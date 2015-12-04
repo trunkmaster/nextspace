@@ -22,7 +22,7 @@
 	    dimmerSlider,
 	    gammaField,
 	    gammaSlider,
-	    monitorsTable,
+	    monitorsList,
 	    monitorsScroll,
 	    offField,
 	    offSlider,

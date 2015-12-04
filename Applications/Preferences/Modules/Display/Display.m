@@ -32,6 +32,7 @@
 #import <AppKit/NSButton.h>
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSTableColumn.h>
+#import <AppKit/NSBrowser.h>
 
 #import "Display.h"
 
@@ -69,13 +70,14 @@ static NSMutableDictionary      *domain = nil;
   [sizecolorView retain];
   [powerView retain];
 
-  {
-    // [monitorsTable sizeLastColumnToFit];
-    NSRect rect = [monitorsScroll frame];
-    NSTableColumn *tColumn;
-    tColumn = [monitorsTable tableColumnWithIdentifier:@"Monitors"];
-    [tColumn setWidth:(rect.size.width-23)];
-  }
+  // {
+  //   NSRect rect = [monitorsScroll frame];
+  //   NSTableColumn *tColumn;
+  //   tColumn = [monitorsTable tableColumnWithIdentifier:@"Monitors"];
+  //   [tColumn setWidth:(rect.size.width-23)];
+  // }
+  [monitorsList setTitle:@"Monitors" ofColumn:0];
+  [monitorsList loadColumnZero];
 }
 
 - (NSView *)view

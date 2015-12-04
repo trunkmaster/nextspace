@@ -48,7 +48,7 @@
   id dimmerSlider;
   id gammaField;
   id gammaSlider;
-  id monitorsTable;
+  id monitorsList;
   id monitorsScroll;
   id offField;
   id offSlider;

@@ -38,7 +38,7 @@
   id shortcutsBrowser;
   id layoutsBox;
   id sectionBox;
-  NSMatrix *sectionsMtrx;
+  id sectionsMtrx;
   id repeatBox;
   id shortcutsBox;
 
