@@ -1,0 +1,2318 @@
+# Finnish translation for WPrefs.app
+# Copyright (C) 1999 Free Software Foundation, Inc.
+#
+# Tomi Kajala <tomi@iki.fi>, 1999-2001
+# Pauli Virtanen <pauli.virtanen@saunalahti.fi>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Maker-0.64.0\n"
+"POT-Creation-Date: 2001-09-03 16:27+0300\n"
+"PO-Revision-Date: 2001-09-03 22:18+03:00\n"
+"Last-Translator: Tomi Kajala <tomi@iki.fi>\n"
+"Language-Team: Finnish <fi@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: ../../WPrefs.app/main.c:74
+#, c-format
+msgid "usage: %s [options]\n"
+msgstr "käyttö: %s [optiot]\n"
+
+#: ../../WPrefs.app/main.c:75
+msgid "options:"
+msgstr "optiot:"
+
+#: ../../WPrefs.app/main.c:76
+msgid " -display <display>\tdisplay to be used"
+msgstr " -display <display>\tkäytettävä näyttö"
+
+#: ../../WPrefs.app/main.c:77
+msgid " --version\t\tprint version number and exit"
+msgstr " --version\t\ttulosta versionumero ja poistu"
+
+#: ../../WPrefs.app/main.c:78
+msgid " --help\t\tprint this message and exit"
+msgstr " --help\t\ttulosta tämä viesti ja poistu"
+
+#: ../../WPrefs.app/main.c:137
+#, c-format
+msgid "too few arguments for %s"
+msgstr "liian vähän argumentteja %s:lle"
+
+#: ../../WPrefs.app/main.c:159
+msgid "X server does not support locale"
+msgstr "X-palvelin ei tue maa-asetusta"
+
+#: ../../WPrefs.app/main.c:162
+msgid "cannot set locale modifiers"
+msgstr "maa-asetusmääreiden asettaminen epäonnistui"
+
+#: ../../WPrefs.app/main.c:168
+#, c-format
+msgid "could not open display %s"
+msgstr "näytön %s avaus ei onnistunut"
+
+#: ../../WPrefs.app/main.c:176
+msgid "could not initialize application"
+msgstr "sovelluksen käynnistäminen epäonnistui"
+
+#: ../../WPrefs.app/WPrefs.c:259
+msgid "Window Maker Preferences"
+msgstr "Window Makerin asetukset"
+
+#: ../../WPrefs.app/WPrefs.c:283
+msgid "Revert Page"
+msgstr "Peruuta sivun muutokset"
+
+#: ../../WPrefs.app/WPrefs.c:289
+msgid "Revert All"
+msgstr "Peruuta kaikki muutokset"
+
+#: ../../WPrefs.app/WPrefs.c:295
+msgid "Save"
+msgstr "Tallenna"
+
+#: ../../WPrefs.app/Appearance.c:2294 ../../WPrefs.app/WPrefs.c:301
+msgid "Close"
+msgstr "Sulje"
+
+#: ../../WPrefs.app/WPrefs.c:308
+msgid "Balloon Help"
+msgstr "Puhekuplaopastus"
+
+#: ../../WPrefs.app/WPrefs.c:333
+msgid "Window Maker Preferences Utility"
+msgstr "Window Makerin asetusten säätöohjelma"
+
+#: ../../WPrefs.app/WPrefs.c:340
+#, c-format
+msgid "Version %s for Window Maker %s or newer"
+msgstr "Versio %s Window Makerille %s tai uudemmalle"
+
+#: ../../WPrefs.app/WPrefs.c:348
+msgid "Starting..."
+msgstr "Käynnistyy..."
+
+#: ../../WPrefs.app/WPrefs.c:354
+msgid ""
+"Programming/Design: Alfredo K. Kojima\n"
+"Artwork: Marco van Hylckama Vlieg, Largo et al\n"
+"More Programming: James Thompson et al"
+msgstr ""
+"Ohjelmointi/suunnittelu: Alfredo K. Kojima\n"
+"Grafiikka: Marco van Hylckama Vlieg, Largo et al\n"
+"Lisää ohjelmointia: James Thompson et al"
+
+#: ../../WPrefs.app/WPrefs.c:454
+#, c-format
+msgid "could not locate image file %s\n"
+msgstr "Kuvatiedostoa %s ei löytynyt\n"
+
+#: ../../WPrefs.app/Appearance.c:1965 ../../WPrefs.app/Configurations.c:242
+#: ../../WPrefs.app/Configurations.c:254 ../../WPrefs.app/Focus.c:289
+#: ../../WPrefs.app/Focus.c:300 ../../WPrefs.app/MenuPreferences.c:135
+#: ../../WPrefs.app/MenuPreferences.c:146
+#: ../../WPrefs.app/MenuPreferences.c:174
+#: ../../WPrefs.app/MenuPreferences.c:189 ../../WPrefs.app/MouseSettings.c:560
+#: ../../WPrefs.app/MouseSettings.c:571 ../../WPrefs.app/WPrefs.c:557
+#: ../../WPrefs.app/WPrefs.c:582
+#, c-format
+msgid "could not load icon file %s"
+msgstr "kuvaketiedoston %s lataus epäonnistui"
+
+#: ../../WPrefs.app/WPrefs.c:669
+#, c-format
+msgid "could not load image file %s:%s"
+msgstr "kuvatiedoston %s:%s lataus epäonnistui"
+
+#: ../../WPrefs.app/WPrefs.c:688
+msgid "Loading Window Maker configuration files..."
+msgstr "Lataan Window Makerin asetustiedostoja..."
+
+#: ../../WPrefs.app/WPrefs.c:692
+msgid "Initializing configuration panels..."
+msgstr "Alustan asetuspaneeleja..."
+
+#: ../../WPrefs.app/WPrefs.c:726
+msgid ""
+"WPrefs is free software and is distributed WITHOUT ANY\n"
+"WARRANTY under the terms of the GNU General Public License."
+msgstr ""
+"WPrefs on vapaa ohjelmisto ja sitä levitetään ILMAN\n"
+"MITÄÄN TAKUUTA, GNU General Public Licensen ehdoilla."
+
+#: ../../WPrefs.app/WPrefs.c:755 ../../WPrefs.app/WPrefs.c:835
+#, c-format
+msgid "Window Maker domain (%s) is corrupted!"
+msgstr "Window Makerin kenttä (%s) on vioittunut!"
+
+#: ../../WPrefs.app/Font.c:330 ../../WPrefs.app/Menu.c:1533
+#: ../../WPrefs.app/MouseSettings.c:140 ../../WPrefs.app/MouseSettings.c:160
+#: ../../WPrefs.app/TexturePanel.c:613 ../../WPrefs.app/TexturePanel.c:693
+#: ../../WPrefs.app/Themes.c:96 ../../WPrefs.app/WPrefs.c:756
+#: ../../WPrefs.app/WPrefs.c:761 ../../WPrefs.app/WPrefs.c:779
+#: ../../WPrefs.app/WPrefs.c:789 ../../WPrefs.app/WPrefs.c:799
+#: ../../WPrefs.app/WPrefs.c:836 ../../WPrefs.app/WPrefs.c:841
+msgid "Error"
+msgstr "Virhe"
+
+#: ../../WPrefs.app/Font.c:330 ../../WPrefs.app/Menu.c:1533
+#: ../../WPrefs.app/MouseSettings.c:142 ../../WPrefs.app/MouseSettings.c:162
+#: ../../WPrefs.app/TexturePanel.c:614 ../../WPrefs.app/TexturePanel.c:695
+#: ../../WPrefs.app/TexturePanel.c:1529 ../../WPrefs.app/Themes.c:98
+#: ../../WPrefs.app/WPrefs.c:756 ../../WPrefs.app/WPrefs.c:761
+#: ../../WPrefs.app/WPrefs.c:781 ../../WPrefs.app/WPrefs.c:793
+#: ../../WPrefs.app/WPrefs.c:799 ../../WPrefs.app/WPrefs.c:806
+#: ../../WPrefs.app/WPrefs.c:836 ../../WPrefs.app/WPrefs.c:841
+msgid "OK"
+msgstr "OK"
+
+#: ../../WPrefs.app/WPrefs.c:759
+#, c-format
+msgid "Could not load Window Maker domain (%s) from defaults database."
+msgstr "Window Makerin kentän (%s) lataus oletustietokannasta epäonnistui."
+
+#: ../../WPrefs.app/WPrefs.c:776
+msgid "could not extract version information from Window Maker"
+msgstr "Window Makerin versiotietojen selvitys epäonnistui"
+
+#: ../../WPrefs.app/WPrefs.c:777
+msgid "Make sure wmaker is in your search path."
+msgstr "Varmista, että wmaker on hakupolussasi."
+
+#: ../../WPrefs.app/WPrefs.c:780
+msgid ""
+"Could not extract version from Window Maker. Make sure it is correctly "
+"installed and is in your PATH environment variable."
+msgstr ""
+"Window Makerin versiota ei voitu selvittää. Varmista, että se on oikein "
+"asennettu ja että PATH-ympäristömuuttujasi sisältää polun, johon se on "
+"asennettu."
+
+#: ../../WPrefs.app/WPrefs.c:790
+msgid ""
+"Could not extract version from Window Maker. Make sure it is correctly "
+"installed and the path where it installed is in the PATH environment "
+"variable."
+msgstr ""
+"Window Makerin versiota ei voitu selvittää. Varmista, että se on oikein "
+"asennettu ja että PATH-ympäristömuuttujasi sisältää polun, johon se on "
+"asennettu."
+
+#: ../../WPrefs.app/WPrefs.c:797
+#, c-format
+msgid ""
+"WPrefs only supports Window Maker 0.18.0 or newer.\n"
+"The version installed is %i.%i.%i\n"
+msgstr ""
+"WPrefs tukee vain Window Makeria 0.18.0 tai uudempaa.\n"
+"Asennettu versio on %i.%i.%i\n"
+
+#: ../../WPrefs.app/WPrefs.c:804
+#, c-format
+msgid ""
+"Window Maker %i.%i.%i, which is installed in your system, is not fully "
+"supported by this version of WPrefs."
+msgstr ""
+"Tämä WPrefs-versio ei tue täysin Window Makeria %i.%i.%i, joka on asennettu "
+"järjestelmääsi."
+
+#: ../../WPrefs.app/Menu.c:1568 ../../WPrefs.app/WPrefs.c:806
+msgid "Warning"
+msgstr "Varoitus"
+
+#: ../../WPrefs.app/WPrefs.c:817
+#, c-format
+msgid "could not run \"%s --global_defaults_path\"."
+msgstr ""
+
+#: ../../WPrefs.app/WPrefs.c:839
+#, c-format
+msgid "Could not load global Window Maker domain (%s)."
+msgstr "Globaalia Window Makerin kenttää (%s) ei voitu ladata."
+
+#: ../../WPrefs.app/WPrefs.c:1088
+#, c-format
+msgid ""
+"bad speed value for option %s\n"
+". Using default Medium"
+msgstr ""
+"virheellinen nopeusarvo valinnalle %s.\n"
+"Käytetään oletusta keskinopea"
+
+#: ../../WPrefs.app/Appearance.c:1131
+msgid "Select File"
+msgstr "Valitse tiedosto"
+
+#: ../../WPrefs.app/Appearance.c:1533
+msgid "Focused Window"
+msgstr "Aktiivinen ikkuna"
+
+#: ../../WPrefs.app/Appearance.c:1537
+msgid "Unfocused Window"
+msgstr "Ei-aktiivinen ikkuna"
+
+#: ../../WPrefs.app/Appearance.c:1541
+msgid "Owner of Focused Window"
+msgstr "Aktiivisen ikkunan omistaja"
+
+#: ../../WPrefs.app/Appearance.c:1545 ../../WPrefs.app/Appearance.c:1862
+msgid "Menu Title"
+msgstr "Valikon otsikko"
+
+#: ../../WPrefs.app/Appearance.c:1549 ../../WPrefs.app/Appearance.c:1551
+msgid "Normal Item"
+msgstr "Normaali alkio"
+
+#: ../../WPrefs.app/Appearance.c:1555
+msgid "Disabled Item"
+msgstr "Ei käytössä"
+
+#: ../../WPrefs.app/Appearance.c:1564
+msgid "Highlighted"
+msgstr "Korostettu"
+
+#: ../../WPrefs.app/Appearance.c:1755
+msgid "Texture"
+msgstr "Kuvio"
+
+#: ../../WPrefs.app/Appearance.c:1763
+msgid "Titlebar of Focused Window"
+msgstr "Aktiivisen ikkunan otsikkopalkki"
+
+#: ../../WPrefs.app/Appearance.c:1764
+msgid "Titlebar of Unfocused Windows"
+msgstr "Ei-aktiivisten ikkunoiden otsikkopalkki"
+
+#: ../../WPrefs.app/Appearance.c:1765
+msgid "Titlebar of Focused Window's Owner"
+msgstr "Aktiivisen ikkunan omistajan otsikkopalkki"
+
+#: ../../WPrefs.app/Appearance.c:1766
+msgid "Window Resizebar"
+msgstr "Ikkunan koonsäätöpalkki"
+
+#: ../../WPrefs.app/Appearance.c:1767
+msgid "Titlebar of Menus"
+msgstr "Valikoiden otsikkopalkki"
+
+#: ../../WPrefs.app/Appearance.c:1768
+msgid "Menu Items"
+msgstr "Valikon alkiot"
+
+#: ../../WPrefs.app/Appearance.c:1769
+msgid "Icon Background"
+msgstr "Kuvakkeen tausta"
+
+#: ../../WPrefs.app/Appearance.c:1784
+msgid ""
+"Double click in the texture you want to use\n"
+"for the selected item."
+msgstr ""
+"Kaksoisnapauta kuviota, jota haluat käyttää\n"
+"valitussa kohdassa."
+
+#: ../../WPrefs.app/Appearance.c:1798
+msgid "New"
+msgstr "Uusi"
+
+#: ../../WPrefs.app/Appearance.c:1802
+msgid "Create a new texture."
+msgstr "Luo uusi kuvio"
+
+#: ../../WPrefs.app/Appearance.c:1810
+msgid "Extract..."
+msgstr "Poimi..."
+
+#: ../../WPrefs.app/Appearance.c:1814
+msgid "Extract texture(s) from a theme or a style file."
+msgstr "Poimi kuvio(ita) teemasta tai tyylitiedostosta."
+
+#: ../../WPrefs.app/Appearance.c:1824
+msgid "Edit"
+msgstr "Muokkaa"
+
+#: ../../WPrefs.app/Appearance.c:1827
+msgid "Edit the highlighted texture."
+msgstr "Muokkaa korostettua kuviota."
+
+#: ../../WPrefs.app/Appearance.c:1835 ../../WPrefs.app/TexturePanel.c:1317
+msgid "Delete"
+msgstr "Poista"
+
+#: ../../WPrefs.app/Appearance.c:1839
+msgid "Delete the highlighted texture."
+msgstr "Poista korostettu kuvio."
+
+#: ../../WPrefs.app/Appearance.c:1852
+msgid "Color"
+msgstr "Väri"
+
+#: ../../WPrefs.app/Appearance.c:1859
+msgid "Focused Window Title"
+msgstr "Aktiivisen ikkunan otsikko"
+
+#: ../../WPrefs.app/Appearance.c:1860
+msgid "Unfocused Window Title"
+msgstr "Ei-aktiivisen ikkunan otsikko"
+
+#: ../../WPrefs.app/Appearance.c:1861
+msgid "Owner of Focused Window Title"
+msgstr "Aktiivisen ikkunan omistajan otsikko"
+
+#: ../../WPrefs.app/Appearance.c:1863
+msgid "Menu Item Text"
+msgstr "Valikkokohdan teksti"
+
+#: ../../WPrefs.app/Appearance.c:1864
+msgid "Disabled Menu Item Text"
+msgstr "Pois käytöstä olevan valikkokohdan teksti"
+
+#: ../../WPrefs.app/Appearance.c:1865
+msgid "Menu Highlight Color"
+msgstr "Valikon korostusväri"
+
+#: ../../WPrefs.app/Appearance.c:1866
+msgid "Highlighted Menu Text Color"
+msgstr "Korostetun valikon tekstiväri"
+
+#: ../../WPrefs.app/Appearance.c:1905
+msgid "Background"
+msgstr "Tausta"
+
+#: ../../WPrefs.app/Appearance.c:1917 ../../WPrefs.app/TexturePanel.c:1504
+msgid "Browse..."
+msgstr "Selaa..."
+
+#: ../../WPrefs.app/Appearance.c:1930
+msgid "Options"
+msgstr "Valintoja"
+
+#: ../../WPrefs.app/Appearance.c:1937
+msgid "Menu Style"
+msgstr "Valikon tyyli"
+
+#: ../../WPrefs.app/Appearance.c:1979
+msgid "Title Alignment"
+msgstr "Otsikon sijoitus"
+
+#: ../../WPrefs.app/Appearance.c:1986
+msgid "Left"
+msgstr "Vasen"
+
+#: ../../WPrefs.app/Appearance.c:1989 ../../WPrefs.app/TexturePanel.c:1518
+#: ../../WPrefs.app/Workspace.c:270
+msgid "Center"
+msgstr "Keskitetty"
+
+#: ../../WPrefs.app/Appearance.c:1992
+msgid "Right"
+msgstr "Oikea"
+
+#: ../../WPrefs.app/Appearance.c:2216
+msgid "Appearance Preferences"
+msgstr "Ulkonäköasetukset"
+
+#: ../../WPrefs.app/Appearance.c:2218
+msgid ""
+"Background texture configuration for windows,\n"
+"menus and icons."
+msgstr ""
+"Taustakuvion asetukset ikkunoille,\n"
+"valikoille ja kuvakkeille."
+
+#: ../../WPrefs.app/Appearance.c:2263
+msgid "Extract Texture"
+msgstr "Poimi kuvio"
+
+#: ../../WPrefs.app/Appearance.c:2283
+msgid "Textures"
+msgstr "Kuviot"
+
+#: ../../WPrefs.app/Appearance.c:2299
+msgid "Extract"
+msgstr "Poimi"
+
+#: ../../WPrefs.app/Configurations.c:150 ../../WPrefs.app/Configurations.c:156
+#: ../../WPrefs.app/MouseSettings.c:490 ../../WPrefs.app/WindowHandling.c:339
+#: ../../WPrefs.app/WindowHandling.c:351 ../../WPrefs.app/Workspace.c:90
+#: ../../WPrefs.app/Workspace.c:101
+#, c-format
+msgid "could not load icon %s"
+msgstr "kuvakkeen %s lataus ei onnistunut"
+
+#: ../../WPrefs.app/Configurations.c:164 ../../WPrefs.app/Workspace.c:109
+#, c-format
+msgid "could not process icon %s: %s"
+msgstr "ei voitu käsitellä kuvaketta %s: %s"
+
+#: ../../WPrefs.app/Configurations.c:189 ../../WPrefs.app/Workspace.c:164
+#, c-format
+msgid "could not load image file %s"
+msgstr "kuvatiedoston %s lataus epäonnistui"
+
+#: ../../WPrefs.app/Configurations.c:203
+msgid "Icon Slide Speed"
+msgstr "Kuvakkeen liukumisnopeus"
+
+#: ../../WPrefs.app/Configurations.c:209
+msgid "Shade Animation Speed"
+msgstr "\"Vain otsikkopalkki\"-animaation nopeus"
+
+#: ../../WPrefs.app/Configurations.c:271
+msgid "Smooth Scaling"
+msgstr "Pehmeä venytys"
+
+#: ../../WPrefs.app/Configurations.c:272
+msgid ""
+"Smooth scaled background images, neutralizing\n"
+"the `pixelization' effect. This will slow\n"
+"down loading of background images considerably."
+msgstr ""
+"Pehmennä venytetyt taustakuvat, mikä\n"
+"poistaa `sahalaitaefektin'. Tämä hidastaa\n"
+"taustakuvan latausta huomattavasti."
+
+#: ../../WPrefs.app/Configurations.c:313
+msgid "Titlebar Style"
+msgstr "Otsikkopalkin tyyli"
+
+#: ../../WPrefs.app/Configurations.c:351
+msgid "Animations and Sound"
+msgstr "Animaatiot ja ääni"
+
+#: ../../WPrefs.app/Configurations.c:357
+msgid "Animations"
+msgstr "Animaatiot"
+
+#: ../../WPrefs.app/Configurations.c:368
+msgid ""
+"Disable/enable animations such as those shown\n"
+"for window miniaturization, shading etc."
+msgstr ""
+"Ikkunan pienennys-, vain otsikkopalkki-, ym.\n"
+"animaatiot päälle/pois."
+
+#: ../../WPrefs.app/Configurations.c:376
+msgid "Superfluous"
+msgstr "Ylimääräiset"
+
+#: ../../WPrefs.app/Configurations.c:387
+msgid ""
+"Disable/enable `superfluous' features and\n"
+"animations. These include the `ghosting' of the\n"
+"dock when it's being moved to another side and\n"
+"the explosion animation when undocking icons."
+msgstr ""
+"\"Ylimääräiset\" ominaisuudet ja animaatiot\n"
+"päälle/pois. Ne sisältävät telakan \"haamuilun\",\n"
+"kun sitä siirretään toiselle puolelle, ja\n"
+"telakasta poistettavien kuvakkeiden räjähdyksen."
+
+#: ../../WPrefs.app/Configurations.c:397
+msgid "Sounds"
+msgstr "Äänet"
+
+#: ../../WPrefs.app/Configurations.c:408
+msgid ""
+"Disable/enable support for sound effects played\n"
+"for actions like shading and closing a window.\n"
+"You will need a module distributed separately\n"
+"for this. You can get it at:\n"
+"http://shadowmere.student.utwente.nl/"
+msgstr ""
+"Tuki äänitehosteille, joita soitetaan toiminnoille\n"
+"kuten Vain otsikkopalkki ja ikkunan sulkeminen.\n"
+"Tähän tarvitaan erikseen jaettava moduuli.\n"
+"Voit hakea sen osoitteesta\n"
+"http://shadowmere.student.utwente.nl/"
+
+#: ../../WPrefs.app/Configurations.c:419
+msgid ""
+"Note: sound requires a module distributed\n"
+"separately"
+msgstr ""
+"Huomaa: ääni edellyttää erikseen\n"
+"jaettavaa moduulia"
+
+#: ../../WPrefs.app/Configurations.c:429
+msgid "Dithering colormap for 8bpp"
+msgstr "Pehmennysvärikartta 8 bpp:lle"
+
+#: ../../WPrefs.app/Configurations.c:431
+msgid ""
+"Number of colors to reserve for Window Maker\n"
+"on displays that support only 8bpp (PseudoColor)."
+msgstr ""
+"Värimäärä, joka Window Makerille varataan näytöissä,\n"
+"joissa käytetään vain 8 bittiä pikseliä kohti (PseudoColor)."
+
+#: ../../WPrefs.app/Configurations.c:438
+msgid "Disable dithering in any visual/depth"
+msgstr "Ei pehmennystä missään visualissa/värisyvyydessä"
+
+#: ../../WPrefs.app/Configurations.c:459
+msgid ""
+"More colors for\n"
+"applications"
+msgstr ""
+"Lisää värejä\n"
+"sovelluksille"
+
+#: ../../WPrefs.app/Configurations.c:466
+msgid ""
+"More colors for\n"
+"Window Maker"
+msgstr ""
+"Lisää värejä\n"
+"Window Makerille"
+
+#: ../../WPrefs.app/Configurations.c:521
+msgid "Other Configurations"
+msgstr "Muut asetukset"
+
+#: ../../WPrefs.app/Configurations.c:523
+msgid ""
+"Animation speeds, titlebar styles, various option\n"
+"toggling and number of colors to reserve for\n"
+"Window Maker on 8bit displays."
+msgstr ""
+"Animaationopeudet, otsikkopalkin tyylit, erilaisten\n"
+"asetusten valinta ja värimäärä, joka Window Makerille\n"
+"varataan kahdeksanbittisissä näytöissä."
+
+#: ../../WPrefs.app/Expert.c:75
+msgid ""
+"Disable miniwindows (icons for miniaturized windows). For use with KDE/GNOME."
+msgstr ""
+"Ei mini-ikkunoita (pienennettyjen ikkunoiden kuvakkeita). KDE:tä/GNOMEa "
+"varten."
+
+#: ../../WPrefs.app/Expert.c:76
+msgid "Do not set non-WindowMaker specific parameters (do not use xset)."
+msgstr "Älä aseta Window Makerin ulkopuolisia parametreja (älä käytä xset:iä)"
+
+#: ../../WPrefs.app/Expert.c:77
+msgid "Automatically save session when exiting Window Maker."
+msgstr "Tallenna istunto automaattisesti, kun Window Maker suljetaan"
+
+#: ../../WPrefs.app/Expert.c:78
+msgid "Use SaveUnder in window frames, icons, menus and other objects."
+msgstr ""
+"SaveUnder käytössä ikkunoiden kehyksissä, kuvakkeissa, valikoissa ja muissa "
+"kohteissa"
+
+#: ../../WPrefs.app/Expert.c:79
+msgid "Use Windoze style cycling."
+msgstr "Käytä Windoze-tyylistä vaihtoa"
+
+#: ../../WPrefs.app/Expert.c:80
+msgid "Disable confirmation panel for the Kill command."
+msgstr "Älä pyydä Tapa-komentoon vahvistusta."
+
+#: ../../WPrefs.app/Expert.c:81
+msgid "Disable selection animation for selected icons."
+msgstr "Ei valittujen kuvakkeiden animaatiota"
+
+#: ../../WPrefs.app/Expert.c:115
+msgid "Expert User Preferences"
+msgstr "Tehokäyttäjän asetukset"
+
+#: ../../WPrefs.app/Expert.c:117
+msgid ""
+"Options for people who know what they're doing...\n"
+"Also have some other misc. options."
+msgstr ""
+"Valintoja ihmisille, jotka tietävät, mitä tekevät...\n"
+"Sekä eräitä sekalaisia valintoja."
+
+#: ../../WPrefs.app/Focus.c:81
+#, c-format
+msgid "bad option value %s for option FocusMode. Using default Manual"
+msgstr "väärä arvo %s valinnalle FocusMode. Käytetään oletusta Manual"
+
+#: ../../WPrefs.app/Focus.c:95
+#, c-format
+msgid "bad option value %s for option ColormapMode. Using default Auto"
+msgstr "väärä arvo %s valinnalle ColormapMode. Käytetään oletusta Auto"
+
+#: ../../WPrefs.app/Focus.c:215
+msgid "Input Focus Mode"
+msgstr "Syöttökohdistuksen tila"
+
+#: ../../WPrefs.app/Focus.c:223
+msgid "Manual:  Click on the window to set keyboard input focus"
+msgstr "Manuaalinen: Napauta ikkunaa asettaaksesi sen näppäimistösyötön kohteeksi"
+
+#: ../../WPrefs.app/Focus.c:230
+msgid "Auto:  Set keyboard input focus to the window under the mouse pointer"
+msgstr "Automaattinen: Aseta hiiren osoittimen alla oleva ikkuna näppäimistösyötön kohteeksi"
+
+#: ../../WPrefs.app/Focus.c:244
+msgid "Install colormap from the window..."
+msgstr "Asenna värikartta ikkunaan..."
+
+#: ../../WPrefs.app/Focus.c:249
+msgid "...that has the input focus"
+msgstr "...jolla on syöttökohdistus"
+
+#: ../../WPrefs.app/Focus.c:254
+msgid "...that's under the mouse pointer"
+msgstr "...joka on hiiren osoittimen alla"
+
+#: ../../WPrefs.app/Focus.c:263
+msgid "Automatic Window Raise Delay"
+msgstr "Automaattisen ikkunannoston viive"
+
+#: ../../WPrefs.app/Focus.c:320 ../../WPrefs.app/MouseSettings.c:601
+msgid "ms"
+msgstr "ms"
+
+#: ../../WPrefs.app/Focus.c:337
+msgid "Do not let applications receive the click used to focus windows"
+msgstr "Älä välitä sovelluksille ikkunan aktivointipainallusta"
+
+#: ../../WPrefs.app/Focus.c:343
+msgid "Automatically focus new windows"
+msgstr "Aktivoi uudet ikkunat automaattisesti"
+
+#: ../../WPrefs.app/Focus.c:364
+msgid "Window Focus Preferences"
+msgstr "Ikkunoiden aktivointiasetukset"
+
+#: ../../WPrefs.app/Focus.c:366
+msgid ""
+"Keyboard focus switching policy, colormap switching\n"
+"policy for 8bpp displays and other related options."
+msgstr ""
+"Näppäimistökohdistuksen vaihtosäännöt, värikartan vaihto-\n"
+"säännöt 8 bittitason näytöille yms. valintoja."
+
+#: ../../WPrefs.app/Font.c:277
+msgid "Could not locate font information file WPrefs.app/font.data"
+msgstr "Kirjasininfo-tiedostoa WPrefs.app/font.data ei löytynyt"
+
+#: ../../WPrefs.app/Font.c:283
+msgid "Could not read font information file WPrefs.app/font.data"
+msgstr "Kirjasininfo-tiedostoa WPrefs.app/font.data ei voitu lukea"
+
+#: ../../WPrefs.app/Font.c:294
+msgid ""
+"Invalid data in font information file WPrefs.app/font.data.\n"
+"Encodings data not found."
+msgstr ""
+"Virheellisiä tietoja kirjasininfo-tiedostossa WPrefs.app/font.data.\n"
+"Merkistötietoja ei löytynyt."
+
+#: ../../WPrefs.app/Font.c:299
+msgid "- Custom -"
+msgstr "- Mukautettu -"
+
+#: ../../WPrefs.app/Font.c:376
+msgid "Default Font Sets"
+msgstr "Oletuskirjasinvalikoima"
+
+#: ../../WPrefs.app/Font.c:389
+msgid "Font Set"
+msgstr "Kirjasinvalikoima"
+
+#: ../../WPrefs.app/Font.c:418
+msgid "Add..."
+msgstr "Lisää..."
+
+#: ../../WPrefs.app/Font.c:423 ../../WPrefs.app/Font.c:438
+msgid "Change..."
+msgstr "Muuta..."
+
+#: ../../WPrefs.app/Font.c:428 ../../WPrefs.app/Paths.c:288
+#: ../../WPrefs.app/Paths.c:319
+msgid "Remove"
+msgstr "Poista"
+
+#: ../../WPrefs.app/Font.c:477
+msgid "Font Preferences"
+msgstr "Kirjasinasetukset"
+
+#: ../../WPrefs.app/Font.c:478
+msgid "Font Configurations for Windows, Menus etc"
+msgstr "Kirjasinasetukset ikkunoille, valikoille jne."
+
+#: ../../WPrefs.app/Icons.c:180
+msgid "Icon Positioning"
+msgstr "Kuvakkeiden sijoitus"
+
+#: ../../WPrefs.app/Icons.c:227
+msgid "Iconification Animation"
+msgstr "Pienennysanimaatio"
+
+#: ../../WPrefs.app/Icons.c:238
+msgid "Shrinking/Zooming"
+msgstr "Kutistuva/kasvava"
+
+#: ../../WPrefs.app/Icons.c:239
+msgid "Spinning/Twisting"
+msgstr "Pyörivä (Z-aks.)"
+
+#: ../../WPrefs.app/Icons.c:240
+msgid "3D-flipping"
+msgstr "Pyörivä (X-aks.)"
+
+#: ../../WPrefs.app/Icons.c:241 ../../WPrefs.app/MouseSettings.c:838
+#: ../../WPrefs.app/MouseSettings.c:843
+msgid "None"
+msgstr "Ei mitään"
+
+#: ../../WPrefs.app/Icons.c:254
+msgid "Auto-arrange icons"
+msgstr "Järjestä kuvakkeet automaattisesti"
+
+#: ../../WPrefs.app/Icons.c:256
+msgid "Keep icons and miniwindows arranged all the time."
+msgstr "Pidä kuvakkeet ja mini-ikkunat aina järjestyksessä."
+
+#: ../../WPrefs.app/Icons.c:262
+msgid "Omnipresent miniwindows"
+msgstr "Mini-ikkunat näkyvät kaikkialla"
+
+#: ../../WPrefs.app/Icons.c:264
+msgid "Make miniwindows be present in all workspaces."
+msgstr "Näytä mini-ikkunat kaikissa työtiloissa."
+
+#: ../../WPrefs.app/Icons.c:273
+msgid "Icon Size"
+msgstr "Kuvakkeiden koko"
+
+#: ../../WPrefs.app/Icons.c:275
+msgid "The size of the dock/application icon and miniwindows"
+msgstr "Telakka/sovelluskuvakkeen ja mini-ikkunoiden koko."
+
+#: ../../WPrefs.app/Icons.c:345
+msgid "Icon Preferences"
+msgstr "Kuvakeasetukset"
+
+#: ../../WPrefs.app/Icons.c:347
+msgid ""
+"Icon/Miniwindow handling options. Icon positioning\n"
+"area, sizes of icons, miniaturization animation style."
+msgstr ""
+"Kuvakkeiden/mini-ikkunoiden käsittelyasetukset:\n"
+"kuvakkeiden sijoituspaikka, niiden koot ja pienennys-\n"
+"animaation tyyli."
+
+#: ../../WPrefs.app/KeyboardSettings.c:73
+msgid "Initial Key Repeat"
+msgstr "Näppäintoiston alkuviive"
+
+#: ../../WPrefs.app/KeyboardSettings.c:114
+msgid "Key Repeat Rate"
+msgstr "Näppäintoiston nopeus"
+
+#: ../../WPrefs.app/KeyboardSettings.c:154
+msgid "Type here to test"
+msgstr "Kokeile kirjoitusta tässä"
+
+#: ../../WPrefs.app/KeyboardSettings.c:173
+msgid "Keyboard Preferences"
+msgstr "Näppäimistöasetukset"
+
+#: ../../WPrefs.app/KeyboardSettings.c:175
+msgid "Not done"
+msgstr "Ei tehty"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:186 ../../WPrefs.app/Menu.c:327
+#: ../../WPrefs.app/TexturePanel.c:1535
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:187
+msgid "Press the desired shortcut key(s) or click Cancel to stop capturing."
+msgstr "Paina haluamasi pikavalinnan näppäinyhdistelmä tai paina 'Peruuta'."
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:207
+#: ../../WPrefs.app/KeyboardShortcuts.c:456 ../../WPrefs.app/Menu.c:338
+#: ../../WPrefs.app/Menu.c:782
+msgid "Capture"
+msgstr "Sieppaa"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:208
+#: ../../WPrefs.app/KeyboardShortcuts.c:464
+msgid "Click Capture to interactively define the shortcut key."
+msgstr "Paina 'Sieppaa' määritelläksesi pikavalinnan interaktiivisesti."
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:363
+msgid "Actions"
+msgstr "Toiminnot"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:379
+msgid "Open applications menu"
+msgstr "Avaa sovellusvalikko"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:380
+msgid "Open window list menu"
+msgstr "Avaa ikkunalistavalikko"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:381
+msgid "Open window commands menu"
+msgstr "Avaa ikkunakomennot-valikko"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:382
+msgid "Hide active application"
+msgstr "Piilota aktiivinen sovellus"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:383
+msgid "Miniaturize active window"
+msgstr "Pienennä aktiivinen ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:384
+msgid "Close active window"
+msgstr "Sulje aktiivinen ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:385
+msgid "Maximize active window"
+msgstr "Suurenna aktiivinen ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:386
+msgid "Maximize active window vertically"
+msgstr "Suurenna akt. ikkuna pystysuunnassa"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:387
+msgid "Maximize active window horizontally"
+msgstr "Suurenna akt. ikkuna vaakasuunnassa"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:388
+msgid "Raise active window"
+msgstr "Nosta aktiivinen ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:389
+msgid "Lower active window"
+msgstr "Laske aktiivinen ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:390
+msgid "Raise/Lower window under mouse pointer"
+msgstr "Nosta/laske hiiren os. alla oleva ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:391
+msgid "Shade active window"
+msgstr "Vain otsikkopalkki aktiivisesta ikkunasta"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:392
+msgid "Move/Resize active window"
+msgstr "Muuta aktiivisen ikkunan paikkaa tai kokoa"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:393
+msgid "Select active window"
+msgstr "Valitse aktiivinen ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:394
+msgid "Focus next window"
+msgstr "Aktivoi seuraava ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:395
+msgid "Focus previous window"
+msgstr "Aktivoi edellinen ikkuna"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:396
+msgid "Switch to next workspace"
+msgstr "Siirry seuraavaan työtilaan"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:397
+msgid "Switch to previous workspace"
+msgstr "Siirry edelliseen työtilaan"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:398
+msgid "Switch to next ten workspaces"
+msgstr "Siirry seuraavalle työtilakymmenelle"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:399
+msgid "Switch to previous ten workspaces"
+msgstr "Siirry edelliselle työtilakymmenelle"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:400
+msgid "Switch to workspace 1"
+msgstr "Siirry työtilaan 1"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:401
+msgid "Switch to workspace 2"
+msgstr "Siirry työtilaan 2"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:402
+msgid "Switch to workspace 3"
+msgstr "Siirry työtilaan 3"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:403
+msgid "Switch to workspace 4"
+msgstr "Siirry työtilaan 4"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:404
+msgid "Switch to workspace 5"
+msgstr "Siirry työtilaan 5"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:405
+msgid "Switch to workspace 6"
+msgstr "Siirry työtilaan 6"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:406
+msgid "Switch to workspace 7"
+msgstr "Siirry työtilaan 7"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:407
+msgid "Switch to workspace 8"
+msgstr "Siirry työtilaan 8"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:408
+msgid "Switch to workspace 9"
+msgstr "Siirry työtilaan 9"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:409
+msgid "Switch to workspace 10"
+msgstr "Siirry työtilaan 10"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:410
+msgid "Shortcut for window 1"
+msgstr "Pikavalinta ikkunalle 1"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:411
+msgid "Shortcut for window 2"
+msgstr "Pikavalinta ikkunalle 2"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:412
+msgid "Shortcut for window 3"
+msgstr "Pikavalinta ikkunalle 3"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:413
+msgid "Shortcut for window 4"
+msgstr "Pikavalinta ikkunalle 4"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:414
+msgid "Shortcut for window 5"
+msgstr "Pikavalinta ikkunalle 5"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:415
+msgid "Shortcut for window 6"
+msgstr "Pikavalinta ikkunalle 6"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:416
+msgid "Shortcut for window 7"
+msgstr "Pikavalinta ikkunalle 7"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:417
+msgid "Shortcut for window 8"
+msgstr "Pikavalinta ikkunalle 8"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:418
+msgid "Shortcut for window 9"
+msgstr "Pikavalinta ikkunalle 9"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:419
+msgid "Shortcut for window 10"
+msgstr "Pikavalinta ikkunalle 10"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:420
+msgid "Switch to Next Screen/Monitor"
+msgstr "Vaihda seuraavaan ruutuun/monitoriin"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:421
+msgid "Raise Clip"
+msgstr "Nosta Liitin"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:422
+msgid "Lower Clip"
+msgstr "Laske Liitin"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:423
+msgid "Raise/Lower Clip"
+msgstr "Nosta/Laske Liitin"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:425
+msgid "Toggle keyboard language"
+msgstr "Vaihda näppäimistön kieli"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:439
+msgid "Shortcut"
+msgstr "Pikavalinta"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:450 ../../WPrefs.app/Menu.c:788
+msgid "Clear"
+msgstr "Tyhjennä"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:512
+msgid "Keyboard Shortcut Preferences"
+msgstr "Näppäimistöpikavalintojen asetukset"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:514
+msgid ""
+"Change the keyboard shortcuts for actions such\n"
+"as changing workspaces and opening menus."
+msgstr ""
+"Muuta näppäinpikavalintoja toiminnoille kuten\n"
+"työtilojen vaihto ja valikkojen avaus."
+
+#: ../../WPrefs.app/Menu.c:477
+msgid "New Items"
+msgstr "Uudet alkiot"
+
+#: ../../WPrefs.app/Menu.c:478
+msgid "Sample Commands"
+msgstr "Näytekomentoja"
+
+#: ../../WPrefs.app/Menu.c:479
+msgid "Sample Submenus"
+msgstr "Näyte-alivalikkoja"
+
+#: ../../WPrefs.app/Menu.c:493
+msgid "Run Program"
+msgstr "Käynnistä ohjelma"
+
+#: ../../WPrefs.app/Menu.c:494
+msgid "Internal Command"
+msgstr "Sisäinen komento"
+
+#: ../../WPrefs.app/Menu.c:495
+msgid "Submenu"
+msgstr "Alivalikko"
+
+#: ../../WPrefs.app/Menu.c:496
+msgid "External Submenu"
+msgstr "Ulkoinen alivalikko"
+
+#: ../../WPrefs.app/Menu.c:497
+msgid "Generated Submenu"
+msgstr "Ohjelman luoma alivalikko"
+
+#: ../../WPrefs.app/Menu.c:498
+msgid "Directory Contents"
+msgstr "Hakemiston sisältö"
+
+#: ../../WPrefs.app/Menu.c:499
+msgid "Workspace Menu"
+msgstr "Työtilavalikko"
+
+#: ../../WPrefs.app/Menu.c:500 ../../WPrefs.app/MouseSettings.c:840
+msgid "Window List Menu"
+msgstr "Ikkunalistavalikko"
+
+#: ../../WPrefs.app/Menu.c:519
+msgid "XTerm"
+msgstr "XTerm"
+
+#: ../../WPrefs.app/Menu.c:522
+msgid "rxvt"
+msgstr "rxvt"
+
+#: ../../WPrefs.app/Menu.c:525
+msgid "ETerm"
+msgstr "ETerm"
+
+#: ../../WPrefs.app/Menu.c:528
+msgid "Run..."
+msgstr "Käynnistä..."
+
+#: ../../WPrefs.app/Menu.c:531
+msgid "Netscape"
+msgstr "Netscape"
+
+#: ../../WPrefs.app/Menu.c:534
+msgid "gimp"
+msgstr "gimp"
+
+#: ../../WPrefs.app/Menu.c:537
+msgid "epic"
+msgstr "epic"
+
+#: ../../WPrefs.app/Menu.c:540
+msgid "ee"
+msgstr "ee"
+
+#: ../../WPrefs.app/Menu.c:543
+msgid "xv"
+msgstr "xv"
+
+#: ../../WPrefs.app/Menu.c:546
+msgid "Acrobat Reader"
+msgstr "Acrobat Reader"
+
+#: ../../WPrefs.app/Menu.c:549
+msgid "ghostview"
+msgstr "ghostview"
+
+#: ../../WPrefs.app/Menu.c:552 ../../WPrefs.app/Menu.c:809
+msgid "Exit Window Maker"
+msgstr "Sulje Window Maker"
+
+#: ../../WPrefs.app/Menu.c:575
+msgid "Debian Menu"
+msgstr "Debian-valikko"
+
+#: ../../WPrefs.app/Menu.c:578
+msgid "RedHat Menu"
+msgstr "RedHat-valikko"
+
+#: ../../WPrefs.app/Menu.c:581
+msgid "Menu Conectiva"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:584 ../../WPrefs.app/Themes.c:250
+msgid "Themes"
+msgstr "Teemat"
+
+#: ../../WPrefs.app/Menu.c:589
+msgid "Bg Images (scale)"
+msgstr "Taustakuvat (venytys)"
+
+#: ../../WPrefs.app/Menu.c:594
+msgid "Bg Images (tile)"
+msgstr "Taustakuvat (mosaiikki)"
+
+#: ../../WPrefs.app/Menu.c:599
+msgid "Assorted XTerms"
+msgstr "XTerm-kokoelma"
+
+#: ../../WPrefs.app/Menu.c:601
+msgid "XTerm Yellow on Blue"
+msgstr "XTerm, keltainen sinisellä"
+
+#: ../../WPrefs.app/Menu.c:604
+msgid "XTerm White on Black"
+msgstr "XTerm, valkoinen mustalla"
+
+#: ../../WPrefs.app/Menu.c:607
+msgid "XTerm Black on White"
+msgstr "XTerm, musta valkoisella"
+
+#: ../../WPrefs.app/Menu.c:610
+msgid "XTerm Black on Beige"
+msgstr "XTerm, musta beigellä"
+
+#: ../../WPrefs.app/Menu.c:613
+msgid "XTerm White on Green"
+msgstr "XTerm, valkoinen vihreällä"
+
+#: ../../WPrefs.app/Menu.c:616
+msgid "XTerm White on Olive"
+msgstr "XTerm, valkoinen oliivinvihreällä"
+
+#: ../../WPrefs.app/Menu.c:619
+msgid "XTerm Blue on Blue"
+msgstr "XTerm, sininen sinisellä"
+
+#: ../../WPrefs.app/Menu.c:622
+msgid "XTerm BIG FONTS"
+msgstr "XTerm, SUURET FONTIT"
+
+#: ../../WPrefs.app/Menu.c:644
+msgid "Program to Run"
+msgstr "Käynnistettävä ohjelma"
+
+#: ../../WPrefs.app/Menu.c:658
+msgid "Run the program inside a Xterm"
+msgstr "Aja ohjelma Xtermissä"
+
+#: ../../WPrefs.app/Menu.c:668
+msgid "Path for Menu"
+msgstr "Valikon polku"
+
+#: ../../WPrefs.app/Menu.c:681
+msgid ""
+"Enter the path for a file containing a menu\n"
+"or a list of directories with the programs you\n"
+"want to have listed in the menu. Ex:\n"
+"~/GNUstep/Library/WindowMaker/menu\n"
+"or\n"
+"/usr/bin ~/xbin"
+msgstr ""
+"Syötä valikon sisältävän tiedoston polku\n"
+"tai ne hakemistot, jotka sisältävät ohjelmat,\n"
+"jotka haluat mukaan valikkoon. Esim.\n"
+"~/GNUstep/Library/WindowMaker/menu\n"
+"tai\n"
+"/usr/bin ~/xbin"
+
+#: ../../WPrefs.app/Menu.c:696
+msgid "Command"
+msgstr "Komento"
+
+#: ../../WPrefs.app/Menu.c:710
+msgid ""
+"Enter a command that outputs a menu\n"
+"definition to stdout when invoked."
+msgstr ""
+"Syötä komento, joka tulostaa valikko-\n"
+"määritelmän vakiotulostusvirtaan."
+
+#: ../../WPrefs.app/Menu.c:721
+msgid "Command to Open Files"
+msgstr "Tiedostojen avauskomento"
+
+#: ../../WPrefs.app/Menu.c:735
+msgid ""
+"Enter the command you want to use to open the\n"
+"files in the directories listed below."
+msgstr ""
+"Kirjoita komento, jolla haluat avata alla näkyvien\n"
+"hakemistojen sisältämät tiedostot."
+
+#: ../../WPrefs.app/Menu.c:744
+msgid "Directories with Files"
+msgstr "Hakemistot, jotka sisältävät tiedostot"
+
+#: ../../WPrefs.app/Menu.c:757
+msgid "Strip extensions from file names"
+msgstr "Älä näytä tiedostonimien päätteitä"
+
+#: ../../WPrefs.app/Menu.c:769
+msgid "Keyboard Shortcut"
+msgstr "Näppäimistöpikavalinta"
+
+#: ../../WPrefs.app/Menu.c:805
+msgid "Arrange Icons"
+msgstr "Järjestä kuvakkeet"
+
+#: ../../WPrefs.app/Menu.c:806
+msgid "Hide All Windows Except For The Focused One"
+msgstr "Piilota kaikki ikkunat aktiivista lukuunottamatta"
+
+#: ../../WPrefs.app/Menu.c:807
+msgid "Show All Windows"
+msgstr "Näytä kaikki ikkunat"
+
+#: ../../WPrefs.app/Menu.c:810
+msgid "Exit X Session"
+msgstr "Sulje X-istunto"
+
+#: ../../WPrefs.app/Menu.c:811
+msgid "Restart Window Maker"
+msgstr "Käynnistä WM uudelleen"
+
+#: ../../WPrefs.app/Menu.c:812
+msgid "Start Another Window Manager   : ("
+msgstr "Käynnistä toinen ikkunamanageri   : ("
+
+#: ../../WPrefs.app/Menu.c:814
+msgid "Save Current Session"
+msgstr "Tallenna tämä istunto"
+
+#: ../../WPrefs.app/Menu.c:815
+msgid "Clear Saved Session"
+msgstr "Tyhjennä tallennettu istunto"
+
+#: ../../WPrefs.app/Menu.c:816
+msgid "Refresh Screen"
+msgstr "Virkistä ruutu"
+
+#: ../../WPrefs.app/Menu.c:817
+msgid "Open Info Panel"
+msgstr "Avaa infopaneeli"
+
+#: ../../WPrefs.app/Menu.c:818
+msgid "Open Copyright Panel"
+msgstr "Avaa copyright-paneeli"
+
+#: ../../WPrefs.app/Menu.c:824
+msgid "Window Manager to Start"
+msgstr "Käynnistettävä ikkunamanageri"
+
+#: ../../WPrefs.app/Menu.c:840
+msgid "Do not confirm action."
+msgstr "Ei vahvistuspaneelia"
+
+#: ../../WPrefs.app/Menu.c:850
+msgid ""
+"Instructions:\n"
+"\n"
+" - drag items from the left to the menu to add new items\n"
+" - drag items out of the menu to remove items\n"
+" - drag items in menu to change their position\n"
+" - drag items with Control pressed to copy them\n"
+" - double click in a menu item to change the label\n"
+" - click on a menu item to change related information"
+msgstr ""
+"Ohjeet:\n"
+" - valikkoon lisätään merkintöjä siirtämällä\n"
+"    niitä vasemmalta\n"
+" - valikosta poistetaan merkintöjä siirtämällä\n"
+"    niitä hiirellä pois\n"
+" - merkintöjen paikkaa vaihdetaan siirtämällä\n"
+"    niitä hiirellä\n"
+" - merkintöjä kopioidaan siirtämällä niitä\n"
+"    Control painettuna\n"
+" - merkinnän nimeä vaihdetaan kaksois-\n"
+"    napauttamalla merkintää\n"
+" - merkintään liittyviä tietoja vaihdetaan\n"
+"    painamalla merkintää"
+
+#: ../../WPrefs.app/Menu.c:1067
+#, c-format
+msgid "unknown command '%s' in menu"
+msgstr "Valikossa on tuntematon komento '%s'"
+
+#: ../../WPrefs.app/Menu.c:1099
+msgid ": Execute Program"
+msgstr ": Käynnistä ohjelma"
+
+#: ../../WPrefs.app/Menu.c:1103
+msgid ": Perform Internal Command"
+msgstr ": Suorita sisäinen komento"
+
+#: ../../WPrefs.app/Menu.c:1107
+msgid ": Open a Submenu"
+msgstr ": Avaa alivalikko"
+
+#: ../../WPrefs.app/Menu.c:1111
+msgid ": Program Generated Submenu"
+msgstr ": Ohjelman luoma alivalikko"
+
+#: ../../WPrefs.app/Menu.c:1115
+msgid ": Directory Contents Menu"
+msgstr ": Hakemiston sisällön mukainen valikko"
+
+#: ../../WPrefs.app/Menu.c:1119
+msgid ": Open Workspaces Submenu"
+msgstr ": Avaa työtila-alivalikko"
+
+#: ../../WPrefs.app/Menu.c:1123
+msgid ": Open Window List Submenu"
+msgstr "Avaa ikkunalista-alivalikko"
+
+#: ../../WPrefs.app/Menu.c:1343
+msgid "Remove Submenu"
+msgstr "Poista alivalikko"
+
+#: ../../WPrefs.app/Menu.c:1344
+msgid ""
+"Removing this item will destroy all items inside\n"
+"the submenu. Do you really want to do that?"
+msgstr ""
+"Jos tämä merkintä poistetaan, kaikki alivalikon\n"
+"sisältämät alkiot häviävät. Haluatko silti poistaa sen?"
+
+#: ../../WPrefs.app/Menu.c:1346
+msgid "Yes"
+msgstr "Kyllä"
+
+#: ../../WPrefs.app/Menu.c:1346
+msgid "No"
+msgstr "Ei"
+
+#: ../../WPrefs.app/Menu.c:1347
+msgid "Yes, don't ask again"
+msgstr "Kyllä, älä kysy enää"
+
+#. if there is a localized plmenu for the tongue put it's filename here
+#: ../../WPrefs.app/Menu.c:1514 ../../WPrefs.app/Menu.c:1521
+#, c-format
+msgid "%s/Library/WindowMaker/plmenu"
+msgstr "%s/Library/WindowMaker/plmenu.fi"
+
+#: ../../WPrefs.app/Menu.c:1530
+#, c-format
+msgid "Could not open default menu from '%s'"
+msgstr "Oletusvalikon '%s' avaaminen ei onnistunut"
+
+#: ../../WPrefs.app/Menu.c:1569
+msgid ""
+"The menu file format currently in use is not supported\n"
+"by this tool. Do you want to discard the current menu\n"
+"to use this tool?"
+msgstr ""
+"Tämä työkalu ei tue käytössä olevaa valikkotiedostomuotoa.\n"
+"Haluatko hylätä tämänhetkisen valikon, jotta voit käyttää\n"
+"tätä työkalua?"
+
+#: ../../WPrefs.app/Menu.c:1572
+msgid "Yes, Discard and Update"
+msgstr "Kyllä, hylkää ja päivitä"
+
+#: ../../WPrefs.app/Menu.c:1573
+msgid "No, Keep Current Menu"
+msgstr "Ei, pidä nykyinen valikko"
+
+#: ../../WPrefs.app/Menu.c:1821
+msgid "Applications Menu Definition"
+msgstr "Sovellusvalikon määrittely"
+
+#: ../../WPrefs.app/Menu.c:1823
+msgid "Edit the menu for launching applications."
+msgstr "Muokkaa sovellusten käynnistysvalikkoa."
+
+#: ../../WPrefs.app/MenuPreferences.c:112
+msgid "Menu Scrolling Speed"
+msgstr "Valikon liukunopeus"
+
+#: ../../WPrefs.app/MenuPreferences.c:161
+msgid "Submenu Alignment"
+msgstr "Alivalikon sijoitus"
+
+#: ../../WPrefs.app/MenuPreferences.c:205
+msgid ""
+"Always open submenus inside the screen, instead of scrolling."
+msgstr ""
+"Avaa alivalikot aina ruudun sisällä vierityksen sijaan."
+
+#: ../../WPrefs.app/MenuPreferences.c:210
+msgid "Scroll off-screen menus when pointer is moved over them."
+msgstr ""
+"Liu'uta ruudun ulkopuolinen valikko näkyviin, kun osoitin on sen päällä."
+
+#: ../../WPrefs.app/MenuPreferences.c:230
+msgid "Menu Preferences"
+msgstr "Valikkoasetukset"
+
+#: ../../WPrefs.app/MenuPreferences.c:232
+msgid ""
+"Menu usability related options. Scrolling speed,\n"
+"alignment of submenus etc."
+msgstr ""
+"Valikon käyttöön liittyvät valinnat. Liukunopeus,\n"
+"alivalikoiden sijoitus, yms."
+
+#: ../../WPrefs.app/MouseSettings.c:141
+msgid "Invalid mouse acceleration value. Must be a positive real value."
+msgstr "Väärä hiiren kiihdytyksen arvo. Pitää olla positiivinen reaaliluku."
+
+#: ../../WPrefs.app/MouseSettings.c:161
+msgid ""
+"Invalid mouse acceleration threshold value. Must be the number of pixels to "
+"travel before accelerating."
+msgstr ""
+"Virheellinen hiiren kiihdytyksen kynnysarvo. Sen pitää olla pikselimäärä, "
+"joka voidaan liikuttaa ilman kiihdytystä."
+
+#: ../../WPrefs.app/MouseSettings.c:262 ../../WPrefs.app/MouseSettings.c:274
+#: ../../WPrefs.app/MouseSettings.c:286 ../../WPrefs.app/MouseSettings.c:298
+#, c-format
+msgid "bad value %s for option %s"
+msgstr "virheellinen arvo %s valinnalle %s"
+
+#: ../../WPrefs.app/MouseSettings.c:357
+#, c-format
+msgid ""
+"modifier key %s for option ModifierKey was not recognized. Using %s as "
+"default"
+msgstr ""
+"muunnosnäppäintä %s valintaa ModifierKey varten ei tunnistettu. Käytetään "
+"oletusta %s"
+
+#: ../../WPrefs.app/MouseSettings.c:382
+msgid "could not retrieve keyboard modifier mapping"
+msgstr "muunnosnäppäimen sijoituksen noutaminen epäonnistui"
+
+#: ../../WPrefs.app/MouseSettings.c:477
+msgid "Mouse Speed"
+msgstr "Hiiren nopeus"
+
+#: ../../WPrefs.app/MouseSettings.c:507
+msgid "Accel.:"
+msgstr "Kiihdytys:"
+
+#: ../../WPrefs.app/MouseSettings.c:520
+msgid "Threshold:"
+msgstr "Kynnys:"
+
+#: ../../WPrefs.app/MouseSettings.c:535
+msgid "Double-Click Delay"
+msgstr "Kaksoispainalluksen viive"
+
+#: ../../WPrefs.app/MouseSettings.c:579
+msgid "Test"
+msgstr "Kokeile"
+
+#: ../../WPrefs.app/MouseSettings.c:609
+msgid "Workspace Mouse Actions"
+msgstr "Työtilan hiiritoiminnot"
+
+#: ../../WPrefs.app/MouseSettings.c:614
+msgid "Disable mouse actions"
+msgstr "Estä hiiritoiminnot"
+
+#: ../../WPrefs.app/MouseSettings.c:620
+msgid "Left Button"
+msgstr "Vasen painike"
+
+#: ../../WPrefs.app/MouseSettings.c:630
+msgid "Middle Button"
+msgstr "Keskipainike"
+
+#: ../../WPrefs.app/MouseSettings.c:640
+msgid "Right Button"
+msgstr "Oikea painike"
+
+#: ../../WPrefs.app/MouseSettings.c:650
+msgid "Mouse Wheel"
+msgstr "Hiiren rulla"
+
+#: ../../WPrefs.app/MouseSettings.c:672
+msgid "Mouse Grab Modifier"
+msgstr "Hiirellätarttumisnäppäin"
+
+#: ../../WPrefs.app/MouseSettings.c:674
+msgid ""
+"Keyboard modifier to use for actions that\n"
+"involve dragging windows with the mouse,\n"
+"clicking inside the window."
+msgstr ""
+"Muunnosnäppäin, jota käytetään toiminnoissa,\n"
+"joiden avulla ikkunoita voidaan siirtää\n"
+"vetämällä hiirellä muualta kuin otsikkopalkista."
+
+#: ../../WPrefs.app/MouseSettings.c:708
+#, c-format
+msgid "could not create %s"
+msgstr "ei voitu luoda %s:aa"
+
+#: ../../WPrefs.app/MouseSettings.c:724
+#, c-format
+msgid "could not create temporary file %s"
+msgstr "ei voitu luoda tilapäistä tiedostoa %s"
+
+#: ../../WPrefs.app/MouseSettings.c:756
+#, c-format
+msgid "could not rename file %s to %s\n"
+msgstr "Ei voitu vaihtaa nimeä %s -> %s\n"
+
+#: ../../WPrefs.app/MouseSettings.c:829
+msgid "Shift"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:830
+msgid "Lock"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:831
+msgid "Control"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:832
+msgid "Mod1"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:833
+msgid "Mod2"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:834
+msgid "Mod3"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:835
+msgid "Mod4"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:836
+msgid "Mod5"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:839
+msgid "Applications Menu"
+msgstr "Sovellusvalikko"
+
+#: ../../WPrefs.app/MouseSettings.c:841
+msgid "Select Windows"
+msgstr "Ikkunoiden valinta"
+
+#: ../../WPrefs.app/MouseSettings.c:844
+msgid "Switch Workspaces"
+msgstr "Työtilan vaihto"
+
+#: ../../WPrefs.app/MouseSettings.c:849
+msgid "Mouse Preferences"
+msgstr "Hiiriasetukset"
+
+#: ../../WPrefs.app/MouseSettings.c:851
+msgid ""
+"Mouse speed/acceleration, double click delay,\n"
+"mouse button bindings etc."
+msgstr ""
+"Hiiren nopeus, kiihdytys, kaksoisnapautuksen viive,\n"
+"hiiren nappien merkitys jne."
+
+#: ../../WPrefs.app/Paths.c:84
+msgid "bad value in option IconPath. Using default path list"
+msgstr "Virheellinen arvo valinnassa IconPath. Käytetään oletushakupolkuja"
+
+#: ../../WPrefs.app/Paths.c:101
+msgid "bad value in option PixmapPath. Using default path list"
+msgstr ""
+"valinta PixmapPath sisältää virheellisen arvon. Käytetään oletushakupolkuja"
+
+#: ../../WPrefs.app/Paths.c:149
+msgid "Select directory"
+msgstr "Valitse hakemisto"
+
+#: ../../WPrefs.app/Paths.c:270
+msgid "Icon Search Paths"
+msgstr "Kuvakkeiden hakupolut"
+
+#: ../../WPrefs.app/Paths.c:281 ../../WPrefs.app/Paths.c:312
+#: ../../WPrefs.app/TexturePanel.c:1311
+msgid "Add"
+msgstr "Lisää"
+
+#: ../../WPrefs.app/Paths.c:301
+msgid "Pixmap Search Paths"
+msgstr "Kuvien hakupolut"
+
+#: ../../WPrefs.app/Paths.c:341
+msgid "Search Path Configuration"
+msgstr "Hakupolkujen asetukset"
+
+#: ../../WPrefs.app/Paths.c:343
+msgid ""
+"Search paths to use when looking for pixmaps\n"
+"and icons."
+msgstr ""
+"Kuvien ja kuvakkeiden hakemiseen käytettävät\n"
+"hakupolut."
+
+#: ../../WPrefs.app/Preferences.c:75
+msgid "OFF"
+msgstr "POIS"
+
+#: ../../WPrefs.app/Preferences.c:77
+msgid "1 pixel"
+msgstr "1 pikseli"
+
+#. 2-4
+#: ../../WPrefs.app/Preferences.c:80
+#, c-format
+msgid "%i pixels"
+msgstr "%i pikseliä"
+
+#. >4
+#: ../../WPrefs.app/Preferences.c:83
+#, c-format
+msgid "%i pixels "
+msgstr "%i pikseliä "
+
+#: ../../WPrefs.app/Preferences.c:229
+msgid "Size Display"
+msgstr "Koon näyttö"
+
+#: ../../WPrefs.app/Preferences.c:231
+msgid ""
+"The position or style of the window size\n"
+"display that's shown when a window is resized."
+msgstr ""
+"Ikkunan kokoa muutettaessa näytettävän\n"
+"kokonäytön paikka tai tyyli."
+
+#: ../../WPrefs.app/Preferences.c:238 ../../WPrefs.app/Preferences.c:259
+msgid "Corner of screen"
+msgstr "Ruudun kulmassa"
+
+#: ../../WPrefs.app/Preferences.c:239 ../../WPrefs.app/Preferences.c:260
+msgid "Center of screen"
+msgstr "Ruudun keskipisteessä"
+
+#: ../../WPrefs.app/Preferences.c:240 ../../WPrefs.app/Preferences.c:261
+msgid "Center of resized window"
+msgstr "Ks. ikkunan keskipisteessä"
+
+#: ../../WPrefs.app/Preferences.c:241
+msgid "Technical drawing-like"
+msgstr "Teknisen piirr. tyyppinen"
+
+#: ../../WPrefs.app/Preferences.c:242 ../../WPrefs.app/Preferences.c:262
+msgid "Disabled"
+msgstr "Ei käytössä"
+
+#: ../../WPrefs.app/Preferences.c:250
+msgid "Position Display"
+msgstr "Sijainnin näyttö"
+
+#: ../../WPrefs.app/Preferences.c:252
+msgid ""
+"The position or style of the window position\n"
+"display that's shown when a window is moved."
+msgstr ""
+"Ikkunaa siirrettäessä näkyvän\n"
+"sijaintinäytön paikka tai tyyli."
+
+#: ../../WPrefs.app/Preferences.c:270
+msgid "Show balloon text for..."
+msgstr "Näytä puhekuplateksti..."
+
+#: ../../WPrefs.app/Preferences.c:277
+msgid "incomplete window titles"
+msgstr "epätäydellisille ikkunaotsikoille"
+
+#: ../../WPrefs.app/Preferences.c:278
+msgid "miniwindow titles"
+msgstr "mini-ikkunoiden otsikoille"
+
+#: ../../WPrefs.app/Preferences.c:279
+msgid "application/dock icons"
+msgstr "sovellus-/telakkakuvakkeille"
+
+#: ../../WPrefs.app/Preferences.c:280
+msgid "internal help"
+msgstr "sisäinen apu"
+
+#: ../../WPrefs.app/Preferences.c:292
+msgid "Raise window when switching focus with keyboard"
+msgstr "Nosta ikkuna, kun aktiivista ikkunaa vaihdetaan näppäimistöllä"
+
+#: ../../WPrefs.app/Preferences.c:298
+msgid ""
+"Enable keyboard language\n"
+"switch button in window titlebars."
+msgstr ""
+"Näytä näppäimistön kielen vaihtopainike\n"
+"ikkunoiden otsikkopalkeissa."
+
+#: ../../WPrefs.app/Preferences.c:307
+msgid "Workspace border"
+msgstr "Työtilan reuna"
+
+#: ../../WPrefs.app/Preferences.c:323
+msgid "Left/Right"
+msgstr "Vas./oik."
+
+#: ../../WPrefs.app/Preferences.c:328
+msgid "Top/Bottom"
+msgstr "Ylh./alh."
+
+#: ../../WPrefs.app/Preferences.c:349
+msgid "Miscellaneous Ergonomic Preferences"
+msgstr "Sekalaiset ergonomia-asetukset"
+
+#: ../../WPrefs.app/Preferences.c:350
+msgid ""
+"Various settings like balloon text, geometry\n"
+"displays etc."
+msgstr ""
+"Erilaisia asetuksia kuten puhekuplateksti,\n"
+"geometrianäytöt jne."
+
+#: ../../WPrefs.app/TexturePanel.c:323
+msgid "Saturation"
+msgstr ""
+
+#: ../../WPrefs.app/TexturePanel.c:325
+msgid "Brightness"
+msgstr "Kirkkaus"
+
+#: ../../WPrefs.app/TexturePanel.c:373 ../../WPrefs.app/TexturePanel.c:380
+msgid "Hue"
+msgstr "Sävy"
+
+#: ../../WPrefs.app/TexturePanel.c:610
+msgid "Could not load the selected file: "
+msgstr "Ei voitu avata valittua tiedostoa: "
+
+#: ../../WPrefs.app/TexturePanel.c:664
+msgid "Open Image"
+msgstr "Avaa kuva"
+
+#: ../../WPrefs.app/TexturePanel.c:694
+msgid "The selected file does not contain a supported image."
+msgstr "Valittu tiedosto ei sisällä tuetun tyyppistä kuvaa."
+
+#: ../../WPrefs.app/TexturePanel.c:945
+#, c-format
+msgid "could not load file '%s': %s"
+msgstr "tiedoston '%s': %s lataus epäonnistui"
+
+#: ../../WPrefs.app/TexturePanel.c:1064
+#, c-format
+msgid "error creating texture %s"
+msgstr ""
+
+#: ../../WPrefs.app/TexturePanel.c:1255
+msgid "Texture Panel"
+msgstr "Kuviopaneeli"
+
+#: ../../WPrefs.app/TexturePanel.c:1263
+msgid "Texture Name"
+msgstr "Kuvion nimi"
+
+#: ../../WPrefs.app/TexturePanel.c:1275
+msgid "Solid Color"
+msgstr "Yksivärinen"
+
+#: ../../WPrefs.app/TexturePanel.c:1276
+msgid "Gradient Texture"
+msgstr "Liukuväri"
+
+#: ../../WPrefs.app/TexturePanel.c:1277
+msgid "Simple Gradient Texture"
+msgstr "Yksinkertainen liukuväri"
+
+#: ../../WPrefs.app/TexturePanel.c:1278
+msgid "Textured Gradient"
+msgstr "Liukuväritetty kuvio"
+
+#: ../../WPrefs.app/TexturePanel.c:1279
+msgid "Image Texture"
+msgstr "Kuva"
+
+#: ../../WPrefs.app/TexturePanel.c:1287
+msgid "Default Color"
+msgstr "Oletusväri"
+
+#: ../../WPrefs.app/TexturePanel.c:1299
+msgid "Gradient Colors"
+msgstr "Liukuvärit"
+
+#: ../../WPrefs.app/TexturePanel.c:1395
+msgid "Direction"
+msgstr "Suunta"
+
+#: ../../WPrefs.app/TexturePanel.c:1423
+msgid "Gradient"
+msgstr "Liukuväri"
+
+#: ../../WPrefs.app/TexturePanel.c:1441
+msgid "Gradient Opacity"
+msgstr "Liukuvärin peittävyys"
+
+#: ../../WPrefs.app/TexturePanel.c:1484
+msgid "Image"
+msgstr "Kuva"
+
+#: ../../WPrefs.app/TexturePanel.c:1516
+msgid "Tile"
+msgstr "Tiili"
+
+#: ../../WPrefs.app/TexturePanel.c:1517
+msgid "Scale"
+msgstr "Venytä"
+
+#: ../../WPrefs.app/TexturePanel.c:1519
+msgid "Maximize"
+msgstr "Suurenna"
+
+#: ../../WPrefs.app/Themes.c:71 ../../WPrefs.app/Themes.c:82
+msgid "Set"
+msgstr "Aseta"
+
+#: ../../WPrefs.app/Themes.c:132
+msgid "Stop"
+msgstr "Pysäytä"
+
+#: ../../WPrefs.app/Themes.c:143 ../../WPrefs.app/Themes.c:203
+#: ../../WPrefs.app/Themes.c:223
+msgid "Download"
+msgstr "Imuroi"
+
+#: ../../WPrefs.app/Themes.c:171
+msgid "Save Current Theme"
+msgstr "Tallenna nykyinen teema"
+
+#: ../../WPrefs.app/Themes.c:180
+msgid "Load"
+msgstr "Lataa"
+
+#: ../../WPrefs.app/Themes.c:185
+msgid "Install"
+msgstr "Asenna"
+
+#: ../../WPrefs.app/Themes.c:193
+msgid "Tile of The Day"
+msgstr "Päivän tiili"
+
+#: ../../WPrefs.app/Themes.c:213
+msgid "Bar of The Day"
+msgstr "Päivän palkki"
+
+#: ../../WPrefs.app/WindowHandling.c:141
+#, c-format
+msgid "bad option value %s in WindowPlacement. Using default value"
+msgstr ""
+"tiedolla WindowPlacement on virheellinen arvo %s. Käytetään oletusarvoa"
+
+#: ../../WPrefs.app/WindowHandling.c:163
+msgid "invalid data in option WindowPlaceOrigin. Using default (0,0)"
+msgstr ""
+"asetuksessa WindowPlaceOrigin on virheellistä tietoa. Käytetään oletusta "
+"(0,0)"
+
+#: ../../WPrefs.app/WindowHandling.c:243
+msgid "Window Placement"
+msgstr "Ikkunan sijoitus"
+
+#: ../../WPrefs.app/WindowHandling.c:244
+msgid ""
+"How to place windows when they are first put\n"
+"on screen."
+msgstr ""
+"Miten ikkunat sijoitetaan, kun ne tulevat\n"
+"ruudulle ensimmäisen kerran."
+
+#: ../../WPrefs.app/WindowHandling.c:250
+msgid "Automatic"
+msgstr "Automaattinen"
+
+#: ../../WPrefs.app/WindowHandling.c:251
+msgid "Random"
+msgstr "Satunnainen"
+
+#: ../../WPrefs.app/WindowHandling.c:252
+msgid "Manual"
+msgstr "Käsin"
+
+#: ../../WPrefs.app/WindowHandling.c:253
+msgid "Cascade"
+msgstr "Limittäin"
+
+#: ../../WPrefs.app/WindowHandling.c:254
+msgid "Smart"
+msgstr "Älykäs"
+
+#: ../../WPrefs.app/WindowHandling.c:260
+msgid "Placement Origin"
+msgstr "Sijoituksen origo"
+
+#: ../../WPrefs.app/WindowHandling.c:321
+msgid "Opaque Move"
+msgstr "Näytä sisältö siirr."
+
+#: ../../WPrefs.app/WindowHandling.c:322
+msgid ""
+"Whether the window contents should be moved\n"
+"when dragging windows aroung or if only a\n"
+"frame should be displayed.\n"
+msgstr ""
+"Pitääkö ikkunan sisällön liikkua ikkunoita\n"
+"siirreltäessä, vai pitääkö näyttää\n"
+"vain kehys.\n"
+
+#: ../../WPrefs.app/WindowHandling.c:361
+msgid "When maximizing..."
+msgstr "Suurennettaessa..."
+
+#: ../../WPrefs.app/WindowHandling.c:366
+msgid "...do not cover icons"
+msgstr "...älä peitä kuvakkeita"
+
+#: ../../WPrefs.app/WindowHandling.c:372
+msgid "...do not cover dock"
+msgstr "...älä peitä sovellustelakkaa"
+
+#: ../../WPrefs.app/WindowHandling.c:381
+msgid "Edge Resistance"
+msgstr "Reunavastus"
+
+#: ../../WPrefs.app/WindowHandling.c:383
+msgid ""
+"Edge resistance will make windows `resist'\n"
+"being moved further for the defined threshold\n"
+"when moved against other windows or the edges\n"
+"of the screen."
+msgstr ""
+"Reunavastus saa ikkunat `vastustamaan'\n"
+"siirtämistä reunavastuksen määrällä, kun\n"
+"niitä siirretään toisten ikkunoiden tai\n"
+"ruudun reunojen yli."
+
+#: ../../WPrefs.app/WindowHandling.c:402
+msgid "Resist"
+msgstr "Vastus"
+
+#: ../../WPrefs.app/WindowHandling.c:407
+msgid "Attract"
+msgstr "Veto"
+
+#: ../../WPrefs.app/WindowHandling.c:423
+msgid "Open dialogs in same workspace as their owners"
+msgstr "Avaa valintaikkunat omistajansa työtilassa"
+
+#: ../../WPrefs.app/WindowHandling.c:450
+msgid "Window Handling Preferences"
+msgstr "Ikkunoidenkäsittelyn asetukset"
+
+#: ../../WPrefs.app/WindowHandling.c:452
+msgid ""
+"Window handling options. Initial placement style\n"
+"edge resistance, opaque move etc."
+msgstr ""
+"Ikkunoidenkäsittelyn valinnat. Ensisijoituspaikka,\n"
+"reunavastus, näytä sisältö siirrettäessä jne."
+
+#: ../../WPrefs.app/Workspace.c:176
+msgid "Workspace Navigation"
+msgstr "Työtilanavigointi"
+
+#: ../../WPrefs.app/Workspace.c:183
+msgid "Wrap to the first workspace from the last workspace"
+msgstr "Siirry ensimmäiseen työtilaan siirryttäessä viimeisen yli"
+
+#: ../../WPrefs.app/Workspace.c:205
+msgid "Switch workspaces while dragging windows"
+msgstr "Vaihda työtiloja ikkunoita vedettäessä"
+
+#: ../../WPrefs.app/Workspace.c:227
+msgid "Automatically create new workspaces"
+msgstr "Luo uusia työtiloja automaattisesti"
+
+#: ../../WPrefs.app/Workspace.c:250
+msgid "Position of workspace name display"
+msgstr "Työtilan nimi-näytön paikka"
+
+#: ../../WPrefs.app/Workspace.c:269
+msgid "Disable"
+msgstr "Ei käytössä"
+
+#: ../../WPrefs.app/Workspace.c:271
+msgid "Top"
+msgstr "Ylhäällä"
+
+#: ../../WPrefs.app/Workspace.c:272
+msgid "Bottom"
+msgstr "Alhaalla"
+
+#: ../../WPrefs.app/Workspace.c:273
+msgid "Top/Left"
+msgstr "Ylävasemmalla"
+
+#: ../../WPrefs.app/Workspace.c:274
+msgid "Top/Right"
+msgstr "Yläoikealla"
+
+#: ../../WPrefs.app/Workspace.c:275
+msgid "Bottom/Left"
+msgstr "Alavasemmalla"
+
+#: ../../WPrefs.app/Workspace.c:276
+msgid "Bottom/Right"
+msgstr "Alaoikealla"
+
+#: ../../WPrefs.app/Workspace.c:284
+msgid "Dock/Clip"
+msgstr "Telakka/Liitin"
+
+#: ../../WPrefs.app/Workspace.c:303
+msgid ""
+"Disable/enable the application Dock (the\n"
+"vertical icon bar in the side of the screen)."
+msgstr ""
+"Sovellustelakka (pystysuuntainen kuvake-\n"
+"palkki ruudun reunassa) päälle/pois."
+
+#: ../../WPrefs.app/Workspace.c:324
+msgid ""
+"Disable/enable the Clip (that thing with\n"
+"a paper clip icon)."
+msgstr ""
+"Liitin (se laite, jossa on paperiliittimen\n"
+"kuva) päälle/pois."
+
+#: ../../WPrefs.app/Workspace.c:364
+msgid "Workspace Preferences"
+msgstr "Työtila-asetukset"
+
+#: ../../WPrefs.app/Workspace.c:366
+msgid ""
+"Workspace navigation features.\n"
+"You can also enable/disable the Dock and Clip here."
+msgstr ""
+"Työtilanavigoinnin ominaisuudet.\n"
+"Tästä voi myös laittaa Telakan ja Liittimen päälle/pois."
+
+#~ msgid "Disable cycling color highlighting of icons"
+#~ msgstr "Ei kuvakkeiden korostusta värikierrolla."
+
+#~ msgid "Click window to focus"
+#~ msgstr "Napauta ikkunaa kohdistaaksesi"
+
+#~ msgid "Focus follows mouse"
+#~ msgstr "Kohdistus seuraa hiirtä"
+
+#~ msgid "\"Sloppy\" focus"
+#~ msgstr "\"Huolimaton\" kohdistus"
+
+#~ msgid "Btn1 (left)"
+#~ msgstr "Painike 1 (vasen)"
+
+#~ msgid "Btn2 (middle)"
+#~ msgstr "Painike 2 (keski)"
+
+#~ msgid "Btn3 (right)"
+#~ msgstr "Painike 3 (oikea)"
+
+#~ msgid "Btn4"
+#~ msgstr "Painike 4"
+
+#~ msgid "Btn5"
+#~ msgstr "Painike 5"
+
+#~ msgid "Command to Execute"
+#~ msgstr "Suoritettava komento"
+
+#~ msgid "New Command %i"
+#~ msgstr "Uusi komento %i"
+
+#~ msgid "Workspaces"
+#~ msgstr "Työtilat"
+
+#~ msgid "Add Command"
+#~ msgstr "Lisää komento"
+
+#~ msgid "Add External Menu"
+#~ msgstr "Lisää ulkopuolinen valikko"
+
+#~ msgid "Remove Item"
+#~ msgstr "Poista alkio"
+
+#~ msgid "Cut Item"
+#~ msgstr "Leikkaa alkio"
+
+#~ msgid "Copy Item"
+#~ msgstr "Kopioi alkio"
+
+#~ msgid "Paste Item"
+#~ msgstr "Liitä alkio"
+
+#~ msgid "Label"
+#~ msgstr "Nimike"
+
+#~ msgid "Execute Shell Command"
+#~ msgstr "Suorita kuoren komento"
+
+#~ msgid "Hide Others"
+#~ msgstr "Piilota muut"
+
+#~ msgid "Legal Panel"
+#~ msgstr "Oikeudet-paneeli"
+
+#~ msgid "Menu Path/Directory List"
+#~ msgstr "Valikkopolku tai hakemistolistaus"
+
+#~ msgid "Ask help to the Guru"
+#~ msgstr "Pyydä Gurulta apua"
+
+#~ msgid ""
+#~ "     The menu that is being used now could not be opened. This either means "
+#~ "that there is a syntax error in it or that the menu is in a format not "
+#~ "supported by WPrefs (WPrefs only supports property list menus).\n"
+#~ "     If you want to keep using the current menu, please read the '%s/%s' "
+#~ "file, press 'Keep Current Menu' and edit it with a text editor.\n"
+#~ "     If you want to use this editor, press 'Copy Default Menu'. It will copy "
+#~ "the default menu and will instruct Window Maker to use it instead of the "
+#~ "current one.\n"
+#~ "     If you want more flexibility, keep using the current one as it allows "
+#~ "you to use C preprocessor (cpp) macros, while being easy to edit. Window "
+#~ "Maker supports both formats."
+#~ msgstr ""
+#~ "     Käytössä olevaa valikkoa ei voitu avata. Se tarkoittaa, että valikossa "
+#~ "on syntaksivirhe tai se on sellaisessa muodossa, jota WPrefs ei tue (WPrefs "
+#~ "tukee vain \"property list\"-valikoita).\n"
+#~ "     Jos haluat käyttää edelleen nykyistä valikkoa, ole hyvä ja lue '%s/%s', "
+#~ "paina 'Pidä nykyinen valikko'-painiketta ja muokkaa valikkotiedostoa "
+#~ "tekstieditorilla.\n"
+#~ "     Jos haluat käyttää WPrefsin valikkomuokkainta, paina \"Kopioi "
+#~ "oletusvalikko\"-painiketta. Se korvaa nykyisen valikon oletusvalikolla, jota "
+#~ "voi muokata.\n"
+#~ "     Jos haluat enemmän joustavuutta, jatka nykyisen valikon käyttöä, sillä "
+#~ "se mahdollistaa C-esiprosessorin (cpp) makrojen käytön ja valikon helpon "
+#~ "käsin muokkauksen. Window Maker tukee molempia valikkomuotoja."
+
+#~ msgid "Copy Default Menu"
+#~ msgstr "Kopioi oletusvalikko"
+
+#~ msgid "Menu Guru - Select Type"
+#~ msgstr "Valikkoguru - Valitse tyyppi"
+
+#~ msgid "Next"
+#~ msgstr "Seuraava"
+
+#~ msgid "Menu Guru - Select Menu File"
+#~ msgstr "Valikkoguru - Valitse valikkotiedosto"
+
+#~ msgid "Menu Guru - Select Pipe Command"
+#~ msgstr "Valikkoguru - Valitse putkikomento"
+
+#~ msgid "Menu Guru - Select Directories"
+#~ msgstr "Valikkoguru - Valitse hakemistot"
+
+#~ msgid "Menu Guru - Select Command"
+#~ msgstr "Valikkoguru - Valitse komento"
+
+#~ msgid "Back"
+#~ msgstr "Taaksepäin"
+
+#~ msgid ""
+#~ "This process will help you create a submenu which definition is located in "
+#~ "another file or is created dynamically.\n"
+#~ "What do you want to use as the contents of the submenu?"
+#~ msgstr ""
+#~ "Tämä auttaa sinua luomaan alivalikon, jonka määritelmä sijaitsee muussa "
+#~ "tiedostossa tai joka luodaan dynaamisesti.\n"
+#~ "Mitä haluat käyttää alivalikon sisältönä?"
+
+#~ msgid ""
+#~ "A file containing the menu definition in the plain text (non-property list) "
+#~ "menu format."
+#~ msgstr ""
+#~ "Tiedosto, joka sisältää valikkomääritelmän \"pelkkä teksti\" (ei \"property "
+#~ "list\") -muodossa."
+
+#~ msgid ""
+#~ "The menu definition generated by a script/program read through a pipe."
+#~ msgstr ""
+#~ "Valikkomääritelmä, joka luodaan skriptillä tai ohjelmalla ja luetaan "
+#~ "putkituksen läpi."
+
+#~ msgid "The files in one or more directories."
+#~ msgstr "Tiedostot yhdessä tai useammassa hakemistossa."
+
+#~ msgid "Type the path for the menu file:"
+#~ msgstr "Kirjoita valikkotiedoston polku:"
+
+#~ msgid ""
+#~ "The menu file must contain a menu in the plain text menu file format. This "
+#~ "format is described in the menu files included with WindowMaker, probably at "
+#~ "~/GNUstep/Library/WindowMaker/menu"
+#~ msgstr ""
+#~ "Valikkotiedoston pitää sisältää valikko pelkkä teksti -muodossa. Tämä muoto "
+#~ "kuvaillaan Window Makerin sisältämissä valikkotiedostoissa, luultavasti "
+#~ "paikassa ~/GNUstep/Library/WindowMaker/menu"
+
+#~ msgid "Type the command that will generate the menu definition:"
+#~ msgstr "Kirjoita komento, joka luo valikkomääritelmän:"
+
+#~ msgid ""
+#~ "The command supplied must generate and output a valid menu definition to "
+#~ "stdout. This definition should be in the plain text menu file format, "
+#~ "described in the menu files included with WindowMaker, usually at "
+#~ "~/GNUstep/Library/WindowMaker/menu"
+#~ msgstr ""
+#~ "Tämän komennon pitää muodostaa valikkomääritelmä ja tulostaa se "
+#~ "vakiotulostusvirtaan. Valikon pitää olla \"pelkkä teksti\" -tiedostomuodossa "
+#~ "(kuvailtu Window Makerin mukana tulevissa valikkotiedostoissa, yleensä "
+#~ "~/GNUstep/Library/WindowMaker/menu)."
+
+#~ msgid ""
+#~ "Type the path for the directory. You can type more than one path by "
+#~ "separating them with spaces."
+#~ msgstr ""
+#~ "Kirjoita hakemiston polku. Voit kirjoittaa useamman kuin yhden polun "
+#~ "erottamalla ne välilyönneillä."
+
+#~ msgid ""
+#~ "The menu generated will have an item for each file in the directory. The "
+#~ "directories can contain program executables or data files (such as jpeg "
+#~ "images)."
+#~ msgstr ""
+#~ "Luotu valikko sisältää yhden alkion jokaista hakemistossa olevaa tiedostoa "
+#~ "kohti. Hakemistot voivat sisältää suoritettavia ohjelmia tai datatiedostoja "
+#~ "(kuten jpeg-kuvia)."
+
+#~ msgid ""
+#~ "If the directory contain data files, type the command used to open these "
+#~ "files. Otherwise, leave it in blank."
+#~ msgstr ""
+#~ "Jos hakemisto sisältää datatiedostoja, kirjoita näiden tiedostojen "
+#~ "avaamiseen tarvittava komento. Muulloin jätä tyhjäksi."
+
+#~ msgid ""
+#~ "Each file in the directory will have an item and they will be opened with "
+#~ "the supplied command.For example, if the directory contains image files and "
+#~ "the command is \"xv -root\", each file in the directory will have a menu "
+#~ "item like \"xv -root imagefile\"."
+#~ msgstr ""
+#~ "Jokainen hakemiston tiedosto näkyy yhtenä kohtana, ja ne avataan annetulla "
+#~ "komennolla. Esimerkiksi jos hakemisto sisältää kuvatiedostoja ja komento on "
+#~ "\"xv -root\", jokaisella hakemiston tiedostolla on valikkokohta kuten \"xv "
+#~ "-root kuvatiedosto\"."

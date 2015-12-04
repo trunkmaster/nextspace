@@ -1,0 +1,56 @@
+ * On Windows, you need to supply -DMAKE_STATIC in CFLAGS when building the
+   static library. This does not apply when using cmake.
+
+ * When passing a knote pointer to the kernel, the reference count of
+   the knote structure should be incremented. Conversely, when the pointer
+   has been returned from the kernel and the event unregistered from the
+   kernel, the reference count should be decremented.
+
+ * Some functions should crash instead of silently printing a debug
+   message.. for example, knote_release().
+
+ * knote_get_by_ident uses 'short' for the ident, but the actual datatype
+   is 'uintptr_t'.
+
+ * need to uninitialize library after fork() using pthread_atfork()
+
+ * Solaris unit test failure.
+    
+    LD_LIBRARY_PATH="..:/usr/sfw/lib/64" ./kqtest
+    1: test_peer_close_detection()  
+    2: test_kqueue()        
+    3: test_kevent_socket_add()     
+    4: test_kevent_socket_del()     
+    5: test_kevent_socket_add_without_ev_add()      
+    6: test_kevent_socket_get()     
+
+    [read.c:84]: Unexpected event:_test_no_kevents(): [ident=7, filter=-1, flags = 1 (EV_ADD), fflags = 0, data=0, udata=fffffd7fff08c6b4]: Error 0
+
+
+ * There are a number of stub functions that silently fail or succeed.
+   These need to be cleaned up; at a minimum, they should emit very loud
+   debugging output saying "FIXME -- UNIMPLEMENTED".
+
+      $ grep STUB src/*/*.c  
+      src/linux/proc.c:    return (-1); /*STUB*/
+      src/linux/proc.c:    return (0); /* STUB */
+      src/linux/proc.c:    return (0); /* STUB */
+      src/linux/proc.c:    return (0); /* STUB */
+      src/linux/proc.c:    return (0); /* STUB */
+      src/linux/proc.c:    return (0); /* STUB */
+      src/linux/read.c:    return (-1); /* STUB */
+      src/linux/timer.c:    return (0); /* STUB */
+      src/linux/vnode.c:    return (-1); /* FIXME - STUB */
+      src/linux/write.c:    return (-1); /* STUB */
+      src/posix/timer.c:    return (-1); /* STUB */
+      src/solaris/socket.c:    return (-1); /* STUB */
+      src/solaris/timer.c:    return (-1); /* STUB */
+      src/windows/read.c:    return (-1); /* STUB */
+      src/windows/timer.c:    return (0); /* STUB */
+
+ * kqueue() should defer thread cancellation until the end.
+
+ * kevent() should defer thread cancellation and call pthread_testcancel() 
+   before and after the call to kevent_wait(). This may require changing the 
+   way that EINTR is handled, to make sure that the EINTR is propagated up 
+   the call stack to kevent().

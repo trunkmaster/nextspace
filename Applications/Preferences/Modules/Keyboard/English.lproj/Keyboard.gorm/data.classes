@@ -1,0 +1,29 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "sectionButtonClicked:"
+	);
+	Super = NSObject;
+    };
+    Keyboard = {
+	Actions = (
+	    "sectionButtonClicked:"
+	);
+	Outlets = (
+	    window,
+	    view,
+	    captureBtn,
+	    initialRepeatMtrx,
+	    captureField,
+	    repeatRateMtrx,
+	    shortcutsBrowser,
+	    layoutsBox,
+	    sectionsMtrx,
+	    repeatBox,
+	    sectionBox,
+	    shortcutsBox
+	);
+	Super = NSObject;
+    };
+}

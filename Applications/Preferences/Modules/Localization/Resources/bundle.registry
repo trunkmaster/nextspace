@@ -1,0 +1,6 @@
+{
+  type = Preferences;
+  mode = Localization;
+  class = Localization;
+  priority = 1;
+}

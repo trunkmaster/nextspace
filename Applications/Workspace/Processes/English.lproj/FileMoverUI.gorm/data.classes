@@ -1,0 +1,67 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    BGProcess = {
+	Actions = (
+	    "stop:"
+	);
+	Outlets = (
+	    window,
+	    processBox,
+	    currentField,
+	    stopButton
+	);
+	Super = NSObject;
+    };
+    FileMoverUI = {
+	Actions = (
+	    "pause:",
+	    "stop:"
+	);
+	Outlets = (
+	    processBox,
+	    fromField,
+	    pauseButton,
+	    progressBar,
+	    stopButton,
+	    toField,
+	    window,
+	    toLabel,
+	    fromLabel,
+	    currentField
+	);
+	Super = BGProcess;
+    };
+    FirstResponder = {
+	Actions = (
+	    "clear:",
+	    "increment:",
+	    "pause:"
+	);
+	Super = NSObject;
+    };
+    NXProgressBar = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NXProgressView;
+    };
+    NXProgressPie = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NXProgressView;
+    };
+    NXProgressView = {
+	Actions = (
+	    "takeIntValueFrom:",
+	    "increment:",
+	    "takeFloatValueFrom:",
+	    "clear:"
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+}

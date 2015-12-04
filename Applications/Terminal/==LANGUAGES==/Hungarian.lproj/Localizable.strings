@@ -1,0 +1,225 @@
+/* - * - *
+ * Hungarian translation by Varga P\u00e9ter
+ * - * - */
+
+/***
+English.lproj/Localizable.strings
+updated by make_strings 2002-12-09 18:39:08 +0100
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: ServicesParameterWindowController.m:98 */
+/* File: ServicesPrefs.m:653 */
+"Command line:" = "Parancssor:";
+
+
+/*** Strings from PreferencesWindowController.m ***/
+/* File: PreferencesWindowController.m:78 */
+"Apply and save" = "Alkalmaz \u00e9s ment";
+/* File: PreferencesWindowController.m:122 */
+"Preferences" = "Be\u00e1ll\u00edt\u00e1sok";
+/* File: PreferencesWindowController.m:70 */
+"Revert" = "Vissza\u00e1ll\u00edt";
+
+
+/*** Strings from Services.m ***/
+/* File: Services.m:152 */
+"Service aborted by user." = "A szolg\u00e1ltat\u00e1st a felhaszn\u00e1l\u00f3 f\u00e9lbeszak\u00edtotta.";
+/* File: Services.m:60 */
+"There is no terminal service called '%@'.\nYour services list is probably out-of-date.\nRun 'make_services' to update it."
+= "Nincs '%@' nev\u00fc termin\u00e1lszolg\u00e1ltat\u00e1s.\nA lista val\u00f3sz\u00edn\u00fcleg elavult..\nFuttatsd a 'make_services'-t a friss\u00edt\u00e9s\u00e9hez.";
+
+
+/*** Strings from ServicesParameterWindowController.m ***/
+/* File: ServicesParameterWindowController.m:66 */
+"Cancel" = "Vissza";
+/* File: ServicesParameterWindowController.m:74 */
+"OK" = "OK";
+/* File: ServicesParameterWindowController.m:118 */
+"Parameter for service %@" = "%@ szolg\u00e1ltat\u00e1s param\u00e9tere";
+
+
+/*** Strings from ServicesPrefs.m ***/
+/* File: ServicesPrefs.m:585 */
+"Accept types" = "Enged\u00e9lyezett t\u00edpusok";
+/* File: ServicesPrefs.m:499 */
+"Add" = "Hozz\u00e1ad";
+/* File: ServicesPrefs.m:348 */
+"Error importing services" = "Hiba a szolg\u00e1ltat\u00e1sok import\u00e1l\u00e1sakor";
+/* File: ServicesPrefs.m:401 */
+"Export services" = "Szolg\u00e1ltat\u00e1sok export\u00e1l\u00e1sa";
+/* File: ServicesPrefs.m:523 */
+"Export..." = "Export...";
+/* File: ServicesPrefs.m:594 */
+"Filenames" = "File-nevek";
+/* File: ServicesPrefs.m:549 */
+"Ignore output" = "Output figyelmen k\u00edv\u00fcl hagy\u00e1sa";
+/* File: ServicesPrefs.m:254 */
+"Import services" = "Szolg\u00e1ltat\u00e1sok import\u00e1l\u00e1sa";
+/* File: ServicesPrefs.m:515 */
+"Import..." = "Import...";
+/* File: ServicesPrefs.m:559 */
+"Input in stdin" = "Input az stdin-r\u00f6l";
+/* File: ServicesPrefs.m:560 */
+"Input on command line" = "Input a parancssorbol";
+/* File: ServicesPrefs.m:640 */
+"Key:" = "Kulcs:";
+/* File: ServicesPrefs.m:627 */
+"Name:" = "N\u00e9v:";
+/* File: ServicesPrefs.m:558 */
+"No input" = "Nincs input";
+/* File: ServicesPrefs.m:602 */
+"Plain text" = "Plaintext";
+/* File: ServicesPrefs.m:507 */
+"Remove" = "T\u00f6r\u00f6l";
+/* File: ServicesPrefs.m:550 */
+"Return output" = "Output-ot ad";
+/* File: ServicesPrefs.m:568 */
+"Run in background" = "V\u00e9grehajt\u00e1s h\u00e1tt\u00e9rben";
+/* File: ServicesPrefs.m:570 */
+"Run in idle window" = "V\u00e9grehajt\u00e1s szabad ablakban";
+/* File: ServicesPrefs.m:569 */
+"Run in new window" = "V\u00e9grehajt\u00e1s \u00faj ablakban";
+/* File: ServicesPrefs.m:468 */
+"Terminal services" = "Termin\u00e1lszolg\u00e1ltat\u00e1sok";
+/* File: ServicesPrefs.m:473 */
+"Terminal\nservices" = "Termin\u00e1l-\nszolg\u00e1ltat\u00e1sok";
+/* File: ServicesPrefs.m:349 */
+"The file '%@' doesn't contain valid terminal services."
+= "A '%@'-ban nincsenek \u00e9rv\u00e9nyes termin\u00e1lszolg\u00e1ltat\u00e1sok.";
+/* File: ServicesPrefs.m:235 */
+"Unnamed service" = "Ismeretlen szolg\u00e1ltat\u00e1s";
+
+
+/*** Strings from TerminalParser_LinuxPrefs.m ***/
+/* File: TerminalParser_LinuxPrefs.m:103 */
+"'linux' terminal parser" = "'linux' terminal parser";
+/* File: TerminalParser_LinuxPrefs.m:108 */
+"'linux'\nparser" = "'linux'\nparser";
+/* File: TerminalParser_LinuxPrefs.m:151 */
+"Character set:" = "Karakterk\u00e9szlet:";
+/* File: TerminalParser_LinuxPrefs.m:43 */
+"Chinese" = "K\u00ednai";
+/* File: TerminalParser_LinuxPrefs.m:44 */
+"Custom, leave unchanged" = "Saj\u00e1t, ne v\u00e1ltoztass rajta";
+/* File: TerminalParser_LinuxPrefs.m:42 */
+"East Europe, latin2" = "Kelet-Eur\u00f3pa, latin2";
+/* File: TerminalParser_LinuxPrefs.m:40 */
+"UTF-8" = "UTF-8";
+/* File: TerminalParser_LinuxPrefs.m:41 */
+"West Europe, latin1" = "Nyugat-Eur\u00f3pa, latin1";
+
+
+/*** Strings from TerminalView.m ***/
+/* File: TerminalView.m:1623 */
+"Unable to fork: %m." = "Nem ind\u00edthat\u00f3: %m.";
+/* File: TerminalView.m:1611 */
+"Unable to open pipe for input: %m." = "A %m pipe nem olvashat\u00f3.";
+/* File: TerminalView.m:1476 */
+"[Process exited]" = "[A program kil\u00e9pett]";
+
+
+/*** Strings from TerminalViewPrefs.m ***/
+/* File: TerminalViewPrefs.m:330 */
+"Bold font:" = "F\u00e9lk\u00f6v\u00e9r bet\u00fc:";
+/* File: TerminalViewPrefs.m:298 */
+"Color:" = "Sz\u00edn:";
+/* File: TerminalViewPrefs.m:277 */
+"Cursor" = "Kurzor";
+/* File: TerminalViewPrefs.m:230 */
+/* File: TerminalViewPrefs.m:225 */
+"Display" = "K\u00e9rerny\u00f6";
+/* File: TerminalViewPrefs.m:291 */
+"Filled block" = "Teli n\u00e9gyzet";
+/* File: TerminalViewPrefs.m:319 */
+"Handle wide (multi-cell) glyphs" = "Kezeld a sz\u00e9les (t\u00f6bb karakternyi) \u00edr\u00e1sjeleket";
+/* File: TerminalViewPrefs.m:292 */
+"Inverted block" = "Inverz n\u00e9gyzet";
+/* File: TerminalViewPrefs.m:607 */
+/* File: TerminalViewPrefs.m:602 */
+"Keyboard" = "Billenty\u00fczet";
+/* File: TerminalViewPrefs.m:289 */
+"Line" = "Cs\u00edk";
+/* File: TerminalViewPrefs.m:357 */
+"Normal font:" = "Norm\u00e1l bet\u00fc:";
+/* File: TerminalViewPrefs.m:369 */
+/* File: TerminalViewPrefs.m:342 */
+"Pick font..." = "V\u00e1lassz bet\u00fct\u00edpust...";
+/* File: TerminalViewPrefs.m:255 */
+"Scroll-back length in lines:" = "Visszag\u00f6rgethet\u00f6 sorok:";
+/* File: TerminalViewPrefs.m:651 */
+"Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta."
+= "K\u00fcldj dupla ESC-et ha lenyomom az ESC billenty\u00fct.\n\n\u00cdgy az legt\u00f6bb program hamarabb reag\u00e1l az ESC-gombra,\nde\nnem haszn\u00e1lhatod a Meta (Alt) helyett.";
+/* File: TerminalViewPrefs.m:492 */
+/* File: TerminalViewPrefs.m:487 */
+"Shell" = "Shell";
+/* File: TerminalViewPrefs.m:527 */
+"Shell:" = "Shell:";
+/* File: TerminalViewPrefs.m:515 */
+"Start as login-shell" = "Ind\u00edt\u00e1s login-shell-k\u00e9nt";
+/* File: TerminalViewPrefs.m:290 */
+"Stroked block" = "Szeg\u00e9lyezett n\u00e9gyzet";
+/* File: TerminalViewPrefs.m:282 */
+"Style:" = "St\u00edlus:";
+/* File: TerminalViewPrefs.m:634 */
+"Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
+= "Kezeld a 'command' (Alt) gombot Meta-k\u00e9nt.\n\nHa ezt enged\u00e9lyezed,\nnem fogod tudni el\u00e9rni\na men\u00fct a billenty\u00fczetr\u00f6l.";
+
+
+/*** Strings from TerminalWindow.m ***/
+/* File: TerminalWindow.m:192 */
+/* File: TerminalWindow.m:188 */
+" (idle)" = " (idle)";
+
+
+/*** Strings from TerminalWindowPrefs.m ***/
+/* File: TerminalWindowPrefs.m:192 */
+"Add top and bottom border" = "Fels\u00f6 \u00e9s als\u00f3 szeg\u00e9ly";
+/* File: TerminalWindowPrefs.m:143 */
+"Close new windows when idle" = "Z\u00e1rd be az \u00faj ablakokat ha felszabadulnak";
+/* File: TerminalWindowPrefs.m:156 */
+"Default size" = "Alap\u00e9rtelmezett m\u00e9ret";
+/* File: TerminalWindowPrefs.m:144 */
+"Don't close new windows" = "Ne z\u00e1rd be az \u00faj ablakokat";
+/* File: TerminalWindowPrefs.m:169 */
+"Height:" = "Magass\u00e1g:";
+/* File: TerminalWindowPrefs.m:112 */
+"Terminal Window" = "Termin\u00e1lablak";
+/* File: TerminalWindowPrefs.m:117 */
+"Terminal\nWindow" = "Termin\u00e1l-\nablak";
+/* File: TerminalWindowPrefs.m:160 */
+"Width:" = "Sz\u00e9less\u00e9g:";
+
+
+/*** Strings from main.m ***/
+/* File: main.m:157 */
+"Benchmark" = "Benchmark";
+/* File: main.m:191 */
+"Close" = "Bez\u00e1r";
+/* File: main.m:180 */
+"Copy" = "M\u00e1sol";
+/* File: main.m:177 */
+"Cut" = "Kiv\u00e1g";
+/* File: main.m:186 */
+"Edit" = "Szerkeszt";
+/* File: main.m:203 */
+"Hide" = "Elrejt";
+/* File: main.m:159 */
+"Info" = "Inf\u00f3";
+/* File: main.m:153 */
+"Info..." = "Inf\u00f3...";
+/* File: main.m:171 */
+"New terminal" = "\u00daj termin\u00e1l";
+/* File: main.m:183 */
+"Paste" = "Beilleszt";
+/* File: main.m:155 */
+"Preferences..." = "Be\u00e1ll\u00edt\u00e1sok...";
+/* File: main.m:207 */
+"Quit" = "Kil\u00e9p";
+/* File: main.m:199 */
+"Services" = "Szolg\u00e1ltat\u00e1sok";
+/* File: main.m:194 */
+"Windows" = "Ablakok";

@@ -1,0 +1,26 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setFilePath:",
+	    "setAction:",
+	    "setAutolaunch:"
+	);
+	Super = NSObject;
+    };
+    StartupPrefs = {
+	Actions = (
+	    "setFilePath:",
+	    "setAction:",
+	    "setAutolaunch:"
+	);
+	Outlets = (
+	    actionsMatrix,
+	    autolaunchBtn,
+	    filePathField,
+	    window,
+	    view
+	);
+	Super = NSObject;
+    };
+}

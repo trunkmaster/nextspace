@@ -1,0 +1,13 @@
+{
+    ShelfContents = {
+	(
+	    <*I0>,
+	    <*I0>
+	) = (
+	    "/Users/me/Developer/StepMaker/code/Applications/Preferences"
+	);
+    };
+    ShelfSize = <*I76>;
+    ViewerPath = "/Modules/Font/Resources/bundle.registry";
+    ViewerWindow = "{x = 476; y = 115; width = 512; height = 423}";
+}

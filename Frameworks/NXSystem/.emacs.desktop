@@ -1,0 +1,338 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Mon Nov 23 16:27:48 2015
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq default-directory "~/Developer/StepMaker/code/Frameworks/NXSystem/")
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("objectForKey:@\"Width" "isConne" "writeTo" "g_print" "Object Added" "_dumpProperties" "writeToFile" "write" "mountedVolumeForPath" "mountedVolumes" "mo"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/Developer/StepMaker/code/Frameworks/NXSystem/Tests/ScreenInfo.m" "~/Developer/StepMaker/code/Frameworks/NXSystem/GNUmakefile" "~/Developer/StepMaker/code/Frameworks/NXSystem/NXScreen.*" "~/Developer/StepMaker/code/Frameworks/NXSystem/FreeBSD/*.[hm]" "~/Developer/StepMaker/code/Frameworks/NXSystem/Linux/*.[hm]" "~/Developer/StepMaker/code/Frameworks/NXSystem/*.[hm]" "~/Developer/StepMaker/code/Frameworks/NXFoundation/*.[hm]" "~/Developer/StepMaker/code/Frameworks/NXAppKit/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/Tools/Sizer/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Tools/FileMover/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Tools/Communicator.*" "~/Developer/StepMaker/code/Applications/Workspace/Viewers/BrowserViewer/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Viewers/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Processes/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Operations/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Inspectors/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/*.[hm]" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXScreen.m"
+  "NXScreen.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  11548
+  '(13195 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/Tests/ScreenInfo.m"
+  "ScreenInfo.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4652
+  '(4577 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXScreen.h"
+  "NXScreen.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(61 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  986
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXUDisksAdaptor.m"
+  "NXUDisksAdaptor.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  17333
+  '(23246 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXUDisksVolume.m"
+  "NXUDisksVolume.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2723
+  '(6118 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXUDisksDrive.m"
+  "NXUDisksDrive.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4909
+  '(4880 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/FreeBSD/NXFileSystem_FreeBSD.m"
+  "NXFileSystem_FreeBSD.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  68
+  '(1 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/FreeBSD/NXSystemInfo_FreeBSD.m"
+  "NXSystemInfo_FreeBSD.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/FreeBSD/TRSysctl.h"
+  "TRSysctl.h"
+  'c-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/FreeBSD/TRSysctlByName.h"
+  "TRSysctlByName.h"
+  'c-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/Linux/NXFileSystemMonitor_Linux.m"
+  "NXFileSystemMonitor_Linux.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/Linux/NXSystemInfo_Linux.m"
+  "NXSystemInfo_Linux.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXDeviceManager.h"
+  "NXDeviceManager.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXDeviceManager.m"
+  "NXDeviceManager.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXFileSystem.h"
+  "NXFileSystem.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXFileSystem.m"
+  "NXFileSystem.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXFileSystemMonitor.h"
+  "NXFileSystemMonitor.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXFileSystemMonitor.m"
+  "NXFileSystemMonitor.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXHALAdaptor.h"
+  "NXHALAdaptor.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXHALAdaptor.m"
+  "NXHALAdaptor.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXMediaManager.h"
+  "NXMediaManager.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXMediaManager.m"
+  "NXMediaManager.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXSystem.h"
+  "NXSystem.h"
+  'c-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXSystemInfo.h"
+  "NXSystemInfo.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXSystemInfo.m"
+  "NXSystemInfo.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXUDisksAdaptor.h"
+  "NXUDisksAdaptor.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXUDisksDrive.h"
+  "NXUDisksDrive.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXSystem/NXUDisksVolume.h"
+  "NXUDisksVolume.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+

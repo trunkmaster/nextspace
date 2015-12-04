@@ -1,0 +1,32 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "performOKAction:",
+	    "revert:",
+	    "selectView:"
+	);
+	Super = NSObject;
+    };
+    Inspector = {
+	Actions = (
+	    "ok:",
+	    "revert:",
+	    "selectView:"
+	);
+	Outlets = (
+	    box,
+	    fileNameField,
+	    fileIconButton,
+	    okButton,
+	    window,
+	    dirNameField,
+	    popUpButton,
+	    revertButton,
+	    dirTitleField,
+	    noInspectorField,
+	    noInspectorBox
+	);
+	Super = NSObject;
+    };
+}

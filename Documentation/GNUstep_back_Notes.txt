@@ -1,0 +1,206 @@
+﻿====== X11 ======
+---
+XGGeneric.h: 
+  enum   XGWMProtocols
+  struct XGWMWinTypes
+  struct XGWMNetStates
+  struct Offsets
+  struct XGGeneric
+---
+NSObject
+  XGScreenContext   ----- XGScreenContext.[hm]
+  XWindowBuffer	    ----- XWindowBuffer.[hm]
+  GSDispayServer    [gui]
+    XGServer	    ----- XGServer.[hm], XGServerEvent.m, XGServerWindow.[hm]
+  NSInputServer	    [gui]
+    XIMInputServer  ----- XGInputServer.h, XIMInputServer.m
+---
+NSView              [gui]
+  GSDragView	    [gui]
+    XGDragView	    ----- XGDragView.[hm]
+
+===================================================================
+=== NSApplication birth sequence (server = x11, graphics = art) ===
+===================================================================
+Functions.m	     
+  NSApplicationMain(int argc, const char **argv);
+
+NSApplication.m	     
+  [[NSApplicaion class] sharedApplication]
+    [[NSApplication alloc] init]
+      [NSApplication _init]
+
+	initialize_gnustep_backend() <GSBackend.m(back)>
+	  [XGServer initializeBackend]; <XGServer.m(back/x11)>
+	    [GSDisplayServer setDefaultServerClass: [XGServer class]];
+	  [ARTContext initializeBackend]; <ARTContext(back/art)>
+	    [NSGraphicsContext setDefaultContextClass: [ARTContext class]];
+	    [[NSScreen mainScreen] deviceDescription];
+	    [NSGraphicsContext graphicsContextWithAttributes:];
+	    [NSGraphicsContext setCurrentContext:];
+
+	srv = [GSDisplayServer serverWithAttributes: nil];
+	[GSDisplayServer setCurrentServer: srv];
+
+  [NSApplication run] // Here is run loop of application
+    [NSApp nextEventMatchingMask:untilDate:inMode:dequeue:]
+
+GSDisplayServer.h
+  DPSGetEvent()
+  [GSDisplayServer getEventMatchingMask:beforeDate:inMode:dequeue:]
+
+===================================================================
+=== X11 server                                                  ===
+===================================================================
+Backend server deals with the following entities:
+- Display, screen: (XGServer, XGScreenContext)
+    screen context (attributes), root window, OpenGL context, input method,
+    coordinates, windows hierarchy
+- Windows & window managers: (XGServerWindow)
+    style, type, state, ordering, icon, size, 
+- Events: (XGServerEvent, XGServerWindow)
+    X, window manager, keyboard, mouse
+- Mouse cursor:
+    set cursor for windows
+- Drag&Drop, Copy&Paste:
+    protocols, dragging images, pasteboard server.
+
+===================================================================
+=== GUI and Backend interconnection
+===
+===   DS - Display Server
+===   GUI - gnustep-gui library
+===   BACK - gnustep-back library
+===   GC - Graphics Context
+===================================================================
+
+--------------------
+-= Display Server =-
+--------------------
+
+Display Server is a set of devices and attributes which needed to perform
+graphics operations and interface with user. That is, it's a monitor,
+keyboard, mouse, events (exposes, moves, displaying and hiding graphic
+objects), window management and so on. Actually DS has virtual nature because
+of it's entity - it's a set of attributes and mainly deals with underlying 
+windowing system and window manager. All graphic drawing operations executed 
+through the usage of 'Graphic Context' entity (see below).
+
+All GUI classes receive access to BACK DS through GUI function
+GSCurrentServer() which is defined in GSDisplayServer.m. Every GUI class
+should include GSDisplayServer.h header file to gain access to Backend DS and
+it's methods. X11 display server concrete class is XGServer. This class
+implements all needed methods to set and receive X server attributes.
+
+Second side effect of such method of access to DS is that GSCurrentServer()
+returns the current BACK's object. So subsequent calls to retreived object is
+calling to XGServer object (X11 BACK server). So BACK's GSDisplayServer 
+child (XGServer) can override its father's(GSDisplayServer) methods.
+
+Here is the list of GUI classes that use calls to GSDisplayServer:
+
+GSDisplayServer --------------------------------------> XGServer
+  GSDragView
+  GSSlideView
+  GSStandardWindowDecorationView
+  GSWindowDecorationView
+  NSApplication
+  NSCursor
+  NSEvent
+  NSGraphicsContext
+  NSImage
+  NSOpenGLContext
+  NSOpenGLPixelFormat
+  NSScreen
+  NSView
+  NSWindow
+  NSWorkspace
+
+--------------------------------
+-= Graphics Context and State =-
+--------------------------------
+
+The same type of access is used to retreive NSGraphicsContext BACK's object.
+This time GSCurrerntContext() function is used (defined in NSGraphicsContext.m).
+
+Here is the list of GUI classes which use call methods of NSGraphicsContext:
+
+NSGraphicsContext ------------- GSContext ------------> ARTContext
+  GSDisplayServer
+  GSDragView
+  GSThemeTools
+  NSAffineTransform
+  NSApplication
+  NSBezierPath
+  NSBitmapImageRep
+  NSColor
+  NSComboBoxCell
+  NSCustomImageRep
+  NSFont
+  NSGraphicsContext
+  NSImage
+  NSImageRep
+  NSLayoutManager
+  NSScrollView
+  NSStringDrawing
+  NSTabView
+  NSTableView
+  NSView
+  NSWindow
+
+====== GSC ======
+NSGraphicsContext   [gui]
+  GSContext         ----- GSContext.[hm]
+    GSStreamContext ----- GSStreamContext.[hm]
+NSObject ----------------
+  GSGState          ----- GSGState.[hm] GSGStateOps.h
+    GSStreamGState  ----- GSStreamGState.[hm]
+
+====== ART ======
+NSObject --------------
+  GSGState	  [gsc]
+    ARTGState	  ----- ARTGState.[hm]
+---
+NSGraphicsContext [gui]
+  GSContext	  [gsc]
+    ARTContext	  ----- ARTContext.[hm]
+
+-----------------------
+-= Window management =-
+-----------------------
+: This section should explain how window management of GUI and BACK works
+: (window types and levels, switching, minimizing, ordering in/out, moving 
+: from dektop to desktop, state/focus changes, icons, etc.)
+
+---------------------------
+-= User input - Keyboard =-
+---------------------------
+: This section should explain how mouse and keybpard events processed by of 
+: GUI and BACK. What Input Server is? How does drag and drop work?
+
+NSInputServer
+  NSInputManager
+    XIMInputServer
+
+------------------------
+-= User input - Mouse =-
+------------------------
+: This section should explain how mouse events processed by of GUI and BACK.
+: What type of mouse events are? How drag and drop works?
+
+GSDragView -------------------------------------------> XGDragView
+  GSDisplayServer ------------------------------------> XGServer
+
+------------
+-= Events =-
+------------
+: This section should explain how X11 events received and processed by GUI 
+: and BACK. What type of events may occur during life of application.
+: Where actually each type of events are processed.
+
+------------------------
+-= Graphic operations =-
+------------------------
+: Text drawing, fonts, image and PS drawing, compositing. This section probably
+: better join with 'Graphics Context' section.
+

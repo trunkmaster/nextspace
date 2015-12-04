@@ -1,0 +1,15 @@
+--- ./wmaker-crm_next/WINGs/userdefaults.c	2015-07-31 01:39:38.465455984 +0300
++++ ./WM/WINGs/userdefaults.c	2015-08-01 22:40:36.150613397 +0300
+@@ -39,8 +39,11 @@
+ char *WMUserDefaultsDidChangeNotification = "WMUserDefaultsDidChangeNotification";
+ 
+ static void synchronizeUserDefaults(void *foo);
+-
++#ifdef NEXTSPACE
+ #define DEFAULTS_DIR "/Preferences"
++#else
++#define DEFAULTS_DIR "/Defaults"
++#endif
+ #ifndef HAVE_INOTIFY
+ /* Check defaults database for changes every this many milliseconds */
+ /* XXX: this is shared with src/ stuff, put it in some common header */

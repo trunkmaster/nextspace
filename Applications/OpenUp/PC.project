@@ -1,0 +1,95 @@
+{
+    APPKIT = "GNUSTEP-GUI";
+    APPLICATIONICON = application.tiff;
+    BUILDTOOL = "/usr/bin/make";
+    CLASS_FILES = (
+	"ApplicationDelegate+compression.m",
+	"ApplicationDelegate+decompression.m",
+	"ApplicationDelegate+infopanel.m",
+	ApplicationDelegate.m,
+	"NSArray+utils.m",
+	"NSColor+utils.m",
+	"NSString+utils.m",
+	"NSTask+utils.m",
+	"NSFileManager+unique.m"
+    );
+    COMPILEROPTIONS = "";
+    CPPOPTIONS = "";
+    CREATION_DATE = "2004-02-06 08:56:07 +0200";
+    DOCU_FILES = (
+    );
+    FOUNDATION = "GNUSTEP-BASE";
+    FRAMEWORKS = (
+    );
+    HEADER_FILES = (
+	ApplicationDelegate.h,
+	"NSArray+utils.h",
+	"NSColor+utils.h",
+	"NSFileManager+unique.h",
+	"NSString+utils.h",
+	"NSTask+utils.h"
+    );
+    IMAGES = (
+	application.tiff,
+	documents.tiff,
+	narrow.tiff
+    );
+    INSTALLDIR = "$(HOME)/GNUstep";
+    INTERFACES = (
+	OpenUp.gorm
+    );
+    LANGUAGE = English;
+    LAST_EDITING = "2004-06-01 23:40:10 +0300";
+    LIBRARIES = (
+	"gnustep-base",
+	"gnustep-gui"
+    );
+    LINKEROPTIONS = "";
+    MAININTERFACE = OpenUp.gorm;
+    MAKEFILEDIR = "$(GNUSTEP_MAKEFILES)";
+    OBJC_COMPILEROPTIONS = "";
+    OTHER_FILES = (
+    );
+    OTHER_RESOURCES = (
+	"Info-gnustep.plist",
+	servicesConfig.plist,
+	filesConfig.plist,
+	version
+    );
+    OTHER_SOURCES = (
+	OpenUp_main.m
+    );
+    PC_WINDOWS = {
+	ProjectWindow = "457 722 732 301 0 0  1216 1024 ";
+	ShowToolbar = YES;
+    };
+    PRINCIPAL_CLASS = NSApplication;
+    PROJECT_AUTHORS = (
+    );
+    PROJECT_COPYRIGHT = "Copyright (C) 200x";
+    PROJECT_COPYRIGHT_DESC = "Released under ...";
+    PROJECT_CREATOR = "Serg Stoyan,,,";
+    PROJECT_DESCRIPTION = "No description avaliable!";
+    PROJECT_DOCUMENTEXTENSIONS = (
+    );
+    PROJECT_GROUP = "No group avaliable!";
+    PROJECT_MAINTAINER = "Serg Stoyan,,,";
+    PROJECT_NAME = OpenUp;
+    PROJECT_RELEASE = 0.1;
+    PROJECT_SOURCE = "%{gs_name}-%{gs_version}.tar.gz";
+    PROJECT_SUMMARY = "No summary avaliable!";
+    PROJECT_TYPE = Application;
+    PROJECT_URL = "";
+    PROJECT_VERSION = 0.1;
+    SEARCH_HEADER_DIRS = (
+    );
+    SEARCH_LIB_DIRS = (
+    );
+    SUBPROJECTS = (
+    );
+    SUPPORTING_FILES = (
+	GNUmakefile.preamble,
+	GNUmakefile,
+	GNUmakefile.postamble
+    );
+}

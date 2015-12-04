@@ -1,0 +1,203 @@
+/*
+ * WindowMakerのルートメニュー設定ファイル
+ *
+ * 構文:
+ *
+ * <Title> <Command> <Parameters>
+ *
+ * <Title> とはメニューのタイトルに使用される文字列です。スペースを含む
+ *      場合には " で囲んでください。
+ * 
+ *
+ * <Command> は以下のものが使えます: 
+ *	MENU - メニュー(サブメニュー)の定義の開始を示します。
+ *	OPEN_MENU - ファイル,パイプ,ディレクトリの内容(それぞれのファイルの
+ *		    前処理に指定したコマンドを使用することも可能)から
+ *		    メニューを作る。
+ *	END  - メニュー(サブメニュー)の定義の終了を示します。
+ *	WORKSPACE_MENU - ワークスペースの操作のためのサブメニューを追加します。
+ *	EXEC <program> - 外部プログラムの呼びだし
+ *	SHEXEC <command> - executes a shell command (like gimp > /dev/null)
+ *	EXIT - ウィンドウマネージャの終了
+ *	RESTART [<window manager>] - WindowMakerの再起動か、または、別の
+ *			ウィンドウマネージャを起動します。
+ *	REFRESH - デスクトップの再描画
+ *	ARRANGE_ICONS - ワークスペースのアイコンの再配置
+ *	SHUTDOWN - 全てのクライアントをkillしXのセッションを終了します。
+ *	SHOW_ALL - ハイドされていた全てのウィンドウを表示します。
+ *	HIDE_OTHERS - ワークスペース上の現在あるいは一番最近フォーカス
+ *		      されたウィンドウを除く全てのウィンドウをハイドします。
+ *		
+ *	SAVE_SESSION - デスクトップの現在の状態をセーブします。現在の状態と
+ *		       とは、全ての実行中のアプリケーション、それらのヒント
+ *		       (ジオメトリ,位置,どのワークスペースに存在するか,
+ *		       dockとclipのどこから起動されたのか,そして、最小化
+ *		       されているのか、シェードされているのか、ハイドされて
+ *		       いるのという情報です。) また、ユーザーが現在どの
+ *		       ワークスペースにいるのかという情報もセーブします。
+ *		       セーブされた全ての情報は毎回の起動時に復活しますが、
+ *		       新たにSAVE_SESSIONを行なうと書きかわります。また、
+ *		       CLEAR_SESSIONが行なわれると消去されます。
+ *		       SaveSessionOnExit = Yes; とWindowMaker ドメインファイル
+ *		       で定義されている場合には、セーブはWindowMakerが終了
+ *		       する度に自動的に行なわれ、前回のSAVE_SESSION(または
+ *		       CLEAR_SESSION)は上書きされます。
+ *	CLEAR_SESSION - 前回セーブされた情報を全て消去します。ただし、
+ *		       SaveSessionOnExitがYesの時には効果を持ちません。
+ *
+ * OPEN_MENU の構文:
+ *   1. ファイルの場合
+ *	// file.menuは構文の誤りもなく実際存在するファイルの名前です。
+ *	// 呼びだされた場所に挿入されます。
+ *	OPEN_MENU file.menu
+ *   2. パイプの場合
+ *	// commandを実行しその標準出力を用いてファイルを作ります。
+ *	// commandの出力は正しいメニュー定義でなければなりません。
+ *	// 記号 '|'とcommandの間のスペースは省略可能です。
+ *	OPEN_MENU | command
+ *   3. ディレクトリの場合
+ *	// 1つあるいは複数のディレクトリを開き、全てのサブディレクトリと
+ *      // そこにあるファイルからメニューを作ります。またアルファベット順に
+ *	// ソートされます。
+ *	OPEN_MENU /some/dir [/some/other/dir ...]
+ *   4. ディレクトリとコマンドの組みあわせの場合
+ *	// 1つあるいは複数のディレクトリを開き、全てのサブディレクトリと
+ *      // そこにある可読できるファイルからメニューを作ります。
+ *      // またアルファベット順にソートされ、commandで前処理されます。
+ *	OPEN_MENU /some/dir [/some/other/dir ...] WITH command -options
+ *
+ *
+ * <Parameters> とは実行するプログラムです。
+ *
+ * ** - EXECのコマンドラインに与えられた引数です。
+ * %s - 現在のセレクションの内容と置換されます。
+ * %a(message) - 入力ダイアログ(メッセージとしてmessageを用いる)を開き、
+ *		 タイプされた内容と置換されます。
+ * %w - 現在フォーカスされているウィンドウのXIDと置換されます。
+ *
+ * 特殊文字( % や " 等)をエスケープするには \ を用います:
+ * 例: kterm -T "\"Hello World\""
+ *
+ * またエスケープキャラクタを用いることができます。(例 \n で改行)
+ *
+ * どの MENU 宣言も必ず、ペアになる END 宣言を末尾につけなければなりません。
+ *
+ * 例:
+ *
+ * "テスト" MENU
+ *	"KTerm" EXEC kterm
+ *		// /usr/openwin/bin中のファイルでサブメニューを作る
+ *	"XView apps" OPEN_MENU "/usr/openwin/bin"
+ *		// 異なるディレクトリのX11アプリケーションを表示 
+ *	"X11 apps" OPEN_MENU /usr/X11/bin $HOME/bin/X11
+ *		// 背景の画像をセットする。
+ *	"背景" OPEN_MENU $HOME/images /usr/share/images WITH wmsetbg -u -t
+ *		// style.menuの内容をここに挿入する。
+ *	"スタイル" OPEN_MENU style.menu
+ * "テスト" END
+ */
+
+#include "wmmacros"
+
+"アプリケーション" MENU
+	"情報" MENU
+		"Info パネル..." INFO_PANEL
+		"Legal パネル..." LEGAL_PANEL
+		"システム負荷" SHEXEC xosview || xload
+		"プロセス一覧" EXEC xterm -e top
+		"マニュアルブラウザ" EXEC xman
+	"情報" END
+	"KTerm" EXEC kterm -sb 
+	"Rxvt" EXEC rxvt -bg black -fg white
+	"ワークスペース" WORKSPACE_MENU
+	"アプリケーション" MENU
+		"グラフィックス" MENU
+			"Gimp" SHEXEC gimp >/dev/null
+			"XV" EXEC xv
+			"XPaint" EXEC xpaint
+			"XFig" EXEC xfig
+		"グラフィックス" END
+		"X File Manager" EXEC xfm
+		"OffiX Files" EXEC files
+		"LyX" EXEC lyx
+		"Netscape" EXEC netscape 
+  		"Ghostview" EXEC ghostview %a(Enter file to view)
+		"Acrobat" EXEC /usr/local/Acrobat3/bin/acroread %a(Enter PDF to view)
+  		"TkDesk" EXEC tkdesk
+	"アプリケーション" END
+	"エディタ" MENU
+		"Mule" EXEC mule
+		"XFte" EXEC xfte
+		"XEmacs" SHEXEC xemacs || emacs
+		"XJed" EXEC xjed 
+		"NEdit" EXEC nedit
+		"Xedit" EXEC xedit
+		"VI" EXEC kterm -e vi
+	"エディタ" END
+	"いろいろ" MENU
+		"Xmcd" SHEXEC xmcd 2> /dev/null
+		"Xplaycd" EXEC xplaycd
+		"Xmixer" EXEC xmixer
+	"いろいろ" END
+	"ユーティリティ" MENU
+		"電卓" EXEC xcalc
+		"プロパティ表示" SHEXEC xprop | xmessage -center -title 'xprop' -file -
+		"フォントセレクタ" EXEC xfontsel
+		"端末エミュレータ" EXEC xminicom
+		"眼鏡" EXEC xmag
+		"カラーマップ" EXEC xcmap
+		"XKill" EXEC xkill
+		"ASClock" EXEC asclock -shape
+		"Clipboard" EXEC xclipboard
+	"ユーティリティー" END
+
+	"セレクション" MENU
+		"コピー" SHEXEC echo '%s' | wxcopy
+		"Mail To" EXEC xterm -name mail -T "Pine" -e pine %s
+		"Netscape" EXEC netscape %s
+		"マニュアル検索" SHEXEC MANUAL_SEARCH(%s)
+	"セレクション" END
+
+	"ワークスペース" MENU
+		"他をハイド" HIDE_OTHERS
+		"全て表示" SHOW_ALL
+		"アイコンの再配置" ARRANGE_ICONS
+		"画面の再描画" REFRESH
+		"ロック" EXEC xlock -allowroot -usefirst
+		"セッションをセーブ" SAVE_SESSION
+		"セッションをクリア" CLEAR_SESSION
+	"ワークスペース" END
+
+	"外観" MENU
+		"テーマ" OPEN_MENU -noext THEMES_DIR $HOME/GNUstep/Library/WindowMaker/Themes WITH setstyle
+		"スタイル" OPEN_MENU -noext STYLES_DIR $HOME/GNUstep/Library/WindowMaker/Styles WITH setstyle
+		"アイコン集" OPEN_MENU -noext ICON_SETS_DIR $HOME/GNUstep/Library/WindowMaker/IconSets WITH seticons
+		"背景" MENU
+			"ソリッド" MENU
+                        	"Black" WS_BACK '(solid, black)'
+                        	"Blue"  WS_BACK '(solid, "#505075")'
+				"Indigo" WS_BACK '(solid, "#243e6c")'
+				"Bleumarine" WS_BACK '(solid, "#224477")'
+                        	"Purple" WS_BACK '(solid, "#554466")'
+                        	"Wheat"  WS_BACK '(solid, "wheat4")'
+                        	"Dark Gray"  WS_BACK '(solid, "#333340")'
+                        	"Wine" WS_BACK '(solid, "#400020")'
+			"ソリッド" END
+			"グラデーション" MENU
+				"Flag" WS_BACK '(mdgradient, green, red, white, green)'
+				"Sky" WS_BACK '(vgradient, blue4, white)'
+			"グラデーション" END
+			"イメージ" OPEN_MENU -noext BACKGROUNDS_DIR $HOME/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -t
+		"背景" END
+		"現在の設定をテーマとしてセーブ" SHEXEC getstyle -t $HOME/GNUstep/Library/WindowMaker/Themes/"%a(Theme name)"
+		"現在のアイコン集をセーブ" SHEXEC geticonset $HOME/GNUstep/Library/WindowMaker/IconSets/"%a(IconSet name)"
+	"外観" END
+
+	"終了"	MENU
+		"再起動" RESTART
+		"AfterStepを起動" RESTART afterstep
+		"終了..."  EXIT
+		"セッションを終了..." SHUTDOWN
+	"終了" END
+"アプリケーション" END
+

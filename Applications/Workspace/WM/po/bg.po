@@ -1,0 +1,2534 @@
+# Message catalog for Window Maker.
+# Copyright (C) 2000,2001,2003 Free Software Foundation, Inc.
+# Boris Jordanov <borj@sdf.lonestar.org>, 2000
+# Bojidar Ivanov <bojidar_ivanov@mailcity.com>, 2000
+# Slavei G. Karadjov <slaff@linux-bg.hypermart.net>, 2000
+# Lyubomir Sotirov <lyubomir@sotirov.org>, 2000
+# Anton Zinoviev <anton@lml.bas.bg>, 2000, 2001, 2003
+msgid ""
+msgstr ""
+"Project-Id-Version: WindowMaker 0.64.0\n"
+"POT-Creation-Date: 2003-02-09 13:00+0200\n"
+"PO-Revision-Date: 2003-02-09 14:21+0200\n"
+"Last-Translator: Anton Zinoviev <zinoviev@debian.org>\n"
+"Language-Team: Bulgarian <dict@linux.zonebg.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# ../src/appicon.c:550 ../src/dialog.c:230 ../src/dock.c:3291
+# ../src/dockedapp.c:211 ../src/main.c:254 ../src/rootmenu.c:1765
+# ../src/winspector.c:383 ../src/winspector.c:399
+#: ../src/appicon.c:426 ../src/dialog.c:304 ../src/dock.c:3326
+#: ../src/dockedapp.c:230 ../src/main.c:273 ../src/rootmenu.c:1854
+#: ../src/winspector.c:389 ../src/winspector.c:406
+msgid "Error"
+msgstr "Грешка"
+
+# ../src/appicon.c:551
+#: ../src/appicon.c:427
+msgid "Could not open specified icon file"
+msgstr "Файлът с иконката не може да бъде зареден"
+
+# ../src/appicon.c:552 ../src/dialog.c:122 ../src/dialog.c:230
+# ../src/dialog.c:574 ../src/dialog.c:1591 ../src/dock.c:515
+# ../src/dock.c:523 ../src/dock.c:547 ../src/dock.c:3292
+# ../src/dockedapp.c:212 ../src/dockedapp.c:370 ../src/main.c:254
+# ../src/rootmenu.c:1769 ../src/winspector.c:384 ../src/winspector.c:400
+#: ../src/appicon.c:428 ../src/dialog.c:201 ../src/dialog.c:304
+#: ../src/dialog.c:751 ../src/dialog.c:1850 ../src/dock.c:526
+#: ../src/dock.c:534 ../src/dock.c:558 ../src/dock.c:3327
+#: ../src/dockedapp.c:231 ../src/dockedapp.c:426 ../src/main.c:273
+#: ../src/rootmenu.c:1858 ../src/winspector.c:390 ../src/winspector.c:407
+msgid "OK"
+msgstr "Приемам"
+
+# За да бъде без род замених "ще бъде затворена" на "ще се затвори".
+# "Запазена" е по-точен превод на "save" - не всичко запазено е записано
+# във файл. (А.З.)  
+# ../src/appicon.c:579 ../src/dock.c:277
+#: ../src/appicon.c:456 ../src/dock.c:264
+msgid ""
+" will be forcibly closed.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+" ще се затвори принудително.\n"
+"Всяка информация, която не е запазена ще бъде загубена.\n"
+"Наистина ли желаете това?"
+
+# 
+# ../src/appicon.c:585 ../src/dock.c:282 ../src/winmenu.c:125
+#: ../src/appicon.c:464 ../src/dock.c:283 ../src/winmenu.c:125
+msgid "Kill Application"
+msgstr "Убиване на приложение"
+
+# ../src/appicon.c:586 ../src/dock.c:283 ../src/winmenu.c:127
+#: ../src/appicon.c:465 ../src/dock.c:284 ../src/winmenu.c:127
+msgid "Yes"
+msgstr "Да"
+
+# ../src/appicon.c:586 ../src/dock.c:283 ../src/winmenu.c:127
+#: ../src/appicon.c:465 ../src/dock.c:284 ../src/winmenu.c:127
+msgid "No"
+msgstr "Не"
+
+# ../src/appicon.c:604 ../src/dock.c:1159 ../src/dock.c:3463
+#: ../src/appicon.c:495 ../src/dock.c:1178 ../src/dock.c:3492
+msgid "Unhide Here"
+msgstr "Покажи"
+
+# ../src/appicon.c:605 ../src/appicon.c:630 ../src/dock.c:1161
+# ../src/dock.c:1163 ../src/dock.c:3475 ../src/winmenu.c:469
+#: ../src/appicon.c:496 ../src/appicon.c:521 ../src/dock.c:1180
+#: ../src/dock.c:1182 ../src/dock.c:3504 ../src/winmenu.c:465
+msgid "Hide"
+msgstr "Скрий"
+
+# Може би "постави" вместо "прибави"? (А.З.)
+# ../src/appicon.c:606
+#: ../src/appicon.c:497
+msgid "Set Icon..."
+msgstr "Постави иконка..."
+
+# ../src/appicon.c:607 ../src/dock.c:1167 ../src/rootmenu.c:226
+# ../src/rootmenu.c:240 ../src/winmenu.c:516
+#: ../src/appicon.c:498 ../src/dock.c:1186 ../src/rootmenu.c:248
+#: ../src/rootmenu.c:264 ../src/winmenu.c:520
+msgid "Kill"
+msgstr "Убий"
+
+# ../src/appicon.c:628 ../src/dock.c:3473
+#: ../src/appicon.c:519 ../src/dock.c:3502
+msgid "Unhide"
+msgstr "Покажи"
+
+#: ../src/application.c:398
+#, c-format
+msgid "recreating missing icon '%s'"
+msgstr "повторно създаване на липсваща иконка \"%s\""
+
+# ../src/defaults.c:972 ../src/defaults.c:1066
+#: ../src/defaults.c:922 ../src/defaults.c:1011
+#, c-format
+msgid "Domain %s (%s) of global defaults database is corrupted!"
+msgstr "Областта %s (%s) от глобалната база данни с настройки е повредена!"
+
+# ../src/defaults.c:1071
+#: ../src/defaults.c:927
+#, c-format
+msgid "could not load domain %s from global defaults database"
+msgstr "областта %s от глобалната база данни не може да бъде заредена"
+
+# [ start translation
+# Translated by: Boris Jordanov
+#
+# Според мен defaults database значи не подразбиращата се база данни, а
+# базата данни с подразбирания, т.е. с настройки.  Съответно и
+# по-нататък изрази като "базата от данни с подразбиращи се
+# потребителски настройки" съм заменял на "потребителската база данни с
+# настройки". (А.З.)
+#
+# И аз така го разбирам, но някак не ми дойде правилно звучащ израз :)
+# (Б.Й.)
+#
+# Относно "Dock" аз лично предпочитам "Док" (Б.Й.)
+#
+# Изрази от вида "да бъде прочетена" тук и по-нататък съм заменил на "да
+# се прочете" единствено за краткост -- при някои шрифтове по-дългият
+# изказ прави проблеми. (А.З.)
+#
+# Ако съображенията за краткост са наистина наложителни - ОК, но "да се
+# прочете" звучи не съвсем едносмислено: "да се прочете" сама? или "да
+# бъде прочетена" - от някого, процес, програма? Дали в момента не пиша
+# безсмислици ?!?! (Б.Й.)
+#
+# Поувлякох се.  Това тук са конзолни съобщения и съображенията за
+# краткост не важат. (А.З.)  
+# ../src/defaults.c:910 ../src/startup.c:820 ../src/startup.c:838
+# ../src/startup.c:844
+#: ../src/defaults.c:949 ../src/startup.c:884 ../src/startup.c:902
+#: ../src/startup.c:908
+#, c-format
+msgid "could not read domain \"%s\" from defaults database"
+msgstr "областта \"%s\" не може да бъде прочетена от базата данни с настройки"
+
+# ../src/defaults.c:956 ../src/defaults.c:1081 ../src/defaults.c:1120
+# ../src/defaults.c:1150
+#: ../src/defaults.c:995 ../src/defaults.c:1099 ../src/defaults.c:1140
+#: ../src/defaults.c:1196
+#, c-format
+msgid "Domain %s (%s) of defaults database is corrupted!"
+msgstr "Областта %s (%s) от базата данни с настройки е повредена!"
+
+# ../src/defaults.c:961 ../src/defaults.c:1102 ../src/defaults.c:1133
+# ../src/defaults.c:1159
+#: ../src/defaults.c:1000 ../src/defaults.c:1119 ../src/defaults.c:1176
+#: ../src/defaults.c:1205
+#, c-format
+msgid "could not load domain %s from user defaults database"
+msgstr ""
+"областта %s от потребителската база данни с настройки не може да бъде "
+"заредена."
+
+# ../src/defaults.c:991
+#: ../src/defaults.c:1030
+#, c-format
+msgid "could not load domain %s from global defaults database (%s)"
+msgstr "областта %s от глобалната база данни %s не може да бъде заредена"
+
+# ../src/screen.c:460
+#: ../src/defaults.c:1166 ../src/screen.c:460
+#, c-format
+msgid "could not load logo image for panels: %s"
+msgstr "картинката %s със знак за панели не може да зареди"
+
+# ../src/defaults.c:1510 ../src/defaults.c:1622 ../src/defaults.c:2040
+# ../src/defaults.c:2057 ../src/defaults.c:2160 ../src/defaults.c:2207
+# ../src/defaults.c:2701 ../src/wdefaults.c:565 ../src/wdefaults.c:601
+#. --------------------------- Local -----------------------
+#: ../src/defaults.c:1414 ../src/defaults.c:1556 ../src/defaults.c:1668
+#: ../src/defaults.c:2147 ../src/defaults.c:2164 ../src/defaults.c:2209
+#: ../src/defaults.c:2256 ../src/defaults.c:2729 ../src/wdefaults.c:571
+#: ../src/wdefaults.c:607
+#, c-format
+msgid "Wrong option format for key \"%s\". Should be %s."
+msgstr "Неправилен формат на параметъра на ключа \"%s\". Трябва да бъде %s."
+
+# ../src/defaults.c:1451 ../src/defaults.c:1483 ../src/defaults.c:1515
+# ../src/defaults.c:1528 ../src/defaults.c:1543 ../src/defaults.c:1557
+# ../src/defaults.c:1627 ../src/defaults.c:1639 ../src/defaults.c:2045
+# ../src/defaults.c:2062 ../src/defaults.c:2075 ../src/defaults.c:2165
+# ../src/defaults.c:2181 ../src/defaults.c:2212 ../src/defaults.c:2299
+# ../src/defaults.c:2707 ../src/defaults.c:2720
+#: ../src/defaults.c:1416 ../src/defaults.c:1497 ../src/defaults.c:1529
+#: ../src/defaults.c:1561 ../src/defaults.c:1574 ../src/defaults.c:1589
+#: ../src/defaults.c:1603 ../src/defaults.c:1673 ../src/defaults.c:1685
+#: ../src/defaults.c:2152 ../src/defaults.c:2169 ../src/defaults.c:2182
+#: ../src/defaults.c:2214 ../src/defaults.c:2230 ../src/defaults.c:2261
+#: ../src/defaults.c:2348 ../src/defaults.c:2734 ../src/defaults.c:2745
+#, c-format
+msgid "using default \"%s\" instead"
+msgstr "вместо това по подразбиране се използва \"%s\""
+
+# ../src/defaults.c:1401
+#: ../src/defaults.c:1447
+#, c-format
+msgid "wrong option value for key \"%s\". Should be one of %s"
+msgstr ""
+"неправилна стойност за ключа \"%s\". Трябва да бъде една от следните: %s"
+
+# ../src/defaults.c:1446
+#: ../src/defaults.c:1492
+#, c-format
+msgid "can't convert \"%s\" to boolean for key \"%s\""
+msgstr "не може да се преобразува \"%s\" в булева стойност за ключa \"%s\""
+
+# ../src/defaults.c:1480
+#: ../src/defaults.c:1526
+#, c-format
+msgid "can't convert \"%s\" to integer for key \"%s\""
+msgstr "не може да се преобразува \"%s\" в цяло число за ключа \"%s\""
+
+# ../src/defaults.c:1523
+#: ../src/defaults.c:1569
+#, c-format
+msgid "Incorrect number of elements in array for key \"%s\"."
+msgstr "Неправилен брой елементи в масива за ключa \"%s\"."
+
+# ../src/defaults.c:1538
+#: ../src/defaults.c:1584
+#, c-format
+msgid "Wrong value for key \"%s\". Should be Coordinate."
+msgstr "Неправилна стойност за ключа \"%s\". Трябва да бъде Coordinate."
+
+# ../src/defaults.c:1553
+#: ../src/defaults.c:1599
+#, c-format
+msgid "can't convert array to integers for \"%s\"."
+msgstr "масивът не може да се преобразува в целочислени стойности за \"%s\"."
+
+# ../src/defaults.c:1749 ../src/defaults.c:1781 ../src/defaults.c:1797
+# ../src/defaults.c:1843 ../src/defaults.c:1883 ../src/defaults.c:1921
+# ../src/defaults.c:1937
+#: ../src/defaults.c:1797 ../src/defaults.c:1829 ../src/defaults.c:1845
+#: ../src/defaults.c:1874 ../src/defaults.c:1897 ../src/defaults.c:1950
+#: ../src/defaults.c:1990 ../src/defaults.c:2028 ../src/defaults.c:2044
+#, c-format
+msgid "\"%s\" is not a valid color name"
+msgstr "\"%s\" не е валидно име на цвят"
+
+# ../src/defaults.c:1762
+#: ../src/defaults.c:1810 ../src/defaults.c:1862
+msgid "bad number of arguments in gradient specification"
+msgstr "неправилен брой аргументи при определяне на градиент"
+
+# ../src/defaults.c:1816
+#: ../src/defaults.c:1923
+msgid "too few arguments in multicolor gradient specification"
+msgstr "недостатъчно аргументи при определяне на многоцветен градиент"
+
+# ../src/defaults.c:1910
+#: ../src/defaults.c:2017
+msgid "bad number of arguments in textured gradient specification"
+msgstr "неправилен брой аргументи при определяне на градиент с текстура"
+
+# ../src/defaults.c:1953
+#: ../src/defaults.c:2060
+#, c-format
+msgid "bad opacity value for tgradient texture \"%s\". Should be [0..255]"
+msgstr ""
+"неправилна стойност на прозрачност \"%s\" за текстурата на градиент. Трябва "
+"да бъде от 0 до 255"
+
+# ../src/defaults.c:2013
+#: ../src/defaults.c:2120
+#, c-format
+msgid "could not initialize library %s"
+msgstr "библиотеката %s не може да бъде инициализирана"
+
+# ../src/defaults.c:2016
+#: ../src/defaults.c:2123
+#, c-format
+msgid "could not find function %s::%s"
+msgstr "функцията %s::%s не може да бъде открита"
+
+# ../src/defaults.c:2023
+#: ../src/defaults.c:2130
+#, c-format
+msgid "invalid texture type %s"
+msgstr "неправилен тип текстура (%s)"
+
+# ../src/defaults.c:2070
+#: ../src/defaults.c:2177
+#, c-format
+msgid "Error in texture specification for key \"%s\""
+msgstr "Грешка при определяне на текстура за ключа \"%s\""
+
+# ../src/defaults.c:2177
+#: ../src/defaults.c:2226
+msgid "Wrong type for workspace background. Should be a texture type."
+msgstr "Неправилен тип фон за работно място. Трябва да бъде вид текстура."
+
+# ../src/defaults.c:2225
+#: ../src/defaults.c:2274
+#, c-format
+msgid "Wrong type for background of workspace %i. Should be a texture."
+msgstr "Неправилен тип фон за работно място %i. Трябва да бъде текстура."
+
+# Translated by: Boris Jordanov
+# [ end translation
+# ../src/defaults.c:2267
+#: ../src/defaults.c:2316
+msgid "could not load any usable font!!!"
+msgstr "не може да се зареди никой използваем шрифт!!!"
+
+# ../src/defaults.c:2294
+#: ../src/defaults.c:2343
+#, c-format
+msgid "could not get color for key \"%s\""
+msgstr "не може да се определи цвят за ключа \"%s\""
+
+# ../src/defaults.c:2352 ../src/rootmenu.c:492
+#: ../src/defaults.c:2401 ../src/rootmenu.c:526
+#, c-format
+msgid "%s:invalid key modifier \"%s\""
+msgstr "%s: неправилен клавишен модификатор \"%s\""
+
+# 
+# ../src/defaults.c:2364
+#: ../src/defaults.c:2413
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\""
+msgstr "%s: определена е недопустима клавишна комбинация \"%s\""
+
+# 
+# ../src/defaults.c:2371
+#: ../src/defaults.c:2420
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\""
+msgstr "%s: недопустим клавиш в комбинацията \"%s\""
+
+# ../src/defaults.c:2396
+#: ../src/defaults.c:2445
+#, c-format
+msgid "%s: modifier key %s is not valid"
+msgstr "%s: модификаторът %s не е известен"
+
+# ../src/defaults.c:2428
+#: ../src/defaults.c:2477
+#, c-format
+msgid "could not load image in option %s: %s"
+msgstr "не може да бъде заредено изображението от параметъра %s: %s"
+
+# ../src/defaults.c:2547
+#: ../src/defaults.c:2594
+#, c-format
+msgid "failed to open bitmap file \"%s\""
+msgstr "неуспешно зареждането на файла с картинка \"%s\""
+
+# ../src/defaults.c:2550
+#: ../src/defaults.c:2597
+#, c-format
+msgid "\"%s\" is not a valid bitmap file"
+msgstr "\"%s\" не е валидно име на файл с картинка"
+
+# ../src/defaults.c:2553
+#: ../src/defaults.c:2600
+#, c-format
+msgid "out of memory reading bitmap file \"%s\""
+msgstr "изчерпване на паметта при четене на картинката \"%s\""
+
+# ../src/defaults.c:2597 ../src/defaults.c:2639
+#: ../src/defaults.c:2639 ../src/defaults.c:2672
+msgid "bad number of arguments in cursor specification"
+msgstr "неправилен брой аргументи при определяне на курсор"
+
+# ../src/defaults.c:2617
+#: ../src/defaults.c:2655
+#, c-format
+msgid "unknown builtin cursor name \"%s\""
+msgstr "непознато име на вграден курсор \"%s\""
+
+# ../src/defaults.c:2651 ../src/defaults.c:2665
+#: ../src/defaults.c:2682 ../src/defaults.c:2694
+#, c-format
+msgid "could not find cursor bitmap file \"%s\""
+msgstr "не може да се открие картинката за курсор \"%s\""
+
+# ../src/defaults.c:2715
+#: ../src/defaults.c:2741
+#, c-format
+msgid "Error in cursor specification for key \"%s\""
+msgstr "Грешка при определяне на курсор в ключа \"%s\""
+
+# ../src/defaults.c:2805
+#: ../src/defaults.c:2826
+msgid "could not render texture for icon background"
+msgstr "текстурата за фон не може да бъде изобразена"
+
+#: ../src/dialog.c:157
+msgid "Save workspace state"
+msgstr "Да се запази състоянието"
+
+# ../src/dialog.c:122 ../src/dialog.c:581 ../src/dock.c:547
+# ../src/dockedapp.c:376 ../src/rootmenu.c:188 ../src/rootmenu.c:226
+# ../src/rootmenu.c:240
+#: ../src/dialog.c:201 ../src/dialog.c:758 ../src/dock.c:558
+#: ../src/dockedapp.c:431 ../src/rootmenu.c:198 ../src/rootmenu.c:248
+#: ../src/rootmenu.c:264
+msgid "Cancel"
+msgstr "Отменям"
+
+# 
+# ../src/dialog.c:225
+#: ../src/dialog.c:299
+msgid "Could not open directory \"%s\":\n%s"
+msgstr "Не може да бъде отворена директорията \"%s\":\n%s"
+
+# ../src/dialog.c:280
+#: ../src/dialog.c:354
+msgid "Could not load image file "
+msgstr "Не може да бъде зареден файл с картинка "
+
+# ../src/dialog.c:509
+#: ../src/dialog.c:685
+msgid "Directories"
+msgstr "Директории"
+
+# ../src/dialog.c:518
+#: ../src/dialog.c:694
+msgid "Icons"
+msgstr "Иконки"
+
+# ../src/dialog.c:551
+#: ../src/dialog.c:727
+msgid "Preview"
+msgstr "Преглед"
+
+# 
+# ../src/dialog.c:564
+#: ../src/dialog.c:740
+msgid "File Name:"
+msgstr "Файл:"
+
+# ../src/dialog.c:587
+#: ../src/dialog.c:764
+msgid "Choose File"
+msgstr "Избор на файл"
+
+# ../src/dialog.c:604 ../src/dialog.c:606
+#: ../src/dialog.c:783 ../src/dialog.c:785
+msgid "Icon Chooser"
+msgstr "Избор на иконка"
+
+#: ../src/dialog.c:1265 ../src/dialog.c:1375
+#, c-format
+msgid "Version %s"
+msgstr "Версия %s"
+
+#: ../src/dialog.c:1372
+msgid "Window Manager for X"
+msgstr "Администратор на прозорци"
+
+#: ../src/dialog.c:1397
+#, c-format
+msgid "Using visual 0x%x: %s %ibpp "
+msgstr "Използва се видеорежим 0x%x: %s %i байта/пиксел "
+
+#: ../src/dialog.c:1405
+msgid "(32 thousand colors)\n"
+msgstr "(32 хиляди цвята)\n"
+
+#: ../src/dialog.c:1408
+msgid "(64 thousand colors)\n"
+msgstr "(64 хиляди цвята)\n"
+
+#: ../src/dialog.c:1412
+msgid "(16 million colors)\n"
+msgstr "(16 милиона цвята)\n"
+
+#: ../src/dialog.c:1415
+#, c-format
+msgid "(%d colors)\n"
+msgstr "(%d цвята)\n"
+
+#: ../src/dialog.c:1425
+#, c-format
+msgid "Total allocated memory: %i kB. Total memory in use: %i kB.\n"
+msgstr "Заделена памет: %i KB.  Употребявана памет: %i KB.\n"
+
+#: ../src/dialog.c:1283
+msgid "Image formats: "
+msgstr "Графични формати: "
+
+#: ../src/dialog.c:1439
+msgid ""
+"\n"
+"Additional support for: "
+msgstr ""
+"\n"
+"Допълнителна поддръжка за: "
+
+#: ../src/dialog.c:1462
+msgid " and "
+msgstr " и "
+
+#: ../src/dialog.c:1472
+msgid ""
+"\n"
+"Sound disabled"
+msgstr "\nОзвучаването е изключено"
+
+#: ../src/dialog.c:1474
+msgid ""
+"\n"
+"Sound enabled"
+msgstr "\nОзвучаването е включено"
+
+# ../src/dockedapp.c:212
+#: ../src/dialog.c:1503
+msgid "Info"
+msgstr "Информация"
+
+#: ../src/dialog.c:1527
+msgid "Merry Christmas!"
+msgstr "Весела Коледа!"
+
+#: ../src/dialog.c:1417
+msgid ""
+"    Window Maker is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"    Window Maker is distributed in the hope that it will be useful, but "
+"WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY "
+"or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for "
+"more details.\n"
+"\n"
+"    You should have received a copy of the GNU General Public License along "
+"with this program; if not, write to the Free Software Foundation, Inc., 51 "
+"Franklin Street, Fifth Floor, Boston, MA02110-1301 USA."
+msgstr ""
+"    Уиндоу Мейкър е свободен софтуер; може да го разпространявате и/или "
+"изменяте съгласно условията на Основната общодостъпна лицензия ГНУ, "
+"както тя е публикувана от Free Software Foundation, или версия 2 на "
+"лицензията, или (ако желаете) коя да е следваща версия.\n"
+"\n"
+"    Уиндоу Мейкър се разпространява с надеждата, че ще бъде полезен, но "
+"БЕЗ НИКАКВИ ГАРАНЦИИ, без дори подразбиращата се гаранция за "
+"ПОЛЕЗНОСТ или ПРИГОДНОСТ ЗА НЯКАКВА ЦЕЛ.  Вижте Основната "
+"общодостъпна лицензия ГНУ за повече подробности.\n"
+"\n"
+"    Би трябвало а сте получили копие на Основната общодостъпна "
+"лицензия ГНУ (GNU General Public License) заедно с тази програма; в "
+"противен случай пишете до Free Software Foundation, Inc., 51 Franklin St, "
+"Fifth Floor, Boston, MA 02110-1301, USA."
+
+#: ../src/dialog.c:1621
+msgid "Legal"
+msgstr "Право"
+
+# ../src/dialog.c:1515 ../src/startup.c:328
+#: ../src/dialog.c:1773 ../src/startup.c:394
+msgid "cannot open connection for crashing dialog panel. Aborting."
+msgstr ""
+"не може да се осъществи връзка с панела за авариен диалог. Прекратяване на "
+"работата."
+
+# ../src/dialog.c:1541
+#: ../src/dialog.c:1799
+msgid "Fatal error"
+msgstr "Критична грешка"
+
+# ../src/dialog.c:1552
+#: ../src/dialog.c:1810
+#, c-format
+msgid ""
+"Window Maker received signal %i\n"
+"(%s)."
+msgstr ""
+"Уиндоу Мейкър получи сигнал %i\n"
+"(%s)."
+
+# ../src/dialog.c:1555
+#: ../src/dialog.c:1813
+#, c-format
+msgid "Window Maker received signal %i."
+msgstr "Уиндоу Мейкър получи сигнал %i."
+
+#. Comment for the PO file: the %s is an email address
+#: ../src/dialog.c:1632
+#, c-format
+msgid ""
+" This fatal error occured probably due to a bug. Please fill the included "
+"BUGFORM and report it to %s."
+msgstr "Възникналата критична грешка вероятно се дължи на програмен дефект. Моля попълнете формуляра от файла BUGFORM и го изпратете на адрес %s."
+
+# ../src/dialog.c:1572
+#: ../src/dialog.c:1831
+msgid "What do you want to do now?"
+msgstr "Какво да се прави сега?"
+
+# ../src/dialog.c:1578
+#: ../src/dialog.c:1837
+msgid "Select action"
+msgstr "Избор на действие"
+
+# ../src/dialog.c:1579
+#: ../src/dialog.c:1838
+msgid "Abort and leave a core file"
+msgstr "Прекъсни и остави core-файл"
+
+# ../src/dialog.c:1580
+#: ../src/dialog.c:1839
+msgid "Restart Window Maker"
+msgstr "Рестартирай Уиндоу Мейкър"
+
+# ../src/dialog.c:1581
+#: ../src/dialog.c:1840
+msgid "Start alternate window manager"
+msgstr "Стартирай друг администратор на прозорците"
+
+#: ../src/dialog.c:2018
+msgid ""
+"Window Maker is part of the GNUstep project.\n"
+"The GNUstep project aims to create a free\n"
+"implementation of the OpenStep(tm) specification\n"
+"which is a object-oriented framework for\n"
+"creating advanced graphical, multi-platform\n"
+"applications. Additionally, a development and\n"
+"user desktop environment will be created on top\n"
+"of the framework. For more information about\n"
+"GNUstep, please visit: www.gnustep.org"
+msgstr ""
+"Уиндоу Мейкър е част от проекта ГНУстеп.\n"
+"Проектът ГНУстеп има за цел да създаде свободна\n"
+"реализация на стандарта OpenStep™, представляващ\n"
+"обектноориентирана среда за създаване на разно-\n"
+"образни графични и мултиплатформени приложения.\n"
+"На тази основа ще бъде създадена и интегрирана\n"
+"потребителска среда.  За повече информация\n"
+"относно ГНУстеп, моля посетете www.gnustep.org"
+
+#: ../src/dialog.c:2041
+msgid "About GNUstep"
+msgstr "Относно ГНУстеп"
+
+# Смених "задайте" на "изберете" от стилистични съображения (А.З.)
+# ../src/dock.c:213
+#: ../src/dock.c:213
+#, c-format
+msgid "Type the name for workspace %i:"
+msgstr "Изберете име за работно място %i:"
+
+# Тук Workspace не е преведено, защото става много дълго и не се побира.(А.З.)
+# ../src/dock.c:214 ../src/dock.c:1123 ../src/dock.c:1126 ../src/dock.c:3381
+#: ../src/dock.c:214 ../src/dock.c:1142 ../src/dock.c:1145 ../src/dock.c:3410
+msgid "Rename Workspace"
+msgstr "Преименуване"
+
+# ../src/dock.c:509 ../src/dock.c:517
+#: ../src/dock.c:520 ../src/dock.c:528
+msgid "Warning"
+msgstr "Внимание!"
+
+# ../src/dock.c:510
+#: ../src/dock.c:521
+msgid ""
+"Some icons cannot be made omnipresent. Please make sure that no other icon "
+"is docked in the same positions on the other workspaces and the Clip is not "
+"full in some workspace."
+msgstr ""
+"Някои иконки не може да се направят вездесъщни. Моля, убедете се, че никоя "
+"друга иконка не е скачена на същото място в другите работни места и че "
+"Кламерът не е пълен в някое работно място."
+
+# "вездесъщни" - "всеприсъстващи", "всеприсъствени"? Прекалено дълги думички. (Б.Й.)
+# ../src/dock.c:518
+#: ../src/dock.c:529
+msgid ""
+"Icon cannot be made omnipresent. Please make sure that no other icon is "
+"docked in the same position on the other workspaces and the Clip is not full "
+"in some workspace."
+msgstr "Иконката не може да се направи вездесъщна. Моля убедете се, че никоя друга иконка не е скачена на същото място в някое друго работно място и че Кламерът не е препълнен в някое работно място."
+
+# ../src/dock.c:545
+#: ../src/dock.c:556
+msgid "Workspace Clip"
+msgstr "Кламер"
+
+# ../src/dock.c:546
+#: ../src/dock.c:557
+msgid "All selected icons will be removed!"
+msgstr "Всички маркирани иконки ще бъдат отстранени!"
+
+# ../src/dock.c:597 ../src/dock.c:1138 ../src/dock.c:1140 ../src/dock.c:3417
+#: ../src/dock.c:608 ../src/dock.c:1157 ../src/dock.c:1159 ../src/dock.c:3446
+msgid "Keep Icon"
+msgstr "Запази иконката"
+
+# 
+# ../src/dock.c:598 ../src/dock.c:2120 ../src/dock.c:2254
+#: ../src/dock.c:609 ../src/dock.c:2138 ../src/dock.c:2279
+msgid "Type the command used to launch the application"
+msgstr "Въведете командата за стартиране на приложението"
+
+# 
+# ../src/dock.c:949
+#: ../src/dock.c:965
+#, c-format
+msgid "could not launch application %s\n"
+msgstr "не може да се стартира приложението %s\n"
+
+# ../src/dock.c:1004
+#: ../src/dock.c:1020
+msgid "could not create workspace submenu for Clip menu"
+msgstr "не може да се направи подменю с работните места в менюто на Кламер"
+
+# ../src/dock.c:1066
+#: ../src/dock.c:1079
+msgid "could not create options submenu for Clip menu"
+msgstr "не може да се направи подменю за настройки в менюто на Кламер"
+
+# ../src/dock.c:1027 ../src/dock.c:1070 ../src/dock.c:1115 ../src/dock.c:3361
+#: ../src/dock.c:1083 ../src/dock.c:1131
+msgid "Keep on Top"
+msgstr "Винаги отгоре"
+
+# ../src/dock.c:1073
+#: ../src/dock.c:1089
+msgid "Collapsed"
+msgstr "Свит"
+
+# ../src/dock.c:1079
+#: ../src/dock.c:1095
+msgid "Autocollapse"
+msgstr "Да се свива автоматично"
+
+# ../src/dock.c:1085
+#: ../src/dock.c:1101
+msgid "Autoraise"
+msgstr "Да изплува автоматично"
+
+# ../src/dock.c:1091
+#: ../src/dock.c:1107
+msgid "Autoattract Icons"
+msgstr "Да привлича иконките"
+
+# ../src/dock.c:1118
+#: ../src/dock.c:1137
+msgid "Clip Options"
+msgstr "Предпочитания за Кламер"
+
+# ../src/dock.c:1128
+#: ../src/dock.c:1147
+msgid "Selected"
+msgstr "Маркирай я"
+
+# ../src/dock.c:1133 ../src/dock.c:1136 ../src/dock.c:3408
+#: ../src/dock.c:1152 ../src/dock.c:1155 ../src/dock.c:3437
+msgid "Select All Icons"
+msgstr "Маркирай всички иконки"
+
+# ../src/dock.c:1142 ../src/dock.c:1144 ../src/dock.c:3425
+#: ../src/dock.c:1161 ../src/dock.c:1163 ../src/dock.c:3454
+msgid "Move Icon To"
+msgstr "Премести иконката в"
+
+# ../src/dock.c:1149 ../src/dock.c:1152 ../src/dock.c:3436
+#: ../src/dock.c:1168 ../src/dock.c:1171 ../src/dock.c:3465
+msgid "Remove Icon"
+msgstr "Махни иконката"
+
+# ../src/dock.c:1154
+#: ../src/dock.c:1173
+msgid "Attract Icons"
+msgstr "Привлечи иконките"
+
+# ../src/dock.c:1157
+#: ../src/dock.c:1176
+msgid "Launch"
+msgstr "Стартирай"
+
+# ../src/dock.c:1165
+#: ../src/dock.c:1184
+msgid "Settings..."
+msgstr "Настройки..."
+
+# ../src/dock.c:1524 ../src/dock.c:1627
+#: ../src/dock.c:1549 ../src/dock.c:1656
+#, c-format
+msgid "bad value in docked icon state info %s"
+msgstr "неправилна стойност за състояние на скачена иконка %s"
+
+# ../src/dock.c:1635
+#: ../src/dock.c:1664
+#, c-format
+msgid "bad value in docked icon position %i,%i"
+msgstr "неправилно местоположение %i,%i на скачена иконка"
+
+# ../src/dock.c:1524 ../src/dock.c:1627
+#: ../src/dock.c:1684
+#, c-format
+msgid "bad value in dock state info:%s"
+msgstr "неправилна стойност за състояние на Дока: %s"
+
+# ../src/dock.c:1887
+#: ../src/dock.c:1920
+msgid "there are too many icons stored in dock. Ignoring what doesn't fit"
+msgstr "има твърде много иконки в Дока и някои не се побират в работното място"
+
+# ../src/dock.c:2119 ../src/dock.c:2253
+#. icon->forced_dock = 1;
+#: ../src/dock.c:2137 ../src/dock.c:2278
+msgid "Dock Icon"
+msgstr "Скачване на иконка"
+
+# ../src/dock.c:3284 ../src/dock.c:3288
+#: ../src/dock.c:3324
+#, c-format
+msgid "Could not execute command \"%s\""
+msgstr "Не може да се изпълни командата \"%s\""
+
+# ../src/dock.c:3387
+#: ../src/dock.c:3416
+msgid "Toggle Omnipresent"
+msgstr "Смени вездесъщността"
+
+# Изненада: "omnipresent" се използва както за иконка, така и за прозорец.
+# Затова не може нито "вездесъщен", нито "вездесъщна" и съм използвал
+# безличното "вездесъщност". (А.З.)
+# ../src/dock.c:3392 ../src/winmenu.c:421 ../src/winspector.c:1380
+#: ../src/dock.c:3421 ../src/kwm.c:637 ../src/winmenu.c:418
+#: ../src/winspector.c:1375
+msgid "Omnipresent"
+msgstr "Вездесъщност"
+
+# ../src/dock.c:3406
+#: ../src/dock.c:3435
+msgid "Unselect All Icons"
+msgstr "Размаркирай иконките"
+
+# ../src/dock.c:3415
+#: ../src/dock.c:3444
+msgid "Keep Icons"
+msgstr "Запази иконките"
+
+# ../src/dock.c:3423
+#: ../src/dock.c:3452
+msgid "Move Icons To"
+msgstr "Премести иконките в"
+
+# ../src/dock.c:3434
+#: ../src/dock.c:3463
+msgid "Remove Icons"
+msgstr "Отстрани иконките"
+
+# ../src/dock.c:3465
+#: ../src/dock.c:3494 ../src/kwm.c:643
+msgid "Bring Here"
+msgstr "Донеси тук"
+
+# ../src/dockedapp.c:131
+#: ../src/dockedapp.c:149
+#, c-format
+msgid "could not find icon %s, used in a docked application"
+msgstr "иконката %s, използвана от приложението, не може да бъде открита"
+
+# 
+# ../src/dockedapp.c:210
+#: ../src/dockedapp.c:229
+#, c-format
+msgid "Could not open specified icon file: %s"
+msgstr "Иконката \"%s\" не може да бъде заредена"
+
+# ../src/dockedapp.c:212
+#: ../src/dockedapp.c:231
+msgid "Ignore"
+msgstr "Пропусни"
+
+# ../src/dockedapp.c:305
+#: ../src/dockedapp.c:333
+msgid "Start when Window Maker is started"
+msgstr "Да се стартира автоматично в началото"
+
+# ../src/dockedapp.c:312
+#: ../src/dockedapp.c:340
+msgid "Lock (prevent accidental removal)"
+msgstr "Да се предпазва от неволно махане"
+
+# 
+# ../src/dockedapp.c:318
+#: ../src/dockedapp.c:344
+msgid "Application path and arguments"
+msgstr "Път към приложението и аргументи"
+
+#: ../src/dockedapp.c:357
+msgid "Command for middle-click launch"
+msgstr "Команда за пускане със среден бутон"
+
+# ../src/dockedapp.c:341
+#: ../src/dockedapp.c:371
+#, c-format
+msgid "%s will be replaced with current selection"
+msgstr "%s ще бъде заменено с текущия избор"
+
+# ../src/dockedapp.c:329
+#: ../src/dockedapp.c:376
+msgid "Command for files dropped with DND"
+msgstr "Команда за пуснати файлове"
+
+# ../src/dockedapp.c:341
+#: ../src/dockedapp.c:390
+#, c-format
+msgid "%d will be replaced with the file name"
+msgstr "%d ще се заменя с името на файла"
+
+# ../src/dockedapp.c:345
+#: ../src/dockedapp.c:394
+msgid "DND support was not compiled in"
+msgstr "поддръжката за DND не е компилирана"
+
+# ../src/dockedapp.c:351
+#: ../src/dockedapp.c:399
+msgid "Icon Image"
+msgstr "Иконка"
+
+# ../src/dockedapp.c:363 ../src/winspector.c:1518
+#: ../src/dockedapp.c:413 ../src/winspector.c:1513
+msgid "Browse..."
+msgstr "Избери..."
+
+# 
+# ../src/dockedapp.c:408
+#: ../src/dockedapp.c:466
+msgid "Docked Application Settings"
+msgstr "Настройки за скачено приложение"
+
+# ../src/framewin.c:655 ../src/framewin.c:750 ../src/menu.c:458
+# ../src/texture.c:549
+#: ../src/framewin.c:649 ../src/framewin.c:744 ../src/menu.c:456
+#: ../src/texture.c:594
+#, c-format
+msgid "could not render texture: %s"
+msgstr "текстурата %s не може да бъде изобразена"
+
+# ../src/framewin.c:678 ../src/framewin.c:689 ../src/framewin.c:705
+# ../src/framewin.c:716 ../src/framewin.c:723 ../src/framewin.c:730
+# ../src/icon.c:350 ../src/menu.c:487
+#: ../src/framewin.c:672 ../src/framewin.c:683 ../src/framewin.c:699
+#: ../src/framewin.c:710 ../src/framewin.c:717 ../src/framewin.c:724
+#: ../src/icon.c:350 ../src/menu.c:485
+#, c-format
+msgid "error rendering image:%s"
+msgstr "грешка при изобразяване на %s"
+
+# ../src/framewin.c:783
+#: ../src/framewin.c:777
+#, c-format
+msgid "error rendering image: %s"
+msgstr "грешка при изобразяване на %s"
+
+# ../src/session.c:1023
+#: ../src/gnome.c:216 ../src/gnome.c:343 ../src/gnome.c:401
+msgid "out of memory while updating GNOME hints"
+msgstr "изчерпана памет при актуализиране на GNOME hints"
+
+# ../src/icon.c:229 ../src/wdefaults.c:435
+#: ../src/icon.c:229 ../src/wdefaults.c:443
+#, c-format
+msgid "error loading image file \"%s\": %s"
+msgstr "грешка при зареждане на файла с картинка \"%s\": %s"
+
+# 
+# ../src/icon.c:488 ../src/icon.c:497
+#: ../src/icon.c:493 ../src/icon.c:502
+#, c-format
+msgid "could not create directory %s"
+msgstr "не може да се създаде директория %s"
+
+# ../src/icon.c:764
+#: ../src/icon.c:769
+#, c-format
+msgid "could not find default icon \"%s\""
+msgstr "не може да се зареди подразбиращата се иконка \"%s\""
+
+# ../src/icon.c:770
+#: ../src/icon.c:775
+#, c-format
+msgid "could not load default icon \"%s\":%s"
+msgstr "не може да се зареди подразбиращата се иконка (\"%s\"): %s"
+
+# ../src/winmenu.c:444 ../src/winmenu.c:579
+#.
+#. * Warning: If you make some change that affects the order of the
+#. * entries, you must update the command #defines in the top of
+#. * this file.
+#.
+#: ../src/kwm.c:633 ../src/winmenu.c:441 ../src/winmenu.c:583
+msgid "Maximize"
+msgstr "Максимизирай"
+
+# ../src/winmenu.c:574
+#: ../src/kwm.c:634 ../src/winmenu.c:578
+msgid "Unmaximize"
+msgstr "Намали"
+
+# ../src/winmenu.c:452 ../src/winmenu.c:565
+#: ../src/kwm.c:635 ../src/winmenu.c:449 ../src/winmenu.c:569
+msgid "Miniaturize"
+msgstr "Минимизирай"
+
+# ../src/winmenu.c:560
+#: ../src/kwm.c:636 ../src/winmenu.c:564
+msgid "Deminiaturize"
+msgstr "Уголеми"
+
+# Изненада: "omnipresent" се използва както за иконка, така и за прозорец.
+# Затова не може нито "вездесъщен", нито "вездесъщна" и съм използвал
+# безличното "вездесъщност". (А.З.)
+# ../src/dock.c:3392 ../src/winmenu.c:421 ../src/winspector.c:1380
+#: ../src/kwm.c:638
+msgid "Not Omnipresent"
+msgstr "Не вездесъщен"
+
+# ../src/winmenu.c:493
+#: ../src/kwm.c:639
+msgid "Move"
+msgstr "Преместване"
+
+# ../src/winmenu.c:477
+#: ../src/kwm.c:640
+msgid "Resize"
+msgstr "Преоразмеряване"
+
+# ../src/rootmenu.c:226 ../src/winmenu.c:509
+#.
+#. entry = wMenuAddCallback(menu, _("Select Shortcut"), NULL, NULL);
+#. wMenuEntrySetCascade(menu, entry, makeMakeShortcutMenu(scr));
+#.
+#: ../src/kwm.c:641 ../src/rootmenu.c:248 ../src/winmenu.c:513
+msgid "Close"
+msgstr "Затвори"
+
+# ../src/winmenu.c:493
+#: ../src/kwm.c:642 ../src/winmenu.c:497
+msgid "Move To"
+msgstr "Премести на..."
+
+#: ../src/kwm.c:1096
+msgid "%a(Run Command,Type the command to run:)"
+msgstr "%a(Изпълни команда,Въведете командата, която да се изпълни:)"
+
+# ../src/main.c:204
+#: ../src/main.c:222
+msgid "failed to restart Window Maker."
+msgstr "рестартирането на Уиндоу Мейкър бе неуспешно."
+
+# ../src/main.c:207
+#: ../src/main.c:225
+#, c-format
+msgid "could not exec %s"
+msgstr "не може да се изпълни %s"
+
+# ../src/main.c:252
+#: ../src/main.c:271
+msgid "Could not execute command: "
+msgstr "Не може да се изпълни командата "
+
+# ../src/main.c:409
+#: ../src/main.c:428
+#, c-format
+msgid "%s aborted.\n"
+msgstr "%s е прекъснато аварийно.\n"
+
+# ../src/main.c:420
+#: ../src/main.c:439
+#, c-format
+msgid "Usage: %s [options]\n"
+msgstr "Употреба: %s [опции]\n"
+
+# ../src/main.c:421
+#: ../src/main.c:440
+msgid "The Window Maker window manager for the X window system"
+msgstr "Уиндоу Мейкър -- администратор на прозорците за X Window"
+
+# ../src/main.c:423
+#: ../src/main.c:442
+msgid " -display host:dpy\tdisplay to use"
+msgstr " -display хост:дисплей\tдисплей да се използва"
+
+# "предпроцесорна"? - "предварителна" мисля е по-добре (Б.Й.)
+# ../src/main.c:425
+#: ../src/main.c:444
+msgid " --no-cpp \t\tdisable preprocessing of configuration files"
+msgstr " --no-cpp \t\tбез предварителна обработка на конфигурационните файлове"
+
+# ../src/main.c:427
+#: ../src/main.c:446
+msgid " --no-dock\t\tdo not open the application Dock"
+msgstr " --no-dock\t\tбез Дока за приложения"
+
+# ../src/main.c:428
+#: ../src/main.c:447
+msgid " --no-clip\t\tdo not open the workspace Clip"
+msgstr " --no-clip\t\tбез Кламера за работните места"
+
+# 
+# ../src/main.c:429
+#: ../src/main.c:448
+msgid " --no-autolaunch\tdo not autolaunch applications"
+msgstr " --no-autolaunch\tда не се изпълняват приложенията"
+
+#: ../src/main.c:449
+msgid " --dont-restore\t\tdo not restore saved session"
+msgstr " --dont-restore\tда не се възстановява запазената сесия"
+
+# "локала" - "локализация" (Б.Й.)
+#: ../src/main.c:451
+msgid " --locale locale\tlocale to use"
+msgstr " --locale локал \t\tда се използва локалът<"
+
+#: ../src/main.c:453
+msgid ""
+" --create-stdcmap\tcreate the standard colormap hint in PseudoColor visuals"
+msgstr " --create-stdcmap\tда се създаде стандартен colormap hint при PseudoColor"
+
+# ../src/main.c:434
+#: ../src/main.c:454
+msgid " --visual-id visualid\tvisual id of visual to use"
+msgstr ""
+" --visual-id visualid\tизползвай посочения цветови клас на изображението"
+
+# ../src/main.c:435
+#: ../src/main.c:455
+msgid " --static\t\tdo not update or save configurations"
+msgstr " --static\t\tне обновявай и не запазвай конфигурациите"
+
+#: ../src/main.c:456
+msgid " --no-polling\t\tdo not periodically check for configuration updates"
+msgstr ""
+" --no-polling\tда не се проверява перманентно за промени в конфигурацията."
+
+# ../src/main.c:437
+#: ../src/main.c:458
+msgid " --synchronous\t\tturn on synchronous display mode"
+msgstr " --synchronous\t\tвключи синхронен режим за извеждане"
+
+# ../src/main.c:439
+#: ../src/main.c:460
+msgid " --version\t\tprint version and exit"
+msgstr " --version\t\tотпечатва версията и изход"
+
+# ../src/main.c:440
+#: ../src/main.c:461
+msgid " --help\t\t\tshow this message"
+msgstr " --help\t\t\tпоказва това съобщение"
+
+# ../src/main.c:452
+#: ../src/main.c:474
+#, c-format
+msgid ""
+"could not find user GNUstep directory (%s).\n"
+"Make sure you have installed Window Maker correctly and run wmaker.inst"
+msgstr ""
+"не може да се открие потребителската директория GNUstep (%s).\n"
+"Уверете се, че Уиндоу Мейкър е инсталиран правилно и стартирайте wmaker.inst"
+
+# 
+# ../src/icon.c:488 ../src/icon.c:497
+#: ../src/main.c:479
+#, c-format
+msgid "could not find user GNUstep directory (%s)."
+msgstr "не може да се създаде потребителската директория GNUstep (%s)"
+
+# ../src/main.c:452
+#: ../src/main.c:482
+msgid ""
+"There was an error while creating GNUstep directory, please make sure you "
+"have installed Window Maker correctly and run wmaker.inst"
+msgstr ""
+"Получи се грешка при създаване на потребителската директория GNUstep (%s).\n"
+"Уверете се, че Уиндоу Мейкър е инсталиран правилно и стартирайте wmaker.inst"
+
+#: ../src/main.c:485
+#, c-format
+msgid "%s directory created with default configuration."
+msgstr "създадена директория %s със стандартните настройки."
+
+# [ start translation
+# Translated by: Boris Jordanov
+# ../src/main.c:473 ../src/main.c:478
+#: ../src/main.c:505 ../src/main.c:510
+#, c-format
+msgid "%s:could not execute initialization script"
+msgstr "%s: не може да бъде изпълнена инициализиращата процедура"
+
+# ../src/main.c:498 ../src/main.c:503
+#: ../src/main.c:528 ../src/main.c:533
+#, c-format
+msgid "%s:could not execute exit script"
+msgstr "%s: не може да бъде изпълнена процедурата за изход"
+
+# Translated by: Boris Jordanov
+# [ end translation
+# ../src/main.c:619 ../src/main.c:626 ../src/main.c:634 ../src/main.c:650
+#: ../src/main.c:661 ../src/main.c:669 ../src/main.c:677 ../src/main.c:697
+#, c-format
+msgid "too few arguments for %s"
+msgstr "твърде малко аргументи за %s"
+
+# ../src/main.c:638
+#: ../src/main.c:681
+#, c-format
+msgid "bad value for visualid: \"%s\""
+msgstr "неправилна стойност на visualid: \"%s\""
+
+# 
+# ../src/main.c:658
+#: ../src/main.c:705
+#, c-format
+msgid "%s: invalid argument '%s'\n"
+msgstr "%s: неправилен аргумент \"%s\"\n"
+
+# ../src/main.c:659
+#: ../src/main.c:706
+#, c-format
+msgid "Try '%s --help' for more information\n"
+msgstr "Пробвайте \"%s --help\" за повече информация\n"
+
+# Не съм убеден, но може би тук 'locale' значи не локализация, а конкретният използван локал (напр bg_BG). (А.З.)
+# ../src/main.c:690
+#: ../src/main.c:737
+msgid "X server does not support locale"
+msgstr "Локалът не се поддържа от X сървъра"
+
+# Пак не ми е ясно за какво точно става въпрос и за да не възникнат
+# недоразумения замених 'параметри на локализацията' с по-буквалното
+# 'модификатори на локала'. (А.З.)  
+# ../src/main.c:694
+#: ../src/main.c:741
+msgid "cannot set locale modifiers"
+msgstr "не може да се зададат модификатори на локала"
+
+# ../src/main.c:710
+#: ../src/main.c:757
+#, c-format
+msgid "could not open display \"%s\""
+msgstr "не е достъпен дисплея \"%s\""
+
+# 
+#: ../src/menu.c:1264
+msgid "could not grab keyboard"
+msgstr "не може да се монополизира клавиатурата"
+
+# ../src/dock.c:1524 ../src/dock.c:1627
+#: ../src/menu.c:2578
+#, c-format
+msgid "bad value in menus state info:%s"
+msgstr "неправилна стойност за състояние меню %s"
+
+# Translated by: Boris Jordanov
+# [ end translation
+#: ../src/misc.c:71
+#, c-format
+msgid "could not define value for %s for cpp"
+msgstr "не може да се дефинира стойност за %s за cpp"
+
+# Има ли смисъл UID да се замени с "номер", в смисъл "... за потребителя
+# с номер(UID) "? (Б.Й.)  
+# ../src/misc.c:101
+#: ../src/misc.c:101
+#, c-format
+msgid "could not get password entry for UID %i"
+msgstr "от /etc/passwd не може да се получи информация за потребителя с номер (UID) %i"
+
+# ../src/misc.c:126
+#: ../src/misc.c:158
+#, c-format
+msgid "your machine is misconfigured. HOSTNAME is set to %s"
+msgstr "системата Ви е конфигурирана неправилно. Като HOSTNAME е посочено %s"
+
+# ../src/misc.c:132
+#: ../src/misc.c:164
+#, c-format
+msgid "your machine is misconfigured. HOST is set to %s"
+msgstr "системата Ви е конфигурирана неправилно. Като HOST е посочено %s"
+
+# ../src/misc.c:769
+#: ../src/misc.c:656
+msgid "Program Arguments"
+msgstr "Аргументи на програмата"
+
+# ../src/misc.c:770
+#: ../src/misc.c:657
+msgid "Enter command arguments:"
+msgstr "Въведете аргументи за програмата:"
+
+# [ start translation
+# Translated by: Boris Jordanov
+# 
+# "пуснати" или "спуснати"? да преведем ли DND?  Или да бъде
+# "... пуснати със(след, чрез) завлачване (изтегляне)" или нещо от сорта
+# (Б.Й.)  
+# ../src/misc.c:863
+#: ../src/misc.c:750
+msgid "unable to get dropped data from DND drop"
+msgstr "невъзможност да се получат данните пуснати чрез DND"
+
+# ../src/misc.c:871
+#: ../src/misc.c:758
+msgid "error getting dropped data from DND drop"
+msgstr "грешка при получаване на данните спуснати чрез DND"
+
+# ../src/misc.c:877
+#: ../src/misc.c:764
+msgid "out of memory while getting data from DND drop"
+msgstr "изчерпване на паметта при опит за получаване на данни от DND операция"
+
+# ../src/misc.c:922 ../src/misc.c:1062
+#: ../src/misc.c:809 ../src/misc.c:949
+#, c-format
+msgid "out of memory during expansion of \"%s\""
+msgstr "изчерпване на паметта при разширяване на \"%s\""
+
+# ../src/misc.c:976
+#: ../src/misc.c:863
+msgid "out of memory during expansion of \"%w\""
+msgstr "изчерпване на паметта при разширяване на \"%w\""
+
+# ../src/misc.c:994
+#: ../src/misc.c:881
+msgid "out of memory during expansion of \"%W\""
+msgstr "изчерпване на паметта при разширяване на \"%W\""
+
+# ../src/misc.c:1010
+#: ../src/misc.c:897
+msgid "out of memory during expansion of \"%a\""
+msgstr "изчерпване на паметта при разширяване на \"%a\""
+
+# ../src/misc.c:1041
+#: ../src/misc.c:928
+#, c-format
+msgid "out of memory during expansion of \"%d\""
+msgstr "изчерпване на паметта при разширяване на \"%d\""
+
+# Translated by: Boris Jordanov
+# [ end translation
+# ../src/misc.c:1055
+#: ../src/misc.c:942
+msgid "selection not available"
+msgstr "нищо не е избрано (маркирано)"
+
+# ../src/misc.c:1127 ../src/misc.c:1133
+#: ../src/misc.c:998 ../src/misc.c:1004
+#, c-format
+msgid "bad window name value in %s state info"
+msgstr "неправилно име на прозорец в информациата за състоянието на Дока -- %s"
+
+# "...помощника за изобразяване на фона" ? (Б.Й.) (вместо "помощника за
+# изображение на фон")
+# ../src/misc.c:1401
+#: ../src/misc.c:1261
+msgid "could not send message to background image helper"
+msgstr "не може да се изпрати съобщение на помощника за изобразяване на фона"
+
+# ../src/pixmap.c:235
+#: ../src/pixmap.c:235
+#, c-format
+msgid "could not load mask bitmap file \"%s\". Won't use mask"
+msgstr ""
+"не може да се зареди растерна маска от файла \"%s\". Маска няма да се "
+"използва"
+
+# ../src/resources.c:44
+#: ../src/resources.c:44
+#, c-format
+msgid "could not parse color \"%s\""
+msgstr "не може да се направи разбор на цвят: \"%s\""
+
+# ../src/resources.c:48
+#: ../src/resources.c:48
+#, c-format
+msgid "could not allocate color \"%s\""
+msgstr "не може да се задели цвят \"%s\""
+
+# ../src/rootmenu.c:186 ../src/rootmenu.c:188
+#: ../src/rootmenu.c:196 ../src/rootmenu.c:198
+msgid "Exit"
+msgstr "Изход"
+
+# ../src/rootmenu.c:187
+#: ../src/rootmenu.c:197
+msgid "Exit window manager?"
+msgstr "Да се излезе ли от администратора на прозорци?"
+
+# ../src/rootmenu.c:223
+#: ../src/rootmenu.c:245
+msgid "Close X session"
+msgstr "Край на работата"
+
+# Вместо "да се затвори ли" много по-добре би било "да се прекрати ли", но за
+# съжаление това води до колизия поради двойната употреба на "Close" от
+# следващата статия - "close the session" и "close a window". (А.З.)
+# А "Да се приключи ли сесията с графичната среда?"? 
+# Изобщо "приключи" вместо "убие" там, където е възможно? (Б.Й.)
+# Не върви "приключи прозореца". (А.З.)
+# ../src/rootmenu.c:224
+#: ../src/rootmenu.c:246
+msgid ""
+"Close Window System session?\n"
+"Kill might close applications with unsaved data."
+msgstr ""
+"Да се затвори ли сесията с графичната среда?\n"
+"Незапазените данни от приложенията може да се загубят."
+
+# И тук не може "прекратяване", този път заради бутона "Kill", който също
+# се използва на много места и затова трябва да се преведе като "Убий". (А.З.)
+# ../src/rootmenu.c:237
+#: ../src/rootmenu.c:261
+msgid "Kill X session"
+msgstr "Убиване на сесията"
+
+# ../src/rootmenu.c:238
+#: ../src/rootmenu.c:262
+msgid ""
+"Kill Window System session?\n"
+"(all applications will be closed)"
+msgstr ""
+"Да се убие ли сесията с графичната среда?\n"
+"(Всички приложения ще бъдат затворени.)"
+
+# ../src/rootmenu.c:505
+#: ../src/rootmenu.c:539
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\" for entry %s"
+msgstr "%s: определена е невярна клавишна комбинация \"%s\" за запис %s"
+
+# ../src/rootmenu.c:513
+#: ../src/rootmenu.c:547
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\" for entry %s"
+msgstr "%s: сгрешен клавиш в клавишната комбинация \"%s\" за запис \"%s\""
+
+# ../src/rootmenu.c:566
+#: ../src/rootmenu.c:600
+#, c-format
+msgid "%s: unmatched '\"' in menu file"
+msgstr "%s: кавичка без нейна съответна във файла за меню"
+
+# ../src/rootmenu.c:616
+#: ../src/rootmenu.c:650
+#, c-format
+msgid "%s: missing command"
+msgstr "%s: липсваща команда"
+
+# ../src/rootmenu.c:648
+#: ../src/rootmenu.c:682
+#, c-format
+msgid "invalid OPEN_MENU specification: %s"
+msgstr "невярно определяне на OPEN_MENU: %s"
+
+# ../src/rootmenu.c:696
+#: ../src/rootmenu.c:733
+#, c-format
+msgid "%s:could not stat menu"
+msgstr "%s: не може да се получи меню"
+
+# ../src/rootmenu.c:704
+#: ../src/rootmenu.c:741
+#, c-format
+msgid "%s:could not stat menu:%s"
+msgstr "%s: не може да се получи меню: %s"
+
+# ../src/rootmenu.c:722
+#: ../src/rootmenu.c:759
+#, c-format
+msgid "too many parameters in OPEN_MENU: %s"
+msgstr "твърде много параметри в OPEN_MENU: %s"
+
+# ../src/rootmenu.c:758
+#: ../src/rootmenu.c:803
+msgid ""
+"There are more than one WORKSPACE_MENU commands in the applications menu. "
+"Only one is allowed."
+msgstr ""
+"В менюто има повече от една команда WORKSPACE_MENU. Допустима е само една."
+
+# ../src/rootmenu.c:758
+#: ../src/rootmenu.c:837
+msgid ""
+"There are more than one WINDOWS_MENU commands in the applications menu. Only "
+"one is allowed."
+msgstr "В менюто на приложенията има повече от една команда WORKSPACE_MENU. Допустима е само една."
+
+#: ../src/rootmenu.c:842
+msgid "Window List"
+msgstr "Списък на прозорците"
+
+# ../src/rootmenu.c:787 ../src/rootmenu.c:805 ../src/rootmenu.c:815
+#: ../src/rootmenu.c:871 ../src/rootmenu.c:889 ../src/rootmenu.c:899
+#, c-format
+msgid "%s:missing parameter for menu command \"%s\""
+msgstr "%s: липсващ параметър за командата за меню \"%s\""
+
+# ../src/rootmenu.c:879
+#: ../src/rootmenu.c:967
+#, c-format
+msgid "%s:unknown command \"%s\" in menu config."
+msgstr "%s: непозната команда \"%s\" в конфигурацията на менюто."
+
+# ../src/rootmenu.c:887
+#: ../src/rootmenu.c:975
+#, c-format
+msgid "%s:can't add shortcut for entry \"%s\""
+msgstr "%s: не може да се добави клавишна комбинация за командата \"%s\""
+
+# ../src/rootmenu.c:1024
+#: ../src/rootmenu.c:1112
+#, c-format
+msgid "%s:maximal line size exceeded in menu config: %s"
+msgstr "%s: конфигурацията на меню %s надхвърли максималната дължина на ред"
+
+# ../src/rootmenu.c:1046 ../src/rootmenu.c:1138 ../src/rootmenu.c:1239
+#: ../src/rootmenu.c:1134 ../src/rootmenu.c:1227 ../src/rootmenu.c:1330
+#, c-format
+msgid "%s:missing command in menu config: %s"
+msgstr "%s: липсваща команда в конфигурацията на меню: %s"
+
+# ../src/rootmenu.c:1076
+#: ../src/rootmenu.c:1164
+#, c-format
+msgid "%s:syntax error in menu file:END declaration missing"
+msgstr "%s: синтактична грешка при определяне на меню: липсва декларация END"
+
+# ../src/rootmenu.c:1105 ../src/rootmenu.c:1204
+#: ../src/rootmenu.c:1193 ../src/rootmenu.c:1294
+msgid "could not make arguments for menu file preprocessor"
+msgstr "не може да се положат аргументи за предпроцесора на файла меню"
+
+# ../src/rootmenu.c:1111 ../src/rootmenu.c:1211
+#: ../src/rootmenu.c:1200 ../src/rootmenu.c:1302
+#, c-format
+msgid "%s:could not open/preprocess menu file"
+msgstr "%s: не може да се отвори/обработи от предпроцесора файлът меню"
+
+# ../src/rootmenu.c:1123 ../src/rootmenu.c:1224
+#: ../src/rootmenu.c:1212 ../src/rootmenu.c:1315
+#, c-format
+msgid "could not open menu file \"%s\": %s"
+msgstr "не може да се отвори файлът меню \"%s\": %s"
+
+# ../src/rootmenu.c:1150
+#: ../src/rootmenu.c:1239
+#, c-format
+msgid "%s:invalid menu file. MENU command is missing"
+msgstr "%s: сгрешен файл меню: липсва командата MENU"
+
+# ../src/rootmenu.c:1159
+#: ../src/rootmenu.c:1248
+msgid "error reading preprocessed menu data"
+msgstr "грешка при четене на обработените данни за меню"
+
+# ../src/rootmenu.c:1251
+#: ../src/rootmenu.c:1342
+#, c-format
+msgid "%s:no title given for the root menu"
+msgstr "%s: не е дадено заглавие за главното меню"
+
+# [ start translation
+# Translated by: Boris Jordanov
+# ???????
+# ../src/rootmenu.c:1341 ../src/rootmenu.c:1416 ../src/rootmenu.c:1459
+#: ../src/rootmenu.c:1433 ../src/rootmenu.c:1506 ../src/rootmenu.c:1547
+#, c-format
+msgid "out of memory while constructing directory menu %s"
+msgstr "изчерпване на паметта при създаване на директорното меню %s"
+
+# ../src/rootmenu.c:1351
+#: ../src/rootmenu.c:1443
+#, c-format
+msgid "%s:could not stat file \"%s\" in menu directory"
+msgstr ""
+"%s:не може да получи параметрите на файла \"%s\" в директорията на менюто"
+
+# Translated by: Boris Jordanov - 10x Antoby
+# [ end translation
+# ../src/rootmenu.c:1513
+#: ../src/rootmenu.c:1601
+msgid "Commands"
+msgstr "Команди"
+
+# ../src/rootmenu.c:1516
+#: ../src/rootmenu.c:1604
+msgid "Restart"
+msgstr "Рестартиране"
+
+# ../src/rootmenu.c:1517
+#: ../src/rootmenu.c:1605
+msgid "Exit..."
+msgstr "Изход..."
+
+# [ Start Lyubo]
+# ../src/rootmenu.c:1562
+#: ../src/rootmenu.c:1650
+#, c-format
+msgid "could not find menu file \"%s\" referenced in WMRootMenu"
+msgstr "меню файлът \"%s\", посочен в WMRootMenu, не може да бъде открит"
+
+# ../src/rootmenu.c:1569
+#: ../src/rootmenu.c:1657
+#, c-format
+msgid "could not access menu \"%s\" referenced in WMRootMenu"
+msgstr ""
+"достъпът до меню \"%s\", посочено в WMRootMenu, не може да бъде осъществен"
+
+# ## variant [mislia po-dobur, no ne bukvalen]
+# "използвам меню файл по подразбиране \"%s\", тъй като указаният в WMRootMenu, не може "
+# "да бъде открит "
+# ../src/rootmenu.c:1580
+#: ../src/rootmenu.c:1668
+#, c-format
+msgid ""
+"using default menu file \"%s\" as the menu referenced in WMRootMenu could "
+"not be found "
+msgstr ""
+"по подразбиране се използва меню файл \"%s\", тъй като менюто, посочено в "
+"WMRootMenu, не може да бъде открито "
+
+#: ../src/rootmenu.c:1691 ../src/rootmenu.c:1767
+#, c-format
+msgid "%s:format error in root menu configuration \"%s\""
+msgstr "%s:синтактична грешка в конфигурацията на главното меню \"%s\""
+
+# tuk triabva po smisul
+# ^Това е от Любо
+# Замених "менюто с приложения" на "менюто на приложенията", защото на другите
+# места е преведено така. (А.З.)
+#: ../src/rootmenu.c:1855
+msgid ""
+"The applications menu could not be loaded. Look at the console output for a "
+"detailed description of the errors."
+msgstr ""
+"Менюто на приложенията не може да бъде заредено.  Подробна информация за "
+"грешките ще бъде изведена на конзолата"
+
+# :::>>>>> - 'context'? 
+# ^Това е от Любо
+# Щом не е ясно какво е "context", може и без него. (А.З.)
+# ../src/screen.c:745
+#: ../src/screen.c:747
+#, c-format
+msgid "could not initialize graphics library context: %s"
+msgstr "Неуспешна инициализация на контекста на графичната библиотека: %s"
+
+# Беше така поради неустановен превод на "widget set":
+# [набора | групата] от [приспособления | помощни програми | инструменти]
+# WINGs не може да бъде инициализиран
+# Значи ще минем и без "widget set". (А.З.):
+# ../src/screen.c:776
+#: ../src/screen.c:778
+msgid "could not do initialization of WINGs widget set"
+msgstr "неуспешна инициализация на библиотеката WINGs"
+
+# ../src/screen.c:1128
+#: ../src/screen.c:1144
+#, c-format
+msgid "could not save session state in %s"
+msgstr "състоянието на сесията не може да се запише в %s"
+
+# ../src/session.c:183 ../src/wdefaults.c:583 ../src/winspector.c:447
+#: ../src/session.c:183 ../src/wdefaults.c:589 ../src/winspector.c:454
+#, c-format
+msgid "can't convert \"%s\" to boolean"
+msgstr "не може да се преобразува \"%s\" в булева стойност"
+
+# ../src/session.c:1023
+#: ../src/session.c:1023
+msgid "out of memory while saving session state"
+msgstr "не достигна памет при записване състоянието на сесията"
+
+# :::>>>> - ne razbiram smisula na 'end of memory'
+# ../src/session.c:1114
+#: ../src/session.c:1106
+msgid "end of memory while saving session state"
+msgstr "изчерпване на паметта при записване състоянието на сеанса"
+
+# (Б.Й.)
+# ../src/session.c:1248
+#. This is not fatal but can mean the session manager exited.
+#. * If the session manager exited normally we would get a
+#. * Die message, so this probably means an abnormal exit.
+#. * If the sm was the last client of session, then we'll die
+#. * anyway, otherwise we can continue doing our stuff.
+#.
+#: ../src/session.c:1244
+msgid "connection to the session manager was lost"
+msgstr "връзката с администратора на сесията се загуби"
+
+# ../src/stacking.c:73
+#: ../src/stacking.c:79
+msgid "could not get window list!!"
+msgstr "списъкът с прозорците не може да бъде извлечен!!"
+
+# ../src/startup.c:197
+#: ../src/startup.c:202
+#, c-format
+msgid "internal X error: %s\n"
+msgstr "грешка в X сървъра: %s\n"
+
+# ../src/startup.c:262
+#: ../src/startup.c:260
+#, c-format
+msgid "got signal %i (%s) - restarting\n"
+msgstr "получен сигнал %i (%s) - рестартиране\n"
+
+# ../src/startup.c:264
+#: ../src/startup.c:262
+#, c-format
+msgid "got signal %i - restarting\n"
+msgstr "получен сигнал %i - рестартиране\n"
+
+# ../src/startup.c:262
+#: ../src/startup.c:272
+#, c-format
+msgid "got signal %i (%s) - rereading defaults\n"
+msgstr "получен сигнал %i (%s) - стойностите по подразбиране се препрочитат\n"
+
+#: ../src/startup.c:274
+#, c-format
+msgid "got signal %i - rereading defaults\n"
+msgstr "получен сигнал %i - стойностите по подразбиране се препрочитат.\n"
+
+# ../src/startup.c:278
+#: ../src/startup.c:284
+#, c-format
+msgid "got signal %i (%s) - exiting...\n"
+msgstr "получен сигнал %i (%s) - изход...\n"
+
+# ../src/startup.c:280
+#: ../src/startup.c:286
+#, c-format
+msgid "got signal %i - exiting...\n"
+msgstr "получен сигнал %i - изход...\n"
+
+# ../src/startup.c:293
+#: ../src/startup.c:329
+#, c-format
+msgid "got signal %i (%s)\n"
+msgstr "получен сигнал %i (%s)\n"
+
+# ../src/startup.c:295
+#: ../src/startup.c:331
+#, c-format
+msgid "got signal %i\n"
+msgstr "получен сигнал %i\n"
+
+# ../src/startup.c:306
+#: ../src/startup.c:342
+msgid ""
+"crashed while trying to do some post-crash cleanup. Aborting immediatelly."
+msgstr "срив при опит за след-аварийно почистване. Незабавно прекратяване."
+
+# ../src/startup.c:340
+#. we try to restart Window Maker
+#: ../src/startup.c:406
+msgid "trying to restart Window Maker..."
+msgstr "опит за рестартиране Уиндоу Мейкър..."
+
+# ../src/startup.c:345
+#: ../src/startup.c:411
+msgid "trying to start alternate window manager..."
+msgstr "опит за стартиране на друг администратор на прозорците..."
+
+# ../src/startup.c:350
+#: ../src/startup.c:417
+msgid "failed to start alternate window manager. Aborting."
+msgstr ""
+"неуспешен опит за стартиране на друг администратор на прозорците. Край на "
+"работата."
+
+# ../src/startup.c:352
+#: ../src/startup.c:419
+msgid ""
+"a fatal error has occured, probably due to a bug. Please fill the included "
+"BUGFORM and report it."
+msgstr "възникна критична грешка, вероятно дължаща се на програмен дефект. Моля попълнете формуляра от файла BUGFORM и ни уведомете "
+
+# ../src/startup.c:830
+#: ../src/startup.c:894
+#, c-format
+msgid "icon size is configured to %i, but it's too small. Using 16, instead\n"
+msgstr ""
+"размерът на иконката е конфигуриран за %i, но това е твърде малко. Вместо "
+"това ще използваме размер 16\n"
+
+# ../src/startup.c:858
+#: ../src/startup.c:922
+msgid "XKB is not supported. KbdModeLock is automatically disabled."
+msgstr ""
+"Тъй като X-сървърът не поддържа XKB, то KbdModeLock е забранен автоматично."
+
+# ../src/startup.c:877
+#: ../src/startup.c:941
+msgid "it seems that there is already a window manager running"
+msgstr "изглежда вече има стартиран администратор на прозорците"
+
+# [End Lyubo]
+# ../src/startup.c:883
+#: ../src/startup.c:947
+#, c-format
+msgid "could not manage screen %i"
+msgstr "не може да се управлява екран %i"
+
+# ../src/startup.c:944
+#: ../src/startup.c:1015
+msgid "could not manage any screen"
+msgstr "не може да се управлява който и да е екран"
+
+# ../src/switchmenu.c:114
+#: ../src/switchmenu.c:137
+msgid "Windows"
+msgstr "Прозорци"
+
+# ../src/texture.c:290 ../src/texture.c:334
+#: ../src/texture.c:329 ../src/texture.c:371
+#, c-format
+msgid "image file \"%s\" used as texture could not be found."
+msgstr "картинката \"%s\" използвана като текстура не може да бъде открита."
+
+# ../src/texture.c:296 ../src/texture.c:340
+#: ../src/texture.c:335 ../src/texture.c:377
+#, c-format
+msgid "could not load texture pixmap \"%s\":%s"
+msgstr "не може да се зареди картинката с текстура \"%s\": %s"
+
+# ../src/texture.c:400
+#: ../src/texture.c:437
+#, c-format
+msgid "library \"%s\" cound not be opened."
+msgstr "библиотеката \"%s\" не може да бъде отворена."
+
+# ../src/texture.c:409
+#: ../src/texture.c:446
+#, c-format
+msgid "function \"%s\" not found in library \"%s\""
+msgstr "функцията \"%s\" не присъства в библиотеката \"%s\""
+
+# ../src/texture.c:416
+#: ../src/texture.c:453
+msgid "function textures not supported on this system, sorry."
+msgstr "за съжаление текстурните функции не се поддържат от тази система."
+
+# ../src/dialog.c:280
+#: ../src/texture.c:598
+msgid "could not allocate image buffer"
+msgstr "Не може да се запази буфер за файл с картинка "
+
+# ../src/wdefaults.c:429
+#: ../src/wdefaults.c:437
+#, c-format
+msgid "could not find icon file \"%s\""
+msgstr "не може да се открие иконката \"%s\""
+
+# ../src/window.c:2715 ../src/window.c:2849
+#: ../src/window.c:2942 ../src/window.c:3081
+msgid ""
+"the NumLock, ScrollLock or similar key seems to be turned on.\n"
+"Turn it off or some mouse actions and keyboard shortcuts will not work."
+msgstr ""
+"изглежда, че NumLock, ScrollLock или подобен модификатор е включен.\n"
+"Изключете го; иначе някои действия с мишката няма да работят."
+
+# ../src/winmenu.c:126
+#: ../src/winmenu.c:126
+msgid ""
+"This will kill the application.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+"Това ще убие приложението.\n"
+"Всяка информация, която не е запазена, ще се загуби.\n"
+"Наистина ли желаете това?"
+
+# ../src/winmenu.c:275 ../src/winmenu.c:283
+#: ../src/winmenu.c:272 ../src/winmenu.c:281
+msgid "Set Shortcut"
+msgstr "Постави бърз клавиш"
+
+# ../src/winmenu.c:361 ../src/winmenu.c:407
+#: ../src/winmenu.c:359 ../src/winmenu.c:404
+msgid "could not create submenu for window menu"
+msgstr "не може да се създаде подменю за менюто на прозорците"
+
+# ../src/winmenu.c:411
+#: ../src/winmenu.c:408
+msgid "Keep on top"
+msgstr "Винаги най-отгоре"
+
+# ../src/winmenu.c:416
+#: ../src/winmenu.c:413
+msgid "Keep at bottom"
+msgstr "Винаги най-отдолу"
+
+# Hide означава всички прозорци да се скрият.  Shade значи да се остави видима
+# само заглавната лента на прозореца. И понеже на другите места "hide" е 
+# превеждано като "скрий", то тук промених "Скрий" на "Засенчи". (А.З.)
+# ../src/winmenu.c:461 ../src/winmenu.c:596
+#: ../src/winmenu.c:457 ../src/winmenu.c:600
+msgid "Shade"
+msgstr "Свий"
+
+# За по-кратко "другите" вместо "останалите". (А.З.)
+# ../src/winspector.c:1431
+#: ../src/winmenu.c:473
+msgid "Hide Others"
+msgstr "Скрий другите"
+
+# ../src/winmenu.c:477
+#: ../src/winmenu.c:481
+msgid "Resize/Move"
+msgstr "Oразмери/Премести"
+
+# ../src/winmenu.c:485
+#: ../src/winmenu.c:489
+msgid "Select"
+msgstr "Избери"
+
+# ../src/winmenu.c:498
+#: ../src/winmenu.c:502
+msgid "Attributes..."
+msgstr "Свойства..."
+
+# ../src/winmenu.c:500
+#: ../src/winmenu.c:504
+msgid "Options"
+msgstr "Предпочитания"
+
+# Може би обратното на "засенчи" е "огрей"? (А.З.)
+# ../src/winmenu.c:591
+#: ../src/winmenu.c:595
+msgid "Unshade"
+msgstr "Развий"
+
+# ../src/winspector.c:381
+#: ../src/winspector.c:387
+#, c-format
+msgid "Could not find icon \"%s\" specified for this window"
+msgstr "Иконката \"%s\", определена за прозорец, не може да бъде открита"
+
+# Доколкото мога да разбера от winspector.c, само първото %s съдържа името
+# на иконката. (А.З.)
+# ../src/winspector.c:397
+#: ../src/winspector.c:404
+#, c-format
+msgid "Could not open specified icon \"%s\":%s"
+msgstr "Иконката \"%s\" не може да бъде заредена: %s"
+
+#: ../src/winspector.c:1121
+#, c-format
+msgid "Inspecting  %s.%s"
+msgstr "Инспектира се %s.%s"
+
+#: ../src/winspector.c:1147
+msgid "Click in the window you wish to inspect."
+msgstr "Щракнете върху прозореца, който желаете да инспектирате."
+
+#: ../src/winspector.c:1186
+msgid ""
+"The configuration will apply to all\n"
+"windows that have their WM_CLASS\n"
+"property set to the above selected\n"
+"name, when saved."
+msgstr ""
+"Когато бъде запазена, тази настройка\n"
+"ще се отнася до всички прозорци,\n"
+"чието свойство WM_CLASS има\n"
+"посочената по-горе стойност."
+
+# ../src/winspector.c:1221
+#: ../src/winspector.c:1215
+msgid "Save"
+msgstr "Запиши"
+
+# ../src/winspector.c:1229
+#: ../src/winspector.c:1223
+msgid "Apply"
+msgstr "Приложи"
+
+# ../src/winspector.c:1235
+#: ../src/winspector.c:1229
+msgid "Reload"
+msgstr "Презареди"
+
+# Тук се определят не характеристики на прозореца, а се определя точно към
+# кои прозорци да се прилага тази настройка.  Затова измених "Характеристики
+# на прозореца" на "За кои прозорци?" -- като че ли е по-ясно от буквалния
+# превод "Oпределяне на прозорец". (А.З.)
+# ../src/winspector.c:1244 ../src/winspector.c:1254
+#: ../src/winspector.c:1238 ../src/winspector.c:1248
+msgid "Window Specification"
+msgstr "За кои прозорци"
+
+# ../src/winspector.c:1245
+#: ../src/winspector.c:1239
+msgid "Window Attributes"
+msgstr "Свойства на прозореца"
+
+# ../src/winspector.c:1246
+#: ../src/winspector.c:1240
+msgid "Advanced Options"
+msgstr "Варианти за напреднали потребители"
+
+# ../src/winspector.c:1247
+#: ../src/winspector.c:1241
+msgid "Icon and Initial Workspace"
+msgstr "Иконка и начално работно място"
+
+# Като че ли за потребителите ще бъде по-ясно ако вместо буквалното "Специфично
+# за приложението" използваме "Атрибути на приложението"? (А.З.)
+# ../src/winspector.c:1248
+#: ../src/winspector.c:1242
+msgid "Application Specific"
+msgstr "Свойства на приложението"
+
+# "Подразбиращо се за всички прозорци" е много дълго и не се побира.
+# Затова го съкратих. (А.З.)
+# ../src/winspector.c:1262
+#: ../src/winspector.c:1256
+msgid "Defaults for all windows"
+msgstr "За всички прозорци"
+
+# ../src/winspector.c:1316
+#: ../src/winspector.c:1310
+msgid "Select window"
+msgstr "Избор на прозорец"
+
+# ../src/winspector.c:1329
+#: ../src/winspector.c:1324
+msgid "Attributes"
+msgstr "Свойства"
+
+# Tук си позволявам отклонение: вместо "Забрани" -- "Без", защото по-нататък
+# "Забрани бутона за минимизиране" е много дълго и не се побира. (А.З.)
+# ../src/winspector.c:1340
+#: ../src/winspector.c:1335
+msgid "Disable titlebar"
+msgstr "Без заглавна ивица"
+
+# ../src/winspector.c:1342
+#: ../src/winspector.c:1337
+msgid ""
+"Remove the titlebar of this window.\n"
+"To access the window commands menu of a window\n"
+"without it's titlebar, press Control+Esc (or the\n"
+"equivalent shortcut, if you changed the default\n"
+"settings)."
+msgstr ""
+"Да се махне заглавната ивица на този прозорец.\n"
+"За да се достигне менюто с прозоречни команди за\n"
+"прозорец без заглавна ивица, натиснете Control+Esc\n"
+"(или еквивалентна клавишна комбинация, ако сте\n"
+"променили стандартната настройка)."
+
+# ../src/winspector.c:1349
+#: ../src/winspector.c:1344
+msgid "Disable resizebar"
+msgstr "Без ивицата за оразмеряване"
+
+# ../src/winspector.c:1351
+#: ../src/winspector.c:1346
+msgid "Remove the resizebar of this window."
+msgstr ""
+"Маха ивицата за оразмеряване\n"
+"на този прозорец."
+
+# ../src/winspector.c:1354
+#: ../src/winspector.c:1349
+msgid "Disable close button"
+msgstr "Без бутона за затваряне"
+
+# ../src/winspector.c:1356
+#: ../src/winspector.c:1351
+msgid "Remove the `close window' button of this window."
+msgstr ""
+"Маха бутона за затваряне\n"
+"от този прозорец."
+
+# ../src/winspector.c:1359
+#: ../src/winspector.c:1354
+msgid "Disable miniaturize button"
+msgstr "Без бутона за минимизиране"
+
+# ../src/winspector.c:1361
+#: ../src/winspector.c:1356
+msgid "Remove the `miniaturize window' button of the window."
+msgstr ""
+"Маха бутона за минимизиране\n"
+"от този прозорец."
+
+# Tук си позволявам отклонение: вместо "Забрани" -- "Без", защото по-нататък
+# "Забрани бутона за минимизиране" е много дълго и не се побира. (А.З.)
+# ../src/winspector.c:1364
+#: ../src/winspector.c:1359
+msgid "Disable border"
+msgstr "Без рамка"
+
+# ../src/winspector.c:1366
+#: ../src/winspector.c:1361
+msgid "Remove the 1 pixel black border around the window."
+msgstr ""
+"Маха черната рамка със ширина\n"
+"1 пиксел около този прозорец."
+
+# ../src/winspector.c:1369
+#: ../src/winspector.c:1364
+msgid "Keep on top (floating)"
+msgstr "Винаги отгоре (плаващ)"
+
+# ../src/winspector.c:1371
+#: ../src/winspector.c:1366
+msgid ""
+"Keep the window over other windows, not allowing\n"
+"them to cover it."
+msgstr ""
+"Държи прозореца над останалите прозорци,\n"
+"като не позволява те да го закрият."
+
+# ../src/winspector.c:1375
+#: ../src/winspector.c:1370
+msgid "Keep at bottom (sunken)"
+msgstr "Винаги отдолу (потопен)"
+
+# ../src/winspector.c:1377
+#: ../src/winspector.c:1372
+msgid "Keep the window under all other windows."
+msgstr ""
+"Държи прозореца под всички\n"
+"останали прозорци."
+
+# ../src/winspector.c:1382
+#: ../src/winspector.c:1377
+msgid "Make window present in all workspaces."
+msgstr ""
+"Прави прозореца да присъства\n"
+"на всички работни места."
+
+# ../src/winspector.c:1385
+#: ../src/winspector.c:1380
+msgid "Start miniaturized"
+msgstr "Да се стартира минимизиран"
+
+# ../src/winspector.c:1387
+#: ../src/winspector.c:1382
+msgid ""
+"Make the window be automatically miniaturized when it's\n"
+"first shown."
+msgstr ""
+"Минимизира прозореца при всяко\n"
+"негово първо появяване."
+
+# ../src/winspector.c:1391
+#: ../src/winspector.c:1386
+msgid "Start maximized"
+msgstr "Да се стартира максимизиран"
+
+# ../src/winspector.c:1393
+#: ../src/winspector.c:1388
+msgid ""
+"Make the window be automatically maximized when it's\n"
+"first shown."
+msgstr ""
+"Максимизира прозореца при всяко\n"
+"негово първо появяване."
+
+# ../src/winspector.c:1479
+#: ../src/winspector.c:1392
+msgid "Full screen maximization"
+msgstr "Максимизиране на цял екран"
+
+# ../src/winspector.c:1481
+#: ../src/winspector.c:1394
+msgid ""
+"Make the window use the whole screen space when it's\n"
+"maximized. The titlebar and resizebar will be moved\n"
+"to outside the screen."
+msgstr ""
+"Прави прозореца да използва цялото място на екрана при\n"
+"максимизация. Заглавната ивица и ивицата за оразмеряване\n"
+"ще бъдат изкарани извън екрана."
+
+# ../src/winspector.c:1414
+#: ../src/winspector.c:1411
+msgid "Advanced"
+msgstr "За напреднали"
+
+# ../src/winspector.c:1437
+#: ../src/winspector.c:1428
+msgid "Do not bind keyboard shortcuts"
+msgstr "Да не се прихващат бързи клавиши"
+
+# ../src/winspector.c:1439
+#: ../src/winspector.c:1430
+msgid ""
+"Do not bind keyboard shortcuts from Window Maker\n"
+"when this window is focused. This will allow the\n"
+"window to receive all key combinations regardless\n"
+"of your shortcut configuration."
+msgstr ""
+"Уиндоу Мейкър няма да прихваща специалните клавишни\n"
+"комбинации, когато този прозорец е на фокус. Това дава\n"
+"възможност на прозореца да получава всички клавишни\n"
+"комбинации, независимо как сте ги конфигурирали."
+
+# Няма място да се преведе и "clicks". (А.З.)
+# ../src/winspector.c:1445
+#: ../src/winspector.c:1436
+msgid "Do not bind mouse clicks"
+msgstr "Да не се прихваща мишката"
+
+# ../src/winspector.c:1447
+#: ../src/winspector.c:1438
+msgid ""
+"Do not bind mouse actions, such as `Alt'+drag\n"
+"in the window (when Alt is the modifier you have\n"
+"configured)."
+msgstr ""
+"Да не се прихващат действия с мишката\n"
+"(напр. Alt+влачене) в прозореца."
+
+# ../src/winspector.c:1399
+#: ../src/winspector.c:1443
+msgid "Do not show in the window list"
+msgstr "Извън списъка на прозорците"
+
+# ../src/winspector.c:1399
+#: ../src/winspector.c:1445
+msgid "Do not list the window in the window list menu."
+msgstr ""
+"Прозорецът няма да бъде включен\n"
+"в менюто на списъка с прозорците."
+
+# "Не му позволявай да вземе фокус" е много дълго. (А.З.)
+# ../src/winspector.c:1458
+#: ../src/winspector.c:1448
+msgid "Do not let it take focus"
+msgstr "Да не получава фокус"
+
+# ../src/winspector.c:1460
+#: ../src/winspector.c:1450
+msgid ""
+"Do not let the window take keyboard focus when you\n"
+"click on it."
+msgstr ""
+"Не позволява на прозореца да получи клавиатурния\n"
+"фокус, когато щтракнете върху него."
+
+# ../src/winspector.c:1452
+#: ../src/winspector.c:1454
+msgid "Keep inside screen"
+msgstr "Винаги в рамките на екрана"
+
+# ../src/winspector.c:1454
+#: ../src/winspector.c:1456
+msgid ""
+"Do not allow the window to move itself completely\n"
+"outside the screen. For bug compatibility.\n"
+msgstr ""
+"Не позволява на прозореца да бъде\n"
+"преместен изцяло извън екрана.\n"
+
+# За по-кратко "другите" вместо "останалите". (А.З.)
+# ../src/winspector.c:1431
+#: ../src/winspector.c:1460
+msgid "Ignore 'Hide Others'"
+msgstr "Да се игнорира \"Скрий другите\""
+
+# ../src/winspector.c:1433
+#: ../src/winspector.c:1462
+msgid ""
+"Do not hide the window when issuing the\n"
+"`HideOthers' command."
+msgstr ""
+"Не скрива прозореца при получаване на\n"
+"командата \"Скрий другите\"."
+
+# ../src/winspector.c:1464
+#: ../src/winspector.c:1466
+msgid "Ignore 'Save Session'"
+msgstr "Да не се записва в сесията"
+
+# ../src/winspector.c:1466
+#: ../src/winspector.c:1468
+msgid ""
+"Do not save the associated application in the\n"
+"session's state, so that it won't be restarted\n"
+"together with other applications when Window Maker\n"
+"starts."
+msgstr ""
+"Не запазва съответното приложение в състоянието\n"
+"на сесията, така че то няма да бъде рестартирано\n"
+"от администратора на сесията заедно с другите\n"
+"приложения при стартиране на Уиндоу Мейкър."
+
+# [ Start translation
+# Translated from English by (-:Stinger®:-)
+# Преведено от Английски от (-:Stinger®:-)
+# corrected 31.03.2000 21:16 local time by Slaff
+# updated ..........
+# 
+# Съкратих "на приложение", защото няма място (А.З.)
+# ../src/winspector.c:1472
+#: ../src/winspector.c:1474
+msgid "Emulate application icon"
+msgstr "Да се емулира иконка на приложението"
+
+# ../src/winspector.c:1474
+#: ../src/winspector.c:1476
+msgid ""
+"Make this window act as an application that provides\n"
+"enough information to Window Maker for a dockable\n"
+"application icon to be created."
+msgstr ""
+"Прави този прозорец да се държи като приложение, което\n"
+"дава достатъчно информация на Уиндоу Мейкър, че да може\n"
+"да се направи иконка на приложението, която може да\n"
+"се скачва на дока."
+
+# ../src/winspector.c:1487
+#: ../src/winspector.c:1482
+msgid "Disable language button"
+msgstr "Без бутон КИР/ЛАТ"
+
+# ../src/winspector.c:1489
+#: ../src/winspector.c:1484
+msgid "Remove the `toggle language' button of the window."
+msgstr "Маха бутона КИР/ЛАТ от прозореца."
+
+# ../src/winspector.c:1506
+#: ../src/winspector.c:1501
+msgid "Miniwindow Image"
+msgstr "Изглед на минипрозорчето"
+
+# ../src/winspector.c:1540
+#: ../src/winspector.c:1528
+msgid "Icon filename:"
+msgstr "Файл за иконката:"
+
+# ../src/winspector.c:1552
+#: ../src/winspector.c:1541
+msgid "Ignore client supplied icon"
+msgstr "Да се игнорира клиентската иконка"
+
+# ../src/winspector.c:1559
+#: ../src/winspector.c:1548
+msgid "Initial Workspace"
+msgstr "Начално работно място"
+
+# ../src/winspector.c:1561
+#: ../src/winspector.c:1550
+msgid "The workspace to place the window when it's first shown."
+msgstr ""
+"Работното място, където да се помести\n"
+"прозореца при първото му появяване."
+
+# никъде по-специално
+# ../src/winspector.c:1567
+#: ../src/winspector.c:1556
+msgid "Nowhere in particular"
+msgstr "Никъде по-специално"
+
+# ../src/winspector.c:1585
+#: ../src/winspector.c:1574
+msgid "Application Attributes"
+msgstr "Свойства на приложението"
+
+# ../src/winspector.c:1596
+#: ../src/winspector.c:1585
+msgid "Start hidden"
+msgstr "Да се стартира скрито"
+
+# ../src/winspector.c:1598
+#: ../src/winspector.c:1587
+msgid "Automatically hide application when it's started."
+msgstr "Автоматично скрива приложението при стартиране."
+
+# ../src/winspector.c:1601
+#: ../src/winspector.c:1590
+msgid "No application icon"
+msgstr "Без иконка на приложението"
+
+# ../src/winspector.c:1603
+#: ../src/winspector.c:1592
+msgid ""
+"Disable the application icon for the application.\n"
+"Note that you won't be able to dock it anymore,\n"
+"and any icons that are already docked will stop\n"
+"working correctly."
+msgstr ""
+"Забранява иконката на това приложение.\n"
+"Забележете, че повече няма да може да го скачвате\n"
+"на дока, а всички иконки на това приложение,\n"
+"които вече са скачени, ще престанат да работят\n"
+"правилно."
+
+# ../src/winspector.c:1601
+#: ../src/winspector.c:1598
+msgid "Shared application icon"
+msgstr "Споделена иконка на приложението"
+
+#: ../src/winspector.c:1600
+msgid ""
+"Use a single shared application icon for all of\n"
+"the instances of this application.\n"
+msgstr ""
+"Събира всички иконки на различни \n"
+"екземляри на това приложение в една.\n"
+
+# ../src/workspace.c:110 ../src/workspace.c:111 ../src/workspace.c:806
+#: ../src/workspace.c:107 ../src/workspace.c:108 ../src/workspace.c:894
+#, c-format
+msgid "Workspace %i"
+msgstr "Работно място %i"
+
+# ../src/workspace.c:863
+#: ../src/workspace.c:944
+msgid "Workspaces"
+msgstr "Работни места"
+
+# ../src/workspace.c:865
+#: ../src/workspace.c:946
+msgid "could not create Workspace menu"
+msgstr "не може да се направи меню на работните места"
+
+# ../src/workspace.c:872
+#: ../src/workspace.c:953
+msgid "New"
+msgstr "Ново"
+
+# ../src/workspace.c:873
+#: ../src/workspace.c:954
+msgid "Destroy Last"
+msgstr "Унищожи последното"
+
+#~ msgid "Sound"
+#~ msgstr "Звук"
+
+# ../src/dock.c:1029 ../src/dock.c:3363
+#~ msgid "Allow Lowering"
+#~ msgstr "Позволява понижаване"
+
+# ../src/proplist.c:180
+#~ msgid "unterminated string"
+#~ msgstr "незавършен низ"
+
+# ../src/proplist.c:247
+#~ msgid "unterminated array"
+#~ msgstr "незавършен масив"
+
+# ../src/proplist.c:256
+#~ msgid "missing , in array or unterminated array"
+#~ msgstr "липсва запетая в масив или незавършен масив"
+
+# ../src/proplist.c:267
+#~ msgid "could not get array element"
+#~ msgstr "не може да се получи елемент на масив"
+
+# ../src/proplist.c:297
+#~ msgid "unterminated dictionary"
+#~ msgstr "незавършен речник"
+
+# ../src/proplist.c:315
+#~ msgid "missing dictionary key"
+#~ msgstr "липсващ ключ на речник"
+
+# continue from here
+# ../src/proplist.c:317
+#~ msgid "missing dictionary entry key or unterminated dictionary"
+#~ msgstr "липсващ ключ на речников елемент или незавършен речник"
+
+# ../src/proplist.c:323
+#~ msgid "error parsing dictionary key"
+#~ msgstr "грешка при разбор на речников ключ"
+
+# ../src/proplist.c:332
+#~ msgid "missing = in dictionary entry"
+#~ msgstr "липсва знак \"=\" в речников елемент"
+
+# ../src/proplist.c:351
+#~ msgid "missing ; in dictionary entry"
+#~ msgstr "липсва знак \";\" в речников елемент"
+
+# ../src/proplist.c:432
+#~ msgid ""
+#~ "was expecting a string, dictionary, data or array. If it's a string, try "
+#~ "enclosing it with \"."
+#~ msgstr ""
+#~ "очакваше се низ, речник, данни или масив. Ако това е низ пробвайте да го "
+#~ "оградите с двойни кавички (\")."
+
+# ../src/proplist.c:466
+#~ msgid "extra data after end of file"
+#~ msgstr "излишни данни след края на файла"
+
+# ../src/screen.c:464
+#~ msgid "error making logo image for panel:%s"
+#~ msgstr "грешка при подготовка на логото за панела: %s"
+
+# ../src/winspector.c:1525
+#~ msgid "Update"
+#~ msgstr "Обнови"
+
+# ../src/xutil.c:228
+#~ msgid "invalid data in selection"
+#~ msgstr "неправилни данни в избора"
+
+#~ msgid "Keep Attracted Icons"
+#~ msgstr "Задържай привлечените иконки"
+
+# [ start translation
+# Translated by: Boris Jordanov
+#~ msgid "wrealloc() failed while trying to add menu item"
+#~ msgstr "неуспех при опит за добавяне на подточка в меню"

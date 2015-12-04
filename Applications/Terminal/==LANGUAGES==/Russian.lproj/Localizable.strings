@@ -1,0 +1,225 @@
+﻿
+/* Translated by Dmitriy Kostiuk <d.k@softhome.net>. */
+
+/***
+Russian.lproj/Localizable.strings
+updated by make_strings 2002-12-09 18:39:08 +0100
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: ServicesParameterWindowController.m:98 */
+/* File: ServicesPrefs.m:653 */
+"Command line:" = "Командная строка:";
+
+
+/*** Strings from PreferencesWindowController.m ***/
+/* File: PreferencesWindowController.m:78 */
+"Apply and save" = "Применить и сохранить";
+/* File: PreferencesWindowController.m:122 */
+"Preferences" = "Настройки";
+/* File: PreferencesWindowController.m:70 */
+"Revert" = "Восстановить";
+
+
+/*** Strings from Services.m ***/
+/* File: Services.m:152 */
+"Service aborted by user." = "Сервис отменен пользователем.";
+/* File: Services.m:60 */
+"There is no terminal service called '%@'.\nYour services list is probably out-of-date.\nRun 'make_services' to update it."
+= "Нет сервиса терминала с именем '%@'.\nВероятно, ваш список сервисов устарел.\nВыполните 'make_services' для его обновления.";
+
+
+/*** Strings from ServicesParameterWindowController.m ***/
+/* File: ServicesParameterWindowController.m:66 */
+"Cancel" = "Отмена";
+/* File: ServicesParameterWindowController.m:74 */
+"OK" = "OK";
+/* File: ServicesParameterWindowController.m:118 */
+"Parameter for service %@" = "Параметр для сервиса %@";
+
+
+/*** Strings from ServicesPrefs.m ***/
+/* File: ServicesPrefs.m:585 */
+"Accept types" = "Принимать";
+/* File: ServicesPrefs.m:499 */
+"Add" = "Добавить";
+/* File: ServicesPrefs.m:348 */
+"Error importing services" = "Ошибка импорта сервисов";
+/* File: ServicesPrefs.m:401 */
+"Export services" = "Экспорт сервисов";
+/* File: ServicesPrefs.m:523 */
+"Export..." = "Экспорт...";
+/* File: ServicesPrefs.m:594 */
+"Filenames" = "Имена файлов";
+/* File: ServicesPrefs.m:549 */
+"Ignore output" = "Игнорировать вывод";
+/* File: ServicesPrefs.m:254 */
+"Import services" = "Импорт сервисов";
+/* File: ServicesPrefs.m:515 */
+"Import..." = "Импорт...";
+/* File: ServicesPrefs.m:559 */
+"Input in stdin" = "Ввод из stdin";
+/* File: ServicesPrefs.m:560 */
+"Input on command line" = "Ввод из командной строки";
+/* File: ServicesPrefs.m:640 */
+"Key:" = "Клавиша:";
+/* File: ServicesPrefs.m:627 */
+"Name:" = "Имя:";
+/* File: ServicesPrefs.m:558 */
+"No input" = "Без ввода";
+/* File: ServicesPrefs.m:602 */
+"Plain text" = "Plain text";
+/* File: ServicesPrefs.m:507 */
+"Remove" = "Удалить";
+/* File: ServicesPrefs.m:550 */
+"Return output" = "Возвращать вывод";
+/* File: ServicesPrefs.m:568 */
+"Run in background" = "Запускать в фоне";
+/* File: ServicesPrefs.m:570 */
+"Run in idle window" = "Запускать в свободном окне";
+/* File: ServicesPrefs.m:569 */
+"Run in new window" = "Запускать в новом окне";
+/* File: ServicesPrefs.m:468 */
+"Terminal services" = "Сервисы терминала";
+/* File: ServicesPrefs.m:473 */
+"Terminal\nservices" = "Сервисы\nтерминала";
+/* File: ServicesPrefs.m:349 */
+"The file '%@' doesn't contain valid terminal services."
+= "Файл '%@' не содержит допустимых сервисов терминала.";
+/* File: ServicesPrefs.m:235 */
+"Unnamed service" = "Безымянный сервис";
+
+
+/*** Strings from TerminalParser_LinuxPrefs.m ***/
+/* File: TerminalParser_LinuxPrefs.m:103 */
+"'linux' terminal parser" = "Терминальный парсер 'linux'";
+/* File: TerminalParser_LinuxPrefs.m:108 */
+"'linux'\nparser" = "Парсер\n'linux'";
+/* File: TerminalParser_LinuxPrefs.m:151 */
+"Character set:" = "Набор символов:";
+/* File: TerminalParser_LinuxPrefs.m:43 */
+"Chinese" = "Chinese";
+/* File: TerminalParser_LinuxPrefs.m:44 */
+"Custom, leave unchanged" = "Пользовательский, оставить без изменений";
+/* File: TerminalParser_LinuxPrefs.m:42 */
+"East Europe, latin2" = "Восточная Европа, latin2";
+/* File: TerminalParser_LinuxPrefs.m:40 */
+"UTF-8" = "UTF-8";
+/* File: TerminalParser_LinuxPrefs.m:41 */
+"West Europe, latin1" = "Западная Европа, latin1";
+
+
+/*** Strings from TerminalView.m ***/
+/* File: TerminalView.m:1623 */
+"Unable to fork: %m." = "Не удается выполнить форк: %m.";
+/* File: TerminalView.m:1611 */
+"Unable to open pipe for input: %m." = "Не удается открыть пайп для ввода: %m.";
+/* File: TerminalView.m:1476 */
+"[Process exited]" = "[Процесс завершился]";
+
+
+/*** Strings from TerminalViewPrefs.m ***/
+/* File: TerminalViewPrefs.m:330 */
+"Bold font:" = "Жирный шрифт:";
+/* File: TerminalViewPrefs.m:298 */
+"Color:" = "Цвет:";
+/* File: TerminalViewPrefs.m:277 */
+"Cursor" = "Курсор";
+/* File: TerminalViewPrefs.m:230 */
+/* File: TerminalViewPrefs.m:225 */
+"Display" = "Дисплей";
+/* File: TerminalViewPrefs.m:291 */
+"Filled block" = "Заполненный блок";
+/* File: TerminalViewPrefs.m:319 */
+"Handle wide (multi-cell) glyphs" = "Оперировать широкими (в несколько позиций) символами";
+/* File: TerminalViewPrefs.m:292 */
+"Inverted block" = "Инвертированный блок";
+/* File: TerminalViewPrefs.m:607 */
+/* File: TerminalViewPrefs.m:602 */
+"Keyboard" = "Клавиатура";
+/* File: TerminalViewPrefs.m:289 */
+"Line" = "Строка";
+/* File: TerminalViewPrefs.m:357 */
+"Normal font:" = "Нормальный шрифт:";
+/* File: TerminalViewPrefs.m:369 */
+/* File: TerminalViewPrefs.m:342 */
+"Pick font..." = "Выбрать шрифт...";
+/* File: TerminalViewPrefs.m:255 */
+"Scroll-back length in lines:" = "Длина прокрутки в строках:";
+/* File: TerminalViewPrefs.m:651 */
+"Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta."
+= "Посылать двойной escape для клавиши escape.\n\nЭто означает, что клавиша escape будет\nраспознаваться быстрее многими программами,\nно ее будет нельзя использовать вместо meta.";
+/* File: TerminalViewPrefs.m:492 */
+/* File: TerminalViewPrefs.m:487 */
+"Shell" = "Оболочка";
+/* File: TerminalViewPrefs.m:527 */
+"Shell:" = "Оболочка:";
+/* File: TerminalViewPrefs.m:515 */
+"Start as login-shell" = "Запускать как оболочку входа";
+/* File: TerminalViewPrefs.m:290 */
+"Stroked block" = "Заштрихованный блок";
+/* File: TerminalViewPrefs.m:282 */
+"Style:" = "Стиль:";
+/* File: TerminalViewPrefs.m:634 */
+"Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
+= "Обрабатывать command как meta.\n\nЕсли разрешить эту опцию, не будет\nдоступа к пунктам меню\nс клавиатуры.";
+
+
+/*** Strings from TerminalWindow.m ***/
+/* File: TerminalWindow.m:192 */
+/* File: TerminalWindow.m:188 */
+" (idle)" = " (свободно)";
+
+
+/*** Strings from TerminalWindowPrefs.m ***/
+/* File: TerminalWindowPrefs.m:192 */
+"Add top and bottom border" = "Добавить верхнюю и нижнюю границы";
+/* File: TerminalWindowPrefs.m:143 */
+"Close new windows when idle" = "Закрывать новые окна при простое";
+/* File: TerminalWindowPrefs.m:156 */
+"Default size" = "Размер по умолчанию";
+/* File: TerminalWindowPrefs.m:144 */
+"Don't close new windows" = "Не закрывать новые окна";
+/* File: TerminalWindowPrefs.m:169 */
+"Height:" = "Высота:";
+/* File: TerminalWindowPrefs.m:112 */
+"Terminal Window" = "Окно терминала";
+/* File: TerminalWindowPrefs.m:117 */
+"Terminal\nWindow" = "Окно\nтерминала";
+/* File: TerminalWindowPrefs.m:160 */
+"Width:" = "Ширина:";
+
+
+/*** Strings from main.m ***/
+/* File: main.m:157 */
+"Benchmark" = "Производительность";
+/* File: main.m:191 */
+"Close" = "Закрыть";
+/* File: main.m:180 */
+"Copy" = "Копировать";
+/* File: main.m:177 */
+"Cut" = "Вырезать";
+/* File: main.m:186 */
+"Edit" = "Редактировать";
+/* File: main.m:203 */
+"Hide" = "Спрятать";
+/* File: main.m:159 */
+"Info" = "Информация";
+/* File: main.m:153 */
+"Info..." = "Информация...";
+/* File: main.m:171 */
+"New terminal" = "Новый терминал";
+/* File: main.m:183 */
+"Paste" = "Вставить";
+/* File: main.m:155 */
+"Preferences..." = "Настройки...";
+/* File: main.m:207 */
+"Quit" = "Выход";
+/* File: main.m:199 */
+"Services" = "Сервисы";
+/* File: main.m:194 */
+"Windows" = "Окна";
+

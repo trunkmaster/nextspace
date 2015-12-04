@@ -1,0 +1,35 @@
+{\rtf1\ansi\ansicpg10000\cocoartf102{\fonttbl\f2\fnil Arial;\f1\fswiss Helvetica;\f0\froman Times;}
+{\colortbl;\red255\green0\blue255;\red0\green255\blue0;\red255\green127\blue0;\red170\green170\blue170;\red0\green0\blue0;\red127\green127\blue127;}
+\paperw11440\paperh11940\hyphauto1\hyphfactor0\cf1\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\ql\f0\fs48\b\ul \uc0 Wor\cf0\cf2 \uc0 ksp\cf0\cf3 \uc0 ace\ulnone\cf0\fs36\cf4 \uc0 \par
+\fs32 \uc0 \par
+\cf0\f1\fs28\i\cf5 \uc0 Media Manager\cf0 \uc0 \par
+\i0\b0 \uc0 \tab \fs24 \uc0 - manage volumes listed in fstab;\par
+\tab - place icons into shelf for foreing filesystem types (think about it)\par
+\cf0\cf4 \uc0 \tab - shelf contents should b updated on disk insert/eject. (FIXED);\par
+\par
+\cf0\fs28\i\b\cf5 \uc0 FileViewer\par
+\fs24\i0\b0 \uc0 \tab - incorrectly handles dirs with cyrillic and spaces ("\cf0\f2 \uc0 \u1052 \u1086 \u1081  \u1090 \u1077 \u1089 \u1090 \u1086 \u1074 \u1099 \u1081  \u1082 \u1072 \u1090 \u1072 \u1083 \u1086 \u1075 \cf0\f1\cf5 \uc0 ");\par
+\tab - if disk mount point is selected and disk is unmounted or mounted: \par
+\tab   1. path view icons remains unchanged\par
+\tab   2. directory listing is not updated\par
+\cf0 \uc0 \tab - update directories contents along the visible paths in Browser [kqueue(2)];\cf0\cf5 \uc0 \par
+\tab - check file viewer, folder viewer for operations on PathView, Shelf , Browser and\par
+\tab   its interactions:\par
+\tab   1. Synchronize viewer and path view placing\cf0\fs28\i\cf4 \uc0 \par
+\cf0\fs24\i0 \uc0 \tab - long file names should be displayed in viewer in the form: "ThisIsVeryLongFol...";\par
+\tab - implement double clicking in browser when file is not selected before (select file after \par
+\tab   double clicking processed);\cf0\cf4 \uc0 \par
+\tab + \cf0\cf5 \uc0 when \rquote .dir\rquote  exists opened in non-root viewer root icon in shelf should be clickable;\par
+\tab + when dir dropped into the shelf, files cannot be copied by dragging file into shelf dir \par
+\pard\ql\pard\tx0\tx560\tx1080\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\ql \uc0 \tab   icon (non-root viewer);\cf0 \uc0 \par
+\cf0\pard\ql\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\ql\cf6 \uc0 \tab \cf0\cf4 \uc0 - diskInfo is not updated in some cases (FIXED);\cf0 \uc0 \par
+\tab \cf0\cf4 \uc0 - fix non-root FileViewer positioning on open (FIXED);\par
+\tab - remember and restore non-root FileViewer shelf contents, window frame (FIXED);\cf0 \uc0 \par
+\par
+\cf0\fs28\i\b\cf5 \uc0 Inspectors\par
+\fs24\i0\b0 \uc0 \tab - adopt temporarerly moved out inspector sections;\cf0 \uc0 \par
+\tab - implement per dir sorting setting;\par
+\par
+\fs28\i\b \uc0 Prefernces\par
+\fs24\i0\b0 \uc0 \tab - match OPENSTEP Workspace perferences;\par
+}

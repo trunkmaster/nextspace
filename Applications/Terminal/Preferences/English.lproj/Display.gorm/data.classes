@@ -1,0 +1,31 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    DisplayPrefs = {
+	Actions = (
+	    "setDefault:",
+	    "setBufferEnabled:",
+	    "setWindow:",
+	    "showDefault:",
+	    "setBufferLength:"
+	);
+	Outlets = (
+	    bufferEnabledBtn,
+	    bufferLengthMatrix,
+	    bufferLengthField,
+	    window,
+	    view,
+	    scrollBottomBtn
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setBufferLength:",
+	    "setBufferEnabled:",
+	    "setDefault:",
+	    "setWindow:",
+	    "showDefault:"
+	);
+	Super = NSObject;
+    };
+}

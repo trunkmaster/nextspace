@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=WindowMaker
+Comment=A fast, feature rich Window Manager
+Exec=wmaker
+Type=Application
+NoDisplay=true

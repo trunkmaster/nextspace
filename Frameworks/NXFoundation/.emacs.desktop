@@ -1,0 +1,118 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Fri Nov 20 19:03:30 2015
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq default-directory "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/")
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/Developer/StepMaker/code/Frameworks/NXFoundation/GNUmakefile" "~/Developer/StepMaker/code/Frameworks/NXFoundation/*.[hm]" "~/Developer/StepMaker/code/Frameworks/NXFoundation/GNUmakefile" "~/Developer/StepMaker/code/Frameworks/NXFoundation/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Preferences.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/StepMaker/code/Applications/Workspace/Processes/Processes.m" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/StepMaker/code/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/StepMaker/code/Applications/Workspace/WM-PATCHES/" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/dock.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/screen.c" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/wmspec.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.vault\\" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/startup.c" "~/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/event.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/main.h" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/main.c"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/NXBundle.m"
+  "NXBundle.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1331
+  '(213 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/NXBundle.h"
+  "NXBundle.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4852
+  '(4213 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/NXFileManager.h"
+  "NXFileManager.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/NXDefaults.m"
+  "NXDefaults.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/NXDefaults.h"
+  "NXDefaults.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(146 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  386
+  '(1 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/CopyOf_NXBundle.m"
+  "CopyOf_NXBundle.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  58
+  '(3918 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/CopyOf_NXBundle.h"
+  "CopyOf_NXBundle.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  395
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Frameworks/NXFoundation/NXFileManager.m"
+  "NXFileManager.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+

@@ -1,0 +1,55 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "changeGroup:",
+	    "computeSize:",
+	    "okAction:",
+	    "revert:",
+	    "setSortBy:",
+	    "textDidChange:",
+	    "touch:"
+	);
+	Super = NSObject;
+    };
+    FolderInspector = {
+	Actions = (
+	    "revert:",
+	    "ok:",
+	    "setSortBy:"
+	);
+	Outlets = (
+	    view,
+	    okButton,
+	    revertButton,
+	    foldersFirstBtn,
+	    sortByMatrix
+	);
+	Super = WMInspector;
+    };
+    PermissionsView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    WMInspector = {
+	Actions = (
+	    "ok:",
+	    "revert:",
+	    "textDidChange:",
+	    "touch:"
+	);
+	Outlets = (
+	    window,
+	    okButton,
+	    revertButton,
+	    dirNameField,
+	    dirTitleField,
+	    fileNameField,
+	    fileIconButton
+	);
+	Super = NSObject;
+    };
+}

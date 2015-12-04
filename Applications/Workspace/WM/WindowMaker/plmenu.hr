@@ -1,0 +1,217 @@
+(
+  Programi,
+  (
+    Info,
+    ("Info Panel...", INFO_PANEL),
+    (Legal..., LEGAL_PANEL),
+    ("Sistemska konzola", EXEC, xconsole),
+    ("Optere\346enje sistema", SHEXEC, "xosview || xload"),
+    ("Lista procesa", EXEC, "xterm -e top"),
+    ("Pretra\276iva\350 manuala", EXEC, xman)
+  ),
+  (Pokreni..., EXEC, "%a(Pokreni,Upi\271ite naredbu za pokrenuti:)"),
+  (NXTerm, EXEC, "nxterm -sb"),
+  (Rxvt, EXEC, rxvt),
+  (WMTerm, EXEC, "rxvt -wm"),
+  ("Radni prostori", WORKSPACE_MENU),
+  (
+    Programi,
+    (
+      Grafika,
+      (Gimp, SHEXEC, "gimp >/dev/null"),
+      (XV, EXEC, xv),
+      (XPaint, EXEC, xpaint),
+      (XFig, EXEC, xfig)
+    ),
+    (FSViewer, EXEC, fsviewer),
+    ("Offix files", EXEC, files),
+    (LyX, EXEC, lyx),
+    (Netscape, EXEC, netscape),
+    (Ghostview, EXEC, "ghostview %a(Enter file to view)"),
+    (
+      Acrobat,
+      EXEC,
+      "/usr/local/Acrobat3/bin/acroread %a(Enter PDF to view)"
+    ),
+    (TkDesk, EXEC, tkdesk)
+  ),
+  (
+    Editori,
+    (XFte, EXEC, xfte),
+    (XEmacs, SHEXEC, "xemacs || emacs"),
+    (XJed, EXEC, xjed),
+    (NEdit, EXEC, nedit),
+    (Xedit, EXEC, xedit),
+    (VI, EXEC, "xterm -e vi")
+  ),
+  (
+    Razno,
+    (Xmcd, SHEXEC, "xmcd 2> /dev/null"),
+    (Xplaycd, EXEC, xplaycd),
+    (Xmixer, EXEC, xmixer)
+  ),
+  (
+    "Pomo\346ni programi",
+    (Kalkulator, EXEC, xcalc),
+    (
+      "Info o prozoru",
+      SHEXEC,
+      "xprop | xmessage -center -title 'xprop' -file -"
+    ),
+    ("Bira\350 fontova", EXEC, xfontsel),
+    ("Emulator terminala", EXEC, xminicom),
+    ("Pove\346alo", EXEC, xmag),
+    (Colormap, EXEC, xcmap),
+    (XKill, EXEC, xkill),
+    (WMClock, EXEC, "wmclock -24"),
+    (Clipboard, EXEC, xclipboard)
+  ),
+  (
+    Odabir,
+    (Kopiraj, SHEXEC, "echo '%s' | wxcopy"),
+    ("Po\271alji e-mail", EXEC, "xterm -name mail -T Pine -e pine %s"),
+    ("Otvori web", EXEC, "netscape %s"),
+    ("Potra\276i u manualu", EXEC, "MANUAL_SEARCH(%s)")
+  ),
+  (
+    "Radni prostor",
+    ("Sakrij ostale", HIDE_OTHERS),
+    ("Poka\276i sve", SHOW_ALL),
+    ("Pospremi ikone", ARRANGE_ICONS),
+    ("Osvje\276i", REFRESH),
+    ("Zaklju\350aj", EXEC, "xlock -allowroot -usefirst"),
+    ("Snimi session", SAVE_SESSION),
+    ("O\350isti snimljeni session", CLEAR_SESSION)
+  ),
+  (
+    Izgled,
+    (
+      Teme,
+      OPEN_MENU,
+      "-noext /usr/local/share/WindowMaker/Themes $HOME/GNUstep/Library/WindowMaker/Themes WITH setstyle"
+    ),
+    (
+      Stilovi,
+      OPEN_MENU,
+      "-noext /usr/local/share/WindowMaker/Styles $HOME/GNUstep/Library/WindowMaker/Styles WITH setstyle"
+    ),
+    (
+      "Setovi ikona",
+      OPEN_MENU,
+      "-noext /usr/local/share/WindowMaker/IconSets $HOME/GNUstep/Library/WindowMaker/IconSets WITH seticons"
+    ),
+    (
+      Pozadina,
+      (
+        Boja,
+        (
+          Crna,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, black)'"
+        ),
+        (
+          Plava,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#505075\")'"
+        ),
+        (
+          Indigo,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#243e6c\")'"
+        ),
+        (
+          "Duboko Blue",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#224477\")'"
+        ),
+        (
+          "Ljubi\350asta",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#554466\")'"
+        ),
+        (
+          Krem,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, wheat4)'"
+        ),
+        (
+          "Tamno siva",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#333340\")'"
+        ),
+        (
+          "Vinsko crvena",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(solid, \"#400020\")'"
+        )
+      ),
+      (
+        Preljevi,
+        (
+          "Zalazak sunca",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(mvgradient, deepskyblue4, black, deepskyblue4, tomato4)'"
+        ),
+        (
+          Nebo,
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, blue4, white)'"
+        ),
+        (
+          "Plave nijanse",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#7080a5\", \"#101020\")'"
+        ),
+        (
+          "Indigo nijanse",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#746ebc\", \"#242e4c\")'"
+        ),
+        (
+          "Ljubi\350aste nijanse",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#654c66\", \"#151426\")'"
+        ),
+        (
+          "Krem nijanse",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#a09060\", \"#302010\")'"
+        ),
+        (
+          "Sive nijanse",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#636380\", \"#131318\")'"
+        ),
+        (
+          "Vinsko crvene nijanse",
+          EXEC,
+          "wdwrite WindowMaker WorkspaceBack '(vgradient, \"#600040\", \"#180010\")'"
+        )
+      ),
+      (
+        Slike,
+        OPEN_MENU,
+        "-noext /usr/local/share/WindowMaker/Backgrounds $HOME/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -t"
+      )
+    ),
+    (
+      "Snimi temu",
+      SHEXEC,
+      "getstyle -t $HOME/GNUstep/Library/WindowMaker/Themes/\"%a(Theme name)\""
+    ),
+    (
+      "Snimi set ikona",
+      SHEXEC,
+      "geticonset $HOME/GNUstep/Library/WindowMaker/IconSets/\"%a(IconSet name)\""
+    )
+  ),
+  (
+    Izlaz,
+    ("Ponovo startaj", RESTART),
+    ("Pokreni BlackBox", RESTART, blackbox),
+    ("Pokreni kwm", RESTART, kwm),
+    ("Pokreni IceWM", RESTART, icewm),
+    (Izlaz..., EXIT),
+    ("Ubij session...", SHUTDOWN)
+  )
+)

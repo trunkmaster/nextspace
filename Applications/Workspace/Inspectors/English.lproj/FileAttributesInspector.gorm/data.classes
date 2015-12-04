@@ -1,0 +1,66 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FileAttributesInspector = {
+	Actions = (
+	    "changeGroup:",
+	    "computeSize:",
+	    "revert:",
+	    "ok:",
+	    "changeOwner:"
+	);
+	Outlets = (
+	    computeSizeBtn,
+	    dateView,
+	    fileGroupBtn,
+	    fileOwnerBtn,
+	    fileSizeField,
+	    linkToField,
+	    window,
+	    permissionsView,
+	    view,
+	    fileInfoField
+	);
+	Super = Inspector;
+    };
+    FirstResponder = {
+	Actions = (
+	    "changeGroup:",
+	    "computeSize:",
+	    "changeOwner:",
+	    "okAction:",
+	    "revert:"
+	);
+	Super = NSObject;
+    };
+    Inspector = {
+	Actions = (
+	);
+	Outlets = (
+	    revertButton,
+	    okButton,
+	    window
+	);
+	Super = NSObject;
+    };
+    NXClockView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    PopUpListCell = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSPopUpButtonCell;
+    };
+    WMPermissions = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+}

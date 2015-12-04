@@ -1,0 +1,27 @@
+Description: XTerm and WMPrefs debian configuration. Based on Marcelo E. Magallon <mmagallo@debian.org> diff patch.
+Author: Rodolfo García Peñas (kix) <kix@kix.es>
+Last-Update: 2012-01-09
+Index: WindowMaker-0.95.6/WindowMaker/Defaults/WMState.in
+===================================================================
+--- WindowMaker-0.95.6.orig/WindowMaker/Defaults/WMState.in
++++ WindowMaker-0.95.6/WindowMaker/Defaults/WMState.in
+@@ -2,7 +2,7 @@
+   Dock = {
+     Applications = (
+       {
+-        Command = "#wprefs#";
++        Command = "/usr/bin/WPrefs";
+         Name = Logo.WMDock;
+         AutoLaunch = No;
+         Forced = No;
+@@ -10,8 +10,8 @@
+         Lock = Yes;
+       },
+       {
+-	Command = xterm;
+-	Name = xterm.XTerm;
++	Command = "x-terminal-emulator";
++	Name = "x-terminal-emulator.XTerm";
+ 	AutoLaunch = No;
+ 	Forced = No;
+ 	Position = "0,1";

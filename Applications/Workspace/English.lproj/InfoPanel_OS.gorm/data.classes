@@ -1,0 +1,18 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Controller = {
+	Actions = (
+	);
+	Outlets = (
+	    memory,
+	    cpuType,
+	    infoPanel,
+	    osType,
+	    wsVersion,
+	    hostName,
+	    baseVersion,
+	    guiVersion
+	);
+	Super = NSObject;
+    };
+}

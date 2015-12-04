@@ -1,0 +1,223 @@
+/***
+English.lproj/Localizable.strings
+updated by make_strings 2002-12-09 18:39:08 +0100
+add comments above this one
+
+Translated by Per Christian Gaustad, svele@netcom.no
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: ServicesParameterWindowController.m:98 */
+/* File: ServicesPrefs.m:653 */
+"Command line:" = "Kommandolinje:";
+
+
+/*** Strings from PreferencesWindowController.m ***/
+/* File: PreferencesWindowController.m:78 */
+"Apply and save" = "Bruk og lagre";
+/* File: PreferencesWindowController.m:122 */
+"Preferences" = "Egenskaper";
+/* File: PreferencesWindowController.m:70 */
+"Revert" = "Tilbake";
+
+
+/*** Strings from Services.m ***/
+/* File: Services.m:152 */
+"Service aborted by user." = "Tjeneste avbrutt av bruker.";
+/* File: Services.m:60 */
+"There is no terminal service called '%@'.\nYour services list is probably out-of-date.\nRun 'make_services' to update it."
+= "Det er ingen terminaltjeneste kalt '%@'.\nTjenestelisten din er trolig foreldret.\nKj\U00f8r 'make_services' for \U00e5 oppdatere den.";
+
+
+/*** Strings from ServicesParameterWindowController.m ***/
+/* File: ServicesParameterWindowController.m:66 */
+"Cancel" = "Avbryt";
+/* File: ServicesParameterWindowController.m:74 */
+"OK" = "OK";
+/* File: ServicesParameterWindowController.m:118 */
+"Parameter for service %@" = "Parameter for tjeneste %@";
+
+
+/*** Strings from ServicesPrefs.m ***/
+/* File: ServicesPrefs.m:585 */
+"Accept types" = "Godta typer";
+/* File: ServicesPrefs.m:499 */
+"Add" = "Legg til";
+/* File: ServicesPrefs.m:348 */
+"Error importing services" = "Veil under import av tjenester";
+/* File: ServicesPrefs.m:401 */
+"Export services" = "Eksporter tjenester";
+/* File: ServicesPrefs.m:523 */
+"Export..." = "Eksporter...";
+/* File: ServicesPrefs.m:594 */
+"Filenames" = "Filnavn";
+/* File: ServicesPrefs.m:549 */
+"Ignore output" = "Ignorer resultat";
+/* File: ServicesPrefs.m:254 */
+"Import services" = "Importer tjenester";
+/* File: ServicesPrefs.m:515 */
+"Import..." = "Importer...";
+/* File: ServicesPrefs.m:559 */
+"Input in stdin" = "Input i stdin";
+/* File: ServicesPrefs.m:560 */
+"Input on command line" = "Input p\U00e5 kommandolinje";
+/* File: ServicesPrefs.m:640 */
+"Key:" = "N\U00f8kkel:";
+/* File: ServicesPrefs.m:627 */
+"Name:" = "Navn:";
+/* File: ServicesPrefs.m:558 */
+"No input" = "Ingen input";
+/* File: ServicesPrefs.m:602 */
+"Plain text" = "Ren tekst";
+/* File: ServicesPrefs.m:507 */
+"Remove" = "Fjern";
+/* File: ServicesPrefs.m:550 */
+"Return output" = "Returner utdata";
+/* File: ServicesPrefs.m:568 */
+"Run in background" = "Kj\U00f8r i bakgrunnen";
+/* File: ServicesPrefs.m:570 */
+"Run in idle window" = "Kj\U00f8r i Run in ledig vindu";
+/* File: ServicesPrefs.m:569 */
+"Run in new window" = "Kj\U00f8r i nytt vindu";
+/* File: ServicesPrefs.m:468 */
+"Terminal services" = "Terminaltjenester";
+/* File: ServicesPrefs.m:473 */
+"Terminal\nservices" = "Terminal\ntjenester";
+/* File: ServicesPrefs.m:349 */
+"The file '%@' doesn't contain valid terminal services."
+= "Filen '%@' inneholder ikke gyldige terminaltjenester.";
+/* File: ServicesPrefs.m:235 */
+"Unnamed service" = "Tjeneste uten navn";
+
+
+/*** Strings from TerminalParser_LinuxPrefs.m ***/
+/* File: TerminalParser_LinuxPrefs.m:103 */
+"'linux' terminal parser" = "'linux' terminalparser";
+/* File: TerminalParser_LinuxPrefs.m:108 */
+"'linux'\nparser" = "'linux'\nparser";
+/* File: TerminalParser_LinuxPrefs.m:151 */
+"Character set:" = "Tegnsett:";
+/* File: TerminalParser_LinuxPrefs.m:43 */
+"Chinese" = "Kinesisk";
+/* File: TerminalParser_LinuxPrefs.m:44 */
+"Custom, leave unchanged" = "Egendefinert, ikke endre";
+/* File: TerminalParser_LinuxPrefs.m:42 */
+"East Europe, latin2" = "\U00d8st-Europa, latin2";
+/* File: TerminalParser_LinuxPrefs.m:40 */
+"UTF-8" = "UTF-8";
+/* File: TerminalParser_LinuxPrefs.m:41 */
+"West Europe, latin1" = "Vest-Europa, latin1";
+
+
+/*** Strings from TerminalView.m ***/
+/* File: TerminalView.m:1623 */
+"Unable to fork: %m." = "Kunne ikke ``forke'': %m.";
+/* File: TerminalView.m:1611 */
+"Unable to open pipe for input: %m." = "Kunn ikke \U00e5pne ``pipe'' for input: %m.";
+/* File: TerminalView.m:1476 */
+"[Process exited]" = "[Prosess avsluttet]";
+
+
+/*** Strings from TerminalViewPrefs.m ***/
+/* File: TerminalViewPrefs.m:330 */
+"Bold font:" = "Fet skrifttype:";
+/* File: TerminalViewPrefs.m:298 */
+"Color:" = "Farge:";
+/* File: TerminalViewPrefs.m:277 */
+"Cursor" = "Mark\U00f8r";
+/* File: TerminalViewPrefs.m:230 */
+/* File: TerminalViewPrefs.m:225 */
+"Display" = "Vis";
+/* File: TerminalViewPrefs.m:291 */
+"Filled block" = "Fylt blokk";
+/* File: TerminalViewPrefs.m:319 */
+"Handle wide (multi-cell) glyphs" = "H\U00e5ndtere brede (multi-celle) ``glyphs''";
+/* File: TerminalViewPrefs.m:292 */
+"Inverted block" = "speilvendt blokk";
+/* File: TerminalViewPrefs.m:607 */
+/* File: TerminalViewPrefs.m:602 */
+"Keyboard" = "Tastatur";
+/* File: TerminalViewPrefs.m:289 */
+"Line" = "Linje";
+/* File: TerminalViewPrefs.m:357 */
+"Normal font:" = "Normal skrifttype:";
+/* File: TerminalViewPrefs.m:369 */
+/* File: TerminalViewPrefs.m:342 */
+"Pick font..." = "Velg skrifttype...";
+/* File: TerminalViewPrefs.m:255 */
+"Scroll-back length in lines:" = "Skriftrulle-tilbeke lengde i linjer:";
+/* File: TerminalViewPrefs.m:651 */
+"Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta."
+= "Send dobbelt escape for escape-tasten.\n\nDette betyr at escape-tasten vil bli \ngjenkjent raskere av mange program, men\ndu kan ikke bruke den som en erstatning for meta.";
+/* File: TerminalViewPrefs.m:492 */
+/* File: TerminalViewPrefs.m:487 */
+"Shell" = "Skall";
+/* File: TerminalViewPrefs.m:527 */
+"Shell:" = "Skall:";
+/* File: TerminalViewPrefs.m:515 */
+"Start as login-shell" = "Start som innlogginsskall";
+/* File: TerminalViewPrefs.m:290 */
+"Stroked block" = "Slag-blokk";
+/* File: TerminalViewPrefs.m:282 */
+"Style:" = "Stil:";
+/* File: TerminalViewPrefs.m:634 */
+"Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
+= "Behandle kommandoknappen som meta.\n\nMerk at med dette p\U00e5sl\U00e5tt, vil ikke du ha noen \nmulighet til \U00e5 f\U00e5 adgang til menyene med \ntastaturet.";
+
+
+/*** Strings from TerminalWindow.m ***/
+/* File: TerminalWindow.m:192 */
+/* File: TerminalWindow.m:188 */
+" (idle)" = " (ledig)";
+
+
+/*** Strings from TerminalWindowPrefs.m ***/
+/* File: TerminalWindowPrefs.m:192 */
+"Add top and bottom border" = "Legg til topp- og bunngrense";
+/* File: TerminalWindowPrefs.m:143 */
+"Close new windows when idle" = "Lukk nye vindu n\U00e5r ledig";
+/* File: TerminalWindowPrefs.m:156 */
+"Default size" = "Standard st\U00f8rrelse";
+/* File: TerminalWindowPrefs.m:144 */
+"Don't close new windows" = "Ikke lukk nye vindu";
+/* File: TerminalWindowPrefs.m:169 */
+"Height:" = "H\U00f8yde:";
+/* File: TerminalWindowPrefs.m:112 */
+"Terminal Window" = "Terminalvindu";
+/* File: TerminalWindowPrefs.m:117 */
+"Terminal\nWindow" = "Terminal\nvindow";
+/* File: TerminalWindowPrefs.m:160 */
+"Width:" = "Bredde:";
+
+
+/*** Strings from main.m ***/
+/* File: main.m:157 */
+"Benchmark" = "Sjekk prestasjon";
+/* File: main.m:191 */
+"Close" = "Lukk";
+/* File: main.m:180 */
+"Copy" = "Kopier";
+/* File: main.m:177 */
+"Cut" = "Klipp ut";
+/* File: main.m:186 */
+"Edit" = "Rediger";
+/* File: main.m:203 */
+"Hide" = "Skjul";
+/* File: main.m:159 */
+"Info" = "Informasjon";
+/* File: main.m:153 */
+"Info..." = "Informasjon...";
+/* File: main.m:171 */
+"New terminal" = "Ny terminal";
+/* File: main.m:183 */
+"Paste" = "Lim inn";
+/* File: main.m:155 */
+"Preferences..." = "Egenskaper...";
+/* File: main.m:207 */
+"Quit" = "Avslutt";
+/* File: main.m:199 */
+"Services" = "Tjenester";
+/* File: main.m:194 */
+"Windows" = "Vinduer";

@@ -1,0 +1,19 @@
+[Unit]
+Description=CUBE Login Panel
+After=gpbs.service
+Requires=gdomap.service gdnc.service gpbs.service
+
+[Service]
+#Environment=LD_LIBRARY_PATH=/Library/Libraries
+StandardOutput=syslog
+StandardError=syslog
+SyslogLevel=info
+#SyslogFacility=local0
+ExecStart=/usr/NextSpace/bin/openapp Login
+ExecStop=/bin/kill -INT $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,42 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH wxcopy 1 "September 1998"
+.SH NAME
+wxcopy \- kopíruje ¹tandardný vstup do cutbuffera
+.SH SYNOPSIS
+.B wxcopy
+[voµby]
+[súbor]
+.SH DESCRIPTION
+.B wxcopy
+kopíruje ¹tandardný vstup alebo
+.I súbor
+do cutbuffera. Ak nie je daný cutbuffer, dáta sa kopírujú do cutbuffera 0
+a ostané cutbuffery rotujú, ak existujú. Ak je daný cutbuffer, dáta sa
+kopírujú do toho cutbuffera a nevykoná sa ¾iadne rotovanie.
+.SH VO¥BY
+.TP
+.B \-cutbuffer èíslo
+©pecifikuje èíslo cutbuffera, do ktorého sa budú kopírova» dáta.
+.TP
+.B \-display displej
+Dáta sa budú kopírova» do cutbufferov daného displeja/obrazovky.
+.TP
+.B \-nolimit
+Vypne normálny limit veµkosti dát 64kb, èím sa umo¾ní zväè¹ovanie buffera
+podµa potreby.
+.TP
+.B \-clearselection
+Vyprázdni vlastníka PRIMARY selekcie. V praxi to znamená, ¾e keï sa pokúsite
+vlo¾i» dáta stredným tlaèítkom (napríklad), vlo¾ia sa dáta z cutbuffera 0,
+namiesto prípadnej existujúcej selelekcie my¹i.
+.PP
+.SH POZRI TIE®
+.BR wxpaste (1),
+.BR wmaker (1)
+.SH AUTOR
+Autorom Window Makera je Alfredo K. Kojima <kojima@windowmaker.info>.
+.PP
+Túto manuálovú stránku napísal Marcelo Magallon <mmagallo@debian.org>.
+
+Kompatibilitu s binárnymi dátami a \-nolimit implementoval Luke Kendall
+<luke@research.canon.com.au>.

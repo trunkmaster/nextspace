@@ -1,0 +1,224 @@
+/*
+Turkish translation by Ahmet Soyata <un4gotten@linux-sevenler.org>
+*/
+
+/***
+Turkish.lproj/Localizable.strings
+updated by make_strings 2002-12-09 18:39:08 +0100
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: ServicesParameterWindowController.m:98 */
+/* File: ServicesPrefs.m:653 */
+"Command line:" = "Komut satırı:";
+
+
+/*** Strings from PreferencesWindowController.m ***/
+/* File: PreferencesWindowController.m:78 */
+"Apply and save" = "Uygula ve kaydet";
+/* File: PreferencesWindowController.m:122 */
+"Preferences" = "Seçenekler";
+/* File: PreferencesWindowController.m:70 */
+"Revert" = "Eski duruma dön";
+
+
+/*** Strings from Services.m ***/
+/* File: Services.m:152 */
+"Service aborted by user." = "Hizmet kullanıcı tarafından iptal edildi";
+/* File: Services.m:60 */
+"There is no terminal service called '%@'.\nYour services list is probably out-of-date.\nRun 'make_services' to update it."
+= " '%@' adında bir hizmet yok.\nBelki hizmetleriniz güncellenmemiştir.\n 'make_services' komutu ile günceleyiniz.";
+
+
+/*** Strings from ServicesParameterWindowController.m ***/
+/* File: ServicesParameterWindowController.m:66 */
+"Cancel" = "İptal";
+/* File: ServicesParameterWindowController.m:74 */
+"OK" = "Tamam";
+/* File: ServicesParameterWindowController.m:118 */
+"Parameter for service %@" = " %@ servisi için parametre";
+
+
+/*** Strings from ServicesPrefs.m ***/
+/* File: ServicesPrefs.m:585 */
+"Accept types" = "Kabul türleri";
+/* File: ServicesPrefs.m:499 */
+"Add" = "Ekle";
+/* File: ServicesPrefs.m:348 */
+"Error importing services" = "Servisleri yüklerken hata oluştu";
+/* File: ServicesPrefs.m:401 */
+"Export services" = "Hizmet ithal et";
+/* File: ServicesPrefs.m:523 */
+"Export..." = "...  ithal et";
+/* File: ServicesPrefs.m:594 */
+"Filenames" = "Dosya isimleri";
+/* File: ServicesPrefs.m:549 */
+"Ignore output" = "Çıktıyı görmezden gel";
+/* File: ServicesPrefs.m:254 */
+"Import services" = "Hizmetler ihraç et";
+/* File: ServicesPrefs.m:515 */
+"Import..." = "... ihraç et";
+/* File: ServicesPrefs.m:559 */
+"Input in stdin" = "stdin'deki girdi";
+/* File: ServicesPrefs.m:560 */
+"Input on command line" = "Komut satırındaki girdi";
+/* File: ServicesPrefs.m:640 */
+"Key:" = "Anahtar:";
+/* File: ServicesPrefs.m:627 */
+"Name:" = "İsim:";
+/* File: ServicesPrefs.m:558 */
+"No input" = "Girdi yok";
+/* File: ServicesPrefs.m:602 */
+"Plain text" = "Sade yazı";
+/* File: ServicesPrefs.m:507 */
+"Remove" = "Kaldır";
+/* File: ServicesPrefs.m:550 */
+"Return output" = "Çıktıyı geri döndür";
+/* File: ServicesPrefs.m:568 */
+"Run in background" = "Arkaplanda çalış";
+/* File: ServicesPrefs.m:570 */
+"Run in idle window" = "Etkin pencerede çalış";
+/* File: ServicesPrefs.m:569 */
+"Run in new window" = "Yeni pencerede çalış";
+/* File: ServicesPrefs.m:468 */
+"Terminal services" = "Termianl hizmetleri";
+/* File: ServicesPrefs.m:473 */
+"Terminal\nservices" = "Terminal\nhizmetleri";
+/* File: ServicesPrefs.m:349 */
+"The file '%@' doesn't contain valid terminal services."
+= " '%@' dosyası  geçerli terminal hizmetleri içermiyor.";
+/* File: ServicesPrefs.m:235 */
+"Unnamed service" = "İsimsiz hizmet";
+
+
+/*** Strings from TerminalParser_LinuxPrefs.m ***/
+/* File: TerminalParser_LinuxPrefs.m:103 */
+"'linux' terminal parser" = "'linux' terminal ayrıştırma";
+/* File: TerminalParser_LinuxPrefs.m:108 */
+"'linux'\nparser" = "'linux'\nayrıştırma";
+/* File: TerminalParser_LinuxPrefs.m:151 */
+"Character set:" = "Karakter kümesi:";
+/* File: TerminalParser_LinuxPrefs.m:43 */
+"Chinese" = "Çince";
+/* File: TerminalParser_LinuxPrefs.m:44 */
+"Custom, leave unchanged" = "Değiştirilmeden çık";
+/* File: TerminalParser_LinuxPrefs.m:42 */
+"East Europe, latin2" = "Doğu Avrupa, latin2";
+/* File: TerminalParser_LinuxPrefs.m:40 */
+"UTF-8" = "UTF-8";
+/* File: TerminalParser_LinuxPrefs.m:41 */
+"West Europe, latin1" = "Batı Avrupa, latin1";
+
+
+/*** Strings from TerminalView.m ***/
+/* File: TerminalView.m:1623 */
+"Unable to fork: %m." = ": %m. çatallanamıyor";
+/* File: TerminalView.m:1611 */
+"Unable to open pipe for input: %m." = "Girdi  %m. için boru açılamıyor";
+/* File: TerminalView.m:1476 */
+"[Process exited]" = "[Süreçten çıkıldı]";
+
+
+/*** Strings from TerminalViewPrefs.m ***/
+/* File: TerminalViewPrefs.m:330 */
+"Bold font:" = "kalın yazıtipi:";
+/* File: TerminalViewPrefs.m:298 */
+"Color:" = "Renk:";
+/* File: TerminalViewPrefs.m:277 */
+"Cursor" = "İmleç";
+/* File: TerminalViewPrefs.m:230 */
+/* File: TerminalViewPrefs.m:225 */
+"Display" = "Görüntü";
+/* File: TerminalViewPrefs.m:291 */
+"Filled block" = "Dolu blok";
+/* File: TerminalViewPrefs.m:319 */
+"Handle wide (multi-cell) glyphs" = "Geniş çok-hücreli glyph'ler tut";
+/* File: TerminalViewPrefs.m:292 */
+"Inverted block" = "Inverted block";
+/* File: TerminalViewPrefs.m:607 */
+/* File: TerminalViewPrefs.m:602 */
+"Keyboard" = "Klavye";
+/* File: TerminalViewPrefs.m:289 */
+"Line" = "Satır";
+/* File: TerminalViewPrefs.m:357 */
+"Normal font:" = "Normal yazıtipi:";
+/* File: TerminalViewPrefs.m:369 */
+/* File: TerminalViewPrefs.m:342 */
+"Pick font..." = "... yazıtipini al";
+/* File: TerminalViewPrefs.m:255 */
+"Scroll-back length in lines:" = "Satırlarda uzunluğu scroll-back et:";
+/* File: TerminalViewPrefs.m:651 */
+"Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta." = "Escape tuşu için çift Esc girin.\n\nBöylece esc tuşunu programlar\n daha hızlı tanıyabilir, ama\nbunum meta için yedek olarak kullanamazsınız.";
+/* File: TerminalViewPrefs.m:492 */
+/* File: TerminalViewPrefs.m:487 */
+"Shell" = "Kabuk";
+/* File: TerminalViewPrefs.m:527 */
+"Shell:" = "Kabuk:";
+/* File: TerminalViewPrefs.m:515 */
+"Start as login-shell" = "Giriş-kabuğu olarak başla";
+/* File: TerminalViewPrefs.m:290 */
+"Stroked block" = "Hasarlı blok";
+/* File: TerminalViewPrefs.m:282 */
+"Style:" = "Stil:";
+/* File: TerminalViewPrefs.m:634 */
+"Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
+= "Komut anahtarı meta olarak davransın.\n\nBunu etkin hale getirince, klavyeyle\nmenülere\nerişemeyeceksiniz. ";
+
+
+/*** Strings from TerminalWindow.m ***/
+/* File: TerminalWindow.m:192 */
+/* File: TerminalWindow.m:188 */
+" (idle)" = " (etkin değil)";
+
+
+/*** Strings from TerminalWindowPrefs.m ***/
+/* File: TerminalWindowPrefs.m:192 */
+"Add top and bottom border" = "Sınırları ekle";
+/* File: TerminalWindowPrefs.m:143 */
+"Close new windows when idle" = "Etkin olmayan yeni pencereleri kapat";
+/* File: TerminalWindowPrefs.m:156 */
+"Default size" = "Öntanımlı boyut";
+/* File: TerminalWindowPrefs.m:144 */
+"Don't close new windows" = "Yeni pencereleri kapatmayın";
+/* File: TerminalWindowPrefs.m:169 */
+"Height:" = "Yükseklik:";
+/* File: TerminalWindowPrefs.m:112 */
+"Terminal Window" = "Terminal Penceresi";
+/* File: TerminalWindowPrefs.m:117 */
+"Terminal\nWindow" = "Terminal\nPenceresi";
+/* File: TerminalWindowPrefs.m:160 */
+"Width:" = "Genişlik:";
+
+
+/*** Strings from main.m ***/
+/* File: main.m:157 */
+"Benchmark" = "Donanım testi";
+/* File: main.m:191 */
+"Close" = "Kapat";
+/* File: main.m:180 */
+"Copy" = "Kopyala";
+/* File: main.m:177 */
+"Cut" = "Kes";
+/* File: main.m:186 */
+"Edit" = "Dzüenle";
+/* File: main.m:203 */
+"Hide" = "Gizle";
+/* File: main.m:159 */
+"Info" = "Bilgi";
+/* File: main.m:153 */
+"Info..." = "Bilgi...";
+/* File: main.m:171 */
+"New terminal" = "Yeni terminal";
+/* File: main.m:183 */
+"Paste" = "Yapıştır";
+/* File: main.m:155 */
+"Preferences..." = "Seçenekler...";
+/* File: main.m:207 */
+"Quit" = "Çık";
+/* File: main.m:199 */
+"Services" = "Hizmetler";
+/* File: main.m:194 */
+"Windows" = "Pencereler";

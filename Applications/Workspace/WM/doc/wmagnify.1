@@ -1,0 +1,56 @@
+.TH wmagnify 1 "March 22, 2006"
+
+.SH NAME
+wmagnify \- magnify parts of the screen
+
+.SH SYNOPSIS
+.B wmagnify
+.RI [ options ]
+
+.SH DESCRIPTION
+\fBwmagnify\fR is a tool which allows you to magnify parts of the screen. The
+main difference from \fBxmag\fR is that the image is refreshed automatically,
+following the cursor on the screen.
+
+.SH OPTIONS
+The following command line options are available:
+.TP
+.BR \-display " \fIdisplay\fP"
+Show the magnified area on this \fIdisplay\fR.
+.TP
+.B \-\-help
+print a help message with the list of options.
+.TP
+.BR \-m " \fIfactor\fP"
+Change the magnification factor, default is 2. You can change this also while
+running the program, using the keys described below.
+.TP
+.BR \-r " \fIdelay\fP"
+Change the refresh delay, in milliseconds. Default is 200.
+.TP
+.BR \-vdisplay " \fIdisplay\fP"
+Take the area to be magnified from this \fIdisplay\fP instead of using the same display as for visualisation.
+
+.SH KEYS
+The following keys can be pressed while \fBwmagnify\fR is running to change its
+behaviour.
+.TP
+.BR 1 , 2 , 3 , 4 ,  5 , 6 , 7 , 8 , 9
+Change the magnification factor.
+.TP
+.BR <space> ", " f
+Freeze the camera, making it magnify only the current position.
+.TP
+.B n
+Create a new window.
+.TP
+.B m
+Show/hide the pointer hot spot mark.
+
+.SH SEE ALSO
+.BR xmag (1),
+.BR wmaker (1)
+
+.SH AUTHOR
+This manual page was written by Andrea Bolognani <eof@kiyuko.org> for the
+Debian project, but may be used by others.

@@ -1,0 +1,284 @@
+/*
+Translation by Manuel Teira.
+*/
+
+/***
+Spanish.lproj/Localizable.strings
+updated by make_strings 2003-08-04 16:35:33 +0200
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: ServicesParameterWindowController.m:98 */
+/* File: ServicesPrefs.m:653 */
+"Command line:" = "L\u00ednea de comando:";
+
+/* File: TerminalViewPrefs.m:233 */
+/* File: TerminalViewPrefs.m:238 */
+"Display" = "Pantalla";
+
+/* File: TerminalViewPrefs.m:378 */
+/* File: TerminalViewPrefs.m:405 */
+"Pick font..." = "Elija fuente...";
+
+/* File: TerminalViewPrefs.m:526 */
+/* File: TerminalViewPrefs.m:531 */
+"Shell" = "Shell";
+
+/* File: TerminalViewPrefs.m:639 */
+/* File: TerminalViewPrefs.m:644 */
+"Keyboard" = "Teclado";
+
+/* File: TerminalWindow.m:193 */
+/* File: TerminalWindow.m:197 */
+" (idle)" = " (terminado)";
+
+
+/*** Unmatched/untranslated keys ***/
+
+/* File: PreferencesWindowController.m:70 */
+"Revert" = "Atr\u00e1s";
+
+/* File: PreferencesWindowController.m:78 */
+"Apply and save" = "Aplicar y guardar";
+
+/* File: PreferencesWindowController.m:122 */
+"Preferences" = "Preferencias";
+
+/* File: Services.m:60 */
+"There is no terminal service called '%@'.\nYour services list is probably out-of-date.\nRun 'make_services' to update it."
+= "No existe ning\u00fan servicio llamado '%@'.\nSu lista de servicios est\u00e1 probablemente desactualizada.\nEjecute 'make_services' para actualizarla.";
+
+/* File: Services.m:152 */
+"Service aborted by user." = "Servicio abortado por el usuario.";
+
+/* File: ServicesParameterWindowController.m:66 */
+"Cancel" = "Cancelar";
+
+/* File: ServicesParameterWindowController.m:74 */
+"OK" = "OK";
+
+/* File: ServicesParameterWindowController.m:118 */
+"Parameter for service %@" = "Par\u00e1metro para el servicio %@";
+
+/* File: ServicesPrefs.m:235 */
+"Unnamed service" = "Servicio sin nombre";
+
+/* File: ServicesPrefs.m:254 */
+"Import services" = "Importar servicios";
+
+/* File: ServicesPrefs.m:348 */
+"Error importing services" = "Error importando servicios";
+
+/* File: ServicesPrefs.m:349 */
+"The file '%@' doesn't contain valid terminal services."
+= "El fichero '%@' no contiene servicios de terminal v\u00e1lidos.";
+
+/* File: ServicesPrefs.m:401 */
+"Export services" = "Exportar servicios";
+
+/* File: ServicesPrefs.m:468 */
+"Terminal services" = "Servicios de terminal";
+
+/* File: ServicesPrefs.m:473 */
+"Terminal\nservices" = "Servicios";
+
+/* File: ServicesPrefs.m:499 */
+"Add" = "A\u00f1adir";
+
+/* File: ServicesPrefs.m:507 */
+"Remove" = "Borrar";
+
+/* File: ServicesPrefs.m:515 */
+"Import..." = "Importar...";
+
+/* File: ServicesPrefs.m:523 */
+"Export..." = "Exportar...";
+
+/* File: ServicesPrefs.m:549 */
+"Ignore output" = "Ignorar salida";
+
+/* File: ServicesPrefs.m:550 */
+"Return output" = "Devolver salida";
+
+/* File: ServicesPrefs.m:558 */
+"No input" = "Sin entrada";
+
+/* File: ServicesPrefs.m:559 */
+"Input in stdin" = "Entrada por stdin";
+
+/* File: ServicesPrefs.m:560 */
+"Input on command line" = "Entrada por l\u00ednea de comandos";
+
+/* File: ServicesPrefs.m:568 */
+"Run in background" = "Ejecutar en segundo plano";
+
+/* File: ServicesPrefs.m:569 */
+"Run in new window" = "Ejecutar en otra ventana";
+
+/* File: ServicesPrefs.m:570 */
+"Run in idle window" = "Ejecutar en ventana inactiva";
+
+/* File: ServicesPrefs.m:585 */
+"Accept types" = "Aceptar tipos";
+
+/* File: ServicesPrefs.m:594 */
+"Filenames" = "Nombres de fichero";
+
+/* File: ServicesPrefs.m:602 */
+"Plain text" = "Texto plano";
+
+/* File: ServicesPrefs.m:627 */
+"Name:" = "Nombre:";
+
+/* File: ServicesPrefs.m:640 */
+"Key:" = "Clave:";
+
+/* File: TerminalParser_LinuxPrefs.m:40 */
+"UTF-8" = "UTF-8";
+
+/* File: TerminalParser_LinuxPrefs.m:41 */
+"West Europe, latin1" = "Europa Oeste, latin1";
+
+/* File: TerminalParser_LinuxPrefs.m:42 */
+"East Europe, latin2" = "Europa del Este, latin2";
+
+/* File: TerminalParser_LinuxPrefs.m:43 */
+"Chinese" = "Chino";
+
+/* File: TerminalParser_LinuxPrefs.m:44 */
+"Custom, leave unchanged" = "Personalizado, no cambiar";
+
+/* File: TerminalParser_LinuxPrefs.m:103 */
+"'linux' terminal parser" = "Parser de terminal 'linux'";
+
+/* File: TerminalParser_LinuxPrefs.m:108 */
+"'linux'\nparser" = "parser\n'linux'";
+
+/* File: TerminalParser_LinuxPrefs.m:151 */
+"Character set:" = "Juego de caracteres:";
+
+/* File: TerminalView.m:1487 */
+"[Process exited]" = "[Proceso terminado]";
+
+/* File: TerminalView.m:1622 */
+"Unable to open pipe for input: %m." = "Error al abrir pipe en entrada: %m.";
+
+/* File: TerminalView.m:1634 */
+"Unable to fork: %m." = "Error en fork: %m.";
+
+/* File: TerminalViewPrefs.m:264 */
+"Scroll-back length in lines:" = "L\u00edneas de buffer:";
+
+/* File: TerminalViewPrefs.m:287 */
+"Cursor" = "Cursor";
+
+/* File: TerminalViewPrefs.m:292 */
+"Style:" = "Estilo:";
+
+/* File: TerminalViewPrefs.m:332 */
+"Color:" = "Color:";
+
+/* File: TerminalViewPrefs.m:355 */
+"Handle wide (multi-cell) glyphs" = "Manejar glyphs multi-celda";
+
+/* File: TerminalViewPrefs.m:366 */
+"Bold font:" = "Fuente negrita:";
+
+/* File: TerminalViewPrefs.m:393 */
+"Normal font:" = "Fuente normal:";
+
+/* File: TerminalViewPrefs.m:552 */
+"Start as login-shell" = "Arrancar como shell de login";
+
+/* File: TerminalViewPrefs.m:564 */
+"Shell:" = "Shell:";
+
+/* File: TerminalViewPrefs.m:669 */
+"Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
+= "Interpretar la tecla de comando como meta.\n\nN\u00f3tese que habilitando esta opci\u00f3n\nno podr\u00e1 acceder al men\u00fa\nutilizando el teclado.";
+
+/* File: TerminalViewPrefs.m:684 */
+"Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta."
+= "Escape se env\u00eda dos veces.\n\nSignifica que la tecla de escape ser\u00e1\nreconocida m\u00e1s r\u00e1pido por algunos programas,\npero no se podr\u00e1 usar como sustituto de 'meta'.";
+
+/* File: TerminalWindowPrefs.m:114 */
+"Terminal Window" = "Ventana de terminal";
+
+/* File: TerminalWindowPrefs.m:119 */
+"Terminal\nWindow" = "Ventana";
+
+/* File: TerminalWindowPrefs.m:152 */
+"Close new windows when idle" = "Cerrar ventanas inactivas";
+
+/* File: TerminalWindowPrefs.m:153 */
+"Don't close new windows" = "No cerrar ventanas nuevas";
+
+/* File: TerminalWindowPrefs.m:176 */
+"Default size" = "Tama\u00f1o por defecto";
+
+/* File: TerminalWindowPrefs.m:180 */
+"Width:" = "Ancho:";
+
+/* File: TerminalWindowPrefs.m:189 */
+"Height:" = "Alto:";
+
+/* File: TerminalWindowPrefs.m:212 */
+"Add top and bottom border" = "A\u00f1adir bordes superior e inferior";
+
+/* File: main.m:154 */
+"Info..." = "Informaci\u00f3n...";
+
+/* File: main.m:156 */
+"Preferences..." = "Preferencias...";
+
+/* File: main.m:158 */
+"Benchmark" = "Benchmark";
+
+/* File: main.m:160 */
+"Info" = "Informaci\u00f3n";
+
+/* File: main.m:172 */
+"New terminal" = "Nuevo terminal";
+
+/* File: main.m:178 */
+"Cut" = "Cortar";
+
+/* File: main.m:181 */
+"Copy" = "Copiar";
+
+/* File: main.m:184 */
+"Paste" = "Pegar";
+
+/* File: main.m:187 */
+"Edit" = "Editar";
+
+/* File: main.m:192 */
+"Close" = "Cerrar";
+
+/* File: main.m:195 */
+"Windows" = "Ventanas";
+
+/* File: main.m:200 */
+"Services" = "Servicios";
+
+/* File: main.m:204 */
+"Hide" = "Ocultar";
+
+/* File: main.m:208 */
+"Quit" = "Salir";
+
+/* File: main.m:256 */
+"Quit?" = "\u00bfSalir?";
+
+/* File: main.m:257 */
+"There are active windows. Quitting will close them."
+= "Hay ventanas activas. Al salir se cerrar\u00e1n.";
+
+/* File: main.m:258 */
+"Don't quit" = "No salir";
+
+/* File: main.m:259 */
+"Quit anyway" = "Salir de todos modos";

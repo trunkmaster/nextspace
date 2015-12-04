@@ -1,0 +1,9 @@
+include (FindPackageHandleStandardArgs)
+
+find_path(COREFOUNDATION_INCLUDE_DIRS CoreFoundation/CoreFoundation.h)
+find_library(COREFOUNDATION_LIBRARIES CoreFoundation)
+
+find_package_handle_standard_args(CoreFoundation DEFAULT_MSG
+  COREFOUNDATION_LIBRARIES
+  COREFOUNDATION_INCLUDE_DIRS
+)

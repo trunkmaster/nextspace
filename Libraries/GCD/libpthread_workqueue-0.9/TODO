@@ -1,0 +1,10 @@
+ * Use mmap() to store the mutex, condition variable, and counter in a
+   process-shared mapping at $HOME/.pthread_workqueue. Mark the mutex
+   and condition variable as process-shared.
+   -or-
+   Use a named semaphore at /pthread_workqueue.$UID
+   -or-
+   Write a kernel device driver for /dev/pthread_workqueue that will
+   allow threads to select() for readiness to achive global load balancing.
+
+ * Support Debian/kFreeBSD in the configure script.

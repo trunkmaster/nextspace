@@ -1,0 +1,21 @@
+"ApplicationDelegate" = {
+    ACTIONS = {
+        "openArchive:" = id; 
+        "selectedDeleteTempFilesOnQuit:" = id; 
+        "showInfoPanel:" = id; 
+    }; 
+    OUTLETS = {
+        debugTextView = id; 
+        debugWindow = id; 
+        errorTextField = id; 
+        errorTextView = id; 
+        errorWindow = id; 
+        infoPanel = id; 
+        infoPanelTextField = id; 
+        infoTableView = id; 
+        preferencesDeleteFilesCheckbox = id; 
+        preferencesWindow = id; 
+    }; 
+    SUPERCLASS = NSObject; 
+};
+"FirstResponder" = {ACTIONS = {}; OUTLETS = {}; SUPERCLASS = NSObject; };

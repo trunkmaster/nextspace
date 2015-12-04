@@ -1,0 +1,207 @@
+# wmgenmenu German translation
+# Copyright (C) 2010 Carlos R. Mafra
+# This file is distributed under the same license as the Window Maker package.
+# Carlos R. Mafra <crmafra@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wmgenmenu\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-27 12:57+0100\n"
+"PO-Revision-Date: 2010-04-02 10:39+0200\n"
+"Last-Translator: Carlos R. Mafra <crmafra@gmail.com>\n"
+"Language-Team: German \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../util/wmgenmenu.c:78 ../../util/wmgenmenu.c:91
+msgid "Window Maker"
+msgstr "Window Maker"
+
+#: ../../util/wmgenmenu.c:79
+msgid "Applications"
+msgstr "Anwendungen"
+
+#. Submenus in Applications
+#: ../../util/wmgenmenu.c:82
+msgid "Terminals"
+msgstr "Terminals"
+
+#: ../../util/wmgenmenu.c:83
+msgid "Internet"
+msgstr "Internet"
+
+#: ../../util/wmgenmenu.c:84
+msgid "Email"
+msgstr "E-Mail"
+
+#: ../../util/wmgenmenu.c:85
+msgid "Mathematics"
+msgstr "Mathematik"
+
+#: ../../util/wmgenmenu.c:86
+msgid "File Managers"
+msgstr "Dateimanager"
+
+#: ../../util/wmgenmenu.c:87
+msgid "Graphics"
+msgstr "Grafik"
+
+#: ../../util/wmgenmenu.c:88
+msgid "Multimedia"
+msgstr "Multimedia"
+
+#: ../../util/wmgenmenu.c:89
+msgid "Editors"
+msgstr "Text-Editoren"
+
+#: ../../util/wmgenmenu.c:90
+msgid "Development"
+msgstr "Entwicklung"
+
+#: ../../util/wmgenmenu.c:92
+msgid "Office"
+msgstr "Büro"
+
+#: ../../util/wmgenmenu.c:93
+msgid "Astronomy"
+msgstr "Astronomie"
+
+#: ../../util/wmgenmenu.c:94
+msgid "Sound"
+msgstr "Audio"
+
+#: ../../util/wmgenmenu.c:95
+msgid "Comics"
+msgstr "Comic"
+
+#: ../../util/wmgenmenu.c:96
+msgid "Viewers"
+msgstr "Dokumentbetrachter"
+
+#: ../../util/wmgenmenu.c:97
+msgid "Utilities"
+msgstr "Hilfsprogramme"
+
+#: ../../util/wmgenmenu.c:98
+msgid "System"
+msgstr "System"
+
+#: ../../util/wmgenmenu.c:99
+msgid "Video"
+msgstr "Video"
+
+#: ../../util/wmgenmenu.c:100
+msgid "Chat and Talk"
+msgstr "Chat und Besprechung"
+
+#: ../../util/wmgenmenu.c:101
+msgid "P2P-Network"
+msgstr "P2P-Netzwerk"
+
+#: ../../util/wmgenmenu.c:102
+msgid "Games"
+msgstr "Spiele"
+
+#: ../../util/wmgenmenu.c:103
+msgid "OpenSUSE"
+msgstr ""
+
+#: ../../util/wmgenmenu.c:104
+msgid "Mandriva"
+msgstr ""
+
+#: ../../util/wmgenmenu.c:110
+msgid "Run..."
+msgstr "Ausführen..."
+
+#: ../../util/wmgenmenu.c:112
+msgid "%A(Run, Type command:)"
+msgstr "%A(Ausführen, Befehl zum Ausführen eingeben:)"
+
+#. Appearance-related items
+#: ../../util/wmgenmenu.c:118
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+
+#: ../../util/wmgenmenu.c:120
+msgid "Themes"
+msgstr "Themen"
+
+#: ../../util/wmgenmenu.c:128
+msgid "Icons"
+msgstr "Iconsätze"
+
+#: ../../util/wmgenmenu.c:136
+msgid "Background"
+msgstr "Hintergrund"
+
+#: ../../util/wmgenmenu.c:144
+msgid "Save Theme"
+msgstr "Thema speichern"
+
+#: ../../util/wmgenmenu.c:152
+msgid "Save Icons"
+msgstr "Iconsatz speichern"
+
+#: ../../util/wmgenmenu.c:162
+msgid "Workspaces"
+msgstr "Arbeitsflächen"
+
+#: ../../util/wmgenmenu.c:168
+msgid "Workspace"
+msgstr "Arbeitsfläche"
+
+#: ../../util/wmgenmenu.c:170
+msgid "Hide Others"
+msgstr "Ändere verstecken"
+
+#: ../../util/wmgenmenu.c:176
+msgid "Show All"
+msgstr "Alle anzeigen"
+
+#: ../../util/wmgenmenu.c:182
+msgid "Arrange Icons"
+msgstr "Icons anordnen"
+
+#: ../../util/wmgenmenu.c:189
+msgid "Refresh"
+msgstr "Neuzeichen"
+
+#: ../../util/wmgenmenu.c:195
+msgid "Save Session"
+msgstr "Arbeitsplatz sichern"
+
+#: ../../util/wmgenmenu.c:201
+msgid "Clear Session"
+msgstr "X Sitzung leeren"
+
+#: ../../util/wmgenmenu.c:209
+msgid "Configure Window Maker"
+msgstr "Window Maker Einstellungen"
+
+#: ../../util/wmgenmenu.c:217
+msgid "Info Panel"
+msgstr "Info-Panel"
+
+#: ../../util/wmgenmenu.c:224
+msgid "Restart"
+msgstr "Neustart"
+
+#: ../../util/wmgenmenu.c:237
+msgid "Lock Screen"
+msgstr "Bildschirm sperren"
+
+#: ../../util/wmgenmenu.c:248
+msgid "Exit Window Maker"
+msgstr "Window Maker beenden"
+
+#: ../../util/wmgenmenu.c:317
+#, c-format
+msgid "Start %s"
+msgstr "%s starten"
+
+#: ../../util/wmgenmenu.c:325
+msgid "Other Window Managers"
+msgstr "Andere Fenstermanager"

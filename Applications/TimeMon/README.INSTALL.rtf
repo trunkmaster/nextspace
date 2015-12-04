@@ -1,0 +1,94 @@
+{\rtf1\mac\ansicpg10000\cocoartf100
+{\fonttbl\f0\froman\fcharset77 Times-Roman;\f1\froman\fcharset77 Times-Bold;\f2\fswiss\fcharset77 Helvetica;
+\f3\fswiss\fcharset77 Helvetica-Bold;\f4\froman\fcharset77 Times-BoldItalic;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx8640\tx9600\ql\qnatural
+
+\f0\fs20 \cf0 Copyright \'bb1993, 1994, 1997  Scott Hess  All Rights Reserved.\
+Copyright 2005-2008 GNUstep Application Project\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\fs16 \cf0 \
+\
+\pard\tx0\li100\ql\qnatural
+
+\f1\b\fs36 \cf0 Installing TimeMon4.2\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\f0\b0\fs16 \cf0 \
+\pard\li300\ql\qnatural
+
+\f2\fs24 \cf0 Installation 
+\f3\b should
+\f2\b0  be trivial.  Drag&drop to copy it where you want it, and run it how you want.  Put it on your dock set to autolaunch, if you have a Dock.  I put it right under the NeXT icon, where it's easy to find.  In Rhapsody, you should be able to put it under the Preferences item for 'Login Items'.\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\f0\fs16 \cf0 \
+\
+\pard\tx0\li100\ql\qnatural
+
+\f1\b\fs36 \cf0 If the program doesn't work because table() isn't found.\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\f0\b0\fs16 \cf0 \
+\pard\li300\ql\qnatural
+
+\f2\fs24 \cf0 Unfortunately, 
+\f3\b TimeMon3.1
+\f2\b0  and later uses an undocumented Mach feature.  It used to be documented under NS2.1.  Sort of.  I refer to the 
+\f3\b table()
+\f2\b0  function, which allows user programs to query certain kernel data structures without having to be setgid-kmem.  Under NS3.0 and later the relevant include file is apparently no longer available, which means that I had to include some code from the NS2.1 file in loadave.c.\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\f0\fs16 \cf0 \
+\pard\li300\ql\qnatural
+
+\f2\fs24 \cf0 This situation concerns me, since it means that perhaps in the next release, not only will the include file be gone, so will the kernel interface, in which case 
+\f3\b TimeMon
+\f2\b0  can no longer use it.  Since that interface is sort of the point of the program ... anyhow, I've included an escape hatch.  If 
+\f3\b TimeMon
+\f2\b0  is compiled with 
+\f3\b CFLAGS=-DKMEM
+\f2\b0  and installed setgid-kmem (chgrp kmem TimeMon ; chmod g+s TimeMon), then it will use the tried-and-true method of poking around in kernel memory to find the information.  
+\f3\b Installing TimeMon setgid-kmem is a security risk.  Only do this if TimeMon no longer links correctly due to absence of the table() function.
+\f2\b0 \
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\f0\fs16 \cf0 \
+\
+\pard\tx0\li100\ql\qnatural
+
+\f1\b\fs36 \cf0 How To Find Scott\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\f0\b0\fs16 \cf0 \
+\pard\tx1520\li300\ql\qnatural
+
+\fs28 \cf0 web:	http://www.doubleu.com/\
+email:	scott@doubleu.com\
+phone:	(606) 578-0412\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\fs16 \cf0 \
+\pard\tx8640\tx9600\ql\qnatural
+
+\fs20 \cf0 This is the small print.  All products or trademarks mentioned in this program are trademarks of their respective trademark holders.  Notably, NeXT and NeXTSTEP are trademarks of NeXT Computer, Inc..\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\fs16 \cf0 \
+\pard\tx8640\tx9600\ql\qnatural
+
+\fs20 \cf0 TimeMon is Copyright \'bb 1991, 1992, 1993, 1994  by Scott Hess.  Permission to use, copy, modify, and distribute this software and its documentation for any purpose and without fee is hereby granted, provided that this copyright notice appear in all copies.  Scott Hess makes no representations about the suitability of this software for any purpose.  It is provided "as is" without express or implied warranty.\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql\qnatural
+
+\fs16 \cf0 \
+\pard\tx8640\tx9600\ql\qnatural
+
+\fs14 \cf0 This is the \ul really\ulnone  small print.
+\fs16 \
+\pard\tx8640\tx9600\ql\qnatural
+
+\fs2 \cf0 And this is the 
+\f4\i\b \ul really
+\f0\i0\b0 \ulnone  small print.\
+}

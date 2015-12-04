@@ -1,0 +1,5 @@
+libkqueue (@@VERSION@@-1) unstable; urgency=low
+
+  * Initial release (Closes: #576317)
+
+ -- Mark Heily <mark@heily.com>  Sun, 28 Mar 2010 18:58:58 -0400

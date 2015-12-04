@@ -1,0 +1,148 @@
+/* Define to 1 if you have the `asprintf' function. */
+#cmakedefine01 HAVE_ASPRINTF
+
+/* Define to 1 if you have the <CoreFoundation/CoreFoundation.h> header file.
+ */
+#cmakedefine01 HAVE_COREFOUNDATION_COREFOUNDATION_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine01 HAVE_UNISTD_H
+
+/* Define to 1 if you have the declaration of `CLOCK_MONOTONIC', and to 0 if
+   you don't. */
+#cmakedefine01 HAVE_DECL_CLOCK_MONOTONIC
+
+/* Define to 1 if you have the declaration of `CLOCK_UPTIME', and to 0 if you
+   don't. */
+#cmakedefine01 HAVE_DECL_CLOCK_UPTIME
+
+/* Define to 1 if you have the declaration of `FD_COPY', and to 0 if you
+   don't. */
+#cmakedefine01 HAVE_DECL_FD_COPY
+
+/* Define to 1 if you have the declaration of `NOTE_NONE', and to 0 if you
+   don't. */
+#cmakedefine01 HAVE_DECL_NOTE_NONE
+
+/* Define to 1 if you have the declaration of `NOTE_REAP', and to 0 if you
+   don't. */
+#cmakedefine01 HAVE_DECL_NOTE_REAP
+
+/* Define to 1 if you have the declaration of `NOTE_REVOKE', and to 0 if you
+   don't. */
+#cmakedefine01 HAVE_DECL_NOTE_REVOKE
+
+/* Define to 1 if you have the declaration of `NOTE_SIGNAL', and to 0 if you
+   don't. */
+#cmakedefine01 HAVE_DECL_NOTE_SIGNAL
+
+/* Define to 1 if you have the declaration of `POSIX_SPAWN_SETEXEC', and to 0
+   if you don't. */
+#cmakedefine01 HAVE_DECL_POSIX_SPAWN_SETEXEC
+
+/* Define to 1 if you have the declaration of `POSIX_SPAWN_START_SUSPENDED',
+   and to 0 if you don't. */
+#cmakedefine01 HAVE_DECL_POSIX_SPAWN_START_SUSPENDED
+
+/* Define to 1 if you have the declaration of `program_invocation_short_name',
+   and to 0 if you don't. */
+#cmakedefine01 HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
+
+/* Define to 1 if you have the declaration of `SIGEMT', and to 0 if you don't.
+   */
+#cmakedefine01 HAVE_DECL_SIGEMT
+
+/* Define to 1 if you have the declaration of `TAILQ_FOREACH_SAFE', and to 0
+   if you don't. */
+#cmakedefine01 HAVE_DECL_TAILQ_FOREACH_SAFE
+
+/* Define to 1 if you have the declaration of `VQ_UPDATE', and to 0 if you
+   don't. */
+#cmakedefine01 HAVE_DECL_VQ_UPDATE
+
+/* Define to 1 if you have the declaration of `VQ_VERYLOWDISK', and to 0 if
+   you don't. */
+#cmakedefine01 HAVE_DECL_VQ_VERYLOWDISK
+
+/* Define to 1 if you have the `getprogname' function. */
+#cmakedefine01 HAVE_GETPROGNAME
+
+/* Define if Apple leaks program is present */
+#cmakedefine01 HAVE_LEAKS
+
+/* Define to 1 if you have the <sys/cdefs.h> header file. */
+#cmakedefine01 HAVE_SYS_CDEFS_H
+
+/* Define to 1 if you have the <libkern/OSAtomic.h> header file. */
+#cmakedefine01 HAVE_LIBKERN_OSATOMIC_H
+
+/* Define to 1 if you have the <libkern/OSByteOrder.h> header file. */
+#cmakedefine01 HAVE_LIBKERN_OSBYTEORDER_H
+
+/* Define to 1 if you have the <libkern/OSCrossEndian.h> header file. */
+#cmakedefine01 HAVE_LIBKERN_OSCROSSENDIAN_H
+
+/* Define if mach is present */
+#cmakedefine01 HAVE_MACH
+
+/* Define to 1 if you have the `mach_absolute_time' function. */
+#cmakedefine01 HAVE_MACH_ABSOLUTE_TIME
+
+/* Define to 1 if you have the `malloc_create_zone' function. */
+#cmakedefine01 HAVE_MALLOC_CREATE_ZONE
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#cmakedefine01 HAVE_MALLOC_MALLOC_H
+
+/* Define if __builtin_trap marked noreturn */
+#cmakedefine01 HAVE_NORETURN_BUILTIN_TRAP
+
+/* Define to 1 if you have the `pthread_key_init_np' function. */
+#cmakedefine01 HAVE_PTHREAD_KEY_INIT_NP
+
+/* Define to 1 if you have the <pthread_machdep.h> header file. */
+#cmakedefine01 HAVE_PTHREAD_MACHDEP_H
+
+/* Define to 1 if you have the `pthread_main_np' function. */
+#cmakedefine01 HAVE_PTHREAD_MAIN_NP
+
+/* Define to 1 if you have the <pthread_np.h> header file. */
+#cmakedefine01 HAVE_PTHREAD_NP_H
+
+/* Define if pthread work queues are present */
+#cmakedefine01 HAVE_PTHREAD_WORKQUEUES
+
+/* Define to 1 if you have the `pthread_workqueue_setdispatch_np' function. */
+#cmakedefine01 HAVE_PTHREAD_WORKQUEUE_SETDISPATCH_NP
+
+/* Define to 1 if you have the `strlcpy' function. */
+#cmakedefine01 HAVE_STRLCPY
+
+/* Define to 1 if you have the `sysconf' function. */
+#cmakedefine01 HAVE_SYSCONF
+
+/* Define to 1 if you have the `sysctlbyname' function. */
+#cmakedefine01 HAVE_SYSCTLBYNAME
+
+/* Define to 1 if you have the <TargetConditionals.h> header file. */
+#cmakedefine01 HAVE_TARGETCONDITIONALS_H
+
+/* Define to use non-portable pthread TSD optimizations for Mac OS X) */
+#cmakedefine01 USE_APPLE_TSD_OPTIMIZATIONS
+
+/* Define to tag libdispatch_init as a constructor */
+#cmakedefine01 USE_LIBDISPATCH_INIT_CONSTRUCTOR
+
+/* Define to use Mach semaphores */
+#cmakedefine01 USE_MACH_SEM
+
+/* Define to use Objective-C runtime */
+#cmakedefine01 USE_OBJC
+
+/* Define to use POSIX semaphores */
+#cmakedefine01 USE_POSIX_SEM
+
+/* Define if unistd.h needs special handling to compile using -fblocks; see
+   https://bugzilla.redhat.com/show_bug.cgi?id=1009623 */
+#cmakedefine01 HAS_PROBLEMATIC_UNISTD_H
+

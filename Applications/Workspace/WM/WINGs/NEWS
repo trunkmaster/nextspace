@@ -1,0 +1,512 @@
+** API and ABI modifications since wmaker 0.92.0
+
+** libWINGs **
+<WINGsP.h>
+struct W_DragDestinationInfo: new members added SIZE CHANGE
+
+<WINGs.h>
+WMGetTextFieldCursorPosition ADDED
+WC_Matrix REMOVED from enum.
+WMCreateProgressIndicator REMOVED
+WMSetProgressIndicatorMinValue REMOVED
+WMSetProgressIndicatorMaxValue REMOVED
+WMSetProgressIndicatorValue REMOVED
+WMGetProgressIndicatorMinValue REMOVED
+WMGetProgressIndicatorMaxValue REMOVED
+WMGetProgressIndicatorValue REMOVED
+typedef struct W_Ruler WMRuler REMOVED
+typedef struct WMRulerMargins REMOVED
+WMAppendTextBlock REMOVED
+WMAppendTextStream REMOVED
+WMCreateRuler  REMOVED
+WMCreateTextBlockWithObject REMOVED
+WMCreateTextBlockWithPixmap REMOVED
+WMCreateTextBlockWithText REMOVED
+WMCreateTextForDocumentType REMOVED
+WMDestroyTextBlock REMOVED
+WMFindInTextStream REMOVED
+WMFreezeText REMOVED
+WMGetGrabbedRulerMargin REMOVED
+WMGetReleasedRulerMargin REMOVED
+WMGetRulerMargins REMOVED
+WMGetRulerOffset REMOVED
+WMGetTextBlockProperties REMOVED
+WMGetTextDefaultColor REMOVED
+WMGetTextDefaultFont REMOVED
+WMGetTextEditable REMOVED
+WMGetTextIgnoresNewline REMOVED
+WMGetTextInsertType REMOVED
+WMGetTextObjects REMOVED
+WMGetTextRulerShown REMOVED
+WMGetTextSelectedObjects REMOVED
+WMGetTextSelectedStream REMOVED
+WMGetTextSelectionColor REMOVED
+WMGetTextSelectionFont REMOVED
+WMGetTextSelectionUnderlined REMOVED
+WMGetTextStream REMOVED
+WMGetTextUsesMonoFont REMOVED
+WMIsMarginEqualToMargin REMOVED
+WMPageText REMOVED
+WMPrependTextBlock REMOVED
+WMPrependTextStream REMOVED
+WMRemoveTextBlock REMOVED
+WMReplaceTextSelection REMOVED
+WMScrollText REMOVED
+WMSetRulerMargins REMOVED
+WMSetRulerMoveAction REMOVED
+WMSetRulerOffset REMOVED
+WMSetRulerReleaseAction REMOVED
+WMSetTextAlignment REMOVED
+WMSetTextBackgroundColor REMOVED
+WMSetTextBackgroundPixmap REMOVED
+WMSetTextBlockProperties REMOVED
+WMSetTextDefaultColor REMOVED
+WMSetTextDefaultFont REMOVED
+WMSetTextDelegate REMOVED
+WMSetTextEditable REMOVED
+WMSetTextForegroundColor REMOVED
+WMSetTextHasHorizontalScroller REMOVED
+WMSetTextHasRuler REMOVED
+WMSetTextHasVerticalScroller REMOVED
+WMSetTextIgnoresNewline REMOVED
+WMSetTextIndentNewLines REMOVED
+WMSetTextRelief REMOVED
+WMSetTextSelectionColor REMOVED
+WMSetTextSelectionFont REMOVED
+WMSetTextSelectionUnderlined REMOVED
+WMSetTextUsesMonoFont REMOVED
+WMShowTextRuler REMOVED
+WMThawText REMOVED
+WMRefreshText REMOVED
+WMCreateText REMOVED
+WMClearText REMOVED
+
+
+
+
+** libWutil **
+enum WMConnectionState REMOVED
+enum WMConnectionTimeoutState REMOVED
+struct ConnectionDelegate REMOVED
+__wmessage ADDED
+wstrerror REMOVED
+wmessage converted from function to wrapper macro
+wwarning converted from function to wrapper macro
+wfatal converted from function to wrapper macro
+wsyserror converted from function to wrapper macro
+wsyserror REMOVED (use werror instead)
+werror macro ADDED (replaces wsyserror)
+wsyserrorwithcode removed
+wmkdirhier ADDED
+wrmdirhier ADDED
+wmalloc0 REMOVED
+wnew REMOVED
+wnew0 REMOVED
+wstrlcpy ADDED
+wstrlcat ADDED
+WMPushInArray REMOVED
+WMWritePropListToFile NUMBER OF FUNCTION ARGUMENTS CHANGED
+WMGetCurrentHost
+WMGetHostWithName
+WMGetHostWithAddress
+WMRetainHost
+WMReleaseHost
+WMSetHostCacheEnabled
+WMIsHostCacheEnabled
+WMFlushHostCache
+WMIsHostEqualToHost
+WMGetHostName
+WMGetHostNames
+WMGetHostAddress
+WMCreateConnectionAsServerAtAddress REMOVED
+WMCreateConnectionToAddress REMOVED
+WMCreateConnectionToAddressAndNotify REMOVED
+WMCloseConnection REMOVED
+WMDestroyConnection REMOVED
+WMConnection* WMAcceptConnection REMOVED
+WMGetConnectionAvailableData REMOVED
+WMSendConnectionData REMOVED
+WMEnqueueConnectionData REMOVED
+WMFlushConnection REMOVED
+WMSetConnectionDelegate REMOVED
+WMGetConnectionService REMOVED
+WMGetConnectionProtocol REMOVED
+WMSetConnectionNonBlocking REMOVED
+WMSetConnectionCloseOnExec REMOVED
+WMSetConnectionShutdownOnClose REMOVED
+WMGetConnectionClientData REMOVED
+WMSetConnectionClientData REMOVED
+WMGetConnectionFlags REMOVED
+WMSetConnectionFlags REMOVED
+WMGetConnectionSocket REMOVED
+WMGetConnectionState REMOVED
+WMGetConnectionTimeoutState REMOVED
+WMGetConnectionUnsentData REMOVED
+WMGetConnectionQueuedData REMOVED
+WMSetConnectionDefaultTimeout REMOVED
+WMSetConnectionOpenTimeout REMOVED
+WMSetConnectionSendTimeout REMOVED
+
+WMTreeWalkProc ADDED
+WMTreeWalk ADDED
+wshellquote ADDED
+
+
+
+----------------------------------------------------
+
+*** Fri May 15 18:44:50 CEST 2015 - Christophe
+
+New Tri-state type for WMButton
+-------------------------------
+
+A new check-box type button is available with state On/Off/Tri, the later being
+generally used to express "leave as-is". The states are cycled through as user
+click on the button. It is created with:
+  btn = WMCreateButton(parent_widget, WBTTriState);
+
+There are is this case 3 possible values for WMSetButtonSelected/WMGetButtonSelected:
+ - 0 and 1, the legacy checked/unchecked states
+ - the new -1, when in the 3rd state
+
+
+*** Sun Dec  7 10:52:21 CET 2014 - David
+
+Support for pixmap in the background of Widget
+----------------------------------------------
+
+The new function WMSetWidgetBackgroundPixmap was introduced to specify a pixmap
+that will be displayed as the background of a widget instead of the usual plain
+color. The dual WMGetWidgetBackgroundPixmap is provided too.
+
+
+*** Sun Nov  2 13:04:14 CET 2014 - David
+
+Get the text of a button
+------------------------
+
+It was assumed that there was no need to retrieve the text from a button because
+it is generally a static constant text, but there are some cases where this can
+be useful, so the new function WMGetButtonText was added to the API.
+
+
+*** Thu May  9 18:24:03 CEST 2013 - Christophe
+
+Const-correctness API changes for WRaster, WUtils and WINGs
+-----------------------------------------------------------
+
+The 3 libraries have been modified to include appropriate 'const' qualifier
+to the function parameters that are treated as such. This should provide
+some hints to the compiler for better optimisation.
+This change should have no impact on the binary interface, and will not
+impact existing source code.
+
+There is one exception however:
+   WUtil: wusergnusteppath()
+This function now returns 'const char *' because its result must *not* be
+modified, so it may generate a const related warning in old code.
+
+
+*** Fri Mar  7 00:39:28 CET 2014 - David
+
+New function WMCreateScaledBlendedPixmapFromFile
+------------------------------------------------
+
+This function can load an image from a file and if it is bigger than the
+specified width/height then it will be scaled down to fit the size while
+keeping the aspect ratio of the original image.
+
+
+*** Mon Oct 14 19:42:42 EEST 2002 - Dan
+
+Double buffering
+----------------
+
+To avoid flickering caused by redrawing the widgets on Expose events, a
+double buffering technique was implemented for most of the widgets.
+This flickering effect has gotten more visible with the introduction
+of antialiased fonts. If with normal text one can redraw the text over the
+old one over and over again without any degradation of the text (new pixels
+simply overwrite old pixels), with antialiased text the situation is
+different and text gets quickly corrupted. To avoid this corruption, one
+needs to first erase the area where the text will go, which can cause the
+before mentioned flickering.
+The double buffer is implemented to solve this issue.
+
+This is a change that that will be automatically available for any WINGs
+applications and will require no change in the existing code.
+However there is an exception from this in case of WMList if you delegate
+the drawing of items to userspace (read below for the complete details).
+
+
+*** Mon Oct 14 22:07:42 EEST 2002 - Dan
+
+WMList change
+-------------
+
+In case of WMList there is the possibility to delegate the drawing of the
+list items to the application that is linked with WINGs, and this code will
+not be inside the WINGs library, but in userland. Since we use the double
+buffering technique in this case too (to allow all widgets based on WMList
+and the ones that draw their list items by themselves to benefit from the
+double buffering advantage automatically), we no longer pass the window to
+the user code doing item drawing, but instead pass this pixmap in which we
+draw before copying to the real window.
+
+Since one cannot use XClearWindow() or XClearArea() on pixmaps, but only on
+windows, if the code drawing list items used to call these functions to clear
+the item area before drawing it needs to change to using XFillRectangle()
+instead.
+
+With this change it also means that there is no longer any need to do any
+double buffering in the user code, since it's already done by WINGs.
+
+
+*** Mon Oct 14 19:28:35 EEST 2002 - Dan
+
+API change
+----------
+
+WMDrawString() and WMDrawImageString() no longer take a GC as argument.
+Instead WMDrawString() takes a WMColor* as the color for the string to be
+drawn, while WMDrawImageString() takes 2 WMColor* arguments in place of the
+old GC: first for text color and second for background color.
+
+This change is required to support extending WMFont to allow it to handle
+antialiased fonts through the XFree86 Xft2 extension.
+
+This also has the advantage of hiding low level X11 details and use WINGs
+internal objects instead.
+
+To fix your old code to work with the new WINGs API you need to replace the
+GC passed to WMDraw***String() in your code with a WMColor*.
+Most of the old code used to be like this:
+
+WMDrawString(screen, window, WMColorGC(color), font, x, y, txt, len);
+
+for the new API it should be replaced by:
+
+WMDrawString(screen, window, color, font, x, y, txt, len);
+
+However if you used a particular GC created by yourself to suit your special
+needs, you need to pass a color which is the same as the foreground color of
+that gc.
+
+For WMDrawImageString(), from:
+
+WMDrawImageString(screen, window, gc, font, x, y, txt, len);
+
+becomes
+
+WMDrawImageString(screen, window, textColor, backColor, font, x, y, txt, len);
+
+where textColor and backColor are declared like:
+
+WMColor *textColor, *backColor;
+
+and have the color of the foreground respective the background of the old gc.
+
+
+
+*** Wed Oct  9 07:10:04 EEST 2002 - Dan
+
+Antialiased font support
+------------------------
+
+With the addition of Xft2 support in the WINGs library, now WINGs can display
+antialiased text with TrueType or any scalable fonts.
+
+Antialiased text is enabled by default, but can be disabled by adding
+
+AntialiasedText = NO; in ~/GNUstep/Defaults/WMGLOBAL
+
+This will disable antialiased text for any WINGs based application. If you
+only want to disable them for a specific application only, like WindowMaker
+for example, then add the same option in the applications configuration file,
+in this case ~/GNUstep/Defaults/WindowMaker
+
+Note that bitmapped fonts look much better than TrueType when antialiasing is
+disabled.
+
+
+*** Mon Sep 09 06:58:30 EEST 2002 - Dan
+
+New delegate for the WMConnection class
+---------------------------------------
+
+ConnectionDelegate structure has a new member: canResumeSending.
+The purpose of this callback is to notify you that you can resume sending
+data over a WMConnection.
+It works in the following manner:
+
+WMSendConnectionData() can return 3 values: -1, 0, 1
+
+-1 - means that the connection has died. you should stop sending data and
+     close the connection ASAP.
+ 1 - means that the data was successfully sent
+ 0 - means that the data (or part of it) was not sent. however, it was saved
+     in a queue and the library will try to send it later when possible.
+
+if the return value is 1, you can continue to send the next message, and so
+on, until the return value of such a send call will be 0.
+After it returns 0 you can continue sending, however, the data will not be
+sent over the connection because the operating system cannot accept any more
+data for the moment. Instead it will be queued inside the library, making your
+program's memory footprint increase. If the amount of data you need to
+send is limited and not too big, this shouldn't be a problem, because your
+data will be queued and sent when the operating system will notify the
+library that sending is possible again.
+If this is the case you can just ignore the output of WMSendConnectionData()
+and not set a callback for canResumeSending.
+
+However, if the amount of data you have to send is undetermined and you
+also want to keep a small memory footprint for your program (so that it
+won't grow until it uses all your available memory ;) ), you will have to
+stop sending data over the connection as soon as WMSendConnectionData()
+returns with 0. Then you should somehow mark this situation in your program
+to avoid it trying to send anymore data until notified that it can resume.
+(You should have also set a canResumeSending callback when you initialized
+your WMConnection object because else you cannot be notified when to resume.)
+
+Now, when you receive such a 0 from the send operation, your last sent data
+is put in a queue inside the library. At a later time when the operating
+system notifies the library that sending is possible again, the library will
+resume to send the data that is saved in the queue. After it will be able to
+send all the data in the queue, the canResumeSending callback will be
+called, letting you know that not only you can resume sending because the
+operating system is again able to send data, but also that the queue was
+completely flushed.
+
+From the canResumeSending callback, you should again update the status of
+your program marking that it can send again, and then resume sending the
+data from where you were left.
+
+
+*** Thu Oct 04 06:00:09 EEST 2001 -Dan
+
+Property lists handling code
+----------------------------
+
+Code to handle property lists was added to WINGs. It is more robust
+than the libPropList code, mostly because some conflicting concepts 
+borrowed from UserDefaults (which libPropList use) are no longer used in
+the WINGs property lists code. These borrowed concepts conflicted with the
+retain/release mechanism of property lists and could lead in certain cases
+to segmentation faults when executing libPropList based code. But the worse
+part was that these libPropList problems were practically unsolvable without
+removing one of those conflicting concepts and without a complete redesign. 
+The new WINGs property lists code is also better integrated with the other
+data types from WINGs and is actively maintained.
+
+Practically the things that were removed from the WINGs property list
+implementation compared to the old libPropList implementation, are exactly
+the UserDefaults borrowed concepts that conflict with the retain/release
+mechanism:
+- The container of a proplist object and the associated functions are gone.
+- The filename associated with a proplist object and the corresponding
+  functions are gone. Now the saving function needs the filename as a
+  parameter.
+- The synchronization functions are no longer supported. They are part of
+  the UserDefaults and are implemented there.
+- No functions related to domains/registering were implemented in the WINGs
+  property lists code, because they are also not part of property lists.
+  They are more in connection with UserDefaults and a central point of access
+  for domains.
+
+The above 2 concepts: container and filename were added to libPropList just
+to let it support synchronization which was borrowed from UserDefaults.
+Property lists as defined in the openstep specification are just complex
+data structures composed of strings, data, arrays, dictionaries and a mix of
+them and are not associated with any file in particular. UserDefaults on the
+other hand are property lists read from a specific file and they associate
+that property list with that file and allow them to be synchronized.
+
+Old libPropList based code can still be used by linking against the WINGs
+library containing the new proplist code with minimal changes which are
+described in detail in the comments at the top of the WINGs/proplist-compat.h
+header file (the same file carries the #defines for mapping old libPropList
+functions to the new WINGs proplist functions).
+Our recommendation is to move to the new functions WINGs provide because
+they better integrate with other function naming conventions in WINGs.
+The proplist-compat.h header file is just a way to have old code up and
+running with minimal changes so that we can remove the old and unmaintained
+libPropList from systems while keeping to use old libPropList based code
+without rewriting it and it should not be used for other purposes.
+
+
+*** Sat Apr 21 09:12:09 EEST 2001 -Dan
+
+API change
+----------
+
+To allow a correct display of icon images with alpha blending in panels and
+other places where a WINGs based application may use them the following
+changes took place:
+
+1. The following functions were renamed:
+   - WMSetApplicationIconImage()  --> WMSetApplicationIconPixmap()
+   - WMGetApplicationIconImage()  --> WMGetApplicationIconPixmap()
+   - WMSetWindowMiniwindowImage() --> WMSetWindowMiniwindowPixmap()
+2. The following functions were added:
+   - WMSetApplicationIconImage(WMScreen *scr, RImage *image)
+   - RImage* WMGetApplicationIconImage(WMScreen *scr)
+   - WMPixmap* WMCreateApplicationIconBlendedPixmap(WMScreen *scr, RColor *col)
+
+As you can see the old functions that operated on WMPixmap images (which are
+basically X Pixmaps that lack alpha information) were renamed to ...Pixmap()
+to make them more suggestive about what they do and to make room for the
+new functions that operate on RImages (that hold alpha information).
+
+Since the corresponding WMGet... functions only retrieve the stored
+image/pixmap from the application, I'll outline how the WMSet...
+functions operate:
+
+All WM...IconPixmap() functions operate on WMPixmaps
+All WM...IconImage() functions operate on RImages
+
+
+- WMSetApplicationIconImage() will set the RImage to be used in panels
+    and will also convert the RImage to a WMPixmap with a threshold of 128
+    and will use that pixmap for the appicon image. If that doesn't satisfy
+    you, you can make a call to WMSetApplicationIconPixmap() on your own to
+    set whatever WMPixmap you see fit for the appicon. 
+
+- WMSetApplicationIconPixmap() will set the WMPixmap to be used for the
+    appicon and for the panels 
+
+
+If you use only one of the above functions, the corresponding image/pixmap
+will be used everywhere where needed (panels and appicon), but the pixmap
+version will not be able to handle alpha blending correctly.
+
+If you use both WMSetApplicationIconImage() and WMSetApplicationIconPixmap()
+then the RImage will have priority in panels, and the WMPixmap will only be
+used for the appicon. This allows you to better control what icon is
+displayed in the appicon, in case the default conversion of the RImage to a
+pixmap with a threshold of 128 is not good enough, or in case you want a
+different icon to be shown in the appicon than in panels.
+
+
+Also this new function was added:
+
+- WMCreateApplicationIconBlendedPixmap() will use the RImage set with
+    WMSetApplicationIconImage() if available and will blend it with the color
+    you passed. This will make the image show well on a background of that
+    color. If the RImage was not set it will return NULL. You need to call
+    WMReleasePixmap() on it after you finish with it. Passing a NULL pointer
+    instead of a color will make the RImage be blended with the default color
+    of the WINGs widgets: '#aeaaae' making it suitable to be assigned to any
+    WINGs widget.
+
+
+To make your existing code work as before all you need to do is to rename
+the following functions:
+
+   - WMSetApplicationIconImage()  --> WMSetApplicationIconPixmap()
+   - WMGetApplicationIconImage()  --> WMGetApplicationIconPixmap()
+   - WMSetWindowMiniwindowImage() --> WMSetWindowMiniwindowPixmap()
+
+But if you want to take advantage of the new abilities to show alpha
+blended images you need to start using the new functions.
+
+

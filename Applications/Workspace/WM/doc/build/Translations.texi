@@ -1,0 +1,556 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename wmaker_i18n.info
+@settitle Window Maker Internationalisation 1.0
+@c %**end of header
+
+@c This documentation is written in Texinfo format:
+@c   https://www.gnu.org/software/texinfo/manual/texinfo/
+@c
+@c The reference checker is the GNU texi2any tool, which can be invoked like this:
+@c   texi2any --plaintext --no-split --verbose Translations.texi
+@c
+@c If you modify this file, you may want to spell-check it with:
+@c    aspell --lang=en_GB --mode=texinfo check Translations.texi
+@c
+@c The length of lines in this file is set to 100 because it tends to keep sentences together
+@c despite the embedded @commands{};
+@c
+@c It is generally considered good practice for Tex and Texinfo formats to keep sentences on
+@c different lines, using the fact that in the end they will be merged in paragraph anyway, because
+@c it makes the patchs clearer about where the changes actually are.
+
+@finalout
+
+@c If the version was not given to texi2any with -D, assume we are being run
+@c on the git dev branch
+@ifclear version
+@set version git#next
+@end ifclear
+
+@c We provide the ability to change the email address for support from the
+@c command line
+@ifclear emailsupport
+@set emailsupport @email{wmaker-dev@@lists.windowmaker.org}
+@end ifclear
+
+@c ---------------------------------------------------------------------------------- Title Page ---
+
+@copying
+@noindent
+This manual is for @sc{Window Maker} window manager, version @value{version}.
+
+@noindent Copyright @copyright{} 2015 The Window Maker Team.
+
+@quotation
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program, see file COPYING for details.
+@end quotation
+@end copying
+
+@titlepage
+@title Window Maker Internationalisation
+@subtitle A guide to enable support for language translations
+@subtitle in @sc{Window Maker} and to the contributors
+@subtitle who want to help translating.
+@author Christophe CURIS
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+
+@sp 1
+Published by The Window Maker team on @today{}.
+@end titlepage
+
+@c ---------------------------------------------------------------------------- Table of Content ---
+@node Top
+@ifnottex
+@top Window Maker Internationalisation
+
+@ifclear cctexi2txt
+A guide to enable support for language translations
+in @sc{Window Maker} and to the contributors
+who want to help translating.
+@end ifclear
+@end ifnottex
+
+@contents
+
+@ifnottex
+@ifclear cctexi2txt
+@sp 1
+This manual is for Window Maker, version @value{version}.
+@end ifclear
+@end ifnottex
+
+@menu
+* Enabling Languages support::  How to compile Window Maker with i18n support
+* Choosing the Language::       When installed, how to run wmaker with your language
+* Troubleshooting::             Some points to check if you have problems
+* Contribute to Translations::  What to do if you want to help translating
+@end menu
+
+
+@c ------------------------------------------------------------------ Enabling Languages support ---
+
+@node Enabling Languages support
+@chapter Enabling Languages support
+
+@sc{Window Maker} has the possibility to be translated in many languages, but by default none of
+them will be installed, and the support for translation will not be compiled.
+
+To enable the translation capabilities, you have to specify which language(s) you want to be
+installed: this is done with the variable @env{LINGUAS} when running the @command{configure} script.
+This variable should contain the space-separated list of languages you want to install.
+
+You could for instance enable both French (@code{fr}) and Dutch (@code{nl}) with this:
+
+@example
+./configure LINGUAS="fr nl"
+@end example
+
+You can of course add any other option that you want to the @command{configure} command.
+From the moment you specify the variable, the @command{configure} script will check that you have
+the appropriate dependencies for this (basically the @code{gettext} function and the @code{libintl}
+library); when you run @command{make} to compile the project, it will also compile the translation
+(@code{mo} files) for the language(s) you asked (if available, of course), and during
+@command{make install} it will install them in the usual directory.
+
+The installation directory can be changed with the standard option @option{--localedir} to the
+@command{configure} script, the default path being
+@file{@emph{<prefix>}/share/locale/@emph{<lang>}/LC_MESSAGES}).
+
+
+@c ----------------------------------------------------------------- List of supported Languages ---
+@section Getting the list of supported languages
+
+The naming convention for the languages follows the @cite{ISO 639-1} standard,
+for which you can find a summary list in the
+@uref{https://www.gnu.org/software/gettext/manual/html_node/Usual-Language-Codes.html, GNU gettext manual}.
+
+But as @sc{Window Maker} does not support all of them, the @command{configure} script will print a
+warning for each language you specify that it does not know, and sum up at the end the list of
+enabled languages that will be installed.
+
+There is a non-standard possibility to set @env{LINGUAS} to @code{list}, in which case the
+@command{configure} script will provide you the list of languages it supports, and stop:
+
+@example
+./configure LINGUAS="list"
+@end example
+
+There is also another non-standard possibility to enable all the languages that @sc{Window Maker}
+supports by setting @env{LINGUAS} to @code{*}.
+This is an internal trick implemented so the development team can have the command
+@command{make distcheck} include some checks on translations:
+
+@example
+./configure LINGUAS='*'
+@end example
+
+
+@c ---------------------------------------------------------------------- Translations for Menus ---
+@section Translations for Menus
+
+In order to propose an @emph{Application Menu} (also called @emph{Root Menu}) that is also
+translated in the language of the interface, @sc{Window Maker} implements two complementary
+mechanisms:
+
+The first, always enabled when i18n support is enabled, is to look for the menu file containing the
+name of the locale.
+For example, if the file is called @file{menu} and the language is set as @env{LANG=fr_FR.utf-8},
+then @sc{Window Maker} will search for, and use the first match found:
+
+@itemize
+@item @code{menu.fr_FR.utf-8}
+@item @code{menu.fr_FR}
+@item @code{menu.fr}
+@item @code{menu}
+@end itemize
+
+The second possibility, which is not enabled by default, is to be able to use a custom @file{po}
+file which contains the translations for the text of the menu.
+This feature is enabled at compile time, using the option @option{--with-menu-textdomain} to the
+@command{configure} script. For example, if you specify:
+
+@example
+./configure --with-menu-textdomain=WMMenu
+@end example
+
+@noindent then the translations for the menu will be searched in the file @file{WMMenu.mo} located
+at the standard location, the default path being
+@file{@emph{<prefix>}/share/locale/@emph{<lang>}/LC_MESSAGES/@emph{WMMenu}.mo}.
+
+If you do not enable the feature (the default behaviour, or with an explicit
+@option{--without-menu-textdomain}), then @sc{Window Maker} will @b{not} try to translate the
+strings, even using its own domain file (@file{WindowMaker.mo}).
+
+
+@c --------------------------------------------------------------------- LINGUAS at system level ---
+@section Setting @env{LINGUAS} at system level
+
+As the variable @env{LINGUAS} is quite standard, you also have the possibility to set its value in
+the @file{config.site} file for @sc{Autoconf}.
+This file can be placed in one of these paths:
+
+@itemize @bullet
+@item @file{@emph{<prefix>}/share/config.site}
+@item @file{@emph{<prefix>}/etc/config.site}
+@end itemize
+
+This way, the same language list will be used for all the programs that use @sc{Autoconf} that you
+would compile.
+Please note that if you also specify a value on the command line, it will have precedence over the
+value in that file.
+
+
+@c ----------------------------------------------------------------------- Choosing the Language ---
+@node Choosing the Language
+@chapter Choosing the Language
+
+If you have compiled and installed @sc{Window Maker} with support for your language,
+the effective translation is done is the very same way as any other application on an @sc{Unix}
+system, you just have to set the shell variable @env{LANG} to your language before @command{wmaker}
+is started.
+In @command{sh} type of shell (@sc{sh}, @sc{ksh}, @sc{bash}, ...), this is done for example with
+(@code{fr} is for French):
+
+@example
+export LANG=fr
+@end example
+
+
+There is also a command line option @option{--locale} for @sc{Window Maker} which may be used to set
+the language:
+
+@example
+wmaker --locale fr
+@end example
+
+When using this option, @sc{Window Maker} will use the locale you specified, redefining the
+@env{LANG} environment variable to this value so all program started from @sc{Window Maker} will
+inherit its value.
+
+
+If your system is using @sc{systemd}, you can also configure the locale at system level using the
+command:
+
+@example
+localectl set-locale LANG=fr
+@end example
+
+
+You can check if the current value is properly supported with the command:
+
+@example
+locale
+@end example
+
+If this does not work, you may need first to activate the support for your locale in the system;
+you can get the list of currently enabled locales with the command:
+
+@example
+locale -a
+@end example
+
+You should be able to enable a new language support by editing the file @file{/etc/locale.gen} to
+uncomment the locale(s) you need (by removing the @code{#} character and space(s) in front of it,
+and by running the command @command{locale-gen} as root.
+
+For further information, you may wish to read dedicated documentation, for example from
+@uref{http://tldp.org/HOWTO/HOWTO-INDEX/other-lang.html, the Linux Documentation Project}
+or through pages like
+@uref{http://www.shellhacks.com/en/HowTo-Change-Locale-Language-and-Character-Set-in-Linux,Shell Hacks' note on Changing Locale}.
+
+
+@c ----------------------------------------------------------------------------- Troubleshooting ---
+@node Troubleshooting
+@chapter Troubleshooting
+
+If I18N support does not work for you, check these:
+
+@itemize @minus
+@item
+the @env{LANG} environment variable is set to your locale, and
+the locale is supported by your OS's locale or X's locale
+emulation. you can display all supported locales by
+executing "@command{locale -a}" command if it is available; you
+can check if your locale is supported by X's locale emulation,
+see @file{/usr/share/X11/locale/locale.alias}
+
+@item
+check if you are using an appropriate fonts for the locale you
+chose. If you're using a font set that has a different
+encoding than the one used by @sc{Xlib} or @sc{libc}, bad things can
+happen. Try specifically putting the encoding in the @env{LANG}
+variable, like @code{ru_RU.KOI8-R}. Again, see
+@file{/usr/share/X11/locale/locale.alias}
+
+@item
+the fonts you're using support your locale. if your font
+setting on @file{$HOME/GNUstep/Defaults/WindowMaker} is like...
+
+@example
+   WindowTitleFont = "Trebuchet MS:bold:pixelsize=12";
+   MenuTitleFont   = "Trebuchet MS:bold:pixelsize=12";
+@end example
+
+then you can't display Asian languages (@code{ja}, @code{ko}, @code{ch}, ...) characters using
+@code{Trebuchet MS}. A font that is guaranteed to work for any language is
+@code{sans} (or @code{sans-serif}). @code{sans} is not a font itself, but an alias which
+points to multiple fonts and will load the first in that list that
+has the ability to show glyphs in your language. If you don't know
+a font that is suited for your language you can always set all your
+fonts to something like:
+
+@example
+   "sans:pixelsize=12"
+@end example
+
+However, please note that if your font is something like:
+
+@example
+   "Trebuchet MS,sans serif:pixelsize=12"
+@end example
+
+this will not be able to display Asian languages if any of the
+previous fonts before sans are installed. This is because unlike
+the proper font pickup that @code{sans} guarantees for your language,
+this construct only allows a font fallback mechanism, which tries
+all the fonts in the list in order, until it finds one that is
+available, even if it doesn't support your language.
+
+Also you need to change font settings in style files in
+the @file{$HOME/Library/WindowMaker/Style} directory.
+
+@item
+the @env{LC_CTYPE} environment variable is unset or it has the correct
+value. If you don't know what is the correct value, unset it.
+
+@end itemize
+
+
+@c ------------------------------------------------------------------ Contribute to Translations ---
+@node Contribute to Translations
+@chapter Contribute to Translations
+
+You may have noticed that many translations are not up to date, because the code has evolved but the
+persons who initially contributed may not have had the time to continue, so any help is welcome.
+
+Since @sc{Window Maker} 0.95.7 there are some targets to @command{make} that can help you in that
+task.
+
+
+@c ------------------------------------------------------------------ Install the latest sources ---
+@section Install the latest sources
+
+If you want to contribute, the first step is get the development branch of the code;
+this is done using @command{git}.
+If you do not feel confident at all with using @command{git}, you may also try to ask for a
+@emph{snapshot} on the developer's mailing list @value{emailsupport}.
+With @command{git} the procedure is:
+
+@example
+# Get your working copy of the sources
+git clone git://repo.or.cz/wmaker-crm.git
+
+# Go into that newly created directory
+cd wmaker-crm
+
+# Switch to the branch where everything happens
+git checkout next
+
+# Generate the configuration script
+./autogen.sh
+@end example
+
+Now you should have an up-to-date working copy ready to be compiled;
+you will not need to go the full way but you should run the @command{configure} script, so it will
+create the @file{Makefile}s, and you may want to compile the code once so it will not do it again
+automatically later while you are doing something else:
+
+@example
+# Setup the build, enabling at least the language you want to work on
+./configure LINGUAS="<list of iso 639 country code>"
+
+# Compile the code once
+make
+@end example
+
+
+@c ------------------------------------------------------------------- Updating the Translations ---
+@section Updating the Translations
+
+The typical process for translating one program is:
+
+@itemize @bullet
+@item
+generate a POT file (PO Template):
+this is done with @command{xgettext} which searches for all the strings from the sources that can be
+translated;
+
+@item
+update the PO file for your language:
+this is done with @command{msgmerge} which compares the PO file and aligns it to the latest
+template;
+
+@item
+edit the new PO file:
+this is done by you with your favourite editor, to add the missing @code{msgstr}, review the
+possible @emph{fuzzy matches}, ...
+
+@item
+check the PO file:
+unfortunately there is no definitive method for this;
+
+@item
+submit your contribution to the project:
+this is done with @command{git}.
+@end itemize
+
+In @sc{Window Maker}, you have actually 4 @code{po} files to take care of:
+
+@itemize @minus
+@item @file{po/@emph{<lang>}.po}: for @sc{Window Maker} itself
+@item @file{WPrefs.app/po/@emph{<lang>}.po}: for the Preference Editor program
+@item @file{WINGs/po/@emph{<lang>}.po}: for the graphic toolkit library
+@item @file{util/po/@emph{<lang>}.po}: for the command-line tools of @sc{Window Maker}
+@end itemize
+
+As stated previously, there is a @command{make} target that can help you to automatically generate
+the POT and update the PO for these 4 cases:
+
+@example
+make update-lang PO=<lang>
+@end example
+
+Once run, it will have updated as needed the 4 @code{po} files against the latest source code.
+You may wish to use the command @command{git gui} to view the changes;
+you can now edit the files to complete the translation, correct them, remove deprecated stuff, ...
+Please note that the encoding should be set to @emph{UTF-8} as this is now the standard.
+
+If you think an error message is too obscure, just ask on the developer mailing list
+@value{emailsupport}: in addition to clarifications there's even a chance for the original message
+to be improved!
+
+You may find some information on working with @code{po} file in the
+@uref{https://www.gnu.org/software/gettext/manual/html_node/Editing.html,GNU gettext documentation}.
+
+
+@c --------------------------------------------------------------------- Translate the Man Pages ---
+@section Translate the Man Pages
+
+You may want to extend the translation to the documentation that is provided to users in the form
+of Unix @i{man pages}.
+The sources of the man pages are located in the @file{doc/} directory;
+the translation should be placed in the directory @file{doc/@i{lang}/} with the same file name.
+
+The directory will also need a file @file{Makefile.am} which provides the list of man pages to be
+included in the distribution package and to be installed.
+You can probably get inspiration from an existing one from another language;
+if you do not feel confident about it do not hesitate to ask on the project's mailing list
+(@value{emailsupport}), either for help or to ask someone to make it for you.
+
+Please note that although most man pages sources are directly in man page format
+(@emph{nroff}, the file extension being a number), a few of them are processed by a script
+(those with the @file{.in} extension, like @file{wmaker.in}).
+This is done because in some case we want the man page to reflect the actual compilation options.
+
+You may not want to bother with this hassle, in which case you can simply name your translation
+file with the @file{.1} and remove the special @code{@@keyword@@} marks.
+If you are sure you want to keep that processing but do not feel confident about hacking the
+@file{Makefile.am} do not hesitate to ask on the project's mailing list (@value{emailsupport}).
+
+
+@c ------------------------------------------------------------------------- Checking the Result ---
+@section Checking the Result
+
+In the @sc{Window Maker} build tree you also have another target that can help you, it is
+@command{make check}.
+
+At current time, it does not check much, but if during the @command{make update-lang} new @code{po}
+file have been created you may get some errors, because you have to add these new files to the
+variable @var{EXTRA_DIST} in the corresponding @file{Makefile}.
+
+If you do not feel confident about doing it, do not worry, just tell about it when you submit your
+work, and some developer on the mailing list will just be happy to do it for you when integrating
+your valuable contribution (we always like when someone helps making @sc{Window Maker} better).
+
+
+@c ---------------------------------------------------------------- Submitting your Contribution ---
+@section Submitting your Contribution
+
+@emph{Preliminary Remark}: if the update process made changes in a @code{po} file but you did not
+change any @code{msgstr} content, it is probably a good idea to not submit the changes to that
+@code{po} file because it would just add noise.
+
+When you feel ready to send your changes, the first step is to prepare them.
+This is done with @command{git}: if you have not run the @command{git gui} previously then it is a
+good time to do it now.
+This window offers you the possibility to show your changes and to decide what you want to send.
+
+The window is divided in 4 panes:
+@itemize @bullet
+@item
+top-right show the current changes you have selected, for review
+(and also for cherry-picking stuff if you want to select precisely)
+
+@item
+top-left ("Unstaged Changes") the list of files with changes to be send,
+ you can click on the name of the file to see the changes,
+ you can click on the icon of the file if you want to send all the changes in this file;
+an icon in blue shows a file that have been changed and an icon in black shows a file that is new
+
+@item
+bottom-left ("Staged Changes") the list of files with changes that you have chosen to send so far,
+ you can click on the file name to view these changes,
+ you can click on the icon if you want to remove the changes from this file from the list to send
+
+@item
+bottom-right ("Commit Message") the message you want to attach to your changes when you submit them
+to the development team
+@end itemize
+
+The idea here is to pick your changes to the @code{po} files;
+for the @emph{commit message} you may wish to stuck to a simple, single line:
+
+@quotation
+"Updated translations for @emph{<lang>}"
+@end quotation
+
+The penultimate step is to click on the button @key{Sign Off} (it will add a line in the commit
+message), and then click on the button @key{Commit}.
+From this time, the commit message will clear itself and the "Staged Changes" also, showing that
+your action was done.
+
+You may now quit the @command{git gui}, the final step begins by running this command:
+
+@example
+git format-patch HEAD^
+@end example
+
+This will generate a file named like @file{0001-@emph{updated-translations-for-XX}.patch}
+which contains your changes, ready for sending.
+The goal will now be to email this file to @value{emailsupport}.
+If you feel confident in having @command{git} send it for you, you may want to read the file
+@file{The-perfect-Window-Maker-patch.txt} to see how to configure @command{git} for mailing, so you
+can run:
+
+@example
+git send-email 0001-@emph{updated-translations-for-XX}.patch
+@end example
+
+
+@c ------------------------------------------------------------------------------------- The End ---
+@bye

@@ -1,0 +1,273 @@
+/*
+French translation by fabien
+*/
+
+/***
+French.lproj/Localizable.strings
+updated by make_strings 2002-12-09 18:39:09 +0100
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: ServicesParameterWindowController.m:98 */
+/* File: ServicesPrefs.m:653 */
+"Command line:" = "Ligne de commande:";
+
+/* File: TerminalWindow.m:188 */
+/* Flag: untranslated */
+/* File: TerminalWindow.m:192 */
+/* Flag: untranslated */
+" (idle)" = " (idle)";
+
+
+/*** Unmatched/untranslated keys ***/
+
+/* File: PreferencesWindowController.m:70 */
+/* Flag: untranslated */
+"Revert" = "Revert";
+
+/* File: ServicesPrefs.m:558 */
+/* Flag: untranslated */
+"No input" = "No input";
+
+/* File: ServicesPrefs.m:559 */
+/* Flag: untranslated */
+"Input in stdin" = "Input in stdin";
+
+/* File: ServicesPrefs.m:602 */
+/* Flag: untranslated */
+"Plain text" = "Plain text";
+
+/* File: TerminalParser_LinuxPrefs.m:40 */
+/* Flag: untranslated */
+"UTF-8" = "UTF-8";
+
+/* File: TerminalParser_LinuxPrefs.m:41 */
+/* Flag: untranslated */
+"West Europe, latin1" = "West Europe, latin1";
+
+/* File: TerminalParser_LinuxPrefs.m:42 */
+/* Flag: untranslated */
+"East Europe, latin2" = "East Europe, latin2";
+
+/* File: TerminalParser_LinuxPrefs.m:43 */
+/* Flag: untranslated */
+"Chinese" = "Chinese";
+
+/* File: TerminalParser_LinuxPrefs.m:44 */
+/* Flag: untranslated */
+"Custom, leave unchanged" = "Custom, leave unchanged";
+
+/* File: TerminalParser_LinuxPrefs.m:103 */
+/* Flag: untranslated */
+"'linux' terminal parser" = "'linux' terminal parser";
+
+/* File: TerminalParser_LinuxPrefs.m:108 */
+/* Flag: untranslated */
+"'linux'\nparser" = "'linux'\nparser";
+
+/* File: TerminalParser_LinuxPrefs.m:151 */
+/* Flag: untranslated */
+"Character set:" = "Character set:";
+
+/* File: TerminalViewPrefs.m:255 */
+/* Flag: untranslated */
+"Scroll-back length in lines:" = "Scroll-back length in lines:";
+
+/* File: TerminalViewPrefs.m:282 */
+/* Flag: untranslated */
+"Style:" = "Style:";
+
+/* File: TerminalViewPrefs.m:290 */
+/* Flag: untranslated */
+"Stroked block" = "Stroked block";
+
+/* File: TerminalViewPrefs.m:291 */
+/* Flag: untranslated */
+"Filled block" = "Filled block";
+
+/* File: TerminalViewPrefs.m:292 */
+/* Flag: untranslated */
+"Inverted block" = "Inverted block";
+
+/* File: TerminalViewPrefs.m:319 */
+/* Flag: untranslated */
+"Handle wide (multi-cell) glyphs" = "Handle wide (multi-cell) glyphs";
+
+/* File: TerminalViewPrefs.m:527 */
+/* Flag: untranslated */
+"Shell:" = "Shell:";
+
+/* File: TerminalViewPrefs.m:651 */
+/* Flag: untranslated */
+"Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta."
+= "Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta.";
+
+/* File: main.m:157 */
+/* Flag: untranslated */
+"Benchmark" = "Benchmark";
+
+/* File: main.m:171 */
+/* Flag: untranslated */
+"New terminal" = "New terminal";
+
+/* File: main.m:199 */
+/* Flag: untranslated */
+"Services" = "Services";
+
+
+/*** Strings from PreferencesWindowController.m ***/
+/* File: PreferencesWindowController.m:78 */
+"Apply and save" = "Appliquer et sauvegarder";
+/* File: PreferencesWindowController.m:122 */
+"Preferences" = "Panneau des Pr\u00e9f\u00e9rences";
+
+
+/*** Strings from Services.m ***/
+/* File: Services.m:152 */
+"Service aborted by user." = "Service annul\u00e9e par l'utilisateur.";
+/* File: Services.m:60 */
+"There is no terminal service called '%@'.\nYour services list is probably out-of-date.\nRun 'make_services' to update it."
+= "Il n'y a aucun service de terminal appel\u00e9e '%@'.\nVotre liste de services n'est probabement pas \u00e0 jout.\nLancer 'make_services' pour la mettre \u00e0 jour.";
+
+
+/*** Strings from ServicesParameterWindowController.m ***/
+/* File: ServicesParameterWindowController.m:66 */
+"Cancel" = "Annuler";
+/* File: ServicesParameterWindowController.m:74 */
+"OK" = "OK";
+/* File: ServicesParameterWindowController.m:118 */
+"Parameter for service %@" = "Param\u00e8tre pour le service %@";
+
+
+/*** Strings from ServicesPrefs.m ***/
+/* File: ServicesPrefs.m:585 */
+"Accept types" = "Accepte les types";
+/* File: ServicesPrefs.m:499 */
+"Add" = "Ajouter";
+/* File: ServicesPrefs.m:348 */
+"Error importing services" = "erreur durant l'import services";
+/* File: ServicesPrefs.m:401 */
+"Export services" = "Exporter les services";
+/* File: ServicesPrefs.m:523 */
+"Export..." = "Exporter...";
+/* File: ServicesPrefs.m:594 */
+"Filenames" = "Noms de fichiers";
+/* File: ServicesPrefs.m:549 */
+"Ignore output" = "Ignorer la sortie";
+/* File: ServicesPrefs.m:254 */
+"Import services" = "Importer des services";
+/* File: ServicesPrefs.m:515 */
+"Import..." = "Importer...";
+/* File: ServicesPrefs.m:560 */
+"Input on command line" = "Entr\u00e9e standard sur la ligne de commande";
+/* File: ServicesPrefs.m:640 */
+"Key:" = "Touche:";
+/* File: ServicesPrefs.m:627 */
+"Name:" = "Nom:";
+/* File: ServicesPrefs.m:507 */
+"Remove" = "Supprimer";
+/* File: ServicesPrefs.m:550 */
+"Return output" = "Retourer la sortie standard";
+/* File: ServicesPrefs.m:568 */
+"Run in background" = "Ex\u00e9cuter en arri\u00e8re plan";
+/* File: ServicesPrefs.m:570 */
+"Run in idle window" = "Ex\u00e9cuter en idle fen\u00eatre";
+/* File: ServicesPrefs.m:569 */
+"Run in new window" = "Ex\u00e9cuter dans une nouvell fen\u00eatre";
+/* File: ServicesPrefs.m:468 */
+"Terminal services" = "services de Terminal";
+/* File: ServicesPrefs.m:473 */
+"Terminal\nservices" = "Services de \nTerminal";
+/* File: ServicesPrefs.m:349 */
+"The file '%@' doesn't contain valid terminal services."
+= "Le fichier '%@' contient des services qui ne sont pas valide.";
+/* File: ServicesPrefs.m:235 */
+"Unnamed service" = "service Inconnu";
+
+
+/*** Strings from TerminalView.m ***/
+/* File: TerminalView.m:1623 */
+"Unable to fork: %m." = "Impossible de cr\u00e9er forker: %m.";
+/* File: TerminalView.m:1611 */
+"Unable to open pipe for input: %m."
+= "Impossible d'ouvrire un pipe pour l'entr\u00e9e standard: %m.";
+/* File: TerminalView.m:1476 */
+"[Process exited]" = "[Fin de processus]";
+
+
+/*** Strings from TerminalViewPrefs.m ***/
+/* File: TerminalViewPrefs.m:330 */
+"Bold font:" = "Texte gras:";
+/* File: TerminalViewPrefs.m:298 */
+"Color:" = "Couleur:";
+/* File: TerminalViewPrefs.m:277 */
+"Cursor" = "Curseur";
+/* File: TerminalViewPrefs.m:225 */
+/* File: TerminalViewPrefs.m:230 */
+"Display" = "Affichage";
+/* File: TerminalViewPrefs.m:607 */
+/* File: TerminalViewPrefs.m:602 */
+"Keyboard" = "Clavier";
+/* File: TerminalViewPrefs.m:289 */
+"Line" = "Ligne";
+/* File: TerminalViewPrefs.m:357 */
+"Normal font:" = "Texte normal:";
+/* File: TerminalViewPrefs.m:369 */
+/* File: TerminalViewPrefs.m:342 */
+"Pick font..." = "D\u00e9finir la police...";
+/* File: TerminalViewPrefs.m:492 */
+/* File: TerminalViewPrefs.m:487 */
+"Shell" = "Shell par d\u00e9faut";
+/* File: TerminalViewPrefs.m:515 */
+"Start as login-shell" = "D\u00e9marrer comme login-shell";
+/* File: TerminalViewPrefs.m:634 */
+"Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
+= "Traiter la touche command comme meta.\n\nNotez qu'avec cette touche activ\u00e9e,vous\nn'aurez plus acc\u00e9s au menu.";
+
+
+/*** Strings from TerminalWindowPrefs.m ***/
+/* File: TerminalWindowPrefs.m:192 */
+"Add top and bottom border" = "Ajouter une bordure en haut et en bas";
+/* File: TerminalWindowPrefs.m:143 */
+"Close new windows when idle"
+= "Fermer les nouvelles fen\u00eatre lorsque lorsque le shell se termine";
+/* File: TerminalWindowPrefs.m:156 */
+"Default size" = "Taille par d\u00e9faut";
+/* File: TerminalWindowPrefs.m:144 */
+"Don't close new windows" = "Ne pas fermer les nouvelles fen\u00eatre";
+/* File: TerminalWindowPrefs.m:169 */
+"Height:" = "Hauteur:";
+/* File: TerminalWindowPrefs.m:112 */
+"Terminal Window" = "Fen\u00eatre Terminal";
+/* File: TerminalWindowPrefs.m:117 */
+"Terminal\nWindow" = "Fen\u00eatre\nTerminal";
+/* File: TerminalWindowPrefs.m:160 */
+"Width:" = "Largeur:";
+
+
+/*** Strings from main.m ***/
+/* File: main.m:191 */
+"Close" = "Fermer";
+/* File: main.m:180 */
+"Copy" = "Copier";
+/* File: main.m:177 */
+"Cut" = "Couper";
+/* File: main.m:186 */
+"Edit" = "Editer";
+/* File: main.m:203 */
+"Hide" = "Masquer";
+/* File: main.m:159 */
+"Info" = "Information";
+/* File: main.m:153 */
+"Info..." = "Panneaux d'informations";
+/* File: main.m:183 */
+"Paste" = "Coller";
+/* File: main.m:155 */
+"Preferences..." = "Pr\u00e9f\u00e9rences...";
+/* File: main.m:207 */
+"Quit" = "Quitter";
+/* File: main.m:194 */
+"Windows" = "Fen\u00eatres";

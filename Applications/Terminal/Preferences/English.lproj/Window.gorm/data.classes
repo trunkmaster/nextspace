@@ -1,0 +1,30 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setDefault:",
+	    "setFont:",
+	    "setWindow:",
+	    "showDefault:"
+	);
+	Super = NSObject;
+    };
+    WindowPrefs = {
+	Actions = (
+	    "setDefault:",
+	    "setFont:",
+	    "setWindow:",
+	    "showDefault:"
+	);
+	Outlets = (
+	    columnsField,
+	    fontField,
+	    rowsField,
+	    setFontBtn,
+	    shellExitMatrix,
+	    window,
+	    view
+	);
+	Super = NSObject;
+    };
+}

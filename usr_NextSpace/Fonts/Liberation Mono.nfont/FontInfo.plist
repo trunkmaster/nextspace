@@ -1,0 +1,32 @@
+{
+    Faces = (
+	{
+	    Files = (
+		LiberationMono-Regular.ttf
+	    );
+	    Name = Regular;
+	    PostScriptName = "Liberation Mono";
+	},
+	{
+	    Files = (
+		LiberationMono-Bold.ttf
+	    );
+	    Name = Bold;
+	    PostScriptName = "Liberation Mono-Bold";
+	},
+	{
+	    Files = (
+		LiberationMono-Italic.ttf
+	    );
+	    Name = Italic;
+	    PostScriptName = "Liberation Mono-Italic";
+	},
+	{
+	    Files = (
+		LiberationMono-BoldItalic.ttf
+	    );
+	    Name = BoldItalic;
+	    PostScriptName = "Liberation Mono-BoldItalic";
+	}
+    );
+}

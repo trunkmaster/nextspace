@@ -1,0 +1,26 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    BrowserViewer = {
+	Actions = (
+	    "updatePath:"
+	);
+	Outlets = (
+	    bogusWindow,
+	    view
+	);
+	Super = NSObject;
+    };
+    BrowserViewerBrowser = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSBrowser;
+    };
+    FirstResponder = {
+	Actions = (
+	    "updatePath:"
+	);
+	Super = NSObject;
+    };
+}

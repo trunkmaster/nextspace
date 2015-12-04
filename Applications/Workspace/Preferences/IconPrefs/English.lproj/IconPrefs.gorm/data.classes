@@ -1,0 +1,34 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "revert:"
+	);
+	Super = NSObject;
+    };
+    IconPrefs = {
+	Actions = (
+	    "revert:"
+	);
+	Outlets = (
+	    bogusWindow,
+	    box,
+	    button,
+	    leftArr,
+	    rightArr,
+	    box2,
+	    resizableSwitch,
+	    iconImage,
+	    iconLabel
+	);
+	Super = NSObject;
+    };
+    NXSizer = {
+	Actions = (
+	);
+	Outlets = (
+	    delegate
+	);
+	Super = NSImageView;
+    };
+}

@@ -1,0 +1,787 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename wmaker_install.info
+@settitle Window Maker Compilation and Installation 1.0
+@c %**end of header
+
+@c This documentation is written in Texinfo format:
+@c   https://www.gnu.org/software/texinfo/manual/texinfo/
+@c
+@c The reference checker is the GNU texi2any tool, which can be invoked like this:
+@c   texi2any --plaintext --no-split --verbose Compilation.texi
+@c
+@c If you modify this file, you may want to spell-check it with:
+@c    aspell --lang=en_GB --mode=texinfo check Compilation.texi
+@c
+@c The length of lines in this file is set to 100 because it tends to keep sentences together
+@c despite the embedded @commands{};
+@c
+@c It is generally considered good practice for Tex and Texinfo formats to keep sentences on
+@c different lines, using the fact that in the end they will be merged in paragraph anyway, because
+@c it makes the patchs clearer about where the changes actually are.
+
+@finalout
+
+@c If the version was not given to texi2any with -D, assume we are being run
+@c on the git dev branch
+@ifclear version
+@set version git#next
+@end ifclear
+
+@c We provide the ability to change the email address for support from the
+@c command line
+@ifclear emailsupport
+@set emailsupport @email{wmaker-dev@@lists.windowmaker.org}
+@end ifclear
+
+@c ---------------------------------------------------------------------------------- Title Page ---
+
+@copying
+@noindent
+This manual is for @sc{Window Maker} window manager, version @value{version}.
+
+@noindent Copyright @copyright{} 2015 The Window Maker Team.
+
+@quotation
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program, see file COPYING for details.
+@end quotation
+@end copying
+
+@titlepage
+@title Window Maker Compilation and Installation
+@subtitle A guide to configure, compile and install
+@subtitle @sc{Window Maker} from sources.
+@author The Window Maker Team
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+
+@sp 1
+Published by The Window Maker team on @today{}.
+@end titlepage
+
+@c ---------------------------------------------------------------------------- Table of Content ---
+@node Top
+@ifnottex
+@top Window Maker Compilation and Installation
+
+@ifclear cctexi2txt
+A guide to configure, compile and install
+@sc{Window Maker} from sources.
+@end ifclear
+@end ifnottex
+
+@contents
+
+@ifnottex
+@ifclear cctexi2txt
+@sp 1
+This manual is for Window Maker, version @value{version}.
+@end ifclear
+@end ifnottex
+
+@menu
+* Prerequisites::         What you will need to build Window Maker
+* Building Window Maker:: How to build Window Maker
+* Miscellaneous::         Misc. information you may want to know
+* Troubleshooting::       Help on a few rare build problems
+@end menu
+
+
+@c ------------------------------------------------------------------------------- Prerequisites ---
+@node Prerequisites
+@chapter Prerequisites
+
+@section Supported Platforms
+
+@itemize -
+@item Intel GNU/Linux Systems in general, @t{ix86} and @t{x86_64} but other architectures should work
+@item BSD systems
+@item Solaris, at least on release 10 and 11
+@end itemize
+
+Patches to make it work on other platforms are welcome.
+
+
+@section Software Dependencies
+@anchor{Software Dependencies}
+
+The following software is required to use @sc{Window Maker}:
+@itemize -
+@item X11R6.x
+
+Window Maker can be compiled in older versions of @emph{X}, like @emph{X11R5} (@emph{Solaris})
+or @emph{X11R4} (@emph{OpenWindows}) but it will not work 100% correctly.
+In such servers there will not be application icons and you'll have trouble using the dock.
+Upgrading the client libraries (@emph{Xlib}, @emph{Xt}, etc.) will help if you can't upgrade
+the server.
+@end itemize
+
+@noindent The following is required to build @sc{Window Maker}:
+@itemize -
+@item Basic obvious stuff
+
+@itemize
+@item @emph{gcc} (or some other ANSI C compiler, supporting some C99 extensions)
+@item @emph{glibc} development files (usually @file{glibc-devel} in Linux distributions)
+@item @emph{X} development files (@file{XFree86-devel} or something similar)
+@end itemize
+
+@item @emph{Xft2} and its dependencies
+
+Dependencies include @emph{freetype2} and @emph{fontconfig}.
+You will also need the development files for them (@file{xft2-devel}).
+Sources are available at: @uref{http://www.freedesktop.org/wiki/Software/Xft/}
+
+@end itemize
+
+@noindent @b{Note}:
+@sc{Window Maker} is known to compile with @emph{gcc} and @emph{clang};
+the code source is mostly ANSI C (also known as C89 and C90) but is uses very few of the C99
+novelties;
+it also uses a few attributes introduced in the C11 standard but those are detected automatically,
+so most compilers should work.
+
+
+@section Special Dependencies
+@anchor{Special Dependencies}
+
+
+If you want to compile using the sources from the git repository instead of the distribution
+package, you will also need:
+@itemize
+@item @emph{git}
+@item @emph{autoconf} 2.69
+@item @emph{automake} 1.12
+@item @emph{libtool} 1.4.2
+@end itemize
+
+
+@section Optional Dependencies
+@anchor{Optional Dependencies}
+
+These libraries are not required to make @sc{Window Maker} work, but they are supported in case you
+want to use them. Version numbers are indicative, but other versions might work too.
+
+@itemize -
+@item @emph{libXPM} 4.7 or newer
+
+Older versions may not work!
+
+Available from @uref{http://xlibs.freedesktop.org/release/}
+
+There is built-in support for @emph{XPM} files, but it will not
+load images in some uncommon encodings.
+
+@item @emph{libpng} 0.96 or newer and @emph{zlib}
+
+For @emph{PNG} image support,
+@uref{http://www.libpng.org/pub/png/libpng.html}
+
+@item @emph{libtiff} 3.4 or newer
+
+For @emph{TIFF} image support,
+@uref{http://www.libtiff.org/}
+
+@item @emph{libjpeg} 6.0.1 or newer
+
+For @emph{JPEG} image support,
+@uref{http://www.ijg.org/}
+
+Note that if you don't have it, @command{configure} will issue a big warning in the end,
+this is because JPEG images are often used in themes and for background images
+so you probably want this format supported.
+
+@item @emph{libgif} 2.2 or @emph{libungif}
+
+For @emph{GIF} image support,
+@uref{http://giflib.sourceforge.net/}
+
+@item @emph{WebP} 0.4.1 or newer
+
+The reference library from @emph{Google} for their image format,
+@uref{https://developers.google.com/speed/webp/download}
+
+@item @emph{GNU xgettext}
+
+If you want to use translated messages, you will need @emph{GNU gettext}.
+Other versions of @emph{gettext} are not compatible and will not work.
+Get the @emph{GNU} version from @uref{http://www.gnu.org/software/gettext/}
+
+@item @emph{Pango} 1.36.8 or newer
+
+This library can be used by the @emph{WINGs} toolkit to improve support for @emph{UTF-8} and for
+languages written in right-to-left direction, in some widgets.
+You have to explicitly ask for its support through (@pxref{Configure Options}).
+You can get it from @uref{http://www.pango.org/Download}
+
+@item @emph{libbsd}
+
+This library can be used by the @emph{WINGs} utility library to make use of @command{strlcat} and
+@command{strlcpy} instead of using built-in functions if your system does not provide them in its
+core @emph{libc}.
+You should let @sc{Window Maker}'s @command{configure} detect this for you.
+You can get it from @uref{http://libbsd.freedesktop.org/wiki/}
+
+@item @emph{Inotify}
+
+If you have Linux's @emph{inotify} support, @sc{Window Maker} will use it to check for configuration
+updates instead of polling regularly the file.
+The needed header comes with the kernel, typical packages names include:
+@itemize
+@item @file{kernel-headers} for @emph{Slackware} and @emph{Fedora}
+@item @file{linux-userspace-headers} for @emph{Mageia}
+@item @file{linux-libc-dev} for @emph{Debian} and @emph{Ubuntu}
+@item @file{linux-glibc-devel} for @emph{OpenSuSE}
+@end itemize
+
+@item @emph{MagickWand} 6.8.9-9 or newer
+
+If found, then the library @emph{WRaster} can use the @emph{ImageMagick} library to let
+@sc{Window Maker} support more image formats, like @emph{SVG}, @emph{BMP}, @emph{TGA}, ...
+You can get it from @uref{http://www.imagemagick.org/}
+
+@item @emph{Boehm GC}
+
+This library can be used by the @emph{WINGs} utility toolkit to use a
+@cite{Boehm-Demers-Weiser Garbage Collector} instead of the traditional
+@command{malloc}/@command{free} functions from the @emph{libc}.
+You have to explicitly ask for its support though (@pxref{Configure Options}).
+You can get it from @uref{http://www.hboehm.info/gc/}
+
+@end itemize
+
+
+@c ----------------------------------------------------------------------- Building Window Maker ---
+@node Building Window Maker
+@chapter Building @sc{Window Maker}
+
+@section Getting the Sources
+
+The latest version of @sc{Window Maker} (@t{-crm}) can be downloaded from
+@uref{http://www.windowmaker.org/}
+
+Alternatively, the development branch, called @t{#next} is in the @emph{git} repository at
+@uref{http://repo.or.cz/w/wmaker-crm.git}
+
+If you want to use the @emph{git} versions, you can get it with:
+@example
+git clone -b next git://repo.or.cz/wmaker-crm.git
+@end example
+@noindent then, assuming you have the dependencies listed in @ref{Special Dependencies}, you have to
+type:
+@example
+./autogen.sh
+@end example
+@noindent to generate the configuration script.
+
+
+@section Build and Install
+
+For a quick start, type the following in your shell prompt:
+
+@example
+./configure
+make
+@end example
+
+@noindent then, login as @emph{root} and type:
+
+@example
+make install
+ldconfig
+@end example
+
+@noindent or if you want to strip the debugging symbols from the binaries to make them smaller,
+you can type instead:
+
+@example
+make install-strip
+ldconfig
+@end example
+
+@noindent This will build and install @sc{Window Maker} with default parameters.
+
+If you want to customise some compile-time options, you can do the following:
+
+@enumerate
+@item
+(optional) Look at the @ref{Configure Options}, for the options available.
+Also run:
+@example
+./configure --help
+@end example
+
+to get a complete list of options that are available.
+
+@item
+Run configure with the options you want.
+For example, if you want to use the @option{--enable-modelock} option, type:
+@example
+./configure --enable-modelock
+@end example
+
+@item
+(optional) Edit @file{src/wconfig.h} with your favourite text editor and browse through it for some
+options you might want to change.
+
+@item
+Compile. Just type:
+@example
+make
+@end example
+
+@item
+Login as root (if you can't do that, read the @ref{No Root Password, , I don't have the @emph{root} password})
+and install @sc{Window Maker} in your system:
+@example
+su root
+make install
+@end example
+
+@end enumerate
+
+
+@section User specific configuration
+
+These instructions do not need to be followed when upgrading @sc{Window Maker}
+from an older version, unless stated differently in the @cite{NEWS} file.
+
+Every user on your system that wishes to run @sc{Window Maker} must do the
+following:
+
+@enumerate
+@item
+Install Window Maker configuration files in your home directory.
+Type:
+@example
+wmaker.inst
+@end example
+
+@command{wmaker.inst} will install @sc{Window Maker} configuration files and will
+setup X to automatically launch @sc{Window Maker} at startup.
+
+@end enumerate
+
+That's it!
+
+You can type @command{man wmaker} to get some general help for configuration
+and other stuff.
+
+Read the @cite{User Guide} for a more in-depth explanation of @sc{Window Maker}.
+
+You might want to take a look at the @cite{FAQ} too.
+
+
+@section Locales/Internationalisation
+
+@sc{Window Maker} has national language support. The procedure to enable national
+language support is described in the dedicated
+@ref{Enabling Languages support,,,wmaker_i18n,@file{README.i18n}}.
+
+
+@section Configure Options
+@anchor{Configure Options}
+
+These options can be passed to the configure script to enable/disable
+some @sc{Window Maker} features. Example:
+@example
+./configure --enable-modelock --disable-gif
+@end example
+will configure @sc{Window Maker} with @emph{modelock} supported and disable @emph{gif} support.
+Normally, you won't need any of them.
+
+To get the list of all options, run @command{./configure --help}
+
+
+@subsection Installation Directory
+
+The default installation path will be in the @file{/usr/local} hierarchy;
+a number of option can customise this:
+
+@table @option
+@item  --prefix=@i{PREFIX}
+@itemx --exec-prefix=@i{EPREFIX}
+@itemx --bindir=@i{DIR}
+@itemx --sysconfdir=@i{DIR}
+@itemx --libdir=@i{DIR}
+@itemx --includedir=@i{DIR}
+@itemx --datarootdir=@i{DIR}
+@itemx --datadir=@i{DIR}
+@itemx --localedir=@i{DIR}
+@itemx --mandir=@i{DIR}
+Standard options from @emph{autoconf} to define target paths,
+you probably want to read @ref{Installation Names,,,INSTALL,@file{INSTALL}}.
+
+@item  --sbindir=@i{DIR}
+@itemx --libexecdir=@i{DIR}
+@itemx --sharedstatedir=@i{DIR}
+@itemx --localstatedir=@i{DIR}
+@itemx --oldincludedir=@i{DIR}
+@itemx --infodir=@i{DIR}
+@itemx --docdir=@i{DIR}
+@itemx --htmldir=@i{DIR}
+@itemx --dvidir=@i{DIR}
+@itemx --pdfdir=@i{DIR}
+@itemx --psdir=@i{DIR}
+More standard options from @emph{autoconf}, today these are not used by @sc{Window Maker};
+they are provided automatically by @emph{autoconf} for consistency.
+
+@item --with-gnustepdir=@i{PATH}
+Specific to @sc{Window Maker}, defines the directory where @file{WPrefs.app} will be installed,
+if you want to install it like a @emph{GNUstep} applications.
+If not specified, it will be installed like usual programs.
+
+@item --with-pixmapdir=@i{DIR}
+Specific to @sc{Window Maker}, this option defines an additional path where @emph{pixmaps} will be
+searched. Nothing will be installed there; the default path taken is @file{@emph{DATADIR}/pixmaps},
+where @var{DATADIR} is the path defined from @option{--datadir}.
+
+@end table
+
+
+@subsection External Libraries
+
+Unless specifically written, @command{configure} will try to detect automatically for the libraries;
+if you explicitly provide @option{--enable-@emph{FEATURE}} then it will break with an error message
+if the library cannot be linked;
+if you specify @option{--disable-@emph{FEATURE}} then it will not try to search for the library.
+You can find more information about the libraries in the
+@ref{Optional Dependencies}.
+
+@table @option
+@item --enable-boehm-gc
+Never enabled by default, use Boehm GC instead of the default @emph{libc} @command{malloc()}
+
+@item --disable-gif
+Disable GIF support in @emph{WRaster} library; when enabled use @file{libgif} or @file{libungif}.
+
+@item --disable-jpeg
+Disable JPEG support in @emph{WRaster} library; when enabled use @file{libjpeg}.
+
+@item --without-libbsd
+Refuse use of the @file{libbsd} compatibility library in @emph{WINGs} utility library,
+even if your system provides it.
+
+@item --disable-magick
+Disable @emph{ImageMagick's MagickWand} support in @emph{WRaster}, used to support for image formats.
+
+@item --enable-pango
+Disabled by default, enable @emph{Pango} text layout support in @emph{WINGs}.
+
+@item --disable-png
+Disable PNG support in @emph{WRaster}; when enabled use @file{libpng}.
+
+@item --disable-tiff
+Disable TIFF support in @emph{WRaster}. when enabled use @file{libtiff}.
+
+@item --disable-webp
+Disable WEBP support in @emph{WRaster}. when enabled use @file{libwebp}.
+
+@item --disable-xpm
+Disable use of @file{libXpm} for XPM support in @emph{WRaster}, use internal code instead.
+
+@end table
+
+The following options can be used to tell @command{configure} about extra paths that needs to be
+used when compiling against libraries:
+
+@table @option
+@item --with-libs-from
+specify additional paths for libraries to be searched.
+The @option{-L} flag must precede each path, like:
+@example
+--with-libs-from="-L/opt/libs -L/usr/local/lib"
+@end example
+
+@item --with-incs-from
+specify additional paths for header files to be searched.
+The @option{-I} flag must precede each paths, like:
+@example
+--with-incs-from="-I/opt/headers -I/usr/local/include"
+@end example
+
+@end table
+
+
+@subsection X11 and Extensions
+
+@command{configure} will try to detect automatically the compilation paths for X11 headers and
+libraries, and which X Extensions support can be enabled.
+if you explicitly provide @option{--enable-@emph{FEATURE}} then it will break with an error message
+if the extension cannot be used;
+if you specify @option{--disable-@emph{FEATURE}} then it will not check for the extension.
+
+@table @option
+@item  --x-includes=@i{DIR}
+@itemx --x-libraries=@i{DIR}
+@emph{Autoconf}'s option to specify search paths for @emph{X11},
+for the case were it would not have been able to detect it automatically.
+
+@item --disable-xlocale
+If you activated support for Native Languages, then @emph{X11} may use a hack to also configure its
+locale support when the program configure the locale for itself.
+The @command{configure} script detects if the @emph{Xlib} supports this or not;
+this options explicitly disable this initialisation mechanism.
+
+@item --enable-modelock
+XKB language status lock support. If you don't know what it is you probably don't need it.
+The default is to not enable it.
+
+@item --disable-shm
+Disable use of the @emph{MIT shared memory} extension.
+This will slow down texture generation a little bit, but in some cases it seems to be necessary due
+to a bug that manifests as messed icons and textures.
+
+@item --disable-shape
+Disables support for @emph{shaped} windows (for @command{oclock}, @command{xeyes}, etc.).
+
+@item --enable-xinerama
+The @emph{Xinerama} extension provides information about the different screens connected when
+running a multi-head setting (if you plug more than one monitor).
+
+@item --enable-randr
+The @emph{RandR} extension provides feedback when changing the multiple-monitor configuration in X11
+and allows to re-configure how screens are organised.
+
+At current time, it is not enabled by default because it is NOT recommended (buggy);
+@sc{Window Maker} only restart itself when the configuration change, to take into account the new
+screen size.
+
+@end table
+
+
+@subsection Feature Selection
+
+@table @option
+@item --disable-animations
+Disable animations permanently, by not compiling the corresponding code into @sc{Window Maker}.
+When enabled (the default), you still have a run-time configuration option in @emph{WPrefs}.
+
+@item --disable-mwm-hints
+Disable support for Motif's MWM Window Manager hints.
+These attributes were introduced by the Motif toolkit to ask for special window appearance requests.
+Nowadays this is covered by the NetWM/EWMH specification, but there are still applications that rely on MWM Hints.
+
+@item --enable-wmreplace
+Add support for the @emph{ICCCM} protocol for cooperative window manager replacement.
+This feature is disabled by default because you probably don't need to switch seamlessly the window manager;
+if you are making a package for a distribution you'd probably want to enable this because it allows users to give
+a try to different window managers without restarting everything for an extra cost that is not really big.
+
+@item --disable-xdnd
+Disable support for dragging and dropping files on the dock, which launches a user-specified command
+with that file.
+Starting from version 0.65.6 this feature is enabled by default.
+
+@item --enable-ld-version-script
+This feature is auto-detected, and you should not use this option.
+When compiling a library (@file{wrlib}, ...), @emph{gcc} has the possibility to filter the list of
+functions that will be visible, to keep only the public API, because it helps running programs
+faster.
+
+The @command{configure} script checks if this feature is available;
+if you specify this option it will not check anymore and blindly trust you that it is supposed to
+work, which is not a good idea as you may encounter problems later when compiling.
+
+@item --enable-usermenu
+This feature, disabled by default, allows to add a user-defined custom menu to applications;
+when choosing an entry of the menu it will send the key combination defined by the user to that
+application. @xref{Application User Menu,,,NEWS,@file{NEWS}} for more information.
+
+@item --with-menu-textdomain=@i{DOMAIN}
+Selection of the domain used for translation of the menus;
+@pxref{Translations for Menus,,,wmaker_i18n,@file{README.i18n}}.
+
+@end table
+
+
+@subsection Developer Stuff
+
+These options are disabled by default:
+
+@table @option
+@item --config-cache
+If you intend to re-run the @command{configure} script often, you probably want to include this
+option, so it will save and re-use the status of what have been detected in the file
+@file{config.cache}.
+
+@item --enable-debug
+Enable debugging features (debug symbol, some extra verbosity and checks) and add a number of
+check flags (warnings) for the compiler (in @emph{gcc} fashion).
+
+@item --enable-lcov=@i{DIRECTORY}
+Enable generation of code coverage and profiling data;
+if the @file{@i{DIRECTORY}} is not specified, use @file{coverage-report}.
+
+This option was meant to be use with @emph{gcc};
+it was not used recently so it is probable that is does not work anymore;
+the @command{configure} script will not even check that your compiling environment has the
+appropriate requirements and works with this.
+Despite all this, if you think there's a use for it and feel in the mood to help, do not hesitate to
+discuss on the mailing list @value{emailsupport} to get it working.
+
+@end table
+
+
+@c ------------------------------------------------------------------------------- Miscelleanous ---
+@node Miscellaneous
+@chapter Miscellaneous
+
+@section Platform Specific Notes
+
+@itemize -
+@item @emph{GNU/Linux} in general
+
+Make sure you have @file{/usr/local/lib} in @file{/etc/ld.so.conf} and that you
+run @command{ldconfig} after installing.
+Uninstall any packaged version of @sc{Window Maker} before installing a new version.
+
+@item @emph{RedHat GNU/Linux}
+
+@emph{RedHat} systems have several annoying problems.
+If you use it, be sure to follow the steps below or @sc{Window Maker} will not work:
+
+@itemize
+@item
+if you installed the @sc{Window Maker} that comes with @emph{RedHat}, uninstall it before upgrading;
+
+@item
+make sure you have @file{/usr/local/bin} in your @env{PATH} environment variable;
+
+@item
+make sure you have @file{/usr/local/lib} in @file{/etc/ld.so.conf} before running @command{ldconfig};
+@end itemize
+
+@item @emph{PowerPC MkLinux}
+
+You will need to have the latest version of @emph{Xpmac}.
+Older versions seem to have bugs that cause the system to hang.
+
+@item @emph{Debian GNU/Linux}
+
+If you want @emph{JPEG} and @emph{TIFF} support, make sure you have @file{libtiff-dev}
+and @file{libjpeg-dev} installed.
+
+@item @emph{SuSE GNU/Linux}
+
+If you installed the @sc{Window Maker} package from @emph{SuSE}, uninstall it before trying to
+compile @emph{Window Maker} or you might have problems.
+
+@item @emph{MetroX} (unknown version)
+
+@emph{MetroX} has a bug that corrupts pixmaps that are set as window backgrounds.
+If you use @emph{MetroX} and have weird problems with textures, do not use textures in title bars.
+Or use a different X server.
+
+@end itemize
+
+
+@section I don't have the @emph{root} password :(
+@anchor{No Root Password}
+
+If you can't get superuser privileges (can't be @i{root}) you can install @emph{Window Maker} in your own
+home directory.
+For that, supply the @option{--prefix} option when running configure in step 2 of building
+@sc{Window Maker}.
+You will also need to supply the @option{--with-gnustepdir} option, to specify the path for
+@command{WPrefs.app}.
+Example:
+
+@example
+./configure --prefix=/home/jshmoe --with-gnustepdir=/home/jshmoe/GNUstep/Applications
+@end example
+
+Then make @file{/home/jshmoe/bin} be included in your search @env{PATH}, add @file{/home/jshmoe/lib}
+to your @env{LD_LIBRARY_PATH} environment variable and run @command{bin/wmaker.inst}
+
+Of course, @file{/home/jshmoe} is supposed to be replaced by your actual home directory path.
+
+
+@section Upgrading
+
+If you are upgrading from an older version of @sc{Window Maker}:
+
+@enumerate
+@item Configure and build @sc{Window Maker} as always
+@item Install @sc{Window Maker} (but do not run @command{wmaker.inst})
+@item Read the @cite{NEWS} file and update your configuration files if necessary.
+@end enumerate
+
+
+@c ------------------------------------------------------------------------------- Miscelleanous ---
+@node Troubleshooting
+@chapter Troubleshooting
+
+When you have some trouble during configuration (while running configure), like not being able to
+use a graphic format library you think you have installed, look at the @file{config.log} file for
+clues of the problem.
+
+
+@section Error with loading fonts, even if they exist
+
+This is probably a problem with NLS (Native Language Support), you probably want to look at the
+@ref{Troubleshooting,,,wmaker_i18n,@file{README.i18n}}
+or try rebuilding without NLS support, which is done with:
+@example
+./configure LINGUAS=""
+@end example
+
+
+@section configure doesn't detect @emph{libtiff}, or other graphic libraries
+
+Delete @file{config.cache}, then rerun configure adding the following options to @command{configure}
+(among the other options you use):
+@example
+--with-libs-from="-L/usr/local/lib"
+--with-incs-from="-I/usr/local/include -I/usr/local/include/tiff"
+@end example
+Put the paths where your graphic libs and their corresponding header files are located.
+You can put multiple paths in any of these options, as the example of @option{--with-incs-from} shows.
+Just put a space between them.
+
+
+@section configure doesn't detect @emph{libXpm}
+
+Check if you have a symbolic link from @file{libXpm.so.4.9} to @file{libXpm.so}
+
+
+@section Segmentation fault on startup
+
+@itemize
+@item Check if the version of @emph{libXPM} you have is at least 4.7
+
+@item Check if you have an updated version of @file{~/GNUstep/Defaults/WindowMaker}
+@end itemize
+
+If you're not sure, try renaming @file{~/GNUstep} to @file{~/GNUtmp}
+and then run @command{wmaker.inst}
+
+
+@section "...: your machine is misconfigured. gethostname() returned (none)"
+
+the host name of your machine is set to something invalid, that starts with a parenthesis.
+Do a @command{man hostname} for info about how to set it.
+
+
+@section The root menu contains only 2 entries. ("XTerm" and "Exit...")
+
+@sc{Window Maker} could not read your menu definition file.
+You should check the output of @command{wmaker} for an error, it may be visible in the console or in the
+@file{.xsession-errors} file.
+
+
+@c ------------------------------------------------------------------------------------- The End ---
+@bye

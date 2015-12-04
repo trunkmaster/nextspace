@@ -1,0 +1,19 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "runCommand:"
+	);
+	Super = NSObject;
+    };
+    Launcher = {
+	Actions = (
+	    "runCommand:"
+	);
+	Outlets = (
+	    commandName,
+	    window
+	);
+	Super = NSObject;
+    };
+}

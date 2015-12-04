@@ -1,0 +1,15 @@
+{
+    ApplicationDescription = "A terminal emulator";
+    ApplicationIcon = Terminal;
+    ApplicationName = Terminal;
+    ApplicationRelease = "0.9.8";
+    ApplicationURL = "http://www.nongnu.org/terminal/";
+    Authors = (
+	"Alexander Malmberg <alex@malmberg.org>",
+	"Sergii Stoian <stoyan255@ukr.net>"
+    );
+    Copyright = "Copyright \u00a9 2002, 2003 Alexander Malmberg <alex@malmberg.org>";
+    CopyrightDescription = "Released under the GNU GPL. See COPYING for details.";
+    FullVersionID = "0.9.8";
+}
+

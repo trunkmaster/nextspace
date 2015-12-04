@@ -1,0 +1,1510 @@
+
+WindowMaker FAQ
+====================================================================
+Last modified: Tue Apr 20 20:15:17 EST 1999
+
+the latest info can be found at
+http://www.dpo.uab.edu/~grapeape/wmfaq.html or
+http://wm.current.nu/wmfaq/
+--------------------------
+
+Summary of Contents:
+
+1 - Introduction 
+     1.1 What is Window Maker? 
+     1.2 Where can I get Window Maker? 
+     1.3 Where are the mailing list archives? 
+     1.4 Where is more documentation on configuring Window Maker? 
+     1.5 What is an App Icon? 
+     1.6 How can I get a question added to the FAQ? 
+     1.7 How do I report bugs? 
+     1.8 Is there an anonymous cvs server?
+
+2 - Installation 
+     2.1 Where can I get proplist.h? 
+     2.2 Why do no icons show up after installing Window Maker 0.15.0
+         when I've followed all the directions? 
+     2.3 How do I get libtiff to work? 
+     2.4 How do I get libjpeg to work? 
+     2.5 How do I get libpng to work? 
+     2.6 How do I get libgif (or libungif) to work? 
+     2.7 Does wmsound work with 0.1x.x? 
+     2.8 Can I use WindowMaker with KDE or GNOME or CDE? 
+     2.9 How do I get Window Maker working with xdm in Redhat 5.[01]? 
+     2.10 Do I need to rerun wmaker.inst with every new version of
+          Window Maker? 
+     2.11 When I install Window Maker, I've used wmaker.inst correctly
+          and I only get a root menu with xterm and exit. How do I fix this?
+     2.12 How do I get Window Maker to use more than 16 colors on my
+          SGI Indy Workstation? 
+     2.13 Using WindowMaker with Solaris 2.6 CDE 
+     2.14 How do I switch CDE's window manager to use Window Maker?
+     2.15 When I run wmaker it quits complaining about something
+          "__register_frame_info".
+     2.16 When I run wmaker it complains about something like library is
+     	  62, caller expects 61
+
+3 - Usage 
+     3.1 How do I get new apps on the dock (The line of pixmaps on the
+         right side of the screen by default) 
+     3.2 What is the difference between the Exit and Exit Session Option?
+     3.3 How do I "dock" AppIcons on the Clip? 
+     3.4 Why do none of my Key Bindings work in Window Maker 0.1x.x 
+     3.5 How do I rename workspaces? 
+     3.6 How can I resize a window if the window is larger than my current
+         desktop? 
+     3.7 How do I "undock" AppIcons? 
+     3.8 I docked an application but when I run it the button is permanently
+	 shaded and I can't run new instances.
+     3.9 When I run wmaker it complains about not being able to load any
+     	 fonts.
+     3.10 When I set the root background with wmsetbg by hand it works,
+          but when I do that from the configuration files it doesn't!
+     3.11 When I run GNOME application they have no title bar.
+
+4 - Configuration 
+     4.1 What are those files inside my ~/GNUstep directory? 
+     4.2 How do I enable the normal X sloppy focus mode? 
+     4.3 How do I get my auto-arrange icons to work? 
+     4.4 How do I get my Meta-Tab to cycle through windows correctly? 
+     4.5 How can I define my own Icon for a program? (instead of the Icon
+         the Application Supplies?) 
+     4.6 How do I get a pixmap background for my appicons (those things
+         in the dock)? 
+     4.7 How do you dock <insert program here> that doesn't have an
+         appicon in the new version of Window Maker? 
+     4.8 How do I get x11amp to not have a title bar? (or any other
+         program for that matter?) 
+     4.9 How do I set a pixmap background? 
+     4.10 Can I put pixmaps in my root menu and title bars? 
+     4.11 How do I get my Minimize Icon to look like the triangle I see in
+          screenshots? 
+     4.12 How do I get superfluous bells and whistles working? 
+     4.13 How do I get my old style back?
+     4.14 How do I get the window menu with only a two button mouse? 
+     4.15 How do I edit my root menu? 
+     4.16 How can I set dock/clip to use single click to launch applications,
+   	  instead of double click?
+
+5 - Other Applications 
+     5.1 How do I assign gimp an appicon? 
+     5.2 How do I get an appicon for XEmacs 20.3+? 
+     5.3 Where do you get that clock program I always see on people's
+         desktops? 
+     5.4 How do you dock asclock? 
+     5.5 How do you dock wmload? 
+     5.6 What other apps exist for the dock? 
+     5.7 How do I get an appicon for rxvt so I can dock it? 
+     5.8 How do I get different icons for rxvt's (or xterms) running different
+         programs?
+     5.9 How do I launch multiple instances of XTerm from one appicon? 
+     5.10 How do I allow Alt+# to work in an rxvt session? (with irc for
+          example) 
+     5.11 Window Maker breaks scilab
+     5.12 Netscape icons show up in black and white
+     5.13 Snow flakes from xsnow don't accumulate on title bars!
+     5.14 I'm using RedHat 6.0 and Netscape dies without reason.
+
+6 - Programming 
+     6.1 How do I get a normal X application to produce an appicon? 
+     6.2 How do I get my tcl/tk application to produce an appicon? 
+     6.3 What is WINGs? 
+     6.4 Where can I get more information about WINGs?
+
+7 - Miscellaneous Questions 
+     7.1 Is there a pager for Window Maker? 
+     7.2 Can I have folders like in AfterStep? 
+     7.3 How do I use getstyle and setstyle? 
+     7.4 Why don't you distribute {normal diff, xdelta} patches?
+     7.5 Will you add GNOME support?
+
+8 - Themes 
+     8.1 What exactly are Themes? 
+     8.2 How do I install a Theme? 
+     8.3 How do I make a Theme? 
+
+
+========================================================================
+
+
+
+-=-=-=-=-=-=-
+Introduction:
+-=-=-=-=-=-=-
+
+1.1 What is Window Maker? 
+----------------------------------
+Window Maker is an elegant X11 window manger that emulates the
+OpenStep desktop with some noticeable enhancements. Look at
+http://wm.current.nu/themes/my-themes.html and
+http://wm.current.nu/themes/screenshots.html
+here for example screenshots. 
+
+
+1.2 Where can I get Window Maker? 
+----------------------------------
+The official site to get new developmental versions from is
+http://windowmaker.org/pub/source/beta/
+
+The mercurial repository is available at https://hg.windowmaker.org/wmaker
+
+The development versions are usually very stable themselves, so if you
+want to have all the newest features, you can rather safely go with the
+development versions. Just remember to save any unsaved data before
+you go playing around with the config files. Also, remember they are
+developmental versions, so your mileage may vary, don't get angry if they
+crash. 
+
+
+1.3 Where are the mailing list archives? 
+----------------------------------------
+Please read the information on the web pages at http://lists.windowmaker.org/
+for information on how to subscribe, the posting guidelines, and how to access
+the web archives.
+
+
+1.4 Where is more documentation on configuring Window Maker? 
+----------------------------------
+Besides the mailing list archives, there are nice documents in
+http://windowmaker.org/documentation.php
+
+
+1.5 What is an appicon? 
+----------------------------------
+An appicon is the icon (without the tiny title bar a minimized application icon
+has) produced by most applications that initially is in the bottom left corner
+of the screen while an application is running. For an example, run xterm and
+notice the icon in the corner.
+
+
+1.6. How can I get a question added to the FAQ? 
+----------------------------------
+Ask on the mailing list, or send your request to faqs@windowmaker.org
+
+Other avenues are the Window Maker wiki
+  http://bugs.windowmaker.org/projects/wmaker/wiki
+and the forums
+  http://bugs.windowmaker.org/projects/wmaker/boards
+
+
+1.7. How do I report bugs? 
+----------------------------------
+You can look at the BUGFORM file in your tarball of Window Maker.
+Alternatively, you can use the Window Maker Bugtracker at
+http://bugs.windowmaker.org/projects/wmaker/issues
+
+
+1.8. Is there a public source code repository?
+----------------------------------
+Yes there is. To check out from mercurial use:
+  hg clone http://hg.windowmaker.org/wmaker wmaker
+
+To update your source tree, cd to the wmaker directory and type
+  hg pull
+          
+
+
+-=-=-=-=-=-=-
+Installation:
+-=-=-=-=-=-=-
+
+2.1 Where can I get libPropList/proplist.h?
+-------------------------------------------
+starting with Window Maker 0.70.0, libPropList is no longer needed.
+It was obsoleted by adding property list handling code to the WINGs library.
+
+
+
+2.2 Why do no icons show up after installing Window Maker >= 0.15.x 
+    when I've followed all the directions? 
+-------------------------------------------------------------------
+Under normal circumstances, this should not happen because Window Maker
+should detect if libtiff is going to be compiled in and then it will make the
+default theme use .tiff or .xpm icons, depending if TIFF support is compiled
+in or not.
+
+As of Window Maker version 0.15.0, the default setup includes .tiff icons
+which require you to have compiled Window Maker with libtiff support, if you
+want them to be used. If you are happy with the .xpm icons, then you don't
+need libtiff. Window Maker will detect that TIFF support is not available and
+use .xpm icons instead. For some help on compiling with libtiff, look at the
+libtiff section of this FAQ. 
+
+
+2.3 How do I get libtiff to work? 
+----------------------------------
+The whole key to getting libtiff working for me was to upgrade to >=
+tiff-v3.4beta037-tar.gz available at ftp.sgi.com.
+
+Rerun ./configure and make and it should work. I had previously been using
+tiff-v3.4-tar.gz instead so the library was there just not working. A note to
+keep in mind, is that the tiff libs are versioned rather oddly, version
+tiff-v3.4beta037 is actually newer than tiff-v3.4. 
+
+Make sure to rm config.cache and rerun ./configure before attempting to
+compile again. 
+
+Also, make sure to use gnu-make for the Window Maker compile. 
+
+
+2.4 How do I get libjpeg to work? 
+----------------------------------
+The newest jpeg libs are available at ftp://ftp.uu.net/graphics/jpeg/.
+
+How many of you have seen that darned "lib reports 62 caller expects 61" type of
+error?
+Well, I have more than once, and here are some answers to possibly help
+you out. 
+
+First things first. As always, make sure there are not older copies of libjpeg
+floating around on your system. By default my Slackware distribution came
+with an old libjpeg.so.1 in the /usr/X11R6/lib/ directory. This can simply be
+deleted. Or if something complains after you delete it, recompile it if you
+can to look for the new lib in the right place, or if that fails, as a last resort,
+you might add a symlink to the new lib like so:
+ln -s /usr/local/lib/libjpeg.so.6.0.2 libjpeg.so.1 
+
+Now on to the error.
+This is basically caused by your application having been compiled to
+dynamically use the libjpeg.so shared library. When you install a new lib and
+then try to run your program again, it expects the lib it was compiled
+against, in this case the older libjpeg.so.6.0.1 and instead finds libjpeg.so.6.0.2
+and reports the error. 
+
+The fix is actually rather simple. Along with adding a libjpeg.so.6 symlink
+like so (just in case):
+ln -s libjpeg.so.6.0.2 libjpeg.so.6
+where you installed your new lib, you simply need to recompile your app to
+link it against the new library. :) 
+
+Make sure to rm config.cache and rerun ./configure before attempting to
+compile again. 
+
+Also, make sure to use gnu-make for the Window Maker compile. 
+
+
+2.5 How do I get libpng to work? 
+----------------------------------
+The newest png libs are available at
+http://www.cdrom.com/pub/png/pngcode.html. 
+
+You should also get the newest zlib libs from
+http://www.cdrom.com/pub/infozip/zlib/. 
+
+I had a few problems with this lib as well, basically I had an old libz.so in my
+/usr/X11R6/lib/ directory which configure was finding first, and which failed the
+test, being an older lib. 
+
+Generally the same applies here as with libjpeg, make sure there are no
+older versions of the necessary libs floating around on your system, then try
+and configure and make again. 
+
+Make sure to rm config.cache and rerun ./configure before attempting to
+compile again. 
+
+Also, make sure to use gnu-make for the Window Maker compile. 
+
+
+2.6 How do I get libgif (or libungif) to work? 
+----------------------------------
+The newest libgif is available at
+ftp://sunsite.unc.edu/pub/Linux/libs/giflib/. 
+
+The newest libungif is available at
+ftp://sunsite.unc.edu/pub/Linux/libs/graphics/. 
+
+I had a few problems with libgif... it seems that the install process didn't
+install the header file libgif.h, so although the Window Maker configure found
+the lib (libgif.so.x), when you actually try to compile, it fails when it looks for
+the header to include the make. I simply copied it from the libgif source
+directory to the system include directory. (/usr/local/include/ on my system). 
+
+Make sure to rm config.cache and rerun ./configure before attempting to
+compile again. 
+
+Also, make sure to use gnu-make for the Window Maker compile. 
+
+
+2.7 Does wmsound work with 0.1x.x? 
+----------------------------------
+As of Window Maker 0.15.x, sound is now included by default but requires
+the authors sound server. For more information, read the NEWS file in the
+Window Maker distribution. 
+
+The author Anthony Quinn <southgat@frontiernet.net> has released a 
+version that works with Window Maker >= 0.15.x. It is available from 
+it's home page at http://www.frontiernet.net/~southgat/wmsound/ 
+or on Largo's site at http://wm.current.nu/files.html#wmsound 
+for your convenience. 
+
+
+2.8 Can I use WindowMaker with KDE or GNOME or CDE? 
+---------------------------------------------------
+Contrary to what a lot of people think, KDE is NOT a window manager. KDE is
+a suite of various applications that includes a custom window manager (kwm).
+The same is true for CDE. 
+
+Now, answering the question: Yes, you can use WindowMaker in these
+environments. To use Window Maker with GNOME, you don't need to do
+anything special, although you may want to look at the "When I run
+GNOME application they have no title bar" below.
+
+To use it with CDE, read the answer for "How do I switch
+CDE's window manager to use Window Maker?"
+
+To use it with KDE, read it's documentation to get rid of kwm (and possibly
+kpanel) and replace it with wmaker. Then, start WPrefs.app, go to "Mouse
+Preferences" and set the "Disable mouse actions" check box. You will
+need to restart Window Maker to make this change take effect. The
+"Disable mouse actions" change is needed to allow you to use krootwm,
+which enables you to use kfm's desktop icons, but will prevent you from
+accessing Window Maker's Applications and Window List menus with the
+mouse. 
+
+
+2.9 How do I get Window Maker working with xdm in Redhat 5.[01]? 
+----------------------------------------------------------------
+After running wmaker.inst and letting it write to .xinitrc,
+cp .xinitrc .xsession
+and make sure that /usr/local/bin is in your $PATH for the Xserver. You can
+make sure of this by including a statement like 
+
+            export PATH=$PATH:/usr/local/bin 
+          
+
+in your .xsession file. 
+
+Make sure to chmod +x .xsession so that the Xsession script of xdm can
+execute it. 
+
+This is how the Xsession script is designed: 
+
+            startup=$HOME/.xsession
+
+            if [ -x "$startup" ]; then
+                    exec "$startup"
+            elif [ -x "$HOME/.Xclients" ]; then
+                    exec "$HOME/.Xclients"
+            elif [ -x /etc/X11/xinit/Xclients ]; then
+                    exec /etc/X11/xinit/Xclients
+            else
+                    if [ -f "$resources" ]; then
+                            xrdb -load "$resources"
+                    fi
+                    exec xsm
+            fi
+          
+
+You could also have a .Xclients file as was mentioned in previous revisions
+of this question. 
+
+
+2.10 Do I need to rerun wmaker.inst with every new version of
+     Window Maker? 
+----------------------------------
+There is no need to do this. You can do it, but keep in mind, that all your
+preferences will be lost, overwritten by the defaults. You can update the
+files and add the changes yourself if you need to, but else in most cases is
+sufficient to rely on WPrefs and it will update for you the new missing
+options if they differ from the default ones.
+
+The way domain files are read beginning from 0.15.0 makes the need for update
+almost redundant. The user config files are merged with the global ones in
+/usr/local/share/WindowMaker/Defaults.
+So even if new options are added, they will be reflected in the user
+configuration. 
+Only if user wishes to change the default behavior, he needs to add that
+option to the config file.
+
+If there ever happens to be a need for all users to rerun wmaker.inst in a
+future version, this will be noted in the NEWS file.
+
+
+2.11 When I install Window Maker, I've used wmaker.inst correctly
+     and I only get a root menu with xterm and exit. How do I fix this?
+----------------------------------
+Most likely, the problem is that Window Maker can not find a copy of the C
+pre processor in a directory such as /lib. The file /lib/cpp should be a
+symbolic link to whatever c compiler's cpp you are using. Mine reads as: 
+
+            cpp -> ../usr/lib/gcc-lib/i586-pc-linux-gnu/pgcc-2.90.29/cpp*
+          
+
+There seems to be another common problem that exhibits this same
+behavior. If you find another solution that matches this question please
+email <sprout@dok.org> or <largo@current.nu>. 
+
+
+2.12 How do I get Window Maker to use more than 16 colors on my
+     SGI Indy Workstation? 
+----------------------------------
+Thanks to Peter H. Chou <pchou@leland.Stanford.EDU> for this answer: 
+
+By default, the SGI X Server uses 8-bit Pseudocolor mode.
+To change it, edit (as root) the file /usr/lib/X11/xdm/Xservers.
+Change it to read: 
+
+            :0 secure /usr/bin/X11/X -bs -c -class TrueColor -depth 24
+          
+
+
+
+
+2.13 Using WindowMaker with Solaris 2.6 CDE 
+----------------------------------
+(thanks to Rob Funk, Unix God of osu.edu) 
+
+Assuming you installed Window Maker according to the README's that
+come with the source, all you need to run Window Maker on a Solaris box
+is an entry in the .xinitrc. Only 0.17 - 0.19 versions have been tested, but
+when you run the configure script, let it make changes to the .xinitrc file. It
+should look something like this: 
+
+            #!/bin/sh
+            # Window Maker Default .xinitrc
+            exec /usr/local/bin/wmaker
+          
+
+Believe it or not, that's all that it takes. This, in fact, runs WindowMaker
+instead of OpenWindows. In order to choose WindowMaker, you simply
+choose "OpenWindows Desktop" in the "Options - Session" Menus.
+Choose "CDE Desktop" if you want CDE. 
+
+The Color schemes and settings for Window Maker are separate from
+CDE. Tested on a SPARC 10, Solaris x86 should work also. (better,
+hopefully) 
+
+
+2.14 How do I switch CDE's window-manager to use Window Maker? 
+----------------------------------
+Method 1: 
+
+Peter Ilberg <peter.ilberg@natinst.com> gives us this answer: 
+
+Install WM wherever you want it, mine is in /opt/WindowMaker-0.16.0
+(eg. use ./configure --prefix=/opt/WindowMaker-0.16.0).
+Run the install script wmaker.inst in your home directory. 
+
+Add the following two lines to .dtprofile in your home directory: 
+
+SESSIONTYPE=xdm; export SESSIONTYPE
+PATH=:/usr/contrib/bin/X11:$PATH:.; export PATH 
+
+This tells CDE to go looking for an .xinitrc/.xsession instead of using the
+default environment. 
+
+Make your .xsession/.xinitrc executable (VERY IMPORTANT, wmaker.inst did
+NOT do this automatically for me) using eg. 
+
+chmod ugo+x .xsession 
+
+Your .xsession/.xinitrc should look something like this: 
+
+#!/bin/sh
+<some other init stuff that you want/need>
+exec wmaker 
+
+Things to try if it doesn't work: (somewhat fuzzy and random) 
+
+This should do it although I did have problems sometimes initially which I
+fixed by randomly trying absolute pathes for wmaker in .xsession/.xinitrc and/or
+making the dtprofile/.xinitrc/etc executable. It helps logging in on the console
+(select from CDE login screen) and start X manually using 'X'.
+If it works that way it should work when logging into the CDE environment.
+Remember to Check your paths! 
+
+If it doesn't work, you can also substitute some other window manager for
+wmaker in the .xinitrc and see if that works. If it does you know at least that
+.xinitrc is getting called/executed, so your WM path is wrong or not set. 
+
+
+Method 2: 
+
+Thomas Hanselman gave this alternative answer (via Peter Ilberg): 
+
+Build and install WM wherever you want, as described in Method 1. You
+can install and run WM just fine from your home directory. That's what I'm
+doing, since I don't have root access at work :(. Then, in your .Xdefaults file in
+your home directory, add the following line: 
+
+Dtsession*wmStartupCommand: <path to Window Maker executable> 
+
+Then, log out, and log back in, and, unless I've forgotten a step (or this is a
+custom Nortel thing), you should be in Window Maker heaven ;). 
+
+Difference between the methods: (according to Thomas) 
+
+I've been told that the difference between setting the resource and Peter's
+method is that if you override the window manager with the resource, you
+still get the CDE resources read into the resource database (so you still
+have your color settings & such from CDE), whereas with Peter's, the CDE
+resource don't get read into the database. I don't know if this is true or not,
+however. Also, another thing to note with Window Maker and HP-UX 10.20
+-- if you select "Exit Session" from the WM root menu, Window Maker and
+all of your applications are killed, but you may not be logged out. Again, this
+might be an artifact from my work environment, or the way I start Window
+Maker. 
+
+Owen Stenseth <iplenergy.com> adds: 
+
+When using this method it is possible to exit Window Maker cleanly by
+using the dtaction command. I use the following in my Window Maker menu: 
+
+"Exit Session"      EXEC dtaction ExitSession 
+
+The only problem I have at the moment is I seem to get multiple copies of
+asclock running when I log in again. 
+
+You can also use the normal "Exit Session" command from the WM root
+menu and place additional commands required to shutdown CDE in
+~/GNUstep/Library/WindowMaker/exitscript 
+
+So, if you add "dtaction ExitSession" in that file, the command to shutdown
+CDE will be automatically executed when you exit WindowMaker. 
+
+
+2.15 When I run wmaker it quits complaining about something
+     __register_frame_info. 
+----------------------------------
+This is due to using gcc >= 2.8.0 or egcs to compile Window Maker or a
+library it uses, then running these precompiled binaries on a system using
+libraries compiled with gcc 2.7.2.x
+
+You will have to compile Window Maker yourself on this system.  Please read
+the INSTALL file for the instructions on how to do so.
+
+
+2.16 When I run wmaker it complains about something like expected
+     libjpeg 61 got 62.
+----------------------------------
+Upgrade your libjpeg library and/or recompile Window Maker.
+
+
+2.17 How do I fix an error such as "libwraster.so.1: cannot open shared
+	 object file" ?
+----------------------------------
+Like most software using GNU autoconf, Window Maker by default will install
+under the /usr/local prefix.  This has the repercussion on many systems that
+the libraries that are part of Window Maker will be installed in
+/usr/local/lib, which is usually not in the default system LD_LIBRARY_PATH.
+This is why the library cannot be found.
+
+Under Linux, you will need to list this directory in /etc/ld.so.conf and
+run /sbin/ldconfig.  Both these operations will need to be performed as the
+superuser.
+
+Under BSD, as the superuser you will need to run
+
+    ldconfig -m /usr/local/lib
+
+which will merge this directory into the system library path.
+
+If the problem persists, you may be able to use "ldd" to track down why the
+library cannot be loaded (it will print a list of dynamic objects used by
+the executable or library listed on the command line, and where it is
+expecting to find it).
+
+
+-=-=-=-
+Usage:
+-=-=-=-
+
+3.1 How do I get new apps on the dock (The icon or line of icons on
+    the right side of the screen by default) 
+----------------------------------
+Launch an application. If there is a little icon that pops up in the bottom
+corner of the screen, drag it over to the dock icon(s). You should see a
+whitish square indicating when it is close enough to dock, and where it will
+be placed. To make sure this application will be there next time you start up
+WindowMaker, exit WindowMaker with the "exit session" option.
+
+
+3.2 What is the difference between the 'Exit' and 'Exit Session' Options? 
+----------------------------------
+'Exit' exits wmaker, but leaves the other apps running, and if wmaker was
+not the last app launched in the .xinitrc the X server is not closed, until
+the last app started by .xinitrc is closed.
+'Exit session' will exit wmaker, but also will close all running apps, thus
+the X server will be closed, and your session will end.
+
+
+3.3 How do I "dock" AppIcons on the Clip? 
+-----------------------------------------
+Just drag icons near it like you would for the dock.  Note that if you place
+the clip near the dock, you may have problems docking appicons in either.
+Move the clip away first.
+
+
+3.4 Why do none of my Key Bindings (ie: Alt+#) work in Window Maker 0.1x.x 
+----------------------------------
+If you are using XFree86, make sure scroll lock and numlock are off or no
+bindings will work (XFree bug). You can try using the XFree86 Numlock
+Hack by editing the line #undef NUMLOCK_HACK in $WindowMakerdir/src/wconfig.h
+and changing it to #define NUMLOCK_HACK. 
+As of 0.18.0, this hack functions properly.
+
+
+3.5 How do I rename workspaces? 
+----------------------------------
+Right click on the "desktop" (root window) to show the menu (don't hold the
+button down). Go to the workspaces menu and hold the Control key down
+and click on the workspace you would like to rename and type the name. 
+
+If you use the clip, use the "Rename Workspace" command in the clip
+menu. 
+
+
+3.6 How can I resize a window if the window is larger than my
+    current desktop?
+----------------------------------
+David Reviejo <dreviejo@arrakis.es> best summed up this answer: 
+
+     "Maybe you know:
+     Alt+Left click and drag
+     to move the window. 
+
+     Try this:
+     Alt+Right click and drag
+     to resize (by moving the nearest window corner) 
+
+     Another move/resize tip: while you are moving or resizing a window,
+     you
+     can change the move/resize mode by pressing the SHIFT key." 
+
+
+
+
+3.7 How do I "undock" AppIcons? 
+----------------------------------
+If the program is not running, just drag the icon to the middle of your
+desktop (away from the dock and clip) and watch it disappear. 
+
+If the program is running, hold down Meta (usually CTRL) and drag the icon
+off the dock. You can also right click on it and choose 'Kill', then undock as
+usual. 
+
+
+3.8 I docked an application but when I run it the button is permanently
+    shaded and I can't run new instances.
+----------------------------------
+You probably docked the application with dockit. To fix it
+remove the icon and use the "Emulate Application Icon" checkbox in
+the Advanced Options section of the Attributes panel for the window.
+Then restart the application to get the application icon you
+must use to dock the application. 
+It can also mean that you did something you shouldn't, which is
+changing the program that is ran from the docked icon. For example,
+if you docked rxvt you must NOT change it to xterm, for example.
+You also can't do any changes that might alter the contents of
+the WM_CLASS hint for the window, like the -name parameter for
+xterm, rxvt and other programs.
+
+
+
+3.9 When I run wmaker it complains about not being able to load any fonts.
+----------------------------------
+Check if the locale settings are correct. If you're not sure what to
+do, unset the LANG environment variable before running wmaker.
+
+TODO: give complete explanation
+
+
+
+3.10 When I set the root background with wmsetbg by hand it works,
+     but when I do that from the configuration files it doesn't!
+----------------------------------
+
+DOH! If you set the root background with wmsetbg by hand, it will obviously
+find the image, since you have explicitly specified it by hand. But if you
+simply put it in ~/GNUstep/Defaults/WindowMaker in some option like
+WorkspaceBack, it will not find the image because Window Maker can't read
+your mind to figure where you put the image. So, to fix it, you have to
+either place the full path for the image in the texture specification or put
+the path for the directory you put your background images in the PixmapPath
+option. You can also put all your background images in places like
+~/GNUstep/Library/WindowMaker/Backgrounds or
+/usr/local/share/WindowMaker/Backgrounds
+These directories will be listed under the "Search Path" section of WPrefs.
+
+
+
+3.11 When I run GNOME application they have no title bar.
+----------------------------------
+
+The GNOME toolkit decided to behave his own way, so it draws its own title bar
+with buttons, and asks Window Maker to not draw anything (title bar, resize bar,
+close and miniaturise button, ...).
+
+The workaround is, for each application, to ask for Window Maker's window menu
+(that is likely <Ctrl>+<Escape> if you did not change it), get the Attributes,
+and click on the greyed "Disable titlebar" until it is white (the same can be
+done for other decoration attributes).
+
+If you use a lot of GNOME applications, you may want to ask Window Maker to just
+ignore the no-titlebar-and-all for all windows at once, which is done from
+WPrefs by going to the "Expert" panel and checking the "Ignore decoration hints
+for GTK applications" button.
+
+
+
+-=-=-=-=-=-=-=-
+Configuration:
+-=-=-=-=-=-=-=-
+
+4.1 What are those files inside my ~/GNUstep directory? 
+----------------------------------
+~/GNUstep/WindowMaker/WindowMaker 
+
+     The main config file. This file controls options such as key bindings,
+     fonts, pixmaps, and focus modes. 
+
+
+~/GNUstep/WindowMaker/WMWindowAttributes 
+
+     The Controls "attributes" for individual applications and appicons.
+     Options such as what icon to use are set here. For the most part, this
+     is now best accessed via a right click on a title bar of an application
+     and selecting "Attributes" 
+
+
+~/GNUstep/Defaults/WMState 
+
+     This is the file that is automatically generated and contains the current
+     dock settings. It is not recommended to edit this file by hand. 
+
+
+~/GNUstep/Defaults/WMRootMenu 
+
+     This file specifies what file to use as the root menu.  In Window Maker
+	 0.19.0 and higher, you can replace this file with the one called plmenu
+	 in ~/GNUstep/Defaults/WindowMaker, and you can then use WPrefs to edit
+	 the menu.
+
+
+~/GNUstep/Library/WindowMaker/menu 
+
+     This is the file to edit to change your root menu. 
+
+~/GNUstep/Library/WindowMaker/plmenu
+
+	 This is the same menu file, in property list format - WPrefs needs a
+	 menu in this format if you wish to edit it using WPrefs.
+
+
+
+
+4.2 How do I enable the normal X sloppy focus mode? 
+----------------------------------
+In the ~/GNUstep/Defaults/WindowMaker, change the following: 
+
+FocusMode = sloppy; 
+
+
+4.3 How do I get my auto-arrange icons to work? 
+----------------------------------
+In ~/GNUstep/Defaults/WindowMaker set AutoArrangeIcons=Yes; and the icons
+should now auto-arrange. 
+
+
+4.4 How do I get my Meta-Tab to cycle through windows correctly? 
+----------------------------------
+Make sure that these settings are true in your ~/GNUstep/Defaults/WindowMaker
+file: 
+
+CirculateRaise = Yes;
+RaiseDelay = 1; 
+
+This will not give you MS Windows(tm) style application switching where
+alt-tab is changes context. 
+
+Paul Warren <<pdw@ferret.lmh.ox.ac.uk>> has released a patch that will
+give this style of Context Switching to Window Maker. 
+
+It is available from http://ferret.lmh.ox.ac.uk/~pdw/patches/
+
+
+4.5 How can I define my own Icon for a program? (instead of the
+    Icon the Application Supplies?) 
+----------------------------------
+You can right click on the title bar of the running app and choose the
+"Attributes..." option, then click on the "Ignore client supplied icon"
+checkbox. Click "Apply", "Save" and close the Attributes Editor. 
+
+Another method is to edit ~/GNUstep/Defaults/WMWindowAttributes by hand and
+use the AlwaysUserIcon=YES; option for the app. For example: 
+
+xmcd = { Icon = "Radio.xpm";
+AlwaysUserIcon=Yes;
+}; 
+
+
+4.6 How do I get a Tile background for my AppIcons (those things in
+    the dock)? 
+----------------------------------
+You need to change 1 line to your ~/GNUstep/Defaults/WindowMaker file. 
+
+IconBack = (spixmap, tile.black.xpm, white);
+or
+IconBack = (tpixmap, tile.black.xpm, white);
+
+spixmap will scale the pixmap to fit the tile, tpixmap will tile it as is. 
+
+As Random@efnet says, The last parameter is the color that fills in any
+Transparent parts of your icon. 
+
+IconBack takes other options too, search the NEWS file.
+
+
+4.7 How do you dock <insert program here> that doesn't have an
+    appicon in the new version of Window Maker? 
+----------------------------------
+There is now an option available to emulate appicons so that Window
+Maker can dock just about anything now. 
+
+To dock a misbehaving application, right click on the title bar and select the
+attributes menu. Next, select the pull down menu's "Advanced Options"
+item. Under the ``Advanced Options'' menu, select the ``Emulate
+Application Icon'' Option then Save, Apply and close the dialog. 
+
+This should allow you do dock the program normally. 
+
+Emulate Appicon does exactly the same thing as dockit, a small app
+distributed with ancient versions of Window Maker before the Attribute
+Editor existed (now deprecated for the obvious reason). If Emulate Appicon
+does not work, dockit will not work either.  Such applications violate the
+ICCCM (Inter-Client Communication Conventions Manual) and are considered
+badly coded for not setting the instance.class hints.
+
+
+4.8 How do I get x11amp to not have a title bar? (or any other
+    program for that matter?) 
+----------------------------------
+Right Click on the title bar and choose "Attributes". Click on Panel 2 and
+click the "Disable titlebar" and "Disable resizebar" options. Click
+"Save", "Apply" and then close the Attributes panel. 
+
+By Default, to get back to the attributes menu once you've removed the
+titlebar, hit the key F10 while the window is focused. 
+
+Here is an example entry in ~/GNUstep/WMWindowAttributes for x11amp. 
+
+x11amp={
+Icon="x11amp.xpm";
+NoTitlebar=Yes;
+NoResizebar=Yes;
+NoAppIcon=Yes;
+}; 
+
+
+4.9 How do I set a pixmap background? 
+----------------------------------
+Here is the in depth explanation straight from the NEWS file: 
+
+wmsetbg now accepts the following options: 
+usage: wmsetbg [-options] image 
+options: 
+-d 
+              dither image
+-m 
+              match colors
+-t 
+              tile image
+-s 
+              scale image (default)
+-u 
+              update Window Maker domain database
+-D <domain> 
+              update <domain> database
+-c <cpc> 
+              colors per channel to use
+
+
+
+By default, it will try to guess if dithering is needed or not and proceed
+accordingly.
+Using -d or -m will force it to dither or match colors. 
+
+Dithering for more than 15bpp is generally not needed, and will only result
+in a slower processing.
+Don't use dithering except when needed, because it is slower. Else rely on
+wmsetbg which will detect if dithering is needed and use it. 
+
+-u 
+   will update the WorkspaceBack in the default database
+   domain file in ~/GNUstep/Defaults/WindowMaker, and let Window
+   Maker refresh the screen. Please note that this option only
+   works under Window Maker, and will have no effect under
+   other window managers, since it rely on Window Maker to
+   update the image after it reads the updated defaults
+   database.
+
+-D 
+   <domain> is same as above, but will update the domain
+   <domain> instead of the default Window Maker domain.
+
+-c 
+   <cpc> will set the color per channel to use. Only needed for
+   PseudoColor visuals. Window Maker will automatically pass
+   the value read from the Window Maker domain database.
+
+
+
+The following line is straight from your WindowMaker-0.15.x
+~/GNUstep/Library/WindowMaker/menu file and should all be on one line. 
+
+"Images" OPEN_MENU BACKGROUNDS_DIR
+~/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -t 
+
+This should give you an idea on how to add other entries for different image
+directories. See the help info at the top of the
+~/GNUstep/Library/WindowMaker/menu file for more information. 
+
+If you for some reason would like to set your background image with XV, for
+instance to use an image format not yet supported by wmsetbg or to use one
+of XV's special modes, edit the file ~/GNUstep/Library/WindowMaker/autostart
+and insert the line 
+
+xv -root -quit -maxpect ~/background.jpg
+or
+xv -root -quit -max ~/background.jpg 
+
+you can also try variations of this to get different tiling and other effects
+(where X is a number 1-9 I believe):
+'xv -root -quit -rmodeX ~/background.jpg' 
+
+If you would like xv functionality in your menu, here's a nice little tip from
+Alfredo: 
+
+Add the following line to your ~/GNUstep/Library/WindowMaker/menu file. (all on
+one line) 
+
+"More Backgrounds" OPEN_MENU /home/whoever/backgrounds xv -root -maxpect -quit 
+
+
+4.10 Can I put pixmaps in my root menu and title bars? 
+----------------------------------
+With the release of WindowMaker-0.14.1, you can now put pixmaps
+anywhere you would have either a gradient or a color. This means now that 
+
+MenuTextBack=(tpixmap, foo.xpm, acolor); 
+
+in ~/GNUstep/Defaults/WindowMaker will put the correct pixmap tiled in your
+menu. 
+
+FTitleBack = (spixmap, foo.xpm, black); 
+
+Would have the effect of stretching a pixmap to fit the title bar of the active
+window.
+You can use png, gif, ppm, tiff, jpeg and xpm images interchangeably in
+Window Maker if you have compiled in support for those formats. 
+
+
+4.11 How do I get my Minimize Icon to look like the triangle I see in
+     screenshots? 
+----------------------------------
+This involves a minor source tweak. Instructions are available at
+http://wm.current.nu/tips.html#titlebar_icons
+
+Example screenshot at 
+http://wm.current.nu/themes/images/screenshots/Midnight3.jpg
+
+
+4.12 How do I get superfluous bells and whistles working? 
+----------------------------------
+Add Superfluous=YES; to your ~/GNUstep/Defaults/Windowmaker file. 
+
+This option was added as a run-time option in Window Maker >= 0.16.1.
+
+
+4.13 How do I get the classic NeXT(tm)-like style back? 
+----------------------------------
+Add NewStyle=NO; to your ~/GNUstep/Defaults/Windowmaker file. 
+
+This option was added as a run-time option in Window Maker >= 0.16.1
+
+
+4.14 How do I get the window menu with only a two button mouse? 
+----------------------------------
+Jim Noble <jmknoble@ntrnet.net> writes: 
+
+If you've got a two-button mouse under some versions of Solaris x86,
+there's no way (that I'm aware of) to emulate a 3-button mouse. The right
+button can be either MB2 or MB3, but chording doesn't work. 
+
+            ApplicationMenuMouseButton = Left;
+
+and 
+
+            WindowListMouseButton = Right; 
+          
+
+in ~/GNUstep/Defaults/WindowMaker ought to allow the left button to
+activate the root menu, and the right button (as MB2) to activate the
+windows menu. 
+
+
+4.15 How do I edit my root menu? 
+----------------------------------
+You can now use WPrefs.app 
+(see http://wm.current.nu/features/configuration.html for more info) 
+if you have the new PropList style menu, or you can manually edit the 
+old style menu file
+
+            ~/GNUstep/Library/WindowMaker/menu
+
+(or you can also manually edit the new style menu file)
+
+            ~/GNUstep/Defaults/WMRootMenu
+
+and save your changes. Window Maker should detect the change and
+automatically update. If you are having a problem getting it to reload the
+menu, try 
+
+            touch ~/GNUstep/Library/WindowMaker/menu
+
+            (or 'touch ~/GNUstep/Defaults/WMRootMenu' for the new style menu)
+
+to force the modification time into the future. 
+
+
+4.16 How can I set dock/clip to use single click to launch
+     applications, instead of double click?
+----------------------------------
+This question was officially answered as follows:
+
+    You cannot do this. This is because single click is used to select
+    app-icons, or to raise/lower the app-icon or the dock/clip.  If
+    this is implemented then you will be unable to select or
+    raise/lower dock/clip or app-icons, without also launching the
+    application it represents.
+
+    So don't ask for this to be implemented, because it will not
+    be. Double click is used for a reason, is not just some weird idea
+    we got in a morning when we wake up too early.
+
+Regardless of that, there is now an option in WPrefs, under "Expert
+User Preferences," which allows you to set "Launch applications and
+restore windows with a single click."  (See the files contrib/README
+and contrib/single_click.diff in the source package for details.)
+
+If you set that option, a left button single click will launch or
+restore, rather than select, the app-icon.  You can use other methods
+(or temporarily turn the option off again) to select app-icons or
+raise/lower the dock/clip.  You can toggle the selected state of any
+app-icon via its right button menu, and there are auto-raise and
+keep-on-top options for the dock and clip.
+
+
+4.18 How do I restore the configuration app to the dock?
+----------------------------------]
+You should start it from a terminal using its full path name, which is
+/usr/local/GNUstep/Applications/WPrefs.app/WPrefs
+by default.
+
+
+4.19 How do I define my own icon for a program?  I don't like the one it
+     supplies.
+----------------------------------
+Right-click the title bar of the running application and start the Attributes
+Editor.  Check the "Ignore client supplied icon" box.  "Apply" and "Save",
+and close the Attributes Editor.
+
+Another method is to edit ~/GNUstep/Defaults/WMWindowAttributes by hand and
+use the AlwaysUserIcon=YES; option for the app. For example: 
+
+xmcd = { Icon = "Radio.xpm"; AlwaysUserIcon=Yes; }; 
+
+
+-=-=-=-=-=-=-=-=-=-
+Other Applications:
+-=-=-=-=-=-=-=-=-=-
+
+5.1 How do I assign gimp an appicon? 
+----------------------------------
+Window Maker now can assign Icons from within the window manager, to
+do so, right click on the title bar of an app or hit F10 while the desired app
+is focused, choose "Attributes...", click on the "4" Button, enter the icon file
+name (make sure this is in your pixmap path, or you can type in the full path
+without using ~/ type path names), click "Update", "Apply", "Save" and then
+close the Attributes Editor. 
+
+You can also enter the following line in
+~/GNUstep/Library/WindowMaker/WMWindowAttributes: 
+
+gimp={Icon="gimp.xpm";}; 
+
+
+5.2 How do I get an appicon for XEmacs 20.3+? 
+----------------------------------
+Thanks to Michael Hafner <hayfi@rz.fh-augsburg.de> for this answer. 
+
+You don't need to patch the XEmacs code, just run 
+
+./configure --with-session=yes (in addition to any other options you use) 
+
+in your XEmacs 20.3+ source dir and rebuild it. Then XEmacs shows an
+appicon when running and you can easily dock it. 
+
+
+5.3 Where do you get that clock program I always see on people's
+    desktops? 
+----------------------------------
+Its called asclock. It was included with each version of Window
+Maker until version 0.17.5, and was no longer included in
+0.18.0 and above.
+You could find it in ./WindowMaker-0.xx.x/misc/asclock.tgz and it was
+pre-patched to be able to dock. Some other (older) versions you might find
+on the net don't dock. 
+
+Since it was pulled from the distribution (probably to save space), I've
+included it at http://wm.current.nu/files.html#asclock for your convenience. 
+
+
+5.4 How do you dock asclock? 
+----------------------------------
+asclock -shape -iconic -12 & 
+
+Drag it from the top right corner of the clock to the dock. Right click on the
+icon and select autolaunch.
+You have to drag the appicon by clicking on the edge of the icon, because
+the actual pixmap belongs to the app itself, and any clicks on the pixmap
+are interpreted by the app rather than X or the window manager. Therefor,
+you need to click somewhere on the appicon where the background tile
+shows through (usually the edges), and drag it that way. 
+
+
+5.5 How do you dock wmload? 
+----------------------------------
+wmload -withdrawn -shape & 
+
+Then dock it similar to asclock. 
+
+
+5.6 What other apps exist for the dock? 
+----------------------------------
+Several Nice applications are available: 
+
+     wmmixer and wmcd and wmmount
+     http://www.geocities.com/SiliconValley/Vista/2471/linux.htm#xapps 
+
+     ascd, WMRack, asmixer, asmodem, and others
+     ftp://ftp.windowmaker.info/pub/wmaker/contrib/srcs/apps/ 
+
+     wmavgload, wmmount, and wmload
+     ftp://ftp.windowmaker.info/pub/wmaker/contrib/srcs/utils/ 
+
+     wmppp-wmifs, wmtime, wmmon and other nifty apps
+     http://windowmaker.mezaway.org/ 
+
+A huge index of most available dockapps is available at:
+
+	 http://www.bensinclair.com/dockapp/
+
+
+5.7 How do I get an appicon for rxvt so I can dock it? 
+----------------------------------
+The default rxvt that comes with most distributions is an outdated version of
+rxvt. The newest development version of rxvt is available from
+ftp://ftp.math.fu-berlin.de/pub/rxvt/devel/. As of the time of this writing, the
+version is 2.4.7 and it natively produces an appicon without a patch. 
+
+John Eikenberry has also created an rpm which is available from
+ftp://ftp.coe.uga.edu/users/jae/windowmaker/ 
+
+For your convenience, I have rxvt-2.4.7.tar.gz at
+http://wm.current.nu/files/rxvt-2.4.7.tar.gz for download. As of
+version 2.4.7, rxvt includes Window Maker support as well as John
+Eikenberry's NeXT scrollbar hack. 
+
+
+5.8 How do I get different icons for rxvt's (or xterms) running
+    different programs? 
+----------------------------------
+The simplest way is to run each rxvt with a different -name parameter. 
+
+For example, I want to run an rxvt for irc and one for mail. This is an
+example of what I'd do: 
+
+for the irc rxvt:
+rxvt -name "irc" -e "irc" 
+
+for the mail rxvt:
+rxvt -name "mail" -e "pine" 
+
+This would result in each rxvt now having the instance and class of irc.Xterm
+and mail.Xterm respectively, so that Window Maker can now set Attributes
+for them individually. 
+
+
+5.9 How do I launch multiple instances of XTerm from one appicon?
+----------------------------------
+The easiest way to accomplish this is to dock XTerm as normal. Then Go
+to the 'Attributes menu' -> 'Application Specific' and select 'no application
+icon' for XTerm. 
+
+You can also right-click on the docked appicon and select settings. Change
+the 'Application Path with arguments' section to 
+
+            foo.sh
+
+where foo.sh is the following script 
+
+            #!/bin/sh
+            exec xterm
+
+This should allow unlimited XTerms without appicon clutter. 
+
+
+5.10 How do I allow Alt+# to work in an rxvt session? (with irc for
+     example) 
+----------------------------------
+First, Launch a unique instance of rxvt or xterm.
+This can be done using the -name option of rxvt.
+For example: 
+
+rxvt -name foo -e irc 
+
+Then, go to the Attributes menu (right click on title bar (or hit F10) and
+choose 'Attributes...')
+Then choose 'Advanced Options' from the listbox and enable 'Don't Bind
+Keyboard shortcuts'.
+Click 'Save' and 'Apply' and you should be able to run your session without
+the shortcuts. 
+
+
+5.11 Window Maker breaks scilab
+----------------------------------
+
+If you refer to the problem of the "graphics" window of scilab not showing
+up in Window Maker, this is caused by a bug in scilab. You can see the
+cause of the problem by yourself, by running xprop on the graphic window:
+WM_NORMAL_HINTS(WM_SIZE_HINTS):
+                user specified location: 136679205, 1074468360
+                user specified size: 400 by 300
+                program specified minimum size: 400 by 300
+
+Now, when scilab opens it's window, Window Maker nicely does exactly what it
+is told, that is, map the window at position 136679205, 1074468360 which
+obviously falls outside the screen no matter how big is your monitor ;) 
+
+Meanwhile, the workaround for this is to open the window list menu
+(click on the root window with the middle mouse button) and click 
+on the ScilabGraphic entry. The window should be brought to your
+reach. Then, open the window commands menu (right click on window's
+title bar) and open the Attributes panel. Go to the "Advanced Options"
+section, check the "Keep inside screen" option and save.
+
+If you can recompile Scilab, this came from a Scilab developer:
+
+replace 
+ size_hints.flags = USPosition | USSize | PMinSize;
+with
+ size_hints.flags = /** USPosition |**/ USSize | PMinSize;
+
+in routines/xsci/jpc_SGraph.c
+
+
+5.12 Netscape shows black and white icons
+----------------------------------
+
+I have seen this happen on some systems if you run Netscape in a high
+color depth (32bpp). That is a Netscape bug. Therefore, bug Netscape.
+
+
+5.13 Snow flakes from xsnow don't accumulate on title bars!
+----------------------------------
+
+Because of the way xsnow is coded, it seems that it can't "see"
+windows with the SaveUnder attribute turned on. So, if snow
+accumulation on windows is vital for you, disable SaveUnders in
+WPrefs, in the advanced options section.
+
+
+5.14 I'm using RedHat 6.0 and Netscape dies without reason.
+----------------------------------
+
+Er... well, I don't know why you're looking in this Window Maker FAQ 
+for a RedHat/Netscape problem, but anyway, the answer is in:
+
+http://www.redhat.com/cgi-bin/support?solution&11-990511-0082&100-926468988&14-0&15-0&25-&3-&30-
+
+
+-=-=-=-=-=-=-
+Programming:
+-=-=-=-=-=-=-
+
+6.1 How do I get a normal X application to produce an appicon? 
+----------------------------------
+ You must define the WM_CLASS (XSetClassHint()) and the
+CLIENT_LEADER or XWMHints.window_group properties, which are
+automatically set by most applications that use Xt (Motif, Athena ...),
+but if you use plain Xlib you must set them by hand. 
+
+Also you must make a call to XSetCommand(dpy, leader, argv, argc); 
+
+Take a look at Window Maker-0.1x.x/test/test.c that is an example for
+writing such an app (which also have an app menu).
+
+
+6.2 How do I get my tcl/tk application to produce an appicon? 
+----------------------------------
+Oliver Graf <ograf@fga.de> writes: 
+
+The main window (normally this is called '.' [dot] in tk) should use the
+following lines: 
+
+wm command . [concat $argv0 $argv] 
+wm group . . 
+
+All child windows attached to the same app-icon should use: 
+
+toplevel .child
+wm group .child . 
+
+where .child should be replaced by the actual window path. 
+
+Replace '.' with the actual main-window path and 'wm group .child .' should
+be added for each 'toplevel .child' call. 
+
+
+6.3 What is WINGs? 
+----------------------------------
+WINGs Is Not GNUstep. ;) 
+
+It is the Widget Library written for the widgets in Window Maker. 
+
+It is currently under heavy development but several people have started
+writing applications in it. Its goal is to emulate the NeXT(tm)-style widgets. 
+
+http://www.ozemail.com.au/~crn/wm/wings.html is the closest thing to an
+information center about WINGs by <crn@ozemail.com.au>. 
+
+
+6.4 Where can I get more information about WINGs? 
+----------------------------------
+Nic Berstein <nic@postilion.org> has created a WINGs Development list.
+
+The purpose of this list is to provide a forum for support, ideas,
+suggestions, bug reports etc. for the WINGs widget set library. 
+
+To subscribe to this list, send a message with the word ``subscribe'' in the
+_BODY_ of the message to: <wings-request@postilion.org>. 
+
+
+
+-=-=-=-=-=-=-=-=-=-=-=-=-
+Miscellaneous Questions:
+-=-=-=-=-=-=-=-=-=-=-=-=-
+
+7.1 Is there a pager for Window Maker? 
+----------------------------------
+Not at the moment because there is not a pressing need for a pager. The
+concept of multiple desktops does exist and there are currently 3 ways to
+switch between them. 
+
+First, the Alt+Number combination will switch between desktops. The
+Workspaces menu will also let you switch workspaces. Lastly, the Clip will
+also scroll one through workspaces. 
+
+For those that would like to send an application to a specific workspace,
+either drag it to an edge of the desktop onto the next workspace or you can
+right click on the title bar, choose "Move to..." and choose the appropriate
+workspace. 
+
+BUT, Window Maker does support KDE and GNOME protocols, including the
+workspace management stuff, so you can use Window Maker in these
+environments and use their pagers.
+
+
+
+7.2 Can I have folders like in AfterStep? 
+----------------------------------
+No. Window Maker does however support the collapsible Clip per desktop
+for a similar functionality. 
+
+
+7.3 How do I use getstyle and setstyle? 
+----------------------------------
+To capture the current Window Maker style, use the command 
+
+            getstyle > current.style 
+          
+
+To replace the current style, use the command 
+
+            setstyle filename.style
+
+
+7.4 Why don't you distribute {normal diff, xdelta} patches? 
+----------------------------------
+Whenever possible plain diff patches are distributed. If the new version has
+new binary files, normal diff won't be able to handle them, so a patch
+package is distributed, instead. We don't use xdelta because: - most
+systems do not have xdelta installed; - xdelta is picky and require the file to
+be patched to be exactly the same as the one used to make the patch. The
+patch package scheme used is much more flexible. 
+
+We do not distribute a simple diff with the binary files separately (and
+variations, like uuencoding the binary files) because: - it is more
+complicated and error prone to require the user to manually move the files
+to the correct places; - the current patch package scheme *does* distribute
+the binary files and diff files separately. If the user wants to install everything
+by hand, nobody will object to that; - sooner or later someone will certainly
+ask for a script to automate the file moving stuff. 
+
+So we hacked a script (mkpatch) that automatically creates a patch
+package with the normal text diff file, a list of removed files and the binary
+files that have changed or been added, plus a script that does the patching
+automatically. If you don't like the script, you can apply the patch and move
+the files manually. Or download the whole distribution. 
+
+
+7.5 Will you add GNOME or KDE support?
+--------------------------------------
+
+Support for GNOME (and KDE) hints is included since 0.50.0.  You have to
+enable them at compile-time using the appropriate arguments to ./configure.
+Please read the INSTALL file for more details.
+Note: starting with version 0.90.0, support for legacy Gnome-1.x and KDE-2.x
+was dropped in favor of NETWM support (used by both Gnome-2.x and KDE-3.x)
+
+
+-=-=-=-=-
+Themes:
+-=-=-=-=-
+
+8.1 What exactly are themes? 
+----------------------------------
+Themes are a great aspect of Window Maker allowing a user to simply
+save the entire 'look' of their desktop in a Archive to distribute freely among
+friends, fellow users and/or the whole net in general. :) 
+
+See the theme-HOWTO at http://wm.current.nu/themes/theme-HOWTO.html 
+for an in-depth walk-through on making a Theme archive. 
+
+
+8.2 How do I install a Theme? 
+----------------------------------
+This should be as simple as untarring the Theme.tar.gz into one of two
+places. You can untar it to the global /usr/local/share/WindowMaker/* directory,
+and have it be accessible to all users, or you can untar it to your own
+~/GNUstep/Library/WindowMaker/ directory for your own personal use. 
+
+Use your favorite variation of the following: 
+
+gzip -dc "Theme.tar.gz" | tar xvf - 
+
+*(directory may differ on some systems) 
+
+
+8.3 How do I make a Theme? 
+----------------------------------
+There is a neat little file called README.themes distributed with Window
+Maker that explains everything in intricate detail.  You can also read
+http://wm.current.nu/themes/themepacks.html
+
+
+====================================================================
+and they lived happily ever after.
+====================================================================
+(The End.)

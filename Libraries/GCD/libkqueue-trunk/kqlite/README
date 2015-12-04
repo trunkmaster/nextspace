@@ -1,0 +1,26 @@
+kqlite has the following goals:
+
+ * be lightweight and efficient
+ * provide a strict subset of the functionality of kqueue(2) and kevent(2)
+ * closely resemble the kqueue API, but not guarantee 100% compatibility
+ * support modern POSIX operating systems 
+
+It should be possible to switch between kqlite and the full libkqueue
+using a few preprocessor macros:
+
+    #if LIBKQUEUE
+    #define kqueue_t    int
+    #define kq_init     kqueue
+    #define kq_event    kevent
+    #define kq_free     close
+    #endif
+
+Here are the differences between kqlite and kqueue:
+
+ * Function names are different:
+
+        kqueue()        ==      kq_init()
+        kevent()        ==      kq_event()
+        close()         ==      kq_free()
+
+ * kqueue() returns an int, while kq_init returns an opaque kqueue_t type.

@@ -1,0 +1,12 @@
+{
+	    ".zip"= {
+		    file_extension = .zip; 
+		    command = "%%WRAPPED_PROGRAM_ZIP%% -r %%DESTINATION_FILE_WITH_PATH%%  %%SOURCE_FILES_WITHOUT_PATHS%%"; 
+		    wrapped_programs = (zip);
+		    };
+	    ".tgz"= {
+		    file_extension = .tgz; 
+		    command = "%%WRAPPED_PROGRAM_GNUTAR%% -cozf %%DESTINATION_FILE_WITH_PATH%%  %%SOURCE_FILES_WITHOUT_PATHS%%"; 
+		    wrapped_programs = (gnutar);
+		    };
+}

@@ -1,0 +1,38 @@
+#!/bin/sh
+set -e
+
+inst="/etc/menu-methods/wmaker /etc/menu-methods/wmappearance"
+
+case "$1" in
+  remove)
+    for file in $inst ; do
+      if [ -f $file ] ; then
+        chmod a-x $file
+      fi
+    done
+  ;;
+  purge)
+    if [ -x /usr/bin/update-menus ] ; then
+      update-menus
+      rm -f /etc/GNUstep/Defaults/menu.hook /etc/GNUstep/Defaults/appearance.menu
+    fi
+  ;;
+  upgrade|abort-install|disappear)
+    # nothing to do
+  ;;
+  failed-upgrade)
+    # this is an upgrade, and it has failed. What can fail?
+    exit 1
+  ;;
+  abort-upgrade)
+    # preinst failed, leave things like they were
+  ;;
+  *)
+    echo "postrm called with unknown argument \`$1'" >&2
+    exit 1
+  ;;
+esac
+
+#DEBHELPER#
+
+exit 0

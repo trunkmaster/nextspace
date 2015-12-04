@@ -1,0 +1,32 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setDefault:",
+	    "setElements:",
+	    "setWindow:",
+	    "showDefault:"
+	);
+	Super = NSObject;
+    };
+    TitleBarPrefs = {
+	Actions = (
+	    "setDefault:",
+	    "setElements:",
+	    "setWindow:",
+	    "showDefault:"
+	);
+	Outlets = (
+	    customTitleBtn,
+	    customTitleField,
+	    deviceNameBtn,
+	    filenameBtn,
+	    demoTitleBarField,
+	    shellPathBth,
+	    window,
+	    windowSizeBtn,
+	    view
+	);
+	Super = NSObject;
+    };
+}

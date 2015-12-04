@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Copyright (c) 2004-2009 Sergii Stoian
+#
+
+# PROVIDE: Login
+# REQUIRE: GNUstep
+# BEFORE: LOGIN
+# KEYWORD:
+
+# Log file
+GS_SECURE="/tmp/GNUstepSecure0"
+LOGFILE="$GS_SECURE/console.log"
+if [ ! -d $GS_SECURE ];then
+    mkdir $GS_SECURE
+    chmod 700 $GS_SECURE
+fi
+
+#. /Developer/Makefiles/GNUstep.sh
+. /usr/NextSpace/etc/profile
+
+case "$1" in
+
+start)
+	openapp	Login > $LOGFILE 2>&1 &
+	;;  
+stop)
+	killall Login
+	;;
+status)
+	;;
+*)
+	echo "Usage: $0 {start|stop|status}"
+	exit 1
+	;;
+esac

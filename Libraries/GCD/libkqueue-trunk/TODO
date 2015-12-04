@@ -1,0 +1,19 @@
+
+ * Create a FILTER_DECL() macro that initializes the 'struct filter' object,
+   with all members properly initialized. Then -Wno-missing-field-initializers
+   can be removed from CFLAGS.
+
+ * Implement the knote_modify() hook for all filters.
+
+ * Add a dbg_printf() statement within kevent_wait() to report the value
+   of the timeout.
+
+ * Refactor kevent_copyin() to remove the goto statements.
+
+ * Fix the crasher w/ corruption in test/vnode.c
+
+ * Add the kevent64() syscall as implemented on MacOS X. This guarantees
+   that 64-bit values can be used in the 'udata' field on 32-bit platforms.
+
+ * Check other filters for the EV_DISPATCH bug that was fixed in r252.
+

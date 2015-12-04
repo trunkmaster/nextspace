@@ -1,0 +1,37 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    ColorsPrefs = {
+	Actions = (
+	    "setDefault:",
+	    "setWindow:",
+	    "showDefault:",
+	    "showCursorColorPanel:"
+	);
+	Outlets = (
+	    windowBGColorBtn,
+	    blinkTextColorBtn,
+	    boldTextColorBtn,
+	    cursorBlinkingBtn,
+	    cursorColorBtn,
+	    cursorStyleMatrix,
+	    inverseTextBGColorBtn,
+	    inverseTextFGColor,
+	    normalTextColorBtn,
+	    windowSelectionColorBtn,
+	    window,
+	    view,
+	    useBoldBtn,
+	    inverseTextLabel
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "showCursorColorPanel:",
+	    "setDefault:",
+	    "setWindow:",
+	    "showDefault:"
+	);
+	Super = NSObject;
+    };
+}

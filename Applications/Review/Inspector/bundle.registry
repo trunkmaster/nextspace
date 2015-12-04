@@ -1,0 +1,7 @@
+{
+    type = InspectorCommand;
+    mode = contents;
+    extension = tar; 
+    selp = selectionOneOrMore;
+    class = TARInspector;
+}

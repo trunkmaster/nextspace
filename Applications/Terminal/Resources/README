@@ -1,0 +1,166 @@
+Terminal.app - copyright (c) 2002 Alexander Malmberg <alexander@malmberg.org>
+
+a terminal emulator for GNUstep
+
+This file is a part of Terminal.app. Terminal.app is free software; you
+can redistribute it and/or modify it under the terms of the GNU General
+Public License as published by the Free Software Foundation; version 2
+of the License. See COPYING or main.m for more information.
+
+
+Installing
+----------
+
+You'll need gnustep-base and gnustep-gui (or possibly some other
+openstep-like system). Recent versions are good. If you want to be able
+to use terminal services, you'll need a version of -gui newer than
+2002-06-12. The pty code is known to work on GNU/Linux and FreeBSD. Reports
+and/or patches for other systems are welcome.
+
+To build, run 'make'.
+To install, run 'make install'.
+
+(All the usual gnustep-make options apply.)
+
+
+Running
+-------
+
+Run it just like you'd run any other GNUstep application, eg.:
+  openapp Terminal.app
+
+An empty window with a shell will be opened when the program starts, unless
+you gave it a command on the command line, in which case that command will
+be run in the opened window.
+
+
+Fonts
+-----
+
+You can change the fonts used for normal and bold text in the preferences
+panel. Terminal.app will get the metrics for the character cells from the
+normal font, so this font really should be a fixed pitch font or things
+will look messed up. The bold font should closely match the normal font.
+
+(Terminal.app assumes that all characters, bold and normal, stay inside
+the normal font's bounding box. If they don't, there will be visual
+glitches. However, it is more common that a non-fixed pitch font's bounding
+box is very large (since it needs to enclose _all_ characters in the font),
+so that the terminal window will be very wide.)
+
+
+Keys
+----
+
+By default, the command key is used to access key equivalents for menu
+entries, and thus can't be used as a meta key in the terminal. If you
+have command mapped to the key you want to use as meta, you can enable
+'Treat the command key as meta' in the preferences panel. However, this
+will disable all key equivalents in Terminal.app. The 'proper' solution
+to this problem is to remap the command key (and possibly alternate key).
+The alternate key will always be treated as meta.
+
+Often, the escape key can be used to emulate a meta key. This means that
+in some programs, you might have to press escape twice to get a 'real'
+escape, or there will be a delay before it is handled. The 'Send a double
+escape...' option causes Terminal.app to send a double escape when you hit
+the escape key (ie. "\e\e"), which should work better (but you can no
+longer use the escape key as meta).
+
+
+Terminal services
+-----------------
+
+Terminal.app can provide services for other applications by piping the
+selection through arbitrary commands. Services are configured in one of
+the preferences panel's tabs. The first time you open this tab, a default
+set of services will be loaded. To save these where make_services will
+actually find them, press 'Apply and save'. This will also run
+make_services to update the services list, but it may take up to 30
+seconds for running applications to notice the change.
+
+The 'Add' and 'Remove' buttons add and remove services. Using the 'Export'
+button it is possible to save a set of services to a file. These files
+can be imported using the 'Import' button, so it is possible for users to
+share terminal services definitions. The extension of the file should be
+'.svcs'. The default set of services is such a file located in the
+application wrapper's resource directory. If you import a service with
+the same name as an existing service, and they aren't identical, the new
+one will be renamed to avoid a conflict.
+
+Name
+  This is the name of the service as it appears in the services menu. By
+  default, terminal services will be placed in a 'Terminal' submenu
+  of the Services menu, but you can override this by giving the name a
+  leading '/'. In this case, you can also use a second '/' to create your
+  own submenus. (gnustep-gui doesn't support submenus of submenus, though.)
+  Names must be unique.
+
+Key
+  The key equivalent for this command, if any. Note that if an application
+  uses this key for some other menu entry, the key will activate that menu
+  entry, not the service.
+
+Command line
+  The command line. It is passed to /bin/sh, so any shell commands will
+  work, and arguments may have to be quoted. A '%p' in the command line
+  will cause a prompt to be brought up when the service is run. If input
+  is to be placed on the command line, you can mark the place to put it
+  at with '%s' (otherwise it will be appended to the command line). You
+  can use '%%' to get a real '%'.
+
+Run in background/new window/idle window
+  If a service is set to run in the background, the command will have to
+  complete before the service will return, and the service can return
+  output. Otherwise, the command's output will appear in a window. 'new
+  window' causes a completely new window to be opened (and it will close
+  automatically when the command is completed if that option is set).
+  'idle window' causes Terminal.app to try to reuse an existing idle
+  window. If there is no such window it will open a new window (and that
+  window won't close automatically).
+
+Ignore/return output (only applies to background services)
+  If set to ignore, the output of the command will be discarded. Otherwise,
+  it will be parsed to a string or a bunch of filenames, depending on the
+  acceptable types. The output is assumed to be utf8 encoded.
+
+No input/Input in stdin/Input on command line
+  If set to 'No input', the service won't accept any input. Otherwise it
+  is necessary to select something to run it, and the selection will be
+  either piped to the command ('in stdin') or placed on the service's
+  command line (either at the '%s' or at the end, see above). Input will
+  be sent to the command utf8 encoded.
+
+Accept types
+  Plain text will be sent verbatim to the command. A list of filenames
+  (possibly just one) will be sent separated by ' ':s (if on the command
+  line), or newlines (if in stdin).
+
+
+Terminal emulation
+------------------
+
+The terminal emulation code is based on Linux's console code, and nearly
+all parts of it are handled. Thus, the TERM environment variable is set
+to 'linux'. Additionally, 'vt100', 'vt220', 'xterm', and others similar
+to these should mostly work. To distinguish Terminal.app from a 'real'
+linux console, the environment variable TERM_PROGRAM is set to
+'GNUstep_Terminal'.
+
+
+The xterm extensions for setting the window's title are also supported.
+You set the title using:
+
+'\033]'+0, 1, or 2+';'+the title+'\007'
+
+1 sets the miniwindow title, 2 sets the window title, and 0 sets both.
+
+Example (from Jeff Teunissen):
+ export PROMPT_COMMAND='echo -ne "\033]2;Terminal - ${HOSTNAME}:${PWD}\007"'
+
+
+(The terminal emulation code is fairly modular. If you want to write a
+terminal emulation class for some other terminal, contact me and I'll
+do the remaining cleanups necessary to load terminal emulation classes
+from bundles.)
+

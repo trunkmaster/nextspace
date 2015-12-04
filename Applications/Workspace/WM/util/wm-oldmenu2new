@@ -1,0 +1,217 @@
+#!/bin/sh
+#
+# wm-oldmenu2new: script to convert from old-style WindowMaker
+# menu file to the new PropertyList style of the WMRootMenu.
+#
+# Note: ex in all the Linux systems I've used is badly
+# broken, except for nex.  perl can be relied on however.
+# Re-written to use perl.
+#
+# Local dependencies:
+#   None.
+#
+# Authors: Luke Kendall, Toby J Sargeant
+#
+# Copyright waived; no warranty provided.
+#
+
+GLW=GNUstep/Library/WindowMaker
+GD=GNUstep/Defaults
+WLW=$HOME/$GLW
+WD=$HOME/$GD
+
+MYNAME=`basename $0`
+USAGE="usage: $MYNAME [menu-file-specifier]
+    E.g.	$MYNAME menu.pt
+    or		$MYNAME pt
+    The default menu if no arguments are given is the English one, 'menu'."
+
+#
+# Process arguments - work out which language menu we're converting.
+# Note that foreign language locales do *not* have the .lang suffix
+# attached to the WMRootMenu name.
+#
+OLD_MENU=menu
+NEW_MENU=WMRootMenu
+if [ $# = 1 ]
+then
+    if [ -s "$WLW/menu.$1" ]
+    then
+	OLD_MENU="menu.$1"
+	NEW_MENU="WMRootMenu"
+    elif [ -s "$WLW/$1" ]
+    then
+	OLD_MENU="$1"
+	x=`expr "$1" : "menu\.\(.*\)"`
+	[ "x$x" != "x" ] && NEW_MENU="WMRootMenu"
+    else
+	echo "$MYNAME: $WLW/$1 does not exist" >&2
+	exit 1
+    fi
+elif [ $# != 0 ]
+then
+    echo "$USAGE" >&2
+    exit 1
+fi
+
+#
+# For working out what cc is installed
+#
+which1()
+{
+    oldpath=$PATH
+    PATH=/bin:/usr/bin:/usr/local/bin
+
+    IFS=":"
+    for j in $oldpath
+    do
+	test -x $j/$1 && test ! -d $j/$1 && echo $j/$1 && return 0
+    done
+    IFS=" "
+    return 1
+}
+
+#
+# Expand macros if necessary.
+# Create a temp copy of the menu file to edit to turn into the new.
+#
+TD=$(/bin/mktemp -d /tmp/wmmenu.XXXXXX) || { echo "$0: can not create temporary file" >& 2; exit 1; }
+T=$TD/wmmenu$$
+
+echo "Converting $GLW/$OLD_MENU --> $GD/$NEW_MENU"
+cd $WLW || exit 1
+if [ ! -s "$OLD_MENU" ]
+then
+    echo "$MYNAME: $WLW/$OLD_MENU does not exist" >&2
+    exit 1
+fi
+#
+# Always pre-process, to join lines split with \, and to strip comments.
+# Not to mention the main purpose, include & process wmmacros if used.
+#
+set -e
+CC=`which1 cc`
+[ "x$CC" = "x" ] && CC=`which1 gcc`
+[ "x$CC" = "x" ] && "$MYNAME: no cc, gcc found - can't preprocess" >&2 && exit 1
+
+#
+# Use the "parse as if it's C option" if cc is gcc, because
+# newer versions apparently get confused.  Apparently gcc -E does
+# not simply run the preprocessor (that's sad).
+#
+strings "$CC" | grep -l gcc > /dev/null && GCC_FLAGS="-x c"
+
+cp $OLD_MENU $T-c
+#
+# Given the set -e, the exit 1 shouldn't be needed.  But it is, on my NeXT!
+#
+$CC -E -I. $GCC_FLAGS $T-c > $T+c || exit 1
+sed '/^#/d;/^[ 	]*$/d' $T+c > $T
+rm $T-c $T+c
+set +e
+
+#
+# This is the interesting bit.  Edit the old style menu and
+# convert into new style property-list menu.
+#
+perl - $T <<-'EOF' > $T-p
+	$v=chr(22);
+	for (<>) {
+		push @foo,$_;
+	}
+	for (@foo) {
+		s/\s*$//;
+		s/^(\s*)"*(Workspaces*)"*\s\s*(WORKSPACE_MENU)/\1(\2, \3),/;
+		s/^(\s*)("[^"]*")\s+MENU/\1($v\n\1\2,/;
+		push @foo2,split "\n";
+	}
+	@foo=();
+	for (@foo2) {
+		s/^(\s*)"([^"]*)"\s\s*END/\1),/;
+		s/^(\s*)"([^"]*)"\s\s*EXEC\s\s*(.*)$/\1($v\n\1"\2",$v\n\1EXEC,$v\n\1"\3"$v\n\1),/;
+		s/^(\s*)"([^"]*)"\s\s*SHEXEC\s\s*(.*)$/\1($v\n\1"\2",$v\n\1SHEXEC,$v\n\1"\3"$v\n\1),/;
+		push @foo,split "\n";
+	}
+	@foo2=();
+	for (@foo) {
+		 
+s/^(\s*)"([^"]*)"\s\s*OPEN_MENU\s\s*(.*)$/\1($v\n\1"\2",$v\n\1OPEN_MENU,$v\n\1"\3"$v\n\1),/;
+		push @foo2,split "\n";
+	}
+	@foo=();
+	for (@foo2) {
+		s/^(\s*)([^ 	]*)\s\s*MENU/\1($v\n\1"\2",/;
+		push @foo,split "\n";
+	}
+	@foo2=();
+	for (@foo) {
+		s/^(\s*)([^ 	]*)\s\s*END/\1),/;
+		s/^(\s*)([^ 	]*)\s\s*EXEC\s\s*(.*)$/\1($v\n\1"\2",$v\n\1EXEC,$v\n\1"\3"$v\n\1),/;
+		s/^(\s*)([^ 	]*)\s\s*SHEXEC\s\s*(.*)$/\1($v\n\1"\2",$v\n\1SHEXEC,$v\n\1"\3"$v\n\1),/;
+		push @foo2,split "\n";
+	}
+	@foo=();
+	for (@foo2) {
+		s/^(\s*)([^ 	 
+]*)\s\s*OPEN_MENU\s\s*(.*)$/\1($v\n\1"\2",$v\n\1OPEN_MENU,$v\n\1"\3"$v\n\1),/;
+		push @foo,split "\n";
+	}
+	@foo2=();
+	for (@foo) {
+		s/ WITH / QQQjjQQQ /;
+		s/^(\s*)"([^"]*)"\s\s*([A-Z_][A-Z_]*)$/\1("\2", \3),/;
+		s/^(\s*)"([^"]*)"\s+([A-Z_][A-Z_]*)\s\s*(.*)$/\1("\2", \3, \4),/;
+		s/"(.*".*)"/JJJqqJJJ\1JJJqqJJJ/;
+		/JJJqqJJJ/ && s/"/\\"/g;
+		s/JJJqqJJJ/"/g;
+		s/ QQQjjQQQ / WITH /;
+		print "$_\n";
+	}
+EOF
+mv $T-p $T
+
+#
+# Now strip off spurious commas from lines like:
+#	),
+#    )
+# since comma is a property separator, not terminator.  Sigh.
+# Also correct for another problem - Linux ex's require the CTRL-V
+# above; a real vi/ex doesn't; so we have to strip out any spurious
+# CTRL-V characters if we're using a real ex:
+#
+sed 's///g' $T | awk '
+	{
+	    if (last_line != null)
+	    {
+		if ((last_line ~ /,$/) && ($0 ~ /^[ 	]*\)/))
+		    print substr(last_line, 0, length(last_line)-1)
+		else
+		    print last_line
+	    }
+	    last_line = $0
+	}
+
+END	{
+	    if (last_line != null)
+	    {
+		if (last_line ~ /,$/)
+		    print substr(last_line, 0, length(last_line)-1)
+		else
+		    print last_line
+	    }
+	}
+' > $WD/$NEW_MENU.new || exit 1
+
+rm -f $T
+rm -fr $TD
+
+#
+# Now install it.
+#
+cd $WD
+if [ -s $NEW_MENU ]
+then
+    echo "Preserving $NEW_MENU as $NEW_MENU.sav in $WD"
+    mv $NEW_MENU $NEW_MENU.sav
+fi
+mv $NEW_MENU.new $NEW_MENU && echo "Created new $WD/$NEW_MENU"

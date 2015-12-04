@@ -1,0 +1,30 @@
+{
+	Faces = (
+	{
+	    Files = (
+	        cour.ttf,
+	        StoyanMedium-10.pcf,
+	        StoyanMedium-12.pcf
+	    );
+	    ScreenFonts = {
+		10 = ("StoyanMedium-10.pcf");
+		12 = ("StoyanMedium-12.pcf");
+	    	};
+		Name = Medium;
+		PostScriptName = Stoyan;
+	},
+	{
+	    Files = (
+		courbd.ttf,
+		StoyanBold-10.pcf,
+		StoyanBold-12.pcf
+	    );
+	    ScreenFonts = {
+	        10 = ("StoyanBold-10.pcf");
+	        12 = ("StoyanBold-12.pcf");
+	    };
+	    Name = Bold;
+	    PostScriptName = Stoyan-Bold;
+	}
+	);
+}

@@ -1,0 +1,32 @@
+{
+    Faces = (
+	{
+	    Files = (
+		LiberationSans-Regular.ttf
+	    );
+	    Name = Regular;
+	    PostScriptName = "Liberation Sans";
+	},
+	{
+	    Files = (
+		LiberationSans-Bold.ttf
+	    );
+	    Name = Bold;
+	    PostScriptName = "Liberation Sans-Bold";
+	},
+	{
+	    Files = (
+		LiberationSans-Italic.ttf
+	    );
+	    Name = Italic;
+	    PostScriptName = "Liberation Sans-Italic";
+	},
+	{
+	    Files = (
+		LiberationSans-BoldItalic.ttf
+	    );
+	    Name = BoldItalic;
+	    PostScriptName = "Liberation Sans-BoldItalic";
+	}
+    );
+}

@@ -1,0 +1,31 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    BrowserPrefs = {
+	Actions = (
+	    "revert:"
+	);
+	Outlets = (
+	    bogusWindow,
+	    box,
+	    button,
+	    rightArr,
+	    box2,
+	    browser
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "revert:"
+	);
+	Super = NSObject;
+    };
+    NXSizer = {
+	Actions = (
+	);
+	Outlets = (
+	    delegate
+	);
+	Super = NSImageView;
+    };
+}

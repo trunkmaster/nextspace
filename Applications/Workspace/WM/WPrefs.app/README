@@ -1,0 +1,121 @@
+
+			          WPrefs.app
+				  ==========
+
+ 		  The WindowMaker Prerefences Application
+		
+
+    WPrefs.app is the preferences "editor" for the WindowMaker window 
+manager. It can be used to set most of the preference options of WindowMaker
+and define it's applications menu. It also can change some settings 
+that do not belong to WindowMaker. 
+
+    Although WPrefs.app is designed to be easy to use, you should read the
+user guide to be fully aware of all available options and other features
+of WindowMaker that are not related to configuration.
+
+    To run WPrefs, do not put it in your search path. Instead, run it
+with the full path, like /usr/local/GNUstep/Applications/WPrefs.app/WPrefs
+Then, dock it's application icon. The dock will automatically detect it's
+icon and use it.
+
+    If you change configuration often, you might want to leave WPrefs
+always running, leaving it hidden while not in use. You can also make it
+be automatically started with WindowMaker and toggle the Start Hidden
+option in the attributes panel for the WPrefs window. Of course, it will
+use some memory, but by leaving it hidden it'll probably be swapped out and
+stay there until you unhide it.
+
+    WPrefs is still under development. Some of the configuration options are 
+not yet configurable from WPrefs, notably the appearance related options.
+It might contain bugs that can corrupt your configuration files, so backup
+the contents of the ~/GNUstep/Defaults directory before using it.
+
+
+
+License
+-------
+
+    Like Window Maker, WPrefs is distributed with through the General Public
+License (as stated in the file COPYING). 
+
+Notes
+-----
+
+The mouse speed configuration is saved as a call for xset in 
+~/G/D/L/W/autostart. WindowMaker calls this file when it is started.
+
+If you don't want or can't use the menu definition section, do not
+open it's section (or if you do open it, do not Save), or WPrefs will
+overwrite your ~/G/D/WMRootMenu file.
+
+Only options that have different values than what is found in the 
+system-wide configuration file is saved.
+
+WPrefs only supports property list menus. If you have a plain text file
+menu, it will not be read by WPrefs. You can either recreate the menu from
+scratch or not use WPrefs for menu definition. The old menu will not be
+overwritten if you recreate it.
+
+
+Build
+-----
+
+WPrefs will be built automatically and installed with the rest of WindowMaker.
+
+
+
+Customized Installation
+-----------------------
+
+By default, WPrefs.app will be installed in the GNUstep applications directory, 
+which is /usr/local/GNUstep/Applications. If you want to install it somewhere 
+else, like in /some_weird_path/Applications, set the GNUSTEP_LOCAL_ROOT
+environment variable to some_weird_path before running configure for
+WindowMaker. You can also configure Window Maker supplying the --with-gnustepdir
+option to configure, like ./configure --with-gnustepdir=/usr/GNUstep/Applications
+If you change your mind after installing, you can move the .app directory 
+to one of the following GNUstep/Applications directories:
+
+/usr/GNUstep/Applications
+
+OR
+
+/usr/local/GNUstep/Applications
+
+OR
+
+~/GNUstep/Applications
+
+
+
+Credits
+-------
+
+User interface design, programming and a few icons:
+    Alfredo K. Kojima <kojima@windowmaker.info>		
+
+Additional programming:
+    James Thompson <jamest@math.ksu.edu>
+    Dan Pascu <dan@windowmaker.info>
+    ]d <id@windowmaker.info>
+
+Icon and image artwork:
+    Jesse Kaufman <glandix@linuxfreak.com>
+    Marco van Hylckama Vlieg <marco@windowmaker.info>
+    See details in README in tiff/ directory
+
+WindowMaker
+-----------
+
+    If for some weird reason you end up with this preferences program and 
+don't have Window Maker yet, you can get more information about it at
+http://windowmaker.info and download it at ftp://ftp.windowmaker.info
+
+
+Contact
+-------
+
+Send comments and bug reports to kojima@windowmaker.info 
+Use the WindowMaker BUGFORM to report bugs.
+

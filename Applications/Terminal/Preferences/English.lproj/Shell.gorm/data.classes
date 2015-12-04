@@ -1,0 +1,21 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setLoginShell:"
+	);
+	Super = NSObject;
+    };
+    ShellPrefs = {
+	Actions = (
+	    "setLoginShell:"
+	);
+	Outlets = (
+	    loginShellBtn,
+	    shellField,
+	    window,
+	    view
+	);
+	Super = NSObject;
+    };
+}

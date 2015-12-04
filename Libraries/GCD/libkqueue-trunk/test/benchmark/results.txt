@@ -1,0 +1,174 @@
+Test system:
+    Linux voltaire 2.6.31-20-generic #58-Ubuntu SMP Fri Mar 12 04:38:19 UTC 2010 x86_64 GNU/Linux
+
+
+
+
+THTTPD 2.25b + POLL(2)
+NO IDLE CONNECTIONS
+
+Time taken for tests:   0.515 seconds
+Complete requests:      5000
+Failed requests:        0
+Write errors:           0
+Total transferred:      2760000 bytes
+HTML transferred:       1555000 bytes
+Requests per second:    9699.79 [#/sec] (mean)
+Time per request:       51.547 [ms] (mean)
+Time per request:       0.103 [ms] (mean, across all concurrent requests)
+Transfer rate:          5228.79 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2   3.2      1      20
+Processing:     3   12   5.1     10      42
+Waiting:        2   11   4.7      9      41
+Total:          3   14   6.3     11      61
+
+Percentage of the requests served within a certain time (ms)
+  50%     11
+  66%     15
+  75%     18
+  80%     19
+  90%     20
+  95%     29
+  98%     37
+  99%     37
+ 100%     61 (longest request)
+
+THTTPD 2.25b + LIBKQUEUE
+NO IDLE CONNECTIONS
+
+Requests per second:    8243.78 [#/sec] (mean)
+Time per request:       60.652 [ms] (mean)
+Time per request:       0.121 [ms] (mean, across all concurrent requests)
+Transfer rate:          4455.47 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4   3.2      4      15
+Processing:     3   11   8.6     11     265
+Waiting:        2    9   8.2     10     260
+Total:          7   16   8.9     16     277
+
+Percentage of the requests served within a certain time (ms)
+  50%     16
+  66%     19
+  75%     19
+  80%     20
+  90%     21
+  95%     23
+  98%     28
+  99%     29
+ 100%    277 (longest request)
+
+
+==================================================================
+
+THTTPD 2.25b + POLL(2)
+3000 IDLE CONNECTIONS
+
+Requests per second:    5902.01 [#/sec] (mean)
+Time per request:       84.717 [ms] (mean)
+Time per request:       0.169 [ms] (mean, across all concurrent requests)
+Transfer rate:          3181.55 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    3   3.7      1      18
+Processing:     7   28  13.3     25     339
+Waiting:        7   26  13.4     23     338
+Total:          8   30  14.2     27     342
+
+Percentage of the requests served within a certain time (ms)
+  50%     27
+  66%     32
+  75%     35
+  80%     38
+  90%     51
+  95%     54
+  98%     59
+  99%     62
+ 100%    342 (longest request)
+
+
+THTTPD 2.25b + LIBKQUEUE
+3000 IDLE CONNECTIONS
+
+Requests per second:    7945.49 [#/sec] (mean)
+Time per request:       62.929 [ms] (mean)
+Time per request:       0.126 [ms] (mean, across all concurrent requests)
+Transfer rate:          4283.11 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2   2.6      1      12
+Processing:     2   14   5.1     14      28
+Waiting:        2   12   4.5     12      27
+Total:          9   16   4.9     17      30
+
+Percentage of the requests served within a certain time (ms)
+  50%     17
+  66%     19
+  75%     19
+  80%     20
+  90%     22
+  95%     24
+  98%     28
+  99%     29
+ 100%     30 (longest request)
+
+===========================================================================
+
+THTTPD 2.25b + POLL(2)
+6000 IDLE CONNECTIONS
+
+Requests per second:    4650.43 [#/sec] (mean)
+Time per request:       107.517 [ms] (mean)
+Time per request:       0.215 [ms] (mean, across all concurrent requests)
+Transfer rate:          2507.37 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    3   5.5      1      23
+Processing:    12   34  18.8     29     542
+Waiting:       12   33  18.1     29     542
+Total:         13   38  21.4     31     544
+
+Percentage of the requests served within a certain time (ms)
+  50%     31
+  66%     35
+  75%     39
+  80%     41
+  90%     65
+  95%     85
+  98%     99
+  99%     99
+ 100%    544 (longest request)
+
+THTTPD 2.25b + LIBKQUEUE
+6000 IDLE CONNECTIONS
+
+Requests per second:    9023.58 [#/sec] (mean)
+Time per request:       55.410 [ms] (mean)
+Time per request:       0.111 [ms] (mean, across all concurrent requests)
+Transfer rate:          4864.27 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4   4.6      3      18
+Processing:     7   22   8.5     23      44
+Waiting:        4   21   8.6     21      43
+Total:         12   27   8.7     26      49
+
+Percentage of the requests served within a certain time (ms)
+  50%     26
+  66%     29
+  75%     31
+  80%     34
+  90%     40
+  95%     45
+  98%     49
+  99%     49
+ 100%     49 (longest request)
+

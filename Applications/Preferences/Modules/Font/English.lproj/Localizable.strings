@@ -1,0 +1,15 @@
+/***
+English.lproj/Localizable.strings
+updated by make_strings 2002-08-10 20:04:06 +0400
+add comments above this one
+***/
+
+
+/*** Strings from Font.m ***/
+/* File: Font.m:275 */
+"Font Preferences" = "Font Preferences";
+/* File: Font.m:241 */
+"Font: Could not load nib \"Font\", aborting."
+= "Font: Could not load nib \"Font\", aborting.";
+/* File: Font.m:252 */
+"Example Text" = "Sphinx of black quartz, judge my vow.\n0123456789";

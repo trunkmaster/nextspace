@@ -1,0 +1,11 @@
+#include "wmmacros"
+
+Appearance MENU 
+  "Background" OPEN_MENU background.menu
+  "Styles" OPEN_MENU -noext LOCAL_STYLES_DIR STYLES_DIR USER_STYLES_DIR WITH setstyle
+  "Themes" OPEN_MENU -noext LOCAL_THEMES_DIR THEMES_DIR USER_THEMES_DIR WITH setstyle
+  "Icon Sets" OPEN_MENU -noext LOCAL_ICON_SETS_DIR ICON_SETS_DIR USER_ICON_SETS_DIR WITH seticons
+  "Save IconSet" EXEC geticonset USER_ICON_SETS_DIR/"%a(IconSet name)"
+  "Save Theme" EXEC getstyle -t USER_THEMES_DIR/"%a(Theme name)"
+Appearance  END 
+

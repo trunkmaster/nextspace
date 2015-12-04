@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "switchModule:"
+	);
+	Super = NSObject;
+    };
+    Preferences = {
+	Actions = (
+	    "switchModule:"
+	);
+	Outlets = (
+	    box,
+	    panel,
+	    popup
+	);
+	Super = NSObject;
+    };
+}

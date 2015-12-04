@@ -1,0 +1,25 @@
+Description: Remove include ungif library (will use gif library)
+Author: Rodolfo García Peñas (kix) <kix@debian.org>
+Last-Update: 2014-10-09
+Index: WindowMaker-0.95.6/m4/wm_imgfmt_check.m4
+===================================================================
+--- WindowMaker-0.95.6.orig/m4/wm_imgfmt_check.m4
++++ WindowMaker-0.95.6/m4/wm_imgfmt_check.m4
+@@ -19,7 +19,7 @@
+ # WM_IMGFMT_CHECK_GIF
+ # -------------------
+ #
+-# Check for GIF file support through 'libgif', 'libungif' or 'giflib v5'
++# Check for GIF file support through 'libgif' or 'giflib v5'
+ # The check depends on variable 'enable_gif' being either:
+ #   yes  - detect, fail if not found
+ #   no   - do not detect, disable support
+@@ -37,7 +37,7 @@ AS_IF([test "x$enable_gif" = "xno"],
+          wm_save_LIBS="$LIBS"
+          dnl
+          dnl We check first if one of the known libraries is available
+-         for wm_arg in "-lgif" "-lungif" ; do
++         for wm_arg in "-lgif" ; do
+            AS_IF([wm_fn_lib_try_link "DGifOpenFileName" "$XLFLAGS $XLIBS $wm_arg"],
+              [wm_cv_imgfmt_gif="$wm_arg" ; break])
+          done

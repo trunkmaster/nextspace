@@ -1,0 +1,41 @@
+#!/bin/sh
+set -e
+
+# Window Maker postinst.
+#
+# Marcelo Magallon <mmagallo@debian.org>
+# Rodolfo "kix" García <kix@kix.es>
+
+inst="/etc/menu-methods/wmappearance"
+
+case "$1" in
+  configure)
+    for file in $inst ; do
+        if [ -f $file ] ; then
+            chmod a+x $file
+        fi
+    done
+
+    if [ -x /usr/bin/update-menus -a -x /usr/bin/install-menu ] ; then
+# Remove the menu.hook from all the possible paths.
+      rm -f /etc/X11/WindowMaker/menu.hook
+      rm -f /usr/share/WindowMaker/menu.hook
+# Remove appearance.menu
+      rm -f /usr/share/WindowMaker/appearance.menu
+      update-menus
+    fi
+  ;;
+
+  abort-upgrade|abort-deconfigure|abort-remove)
+    # how did we got here? Force a non-zero exit code
+    exit 1
+  ;;
+
+  *)
+    echo "postinst called with unkown argument: \$1" >&2
+  ;;
+esac
+
+#DEBHELPER#
+
+exit 0

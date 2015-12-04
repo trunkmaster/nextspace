@@ -1,0 +1,72 @@
+(
+    {
+        Comments = "Binhex'd files (usually Macintosh files)"; 
+        file_extension = .hqx; 
+        wrapped_programs = (hexbin); 
+        command = "%%WRAPPED_PROGRAM_HEXBIN%% -3 %%FILE%%"; 
+    }, 
+    {
+        Comments = {
+            .compressed = "tar & compressed archive, alternate extension under NEXTSTEP"; 
+            .tar.Z = "tar & compressed archive"; 
+            .gnutar.gz = "gnutar & gzipped archive"; 
+            ".tar-gz" = "tar & gzipped archive, alternate extension common on VMS"; 
+            ".tar-z" = "tar & gzipped archive, alternate extension common on VMS"; 
+            .tar.gz = "tar & gzipped archive"; 
+            .taz = "tar & gzipped archive, alternate extension common on IBM"; 
+            .tgz = "tar & gzipped archive, alternate extension common on IBM/Macintosh/Rhapsody"; 
+        }; 
+        file_extension = (.compressed, .tgz, .tar.gz, .tar.Z, .taz, ".tar-z", ".tar-gz", .gnutar.gz); 
+        wrapped_programs = (tar,gunzip); 
+        command = "%%WRAPPED_PROGRAM_TAR%% -xozf %%FILE%%"; 
+    }, 
+    {
+        Comments = {
+            .gnutar = "gnutar archive, common on Unix/NEXTSTEP/Rhapsody"; 
+            .tar = "tar archive, common on Unix/NEXTSTEP/Rhapsody"; 
+        }; 
+        file_extension = (.tar, .gnutar); 
+        wrapped_programs = (tar); 
+        command = "%%WRAPPED_PROGRAM_TAR%% -xof %%FILE%%"; 
+    }, 
+    {
+        Comments = {
+            .Z = "compressed file, common on Unix"; 
+            .gz = "gzipped file, better compression than compress, no patent LZW issues"; 
+            .z = "gzipped or pack file, original extension for gzip, renamed due to conflict with pack files"; 
+        }; 
+        file_extension = (.Z, .gz, .z); 
+        wrapped_programs = (gunzip); 
+        command = "%%WRAPPED_PROGRAM_GUNZIP%% -c %%FILE%% > %%FILENAME-WITHOUT_FILE_EXTENSION-WITHOUT_PATH%%";
+    }, 
+    {
+        Comments = "ZIP files, the standard on Windows 95/NT"; 
+        file_extension = .zip; 
+        wrapped_programs = (unzip); 
+        command = "%%WRAPPED_PROGRAM_UNZIP%% -o %%FILE%%"; 
+    }, 
+    {
+        Comments = "LHA files, ancient compression format on IBM PCs"; 
+        file_extension = (.lha, .lzh); 
+        wrapped_programs = (lha); 
+        command = "%%WRAPPED_PROGRAM_LHA%% xf %%FILE%%"; 
+    }, 
+    {
+        Comments = "ARJ files, compression format on IBM PCs"; 
+        file_extension = .arj; 
+        wrapped_programs = (unarj); 
+        command = "%%WRAPPED_PROGRAM_UNARJ%% e %%FILE%%"; 
+    }, 
+    {
+        Comments = {
+            .bin = "Macbinary file, common on Macintosh"; 
+            .cpt = "Compactor Pro file, older compression format on the Macintosh"; 
+            .macbin = "Macbinary file, common on Macintosh"; 
+            .pit = "Pack It file, older compression format on the Macintosh"; 
+            .sit = "StuffIt file, common on Macintosh (Older 1.5 archives only...)"; 
+        }; 
+        file_extension = (.bin, .macbin, .cpt, .sit, .pit); 
+        wrapped_programs = (macunpack); 
+        command = "%%WRAPPED_PROGRAM_MACUNPACK%% -3 %%FILE%%"; 
+    }
+)
