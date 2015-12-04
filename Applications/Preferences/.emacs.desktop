@@ -2,90 +2,68 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Dec  4 14:54:52 2015
+;; Created Fri Dec  4 19:03:53 2015
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring nil)
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Display/*.m" "~/Developer/StepMaker/code/Applications/Preferences/*.m" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/*.m" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/" "~/Developer/StepMaker/code/Applications/Preferences/PrefsModule.h" "~/Developer/StepMaker/code/Applications/Preferences/Preferences.h" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/Resources/bundle.registry" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/PreferencesInfo.plist" "~/Developer/StepMaker/code/Applications/Preferences/GNUmakefile.*" "~/Developer/StepMaker/code/Applications/Preferences/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Preferences.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace/Operations/ProcessManager.m"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Mouse/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Font/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Display/*.m" "~/Developer/nextspace/Applications/Preferences/*" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Display/*.m" "~/Developer/StepMaker/code/Applications/Preferences/*.m" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/*.m" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/" "~/Developer/StepMaker/code/Applications/Preferences/PrefsModule.h" "~/Developer/StepMaker/code/Applications/Preferences/Preferences.h" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/Resources/bundle.registry" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/PreferencesInfo.plist"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/Mouse.m"
-  "Mouse.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  123
-  '(1638 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Display/Display.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
   "Display.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2521
-  '(1118 nil)
+  1096
+  '(1071 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Display/Display.h"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
   "Display.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  198
-  '(833 nil)
+  1295
+  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/Mouse.h"
-  "Mouse.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  822
-  '(4 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/Localization.m"
-  "Localization.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2929
-  '(4 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/Localization.h"
-  "Localization.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  846
-  '(4 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/Keyboard.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
   "Keyboard.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  7234
+  '(7516 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
+  "Keyboard.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1106
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.m"
+  "Mouse.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1
@@ -95,7 +73,18 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Font/Font.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
+  "Localization.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/Font.m"
   "Font.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -106,7 +95,29 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/AppController.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"
+  "PrefsController.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/AppController.h"
+  "AppController.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/AppController.m"
   "AppController.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -117,7 +128,18 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/ClockView.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/ClockView.h"
+  "ClockView.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/ClockView.m"
   "ClockView.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -128,7 +150,62 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Preferences_main.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/GNUmakefile.postamble"
+  "GNUmakefile.postamble"
+  'fundamental-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'fundamental-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Preferences.h"
+  "Preferences.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/PreferencesInfo.plist"
+  "PreferencesInfo.plist"
+  'fundamental-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Preferences_main.m"
   "Preferences_main.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -139,8 +216,8 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Preferences/PrefsController.m"
-  "PrefsController.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.h"
+  "PrefsController.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1

@@ -175,7 +175,8 @@ static NSMutableDictionary      *domain = nil;
   [[sectionsMtrx cellWithTag:2] setRefusesFirstResponder:YES];
 
   [shortcutsBrowser setTitle:@"Action" ofColumn:0];
-  [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];  
+  [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
+  [shortcutsBrowser loadColumnZero];
 
   [self sectionButtonClicked:sectionsMtrx];
 }
@@ -186,10 +187,13 @@ static NSMutableDictionary      *domain = nil;
     {
       if (![NSBundle loadNibNamed:@"Keyboard" owner:self])
         {
-          NSLog (@"Display.preferences: Could not load nib \"Keyboard\", aborting.");
+          NSLog (@"Keyboard.preferences: Could not load NIB file, aborting.");
           return nil;
         }
     }
+
+  [shortcutsBrowser setTitle:@"Action" ofColumn:0];
+  [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
   
   return view;
 }
