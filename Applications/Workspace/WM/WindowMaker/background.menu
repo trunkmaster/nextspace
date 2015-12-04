@@ -1,0 +1,28 @@
+#include "wmmacros"
+
+"Background" MENU
+        "Solid" MENU
+                "Black" WS_BACK '(solid, black)'
+                "Blue"  WS_BACK '(solid, "#505075")'
+                "Indigo" WS_BACK '(solid, "#243e6c")'
+                "Deep Blue" WS_BACK '(solid, "#180090")'
+                "Purple" WS_BACK '(solid, "#554466")'
+                "Wheat"  WS_BACK '(solid, "wheat4")'
+                "Dark Gray"  WS_BACK '(solid, "#333340")'
+                "Wine" WS_BACK '(solid, "#400020")'
+        "Solid" END
+        "Gradient" MENU
+		"Sunset" WS_BACK '(mvgradient, deepskyblue4, black, deepskyblue4, tomato4)'
+		"Sky" WS_BACK '(vgradient, blue4, white)'
+		"Blue Shades" WS_BACK '(vgradient, "#7080a5", "#101020")'
+		"Indigo Shades" WS_BACK '(vgradient, "#746ebc", "#242e4c")'
+	    	"Purple Shades" WS_BACK '(vgradient, "#654c66", "#151426")'
+		"Wheat Shades" WS_BACK '(vgradient, "#a09060", "#302010")'
+		"Grey Shades" WS_BACK '(vgradient, "#636380", "#131318")'
+		"Wine Shades" WS_BACK '(vgradient, "#600040", "#180010")'
+        "Gradient" END
+        "Images" MENU
+            "Tiled" OPEN_MENU LOCAL_BACKGROUNDS_DIR BACKGROUNDS_DIR USER_BACKGROUNDS_DIR WITH wmsetbg -u -t
+            "Scaled" OPEN_MENU LOCAL_BACKGROUNDS_DIR BACKGROUNDS_DIR USER_BACKGROUNDS_DIR WITH wmsetbg -u -s
+        "Image" END
+"Background" END

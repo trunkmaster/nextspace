@@ -1,0 +1,30 @@
+{
+  WindowTitleFont = "Trebuchet MS,sans serif:bold:pixelsize=12";
+  MenuTitleFont = "Trebuchet MS,sans serif:bold:pixelsize=12";
+  MenuTextFont = "Trebuchet MS,sans serif:pixelsize=12";
+  IconTitleFont = "Arial,sans serif:pixelsize=9";
+  ClipTitleFont = "Verdana:bold:pixelsize=10";
+  LargeDisplayFont = "Trebuchet MS,sans serif:pixelsize=24";
+  TitleJustify = right;
+  HighlightColor = "#000000";
+  HighlightTextColor = "#bac4e0";
+  ClipTitleColor = "#8a94b0";
+  CClipTitleColor = "#6a7490";
+  FTitleColor = (function, libwmfun.so, drawPlainString, "#dae4f0", black, grey20);
+  PTitleColor = (function, libwmfun.so, drawPlainString, "#dae4f0", black, grey20);
+  UTitleColor = (function, libwmfun.so, drawPlainString, "#7a8490", black, grey10);
+  FTitleBack = (igradient, black, "#0000cc", 1, grey10, "#aaaaaa", 1);
+  PTitleBack = (igradient, black, "#0000ff", 1, grey10, "#dddddd", 1);
+  UTitleBack = (igradient, black, "#111188", 1, grey10, "#777777", 1);
+  ResizebarBack = (dgradient, "#111144", grey10);
+  MenuTitleColor = (function, libwmfun.so, drawPlainString, "#dae4f0", black, grey20);
+  MenuTextColor = "#8a94b0";
+  MenuDisabledColor = "#4a5470";
+  MenuTitleBack = (igradient, black, "#0000cc", 1, grey10, "#aaaaaa", 1);
+  MenuTextBack = (mdgradient, "#555566", black, black, "#111133");
+  IconBack = (igradient, black, "#111177", 1, grey10, "#555555", 1);
+  IconTitleColor = "#8a94b0";
+  IconTitleBack = "#0b0f22";
+  MenuStyle = flat;
+  WorkspaceBack = (mdgradient, black, black, black, "#111133");
+}

@@ -1,0 +1,34 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FileToolsInspector = {
+	Actions = (
+	    "setDefault:",
+	    "revert:"
+	);
+	Outlets = (
+	    appListView,
+	    appPathField,
+	    defaultAppField,
+	    bottomTextField,
+	    view
+	);
+	Super = Inspector;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setDefault:",
+	    "revert:"
+	);
+	Super = NSObject;
+    };
+    Inspector = {
+	Actions = (
+	);
+	Outlets = (
+	    window,
+	    okButton,
+	    revertButton
+	);
+	Super = NSObject;
+    };
+}

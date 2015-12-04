@@ -1,0 +1,98 @@
+#
+#   GNUmakefile.postamble
+#   The OpenSpaceManager app postamble makefile.
+#
+#   This file is part of OpenSpace.
+#
+#   Copyright (C) 2005 Saso Kiselkov
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+APP_WRAPPER = Workspace.app
+APP_WRAPPER_INSTALLED = $(GNUSTEP_SYSTEM_APPS)/$(APP_WRAPPER)
+SHARED = obj
+
+before-all::
+ifneq ($(windowmaker), no)
+	@ mkdir -p $(APP_WRAPPER_INSTALLED)
+	@ echo "Making WindowMaker external components ... "
+	@ echo " Building raster graphics library in WM/wrlib ... "
+	@ cd WM/wrlib; make > /dev/null 2>&1
+	@ echo " Building WINGs library in WM/WINGs ... "
+	@ cd WM/WINGs; make > /dev/null 2>&1
+	@ echo " Building utilities in WM/util ..."
+	@ cd WM/util; make > /dev/null 2>&1
+	@ echo " Preparing data in WM/WindowMaker ..."
+	@ cd WM/WindowMaker; make > /dev/null 2>&1
+	@ echo " Building documentation in WM/doc..."
+	@ cd WM/doc; make > /dev/null 2>&1
+endif
+
+after-all::
+	@ echo " Copying Viewers bundles into the app wrapper ..."
+	@ find Viewers -iname '*.viewer' -exec cp -r '{}' $(APP_WRAPPER)/Resources ';'
+	@ echo " Copying Preferenses bundles into the app wrapper ..."
+	@ find Preferences -iname '*.wsprefs' -exec cp -r '{}' $(APP_WRAPPER)/Resources ';'
+	@ echo " Copying Tools into the app wrapper..."
+	@ cp "Tools/FileMover/$(SHARED)/FileMover.tool" $(APP_WRAPPER)/Resources
+	@ cp "Tools/Sizer/$(SHARED)/Sizer.tool" $(APP_WRAPPER)/Resources
+
+after-clean::
+ifneq ($(windowmaker), no)
+	@ echo "Making clean in WindowMaker ... "
+	@ echo " Cleaning in WM/wrlib ..."
+	@ cd WM/wrlib; make clean > /dev/null 2>&1
+	@ echo " Cleaning in WM/WINGs ..."
+	@ cd WM/WINGs; make clean > /dev/null 2>&1
+	@ echo " Cleaning in WM/WindowMaker ..."
+	@ cd WM/WindowMaker; make clean > /dev/null 2>&1
+	@ echo " Cleaning in WM/doc ..."
+	@ cd WM/doc; make clean > /dev/null 2>&1
+	@ echo " Cleaning in WM/util ..."
+	@ cd WM/util; make clean > /dev/null 2>&1
+endif
+
+after-install::
+	@ echo " Copying header files into $(GNUSTEP_SYSTEM_HEADERS)/apps ..."
+	@ mkdir -p $(GNUSTEP_SYSTEM_HEADERS)/apps
+	@ cp Workspace.h $(GNUSTEP_SYSTEM_HEADERS)/apps
+ifneq ($(windowmaker), no)
+	@ echo "===> Installing WindowMaker resources ..."
+	@ cd WM/wrlib; make install > /dev/null 2>&1
+	@ cd WM/WINGs; make install > /dev/null 2>&1
+	@ cd WM/WindowMaker; make install > /dev/null 2>&1
+# Rewrite some files
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cd WM/doc; make install > /dev/null 2>&1
+	@ cd WM/util; make install > /dev/null 2>&1
+endif
+
+after-uninstall::
+ifneq ($(windowmaker), no)
+	@ echo "Uninstalling WM/wrlib ..."
+	@ cd WM/wrlib; make uninstall > /dev/null 2>&1
+	@ echo "Uninstalling WM/WINGs ..."
+	@ cd WM/WINGs; make uninstall > /dev/null 2>&1
+	@ echo "Uninstalling WM/WindowMaker ..."
+	@ cd WM/WindowMaker; make uninstall > /dev/null 2>&1
+	@ echo "Uninstalling WM/doc ..."
+	@ cd WM/doc; make uninstall > /dev/null 2>&1
+	@ echo "Uninstalling WM/util ..."
+	@ cd WM/util; make uninstall > /dev/null 2>&1
+endif

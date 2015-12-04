@@ -1,0 +1,56 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    BGProcess = {
+	Actions = (
+	    "stop:",
+	    "miniIcon:",
+	    "processView:",
+	    "stateString:",
+	    "titleString:"
+	);
+	Outlets = (
+	    processBox,
+	    currentField,
+	    progressPie,
+	    stopButton,
+	    window
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "clear:",
+	    "increment:",
+	    "miniIcon:",
+	    "processView:",
+	    "stateString:",
+	    "titleString:"
+	);
+	Super = NSObject;
+    };
+    NXProgressBar = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NXProgressView;
+    };
+    NXProgressPie = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NXProgressView;
+    };
+    NXProgressView = {
+	Actions = (
+	    "takeIntValueFrom:",
+	    "increment:",
+	    "takeFloatValueFrom:",
+	    "clear:"
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+}

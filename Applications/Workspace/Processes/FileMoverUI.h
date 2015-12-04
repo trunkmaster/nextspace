@@ -1,0 +1,70 @@
+/*
+  FileMoverUI.h
+  A FileMover.tool wrapper.
+
+  Copyright (C) 2015 Sergii Stoian
+  
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#import <Foundation/Foundation.h>
+
+#import "Processes/BGProcess.h"
+#import <Operations/FileMover.h>
+
+@interface FileMoverUI : BGProcess
+{
+  // BGProcess
+  // IBOutlet NSWindow    *window;
+  // IBOutlet NSBox       *processBox;
+  // IBOutlet NSTextField *currentField;
+  // IBOutlet NSButton    *stopButton;
+  // 
+  // IBOutlet NSBox       *alertBox;
+
+  OperationState operationState;
+
+  // Addons
+  id fromField;
+  id fromLabel;
+  id toField;
+  id toLabel;
+  id progressBar; // NXProgressPie
+  id pauseButton;
+}
+
+- (void)pause:(id)sender;
+
+@end
+
+@interface NSObject (FileMoverDelegate)
+
+- (void)fileOperation:(FileMover *)fop
+       processingFile:(NSString *)filename
+	 sourcePrefix:(NSString *)sourcePrefix
+	 targetPrefix:(NSString *)targetPrefix;
+
+- (void)  fileOperation:(FileMover *)anOperation
+ processedToPercentDone:(float)percentDone;
+
+- (void) fileOperation:(FileMover *)anOperation
+      didChangeStateTo:(OperationState)aState;
+
+- (void)fileOperation:(FileMover *)anOperation
+   encounteredProblem:(OperationProblem)problem
+     	  description:(NSString *)problemDescription
+ solutionDescriptions:(NSArray *)solutions;
+
+@end

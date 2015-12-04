@@ -1,0 +1,653 @@
+Changes since wmaker 0.92.0:
+............................
+
+- updated the XDND code in to work with GDK based applications.
+  WINGs based applications should now work with both KDE and GNOME
+  applications (Sylvain Reynal <sreynal@nerim.net>)
+- better check for the XDND protocol version when interoperating with other
+  applications. As it seems xdnd version 3 (which WINGs supports) and newer
+  are not backward compatible with xdnd version 1 and 2. This is why WINGs
+  applications cannot interoperate with GNUstep applications (which uses
+  xdnd version 2). Xdnd version 4 and 5 are backwards compatible with
+  version 3 though. (Sylvain Reynal <sreynal@nerim.net>)
+- removed dependency on rgb.txt from X11 and issues with locating it on the
+  filesystem for different systems/distributions.
+- Removed dependency on rgb.txt (from X11) and issues with locating it on the
+  filesystem for different systems/distributions.
+
+
+Changes since wmaker 0.80.1:
+............................
+
+- Added WMSetConnectionShutdownOnClose()
+- Added an extra member to the ConnectionDelegate: canResumeSending
+  see NEWS for details.
+- WMDrawString() and WMDrawImageString() now take WMColor instead of GC as
+  arguments. WMDrawImageString() receives 2 colors (text & background).
+  This is to allow easy extension for Xft/Xrender and hide X low level details
+  Read NEWS for details since this will break backward compatibility.
+- Added alpha channel to WMColor. 2 new functions also:
+  WMCreateRGBAColor() and WMSetColorAlpha()
+- Miscelaneous code cleanups in wtext.c
+- Added Xft2 support in WINGs (for drawing antialiased fonts with transparency).
+- New options in WMGLOBAL: AntialiasedText. Check NEWS for details.
+- Fixed some improper calls to snprintf in wfont.c
+- Added double buffering when drawing a WMFrame title with an antialiased font
+  to avoid flickering.
+- Added double buffering when drawing WMList items to avoid flickering.
+  Double buffering for list also works for user drawn lists. Read NEWS for
+  details and incompatibilities introduced by this change.
+- Added WMGetColorAlpha(WMColor *color)
+- Better outline when drawing balloons.
+- Added WMCreateFontWithAttributes()
+- You can now pass "SystemFont", "BoldSystemFont", "SystemFont-##" or
+  "BoldSystemFont-##", with ## being the font size to any font creating
+  function to create a font with the (bold) system font font specification.
+- Added WMCopyFontWithChanges(). This is a more generic and powerful function
+  meant to replaces the obsoleted WMEmphasizeFont(), WMNormalizeFont(),
+  WMStrenghtenFont() and the other similar functions. To get the same effect
+  you pass some predefined structs to it: WFANormal, WFABold, WFAEmphasized,
+  etc which are declared in WINGs.h).
+- Fixed a bug with empty frame titles (Alexey Voinov <voins@voins.program.ru>)
+- Added WMGetWidgetBackgroundColor()
+- Code cleanup in wtext.c
+- Fixed a memory leak in wfontpanel.c
+- Fixed WMGetTextDefaultColor() not to retain the returned color. It returns
+  only a reference to the internal color, which you shouldn't release
+- Added wstrndup()
+- Added WMGetFontName()
+- Added fontpanel callback
+- Added WMSetTableViewHasHorizontalScroller()
+- Fixed bug that could cause SIGSEGV by accessing beyond the end of text in
+  a WINGs textfield widget.
+- Fixed small memory leak in the font panel code.
+- Fixed call to qsort in WMSortArray.
+- Fixed a memleak in the file panel.
+- Double/triple-click selection in text widgets 
+  (Vitaly Ovtchinnikov <ov@rbcmail.ru>)
+- Fixed bug in tableview (clicked row callback got incorrect row)
+  (Carlos Torres <vlaadbrain@operamail.com>)
+- Fixed bug in resizing a scrollview
+- Fixed bug with wrong text wrapping (Alexey Voinov <voins@voins.program.ru>)
+- Added wmkrect()
+- Added xdnd v3 support (Sylvain Reynal <sreynal@nerim.net>)
+- Fixed and enhanced text wrapping.
+
+
+Changes since wmaker 0.80.0:
+............................
+
+- fixed a bug in wfindfile() (rewrote wfindfile() with better logic).
+- separated the font caches for normal fonts and fontsets in WINGs (they can
+  have the same names and collide in the cache giving unwanted results)
+- fixed labels not to display '\n' as a character if multiple '\n' are passed
+  but just skip to the next line.
+- better warning when importing non-digit characters in PropList Data.
+- rewrote WMBox to use a WMArray for subviews. with this change fixed a bug
+  about arranging subviews after removing one and a memleak occuring in the
+  same case.
+- Fixed WMGetViewScreenPosition() to consider the window decorations.
+- Added ability to enable/disable individual WMTableViewItems.
+- Fixed textfields regarding interpretation of special keys with modifiers.
+- Fixed some functions that accept a boolean flag as a paramater, to set only
+  1 or 0 for the flag value, not the flag passed by the user.
+- Added 2 functions to retrieve the default system fonts:
+  WMDefaultSystemFont(WMScreen *scr) and WMDefaultBoldSystemFont(WMScreen *scr)
+- Added WMSetButtonImageDimsWhenDisabled() and WMGetButtonEnabled()
+- Cleaned-up the header files of functions/vars declared but not implemented
+- Added WMGetTextFieldDelegate()
+
+
+Changes since wmaker 0.70.0:
+............................
+
+- added an internal strcasecmp() (only on systems where is not present)
+- removed some redundant includes of ../src/config.h when wconfig.h is 
+  included too
+- removed a wsyserror() message when reading a property list from file
+  (the programmer should decide if to give that message or just ignore).
+- added a 'Bool recursive' flag to WMMergePLDictionaries()
+- added WMSubtractPLDictionaries()
+
+
+Changes since wmaker 0.65.0:
+............................
+
+- fixed problem with WINGs based apps exiting with a "X_RotateProperties"
+  related error when text was selected in a textfiled.
+- moved wstrdup(), wstrconcat() and wstrappend() from memory.c to string.c
+- added property list handling code making libPropList unnecessary and
+  obsolete. Backward compatibility is provided through the 
+  WINGs/proplist-compat.h header file which has #defines from old libPropList
+  function names to new function names with minimal changes. Read this
+  header file and the NEWS file for more details about this subject.
+- Renamed WMGetUDAllKeys() to WMGetUDKeys()
+
+
+Changes since wmaker 0.64.0:
+............................
+
+- made programmatic scroller changes send notifications
+- replaced WMSetBoxExpandsToParent with WMSetViewExpands...
+- added WMGetLabelFont()
+- added WMAddPersistentTimerHandler()
+- Moved all internal handlers (timer, idle and input) to handlers.c
+- simplified wevent.c and wutil.c.
+- fixed handling of input with poll (was broken)
+- fixed mem leak that occured when input handling was done with poll
+- simpler and more straightforward event handling for timer, idle, input
+  and X events (also fixed some problems the old handling logic had)
+- moved timer, idle and input handler definitions and prototypes from
+  WINGs.h to WUtil.h because they're not GUI related.
+- better and more robust handling of events (timer, idle, input, X) in
+  WMMaskEvent(). Also fixed a bug where input and timer events were not
+  treated for undefined periods of time under some circumstances.
+- fixed secure textfields not to allow text selection, to avoid compromising
+  sensitive information by pasting it to a terminal.
+- replaced wmkrange(), wmkpoint() and wmksize() functions with macros.
+- added WMRemoveFromArrayMatching(array, match, cdata), which will remove the
+  first element in the array that is matched by match(item, cdata)==True.
+- added WMArrayFirst(), WMArrayLast(), WMArrayNext() and WMArrayPrevious()
+  functions and also WM_ITERATE_ARRAY() and WM_ETARETI_ARRAY() macros, to make
+  interfaces to WMBag and WMArray similar and to make life a little simpler
+  when iterating through all elements of an array.
+- replaced bags with arrays wherever appropriate. This will improve
+  performance a bit.
+- replaced some recursive code with iterative code in selection.c
+- added WMCreateBlendedPixmapFromRImage()
+- small API change:
+  1. Renamed WMSetApplicationIconImage(), WMGetApplicationIconImage() and
+     WMSetWindowMiniwindowImage() to respectively WMSetApplicationIconPixmap(),
+     WMGetApplicationIconPixmap() and WMSetWindowMiniwindowPixmap()
+     They operate on a WMPixmap which is practically an X Pixmap with no alpha
+     channel information and the new name is more suggestive and also leaves
+     room for the new functions added for operating on images with alpha info.
+  2. Added WMSetApplicationIconImage() and WMGetApplicationIconImage() which
+     operate on an RImage and store alpha information too.
+  3. Added WMCreateApplicationIconBlendedPixmap() which will take the image
+     set by WMSetApplicationIconImage() and will combine it with a color.
+     If color is NULL it will blend using the default panel color (#aeaaae)
+  All these changes will allow WINGs to handle images with alpha blending
+  correctly in panels and wherever else needed. More about in NEWS.
+- updated panels to use the newly available RImages if present and fallback
+  to old WMPixmaps if not, to properly show alpha blended images.
+- replaced some still left malloc's with wmalloc's.
+- fixed a bug in WMReparentWidget()
+- added WMReparentWidget() to WINGs.h
+- fixed a bug that made the scroller knob jump backwards when dragged (this
+  bug had no relation with the behavior that #define STRICT_NEXT_BEHAVIOUR
+  attempts to accomplish).
+- fixed scrolling direction with mouse wheel for horizontal scroller.
+
+
+changes since wmaker 0.63.1:
+............................
+- added WMRunModalLoop() and WMBreakModalLoop()
+- added WMSetBoxExpandsToParent()
+- added WMRemoveBoxSubview()
+- moved WINGs headers in a WINGs subdirectory when installed.
+  use #include <WINGs/header_file_name> in your application from now on.
+  Also updated get-{wings|wutil}-flags.
+- Fixed a mem leak in WMList.
+- Fixed a bug that caused sigsegv for a WMList with more than 32767 items.
+- Added an example of how to create a server type program with WMConnection.
+- added WMOpenScreen()
+
+
+changes since wmaker 0.62.1:
+............................
+- added WRuler widget
+- added WText widget (rtf multiline text widget) 
+	Nwanua Elumeze <nwanua@colorado.edu>
+- added a new AUTO option for the UseMultiByte option
+- added WMRaiseWidget()/WMLowerWidget()
+- added missing EscapeTextMovement to textfield delegate/notification
+- added WMGetLabelText()
+- added WMReparentWidget()
+- added WMCreateTabViewItem()
+- added W_CreateUnmanagedTopView()
+- added wtokenjoin(), wtokensplit(), wtokenfree(), wtrimspace()
+- added WMWidgetIsMapped()
+- added WMSetApplicationIconWindow()
+- restructured the directory tree. Added Documentation, Examples and Tests
+  subdirectories
+- removed WMArrayBag and reorganized WMTreeBag to be WMBag.
+- added WMArray class.
+- added WMSetWindowUserPosition()
+- added WMGetListSelectedItems()
+- added WMSetListAllowMultipleSelection(), WMListAllowsMultipleSelection().
+- added WMSetListAllowEmptySelection(), WMListAllowsEmptySelection().
+- WMListSelectionDidChangeNotification passes NULL as the notification 
+  client data (previously passed the selected item row).
+- added WMUnselectListItem(), WMSelectAllListItems(), WMUnselectAllListItems()
+- better behavior of wheel mices in WMList. Simple mouse wheel events
+  will scroll by 1/3 of the WMList height. Using Shift as a modifier will
+  scroll line by line, while using Control as a modifier will scroll page
+  by page.
+- better behavior of WMScroller regarding mouse wheel events. 'Shift' modifier
+  will scroll line by line, while 'Control' modifier will scroll page by page.
+- fixed some buffer overflow allowing bugs.
+- added WSDecrementWheel and WSIncrementWheel for handling mouse wheel in
+  scrollers and scrolled widgets. This should be treated like the WSxxxPage
+  counterparts, except it should scroll by page_size/3 instead of one full page
+- added WMSetBrowserAllowMultipleSelection(), WMSetBrowserAllowEmptySelection()
+  WMBrowserAllowsMultipleSelection() and WMBrowserAllowsEmptySelection()
+- WMBrowser now allows multiple selections.
+- Added WMGetBrowserPaths() to retrieve the paths for browsers that allow
+  multiple selections.
+- WMDestroyWidget() now calls WMUnmapWidget() first
+- added WMScrollerDidScrollNotification to scroller
+- added WMGetScrollViewVisibleRect()
+- fixed a mem leak in the browser code.
+- renamed wstrappend() to wstrconcat(). wstrconcat(str1, str2) concatenates
+  str1 with str2 and returns that in a newly malloc'ed string.
+  Be sure to rename wstrappend with wstrconcat in your code too, else
+  hazardous things can happen!
+- implemented a new wstrappend() function. wstrappend(dst, src) will append 
+  src to dst modifing dst and returning a pointer to it. No new string is 
+  generated, except if dst is NULL, in which case its the same as calling
+  wstrdup(src).
+  dst can ONLY be NULL or a dynamically allocated string (obtained from a
+  call to malloc, realloc, wmalloc, wrealloc, ...). dst CANNOT be a static
+  or a constant string!
+- added wmessage() for printing a variable formatted string to stderr, with
+  the program name prepended to it. Similar to wwarning(), except that it
+  doesn't add "warning:" in the output message.
+- added WMBox widget
+- added WMAddTabViewItemWithView()
+- added W_SetViewCursor()
+- made Extra widgets library
+- added table widget in Extras library
+- added WMGetConnectionUnsentData() (WMGetConnectionQueuedData() too as an
+  alias).
+- added WMSetConnectionCloseOnExec() to specify if the socket associated
+  with a connection survives an exec* call or not. When a new connection is
+  created using the WMCreate... or WMAcceptConnection() calls, it has the
+  close on exec flag set automatically to 'True' by the library. Unless
+  you want to let the socket of some connection to survive across an exec*
+  call, you need not to call this function.
+- removed all the wsyserror() and wwarning() calls from host.c and
+  connection.c and replaced where appropriate with assertions. If a function
+  returns some invalid result, you can still get the system error message if
+  you need, by calling wsyserrorwithcode() and passing WCErrorCode, if
+  WCErrorCode > 0. If WCErrorCode==0, that is not a system error, and
+  wsyserrorwithcode() should not be called in this case.
+- added WMNextHashEnumeratorKey() to retrieve all keys in some hash enumerator
+  one by one.
+- fixed a bug with mouse wheels scrolling in scrollers even with the widget
+  fully visible.
+- Fixed a memory leak (the destroy function for a view was never called and
+  as a result the shaded windows didn't go away when closed. The non-shaded
+  windows were unmapped on close but not destroyed either so they only
+  apparently went away, but continued to use memory).
+- Fixed a bug in the hashtable code which free'd the whole item instead of
+  just the item key in WMResetHashTable() (possible source of SIGSEGVs)
+
+
+changes since wmaker 0.62.0:
+............................
+- added WMSetWidgetDefaultFont(), WMSetWidgetDefaultBoldFont()
+
+
+
+changes since wmaker 0.62.0:
+............................
+- added WM{S,G}etDataFormat()
+- added drag and drop
+- changed selection code
+- added clientdata to WMFindInBag
+- removed SetWindowInitialSize()
+- added SetWindowAspectRatio()
+- added initial timeout when establishing a connection.
+- added WMSetConnectionDefaultTimeout() and WMSetConnectionOpenTimeout();
+- added WMGetConnectionTimeoutState()
+
+changes since wmaker 0.61.1:
+............................
+
+- WARNING: semantic of bags has changed!
+	An index assigned to an item will always keep that index unless
+	you insert an item before it.
+
+	For example:
+		bag = WMCreateBag();
+		WMSetInBag(bag, 10, "bla");
+	That code will put "bla" in index 10, instead of 0, as it used to be.
+- fixed WMInsertInBag(). It ignored index, and always put the new item at end.
+- added WMSaveUserDefaults().
+- rewrote WMPopUpButton to use WMMenuItem
+- added WMGetPopUpButtonMenuItem(WMPopUpButton *bPtr, int index)
+- WMSortListItemsWithComparer(WMList *lPtr, (int)(f)(const void*, const void*))
+- WMSortBrowserColumnWithComparer()
+- fixed bug with sorting list items.
+- fixed bug in handling keyboard input associated with selection and
+  notification sending.
+- filepanel puts dirs on top of list (Wolff <wolff@cybercable.fr>)
+- added WMReplaceInBag (Wolff <wolff@cybercable.fr>)
+- added vertical views and multiple views in WMSplitView (Wolff <wolff@cybercable.fr>)
+- changed values of parameter values of WMSplitViewConstrainProc()
+- configurable default fontsize patch (Igor P. Roboul <igor@mordor.myip.org>)
+- fixed a bug that crashed the programm when a popup button was scrolled.
+- fixed a bug that caused incorrect drawing position of the popup indicator.
+- fixed a bug that prevented selecting no item (-1) in a popup button.
+- an assertion will be raised if the program tries to select a popup button
+  item that is beyond the total number of items present in the popup button.
+- changed names of functions for SplitView to be consistent. Some contained
+  SubView while other Subview. Now all have Subview.
+- fixed a bug in how input events were posted. Establishing 2 or more input 
+  handlers for the same file descriptor, handling different (read/write/except)
+  events, caused wrong handlers to be called.
+- Reimplemented the input and idle handlers with WMBag to avoid a functional
+  problem with them: inability to remove handlers next to the called one, from
+  the called handler itself. Trying to do this with the old version caused the
+  program to crash.
+- changed wrealloc behaviour to be like this: new = wrealloc(old, new_size);
+    1. if old is NULL, return wmalloc(new_size).
+    2. if new_size is 0, call wfree(old), and return NULL.
+    3. if both old is a valid pointer and new_size>0, call realloc.
+- added wstrerror(int errnum) to return the string associated with errnum.
+- new wsyserrorwithcode(int error, const char* fmt, ...), similar to 
+  wsyserror(), but printing the message for the specified error code.
+- added 3 new classes: WMData, WMHost and WMConnection
+- fixed a big memory leak in the color panel code (from Pascal Hofstee).
+- added scrolling to tabview
+
+changes since wmaker 0.61.0:
+............................
+
+- added WMGetTextFieldFont()
+- escape key in panels (craig nellist <crn@ozemail.com.au>)
+- applied patch with fixes and enhancements to textfield 
+	(Franck Wolff <wolff@cybercable.fr>)
+- changed WMList to use WMBag internally, instead of a linked list
+- replaced WMAddSortedListItem() with WMSortListItems()
+- replaced WMAddSortedBrowserItem() with WMSortBrowserColumn()
+
+changes since wmaker 0.60.0:
+............................
+
+- added WMScreenWidth() and WMScreenHeight() functions.
+- fixed some problems when compiling with non gcc compilers.
+- added WMSetTextFieldFont()
+- added WMSetButtonImageDefault() (craig nellist <crn@ozemail.com.au>)
+- added WMBag (array/list)
+- added libWUtil, a library that is a subset of libWINGs. It contains utils
+  that can be used in writing non-GUI programs. They include: hashes,
+  notifications, input/idle/timer handlers, user defaults database handling,
+  memory handling, application resource handling, etc.
+  All the non-GUI stuff from libWINGs is present.
+  Still linWINGs contain all this stuff so if you use libWINGs, you don't
+  need to link against libWUtil too.
+  One notable aspect of libWUtil is that it has a modified version of the
+  event handling function. It is named WHandleEvents() and will handle all
+  input/idle/timer events the app has.
+  If your app has a permanent input handler (as for example a socket a server
+  is listening on), then the main loop of the app can be:
+  	while(1) {
+    	    WHandleEvents();
+  	}
+  but if there is no permanent input handler, you need to add some delay to
+  avoid a too high cpu load by your program:
+  	while(1) {
+            WHandleEvents();
+            wusleep(5000);
+        }
+  A permanent input handler is one that is established when the program starts
+  and is present until the program exits.
+  One that is deleted and later reinstalled, is not considered permanent.
+  This difference is because if there is some input handler, the function will
+  block until some event appears, while if there is no input handler the
+  function will return almost immediately (after handling the timer/idle
+  stuff).
+
+  Except the stuff declared in WUtil.h, the following functions declared in
+  WINGs.h are also present in libWUtil (you will need to #include <WINGs.h>
+  if you use one of these):
+	WMInitializeApplication(char *applicationName, int *argc, char **argv);
+	WMSetResourcePath(char *path);
+	WMGetApplicationName();
+	WMPathForResourceOfType(char *resource, char *ext);
+	WMAddTimerHandler(int milliseconds, WMCallback *callback, void *cdata);
+	WMDeleteTimerWithClientData(void *cdata);
+	WMDeleteTimerHandler(WMHandlerID handlerID);
+	WMAddIdleHandler(WMCallback *callback, void *cdata);
+	WMDeleteIdleHandler(WMHandlerID handlerID);
+	WMAddInputHandler(int fd, int condition, WMInputProc *proc,
+        		  void *clientData);
+	WMDeleteInputHandler(WMHandlerID handlerID);
+- added progress indicator widget
+- Changed WMSetWindowUPosition() and WMSetWindowUSize() to
+  WMSetWindowInitialPosition() and WMSetWindowInitialSize() respectively,
+  for better naming conventions.
+
+
+changes since wmaker 0.53.0:
+............................
+
+- added balloon help
+- fixed a bug with setting initial path in browsers.
+- added WMSetButtonImageDimsWhenDisabled()
+- changed simple callback/notifications to delegate-like stuff. Affected
+  widgets are:
+  	WMBrowser
+	- WMSetBrowserFillProc() was replaced with WMSetBrowserDelegate
+	- WMBrowserDidScrollNotification was replaced with a delegate callback
+
+	WMTextField (not completed yet)
+	The notifications will still work, but using the delegate is preferable
+
+  How to convert old code to delegate callbacks:
+  	1 - create a variable (static or dynamic) of the type of the 
+	    delegate for the widget type.
+	2 - Replace the notification observers with the equivalent 
+	    delegate callbacks. 
+	3 - Put pointers to the callbacks in the delegate variable.
+
+	Take a look in wfilepanel.c to see how it is used there.
+
+- changed W_ViewProcedureTable to delegates
+	This will only affect user created widgets. If you have a custom
+	widget, you will need to update the callbacks and the declaration
+	of the W_ViewProcedureTable variable to be a W_ViewDelegate,
+	which is declared in WINGsP.h  To setup the delegate, assign
+	the delegate variable to view->delegate.
+
+- WMTextField
+	Removed all the didChange notifications that were sent when the text
+	was changed programmatically. Only changes made by user interaction
+	will be notified now. If you need the old behaviour, send notifications
+	manually when you change the text.
+
+- added WMTabView
+- added WMGetColorPanelColor(WMColorPanel *panel)
+- made WMGetUDStringForKey() to only return a reference to the string, not a
+  wstrdup()'ed copy. DO NOT FREE IT ANYMORE!
+- added MultiByteText option to userdefaults file to control use of multibyte
+  string drawing functions
+- renamed WMCreateFont() to WMCreateFontSet()
+- renamed WMCreateFontInDefaultEncoding() to WMCreateNormalFont()
+- added WMCreateFont() with different semantics
+
+
+changes since wmaker 0.52.0:
+............................
+
+- added int WMGetBrowserMaxVisibleColumns(WMBrowser *bPtr);
+
+
+changes since wmaker 0.51.2:
+............................
+
+- added WMColorWellDidChangeNotification
+- added wfindfileinarray()
+- fixed bug in window title setting 
+	(MANOME Tomonori <manome@itlb.te.noda.sut.ac.jp>)
+
+changes since wmaker 0.51.1:
+............................
+
+- wusergnusteppath() will return a statically allocated string now.
+ DO NOT FREE IT ANYMORE!!
+
+
+
+changes since wmaker 0.51.0:
+............................
+
+- applied c++ compat header patch from Martynas Kunigelis <mkunigelis@alna.lt>
+- added WMSetTextFieldBeveled()
+- removed W_GC() : use WMColorGC() instead
+- added WMCreatePixmap()
+- changed WMSetTextFieldEnabled() to WMSetTextFieldEditable()
+
+changes since wmaker 0.50.1:
+............................
+
+- fixed various bugs
+- added patch from Franck Wolff <frawolff@club-internet.fr>, with
+  many fixes and enhancements
+- added notification queues, asynchronous notifications etc.
+- added WMSetBrowserDoubleAction()
+- fixed list double click action
+
+changes since wmaker 0.50.2:
+............................
+
+- added wsetabort() - look WUtil.h
+- fixed bug in WMList resize
+- added notification sending when changing textfield programatically
+- removed WMHideWindow()
+- fixed bug in WMCloseWindow()
+- added textfield selection patch
+- added color panel code
+- added auto name completion for the file panel
+- added function to select text range, and to set cursor position in text
+  fields programatically
+
+changes since wmaker 0.20.3:
+............................
+
+- added WMSetSliderImage(), WMSetSliderKnobThickness()
+- added WMGetListItemHeight()
+- added WMListDidScrollNotification
+- added WSetColorWellBordered()
+- added hacky color dragging in colorwell
+- added poll() support in WMNextEvent. WARNING: the stuff needed for
+  WMAddInputHandler() is not yet implemented for the poll stuff
+- added WMSetFilePanelAccessoryView(), WMGetFilePanelAccessoryView()
+- added WMSetPopUpButtonEnabled()
+- added WMGetLabelImage()
+- autoscroll for popup button menus
+- added WMDrawPixmap()
+- WARNING: changed parameter list for WMListDrawProc
+
+changes since wmaker 0.20.2:
+............................
+
+- WMSetBrowserMaxVisibleColumns() - untested
+
+
+
+changes since wmaker 0.20.0:
+............................
+
+- added generic object field for WMListItem. This is for hanging generic
+  clientdata
+
+
+changes since wmaker 0.20.0:
+............................
+
+- changed WMGetFilePanelFile() with WMGetFilePanelFileName()
+- made SavePanel
+
+changes since wmaker 0.19.3:
+............................
+
+- added WMCreatePanelForWindow()
+- added extra parent parameter for filepanel, alertpanel and inputpanel
+- WMCloseWindow()
+- WMChangePanelOwner()
+- added WMAddInputHandler()
+- change range related function arguments (WMTextField) to use WMRange
+
+changes since wmaker 0.19.1:
+............................
+
+- added wstrappend()
+- fixed bug when changing selected radio button by hand
+
+changes since wmaker 0.18.1:
+............................
+
+- removed textHeight arg from W_PaintImageAndText
+- added WMCreateWindowWithStyle()
+- added WMSetWindowBaseSize() and ResizeIncrements()
+- added WMSetWindowLeve()
+- added WMSetWindowDocumentEdited()
+- added WMSetScrollViewLineScroll(), WMSetScrollViewPageScroll()
+- added WMSetWindowMiniwindowTitle()
+- added WMSetWindowMiniwindowImage()
+
+changes since wmaker 0.18.0:
+............................
+
+- added functions to get RGB components and "#rrggbb" string from WMColor.
+- added function to create color from a name
+- fixed bug that caused blocking until some new event arrives, even
+  when there already were events in the queue
+  (like having to move the pointer over window to force the window to be
+  painted)
+
+changes since wmaker 0.17.5:
+............................
+
+I don't remember everything, but here it goes:
+
+- fixed some bugs in text field
+- added a incomplete implementation of split view (not yet usable)
+- added a slider
+- changed the filepanel stuff. Each application can have only 1 file panel.
+The same panel will be reused every time you call for it, unless you free it.
+- changed semantics of WMCreateFont() so that it returns NULL if the requested
+  font can't be loaded
+- removed WMAddDestroyCallback() 
+- fixed bug in WMRemovePopUpButtonItem()
+- added function for user specified item height in WMList
+- added WMSetPopUpButtonText(). It will set the default text in the button
+  when no options are selected
+- fixed bug in remove/add item in already mapped popupbuttons. Note: it is
+  not good practice to change the contents of a popup button when it's
+  already visible and the user has probably interacted with it.
+- fixed behaviour of "radio buttons"
+- WMInitializeApplication() must be the first function to be called in the
+  program
+- removed applicationName, argc and argv arguments from the WMCreateScree...
+  functions
+- WMReleaseColor(scr,color) changed to WMReleaseColor(color)
+- WMPaintColorRectangle() changed to WMPaintColorSwatch()
+- added various functions in font and color handling
+- added WMSetButtonFont()
+- changed WMCreateCommandButton() so that the buttons it creates will change
+	their label when pushed
+- added WMGetSystemPixmap(WMScreen *scr, int image)
+- added partial I18N support
+- added libPropList requirement and some related utility functions
+- added a interface to prooplist, so that it works as a user defaults db
+- added WMWidthOfString() (removed WMFontWidthOfString())
+- added WMDrawString()
+- added WMSetTextFieldSecure(WMTextField *tPtr, Bool flag)
+- WMGetListItem() will dup the returned string
+- removed need for ProgName being defined
+- rewrote hashtable stuff and made it available for outside use
+- added notification functions, with view resize notification
+- added WMSetWindowMinSize() and MaxSize()
+- text editing notification
+- added WMSetListPosition() etc.
+- added WMInsertBrowserItem()
+- the above 2 functions return WMListItem*, instead of Bool
+- rewrote browser
+- WMGetListItem() will return WMListItem*
+- removed WMGetListItems() and WMSetListItems()
+- fixed focus stuff for multi-window apps
+- changed all WMList function names that contained index to row

@@ -1,0 +1,24 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    ApplicationDelegate = {
+	Actions = (
+	    "showInfoPanel:",
+	    "openArchive:"
+	);
+	Outlets = (
+	    delegate,
+	    infoPanel,
+	    InfoPanelTextField,
+	    InfoPanelTableView
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "openArchive:",
+	    "orderFrontFontPanel:",
+	    "showInfoPanel:"
+	);
+	Super = NSObject;
+    };
+}

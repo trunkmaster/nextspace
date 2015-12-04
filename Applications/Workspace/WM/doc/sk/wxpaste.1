@@ -1,0 +1,39 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH wxpaste 1 "March 1998"
+.SH MENO
+wxpaste \- zapí¹e cutbuffer na ¹tandardný výstup
+.SH SYNTAX
+.B wxpaste
+[voµby]
+.SH POPIS
+.B wxpaste
+vypí¹e obsah daného cutbuffera na ¹tandardný výstup. Ak nie je daný ¾iadny
+cutbuffer, pou¾ije sa cutbuffer 0.
+.PP
+.SH VO¥BY
+.TP
+.B \-cutbuffer èíslo
+Dáta budú vlo¾ené do daného cutbuffera namiesto ¹tandardného 0.
+.TP
+.B \-display displej
+Dáta sa budú kopírova» do cutbufferov daného displeja/obrazovky.
+.TP
+.B \-selection [selekcia]
+Dáta budú kopírované z danej selekcie. Ak sa výber zo selekcie nepodarí,
+pou¾ije sa cutbuffer. Implicitná hodnota pre selekciu je PRIMARY.
+.PP
+.SH CHYBY
+.TP
+\-selection musí by» posledá voµba. Syntax mô¾e by» upravená, ale
+bráni tomu spätná kompatibilita.
+
+Typy selekcií INCR a MULTIPLE nie sú podporované. V skutoènosti je
+podporovaný len jednoduchý text, èo by malo staèi» pre väè¹inu u¾ívateµov
+takejto jednoduchej utilitky.
+.SH POZRI TIE®
+.BR wxcopy (1),
+.BR wmaker (1)
+.SH AUTOR
+Autorom Window Makera je Alfredo K. Kojima <kojima@windowmaker.info>.
+.PP
+Túto manuálovú stránku napísal Marcelo Magallon <mmagallo@debian.org>.

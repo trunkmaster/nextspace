@@ -1,0 +1,217 @@
+/*
+ * Traducció per Carles Amigó dj_fr3nd@hotmail.com
+ *
+ * Definició per al Menú Principal de Window Maker
+ *
+ * La sintàxis és:
+ *
+ * <Títol> [TECLA <Tecla>] <Comanda> <Paràmetres>
+ *
+ * <Títol> És la cadena de caracters per a fer servur com a titol. Ha
+ *      d'estar entre "" si conté espais.
+ *
+ * TECLA especifica una combinació de tecles per aquest objecte. <Tecla> té
+ * la mateixa sintaxis que les combinacions de tecles especificades al
+ * fitxer $HOME/GNUstep/Defaults/WindowMaker , com a RootMenuKey o bé
+ * MiniaturizeKey.
+ *
+ * No es pot especificar una combinació de tecles per a un MENU o un
+ * OPEN_MENU
+ *
+ * <Comanda> pot ser un d'aquests comandes: 
+ *      MENU - Comença la definició d'un submenú
+ *      END  - Acaba la definició d'un submenú
+ *      OPEN_MENU - Obre el contingut d'un menú desde un fitxer, una
+ *                  canonada (pipe), o desde el contingut de un(s) 
+ *                  directori(s) i eventualment pot precedir-li algun
+ *                  comanda
+ *      WORKSPACE_MENU - Afageix el menú de operacions del escriptori. Tan
+ *                  sols es permet un WORKSPACE_MENU
+ *      EXEC <programa> - Executa un programa extern
+ *      EXIT - Surt del gestor de finestres
+ *      RESTART [<Gestor de finestres>] - Rearranca windowmaker o bé un
+ *                  altre gestor de finestres
+ *      REFRESH - Refresca l'escriptori
+ *      ARRANGE_ICONS - Alinea les icones del escriptori
+ *      SHUTDOWN - Mata tots els clients (i tanca la sessió de les X Windows)
+ *      SHOW_ALL - Ensenya totes les finestres de l'escriptori
+ *      HIDE_OTHERS - Oculta totes les finestres de l'escriptori excepte la
+ *                  actual (o la darrera que ha estat activa)
+ *      SAVE_SESSION - Guarda l'estat actual de l'escriptori, que inclou
+ *                  totes les aplicacions en execució, la seva geometria, la 
+ *                  posició en pantalla, l'escriptori en que estaven, el dock 
+ *                  o el clip desde on van ser executades, i si estaven 
+ *                  minimitzades, ocultes o plegades. També guarda l'escriptori
+ *                  que és usat en aquest moment. Tot això serà restaurat el 
+ *                  pròxim cop que s'arrenqui Window Maker fins que es faci un
+ *                  altre SAVE_SESSION o CLEAR_SESSION. Si SaveSessionOnExit =
+ *                  Yes; el fitxer de domini de Window Maker, llavors la sessió
+ *                  es guardarà cada cop que es surt de Window Maker, 
+ *                  sobreescribint qualsevol SAVE_SESSION o CLEAR_SESSION 
+ *                  (veure avall)
+ *      CLEAR_SESSION - Borra qualsevol sessió guardada anteriorment. No té
+ *                  cap efecte si SaveSessionOnExit és verdader
+ *
+ * OPEN_MENU sintàxis:
+ *   1. Fent servir fitxers de menú
+ *      // Obre un fitxer.menu que ha de ser un fitxer de menú vàlid i
+ *      // l'inserta a la posició actual
+ *      OPEN_MENU fitxer.menu
+ *   2. Fent servir canonades (pipes) en el menú
+ *      // executa un programa i fa servir la seva sortida per fer el menú
+ *      // La sortida del programa ha de seguir el format de menú
+ *      // L'espai entre '|' i la comanda, és opcional.
+ *      OPEN_MENU | comanda
+ *   3. Obrint directoris
+ *      // Obre un o més directoris i construeix el menu amb tots els
+ *      // directoris i els fitxers executables, ordenats alfabeticament
+ *      OPEN_MENU /qualsevol/directori [/qualsevol/altre/directori ...]
+ *   4. Obrint directoris amb un programa
+ *      // Obre un o més directoris i construeix el menu amb tots els
+ *      // directoris i els fitxers, ordenats alfabeticament, i
+ *      // executant-los amb un programa
+ *      OPEN_MENU /qualsevol/directori [/qualsevol/altre/directori ...] WITH
+ *                  comanda -opcions
+ *
+ *
+ * <Paràmetres> és el programa a executar
+ *
+ * ** Opcions per a la linea de comanda en EXEC:
+ * %s - substitueix amb la sel·lecció actual
+ * %a(mensaje) - Obre una finestra de dialeg i ho substitueix amb el que
+ *              s'hi introdueixi
+ * %w - Ho substitueix per el XID de la finestra actual
+ *
+ * Es poden posar caràcters especials (com % i ") amb el caràcter \ :
+ * ex: xterm -T "\"Hola Món\""
+ *
+ * També pots fer servir comandes de escapament, com \n
+ *
+ * Cada sentència de MENU ha de tenir una sentència de END que l'acavi
+ *
+ * Exemple:
+ *
+ * "Test" MENU
+ *      "XTerm" EXEC xterm
+ *              // crea un submenu amb els continguts de /usr/openwin/bin
+ *      "XView apps" OPEN_MENU "/usr/openwin/bin"
+ *              // Algunes aplicacions X de diferents directoris
+ *      "X11 apps" OPEN_MENU /usr/X11/bin $HOME/bin/X11
+ *              // algunes imatges de fondo de l'escriptori
+ *      "Background" OPEN_MENU $HOME/images /usr/share/images WITH wmsetbg -u -t
+ *              // inserta el fitxer style.menu
+ *      "Style" OPEN_MENU style.menu
+ * "Test" END
+ */
+
+#include "wmmacros"
+
+"Aplicacions" MENU
+        "Informació" MENU
+                "Info Panel..." INFO_PANEL
+                "Legal..." LEGAL_PANEL
+                "Consola del Sistema" EXEC xconsole
+                "Càrrega del Sistema" SHEXEC xosview || xload
+                "Llista de Processos" EXEC xterm -e top
+                "Manual d'instruccions" EXEC xman
+        "Informació" END
+        "XTerm" EXEC xterm -sb 
+        "Rxvt" EXEC rxvt -bg black -fg white -fn fixed
+        "Escriptoris" WORKSPACE_MENU
+        "Aplicacions" MENU
+                "Gràfics" MENU
+                        "Gimp" SHEXEC gimp >/dev/null
+                        "XV" EXEC xv
+                        "XPaint" EXEC xpaint
+                        "XFig" EXEC xfig
+                "Gràfics" END
+                "X File Manager" EXEC xfm
+                "OffiX Files" EXEC files
+                "LyX" EXEC lyx
+                "Netscape" EXEC netscape 
+                "Ghostview" EXEC ghostview %a(Enter file to view)
+                "Acrobat" EXEC /usr/local/Acrobat3/bin/acroread %a(Enter PDF to view)
+                "TkDesk" EXEC tkdesk
+        "Aplicacions" END
+        "Editors" MENU
+                "XFte" EXEC xfte
+                "XEmacs" SHEXEC xemacs || emacs
+                "XJed" EXEC xjed 
+                "NEdit" EXEC nedit
+                "Xedit" EXEC xedit
+                "VI" EXEC xterm -e vi
+        "Editors" END
+        "Miscel·lani" MENU
+                "Xmcd" SHEXEC xmcd 2> /dev/null
+                "Xplaycd" EXEC xplaycd
+                "Xmixer" EXEC xmixer
+        "Miscel·lani" END
+        "Utilitats" MENU
+                "Calculadora" EXEC xcalc
+                "Propietats de la finestra" SHEXEC xprop | xmessage -center -title 'xprop' -file -
+                "Sel·lecciona una Font" EXEC xfontsel
+                "Emulador de Terminal" EXEC xminicom
+                "Lupa" EXEC xmag
+                "Mapa de Color" EXEC xcmap
+                "XKill" EXEC xkill
+                "Portapapers" EXEC xclipboard
+        "Utilitats" END
+
+        "Sel·lecció" MENU
+                "Copiar" SHEXEC echo '%s' | wxcopy
+                "Enviar a" EXEC xterm -name mail -T "Pine" -e pine %s
+                "Enviar al Navegador" EXEC netscape %s
+                "Buscar al Manual" SHEXEC MANUAL_SEARCH(%s)
+        "Sel·lecció" END
+
+        "Escriptori" MENU
+                "Amagar Altres" HIDE_OTHERS
+                "Ensenyar Totes" SHOW_ALL
+                "Alinear Icones" ARRANGE_ICONS
+                "Refrescar" REFRESH
+                "Bloquejar" EXEC xlock -allowroot -usefirst
+                "Guardar Sessió" SAVE_SESSION
+                "Borrar Sessió Guardada" CLEAR_SESSION
+        "Escriptori" END
+
+        "Aparença" MENU
+                "Temes" OPEN_MENU THEMES_DIR $HOME/GNUstep/Library/WindowMaker/Themes WITH setstyle
+                "Estils" OPEN_MENU STYLES_DIR $HOME/GNUstep/Library/WindowMaker/Styles WITH setstyle
+                "Jocs d'Icones" OPEN_MENU ICON_SETS_DIR $HOME/GNUstep/Library/WindowMaker/IconSets WITH seticons
+                "Fons de pantalla" MENU
+                        "Sòlid" MENU
+                                "Negre" WS_BACK '(solid, black)'
+                                "Lila Clar"  WS_BACK '(solid, "#505075")'
+                                "Blau Clar" WS_BACK '(solid, "#243e6c")'
+                                "Blau Lluminós" WS_BACK '(solid, "#224477")'
+                                "Purpura" WS_BACK '(solid, "#554466")'
+                                "Caki"  WS_BACK '(solid, "wheat4")'
+                                "Gris Fosc"  WS_BACK '(solid, "#333340")'
+                                "Lila" WS_BACK '(solid, "#400020")'
+                        "Sòlid" END
+                        "Degradat" MENU
+                                "Posta de Sòl" WS_BACK '(mvgradient, deepskyblue4,black, deepskyblue4, tomato4)'
+                                "Cel" WS_BACK '(vgradient, blue4, white)'
+                                "Degradat Blau" WS_BACK '(vgradient,"#7080a5", "#101020")'
+                                "Degradat Blau Cel" WS_BACK '(vgradient,"#746ebc","#242e4c")'
+                                "Degradat Purpura" WS_BACK '(vgradient,"#654c66","#151426")'
+                                "Degradat d'or" WS_BACK '(vgradient,"#a09060", "#302010")'
+                                "Degradat Gris" WS_BACK '(vgradient,"#636380", "#131318")'
+                                "Degradat Lila" WS_BACK '(vgradient,"#600040", "#180010")'
+                        "Degradat" END
+                        "Imatges" OPEN_MENU BACKGROUNDS_DIR $HOME/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -t
+                "Fons de pantalla" END
+                "Guardar Tema" SHEXEC getstyle -t $HOME/GNUstep/Library/WindowMaker/Themes/"%a(Theme name)"
+                "Guardar Joc d'Icones" SHEXEC geticonset $HOME/GNUstep/Library/WindowMaker/IconSets/"%a(IconSet name)"
+        "Aparença" END
+
+        "Sortir"        MENU
+                "Rearrancar" RESTART
+                "Arrancar AfterStep" RESTART afterstep
+                "Sortir..."  EXIT
+                "Matar la Sessió..." SHUTDOWN
+        "Sortir" END
+"Aplicacions" END
+
+
+

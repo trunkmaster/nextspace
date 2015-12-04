@@ -1,0 +1,13 @@
+{
+    ShelfContents = {
+	(
+	    <*I0>,
+	    <*I0>
+	) = (
+	    "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard"
+	);
+    };
+    ShelfSize = <*I76>;
+    ViewerPath = "/";
+    ViewerWindow = "{x = 326; y = 215; width = 512; height = 423}";
+}

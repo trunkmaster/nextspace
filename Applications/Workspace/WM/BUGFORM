@@ -1,0 +1,70 @@
+
+			WindowMaker Bug Report Form
+			---------------------------
+
+
+	If you find a bug please fill this form and send it to 
+wmaker-dev@lists.windowmaker.org Please, USE THIS FORM!!!
+
+0. Before reporting this bug I already:
+[ ] read the NEWS, README and INSTALL files
+[ ] read the list of already known bugs in the BUGS file
+[ ] downloaded and tried the latest version of WindowMaker
+
+1. What happened:
+[ ] could not compile
+[ ] crashed
+[ ] configuration option does not work
+[ ] weird behavior
+[ ] cosmetic 
+[ ] some problem with WPrefs 
+[ ] others: ...................................
+
+2. Detailed description of what happened:
+
+
+3. How to reproduce the bug, if known:
+
+
+4. Configure time options you specified:
+[ ]  --enable-kanji
+[ ]  --disable-shape   
+[ ]  --enable-single-icon
+[ ]  --enable-modelock
+[ ]  Others: .......................
+
+
+5. Changes to the src/wconfig.h file:
+
+
+6. The error occurred during:
+[ ] configuration
+[ ] compilation
+[ ] start-up
+[ ] use
+
+7. Changes made to the configuration files, if the error occurred during use:
+
+
+8. Error messages output:
+
+
+9. Fix, if known:
+
+
+10. Other Notes:
+
+
+Your e-mail address: .................................................
+
+Operating System (run "uname -a"): .................. Version: .......
+Distribution (if applicable): ..................... Version:..........
+X Server Vendor: ...................... Color Depth: .................
+WindowMaker Version (run "wmaker -version"): .........................
+
+
+11. backtrace if the bug made Window Maker crash. PLEASE SEND THE
+BACKTRACE. Your bug report might be of not much use without one.
+strace/truss outputs are usually not useful for crashes, so you can
+skip it. The README file has instructions to make one.
+

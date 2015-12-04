@@ -1,0 +1,61 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Controller = {
+	Actions = (
+	    "emptyRecycler:",
+	    "showConsole:",
+	    "newViewer:",
+	    "showFinder:",
+	    "showPrefsPanel:",
+	    "showProcesses:",
+	    "logOut:",
+	    "showPermissionsInspector:",
+	    "showAttributesInspector:",
+	    "showContentsInspector:",
+	    "showToolsInspector:",
+	    "showLegalPanel:",
+	    "showInfoPanel:",
+	    "showVolumes:",
+	    "updateViewers:",
+	    "showLauncher:",
+	    "initializeDisk:",
+	    "checkForDisks:"
+	);
+	Outlets = (
+	    deviceManager,
+	    viewMenu,
+	    viewMenuItem
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "compress:",
+	    "destroy:",
+	    "duplicate:",
+	    "eject:",
+	    "emptyRecycler:",
+	    "initializeDisk:",
+	    "logOut:",
+	    "checkForDisks:",
+	    "newFolder:",
+	    "newViewer:",
+	    "openAsFolder:",
+	    "showAttributesInspector:",
+	    "showConsole:",
+	    "showContentsInspector:",
+	    "showFinder:",
+	    "showInfoPanel:",
+	    "showLauncher:",
+	    "showLegalPanel:",
+	    "showPermissionsInspector:",
+	    "showPrefsPanel:",
+	    "showProcesses:",
+	    "showToolsInspector:",
+	    "showVolumes:",
+	    "unmount:",
+	    "updateViewers:"
+	);
+	Super = NSObject;
+    };
+}

@@ -1,0 +1,787 @@
+786
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-adobe-standard
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-ibm-cp437
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-ibm-cp850
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-ibm-cp852
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-ibm-cp866
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso10646-1
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-10
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-13
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-15
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-2
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-3
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-4
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-5
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-iso8859-9
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-koi8-e
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-koi8-ru
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-koi8-r
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-koi8-uni
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-koi8-u
+ai=0.2:ariblk.ttf -monotype-arial black-medium-i-normal--0-0-0-0-p-0-microsoft-cp1252
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-adobe-standard
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-ibm-cp437
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-ibm-cp850
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-ibm-cp852
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-ibm-cp866
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso10646-1
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-10
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-13
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-15
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-2
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-3
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-4
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-5
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-iso8859-9
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-koi8-e
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-koi8-r
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-koi8-ru
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-koi8-u
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-koi8-uni
+ai=0.2:ariblk.ttf -monotype-arial black-medium-o-normal--0-0-0-0-p-0-microsoft-cp1252
+ai=0.2:symbol.ttf -monotype-symbol-medium-i-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:symbol.ttf -monotype-symbol-medium-i-normal--0-0-0-0-p-0-microsoft-symbol
+ai=0.2:symbol.ttf -monotype-symbol-medium-o-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:symbol.ttf -monotype-symbol-medium-o-normal--0-0-0-0-p-0-microsoft-symbol
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-adobe-standard
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso10646-1
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-10
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-11
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-13
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-15
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-16
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-2
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-3
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-4
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-5
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-8
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-iso8859-9
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-koi8-e
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-koi8-ru
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-koi8-r
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-koi8-u
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-koi8-uni
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-microsoft-cp1252
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-i-normal--0-0-0-0-p-0-tis620-2
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-adobe-standard
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso10646-1
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-10
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-11
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-13
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-15
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-16
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-2
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-3
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-4
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-5
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-8
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-iso8859-9
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-koi8-e
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-koi8-ru
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-koi8-r
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-koi8-u
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-koi8-uni
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-microsoft-cp1252
+ai=0.2:tahoma.ttf -microsoft-tahoma-medium-o-normal--0-0-0-0-p-0-tis620-2
+ai=0.2:webdings.ttf -microsoft-webdings-medium-i-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:webdings.ttf -microsoft-webdings-medium-i-normal--0-0-0-0-p-0-microsoft-symbol
+ai=0.2:webdings.ttf -microsoft-webdings-medium-o-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:webdings.ttf -microsoft-webdings-medium-o-normal--0-0-0-0-p-0-microsoft-symbol
+ai=0.2:wingding.ttf -microsoft-wingdings-medium-i-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:wingding.ttf -microsoft-wingdings-medium-i-normal--0-0-0-0-p-0-microsoft-symbol
+ai=0.2:wingding.ttf -microsoft-wingdings-medium-o-normal--0-0-0-0-p-0-iso8859-1
+ai=0.2:wingding.ttf -microsoft-wingdings-medium-o-normal--0-0-0-0-p-0-microsoft-symbol
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-adobe-standard
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-ibm-cp437
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-ibm-cp850
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-ibm-cp852
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-ibm-cp866
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso10646-1
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-10
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-13
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-15
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-1
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-2
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-3
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-4
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-5
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-8
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-iso8859-9
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-koi8-e
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-koi8-r
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-koi8-ru
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-koi8-u
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-koi8-uni
+arial.ttf -monotype-arial-medium-r-normal--0-0-0-0-p-0-microsoft-cp1252
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-adobe-standard
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-ibm-cp437
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-ibm-cp850
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-ibm-cp852
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-ibm-cp866
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso10646-1
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-1
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-10
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-13
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-15
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-2
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-3
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-4
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-5
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-8
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-iso8859-9
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-koi8-e
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-koi8-r
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-koi8-ru
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-koi8-uni
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-koi8-u
+arialbd.ttf -monotype-arial-bold-r-normal--0-0-0-0-p-0-microsoft-cp1252
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-adobe-standard
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-ibm-cp437
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-ibm-cp850
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-ibm-cp852
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-ibm-cp866
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso10646-1
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-10
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-13
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-15
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-1
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-2
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-3
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-4
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-5
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-8
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-iso8859-9
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-koi8-e
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-koi8-ru
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-koi8-r
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-koi8-uni
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-koi8-u
+arialbi.ttf -monotype-arial-bold-i-normal--0-0-0-0-p-0-microsoft-cp1252
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-adobe-standard
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-ibm-cp437
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-ibm-cp850
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-ibm-cp852
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-ibm-cp866
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso10646-1
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-10
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-13
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-15
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-1
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-2
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-3
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-4
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-5
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-8
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-iso8859-9
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-koi8-e
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-koi8-r
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-koi8-ru
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-koi8-u
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-koi8-uni
+arialbi.ttf -monotype-arial-bold-o-normal--0-0-0-0-p-0-microsoft-cp1252
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-adobe-standard
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-ibm-cp437
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-ibm-cp850
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-ibm-cp852
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-ibm-cp866
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso10646-1
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-1
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-10
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-13
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-15
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-2
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-3
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-4
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-5
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-8
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-iso8859-9
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-koi8-e
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-koi8-r
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-koi8-ru
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-koi8-u
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-koi8-uni
+ariali.ttf -monotype-arial-medium-i-normal--0-0-0-0-p-0-microsoft-cp1252
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-adobe-standard
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-ibm-cp437
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-ibm-cp850
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-ibm-cp852
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-ibm-cp866
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso10646-1
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-10
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-13
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-15
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-1
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-2
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-3
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-4
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-5
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-8
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-iso8859-9
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-koi8-e
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-koi8-r
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-koi8-ru
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-koi8-u
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-koi8-uni
+ariali.ttf -monotype-arial-medium-o-normal--0-0-0-0-p-0-microsoft-cp1252
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-adobe-standard
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-ibm-cp437
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-ibm-cp850
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-ibm-cp852
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-ibm-cp866
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso10646-1
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-10
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-13
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-15
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-1
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-2
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-3
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-4
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-5
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-iso8859-9
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-koi8-e
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-koi8-ru
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-koi8-r
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-koi8-uni
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-koi8-u
+ariblk.ttf -monotype-arial black-medium-r-normal--0-0-0-0-p-0-microsoft-cp1252
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-adobe-standard
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-ibm-cp437
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-ibm-cp850
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-ibm-cp852
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-ibm-cp866
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso10646-1
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-1
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-10
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-13
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-15
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-2
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-3
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-4
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-5
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-8
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-iso8859-9
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-koi8-e
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-koi8-r
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-koi8-ru
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-koi8-u
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-koi8-uni
+cour.ttf -monotype-courier new-medium-r-normal--0-0-0-0-m-0-microsoft-cp1252
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-adobe-standard
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-ibm-cp437
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-ibm-cp850
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-ibm-cp852
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-ibm-cp866
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso10646-1
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-1
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-10
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-13
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-15
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-2
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-3
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-4
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-5
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-8
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-iso8859-9
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-koi8-e
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-koi8-r
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-koi8-ru
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-koi8-u
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-koi8-uni
+courbd.ttf -monotype-courier new-bold-r-normal--0-0-0-0-m-0-microsoft-cp1252
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-adobe-standard
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-ibm-cp437
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-ibm-cp850
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-ibm-cp852
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-ibm-cp866
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso10646-1
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-10
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-13
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-15
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-1
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-2
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-3
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-4
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-5
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-8
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-iso8859-9
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-koi8-e
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-koi8-ru
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-koi8-r
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-koi8-u
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-koi8-uni
+courbi.ttf -monotype-courier new-bold-i-normal--0-0-0-0-m-0-microsoft-cp1252
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-adobe-standard
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-ibm-cp437
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-ibm-cp850
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-ibm-cp852
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-ibm-cp866
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso10646-1
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-10
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-13
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-15
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-1
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-2
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-3
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-4
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-5
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-8
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-iso8859-9
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-koi8-e
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-koi8-r
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-koi8-ru
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-koi8-u
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-koi8-uni
+courbi.ttf -monotype-courier new-bold-o-normal--0-0-0-0-m-0-microsoft-cp1252
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-adobe-standard
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-ibm-cp437
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-ibm-cp850
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-ibm-cp852
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-ibm-cp866
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso10646-1
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-10
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-13
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-15
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-1
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-2
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-3
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-4
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-5
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-8
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-iso8859-9
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-koi8-e
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-koi8-ru
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-koi8-r
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-koi8-uni
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-koi8-u
+couri.ttf -monotype-courier new-medium-i-normal--0-0-0-0-m-0-microsoft-cp1252
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-adobe-standard
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-ibm-cp437
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-ibm-cp850
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-ibm-cp852
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-ibm-cp866
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso10646-1
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-10
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-13
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-15
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-1
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-2
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-3
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-4
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-5
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-8
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-iso8859-9
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-koi8-e
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-koi8-r
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-koi8-ru
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-koi8-u
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-koi8-uni
+couri.ttf -monotype-courier new-medium-o-normal--0-0-0-0-m-0-microsoft-cp1252
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-adobe-standard
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-ibm-cp437
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-ibm-cp850
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-ibm-cp852
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-ibm-cp866
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso10646-1
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-10
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-13
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-15
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-2
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-3
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-4
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-5
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-iso8859-9
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-koi8-e
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-koi8-ru
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-koi8-r
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-koi8-uni
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-koi8-u
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-i-normal--0-0-0-0-p-0-microsoft-cp1252
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-adobe-standard
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-ibm-cp437
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-ibm-cp850
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-ibm-cp852
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-ibm-cp866
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso10646-1
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-10
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-13
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-15
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-2
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-3
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-4
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-5
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-iso8859-9
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-koi8-e
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-koi8-r
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-koi8-ru
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-koi8-u
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-koi8-uni
+ds=y:ai=0.2:ariblk.ttf -monotype-arial black-bold-o-normal--0-0-0-0-p-0-microsoft-cp1252
+ds=y:ai=0.2:symbol.ttf -monotype-symbol-bold-i-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:symbol.ttf -monotype-symbol-bold-i-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:ai=0.2:symbol.ttf -monotype-symbol-bold-o-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:symbol.ttf -monotype-symbol-bold-o-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-adobe-standard
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso10646-1
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-10
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-11
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-13
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-15
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-16
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-2
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-3
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-4
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-5
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-8
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-iso8859-9
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-koi8-e
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-koi8-r
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-koi8-ru
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-koi8-uni
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-koi8-u
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-microsoft-cp1252
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-i-normal--0-0-0-0-p-0-tis620-2
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-adobe-standard
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso10646-1
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-10
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-11
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-13
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-15
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-16
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-2
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-3
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-4
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-5
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-8
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-iso8859-9
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-koi8-e
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-koi8-r
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-koi8-ru
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-koi8-u
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-koi8-uni
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-microsoft-cp1252
+ds=y:ai=0.2:tahoma.ttf -microsoft-tahoma-bold-o-normal--0-0-0-0-p-0-tis620-2
+ds=y:ai=0.2:webdings.ttf -microsoft-webdings-bold-i-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:webdings.ttf -microsoft-webdings-bold-i-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:ai=0.2:webdings.ttf -microsoft-webdings-bold-o-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:webdings.ttf -microsoft-webdings-bold-o-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:ai=0.2:wingding.ttf -microsoft-wingdings-bold-i-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:wingding.ttf -microsoft-wingdings-bold-i-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:ai=0.2:wingding.ttf -microsoft-wingdings-bold-o-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ai=0.2:wingding.ttf -microsoft-wingdings-bold-o-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-adobe-standard
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-ibm-cp437
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-ibm-cp850
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-ibm-cp852
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-ibm-cp866
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso10646-1
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-10
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-13
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-15
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-1
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-2
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-3
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-4
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-5
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-iso8859-9
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-koi8-e
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-koi8-r
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-koi8-ru
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-koi8-u
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-koi8-uni
+ds=y:ariblk.ttf -monotype-arial black-bold-r-normal--0-0-0-0-p-0-microsoft-cp1252
+ds=y:symbol.ttf -monotype-symbol-bold-r-normal--0-0-0-0-p-0-iso8859-1
+ds=y:symbol.ttf -monotype-symbol-bold-r-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:webdings.ttf -microsoft-webdings-bold-r-normal--0-0-0-0-p-0-iso8859-1
+ds=y:webdings.ttf -microsoft-webdings-bold-r-normal--0-0-0-0-p-0-microsoft-symbol
+ds=y:wingding.ttf -microsoft-wingdings-bold-r-normal--0-0-0-0-p-0-iso8859-1
+ds=y:wingding.ttf -microsoft-wingdings-bold-r-normal--0-0-0-0-p-0-microsoft-symbol
+symbol.ttf -monotype-symbol-medium-r-normal--0-0-0-0-p-0-iso8859-1
+symbol.ttf -monotype-symbol-medium-r-normal--0-0-0-0-p-0-microsoft-symbol
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-adobe-standard
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso10646-1
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-1
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-10
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-11
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-13
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-15
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-16
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-2
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-3
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-4
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-5
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-8
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-iso8859-9
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-koi8-e
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-koi8-ru
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-koi8-r
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-koi8-u
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-koi8-uni
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-microsoft-cp1252
+tahoma.ttf -microsoft-tahoma-medium-r-normal--0-0-0-0-p-0-tis620-2
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-adobe-standard
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso10646-1
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-1
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-10
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-11
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-13
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-15
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-16
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-2
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-3
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-4
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-5
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-8
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-iso8859-9
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-koi8-e
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-koi8-ru
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-koi8-r
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-koi8-u
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-koi8-uni
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-microsoft-cp1252
+tahomabd.ttf -microsoft-tahoma-bold-r-normal--0-0-0-0-p-0-tis620-2
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-adobe-standard
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-ibm-cp437
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-ibm-cp850
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-ibm-cp852
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-ibm-cp866
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso10646-1
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-10
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-13
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-15
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-1
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-2
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-3
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-4
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-5
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-8
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-iso8859-9
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-koi8-e
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-koi8-ru
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-koi8-r
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-koi8-u
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-koi8-uni
+times.ttf -monotype-times new roman-medium-r-normal--0-0-0-0-p-0-microsoft-cp1252
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-adobe-standard
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-ibm-cp437
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-ibm-cp850
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-ibm-cp852
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-ibm-cp866
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso10646-1
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-10
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-13
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-15
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-1
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-2
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-3
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-4
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-5
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-8
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-iso8859-9
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-koi8-e
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-koi8-ru
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-koi8-r
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-koi8-uni
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-koi8-u
+timesbd.ttf -monotype-times new roman-bold-r-normal--0-0-0-0-p-0-microsoft-cp1252
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-adobe-standard
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-ibm-cp437
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-ibm-cp850
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-ibm-cp852
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-ibm-cp866
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso10646-1
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-1
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-10
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-13
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-15
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-2
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-3
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-4
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-5
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-8
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-iso8859-9
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-koi8-e
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-koi8-ru
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-koi8-r
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-koi8-u
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-koi8-uni
+timesbi.ttf -monotype-times new roman-bold-i-normal--0-0-0-0-p-0-microsoft-cp1252
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-adobe-standard
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-ibm-cp437
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-ibm-cp850
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-ibm-cp852
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-ibm-cp866
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso10646-1
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-10
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-13
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-15
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-1
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-2
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-3
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-4
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-5
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-8
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-iso8859-9
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-koi8-e
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-koi8-ru
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-koi8-r
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-koi8-uni
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-koi8-u
+timesbi.ttf -monotype-times new roman-bold-o-normal--0-0-0-0-p-0-microsoft-cp1252
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-adobe-standard
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-ibm-cp437
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-ibm-cp850
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-ibm-cp852
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-ibm-cp866
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso10646-1
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-10
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-13
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-15
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-1
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-2
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-3
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-4
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-5
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-8
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-iso8859-9
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-koi8-e
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-koi8-ru
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-koi8-r
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-koi8-u
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-koi8-uni
+timesi.ttf -monotype-times new roman-medium-i-normal--0-0-0-0-p-0-microsoft-cp1252
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-adobe-standard
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-ibm-cp437
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-ibm-cp850
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-ibm-cp852
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-ibm-cp866
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso10646-1
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-1
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-10
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-13
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-15
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-2
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-3
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-4
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-5
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-8
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-iso8859-9
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-koi8-e
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-koi8-ru
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-koi8-r
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-koi8-u
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-koi8-uni
+timesi.ttf -monotype-times new roman-medium-o-normal--0-0-0-0-p-0-microsoft-cp1252
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-adobe-standard
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso10646-1
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-10
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-13
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-15
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-1
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-2
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-3
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-4
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-5
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-iso8859-9
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-koi8-e
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-koi8-ru
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-koi8-r
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-koi8-u
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-koi8-uni
+verdana.ttf -microsoft-verdana-medium-r-normal--0-0-0-0-p-0-microsoft-cp1252
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-adobe-standard
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso10646-1
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-10
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-13
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-15
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-1
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-2
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-3
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-4
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-5
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-iso8859-9
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-koi8-e
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-koi8-r
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-koi8-ru
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-koi8-uni
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-koi8-u
+verdanab.ttf -microsoft-verdana-bold-r-normal--0-0-0-0-p-0-microsoft-cp1252
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-adobe-standard
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso10646-1
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-1
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-10
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-13
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-15
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-2
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-3
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-4
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-5
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-iso8859-9
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-koi8-e
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-koi8-r
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-koi8-ru
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-koi8-uni
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-koi8-u
+verdanai.ttf -microsoft-verdana-medium-i-normal--0-0-0-0-p-0-microsoft-cp1252
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-adobe-standard
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso10646-1
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-10
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-13
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-15
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-1
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-2
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-3
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-4
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-5
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-iso8859-9
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-koi8-e
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-koi8-ru
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-koi8-r
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-koi8-u
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-koi8-uni
+verdanai.ttf -microsoft-verdana-medium-o-normal--0-0-0-0-p-0-microsoft-cp1252
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-adobe-standard
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso10646-1
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-1
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-10
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-13
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-15
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-2
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-3
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-4
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-5
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-iso8859-9
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-koi8-e
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-koi8-r
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-koi8-ru
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-koi8-uni
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-koi8-u
+verdanaz.ttf -microsoft-verdana-bold-i-normal--0-0-0-0-p-0-microsoft-cp1252
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-adobe-standard
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso10646-1
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-1
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-10
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-13
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-15
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-2
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-3
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-4
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-5
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-iso8859-9
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-koi8-e
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-koi8-ru
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-koi8-r
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-koi8-u
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-koi8-uni
+verdanaz.ttf -microsoft-verdana-bold-o-normal--0-0-0-0-p-0-microsoft-cp1252
+webdings.ttf -microsoft-webdings-medium-r-normal--0-0-0-0-p-0-iso8859-1
+webdings.ttf -microsoft-webdings-medium-r-normal--0-0-0-0-p-0-microsoft-symbol
+wingding.ttf -microsoft-wingdings-medium-r-normal--0-0-0-0-p-0-iso8859-1
+wingding.ttf -microsoft-wingdings-medium-r-normal--0-0-0-0-p-0-microsoft-symbol

@@ -1,0 +1,6 @@
+{
+  type = Preferences;
+  mode = Font;
+  class = Font;
+  priority = 1;
+}

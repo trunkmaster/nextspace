@@ -1,0 +1,27 @@
+#./autogen.sh
+
+WM_APP="/usr/NextSpace/Apps/Workspace.app"
+export CFLAGS=-DNEXTSPACE
+
+./configure \
+--enable-randr \
+--enable-xinerama \
+--disable-magick \
+\
+--prefix=/usr/NextSpace \
+--bindir=/usr/NextSpace/bin \
+--libdir=/usr/NextSpace/lib \
+--includedir=/usr/NextSpace/include \
+--mandir=/usr/NextSpace/Documentation/man \
+\
+--datadir=$WM_APP \
+--sysconfdir=$WM_APP \
+--localedir=$WM_APP \
+--with-pixmapdir=$WM_APP/WindowMaker/Pixmaps \
+\
+--with-gnustepdir=/usr/NextSpace \
+CC=clang CXX=clang++
+
+#--disable-xft
+#--enable-gnome \
+#--enable-kde \

@@ -1,0 +1,28 @@
+{
+  Description = "Default ProjectCenter code editor (C, ObjectiveC, C++ files)";
+  ProvidesBrowserItems = YES;
+}
+
+{
+  // optional
+  desc = "Describe bundle for humans";
+  // InspectorCommand, PreferencesModule, TextParser, ProjectType, whatever...
+  // Bundles should be located in application specific directories
+  // (/Applications/AppName.app/Resources, /Library/Bundles/AppName)
+  type = "InspectorCommand";
+  // Name - name of popup button element or section selection control. Examples:
+  // Workspace: Attributes, Contents, Tools, Access Control.
+  // Preferences: Fonts, Login, Localization, Time, Display, Keyboard, Sound
+  mode = "Attributes";
+  // Principal class name used to initialize object
+  class = "FileAttributesInspector";  // PrincipalClassName
+  // Workspace selection count
+  selp = "selectionOneOrMore";
+  // Supported file extensions will be checked here.
+  // THINK: add 'exts' field to check supported file types without loading
+  // bundle?
+  nodep = "isLocalFile";              // file types checked here
+  // If several bundles with other appropriate properties found,
+  // bundle with higher number in 'priority' field will be used.
+  priority = 1;                         // ? optional
+}

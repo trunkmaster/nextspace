@@ -1,0 +1,37 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH geticonset 1 "January 1999"
+.SH "НАИМЕНОВАНИЕ"
+geticonset \- считывает данные о наборе иконок Window Maker.
+.SH "СИНТАКСИС"
+.B geticonset
+.I [опции] [iconsetfile]
+.SH "ОПИСАНИЕ"
+.B geticonset
+читает домен WMWindowAttributes, и выводит настройки набора иконок на
+стандартный вывод или в файл
+.I iconsetfile.
+.SH "ОПЦИИ"
+.TP
+.B \-\-help
+Выводит справку.
+.TP
+.B \-\-version
+Выводит номер версии.
+.SH "ОКРУЖЕНИЕ"
+.IP GNUSTEP_USER_ROOT
+Указывает начальный путь к папке Defaults. "Defaults/" приписывается к этой
+переменной, чтобы определить настоящее расположение данных. Если переменная не
+установлена, то её значение: "~/GNUstep".
+.SH "ФАЙЛЫ"
+.IP GNUSTEP_USER_ROOT/Defaults/WMWindowAttributes
+Файл, из которого читаются данные.
+.SH "СМОТРИ ТАКЖЕ"
+.BR seticons (1),
+.BR wmaker (1)
+.SH "АВТОРЫ"
+Window Maker написан Alfredo K. Kojima <kojima@windowmaker.info>,
+Dan Pascu <dan@windowmaker.org> и дополнен вкладом многих людей по всему
+интернету.
+.PP
+Это руководство было написано Marcelo E. Magallon, <mmagallo@debian.org>.
+Перевод на русский язык осуществил NIR aka Ginko <faust@gmx.com>.

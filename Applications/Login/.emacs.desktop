@@ -1,0 +1,162 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Thu Nov 26 18:57:11 2015
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq default-directory "/Users/me/Developer/StepMaker/code/Applications/Login/")
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("authenticate" "shrink" "shake" "shrink" "hideWindow"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/Developer/StepMaker/code/Applications/Login/GNUmakefile.postamble" "~/Developer/StepMaker/code/Applications/Login/Preferences/GNUmakefile.preamble" "~/Developer/StepMaker/code/Applications/Login/GNUmakefile" "~/Developer/StepMaker/code/Applications/Login/Preferences/Resources/bundle.registry" "~/Developer/StepMaker/code/Applications/Login/Preferences/GNUmakefile" "~/Developer/StepMaker/code/Applications/Login/Preferences/*.m" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/Resources/bundle.registry" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/PreferencesInfo.plist" "~/Developer/StepMaker/code/Applications/Preferences/GNUmakefile.*" "~/Developer/StepMaker/code/Applications/Preferences/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Preferences.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/StepMaker/code/Applications/Workspace/Processes/Processes.m" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/StepMaker/code/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/StepMaker/code/Applications/Workspace/WM-PATCHES/" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/dock.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/screen.c" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/LoginWindow.m"
+  "LoginWindow.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2044
+  '(2043 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/LoginWindow.h"
+  "LoginWindow.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1269
+  '(1608 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Controller.m"
+  "Controller.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  14617
+  '(14225 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Controller.h"
+  "Controller.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Application.m"
+  "Application.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1007
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Login_main.m"
+  "Login_main.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2749
+  '(3040 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/UserSession.m"
+  "UserSession.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1679
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Preferences/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  581
+  '(172 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/GNUmakefile"
+  "GNUmakefile<2>"
+  'makefile-gmake-mode
+  nil
+  570
+  '(86 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/GNUmakefile.postamble"
+  "GNUmakefile.postamble"
+  'fundamental-mode
+  nil
+  677
+  '(677 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Preferences/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'fundamental-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Preferences/Resources/bundle.registry"
+  "bundle.registry"
+  'fundamental-mode
+  nil
+  58
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Login/Preferences/Login.m"
+  "Login.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2235
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+

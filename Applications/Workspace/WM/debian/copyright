@@ -1,0 +1,125 @@
+Format: http://anonscm.debian.org/viewvc/dep/web/deps/dep5.mdwn?view=co&pathrev=174
+Upstream-Name: wmaker
+Upstream-Contact: Window Maker developers mailing list <wmaker-dev@lists.windowmaker.org>
+Source: http://repo.or.cz/w/wmaker-crm.git
+
+Files: *
+Copyright: 1997, Alfredo Kengi Kojima <kojima@windowmaker.info>
+           2011, Carlos R. Mafra <crmafra@gmail.com>
+License: GPL-2+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+Files: wrlib/*
+Copyright: 2000-2003, Alfredo Kengi Kojima <kojima@windowmaker.info>
+           2011, Carlos R. Mafra <crmafra@gmail.com>
+License: LGPL-2
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Library General Public License for more details.
+ .
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU Library General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/LGPL-2'.
+
+Files: debian/*
+Copyright: 1997, Neil A. Rubin <nar5@po.cwru.edu>
+           1997, Marcelo E. Magallon <mmagallo@debian.org>
+           2011, Rodolfo García Peñas (kix) <kix@kix.es>
+License: GPL-2+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+Files: WindowMaker/Icons/BitchX.tiff WindowMaker/Icons/defaultAppIcon.tiff
+       WindowMaker/Icons/GNUterm.tiff WindowMaker/Icons/defaultterm.tiff
+       WindowMaker/Icons/draw.tiff WindowMaker/Icons/linuxterm.tiff
+       WindowMaker/Icons/mixer.tiff WindowMaker/Icons/notepad.tiff
+       WindowMaker/Icons/pdf.tiff WindowMaker/Icons/ps.tiff
+       WindowMaker/Icons/real.tiff WindowMaker/Icons/sgiterm.tiff
+       WindowMaker/Icons/staroffice2.tiff WindowMaker/Icons/timer.tiff
+       WindowMaker/Icons/wilber.tiff WindowMaker/Icons/write.tiff
+       WindowMaker/Icons/xdvi.tiff WindowMaker/Icons/xv.tiff
+Copyright: 1997, Marco van Hylckama Vlieg <marco@windowmaker.info>
+License: attribution
+ They may be distributed freely and/or modified as long as the original
+ Author is mentioned!
+
+Files: WindowMaker/Icons/GNUstepGlow.tiff WindowMaker/Icons/GNUstepGlow.xpm
+       WindowMaker/Icons/Magnify.tiff WindowMaker/Icons/Magnify.xpm
+       WindowMaker/Icons/Terminal.tiff WindowMaker/Icons/Terminal.xpm
+       WindowMaker/Icons/TerminalGNUstep.tiff WindowMaker/Icons/TerminalGNUstep.xpm
+       WindowMaker/Icons/TerminalLinux.tiff WindowMaker/Icons/TerminalLinux.xpm
+       WindowMaker/Icons/Ear.png WindowMaker/Icons/Ftp.png WindowMaker/Icons/ICQ.png
+       WindowMaker/Icons/Jabber.png WindowMaker/Icons/Mozilla.png
+       WindowMaker/Icons/Pen.png WindowMaker/Icons/Pencil.png
+       WindowMaker/Icons/Shell.png WindowMaker/Icons/Speaker.png
+       WindowMaker/Icons/XChat.png
+       WPrefs.app/tiff/msty1.tiff WPrefs.app/tiff/msty2.tiff WPrefs.app/tiff/msty3.tiff
+       WPrefs.app/xpm/msty1.xpm WPrefs.app/xpm/msty2.xpm WPrefs.app/xpm/msty3.xpm
+       WPrefs.app/WPrefs.tiff WPrefs.app/WPrefs.xpm WPrefs.app/tiff/tdel.tiff
+       WPrefs.app/tiff/tedit.tiff WPrefs.app/tiff/textr.tiff WPrefs.app/tiff/tnew.tiff
+       WPrefs.app/xpm/tdel.xpm WPrefs.app/xpm/tedit.xpm WPrefs.app/xpm/textr.xpm
+       WPrefs.app/xpm/tnew.xpm WINGs/Resources/defaultIcon.tiff
+       WINGs/Resources/Images.tiff WINGs/Resources/Images.xpm
+       WINGs/Resources/defaultIcon.xpm WINGs/Resources/Images.xcf
+Copyright: 2000, Banlu Kemiyatorn
+License: WTFPL-1
+ do What The Fuck you want to Public License
+ .
+ Version 1.0, March 2000
+ Copyright (C) 2000 Banlu Kemiyatorn (]d).
+ 136 Nives 7 Jangwattana 14 Laksi Bangkok
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+ .
+ Ok, the purpose of this license is simple
+ and you just
+ .
+ DO WHAT THE FUCK YOU WANT TO.

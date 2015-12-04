@@ -1,0 +1,124 @@
+//
+// Hauptmenükonfiguration für WindowMaker
+//
+// Syntax:
+//
+// <Title> <Command> <Parameters>
+//
+// <Title> ist ein Text, der als Titel benutzt werden soll. Falls er
+//	Leerzeichen enthält, muss er von " umgeben sein.
+//
+// <Command> eine der folgenden gültigen Anweisungen: 
+//	MENU - beginnt (Unter)menüdefinition
+//	END  - beendet (Unter)menüdefinition
+//	EXEC <program> - führt ein externes Programm aus
+//	SHEXEC <command> - executes a shell command (like gimp > /dev/null)
+//	EXIT - beendet den Fenstermanager
+//	RESTART [<window manager>] - startet WindowMaker neu oder
+//			startet einen anderen Fenstermanager.
+//	REFRESH - Zeichnet den Bildschirminhalt neu.
+//	ARRANGE_ICONS - Ordnet die Icons auf der Arbeitsfläche neu an.
+//	SHUTDOWN - Beendet die X Sitzung und alle Anwendungen
+//	WORKSPACE_MENU - fügt Untermenü für Arbeitsflächenverwaltung ein
+//	SHOW_ALL - Bringt alle Fenster zurück auf Arbeitsfläche
+//	HIDE_OTHERS - Versteckt (mit Ausnahme des aktiven) alle Fenster auf
+//		 der Arbeitsfläche
+//
+// <Parameters> ist das auszuführende Programm
+//
+// Besonderheiten für die EXEC Kommandozeile
+// %s - An dieser Stelle den aktuell markierten Text einsetzen. Ist kein Text
+//      markiert, wird das Kommando abgebrochen
+// %w - An dieser Stelle die ID des aktuellen Fensters einsetzen. Ist kein
+//      Fenster aktiv, so wird nicht eingesetzt.
+//
+// Die Bedeutung der ausgezeichneten Zeichen (% bzw. ") kann mit dem \ Zeichen
+// außer Kraft gesetzt werden. z.B.: xterm -T "\"Hello World\""
+//
+// Jede MENU Anweisung muss eine passende END Anweisung besitzen.
+// Siehe dieses Beispiel:
+
+#include <wmmacros>
+
+"Anwendungen" MENU
+	"Info" MENU
+		"Info Panel..." INFO_PANEL
+		"Legal" LEGAL_PANEL
+  		"Systemauslastung" SHEXEC xosview || xload
+              	"Prozeßtabelle" EXEC xterm -e top
+		"Anleitungen" EXEC xman
+	"Info" END
+	"XTerm" SHEXEC xterm -sb || color-xterm -sb || xterm -sb
+	"XJed"	EXEC xjed
+	"Arbeitsfläche" WORKSPACE_MENU
+	"Anwendungen" MENU
+		"Grafik" MENU
+			"Gimp" EXEC gimp
+			"XV" EXEC xv
+			"XPaint" EXEC xpaint
+			"XFig" EXEC xfig
+		"Grafik" END
+		"X Dateimanager" EXEC xfm
+		"OffiX Files" EXEC files
+		"LyX" EXEC lyx
+		"Netscape" EXEC netscape
+               	"Ghostview" EXEC ghostview %a(Ghostview)
+                "XDvi" EXEC xdvi %a(XDvi)
+               	"Acrobat" EXEC /usr/local/Acrobat3/bin/acroread %a(Acrobat)
+  		"TkDesk" EXEC tkdesk
+	"Anwendungen" END
+	"Editoren" MENU
+		"XEmacs" SHEXEC xemacs || emacs
+		"XJed" EXEC xjed
+		"NEdit" EXEC nedit
+		"Xedit" EXEC xedit
+		"VI" EXEC xterm -e vi
+	"Editoren" END
+	"Sonstiges" MENU
+		"Xmcd" SHEXEC xmcd 2> /dev/null
+		"Xplaycd" EXEC xplaycd
+		"Xmixer" EXEC xmixer
+	"Sonstiges" END
+	"Hilfsmittel" MENU
+		"Taschenrechner" EXEC xcalc
+		"Schriftauswahl" EXEC xfontsel
+		"Lupe" EXEC xmag
+		"Farbtabelle" EXEC xcmap
+		"XKill" EXEC xkill
+		"ASClock" EXEC asclock -shape
+	"Hilfsmittel" END
+        "Markierung" MENU
+                "email an" EXEC xterm -name mail -T "Pine" -e pine %s
+                "Navigate" SHEXEC netscape -noraise -remote \
+                       'openURL(%s,new-window)' || netscape %s
+                "in Anleitung suchen" SHEXEC MANUAL_SEARCH(%s)
+	"Markierung" END
+        "Arbeitsplatz" MENU
+                "Andere verstecken" HIDE_OTHERS
+                "Alle anzeigen" SHOW_ALL
+                "Icons anordnen" ARRANGE_ICONS
+                "Neuzeichnen" REFRESH
+                "Sperren" EXEC xlock -allowroot -usefirst
+		"Hintergrund" MENU
+			"None" EXEC CLEARROOT
+			"Schwarz" WS_BACK '(solid, black)'
+			"Blau" WS_BACK '(solid, "#505075")'
+			"Purpur" WS_BACK '(solid, "#554466")'
+			"Weizen" WS_BACK '(solid, wheat4)'
+			"Dunkelgrau" WS_BACK '(solid, "#333340")'
+			"Wein" WS_BACK '(solid, "#400020")'
+		"Hintergrund" END
+#if (DEPTH>=8)
+// Einbinden einiger Farbverläufe für Anfänger und Faulpelze.
+// Nach dem Ändern muß 'RESTART' ausgeführt werden
+#include <gradients.menu>
+#endif
+		"Arbeitsplatz sichern" EXEC SAVE_WORKSPACE
+	"Arbeitsplatz" END
+	"Beenden"	MENU
+		"Neustart" RESTART
+		"AfterStep starten" RESTART afterstep
+		"Beenden..."  EXIT
+		"Sitzung beenden..." SHUTDOWN
+	"Beenden" END
+"Anwendungen" END

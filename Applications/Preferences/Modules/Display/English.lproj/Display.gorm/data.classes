@@ -1,0 +1,41 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Display = {
+	Actions = (
+	    "sectionButtonClicked:"
+	);
+	Outlets = (
+	    arrangementBtn,
+	    arrangementView,
+	    powerView,
+	    powerBtn,
+	    sectionBox,
+	    sizecolorBtn,
+	    sizecolorView,
+	    view,
+	    window,
+	    brightnessBox,
+	    brightnessField,
+	    brightnessSlider,
+	    colorBtn,
+	    dimmerField,
+	    dimmerSlider,
+	    gammaField,
+	    gammaSlider,
+	    monitorsTable,
+	    monitorsScroll,
+	    offField,
+	    offSlider,
+	    rateBtn,
+	    resolutionBtn,
+	    setImageBtn
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "sectionButtonClicked:"
+	);
+	Super = NSObject;
+    };
+}

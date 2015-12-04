@@ -1,0 +1,29 @@
+{
+    ApplicationDescription = "an OpenStep text editor";
+    ApplicationIcon = Edit.tiff;
+    ApplicationName = TextEdit;
+    ApplicationRelease = 4;
+    Authors = (
+	"Ali Ozer",
+	"Jeff Teunissen"
+    );
+    Copyright = (
+	"Copyright \U00a9 1995-1996 NeXT Software, Inc.",
+	"Copyright \U00a9 2001-2003 Dusk to Dawn Computing, Inc."
+    );
+    CopyrightDescription = "You may freely copy, distribute, and reuse the code in this example.";
+    NSExtensions = {
+//	"" = {
+//	    NSIcon = text.tiff;
+//	};
+	rtf = {
+	    NSIcon = rtf.tiff;
+	};
+	rtfd = {
+	    NSIcon = rtfd.tiff;
+	};
+	txt = {
+	    NSIcon = text.tiff;
+	};
+    };
+}

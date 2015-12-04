@@ -1,0 +1,6 @@
+{
+  type = Preferences;
+  mode = Keyboard;
+  class = Keyboard;
+  priority = 1;
+}

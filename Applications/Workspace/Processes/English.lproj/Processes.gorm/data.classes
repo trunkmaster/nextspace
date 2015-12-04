@@ -1,0 +1,43 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "kill:",
+	    "pause:",
+	    "setView:",
+	    "showApp:",
+	    "showOperation:"
+	);
+	Super = NSObject;
+    };
+    Processes = {
+	Actions = (
+	    "kill:",
+	    "setView:",
+	    "stop:",
+	    "showApp:",
+	    "showOperation:",
+	    "pause:"
+	);
+	Outlets = (
+	    appBogusWindow,
+	    appIcon,
+	    appKillBtn,
+	    appList,
+	    appName,
+	    appPID,
+	    appPath,
+	    appStatus,
+	    procBox,
+	    backBogusWindow,
+	    backBox,
+	    backList,
+	    appBox,
+	    procWindow,
+	    procPopup,
+	    backNoFopLabel,
+	    backFopBox
+	);
+	Super = NSObject;
+    };
+}

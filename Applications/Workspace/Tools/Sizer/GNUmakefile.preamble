@@ -1,0 +1,6 @@
+#
+# GNUmakefile.preamble
+#
+
+ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-unused -Wno-unused-parameter
+ADDITIONAL_CFLAGS += -W -Wall

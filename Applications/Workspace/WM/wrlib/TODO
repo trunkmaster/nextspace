@@ -1,0 +1,5 @@
+- support for other types of displays and convertion modes (currently only
+supports PseudoColor and TrueColor in some depths)
+- Gimp's xcf format?
+- add clipping code to RCombineArea()
+- remake and optimize converters

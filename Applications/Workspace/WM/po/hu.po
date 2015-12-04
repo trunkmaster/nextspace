@@ -1,0 +1,1902 @@
+# Hungarian translation of Window Maker
+# Copyright (C) 1998-2000 Free Software Foundation, Inc.
+# Horvath Szabolcs <horvathsz@penguinpowered.com>
+# thanks to magyar@lists.linux.hu.
+#                                                                                              
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Maker 0.95.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-14 01:34+0100\n"
+"PO-Revision-Date: 2014-02-18 00:23+0100\n"
+"Last-Translator: BALATON Zoltán <balaton@eik.bme.hu>\n"
+"Language-Team: Hungarian\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../wmaker-crm/src/appicon.c:542 ../../wmaker-crm/src/dialog.c:581
+#: ../../wmaker-crm/src/dock.c:3367 ../../wmaker-crm/src/dockedapp.c:171
+#: ../../wmaker-crm/src/main.c:276 ../../wmaker-crm/src/rootmenu.c:1672
+#: ../../wmaker-crm/src/winspector.c:342 ../../wmaker-crm/src/winspector.c:358
+msgid "Error"
+msgstr "Hiba"
+
+#: ../../wmaker-crm/src/appicon.c:543
+msgid "Could not open specified icon file"
+msgstr "Nem találom a megadott ikon fájlt"
+
+#: ../../wmaker-crm/src/appicon.c:543 ../../wmaker-crm/src/dialog.c:423
+#: ../../wmaker-crm/src/dialog.c:484 ../../wmaker-crm/src/dialog.c:581
+#: ../../wmaker-crm/src/dialog.c:989 ../../wmaker-crm/src/dialog.c:1625
+#: ../../wmaker-crm/src/dock.c:452 ../../wmaker-crm/src/dock.c:459
+#: ../../wmaker-crm/src/dock.c:506 ../../wmaker-crm/src/dock.c:3367
+#: ../../wmaker-crm/src/dock.c:4469 ../../wmaker-crm/src/dockedapp.c:172
+#: ../../wmaker-crm/src/dockedapp.c:344 ../../wmaker-crm/src/main.c:276
+#: ../../wmaker-crm/src/rootmenu.c:1675 ../../wmaker-crm/src/winspector.c:342
+#: ../../wmaker-crm/src/winspector.c:358 ../../wmaker-crm/src/winspector.c:756
+msgid "OK"
+msgstr "OK"
+
+#: ../../wmaker-crm/src/appicon.c:572 ../../wmaker-crm/src/dock.c:229
+msgid ""
+" will be forcibly closed.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+" ki lesz lőve.\n"
+"Az alkalmazás nem mentett adatai elvesznek.\n"
+"Biztos ezt akarod?"
+
+#: ../../wmaker-crm/src/appicon.c:579 ../../wmaker-crm/src/dock.c:247
+#: ../../wmaker-crm/src/winmenu.c:208
+msgid "Kill Application"
+msgstr "Alkalmazás kilövése"
+
+#: ../../wmaker-crm/src/appicon.c:580 ../../wmaker-crm/src/dock.c:248
+#: ../../wmaker-crm/src/winmenu.c:211
+msgid "Yes"
+msgstr "Igen"
+
+#: ../../wmaker-crm/src/appicon.c:580 ../../wmaker-crm/src/dock.c:248
+#: ../../wmaker-crm/src/winmenu.c:211
+msgid "No"
+msgstr "Nem"
+
+#: ../../wmaker-crm/src/appicon.c:605 ../../wmaker-crm/src/dock.c:1279
+#: ../../wmaker-crm/src/dock.c:3548
+msgid "Unhide Here"
+msgstr "Előhoz ide"
+
+#: ../../wmaker-crm/src/appicon.c:606 ../../wmaker-crm/src/appicon.c:630
+#: ../../wmaker-crm/src/dock.c:1281 ../../wmaker-crm/src/dock.c:1283
+#: ../../wmaker-crm/src/dock.c:3560 ../../wmaker-crm/src/winmenu.c:543
+msgid "Hide"
+msgstr "Elrejt"
+
+#: ../../wmaker-crm/src/appicon.c:607 ../../wmaker-crm/src/dock.c:1277
+#: ../../wmaker-crm/src/winmenu.c:559
+msgid "Launch"
+msgstr "Elindít"
+
+#: ../../wmaker-crm/src/appicon.c:608
+msgid "Set Icon..."
+msgstr "Ikon..."
+
+#: ../../wmaker-crm/src/appicon.c:609 ../../wmaker-crm/src/dock.c:1287
+#: ../../wmaker-crm/src/dock.c:1289 ../../wmaker-crm/src/dock.c:3578
+#: ../../wmaker-crm/src/rootmenu.c:232 ../../wmaker-crm/src/winmenu.c:563
+msgid "Kill"
+msgstr "Kilő"
+
+#: ../../wmaker-crm/src/appicon.c:628 ../../wmaker-crm/src/dock.c:3558
+msgid "Unhide"
+msgstr "Előhoz"
+
+#: ../../wmaker-crm/src/defaults.c:806
+#, c-format
+msgid "Domain %s (%s) of global defaults database is corrupted!"
+msgstr "A globális beállítás adatbázis %s (%s) domainja sérült!"
+
+#: ../../wmaker-crm/src/defaults.c:810
+#, c-format
+msgid "could not load domain %s from global defaults database"
+msgstr "Nem tudtam betölteni a globális beállítás adatbázis %s domainját."
+
+#: ../../wmaker-crm/src/defaults.c:855 ../../wmaker-crm/src/defaults.c:869
+#, c-format
+msgid "invalid global menu file %s"
+msgstr "Érvénytelen globális menü fájl: %s"
+
+#: ../../wmaker-crm/src/defaults.c:906 ../../wmaker-crm/src/defaults.c:985
+#: ../../wmaker-crm/src/defaults.c:1024 ../../wmaker-crm/src/defaults.c:1065
+#, c-format
+msgid "Domain %s (%s) of defaults database is corrupted!"
+msgstr "A beállítás adatbázis %s (%s) domainja sérült!"
+
+#: ../../wmaker-crm/src/defaults.c:910 ../../wmaker-crm/src/defaults.c:1007
+#: ../../wmaker-crm/src/defaults.c:1051 ../../wmaker-crm/src/defaults.c:1075
+#, c-format
+msgid "could not load domain %s from user defaults database"
+msgstr "Nem tudtam betölteni a felhasználói beállítás adatbázisból a %s domaint."
+
+#. --------------------------- Local -----------------------
+#: ../../wmaker-crm/src/defaults.c:1243 ../../wmaker-crm/src/defaults.c:1372
+#: ../../wmaker-crm/src/defaults.c:1467 ../../wmaker-crm/src/defaults.c:1875
+#: ../../wmaker-crm/src/defaults.c:1891 ../../wmaker-crm/src/defaults.c:1936
+#: ../../wmaker-crm/src/defaults.c:1985 ../../wmaker-crm/src/defaults.c:2399
+#: ../../wmaker-crm/src/wdefaults.c:634 ../../wmaker-crm/src/wdefaults.c:663
+#, c-format
+msgid "Wrong option format for key \"%s\". Should be %s."
+msgstr "Hibás formátum a következő kulcsnál: \"%s\". Valami ilyesminek kellene lennie: %s."
+
+#: ../../wmaker-crm/src/defaults.c:1245 ../../wmaker-crm/src/defaults.c:1321
+#: ../../wmaker-crm/src/defaults.c:1349 ../../wmaker-crm/src/defaults.c:1376
+#: ../../wmaker-crm/src/defaults.c:1388 ../../wmaker-crm/src/defaults.c:1402
+#: ../../wmaker-crm/src/defaults.c:1416 ../../wmaker-crm/src/defaults.c:1471
+#: ../../wmaker-crm/src/defaults.c:1483 ../../wmaker-crm/src/defaults.c:1879
+#: ../../wmaker-crm/src/defaults.c:1896 ../../wmaker-crm/src/defaults.c:1908
+#: ../../wmaker-crm/src/defaults.c:1941 ../../wmaker-crm/src/defaults.c:1957
+#: ../../wmaker-crm/src/defaults.c:1990 ../../wmaker-crm/src/defaults.c:2069
+#: ../../wmaker-crm/src/defaults.c:2404 ../../wmaker-crm/src/defaults.c:2415
+#, c-format
+msgid "using default \"%s\" instead"
+msgstr "a \"%s\" alapbeállítást használom helyette"
+
+#: ../../wmaker-crm/src/defaults.c:1272
+#, c-format
+msgid "wrong option value for key \"%s\"; got \"%s\", should be one of %s."
+msgstr "rossz érték a következő kulcshoz: \"%s\": \"%s\" Válassz ezek közül egyet: %s."
+
+#: ../../wmaker-crm/src/defaults.c:1317
+#, c-format
+msgid "can't convert \"%s\" to boolean for key \"%s\""
+msgstr "a következő adatot nem tudom logikai értékké alakítani: \"%s\". Ehhez a kulcshoz: \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:1347
+#, c-format
+msgid "can't convert \"%s\" to integer for key \"%s\""
+msgstr "a következő adatot nem tudom egész típusúvá alakítani: \"%s\". Ehhez a kulcshoz: \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:1384
+#, c-format
+msgid "Incorrect number of elements in array for key \"%s\"."
+msgstr "A \"%s\" kulcshoz tartozó tömbben helytelen számú elem található."
+
+#: ../../wmaker-crm/src/defaults.c:1398
+#, c-format
+msgid "Wrong value for key \"%s\". Should be Coordinate."
+msgstr "Rossz értéket adtál meg ehhez a kulcshoz: \"%s\". Koordinátának kellene lennie."
+
+#: ../../wmaker-crm/src/defaults.c:1412
+#, c-format
+msgid "can't convert array to integers for \"%s\"."
+msgstr "nem tudom a tömböt egész számokká konvertálni ehhez a kulcshoz: \"%s\"."
+
+#: ../../wmaker-crm/src/defaults.c:1589 ../../wmaker-crm/src/defaults.c:1619
+#: ../../wmaker-crm/src/defaults.c:1635 ../../wmaker-crm/src/defaults.c:1664
+#: ../../wmaker-crm/src/defaults.c:1686 ../../wmaker-crm/src/defaults.c:1737
+#: ../../wmaker-crm/src/defaults.c:1776 ../../wmaker-crm/src/defaults.c:1813
+#: ../../wmaker-crm/src/defaults.c:1829
+#, c-format
+msgid "\"%s\" is not a valid color name"
+msgstr "Ilyen szín nincs: \"%s\"!"
+
+#: ../../wmaker-crm/src/defaults.c:1601 ../../wmaker-crm/src/defaults.c:1652
+msgid "bad number of arguments in gradient specification"
+msgstr "nem megfelelő számú paraméter a színátmenet-leírásban "
+
+#: ../../wmaker-crm/src/defaults.c:1710
+msgid "too few arguments in multicolor gradient specification"
+msgstr "túl kevés paraméter a többszínű színátmenet-leírásban."
+
+#: ../../wmaker-crm/src/defaults.c:1802
+msgid "bad number of arguments in textured gradient specification"
+msgstr "nem megfelelő számú paraméter a mintázott színátmenet-leírásban."
+
+#: ../../wmaker-crm/src/defaults.c:1845
+#, c-format
+msgid "bad opacity value for tgradient texture \"%s\". Should be [0..255]"
+msgstr "Rossz érték a tgradient minta áttetszőségénél: \"%s\". 0..255 közötti értéknek kell lennie."
+
+#: ../../wmaker-crm/src/defaults.c:1862
+#, c-format
+msgid "invalid texture type %s"
+msgstr "Érvénytelen minta típus: %s"
+
+#: ../../wmaker-crm/src/defaults.c:1904
+#, c-format
+msgid "Error in texture specification for key \"%s\""
+msgstr "A \"%s\" kulcsnál hiba van a minta leírásában."
+
+#: ../../wmaker-crm/src/defaults.c:1953
+msgid "Wrong type for workspace background. Should be a texture type."
+msgstr "Rossz típust adtál meg a munkafelület hátterének. Minta típusnak kellene lennie."
+
+#: ../../wmaker-crm/src/defaults.c:2003
+#, c-format
+msgid "Wrong type for background of workspace %i. Should be a texture."
+msgstr "Rossz típust adtál meg a %i. számú munkafelület hátterének. Mintának kellene lennie."
+
+#: ../../wmaker-crm/src/defaults.c:2042
+msgid "could not load any usable font!!!"
+msgstr "Egyetlen használható betütípust sem tudok betölteni!!"
+
+#: ../../wmaker-crm/src/defaults.c:2065
+#, c-format
+msgid "could not get color for key \"%s\""
+msgstr "Nem találtam színt ehhez a kulcshoz: \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:2121 ../../wmaker-crm/src/rootmenu.c:469
+#, c-format
+msgid "%s: invalid key modifier \"%s\""
+msgstr "%s: érvénytelen billentyű-módosító \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:2133
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\""
+msgstr "%s: érvénytelen gyorsbillentyű-leírás \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:2139
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\""
+msgstr "%s: érvénytelen billentyű a \"%s\" gyorsbillentyűben"
+
+#: ../../wmaker-crm/src/defaults.c:2164
+#, c-format
+msgid "%s: modifier key %s is not valid"
+msgstr "%s: a %s módosító billentyű érvénytelen"
+
+#: ../../wmaker-crm/src/defaults.c:2271
+#, c-format
+msgid "failed to open bitmap file \"%s\""
+msgstr "Nem tudtam megnyitni a következő kép fájlt: %s"
+
+#: ../../wmaker-crm/src/defaults.c:2274
+#, c-format
+msgid "\"%s\" is not a valid bitmap file"
+msgstr "Nem megfelelő kép fájl: \"%s\"!"
+
+#: ../../wmaker-crm/src/defaults.c:2277
+#, c-format
+msgid "out of memory reading bitmap file \"%s\""
+msgstr "elfogyott a memória a \"%s\" kép fájl beolvasásakor"
+
+#: ../../wmaker-crm/src/defaults.c:2315 ../../wmaker-crm/src/defaults.c:2348
+msgid "bad number of arguments in cursor specification"
+msgstr "nem megfelelő számú paraméter a mutató leírásban"
+
+#: ../../wmaker-crm/src/defaults.c:2331
+#, c-format
+msgid "unknown builtin cursor name \"%s\""
+msgstr "ismeretlen beépített mutató név: %s"
+
+#: ../../wmaker-crm/src/defaults.c:2358 ../../wmaker-crm/src/defaults.c:2370
+#, c-format
+msgid "could not find cursor bitmap file \"%s\""
+msgstr "nem találom a kövekező mutató kép fájlt: \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:2411
+#, c-format
+msgid "Error in cursor specification for key \"%s\""
+msgstr "Hibás mutató leírás a következő kulcsnál: \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:2536
+msgid "could not render texture for icon background"
+msgstr "nem tudom a mintát ikon háttérként használni"
+
+#: ../../wmaker-crm/src/defaults.c:3275 ../../wmaker-crm/src/defaults.c:3344
+#, c-format
+msgid "Invalid arguments for option \"%s\""
+msgstr "Nem megfelelő paraméterek a \"%s\" opcióhoz"
+
+#: ../../wmaker-crm/src/defaults.c:3281 ../../wmaker-crm/src/defaults.c:3350
+#, c-format
+msgid "Could not find image \"%s\" for option \"%s\""
+msgstr "Nem találtam a \"%s\" képet a \"%s\" opcióhoz"
+
+#: ../../wmaker-crm/src/defaults.c:3286 ../../wmaker-crm/src/defaults.c:3358
+#, c-format
+msgid "Could not load image \"%s\" for option \"%s\""
+msgstr "Nem tudtam betölteni a \"%s\" képet a \"%s\" opcióhoz"
+
+#: ../../wmaker-crm/src/defaults.c:3296
+msgid "Invalid split sizes for switch panel back image."
+msgstr "Érvénytelen osztás méret a VáltóPanel háttér képéhez."
+
+#: ../../wmaker-crm/src/defaults.c:3365
+#, c-format
+msgid "Invalid number of arguments for option \"%s\""
+msgstr "Nem megfelelő számú paraméter ehhez az opcióhoz: \"%s\""
+
+#: ../../wmaker-crm/src/defaults.c:3381
+#, c-format
+msgid "Value for option \"%s\" must be an array of 7 strings"
+msgstr "\"%s\" opció értékenek egy 7 karakterláncból álló tömbnek kell lennie"
+
+#: ../../wmaker-crm/src/defaults.c:3395
+#, c-format
+msgid "Invalid argument for option \"%s\" item %d"
+msgstr "Érvénytelen paraméter a \"%s\" opció %d. eleménél"
+
+#: ../../wmaker-crm/src/dialog.c:129
+msgid "Save workspace state"
+msgstr "Munkafelület állapot mentés"
+
+#: ../../wmaker-crm/src/dialog.c:423 ../../wmaker-crm/src/dialog.c:484
+#: ../../wmaker-crm/src/dialog.c:996 ../../wmaker-crm/src/dock.c:506
+#: ../../wmaker-crm/src/dock.c:4469 ../../wmaker-crm/src/dockedapp.c:349
+#: ../../wmaker-crm/src/rootmenu.c:189 ../../wmaker-crm/src/rootmenu.c:232
+msgid "Cancel"
+msgstr "Mégsem"
+
+#: ../../wmaker-crm/src/dialog.c:576
+msgid "Could not open directory \"%s\":\n%s"
+msgstr "Nem sikerült megnyitni ezt a könyvtárat \"%s\":\n%s"
+
+#: ../../wmaker-crm/src/dialog.c:626
+msgid "Could not load image file "
+msgstr "Nem sikerült betölteni ezt a kép fájlt: "
+
+#: ../../wmaker-crm/src/dialog.c:923
+msgid "Directories"
+msgstr "Könyvtárak"
+
+#: ../../wmaker-crm/src/dialog.c:932
+msgid "Icons"
+msgstr "Ikonok"
+
+#: ../../wmaker-crm/src/dialog.c:965
+msgid "Preview"
+msgstr "Előnézet"
+
+#: ../../wmaker-crm/src/dialog.c:978
+msgid "File Name:"
+msgstr "Fájlnév:"
+
+#: ../../wmaker-crm/src/dialog.c:1002
+msgid "Choose File"
+msgstr "Válassz fájlt"
+
+#: ../../wmaker-crm/src/dialog.c:1021 ../../wmaker-crm/src/dialog.c:1023
+msgid "Icon Chooser"
+msgstr "Ikon választó"
+
+#: ../../wmaker-crm/src/dialog.c:1212
+msgid "Window Manager for X"
+msgstr "X Ablakkezelő"
+
+#: ../../wmaker-crm/src/dialog.c:1214
+#, c-format
+msgid "Version %s"
+msgstr "%s verzió"
+
+#: ../../wmaker-crm/src/dialog.c:1235
+#, c-format
+msgid "Using visual 0x%x: %s %ibpp "
+msgstr "Használt visual 0x%x: %s %ibpp "
+
+#: ../../wmaker-crm/src/dialog.c:1242
+msgid "(32 thousand colors)\n"
+msgstr "(32 ezer szín)\n"
+
+#: ../../wmaker-crm/src/dialog.c:1245
+msgid "(64 thousand colors)\n"
+msgstr "(64 ezer szín)\n"
+
+#: ../../wmaker-crm/src/dialog.c:1249
+msgid "(16 million colors)\n"
+msgstr "(16 millió szín)\n"
+
+#: ../../wmaker-crm/src/dialog.c:1252
+#, c-format
+msgid "(%d colors)\n"
+msgstr "(%d szín)\n"
+
+#: ../../wmaker-crm/src/dialog.c:1262
+#, c-format
+msgid "Total memory allocated: %i kB (in use: %i kB, %d free chunks).\n"
+msgstr "Lefoglalt memória: %i kB (használatban: %i kB, %d szabad darab)\n"
+
+#: ../../wmaker-crm/src/dialog.c:1264
+#, c-format
+msgid "Total memory allocated: %i kB (in use: %i kB).\n"
+msgstr "Lefoglalt memória: %i kB (használatban: %i kB)\n"
+
+#: ../../wmaker-crm/src/dialog.c:1283
+msgid "Image formats: "
+msgstr "Kép formátum: "
+
+#: ../../wmaker-crm/src/dialog.c:1292
+msgid ""
+"\n"
+"Additional support for: "
+msgstr "\nTámogatott még: "
+
+#: ../../wmaker-crm/src/dialog.c:1298
+msgid "(Supported)"
+msgstr "(Működik)"
+
+#: ../../wmaker-crm/src/dialog.c:1300
+msgid "(Unsupported)"
+msgstr "(Nem működik)"
+
+#: ../../wmaker-crm/src/dialog.c:1308
+msgid "\n"
+msgstr "\n"
+
+#: ../../wmaker-crm/src/dialog.c:1310
+msgid "Solaris "
+msgstr "Solaris "
+
+#: ../../wmaker-crm/src/dialog.c:1312
+msgid "Xinerama: "
+msgstr "Xinerama: "
+
+#: ../../wmaker-crm/src/dialog.c:1320
+#, c-format
+msgid "%d head(s) found."
+msgstr "%d képernyőt találtam."
+
+#: ../../wmaker-crm/src/dialog.c:1342
+msgid "Info"
+msgstr "Információk"
+
+#: ../../wmaker-crm/src/dialog.c:1417
+msgid ""
+"    Window Maker is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"    Window Maker is distributed in the hope that it will be useful, but "
+"WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY "
+"or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for "
+"more details.\n"
+"\n"
+"    You should have received a copy of the GNU General Public License along "
+"with this program; if not, write to the Free Software Foundation, Inc., 51 "
+"Franklin Street, Fifth Floor, Boston, MA02110-1301 USA."
+msgstr ""
+"  A Window Maker szabad szoftver; terjesztheti és/vagy módosíthatja a Free "
+"Software Foundation által kiadott GNU General Public License második (vagy "
+"bármely későbbi) változatában foglaltak alapján.\n"
+"\n"
+"  A Window Makert abban a reményben adjuk közre, hogy hasznos lesz, de nem "
+"vállalunk SEMMIFÉLE GARANCIÁT, még olyan értelemben sem, hogy a program "
+"alkalmas-e KÖZREADÁSRA vagy EGY BIZONYOS FELADAT ELVÉGZÉSÉRE. További "
+"részletekért tanulmányozza a GNU GPL licencet.\n"
+"\n"
+"  E programmal együtt meg kellett kapnia a GNU General Public License egy "
+"példányát is. Ha nem kapta meg, írjon a Free Software Foundation, Inc. "
+"címére: 51 Franklin Street, Fifth Floor, Boston, MA02110-1301 USA."
+
+#: ../../wmaker-crm/src/dialog.c:1437
+msgid "Legal"
+msgstr "Jogi információk"
+
+#: ../../wmaker-crm/src/dialog.c:1555 ../../wmaker-crm/src/monitor.c:56
+msgid "cannot open connection for crashing dialog panel. Aborting."
+msgstr "Nem sikerült kapcsolatot nyitni az összeomláskori dialógus panelhez. Kilépek."
+
+#: ../../wmaker-crm/src/dialog.c:1581
+msgid "Fatal error"
+msgstr "Végzetes hiba"
+
+#: ../../wmaker-crm/src/dialog.c:1591
+#, c-format
+msgid "Window Maker received signal %i."
+msgstr "A Window Maker %i jelzést kapott."
+
+#: ../../wmaker-crm/src/dialog.c:1599
+msgid ""
+" This fatal error occured probably due to a bug. Please fill the included "
+"BUGFORM and report it to %s."
+msgstr " Ezt a végzetes hibát valószínűleg egy programozási hiba okozta. Légy szíves töltsd ki a mellékelt BUGFORM kérdőívet és küldd el a %s e-mail címre!"
+
+#: ../../wmaker-crm/src/dialog.c:1606
+msgid "What do you want to do now?"
+msgstr "Mit szeretnél tenni?"
+
+#: ../../wmaker-crm/src/dialog.c:1612
+msgid "Select action"
+msgstr "Válassz ezek közül"
+
+#: ../../wmaker-crm/src/dialog.c:1613
+msgid "Abort and leave a core file"
+msgstr "Megszakít és core fájlt készít"
+
+#: ../../wmaker-crm/src/dialog.c:1614
+msgid "Restart Window Maker"
+msgstr "Újraindítja a Window Makert"
+
+#: ../../wmaker-crm/src/dialog.c:1615
+msgid "Start alternate window manager"
+msgstr "Másik ablakkezelőt indít"
+
+#: ../../wmaker-crm/src/dock.c:181 ../../wmaker-crm/src/menu.c:1768
+#, c-format
+msgid "Type the name for workspace %i:"
+msgstr "Írj be egy nevet a %i. munkafelülethez:"
+
+#: ../../wmaker-crm/src/dock.c:182 ../../wmaker-crm/src/dock.c:1243
+#: ../../wmaker-crm/src/dock.c:1245 ../../wmaker-crm/src/dock.c:3460
+#: ../../wmaker-crm/src/menu.c:1772
+msgid "Rename Workspace"
+msgstr "Munkafelület átnevezése"
+
+#: ../../wmaker-crm/src/dock.c:447 ../../wmaker-crm/src/dock.c:454
+#: ../../wmaker-crm/src/winspector.c:756
+msgid "Warning"
+msgstr "Figyelmeztetés"
+
+#: ../../wmaker-crm/src/dock.c:448
+msgid ""
+"Some icons cannot be made omnipresent. Please make sure that no other icon "
+"is docked in the same positions on the other workspaces and the Clip is not "
+"full in some workspace."
+msgstr "Néhány ikont nem lehet mindig láthatóvá tenni. Győzödj meg róla, hogy nincs-e másik munkafelületen másik ikon ugyanazon pozíciókban dokkolva vagy nincs-e megtelve a Kapocs valahol."
+
+#: ../../wmaker-crm/src/dock.c:455
+msgid ""
+"Icon cannot be made omnipresent. Please make sure that no other icon is "
+"docked in the same position on the other workspaces and the Clip is not full "
+"in some workspace."
+msgstr "Ezt az ikont nem lehet mindig láthatóvá tenni. Győzödj meg róla, hogy nincs-e másik munkafelületen másik ikon ugyanebben a pozícióban dokkolva vagy nincs-e megtelve a Kapocs valahol."
+
+#: ../../wmaker-crm/src/dock.c:504
+msgid "Workspace Clip"
+msgstr "Munkafelület kapocs"
+
+#: ../../wmaker-crm/src/dock.c:504 ../../wmaker-crm/src/dock.c:4467
+msgid "Drawer"
+msgstr "Fiók"
+
+#: ../../wmaker-crm/src/dock.c:505
+msgid "All selected icons will be removed!"
+msgstr "A kijelölt ikonok eltávolításra kerülnek!"
+
+#. can be: Unselect all icons
+#: ../../wmaker-crm/src/dock.c:547 ../../wmaker-crm/src/dock.c:1257
+#: ../../wmaker-crm/src/dock.c:1259 ../../wmaker-crm/src/dock.c:3498
+msgid "Keep Icon"
+msgstr "Ikon megtartása"
+
+#: ../../wmaker-crm/src/dock.c:548 ../../wmaker-crm/src/dock.c:2151
+#: ../../wmaker-crm/src/dock.c:2293
+msgid "Type the command used to launch the application"
+msgstr "Írd be a parancsot, amivel az alkalmazás indul"
+
+#: ../../wmaker-crm/src/dock.c:938
+#, c-format
+msgid "could not launch application %s"
+msgstr "Nem tudtam elindítani ezt az alkalmazást: %s"
+
+#: ../../wmaker-crm/src/dock.c:987
+msgid "could not create workspace submenu for Clip menu"
+msgstr "nem sikerült munkafelület almenüt létrehozni a Kapocs menühöz"
+
+#: ../../wmaker-crm/src/dock.c:1044
+msgid "could not create options submenu for Clip menu"
+msgstr "nem sikerült opciók almenüt létrehozni a Kapocs menühöz"
+
+#: ../../wmaker-crm/src/dock.c:1048 ../../wmaker-crm/src/dock.c:1195
+msgid "Keep on Top"
+msgstr "Mindig felül"
+
+#: ../../wmaker-crm/src/dock.c:1053
+msgid "Collapsed"
+msgstr "Ikonok rejtve"
+
+#: ../../wmaker-crm/src/dock.c:1058
+msgid "Autocollapse"
+msgstr "Automatikus ikon elrejtés"
+
+#: ../../wmaker-crm/src/dock.c:1063
+msgid "Autoraise"
+msgstr "Automatikus előre ugrás"
+
+#: ../../wmaker-crm/src/dock.c:1068
+msgid "Autoattract Icons"
+msgstr "Automatikus ikon vonzás"
+
+#: ../../wmaker-crm/src/dock.c:1183
+msgid "could not create options submenu for dock position menu"
+msgstr "nem sikerült opciók almenüt létrehozni a Dokk pozícióhoz"
+
+#: ../../wmaker-crm/src/dock.c:1187
+msgid "Normal"
+msgstr "Normál"
+
+#: ../../wmaker-crm/src/dock.c:1191
+msgid "Auto raise & lower"
+msgstr "Automatikus előre/hátra rakás"
+
+#: ../../wmaker-crm/src/dock.c:1219
+msgid "Dock position"
+msgstr "Dokkolt ikon"
+
+#: ../../wmaker-crm/src/dock.c:1225
+msgid "Add a drawer"
+msgstr "Új fiók"
+
+#: ../../wmaker-crm/src/dock.c:1229
+msgid "Clip Options"
+msgstr "Kapocs beállítások"
+
+#. if (type == WM_DRAWER)
+#: ../../wmaker-crm/src/dock.c:1231
+msgid "Drawer options"
+msgstr "Fiók beállítások"
+
+#: ../../wmaker-crm/src/dock.c:1248
+msgid "Selected"
+msgstr "Kijelölve"
+
+#: ../../wmaker-crm/src/dock.c:1253 ../../wmaker-crm/src/dock.c:1255
+#: ../../wmaker-crm/src/dock.c:3488
+msgid "Select All Icons"
+msgstr "Összes ikon kijelölése"
+
+#: ../../wmaker-crm/src/dock.c:1262 ../../wmaker-crm/src/dock.c:1264
+#: ../../wmaker-crm/src/dock.c:3508
+msgid "Move Icon To"
+msgstr "Ikon átrakása"
+
+#: ../../wmaker-crm/src/dock.c:1270 ../../wmaker-crm/src/dock.c:1272
+#: ../../wmaker-crm/src/dock.c:3522
+msgid "Remove Icon"
+msgstr "Ikon törlése"
+
+#. can be: Remove Icons
+#: ../../wmaker-crm/src/dock.c:1274
+msgid "Attract Icons"
+msgstr "Vonzza az ikonokat"
+
+#. can be: Unhide
+#: ../../wmaker-crm/src/dock.c:1285
+msgid "Settings..."
+msgstr "Beállítások..."
+
+#: ../../wmaker-crm/src/dock.c:1631 ../../wmaker-crm/src/dock.c:1722
+#, c-format
+msgid "bad value in docked icon state info %s"
+msgstr "rossz érték a dokkolt ikon állapot-információjánál: %s"
+
+#: ../../wmaker-crm/src/dock.c:1745
+#, c-format
+msgid "bad value in dock state info:%s"
+msgstr "rossz érték a dokk állapot-információjánál: %s"
+
+#: ../../wmaker-crm/src/dock.c:1944
+msgid "there are too many icons stored in dock. Ignoring what doesn't fit"
+msgstr "túl sok ikon van a dokkolva. Figyelmen kívűl hagyom, ami nem fér el"
+
+#. icon->forced_dock = 1;
+#: ../../wmaker-crm/src/dock.c:2150 ../../wmaker-crm/src/dock.c:2292
+msgid "Dock Icon"
+msgstr "Ikon dokkolása"
+
+#: ../../wmaker-crm/src/dock.c:3365
+#, c-format
+msgid "Could not execute command \"%s\""
+msgstr "Nem tudom végrehajtani ezt a parancsot: \"%s\""
+
+#: ../../wmaker-crm/src/dock.c:3466
+msgid "Toggle Omnipresent"
+msgstr "Mindenhol látható mód ki/be"
+
+#: ../../wmaker-crm/src/dock.c:3471 ../../wmaker-crm/src/winmenu.c:499
+#: ../../wmaker-crm/src/winspector.c:1356
+msgid "Omnipresent"
+msgstr "Mindenhol látható"
+
+#: ../../wmaker-crm/src/dock.c:3486
+msgid "Unselect All Icons"
+msgstr "Ikon kijelölések megszüntetése"
+
+#: ../../wmaker-crm/src/dock.c:3496
+msgid "Keep Icons"
+msgstr "Ikonok megtartása"
+
+#: ../../wmaker-crm/src/dock.c:3506
+msgid "Move Icons To"
+msgstr "Ikonok átrakása"
+
+#: ../../wmaker-crm/src/dock.c:3520
+msgid "Remove Icons"
+msgstr "Ikonok törlése"
+
+#: ../../wmaker-crm/src/dock.c:3550
+msgid "Bring Here"
+msgstr "Áthoz ide"
+
+#: ../../wmaker-crm/src/dock.c:3574
+msgid "Remove drawer"
+msgstr "Fiók törlése"
+
+#: ../../wmaker-crm/src/dock.c:4468
+msgid "All icons in this drawer will be detached!"
+msgstr "Az összes ikon ami eddig a fiókban volt szabadon álló lesz!"
+
+#: ../../wmaker-crm/src/dock.c:4853
+msgid "there are too many icons stored in drawer. Ignoring what doesn't fit"
+msgstr "túl sok ikon van a fiókban. Figyelmen kívűl hagyom, ami nem fér el"
+
+#: ../../wmaker-crm/src/dockedapp.c:94
+#, c-format
+msgid "could not find icon %s, used in a docked application"
+msgstr "nem találom a következő ikont: \"%s\" (egy dokkolt alkalmazás használná)"
+
+#: ../../wmaker-crm/src/dockedapp.c:170
+#, c-format
+msgid "Could not open specified icon file: %s"
+msgstr "A következő ikon-fájlt nem tudom megnyitni: %s"
+
+#: ../../wmaker-crm/src/dockedapp.c:172
+msgid "Ignore"
+msgstr "Na és?"
+
+#: ../../wmaker-crm/src/dockedapp.c:266
+msgid "Start when Window Maker is started"
+msgstr "Window Makerrel együtt indul"
+
+#: ../../wmaker-crm/src/dockedapp.c:271
+msgid "Lock (prevent accidental removal)"
+msgstr "Rögzített (véletlen törlés ellen)"
+
+#: ../../wmaker-crm/src/dockedapp.c:275
+msgid "Application path and arguments"
+msgstr "Alkalmazás elérési útvonala és paraméterei"
+
+#: ../../wmaker-crm/src/dockedapp.c:286
+msgid "Command for middle-click launch"
+msgstr "Parancs középső gombos índításhoz"
+
+#: ../../wmaker-crm/src/dockedapp.c:298
+#, c-format
+msgid "%s will be replaced with current selection"
+msgstr "%s helyére az aktuális kijelölés kerül majd"
+
+#: ../../wmaker-crm/src/dockedapp.c:302
+msgid "Command for files dropped with DND"
+msgstr "Parancs DND módszerrel rádobott fájlokhoz"
+
+#: ../../wmaker-crm/src/dockedapp.c:314
+#, c-format
+msgid "%d will be replaced with the file name"
+msgstr "%d helyére a rádobott fájl neve kerül"
+
+#: ../../wmaker-crm/src/dockedapp.c:317
+msgid "DND support was not compiled in"
+msgstr "DND-támogatás fordításkor letiltva"
+
+#: ../../wmaker-crm/src/dockedapp.c:322
+msgid "Icon Image"
+msgstr "Ikon"
+
+#: ../../wmaker-crm/src/dockedapp.c:333 ../../wmaker-crm/src/winspector.c:1505
+msgid "Browse..."
+msgstr "Választ..."
+
+#: ../../wmaker-crm/src/dockedapp.c:391
+msgid "Docked Application Settings"
+msgstr "Dokkolt alkalmazás beállításai"
+
+#: ../../wmaker-crm/src/event.c:321
+msgid ""
+"the defaults database has been deleted! Restart Window Maker to create the "
+"database with the default settings"
+msgstr "A beállítás adatbázist törölték! Idítsd újra a Window Makert az adatbázis létrehozásához alap beállításokkal!"
+
+#: ../../wmaker-crm/src/event.c:330
+msgid ""
+"the unit containing the defaults database has been unmounted. Setting --"
+"static mode. Any changes will not be saved."
+msgstr "a beállítás adatbázist tartalmazó egységet lecsatolták. \"--static\" módra váltok. A változtatások nem kerülnek mentésre."
+
+#: ../../wmaker-crm/src/event.c:341
+msgid "Inotify: Reading config files in defaults database."
+msgstr "Inotify: újraolvasom a konfigurációs fájlokat a beállítás adatbázisból."
+
+#. an error has occured
+#: ../../wmaker-crm/src/event.c:391
+msgid ""
+"select failed. The inotify instance will be closed. Changes to the defaults "
+"database will require a restart to take effect."
+msgstr "A select hívás hibát adott. Inotify letiltva. A beállítás adatbázisbeli változások csak újraindítás után fognak érvényesülni."
+
+#: ../../wmaker-crm/src/event.c:944
+msgid "Got Reconfigure command"
+msgstr "Reconfigure parancs"
+
+#: ../../wmaker-crm/src/event.c:947
+#, c-format
+msgid "Got unknown command %s"
+msgstr "Ismeretlen parancs %s"
+
+#: ../../wmaker-crm/src/framewin.c:649 ../../wmaker-crm/src/framewin.c:739
+#: ../../wmaker-crm/src/menu.c:408 ../../wmaker-crm/src/texture.c:454
+#, c-format
+msgid "could not render texture: %s"
+msgstr "a következő minta nem képezhető le: %s"
+
+#: ../../wmaker-crm/src/framewin.c:672 ../../wmaker-crm/src/framewin.c:682
+#: ../../wmaker-crm/src/framewin.c:698 ../../wmaker-crm/src/framewin.c:709
+#: ../../wmaker-crm/src/framewin.c:716 ../../wmaker-crm/src/framewin.c:722
+#: ../../wmaker-crm/src/icon.c:308 ../../wmaker-crm/src/menu.c:435
+#, c-format
+msgid "error rendering image:%s"
+msgstr "hiba a %s kép leképezésekor"
+
+#: ../../wmaker-crm/src/framewin.c:767
+#, c-format
+msgid "error rendering image: %s"
+msgstr "hiba a %s kép leképezésekor"
+
+#: ../../wmaker-crm/src/main.c:228
+msgid "failed to restart Window Maker."
+msgstr "hiba a Window Maker újraindítása közben"
+
+#: ../../wmaker-crm/src/main.c:231
+#, c-format
+msgid "could not exec %s"
+msgstr "nem tudom végrehajtani: %s"
+
+#: ../../wmaker-crm/src/main.c:274
+msgid "Could not execute command: "
+msgstr "Nem tudom végrehajtani a következő parancsot: "
+
+#: ../../wmaker-crm/src/main.c:409
+#, c-format
+msgid "%s aborted.\n"
+msgstr "%s megszakítva \n"
+
+#: ../../wmaker-crm/src/main.c:418
+#, c-format
+msgid "Usage: %s [options]\n"
+msgstr "Használat: %s [opciók]\n"
+
+#: ../../wmaker-crm/src/main.c:419
+msgid "The Window Maker window manager for the X window system"
+msgstr "Window Maker ablakkezelő az X window systemhez"
+
+#: ../../wmaker-crm/src/main.c:421
+msgid " -display host:dpy\tdisplay to use"
+msgstr "-display host:dpy\thasználandó display"
+
+#: ../../wmaker-crm/src/main.c:422
+msgid " --no-dock\t\tdo not open the application Dock"
+msgstr "--no-dock\t\tne nyissa meg az alkalmazás dokkot"
+
+#: ../../wmaker-crm/src/main.c:423
+msgid " --no-clip\t\tdo not open the workspace Clip"
+msgstr "--no-clip\t\tne nyissa meg a munkafelület Kapcsot"
+
+#: ../../wmaker-crm/src/main.c:424
+msgid " --no-autolaunch\tdo not autolaunch applications"
+msgstr " --no-autolaunch\tautomatikusan indítandó alkalmazásokat ne indítsa"
+
+#: ../../wmaker-crm/src/main.c:425
+msgid " --dont-restore\t\tdo not restore saved session"
+msgstr " --dont-restore\tne állítsa vissza az elmentett munkafelület állapotot"
+
+#: ../../wmaker-crm/src/main.c:427
+msgid " --locale locale\tlocale to use"
+msgstr " --locale locale\thasználandó helyi beállítások"
+
+#: ../../wmaker-crm/src/main.c:429
+msgid " --visual-id visualid\tvisual id of visual to use"
+msgstr "--visual-id visualid\thasználandó visual azonosító"
+
+#: ../../wmaker-crm/src/main.c:430
+msgid " --static\t\tdo not update or save configurations"
+msgstr "--static\t\tnem menti és nem is frissíti a beállításokat"
+
+#: ../../wmaker-crm/src/main.c:432
+msgid " --no-polling\t\tdo not periodically check for configuration updates"
+msgstr "--no-polling\t\tne ellenőrizze időnként a beállítások változását"
+
+#: ../../wmaker-crm/src/main.c:434
+msgid " --version\t\tprint version and exit"
+msgstr "--version\t\tkiírja a verziószámot és kilép"
+
+#: ../../wmaker-crm/src/main.c:435
+msgid " --help\t\t\tshow this message"
+msgstr "--help\t\t\tkiírja ezt a szöveget"
+
+#: ../../wmaker-crm/src/main.c:445
+#, c-format
+msgid "could not find user GNUstep directory (%s)."
+msgstr "nem találom a felhasználó GNUstep könyvtárát (%s)."
+
+#: ../../wmaker-crm/src/main.c:448
+msgid ""
+"There was an error while creating GNUstep directory, please make sure you "
+"have installed Window Maker correctly and run wmaker.inst"
+msgstr "Hiba a GNUstep könyvtár létrehozásakor. Győzödj meg róla, hogy a Window Maker rendesen telepítve van és futtasd le a wmaker.inst scriptet!"
+
+#: ../../wmaker-crm/src/main.c:451
+#, c-format
+msgid "%s directory created with default configuration."
+msgstr "%s könyvtár létrehozva alapbeállításokkal."
+
+#: ../../wmaker-crm/src/main.c:470
+msgid ""
+"could not initialise an inotify instance. Changes to the defaults database "
+"will require a restart to take effect. Check your kernel!"
+msgstr "Nem sikerült inotify példányt létrehozni. A beállítások változásai csak újraindítás után fognak érvényesülni. Ellenőrizd a kerneledet!"
+
+#: ../../wmaker-crm/src/main.c:481
+#, c-format
+msgid ""
+"could not add an inotify watch on path %s. Changes to the defaults database "
+"will require a restart to take effect."
+msgstr "Nem sikerült inotify figyelőt adni ehhez az útvonalhoz: %s. A beállítások változásai csak újraindítás után fognak érvényesülni."
+
+#: ../../wmaker-crm/src/main.c:504
+#, c-format
+msgid "%s:could not execute initialization script"
+msgstr "%s: nem tudtam futtatni a kezdeti beállításokat tartalmazó scriptet"
+
+#: ../../wmaker-crm/src/main.c:522
+#, c-format
+msgid "%s:could not execute exit script"
+msgstr "%s: nem tudtam futtatni a kilépési scriptet"
+
+#: ../../wmaker-crm/src/main.c:568 ../../wmaker-crm/src/main.c:645
+#: ../../wmaker-crm/src/main.c:652 ../../wmaker-crm/src/main.c:659
+#, c-format
+msgid "too few arguments for %s"
+msgstr "Túl kevés paraméter a következőhöz: %s"
+
+#: ../../wmaker-crm/src/main.c:617
+#, c-format
+msgid "option \"%s\" is deprecated, please remove it from your script"
+msgstr "%s opció használata már nem javasolt, légy szíves töröld a scriptedből!"
+
+#: ../../wmaker-crm/src/main.c:663
+#, c-format
+msgid "bad value for visualid: \"%s\""
+msgstr "hibás érték a visualid-nél: \"%s\""
+
+#: ../../wmaker-crm/src/main.c:676
+#, c-format
+msgid "%s: invalid argument '%s'\n"
+msgstr "%s: érvénytelen paraméter '%s'\n"
+
+#: ../../wmaker-crm/src/main.c:677
+#, c-format
+msgid "Try '%s --help' for more information\n"
+msgstr "Próbáld a '%s --help parancsot a további információkhoz\n"
+
+#: ../../wmaker-crm/src/main.c:720
+msgid "X server does not support locale"
+msgstr "Az X-server nem támogatja a fordítások használatát"
+
+#: ../../wmaker-crm/src/main.c:724
+msgid "cannot set locale modifiers"
+msgstr "a lokális módosításokat nem tudom beállítani"
+
+#: ../../wmaker-crm/src/main.c:740
+#, c-format
+msgid "could not open display \"%s\""
+msgstr "nem tudom megnyitni a \"%s\" megjelenítőt"
+
+#: ../../wmaker-crm/src/menu.c:2351
+#, c-format
+msgid "bad value in menus state info: %s"
+msgstr "rossz érték a menü állapot-információjánál: %s"
+
+#: ../../wmaker-crm/src/misc.c:475 ../../wmaker-crm/src/misc.c:480
+msgid "Program Arguments"
+msgstr "Program paraméterek"
+
+#: ../../wmaker-crm/src/misc.c:476 ../../wmaker-crm/src/misc.c:481
+msgid "Enter command arguments:"
+msgstr "Kérem a parancs paramétereit:"
+
+#: ../../wmaker-crm/src/misc.c:525
+#, c-format
+msgid "out of memory during expansion of \"%s\""
+msgstr "elfogyott a memória a következő vizsgálatánál: \"%s\""
+
+#: ../../wmaker-crm/src/misc.c:578
+#, c-format
+msgid "out of memory during expansion of \"%%w\""
+msgstr "elfogyott a memória a következő vizsgálatánál: \"%%w\""
+
+#: ../../wmaker-crm/src/misc.c:595
+#, c-format
+msgid "out of memory during expansion of \"%%W\""
+msgstr "elfogyott a memória a következő vizsgálatánál: \"%%W\""
+
+#: ../../wmaker-crm/src/misc.c:612
+#, c-format
+msgid "out of memory during expansion of \"%%a\""
+msgstr "elfogyott a memória a következő vizsgálatánál: \"%%a\""
+
+#: ../../wmaker-crm/src/misc.c:641
+#, c-format
+msgid "out of memory during expansion of \"%%d\""
+msgstr "elfogyott a memória a következő vizsgálatánál: \"%%d\""
+
+#: ../../wmaker-crm/src/misc.c:655
+msgid "selection not available"
+msgstr "kijelölés nem elérhető"
+
+#: ../../wmaker-crm/src/misc.c:662
+#, c-format
+msgid "out of memory during expansion of \"%%s\""
+msgstr "elfogyott a memória a következő vizsgálatánál: \"%%s\""
+
+#: ../../wmaker-crm/src/misc.c:697 ../../wmaker-crm/src/misc.c:703
+#, c-format
+msgid "bad window name value in %s state info"
+msgstr "hibás az \"ablak neve\" érték az %s információjában"
+
+#: ../../wmaker-crm/src/misc.c:950
+msgid "could not send message to background image helper"
+msgstr "nem tudok üzenetet küldeni a háttérkép segítőnek"
+
+#: ../../wmaker-crm/src/monitor.c:63
+msgid "trying to start alternate window manager..."
+msgstr "megpróbálok egy másik ablakkezelőt elindítani"
+
+#: ../../wmaker-crm/src/monitor.c:69
+msgid "failed to start alternate window manager. Aborting."
+msgstr "hiba a másik ablakkezelő indításakor. Kilépek."
+
+#: ../../wmaker-crm/src/monitor.c:98 ../../wmaker-crm/src/monitor.c:101
+msgid "Error respawning Window Maker"
+msgstr "A Window Maker újraindítása nem sikerült"
+
+#: ../../wmaker-crm/src/monitor.c:107
+msgid "Error during monitoring of Window Maker process."
+msgstr "Hiba lépett fel a Window Maker monitorozása közben."
+
+#: ../../wmaker-crm/src/monitor.c:131
+#, c-format
+msgid "Window Maker exited due to a crash (signal %i) and will be restarted."
+msgstr "A Window Maker egy hiba miatt kilépett (%i jelzés). Megpróbálom újraindítani."
+
+#: ../../wmaker-crm/src/resources.c:41
+#, c-format
+msgid "could not parse color \"%s\""
+msgstr "A \"%s\" színt nem tudom értelmezni"
+
+#: ../../wmaker-crm/src/resources.c:45
+#, c-format
+msgid "could not allocate color \"%s\""
+msgstr "A \"%s\" színt nem tudom lefoglalni"
+
+#: ../../wmaker-crm/src/rootmenu.c:188 ../../wmaker-crm/src/rootmenu.c:189
+msgid "Exit"
+msgstr "Kilépés"
+
+#: ../../wmaker-crm/src/rootmenu.c:189
+msgid "Exit window manager?"
+msgstr "Biztos ki akarsz lépni az ablakkezelőből?"
+
+#: ../../wmaker-crm/src/rootmenu.c:230
+msgid "Kill X session"
+msgstr "X kilövése"
+
+#: ../../wmaker-crm/src/rootmenu.c:231
+msgid ""
+"Kill Window System session?\n"
+"(all applications will be closed)"
+msgstr ""
+"Tényleg lelövöd a X Window-t?\n"
+"(minden alkalmazás be lesz zárva)"
+
+#: ../../wmaker-crm/src/rootmenu.c:482
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\" for entry %s"
+msgstr "%s: érvénytelen gyorsbillentyű-leírás \"%s\" a következő bejegyzéshez: %s"
+
+#: ../../wmaker-crm/src/rootmenu.c:490
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\" for entry %s"
+msgstr "%s: érvénytelen billentyű a \"%s\" gyorsbillentyűben a következő bejegyzéshez: %s"
+
+#: ../../wmaker-crm/src/rootmenu.c:524
+#, c-format
+msgid "%s: unmatched '\"' in menu file"
+msgstr "%s: lezáratlan '\"' a menü fájlban"
+
+#: ../../wmaker-crm/src/rootmenu.c:573
+#, c-format
+msgid "%s: missing command"
+msgstr "%s: hiányzó parancs"
+
+#: ../../wmaker-crm/src/rootmenu.c:628
+#, c-format
+msgid "invalid OPEN_MENU specification: %s"
+msgstr "hibás OPEN_MENU leírás: %s"
+
+#: ../../wmaker-crm/src/rootmenu.c:685
+#, c-format
+msgid "%s:could not stat menu"
+msgstr "%s: nem tudom elérni a menüt"
+
+#: ../../wmaker-crm/src/rootmenu.c:693
+#, c-format
+msgid "%s:could not stat menu:%s"
+msgstr "%s: nem tudom elérni a menüt:%s"
+
+#: ../../wmaker-crm/src/rootmenu.c:709
+#, c-format
+msgid "too many parameters in OPEN_MENU: %s"
+msgstr "túl sok paraméter az OPEN_MENU-ben: %s"
+
+#: ../../wmaker-crm/src/rootmenu.c:747
+#, c-format
+msgid "invalid OPEN_PLMENU specification: %s"
+msgstr "hibás OPEN_PLMENU leírás: %s"
+
+#: ../../wmaker-crm/src/rootmenu.c:798
+msgid ""
+"There are more than one WORKSPACE_MENU commands in the applications menu. "
+"Only one is allowed."
+msgstr "Egynél több WORKSPACE_MENU-parancs van az alkalmazások menüben. Csak egy lehet."
+
+#: ../../wmaker-crm/src/rootmenu.c:829
+msgid ""
+"There are more than one WINDOWS_MENU commands in the applications menu. Only "
+"one is allowed."
+msgstr "Egynél több WOINDOWS_MENU-parancs van az alkalmazások menüben. Csak egy lehet."
+
+#: ../../wmaker-crm/src/rootmenu.c:834
+msgid "Window List"
+msgstr "Ablakok listája"
+
+#: ../../wmaker-crm/src/rootmenu.c:861 ../../wmaker-crm/src/rootmenu.c:878
+#: ../../wmaker-crm/src/rootmenu.c:895 ../../wmaker-crm/src/rootmenu.c:903
+#, c-format
+msgid "%s:missing parameter for menu command \"%s\""
+msgstr "%s: hiányzó paraméter a menü parancshoz \"%s\""
+
+#: ../../wmaker-crm/src/rootmenu.c:967
+#, c-format
+msgid "%s:unknown command \"%s\" in menu config."
+msgstr "%s: ismeretlen parancs \"%s\" a menü beállításaiban."
+
+#: ../../wmaker-crm/src/rootmenu.c:974
+#, c-format
+msgid "%s:can't add shortcut for entry \"%s\""
+msgstr "%s: nem tudom a gyorsbillentyűt a \"%s\" bejegyzéshez hozzáadni"
+
+#: ../../wmaker-crm/src/rootmenu.c:1006 ../../wmaker-crm/src/rootmenu.c:1058
+#: ../../wmaker-crm/src/rootmenu.c:1147
+msgid "missing command in menu config"
+msgstr "hiányzó parancs a menü beállításaiban"
+
+#: ../../wmaker-crm/src/rootmenu.c:1034
+msgid "syntax error in menu file: END declaration missing"
+msgstr "szintaktikai hiba a menü fájlban: hiányzó END kulcsszó"
+
+#: ../../wmaker-crm/src/rootmenu.c:1049 ../../wmaker-crm/src/rootmenu.c:1138
+#, c-format
+msgid "could not open menu file \"%s\": %s"
+msgstr "nem tudom megnyitni a menü fájlt \"%s\": %s"
+
+#: ../../wmaker-crm/src/rootmenu.c:1072
+msgid "invalid menu file, MENU command is missing"
+msgstr "érvénytelen menü fájl. MENU parancs hiányzik"
+
+#: ../../wmaker-crm/src/rootmenu.c:1161
+msgid "no title given for the root menu"
+msgstr "nincs megnevezve a gyökér (root) menü"
+
+#: ../../wmaker-crm/src/rootmenu.c:1274 ../../wmaker-crm/src/rootmenu.c:1346
+#: ../../wmaker-crm/src/rootmenu.c:1385
+#, c-format
+msgid "out of memory while constructing directory menu %s"
+msgstr "elfogyott a memória a %s könyvtár menü létrehozásakor"
+
+#: ../../wmaker-crm/src/rootmenu.c:1283
+#, c-format
+msgid "%s:could not stat file \"%s\" in menu directory"
+msgstr "%s: a menü könyvtárában a következő fájlt nem sikerül elérnem: \"%s\""
+
+#: ../../wmaker-crm/src/rootmenu.c:1435
+msgid "Commands"
+msgstr "Parancsok"
+
+#: ../../wmaker-crm/src/rootmenu.c:1438
+msgid "Restart"
+msgstr "Újraindítás"
+
+#: ../../wmaker-crm/src/rootmenu.c:1439
+msgid "Exit..."
+msgstr "Kilépés..."
+
+#: ../../wmaker-crm/src/rootmenu.c:1478
+#, c-format
+msgid "could not find menu file \"%s\" referenced in WMRootMenu"
+msgstr "nem találom a menü fájlt \"%s\". A WMRootMenu hivatkozik rá."
+
+#: ../../wmaker-crm/src/rootmenu.c:1484
+#, c-format
+msgid "could not access menu \"%s\" referenced in WMRootMenu"
+msgstr "a menü elérhetetlen: \"%s\". A WMRootMenu hivatkozik rá."
+
+#: ../../wmaker-crm/src/rootmenu.c:1496
+#, c-format
+msgid ""
+"using default menu file \"%s\" as the menu referenced in WMRootMenu could "
+"not be found "
+msgstr "a \"%s\" alap menü fájlt használom, mert a WMRootMenu-ben hivatkozott fájl nem található."
+
+#: ../../wmaker-crm/src/rootmenu.c:1519 ../../wmaker-crm/src/rootmenu.c:1596
+#, c-format
+msgid "%s:format error in root menu configuration \"%s\""
+msgstr "%s: formai hiba a root menü konfigurációjában \"%s\""
+
+#: ../../wmaker-crm/src/rootmenu.c:1673
+msgid ""
+"The applications menu could not be loaded. Look at the console output for a "
+"detailed description of the errors."
+msgstr "Nem sikerült betölteni az Alkalmazások menüt. A hibák részletes leírását lásd a konzol kimeneten."
+
+#: ../../wmaker-crm/src/screen.c:404
+#, c-format
+msgid "could not load logo image for panels: %s"
+msgstr "nem tudom betölteni a logo-t a panelhez: %s"
+
+#: ../../wmaker-crm/src/screen.c:595
+msgid "could not initialize WINGs widget set"
+msgstr "nem sikerült inicializálni a WINGs widget set-et"
+
+#: ../../wmaker-crm/src/screen.c:902
+#, c-format
+msgid "could not save session state in %s"
+msgstr "Nem sikerült elmentenem a munkamenet állapotát ide: %s"
+
+#: ../../wmaker-crm/src/session.c:147 ../../wmaker-crm/src/wdefaults.c:650
+#: ../../wmaker-crm/src/winspector.c:394
+#, c-format
+msgid "can't convert \"%s\" to boolean"
+msgstr "a \"%s\"-t nem tudom logikai értékké alakítani"
+
+#: ../../wmaker-crm/src/stacking.c:70
+msgid "could not get window list!!"
+msgstr "nem tudom lekérdezni az ablakok listáját!!"
+
+#: ../../wmaker-crm/src/startup.c:118
+#, c-format
+msgid "internal X error: %s"
+msgstr "belső X-hiba: %s"
+
+#: ../../wmaker-crm/src/startup.c:564 ../../wmaker-crm/src/startup.c:580
+#: ../../wmaker-crm/src/startup.c:586
+#, c-format
+msgid "could not read domain \"%s\" from defaults database"
+msgstr "A beállítás adatbázisból a \"%s\" domain nem olvasható."
+
+#: ../../wmaker-crm/src/startup.c:572
+#, c-format
+msgid "icon size is configured to %i, but it's too small. Using 16 instead"
+msgstr "Az ikon méret beállítás jelenleg %i, de ez túl kicsi. 16-ot használok helyette."
+
+#: ../../wmaker-crm/src/startup.c:602
+msgid "XKB is not supported. KbdModeLock is automatically disabled."
+msgstr "Nincs XKB támogatás. A KbdModeLock automatikusan letiltva."
+
+#: ../../wmaker-crm/src/startup.c:632
+msgid "it seems that there is already a window manager running"
+msgstr "nekem úgy tűnik, hogy már fut egy másik ablakkezelő"
+
+#: ../../wmaker-crm/src/startup.c:638
+#, c-format
+msgid "could not manage screen %i"
+msgstr "a %i képernyőt nem tudom a kezelni"
+
+#: ../../wmaker-crm/src/startup.c:702
+msgid "could not manage any screen"
+msgstr "egy képernyőt sem tudok kezelni"
+
+#: ../../wmaker-crm/src/switchmenu.c:135
+msgid "Windows"
+msgstr "Ablakok"
+
+#: ../../wmaker-crm/src/texture.c:331
+#, c-format
+msgid "image file \"%s\" used as texture could not be found."
+msgstr "Nem találom a \"%s\" képet (mintaként használatos)."
+
+#: ../../wmaker-crm/src/texture.c:336
+#, c-format
+msgid "could not load texture pixmap \"%s\":%s"
+msgstr "nem tudom betölteni ezt a mintát \"%s\":%s"
+
+#: ../../wmaker-crm/src/texture.c:458
+msgid "could not allocate image buffer"
+msgstr "Nem sikerült átmeneti kép tárolót lefoglalni"
+
+#: ../../wmaker-crm/src/wdefaults.c:400
+#, c-format
+msgid "icon \"%s\" doesn't exist, check your config files"
+msgstr "\"%s\" ikon nem létezik. Ellenőrizd a beállításaidat!"
+
+#: ../../wmaker-crm/src/wdefaults.c:427
+#, c-format
+msgid "error loading image file \"%s\": %s"
+msgstr "hiba a \"%s\" kép betöltése közben: %s"
+
+#: ../../wmaker-crm/src/wdefaults.c:463
+#, c-format
+msgid "could not find default icon \"%s\""
+msgstr "az alapértelmezett ikont \"%s\" nem találom"
+
+#: ../../wmaker-crm/src/window.c:2683 ../../wmaker-crm/src/window.c:2845
+msgid ""
+"The NumLock, ScrollLock or similar key seems to be turned on. Turn it off or "
+"some mouse actions and keyboard shortcuts will not work."
+msgstr "Úgy tűnik, hogy a NumLock, ScrollLock vagy valamelyik hasonló billentyű be van kapcsolva. Kapcsold ki, vagy néhány egérművelet vagy billentyű-kombináció nem fog működni."
+
+#: ../../wmaker-crm/src/winmenu.c:81
+msgid "Maximize vertically"
+msgstr "Teljes méret függőlegesen"
+
+#: ../../wmaker-crm/src/winmenu.c:82
+msgid "Maximize horizontally"
+msgstr "Teljes méret vízszintesen"
+
+#: ../../wmaker-crm/src/winmenu.c:83
+msgid "Maximize left half"
+msgstr "Teljes méret bal félre"
+
+#: ../../wmaker-crm/src/winmenu.c:84
+msgid "Maximize right half"
+msgstr "Teljes méret jobb félre"
+
+#: ../../wmaker-crm/src/winmenu.c:85
+msgid "Maximize top half"
+msgstr "Teljes méret felső félre"
+
+#: ../../wmaker-crm/src/winmenu.c:86
+msgid "Maximize bottom half"
+msgstr "Teljes méret alsó félre"
+
+#: ../../wmaker-crm/src/winmenu.c:87
+msgid "Maximize left top corner"
+msgstr "Teljes méret bal felső sarokba"
+
+#: ../../wmaker-crm/src/winmenu.c:88
+msgid "Maximize right top corner"
+msgstr "Teljes méret jobb felső sarokba"
+
+#: ../../wmaker-crm/src/winmenu.c:89
+msgid "Maximize left bottom corner"
+msgstr "Teljes méret bal alsó sarokba"
+
+#: ../../wmaker-crm/src/winmenu.c:90
+msgid "Maximize right bottom corner"
+msgstr "Teljes méret jobb alsó sarokba"
+
+#: ../../wmaker-crm/src/winmenu.c:91
+msgid "Maximus: tiled maximization"
+msgstr "Csempézett teljes méret"
+
+#: ../../wmaker-crm/src/winmenu.c:210
+msgid ""
+"This will kill the application.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+"Ez bezárja az alkalmazást.\n"
+"Minden nem mentett adat elveszik.\n"
+"Biztos vagy benne?"
+
+#: ../../wmaker-crm/src/winmenu.c:360 ../../wmaker-crm/src/winmenu.c:369
+msgid "Set Shortcut"
+msgstr "Gyorsbillentyű"
+
+#: ../../wmaker-crm/src/winmenu.c:457 ../../wmaker-crm/src/winmenu.c:487
+#: ../../wmaker-crm/src/winmenu.c:513
+msgid "could not create submenu for window menu"
+msgstr "nem tudtam almenüt létrehozni az ablak menühöz"
+
+#: ../../wmaker-crm/src/winmenu.c:491
+msgid "Keep on top"
+msgstr "Mindig felül"
+
+#: ../../wmaker-crm/src/winmenu.c:495
+msgid "Keep at bottom"
+msgstr "Mindig alul"
+
+#.
+#. * Warning: If you make some change that affects the order of the
+#. * entries, you must update the command enum in the top of
+#. * this file.
+#.
+#: ../../wmaker-crm/src/winmenu.c:534 ../../wmaker-crm/src/winmenu.c:623
+msgid "Maximize"
+msgstr "Teljes méret"
+
+#: ../../wmaker-crm/src/winmenu.c:536
+msgid "Other maximization"
+msgstr "Teljes méret opciók"
+
+#: ../../wmaker-crm/src/winmenu.c:539 ../../wmaker-crm/src/winmenu.c:606
+msgid "Miniaturize"
+msgstr "Ikonállapot"
+
+#: ../../wmaker-crm/src/winmenu.c:541 ../../wmaker-crm/src/winmenu.c:642
+msgid "Shade"
+msgstr "Felhúz"
+
+#: ../../wmaker-crm/src/winmenu.c:545
+msgid "Resize/Move"
+msgstr "Átméretez/Mozgat"
+
+#: ../../wmaker-crm/src/winmenu.c:547 ../../wmaker-crm/src/winmenu.c:659
+msgid "Select"
+msgstr "Kijelöl"
+
+#: ../../wmaker-crm/src/winmenu.c:549
+msgid "Move To"
+msgstr "Átrak"
+
+#: ../../wmaker-crm/src/winmenu.c:554
+msgid "Attributes..."
+msgstr "Tulajdonságok..."
+
+#: ../../wmaker-crm/src/winmenu.c:556
+msgid "Options"
+msgstr "Beállítások"
+
+#: ../../wmaker-crm/src/winmenu.c:561
+msgid "Close"
+msgstr "Bezár"
+
+#: ../../wmaker-crm/src/winmenu.c:600
+msgid "Deminiaturize"
+msgstr "Eredeti méret"
+
+#: ../../wmaker-crm/src/winmenu.c:616
+msgid "Unmaximize"
+msgstr "Eredeti méret"
+
+#: ../../wmaker-crm/src/winmenu.c:636
+msgid "Unshade"
+msgstr "Leereszt"
+
+#: ../../wmaker-crm/src/winmenu.c:653
+msgid "Deselect"
+msgstr "Kijelölést megszüntet"
+
+#: ../../wmaker-crm/src/winspector.c:341
+#, c-format
+msgid "Could not find icon \"%s\" specified for this window"
+msgstr "Nem találom az ehhez az ablakhoz megadott \"%s\" ikont"
+
+#: ../../wmaker-crm/src/winspector.c:356
+#, c-format
+msgid "Could not open specified icon \"%s\":%s"
+msgstr "Nem tudom megnyitni a megadott ikont \"%s\" : %s"
+
+#: ../../wmaker-crm/src/winspector.c:755
+#, c-format
+msgid ""
+"Ignore client supplied icon is set, but icon filename textbox is empty. "
+"Using client supplied icon"
+msgstr "Le van tiltva a program által adott ikon használata, de nincs megadva ikon fájl név. A program által adott ikont használom. "
+
+#: ../../wmaker-crm/src/winspector.c:1005
+#, c-format
+msgid "Inspecting  %s.%s"
+msgstr "%s.%s tulajdonságai"
+
+#: ../../wmaker-crm/src/winspector.c:1030
+msgid "Click in the window you wish to inspect."
+msgstr ""
+"Kattints abba az ablakba amelynek\n"
+"tulajdonságait szerkeszteni akarod!"
+
+#: ../../wmaker-crm/src/winspector.c:1054
+msgid ""
+"The configuration will apply to all\n"
+"windows that have their WM_CLASS\n"
+"property set to the above selected\n"
+"name, when saved."
+msgstr ""
+"Az elmentett beállítások minden olyan\n"
+"ablakra érvényesek lesznek, amelyek\n"
+"WM_CLASS tulajdonsága megegyezik\n"
+"a fent kiválasztottal."
+
+#: ../../wmaker-crm/src/winspector.c:1074
+msgid "Save"
+msgstr "Ment"
+
+#: ../../wmaker-crm/src/winspector.c:1082
+msgid "Apply"
+msgstr "Alkalmaz"
+
+#: ../../wmaker-crm/src/winspector.c:1088
+msgid "Reload"
+msgstr "Frissít"
+
+#: ../../wmaker-crm/src/winspector.c:1097
+#: ../../wmaker-crm/src/winspector.c:1107
+msgid "Window Specification"
+msgstr "Ablak meghatározás"
+
+#: ../../wmaker-crm/src/winspector.c:1098
+msgid "Window Attributes"
+msgstr "Ablak tulajdonságok"
+
+#: ../../wmaker-crm/src/winspector.c:1099
+msgid "Advanced Options"
+msgstr "Haladó beállítások"
+
+#: ../../wmaker-crm/src/winspector.c:1100
+msgid "Icon and Initial Workspace"
+msgstr "Ikon és kezdő munkafelület"
+
+#: ../../wmaker-crm/src/winspector.c:1101
+msgid "Application Specific"
+msgstr "Alkalmazás beállításai"
+
+#: ../../wmaker-crm/src/winspector.c:1114
+msgid "Defaults for all windows"
+msgstr "Alapértelmezés minden ablakra"
+
+#: ../../wmaker-crm/src/winspector.c:1165
+msgid "Select window"
+msgstr "Ablak választás"
+
+#: ../../wmaker-crm/src/winspector.c:1311
+msgid "Attributes"
+msgstr "Tulajdonságok"
+
+#: ../../wmaker-crm/src/winspector.c:1318
+msgid "Disable titlebar"
+msgstr "Címsor letiltása"
+
+#: ../../wmaker-crm/src/winspector.c:1320
+msgid ""
+"Remove the titlebar of this window.\n"
+"To access the window commands menu of a window\n"
+"without it's titlebar, press Control+Esc (or the\n"
+"equivalent shortcut, if you changed the default\n"
+"settings)."
+msgstr ""
+"Eltünteti az ablak címsorát.\n"
+"Az ablak-parancsok menüjéhez a címsor nélküli\n"
+"ablakoknál a Control+Esc lenyomásával juthatsz\n"
+"(vagy egy ezzel egyenértékű gombkombinációval, ha\n"
+"átállítottad az alapértelmezést)."
+
+#: ../../wmaker-crm/src/winspector.c:1326
+msgid "Disable resizebar"
+msgstr "Átméretező sáv letiltása"
+
+#: ../../wmaker-crm/src/winspector.c:1328
+msgid "Remove the resizebar of this window."
+msgstr "Eltünteti az átméretező sávot"
+
+#: ../../wmaker-crm/src/winspector.c:1331
+msgid "Disable close button"
+msgstr "Bezárás gomb letiltása"
+
+#: ../../wmaker-crm/src/winspector.c:1333
+msgid "Remove the `close window' button of this window."
+msgstr "Eltünteti a `bezárás' gombot az ablakról"
+
+#: ../../wmaker-crm/src/winspector.c:1336
+msgid "Disable miniaturize button"
+msgstr "Ikonállapot gomb letiltása"
+
+#: ../../wmaker-crm/src/winspector.c:1338
+msgid "Remove the `miniaturize window' button of the window."
+msgstr "Eltünteti az `Ikonállapot' gombot az ablakról"
+
+#: ../../wmaker-crm/src/winspector.c:1341
+msgid "Disable border"
+msgstr "Keret letiltása"
+
+#: ../../wmaker-crm/src/winspector.c:1343
+msgid "Remove the 1 pixel black border around the window."
+msgstr "Eltünteti az 1 pixel széles fekete keretet az ablak körül."
+
+#: ../../wmaker-crm/src/winspector.c:1346
+msgid "Keep on top (floating)"
+msgstr "Mindig felül (lebegtetés)"
+
+#: ../../wmaker-crm/src/winspector.c:1348
+msgid ""
+"Keep the window over other windows, not allowing\n"
+"them to cover it."
+msgstr ""
+"Az ablakot mindig felülre teszi, nem engedi, hogy\n"
+"más ablak eltakarja."
+
+#: ../../wmaker-crm/src/winspector.c:1351
+msgid "Keep at bottom (sunken)"
+msgstr "Mindig alul (lesüllyesztés)"
+
+#: ../../wmaker-crm/src/winspector.c:1353
+msgid "Keep the window under all other windows."
+msgstr "Az ablak mindig a legalsó lesz."
+
+#: ../../wmaker-crm/src/winspector.c:1358
+msgid "Make window present in all workspaces."
+msgstr "Az ablak minden munkafelületen megjelenik."
+
+#: ../../wmaker-crm/src/winspector.c:1361
+msgid "Start miniaturized"
+msgstr "Ikonállapotban indít"
+
+#: ../../wmaker-crm/src/winspector.c:1363
+msgid ""
+"Make the window be automatically miniaturized when it's\n"
+"first shown."
+msgstr ""
+"Az ablak automatikusan ikonállapotba kerül, amikor\n"
+"először megjelenik."
+
+#: ../../wmaker-crm/src/winspector.c:1366
+msgid "Start maximized"
+msgstr "Teljes méretben indít"
+
+#: ../../wmaker-crm/src/winspector.c:1368
+msgid ""
+"Make the window be automatically maximized when it's\n"
+"first shown."
+msgstr ""
+"Az ablak automatikusan teljes méretű lesz, amikor\n"
+"először megjelenik."
+
+#: ../../wmaker-crm/src/winspector.c:1371
+msgid "Full screen maximization"
+msgstr "Teljes képernyős üzemmód"
+
+#: ../../wmaker-crm/src/winspector.c:1373
+msgid ""
+"Make the window use the whole screen space when it's\n"
+"maximized. The titlebar and resizebar will be moved\n"
+"to outside the screen."
+msgstr ""
+"Az ablak az egész képernyőt el fogja foglalni, amikor\n"
+"teljes méretűre állítod. A címsor és az átméretező sáv\n"
+"is a képernyőn kívűlre kerül."
+
+#: ../../wmaker-crm/src/winspector.c:1395
+msgid "Advanced"
+msgstr "Haladó"
+
+#: ../../wmaker-crm/src/winspector.c:1402
+msgid "Do not bind keyboard shortcuts"
+msgstr "Ne értelmezze a gyorsbillentyűket"
+
+#: ../../wmaker-crm/src/winspector.c:1404
+msgid ""
+"Do not bind keyboard shortcuts from Window Maker\n"
+"when this window is focused. This will allow the\n"
+"window to receive all key combinations regardless\n"
+"of your shortcut configuration."
+msgstr ""
+"A Window Maker nem fogja értelmezni a gyorsbillentyűket,\n"
+"amikor ez az ablak aktív. Ez lehetővé teszi, hogy az\n"
+"ablak minden gombkombinációt megkapjon, azt is, ami\n"
+"már esetleg szerepel a gyorsbillentyűid között."
+
+#: ../../wmaker-crm/src/winspector.c:1410
+msgid "Do not bind mouse clicks"
+msgstr "Ne értelmezze az egérkattintásokat"
+
+#: ../../wmaker-crm/src/winspector.c:1412
+msgid ""
+"Do not bind mouse actions, such as `Alt'+drag\n"
+"in the window (when Alt is the modifier you have\n"
+"configured)."
+msgstr ""
+"Nem próbálja meg értelmezni az egér tevékenységét,\n"
+"pl. az Alt+húzást ebben az ablakban (feltéve hogy az\n"
+"Alt a beállított módosító billentyű)."
+
+#: ../../wmaker-crm/src/winspector.c:1416
+msgid "Do not show in the window list"
+msgstr "Nem jelenik meg az ablak listában"
+
+#: ../../wmaker-crm/src/winspector.c:1418
+msgid "Do not list the window in the window list menu."
+msgstr "Az ablak nem jelenik meg az \"Ablakok listája\" menüben"
+
+#: ../../wmaker-crm/src/winspector.c:1421
+msgid "Do not show in the switch panel"
+msgstr "Nem jelenik meg a váltó panelen"
+
+#: ../../wmaker-crm/src/winspector.c:1423
+msgid "Do not include in switch panel while cycling windows."
+msgstr "Ne jelenítse meg a váltó panelen aktív ablak váltáskor."
+
+#: ../../wmaker-crm/src/winspector.c:1426
+msgid "Do not let it take focus"
+msgstr "Ne kapjon fókuszt"
+
+#: ../../wmaker-crm/src/winspector.c:1428
+msgid ""
+"Do not let the window take keyboard focus when you\n"
+"click on it."
+msgstr ""
+"Amikor rákattintasz az ablakra, akkor a billentyűzet\n"
+"nem fókuszálódik rá."
+
+#: ../../wmaker-crm/src/winspector.c:1431
+msgid "Keep inside screen"
+msgstr "Képernyőn belül tart"
+
+#: ../../wmaker-crm/src/winspector.c:1433
+msgid ""
+"Do not allow the window to move itself completely\n"
+"outside the screen. For bug compatibility.\n"
+msgstr ""
+"Nem engedi hogy az ablak teljesen a képernyőn kívűlre\n"
+"rakja magát. Hibás alkalmazásokhoz.\n"
+
+#: ../../wmaker-crm/src/winspector.c:1437
+msgid "Ignore 'Hide Others'"
+msgstr "Kihagyás \"Többi elrejtése\"-kor"
+
+#: ../../wmaker-crm/src/winspector.c:1439
+msgid ""
+"Do not hide the window when issuing the\n"
+"`HideOthers' command."
+msgstr ""
+"Figyelmen kívül hagyja a \"Többi elrejtése\"\n"
+"parancsot és ezt az ablakot nem rejti el."
+
+#: ../../wmaker-crm/src/winspector.c:1442
+msgid "Ignore 'Save Session'"
+msgstr "Kihagyás \"Session mentése\"-kor"
+
+#: ../../wmaker-crm/src/winspector.c:1444
+msgid ""
+"Do not save the associated application in the\n"
+"session's state, so that it won't be restarted\n"
+"together with other applications when Window Maker\n"
+"starts."
+msgstr ""
+"Nem menti el a hozzá tartozó alkalmazást a session\n"
+"állapottal, így az nem fog újraindulni a többi\n"
+"alkalmazással, amikor a Window Maker elindul."
+
+#: ../../wmaker-crm/src/winspector.c:1449
+msgid "Emulate application icon"
+msgstr "Alkalmazás-ikon emuláció"
+
+#: ../../wmaker-crm/src/winspector.c:1451
+msgid ""
+"Make this window act as an application that provides\n"
+"enough information to Window Maker for a dockable\n"
+"application icon to be created."
+msgstr ""
+"Lehetővé teszi, hogy az ablak úgy viselkedjen mint azok az\n"
+"alkalmazások melyek elegendő információt szolgáltatnak a\n"
+"Window Makernek, hogy dokkolható alkalmazás ikont hozzon létre."
+
+#: ../../wmaker-crm/src/winspector.c:1456
+msgid "Focus across workspaces"
+msgstr "Munkafelületek közötti fókuszálás"
+
+#: ../../wmaker-crm/src/winspector.c:1458
+msgid ""
+"Allow Window Maker to switch workspace to satisfy\n"
+"a focus request (annoying)."
+msgstr ""
+"Megengedi, hogy a Window Maker munkafelületet váltson az\n"
+"ablak fókuszálásakor (ez idegesítő tud lenni)."
+
+#: ../../wmaker-crm/src/winspector.c:1462
+msgid "Do not let it be minimized"
+msgstr "Nem engedi ikonállapotba"
+
+#: ../../wmaker-crm/src/winspector.c:1464
+msgid ""
+"Do not let the window of this application be\n"
+"minimized.\n"
+msgstr ""
+"Nem engedi ikonállapotba helyezni ennek az\n"
+"alkalmazásnak az ablakait.\n"
+
+#: ../../wmaker-crm/src/winspector.c:1469
+msgid "Disable language button"
+msgstr "Nyelv-gomb letiltása"
+
+#: ../../wmaker-crm/src/winspector.c:1471
+msgid "Remove the `toggle language' button of the window."
+msgstr "Eltünteti a `nyelv ki/be' gombot az ablakról"
+
+#: ../../wmaker-crm/src/winspector.c:1493
+msgid "Miniwindow Image"
+msgstr "Miniablak-kép"
+
+#: ../../wmaker-crm/src/winspector.c:1510
+msgid "Icon filename:"
+msgstr "Ikonfájl neve:"
+
+#: ../../wmaker-crm/src/winspector.c:1521
+msgid "Ignore client supplied icon"
+msgstr "Ne használja a program ikonját"
+
+#: ../../wmaker-crm/src/winspector.c:1527
+msgid "Initial Workspace"
+msgstr "Kezdeti munkafelület"
+
+#: ../../wmaker-crm/src/winspector.c:1529
+msgid "The workspace to place the window when it's first shown."
+msgstr "Amikor megjelenik, melyik munkafelületre helyezze az ablakot"
+
+#: ../../wmaker-crm/src/winspector.c:1535
+msgid "Nowhere in particular"
+msgstr "Aktuális munkafelület"
+
+#: ../../wmaker-crm/src/winspector.c:1558
+msgid "Application Attributes"
+msgstr "Alkalmazás tulajdonságok"
+
+#: ../../wmaker-crm/src/winspector.c:1565
+msgid "Start hidden"
+msgstr "Indításkor elrejt"
+
+#: ../../wmaker-crm/src/winspector.c:1567
+msgid "Automatically hide application when it's started."
+msgstr "Amikor elindul, automatikusan elrejti"
+
+#: ../../wmaker-crm/src/winspector.c:1570
+msgid "No application icon"
+msgstr "Nincs alkalmazás-ikon"
+
+#: ../../wmaker-crm/src/winspector.c:1572
+msgid ""
+"Disable the application icon for the application.\n"
+"Note that you won't be able to dock it anymore,\n"
+"and any icons that are already docked will stop\n"
+"working correctly."
+msgstr ""
+"Letiltja az alkalmazáshoz tartozó ikon megjelenését.\n"
+"Ezután nem tudod dokkolni az alkalmazást és a már\n"
+"dokkolt ikonok sem fognak megfelelően működni."
+
+#: ../../wmaker-crm/src/winspector.c:1578
+msgid "Shared application icon"
+msgstr "Közös alkalmazás-ikon"
+
+#: ../../wmaker-crm/src/winspector.c:1580
+msgid ""
+"Use a single shared application icon for all of\n"
+"the instances of this application.\n"
+msgstr ""
+"Egyetlen közös alkalmazás-ikont használ ezen\n"
+"alkalmazás összes futó példányához.\n"
+
+#: ../../wmaker-crm/src/workspace.c:101 ../../wmaker-crm/src/workspace.c:691
+#, c-format
+msgid "Workspace %i"
+msgstr "Munkafelület %i"
+
+#: ../../wmaker-crm/src/workspace.c:737
+msgid "Workspaces"
+msgstr "Munkafelületek"
+
+#: ../../wmaker-crm/src/workspace.c:739
+msgid "could not create Workspace menu"
+msgstr "nem tudom létrehozni a Munkafelület menüt"
+
+#: ../../wmaker-crm/src/workspace.c:746
+msgid "New"
+msgstr "Új"
+
+#: ../../wmaker-crm/src/workspace.c:747
+msgid "Destroy Last"
+msgstr "Törli az utolsót"
+
+#: ../../wmaker-crm/src/workspace.c:749
+msgid "Last Used"
+msgstr "Utoljára használt"

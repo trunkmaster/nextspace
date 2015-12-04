@@ -1,0 +1,50 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Controller = {
+	Actions = (
+	    "authenticate:",
+	    "shutDown:",
+	    "restart:"
+	);
+	Outlets = (
+	    shutDownBtn,
+	    password,
+	    restartBtn,
+	    userName,
+	    window,
+	    panelImageView,
+	    fieldsImage,
+	    quitLabel,
+	    fieldsLabelImage
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "authenticate:",
+	    "orderWindow:",
+	    "restart:",
+	    "shutDown:"
+	);
+	Super = NSObject;
+    };
+    LoginApplication = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSApplication;
+    };
+    LoginWindow = {
+	Actions = (
+	);
+	Outlets = (
+	    hostnameField,
+	    panelImageView,
+	    restartBtn,
+	    shutDownBtn,
+	    tfImageView
+	);
+	Super = NSWindow;
+    };
+}

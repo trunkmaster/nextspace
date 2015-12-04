@@ -1,0 +1,6 @@
+{
+  type = Preferences;
+  mode = Login;
+  class = Login;
+  priority = 1;
+}

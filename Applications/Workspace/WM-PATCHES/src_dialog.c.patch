@@ -1,0 +1,14 @@
+--- ./wmaker-crm_next/src/dialog.c	2015-07-29 16:02:49.000000000 +0300
++++ ./WM/src/dialog.c	2015-08-01 22:32:49.700624794 +0300
+@@ -177,7 +177,11 @@
+ 	char *filename = NULL;
+ 
+ 	filename = wstrdup(wusergnusteppath());
++#ifdef NEXTSPACE
++	filename = wstrappend(filename, "/WindowMaker/History");
++#else
+ 	filename = wstrappend(filename, "/.AppInfo/WindowMaker/History");
++#endif
+ 	if (name && strlen(name)) {
+ 		filename = wstrappend(filename, ".");
+ 		filename = wstrappend(filename, name);

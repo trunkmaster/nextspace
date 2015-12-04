@@ -1,0 +1,50 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH wxcopy 1 "September 1998"
+.SH NAME
+wxcopy \- copy stdin or file into X11 cutbuffer
+.SH SYNOPSIS
+.B wxcopy
+.RI [ options ]
+.RI [ filename ]
+.SH DESCRIPTION
+.B wxcopy
+copies stdin or
+.I filename
+into the cutbuffer. If no cutbuffer is specified, the data will be
+copied into cutbuffer 0 and the other cutbuffers will be rotated, if present.
+If a cutbuffer is specified, the data is copied into that cutbuffer,
+and no rotation of buffers is performed.
+.SH OPTIONS
+.TP
+.B \-\-clear\-selection
+Clears the PRIMARY selection owner. In practice it means that when you try
+to paste the data with the middle mouse button (for example) it will paste
+the data from cut buffer 0, instead of any eventually existing mouse
+selection.
+.TP
+.BI \-\-cutbuffer " number"
+Specifies the number of the cutbuffer to copy data to.
+.TP
+.BR \-display " display\-name"
+The data will be copied in the cutbuffers of the specified display/screen.
+.TP
+.B \-\-help
+print a help message with the list of options.
+.TP
+.B \-\-no\-limit
+Makes the normal 64kb limit check not to be performed, making the buffer
+attempt to grow to whatever size is required.
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes.
+.PP
+.SH SEE ALSO
+.BR wxpaste (1),
+.BR wmaker (1)
+.SH AUTHOR
+This man page was written by Marcelo Magallon <mmagallo@debian.org>.
+.PP
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>.
+
+Binary data compatibility and \-\-no\-limit stuff by Luke Kendall
+<luke@research.canon.com.au>.

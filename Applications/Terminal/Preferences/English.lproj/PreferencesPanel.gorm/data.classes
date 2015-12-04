@@ -1,0 +1,30 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "switchMode:",
+	    "setBuildTool:"
+	);
+	Super = NSObject;
+    };
+    Preferences = {
+	Actions = (
+	    "switchMode:"
+	);
+	Outlets = (
+	    modeBtn,
+	    window,
+	    modeContentBox
+	);
+	Super = NSObject;
+    };
+    PreferencesPanel = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSPanel;
+    };
+    PreferencesWindowController = {
+    };
+}

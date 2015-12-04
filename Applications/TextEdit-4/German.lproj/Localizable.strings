@@ -1,0 +1,138 @@
+/***
+German strings by Johannes Bauer <jbauer@5pm.de>
+2004/03/27
+***/
+
+/* Zoom popup entry */
+"10%" = "10%";
+
+/* Zoom popup entry */
+"800%" = "800%";
+
+/* Zoom popup entry */
+"50%" = "50%";
+
+/* Zoom popup entry */
+"128%" = "128%";
+
+/* Zoom popup entry */
+"75%" = "75%";
+
+/* Zoom popup entry */
+"25%" = "25%";
+
+/* Zoom popup entry */
+"400%" = "400%";
+
+/* Zoom popup entry */
+"1600%" = "1600%";
+
+/* Zoom popup entry */
+"200%" = "200%";
+
+/* Zoom popup entry */
+"100%" = "100%";
+
+/* Button choice which allows the user to abort the save of a document which is being closed. */
+"Don't Save" = "Nicht speichern";
+
+/* Title of alert indicating file couldn't be reverted */
+"Couldn't Revert" = "Konnte nicht wiederherstellen";
+
+/* Menu item to make the current document rich text */
+"&Make Rich Text" = "In Rich Text umwandeln";
+
+/* Name of new, untitled document */
+"UNTITLED" = "UNBENANNT";
+
+/* Menu item to cause text to be laid out to the size of the currently selected page type */
+"&Wrap to Page" = "Textumbruch an der Seite";
+
+/* Title of save and alert panels when saving RTFD */
+"Save RTFD" = "RTFD speichern";
+
+/* Message confirming revert of specified document name. */
+"Revert to saved version of %@?" = "Gespeicherte Version von %@ wiederherstellen?";
+
+/* Title of save and alert panels when saving RTF */
+"Save RTF" = "RTF speichern";
+
+/* Question asked of user when he/she tries to close a window containing an unsaved document. */
+"Document has been edited. Save?" = "Das Dokument wurde bearbeitet. \u00c4nderungen speichern?";
+
+/* Message indicating file couldn't be reverted. */
+"Couldn't revert to saved version of %@." = "Konnte gespeicherte Version von %@ nicht wiederherstellen.";
+
+/* Menu item to cause text to be laid out to size of the window */
+"&Wrap to Window" = "Textumbruch am Fenster";
+
+/* Title of save and alert panels when saving plain text */
+"Save Plain Text" = "Reinen Text speichern";
+
+/* Encoding popup entry indicating default encoding */
+"Default" = "Voreinstellung";
+
+/* Title of alert indicating file couldn't be opened */
+"File system error" = "Dateisystem-Fehler";
+
+/* Button choice which allows the user to save the document. */
+"Save" = "Speichern";
+
+/* Message indicating document couldn't be saved under the given name. */
+"Couldn't save document as %@." = "Konnte das Dokument nicht als %@ speichern.";
+
+/* Message indicating file couldn't be opened. */
+"Couldn't open file %@." = "Konnte Datei %@ nicht \u00f6ffnen.";
+
+/* Button choice allowing user to cancel. */
+"Cancel" = "Abbrechen";
+
+/* Menu item to disallow hyphenation in the document */
+"Disallow &Hyphenation" = "Silbentrennung abschalten";
+
+/* Menu item to allow hyphenation in the document */
+"Allow &Hyphenation" = "Silbentrennung anschalten";
+
+/* Title of alert confirming Make Plain Text */
+"Make Plain Text" = "In reinen Text umwandeln";
+
+/* Contents of alert panel informing user that the file's string encoding needs to be changed */
+"Document can no longer be saved using its original %@ encoding. Please choose another encoding (%@ is one possibility)." = "Das Dokument kann nicht mehr mit seiner urspr\u00fcnglichen Zeichenkodierung %@ gespeichert werden. Bitte eine andere Kodierung w\u00e4hlen (%@ ist eine M\u00f6glichkeit).";
+
+/* Message confirming Make Plain Text */
+"Convert document to plain text? This will lose fonts, colors, and other text attribute settings." = "Dokument in reinen Text umwandeln? Dadurch gehen Schriftarten, Farben und andere Textattribute verloren.";
+
+/* Menu item to make the current document plain text */
+"&Make Plain Text" = "In reinen Text umwandeln";
+
+/* Title of alert confirming revert */
+"Revert" = "Revert";
+
+/* Button allowing user to abort opening multiple files after one couldn't be opened */
+"Abort" = "Abbrechen";
+
+/* OK. */
+"OK" = "OK";
+
+/* Title of alert panel which comes when the user tries to quit or close a window containing an unsaved document. */
+"Close" = "Schlie\u00dfen";
+
+/* Version string.  %s is replaced by the version number. */
+"Release 4 (v%s)" = "Release 4 (v%s)";
+
+/* Button choice allowing user to cancel. */
+"Cancel" = "Abbrechen";
+
+/* Title of alert panel which comes up when user chooses Quit and there are unsaved documents. */
+"Quit" = "Beenden";
+
+/* Message in the alert panel which comes up when user chooses Quit and there are unsaved documents. */
+"You have unsaved documents." = "Einige Dokumente wurden noch nicht gespeichert.";
+
+/* Choice (on a button) given to user which allows him/her to review all unsaved documents if he/she quits the application without saving them all first. */
+"Review Unsaved" = "Ansehen";
+
+/* Choice (on a button) given to user which allows him/her to quit the application even though there are unsaved documents. */
+"Quit Anyway" = "Trotzdem beenden";
+
+

@@ -1,0 +1,1 @@
+./configure --disable-mixedabi CC=clang CXX=clang++

@@ -1,0 +1,12 @@
+{
+  NSExecutable = "Workspace";
+  NSMainNibFile = "WorkspaceManager";
+  NSPrincipalClass = "NSApplication";
+  Authors = (
+    "Saso Kiselkov",
+    "Sergii Stoian"
+  );
+  ApplicationRelease = 1.0;
+  NSIcon = GNUstep48x48.tiff;
+  ApplicationIcon = GNUstep;
+}

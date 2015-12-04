@@ -1,0 +1,132 @@
+/* Zoom popup entry */
+"10%" = "10%";
+
+/* Zoom popup entry */
+"800%" = "800%";
+
+/* Zoom popup entry */
+"50%" = "50%";
+
+/* Zoom popup entry */
+"128%" = "128%";
+
+/* Zoom popup entry */
+"75%" = "75%";
+
+/* Zoom popup entry */
+"25%" = "25%";
+
+/* Zoom popup entry */
+"400%" = "400%";
+
+/* Zoom popup entry */
+"1600%" = "1600%";
+
+/* Zoom popup entry */
+"200%" = "200%";
+
+/* Zoom popup entry */
+"100%" = "100%";
+
+/* Button choice which allows the user to abort the save of a document which is being closed. */
+"Don't Save" = "Don't Save";
+
+/* Title of alert indicating file couldn't be reverted */
+"Couldn't Revert" = "Couldn't Revert";
+
+/* Menu item to make the current document rich text */
+"&Make Rich Text" = "&Make Rich Text";
+
+/* Name of new, untitled document */
+"UNTITLED" = "UNTITLED";
+
+/* Menu item to cause text to be laid out to the size of the currently selected page type */
+"&Wrap to Page" = "&Wrap to Page";
+
+/* Title of save and alert panels when saving RTFD */
+"Save RTFD" = "Save RTFD";
+
+/* Message confirming revert of specified document name. */
+"Revert to saved version of %@?" = "Revert to saved version of %@?";
+
+/* Title of save and alert panels when saving RTF */
+"Save RTF" = "Save RTF";
+
+/* Question asked of user when he/she tries to close a window containing an unsaved document. */
+"Document has been edited. Save?" = "Document has been edited. Save?";
+
+/* Message indicating file couldn't be reverted. */
+"Couldn't revert to saved version of %@." = "Couldn't revert to saved version of %@.";
+
+/* Menu item to cause text to be laid out to size of the window */
+"&Wrap to Window" = "&Wrap to Window";
+
+/* Title of save and alert panels when saving plain text */
+"Save Plain Text" = "Save Plain Text";
+
+/* Encoding popup entry indicating default encoding */
+"Default" = "Default";
+
+/* Title of alert indicating file couldn't be opened */
+"File system error" = "File system error";
+
+/* Button choice which allows the user to save the document. */
+"Save" = "Save";
+
+/* Message indicating document couldn't be saved under the given name. */
+"Couldn't save document as %@." = "Couldn't save document as %@.";
+
+/* Message indicating file couldn't be opened. */
+"Couldn't open file %@." = "Couldn't open file %@.";
+
+/* Button choice allowing user to cancel. */
+"Cancel" = "Cancel";
+
+/* Menu item to disallow hyphenation in the document */
+"Disallow &Hyphenation" = "Disallow &Hyphenation";
+
+/* Menu item to allow hyphenation in the document */
+"Allow &Hyphenation" = "Allow &Hyphenation";
+
+/* Title of alert confirming Make Plain Text */
+"Make Plain Text" = "Make Plain Text";
+
+/* Contents of alert panel informing user that the file's string encoding needs to be changed */
+"Document can no longer be saved using its original %@ encoding. Please choose another encoding (%@ is one possibility)." = "Document can no longer be saved using its original %@ encoding. Please choose another encoding (%@ is one possibility).";
+
+/* Message confirming Make Plain Text */
+"Convert document to plain text? This will lose fonts, colors, and other text attribute settings." = "Convert document to plain text? This will lose fonts, colors, and other text attribute settings.";
+
+/* Menu item to make the current document plain text */
+"&Make Plain Text" = "&Make Plain Text";
+
+/* Title of alert confirming revert */
+"Revert" = "Revert";
+
+/* Button allowing user to abort opening multiple files after one couldn't be opened */
+"Abort" = "Abort";
+
+/* OK. */
+"OK" = "OK";
+
+/* Title of alert panel which comes when the user tries to quit or close a window containing an unsaved document. */
+"Close" = "Close";
+
+/* Version string.  %s is replaced by the version number. */
+"Release 4 (v%s)" = "Release 4 (v%s)";
+
+/* Button choice allowing user to cancel. */
+"Cancel" = "Cancel";
+
+/* Title of alert panel which comes up when user chooses Quit and there are unsaved documents. */
+"Quit" = "Quit";
+
+/* Message in the alert panel which comes up when user chooses Quit and there are unsaved documents. */
+"You have unsaved documents." = "You have unsaved documents.";
+
+/* Choice (on a button) given to user which allows him/her to review all unsaved documents if he/she quits the application without saving them all first. */
+"Review Unsaved" = "Review Unsaved";
+
+/* Choice (on a button) given to user which allows him/her to quit the application even though there are unsaved documents. */
+"Quit Anyway" = "Quit Anyway";
+

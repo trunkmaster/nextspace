@@ -1,0 +1,29 @@
+{
+  WindowTitleFont = "Trebuchet MS,sans serif:bold:pixelsize=12";
+  MenuTitleFont = "Trebuchet MS,sans serif:bold:pixelsize=12";
+  MenuTextFont = "Trebuchet MS,sans serif:pixelsize=12";
+  IconTitleFont = "Arial,sans serif:pixelsize=9";
+  ClipTitleFont = "Verdana:bold:pixelsize=10";
+  LargeDisplayFont = "Trebuchet MS,sans serif:pixelsize=24";
+  TitleJustify = center;
+  HighlightColor = white;
+  HighlightTextColor = black;
+  ClipTitleColor = black;
+  CClipTitleColor = gray30;
+  FTitleColor = gray30;
+  PTitleColor = white;
+  UTitleColor = gray30;
+  FTitleBack = (hgradient, PaleTurquoise3, PaleTurquoise4);
+  PTitleBack = (hgradient, pink, pink4);
+  UTitleBack = (hgradient, cornsilk2, cornsilk4);
+  ResizebarBack = (hgradient, cornsilk2, cornsilk4);
+  MenuTitleColor = gray30;
+  MenuTextColor = gray30;
+  MenuDisabledColor = gray50;
+  MenuTitleBack = (hgradient, lightyellow2, lightyellow4);
+  MenuTextBack = (hgradient, slategray2, slategray4);
+  IconBack = (dgradient, "rgb:a6/a6/b6", "rgb:51/55/61");
+  IconTitleColor = gray30;
+  IconTitleBack = "#7eacac";
+  MenuStyle = normal;
+}

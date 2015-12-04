@@ -1,0 +1,70 @@
+remake wrlib rule to not compile with -fomit-frame-pointer and stuff
+if its added to CFLAGS
+
+Do ASAP:
+========
+- fix bestvisual selection code. Broken.
+- fix RemakeStackList() to account for transient windows
+- blink border of clients with UrgencyHint set between red and black
+- finish session stuff
+- remove colors_per_channel stuff from wmaker after?
++ finish the ability to browse for files/dirs in the WPrefs menu editor
+- check whether window states are being saved/restored properly via netwm
+  on restart/crash-restart (grep for XXX/TODO)
+
+Need to do:
+===========
+- figure out a better gnustep path for wprefs.app installation
+- impelment a generic pixmap type, which receives attributes
+  (scaled/maxscaled/centered/tiled, smoothed, size/position, ...)
+- allow user to select/restore default root menu from wprefs
+- support for X11R6.4 extension for getting extra visual info in wrlib's
+  automatic best context guessing
+- docklet to control AccessX (keyboard accessibility) functions
+- rewrite all redundant stuff to use WINGs
+- add function to directly make a thumbnail of an image, using the
+  functionality provided by the image libraries to load a minimal
+  amount of data.
+- rewrite defaults/wdefaults stuff to use WINGs UD stuff. Search list:
+  ~/G/D/WindowMaker /u/l/s/W/D/WindowMaker built-in-defaults
+- remake internal string processing to use wchar? unicode?
+- add new file for stuff like default commands and dnd commands for
+  docked apps, balloons for the dock etc
+- check whether apps with name.class set to empty strings should be treated
+  like if name.class is NULL.NULL
+- review the defaults handling code (not to reread after we update a
+  domain if possible, check WINGs apps updating WMWindowAttributes after
+  start making screen to flash on update)
+
+
+Maybe some day:
+===============
+- virtual workspace
+- optimize for size
+
+
+Never: (so, dont even bother to ask)
+======
+- different themes for each workspace. Unless you give us a SGI/Power Onyx
+  with 2 CPUs ;). 
+- anything that requires the mouse pointer to be jumped by WindowMaker to
+  somewhere. This is *terrible* behaviour. And it's not just IMO.
+- rewrite to use Gtk... I wont even bother to explain why...
+
+
+- ICCCM 2.0: ICCCM 2.0 (not 1.0, which is what everybody supports so so) is
+a relatively new standard and nobody, AFAIK, complies with it (not even
+twm as people tend to think). It has some neat things, but many of the new
+stuff is really weird and tricky to implement, not to say unworthy (read the
+specs and you'll see). This is not bad, since I think it is very unlikely
+that a client that requires it exists... Anyway, if we get an "official"
+sample implementation (twm?) it might be supported. Maybe dtwm supports
+it? I dont know...
+
+
+After 1.0.0 is released
+=======================
+- rework/redesign the appicon/dock/clip concept
+- maybe rewrite the main code in obj-c or c++
+- major clean up in theming/texturing stuff
+

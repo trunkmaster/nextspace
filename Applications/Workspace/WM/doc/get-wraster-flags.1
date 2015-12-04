@@ -1,0 +1,34 @@
+.TH "get-wraster-flags" "1" "22 March 2005"
+.SH "NAME"
+\fBget-wraster-flags\fP \- output libwraster compiler and linker flags (deprecated)
+.PP
+.SH "SYNOPSIS"
+.B pkg-config
+wrlib
+.I \-\-cflags
+.br
+.B pkg-config
+wrlib
+.I \-\-libs
+.SH "DESCRIPTION"
+\fBget-wraster-flags\fP used to provide the compilation and link flags for programs that use
+the \fIWRaster\fP library, before \fBpkg-config\fP became the universal way to handle these
+developer configurations. The script is now deprecated and you should use instead:
+.TP
+.BR pkg-config " wrlib \fI\-\-cflags\fP"
+to get the flags for the compiler
+.TP
+.BR pkg-config " wrlib \fI\-\-libs\fP"
+to get the flags for the linker
+.SH "IMPORTANT NOTE"
+As with every deprecated stuff, the script \fBget-wraster-flags\fR will be removed soon,
+so you should update your script quickly while you know about it.
+.SH "AUTHOR"
+get-wraster-flags is part of Window Maker, which was written by
+Alfredo K. Kojima <kojima@windowmaker.info> and Dan Pascu <dan@windowmaker.info>,
+with contributions from many people around the Internet.
+.PP
+This man page was written by Frederik Schueler <fschueler@gmx.net> for the
+Debian GNU/Linux system (but may be used by others).
+.SH "SEE ALSO"
+.BR pkg-config (1)

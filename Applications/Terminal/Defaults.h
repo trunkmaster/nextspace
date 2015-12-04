@@ -1,0 +1,185 @@
+/*
+  Copyright (C) 2015 Sergii Stoian <stoyan255@ukr.net>
+
+  This file is a part of Terminal.app. Terminal.app is free software; you
+  can redistribute it and/or modify it under the terms of the GNU General
+  Public License as published by the Free Software Foundation; version 2
+  of the License. See COPYING or main.m for more information.
+*/
+
+#import <Foundation/Foundation.h>
+
+#import "Preferences/Preferences.h"
+
+NSUserDefaults *ud;
+
+@interface Defaults : NSObject
+{
+  Preferences *preferencesPanel;
+}
+
++ shared;
+
+- (void)activatePanel;
+
+@end
+
+// Used for per-window setting preferences ("Set Window" button).
+extern NSString *TerminalPreferencesDidChangeNotification;
+
+//----------------------------------------------------------------------------
+// Window
+//---
+#define DEFAULT_COLUMNS 80
+#define DEFAULT_LINES 25
+#define MIN_COLUMNS 40
+#define MIN_LINES 4
+
+extern NSString *WindowCloseBehaviorKey;
+extern NSString *WindowHeightKey;
+extern NSString *WindowWidthKey;
+extern NSString *AddYBordersKey;
+extern NSString *TerminalFontKey;
+extern NSString *TerminalFontSizeKey;
+
+typedef enum {
+  WindowCloseAlways = 0,
+  WindowCloseOnCleanExit = 1,
+  WindowCloseNever = 2
+} WindowCloseBehavior;
+
+@interface Defaults (Window)
++ (void)readWindowDefaults;
++ (int)windowWidth;
++ (int)windowHeight;
++ (WindowCloseBehavior)windowCloseBehavior; // 'When Shell Exits'
++ (NSFont *)terminalFont;
++ (NSSize)characterCellSizeForFont:(NSFont *)font;
+@end
+
+//----------------------------------------------------------------------------
+// Title Bar
+//---
+extern NSString *TitleBarElementsMaskKey;
+extern NSString *TitleBarCustomTitleKey;
+
+extern const NSUInteger TitleBarCustomTitle;
+extern const NSUInteger TitleBarShellPath;
+extern const NSUInteger TitleBarDeviceName;
+extern const NSUInteger TitleBarFileName;
+extern const NSUInteger TitleBarWindowSize;
+
+@interface Defaults (TitleBar)
++ (void)readTitleBarDefaults;
++ (NSUInteger)titleBarElementsMask;
++ (NSString *)customTitle;
+@end
+//----------------------------------------------------------------------------
+// Linux Emulation
+//---
+extern NSString *CharacterSetKey;
+extern NSString *UseMultiCellGlyphsKey;
+extern NSString *CommandAsMetaKey;
+extern NSString *DoubleEscapeKey;
+
+@interface Defaults (Linux)
++ (void)readLinuxDefaults;
++ (NSString *)characterSet;
++ (BOOL)commandAsMeta;
++ (BOOL)doubleEscape;
++ (BOOL)useMultiCellGlyphs;
+@end
+
+//----------------------------------------------------------------------------
+// Colors
+//---
+extern NSString *BlackOnWhiteKey;
+extern NSString *CursorStyleKey;
+extern NSString *CursorColorKey;
+
+extern NSString *WindowBGColorKey;
+extern NSString *SelectionBGColorKey;
+extern NSString *TextNormalColorKey;
+extern NSString *TextBlinkColorKey;
+extern NSString *TextBoldColorKey;
+extern NSString *TextInverseBGColorKey;
+extern NSString *TextInverseFGColorKey;
+
+extern NSString *TerminalFontUseBoldKey;
+
+@interface Defaults (Colors)
+#define CURSOR_BLOCK_INVERT  0
+#define CURSOR_BLOCK_STROKE  1
+#define CURSOR_BLOCK_FILL    2
+#define CURSOR_LINE          3
+
++ (NSDictionary *)descriptionFromColor:(NSColor *)color;
++ (NSColor *)colorFromDescription:(NSDictionary *)desc;
+
++ (void)readColorsDefaults;
++ (BOOL)blackOnWhite;
++ (const float *)brightnessForIntensities;
++ (const float *)saturationForIntensities;
++ (int)cursorStyle;
++ (NSColor *)cursorColor;
++ (BOOL)useBoldTerminalFont;
++ (NSFont *)boldTerminalFontForFont:(NSFont *)font;
+// TODO:
++ (NSColor *)windowBackgroundColor;
++ (NSColor *)windowSelectionColor;
++ (BOOL)isCursorBlinking;
++ (NSColor *)textNormalColor;
++ (NSColor *)textBoldColor;
++ (NSColor *)textBlinkColor;
++ (NSColor *)textInverseBackground;
++ (NSColor *)textInverseForeground;
+
+@end
+
+//----------------------------------------------------------------------------
+// Display
+//---
+extern NSString *ScrollBackLinesKey;
+extern NSString *ScrollBackEnabledKey;
+extern NSString *ScrollBackUnlimitedKey;
+extern NSString *ScrollBottomOnInputKey;
+
+@interface Defaults (Display)
++ (void)readDisplayDefaults;
++ (int)scrollBackLines;
++ (BOOL)scrollBackEnabled;
++ (BOOL)scrollBackUnlimited;
++ (BOOL)scrollBottomOnInput;
+@end
+
+//----------------------------------------------------------------------------
+// Shell
+//---
+extern NSString *ShellKey;
+extern NSString	*LoginShellKey;
+
+@interface Defaults (Shell)
++ (void)readShellDefaults;
++ (NSString *)shell;
++ (BOOL)loginShell;
+@end
+
+//----------------------------------------------------------------------------
+// Startup
+//---
+extern NSString *StartupActionKey;
+extern NSString	*StartupFileKey;
+extern NSString	*HideOnAutolaunchKey;
+
+typedef enum {
+  OnStartDoNothing = 1,
+  OnStartOpenFile = 2,
+  OnStartCreateShell = 3
+} StartupAction;
+
+@interface Defaults (Startup)
++ (void)readStartupDefaults;
++ (StartupAction)startupAction;
++ (NSString *)startupFile;
++ (BOOL)hideOnAutolaunch;
+@end

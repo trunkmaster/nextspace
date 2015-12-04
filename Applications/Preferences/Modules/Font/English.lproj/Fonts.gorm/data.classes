@@ -1,0 +1,32 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "enableSubpixelChanged:",
+	    "subpixelModeChanged:"
+	);
+	Super = NSObject;
+    };
+    Font = {
+	Actions = (
+	    "fontCategoryChanged:",
+	    "fontSetPushed:",
+	    "enableAntiAliasingChanged:",
+	    "enableSubpixelChanged:",
+	    "subpixelModeChanged:"
+	);
+	Outlets = (
+	    window,
+	    view,
+	    fontNameTextField,
+	    enableAntiAliasingButton,
+	    fontExampleScrollView,
+	    enableSubpixelButton,
+	    subpixelModeButton,
+	    fontCategoryPopUp,
+	    fontExampleTextView,
+	    fontSetButton
+	);
+	Super = NSObject;
+    };
+}

@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Controller = {
+	Actions = (
+	);
+	Outlets = (
+	    infoPanel,
+	    versionField
+	);
+	Super = NSObject;
+    };
+    NSResponder = {
+	Actions = (
+	    "deselectAll:",
+	    "selectAll:",
+	    "selectText:"
+	);
+	Super = NSObject;
+    };
+}

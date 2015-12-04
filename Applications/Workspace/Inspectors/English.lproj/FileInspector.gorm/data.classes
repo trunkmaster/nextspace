@@ -1,0 +1,47 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FileInspector = {
+	Actions = (
+	    "revert:",
+	    "ok:"
+	);
+	Outlets = (
+	    view,
+	    okButton,
+	    revertButton,
+	    fileInfoText,
+	    window,
+	    encodingLabel,
+	    linesField,
+	    linesLabel,
+	    encodingField
+	);
+	Super = Inspector;
+    };
+    FirstResponder = {
+	Actions = (
+	    "changeGroup:",
+	    "computeSize:",
+	    "okAction:",
+	    "revert:"
+	);
+	Super = NSObject;
+    };
+    Inspector = {
+	Actions = (
+	);
+	Outlets = (
+	    okButton,
+	    window,
+	    revertButton
+	);
+	Super = NSObject;
+    };
+    PermissionsView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+}

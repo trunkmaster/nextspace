@@ -1,0 +1,217 @@
+/*
+ * Root Menu definition for WindowMaker
+ *
+ * Syntax is:
+ *
+ * <Title> [SHORTCUT <Shortcut>] <Command> <Parameters>
+ *
+ * <Title> is any string to be used as title. Must be enclosed with " if it
+ * 	has spaces
+ * 
+ * SHORTCUT specifies a shortcut for that item. <Shortcut> has the
+ * same syntax of the shortcuts key options in the 
+ * $HOME/GNUstep/Defaults/WindowMaker file, such as RootMenuKey or MiniaturizeKey.
+ *
+ * You can't specify a shortcut for a MENU or OPEN_MENU entry.
+ * 
+ * <Command> one of the valid commands: 
+ *	MENU - starts (sub)menu definition
+ *	END  - end (sub)menu definition
+ *	OPEN_MENU - opens a menu from a file, pipe or directory(ies) contents
+ *		    and eventually precede each with a command.
+ *	WORKSPACE_MENU - adds a submenu for workspace operations. Only one
+ *		    workspace_menu is allowed. 		
+ *	EXEC <program> - executes an external program
+ *	SHEXEC <command> - executes a shell command (like gimp > /dev/null)
+ *	EXIT - exits the window manager
+ *	RESTART [<window manager>] - restarts WindowMaker or start another
+ *			window manager
+ *	REFRESH - refreshes the desktop
+ *	ARRANGE_ICONS - rearranges the icons on the workspace
+ *	SHUTDOWN - kills all clients (and close the X window session)
+ *	SHOW_ALL - unhides all windows on workspace
+ *	HIDE_OTHERS - hides all windows on the workspace, except the
+ *		focused one (or the last one that received focus)
+ *	SAVE_SESSION - saves the current state of the desktop, which include
+ *		       all running applications, all their hints (geometry,
+ *		       position on screen, workspace they live on, the dock
+ *		       or clip from where they were launched, and
+ *		       if minimized, shaded or hidden. Also saves the current
+ *		       workspace the user is on. All will be restored on every
+ *		       start of windowmaker until another SAVE_SESSION or
+ *		       CLEAR_SESSION is used. If SaveSessionOnExit = Yes; in
+ *		       WindowMaker domain file, then saving is automatically
+ *		       done on every windowmaker exit, overwriting any
+ *		       SAVE_SESSION or CLEAR_SESSION (see below).
+ *	CLEAR_SESSION - clears any previous saved session. This will not have
+ *		       any effect if SaveSessionOnExit is True.
+ *	INFO - shows the Info Panel
+ *
+ * OPEN_MENU syntax:
+ *   1. File menu handling.
+ *	// opens file.menu which must contain a valid menu file and inserts
+ *	// it in current position
+ *	OPEN_MENU file.menu
+ *   2. Pipe menu handling.
+ *	// opens command and uses it's stdout to construct menu.
+ *	// Command's output must be a valid menu description.
+ *	// The space between '|' and command itself is optional.
+ *	OPEN_MENU | command
+ *   3. Directory handling.
+ *	// Opens one or more directories and construct a menu with all
+ *	// the subdirectories and executable files in them sorted
+ *	// alphabetically.
+ *	OPEN_MENU /some/dir [/some/other/dir ...]
+ *   4. Directory handling with command.
+ *	// Opens one or more directories and construct menu with all
+ *	// subdirectories and readable files in them sorted alphabetically,
+ *	// preceding each of them with command.
+ *	OPEN_MENU [options] /some/dir [/some/other/dir ...] WITH command -options
+ *		Options:
+ * 			-noext 	strip whatever is after the last dot in the
+ *				file name
+ *
+ * <Parameters> is the program to execute.
+ *
+ * ** Options for command line in EXEC:
+ * %s - substitute with current selection
+ * %a(title[,prompt]) - opens a input box with the specified title and the
+ *			optional prompt	and do substitution with what you typed
+ * %w - substitute with XID for the current focused window
+ * %W - substitute with the number of the current workspace
+ * 
+ * You can override special characters (as % and ") with the \ character:
+ * ex: xterm -T "\"Hello World\""
+ *
+ * You can also use character escapes, like \n
+ *
+ * Each MENU statement must have one mathching END statement at the end.
+ *
+ * Example:
+ *
+ * "Test" MENU
+ *	"XTerm" EXEC xterm
+ *		// creates a submenu with the contents of /usr/openwin/bin
+ *	"XView apps" OPEN_MENU "/usr/openwin/bin"
+ *		// some X11 apps in different directories
+ *	"X11 apps" OPEN_MENU /usr/X11/bin $HOME/bin/X11
+ *		// set some background images
+ *	"Background" OPEN_MENU -noext $HOME/images /usr/share/images WITH wmsetbg -u -t
+ *		// inserts the style.menu in this entry
+ *	"Style" OPEN_MENU style.menu
+ * "Test" END
+ */
+
+#include "wmmacros"
+
+"应用程序" MENU
+	"信息" MENU
+		"信息面板..." INFO_PANEL
+		"版权..." LEGAL_PANEL
+		"系统控制台" EXEC xconsole
+		"系统负载" SHEXEC xosview || xload
+		"进程列表" EXEC xterm -e top
+		"手册浏览器" EXEC xman
+	"信息" END
+	"运行..." EXEC %a(运行,要执行的命令:)
+	"XTerm" EXEC xterm -sb 
+	"Rxvt" EXEC rxvt -bg black -fg white -fn fixed
+	"工作空间" WORKSPACE_MENU
+	"应用程序" OPEN_MENU
+		"图形" MENU
+                        "Gimp" SHEXEC gimp >/dev/null
+                        "XV" EXEC xv
+                        "XPaint" EXEC xpaint
+                        "XFig" EXEC xfig
+		"图形" END
+                "X文件管理器" EXEC xfm
+                "OffiX Files" EXEC files
+                "LyX" EXEC lyx
+                "Netscape" EXEC netscape
+                "Ghostview" EXEC ghostview %a(GhostView,输入要查看的文件名)
+                "Acrobat" EXEC /usr/local/Acrobat3/bin/acroread %a(Acrobat,输入要查看的PDF文件名)
+                "TkDesk" EXEC tkdesk
+        "应用程序" END
+        "编辑器" MENU
+                "XFte" EXEC xfte
+                "XEmacs" SHEXEC xemacs || emacs
+                "XJed" EXEC xjed
+                "NEdit" EXEC nedit
+                "Xedit" EXEC xedit
+                "VI" EXEC xterm -e vi
+        "编辑器" END
+        "其他" MENU
+                "Xmcd" SHEXEC xmcd 2> /dev/null
+                "Xplaycd" EXEC xplaycd
+                "Xmixer" EXEC xmixer
+        "其他" END
+        "工具" MENU
+                "计算器" EXEC xcalc
+                "窗口属性" SHEXEC xprop | xmessage -center -title 'xpro
+p' -file -
+                "字体选择" EXEC xfontsel
+                "终端模拟器" EXEC xminicom
+                "放大" EXEC xmag
+                "颜色表" EXEC xcmap
+                "XKill" EXEC xkill
+                "剪贴板" EXEC xclipboard
+        "工具" END
+
+	"选择" MENU
+		"复制" SHEXEC echo '%s' | wxcopy
+		"发送邮件" EXEC xterm -name mail -T "Pine" -e pine %s
+		"浏览" EXEC netscape %s
+		"查找手册" SHEXEC MANUAL_SEARCH(%s)
+	"选择" END
+
+	"工作空间" MENU
+		"隐藏其他" HIDE_OTHERS
+		"显示所有" SHOW_ALL
+		"排列图标" ARRANGE_ICONS
+		"刷新" REFRESH
+		"锁住屏幕" EXEC xlock -allowroot -usefirst
+		"保存会话" SAVE_SESSION
+		"清除保存的会话" CLEAR_SESSION
+	"工作空间" END
+
+	"外观" MENU
+		"主题" OPEN_MENU -noext THEMES_DIR $HOME/GNUstep/Library/WindowMaker/Themes WITH setstyle
+		"风格" OPEN_MENU -noext STYLES_DIR $HOME/GNUstep/Library/WindowMaker/Styles WITH setstyle
+		"图标集" OPEN_MENU -noext ICON_SETS_DIR $HOME/GNUstep/Library/WindowMaker/IconSets WITH seticons
+		"背景" MENU
+			"单色" MENU
+                        	"黑" WS_BACK '(solid, black)'
+                        	"蓝"  WS_BACK '(solid, "#505075")'
+				"青" WS_BACK '(solid, "#243e6c")'
+				"深蓝" WS_BACK '(solid, "#224477")'
+                        	"紫" WS_BACK '(solid, "#554466")'
+                        	"淡黄"  WS_BACK '(solid, "wheat4")'
+                        	"深灰"  WS_BACK '(solid, "#333340")'
+                        	"酒红" WS_BACK '(solid, "#400020")'
+			"单色" END
+			"过渡色" MENU
+				"日落" WS_BACK '(mvgradient, deepskyblue4, black, deepskyblue4, tomato4)'
+				"天空" WS_BACK '(vgradient, blue4, white)'
+    				"蓝色阴影" WS_BACK '(vgradient, "#7080a5", "#101020")'
+				"青色阴影" WS_BACK '(vgradient, "#746ebc", "#242e4c")'
+			    	"紫色阴影" WS_BACK '(vgradient, "#654c66", "#151426")'
+    				"淡黄色阴影" WS_BACK '(vgradient, "#a09060", "#302010")'
+    				"灰色阴影" WS_BACK '(vgradient, "#636380", "#131318")'
+    				"酒红色阴影" WS_BACK '(vgradient, "#600040", "#180010")'
+			"过渡色" END
+			"图像" OPEN_MENU -noext BACKGROUNDS_DIR $HOME/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -t
+		"背景" END
+		"保存主题" SHEXEC getstyle -t $HOME/GNUstep/Library/WindowMaker/Themes/"%a(主题名,输入文件名:)"
+		"保存图标集" SHEXEC geticonset $HOME/GNUstep/Library/WindowMaker/IconSets/"%a(图标集名,输入文件名:)"
+	"外观" END
+
+	"退出"	MENU
+		"重新启动" RESTART
+		"启动 BlackBox" RESTART blackbox
+                "启动 kwm" RESTART kwm
+                "启动 IceWM" RESTART icewm
+		"退出..."  EXIT
+	"退出" END
+"应用程序" END
+
+

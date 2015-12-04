@@ -1,0 +1,14 @@
+--- ./wmaker-crm_next/src/icon.c	2015-07-29 16:02:49.000000000 +0300
++++ ./WM/src/icon.c	2015-08-01 22:34:00.300623069 +0300
+@@ -51,7 +51,11 @@
+ /**** Global varianebles ****/
+ 
+ #define MOD_MASK wPreferences.modifier_mask
++#ifdef NEXTSPACE
++#define CACHE_ICON_PATH "/WindowMaker/CachedPixmaps"
++#else
+ #define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
++#endif
+ #define ICON_BORDER 3
+ 
+ static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);

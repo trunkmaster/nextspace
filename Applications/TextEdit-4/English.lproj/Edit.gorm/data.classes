@@ -1,0 +1,59 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Controller = {
+	Actions = (
+	    "createNew:",
+	    "open:",
+	    "saveAll:",
+	    "showInfoPanel:",
+	    "applicationShouldTerminate:"
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "addFontTrait:",
+	    "enterSelection:",
+	    "findNext:",
+	    "findPrevious:",
+	    "jumpToSelection:",
+	    "applicationShouldTerminate:",
+	    "oderFrontFindPanel:",
+	    "orderFrontFindPanel:",
+	    "orderFrontFontPanel:",
+	    "revert:",
+	    "save:",
+	    "saveAs:",
+	    "saveTo:",
+	    "toggleHyphenation:",
+	    "togglePageBreaks:",
+	    "toggleRich:"
+	);
+	Super = NSObject;
+    };
+    Preferences = {
+	Actions = (
+	    "changePlainTextFont:",
+	    "changeRichTextFont:",
+	    "miscChanged:",
+	    "ok:",
+	    "revert:",
+	    "revertToDefault:",
+	    "showPanel:"
+	);
+	Outlets = (
+	    deleteBackupMatrix,
+	    plainTextEncodingPopup,
+	    plainTextFontNameField,
+	    richTextFontNameField,
+	    richTextMatrix,
+	    saveFilesWritableButton,
+	    showPageBreaksButton,
+	    windowHeightField,
+	    windowWidthField
+	);
+	Super = NSObject;
+    };
+}

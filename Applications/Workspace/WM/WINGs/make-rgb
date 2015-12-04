@@ -1,0 +1,53 @@
+#!/usr/bin/python
+
+import sys
+import re
+from optparse import OptionParser
+
+parser = OptionParser(version="%prog 1.0")
+parser.add_option("-f", "--file", dest="rgbtxtFile", default='/etc/X11/rgb.txt',
+                  help="rgb.txt file containing X11 colors (/etc/X11/rgb.txt)",
+                  metavar="File")
+
+(options, args) = parser.parse_args()
+
+f = open(options.rgbtxtFile)
+lines = f.readlines()
+f.close()
+
+colorLine = re.compile(r'''\s*
+                           (?P<red>\d+)       # red
+                           \s+
+                           (?P<green>\d+)     # green
+                           \s+
+                           (?P<blue>\d+)      # blue
+                           \s+
+                           (?P<name>[^\s]+)   # name
+                           ''', re.VERBOSE)
+
+print '''
+/* Automatically generated file. Do NOT edit. Regenerate it using make-rgb */
+
+#ifndef RGB_H_
+#define RGB_H_
+
+#include <wraster.h>
+
+typedef struct RGBColor {
+    RColor color;
+    char *name;
+} RGBColor;
+
+RGBColor rgbColors[] = {'''
+
+for line in lines:
+    m = colorLine.match(line)
+    if m:
+        print '''    {{%(red)3s, %(green)3s, %(blue)3s, 0}, "%(name)s"},''' % m.groupdict()
+
+print '''    {{  0,   0,   0, 0}, NULL}
+};
+
+#endif
+'''
+

@@ -1,0 +1,24 @@
+Newly added
+- after a crash, wmaker will forget the hidden state of the apps and just 
+  show their windows minimized. normal restart is unaffected
+- after a crash, wmaker will completely mess the window's saved geometries
+  and maximizing will have weird results. restart is unaffected
+
+- wmaker will not stop managing a screen even if another window manager
+  requests that, through the ICCCM 2.0 manager selection stuff
+- stacking code is buggy (or XFree is buggy)
+- save session doesnt work on some platforms (Alpha and Sparc)
+- texture pixmaps are being incorrectly freed somewhere. Either
+  fix bug (to support broken MetroX servers) or remove all useless references
+  to the Pixmap (to save memory and drop bug compatibility).
+- host information is not saved/honored by the dock or save session stuff.
+  It should at least check if the host is the local machine and only save it
+  in the session/allow docking it if yes.
+- the SHELL environment variable support in the apps menu was removed
+  because of a problem with tcsh. If ~/.tcshrc contains "stty erase ^H",
+  it will block and the cmd will not be executed. 
+- mouse grab being done in client window (in wWindowResetMouseGrabs())
+  instead of the frame window. If grab is done in frame, titlebar buttons
+  dont work well
+
+- mysterious mess in dock icons (specially netscape)

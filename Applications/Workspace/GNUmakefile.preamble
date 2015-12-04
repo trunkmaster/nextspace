@@ -1,0 +1,36 @@
+#
+# GNUmakefile.preamble
+#
+
+# Additional flags to pass to the preprocessor
+ADDITIONAL_CPPFLAGS += 
+
+# Additional flags to pass to Objective C compiler
+ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
+
+# Additional flags to pass to C compiler
+ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -fno-strict-aliasing -fblocks
+
+# Additional flags to pass to the linker
+ADDITIONAL_LDFLAGS +=
+
+# Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS += -I./
+
+# Additional library directories the linker should search
+ADDITIONAL_LIB_DIRS += 
+
+ADDITIONAL_GUI_LIBS += -lNXSystem -lNXFoundation -lNXAppKit -lX11
+
+
+#
+# WindowMaker addons
+#
+ifneq ($(windowmaker), no)
+  ADDITIONAL_CFLAGS += -DNEXTSPACE
+  ADDITIONAL_OBJCFLAGS += -DNEXTSPACE
+  ADDITIONAL_LDFLAGS += -ldispatch -ldl
+  ADDITIONAL_INCLUDE_DIRS += -I./WM/src -I./WM/WINGs -I./WM/wrlib
+  ADDITIONAL_LIB_DIRS += -L./WM/WINGs/.libs -L./WM/wrlib/.libs
+  ADDITIONAL_GUI_LIBS += -lWUtil -lWINGs -lwraster -lXext -lXrandr -lXinerama
+endif

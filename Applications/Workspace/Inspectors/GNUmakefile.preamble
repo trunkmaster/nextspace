@@ -1,0 +1,24 @@
+#
+# GNUmakefile.preamble
+#
+
+# Additional flags to pass to the preprocessor
+ADDITIONAL_CPPFLAGS += 
+
+# Additional flags to pass to Objective C compiler
+ADDITIONAL_OBJCFLAGS += -Wno-import -Wno-unused -pipe
+
+# Additional flags to pass to C compiler
+ADDITIONAL_CFLAGS +=
+
+# Additional flags to pass to the linker
+ADDITIONAL_LDFLAGS += -ldispatch -lkqueue -lpthread_workqueue
+
+# Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS += -I../ -I../Operations
+
+# Additional library directories the linker should search
+ADDITIONAL_LIB_DIRS += 
+
+ADDITIONAL_GUI_LIBS +=
+

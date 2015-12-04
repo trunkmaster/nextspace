@@ -1,0 +1,162 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Wed Nov 18 18:55:01 2015
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq default-directory "/Users/me/Developer/StepMaker/code/Applications/Workspace/")
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/Developer/StepMaker/code/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Preferences.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/StepMaker/code/Applications/Workspace/Processes/Processes.m" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/StepMaker/code/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/StepMaker/code/Applications/Workspace/WM-PATCHES/" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/dock.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/screen.c" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/wmspec.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.vault\\" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/startup.c" "~/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/event.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/main.h" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/main.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/shutdown.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/WINGs/wcolorpanel.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/icon.c"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/ModuleLoader.m"
+  "ModuleLoader.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1744
+  '(1744 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Inspectors/Inspector.m"
+  "Inspector.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  9896
+  '(5681 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Preferences.m"
+  "Preferences.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1023
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/ModuleLoader.h"
+  "ModuleLoader.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1155
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Preferences.h"
+  "Preferences.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  890
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Inspectors/Inspector.h"
+  "Inspector.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2250
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Operations/ProcessManager.m"
+  "ProcessManager.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1425
+  '(5622 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.m"
+  "Workspace+WindowMaker.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  15027
+  '(11369 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.h"
+  "Workspace+WindowMaker.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1405
+  '(1525 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Processes/Processes.m"
+  "Processes.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1245
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Workspace_main.m"
+  "Workspace_main.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1333
+  '(1355 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Workspace/Workspace.h"
+  "Workspace.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "Workspace.app"
+  'dired-mode
+  nil
+  259
+  '(nil nil)
+  t
+  '("/Users/me/Developer/StepMaker/code/Applications/Workspace/Workspace.app/")
+  nil)
+

@@ -1,0 +1,26 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "enableSubpixelChanged:",
+	    "subpixelModeChanged:"
+	);
+	Super = NSObject;
+    };
+    Password = {
+	Actions = (
+	    "fontCategoryChanged:",
+	    "fontSetPushed:",
+	    "enableAntiAliasingChanged:",
+	    "enableSubpixelChanged:",
+	    "subpixelModeChanged:"
+	);
+	Outlets = (
+	    window,
+	    view,
+	    passwordTextField,
+	    lockView
+	);
+	Super = NSObject;
+    };
+}

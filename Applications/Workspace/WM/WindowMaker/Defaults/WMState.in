@@ -1,0 +1,45 @@
+{
+  Dock = {
+    Applications = (
+      {
+        Command = "#wprefs#";
+        Name = Logo.WMDock;
+        AutoLaunch = No;
+        Forced = No;
+        Position = "0,0";
+        Lock = Yes;
+      },
+      {
+	Command = xterm;
+	Name = xterm.XTerm;
+	AutoLaunch = No;
+	Forced = No;
+	Position = "0,1";
+      }
+    );
+    Position = "-64,0";
+    Lowered = No;
+  };
+  Clip = {
+    Command = "-";
+    Name = Logo.WMClip;
+    AutoLaunch = No;
+    StartHidden = No;
+    StartMiniaturized = No;
+    Forced = No;
+    Position = "0,0";
+    DropCommand = "wmsetbg -u -t %d";
+  };
+  Workspaces = (
+    {
+      Name = "Main";
+      Clip = {
+        Applications = ();
+        Lowered = Yes;
+        Collapsed = No;
+        AutoAttractIcons = No;
+        KeepAttracted = No;
+      };
+    }
+  );
+}

@@ -1,0 +1,32 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FileCopyPrefs = {
+	Actions = (
+	    "setSymlinkAction:"
+	);
+	Outlets = (
+	    bogusWindow,
+	    box,
+	    box2,
+	    buttonMatrix
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "revert:",
+	    "setLinkAction:",
+	    "setResizable:",
+	    "setSymlinkAction:"
+	);
+	Super = NSObject;
+    };
+    NXSizer = {
+	Actions = (
+	);
+	Outlets = (
+	    delegate
+	);
+	Super = NSImageView;
+    };
+}

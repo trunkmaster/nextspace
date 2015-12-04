@@ -1,0 +1,30 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Wed Aug 12 19:39:19 2015
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq default-directory "/Users/me/Developer/StepMaker/code/Applications/TimeMon/")
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/Developer/StepMaker/code/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/StepMaker/code/Applications/Workspace/WM-PATCHES/" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/dock.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/screen.c" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/wmspec.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.vault\\" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/startup.c" "~/Developer/StepMaker/code/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/event.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/main.h" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/main.c" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/shutdown.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/WINGs/wcolorpanel.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/icon.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/dialog.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/WINGs/userdefaults.c" "~/Developer/StepMaker/code/Applications/Workspace/WM/src/main.c" "~/Developer/StepMaker/code/Applications/Workspace/GNUmakefile*" "~/Developer/StepMaker/code/Applications/Workspace/WindowMaker/WindowMaker_main.m" "~/Developer/StepMaker/code/Applications/Workspace" "~/Developer/StepMaker/code/Applications/Workspace/WindowMaker/misc.c" "~/Developer/StepMaker/code/Applications/Workspace"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/TimeMon/Percentages.m"
+  "Percentages.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  5845
+  '(5820 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+

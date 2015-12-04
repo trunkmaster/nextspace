@@ -1,0 +1,10 @@
+
+after-clean::
+#	rm -rf Documentation
+
+after-distclean::
+#	rm -fr Documentation
+
+after-install::
+
+after-uninstall::

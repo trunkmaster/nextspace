@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Window Maker
+Comment=This session logs you into Window Maker
+Exec=/usr/bin/wmaker
+# no icon yet, only the top three are currently used
+Icon=
+Keywords=Window Manager
+Type=Application

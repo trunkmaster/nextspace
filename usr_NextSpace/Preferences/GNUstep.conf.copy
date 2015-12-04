@@ -1,0 +1,101 @@
+# This is the GNUstep configuration file.
+
+# Any line starting with a '#' is a comment.
+# Empty lines are ignored.
+# Every other line in this file must be of the form
+#   XXX=YYY
+# where there should be no spaces around the '=' (this is because we
+# include this file in shell scripts and makefiles, and sh syntax
+# requires no spaces around the '=').
+#
+# Standard sh quotes can be used in YYY but only at runtime; they can 
+# not be used while building.
+
+# GNUstep can use up to 4 domains at the same time.  They are System,
+# Local, Network and User.  You can install your programs / resources
+# in any of these domains.  This file mostly deals with configuring
+# how the domains map to your filesystem.
+
+# IMPORTANT: Don't delete lines from this file unless you want
+# the values hardcoded in the packages to be used.  If you want
+# to suppress the network domain, set all its paths to be the same
+# as the system domain.  If you want to suppress the local domain,
+# set all its paths to be the same as the network domain.  If you
+# want to suppress the user domain, set its paths to be the same
+# as the local domain.  You can not suppress the system domain.
+
+# The paths should not include a '/' at the end.
+
+# These GNUSTEP_*_ROOT variables are obsolete, and will be removed.
+GNUSTEP_SYSTEM_ROOT=/usr/local/System
+GNUSTEP_LOCAL_ROOT=/usr/local/Local
+GNUSTEP_NETWORK_ROOT=/usr/local/Network
+
+
+# This is where the gnustep-make Makefiles are installed.
+GNUSTEP_MAKEFILES=/Developer/Makefiles
+
+# This is where the user home directories are.  Only used to provide
+# NSUserDirectory in gnustep-base.  Never used anywhere else.
+GNUSTEP_SYSTEM_USERS_DIR=/Users
+GNUSTEP_NETWORK_USERS_DIR=/Network/Users
+GNUSTEP_LOCAL_USERS_DIR=/Users
+
+
+GNUSTEP_SYSTEM_APPS=/usr/NextSpace/Apps
+GNUSTEP_SYSTEM_ADMIN_APPS=/usr/NextSpace/Apps
+GNUSTEP_SYSTEM_WEB_APPS=/usr/NextSpace/WebApps
+GNUSTEP_SYSTEM_TOOLS=/usr/NextSpace/bin
+GNUSTEP_SYSTEM_ADMIN_TOOLS=/usr/NextSpace/sbin
+GNUSTEP_SYSTEM_LIBRARY=/usr/NextSpace
+GNUSTEP_SYSTEM_HEADERS=/usr/NextSpace/include
+GNUSTEP_SYSTEM_LIBRARIES=/usr/NextSpace/lib
+GNUSTEP_SYSTEM_DOC=/usr/NextSpace/Documentation
+GNUSTEP_SYSTEM_DOC_MAN=/usr/NextSpace/Documentation/man
+GNUSTEP_SYSTEM_DOC_INFO=/usr/NextSpace/Documentation/info
+
+
+GNUSTEP_LOCAL_APPS=/Applications
+GNUSTEP_LOCAL_ADMIN_APPS=/Applications/Utilities
+GNUSTEP_LOCAL_WEB_APPS=/Library/WebApplications
+GNUSTEP_LOCAL_TOOLS=/Library/bin
+GNUSTEP_LOCAL_ADMIN_TOOLS=/Library/sbin
+GNUSTEP_LOCAL_LIBRARY=/Library
+GNUSTEP_LOCAL_HEADERS=/Developer/Headers
+GNUSTEP_LOCAL_LIBRARIES=/Library/Libraries
+GNUSTEP_LOCAL_DOC=/Library/Documentation
+GNUSTEP_LOCAL_DOC_MAN=/Library/Documentation/man
+GNUSTEP_LOCAL_DOC_INFO=/Library/Documentation/info
+
+
+GNUSTEP_NETWORK_APPS=/Applications
+GNUSTEP_NETWORK_ADMIN_APPS=/Applications/Utilities
+GNUSTEP_NETWORK_WEB_APPS=/Library/WebApplications
+GNUSTEP_NETWORK_TOOLS=/Library/bin
+GNUSTEP_NETWORK_ADMIN_TOOLS=/Library/sbin
+GNUSTEP_NETWORK_LIBRARY=/Library
+GNUSTEP_NETWORK_HEADERS=/Developer/Headers
+GNUSTEP_NETWORK_LIBRARIES=/Library/Libraries
+GNUSTEP_NETWORK_DOC=/Library/Documentation
+GNUSTEP_NETWORK_DOC_MAN=/Library/Documentation/man
+GNUSTEP_NETWORK_DOC_INFO=/Library/Documentation/info
+
+# Important: settings in the User should normally be relative paths,
+# and will be interpreted as relative to the user's directory.  This
+# allows each user to have their own domain to install things.  You
+# can set them to be absolute, mostly if you want to disable them
+# by setting them equal to the ones in the Network domain.
+GNUSTEP_USER_CONFIG_FILE=Library/Preferences/GNUstep.conf
+GNUSTEP_USER_DEFAULTS_DIR=Library/Preferences
+
+GNUSTEP_USER_DIR_APPS=Applications
+GNUSTEP_USER_DIR_ADMIN_APPS=Applications/Utilities
+GNUSTEP_USER_DIR_WEB_APPS=Library/WebApplications
+GNUSTEP_USER_DIR_TOOLS=bin
+GNUSTEP_USER_DIR_ADMIN_TOOLS=sbin
+GNUSTEP_USER_DIR_LIBRARY=Library
+GNUSTEP_USER_DIR_HEADERS=Library/Headers
+GNUSTEP_USER_DIR_LIBRARIES=Library/Libraries
+GNUSTEP_USER_DIR_DOC=Library/Documentation
+GNUSTEP_USER_DIR_DOC_MAN=Library/Documentation/man
+GNUSTEP_USER_DIR_DOC_INFO=Library/Documentation/info

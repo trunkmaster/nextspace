@@ -1,0 +1,72 @@
+{\rtf0\ansi{\fonttbl\f0\froman Times-Roman;\f1\ftech Symbol;\f2\fswiss Helvetica;
+}
+\paperw12500\paperh10440
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\ql\qnatural
+
+\f0\fs24 \cf0 OPENSTEP Release 4.2  Copyright 
+\f1 ã
+\f0 1997 by NeXT Software, Inc.  All Rights Reserved.\
+\pard\ql\qnatural
+
+\f2\fs30 \cf0 \
+\
+\pard\tx0\tx2520\tx2880\tx3240\li720\fi20\ql\qnatural
+
+\f0\fs48 \cf0 OPENSTEP 4.2 Release Notes: \
+TextEdit
+\fs30 \
+\pard\li1440\ql\qnatural
+
+\fs28 \cf0 \
+\pard\tx1800\li720\ql\qnatural
+\cf0 \
+\pard\tx1800\li1440\ql\qnatural
+\cf0 TextEdit is a new application based on the new text system. In addition to the standard text editing features in the 3.3 Edit application, it provides:\
+\
+\pard\tx1640\li1640\fi-200\ql\qnatural
+\cf0 ·	"Wrap to Page" mode. This mode causes the document to be wrapped to the current page size (as opposed to the window size), and thus shows you a simple WYSIWYG representation of your pages. This mode also allows zooming.\
+\
+·	Support for new text object features such as hyphenation, kerning, ligatures, and baseline offsets.\
+\
+·	Ability to read/write plain text files in different 8-bit character encodings and Unicode. Coupled with the Kanji support in the new text object, you can read/write/edit Kanji files created by 3.3J or 4.1J. (You will need Kanji fonts and input manager.)\
+\
+   The alternate encoding to apply to a file is specified by a popup in the Open or Save panels. The default item, "Default," tells TextEdit to use either the default 8-bit encoding of the system or Unicode. Other choices let you select different encodings. You can also set the default setting of this popup via the Preferences panel.\
+\
+\pard\tx1800\li1440\ql\qnatural
+\cf0 Sources to TextEdit are available with the developer software, in 
+\b /NextDeveloper/Examples/AppKit/TextEdit
+\b0 .\
+\pard\tx1640\li1640\fi-200\ql\qnatural
+\cf0 \
+\pard\tx1800\li1440\ql\qnatural
+\cf0 \
+\pard\tx0\tx2520\tx2880\tx3240\ql\qnatural
+
+\fs36 \cf0 Known Problems in This Release
+\fs28 \
+\pard\tx2540\tx11440\li2540\fi-1100\ql\qnatural
+\cf0 \
+
+\f2\fs18 Reference:
+\f0\fs28 	None\
+
+\fs12   \
+
+\f2\fs18 Problem:
+\f0\fs28 	Encoding popup in Open/Save panels not available under NT3.51 \
+
+\fs12   \
+
+\f2\fs18 Description:	
+\f0\fs28 Because accessory views aren't supported under NT3.51, there is no encoding popup in the Open/Save panels.\
+
+\fs12 \
+
+\f2\fs18 Workaround: 
+\f0\fs28 You can use the popup in the Preferences panel to set the default choice for the popup, which will then be used when files are opened or saved.\
+\
+\pard\tx1800\li1440\ql\qnatural
+\cf0 In addition, please refer to the Application Kit release notes for the new text system bugs.\
+\pard\tx2540\tx11440\li2540\fi-1100\ql\qnatural
+\cf0 \
+}

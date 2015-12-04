@@ -1,0 +1,16 @@
+Description: This patch changes the default config paths
+Author: Andreas Metzler <ametzler@debian.org>
+Last-Update: 2010-08-07
+Index: WindowMaker-0.95.6/src/wconfig.h.in
+===================================================================
+--- WindowMaker-0.95.6.orig/src/wconfig.h.in
++++ WindowMaker-0.95.6/src/wconfig.h.in
+@@ -122,7 +122,7 @@
+  */
+ 
+ /* list of paths to look for the config files, searched in order of appearance */
+-#define DEF_CONFIG_PATHS "~/GNUstep/Library/WindowMaker:"PKGDATADIR
++#define DEF_CONFIG_PATHS "~/GNUstep/Library/WindowMaker:/etc/GNUstep/Defaults:"PKGDATADIR
+ #define DEF_MENU_FILE	 "menu"
+ 
+ /* name of the script to execute at startup */

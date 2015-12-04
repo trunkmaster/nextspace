@@ -1,0 +1,78 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FileViewer = {
+	Actions = (
+	    "compress:",
+	    "destroy:",
+	    "duplicate:",
+	    "eject:",
+	    "showPermissionsInspector:",
+	    "newFolder:",
+	    "open:",
+	    "openAsFolder:",
+	    "showAttributesInspector:",
+	    "showContentsInspector:",
+	    "showToolsInspector:",
+	    "unmount:",
+	    "shelfIconClicked:"
+	);
+	Outlets = (
+	    box,
+	    pathView,
+	    shelf,
+	    bogusWindow,
+	    splitView,
+	    containerBox,
+	    diskInfo,
+	    operationInfo
+	);
+	Super = NSObject;
+    };
+    FileViewerPathView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = XSIconView;
+    };
+    FileViewerShelfView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = XSIconView;
+    };
+    FirstResponder = {
+	Actions = (
+	    "compress:",
+	    "destroy:",
+	    "duplicate:",
+	    "eject:",
+	    "shelfIconClicked:",
+	    "newFolder:",
+	    "openAsFolder:",
+	    "showAttributesInspector:",
+	    "showContentsInspector:",
+	    "showPermissionsInspector:",
+	    "showToolsInspector:",
+	    "unmount:"
+	);
+	Super = NSObject;
+    };
+    NXSplitView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSSplitView;
+    };
+    XSIconView = {
+	Actions = (
+	);
+	Outlets = (
+	    delegate,
+	    target
+	);
+	Super = NSView;
+    };
+}

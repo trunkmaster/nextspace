@@ -1,0 +1,30 @@
+include $(GNUSTEP_MAKEFILES)/common.make
+
+BUNDLE_NAME = Mouse
+BUNDLE_EXTENSION = .preferences
+
+BUNDLE_INSTALL_DIR = $(GNUSTEP_INSTALLATION_DIR)/Library/Preferences
+
+$(BUNDLE_NAME)_LANGUAGES = \
+	English
+
+$(BUNDLE_NAME)_LOCALIZED_RESOURCE_FILES= \
+	Mouse.gorm
+
+$(BUNDLE_NAME)_RESOURCE_FILES = \
+	$(wildcard Resources/*.tiff)
+
+$(BUNDLE_NAME)_OBJC_FILES= \
+	Mouse.m
+
+$(BUNDLE_NAME)_HEADERS= \
+	Mouse.h
+
+$(BUNDLE_NAME)_PRINCIPAL_CLASS= \
+	Mouse
+
+-include GNUmakefile.preamble
+
+include $(GNUSTEP_MAKEFILES)/bundle.make
+
+-include GNUmakefile.postamble

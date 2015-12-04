@@ -1,0 +1,27 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    BGProcess = {
+	Actions = (
+	    "alertButtonClicked:",
+	    "stop:"
+	);
+	Outlets = (
+	    alertButton0,
+	    alertButton1,
+	    alertWindow,
+	    alertBox,
+	    alertDescription,
+	    alertMessage,
+	    alertRepeatButton,
+	    alertButton2
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "alertButtonClicked:",
+	    "repeatButtonClicked:"
+	);
+	Super = NSObject;
+    };
+}

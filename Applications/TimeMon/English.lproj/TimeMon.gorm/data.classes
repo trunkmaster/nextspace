@@ -1,0 +1,35 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setFactor:",
+	    "setLag:",
+	    "setPeriod:",
+	    "togglePause:"
+	);
+	Super = NSObject;
+    };
+    NSPanel = {
+	Actions = (
+	    "makeKeyAndOrderFront:"
+	);
+	Super = NSWindow;
+    };
+    Percentages = {
+	Actions = (
+	    "togglePause:",
+	    "setPeriod:",
+	    "setLag:",
+	    "setFactor:"
+	);
+	Outlets = (
+	    periodText,
+	    lagText,
+	    factorText,
+	    pauseMenuCell,
+	    colorFields,
+	    readmeText
+	);
+	Super = NSObject;
+    };
+}

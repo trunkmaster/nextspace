@@ -1,0 +1,125 @@
+5.	      Login, WindowMaker, Workspace, Preferences
+4.	              [GNUstep-Back] [GNUstep-GUI]
+3.	      [DisplayServerKit] [GraphicsKit] [OpenGL]
+2. [---------------- GNUstep Foundation ----------------]
+2.     [HAL] [Xorg] [Freetype] [Cairo(2D)] [Mesa 3-D]
+1. [------------------- FreeBSD(OS) --------------------]
+
+-----------
+-= Intro =-
+-----------
+
+The current principles of GNUstep backend library approach are:
+- separate display server from graphics operations;
+- display server implemented by overriding of GUI GSDisplayServer class;
+- graphics operation implemented through successor of 
+  GSContext:NSGraphicsContext classes (for example, ARTContext);
+- backend library implemented as loadable bundle;
+- paricular backend should be loaded at runtime with name defined in
+  NSGlobalDomain's GSBackend preference.
+
+The current approach lacks some features:
+- no defined way to use backend specific methods for gaining access to a display 
+  server and low-level drawing operations;
+- implementation of GSDisplayServer object through overriding leads to
+  hard bug hunting and lack of clear understanding of how things work (signle 
+  object code spreaded between two separate libraries);
+- some of really useful code for 'backend' resides in 'gui' (GSFusedSilica,
+  GSStandardWindowDecorationView...).
+
+Proposed architecture should adopt the following principles:
+- perform drawing operations to a various devices that libcairo supports 
+  (X11, WIN32, PS, PDF);
+- provide access to device specific attributes (display, keyboard, mouse);
+- implement display effects (transaprency, shadows, fading);
+- implement color management for a specific device (lcms?);
+- implement window management;
+- implement windowing system event management;
+- implement input management;
+- 
+
+----------------------
+-= DisplayServerKit =- (Quartz Display Services)
+----------------------
+---
+-= Definitions
+---
+Screen - physical monitor and hardware that can be color, grayscale, or 
+monochrome.
+
+Display - a set of screens (monitors) for a single user with one keyboard and
+mouse. In other words, display is a set of hardware resources: one or more 
+monitors, one keyboard and one mouse.
+
+---
+-= Description
+---
+DisplayServerKit is a set of functions and classes to get and set underlying 
+windowing system information, including:
+  - Getting Display information: resolution, monitor mode, monitor type 
+    (CRT, TFT, LVDS), gamma, color depth, dpi value, monitor model.
+  - Changing display modes: resolution, refresh rate, full screen.
+  - Configuring display configuration: mirroring, dual screen.
+  - Providing mechanism to do various display manipulation: fading, switching 
+    to console, power management.
+  - Getting and setting mouse (acceleration, mouse buttons, scroll) and 
+    keyboard (model, layouts, shortcuts) attributes.
+
+DisplayServerKit operates with 2 types objects:
+
+  - Hardware: monitor, keyboard, mouse, video card. Mainly it uses underlying 
+    BSD, HAL and Xorg subsystems. For example for changing display modes it 
+    uses XRandR Xorg extension, for switching to a fullscreen mode - 
+    XF86VidMode Xorg extension. So DisplayServerKit uses two layers down 
+    directly.
+  - Software: defines protocol and methods of accessing and processing X11 
+    events (window manager, mouse, keyboard events).
+
+----------------------
+-= GraphicsKit (GK) =- (Quartz 2D, CoreGraphics)
+----------------------
+---
+-= Definitions
+---
+
+Graphics Context (GC) - set of atributes defining a destination of graphics
+operations. These attributes describes device - target for drawing operations.
+GC can describe a devices such as: display, printer, file with some format.
+
+Graphics State (GS) - set of attributes that needed by consequent graphics 
+operations (e.g. line drawing, text drawing, image displaying). For example, 
+these attributes may include foreground and background color, line drawing 
+attributes (line width, line style, join style), origin of drawing target,
+clipping information. Another example: some program draws text blocks
+using different regular font for the block_1 and bold font for block_2. 
+In this case algorythm shoudl be the following:
+  - Program sets GC set of attributes "Font" with description of            [1]
+    regular font;
+  - Programm draws to GC block_1;                                           [2]
+  - Program sets GC set of attributes "Font" with description of            [3]
+    bold font;
+  - Programm draws to GC block_2;                                           [4]
+In this example GS represents set of attibutes of GC at different time. So
+we can say about 2 graphics states: "Regular font" step [1] and "Bold font" [3].
+So "graphics state" must be read as "state of graphics context at particular 
+point in time".
+
+---
+-= Description
+---
+
+GK is a 2D drawing engine which primarily used in user interface 
+operation. That is, drawing controls, text and images inside application 
+windows are what GK was designed for. There are several points of 
+interest of GraphicsKit:
+  - Uses PostScript (or PDF) imaging model.
+  - Draws vector graphics, images and text into off-screen regions and then
+    draws off-screen region into GC.
+  - Supports color management technologies.
+  - Uses device independent drawing (supports multiple types of GCs).
+
+Cairo graphics library is used for drawing and imaging. Amethyst adopts all its
+technics plus some enhancements not implemented inside Cairo.
+(TODO: Examine DirectFB architecture. May be some ideas would be usefull).
+Freetype library is used for font management.
+

@@ -1,0 +1,15 @@
+"TempDirectoryDeleteWarning" = "Delete temporary files in %@";
+"TempDirectoryDeleteYesButton" = "Yes";
+"TempDirectoryDeleteNoButton" = "No";
+"TempDirectoryDeleteCancelButton" = "Cancel";
+"ErrorCompressingFiles" = "Error: couldn\'t compress files.";
+"ErrorWhileDecompressing" = "While decompressing \"%@\".";
+"ErrorWhileCompressing" = "Error while compressing %@";
+"InitializationFailure" = "Failed to create a working directory in %@.";
+"InitializationFailureButton" = "OK";
+"ErrorLoadingFilesConfig" = "Error while attempting to load filesConfig.plist";
+"ErrorLoadingServicesConfig" = "Error while attempting to load servicesConfig.plist";
+"DecompressionFailedLaunchPathNil" = "Unable to find required component %@";
+"DecompressionFailedOK" = "OK";
+"DecompressionFailedTempDirectoryFailed" = "Unable to create temp directory in %@";
+"CompressFilesToArchiveOfType" = "Archive to \"%@\"";

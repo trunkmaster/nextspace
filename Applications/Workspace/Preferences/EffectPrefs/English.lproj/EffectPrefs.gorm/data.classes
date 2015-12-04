@@ -1,0 +1,26 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    EffectPrefs = {
+	Actions = (
+	    "setSlidesWhenChangingPath:",
+	    "setSlidesBackOnBadOperation:",
+	    "setSlidesWhenOpeningFile:"
+	);
+	Outlets = (
+	    bogusWindow,
+	    box,
+	    slideOnBadFop,
+	    slideFromShelf,
+	    slideWhenOpening
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setSlidesWhenChangingPath:",
+	    "setSlidesBackOnBadOperation:",
+	    "setSlidesWhenOpeningFile:"
+	);
+	Super = NSObject;
+    };
+}

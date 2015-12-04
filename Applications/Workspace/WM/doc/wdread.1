@@ -1,0 +1,46 @@
+.TH wdread 1 "April 2015"
+.SH "NAME"
+\fBwdread\fR \- read value from defaults database
+.PP
+.SH "SYNOPSIS"
+.B wdread
+.RI [ options ]
+.I domain
+.I key
+.PP
+.SH "DESCRIPTION"
+\fBwdread\fR\ gets the value associated with the key \fIkey\fR from the domain \fIdomain\fR
+and prints it on stdout.
+.PP
+.SH "OPTIONS"
+.TP
+.B \-\-help
+print a help message with the list of options
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes
+.PP
+.SH "EXIT STATUS"
+The program \fBwdread\fP will exit with the following code:
+.TP
+.B 0
+when the \fIkey\fP was successfully found and its content printed.
+.TP
+.B 1
+if the program was not invoked properly (unknown option or incorrect argument count).
+.TP
+.B 1
+if the \fIdomain\fP's file could not be read (probably nonexistent domain).
+.TP
+.B 2
+if the \fIkey\fP was not found in the \fIdomain\fP.
+.SH "SEE ALSO"
+.BR wdwrite (1),
+.BR wmaker (1)
+.SH "AUTHOR"
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>,
+wdread is a part of Window Maker, was  cowardly remade from wdwrite.c;
+by judas@hell on Jan 26 2001
+.PP
+This manpage was written by Rodolfo García Peñas (kix) for the
+Debian GNU/Linux system (but may be used by others).

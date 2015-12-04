@@ -1,0 +1,223 @@
+{
+    APPLICATIONICON = Review.tiff;
+    APP_DOCUMENT_BASED = NO;
+    APP_TYPE = GORM;
+    BUILDTOOL = "/usr/bin/make";
+    CLASS_FILES = (
+	AppController.m,
+	ImageCache.m,
+	ImageHolder.m,
+	ImageWindow.m,
+	Inspector.m,
+	PrefController.m
+    );
+    COMPILEROPTIONS = "";
+    CPPOPTIONS = "";
+    CREATION_DATE = "2004-09-13 23:59:13 +0300";
+    DOCU_FILES = (
+    );
+    FRAMEWORKS = (
+    );
+    HEADER_FILES = (
+	AppController.h,
+	ImageCache.h,
+	ImageHolder.h,
+	ImageWindow.h,
+	Inspector.h,
+	PrefController.h,
+	ImageShowing.h
+    );
+    IMAGES = (
+	GenericImage.tiff,
+	GIFImage.tiff,
+	JPEGImage.tiff,
+	NotImageable.tiff,
+	PNGImage.tiff,
+	Review.tiff,
+	TIFFImage.tiff,
+	XPMImage.tiff
+    );
+    INSTALLDIR = "$(HOME)/GNUstep";
+    INTERFACES = (
+	Review.gorm
+    );
+    LANGUAGE = English;
+    LAST_EDITING = "2007-01-20 17:14:09 +0200";
+    LIBRARIES = (
+	"gnustep-base",
+	"gnustep-gui"
+    );
+    LINKEROPTIONS = "";
+    LOCALIZED_RESOURCES = (
+	Review.gorm
+    );
+    MAININTERFACE = Review.gorm;
+    MAKEFILEDIR = "$(GNUSTEP_MAKEFILES)";
+    OBJC_COMPILEROPTIONS = "";
+    OTHER_RESOURCES = (
+	"Info-gnustep.plist"
+    );
+    OTHER_SOURCES = (
+	Review_main.m
+    );
+    PC_WINDOWS = {
+	ProjectBrowser = "{x = 0; y = 0; width = 695; height = 191}";
+	ProjectBuild = "0 0 0 0 0 0  0 0 ";
+	ProjectWindow = "490 243 713 766 0 0  1280 1024 ";
+	ShowToolbar = YES;
+    };
+    PRINCIPAL_CLASS = NSApplication;
+    PROJECT_AUTHORS = (
+	"Serg Stoyan <stoyan255@ukr.net>"
+    );
+    PROJECT_COPYRIGHT = "Copyright (C) 2005";
+    PROJECT_COPYRIGHT_DESC = "Released under GPL 2.0";
+    PROJECT_CREATOR = "Serg Stoyan";
+    PROJECT_DESCRIPTION = "Simple image viewer";
+    PROJECT_DOCUMENTEXTENSIONS = (
+	{
+	    Extension = jpg;
+	    Icon = JPEGImage.tiff;
+	},
+	{
+	    Extension = JPG;
+	    Icon = JPEGImage.tiff;
+	},
+	{
+	    Extension = jpeg;
+	    Icon = JPEGImage.tiff;
+	},
+	{
+	    Extension = JPEG;
+	    Icon = JPEGImage.tiff;
+	},
+	{
+	    Extension = tif;
+	    Icon = TIFFImage.tiff;
+	},
+	{
+	    Extension = TIF;
+	    Icon = TIFFImage.tiff;
+	},
+	{
+	    Extension = tiff;
+	    Icon = TIFFImage.tiff;
+	},
+	{
+	    Extension = TIFF;
+	    Icon = TIFFImage.tiff;
+	},
+	{
+	    Extension = PNG;
+	    Icon = PNGImage.tiff;
+	},
+	{
+	    Extension = png;
+	    Icon = PNGImage.tiff;
+	},
+	{
+	    Extension = GIF;
+	    Icon = GIFImage.tiff;
+	},
+	{
+	    Extension = gif;
+	    Icon = GIFImage.tiff;
+	},
+	{
+	    Extension = xpm;
+	    Icon = XPMImage.tiff;
+	},
+	{
+	    Extension = XPM;
+	    Icon = XPMImage.tiff;
+	}
+    );
+    PROJECT_DOCUMENTTYPES = (
+	{
+	    NSDOSExtensions = (
+		jpg,
+		JPG,
+		jpeg,
+		JPEG
+	    );
+	    NSDocumentClass = unknown;
+	    NSHumanReadableName = unknown;
+	    NSIcon = JPEGImage.tiff;
+	    NSName = unknown;
+	    NSRole = unknown;
+	    NSUnixExtensions = (
+		jpg,
+		JPG,
+		jpeg,
+		JPEG
+	    );
+	},
+	{
+	    NSDocumentClass = unknown;
+	    NSHumanReadableName = unknown;
+	    NSIcon = TIFFImage.tiff;
+	    NSName = unknown;
+	    NSRole = unknown;
+	    NSUnixExtensions = (
+		tif,
+		TIF,
+		tiff,
+		TIFF
+	    );
+	},
+	{
+	    NSDocumentClass = unknown;
+	    NSHumanReadableName = unknown;
+	    NSIcon = PNGImage.tiff;
+	    NSName = unknown;
+	    NSRole = unknown;
+	    NSUnixExtensions = (
+		PNG,
+		png
+	    );
+	},
+	{
+	    NSDocumentClass = unknown;
+	    NSHumanReadableName = unknown;
+	    NSIcon = GIFImage.tiff;
+	    NSName = unknown;
+	    NSRole = unknown;
+	    NSUnixExtensions = (
+		GIF,
+		gif
+	    );
+	},
+	{
+	    NSDocumentClass = unknown;
+	    NSHumanReadableName = unknown;
+	    NSIcon = XPMImage.tiff;
+	    NSName = unknown;
+	    NSRole = unknown;
+	    NSUnixExtensions = (
+		xpm,
+		XPM
+	    );
+	}
+    );
+    PROJECT_GROUP = "No group avaliable!";
+    PROJECT_MAINTAINER = "Serg Stoyan";
+    PROJECT_NAME = Review;
+    PROJECT_RELEASE = 0.1;
+    PROJECT_SUMMARY = "No summary avaliable!";
+    PROJECT_TYPE = Application;
+    PROJECT_URL = "";
+    SEARCH_HEADER_DIRS = (
+    );
+    SEARCH_LIB_DIRS = (
+    );
+    SUBPROJECTS = (
+    );
+    SUPPORTING_FILES = (
+	ReviewInfo.plist
+    );
+    USER_LANGUAGES = (
+	Ukrainian,
+	Russian,
+	English
+    );
+}

@@ -1,0 +1,39 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH seticons 1 "March 1998"
+.SH "НАИМЕНОВАНИЕ"
+seticons \- устанавливает набор иконок Window Maker.
+.SH "СИНТАКСИС"
+.B seticons
+.I iconsfile
+.SH "ОПИСАНИЕ"
+.B seticons
+читает
+.I iconsfile
+и пишет его содержимое в домен WMWindowAttributes, эффективно устанавливая
+набор иконок, который Window Maker использует для определённого класса программ
+(например: XTerm, "xterm.XTerm", "rxvt.XTerm", "pine.XTerm", etc.)
+.SH "ОПЦИИ"
+.TP
+.B \-\-help
+Выводит справку.
+.TP
+.B \-\-version
+Выводит номер версии.
+.SH "ОКРУЖЕНИЕ"
+.IP GNUSTEP_USER_ROOT
+Указывает начальный путь к папке Defaults. "Defaults/" приписывается к этой
+переменной, чтобы определить настоящее расположение данных. Если переменная не
+установлена, то её значение: "~/GNUstep".
+.SH "ОКРУЖЕНИЕ"
+.IP GNUSTEP_USER_ROOT/Defaults/WMWindowAttributes
+Это файл, в который идёт запись.
+.SH "СМОТРИ ТАКЖЕ"
+.BR geticonset (1),
+.BR wmaker (1)
+.SH "АВТОРЫ"
+Window Maker написан Alfredo K. Kojima <kojima@windowmaker.info>,
+Dan Pascu <dan@windowmaker.org> и дополнен вкладом многих людей по всему
+интернету.
+.PP
+Это руководство было написано Marcelo E. Magallon, <mmagallo@debian.org>.
+Перевод на русский язык осуществил NIR aka Ginko <faust@gmx.com>.

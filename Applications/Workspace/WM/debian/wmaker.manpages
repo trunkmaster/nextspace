@@ -1,0 +1,14 @@
+doc/wmgenmenu.1
+doc/wdread.1
+doc/wmmenugen.1
+doc/geticonset.1x
+doc/getstyle.1x
+doc/seticons.1x
+doc/setstyle.1x
+doc/wdwrite.1x
+doc/wmagnify.1x
+doc/wmsetbg.1x
+doc/WPrefs.1x
+doc/wxcopy.1x
+doc/wxpaste.1x
+doc/wmiv.1
