@@ -1,0 +1,151 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Fri Dec  4 14:54:52 2015
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq default-directory "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/")
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Display/*.m" "~/Developer/StepMaker/code/Applications/Preferences/*.m" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/*.m" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/" "~/Developer/StepMaker/code/Applications/Preferences/PrefsModule.h" "~/Developer/StepMaker/code/Applications/Preferences/Preferences.h" "~/Developer/StepMaker/code/Applications/Preferences/" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/Resources/bundle.registry" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/PreferencesInfo.plist" "~/Developer/StepMaker/code/Applications/Preferences/GNUmakefile.*" "~/Developer/StepMaker/code/Applications/Preferences/GNUmakefile" "~/Developer/StepMaker/code/Applications/Preferences/*.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Preferences.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/StepMaker/code/Applications/Workspace/" "~/Developer/StepMaker/code/Applications/Workspace/Operations/ProcessManager.m"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/Mouse.m"
+  "Mouse.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  123
+  '(1638 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Display/Display.m"
+  "Display.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2521
+  '(1118 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Display/Display.h"
+  "Display.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  198
+  '(833 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/Mouse.h"
+  "Mouse.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  822
+  '(4 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/Localization.m"
+  "Localization.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2929
+  '(4 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/Localization.h"
+  "Localization.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  846
+  '(4 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Keyboard/Keyboard.m"
+  "Keyboard.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Modules/Font/Font.m"
+  "Font.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/AppController.m"
+  "AppController.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/ClockView.m"
+  "ClockView.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/Preferences_main.m"
+  "Preferences_main.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/StepMaker/code/Applications/Preferences/PrefsController.m"
+  "PrefsController.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
