@@ -31,12 +31,10 @@
 
 @interface Display: NSObject <PrefsModule>
 {
-  id arrangementBtn;
+  id sectionsMtrx;
   id arrangementView;
   id powerView;
-  id powerBtn;
   id sectionBox;
-  id sizecolorBtn;
   id sizecolorView;
   id view;
   id window;

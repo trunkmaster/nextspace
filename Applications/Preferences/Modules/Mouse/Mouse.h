@@ -24,15 +24,15 @@
   59 Temple Place - Suite 330
   Boston, MA  02111-1307, USA
 */
-#import <AppKit/NSNibDeclarations.h>
-#import <AppKit/NSTableView.h>
-#import <AppKit/NSPopUpButton.h>
-
-#import <XSFoundation/XSPreferences.h>
+#import <AppKit/NSImage.h>
+#import <Preferences.h>
 
 @interface Mouse: NSObject <PrefsModule>
 {
-}
+  id view;
+id window;
 
+NSImage *image;
+}
 
 @end

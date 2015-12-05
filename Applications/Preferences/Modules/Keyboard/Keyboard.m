@@ -213,7 +213,6 @@ static NSMutableDictionary      *domain = nil;
 //
 - (void)sectionButtonClicked:(id)sender
 {
-  NSLog(@"Keyboard.preferences: sectionButtonClicked: %li", [[sender selectedCell] tag]);
   switch ([[sender selectedCell] tag])
     {
     case 0: // Key Repeat

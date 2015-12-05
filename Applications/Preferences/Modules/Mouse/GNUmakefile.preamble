@@ -8,7 +8,7 @@ ADDITIONAL_OBJCFLAGS +=
 ADDITIONAL_CFLAGS +=
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS +=
+ADDITIONAL_INCLUDE_DIRS += -I../..
 
 # Additional LDFLAGS to pass to the linker
 ADDITIONAL_LDFLAGS += 
@@ -21,7 +21,7 @@ ADDITIONAL_LIB_DIRS +=
 # GNUstepWeb
 ADDITIONAL_GSW_LIBS +=
 # GUI apps
-ADDITIONAL_GUI_LIBS += -lXSFoundation
+ADDITIONAL_GUI_LIBS += -lNXFoundation
 # Libraries
 ADDITIONAL_LIBRARY_LIBS +=
 # ObjC stuff

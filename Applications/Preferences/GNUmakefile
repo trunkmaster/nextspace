@@ -19,7 +19,8 @@ SUBPROJECTS = \
 	Modules/Font \
 	Modules/Display \
 	Modules/Keyboard \
-	Modules/Localization
+	Modules/Localization \
+	Modules/Mouse
 
 #
 # Resource files
@@ -28,7 +29,8 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Font/Font.preferences \
 	Modules/Display/Display.preferences \
 	Modules/Keyboard/Keyboard.preferences \
-	Modules/Localization/Localization.preferences
+	Modules/Localization/Localization.preferences \
+	Modules/Mouse/Mouse.preferences
 
 #
 # Localization

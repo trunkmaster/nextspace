@@ -33,6 +33,7 @@
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSBrowser.h>
+#import <AppKit/NSMatrix.h>
 
 #import "Display.h"
 
@@ -76,8 +77,10 @@ static NSMutableDictionary      *domain = nil;
   //   tColumn = [monitorsTable tableColumnWithIdentifier:@"Monitors"];
   //   [tColumn setWidth:(rect.size.width-23)];
   // }
-  [monitorsList setTitle:@"Monitors" ofColumn:0];
-  [monitorsList loadColumnZero];
+  
+  [[sectionsMtrx cellWithTag:0] setRefusesFirstResponder:YES];
+  [[sectionsMtrx cellWithTag:1] setRefusesFirstResponder:YES];
+  [[sectionsMtrx cellWithTag:2] setRefusesFirstResponder:YES];
 }
 
 - (NSView *)view
@@ -89,8 +92,11 @@ static NSMutableDictionary      *domain = nil;
           NSLog (@"Display.preferences: Could not load nib \"Display\", aborting.");
           return nil;
         }
-      [self sectionButtonClicked:arrangementBtn];
+      [self sectionButtonClicked:sectionsMtrx];
     }
+  
+  [monitorsList setTitle:@"Monitors" ofColumn:0];
+  [monitorsList loadColumnZero];
   
   return view;
 }
@@ -110,25 +116,16 @@ static NSMutableDictionary      *domain = nil;
 //
 - (IBAction)sectionButtonClicked:(id)sender
 {
-  switch ([sender tag])
+  switch ([[sender selectedCell] tag])
     {
     case 0: // Arrangement
       [sectionBox setContentView:arrangementView];
-      [arrangementBtn setState:NSOnState];
-      [sizecolorBtn setState:NSOffState];
-      [powerBtn setState:NSOffState];
       break;
     case 1: // Size & Colors
       [sectionBox setContentView:sizecolorView];
-      [arrangementBtn setState:NSOffState];
-      [sizecolorBtn setState:NSOnState];
-      [powerBtn setState:NSOffState];
       break;
     case 2: // Power
       [sectionBox setContentView:powerView];
-      [arrangementBtn setState:NSOffState];
-      [sizecolorBtn setState:NSOffState];
-      [powerBtn setState:NSOnState];
       break;
     default:
       NSLog(@"Display.preferences: Unknow section button was clicked!");
