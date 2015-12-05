@@ -1,0 +1,19 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "enableSubpixelChanged:",
+	    "subpixelModeChanged:"
+	);
+	Super = NSObject;
+    };
+    Localization = {
+	Actions = (
+	);
+	Outlets = (
+	    view,
+	    window
+	);
+	Super = NSObject;
+    };
+}

@@ -5,12 +5,10 @@
 	    "sectionButtonClicked:"
 	);
 	Outlets = (
-	    arrangementBtn,
+	    sectionsMtrx,
 	    arrangementView,
 	    powerView,
-	    powerBtn,
 	    sectionBox,
-	    sizecolorBtn,
 	    sizecolorView,
 	    view,
 	    window,
