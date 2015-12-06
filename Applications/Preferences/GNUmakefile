@@ -16,21 +16,27 @@ APP_NAME = Preferences
 $(APP_NAME)_APPLICATION_ICON = Mask.tiff
 
 SUBPROJECTS = \
-	Modules/Font \
-	Modules/Display \
-	Modules/Keyboard \
 	Modules/Localization \
-	Modules/Mouse
+	Modules/Font \
+	Modules/Keyboard \
+	Modules/Mouse \
+	Modules/Display \
+	Modules/Screen \
+	Modules/Power \
+	Modules/Password
 
 #
 # Resource files
 #
 $(APP_NAME)_RESOURCE_FILES = \
-	Modules/Font/Font.preferences \
-	Modules/Display/Display.preferences \
-	Modules/Keyboard/Keyboard.preferences \
 	Modules/Localization/Localization.preferences \
-	Modules/Mouse/Mouse.preferences
+	Modules/Font/Font.preferences \
+	Modules/Keyboard/Keyboard.preferences \
+	Modules/Mouse/Mouse.preferences \
+	Modules/Display/Display.preferences \
+	Modules/Screen/Screen.preferences \
+	Modules/Power/Power.preferences \
+	Modules/Password/Password.preferences
 
 #
 # Localization

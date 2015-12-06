@@ -1,130 +1,80 @@
 /*
-	Font.m
-
-	Controller class for this bundle
-
-	Author: Sir Raorn <raorn@binec.ru>
-	Date:	10 Aug 2002
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License as
-	published by the Free Software Foundation; either version 2 of
-	the License, or (at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public
-	License along with this program; if not, write to:
-
-		Free Software Foundation, Inc.
-		59 Temple Place - Suite 330
-		Boston, MA  02111-1307, USA
 */
 #import <math.h>
 
-#import <AppKit/NSPopUpButton.h>
-#import <AppKit/NSButton.h>
-#import <AppKit/NSTextField.h>
-#import <AppKit/NSTextView.h>
-#import <AppKit/NSFont.h>
-#import <AppKit/NSFontPanel.h>
-#import <AppKit/NSNibLoading.h>
-#import <AppKit/NSOpenPanel.h>
-
 #import <AppKit/NSApplication.h>
+#import <AppKit/NSNibLoading.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSBox.h>
+#import <AppKit/NSImage.h>
+#import <AppKit/NSButton.h>
+#import <AppKit/NSTableView.h>
+#import <AppKit/NSTableColumn.h>
+#import <AppKit/NSBrowser.h>
+#import <AppKit/NSMatrix.h>
 
 #import "Password.h"
 
 @implementation Password
 
-static Password			*sharedInstance = nil;
-static id <XSPrefsController>	owner = nil;
-
 static NSBundle                 *bundle = nil;
 static NSUserDefaults           *defaults = nil;
 static NSMutableDictionary      *domain = nil;
 
-- (id) initWithOwner:(id <XSPrefsController>)anOwner
+- (id)init
 {
-  if (sharedInstance)
-    {
-      [self dealloc];
-    }
-  else
-    {
-      self = [super init];
-      owner = anOwner;
-      defaults = [NSUserDefaults standardUserDefaults];
-      domain = [[defaults persistentDomainForName: NSGlobalDomain] mutableCopy];
-      bundle = [NSBundle bundleForClass: [self class]];
-      
-      [owner registerPrefsModule: self];
-      
-      sharedInstance = self;
-    }
-  return sharedInstance;
-}
+  self = [super init];
+  
+  defaults = [NSUserDefaults standardUserDefaults];
+  domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
 
-- (void)release
-{
-  NSLog(@"[release] view RC: %i", [view retainCount]);
-  [super release];
+  bundle = [NSBundle bundleForClass:[self class]];
+  NSString *imagePath = [bundle pathForResource:@"Password" ofType:@"tiff"];
+  image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+      
+  return self;
 }
 
 - (void)dealloc
 {
-  NSLog(@"view RC: %i", [view retainCount]);
+  [image release];
   [super dealloc];
 }
 
 - (void)awakeFromNib
 {
-  NSString *imageFile = [bundle pathForResource:@"LockOpen" ofType:@"tiff"];
-
-  [lockView setImage: [[NSImage alloc] initWithContentsOfFile:imageFile]];
   [view retain];
+  [window release];
 }
 
-- (void) showView:(id)sender;
+- (NSView *)view
 {
-  if (!view)
+  if (view == nil)
     {
-      [NSBundle loadNibNamed:@"Password" owner:self];
+      if (![NSBundle loadNibNamed:@"Password" owner:self])
+        {
+          NSLog (@"Password.preferences: Could not load NIB, aborting.");
+          return nil;
+        }
     }
-
-  [owner setCurrentModule:self];
-  [view setNeedsDisplay:YES];
-}
-
-- (NSView *) view
-{
+  
   return view;
 }
 
-- (NSString *) buttonCaption
+- (NSString *)buttonCaption
 {
-  return NSLocalizedStringFromTableInBundle(@"Password Preferences", 
-					    @"Localizable", bundle, @"");
+  return @"Password Preferences";
 }
 
-- (NSImage *) buttonImage
+- (NSImage *)buttonImage
 {
-  return [NSImage imageNamed: @"Password"];
-}
-
-- (SEL) buttonAction
-{
-  return @selector(showView:);
+  return image;
 }
 
 //
 // Action methods
 //
-- (IBAction) passwordChanged: (id)sender
+- (IBAction)passwordChanged:(id)sender
 {
 }
 
