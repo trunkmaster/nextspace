@@ -1,0 +1,6 @@
+﻿{
+  type = Preferences;
+  mode = Power;
+  class = Power;
+  priority = 10;
+}
