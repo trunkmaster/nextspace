@@ -1,5 +1,6 @@
 
 #import "NXBundle.h"
+#import "NXFileManager.h"
 
 #import <Foundation/Foundation.h>
 
@@ -50,12 +51,44 @@ static NXBundle *shared = nil;
 // Returns list of paths to bundles found in Library and Applications domains.
 - (NSArray *)bundlePathsOfType:(NSString *)fileExtension
 {
-  NSArray        *pathList;
+  NSArray        *libPathList;
+  NSMutableArray *pathList = [NSMutableArray new];
   NSMutableArray *bundlePaths = [NSMutableArray new];
+  NSString	 *intersection;
+  BOOL           skip;
 
   // ~/Applications, /Applications, /usr/NexSpace/Apps
-  pathList = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
-                                                 NSAllDomainsMask, YES);
+  [pathList
+    addObjectsFromArray:NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
+                                                            NSAllDomainsMask, YES)];
+  // ~/Library, /Library, /usr/NextSpace
+  libPathList = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                    NSAllDomainsMask, YES);
+  for (NSString *lPath in libPathList)
+    {
+      skip = NO;
+      for (NSString *path in pathList)
+        {
+          intersection = NXIntersectionPath(path, lPath);
+          if ([intersection isEqualToString:path])
+            {
+              skip = YES;
+              break;
+            }
+          else if ([intersection isEqualToString:lPath])
+            {
+              [pathList replaceObjectAtIndex:[pathList indexOfObject:path]
+                                  withObject:lPath];
+              skip = YES;
+              break;
+            }
+        }
+      if (!skip)
+        {
+          [pathList addObject:lPath];
+        }
+    }
+  
   NSLog(@"Searching for bundles in: %@", pathList);
   for (NSString *path in pathList)
     {
@@ -63,16 +96,6 @@ static NXBundle *shared = nil;
                                                         atPath:path]];
     }
 
-  // ~/Library, /Library, /usr/NextSpace
-  pathList = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                                 NSAllDomainsMask, YES);
-  NSLog(@"Searching for bundles in: %@", pathList);
-  for (NSString *path in pathList)
-    {
-      [bundlePaths addObjectsFromArray:[self bundlePathsOfType:fileExtension
-                                                        atPath:path]];
-    }
-  
   return bundlePaths;
 }
 
@@ -84,8 +107,8 @@ static NXBundle *shared = nil;
 {
   NSArray             *bundlePathsList; // list of dirs to check for registry
   NSMutableDictionary *bundlesRegistry; // gathered registries of all bundles
-  NSString            *brFile;        // path to file with registry information
-  NSDictionary        *brContent;    // content of one registry file
+  NSString            *brFile;          // path to file with registry information
+  NSDictionary        *brContent;       // content of one registry file
 
   if (dirPath != nil)
     {
@@ -95,6 +118,7 @@ static NXBundle *shared = nil;
     {
       bundlePathsList = [self bundlePathsOfType:fileExtension];
     }
+  
   NSLog(@"Bundles path list: %@", bundlePathsList);
   bundlesRegistry = [NSMutableDictionary new];
   
@@ -117,7 +141,6 @@ static NXBundle *shared = nil;
 //--- Validating and loading
 //-----------------------------------------------------------------------------
 
-// TODO
 - (NSArray *)loadBundlesOfType:(NSString *)fileType
                       protocol:(Protocol *)protocol
                    inDirectory:(NSString *)dir
