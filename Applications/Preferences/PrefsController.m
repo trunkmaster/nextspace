@@ -30,6 +30,7 @@
 #import <Foundation/NSInvocation.h>
 #import <Foundation/NSObjCRuntime.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSValue.h>
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSNibLoading.h>
@@ -72,7 +73,7 @@
   [iconList setCellSize:NSMakeSize (70, 70)];
   [iconList setMode:NSRadioModeMatrix];
   [iconList setIntercellSpacing:NSZeroSize];
-  [iconList setAllowsEmptySelection:YES];
+  [iconList setAllowsEmptySelection:NO];
 
   [iconScrollView setDocumentView:iconList];
   [iconScrollView setHasHorizontalScroller:YES];
@@ -146,8 +147,7 @@
   [button setFont:[NSFont systemFontOfSize:9]];
   [button setImage:[aPrefsModule buttonImage]];
   [button setImagePosition:NSImageOnly];
-  [button setHighlightsBy:NSChangeBackgroundCellMask];
-  [button setShowsStateBy:NSChangeBackgroundCellMask];
+  [button setButtonType:NSOnOffButton];
   [button setRefusesFirstResponder:YES];
 
   [button setTarget:self];
@@ -159,6 +159,26 @@
   return YES;
 }
 
+- (NSArray *)sortModules:(NSDictionary *)registry
+{
+  NSArray *paths = [registry allKeys];
+
+  id sortByPriority = ^(NSString *path1, NSString *path2)
+    {
+      NSString *ps1, *ps2;
+      NSNumber *p1, *p2;
+
+      ps1 = [[registry objectForKey:path1] objectForKey:@"priority"];
+      p1 = [NSNumber numberWithInt:[ps1 intValue]];
+      ps2 = [[registry objectForKey:path2] objectForKey:@"priority"];
+      p2 = [NSNumber numberWithInt:[ps2 intValue]];
+
+      return [p1 compare:p2];
+    };
+
+  return [paths sortedArrayUsingComparator:sortByPriority];
+}
+
 - (void)loadBundles
 {
   NSDictionary	*bRegistry;
@@ -168,8 +188,10 @@
 
   bRegistry = [[NXBundle shared] registerBundlesOfType:@"preferences"
                                                 atPath:nil];
+  
+  NSArray *sortedModulesPaths = [self sortModules:bRegistry];
 
-  for (NSString *bPath in [bRegistry allKeys])
+  for (NSString *bPath in sortedModulesPaths)
     {
       // Check type
       if (![[[bRegistry objectForKey:bPath] objectForKey:@"type"]
@@ -219,6 +241,5 @@
 {
   return loadedBundles;
 }
-
 
 @end

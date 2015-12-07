@@ -55,6 +55,9 @@ static NSUserDefaults *defaults = nil;
 
 - (void)awakeFromNib
 {
+  if (clockView)
+    return;
+  
   clockView = [ClockView new];
   [[NSApp iconWindow] setContentView:clockView];
 }
@@ -98,7 +101,7 @@ static NSUserDefaults *defaults = nil;
   if (prefsController == nil)
     {
       prefsController = [[PrefsController alloc] init];
-      if ([NSBundle loadNibNamed:@"PrefsWindow" owner:prefsController] == NO)
+      if ([NSBundle loadNibNamed:@"PrefsWindow" owner:self] == NO)
         {
           NSLog(@"Error loading NIB PrefsWindow");
           return;

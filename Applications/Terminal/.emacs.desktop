@@ -7,18 +7,18 @@
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/StepMaker/code/Applications/Terminal/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Terminal/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring '("boldTerminal" "boldTerminalFontFor" "toggle_meta" "0x80" "color" "ch.color" "c" "def_color" "set_foreground" "draw" "ts_se" "terminalName" "TerminalNameDid" "TerminalViewTitleDid" "terminalNameDid" "TerminalNameDid"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/" "~/Developer/StepMaker/code/Applications/Terminal" "~/Developer/StepMaker/code/Applications/Terminal/Preferences/GNUmakefile*" "~/Developer/StepMaker/code/Applications/Terminal/GNUmakefile*" "~/Developer/StepMaker/code/Applications/Terminal/Preferences/Preferences.*"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/Preferences/GNUmakefile*" "~/Developer/nextspace/Applications/Terminal/GNUmakefile*" "~/Developer/nextspace/Applications/Terminal/Preferences/Preferences.*"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/TerminalView.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalView.m"
   "TerminalView.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -29,7 +29,7 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/TerminalWindow.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.m"
   "TerminalWindow.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -40,7 +40,7 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/ColorsPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/ColorsPrefs.m"
   "ColorsPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -51,7 +51,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Defaults.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.h"
   "Defaults.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -62,7 +62,7 @@
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/TerminalView.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalView.h"
   "TerminalView.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -73,7 +73,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Defaults.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.m"
   "Defaults.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -84,7 +84,7 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/WindowPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/WindowPrefs.m"
   "WindowPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -95,7 +95,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/ColorsPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/ColorsPrefs.h"
   "ColorsPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -106,7 +106,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/TerminalParser_Linux.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalParser_Linux.h"
   "TerminalParser_Linux.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -117,7 +117,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/TerminalParser_Linux.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalParser_Linux.m"
   "TerminalParser_Linux.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -128,7 +128,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Terminal.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Terminal.h"
   "Terminal.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -139,7 +139,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Controller.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.m"
   "Controller.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -150,7 +150,7 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/StartupPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/StartupPrefs.m"
   "StartupPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -161,7 +161,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/StartupPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/StartupPrefs.h"
   "StartupPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -172,7 +172,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/GNUmakefile"
+  "/Users/me/Developer/nextspace/Applications/Terminal/GNUmakefile"
   "GNUmakefile"
   'makefile-gmake-mode
   nil
@@ -183,7 +183,7 @@
   '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/TitleBarPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/TitleBarPrefs.m"
   "TitleBarPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -194,7 +194,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/TitleBarPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/TitleBarPrefs.h"
   "TitleBarPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -205,7 +205,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/TerminalWindow.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.h"
   "TerminalWindow.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -216,7 +216,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/Preferences.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/Preferences.h"
   "Preferences.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -227,7 +227,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/WindowPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/WindowPrefs.h"
   "WindowPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -238,7 +238,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Controller.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.h"
   "Controller.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -249,7 +249,7 @@
   '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/DisplayPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/DisplayPrefs.m"
   "DisplayPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -260,7 +260,7 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/DisplayPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/DisplayPrefs.h"
   "DisplayPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -271,7 +271,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/GNUmakefile.preamble"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/GNUmakefile.preamble"
   "GNUmakefile.preamble"
   'fundamental-mode
   nil
@@ -282,7 +282,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Services.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Services.m"
   "Services.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -293,7 +293,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Services.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Services.h"
   "Services.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -304,7 +304,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/Preferences.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/Preferences.m"
   "Preferences.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -315,7 +315,7 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/main.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/main.m"
   "main.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -326,7 +326,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/ShellPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/ShellPrefs.m"
   "ShellPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -337,7 +337,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/ShellPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/ShellPrefs.h"
   "ShellPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -348,7 +348,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/LinuxPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/LinuxPrefs.m"
   "LinuxPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -359,7 +359,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/LinuxPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/LinuxPrefs.h"
   "LinuxPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -370,7 +370,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/PrefBox.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/PrefBox.h"
   "PrefBox.h"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -381,7 +381,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Preferences/GNUmakefile"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/GNUmakefile"
   "GNUmakefile<2>"
   'makefile-gmake-mode
   nil
@@ -392,7 +392,7 @@
   '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/ServicesPrefs.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/ServicesPrefs.h"
   "ServicesPrefs.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -403,7 +403,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/ServicesParameterWindowController.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/ServicesParameterWindowController.h"
   "ServicesParameterWindowController.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -414,7 +414,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Label.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Label.h"
   "Label.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -425,7 +425,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/autokeyviewchain.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/autokeyviewchain.h"
   "autokeyviewchain.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -436,7 +436,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/charmaps.h"
+  "/Users/me/Developer/nextspace/Applications/Terminal/charmaps.h"
   "charmaps.h"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -447,7 +447,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/Label.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/Label.m"
   "Label.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -458,7 +458,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/ServicesParameterWindowController.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/ServicesParameterWindowController.m"
   "ServicesParameterWindowController.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -469,7 +469,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/ServicesPrefs.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/ServicesPrefs.m"
   "ServicesPrefs.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
@@ -480,7 +480,7 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/StepMaker/code/Applications/Terminal/autokeyviewchain.m"
+  "/Users/me/Developer/nextspace/Applications/Terminal/autokeyviewchain.m"
   "autokeyviewchain.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
