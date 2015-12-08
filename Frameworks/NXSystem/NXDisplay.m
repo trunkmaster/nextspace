@@ -101,7 +101,7 @@
   screen = [scr retain];
   screen_resources = [screen randrScreenResources];
 
-  isMainDisplay = NO;
+  isMain = NO;
   isActive = NO;
   output_id = output;
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output);
@@ -162,6 +162,10 @@
           modeRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
           dpiValue = (25.4 * modeSize.height) / output_info->mm_height;
         }
+
+      // Primary display
+      isMain = [self isMain];
+      
       XRRFreeCrtcInfo(crtc_info);
     }
   
@@ -422,14 +426,32 @@
 
 - (BOOL)isMain
 {
-  return isMainDisplay;
+  if (XRRGetOutputPrimary(xDisplay, RootWindow(xDisplay, DefaultScreen(xDisplay)))
+      == output_id)
+    {
+      return YES;
+    }
+  
+  return NO;
 }
 
 - (void)setMain:(BOOL)yn
 {
-  XRRSetOutputPrimary(xDisplay, RootWindow(xDisplay, DefaultScreen(xDisplay)),
-                      output_id);
-  isMainDisplay = yn;
+  if (isMain && yn == NO)
+    {
+      XRRSetOutputPrimary(xDisplay,
+                          RootWindow(xDisplay, DefaultScreen(xDisplay)),
+                          None);
+      isMain = NO;
+    }
+  
+  if (yn == YES)
+    {
+      XRRSetOutputPrimary(xDisplay,
+                          RootWindow(xDisplay, DefaultScreen(xDisplay)),
+                          output_id);
+      isMain = YES;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -437,6 +459,7 @@
 //------------------------------------------------------------------------------
 
 /* Returns the index of the last value in an array < 0xffff */
+// from xrandr.c
 static int
 find_last_non_clamped(CARD16 array[], int size)
 {
@@ -449,6 +472,7 @@ find_last_non_clamped(CARD16 array[], int size)
   return 0;
 }
 
+// from xrandr.c
 - (void)getGamma
 {
   XRRScreenResources *screen_resources = [screen randrScreenResources];
@@ -462,18 +486,18 @@ find_last_non_clamped(CARD16 array[], int size)
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   
   size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
-  // if (!size)
-  //   {
-  //     warning("Failed to get size of gamma for output %s\n", output_info->name);
-  //     return;
-  //   }
+  if (!size)
+    {
+      NSLog(@"Failed to get size of gamma for output %s", output_info->name);
+      return;
+    }
 
   crtc_gamma = XRRGetCrtcGamma(xDisplay, output_info->crtc);
-  // if (!crtc_gamma)
-  //   {
-  //     warning("Failed to get gamma for output %s\n", output_info->name);
-  //     return;
-  //   }
+  if (!crtc_gamma)
+    {
+      NSLog(@"Failed to get gamma for output %s", output_info->name);
+      return;
+    }
 
   /*
    * Here is a bit tricky because gamma is a whole curve for each

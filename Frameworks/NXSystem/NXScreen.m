@@ -204,12 +204,16 @@ static id systemScreen = nil;
   [self _refreshDisplaysInfo];
 
   // Initially we set primary display to first active
-  for (NXDisplay *display in systemDisplays)
+  if ([self mainDisplay] == nil)
     {
-      if ([display isActive])
+      NSLog(@"NXScreen: main display not found, setting first active as main...");
+      for (NXDisplay *display in systemDisplays)
         {
-          [display setMain:YES];
-          break;
+          if ([display isActive])
+            {
+              [display setMain:YES];
+              break;
+            }
         }
     }
 
@@ -318,6 +322,7 @@ static id systemScreen = nil;
     {
       if ([display isActive] && [display isMain])
         break;
+      display = nil;
     }
   
   return display;

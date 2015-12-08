@@ -1,6 +1,6 @@
 ﻿{
   type = Preferences;
   mode = Display;
-  class = Display;
+  class = DisplayPrefs;
   priority = 3;
 }

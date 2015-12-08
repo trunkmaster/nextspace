@@ -59,14 +59,14 @@ typedef struct _NXGammaValue NXGammaValue;
   NSSize   modeSize;        // display resolution
   CGFloat  modeRate;        // refresh rate for resolution (75.0)
   
-  CGFloat		dpiValue;
+  CGFloat  dpiValue;
 
   NXGammaValue gammaValue;
   CGFloat      gammaBrightness;
 
   NSMutableDictionary *properties;
   
-  BOOL        isMainDisplay;
+  BOOL        isMain;
   BOOL        isActive;
 }
 
@@ -118,13 +118,9 @@ typedef struct _NXGammaValue NXGammaValue;
 - (NSDictionary *)properties;
 - (id)uniqueID;
 
-// - (NSString *)model;   // EDID
-// - (CGFloat)brightness; // EDID (if supported)
-// - (CGFloat)gamma;      // EDID
-
-// - (CGFloat)gammaCorrection;
-// - (void)setGammaCorrection:(CGFloat)gamma;
-// - (NSUInteger)colorDepth;
-// - (NSArray *)rotations;      // XRRRotations
+// - (NSString *)model;    // EDID
+// - (CGFloat)brightness;  // EDID (if supported)
+// - (CGFloat)gamma;       // EDID
+// - (NSArray *)rotations; // XRRRotations
 
 @end
