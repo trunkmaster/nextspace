@@ -46,14 +46,51 @@ NSString *get_vendor_name(unsigned char* edid)
   return [NSString stringWithCString:v_name];
 }
 
+void fadeInFadeOutTest(NXScreen *sScreen)
+{
+  NSArray   *displays = [sScreen connectedDisplays];
+  for (NXDisplay *display in displays)
+    {
+      if ([display isActive])
+        {
+          [display fadeToBlack];
+          sleep(2);
+          [display fadeToNormal];
+        }
+    }
+}
+
+void gammaCorrectionTest(NXScreen *sScreen)
+{
+  NSArray   *displays = [sScreen connectedDisplays];
+  for (NXDisplay *display in displays)
+    {
+      // CGFloat gamma = 1.25;
+      if ([display isActive])
+        {
+          fprintf(stderr, "Initial Gamma> Correction value = %0.2f, Brightness = %0.2f\n",
+                  1.0/[display gammaValue].red, [display gammaBrightness]);
+          
+          [display setGammaCorrectionValue:1.0];
+          fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
+                  1.0/[display gammaValue].red, [display gammaBrightness]);
+  
+          [display setGammaCorrectionValue:1.25];
+          
+          fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
+                  1.0/[display gammaValue].red, [display gammaBrightness]);
+        }
+    }
+
+}
+
 int main(int argc, const char ** argv)
 {
-  NXScreen *sScreen;
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  BOOL isActive = NO;
-  NSSize dSize;
+  NSAutoreleasePool	*pool = [[NSAutoreleasePool alloc] init];
+  NXScreen		*sScreen = [NXScreen sharedScreen];
+  BOOL			isActive = NO;
+  NSSize		dSize;
   
-  sScreen = [NXScreen sharedScreen];
   NSLog(@"Screen:");
   NSLog(@"\tPhysical size: %.0fmm x %.0fmm",
         [sScreen sizeInMilimeters].width,[sScreen sizeInMilimeters].height);
@@ -148,59 +185,9 @@ int main(int argc, const char ** argv)
         }
     }
 
-  // [[sScreen currentLayout] writeToFile:@"Displays.ospl" atomically:YES];
-
-  // [sScreen applyDisplayLayout:[sScreen defaultLayout:NO]];
-
-  // Gone to Login.app
-  // NSArray *displays = [sScreen connectedDisplays];
-  // for (int i=0; i < [displays count]-1; i++)
-  //   {
-  //     [[displays objectAtIndex:i] deactivate];
-  //   }
-  
-  fprintf(stderr, ">>> Setting default arranged layout of displays...\n");
-  [sScreen applyDisplayLayout:[sScreen defaultLayout:YES]];
-  
-  /*  NXDisplay *d = [[sScreen connectedDisplays] objectAtIndex:0];
-
-  fprintf(stderr, ">>> Setting default arranged layout of displays...\n");
-  [sScreen applyDisplayLayout:[sScreen defaultLayout:YES]];
-  sleep(3);
-  fprintf(stderr, ">>> Switching OFF display 0...\n");
-  [d deactivate];
-  sleep(3);
-  fprintf(stderr, ">>> Switching ON display 0...\n");
-  [d activate];
-  // [d setResolution:[d preferredMode] origin:NSMakePoint(0,0)];
-  sleep(3);
-  [sScreen applyDisplayLayout:[sScreen defaultLayout:NO]];*/
-
-  // NSArray   *displays = [sScreen connectedDisplays];
-  // for (NXDisplay *display in displays)
-  //   {
-  //     // CGFloat gamma = 1.25;
-  //     if ([display isActive])
-  //       {
-  //         // [display fadeToBlack];
-  //         // sleep(2);
-  //         // [display fadeToNormal];
-          
-  //         fprintf(stderr, "Initial Gamma> Correction value = %0.2f, Brightness = %0.2f\n",
-  //                 1.0/[display gammaValue].red, [display gammaBrightness]);
-          
-  //         [display setGammaCorrectionValue:1.0];
-  //         fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
-  //                 1.0/[display gammaValue].red, [display gammaBrightness]);
-  
-  //         [display setGammaCorrectionValue:1.25];
-          
-  //         fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
-  //                 1.0/[display gammaValue].red, [display gammaBrightness]);
-  //       }
-  //   }
-
-  
+  // fprintf(stderr, ">>> Setting default arranged layout of displays...\n");
+  // [sScreen applyDisplayLayout:[sScreen defaultLayout:YES]];
+ 
   [pool release];
 
   return 0;

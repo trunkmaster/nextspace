@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Dec  7 03:00:50 2015
+;; Created Tue Dec  8 02:50:32 2015
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -17,6 +17,61 @@
 (setq file-name-history '("~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Password/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences/Modules/Password/GNUmakefile*" "~/Developer/nextspace/Applications/Preferences/Modules/Password/Resources/bundle.registry" "~/Developer/nextspace/Applications/Preferences/Modules/Password/*.m" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Power/Resources/bundle.registry" "~/Developer/nextspace/Applications/Preferences/Modules/Power/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Power/GNUmakefile*" "~/Developer/nextspace/Applications/Preferences/Modules/Power/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/Resources/bundle.registry" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile*" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/*.m" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Display/GNUmakefile*" "~/Developer/nextspace/Applications/Preferences/Modules/Mouse/GNUmakefile*" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Mouse/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Font/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Display/*.m" "~/Developer/nextspace/Applications/Preferences/*" "~/Developer/StepMaker/code/Applications/Preferences" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Mouse/*.m" "~/Developer/StepMaker/code/Applications/Preferences/Modules/Localization/*.m"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
+  "Display.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  3807
+  '(4154 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
+  "Display.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1099
+  '(1213 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/GNUmakefile"
+  "GNUmakefile<3>"
+  'makefile-gmake-mode
+  nil
+  98
+  '(98 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/GNUmakefile.preamble"
+  "GNUmakefile.preamble<3>"
+  'fundamental-mode
+  nil
+  584
+  '(559 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
+  "Keyboard.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  7237
+  '(7201 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/AppController.m"
   "AppController.m"
@@ -249,67 +304,12 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
-  "Display.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1242
-  '(875 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/GNUmakefile.preamble"
-  "GNUmakefile.preamble<3>"
-  'fundamental-mode
-  nil
-  573
-  '(559 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.m"
   "Mouse.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   858
   '(1992 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/GNUmakefile"
-  "GNUmakefile<3>"
-  'makefile-gmake-mode
-  nil
-  176
-  '(98 nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
-  "Display.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1128
-  '(1100 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
-  "Keyboard.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1066
-  '(1038 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

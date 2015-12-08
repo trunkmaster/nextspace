@@ -29,35 +29,23 @@
 #import <AppKit/NSImage.h>
 #import <Preferences.h>
 
-@interface Display: NSObject <PrefsModule>
+@interface DisplayPrefs : NSObject <PrefsModule>
 {
-  id sectionsMtrx;
-  id arrangementView;
-  id powerView;
-  id sectionBox;
-  id sizecolorView;
   id view;
   id window;
   id brightnessBox;
   id brightnessField;
   id brightnessSlider;
   id colorBtn;
-  id dimmerField;
-  id dimmerSlider;
   id gammaField;
   id gammaSlider;
   id monitorsList;
   id monitorsScroll;
-  id offField;
-  id offSlider;
   id rateBtn;
   id resolutionBtn;
-  id setImageBtn;
 
   NSImage *image;
 }
-
-- (IBAction)sectionButtonClicked:(id)sender;
 
 @end
 

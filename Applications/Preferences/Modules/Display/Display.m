@@ -29,15 +29,20 @@
 #import <AppKit/NSView.h>
 #import <AppKit/NSBox.h>
 #import <AppKit/NSImage.h>
-#import <AppKit/NSButton.h>
-#import <AppKit/NSTableView.h>
-#import <AppKit/NSTableColumn.h>
+#import <AppKit/NSPopUpButton.h>
+// #import <AppKit/NSTableView.h>
+// #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSBrowser.h>
+#import <AppKit/NSBrowserCell.h>
 #import <AppKit/NSMatrix.h>
+#import <AppKit/NSSlider.h>
+
+#import <NXSystem/NXScreen.h>
+#import <NXSystem/NXDisplay.h>
 
 #import "Display.h"
 
-@implementation Display
+@implementation DisplayPrefs
 
 static NSBundle                 *bundle = nil;
 static NSUserDefaults           *defaults = nil;
@@ -67,20 +72,6 @@ static NSMutableDictionary      *domain = nil;
 {
   [view retain];
   [window release];
-  [arrangementView retain];
-  [sizecolorView retain];
-  [powerView retain];
-
-  // {
-  //   NSRect rect = [monitorsScroll frame];
-  //   NSTableColumn *tColumn;
-  //   tColumn = [monitorsTable tableColumnWithIdentifier:@"Monitors"];
-  //   [tColumn setWidth:(rect.size.width-23)];
-  // }
-  
-  [[sectionsMtrx cellWithTag:0] setRefusesFirstResponder:YES];
-  [[sectionsMtrx cellWithTag:1] setRefusesFirstResponder:YES];
-  [[sectionsMtrx cellWithTag:2] setRefusesFirstResponder:YES];
 }
 
 - (NSView *)view
@@ -92,11 +83,7 @@ static NSMutableDictionary      *domain = nil;
           NSLog (@"Display.preferences: Could not load nib \"Display\", aborting.");
           return nil;
         }
-      [self sectionButtonClicked:sectionsMtrx];
     }
-  
-  [monitorsList setTitle:@"Monitors" ofColumn:0];
-  [monitorsList loadColumnZero];
   
   return view;
 }
@@ -114,23 +101,107 @@ static NSMutableDictionary      *domain = nil;
 //
 // Action methods
 //
-- (IBAction)sectionButtonClicked:(id)sender
+- (IBAction)monitorsListClicked:(id)sender
 {
-  switch ([[sender selectedCell] tag])
+  NSString *mName = [[[sender matrixInColumn:0] selectedCell] title];
+  NSSize   size;
+  NSString *resolution;
+  
+  NSLog(@"Display.preferences: selected monitor with title: %@", mName);
+
+  for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
     {
-    case 0: // Arrangement
-      [sectionBox setContentView:arrangementView];
-      break;
-    case 1: // Size & Colors
-      [sectionBox setContentView:sizecolorView];
-      break;
-    case 2: // Power
-      [sectionBox setContentView:powerView];
-      break;
-    default:
-      NSLog(@"Display.preferences: Unknow section button was clicked!");
+      if ([[d outputName] isEqualToString:mName])
+        {
+          NSArray      *m = [d allModes];
+          NSDictionary *r;
+
+          // Resolution
+          [resolutionBtn removeAllItems];
+          [rateBtn removeAllItems];
+          for (NSDictionary *res in m)
+            {
+              size = NSSizeFromString([res objectForKey:@"Dimensions"]);
+              resolution = [NSString stringWithFormat:@"%.0f x %.0f",
+                                     size.width, size.height];
+              [resolutionBtn addItemWithTitle:resolution];
+              [rateBtn addItemWithTitle:[[res objectForKey:@"Rate"] stringValue]];
+            }
+          r = [d mode];
+          [resolutionBtn selectItemAtIndex:[m indexOfObject:r]];
+          [rateBtn selectItemWithTitle:[[r objectForKey:@"Rate"] stringValue]];
+
+          // Gamma
+          CGFloat gamma = [d gammaValue].red;
+          [gammaSlider setFloatValue:1.0/gamma];
+          [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
+
+          // Brightness
+          CGFloat brightness = [d gammaBrightness];
+          [brightnessSlider setFloatValue:brightness];
+          [brightnessField
+             setStringValue:[NSString stringWithFormat:@"%.0f", brightness*100]];
+        }
     }
 }
 
-@end
+- (IBAction)sliderMoved:(id)sender
+{
+  if (sender == gammaSlider)
+    {
+      // NSLog(@"Gamma slider moved");
+      [gammaField setFloatValue:[sender floatValue]];
+    }
+  else if (sender == brightnessSlider)
+    {
+      // NSLog(@"Brightness slider moved");
+      [brightnessField setFloatValue:[sender floatValue]*100];
+    }
+  else
+    NSLog(@"Unknown slider moved");  
+}
 
+//
+// Delegate methods
+//
+- (NSString *)browser:(NSBrowser *)sender titleOfColumn:(NSInteger)column
+{
+  if (column > 0)
+    return @"";
+
+  return @"Monitors";
+}
+
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+            inMatrix:(NSMatrix *)matrix
+{
+  NSArray *displays;
+  NSBrowserCell *bc;
+
+  if (column > 0)
+    return;
+  
+  displays = [[NXScreen sharedScreen] connectedDisplays];
+    
+  for (NXDisplay *d in displays)
+    {
+      [matrix addRow];
+      bc = [matrix cellAtRow:[matrix numberOfRows]-1 column:0];
+      [bc setTitle:[d outputName]];
+      [bc setLeaf:YES];
+      [bc setRefusesFirstResponder:YES];
+    }
+}
+
+- (BOOL)browser:(NSBrowser *)sender
+      selectRow:(NSInteger)row
+       inColumn:(NSInteger)column
+{
+  // Update preferences
+  // NSLog(@"Display.preferences: selected monitor with title: %@",
+  //       [[[sender matrixInColumn:column] cellAtRow:row column:0] title]);
+  return YES;
+}
+
+@end

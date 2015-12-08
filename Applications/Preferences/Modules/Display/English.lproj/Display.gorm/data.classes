@@ -2,6 +2,8 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     Display = {
 	Actions = (
+	    "monitorsListClicked:",
+	    "sliderMoved:"
 	);
 	Outlets = (
 	    view,
@@ -16,6 +18,13 @@
 	    monitorsScroll,
 	    rateBtn,
 	    resolutionBtn
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "monitorsListClicked:",
+	    "sliderMoved:"
 	);
 	Super = NSObject;
     };
