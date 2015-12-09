@@ -72,6 +72,8 @@ static NSMutableDictionary      *domain = nil;
 {
   [view retain];
   [window release];
+
+  NSLog(@"awakeFromNib");
 }
 
 - (NSView *)view
@@ -80,10 +82,18 @@ static NSMutableDictionary      *domain = nil;
     {
       if (![NSBundle loadNibNamed:@"Display" owner:self])
         {
-          NSLog (@"Display.preferences: Could not load nib \"Display\", aborting.");
+          NSLog (@"Display.preferences: Could not load NIB, aborting.");
           return nil;
         }
     }
+
+  NSLog(@"view");
+
+  while ([monitorsList isLoaded] == NO)
+    {
+    }
+  
+  [monitorsList selectRow:0 inColumn:0];
   
   return view;
 }
@@ -103,11 +113,13 @@ static NSMutableDictionary      *domain = nil;
 //
 - (IBAction)monitorsListClicked:(id)sender
 {
-  NSString *mName = [[[sender matrixInColumn:0] selectedCell] title];
+  // NSString *mName = [[[sender matrixInColumn:0] selectedCell] title];
+  NSString *mName = [[sender selectedCell] title];
   NSSize   size;
   NSString *resolution;
-  
-  NSLog(@"Display.preferences: selected monitor with title: %@", mName);
+
+  NSLog(@"Display.preferences: selected monitor with title: %@ (%@ ==== %@)",
+        mName, sender, [sender matrixInColumn:0]);
 
   for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
     {
@@ -115,6 +127,7 @@ static NSMutableDictionary      *domain = nil;
         {
           NSArray      *m = [d allModes];
           NSDictionary *r;
+          NSString     *rateString;
 
           // Resolution
           [resolutionBtn removeAllItems];
@@ -125,11 +138,15 @@ static NSMutableDictionary      *domain = nil;
               resolution = [NSString stringWithFormat:@"%.0f x %.0f",
                                      size.width, size.height];
               [resolutionBtn addItemWithTitle:resolution];
-              [rateBtn addItemWithTitle:[[res objectForKey:@"Rate"] stringValue]];
+              rateString = [NSString stringWithFormat:@"%.1f",
+                              round([[res objectForKey:@"Rate"] floatValue])];
+              [rateBtn addItemWithTitle:rateString];
             }
           r = [d mode];
           [resolutionBtn selectItemAtIndex:[m indexOfObject:r]];
-          [rateBtn selectItemWithTitle:[[r objectForKey:@"Rate"] stringValue]];
+          rateString = [NSString stringWithFormat:@"%.1f",
+                            roundf([[r objectForKey:@"Rate"] floatValue])];
+          [rateBtn selectItemWithTitle:rateString];
 
           // Gamma
           CGFloat gamma = [d gammaValue].red;
@@ -181,7 +198,9 @@ static NSMutableDictionary      *domain = nil;
 
   if (column > 0)
     return;
-  
+
+  NSLog(@"browser:createRowsForColumn:inMatrix:");
+ 
   displays = [[NXScreen sharedScreen] connectedDisplays];
     
   for (NXDisplay *d in displays)
@@ -191,17 +210,31 @@ static NSMutableDictionary      *domain = nil;
       [bc setTitle:[d outputName]];
       [bc setLeaf:YES];
       [bc setRefusesFirstResponder:YES];
+      if (![d isActive])
+        {
+          [bc setEnabled:NO];
+        }
     }
+  // [sender loadedCellAtRow:0 column:0];
+  [sender selectRow:0 inColumn:0];
 }
 
-- (BOOL)browser:(NSBrowser *)sender
-      selectRow:(NSInteger)row
-       inColumn:(NSInteger)column
+- (void) browser:(NSBrowser *)sender
+ willDisplayCell:(id)cell
+           atRow:(NSInteger)row
+          column:(NSInteger)column
 {
-  // Update preferences
-  // NSLog(@"Display.preferences: selected monitor with title: %@",
-  //       [[[sender matrixInColumn:column] cellAtRow:row column:0] title]);
-  return YES;
+  NSLog(@"browser:willDisplayCell: %@ (selected=%@)",
+        [cell title], [[sender selectedCell] title]);
+}
+
+- (void) browser:(NSBrowser *)sender
+       selectRow:(NSInteger)row
+        inColumn:(NSInteger)column
+{
+  NSLog(@"browser:selectRow:inColumn: %@",
+        [[sender loadedCellAtRow:row column:column] title]);
+  [self monitorsListClicked:sender];
 }
 
 @end

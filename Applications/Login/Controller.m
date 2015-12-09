@@ -568,11 +568,40 @@ void *alloc(int size)
 - (void)restart:sender
 {
   NSString *restartCmd;
+  NSAlert *alertPanel;
 
-  if (NSRunAlertPanel(_(@"Restart"),
-		      _(@"Do you really want to restart the computer?"),
-		      _(@"Restart"), _(@"Cancel"), nil) 
-      == NSAlertDefaultReturn)
+  // {
+    NSRect   panelFrame, displayFrame;
+    NXScreen *rScreen;
+    NSPoint  newOrigin;
+    
+    alertPanel = NSGetAlertPanel(@"Restart",
+                                 @"Do you really want to restart the computer?",
+                                 @"Restart", @"Cancel", nil);
+    [alertPanel sizePanelToFit];
+    // panelFrame = [[alertPanel window] frame];
+
+    // rScreen = [[NXScreen alloc] init];
+    // displayFrame = [[rScreen mainDisplay] frame];
+    // [rScreen release];
+    displayFrame = [[[alertPanel window] screen] frame];
+
+    // Calculate the new position of the window.
+    // newOrigin.x = displayFrame.size.width/2 - panelFrame.size.width/2;
+    newOrigin.x = displayFrame.size.width/2;
+    newOrigin.x += displayFrame.origin.x;
+    newOrigin.y = displayFrame.size.height/2;
+    // newOrigin.y += gScreenRect.size.height - displayFrame.size.height;
+
+    // Set the origin
+    [[alertPanel window] setFrameOrigin:newOrigin];
+    // [[alertPanel window] makeKeyAndOrderFront:self];
+  // }
+
+  // if (NSRunAlertPanel(_(@"Restart"),
+  //       	      _(@"Do you really want to restart the computer?"),
+  //       	      _(@"Restart"), _(@"Cancel"), nil) 
+  if ([alertPanel runModal] == NSAlertDefaultReturn)
     {
       if ((restartCmd = [self rebootCommand]) == nil)
 	{
