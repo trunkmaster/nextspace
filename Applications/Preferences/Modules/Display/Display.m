@@ -73,13 +73,12 @@ static NSMutableDictionary      *domain = nil;
   [view retain];
   [window release];
 
-  [resolutionBtn removeAllItems];
-  [rateBtn removeAllItems];
-
+  [monitorsList loadColumnZero];
+  [monitorsList selectRow:0 inColumn:0];
+  [self monitorsListClicked:monitorsList];
+  
   [rotationBtn setEnabled:NO];
   [reflectionBtn setEnabled:NO];
-
-  NSLog(@"awakeFromNib");
 }
 
 - (NSView *)view
@@ -93,10 +92,6 @@ static NSMutableDictionary      *domain = nil;
         }
     }
 
-  NSLog(@"view");
-
-  [monitorsList selectRow:0 inColumn:0];
-  
   return view;
 }
 
@@ -115,13 +110,11 @@ static NSMutableDictionary      *domain = nil;
 //
 - (IBAction)monitorsListClicked:(id)sender
 {
-  // NSString *mName = [[[sender matrixInColumn:0] selectedCell] title];
   NSString *mName = [[sender selectedCell] title];
   NSSize   size;
   NSString *resolution;
 
-  NSLog(@"Display.preferences: selected monitor with title: %@ (%@ ==== %@)",
-        mName, sender, [sender matrixInColumn:0]);
+  // NSLog(@"Display.preferences: selected monitor with title: %@", mName);
 
   for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
     {
@@ -244,29 +237,29 @@ static NSMutableDictionary      *domain = nil;
       [bc setTitle:[d outputName]];
       [bc setLeaf:YES];
       [bc setRefusesFirstResponder:YES];
-      // if (![d isActive])
-      //   {
-      //     [bc setEnabled:NO];
-      //   }
+      if (![d isActive])
+        {
+          [bc setEnabled:NO];
+        }
     }
 }
 
-- (void) browser:(NSBrowser *)sender
- willDisplayCell:(id)cell
-           atRow:(NSInteger)row
-          column:(NSInteger)column
-{
-  NSLog(@"browser:willDisplayCell: %@ (selected=%@)",
-        [cell title], [[sender selectedCell] title]);
-}
+// - (void) browser:(NSBrowser *)sender
+//  willDisplayCell:(id)cell
+//            atRow:(NSInteger)row
+//           column:(NSInteger)column
+// {
+//   NSLog(@"browser:willDisplayCell: %@ (selected=%@)",
+//         [cell title], [[sender selectedCell] title]);
+// }
 
-- (void) browser:(NSBrowser *)sender
-       selectRow:(NSInteger)row
-        inColumn:(NSInteger)column
-{
-  NSLog(@"browser:selectRow:inColumn: %@",
-        [[sender loadedCellAtRow:row column:column] title]);
-  [self monitorsListClicked:sender];
-}
+// - (void) browser:(NSBrowser *)sender
+//        selectRow:(NSInteger)row
+//         inColumn:(NSInteger)column
+// {
+//   NSLog(@"browser:selectRow:inColumn: %@",
+//         [[sender loadedCellAtRow:row column:column] title]);
+//   [self monitorsListClicked:sender];
+// }
 
 @end
