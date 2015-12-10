@@ -3,7 +3,9 @@
     Display = {
 	Actions = (
 	    "monitorsListClicked:",
-	    "sliderMoved:"
+	    "sliderMoved:",
+	    "resolutionClicked:",
+	    "rateClicked:"
 	);
 	Outlets = (
 	    view,
@@ -17,13 +19,17 @@
 	    monitorsList,
 	    monitorsScroll,
 	    rateBtn,
-	    resolutionBtn
+	    resolutionBtn,
+	    reflectionBtn,
+	    rotationBtn
 	);
 	Super = NSObject;
     };
     FirstResponder = {
 	Actions = (
 	    "monitorsListClicked:",
+	    "rateClicked:",
+	    "resolutionClicked:",
 	    "sliderMoved:"
 	);
 	Super = NSObject;

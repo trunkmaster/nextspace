@@ -43,6 +43,8 @@
   id monitorsScroll;
   id rateBtn;
   id resolutionBtn;
+  id rotationBtn;
+  id reflectionBtn;
 
   NSImage *image;
 }

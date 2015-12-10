@@ -73,6 +73,12 @@ static NSMutableDictionary      *domain = nil;
   [view retain];
   [window release];
 
+  [resolutionBtn removeAllItems];
+  [rateBtn removeAllItems];
+
+  [rotationBtn setEnabled:NO];
+  [reflectionBtn setEnabled:NO];
+
   NSLog(@"awakeFromNib");
 }
 
@@ -89,10 +95,6 @@ static NSMutableDictionary      *domain = nil;
 
   NSLog(@"view");
 
-  while ([monitorsList isLoaded] == NO)
-    {
-    }
-  
   [monitorsList selectRow:0 inColumn:0];
   
   return view;
@@ -127,7 +129,6 @@ static NSMutableDictionary      *domain = nil;
         {
           NSArray      *m = [d allModes];
           NSDictionary *r;
-          NSString     *rateString;
 
           // Resolution
           [resolutionBtn removeAllItems];
@@ -135,23 +136,21 @@ static NSMutableDictionary      *domain = nil;
           for (NSDictionary *res in m)
             {
               size = NSSizeFromString([res objectForKey:@"Dimensions"]);
-              resolution = [NSString stringWithFormat:@"%.0f x %.0f",
+              resolution = [NSString stringWithFormat:@"%.0fx%.0f",
                                      size.width, size.height];
               [resolutionBtn addItemWithTitle:resolution];
-              rateString = [NSString stringWithFormat:@"%.1f",
-                              round([[res objectForKey:@"Rate"] floatValue])];
-              [rateBtn addItemWithTitle:rateString];
             }
           r = [d mode];
           [resolutionBtn selectItemAtIndex:[m indexOfObject:r]];
-          rateString = [NSString stringWithFormat:@"%.1f",
-                            roundf([[r objectForKey:@"Rate"] floatValue])];
-          [rateBtn selectItemWithTitle:rateString];
+          // Rate button filled here. Items tagged with resolution description
+          // object in [NSDisplay allModes] array
+          [self resolutionClicked:resolutionBtn];
 
           // Gamma
           CGFloat gamma = [d gammaValue].red;
           [gammaSlider setFloatValue:1.0/gamma];
-          [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
+          [gammaField
+            setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
 
           // Brightness
           CGFloat brightness = [d gammaBrightness];
@@ -160,6 +159,41 @@ static NSMutableDictionary      *domain = nil;
              setStringValue:[NSString stringWithFormat:@"%.0f", brightness*100]];
         }
     }
+}
+
+- (IBAction)resolutionClicked:(id)sender
+{
+  NSString  *mName = [[monitorsList selectedCell] title];
+  NSString  *resString = [sender titleOfSelectedItem]; // "1920 x 1200"
+  NXDisplay *d = [[NXScreen sharedScreen] displayWithName:mName];
+  NSArray   *m = [d allModes];
+  NSString  *rateString;
+  NSDictionary *res;
+
+  [rateBtn removeAllItems];
+  for (NSInteger i = 0; i < [m count]; i++)
+    {
+      res = [m objectAtIndex:i];
+      if ([[res objectForKey:@"Name"] rangeOfString:resString].location !=
+          NSNotFound)
+        {
+          rateString = [NSString stringWithFormat:@"%.1f",
+                               [[res objectForKey:@"Rate"] floatValue]];
+          [rateBtn addItemWithTitle:rateString];
+          [[rateBtn itemWithTitle:rateString] setRepresentedObject:res];
+        }
+    }
+  NSLog(@"Selected resolution: %@",
+        [[rateBtn selectedCell] representedObject]);
+}
+
+- (IBAction)rateClicked:(id)sender
+{
+  // NSString  *mName = [[monitorsList selectedCell] title];
+  // NXDisplay *d = [[NXScreen sharedScreen] displayWithName:mName];
+
+  NSLog(@"rateClicked: Selected resolution: %@",
+        [[rateBtn selectedCell] representedObject]);
 }
 
 - (IBAction)sliderMoved:(id)sender
@@ -210,13 +244,11 @@ static NSMutableDictionary      *domain = nil;
       [bc setTitle:[d outputName]];
       [bc setLeaf:YES];
       [bc setRefusesFirstResponder:YES];
-      if (![d isActive])
-        {
-          [bc setEnabled:NO];
-        }
+      // if (![d isActive])
+      //   {
+      //     [bc setEnabled:NO];
+      //   }
     }
-  // [sender loadedCellAtRow:0 column:0];
-  [sender selectRow:0 inColumn:0];
 }
 
 - (void) browser:(NSBrowser *)sender
