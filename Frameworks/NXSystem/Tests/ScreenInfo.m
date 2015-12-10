@@ -131,7 +131,7 @@ int main(int argc, const char ** argv)
       //     NSLog(@"\t\t%@", [res objectForKey:@"Name"]);
       //   }
       
-      if (isActive)
+      // if (isActive)
         {
           NSDictionary *mode = [display mode];
           if (mode)
