@@ -147,7 +147,7 @@ static NSMutableDictionary      *domain = nil;
 
           // Brightness
           CGFloat brightness = [d gammaBrightness];
-          [brightnessSlider setFloatValue:brightness];
+          [brightnessSlider setFloatValue:brightness*100];
           [brightnessField
              setStringValue:[NSString stringWithFormat:@"%.0f", brightness*100]];
         }
@@ -194,19 +194,20 @@ static NSMutableDictionary      *domain = nil;
   if (sender == gammaSlider)
     {
       // NSLog(@"Gamma slider moved");
-      [gammaField setFloatValue:[sender floatValue]];
+      [gammaField
+        setStringValue:[NSString stringWithFormat:@"%.2f", [sender floatValue]]];
     }
   else if (sender == brightnessSlider)
     {
       // NSLog(@"Brightness slider moved");
-      [brightnessField setFloatValue:[sender floatValue]*100];
+      [brightnessField setIntValue:[sender intValue]];
     }
   else
     NSLog(@"Unknown slider moved");  
 }
 
 //
-// Delegate methods
+// Browser Delegate methods
 //
 - (NSString *)browser:(NSBrowser *)sender titleOfColumn:(NSInteger)column
 {
@@ -262,4 +263,29 @@ static NSMutableDictionary      *domain = nil;
 //   [self monitorsListClicked:sender];
 // }
 
+//
+// TextField Delegate methods
+//
+// - (BOOL)textShouldEndEditing:(NSText *)textObject
+// {
+//   NSString *text = [textObject text];
+
+  
+// }
+
+- (void)controlTextDidEndEditing:(NSNotification *)aNotification
+{
+  id tf = [aNotification object];
+
+  if (tf == gammaField)
+    {
+      [gammaSlider setFloatValue:[tf floatValue]];
+    }
+  else if (tf == brightnessField)
+    {
+      [brightnessSlider setFloatValue:[tf floatValue]];
+    }
+
+}
+  
 @end
