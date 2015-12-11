@@ -99,6 +99,7 @@ typedef struct _NXGammaValue NXGammaValue;
 - (BOOL)isMain;
 - (void)setMain:(BOOL)yn;
 
+- (void)getGamma;
 - (NXGammaValue)gammaValue;
 - (CGFloat)gammaBrightness;
 
