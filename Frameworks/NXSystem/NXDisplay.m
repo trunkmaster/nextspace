@@ -176,8 +176,7 @@
   [self parseProperties];
 
   // Set initial values to gammaValue and gammaBrightness
-  gammaValue.red = gammaValue.green = gammaValue.blue = 1.0;
-  gammaBrightness = 1.0;
+  [self getGamma];
 
   return self;
 }
@@ -477,25 +476,36 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
-  
-  XRRCrtcGamma *crtc_gamma;
-  CGFloat i1, v1, i2, v2;
-  int size, middle, last_best, last_red, last_green, last_blue;
-  CARD16 *best_array;
+  XRRCrtcGamma	     *crtc_gamma;
+  CGFloat            i1, v1, i2, v2;
+  int                size, middle, last_best, last_red, last_green, last_blue;
+  CARD16             *best_array;
 
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
+
+  // Default values
+  gammaValue.red = 1.0;
+  gammaValue.green = 1.0;
+  gammaValue.blue = 1.0;
+  gammaBrightness = 1.0;
   
+  if (!output_info->crtc)
+    {
+      return;
+    }
+
   size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
   if (!size)
     {
-      NSLog(@"Failed to get size of gamma for output %s", output_info->name);
+      NSLog(@"NXDisplay: Failed to get size of gamma for output %s",
+            output_info->name);
       return;
     }
 
   crtc_gamma = XRRGetCrtcGamma(xDisplay, output_info->crtc);
   if (!crtc_gamma)
     {
-      NSLog(@"Failed to get gamma for output %s", output_info->name);
+      NSLog(@"NXDisplay: Failed to get gamma for output %s", output_info->name);
       return;
     }
 
@@ -518,16 +528,20 @@ find_last_non_clamped(CARD16 array[], int size)
   last_blue = find_last_non_clamped(crtc_gamma->blue, size);
   best_array = crtc_gamma->red;
   last_best = last_red;
-  if (last_green > last_best) {
-    last_best = last_green;
-    best_array = crtc_gamma->green;
-  }
-  if (last_blue > last_best) {
-    last_best = last_blue;
-    best_array = crtc_gamma->blue;
-  }
+  if (last_green > last_best)
+    {
+      last_best = last_green;
+      best_array = crtc_gamma->green;
+    }
+  if (last_blue > last_best)
+    {
+      last_best = last_blue;
+      best_array = crtc_gamma->blue;
+    }
   if (last_best == 0)
-    last_best = 1;
+    {
+      last_best = 1;
+    }
 
   middle = last_best / 2;
   i1 = (CGFloat)(middle + 1) / size;
@@ -537,9 +551,6 @@ find_last_non_clamped(CARD16 array[], int size)
   if (v2 < 0.0001)
     { /* The screen is black */
       gammaBrightness = 0;
-      gammaValue.red = 1;
-      gammaValue.green = 1;
-      gammaValue.blue = 1;
     }
   else
     {
@@ -551,12 +562,15 @@ find_last_non_clamped(CARD16 array[], int size)
         {
           gammaBrightness = exp((log(v2)*log(i1) - log(v1)*log(i2))/log(i1/i2));
         }
-      gammaValue.red = log((CGFloat)(crtc_gamma->red[last_red / 2]) / gammaBrightness
-                           / 65535) / log((CGFloat)((last_red / 2) + 1) / size);
-      gammaValue.green = log((CGFloat)(crtc_gamma->green[last_green / 2]) / gammaBrightness
-                             / 65535) / log((CGFloat)((last_green / 2) + 1) / size);
-      gammaValue.blue = log((double)(crtc_gamma->blue[last_blue / 2]) / gammaBrightness
-                            / 65535) / log((CGFloat)((last_blue / 2) + 1) / size);
+      gammaValue.red =
+        log((CGFloat)(crtc_gamma->red[last_red/2])/gammaBrightness/65535)
+        / log((CGFloat)((last_red/2) + 1) / size);
+      gammaValue.green =
+        log((CGFloat)(crtc_gamma->green[last_green/2])/gammaBrightness/65535)
+        / log((CGFloat)((last_green/2) + 1) / size);
+      gammaValue.blue =
+        log((double)(crtc_gamma->blue[last_blue/2])/gammaBrightness/65535)
+        / log((CGFloat)((last_blue / 2) + 1) / size);
     }
 
   XRRFreeGamma(crtc_gamma);

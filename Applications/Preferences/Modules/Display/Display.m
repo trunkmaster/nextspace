@@ -30,8 +30,6 @@
 #import <AppKit/NSBox.h>
 #import <AppKit/NSImage.h>
 #import <AppKit/NSPopUpButton.h>
-// #import <AppKit/NSTableView.h>
-// #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSBrowserCell.h>
 #import <AppKit/NSMatrix.h>
@@ -47,6 +45,7 @@
 static NSBundle                 *bundle = nil;
 static NSUserDefaults           *defaults = nil;
 static NSMutableDictionary      *domain = nil;
+static NXDisplay		*selectedDisplay = nil;
 
 - (id)init
 {
@@ -74,7 +73,18 @@ static NSMutableDictionary      *domain = nil;
   [window release];
 
   [monitorsList loadColumnZero];
-  [monitorsList selectRow:0 inColumn:0];
+  {
+    NSArray *cells = [[monitorsList matrixInColumn:0] cells];
+    int i;
+    for (i = 0; i < [cells count]; i++)
+      {
+        if ([[cells objectAtIndex:i] isEnabled] == YES)
+          {
+            [monitorsList selectRow:i inColumn:0];
+            break;
+          }
+      }
+  }
   [self monitorsListClicked:monitorsList];
   
   [rotationBtn setEnabled:NO];
@@ -110,48 +120,41 @@ static NSMutableDictionary      *domain = nil;
 //
 - (IBAction)monitorsListClicked:(id)sender
 {
-  NSString *mName = [[sender selectedCell] title];
-  NSSize   size;
-  NSString *resolution;
+  NSArray      *m;
+  NSSize       size;
+  NSString     *resolution;
+  NSDictionary *r;
 
+  selectedDisplay = [[sender selectedCell] representedObject];
+  m = [selectedDisplay allModes];
   // NSLog(@"Display.preferences: selected monitor with title: %@", mName);
 
-  for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
+  // Resolution
+  [resolutionBtn removeAllItems];
+  for (NSDictionary *res in m)
     {
-      if ([[d outputName] isEqualToString:mName])
-        {
-          NSArray      *m = [d allModes];
-          NSDictionary *r;
-
-          // Resolution
-          [resolutionBtn removeAllItems];
-          [rateBtn removeAllItems];
-          for (NSDictionary *res in m)
-            {
-              size = NSSizeFromString([res objectForKey:@"Dimensions"]);
-              resolution = [NSString stringWithFormat:@"%.0fx%.0f",
-                                     size.width, size.height];
-              [resolutionBtn addItemWithTitle:resolution];
-            }
-          r = [d mode];
-          [resolutionBtn selectItemAtIndex:[m indexOfObject:r]];
-          // Rate button filled here. Items tagged with resolution description
-          // object in [NSDisplay allModes] array
-          [self resolutionClicked:resolutionBtn];
-
-          // Gamma
-          CGFloat gamma = [d gammaValue].red;
-          [gammaSlider setFloatValue:1.0/gamma];
-          [gammaField
-            setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
-
-          // Brightness
-          CGFloat brightness = [d gammaBrightness];
-          [brightnessSlider setFloatValue:brightness*100];
-          [brightnessField
-             setStringValue:[NSString stringWithFormat:@"%.0f", brightness*100]];
-        }
+      size = NSSizeFromString([res objectForKey:@"Dimensions"]);
+      resolution = [NSString stringWithFormat:@"%.0fx%.0f",
+                             size.width, size.height];
+      [resolutionBtn addItemWithTitle:resolution];
     }
+  r = [selectedDisplay mode];
+  [resolutionBtn selectItemAtIndex:[m indexOfObject:r]];
+  // Rate button filled here. Items tagged with resolution description
+  // object in [NSDisplay allModes] array
+  [self resolutionClicked:resolutionBtn];
+
+  // Gamma
+  CGFloat gamma = [selectedDisplay gammaValue].red;
+  [gammaSlider setFloatValue:1.0/gamma];
+  [gammaField
+    setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
+
+  // Brightness
+  CGFloat brightness = [selectedDisplay gammaBrightness];
+  [brightnessSlider setFloatValue:brightness * 100];
+  [brightnessField
+    setStringValue:[NSString stringWithFormat:@"%.0f", brightness * 100]];
 }
 
 - (IBAction)resolutionClicked:(id)sender
@@ -170,14 +173,17 @@ static NSMutableDictionary      *domain = nil;
       if ([[res objectForKey:@"Name"] rangeOfString:resString].location !=
           NSNotFound)
         {
-          rateString = [NSString stringWithFormat:@"%.1f",
+          rateString = [NSString stringWithFormat:@"%.1f Hz",
                                [[res objectForKey:@"Rate"] floatValue]];
           [rateBtn addItemWithTitle:rateString];
           [[rateBtn itemWithTitle:rateString] setRepresentedObject:res];
         }
     }
-  NSLog(@"Selected resolution: %@",
-        [[rateBtn selectedCell] representedObject]);
+
+  [rateBtn setEnabled:([[rateBtn itemArray] count] == 1) ? NO : YES];
+  
+  // NSLog(@"Selected resolution: %@",
+  //       [[rateBtn selectedCell] representedObject]);
 }
 
 - (IBAction)rateClicked:(id)sender
@@ -185,22 +191,28 @@ static NSMutableDictionary      *domain = nil;
   // NSString  *mName = [[monitorsList selectedCell] title];
   // NXDisplay *d = [[NXScreen sharedScreen] displayWithName:mName];
 
-  NSLog(@"rateClicked: Selected resolution: %@",
-        [[rateBtn selectedCell] representedObject]);
+  // NSLog(@"rateClicked: Selected resolution: %@",
+  //       [[rateBtn selectedCell] representedObject]);
 }
 
 - (IBAction)sliderMoved:(id)sender
 {
+  CGFloat value = [sender floatValue];
+  
   if (sender == gammaSlider)
     {
       // NSLog(@"Gamma slider moved");
-      [gammaField
-        setStringValue:[NSString stringWithFormat:@"%.2f", [sender floatValue]]];
+      [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", value]];
+      [selectedDisplay
+        setGammaCorrectionValue:value
+                     brightness:[brightnessSlider floatValue]/100];
     }
   else if (sender == brightnessSlider)
     {
       // NSLog(@"Brightness slider moved");
       [brightnessField setIntValue:[sender intValue]];
+      [selectedDisplay setGammaCorrectionValue:[gammaSlider floatValue]
+                                    brightness:value/100];
     }
   else
     NSLog(@"Unknown slider moved");  
@@ -238,10 +250,11 @@ static NSMutableDictionary      *domain = nil;
       [bc setTitle:[d outputName]];
       [bc setLeaf:YES];
       [bc setRefusesFirstResponder:YES];
-      if (![d isActive])
-        {
-          [bc setEnabled:NO];
-        }
+      [bc setRepresentedObject:d];
+      // if (![d isActive])
+      //   {
+      //     [bc setEnabled:NO];
+      //   }
     }
 }
 
@@ -275,17 +288,19 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {
-  id tf = [aNotification object];
+  id      tf = [aNotification object];
+  CGFloat value = [tf floatValue];
 
   if (tf == gammaField)
     {
-      [gammaSlider setFloatValue:[tf floatValue]];
+      [gammaSlider setFloatValue:value];
+      [selectedDisplay setGammaCorrectionValue:value];
     }
   else if (tf == brightnessField)
     {
-      [brightnessSlider setFloatValue:[tf floatValue]];
+      [brightnessSlider setFloatValue:value];
+      [selectedDisplay setGammaBrightness:value/100];
     }
-
 }
   
 @end
