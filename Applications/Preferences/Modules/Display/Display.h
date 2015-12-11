@@ -49,5 +49,10 @@
   NSImage *image;
 }
 
+//
+// Helper methods
+//
+- (void)fillRateButton;
+
 @end
 

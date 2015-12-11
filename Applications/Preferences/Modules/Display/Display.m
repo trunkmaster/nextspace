@@ -116,6 +116,33 @@ static NXDisplay		*selectedDisplay = nil;
 }
 
 //
+// Helper methods
+//
+- (void)fillRateButton
+{
+  NSString     *resString = [resolutionBtn titleOfSelectedItem];
+  NSArray      *m = [selectedDisplay allModes];
+  NSString     *rateString;
+  NSDictionary *res;
+
+  [rateBtn removeAllItems];
+  for (NSInteger i = 0; i < [m count]; i++)
+    {
+      res = [m objectAtIndex:i];
+      if ([[res objectForKey:@"Name"] rangeOfString:resString].location !=
+          NSNotFound)
+        {
+          rateString = [NSString stringWithFormat:@"%.1f Hz",
+                               [[res objectForKey:@"Rate"] floatValue]];
+          [rateBtn addItemWithTitle:rateString];
+          [[rateBtn itemWithTitle:rateString] setRepresentedObject:res];
+        }
+    }
+
+  [rateBtn setEnabled:([[rateBtn itemArray] count] == 1) ? NO : YES];
+}
+
+//
 // Action methods
 //
 - (IBAction)monitorsListClicked:(id)sender
@@ -139,10 +166,13 @@ static NXDisplay		*selectedDisplay = nil;
       [resolutionBtn addItemWithTitle:resolution];
     }
   r = [selectedDisplay mode];
-  [resolutionBtn selectItemAtIndex:[m indexOfObject:r]];
+  size = NSSizeFromString([r objectForKey:@"Dimensions"]);
+  resolution = [NSString stringWithFormat:@"%.0fx%.0f",
+                         size.width, size.height];
+  [resolutionBtn selectItemWithTitle:resolution];
   // Rate button filled here. Items tagged with resolution description
   // object in [NSDisplay allModes] array
-  [self resolutionClicked:resolutionBtn];
+  [self fillRateButton];
 
   // Gamma
   CGFloat gamma = [selectedDisplay gammaValue].red;
@@ -159,31 +189,22 @@ static NXDisplay		*selectedDisplay = nil;
 
 - (IBAction)resolutionClicked:(id)sender
 {
-  NSString  *mName = [[monitorsList selectedCell] title];
-  NSString  *resString = [sender titleOfSelectedItem]; // "1920 x 1200"
-  NXDisplay *d = [[NXScreen sharedScreen] displayWithName:mName];
-  NSArray   *m = [d allModes];
-  NSString  *rateString;
-  NSDictionary *res;
-
-  [rateBtn removeAllItems];
-  for (NSInteger i = 0; i < [m count]; i++)
-    {
-      res = [m objectAtIndex:i];
-      if ([[res objectForKey:@"Name"] rangeOfString:resString].location !=
-          NSNotFound)
-        {
-          rateString = [NSString stringWithFormat:@"%.1f Hz",
-                               [[res objectForKey:@"Rate"] floatValue]];
-          [rateBtn addItemWithTitle:rateString];
-          [[rateBtn itemWithTitle:rateString] setRepresentedObject:res];
-        }
-    }
-
-  [rateBtn setEnabled:([[rateBtn itemArray] count] == 1) ? NO : YES];
+  NSDictionary *currentResolution, *newResolution;
+    
+  [self fillRateButton];
   
-  // NSLog(@"Selected resolution: %@",
-  //       [[rateBtn selectedCell] representedObject]);
+  // Set resolution only to active display.
+  // Display activating implemented in 'Screen' Preferences' module.
+  currentResolution = [selectedDisplay mode];
+  newResolution = [[rateBtn selectedCell] representedObject];
+  if ([selectedDisplay isActive] && (newResolution != currentResolution))
+    {
+      [selectedDisplay setResolution:newResolution
+                              origin:[selectedDisplay frame].origin];
+    }
+  
+  NSLog(@"Selected resolution: %@",
+        [[rateBtn selectedCell] representedObject]);
 }
 
 - (IBAction)rateClicked:(id)sender
@@ -233,48 +254,22 @@ static NXDisplay		*selectedDisplay = nil;
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
-  NSArray *displays;
   NSBrowserCell *bc;
 
   if (column > 0)
     return;
 
-  NSLog(@"browser:createRowsForColumn:inMatrix:");
- 
-  displays = [[NXScreen sharedScreen] connectedDisplays];
-    
-  for (NXDisplay *d in displays)
+  for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
     {
       [matrix addRow];
       bc = [matrix cellAtRow:[matrix numberOfRows]-1 column:0];
       [bc setTitle:[d outputName]];
+      [bc setRepresentedObject:d];
       [bc setLeaf:YES];
       [bc setRefusesFirstResponder:YES];
-      [bc setRepresentedObject:d];
-      // if (![d isActive])
-      //   {
-      //     [bc setEnabled:NO];
-      //   }
+      [bc setEnabled:[d isActive]];
     }
 }
-
-// - (void) browser:(NSBrowser *)sender
-//  willDisplayCell:(id)cell
-//            atRow:(NSInteger)row
-//           column:(NSInteger)column
-// {
-//   NSLog(@"browser:willDisplayCell: %@ (selected=%@)",
-//         [cell title], [[sender selectedCell] title]);
-// }
-
-// - (void) browser:(NSBrowser *)sender
-//        selectRow:(NSInteger)row
-//         inColumn:(NSInteger)column
-// {
-//   NSLog(@"browser:selectRow:inColumn: %@",
-//         [[sender loadedCellAtRow:row column:column] title]);
-//   [self monitorsListClicked:sender];
-// }
 
 //
 // TextField Delegate methods
