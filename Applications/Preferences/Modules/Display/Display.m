@@ -142,6 +142,20 @@ static NXDisplay		*selectedDisplay = nil;
   [rateBtn setEnabled:([[rateBtn itemArray] count] == 1) ? NO : YES];
 }
 
+- (void)setResolution
+{
+  NSDictionary *currentResolution = [selectedDisplay mode];
+  NSDictionary *newResolution = [[rateBtn selectedCell] representedObject];
+    
+  // Set resolution only to active display.
+  // Display activating implemented in 'Screen' Preferences' module.
+  if ([selectedDisplay isActive] && (newResolution != currentResolution))
+    {
+      [selectedDisplay setResolution:newResolution
+                              origin:[selectedDisplay frame].origin];
+    }
+}
+
 //
 // Action methods
 //
@@ -189,31 +203,19 @@ static NXDisplay		*selectedDisplay = nil;
 
 - (IBAction)resolutionClicked:(id)sender
 {
-  NSDictionary *currentResolution, *newResolution;
-    
   [self fillRateButton];
+  [self setResolution];
   
-  // Set resolution only to active display.
-  // Display activating implemented in 'Screen' Preferences' module.
-  currentResolution = [selectedDisplay mode];
-  newResolution = [[rateBtn selectedCell] representedObject];
-  if ([selectedDisplay isActive] && (newResolution != currentResolution))
-    {
-      [selectedDisplay setResolution:newResolution
-                              origin:[selectedDisplay frame].origin];
-    }
-  
-  NSLog(@"Selected resolution: %@",
+  NSLog(@"resolutionClicked: Selected resolution: %@",
         [[rateBtn selectedCell] representedObject]);
 }
 
 - (IBAction)rateClicked:(id)sender
 {
-  // NSString  *mName = [[monitorsList selectedCell] title];
-  // NXDisplay *d = [[NXScreen sharedScreen] displayWithName:mName];
+  [self setResolution];
 
-  // NSLog(@"rateClicked: Selected resolution: %@",
-  //       [[rateBtn selectedCell] representedObject]);
+  NSLog(@"rateClicked: Selected resolution: %@",
+        [[rateBtn selectedCell] representedObject]);
 }
 
 - (IBAction)sliderMoved:(id)sender
