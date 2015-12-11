@@ -418,6 +418,7 @@ static id systemScreen = nil;
   NSMutableArray      *layout = [NSMutableArray new];
   NSDictionary        *resolution;
   NSPoint             origin = NSMakePoint(0.0,0.0);
+  NXGammaValue        gamma;
   
   for (NXDisplay *display in [self connectedDisplays])
     {
@@ -429,6 +430,13 @@ static id systemScreen = nil;
       [d setObject:NSStringFromSize([display physicalSize]) forKey:@"Size"];
       [d setObject:([display isActive]) ? @"YES" : @"NO" forKey:@"Active"];
       [d setObject:([display isMain]) ? @"YES" : @"NO" forKey:@"Main"];
+
+      gamma = [display gammaValue];
+      [d setObject:[NSNumber numberWithFloat:gamma.red] forKey:@"GammaRed"];
+      [d setObject:[NSNumber numberWithFloat:gamma.green] forKey:@"GammaGreen"];
+      [d setObject:[NSNumber numberWithFloat:gamma.blue] forKey:@"GammaBlue"];
+      [d setObject:[NSNumber numberWithFloat:[display gammaBrightness]]
+            forKey:@"GammaBrightness"];
       
       [layout addObject:d];
       [d release];
