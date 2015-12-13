@@ -578,7 +578,7 @@ void *alloc(int size)
     alertPanel = NSGetAlertPanel(@"Restart",
                                  @"Do you really want to restart the computer?",
                                  @"Restart", @"Cancel", nil);
-    [alertPanel sizePanelToFit];
+    // [alertPanel sizePanelToFit];
     // panelFrame = [[alertPanel window] frame];
 
     // rScreen = [[NXScreen alloc] init];

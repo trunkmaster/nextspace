@@ -99,19 +99,26 @@ typedef struct _NXGammaValue NXGammaValue;
 - (BOOL)isMain;
 - (void)setMain:(BOOL)yn;
 
-- (void)getGamma;
-- (NXGammaValue)gammaValue;
+- (void)_getGamma;
+// - (NXGammaValue)gammaValue;
+
+// Get
+- (NSDictionary *)gammaDescription;
+- (void)setGammaFromDescription:(NSDictionary *)gammaDict;
+- (CGFloat)gamma;
 - (CGFloat)gammaBrightness;
 
-- (void)setGammaCorrectionRed:(CGFloat)redGC
-                        green:(CGFloat)greenGC
-                         blue:(CGFloat)blueGC
-                   brightness:(CGFloat)gammaBrightness;
-- (void)setGammaCorrectionValue:(CGFloat)gammaValue
-                     brightness:(CGFloat)gammaBrightness;
-- (void)setGammaCorrectionValue:(CGFloat)value;
+// Set
+- (void)setGammaRed:(CGFloat)redGC
+              green:(CGFloat)greenGC
+               blue:(CGFloat)blueGC
+         brightness:(CGFloat)gammaBrightness;
+- (void)setGamma:(CGFloat)gammaValue
+      brightness:(CGFloat)gammaBrightness;
+- (void)setGamma:(CGFloat)value;
 - (void)setGammaBrightness:(CGFloat)brightness;
 
+// Other
 - (void)fadeToBlack;
 - (void)fadeToNormal;
 

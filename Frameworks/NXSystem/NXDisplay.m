@@ -176,7 +176,7 @@
   [self parseProperties];
 
   // Set initial values to gammaValue and gammaBrightness
-  [self getGamma];
+  [self _getGamma];
 
   return self;
 }
@@ -311,6 +311,8 @@
   RRCrtc             rr_crtc;
   XRRModeInfo        mode_info;
 
+  [self fadeToBlack];
+  
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   
   NSLog(@"Set resolution %@ for CRTC output %s", 
@@ -369,6 +371,8 @@
       modeRate = [[resolution objectForKey:@"Rate"] floatValue];
       frame = NSMakeRect(origin.x, origin.y, modeSize.width, modeSize.height);
     }
+  
+  [self fadeToNormal];
 }
 
 - (NSRect)frame
@@ -472,7 +476,7 @@ find_last_non_clamped(CARD16 array[], int size)
 }
 
 // from xrandr.c
-- (void)getGamma
+- (void)_getGamma
 {
   XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
@@ -577,45 +581,57 @@ find_last_non_clamped(CARD16 array[], int size)
 }
 
 //---
+// gamma - monitor gamma, for example 0.8
+// gamma correction - 1.0/gamma, e.g. 1.25
 
 - (NSDictionary *)gammaDescription
 {
   NSMutableDictionary *d = [[NSMutableDictionary alloc] init];
 
-  [d setObject:[NSNumber numberWithFloat:gammaValue.red] forKey:@"Red"];
+  [d setObject:[NSNumber numberWithFloat:gammaValue.red]   forKey:@"Red"];
   [d setObject:[NSNumber numberWithFloat:gammaValue.green] forKey:@"Green"];
-  [d setObject:[NSNumber numberWithFloat:gammaValue.blue] forKey:@"Blue"];
-  [d setObject:[NSNumber numberWithFloat:gammaBrightness] forKey:@"Brightness"];
+  [d setObject:[NSNumber numberWithFloat:gammaValue.blue]  forKey:@"Blue"];
+  [d setObject:[NSNumber numberWithFloat:gammaBrightness]  forKey:@"Brightness"];
 
   return [d autorelease];
 }
 
 - (void)setGammaFromDescription:(NSDictionary *)gammaDict
 {
+  if (!gammaDict || !isActive)
+    return;
+  
   [self
-    setGammaCorrectionRed:[[gammaDict objectForKey:@"Red"] floatValue]
-                    green:[[gammaDict objectForKey:@"Green"] floatValue]
-                     blue:[[gammaDict objectForKey:@"Blue"] floatValue]
-               brightness:[[gammaDict objectForKey:@"Brightness"] floatValue]];
+    setGammaRed:[[gammaDict objectForKey:@"Red"] floatValue]
+          green:[[gammaDict objectForKey:@"Green"] floatValue]
+           blue:[[gammaDict objectForKey:@"Blue"] floatValue]
+     brightness:[[gammaDict objectForKey:@"Brightness"] floatValue]];
 }
 
-- (NXGammaValue)gammaValue
-{
-  [self getGamma];
+// - (NXGammaValue)gammaValue
+// {
+//   [self getGamma];
   
-  return gammaValue;
+//   return gammaValue;
+// }
+- (CGFloat)gamma
+{
+  [self _getGamma];
+  
+  return (gammaValue.red + gammaValue.green + gammaValue.blue) / 3.0;
 }
+
 - (CGFloat)gammaBrightness
 {
-  [self getGamma];
+  [self _getGamma];
   
   return gammaBrightness;
 }
 
-- (void)setGammaCorrectionRed:(CGFloat)redGC
-                        green:(CGFloat)greenGC
-                         blue:(CGFloat)blueGC
-                   brightness:(CGFloat)brightness
+- (void)setGammaRed:(CGFloat)redGC
+              green:(CGFloat)greenGC
+               blue:(CGFloat)blueGC
+         brightness:(CGFloat)brightness
 {
   XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
@@ -671,29 +687,29 @@ find_last_non_clamped(CARD16 array[], int size)
   
 }
 
-- (void)setGammaCorrectionValue:(CGFloat)value
-                     brightness:(CGFloat)brightness
+- (void)setGamma:(CGFloat)value
+      brightness:(CGFloat)brightness
 {
-  [self setGammaCorrectionRed:value
-                        green:value
-                         blue:value
-                   brightness:brightness];
+  [self setGammaRed:value
+              green:value
+               blue:value
+         brightness:brightness];
 }
 
-- (void)setGammaCorrectionValue:(CGFloat)value
+- (void)setGamma:(CGFloat)value
 {
-  [self setGammaCorrectionRed:value
-                        green:value
-                         blue:value
-                   brightness:gammaBrightness];
+  [self setGammaRed:value
+              green:value
+               blue:value
+         brightness:gammaBrightness];
 }
 
 - (void)setGammaBrightness:(CGFloat)brightness
 {
-  [self setGammaCorrectionRed:gammaValue.red
-                        green:gammaValue.green
-                         blue:gammaValue.blue
-                   brightness:brightness];
+  [self setGammaRed:gammaValue.red
+              green:gammaValue.green
+               blue:gammaValue.blue
+         brightness:brightness];
 }
 
 // TODO: set fade speed by time interval
@@ -706,10 +722,10 @@ find_last_non_clamped(CARD16 array[], int size)
   
   for (float i=10; i >= 0; i--)
     {
-      [self setGammaCorrectionRed:gammaValue.red
-                            green:gammaValue.green
-                             blue:gammaValue.blue
-                         brightness:i/10];
+      [self setGammaRed:gammaValue.red
+                  green:gammaValue.green
+                   blue:gammaValue.blue
+             brightness:i/10];
     }
   
   // XUngrabServer(xDisplay);
@@ -725,10 +741,10 @@ find_last_non_clamped(CARD16 array[], int size)
   
   for (float i=0; i <= 10; i++)
     {
-      [self setGammaCorrectionRed:gammaValue.red
-                            green:gammaValue.green
-                             blue:gammaValue.blue
-                         brightness:i/10];
+      [self setGammaRed:gammaValue.red
+                  green:gammaValue.green
+                   blue:gammaValue.blue
+             brightness:i/10];
     }
 
   // XUngrabServer(xDisplay);
