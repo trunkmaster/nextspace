@@ -94,6 +94,8 @@ void setupDisplays()
       // TODO: after Workspace handle arranged monitors correctly set to 'YES'
       layout = [screen defaultLayout:NO];
     }
+
+  // Set resolutions, arrangement and gamma
   [screen applyDisplayLayout:layout];
 
   // Setup initial gamma and brightness
@@ -101,7 +103,7 @@ void setupDisplays()
   systemDisplays = [screen activeDisplays];
   for (NXDisplay *display in systemDisplays)
     {
-      [display setGammaCorrectionValue:1.25 brightness:0.0];
+      [display setGammaBrightness:0.0];
       if ([display isMain] && !mainDisplay)
         mainDisplay = display;
       else
@@ -112,8 +114,8 @@ void setupDisplays()
       [[systemDisplays objectAtIndex:0] setMain:YES];
     }
   [systemDisplays release];
-
-  [[screen currentLayout] writeToFile:DISPLAYS_CONFIG atomically:YES];
+  
+  [layout writeToFile:DISPLAYS_CONFIG atomically:YES];
 }
 
 int main(int argc, const char ** argv)

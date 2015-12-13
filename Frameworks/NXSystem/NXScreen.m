@@ -383,10 +383,12 @@ static id systemScreen = nil;
 // layout of existing monitors).
 - (NSArray *)defaultLayout:(BOOL)arrange
 {
-  NSMutableDictionary   *d;
-  NSMutableArray *layout = [NSMutableArray new];
-  NSDictionary   *resolution;
-  NSPoint        origin = NSMakePoint(0.0,0.0);
+  NSMutableDictionary *d;
+  NSMutableDictionary *gamma;
+  NSMutableArray      *layout = [NSMutableArray new];
+  NSDictionary        *resolution;
+  NSPoint             origin = NSMakePoint(0.0,0.0);
+  NSDictionary        *properties;
   
   for (NXDisplay *display in [self connectedDisplays])
     {
@@ -400,6 +402,16 @@ static id systemScreen = nil;
       [d setObject:NSStringFromSize([display physicalSize]) forKey:@"Size"];
       [d setObject:@"YES" forKey:@"Active"];
       [d setObject:([display isMain]) ? @"YES" : @"NO" forKey:@"Main"];
+      
+      gamma = [NSMutableDictionary new];
+      [gamma setObject:[NSNumber numberWithFloat:0.8] forKey:@"Red"];
+      [gamma setObject:[NSNumber numberWithFloat:0.8] forKey:@"Green"];
+      [gamma setObject:[NSNumber numberWithFloat:0.8] forKey:@"Blue"];
+      [gamma setObject:[NSNumber numberWithFloat:1.0] forKey:@"Brightness"];
+      [d setObject:gamma forKey:@"Gamma"];
+      
+      if ((properties = [display properties]))
+        [d setObject:properties forKey:@"Properties"];
       
       [layout addObject:d];
       [d release];
@@ -418,7 +430,7 @@ static id systemScreen = nil;
   NSMutableArray      *layout = [NSMutableArray new];
   NSDictionary        *resolution;
   NSPoint             origin = NSMakePoint(0.0,0.0);
-  NXGammaValue        gamma;
+  NSDictionary        *properties;
   
   for (NXDisplay *display in [self connectedDisplays])
     {
@@ -431,13 +443,12 @@ static id systemScreen = nil;
       [d setObject:([display isActive]) ? @"YES" : @"NO" forKey:@"Active"];
       [d setObject:([display isMain]) ? @"YES" : @"NO" forKey:@"Main"];
 
-      gamma = [display gammaValue];
-      [d setObject:[NSNumber numberWithFloat:gamma.red] forKey:@"GammaRed"];
-      [d setObject:[NSNumber numberWithFloat:gamma.green] forKey:@"GammaGreen"];
-      [d setObject:[NSNumber numberWithFloat:gamma.blue] forKey:@"GammaBlue"];
-      [d setObject:[NSNumber numberWithFloat:[display gammaBrightness]]
-            forKey:@"GammaBrightness"];
-      
+      [d setObject:[display gammaDescription] forKey:@"Gamma"];
+      if ((properties = [display properties]))
+        {
+          [d setObject:properties forKey:@"Properties"];
+        }
+
       [layout addObject:d];
       [d release];
     }
@@ -458,7 +469,7 @@ static id systemScreen = nil;
       if (![self displayWithID:[displayLayout objectForKey:@"ID"]])
         { // Some display is not connected - layout is not valid, apply default
           [self applyDisplayLayout:[self defaultLayout:YES]];
-          NSLog(@"NXScreen:Applying default layout (Display.config ignored)");
+          NSLog(@"NXScreen:Applying default layout. Display.config ignored.");
           return;
         }
     }
@@ -477,10 +488,13 @@ static id systemScreen = nil;
                        (int)mmSize.width, (int)mmSize.height);
     }
   
-  // Set resolution to displays
+  // Set resolution and gamma to displays
   for (NSDictionary *displayLayout in layout)
     {
       display = [self displayWithName:[displayLayout objectForKey:@"Name"]];
+      
+      [display setGammaFromDescription:[displayLayout objectForKey:@"Gamma"]];
+      
       if ([[displayLayout objectForKey:@"Active"] isEqualToString:@"NO"])
         {
           [display deactivate];

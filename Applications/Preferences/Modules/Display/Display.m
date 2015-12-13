@@ -189,10 +189,9 @@ static NXDisplay		*selectedDisplay = nil;
   [self fillRateButton];
 
   // Gamma
-  CGFloat gamma = [selectedDisplay gammaValue].red;
+  CGFloat gamma = [selectedDisplay gamma];
   [gammaSlider setFloatValue:1.0/gamma];
-  [gammaField
-    setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
+  [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
 
   // Brightness
   CGFloat brightness = [selectedDisplay gammaBrightness];
@@ -226,16 +225,15 @@ static NXDisplay		*selectedDisplay = nil;
     {
       // NSLog(@"Gamma slider moved");
       [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", value]];
-      [selectedDisplay
-        setGammaCorrectionValue:value
+      [selectedDisplay setGamma:value
                      brightness:[brightnessSlider floatValue]/100];
     }
   else if (sender == brightnessSlider)
     {
       // NSLog(@"Brightness slider moved");
       [brightnessField setIntValue:[sender intValue]];
-      [selectedDisplay setGammaCorrectionValue:[gammaSlider floatValue]
-                                    brightness:value/100];
+      [selectedDisplay setGamma:[gammaSlider floatValue]
+                     brightness:value/100];
     }
   else
     NSLog(@"Unknown slider moved");  
@@ -291,7 +289,7 @@ static NXDisplay		*selectedDisplay = nil;
   if (tf == gammaField)
     {
       [gammaSlider setFloatValue:value];
-      [selectedDisplay setGammaCorrectionValue:value];
+      [selectedDisplay setGamma:value];
     }
   else if (tf == brightnessField)
     {
