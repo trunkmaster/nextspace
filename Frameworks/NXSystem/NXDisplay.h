@@ -48,6 +48,7 @@ typedef struct _NXGammaValue NXGammaValue;
 {
   Display     *xDisplay;
   NXScreen    *screen;
+  XRRScreenResources *screen_resources;
   RROutput    output_id;
 
   NSString       *outputName;     // name of Xrandr output (VGA)
@@ -100,7 +101,6 @@ typedef struct _NXGammaValue NXGammaValue;
 - (void)setMain:(BOOL)yn;
 
 - (void)_getGamma;
-// - (NXGammaValue)gammaValue;
 
 // Get
 - (NSDictionary *)gammaDescription;

@@ -38,6 +38,9 @@
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXDisplay.h>
 
+#import <dispatch/dispatch.h>
+#import <X11/Xlib.h>
+
 #import "Display.h"
 
 @implementation DisplayPrefs
@@ -57,6 +60,8 @@ static NXDisplay		*selectedDisplay = nil;
   bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+
+  XInitThreads();
       
   return self;
 }
@@ -154,6 +159,10 @@ static NXDisplay		*selectedDisplay = nil;
       [selectedDisplay setResolution:newResolution
                               origin:[selectedDisplay frame].origin];
     }
+  
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:DisplayPreferencesDidChangeNotification
+                  object:self];
 }
 
 //
@@ -225,22 +234,30 @@ static NXDisplay		*selectedDisplay = nil;
     {
       // NSLog(@"Gamma slider moved");
       [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", value]];
-      [selectedDisplay setGamma:value
-                     brightness:[brightnessSlider floatValue]/100];
+      
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
+                     ^{
+                       [selectedDisplay
+                         setGamma:value
+                         brightness:[brightnessSlider floatValue]/100];
+                     });
     }
   else if (sender == brightnessSlider)
     {
       // NSLog(@"Brightness slider moved");
       [brightnessField setIntValue:[sender intValue]];
-      [selectedDisplay setGamma:[gammaSlider floatValue]
-                     brightness:value/100];
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
+                     ^{
+                       [selectedDisplay setGamma:[gammaSlider floatValue]
+                                      brightness:value/100];
+                     });
     }
   else
     NSLog(@"Unknown slider moved");  
 }
 
 //
-// Browser Delegate methods
+// Browser (list of monitors) delegate methods
 //
 - (NSString *)browser:(NSBrowser *)sender titleOfColumn:(NSInteger)column
 {
@@ -294,7 +311,9 @@ static NXDisplay		*selectedDisplay = nil;
   else if (tf == brightnessField)
     {
       [brightnessSlider setFloatValue:value];
-      [selectedDisplay setGammaBrightness:value/100];
+      [selectedDisplay setGammaBrightness:value/100]; // TODO: херит гамму
+      // [selectedDisplay setGamma:[gammaSlider floatValue]
+      //                brightness:value/100];
     }
 }
   

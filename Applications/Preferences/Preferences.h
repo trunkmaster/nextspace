@@ -57,3 +57,8 @@
 - loadNibForLayout:(const char *)name owner:anOwner;
 
 @end
+
+// User settings of Display and Screen modules
+#define DISPLAYS_CONFIG @"~/Library/Preferences/Displays.config"
+
+extern NSString *DisplayPreferencesDidChangeNotification;

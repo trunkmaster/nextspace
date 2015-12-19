@@ -92,8 +92,7 @@
                   screen:(NXScreen *)scr
                 xDisplay:(Display *)x_display
 {
-  XRRScreenResources *screen_resources;
-  XRROutputInfo      *output_info;
+  XRROutputInfo *output_info;
   
   self = [super init];
 
@@ -272,7 +271,7 @@
 // Get mode with highest refresh rate
 - (RRMode)randrModeForResolution:(NSDictionary *)resolution
 {
-  XRRScreenResources *screen_resources = [screen randrScreenResources];
+  // XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   RRMode             mode = None;
   XRRModeInfo        mode_info;
@@ -285,7 +284,7 @@
 
   for (int i=0; i<output_info->nmode; i++)
     {
-      mode_info = getModeInfoForMode(xDisplay, [screen randrScreenResources],
+      mode_info = getModeInfoForMode(xDisplay, screen_resources,
                                      output_info->modes[i]);
       if (mode_info.width == (unsigned int)resDims.width &&
           mode_info.height == (unsigned int)resDims.height)
@@ -304,7 +303,7 @@
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin
 {
-  XRRScreenResources *screen_resources = [screen randrScreenResources];
+  // XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcInfo        *crtc_info;
   RRMode             rr_mode;
@@ -478,7 +477,7 @@ find_last_non_clamped(CARD16 array[], int size)
 // from xrandr.c
 - (void)_getGamma
 {
-  XRRScreenResources *screen_resources = [screen randrScreenResources];
+  // XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcGamma	     *crtc_gamma;
   CGFloat            i1, v1, i2, v2;
@@ -602,9 +601,9 @@ find_last_non_clamped(CARD16 array[], int size)
     return;
   
   [self
-    setGammaRed:[[gammaDict objectForKey:@"Red"] floatValue]
-          green:[[gammaDict objectForKey:@"Green"] floatValue]
-           blue:[[gammaDict objectForKey:@"Blue"] floatValue]
+    setGammaRed:1.0/[[gammaDict objectForKey:@"Red"] floatValue]
+          green:1.0/[[gammaDict objectForKey:@"Green"] floatValue]
+           blue:1.0/[[gammaDict objectForKey:@"Blue"] floatValue]
      brightness:[[gammaDict objectForKey:@"Brightness"] floatValue]];
 }
 
@@ -633,7 +632,7 @@ find_last_non_clamped(CARD16 array[], int size)
                blue:(CGFloat)blueGC
          brightness:(CGFloat)brightness
 {
-  XRRScreenResources *screen_resources = [screen randrScreenResources];
+  // XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcGamma       *gamma, *new_gamma;
   int                i, size;
@@ -674,17 +673,16 @@ find_last_non_clamped(CARD16 array[], int size)
                                  * brightness, 1.0) * 65535.0;
     }
 
-  gammaValue.red = redGC;
-  gammaValue.green = greenGC;
-  gammaValue.blue = blueGC;
+  gammaValue.red = gammaRed;
+  gammaValue.green = gammaGreen;
+  gammaValue.blue = gammaBlue;
   gammaBrightness = brightness;
 
   XRRSetCrtcGamma(xDisplay, output_info->crtc, new_gamma);
   XSync(xDisplay, False);
   
   XRRFreeGamma(new_gamma);
-  XRRFreeOutputInfo(output_info);
-  
+  XRRFreeOutputInfo(output_info);  
 }
 
 - (void)setGamma:(CGFloat)value
@@ -706,9 +704,9 @@ find_last_non_clamped(CARD16 array[], int size)
 
 - (void)setGammaBrightness:(CGFloat)brightness
 {
-  [self setGammaRed:gammaValue.red
-              green:gammaValue.green
-               blue:gammaValue.blue
+  [self setGammaRed:1.0/gammaValue.red
+              green:1.0/gammaValue.green
+               blue:1.0/gammaValue.blue
          brightness:brightness];
 }
 

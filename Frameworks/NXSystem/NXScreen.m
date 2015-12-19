@@ -231,8 +231,13 @@ static id systemScreen = nil;
 
 - (XRRScreenResources *)randrScreenResources
 {
+  // XLockDisplay(xDisplay);
+  
   XRRFreeScreenResources(screen_resources);
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
+  
+  // XUnlockDisplay(xDisplay);
+  
   return screen_resources;
 }
 
@@ -493,14 +498,15 @@ static id systemScreen = nil;
     {
       display = [self displayWithName:[displayLayout objectForKey:@"Name"]];
       
-      [display setGammaFromDescription:[displayLayout objectForKey:@"Gamma"]];
-      
       if ([[displayLayout objectForKey:@"Active"] isEqualToString:@"NO"])
         {
           [display deactivate];
         }
       else
         {
+          [display
+            setGammaFromDescription:[displayLayout objectForKey:@"Gamma"]];
+      
           [display
             setResolution:[displayLayout objectForKey:@"Resolution"]
                    origin:NSPointFromString([displayLayout objectForKey:@"Origin"])];

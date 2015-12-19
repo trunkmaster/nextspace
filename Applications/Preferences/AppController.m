@@ -24,10 +24,15 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import <NXSystem/NXScreen.h>
+
 #import "AppController.h"
 #import "ClockView.h"
 
 static NSUserDefaults *defaults = nil;
+
+NSString *DisplayPreferencesDidChangeNotification =
+  @"DisplayPreferencesDidChange";
 
 @implementation AppController
 
@@ -64,6 +69,13 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notify
 {
+  [self applySavedDisplayPreferences];
+
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(saveDisplayPreferences)
+           name:DisplayPreferencesDidChangeNotification
+         object:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
@@ -114,3 +126,36 @@ static NSUserDefaults *defaults = nil;
 
 @end
 
+@implementation AppController (ModulesDelegate)
+
+// Display and Screen
+- (void)applySavedDisplayPreferences
+{
+  // NXScreen *screen;
+  NSArray  *layout;
+  NSString *displaysConfigPath = [DISPLAYS_CONFIG stringByExpandingTildeInPath];
+
+  // screen = [[NXScreen alloc] init];
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:displaysConfigPath])
+    {
+      NSLog(@"Apply saved user screen layout");
+      layout = [NSArray arrayWithContentsOfFile:displaysConfigPath];
+      [[NXScreen sharedScreen] applyDisplayLayout:layout];
+    }
+  
+  // [screen release];
+}
+
+- (void)saveDisplayPreferences
+{
+  NXScreen *screen = [[NXScreen alloc] init];
+  
+  [[screen currentLayout]
+    writeToFile:[DISPLAYS_CONFIG stringByExpandingTildeInPath]
+     atomically:YES];
+  
+  [screen release];
+}
+
+@end
