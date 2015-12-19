@@ -40,3 +40,12 @@
 
 @end
 
+@interface AppController (ModulesDelegate)
+
+// Display and Screen
+- (void)applySavedDisplayPreferences;
+- (void)saveDisplayPreferences;
+
+@end
+
+

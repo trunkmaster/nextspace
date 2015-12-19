@@ -21,7 +21,7 @@ ADDITIONAL_LIB_DIRS +=
 # GNUstepWeb
 ADDITIONAL_GSW_LIBS +=
 # GUI apps
-ADDITIONAL_GUI_LIBS += -lNXFoundation -lNXSystem
+ADDITIONAL_GUI_LIBS += -lNXFoundation -lNXSystem -ldispatch -lkqueue -lpthread_workqueue
 # Libraries
 ADDITIONAL_LIBRARY_LIBS +=
 # ObjC stuff
