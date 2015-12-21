@@ -131,20 +131,14 @@ NSString *DisplayPreferencesDidChangeNotification =
 // Display and Screen
 - (void)applySavedDisplayPreferences
 {
-  // NXScreen *screen;
   NSArray  *layout;
   NSString *displaysConfigPath = [DISPLAYS_CONFIG stringByExpandingTildeInPath];
 
-  // screen = [[NXScreen alloc] init];
-
   if ([[NSFileManager defaultManager] fileExistsAtPath:displaysConfigPath])
     {
-      NSLog(@"Apply saved user screen layout");
       layout = [NSArray arrayWithContentsOfFile:displaysConfigPath];
       [[NXScreen sharedScreen] applyDisplayLayout:layout];
     }
-  
-  // [screen release];
 }
 
 - (void)saveDisplayPreferences

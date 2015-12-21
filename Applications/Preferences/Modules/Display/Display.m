@@ -238,7 +238,7 @@ static NXDisplay		*selectedDisplay = nil;
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
                      ^{
                        [selectedDisplay
-                         setGamma:value
+                         setGamma:1.0/value
                          brightness:[brightnessSlider floatValue]/100];
                      });
     }
@@ -248,7 +248,7 @@ static NXDisplay		*selectedDisplay = nil;
       [brightnessField setIntValue:[sender intValue]];
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
                      ^{
-                       [selectedDisplay setGamma:[gammaSlider floatValue]
+                       [selectedDisplay setGamma:1.0/[gammaSlider floatValue]
                                       brightness:value/100];
                      });
     }
@@ -306,14 +306,12 @@ static NXDisplay		*selectedDisplay = nil;
   if (tf == gammaField)
     {
       [gammaSlider setFloatValue:value];
-      [selectedDisplay setGamma:value];
+      [selectedDisplay setGamma:1.0/value];
     }
   else if (tf == brightnessField)
     {
       [brightnessSlider setFloatValue:value];
-      [selectedDisplay setGammaBrightness:value/100]; // TODO: херит гамму
-      // [selectedDisplay setGamma:[gammaSlider floatValue]
-      //                brightness:value/100];
+      [selectedDisplay setGammaBrightness:value/100];
     }
 }
   

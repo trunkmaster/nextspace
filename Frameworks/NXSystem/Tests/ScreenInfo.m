@@ -53,9 +53,13 @@ void fadeInFadeOutTest(NXScreen *sScreen)
     {
       if ([display isActive])
         {
-          [display fadeToBlack];
+          CGFloat br = [display gammaBrightness];
+          
+          [display fadeToBlack:br];
+          // [display fadeTo:0 interval:2.0 brightness:br];
           sleep(2);
-          [display fadeToNormal];
+          [display fadeToNormal:br];
+          // [display fadeTo:1 interval:2.0 brightness:br];
         }
     }
 }
@@ -66,20 +70,20 @@ void gammaCorrectionTest(NXScreen *sScreen)
   for (NXDisplay *display in displays)
     {
       // CGFloat gamma = 1.25;
-      if ([display isActive])
-        {
-          fprintf(stderr, "Initial Gamma> Correction value = %0.2f, Brightness = %0.2f\n",
-                  1.0/[display gammaValue].red, [display gammaBrightness]);
+      // if ([display isActive])
+      //   {
+      //     fprintf(stderr, "Initial Gamma> Correction value = %0.2f, Brightness = %0.2f\n",
+      //             1.0/[display gammaValue].red, [display gammaBrightness]);
           
-          [display setGammaCorrectionValue:1.0];
-          fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
-                  1.0/[display gammaValue].red, [display gammaBrightness]);
+      //     [display setGammaCorrectionValue:1.0];
+      //     fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
+      //             1.0/[display gammaValue].red, [display gammaBrightness]);
   
-          [display setGammaCorrectionValue:1.25];
+      //     [display setGammaCorrectionValue:1.25];
           
-          fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
-                  1.0/[display gammaValue].red, [display gammaBrightness]);
-        }
+      //     fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
+      //             1.0/[display gammaValue].red, [display gammaBrightness]);
+      //   }
     }
 
 }
@@ -187,6 +191,13 @@ int main(int argc, const char ** argv)
 
   // fprintf(stderr, ">>> Setting default arranged layout of displays...\n");
   // [sScreen applyDisplayLayout:[sScreen defaultLayout:YES]];
+  
+  // NSArray *layout;
+  // layout = [NSArray arrayWithContentsOfFile:
+  //                     @"/usr/NextSpace/Preferences/Displays.config"];
+  // [sScreen applyDisplayLayout:layout];
+
+  fadeInFadeOutTest(sScreen);
  
   [pool release];
 

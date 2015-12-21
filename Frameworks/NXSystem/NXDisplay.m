@@ -303,16 +303,17 @@
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin
 {
-  // XRRScreenResources *screen_resources = [screen randrScreenResources];
+  XRRScreenResources *scr_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcInfo        *crtc_info;
   RRMode             rr_mode;
   RRCrtc             rr_crtc;
   XRRModeInfo        mode_info;
+  CGFloat            brightness = gammaBrightness;
 
-  [self fadeToBlack];
+  [self fadeToBlack:brightness];
   
-  output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
+  output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
   
   NSLog(@"Set resolution %@ for CRTC output %s", 
         [resolution objectForKey:@"Dimensions"],
@@ -322,7 +323,7 @@
   if (!rr_crtc)
     {
       rr_crtc = [screen randrFindFreeCRTC];
-      crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
+      crtc_info = XRRGetCrtcInfo(xDisplay, scr_resources, rr_crtc);
       crtc_info->timestamp = CurrentTime;
       crtc_info->rotation = RR_Rotate_0;
       crtc_info->outputs[0] = output_id;
@@ -332,7 +333,7 @@
     }
   else
     {
-      crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
+      crtc_info = XRRGetCrtcInfo(xDisplay, scr_resources, rr_crtc);
     }
 
   NSSize dims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
@@ -371,7 +372,7 @@
       frame = NSMakeRect(origin.x, origin.y, modeSize.width, modeSize.height);
     }
   
-  [self fadeToNormal];
+  [self fadeToNormal:brightness];
 }
 
 - (NSRect)frame
@@ -587,10 +588,14 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   NSMutableDictionary *d = [[NSMutableDictionary alloc] init];
 
-  [d setObject:[NSNumber numberWithFloat:gammaValue.red]   forKey:@"Red"];
-  [d setObject:[NSNumber numberWithFloat:gammaValue.green] forKey:@"Green"];
-  [d setObject:[NSNumber numberWithFloat:gammaValue.blue]  forKey:@"Blue"];
-  [d setObject:[NSNumber numberWithFloat:gammaBrightness]  forKey:@"Brightness"];
+  [d setObject:[[NSNumber numberWithFloat:gammaValue.red] stringValue]
+        forKey:@"Red"];
+  [d setObject:[[NSNumber numberWithFloat:gammaValue.green] stringValue]
+        forKey:@"Green"];
+  [d setObject:[[NSNumber numberWithFloat:gammaValue.blue] stringValue]
+        forKey:@"Blue"];
+  [d setObject:[[NSNumber numberWithFloat:gammaBrightness] stringValue]
+        forKey:@"Brightness"];
 
   return [d autorelease];
 }
@@ -599,20 +604,19 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   if (!gammaDict || !isActive)
     return;
+
+  NSLog(@"setGammaFromDescription: %f : %f : %f",
+        [[gammaDict objectForKey:@"Red"] floatValue],
+        [[gammaDict objectForKey:@"Green"] floatValue],
+        [[gammaDict objectForKey:@"Blue"] floatValue]);
   
   [self
-    setGammaRed:1.0/[[gammaDict objectForKey:@"Red"] floatValue]
-          green:1.0/[[gammaDict objectForKey:@"Green"] floatValue]
-           blue:1.0/[[gammaDict objectForKey:@"Blue"] floatValue]
+    setGammaRed:[[gammaDict objectForKey:@"Red"] floatValue]
+          green:[[gammaDict objectForKey:@"Green"] floatValue]
+           blue:[[gammaDict objectForKey:@"Blue"] floatValue]
      brightness:[[gammaDict objectForKey:@"Brightness"] floatValue]];
 }
 
-// - (NXGammaValue)gammaValue
-// {
-//   [self getGamma];
-  
-//   return gammaValue;
-// }
 - (CGFloat)gamma
 {
   [self _getGamma];
@@ -627,30 +631,25 @@ find_last_non_clamped(CARD16 array[], int size)
   return gammaBrightness;
 }
 
-- (void)setGammaRed:(CGFloat)redGC
-              green:(CGFloat)greenGC
-               blue:(CGFloat)blueGC
+- (void)setGammaRed:(CGFloat)gammaRed
+              green:(CGFloat)gammaGreen
+               blue:(CGFloat)gammaBlue
          brightness:(CGFloat)brightness
 {
   // XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcGamma       *gamma, *new_gamma;
   int                i, size;
-  CGFloat            gammaRed, gammaGreen, gammaBlue;
    
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   gamma = XRRGetCrtcGamma(xDisplay, output_info->crtc);
   size = gamma->size;
   new_gamma = XRRAllocGamma(size);
 
-  if (redGC == 0.0) redGC = 1.0;
-  if (greenGC == 0.0) greenGC = 1.0;
-  if (blueGC == 0.0) blueGC = 1.0;
+  if (gammaRed == 0.0) gammaRed = 1.0;
+  if (gammaGreen == 0.0) gammaGreen = 1.0;
+  if (gammaBlue == 0.0) gammaBlue = 1.0;
   
-  gammaRed = 1.0 / redGC;
-  gammaGreen = 1.0 / greenGC;
-  gammaBlue = 1.0 / blueGC;
-
   for (i = 0; i < size; i++)
     {
       if (gammaRed == 1.0 && brightness == 1.0)
@@ -679,10 +678,10 @@ find_last_non_clamped(CARD16 array[], int size)
   gammaBrightness = brightness;
 
   XRRSetCrtcGamma(xDisplay, output_info->crtc, new_gamma);
-  XSync(xDisplay, False);
   
   XRRFreeGamma(new_gamma);
   XRRFreeOutputInfo(output_info);  
+  XSync(xDisplay, False);
 }
 
 - (void)setGamma:(CGFloat)value
@@ -704,14 +703,16 @@ find_last_non_clamped(CARD16 array[], int size)
 
 - (void)setGammaBrightness:(CGFloat)brightness
 {
-  [self setGammaRed:1.0/gammaValue.red
-              green:1.0/gammaValue.green
-               blue:1.0/gammaValue.blue
+  [self setGammaRed:gammaValue.red
+              green:gammaValue.green
+               blue:gammaValue.blue
          brightness:brightness];
 }
 
+#include <unistd.h>
+
 // TODO: set fade speed by time interval
-- (void)fadeToBlack
+- (void)fadeToBlack:(CGFloat)brightness
 {
   if (![self isActive])
     return;
@@ -720,30 +721,71 @@ find_last_non_clamped(CARD16 array[], int size)
   
   for (float i=10; i >= 0; i--)
     {
-      [self setGammaRed:gammaValue.red
-                  green:gammaValue.green
-                   blue:gammaValue.blue
-             brightness:i/10];
+      [self setGammaBrightness:brightness * (i/10)];
+      usleep(30000);
     }
   
   // XUngrabServer(xDisplay);
 }
 
 // TODO: set fade speed by time interval
-- (void)fadeToNormal
+- (void)fadeToNormal:(CGFloat)brightness
 {
   if (![self isActive])
     return;
-
+  
   // XGrabServer(xDisplay);
   
-  for (float i=0; i <= 10; i++)
+  // for (float i=0; i <= 10; i++)
+  //   {
+  //     [self setGammaBrightness:i/10];
+  //     usleep(10000);
+  //   }
+
+  NSLog(@">>> Start fade to normal");
+
+  CGFloat    secs = 0.5;
+  NSUInteger msecs = secs * 1000000;
+  NSUInteger steps = ceil(msecs / 30000);
+  // NSUInteger msecs_step = msecs / steps;
+
+  for (float i=0; i <= steps; i++)
     {
-      [self setGammaRed:gammaValue.red
-                  green:gammaValue.green
-                   blue:gammaValue.blue
-             brightness:i/10];
+      [self setGammaBrightness:brightness * (i/steps)];
+      usleep(30000);
     }
+  
+  NSLog(@">>> End fade to normal");
+
+  // XUngrabServer(xDisplay);
+}
+
+- (void)fadeTo:(NSInteger)mode     // now ignored
+      interval:(CGFloat)seconds    // in seconds, mininmum 0.1
+    brightness:(CGFloat)brightness // original brightness
+{
+  if (![self isActive])
+    return;
+  
+  NSLog(@">>> Start fade");
+
+  NSUInteger msecs = seconds * 1000000;
+  NSUInteger steps = ceil(msecs / 30000);
+  float      i;
+  
+  i = 1;
+  while (i <= steps)
+    {
+      if (mode) // to normal
+        [self setGammaBrightness:brightness * (i/steps)];
+      else	// to black
+        [self setGammaBrightness:brightness * (i/steps)];
+      
+      usleep(30000);
+      i++;
+    }
+  
+  NSLog(@">>> End fade");
 
   // XUngrabServer(xDisplay);
 }
