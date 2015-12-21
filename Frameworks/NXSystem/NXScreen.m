@@ -522,10 +522,10 @@ static id systemScreen = nil;
                        (int)mmSize.width, (int)mmSize.height);
     }
 
-  XUngrabServer(xDisplay);
+  // XUngrabServer(xDisplay);
 
-  sizeInPixels = [self _sizeInPixels];
-  sizeInMilimeters = [self _sizeInMilimeters];
+  // sizeInPixels = [self _sizeInPixels];
+  // sizeInMilimeters = [self _sizeInMilimeters];
   
   [self _refreshDisplaysInfo];
 }

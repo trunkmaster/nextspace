@@ -109,18 +109,23 @@ typedef struct _NXGammaValue NXGammaValue;
 - (CGFloat)gammaBrightness;
 
 // Set
-- (void)setGammaRed:(CGFloat)redGC
-              green:(CGFloat)greenGC
-               blue:(CGFloat)blueGC
-         brightness:(CGFloat)gammaBrightness;
+- (void)setGammaRed:(CGFloat)gammaRed
+              green:(CGFloat)gammaGreen
+               blue:(CGFloat)gammaBlue
+         brightness:(CGFloat)brightness;
 - (void)setGamma:(CGFloat)gammaValue
       brightness:(CGFloat)gammaBrightness;
 - (void)setGamma:(CGFloat)value;
 - (void)setGammaBrightness:(CGFloat)brightness;
 
 // Other
-- (void)fadeToBlack;
-- (void)fadeToNormal;
+- (void)fadeToBlack:(CGFloat)brightness;
+- (void)fadeToNormal:(CGFloat)brightness;
+// - (void)fadeToBlack;
+// - (void)fadeToNormal;
+- (void)fadeTo:(NSInteger)mode      // 0 - to black, 1 - to normal
+      interval:(CGFloat)seconds     // in seconds, mininmum 0.1
+    brightness:(CGFloat)brightness; // original brightness
 
 - (void)parseProperties;
 - (NSDictionary *)properties;
