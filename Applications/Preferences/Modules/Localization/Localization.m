@@ -86,6 +86,7 @@ static NSMutableDictionary      *domain = nil;
     NSTableColumn *tColumn;
     [languageList setHeaderView:nil];
     [languageList setCornerView:nil];
+    [languageList setVerticalMotionCanBeginDrag:YES];
     tColumn = [languageList tableColumnWithIdentifier:@"language"];
     [tColumn setWidth:(rect.size.width-23)];
   }
@@ -144,11 +145,33 @@ static NSMutableDictionary      *domain = nil;
   return nil;
 }
 
-- (void) tableView:(NSTableView *)aTableView
-    setObjectValue:anObject
-    forTableColumn:(NSTableColumn *)aTableColumn
-               row:(int)rowIndex
+// - (void) tableView:(NSTableView *)aTableView
+//     setObjectValue:anObject
+//     forTableColumn:(NSTableColumn *)aTableColumn
+//                row:(int)rowIndex
+// {
+// }
+
+- (BOOL)tableView:(NSTableView*)tableView
+        writeRows:(NSArray*)rows
+     toPasteboard:(NSPasteboard*)pboard
 {
+  return YES;
 }
+
+- (BOOL)tableView:(NSTableView*)tableView
+       acceptDrop:(id <NSDraggingInfo>)info
+              row:(NSInteger)row
+    dropOperation:(NSTableViewDropOperation)operation
+{
+  return YES;
+}
+
+// - (NSDragOperation)tableView:(NSTableView*)tableView
+//                 validateDrop:(id <NSDraggingInfo>)info
+//                  proposedRow:(NSInteger)row
+//        proposedDropOperation:(NSTableViewDropOperation)operation
+// {
+// }
 
 @end
