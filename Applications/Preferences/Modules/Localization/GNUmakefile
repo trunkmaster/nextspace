@@ -17,7 +17,8 @@ $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/bundle.registry
 
 $(BUNDLE_NAME)_OBJC_FILES= \
-	Localization.m
+	Localization.m \
+	LanguageList.m
 
 $(BUNDLE_NAME)_HEADERS= \
 	Localization.h
