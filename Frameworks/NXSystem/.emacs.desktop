@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Dec 21 03:08:26 2015
+;; Created Tue Dec 22 02:35:10 2015
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXSystem/Tests/")
+(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXSystem/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -18,45 +18,12 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/Tests/ScreenInfo.m"
-  "ScreenInfo.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1653
-  '(1690 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
-  "NXDisplay.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  16386
-  '(20270 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
-  "NXDisplay.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3877
-  '(3878 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.m"
   "NXScreen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  6285
-  '(14331 nil)
+  7196
+  '(14368 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -66,11 +33,44 @@
   "NXScreen.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3058
+  3430
   '(3729 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
+  "NXDisplay.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1705
+  '(3878 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
+  "NXDisplay.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  12907
+  '(12710 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/Tests/ScreenInfo.m"
+  "ScreenInfo.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1653
+  '(1690 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile"

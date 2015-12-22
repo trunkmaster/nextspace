@@ -94,6 +94,10 @@ static NXDisplay		*selectedDisplay = nil;
   
   [rotationBtn setEnabled:NO];
   [reflectionBtn setEnabled:NO];
+
+  { // Window background
+    
+  }
 }
 
 - (NSView *)view
@@ -197,10 +201,11 @@ static NXDisplay		*selectedDisplay = nil;
   // object in [NSDisplay allModes] array
   [self fillRateButton];
 
-  // Gamma
-  CGFloat gamma = [selectedDisplay gamma];
-  [gammaSlider setFloatValue:1.0/gamma];
-  [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", 1.0/gamma]];
+  // Contrast
+  NSString *gammaString = [NSString stringWithFormat:@"%.2f",
+                                    [selectedDisplay gamma]];
+  [gammaSlider setFloatValue:[gammaString floatValue]];
+  [gammaField setStringValue:gammaString];
 
   // Brightness
   CGFloat brightness = [selectedDisplay gammaBrightness];
@@ -238,7 +243,7 @@ static NXDisplay		*selectedDisplay = nil;
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
                      ^{
                        [selectedDisplay
-                         setGamma:1.0/value
+                         setGamma:value
                          brightness:[brightnessSlider floatValue]/100];
                      });
     }
@@ -248,7 +253,7 @@ static NXDisplay		*selectedDisplay = nil;
       [brightnessField setIntValue:[sender intValue]];
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
                      ^{
-                       [selectedDisplay setGamma:1.0/[gammaSlider floatValue]
+                       [selectedDisplay setGamma:[gammaSlider floatValue]
                                       brightness:value/100];
                      });
     }
@@ -306,7 +311,7 @@ static NXDisplay		*selectedDisplay = nil;
   if (tf == gammaField)
     {
       [gammaSlider setFloatValue:value];
-      [selectedDisplay setGamma:1.0/value];
+      [selectedDisplay setGamma:value];
     }
   else if (tf == brightnessField)
     {

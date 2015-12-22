@@ -282,6 +282,11 @@ static id systemScreen = nil;
   return (NSUInteger)depth;
 }
 
+- (NSColor *)backgroundColor
+{
+  
+}
+
 // Returns array of NXDisplay
 - (NSArray *)allDisplays
 {
