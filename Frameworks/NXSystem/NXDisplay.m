@@ -311,8 +311,6 @@
   XRRModeInfo        mode_info;
   CGFloat            brightness = gammaBrightness;
 
-  [self fadeToBlack:brightness];
-  
   output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
   
   NSLog(@"Set resolution %@ for CRTC output %s", 
@@ -350,29 +348,36 @@
       rr_mode = [self randrModeForResolution:resolution];
     }
 
-  XRRSetCrtcConfig(xDisplay,
-                   screen_resources,
-                   rr_crtc,
-                   crtc_info->timestamp,
-                   origin.x, origin.y,
-                   rr_mode,
-                   crtc_info->rotation,
-                   crtc_info->outputs,
-                   crtc_info->noutput);
-  
-  XRRFreeCrtcInfo(crtc_info);
-  XRRFreeOutputInfo(output_info);
-  
-  // Save dimensions in ivars for -activate.
-  if (dims.width > 0 && dims.height > 0)
+  // Current and new modes differ
+  if (crtc_info->mode != rr_mode)
     {
-      isActive = YES;
-      modeSize = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
-      modeRate = [[resolution objectForKey:@"Rate"] floatValue];
-      frame = NSMakeRect(origin.x, origin.y, modeSize.width, modeSize.height);
+      
+      [self fadeToBlack:brightness];
+  
+      XRRSetCrtcConfig(xDisplay,
+                       screen_resources,
+                       rr_crtc,
+                       crtc_info->timestamp,
+                       origin.x, origin.y,
+                       rr_mode,
+                       crtc_info->rotation,
+                       crtc_info->outputs,
+                       crtc_info->noutput);
+  
+      // Save dimensions in ivars for -activate.
+      if (dims.width > 0 && dims.height > 0)
+        {
+          isActive = YES;
+          modeSize = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
+          modeRate = [[resolution objectForKey:@"Rate"] floatValue];
+          frame = NSMakeRect(origin.x, origin.y, modeSize.width, modeSize.height);
+        }
+      
+      [self fadeToNormal:brightness];
     }
   
-  [self fadeToNormal:brightness];
+  XRRFreeCrtcInfo(crtc_info);
+  XRRFreeOutputInfo(output_info);  
 }
 
 - (NSRect)frame
@@ -456,6 +461,10 @@
       isMain = YES;
     }
 }
+
+//------------------------------------------------------------------------------
+//--- Gamma correction, brightness
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //--- Gamma correction, brightness
@@ -577,7 +586,7 @@ find_last_non_clamped(CARD16 array[], int size)
         / log((CGFloat)((last_blue / 2) + 1) / size);
     }
 
-  XRRFreeGamma(crtc_gamma);
+  XRRFreeGamma(crtc_gamma);  
 }
 
 //---
@@ -646,42 +655,40 @@ find_last_non_clamped(CARD16 array[], int size)
   size = gamma->size;
   new_gamma = XRRAllocGamma(size);
 
-  if (gammaRed == 0.0) gammaRed = 1.0;
-  if (gammaGreen == 0.0) gammaGreen = 1.0;
-  if (gammaBlue == 0.0) gammaBlue = 1.0;
+  gammaValue.red = (gammaRed == 0.0) ? 1.0 : gammaRed;
+  gammaValue.green = (gammaGreen == 0.0) ? 1.0 : gammaGreen;
+  gammaValue.blue = (gammaBlue == 0.0) ? 1.0 : gammaBlue;
+  gammaBrightness = brightness;
   
   for (i = 0; i < size; i++)
     {
       if (gammaRed == 1.0 && brightness == 1.0)
         new_gamma->red[i] = (CGFloat)i / (CGFloat)(size - 1) * 65535.0;
       else
-        new_gamma->red[i] = MIN(pow((CGFloat)i/(CGFloat)(size - 1), gammaRed)
+        new_gamma->red[i] = MIN(pow((CGFloat)i / (CGFloat)(size - 1),
+                                    gammaValue.red)
                                 * brightness, 1.0) * 65535.0;
 
       if (gammaGreen == 1.0 && brightness == 1.0)
         new_gamma->green[i] = (CGFloat)i / (CGFloat)(size - 1) * 65535.0;
       else
-        new_gamma->green[i] = MIN(pow((CGFloat)i/(CGFloat)(size - 1),
-                                      gammaGreen)
+        new_gamma->green[i] = MIN(pow((CGFloat)i / (CGFloat)(size - 1),
+                                      gammaValue.green)
                                   * brightness, 1.0) * 65535.0;
 
       if (gammaBlue == 1.0 && brightness == 1.0)
         new_gamma->blue[i] = (CGFloat)i / (CGFloat)(size - 1) * 65535.0;
       else
-        new_gamma->blue[i] = MIN(pow((CGFloat)i/(CGFloat)(size - 1), gammaBlue)
+        new_gamma->blue[i] = MIN(pow((CGFloat)i / (CGFloat)(size - 1),
+                                     gammaValue.blue)
                                  * brightness, 1.0) * 65535.0;
     }
 
-  gammaValue.red = gammaRed;
-  gammaValue.green = gammaGreen;
-  gammaValue.blue = gammaBlue;
-  gammaBrightness = brightness;
-
   XRRSetCrtcGamma(xDisplay, output_info->crtc, new_gamma);
+  XSync(xDisplay, False);
   
   XRRFreeGamma(new_gamma);
   XRRFreeOutputInfo(output_info);  
-  XSync(xDisplay, False);
 }
 
 - (void)setGamma:(CGFloat)value

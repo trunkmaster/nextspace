@@ -467,7 +467,7 @@ void *alloc(int size)
   // Turn light on
   for (NXDisplay *display in [[NXScreen sharedScreen] activeDisplays])
     {
-      [display fadeToNormal];
+      [display fadeToNormal:1.0];
     }
 }
 
