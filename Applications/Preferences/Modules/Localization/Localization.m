@@ -30,6 +30,7 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSTableColumn.h>
+#import <AppKit/NSPasteboard.h>
 
 #import "Localization.h"
 
@@ -87,6 +88,7 @@ static NSMutableDictionary      *domain = nil;
     [languageList setHeaderView:nil];
     [languageList setCornerView:nil];
     [languageList setVerticalMotionCanBeginDrag:YES];
+    // [languageList registerForDraggedTypes:@"language"];
     tColumn = [languageList tableColumnWithIdentifier:@"language"];
     [tColumn setWidth:(rect.size.width-23)];
   }
@@ -152,10 +154,16 @@ static NSMutableDictionary      *domain = nil;
 // {
 // }
 
-- (BOOL)tableView:(NSTableView*)tableView
-        writeRows:(NSArray*)rows
-     toPasteboard:(NSPasteboard*)pboard
+- (BOOL)tableView:(NSTableView *)tableView
+        writeRows:(NSArray *)rows
+     toPasteboard:(NSPasteboard *)pboard
 {
+  NSTableColumn *tCol = [languageList tableColumnWithIdentifier:@"language"];
+  NSCell        *aCell = [tCol dataCellForRow:[[rows lastObject] intValue]];
+  
+  NSLog(@"write to Pasteboard: %@ - %@", rows, [aCell stringValue]);
+  [pboard setString:[aCell stringValue]
+            forType:@"language"];
   return YES;
 }
 
@@ -164,14 +172,19 @@ static NSMutableDictionary      *domain = nil;
               row:(NSInteger)row
     dropOperation:(NSTableViewDropOperation)operation
 {
+  NSLog(@"acceptDrop into row %li", row);
   return YES;
 }
 
-// - (NSDragOperation)tableView:(NSTableView*)tableView
-//                 validateDrop:(id <NSDraggingInfo>)info
-//                  proposedRow:(NSInteger)row
-//        proposedDropOperation:(NSTableViewDropOperation)operation
-// {
-// }
+- (NSDragOperation)tableView:(NSTableView*)tableView
+                validateDrop:(id <NSDraggingInfo>)info
+                 proposedRow:(NSInteger)row
+       proposedDropOperation:(NSTableViewDropOperation)operation
+{
+  NSLog(@"validateDrop: %@ in row %li",
+        [[info draggingPasteboard] stringForType:@"Language"], row);
+
+  return operation;
+}
 
 @end

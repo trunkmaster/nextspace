@@ -7,6 +7,13 @@
 	);
 	Super = NSObject;
     };
+    LanguageList = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTableView;
+    };
     Localization = {
 	Actions = (
 	);
