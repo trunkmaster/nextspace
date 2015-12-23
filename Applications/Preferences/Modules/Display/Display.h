@@ -27,6 +27,7 @@
 
 // #import <AppKit/NibDeclarations.h>
 #import <AppKit/NSImage.h>
+#import <AppKit/NSColorWell.h>
 #import <Preferences.h>
 
 @interface DisplayPrefs : NSObject <PrefsModule>
@@ -36,7 +37,6 @@
   id brightnessBox;
   id brightnessField;
   id brightnessSlider;
-  id colorBtn;
   id gammaField;
   id gammaSlider;
   id monitorsList;
@@ -45,6 +45,7 @@
   id resolutionBtn;
   id rotationBtn;
   id reflectionBtn;
+  NSColorWell *colorBtn;
 
   NSImage *image;
 }

@@ -5,7 +5,8 @@
 	    "monitorsListClicked:",
 	    "sliderMoved:",
 	    "resolutionClicked:",
-	    "rateClicked:"
+	    "rateClicked:",
+	    "backgroundChanged:"
 	);
 	Outlets = (
 	    view,
@@ -28,6 +29,7 @@
     FirstResponder = {
 	Actions = (
 	    "monitorsListClicked:",
+	    "backgroundChanged:",
 	    "rateClicked:",
 	    "resolutionClicked:",
 	    "sliderMoved:"
