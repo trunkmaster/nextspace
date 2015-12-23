@@ -199,7 +199,19 @@ static id systemScreen = nil;
       NSLog(@"Can't open Xorg display.");
       return nil;
     }
-  
+
+  {
+    int event_base, error_base;
+    int major_version, minor_version;
+
+    XRRQueryExtension(xDisplay, &event_base, &error_base);
+    XRRQueryVersion(xDisplay, &major_version, &minor_version);
+
+    NSLog(@"XRandR %i.%i, event:%i, erro:%i",
+          major_version, minor_version,
+          event_base, error_base);
+  }
+
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   screen_resources = NULL;
 
@@ -230,6 +242,12 @@ static id systemScreen = nil;
 
   [super dealloc];
 }
+
+//
+//------------------------------------------------------------------------------
+// Screen resources attributes
+//------------------------------------------------------------------------------
+//
 
 - (XRRScreenResources *)randrScreenResources
 {
@@ -327,6 +345,12 @@ static id systemScreen = nil;
   XClearWindow(xDisplay, xRootWindow);
 }
 
+//
+//------------------------------------------------------------------------------
+// Displays
+//------------------------------------------------------------------------------
+//
+
 // Returns array of NXDisplay
 - (NSArray *)allDisplays
 {
@@ -399,16 +423,19 @@ static id systemScreen = nil;
 {
   for (NXDisplay *display in systemDisplays)
     {
-      if ([[display uniqueID] hash] == [uniqueID hash])
-        return display;
+      if ([[display uniqueID] isEqualToString:uniqueID] ||
+          [[display uniqueID] hash] == [uniqueID hash])
+        {
+          return display;
+        }
     }
 
   return nil;
 }
 
-//---
+//------------------------------------------------------------------------------
 // Layouts
-//---
+//------------------------------------------------------------------------------
 // Described by set of NXDisplay's with:
 // - resolution and refresh rate (mode);
 // - origin (position) - place displays aligned with each other;
@@ -445,7 +472,8 @@ static id systemScreen = nil;
       resolution = [display preferredMode];
       
       d = [[NSMutableDictionary alloc] init];
-      [d setObject:[display uniqueID] forKey:@"ID"];
+      [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
+            forKey:@"ID"];
       [d setObject:[display outputName] forKey:@"Name"];
       [d setObject:resolution forKey:@"Resolution"];
       [d setObject:NSStringFromPoint(origin) forKey:@"Origin"];
@@ -512,15 +540,24 @@ static id systemScreen = nil;
   NSSize    mmSize;
   BOOL      isGrowing = NO;
   NXDisplay *display;
+  XRRProviderResources *provider_resources;
+
+  provider_resources = XRRGetProviderResources(xDisplay, xRootWindow);
+  if (provider_resources->nproviders < 1)
+    { // No video cards - applying layout doesn't make sense or work.
+      NSLog(@"NXScreen: No video adapters found - no saved layout will be applied.");
+      XRRFreeProviderResources(provider_resources);
+      return;
+    }
 
   // Validate existance of all displays in 'layout'
-  for (NSDictionary *displayLayout in layout)
+  for (NSDictionary *d in layout)
     {
-      if (![self displayWithID:[displayLayout objectForKey:@"ID"]])
-        { // Some display is not connected - layout is not valid, apply default
-          [self applyDisplayLayout:[self defaultLayout:YES]];
+      if (![self displayWithID:[d objectForKey:@"ID"]])
+        { // Some display is not connected - use default layout
           NSLog(@"NXScreen:Applying default layout. Display.config ignored.");
-          return;
+          layout = [self defaultLayout:YES];
+          break;
         }
     }
   
@@ -557,7 +594,7 @@ static id systemScreen = nil;
                    origin:NSPointFromString([displayLayout objectForKey:@"Origin"])];
         }
     }
-        
+
   // Screen size gets smaller and must have changed after display
   // resolution changes.
   if (isGrowing == NO)
@@ -568,11 +605,13 @@ static id systemScreen = nil;
     }
 
   // XUngrabServer(xDisplay);
-
-  // sizeInPixels = [self _sizeInPixels];
-  // sizeInMilimeters = [self _sizeInMilimeters];
   
   [self _refreshDisplaysInfo];
 }
+
+//------------------------------------------------------------------------------
+// Video adapters
+//------------------------------------------------------------------------------
+
 
 @end
