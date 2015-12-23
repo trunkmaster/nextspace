@@ -355,7 +355,7 @@
       [self fadeToBlack:brightness];
   
       XRRSetCrtcConfig(xDisplay,
-                       screen_resources,
+                       scr_resources,
                        rr_crtc,
                        crtc_info->timestamp,
                        origin.x, origin.y,
@@ -921,8 +921,8 @@ property_value(Display *dpy,
       
       if (!strcmp(atom_name, "EDID") && nitems > 1)
         {
-	  [properties setObject:[NSData dataWithBytes:prop length:128]
-			 forKey:@"EDID"];
+          [properties setObject:[NSData dataWithBytes:prop length:128]
+                         forKey:@"EDID"];
         }
       else
         {
@@ -940,7 +940,6 @@ property_value(Display *dpy,
                                                 actual_type,
                                                 prop + (i * bytes_per_item))];
               }
-            
             [valueDict setObject:value forKey:@"Value"];
             [value release];
           }
@@ -1001,7 +1000,14 @@ property_value(Display *dpy,
 
 - (id)uniqueID
 {
-  return [properties objectForKey:@"EDID"];
+  id displayID = [properties objectForKey:@"EDID"];
+
+  if ([displayID length] < 1)
+    {
+      displayID = @" ";
+    }
+  
+  return displayID;
 }
 
 @end
