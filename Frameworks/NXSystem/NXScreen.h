@@ -71,6 +71,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <AppKit/NSColor.h>
 
 #import <X11/extensions/Xrandr.h>
 
@@ -97,7 +98,10 @@
 - (NSSize)sizeInPixels;
 - (NSSize)sizeInMilimeters;
 - (NSUInteger)colorDepth;
-  
+
+- (NSColor *)backgroundColor;
+- (void)setBackgroundColor:(NSColor *)color;
+ 
 - (NSArray *)allDisplays;
 - (NSArray *)activeDisplays;
 - (NSArray *)connectedDisplays;

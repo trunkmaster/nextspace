@@ -261,6 +261,12 @@ static NXDisplay		*selectedDisplay = nil;
     NSLog(@"Unknown slider moved");  
 }
 
+- (IBAction)backgroundChanged:(id)sender
+{
+  NSLog(@"Display: backgroundChanged");
+  [[NXScreen sharedScreen] setBackgroundColor:[colorBtn color]];
+}
+
 //
 // Browser (list of monitors) delegate methods
 //

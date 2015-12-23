@@ -44,6 +44,8 @@
 // } XRRScreenResources;
 */
 
+#import <AppKit/NSGraphics.h>
+
 #import "NXDisplay.h"
 #import "NXScreen.h"
 
@@ -284,7 +286,45 @@ static id systemScreen = nil;
 
 - (NSColor *)backgroundColor
 {
+  // XWindowAttributes attrs;
+  // XGCValues gc_values;
   
+  // XGetWindowAttributes(xDisplay, xRootWindow, &attrs);
+  
+  // xScreen = DefaultScreenOfDisplay(xDisplay);
+  // XGetGCValues(xDisplay, xScreen->default_gc, GCBackground, &gc_values);
+
+  // fprintf(stderr, "Desktop background: %lu\n", gc_values.background);
+
+  return nil;
+}
+
+- (void)setBackgroundColor:(NSColor *)color
+{
+  Screen *xScreen = DefaultScreenOfDisplay(xDisplay);
+  XColor xColor;
+  char   *x_color_spec;
+  
+  // color = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+  // xf.red   = 65535 * [color redComponent];
+  // xf.green = 65535 * [color greenComponent];
+  // xf.blue  = 65535 * [color blueComponent];
+
+  x_color_spec = [[NSString stringWithFormat:@"rgb:%x/%x/%x",
+                            (int)(65535 * [color redComponent]),
+                            (int)(65535 * [color greenComponent]),
+                            (int)(65535 * [color blueComponent])] cString];
+  fprintf(stderr, "Set root window background: %s\n", x_color_spec);
+  
+  XParseColor(xDisplay, xScreen->cmap, x_color_spec, &xColor);
+  
+  // NSDebugLLog(@"XGTrace", @"setbackgroundcolor: %@ %d", color, win);
+  // xf = [self xColorFromColor: xf forScreen: window->screen];
+  // window->xwn_attrs.background_pixel = xf.pixel;
+  
+  XSetWindowBackground(xDisplay, xRootWindow, xColor.pixel);
+  XSync(xDisplay, False);
+  XClearWindow(xDisplay, xRootWindow);
 }
 
 // Returns array of NXDisplay
