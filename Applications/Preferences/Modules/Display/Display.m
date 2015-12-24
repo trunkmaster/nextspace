@@ -153,20 +153,17 @@ static NXDisplay		*selectedDisplay = nil;
 
 - (void)setResolution
 {
-  NSDictionary *currentResolution = [selectedDisplay mode];
-  NSDictionary *newResolution = [[rateBtn selectedCell] representedObject];
-    
   // Set resolution only to active display.
   // Display activating implemented in 'Screen' Preferences' module.
-  if ([selectedDisplay isActive] && (newResolution != currentResolution))
+  if ([selectedDisplay isActive])
     {
-      [selectedDisplay setResolution:newResolution
+      [selectedDisplay setResolution:[[rateBtn selectedCell] representedObject]
                               origin:[selectedDisplay frame].origin];
-    }
-  
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:DisplayPreferencesDidChangeNotification
-                  object:self];
+      
+      [[NSNotificationCenter defaultCenter]
+        postNotificationName:DisplayPreferencesDidChangeNotification
+                      object:self];
+    }  
 }
 
 //

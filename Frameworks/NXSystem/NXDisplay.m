@@ -310,7 +310,33 @@
   RRCrtc             rr_crtc;
   XRRModeInfo        mode_info;
   CGFloat            brightness = gammaBrightness;
+  NSSize 	     dims, screenDims;
 
+  // Update screen dimension
+  dims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
+  screenDims = [screen sizeInPixels];
+  if (dims.width != screenDims.width || dims.height != screenDims.height)
+    {
+      // Screen size must be adjusted before display resolution change
+      NSMutableArray *layout = [[screen currentLayout] mutableCopy];
+      NSDictionary   *d;
+      for (NSUInteger i=0; i < [layout count]; i++)
+        {
+          d = [layout objectAtIndex:i];
+          if ([[d objectForKey:@"Name"] isEqualToString:outputName])
+            {
+              NSMutableDictionary *dd = [d mutableCopy];
+              [dd setObject:resolution forKey:@"Resolution"];
+              [layout replaceObjectAtIndex:i
+                                withObject:dd];
+              [dd release];
+              break;
+            }
+        }
+      [screen applyDisplayLayout:layout];
+      [layout release];
+    }
+  
   output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
   
   NSLog(@"Set resolution %@ for CRTC output %s", 
@@ -334,7 +360,6 @@
       crtc_info = XRRGetCrtcInfo(xDisplay, scr_resources, rr_crtc);
     }
 
-  NSSize dims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
   if (dims.width == 0 || dims.height == 0)
     {
       rr_mode = None;
@@ -347,7 +372,7 @@
     {
       rr_mode = [self randrModeForResolution:resolution];
     }
-
+  
   // Current and new modes differ
   if (crtc_info->mode != rr_mode)
     {
@@ -461,10 +486,6 @@
       isMain = YES;
     }
 }
-
-//------------------------------------------------------------------------------
-//--- Gamma correction, brightness
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //--- Gamma correction, brightness
