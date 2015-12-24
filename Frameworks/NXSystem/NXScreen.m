@@ -542,13 +542,13 @@ static id systemScreen = nil;
   NXDisplay *display;
   XRRProviderResources *provider_resources;
 
-  provider_resources = XRRGetProviderResources(xDisplay, xRootWindow);
-  if (provider_resources->nproviders < 1)
-    { // No video cards - applying layout doesn't make sense or work.
-      NSLog(@"NXScreen: No video adapters found - no saved layout will be applied.");
-      XRRFreeProviderResources(provider_resources);
-      return;
-    }
+  // provider_resources = XRRGetProviderResources(xDisplay, xRootWindow);
+  // if (provider_resources->nproviders < 1)
+  //   { // No video cards - applying layout doesn't make sense or work.
+  //     NSLog(@"NXScreen: No video adapters found - no saved layout will be applied.");
+  //     XRRFreeProviderResources(provider_resources);
+  //     return;
+  //   }
 
   // Validate existance of all displays in 'layout'
   for (NSDictionary *d in layout)
@@ -574,6 +574,8 @@ static id systemScreen = nil;
                        (int)newPixSize.width, (int)newPixSize.height,
                        (int)mmSize.width, (int)mmSize.height);
     }
+  
+  sizeInPixels = newPixSize;
   
   // Set resolution and gamma to displays
   for (NSDictionary *displayLayout in layout)
