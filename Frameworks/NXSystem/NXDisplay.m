@@ -315,7 +315,7 @@
   // Update screen dimension
   dims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
   screenDims = [screen sizeInPixels];
-  if (dims.width != screenDims.width || dims.height != screenDims.height)
+  if (dims.width > screenDims.width || dims.height > screenDims.height)
     {
       // Screen size must be adjusted before display resolution change
       NSMutableArray *layout = [[screen currentLayout] mutableCopy];

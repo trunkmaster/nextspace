@@ -423,8 +423,7 @@ static id systemScreen = nil;
 {
   for (NXDisplay *display in systemDisplays)
     {
-      if ([[display uniqueID] isEqualToString:uniqueID] ||
-          [[display uniqueID] hash] == [uniqueID hash])
+      if ([[display uniqueID] hash] == [uniqueID hash])
         {
           return display;
         }
