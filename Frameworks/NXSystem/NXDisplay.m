@@ -300,6 +300,10 @@
 
   return mode;
 }
+
+// Sets resolution without changing layout
+// If you want to relayout displays with new resolution use
+// [NXScreen setDisplay:resolution:origin] instead.
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin
 {
@@ -310,32 +314,7 @@
   RRCrtc             rr_crtc;
   XRRModeInfo        mode_info;
   CGFloat            brightness = gammaBrightness;
-  NSSize 	     dims, screenDims;
-
-  // Update screen dimension
-  dims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
-  screenDims = [screen sizeInPixels];
-  if (dims.width > screenDims.width || dims.height > screenDims.height)
-    {
-      // Screen size must be adjusted before display resolution change
-      NSMutableArray *layout = [[screen currentLayout] mutableCopy];
-      NSDictionary   *d;
-      for (NSUInteger i=0; i < [layout count]; i++)
-        {
-          d = [layout objectAtIndex:i];
-          if ([[d objectForKey:@"Name"] isEqualToString:outputName])
-            {
-              NSMutableDictionary *dd = [d mutableCopy];
-              [dd setObject:resolution forKey:@"Resolution"];
-              [layout replaceObjectAtIndex:i
-                                withObject:dd];
-              [dd release];
-              break;
-            }
-        }
-      [screen applyDisplayLayout:layout];
-      [layout release];
-    }
+  NSSize 	     dims;
   
   output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
   
@@ -376,7 +355,6 @@
   // Current and new modes differ
   if (crtc_info->mode != rr_mode)
     {
-      
       [self fadeToBlack:brightness];
   
       XRRSetCrtcConfig(xDisplay,
@@ -390,12 +368,14 @@
                        crtc_info->noutput);
   
       // Save dimensions in ivars for -activate.
+      dims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
       if (dims.width > 0 && dims.height > 0)
         {
           isActive = YES;
           modeSize = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
           modeRate = [[resolution objectForKey:@"Rate"] floatValue];
-          frame = NSMakeRect(origin.x, origin.y, modeSize.width, modeSize.height);
+          frame = NSMakeRect(origin.x, origin.y,
+                             modeSize.width, modeSize.height);
         }
       
       [self fadeToNormal:brightness];
