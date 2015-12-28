@@ -115,5 +115,8 @@
 - (NSArray *)defaultLayout:(BOOL)arrange;
 - (NSArray *)currentLayout;
 - (void)applyDisplayLayout:(NSArray *)layout;
+- (void)setDisplay:(NXDisplay *)display
+        resolution:(NSDictionary *)resolution
+            origin:(NSPoint)origin;
 
 @end

@@ -328,10 +328,11 @@ static id systemScreen = nil;
   // xf.green = 65535 * [color greenComponent];
   // xf.blue  = 65535 * [color blueComponent];
 
-  x_color_spec = [[NSString stringWithFormat:@"rgb:%x/%x/%x",
-                            (int)(65535 * [color redComponent]),
-                            (int)(65535 * [color greenComponent]),
-                            (int)(65535 * [color blueComponent])] cString];
+  x_color_spec = (char *)[[NSString stringWithFormat:@"rgb:%x/%x/%x",
+                                    (int)(65535 * [color redComponent]),
+                                    (int)(65535 * [color greenComponent]),
+                                    (int)(65535 * [color blueComponent])]
+                           cString];
   fprintf(stderr, "Set root window background: %s\n", x_color_spec);
   
   XParseColor(xDisplay, xScreen->cmap, x_color_spec, &xColor);
@@ -610,9 +611,85 @@ static id systemScreen = nil;
   [self _refreshDisplaysInfo];
 }
 
+- (void)setDisplay:(NXDisplay *)display
+        resolution:(NSDictionary *)resolution
+            origin:(NSPoint)origin
+{
+  NSString            *displayName = [display outputName];
+  NSMutableArray      *newLayout = [[self currentLayout] mutableCopy];
+  NSDictionary	      *d;
+  NSMutableDictionary *dd;
+  NSUInteger	      i, dCount;
+  NSSize	      oldSize, dSize, newSize;
+  NSPoint             oldOrigin, dOrigin;
+  CGFloat	      xOffset, yOffset;
+  CGFloat 	      dTopY, dRightX, oldTopY, oldRightX;
+  
+  // 1. Change resolution and origin of display in layout.
+  dCount = [newLayout count];
+  for (i = 0; i < dCount; i++)
+    {
+      d = [newLayout objectAtIndex:i];
+      if ([[d objectForKey:@"Name"] isEqualToString:displayName])
+        {
+          // Save old values for resolution and origin
+          oldSize = NSSizeFromString([[d objectForKey:@"Resolution"]
+                                       objectForKey:@"Dimensions"]);
+          oldOrigin = NSPointFromString([d objectForKey:@"Origin"]);
+          oldTopY = oldOrigin.y + oldSize.height;
+          oldRightX = oldOrigin.x + oldSize.width;
+          newSize = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
+          
+          dd = [d mutableCopy];
+          [dd setObject:resolution forKey:@"Resolution"];
+          [dd setObject:NSStringFromPoint(origin) forKey:@"Origin"];
+          [newLayout replaceObjectAtIndex:i withObject:dd];
+          [dd release];
+          break;
+        }
+    }
+
+  // 2. Change origin of other display(s) if new resolution requires it.
+  for (d in newLayout)
+    {
+      if (![[d objectForKey:@"Name"] isEqualToString:displayName])
+        {
+          dSize = NSSizeFromString([[d objectForKey:@"Resolution"]
+                                       objectForKey:@"Dimensions"]);
+          dOrigin = NSPointFromString([d objectForKey:@"Origin"]);
+          dTopY = dOrigin.y + dSize.height;
+          dRightX = dOrigin.x + dSize.width;
+          // Adjust horizontal position
+          if ((dOrigin.x > oldOrigin.x) &&
+              (dTopY > oldOrigin.y && dOrigin.y < oldTopY))
+            {
+              xOffset = dOrigin.x - oldOrigin.x - oldSize.width;
+              dOrigin.x = origin.x + newSize.width + xOffset;
+            }
+          // Adjust vertical position
+          if ((dOrigin.y > oldOrigin.y) &&
+              (dRightX > oldOrigin.x && dOrigin.x < oldRightX))
+            {
+              yOffset = dOrigin.y - oldOrigin.y - oldSize.height;
+              dOrigin.y = origin.y + newSize.height + yOffset;
+            }
+          
+          dd = [d mutableCopy];
+          [dd setObject:NSStringFromPoint(dOrigin) forKey:@"Origin"];
+          [newLayout replaceObjectAtIndex:[newLayout indexOfObject:d]
+                               withObject:dd];
+          [dd release];
+        }
+    }
+
+  // 3. Apply new layout
+  [newLayout writeToFile:@"NewDisplay.config" atomically:YES];
+  // [self applyDisplayLayout:newLayout];
+  [newLayout release];
+}
+
 //------------------------------------------------------------------------------
 // Video adapters
 //------------------------------------------------------------------------------
-
 
 @end
