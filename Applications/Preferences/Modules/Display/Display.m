@@ -157,8 +157,12 @@ static NXDisplay		*selectedDisplay = nil;
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive])
     {
-      [selectedDisplay setResolution:[[rateBtn selectedCell] representedObject]
-                              origin:[selectedDisplay frame].origin];
+      [[NXScreen sharedScreen]
+        setDisplay:selectedDisplay
+        resolution:[[rateBtn selectedCell] representedObject]
+            origin:[selectedDisplay frame].origin];
+      // [selectedDisplay setResolution:[[rateBtn selectedCell] representedObject]
+      //                         origin:[selectedDisplay frame].origin];
       
       [[NSNotificationCenter defaultCenter]
         postNotificationName:DisplayPreferencesDidChangeNotification
@@ -184,13 +188,13 @@ static NXDisplay		*selectedDisplay = nil;
   [resolutionBtn removeAllItems];
   for (NSDictionary *res in m)
     {
-      size = NSSizeFromString([res objectForKey:@"Dimensions"]);
+      size = NSSizeFromString([res objectForKey:@"Size"]);
       resolution = [NSString stringWithFormat:@"%.0fx%.0f",
                              size.width, size.height];
       [resolutionBtn addItemWithTitle:resolution];
     }
   r = [selectedDisplay mode];
-  size = NSSizeFromString([r objectForKey:@"Dimensions"]);
+  size = NSSizeFromString([r objectForKey:@"Size"]);
   resolution = [NSString stringWithFormat:@"%.0fx%.0f",
                          size.width, size.height];
   [resolutionBtn selectItemWithTitle:resolution];

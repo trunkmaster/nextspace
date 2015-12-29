@@ -518,7 +518,7 @@
 **** DONE Проверить количество rate для одного resolution
      То, что показывает NXDisplay и xrandr не совпадает.
 **** DONE NXDisplay: менять разрешение только если отличается
-**** TODO Перписать setResolution
+**** TODO Переписать setResolution
      Вызов [NXDisplay setResolution:origin:] напрямую не меняет размер
      NXScreen.
      Однако, изменение разрешения монитора (NXDisplay) менят размер экрана
@@ -530,6 +530,7 @@
        метода: один - меняет описание layout и вызывает [NXScreen apply...],
        другой - только меняет разрешение монитора (вызывается только 
        [NXScreen apply...]).
+**** TODO NXDisplay: заменить Dimensions и Origin на Frame
 **** TODO Background color of desktop
 **** TODO NXDisplay: rotation & reflection
 **** TODO Установка Backlight (если монитор поддерживает)

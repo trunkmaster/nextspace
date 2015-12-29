@@ -97,7 +97,7 @@
       
       origin = NSPointFromString([display objectForKey:@"Origin"]);
       resolution = [display objectForKey:@"Resolution"];
-      size = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
+      size = NSSizeFromString([resolution objectForKey:@"Size"]);
           
       w = origin.x + size.width;
       if (w > width) width = w;
@@ -155,9 +155,9 @@
   for (int i=0; i < screen_resources->noutput; i++)
     {
       display = [[NXDisplay alloc]
-	initWithOutputInfo:screen_resources->outputs[i]
-		    screen:self
-		  xDisplay:xDisplay];
+                  initWithOutputInfo:screen_resources->outputs[i]
+                              screen:self
+                            xDisplay:xDisplay];
       
       if (XRRGetOutputPrimary(xDisplay, xRootWindow) ==
           screen_resources->outputs[i])
@@ -625,6 +625,8 @@ static id systemScreen = nil;
   CGFloat	      xOffset, yOffset;
   CGFloat 	      dTopY, dRightX, oldTopY, oldRightX;
   
+  [newLayout writeToFile:@"Display.config" atomically:YES];
+  
   // 1. Change resolution and origin of display in layout.
   dCount = [newLayout count];
   for (i = 0; i < dCount; i++)
@@ -634,11 +636,11 @@ static id systemScreen = nil;
         {
           // Save old values for resolution and origin
           oldSize = NSSizeFromString([[d objectForKey:@"Resolution"]
-                                       objectForKey:@"Dimensions"]);
+                                       objectForKey:@"Size"]);
           oldOrigin = NSPointFromString([d objectForKey:@"Origin"]);
           oldTopY = oldOrigin.y + oldSize.height;
           oldRightX = oldOrigin.x + oldSize.width;
-          newSize = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
+          newSize = NSSizeFromString([resolution objectForKey:@"Size"]);
           
           dd = [d mutableCopy];
           [dd setObject:resolution forKey:@"Resolution"];
@@ -655,7 +657,7 @@ static id systemScreen = nil;
       if (![[d objectForKey:@"Name"] isEqualToString:displayName])
         {
           dSize = NSSizeFromString([[d objectForKey:@"Resolution"]
-                                       objectForKey:@"Dimensions"]);
+                                       objectForKey:@"Size"]);
           dOrigin = NSPointFromString([d objectForKey:@"Origin"]);
           dTopY = dOrigin.y + dSize.height;
           dRightX = dOrigin.x + dSize.width;
