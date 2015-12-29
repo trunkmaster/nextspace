@@ -469,7 +469,7 @@ static id systemScreen = nil;
   
   for (NXDisplay *display in [self connectedDisplays])
     {
-      resolution = [display preferredMode];
+      resolution = [display bestResolution];
       
       d = [[NSMutableDictionary alloc] init];
       [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
@@ -515,9 +515,10 @@ static id systemScreen = nil;
       d = [[NSMutableDictionary alloc] init];
       [d setObject:[display uniqueID] forKey:@"ID"];
       [d setObject:[display outputName] forKey:@"Name"];
-      [d setObject:[display mode] forKey:@"Resolution"];
+      [d setObject:[display resolution] forKey:@"Resolution"];
       [d setObject:NSStringFromPoint([display frame].origin) forKey:@"Origin"];
-      [d setObject:NSStringFromSize([display physicalSize]) forKey:@"Size"];
+      [d setObject:NSStringFromSize([display physicalSize])
+            forKey:@"PhysicalSize"];
       [d setObject:([display isActive]) ? @"YES" : @"NO" forKey:@"Active"];
       [d setObject:([display isMain]) ? @"YES" : @"NO" forKey:@"Main"];
 

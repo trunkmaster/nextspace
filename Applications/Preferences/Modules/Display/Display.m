@@ -129,17 +129,21 @@ static NXDisplay		*selectedDisplay = nil;
 //
 - (void)fillRateButton
 {
-  NSString     *resString = [resolutionBtn titleOfSelectedItem];
-  NSArray      *m = [selectedDisplay allModes];
+  NSString     *resBtnTitle = [resolutionBtn titleOfSelectedItem];
+  NSArray      *m = [selectedDisplay allResolutions];
   NSString     *rateString;
   NSDictionary *res;
+  NSString     *resTitle;
+  NSSize       size;
 
   [rateBtn removeAllItems];
   for (NSInteger i = 0; i < [m count]; i++)
     {
       res = [m objectAtIndex:i];
-      if ([[res objectForKey:@"Name"] rangeOfString:resString].location !=
-          NSNotFound)
+      size = NSSizeFromString([res objectForKey:@"Size"]);
+      resTitle = [NSString stringWithFormat:@"%.0fx%.0f",
+                           size.width, size.height];
+      if ([resTitle isEqualToString:resBtnTitle])
         {
           rateString = [NSString stringWithFormat:@"%.1f Hz",
                                [[res objectForKey:@"Rate"] floatValue]];
@@ -181,7 +185,7 @@ static NXDisplay		*selectedDisplay = nil;
   NSDictionary *r;
 
   selectedDisplay = [[sender selectedCell] representedObject];
-  m = [selectedDisplay allModes];
+  m = [selectedDisplay allResolutions];
   // NSLog(@"Display.preferences: selected monitor with title: %@", mName);
 
   // Resolution
@@ -193,7 +197,7 @@ static NXDisplay		*selectedDisplay = nil;
                              size.width, size.height];
       [resolutionBtn addItemWithTitle:resolution];
     }
-  r = [selectedDisplay mode];
+  r = [selectedDisplay resolution];
   size = NSSizeFromString([r objectForKey:@"Size"]);
   resolution = [NSString stringWithFormat:@"%.0fx%.0f",
                          size.width, size.height];

@@ -90,8 +90,8 @@
 
 - (void)dealloc
 {
-  [loadedBundles release];
   [prefsViews release];
+  [loadedBundles release];
   currentModule = nil;
   
   [super dealloc];
