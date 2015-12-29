@@ -143,13 +143,9 @@ NSString *DisplayPreferencesDidChangeNotification =
 
 - (void)saveDisplayPreferences
 {
-  NXScreen *screen = [[NXScreen alloc] init];
-  
-  [[screen currentLayout]
+  [[[NXScreen sharedScreen] currentLayout]
     writeToFile:[DISPLAYS_CONFIG stringByExpandingTildeInPath]
      atomically:YES];
-  
-  [screen release];
 }
 
 @end

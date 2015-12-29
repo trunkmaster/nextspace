@@ -46,21 +46,19 @@ typedef struct _NXGammaValue NXGammaValue;
 // Physical device
 @interface NXDisplay : NSObject
 {
-  Display     *xDisplay;
-  NXScreen    *screen;
-  XRRScreenResources *screen_resources;
-  RROutput    output_id;
+  Display		*xDisplay;
+  NXScreen		*screen;
+  XRRScreenResources	*screen_resources;
+  RROutput		output_id;
 
-  NSString       *outputName;     // name of Xrandr output (VGA)
-  NSSize         physicalSize;    // physical size in milimeters
-  Connection     connectionState; // RandR connection state
-  NSMutableArray *resolutions; // width, height, rate
+  NSString       *outputName;		// name of Xrandr output (VGA)
+  NSSize         physicalSize;		// physical size in milimeters
+  Connection     connectionState;	// RandR connection state
+  NSMutableArray *resolutions;		// width, height, rate
   
-  NSRect   frame;           // logical rect of display
-  NSSize   modeSize;        // display resolution
-  CGFloat  modeRate;        // refresh rate for resolution (75.0)
-  
-  CGFloat  dpiValue;
+  NSRect   frame;			// logical rect of monitor
+  CGFloat  rate;			// refresh rate for resolution (75.0)
+  CGFloat  dpiValue;			// calculated DPI
 
   NXGammaValue gammaValue;
   CGFloat      gammaBrightness;
@@ -81,14 +79,15 @@ typedef struct _NXGammaValue NXGammaValue;
 - (NSArray *)allModes;    // Supported resolutions (W x H @ R)
 - (NSDictionary *)preferredMode;
 - (NSDictionary *)mode;   // Current mode
-- (NSSize)modeSize;       // width, height
-- (CGFloat)modeRate;      // 75.0 in Hertz
 
 - (RRMode)randrModeForResolution:(NSDictionary *)resolution;
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin;
 
-- (NSRect)frame;          // logical rect of display
+// Contains resolution (width,height) and position (x,y)
+- (NSRect)frame;
+// Monitor refresh rate for resolution set
+- (CGFloat)rate;
 - (CGFloat)dpi;
 
 - (BOOL)isConnected;      // output has connected monitor
@@ -96,7 +95,6 @@ typedef struct _NXGammaValue NXGammaValue;
 - (void)deactivate;
 - (void)activate;
 
-- (BOOL)isBuiltin;
 - (BOOL)isMain;
 - (void)setMain:(BOOL)yn;
 
@@ -121,8 +119,7 @@ typedef struct _NXGammaValue NXGammaValue;
 // Other
 - (void)fadeToBlack:(CGFloat)brightness;
 - (void)fadeToNormal:(CGFloat)brightness;
-// - (void)fadeToBlack;
-// - (void)fadeToNormal;
+// TODO
 - (void)fadeTo:(NSInteger)mode      // 0 - to black, 1 - to normal
       interval:(CGFloat)seconds     // in seconds, mininmum 0.1
     brightness:(CGFloat)brightness; // original brightness
@@ -130,6 +127,7 @@ typedef struct _NXGammaValue NXGammaValue;
 - (void)parseProperties;
 - (NSDictionary *)properties;
 - (id)uniqueID;
+- (BOOL)isBuiltin;
 
 // - (NSString *)model;    // EDID
 // - (CGFloat)brightness;  // EDID (if supported)

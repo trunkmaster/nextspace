@@ -88,6 +88,26 @@
 
 @implementation NXDisplay
 
+//------------------------------------------------------------------------------
+//--- Utility
+//------------------------------------------------------------------------------
+XRRModeInfo
+modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
+{
+  XRRModeInfo rrMode;
+
+  for (int i=0; i<xrrs->nmode; i++)
+    {
+      rrMode = xrrs->modes[i];
+      if (rrMode.id == mode) break;
+    }
+  
+  return rrMode;
+}
+
+//------------------------------------------------------------------------------
+//--- Base
+//------------------------------------------------------------------------------
 - (id)initWithOutputInfo:(RROutput)output
                   screen:(NXScreen *)scr
                 xDisplay:(Display *)x_display
@@ -114,31 +134,21 @@
   // Display modes (resolutions supported by monitor connected to output)
   XRRModeInfo  mode_info;
   XRRCrtcInfo  *crtc_info;
-  NSString     *name;
-  NSNumber     *rate;
-  NSSize       dimensions;
+  CGFloat      rRate;
+  NSSize       rSize;
   NSDictionary *res;
-  
+
+  // Get all resolutions for display
   resolutions = [[NSMutableArray alloc] init];
-  
   for (int i=0; i<output_info->nmode; i++)
     {
-      mode_info = getModeInfoForMode(xDisplay,
-                                     screen_resources,
-                                     output_info->modes[i]);
-      rate = [NSNumber
-               numberWithFloat:
-                 (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal];
-
-      name = [NSString stringWithFormat:@"%s@%.2f",
-                       mode_info.name, [rate floatValue]];
-      dimensions = NSMakeSize((CGFloat)mode_info.width,
-                              (CGFloat)mode_info.height);
+      mode_info = modeInfoForMode(screen_resources, output_info->modes[i]);
+      rSize = NSMakeSize((CGFloat)mode_info.width, (CGFloat)mode_info.height);
+      rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
       res = [NSDictionary dictionaryWithObjectsAndKeys:
-                            name, @"Name",
-                          NSStringFromSize(dimensions), @"Dimensions",
-                          rate, @"Rate",
-                          nil];
+                            NSStringFromSize(rSize), @"Size",
+                            [NSNumber numberWithFloat:rRate], @"Rate",
+                            nil];
       [resolutions addObject:res];
     }
 
@@ -146,26 +156,27 @@
   if (output_info->crtc)
     {
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, output_info->crtc);
-      frame = NSMakeRect((CGFloat)crtc_info->x,
-                         (CGFloat)crtc_info->y,
-                         (CGFloat)crtc_info->width,
-                         (CGFloat)crtc_info->height);
-      
       // Current resolution
-      mode_info = getModeInfoForMode(xDisplay,
-                                     screen_resources, crtc_info->mode);
-      if (mode_info.width > 0 && mode_info.height)
+      mode_info = modeInfoForMode(screen_resources, crtc_info->mode);
+      if (mode_info.width > 0 && mode_info.height > 0)
         {
+          // Actually there's dimensions of display:
+          // 1. Resolution of monitor: mode_info.width x mode_info.height
+          // 2. Logical size of display: crtc_info->width x crtc_info->height
+          // Now I'm sticking to mode_info because I can't imagine real life
+          // use case when logical size is bigger than resolution.
+          frame = NSMakeRect((CGFloat)crtc_info->x,
+                             (CGFloat)crtc_info->y,
+                             mode_info.width,
+                             mode_info.height);
+          rate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
           isActive = YES;
-          modeSize = NSMakeSize(mode_info.width, mode_info.height);
-          modeRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
-          dpiValue = (25.4 * modeSize.height) / output_info->mm_height;
+          
+          XRRFreeCrtcInfo(crtc_info);
         }
 
       // Primary display
-      isMain = [self isMain];
-      
-      XRRFreeCrtcInfo(crtc_info);
+      isMain = [self isMain];      
     }
   
   XRRFreeOutputInfo(output_info);
@@ -200,6 +211,9 @@
   return physicalSize;
 }
 
+//------------------------------------------------------------------------------
+//--- Resolution, position and refresh rate
+//------------------------------------------------------------------------------
 - (NSArray *)allModes
 {
   return resolutions;
@@ -209,13 +223,13 @@
   NSDictionary *mode=nil, *res;
   NSSize       resSize;
   int          mpixels=0, mps, res_count;
-  float        rate=0.0, r;
+  float        rRate=0.0, r;
 
   res_count = [resolutions count];
   for (int i=0; i<res_count; i++)
     {
       res = [resolutions objectAtIndex:i];
-      resSize = NSSizeFromString([res objectForKey:@"Dimensions"]);
+      resSize = NSSizeFromString([res objectForKey:@"Size"]);
       mps = resSize.width * resSize.height;
       r = [[res objectForKey:@"Rate"] floatValue];
       
@@ -243,10 +257,10 @@
 
   for (mode in resolutions)
     {
-      modeDims = NSSizeFromString([mode objectForKey:@"Dimensions"]);
-      if (modeDims.width == modeSize.width &&
-          modeDims.height == modeSize.height &&
-          [[mode objectForKey:@"Rate"] floatValue] == modeRate)
+      modeDims = NSSizeFromString([mode objectForKey:@"Size"]);
+      if (modeDims.width == frame.size.width &&
+          modeDims.height == frame.size.height &&
+          [[mode objectForKey:@"Rate"] floatValue] == rate)
         {
           break;
         }
@@ -259,14 +273,22 @@
 
   return mode;
 }
-- (NSSize)modeSize
+
+- (CGFloat)rate
 {
-  return modeSize;
+  return rate;
 }
-- (CGFloat)modeRate
+
+- (NSRect)frame
 {
-  return modeRate;
+  return frame;
 }
+
+- (CGFloat)dpi
+{
+  return (25.4 * frame.size.height) / physicalSize.height;
+
+} 
 
 // Get mode with highest refresh rate
 - (RRMode)randrModeForResolution:(NSDictionary *)resolution
@@ -276,21 +298,20 @@
   RRMode             mode = None;
   XRRModeInfo        mode_info;
   NSSize             resDims;
-  float              rate, mode_rate=0.0;
+  float              rRate, mode_rate=0.0;
   
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
 
-  resDims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
+  resDims = NSSizeFromString([resolution objectForKey:@"Size"]);
 
   for (int i=0; i<output_info->nmode; i++)
     {
-      mode_info = getModeInfoForMode(xDisplay, screen_resources,
-                                     output_info->modes[i]);
+      mode_info = modeInfoForMode(screen_resources, output_info->modes[i]);
       if (mode_info.width == (unsigned int)resDims.width &&
           mode_info.height == (unsigned int)resDims.height)
         {
-          rate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
-          if (rate > mode_rate) mode_rate = rate;
+          rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
+          if (rRate > mode_rate) mode_rate = rRate;
           
           mode = output_info->modes[i];
         }
@@ -314,12 +335,12 @@
   RRCrtc             rr_crtc;
   XRRModeInfo        mode_info;
   CGFloat            brightness = gammaBrightness;
-  NSSize 	     dims;
+  NSSize 	     dims, resolutionSize;
   
   output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
   
   NSLog(@"Set resolution %@ for CRTC output %s", 
-        [resolution objectForKey:@"Dimensions"],
+        [resolution objectForKey:@"Size"],
         output_info->name);
  
   rr_crtc = output_info->crtc;
@@ -353,7 +374,9 @@
     }
   
   // Current and new modes differ
-  if (crtc_info->mode != rr_mode)
+  if (crtc_info->mode != rr_mode ||
+      crtc_info->x != origin.x ||
+      crtc_info->y != origin.y)
     {
       [self fadeToBlack:brightness];
   
@@ -367,33 +390,27 @@
                        crtc_info->outputs,
                        crtc_info->noutput);
   
-      // Save dimensions in ivars for -activate.
-      dims = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
-      if (dims.width > 0 && dims.height > 0)
-        {
-          isActive = YES;
-          modeSize = NSSizeFromString([resolution objectForKey:@"Dimensions"]);
-          modeRate = [[resolution objectForKey:@"Rate"] floatValue];
-          frame = NSMakeRect(origin.x, origin.y,
-                             modeSize.width, modeSize.height);
-        }
       
       [self fadeToNormal:brightness];
+    }
+      
+  // Save dimensions in ivars even if mode was not changed.
+  resolutionSize = NSSizeFromString([resolution objectForKey:@"Size"]);
+  if (resolutionSize.width > 0 && resolutionSize.height > 0)
+    {
+      frame = NSMakeRect(origin.x, origin.y,
+                         resolutionSize.width, resolutionSize.height);
+      rate = [[resolution objectForKey:@"Rate"] floatValue];
+      isActive = YES;
     }
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);  
 }
 
-- (NSRect)frame
-{
-  return frame;
- }
-- (CGFloat)dpi
-{
-  return dpiValue;
-} 
-
+//------------------------------------------------------------------------------
+//--- Monitor state
+//------------------------------------------------------------------------------
 - (BOOL)isConnected
 {
   if (connectionState == RR_Connected)
@@ -401,40 +418,35 @@
   
   return NO;
 }
+
 - (BOOL)isActive
 {
   return isActive;
 }
+
 - (void)deactivate
 {
   NSDictionary *res;
   
   res = [NSDictionary dictionaryWithObjectsAndKeys:
                         outputName, @"Name",
-                      NSStringFromSize(NSMakeSize(0,0)), @"Dimensions",
+                      NSStringFromSize(NSMakeSize(0,0)), @"Size",
                          [NSNumber numberWithFloat:0.0], @"Rate",
                       nil];
   [self setResolution:res origin:NSMakePoint(0,0)];
   isActive = NO;
 }
+
 - (void)activate
 {
   NSDictionary *res;
-  NSNumber     *rate = [NSNumber numberWithFloat:modeRate];
-  
+
   res = [NSDictionary dictionaryWithObjectsAndKeys:
-                        outputName, @"Name",
-                      NSStringFromSize(modeSize), @"Dimensions",
-                      rate, @"Rate",
+                      NSStringFromSize(frame.size),	@"Size",
+                      [NSNumber numberWithFloat:rate],	@"Rate",
                       nil];
   [self setResolution:res origin:frame.origin];
   isActive = YES;
-}
-
-// TODO
-- (BOOL)isBuiltin
-{
-  return NO;
 }
 
 - (BOOL)isMain
@@ -802,21 +814,6 @@ find_last_non_clamped(CARD16 array[], int size)
 //--- Display properties
 //------------------------------------------------------------------------------
 
-XRRModeInfo getModeInfoForMode(Display *dpy,
-                               XRRScreenResources *xrrs,
-                               RRMode mode)
-{
-  XRRModeInfo rrMode;
-
-  for (int i=0; i<xrrs->nmode; i++)
-    {
-      rrMode = xrrs->modes[i];
-      if (rrMode.id == mode) break;
-    }
-  
-  return rrMode;
-}
-
 id
 property_value(Display *dpy,
                int value_format, /* 8, 16, 32 */
@@ -1009,6 +1006,12 @@ property_value(Display *dpy,
     }
   
   return displayID;
+}
+
+// TODO
+- (BOOL)isBuiltin
+{
+  return NO;
 }
 
 @end
