@@ -76,19 +76,15 @@ typedef struct _NXGammaValue NXGammaValue;
 - (NSString *)outputName; // LVDS, VGA, DVI, HDMI
 - (NSSize)physicalSize;   // in milimetres
 
-- (NSArray *)allModes;    // Supported resolutions (W x H @ R)
-- (NSDictionary *)preferredMode;
-- (NSDictionary *)mode;   // Current mode
+- (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
+- (NSDictionary *)bestResolution;
+- (NSDictionary *)resolution;   // Current resolution of monitor
 
-- (RRMode)randrModeForResolution:(NSDictionary *)resolution;
+- (CGFloat)refreshRate;         // Monitor refresh rate for resolution
+- (CGFloat)dpi;
+- (NSRect)frame; // Contains resolution NSSize and position NSPoint
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin;
-
-// Contains resolution (width,height) and position (x,y)
-- (NSRect)frame;
-// Monitor refresh rate for resolution set
-- (CGFloat)rate;
-- (CGFloat)dpi;
 
 - (BOOL)isConnected;      // output has connected monitor
 - (BOOL)isActive;         // is online and visible

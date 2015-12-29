@@ -89,20 +89,51 @@
 @implementation NXDisplay
 
 //------------------------------------------------------------------------------
-//--- Utility
+//--- XRandR utility functions
 //------------------------------------------------------------------------------
-XRRModeInfo
-modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
+- (XRRModeInfo)_modeInfoForMode:(RRMode) mode
 {
   XRRModeInfo rrMode;
 
-  for (int i=0; i<xrrs->nmode; i++)
+  for (int i=0; i<screen_resources->nmode; i++)
     {
-      rrMode = xrrs->modes[i];
-      if (rrMode.id == mode) break;
+      rrMode = screen_resources->modes[i];
+      if (rrMode.id == mode)
+        break;
     }
   
   return rrMode;
+}
+// Get mode with highest refresh rate
+- (RRMode)_modeForResolution:(NSDictionary *)resolution
+{
+  // XRRScreenResources *screen_resources = [screen randrScreenResources];
+  XRROutputInfo      *output_info;
+  RRMode             mode = None;
+  XRRModeInfo        mode_info;
+  NSSize             resDims;
+  float              rRate, mode_rate=0.0;
+  
+  output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
+
+  resDims = NSSizeFromString([resolution objectForKey:@"Size"]);
+
+  for (int i=0; i<output_info->nmode; i++)
+    {
+      mode_info = [self _modeInfoForMode:output_info->modes[i]];
+      if (mode_info.width == (unsigned int)resDims.width &&
+          mode_info.height == (unsigned int)resDims.height)
+        {
+          rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
+          if (rRate > mode_rate) mode_rate = rRate;
+          
+          mode = output_info->modes[i];
+        }
+    }
+  
+  XRRFreeOutputInfo(output_info);
+
+  return mode;
 }
 
 //------------------------------------------------------------------------------
@@ -142,7 +173,7 @@ modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
   resolutions = [[NSMutableArray alloc] init];
   for (int i=0; i<output_info->nmode; i++)
     {
-      mode_info = modeInfoForMode(screen_resources, output_info->modes[i]);
+      mode_info = [self _modeInfoForMode:output_info->modes[i]];
       rSize = NSMakeSize((CGFloat)mode_info.width, (CGFloat)mode_info.height);
       rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
       res = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -157,7 +188,7 @@ modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
     {
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, output_info->crtc);
       // Current resolution
-      mode_info = modeInfoForMode(screen_resources, crtc_info->mode);
+      mode_info = [self _modeInfoForMode:crtc_info->mode];
       if (mode_info.width > 0 && mode_info.height > 0)
         {
           // Actually there's dimensions of display:
@@ -213,12 +244,17 @@ modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
 
 //------------------------------------------------------------------------------
 //--- Resolution, position and refresh rate
+// resolution - NSDictionary with: Size = {width, height}, Rate = rate in Hz
+// mode - XRandR RRMode structure
+// modeInfo - XRandR XRRModeInfo structure
 //------------------------------------------------------------------------------
-- (NSArray *)allModes
+- (NSArray *)allResolutions
 {
   return resolutions;
 }
-- (NSDictionary *)preferredMode
+
+// Select preferred
+- (NSDictionary *)bestResolution
 {
   NSDictionary *mode=nil, *res;
   NSSize       resSize;
@@ -248,33 +284,33 @@ modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
   
   return mode;
 }
-// Returns mode description.
-// If mode is not in list of supported by monitor - returns 'nil'.
-- (NSDictionary *)mode
-{
-  NSDictionary *mode = nil;
-  NSSize       modeDims;
 
-  for (mode in resolutions)
+// If resolution set is not in list of supported by monitor - returns 'nil'.
+- (NSDictionary *)resolution // {Size=; Rate=}
+{
+  NSDictionary *res = nil;
+  NSSize       resSize;
+
+  for (res in resolutions)
     {
-      modeDims = NSSizeFromString([mode objectForKey:@"Size"]);
-      if (modeDims.width == frame.size.width &&
-          modeDims.height == frame.size.height &&
-          [[mode objectForKey:@"Rate"] floatValue] == rate)
+      resSize = NSSizeFromString([res objectForKey:@"Size"]);
+      if (resSize.width == frame.size.width &&
+          resSize.height == frame.size.height &&
+          [[res objectForKey:@"Rate"] floatValue] == rate)
         {
           break;
         }
     }
 
-  if (mode == nil)
+  if (res == nil)
     {
-      mode = [self preferredMode];
+      res = [self bestResolution];
     }
 
-  return mode;
+  return res;
 }
 
-- (CGFloat)rate
+- (CGFloat)refreshRate
 {
   return rate;
 }
@@ -287,40 +323,7 @@ modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
 - (CGFloat)dpi
 {
   return (25.4 * frame.size.height) / physicalSize.height;
-
 } 
-
-// Get mode with highest refresh rate
-- (RRMode)randrModeForResolution:(NSDictionary *)resolution
-{
-  // XRRScreenResources *screen_resources = [screen randrScreenResources];
-  XRROutputInfo      *output_info;
-  RRMode             mode = None;
-  XRRModeInfo        mode_info;
-  NSSize             resDims;
-  float              rRate, mode_rate=0.0;
-  
-  output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
-
-  resDims = NSSizeFromString([resolution objectForKey:@"Size"]);
-
-  for (int i=0; i<output_info->nmode; i++)
-    {
-      mode_info = modeInfoForMode(screen_resources, output_info->modes[i]);
-      if (mode_info.width == (unsigned int)resDims.width &&
-          mode_info.height == (unsigned int)resDims.height)
-        {
-          rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
-          if (rRate > mode_rate) mode_rate = rRate;
-          
-          mode = output_info->modes[i];
-        }
-    }
-  
-  XRRFreeOutputInfo(output_info);
-
-  return mode;
-}
 
 // Sets resolution without changing layout
 // If you want to relayout displays with new resolution use
@@ -370,7 +373,7 @@ modeInfoForMode(XRRScreenResources *xrrs, RRMode mode)
     }
   else
     {
-      rr_mode = [self randrModeForResolution:resolution];
+      rr_mode = [self _modeForResolution:resolution];
     }
   
   // Current and new modes differ
