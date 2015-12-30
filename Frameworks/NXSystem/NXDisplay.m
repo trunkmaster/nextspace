@@ -325,7 +325,7 @@
   return (25.4 * frame.size.height) / physicalSize.height;
 } 
 
-// Sets resolution without changing layout
+// Sets resolution without changing layout of displays.
 // If you want to relayout displays with new resolution use
 // [NXScreen setDisplay:resolution:origin] instead.
 - (void)setResolution:(NSDictionary *)resolution
@@ -350,6 +350,10 @@
   if (!rr_crtc)
     {
       rr_crtc = [screen randrFindFreeCRTC];
+      if (!rr_crtc)
+        {
+          NSLog(@"Can't find free CRTC!");
+        }
       crtc_info = XRRGetCrtcInfo(xDisplay, scr_resources, rr_crtc);
       crtc_info->timestamp = CurrentTime;
       crtc_info->rotation = RR_Rotate_0;
@@ -609,6 +613,20 @@ find_last_non_clamped(CARD16 array[], int size)
 // gamma - monitor gamma, for example 0.8
 // gamma correction - 1.0/gamma, e.g. 1.25
 
+- (BOOL)isGammaSupported
+{
+  XRROutputInfo *output_info;
+  int           size;
+ 
+  output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
+  size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
+
+  if (size == 0 || [[self uniqueID] isEqualToString:@" "])
+    return NO;
+
+  return YES;
+}
+
 - (NSDictionary *)gammaDescription
 {
   NSMutableDictionary *d = [[NSMutableDictionary alloc] init];
@@ -665,7 +683,9 @@ find_last_non_clamped(CARD16 array[], int size)
   XRROutputInfo      *output_info;
   XRRCrtcGamma       *gamma, *new_gamma;
   int                i, size;
-   
+
+  if ([self isGammaSupported] == NO) return;
+  
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   gamma = XRRGetCrtcGamma(xDisplay, output_info->crtc);
   size = gamma->size;

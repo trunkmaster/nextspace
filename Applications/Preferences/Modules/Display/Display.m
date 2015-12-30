@@ -165,8 +165,6 @@ static NXDisplay		*selectedDisplay = nil;
         setDisplay:selectedDisplay
         resolution:[[rateBtn selectedCell] representedObject]
             origin:[selectedDisplay frame].origin];
-      // [selectedDisplay setResolution:[[rateBtn selectedCell] representedObject]
-      //                         origin:[selectedDisplay frame].origin];
       
       [[NSNotificationCenter defaultCenter]
         postNotificationName:DisplayPreferencesDidChangeNotification

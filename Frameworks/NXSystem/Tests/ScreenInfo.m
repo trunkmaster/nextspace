@@ -66,9 +66,9 @@ void fadeInFadeOutTest(NXScreen *sScreen)
 
 void gammaCorrectionTest(NXScreen *sScreen)
 {
-  NSArray   *displays = [sScreen connectedDisplays];
-  for (NXDisplay *display in displays)
-    {
+  // NSArray   *displays = [sScreen connectedDisplays];
+  // for (NXDisplay *display in displays)
+    // {
       // CGFloat gamma = 1.25;
       // if ([display isActive])
       //   {
@@ -84,7 +84,7 @@ void gammaCorrectionTest(NXScreen *sScreen)
       //     fprintf(stderr, ">>> Gamma Correction value = %0.2f, Gamma Brightness = %0.2f\n",
       //             1.0/[display gammaValue].red, [display gammaBrightness]);
       //   }
-    }
+    // }
 
 }
 
@@ -137,7 +137,7 @@ int main(int argc, const char ** argv)
       
       // if (isActive)
         {
-          NSDictionary *mode = [display mode];
+          NSDictionary *mode = [display resolution];
           if (mode)
             {
               dSize = NSSizeFromString([mode objectForKey:@"Dimensions"]);
@@ -149,7 +149,7 @@ int main(int argc, const char ** argv)
           //   {
           //     NSLog(@"\tCurrent resolution (%.0fx%.0f@%.2f) is not in list of supported by monitor", [display modeSize].width, [display modeSize].height, [display modeRate]);
           //   }
-          mode = [display preferredMode];
+          mode = [display bestResolution];
           dSize = NSSizeFromString([mode objectForKey:@"Dimensions"]);
           NSLog(@"\tPreferred resolution: %.0f x %.0f @ %.2f",
                 dSize.width, dSize.height,
@@ -167,23 +167,26 @@ int main(int argc, const char ** argv)
             NSDictionary *properties = [display properties];
             NSData *edidData = [properties objectForKey:@"EDID"];
             unsigned char *edid = (unsigned char *)[edidData bytes];
-            
-            NSLog(@"\t\tEDID: ");
-            for (NSUInteger i=0; i < [edidData length]; i++)
+
+            if ([edidData length] > 0)
               {
-                fprintf(stderr, "%x", edid[i]);
-              }
-            fprintf(stderr, "\n");
-            NSLog(@"\t\tMonitor name: %@", get_monitor_name(edid));
-            NSLog(@"\t\tVendor name: %@", get_vendor_name(edid));
+                NSLog(@"\t\tEDID: ");
+                for (NSUInteger i=0; i < [edidData length]; i++)
+                  {
+                    fprintf(stderr, "%x", edid[i]);
+                  }
+                fprintf(stderr, "\n");
+                NSLog(@"\t\tMonitor name: %@", get_monitor_name(edid));
+                NSLog(@"\t\tVendor name: %@", get_vendor_name(edid));
             
-            /* Gamma. Divide by 100, add 1.
-               Defaults to 1, so if 0, it'll be 1 anyway. */
-            if (edid[0x17] != 0xff)
-              {
-                float monitorGamma;
-                monitorGamma = (float)((((float)edid[0x17]) / 100) + 1);
-                NSLog(@"\t\tMonitor Gamma: %.2f\n", monitorGamma);
+                // Gamma. Divide by 100, add 1.
+                // Defaults to 1, so if 0, it'll be 1 anyway.
+                if (edid[0x17] != 0xff)
+                  {
+                    float monitorGamma;
+                    monitorGamma = (float)((((float)edid[0x17]) / 100) + 1);
+                    NSLog(@"\t\tMonitor Gamma: %.2f\n", monitorGamma);
+                  }
               }
           }
         }
@@ -199,7 +202,9 @@ int main(int argc, const char ** argv)
 
   // fadeInFadeOutTest(sScreen);
 
-  [sScreen backgroundColor];
+  // [sScreen backgroundColor];
+
+  [[[sScreen allDisplays] lastObject] isGammaSupported];
  
   [pool release];
 
