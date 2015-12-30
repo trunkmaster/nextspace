@@ -530,6 +530,7 @@
        метода: один - меняет описание layout и вызывает [NXScreen apply...],
        другой - только меняет разрешение монитора (вызывается только 
        [NXScreen apply...]).
+**** TODO Проверять поддерживает ли дисплей Gamma
 **** TODO NXDisplay: заменить Dimensions и Origin на Frame
 **** TODO Background color of desktop
 **** TODO NXDisplay: rotation & reflection

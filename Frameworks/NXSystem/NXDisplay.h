@@ -95,6 +95,7 @@ typedef struct _NXGammaValue NXGammaValue;
 - (void)setMain:(BOOL)yn;
 
 - (void)_getGamma;
+- (BOOL)isGammaSupported;
 
 // Get
 - (NSDictionary *)gammaDescription;

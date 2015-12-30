@@ -653,8 +653,9 @@ static id systemScreen = nil;
     }
 
   // 2. Change origin of other display(s) if new resolution requires it.
-  for (d in newLayout)
+  for (NSUInteger i=0; i<[newLayout count]; i++)
     {
+      d = [newLayout objectAtIndex:0];
       if (![[d objectForKey:@"Name"] isEqualToString:displayName])
         {
           dSize = NSSizeFromString([[d objectForKey:@"Resolution"]
@@ -687,7 +688,7 @@ static id systemScreen = nil;
 
   // 3. Apply new layout
   [newLayout writeToFile:@"NewDisplay.config" atomically:YES];
-  // [self applyDisplayLayout:newLayout];
+  [self applyDisplayLayout:newLayout];
   [newLayout release];
 }
 
