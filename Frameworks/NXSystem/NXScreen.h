@@ -114,9 +114,27 @@
 
 - (NSArray *)defaultLayout:(BOOL)arrange;
 - (NSArray *)currentLayout;
+- (BOOL)validateLayout:(NSArray *)layout;
 - (void)applyDisplayLayout:(NSArray *)layout;
 - (void)setDisplay:(NXDisplay *)display
         resolution:(NSDictionary *)resolution
             origin:(NSPoint)origin;
 
 @end
+
+// Displays.config field keys
+extern NSString *NXDisplayIsActiveKey;
+extern NSString *NXDisplayIsMainKey;
+extern NSString *NXDisplayGammaKey;
+extern NSString *NXDisplayGammaRedKey;
+extern NSString *NXDisplayGammaGreenKey;
+extern NSString *NXDisplayGammaBlueKey;
+extern NSString *NXDisplayGammaBrightnessKey;
+extern NSString *NXDisplayIDKey;
+extern NSString *NXDisplayNameKey;
+extern NSString *NXDisplayOriginKey;
+extern NSString *NXDisplayResolutionKey;
+extern NSString *NXDisplaySizeKey;
+extern NSString *NXDisplayRateKey;
+extern NSString *NXDisplayPhSizeKey;
+extern NSString *NXDisplayPropertiesKey;

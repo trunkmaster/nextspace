@@ -140,26 +140,28 @@ int main(int argc, const char ** argv)
           NSDictionary *mode = [display resolution];
           if (mode)
             {
-              dSize = NSSizeFromString([mode objectForKey:@"Dimensions"]);
+              dSize = NSSizeFromString([mode objectForKey:NXDisplaySizeKey]);
               NSLog(@"\tCurrent resolution: %.0f x %.0f @ %.2f",
                     dSize.width, dSize.height,
-                    [[mode objectForKey:@"Rate"] floatValue]);
+                    [[mode objectForKey:NXDisplayRateKey] floatValue]);
             }
           // else
           //   {
           //     NSLog(@"\tCurrent resolution (%.0fx%.0f@%.2f) is not in list of supported by monitor", [display modeSize].width, [display modeSize].height, [display modeRate]);
           //   }
           mode = [display bestResolution];
-          dSize = NSSizeFromString([mode objectForKey:@"Dimensions"]);
+          dSize = NSSizeFromString([mode objectForKey:NXDisplaySizeKey]);
           NSLog(@"\tPreferred resolution: %.0f x %.0f @ %.2f",
                 dSize.width, dSize.height,
-                [[mode objectForKey:@"Rate"] floatValue]);
+                [[mode objectForKey:NXDisplayRateKey] floatValue]);
       
           NSRect frame = [display frame];
           NSLog(@"\tPosition: %.1f, %.1f", frame.origin.x, frame.origin.y);
           NSLog(@"\tSize in pixels: %.1f x %.1f",
                 frame.size.width, frame.size.height);
           NSLog(@"\tDots per Inch: %.1f", [display dpi]);
+          NSLog(@"\tGamma supported: %@",
+                (([display isGammaSupported]) ? @"Yes" : @"No"));
 
           // Propeties
           {
@@ -204,7 +206,6 @@ int main(int argc, const char ** argv)
 
   // [sScreen backgroundColor];
 
-  [[[sScreen allDisplays] lastObject] isGammaSupported];
  
   [pool release];
 
