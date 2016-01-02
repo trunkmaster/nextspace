@@ -518,7 +518,7 @@
 **** DONE Проверить количество rate для одного resolution
      То, что показывает NXDisplay и xrandr не совпадает.
 **** DONE NXDisplay: менять разрешение только если отличается
-**** TODO Переписать setResolution
+**** DONE Переписать setResolution
      Вызов [NXDisplay setResolution:origin:] напрямую не меняет размер
      NXScreen.
      Однако, изменение разрешения монитора (NXDisplay) менят размер экрана
@@ -530,6 +530,14 @@
        метода: один - меняет описание layout и вызывает [NXScreen apply...],
        другой - только меняет разрешение монитора (вызывается только 
        [NXScreen apply...]).
+    Переписал следующим образом:
+    - [NSDisplay setResolution:origin:] устанавливает разрешение и позицию
+      дисплея безусловно - layout не меняет (не вызывает метод NXScreen).
+    - добавил метод [NXScreen setDisplay;resolution:origin:], который как раз
+      меняет разрешение только после проверки и изменения layout дисплеев.
+**** DONE Displays.config keys in NXScreen.h
+     Плюс, добавил отдельный метод для проверки корректности layout.
+**** TODO Проверить работает ли изменение разрешения при увеличении экрана
 **** TODO Проверять поддерживает ли дисплей Gamma
 **** TODO NXDisplay: заменить Dimensions и Origin на Frame
 **** TODO Background color of desktop

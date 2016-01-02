@@ -49,6 +49,23 @@
 #import "NXDisplay.h"
 #import "NXScreen.h"
 
+// Displays.config field keys
+NSString *NXDisplayIsActiveKey = @"Active";
+NSString *NXDisplayIsMainKey = @"Main";
+NSString *NXDisplayGammaKey = @"Gamma";
+NSString *NXDisplayGammaRedKey = @"Red";
+NSString *NXDisplayGammaGreenKey = @"Green";
+NSString *NXDisplayGammaBlueKey = @"Blue";
+NSString *NXDisplayGammaBrightnessKey = @"Brightness";
+NSString *NXDisplayIDKey = @"ID";
+NSString *NXDisplayNameKey = @"Name";
+NSString *NXDisplayOriginKey = @"Origin";
+NSString *NXDisplayResolutionKey = @"Resolution";
+NSString *NXDisplaySizeKey = @"Size";
+NSString *NXDisplayRateKey = @"Rate";
+NSString *NXDisplayPhSizeKey = @"PhysicalSize";
+NSString *NXDisplayPropertiesKey = @"Properties";
+
 @interface NXScreen (Private)
 - (NSSize)_sizeInPixels;
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout;
@@ -92,12 +109,12 @@
   
   for (NSDictionary *display in layout)
     {
-      if ([[display objectForKey:@"Active"] isEqualToString:@"NO"])
+      if ([[display objectForKey:NXDisplayIsActiveKey] isEqualToString:@"NO"])
         continue;
       
-      origin = NSPointFromString([display objectForKey:@"Origin"]);
-      resolution = [display objectForKey:@"Resolution"];
-      size = NSSizeFromString([resolution objectForKey:@"Size"]);
+      origin = NSPointFromString([display objectForKey:NXDisplayOriginKey]);
+      resolution = [display objectForKey:NXDisplayResolutionKey];
+      size = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
           
       w = origin.x + size.width;
       if (w > width) width = w;
@@ -220,7 +237,7 @@ static id systemScreen = nil;
   // Initially we set primary display to first active
   if ([self mainDisplay] == nil)
     {
-      NSLog(@"NXScreen: main display not found, setting first active as main...");
+      NSLog(@"NXScreen: main display not found, setting first active as main.");
       for (NXDisplay *display in systemDisplays)
         {
           if ([display isActive])
@@ -388,7 +405,6 @@ static id systemScreen = nil;
   return connectedDL;
 }
 
-// TODO
 - (NXDisplay *)mainDisplay
 {
   NXDisplay *display;
@@ -422,9 +438,11 @@ static id systemScreen = nil;
 
 - (NXDisplay *)displayWithID:(id)uniqueID
 {
+  NSData *uid;
   for (NXDisplay *display in systemDisplays)
     {
-      if ([[display uniqueID] hash] == [uniqueID hash])
+      uid = [display uniqueID];
+      if (uid && ([uid hash] == [uniqueID hash]))
         {
           return display;
         }
@@ -473,30 +491,44 @@ static id systemScreen = nil;
       
       d = [[NSMutableDictionary alloc] init];
       [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
-            forKey:@"ID"];
-      [d setObject:[display outputName] forKey:@"Name"];
-      [d setObject:resolution forKey:@"Resolution"];
-      [d setObject:NSStringFromPoint(origin) forKey:@"Origin"];
-      [d setObject:NSStringFromSize([display physicalSize]) forKey:@"Size"];
-      [d setObject:@"YES" forKey:@"Active"];
-      [d setObject:([display isMain]) ? @"YES" : @"NO" forKey:@"Main"];
+            forKey:NXDisplayIDKey];
+      [d setObject:[display outputName]
+            forKey:NXDisplayNameKey];
+      [d setObject:resolution
+            forKey:NXDisplayResolutionKey];
+      [d setObject:NSStringFromPoint(origin)
+            forKey:NXDisplayOriginKey];
+      [d setObject:NSStringFromSize([display physicalSize])
+            forKey:NXDisplayPhSizeKey];
+      [d setObject:@"YES"
+            forKey:NXDisplayIsActiveKey];
+      [d setObject:([display isMain]) ? @"YES" : @"NO"
+            forKey:NXDisplayIsMainKey];
       
       gamma = [NSMutableDictionary new];
-      [gamma setObject:[NSNumber numberWithFloat:0.8] forKey:@"Red"];
-      [gamma setObject:[NSNumber numberWithFloat:0.8] forKey:@"Green"];
-      [gamma setObject:[NSNumber numberWithFloat:0.8] forKey:@"Blue"];
-      [gamma setObject:[NSNumber numberWithFloat:1.0] forKey:@"Brightness"];
-      [d setObject:gamma forKey:@"Gamma"];
+      [gamma setObject:[NSNumber numberWithFloat:0.8]
+                forKey:NXDisplayGammaRedKey];
+      [gamma setObject:[NSNumber numberWithFloat:0.8]
+                forKey:NXDisplayGammaGreenKey];
+      [gamma setObject:[NSNumber numberWithFloat:0.8]
+                forKey:NXDisplayGammaBlueKey];
+      [gamma setObject:[NSNumber numberWithFloat:1.0]
+                forKey:NXDisplayGammaBrightnessKey];
+      [d setObject:gamma forKey:NXDisplayGammaKey];
       
       if ((properties = [display properties]))
-        [d setObject:properties forKey:@"Properties"];
+        {
+          [d setObject:properties forKey:NXDisplayPropertiesKey];
+        }
       
       [layout addObject:d];
       [d release];
 
       if (arrange)
-        origin.x +=
-          NSSizeFromString([resolution objectForKey:@"Dimensions"]).width;
+        {
+          origin.x +=
+            NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]).width;
+        }
     }
 
   return [layout copy];
@@ -513,19 +545,25 @@ static id systemScreen = nil;
   for (NXDisplay *display in [self connectedDisplays])
     {
       d = [[NSMutableDictionary alloc] init];
-      [d setObject:[display uniqueID] forKey:@"ID"];
-      [d setObject:[display outputName] forKey:@"Name"];
-      [d setObject:[display resolution] forKey:@"Resolution"];
-      [d setObject:NSStringFromPoint([display frame].origin) forKey:@"Origin"];
+      [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
+            forKey:NXDisplayIDKey];
+      [d setObject:[display outputName]
+            forKey:NXDisplayNameKey];
+      [d setObject:[display resolution]
+            forKey:NXDisplayResolutionKey];
+      [d setObject:NSStringFromPoint([display frame].origin)
+            forKey:NXDisplayOriginKey];
       [d setObject:NSStringFromSize([display physicalSize])
-            forKey:@"PhysicalSize"];
-      [d setObject:([display isActive]) ? @"YES" : @"NO" forKey:@"Active"];
-      [d setObject:([display isMain]) ? @"YES" : @"NO" forKey:@"Main"];
+            forKey:NXDisplayPhSizeKey];
+      [d setObject:([display isActive]) ? @"YES" : @"NO"
+            forKey:NXDisplayIsActiveKey];
+      [d setObject:([display isMain]) ? @"YES" : @"NO"
+            forKey:NXDisplayIsMainKey];
 
-      [d setObject:[display gammaDescription] forKey:@"Gamma"];
+      [d setObject:[display gammaDescription] forKey:NXDisplayGammaKey];
       if ((properties = [display properties]))
         {
-          [d setObject:properties forKey:@"Properties"];
+          [d setObject:properties forKey:NXDisplayPropertiesKey];
         }
 
       [layout addObject:d];
@@ -533,6 +571,38 @@ static id systemScreen = nil;
     }
 
   return layout;
+}
+
+- (BOOL)validateLayout:(NSArray *)layout
+{
+  NSDictionary *gamma;
+  
+  for (NSDictionary *d in layout)
+    {
+      if (![self displayWithID:[d objectForKey:NXDisplayIDKey]])
+        { // Some display is not connected - use default layout
+          NSLog(@"NXScreen: display is not connected");
+          return NO;
+        }
+      if (![d objectForKey:NXDisplayResolutionKey] ||
+          ![d objectForKey:NXDisplayOriginKey])
+        { // Display resolution or origin not found
+          NSLog(@"NXScreen: display no saved resolution or origin");
+          return NO;
+        }
+      ;
+      if (!(gamma = [d objectForKey:NXDisplayGammaKey]) ||
+          ![gamma objectForKey:NXDisplayGammaRedKey] ||
+          ![gamma objectForKey:NXDisplayGammaGreenKey] ||
+          ![gamma objectForKey:NXDisplayGammaBlueKey] ||
+          ![gamma objectForKey:NXDisplayGammaBrightnessKey])
+        { // Something wrong with saved gamma
+          NSLog(@"NXScreen: display no saved gamma");
+          return NO;
+        }
+    }
+
+  return YES;
 }
 
 - (void)applyDisplayLayout:(NSArray *)layout
@@ -543,23 +613,11 @@ static id systemScreen = nil;
   NXDisplay *display;
   XRRProviderResources *provider_resources;
 
-  // provider_resources = XRRGetProviderResources(xDisplay, xRootWindow);
-  // if (provider_resources->nproviders < 1)
-  //   { // No video cards - applying layout doesn't make sense or work.
-  //     NSLog(@"NXScreen: No video adapters found - no saved layout will be applied.");
-  //     XRRFreeProviderResources(provider_resources);
-  //     return;
-  //   }
-
-  // Validate existance of all displays in 'layout'
-  for (NSDictionary *d in layout)
+  // Validate 'layout'
+  if ([self validateLayout:layout] == NO)
     {
-      if (![self displayWithID:[d objectForKey:@"ID"]])
-        { // Some display is not connected - use default layout
-          NSLog(@"NXScreen:Applying default layout. Display.config ignored.");
-          layout = [self defaultLayout:YES];
-          break;
-        }
+      NSLog(@"NXScreen:Applying default layout. Display.config ignored.");
+      layout = [self defaultLayout:YES];
     }
   
   newPixSize = [self _sizeInPixelsForLayout:layout];
@@ -579,22 +637,29 @@ static id systemScreen = nil;
   sizeInPixels = newPixSize;
   
   // Set resolution and gamma to displays
+  NSString     *displayName;
+  NSDictionary *gamma;
+  NSDictionary *resolution;
+  NSPoint      origin;
   for (NSDictionary *displayLayout in layout)
     {
-      display = [self displayWithName:[displayLayout objectForKey:@"Name"]];
+      displayName = [displayLayout objectForKey:NXDisplayNameKey];
+      display = [self displayWithName:displayName];
       
-      if ([[displayLayout objectForKey:@"Active"] isEqualToString:@"NO"])
+      if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
+            isEqualToString:@"NO"])
         {
           [display deactivate];
         }
       else
         {
-          [display
-            setGammaFromDescription:[displayLayout objectForKey:@"Gamma"]];
-      
-          [display
-            setResolution:[displayLayout objectForKey:@"Resolution"]
-                   origin:NSPointFromString([displayLayout objectForKey:@"Origin"])];
+          gamma = [displayLayout objectForKey:NXDisplayGammaKey];
+          [display setGammaFromDescription:gamma];
+
+          resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
+          origin = NSPointFromString([displayLayout
+                                       objectForKey:NXDisplayOriginKey]);
+          [display setResolution:resolution origin:origin];
         }
     }
 
@@ -633,19 +698,19 @@ static id systemScreen = nil;
   for (i = 0; i < dCount; i++)
     {
       d = [newLayout objectAtIndex:i];
-      if ([[d objectForKey:@"Name"] isEqualToString:displayName])
+      if ([[d objectForKey:NXDisplayNameKey] isEqualToString:displayName])
         {
           // Save old values for resolution and origin
-          oldSize = NSSizeFromString([[d objectForKey:@"Resolution"]
-                                       objectForKey:@"Size"]);
-          oldOrigin = NSPointFromString([d objectForKey:@"Origin"]);
+          oldSize = NSSizeFromString([[d objectForKey:NXDisplayResolutionKey]
+                                       objectForKey:NXDisplaySizeKey]);
+          oldOrigin = NSPointFromString([d objectForKey:NXDisplayOriginKey]);
           oldTopY = oldOrigin.y + oldSize.height;
           oldRightX = oldOrigin.x + oldSize.width;
-          newSize = NSSizeFromString([resolution objectForKey:@"Size"]);
+          newSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
           
           dd = [d mutableCopy];
-          [dd setObject:resolution forKey:@"Resolution"];
-          [dd setObject:NSStringFromPoint(origin) forKey:@"Origin"];
+          [dd setObject:resolution forKey:NXDisplayResolutionKey];
+          [dd setObject:NSStringFromPoint(origin) forKey:NXDisplayOriginKey];
           [newLayout replaceObjectAtIndex:i withObject:dd];
           [dd release];
           break;
@@ -656,11 +721,11 @@ static id systemScreen = nil;
   for (NSUInteger i=0; i<[newLayout count]; i++)
     {
       d = [newLayout objectAtIndex:0];
-      if (![[d objectForKey:@"Name"] isEqualToString:displayName])
+      if (![[d objectForKey:NXDisplayNameKey] isEqualToString:displayName])
         {
-          dSize = NSSizeFromString([[d objectForKey:@"Resolution"]
-                                       objectForKey:@"Size"]);
-          dOrigin = NSPointFromString([d objectForKey:@"Origin"]);
+          dSize = NSSizeFromString([[d objectForKey:NXDisplayResolutionKey]
+                                       objectForKey:NXDisplaySizeKey]);
+          dOrigin = NSPointFromString([d objectForKey:NXDisplayOriginKey]);
           dTopY = dOrigin.y + dSize.height;
           dRightX = dOrigin.x + dSize.width;
           // Adjust horizontal position
@@ -679,7 +744,7 @@ static id systemScreen = nil;
             }
           
           dd = [d mutableCopy];
-          [dd setObject:NSStringFromPoint(dOrigin) forKey:@"Origin"];
+          [dd setObject:NSStringFromPoint(dOrigin) forKey:NXDisplayOriginKey];
           [newLayout replaceObjectAtIndex:[newLayout indexOfObject:d]
                                withObject:dd];
           [dd release];
@@ -695,5 +760,12 @@ static id systemScreen = nil;
 //------------------------------------------------------------------------------
 // Video adapters
 //------------------------------------------------------------------------------
+  // provider_resources = XRRGetProviderResources(xDisplay, xRootWindow);
+  // if (provider_resources->nproviders < 1)
+  //   { // No video cards - applying layout doesn't make sense or work.
+  //     NSLog(@"NXScreen: No video adapters found - no saved layout will be applied.");
+  //     XRRFreeProviderResources(provider_resources);
+  //     return;
+  //   }
 
 @end

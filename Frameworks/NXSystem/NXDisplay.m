@@ -91,7 +91,7 @@
 //------------------------------------------------------------------------------
 //--- XRandR utility functions
 //------------------------------------------------------------------------------
-- (XRRModeInfo)_modeInfoForMode:(RRMode) mode
+- (XRRModeInfo)_modeInfoForMode:(RRMode)mode
 {
   XRRModeInfo rrMode;
 
@@ -116,7 +116,7 @@
   
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
 
-  resDims = NSSizeFromString([resolution objectForKey:@"Size"]);
+  resDims = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
 
   for (int i=0; i<output_info->nmode; i++)
     {
@@ -177,8 +177,8 @@
       rSize = NSMakeSize((CGFloat)mode_info.width, (CGFloat)mode_info.height);
       rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
       res = [NSDictionary dictionaryWithObjectsAndKeys:
-                            NSStringFromSize(rSize), @"Size",
-                            [NSNumber numberWithFloat:rRate], @"Rate",
+                            NSStringFromSize(rSize), NXDisplaySizeKey,
+                            [NSNumber numberWithFloat:rRate], NXDisplayRateKey,
                             nil];
       [resolutions addObject:res];
     }
@@ -205,9 +205,8 @@
           
           XRRFreeCrtcInfo(crtc_info);
         }
-
       // Primary display
-      isMain = [self isMain];      
+      isMain = [self isMain];
     }
   
   XRRFreeOutputInfo(output_info);
@@ -265,9 +264,9 @@
   for (int i=0; i<res_count; i++)
     {
       res = [resolutions objectAtIndex:i];
-      resSize = NSSizeFromString([res objectForKey:@"Size"]);
+      resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
       mps = resSize.width * resSize.height;
-      r = [[res objectForKey:@"Rate"] floatValue];
+      r = [[res objectForKey:NXDisplayRateKey] floatValue];
       
       if ((mps == mpixels) && (r > rate))
         {
@@ -293,10 +292,10 @@
 
   for (res in resolutions)
     {
-      resSize = NSSizeFromString([res objectForKey:@"Size"]);
+      resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
       if (resSize.width == frame.size.width &&
           resSize.height == frame.size.height &&
-          [[res objectForKey:@"Rate"] floatValue] == rate)
+          [[res objectForKey:NXDisplayRateKey] floatValue] == rate)
         {
           break;
         }
@@ -343,7 +342,7 @@
   output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
   
   NSLog(@"Set resolution %@ for CRTC output %s", 
-        [resolution objectForKey:@"Size"],
+        [resolution objectForKey:NXDisplaySizeKey],
         output_info->name);
  
   rr_crtc = output_info->crtc;
@@ -367,7 +366,9 @@
       crtc_info = XRRGetCrtcInfo(xDisplay, scr_resources, rr_crtc);
     }
 
-  if (dims.width == 0 || dims.height == 0)
+  resolutionSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
+  
+  if (resolutionSize.width == 0 || resolutionSize.height == 0)
     {
       rr_mode = None;
       crtc_info->timestamp = CurrentTime;
@@ -402,12 +403,11 @@
     }
       
   // Save dimensions in ivars even if mode was not changed.
-  resolutionSize = NSSizeFromString([resolution objectForKey:@"Size"]);
   if (resolutionSize.width > 0 && resolutionSize.height > 0)
     {
       frame = NSMakeRect(origin.x, origin.y,
                          resolutionSize.width, resolutionSize.height);
-      rate = [[resolution objectForKey:@"Rate"] floatValue];
+      rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
       isActive = YES;
     }
   
@@ -436,9 +436,8 @@
   NSDictionary *res;
   
   res = [NSDictionary dictionaryWithObjectsAndKeys:
-                        outputName, @"Name",
-                      NSStringFromSize(NSMakeSize(0,0)), @"Size",
-                         [NSNumber numberWithFloat:0.0], @"Rate",
+                      NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
+                      [NSNumber numberWithFloat:0.0],    NXDisplayRateKey,
                       nil];
   [self setResolution:res origin:NSMakePoint(0,0)];
   isActive = NO;
@@ -449,8 +448,8 @@
   NSDictionary *res;
 
   res = [NSDictionary dictionaryWithObjectsAndKeys:
-                      NSStringFromSize(frame.size),	@"Size",
-                      [NSNumber numberWithFloat:rate],	@"Rate",
+                      NSStringFromSize(frame.size),	NXDisplaySizeKey,
+                      [NSNumber numberWithFloat:rate],	NXDisplayRateKey,
                       nil];
   [self setResolution:res origin:frame.origin];
   isActive = YES;
@@ -458,7 +457,8 @@
 
 - (BOOL)isMain
 {
-  if (XRRGetOutputPrimary(xDisplay, RootWindow(xDisplay, DefaultScreen(xDisplay)))
+  if (XRRGetOutputPrimary(xDisplay,
+                          RootWindow(xDisplay, DefaultScreen(xDisplay)))
       == output_id)
     {
       return YES;
@@ -621,7 +621,7 @@ find_last_non_clamped(CARD16 array[], int size)
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
 
-  if (size == 0 || [[self uniqueID] isEqualToString:@" "])
+  if (size == 0 || [self uniqueID] == nil)
     return NO;
 
   return YES;
@@ -632,13 +632,13 @@ find_last_non_clamped(CARD16 array[], int size)
   NSMutableDictionary *d = [[NSMutableDictionary alloc] init];
 
   [d setObject:[[NSNumber numberWithFloat:gammaValue.red] stringValue]
-        forKey:@"Red"];
+        forKey:NXDisplayGammaRedKey];
   [d setObject:[[NSNumber numberWithFloat:gammaValue.green] stringValue]
-        forKey:@"Green"];
+        forKey:NXDisplayGammaGreenKey];
   [d setObject:[[NSNumber numberWithFloat:gammaValue.blue] stringValue]
-        forKey:@"Blue"];
+        forKey:NXDisplayGammaBlueKey];
   [d setObject:[[NSNumber numberWithFloat:gammaBrightness] stringValue]
-        forKey:@"Brightness"];
+        forKey:NXDisplayGammaBrightnessKey];
 
   return [d autorelease];
 }
@@ -649,15 +649,19 @@ find_last_non_clamped(CARD16 array[], int size)
     return;
 
   NSLog(@"setGammaFromDescription: %f : %f : %f",
-        [[gammaDict objectForKey:@"Red"] floatValue],
-        [[gammaDict objectForKey:@"Green"] floatValue],
-        [[gammaDict objectForKey:@"Blue"] floatValue]);
+        [[gammaDict objectForKey:NXDisplayGammaRedKey] floatValue],
+        [[gammaDict objectForKey:NXDisplayGammaGreenKey] floatValue],
+        [[gammaDict objectForKey:NXDisplayGammaBlueKey] floatValue]);
   
   [self
-    setGammaRed:[[gammaDict objectForKey:@"Red"] floatValue]
-          green:[[gammaDict objectForKey:@"Green"] floatValue]
-           blue:[[gammaDict objectForKey:@"Blue"] floatValue]
-     brightness:[[gammaDict objectForKey:@"Brightness"] floatValue]];
+    setGammaRed:[[gammaDict objectForKey:NXDisplayGammaRedKey]
+                  floatValue]
+          green:[[gammaDict objectForKey:NXDisplayGammaGreenKey]
+                  floatValue]
+           blue:[[gammaDict objectForKey:NXDisplayGammaBlueKey]
+                  floatValue]
+     brightness:[[gammaDict objectForKey:NXDisplayGammaBrightnessKey]
+                  floatValue]];
 }
 
 - (CGFloat)gamma
@@ -1025,7 +1029,7 @@ property_value(Display *dpy,
 
   if ([displayID length] < 1)
     {
-      displayID = @" ";
+      displayID = nil;
     }
   
   return displayID;
