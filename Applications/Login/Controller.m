@@ -568,7 +568,7 @@ void *alloc(int size)
 - (void)restart:sender
 {
   NSString *restartCmd;
-  NSAlert *alertPanel;
+  /*  NSAlert *alertPanel;
 
   // {
     NSRect   panelFrame, displayFrame;
@@ -597,11 +597,13 @@ void *alloc(int size)
     [[alertPanel window] setFrameOrigin:newOrigin];
     // [[alertPanel window] makeKeyAndOrderFront:self];
   // }
+  // if ([alertPanel runModal] == NSAlertDefaultReturn)
+  */
 
-  // if (NSRunAlertPanel(_(@"Restart"),
-  //       	      _(@"Do you really want to restart the computer?"),
-  //       	      _(@"Restart"), _(@"Cancel"), nil) 
-  if ([alertPanel runModal] == NSAlertDefaultReturn)
+  if (NSRunAlertPanel(_(@"Restart"),
+         	      _(@"Do you really want to restart the computer?"),
+         	      _(@"Restart"), _(@"Cancel"), nil)
+      == NSAlertDefaultReturn)
     {
       if ((restartCmd = [self rebootCommand]) == nil)
 	{

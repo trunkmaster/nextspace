@@ -202,7 +202,7 @@ int main(int argc, const char ** argv)
   //                     @"/usr/NextSpace/Preferences/Displays.config"];
   // [sScreen applyDisplayLayout:layout];
 
-  // fadeInFadeOutTest(sScreen);
+  fadeInFadeOutTest(sScreen);
 
   // [sScreen backgroundColor];
 
