@@ -619,6 +619,9 @@ find_last_non_clamped(CARD16 array[], int size)
   int           size;
  
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
+  
+  if (!output_info->crtc) return NO;
+  
   size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
 
   if (size == 0 || [self uniqueID] == nil)
@@ -729,7 +732,7 @@ find_last_non_clamped(CARD16 array[], int size)
   
   XRRFreeGamma(new_gamma);
   XRRFreeOutputInfo(output_info);  
-}
+       }
 
 - (void)setGamma:(CGFloat)value
       brightness:(CGFloat)brightness
@@ -764,7 +767,7 @@ find_last_non_clamped(CARD16 array[], int size)
   if (![self isActive])
     return;
 
-  // XGrabServer(xDisplay);
+  XGrabServer(xDisplay);
   
   for (float i=10; i >= 0; i--)
     {
@@ -772,7 +775,7 @@ find_last_non_clamped(CARD16 array[], int size)
       usleep(30000);
     }
   
-  // XUngrabServer(xDisplay);
+  XUngrabServer(xDisplay);
 }
 
 // TODO: set fade speed by time interval
