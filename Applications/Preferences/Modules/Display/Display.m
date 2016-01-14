@@ -167,8 +167,8 @@ static NXDisplay		*selectedDisplay = nil;
             origin:[selectedDisplay frame].origin];
       
       [[NSNotificationCenter defaultCenter]
-        postNotificationName:DisplayPreferencesDidChangeNotification
-                      object:self];
+         postNotificationName:DisplayPreferencesDidChangeNotification
+                       object:self];
     }  
 }
 

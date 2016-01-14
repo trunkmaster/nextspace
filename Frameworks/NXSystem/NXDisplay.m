@@ -101,7 +101,6 @@
       if (rrMode.id == mode)
         break;
     }
-  
   return rrMode;
 }
 // Get mode with highest refresh rate
@@ -330,7 +329,7 @@
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin
 {
-  XRRScreenResources *scr_resources = [screen randrScreenResources];
+  // XRRScreenResources *scr_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcInfo        *crtc_info;
   RRMode             rr_mode;
@@ -339,7 +338,7 @@
   CGFloat            brightness = gammaBrightness;
   NSSize 	     dims, resolutionSize;
   
-  output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
+  output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   
   NSLog(@"Set resolution %@ for CRTC output %s", 
         [resolution objectForKey:NXDisplaySizeKey],
@@ -353,7 +352,7 @@
         {
           NSLog(@"Can't find free CRTC!");
         }
-      crtc_info = XRRGetCrtcInfo(xDisplay, scr_resources, rr_crtc);
+      crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
       crtc_info->timestamp = CurrentTime;
       crtc_info->rotation = RR_Rotate_0;
       crtc_info->outputs[0] = output_id;
@@ -363,7 +362,7 @@
     }
   else
     {
-      crtc_info = XRRGetCrtcInfo(xDisplay, scr_resources, rr_crtc);
+      crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
     }
 
   resolutionSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
@@ -389,7 +388,7 @@
       [self fadeToBlack:brightness];
   
       XRRSetCrtcConfig(xDisplay,
-                       scr_resources,
+                       screen_resources,
                        rr_crtc,
                        crtc_info->timestamp,
                        origin.x, origin.y,
@@ -1032,7 +1031,7 @@ property_value(Display *dpy,
 
   if ([displayID length] < 1)
     {
-      displayID = nil;
+      displayID = outputName;
     }
   
   return displayID;

@@ -102,7 +102,7 @@ NSString *NXDisplayPropertiesKey = @"Properties";
 // Doesn't change 'sizeInPixels' ivar.
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout
 {
-  CGFloat width = 0.0, height = 0.0, w = 0.0, h = 0.0;
+  CGFloat      width = 0.0, height = 0.0, w = 0.0, h = 0.0;
   NSSize       size;
   NSPoint      origin;
   NSDictionary *resolution;
@@ -269,8 +269,11 @@ static id systemScreen = nil;
 - (XRRScreenResources *)randrScreenResources
 {
   // XLockDisplay(xDisplay);
-  
-  XRRFreeScreenResources(screen_resources);
+
+  if (screen_resources)
+    {
+      XRRFreeScreenResources(screen_resources);
+    }
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
   
   // XUnlockDisplay(xDisplay);
