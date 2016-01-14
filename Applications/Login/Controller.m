@@ -549,14 +549,14 @@ void *alloc(int size)
 
   if ([self authenticateUser:user] == YES)
     {
+      [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
+      [self hideWindow];
+      
       NSLog(@"Controller, username: %@", user);
       [self setLastLoggedInUser:user];
       NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
       [self openSessionForUser:user];
       NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
-
-      [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
-      [self hideWindow];
     }
   else
     {

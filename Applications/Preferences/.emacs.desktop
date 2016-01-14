@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Dec 30 18:30:47 2015
+;; Created Fri Jan 15 01:28:17 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/")
+(setq default-directory "~/Developer/nextspace/Applications/Preferences/Modules/Display/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,8 @@
   "Display.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3998
-  '(4137 nil)
+  4258
+  '(4144 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))

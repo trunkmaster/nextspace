@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Dec 30 11:46:25 2015
+;; Created Thu Jan 14 22:10:13 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Login/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -18,23 +18,12 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/.emacs"
-  ".emacs"
-  'emacs-lisp-mode
-  '(auto-complete-mode)
-  11957
-  '(11823 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Login/Controller.m"
   "Controller.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  12415
-  '(15107 nil)
+  14321
+  '(14229 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
