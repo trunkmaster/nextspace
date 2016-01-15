@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Jan 15 01:28:17 2016
+;; Created Fri Jan 15 19:09:18 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Applications/Preferences/Modules/Display/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,11 +22,22 @@
   "Display.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  4258
-  '(4144 nil)
+  4444
+  '(4295 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
+  "Display.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1076
+  '(902 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/Font.m"
@@ -68,17 +79,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   2170
   '(834 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
-  "Display.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  929
-  '(902 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
