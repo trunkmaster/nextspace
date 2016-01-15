@@ -169,6 +169,10 @@ static NXDisplay		*selectedDisplay = nil;
       [[NSNotificationCenter defaultCenter]
          postNotificationName:DisplayPreferencesDidChangeNotification
                        object:self];
+      
+      NSInteger sc = [monitorsList selectedRowInColumn:0];
+      [monitorsList reloadColumn:0];
+      [monitorsList selectRow:sc inColumn:0];
     }  
 }
 
