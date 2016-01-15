@@ -542,11 +542,6 @@
      Непонятно, как это сделать. Пока поддержка Gamma определяется по:
      - наличию CRTC;
      - возможности получения размер gamma (XRRGetCrtcGammaSize).
-**** TODO NXDisplay: заменить Dimensions и Origin на Frame
-**** TODO Background color of desktop
-**** TODO Установка Backlight (если монитор поддерживает)
-     Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
-     сделать паузу для NXSystem/NXScreen.
 **** TODO События (изменение параметров, подключени/отключение мониторов)
      События ловятся через обработку событий X11 (X events). Ловить нужно
      XRRScreenChangeNotifyEvent. Поскольку в run loop сложно встроить
@@ -563,7 +558,12 @@
      X-сервера (а это window manager). Но, с другой стороны, Login должен
      тоже реагировать на события подключния/отключения монитора.
      Как быть?
+**** TODO Background color of desktop
+**** TODO Установка Backlight (если монитор поддерживает)
+     Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
+     сделать паузу для NXSystem/NXScreen.
 **** TODO NXDisplay: rotation & reflection
+**** TODO NXDisplay: заменить Dimensions и Origin на Frame
 **** TODO Управление конфигурациями и взаимодествием видеоадаптеров
 **** TODO Округление значений гаммы до второго знака после запятой
      Не получается. Брошу пока.

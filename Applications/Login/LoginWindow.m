@@ -152,13 +152,14 @@
 - (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy
 {
   NSRect windowRect = [self frame];
+  NSRect mDisplayRect = [[[NXScreen sharedScreen] mainDisplay] frame];
   GC     gc;
   Pixmap pixmap;
   XImage *windowSnap;
   int    x, y, width, height, xo, wo;
 
   xo = x = (int)windowRect.origin.x;
-  y = (int)windowRect.origin.y;
+  y = (int)(mDisplayRect.size.height - windowRect.size.height - windowRect.origin.y);
   wo = width = (int)windowRect.size.width;
   height = (int)windowRect.size.height;
 

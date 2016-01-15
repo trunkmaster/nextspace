@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Jan 14 22:10:13 2016
+;; Created Fri Jan 15 10:51:53 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,11 +18,22 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/LoginWindow.m"
+  "LoginWindow.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4323
+  '(4323 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Login/Controller.m"
   "Controller.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  14321
+  14718
   '(14229 nil)
   nil
   nil
@@ -35,17 +46,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   3303
   '(3040 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/LoginWindow.m"
-  "LoginWindow.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2398
-  '(2137 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
