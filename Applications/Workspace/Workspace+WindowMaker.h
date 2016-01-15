@@ -24,6 +24,7 @@ dispatch_queue_t wmaker_q;
 #include <window.h>
 #include <event.h>
 #include <dock.h>
+#include <actions.h> // wArrangeIcons()
 #include <application.h>
 #include <appicon.h>
 #include <shutdown.h> // Shutdown(), WSxxxMode
@@ -72,14 +73,16 @@ void WWMShutdown(WShutdownMode mode);
 //-----------------------------------------------------------------------------
 // Visible in WindowMaker and Workspace
 // Workspace callbacks for WindowMaker.
-// 'WMW' prefix is a vector of calls 'WindowMaker->Workspace'
 //-----------------------------------------------------------------------------
 
+// Applications creation and destroying
 void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin);
 void XWApplicationDidAddWindow(WApplication *wapp, WWindow *wwin);
-
 void XWApplicationDidDestroy(WApplication *wapp);
 void XWApplicationDidCloseWindow(WWindow *wwin);
+
+// Called from WM/src/event.c on update of XrandR screen configuration
+void XWUpdateScreenInfo(WScreen *scr);
 
 void xActivateWorkspace(void);
 

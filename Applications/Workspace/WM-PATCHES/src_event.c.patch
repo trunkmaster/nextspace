@@ -1,5 +1,5 @@
 --- ./wmaker-crm_next/src/event.c	2015-07-29 16:02:49.000000000 +0300
-+++ ./WM/src/event.c	2015-08-22 22:54:58.000000000 +0300
++++ ./WM/src/event.c	2016-01-15 18:13:11.449887062 +0200
 @@ -80,6 +80,7 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -8,7 +8,24 @@
  
  #define MOD_MASK wPreferences.modifier_mask
  
-@@ -669,7 +670,15 @@
+@@ -580,9 +581,16 @@
+ 		 * XRRUpdateConfiguration when screen configuration change notify
+ 		 * events are generated */
+ 		XRRUpdateConfiguration(event);
++#ifdef NEXTSPACE                
++                for (int i = 0; i < w_global.screen_count; i++)
++                  {
++                    XWUpdateScreenInfo(wScreenWithNumber(i));
++                  }
++#else
+ 		WCHANGE_STATE(WSTATE_RESTARTING);
+ 		Shutdown(WSRestartPreparationMode);
+ 		Restart(NULL,True);
++#endif
+ 	}
+ #endif
+ }
+@@ -669,7 +677,15 @@
  	int widx;
  
  	wwin = wWindowFor(window);
