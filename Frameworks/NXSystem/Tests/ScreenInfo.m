@@ -195,14 +195,14 @@ int main(int argc, const char ** argv)
     }
 
   // fprintf(stderr, ">>> Setting default arranged layout of displays...\n");
-  // [sScreen applyDisplayLayout:[sScreen defaultLayout:YES]];
+  [sScreen applyDisplayLayout:[sScreen defaultLayout:YES]];
   
   // NSArray *layout;
   // layout = [NSArray arrayWithContentsOfFile:
   //                     @"/usr/NextSpace/Preferences/Displays.config"];
   // [sScreen applyDisplayLayout:layout];
 
-  fadeInFadeOutTest(sScreen);
+  // fadeInFadeOutTest(sScreen);
 
   // [sScreen backgroundColor];
 
