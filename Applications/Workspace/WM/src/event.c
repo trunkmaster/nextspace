@@ -581,17 +581,16 @@ static void handleExtensions(XEvent * event)
 		 * XRRUpdateConfiguration when screen configuration change notify
 		 * events are generated */
 		XRRUpdateConfiguration(event);
-		/* WCHANGE_STATE(WSTATE_RESTARTING); */
-		/* Shutdown(WSRestartPreparationMode); */
-		/* Restart(NULL,True); */
-                
-                fprintf(stderr, "RandR change notify event occured. Refreshing screen info.\n");
-                WScreen *scr = wScreenWithNumber(0);
-                scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, 0));
-                scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, 0));
-                wScreenUpdateUsableArea(scr);
-                /* wScreenSaveState(wScreenWithNumber(0)); */
-                /* wScreenRestoreState(wScreenWithNumber(0)); */
+#ifdef NEXTSPACE                
+                for (int i = 0; i < w_global.screen_count; i++)
+                  {
+                    XWUpdateScreenInfo(wScreenWithNumber(i));
+                  }
+#else
+		WCHANGE_STATE(WSTATE_RESTARTING);
+		Shutdown(WSRestartPreparationMode);
+		Restart(NULL,True);
+#endif
 	}
 #endif
 }

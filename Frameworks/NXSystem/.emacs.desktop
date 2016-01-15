@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Jan 14 19:04:19 2016
+;; Created Fri Jan 15 12:54:43 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,12 +18,34 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
+  "NXDisplay.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4202
+  '(3197 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.h"
+  "NXScreen.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4075
+  '(4720 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.m"
   "NXScreen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   22478
-  '(22684 nil)
+  '(2498 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
@@ -51,34 +73,12 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.h"
-  "NXScreen.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  4272
-  '(3901 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXSystem.h"
   "NXSystem.h"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
-  "NXDisplay.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2530
-  '(3197 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

@@ -66,7 +66,7 @@ BOOL xIsWindowManagerAlreadyRunning(void)
     }
 }
 
-//--- Below this line of X Window related functions is TODO
+//--- Below this line X Window related functions is TODO
 
 // TODO: Move to NXFoundation/NXFileManager
 NSString *fullPathForCommand(NSString *command)
@@ -105,7 +105,7 @@ NSString *fullPathForCommand(NSString *command)
 // 'WWM' prefix is a vector of calls 'Workspace->WindowMaker'
 //-----------------------------------------------------------------------------
 
-// WM/main.c
+// WM/src/main.c
 extern int real_main(int argc, char **argv);
 
 void WWMInitializeWindowMaker(int argc, char **argv)
@@ -717,6 +717,75 @@ void xActivateWorkspace(void)
   NSLog(@"xActivateWorkspace");
 //  [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
   [NSApp activateIgnoringOtherApps:YES];
+}
+
+// Screen resizing
+static void moveDock(WDock *dock, int new_x, int new_y)
+{
+  WAppIcon *btn;
+  WDrawerChain *dc;
+  int i;
+
+  if (dock->type == WM_DOCK)
+    {
+      for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next)
+        moveDock(dc->adrawer, new_x, dc->adrawer->y_pos - dock->y_pos + new_y);
+    }
+
+  dock->x_pos = new_x;
+  dock->y_pos = new_y;
+  for (i = 0; i < dock->max_icons; i++)
+    {
+      btn = dock->icon_array[i];
+      if (btn)
+        {
+          btn->x_pos = new_x + btn->xindex * wPreferences.icon_size;
+          btn->y_pos = new_y + btn->yindex * wPreferences.icon_size;
+          XMoveWindow(dpy, btn->icon->core->window, btn->x_pos, btn->y_pos);
+        }
+    }
+}
+
+#include <X11/extensions/Xinerama.h>
+void XWUpdateScreenInfo(WScreen *scr)
+{
+  // WScreen *scr = wScreenWithNumber(0);
+  
+  // 1. Update screen dimensions
+  scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, scr->screen));
+  scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, scr->screen));
+  
+  // 2. Update Xinerama heads dimension (-> xinerama.c)
+  WXineramaInfo      *info = &scr->xine_info;
+  XineramaScreenInfo *xine_screens = XineramaQueryScreens(dpy, &info->count);
+
+  for (int i = 0; i < info->count; i++)
+    {
+      info->screens[i].pos.x = xine_screens[i].x_org;
+      info->screens[i].pos.y = xine_screens[i].y_org;
+      info->screens[i].size.width = xine_screens[i].width;
+      info->screens[i].size.height = xine_screens[i].height;
+    }
+  XFree(xine_screens);
+  
+  wScreenUpdateUsableArea(scr);
+  /* WMRect rect = wGetRectForHead(scr, 0); */
+  /* fprintf(stderr, "New screen dims: %ix%i@%i,%i\n", */
+  /*         rect.size.width, rect.size.height, */
+  /*         rect.pos.x, rect.pos.y); */
+  
+  // 3. Move IconYard
+  // TODO: place IconYard into main display.
+  wArrangeIcons(scr, True);
+  
+  // 4. Move Dock
+  // TODO: place Dock into main display.
+  moveDock(scr->dock,
+           (scr->scr_width - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
+  
+  // 5. Save Dock state with new position and screen size
+  wScreenSaveState(scr);
+  /* wScreenRestoreState(wScreenWithNumber(0)); */
 }
 
 #endif //NEXTSPACE
