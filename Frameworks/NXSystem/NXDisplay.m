@@ -595,14 +595,24 @@ find_last_non_clamped(CARD16 array[], int size)
           gammaBrightness = exp((log(v2)*log(i1) - log(v1)*log(i2))/log(i1/i2));
         }
       gammaValue.red =
-        log((CGFloat)(crtc_gamma->red[last_red/2])/gammaBrightness/65535)
-        / log((CGFloat)((last_red/2) + 1) / size);
+        log((double)(crtc_gamma->red[last_red/2])/gammaBrightness/65535)
+        / log((CGFloat)((last_red/2) + 0.5) / size);
       gammaValue.green =
         log((CGFloat)(crtc_gamma->green[last_green/2])/gammaBrightness/65535)
-        / log((CGFloat)((last_green/2) + 1) / size);
+        / log((CGFloat)((last_green/2) + 0.5) / size);
       gammaValue.blue =
-        log((double)(crtc_gamma->blue[last_blue/2])/gammaBrightness/65535)
-        / log((CGFloat)((last_blue / 2) + 1) / size);
+        log((CGFloat)(crtc_gamma->blue[last_blue/2])/gammaBrightness/65535)
+        / log((CGFloat)((last_blue / 2) + 0.5) / size);
+
+      // Drop precision to 2 digits after point
+      // NSLog(@"NXDisplay _getGamma pre: %f", gammaValue.red);
+      
+      gammaValue.red = (CGFloat)((int)(gammaValue.red*100.0))/100.0;
+      gammaValue.green = (CGFloat)((int)(gammaValue.green*100.0))/100.0;
+      gammaValue.blue = (CGFloat)((int)(gammaValue.blue*100.0))/100.0;
+      // gammaBrightness = (CGFloat)((int)(gammaBrightness*100.0))/100.0;
+      
+      // NSLog(@"NXDisplay _getGamma post: %f", gammaValue.red);
     }
 
   XRRFreeGamma(crtc_gamma);  
@@ -633,13 +643,15 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   NSMutableDictionary *d = [[NSMutableDictionary alloc] init];
 
-  [d setObject:[[NSNumber numberWithFloat:gammaValue.red] stringValue]
+  // NSLog(@"NXDisplay gammaDescription: %f", gammaValue.red);
+
+  [d setObject:[NSString stringWithFormat:@"%.2f", gammaValue.red]
         forKey:NXDisplayGammaRedKey];
-  [d setObject:[[NSNumber numberWithFloat:gammaValue.green] stringValue]
+  [d setObject:[NSString stringWithFormat:@"%.2f", gammaValue.green]
         forKey:NXDisplayGammaGreenKey];
-  [d setObject:[[NSNumber numberWithFloat:gammaValue.blue] stringValue]
+  [d setObject:[NSString stringWithFormat:@"%.2f", gammaValue.blue]
         forKey:NXDisplayGammaBlueKey];
-  [d setObject:[[NSNumber numberWithFloat:gammaBrightness] stringValue]
+  [d setObject:[NSString stringWithFormat:@"%.2f", gammaBrightness]
         forKey:NXDisplayGammaBrightnessKey];
 
   return [d autorelease];
@@ -686,12 +698,12 @@ find_last_non_clamped(CARD16 array[], int size)
          brightness:(CGFloat)brightness
 {
   // XRRScreenResources *screen_resources = [screen randrScreenResources];
-  XRROutputInfo      *output_info;
-  XRRCrtcGamma       *gamma, *new_gamma;
-  int                i, size;
+  XRROutputInfo *output_info;
+  XRRCrtcGamma  *gamma, *new_gamma;
+  int           i, size;
 
   if ([self isGammaSupported] == NO) return;
-  
+
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   gamma = XRRGetCrtcGamma(xDisplay, output_info->crtc);
   size = gamma->size;
@@ -728,10 +740,10 @@ find_last_non_clamped(CARD16 array[], int size)
 
   XRRSetCrtcGamma(xDisplay, output_info->crtc, new_gamma);
   XSync(xDisplay, False);
-  
+
   XRRFreeGamma(new_gamma);
   XRRFreeOutputInfo(output_info);  
-       }
+}
 
 - (void)setGamma:(CGFloat)value
       brightness:(CGFloat)brightness
@@ -744,6 +756,7 @@ find_last_non_clamped(CARD16 array[], int size)
 
 - (void)setGamma:(CGFloat)value
 {
+  // NSLog(@"NXDisplay setGamma: %f", value);
   [self setGammaRed:value
               green:value
                blue:value
