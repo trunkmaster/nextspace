@@ -66,6 +66,9 @@ NSString *NXDisplayRateKey = @"Rate";
 NSString *NXDisplayPhSizeKey = @"PhysicalSize";
 NSString *NXDisplayPropertiesKey = @"Properties";
 
+// Notifications
+NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
+
 @interface NXScreen (Private)
 - (NSSize)_sizeInPixels;
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout;
@@ -369,18 +372,26 @@ static id systemScreen = nil;
 //
 //------------------------------------------------------------------------------
 // Displays
+// 
+// -allDisplays, -activeDisplays, -connectedDisplay refresh display information
+// before returning processed 'systemDisplays' array.
+// Other -display* methods work with cached displays information.
 //------------------------------------------------------------------------------
 //
 
 // Returns array of NXDisplay
 - (NSArray *)allDisplays
 {
+  [self _refreshDisplaysInfo];
+  
   return systemDisplays;
 }
 
 - (NSArray *)activeDisplays
 {
   NSMutableArray *activeDL = [[NSMutableArray alloc] init];
+  
+  [self _refreshDisplaysInfo];
   
   for (NXDisplay *d in systemDisplays)
     {
@@ -396,6 +407,8 @@ static id systemScreen = nil;
 - (NSArray *)connectedDisplays
 {
   NSMutableArray *connectedDL = [[NSMutableArray alloc] init];
+
+  [self _refreshDisplaysInfo];
   
   for (NXDisplay *d in systemDisplays)
     {
@@ -407,6 +420,8 @@ static id systemScreen = nil;
 
   return connectedDL;
 }
+
+//---
 
 - (NXDisplay *)mainDisplay
 {

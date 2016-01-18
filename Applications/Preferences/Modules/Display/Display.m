@@ -78,26 +78,19 @@ static NXDisplay		*selectedDisplay = nil;
   [window release];
 
   [monitorsList loadColumnZero];
-  {
-    NSArray *cells = [[monitorsList matrixInColumn:0] cells];
-    int i;
-    for (i = 0; i < [cells count]; i++)
-      {
-        if ([[cells objectAtIndex:i] isEnabled] == YES)
-          {
-            [monitorsList selectRow:i inColumn:0];
-            break;
-          }
-      }
-  }
-  [self monitorsListClicked:monitorsList];
+  [self selectFirstEnabledMonitor];
   
   [rotationBtn setEnabled:NO];
   [reflectionBtn setEnabled:NO];
 
   { // Window background
-    
   }
+
+  [[NSDistributedNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(screenDidChange:)
+           name:NXScreenDidChangeNotification
+         object:nil];
 }
 
 - (NSView *)view
@@ -166,14 +159,26 @@ static NXDisplay		*selectedDisplay = nil;
         resolution:[[rateBtn selectedCell] representedObject]
             origin:[selectedDisplay frame].origin];
       
-      [[NSNotificationCenter defaultCenter]
-         postNotificationName:DisplayPreferencesDidChangeNotification
-                       object:self];
-      
-      NSInteger sc = [monitorsList selectedRowInColumn:0];
-      [monitorsList reloadColumn:0];
-      [monitorsList selectRow:sc inColumn:0];
+      // [[NSNotificationCenter defaultCenter]
+      //    postNotificationName:DisplayPreferencesDidChangeNotification
+      //                  object:self];
     }  
+}
+
+- (void)selectFirstEnabledMonitor
+{
+  NSArray *cells = [[monitorsList matrixInColumn:0] cells];
+
+  for (int i = 0; i < [cells count]; i++)
+    {
+      if ([[cells objectAtIndex:i] isEnabled] == YES)
+        {
+          [monitorsList selectRow:i inColumn:0];
+          break;
+        }
+    }
+  
+  [self monitorsListClicked:monitorsList];
 }
 
 //
@@ -312,8 +317,6 @@ static NXDisplay		*selectedDisplay = nil;
 // - (BOOL)textShouldEndEditing:(NSText *)textObject
 // {
 //   NSString *text = [textObject text];
-
-  
 // }
 
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
@@ -331,6 +334,21 @@ static NXDisplay		*selectedDisplay = nil;
       [brightnessSlider setFloatValue:value];
       [selectedDisplay setGammaBrightness:value/100];
     }
+}
+
+// Notifications
+- (void)screenDidChange:(NSNotification *)aNotif
+{
+  NSInteger sc = [monitorsList selectedRowInColumn:0];
+  
+  NSLog(@"Display: screenDidChange");
+  
+  [monitorsList reloadColumn:0];
+  
+  // if ([[[monitorsList cellAtRow:sc column:0] representedObject] isActive])
+  //   [monitorsList selectRow:sc inColumn:0];
+  // else
+    [self selectFirstEnabledMonitor];
 }
   
 @end

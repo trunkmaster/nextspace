@@ -138,3 +138,6 @@ extern NSString *NXDisplaySizeKey;
 extern NSString *NXDisplayRateKey;
 extern NSString *NXDisplayPhSizeKey;
 extern NSString *NXDisplayPropertiesKey;
+
+// Notifications
+extern NSString *NXScreenDidChangeNotification;
