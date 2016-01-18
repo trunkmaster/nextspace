@@ -551,19 +551,42 @@
      делается в event.c, только это приводит к выходу из Workspace.
      Нужно:
       - из WindowMaker не выходить, а обновить внутренние переменные WM;
-      - отправить notification для заинтересованных (в первую очередь NXScreen);
+      - отправить notification для заинтересованных
+        (NXScreenDidChangeNotification);
       - обновить параметры дисплеев внутри NXScreen.
         
      По большому счету ловить события нужно там, где обрабатываются события
      X-сервера (а это window manager). Но, с другой стороны, Login должен
      тоже реагировать на события подключния/отключения монитора.
+
      Как быть?
-**** TODO Background color of desktop
+
+     Мысль №1:
+     - для того, чтобы Login реагировал на изменение конфигурации экрана,
+       нужно, чтобы сам Login ловил события X11 и обрабатывал случай с
+       событием RRScreenChangeNotify (XRRSelectInput(dpy, root_win,
+       RRScreenChangeNotifyMask));
+     - после того, как Login переходит в неактивное состояние (пользователь
+       делает logon):
+       - событие RRScreenChangeNotify начинает обрабатывать WorkspaceManager
+         (внутри WindowMaker EventLoop());
+       - Login перестает обрабатывать это событие: XRRSelectInput(dpy,win,0)(?);
+     - после того, как пользователь сделал logout, Login:
+       - перечитывает информацию о NXScreen;
+       - правильно размещает свое окно;
+       - начинает ловить RRScreenChangeNotify (XRRSelectInput);
+       - показывает окно.
+     Итого, главный принцип событие XRRScreenChangeNotify в единицу времени
+     должно ловить одно приложение (Login или WorkspaceManager). Каждое
+     приложение это делает самостоятельно и шлет NSNotification через
+     NXDistributedNotificationCenter.
+**** TODO NXDisplay: определять lid closed/opened
 **** TODO Установка Backlight (если монитор поддерживает)
      Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
      сделать паузу для NXSystem/NXScreen.
 **** TODO NXDisplay: rotation & reflection
 **** TODO NXDisplay: заменить Dimensions и Origin на Frame
+**** TODO Background color of desktop
 **** TODO Управление конфигурациями и взаимодествием видеоадаптеров
 **** TODO Округление значений гаммы до второго знака после запятой
      Не получается. Брошу пока.
@@ -662,14 +685,16 @@
 *** TODO Версия 1.0
 **** DONE Вход/выход без неожиданностей (core dumps)
 **** DONE Взаимодействие с Workspace Manager - Power Off
-**** TODO Взаимодействие с Workspace Manager - Reboot
-**** DONE Корректная работа с многомониторными конфигурациями
+**** TODO Корректная работа с многомониторными конфигурациями
 ***** DONE Устанавливать display layout по-умолчанию
 ***** DONE Устанавливать сохраненный display layout
       /usr/NextSpace/Prefrences/Displays.config
 ***** DONE Расположение окна по центру main display
       Нужно проверять каждый раз при завершении пользовальской сессии,
       поскольку display layout мог измениться.
+***** TODO Ловить подключение/отключение мониторов
+***** TODO Обновлять информацию о мониторах после завершения сессии
+**** TODO Взаимодействие с Workspace Manager - Reboot
 **** DONE Shrink окна при старте пользовательской сессии
      Реализовал shrinkPanel и shakePanel с помощью функций X11.
      Через GNUstep получается медленно и с непредсказуемой скоростью.
@@ -2334,7 +2359,7 @@
     Протокол для бандлов лежит в /usr/NextSpace/apps/Preferences.h.
 *** DONE Появление/скрытие окна
 *** TODO Настройки GNUstep и WindowMaker
-**** TODO 
+    Нужно думать как организовать работу так, чтобы ничего не забыть.
 *** TODO Модули
 **** TODO Нарисовать в Gorm все панели и определиться с размером окна
 ***** DONE Login
@@ -2360,14 +2385,15 @@
       Сделал, чтобы NXDisplay кешировал screen_resources.
 ***** DONE Сохранять изменения в ~/Preferences/Displays.config
 ***** DONE Если есть ~/Preferences/Displays.config - применять при старте
+***** TODO Перечитывать список мониторов после изменений
 ***** TODO Отложенное сохранение настроек для gamma и brightness
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
-**** TODO Login: screensaver, hooks, display hostname
 **** TODO Fonts: GNUstep font settings
 **** TODO Localization: language, units, paper, encoding
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
 **** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
+**** TODO Login: screensaver, hooks, display hostname
 **** TODO Sound: input and output settings, system beep sound
 **** TODO Power: screensaver, display dimming (или в дисплей?)
 **** TODO Date & Time

@@ -11,11 +11,11 @@ lib_LTLIBRARIES = libwraster.la
 
 libwraster_la_LDFLAGS = -version-info @WRASTER_VERSION@
 
-if HAVE_LD_VERSION_SCRIPT
-libwraster_la_LDFLAGS += -Wl,--version-script=libwraster.map
-EXTRA_libwraster_la_DEPENDENCIES = libwraster.map
-CLEANFILES = libwraster.map
-endif
+#if HAVE_LD_VERSION_SCRIPT
+#libwraster_la_LDFLAGS += -Wl,--version-script=libwraster.map
+#EXTRA_libwraster_la_DEPENDENCIES = libwraster.map
+#CLEANFILES = libwraster.map
+#endif
 
 dist_bin_SCRIPTS = get-wraster-flags
 
@@ -96,8 +96,8 @@ wrlib.pc: Makefile
 	@echo 'Cflags: $(inc_search_path)' >> $@
 
 
-if HAVE_LD_VERSION_SCRIPT
-libwraster.map: $(include_HEADERS) $(top_srcdir)/script/generate-mapfile-from-header.sh
-	$(AM_V_GEN)$(top_srcdir)/script/generate-mapfile-from-header.sh \
-		-n LIBWRASTER -v $(WRASTER_VERSION) $(srcdir)/$(include_HEADERS) > libwraster.map
-endif
+#if HAVE_LD_VERSION_SCRIPT
+#libwraster.map: $(include_HEADERS) $(top_srcdir)/script/generate-mapfile-from-header.sh
+#	$(AM_V_GEN)$(top_srcdir)/script/generate-mapfile-from-header.sh \
+#		-n LIBWRASTER -v $(WRASTER_VERSION) $(srcdir)/$(include_HEADERS) > libwraster.map
+#endif

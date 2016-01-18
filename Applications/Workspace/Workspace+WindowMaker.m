@@ -11,6 +11,7 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
+#import <NXSystem/NXScreen.h>
 
 // #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -757,8 +758,9 @@ void XWUpdateScreenInfo(WScreen *scr)
   
   // 2. Update Xinerama heads dimension (-> xinerama.c)
   WXineramaInfo      *info = &scr->xine_info;
-  XineramaScreenInfo *xine_screens = XineramaQueryScreens(dpy, &info->count);
+  XineramaScreenInfo *xine_screens;
 
+  xine_screens = XineramaQueryScreens(dpy, &info->count);
   for (int i = 0; i < info->count; i++)
     {
       info->screens[i].pos.x = xine_screens[i].x_org;
@@ -785,7 +787,10 @@ void XWUpdateScreenInfo(WScreen *scr)
   
   // 5. Save Dock state with new position and screen size
   wScreenSaveState(scr);
-  /* wScreenRestoreState(wScreenWithNumber(0)); */
+
+  [[NSDistributedNotificationCenter defaultCenter]
+    postNotificationName:NXScreenDidChangeNotification
+                  object:nil];
 }
 
 #endif //NEXTSPACE

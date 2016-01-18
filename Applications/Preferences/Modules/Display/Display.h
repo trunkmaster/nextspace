@@ -54,6 +54,8 @@
 // Helper methods
 //
 - (void)fillRateButton;
+- (void)setResolution;
+- (void)selectFirstEnabledMonitor;
 
 @end
 
