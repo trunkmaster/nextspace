@@ -709,7 +709,7 @@ static id systemScreen = nil;
   CGFloat	      xOffset, yOffset;
   CGFloat 	      dTopY, dRightX, oldTopY, oldRightX;
   
-  [newLayout writeToFile:@"Display.config" atomically:YES];
+  // [newLayout writeToFile:@"Display.config" atomically:YES];
   
   // 1. Change resolution and origin of display in layout.
   dCount = [newLayout count];
@@ -770,7 +770,7 @@ static id systemScreen = nil;
     }
 
   // 3. Apply new layout
-  [newLayout writeToFile:@"NewDisplay.config" atomically:YES];
+  // [newLayout writeToFile:@"NewDisplay.config" atomically:YES];
   [self applyDisplayLayout:newLayout];
   [newLayout release];
 }

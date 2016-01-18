@@ -41,6 +41,7 @@
 #import <dispatch/dispatch.h>
 #import <X11/Xlib.h>
 
+#import "AppController.h"
 #import "Display.h"
 
 @implementation DisplayPrefs
@@ -61,8 +62,9 @@ static NXDisplay		*selectedDisplay = nil;
   NSString *imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  XInitThreads();
-      
+  if (!XInitThreads())
+    NSLog(@"Display: multi-threading is not initialized!");
+  
   return self;
 }
 
@@ -83,14 +85,15 @@ static NXDisplay		*selectedDisplay = nil;
   [rotationBtn setEnabled:NO];
   [reflectionBtn setEnabled:NO];
 
-  { // Window background
-  }
+  // { // Window background
+  // }
 
   [[NSDistributedNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(screenDidChange:)
            name:NXScreenDidChangeNotification
          object:nil];
+
 }
 
 - (NSView *)view
@@ -254,19 +257,17 @@ static NXDisplay		*selectedDisplay = nil;
       
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
                      ^{
-                       [selectedDisplay
-                         setGamma:value
-                         brightness:[brightnessSlider floatValue]/100];
+                       [selectedDisplay setGamma:value];
                      });
     }
   else if (sender == brightnessSlider)
     {
       // NSLog(@"Brightness slider moved");
+      // if (value > 1.0) value = 1.0;
       [brightnessField setIntValue:[sender intValue]];
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
                      ^{
-                       [selectedDisplay setGamma:[gammaSlider floatValue]
-                                      brightness:value/100];
+                       [selectedDisplay setGammaBrightness:value/100];
                      });
     }
   else
@@ -324,31 +325,44 @@ static NXDisplay		*selectedDisplay = nil;
   id      tf = [aNotification object];
   CGFloat value = [tf floatValue];
 
+  NSLog(@"Display set gamma: %f", value);
+
   if (tf == gammaField)
     {
+      if (value > 2.0)
+        value = 2.00;
+      else if (value < 0.1)
+        value = 0.10;
+
       [gammaSlider setFloatValue:value];
       [selectedDisplay setGamma:value];
+      [tf setFloatValue:value];
     }
   else if (tf == brightnessField)
     {
-      [brightnessSlider setFloatValue:value];
+      if (value > 100)
+        value = 100;
+      else if (value <= 0.0)
+        value = 0;
+
+      NSString *strVal = [NSString stringWithFormat:@"%.0f", value];
+      value = [strVal floatValue];
+
       [selectedDisplay setGammaBrightness:value/100];
+      value = [selectedDisplay gammaBrightness]*100;
+      [brightnessSlider setFloatValue:value];
+      [tf setIntValue:[strVal intValue]];
     }
+  
+
+  [[NSApp delegate] saveDisplayPreferences];
 }
 
 // Notifications
 - (void)screenDidChange:(NSNotification *)aNotif
 {
-  NSInteger sc = [monitorsList selectedRowInColumn:0];
-  
-  NSLog(@"Display: screenDidChange");
-  
   [monitorsList reloadColumn:0];
-  
-  // if ([[[monitorsList cellAtRow:sc column:0] representedObject] isActive])
-  //   [monitorsList selectRow:sc inColumn:0];
-  // else
-    [self selectFirstEnabledMonitor];
+  [self selectFirstEnabledMonitor];
 }
   
 @end
