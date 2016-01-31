@@ -537,7 +537,8 @@ void WWMShutdown(WShutdownMode mode)
 
 //-----------------------------------------------------------------------------
 // Workspace functions which are called from WindowMaker code.
-// 'WMW' prefix is a vector of calls 'WindowMaker->Workspace'
+// Most calls are coming from X11 EventLoop().
+// 'XW' prefix is a vector of calls 'WindowMaker(X)->Workspace(W)'
 //-----------------------------------------------------------------------------
 
 //--- Application management
@@ -750,6 +751,10 @@ static void moveDock(WDock *dock, int new_x, int new_y)
 #include <X11/extensions/Xinerama.h>
 void XWUpdateScreenInfo(WScreen *scr)
 {
+  NXScreen *systemScreen;
+  NSRect   dRect;
+  int      dWidth;
+  
   // WScreen *scr = wScreenWithNumber(0);
   
   // 1. Update screen dimensions
@@ -769,23 +774,27 @@ void XWUpdateScreenInfo(WScreen *scr)
       info->screens[i].size.height = xine_screens[i].height;
     }
   XFree(xine_screens);
-  
+
+  // 3. Update WindowMaker info about usable area
   wScreenUpdateUsableArea(scr);
-  /* WMRect rect = wGetRectForHead(scr, 0); */
-  /* fprintf(stderr, "New screen dims: %ix%i@%i,%i\n", */
-  /*         rect.size.width, rect.size.height, */
-  /*         rect.pos.x, rect.pos.y); */
+
+  // 4.1 Get info about main display
+  systemScreen = [[NXScreen alloc] init];
+  dRect = [[systemScreen mainDisplay] frame];
+  dWidth = dRect.origin.x + dRect.size.width;
+  [systemScreen release];
   
-  // 3. Move IconYard
-  // TODO: place IconYard into main display.
+  // 4.2 Move Dock
+  // Place Dock into main display with changed usable area.
+  // moveDock(scr->dock,
+  //          (scr->scr_width - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
+  moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
+  
+  // 5. Move IconYard
+  // IconYard is placed into main display automatically.
   wArrangeIcons(scr, True);
   
-  // 4. Move Dock
-  // TODO: place Dock into main display.
-  moveDock(scr->dock,
-           (scr->scr_width - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
-  
-  // 5. Save Dock state with new position and screen size
+  // 6. Save Dock state with new position and screen size
   wScreenSaveState(scr);
 
   [[NSDistributedNotificationCenter defaultCenter]

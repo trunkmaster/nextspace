@@ -493,14 +493,6 @@
      - backlight - backlight, BACKLIGHT (0-7)
      - аудио через HDMI? - audio (force-dvi, off, auto, on)
      - scaling mode - (None, Full, Center, Full aspect)
-**** DONE Применение конфигурации display layout
-     Конфигурации изменяются при помощи Preferences.app->Display.
-***** DONE Конфигурация по-умолчанию при запуске Xorg/Login...
-      ...если сохраненной конфигурации нет.
-      DONE: просто выключает все мониторы, кроме первого в списке если
-      мониторов больше 1.
-***** DONE Сохранять в layout EDID (уникальный идентификатор)
-***** DONE Проверка EDID монитора перед применением layout
 **** DONE XRRSetCrtcGamma
 ***** DONE Set Gamma Correction
 ***** DONE FadeIn/FadeOut
@@ -542,6 +534,19 @@
      Непонятно, как это сделать. Пока поддержка Gamma определяется по:
      - наличию CRTC;
      - возможности получения размер gamma (XRRGetCrtcGammaSize).
+**** TODO Применение конфигурации display layout
+     Конфигурации изменяются при помощи Preferences.app->Display.
+***** TODO Оставлять конфигурацию подключенных мониторов
+      ... и применять дефолнтные настройки для новых мониторов.
+      Что делать с Layout? 
+      На какое место ставить найденный монитор (слева направо, разваливать
+      стыковку мониторов и делать дублированное изображение)?      
+***** DONE Конфигурация по-умолчанию при запуске Xorg/Login...
+      ...если сохраненной конфигурации нет.
+      DONE: просто выключает все мониторы, кроме первого в списке если
+      мониторов больше 1.
+***** DONE Сохранять в layout EDID (уникальный идентификатор)
+***** DONE Проверка EDID монитора перед применением layout
 **** TODO События (изменение параметров, подключени/отключение мониторов)
 ***** Мысль №1
      События ловятся через обработку событий X11 (X events). Ловить нужно
@@ -561,7 +566,6 @@
      тоже реагировать на события подключния/отключения монитора.
 
      Как быть?
-
 ***** Мысль №2:
      - для того, чтобы Login реагировал на изменение конфигурации экрана,
        нужно, чтобы сам Login ловил события X11 и обрабатывал случай с
@@ -581,15 +585,15 @@
      должно ловить одно приложение (Login или WorkspaceManager). Каждое
      приложение это делает самостоятельно и шлет NSNotification через
      NXDistributedNotificationCenter.
-***** TODO Workspace.app: размещать Dock и IconYard на mainDisplay
-***** TODO Login.app: ловить события (нужен свой EventLoop)
+***** DONE Workspace.app: размещать Dock и IconYard на mainDisplay
+      Сделал в Workspace+WindowMaker.m (XWUpdateScreenInfo()).
 **** TODO NXDisplay: определять lid closed/opened
 **** TODO Установка Backlight (если монитор поддерживает)
      Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
      сделать паузу для NXSystem/NXScreen.
+**** TODO Background color of desktop
 **** TODO NXDisplay: rotation & reflection
 **** TODO NXDisplay: заменить Dimensions и Origin на Frame
-**** TODO Background color of desktop
 **** TODO Управление конфигурациями и взаимодествием видеоадаптеров
      На текущий момент NVIDIA Optimus не работает заявленным способом.
      Единственный работающий вариант: Bumblebee (запуск отдельного X-сервера с
@@ -703,6 +707,7 @@
 ***** DONE Расположение окна по центру main display
       Нужно проверять каждый раз при завершении пользовальской сессии,
       поскольку display layout мог измениться.
+***** TODO Ловить события XRandR: нужен свой EventLoop
 ***** TODO Ловить подключение/отключение мониторов
 ***** TODO Обновлять информацию о мониторах после завершения сессии
 **** TODO Взаимодействие с Workspace Manager - Reboot
