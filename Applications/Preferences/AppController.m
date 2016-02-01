@@ -69,13 +69,6 @@ NSString *DisplayPreferencesDidChangeNotification =
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notify
 {
-  [self applySavedDisplayPreferences];
-
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(saveDisplayPreferences)
-           name:DisplayPreferencesDidChangeNotification
-         object:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
@@ -122,30 +115,6 @@ NSString *DisplayPreferencesDidChangeNotification =
 
   [NSApp activateIgnoringOtherApps:YES];
   [[prefsController window] makeKeyAndOrderFront:self];
-}
-
-@end
-
-@implementation AppController (ModulesDelegate)
-
-// Display and Screen
-- (void)applySavedDisplayPreferences
-{
-  NSArray  *layout;
-  NSString *displaysConfigPath = [DISPLAYS_CONFIG stringByExpandingTildeInPath];
-
-  if ([[NSFileManager defaultManager] fileExistsAtPath:displaysConfigPath])
-    {
-      layout = [NSArray arrayWithContentsOfFile:displaysConfigPath];
-      [[NXScreen sharedScreen] applyDisplayLayout:layout];
-    }
-}
-
-- (void)saveDisplayPreferences
-{
-  [[[NXScreen sharedScreen] currentLayout]
-    writeToFile:[DISPLAYS_CONFIG stringByExpandingTildeInPath]
-     atomically:YES];
 }
 
 @end
