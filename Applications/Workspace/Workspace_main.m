@@ -17,10 +17,9 @@
 */
 
 #import <AppKit/AppKit.h>
+#import <NXSystem/NXScreen.h>
 
 #import "Workspace+WindowMaker.h"
-
-static NSArray *autostartList;
 
 int main(int argc, const char **argv)
 {
@@ -29,6 +28,21 @@ int main(int argc, const char **argv)
   if (useInternalWindowManager)
     {
       NSLog(@"Starting Workspace Manager...");
+      
+      //--- Apply saved Display layout
+      @autoreleasepool
+        {
+          NSArray  *layout;
+          NSString *displaysConfigPath = [DISPLAYS_CONFIG stringByExpandingTildeInPath];
+
+          NSLog(@"Apply saved display layout...");
+      
+          if ([[NSFileManager defaultManager] fileExistsAtPath:displaysConfigPath])
+            {
+              layout = [NSArray arrayWithContentsOfFile:displaysConfigPath];
+              [[NXScreen sharedScreen] applyDisplayLayout:layout];
+            }
+        }
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);

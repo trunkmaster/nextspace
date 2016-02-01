@@ -57,5 +57,7 @@
 - (void)setResolution;
 - (void)selectFirstEnabledMonitor;
 
+- (void)saveDisplayPreferences;
+
 @end
 

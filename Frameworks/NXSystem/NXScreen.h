@@ -122,6 +122,9 @@
 
 @end
 
+// Displays.config user path
+#define DISPLAYS_CONFIG @"~/Library/Preferences/Displays.config"
+
 // Displays.config field keys
 extern NSString *NXDisplayIsActiveKey;
 extern NSString *NXDisplayIsMainKey;

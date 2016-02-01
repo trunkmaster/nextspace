@@ -315,11 +315,6 @@ static NXDisplay		*selectedDisplay = nil;
 //
 // TextField Delegate methods
 //
-// - (BOOL)textShouldEndEditing:(NSText *)textObject
-// {
-//   NSString *text = [textObject text];
-// }
-
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {
   id      tf = [aNotification object];
@@ -353,9 +348,8 @@ static NXDisplay		*selectedDisplay = nil;
       [brightnessSlider setFloatValue:value];
       [tf setIntValue:[strVal intValue]];
     }
-  
 
-  [[NSApp delegate] saveDisplayPreferences];
+  [self saveDisplayPreferences];
 }
 
 // Notifications
@@ -363,6 +357,16 @@ static NXDisplay		*selectedDisplay = nil;
 {
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
+}
+
+//
+// Utility methods
+//
+- (void)saveDisplayPreferences
+{
+  [[[NXScreen sharedScreen] currentLayout]
+    writeToFile:[DISPLAYS_CONFIG stringByExpandingTildeInPath]
+     atomically:YES];
 }
   
 @end

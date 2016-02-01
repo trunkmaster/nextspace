@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Jan 18 18:22:00 2016
+;; Created Mon Feb  1 17:39:18 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,12 +18,34 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.h"
+  "NXScreen.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  3691
+  '(4147 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.m"
+  "NXScreen.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  9749
+  '(22833 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
   "NXDisplay.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  14397
-  '(20346 nil)
+  13941
+  '(14397 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
@@ -38,28 +60,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.m"
-  "NXScreen.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  20428
-  '(22833 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.h"
-  "NXScreen.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  4642
-  '(4721 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/Tests/ScreenInfo.m"
