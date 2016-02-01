@@ -123,6 +123,39 @@
   return [[modelName componentsSeparatedByString:@":"] objectAtIndex:1];
 }
 
++ (NSString *)operatingSystemRelease
+{
+  struct utsname buf;
+  NSString *osRelease;
+  NSRange  typeRange;
+  NSString *osType, *value;
+  NSString *releaseFile;
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:@"/etc/os-release"])
+    {
+      osRelease = [NSString stringWithContentsOfFile:@"/etc/os-release"];
+
+      // OS type
+      typeRange = [osRelease lineRangeForRange:[osRelease rangeOfString:@"ID"]];
+      typeRange.length--;
+      osType = [osRelease substringWithRange:typeRange];
+      value = [[osType componentsSeparatedByString:@"="] objectAtIndex:1];
+      osType = [value stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+
+      releaseFile = [NSString stringWithFormat:@"/etc/%@-release", osType];
+      if ([[NSFileManager defaultManager] fileExistsAtPath:releaseFile])
+        {
+          return [NSString stringWithContentsOfFile:releaseFile];
+        }
+      else
+        {
+          return [NXSystemInfo operatingSystem];
+        }
+    }
+
+  return @"unknown";
+}
+
 // OPTIMIZE
 + (NSString *)operatingSystem
 {
@@ -135,7 +168,9 @@
   if ([[NSFileManager defaultManager] fileExistsAtPath:@"/etc/os-release"])
     {
       osRelease = [NSString stringWithContentsOfFile:@"/etc/os-release"];
-      nameRange = [osRelease lineRangeForRange:[osRelease rangeOfString:@"NAME"]];
+
+      nameRange = [osRelease
+                    lineRangeForRange:[osRelease rangeOfString:@"NAME"]];
       nameRange.length--;
       osName = [osRelease substringWithRange:nameRange];
       

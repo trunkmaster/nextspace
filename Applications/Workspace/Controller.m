@@ -153,11 +153,7 @@ static NSString *WMComputerShouldGoDownNotification =
                       [NXSystemInfo realMemory]/1024/1024]];
 
   // Operating System:
-  osVersion = [NSString stringWithFormat:@"%@ %@, %@",
-                        [NXSystemInfo operatingSystem],
-                        [NXSystemInfo operatingSystemVersion],
-                        [NXSystemInfo machineType]];
-  [osType setStringValue:osVersion];
+  [osType setStringValue:[NXSystemInfo operatingSystemRelease]];
 
   // Window Server:
   [wsVersion setStringValue:[NSString stringWithFormat:@"%@", 

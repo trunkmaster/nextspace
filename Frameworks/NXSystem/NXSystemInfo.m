@@ -271,6 +271,13 @@ humanReadableNumber(double value,
     }
 }
 
++ (NSString *)operatingSystemRelease
+{
+  return [NSString stringWithFormat:@"%@ %@",
+                   [NXSystemInfo operatingSystem],
+                   [NXSystemInfo operatingSystemVersion]];
+}
+
 /**
  * Returns the operating system's name.
  */

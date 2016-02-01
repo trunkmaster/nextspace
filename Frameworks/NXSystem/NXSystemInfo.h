@@ -53,6 +53,7 @@
 + (NSString *)humanReadableRealMemory;
 + (NSString *)humanReadableCPUSpeed;
 + (NSString *)tidyCPUName;
++ (NSString *)operatingSystemRelease;
 + (NSString *)operatingSystem;
 + (NSString *)operatingSystemVersion;
 + (NSString *)hostName;

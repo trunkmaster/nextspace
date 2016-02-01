@@ -173,8 +173,8 @@
   LTCMaximizeKey = None;
   LastWorkspaceKey = None;
   LowerKey = None;
-  MaximizeKey = None;
-  MaximusKey = "Mod1+KP_Add";
+  MaximizeKey = "Mod1+KP_Add";
+  MaximusKey = None;
   MiniaturizeKey = None;
   MinimizeAllKey = None;
   MoveResizeKey = None;
