@@ -31,9 +31,6 @@
 
 static NSUserDefaults *defaults = nil;
 
-NSString *DisplayPreferencesDidChangeNotification =
-  @"DisplayPreferencesDidChange";
-
 @implementation AppController
 
 - (id)init

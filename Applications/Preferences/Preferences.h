@@ -3,10 +3,10 @@
    class of the Application Kit. These methods make it easier for your 
    Preferences module to:
 
-   -	Locate its interface when the module is loaded
-   -	Enable and disable items in the Windows and Edit menus of the Preferences
-        application
-   -	Access the views contained in the Preferences window
+   - Locate its interface when the module is loaded
+   - Enable and disable items in the Windows and Edit menus of the Preferences
+     application
+   - Access the views contained in the Preferences window
 */
 
 #import <Foundation/NSUserDefaults.h>
@@ -52,8 +52,8 @@
 /** Loads the nib file named "name.nib" and makes anOwner its owner.  
 
     This is a convenience method that searches for the nib file in the 
-    appropriate language subproject of the bundle from which the class of anOwner
-    was loaded. */
+    appropriate language subproject of the bundle from which the class of 
+    anOwner was loaded. */
 - loadNibForLayout:(const char *)name owner:anOwner;
 
 @end

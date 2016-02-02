@@ -659,7 +659,8 @@ find_last_non_clamped(CARD16 array[], int size)
 
 - (void)setGammaFromDescription:(NSDictionary *)gammaDict
 {
-  if (!gammaDict || !isActive)
+  // if (!gammaDict || !isActive)
+  if (!gammaDict)
     return;
 
   NSLog(@"setGammaFromDescription: %f : %f : %f",

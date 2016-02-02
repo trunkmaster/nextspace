@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Feb  1 18:34:23 2016
+;; Created Tue Feb  2 03:11:46 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,12 +18,12 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
-  "Controller.m"
+  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
+  "Workspace+WindowMaker.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  4555
-  '(4555 nil)
+  23704
+  '(23704 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,19 +33,8 @@
   "Workspace_main.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1283
-  '(764 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
-  "Workspace+WindowMaker.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  24220
-  '(23849 nil)
+  2100
+  '(1115 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -55,8 +44,19 @@
   "event.c"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  9584
+  16939
   '(4180 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
+  "Controller.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  5121
+  '(4555 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
