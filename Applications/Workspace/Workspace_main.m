@@ -32,15 +32,14 @@ int main(int argc, const char **argv)
       //--- Apply saved Display layout
       @autoreleasepool
         {
-          NSArray  *layout;
-          NSString *displaysConfigPath = [DISPLAYS_CONFIG stringByExpandingTildeInPath];
+          NSString *configPath = [DISPLAYS_CONFIG stringByExpandingTildeInPath];
 
           NSLog(@"Apply saved display layout...");
       
-          if ([[NSFileManager defaultManager] fileExistsAtPath:displaysConfigPath])
+          if ([[NSFileManager defaultManager] fileExistsAtPath:configPath])
             {
-              layout = [NSArray arrayWithContentsOfFile:displaysConfigPath];
-              [[NXScreen sharedScreen] applyDisplayLayout:layout];
+              [[NXScreen sharedScreen]
+                applyDisplayLayout:[NSArray arrayWithContentsOfFile:configPath]];
             }
         }
 

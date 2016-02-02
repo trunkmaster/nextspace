@@ -46,10 +46,10 @@
 
 @implementation DisplayPrefs
 
-static NSBundle                 *bundle = nil;
-static NSUserDefaults           *defaults = nil;
-static NSMutableDictionary      *domain = nil;
-static NXDisplay		*selectedDisplay = nil;
+static NSBundle            *bundle = nil;
+static NSUserDefaults      *defaults = nil;
+static NSMutableDictionary *domain = nil;
+static NXDisplay           *selectedDisplay = nil;
 
 - (id)init
 {
@@ -93,7 +93,6 @@ static NXDisplay		*selectedDisplay = nil;
        selector:@selector(screenDidChange:)
            name:NXScreenDidChangeNotification
          object:nil];
-
 }
 
 - (NSView *)view
@@ -161,10 +160,6 @@ static NXDisplay		*selectedDisplay = nil;
         setDisplay:selectedDisplay
         resolution:[[rateBtn selectedCell] representedObject]
             origin:[selectedDisplay frame].origin];
-      
-      // [[NSNotificationCenter defaultCenter]
-      //    postNotificationName:DisplayPreferencesDidChangeNotification
-      //                  object:self];
     }  
 }
 
@@ -355,8 +350,10 @@ static NXDisplay		*selectedDisplay = nil;
 // Notifications
 - (void)screenDidChange:(NSNotification *)aNotif
 {
+  NSLog(@"XRandR screen changed!");
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
+  [self saveDisplayPreferences];
 }
 
 //

@@ -779,7 +779,9 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenUpdateUsableArea(scr);
 
   // 4.1 Get info about main display
+  // systemScreen = [[NXScreen alloc] init];
   systemScreen = [[NXScreen alloc] init];
+  [systemScreen applyDisplayLayout:[systemScreen currentLayout]];
   dRect = [[systemScreen mainDisplay] frame];
   dWidth = dRect.origin.x + dRect.size.width;
   [systemScreen release];

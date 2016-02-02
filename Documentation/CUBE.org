@@ -5,7 +5,8 @@
      Включая загрузку сохраненной конфигурации. - NXSystem->NXDisplay.
    - [X] Вход по login/password - LoginWindow.app
    - [X] Десктоп с Window и Workspace Manager - Workspace.app
-   - [ ] Возможность настройки важных параметров (шрифты, дисплей, клава, мышь, звук)
+   - [ ] Возможность настройки важных параметров (шрифты, дисплей, клава,
+     мышь, звук) - NXSystem.framework, Preferences.app
    - [ ] Простой текстовый редактор - TextEdit.app
    - [ ] Простой просмотрщик картинок - Review.app
    - [ ] Терминал для всяких админских штучек
@@ -13,7 +14,39 @@
      GNUstep (miniwindow, fonts hinting, DnD, icon placement и т.д.)
    - [ ] В frameworks должны быть реализованы все TODO класса #A.
 
+
 ** Возможные контексты
+*** Запуск ОС
+**** Отображение boot screen
+***** TODO Придумать тему для plymouth (вид, анимация)
+***** TODO Реализовать новую тему для plymouth
+***** TODO Сделать RPM-пакет с темой NEXTSPACE для plymouth
+**** Старт Xorg и Login.app
+***** TODO Применить сохраненный Display Layout
+***** TODO Реагировать на подключение/отключение мониторов
+***** TODO Затенять экран по тайм-ауту
+***** TODO Запускать screensaver по тайм-ауту
+
+*** Desktop
+**** Взаимодействие Workspace и WindowMaker
+**** File manager
+**** Workspace Manager
+***** Переключение между Workspaces
+***** Сочетания клавиш для управления окнами
+**** Мониторы и дисплеи
+**** Звук
+**** Сеть
+**** Утилиты
+***** Погодный апплет
+***** Монитор утиолизации системных ресурсов
+**** Look and feel
+***** GNUstep: color mouse cursors, pass click
+***** Fonts: default fonts, Font Panel, font prefs in Preferences.app
+***** Miniwindows (font, placing)
+***** Pass mouse click
+***** Drag and Drop Workspace<->Dock
+
+
 *** Многомониторные конфигурации
 **** Applying default layout on startup by Login.app
      Default layout use arranged monitors lined up in horizontal direction.
@@ -29,28 +62,27 @@
      Dock, miniwindows, panels.
 **** Place GNUstep elements wrt layout
      Application menu, windows.
+
 *** Startup
     - Boot screen
     - Login: NXScreen, Login
     - Desktop: Workspace-Login-WindowMaker interaction (autostart, logout, 
       shutdown)
-*** Look and feel
-    - GNUstep: color mouse cursors, pass click
-    - Fonts: default fonts, Font Panel, font prefs in Preferences.app
-    - WM+WM: miniwindows (font, placing), pass click, DnD (Workspace<->Dock,
-      Alternate button)
+
 *** Functionality completeness
     - Startup, shutdown, sleep, hibernate
     - Security: lock screen, screensaver
     - Configuration: sound, network, displays (multiple monitors and video 
       cards), keyboard, power
     - Monitoring and management: sound, network, displays
+
 *** Activities
     - Text editing: TextEdit application
     - Images: view, smple edit, cataloging (tags, annotations)
     - Sounds: listen music, edit and convert encoding of MP3 tags
     - Movies: view, viewt attributes (format, length, frame size, audio tracks)
     - Programming: debuger, editor, navigation, refactoring -> ProjectCenter
+
 
 ** Текущий видимый план
    1. NXSsystem-NXScreen
@@ -169,11 +201,11 @@
    При том, что в wconfig никак не используется.
 ** TODO WPrefs.app
    - Выбрать все существующие настройки
-     Нужно поискать по WINGs, WPrefs.app, src. Трудозатратно. Для чего это нужно?
+     Нужно поискать по WINGs, WPrefs.app, src. 
+     Трудозатратно. Для чего это нужно?
 
 ** TODO Hinting шрифтов
    Нужно сделать такой-же как у ART backend в GNUstep.
-
 ** TODO Размер заголовка окна
    Сейчас размер заголовка,и, как следствие, размеры кнопок больше
    чем в OPENSTEP при визуально одинаковом размере шрифта.
@@ -588,6 +620,24 @@
 ***** DONE Workspace.app: размещать Dock и IconYard на mainDisplay
       Сделал в Workspace+WindowMaker.m (XWUpdateScreenInfo()).
 **** TODO NXDisplay: определять lid closed/opened
+     Основные вопросы:
+     1. как узнать о статусе LID?
+        -> /proc/acpi/button/lid/LID/state
+     2. как узнать о смене статуса LID (откр./закр.)?
+        -> чтение /var/run/acpid.socket
+     3. как узнать какой монитор обладает LID (какой монитор вкл./выкл.)?
+        ->
+     5. как управлять/перехыватывать реакцию системы на смену статуса LID?
+        -> запретить suspend если подключен внешний монитор:
+           LidSwitchIgnoreInhibited=no > /etc/systemd/logind.conf
+        -> настроить 'acpid' - /etc/acpi/(events|actions)
+
+     Пока запретил засыпать ноутбуку если подключен внешний монитор через:
+     LidSwitchIgnoreInhibited=no, в /etc/systemd/logind.conf
+     Ловить события можно:
+     - через чтение сокета: /var/run/acpid.socket;
+     - отдать на откуп 'acpid' и сконфигурировать поведение через
+       /etc/acpi/(events|actions).
 **** TODO Установка Backlight (если монитор поддерживает)
      Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
      сделать паузу для NXSystem/NXScreen.
@@ -686,7 +736,7 @@
       rotate...)
 
 
-** TODO Application implemented Contents Inspectors
+** 0. Application implemented Contents Inspectors
 *** TODO Готовность Frameworks->NXFoundation->NXBundle
 **** TODO Поиск внешних инспекторов
 **** TODO Доступ к мета-информации (bundle.registry)
@@ -695,6 +745,7 @@
 *** TODO Player
    - Player.app: Sound - codec, bitrate, sampling, duration, album,
      artist, song, мини плейер.
+
 
 ** 1. Login
 *** TODO Версия 1.0
@@ -708,7 +759,7 @@
       Нужно проверять каждый раз при завершении пользовальской сессии,
       поскольку display layout мог измениться.
 ***** TODO Ловить события XRandR: нужен свой EventLoop
-***** TODO Ловить подключение/отключение мониторов
+***** TODO Ловить подключение/отключение мониторов (как?)
 ***** TODO Обновлять информацию о мониторах после завершения сессии
 **** TODO Взаимодействие с Workspace Manager - Reboot
 **** DONE Shrink окна при старте пользовательской сессии
@@ -726,6 +777,8 @@
      известно, с этим все плохо.
 **** TODO Fade-in/Fade-out экрана при переходах
 **** TODO Переключение между пользователькими сессиями
+
+
 ** 2. Workspace Manager
 *** TODO Версия 1.0 [19/24]
     :PROPERTIES:
@@ -2368,14 +2421,13 @@
 **** TODO Работа с сетевыми ФС: CIFS, NFS, FTP, SFTP (/Net?)
 **** TODO (нужно ли?) Операции с файлами/каталогами через меню "Edit"-> Cut, Copy, Paste, Delete
 
+
 ** 3. Preferences
 *** DONE Работа с бандлами .preferences
     Все модули должны иметь заполненный bundle.registry и устанавливаться в
     Preferences.app/Resources.
     Протокол для бандлов лежит в /usr/NextSpace/apps/Preferences.h.
 *** DONE Появление/скрытие окна
-*** TODO Настройки GNUstep и WindowMaker
-    Нужно думать как организовать работу так, чтобы ничего не забыть.
 *** TODO Модули
 **** TODO Нарисовать в Gorm все панели и определиться с размером окна
 ***** DONE Login
@@ -2402,6 +2454,13 @@
 ***** DONE Сохранять изменения в ~/Preferences/Displays.config
 ***** DONE Если есть ~/Preferences/Displays.config - применять при старте
 ***** TODO Перечитывать список мониторов после изменений
+      NXScreenDidChangeNotification посылается Workspace как результат
+      получения Notify от XRandR в EventLoop(). Который, в свою очередь
+      отправляется только при изменении Screen (изменение разрешения, on/off
+      мониторов, в т.ч. и подключение/отключение).
+      При изменении атрибутов мониторов (gamma, brightness, properties) XRandR
+      Notify не генерируется.
+***** TODO В VirtualBox двигание слайдеров = залипание/падение
 ***** TODO Отложенное сохранение настроек для gamma и brightness
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
@@ -2422,7 +2481,11 @@
 **** TODO Password/Users?
 **** TODO Services: enable/disable
 **** TODO Window management
+*** TODO Настройки GNUstep и WindowMaker
+    Нужно думать как организовать работу так, чтобы ничего не забыть.
 *** TODO Старт без без появления меню
+
+
 ** 4. Terminal
 *** TODO 1.0
 **** DONE Terminal падает на CentOS 7
@@ -2519,6 +2582,8 @@
       Устанавливать шрифт и цвета для main window.
 ***** TODO Shell->...
 **** TODO Сессии с поддержкой SSH
+
+
 ** 5. TextEdit
 *** TODO Минимум
 **** TODO Режимы редактирования: Text, Developer
@@ -2537,6 +2602,8 @@
 *** Полезное
     * Get the number of lines of text in an NSTextView?
     http://www.cocoabuilder.com/archive/cocoa/155182-get-the-number-of-lines-of-text-in-an-nstextview.html
+
+
 ** 6. Preview
 *** TODO Просмотр картинок
 **** TODO Просмотр всех картинок в каталоге
@@ -2546,9 +2613,11 @@
 *** TODO Content Inspector для Workspace
     изображение, размер, дата съемки, EXIF?
 
+
 ** 7. NoteBook
    Программа для ведения заметок, проектов, действий.
    Типа: OmniFocus, Emacs Org mode.
+
 
 ** Разное
 *** TODO Отображение текущего workspace'а в иконке WorkspaceManager
@@ -2556,3 +2625,6 @@
 *** TODO Индикатор состояния/скорости сети (Ethernet, WiFi)
 *** TODO Индикатор погоды: температура, влажность
 *** TODO Что делать с systray индикаторами приложений GNOME, KDE?
+
+--------------------------------------------------------------------------------
+
