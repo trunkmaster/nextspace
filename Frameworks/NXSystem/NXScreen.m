@@ -642,15 +642,34 @@ static id systemScreen = nil;
   mmSize = [self _sizeInMilimeters];
   NSLog(@"New screen size: %@, old %.0fx%.0f",
         NSStringFromSize(newPixSize), sizeInPixels.width, sizeInPixels.height);
-  if (sizeInPixels.width < newPixSize.width ||
-      sizeInPixels.height < newPixSize.height)
+  // Deactivate displays with current width or height bigger
+  // than new screen size. Otherwise [NXDisplay setResolution...] will fail with
+  // XRandR error and application will be terminated.
+  NSRect dRect;
+  for (NXDisplay *d in [self activeDisplays])
     {
-      // Screen is getting bigger
-      isGrowing = YES;
-      XRRSetScreenSize(xDisplay, xRootWindow,
-                       (int)newPixSize.width, (int)newPixSize.height,
-                       (int)mmSize.width, (int)mmSize.height);
+      // dRect = [d frame];
+      // if (sizeInPixels.width < dRect.size.width ||
+      //     sizeInPixels.height < dRect.size.height)
+      //   {
+          [d deactivate];
+        // }
     }
+
+  // Set new screen size for new layout
+  XRRSetScreenSize(xDisplay, xRootWindow,
+                   (int)newPixSize.width, (int)newPixSize.height,
+                   (int)mmSize.width, (int)mmSize.height);
+  
+  // if (sizeInPixels.width < newPixSize.width &&
+  //     sizeInPixels.height < newPixSize.height)
+  //   {
+  //     // Screen is getting bigger
+  //     isGrowing = YES;
+  //     XRRSetScreenSize(xDisplay, xRootWindow,
+  //                      (int)newPixSize.width, (int)newPixSize.height,
+  //                      (int)mmSize.width, (int)mmSize.height);
+  //   }
   
   sizeInPixels = newPixSize;
   
@@ -683,12 +702,12 @@ static id systemScreen = nil;
 
   // Screen size gets smaller and must have changed after display
   // resolution changes.
-  if (isGrowing == NO)
-    {
-      XRRSetScreenSize(xDisplay, xRootWindow,
-                       (int)newPixSize.width, (int)newPixSize.height,
-                       (int)mmSize.width, (int)mmSize.height);
-    }
+  // if (isGrowing == NO)
+  //   {
+  //     XRRSetScreenSize(xDisplay, xRootWindow,
+  //                      (int)newPixSize.width, (int)newPixSize.height,
+  //                      (int)mmSize.width, (int)mmSize.height);
+  //   }
 
   // XUngrabServer(xDisplay);
   

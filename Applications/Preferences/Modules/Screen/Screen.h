@@ -26,15 +26,38 @@
 */
 
 #import <AppKit/NSImage.h>
+#import <AppKit/NSBox.h>
+
+#import <NXSystem/NXScreen.h>
+
 #import <Preferences.h>
 
-@interface Screen: NSObject <PrefsModule>
+@interface ScreenCanvas : NSBox
+{
+}
+@end
+
+@interface DisplayBox : NSBox
+{
+}
+- (void)setMainDisplay:(BOOL)isMain;
+@end
+
+@interface ScreenPreferences: NSObject <PrefsModule>
 {
   id view;
   id window;
+  id canvas;
 
   NSImage *image;
+
+  NSMutableArray *displayBoxList;
+  CGFloat scaleFactor;
 }
 
+- (void)updateDisplayBoxList;
+- (void)arrangeDisplayBoxes;
+
 @end
+
 

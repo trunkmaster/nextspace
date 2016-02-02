@@ -1,11 +1,19 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
-    Screen = {
+    ScreenCanvas = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSBox;
+    };
+    ScreenPreferences = {
 	Actions = (
 	);
 	Outlets = (
 	    view,
-	    window
+	    window,
+	    canvas
 	);
 	Super = NSObject;
     };
