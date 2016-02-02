@@ -365,6 +365,8 @@
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
     }
 
+  NSLog(@"1");
+
   resolutionSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
   
   if (resolutionSize.width == 0 || resolutionSize.height == 0)
@@ -379,6 +381,8 @@
     {
       rr_mode = [self _modeForResolution:resolution];
     }
+  
+  NSLog(@"2");
   
   // Current and new modes differ
   if (crtc_info->mode != rr_mode ||
@@ -400,8 +404,11 @@
       
       [self fadeToNormal:brightness];
     }
-      
+  
+  NSLog(@"3");
+  
   // Save dimensions in ivars even if mode was not changed.
+  // Change active status only if dimensions are greater than 0.
   if (resolutionSize.width > 0 && resolutionSize.height > 0)
     {
       frame = NSMakeRect(origin.x, origin.y,
@@ -411,7 +418,7 @@
     }
   
   XRRFreeCrtcInfo(crtc_info);
-  XRRFreeOutputInfo(output_info);  
+  XRRFreeOutputInfo(output_info);
 }
 
 //------------------------------------------------------------------------------
@@ -438,8 +445,9 @@
                       NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
                       [NSNumber numberWithFloat:0.0],    NXDisplayRateKey,
                       nil];
-  [self setResolution:res origin:NSMakePoint(0,0)];
+  [self fadeToBlack];
   isActive = NO;
+  [self setResolution:res origin:NSMakePoint(0,0)];
 }
 
 - (void)activate

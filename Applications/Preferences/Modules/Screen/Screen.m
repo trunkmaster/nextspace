@@ -34,10 +34,11 @@
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSMatrix.h>
+#import <AppKit/NSGraphics.h>
 
 #import "Screen.h"
 
-@implementation Screen
+@implementation ScreenPreferences
 
 static NSBundle                 *bundle = nil;
 static NSUserDefaults           *defaults = nil;
@@ -60,6 +61,7 @@ static NSMutableDictionary      *domain = nil;
 - (void)dealloc
 {
   [image release];
+  [displayBoxList release];
   [super dealloc];
 }
 
@@ -67,6 +69,10 @@ static NSMutableDictionary      *domain = nil;
 {
   [view retain];
   [window release];
+
+  // Get info about monitors and layout
+  displayBoxList = [[NSMutableArray alloc] init];
+  [self updateDisplayBoxList];
 }
 
 - (NSView *)view
@@ -97,5 +103,129 @@ static NSMutableDictionary      *domain = nil;
 // Action methods
 //
 
+//
+// Helper methods
+//
+- (void)updateDisplayBoxList
+{
+  NSArray *displays;
+  NSRect  canvasRect = [[canvas contentView] frame];
+  NSRect  displayRect;
+  CGFloat dMaxWidth = 0.0, dMaxHeight = 0.0;
+  CGFloat scaleWidth, scaleHeight;
+  DisplayBox *dBox;
+
+  // Clear view and array
+  for (dBox in displayBoxList)
+    {
+      [dBox removeFromSuperview];
+    }
+  dBox = nil;
+  [displayBoxList removeAllObjects];
+  
+  displays = [[NXScreen sharedScreen] allDisplays];
+  // Calculate scale factor
+  for (NXDisplay *d in displays)
+    {
+      displayRect = [d frame];
+      if (dMaxWidth < displayRect.size.width ||
+          dMaxHeight < displayRect.size.height)
+        {
+          dMaxWidth = displayRect.size.width;
+          dMaxHeight = displayRect.size.height;
+        }
+    }
+  scaleWidth = (canvasRect.size.width/dMaxWidth) / 3;
+  scaleHeight = (canvasRect.size.height/dMaxHeight) / 3;
+  scaleFactor = (scaleWidth < scaleHeight) ? scaleWidth : scaleHeight;
+
+  // Create and add display boxes
+  for (NXDisplay *d in displays)
+    {
+      displayRect = [d frame];
+      displayRect.origin.x = floor(displayRect.origin.x*scaleFactor)+0.5;
+      displayRect.origin.y = floor(displayRect.origin.y*scaleFactor)+0.5;
+      displayRect.size.width = floor(displayRect.size.width*scaleFactor);
+      displayRect.size.height = floor(displayRect.size.height*scaleFactor);
+
+      dBox = [[DisplayBox alloc] initWithFrame:displayRect];
+      [displayBoxList addObject:dBox];
+      [canvas addSubview:dBox];
+    }
+
+  [self arrangeDisplayBoxes];
+}
+
+- (void)arrangeDisplayBoxes
+{
+  NSRect  dRect, sRect = [canvas frame];
+  NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
+  CGFloat xOffset, yOffset;
+  
+  xOffset = (sRect.size.width - (screenSize.width * scaleFactor))/2;
+  yOffset = (sRect.size.height - (screenSize.height * scaleFactor))/2;
+  
+  for (DisplayBox *dBox in displayBoxList)
+    {
+      dRect = [dBox frame];
+      dRect.origin.x += xOffset;
+      dRect.origin.y += yOffset;
+      NSLog(@"Display Box rec: %@", NSStringFromRect(dRect));
+      [dBox setFrame:dRect];
+    }
+}
+
 @end
 
+@implementation ScreenCanvas
+
+- initWithFrame:(NSRect)frameRect
+{
+  self = [super initWithFrame:frameRect];
+  [self setBorderType:NSBezelBorder];
+  [self setTitlePosition:NSNoTitle];
+  [self setFillColor:[NSColor grayColor]];
+  [self setContentViewMargins:NSMakeSize(0, 0)];
+
+  return self;
+}
+
+- (void)drawRect:(NSRect)rect
+{
+  [super drawRect:rect];
+
+  [_fill_color set];
+  NSRectFill([[self contentView] frame]);
+}
+
+@end
+
+@implementation DisplayBox
+
+- initWithFrame:(NSRect)frameRect
+{
+  self = [super initWithFrame:frameRect];
+  [self setBorderType:NSLineBorder];
+  [self setTitlePosition:NSNoTitle];
+  [self setContentViewMargins:NSMakeSize(1, 1)];
+
+  return self;
+}
+
+- (void)setMainDisplay:(BOOL)isMain
+{
+}
+
+- (void)mouseDown
+{
+}
+
+- (void)drawRect:(NSRect)rect
+{
+  [super drawRect:rect];
+  
+  [_fill_color set];
+  NSRectFill([[self contentView] frame]);
+}
+
+@end
