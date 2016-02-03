@@ -70,13 +70,19 @@
 
 - (void)center
 {
-  NXScreen *rScreen = nil;
-  NSRect   mDisplayRect, gScreenRect, windowRect;
-  NSPoint  newOrigin;
+  NXScreen  *rScreen = nil;
+  NXDisplay *mainDisplay = nil;
+  NSRect    mDisplayRect, gScreenRect, windowRect;
+  NSPoint   newOrigin;
 
   // Get NEXTSPACE screen rect
-  rScreen = [[NXScreen alloc] init];
-  mDisplayRect = [[rScreen mainDisplay] frame];
+  rScreen = [NXScreen sharedScreen];
+  mainDisplay = [rScreen mainDisplay];
+  if (!mainDisplay)
+    {
+      mainDisplay = [[rScreen activeDisplays] objectAtIndex:0];
+    }
+  mDisplayRect = [mainDisplay frame];
   NSLog(@"NEXTSPACE screen size: %@", NSStringFromRect(mDisplayRect));
   [rScreen release];
 

@@ -79,23 +79,22 @@ int startWindowServer()
 void setupDisplays()
 {
   NXScreen  *screen = [NXScreen sharedScreen];
-  NSString  *configFile = @"/usr/NextSpace/Preferences/Displays.config";
   NSArray   *layout;
   NSArray   *systemDisplays;
-  NXDisplay *mainDisplay = nil;
+  // NXDisplay *mainDisplay = nil;
   
-  if ([[NSFileManager defaultManager] fileExistsAtPath:configFile])
-    {
-      layout = [NSArray arrayWithContentsOfFile:configFile];
-    }
-  else
-    {
-      // TODO: after Workspace handle arranged monitors correctly set to 'YES'
-      layout = [screen defaultLayout:NO];
-    }
+  // if ([[NSFileManager defaultManager] fileExistsAtPath:configFile])
+  //   {
+  //     layout = [NSArray arrayWithContentsOfFile:configFile];
+  //   }
+  // else
+  //   {
+  //     // TODO: after Workspace handle arranged monitors correctly set to 'YES'
+  //     layout = [screen defaultLayout:NO];
+  //   }
 
-  // Set resolutions, arrangement and gamma
-  [screen applyDisplayLayout:layout];
+  // Get layout with monitors aligned horizontally
+  layout = [screen defaultLayout:YES];
 
   // Setup initial gamma and brightness
   // And check main display from saved layout is active
@@ -103,18 +102,20 @@ void setupDisplays()
   for (NXDisplay *display in systemDisplays)
     {
       [display setGammaBrightness:0.0];
-      if ([display isMain] && !mainDisplay)
-        mainDisplay = display;
-      else
-        [display setMain:NO];
+      // if ([display isMain] && !mainDisplay)
+      //   mainDisplay = display;
+      // else
+      //   [display setMain:NO];
     }
-  if (!mainDisplay)
-    {
-      [[systemDisplays objectAtIndex:0] setMain:YES];
-    }
+  // if (!mainDisplay)
+  //   {
+  //     [[systemDisplays objectAtIndex:0] setMain:YES];
+  //   }
   [systemDisplays release];
   
-  [layout writeToFile:DISPLAYS_CONFIG atomically:YES];
+  [screen applyDisplayLayout:layout];
+  
+  // [layout writeToFile:DISPLAYS_CONFIG atomically:YES];
 }
 
 int main(int argc, const char ** argv)
