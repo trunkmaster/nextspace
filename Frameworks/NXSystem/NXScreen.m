@@ -196,8 +196,9 @@ NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
 
 @end
 
-@implementation NXScreen
 static id systemScreen = nil;
+
+@implementation NXScreen
 
 + (id)sharedScreen
 {
@@ -246,6 +247,7 @@ static id systemScreen = nil;
           if ([display isActive])
             {
               [display setMain:YES];
+              mainDisplay = display;
               break;
             }
         }
@@ -509,8 +511,14 @@ static id systemScreen = nil;
       // show the same contents. Primary(main) display make sense on aligned
       // monitors (screen stretched across all active monitors).
       // So in this case all monitors must be unset as primary(main).
-      [display setMain:NO];
-      resolution = [display bestResolution];
+      if (arrange == NO)
+        [display setMain:NO];
+      else if ([systemDisplays indexOfObject:display] == 0)
+        [display setMain:YES];
+        
+      // resolution = [display bestResolution];
+      // Preferred resolution always at first position.
+      resolution = [[display allResolutions] objectAtIndex:0];
       
       d = [[NSMutableDictionary alloc] init];
       [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
@@ -599,28 +607,44 @@ static id systemScreen = nil;
 - (BOOL)validateLayout:(NSArray *)layout
 {
   NSDictionary *gamma;
+  NSString     *dName;
+  NSDictionary *resolution;
   
   for (NSDictionary *d in layout)
     {
+      dName = [d objectForKey:NXDisplayNameKey];
+
+      // ID
       if (![self displayWithID:[d objectForKey:NXDisplayIDKey]])
         { // Some display is not connected - use default layout
-          NSLog(@"NXScreen: display is not connected");
+          NSLog(@"NXScreen: monitor %@ is not connected.", dName);
           return NO;
         }
+
+      // Resolution & origin
       if (![d objectForKey:NXDisplayResolutionKey] ||
           ![d objectForKey:NXDisplayOriginKey])
         { // Display resolution or origin not found
-          NSLog(@"NXScreen: display no saved resolution or origin");
+          NSLog(@"NXScreen: monitor %@ no saved resolution or origin.", dName);
           return NO;
         }
-      ;
+
+      // Is resolution supported by monitor?
+      resolution = [d objectForKey:NXDisplayResolutionKey];
+      if (![[self displayWithName:dName] isSupportedResolution:resolution])
+        {
+          NSLog(@"NXScreen: monitor %@ doesn't support resolution %@.",
+                dName, [resolution objectForKey:NXDisplaySizeKey]);
+          return NO;
+        }
+      
       if (!(gamma = [d objectForKey:NXDisplayGammaKey]) ||
           ![gamma objectForKey:NXDisplayGammaRedKey] ||
           ![gamma objectForKey:NXDisplayGammaGreenKey] ||
           ![gamma objectForKey:NXDisplayGammaBlueKey] ||
           ![gamma objectForKey:NXDisplayGammaBrightnessKey])
         { // Something wrong with saved gamma
-          NSLog(@"NXScreen: display no saved gamma");
+          NSLog(@"NXScreen: display %@ no saved gamma", dName);
           return NO;
         }
     }
@@ -628,61 +652,45 @@ static id systemScreen = nil;
   return YES;
 }
 
-- (void)applyDisplayLayout:(NSArray *)layout
+- (BOOL)applyDisplayLayout:(NSArray *)layout
 {
-  NSSize    newPixSize;
-  NSSize    mmSize;
-  BOOL      isGrowing = NO;
-  NXDisplay *display;
-  XRRProviderResources *provider_resources;
+  NSSize       newPixSize;
+  NSSize       mmSize;
+  NXDisplay    *display;
+  NSString     *displayName;
+  NSDictionary *gamma;
+  NSDictionary *resolution;
+  NSPoint      origin;
+  CGFloat      brightness;
 
   // Validate 'layout'
   if ([self validateLayout:layout] == NO)
     {
-      NSLog(@"NXScreen:Applying default layout. Display.config ignored.");
-      layout = [self defaultLayout:YES];
+      NSLog(@"NXScreen: Proposed layout ignored. Bailing out.");
+      return NO;
     }
-  
+
+  // Calculate sizes of screen
   newPixSize = [self _sizeInPixelsForLayout:layout];
   mmSize = [self _sizeInMilimeters];
   NSLog(@"New screen size: %@, old %.0fx%.0f",
         NSStringFromSize(newPixSize), sizeInPixels.width, sizeInPixels.height);
+  
   // Deactivate displays with current width or height bigger
   // than new screen size. Otherwise [NXDisplay setResolution...] will fail with
   // XRandR error and application will be terminated.
-  NSRect dRect;
   for (NXDisplay *d in [self activeDisplays])
     {
-      dRect = [d frame];
       [d deactivate];
-      // if (sizeInPixels.width < dRect.size.width ||
-      //     sizeInPixels.height < dRect.size.height)
-      //   {
-      //   }
     }
 
   // Set new screen size for new layout
   XRRSetScreenSize(xDisplay, xRootWindow,
                    (int)newPixSize.width, (int)newPixSize.height,
                    (int)mmSize.width, (int)mmSize.height);
-  
-  // if (sizeInPixels.width < newPixSize.width &&
-  //     sizeInPixels.height < newPixSize.height)
-  //   {
-  //     // Screen is getting bigger
-  //     isGrowing = YES;
-  //     XRRSetScreenSize(xDisplay, xRootWindow,
-  //                      (int)newPixSize.width, (int)newPixSize.height,
-  //                      (int)mmSize.width, (int)mmSize.height);
-  //   }
-  
   sizeInPixels = newPixSize;
   
   // Set resolution and gamma to displays
-  NSString     *displayName;
-  NSDictionary *gamma;
-  NSDictionary *resolution;
-  NSPoint      origin;
   for (NSDictionary *displayLayout in layout)
     {
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
@@ -695,8 +703,14 @@ static id systemScreen = nil;
         }
       else
         {
+          // If initial brightness is 0.0 fadeIn/Out processed in application.
+          brightness = [display gammaBrightness];
+
           // Off
-          [display fadeToBlack:[display gammaBrightness]];
+          if (brightness > 0.0)
+            {
+              [display fadeToBlack:brightness];
+            }
   
           gamma = [displayLayout objectForKey:NXDisplayGammaKey];
           [display setGammaFromDescription:gamma];
@@ -707,24 +721,21 @@ static id systemScreen = nil;
           [display setResolution:resolution origin:origin];
 
           // On
-          [display fadeToNormal:[display gammaBrightness]];
+          if (brightness > 0.0)
+            {
+              [display fadeToNormal:brightness];
+            }
         }
     }
-
-  // Screen size gets smaller and must have changed after display
-  // resolution changes.
-  // if (isGrowing == NO)
-  //   {
-  //     XRRSetScreenSize(xDisplay, xRootWindow,
-  //                      (int)newPixSize.width, (int)newPixSize.height,
-  //                      (int)mmSize.width, (int)mmSize.height);
-  //   }
 
   // XUngrabServer(xDisplay);
   
   [self _refreshDisplaysInfo];
+  
+  return YES;
 }
 
+// TODO: check if resolution is supported by designated monitor.
 - (void)setDisplay:(NXDisplay *)display
         resolution:(NSDictionary *)resolution
             origin:(NSPoint)origin

@@ -79,6 +79,7 @@ typedef struct _NXGammaValue NXGammaValue;
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
 - (NSDictionary *)bestResolution;
 - (NSDictionary *)resolution;   // Current resolution of monitor
+- (BOOL)isSupportedResolution:(NSDictionary *)resolution;
 
 - (CGFloat)refreshRate;         // Monitor refresh rate for resolution
 - (CGFloat)dpi;

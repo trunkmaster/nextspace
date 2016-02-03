@@ -251,7 +251,7 @@
   return resolutions;
 }
 
-// Select preferred
+// Select largest resolution supported by monitor
 - (NSDictionary *)bestResolution
 {
   NSDictionary *mode=nil, *res;
@@ -308,6 +308,11 @@
   return res;
 }
 
+- (BOOL)isSupportedResolution:(NSDictionary *)resolution
+{
+  return !([self _modeForResolution:resolution] == 0);
+}
+
 - (CGFloat)refreshRate
 {
   return rate;
@@ -335,30 +340,32 @@
   RRMode             rr_mode;
   RRCrtc             rr_crtc;
   XRRModeInfo        mode_info;
-  CGFloat            brightness = gammaBrightness;
   NSSize 	     dims, resolutionSize;
   
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   
-  NSLog(@"Set resolution %@ for CRTC output %s", 
+  NSLog(@"%s: Set resolution %@ and origin %@", 
+        output_info->name,
         [resolution objectForKey:NXDisplaySizeKey],
-        output_info->name);
+        NSStringFromPoint(origin));
  
   rr_crtc = output_info->crtc;
   if (!rr_crtc)
     {
+      NSLog(@"%s: no CRTC assossiated with Output - requesting free CRTC...",
+            output_info->name);
       rr_crtc = [screen randrFindFreeCRTC];
       if (!rr_crtc)
         {
-          NSLog(@"Can't find free CRTC!");
+          NSLog(@"%s: Can't find free CRTC!", output_info->name);
         }
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
       crtc_info->timestamp = CurrentTime;
       crtc_info->rotation = RR_Rotate_0;
       crtc_info->outputs[0] = output_id;
       crtc_info->noutput = 1;
-      origin.x = frame.origin.x;
-      origin.y = frame.origin.y;
+      // origin.x = frame.origin.x;
+      // origin.y = frame.origin.y;
     }
   else
     {
@@ -377,6 +384,8 @@
     }
   else
     {
+      // Check if resolution is supported must be done before screen size
+      // calculation ([NXScreen applyLayout:]).
       rr_mode = [self _modeForResolution:resolution];
     }
   
@@ -475,6 +484,7 @@
   
   if (yn == YES)
     {
+      NSLog(@"%@: become main display.", outputName);
       XRRSetOutputPrimary(xDisplay,
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);

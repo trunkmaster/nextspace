@@ -2,16 +2,16 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Feb  3 02:40:01 2016
+;; Created Wed Feb  3 19:38:24 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Applications/Login/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Login/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("NXScreen" "cursor" "authenticate" "shrink" "shake" "shrink" "hideWindow"))
+(setq search-ring '("NEXTSPACE" "NXScreen" "cursor" "authenticate" "shrink" "shake" "shrink" "hideWindow"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Applications/Login/GNUmakefile.postamble" "~/Developer/nextspace/Applications/Login/Preferences/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Login/GNUmakefile" "~/Developer/nextspace/Applications/Login/Preferences/Resources/bundle.registry" "~/Developer/nextspace/Applications/Login/Preferences/GNUmakefile" "~/Developer/nextspace/Applications/Login/Preferences/*.m" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Font/Resources/bundle.registry" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/PreferencesInfo.plist" "~/Developer/nextspace/Applications/Preferences/GNUmakefile.*" "~/Developer/nextspace/Applications/Preferences/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/*.[hm]" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace"))
@@ -22,19 +22,8 @@
   "Login_main.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2534
-  '(1028 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/Controller.m"
-  "Controller.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  12415
-  '(15766 nil)
+  2786
+  '(2352 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -44,11 +33,55 @@
   "LoginWindow.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  4323
-  '(4323 nil)
+  2302
+  '(2279 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/Preferences/Login.m"
+  "Login.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1117
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/Application.m"
+  "Application.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1471
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/Controller.m"
+  "Controller.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  12155
+  '(15766 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/Preferences/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  581
+  '(172 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Login/Controller.h"
@@ -73,17 +106,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/Application.m"
-  "Application.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1007
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Login/UserSession.m"
   "UserSession.m"
   'objc-mode
@@ -93,17 +115,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/Preferences/GNUmakefile"
-  "GNUmakefile"
-  'makefile-gmake-mode
-  nil
-  581
-  '(172 nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Login/GNUmakefile"
@@ -144,17 +155,6 @@
   'fundamental-mode
   nil
   58
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/Preferences/Login.m"
-  "Login.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2235
   '(nil nil)
   nil
   nil
