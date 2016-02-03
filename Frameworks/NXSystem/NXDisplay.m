@@ -106,14 +106,14 @@
 // Get mode with highest refresh rate
 - (RRMode)_modeForResolution:(NSDictionary *)resolution
 {
-  // XRRScreenResources *screen_resources = [screen randrScreenResources];
+  XRRScreenResources *scr_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   RRMode             mode = None;
   XRRModeInfo        mode_info;
   NSSize             resDims;
   float              rRate, mode_rate=0.0;
   
-  output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
+  output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
 
   resDims = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
 
@@ -365,8 +365,6 @@
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
     }
 
-  NSLog(@"1");
-
   resolutionSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
   
   if (resolutionSize.width == 0 || resolutionSize.height == 0)
@@ -382,15 +380,11 @@
       rr_mode = [self _modeForResolution:resolution];
     }
   
-  NSLog(@"2");
-  
   // Current and new modes differ
   if (crtc_info->mode != rr_mode ||
       crtc_info->x != origin.x ||
       crtc_info->y != origin.y)
     {
-      [self fadeToBlack:brightness];
-  
       XRRSetCrtcConfig(xDisplay,
                        screen_resources,
                        rr_crtc,
@@ -400,12 +394,7 @@
                        crtc_info->rotation,
                        crtc_info->outputs,
                        crtc_info->noutput);
-  
-      
-      [self fadeToNormal:brightness];
     }
-  
-  NSLog(@"3");
   
   // Save dimensions in ivars even if mode was not changed.
   // Change active status only if dimensions are greater than 0.
@@ -445,7 +434,7 @@
                       NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
                       [NSNumber numberWithFloat:0.0],    NXDisplayRateKey,
                       nil];
-  [self fadeToBlack];
+  [self fadeToBlack:gammaBrightness];
   isActive = NO;
   [self setResolution:res origin:NSMakePoint(0,0)];
 }
@@ -785,8 +774,8 @@ find_last_non_clamped(CARD16 array[], int size)
 // TODO: set fade speed by time interval
 - (void)fadeToBlack:(CGFloat)brightness
 {
-  if (![self isActive])
-    return;
+  // if (![self isActive])
+  return;
 
   XGrabServer(xDisplay);
   
@@ -802,8 +791,8 @@ find_last_non_clamped(CARD16 array[], int size)
 // TODO: set fade speed by time interval
 - (void)fadeToNormal:(CGFloat)brightness
 {
-  if (![self isActive])
-    return;
+  // if (![self isActive])
+  return;
   
   // XGrabServer(xDisplay);
   

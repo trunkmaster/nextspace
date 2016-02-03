@@ -31,8 +31,6 @@
 #import "Application.h"
 #import "Controller.h"
 
-#define DISPLAYS_CONFIG @"/usr/NextSpace/Preferences/Displays.config"
-
 NSTask     *xorgTask = nil;
 NXDefaults *loginDefaults = nil;
 
@@ -81,13 +79,14 @@ int startWindowServer()
 void setupDisplays()
 {
   NXScreen  *screen = [NXScreen sharedScreen];
+  NSString  *configFile = @"/usr/NextSpace/Preferences/Displays.config";
   NSArray   *layout;
   NSArray   *systemDisplays;
   NXDisplay *mainDisplay = nil;
   
-  if ([[NSFileManager defaultManager] fileExistsAtPath:DISPLAYS_CONFIG])
+  if ([[NSFileManager defaultManager] fileExistsAtPath:configFile])
     {
-      layout = [NSArray arrayWithContentsOfFile:DISPLAYS_CONFIG];
+      layout = [NSArray arrayWithContentsOfFile:configFile];
     }
   else
     {

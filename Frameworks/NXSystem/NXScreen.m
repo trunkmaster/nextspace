@@ -505,6 +505,11 @@ static id systemScreen = nil;
   
   for (NXDisplay *display in [self connectedDisplays])
     {
+      // With default layout all monitors have origin set to (0.0,0.0),
+      // show the same contents. Primary(main) display make sense on aligned
+      // monitors (screen stretched across all active monitors).
+      // So in this case all monitors must be unset as primary(main).
+      [display setMain:NO];
       resolution = [display bestResolution];
       
       d = [[NSMutableDictionary alloc] init];
@@ -648,12 +653,12 @@ static id systemScreen = nil;
   NSRect dRect;
   for (NXDisplay *d in [self activeDisplays])
     {
-      // dRect = [d frame];
+      dRect = [d frame];
+      [d deactivate];
       // if (sizeInPixels.width < dRect.size.width ||
       //     sizeInPixels.height < dRect.size.height)
       //   {
-          [d deactivate];
-        // }
+      //   }
     }
 
   // Set new screen size for new layout
@@ -690,6 +695,9 @@ static id systemScreen = nil;
         }
       else
         {
+          // Off
+          [display fadeToBlack:[display gammaBrightness]];
+  
           gamma = [displayLayout objectForKey:NXDisplayGammaKey];
           [display setGammaFromDescription:gamma];
 
@@ -697,6 +705,9 @@ static id systemScreen = nil;
           origin = NSPointFromString([displayLayout
                                        objectForKey:NXDisplayOriginKey]);
           [display setResolution:resolution origin:origin];
+
+          // On
+          [display fadeToNormal:[display gammaBrightness]];
         }
     }
 
