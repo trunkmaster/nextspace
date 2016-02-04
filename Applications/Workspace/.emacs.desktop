@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Feb  3 15:56:25 2016
+;; Created Wed Feb  3 23:06:45 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Library/Preferences/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -17,6 +17,17 @@
 (setq file-name-history '("~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/wmspec.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.vault\\" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/startup.c" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/main.h" "~/Developer/nextspace/Applications/Workspace/WM/src/main.c"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
+  "Workspace+WindowMaker.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  23615
+  '(23546 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Library/Preferences/Displays.config"
   "Displays.config"
@@ -35,17 +46,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1197
   '(1115 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
-  "Workspace+WindowMaker.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  24334
-  '(23546 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

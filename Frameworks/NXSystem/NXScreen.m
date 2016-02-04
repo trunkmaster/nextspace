@@ -565,6 +565,7 @@ static id systemScreen = nil;
   return [layout copy];
 }
 
+// Create layout description from monitors(displays) information
 - (NSArray *)currentLayout
 {
   NSMutableDictionary *d;

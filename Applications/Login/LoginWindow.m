@@ -76,7 +76,7 @@
   NSPoint   newOrigin;
 
   // Get NEXTSPACE screen rect
-  rScreen = [NXScreen sharedScreen];
+  rScreen = [[NXScreen alloc] init];
   mainDisplay = [rScreen mainDisplay];
   if (!mainDisplay)
     {
