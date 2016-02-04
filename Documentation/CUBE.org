@@ -570,9 +570,8 @@
      Конфигурации изменяются при помощи Preferences.app->Display.
 ***** TODO Оставлять конфигурацию подключенных мониторов
       ... и применять дефолнтные настройки для новых мониторов.
-      Что делать с Layout? 
-      На какое место ставить найденный монитор (слева направо, разваливать
-      стыковку мониторов и делать дублированное изображение)?      
+      Что делать с Layout?
+      На какое место ставить найденный монитор - слева направо.
 ***** DONE Конфигурация по-умолчанию при запуске Xorg/Login...
       ...если сохраненной конфигурации нет.
       DONE: просто выключает все мониторы, кроме первого в списке если
@@ -617,8 +616,13 @@
      должно ловить одно приложение (Login или WorkspaceManager). Каждое
      приложение это делает самостоятельно и шлет NSNotification через
      NXDistributedNotificationCenter.
-***** DONE Workspace.app: размещать Dock и IconYard на mainDisplay
-      Сделал в Workspace+WindowMaker.m (XWUpdateScreenInfo()).
+***** TODO Workspace: размещать Dock и IconYard на mainDisplay
+****** DONE При изменении размеров размеров во время работы
+       Сделал в Workspace+WindowMaker.m (XWUpdateScreenInfo()).
+****** TODO При старте Workspace (WindowMaker)
+***** TODO Login: перемещать окно на mainDisplay посередине
+****** TODO При старте
+****** TODO После старта (нужен EeventLoop)
 **** TODO NXDisplay: определять lid closed/opened
      Основные вопросы:
      1. как узнать о статусе LID?

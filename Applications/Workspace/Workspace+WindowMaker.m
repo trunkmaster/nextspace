@@ -146,7 +146,10 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   // WM/src/main.c
   real_main(argc, argv);
 
-  //--- Below this point WindowMaker is initialized
+  //--- Below this point WindowMaker was initialized
+
+  // TODO: go through all screens
+  XWUpdateScreenInfo(wScreenWithNumber(0));
 
   // Set properties of icon 0 in dock to Workspace
   {
