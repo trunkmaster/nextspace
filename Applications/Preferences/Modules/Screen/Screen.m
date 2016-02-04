@@ -163,13 +163,14 @@ static NSMutableDictionary      *domain = nil;
   CGFloat xOffset, yOffset;
   
   xOffset = (sRect.size.width - (screenSize.width * scaleFactor))/2;
-  yOffset = (sRect.size.height - (screenSize.height * scaleFactor))/2;
+  // Align boxes at that top edge
+  yOffset = sRect.size.height - (sRect.size.height - (screenSize.height * scaleFactor))/2;
   
   for (DisplayBox *dBox in displayBoxList)
     {
       dRect = [dBox frame];
       dRect.origin.x += xOffset;
-      dRect.origin.y += yOffset;
+      dRect.origin.y += (yOffset - dRect.size.height);
       NSLog(@"Display Box rec: %@", NSStringFromRect(dRect));
       [dBox setFrame:dRect];
     }
