@@ -27,20 +27,29 @@
 
 #import <AppKit/NSImage.h>
 #import <AppKit/NSBox.h>
+#import <AppKit/NSTextField.h>
 
 #import <NXSystem/NXScreen.h>
 
 #import <Preferences.h>
 
+@interface DisplayBox : NSBox
+{
+  NSTextField *nameField;
+  
+  BOOL isMainDisplay;
+  BOOL isSelected;
+}
+
+- (void)setName:(NSString *)name;
+
+- (void)setMainDisplay:(BOOL)isMain;
+- (void)setSelected:(BOOL)selected;
+@end
+
 @interface ScreenCanvas : NSBox
 {
 }
-@end
-
-@interface DisplayBox : NSBox
-{
-}
-- (void)setMainDisplay:(BOOL)isMain;
 @end
 
 @interface ScreenPreferences: NSObject <PrefsModule>
@@ -57,6 +66,8 @@
 
 - (void)updateDisplayBoxList;
 - (void)arrangeDisplayBoxes;
+
+- (void)displayBoxClicked:(DisplayBox *)sender;
 
 @end
 
