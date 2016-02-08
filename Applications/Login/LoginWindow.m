@@ -165,7 +165,7 @@
   int    x, y, width, height, xo, wo;
 
   xo = x = (int)windowRect.origin.x;
-  y = (int)(mDisplayRect.size.height - windowRect.size.height - windowRect.origin.y);
+  y = (int)(mDisplayRect.size.height - windowRect.size.height)/2;
   wo = width = (int)windowRect.size.width;
   height = (int)windowRect.size.height;
 
@@ -181,7 +181,8 @@
       width -= SHRINKFACTOR;
       
       XMoveResizeWindow(dpy, panel, x, y, width, height);
-      XCopyArea(dpy, pixmap, pixmap, gc, SHRINKFACTOR/2, 0, width, height, 0, 0);
+      XCopyArea(dpy, pixmap, pixmap, gc,
+                SHRINKFACTOR/2, 0, width, height, 0, 0);
       XSetWindowBackgroundPixmap(dpy, panel, pixmap);
       XSync(dpy, False);
       usleep(250);

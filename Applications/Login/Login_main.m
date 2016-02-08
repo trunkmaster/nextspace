@@ -81,17 +81,6 @@ void setupDisplays()
   NXScreen  *screen = [NXScreen sharedScreen];
   NSArray   *layout;
   NSArray   *systemDisplays;
-  // NXDisplay *mainDisplay = nil;
-  
-  // if ([[NSFileManager defaultManager] fileExistsAtPath:configFile])
-  //   {
-  //     layout = [NSArray arrayWithContentsOfFile:configFile];
-  //   }
-  // else
-  //   {
-  //     // TODO: after Workspace handle arranged monitors correctly set to 'YES'
-  //     layout = [screen defaultLayout:NO];
-  //   }
 
   // Get layout with monitors aligned horizontally
   layout = [screen defaultLayout:YES];
@@ -102,15 +91,7 @@ void setupDisplays()
   for (NXDisplay *display in systemDisplays)
     {
       [display setGammaBrightness:0.0];
-      // if ([display isMain] && !mainDisplay)
-      //   mainDisplay = display;
-      // else
-      //   [display setMain:NO];
     }
-  // if (!mainDisplay)
-  //   {
-  //     [[systemDisplays objectAtIndex:0] setMain:YES];
-  //   }
   [systemDisplays release];
   
   [screen applyDisplayLayout:layout];

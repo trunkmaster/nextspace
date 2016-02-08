@@ -73,6 +73,7 @@ NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
 - (NSSize)_sizeInPixels;
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout;
 - (NSSize)_sizeInMilimeters;
+- (NSSize)_sizeInMilimetersForLayout:(NSArray *)layout;
 - (void)_refreshDisplaysInfo;
 @end
 
@@ -154,6 +155,37 @@ NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
           else if (dPSize.height == 0)
             height = 200; // perhaps it's VM, this number will be ignored
         }
+    }
+  
+  return NSMakeSize(width, height);
+}
+
+// Calculate screen size in pixels using displays information contained
+// in 'layout'.
+// Doesn't change 'sizeInPixels' ivar.
+// TODO: calculate real size wrt monitor layout
+- (NSSize)_sizeInMilimetersForLayout:(NSArray *)layout
+{
+  CGFloat      width = 0.0, height = 0.0;
+  NSSize       dPSize, pixSize;
+  NSDictionary *mode;
+  
+  for (NSDictionary *display in layout)
+    {
+      if ([[display objectForKey:NXDisplayIsActiveKey] isEqualToString:@"NO"])
+        continue;
+      
+      dPSize = NSSizeFromString([display objectForKey:NXDisplayPhSizeKey]);
+          
+      if (dPSize.width > width)
+        width = dPSize.width;
+      else if (dPSize.width == 0)
+        width = 200; // perhaps it's VM, this number will be ignored
+          
+      if (dPSize.height > height)
+        height = dPSize.height;
+      else if (dPSize.height == 0)
+        height = 200; // perhaps it's VM, this number will be ignored
     }
   
   return NSMakeSize(width, height);
@@ -673,9 +705,10 @@ static id systemScreen = nil;
 
   // Calculate sizes of screen
   newPixSize = [self _sizeInPixelsForLayout:layout];
-  mmSize = [self _sizeInMilimeters];
-  NSLog(@"New screen size: %@, old %.0fx%.0f",
-        NSStringFromSize(newPixSize), sizeInPixels.width, sizeInPixels.height);
+  mmSize = [self _sizeInMilimetersForLayout:layout];
+  NSLog(@"New screen size: %@ (%@), old %@(%@)",
+        NSStringFromSize(newPixSize), NSStringFromSize(mmSize),
+        NSStringFromSize(sizeInPixels), NSStringFromSize(sizeInMilimeters));
   
   // Deactivate displays with current width or height bigger
   // than new screen size. Otherwise [NXDisplay setResolution...] will fail with
@@ -708,24 +741,24 @@ static id systemScreen = nil;
           brightness = [display gammaBrightness];
 
           // Off
-          if (brightness > 0.0)
-            {
-              [display fadeToBlack:brightness];
-            }
+          // if (brightness > 0.0)
+          //   {
+          //     [display fadeToBlack:brightness];
+          //   }
   
-          gamma = [displayLayout objectForKey:NXDisplayGammaKey];
-          [display setGammaFromDescription:gamma];
-
           resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
           origin = NSPointFromString([displayLayout
                                        objectForKey:NXDisplayOriginKey]);
           [display setResolution:resolution origin:origin];
 
+          gamma = [displayLayout objectForKey:NXDisplayGammaKey];
+          [display setGammaFromDescription:gamma];
+
           // On
-          if (brightness > 0.0)
-            {
-              [display fadeToNormal:brightness];
-            }
+          // if (brightness > 0.0)
+          //   {
+          //     [display fadeToNormal:brightness];
+          //   }
         }
     }
 

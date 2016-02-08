@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Feb  3 19:38:24 2016
+;; Created Sun Feb  7 02:03:03 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,23 +18,34 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/Login_main.m"
-  "Login_main.m"
+  "/Users/me/Developer/nextspace/Applications/Login/LoginWindow.m"
+  "LoginWindow.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2786
-  '(2352 nil)
+  4520
+  '(4520 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/LoginWindow.m"
-  "LoginWindow.m"
+  "/Users/me/Developer/nextspace/Applications/Login/Controller.m"
+  "Controller.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2302
-  '(2279 nil)
+  12436
+  '(12307 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/Login_main.m"
+  "Login_main.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2854
+  '(2681 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -57,17 +68,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1471
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/Controller.m"
-  "Controller.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  12155
-  '(15766 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
