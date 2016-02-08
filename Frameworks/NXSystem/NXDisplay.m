@@ -93,11 +93,12 @@
 //------------------------------------------------------------------------------
 - (XRRModeInfo)_modeInfoForMode:(RRMode)mode
 {
+  XRRScreenResources *scr_resources = [screen randrScreenResources];
   XRRModeInfo rrMode;
 
-  for (int i=0; i<screen_resources->nmode; i++)
+  for (int i=0; i<scr_resources->nmode; i++)
     {
-      rrMode = screen_resources->modes[i];
+      rrMode = scr_resources->modes[i];
       if (rrMode.id == mode)
         break;
     }
@@ -784,8 +785,8 @@ find_last_non_clamped(CARD16 array[], int size)
 // TODO: set fade speed by time interval
 - (void)fadeToBlack:(CGFloat)brightness
 {
-  // if (![self isActive])
-  return;
+  if (![self isActive])
+    return;
 
   XGrabServer(xDisplay);
   
@@ -801,8 +802,8 @@ find_last_non_clamped(CARD16 array[], int size)
 // TODO: set fade speed by time interval
 - (void)fadeToNormal:(CGFloat)brightness
 {
-  // if (![self isActive])
-  return;
+  if (![self isActive])
+    return;
   
   // XGrabServer(xDisplay);
   
@@ -1058,9 +1059,21 @@ property_value(Display *dpy,
   return displayID;
 }
 
-// TODO
+// Names are coming from kernel video and drm drivers:
+//   eDP - Embedded DisplayPort
+//   LVDS - Low-Voltage Differential Signaling
+// If returns YES monitor will be deactivated on LID close.
 - (BOOL)isBuiltin
 {
+  if (!outputName)
+    return NO;
+  
+  if (([outputName rangeOfString:@"LVDS"].location != NSNotFound))
+    return YES;
+  
+  if (([outputName rangeOfString:@"eDP"].location != NSNotFound))
+    return YES;
+
   return NO;
 }
 

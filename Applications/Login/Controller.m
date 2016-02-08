@@ -465,10 +465,10 @@ void *alloc(int size)
   NSLog(@"appDidFinishLaunch: end");
 
   // Turn light on
-  for (NXDisplay *display in [[NXScreen sharedScreen] activeDisplays])
-    {
-      [display fadeToNormal:1.0];
-    }
+  // for (NXDisplay *display in [[NXScreen sharedScreen] activeDisplays])
+  //   {
+  //     [display fadeToNormal:1.0];
+  //   }
 }
 
 - (BOOL)authenticateUser:(NSString *)user
