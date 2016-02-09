@@ -110,10 +110,41 @@ static NSMutableDictionary      *domain = nil;
 //
 - (void)displayBoxClicked:(DisplayBox *)sender
 {
+  selectedBox = sender;
   for (DisplayBox *db in displayBoxList)
     {
-      [sender setSelected:(db == sender) ? YES : NO];
+      if (db != sender) [db setSelected:NO];
     }
+
+  [setMainBtn setEnabled:![sender isMain]];
+  [setStateBtn setTitle:[sender isActive] ? @"Disable" : @"Enable"];
+  [setStateBtn setEnabled:YES];
+}
+
+- (void)setMainDisplay:(id)sender
+{
+  [selectedBox setMain:YES];
+  for (DisplayBox *db in displayBoxList)
+    {
+      [db setMain:(db == selectedBox) ? YES : NO];
+    }
+  [self displayBoxClicked:selectedBox];
+}
+
+- (void)setDisplayState:(id)sender
+{
+  if ([[sender title] isEqualToString:@"Disable"])
+    [selectedBox setActive:NO];
+  else
+    [selectedBox setActive:YES];
+
+  [self displayBoxClicked:selectedBox];
+  [canvas setNeedsDisplay:YES];
+}
+
+- (void)arrangeDisplays:(id)sender
+{
+  [self arrangeDisplayBoxes];
 }
 
 //
@@ -123,7 +154,7 @@ static NSMutableDictionary      *domain = nil;
 {
   NSArray *displays;
   NSRect  canvasRect = [[canvas contentView] frame];
-  NSRect  displayRect;
+  NSRect  displayRect, dBoxRect;
   CGFloat dMaxWidth = 0.0, dMaxHeight = 0.0;
   CGFloat scaleWidth, scaleHeight;
   DisplayBox *dBox;
@@ -136,7 +167,8 @@ static NSMutableDictionary      *domain = nil;
   dBox = nil;
   [displayBoxList removeAllObjects];
   
-  displays = [[NXScreen sharedScreen] allDisplays];
+  displays = [[NXScreen sharedScreen] connectedDisplays];
+  
   // Calculate scale factor
   for (NXDisplay *d in displays)
     {
@@ -156,18 +188,65 @@ static NSMutableDictionary      *domain = nil;
   for (NXDisplay *d in displays)
     {
       displayRect = [d frame];
-      displayRect.origin.x = floor(displayRect.origin.x*scaleFactor)+0.4;
-      displayRect.origin.y = floor(displayRect.origin.y*scaleFactor)-0.3;
-      displayRect.size.width = floor(displayRect.size.width*scaleFactor);
-      displayRect.size.height = floor(displayRect.size.height*scaleFactor);
+      if ([d isActive] == NO)
+        {
+          NSDictionary *res = [[d allResolutions] objectAtIndex:0];
+          NSSize       dSize;
+          
+          dSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
+          displayRect.size.width = dSize.width;
+          displayRect.size.height = dSize.height;
+        }
+      
+      dBoxRect.origin.x = floor(displayRect.origin.x*scaleFactor);
+      dBoxRect.origin.y = floor(displayRect.origin.y*scaleFactor);
+      dBoxRect.size.width = floor(displayRect.size.width*scaleFactor);
+      dBoxRect.size.height = floor(displayRect.size.height*scaleFactor);
 
-      dBox = [[DisplayBox alloc] initWithFrame:displayRect];
+      dBox = [[DisplayBox alloc] initWithFrame:dBoxRect display:d owner:self];
+      [dBox setDisplayFrame:displayRect];
       [dBox setName:[d outputName]];
+      [dBox setActive:[d isActive]];
+      [dBox setMain:[d isMain]];
+      if ([displays indexOfObject:d] != 0)
+        {
+          [canvas addSubview:dBox
+                  positioned:NSWindowAbove
+                  relativeTo:[displayBoxList lastObject]];
+        }
+      else
+        {
+          [canvas addSubview:dBox];
+        }
       [displayBoxList addObject:dBox];
-      [canvas addSubview:dBox];
     }
 
   [self arrangeDisplayBoxes];
+}
+
+// edge: NSMinXEdge, NSMaxXEdge, NSMinYEdge, NSMaxYEdge
+- (NSPoint)pointAtLayoutEdge:(NSInteger)edge
+                      forBox:(DisplayBox *)box
+{
+  NSPoint point = NSMakePoint(0,0);
+  NSRect  dRect;
+  
+  for (DisplayBox *dBox in displayBoxList)
+    {
+      if (dBox == box) continue;
+      
+      dRect = [dBox frame];
+      if (edge == NSMaxXEdge) // right
+        {
+          point.x = MAX(NSMaxX(dRect), point.x);
+        }
+      else if (edge == NSMaxYEdge) // top
+        {
+          point.y = MAX(NSMaxY(dRect), point.y);
+        }
+    }
+
+  return point;
 }
 
 - (void)arrangeDisplayBoxes
@@ -175,16 +254,34 @@ static NSMutableDictionary      *domain = nil;
   NSRect  dRect, sRect = [canvas frame];
   NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
   CGFloat xOffset, yOffset;
-  
-  xOffset = (sRect.size.width - (screenSize.width * scaleFactor))/2;
-  // Align boxes at that top edge
-  yOffset = sRect.size.height -
-    (sRect.size.height - (screenSize.height * scaleFactor))/2;
-  
+
+  // Include inactive display into screen size
   for (DisplayBox *dBox in displayBoxList)
     {
       dRect = [dBox frame];
-      dRect.origin.x += xOffset;
+      if ([dBox isActive] == NO)
+        {
+          screenSize.width += [dBox displayFrame].size.width;
+        }
+    }
+  xOffset = floor((sRect.size.width - (screenSize.width * scaleFactor))/2);
+  
+  // Align boxes at that top edge
+  yOffset = floor(sRect.size.height -
+                  (sRect.size.height - (screenSize.height * scaleFactor))/2);
+
+  for (DisplayBox *dBox in displayBoxList)
+    {
+      dRect = [dBox frame];
+      if ([dBox isActive] == NO)
+        {
+          // Place inactive display at right from active
+          dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
+        }
+      else
+        {
+          dRect.origin.x += xOffset;
+        }
       dRect.origin.y += (yOffset - dRect.size.height);
       NSLog(@"Display Box rec: %@", NSStringFromRect(dRect));
       [dBox setFrame:dRect];
@@ -219,6 +316,8 @@ static NSMutableDictionary      *domain = nil;
 @implementation DisplayBox
 
 - initWithFrame:(NSRect)frameRect
+        display:(NXDisplay *)aDisplay
+          owner:(id)prefs
 {
   NSRect nameRect;
   
@@ -226,6 +325,10 @@ static NSMutableDictionary      *domain = nil;
   [self setBorderType:NSLineBorder];
   [self setTitlePosition:NSNoTitle];
   [self setContentViewMargins:NSMakeSize(1, 1)];
+
+  owner = prefs;
+  
+  display = [aDisplay retain];
 
   nameRect = frameRect;
   nameRect.size.height = 15;
@@ -247,15 +350,71 @@ static NSMutableDictionary      *domain = nil;
   return self;
 }
 
+- (void)dealloc
+{
+  [display release];
+  [super dealloc];
+}
+
+- (NXDisplay *)display
+{
+  return display;
+}
+
+- (void)setDisplayFrame:(NSRect)rect
+{
+  displayFrame = rect;
+}
+
+- (NSRect)displayFrame
+{
+  return displayFrame;
+}
+
 - (void)setName:(NSString *)name
 {
   [nameField setStringValue:name];
 }
 
-- (void)setMainDisplay:(BOOL)isMain
+- (void)setActive:(BOOL)active
 {
-  isMainDisplay = YES;
+  NSColor *color;
+  
+  if (active)
+    {
+      // TODO: get desktop background color
+      color = [NSColor colorWithDeviceRed:83.0/255.0
+                                    green:83.0/255.0
+                                     blue:116.0/255.0
+                                    alpha:1];
+      [nameField setTextColor:[NSColor whiteColor]];
+    }
+  else
+    {
+      color = [NSColor darkGrayColor];
+      [nameField setTextColor:[NSColor lightGrayColor]];
+    }
+  ASSIGN(bgColor, color);
+  
+  isActiveDisplay = active;
+  
   [[self superview] setNeedsDisplay:YES];
+}
+
+- (BOOL)isActive
+{
+  return isActiveDisplay;
+}
+
+- (void)setMain:(BOOL)isMain
+{
+  isMainDisplay = isMain;
+  [[self superview] setNeedsDisplay:YES];
+}
+
+- (BOOL)isMain
+{
+  return isMainDisplay;
 }
 
 - (void)setSelected:(BOOL)selected
@@ -266,8 +425,7 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  NSLog(@"DisplayBox: mouseDown");
-  // [ displayBoxClicked:self];
+  // NSLog(@"DisplayBox: mouseDown");
   
   if ([theEvent clickCount] >= 2)
     {
@@ -303,8 +461,7 @@ static NSMutableDictionary      *domain = nil;
             case NSRightMouseUp:
             case NSOtherMouseUp:
             case NSLeftMouseUp:
-              /* right mouse up or left mouse up means we're done */
-              NSLog(@"Mouse UP.");
+              // NSLog(@"Mouse UP.");
               done = YES;
               break;
             case NSPeriodic:
@@ -348,6 +505,7 @@ static NSMutableDictionary      *domain = nil;
 
       if (NSEqualPoints(initialLocation, lastLocation) == YES)
         {
+          [(ScreenPreferences *)owner displayBoxClicked:self];
           [self setSelected:YES];
         }
     }  
@@ -355,15 +513,9 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)drawRect:(NSRect)rect
 {
-  NSColor *desktopColor;
-  
   [super drawRect:rect];
 
-  desktopColor = [NSColor colorWithDeviceRed:83.0/255.0
-                                       green:83.0/255.0
-                                        blue:116.0/255.0
-                                       alpha:1];
-  [desktopColor set];
+  [bgColor set];
   NSRectFill([[self contentView] frame]);
 
   // Draw red frame
@@ -371,11 +523,11 @@ static NSMutableDictionary      *domain = nil;
     {
       [[NSColor yellowColor] set];
       PSnewpath();
-      PSmoveto(1,1);
-      PSlineto(1, rect.size.height-2);
-      PSlineto(rect.size.width-2, rect.size.height-2);
-      PSlineto(rect.size.width-2, 1);
-      PSlineto(1, 1);
+      PSmoveto(1.5,1.5);
+      PSlineto(1.5, rect.size.height-1.5);
+      PSlineto(rect.size.width-1.5, rect.size.height-1.5);
+      PSlineto(rect.size.width-1.5, 1.5);
+      PSlineto(1.5, 1.5);
       PSstroke();
     }
   

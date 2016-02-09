@@ -35,15 +35,33 @@
 
 @interface DisplayBox : NSBox
 {
+  id          owner;
+  NXDisplay   *display;
+  NSRect      displayFrame;
+  
   NSTextField *nameField;
+  NSColor     *bgColor;
+  NSColor     *fgColor;
   
   BOOL isMainDisplay;
+  BOOL isActiveDisplay;
   BOOL isSelected;
 }
 
+- initWithFrame:(NSRect)frameRect
+        display:(NXDisplay *)aDisplay
+          owner:(id)prefs; // ugly
+
+- (NXDisplay *)display;
+- (void)setDisplayFrame:(NSRect)rect;
+- (NSRect)displayFrame;
+
 - (void)setName:(NSString *)name;
 
-- (void)setMainDisplay:(BOOL)isMain;
+- (void)setActive:(BOOL)active;
+- (BOOL)isActive;
+- (void)setMain:(BOOL)isMain;
+- (BOOL)isMain;
 - (void)setSelected:(BOOL)selected;
 @end
 
@@ -57,14 +75,21 @@
   id view;
   id window;
   id canvas;
+  id setMainBtn;
+  id setStateBtn;
+  id arrangeBtn;
 
   NSImage *image;
 
   NSMutableArray *displayBoxList;
+  DisplayBox     *selectedBox;
   CGFloat scaleFactor;
 }
 
 - (void)updateDisplayBoxList;
+
+- (NSPoint)pointAtLayoutEdge:(NSInteger)edge
+                      forBox:(DisplayBox *)box;
 - (void)arrangeDisplayBoxes;
 
 - (void)displayBoxClicked:(DisplayBox *)sender;
