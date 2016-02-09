@@ -2468,6 +2468,18 @@
 ***** TODO Отложенное сохранение настроек для gamma и brightness
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
+**** TODO Screen: displays layout, on/off
+***** TODO Отображение мониторов
+****** TODO Показывать отключенный монитор
+****** TODO Arrange (метод и кнопка)
+****** TODO Отображение Dock и Icon Yard на 'Main Display'
+****** TODO Получать и отображать desktop background
+***** TODO Устанавливать 'Main Display'
+***** TODO Активировать/деактивировать монитор
+***** TODO Перемещение мониторов мышкой
+****** TODO Прилипание одного к другому
+****** TODO Выравнивание во время перетаскивания
+***** TODO Принимать уведомления об измнениях в конф. мониторов
 **** TODO Fonts: GNUstep font settings
 **** TODO Localization: language, units, paper, encoding
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
