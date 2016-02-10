@@ -2457,21 +2457,26 @@
       Сделал, чтобы NXDisplay кешировал screen_resources.
 ***** DONE Сохранять изменения в ~/Preferences/Displays.config
 ***** DONE Если есть ~/Preferences/Displays.config - применять при старте
-***** TODO Перечитывать список мониторов после изменений
+***** DONE Перечитывать список мониторов после изменений
       NXScreenDidChangeNotification посылается Workspace как результат
       получения Notify от XRandR в EventLoop(). Который, в свою очередь
       отправляется только при изменении Screen (изменение разрешения, on/off
       мониторов, в т.ч. и подключение/отключение).
       При изменении атрибутов мониторов (gamma, brightness, properties) XRandR
       Notify не генерируется.
-***** TODO В VirtualBox двигание слайдеров = залипание/падение
+***** DONE В VirtualBox двигание слайдеров = залипание/падение
+      В текущей версии - все нормально. Возможно какие-то изменения в ядре? ХЗ.
 ***** TODO Отложенное сохранение настроек для gamma и brightness
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
+      Не нашел возможности простого получения текущего цвета окна X11.
+      Поэтому, сейчас предполагаю, что цвет был установлен такой, который
+      сохранен где-то в  ~/Library/Preferences.
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
 **** TODO Screen: displays layout, on/off
 ***** TODO Отображение мониторов
 ****** DONE Показывать отключенный монитор
-****** TODO Arrange (метод и кнопка)
+****** DONE Arrange (метод и кнопка)
+       Нажатие на кнопку возвращает display boxes в исходное состояние.
 ****** TODO Отображение Dock и Icon Yard на 'Main Display'
 ****** TODO Получать и отображать desktop background
 ***** TODO Устанавливать 'Main Display'
@@ -2479,7 +2484,7 @@
 ***** TODO Перемещение мониторов мышкой
 ****** TODO Прилипание одного к другому
 ****** TODO Выравнивание во время перетаскивания
-***** TODO Принимать уведомления об измнениях в конф. мониторов
+***** DONE Принимать уведомления об измнениях в конф. мониторов
 **** TODO Fonts: GNUstep font settings
 **** TODO Localization: language, units, paper, encoding
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
