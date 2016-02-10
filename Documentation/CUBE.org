@@ -2470,7 +2470,7 @@
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
 **** TODO Screen: displays layout, on/off
 ***** TODO Отображение мониторов
-****** TODO Показывать отключенный монитор
+****** DONE Показывать отключенный монитор
 ****** TODO Arrange (метод и кнопка)
 ****** TODO Отображение Dock и Icon Yard на 'Main Display'
 ****** TODO Получать и отображать desktop background
