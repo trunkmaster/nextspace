@@ -79,6 +79,12 @@ static NSMutableDictionary      *domain = nil;
   // Get info about monitors and layout
   displayBoxList = [[NSMutableArray alloc] init];
   [self updateDisplayBoxList];
+
+  [[NSDistributedNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(screenDidChange:)
+           name:NXScreenDidChangeNotification
+         object:nil];
 }
 
 - (NSView *)view
@@ -144,12 +150,22 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)arrangeDisplays:(id)sender
 {
-  [self arrangeDisplayBoxes];
+  [self updateDisplayBoxList];
 }
 
 //
 // Helper methods
 //
+
+- (void)screenDidChange:(NSNotification *)aNotif
+{
+  selectedBox = nil;
+  [self updateDisplayBoxList];
+  
+  [setMainBtn setEnabled:NO];
+  [setStateBtn setEnabled:NO];
+}
+
 - (void)updateDisplayBoxList
 {
   NSArray *displays;
