@@ -75,6 +75,7 @@ static NSUserDefaults *defaults = nil;
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
+  [prefsController release];
   return YES;
 }
 

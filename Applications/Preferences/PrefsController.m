@@ -90,6 +90,7 @@
 
 - (void)dealloc
 {
+  NSLog(@"PrefsController: dealloc");
   [prefsViews release];
   [loadedBundles release];
   currentModule = nil;

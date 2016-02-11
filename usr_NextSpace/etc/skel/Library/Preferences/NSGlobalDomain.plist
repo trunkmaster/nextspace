@@ -6,10 +6,22 @@
     <string>art</string>
     <key>GSCommandKeyString</key>
     <string></string>
+    <key>GSFirstAlternateKey</key>
+    <string>Alt_L</string>
+    <key>GSFirstCommandKey</key>
+    <string>Super_L</string>
+    <key>GSFirstControlKey</key>
+    <string>Control_L</string>
     <key>GSFontAntiAlias</key>
     <string>NO</string>
     <key>GSOldClipboard</key>
     <string>NO</string>
+    <key>GSSecondAlternateKey</key>
+    <string>Alt_R</string>
+    <key>GSSecondCommandKey</key>
+    <string>Super_R</string>
+    <key>GSSecondControlKey</key>
+    <string>Control_R</string>
     <key>Local Time Zone</key>
     <string>Europe/Kiev</string>
     <key>NSBoldFont</key>

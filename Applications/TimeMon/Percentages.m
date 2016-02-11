@@ -205,7 +205,7 @@
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
   // [NSApp hide:self];
-w  // [[NSApp iconWindow] orderFrontRegardless];
+  // [[NSApp iconWindow] orderFrontRegardless];
   // [[[NSApp mainMenu] window] orderFrontRegardless];
   // [[[NSApp mainMenu] window] orderOut:self];
 }

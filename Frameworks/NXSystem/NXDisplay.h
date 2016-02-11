@@ -70,10 +70,12 @@ typedef struct _NXGammaValue NXGammaValue;
 }
 
 - (id)initWithOutputInfo:(RROutput)output
+         screenResources:(XRRScreenResources *)scr_res
                   screen:(NXScreen *)scr
                 xDisplay:(Display *)x_display;
 
 - (NSString *)outputName; // LVDS, VGA, DVI, HDMI
+- (RROutput)randrOutput;
 - (NSSize)physicalSize;   // in milimetres
 
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
