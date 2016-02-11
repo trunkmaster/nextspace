@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Aug 12 19:39:19 2015
+;; Created Thu Feb 11 09:44:30 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/TimeMon/")
+(setq default-directory "~/Developer/nextspace/Applications/TimeMon/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,8 @@
   "Percentages.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  5845
-  '(5820 nil)
+  5947
+  '(5844 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

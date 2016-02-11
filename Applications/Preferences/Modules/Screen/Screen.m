@@ -50,24 +50,46 @@ static NSBundle                 *bundle = nil;
 static NSUserDefaults           *defaults = nil;
 static NSMutableDictionary      *domain = nil;
 
+@synthesize dockImage;
+@synthesize appIconYardImage;
+@synthesize iconYardImage;  
+
 - (id)init
 {
+  NSString *imagePath;
+  
   self = [super init];
   
   defaults = [NSUserDefaults standardUserDefaults];
   domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
 
   bundle = [NSBundle bundleForClass:[self class]];
-  NSString *imagePath = [bundle pathForResource:@"Screen" ofType:@"tiff"];
+  
+  imagePath = [bundle pathForResource:@"Screen" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+
+  imagePath = [bundle pathForResource:@"dock" ofType:@"tiff"];
+  dockImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
+  imagePath = [bundle pathForResource:@"appiconyard" ofType:@"tiff"];
+  appIconYardImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
+  imagePath = [bundle pathForResource:@"iconyard" ofType:@"tiff"];
+  iconYardImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
       
   return self;
 }
 
 - (void)dealloc
 {
+  NSLog(@"Screen: dealloc");
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+  
   [image release];
+  [dockImage release];
+  [appIconYardImage release];
+  [iconYardImage release];
+  
   [displayBoxList release];
+  
   [super dealloc];
 }
 
@@ -129,12 +151,9 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)setMainDisplay:(id)sender
 {
-  [selectedBox setMain:YES];
-  for (DisplayBox *db in displayBoxList)
-    {
-      [db setMain:(db == selectedBox) ? YES : NO];
-    }
-  [self displayBoxClicked:selectedBox];
+  // NXScreen -> [NXDisplay setMain:] -> [NXScreen _refreshDisplaysInfo]
+  // [NXDisplay setMain:] will generate NXScreenDidChangeNotification.
+  [[NXScreen sharedScreen] setMainDisplay:[selectedBox display]];
 }
 
 - (void)setDisplayState:(id)sender
@@ -537,7 +556,15 @@ static NSMutableDictionary      *domain = nil;
   // Draw red frame
   if (isSelected)
     {
-      [[NSColor yellowColor] set];
+      NSColor *selColor;
+
+      selColor = [NSColor colorWithDeviceRed:1.0
+                                       green:221.0/255.0
+                                        blue:0.0
+                                       alpha:1];
+
+      // [[NSColor yellowColor] set];
+      [selColor set];
       PSnewpath();
       PSmoveto(1.5,1.5);
       PSlineto(1.5, rect.size.height-1.5);
@@ -546,10 +573,34 @@ static NSMutableDictionary      *domain = nil;
       PSlineto(1.5, 1.5);
       PSstroke();
     }
+
+  if (!isActiveDisplay) return;
   
+  // Draw dock and icon yard
+  NSSize  iSize;
+  NSPoint iPoint;
   if (isMainDisplay)
     {
-      // Draw dock and icon yard
+      iSize = [[owner dockImage] size];
+      iPoint = NSMakePoint(rect.size.width-iSize.width-3,
+                           rect.size.height-iSize.height-3);
+      [[owner dockImage] compositeToPoint:iPoint
+                                operation:NSCompositeSourceOver];
+      
+      iSize = [[owner appIconYardImage] size];
+      iPoint = NSMakePoint(3,3);
+      [[owner appIconYardImage] compositeToPoint:iPoint
+                                       operation:NSCompositeSourceOver];
+    }
+  else
+    {
+      iPoint = NSMakePoint(3,3);
+      iSize = [[owner iconYardImage] size];
+      [[owner iconYardImage] compositeToPoint:iPoint
+                                    operation:NSCompositeSourceOver];
+      iPoint.x += iSize.width;
+      [[owner iconYardImage] compositeToPoint:iPoint
+                                    operation:NSCompositeSourceOver];
     }
 }
 

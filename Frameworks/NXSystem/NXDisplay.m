@@ -140,6 +140,7 @@
 //--- Base
 //------------------------------------------------------------------------------
 - (id)initWithOutputInfo:(RROutput)output
+         screenResources:(XRRScreenResources *)scr_res
                   screen:(NXScreen *)scr
                 xDisplay:(Display *)x_display
 {
@@ -149,7 +150,7 @@
 
   xDisplay = x_display;
   screen = [scr retain];
-  screen_resources = [screen randrScreenResources];
+  screen_resources = scr_res;
 
   isMain = NO;
   isActive = NO;
@@ -235,6 +236,10 @@
 - (NSString *)outputName
 {
   return outputName;
+}
+- (RROutput)randrOutput
+{
+  return output_id;
 }
 - (NSSize)physicalSize
 {
@@ -475,22 +480,15 @@
 
 - (void)setMain:(BOOL)yn
 {
-  if (isMain && yn == NO)
-    {
-      XRRSetOutputPrimary(xDisplay,
-                          RootWindow(xDisplay, DefaultScreen(xDisplay)),
-                          None);
-      isMain = NO;
-    }
-  
-  if (yn == YES)
+  if (isActive && yn == YES)
     {
       NSLog(@"%@: become main display.", outputName);
       XRRSetOutputPrimary(xDisplay,
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);
-      isMain = YES;
     }
+  
+  isMain = yn;
 }
 
 //------------------------------------------------------------------------------

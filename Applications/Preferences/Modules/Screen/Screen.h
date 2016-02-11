@@ -80,11 +80,15 @@
   id arrangeBtn;
 
   NSImage *image;
-
+  
   NSMutableArray *displayBoxList;
   DisplayBox     *selectedBox;
   CGFloat scaleFactor;
 }
+
+@property (readonly) NSImage *dockImage;
+@property (readonly) NSImage *appIconYardImage;
+@property (readonly) NSImage *iconYardImage;
 
 - (void)updateDisplayBoxList;
 
@@ -95,5 +99,3 @@
 - (void)displayBoxClicked:(DisplayBox *)sender;
 
 @end
-
-

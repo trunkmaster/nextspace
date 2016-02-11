@@ -14,6 +14,9 @@ $(BUNDLE_NAME)_HEADERS= \
 
 $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/Screen.tiff \
+	Resources/appiconyard.tiff \
+	Resources/iconyard.tiff \
+	Resources/dock.tiff \
 	Resources/bundle.registry
 
 $(BUNDLE_NAME)_LANGUAGES = \

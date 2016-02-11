@@ -85,7 +85,6 @@
   XRRScreenResources *screen_resources;
   
   NSMutableArray *systemDisplays;
-  NXDisplay      *mainDisplay;
 
   NSSize         sizeInPixels, sizeInMilimeters;
 }
@@ -105,8 +104,10 @@
 - (NSArray *)allDisplays;
 - (NSArray *)activeDisplays;
 - (NSArray *)connectedDisplays;
-// TODO
+
 - (NXDisplay *)mainDisplay;
+- (void)setMainDisplay:(NXDisplay *)display;
+
 // TODO
 - (NXDisplay *)displayAtPoint:(NSPoint)point;
 - (NXDisplay *)displayWithName:(NSString *)name;

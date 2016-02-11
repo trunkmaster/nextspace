@@ -196,29 +196,29 @@ NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
 {
   NXDisplay *display;
 
-  if (systemDisplays) [systemDisplays release];
+  NSLog(@"NXScreen: refresh information about displays.");
+
+  if (systemDisplays)
+    {
+      [systemDisplays release];
+    }
   systemDisplays = [[NSMutableArray alloc] init];
 
   if (screen_resources == NULL)
     {
-      screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
+      [self randrScreenResources]; // initialize 'screen_resources'
     }
 
   for (int i=0; i < screen_resources->noutput; i++)
     {
       display = [[NXDisplay alloc]
                   initWithOutputInfo:screen_resources->outputs[i]
+                     screenResources:screen_resources
                               screen:self
                             xDisplay:xDisplay];
       
-      if (XRRGetOutputPrimary(xDisplay, xRootWindow) ==
-          screen_resources->outputs[i])
-        {
-          mainDisplay = display;
-        }
-      
       [systemDisplays addObject:display];
-      [display release];      
+      [display release];
     }
   
   // Update screen dimensions
@@ -260,7 +260,7 @@ static id systemScreen = nil;
     XRRQueryExtension(xDisplay, &event_base, &error_base);
     XRRQueryVersion(xDisplay, &major_version, &minor_version);
 
-    NSLog(@"XRandR %i.%i, event:%i, erro:%i",
+    NSLog(@"XRandR %i.%i, event base:%i, error base:%i",
           major_version, minor_version,
           event_base, error_base);
   }
@@ -279,7 +279,6 @@ static id systemScreen = nil;
           if ([display isActive])
             {
               [display setMain:YES];
-              mainDisplay = display;
               break;
             }
         }
@@ -290,6 +289,7 @@ static id systemScreen = nil;
 
 - (void)dealloc
 {
+  NSLog(@"NXScreen: dealloc");
   XRRFreeScreenResources(screen_resources);
   
   XCloseDisplay(xDisplay);
@@ -305,15 +305,12 @@ static id systemScreen = nil;
 
 - (XRRScreenResources *)randrScreenResources
 {
-  // XLockDisplay(xDisplay);
-
+  NSLog(@"NXScreen: Initialize 'screen_resources'");
   if (screen_resources)
     {
       XRRFreeScreenResources(screen_resources);
     }
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
-  
-  // XUnlockDisplay(xDisplay);
   
   return screen_resources;
 }
@@ -469,6 +466,22 @@ static id systemScreen = nil;
     }
   
   return display;
+}
+
+- (void)setMainDisplay:(NXDisplay *)display
+{
+  if (display == nil)
+    {
+      XRRSetOutputPrimary(xDisplay, xRootWindow, None);
+      return;
+    }
+  
+  for (NXDisplay *d in systemDisplays)
+    {
+      [d setMain:(d == display) ? YES : NO];
+    }
+
+  [self _refreshDisplaysInfo];
 }
 
 // TODO
