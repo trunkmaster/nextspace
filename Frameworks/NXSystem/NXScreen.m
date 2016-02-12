@@ -413,7 +413,7 @@ static id systemScreen = nil;
 // Returns array of NXDisplay
 - (NSArray *)allDisplays
 {
-  [self _refreshDisplaysInfo];
+  // [self _refreshDisplaysInfo];
   
   return systemDisplays;
 }
@@ -422,7 +422,7 @@ static id systemScreen = nil;
 {
   NSMutableArray *activeDL = [[NSMutableArray alloc] init];
   
-  [self _refreshDisplaysInfo];
+  // [self _refreshDisplaysInfo];
   
   for (NXDisplay *d in systemDisplays)
     {
@@ -432,14 +432,14 @@ static id systemScreen = nil;
         }
     }
 
-  return activeDL;
+  return [activeDL autorelease];
 }
 
 - (NSArray *)connectedDisplays
 {
   NSMutableArray *connectedDL = [[NSMutableArray alloc] init];
 
-  [self _refreshDisplaysInfo];
+  // [self _refreshDisplaysInfo];
   
   for (NXDisplay *d in systemDisplays)
     {
@@ -449,7 +449,7 @@ static id systemScreen = nil;
         }
     }
 
-  return connectedDL;
+  return [connectedDL autorelease];
 }
 
 //---
