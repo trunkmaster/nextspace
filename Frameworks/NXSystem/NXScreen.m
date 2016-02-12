@@ -76,7 +76,6 @@ static id systemScreen = nil;
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout;
 - (NSSize)_sizeInMilimeters;
 - (NSSize)_sizeInMilimetersForLayout:(NSArray *)layout;
-- (void)_refreshDisplaysInfo;
 @end
 
 @implementation NXScreen (Private)
@@ -193,41 +192,6 @@ static id systemScreen = nil;
   return NSMakeSize(width, height);
 }
 
-// Update display information local cache.
-- (void)_refreshDisplaysInfo
-{
-  NXDisplay *display;
-
-  NSLog(@"NXScreen: refresh information about displays.");
-
-  if (systemDisplays)
-    {
-      [systemDisplays release];
-    }
-  systemDisplays = [[NSMutableArray alloc] init];
-
-  // if (screen_resources == NULL)
-  //   {
-  //     [self randrUpdateScreenResources]; // initialize 'screen_resources'
-  //   }
-
-  for (int i=0; i < screen_resources->noutput; i++)
-    {
-      display = [[NXDisplay alloc]
-                  initWithOutputInfo:screen_resources->outputs[i]
-                     screenResources:screen_resources
-                              screen:self
-                            xDisplay:xDisplay];
-      
-      [systemDisplays addObject:display];
-      [display release];
-    }
-  
-  // Update screen dimensions
-  sizeInPixels = [self _sizeInPixels];
-  sizeInMilimeters = [self _sizeInMilimeters];
-}
-
 @end
 
 @implementation NXScreen
@@ -305,18 +269,51 @@ static id systemScreen = nil;
 
 - (XRRScreenResources *)randrScreenResources
 {
+  if (screen_resources == NULL)
+    {
+      [self randrUpdateScreenResources];
+    }
+  
   return screen_resources;
 }
 
 - (void)randrUpdateScreenResources
 {
+  // Reread screen resources
   NSLog(@"NXScreen: Update 'screen_resources'");
   if (screen_resources)
     {
       XRRFreeScreenResources(screen_resources);
     }
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
-  [self _refreshDisplaysInfo];
+
+  // Update display information local cache.
+  // [self _refreshDisplaysInfo];
+  NXDisplay *display;
+
+  NSLog(@"NXScreen: refresh information about displays.");
+
+  if (systemDisplays)
+    {
+      [systemDisplays release];
+    }
+  systemDisplays = [[NSMutableArray alloc] init];
+
+  for (int i=0; i < screen_resources->noutput; i++)
+    {
+      display = [[NXDisplay alloc]
+                  initWithOutputInfo:screen_resources->outputs[i]
+                     screenResources:screen_resources
+                              screen:self
+                            xDisplay:xDisplay];
+      
+      [systemDisplays addObject:display];
+      [display release];
+    }
+  
+  // Update screen dimensions
+  sizeInPixels = [self _sizeInPixels];
+  sizeInMilimeters = [self _sizeInMilimeters];
 }
 
 - (RRCrtc)randrFindFreeCRTC
