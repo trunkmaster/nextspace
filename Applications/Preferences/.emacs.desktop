@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sat Feb 13 00:19:00 2016
+;; Created Sat Feb 13 01:10:21 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "Screen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  4366
-  '(8271 nil)
+  3627
+  '(8292 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

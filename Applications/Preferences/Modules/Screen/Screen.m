@@ -144,7 +144,7 @@ static NSMutableDictionary      *domain = nil;
       if (db != sender) [db setSelected:NO];
     }
 
-  [setMainBtn setEnabled:![sender isMain]];
+  [setMainBtn setEnabled:(![sender isMain]&&[sender isActive])];
   [setStateBtn setTitle:[sender isActive] ? @"Disable" : @"Enable"];
   [setStateBtn setEnabled:YES];
 }
