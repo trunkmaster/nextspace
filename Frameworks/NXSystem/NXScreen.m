@@ -206,7 +206,7 @@ NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
 
   if (screen_resources == NULL)
     {
-      [self randrScreenResources]; // initialize 'screen_resources'
+      [self randrUpdateScreenResources]; // initialize 'screen_resources'
     }
 
   for (int i=0; i < screen_resources->noutput; i++)
@@ -305,14 +305,17 @@ static id systemScreen = nil;
 
 - (XRRScreenResources *)randrScreenResources
 {
-  NSLog(@"NXScreen: Initialize 'screen_resources'");
+  return screen_resources;
+}
+
+- (void)randrUpdateScreenResources
+{
+  NSLog(@"NXScreen: Update 'screen_resources'");
   if (screen_resources)
     {
       XRRFreeScreenResources(screen_resources);
     }
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
-  
-  return screen_resources;
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -473,6 +476,7 @@ static id systemScreen = nil;
   if (display == nil)
     {
       XRRSetOutputPrimary(xDisplay, xRootWindow, None);
+      [self randrUpdateScreenResources];
       return;
     }
   

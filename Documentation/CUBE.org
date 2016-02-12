@@ -165,7 +165,7 @@
 * GNUstep
 ** TODO Шрифт у иконки нечитаемый
    В WindowMaker и приложений GNUstep должны быть одинаковые шрифты
-   у minicon (minwindow). Сейчас у art и WindowMaker разный тип hinting'а -
+   у minwindow. Сейчас у art и WindowMaker разный тип hinting'а -
    нужно привести в соответствие.
 ** DONE Font Panel какой-то неадекватный
    Отображение глючит. Кнопки нужно нажимать чуть выше, чтобы попасть...
@@ -179,6 +179,8 @@
    подергать скролл-бары. Посмотреть на то, как перерисовывается картинка
    в NSImageView.
 ** TODO Какая-то фигня с чтением изображений
+   Изображения с DPI отличным от 72x72 обрабатываются некорректно - меняется
+   размер. Именно поэтому некоторые PNG-файлы отображаются коряво.
 ** TODO Клик внутри неактивного окна не обрабатывается subview
    ...или не передается subview окном. NSFistResponder chain?
 ** TODO DnD
@@ -187,10 +189,14 @@
     любой Alternate.
 
 *** TODO Операция по-умолчанию должна быть Copy
-
 ** TODO back-art
    Падает при попытке сделать скриншот части окна (view).
    С cairo все впорядке.
+
+** TODO Новые версии компонент GNUstep (base, gui, back)
+   Пока ставить нельзя - сейчас творится какая-то хрень (в Workspace все
+   посъезжало, splitview не работает, может что-то еще).
+   Пока остаемся на стабильной версии, которая выпущена летом 2015-го.
 
 
 * WindowMaker
@@ -211,6 +217,10 @@
    чем в OPENSTEP при визуально одинаковом размере шрифта.
 ** TODO Highlight кнопок в заголовке окна
    Кнопки должны не нажиматься, а подсвечиваться.
+
+** TODO Вид miniwindow
+   Между WindowMaker и GNUstep есть разница.
+   Нужно привести к одному виду, ориентиуясь на OPENSTEP.
 
 
 * Frameworks
@@ -566,6 +576,23 @@
      Непонятно, как это сделать. Пока поддержка Gamma определяется по:
      - наличию CRTC;
      - возможности получения размер gamma (XRRGetCrtcGammaSize).
+**** TODO Использование XRRScreenResources
+***** TODO Нужно определить когда обязательно нужно обновлять
+      NXDisplay:
+      - setResolution:origin:
+      - setMain:
+      NXScreen:
+      - applyDisplayLayout:
+      - setDisplayMain:
+
+      Calling of the methods above (or changing screen configiguration via
+      'xrandr' utility) results in emitting NXScreenDidChangeNotification by
+      WorkspaceManager or Login (or whatever app which has X11 event loop and
+      listens to RandR events).
+      So update of screen configuration is a responsibility of application
+      which uses NXSystem. NXSystem should never update XRRScreenConfiguration
+      by itself.
+***** TODO Уменьшить количество инициализаций (сейчас - многовато)
 **** TODO Применение конфигурации display layout
      Конфигурация изменяется при помощи Preferences.app->Display.
 ***** TODO Default layout: учитывать состояние LID
@@ -593,7 +620,10 @@
      - через чтение сокета: /var/run/acpid.socket;
      - отдать на откуп 'acpid' и сконфигурировать поведение через
        /etc/acpi/(events|actions);
-     - подключившись к dbus и ловя сообщения от logind.
+     - подключившись к dbus и ловя сообщения от logind - не ловится!
+     - нужно ловить события от UPower - сообщает о lid close/open; также
+       хранит и сообщает информацию о батарее и состоянии подключения к 
+       розетке; наверное стоит вынести эту функциональность в NXPower.
 **** TODO События (изменение параметров, подключени/отключение мониторов)
 ***** Мысль №1
      События ловятся через обработку событий X11 (X events). Ловить нужно
@@ -2452,6 +2482,19 @@
 ***** TODO Services
 **** DONE Отображать иконки с учетом priority из bundle.registry
 **** TODO .preferences как документ открываемый Preferences
+**** TODO Screen: displays layout, on/off
+***** TODO Отображение мониторов
+****** DONE Показывать отключенный монитор
+****** DONE Arrange (метод и кнопка)
+       Нажатие на кнопку возвращает display boxes в исходное состояние.
+****** DONE Отображение Dock и Icon Yard на 'Main Display'
+****** TODO Получать и отображать desktop background
+***** TODO Устанавливать 'Main Display'
+***** TODO Активировать/деактивировать монитор
+***** TODO Перемещение мониторов мышкой
+****** TODO Прилипание одного к другому
+****** TODO Выравнивание во время перетаскивания
+***** DONE Принимать уведомления об измнениях в конф. мониторов
 **** TODO Display: resolution, layout, gamma correction, wallpaper/color
 ***** DONE Изменение настроек не должно влиять на плавность изменения контролов
       Использовать dispatch & blocks?
@@ -2474,19 +2517,8 @@
       Поэтому, сейчас предполагаю, что цвет был установлен такой, который
       сохранен где-то в  ~/Library/Preferences.
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
-**** TODO Screen: displays layout, on/off
-***** TODO Отображение мониторов
-****** DONE Показывать отключенный монитор
-****** DONE Arrange (метод и кнопка)
-       Нажатие на кнопку возвращает display boxes в исходное состояние.
-****** TODO Отображение Dock и Icon Yard на 'Main Display'
-****** TODO Получать и отображать desktop background
-***** TODO Устанавливать 'Main Display'
-***** TODO Активировать/деактивировать монитор
-***** TODO Перемещение мониторов мышкой
-****** TODO Прилипание одного к другому
-****** TODO Выравнивание во время перетаскивания
-***** DONE Принимать уведомления об измнениях в конф. мониторов
+***** TODO Установка Brightness
+***** TODO Color profiles
 **** TODO Fonts: GNUstep font settings
 **** TODO Localization: language, units, paper, encoding
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
@@ -2507,7 +2539,6 @@
 *** TODO Настройки GNUstep и WindowMaker
     Нужно думать как организовать работу так, чтобы ничего не забыть.
 *** TODO Старт без без появления меню
-
 
 ** 4. Terminal
 *** TODO 1.0

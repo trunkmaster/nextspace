@@ -179,6 +179,7 @@ static NSMutableDictionary      *domain = nil;
 - (void)screenDidChange:(NSNotification *)aNotif
 {
   selectedBox = nil;
+  [[NXScreen sharedScreen] randrUpdateScreenResources];
   [self updateDisplayBoxList];
   
   [setMainBtn setEnabled:NO];
@@ -344,6 +345,20 @@ static NSMutableDictionary      *domain = nil;
 
   [_fill_color set];
   NSRectFill([[self contentView] frame]);
+
+  // CGFloat f, lines = rect.size.height;
+  // CGFloat pattern[2] = {1};
+  // [[NSColor darkGrayColor] set];
+  // PSsetdash(pattern, 1, 0);
+  // for (f=2; f<lines-2; f++)
+  //   {
+  //     PSmoveto(2, f);
+  //     PSlineto(rect.size.width, f);
+  //     f++;
+  //     PSmoveto(3, f);
+  //     PSlineto(rect.size.width-2, f);
+  //   }
+  // PSstroke();
 }
 
 @end
