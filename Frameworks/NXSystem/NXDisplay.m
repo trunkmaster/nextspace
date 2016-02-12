@@ -487,7 +487,7 @@
       XRRSetOutputPrimary(xDisplay,
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);
-      // [screen randrUpdateScreenResources];
+      [screen randrUpdateScreenResources];
     }
   
   isMain = yn;

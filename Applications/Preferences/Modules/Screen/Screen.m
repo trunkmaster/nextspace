@@ -314,10 +314,7 @@ static NSMutableDictionary      *domain = nil;
           // Place inactive display at right from active
           dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
         }
-      else
-        {
-          dRect.origin.x += xOffset;
-        }
+      dRect.origin.x += xOffset;
       dRect.origin.y += (yOffset - dRect.size.height);
       NSLog(@"Display Box rec: %@", NSStringFromRect(dRect));
       [dBox setFrame:dRect];

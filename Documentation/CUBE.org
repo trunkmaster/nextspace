@@ -576,8 +576,8 @@
      Непонятно, как это сделать. Пока поддержка Gamma определяется по:
      - наличию CRTC;
      - возможности получения размер gamma (XRRGetCrtcGammaSize).
-**** TODO Использование XRRScreenResources
-***** TODO Нужно определить когда обязательно нужно обновлять
+**** DONE Использование XRRScreenResources
+***** DONE Нужно определить когда обязательно нужно обновлять
       NXDisplay:
       - setResolution:origin:
       - setMain:
@@ -590,9 +590,12 @@
       WorkspaceManager or Login (or whatever app which has X11 event loop and
       listens to RandR events).
       So update of screen configuration is a responsibility of application
-      which uses NXSystem. NXSystem should never update XRRScreenConfiguration
-      by itself.
-***** TODO Уменьшить количество инициализаций (сейчас - многовато)
+      which uses NXSystem. 
+      NXSystem should update XRRScreenConfiguration only in case of changing
+      main (primary) display - XRRSetOutputPrimary doesn't generate
+      notification (event). It's [NXScreen setMainDisplay:] and 
+      [NXDisplay setMain:] methods.
+***** DONE Уменьшить количество инициализаций (сейчас - многовато)
 **** TODO Применение конфигурации display layout
      Конфигурация изменяется при помощи Preferences.app->Display.
 ***** TODO Default layout: учитывать состояние LID
