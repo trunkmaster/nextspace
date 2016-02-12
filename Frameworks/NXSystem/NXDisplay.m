@@ -340,7 +340,6 @@
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin
 {
-  // XRRScreenResources *scr_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcInfo        *crtc_info;
   RRMode             rr_mode;
@@ -423,6 +422,8 @@
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
+
+  // [screen randrUpdateScreenResources];
 }
 
 //------------------------------------------------------------------------------
@@ -486,6 +487,7 @@
       XRRSetOutputPrimary(xDisplay,
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);
+      // [screen randrUpdateScreenResources];
     }
   
   isMain = yn;
@@ -512,7 +514,6 @@ find_last_non_clamped(CARD16 array[], int size)
 // from xrandr.c
 - (void)_getGamma
 {
-  // XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo      *output_info;
   XRRCrtcGamma	     *crtc_gamma;
   CGFloat            i1, v1, i2, v2;
@@ -704,7 +705,6 @@ find_last_non_clamped(CARD16 array[], int size)
                blue:(CGFloat)gammaBlue
          brightness:(CGFloat)brightness
 {
-  // XRRScreenResources *screen_resources = [screen randrScreenResources];
   XRROutputInfo *output_info;
   XRRCrtcGamma  *gamma, *new_gamma;
   int           i, size;

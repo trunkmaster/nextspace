@@ -92,6 +92,7 @@
 + (id)sharedScreen;
 
 - (XRRScreenResources *)randrScreenResources;
+- (void)randrUpdateScreenResources;
 - (RRCrtc)randrFindFreeCRTC;
 
 - (NSSize)sizeInPixels;
