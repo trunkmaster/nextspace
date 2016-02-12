@@ -69,6 +69,8 @@ NSString *NXDisplayPropertiesKey = @"Properties";
 // Notifications
 NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
 
+static id systemScreen = nil;
+
 @interface NXScreen (Private)
 - (NSSize)_sizeInPixels;
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout;
@@ -204,10 +206,10 @@ NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
     }
   systemDisplays = [[NSMutableArray alloc] init];
 
-  if (screen_resources == NULL)
-    {
-      [self randrUpdateScreenResources]; // initialize 'screen_resources'
-    }
+  // if (screen_resources == NULL)
+  //   {
+  //     [self randrUpdateScreenResources]; // initialize 'screen_resources'
+  //   }
 
   for (int i=0; i < screen_resources->noutput; i++)
     {
@@ -227,8 +229,6 @@ NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
 }
 
 @end
-
-static id systemScreen = nil;
 
 @implementation NXScreen
 
@@ -268,7 +268,7 @@ static id systemScreen = nil;
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   screen_resources = NULL;
 
-  [self _refreshDisplaysInfo];
+  [self randrUpdateScreenResources];
 
   // Initially we set primary display to first active
   if ([self mainDisplay] == nil)
@@ -316,6 +316,7 @@ static id systemScreen = nil;
       XRRFreeScreenResources(screen_resources);
     }
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
+  [self _refreshDisplaysInfo];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -416,16 +417,12 @@ static id systemScreen = nil;
 // Returns array of NXDisplay
 - (NSArray *)allDisplays
 {
-  // [self _refreshDisplaysInfo];
-  
   return systemDisplays;
 }
 
 - (NSArray *)activeDisplays
 {
   NSMutableArray *activeDL = [[NSMutableArray alloc] init];
-  
-  // [self _refreshDisplaysInfo];
   
   for (NXDisplay *d in systemDisplays)
     {
@@ -442,8 +439,6 @@ static id systemScreen = nil;
 {
   NSMutableArray *connectedDL = [[NSMutableArray alloc] init];
 
-  // [self _refreshDisplaysInfo];
-  
   for (NXDisplay *d in systemDisplays)
     {
       if ([d isConnected])
@@ -484,8 +479,6 @@ static id systemScreen = nil;
     {
       [d setMain:(d == display) ? YES : NO];
     }
-
-  [self _refreshDisplaysInfo];
 }
 
 // TODO
@@ -781,7 +774,7 @@ static id systemScreen = nil;
 
   // XUngrabServer(xDisplay);
   
-  [self _refreshDisplaysInfo];
+  // [self _refreshDisplaysInfo];
   
   return YES;
 }
