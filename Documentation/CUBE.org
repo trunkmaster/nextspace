@@ -577,7 +577,7 @@
      - наличию CRTC;
      - возможности получения размер gamma (XRRGetCrtcGammaSize).
 **** DONE Использование XRRScreenResources
-***** DONE Нужно определить когда обязательно нужно обновлять
+     Нужно определить когда обязательно нужно обновлять.
       NXDisplay:
       - setResolution:origin:
       - setMain:
@@ -595,16 +595,19 @@
       main (primary) display - XRRSetOutputPrimary doesn't generate
       notification (event). It's [NXScreen setMainDisplay:] and 
       [NXDisplay setMain:] methods.
-***** DONE Уменьшить количество инициализаций (сейчас - многовато)
-**** TODO Применение конфигурации display layout
+
+      Заодно пофиксил использование "static id systemScreen" - перенес в
+      самый верх - перестал вызываться -init при каждом вызове +sharedScreen.
+**** DONE Применение конфигурации display layout
      Конфигурация изменяется при помощи Preferences.app->Display.
-***** TODO Default layout: учитывать состояние LID
+***** DONE Default layout: учитывать состояние LID
       Если LID->closed делать монитор неактивным.
+      Релизовано [NXPower isLidClosed] и использовано в -applyDisplayLayout.
 ***** DONE Конфигурация по-умолчанию при запуске Xorg/Login
       Login устанавливает defaultLayout всегда.
 ***** DONE Сохранять в layout EDID (уникальный идентификатор)
 ***** DONE Проверка EDID монитора перед применением layout
-**** TODO NXDisplay: определять lid closed/opened
+**** DONE NXDisplay: определять lid closed/opened
      Основные вопросы:
      1. как узнать о статусе LID?
         -> /proc/acpi/button/lid/LID/state
@@ -627,6 +630,12 @@
      - нужно ловить события от UPower - сообщает о lid close/open; также
        хранит и сообщает информацию о батарее и состоянии подключения к 
        розетке; наверное стоит вынести эту функциональность в NXPower.
+
+      Релизовано [NXPower isLidClosed] и использовано в -applyDisplayLayout.
+**** DONE Округление значений гаммы до второго знака после запятой
+     В основном вся магия находится в [NXDisplay _getGamma]. При вычислении
+     гаммы используется магическое число '0.5'. Не до конца понимаю почему,
+     но работает. Может потом нужно будет разобраться до конца.
 **** TODO События (изменение параметров, подключени/отключение мониторов)
 ***** Мысль №1
      События ловятся через обработку событий X11 (X events). Ловить нужно
@@ -677,12 +686,14 @@
       настройки для новых мониторов.
       Что делать с Layout?
       На какое место ставить найденный монитор - слева направо.
+***** TODO Open/close laptop lid
 **** TODO Установка Backlight (если монитор поддерживает)
      Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
      сделать паузу для NXSystem/NXScreen.
 **** TODO Background color of desktop
 **** TODO NXDisplay: rotation & reflection
 **** TODO NXDisplay: заменить Dimensions и Origin на Frame
+**** TODO fadIn/fadeOut по времени
 **** TODO Управление конфигурациями и взаимодествием видеоадаптеров
      На текущий момент NVIDIA Optimus не работает заявленным способом.
      Единственный работающий вариант: Bumblebee (запуск отдельного X-сервера с
@@ -690,11 +701,12 @@
      Поэтому эта задача сводится к правильно устанволенному и настроенному
      Bumblebee, чтобы легко можно было бы использовать утилиту 'optirun' или
      'primusrun'.
-**** DONE Округление значений гаммы до второго знака после запятой
-     В основном вся магия находится в [NXDisplay _getGamma]. При вычислении
-     гаммы используется магическое число '0.5'. Не до конца понимаю почему,
-     но работает. Может потом нужно будет разобраться до конца.
-**** TODO fadIn/fadeOut по времени
+*** TODO [#B] NXPower
+**** TODO State of the LID (open/closed)
+**** TODO Power state (battery/AC)
+**** TODO Battery information
+**** TODO Shutdown/Restart
+**** TODO Hibernate/Sleep
 *** TODO [#B] NXKeyboard - type, input languages, shortcuts, repeat rate
 **** TODO Keyboard type (Xorg keyboard types)
 **** TODO Input languages (Xkb layouts)
@@ -719,7 +731,6 @@
 *** TODO [#B] NXMouse - type, acceleration, buttons mapping, pointer
     Посмотреть в WindowMaker.
 *** TODO [#C] NXSound - volume/bass/treble/balance, device information
-*** TODO [#C] NXPower - power state, battery, hibernate/shutdown/restart/sleep, saver
 *** TODO [#C] NXNetwork - hostname, interfaces, routes, user initiated up/down, WiFi
 *** TODO [#B] NXDeviceManager
     Register added/removed system devices (storage, monitor, mouse, keyboard,
