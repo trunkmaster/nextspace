@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Feb 12 08:02:45 2016
+;; Created Sat Feb 13 02:32:51 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,10 +11,10 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("_refe" "mainDisplay" "mainDiso" "screen_resources" "randrScreenRes" "mainDispla" "setMain" "XGrab" "isActive" "apply" "isActive" "NXScreenDidChange" "setMain" "main display" "main display not" "frame"))
+(setq search-ring '("dealloc" "org.freedesktop." "_refreshDisplaysInfo" "_refre" "_refe" "mainDisplay" "mainDiso" "screen_resources" "randrScreenRes" "mainDispla" "setMain" "XGrab" "isActive" "apply" "isActive" "NXScreenDidChange"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Frameworks/NXSystem/" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/Tests/ScreenInfo.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXSystem/FreeBSD/*.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/Linux/*.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/*.[hm]" "~/Developer/nextspace/Frameworks/NXFoundation/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Tools/Sizer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/FileMover/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/Communicator.*" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Viewers/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Operations/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/*.[hm]" "~/Developer/nextspace/Applications/Workspace/*.[hm]" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/NXSystem/NXPower.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/Tests/ScreenInfo.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXSystem/FreeBSD/*.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/Linux/*.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/*.[hm]" "~/Developer/nextspace/Frameworks/NXFoundation/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Tools/Sizer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/FileMover/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/Communicator.*" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Viewers/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Operations/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/*.[hm]" "~/Developer/nextspace/Applications/Workspace/*.[hm]" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -22,8 +22,107 @@
   "NXScreen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  11920
-  '(13764 nil)
+  21621
+  '(22493 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksAdaptor.m"
+  "NXUDisksAdaptor.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  34509
+  '(35558 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'makefile-gmake-mode
+  nil
+  1277
+  '(924 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  407
+  '(1013 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXPower.m"
+  "NXPower.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2109
+  '(2294 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXPower.h"
+  "NXPower.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1911
+  '(1874 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksAdaptor.h"
+  "NXUDisksAdaptor.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4018
+  '(3997 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMediaManager.h"
+  "NXMediaManager.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2720
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXSystemInfo.m"
+  "NXSystemInfo.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4855
+  '(7331 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
+  "NXDisplay.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  14283
+  '(4693 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
@@ -38,17 +137,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
-  "NXDisplay.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  5006
-  '(4693 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
@@ -68,17 +156,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   3897
   '(4743 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXSystemInfo.m"
-  "NXSystemInfo.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  7499
-  '(7363 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -112,28 +189,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile"
-  "GNUmakefile"
-  'makefile-gmake-mode
-  nil
-  986
-  '(nil nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksAdaptor.m"
-  "NXUDisksAdaptor.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  17333
-  '(23246 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -304,30 +359,8 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMediaManager.h"
-  "NXMediaManager.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMediaManager.m"
   "NXMediaManager.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksAdaptor.h"
-  "NXUDisksAdaptor.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1

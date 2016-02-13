@@ -48,6 +48,7 @@
 
 #import "NXDisplay.h"
 #import "NXScreen.h"
+#import "NXPower.h"
 
 // Displays.config field keys
 NSString *NXDisplayIsActiveKey = @"Active";
@@ -737,12 +738,13 @@ static id systemScreen = nil;
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
       display = [self displayWithName:displayName];
       
-      if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
-            isEqualToString:@"NO"])
-        {
-          [display deactivate];
-        }
-      else
+      // if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
+      //       isEqualToString:@"NO"])
+      //   {
+      //     [display deactivate];
+      //   }
+      // else
+      if (![display isBuiltin] || ![NXPower isLidClosed])
         {
           // If initial brightness is 0.0 fadeIn/Out processed in application.
           brightness = [display gammaBrightness];
@@ -768,15 +770,11 @@ static id systemScreen = nil;
           //   }
         }
     }
-
-  // XUngrabServer(xDisplay);
-  
-  // [self _refreshDisplaysInfo];
   
   return YES;
 }
 
-// TODO: check if resolution is supported by designated monitor.
+// TODO: check if resolution is supported by monitor.
 - (void)setDisplay:(NXDisplay *)display
         resolution:(NSDictionary *)resolution
             origin:(NSPoint)origin
