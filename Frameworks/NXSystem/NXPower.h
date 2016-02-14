@@ -33,10 +33,14 @@
 
 #import <Foundation/NSObject.h>
 
+#include <upower.h>
+
 @class NSString;
 
 @interface NXPower : NSObject
-
+{
+  UpClient *upower_client;
+}
 // Battery information
 + (unsigned int)batteryLife;
 + (unsigned char)batteryPercent;
@@ -45,7 +49,15 @@
 // LID information
 + (BOOL)hasLid;
 + (BOOL)isLidClosed;
+- (BOOL)hasLid;
+- (BOOL)isLidClosed;
+  
+// Monitor for D-Bus messages
+- (void)startEventsMonitor;
+- (void)stopEventsMonitor;
 
 @end
+
+extern NSString *NXPowerLidDidChangeNotification;
 
 #endif //WITH_UPOWER

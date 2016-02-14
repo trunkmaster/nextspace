@@ -29,19 +29,43 @@
 #ifdef WITH_UPOWER
 
 #import <Foundation/NSArray.h>
-#import <Foundation/NSBundle.h>
+// #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
-
-#include <upower.h>
+#import <Foundation/NSTimer.h>
+#import <Foundation/NSNotification.h>
 
 #import "NXPower.h"
 
+NSString *NXPowerLidDidChangeNotification = @"NXPowerLidDidChangeNotification";
+
+static NSTimer   *monitorTimer;
+static GMainLoop *glib_mainloop;
+static NXPower   *power;
+
 @implementation NXPower
+
+- (id)init
+{
+  power = self = [super init];
+  
+  return self;
+}
+
+- (void)dealloc
+{
+  if ([monitorTimer isValid])
+    {
+      [self stopEventsMonitor];
+    }
+
+  g_object_unref(upower_client);
+  
+  [super dealloc];
+}
 
 //-------------------------------------------------------------------------------
 // Battery
 //-------------------------------------------------------------------------------
-
 + (unsigned int)batteryLife
 {
   return 0;
@@ -62,22 +86,88 @@
 //-------------------------------------------------------------------------------
 + (BOOL)hasLid
 {
-  UpClient *upower_client = up_client_new();
-  BOOL     yn = up_client_get_lid_is_present(upower_client);
+  UpClient *up_client = up_client_new();
+  BOOL     yn = up_client_get_lid_is_present(up_client);
 
-  g_object_unref(upower_client);
+  g_object_unref(up_client);
     
   return yn;
 }
 
 + (BOOL)isLidClosed
 {
-  UpClient *upower_client = up_client_new();
-  BOOL     yn = up_client_get_lid_is_closed(upower_client);
+  UpClient *up_client = up_client_new();
+  BOOL     yn = up_client_get_lid_is_closed(up_client);
 
-  g_object_unref(upower_client);
+  g_object_unref(up_client);
     
   return yn;
+}
+
+- (BOOL)hasLid
+{
+  return up_client_get_lid_is_present(upower_client);
+}
+
+- (BOOL)isLidClosed
+{
+  return up_client_get_lid_is_closed(upower_client);
+}
+
+//-------------------------------------------------------------------------------
+// UPower D-Bus events
+//-------------------------------------------------------------------------------
+
+static void
+up_device_added_cb(UpClient *client, UpDevice *device, gpointer user_data)
+{
+  NSLog(@"NXPower: device %s added", up_device_to_text(device));
+}
+static void
+up_device_removed_cb(UpClient *client, UpDevice *device, gpointer user_data)
+{
+  NSLog(@"NXPower: device %s removed", up_device_to_text(device));
+}
+static void
+up_lid_closed_cb(UpClient *client, gpointer user_data)
+{
+  NSLog(@"NXPower: LidClosed property changed");
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:NXPowerLidDidChangeNotification
+                  object:power];
+}
+
+// Timer selector
+- (void)_glibRunLoopIterate
+{
+  g_main_context_iteration(g_main_loop_get_context(glib_mainloop), FALSE);
+}
+
+- (void)startEventsMonitor
+{
+  upower_client = up_client_new();
+
+  // Set events monitoring callbacks
+  g_signal_connect(upower_client, "device-added",
+                   G_CALLBACK(up_device_added_cb), NULL);
+  g_signal_connect(upower_client, "device-removed",
+                   G_CALLBACK(up_device_removed_cb), NULL);
+  g_signal_connect(upower_client, "notify::lid-is-closed",
+                   G_CALLBACK(up_lid_closed_cb), NULL);
+
+  glib_mainloop = g_main_loop_new(NULL, TRUE);
+  
+  monitorTimer = [NSTimer
+                   scheduledTimerWithTimeInterval:1.0
+                                           target:self
+                                         selector:@selector(_glibRunLoopIterate)
+                                         userInfo:nil
+                                          repeats:YES];
+}
+
+- (void)stopEventsMonitor
+{
+  [monitorTimer invalidate];
 }
 
 @end

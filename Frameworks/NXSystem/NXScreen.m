@@ -255,6 +255,7 @@ static id systemScreen = nil;
 - (void)dealloc
 {
   NSLog(@"NXScreen: dealloc");
+  
   XRRFreeScreenResources(screen_resources);
   
   XCloseDisplay(xDisplay);
