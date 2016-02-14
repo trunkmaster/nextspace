@@ -40,7 +40,11 @@
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSWindow.h>
 
+#import <AppKit/NSScreen.h>
+#import <AppKit/NSPanel.h>
+
 #import <NXSystem/NXDisplay.h>
+#import <NXSystem/NXPower.h>
 
 #import "Screen.h"
 
@@ -53,6 +57,8 @@ static NSMutableDictionary      *domain = nil;
 @synthesize dockImage;
 @synthesize appIconYardImage;
 @synthesize iconYardImage;  
+
+static NXPower *power = nil;
 
 - (id)init
 {
@@ -107,6 +113,15 @@ static NSMutableDictionary      *domain = nil;
        selector:@selector(screenDidChange:)
            name:NXScreenDidChangeNotification
          object:nil];
+
+  // Open/close lid events
+  power = [NXPower new];
+  [power startEventsMonitor];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(lidDidChange:)
+           name:NXPowerLidDidChangeNotification
+         object:power];
 }
 
 - (NSView *)view
@@ -145,8 +160,13 @@ static NSMutableDictionary      *domain = nil;
     }
 
   [setMainBtn setEnabled:(![sender isMain]&&[sender isActive])];
+  
   [setStateBtn setTitle:[sender isActive] ? @"Disable" : @"Enable"];
-  [setStateBtn setEnabled:YES];
+  if (![sender isActive] ||
+      [[[NXScreen sharedScreen] activeDisplays] count] > 1)
+    [setStateBtn setEnabled:YES];
+  else
+    [setStateBtn setEnabled:NO];
 }
 
 - (void)setMainDisplay:(id)sender
@@ -184,6 +204,36 @@ static NSMutableDictionary      *domain = nil;
   
   [setMainBtn setEnabled:NO];
   [setStateBtn setEnabled:NO];
+}
+
+- (void)lidDidChange:(NSNotification *)aNotif
+{
+  NXDisplay *builtinDisplay = nil;
+  NXDisplay *d;
+    
+  for (DisplayBox *db in displayBoxList)
+    {
+      d = [db display];
+      if ([d isBuiltin])
+        {
+          builtinDisplay = d;
+          break;
+        }
+    }
+  
+  if (d)
+    {
+      if (![[aNotif object] isLidClosed] && ![d isActive])
+        {
+          NSLog(@"Screen: activating display %@", [d outputName]);
+          [d activate];
+        }
+      else if ([[aNotif object] isLidClosed] && [d isActive])
+        {
+          NSLog(@"Screen: DEactivating display %@", [d outputName]);
+          [d deactivate];
+        }
+    }
 }
 
 - (void)updateDisplayBoxList
@@ -314,9 +364,11 @@ static NSMutableDictionary      *domain = nil;
           // Place inactive display at right from active
           dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
         }
-      dRect.origin.x += xOffset;
+      if ([dBox isActive] == YES || [displayBoxList indexOfObject:dBox] == 0)
+        {
+          dRect.origin.x += xOffset;
+        }
       dRect.origin.y += (yOffset - dRect.size.height);
-      NSLog(@"Display Box rec: %@", NSStringFromRect(dRect));
       [dBox setFrame:dRect];
     }
 }

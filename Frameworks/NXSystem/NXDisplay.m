@@ -237,10 +237,7 @@
 {
   return outputName;
 }
-- (RROutput)randrOutput
-{
-  return output_id;
-}
+
 - (NSSize)physicalSize
 {
   return physicalSize;
@@ -422,8 +419,6 @@
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
-
-  // [screen randrUpdateScreenResources];
 }
 
 //------------------------------------------------------------------------------
@@ -459,11 +454,19 @@
 {
   NSDictionary *res;
 
-  res = [NSDictionary dictionaryWithObjectsAndKeys:
-                      NSStringFromSize(frame.size),	NXDisplaySizeKey,
-                      [NSNumber numberWithFloat:rate],	NXDisplayRateKey,
-                      nil];
-  [self setResolution:res origin:frame.origin];
+  if (frame.size.width > 0 && frame.size.height > 0)
+    {
+      res = [NSDictionary dictionaryWithObjectsAndKeys:
+                            NSStringFromSize(frame.size),	NXDisplaySizeKey,
+                             [NSNumber numberWithFloat:rate],	NXDisplayRateKey,
+                          nil];
+    }
+  else
+    {
+      res = [self bestResolution];
+    }
+  // [self setResolution:res origin:frame.origin];
+  [screen setDisplay:self resolution:res origin:frame.origin];
   isActive = YES;
 }
 

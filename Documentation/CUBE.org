@@ -674,13 +674,16 @@
      должно ловить одно приложение (Login или WorkspaceManager). Каждое
      приложение это делает самостоятельно и шлет NSNotification через
      NXDistributedNotificationCenter.
-***** TODO Workspace: размещать Dock и IconYard на mainDisplay
+***** DONE Workspace: размещать Dock и IconYard на mainDisplay
 ****** DONE При изменении размеров размеров во время работы
        Сделал в Workspace+WindowMaker.m (XWUpdateScreenInfo()).
-****** TODO При старте Workspace (WindowMaker)
-***** TODO Login: перемещать окно на mainDisplay посередине
-****** TODO При старте
-****** TODO После старта (нужен EeventLoop), в активном режиме
+****** DONE При старте Workspace (WindowMaker)
+       Частично сделано. Но Dock сначала появляется справа, и только потом,
+       перемещеается на primary display. Переместил в Workspace.
+***** DONE Login: перемещать окно на mainDisplay посередине
+****** DONE При старте
+****** DONE После старта (нужен EeventLoop), в активном режиме
+       Добавил задачу к Login. Помечаю здесь как выполненное.
 ***** TODO Подключение нового монитора на лету
       Оставлять конфигурацию подключенных мониторов и применять дефолтные
       настройки для новых мониторов.
@@ -1491,6 +1494,7 @@
       
       То же с Dock только проще - иконка уже есть и ее можно вычислить из
       информации о Dock.
+****** TODO При старте размещать Dock и Icon Yard на primary display
 ****** TODO Workspace: перелетание иконки из Workspace в Dock
        Пока только для приложений GNUstep.
        Видятся следущие шаги:
@@ -2553,6 +2557,7 @@
 *** TODO Настройки GNUstep и WindowMaker
     Нужно думать как организовать работу так, чтобы ничего не забыть.
 *** TODO Старт без без появления меню
+
 
 ** 4. Terminal
 *** TODO 1.0
