@@ -56,9 +56,9 @@ typedef struct _NXGammaValue NXGammaValue;
   Connection     	connectionState;	// RandR connection state
   NSMutableArray 	*resolutions;		// width, height, rate
   
-  NSRect   		frame;	// logical rect of monitor
-  CGFloat  		rate;	// refresh rate for resolution (75.0)
-  CGFloat  		dpiValue;	// calculated DPI
+  NSRect   		frame;			// logical rect of monitor
+  CGFloat  		rate;			// refresh rate (75.0)
+  CGFloat  		dpiValue;		// calculated DPI
 
   NXGammaValue		gammaValue;
   CGFloat		gammaBrightness;
@@ -76,26 +76,39 @@ typedef struct _NXGammaValue NXGammaValue;
 
 - (NSString *)outputName; // LVDS, VGA, DVI, HDMI
 - (NSSize)physicalSize;   // in milimetres
+- (CGFloat)dpi;           // calculated from frame and phys. size
+- (BOOL)isBuiltin;        // decision base on outputName
 
+//------------------------------------------------------------------------------
+//--- Resolution and refresh rate
+//------------------------------------------------------------------------------
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
 - (NSDictionary *)bestResolution;
 - (NSDictionary *)resolution;   // Current resolution of monitor
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution;
-
 - (CGFloat)refreshRate;         // Monitor refresh rate for resolution
-- (CGFloat)dpi;
-- (NSRect)frame; // Contains resolution NSSize and position NSPoint
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin;
 
+//------------------------------------------------------------------------------
+//--- Monitor attributes cache
+//------------------------------------------------------------------------------
+- (NSRect)frame;                   // cache resolution and origin
+- (void)setFrame:(NSRect)newFrame; // update cache (won't change monitor)
+
+//------------------------------------------------------------------------------
+//--- Monitor state
+//------------------------------------------------------------------------------
 - (BOOL)isConnected;      // output has connected monitor
 - (BOOL)isActive;         // is online and visible
 - (void)deactivate;
 - (void)activate;
-
 - (BOOL)isMain;
 - (void)setMain:(BOOL)yn;
 
+//------------------------------------------------------------------------------
+//--- Gamma correction, brightness
+//------------------------------------------------------------------------------
 - (void)_getGamma;
 - (BOOL)isGammaSupported;
 
@@ -123,13 +136,14 @@ typedef struct _NXGammaValue NXGammaValue;
       interval:(CGFloat)seconds     // in seconds, mininmum 0.1
     brightness:(CGFloat)brightness; // original brightness
 
+//------------------------------------------------------------------------------
+//--- Display properties
+//------------------------------------------------------------------------------
 - (void)parseProperties;
 - (NSDictionary *)properties;
 - (id)uniqueID;
-- (BOOL)isBuiltin;
 
 // - (NSString *)model;    // EDID
-// - (CGFloat)brightness;  // EDID (if supported)
 // - (CGFloat)gamma;       // EDID
 // - (NSArray *)rotations; // XRRRotations
 
