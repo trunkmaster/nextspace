@@ -162,11 +162,17 @@ static NXPower *power = nil;
   [setMainBtn setEnabled:(![sender isMain]&&[sender isActive])];
   
   [setStateBtn setTitle:[sender isActive] ? @"Disable" : @"Enable"];
-  if (![sender isActive] ||
-      [[[NXScreen sharedScreen] activeDisplays] count] > 1)
-    [setStateBtn setEnabled:YES];
+  
+  if (([sender isActive] &&
+       [[[NXScreen sharedScreen] activeDisplays] count] > 1) ||
+      (![sender isActive] && ![NXPower isLidClosed]))
+    {
+      [setStateBtn setEnabled:YES];
+    }
   else
-    [setStateBtn setEnabled:NO];
+    {
+      [setStateBtn setEnabled:NO];
+    }  
 }
 
 - (void)setMainDisplay:(id)sender
@@ -359,9 +365,6 @@ static NXPower *power = nil;
   selectedBox = nil;
   [[NXScreen sharedScreen] randrUpdateScreenResources];
   [self updateDisplayBoxList];
-  
-  [setMainBtn setEnabled:NO];
-  [setStateBtn setEnabled:NO];
 }
 
 - (void)lidDidChange:(NSNotification *)aNotif
@@ -393,7 +396,6 @@ static NXPower *power = nil;
         }
     }
 }
-
 
 @end
 
