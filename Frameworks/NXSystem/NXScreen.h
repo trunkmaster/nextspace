@@ -118,6 +118,8 @@
 - (NSArray *)currentLayout;
 - (BOOL)validateLayout:(NSArray *)layout;
 - (BOOL)applyDisplayLayout:(NSArray *)layout;
+- (NSArray *)arrangeDisplaysHorizontally;
+
 - (void)setDisplay:(NXDisplay *)display
         resolution:(NSDictionary *)resolution
             origin:(NSPoint)origin;

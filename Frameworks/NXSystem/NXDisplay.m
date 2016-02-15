@@ -243,11 +243,34 @@
   return physicalSize;
 }
 
+- (CGFloat)dpi
+{
+  return (25.4 * frame.size.height) / physicalSize.height;
+}
+
+// Names are coming from kernel video and drm drivers:
+//   eDP - Embedded DisplayPort
+//   LVDS - Low-Voltage Differential Signaling
+// If returns YES monitor will be deactivated on LID close.
+- (BOOL)isBuiltin
+{
+  if (!outputName)
+    return NO;
+  
+  if (([outputName rangeOfString:@"LVDS"].location != NSNotFound))
+    return YES;
+  
+  if (([outputName rangeOfString:@"eDP"].location != NSNotFound))
+    return YES;
+
+  return NO;
+}
+
 //------------------------------------------------------------------------------
-//--- Resolution, position and refresh rate
+//--- Resolution and refresh rate
 // resolution - NSDictionary with: Size = {width, height}, Rate = rate in Hz
-// mode - XRandR RRMode structure
-// modeInfo - XRandR XRRModeInfo structure
+// mode       - XRandR RRMode structure
+// modeInfo   - XRandR XRRModeInfo structure
 //------------------------------------------------------------------------------
 - (NSArray *)allResolutions
 {
@@ -286,7 +309,7 @@
   return mode;
 }
 
-// If resolution set is not in list of supported by monitor - returns 'nil'.
+// Returns resolution which equals visible frame dimensions and saved rate value.
 - (NSDictionary *)resolution // {Size=; Rate=}
 {
   NSDictionary *res = nil;
@@ -320,16 +343,6 @@
 {
   return rate;
 }
-
-- (NSRect)frame
-{
-  return frame;
-}
-
-- (CGFloat)dpi
-{
-  return (25.4 * frame.size.height) / physicalSize.height;
-} 
 
 // Sets resolution without changing layout of displays.
 // If you want to relayout displays with new resolution use
@@ -417,6 +430,26 @@
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
+}
+
+//------------------------------------------------------------------------------
+//--- Monitor attributes cache
+// Won't change real mode of monitor or placement in layout.
+// When display is deactivated resolution and origin values are set to 0.
+// After that NXScreen update list of NXDisplays (with zeroed resolution and
+// origin). So on activation we can get resolution from [self bestResolution]
+// but we have no idea where activated display should be place to.
+// In fact, we may cache only origin values but, for consitency, also cache
+// resoltion dimensions.
+//------------------------------------------------------------------------------
+- (NSRect)frame
+{
+  return frame;
+}
+
+- (void)setFrame:(NSRect)newFrame
+{
+  frame = newFrame;
 }
 
 //------------------------------------------------------------------------------
@@ -1065,24 +1098,6 @@ property_value(Display *dpy,
     }
   
   return displayID;
-}
-
-// Names are coming from kernel video and drm drivers:
-//   eDP - Embedded DisplayPort
-//   LVDS - Low-Voltage Differential Signaling
-// If returns YES monitor will be deactivated on LID close.
-- (BOOL)isBuiltin
-{
-  if (!outputName)
-    return NO;
-  
-  if (([outputName rangeOfString:@"LVDS"].location != NSNotFound))
-    return YES;
-  
-  if (([outputName rangeOfString:@"eDP"].location != NSNotFound))
-    return YES;
-
-  return NO;
 }
 
 @end

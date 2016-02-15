@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Feb 15 03:10:59 2016
+;; Created Mon Feb 15 17:49:03 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,7 +22,7 @@
   "Workspace+WindowMaker.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  23155
+  23741
   '(4314 nil)
   nil
   nil

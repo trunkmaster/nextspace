@@ -769,6 +769,55 @@ static id systemScreen = nil;
   return YES;
 }
 
+// Returns changed layout description.
+// Set update frame cache for inactive displays, change origin for active ones.
+// Doesn't touch displays with origins other than (0,0)
+- (NSArray *)arrangeDisplaysHorizontally
+{
+  NSSize  sSize, brSize;
+  NSRect  newRect;
+  NSPoint dOrigin;
+
+  for (NXDisplay *d in [self connectedDisplays])
+    {
+      sSize = NSMakeSize(0,0);
+      newRect = NSMakeRect(0,0,0,0);
+      dOrigin = [d frame].origin;
+      if (dOrigin.x == 0 && dOrigin.y == 0)
+        {
+          if (![d isActive])
+            {
+              dOrigin.x = sSize.width;
+          
+              brSize = NSSizeFromString([[d bestResolution]
+                                          objectForKey:NXDisplaySizeKey]);
+              newRect.origin = dOrigin;
+              newRect.size = brSize;
+          
+              [d setFrame:newRect];
+          
+              sSize.width += brSize.width;
+            }
+          else if ([[self connectedDisplays] indexOfObject:d] > 0)
+            {
+              dOrigin.x = sSize.width;
+              [d setResolution:[d resolution] origin:dOrigin];
+              
+              sSize.width += [d frame].size.width;
+            }
+          else 
+            {
+              // active display at first place in list - should be called once
+              // just initialize screen width which later will be used to place
+              // other displays
+              sSize.width += [d frame].size.width;
+            }
+        }
+    }
+
+  return [self currentLayout];
+}
+
 // TODO: check if resolution is supported by monitor.
 - (void)setDisplay:(NXDisplay *)display
         resolution:(NSDictionary *)resolution
