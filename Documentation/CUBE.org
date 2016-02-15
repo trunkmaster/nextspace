@@ -1,4 +1,5 @@
 * NEXTSPACE
+
 ** Что нужно для релиза
    - [ ] Старт ОС с отображением прогресса загрузки (с сообщениями)
    - [ ] Запуск Xorg с обнаруженными/сконфигурированными мониторами
@@ -90,6 +91,8 @@
    3. Application-Preferences-Display
    4. Applications-Worksapce-Реакция на изменение настроек дисплеев
 
+
+** Use cases
 
 * Linux - CentOS 7
 
@@ -684,19 +687,47 @@
 ****** DONE При старте
 ****** DONE После старта (нужен EeventLoop), в активном режиме
        Добавил задачу к Login. Помечаю здесь как выполненное.
-***** TODO Подключение нового монитора на лету
-      Оставлять конфигурацию подключенных мониторов и применять дефолтные
-      настройки для новых мониторов.
-      Что делать с Layout?
-      На какое место ставить найденный монитор - слева направо.
-***** TODO Open/close laptop lid
-**** TODO Установка Backlight (если монитор поддерживает)
-     Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
-     сделать паузу для NXSystem/NXScreen.
-**** TODO Background color of desktop
-**** TODO NXDisplay: rotation & reflection
+***** DONE Open/close laptop lid
+      Задача перенесена в NXPower и реализована.
+***** TODO Подключение монитора на лету
+      Q:Как ловить подключение нового монитора?
+      A:На подключение/отключение генерируется XRRScrenChangeNotify.
+        Конфигурация экрана XRandR перечитывается.
+        Применяется сохраненный layout.
+
+      Q:Как поступать при подключении монитора к ноутбуку?
+      A:На момент подключения, могут быть такие ситуации:
+        1. Ноутбук закрыт, внутренний экран активен, основной.
+           Реакция: активировать внешний, сделать его активным и основным;
+           внутренний деактивировать; fadeOut/fadeIn только для внешнего.
+        2. Ноутбук открыт, внутренний экран активен, основной.
+           Реакция: активировать внешний, поставить его справа от
+           внутреннего; fadeOut/fadeIn только для внешнего монитора.
+
+***** TODO Отключение монитора на лету
+      Q:Как ловить отключение нового монитора?
+      A:На подключение/отключение генерируется XRRScrenChangeNotify.
+        Конфигурация экрана XRandR перечитывается.
+
+      Q:Как поступать при отключении монитора?
+      A:На момент подключения, могут быть такие ситуации:
+        1. Ноутбук закрыт, внутренний экран неактивен.
+           Реакция: 
+        2. Ноутбук открыт, внутренний экран активен, основной.
+           Реакция: 
+
+**** TODO Иногда display включается с gammaBrightness=0
+     Нужно найти такой кейс и решить этот вопрос.
+     Это даосаточно важный момент, поскольку можно оказаться с темным экраном
+     и без возможности изменить яркость = перезагрузка.
+**** TODO Fade in/Fade out
+***** TODO Использовать в нужных местах
+      Нужно пройтись по коду и проверить/добавить/убрать где было бы
+      целесообразно использовать этот эффект. Сейчас он где-то в одном месте
+      включен, но где - нужно найти.
+***** TODO fadIn/fadeOut по времени
 **** TODO NXDisplay: заменить Dimensions и Origin на Frame
-**** TODO fadIn/fadeOut по времени
+**** TODO NXDisplay: rotation & reflection
 **** TODO Управление конфигурациями и взаимодествием видеоадаптеров
      На текущий момент NVIDIA Optimus не работает заявленным способом.
      Единственный работающий вариант: Bumblebee (запуск отдельного X-сервера с
@@ -705,7 +736,12 @@
      Bumblebee, чтобы легко можно было бы использовать утилиту 'optirun' или
      'primusrun'.
 *** TODO [#B] NXPower
-**** TODO State of the LID (open/closed)
+**** DONE State of the LID (open/closed)
+***** DONE Методы получения статус и наличие Lid
+***** DONE Событие открытия/закрытия крышки
+      DONE! Отправляется notification в NSNotificationCenter.
+      Приложение, которое хочет получать такой notification, должно запустить
+      процесс мониторинга через вызов [NXPower startEventsMonitoring].
 **** TODO Power state (battery/AC)
 **** TODO Battery information
 **** TODO Shutdown/Restart
@@ -735,7 +771,7 @@
     Посмотреть в WindowMaker.
 *** TODO [#C] NXSound - volume/bass/treble/balance, device information
 *** TODO [#C] NXNetwork - hostname, interfaces, routes, user initiated up/down, WiFi
-*** TODO [#B] NXDeviceManager
+*** TODO [?] NXDeviceManager
     Register added/removed system devices (storage, monitor, mouse, keyboard,
     bluetooth).
     Большинство вложенных классов нужны для конфигурирования в
@@ -746,7 +782,7 @@
      - udev/UDisks/UPower/NetworkManager (Linux)
      - devd (FreeBSD)
      - hal (FreeBSD, Linux)
-*** TODO [#C] NXAuth - user authentification, user/groups management
+*** TODO [?] NXAuth - user authentification, user/groups management
 
 
 * Applications
@@ -2529,6 +2565,10 @@
       Notify не генерируется.
 ***** DONE В VirtualBox двигание слайдеров = залипание/падение
       В текущей версии - все нормально. Возможно какие-то изменения в ядре? ХЗ.
+***** TODO Установка Backlight (если монитор поддерживает)
+      Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
+      сделать паузу для NXSystem/NXScreen.
+***** TODO Background color of desktop
 ***** TODO Отложенное сохранение настроек для gamma и brightness
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
       Не нашел возможности простого получения текущего цвета окна X11.

@@ -366,8 +366,6 @@
       crtc_info->rotation = RR_Rotate_0;
       crtc_info->outputs[0] = output_id;
       crtc_info->noutput = 1;
-      // origin.x = frame.origin.x;
-      // origin.y = frame.origin.y;
     }
   else
     {
@@ -440,34 +438,43 @@
 - (void)deactivate
 {
   NSDictionary *res;
+  CGFloat      gBrightness;
   
   res = [NSDictionary dictionaryWithObjectsAndKeys:
                       NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
                       [NSNumber numberWithFloat:0.0],    NXDisplayRateKey,
                       nil];
+  
+  gBrightness = gammaBrightness;
   [self fadeToBlack:gammaBrightness];
-  isActive = NO;
-  [self setResolution:res origin:NSMakePoint(0,0)];
+  [self setResolution:res origin:frame.origin];
+  [self setGammaBrightness:gBrightness];
+  
+  isActive = NO;  
 }
 
 - (void)activate
 {
   NSDictionary *res;
+  CGFloat      gBrightness;
 
   if (frame.size.width > 0 && frame.size.height > 0)
     {
       res = [NSDictionary dictionaryWithObjectsAndKeys:
-                            NSStringFromSize(frame.size),	NXDisplaySizeKey,
-                             [NSNumber numberWithFloat:rate],	NXDisplayRateKey,
+                            NSStringFromSize(frame.size),NXDisplaySizeKey,
+                             [NSNumber numberWithFloat:rate],NXDisplayRateKey,
                           nil];
     }
   else
     {
       res = [self bestResolution];
     }
-  // [self setResolution:res origin:frame.origin];
-  [screen setDisplay:self resolution:res origin:frame.origin];
+
+  gBrightness = gammaBrightness;
   isActive = YES;
+  [self setGammaBrightness:0.0];
+  [self setResolution:res origin:frame.origin];
+  [self fadeToNormal:gBrightness];
 }
 
 - (BOOL)isMain
