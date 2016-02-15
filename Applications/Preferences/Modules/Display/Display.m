@@ -354,6 +354,7 @@ static NXDisplay           *selectedDisplay = nil;
   [[NXScreen sharedScreen] randrUpdateScreenResources];
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
+  
   [self saveDisplayPreferences];
 }
 

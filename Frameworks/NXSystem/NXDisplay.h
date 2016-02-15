@@ -51,22 +51,22 @@ typedef struct _NXGammaValue NXGammaValue;
   XRRScreenResources	*screen_resources;
   RROutput		output_id;
 
-  NSString       *outputName;		// name of Xrandr output (VGA)
-  NSSize         physicalSize;		// physical size in milimeters
-  Connection     connectionState;	// RandR connection state
-  NSMutableArray *resolutions;		// width, height, rate
+  NSString       	*outputName;		// name of Xrandr output (VGA)
+  NSSize         	physicalSize;		// physical size in milimeters
+  Connection     	connectionState;	// RandR connection state
+  NSMutableArray 	*resolutions;		// width, height, rate
   
-  NSRect   frame;			// logical rect of monitor
-  CGFloat  rate;			// refresh rate for resolution (75.0)
-  CGFloat  dpiValue;			// calculated DPI
+  NSRect   		frame;	// logical rect of monitor
+  CGFloat  		rate;	// refresh rate for resolution (75.0)
+  CGFloat  		dpiValue;	// calculated DPI
 
-  NXGammaValue gammaValue;
-  CGFloat      gammaBrightness;
+  NXGammaValue		gammaValue;
+  CGFloat		gammaBrightness;
 
-  NSMutableDictionary *properties;
+  NSMutableDictionary	*properties;
   
-  BOOL        isMain;
-  BOOL        isActive;
+  BOOL			isMain;
+  BOOL			isActive;
 }
 
 - (id)initWithOutputInfo:(RROutput)output

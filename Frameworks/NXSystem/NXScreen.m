@@ -739,16 +739,10 @@ static id systemScreen = nil;
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
       display = [self displayWithName:displayName];
       
-      // if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
-      //       isEqualToString:@"NO"])
-      //   {
-      //     [display deactivate];
-      //   }
-      // else
       if (![display isBuiltin] || ![NXPower isLidClosed])
         {
           // If initial brightness is 0.0 fadeIn/Out processed in application.
-          brightness = [display gammaBrightness];
+          // brightness = [display gammaBrightness];
 
           // Off
           // if (brightness > 0.0)

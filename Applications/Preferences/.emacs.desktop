@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun Feb 14 04:21:53 2016
+;; Created Mon Feb 15 03:10:46 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,11 +22,22 @@
   "Screen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  5568
-  '(5579 nil)
+  4727
+  '(15874 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
+  "Display.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  4155
+  '(4121 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile.preamble"
@@ -60,17 +71,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
-  "Display.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  8098
-  '(9021 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"

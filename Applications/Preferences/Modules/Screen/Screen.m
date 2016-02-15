@@ -179,12 +179,13 @@ static NXPower *power = nil;
 - (void)setDisplayState:(id)sender
 {
   if ([[sender title] isEqualToString:@"Disable"])
-    [selectedBox setActive:NO];
+    {
+      [[selectedBox display] deactivate];
+    }
   else
-    [selectedBox setActive:YES];
-
-  [self displayBoxClicked:selectedBox];
-  [canvas setNeedsDisplay:YES];
+    {
+      [[selectedBox display] activate];
+    }
 }
 
 - (void)arrangeDisplays:(id)sender
@@ -196,44 +197,20 @@ static NXPower *power = nil;
 // Helper methods
 //
 
-- (void)screenDidChange:(NSNotification *)aNotif
+- (void)selectFirstEnabledMonitor
 {
-  selectedBox = nil;
-  [[NXScreen sharedScreen] randrUpdateScreenResources];
-  [self updateDisplayBoxList];
+  DisplayBox *db = nil;
   
-  [setMainBtn setEnabled:NO];
-  [setStateBtn setEnabled:NO];
-}
-
-- (void)lidDidChange:(NSNotification *)aNotif
-{
-  NXDisplay *builtinDisplay = nil;
-  NXDisplay *d;
-    
-  for (DisplayBox *db in displayBoxList)
+  for (db in displayBoxList)
     {
-      d = [db display];
-      if ([d isBuiltin])
+      if ([[db display] isActive])
         {
-          builtinDisplay = d;
+          [db setSelected:YES];
           break;
         }
     }
-  
-  if (d)
-    {
-      if (![[aNotif object] isLidClosed] && ![d isActive])
-        {
-          NSLog(@"Screen: activating display %@", [d outputName]);
-          [d activate];
-        }
-      else if ([[aNotif object] isLidClosed] && [d isActive])
-        {
-          NSLog(@"Screen: DEactivating display %@", [d outputName]);
-          [d deactivate];
-        }
-    }
+
+  [self displayBoxClicked:db];
 }
 
 - (void)updateDisplayBoxList
@@ -308,6 +285,7 @@ static NXPower *power = nil;
     }
 
   [self arrangeDisplayBoxes];
+  [self selectFirstEnabledMonitor];
 }
 
 // edge: NSMinXEdge, NSMaxXEdge, NSMinYEdge, NSMaxYEdge
@@ -372,6 +350,50 @@ static NXPower *power = nil;
       [dBox setFrame:dRect];
     }
 }
+
+//
+// Notifications
+//
+- (void)screenDidChange:(NSNotification *)aNotif
+{
+  selectedBox = nil;
+  [[NXScreen sharedScreen] randrUpdateScreenResources];
+  [self updateDisplayBoxList];
+  
+  [setMainBtn setEnabled:NO];
+  [setStateBtn setEnabled:NO];
+}
+
+- (void)lidDidChange:(NSNotification *)aNotif
+{
+  NXDisplay *builtinDisplay = nil;
+  NXDisplay *d;
+    
+  for (DisplayBox *db in displayBoxList)
+    {
+      d = [db display];
+      if ([d isBuiltin])
+        {
+          builtinDisplay = d;
+          break;
+        }
+    }
+  
+  if (d)
+    {
+      if (![[aNotif object] isLidClosed] && ![d isActive])
+        {
+          NSLog(@"Screen: activating display %@", [d outputName]);
+          [d activate];
+        }
+      else if ([[aNotif object] isLidClosed] && [d isActive])
+        {
+          NSLog(@"Screen: DEactivating display %@", [d outputName]);
+          [d deactivate];
+        }
+    }
+}
+
 
 @end
 
