@@ -291,15 +291,12 @@ static id systemScreen = nil;
 
   // Update display information local cache.
   // [self _refreshDisplaysInfo];
-  NXDisplay *display;
+  NXDisplay      *display;
+  NSMutableArray *new_systemDisplays;
 
   NSLog(@"NXScreen: refresh information about displays.");
 
-  if (systemDisplays)
-    {
-      [systemDisplays release];
-    }
-  systemDisplays = [[NSMutableArray alloc] init];
+  new_systemDisplays = [[NSMutableArray alloc] init];
 
   for (int i=0; i < screen_resources->noutput; i++)
     {
@@ -308,16 +305,28 @@ static id systemScreen = nil;
                      screenResources:screen_resources
                               screen:self
                             xDisplay:xDisplay];
+
+      // Set hiddenFrame for inactive displays
+      if (![display isActive] && systemDisplays)
+        {
+          NSRect hfRect;
+          hfRect = [[self displayWithID:[display uniqueID]] hiddenFrame];
+          [display setHiddenFrame:hfRect];
+        }
       
-      [systemDisplays addObject:display];
+      [new_systemDisplays addObject:display];
       [display release];
     }
+
+  if (systemDisplays)
+    {
+      [systemDisplays release];
+    }
+  systemDisplays = new_systemDisplays;
   
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
   sizeInMilimeters = [self _sizeInMilimeters];
-
-  // [self arrangeDisplaysHorizontally];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -514,6 +523,44 @@ static id systemScreen = nil;
   return nil;
 }
 
+- (void)activateDisplay:(NXDisplay *)display
+{// At start frame, resolution are zeroed.
+  NSDictionary *resolution = [display bestResolution];
+
+  [self setDisplay:display
+        resolution:resolution
+            origin:[display hiddenFrame].origin];
+}
+
+- (void)deactivateDisplay:(NXDisplay *)display
+{
+  NSString      *displayName = [display outputName];
+  NSRect        dRect = [display frame];
+  NSDictionary *newLayout;
+  NSDictionary *resolution;
+  
+  [display setHiddenFrame:dRect];
+  dRect.origin.x = dRect.origin.y = dRect.size.width = dRect.size.height = 0;
+
+  resolution = [NSDictionary dictionaryWithObjectsAndKeys:
+                               NSStringFromSize(NSMakeSize(0,0)),
+                             NXDisplaySizeKey,
+                                [NSNumber numberWithFloat:0.0],
+                             NXDisplayRateKey,
+                             nil];
+  [self setDisplay:display
+        resolution:resolution
+            origin:dRect.origin];
+
+  // Prepare new layout taking into account frame and hiddenFrame.
+  // Major focus is on frame.origin of all active displays.
+  // newLayout = [self arrangeDisplays];
+
+  // As a result XRRScreenChangeNotify will be generated and
+  // [NXScreen randrUpdateScreenResources] should be called to update info
+  // about displays
+  // [self applyDisplayLayout:newLayout];
+}
 //------------------------------------------------------------------------------
 // Layouts
 //------------------------------------------------------------------------------
@@ -779,59 +826,46 @@ static id systemScreen = nil;
 
 // Returns changed layout description.
 // Set update frame cache for inactive displays, change origin for active ones.
-// Doesn't touch displays with origins other than (0,0)
-- (NSArray *)arrangeDisplaysHorizontally
-{
-  NSSize  sSize = NSMakeSize(0,0), brSize;
-  NSRect  newRect;
-  NSPoint dOrigin;
+// - (NSArray *)arrangeDisplays
+// {
+//   NSMutableArray *newLayout = [[self currentLayout] mutableCopy];
+//   CGFloat        xShift, xShift;
+//   NSSize  sSize = NSMakeSize(0,0), brSize;
+//   NSRect  dRect, ldRect;
+//   NSPoint origin = NSMakePoint(10000,10000), dOrigin;
 
-  for (NXDisplay *d in [self connectedDisplays])
-    {
-      newRect = NSMakeRect(0,0,0,0);
-      dOrigin = [d frame].origin;
-      if (dOrigin.x == 0 && dOrigin.y == 0)
-        {
-          if (![d isActive])
-            {
-              dOrigin.x = sSize.width;
-          
-              brSize = NSSizeFromString([[d bestResolution]
-                                          objectForKey:NXDisplaySizeKey]);
-              newRect.origin = dOrigin;
-              newRect.size = brSize;
-          
-              [d setFrame:newRect];
-          
-              sSize.width += brSize.width;
-            }
-          else if ([[self connectedDisplays] indexOfObject:d] > 0)
-            {
-              dOrigin.x = sSize.width;
-              // [d setResolution:[d resolution] origin:dOrigin];
-
-              brSize = NSSizeFromString([[d bestResolution]
-                                          objectForKey:NXDisplaySizeKey]);
-              newRect.origin = dOrigin;
-              newRect.size = brSize;
-              [d setFrame:newRect];
+//   // 1. Find active display with origin closest to {0,0}.
+//   // 2. Calculate shifts.
+//   // 3. Change origins of active displays with calculated shifts.
+//   // 4. Return changed layout.
+//   for (NXDisplay *d in [self connectedDisplays])
+//     {
+//       if ([d isActive])
+//         {
+//           dRect = [d frame];
+//           if (dRect.origin.x = 0 && dRect.origin.y == 0)
+//             continue; // OK - do nothing
+//           if (dRect.origin.x > 0)
+//             { // Find monitor at left
+//               NXDisplay *prevDisplay;
               
-              sSize.width += [d frame].size.width;
-            }
-          else 
-            {
-              // active display at first place in list - should be called once
-              // just initialize screen width which later will be used to place
-              // other displays
-              sSize.width += [d frame].size.width;
-            }
-        }
-    }
-
-  [[self currentLayout] writeToFile:@"DisplayArragnged.config" atomically:YES];
+//               dOrigin = dRect.origin;
+//               dOrigin.x -= 1;
+//               prevDisplay = [self displayAtPoint:dOrigin];
+              
+//               if (!prevDisplay || ![prevDisplay isActive])
+//                 { // shift
+//                   ldRect = [prevDisplay frame];
+//                   dRect.origin.x = ldRect.origin.x;
+//                 }
+//             }
+//         }
+//     }
   
-  return [self currentLayout];
-}
+//   [[self currentLayout] writeToFile:@"DisplayArragnged.config" atomically:YES];
+  
+//   return [self currentLayout];
+// }
 
 // TODO: check if resolution is supported by monitor.
 - (void)setDisplay:(NXDisplay *)display
