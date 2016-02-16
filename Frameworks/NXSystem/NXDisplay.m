@@ -278,7 +278,8 @@
 }
 
 // Select largest resolution supported by monitor
-- (NSDictionary *)bestResolution
+// UNUSED
+- (NSDictionary *)largestResolution
 {
   NSDictionary *mode=nil, *res;
   NSSize       resSize;
@@ -309,6 +310,12 @@
   return mode;
 }
 
+// First entry in list of supported resolutions
+- (NSDictionary *)bestResolution
+{
+  return [resolutions objectAtIndex:0];
+}
+
 // Returns resolution which equals visible frame dimensions and saved rate value.
 - (NSDictionary *)resolution // {Size=; Rate=}
 {
@@ -336,6 +343,13 @@
 
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution
 {
+  NSSize dSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
+
+  if (dSize.width == 0 && dSize.height == 0)
+    { // resolution 0x0 used for display deactivation - accept it
+      return YES;
+    }
+  
   return !([self _modeForResolution:resolution] == 0);
 }
 
@@ -456,6 +470,18 @@
   frame = newFrame;
 }
 
+// Hidden frame set for inactive display.
+// Should be used for correct placing of display on activation.
+- (NSRect)hiddenFrame
+{
+  return hiddenFrame;
+}
+
+- (void)setHiddenFrame:(NSRect)hFrame
+{
+  hiddenFrame = hFrame;
+}
+
 //------------------------------------------------------------------------------
 //--- Monitor state
 //------------------------------------------------------------------------------
@@ -472,6 +498,10 @@
   return isActive;
 }
 
+// Set resolution
+// 	[NXDisplay deactivate]
+// Update layout, update screen size.
+//	[NXScreen ranrdUpdateScreenResources]
 - (void)deactivate
 {
   NSDictionary *res;
@@ -484,13 +514,16 @@
   
   gBrightness = gammaBrightness;
   [self fadeToBlack:gammaBrightness];
-  // [self setResolution:res origin:frame.origin];
-  [screen setDisplay:self resolution:res origin:frame.origin];
+  [self setResolution:res origin:frame.origin];
   [self setGammaBrightness:gBrightness];
   
   isActive = NO;  
 }
 
+// Update layout, update screen size,
+// 	[NXScreen arrangeDisplays]
+// set resolution.
+// 	[NXDisplay activate]
 - (void)activate
 {
   NSDictionary *res;
@@ -514,8 +547,7 @@
   gBrightness = (gammaBrightness) ? gammaBrightness : 1.0;
   isActive = YES;
   [self setGammaBrightness:0.0];
-  // [self setResolution:res origin:frame.origin];
-  [screen setDisplay:self resolution:res origin:frame.origin];
+  [self setResolution:res origin:frame.origin];
   [self fadeToNormal:gBrightness];
 }
 

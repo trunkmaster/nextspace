@@ -186,11 +186,13 @@ static NXPower *power = nil;
 {
   if ([[sender title] isEqualToString:@"Disable"])
     {
-      [[selectedBox display] deactivate];
+      // [[selectedBox display] deactivate];
+      [[NXScreen sharedScreen] deactivateDisplay:[selectedBox display]];
     }
   else
     {
-      [[selectedBox display] activate];
+      // [[selectedBox display] activate];
+      [[NXScreen sharedScreen] activateDisplay:[selectedBox display]];
     }
 }
 

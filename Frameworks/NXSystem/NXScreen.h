@@ -114,11 +114,14 @@
 - (NXDisplay *)displayWithName:(NSString *)name;
 - (NXDisplay *)displayWithID:(id)uniqueID;
 
+- (void)activateDisplay:(NXDisplay *)display;
+- (void)deactivateDisplay:(NXDisplay *)display;
+
 - (NSArray *)defaultLayout:(BOOL)arrange;
 - (NSArray *)currentLayout;
 - (BOOL)validateLayout:(NSArray *)layout;
 - (BOOL)applyDisplayLayout:(NSArray *)layout;
-- (NSArray *)arrangeDisplaysHorizontally;
+// - (NSArray *)arrangeDisplaysHorizontally;
 
 - (void)setDisplay:(NXDisplay *)display
         resolution:(NSDictionary *)resolution

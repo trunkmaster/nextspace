@@ -57,6 +57,7 @@ typedef struct _NXGammaValue NXGammaValue;
   NSMutableArray 	*resolutions;		// width, height, rate
   
   NSRect   		frame;			// logical rect of monitor
+  NSRect   		hiddenFrame;		// for inactive monitor
   CGFloat  		rate;			// refresh rate (75.0)
   CGFloat  		dpiValue;		// calculated DPI
 
@@ -83,6 +84,7 @@ typedef struct _NXGammaValue NXGammaValue;
 //--- Resolution and refresh rate
 //------------------------------------------------------------------------------
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
+- (NSDictionary *)largestResolution;
 - (NSDictionary *)bestResolution;
 - (NSDictionary *)resolution;   // Current resolution of monitor
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution;
@@ -95,6 +97,8 @@ typedef struct _NXGammaValue NXGammaValue;
 //------------------------------------------------------------------------------
 - (NSRect)frame;                   // cache resolution and origin
 - (void)setFrame:(NSRect)newFrame; // update cache (won't change monitor)
+- (NSRect)hiddenFrame;
+- (void)setHiddenFrame:(NSRect)hFrame;
 
 //------------------------------------------------------------------------------
 //--- Monitor state

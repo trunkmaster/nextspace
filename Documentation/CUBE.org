@@ -721,13 +721,14 @@
       Q:Как поступать при отключении монитора?
       A:На момент подключения, могут быть такие ситуации:
         1. Ноутбук закрыт, внутренний экран неактивен.
-           Реакция: 
+           Реакция: заснуть.
         2. Ноутбук открыт, внутренний экран активен, основной.
-           Реакция: 
+           Реакция: ничего - конфигурация перечитать конфигурацию, пересчитать
+           параметры экрана, передвинуть внутренний экран если он был справа.
 
 **** TODO Иногда display включается с gammaBrightness=0
      Нужно найти такой кейс и решить этот вопрос.
-     Это даосаточно важный момент, поскольку можно оказаться с темным экраном
+     Это дастаточно важный момент, поскольку можно оказаться с темным экраном
      и без возможности изменить яркость = перезагрузка.
 **** TODO NXDisplay: Resolution, Origin и frame
      Кажется, что изменения должны быть концептульнее. Сейчас frame напрямую
@@ -758,6 +759,44 @@
         [NXScreen arrangeDisplaysHorizontally]
      4. Применить измененнный layout - [NXScreen applyDisplayLayout:newLayout]
      5. ? Записать layout в пользовательский конфиг
+
+     _Активирование/деактивирование_:
+
+     СЕЙЧАС:
+     - [NXDisplay deactivate];
+     - [NXDisplay setResolution:origin:];
+
+     - генерируется событие XRRScreenChangeNotify;
+     - [Preferences screenDidChange:];
+     - [NXScreen randrUpdateScreenResources];
+
+     НУЖНО:
+     + [NXScreen deactivateDisplay:(NXDisplay*)];
+       + сохраняет текущую 'frame' в 'hiddenFrame';
+       + обнуляет значения 'frame'.
+     - (NSArray*)[NXScreen arrangeDisplays];
+       - пересчитывает 'frame.origin' активных дисплеев со сдвигом влево;
+       - строит новый layout на основании 'frame' дисплеев;
+     + [NXScreen applyDisplayLayout:(NSArray*)];
+
+     + генерируются события XRRScreenChangeNotify;
+     + [Preferences screenDidChange:] (будет в Workspace);
+     + [NXScreen randrUpdateScreenResources];
+       + при обновлении переносит hiddenFrame для неактивных дисплеев.
+
+     _Концепция_
+     
+     Концептуально получается, что любые изменения в характеристиках
+     дисплеев, которые приводят (или могут привести) к изменению layout
+     должны выполняться под управлением (реализовано в) NXScreen.
+     Любые вызовы методов NXDisplay: activate, deactivate,
+     setResolution:origin: приводят к кривому layout. Например:
+     - activate - завершается неуспешно, потому, что RandR screen не может
+       вместить новый дисплей (за исключением случая, когда origin={0,0} и
+       активируемый дисплей меньше уже активного);
+     - deactivate - не обновляет размер RandR screen;
+     - setResolution:origin: - завершается неуспешно по той же причине, что и
+       activate.
         
 **** TODO Конфиг layout'ов
 ***** TODO Запись конфигов
