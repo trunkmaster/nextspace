@@ -184,7 +184,7 @@
       [resolutions addObject:res];
     }
 
-  //CRTC (may be 0 only if monitor is not connected to output port)
+  //CRTC = 0 if monitor is not connected to output port or deactivated
   if (output_info->crtc)
     {
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, output_info->crtc);
@@ -196,7 +196,7 @@
           // 1. Resolution of monitor: mode_info.width x mode_info.height
           // 2. Logical size of display: crtc_info->width x crtc_info->height
           // Now I'm sticking to mode_info because I can't imagine real life
-          // use case when logical size is bigger than resolution.
+          // use case when logical size need to be bigger than resolution.
           frame = NSMakeRect((CGFloat)crtc_info->x,
                              (CGFloat)crtc_info->y,
                              mode_info.width,
@@ -427,6 +427,10 @@
       rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
       isActive = YES;
     }
+  else
+    {
+      isActive = NO;
+    }
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
@@ -480,7 +484,8 @@
   
   gBrightness = gammaBrightness;
   [self fadeToBlack:gammaBrightness];
-  [self setResolution:res origin:frame.origin];
+  // [self setResolution:res origin:frame.origin];
+  [screen setDisplay:self resolution:res origin:frame.origin];
   [self setGammaBrightness:gBrightness];
   
   isActive = NO;  
@@ -503,10 +508,14 @@
       res = [self bestResolution];
     }
 
-  gBrightness = gammaBrightness;
+  frame.origin.x = [screen sizeInPixels].width;
+  frame.origin.y = 0;
+
+  gBrightness = (gammaBrightness) ? gammaBrightness : 1.0;
   isActive = YES;
   [self setGammaBrightness:0.0];
-  [self setResolution:res origin:frame.origin];
+  // [self setResolution:res origin:frame.origin];
+  [screen setDisplay:self resolution:res origin:frame.origin];
   [self fadeToNormal:gBrightness];
 }
 
