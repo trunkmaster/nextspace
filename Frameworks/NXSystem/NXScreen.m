@@ -316,6 +316,8 @@ static id systemScreen = nil;
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
   sizeInMilimeters = [self _sizeInMilimeters];
+
+  // [self arrangeDisplaysHorizontally];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -738,6 +740,12 @@ static id systemScreen = nil;
     {
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
       display = [self displayWithName:displayName];
+
+      if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
+            isEqualToString:@"NO"])
+        {
+          continue;
+        }
       
       if (![display isBuiltin] || ![NXPower isLidClosed])
         {
@@ -774,13 +782,12 @@ static id systemScreen = nil;
 // Doesn't touch displays with origins other than (0,0)
 - (NSArray *)arrangeDisplaysHorizontally
 {
-  NSSize  sSize, brSize;
+  NSSize  sSize = NSMakeSize(0,0), brSize;
   NSRect  newRect;
   NSPoint dOrigin;
 
   for (NXDisplay *d in [self connectedDisplays])
     {
-      sSize = NSMakeSize(0,0);
       newRect = NSMakeRect(0,0,0,0);
       dOrigin = [d frame].origin;
       if (dOrigin.x == 0 && dOrigin.y == 0)
@@ -801,7 +808,13 @@ static id systemScreen = nil;
           else if ([[self connectedDisplays] indexOfObject:d] > 0)
             {
               dOrigin.x = sSize.width;
-              [d setResolution:[d resolution] origin:dOrigin];
+              // [d setResolution:[d resolution] origin:dOrigin];
+
+              brSize = NSSizeFromString([[d bestResolution]
+                                          objectForKey:NXDisplaySizeKey]);
+              newRect.origin = dOrigin;
+              newRect.size = brSize;
+              [d setFrame:newRect];
               
               sSize.width += [d frame].size.width;
             }
@@ -815,6 +828,8 @@ static id systemScreen = nil;
         }
     }
 
+  [[self currentLayout] writeToFile:@"DisplayArragnged.config" atomically:YES];
+  
   return [self currentLayout];
 }
 
