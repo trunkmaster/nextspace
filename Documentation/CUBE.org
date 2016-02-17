@@ -770,7 +770,7 @@
      - [Preferences screenDidChange:];
      - [NXScreen randrUpdateScreenResources];
 
-     НУЖНО:
+     НУЖНО, deactivate:
      + [NXScreen deactivateDisplay:(NXDisplay*)];
        + сохраняет текущую 'frame' в 'hiddenFrame';
        + обнуляет значения 'frame'.
@@ -797,6 +797,14 @@
      - deactivate - не обновляет размер RandR screen;
      - setResolution:origin: - завершается неуспешно по той же причине, что и
        activate.
+
+     	_NXScreenLayout_
+       
+       Наверное нужнен класс, которы позволит удобно манипулировать содрежимым
+       layout. Очевидно, нужно будет:
+       - находить аттрибуты дисплея;
+       - удобно менять Origin, Resolution;
+       - хранить предыдущие значения Origin и Resolution;
         
 **** TODO Конфиг layout'ов
 ***** TODO Запись конфигов
