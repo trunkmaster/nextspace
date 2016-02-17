@@ -512,10 +512,10 @@
                       [NSNumber numberWithFloat:0.0],    NXDisplayRateKey,
                       nil];
   
-  gBrightness = gammaBrightness;
-  [self fadeToBlack:gammaBrightness];
+  // gBrightness = gammaBrightness;
+  // [self fadeToBlack:gammaBrightness];
   [self setResolution:res origin:frame.origin];
-  [self setGammaBrightness:gBrightness];
+  // [self setGammaBrightness:gBrightness];
   
   isActive = NO;  
 }
@@ -544,11 +544,11 @@
   frame.origin.x = [screen sizeInPixels].width;
   frame.origin.y = 0;
 
-  gBrightness = (gammaBrightness) ? gammaBrightness : 1.0;
   isActive = YES;
-  [self setGammaBrightness:0.0];
+  // gBrightness = (gammaBrightness) ? gammaBrightness : 1.0;
+  // [self setGammaBrightness:0.0];
   [self setResolution:res origin:frame.origin];
-  [self fadeToNormal:gBrightness];
+  // [self fadeToNormal:gBrightness];
 }
 
 - (BOOL)isMain
