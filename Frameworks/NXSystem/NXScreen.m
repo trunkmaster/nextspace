@@ -527,6 +527,10 @@ static id systemScreen = nil;
 {// At start frame, resolution are zeroed.
   NSDictionary *resolution = [display bestResolution];
 
+  NSLog(@"NXScreen: activating display %@ (%@, %@)",
+        [display outputName],
+        [resolution objectForKey:NXDisplaySizeKey],
+        NSStringFromPoint([display hiddenFrame].origin));
   [self setDisplay:display
         resolution:resolution
             origin:[display hiddenFrame].origin];
@@ -825,7 +829,21 @@ static id systemScreen = nil;
 }
 
 // Returns changed layout description.
-// Set update frame cache for inactive displays, change origin for active ones.
+// Should process the following cases:
+// 1. Active = "YES", "frame.size" != {0,0} and differs from "Resolution"
+// 	Change resolution requested:
+// 	- change "Resolution",
+// 	- adjust other active displays' origins if needed.
+// 2. Active = "NO", 'frame.size' != {0,0}
+// 	Display activation requested:
+// 	- change Active to "YES";
+// 	- set resolution and origin;
+// 	- adjust other active displays' origins if needed.
+// 3. Active = "YES", 'frame.size' = {0,0}, 'hiddenFrame.size' != {0,0}
+// 	Display deactivation requested:
+// 	- Active will be set to "NO" by applyLayout:;
+// 	- 'hiddenFrame' will restored by randrUpdateScreenResources;
+// 	- adjust other active displays' origins if needed.
 // - (NSArray *)arrangeDisplays
 // {
 //   NSMutableArray *newLayout = [[self currentLayout] mutableCopy];
@@ -884,7 +902,7 @@ static id systemScreen = nil;
   
   // [newLayout writeToFile:@"Display.config" atomically:YES];
   
-  // 1. Change resolution and origin of display in layout.
+  // 1. Change resolution and origin of 'display' in layout.
   dCount = [newLayout count];
   for (i = 0; i < dCount; i++)
     {
@@ -895,13 +913,16 @@ static id systemScreen = nil;
           oldSize = NSSizeFromString([[d objectForKey:NXDisplayResolutionKey]
                                        objectForKey:NXDisplaySizeKey]);
           oldOrigin = NSPointFromString([d objectForKey:NXDisplayOriginKey]);
+          
           oldTopY = oldOrigin.y + oldSize.height;
           oldRightX = oldOrigin.x + oldSize.width;
+          
           newSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
           
           dd = [d mutableCopy];
           [dd setObject:resolution forKey:NXDisplayResolutionKey];
           [dd setObject:NSStringFromPoint(origin) forKey:NXDisplayOriginKey];
+          [dd setObject:@"YES" forKey:NXDisplayIsActiveKey];
           [newLayout replaceObjectAtIndex:i withObject:dd];
           [dd release];
           break;
