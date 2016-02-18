@@ -830,7 +830,7 @@ static id systemScreen = nil;
 
 // Returns changed layout description.
 // Should process the following cases:
-// 1. Active = "YES", "frame.size" != {0,0} and differs from "Resolution"
+// 1. Active = "YES", "frame.size" != {0,0} and differs from "Resolution"."Size"
 // 	Change resolution requested:
 // 	- change "Resolution",
 // 	- adjust other active displays' origins if needed.
@@ -844,6 +844,10 @@ static id systemScreen = nil;
 // 	- Active will be set to "NO" by applyLayout:;
 // 	- 'hiddenFrame' will restored by randrUpdateScreenResources;
 // 	- adjust other active displays' origins if needed.
+- (NSArray *)arrangeDisplays
+{
+  NSMutableArray *newLayout = [[self currentLayout] mutableCopy];
+}
 // - (NSArray *)arrangeDisplays
 // {
 //   NSMutableArray *newLayout = [[self currentLayout] mutableCopy];

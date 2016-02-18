@@ -649,80 +649,163 @@
      гаммы используется магическое число '0.5'. Не до конца понимаю почему,
      но работает. Может потом нужно будет разобраться до конца.
 **** TODO NXDisplay: Resolution, Origin и frame
-     Кажется, что изменения должны быть концептульнее. Сейчас frame напрямую
-     связан с Resolution и Origin: изменение Resolution обновляет frame если
-     Resolution width и height больше 0.
+***** TODO Размышления
+      Кажется, что изменения должны быть концептульнее. Сейчас frame напрямую
+      связан с Resolution и Origin: изменение Resolution обновляет frame если
+      Resolution width и height больше 0.
 
-     На самом деле это не имеет смысла поскольку в случае изменений генерится
-     событие RandR, которое приводит к пересозданию NXDisplay. Для выключенных
-     мониторов (был вызван -deactivate) это приводит к значениям 0 для всех
-     значений frame.origin.
+      На самом деле это не имеет смысла поскольку в случае изменений генерится
+      событие RandR, которое приводит к пересозданию NXDisplay. Для выключенных
+      мониторов (был вызван -deactivate) это приводит к значениям 0 для всех
+      значений frame.origin.
 
-     frame - сохраненная информация о разрешении и положении.
-     При запросе разрешения (NSDictionary - {Size={}, Rate={}}) по
-     сохраненным значения, которые входят в 'frame' находится resolution из
-     списка поддерживаемых монитором. Таким образом, основной ivar, которая
-     характеризует монитор - 'frame'. Вот на нее и стот обратить пристальное
-     внимание.
+      frame - сохраненная информация о разрешении и положении.
+      При запросе разрешения (NSDictionary - {Size={}, Rate={}}) по
+      сохраненным значения, которые входят в 'frame' находится resolution из
+      списка поддерживаемых монитором. Таким образом, основной ivar, которая
+      характеризует монитор - 'frame'. Вот на нее и стот обратить пристальное
+      внимание.
 
-     Заменять Resolution = {} и Origin = {} на Frame смысла нет. Наоборот,
-     Resolution это копия из списка поддерживаемых разрешений, а Origin
-     устанавливается при вызове -setResolution:origin:.
+      Заменять Resolution = {} и Origin = {} на Frame смысла нет. Наоборот,
+      Resolution это копия из списка поддерживаемых разрешений, а Origin
+      устанавливается при вызове -setResolution:origin:.
 
-     При возникновении события RandR (изменение разрешения, расположения,
-     activate, deactivate) нужно:
-     1. Перечитать XRRScreenResoutrces - уже
-     2. Пересоздать список NXDisplay - уже
-     3. Переразместить дисплеи относительно друг друга (изменить layout)
-        [NXScreen arrangeDisplaysHorizontally]
-     4. Применить измененнный layout - [NXScreen applyDisplayLayout:newLayout]
-     5. ? Записать layout в пользовательский конфиг
+      При возникновении события RandR (изменение разрешения, расположения,
+      activate, deactivate) нужно:
+      1. Перечитать XRRScreenResoutrces - уже
+      2. Пересоздать список NXDisplay - уже
+      3. Переразместить дисплеи относительно друг друга (изменить layout)
+         [NXScreen arrangeDisplaysHorizontally]
+      4. Применить измененнный layout - [NXScreen applyDisplayLayout:newLayout]
+      5. ? Записать layout в пользовательский конфиг
 
-     _Активирование/деактивирование_:
+      _Активирование/деактивирование_:
 
-     СЕЙЧАС:
-     - [NXDisplay deactivate];
-     - [NXDisplay setResolution:origin:];
+      СЕЙЧАС:
+      - [NXDisplay deactivate];
+      - [NXDisplay setResolution:origin:];
 
-     - генерируется событие XRRScreenChangeNotify;
-     - [Preferences screenDidChange:];
-     - [NXScreen randrUpdateScreenResources];
+      - генерируется событие XRRScreenChangeNotify;
+      - [Preferences screenDidChange:];
+      - [NXScreen randrUpdateScreenResources];
 
-     НУЖНО, deactivate:
-     + [NXScreen deactivateDisplay:(NXDisplay*)];
-       + сохраняет текущую 'frame' в 'hiddenFrame';
-       + обнуляет значения 'frame'.
-     - (NSArray*)[NXScreen arrangeDisplays];
-       - пересчитывает 'frame.origin' активных дисплеев со сдвигом влево;
-       - строит новый layout на основании 'frame' дисплеев;
-     + [NXScreen applyDisplayLayout:(NSArray*)];
+      НУЖНО, deactivate:
+      + [NXScreen deactivateDisplay:(NXDisplay*)];
+        + сохраняет текущую 'frame' в 'hiddenFrame';
+        + обнуляет значения 'frame'.
+      - (NSArray*)[NXScreen arrangeDisplays];
+        - пересчитывает 'frame.origin' активных дисплеев со сдвигом влево;
+        - строит новый layout на основании 'frame' дисплеев;
+      + [NXScreen applyDisplayLayout:(NSArray*)];
 
-     + генерируются события XRRScreenChangeNotify;
-     + [Preferences screenDidChange:] (будет в Workspace);
-     + [NXScreen randrUpdateScreenResources];
-       + при обновлении переносит hiddenFrame для неактивных дисплеев.
+      + генерируются события XRRScreenChangeNotify;
+      + [Preferences screenDidChange:] (будет в Workspace);
+      + [NXScreen randrUpdateScreenResources];
+        + при обновлении переносит hiddenFrame для неактивных дисплеев.
 
-     _Концепция_
-     
-     Концептуально получается, что любые изменения в характеристиках
-     дисплеев, которые приводят (или могут привести) к изменению layout
-     должны выполняться под управлением (реализовано в) NXScreen.
-     Любые вызовы методов NXDisplay: activate, deactivate,
-     setResolution:origin: приводят к кривому layout. Например:
-     - activate - завершается неуспешно, потому, что RandR screen не может
-       вместить новый дисплей (за исключением случая, когда origin={0,0} и
-       активируемый дисплей меньше уже активного);
-     - deactivate - не обновляет размер RandR screen;
-     - setResolution:origin: - завершается неуспешно по той же причине, что и
-       activate.
+      _Концепция_
+      
+      Концептуально получается, что любые изменения в характеристиках
+      дисплеев, которые приводят (или могут привести) к изменению layout
+      должны выполняться под управлением (реализовано в) NXScreen.
+      Любые вызовы методов NXDisplay: activate, deactivate,
+      setResolution:origin: приводят к кривому layout. Например:
+      - activate - завершается неуспешно, потому, что RandR screen не может
+        вместить новый дисплей (за исключением случая, когда origin={0,0} и
+        активируемый дисплей меньше уже активного);
+      - deactivate - не обновляет размер RandR screen;
+      - setResolution:origin: - завершается неуспешно по той же причине, что и
+        activate.
 
-     	_NXScreenLayout_
-       
-       Наверное нужнен класс, которы позволит удобно манипулировать содрежимым
-       layout. Очевидно, нужно будет:
-       - находить аттрибуты дисплея;
-       - удобно менять Origin, Resolution;
-       - хранить предыдущие значения Origin и Resolution;
+     	 _NXScreenLayout_
+        
+        Наверное нужнен класс, которы позволит удобно манипулировать содрежимым
+        layout. Очевидно, нужно будет:
+        - находить аттрибуты дисплея;
+        - удобно менять Origin, Resolution;
+        - хранить предыдущие значения Origin и Resolution;
+***** TODO arrangeDisplays в виде конфиг. файла (без применения/изменений)
+      DLD - display layout description - NSDictionary
+      NXD - NXDisplay live object that represents monitor
+****** TODO Case 1: деактивация 
+       Prepare request:
+        - [NXDisplay setHiddenFrame:[NXDisplay frame]]
+        - [NXDisplay setFrame:{0,0,0,0}]
+
+       Result after preparation:
+        Active = "YES", 'frame.size' = {0,0}, 'hiddenFrame.size' != {0,0}
+
+       Display _deactivation_ requested:
+        - Active will be set to "NO" by applyLayout:;
+        - 'hiddenFrame' will restored by randrUpdateScreenResources;
+        - arrangeDisplays:
+          - adjust other active displays' origins if needed.
+            [DLD]
+****** TODO Case 2: активация
+       Prepare request:
+        - [NXDisplay setFrame:[NXDisplay hiddenFrame]]
+
+       Result after preparation:
+        Active = "NO", 'frame.size' != {0,0}
+
+       Display _activation_ requested:
+ 	- change Active to "YES";
+ 	- set resolution and origin;
+ 	- adjust other active displays' origins if needed.
+****** TODO Case 3: смена разрешения (frame.size)
+       Active = "YES", "frame.size" != {0,0} and differs from "Resolution"
+****** TODO Case 4: смена позиции (frame.origin)
+       Active = "YES", "frame.origin" and differs from "Origin"
+**** TODO Конфиг layout'ов
+***** TODO Запись конфигов
+****** TODO Кто и в каких случаях?
+       Нужно определить кто и в каких случаях должен инициировать сохранение
+       конфига. 
+       Пока видятся такие варианты:
+       1. Изменение настроек в Preferences - записывает Preferences
+       2. Изменения извне (xrandr) - Workspace?
+       3. Подключение/отключение мониторов - Workspace?
+
+       Единственное пользовательское приложение, которое регистрирует все 3
+       нижеописанных сценария - Workspace. Может пусть и пишет?
+       Если будет писать Workspace, Preferences только инициирует изменения и
+       регистрирует через получение NXScreenDidChangeNotification.
+
+******* TODO Запись:
+       - (BOOL)[NXScreen writeLayoutAtPath:(NSString*)] или 
+         (BOOL)[NXScreen writeLayoutAtPath:(NSString*) forLayout:(NSArray*)]
+         - (NSString*)[NXScreen configNameForLayout:(NSArrray*)]
+         - (BOOL)[NSArray writeToFile: atomically:YES]
+******* TODO Чтение:
+       - [NXScreen readLayoutAtPath:(NSString*)]
+         - (NSString*)[NXScreen configNameForLayout] - генерация имени файла
+         - (NSDictionary*)[NSArray dictioanryWith]
+****** TODO Класть конфиги в ~/Library/Peferences/.NextSpace -> Workspace
+***** TODO Нужно как-то опеределять layout'ы
+      Сейчас нет истории использования ноутбука. Например, если ноутбук был
+      подключен к монитору (layout1), а затем был отключен и подключен к
+      телевизору (layout2) layout1 будет перзатерт layout2. После возвврата
+      ноутбука к монитору - будет сгенерен dafault layout.
+
+      Нужно чтобы как-то запоминались такие случаи использования. Варианты:
+      1. Добавлять к имени конфига цифру (Displays-1, Displays-2). При
+         подключении к внешнему дисплею проходится по сохраненным конфигам и
+         проверять не наш ли это случай.
+      2. Генерировать hash и добавлять к имени файла. При подключении
+         генерировать default layout, считать hash подключенных мониторов и
+         сравнивать с суффиксом в имени файла. Правда просто чтение конфига
+         (например, при старте) тоже будет происходить через генерацию hash'а.
+
+      Дополнительный вариант на подумать: при подключении/отключении всегда
+      остается один неизменный дисплей - внутренний. Но между отключением от
+      предыдущего дисплея и подключением к новому ноутбук находится в
+      "чистом" состоянии - с единственным дисплеем - внутренним. Поэтому, тут
+      может быть только один вариант искать сохранненый и применять или
+      переходить к default layout с автоматическим размещением.
+
+      Таким обрахом, в случае с монитором и телевизором должно быть как
+      минимум 3 конфига: только встроенный дисплей, встроенный+монитор,
+      встроенный+телевизор.
 **** TODO События (изменение параметров, подключени/отключение мониторов)
 ***** Мысль №1
      События ловятся через обработку событий X11 (X events). Ловить нужно
@@ -804,57 +887,18 @@
      Нужно найти такой кейс и решить этот вопрос.
      Это дастаточно важный момент, поскольку можно оказаться с темным экраном
      и без возможности изменить яркость = перезагрузка.
-        
-**** TODO Конфиг layout'ов
-***** TODO Запись конфигов
-****** TODO Кто и в каких случаях?
-       Нужно определить кто и в каких случаях должен инициировать сохранение
-       конфига. 
-       Пока видятся такие варианты:
-       1. Изменение настроек в Preferences - записывает Preferences
-       2. Изменения извне (xrandr) - Workspace?
-       3. Подключение/отключение мониторов - Workspace?
 
-       Единственное пользовательское приложение, которое регистрирует все 3
-       нижеописанных сценария - Workspace. Может пусть и пишет?
-       Если будет писать Workspace, Preferences только инициирует изменения и
-       регистрирует через получение NXScreenDidChangeNotification.
-
-******* TODO Запись:
-       - (BOOL)[NXScreen writeLayoutAtPath:(NSString*)] или 
-         (BOOL)[NXScreen writeLayoutAtPath:(NSString*) forLayout:(NSArray*)]
-         - (NSString*)[NXScreen configNameForLayout:(NSArrray*)]
-         - (BOOL)[NSArray writeToFile: atomically:YES]
-******* TODO Чтение:
-       - [NXScreen readLayoutAtPath:(NSString*)]
-         - (NSString*)[NXScreen configNameForLayout] - генерация имени файла
-         - (NSDictionary*)[NSArray dictioanryWith]
-****** TODO Класть конфиги в ~/Library/Peferences/.NextSpace -> Workspace
-***** TODO Нужно как-то опеределять layout'ы
-      Сейчас нет истории использования ноутбука. Например, если ноутбук был
-      подключен к монитору (layout1), а затем был отключен и подключен к
-      телевизору (layout2) layout1 будет перзатерт layout2. После возвврата
-      ноутбука к монитору - будет сгенерен dafault layout.
-
-      Нужно чтобы как-то запоминались такие случаи использования. Варианты:
-      1. Добавлять к имени конфига цифру (Displays-1, Displays-2). При
-         подключении к внешнему дисплею проходится по сохраненным конфигам и
-         проверять не наш ли это случай.
-      2. Генерировать hash и добавлять к имени файла. При подключении
-         генерировать default layout, считать hash подключенных мониторов и
-         сравнивать с суффиксом в имени файла. Правда просто чтение конфига
-         (например, при старте) тоже будет происходить через генерацию hash'а.
-
-      Дополнительный вариант на подумать: при подключении/отключении всегда
-      остается один неизменный дисплей - внутренний. Но между отключением от
-      предыдущего дисплея и подключением к новому ноутбук находится в
-      "чистом" состоянии - с единственным дисплеем - внутренним. Поэтому, тут
-      может быть только один вариант искать сохранненый и применять или
-      переходить к default layout с автоматическим размещением.
-
-      Таким обрахом, в случае с монитором и телевизором должно быть как
-      минимум 3 конфига: только встроенный дисплей, встроенный+монитор,
-      встроенный+телевизор.
+     Кажется я понял в чем дело: это следствие деактивации монитора с
+     эффектом затухания. Происходит это так:
+     1. Запоминается текущее значение gammaBrightness.
+     2. Вызывается fadeToBlack:
+     3. Выключается монитор (устанвливется разрешение 0x0).
+     4. Вызывается setGammaBrightness.
+     На шаге №4 должно устанавливаться (возвращаться) исходное значение для
+     выключенного монитора. Но проблема в том, что это значение не
+     устанавливается! Поэтому для таких случаев значение gammaBrightness
+     должно запоминатся в layout или где-то еще, откуда оно может быть
+     считано перед активацией монитора.
 **** TODO Fade In/Fade Out
 ***** TODO Использовать в нужных местах
       Нужно пройтись по коду и проверить/добавить/убрать где было бы
