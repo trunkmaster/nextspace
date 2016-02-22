@@ -156,10 +156,13 @@ static NXDisplay           *selectedDisplay = nil;
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive])
     {
+      // [[NXScreen sharedScreen]
+      //   setDisplay:selectedDisplay
+      //   resolution:[[rateBtn selectedCell] representedObject]
+      //       origin:[selectedDisplay frame].origin];
       [[NXScreen sharedScreen]
-        setDisplay:selectedDisplay
-        resolution:[[rateBtn selectedCell] representedObject]
-            origin:[selectedDisplay frame].origin];
+         setDisplay:selectedDisplay
+         resolution:[[rateBtn selectedCell] representedObject]];
     }  
 }
 

@@ -135,6 +135,29 @@
 
   return mode;
 }
+- (NSDictionary *)_resolutionForModeInfo:(XRRModeInfo)mode_info
+{
+  NSSize       resSize;
+  NSDictionary *res;
+  CGFloat      r;
+  
+  for (res in allResolutions)
+    {
+      resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
+      if (resSize.width == mode_info.width &&
+          resSize.height == mode_info.height &&
+          [[res objectForKey:NXDisplayRateKey] floatValue] == rate)
+        {
+          break;
+        }
+      else
+        {
+          res = nil;
+        }
+    }
+
+  return res;
+}
 
 //------------------------------------------------------------------------------
 //--- Base
@@ -145,6 +168,11 @@
                 xDisplay:(Display *)x_display
 {
   XRROutputInfo *output_info;
+  XRRModeInfo   mode_info;
+  XRRCrtcInfo   *crtc_info;
+  CGFloat       rRate;
+  NSSize        rSize;
+  NSDictionary  *res;
   
   self = [super init];
 
@@ -155,6 +183,7 @@
   isMain = NO;
   isActive = NO;
   output_id = output;
+  
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output);
 
   // Output (connection port)
@@ -163,15 +192,8 @@
                             (CGFloat)output_info->mm_height);
   connectionState = output_info->connection;
 
-  // Display modes (resolutions supported by monitor connected to output)
-  XRRModeInfo  mode_info;
-  XRRCrtcInfo  *crtc_info;
-  CGFloat      rRate;
-  NSSize       rSize;
-  NSDictionary *res;
-
   // Get all resolutions for display
-  resolutions = [[NSMutableArray alloc] init];
+  allResolutions = [[NSMutableArray alloc] init];
   for (int i=0; i<output_info->nmode; i++)
     {
       mode_info = [self _modeInfoForMode:output_info->modes[i]];
@@ -181,7 +203,7 @@
                             NSStringFromSize(rSize), NXDisplaySizeKey,
                             [NSNumber numberWithFloat:rRate], NXDisplayRateKey,
                             nil];
-      [resolutions addObject:res];
+      [allResolutions addObject:res];
     }
 
   //CRTC = 0 if monitor is not connected to output port or deactivated
@@ -202,12 +224,27 @@
                              mode_info.width,
                              mode_info.height);
           rate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
+          currResolution = [self resolutionWithWidth:mode_info.width
+                                              height:mode_info.height
+                                                rate:rate];
           isActive = YES;
           
           XRRFreeCrtcInfo(crtc_info);
+          
+          // Primary display
+          isMain = [self isMain];
         }
-      // Primary display
-      isMain = [self isMain];
+    }
+  else if ([allResolutions count] > 0)
+    {
+      // hiddenFrame = NSMakeRect(0,0,0,0);
+      currResolution = [[NSDictionary
+                         dictionaryWithObjectsAndKeys:
+                           NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
+                            [NSNumber numberWithFloat:0.0], NXDisplayRateKey,
+                         nil] retain];
+      hiddenFrame.size = NSSizeFromString([[self bestResolution]
+                                            objectForKey:NXDisplaySizeKey]);
     }
   
   XRRFreeOutputInfo(output_info);
@@ -228,7 +265,7 @@
 
   [properties release];
   [outputName release];
-  [resolutions release];
+  [allResolutions release];
   
   [super dealloc];
 }
@@ -274,7 +311,7 @@
 //------------------------------------------------------------------------------
 - (NSArray *)allResolutions
 {
-  return resolutions;
+  return allResolutions;
 }
 
 // Select largest resolution supported by monitor
@@ -286,10 +323,10 @@
   int          mpixels=0, mps, res_count;
   float        rRate=0.0, r;
 
-  res_count = [resolutions count];
+  res_count = [allResolutions count];
   for (int i=0; i<res_count; i++)
     {
-      res = [resolutions objectAtIndex:i];
+      res = [allResolutions objectAtIndex:i];
       resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
       mps = resSize.width * resSize.height;
       r = [[res objectForKey:NXDisplayRateKey] floatValue];
@@ -305,7 +342,7 @@
         }
     }
 
-  if (!mode) mode = [resolutions objectAtIndex:0];
+  if (!mode) mode = [allResolutions objectAtIndex:0];
   
   return mode;
 }
@@ -313,32 +350,45 @@
 // First entry in list of supported resolutions
 - (NSDictionary *)bestResolution
 {
-  return [resolutions objectAtIndex:0];
+  return [allResolutions objectAtIndex:0];
+}
+
+- (NSDictionary *)resolutionWithWidth:(CGFloat)width
+                               height:(CGFloat)height
+                                 rate:(CGFloat)refresh
+{
+  NSSize       resSize;
+  NSDictionary *res, *resolution = nil;
+  CGFloat      resRate, max_rate = 0.0;
+  
+  for (res in allResolutions)
+    {
+      resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
+      resRate = [[res objectForKey:NXDisplayRateKey] floatValue];
+      if (resSize.width == width && resSize.height == height)
+        {
+          if (refresh) // 'rate' != 0, search for exact resolution
+            {
+              if (refresh == resRate)
+                {
+                  resolution = res;
+                }
+            }
+          else if (resRate > max_rate) // search for resolution with max rate
+            {
+              resolution = res;
+              max_rate = resRate;
+            }
+        }
+    }
+
+  return resolution;
 }
 
 // Returns resolution which equals visible frame dimensions and saved rate value.
 - (NSDictionary *)resolution // {Size=; Rate=}
 {
-  NSDictionary *res = nil;
-  NSSize       resSize;
-
-  for (res in resolutions)
-    {
-      resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
-      if (resSize.width == frame.size.width &&
-          resSize.height == frame.size.height &&
-          [[res objectForKey:NXDisplayRateKey] floatValue] == rate)
-        {
-          break;
-        }
-    }
-
-  if (res == nil)
-    {
-      res = [self bestResolution];
-    }
-
-  return res;
+  return currResolution;
 }
 
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution
@@ -432,19 +482,20 @@
                        crtc_info->noutput);
     }
   
-  // Save dimensions in ivars even if mode was not changed.
   // Change active status only if dimensions are greater than 0.
-  if (resolutionSize.width > 0 && resolutionSize.height > 0)
-    {
-      frame = NSMakeRect(origin.x, origin.y,
-                         resolutionSize.width, resolutionSize.height);
-      rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
-      isActive = YES;
-    }
-  else
-    {
-      isActive = NO;
-    }
+  // if (resolutionSize.width > 0 && resolutionSize.height > 0)
+  //   {
+  //     isActive = YES;
+  //   }
+  // else
+  //   {
+  //     isActive = NO;
+  //   }
+  
+  frame = NSMakeRect(origin.x, origin.y,
+                     resolutionSize.width, resolutionSize.height);
+  rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
+  ASSIGN(currResolution, resolution);
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
@@ -498,57 +549,24 @@
   return isActive;
 }
 
-// Set resolution
-// 	[NXDisplay deactivate]
-// Update layout, update screen size.
-//	[NXScreen ranrdUpdateScreenResources]
-- (void)deactivate
+- (void)setActive:(BOOL)active
 {
-  NSDictionary *res;
-  CGFloat      gBrightness;
-  
-  res = [NSDictionary dictionaryWithObjectsAndKeys:
-                      NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
-                      [NSNumber numberWithFloat:0.0],    NXDisplayRateKey,
-                      nil];
-  
-  // gBrightness = gammaBrightness;
-  // [self fadeToBlack:gammaBrightness];
-  [self setResolution:res origin:frame.origin];
-  // [self setGammaBrightness:gBrightness];
-  
-  isActive = NO;  
-}
-
-// Update layout, update screen size,
-// 	[NXScreen arrangeDisplays]
-// set resolution.
-// 	[NXDisplay activate]
-- (void)activate
-{
-  NSDictionary *res;
-  CGFloat      gBrightness;
-
-  if (frame.size.width > 0 && frame.size.height > 0)
+  if (active == YES) // activation
     {
-      res = [NSDictionary dictionaryWithObjectsAndKeys:
-                            NSStringFromSize(frame.size),NXDisplaySizeKey,
-                             [NSNumber numberWithFloat:rate],NXDisplayRateKey,
-                          nil];
+      currResolution = [self resolutionWithWidth:frame.size.width
+                                          height:frame.size.height
+                                            rate:0.0];
     }
-  else
+  else // deactivation
     {
-      res = [self bestResolution];
+      currResolution = [NSDictionary
+                         dictionaryWithObjectsAndKeys:
+                           NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
+                            [NSNumber numberWithFloat:0.0], NXDisplayRateKey,
+                         nil];
     }
-
-  frame.origin.x = [screen sizeInPixels].width;
-  frame.origin.y = 0;
-
-  isActive = YES;
-  // gBrightness = (gammaBrightness) ? gammaBrightness : 1.0;
-  // [self setGammaBrightness:0.0];
-  [self setResolution:res origin:frame.origin];
-  // [self fadeToNormal:gBrightness];
+  
+  isActive = active;
 }
 
 - (BOOL)isMain
@@ -571,7 +589,6 @@
       XRRSetOutputPrimary(xDisplay,
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);
-      [screen randrUpdateScreenResources];
     }
   
   isMain = yn;

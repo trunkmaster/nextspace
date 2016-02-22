@@ -186,12 +186,10 @@ static NXPower *power = nil;
 {
   if ([[sender title] isEqualToString:@"Disable"])
     {
-      // [[selectedBox display] deactivate];
       [[NXScreen sharedScreen] deactivateDisplay:[selectedBox display]];
     }
   else
     {
-      // [[selectedBox display] activate];
       [[NXScreen sharedScreen] activateDisplay:[selectedBox display]];
     }
 }
@@ -372,11 +370,10 @@ static NXPower *power = nil;
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   NXDisplay *builtinDisplay = nil;
-  NXDisplay *d;
-    
-  for (DisplayBox *db in displayBoxList)
+
+  // for (DisplayBox *db in displayBoxList)
+  for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
     {
-      d = [db display];
       if ([d isBuiltin])
         {
           builtinDisplay = d;
@@ -384,17 +381,18 @@ static NXPower *power = nil;
         }
     }
   
-  if (d)
+  if (builtinDisplay)
     {
-      if (![[aNotif object] isLidClosed] && ![d isActive])
+      if (![[aNotif object] isLidClosed] && ![builtinDisplay isActive])
         {
-          NSLog(@"Screen: activating display %@", [d outputName]);
-          [d activate];
+          NSLog(@"Screen: activating display %@", [builtinDisplay outputName]);
+          [[NXScreen sharedScreen] activateDisplay:builtinDisplay];
         }
-      else if ([[aNotif object] isLidClosed] && [d isActive])
+      else if ([[aNotif object] isLidClosed] && [builtinDisplay isActive])
         {
-          NSLog(@"Screen: DEactivating display %@", [d outputName]);
-          [d deactivate];
+          NSLog(@"Screen: DEactivating display %@",
+                [builtinDisplay outputName]);
+          [[NXScreen sharedScreen] deactivateDisplay:builtinDisplay];
         }
     }
 }
