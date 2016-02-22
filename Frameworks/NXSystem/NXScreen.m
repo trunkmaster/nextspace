@@ -233,6 +233,7 @@ static id systemScreen = nil;
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   screen_resources = NULL;
 
+  updateScreenLock = [[NSLock alloc] init];
   [self randrUpdateScreenResources];
 
   // Initially we set primary display to first active
@@ -260,6 +261,8 @@ static id systemScreen = nil;
   
   XCloseDisplay(xDisplay);
 
+  [updateScreenLock release];
+
   [super dealloc];
 }
 
@@ -281,8 +284,15 @@ static id systemScreen = nil;
 
 - (void)randrUpdateScreenResources
 {
+  NXDisplay      *display;
+  NSMutableArray *new_systemDisplays;
+  
+  if ([updateScreenLock tryLock] == NO)
+    return;
+    
+  NSLog(@"NXScreen: Update 'screen_resources' and displays information");
+  
   // Reread screen resources
-  NSLog(@"NXScreen: Update 'screen_resources'");
   if (screen_resources)
     {
       XRRFreeScreenResources(screen_resources);
@@ -290,12 +300,6 @@ static id systemScreen = nil;
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
 
   // Update display information local cache.
-  // [self _refreshDisplaysInfo];
-  NXDisplay      *display;
-  NSMutableArray *new_systemDisplays;
-
-  NSLog(@"NXScreen: refresh information about displays.");
-
   new_systemDisplays = [[NSMutableArray alloc] init];
 
   for (int i=0; i < screen_resources->noutput; i++)
@@ -318,15 +322,13 @@ static id systemScreen = nil;
       [display release];
     }
 
-  if (systemDisplays)
-    {
-      [systemDisplays release];
-    }
-  systemDisplays = new_systemDisplays;
+  ASSIGN(systemDisplays, new_systemDisplays);
   
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
   sizeInMilimeters = [self _sizeInMilimeters];
+
+  [updateScreenLock unlock];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -774,19 +776,15 @@ static id systemScreen = nil;
   NSLog(@"New screen size: %@ (%@), old %@(%@)",
         NSStringFromSize(newPixSize), NSStringFromSize(mmSize),
         NSStringFromSize(sizeInPixels), NSStringFromSize(sizeInMilimeters));
+
+  [updateScreenLock lock];
   
   // Deactivate displays with current width or height bigger
   // than new screen size. Otherwise [NXDisplay setResolution...] will fail with
   // XRandR error and application will be terminated.
-  nullResolution = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   NSStringFromSize(NSMakeSize(0,0)),
-                                 NXDisplaySizeKey,
-                                    [NSNumber numberWithFloat:0.0],
-                                 NXDisplayRateKey,
-                                 nil];
-  for (NXDisplay *d in [self activeDisplays])
+  for (NXDisplay *d in [self connectedDisplays])
     {
-      [d setResolution:nullResolution origin:[d frame].origin];
+      [d setResolution:[NXDisplay zeroResolution] origin:[d frame].origin];
     }
 
   // Set new screen size for new layout
@@ -801,29 +799,25 @@ static id systemScreen = nil;
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
       display = [self displayWithName:displayName];
 
-      // If initial brightness is 0.0 fadeIn/Out processed in application.
-      // brightness = [display gammaBrightness];
-
-      // Off
-      // if (brightness > 0.0)
-      //   {
-      //     [display fadeToBlack:brightness];
-      //   }
-  
-      resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
-      origin = NSPointFromString([displayLayout
+      // Do not set resolution for already deactivated displays
+      // (code block right before XRRSetScreenSize() call).
+      if ([display isActive])
+        {
+          if ([display isBuiltin] && [NXPower isLidClosed])
+            continue;
+          
+          resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
+          origin = NSPointFromString([displayLayout
                                        objectForKey:NXDisplayOriginKey]);
-      [display setResolution:resolution origin:origin];
+          [display setResolution:resolution origin:origin];
 
-      gamma = [displayLayout objectForKey:NXDisplayGammaKey];
-      [display setGammaFromDescription:gamma];
-
-      // On
-      // if (brightness > 0.0)
-      //   {
-      //     [display fadeToNormal:brightness];
-      //   }
+          gamma = [displayLayout objectForKey:NXDisplayGammaKey];
+          [display setGammaFromDescription:gamma];
+        }
     }
+
+  [updateScreenLock unlock];
+  [self randrUpdateScreenResources];
   
   return YES;
 }
@@ -841,8 +835,8 @@ static id systemScreen = nil;
 // 	- adjust other active displays' origins if needed.
 // 3. Active = "YES", 'frame.size' = {0,0}, 'hiddenFrame.size' != {0,0}
 // 	Display deactivation requested:
-// 	- Active will be set to "NO" by applyLayout:;
 // 	- 'hiddenFrame' will restored by randrUpdateScreenResources;
+// 	- Set Active to "NO";
 // 	- adjust other active displays' origins if needed.
 
 NSComparisonResult
@@ -866,6 +860,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
   NSArray      *newLayout;
   NSRect       frame, hiddenFrame;
   NSSize       resolutionSize;
+  NSPoint      originPoint;
   NSArray      *sortedDisplays;
   NSDictionary *resolution;
   CGFloat      xShift = 0.0, yShift = 0.0, xPoint = 0.0;
@@ -946,90 +941,6 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
   [newLayout  writeToFile:@"/tmp/ArrangedDisplays.config" atomically:YES];
 
   return newLayout;
-}
-
-// TODO: check if resolution is supported by monitor.
-- (void)setDisplay:(NXDisplay *)display
-        resolution:(NSDictionary *)resolution
-            origin:(NSPoint)origin
-{
-  NSString            *displayName = [display outputName];
-  NSMutableArray      *newLayout = [[self currentLayout] mutableCopy];
-  NSDictionary	      *d;
-  NSMutableDictionary *dd;
-  NSUInteger	      i, dCount;
-  NSSize	      oldSize, dSize, newSize;
-  NSPoint             oldOrigin, dOrigin;
-  CGFloat	      xOffset, yOffset;
-  CGFloat 	      dTopY, dRightX, oldTopY, oldRightX;
-  
-  // [newLayout writeToFile:@"Display.config" atomically:YES];
-  
-  // 1. Change resolution and origin of 'display' in layout.
-  dCount = [newLayout count];
-  for (i = 0; i < dCount; i++)
-    {
-      d = [newLayout objectAtIndex:i];
-      if ([[d objectForKey:NXDisplayNameKey] isEqualToString:displayName])
-        {
-          // Save old values for resolution and origin
-          oldSize = NSSizeFromString([[d objectForKey:NXDisplayResolutionKey]
-                                       objectForKey:NXDisplaySizeKey]);
-          oldOrigin = NSPointFromString([d objectForKey:NXDisplayOriginKey]);
-          
-          oldTopY = oldOrigin.y + oldSize.height;
-          oldRightX = oldOrigin.x + oldSize.width;
-          
-          newSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
-          
-          dd = [d mutableCopy];
-          [dd setObject:resolution forKey:NXDisplayResolutionKey];
-          [dd setObject:NSStringFromPoint(origin) forKey:NXDisplayOriginKey];
-          [dd setObject:@"YES" forKey:NXDisplayIsActiveKey];
-          [newLayout replaceObjectAtIndex:i withObject:dd];
-          [dd release];
-          break;
-        }
-    }
-
-  // 2. Change origin of other display(s) if new resolution requires it.
-  for (NSUInteger i=0; i<[newLayout count]; i++)
-    {
-      d = [newLayout objectAtIndex:0];
-      if (![[d objectForKey:NXDisplayNameKey] isEqualToString:displayName])
-        {
-          dSize = NSSizeFromString([[d objectForKey:NXDisplayResolutionKey]
-                                       objectForKey:NXDisplaySizeKey]);
-          dOrigin = NSPointFromString([d objectForKey:NXDisplayOriginKey]);
-          dTopY = dOrigin.y + dSize.height;
-          dRightX = dOrigin.x + dSize.width;
-          // Adjust horizontal position
-          if ((dOrigin.x > oldOrigin.x) &&
-              (dTopY > oldOrigin.y && dOrigin.y < oldTopY))
-            {
-              xOffset = dOrigin.x - oldOrigin.x - oldSize.width;
-              dOrigin.x = origin.x + newSize.width + xOffset;
-            }
-          // Adjust vertical position
-          if ((dOrigin.y > oldOrigin.y) &&
-              (dRightX > oldOrigin.x && dOrigin.x < oldRightX))
-            {
-              yOffset = dOrigin.y - oldOrigin.y - oldSize.height;
-              dOrigin.y = origin.y + newSize.height + yOffset;
-            }
-          
-          dd = [d mutableCopy];
-          [dd setObject:NSStringFromPoint(dOrigin) forKey:NXDisplayOriginKey];
-          [newLayout replaceObjectAtIndex:[newLayout indexOfObject:d]
-                               withObject:dd];
-          [dd release];
-        }
-    }
-
-  // 3. Apply new layout
-  // [newLayout writeToFile:@"NewDisplay.config" atomically:YES];
-  [self applyDisplayLayout:newLayout];
-  [newLayout release];
 }
 
 //------------------------------------------------------------------------------
