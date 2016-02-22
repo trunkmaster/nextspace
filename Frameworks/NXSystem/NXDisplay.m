@@ -88,6 +88,17 @@
 
 @implementation NXDisplay
 
++ (NSDictionary *)zeroResolution
+{
+  NSString *zeroSizeString = NSStringFromSize(NSMakeSize(0,0));
+  NSNumber *zeroRate = [NSNumber numberWithFloat:0.0];
+  
+  return [NSDictionary dictionaryWithObjectsAndKeys:
+                         zeroSizeString, NXDisplaySizeKey,
+                       zeroRate,NXDisplayRateKey,
+                       nil];
+}
+
 //------------------------------------------------------------------------------
 //--- XRandR utility functions
 //------------------------------------------------------------------------------
@@ -409,8 +420,10 @@
 }
 
 // Sets resolution without changing layout of displays.
+// Updates 'frame', 'rate' and 'currResolution' ivars.
+// Doesn't change 'isActive' ivar.
 // If you want to relayout displays with new resolution use
-// [NXScreen setDisplay:resolution:origin] instead.
+// [NXScreen setDisplay:resolution:] instead.
 - (void)setResolution:(NSDictionary *)resolution
                origin:(NSPoint)origin
 {
@@ -482,16 +495,6 @@
                        crtc_info->noutput);
     }
   
-  // Change active status only if dimensions are greater than 0.
-  // if (resolutionSize.width > 0 && resolutionSize.height > 0)
-  //   {
-  //     isActive = YES;
-  //   }
-  // else
-  //   {
-  //     isActive = NO;
-  //   }
-  
   frame = NSMakeRect(origin.x, origin.y,
                      resolutionSize.width, resolutionSize.height);
   rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
@@ -549,23 +552,28 @@
   return isActive;
 }
 
+// Changes 'currResolution' ivar without setting resolution to monitor.
+// Used for preparation to apply new display layout.
 - (void)setActive:(BOOL)active
 {
+  NSDictionary *res;
+  
   if (active == YES) // activation
     {
-      currResolution = [self resolutionWithWidth:frame.size.width
-                                          height:frame.size.height
-                                            rate:0.0];
+      res = [self resolutionWithWidth:frame.size.width
+                               height:frame.size.height
+                                 rate:0.0];
     }
   else // deactivation
     {
-      currResolution = [NSDictionary
-                         dictionaryWithObjectsAndKeys:
-                           NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
-                            [NSNumber numberWithFloat:0.0], NXDisplayRateKey,
-                         nil];
+      // res = [NSDictionary dictionaryWithObjectsAndKeys:
+      //                       NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
+      //                        [NSNumber numberWithFloat:0.0], NXDisplayRateKey,
+      //                     nil];
+      res = [NXDisplay zeroResolution];
     }
-  
+
+  ASSIGN(currResolution, res);
   isActive = active;
 }
 

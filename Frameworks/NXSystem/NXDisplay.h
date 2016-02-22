@@ -71,6 +71,8 @@ typedef struct _NXGammaValue NXGammaValue;
   BOOL			isActive;
 }
 
++ (NSDictionary *)zeroResolution;
+
 - (id)initWithOutputInfo:(RROutput)output
          screenResources:(XRRScreenResources *)scr_res
                   screen:(NXScreen *)scr
