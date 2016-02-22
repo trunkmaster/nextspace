@@ -649,7 +649,7 @@
      гаммы используется магическое число '0.5'. Не до конца понимаю почему,
      но работает. Может потом нужно будет разобраться до конца.
 **** TODO NXDisplay: Resolution, Origin и frame
-***** TODO Размышления
+***** Размышления
       Кажется, что изменения должны быть концептульнее. Сейчас frame напрямую
       связан с Resolution и Origin: изменение Resolution обновляет frame если
       Resolution width и height больше 0.
@@ -727,7 +727,7 @@
 ***** TODO arrangeDisplays в виде конфиг. файла (без применения/изменений)
       DLD - display layout description - NSDictionary
       NXD - NXDisplay live object that represents monitor
-****** TODO Case 1: деактивация 
+****** DONE Case 1: деактивация 
        Prepare request:
         - [NXDisplay setHiddenFrame:[NXDisplay frame]]
         - [NXDisplay setFrame:{0,0,0,0}]
@@ -741,7 +741,7 @@
         - arrangeDisplays:
           - adjust other active displays' origins if needed.
             [DLD]
-****** TODO Case 2: активация
+****** DONE Case 2: активация
        Prepare request:
         - [NXDisplay setFrame:[NXDisplay hiddenFrame]]
 

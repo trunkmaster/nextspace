@@ -116,6 +116,7 @@
 
 - (void)activateDisplay:(NXDisplay *)display;
 - (void)deactivateDisplay:(NXDisplay *)display;
+- (void)setDisplay:(NXDisplay *)display resolution:(NSDictionary *)resolution;
 
 - (NSArray *)defaultLayout:(BOOL)arrange;
 - (NSArray *)currentLayout;

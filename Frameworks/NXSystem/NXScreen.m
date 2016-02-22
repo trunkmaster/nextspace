@@ -489,6 +489,7 @@ static id systemScreen = nil;
     {
       [d setMain:(d == display) ? YES : NO];
     }
+  [self randrUpdateScreenResources];
 }
 
 // TODO
@@ -524,46 +525,47 @@ static id systemScreen = nil;
 }
 
 - (void)activateDisplay:(NXDisplay *)display
-{// At start frame, resolution are zeroed.
-  NSDictionary *resolution = [display bestResolution];
+{
+  NSArray *newLayout;
 
-  NSLog(@"NXScreen: activating display %@ (%@, %@)",
-        [display outputName],
-        [resolution objectForKey:NXDisplaySizeKey],
-        NSStringFromPoint([display hiddenFrame].origin));
-  [self setDisplay:display
-        resolution:resolution
-            origin:[display hiddenFrame].origin];
+  [display setFrame:[display hiddenFrame]];
+  newLayout = [self arrangeDisplays];
+  
+  [self applyDisplayLayout:newLayout];
 }
 
 - (void)deactivateDisplay:(NXDisplay *)display
 {
-  NSString      *displayName = [display outputName];
-  NSRect        dRect = [display frame];
-  NSDictionary *newLayout;
-  NSDictionary *resolution;
-  
-  [display setHiddenFrame:dRect];
-  dRect.origin.x = dRect.origin.y = dRect.size.width = dRect.size.height = 0;
+  NSRect  dRect = [display frame];
+  NSArray *newLayout;
 
-  resolution = [NSDictionary dictionaryWithObjectsAndKeys:
-                               NSStringFromSize(NSMakeSize(0,0)),
-                             NXDisplaySizeKey,
-                                [NSNumber numberWithFloat:0.0],
-                             NXDisplayRateKey,
-                             nil];
-  [self setDisplay:display
-        resolution:resolution
-            origin:dRect.origin];
+  // Prepare request for [self arrangeDisplays]
+  [display setHiddenFrame:NSMakeRect(sizeInPixels.width-dRect.size.width,
+                                     dRect.origin.y,
+                                     dRect.size.width,
+                                     dRect.size.height)];
+  [display setFrame:NSMakeRect(dRect.origin.x, dRect.origin.y, 0, 0)];
 
   // Prepare new layout taking into account frame and hiddenFrame.
   // Major focus is on frame.origin of all active displays.
-  // newLayout = [self arrangeDisplays];
+  newLayout = [self arrangeDisplays];
+  
+  [self applyDisplayLayout:newLayout];
+}
 
-  // As a result XRRScreenChangeNotify will be generated and
-  // [NXScreen randrUpdateScreenResources] should be called to update info
-  // about displays
-  // [self applyDisplayLayout:newLayout];
+- (void)setDisplay:(NXDisplay *)display
+        resolution:(NSDictionary *)resolution
+{
+  NSRect  newFrame = [display frame];
+  NSArray *newLayout;
+
+  newFrame.size = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
+
+  [display setFrame:newFrame];
+  
+  newLayout = [self arrangeDisplays];
+
+  [self applyDisplayLayout:newLayout];
 }
 //------------------------------------------------------------------------------
 // Layouts
@@ -757,6 +759,7 @@ static id systemScreen = nil;
   NSDictionary *resolution;
   NSPoint      origin;
   CGFloat      brightness;
+  NSDictionary *nullResolution;
 
   // Validate 'layout'
   if ([self validateLayout:layout] == NO)
@@ -775,9 +778,15 @@ static id systemScreen = nil;
   // Deactivate displays with current width or height bigger
   // than new screen size. Otherwise [NXDisplay setResolution...] will fail with
   // XRandR error and application will be terminated.
+  nullResolution = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   NSStringFromSize(NSMakeSize(0,0)),
+                                 NXDisplaySizeKey,
+                                    [NSNumber numberWithFloat:0.0],
+                                 NXDisplayRateKey,
+                                 nil];
   for (NXDisplay *d in [self activeDisplays])
     {
-      [d deactivate];
+      [d setResolution:nullResolution origin:[d frame].origin];
     }
 
   // Set new screen size for new layout
@@ -792,37 +801,28 @@ static id systemScreen = nil;
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
       display = [self displayWithName:displayName];
 
-      if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
-            isEqualToString:@"NO"])
-        {
-          continue;
-        }
-      
-      if (![display isBuiltin] || ![NXPower isLidClosed])
-        {
-          // If initial brightness is 0.0 fadeIn/Out processed in application.
-          // brightness = [display gammaBrightness];
+      // If initial brightness is 0.0 fadeIn/Out processed in application.
+      // brightness = [display gammaBrightness];
 
-          // Off
-          // if (brightness > 0.0)
-          //   {
-          //     [display fadeToBlack:brightness];
-          //   }
+      // Off
+      // if (brightness > 0.0)
+      //   {
+      //     [display fadeToBlack:brightness];
+      //   }
   
-          resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
-          origin = NSPointFromString([displayLayout
+      resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
+      origin = NSPointFromString([displayLayout
                                        objectForKey:NXDisplayOriginKey]);
-          [display setResolution:resolution origin:origin];
+      [display setResolution:resolution origin:origin];
 
-          gamma = [displayLayout objectForKey:NXDisplayGammaKey];
-          [display setGammaFromDescription:gamma];
+      gamma = [displayLayout objectForKey:NXDisplayGammaKey];
+      [display setGammaFromDescription:gamma];
 
-          // On
-          // if (brightness > 0.0)
-          //   {
-          //     [display fadeToNormal:brightness];
-          //   }
-        }
+      // On
+      // if (brightness > 0.0)
+      //   {
+      //     [display fadeToNormal:brightness];
+      //   }
     }
   
   return YES;
@@ -844,50 +844,109 @@ static id systemScreen = nil;
 // 	- Active will be set to "NO" by applyLayout:;
 // 	- 'hiddenFrame' will restored by randrUpdateScreenResources;
 // 	- adjust other active displays' origins if needed.
+
+NSComparisonResult
+compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
+{
+  NSPoint aPoint = [displayA frame].origin;
+  NSPoint bPoint = [displayB frame].origin;
+
+  NSLog(@"%@ <-> %@", NSStringFromPoint(aPoint), NSStringFromPoint(bPoint));
+
+  if (aPoint.x < bPoint.x)
+    return  NSOrderedAscending;
+  else if (aPoint.x > bPoint.x)
+    return NSOrderedDescending;
+  else
+    return NSOrderedSame;
+}
+
 - (NSArray *)arrangeDisplays
 {
-  NSMutableArray *newLayout = [[self currentLayout] mutableCopy];
-}
-// - (NSArray *)arrangeDisplays
-// {
-//   NSMutableArray *newLayout = [[self currentLayout] mutableCopy];
-//   CGFloat        xShift, xShift;
-//   NSSize  sSize = NSMakeSize(0,0), brSize;
-//   NSRect  dRect, ldRect;
-//   NSPoint origin = NSMakePoint(10000,10000), dOrigin;
+  NSArray      *newLayout;
+  NSRect       frame, hiddenFrame;
+  NSSize       resolutionSize;
+  NSArray      *sortedDisplays;
+  NSDictionary *resolution;
+  CGFloat      xShift = 0.0, yShift = 0.0, xPoint = 0.0;
 
-//   // 1. Find active display with origin closest to {0,0}.
-//   // 2. Calculate shifts.
-//   // 3. Change origins of active displays with calculated shifts.
-//   // 4. Return changed layout.
-//   for (NXDisplay *d in [self connectedDisplays])
-//     {
-//       if ([d isActive])
-//         {
-//           dRect = [d frame];
-//           if (dRect.origin.x = 0 && dRect.origin.y == 0)
-//             continue; // OK - do nothing
-//           if (dRect.origin.x > 0)
-//             { // Find monitor at left
-//               NXDisplay *prevDisplay;
-              
-//               dOrigin = dRect.origin;
-//               dOrigin.x -= 1;
-//               prevDisplay = [self displayAtPoint:dOrigin];
-              
-//               if (!prevDisplay || ![prevDisplay isActive])
-//                 { // shift
-//                   ldRect = [prevDisplay frame];
-//                   dRect.origin.x = ldRect.origin.x;
-//                 }
-//             }
-//         }
-//     }
+  [[self currentLayout] writeToFile:@"/tmp/Displays.config" atomically:YES];
   
-//   [[self currentLayout] writeToFile:@"DisplayArragnged.config" atomically:YES];
+  // Displays sorted by origin.x from left to right
+  sortedDisplays = [[self connectedDisplays]
+                     sortedArrayUsingFunction:compareDisplays
+                                      context:NULL];
   
-//   return [self currentLayout];
-// }
+  for (NXDisplay *d in sortedDisplays)
+    {
+      frame = [d frame];
+      resolutionSize = NSSizeFromString([[d resolution] objectForKey:@"Size"]);
+      if ([d isActive] == YES)
+        {
+          if ((frame.size.width > 0 && frame.size.height > 0) &&
+              ((frame.size.width != resolutionSize.width) ||
+               (frame.size.height != resolutionSize.height)))
+            {// Change resolution to 'frame'
+              resolution = [d resolutionWithWidth:frame.size.width
+                                           height:frame.size.height
+                                             rate:0.0];
+              NSLog(@"Change resolution %@: %@",
+                    [d outputName], resolution);
+              xShift = frame.size.width - resolutionSize.width;
+            }
+          else if ((frame.size.width == 0.0) || (frame.size.height == 0.0))
+            {
+              hiddenFrame = [d hiddenFrame];
+              if (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0)
+                { // Deactivate ('frame' saved in 'hiddenFrame')
+                  // Shift active displays which are placed at right
+                  xShift = -hiddenFrame.size.width;
+                  [d setActive:NO];
+                  NSLog(@"Deactivate %@: resolution %@",
+                        [d outputName], [d resolution]);
+                }
+            }
+          else 
+            { // Arrange active
+              if ((xShift > 0) || (frame.origin.x > 0))
+                {
+                  [d setFrame:NSMakeRect(frame.origin.x+xShift, frame.origin.y,
+                                         frame.size.width, frame.size.height)];
+                }
+              // Save rightmost X point for displays that will be activated
+              if (NSMaxX(frame) > xPoint)
+                {
+                  xPoint = NSMaxX(frame);
+                }
+              NSLog(@"Arrange %@: shift by x:%f, frame: %@",
+                    [d outputName], xShift, NSStringFromRect([d frame]));
+            }
+        }
+      else if ([d isActive] == NO &&
+               (frame.size.width > 0 && frame.size.height > 0))
+        { // Activate, use 'frame'
+          if (xPoint)
+            {
+              frame = [d frame];
+              frame.origin.x = xPoint;
+              [d setFrame:frame];
+            }
+          [d setActive:YES];
+
+          if (frame.origin.x == 0)
+            {
+              xShift = frame.size.width;
+            }
+          NSLog(@"Activate %@: set resolution %@, origin %@",
+                [d outputName], [d resolution], NSStringFromPoint(frame.origin));
+        }
+    }
+
+  newLayout = [self currentLayout];
+  [newLayout  writeToFile:@"/tmp/ArrangedDisplays.config" atomically:YES];
+
+  return newLayout;
+}
 
 // TODO: check if resolution is supported by monitor.
 - (void)setDisplay:(NXDisplay *)display
@@ -976,12 +1035,12 @@ static id systemScreen = nil;
 //------------------------------------------------------------------------------
 // Video adapters
 //------------------------------------------------------------------------------
-  // provider_resources = XRRGetProviderResources(xDisplay, xRootWindow);
-  // if (provider_resources->nproviders < 1)
-  //   { // No video cards - applying layout doesn't make sense or work.
-  //     NSLog(@"NXScreen: No video adapters found - no saved layout will be applied.");
-  //     XRRFreeProviderResources(provider_resources);
-  //     return;
-  //   }
+// provider_resources = XRRGetProviderResources(xDisplay, xRootWindow);
+// if (provider_resources->nproviders < 1)
+//   { // No video cards - applying layout doesn't make sense or work.
+//     NSLog(@"NXScreen: No video adapters found - no saved layout will be applied.");
+//     XRRFreeProviderResources(provider_resources);
+//     return;
+//   }
 
 @end

@@ -54,10 +54,11 @@ typedef struct _NXGammaValue NXGammaValue;
   NSString       	*outputName;		// name of Xrandr output (VGA)
   NSSize         	physicalSize;		// physical size in milimeters
   Connection     	connectionState;	// RandR connection state
-  NSMutableArray 	*resolutions;		// width, height, rate
+  NSMutableArray 	*allResolutions;	// width, height, rate
   
   NSRect   		frame;			// logical rect of monitor
   NSRect   		hiddenFrame;		// for inactive monitor
+  NSDictionary		*currResolution;
   CGFloat  		rate;			// refresh rate (75.0)
   CGFloat  		dpiValue;		// calculated DPI
 
@@ -86,6 +87,9 @@ typedef struct _NXGammaValue NXGammaValue;
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
 - (NSDictionary *)largestResolution;
 - (NSDictionary *)bestResolution;
+- (NSDictionary *)resolutionWithWidth:(CGFloat)width
+                               height:(CGFloat)height
+                                 rate:(CGFloat)refresh;
 - (NSDictionary *)resolution;   // Current resolution of monitor
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution;
 - (CGFloat)refreshRate;         // Monitor refresh rate for resolution
@@ -105,8 +109,7 @@ typedef struct _NXGammaValue NXGammaValue;
 //------------------------------------------------------------------------------
 - (BOOL)isConnected;      // output has connected monitor
 - (BOOL)isActive;         // is online and visible
-- (void)deactivate;
-- (void)activate;
+- (void)setActive:(BOOL)active;
 - (BOOL)isMain;
 - (void)setMain:(BOOL)yn;
 
