@@ -56,9 +56,11 @@ typedef struct _NXGammaValue NXGammaValue;
   Connection     	connectionState;	// RandR connection state
   NSMutableArray 	*allResolutions;	// width, height, rate
   
+  NSDictionary		*currResolution;
+  NSPoint               currPosition;
+  
   NSRect   		frame;			// logical rect of monitor
   NSRect   		hiddenFrame;		// for inactive monitor
-  NSDictionary		*currResolution;
   CGFloat  		rate;			// refresh rate (75.0)
   CGFloat  		dpiValue;		// calculated DPI
 
@@ -95,8 +97,9 @@ typedef struct _NXGammaValue NXGammaValue;
 - (NSDictionary *)resolution;   // Current resolution of monitor
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution;
 - (CGFloat)refreshRate;         // Monitor refresh rate for resolution
+- (NSPoint)position;
 - (void)setResolution:(NSDictionary *)resolution
-               origin:(NSPoint)origin;
+             position:(NSPoint)position;
 
 //------------------------------------------------------------------------------
 //--- Monitor attributes cache

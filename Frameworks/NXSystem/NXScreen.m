@@ -569,6 +569,22 @@ static id systemScreen = nil;
 
   [self applyDisplayLayout:newLayout];
 }
+
+- (void)setDisplay:(NXDisplay *)display
+            origin:(NSPoint)origin
+{
+  NSRect  frame = [display frame];
+  NSArray *newLayout;
+
+  if ((origin.x != frame.origin.x) || (origin.y != frame.origin.y))
+    {
+      frame.origin = origin;
+      [display setFrame:frame];
+  
+      newLayout = [self arrangeDisplays];
+      [self applyDisplayLayout:newLayout];
+    }
+}
 //------------------------------------------------------------------------------
 // Layouts
 //------------------------------------------------------------------------------
@@ -784,7 +800,7 @@ static id systemScreen = nil;
   // XRandR error and application will be terminated.
   for (NXDisplay *d in [self connectedDisplays])
     {
-      [d setResolution:[NXDisplay zeroResolution] origin:[d frame].origin];
+      [d setResolution:[NXDisplay zeroResolution] position:[d frame].origin];
     }
 
   // Set new screen size for new layout
@@ -809,7 +825,7 @@ static id systemScreen = nil;
           resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
           origin = NSPointFromString([displayLayout
                                        objectForKey:NXDisplayOriginKey]);
-          [display setResolution:resolution origin:origin];
+          [display setResolution:resolution position:origin];
 
           gamma = [displayLayout objectForKey:NXDisplayGammaKey];
           [display setGammaFromDescription:gamma];
@@ -859,8 +875,8 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
 {
   NSArray      *newLayout;
   NSRect       frame, hiddenFrame;
-  NSSize       resolutionSize;
-  NSPoint      originPoint;
+  NSSize       displaySize;
+  NSPoint      displayPosition;
   NSArray      *sortedDisplays;
   NSDictionary *resolution;
   CGFloat      xShift = 0.0, yShift = 0.0, xPoint = 0.0;
@@ -875,19 +891,21 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
   for (NXDisplay *d in sortedDisplays)
     {
       frame = [d frame];
-      resolutionSize = NSSizeFromString([[d resolution] objectForKey:@"Size"]);
+      displaySize = NSSizeFromString([[d resolution] objectForKey:@"Size"]);
+      displayPosition = [d position];
       if ([d isActive] == YES)
         {
-          if ((frame.size.width > 0 && frame.size.height > 0) &&
-              ((frame.size.width != resolutionSize.width) ||
-               (frame.size.height != resolutionSize.height)))
+          // if ((frame.size.width > 0 && frame.size.height > 0)
+          if (!NSIsEmptyRect(frame) &&
+              (!NSEqualSizes(frame.size, displaySize) ||
+               !NSEqualPoints(frame.origin, displayPosition)))
             {// Change resolution to 'frame'
               resolution = [d resolutionWithWidth:frame.size.width
                                            height:frame.size.height
                                              rate:0.0];
               NSLog(@"Change resolution %@: %@",
                     [d outputName], resolution);
-              xShift = frame.size.width - resolutionSize.width;
+              xShift = frame.size.width - displaySize.width;
             }
           else if ((frame.size.width == 0.0) || (frame.size.height == 0.0))
             {
@@ -917,8 +935,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
                     [d outputName], xShift, NSStringFromRect([d frame]));
             }
         }
-      else if ([d isActive] == NO &&
-               (frame.size.width > 0 && frame.size.height > 0))
+      else if ([d isActive] == NO && !NSIsEmptyRect(frame))
         { // Activate, use 'frame'
           if (xPoint)
             {

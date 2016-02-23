@@ -238,6 +238,7 @@
           currResolution = [self resolutionWithWidth:mode_info.width
                                               height:mode_info.height
                                                 rate:rate];
+          currPosition = frame.origin;
           isActive = YES;
           
           XRRFreeCrtcInfo(crtc_info);
@@ -249,11 +250,8 @@
   else if ([allResolutions count] > 0)
     {
       // hiddenFrame = NSMakeRect(0,0,0,0);
-      currResolution = [[NSDictionary
-                         dictionaryWithObjectsAndKeys:
-                           NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
-                            [NSNumber numberWithFloat:0.0], NXDisplayRateKey,
-                         nil] retain];
+      ASSIGN (currResolution, [NXDisplay zeroResolution]);
+      currPosition = NSMakePoint(0,0);
       hiddenFrame.size = NSSizeFromString([[self bestResolution]
                                             objectForKey:NXDisplaySizeKey]);
     }
@@ -419,13 +417,18 @@
   return rate;
 }
 
+- (NSPoint)position
+{
+  return currPosition;
+}
+
 // Sets resolution without changing layout of displays.
 // Updates 'frame', 'rate' and 'currResolution' ivars.
 // Doesn't change 'isActive' ivar.
 // If you want to relayout displays with new resolution use
 // [NXScreen setDisplay:resolution:] instead.
 - (void)setResolution:(NSDictionary *)resolution
-               origin:(NSPoint)origin
+             position:(NSPoint)position
 {
   XRROutputInfo      *output_info;
   XRRCrtcInfo        *crtc_info;
@@ -439,7 +442,7 @@
   NSLog(@"%s: Set resolution %@ and origin %@", 
         output_info->name,
         [resolution objectForKey:NXDisplaySizeKey],
-        NSStringFromPoint(origin));
+        NSStringFromPoint(position));
  
   rr_crtc = output_info->crtc;
   if (!rr_crtc)
@@ -481,24 +484,29 @@
   
   // Current and new modes differ
   if (crtc_info->mode != rr_mode ||
-      crtc_info->x != origin.x ||
-      crtc_info->y != origin.y)
+      crtc_info->x != position.x ||
+      crtc_info->y != position.y)
     {
       XRRSetCrtcConfig(xDisplay,
                        screen_resources,
                        rr_crtc,
                        crtc_info->timestamp,
-                       origin.x, origin.y,
+                       position.x, position.y,
                        rr_mode,
                        crtc_info->rotation,
                        crtc_info->outputs,
                        crtc_info->noutput);
     }
-  
-  frame = NSMakeRect(origin.x, origin.y,
+
+  // Update frame, so currResolution.size == frame.size and
+  // currPosition == frame.origin
+  frame = NSMakeRect(position.x, position.y,
                      resolutionSize.width, resolutionSize.height);
-  rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
+
+  // Save values which represent current monitor state
   ASSIGN(currResolution, resolution);
+  rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
+  currPosition = position;
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
