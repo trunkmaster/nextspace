@@ -648,48 +648,47 @@
      В основном вся магия находится в [NXDisplay _getGamma]. При вычислении
      гаммы используется магическое число '0.5'. Не до конца понимаю почему,
      но работает. Может потом нужно будет разобраться до конца.
-**** TODO NXDisplay: Resolution, Origin и frame
-***** Размышления
-      Кажется, что изменения должны быть концептульнее. Сейчас frame напрямую
-      связан с Resolution и Origin: изменение Resolution обновляет frame если
-      Resolution width и height больше 0.
-
-      На самом деле это не имеет смысла поскольку в случае изменений генерится
-      событие RandR, которое приводит к пересозданию NXDisplay. Для выключенных
-      мониторов (был вызван -deactivate) это приводит к значениям 0 для всех
-      значений frame.origin.
-
-      frame - сохраненная информация о разрешении и положении.
-      При запросе разрешения (NSDictionary - {Size={}, Rate={}}) по
-      сохраненным значения, которые входят в 'frame' находится resolution из
-      списка поддерживаемых монитором. Таким образом, основной ivar, которая
-      характеризует монитор - 'frame'. Вот на нее и стот обратить пристальное
-      внимание.
-
-      Заменять Resolution = {} и Origin = {} на Frame смысла нет. Наоборот,
-      Resolution это копия из списка поддерживаемых разрешений, а Origin
-      устанавливается при вызове -setResolution:origin:.
-
-      При возникновении события RandR (изменение разрешения, расположения,
-      activate, deactivate) нужно:
+**** NXDisplay: Resolution, Origin и frame
+     Кажется, что изменения должны быть концептульнее. Сейчас frame напрямую
+     связан с Resolution и Origin: изменение Resolution обновляет frame если
+     Resolution width и height больше 0.
+     
+     На самом деле это не имеет смысла поскольку в случае изменений генерится
+     событие RandR, которое приводит к пересозданию NXDisplay. Для выключенных
+     мониторов (был вызван -deactivate) это приводит к значениям 0 для всех
+     значений frame.origin.
+     
+     frame - сохраненная информация о разрешении и положении.
+     При запросе разрешения (NSDictionary - {Size={}, Rate={}}) по
+     сохраненным значения, которые входят в 'frame' находится resolution из
+     списка поддерживаемых монитором. Таким образом, основной ivar, которая
+     характеризует монитор - 'frame'. Вот на нее и стот обратить пристальное
+     внимание.
+     
+     Заменять Resolution = {} и Origin = {} на Frame смысла нет. Наоборот,
+     Resolution это копия из списка поддерживаемых разрешений, а Origin
+     устанавливается при вызове -setResolution:origin:.
+     
+     При возникновении события RandR (изменение разрешения, расположения,
+     activate, deactivate) нужно:
       1. Перечитать XRRScreenResoutrces - уже
       2. Пересоздать список NXDisplay - уже
       3. Переразместить дисплеи относительно друг друга (изменить layout)
          [NXScreen arrangeDisplaysHorizontally]
       4. Применить измененнный layout - [NXScreen applyDisplayLayout:newLayout]
       5. ? Записать layout в пользовательский конфиг
-
-      _Активирование/деактивирование_:
-
-      СЕЙЧАС:
+         
+     _Активирование/деактивирование_:
+     
+     СЕЙЧАС:
       - [NXDisplay deactivate];
       - [NXDisplay setResolution:origin:];
-
+        
       - генерируется событие XRRScreenChangeNotify;
       - [Preferences screenDidChange:];
       - [NXScreen randrUpdateScreenResources];
-
-      НУЖНО, deactivate:
+        
+     НУЖНО, deactivate:
       + [NXScreen deactivateDisplay:(NXDisplay*)];
         + сохраняет текущую 'frame' в 'hiddenFrame';
         + обнуляет значения 'frame'.
@@ -697,34 +696,34 @@
         - пересчитывает 'frame.origin' активных дисплеев со сдвигом влево;
         - строит новый layout на основании 'frame' дисплеев;
       + [NXScreen applyDisplayLayout:(NSArray*)];
-
+        
       + генерируются события XRRScreenChangeNotify;
       + [Preferences screenDidChange:] (будет в Workspace);
       + [NXScreen randrUpdateScreenResources];
         + при обновлении переносит hiddenFrame для неактивных дисплеев.
-
-      _Концепция_
-      
-      Концептуально получается, что любые изменения в характеристиках
-      дисплеев, которые приводят (или могут привести) к изменению layout
-      должны выполняться под управлением (реализовано в) NXScreen.
-      Любые вызовы методов NXDisplay: activate, deactivate,
-      setResolution:origin: приводят к кривому layout. Например:
+          
+     _Концепция_
+     
+     Концептуально получается, что любые изменения в характеристиках
+     дисплеев, которые приводят (или могут привести) к изменению layout
+     должны выполняться под управлением (реализовано в) NXScreen.
+     Любые вызовы методов NXDisplay: activate, deactivate,
+     setResolution:origin: приводят к кривому layout. Например:
       - activate - завершается неуспешно, потому, что RandR screen не может
         вместить новый дисплей (за исключением случая, когда origin={0,0} и
         активируемый дисплей меньше уже активного);
       - deactivate - не обновляет размер RandR screen;
       - setResolution:origin: - завершается неуспешно по той же причине, что и
         activate.
-
-     	 _NXScreenLayout_
+        
+     	_NXScreenLayout_
         
         Наверное нужнен класс, которы позволит удобно манипулировать содрежимым
         layout. Очевидно, нужно будет:
         - находить аттрибуты дисплея;
         - удобно менять Origin, Resolution;
         - хранить предыдущие значения Origin и Resolution;
-**** TODO NXScreen: arrangeDisplays
+**** DONE NXScreen: arrangeDisplays
      DLD - display layout description - NSDictionary
      NXD - NXDisplay live object that represents monitor
 ***** DONE Case 1: деактивация 
@@ -754,7 +753,7 @@
        - adjust other active displays' origins if needed.
 ***** DONE Case 3: смена разрешения (frame.size)
       Active = "YES", "frame.size" != {0,0} and differs from "Resolution"
-***** TODO Case 4: смена позиции (frame.origin)
+***** DONE Case 4: смена позиции (frame.origin)
       Active = "YES", "frame.origin" and differs from "Origin"
 **** TODO Конфиг layout'ов
 ***** TODO Запись конфигов
