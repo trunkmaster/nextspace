@@ -349,7 +349,7 @@ static NXDisplay           *selectedDisplay = nil;
 // Notifications
 - (void)screenDidUpdate:(NSNotification *)aNotif
 {
-  NSLog(@"Display: XRandR screen changed!");
+  NSLog(@"Display: XRandR screen resources was updated, refreshing...");
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
   
