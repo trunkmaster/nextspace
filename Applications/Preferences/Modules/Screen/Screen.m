@@ -87,7 +87,7 @@ static NXPower *power = nil;
 - (void)dealloc
 {
   NSLog(@"Screen: dealloc");
-  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   [image release];
   [dockImage release];
@@ -108,10 +108,10 @@ static NXPower *power = nil;
   displayBoxList = [[NSMutableArray alloc] init];
   [self updateDisplayBoxList];
 
-  [[NSDistributedNotificationCenter defaultCenter]
+  [[NSNotificationCenter defaultCenter]
     addObserver:self
-       selector:@selector(screenDidChange:)
-           name:NXScreenDidChangeNotification
+       selector:@selector(screenDidUpdate:)
+           name:NXScreenDidUpdateNotification
          object:nil];
 
   // Open/close lid events
@@ -360,10 +360,10 @@ static NXPower *power = nil;
 //
 // Notifications
 //
-- (void)screenDidChange:(NSNotification *)aNotif
+- (void)screenDidUpdate:(NSNotification *)aNotif
 {
+  NSLog(@"Preferences: screen configuration was updated by NXScreen");
   selectedBox = nil;
-  [[NXScreen sharedScreen] randrUpdateScreenResources];
   [self updateDisplayBoxList];
 }
 

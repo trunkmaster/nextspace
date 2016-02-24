@@ -150,3 +150,4 @@ extern NSString *NXDisplayPropertiesKey;
 
 // Notifications
 extern NSString *NXScreenDidChangeNotification;
+extern NSString *NXScreenDidUpdateNotification;
