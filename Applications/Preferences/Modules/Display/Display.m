@@ -88,10 +88,10 @@ static NXDisplay           *selectedDisplay = nil;
   // { // Window background
   // }
 
-  [[NSDistributedNotificationCenter defaultCenter]
+  [[NSNotificationCenter defaultCenter]
     addObserver:self
-       selector:@selector(screenDidChange:)
-           name:NXScreenDidChangeNotification
+       selector:@selector(screenDidUpdate:)
+           name:NXScreenDidUpdateNotification
          object:nil];
 }
 
@@ -156,14 +156,10 @@ static NXDisplay           *selectedDisplay = nil;
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive])
     {
-      // [[NXScreen sharedScreen]
-      //   setDisplay:selectedDisplay
-      //   resolution:[[rateBtn selectedCell] representedObject]
-      //       origin:[selectedDisplay frame].origin];
       [[NXScreen sharedScreen]
          setDisplay:selectedDisplay
          resolution:[[rateBtn selectedCell] representedObject]];
-    }  
+    }
 }
 
 - (void)selectFirstEnabledMonitor
@@ -351,10 +347,9 @@ static NXDisplay           *selectedDisplay = nil;
 }
 
 // Notifications
-- (void)screenDidChange:(NSNotification *)aNotif
+- (void)screenDidUpdate:(NSNotification *)aNotif
 {
   NSLog(@"Display: XRandR screen changed!");
-  [[NXScreen sharedScreen] randrUpdateScreenResources];
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
   

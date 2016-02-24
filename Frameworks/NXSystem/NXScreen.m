@@ -69,6 +69,7 @@ NSString *NXDisplayPropertiesKey = @"Properties";
 
 // Notifications
 NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
+NSString *NXScreenDidUpdateNotification = @"NXScreenDidUpdateNotification";
 
 static id systemScreen = nil;
 
@@ -250,6 +251,12 @@ static id systemScreen = nil;
         }
     }
 
+  [[NSDistributedNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(randrScreenDidChange:)
+           name:NXScreenDidChangeNotification
+         object:nil];
+
   return self;
 }
 
@@ -257,6 +264,8 @@ static id systemScreen = nil;
 {
   NSLog(@"NXScreen: dealloc");
   
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+
   XRRFreeScreenResources(screen_resources);
   
   XCloseDisplay(xDisplay);
@@ -271,6 +280,13 @@ static id systemScreen = nil;
 // Screen resources attributes
 //------------------------------------------------------------------------------
 //
+
+// External notification - NXScreenDidChangeNotification.
+// XRRScreenResources update will generate NXScreenDidUpdateNotification.
+- (void)randrScreenDidChange:(NSNotification *)aNotif
+{
+  [self randrUpdateScreenResources];
+}
 
 - (XRRScreenResources *)randrScreenResources
 {
@@ -329,6 +345,10 @@ static id systemScreen = nil;
   sizeInMilimeters = [self _sizeInMilimeters];
 
   [updateScreenLock unlock];
+
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:NXScreenDidUpdateNotification
+                  object:nil];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -562,23 +582,21 @@ static id systemScreen = nil;
   NSArray *newLayout;
 
   newFrame.size = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
-
   [display setFrame:newFrame];
   
   newLayout = [self arrangeDisplays];
-
   [self applyDisplayLayout:newLayout];
 }
 
 - (void)setDisplay:(NXDisplay *)display
-            origin:(NSPoint)origin
+          position:(NSPoint)position
 {
   NSRect  frame = [display frame];
   NSArray *newLayout;
 
-  if ((origin.x != frame.origin.x) || (origin.y != frame.origin.y))
+  if (NSEqualPoints(position, frame.origin) == NO)
     {
-      frame.origin = origin;
+      frame.origin = position;
       [display setFrame:frame];
   
       newLayout = [self arrangeDisplays];
