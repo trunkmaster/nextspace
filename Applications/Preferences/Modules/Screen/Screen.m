@@ -362,7 +362,7 @@ static NXPower *power = nil;
 //
 - (void)screenDidUpdate:(NSNotification *)aNotif
 {
-  NSLog(@"Preferences: screen configuration was updated by NXScreen");
+  NSLog(@"Screen: XRandR screen resources was updated, refreshing...");
   selectedBox = nil;
   [self updateDisplayBoxList];
 }
