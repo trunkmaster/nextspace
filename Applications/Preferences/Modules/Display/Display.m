@@ -361,9 +361,11 @@ static NXDisplay           *selectedDisplay = nil;
 //
 - (void)saveDisplayPreferences
 {
-  [[[NXScreen sharedScreen] currentLayout]
-    writeToFile:[DISPLAYS_CONFIG stringByExpandingTildeInPath]
-     atomically:YES];
+  // [[[NXScreen sharedScreen] currentLayout]
+  //   writeToFile:[DISPLAYS_CONFIG stringByExpandingTildeInPath]
+  //    atomically:YES];
+
+  [[NXScreen sharedScreen] saveCurrentDisplayLayout];
 }
   
 @end
