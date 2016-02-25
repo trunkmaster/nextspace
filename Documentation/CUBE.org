@@ -755,32 +755,39 @@
       Active = "YES", "frame.size" != {0,0} and differs from "Resolution"
 ***** DONE Case 4: смена позиции (frame.origin)
       Active = "YES", "frame.origin" and differs from "Origin"
-**** TODO Конфиг layout'ов
-***** TODO Запись конфигов
-****** TODO Кто и в каких случаях?
-       Нужно определить кто и в каких случаях должен инициировать сохранение
-       конфига. 
-       Пока видятся такие варианты:
-       1. Изменение настроек в Preferences - записывает Preferences
-       2. Изменения извне (xrandr) - Workspace?
-       3. Подключение/отключение мониторов - Workspace?
+**** TODO Запись и чтение конфигов с layout'ами
+***** TODO Кто и в каких случаях?
+      Нужно определить кто и в каких случаях должен инициировать сохранение
+      конфига. 
+      Пока видятся такие варианты:
+      1. Изменение настроек в Preferences - записывает Preferences
+      2. Изменения извне (xrandr) - Workspace?
+      3. Подключение/отключение мониторов - Workspace?
 
-       Единственное пользовательское приложение, которое регистрирует все 3
-       нижеописанных сценария - Workspace. Может пусть и пишет?
-       Если будет писать Workspace, Preferences только инициирует изменения и
-       регистрирует через получение NXScreenDidChangeNotification.
+      Единственное пользовательское приложение, которое регистрирует все 3
+      нижеописанных сценария - Workspace. Может пусть и пишет?
+      Если будет писать Workspace, Preferences только инициирует изменения и
+      регистрирует через получение NXScreenDidChangeNotification.
 
-******* TODO Запись:
-       - (BOOL)[NXScreen writeLayoutAtPath:(NSString*)] или 
-         (BOOL)[NXScreen writeLayoutAtPath:(NSString*) forLayout:(NSArray*)]
-         - (NSString*)[NXScreen configNameForLayout:(NSArrray*)]
-         - (BOOL)[NSArray writeToFile: atomically:YES]
-******* TODO Чтение:
-       - [NXScreen readLayoutAtPath:(NSString*)]
-         - (NSString*)[NXScreen configNameForLayout] - генерация имени файла
-         - (NSDictionary*)[NSArray dictioanryWith]
-****** TODO Класть конфиги в ~/Library/Peferences/.NextSpace -> Workspace
+****** DONE Запись:
+      - [NXScreen saveCurrentDisplayLayout];
+        - (NSString*)[NXScreen _displayConfigFileName]
+        - (BOOL)[[NXScreen currentLayout] writeToFile: atomically:YES]
+****** DONE Чтение:
+      - [NScreen applySavedDisplayLayout]
+        - (NSString*)[NXScreen _displayConfigFileName]
+        - (NSArray*)[NSArray arrayWithContentsOfFile:]
+        - [NXScreen applyDisplayLayout:(NSArray*)]
+***** TODO Класть конфиги в ~/Library/Peferences/.NextSpace -> Workspace
+      Новые методы NXScreen это уже делают.
+      Нужно проверить Login, Workspace и Preferences, чтобы пользовались
+      этими методами.
 ***** TODO Нужно как-то опеределять layout'ы
+      DONE: генерируется файл с именем формата: 
+            Display-<сумма хешей ID дисплеев>.config
+            Нужно проверить как это работает после этого как разберусь с 
+            событиями.
+
       Сейчас нет истории использования ноутбука. Например, если ноутбук был
       подключен к монитору (layout1), а затем был отключен и подключен к
       телевизору (layout2) layout1 будет перзатерт layout2. После возвврата
@@ -802,9 +809,10 @@
       может быть только один вариант искать сохранненый и применять или
       переходить к default layout с автоматическим размещением.
 
-      Таким обрахом, в случае с монитором и телевизором должно быть как
+      Таким образом, в случае с монитором и телевизором должно быть как
       минимум 3 конфига: только встроенный дисплей, встроенный+монитор,
       встроенный+телевизор.
+
 **** TODO События (изменение параметров, подключени/отключение мониторов)
 ***** Мысль №1
      События ловятся через обработку событий X11 (X events). Ловить нужно

@@ -124,12 +124,16 @@
 - (NSArray *)currentLayout;
 - (BOOL)validateLayout:(NSArray *)layout;
 - (BOOL)applyDisplayLayout:(NSArray *)layout;
+- (BOOL)saveCurrentDisplayLayout;
+- (BOOL)applySavedDisplayLayout;
+
 - (NSArray *)arrangeDisplays;
 
 @end
 
 // Displays.config user path
 #define DISPLAYS_CONFIG @"~/Library/Preferences/Displays.config"
+#define LAYOUTS_DIR     @"~/Library/Preferences/.NextSpace"
 
 // Displays.config field keys
 extern NSString *NXDisplayIsActiveKey;
@@ -142,6 +146,9 @@ extern NSString *NXDisplayGammaBrightnessKey;
 extern NSString *NXDisplayIDKey;
 extern NSString *NXDisplayNameKey;
 extern NSString *NXDisplayOriginKey;
+extern NSString *NXDisplayPositionKey;
+extern NSString *NXDisplayFrameKey;
+extern NSString *NXDisplayHiddenFrameKey;
 extern NSString *NXDisplayResolutionKey;
 extern NSString *NXDisplaySizeKey;
 extern NSString *NXDisplayRateKey;
