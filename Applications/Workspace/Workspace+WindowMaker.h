@@ -36,7 +36,10 @@ dispatch_queue_t wmaker_q;
 
 BOOL xIsWindowManagerAlreadyRunning(void);
 
-BOOL useInternalWindowManager;
+BOOL     useInternalWindowManager;
+
+#import <NXSystem/NXScreen.h>
+NXScreen *systemScreen; // initialized in Workspace_main
 
 //-----------------------------------------------------------------------------
 // Calls related to internals of WindowMaker.
