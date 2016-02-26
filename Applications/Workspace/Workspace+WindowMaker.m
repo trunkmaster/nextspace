@@ -11,9 +11,6 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
-#import <NXSystem/NXScreen.h>
-
-// #import <GNUstepGUI/GSDisplayServer.h>
 
 #import "Workspace+WindowMaker.h"
 #import "Operations/ProcessManager.h"
@@ -754,10 +751,17 @@ static void moveDock(WDock *dock, int new_x, int new_y)
 #include <X11/extensions/Xinerama.h>
 void XWUpdateScreenInfo(WScreen *scr)
 {
-  NXScreen *systemScreen;
+  // NXScreen *systemScreen;
   NSRect   dRect;
   int      dWidth;
-  
+
+  NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
+
+  // Send notification to active NXScreen applications (Workspace included)
+  [[NSDistributedNotificationCenter defaultCenter]
+    postNotificationName:NXScreenDidChangeNotification
+                  object:nil];
+
   // WScreen *scr = wScreenWithNumber(0);
   
   // 1. Update screen dimensions
@@ -783,10 +787,9 @@ void XWUpdateScreenInfo(WScreen *scr)
 
   // 4.1 Get info about main display
   // systemScreen = [[NXScreen alloc] init];
-  systemScreen = [[NXScreen alloc] init];
   dRect = [[systemScreen mainDisplay] frame];
+  // dRect = [[[NXScreen sharedScreen] mainDisplay] frame];
   dWidth = dRect.origin.x + dRect.size.width;
-  [systemScreen release];
   
   // 4.2 Move Dock
   // Place Dock into main display with changed usable area.
@@ -801,9 +804,11 @@ void XWUpdateScreenInfo(WScreen *scr)
   // 6. Save Dock state with new position and screen size
   wScreenSaveState(scr);
 
-  [[NSDistributedNotificationCenter defaultCenter]
-    postNotificationName:NXScreenDidChangeNotification
-                  object:nil];
+  // Save changed layout in user's prefernces directory
+  // [[NXScreen sharedScreen] saveCurrentDisplayLayout];
+  // [[NXScreen sharedScreen] release];
+  [systemScreen saveCurrentDisplayLayout];
+  // [systemScreen release];
 }
 
 #endif //NEXTSPACE

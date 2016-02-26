@@ -208,7 +208,7 @@ static id systemScreen = nil;
       self = systemScreen = [NXScreen new];
     }
 
-  return systemScreen;
+  return [systemScreen autorelease];
 }
 
 - (id)init
@@ -859,7 +859,8 @@ static id systemScreen = nil;
 
       // Do not set resolution for already deactivated displays
       // (code block right before XRRSetScreenSize() call).
-      if ([display isActive])
+      if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
+            isEqualToString:@"YES"])
         {
           if ([display isBuiltin] && [NXPower isLidClosed])
             continue;
@@ -884,33 +885,35 @@ static id systemScreen = nil;
 - (NSString *)_displayConfigFileName
 {
   NSUInteger layoutHash = 0;
+  NSString   *configDir;
+
+  // Construct path to config file
+  configDir = [LAYOUTS_DIR stringByExpandingTildeInPath];
   
   for (NXDisplay *d in [self connectedDisplays])
     {
       layoutHash += [[d uniqueID] hash];
     }
   
-  return [NSString stringWithFormat:@"Displays-%lu.config", layoutHash];
+  return [NSString stringWithFormat:@"%@/Displays-%lu.config",
+                   configDir, layoutHash];
 }
 
 - (BOOL)saveCurrentDisplayLayout
 {
-  NSString *configPath;
+  NSString *configFile = [self _displayConfigFileName];
+  NSString *configDir = [configFile stringByDeletingLastPathComponent];
 
   // Construct path to config file
-  configPath = [LAYOUTS_DIR stringByExpandingTildeInPath];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:configPath])
+  if (![[NSFileManager defaultManager] fileExistsAtPath:configDir])
     {
-      [[NSFileManager defaultManager] createDirectoryAtPath:configPath
+      [[NSFileManager defaultManager] createDirectoryAtPath:configDir
                                 withIntermediateDirectories:YES
                                                  attributes:nil
                                                       error:NULL];
     }
   
-  configPath = [configPath
-                 stringByAppendingPathComponent:[self _displayConfigFileName]];
-  
-  return [[self currentLayout] writeToFile:configPath atomically:YES];
+  return [[self currentLayout] writeToFile:configFile atomically:YES];
 }
 
 - (BOOL)applySavedDisplayLayout
@@ -921,9 +924,11 @@ static id systemScreen = nil;
 
   if (layout)
     {
+      NSLog(@"Apply display layout saved in %@", [self _displayConfigFileName]);
       return [self applyDisplayLayout:layout];
     }
   
+  NSLog(@"Apply automatic default display layout");
   return [self applyDisplayLayout:[self defaultLayout:YES]];
 }
 

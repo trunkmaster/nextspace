@@ -30,18 +30,13 @@ int main(int argc, const char **argv)
       NSLog(@"Starting Workspace Manager...");
       
       //--- Apply saved Display layout
-      @autoreleasepool
-        {
-          NSString *configPath = [DISPLAYS_CONFIG stringByExpandingTildeInPath];
-
+      // @autoreleasepool
+      //   {
           NSLog(@"Apply saved display layout...");
-      
-          if ([[NSFileManager defaultManager] fileExistsAtPath:configPath])
-            {
-              [[NXScreen sharedScreen]
-                applyDisplayLayout:[NSArray arrayWithContentsOfFile:configPath]];
-            }
-        }
+          systemScreen = [NXScreen new];
+          [systemScreen applySavedDisplayLayout];
+          // [screen release];
+        // }
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);
@@ -63,6 +58,7 @@ int main(int argc, const char **argv)
                         }
                     });
       //---------------------------------------------------------------------
+      DESTROY(systemScreen);
     }
   else
 #endif // NEXTSPACE
