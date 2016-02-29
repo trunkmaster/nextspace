@@ -82,13 +82,13 @@
   Display        *xDisplay;
   Window         xRootWindow;
 
-  NSLock         *updateScreenLock;
+  NSLock *updateScreenLock;
   
   XRRScreenResources *screen_resources;
   
   NSMutableArray *systemDisplays;
 
-  NSSize         sizeInPixels, sizeInMilimeters;
+  NSSize sizeInPixels, sizeInMilimeters;
 }
 
 + (id)sharedScreen;
