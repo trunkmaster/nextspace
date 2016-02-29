@@ -188,7 +188,7 @@
   self = [super init];
 
   xDisplay = x_display;
-  screen = [scr retain];
+  screen = scr;
   screen_resources = scr_res;
 
   isMain = NO;
@@ -249,7 +249,6 @@
     }
   else if ([allResolutions count] > 0)
     {
-      // hiddenFrame = NSMakeRect(0,0,0,0);
       ASSIGN (currResolution, [NXDisplay zeroResolution]);
       currPosition = NSMakePoint(0,0);
       hiddenFrame.size = NSSizeFromString([[self bestResolution]
@@ -270,11 +269,12 @@
 
 - (void)dealloc
 {
-  [screen release];
+  NSLog(@"NXDisplay %@: -dealloc", outputName);
 
   [properties release];
   [outputName release];
-  [allResolutions release];
+  NSLog(@"NXDisplay allResolution: %@", allResolutions);
+  // [allResolutions release];
   
   [super dealloc];
 }

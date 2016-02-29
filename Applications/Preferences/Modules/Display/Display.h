@@ -48,6 +48,8 @@
   NSColorWell *colorBtn;
 
   NSImage *image;
+
+  NXScreen *systemScreen;
 }
 
 //
@@ -56,8 +58,6 @@
 - (void)fillRateButton;
 - (void)setResolution;
 - (void)selectFirstEnabledMonitor;
-
-- (void)saveDisplayPreferences;
 
 @end
 

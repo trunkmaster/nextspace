@@ -74,7 +74,7 @@ NSString *NXDisplayPropertiesKey = @"Properties";
 NSString *NXScreenDidChangeNotification = @"NXScreenDidChangeNotification";
 NSString *NXScreenDidUpdateNotification = @"NXScreenDidUpdateNotification";
 
-static id systemScreen = nil;
+static NXScreen *systemScreen = nil;
 
 @interface NXScreen (Private)
 - (NSSize)_sizeInPixels;
@@ -205,10 +205,10 @@ static id systemScreen = nil;
 {
   if (systemScreen == nil)
     {
-      self = systemScreen = [NXScreen new];
+      systemScreen = [[NXScreen alloc] init];
     }
 
-  return [systemScreen autorelease];
+  return systemScreen;
 }
 
 - (id)init
@@ -254,6 +254,7 @@ static id systemScreen = nil;
         }
     }
 
+  // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   [[NSDistributedNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(randrScreenDidChange:)
@@ -273,6 +274,7 @@ static id systemScreen = nil;
   
   XCloseDisplay(xDisplay);
 
+  [systemDisplays release];
   [updateScreenLock release];
 
   [super dealloc];
@@ -288,6 +290,14 @@ static id systemScreen = nil;
 // XRRScreenResources update will generate NXScreenDidUpdateNotification.
 - (void)randrScreenDidChange:(NSNotification *)aNotif
 {
+  if ([[aNotif object] isEqualToString:@"WorkspaceManager"])
+    {
+      NSLog(@"NXScreen: received NXScreenDidChangeNotification "
+            "from Workspace Manager. Skip updating XRandR screen resources. "
+            "Assuming it's already done.");
+      return;
+    }
+  
   [self randrUpdateScreenResources];
 }
 
@@ -342,16 +352,17 @@ static id systemScreen = nil;
     }
 
   ASSIGN(systemDisplays, new_systemDisplays);
+  [new_systemDisplays release];
   
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
   sizeInMilimeters = [self _sizeInMilimeters];
 
-  [updateScreenLock unlock];
-
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NXScreenDidUpdateNotification
                   object:nil];
+  
+  [updateScreenLock unlock];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -555,8 +566,10 @@ static id systemScreen = nil;
 
   [display setFrame:[display hiddenFrame]];
   newLayout = [self arrangeDisplays];
-  
+
+  XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
+  XUnlockDisplay(xDisplay);
 }
 
 - (void)deactivateDisplay:(NXDisplay *)display
@@ -575,7 +588,9 @@ static id systemScreen = nil;
   // Major focus is on frame.origin of all active displays.
   newLayout = [self arrangeDisplays];
   
+  XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
+  XUnlockDisplay(xDisplay);
 }
 
 - (void)setDisplay:(NXDisplay *)display

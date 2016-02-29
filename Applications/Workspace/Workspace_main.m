@@ -28,22 +28,24 @@ int main(int argc, const char **argv)
   if (useInternalWindowManager)
     {
       NSLog(@"Starting Workspace Manager...");
+
+      systemScreen = [[NXScreen alloc] init];
       
       //--- Apply saved Display layout
       // @autoreleasepool
       //   {
-          NSLog(@"Apply saved display layout...");
-          systemScreen = [NXScreen new];
-          [systemScreen applySavedDisplayLayout];
-          // [screen release];
-        // }
+      //     NSLog(@"Apply saved display layout...");
+      //     [systemScreen applySavedDisplayLayout];
+      //   }
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);
 
       //--- WindowMaker queue -----------------------------------------------
       dispatch_sync(wmaker_q,
-                    ^{ WWMInitializeWindowMaker(argc, (char **)argv); });
+                    ^{
+                      WWMInitializeWindowMaker(argc, (char **)argv);
+                    });
 
       // Start X11 EventLoop in parallel
       dispatch_async(wmaker_q, ^{ EventLoop(); });
@@ -53,12 +55,13 @@ int main(int argc, const char **argv)
                     ^{
                       @autoreleasepool
                         {
+                          // systemScreen = [[NXScreen alloc] init];
                           NSApplicationMain(argc, argv);
                           NSLog(@"Workspace applicaton terminated.");
                         }
                     });
       //---------------------------------------------------------------------
-      DESTROY(systemScreen);
+      [systemScreen release];
     }
   else
 #endif // NEXTSPACE

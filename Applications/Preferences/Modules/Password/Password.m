@@ -37,6 +37,7 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)dealloc
 {
+  NSLog(@"Password -dealloc");
   [image release];
   [super dealloc];
 }

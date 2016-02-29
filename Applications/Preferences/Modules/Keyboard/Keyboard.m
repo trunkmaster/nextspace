@@ -154,6 +154,7 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)dealloc
 {
+  NSLog(@"KeyboardPrefs -dealloc");
   [image release];
   [super dealloc];
 }

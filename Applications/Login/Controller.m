@@ -34,7 +34,6 @@
 
 #import <dispatch/dispatch.h>
 
-#import <NXSystem/NXScreen.h>
 #import <NXSystem/NXDisplay.h>
 
 static NSString

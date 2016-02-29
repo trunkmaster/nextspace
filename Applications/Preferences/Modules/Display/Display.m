@@ -70,7 +70,11 @@ static NXDisplay           *selectedDisplay = nil;
 
 - (void)dealloc
 {
+  NSLog(@"DisplayPrefs -dealloc");
+  
   [image release];
+  [systemScreen release];
+  [view release];
   [super dealloc];
 }
 
@@ -78,6 +82,8 @@ static NXDisplay           *selectedDisplay = nil;
 {
   [view retain];
   [window release];
+
+  systemScreen = [[NXScreen alloc] init];
 
   [monitorsList loadColumnZero];
   [self selectFirstEnabledMonitor];
@@ -156,9 +162,8 @@ static NXDisplay           *selectedDisplay = nil;
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive])
     {
-      [[NXScreen sharedScreen]
-         setDisplay:selectedDisplay
-         resolution:[[rateBtn selectedCell] representedObject]];
+      [systemScreen setDisplay:selectedDisplay
+                    resolution:[[rateBtn selectedCell] representedObject]];
     }
 }
 
@@ -271,7 +276,7 @@ static NXDisplay           *selectedDisplay = nil;
 - (IBAction)backgroundChanged:(id)sender
 {
   NSLog(@"Display: backgroundChanged");
-  [[NXScreen sharedScreen] setBackgroundColor:[colorBtn color]];
+  [systemScreen setBackgroundColor:[colorBtn color]];
 }
 
 //
@@ -294,7 +299,7 @@ static NXDisplay           *selectedDisplay = nil;
   if (column > 0)
     return;
 
-  for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
+  for (NXDisplay *d in [systemScreen connectedDisplays])
     {
       [matrix addRow];
       bc = [matrix cellAtRow:[matrix numberOfRows]-1 column:0];
@@ -343,7 +348,7 @@ static NXDisplay           *selectedDisplay = nil;
       [tf setIntValue:[strVal intValue]];
     }
 
-  [self saveDisplayPreferences];
+  [systemScreen saveCurrentDisplayLayout];
 }
 
 // Notifications
@@ -353,19 +358,11 @@ static NXDisplay           *selectedDisplay = nil;
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
   
-  [self saveDisplayPreferences];
+  // [systemScreen saveCurrentDisplayLayout];
 }
 
 //
 // Utility methods
 //
-- (void)saveDisplayPreferences
-{
-  // [[[NXScreen sharedScreen] currentLayout]
-  //   writeToFile:[DISPLAYS_CONFIG stringByExpandingTildeInPath]
-  //    atomically:YES];
-
-  [[NXScreen sharedScreen] saveCurrentDisplayLayout];
-}
   
 @end

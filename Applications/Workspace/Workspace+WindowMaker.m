@@ -755,12 +755,9 @@ void XWUpdateScreenInfo(WScreen *scr)
   NSRect   dRect;
   int      dWidth;
 
-  NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
+  XLockDisplay(dpy);
 
-  // Send notification to active NXScreen applications (Workspace included)
-  [[NSDistributedNotificationCenter defaultCenter]
-    postNotificationName:NXScreenDidChangeNotification
-                  object:nil];
+  // NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
 
   // WScreen *scr = wScreenWithNumber(0);
   
@@ -786,9 +783,8 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenUpdateUsableArea(scr);
 
   // 4.1 Get info about main display
-  // systemScreen = [[NXScreen alloc] init];
+  [systemScreen randrUpdateScreenResources];
   dRect = [[systemScreen mainDisplay] frame];
-  // dRect = [[[NXScreen sharedScreen] mainDisplay] frame];
   dWidth = dRect.origin.x + dRect.size.width;
   
   // 4.2 Move Dock
@@ -805,10 +801,16 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenSaveState(scr);
 
   // Save changed layout in user's prefernces directory
-  // [[NXScreen sharedScreen] saveCurrentDisplayLayout];
-  // [[NXScreen sharedScreen] release];
   [systemScreen saveCurrentDisplayLayout];
-  // [systemScreen release];
+  // NSLog(@"XRRScreenChangeNotify: END");
+  XUnlockDisplay(dpy);
+
+  // NSLog(@"Sending NXScreenDidChangeNotification...");
+  // Send notification to active NXScreen applications.
+  // Our NXScreen should skip updating screen info.
+  [[NSDistributedNotificationCenter defaultCenter]
+     postNotificationName:NXScreenDidChangeNotification
+                   object:@"WorkspaceManager"];
 }
 
 #endif //NEXTSPACE

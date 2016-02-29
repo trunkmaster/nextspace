@@ -53,6 +53,7 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)dealloc
 {
+  NSLog(@"Mouse -dealloc");
   [image release];
   [super dealloc];
 }

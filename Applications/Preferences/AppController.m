@@ -50,10 +50,10 @@ static NSUserDefaults *defaults = nil;
   return self;
 }
 
-- (void)dealloc
-{
-  [super dealloc];
-}
+// - (void)dealloc
+// {
+//   [super dealloc];
+// }
 
 - (void)awakeFromNib
 {
@@ -75,14 +75,12 @@ static NSUserDefaults *defaults = nil;
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-  [prefsController release];
   return YES;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
   [prefsController release];
-  prefsController = nil;
 }
 
 - (void)applicationDidBecomeActive:(NSNotification*)aNotification

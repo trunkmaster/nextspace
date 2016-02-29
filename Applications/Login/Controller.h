@@ -33,6 +33,7 @@
 #import <AppKit/AppKit.h>
 
 #import <NXFoundation/NXDefaults.h>
+#import <NXSystem/NXScreen.h>
 
 #import "LoginWindow.h"
 
@@ -57,6 +58,8 @@ extern NSString *SessionDidCloseNotification;
   Display              *xDisplay;
   Window               xRootWindow;
   Window               xPanelWindow;
+
+  NXScreen	       *screen;
 
   // Preferences
   NXDefaults           *prefs;
