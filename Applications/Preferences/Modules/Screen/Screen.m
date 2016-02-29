@@ -30,10 +30,6 @@
 #import <AppKit/NSBox.h>
 #import <AppKit/NSImage.h>
 #import <AppKit/NSButton.h>
-#import <AppKit/NSTableView.h>
-#import <AppKit/NSTableColumn.h>
-#import <AppKit/NSBrowser.h>
-#import <AppKit/NSMatrix.h>
 #import <AppKit/NSGraphics.h>
 
 #import <AppKit/PSOperators.h>
@@ -86,7 +82,7 @@ static NXPower *power = nil;
 
 - (void)dealloc
 {
-  NSLog(@"Screen: dealloc");
+  NSLog(@"Screen: -dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   [image release];
@@ -95,6 +91,8 @@ static NXPower *power = nil;
   [iconYardImage release];
   
   [displayBoxList release];
+
+  [systemScreen release];
   
   [super dealloc];
 }
@@ -104,6 +102,7 @@ static NXPower *power = nil;
   [view retain];
   [window release];
 
+  systemScreen = [[NXScreen alloc] init];
   // Get info about monitors and layout
   displayBoxList = [[NSMutableArray alloc] init];
   [self updateDisplayBoxList];
@@ -164,7 +163,7 @@ static NXPower *power = nil;
   [setStateBtn setTitle:[sender isActive] ? @"Disable" : @"Enable"];
   
   if (([sender isActive] &&
-       [[[NXScreen sharedScreen] activeDisplays] count] > 1) ||
+       [[systemScreen activeDisplays] count] > 1) ||
       (![sender isActive] && ![NXPower isLidClosed]))
     {
       [setStateBtn setEnabled:YES];
@@ -179,18 +178,18 @@ static NXPower *power = nil;
 {
   // NXScreen -> [NXDisplay setMain:] -> [NXScreen _refreshDisplaysInfo]
   // [NXDisplay setMain:] will generate NXScreenDidChangeNotification.
-  [[NXScreen sharedScreen] setMainDisplay:[selectedBox display]];
+  [systemScreen setMainDisplay:[selectedBox display]];
 }
 
 - (void)setDisplayState:(id)sender
 {
   if ([[sender title] isEqualToString:@"Disable"])
     {
-      [[NXScreen sharedScreen] deactivateDisplay:[selectedBox display]];
+      [systemScreen deactivateDisplay:[selectedBox display]];
     }
   else
     {
-      [[NXScreen sharedScreen] activateDisplay:[selectedBox display]];
+      [systemScreen activateDisplay:[selectedBox display]];
     }
 }
 
@@ -233,10 +232,9 @@ static NXPower *power = nil;
     {
       [dBox removeFromSuperview];
     }
-  dBox = nil;
   [displayBoxList removeAllObjects];
   
-  displays = [[NXScreen sharedScreen] connectedDisplays];
+  displays = [systemScreen connectedDisplays];
   
   // Calculate scale factor
   for (NXDisplay *d in displays)
@@ -288,6 +286,7 @@ static NXPower *power = nil;
           [canvas addSubview:dBox];
         }
       [displayBoxList addObject:dBox];
+      [dBox release];
     }
 
   [self arrangeDisplayBoxes];
@@ -322,7 +321,7 @@ static NXPower *power = nil;
 - (void)arrangeDisplayBoxes
 {
   NSRect  dRect, sRect = [canvas frame];
-  NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
+  NSSize  screenSize = [systemScreen sizeInPixels];
   CGFloat xOffset, yOffset;
 
   // Include inactive display into screen size
@@ -363,7 +362,6 @@ static NXPower *power = nil;
 - (void)screenDidUpdate:(NSNotification *)aNotif
 {
   NSLog(@"Screen: XRandR screen resources was updated, refreshing...");
-  selectedBox = nil;
   [self updateDisplayBoxList];
 }
 
@@ -372,7 +370,7 @@ static NXPower *power = nil;
   NXDisplay *builtinDisplay = nil;
 
   // for (DisplayBox *db in displayBoxList)
-  for (NXDisplay *d in [[NXScreen sharedScreen] connectedDisplays])
+  for (NXDisplay *d in [systemScreen connectedDisplays])
     {
       if ([d isBuiltin])
         {
@@ -386,13 +384,13 @@ static NXPower *power = nil;
       if (![[aNotif object] isLidClosed] && ![builtinDisplay isActive])
         {
           NSLog(@"Screen: activating display %@", [builtinDisplay outputName]);
-          [[NXScreen sharedScreen] activateDisplay:builtinDisplay];
+          [systemScreen activateDisplay:builtinDisplay];
         }
       else if ([[aNotif object] isLidClosed] && [builtinDisplay isActive])
         {
           NSLog(@"Screen: DEactivating display %@",
                 [builtinDisplay outputName]);
-          [[NXScreen sharedScreen] deactivateDisplay:builtinDisplay];
+          [systemScreen deactivateDisplay:builtinDisplay];
         }
     }
 }
@@ -451,12 +449,13 @@ static NXPower *power = nil;
 
   owner = prefs;
   
-  display = [aDisplay retain];
+  display = aDisplay;
 
   nameRect = frameRect;
   nameRect.size.height = 15;
   nameRect.origin.x = 0;
   nameRect.origin.y = (frameRect.size.height - nameRect.size.height)/2;
+
   nameField = [[NSTextField alloc] initWithFrame:nameRect];
   [nameField setEditable:NO];
   [nameField setSelectable:NO];
@@ -475,7 +474,7 @@ static NXPower *power = nil;
 
 - (void)dealloc
 {
-  [display release];
+  NSLog(@"Screen: display box %@: -dealloc", [nameField stringValue]);
   [super dealloc];
 }
 

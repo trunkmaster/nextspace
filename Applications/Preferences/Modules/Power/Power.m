@@ -59,6 +59,7 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)dealloc
 {
+  NSLog(@"Power -dealloc");
   [image release];
   [super dealloc];
 }

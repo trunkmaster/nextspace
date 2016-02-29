@@ -74,6 +74,7 @@ static NSMutableDictionary      *domain = nil;
 - (void)dealloc
 {
   [image release];
+  [view release];
   [super dealloc];
 }
 

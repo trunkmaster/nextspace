@@ -80,19 +80,19 @@ void setupDisplays()
 {
   NXScreen  *screen = [NXScreen sharedScreen];
   NSArray   *layout;
-  NSArray   *systemDisplays;
+  // NSArray   *systemDisplays;
 
   // Get layout with monitors aligned horizontally
   layout = [screen defaultLayout:YES];
 
   // Setup initial gamma and brightness
   // And check main display from saved layout is active
-  systemDisplays = [screen activeDisplays];
-  for (NXDisplay *display in systemDisplays)
-    {
-      [display setGammaBrightness:0.0];
-    }
-  [systemDisplays release];
+  // systemDisplays = [screen activeDisplays];
+  // for (NXDisplay *display in systemDisplays)
+  //   {
+  //     [display setGammaBrightness:0.0];
+  //   }
+  // [systemDisplays release];
   
   [screen applyDisplayLayout:layout];
   

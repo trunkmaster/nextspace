@@ -311,6 +311,7 @@ getIntDefault (NSMutableDictionary *dict, NSString *name)
 
 - (void)dealloc
 {
+  NSLog(@"FontPrefs -dealloc");
   [image release];
   [super dealloc];
 }

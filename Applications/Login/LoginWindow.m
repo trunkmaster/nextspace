@@ -70,21 +70,21 @@
 
 - (void)center
 {
-  NXScreen  *rScreen = nil;
+  NXScreen  *screen = nil;
   NXDisplay *mainDisplay = nil;
   NSRect    mDisplayRect, gScreenRect, windowRect;
   NSPoint   newOrigin;
 
   // Get NEXTSPACE screen rect
-  rScreen = [[NXScreen alloc] init];
-  mainDisplay = [rScreen mainDisplay];
+  screen = [NXScreen sharedScreen];
+  NSLog(@"LoginWindow center: %@", screen);
+  mainDisplay = [screen mainDisplay];
   if (!mainDisplay)
     {
-      mainDisplay = [[rScreen activeDisplays] objectAtIndex:0];
+      mainDisplay = [[screen activeDisplays] objectAtIndex:0];
     }
   mDisplayRect = [mainDisplay frame];
   NSLog(@"NEXTSPACE screen size: %@", NSStringFromRect(mDisplayRect));
-  [rScreen release];
 
   // Get GNUstep screen rect
   gScreenRect = [[self screen] frame];

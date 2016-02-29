@@ -80,6 +80,8 @@
   id arrangeBtn;
 
   NSImage *image;
+
+  NXScreen *systemScreen;
   
   NSMutableArray *displayBoxList;
   DisplayBox     *selectedBox;

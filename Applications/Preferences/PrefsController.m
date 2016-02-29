@@ -91,9 +91,10 @@
 - (void)dealloc
 {
   NSLog(@"PrefsController: dealloc");
+  
+  // [[currentModule view] removeFromSuperview];
   [prefsViews release];
   [loadedBundles release];
-  currentModule = nil;
   
   [super dealloc];
 }
@@ -142,6 +143,7 @@
   if ([prefsViews objectForKey:caption] != aPrefsModule)
     {
       [prefsViews setObject:aPrefsModule forKey:caption];
+      [aPrefsModule release];
     }
 
   [button setTitle:caption];
@@ -234,6 +236,7 @@
       if ([self registerPrefsModule:[[bClass alloc] init]] == YES)
         {
           [loadedBundles setObject:bundle forKey:bExecutable];
+          [bundle release];
         }
     }
 }
