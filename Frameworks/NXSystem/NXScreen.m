@@ -352,7 +352,6 @@ static NXScreen *systemScreen = nil;
     }
 
   ASSIGN(systemDisplays, new_systemDisplays);
-  [new_systemDisplays release];
   
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
@@ -361,7 +360,10 @@ static NXScreen *systemScreen = nil;
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NXScreenDidUpdateNotification
                   object:nil];
-  
+
+  // Release here, after notification has been sent.
+  // Otherwise, applications segfault while trying to -release NXDisplays.
+  [new_systemDisplays release];
   [updateScreenLock unlock];
 }
 
