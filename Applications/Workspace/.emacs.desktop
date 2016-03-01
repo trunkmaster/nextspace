@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Feb 29 02:08:16 2016
+;; Created Wed Mar  2 01:32:29 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "Workspace_main.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2339
-  '(2276 nil)
+  1162
+  '(1162 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

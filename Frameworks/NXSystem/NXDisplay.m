@@ -274,11 +274,14 @@
   [properties release];
   [outputName release];
 
+  // NSLog(@"NXDisplay, allResolutions: %@", allResolutions);
+
   // It seems that empty NSArray can't be released safely (why?).
-  if (allResolutions && [allResolutions count] > 0)
-    {
-      [allResolutions release];
-    }
+  // if (allResolutions &&
+  //     ([allResolutions count] > 0 || [allResolutions retainCount] >= 1))
+  //   {
+  [allResolutions release];
+  //   }
   
   [super dealloc];
 }

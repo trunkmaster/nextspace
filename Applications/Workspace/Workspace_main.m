@@ -32,11 +32,11 @@ int main(int argc, const char **argv)
       systemScreen = [[NXScreen alloc] init];
       
       //--- Apply saved Display layout
-      // @autoreleasepool
-      //   {
-      //     NSLog(@"Apply saved display layout...");
-      //     [systemScreen applySavedDisplayLayout];
-      //   }
+      @autoreleasepool
+        {
+          NSLog(@"Apply saved display layout...");
+          [systemScreen applySavedDisplayLayout];
+        }
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);
