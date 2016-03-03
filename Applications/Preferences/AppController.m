@@ -80,7 +80,7 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  [prefsController release];
+  // [prefsController release];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification*)aNotification

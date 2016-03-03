@@ -36,7 +36,7 @@
 @interface DisplayBox : NSBox
 {
   id          owner;
-  NXDisplay   *display;
+  // NXDisplay   *display;
   NSRect      displayFrame;
   
   NSTextField *nameField;
@@ -52,11 +52,12 @@
         display:(NXDisplay *)aDisplay
           owner:(id)prefs; // ugly
 
-- (NXDisplay *)display;
+// - (NXDisplay *)display;
 - (void)setDisplayFrame:(NSRect)rect;
 - (NSRect)displayFrame;
 
 - (void)setName:(NSString *)name;
+- (NSString *)name;
 
 - (void)setActive:(BOOL)active;
 - (BOOL)isActive;

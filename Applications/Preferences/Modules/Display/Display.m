@@ -62,9 +62,6 @@ static NXDisplay           *selectedDisplay = nil;
   NSString *imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  if (!XInitThreads())
-    NSLog(@"Display: multi-threading is not initialized!");
-  
   return self;
 }
 
@@ -72,9 +69,11 @@ static NXDisplay           *selectedDisplay = nil;
 {
   NSLog(@"DisplayPrefs -dealloc");
   
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  
   [image release];
-  [systemScreen release];
-  [view release];
+  // [systemScreen release];
+  // [view release];
   [super dealloc];
 }
 
@@ -99,6 +98,9 @@ static NXDisplay           *selectedDisplay = nil;
        selector:@selector(screenDidUpdate:)
            name:NXScreenDidUpdateNotification
          object:nil];
+
+  // if (!XInitThreads())
+  //   NSLog(@"Display: multi-threading is not initialized!");
 }
 
 - (NSView *)view
