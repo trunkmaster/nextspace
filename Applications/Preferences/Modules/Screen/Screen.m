@@ -176,20 +176,29 @@ static NXPower *power = nil;
 
 - (void)setMainDisplay:(id)sender
 {
+  NXDisplay *display;
+  
+  display = [systemScreen displayWithName:[selectedBox name]];
   // NXScreen -> [NXDisplay setMain:] -> [NXScreen _refreshDisplaysInfo]
   // [NXDisplay setMain:] will generate NXScreenDidChangeNotification.
-  [systemScreen setMainDisplay:[selectedBox display]];
+  [systemScreen setMainDisplay:display];
 }
 
 - (void)setDisplayState:(id)sender
 {
+  NXDisplay *display;
+  
+  display = [systemScreen displayWithName:[selectedBox name]];
+  
   if ([[sender title] isEqualToString:@"Disable"])
     {
-      [systemScreen deactivateDisplay:[selectedBox display]];
+      // [systemScreen deactivateDisplay:[selectedBox display]];
+      [systemScreen deactivateDisplay:display];
     }
   else
     {
-      [systemScreen activateDisplay:[selectedBox display]];
+      // [systemScreen activateDisplay:[selectedBox display]];
+      [systemScreen activateDisplay:display];
     }
 }
 
@@ -208,7 +217,8 @@ static NXPower *power = nil;
   
   for (db in displayBoxList)
     {
-      if ([[db display] isActive])
+      // if ([[db display] isActive])
+      if ([[systemScreen displayWithName:[db name]] isActive])
         {
           [db setSelected:YES];
           break;
@@ -226,6 +236,8 @@ static NXPower *power = nil;
   CGFloat dMaxWidth = 0.0, dMaxHeight = 0.0;
   CGFloat scaleWidth, scaleHeight;
   DisplayBox *dBox;
+
+  NSLog(@"Screen: update display box list.");
 
   // Clear view and array
   for (dBox in displayBoxList)
@@ -449,7 +461,7 @@ static NXPower *power = nil;
 
   owner = prefs;
   
-  display = aDisplay;
+  // display = aDisplay;
 
   nameRect = frameRect;
   nameRect.size.height = 15;
@@ -478,10 +490,10 @@ static NXPower *power = nil;
   [super dealloc];
 }
 
-- (NXDisplay *)display
-{
-  return display;
-}
+// - (NXDisplay *)display
+// {
+//   return display;
+// }
 
 - (void)setDisplayFrame:(NSRect)rect
 {
@@ -496,6 +508,11 @@ static NXPower *power = nil;
 - (void)setName:(NSString *)name
 {
   [nameField setStringValue:name];
+}
+
+- (NSString *)name
+{
+  return [nameField stringValue];
 }
 
 - (void)setActive:(BOOL)active

@@ -290,7 +290,8 @@ static NXScreen *systemScreen = nil;
 // XRRScreenResources update will generate NXScreenDidUpdateNotification.
 - (void)randrScreenDidChange:(NSNotification *)aNotif
 {
-  if ([[aNotif object] isEqualToString:@"WorkspaceManager"])
+  if ([[[NSProcessInfo processInfo] processName] isEqualToString:@"Workspace"]
+      && [[aNotif object] isEqualToString:@"WorkspaceManager"])
     {
       NSLog(@"NXScreen: received NXScreenDidChangeNotification "
             "from Workspace Manager. Skip updating XRandR screen resources. "
@@ -313,13 +314,13 @@ static NXScreen *systemScreen = nil;
 
 - (void)randrUpdateScreenResources
 {
-  NXDisplay      *display;
-  NSMutableArray *new_systemDisplays;
+  NXDisplay *display;
+  BOOL      initialUpdate = NO;
   
   if ([updateScreenLock tryLock] == NO)
     return;
     
-  NSLog(@"NXScreen: Update 'screen_resources' and displays information");
+  NSLog(@"NXScreen: randrUpdateScreenResources: START");
   
   // Reread screen resources
   if (screen_resources)
@@ -328,9 +329,18 @@ static NXScreen *systemScreen = nil;
     }
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
 
-  // Update display information local cache.
-  new_systemDisplays = [[NSMutableArray alloc] init];
+  // Create/clean display information local cache.
+  if (systemDisplays)
+    {
+      [systemDisplays removeAllObjects];
+    }
+  else
+    {
+      systemDisplays = [[NSMutableArray alloc] init];
+      initialUpdate = YES;
+    }
 
+  // Update displays info
   for (int i=0; i < screen_resources->noutput; i++)
     {
       display = [[NXDisplay alloc]
@@ -340,31 +350,28 @@ static NXScreen *systemScreen = nil;
                             xDisplay:xDisplay];
 
       // Set hiddenFrame for inactive displays
-      if (![display isActive] && systemDisplays)
+      if (![display isActive] && !initialUpdate)
         {
           NSRect hfRect;
           hfRect = [[self displayWithID:[display uniqueID]] hiddenFrame];
           [display setHiddenFrame:hfRect];
         }
       
-      [new_systemDisplays addObject:display];
+      [systemDisplays addObject:display];
       [display release];
     }
 
-  ASSIGN(systemDisplays, new_systemDisplays);
-  
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
   sizeInMilimeters = [self _sizeInMilimeters];
 
+  [updateScreenLock unlock];
+  
+  NSLog(@"NXScreen: randrUpdateScreenResources: END");
+  
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NXScreenDidUpdateNotification
                   object:nil];
-
-  // Release here, after notification has been sent.
-  // Otherwise, applications segfault while trying to -release NXDisplays.
-  [new_systemDisplays release];
-  [updateScreenLock unlock];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -565,6 +572,8 @@ static NXScreen *systemScreen = nil;
 - (void)activateDisplay:(NXDisplay *)display
 {
   NSArray *newLayout;
+
+  NSLog(@"NXSystem: activate display: %@", [display outputName]);
 
   [display setFrame:[display hiddenFrame]];
   newLayout = [self arrangeDisplays];
@@ -901,7 +910,7 @@ static NXScreen *systemScreen = nil;
     }
 
   [updateScreenLock unlock];
-  [self randrUpdateScreenResources];
+  // [self randrUpdateScreenResources];
   
   return YES;
 }
