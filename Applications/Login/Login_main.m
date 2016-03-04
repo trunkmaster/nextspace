@@ -95,8 +95,6 @@ void setupDisplays()
   // [systemDisplays release];
   
   [screen applyDisplayLayout:layout];
-  
-  // [layout writeToFile:DISPLAYS_CONFIG atomically:YES];
 }
 
 int main(int argc, const char ** argv)

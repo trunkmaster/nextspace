@@ -2,7 +2,7 @@
    Controller.m
    The main app controller of the Login application.
 
-   This file is part of xSTEP.
+   This file is part of NEXTSPACE.
 
    Copyright (C) 2006
 
@@ -261,7 +261,7 @@ void *alloc(int size)
   XSetWindowBackground(xDisplay, xRootWindow, 5460853L);
   XClearWindow(xDisplay, xRootWindow);
   XSync(xDisplay, false);
- }
+}
 
 - (void)setWindowVisible:(BOOL)flag
 {
