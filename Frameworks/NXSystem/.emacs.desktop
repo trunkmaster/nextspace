@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Mar  3 02:59:45 2016
+;; Created Fri Mar  4 02:43:19 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "NXScreen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  8111
-  '(8111 nil)
+  26277
+  '(26476 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
@@ -33,7 +33,7 @@
   "NXDisplay.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  9074
+  17863
   '(9132 nil)
   nil
   nil

@@ -572,10 +572,23 @@ static NXScreen *systemScreen = nil;
 - (void)activateDisplay:(NXDisplay *)display
 {
   NSArray *newLayout;
+  NSRect  hiddenFrame;
+  NSRect  bestFrame;
 
   NSLog(@"NXSystem: activate display: %@", [display outputName]);
 
-  [display setFrame:[display hiddenFrame]];
+  hiddenFrame = [display hiddenFrame];
+  if (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0)
+    {
+      [display setFrame:hiddenFrame];
+    }
+  else
+    {
+      bestFrame.size = NSSizeFromString([[display bestResolution]
+                                          objectForKey:NXDisplaySizeKey]);
+      [display setFrame:bestFrame];
+    }
+  
   newLayout = [self arrangeDisplays];
 
   XLockDisplay(xDisplay);
@@ -847,6 +860,8 @@ static NXScreen *systemScreen = nil;
 {
   NSSize       newPixSize;
   NSSize       mmSize;
+  NXDisplay    *mainDisplay;
+  NXDisplay    *lastActiveDisplay;
   NXDisplay    *display;
   NSString     *displayName;
   NSDictionary *gamma;
@@ -886,6 +901,7 @@ static NXScreen *systemScreen = nil;
   sizeInPixels = newPixSize;
   
   // Set resolution and gamma to displays
+  mainDisplay = nil;
   for (NSDictionary *displayLayout in layout)
     {
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
@@ -898,6 +914,9 @@ static NXScreen *systemScreen = nil;
         {
           if ([display isBuiltin] && [NXPower isLidClosed])
             continue;
+
+          if ([display isMain])
+            mainDisplay = display;
           
           resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
           origin = NSPointFromString([displayLayout
@@ -906,11 +925,17 @@ static NXScreen *systemScreen = nil;
 
           gamma = [displayLayout objectForKey:NXDisplayGammaKey];
           [display setGammaFromDescription:gamma];
+          lastActiveDisplay = display;
         }
     }
 
+  // No active main displays left. Set main to last processed with loop above.
+  if (!mainDisplay)
+    {
+      [lastActiveDisplay setMain:YES];
+    }
+
   [updateScreenLock unlock];
-  // [self randrUpdateScreenResources];
   
   return YES;
 }

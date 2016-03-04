@@ -350,6 +350,8 @@ static NXDisplay           *selectedDisplay = nil;
       [tf setIntValue:[strVal intValue]];
     }
 
+  // Changes to gamma is not generate XRRScreenChangeNotify event.
+  // That's why saving display configuration is here.
   [systemScreen saveCurrentDisplayLayout];
 }
 
@@ -359,8 +361,6 @@ static NXDisplay           *selectedDisplay = nil;
   NSLog(@"Display: XRandR screen resources was updated, refreshing...");
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
-  
-  // [systemScreen saveCurrentDisplayLayout];
 }
 
 //

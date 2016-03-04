@@ -755,8 +755,8 @@
       Active = "YES", "frame.size" != {0,0} and differs from "Resolution"
 ***** DONE Case 4: смена позиции (frame.origin)
       Active = "YES", "frame.origin" and differs from "Origin"
-**** TODO Запись и чтение конфигов с layout'ами
-***** TODO Кто и в каких случаях?
+**** DONE Запись и чтение конфигов с layout'ами
+***** DONE Кто и в каких случаях?
       Нужно определить кто и в каких случаях должен инициировать сохранение
       конфига. 
       Пока видятся такие варианты:
@@ -771,24 +771,26 @@
       Если будет писать Workspace, Preferences только инициирует изменения и
       регистрирует через получение NXScreenDidChangeNotification.
 
+      DONE:
+      1. Изменения в конфигурации дисплеев, которые генерируют
+         XRRScreenChangeNotify (xrandr, Prefernces, plag'n'play)
+         - пишет Workspace.
+      2. Изменения, которые не генерирует Notify (backlight, brightness,
+         contrast):
+         - пишет каждое приложение, которое вносит измнение в настроку
+           дисплеев.
+
 ****** DONE Запись:
-      - [NXScreen saveCurrentDisplayLayout];
-        - (NSString*)[NXScreen _displayConfigFileName]
-        - (BOOL)[[NXScreen currentLayout] writeToFile: atomically:YES]
+       [NXScreen saveCurrentDisplayLayout];
 ****** DONE Чтение:
-      - [NScreen applySavedDisplayLayout]
-        - (NSString*)[NXScreen _displayConfigFileName]
-        - (NSArray*)[NSArray arrayWithContentsOfFile:]
-        - [NXScreen applyDisplayLayout:(NSArray*)]
-***** TODO Класть конфиги в ~/Library/Peferences/.NextSpace -> Workspace
+       [NScreen applySavedDisplayLayout];
+***** DONE Класть конфиги в ~/Library/Peferences/.NextSpace -> Workspace
       Новые методы NXScreen это уже делают.
       Нужно проверить чтобы Login, Workspace и Preferences пользовались
       этими методами.
-***** TODO Нужно как-то опеределять layout'ы
+***** DONE Нужно как-то опеределять layout'ы
       DONE: генерируется файл с именем формата: 
             Display-<сумма хешей ID дисплеев>.config
-            Нужно проверить как это работает после этого как разберусь с 
-            событиями.
 
       Сейчас нет истории использования ноутбука. Например, если ноутбук был
       подключен к монитору (layout1), а затем был отключен и подключен к
@@ -867,9 +869,7 @@
       Задача перенесена в NXPower и реализована.
 ***** TODO Подключение монитора на лету
       Q:Как ловить подключение нового монитора?
-      A:На подключение/отключение генерируется XRRScrenChangeNotify.
-        Конфигурация экрана XRandR перечитывается.
-        Применяется сохраненный layout.
+      A:ХЗ - XRRScrenChangeNotify не генерируется.
 
       Q:Как поступать при подключении монитора к ноутбуку?
       A:На момент подключения, могут быть такие ситуации:
@@ -882,16 +882,23 @@
 
 ***** TODO Отключение монитора на лету
       Q:Как ловить отключение нового монитора?
-      A:На подключение/отключение генерируется XRRScrenChangeNotify.
-        Конфигурация экрана XRandR перечитывается.
+      A:На отключение генерируется XRRScrenChangeNotify.
+      	Подключенный монитор находится в неактивном состоянии.
+      	Конфигурация экрана XRandR перечитывается.
 
       Q:Как поступать при отключении монитора?
       A:На момент подключения, могут быть такие ситуации:
         1. Ноутбук закрыт, внутренний экран неактивен.
            Реакция: заснуть.
         2. Ноутбук открыт, внутренний экран активен, основной.
-           Реакция: ничего - конфигурация перечитать конфигурацию, пересчитать
+           Реакция: перечитать конфигурацию, пересчитать
            параметры экрана, передвинуть внутренний экран если он был справа.
+
+**** TODO Проверить работу сохраненных .NextSpace/Display-xxxx.config
+     Генерируется файл с именем формата: 
+     	Display-<сумма хешей ID дисплеев>.config
+     Нужно проверить как это работает после этого как разберусь с 
+     событиями.
 **** TODO Иногда display включается с gammaBrightness=0
      Нужно найти такой кейс и решить этот вопрос.
      Это дастаточно важный момент, поскольку можно оказаться с темным экраном
@@ -958,7 +965,7 @@
     Посмотреть в WindowMaker.
 *** TODO [#C] NXSound - volume/bass/treble/balance, device information
 *** TODO [#C] NXNetwork - hostname, interfaces, routes, user initiated up/down, WiFi
-*** TODO [?] NXDeviceManager
+*** [?] NXDeviceManager
     Register added/removed system devices (storage, monitor, mouse, keyboard,
     bluetooth).
     Большинство вложенных классов нужны для конфигурирования в
@@ -969,7 +976,7 @@
      - udev/UDisks/UPower/NetworkManager (Linux)
      - devd (FreeBSD)
      - hal (FreeBSD, Linux)
-*** TODO [?] NXAuth - user authentification, user/groups management
+*** [?] NXAuth - user authentification, user/groups management
 
 
 * Applications

@@ -800,8 +800,9 @@ void XWUpdateScreenInfo(WScreen *scr)
   // 6. Save Dock state with new position and screen size
   wScreenSaveState(scr);
 
-  // Save changed layout in user's prefernces directory
+  // Save changed layout in user's preferences directory
   [systemScreen saveCurrentDisplayLayout];
+  
   // NSLog(@"XRRScreenChangeNotify: END");
   XUnlockDisplay(dpy);
 
