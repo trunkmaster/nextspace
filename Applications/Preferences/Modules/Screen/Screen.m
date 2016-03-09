@@ -46,10 +46,6 @@
 
 @implementation ScreenPreferences
 
-static NSBundle                 *bundle = nil;
-static NSUserDefaults           *defaults = nil;
-static NSMutableDictionary      *domain = nil;
-
 @synthesize dockImage;
 @synthesize appIconYardImage;
 @synthesize iconYardImage;  
@@ -59,12 +55,10 @@ static NXPower *power = nil;
 - (id)init
 {
   NSString *imagePath;
+  NSBundle *bundle;
   
   self = [super init];
   
-  defaults = [NSUserDefaults standardUserDefaults];
-  domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
-
   bundle = [NSBundle bundleForClass:[self class]];
   
   imagePath = [bundle pathForResource:@"Screen" ofType:@"tiff"];
@@ -152,6 +146,7 @@ static NXPower *power = nil;
 //
 - (void)displayBoxClicked:(DisplayBox *)sender
 {
+  [sender setSelected:YES];
   selectedBox = sender;
   for (DisplayBox *db in displayBoxList)
     {
@@ -444,6 +439,96 @@ static NXPower *power = nil;
   // PSstroke();
 }
 
+- (void)mouseDown:(NSEvent *)theEvent
+            inBox:(DisplayBox *)box
+{
+  // NSArray    *boxes = [self subviews];
+  NSRect     boxRect = [box frame];
+  NSPoint    location, initialLocation, lastLocation;
+  
+  NSWindow   *window = [self window];
+  NSRect     superFrame = [self frame];
+  NSRect     displayFrame = [box displayFrame];
+  NSPoint    initialOrigin, boxOrigin;
+  NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
+                          | NSPeriodicMask | NSOtherMouseUpMask
+                          | NSRightMouseUpMask);
+  NSDate     *theDistantFuture = [NSDate distantFuture];
+  BOOL       done = NO;
+
+  initialOrigin = boxOrigin = boxRect.origin;
+  initialLocation = lastLocation = [theEvent locationInWindow];
+
+  [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
+
+  while (!done)
+    {
+      theEvent = [NSApp nextEventMatchingMask:eventMask
+                                    untilDate:theDistantFuture
+                                       inMode:NSEventTrackingRunLoopMode
+                                      dequeue:YES];
+
+      switch ([theEvent type])
+        {
+        case NSRightMouseUp:
+        case NSOtherMouseUp:
+        case NSLeftMouseUp:
+          // NSLog(@"Mouse UP.");
+          done = YES;
+          break;
+        case NSPeriodic:
+          location = [window mouseLocationOutsideOfEventStream];
+          if (NSEqualPoints(location, lastLocation) == NO &&
+              (fabs(location.x - initialLocation.x) > 5 ||
+               fabs(location.y - initialLocation.y) > 5))
+            {
+              if (displayFrame.origin.x > 0 ||
+                  boxOrigin.x > initialOrigin.x ||
+                  (location.x - lastLocation.x) > 0)
+                {
+                  boxOrigin.x += (location.x - lastLocation.x);
+                  if (boxOrigin.x < 0)
+                    {
+                      boxOrigin.x = 0;
+                    }
+                  else if ((boxOrigin.x + boxRect.size.width)
+                           > superFrame.size.width)
+                    {
+                      boxOrigin.x =
+                        superFrame.size.width - boxRect.size.width;
+                    }
+                }
+                  
+              boxOrigin.y += (location.y - lastLocation.y);
+              if (boxOrigin.y < 0)
+                {
+                  boxOrigin.y = 0;
+                }
+              else if ((boxOrigin.y + boxRect.size.height)
+                       > superFrame.size.height)
+                {
+                  boxOrigin.y = superFrame.size.height - boxRect.size.height;
+                }
+                  
+              [box setFrameOrigin:boxOrigin];
+              [self setNeedsDisplay:YES];
+                  
+              lastLocation = location;
+            }
+          break;
+
+        default:
+          break;
+        }
+    }
+  [NSEvent stopPeriodicEvents];
+
+  if (NSEqualPoints(initialLocation, lastLocation) == YES)
+    {
+      [owner displayBoxClicked:box];
+    }
+}
+
 @end
 
 @implementation DisplayBox
@@ -489,11 +574,6 @@ static NXPower *power = nil;
   NSLog(@"Screen: display box %@: -dealloc", [nameField stringValue]);
   [super dealloc];
 }
-
-// - (NXDisplay *)display
-// {
-//   return display;
-// }
 
 - (void)setDisplayFrame:(NSRect)rect
 {
@@ -564,90 +644,15 @@ static NXPower *power = nil;
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  // NSLog(@"DisplayBox: mouseDown");
-  
   if ([theEvent clickCount] >= 2)
     {
       // Set main display
     }
   else
     {
-      NSWindow   *window = [self window];
-      NSView     *superview = [self superview];
-      NSRect     superFrame = [superview frame];
-      NSRect     boxRect = [self frame];
-      NSPoint    boxOrigin = boxRect.origin;
-      NSPoint    lastLocation;
-      NSPoint    location, initialLocation;
-      NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
-                              | NSPeriodicMask | NSOtherMouseUpMask
-                              | NSRightMouseUpMask);
-      NSDate     *theDistantFuture = [NSDate distantFuture];
-      BOOL       done = NO;
-
-      initialLocation = lastLocation = [theEvent locationInWindow];
-      [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
-
-      while (!done)
-        {
-          theEvent = [NSApp nextEventMatchingMask:eventMask
-                                        untilDate:theDistantFuture
-                                           inMode:NSEventTrackingRunLoopMode
-                                          dequeue:YES];
-
-          switch ([theEvent type])
-            {
-            case NSRightMouseUp:
-            case NSOtherMouseUp:
-            case NSLeftMouseUp:
-              // NSLog(@"Mouse UP.");
-              done = YES;
-              break;
-            case NSPeriodic:
-              location = [window mouseLocationOutsideOfEventStream];
-              if (NSEqualPoints(location, lastLocation) == NO)
-                {
-                  boxOrigin.x += (location.x - lastLocation.x);
-                  if (boxOrigin.x < 0)
-                    {
-                      boxOrigin.x = 0;
-                    }
-                  else if ((boxOrigin.x + boxRect.size.width)
-                           > superFrame.size.width)
-                    {
-                      boxOrigin.x = superFrame.size.width - boxRect.size.width;
-                    }
-                  
-                  boxOrigin.y += (location.y - lastLocation.y);
-                  if (boxOrigin.y < 0)
-                    {
-                      boxOrigin.y = 0;
-                    }
-                  else if ((boxOrigin.y + boxRect.size.height)
-                           > superFrame.size.height)
-                    {
-                      boxOrigin.y = superFrame.size.height - boxRect.size.height;
-                    }
-                  
-                  [self setFrameOrigin:boxOrigin];
-                  [superview setNeedsDisplay:YES];
-                  
-                  lastLocation = location;
-                }
-              break;
-
-            default:
-              break;
-            }
-        }
-      [NSEvent stopPeriodicEvents];
-
-      if (NSEqualPoints(initialLocation, lastLocation) == YES)
-        {
-          [(ScreenPreferences *)owner displayBoxClicked:self];
-          [self setSelected:YES];
-        }
-    }  
+      [(ScreenCanvas *)[[self superview] superview] mouseDown:theEvent
+                                                        inBox:self];
+    }
 }
 
 - (void)drawRect:(NSRect)rect

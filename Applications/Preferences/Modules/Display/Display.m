@@ -46,20 +46,17 @@
 
 @implementation DisplayPrefs
 
-static NSBundle            *bundle = nil;
-static NSUserDefaults      *defaults = nil;
-static NSMutableDictionary *domain = nil;
-static NXDisplay           *selectedDisplay = nil;
+static NXDisplay *selectedDisplay = nil;
 
 - (id)init
 {
+  NSBundle *bundle;
+  NSString *imagePath;
+  
   self = [super init];
   
-  defaults = [NSUserDefaults standardUserDefaults];
-  domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
-
   bundle = [NSBundle bundleForClass:[self class]];
-  NSString *imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
+  imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
   return self;

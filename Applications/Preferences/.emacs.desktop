@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Mar  3 22:27:19 2016
+;; Created Tue Mar  8 03:38:54 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,19 +11,30 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("save" "writeTo" "write" "XRa" "allResolutions" "selected" "allResolo" "systemScreen" "RC" "prefsController" "NXScreen" "NXScree" "save" "NXScree" "saveD" "saveDispla"))
+(setq search-ring '("owner" "selectedDisplay" "bundle" "owner" "superview" "save" "writeTo" "write" "XRa" "allResolutions" "selected" "allResolo" "systemScreen" "RC" "prefsController" "NXScreen"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.*" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Mouse/*.m" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/*.m"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"
-  "PrefsController.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.m"
+  "Screen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  6231
-  '(2386 nil)
+  10214
+  '(14054 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.h"
+  "Screen.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1653
+  '(1653 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,19 +44,19 @@
   "Display.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2541
-  '(9453 nil)
+  2420
+  '(1322 nil)
   nil
   nil
-  '((buffer-file-coding-system . utf-8-unix)))
+  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.m"
-  "Screen.m"
+  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"
+  "PrefsController.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1
-  '(2679 nil)
+  4538
+  '(2386 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -79,17 +90,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   2181
   '(1770 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.h"
-  "Screen.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1048
-  '(1021 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

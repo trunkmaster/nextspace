@@ -12,6 +12,7 @@
 	Actions = (
 	);
 	Outlets = (
+	    owner
 	);
 	Super = NSBox;
     };
