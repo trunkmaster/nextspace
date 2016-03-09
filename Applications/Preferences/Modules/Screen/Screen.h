@@ -36,7 +36,6 @@
 @interface DisplayBox : NSBox
 {
   id          owner;
-  // NXDisplay   *display;
   NSRect      displayFrame;
   
   NSTextField *nameField;
@@ -52,7 +51,6 @@
         display:(NXDisplay *)aDisplay
           owner:(id)prefs; // ugly
 
-// - (NXDisplay *)display;
 - (void)setDisplayFrame:(NSRect)rect;
 - (NSRect)displayFrame;
 
@@ -66,9 +64,15 @@
 - (void)setSelected:(BOOL)selected;
 @end
 
+@class ScreenPreferences;
+
 @interface ScreenCanvas : NSBox
 {
+  ScreenPreferences *owner;
 }
+
+- (void)mouseDown:(NSEvent *)theEvent
+            inBox:(DisplayBox *)box;
 @end
 
 @interface ScreenPreferences: NSObject <PrefsModule>
