@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Mar  4 00:39:07 2016
+;; Created Thu Mar 10 02:51:21 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,41 @@
   "Workspace+WindowMaker.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  24180
-  '(24622 nil)
+  24228
+  '(24226 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.h"
+  "Workspace+WindowMaker.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  1101
+  '(1074 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WM/src/event.c"
+  "event.c"
+  'c-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  18133
+  '(4180 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WM/src/screen.c"
+  "screen.c"
+  'c-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  27886
+  '(1 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -35,17 +68,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1162
   '(1162 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.h"
-  "Workspace+WindowMaker.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1074
-  '(1074 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -79,17 +101,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   52432
   '(36785 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WM/src/screen.c"
-  "screen.c"
-  'c-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  27886
-  '(1 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -134,17 +145,6 @@
   nil
   9
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WM/src/event.c"
-  "event.c"
-  'c-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  16939
-  '(4180 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

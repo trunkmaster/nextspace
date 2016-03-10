@@ -39,6 +39,7 @@ BOOL xIsWindowManagerAlreadyRunning(void);
 BOOL     useInternalWindowManager;
 
 #import <NXSystem/NXScreen.h>
+#import <NXSystem/NXDisplay.h>
 NXScreen *systemScreen; // initialized in Workspace_main
 
 //-----------------------------------------------------------------------------

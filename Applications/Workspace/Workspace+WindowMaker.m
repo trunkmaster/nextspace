@@ -751,16 +751,13 @@ static void moveDock(WDock *dock, int new_x, int new_y)
 #include <X11/extensions/Xinerama.h>
 void XWUpdateScreenInfo(WScreen *scr)
 {
-  // NXScreen *systemScreen;
-  NSRect   dRect;
-  int      dWidth;
+  NSRect dRect;
+  int    dWidth;
 
   XLockDisplay(dpy);
 
   // NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
 
-  // WScreen *scr = wScreenWithNumber(0);
-  
   // 1. Update screen dimensions
   scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, scr->screen));
   scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, scr->screen));
@@ -783,7 +780,29 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenUpdateUsableArea(scr);
 
   // 4.1 Get info about main display
-  [systemScreen randrUpdateScreenResources];
+  {
+    NSUInteger oldDisplayCount = [[systemScreen connectedDisplays] count];
+    NSArray    *displayList;
+    NSRect     hiddenFrame;
+    
+    [systemScreen randrUpdateScreenResources];
+    displayList = [systemScreen connectedDisplays];
+    if (oldDisplayCount < [displayList count])
+      { // New monitor connected enable all disabled monitors
+        for (NXDisplay *d in displayList)
+          {
+            hiddenFrame = [d hiddenFrame];
+            if ([d isActive] == NO &&
+                (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0))
+              {
+                [d setFrame:hiddenFrame];
+                // [systemScreen activateDisplay:d]; // ...and arrange displays
+              }
+            [systemScreen applyDisplayLayout:[systemScreen arrangeDisplays]];
+          }
+      }
+  }
+  // [systemScreen randrUpdateScreenResources];
   dRect = [[systemScreen mainDisplay] frame];
   dWidth = dRect.origin.x + dRect.size.width;
   
