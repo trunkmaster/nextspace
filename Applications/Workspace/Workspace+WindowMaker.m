@@ -780,29 +780,7 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenUpdateUsableArea(scr);
 
   // 4.1 Get info about main display
-  {
-    NSUInteger oldDisplayCount = [[systemScreen connectedDisplays] count];
-    NSArray    *displayList;
-    NSRect     hiddenFrame;
-    
-    [systemScreen randrUpdateScreenResources];
-    displayList = [systemScreen connectedDisplays];
-    if (oldDisplayCount < [displayList count])
-      { // New monitor connected enable all disabled monitors
-        for (NXDisplay *d in displayList)
-          {
-            hiddenFrame = [d hiddenFrame];
-            if ([d isActive] == NO &&
-                (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0))
-              {
-                [d setFrame:hiddenFrame];
-                // [systemScreen activateDisplay:d]; // ...and arrange displays
-              }
-            [systemScreen applyDisplayLayout:[systemScreen arrangeDisplays]];
-          }
-      }
-  }
-  // [systemScreen randrUpdateScreenResources];
+  [systemScreen randrUpdateScreenResources];
   dRect = [[systemScreen mainDisplay] frame];
   dWidth = dRect.origin.x + dRect.size.width;
   
