@@ -23,6 +23,9 @@
 
 int main(int argc, const char **argv)
 {
+  systemPower = nil;
+  systemScreen = nil;
+  
 #ifdef NEXTSPACE
   useInternalWindowManager = !xIsWindowManagerAlreadyRunning();
   if (useInternalWindowManager)
@@ -55,13 +58,11 @@ int main(int argc, const char **argv)
                     ^{
                       @autoreleasepool
                         {
-                          // systemScreen = [[NXScreen alloc] init];
                           NSApplicationMain(argc, argv);
                           NSLog(@"Workspace applicaton terminated.");
                         }
                     });
       //---------------------------------------------------------------------
-      [systemScreen release];
     }
   else
 #endif // NEXTSPACE

@@ -320,7 +320,10 @@ static NXScreen *systemScreen = nil;
   BOOL           initialUpdate = NO;
   
   if ([updateScreenLock tryLock] == NO)
-    return;
+    {
+      NSLog(@"NXScreen: unsuccessful attempt to update XRandR screen resources detected!");
+      return;
+    }
     
   NSLog(@"NXScreen: randrUpdateScreenResources: START");
   
@@ -365,7 +368,7 @@ static NXScreen *systemScreen = nil;
       [display release];
     }
 
-  connectedDisplays = [self connectedDisplays];
+  /*  connectedDisplays = [self connectedDisplays];
   NSLog(@"NXScreen: old display count: %lu, new display count: %lu",
         [old_connectedDisplays count], [connectedDisplays count]);
 
@@ -374,37 +377,23 @@ static NXScreen *systemScreen = nil;
     {
       for (int i=0; [systemDisplays count]; i++)
         {
-          if ([[systemDisplays objectAtIndex:i] isConnected] !=
+          display = [systemDisplays objectAtIndex:i];
+          if ([display isConnected] !=
               [[old_systemDisplays objectAtIndex:i] isConnected])
             {
-              if ([[systemDisplays objectAtIndex:i] isConnected] == NO)
-                {
+              if ([display isConnected] == NO)
+                {// monitor was disconnected
+                  // deactivate monitor, arrange, apply layout
+                }
+              else
+                {// monitor was connected
+                  // deactivate monitor, arrange, apply layout
                 }
               NSLog(@"NXScreen: monitor %@ set isConnected state!",
                     [[systemDisplays objectAtIndex:i] outputName]);
             }
         }
-      /*      for (NXDisplay *d in systemDisplays)
-        {
-          for (NXDisplay *od in old_systemDisplays)
-            {
-              if ([[od uniqueID] hash] == [[d uniqueID] hash])
-                {
-                  [old_connectedDisplays removeObject:od];
-                  break;
-                }
-            }
-        }
-      // Here 'old_syetmDisplays' contains added or removed displays
-      if ([old_systemDisplays count] < [systemDisplays count])
-        {// display added
-          for ()
-        }
-      else
-        {// display removed
-        }*/
-    }
-  
+        }*/ 
 
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
@@ -940,9 +929,14 @@ static NXScreen *systemScreen = nil;
     }
 
   // Set new screen size for new layout
+  NSLog(@"NXScreen: set new screen size: START");
+  // XGrabServer(xDisplay);
   XRRSetScreenSize(xDisplay, xRootWindow,
                    (int)newPixSize.width, (int)newPixSize.height,
                    (int)mmSize.width, (int)mmSize.height);
+  // XUngrabServer(xDisplay);
+  // XFlush(xDisplay);
+  NSLog(@"NXScreen: set new screen size: END");
   sizeInPixels = newPixSize;
   
   // Set resolution and gamma to displays
@@ -966,7 +960,11 @@ static NXScreen *systemScreen = nil;
           resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
           origin = NSPointFromString([displayLayout
                                        objectForKey:NXDisplayOriginKey]);
+          
+          NSLog(@"NXScreen: set resolution to %@: START", [display outputName]);
           [display setResolution:resolution position:origin];
+          NSLog(@"NXScreen: set resolution to %@: END", [display outputName]);
+          XFlush(xDisplay);
 
           gamma = [displayLayout objectForKey:NXDisplayGammaKey];
           [display setGammaFromDescription:gamma];

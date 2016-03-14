@@ -217,7 +217,7 @@
       [allResolutions addObject:res];
     }
 
-  //CRTC = 0 if monitor is not connected to output port or deactivated
+  //CRTC = 0 if monitor is not connected to output port
   if (output_info->crtc)
     {
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, output_info->crtc);
@@ -251,6 +251,7 @@
     {
       ASSIGN (currResolution, [NXDisplay zeroResolution]);
       currPosition = NSMakePoint(0,0);
+      hiddenFrame.origin = currPosition;
       hiddenFrame.size = NSSizeFromString([[self bestResolution]
                                             objectForKey:NXDisplaySizeKey]);
     }
