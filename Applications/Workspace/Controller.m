@@ -294,6 +294,14 @@ static NSString *WMComputerShouldGoDownNotification =
   [mediaAdaptor ejectAllRemovables];
   [mediaManager release]; //  mediaAdaptor released also
   [mediaOperations release];
+
+  // NXSystem objects declared in Workspace+WindowMaker.h
+  if (useInternalWindowManager)
+    {
+      [systemPower stopEventsMonitor];
+      [systemPower release];
+      [systemScreen release];
+    }
         
   // Workspace Tools
   TEST_RELEASE(inspector);
@@ -372,15 +380,6 @@ static NSString *WMComputerShouldGoDownNotification =
   //NSUpdateDynamicServices(); -- app won't start
   //[[NSWorkspace sharedWorkspace] findApplications]; -- won't start
   
-  procManager = [ProcessManager shared];
-  
-  // ProcessManager created - Workspace is ready to register applications.
-  // Invoke Dock apps autolaunch.
-  if (procManager && useInternalWindowManager)
-    {
-      wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
-    }
-  
   // Set appicon image
   operatingSystem = [NXSystemInfo operatingSystem];
   if ([operatingSystem rangeOfString:@"CentOS"].location != NSNotFound)
@@ -402,6 +401,26 @@ static NSString *WMComputerShouldGoDownNotification =
     }
 
   [NSApp setApplicationIconImage:appImage];
+  
+  procManager = [ProcessManager shared];
+  // ProcessManager created - Workspace is ready to register applications.
+  // Invoke Dock apps autolaunch.
+  if (procManager && useInternalWindowManager)
+    {
+      wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
+    }
+
+  // Detect lid close/open events
+  if (useInternalWindowManager)
+    {
+      systemPower = [NXPower new];
+      [systemPower startEventsMonitor];
+      [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(lidDidChange:)
+               name:NXPowerLidDidChangeNotification
+             object:systemPower];
+    }
   
   return;
 }
@@ -829,7 +848,6 @@ static NSString *WMComputerShouldGoDownNotification =
   return YES;
 }
 
-
 //============================================================================
 // NXMediaManager events (alert panels, Processes-Background updates).
 //============================================================================
@@ -902,6 +920,40 @@ static NSString *WMComputerShouldGoDownNotification =
         [info objectForKey:@"Title"],
         [info objectForKey:@"Message"],
         source);
+}
+
+//============================================================================
+// NXScreen events
+//============================================================================
+- (void)lidDidChange:(NSNotification *)aNotif
+{
+  NXDisplay *builtinDisplay = nil;
+
+  for (NXDisplay *d in [systemScreen connectedDisplays])
+    {
+      if ([d isBuiltin])
+        {
+          builtinDisplay = d;
+          break;
+        }
+    }
+  
+  if (builtinDisplay)
+    {
+      [systemScreen randrUpdateScreenResources];
+      if (![systemPower isLidClosed] && ![builtinDisplay isActive])
+        {
+          NSLog(@"Workspace: activating display %@",
+                [builtinDisplay outputName]);
+          [systemScreen activateDisplay:builtinDisplay];
+        }
+      else if ([systemPower isLidClosed] && [builtinDisplay isActive])
+        {
+          NSLog(@"Workspace: DEactivating display %@",
+                [builtinDisplay outputName]);
+          [systemScreen deactivateDisplay:builtinDisplay];
+        }
+    }
 }
 
 @end

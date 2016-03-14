@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Mar 11 02:57:31 2016
+;; Created Mon Mar 14 03:04:03 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -14,27 +14,93 @@
 (setq search-ring '("saveCure" "NXScreen" "systemScreen" "XWUpdate" "NXScreen" "dock" "wWorkspaceRestore" "wDockRestoreS" "screen_n" "wScreenRes" "Start" "dock" "real_main" "autostart" "DispatchEvent" "handleExtensions"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/WM/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/WM/src/startup.c" "~/Developer/nextspace/Applications/Workspace/WM/src/main.c" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/wmspec.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.vault\\" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/startup.c" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/GNUmakefile.WM" "~/Developer/nextspace/Applications/Workspace/GNUmakefile" "~/Developer/nextspace/Applications/Workspace/WM/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/WM/src/startup.c" "~/Developer/nextspace/Applications/Workspace/WM/src/main.c" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/wmspec.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.vault\\" "~/Developer/nextspace/Applications/Workspace"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
+  "Controller.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  25553
+  '(24979 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace_main.m"
+  "Workspace_main.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  2432
+  '(1998 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
   "Workspace+WindowMaker.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  23501
-  '(23501 nil)
+  3188
+  '(3188 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'makefile-gmake-mode
+  nil
+  408
+  '(430 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile.WM"
+  "GNUmakefile.WM"
+  'fundamental-mode
+  nil
+  895
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  1813
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble"
+  "GNUmakefile.postamble"
+  'makefile-gmake-mode
+  nil
+  1563
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.h"
   "Workspace+WindowMaker.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1101
-  '(1074 nil)
+  1191
+  '(1215 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -44,7 +110,7 @@
   "event.c"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  18133
+  14489
   '(4180 nil)
   nil
   nil
@@ -57,28 +123,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   27886
   '(1 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace_main.m"
-  "Workspace_main.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1162
-  '(1162 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
-  "Controller.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  973
-  '(973 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -134,39 +178,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   8372
   '(1869 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Library/Preferences/Displays.config"
-  "Displays.config"
-  'conf-unix-mode
-  nil
-  9
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble"
-  "GNUmakefile.postamble"
-  'makefile-gmake-mode
-  nil
-  1544
-  '(nil nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile.preamble"
-  "GNUmakefile.preamble"
-  'fundamental-mode
-  nil
-  1
-  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

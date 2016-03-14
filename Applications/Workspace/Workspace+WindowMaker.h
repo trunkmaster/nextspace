@@ -41,6 +41,8 @@ BOOL     useInternalWindowManager;
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXDisplay.h>
 NXScreen *systemScreen; // initialized in Workspace_main
+#import <NXSystem/NXPower.h>
+NXPower  *systemPower;  // initialized in Controller
 
 //-----------------------------------------------------------------------------
 // Calls related to internals of WindowMaker.

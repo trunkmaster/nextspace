@@ -3,7 +3,7 @@
 #
 
 # Additional flags to pass to the preprocessor
-ADDITIONAL_CPPFLAGS += 
+ADDITIONAL_CPPFLAGS += -DWITH_UPOWER
 
 # Additional flags to pass to Objective C compiler
 ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
@@ -12,10 +12,10 @@ ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
 ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -fno-strict-aliasing -fblocks
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS +=
+ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1 upower-glib`
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -I./
+ADDITIONAL_INCLUDE_DIRS += -I./ `pkg-config --cflags dbus-1 upower-glib`
 
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += 
