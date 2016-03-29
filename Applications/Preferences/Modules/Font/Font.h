@@ -36,7 +36,7 @@
 
 #import <Preferences.h>
 
-@interface Font: NSObject <PrefsModule>
+@interface Font : NSObject <PrefsModule>
 {
   IBOutlet NSPopUpButton *fontCategoryPopUp;
   IBOutlet NSButton      *fontSetButton;
@@ -51,10 +51,11 @@
   IBOutlet id            view;
 
   NSImage		 *image;
+  NSString		 *appExampleText;
 }
 
-- (IBAction) fontCategoryChanged: (id)sender;
-- (IBAction) fontSetPushed: (id)sender;
-- (IBAction) enableAntiAliasingChanged: (id)sender;
+- (IBAction)fontCategoryChanged:(id)sender;
+- (IBAction)setFont:(id)sender;
+- (IBAction)enableAntiAliasingChanged:(id)sender;
 
 @end

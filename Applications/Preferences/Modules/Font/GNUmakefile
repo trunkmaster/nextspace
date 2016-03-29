@@ -10,7 +10,8 @@ $(BUNDLE_NAME)_LANGUAGES = English
 
 $(BUNDLE_NAME)_LOCALIZED_RESOURCE_FILES = \
 	Fonts.gorm \
-	Localizable.strings
+	Localizable.strings \
+	ExampleText.rtf
 
 $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/FontPreferences.tiff \
