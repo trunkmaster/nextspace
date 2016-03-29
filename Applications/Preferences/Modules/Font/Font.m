@@ -27,6 +27,7 @@
 #import <math.h>
 
 #import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSData.h>
 
 #import <AppKit/NSImage.h>
 #import <AppKit/NSPopUpButton.h>
@@ -39,6 +40,7 @@
 #import <AppKit/NSOpenPanel.h>
 
 #import <AppKit/NSApplication.h>
+#import <AppKit/NSAttributedString.h>
 
 #import "Font.h"
 
@@ -204,7 +206,7 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
                 objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
   if (!fontKey)
     { // no selected item, bail out
-      [fontNameTextField setStringValue: @"No font (?!?!?)"];
+      [fontNameTextField setStringValue:@"Unable to determine font type."];
       [fontExampleTextView setFont:[NSFont systemFontOfSize:12.0]];
       [view setNeedsDisplay:YES];
       return;
@@ -214,16 +216,17 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   font = [NSFont fontWithName:getStringDefault(domain, fontKey)
                          size:getFloatDefault(domain, fontSizeKey)];
 
-  [fontNameTextField setStringValue: [NSString stringWithFormat: @"%@ %g point",
-                                               [font displayName],
-                                               [font pointSize]]];
+  [fontNameTextField setFont:font];
+  [fontNameTextField setStringValue:[NSString stringWithFormat: @"%@ %g point",
+                                              [font displayName],
+                                              [font pointSize]]];
 
-  [fontExampleTextView setFont:font];
+  // [fontExampleTextView setFont:font];
 
   [enableAntiAliasingButton
-    setIntValue:getBoolDefault(domain, @"GSFontAntiAlias")];
+    setIntValue:getBoolDefault(domain,@"GSFontAntiAlias")];
 
-  if ((subpixel = getIntDefault(domain, @"back-art-subpixel-text")))
+  if ((subpixel = getIntDefault(domain,@"back-art-subpixel-text")))
     {
       [enableSubpixelButton setIntValue:1];
     }
@@ -265,8 +268,13 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   [window release];
   window = nil;
 
+  // [fontExampleTextView
+  //   setText:NSLocalizedStringFromTableInBundle(@"Example Text", @"Localizable", bundle, @"")];
+  // appExampleText = NSLocalizedStringFromTableInBundle(@"Example Text",
+  //                                                     @"Localizable",
+  //                                                     bundle, @"");
   [fontExampleTextView
-    setText:NSLocalizedStringFromTableInBundle(@"Example Text", @"Localizable", bundle, @"")];
+     readRTFDFromFile:[bundle pathForResource:@"ExampleText" ofType:@"rtf"]];
 
   [self updateUI];
 }
@@ -312,12 +320,13 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   [self updateUI];
 }
 
-- (IBAction)fontSetPushed:(id)sender
+- (IBAction)setFont:(id)sender
 {
   NSString      *fontKey;
   NSString      *fontSizeKey;
   NSFont        *font;
-  NSFontManager *fontManager = [NSFontManager sharedFontManager];
+  NSFontManager *fontManager;
+  NSFontPanel   *fontPanel;
 
   fontKey = [fontCategories() 
                 objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
@@ -326,8 +335,11 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   font = [NSFont fontWithName:getStringDefault(domain, fontKey)
 			 size:getFloatDefault(domain, fontSizeKey)];
 
+  fontManager = [NSFontManager sharedFontManager];
+  fontPanel = [fontManager fontPanel:YES];
+  [fontPanel setDelegate:self];
   [fontManager setSelectedFont:font isMultiple:NO];
-  [fontManager orderFrontFontPanel:self];
+  [fontPanel makeKeyAndOrderFront:self];
 }
 
 - (IBAction)enableAntiAliasingChanged:(id)sender
@@ -359,37 +371,70 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
 */
 - (void)changeFont:(id)sender
 {
-  NSString      *fontKey;
-  NSString      *fontSizeKey;
+  NSString      *fontName, *fontKey;
+  CGFloat       fontSize;
   NSFontManager *fontManager = [NSFontManager sharedFontManager];
   NSFont        *font;
 
   font = [fontManager convertFont:[fontExampleTextView font]];
-
+  fontName = [font fontName];
+  fontSize = [font pointSize];
   fontKey = [fontCategories()
                 objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
-  fontSizeKey = [NSString stringWithFormat:@"%@Size", fontKey];
 
-  setStringDefault([font fontName], fontKey);
-  setFloatDefault([font pointSize], fontSizeKey);
-
-  if ([fontKey isEqualToString:@"NSFont"])
+  if ([fontKey isEqualToString:@"NSUserFont"]) // Application
     {
-      // small
-      fontKey = @"NSSmallFont";
-      fontSizeKey = @"NSSmallFontSize";
-
-      setStringDefault([font fontName], fontKey);
-      setFloatDefault(rintf([font pointSize] * 0.75), fontSizeKey);
-
-      // bold
-      fontKey = @"NSBoldFont";
-      fontSizeKey = @"NSBoldFontSize";
-
-      font = [fontManager convertFont:font toHaveTrait:NSBoldFontMask];
-      setStringDefault([font fontName], fontKey);
-      setFloatDefault([font pointSize], fontSizeKey);
-  }
+      // NSUserFont, NSUserFontSize=12
+      setStringDefault(fontName, @"NSUserFont");
+      setFloatDefault(fontSize, @"NSUserFontSize");
+    }
+  else if ([fontKey isEqualToString:@"NSUserFixedPitchFont"]) // Fixed Pitch
+    {
+      // NSUserFixedPitchFont, NSUserFixedPitchFontSize
+      setStringDefault(fontName, @"NSUserFixedPitchFont");
+      setFloatDefault(fontSize, @"NSUserFixedPitchFontSize");
+    }
+  else if ([fontKey isEqualToString:@"NSFont"]) // System
+    {
+      // NSFont, NSFontSize=12
+      setStringDefault(fontName, @"NSFont");
+      setFloatDefault(fontSize, @"NSFontSize");
+      // NSMenuFont, NSMenuFontSize=12
+      setStringDefault(fontName, @"NSMenuFont");
+      setFloatDefault(fontSize, @"NSMenuFontSize");
+      // NSMessageFont, NSMessageFontSize = NSFontSize+2
+      setStringDefault(fontName, @"NSMessageFont");
+      setFloatDefault(fontSize+2.0, @"NSMessageFontSize");
+      // NSControlContentFont, NSControlContentFontSize=12
+      setStringDefault(fontName, @"NSControlContentFont");
+      setFloatDefault(fontSize, @"NSControlContentFontSize");
+      // NSLabelFont, NSLabelFontSize=12
+      setStringDefault(fontName, @"NSLabelFont");
+      setFloatDefault(fontSize, @"NSLabelFontSize");
+      // NSMiniFontSize=9, NSSmallFontSize=11
+      setFloatDefault(9.0, @"NSMiniFontSize");
+      setFloatDefault(11.0, @"NSSmallFontSize");
+    }
+  else if ([fontKey isEqualToString:@"NSBoldFont"]) // Bold System
+    {
+      // NSBoldFont, NSBoldFontSize=12
+      setStringDefault(fontName, @"NSBoldFont");
+      setFloatDefault(fontSize, @"NSBoldFontSize");
+      // NSTitleBarFont, NSTitleBarFontSize=12
+      setStringDefault(fontName, @"NSTitleBarFont");
+      setFloatDefault(fontSize, @"NSTitleBarFontSize");
+      // NSMenuBarFont
+      setStringDefault(fontName, @"NSMenuBarFont");
+      // NSPaletteFont, NSPaletteFontSize=12
+      setStringDefault(fontName, @"NSPaletteFont");
+      setFloatDefault(fontSize, @"NSPaletteFontSize");
+    }
+  else if ([fontKey isEqualToString:@"NSToolTipsFont"]) // Tool Tips
+    {
+      // NSToolTipsFont, NSToolTipsFontSize=11
+      setStringDefault(fontName, @"NSToolTipsFont");
+      setFloatDefault(fontSize, @"NSToolTipsFontSize");
+    }
 
   [self updateUI];
 }
