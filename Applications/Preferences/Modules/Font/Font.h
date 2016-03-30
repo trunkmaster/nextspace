@@ -51,7 +51,9 @@
   IBOutlet id            view;
 
   NSImage		 *image;
-  NSString		 *appExampleText;
+  NSString		 *exampleString;
+  NSString		 *normalExampleString;
+  NSString		 *boldExampleString;  
 }
 
 - (IBAction)fontCategoryChanged:(id)sender;

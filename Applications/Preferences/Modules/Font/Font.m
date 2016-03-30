@@ -199,7 +199,7 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
 {
   NSString	*fontKey;
   NSString	*fontSizeKey;
-  NSFont	*font;
+  NSFont	*font, *boldFont;
   int		subpixel;
 
   fontKey = [fontCategories()
@@ -215,25 +215,33 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   fontSizeKey = [NSString stringWithFormat:@"%@Size", fontKey];
   font = [NSFont fontWithName:getStringDefault(domain, fontKey)
                          size:getFloatDefault(domain, fontSizeKey)];
+  boldFont = [[NSFontManager sharedFontManager] convertFont:font
+                                                toHaveTrait:NSBoldFontMask];
 
+  //
   [fontNameTextField setFont:font];
   [fontNameTextField setStringValue:[NSString stringWithFormat: @"%@ %g point",
                                               [font displayName],
                                               [font pointSize]]];
 
-  // [fontExampleTextView setFont:font];
+  //
+  [fontExampleTextView setFont:font];
+  [fontExampleTextView setFont:boldFont
+                         range:NSMakeRange([normalExampleString length],
+                                           [boldExampleString length]+1)];
 
+  //
   [enableAntiAliasingButton
     setIntValue:getBoolDefault(domain,@"GSFontAntiAlias")];
 
-  if ((subpixel = getIntDefault(domain,@"back-art-subpixel-text")))
-    {
-      [enableSubpixelButton setIntValue:1];
-    }
-  [subpixelModeButton setEnabled:(subpixel != 0)];
+  // if ((subpixel = getIntDefault(domain,@"back-art-subpixel-text")))
+  //   {
+  //     [enableSubpixelButton setIntValue:1];
+  //   }
+  // [subpixelModeButton setEnabled:(subpixel != 0)];
 
-  if (subpixel == 2)
-    [subpixelModeButton setIntValue:1];
+  // if (subpixel == 2)
+  //   [subpixelModeButton setIntValue:1];
 
   [view setNeedsDisplay:YES];
 }
@@ -268,13 +276,19 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   [window release];
   window = nil;
 
+  exampleString = NSLocalizedStringFromTableInBundle(@"Example Text",
+                                                     @"Localizable",
+                                                     bundle, @"");
+  normalExampleString = [[NSString alloc] initWithFormat:@"Normal:\n%@",
+                                          exampleString];
+  boldExampleString = [[NSString alloc] initWithFormat:@"Bold:\n%@",
+                                        exampleString];
+  
+  [fontExampleTextView setText:[NSString stringWithFormat:@"%@\n%@",
+                                         normalExampleString,
+                                         boldExampleString]];
   // [fontExampleTextView
-  //   setText:NSLocalizedStringFromTableInBundle(@"Example Text", @"Localizable", bundle, @"")];
-  // appExampleText = NSLocalizedStringFromTableInBundle(@"Example Text",
-  //                                                     @"Localizable",
-  //                                                     bundle, @"");
-  [fontExampleTextView
-     readRTFDFromFile:[bundle pathForResource:@"ExampleText" ofType:@"rtf"]];
+  //     readRTFDFromFile:[bundle pathForResource:@"ExampleText" ofType:@"rtf"]];
 
   [self updateUI];
 }
@@ -283,6 +297,8 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
 {
   NSLog(@"FontPrefs -dealloc");
   [image release];
+  [normalExampleString release];
+  [boldExampleString release];
   [super dealloc];
 }
 
@@ -345,9 +361,12 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
 - (IBAction)enableAntiAliasingChanged:(id)sender
 {
   setBoolDefault([sender intValue], @"GSFontAntiAlias");
+  setIntDefault(0, @"back-art-subpixel-text");
+  
   [self updateUI];
 }
 
+// UNUSED
 - (IBAction)enableSubpixelChanged:(id)sender
 {
   int	subpixel = 0;
