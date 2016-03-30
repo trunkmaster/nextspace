@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Mar 30 01:06:59 2016
+;; Created Thu Mar 31 02:01:27 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "Font.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  7912
-  '(10388 nil)
+  10605
+  '(7382 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -33,8 +33,8 @@
   "Font.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1116
-  '(4 nil)
+  1606
+  '(1654 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
