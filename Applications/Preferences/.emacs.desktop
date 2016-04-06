@@ -2,28 +2,39 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Mar 31 02:01:27 2016
+;; Created Thu Apr  7 02:22:17 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring '("fontCategoryNam" "fontCate" "owner" "selectedDisplay" "bundle" "owner" "superview" "save" "writeTo" "write" "XRa" "allResolutions" "selected" "allResolo" "systemScreen" "RC"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.*" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.*" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
+  "Localization.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  3112
+  '(3252 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/Font.m"
   "Font.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  10605
-  '(7382 nil)
+  7430
+  '(6137 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -189,17 +200,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   1
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
-  "Localization.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1098
-  '(3994 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

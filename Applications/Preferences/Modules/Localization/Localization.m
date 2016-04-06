@@ -119,6 +119,10 @@ static NSMutableDictionary      *domain = nil;
   return image;
 }
 
+// Lanuages = NSLanguages = (English, Esperanto, ...)
+// Text Encoding = GNUSTEP_STRING_ENCODING = NSUTFStringEncoding
+// Measurement Unit = NSMeasurementUnit (Centimeters, Inches, Points, Picas)
+
 @end
 
 @implementation Localization (TableViewDelegate)

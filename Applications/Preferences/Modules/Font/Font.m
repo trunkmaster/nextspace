@@ -55,6 +55,7 @@
 static NSBundle		   *bundle = nil;
 static NSUserDefaults      *defaults = nil;
 static NSMutableDictionary *domain = nil;
+static NSPanel             *fontPanel = nil;
 
 #define setBoolDefault(aBool,name) \
 	[domain setObject:(aBool)?@"YES":@"NO" forKey:(name)]; \
@@ -200,7 +201,7 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   NSString	*fontKey;
   NSString	*fontSizeKey;
   NSFont	*font, *boldFont;
-  int		subpixel;
+  // int		subpixel;
 
   fontKey = [fontCategories()
                 objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
@@ -244,6 +245,29 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
   //   [subpixelModeButton setIntValue:1];
 
   [view setNeedsDisplay:YES];
+}
+
+- (void)updateFontPanel
+{
+  NSString      *fontKey;
+  NSString      *fontSizeKey;
+  NSFont        *font;
+  NSFontManager *fontManager;
+
+  fontKey = [fontCategories() 
+                objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
+  fontSizeKey = [NSString stringWithFormat:@"%@Size", fontKey];
+  
+  font = [NSFont fontWithName:getStringDefault(domain, fontKey)
+			 size:getFloatDefault(domain, fontSizeKey)];
+
+  fontManager = [NSFontManager sharedFontManager];
+  [fontManager setSelectedFont:font isMultiple:NO];
+  if (!fontPanel)
+    {
+      fontPanel = [fontManager fontPanel:YES];
+      [fontPanel setDelegate:self];
+    }
 }
 
 @end	// Font (Private)
@@ -334,27 +358,12 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
 - (IBAction)fontCategoryChanged:(id)sender
 {
   [self updateUI];
+  [self updateFontPanel];
 }
 
 - (IBAction)setFont:(id)sender
 {
-  NSString      *fontKey;
-  NSString      *fontSizeKey;
-  NSFont        *font;
-  NSFontManager *fontManager;
-  NSFontPanel   *fontPanel;
-
-  fontKey = [fontCategories() 
-                objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
-  fontSizeKey = [NSString stringWithFormat:@"%@Size", fontKey];
-  
-  font = [NSFont fontWithName:getStringDefault(domain, fontKey)
-			 size:getFloatDefault(domain, fontSizeKey)];
-
-  fontManager = [NSFontManager sharedFontManager];
-  fontPanel = [fontManager fontPanel:YES];
-  [fontPanel setDelegate:self];
-  [fontManager setSelectedFont:font isMultiple:NO];
+  [self updateFontPanel];
   [fontPanel makeKeyAndOrderFront:self];
 }
 
