@@ -3,22 +3,24 @@
 # ksh(1), ash(1), ...).
 
 NS_PATH="/usr/NextSpace/bin:/Library/bin:/usr/NextSpace/sbin:/Library/sbin"
-export PATH="/bin:/sbin:"$NS_PATH":/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:$HOME/bin"
+SYS_PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:$HOME/bin"
+export PATH=$NS_PATH:$SYS_PATH
 
 export MANPATH=:/Library/Documentation/man:/usr/NextSpace/Documentation/man
 
+### Moved into NSGlobalDomain prefs. Format 'Local Time Zone' = Europe/Kiev
 #export GNUSTEP_TZ=`cat /etc/timezone`
-export GNUSTEP_STRING_ENCODING="NSUTF8StringEncoding"
-export LANGUAGES="English"
+### NSString encoding should be determined from system locale
+#export GNUSTEP_STRING_ENCODING="NSUTF8StringEncoding"
+### LANGUAGES moved into NSLanguages in NSGlobalDomain preferences
+#export LANGUAGES="English"
 
 # Instead of calling /Developer/Makefiles/GNUstep.sh set vars manually
 export GNUSTEP_MAKEFILES="/Developer/Makefiles"
-export LIBRARY_COMBO="gnu-gnu-gnu"
+# Only user home lib dir here. Others in /etc/ld.so.conf.d/nextspace.conf
+export LD_LIBRARY_PATH="$HOME/Library/Libraries"
 export GNUSTEP_PATHLIST="$HOME:/:/usr/NextSpace:/Network"
-export LD_LIBRARY_PATH="/Library/Libraries:/usr/NextSpace/lib:$HOME/Library/Libraries"
 export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info"
-
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GNUSTEP_SYSTEM_LIBRARIES
 
 export COLUMNS
 
@@ -27,11 +29,6 @@ export LC_CTYPE="en_US.UTF-8"
 export NS_SYSTEM="/usr/NextSpace"
 
 ################# User specific environment and startup programs
-
-### PATH
-#if [ "$WMAKER_BIN_NAME" != "" ]; then
-#    PATH=$PATH:`dirname $WMAKER_BIN_NAME`
-#fi
 
 ### Terminals
 #if [ "$TERM_PROGRAM" = "GNUstep_Terminal" ]; then
