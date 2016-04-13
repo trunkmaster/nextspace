@@ -2795,7 +2795,7 @@
 **** TODO Localization: language, units, paper, encoding
      NSLanguages = (English, Russian, Ukrainian)
      NSMeasurementUnit = Centimeters | Inches | Points | Picas
-     GNUSTEP_STRING_ENCODING - почему не NSStringEncoding?
+     GNUSTEP_STRING_ENCODING - определяется автоматически из системной локали.
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
 **** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
 **** TODO Login: screensaver, hooks, display hostname
