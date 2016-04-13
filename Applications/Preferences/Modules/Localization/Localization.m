@@ -120,7 +120,7 @@ static NSMutableDictionary      *domain = nil;
 }
 
 // Lanuages = NSLanguages = (English, Esperanto, ...)
-// Text Encoding = GNUSTEP_STRING_ENCODING = NSUTFStringEncoding
+// Text Encoding = GNUSTEP_STRING_ENCODING = NSUTF8StringEncoding
 // Measurement Unit = NSMeasurementUnit (Centimeters, Inches, Points, Picas)
 
 @end
