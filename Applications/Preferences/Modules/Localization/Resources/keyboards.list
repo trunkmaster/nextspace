@@ -1,134 +1,128 @@
 {
-  "Dutch" =
-    {
-      "Basic" = nl;
-      "Standard" = "nl(std)";
-      "Sun dead keys" = "nl(sundeadkeys)";
-      "Macintosh" = "nl(mac)";
-    };
-  "English" = { "Basic" = us; };
-  "French" =
-    {
-      "Basic" = fr;
-      "Sun dead keys" = "fr(sundeadkeys)";
-      "Eliminate dead keys" = "fr(nodeadkeys)";
-      "Alternative" = "fr(oss)";
-      "Alternative, Latin-9 only" = "fr(oss_latin9)";
-      "Alternative, Sun dead keys" = "fr(oss_sundeadkeys)";
-      "Alternative, Eliminate dead keys" = "fr(oss_nodeadkeys)";
-      "Legacy, Alternative" = "fr(latin9)";
-      "Legacy, Alternative, Sun dead keys" = "fr(latin9_sundeadkeys)";
-      "Legacy, Alternative, Eliminate dead keys" = "fr(latin9_nodeadkeys)";
-      "Bepo, Ergonomic, Dvorak way" = "fr(bepo)";
-      "Bepo, Ergonomic, Dvorak way, Latin-9 only" = "fr(bepo_latin9)";
-      "Dvorak" = "fr(dvorak)";
-      "Breton" = "fr(bre)";
-      "Occitan" = "fr(oci)";
-      "Macintosh" = "fr(mac)";
-      "Georgian (France, AZERTY Tskapo)" = "fr(geo)";
-    };
-  "German" =
-    {
-      "Basic" = de;
-      "Legacy" = "de(legacy)";
-      "Eliminate dead keys" = "de(nodeadkeys)";
-      "Dead grave acute" = "de(deadgraveacute)";
-      "Dead acute" = "de(deadacute)";
-      "T3" = "de(T3)";
-      "Romanian (Germany)" = "de(ro)";
-      "Romanian (Germany, eliminate dead keys)" = "de(ro_nodeadkeys)";
-      "Dvorak" = "de(dvorak)";
-      "Neo 2" = "de(neo)";
-      "Macintosh" = "de(mac)";
-      "Macintosh, Eliminate dead keys" = "de(mac_nodeadkeys)";
-      "Lower Sorbian" = "de(dsb)";
-      "Lower Sorbian (qwertz)" = "de(dsb_qwertz)";
-      "qwerty" = "de(qwerty)";
-      "Russian (Germany, phonetic)" = "de(ru)";
-      "Polish (Germany, eliminate dead keys)" = "de(pl)";
-      "Turkish (Germany)" = "de(tr)";
-      "US keyboard with German letters" = "de(us)";
-      "With Hungarian letters and no dead keys" = "de(hu)";
-      "Aus der Neo-Welt" = "de(adnw)";
-    };
-  "Hungarian" =
-    {
-      "Basic" = hu;
-      "Standard" = "hu(standard)";
-      "Eliminate dead keys" = "hu(nodeadkeys)";
-      "qwerty" = "hu(qwerty)";
-      "101/qwertz/comma/dead keys" = "101_qwertz_comma_dead";
-      "101/qwertz/comma/eliminate dead keys" = "101_qwertz_comma_nodead";
-      "101/qwertz/dot/dead keys" = "hu(101_qwertz_dot_dead)";
-      "101/qwertz/dot/eliminate dead keys" = "hu(101_qwertz_dot_nodead)";
-      "101/qwerty/comma/dead keys" = "hu(101_qwerty_comma_dead)";
-      "101/qwerty/comma/eliminate dead keys" = "hu(101_qwerty_comma_nodead)";
-      "101/qwerty/dot/dead keys" = "hu(101_qwerty_dot_dead)";
-      "101/qwerty/dot/eliminate dead keys" = "hu(101_qwerty_dot_nodead)";
-      "102/qwertz/comma/dead keys" = "hu(102_qwertz_comma_dead)";
-      "102/qwertz/comma/eliminate dead keys" = "hu(102/qwertz/comma/eliminate dead keys)";
-      "102/qwertz/dot/dead keys" = "hu(102/qwertz/dot/dead keys)";
-      "102/qwertz/dot/eliminate dead keys" = "hu(102/qwertz/dot/eliminate dead keys)";
-      "102/qwerty/comma/dead keys" = "hu(102/qwerty/comma/dead keys)";
-      "102/qwerty/comma/eliminate dead keys" = "hu(102/qwerty/comma/eliminate dead keys)";
-      "102/qwerty/dot/dead keys" = "hu(102/qwerty/dot/dead keys)";
-      "102/qwerty/dot/eliminate dead keys" = "hu(102/qwerty/dot/eliminate dead keys)";
-    };
-  "Italian" =
-    {
-      "Basic" = it;
-      "eliminate dead keys" = "it(nodeadkeys)";
-      "Winkeys" = "it(winkeys)";
-      "Macintosh" = "it(mac)";
-      "Georgian (Italy)" = "it(geo)";
-      "US keyboard with Italian letters" = "it(us)";
-      "IBM 142" = "it(ibm)";
-    };
-  "Korean" =
-    {
-      "Basic" = "kr";
-      "101/104 key compatible" = "kr(kr104)";
-    };
-  "Russian" =
-    {
-      "Basic" = "ru";
-      "Legacy" = "ru(legacy)";
-      "Typewriter" = "ru(typewriter)";
-      "Typewriter, Legacy" = "ru(typewriter-legacy)";
-      "Phonetic" = "ru(phonetic)";
-      "Phonetic WinKeys" = "ru(phonetic_winkeys)";
-      "Tatar" = "ru(tt)";
-      "Ossetian (legacy)" = "ru(os_legacy)";
-      "Ossetian (WinKeys)" = "ru(os_winkeys)";
-      "Chuvash" = "ru(cv)";
-      "Udmurt" = "ru(udm)";
-      "Chuvash (Latin)" = "ru(cv_latin)";
-      "Komi" = "ru(kom)";
-      "Yakut" = "ru(sah)";
-      "Kalmyk" = "ru(xal)";
-      "DOS" = "ru(dos)";
-      "Bashkirian" = "ru(bak)";
-      "Serbian (Russia)" = "ru(srp)";
-      "Mari" = "ru(chm)";
-      "Russian (phonetic azerty)" = "ru(phonetic_azerty)";
-      "Russian (phonetic French)" = "ru(phonetic_fr)";
-      "Church Slavonic" = "ru(chu)";
-      "Russian (with Ukrainian-Belorussian layout)" = "ru(ruu)";
-      "Russian (Macintosh)" = "ru(mac)";
-    };
+  Dutch = {
+    "Basic" = nl;
+    "Standard" = "nl(std)";
+    "Sun dead keys" = "nl(sundeadkeys)";
+    "Macintosh" = "nl(mac)";
+  };
+  English = {
+    "Basic" = us;
+  };
+  French = {
+    "Basic" = fr;
+    "Sun dead keys" = "fr(sundeadkeys)";
+    "Eliminate dead keys" = "fr(nodeadkeys)";
+    "Alternative" = "fr(oss)";
+    "Alternative, Latin-9 only" = "fr(oss_latin9)";
+    "Alternative, Sun dead keys" = "fr(oss_sundeadkeys)";
+    "Alternative, Eliminate dead keys" = "fr(oss_nodeadkeys)";
+    "Legacy, Alternative" = "fr(latin9)";
+    "Legacy, Alternative, Sun dead keys" = "fr(latin9_sundeadkeys)";
+    "Legacy, Alternative, Eliminate dead keys" = "fr(latin9_nodeadkeys)";
+    "Bepo, Ergonomic, Dvorak way" = "fr(bepo)";
+    "Bepo, Ergonomic, Dvorak way, Latin-9 only" = "fr(bepo_latin9)";
+    "Dvorak" = "fr(dvorak)";
+    "Breton" = "fr(bre)";
+    "Occitan" = "fr(oci)";
+    "Macintosh" = "fr(mac)";
+    "Georgian (France, AZERTY Tskapo)" = "fr(geo)";
+  };
+  German = {
+    "Basic" = de;
+    "Legacy" = "de(legacy)";
+    "Eliminate dead keys" = "de(nodeadkeys)";
+    "Dead grave acute" = "de(deadgraveacute)";
+    "Dead acute" = "de(deadacute)";
+    "T3" = "de(T3)";
+    "Romanian (Germany)" = "de(ro)";
+    "Romanian (Germany, eliminate dead keys)" = "de(ro_nodeadkeys)";
+    "Dvorak" = "de(dvorak)";
+    "Neo 2" = "de(neo)";
+    "Macintosh" = "de(mac)";
+    "Macintosh, Eliminate dead keys" = "de(mac_nodeadkeys)";
+    "Lower Sorbian" = "de(dsb)";
+    "Lower Sorbian (qwertz)" = "de(dsb_qwertz)";
+    "qwerty" = "de(qwerty)";
+    "Russian (Germany, phonetic)" = "de(ru)";
+    "Polish (Germany, eliminate dead keys)" = "de(pl)";
+    "Turkish (Germany)" = "de(tr)";
+    "US keyboard with German letters" = "de(us)";
+    "With Hungarian letters and no dead keys" = "de(hu)";
+    "Aus der Neo-Welt" = "de(adnw)";
+  };
+  Hungarian = {
+    "Basic" = hu;
+    "Standard" = "hu(standard)";
+    "Eliminate dead keys" = "hu(nodeadkeys)";
+    "qwerty" = "hu(qwerty)";
+    "101/qwertz/comma/dead keys" = "hu(101_qwertz_comma_dead)";
+    "101/qwertz/comma/eliminate dead keys" = "hu(101_qwertz_comma_nodead)";
+    "101/qwertz/dot/dead keys" = "hu(101_qwertz_dot_dead)";
+    "101/qwertz/dot/eliminate dead keys" = "hu(101_qwertz_dot_nodead)";
+    "101/qwerty/comma/dead keys" = "hu(101_qwerty_comma_dead)";
+    "101/qwerty/comma/eliminate dead keys" = "hu(101_qwerty_comma_nodead)";
+    "101/qwerty/dot/dead keys" = "hu(101_qwerty_dot_dead)";
+    "101/qwerty/dot/eliminate dead keys" = "hu(101_qwerty_dot_nodead)";
+    "102/qwertz/comma/dead keys" = "hu(102_qwertz_comma_dead)";
+    "102/qwertz/comma/eliminate dead keys" = "hu(102/qwertz/comma/eliminate dead keys)";
+    "102/qwertz/dot/dead keys" = "hu(102/qwertz/dot/dead keys)";
+    "102/qwertz/dot/eliminate dead keys" = "hu(102/qwertz/dot/eliminate dead keys)";
+    "102/qwerty/comma/dead keys" = "hu(102/qwerty/comma/dead keys)";
+    "102/qwerty/comma/eliminate dead keys" = "hu(102/qwerty/comma/eliminate dead keys)";
+    "102/qwerty/dot/dead keys" = "hu(102/qwerty/dot/dead keys)";
+    "102/qwerty/dot/eliminate dead keys" = "hu(102/qwerty/dot/eliminate dead keys)";
+  };
+  Italian = {
+    "Basic" = it;
+    "eliminate dead keys" = "it(nodeadkeys)";
+    "Winkeys" = "it(winkeys)";
+    "Macintosh" = "it(mac)";
+    "Georgian (Italy)" = "it(geo)";
+    "US keyboard with Italian letters" = "it(us)";
+    "IBM 142" = "it(ibm)";
+  };
+  Korean = {
+    "Basic" = "kr";
+    "101/104 key compatible" = "kr(kr104)";
+  };
+  Russian = {
+    "Basic" = "ru";
+    "Legacy" = "ru(legacy)";
+    "Typewriter" = "ru(typewriter)";
+    "Typewriter, Legacy" = "ru(typewriter-legacy)";
+    "Phonetic" = "ru(phonetic)";
+    "Phonetic WinKeys" = "ru(phonetic_winkeys)";
+    "Tatar" = "ru(tt)";
+    "Ossetian (legacy)" = "ru(os_legacy)";
+    "Ossetian (WinKeys)" = "ru(os_winkeys)";
+    "Chuvash" = "ru(cv)";
+    "Udmurt" = "ru(udm)";
+    "Chuvash (Latin)" = "ru(cv_latin)";
+    "Komi" = "ru(kom)";
+    "Yakut" = "ru(sah)";
+    "Kalmyk" = "ru(xal)";
+    "DOS" = "ru(dos)";
+    "Bashkirian" = "ru(bak)";
+    "Serbian (Russia)" = "ru(srp)";
+    "Mari" = "ru(chm)";
+    "Russian (phonetic azerty)" = "ru(phonetic_azerty)";
+    "Russian (phonetic French)" = "ru(phonetic_fr)";
+    "Church Slavonic" = "ru(chu)";
+    "Russian (with Ukrainian-Belorussian layout)" = "ru(ruu)";
+    "Russian (Macintosh)" = "ru(mac)";
+  };
   Slovak = {};
   Spanish = {};
   Chinese = {};
-  Ukrainian =
-    {
-      "Basic" = ua;
-      "Unicode" = "ua(unicode)";
-      "Legacy" = "ua(legacy)";
-      "Winkeys" = "ua(winkeys)";
-      "Typewriter" = "ua(typewriter)";
-      "Phonetic" = "ua(phonetic)";
-      "Standard RSTU" = "ua(rstu)";
-      "Russian (Ukraine, standard RSTU)" = "ua(rstu_ru)";
-      "Homophonic" = "ua(homophonic)";
-    };
+  Ukrainian = {
+    "Basic" = ua;
+    "Unicode" = "ua(unicode)";
+    "Legacy" = "ua(legacy)";
+    "Winkeys" = "ua(winkeys)";
+    "Typewriter" = "ua(typewriter)";
+    "Phonetic" = "ua(phonetic)";
+    "Standard RSTU" = "ua(rstu)";
+    "Russian (Ukraine, standard RSTU)" = "ua(rstu_ru)";
+    "Homophonic" = "ua(homophonic)";
+  };
 }
