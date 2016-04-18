@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sat Apr  9 03:14:02 2016
+;; Created Tue Apr 19 02:29:09 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,23 +18,23 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list"
-  "languages.list"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/keyboards.list"
+  "keyboards.list"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  584
-  '(607 nil)
+  2574
+  '(4390 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/keyboards.list"
-  "keyboards.list"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list"
+  "languages.list"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  145
-  '(21 nil)
+  305
+  '(584 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
