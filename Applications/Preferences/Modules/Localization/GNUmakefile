@@ -14,7 +14,9 @@ $(BUNDLE_NAME)_LOCALIZED_RESOURCE_FILES = \
 
 $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/Localization.tiff \
-	Resources/bundle.registry
+	Resources/bundle.registry \
+	Resources/languages.list \
+	Resources/keyboards.list
 
 $(BUNDLE_NAME)_OBJC_FILES= \
 	Localization.m \
