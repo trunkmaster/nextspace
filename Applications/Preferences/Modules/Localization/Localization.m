@@ -24,6 +24,8 @@
   	59 Temple Place - Suite 330
   	Boston, MA  02111-1307, USA
 */
+#import <Foundation/Foundation.h>
+
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSNibLoading.h>
 #import <AppKit/NSScrollView.h>
@@ -51,21 +53,26 @@ static NSMutableDictionary      *domain = nil;
   NSString *imagePath = [bundle pathForResource:@"Localization" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  languages = [NSArray arrayWithObjects:
-                       @"Dutch",
-                       @"English",
-                       @"Esperanto",
-                       @"French",
-                       @"German",
-                       @"Hungarian",
-                       @"Italian",
-                       @"Korean",
-                       @"Russian",
-                       @"Slovak",
-                       @"Spanish",
-                       @"Traditional Chinese",
-                       @"Ukrainian",
-                       nil];
+  NSString	*languagesPath;
+  NSDictionary	*languagesDict;
+  languagesPath = [bundle pathForResource:@"languages" ofType:@"list"];
+  languagesDict = [[NSDictionary alloc] initWithContentsOfFile:languagesPath];
+  languages = [languagesDict allKeys];
+  // languages = [NSArray arrayWithObjects:
+  //                      @"Dutch",
+  //                      @"English",
+  //                      @"Esperanto",
+  //                      @"French",
+  //                      @"German",
+  //                      @"Hungarian",
+  //                      @"Italian",
+  //                      @"Korean",
+  //                      @"Russian",
+  //                      @"Slovak",
+  //                      @"Spanish",
+  //                      @"Traditional Chinese",
+  //                      @"Ukrainian",
+  //                      nil];
   [languages retain];
   
   return self;

@@ -1,33 +1,14 @@
 {
-  Dutch = nl_NL.UTF-8;
   English = en_US.UTF-8;
+  Chinese = zh_CH.UTF-8;
+  Dutch = nl_NL.UTF-8;
   French = fr_FR.UTF-8;
   German = de_DE.UTF-8;
   Hungarian = hu_HU.UTF-8;
-  Italian = it_IT.UTF-8;
   Korean = ko_KR.UTF-8;
+  Italian = it_IT.UTF-8;
   Russian = ru_RU.UTF-8;
   Slovak = sk_SK.UTF-8;
   Spanish = es_ES.UTF-8;
-  Chinese = zh_CH.UTF-8;
   Ukranian = uk_UA.UTF-8;
-}
-
-{
-  Dutch = {
-    LANG = nl_NL.UTF-8;
-    NSStringEncoding = NSUTF8StringEncoding;
-    KeyboardLayouts = {
-      "Basic" = nl;
-      "Standard" = "nl(std)";
-      "Sun dead keys" = "nl(sundeadkeys)";
-      "Macintosh" = "nl(mac)";
-    };
-  };
-  English = {
-    LANG = en_US.UTF-8;
-    NSStringEncoding = NSUTF8StringEncoding;
-    KeyboardLayouts = {
-    }
-  }
 }
