@@ -5,10 +5,14 @@
 
 @implementation LanguageList
 
-- (NSImage*) dragImageForRows: (NSArray*)dragRows
-                        event: (NSEvent*)dragEvent
-              dragImageOffset: (NSPoint*)dragImageOffset
+- (NSImage*)dragImageForRows:(NSArray*)dragRows
+                       event:(NSEvent*)dragEvent
+             dragImageOffset:(NSPoint*)dragImageOffset
 {
+  // return [super dragImageForRows:dragRows
+  //                          event:dragEvent
+  //                dragImageOffset:dragImageOffset];
+  
   // NSTableColumn *tCol = [self tableColumnWithIdentifier:@"language"];
   // NSCell *aCell = [tCol dataCellForRow:[[dragRows lastObject] intValue]];
   NSRect cellRect = [self rectOfRow:[[dragRows lastObject] intValue]];
@@ -19,7 +23,9 @@
   NSLog(@"Dragged cell bounds: %@", NSStringFromRect(cellRect));
   
   [self lockFocus];
-  imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:cellRect];
+  imageRep = [[NSBitmapImageRep alloc]
+               initWithFocusedViewRect:NSMakeRect(10,100,10,10)];
+  // imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:cellRect];
   // image = [[NSImage alloc] initWithData:[self dataWithEPSInsideRect:cellRect]];
   // epsRep = [[NSEPSImageRep alloc] initWithData:[self dataWithEPSInsideRect:cellRect]];
   image = [NSImage new];
