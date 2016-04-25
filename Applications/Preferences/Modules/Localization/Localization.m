@@ -95,7 +95,7 @@ static NSMutableDictionary      *domain = nil;
     NSTableColumn *tColumn;
     [languageList setHeaderView:nil];
     [languageList setCornerView:nil];
-    [languageList setVerticalMotionCanBeginDrag:YES];
+    [languageList setVerticalMotionCanBeginDrag:NO];
     // [languageList registerForDraggedTypes:@"language"];
     tColumn = [languageList tableColumnWithIdentifier:@"language"];
     [tColumn setWidth:(rect.size.width-23)];

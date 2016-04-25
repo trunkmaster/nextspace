@@ -5,36 +5,34 @@
 
 @implementation LanguageList
 
+// - (NSRect)rectForRows:
+
 - (NSImage*)dragImageForRows:(NSArray*)dragRows
                        event:(NSEvent*)dragEvent
              dragImageOffset:(NSPoint*)dragImageOffset
 {
-  // return [super dragImageForRows:dragRows
-  //                          event:dragEvent
-  //                dragImageOffset:dragImageOffset];
-  
   // NSTableColumn *tCol = [self tableColumnWithIdentifier:@"language"];
   // NSCell *aCell = [tCol dataCellForRow:[[dragRows lastObject] intValue]];
-  NSRect cellRect = [self rectOfRow:[[dragRows lastObject] intValue]];
+  NSRect dragRowsRect = NSMakeRect(0,0,0,0);
+  // NSRect cellRect = [self rectOfRow:[[dragRows lastObject] intValue]];
   NSBitmapImageRep *imageRep;
-  // NSEPSImageRep *epsRep;
   NSImage *image;
+  int i;
 
-  NSLog(@"Dragged cell bounds: %@", NSStringFromRect(cellRect));
+  for (i=0; i < [dragRows count]; i++)
+    {
+      dragRowsRect = NSUnionRect(dragRowsRect,
+                                 [self rectOfRow:[[dragRows objectAtIndex:i] intValue]]);
+    }
+
+  NSLog(@"Dragged cell bounds: %@", NSStringFromRect(dragRowsRect));
   
   [self lockFocus];
-  imageRep = [[NSBitmapImageRep alloc]
-               initWithFocusedViewRect:NSMakeRect(10,100,10,10)];
-  // imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:cellRect];
-  // image = [[NSImage alloc] initWithData:[self dataWithEPSInsideRect:cellRect]];
-  // epsRep = [[NSEPSImageRep alloc] initWithData:[self dataWithEPSInsideRect:cellRect]];
+  imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:dragRowsRect];
   image = [NSImage new];
   [image addRepresentation:imageRep];
-  // [epsRep release];
   [self unlockFocus];
 
-  NSLog(@"Image");
-  // return [NSImage imageNamed:@"common_outlineCollapsed"];
   return image;
 }
 
