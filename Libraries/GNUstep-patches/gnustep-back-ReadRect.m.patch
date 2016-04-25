@@ -1,0 +1,54 @@
+--- gnustep-back-0.24.1.orig/Source/art/ReadRect.m	2015-09-08 21:57:10.480108546 +0300
++++ gnustep-back-0.24.1/Source/art/ReadRect.m	2016-04-25 03:08:30.540019727 +0300
+@@ -98,7 +98,8 @@
+   [matrix translateXBy: -x0 yBy: -y0];
+ 
+   ox = [matrix transformPoint: NSMakePoint(0, 0)].x - offset.x;
+-  oy = offset.y - [matrix transformPoint: NSMakePoint(0, 0)].y;
++  oy = ([matrix transformPoint: r.origin].y - offset.y) + r.size.height;
++  // oy = offset.y - [matrix transformPoint: NSMakePoint(0, 0)].y;
+ 
+   [md setObject: NSDeviceRGBColorSpace  forKey: @"ColorSpace"];
+   [md setObject: [NSNumber numberWithUnsignedInt: 1]  forKey: @"HasAlpha"];
+@@ -121,23 +122,30 @@
+ 
+     c.dst = [d mutableBytes];
+ 
+-    c.src = wi->data + (oy - y1) * wi->bytes_per_line + (x0 + ox) * DI.bytes_per_pixel;
+-    c.srca = wi->alpha + (oy - y1) * wi->sx + (x0 + ox);
++    y = [matrix transformPoint:r.origin].y;
++    fprintf(stderr, "oy = %i; y1 = %i, offset.y = %f y = %i\n",
++            oy, y1, offset.y, y);
++    c.src = wi->data +
++      (y1 - oy) * wi->bytes_per_line +
++      (x0 + ox) * DI.bytes_per_pixel;
++    c.srca = wi->alpha + (y1 - oy) * wi->sx + (x0 + ox);
++    // c.src = wi->data + (oy - y1) * wi->bytes_per_line + (x0 + ox) * DI.bytes_per_pixel;
++    // c.srca = wi->alpha + (oy - y1) * wi->sx + (x0 + ox);
+ 
+     for (y = 0; y < h; y++)
+       {
+-	if (wi->has_alpha)
+-	  DI.read_pixels_a(&c, w);
+-	else
+-	  DI.read_pixels_o(&c, w);
+-	c.src += wi->bytes_per_line;
+-	c.srca += wi->sx;
+-	c.dst += w * 4;
++        if (wi->has_alpha)
++          DI.read_pixels_a(&c, w);
++        else
++          DI.read_pixels_o(&c, w);
++        c.src += wi->bytes_per_line;
++        c.srca += wi->sx;
++        c.dst += w * 4;
+       }
+ 
+     [md setObject: [[d autorelease] makeImmutableCopyOnFail: YES]  forKey: @"Data"];
+-  }
+-
++    }
++  
+   return [[md autorelease] makeImmutableCopyOnFail: YES];
+ }
+ 
