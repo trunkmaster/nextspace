@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Apr 26 02:55:42 2016
+;; Created Wed Apr 27 02:31:10 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,6 +18,17 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.m"
+  "LanguageList.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  573
+  '(550 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list"
   "languages.list"
   'c-mode
@@ -27,17 +38,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.m"
-  "LanguageList.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  901
-  '(488 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"

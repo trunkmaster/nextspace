@@ -3,6 +3,39 @@
 #include <AppKit/AppKit.h>
 #include "LanguageList.h"
 
+@interface DraggedImage : NSImage
+@end
+@implementation DraggedImage
+
+- (void) drawInRect: (NSRect)dstRect // Negative width/height => Nothing draws.
+           fromRect: (NSRect)srcRect
+          operation: (NSCompositingOperation)op
+           fraction: (CGFloat)delta
+     respectFlipped: (BOOL)respectFlipped
+              hints: (NSDictionary*)hints
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSRect dstImageRect = dstRect;
+
+  dstImageRect.origin.x += 1;
+  dstImageRect.origin.y += 1;
+  [super drawInRect:dstImageRect
+           fromRect:srcRect
+          operation:op
+           fraction:delta
+     respectFlipped:respectFlipped
+              hints:hints];
+  
+  DPSgsave(ctxt);
+  
+  [[NSColor darkGrayColor] set];
+  NSFrameRect(dstRect);
+  // NSRectFill(dstRect);
+
+  DPSgrestore(ctxt);
+}
+@end
+
 @implementation LanguageList
 
 // - (NSRect)rectForRows:
@@ -29,7 +62,8 @@
   
   [self lockFocus];
   imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:dragRowsRect];
-  image = [NSImage new];
+  image = [DraggedImage new];
+  [image setSize:dragRowsRect.size];
   [image addRepresentation:imageRep];
   [self unlockFocus];
 
