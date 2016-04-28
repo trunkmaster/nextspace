@@ -95,10 +95,13 @@ static NSMutableDictionary      *domain = nil;
     NSTableColumn *tColumn;
     [languageList setHeaderView:nil];
     [languageList setCornerView:nil];
-    [languageList setVerticalMotionCanBeginDrag:NO];
+    [languageList setVerticalMotionCanBeginDrag:YES];
     // [languageList registerForDraggedTypes:@"language"];
+    [languageList setTarget:self];
+    [languageList setAction:@selector(doClick:)];
     tColumn = [languageList tableColumnWithIdentifier:@"language"];
     [tColumn setWidth:(rect.size.width-23)];
+    [tColumn setEditable:NO];
   }
 }
 
@@ -133,6 +136,12 @@ static NSMutableDictionary      *domain = nil;
 @end
 
 @implementation Localization (TableViewDelegate)
+
+- (void)doClick:(id)sender
+{
+  NSLog(@"Languages row clicked.");
+  
+}
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {

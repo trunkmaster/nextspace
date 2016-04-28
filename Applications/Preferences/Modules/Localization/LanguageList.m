@@ -7,19 +7,16 @@
 @end
 @implementation DraggedImage
 
-- (void) drawInRect: (NSRect)dstRect // Negative width/height => Nothing draws.
-           fromRect: (NSRect)srcRect
-          operation: (NSCompositingOperation)op
-           fraction: (CGFloat)delta
-     respectFlipped: (BOOL)respectFlipped
-              hints: (NSDictionary*)hints
+- (void)drawInRect:(NSRect)dstRect // Negative width/height => Nothing draws.
+          fromRect:(NSRect)srcRect
+         operation:(NSCompositingOperation)op
+          fraction:(CGFloat)delta
+    respectFlipped:(BOOL)respectFlipped
+             hints:(NSDictionary*)hints
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSRect dstImageRect = dstRect;
 
-  dstImageRect.origin.x += 1;
-  dstImageRect.origin.y += 1;
-  [super drawInRect:dstImageRect
+  [super drawInRect:dstRect
            fromRect:srcRect
           operation:op
            fraction:delta
@@ -27,11 +24,8 @@
               hints:hints];
   
   DPSgsave(ctxt);
-  
-  [[NSColor darkGrayColor] set];
+  [[NSColor blackColor] set];
   NSFrameRect(dstRect);
-  // NSRectFill(dstRect);
-
   DPSgrestore(ctxt);
 }
 @end
@@ -58,12 +52,16 @@
                                  [self rectOfRow:[[dragRows objectAtIndex:i] intValue]]);
     }
 
+  dragRowsRect.size.width += 2;
+  dragRowsRect.size.height += 2;
+  dragRowsRect.origin.x -= 1;
+  dragRowsRect.origin.y -= 1;
+
   NSLog(@"Dragged cell bounds: %@", NSStringFromRect(dragRowsRect));
   
   [self lockFocus];
   imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:dragRowsRect];
   image = [DraggedImage new];
-  [image setSize:dragRowsRect.size];
   [image addRepresentation:imageRep];
   [self unlockFocus];
 
