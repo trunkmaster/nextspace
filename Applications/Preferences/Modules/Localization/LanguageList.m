@@ -2,7 +2,7 @@
 
 #include <AppKit/AppKit.h>
 #include "LanguageList.h"
-
+/*
 @interface DraggedImage : NSImage
 @end
 @implementation DraggedImage
@@ -31,8 +31,6 @@
 @end
 
 @implementation LanguageList
-
-// - (NSRect)rectForRows:
 
 - (NSImage*)dragImageForRows:(NSArray*)dragRows
                        event:(NSEvent*)dragEvent
@@ -88,12 +86,12 @@ NSInteger lastQuarterPosition;
   // if (isSameDropTargetThanBefore)
   //   return currentDragOperation;
 
-  // /* Remember current drop target */
+  // // Remember current drop target
   // currentDragOperation = dragOperation;
   // lastQuarterPosition = quarterPosition;
 
-  // /* The user can retarget this default drop using -setDropRow:dropOperation:
-  //    in -tableView:validateDrop:proposedRow:proposedDropOperation:. */
+  // // The user can retarget this default drop using -setDropRow:dropOperation:
+  // // in -tableView:validateDrop:proposedRow:proposedDropOperation:.
   // [self _setDropOperationAndRow: row
   //            usingPositionInRow: positionInRow
   //                       atPoint: p];
@@ -107,9 +105,9 @@ NSInteger lastQuarterPosition;
   //                             proposedDropOperation: currentDropOperation];
   //   }
 
-  // /* -setDropRow:dropOperation: can changes both currentDropRow and
-  //    currentDropOperation. Whether we have to redraw the drop indicator depends
-  //    on this change. */
+  // // -setDropRow:dropOperation: can changes both currentDropRow and
+  // //   currentDropOperation. Whether we have to redraw the drop indicator depends
+  //    on this change.
   // if (currentDropRow != oldDropRow || currentDropOperation != oldDropOperation)
   //   {
   //     [self _drawDropIndicator];
@@ -118,6 +116,24 @@ NSInteger lastQuarterPosition;
   //   }
 
   return dragOperation;
+}
+
+@end
+*/
+
+@implementation LanguageList
+
+- (void)loadRowsFromArray:(NSArray *)array
+{
+  NSCell *cell;
+  
+  for (int i=0; i < [array count]; i++)
+    {
+      [self addRow];
+      // cell = [self cellAtRow:i column:0];
+      cell = [self makeCellAtRow:i column:0];
+      [cell setObjectValue:[array objectAtIndex:i]];
+    }
 }
 
 @end

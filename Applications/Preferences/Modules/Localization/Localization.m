@@ -90,6 +90,7 @@ static NSMutableDictionary      *domain = nil;
   [view retain];
   [window release];
 
+  /*
   {
     NSRect rect = [languageScrollView frame];
     NSTableColumn *tColumn;
@@ -103,6 +104,23 @@ static NSMutableDictionary      *domain = nil;
     [tColumn setWidth:(rect.size.width-23)];
     [tColumn setEditable:NO];
   }
+  */
+  [languageScrollView setHasVerticalScroller:YES];
+  [languageScrollView setBorderType:NSBezelBorder];
+  
+  NSRect lsvFrame = [languageScrollView frame];
+  languageList = [[LanguageList alloc]
+                    initWithFrame:NSMakeRect(0,0,100,100)];
+  [languageList setMode:NSListModeMatrix];
+  [languageList setIntercellSpacing:NSMakeSize(0,0)];
+  [languageList setAllowsEmptySelection:YES];
+  [languageList setAutoscroll:YES];
+  
+  [languageScrollView setDocumentView:languageList];
+  [languageList release];
+  
+  [languageList loadRowsFromArray:languages];
+  [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 16)];
 }
 
 - (NSView *)view
@@ -132,80 +150,5 @@ static NSMutableDictionary      *domain = nil;
 // Lanuages = NSLanguages = (English, Esperanto, ...)
 // Text Encoding = GNUSTEP_STRING_ENCODING = NSUTF8StringEncoding
 // Measurement Unit = NSMeasurementUnit (Centimeters, Inches, Points, Picas)
-
-@end
-
-@implementation Localization (TableViewDelegate)
-
-- (void)doClick:(id)sender
-{
-  NSLog(@"Languages row clicked.");
-  
-}
-
-- (int)numberOfRowsInTableView:(NSTableView *)aTableView
-{
-  if (aTableView == languageList)
-    {
-      return [languages count];
-    }
-  
-  return 0;
-}
-
-- (id)            tableView:(NSTableView *)aTableView
-  objectValueForTableColumn:(NSTableColumn *)aTableColumn
-                        row:(int)rowIndex
-{
-  if (aTableView == languageList)
-    {
-      if (aTableColumn == [languageList tableColumnWithIdentifier:@"language"])
-        {
-          return [languages objectAtIndex:rowIndex];
-        }
-    }
-
-  return nil;
-}
-
-// - (void) tableView:(NSTableView *)aTableView
-//     setObjectValue:anObject
-//     forTableColumn:(NSTableColumn *)aTableColumn
-//                row:(int)rowIndex
-// {
-// }
-
-- (BOOL)tableView:(NSTableView *)tableView
-        writeRows:(NSArray *)rows
-     toPasteboard:(NSPasteboard *)pboard
-{
-  NSTableColumn *tCol = [languageList tableColumnWithIdentifier:@"language"];
-  NSCell        *aCell = [tCol dataCellForRow:[[rows lastObject] intValue]];
-  
-  NSLog(@"write to Pasteboard: %@ - %@", rows, [aCell stringValue]);
-  [pboard setString:[aCell stringValue]
-            forType:@"language"];
-  return YES;
-}
-
-- (BOOL)tableView:(NSTableView*)tableView
-       acceptDrop:(id <NSDraggingInfo>)info
-              row:(NSInteger)row
-    dropOperation:(NSTableViewDropOperation)operation
-{
-  NSLog(@"acceptDrop into row %li", row);
-  return YES;
-}
-
-- (NSDragOperation)tableView:(NSTableView*)tableView
-                validateDrop:(id <NSDraggingInfo>)info
-                 proposedRow:(NSInteger)row
-       proposedDropOperation:(NSTableViewDropOperation)operation
-{
-  NSLog(@"validateDrop: %@ in row %li",
-        [[info draggingPasteboard] stringForType:@"Language"], row);
-
-  return operation;
-}
 
 @end

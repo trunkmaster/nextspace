@@ -2,7 +2,10 @@
 
 #include <AppKit/AppKit.h>
 
-@interface LanguageList : NSTableView
+@interface LanguageList : NSMatrix
 {
 }
+
+- (void)loadRowsFromArray:(NSArray *)array;
+
 @end

@@ -2796,6 +2796,9 @@
      NSLanguages = (English, Russian, Ukrainian)
      NSMeasurementUnit = Centimeters | Inches | Points | Picas
      GNUSTEP_STRING_ENCODING - определяется автоматически из системной локали.
+***** TODO Список Language - отдельный виджет
+      С перетаскиваемыми языками, но не так, как это сделано в NSTableView.
+      NSScrollView с documentView в виде NSMatrix.
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
 **** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
 **** TODO Login: screensaver, hooks, display hostname
