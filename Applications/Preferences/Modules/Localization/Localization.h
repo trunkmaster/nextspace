@@ -27,9 +27,11 @@
 #import <AppKit/NSImage.h>
 #import <Preferences.h>
 
+#import "LanguageList.h"
+
 @interface Localization: NSObject <PrefsModule>
 {
-  id languageList;
+  LanguageList *languageList;
   id languageScrollView;
   id encodingBtn;
   id papersizeBtn;
