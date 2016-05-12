@@ -130,10 +130,28 @@ NSInteger lastQuarterPosition;
   for (int i=0; i < [array count]; i++)
     {
       [self addRow];
-      // cell = [self cellAtRow:i column:0];
       cell = [self makeCellAtRow:i column:0];
       [cell setObjectValue:[array objectAtIndex:i]];
+      // [cell setRefusesFirstResponder:YES];
+      [cell setSelectable:NO];
     }
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  NSInteger row, column;
+  NSPoint   mouseInWindow = [event locationInWindow];
+  NSPoint   mouseInList;
+  NSCell    *cell;
+
+  mouseInList = [[[event window] contentView] convertPoint:mouseInWindow
+                                                    toView:self];
+  [self getRow:&row column:&column forPoint:mouseInList];
+  cell = [self cellAtRow:row column:column];
+  [cell setEnabled:NO];
+  
+  NSLog(@"LanguageList: mouseDown on '%@'",
+        [[self cellAtRow:row column:column] title]);
 }
 
 @end

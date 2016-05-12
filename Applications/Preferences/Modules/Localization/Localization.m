@@ -109,18 +109,17 @@ static NSMutableDictionary      *domain = nil;
   [languageScrollView setBorderType:NSBezelBorder];
   
   NSRect lsvFrame = [languageScrollView frame];
-  languageList = [[LanguageList alloc]
-                    initWithFrame:NSMakeRect(0,0,100,100)];
-  [languageList setMode:NSListModeMatrix];
-  [languageList setIntercellSpacing:NSMakeSize(0,0)];
+  languageList = [[LanguageList alloc] initWithFrame:NSMakeRect(0,0,100,100)];
+  // [languageList setMode:NSListModeMatrix];
+  // [languageList setIntercellSpacing:NSMakeSize(6,0)];
   [languageList setAllowsEmptySelection:YES];
   [languageList setAutoscroll:YES];
-  
-  [languageScrollView setDocumentView:languageList];
-  [languageList release];
-  
   [languageList loadRowsFromArray:languages];
   [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 16)];
+  
+  [languageScrollView setDocumentView:languageList];
+  [languageScrollView setLineScroll:17.0];
+  [languageList release];  
 }
 
 - (NSView *)view
