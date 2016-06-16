@@ -2,126 +2,65 @@
 
 #include <AppKit/AppKit.h>
 #include "LanguageList.h"
-/*
-@interface DraggedImage : NSImage
-@end
-@implementation DraggedImage
 
-- (void)drawInRect:(NSRect)dstRect // Negative width/height => Nothing draws.
-          fromRect:(NSRect)srcRect
-         operation:(NSCompositingOperation)op
-          fraction:(CGFloat)delta
-    respectFlipped:(BOOL)respectFlipped
-             hints:(NSDictionary*)hints
+@interface LanguageCell : NSActionCell
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
-
-  [super drawInRect:dstRect
-           fromRect:srcRect
-          operation:op
-           fraction:delta
-     respectFlipped:respectFlipped
-              hints:hints];
-  
-  DPSgsave(ctxt);
-  [[NSColor blackColor] set];
-  NSFrameRect(dstRect);
-  DPSgrestore(ctxt);
+  BOOL isSelected;
 }
 @end
+@implementation LanguageCell
 
-@implementation LanguageList
-
-- (NSImage*)dragImageForRows:(NSArray*)dragRows
-                       event:(NSEvent*)dragEvent
-             dragImageOffset:(NSPoint*)dragImageOffset
+- (id)init
 {
-  // NSTableColumn *tCol = [self tableColumnWithIdentifier:@"language"];
-  // NSCell *aCell = [tCol dataCellForRow:[[dragRows lastObject] intValue]];
-  NSRect dragRowsRect = NSMakeRect(0,0,0,0);
-  // NSRect cellRect = [self rectOfRow:[[dragRows lastObject] intValue]];
-  NSBitmapImageRep *imageRep;
-  NSImage *image;
-  int i;
+  self = [super init];
+  isSelected = NO;
+  return self;
+}
 
-  for (i=0; i < [dragRows count]; i++)
+- (void)drawInteriorWithFrame:(NSRect)cellFrame
+                       inView:(NSView *)controlView
+{
+  NSLog(@"Draw cell with frame: %@", NSStringFromRect(cellFrame));
+  if (!isSelected)
     {
-      dragRowsRect = NSUnionRect(dragRowsRect,
-                                 [self rectOfRow:[[dragRows objectAtIndex:i] intValue]]);
+      [[NSColor controlBackgroundColor] set];
+      NSRectFill(cellFrame);
+      cellFrame.origin.x += 2;
+      [self _drawAttributedText:[self _drawAttributedString]
+                        inFrame:[self titleRectForBounds:cellFrame]];
     }
-
-  dragRowsRect.size.width += 2;
-  dragRowsRect.size.height += 2;
-  dragRowsRect.origin.x -= 1;
-  dragRowsRect.origin.y -= 1;
-
-  NSLog(@"Dragged cell bounds: %@", NSStringFromRect(dragRowsRect));
-  
-  [self lockFocus];
-  imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:dragRowsRect];
-  image = [DraggedImage new];
-  [image addRepresentation:imageRep];
-  [self unlockFocus];
-
-  return image;
 }
 
-NSDragOperation currentDragOperation;
-NSInteger lastQuarterPosition;
-
-- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
+- (BOOL)isSelected
 {
-  // NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
-  // NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (int)_rowHeight;
-  // NSInteger quarterPosition = (NSInteger)([self _computedRowAtPoint: p] * 4.);
-  // NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
-  NSDragOperation dragOperation = [sender draggingSourceOperationMask];
-  // BOOL isSameDropTargetThanBefore = (lastQuarterPosition == quarterPosition
-  //   && currentDragOperation == dragOperation);
+  return isSelected;
+}
 
-  NSLog(@"Dragging updated");
-  
-  // [self _scrollRowAtPointToVisible: p];
-
-  // if (isSameDropTargetThanBefore)
-  //   return currentDragOperation;
-
-  // // Remember current drop target
-  // currentDragOperation = dragOperation;
-  // lastQuarterPosition = quarterPosition;
-
-  // // The user can retarget this default drop using -setDropRow:dropOperation:
-  // // in -tableView:validateDrop:proposedRow:proposedDropOperation:.
-  // [self _setDropOperationAndRow: row
-  //            usingPositionInRow: positionInRow
-  //                       atPoint: p];
-
-  // if ([_dataSource respondsToSelector:
-  //     @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
-  //   {
-  //     currentDragOperation = [_dataSource tableView: self
-  //                                      validateDrop: sender
-  //                                       proposedRow: currentDropRow
-  //                             proposedDropOperation: currentDropOperation];
-  //   }
-
-  // // -setDropRow:dropOperation: can changes both currentDropRow and
-  // //   currentDropOperation. Whether we have to redraw the drop indicator depends
-  //    on this change.
-  // if (currentDropRow != oldDropRow || currentDropOperation != oldDropOperation)
-  //   {
-  //     [self _drawDropIndicator];
-  //     oldDropRow = (currentDropRow > -1 ? currentDropRow : _numberOfRows);
-  //     oldDropOperation = currentDropOperation;
-  //   }
-
-  return dragOperation;
+- (void)setSelected:(BOOL)yn
+{
+  isSelected = yn;
+  [[self controlView] setNeedsDisplay:YES];
 }
 
 @end
-*/
 
 @implementation LanguageList
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+  self = [super initWithFrame:frameRect];
+  [self setCellClass:[LanguageCell class]];
+
+  // [super setMode:NSListModeMatrix];
+  [self setIntercellSpacing:NSMakeSize(0,0)];
+  [self setAllowsEmptySelection:YES];
+  [self setAutoscroll:YES];
+  // [self setCellSize:NSMakeSize(frameRect.size.width-24, 15)];
+  [self setDrawsBackground:YES];
+  [self setBackgroundColor:[NSColor darkGrayColor]];
+    
+  return self;
+}
 
 - (void)loadRowsFromArray:(NSArray *)array
 {
@@ -139,19 +78,96 @@ NSInteger lastQuarterPosition;
 
 - (void)mouseDown:(NSEvent *)event
 {
-  NSInteger row, column;
-  NSPoint   mouseInWindow = [event locationInWindow];
-  NSPoint   mouseInList;
-  NSCell    *cell;
+  NSInteger    row, column;
+  NSPoint      mouseInWindow = [event locationInWindow];
+  NSPoint      mouseInList;
+  LanguageCell *cell;
 
   mouseInList = [[[event window] contentView] convertPoint:mouseInWindow
                                                     toView:self];
   [self getRow:&row column:&column forPoint:mouseInList];
   cell = [self cellAtRow:row column:column];
-  [cell setEnabled:NO];
+  [cell setSelected:![cell isSelected]];
+  // [cell setEnabled:NO];
   
   NSLog(@"LanguageList: mouseDown on '%@'",
         [[self cellAtRow:row column:column] title]);
+
+  /*****************************************************************************/
+  NSWindow   *window = [self window];
+  NSRect     boxRect = [box frame];
+  NSPoint    location, initialLocation, lastLocation;
+  NSRect     superFrame = [self frame];
+  NSRect     displayFrame = [box displayFrame];
+  NSPoint    initialOrigin, boxOrigin;
+  NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
+                          | NSPeriodicMask | NSOtherMouseUpMask
+                          | NSRightMouseUpMask);
+  BOOL       done = NO;
+
+  [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
+  while (!done)
+    {
+      theEvent = [NSApp nextEventMatchingMask:eventMask
+                                    untilDate:theDistantFuture
+                                       inMode:NSEventTrackingRunLoopMode
+                                      dequeue:YES];
+
+      switch ([event type])
+        {
+        case NSRightMouseUp:
+        case NSOtherMouseUp:
+        case NSLeftMouseUp:
+          // NSLog(@"Mouse UP.");
+          done = YES;
+          break;
+        case NSPeriodic:
+          location = [window mouseLocationOutsideOfEventStream];
+          if (NSEqualPoints(location, lastLocation) == NO &&
+              (fabs(location.x - initialLocation.x) > 5 ||
+               fabs(location.y - initialLocation.y) > 5))
+            {
+              if (displayFrame.origin.x > 0 ||
+                  boxOrigin.x > initialOrigin.x ||
+                  (location.x - lastLocation.x) > 0)
+                {
+                  boxOrigin.x += (location.x - lastLocation.x);
+                  if (boxOrigin.x < 0)
+                    {
+                      boxOrigin.x = 0;
+                    }
+                  else if ((boxOrigin.x + boxRect.size.width)
+                           > superFrame.size.width)
+                    {
+                      boxOrigin.x =
+                        superFrame.size.width - boxRect.size.width;
+                    }
+                }
+                  
+              boxOrigin.y += (location.y - lastLocation.y);
+              if (boxOrigin.y < 0)
+                {
+                  boxOrigin.y = 0;
+                }
+              else if ((boxOrigin.y + boxRect.size.height)
+                       > superFrame.size.height)
+                {
+                  boxOrigin.y = superFrame.size.height - boxRect.size.height;
+                }
+                  
+              [box setFrameOrigin:boxOrigin];
+              [self setNeedsDisplay:YES];
+                  
+              lastLocation = location;
+            }
+          break;
+
+        default:
+          break;
+        }
+    }
+  [NSEvent stopPeriodicEvents];
+
 }
 
 @end

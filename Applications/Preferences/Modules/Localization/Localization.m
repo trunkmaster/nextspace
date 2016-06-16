@@ -110,15 +110,13 @@ static NSMutableDictionary      *domain = nil;
   
   NSRect lsvFrame = [languageScrollView frame];
   languageList = [[LanguageList alloc] initWithFrame:NSMakeRect(0,0,100,100)];
-  // [languageList setMode:NSListModeMatrix];
-  // [languageList setIntercellSpacing:NSMakeSize(6,0)];
-  [languageList setAllowsEmptySelection:YES];
-  [languageList setAutoscroll:YES];
+  // [languageList setAllowsEmptySelection:YES];
+  // [languageList setAutoscroll:YES];
   [languageList loadRowsFromArray:languages];
-  [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 16)];
+  [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 15)];
   
   [languageScrollView setDocumentView:languageList];
-  [languageScrollView setLineScroll:17.0];
+  [languageScrollView setLineScroll:15.0];
   [languageList release];  
 }
 
