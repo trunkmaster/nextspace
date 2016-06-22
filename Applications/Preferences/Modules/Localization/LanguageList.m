@@ -5,7 +5,7 @@
 
 @interface LanguageCell : NSActionCell
 {
-  BOOL isSelected;
+  BOOL isDragged;
 }
 @end
 @implementation LanguageCell
@@ -13,7 +13,7 @@
 - (id)init
 {
   self = [super init];
-  isSelected = NO;
+  isDragged = NO;
   return self;
 }
 
@@ -21,7 +21,7 @@
                        inView:(NSView *)controlView
 {
   NSLog(@"Draw cell with frame: %@", NSStringFromRect(cellFrame));
-  if (!isSelected)
+  if (!isDragged)
     {
       [[NSColor controlBackgroundColor] set];
       NSRectFill(cellFrame);
@@ -31,14 +31,14 @@
     }
 }
 
-- (BOOL)isSelected
+- (BOOL)isDragged
 {
-  return isSelected;
+  return isDragged;
 }
 
-- (void)setSelected:(BOOL)yn
+- (void)setDragged:(BOOL)yn
 {
-  isSelected = yn;
+  isDragged = yn;
   [[self controlView] setNeedsDisplay:YES];
 }
 
@@ -82,36 +82,49 @@
   NSPoint      mouseInWindow = [event locationInWindow];
   NSPoint      mouseInList;
   LanguageCell *cell;
+  NSRect       cellFrame;
 
   mouseInList = [[[event window] contentView] convertPoint:mouseInWindow
                                                     toView:self];
   [self getRow:&row column:&column forPoint:mouseInList];
   cell = [self cellAtRow:row column:column];
-  [cell setSelected:![cell isSelected]];
+  cellFrame = [self cellFrameAtRow:row column:column];
+  [cell setDragged:YES];
   // [cell setEnabled:NO];
   
   NSLog(@"LanguageList: mouseDown on '%@'",
         [[self cellAtRow:row column:column] title]);
 
   /*****************************************************************************/
-  NSWindow   *window = [self window];
-  NSRect     boxRect = [box frame];
-  NSPoint    location, initialLocation, lastLocation;
-  NSRect     superFrame = [self frame];
-  NSRect     displayFrame = [box displayFrame];
-  NSPoint    initialOrigin, boxOrigin;
-  NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
-                          | NSPeriodicMask | NSOtherMouseUpMask
-                          | NSRightMouseUpMask);
-  BOOL       done = NO;
+  NSWindow    *window = [event window];
+  NSPoint     location, initialLocation, lastLocation;
+  NSPoint     cellOrigin;
+  NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
+                           | NSPeriodicMask | NSOtherMouseUpMask
+                           | NSRightMouseUpMask);
+  BOOL        done = NO;
+  NSTextField *draggedRow;
 
+  lastLocation = initialLocation = [window mouseLocationOutsideOfEventStream];
+  cellOrigin = cellFrame.origin;
+
+  draggedRow = [[NSTextField alloc] initWithFrame:cellFrame];
+  [draggedRow setBordered:YES];
+  [draggedRow setBezeled:NO];
+  [draggedRow setEditable:NO];
+  [draggedRow setSelectable:NO];
+  [draggedRow setDrawsBackground:YES];
+  [draggedRow setBackgroundColor:[NSColor controlBackgroundColor]];
+  [draggedRow setStringValue:[cell title]];
+  [self addSubview:draggedRow];
+  
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
   while (!done)
     {
-      theEvent = [NSApp nextEventMatchingMask:eventMask
-                                    untilDate:theDistantFuture
-                                       inMode:NSEventTrackingRunLoopMode
-                                      dequeue:YES];
+      event = [NSApp nextEventMatchingMask:eventMask
+                                 untilDate:[NSDate distantFuture]
+                                    inMode:NSEventTrackingRunLoopMode
+                                   dequeue:YES];
 
       switch ([event type])
         {
@@ -120,54 +133,28 @@
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
           done = YES;
+          [cell setDragged:NO];
+          [draggedRow removeFromSuperview];
+          [draggedRow release];
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
           if (NSEqualPoints(location, lastLocation) == NO &&
-              (fabs(location.x - initialLocation.x) > 5 ||
-               fabs(location.y - initialLocation.y) > 5))
+              fabs(location.y - initialLocation.y) > 2)
             {
-              if (displayFrame.origin.x > 0 ||
-                  boxOrigin.x > initialOrigin.x ||
-                  (location.x - lastLocation.x) > 0)
-                {
-                  boxOrigin.x += (location.x - lastLocation.x);
-                  if (boxOrigin.x < 0)
-                    {
-                      boxOrigin.x = 0;
-                    }
-                  else if ((boxOrigin.x + boxRect.size.width)
-                           > superFrame.size.width)
-                    {
-                      boxOrigin.x =
-                        superFrame.size.width - boxRect.size.width;
-                    }
-                }
-                  
-              boxOrigin.y += (location.y - lastLocation.y);
-              if (boxOrigin.y < 0)
-                {
-                  boxOrigin.y = 0;
-                }
-              else if ((boxOrigin.y + boxRect.size.height)
-                       > superFrame.size.height)
-                {
-                  boxOrigin.y = superFrame.size.height - boxRect.size.height;
-                }
-                  
-              [box setFrameOrigin:boxOrigin];
+              cellOrigin.y += (lastLocation.y - location.y);
+              [draggedRow setFrameOrigin:cellOrigin];
               [self setNeedsDisplay:YES];
-                  
+              // [draggedRow setNeedsDisplay:YES];
+              
               lastLocation = location;
             }
           break;
-
         default:
           break;
         }
     }
   [NSEvent stopPeriodicEvents];
-
 }
 
 @end
