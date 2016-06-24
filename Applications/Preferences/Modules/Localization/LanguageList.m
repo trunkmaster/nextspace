@@ -3,9 +3,10 @@
 #include <AppKit/AppKit.h>
 #include "LanguageList.h"
 
-@interface LanguageCell : NSActionCell
+@interface LanguageCell : NSTextFieldCell
 {
   BOOL isDragged;
+  BOOL isDrawEdges;
 }
 @end
 @implementation LanguageCell
@@ -14,13 +15,14 @@
 {
   self = [super init];
   isDragged = NO;
+  isDrawEdges = NO;
   return self;
 }
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
                        inView:(NSView *)controlView
 {
-  NSLog(@"Draw cell with frame: %@", NSStringFromRect(cellFrame));
+  // NSLog(@"Draw cell with frame: %@", NSStringFromRect(cellFrame));
   if (!isDragged)
     {
       [[NSColor controlBackgroundColor] set];
@@ -28,6 +30,20 @@
       cellFrame.origin.x += 2;
       [self _drawAttributedText:[self _drawAttributedString]
                         inFrame:[self titleRectForBounds:cellFrame]];
+
+      if (isDrawEdges)
+        {
+          [[NSColor whiteColor] set];
+          PSnewpath();
+          PSmoveto(0, 0);
+          PSlineto(cellFrame.size.width, 0);
+          // PSstroke();
+          // [[NSColor darkGrayColor] set];
+          // PSnewpath();
+          PSmoveto(0, cellFrame.size.height-1);
+          PSlineto(cellFrame.size.width, cellFrame.size.height-1);
+          PSstroke();
+        }      
     }
 }
 
@@ -40,6 +56,11 @@
 {
   isDragged = yn;
   [[self controlView] setNeedsDisplay:YES];
+}
+
+- (void)setDrawEdges:(BOOL)yn
+{
+  isDrawEdges = yn;
 }
 
 @end
@@ -108,14 +129,16 @@
   lastLocation = initialLocation = [window mouseLocationOutsideOfEventStream];
   cellOrigin = cellFrame.origin;
 
+  [NSTextField setCellClass:[LanguageCell class]];
   draggedRow = [[NSTextField alloc] initWithFrame:cellFrame];
-  [draggedRow setBordered:YES];
+  [draggedRow setBordered:NO];
   [draggedRow setBezeled:NO];
   [draggedRow setEditable:NO];
   [draggedRow setSelectable:NO];
   [draggedRow setDrawsBackground:YES];
   [draggedRow setBackgroundColor:[NSColor controlBackgroundColor]];
   [draggedRow setStringValue:[cell title]];
+  [[draggedRow cell] setDrawEdges:YES];
   [self addSubview:draggedRow];
   
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
@@ -139,8 +162,9 @@
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
-          if (NSEqualPoints(location, lastLocation) == NO &&
-              fabs(location.y - initialLocation.y) > 2)
+          // if (NSEqualPoints(location, lastLocation) == NO
+          //     && fabs(location.y - initialLocation.y) > 2)
+          if (NSEqualPoints(location, lastLocation) == NO)
             {
               cellOrigin.y += (lastLocation.y - location.y);
               [draggedRow setFrameOrigin:cellOrigin];

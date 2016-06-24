@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Jun 23 02:21:18 2016
+;; Created Fri Jun 24 19:27:27 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,12 +18,23 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
+  "Localization.m"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  3623
+  '(3417 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.m"
   "LanguageList.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3123
-  '(3091 nil)
+  1287
+  '(892 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -33,8 +44,8 @@
   "Screen.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  12193
-  '(11563 nil)
+  17018
+  '(10780 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -46,17 +57,6 @@
   '(abbrev-mode auto-complete-mode hs-minor-mode)
   95
   '(104 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
-  "Localization.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3345
-  '(3417 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
