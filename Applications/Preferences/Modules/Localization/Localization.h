@@ -45,4 +45,6 @@
   NSArray *encodings;
 }
 
+- (void)validateUserDefaults;
+
 @end

@@ -33,7 +33,7 @@
 
       if (isDrawEdges)
         {
-          [[NSColor whiteColor] set];
+          [[NSColor darkGrayColor] set];
           PSnewpath();
           PSmoveto(0, 0);
           PSlineto(cellFrame.size.width, 0);
@@ -72,11 +72,9 @@
   self = [super initWithFrame:frameRect];
   [self setCellClass:[LanguageCell class]];
 
-  // [super setMode:NSListModeMatrix];
   [self setIntercellSpacing:NSMakeSize(0,0)];
   [self setAllowsEmptySelection:YES];
   [self setAutoscroll:YES];
-  // [self setCellSize:NSMakeSize(frameRect.size.width-24, 15)];
   [self setDrawsBackground:YES];
   [self setBackgroundColor:[NSColor darkGrayColor]];
     

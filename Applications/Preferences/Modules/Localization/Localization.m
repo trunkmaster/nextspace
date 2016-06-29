@@ -53,27 +53,7 @@ static NSMutableDictionary      *domain = nil;
   NSString *imagePath = [bundle pathForResource:@"Localization" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  NSString	*languagesPath;
-  NSDictionary	*languagesDict;
-  languagesPath = [bundle pathForResource:@"languages" ofType:@"list"];
-  languagesDict = [[NSDictionary alloc] initWithContentsOfFile:languagesPath];
-  languages = [languagesDict allKeys];
-  // languages = [NSArray arrayWithObjects:
-  //                      @"Dutch",
-  //                      @"English",
-  //                      @"Esperanto",
-  //                      @"French",
-  //                      @"German",
-  //                      @"Hungarian",
-  //                      @"Italian",
-  //                      @"Korean",
-  //                      @"Russian",
-  //                      @"Slovak",
-  //                      @"Spanish",
-  //                      @"Traditional Chinese",
-  //                      @"Ukrainian",
-  //                      nil];
-  [languages retain];
+  [self validateUserDefaults];
   
   return self;
 }
@@ -85,11 +65,68 @@ static NSMutableDictionary      *domain = nil;
   [super dealloc];
 }
 
+// Languages = NSLanguages = (English, Esperanto, ...)
+// Text Encoding = GNUSTEP_STRING_ENCODING = NSUTF8StringEncoding
+// Measurement Unit = NSMeasurementUnit (Centimeters, Inches, Points, Picas)
+- (void)validateUserDefaults
+{
+  id value = nil;
+
+  value = [domain objectForKey:@"NSLanguages"];
+  if (!value || ![value isKindOfClass:[NSArray class]])
+    {
+      NSString	   *languagesPath;
+      NSDictionary *languagesDict;
+      
+      languagesPath = [bundle pathForResource:@"languages" ofType:@"list"];
+      languagesDict = [[NSDictionary alloc] initWithContentsOfFile:languagesPath];
+      languages = [languagesDict allKeys];
+      // languages = [NSArray arrayWithObjects:
+      //                      @"English",
+      //                      @"Dutch",
+      //                      @"Esperanto",
+      //                      @"French",
+      //                      @"German",
+      //                      @"Hungarian",
+      //                      @"Italian",
+      //                      @"Korean",
+      //                      @"Russian",
+      //                      @"Slovak",
+      //                      @"Spanish",
+      //                      @"Traditional Chinese",
+      //                      @"Ukrainian",
+      //                      nil];
+      [domain setObject:languages forKey:@"NSLanguages"];
+      [defaults setPersistentDomain:domain forName:@"NSGlobalDomain"];
+      [defaults synchronize];
+    }
+
+  value = [domain objectForKey:@"NSMeasurementUnit"];
+  if (!value || ![value isKindOfClass:[NSString class]])
+    {
+      [domain setObject:@"Centimeters" forKey:@"NSMeasurementUnit"];
+    }  
+}
+
 - (void)awakeFromNib
 {
   [view retain];
   [window release];
 
+  {
+    [languageScrollView setHasVerticalScroller:YES];
+    [languageScrollView setBorderType:NSBezelBorder];
+  
+    NSRect lsvFrame = [languageScrollView frame];
+    languageList = [[LanguageList alloc] initWithFrame:NSMakeRect(0,0,100,100)];
+    [languageList loadRowsFromArray:[defaults arrayForKey:@"NSLanguages"]];
+    [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 17)];
+  
+    [languageScrollView setDocumentView:languageList];
+    [languageScrollView setLineScroll:17.0];
+    [languageList release];
+  }
+  
   /*
   {
     NSRect rect = [languageScrollView frame];
@@ -105,19 +142,6 @@ static NSMutableDictionary      *domain = nil;
     [tColumn setEditable:NO];
   }
   */
-  [languageScrollView setHasVerticalScroller:YES];
-  [languageScrollView setBorderType:NSBezelBorder];
-  
-  NSRect lsvFrame = [languageScrollView frame];
-  languageList = [[LanguageList alloc] initWithFrame:NSMakeRect(0,0,100,100)];
-  // [languageList setAllowsEmptySelection:YES];
-  // [languageList setAutoscroll:YES];
-  [languageList loadRowsFromArray:languages];
-  [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 17)];
-  
-  [languageScrollView setDocumentView:languageList];
-  [languageScrollView setLineScroll:15.0];
-  [languageList release];  
 }
 
 - (NSView *)view
@@ -143,9 +167,5 @@ static NSMutableDictionary      *domain = nil;
 {
   return image;
 }
-
-// Lanuages = NSLanguages = (English, Esperanto, ...)
-// Text Encoding = GNUSTEP_STRING_ENCODING = NSUTF8StringEncoding
-// Measurement Unit = NSMeasurementUnit (Centimeters, Inches, Points, Picas)
 
 @end
