@@ -45,6 +45,6 @@
   NSArray *encodings;
 }
 
-- (void)validateUserDefaults;
+- (void)readUserDefaults;
 
 @end

@@ -1,0 +1,14 @@
+{
+  "English" = "en_US.UTF-8";
+  "Українська" = "uk_UA.UTF-8";
+  "Chinese" = "zh_CH.UTF-8";
+  "Dutch" = "nl_NL.UTF-8";
+  "Fran\u00e7ais" = "fr_FR.UTF-8";
+  "Deutsch" = "de_DE.UTF-8";
+  "Magyar" = "hu_HU.UTF-8";
+  "Korean" = "ko_KR.UTF-8";
+  "Italiano" = "it_IT.UTF-8";
+  "Slovensky" = "sk_SK.UTF-8";
+  "Espa\U00f1ol" = "es_ES.UTF-8";
+  "Русский" = "ru_RU.UTF-8";
+}

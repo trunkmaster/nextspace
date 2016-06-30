@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Jun 30 01:45:55 2016
+;; Created Fri Jul  1 02:44:21 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "Localization.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3136
-  '(1998 nil)
+  1735
+  '(3449 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,7 +33,7 @@
   "Localization.h"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1204
+  1175
   '(1175 nil)
   nil
   nil
@@ -44,11 +44,22 @@
   "languages.list"
   'c-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  363
-  '(363 nil)
+  15
+  '(15 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile"
+  "GNUmakefile<8>"
+  'makefile-gmake-mode
+  nil
+  412
+  '(412 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.m"
@@ -93,17 +104,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile"
-  "GNUmakefile<8>"
-  'makefile-gmake-mode
-  nil
-  412
-  '(nil nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/keyboards.list"
