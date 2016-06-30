@@ -53,7 +53,7 @@ static NSMutableDictionary      *domain = nil;
   NSString *imagePath = [bundle pathForResource:@"Localization" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  [self validateUserDefaults];
+  [self readUserDefaults];
   
   return self;
 }
@@ -68,44 +68,33 @@ static NSMutableDictionary      *domain = nil;
 // Languages = NSLanguages = (English, Esperanto, ...)
 // Text Encoding = GNUSTEP_STRING_ENCODING = NSUTF8StringEncoding
 // Measurement Unit = NSMeasurementUnit (Centimeters, Inches, Points, Picas)
-- (void)validateUserDefaults
+- (void)readUserDefaults
 {
   id value = nil;
+  BOOL isSyncDomain = NO;
 
-  value = [domain objectForKey:@"NSLanguages"];
-  if (!value || ![value isKindOfClass:[NSArray class]])
+  languages = [domain objectForKey:@"NSLanguages"];
+  if (!languages || ![languages isKindOfClass:[NSArray class]])
     {
-      NSString	   *languagesPath;
-      NSDictionary *languagesDict;
+      NSString *lPath = [bundle pathForResource:@"languages" ofType:@"list"];
       
-      languagesPath = [bundle pathForResource:@"languages" ofType:@"list"];
-      languagesDict = [[NSDictionary alloc] initWithContentsOfFile:languagesPath];
-      languages = [languagesDict allKeys];
-      // languages = [NSArray arrayWithObjects:
-      //                      @"English",
-      //                      @"Dutch",
-      //                      @"Esperanto",
-      //                      @"French",
-      //                      @"German",
-      //                      @"Hungarian",
-      //                      @"Italian",
-      //                      @"Korean",
-      //                      @"Russian",
-      //                      @"Slovak",
-      //                      @"Spanish",
-      //                      @"Traditional Chinese",
-      //                      @"Ukrainian",
-      //                      nil];
+      languages = [[NSArray alloc] initWithContentsOfFile:lPath];
       [domain setObject:languages forKey:@"NSLanguages"];
-      [defaults setPersistentDomain:domain forName:@"NSGlobalDomain"];
-      [defaults synchronize];
+      isSyncDomain = YES;
     }
 
   value = [domain objectForKey:@"NSMeasurementUnit"];
   if (!value || ![value isKindOfClass:[NSString class]])
     {
       [domain setObject:@"Centimeters" forKey:@"NSMeasurementUnit"];
-    }  
+      isSyncDomain = YES;
+    }
+
+  if (isSyncDomain == YES)
+    {
+      [defaults setPersistentDomain:domain forName:@"NSGlobalDomain"];
+      [defaults synchronize];
+    }
 }
 
 - (void)awakeFromNib
@@ -113,19 +102,23 @@ static NSMutableDictionary      *domain = nil;
   [view retain];
   [window release];
 
+  /* Language */
   {
     [languageScrollView setHasVerticalScroller:YES];
     [languageScrollView setBorderType:NSBezelBorder];
   
     NSRect lsvFrame = [languageScrollView frame];
     languageList = [[LanguageList alloc] initWithFrame:NSMakeRect(0,0,100,100)];
-    [languageList loadRowsFromArray:[defaults arrayForKey:@"NSLanguages"]];
+    [languageList loadRowsFromArray:languages];
     [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 17)];
   
     [languageScrollView setDocumentView:languageList];
     [languageScrollView setLineScroll:17.0];
     [languageList release];
   }
+
+  /* Measurement Units */
+  [unitsBtn selectItemWithTitle:[domain objectForKey:@"NSMeasurementUnit"]];
   
   /*
   {
