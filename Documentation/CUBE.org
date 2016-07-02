@@ -1084,14 +1084,15 @@
     :PROPERTIES:
     :COOKIE_DATA: todo reccursive
     :END:
-**** TODO *Ошибки/падения/неправильное поведение* [41/43]
-***** TODO Dock перестал принимать иконки по DnD
-      Это связано с Xinerama - нужно будет этим отдельно заняться.
-***** TODO [#C] Выход из Workspace == segault
+**** TODO *Ошибки/падения/неправильное поведение* [41/44]
+***** TODO Выход из Workspace == segault
       Сюда буду вписывать разные случаи непонятного, некритичного segfault:
       - [X] при открытом окне Processes (нужно делать close и release окна).
       - [ ] если открыты одновременно 'Processes' и 'Inspector', причем если
         'Inspector' был открыт первым (мистика какая-то...).
+***** TODO Иногда повисает процесс копирования/перемещения
+***** TODO Dock перестал принимать иконки по DnD
+      Это связано с Xinerama - нужно будет этим отдельно заняться.
 ***** DONE Кажется не работет Duplicate
       Причем похоже с каталогами.
       Генерит: Problem posting notification: <NSException: 0x2e525f0>
@@ -1386,6 +1387,7 @@
       иерархии вверх.
       Удаление каталога/файла не приводит к падению.
 **** TODO *Оптимизации/Улучшения*
+***** TODO Сохранять состояние окон(minimized,shaded) при выходе
 ***** TODO [#A] Default sort method -> Kind
 ***** TODO [#A] Inspector: не вызывать если панель скрыта?
       Влияет на скорость прокрутки с помощью стрелок.
@@ -2780,30 +2782,39 @@
 ***** TODO Установка Backlight (если монитор поддерживает)
       Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
       сделать паузу для NXSystem/NXScreen.
-***** TODO Background color of desktop
 ***** TODO Отложенное сохранение настроек для gamma и brightness
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
       Не нашел возможности простого получения текущего цвета окна X11.
       Поэтому, сейчас предполагаю, что цвет был установлен такой, который
       сохранен где-то в  ~/Library/Preferences.
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
+      Стоит реализовать подклассы в NXAppKit.
+      NSTextField->NXIntegerTextField->NXFloatTextField.
+      NXIntegerTextField - ввод чисел, без точки, без пробелов.
+      NXFloatTextField - если без точки добавлять '.0', если вида '.X'
+      добавлять '0' впереди.
 ***** TODO Установка Brightness
 ***** TODO Color profiles
 **** DONE Fonts: GNUstep font settings
      back-art-subpixel-text всегда устанавливается в '0'.
      Пробовал другие значения - разницы не заметил.
 **** TODO Localization: language, units, paper, encoding
-     NSLanguages = (English, Russian, Ukrainian)
-     NSMeasurementUnit = Centimeters | Inches | Points | Picas
-     GNUSTEP_STRING_ENCODING - определяется автоматически из системной локали.
-***** TODO Список Language - отдельный виджет
-      С перетаскиваемыми языками, но не так, как это сделано в NSTableView.
-      NSScrollView с documentView в виде NSMatrix.
+***** TODO Language
+      NSLanguages = (English, Russian, Ukrainian)
+      Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
+      в NSTableView. NSScrollView с documentView в виде NSMatrix.
+***** TODO Text Encoding
+      GNUSTEP_STRING_ENCODING - определяется автоматически из системной
+      локали - нужно проверить.
+      Вроде работает: при установленной локале en_US.UTF-8 выдает NSUTF8StringEncoding.
+***** TODO Measurement Unit
+      NSMeasurementUnit = Centimeters | Inches | Points | Picas
+***** TODO Keyboard
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
 **** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
-**** TODO Login: screensaver, hooks, display hostname
 **** TODO Sound: input and output settings, system beep sound
 **** TODO Power: screensaver, display dimming (или в дисплей?)
+**** TODO Login: screensaver, hooks, display hostname
 **** TODO Date & Time
 **** TODO Menu, Dock, icons
      - Default menu location;

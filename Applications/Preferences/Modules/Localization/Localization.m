@@ -54,6 +54,9 @@ static NSMutableDictionary      *domain = nil;
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
   [self readUserDefaults];
+
+  NSLog(@"Localization: default C string encoding - %i",
+        [NSString defaultCStringEncoding]);
   
   return self;
 }
@@ -74,7 +77,7 @@ static NSMutableDictionary      *domain = nil;
   BOOL isSyncDomain = NO;
 
   languages = [domain objectForKey:@"NSLanguages"];
-  if (!languages || ![languages isKindOfClass:[NSArray class]])
+  if (!languages || ![languages isKindOfClass:[NSArray class]] || [languages count] < 1)
     {
       NSString *lPath = [bundle pathForResource:@"languages" ofType:@"list"];
       
