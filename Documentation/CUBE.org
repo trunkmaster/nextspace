@@ -2799,14 +2799,25 @@
      back-art-subpixel-text всегда устанавливается в '0'.
      Пробовал другие значения - разницы не заметил.
 **** TODO Localization: language, units, paper, encoding
+     Есть идея заменить 'Text Encoding' на 'Paper Size', а 'Keyboard' вынести
+     в модуль 'Keyboard' в таб 'Layouts'. Вместо 'Keyboard' редактировать
+     разные настройки International: первый день недели, формат даты/времени,
+     валюта и т.д.
+     Значения достаются через [NSUserDefaults] читается в след. порядке:
+     - из NSGlobalDomain;
+     - из Languages/<первый элемент массива из NSLanguages>.
+***** Text Encoding
+      Опеределяется автоматически, либо через переменную окружения
+      GNUSTEP_STRING_ENCODING.
+      В Text Encoding нет смысла: по сути эта настройка управляет чтением
+      строк C в объекты ObjC. По умолчанию должно быть UTF8 (для чтения имени
+      файлов и т.д.). Во всех других случаях (например, чтение содержимого
+      текстового файла в какой-то специфической кодировке должно делать
+      приложение).
 ***** TODO Language
       NSLanguages = (English, Russian, Ukrainian)
       Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
       в NSTableView. NSScrollView с documentView в виде NSMatrix.
-***** TODO Text Encoding
-      GNUSTEP_STRING_ENCODING - определяется автоматически из системной
-      локали - нужно проверить.
-      Вроде работает: при установленной локале en_US.UTF-8 выдает NSUTF8StringEncoding.
 ***** TODO Measurement Unit
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 ***** TODO Keyboard
