@@ -141,17 +141,27 @@ static NSMutableDictionary      *domain = nil;
   }
 
   /* Date & Time examples*/
-  NSDateFormatter *dFormatter;
-  NSDate          *exampleDate = [NSDate date];
-  dFormatter = [[NSDateFormatter alloc]
-                 initWithDateFormat:[defaults objectForKey:NSDateFormatString]
-                 allowNaturalLanguage:NO];
-  [dateExample setStringValue:[dFormatter stringFromDate:exampleDate]];
+  NSCalendarDate  *cDate = [NSCalendarDate date];
+  NSString        *format;
+
+  format = [defaults objectForKey:NSDateFormatString];
+  [dateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
   
-  [dFormatter setDateFormat:[defaults objectForKey:NSShortDateFormatString]];
-  [shortDateExample setStringValue:[dFormatter stringFromDate:exampleDate]];
+  format = [defaults objectForKey:NSShortDateFormatString];
+  [shortDateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+
+  format = [defaults objectForKey:NSTimeFormatString];
+  [timeExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+
+  format = [defaults objectForKey:NSTimeDateFormatString];
+  [timeDateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+  
+  format = [defaults objectForKey:NSShortTimeDateFormatString];
+  [shortTimeDateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
 
   /* Numbers & Currency example*/
+  format = [defaults objectForKey:@"NSPositiveCurrencyFormatString"];
+  [numbersExample setStringValue:format];
 
   /* Measurement Units */
   [unitsBtn selectItemWithTitle:[domain objectForKey:@"NSMeasurementUnit"]]; 

@@ -36,9 +36,9 @@
   id dateExample;		// NSDateFormatString
   id shortDateExample;		// NSShortDateFormatString
   id timeExample; 		// NSTimeFormatString
-  id numbersExample;		// NSPositiveCurrencyFormatString
-  id shortTimeDateExample;	// NSShortTimeDateFormatString
   id timeDateExample;		// NSTimeDateFormatString
+  id shortTimeDateExample;	// NSShortTimeDateFormatString
+  id numbersExample;		// NSPositiveCurrencyFormatString
   id encodingBtn;
   // id papersizeBtn;
   id unitsBtn;
