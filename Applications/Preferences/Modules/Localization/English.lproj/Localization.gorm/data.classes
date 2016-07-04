@@ -18,13 +18,18 @@
 	Actions = (
 	);
 	Outlets = (
-	    languageList,
 	    encodingBtn,
 	    papersizeBtn,
 	    unitsBtn,
 	    view,
 	    languageScrollView,
-	    window
+	    window,
+	    datetExample,
+	    numbersExample,
+	    shortDateExample,
+	    shortTimeDateExample,
+	    timeDateExample,
+	    timeExample
 	);
 	Super = NSObject;
     };

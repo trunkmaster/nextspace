@@ -33,8 +33,14 @@
 {
   LanguageList *languageList;
   id languageScrollView;
+  id dateExample;		// NSDateFormatString
+  id shortDateExample;		// NSShortDateFormatString
+  id timeExample; 		// NSTimeFormatString
+  id numbersExample;		// NSPositiveCurrencyFormatString
+  id shortTimeDateExample;	// NSShortTimeDateFormatString
+  id timeDateExample;		// NSTimeDateFormatString
   id encodingBtn;
-  id papersizeBtn;
+  // id papersizeBtn;
   id unitsBtn;
   id view;
   id window;

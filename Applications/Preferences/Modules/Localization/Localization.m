@@ -140,24 +140,21 @@ static NSMutableDictionary      *domain = nil;
     [languageList release];
   }
 
-  /* Measurement Units */
-  [unitsBtn selectItemWithTitle:[domain objectForKey:@"NSMeasurementUnit"]];
+  /* Date & Time examples*/
+  NSDateFormatter *dFormatter;
+  NSDate          *exampleDate = [NSDate date];
+  dFormatter = [[NSDateFormatter alloc]
+                 initWithDateFormat:[defaults objectForKey:NSDateFormatString]
+                 allowNaturalLanguage:NO];
+  [dateExample setStringValue:[dFormatter stringFromDate:exampleDate]];
   
-  /*
-  {
-    NSRect rect = [languageScrollView frame];
-    NSTableColumn *tColumn;
-    [languageList setHeaderView:nil];
-    [languageList setCornerView:nil];
-    [languageList setVerticalMotionCanBeginDrag:YES];
-    // [languageList registerForDraggedTypes:@"language"];
-    [languageList setTarget:self];
-    [languageList setAction:@selector(doClick:)];
-    tColumn = [languageList tableColumnWithIdentifier:@"language"];
-    [tColumn setWidth:(rect.size.width-23)];
-    [tColumn setEditable:NO];
-  }
-  */
+  [dFormatter setDateFormat:[defaults objectForKey:NSShortDateFormatString]];
+  [shortDateExample setStringValue:[dFormatter stringFromDate:exampleDate]];
+
+  /* Numbers & Currency example*/
+
+  /* Measurement Units */
+  [unitsBtn selectItemWithTitle:[domain objectForKey:@"NSMeasurementUnit"]]; 
 }
 
 - (NSView *)view
