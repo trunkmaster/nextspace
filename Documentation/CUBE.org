@@ -2818,6 +2818,14 @@
       NSLanguages = (English, Russian, Ukrainian)
       Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
       в NSTableView. NSScrollView с documentView в виде NSMatrix.
+***** TODO Formats
+      NSUserDefaults:
+      - NSTimeFormatString, NSDateFormatString, NSShortDateFormatString
+      - NSTimeDateFormatString, NSShortTimeDateFormatString
+      - NSCurrencySymbol, NSInternationalCurrencyString, NSCurrencyString
+      - NSDecimalSeparator, NSThousandsSeparator
+      Валюта: NSCurrencySymbol, NSPositiveCurrencyFormatString
+      Числа: 
 ***** TODO Measurement Unit
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 ***** TODO Keyboard
