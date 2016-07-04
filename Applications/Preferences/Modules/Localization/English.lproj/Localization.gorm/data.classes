@@ -24,7 +24,7 @@
 	    view,
 	    languageScrollView,
 	    window,
-	    datetExample,
+	    dateExample,
 	    numbersExample,
 	    shortDateExample,
 	    shortTimeDateExample,
