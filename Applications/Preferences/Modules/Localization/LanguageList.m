@@ -83,14 +83,23 @@
 
 - (void)loadRowsFromArray:(NSArray *)array
 {
-  NSCell *cell;
+  NSCell       *cell;
+  NSBundle     *baseBundle = [NSBundle bundleForLibrary:@"gnustep-base"];
+  NSString     *languagePath, *languageName;
+  NSDictionary *languageDesc;
   
   for (int i=0; i < [array count]; i++)
     {
+      languageName = [array objectAtIndex:i];
+      languagePath = [baseBundle pathForResource:languageName
+                                          ofType:@""
+                                     inDirectory:@"Languages"];
+      languageDesc = [NSDictionary dictionaryWithContentsOfFile:languagePath];
+      
       [self addRow];
       cell = [self makeCellAtRow:i column:0];
-      [cell setObjectValue:[array objectAtIndex:i]];
-      // [cell setRefusesFirstResponder:YES];
+      [cell setObjectValue:[languageDesc objectForKey:@"NSFormalName"]];
+      [cell setRepresentedObject:languageName];
       [cell setSelectable:NO];
     }
 }
