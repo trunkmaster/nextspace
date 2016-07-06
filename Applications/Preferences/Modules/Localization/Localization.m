@@ -97,7 +97,9 @@ static NSMutableDictionary      *domain = nil;
   BOOL isSyncDomain = NO;
 
   languages = [domain objectForKey:@"NSLanguages"];
-  if (!languages || ![languages isKindOfClass:[NSArray class]] || [languages count] < 1)
+  if (!languages
+      || ![languages isKindOfClass:[NSArray class]]
+      || [languages count] < 1)
     {
       NSString *lPath = [bundle pathForResource:@"languages" ofType:@"list"];
       
@@ -157,14 +159,15 @@ static NSMutableDictionary      *domain = nil;
   [timeDateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
   
   format = [defaults objectForKey:NSShortTimeDateFormatString];
-  [shortTimeDateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+  [shortTimeDateExample
+    setStringValue:[cDate descriptionWithCalendarFormat:format]];
 
   /* Numbers & Currency example*/
   format = [defaults objectForKey:@"NSPositiveCurrencyFormatString"];
   [numbersExample setStringValue:format];
 
   /* Measurement Units */
-  [unitsBtn selectItemWithTitle:[domain objectForKey:@"NSMeasurementUnit"]]; 
+  [unitsBtn selectItemWithTitle:[domain objectForKey:@"NSMeasurementUnit"]];
 }
 
 - (NSView *)view

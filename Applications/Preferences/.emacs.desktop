@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jul  5 19:28:26 2016
+;; Created Thu Jul  7 02:12:54 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,7 +22,7 @@
   "LanguageList.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  2311
+  5174
   '(2305 nil)
   nil
   nil
@@ -33,7 +33,7 @@
   "Localization.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3151
+  5760
   '(1800 nil)
   nil
   nil
