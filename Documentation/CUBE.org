@@ -2732,23 +2732,37 @@
     Протокол для бандлов лежит в /usr/NextSpace/apps/Preferences.h.
 *** DONE Появление/скрытие окна
 *** TODO Модули
-**** TODO Нарисовать в Gorm все панели и определиться с размером окна
-***** DONE Login
-***** TODO Fonts
-***** DONE Display
-***** DONE Screen
-***** DONE Localization
-***** DONE Keyboard
-***** DONE Mouse
-***** DONE Power
-***** DONE Password
-***** TODO Sound
-***** TODO UNIX Expert
-***** TODO Date & Time
-***** TODO Services
-**** TODO Все модули должны подстраиваться под размер окна
-**** DONE Отображать иконки с учетом priority из bundle.registry
-**** TODO .preferences как документ открываемый Preferences
+**** TODO Localization: language, units, paper, encoding
+     Есть идея заменить 'Text Encoding' на 'Paper Size', а 'Keyboard' вынести
+     в модуль 'Keyboard' в таб 'Layouts'. Вместо 'Keyboard' редактировать
+     разные настройки International: первый день недели, формат даты/времени,
+     валюта и т.д.
+     Значения достаются через [NSUserDefaults] читается в след. порядке:
+     - из NSGlobalDomain;
+     - из Languages/<первый элемент массива из NSLanguages>.
+***** Text Encoding
+      Опеределяется автоматически, либо через переменную окружения
+      GNUSTEP_STRING_ENCODING.
+      В Text Encoding нет смысла: по сути эта настройка управляет чтением
+      строк C в объекты ObjC. По умолчанию должно быть UTF8 (для чтения имени
+      файлов и т.д.). Во всех других случаях (например, чтение содержимого
+      текстового файла в какой-то специфической кодировке должно делать
+      приложение).
+***** TODO Language
+      NSLanguages = (English, Russian, Ukrainian)
+      Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
+      в NSTableView. NSScrollView с documentView в виде NSMatrix.
+***** TODO Formats
+      NSUserDefaults:
+      - NSTimeFormatString, NSDateFormatString, NSShortDateFormatString
+      - NSTimeDateFormatString, NSShortTimeDateFormatString
+      - NSCurrencySymbol, NSInternationalCurrencyString, NSCurrencyString
+      - NSDecimalSeparator, NSThousandsSeparator
+      Валюта: NSCurrencySymbol, NSPositiveCurrencyFormatString
+      Числа: 
+***** TODO Measurement Unit
+      NSMeasurementUnit = Centimeters | Inches | Points | Picas
+***** TODO Keyboard
 **** TODO Screen: displays layout, on/off
 ***** TODO Отображение мониторов
 ****** DONE Показывать отключенный монитор
@@ -2795,40 +2809,26 @@
       добавлять '0' впереди.
 ***** TODO Установка Brightness
 ***** TODO Color profiles
+**** TODO Нарисовать в Gorm все панели и определиться с размером окна
+***** DONE Login
+***** DONE Fonts
+***** DONE Display
+***** DONE Screen
+***** DONE Localization
+***** DONE Keyboard
+***** DONE Mouse
+***** DONE Power
+***** DONE Password
+***** TODO Sound
+***** TODO UNIX Expert
+***** TODO Date & Time
+***** TODO Services
+**** TODO Все модули должны подстраиваться под размер окна
+**** TODO .preferences как документ открываемый Preferences
+**** DONE Отображать иконки с учетом priority из bundle.registry
 **** DONE Fonts: GNUstep font settings
      back-art-subpixel-text всегда устанавливается в '0'.
      Пробовал другие значения - разницы не заметил.
-**** TODO Localization: language, units, paper, encoding
-     Есть идея заменить 'Text Encoding' на 'Paper Size', а 'Keyboard' вынести
-     в модуль 'Keyboard' в таб 'Layouts'. Вместо 'Keyboard' редактировать
-     разные настройки International: первый день недели, формат даты/времени,
-     валюта и т.д.
-     Значения достаются через [NSUserDefaults] читается в след. порядке:
-     - из NSGlobalDomain;
-     - из Languages/<первый элемент массива из NSLanguages>.
-***** Text Encoding
-      Опеределяется автоматически, либо через переменную окружения
-      GNUSTEP_STRING_ENCODING.
-      В Text Encoding нет смысла: по сути эта настройка управляет чтением
-      строк C в объекты ObjC. По умолчанию должно быть UTF8 (для чтения имени
-      файлов и т.д.). Во всех других случаях (например, чтение содержимого
-      текстового файла в какой-то специфической кодировке должно делать
-      приложение).
-***** TODO Language
-      NSLanguages = (English, Russian, Ukrainian)
-      Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
-      в NSTableView. NSScrollView с documentView в виде NSMatrix.
-***** TODO Formats
-      NSUserDefaults:
-      - NSTimeFormatString, NSDateFormatString, NSShortDateFormatString
-      - NSTimeDateFormatString, NSShortTimeDateFormatString
-      - NSCurrencySymbol, NSInternationalCurrencyString, NSCurrencyString
-      - NSDecimalSeparator, NSThousandsSeparator
-      Валюта: NSCurrencySymbol, NSPositiveCurrencyFormatString
-      Числа: 
-***** TODO Measurement Unit
-      NSMeasurementUnit = Centimeters | Inches | Points | Picas
-***** TODO Keyboard
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
 **** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
 **** TODO Sound: input and output settings, system beep sound
