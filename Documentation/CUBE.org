@@ -2740,6 +2740,10 @@
      Значения достаются через [NSUserDefaults] читается в след. порядке:
      - из NSGlobalDomain;
      - из Languages/<первый элемент массива из NSLanguages>.
+***** TODO Language
+      NSLanguages = (English, Russian, Ukrainian)
+      Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
+      в NSTableView. NSScrollView с documentView в виде NSMatrix.
 ***** Text Encoding
       Опеределяется автоматически, либо через переменную окружения
       GNUSTEP_STRING_ENCODING.
@@ -2748,21 +2752,8 @@
       файлов и т.д.). Во всех других случаях (например, чтение содержимого
       текстового файла в какой-то специфической кодировке должно делать
       приложение).
-***** TODO Language
-      NSLanguages = (English, Russian, Ukrainian)
-      Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
-      в NSTableView. NSScrollView с documentView в виде NSMatrix.
-***** TODO Formats
-      NSUserDefaults:
-      - NSTimeFormatString, NSDateFormatString, NSShortDateFormatString
-      - NSTimeDateFormatString, NSShortTimeDateFormatString
-      - NSCurrencySymbol, NSInternationalCurrencyString, NSCurrencyString
-      - NSDecimalSeparator, NSThousandsSeparator
-      Валюта: NSCurrencySymbol, NSPositiveCurrencyFormatString
-      Числа: 
-***** TODO Measurement Unit
+***** DONE Measurement Unit
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
-***** TODO Keyboard
 **** TODO Screen: displays layout, on/off
 ***** TODO Отображение мониторов
 ****** DONE Показывать отключенный монитор
