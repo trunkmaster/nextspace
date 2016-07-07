@@ -125,8 +125,10 @@
 
   /*****************************************************************************/
   NSWindow    *window = [event window];
+  NSRect      superviewFrame = [[self superview] frame];
   NSPoint     location, initialLocation, lastLocation;
   NSPoint     cellOrigin;
+  NSInteger   y;
   NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                            | NSPeriodicMask | NSOtherMouseUpMask
                            | NSRightMouseUpMask);
@@ -147,6 +149,9 @@
   [draggedRow setStringValue:[cell title]];
   [[draggedRow cell] setDrawEdges:YES];
   [self addSubview:draggedRow];
+
+  NSLog(@"Superview %@ frame %@",
+        [[self superview] className], NSStringFromRect(superviewFrame));
   
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
   while (!done)
@@ -169,16 +174,20 @@
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
-          // if (NSEqualPoints(location, lastLocation) == NO
-          //     && fabs(location.y - initialLocation.y) > 2)
           if (NSEqualPoints(location, lastLocation) == NO)
             {
-              cellOrigin.y += (lastLocation.y - location.y);
-              [draggedRow setFrameOrigin:cellOrigin];
-              [self setNeedsDisplay:YES];
-              // [draggedRow setNeedsDisplay:YES];
-              
-              lastLocation = location;
+              y = cellOrigin.y;
+              y += (lastLocation.y - location.y);
+              NSLog(@"cellOrigin: %@", NSStringFromPoint(cellOrigin));
+
+              if (y > 0
+                  && y+cellFrame.size.height < [[self superview] frame].size.height)
+                {
+                  cellOrigin.y = y;
+                  [draggedRow setFrameOrigin:cellOrigin];
+                  [self setNeedsDisplay:YES];
+                  lastLocation = location;
+                }              
             }
           break;
         default:
