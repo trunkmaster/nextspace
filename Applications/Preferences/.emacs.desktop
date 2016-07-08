@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Jul  8 02:12:08 2016
+;; Created Fri Jul  8 18:34:05 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "LanguageList.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  5326
-  '(5172 nil)
+  5587
+  '(3831 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))

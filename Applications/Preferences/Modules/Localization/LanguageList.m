@@ -126,8 +126,9 @@
   /*****************************************************************************/
   NSWindow    *window = [event window];
   NSRect      superviewFrame = [[self superview] frame];
+  CGFloat     cellHeight, superHeight;
   NSPoint     location, initialLocation, lastLocation;
-  NSPoint     cellOrigin;
+  NSPoint     cellOrigin = cellFrame.origin;
   NSInteger   y;
   NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                            | NSPeriodicMask | NSOtherMouseUpMask
@@ -136,7 +137,8 @@
   NSTextField *draggedRow;
 
   lastLocation = initialLocation = [window mouseLocationOutsideOfEventStream];
-  cellOrigin = cellFrame.origin;
+  cellHeight = cellFrame.size.height;
+  superHeight = [[self superview] frame].size.height;
 
   [NSTextField setCellClass:[LanguageCell class]];
   draggedRow = [[NSTextField alloc] initWithFrame:cellFrame];
@@ -178,16 +180,24 @@
             {
               y = cellOrigin.y;
               y += (lastLocation.y - location.y);
-              NSLog(@"cellOrigin: %@", NSStringFromPoint(cellOrigin));
+              NSLog(@"cellOrigin: %@, y:%li",
+                    NSStringFromPoint(cellOrigin), y);
 
-              if (y > 0
-                  && y+cellFrame.size.height < [[self superview] frame].size.height)
+              if (y > 0 && ((y + cellHeight) < superHeight))
                 {
                   cellOrigin.y = y;
-                  [draggedRow setFrameOrigin:cellOrigin];
-                  [self setNeedsDisplay:YES];
-                  lastLocation = location;
-                }              
+                }
+              else if (y < 0 && cellOrigin.y > 1)
+                {
+                  cellOrigin.y = 1;
+                }
+              else
+                {
+                  continue;
+                }
+              [draggedRow setFrameOrigin:cellOrigin];
+              [self setNeedsDisplay:YES];
+              lastLocation = location;
             }
           break;
         default:
