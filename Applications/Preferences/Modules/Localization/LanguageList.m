@@ -186,8 +186,9 @@
               if (y > 0 && ((y + cellHeight) < superHeight))
                 {
                   cellOrigin.y = y;
+                  lastLocation = location;
                 }
-              else if (y < 0 && cellOrigin.y > 1)
+              else if (y <= 0 && cellOrigin.y > 1)
                 {
                   cellOrigin.y = 1;
                 }
@@ -197,7 +198,6 @@
                 }
               [draggedRow setFrameOrigin:cellOrigin];
               [self setNeedsDisplay:YES];
-              lastLocation = location;
             }
           break;
         default:
