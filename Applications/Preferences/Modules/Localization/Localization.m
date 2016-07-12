@@ -136,6 +136,7 @@ static NSMutableDictionary      *domain = nil;
     languageList = [[LanguageList alloc] initWithFrame:NSMakeRect(0,0,100,100)];
     [languageList loadRowsFromArray:languages];
     [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 17)];
+    [languageList setScrollView:languageScrollView];
   
     [languageScrollView setDocumentView:languageList];
     [languageScrollView setLineScroll:17.0];

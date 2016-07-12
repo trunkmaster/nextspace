@@ -104,16 +104,22 @@
     }
 }
 
+- (void)setScrollView:(NSScrollView *)view
+{
+  scrollView = view;
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
+  NSWindow     *window = [event window];
+  NSView       *contentView = [window contentView];
   NSInteger    row, column;
   NSPoint      mouseInWindow = [event locationInWindow];
   NSPoint      mouseInList;
   LanguageCell *cell;
   NSRect       cellFrame;
 
-  mouseInList = [[[event window] contentView] convertPoint:mouseInWindow
-                                                    toView:self];
+  mouseInList = [contentView convertPoint:mouseInWindow toView:self];
   [self getRow:&row column:&column forPoint:mouseInList];
   cell = [self cellAtRow:row column:column];
   cellFrame = [self cellFrameAtRow:row column:column];
@@ -124,21 +130,16 @@
         [[self cellAtRow:row column:column] title]);
 
   /*****************************************************************************/
-  NSWindow    *window = [event window];
-  NSRect      superviewFrame = [[self superview] frame];
-  CGFloat     cellHeight, superHeight;
-  NSPoint     location, initialLocation, lastLocation;
   NSPoint     cellOrigin = cellFrame.origin;
+  CGFloat     cellHeight = cellFrame.size.height;
+  CGFloat     listHeight = [[self superview] frame].size.height;
+  NSPoint     location, lastLocation;
   NSInteger   y;
   NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                            | NSPeriodicMask | NSOtherMouseUpMask
                            | NSRightMouseUpMask);
   BOOL        done = NO;
   NSTextField *draggedRow;
-
-  lastLocation = initialLocation = [window mouseLocationOutsideOfEventStream];
-  cellHeight = cellFrame.size.height;
-  superHeight = [[self superview] frame].size.height;
 
   [NSTextField setCellClass:[LanguageCell class]];
   draggedRow = [[NSTextField alloc] initWithFrame:cellFrame];
@@ -152,10 +153,9 @@
   [[draggedRow cell] setDrawEdges:YES];
   [self addSubview:draggedRow];
 
-  NSLog(@"Superview %@ frame %@",
-        [[self superview] className], NSStringFromRect(superviewFrame));
-  
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
+  
+  lastLocation = [window mouseLocationOutsideOfEventStream];
   while (!done)
     {
       event = [NSApp nextEventMatchingMask:eventMask
@@ -176,26 +176,33 @@
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
-          if (NSEqualPoints(location, lastLocation) == NO)
+          mouseInList = [contentView convertPoint:location toView:scrollView];
+          if (NSEqualPoints(location, lastLocation) == NO &&
+              NSMouseInRect(mouseInList, [scrollView frame], NO))
             {
               y = cellOrigin.y;
               y += (lastLocation.y - location.y);
-              NSLog(@"cellOrigin: %@, y:%li",
-                    NSStringFromPoint(cellOrigin), y);
+              
+              NSLog(@"cellOrigin: %@, y:%li", NSStringFromPoint(cellOrigin), y);
 
-              if (y > 0 && ((y + cellHeight) < superHeight))
+              if (y > 0 && // top position
+                  ((y + cellHeight) <= listHeight)) // bottom position
                 {
                   cellOrigin.y = y;
-                  lastLocation = location;
                 }
               else if (y <= 0 && cellOrigin.y > 1)
-                {
+                { // top position if mouse moved too fast
                   cellOrigin.y = 1;
+                }
+              else if (y > listHeight)
+                { // bottom position if mouse moved too fast
+                  cellOrigin.y = listHeight - cellHeight;
                 }
               else
                 {
                   continue;
                 }
+              lastLocation = location;
               [draggedRow setFrameOrigin:cellOrigin];
               [self setNeedsDisplay:YES];
             }
