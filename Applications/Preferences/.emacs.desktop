@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jul 12 01:02:42 2016
+;; Created Wed Jul 13 02:12:40 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,19 +22,41 @@
   "LanguageList.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  5790
-  '(5588 nil)
+  5232
+  '(5053 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.h"
+  "Localization.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  976
+  '(1191 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
   "Localization.m"
   'objc-mode
   '(abbrev-mode auto-complete-mode hs-minor-mode)
-  3342
-  '(1800 nil)
+  4303
+  '(4308 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.h"
+  "LanguageList.h"
+  'objc-mode
+  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  212
+  '(168 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -49,17 +71,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.h"
-  "Localization.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  1124
-  '(1191 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile"
@@ -82,17 +93,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.h"
-  "LanguageList.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  95
-  '(104 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
