@@ -132,6 +132,7 @@
   /*****************************************************************************/
   NSPoint     cellOrigin = cellFrame.origin;
   CGFloat     cellHeight = cellFrame.size.height;
+  NSRect      superRect = [[self superview] frame];
   CGFloat     listHeight = [[self superview] frame].size.height;
   NSPoint     location, lastLocation;
   NSInteger   y;
@@ -156,6 +157,7 @@
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
   
   lastLocation = [window mouseLocationOutsideOfEventStream];
+  lastLocation = [contentView convertPoint:lastLocation toView:scrollView];
   while (!done)
     {
       event = [NSApp nextEventMatchingMask:eventMask
@@ -176,27 +178,35 @@
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
-          mouseInList = [contentView convertPoint:location toView:scrollView];
+          // NSLog(@"Mouse cursor in Window: %@", NSStringFromPoint(location));
+          location = [contentView convertPoint:location toView:scrollView];
+          // NSLog(@"Mouse cursor in ScrollView: %@ (%@)",
+          //       NSStringFromPoint(location),
+          //       NSStringFromRect(superRect));
           if (NSEqualPoints(location, lastLocation) == NO &&
-              NSMouseInRect(mouseInList, [scrollView frame], NO))
+              location.x > 0 && location.x < superRect.size.width)
             {
-              y = cellOrigin.y;
-              y += (lastLocation.y - location.y);
-              
-              NSLog(@"cellOrigin: %@, y:%li", NSStringFromPoint(cellOrigin), y);
-
-              if (y > 0 && // top position
-                  ((y + cellHeight) <= listHeight)) // bottom position
+              if (location.y > 0 && location.y < superRect.size.height)
                 {
-                  cellOrigin.y = y;
+                  y = cellOrigin.y;
+                  y += (location.y - lastLocation.y);
+              
+                  NSLog(@"cellOrigin: %@, y:%li",
+                        NSStringFromPoint(cellOrigin), y);
+
+                  if (y > 0 && y < listHeight &&        // top position
+                      ((y + cellHeight) <= listHeight)) // bottom position
+                    {
+                      cellOrigin.y = y;
+                    }
                 }
-              else if (y <= 0 && cellOrigin.y > 1)
-                { // top position if mouse moved too fast
-                  cellOrigin.y = 1;
+              else if (location.y > superRect.size.height)
+                {
+                  cellOrigin.y = superRect.size.height - cellHeight;
                 }
-              else if (y > listHeight)
-                { // bottom position if mouse moved too fast
-                  cellOrigin.y = listHeight - cellHeight;
+              else if (location.y <= 0 && cellOrigin.y > 0)
+                {
+                  cellOrigin.y = 0;
                 }
               else
                 {
