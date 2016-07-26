@@ -55,28 +55,28 @@ static NSMutableDictionary      *domain = nil;
 
   [self readUserDefaults];
 
-  NSLog(@"Localization: default C string encoding - %i",
-        [NSString defaultCStringEncoding]);
-  {
-    NSLocale *currentLocale = [NSLocale currentLocale];
-    NSLocale *systemLocale = [NSLocale systemLocale];
+  // NSLog(@"Localization: default C string encoding - %i",
+  //       [NSString defaultCStringEncoding]);
+  // {
+  //   NSLocale *currentLocale = [NSLocale currentLocale];
+  //   NSLocale *systemLocale = [NSLocale systemLocale];
     
-    NSLog(@"Current language:%@ %@; System language:%@",
-          [currentLocale objectForKey:NSLocaleLanguageCode],
-          [defaults objectForKey:NSCurrencySymbol],
-          [systemLocale objectForKey:NSLocaleLanguageCode]);
-    NSLog(@"Locale defaults:\n"
-          "\tCurrency symbol: %@\n"
-          "\tInternational currency string: %@\n"
-          "\tPositive Currency Format String: %@\n"
-          "\tDecimal separator: %@\n"
-          "\tEarlierTimeDesignations: %@\n",
-          [defaults objectForKey:NSCurrencySymbol],
-          [defaults objectForKey:NSInternationalCurrencyString],
-          [defaults objectForKey:@"NSPositiveCurrencyFormatString"],
-          [defaults objectForKey:NSDecimalSeparator],
-          [[defaults objectForKey:@"NSEarlierTimeDesignations"] objectAtIndex:0]);
-  }
+  //   NSLog(@"Current language:%@ %@; System language:%@",
+  //         [currentLocale objectForKey:NSLocaleLanguageCode],
+  //         [defaults objectForKey:NSCurrencySymbol],
+  //         [systemLocale objectForKey:NSLocaleLanguageCode]);
+  //   NSLog(@"Locale defaults:\n"
+  //         "\tCurrency symbol: %@\n"
+  //         "\tInternational currency string: %@\n"
+  //         "\tPositive Currency Format String: %@\n"
+  //         "\tDecimal separator: %@\n"
+  //         "\tEarlierTimeDesignations: %@\n",
+  //         [defaults objectForKey:NSCurrencySymbol],
+  //         [defaults objectForKey:NSInternationalCurrencyString],
+  //         [defaults objectForKey:@"NSPositiveCurrencyFormatString"],
+  //         [defaults objectForKey:NSDecimalSeparator],
+  //         [[defaults objectForKey:@"NSEarlierTimeDesignations"] objectAtIndex:0]);
+  // }
   
   return self;
 }
