@@ -560,12 +560,13 @@ static Inspector *inspectorPanel = nil;
       
       filePath = nil;
       fileSelection = nil;
-      fileViewerSelectionChanged = YES;
       
       // load information about inspectors
       [self _registerInspectors];
    }
 
+  // do it for updates after panel was closed and activated again
+  fileViewerSelectionChanged = YES;
   [self _updateDisplay];
   
   // don't make our panel the key window - we want to allow
@@ -695,6 +696,10 @@ static Inspector *inspectorPanel = nil;
     }
   else if ([sender isKindOfClass:[FileViewer class]]) // selection changed
     {
+      if ([window isVisible] == NO)
+        {
+          return self;
+        }
       NSLog(@"Selection changed in FileViewer");
       // Update Inspector panel fields
       fileViewerSelectionChanged = YES;
