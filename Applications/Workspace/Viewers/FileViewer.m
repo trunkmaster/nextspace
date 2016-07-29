@@ -807,7 +807,7 @@
   if ([window isMainWindow] == YES)
     {
       Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
-      if (inspector != nil && [[inspector window] isVisible])
+      if (inspector != nil)
         {
           [inspector revert:self];
         }
@@ -1722,7 +1722,7 @@
 {
   Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
   
-  if (inspector != nil && [[inspector window] isVisible])
+  if (inspector != nil)
     {
       [inspector revert:self];
     }

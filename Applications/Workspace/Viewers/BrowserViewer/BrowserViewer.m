@@ -678,7 +678,8 @@ BOOL browserColumnLoaded;
 	{
 	  filenames = [NSArray arrayWithObject:[dirPath lastPathComponent]];
           dirPath = [dirPath stringByDeletingLastPathComponent];
-          [owner displayPath:dirPath selection:filenames sender:self]; // FileViewer
+	  // FileViewer
+          [owner displayPath:dirPath selection:filenames sender:self];
 	}
     }
   else // multiple files (dirs?) selected
@@ -695,7 +696,8 @@ BOOL browserColumnLoaded;
       filenames = array;
       dirPath = [dirPath stringByDeletingLastPathComponent];
 
-      [owner displayPath:dirPath selection:filenames sender:self]; // FileViewer
+      // FileViewer
+      [owner displayPath:dirPath selection:filenames sender:self];
     }
   
   ASSIGN(currentPath, dirPath);
