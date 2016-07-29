@@ -61,6 +61,8 @@
   // Update 'filePath' and 'fileSelection' ivars
   [self getSelectedPath:&filePath andFiles:&fileSelection];
 
+  NSLog(@"Inspector _updateDisplay: %@/%@", filePath, fileSelection);
+
   if (filePath == nil)
     {
       return;
@@ -116,7 +118,6 @@
   NSString     *nodep = [registry objectForKey:@"nodep"];
   SEL          nodepSel = NSSelectorFromString(nodep);
   BOOL         validInspector = YES;
-  NSString     *title;
 
   // By default inspector will be shown. Inspector subclass must implement
   // 'nodep' method to define special cases in which 'No ... Inspector'
@@ -560,12 +561,12 @@ static Inspector *inspectorPanel = nil;
       
       filePath = nil;
       fileSelection = nil;
-      fileViewerSelectionChanged = YES;
       
       // load information about inspectors
       [self _registerInspectors];
    }
 
+  fileViewerSelectionChanged = YES;
   [self _updateDisplay];
   
   // don't make our panel the key window - we want to allow
@@ -688,14 +689,14 @@ static Inspector *inspectorPanel = nil;
 {
   if (sender == revertButton)  // button clicked
     {
-      NSLog(@"'Revert' button clicked. Send message to '%@'",
+      NSLog(@"Inspector: 'Revert' button clicked. Send message to '%@'",
             [currentInspector className]);
       // Update contents of section inspector
       [currentInspector revert:sender];
     }
   else if ([sender isKindOfClass:[FileViewer class]]) // selection changed
     {
-      NSLog(@"Selection changed in FileViewer");
+      NSLog(@"Inspector: Selection changed in FileViewer");
       // Update Inspector panel fields
       fileViewerSelectionChanged = YES;
       [self _updateDisplay];
