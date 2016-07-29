@@ -155,7 +155,7 @@
   [self addSubview:draggedRow];
 
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
-  
+
   lastLocation = [window mouseLocationOutsideOfEventStream];
   lastLocation = [contentView convertPoint:lastLocation toView:scrollView];
   while (!done)
