@@ -9,6 +9,7 @@
   BOOL isDrawEdges;
 }
 @end
+
 @implementation LanguageCell
 
 - (id)init
@@ -191,8 +192,8 @@
                   y = cellOrigin.y;
                   y += (location.y - lastLocation.y);
               
-                  NSLog(@"cellOrigin: %@, y:%li",
-                        NSStringFromPoint(cellOrigin), y);
+                  // NSLog(@"cellOrigin: %@, y:%li",
+                  //       NSStringFromPoint(cellOrigin), y);
 
                   if (y > 0 && y < listHeight &&        // top position
                       ((y + cellHeight) <= listHeight)) // bottom position
