@@ -2834,6 +2834,7 @@
      - WindowMaker Dock settings: Dock position, hiding, etc.
      - Bottom icons placement
 **** TODO UNIX Expert
+     Используется Workspace Manager'ом.
 **** TODO Password/Users?
 **** TODO Services: enable/disable
 **** TODO Window management
