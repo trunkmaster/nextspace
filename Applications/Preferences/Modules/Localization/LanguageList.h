@@ -5,6 +5,7 @@
 @interface LanguageList : NSMatrix
 {
   NSScrollView *scrollView;
+  NSTextField  *draggedRow;
 }
 
 - (void)loadRowsFromArray:(NSArray *)array;

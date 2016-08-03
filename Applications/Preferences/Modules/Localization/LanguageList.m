@@ -82,6 +82,13 @@
   return self;
 }
 
+- (void)dealloc
+{
+  TEST_RELEASE(draggedRow);
+  [super dealloc];
+}
+
+
 - (void)loadRowsFromArray:(NSArray *)array
 {
   NSCell       *cell;
@@ -120,15 +127,29 @@
   LanguageCell *cell;
   NSRect       cellFrame;
 
+  // Determine clicked row
   mouseInList = [contentView convertPoint:mouseInWindow toView:self];
   [self getRow:&row column:&column forPoint:mouseInList];
   cell = [self cellAtRow:row column:column];
   cellFrame = [self cellFrameAtRow:row column:column];
+  NSLog(@"LanguageList: mouseDown on '%@'", [cell title]);
+
+  // Prepare for dragging
   [cell setDragged:YES];
-  // [cell setEnabled:NO];
-  
-  NSLog(@"LanguageList: mouseDown on '%@'",
-        [[self cellAtRow:row column:column] title]);
+  if (!draggedRow)
+    {
+      [NSTextField setCellClass:[LanguageCell class]];
+      draggedRow = [[NSTextField alloc] initWithFrame:cellFrame];
+      [draggedRow setBordered:NO];
+      [draggedRow setBezeled:NO];
+      [draggedRow setEditable:NO];
+      [draggedRow setSelectable:NO];
+      [draggedRow setDrawsBackground:YES];
+      [draggedRow setBackgroundColor:[NSColor controlBackgroundColor]];
+      [draggedRow setStringValue:[cell title]];
+      [[draggedRow cell] setDrawEdges:YES];
+    }
+  [self addSubview:draggedRow];
 
   /*****************************************************************************/
   NSPoint     cellOrigin = cellFrame.origin;
@@ -141,19 +162,6 @@
                            | NSPeriodicMask | NSOtherMouseUpMask
                            | NSRightMouseUpMask);
   BOOL        done = NO;
-  NSTextField *draggedRow;
-
-  [NSTextField setCellClass:[LanguageCell class]];
-  draggedRow = [[NSTextField alloc] initWithFrame:cellFrame];
-  [draggedRow setBordered:NO];
-  [draggedRow setBezeled:NO];
-  [draggedRow setEditable:NO];
-  [draggedRow setSelectable:NO];
-  [draggedRow setDrawsBackground:YES];
-  [draggedRow setBackgroundColor:[NSColor controlBackgroundColor]];
-  [draggedRow setStringValue:[cell title]];
-  [[draggedRow cell] setDrawEdges:YES];
-  [self addSubview:draggedRow];
 
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
   
@@ -175,7 +183,6 @@
           done = YES;
           [cell setDragged:NO];
           [draggedRow removeFromSuperview];
-          [draggedRow release];
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
