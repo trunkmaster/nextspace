@@ -122,17 +122,20 @@
   NSWindow     *window = [event window];
   NSView       *contentView = [window contentView];
   NSInteger    row, column;
-  NSPoint      mouseInWindow = [event locationInWindow];
-  NSPoint      mouseInList;
+  NSPoint      location, lastLocation;
   LanguageCell *cell;
   NSRect       cellFrame;
+  NSPoint      cellOrigin;
+  CGFloat      cellHeight;
 
   // Determine clicked row
-  mouseInList = [contentView convertPoint:mouseInWindow toView:self];
-  [self getRow:&row column:&column forPoint:mouseInList];
+  lastLocation = [contentView convertPoint:[event locationInWindow] toView:scrollView];
+  [self getRow:&row column:&column forPoint:lastLocation];
   cell = [self cellAtRow:row column:column];
   cellFrame = [self cellFrameAtRow:row column:column];
-  NSLog(@"LanguageList: mouseDown on '%@'", [cell title]);
+  cellOrigin = cellFrame.origin;
+  cellHeight = cellFrame.size.height;
+  // NSLog(@"LanguageList: mouseDown on '%@'", [cell title]);
 
   // Prepare for dragging
   [cell setDragged:YES];
@@ -146,27 +149,26 @@
       [draggedRow setSelectable:NO];
       [draggedRow setDrawsBackground:YES];
       [draggedRow setBackgroundColor:[NSColor controlBackgroundColor]];
-      [draggedRow setStringValue:[cell title]];
       [[draggedRow cell] setDrawEdges:YES];
     }
+  else
+    {
+      [draggedRow setFrame:cellFrame];
+    }
+  [draggedRow setStringValue:[cell title]];
   [self addSubview:draggedRow];
 
   /*****************************************************************************/
-  NSPoint     cellOrigin = cellFrame.origin;
-  CGFloat     cellHeight = cellFrame.size.height;
-  NSRect      superRect = [[self superview] frame];
-  CGFloat     listHeight = [[self superview] frame].size.height;
-  NSPoint     location, lastLocation;
-  NSInteger   y;
   NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                            | NSPeriodicMask | NSOtherMouseUpMask
                            | NSRightMouseUpMask);
+  CGFloat     listHeight = [[self superview] frame].size.height;
+  CGFloat     listWidth = [[self superview] frame].size.width;
+  NSInteger   y;
   BOOL        done = NO;
 
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
   
-  lastLocation = [window mouseLocationOutsideOfEventStream];
-  lastLocation = [contentView convertPoint:lastLocation toView:scrollView];
   while (!done)
     {
       event = [NSApp nextEventMatchingMask:eventMask
@@ -185,16 +187,16 @@
           [draggedRow removeFromSuperview];
           break;
         case NSPeriodic:
-          location = [window mouseLocationOutsideOfEventStream];
-          // NSLog(@"Mouse cursor in Window: %@", NSStringFromPoint(location));
-          location = [contentView convertPoint:location toView:scrollView];
+          location = [contentView
+                       convertPoint:[window mouseLocationOutsideOfEventStream]
+                             toView:scrollView];
           // NSLog(@"Mouse cursor in ScrollView: %@ (%@)",
           //       NSStringFromPoint(location),
           //       NSStringFromRect(superRect));
           if (NSEqualPoints(location, lastLocation) == NO &&
-              location.x > 0 && location.x < superRect.size.width)
+              location.x > 0 && location.x < listWidth)
             {
-              if (location.y > 0 && location.y < superRect.size.height)
+              if (location.y > 0 && location.y < listHeight)
                 {
                   y = cellOrigin.y;
                   y += (location.y - lastLocation.y);
@@ -202,15 +204,15 @@
                   // NSLog(@"cellOrigin: %@, y:%li",
                   //       NSStringFromPoint(cellOrigin), y);
 
-                  if (y > 0 && y < listHeight &&        // top position
+                  if (y >= 0 &&                         // top position
                       ((y + cellHeight) <= listHeight)) // bottom position
                     {
                       cellOrigin.y = y;
                     }
                 }
-              else if (location.y > superRect.size.height)
+              else if (location.y >= listHeight)
                 {
-                  cellOrigin.y = superRect.size.height - cellHeight;
+                  cellOrigin.y = listHeight - cellHeight;
                 }
               else if (location.y <= 0 && cellOrigin.y > 0)
                 {
