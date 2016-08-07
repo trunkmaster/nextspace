@@ -2744,8 +2744,11 @@
      - из Languages/<первый элемент массива из NSLanguages>.
 ***** TODO Language
       NSLanguages = (English, Russian, Ukrainian)
-      Отдельный виджет с перетаскиваемыми языками, но не так, как это сделано
-      в NSTableView. NSScrollView с documentView в виде NSMatrix.
+****** DONE Отдельный виджет
+       ...с перетаскиваемыми языками, но не так, как это сделано в NSTableView.
+****** DONE NSScrollView с documentView в виде NSMatrix.
+****** TODO Менять местами языки после перетаскивания
+****** TODO Прокручивать список при приближении перетаскиваемого языка
 ***** Text Encoding
       Опеределяется автоматически, либо через переменную окружения
       GNUSTEP_STRING_ENCODING.
