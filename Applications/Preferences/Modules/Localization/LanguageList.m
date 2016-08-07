@@ -121,24 +121,25 @@
 {
   NSWindow     *window = [event window];
   NSView       *contentView = [window contentView];
-  NSInteger    row, column;
+  NSInteger    dRow, row, column;
   NSPoint      location, lastLocation;
-  LanguageCell *cell;
+  LanguageCell *draggedCell, *cell;
   NSRect       cellFrame;
   NSPoint      cellOrigin;
   CGFloat      cellHeight;
 
   // Determine clicked row
-  lastLocation = [contentView convertPoint:[event locationInWindow] toView:scrollView];
-  [self getRow:&row column:&column forPoint:lastLocation];
-  cell = [self cellAtRow:row column:column];
-  cellFrame = [self cellFrameAtRow:row column:column];
+  lastLocation = [contentView convertPoint:[event locationInWindow]
+                                    toView:[scrollView contentView]];
+  [self getRow:&dRow column:&column forPoint:lastLocation];
+  draggedCell = [self cellAtRow:dRow column:column];
+  cellFrame = [self cellFrameAtRow:dRow column:column];
   cellOrigin = cellFrame.origin;
   cellHeight = cellFrame.size.height;
   // NSLog(@"LanguageList: mouseDown on '%@'", [cell title]);
 
   // Prepare for dragging
-  [cell setDragged:YES];
+  [draggedCell setDragged:YES];
   if (!draggedRow)
     {
       [NSTextField setCellClass:[LanguageCell class]];
@@ -155,7 +156,7 @@
     {
       [draggedRow setFrame:cellFrame];
     }
-  [draggedRow setStringValue:[cell title]];
+  [draggedRow setStringValue:[draggedCell title]];
   [self addSubview:draggedRow];
 
   /*****************************************************************************/
@@ -183,19 +184,30 @@
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
           done = YES;
-          [cell setDragged:NO];
+          [draggedCell setDragged:NO];
           [draggedRow removeFromSuperview];
           break;
         case NSPeriodic:
           location = [contentView
                        convertPoint:[window mouseLocationOutsideOfEventStream]
-                             toView:scrollView];
+                             toView:[scrollView contentView]];
           // NSLog(@"Mouse cursor in ScrollView: %@ (%@)",
           //       NSStringFromPoint(location),
           //       NSStringFromRect(superRect));
           if (NSEqualPoints(location, lastLocation) == NO &&
               location.x > 0 && location.x < listWidth)
             {
+              [self getRow:&row column:&column forPoint:lastLocation];
+              cell = [self cellAtRow:row column:column];
+              if (cell != draggedCell)
+                {
+                  LanguageCell *tmpCell = [cell copy];
+                  [self putCell:draggedCell atRow:row column:column];
+                  [self putCell:tmpCell atRow:dRow column:column];
+                  [tmpCell release];
+                  // NSLog(@"LanguageList: drag over '%@'", [cell title]);
+                  dRow = row;
+                }
               if (location.y > 0 && location.y < listHeight)
                 {
                   y = cellOrigin.y;
