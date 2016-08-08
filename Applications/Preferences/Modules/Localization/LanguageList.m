@@ -159,12 +159,16 @@
   [draggedRow setStringValue:[draggedCell title]];
   [self addSubview:draggedRow];
 
+  // NSLog(@"NSMatrix superview visible rect: %@", NSStringFromRect([[self superview] visibleRect]));
+
   /*****************************************************************************/
   NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                            | NSPeriodicMask | NSOtherMouseUpMask
                            | NSRightMouseUpMask);
-  CGFloat     listHeight = [[self superview] frame].size.height;
-  CGFloat     listWidth = [[self superview] frame].size.width;
+  // NSRect      listRect = [[self superview] visibleRect];
+  NSRect      listRect = [scrollView documentVisibleRect];
+  CGFloat     listHeight = listRect.size.height;
+  CGFloat     listWidth = listRect.size.width;
   NSInteger   y;
   BOOL        done = NO;
 
@@ -191,44 +195,45 @@
           location = [contentView
                        convertPoint:[window mouseLocationOutsideOfEventStream]
                              toView:[scrollView contentView]];
-          // NSLog(@"Mouse cursor in ScrollView: %@ (%@)",
-          //       NSStringFromPoint(location),
-          //       NSStringFromRect(superRect));
           if (NSEqualPoints(location, lastLocation) == NO &&
-              location.x > 0 && location.x < listWidth)
+              location.x > listRect.origin.x &&
+              location.x < listWidth)
             {
-              [self getRow:&row column:&column forPoint:lastLocation];
-              cell = [self cellAtRow:row column:column];
-              if (cell != draggedCell)
-                {
-                  LanguageCell *tmpCell = [cell copy];
-                  [self putCell:draggedCell atRow:row column:column];
-                  [self putCell:tmpCell atRow:dRow column:column];
-                  [tmpCell release];
-                  // NSLog(@"LanguageList: drag over '%@'", [cell title]);
-                  dRow = row;
-                }
-              if (location.y > 0 && location.y < listHeight)
+              if (location.y > listRect.origin.y &&
+                  location.y < (listRect.origin.y + listHeight))
                 {
                   y = cellOrigin.y;
                   y += (location.y - lastLocation.y);
               
-                  // NSLog(@"cellOrigin: %@, y:%li",
-                  //       NSStringFromPoint(cellOrigin), y);
+                  // NSLog(@"cellOrigin: %@, y:%li", NSStringFromPoint(cellOrigin), y);
 
-                  if (y >= 0 &&                         // top position
-                      ((y + cellHeight) <= listHeight)) // bottom position
+                  if (y >= listRect.origin.y &&                               // top position
+                      ((y + cellHeight) <= (listRect.origin.y + listHeight))) // bottom position
                     {
                       cellOrigin.y = y;
                     }
+
+                  // Swap cells during dragging
+                  [self getRow:&row column:&column forPoint:location];
+                  cell = [self cellAtRow:row column:column];
+                  if (cell && cell != draggedCell)
+                    {
+                      LanguageCell *tmpCell = [cell copy];
+                      [self putCell:draggedCell atRow:row column:column];
+                      [self putCell:tmpCell atRow:dRow column:column];
+                      [tmpCell release];
+                      // NSLog(@"LanguageList: drag over '%@'", [cell title]);
+                      dRow = row;
+                    }
                 }
-              else if (location.y >= listHeight)
+              else if (location.y >= (listRect.origin.y + listHeight))
                 {
-                  cellOrigin.y = listHeight - cellHeight;
+                  cellOrigin.y = (listRect.origin.y + listHeight) - cellHeight;
                 }
-              else if (location.y <= 0 && cellOrigin.y > 0)
+              else if (location.y <= listRect.origin.y &&
+                       cellOrigin.y > listRect.origin.y)
                 {
-                  cellOrigin.y = 0;
+                  cellOrigin.y = listRect.origin.y;
                 }
               else
                 {
