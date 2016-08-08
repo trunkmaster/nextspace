@@ -2733,7 +2733,11 @@
     Preferences.app/Resources.
     Протокол для бандлов лежит в /usr/NextSpace/apps/Preferences.h.
 *** DONE Появление/скрытие окна
+*** DONE Отображать иконки с учетом priority из bundle.registry
 *** TODO Модули
+**** DONE Fonts: GNUstep font settings
+     back-art-subpixel-text всегда устанавливается в '0'.
+     Пробовал другие значения - разницы не заметил.
 **** TODO Localization: language, units, paper, encoding
      Есть идея заменить 'Text Encoding' на 'Paper Size', а 'Keyboard' вынести
      в модуль 'Keyboard' в таб 'Layouts'. Вместо 'Keyboard' редактировать
@@ -2747,7 +2751,7 @@
 ****** DONE Отдельный виджет
        ...с перетаскиваемыми языками, но не так, как это сделано в NSTableView.
 ****** DONE NSScrollView с documentView в виде NSMatrix.
-****** TODO Менять местами языки после перетаскивания
+****** DONE Менять местами языки после перетаскивания
 ****** TODO Прокручивать список при приближении перетаскиваемого языка
 ***** Text Encoding
       Опеределяется автоматически, либо через переменную окружения
@@ -2760,6 +2764,9 @@
 ***** DONE Measurement Unit
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 **** TODO Screen: displays layout, on/off
+***** DONE Устанавливать 'Main Display'
+***** DONE Активировать/деактивировать монитор
+***** DONE Принимать уведомления об измнениях в конф. мониторов
 ***** TODO Отображение мониторов
 ****** DONE Показывать отключенный монитор
 ****** DONE Arrange (метод и кнопка)
@@ -2767,12 +2774,9 @@
 ****** DONE Отображение Dock и Icon Yard на 'Main Display'
 ****** TODO Получать и отображать desktop background
        Нужно сначала реализовать это в модуле Display.
-***** DONE Устанавливать 'Main Display'
-***** DONE Активировать/деактивировать монитор
 ***** TODO Перемещение мониторов мышкой
 ****** TODO Прилипание одного к другому
 ****** TODO Выравнивание во время перетаскивания
-***** DONE Принимать уведомления об измнениях в конф. мониторов
 **** TODO Display: resolution, layout, gamma correction, wallpaper/color
 ***** DONE Изменение настроек не должно влиять на плавность изменения контролов
       Использовать dispatch & blocks?
@@ -2789,23 +2793,39 @@
       Notify не генерируется.
 ***** DONE В VirtualBox двигание слайдеров = залипание/падение
       В текущей версии - все нормально. Возможно какие-то изменения в ядре? ХЗ.
-***** TODO Установка Backlight (если монитор поддерживает)
-      Нужно вместе с Preferences/Modules/Display. Поэтому, здесь нужно
-      сделать паузу для NXSystem/NXScreen.
-***** TODO Отложенное сохранение настроек для gamma и brightness
-***** TODO Получать и изменять фон рабочего стола -> NXDisplay
-      Не нашел возможности простого получения текущего цвета окна X11.
-      Поэтому, сейчас предполагаю, что цвет был установлен такой, который
-      сохранен где-то в  ~/Library/Preferences.
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
       Стоит реализовать подклассы в NXAppKit.
       NSTextField->NXIntegerTextField->NXFloatTextField.
       NXIntegerTextField - ввод чисел, без точки, без пробелов.
       NXFloatTextField - если без точки добавлять '.0', если вида '.X'
       добавлять '0' впереди.
+***** TODO Отложенное сохранение настроек для gamma и brightness
+***** TODO Получать и изменять фон рабочего стола -> NXDisplay
+      Не нашел возможности простого получения текущего цвета окна X11.
+      Поэтому, сейчас предполагаю, что цвет был установлен такой, который
+      сохранен где-то в  ~/Library/Preferences.
+***** TODO Установка Backlight (если монитор поддерживает)
 ***** TODO Установка Brightness
 ***** TODO Color profiles
-**** TODO Нарисовать в Gorm все панели и определиться с размером окна
+
+**** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
+**** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
+**** TODO Sound: input and output settings, system beep sound
+**** TODO Power: screensaver, display dimming (или в дисплей?)
+**** TODO Network
+**** TODO UNIX Expert
+     Используется Workspace Manager'ом.
+**** TODO Login: screensaver, hooks, display hostname
+**** TODO Date & Time
+**** TODO Password/Users?
+**** TODO Services: enable/disable
+**** TODO Menu, Dock, icons
+     - Default menu location;
+     - WindowMaker Dock settings: Dock position, hiding, etc.
+     - Dock placement on multi-monitor configuration = on Main Display;
+     - Bottom icons placement = on Main Display;
+**** TODO Window management
+*** TODO Нарисовать в Gorm все панели и определиться с размером окна
 ***** DONE Login
 ***** DONE Fonts
 ***** DONE Display
@@ -2819,28 +2839,8 @@
 ***** TODO UNIX Expert
 ***** TODO Date & Time
 ***** TODO Services
-**** TODO Все модули должны подстраиваться под размер окна
-**** TODO .preferences как документ открываемый Preferences
-**** DONE Отображать иконки с учетом priority из bundle.registry
-**** DONE Fonts: GNUstep font settings
-     back-art-subpixel-text всегда устанавливается в '0'.
-     Пробовал другие значения - разницы не заметил.
-**** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
-**** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
-**** TODO Sound: input and output settings, system beep sound
-**** TODO Power: screensaver, display dimming (или в дисплей?)
-**** TODO Login: screensaver, hooks, display hostname
-**** TODO Date & Time
-**** TODO Menu, Dock, icons
-     - Default menu location;
-     - Dock placement on multi-monitor configuration;
-     - WindowMaker Dock settings: Dock position, hiding, etc.
-     - Bottom icons placement
-**** TODO UNIX Expert
-     Используется Workspace Manager'ом.
-**** TODO Password/Users?
-**** TODO Services: enable/disable
-**** TODO Window management
+*** TODO .preferences как документ открываемый Preferences
+*** TODO Все модули должны подстраиваться под размер окна
 *** TODO Настройки GNUstep и WindowMaker
     Нужно думать как организовать работу так, чтобы ничего не забыть.
 *** TODO Старт без без появления меню
