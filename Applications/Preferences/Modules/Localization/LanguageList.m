@@ -112,18 +112,50 @@
     }
 }
 
+- (NSArray *)arrayFromRows
+{
+  NSMutableArray *languages = [NSMutableArray array];
+
+  for (id cell in [self cells])
+    {
+      [languages addObject:[cell representedObject]];
+    }
+  
+  return languages;
+}
+
 - (void)setScrollView:(NSScrollView *)view
 {
   scrollView = view;
+}
+
+- (NSInteger)swapCellAtPoint:(NSPoint)location
+                    withCell:(LanguageCell *)draggedCell
+                       atRow:(NSInteger)dRow
+{
+  LanguageCell *cell, *tmpCell;
+  NSInteger    row, column;
+  
+  [self getRow:&row column:&column forPoint:location];
+  cell = [self cellAtRow:row column:column];
+  if (cell && cell != draggedCell)
+    {
+      tmpCell = [cell copy];
+      [self putCell:draggedCell atRow:row column:column];
+      [self putCell:tmpCell atRow:dRow column:column];
+      [tmpCell release];
+      dRow = row;
+    }
+  return dRow;
 }
 
 - (void)mouseDown:(NSEvent *)event
 {
   NSWindow     *window = [event window];
   NSView       *contentView = [window contentView];
-  NSInteger    dRow, row, column;
+  NSInteger    dRow, dColumn;
   NSPoint      location, lastLocation;
-  LanguageCell *draggedCell, *cell;
+  LanguageCell *draggedCell;
   NSRect       cellFrame;
   NSPoint      cellOrigin;
   CGFloat      cellHeight;
@@ -131,9 +163,9 @@
   // Determine clicked row
   lastLocation = [contentView convertPoint:[event locationInWindow]
                                     toView:[scrollView contentView]];
-  [self getRow:&dRow column:&column forPoint:lastLocation];
-  draggedCell = [self cellAtRow:dRow column:column];
-  cellFrame = [self cellFrameAtRow:dRow column:column];
+  [self getRow:&dRow column:&dColumn forPoint:lastLocation];
+  draggedCell = [self cellAtRow:dRow column:dColumn];
+  cellFrame = [self cellFrameAtRow:dRow column:dColumn];
   cellOrigin = cellFrame.origin;
   cellHeight = cellFrame.size.height;
   // NSLog(@"LanguageList: mouseDown on '%@'", [cell title]);
@@ -190,6 +222,8 @@
           done = YES;
           [draggedCell setDragged:NO];
           [draggedRow removeFromSuperview];
+          if (_target)
+            [_target performSelector:_action];
           break;
         case NSPeriodic:
           location = [contentView
@@ -214,26 +248,31 @@
                     }
 
                   // Swap cells during dragging
-                  [self getRow:&row column:&column forPoint:location];
-                  cell = [self cellAtRow:row column:column];
-                  if (cell && cell != draggedCell)
-                    {
-                      LanguageCell *tmpCell = [cell copy];
-                      [self putCell:draggedCell atRow:row column:column];
-                      [self putCell:tmpCell atRow:dRow column:column];
-                      [tmpCell release];
-                      // NSLog(@"LanguageList: drag over '%@'", [cell title]);
-                      dRow = row;
-                    }
+                  dRow = [self swapCellAtPoint:location
+                                      withCell:draggedCell
+                                         atRow:dRow];
                 }
-              else if (location.y >= (listRect.origin.y + listHeight))
+              else if (location.y >= (listRect.origin.y + listHeight) &&
+                       [[scrollView verticalScroller] floatValue] < 1.0)
                 {
+                  listRect.origin.y += [scrollView lineScroll];
+                  [[scrollView documentView] scrollRectToVisible:listRect];
                   cellOrigin.y = (listRect.origin.y + listHeight) - cellHeight;
+                  // Swap cells during dragging
+                  dRow = [self swapCellAtPoint:location
+                                      withCell:draggedCell
+                                         atRow:dRow];
                 }
               else if (location.y <= listRect.origin.y &&
-                       cellOrigin.y > listRect.origin.y)
+                       listRect.origin.y > 0)
                 {
+                  listRect.origin.y -= [scrollView lineScroll];
+                  [[scrollView documentView] scrollRectToVisible:listRect];
                   cellOrigin.y = listRect.origin.y;
+                  // Swap cells during dragging
+                  dRow = [self swapCellAtPoint:location
+                                      withCell:draggedCell
+                                         atRow:dRow];
                 }
               else
                 {
