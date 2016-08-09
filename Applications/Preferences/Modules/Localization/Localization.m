@@ -137,6 +137,8 @@ static NSMutableDictionary      *domain = nil;
     [languageList loadRowsFromArray:languages];
     [languageList setCellSize:NSMakeSize(lsvFrame.size.width-24, 17)];
     [languageList setScrollView:languageScrollView];
+    [languageList setTarget:self];
+    [languageList setAction:@selector(languageListChanged)];
   
     [languageScrollView setDocumentView:languageList];
     [languageScrollView setLineScroll:17.0];
@@ -194,5 +196,44 @@ static NSMutableDictionary      *domain = nil;
 {
   return image;
 }
+
+// Actions
+- (void)updateFormatExamples
+{
+  /* Date & Time examples*/
+  NSCalendarDate  *cDate = [NSCalendarDate date];
+  NSString        *format;
+
+  format = [defaults objectForKey:NSDateFormatString];
+  [dateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+  
+  format = [defaults objectForKey:NSShortDateFormatString];
+  [shortDateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+
+  format = [defaults objectForKey:NSTimeFormatString];
+  [timeExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+
+  format = [defaults objectForKey:NSTimeDateFormatString];
+  [timeDateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
+  
+  format = [defaults objectForKey:NSShortTimeDateFormatString];
+  [shortTimeDateExample
+    setStringValue:[cDate descriptionWithCalendarFormat:format]];
+
+  /* Numbers & Currency example*/
+  format = [defaults objectForKey:@"NSPositiveCurrencyFormatString"];
+  [numbersExample setStringValue:format];
+}
+
+- (void)languageListChanged
+{
+  // NSLog(@"Localization-languageListChanged: %@", [languageList arrayFromRows]);
+  languages = [languageList arrayFromRows];
+  [domain setObject:languages forKey:@"NSLanguages"];
+  [defaults setPersistentDomain:domain forName:@"NSGlobalDomain"];
+  [defaults synchronize];
+  [self updateFormatExamples];
+}
+
 
 @end

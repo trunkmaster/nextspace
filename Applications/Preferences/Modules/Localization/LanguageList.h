@@ -9,6 +9,7 @@
 }
 
 - (void)loadRowsFromArray:(NSArray *)array;
+- (NSArray *)arrayFromRows;
 - (void)setScrollView:(NSScrollView *)view;
 
 @end

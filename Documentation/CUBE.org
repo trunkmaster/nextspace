@@ -2746,13 +2746,13 @@
      Значения достаются через [NSUserDefaults] читается в след. порядке:
      - из NSGlobalDomain;
      - из Languages/<первый элемент массива из NSLanguages>.
-***** TODO Language
+***** DONE Language
       NSLanguages = (English, Russian, Ukrainian)
 ****** DONE Отдельный виджет
        ...с перетаскиваемыми языками, но не так, как это сделано в NSTableView.
 ****** DONE NSScrollView с documentView в виде NSMatrix.
 ****** DONE Менять местами языки после перетаскивания
-****** TODO Прокручивать список при приближении перетаскиваемого языка
+****** DONE Прокручивать список при приближении перетаскиваемого языка
 ***** Text Encoding
       Опеределяется автоматически, либо через переменную окружения
       GNUSTEP_STRING_ENCODING.
@@ -2763,6 +2763,7 @@
       приложение).
 ***** DONE Measurement Unit
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
+***** TODO Обновлять примеры форматов после смены в списке языков
 **** TODO Screen: displays layout, on/off
 ***** DONE Устанавливать 'Main Display'
 ***** DONE Активировать/деактивировать монитор
