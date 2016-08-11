@@ -235,5 +235,4 @@ static NSMutableDictionary      *domain = nil;
   [self updateFormatExamples];
 }
 
-
 @end
