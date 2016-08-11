@@ -204,6 +204,9 @@ static NSMutableDictionary      *domain = nil;
   NSCalendarDate  *cDate = [NSCalendarDate date];
   NSString        *format;
 
+  [NSUserDefaults resetStandardUserDefaults];
+  defaults = [NSUserDefaults standardUserDefaults];
+
   format = [defaults objectForKey:NSDateFormatString];
   [dateExample setStringValue:[cDate descriptionWithCalendarFormat:format]];
   
@@ -233,6 +236,13 @@ static NSMutableDictionary      *domain = nil;
   [defaults setPersistentDomain:domain forName:@"NSGlobalDomain"];
   [defaults synchronize];
   [self updateFormatExamples];
+}
+
+- (void)measurementUnitChanged:(id)sender
+{
+  [domain setObject:[unitsBtn stringValue] forKey:@"NSMeasurementUnit"];
+  [defaults setPersistentDomain:domain forName:@"NSGlobalDomain"];
+  [defaults synchronize];
 }
 
 @end
