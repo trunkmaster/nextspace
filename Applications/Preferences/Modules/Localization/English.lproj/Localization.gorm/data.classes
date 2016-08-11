@@ -3,6 +3,7 @@
     FirstResponder = {
 	Actions = (
 	    "enableSubpixelChanged:",
+	    "measurementUnitChanged:",
 	    "subpixelModeChanged:"
 	);
 	Super = NSObject;
@@ -16,6 +17,7 @@
     };
     Localization = {
 	Actions = (
+	    "measurementUnitChanged:"
 	);
 	Outlets = (
 	    encodingBtn,
