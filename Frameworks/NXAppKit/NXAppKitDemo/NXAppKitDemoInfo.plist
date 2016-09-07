@@ -1,0 +1,9 @@
+{
+    ApplicationDescription = "Tests and demos for NXAppKit controls.";
+    ApplicationIcon = "NEXTSPACE.tiff";
+    ApplicationName = NXAppKitDemo;
+    ApplicationRelease = "0.1";
+    FullVersionID = "0.1";
+    NSMainNibFile = "NXAppKitDemo.gorm";
+    NSRole = Application;
+}

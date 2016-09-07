@@ -14,28 +14,30 @@ $(FRAMEWORK_NAME)_DEPLOY_WITH_CURRENT_VERSION = yes
 
 # $(wildcard *.m)
 $(FRAMEWORK_NAME)_OBJC_FILES = \
+	NXClockView.m \
 	NXIcon.m \
 	NXIconLabel.m \
 	NXIconView.m \
-	NXSplitView.m \
-	NXProgressView.m \
 	NXProgressBar.m \
 	NXProgressPie.m \
+	NXProgressView.m \
 	NXSizer.m \
-	NXClockView.m \
+	NXSplitView.m \
+	NXTextFieldInteger.m \
 	NXUtilities.m
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXAppKit.h \
+	NXClockView.h \
 	NXIcon.h \
 	NXIconLabel.h \
 	NXIconView.h \
-	NXSplitView.h \
-	NXProgressView.h \
 	NXProgressBar.h \
 	NXProgressPie.h \
+	NXProgressView.h \
 	NXSizer.h \
-	NXClockView.h \
+	NXSplitView.h \
+	NXTextFieldInteger.h \
 	NXUtilities.h
 
 #$(FRAMEWORK_NAME)_RESOURCE_FILES=$(wildcard Images/*)
