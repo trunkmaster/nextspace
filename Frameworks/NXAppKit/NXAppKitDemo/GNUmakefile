@@ -37,7 +37,9 @@ $(APP_NAME)_HEADER_FILES =
 #
 # Other sources
 #
-$(APP_NAME)_OBJC_FILES += NXAppKitDemo_main.m
+$(APP_NAME)_OBJC_FILES += \
+	NXAppKitDemo_main.m \
+	AppController.m
 
 #
 # Makefiles
