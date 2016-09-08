@@ -248,6 +248,8 @@
     Modified NSSplitView:
        + different divider size (e.g. 12px);
        + configurable resizing constrains.
+*** TODO NXIntegerTextField
+*** TODO NSFloatTextField
 *** TODO NXClockView
 **** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
 **** TODO Расстояния между цифрами
@@ -2835,6 +2837,7 @@
 *** TODO .preferences как документ открываемый Preferences
 *** TODO Все модули должны подстраиваться под размер окна
 *** TODO Старт без без появления меню
+
 
 ** 4. Terminal
 *** TODO 1.0

@@ -23,7 +23,7 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXProgressView.m \
 	NXSizer.m \
 	NXSplitView.m \
-	NXTextFieldInteger.m \
+	NXNumericTextField.m \
 	NXUtilities.m
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
@@ -37,7 +37,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXProgressView.h \
 	NXSizer.h \
 	NXSplitView.h \
-	NXTextFieldInteger.h \
+	NXNumericTextField.h \
 	NXUtilities.h
 
 #$(FRAMEWORK_NAME)_RESOURCE_FILES=$(wildcard Images/*)

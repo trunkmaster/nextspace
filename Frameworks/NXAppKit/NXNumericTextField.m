@@ -1,7 +1,9 @@
 /*
-  Class:               NXTextFieldInteger
+  Class:               NXNumericTextField
   Inherits from:       NSTextField
   Class descritopn:    NSTextField wich accepts only digits.
+                       By default entered value interpreted as integer.
+                       Otherwise it must be set as float via setIsFloat:YES method.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -20,9 +22,48 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import "NXTextFieldInteger.h"
+#import "NXNumericTextField.h"
 
-@implementation NXTextFieldInteger
+@implementation NXNumericTextField
+
+- (id)init
+{
+  self = [super init];
+
+  isFloat = NO;
+  
+  return self;
+}
+
+- (void)setIsFloat:(BOOL)yn
+{
+  isFloat = yn;
+}
+
+- (BOOL)validateString:(NSString *)text
+{
+  NSCharacterSet *digitsCharset = [NSCharacterSet decimalDigitCharacterSet];
+  BOOL           isDigit = NO;
+  
+  // Not a digit
+  for (int i = 0; i < [text length]; ++i)
+    {
+      isDigit = [digitsCharset characterIsMember:[text characterAtIndex:i]];
+      if (isFloat)
+        {
+          if (([text characterAtIndex:i] != '.') && !isDigit)
+            {
+              return NO;
+            }
+        }
+      else if (!isDigit)
+        {
+          return NO;
+        }
+    }
+
+  return YES;
+}
 
 /* Field editor (NSTextView) designates us as delegate. So we use delegate 
    methods to validate entered or pasted values. */
@@ -36,20 +77,24 @@
     return [self validateString:replacementString];
 }
 
-- (BOOL)validateString:(NSString *)text
+// NSTextField method overriding
+- (BOOL)textShouldEndEditing:(NSText*)textObject
 {
-  NSCharacterSet *digitsCharset = [NSCharacterSet decimalDigitCharacterSet];
-  
-  NSLog(@"NXTextFieldDemo: validateString");
-  
-  // Not a digit
-  for (int i = 0; i < [text length]; ++i)
+  NSString *string;
+
+  if ([super textShouldEndEditing:textObject] == NO)
     {
-      if ([digitsCharset characterIsMember:[text characterAtIndex:i]] == NO)
-        {
-          NSBeep();
-          return NO;
-        }
+      return NO;
+    }
+
+  string = [textObject string];
+  if (isFloat)
+    {
+      [self setFloatValue:[string floatValue]];
+    }
+  else
+    {
+      [self setIntValue:[string intValue]];
     }
 
   return YES;

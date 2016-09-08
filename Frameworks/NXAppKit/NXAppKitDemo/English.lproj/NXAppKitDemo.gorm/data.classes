@@ -1,6 +1,23 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
-    NXTextFieldInteger = {
+    AppController = {
+	Actions = (
+	    "showTextFieldsDemo:"
+	);
+	Outlets = (
+	    integerTextField,
+	    floatTextField,
+	    textFieldsWindow
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "showTextFieldsDemo:"
+	);
+	Super = NSObject;
+    };
+    NXNumericTextField = {
 	Actions = (
 	);
 	Outlets = (

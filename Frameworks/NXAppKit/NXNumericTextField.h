@@ -1,5 +1,5 @@
 /*
-  Class:               NXTextFieldInteger
+  Class:               NXNumericTextField
   Inherits from:       NSTextField
   Class descritopn:    NSTextField wich accepts only digits.
 
@@ -23,10 +23,11 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-@interface NXTextFieldInteger : NSTextField
+@interface NXNumericTextField : NSTextField
 {
+  BOOL isFloat;
 }
 
-- (BOOL)validateString:(NSString *)text;
+- (void)setIsFloat:(BOOL)yn;
 
 @end
