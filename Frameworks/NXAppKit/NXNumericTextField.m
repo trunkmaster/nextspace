@@ -24,23 +24,15 @@
 
 #import "NXNumericTextField.h"
 
-@implementation NXNumericTextField
+@implementation NXNumericTextField (Private)
 
-- (id)init
+- (void)_setup
 {
-  self = [super init];
-
+  [self setAlignment:NSRightTextAlignment];
   isFloat = NO;
-  
-  return self;
 }
 
-- (void)setIsFloat:(BOOL)yn
-{
-  isFloat = yn;
-}
-
-- (BOOL)validateString:(NSString *)text
+- (BOOL)_isValidString:(NSString *)text
 {
   NSCharacterSet *digitsCharset = [NSCharacterSet decimalDigitCharacterSet];
   BOOL           isDigit = NO;
@@ -65,19 +57,35 @@
   return YES;
 }
 
-/* Field editor (NSTextView) designates us as delegate. So we use delegate 
-   methods to validate entered or pasted values. */
-- (BOOL)	textView:(NSTextView *)textView
- shouldChangeTextInRange:(NSRange)affectedCharRange
-       replacementString:(NSString *)replacementString
+@end
+
+@implementation NXNumericTextField
+
+//----------------------------------------------------------------------------
+#pragma mark | Overridings
+//----------------------------------------------------------------------------
+
+- (id)init
 {
-  if (!replacementString || [replacementString length] == 0)
-    return YES;
-  else
-    return [self validateString:replacementString];
+  self = [super init];
+  [self _setup];
+  return self;
 }
 
-// NSTextField method overriding
+- (id)initWithFrame:(NSRect)frameRect
+{
+  self = [super initWithFrame:frameRect];
+  [self _setup];
+  return self;
+}
+
+- (id)initWithCoder:(NSCoder*)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
+  [self _setup];
+  return self;
+}
+
 - (BOOL)textShouldEndEditing:(NSText*)textObject
 {
   NSString *string;
@@ -98,6 +106,53 @@
     }
 
   return YES;
+}
+
+//----------------------------------------------------------------------------
+#pragma mark | NSTextView delegate
+//----------------------------------------------------------------------------
+
+/* Field editor (NSTextView) designates us as delegate. So we use delegate 
+   methods to validate entered or pasted values. */
+- (BOOL)	textView:(NSTextView *)textView
+ shouldChangeTextInRange:(NSRange)affectedCharRange
+       replacementString:(NSString *)replacementString
+{
+  BOOL    result = NO;
+  NSRange range;
+  
+  if (!replacementString || [replacementString length] == 0)
+    {
+      result = YES;
+    }
+  else if ([self _isValidString:replacementString])
+    {
+      if (isFloat && [replacementString rangeOfString:@"."].location != NSNotFound)
+        {
+          range = [[self stringValue] rangeOfString:@"."];
+          if (range.location == NSNotFound
+              || NSIntersectionRange(range, affectedCharRange).length > 0)
+            {// Field already contains '.' but will be replaced by string with '.' in it
+              result = YES;
+            }
+        }
+      else
+        {
+          result = YES;
+        }
+    }
+
+  return result;
+}
+
+
+//----------------------------------------------------------------------------
+#pragma mark | NSTextField additions
+//----------------------------------------------------------------------------
+
+- (void)setIsFloat:(BOOL)yn
+{
+  isFloat = yn;
 }
 
 @end
