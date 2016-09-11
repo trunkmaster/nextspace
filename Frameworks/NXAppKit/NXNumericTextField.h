@@ -25,9 +25,17 @@
 
 @interface NXNumericTextField : NSTextField
 {
-  BOOL isFloat;
+  BOOL     isDecimal;
+  NSString *outputFormat;
+  CGFloat  minimumValue;
+  CGFloat  maximumValue;
 }
 
-- (void)setIsFloat:(BOOL)yn;
+- (void)setNumericFormat:(BOOL)autoRange
+                    left:(NSUInteger)leftDigits
+                   right:(NSUInteger)rightDigits;
+
+- (void)setMinimumValue:(CGFloat)min;
+- (void)setMaximumValue:(CGFloat)max;
 
 @end
