@@ -27,6 +27,11 @@
 
 - (void)awakeFromNib
 {
+  // NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+  // [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+  // [numberFormatter setPositiveFormat:@"00.00"];
+  // [floatTextField setFormatter:numberFormatter];
+  [floatTextField setNumericFormat:YES left:2 right:2];
 }
 
 //----------------------------------------------------------------------------

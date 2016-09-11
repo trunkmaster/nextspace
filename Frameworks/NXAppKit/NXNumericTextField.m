@@ -24,12 +24,17 @@
 
 #import "NXNumericTextField.h"
 
+// NB: I stopped trying to use NSFormatter. It doesn't work for me.
+//     Does it working for anyone?
+
 @implementation NXNumericTextField (Private)
 
 - (void)_setup
 {
   [self setAlignment:NSRightTextAlignment];
-  isFloat = NO;
+  isDecimal = NO;
+  minimumValue = -65535.0;
+  maximumValue = 65535.0;
 }
 
 - (BOOL)_isValidString:(NSString *)text
@@ -41,7 +46,7 @@
   for (int i = 0; i < [text length]; ++i)
     {
       isDigit = [digitsCharset characterIsMember:[text characterAtIndex:i]];
-      if (isFloat)
+      if (isDecimal)
         {
           if (([text characterAtIndex:i] != '.') && !isDigit)
             {
@@ -86,26 +91,56 @@
   return self;
 }
 
+- (void)dealloc
+{
+  [outputFormat release];
+  [super dealloc];
+}
+
 - (BOOL)textShouldEndEditing:(NSText*)textObject
 {
-  NSString *string;
-
   if ([super textShouldEndEditing:textObject] == NO)
     {
       return NO;
     }
 
-  string = [textObject string];
-  if (isFloat)
+  CGFloat val = [[textObject string] floatValue];
+
+  if (val < minimumValue) val = minimumValue;
+  if (val > maximumValue) val = maximumValue;
+
+  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+  [formatter setFormat:@"0.00"];
+
+  NSLog(@"Localized field value: '%@'",
+        [NSNumberFormatter
+          localizedStringFromNumber:[NSDecimalNumber numberWithFloat:val]
+                        numberStyle:NSNumberFormatterDecimalStyle]);
+
+  if (isDecimal)
     {
-      [self setFloatValue:[string floatValue]];
+      [self setStringValue:[NSString stringWithFormat:outputFormat, val]];
     }
   else
     {
-      [self setIntValue:[string intValue]];
+      [self setStringValue:[NSString stringWithFormat:@"%.0f", val]];
     }
-
+  
   return YES;
+}
+
+// TODO: Should override NSCell method
+- (void)setNumericFormat:(BOOL)autoRange
+                    left:(NSUInteger)leftDigits
+                   right:(NSUInteger)rightDigits
+{
+  if (outputFormat != nil)
+    [outputFormat release];
+  
+  outputFormat = [[NSString alloc] initWithFormat:@"%%%lu.%luf",
+                                   leftDigits, rightDigits];
+
+  isDecimal = rightDigits > 0 ? YES : NO;
 }
 
 //----------------------------------------------------------------------------
@@ -120,14 +155,14 @@
 {
   BOOL    result = NO;
   NSRange range;
-  
+
   if (!replacementString || [replacementString length] == 0)
     {
       result = YES;
     }
   else if ([self _isValidString:replacementString])
     {
-      if (isFloat && [replacementString rangeOfString:@"."].location != NSNotFound)
+      if (isDecimal && [replacementString rangeOfString:@"."].location != NSNotFound)
         {
           range = [[self stringValue] rangeOfString:@"."];
           if (range.location == NSNotFound
@@ -150,9 +185,14 @@
 #pragma mark | NSTextField additions
 //----------------------------------------------------------------------------
 
-- (void)setIsFloat:(BOOL)yn
+- (void)setMinimumValue:(CGFloat)min
 {
-  isFloat = yn;
+  minimumValue = min;
+}
+
+- (void)setMaximumValue:(CGFloat)max
+{
+  maximumValue = max;
 }
 
 @end
