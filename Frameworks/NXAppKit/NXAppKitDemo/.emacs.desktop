@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun Sep 11 03:50:18 2016
+;; Created Mon Sep 12 03:10:48 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "AppController.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  974
-  '(1222 nil)
+  1131
+  '(1129 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))

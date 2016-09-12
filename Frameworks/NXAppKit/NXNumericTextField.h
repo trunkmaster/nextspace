@@ -2,6 +2,9 @@
   Class:               NXNumericTextField
   Inherits from:       NSTextField
   Class descritopn:    NSTextField wich accepts only digits.
+                       By default entered value interpreted as integer.
+                       Otherwise it must be set as float via 
+                       setMinimum.../setMaximum... methods.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -25,17 +28,19 @@
 
 @interface NXNumericTextField : NSTextField
 {
-  BOOL     isDecimal;
-  NSString *outputFormat;
+  BOOL              isDecimal;
+  NSNumberFormatter *formatter;
+  
   CGFloat  minimumValue;
   CGFloat  maximumValue;
 }
 
-- (void)setNumericFormat:(BOOL)autoRange
-                    left:(NSUInteger)leftDigits
-                   right:(NSUInteger)rightDigits;
-
 - (void)setMinimumValue:(CGFloat)min;
 - (void)setMaximumValue:(CGFloat)max;
+
+- (void)setMaximumIntegerDigits:(NSUInteger)leftDigits;
+- (void)setMinimumIntegerDigits:(NSUInteger)leftDigits;
+- (void)setMaximumFractionDigits:(NSUInteger)rightDigits;
+- (void)setMinimumFractionDigits:(NSUInteger)rightDigits;
 
 @end

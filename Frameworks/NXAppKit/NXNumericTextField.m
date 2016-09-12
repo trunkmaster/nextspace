@@ -3,7 +3,8 @@
   Inherits from:       NSTextField
   Class descritopn:    NSTextField wich accepts only digits.
                        By default entered value interpreted as integer.
-                       Otherwise it must be set as float via setIsFloat:YES method.
+                       Otherwise it must be set as float via 
+                       setMinimum.../setMaximum... methods.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -24,9 +25,6 @@
 
 #import "NXNumericTextField.h"
 
-// NB: I stopped trying to use NSFormatter. It doesn't work for me.
-//     Does it working for anyone?
-
 @implementation NXNumericTextField (Private)
 
 - (void)_setup
@@ -35,25 +33,23 @@
   isDecimal = NO;
   minimumValue = -65535.0;
   maximumValue = 65535.0;
+
+  formatter = [[NSNumberFormatter alloc] init];
+  [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+  [formatter setMinimumIntegerDigits:1];
+  [formatter setMinimumFractionDigits:0];
 }
 
+// Check for digits (0-9), minus (-) and dot (.) signs.
 - (BOOL)_isValidString:(NSString *)text
 {
   NSCharacterSet *digitsCharset = [NSCharacterSet decimalDigitCharacterSet];
-  BOOL           isDigit = NO;
   
-  // Not a digit
   for (int i = 0; i < [text length]; ++i)
     {
-      isDigit = [digitsCharset characterIsMember:[text characterAtIndex:i]];
-      if (isDecimal)
-        {
-          if (([text characterAtIndex:i] != '.') && !isDigit)
-            {
-              return NO;
-            }
-        }
-      else if (!isDigit)
+      if ([digitsCharset characterIsMember:[text characterAtIndex:i]] == NO
+          && ([text characterAtIndex:i] != '-')
+          && ([text characterAtIndex:i] == '.' && !isDecimal))
         {
           return NO;
         }
@@ -74,8 +70,7 @@
 {
   self = [super init];
   [self _setup];
-  return self;
-}
+  return self;}
 
 - (id)initWithFrame:(NSRect)frameRect
 {
@@ -93,54 +88,33 @@
 
 - (void)dealloc
 {
-  [outputFormat release];
+  [formatter release];
   [super dealloc];
+}
+
+- (void)setStringValue:(NSString *)aString
+{
+  CGFloat val = [aString floatValue];
+  
+  [super setStringValue:[formatter stringFromNumber:[NSDecimalNumber numberWithFloat:val]]];
 }
 
 - (BOOL)textShouldEndEditing:(NSText*)textObject
 {
-  if ([super textShouldEndEditing:textObject] == NO)
-    {
-      return NO;
-    }
-
   CGFloat val = [[textObject string] floatValue];
 
   if (val < minimumValue) val = minimumValue;
   if (val > maximumValue) val = maximumValue;
 
-  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-  [formatter setFormat:@"0.00"];
-
-  NSLog(@"Localized field value: '%@'",
+  NSLog(@"Localized field value: '%@' - '%@'",
         [NSNumberFormatter
           localizedStringFromNumber:[NSDecimalNumber numberWithFloat:val]
-                        numberStyle:NSNumberFormatterDecimalStyle]);
+                        numberStyle:NSNumberFormatterDecimalStyle],
+        [formatter stringFromNumber:[NSDecimalNumber numberWithFloat:val]]);
 
-  if (isDecimal)
-    {
-      [self setStringValue:[NSString stringWithFormat:outputFormat, val]];
-    }
-  else
-    {
-      [self setStringValue:[NSString stringWithFormat:@"%.0f", val]];
-    }
+  [self setStringValue:[formatter stringFromNumber:[NSDecimalNumber numberWithFloat:val]]];
   
   return YES;
-}
-
-// TODO: Should override NSCell method
-- (void)setNumericFormat:(BOOL)autoRange
-                    left:(NSUInteger)leftDigits
-                   right:(NSUInteger)rightDigits
-{
-  if (outputFormat != nil)
-    [outputFormat release];
-  
-  outputFormat = [[NSString alloc] initWithFormat:@"%%%lu.%luf",
-                                   leftDigits, rightDigits];
-
-  isDecimal = rightDigits > 0 ? YES : NO;
 }
 
 //----------------------------------------------------------------------------
@@ -153,30 +127,53 @@
  shouldChangeTextInRange:(NSRange)affectedCharRange
        replacementString:(NSString *)replacementString
 {
-  BOOL    result = NO;
+  BOOL    result = YES;
   NSRange range;
 
   if (!replacementString || [replacementString length] == 0)
     {
-      result = YES;
+      return YES;
     }
-  else if ([self _isValidString:replacementString])
+  
+  if ([self _isValidString:replacementString] == YES)
     {
-      if (isDecimal && [replacementString rangeOfString:@"."].location != NSNotFound)
+      for (int i = 0; i < [replacementString length]; ++i)
         {
-          range = [[self stringValue] rangeOfString:@"."];
-          if (range.location == NSNotFound
-              || NSIntersectionRange(range, affectedCharRange).length > 0)
-            {// Field already contains '.' but will be replaced by string with '.' in it
-              result = YES;
+          if ([replacementString characterAtIndex:i] == '-')
+            {
+              if (i != 0 || affectedCharRange.location != 0
+                  || [[self stringValue] rangeOfString:@"-"].location != NSNotFound)
+                {
+                  result = NO;
+                  break;
+                }
+            }
+          else if ([replacementString characterAtIndex:i] == '.')
+            {
+              if (!isDecimal)
+                {
+                  result = NO;
+                  break;
+                }
+              else
+                {
+                  range = [[self stringValue] rangeOfString:@"."];
+                  // Extra '.' want to be added
+                  if (range.location != NSNotFound
+                      && NSIntersectionRange(range, affectedCharRange).length == 0)
+                    {
+                      result = NO;
+                      break;
+                    }
+                }
             }
         }
-      else
-        {
-          result = YES;
-        }
     }
-
+  else
+    {
+      result = NO;
+    }
+  
   return result;
 }
 
@@ -194,5 +191,28 @@
 {
   maximumValue = max;
 }
+
+- (void)setMaximumIntegerDigits:(NSUInteger)leftDigits
+{
+  [formatter setMaximumIntegerDigits:leftDigits];
+}
+
+- (void)setMinimumIntegerDigits:(NSUInteger)leftDigits
+{
+  [formatter setMinimumIntegerDigits:leftDigits];
+}
+
+- (void)setMaximumFractionDigits:(NSUInteger)rightDigits
+{
+  [formatter setMaximumFractionDigits:rightDigits];
+  isDecimal = rightDigits > 0 ? YES : NO;
+}
+
+- (void)setMinimumFractionDigits:(NSUInteger)rightDigits
+{
+  [formatter setMinimumFractionDigits:rightDigits];
+  isDecimal = rightDigits > 0 ? YES : NO;
+}
+
 
 @end
