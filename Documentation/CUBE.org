@@ -47,7 +47,6 @@
 ***** Pass mouse click
 ***** Drag and Drop Workspace<->Dock
 
-
 *** Многомониторные конфигурации
 **** Applying default layout on startup by Login.app
      Default layout use arranged monitors lined up in horizontal direction.
@@ -248,20 +247,24 @@
     Modified NSSplitView:
        + different divider size (e.g. 12px);
        + configurable resizing constrains.
-*** TODO NXIntegerTextField
-*** TODO NSFloatTextField
+*** TODO NXNumericTextField
+    Базовая функциональность реализована.
+    Стоит добавить:
+    - при вводе '.':
+      - перемещать курсор перед следующей цифрой;
+      - выделять блок цифр (для целых все, для float перед или после точки);
 *** TODO NXClockView
 **** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
 **** TODO Расстояния между цифрами
      Сейчас цифры близко прижимаются друг к другу.
      Выбрать визуально оптимальный вариант.
-     Как тест, можно создать Time.preferences для Preferences.app.
+     Как тест, можно создать Date.preferences для Preferences.app.
 **** TODO Добавить языков
      Сделать картинки с днями недели и месяцами для разных языков (*.lproj).
-      Минимум:
-        - English, Ukrainian;
-      Максимум:
-        - языки, которые поддерживаются в GNUstep
+     Минимум:
+       - English, Ukrainian;
+     Максимум:
+       - German, Dutch, Spanish, French, Italian, Slovak, Hungarian, Russian
      В дальнейшем это можно будет использовать в Preferences.app
 *** TODO NXPreferences = PrefsModule, PrefsConttroller (PrefsModule.h)
     UI for standard application preferences, API for .preferences bundles
@@ -303,11 +306,26 @@
 ***** DONE Поиск в /Library/Bundles
       Поиск в /Libray и ~/Library рекурсивный, поэтому объекты в Bundles тоже
       будут находиться.
-*** DONE NXDefaults
+*** TODO NXDefaults
     Reading/writing preferences (separate .ospl file for each app in
     OpenStep style).
+**** TODO Размещать файлы в ~/Library/Preferences/.NextSpace
+     Тогда не нужно будет мучиться с расширением - стандартные настройки
+     GNUstep ложаться в ~/Library/Preferences, настройки NextSpace в
+     ~/Library/Preferences/.NextSpace.
+     Например, для Workspace:
+     - ~/Library/Preferences/Workspace.plist - размеры и положения окон, и
+       т.д.;
+     - ~/Library/Preferences/.NextSpace/Workspace.plist - параметры Shelf,
+       сохраненные открытые окна, настройеки сортировки и т.д.
+
+     Аналогично, можно для WindowMaker складываеть все его файлы настроек в
+     ~/Library/Preferences/.WindowMaker - пользователю этот каталог видеть не
+     нужно, мне не нужно вливать настройки WindowMaker в какие-либо файлы
+     настроек NextSpace (.NextSpace).
 *** DONE NXFileManager - customized methods for manipulating files/dirs
-    Пока реализовано то, что нужно. Может еще что-нибудь понадобиться - посмотрим.
+    Пока реализовано то, что нужно. Может еще что-нибудь понадобиться -
+    посмотрим.
 *** TODO [#B] (?) NXList - linked list
 *** TODO [#B] (?) NXIndex 
     NXIndex index symbols of text information (docs, sources, config files)
@@ -2784,11 +2802,8 @@
       В текущей версии - все нормально. Возможно какие-то изменения в ядре? ХЗ.
 ***** DONE Установка Brightness
 ***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
-      Стоит реализовать подклассы в NXAppKit.
-      NSTextField->NXIntegerTextField->NXFloatTextField.
-      NXIntegerTextField - ввод чисел, без точки, без пробелов.
-      NXFloatTextField - если без точки добавлять '.0', если вида '.X'
-      добавлять '0' впереди.
+      Стоит реализовать в NXAppKit. После реализации в NXAppKit использовать
+      здесь.
 ***** TODO Отложенное сохранение настроек для gamma и brightness
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
       Не нашел возможности простого получения текущего цвета окна X11.

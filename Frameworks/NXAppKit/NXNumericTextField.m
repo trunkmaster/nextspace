@@ -40,16 +40,16 @@
   [formatter setMinimumFractionDigits:0];
 }
 
-// Check for digits (0-9), minus (-) and dot (.) signs.
+// Check for digits (0-9), minus (-) and period (.) signs.
 - (BOOL)_isValidString:(NSString *)text
 {
   NSCharacterSet *digitsCharset = [NSCharacterSet decimalDigitCharacterSet];
   
   for (int i = 0; i < [text length]; ++i)
     {
-      if ([digitsCharset characterIsMember:[text characterAtIndex:i]] == NO
+      if (([digitsCharset characterIsMember:[text characterAtIndex:i]] == NO)
           && ([text characterAtIndex:i] != '-')
-          && ([text characterAtIndex:i] == '.' && !isDecimal))
+          && ([text characterAtIndex:i] != '.'))
         {
           return NO;
         }
@@ -117,6 +117,33 @@
   return YES;
 }
 
+- (void)keyDown:(NSEvent*)theEvent
+{
+  NSLog(@"NXNumericField: keyDown.");
+}
+
+- (void)keyUp:(NSEvent*)theEvent
+{
+  NSRange range;
+  
+  [super keyUp:theEvent];
+
+  if ([theEvent keyCode] == 110)
+    {
+      range = [[self stringValue] rangeOfString:@"."];  
+      if (range.location != NSNotFound)
+        {
+          // Select fraction part
+          range.length = range.location;
+          range.location = 0;
+          [[[self window] fieldEditor:NO forObject:self]
+                        setSelectedRange:range];
+        }
+    }
+  
+  NSLog(@"NXNumericField: keyUp - %u", [theEvent keyCode]);
+}
+
 //----------------------------------------------------------------------------
 #pragma mark | NSTextView delegate
 //----------------------------------------------------------------------------
@@ -162,6 +189,11 @@
                   if (range.location != NSNotFound
                       && NSIntersectionRange(range, affectedCharRange).length == 0)
                     {
+                      // Select fraction part
+                      range.location += 1;
+                      range.length = [[self stringValue] length] - range.location;
+                      [[[self window] fieldEditor:NO forObject:self]
+                        setSelectedRange:range];
                       result = NO;
                       break;
                     }
@@ -171,6 +203,7 @@
     }
   else
     {
+      NSLog(@"Invalid text was entered!");
       result = NO;
     }
   
