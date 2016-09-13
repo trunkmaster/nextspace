@@ -21,15 +21,13 @@
 */
 
 #import "AppController.h"
-#import <NXAppKit/NXNumericTextField.h>
+#import <NXAppKit/NXNumericField.h>
 
 @implementation AppController : NSObject
 
 - (void)awakeFromNib
 {
-  // [floatTextField setNumericFormat:YES left:2 right:2];
-  
-  [floatTextField setMinimumIntegerDigits:2];
+  [floatTextField setMinimumIntegerDigits:1];
   [floatTextField setMinimumFractionDigits:2];
   [floatTextField setStringValue:@"0.0"];
 }

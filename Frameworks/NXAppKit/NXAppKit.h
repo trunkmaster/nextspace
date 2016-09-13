@@ -18,6 +18,7 @@
 #import <NXAppKit/NXSizer.h>
 #import <NXAppKit/NXClockView.h>
 #import <NXAppKit/NXUtilities.h>
+#import <NXAppKit/NXNumericField.h>
 
 // Moved into Workspace.app
 //#import <NXAppKit/NXPathView.h>
