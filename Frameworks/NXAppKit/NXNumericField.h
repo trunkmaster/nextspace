@@ -1,5 +1,5 @@
 /*
-  Class:               NXNumericTextField
+  Class:               NXNumericField
   Inherits from:       NSTextField
   Class descritopn:    NSTextField wich accepts only digits.
                        By default entered value interpreted as integer.
@@ -26,7 +26,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-@interface NXNumericTextField : NSTextField
+@interface NXNumericField : NSTextField
 {
   BOOL              isDecimal;
   NSNumberFormatter *formatter;

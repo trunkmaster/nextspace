@@ -1,5 +1,5 @@
 /*
-  Class:               NXNumericTextField
+  Class:               NXNumericField
   Inherits from:       NSTextField
   Class descritopn:    NSTextField wich accepts only digits.
                        By default entered value interpreted as integer.
@@ -23,9 +23,9 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import "NXNumericTextField.h"
+#import "NXNumericField.h"
 
-@implementation NXNumericTextField (Private)
+@implementation NXNumericField (Private)
 
 - (void)_setup
 {
@@ -60,7 +60,7 @@
 
 @end
 
-@implementation NXNumericTextField
+@implementation NXNumericField
 
 //----------------------------------------------------------------------------
 #pragma mark | Overridings
@@ -94,40 +94,30 @@
 
 - (void)setStringValue:(NSString *)aString
 {
-  CGFloat val = [aString floatValue];
+  NSNumber *number = [formatter numberFromString:aString];
   
-  [super setStringValue:[formatter stringFromNumber:[NSDecimalNumber numberWithFloat:val]]];
+  [super setStringValue:[formatter stringFromNumber:number]];
 }
 
 - (BOOL)textShouldEndEditing:(NSText*)textObject
 {
-  CGFloat val = [[textObject string] floatValue];
+  NSNumber *number = [formatter numberFromString:[textObject string]];
+  CGFloat  val = [number floatValue];
 
   if (val < minimumValue) val = minimumValue;
   if (val > maximumValue) val = maximumValue;
 
-  NSLog(@"Localized field value: '%@' - '%@'",
-        [NSNumberFormatter
-          localizedStringFromNumber:[NSDecimalNumber numberWithFloat:val]
-                        numberStyle:NSNumberFormatterDecimalStyle],
-        [formatter stringFromNumber:[NSDecimalNumber numberWithFloat:val]]);
-
-  [self setStringValue:[formatter stringFromNumber:[NSDecimalNumber numberWithFloat:val]]];
+  [super setStringValue:[formatter stringFromNumber:[NSNumber numberWithFloat:val]]];
   
   return YES;
-}
-
-- (void)keyDown:(NSEvent*)theEvent
-{
-  NSLog(@"NXNumericField: keyDown.");
 }
 
 - (void)keyUp:(NSEvent*)theEvent
 {
   NSRange range;
   
-  [super keyUp:theEvent];
-
+  // 'Home' key places insertion point at the beginning and selects inegral
+  // part of number.
   if ([theEvent keyCode] == 110)
     {
       range = [[self stringValue] rangeOfString:@"."];  
@@ -141,7 +131,6 @@
         }
     }
   
-  NSLog(@"NXNumericField: keyUp - %u", [theEvent keyCode]);
 }
 
 //----------------------------------------------------------------------------
@@ -159,7 +148,12 @@
 
   if (!replacementString || [replacementString length] == 0)
     {
-      return YES;
+      // Prevent deletion of '.' symbol
+      range = [[self stringValue] rangeOfString:@"."];
+      if (NSIntersectionRange(range, affectedCharRange).length > 0)
+        return NO;
+      else
+        return YES;
     }
   
   if ([self _isValidString:replacementString] == YES)
