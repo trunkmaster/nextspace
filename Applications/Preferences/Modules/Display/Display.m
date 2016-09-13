@@ -35,6 +35,8 @@
 #import <AppKit/NSMatrix.h>
 #import <AppKit/NSSlider.h>
 
+#import <NXAppKit/NXNumericField.h>
+
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXDisplay.h>
 
@@ -81,6 +83,16 @@ static NXDisplay *selectedDisplay = nil;
 
   systemScreen = [[NXScreen alloc] init];
 
+  // Setup NXNumericField float constraints
+  [gammaField setMinimumValue:0.1];
+  [gammaField setMaximumValue:2.0];
+  [[gammaField formatter] setMinimumIntegerDigits:1];
+  [[gammaField formatter] setMinimumFractionDigits:2];
+
+  // Setup NXNumericField integer constraints
+  [brightnessField setMinimumValue:0.5];
+  [brightnessField setMaximumValue:100.0];
+  
   [monitorsList loadColumnZero];
   [self selectFirstEnabledMonitor];
   
@@ -322,29 +334,17 @@ static NXDisplay *selectedDisplay = nil;
 
   if (tf == gammaField)
     {
-      if (value > 2.0)
-        value = 2.00;
-      else if (value < 0.1)
-        value = 0.10;
-
       [gammaSlider setFloatValue:value];
       [selectedDisplay setGamma:value];
       [tf setFloatValue:value];
     }
   else if (tf == brightnessField)
     {
-      if (value > 100)
-        value = 100;
-      else if (value <= 0.0)
-        value = 0;
-
-      NSString *strVal = [NSString stringWithFormat:@"%.0f", value];
-      value = [strVal floatValue];
-
       [selectedDisplay setGammaBrightness:value/100];
       value = [selectedDisplay gammaBrightness]*100;
       [brightnessSlider setFloatValue:value];
-      [tf setIntValue:[strVal intValue]];
+      // [tf setIntValue:[strVal intValue]];
+      [tf setFloatValue:value];
     }
 
   // Changes to gamma is not generate XRRScreenChangeNotify event.
