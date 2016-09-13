@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Sep 12 03:10:48 2016
+;; Created Wed Sep 14 02:47:30 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,11 +22,22 @@
   "AppController.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  1131
-  '(1129 nil)
+  1129
+  '(1087 nil)
   nil
   nil
-  '((buffer-file-coding-system . utf-8-unix)))
+  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  '(yas-minor-mode)
+  1
+  '(257 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h"
@@ -38,15 +49,4 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/GNUmakefile"
-  "GNUmakefile"
-  'makefile-gmake-mode
-  '(yas-minor-mode)
-  257
-  '(257 nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 

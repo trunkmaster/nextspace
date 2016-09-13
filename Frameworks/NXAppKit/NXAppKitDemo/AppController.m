@@ -27,9 +27,10 @@
 
 - (void)awakeFromNib
 {
-  [floatTextField setMinimumIntegerDigits:1];
-  [floatTextField setMinimumFractionDigits:2];
+  [[floatTextField formatter] setMinimumIntegerDigits:1];
+  [[floatTextField formatter] setMinimumFractionDigits:2];
   [floatTextField setStringValue:@"0.0"];
+  [floatTextField setMinimumValue:-100.0];
 }
 
 //----------------------------------------------------------------------------

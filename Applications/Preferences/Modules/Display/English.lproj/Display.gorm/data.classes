@@ -36,4 +36,11 @@
 	);
 	Super = NSObject;
     };
+    NXNumericField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
 }

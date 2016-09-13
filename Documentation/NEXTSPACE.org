@@ -238,98 +238,104 @@
 
 ** TODO NXAppKit
    additions to and modification of AppKit classes
-*** DONE NXIcon
-*** DONE NXIconLabel
-**** DONE Перевести сокращение текста на функцию в NXUtilities
-*** DONE NXIconView
-**** TODO -checkWrapDown что-то непонятное делает с размером view
-*** DONE NXSplitView
-    Modified NSSplitView:
-       + different divider size (e.g. 12px);
-       + configurable resizing constrains.
-*** TODO NXNumericTextField
-    Базовая функциональность реализована.
-    Стоит добавить:
-    - при вводе '.':
-      - перемещать курсор перед следующей цифрой;
-      - выделять блок цифр (для целых все, для float перед или после точки);
-*** TODO NXClockView
-**** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
-**** TODO Расстояния между цифрами
-     Сейчас цифры близко прижимаются друг к другу.
-     Выбрать визуально оптимальный вариант.
-     Как тест, можно создать Date.preferences для Preferences.app.
-**** TODO Добавить языков
-     Сделать картинки с днями недели и месяцами для разных языков (*.lproj).
-     Минимум:
-       - English, Ukrainian;
-     Максимум:
-       - German, Dutch, Spanish, French, Italian, Slovak, Hungarian, Russian
-     В дальнейшем это можно будет использовать в Preferences.app
-*** TODO NXPreferences = PrefsModule, PrefsConttroller (PrefsModule.h)
-    UI for standard application preferences, API for .preferences bundles
-**** TODO Make part of Preferences application
-*** TODO NXAlertPanel
-    Modified NSRunAlertPanel()
-*** TODO NXSavePanel, NXOpenPanel
-    Standard panels without icons, dirs-first sorting, without
-    keyboard focus in browser etc.
-*** TODO NXHelpPanel
-    OpenStep's NSHelpPanel implementation
-*** TODO NXFindPanel
-    Generic find/replace panel
-      - find/replace panel for text (for editors, help panel etc.);
-      - find/replace view to incorporate as subview.
+*** TODO Version 1.0
+**** DONE NXIcon
+**** DONE NXIconLabel
+***** DONE Перевести сокращение текста на функцию в NXUtilities
+**** DONE NXIconView
+***** TODO -checkWrapDown что-то непонятное делает с размером view
+**** DONE NXSplitView
+     Modified NSSplitView:
+        + different divider size (e.g. 12px);
+        + configurable resizing constrains.
+**** DONE NXNumericField
+     Базовая функциональность реализована.
+     Добавить:
+     - при вводе '.':
+       - перемещать курсор перед следующей цифрой;
+       - выделять блок цифр (для целых все, для float перед или после точки);
+     - не удалять '.' клавишами Delete и Backspace.
+**** TODO NXClockView
+***** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
+***** TODO Создать тестовый модуль в NXAppKitDemo.
+      В этом модуле нужно, чтобы можно было:
+      - вводить произвольное время и дату;
+      - выбрать язык для отображения месяца и дня недели.
+      Может сразу реализовать календарь для Date.preferences?
+***** TODO Добавить языков
+      Сделать картинки с днями недели и месяцами для разных языков (*.lproj).
+      Минимум:
+        - English, Ukrainian;
+      Максимум:
+        - German, Dutch, Spanish, French, Italian, Slovak, Hungarian, Russian.
+      В дальнейшем это можно будет использовать в Preferences.app
+***** TODO Расстояния между цифрами
+      Сейчас цифры близко прижимаются друг к другу.
+      Выбрать визуально оптимальный вариант.
+**** TODO NXAlertPanel
+     Modified NSRunAlertPanel()
+**** TODO NXSavePanel, NXOpenPanel
+     Standard panels without icons, dirs-first sorting, without
+     keyboard focus in browser etc.
+**** TODO NXFindPanel
+     Generic find/replace panel
+       - find/replace panel for text (for editors, help panel etc.);
+       - find/replace view to incorporate as subview.
+*** TODO Version 2.0
+**** TODO NXHelpPanel
+     OpenStep's NSHelpPanel implementation
 
 
 ** TODO NXFoundation
-   additions to and modification of Foundation classes
-*** TODO NXBundle
-**** TODO Сортировать по полю 'priority'
-     Сделано в Preferences, поскольку NXBundle возвращает NSDictionary.
-     Нужно возвращать NSArray, тогда его можно будет отсортировать.
-**** TODO Загрузка бандлов непроверена
-**** DONE Проверять дубли при регистрации
-**** DONE Clever bundle search
-     По итогу: 
-     - информация о бандлах может быть получена без загрузки; для
-       этого в каждом должен быть файл bundle.registry с необходимой
-       информацией.
-     - поиск бандлов может быть по-умолчанию в Library, Applications доменов
-       SYSTEM, LOCAL и пользовательском.
-     - поиск может быть сужен путем указания каталога при вызове
-       registerBundlesOfType:atPath: и loadBundlesOfType:protocol:inDirectory.
-     - все остальное может появится после использования реализованных методов
-       в приложениях (что-может быть востребованно в разных приложениях).     
-***** DONE bundle.registry
-***** DONE Поиск в /Applications, ~/Applications
-***** DONE Поиск в /Library/Bundles
-      Поиск в /Libray и ~/Library рекурсивный, поэтому объекты в Bundles тоже
-      будут находиться.
-*** TODO NXDefaults
-    Reading/writing preferences (separate .ospl file for each app in
-    OpenStep style).
-**** TODO Размещать файлы в ~/Library/Preferences/.NextSpace
-     Тогда не нужно будет мучиться с расширением - стандартные настройки
-     GNUstep ложаться в ~/Library/Preferences, настройки NextSpace в
-     ~/Library/Preferences/.NextSpace.
-     Например, для Workspace:
-     - ~/Library/Preferences/Workspace.plist - размеры и положения окон, и
-       т.д.;
-     - ~/Library/Preferences/.NextSpace/Workspace.plist - параметры Shelf,
-       сохраненные открытые окна, настройеки сортировки и т.д.
+   ...additions to and modification of Foundation classes
+*** TODO Version 1.0
+**** TODO NXBundle
+***** TODO Сортировать по полю 'priority'
+      Сделано в Preferences, поскольку NXBundle возвращает NSDictionary.
+      Нужно возвращать NSArray, тогда его можно будет отсортировать.
+***** TODO Загрузка бандлов непроверена
+***** DONE Проверять дубли при регистрации
+***** DONE Clever bundle search
+      По итогу: 
+      - информация о бандлах может быть получена без загрузки; для
+        этого в каждом должен быть файл bundle.registry с необходимой
+        информацией.
+      - поиск бандлов может быть по-умолчанию в Library, Applications доменов
+        SYSTEM, LOCAL и пользовательском.
+      - поиск может быть сужен путем указания каталога при вызове
+        registerBundlesOfType:atPath: и loadBundlesOfType:protocol:inDirectory.
+      - все остальное может появится после использования реализованных методов
+        в приложениях (что-может быть востребованно в разных приложениях).     
+****** DONE bundle.registry
+****** DONE Поиск в /Applications, ~/Applications
+****** DONE Поиск в /Library/Bundles
+       Поиск в /Libray и ~/Library рекурсивный, поэтому объекты в Bundles тоже
+       будут находиться.
+**** TODO NXDefaults
+     Reading/writing preferences (separate .ospl file for each app in
+     OpenStep style).
+***** TODO Размещать файлы в ~/Library/Preferences/.NextSpace
+      Тогда не нужно будет мучиться с расширением - стандартные настройки
+      GNUstep ложаться в ~/Library/Preferences, настройки NextSpace в
+      ~/Library/Preferences/.NextSpace.
+      Например, для Workspace:
+      - ~/Library/Preferences/Workspace.plist - размеры и положения окон, и
+        т.д.;
+      - ~/Library/Preferences/.NextSpace/Workspace.plist - параметры Shelf,
+        сохраненные открытые окна, настройеки сортировки и т.д.
 
-     Аналогично, можно для WindowMaker складываеть все его файлы настроек в
-     ~/Library/Preferences/.WindowMaker - пользователю этот каталог видеть не
-     нужно, мне не нужно вливать настройки WindowMaker в какие-либо файлы
-     настроек NextSpace (.NextSpace).
-*** DONE NXFileManager - customized methods for manipulating files/dirs
-    Пока реализовано то, что нужно. Может еще что-нибудь понадобиться -
-    посмотрим.
-*** TODO [#B] (?) NXList - linked list
-*** TODO [#B] (?) NXIndex 
-    NXIndex index symbols of text information (docs, sources, config files)
-    for fast search.
+      Аналогично, можно для WindowMaker складываеть все его файлы настроек в
+      ~/Library/Preferences/.WindowMaker - пользователю этот каталог видеть не
+      нужно, мне не нужно вливать настройки WindowMaker в какие-либо файлы
+      настроек NextSpace (.NextSpace).
+**** DONE NXFileManager - customized methods for manipulating files/dirs
+     Пока реализовано то, что нужно. Может еще что-нибудь понадобиться -
+     посмотрим.
+*** TODO Version 2.0
+**** TODO [#B] (?) NXList - linked list
+**** TODO [#B] (?) NXIndex 
+     NXIndex index symbols of text information (docs, sources, config files)
+     for fast search.
 *** Полезное
     1. [[http://www.davidhamrick.com/2011/10/10/handling-filesystem-events-with-gcd.html][Handling Filesystem Events with GCD]]
 
@@ -2801,7 +2807,7 @@
 ***** DONE В VirtualBox двигание слайдеров = залипание/падение
       В текущей версии - все нормально. Возможно какие-то изменения в ядре? ХЗ.
 ***** DONE Установка Brightness
-***** TODO Ввод только цифр и точки в текстовые поля (gamma, brightness)
+***** DONE Ввод только цифр и точки в текстовые поля (gamma, brightness)
       Стоит реализовать в NXAppKit. После реализации в NXAppKit использовать
       здесь.
 ***** TODO Отложенное сохранение настроек для gamma и brightness
