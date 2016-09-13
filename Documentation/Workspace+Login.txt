@@ -1,7 +1,0 @@
-= [TODO] Login starts Pasteboard (gpbs) after Xorg come up;
-= [TODO] Login set it's and user environment;
-= Login starts user session (via .xinitrc or directly lauching Workspace);
-= [TODO] if user session terminates abnormally Login starts session again 
-  without terminating user applications;
-= Workspace should talk to Login if user click "Power off" button on 
-  Workspace quit;
