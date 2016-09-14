@@ -248,6 +248,8 @@
      Modified NSSplitView:
         + different divider size (e.g. 12px);
         + configurable resizing constrains.
+**** DONE Progress bar, pie (NXProgress*)
+**** DONE NXSizer (moved from Workspace)
 **** DONE NXNumericField
      Базовая функциональность реализована.
      Добавить:

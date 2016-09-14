@@ -1,7 +1,7 @@
 /*
-  Class:               AppController
+  Class:               NumericFieldTest
   Inherits from:       NSObject
-  Class descritopn:    NSApplication delegate
+  Class descritopn:    NXNumericField demo for testing purposes.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -20,32 +20,18 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import "AppController.h"
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
+#import <NXAppKit/NXNumericField.h>
 
-@implementation AppController : NSObject
-
-- (void)awakeFromNib
+@interface NumericFieldTest : NSObject
 {
+  id window;
+  id integerTextField;
+  id floatTextField;
+  id testDescription;
 }
 
-- (void)dealloc
-{
-  TEST_RELEASE(numericFieldTest);
-
-  [super dealloc];
-}
-
-//----------------------------------------------------------------------------
-#pragma mark | Actions
-//----------------------------------------------------------------------------
-
-- (void)showTextFieldsDemo:(id)sender
-{
-  if (numericFieldTest == nil)
-    {
-      numericFieldTest = [[NumericFieldTest alloc] init];
-    }
-  [numericFieldTest show];
-}
+- (void)show;
 
 @end

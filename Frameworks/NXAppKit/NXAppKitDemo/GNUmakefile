@@ -12,6 +12,7 @@ VERSION = 0.1
 PACKAGE_NAME = NXAppKitDemo
 APP_NAME = NXAppKitDemo
 $(APP_NAME)_APPLICATION_ICON = NEXTSPACE.tiff
+$(APP_NAME)_STANDARD_INSTALL = no
 
 #
 # Resource files
@@ -22,7 +23,10 @@ $(APP_NAME)_RESOURCE_FILES = NEXTSPACE.tiff
 # Localization
 #
 $(APP_NAME)_LANGUAGES = English
-$(APP_NAME)_LOCALIZED_RESOURCE_FILES = NXAppKitDemo.gorm 
+$(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
+	NXAppKitDemo.gorm \
+	NumericField.gorm \
+	NumericField.rtf
 
 #
 # Header files
@@ -39,7 +43,8 @@ $(APP_NAME)_HEADER_FILES =
 #
 $(APP_NAME)_OBJC_FILES += \
 	NXAppKitDemo_main.m \
-	AppController.m
+	AppController.m \
+	NumericFieldTest.m
 
 #
 # Makefiles
