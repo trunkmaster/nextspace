@@ -22,12 +22,11 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
+#import "NumericFieldTest.h"
 
 @interface AppController : NSObject
 {
-  id textFieldsWindow;
-  id integerTextField;
-  id floatTextField;
+  NumericFieldTest *numericFieldTest;
 }
 
 @end

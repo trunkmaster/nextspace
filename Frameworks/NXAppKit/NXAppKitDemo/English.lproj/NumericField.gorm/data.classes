@@ -17,4 +17,22 @@
 	);
 	Super = NSObject;
     };
+    NXNumericField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
+    NumericFieldTest = {
+	Actions = (
+	);
+	Outlets = (
+	    window,
+	    integerTextField,
+	    floatTextField,
+	    testDescription
+	);
+	Super = NSObject;
+    };
 }
