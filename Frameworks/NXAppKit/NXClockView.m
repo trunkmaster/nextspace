@@ -13,39 +13,38 @@
 
 - (void)loadImages
 {
-  NSBundle       *bundle;
-  NSMutableArray *array;
-  unsigned int   i;
+  NSBundle *bundle;
   
   bundle = [NSBundle bundleForClass:[self class]];
 
   clockBits = [[NSImage alloc]
 		  initByReferencingFile:[bundle pathForResource:@"clockbits"
-                                                         ofType:@"png"]];
-  // tileRect = NSMakeRect(191, 9, 64, 71);
-  tileRect = NSMakeRect(191, 16, 64, 64);
+                                                         ofType:@"tiff"]];
+  tileRect = NSMakeRect(191, 9, 64, 71);
+  // tileRect = NSMakeRect(191, 16, 64, 64);
   
-  mondayRect = NSMakeRect(0, (72-6), 19, 6);
+  mondayRect = NSMakeRect(0, 65, 19, 6);
   
-  januaryRect = NSMakeRect(40, (72-6), 22, 6);
+  januaryRect = NSMakeRect(40, 60, 22, 6);
 
   firstDayRect = NSMakeRect(64, 14, 12, 17);
 
   // it's inside tile rect
-  ledDisplayRect = NSMakeRect(5, 43, 53, 16);
+  // ledDisplayRect = NSMakeRect(5, 43, 53, 16);
+  ledDisplayRect = NSMakeRect(5, 51, 53, 16);
   
-  led_nums[0] = NSMakeRect(150, 56, 9, 11); // 0
-  led_nums[1] = NSMakeRect(83,  56, 4, 11); // 1
-  led_nums[2] = NSMakeRect(87,  56, 8, 11); // 2
-  led_nums[3] = NSMakeRect(95,  56, 8, 11); // 3
-  led_nums[4] = NSMakeRect(103, 56, 8, 11); // 4
-  led_nums[5] = NSMakeRect(111, 56, 7, 11); // 5
-  led_nums[6] = NSMakeRect(118, 56, 8, 11); // 6
-  led_nums[7] = NSMakeRect(126, 56, 7, 11); // 7
-  led_nums[8] = NSMakeRect(133, 56, 9, 11); // 8
-  led_nums[9] = NSMakeRect(142, 56, 8, 11); // 9
+  led_nums[0] = NSMakeRect(150, 57, 9, 11); // 0
+  led_nums[1] = NSMakeRect(83,  57, 4, 11); // 1
+  led_nums[2] = NSMakeRect(87,  57, 8, 11); // 2
+  led_nums[3] = NSMakeRect(95,  57, 8, 11); // 3
+  led_nums[4] = NSMakeRect(103, 57, 8, 11); // 4
+  led_nums[5] = NSMakeRect(111, 57, 7, 11); // 5
+  led_nums[6] = NSMakeRect(118, 57, 8, 11); // 6
+  led_nums[7] = NSMakeRect(126, 57, 7, 11); // 7
+  led_nums[8] = NSMakeRect(133, 57, 9, 11); // 8
+  led_nums[9] = NSMakeRect(142, 57, 8, 11); // 9
 
-  ledColonRect = NSMakeRect(159, 56, 3, 11);
+  ledColonRect = NSMakeRect(159, 57, 3,  11);
   ledAMRect    = NSMakeRect(162, 56, 13, 11);
   ledPMRect    = NSMakeRect(175, 56, 12, 11);
 }
@@ -80,7 +79,7 @@
 
 - init
 {
-  return [self initWithFrame: NSMakeRect(0, 0, 55, 57)];
+  return [self initWithFrame:NSMakeRect(0, 0, 55, 71)];
 }
 
 - (void)sizeToFit
@@ -107,13 +106,12 @@
   BOOL   morning = NO;
   CGFloat rectCenter = r.size.width/2;
   NSRect  elRect;
-  CGFloat elWidth;
   NSPoint elPoint;
   int     v_offset;
 
-  if (showsYear)
-    offset = 11;
-  else
+  // if (showsYear)
+  //   offset = 11;
+  // else
     offset = 0;
 
   elPoint = NSMakePoint(rectCenter - ceilf(tileRect.size.width/2), offset);
@@ -130,7 +128,7 @@
   elRect = mondayRect;
   elRect.origin.y -= [date dayOfWeek] * mondayRect.size.height;
   elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
-                        offset + 34);
+                        offset + 41);
   [clockBits  compositeToPoint:elPoint
                       fromRect:elRect
                      operation:NSCompositeSourceOver];
@@ -139,14 +137,14 @@
   elRect = januaryRect;
   elRect.origin.y -= ([date monthOfYear] - 1) * januaryRect.size.height;
   elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2) - 3,
-                        offset + 9);
+                        offset + 16);
   [clockBits  compositeToPoint:elPoint
                       fromRect:elRect
                      operation:NSCompositeSourceOver];
 
   // Day of month
   dayOfMonth = [date dayOfMonth];
-  v_offset = offset + 24 - (firstDayRect.size.height/2);
+  v_offset = offset + 31 - (firstDayRect.size.height/2);
   if (dayOfMonth > 9)
     {
       CGFloat x = rectCenter - firstDayRect.size.width;
@@ -211,12 +209,13 @@
     }
 
   rectCenter = hoffset + ledDisplayRect.size.width/2;
+  offset = ledDisplayRect.origin.y + (ledDisplayRect.size.height - 11)/2;
 
   // Colon
   hoffset = rectCenter - ledColonRect.size.width/2;
   if (showsLEDColon)
     {
-      [clockBits  compositeToPoint:NSMakePoint(hoffset, offset + 46)
+      [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
                           fromRect:ledColonRect
                          operation:NSCompositeSourceOver];
       // if (0) // if blinking enabled
@@ -229,7 +228,7 @@
   // second digit of hour
   elRect = led_nums[(hourOfDay % 10)];
   hoffset -= elRect.size.width;
-  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset + 46)
+  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
                       fromRect:elRect
                      operation:NSCompositeSourceOver];
 
@@ -238,7 +237,7 @@
     {
       elRect = led_nums[((hourOfDay - (hourOfDay % 10)) / 10)];
       hoffset -= elRect.size.width;
-      [clockBits  compositeToPoint:NSMakePoint(hoffset, offset + 46)
+      [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
                           fromRect:elRect
                          operation:NSCompositeSourceOver];
     }
@@ -246,12 +245,12 @@
   // Minutes
   hoffset = rectCenter + ledColonRect.size.width/2;
   elRect = led_nums[(minuteOfHour - (minuteOfHour % 10)) / 10];
-  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset + 46)
+  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
                       fromRect:elRect
                      operation:NSCompositeSourceOver];
   hoffset += elRect.size.width;
   elRect = led_nums[minuteOfHour % 10];
-  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset + 46)
+  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
                       fromRect:elRect
                      operation:NSCompositeSourceOver];
   hoffset += elRect.size.width;
@@ -259,18 +258,20 @@
   // am/pm
   if (shows12HourFormat)
     {
+      float voffset;
       hoffset = (ledDisplayRect.origin.x + ledDisplayRect.size.width) - 2;
+      voffset = offset + (ledDisplayRect.size.height-2-ledAMRect.size.height)/2;
       if (morning)
         {
           hoffset -= ledAMRect.size.width;
-          [clockBits  compositeToPoint:NSMakePoint(hoffset, offset + 46)
+          [clockBits  compositeToPoint:NSMakePoint(hoffset, voffset)
                               fromRect:ledAMRect
                              operation:NSCompositeSourceOver];
         }
       else
         {
           hoffset -= ledPMRect.size.width;
-          [clockBits  compositeToPoint:NSMakePoint(hoffset, offset + 46)
+          [clockBits  compositeToPoint:NSMakePoint(hoffset, voffset)
                               fromRect:ledPMRect
                              operation:NSCompositeSourceOver];
         }
@@ -349,7 +350,7 @@
   if (yearField != nil)
     [yearField setIntValue:[date yearOfCommonEra]];
 
-  [self setNeedsDisplay: YES];
+  [self setNeedsDisplay:YES];
 }
 
 - (NSCalendarDate *)calendarDate

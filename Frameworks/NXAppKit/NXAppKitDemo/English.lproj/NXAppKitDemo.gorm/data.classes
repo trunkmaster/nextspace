@@ -2,7 +2,8 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     AppController = {
 	Actions = (
-	    "showTextFieldsDemo:"
+	    "showTextFieldsDemo:",
+	    "showClockViewDemo:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -13,6 +14,7 @@
     };
     FirstResponder = {
 	Actions = (
+	    "showClockViewDemo:",
 	    "showTextFieldsDemo:"
 	);
 	Super = NSObject;

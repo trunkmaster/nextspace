@@ -269,7 +269,8 @@
       Минимум:
         - English, Ukrainian;
       Максимум:
-        - German, Dutch, Spanish, French, Italian, Slovak, Hungarian, Russian.
+        - French, German, Italian, Spanish,
+        - Dutch, Slovak, Hungarian, Russian.
       В дальнейшем это можно будет использовать в Preferences.app
 ***** TODO Расстояния между цифрами
       Сейчас цифры близко прижимаются друг к другу.
