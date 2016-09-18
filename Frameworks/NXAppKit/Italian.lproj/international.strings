@@ -1,0 +1,8 @@
+"NXShortDays"	= "Dom Lun Mar Mer Gio Ven Sab";
+"NXLongDays"	= "Domenica Lunedà Martedà Mercoledà Giovedà Venerdà Sabato";
+"NXShortMonths"	= "Gen Feb Mar Apr Mag Giu Lug Ago Set Ott Nov Dic";
+"NXLongMonths"	= "Gennaio Febbraio Marzo Aprile Maggio Giugno Luglio Agosto Settembre Ottobre Novembre Dicembre";
+"NXAmPm"	= "AM PM";
+"NXDateAndTime"	= "%a %b %d %H:%M:%S %Z %Y";
+"NXDate"	= "%a %b %d %Y";
+"NXTime"	= "%H:%M:%S %Z";

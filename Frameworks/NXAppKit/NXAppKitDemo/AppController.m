@@ -48,4 +48,13 @@
   [numericFieldTest show];
 }
 
+- (void)showClockViewDemo:(id)sender
+{
+  if (clockViewTest == nil)
+    {
+      clockViewTest = [[ClockViewTest alloc] init];
+    }
+  [clockViewTest show];
+}
+
 @end

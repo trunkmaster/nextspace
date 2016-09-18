@@ -1,0 +1,60 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AppController = {
+	Actions = (
+	    "showTextFieldsDemo:"
+	);
+	Outlets = (
+	    integerTextField,
+	    floatTextField,
+	    textFieldsWindow
+	);
+	Super = NSObject;
+    };
+    ClockViewTest = {
+	Actions = (
+	    "setShowColon:",
+	    "set24Hour:",
+	    "setDate:",
+	    "setShowYear:"
+	);
+	Outlets = (
+	    window,
+	    clockView,
+	    dayField,
+	    hour24Btn,
+	    hourField,
+	    minuteField,
+	    monthField,
+	    showColonBtn,
+	    secondField,
+	    showYearBtn,
+	    yearField
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setShowColon:",
+	    "set24Hour:",
+	    "setDate:",
+	    "setShowYear:",
+	    "showTextFieldsDemo:"
+	);
+	Super = NSObject;
+    };
+    NXClockView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    NXNumericField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
+}

@@ -43,7 +43,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 
 #$(FRAMEWORK_NAME)_RESOURCE_FILES=$(wildcard Images/*)
 
-$(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.png
+$(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff
 $(FRAMEWORK_NAME)_LANGUAGES = English
 
 -include GNUmakefile.preamble

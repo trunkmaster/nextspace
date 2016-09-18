@@ -1,7 +1,7 @@
-/*
-  Class:               AppController
+ /*
+  Class:               ClockViewTest
   Inherits from:       NSObject
-  Class descritopn:    NSApplication delegate
+  Class descritopn:    NXClockView demo for testing purposes.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -22,13 +22,36 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-#import "NumericFieldTest.h"
-#import "ClockViewTest.h"
 
-@interface AppController : NSObject
+#import <NXAppKit/NXClockView.h>
+#import <NXAppKit/NXNumericField.h>
+
+@interface ClockViewTest : NSObject
 {
-  NumericFieldTest *numericFieldTest;
-  ClockViewTest    *clockViewTest;
+  id window;
+  id clockView;
+  id yearField;
+  id monthField;
+  id dayField;
+  
+  id hourField;
+  id minuteField;
+  id secondField;
+  
+  id hour24Btn;
+  id showYearBtn;
+  id showColonBtn;
+
+  NSInteger year;
+  NSUInteger month, day, hour, minute, second;
 }
+
+- (void)show;
+
+- (void)setDate:(id)sender;
+
+- (void)set24Hour:(id)sender;
+- (void)setShowYear:(id)sender;
+- (void)setShowColon:(id)sender;
 
 @end
