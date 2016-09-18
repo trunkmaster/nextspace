@@ -43,6 +43,7 @@
   [hour24Btn setState:![clockView shows12HourFormat]];
   [showYearBtn setState:[clockView showsYear]];
   [showColonBtn setState:[clockView showsLEDColon]];
+  [clockView setCalendarDate:[NSCalendarDate calendarDate]];
 }
 
 - (void)show
