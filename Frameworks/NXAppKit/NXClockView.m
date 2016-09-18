@@ -23,9 +23,9 @@
   tileRect = NSMakeRect(191, 9, 64, 71);
   // tileRect = NSMakeRect(191, 16, 64, 64);
   
-  mondayRect = NSMakeRect(0, 65, 19, 6);
+  mondayRect = NSMakeRect(0, 71, 21, 6);
   
-  januaryRect = NSMakeRect(40, 60, 22, 6);
+  januaryRect = NSMakeRect(40, 71, 22, 6);
 
   firstDayRect = NSMakeRect(64, 14, 12, 17);
 
@@ -135,9 +135,9 @@
 
   // Month
   elRect = januaryRect;
-  elRect.origin.y -= ([date monthOfYear] - 1) * januaryRect.size.height;
-  elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2) - 3,
-                        offset + 16);
+  elRect.origin.y -= [date monthOfYear] * januaryRect.size.height;
+  elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
+                        offset + 15);
   [clockBits  compositeToPoint:elPoint
                       fromRect:elRect
                      operation:NSCompositeSourceOver];
@@ -259,18 +259,18 @@
   if (shows12HourFormat)
     {
       float voffset;
-      hoffset = (ledDisplayRect.origin.x + ledDisplayRect.size.width) - 2;
+      hoffset = (ledDisplayRect.origin.x + ledDisplayRect.size.width);
       voffset = offset + (ledDisplayRect.size.height-2-ledAMRect.size.height)/2;
       if (morning)
         {
-          hoffset -= ledAMRect.size.width;
+          hoffset -= ledAMRect.size.width + 3;
           [clockBits  compositeToPoint:NSMakePoint(hoffset, voffset)
                               fromRect:ledAMRect
                              operation:NSCompositeSourceOver];
         }
       else
         {
-          hoffset -= ledPMRect.size.width;
+          hoffset -= ledPMRect.size.width + 3;
           [clockBits  compositeToPoint:NSMakePoint(hoffset, voffset)
                               fromRect:ledPMRect
                              operation:NSCompositeSourceOver];
