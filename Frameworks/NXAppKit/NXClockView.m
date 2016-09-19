@@ -21,16 +21,12 @@
 		  initByReferencingFile:[bundle pathForResource:@"clockbits"
                                                          ofType:@"tiff"]];
   tileRect = NSMakeRect(191, 9, 64, 71);
-  // tileRect = NSMakeRect(191, 16, 64, 64);
   
-  mondayRect = NSMakeRect(0, 71, 21, 6);
-  
-  januaryRect = NSMakeRect(40, 71, 22, 6);
-
-  firstDayRect = NSMakeRect(64, 14, 12, 17);
+  mondayRect = NSMakeRect(0, 71, 21, 6);     // 'MON' + one white line below
+  januaryRect = NSMakeRect(40, 72, 22, 6);   // 'JAN' + one white line above
+  firstDayRect = NSMakeRect(64, 14, 12, 17); // '1'
 
   // it's inside tile rect
-  // ledDisplayRect = NSMakeRect(5, 43, 53, 16);
   ledDisplayRect = NSMakeRect(5, 51, 53, 16);
   
   led_nums[0] = NSMakeRect(150, 57, 9, 11); // 0
@@ -126,7 +122,7 @@
   
   // Day of week
   elRect = mondayRect;
-  elRect.origin.y -= [date dayOfWeek] * mondayRect.size.height;
+  elRect.origin.y -= ([date dayOfWeek] > 0 ? [date dayOfWeek] : 7) * mondayRect.size.height;
   elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
                         offset + 41);
   [clockBits  compositeToPoint:elPoint
@@ -137,7 +133,7 @@
   elRect = januaryRect;
   elRect.origin.y -= [date monthOfYear] * januaryRect.size.height;
   elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
-                        offset + 15);
+                        offset + 16);
   [clockBits  compositeToPoint:elPoint
                       fromRect:elRect
                      operation:NSCompositeSourceOver];
