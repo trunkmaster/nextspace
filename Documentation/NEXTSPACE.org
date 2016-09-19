@@ -265,13 +265,14 @@
       - выбрать язык для отображения месяца и дня недели.
       Может сразу реализовать календарь для Date.preferences?
 ***** TODO Добавить языков
-      Сделать картинки с днями недели и месяцами для разных языков (*.lproj).
-      Минимум:
-        - English, Ukrainian;
-      Максимум:
-        - French, German, Italian, Spanish,
-        - Dutch, Slovak, Hungarian, Russian.
-      В дальнейшем это можно будет использовать в Preferences.app
+      Сделать картинки с днями недели и месяцами для разных языков (.lproj).
+****** DONE English French, German, Italian, Spanish
+       clockbits.tiff из OPENSTEP.
+****** DONE Ukrainian
+****** DONE Russian
+****** TODO Dutch
+****** TODO Slovak
+****** TODO Hungarian
 ***** TODO Расстояния между цифрами
       Сейчас цифры близко прижимаются друг к другу.
       Выбрать визуально оптимальный вариант.
