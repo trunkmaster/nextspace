@@ -29,7 +29,7 @@
 @interface ClockViewTest : NSObject
 {
   id window;
-  id clockView;
+  NXClockView *clockView;
   id yearField;
   id monthField;
   id dayField;
@@ -41,6 +41,8 @@
   id hour24Btn;
   id showYearBtn;
   id showColonBtn;
+
+  id languageList;
 
   NSInteger year;
   NSUInteger month, day, hour, minute, second;
