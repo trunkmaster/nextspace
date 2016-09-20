@@ -45,7 +45,7 @@
   NSRect ledPMRect;
 }
 
-- init;
+- (void)loadImageForLanguage:(NSString *)languageName;
 
 - (void)sizeToFit;
 
@@ -72,5 +72,7 @@
     defaults changes about the receiver's appearance. */
 - (void)setTracksDefaultsDatabase:(BOOL)flag;
 - (BOOL)tracksDefaultsDatabase;
+
+- (void)setLanguage:(NSString *)languageName;
 
 @end

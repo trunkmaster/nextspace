@@ -3,23 +3,27 @@
 
 #import <AppKit/AppKit.h>
 
-@interface NXClockView (Private)
-
-- (void)loadImages;
+@implementation NXClockView (Private)
 
 @end
 
-@implementation NXClockView (Private)
+@implementation NXClockView
 
-- (void)loadImages
+#pragma mark - Init and dealloc
+
+- initWithFrame:(NSRect)aFrame
 {
-  NSBundle *bundle;
-  
-  bundle = [NSBundle bundleForClass:[self class]];
+  // self = [super initWithFrame:NSMakeRect(0, 0, 55, 71)];
+  self = [super initWithFrame:aFrame];
 
-  clockBits = [[NSImage alloc]
-		  initByReferencingFile:[bundle pathForResource:@"clockbits"
-                                                         ofType:@"tiff"]];
+  // Defaults
+  showsLEDColon = YES;
+  shows12HourFormat = YES;
+  // shows12HourFormat = [[NSUserDefaults standardUserDefaults]
+  //                       boolForKey:@"NXClockViewShows12HourFormat"];
+  [self setTracksDefaultsDatabase:YES];
+
+  // Image rects
   tileRect = NSMakeRect(191, 9, 64, 71);
   
   mondayRect = NSMakeRect(0, 71, 21, 6);     // 'MON' + one white line below
@@ -43,11 +47,41 @@
   ledColonRect = NSMakeRect(159, 57, 3,  11);
   ledAMRect    = NSMakeRect(162, 56, 13, 11);
   ledPMRect    = NSMakeRect(175, 56, 12, 11);
+
+  [self loadImageForLanguage:nil];
+  
+  return self;
 }
 
-@end
+- (void)loadImageForLanguage:(NSString *)languageName
+{
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  NSString *langDir;
 
-@implementation NXClockView
+  if (languageName == nil)
+    {
+      langDir = @"English.lproj";
+    }
+  else
+    {
+      langDir = [languageName stringByAppendingPathExtension:@"lproj"];
+    }
+  
+  if (clockBits != nil)
+    {
+      [clockBits release];
+    }
+
+  clockBits = [[NSImage alloc]
+		  initByReferencingFile:[bundle pathForResource:@"clockbits"
+                                                         ofType:@"tiff"
+                                                    inDirectory:langDir]];
+
+  if (clockBits == nil) // No resource for specified language
+    {
+      [self loadImageForLanguage:nil];
+    }
+}
 
 - (void)dealloc
 {
@@ -59,24 +93,7 @@
   [super dealloc];
 }
 
-- initWithFrame:(NSRect)r
-{
-  showsLEDColon = YES;
-  shows12HourFormat = YES;
-  // shows12HourFormat = [[NSUserDefaults standardUserDefaults]
-  //                       boolForKey:@"NXClockViewShows12HourFormat"];
-
-  [self loadImages];
-
-  [self setTracksDefaultsDatabase:YES];
-
-  return [super initWithFrame:r];
-}
-
-- init
-{
-  return [self initWithFrame:NSMakeRect(0, 0, 55, 71)];
-}
+#pragma mark - Drawing
 
 - (void)sizeToFit
 {
@@ -274,6 +291,8 @@
     }
 }
 
+#pragma mark - Properties
+
 - (void)setShowsYear:(BOOL)flag
 {
   if (showsYear == NO && flag == YES)
@@ -354,6 +373,8 @@
   return date;
 }
 
+#pragma mark - Defaults
+
 - (void)setTracksDefaultsDatabase:(BOOL)flag
 {
   if (flag != tracksDefaults)
@@ -394,6 +415,12 @@
       shows12HourFormat = flag;
       [self setNeedsDisplay:YES];
     }
+}
+
+- (void)setLanguage:(NSString *)languageName
+{
+  [self loadImageForLanguage:languageName];
+  [self setNeedsDisplay:YES];
 }
 
 @end

@@ -44,6 +44,10 @@
   [showYearBtn setState:[clockView showsYear]];
   [showColonBtn setState:[clockView showsLEDColon]];
   [clockView setCalendarDate:[NSCalendarDate calendarDate]];
+
+  [languageList
+    addItemsWithTitles:[[NSUserDefaults standardUserDefaults]
+                         objectForKey:@"NSLanguages"]];
 }
 
 - (void)show
@@ -83,6 +87,12 @@
 - (void)setShowColon:(id)sender
 {
   [clockView setShowsLEDColon:[sender state]];
+}
+
+- (void)setLanguage:(id)sender
+{
+  [clockView loadImageForLanguage:[[languageList selectedItem] title]];
+  [clockView setNeedsDisplay:YES];
 }
 
 @end

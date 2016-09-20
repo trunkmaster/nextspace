@@ -16,7 +16,8 @@
 	    "setShowColon:",
 	    "set24Hour:",
 	    "setDate:",
-	    "setShowYear:"
+	    "setShowYear:",
+	    "setLanguage:"
 	);
 	Outlets = (
 	    window,
@@ -29,15 +30,17 @@
 	    showColonBtn,
 	    secondField,
 	    showYearBtn,
-	    yearField
+	    yearField,
+	    languageList
 	);
 	Super = NSObject;
     };
     FirstResponder = {
 	Actions = (
-	    "setShowColon:",
+	    "setLanguage:",
 	    "set24Hour:",
 	    "setDate:",
+	    "setShowColon:",
 	    "setShowYear:",
 	    "showTextFieldsDemo:"
 	);
