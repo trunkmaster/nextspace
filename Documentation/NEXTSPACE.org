@@ -259,7 +259,7 @@
      - не удалять '.' клавишами Delete и Backspace.
 **** TODO NXClockView
 ***** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
-***** TODO Создать тестовый модуль в NXAppKitDemo.
+***** DONE Создать тестовый модуль в NXAppKitDemo.
       В этом модуле нужно, чтобы можно было:
       - вводить произвольное время и дату;
       - выбрать язык для отображения месяца и дня недели.
@@ -270,12 +270,17 @@
        clockbits.tiff из OPENSTEP.
 ****** DONE Ukrainian
 ****** DONE Russian
-****** TODO Dutch
+****** DONE Dutch
 ****** TODO Slovak
 ****** TODO Hungarian
 ***** TODO Расстояния между цифрами
       Сейчас цифры близко прижимаются друг к другу.
       Выбрать визуально оптимальный вариант.
+      В clockbits.tiff есть 2 строки с цифрами времени:
+      - верхняя - расстояние между цифрами одинаковое независимо от цифры;
+      - нижняя - похоже на моноширинный шрифт.
+      TODO: может нижняя для режима 24-clock? Нужно проверить как это сделано
+      в OPENSTEP.
 **** TODO NXAlertPanel
      Modified NSRunAlertPanel()
 **** TODO NXSavePanel, NXOpenPanel
