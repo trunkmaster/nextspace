@@ -282,6 +282,10 @@
       Может нижняя для режима 24-clock? Нужно проверить как это сделано
       в OPENSTEP. Проверил - в обоих режимах расстояние между цифрами
       одинаковое - цифры плотно прижаты друг к другу.
+***** TODO Рисовать год как картинку
+***** TODO Реагировать на изменение глобальных настроек
+      ~/Library/Prefrences/NXGlobalDomain.plist - NSLanguages
+      ~/LibraryPreferences/.NextSpace/NXGlobalDomain - NXClockView24HourFormat
 **** TODO NXAlertPanel
      Modified NSRunAlertPanel()
 **** TODO NXSavePanel, NXOpenPanel
@@ -322,9 +326,8 @@
        Поиск в /Libray и ~/Library рекурсивный, поэтому объекты в Bundles тоже
        будут находиться.
 **** TODO NXDefaults
-     Reading/writing preferences (separate .ospl file for each app in
-     OpenStep style).
-***** TODO Размещать файлы в ~/Library/Preferences/.NextSpace
+     Reading/writing preferences (см. "Размещать файлы...").
+***** TODO Размещать файлы NextSpace в ~/Library/Preferences/.NextSpace
       Тогда не нужно будет мучиться с расширением - стандартные настройки
       GNUstep ложаться в ~/Library/Preferences, настройки NextSpace в
       ~/Library/Preferences/.NextSpace.
@@ -338,6 +341,25 @@
       ~/Library/Preferences/.WindowMaker - пользователю этот каталог видеть не
       нужно, мне не нужно вливать настройки WindowMaker в какие-либо файлы
       настроек NextSpace (.NextSpace).
+      Структура каталогов:
+      - ~/Library/Preferences/.WindowMaker:
+        - WindowMaker
+        - WMGLOBAL
+        - WMRootMenu
+        - WMState
+        - WMWindowAttributes
+      - ~/Library/Preferences/.NextSpace:
+        - NXGlobalDomain.plist - глобальные настройки для приложений и
+          фреймворков NextSpace: NXClockView24Hour, клавиатура, мышь, сеть,
+          звук и т.д.;
+        - Displays* - мультимониторные конфигурации;
+        - Настройки приложений, которые пишутся через NXDefaults (формат
+          OPENSTEP, без расширения). GNUstep почему-то не очень хорошо
+          работает если все настройки храняться в этом формате. 
+          Пока будет так.
+***** TODO Размещать файлы настроек WindowMaker в ~/L/P/.WindowMaker
+***** TODO Читать настройки из ~/L/P/.NextSpace/NXGlobalDomain by default
+***** TODO Слать notification при изменении ~/L/P/.NextSpace/NXGlobalDomain
 **** DONE NXFileManager - customized methods for manipulating files/dirs
      Пока реализовано то, что нужно. Может еще что-нибудь понадобиться -
      посмотрим.

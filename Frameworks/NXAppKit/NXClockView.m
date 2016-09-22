@@ -375,7 +375,9 @@
 
 #pragma mark - Defaults
 
-// Track language order changes
+// Track changes of:
+// - NSLanguages - language order
+// - NXClockView24HourFormat - 12/24 hour clock format
 - (void)setTracksDefaultsDatabase:(BOOL)flag
 {
   if (flag != tracksDefaults)
@@ -403,18 +405,30 @@
 
 - (void)defaultsChanged:(NSNotification *)notif
 {
-  BOOL flag;
-  NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults *df = [notif object];
+  NSArray        *languages = nil;
 
-  if ([df objectForKey:@"NXClockViewShows12HourFormat"] == nil)
-    return;
-    
-  flag = [df boolForKey:@"NXClockViewShows12HourFormat"];
-
-  if (flag != shows12HourFormat)
+  // NextSpace's NXGlobalDomain was changed
+  if ([df objectForKey:@"NXClockView24HourFormat"] != nil)
     {
-      shows12HourFormat = flag;
+      BOOL flag;
+      
+      flag = [df boolForKey:@"NXClockView24HourFormat"];
+      if (flag != shows12HourFormat)
+        {
+          shows12HourFormat = flag;
+          [self setNeedsDisplay:YES];
+        }
+      return;
+    }
+
+  // GNUstep's NSGlobalDomain was changed
+  if ((languages = [df objectForKey:@"NSLanguages"]) != nil &&
+      [languages isKindOfClass:[NSArray class]])
+    {
+      [self loadImageForLanguage:[languages objectAtIndex:0]];
       [self setNeedsDisplay:YES];
+      return;
     }
 }
 
