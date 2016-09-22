@@ -44,7 +44,9 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 #$(FRAMEWORK_NAME)_RESOURCE_FILES=$(wildcard Images/*)
 
 $(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff
-$(FRAMEWORK_NAME)_LANGUAGES = English French German Italian Spanish Ukrainian Russian
+$(FRAMEWORK_NAME)_LANGUAGES = \
+	English French German Italian Spanish \
+	Ukrainian Russian Dutch
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/framework.make
