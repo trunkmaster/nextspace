@@ -375,6 +375,7 @@
 
 #pragma mark - Defaults
 
+// Track language order changes
 - (void)setTracksDefaultsDatabase:(BOOL)flag
 {
   if (flag != tracksDefaults)
