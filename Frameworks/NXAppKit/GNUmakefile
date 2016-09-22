@@ -46,7 +46,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 $(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff
 $(FRAMEWORK_NAME)_LANGUAGES = \
 	English French German Italian Spanish \
-	Ukrainian Russian Dutch
+	Ukrainian Russian Dutch Slovak Hungarian
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/framework.make
