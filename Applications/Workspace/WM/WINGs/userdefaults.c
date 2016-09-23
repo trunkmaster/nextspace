@@ -40,7 +40,7 @@ char *WMUserDefaultsDidChangeNotification = "WMUserDefaultsDidChangeNotification
 
 static void synchronizeUserDefaults(void *foo);
 #ifdef NEXTSPACE
-#define DEFAULTS_DIR "/Preferences"
+#define DEFAULTS_DIR "/Preferences/.WindowMaker"
 #else
 #define DEFAULTS_DIR "/Defaults"
 #endif

@@ -1,12 +1,13 @@
---- ./wmaker-crm_next/WINGs/userdefaults.c	2015-07-31 01:39:38.465455984 +0300
-+++ ./WM/WINGs/userdefaults.c	2015-08-01 22:40:36.150613397 +0300
+--- ./wmaker-crm_next/WINGs/userdefaults.c	2015-07-31 01:39:38.000000000 +0300
++++ ./WM/WINGs/userdefaults.c	2016-09-23 13:48:43.663981381 +0300
 @@ -39,8 +39,11 @@
  char *WMUserDefaultsDidChangeNotification = "WMUserDefaultsDidChangeNotification";
  
  static void synchronizeUserDefaults(void *foo);
 -
+-#define DEFAULTS_DIR "/Preferences"
 +#ifdef NEXTSPACE
- #define DEFAULTS_DIR "/Preferences"
++#define DEFAULTS_DIR "/Preferences/.WindowMaker"
 +#else
 +#define DEFAULTS_DIR "/Defaults"
 +#endif
