@@ -1,7 +1,12 @@
 /** @class NXDefaults
 
-    Reading/writing preferences (separate .ospl file for each app in
-    OpenStep style).
+    Reading/writing NextSpace preferences (separate file for each app, 
+    OpenStep style, no file name extension).
+    User preferences files located in ~/Library/Preferences/.NextSpace.
+    System preferences files located in /usr/NextSpace/Library/Preferences.
+
+    User preferences are used by user controlled applications.
+    System prefereences used by system controlled applications (like Login.app).
 
     @author Sergii Stioan
  */
@@ -19,45 +24,6 @@ static NXDefaults *sharedSystemDefaults;
 static NXDefaults *sharedUserDefaults;
 
 @implementation NXDefaults
-
-// --- Private
-- (NSString *)fileNameInDomain:(NSSearchPathDomainMask)domain
-{
-  NSString *processName = [[NSProcessInfo processInfo] processName];
-  NSArray  *searchPath;
-  NSString *path;
-
-  searchPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-						   domain, YES);
-  path = [searchPath objectAtIndex:0];
-
-  // Since GNUstep uses .plist (XML) for its defaults file we will use .ospl
-  // for ours.
-  return [NSString stringWithFormat:@"%@/Preferences/%@.ospl",
-                   path, processName];
-}
-
-- (void)loadFromFile:(NSString *)filePath
-{
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-
-  if ([fileManager fileExistsAtPath:filePath])
-    {
-      defaultsDict = 
-	[[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
-    }
-  else
-    {
-      defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
-      [defaultsDict retain];
-    }
-}
-
-- (BOOL)synchronize
-{
-  return [defaultsDict writeToFile:fileName atomically:NO];
-}
-// --- End of Private
 
 + (NXDefaults *)systemDefaults
 {
@@ -79,24 +45,76 @@ static NXDefaults *sharedUserDefaults;
   return sharedUserDefaults;
 }
 
-- (NXDefaults *)initWithSystemDefaults
+- (NXDefaults *)initDefaultsWithPath:(NSSearchPathDomainMask)domainMask
+                              domain:(NSString *)domainName
 {
-  self = [self init];
+  NSArray  *searchPath;
+  NSString *pathFormat;
 
-  fileName = [[self fileNameInDomain:NSSystemDomainMask] retain];
-  [self loadFromFile:fileName];
-  NSLog(@"NXDefaults: defaults loadedFromFile %@", fileName);
+  self = [super init];
+
+  searchPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						   domainMask, YES);
+
+  if (domainMask == NSUserDomainMask)
+    pathFormat = @"%@/Preferences/.NextSpace/%@";
+  else
+    pathFormat = @"%@/Preferences/%@";
+  
+  filePath = [[NSString alloc] initWithFormat:pathFormat,
+                    [searchPath objectAtIndex:0], domainName];
+  
+  {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    if ([fileManager fileExistsAtPath:filePath])
+      {
+        defaultsDict = 
+          [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+        NSLog(@"NXDefaults: defaults loaded from file %@", filePath);
+      }
+    else
+      {
+        defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
+        [defaultsDict retain];
+        NSLog(@"NXDefaults: defaults created for file %@", filePath);
+      }
+  }
+  
 
   return self;
 }
 
-- (NXDefaults *)initWithUserDefaults
+// Located in /usr/NextSpace/Preferences
+- (NXDefaults *)initWithSystemDefaults
 {
   self = [self init];
 
-  fileName = [[self fileNameInDomain:NSUserDomainMask] retain];
-  [self loadFromFile:fileName];
-  NSLog(@"NXDefaults: defaults loadedFromFile %@", fileName);
+  [self initDefaultsWithPath:NSSystemDomainMask
+                      domain:[[NSProcessInfo processInfo] processName]];
+  
+  return self;
+}
+
+// Located in ~/Library/Preferences/.NextSpace
+- (NXDefaults *)initWithUserDefaults
+{
+  self = [super init];
+
+  [self initDefaultsWithPath:NSUserDomainMask
+                      domain:[[NSProcessInfo processInfo] processName]];
+
+  return self;
+}
+
+// Global NextSpace preferences located in
+// ~/Library/Preferences/.NextSpace/NXGlobalDomain
+- (NXDefaults *)initWithGlobalUserDefaults
+{
+  self = [super init];
+
+  [self initDefaultsWithPath:NSUserDomainMask
+                      domain:@"NXGlobalDomain"];
 
   return self;
 }
@@ -105,9 +123,14 @@ static NXDefaults *sharedUserDefaults;
 {
   [self synchronize];
   [defaultsDict release];
-  [fileName release];
+  [filePath release];
 
   [super dealloc];
+}
+
+- (BOOL)synchronize
+{
+  return [defaultsDict writeToFile:filePath atomically:NO];
 }
 
 - (id)objectForKey:(NSString *)key
@@ -118,7 +141,6 @@ static NXDefaults *sharedUserDefaults;
 - (void)setObject:(id)value forKey:(NSString *)key
 {
   [defaultsDict setObject:value forKey:key];
-  NSLog(@"NXDefaults setObject: %@", value);
   [self synchronize];
 }
 
@@ -146,6 +168,7 @@ static NXDefaults *sharedUserDefaults;
   NSNumber *n = [NSNumber numberWithFloat:value];
 
   [self setObject:n forKey:key];
+  [self synchronize];
 }
 
 - (NSInteger)integerForKey:(NSString *)key
@@ -161,12 +184,12 @@ static NXDefaults *sharedUserDefaults;
   return -1;
 }
 
-- (void)setInteger:(NSInteger)value 
-            forKey:(NSString *)key
+- (void)setInteger:(NSInteger)value forKey:(NSString *)key
 {
   NSNumber *n = [NSNumber numberWithInteger:value];
 
   [self setObject:n forKey:key];
+  [self synchronize];
 }
 
 - (BOOL)boolForKey:(NSString*)key
@@ -192,6 +215,7 @@ static NXDefaults *sharedUserDefaults;
     {
       [self setObject:@"NO" forKey:key];
     }
+  [self synchronize];
 }
 
 @end

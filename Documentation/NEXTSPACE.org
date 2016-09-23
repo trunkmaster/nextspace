@@ -333,32 +333,35 @@
        GNUstep ложаться в ~/Library/Preferences, настройки NextSpace в
        ~/Library/Preferences/.NextSpace.
        Например, для Workspace:
-       - ~/Library/Preferences/Workspace.plist - размеры и положения окон, и
-         т.д.;
-       - ~/Library/Preferences/.NextSpace/Workspace.plist - параметры Shelf,
+       - ~/Library/Preferences/Workspace.plist - то, что GNUstep пишет сам
+         (размеры и положения окон, и т.д.;
+       - ~/Library/Preferences/.NextSpace/Workspace - параметры Shelf,
          сохраненные открытые окна, настройеки сортировки и т.д.
 
        Аналогично, можно для WindowMaker складываеть все его файлы настроек в
        ~/Library/Preferences/.WindowMaker - пользователю этот каталог видеть не
        нужно, мне не нужно вливать настройки WindowMaker в какие-либо файлы
        настроек NextSpace (.NextSpace).
-       Структура каталогов:
-       - ~/Library/Preferences/.WindowMaker:
+
+****** DONE Размещать файлы настроек WindowMaker в ~/L/P/.WindowMaker
+       Содержимое ~/Library/Preferences/.WindowMaker:
          - WindowMaker
          - WMGLOBAL
          - WMRootMenu
          - WMState
-         - WMWindowAttributes
-       - ~/Library/Preferences/.NextSpace:
-         - NXGlobalDomain.plist - глобальные настройки для приложений и
-           фреймворков NextSpace: NXClockView24Hour, клавиатура, мышь, сеть,
-           звук и т.д.;
-         - Displays* - мультимониторные конфигурации;
-         - Настройки приложений, которые пишутся через NXDefaults (формат
-           OPENSTEP, без расширения). GNUstep почему-то не очень хорошо
-           работает если все настройки храняться в этом формате. 
-           Пока будет так.
-****** TODO Размещать файлы настроек WindowMaker в ~/L/P/.WindowMaker
+         - WMWindowAttributes           
+
+****** TODO По-умолчанию размещать файлы в ~/L/P/.NextSpace
+******* DONE Displays*.config - мультимониторные конфигурации
+******* TODO NXGlobalDomain.plist 
+        Глобальные настройки для приложений и фреймворков NextSpace: 
+        NXClockView24Hour, клавиатура, мышь, сеть, звук и т.д.
+******* TODO Настройки приложений
+        Настройки приложений, которые пишутся через NXDefaults (формат
+        OPENSTEP, без расширения). GNUstep почему-то не очень хорошо
+        работает если все настройки храняться в этом формате. 
+        Пока будет так.
+
 ****** TODO Читать настройки из ~/L/P/.NextSpace/NXGlobalDomain by default
 ****** TODO Слать notification при изменении ~/L/P/.NextSpace/NXGlobalDomain
 **** DONE NXFileManager - customized methods for manipulating files/dirs

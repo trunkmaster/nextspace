@@ -11,19 +11,22 @@
  
 @interface NXDefaults : NSObject
 {
-  NSString            *fileName;
+  NSString            *filePath;
   NSMutableDictionary *defaultsDict;
 }
 
-/** Returns preferences located in system directory 
-    (e.g. /Library/Preferences)*/
 + (NXDefaults *)systemDefaults;
-/** Returns preferences located in user home directory 
-    (e.g. ~/Library/Preferences)*/
 + (NXDefaults *)userDefaults;
 
+/** Returns preferences located in /usr/NextSpace/Preferences */
 - (NXDefaults *)initWithSystemDefaults;
+/** Returns preferences located in /usr/NextSpace/Preferences/.NextSpace */
 - (NXDefaults *)initWithUserDefaults;
+/** Returns global NextSpace preferences 
+    ~/Library/Preferences/.NextSpace/NXGlobalDomain */
+- (NXDefaults *)initWithGlobalUserDefaults;
+
+- (BOOL)synchronize;
 
 - (id)objectForKey:(NSString *)key;
 - (void)setObject:(id)value 
