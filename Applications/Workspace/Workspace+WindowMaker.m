@@ -253,7 +253,7 @@ NSString *WWMStateCheck(void)
   NSString      *userDefPath, *appDefPath;
   NSFileManager *fm = [NSFileManager defaultManager];
 
-  userDefPath = [NSString stringWithFormat:@"%@/WMState",
+  userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WMState",
                           GSDefaultsRootForUser(NSUserName())];
   
   if (![fm fileExistsAtPath:userDefPath])

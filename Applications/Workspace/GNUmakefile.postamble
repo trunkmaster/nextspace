@@ -74,11 +74,11 @@ ifneq ($(windowmaker), no)
 	@ cd WM/WINGs; make install > /dev/null 2>&1
 	@ cd WM/WindowMaker; make install > /dev/null 2>&1
 # Rewrite some files
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cd WM/doc; make install > /dev/null 2>&1
 	@ cd WM/util; make install > /dev/null 2>&1
 endif
