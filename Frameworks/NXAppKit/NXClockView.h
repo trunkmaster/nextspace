@@ -22,7 +22,7 @@
   NSTextField *yearField;
 
   BOOL showsYear;
-  BOOL shows12HourFormat;
+  BOOL shows24HourFormat;
   BOOL showsLEDColon;
   BOOL tracksDefaults;
 
@@ -43,6 +43,7 @@
   NSRect ledColonRect;
   NSRect ledAMRect;
   NSRect ledPMRect;
+  NSRect year_nums[10];
 }
 
 - (void)loadImageForLanguage:(NSString *)languageName;
@@ -56,8 +57,8 @@
 
  /** Sets whether the receiver is to display 12-hour AM/PM format or full
      24-hour format. */
-- (void)setShows12HourFormat:(BOOL)flag;
-- (BOOL)shows12HourFormat;
+- (void)setShows24HourFormat:(BOOL)flag;
+- (BOOL)shows24HourFormat;
 
 /** Sets whether the receiver is to display a colon between the hour
     and minute fields. */

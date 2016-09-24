@@ -21,6 +21,7 @@
 */
 
 #import "ClockViewTest.h"
+#import <NXFoundation/NXDefaults.h>
 
 @implementation ClockViewTest : NSObject
 
@@ -40,9 +41,10 @@
 - (void)awakeFromNib
 {
   [window center];
-  [hour24Btn setState:![clockView shows12HourFormat]];
+  [hour24Btn setState:[clockView shows24HourFormat]];
   [showYearBtn setState:[clockView showsYear]];
   [showColonBtn setState:[clockView showsLEDColon]];
+  
   [clockView setCalendarDate:[NSCalendarDate calendarDate]];
 
   [languageList
@@ -78,7 +80,10 @@
 
 - (void)set24Hour:(id)sender
 {
-  [clockView setShows12HourFormat:![sender state]];
+  [[NXDefaults globalUserDefaults] setBool:[sender state]
+                                    forKey:@"NXClockView24HourFormat"];
+  [[NXDefaults globalUserDefaults] synchronize];
+ // [clockView setShows24HourFormat:[sender state]];
 }
 - (void)setShowYear:(id)sender
 {

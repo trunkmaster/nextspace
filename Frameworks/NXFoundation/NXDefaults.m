@@ -1,12 +1,30 @@
 /** @class NXDefaults
 
-    Reading/writing NextSpace preferences (separate file for each app, 
-    OpenStep style, no file name extension).
-    User preferences files located in ~/Library/Preferences/.NextSpace.
-    System preferences files located in /usr/NextSpace/Library/Preferences.
+    This is a simplified version NSUserDefaults for use in NextSpace apps.
+    From NSUserDefaults differences is the following:
+    - access to user-level applications' defaults provided by
+      +userDefaults and -initWithUserDefaults methods
+      (located in ~/Library/Preferences/.NextSpace/<name of the app>);
+    - access to system-level applications' defaults - via
+      +systemDefaults and -initWithSystemDefaults
+      (located in /usr/NextSpace/Preferences/<name of the app>);
+    - access to ~/Library/Preferences/.NextSpace/NXGobalDomain via
+      +globalUserDefaults and -initGlobalUserDefaults;
+    - file with defaults of any kind has no extension and stored in old
+      OpenStep style;
+    - all domains are persistent;
+    - there's not method of defaults registration (no -registerDefaults method).
 
     User preferences are used by user controlled applications.
     System prefereences used by system controlled applications (like Login.app).
+
+    If user defaults file has changed notification sent to NSNotificationCenter.
+    If NXGlobalDomain has changed notification sent to 
+    NSDistributedNotificationCenter.
+
+    It should be a better way to implement storing user defaults .NextSpace
+    subdirectory and have notifications to all applications after changes while
+    holding all generic functionality of NSUserDefaults.
 
     @author Sergii Stioan
  */
@@ -17,13 +35,23 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
+
+#import <Foundation/NSUserDefaults.h>
 
 #import "NXDefaults.h"
 
+NSString* const NXUserDefaultsDidChangeNotification = @"NXUserDefaultsDidChangeNotification";
+
 static NXDefaults *sharedSystemDefaults;
 static NXDefaults *sharedUserDefaults;
+static NXDefaults *sharedGlobalUserDefaults;
 
 @implementation NXDefaults
+
+//-----------------------------------------------------------------------------
+#pragma mark - Class methods
+//-----------------------------------------------------------------------------
 
 + (NXDefaults *)systemDefaults
 {
@@ -45,6 +73,20 @@ static NXDefaults *sharedUserDefaults;
   return sharedUserDefaults;
 }
 
++ (NXDefaults *)globalUserDefaults
+{
+  if (sharedGlobalUserDefaults == nil)
+    {
+      sharedGlobalUserDefaults = [[NXDefaults alloc] initWithGlobalUserDefaults];
+    }
+
+  return sharedGlobalUserDefaults;
+}
+
+//-----------------------------------------------------------------------------
+#pragma mark - Init & dealloc
+//-----------------------------------------------------------------------------
+
 - (NXDefaults *)initDefaultsWithPath:(NSSearchPathDomainMask)domainMask
                               domain:(NSString *)domainName
 {
@@ -60,7 +102,7 @@ static NXDefaults *sharedUserDefaults;
     pathFormat = @"%@/Preferences/.NextSpace/%@";
   else
     pathFormat = @"%@/Preferences/%@";
-  
+
   filePath = [[NSString alloc] initWithFormat:pathFormat,
                     [searchPath objectAtIndex:0], domainName];
   
@@ -80,7 +122,6 @@ static NXDefaults *sharedUserDefaults;
         NSLog(@"NXDefaults: defaults created for file %@", filePath);
       }
   }
-  
 
   return self;
 }
@@ -88,66 +129,80 @@ static NXDefaults *sharedUserDefaults;
 // Located in /usr/NextSpace/Preferences
 - (NXDefaults *)initWithSystemDefaults
 {
-  self = [self init];
-
-  [self initDefaultsWithPath:NSSystemDomainMask
-                      domain:[[NSProcessInfo processInfo] processName]];
-  
-  return self;
+  isGlobal = NO;
+  return [self initDefaultsWithPath:NSSystemDomainMask
+                             domain:[[NSProcessInfo processInfo] processName]];
 }
 
 // Located in ~/Library/Preferences/.NextSpace
 - (NXDefaults *)initWithUserDefaults
 {
-  self = [super init];
-
-  [self initDefaultsWithPath:NSUserDomainMask
-                      domain:[[NSProcessInfo processInfo] processName]];
-
-  return self;
+  isGlobal = NO;
+  return [self initDefaultsWithPath:NSUserDomainMask
+                             domain:[[NSProcessInfo processInfo] processName]];
 }
 
 // Global NextSpace preferences located in
 // ~/Library/Preferences/.NextSpace/NXGlobalDomain
 - (NXDefaults *)initWithGlobalUserDefaults
 {
-  self = [super init];
-
-  [self initDefaultsWithPath:NSUserDomainMask
-                      domain:@"NXGlobalDomain"];
-
-  return self;
+  isGlobal = YES;
+  return [self initDefaultsWithPath:NSUserDomainMask
+                             domain:@"NXGlobalDomain"];
 }
 
 - (void)dealloc
 {
-  [self synchronize];
+  // [self synchronize];
   [defaultsDict release];
   [filePath release];
 
   [super dealloc];
 }
 
+// Writes volatile dictionary to file. On success sends notification to
+// all applications of current user if isGlobal == YES.
 - (BOOL)synchronize
 {
-  return [defaultsDict writeToFile:filePath atomically:NO];
+  if ([defaultsDict writeToFile:filePath atomically:NO] == YES)
+    {
+      if (isGlobal == YES)
+        {
+          [[NSDistributedNotificationCenter
+             notificationCenterForType:NSLocalNotificationCenterType]
+            postNotificationName:NXUserDefaultsDidChangeNotification
+                          object:@"NXGlobalDomain"];
+        }
+      else
+        {
+          [[NSNotificationCenter defaultCenter]
+            postNotificationName:NXUserDefaultsDidChangeNotification
+                          object:self];
+        }
+      return YES;
+    }
+
+  return NO;
 }
+
+//-----------------------------------------------------------------------------
+#pragma mark - Values
+//-----------------------------------------------------------------------------
 
 - (id)objectForKey:(NSString *)key
 {
   return [defaultsDict objectForKey:key];
 }
 
-- (void)setObject:(id)value forKey:(NSString *)key
+- (void)setObject:(id)value
+           forKey:(NSString *)key
 {
   [defaultsDict setObject:value forKey:key];
-  [self synchronize];
 }
 
 - (void)removeObjectForKey:(NSString *)key
 {
   [defaultsDict removeObjectForKey:key];
-  [self synchronize];
 }
 
 - (float)floatForKey:(NSString *)key
@@ -163,12 +218,12 @@ static NXDefaults *sharedUserDefaults;
   return 0.0;
 }
 
-- (void)setFloat:(float)value forKey:(NSString*)key
+- (void)setFloat:(float)value
+          forKey:(NSString*)key
 {
   NSNumber *n = [NSNumber numberWithFloat:value];
 
   [self setObject:n forKey:key];
-  [self synchronize];
 }
 
 - (NSInteger)integerForKey:(NSString *)key
@@ -184,12 +239,12 @@ static NXDefaults *sharedUserDefaults;
   return -1;
 }
 
-- (void)setInteger:(NSInteger)value forKey:(NSString *)key
+- (void)setInteger:(NSInteger)value
+            forKey:(NSString *)key
 {
   NSNumber *n = [NSNumber numberWithInteger:value];
 
   [self setObject:n forKey:key];
-  [self synchronize];
 }
 
 - (BOOL)boolForKey:(NSString*)key
@@ -205,7 +260,8 @@ static NXDefaults *sharedUserDefaults;
   return NO;
 }
 
-- (void)setBool:(BOOL)value forKey:(NSString*)key
+- (void)setBool:(BOOL)value
+         forKey:(NSString*)key
 {
   if (value == YES)
     {
@@ -215,7 +271,6 @@ static NXDefaults *sharedUserDefaults;
     {
       [self setObject:@"NO" forKey:key];
     }
-  [self synchronize];
 }
 
 @end

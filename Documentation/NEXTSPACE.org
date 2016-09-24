@@ -282,10 +282,11 @@
       Может нижняя для режима 24-clock? Нужно проверить как это сделано
       в OPENSTEP. Проверил - в обоих режимах расстояние между цифрами
       одинаковое - цифры плотно прижаты друг к другу.
-***** TODO Рисовать год как картинку
-***** TODO Реагировать на изменение глобальных настроек
-      ~/Library/Prefrences/NXGlobalDomain.plist - NSLanguages
+***** DONE Реагировать на изменение глобальных настроек
       ~/LibraryPreferences/.NextSpace/NXGlobalDomain - NXClockView24HourFormat
+***** DONE Рисовать год как картинку
+***** TODO Оптимизировать рисование (drawRect:)
+      Обновлять только те части, которые изменились.
 **** TODO NXAlertPanel
      Modified NSRunAlertPanel()
 **** TODO NXSavePanel, NXOpenPanel
@@ -307,7 +308,6 @@
 ***** TODO Сортировать по полю 'priority'
       Сделано в Preferences, поскольку NXBundle возвращает NSDictionary.
       Нужно возвращать NSArray, тогда его можно будет отсортировать.
-***** TODO Загрузка бандлов непроверена
 ***** DONE Проверять дубли при регистрации
 ***** DONE Clever bundle search
       По итогу: 
@@ -325,9 +325,9 @@
 ****** DONE Поиск в /Library/Bundles
        Поиск в /Libray и ~/Library рекурсивный, поэтому объекты в Bundles тоже
        будут находиться.
-**** TODO NXDefaults
+**** DONE NXDefaults
      Reading/writing preferences (см. "Размещать файлы...").
-***** TODO Размещать файлы NextSpace в ~/Library/Preferences/.NextSpace
+***** DONE Размещать файлы NextSpace в ~/Library/Preferences/.NextSpace
 ****** /Мысли
        Тогда не нужно будет мучиться с расширением - стандартные настройки
        GNUstep ложаться в ~/Library/Preferences, настройки NextSpace в
@@ -351,19 +351,17 @@
          - WMState
          - WMWindowAttributes           
 
-****** TODO По-умолчанию размещать файлы в ~/L/P/.NextSpace
+****** DONE По-умолчанию размещать файлы в ~/L/P/.NextSpace
 ******* DONE Displays*.config - мультимониторные конфигурации
-******* TODO NXGlobalDomain.plist 
+******* DONE NXGlobalDomain
         Глобальные настройки для приложений и фреймворков NextSpace: 
         NXClockView24Hour, клавиатура, мышь, сеть, звук и т.д.
-******* TODO Настройки приложений
+******* DONE Настройки приложений
         Настройки приложений, которые пишутся через NXDefaults (формат
         OPENSTEP, без расширения). GNUstep почему-то не очень хорошо
         работает если все настройки храняться в этом формате. 
         Пока будет так.
-
-****** TODO Читать настройки из ~/L/P/.NextSpace/NXGlobalDomain by default
-****** TODO Слать notification при изменении ~/L/P/.NextSpace/NXGlobalDomain
+****** DONE Слать notification при изменении ~/L/P/.NextSpace/NXGlobalDomain
 **** DONE NXFileManager - customized methods for manipulating files/dirs
      Пока реализовано то, что нужно. Может еще что-нибудь понадобиться -
      посмотрим.
