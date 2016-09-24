@@ -395,10 +395,6 @@
 - (void)setCalendarDate:(NSCalendarDate *)aDate
 {
   ASSIGN(date, aDate);
-
-  // if (yearField != nil)
-  //   [yearField setIntValue:[date yearOfCommonEra]];
-
   [self setNeedsDisplay:YES];
 }
 
