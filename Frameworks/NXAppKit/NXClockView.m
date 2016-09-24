@@ -2,6 +2,7 @@
 #import "NXClockView.h"
 
 #import <AppKit/AppKit.h>
+#import <NXFoundation/NXDefaults.h>
 
 @implementation NXClockView (Private)
 
@@ -9,7 +10,9 @@
 
 @implementation NXClockView
 
+//-----------------------------------------------------------------------------
 #pragma mark - Init and dealloc
+//-----------------------------------------------------------------------------
 
 - initWithFrame:(NSRect)aFrame
 {
@@ -18,9 +21,9 @@
 
   // Defaults
   showsLEDColon = YES;
-  shows12HourFormat = YES;
-  // shows12HourFormat = [[NSUserDefaults standardUserDefaults]
-  //                       boolForKey:@"NXClockViewShows12HourFormat"];
+  shows24HourFormat = [[NXDefaults globalUserDefaults]
+                        boolForKey:@"NXClockView24HourFormat"];
+
   [self setTracksDefaultsDatabase:YES];
 
   // Image rects
@@ -47,6 +50,17 @@
   ledColonRect = NSMakeRect(159, 57, 3,  11);
   ledAMRect    = NSMakeRect(162, 56, 13, 11);
   ledPMRect    = NSMakeRect(175, 56, 12, 11);
+
+  year_nums[0] = NSMakeRect(12,  8, 6, 6);
+  year_nums[1] = NSMakeRect(0,  20, 2, 6);
+  year_nums[2] = NSMakeRect(2,  20, 5, 6);
+  year_nums[3] = NSMakeRect(7,  20, 5, 6);
+  year_nums[4] = NSMakeRect(12, 20, 6, 6);
+  year_nums[5] = NSMakeRect(0,  14, 5, 6);
+  year_nums[6] = NSMakeRect(5,  14, 6, 6);
+  year_nums[7] = NSMakeRect(11, 14, 5, 6);
+  year_nums[8] = NSMakeRect(0,   8, 6, 6);
+  year_nums[9] = NSMakeRect(6,   8, 6, 6);
 
   [self loadImageForLanguage:nil];
   
@@ -85,7 +99,9 @@
 
 - (void)dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSDistributedNotificationCenter
+              notificationCenterForType:NSLocalNotificationCenterType]
+    removeObserver:self];
 
   TEST_RELEASE(yearField);
   TEST_RELEASE(date);
@@ -93,7 +109,9 @@
   [super dealloc];
 }
 
+//-----------------------------------------------------------------------------
 #pragma mark - Drawing
+//-----------------------------------------------------------------------------
 
 - (void)sizeToFit
 {
@@ -151,9 +169,9 @@
   elRect.origin.y -= [date monthOfYear] * januaryRect.size.height;
   elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
                         offset + 16);
-  [clockBits  compositeToPoint:elPoint
-                      fromRect:elRect
-                     operation:NSCompositeSourceOver];
+  [clockBits compositeToPoint:elPoint
+                     fromRect:elRect
+                    operation:NSCompositeSourceOver];
 
   // Day of month
   dayOfMonth = [date dayOfMonth];
@@ -196,7 +214,7 @@
   hourOfDay = [date hourOfDay];
   minuteOfHour = [date minuteOfHour];
 
-  if (shows12HourFormat)
+  if (shows24HourFormat == NO)
     {
       if (hourOfDay == 0)
 	{
@@ -246,7 +264,7 @@
                      operation:NSCompositeSourceOver];
 
   // first digit of hour
-  if (!shows12HourFormat || hourOfDay > 9)
+  if (shows24HourFormat || hourOfDay > 9)
     {
       elRect = led_nums[((hourOfDay - (hourOfDay % 10)) / 10)];
       hoffset -= elRect.size.width;
@@ -269,7 +287,7 @@
   hoffset += elRect.size.width;
 
   // am/pm
-  if (shows12HourFormat)
+  if (shows24HourFormat == NO)
     {
       float voffset;
       hoffset = (ledDisplayRect.origin.x + ledDisplayRect.size.width);
@@ -289,40 +307,56 @@
                              operation:NSCompositeSourceOver];
         }
     }
+
+  if (showsYear == YES)
+    {
+      int year = [date yearOfCommonEra];
+      int thousands, hundreds, tens, nums;
+      CGFloat x;
+      
+      nums = year % 10;                          // 201. 6
+      tens = ((year % 100) - nums) / 10;         // 20. 16
+      hundreds = ((year % 1000) - tens) / 100;   // 2. 016
+      thousands = (year - (hundreds + tens)) / 1000;
+
+      rectCenter = r.size.width/2;
+
+      // To the left from the center
+      elRect = year_nums[hundreds];
+      x = rectCenter - elRect.size.width;
+      [clockBits compositeToPoint:NSMakePoint(x, 2)
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
+      elRect = year_nums[thousands];
+      x -= elRect.size.width;
+      [clockBits compositeToPoint:NSMakePoint(x, 2)
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
+      
+
+      // To the right from the center
+      elRect = year_nums[tens];
+      x = rectCenter;
+      [clockBits compositeToPoint:NSMakePoint(x, 2)
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
+      
+      x += elRect.size.width;
+      elRect = year_nums[nums];
+      [clockBits compositeToPoint:NSMakePoint(x, 2)
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
+    }
 }
 
+//-----------------------------------------------------------------------------
 #pragma mark - Properties
+//-----------------------------------------------------------------------------
 
 - (void)setShowsYear:(BOOL)flag
 {
-  if (showsYear == NO && flag == YES)
-    {
-      if (yearField == nil)
-        {
-          yearField = [[NSTextField alloc]
-                          initWithFrame:NSMakeRect(0, 0, 64, 12)];
-          [yearField setFont:
-                       [NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
-          [yearField setEditable:NO];
-          [yearField setSelectable:NO];
-          [yearField setBordered:NO];
-          [yearField setBezeled:NO];
-          [yearField setDrawsBackground:NO];
-          [yearField setAlignment:NSCenterTextAlignment];
-        }
-
-      if (date != nil)
-        [yearField setIntValue:[date yearOfCommonEra]];
-      else
-        [yearField setStringValue:nil];
-
-      [self addSubview:yearField];
-    }
-  else if (showsYear == YES && flag == NO)
-    {
-      [yearField removeFromSuperview];
-    }
   showsYear = flag;
+  [self setNeedsDisplay:YES];
 }
 
 - (BOOL)showsYear
@@ -330,18 +364,18 @@
   return showsYear;
 }
 
-- (void)setShows12HourFormat:(BOOL)flag
+- (void)setShows24HourFormat:(BOOL)flag
 {
-  if (shows12HourFormat != flag)
+  if (shows24HourFormat != flag)
     {
-      shows12HourFormat = flag;
+      shows24HourFormat = flag;
       [self setNeedsDisplay:YES];
     }
 }
 
-- (BOOL)shows12HourFormat
+- (BOOL)shows24HourFormat
 {
-  return shows12HourFormat;
+  return shows24HourFormat;
 }
 
 - (void)setShowsLEDColon:(BOOL)flag
@@ -362,8 +396,8 @@
 {
   ASSIGN(date, aDate);
 
-  if (yearField != nil)
-    [yearField setIntValue:[date yearOfCommonEra]];
+  // if (yearField != nil)
+  //   [yearField setIntValue:[date yearOfCommonEra]];
 
   [self setNeedsDisplay:YES];
 }
@@ -373,27 +407,32 @@
   return date;
 }
 
+//-----------------------------------------------------------------------------
 #pragma mark - Defaults
+//-----------------------------------------------------------------------------
 
-// Track changes of:
-// - NSLanguages - language order
-// - NXClockView24HourFormat - 12/24 hour clock format
+// Track changes of NXClockView24HourFormat - 12/24 hour clock format
 - (void)setTracksDefaultsDatabase:(BOOL)flag
 {
   if (flag != tracksDefaults)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      NSDistributedNotificationCenter *dnc;
+
+      dnc = [NSDistributedNotificationCenter
+              notificationCenterForType:NSLocalNotificationCenterType];
       
       if (flag == YES)
         {
-          [nc addObserver:self
-                 selector:@selector(defaultsChanged:)
-                     name:NSUserDefaultsDidChangeNotification
-                   object:[NSUserDefaults standardUserDefaults]];
+          // ~/Library/Preferences/.NextSpace/NXGlobalDomain
+          // NXClockView24HourFormat = YES/NO;
+          [dnc addObserver:self
+                  selector:@selector(defaultsChanged:)
+                      name:NXUserDefaultsDidChangeNotification
+                   object:nil];
         }
       else
         {
-          [nc removeObserver:self];
+          [dnc removeObserver:self];
         }
     }
 }
@@ -405,30 +444,14 @@
 
 - (void)defaultsChanged:(NSNotification *)notif
 {
-  NSUserDefaults *df = [notif object];
-  NSArray        *languages = nil;
+  NSLog(@"NXClockView: defaults was changed! %@", [notif object]);
 
-  // NextSpace's NXGlobalDomain was changed
-  if ([df objectForKey:@"NXClockView24HourFormat"] != nil)
+  if ([[notif object] isKindOfClass:[NSString class]])
     {
-      BOOL flag;
-      
-      flag = [df boolForKey:@"NXClockView24HourFormat"];
-      if (flag != shows12HourFormat)
-        {
-          shows12HourFormat = flag;
-          [self setNeedsDisplay:YES];
-        }
-      return;
-    }
-
-  // GNUstep's NSGlobalDomain was changed
-  if ((languages = [df objectForKey:@"NSLanguages"]) != nil &&
-      [languages isKindOfClass:[NSArray class]])
-    {
-      [self loadImageForLanguage:[languages objectAtIndex:0]];
-      [self setNeedsDisplay:YES];
-      return;
+      // NextSpace's NXGlobalDomain was changed
+      [self setShows24HourFormat:
+              [[NXDefaults globalUserDefaults]
+                boolForKey:@"NXClockView24HourFormat"]];
     }
 }
 

@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Sep 23 16:41:15 2016
+;; Created Sun Sep 25 01:52:39 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/Inspectors/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -17,6 +17,28 @@
 (setq file-name-history '("~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.WM" "~/Developer/nextspace/Applications/Workspace/GNUmakefile" "~/Developer/nextspace/Applications/Workspace/WM/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/WM/src/startup.c" "~/Developer/nextspace/Applications/Workspace/WM/src/main.c" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/wmspec.c" "~/Developer/nextspace/Applications/Workspace"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Inspectors/FileAttributesInspector.m"
+  "FileAttributesInspector.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  10637
+  '(10637 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.m"
+  "Inspector.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  791
+  '(21226 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
   "Workspace+WindowMaker.m"
@@ -68,17 +90,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
   1011
   '(1011 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.m"
-  "Inspector.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  791
-  '(21226 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
