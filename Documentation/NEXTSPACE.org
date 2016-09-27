@@ -287,6 +287,8 @@
 ***** DONE Рисовать год как картинку
 ***** TODO Оптимизировать рисование (drawRect:)
       Обновлять только те части, которые изменились.
+***** TODO Сделать настраиваемое мигание точек в часах
+***** TODO Добавить возможность загрузки clockbits снаружи
 **** TODO NXAlertPanel
      Modified NSRunAlertPanel()
 **** TODO NXSavePanel, NXOpenPanel
