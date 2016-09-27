@@ -16,40 +16,51 @@
 
 - initWithFrame:(NSRect)aFrame
 {
-  // self = [super initWithFrame:NSMakeRect(0, 0, 55, 71)];
   self = [super initWithFrame:aFrame];
 
   // Defaults
-  showsLEDColon = YES;
   shows24HourFormat = [[NXDefaults globalUserDefaults]
                         boolForKey:@"NXClockView24HourFormat"];
-
+  // The next method call sets 'timeOffset' ivar but will not cause drawing
+  // because 'shows24HourFormat' was not changed (set at the above line).
+  [self setShows24HourFormat:shows24HourFormat];
+  showsLEDColon = YES;
+  [self setShowsLEDColon:YES];
+  showsYear = YES;
   [self setTracksDefaultsDatabase:YES];
 
-  // Image rects
+  // Tile: inside 'clockbits' image
   tileRect = NSMakeRect(191, 9, 64, 71);
-  
-  mondayRect = NSMakeRect(0, 71, 21, 6);     // 'MON' + one white line below
-  januaryRect = NSMakeRect(40, 72, 22, 6);   // 'JAN' + one white line above
+
+  // Day of week
+  dowRect    = NSMakeRect(14, 41, 33, 6);    // display rect inside 'tileRect'
+  mondayRect = NSMakeRect( 0, 71, 19, 6);    // 'MON' + one white line below
+
+  // Day
+  dayRect      = NSMakeRect(14, 22, 33, 17); // display rect rect inside 'tileRect'
   firstDayRect = NSMakeRect(64, 14, 12, 17); // '1'
 
-  // it's inside tile rect
-  ledDisplayRect = NSMakeRect(5, 51, 53, 16);
-  
-  led_nums[0] = NSMakeRect(150, 57, 9, 11); // 0
-  led_nums[1] = NSMakeRect(83,  57, 4, 11); // 1
-  led_nums[2] = NSMakeRect(87,  57, 8, 11); // 2
-  led_nums[3] = NSMakeRect(95,  57, 8, 11); // 3
-  led_nums[4] = NSMakeRect(103, 57, 8, 11); // 4
-  led_nums[5] = NSMakeRect(111, 57, 7, 11); // 5
-  led_nums[6] = NSMakeRect(118, 57, 8, 11); // 6
-  led_nums[7] = NSMakeRect(126, 57, 7, 11); // 7
-  led_nums[8] = NSMakeRect(133, 57, 9, 11); // 8
-  led_nums[9] = NSMakeRect(142, 57, 8, 11); // 9
+  // Month
+  monthRect   = NSMakeRect(14, 16, 31, 6);   // display rect inside 'tileRect'
+  januaryRect = NSMakeRect(40, 72, 22, 6);   // 'JAN' + one white line above
 
-  ledColonRect = NSMakeRect(159, 57, 3,  11);
-  ledAMRect    = NSMakeRect(162, 56, 13, 11);
-  ledPMRect    = NSMakeRect(175, 56, 12, 11);
+  // it's inside tile rect
+  timeRect = NSMakeRect(5, 53, 53, 11);      // display rect inside 'tileRect'
+  
+  time_nums[0] = NSMakeRect(150, 56, 9, 11); // 0
+  time_nums[1] = NSMakeRect(83,  56, 4, 11); // 1
+  time_nums[2] = NSMakeRect(87,  56, 8, 11); // 2
+  time_nums[3] = NSMakeRect(95,  56, 8, 11); // 3
+  time_nums[4] = NSMakeRect(103, 56, 8, 11); // 4
+  time_nums[5] = NSMakeRect(111, 56, 7, 11); // 5
+  time_nums[6] = NSMakeRect(118, 56, 8, 11); // 6
+  time_nums[7] = NSMakeRect(126, 56, 7, 11); // 7
+  time_nums[8] = NSMakeRect(133, 56, 9, 11); // 8
+  time_nums[9] = NSMakeRect(142, 56, 8, 11); // 9
+
+  colonRect = NSMakeRect(159, 56, 3,  11);   // :
+  amRect    = NSMakeRect(162, 56, 13, 6);    // am
+  pmRect    = NSMakeRect(175, 56, 12, 6);    // pm
 
   year_nums[0] = NSMakeRect(12,  8, 6, 6);
   year_nums[1] = NSMakeRect(0,  20, 2, 6);
@@ -103,7 +114,6 @@
               notificationCenterForType:NSLocalNotificationCenterType]
     removeObserver:self];
 
-  TEST_RELEASE(yearField);
   TEST_RELEASE(date);
 
   [super dealloc];
@@ -129,24 +139,15 @@
 
 - (void)drawRect:(NSRect)r
 {
-  float  offset;
-  float  hoffset;
-  int    dayOfMonth;
-  int    hourOfDay;
-  int    minuteOfHour;
-  BOOL   morning = NO;
-  CGFloat rectCenter = r.size.width/2;
+  float   hoffset;
+  BOOL    morning;
+  CGFloat rectCenter;
   NSRect  elRect;
   NSPoint elPoint;
-  int     v_offset;
+  int     ampm_offset;
 
-  // if (showsYear)
-  //   offset = 11;
-  // else
-    offset = 0;
-
-  elPoint = NSMakePoint(rectCenter - ceilf(tileRect.size.width/2), offset);
-  [clockBits compositeToPoint:elPoint
+  // Tile
+  [clockBits compositeToPoint:NSMakePoint(0,0)
                      fromRect:tileRect
                     operation:NSCompositeSourceOver];
 
@@ -156,66 +157,71 @@
   // --- Date
   
   // Day of week
+  // dayOfWeek = [date dayOfWeek];
   elRect = mondayRect;
-  elRect.origin.y -= ([date dayOfWeek] > 0 ? [date dayOfWeek] : 7) * mondayRect.size.height;
+  elRect.origin.y -= (dayOfWeek > 0 ? dayOfWeek : 7) * mondayRect.size.height;
+  rectCenter = dowRect.origin.x + ceilf(dowRect.size.width/2);
   elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
-                        offset + 41);
-  [clockBits  compositeToPoint:elPoint
-                      fromRect:elRect
-                     operation:NSCompositeSourceOver];
-
-  // Month
-  elRect = januaryRect;
-  elRect.origin.y -= [date monthOfYear] * januaryRect.size.height;
-  elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
-                        offset + 16);
+                        dowRect.origin.y);
   [clockBits compositeToPoint:elPoint
                      fromRect:elRect
                     operation:NSCompositeSourceOver];
 
   // Day of month
-  dayOfMonth = [date dayOfMonth];
-  v_offset = offset + 31 - (firstDayRect.size.height/2);
+  // dayOfMonth = [date dayOfMonth];
+  rectCenter = dayRect.origin.x + ceilf(dayRect.size.width/2);
   if (dayOfMonth > 9)
     {
-      CGFloat x = rectCenter - firstDayRect.size.width;
-      int     decade, day;
+      int  decade, day;
 
-      // Decade of month
+      // First digit of day
       elRect = firstDayRect;
       decade = (dayOfMonth - (dayOfMonth % 10)) / 10;
       elRect.origin.x += (decade - 1) * firstDayRect.size.width;
-      elPoint = NSMakePoint(x, v_offset);
-      [clockBits  compositeToPoint:elPoint
-                          fromRect:elRect
-                         operation:NSCompositeSourceOver];
-      // Day of decade
+      elPoint = NSMakePoint((rectCenter - firstDayRect.size.width) + 1,
+                            dayRect.origin.y);
+      [clockBits compositeToPoint:elPoint
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
+      // Second digit of day
       elRect = firstDayRect;
       if ((day = dayOfMonth % 10) == 0)
         day = 10;
       elRect.origin.x += (day - 1) * firstDayRect.size.width;
-      elPoint = NSMakePoint(x + (firstDayRect.size.width-2), v_offset);
-      [clockBits  compositeToPoint:elPoint
-                          fromRect:elRect
-                         operation:NSCompositeSourceOver];
+      elPoint = NSMakePoint(rectCenter - 1, dayRect.origin.y);
+      [clockBits compositeToPoint:elPoint
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
     }
   else
     {
       elRect = firstDayRect;
       elRect.origin.x += (dayOfMonth - 1) * firstDayRect.size.width;
-      elPoint = NSMakePoint(rectCenter - firstDayRect.size.width/2, v_offset);
-      [clockBits  compositeToPoint:elPoint
-                          fromRect:elRect
-                         operation:NSCompositeSourceOver];
+      elPoint = NSMakePoint(rectCenter - ceilf(firstDayRect.size.width/2),
+                            dayRect.origin.y);
+      [clockBits compositeToPoint:elPoint
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
     }
+
+  // Month
+  // monthOfYear = [date monthOfYear];
+  elRect = januaryRect;
+  elRect.origin.y -= monthOfYear * januaryRect.size.height;
+  rectCenter = monthRect.origin.x + ceilf(monthRect.size.width/2);
+  elPoint = NSMakePoint(rectCenter - ceilf(elRect.size.width/2),
+                        monthRect.origin.y);
+  [clockBits compositeToPoint:elPoint
+                     fromRect:elRect
+                    operation:NSCompositeSourceOver];
 
   // --- Time
   
-  hourOfDay = [date hourOfDay];
-  minuteOfHour = [date minuteOfHour];
-
+  // hourOfDay = [date hourOfDay];
+  // minuteOfHour = [date minuteOfHour];
   if (shows24HourFormat == NO)
     {
+      morning = NO;
       if (hourOfDay == 0)
 	{
 	  hourOfDay = 12;
@@ -225,30 +231,19 @@
 	{
 	  morning = YES;
 	}
-      else
+      else if (hourOfDay > 12)
 	{
-	  if (hourOfDay > 12)
-	    hourOfDay -= 12;
-	  morning = NO;
+          hourOfDay -= 12;
 	}
-
-      hoffset = -4;
     }
-  else
-    {
-      hoffset = 3;
-    }
-
-  rectCenter = hoffset + ledDisplayRect.size.width/2;
-  offset = ledDisplayRect.origin.y + (ledDisplayRect.size.height - 11)/2;
 
   // Colon
-  hoffset = rectCenter - ledColonRect.size.width/2;
+  rectCenter = ceilf(timeRect.size.width/2 - colonRect.size.width/2) + timeOffset;
   if (showsLEDColon)
     {
-      [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
-                          fromRect:ledColonRect
-                         operation:NSCompositeSourceOver];
+      [clockBits compositeToPoint:NSMakePoint(rectCenter, timeRect.origin.y)
+                         fromRect:colonRect
+                        operation:NSCompositeSourceOver];
       // if (0) // if blinking enabled
       //   {
       //     [self setShowsLEDColon:!showsLEDColon];
@@ -257,68 +252,66 @@
   
   // Hours
   // second digit of hour
-  elRect = led_nums[(hourOfDay % 10)];
-  hoffset -= elRect.size.width;
-  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
-                      fromRect:elRect
-                     operation:NSCompositeSourceOver];
+  elRect = time_nums[(hourOfDay % 10)];
+  hoffset = rectCenter - elRect.size.width;
+  [clockBits compositeToPoint:NSMakePoint(hoffset, timeRect.origin.y)
+                     fromRect:elRect
+                    operation:NSCompositeSourceOver];
 
   // first digit of hour
   if (shows24HourFormat || hourOfDay > 9)
     {
-      elRect = led_nums[((hourOfDay - (hourOfDay % 10)) / 10)];
+      elRect = time_nums[((hourOfDay - (hourOfDay % 10)) / 10)];
       hoffset -= elRect.size.width;
-      [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
-                          fromRect:elRect
-                         operation:NSCompositeSourceOver];
+      [clockBits compositeToPoint:NSMakePoint(hoffset, timeRect.origin.y)
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
     }
 
   // Minutes
-  hoffset = rectCenter + ledColonRect.size.width/2;
-  elRect = led_nums[(minuteOfHour - (minuteOfHour % 10)) / 10];
-  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
-                      fromRect:elRect
-                     operation:NSCompositeSourceOver];
+  hoffset = rectCenter + colonRect.size.width;
+  elRect = time_nums[(minuteOfHour - (minuteOfHour % 10)) / 10];
+  [clockBits compositeToPoint:NSMakePoint(hoffset, timeRect.origin.y)
+                     fromRect:elRect
+                    operation:NSCompositeSourceOver];
   hoffset += elRect.size.width;
-  elRect = led_nums[minuteOfHour % 10];
-  [clockBits  compositeToPoint:NSMakePoint(hoffset, offset)
-                      fromRect:elRect
-                     operation:NSCompositeSourceOver];
-  hoffset += elRect.size.width;
+  elRect = time_nums[minuteOfHour % 10];
+  [clockBits compositeToPoint:NSMakePoint(hoffset, timeRect.origin.y)
+                     fromRect:elRect
+                    operation:NSCompositeSourceOver];
 
   // am/pm
   if (shows24HourFormat == NO)
     {
-      float voffset;
-      hoffset = (ledDisplayRect.origin.x + ledDisplayRect.size.width);
-      voffset = offset + (ledDisplayRect.size.height-2-ledAMRect.size.height)/2;
+      hoffset = (timeRect.origin.x + timeRect.size.width) - 3;
+      ampm_offset = timeRect.origin.y + (timeRect.size.height-amRect.size.height)/2;
       if (morning)
         {
-          hoffset -= ledAMRect.size.width + 3;
-          [clockBits  compositeToPoint:NSMakePoint(hoffset, voffset)
-                              fromRect:ledAMRect
-                             operation:NSCompositeSourceOver];
+          hoffset -= amRect.size.width;
+          [clockBits compositeToPoint:NSMakePoint(hoffset, ampm_offset)
+                             fromRect:amRect
+                            operation:NSCompositeSourceOver];
         }
       else
         {
-          hoffset -= ledPMRect.size.width + 3;
-          [clockBits  compositeToPoint:NSMakePoint(hoffset, voffset)
-                              fromRect:ledPMRect
-                             operation:NSCompositeSourceOver];
+          hoffset -= pmRect.size.width;
+          [clockBits compositeToPoint:NSMakePoint(hoffset, ampm_offset)
+                             fromRect:pmRect
+                            operation:NSCompositeSourceOver];
         }
     }
 
   if (showsYear == YES)
     {
-      int year = [date yearOfCommonEra];
       int thousands, hundreds, tens, nums;
       CGFloat x;
       
-      nums = year % 10;                          // 201. 6
-      tens = ((year % 100) - nums) / 10;         // 20. 16
-      hundreds = ((year % 1000) - tens) / 100;   // 2. 016
-      thousands = (year - (hundreds + tens)) / 1000;
+      nums = yearOfCommonEra % 10;                          // 201. 6
+      tens = ((yearOfCommonEra % 100) - nums) / 10;         // 20. 16
+      hundreds = ((yearOfCommonEra % 1000) - tens) / 100;   // 2. 016
+      thousands = (yearOfCommonEra - (hundreds + tens)) / 1000;
 
+      // TODO: implement and use yearRect
       rectCenter = r.size.width/2;
 
       // To the left from the center
@@ -333,7 +326,6 @@
                          fromRect:elRect
                         operation:NSCompositeSourceOver];
       
-
       // To the right from the center
       elRect = year_nums[tens];
       x = rectCenter;
@@ -347,6 +339,13 @@
                          fromRect:elRect
                         operation:NSCompositeSourceOver];
     }
+
+  lastHOD = hourOfDay;
+  lastMOH = minuteOfHour;
+  lastDOW = dayOfWeek;
+  lastDOM = dayOfMonth;
+  lastMOY = monthOfYear;
+  lastYOCE = yearOfCommonEra;
 }
 
 //-----------------------------------------------------------------------------
@@ -355,8 +354,14 @@
 
 - (void)setShowsYear:(BOOL)flag
 {
-  showsYear = flag;
-  [self setNeedsDisplay:YES];
+  if (showsYear != flag)
+    {
+      showsYear = flag;
+      if (clockBits != nil)
+        {
+          [self setNeedsDisplay:YES];
+        }
+    }
 }
 
 - (BOOL)showsYear
@@ -366,10 +371,22 @@
 
 - (void)setShows24HourFormat:(BOOL)flag
 {
+  if (flag == NO)
+    {
+      timeOffset = -4;
+    }
+  else
+    {
+      timeOffset = 3;
+    }
+
   if (shows24HourFormat != flag)
     {
       shows24HourFormat = flag;
-      [self setNeedsDisplay:YES];
+      if (clockBits != nil)
+        {
+          [self setNeedsDisplay:YES];
+        }
     }
 }
 
@@ -383,7 +400,10 @@
   if (showsLEDColon != flag)
     {
       showsLEDColon = flag;
-      [self setNeedsDisplay:YES];
+       if (clockBits != nil)
+        {
+          [self setNeedsDisplay:YES];
+        }
     }
 }
 
@@ -394,8 +414,32 @@
 
 - (void)setCalendarDate:(NSCalendarDate *)aDate
 {
+  BOOL dateChanged = NO;
+    
   ASSIGN(date, aDate);
-  [self setNeedsDisplay:YES];
+  
+  hourOfDay = [date hourOfDay];
+  minuteOfHour = [date minuteOfHour];
+  dayOfWeek = [date dayOfWeek];
+  dayOfMonth = [date dayOfMonth];
+  monthOfYear = [date monthOfYear];
+  yearOfCommonEra = [date yearOfCommonEra];
+
+  if (hourOfDay != lastHOD || minuteOfHour != lastMOH ||
+      dayOfWeek != lastDOW || dayOfMonth != lastDOM ||
+      monthOfYear != lastMOY || yearOfCommonEra != lastYOCE)
+    {
+      dateChanged = YES;
+    }
+
+  if (dateChanged == YES)
+    {
+      [self setNeedsDisplay:YES];
+    }
+  else if (showsLEDColon == YES && colonBlinks == YES)
+    {
+      [self drawColon];
+    }
 }
 
 - (NSCalendarDate *)calendarDate

@@ -83,7 +83,6 @@
   [[NXDefaults globalUserDefaults] setBool:[sender state]
                                     forKey:@"NXClockView24HourFormat"];
   [[NXDefaults globalUserDefaults] synchronize];
- // [clockView setShows24HourFormat:[sender state]];
 }
 - (void)setShowYear:(id)sender
 {

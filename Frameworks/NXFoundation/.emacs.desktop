@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sat Sep 24 12:09:29 2016
+;; Created Sun Sep 25 03:26:39 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "NXDefaults.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  1170
-  '(1190 nil)
+  3736
+  '(3736 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,8 +33,8 @@
   "NXDefaults.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  515
-  '(479 nil)
+  994
+  '(1189 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

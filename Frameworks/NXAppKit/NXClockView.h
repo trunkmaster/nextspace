@@ -18,31 +18,43 @@
 
 @interface NXClockView : NSView
 {
-  /// The text field used to display the year.
-  NSTextField *yearField;
+  // The currently displayed date.
+  NSCalendarDate *date;
+  NSInteger      dayOfWeek, lastDOW;
+  NSInteger      dayOfMonth, lastDOM;
+  NSInteger      monthOfYear, lastMOY;
+  NSInteger      hourOfDay, lastHOD;
+  NSInteger      minuteOfHour, lastMOH;
+  NSInteger      yearOfCommonEra, lastYOCE;
 
-  BOOL showsYear;
+  // Properties
   BOOL shows24HourFormat;
   BOOL showsLEDColon;
+  BOOL showsYear;
   BOOL tracksDefaults;
-
-  /// The currently displayed date.
-  NSCalendarDate *date;
 
   NSImage *clockBits;
   NSRect  tileRect;
 
-  // Day of week, month, day of month
-  NSRect  mondayRect;
-  NSRect  januaryRect;
-  NSRect  firstDayRect;
+  // Day of week, month, day
+  NSRect dowRect;
+  NSRect mondayRect;
+  NSRect dayRect;
+  NSRect firstDayRect;
+  NSRect monthRect;
+  NSRect januaryRect;
 
   // LED time
-  NSRect ledDisplayRect;
-  NSRect led_nums[10];
-  NSRect ledColonRect;
-  NSRect ledAMRect;
-  NSRect ledPMRect;
+  CGFloat timeOffset;
+  NSRect  timeRect;
+  NSRect  time_nums[10];
+  NSRect  colonRect;
+  NSRect  colonDisplayRect;
+  NSRect  amRect;
+  NSRect  pmRect;
+
+  // Year
+  NSRect yearRect;
   NSRect year_nums[10];
 }
 
