@@ -12,9 +12,9 @@
     @author Saso Kiselkov, Sergii Stoian
 */
 
+#import <Foundation/NSCalendarDate.h>
+#import <Foundation/NSTimer.h>
 #import <AppKit/NSView.h>
-
-@class NSTextField, NSCalendarDate;
 
 @interface NXClockView : NSView
 {
@@ -27,26 +27,31 @@
   NSInteger      minuteOfHour, lastMOH;
   NSInteger      yearOfCommonEra, lastYOCE;
 
-  // Properties
-  BOOL shows24HourFormat;
-  BOOL showsLEDColon;
-  BOOL showsYear;
-  BOOL tracksDefaults;
+  NSTimer *updateTimer;
+
+  // Properties and state
+  BOOL isAlive;
+  BOOL is24HourFormat;
+  BOOL isYearVisible;
+  BOOL isTrackDefaults;
+  BOOL isColonVisible;
+  BOOL isColonBlinking;
+  BOOL isMorning;
 
   NSImage *clockBits;
   NSRect  tileRect;
 
   // Day of week, month, day
-  NSRect dowRect;
+  NSRect dowDisplayRect;
   NSRect mondayRect;
-  NSRect dayRect;
+  NSRect dayDisplayRect;
   NSRect firstDayRect;
-  NSRect monthRect;
+  NSRect monthDisplayRect;
   NSRect januaryRect;
 
   // LED time
   CGFloat timeOffset;
-  NSRect  timeRect;
+  NSRect  timeDisplayRect;
   NSRect  time_nums[10];
   NSRect  colonRect;
   NSRect  colonDisplayRect;
@@ -54,7 +59,7 @@
   NSRect  pmRect;
 
   // Year
-  NSRect yearRect;
+  NSRect yearDisplayRect;
   NSRect year_nums[10];
 }
 
@@ -64,18 +69,23 @@
 
 /** Sets whether the receiver displays the year information in a small
     text field at it's bottom. */
-- (void)setShowsYear:(BOOL)flag;
-- (BOOL)showsYear;
+- (void)setYearVisible:(BOOL)flag;
+- (BOOL)isYearVisible;
 
  /** Sets whether the receiver is to display 12-hour AM/PM format or full
      24-hour format. */
-- (void)setShows24HourFormat:(BOOL)flag;
-- (BOOL)shows24HourFormat;
+- (void)set24HourFormat:(BOOL)flag;
+- (BOOL)is24HourFormat;
 
 /** Sets whether the receiver is to display a colon between the hour
     and minute fields. */
-- (void)setShowsLEDColon:(BOOL)flag;
-- (BOOL)showsLEDColon;
+- (void)setColonVisible:(BOOL)flag;
+- (BOOL)isColonVisible;
+/** Set whether the receiver display real machine date. Colon blinking setting
+    accepted only if live = YES. */
+- (void)setAlive:(BOOL)live colonBlinking:(BOOL)blink;
+- (BOOL)isAlive;
+- (BOOL)isColonBlinking;
 
 /// Sets the calendar date the receiver is to display.
 - (void)setCalendarDate:(NSCalendarDate *)aDate;
