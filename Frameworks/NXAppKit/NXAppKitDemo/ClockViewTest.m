@@ -45,7 +45,7 @@
   [showYearBtn setState:[clockView isYearVisible]];
   [showColonBtn setState:[clockView isColonVisible]];
   
-  [clockView setCalendarDate:[NSCalendarDate calendarDate]];
+  // [clockView setCalendarDate:[NSCalendarDate calendarDate]];
 
   [languageList
     addItemsWithTitles:[[NSUserDefaults standardUserDefaults]

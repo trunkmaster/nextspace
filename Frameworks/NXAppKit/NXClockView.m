@@ -4,10 +4,6 @@
 #import <AppKit/AppKit.h>
 #import <NXFoundation/NXDefaults.h>
 
-@implementation NXClockView (Private)
-
-@end
-
 @implementation NXClockView
 
 //-----------------------------------------------------------------------------
@@ -29,6 +25,7 @@
   [self setYearVisible:YES];
   [self setTracksDefaultsDatabase:YES];
   [self setAlive:NO colonBlinking:NO];
+  date = nil;
 
   // Tile: inside 'clockbits' image
   tileRect = NSMakeRect(191, 9, 64, 71);
@@ -63,7 +60,7 @@
   amRect    = NSMakeRect(162, 56, 13, 6);    // am
   pmRect    = NSMakeRect(175, 56, 12, 6);    // pm
 
-  yearDisplayRect = NSMakeRect(0, 0, 64, 6);
+  yearDisplayRect = NSMakeRect(0, 2, 64, 6);
   year_nums[0] = NSMakeRect(12,  8, 6, 6);
   year_nums[1] = NSMakeRect(0,  20, 2, 6);
   year_nums[2] = NSMakeRect(2,  20, 5, 6);
@@ -77,7 +74,7 @@
 
   [self loadImageForLanguage:nil];
 
-  [self setNeedsDisplay:YES];
+  // [self setNeedsDisplay:YES];
   
   return self;
 }
@@ -155,17 +152,29 @@
   NSPoint elPoint;
   int     ampm_offset;
 
+  if (date == nil)
+    {
+      
+      [self setCalendarDate:[NSCalendarDate dateWithYear:1970
+                                                   month:1
+                                                     day:1
+                                                    hour:0
+                                                  minute:0
+                                                  second:0
+                                                timeZone:[NSTimeZone localTimeZone]]];
+      return;
+    }
+
   // Tile
-  // if (NSIntersectsRect(r, [self frame]) == YES)
-  //   {
+  NSLog(@"NXClockView: drawRect: %@; bounds: %@",
+        NSStringFromRect(r), NSStringFromRect([self bounds]));
+  if (NSIntersectsRect(r, [self bounds]) == YES)
+    {
       NSLog(@"NXClockView: draw TILE");
       [clockBits compositeToPoint:NSMakePoint(0,0)
                          fromRect:tileRect
                         operation:NSCompositeSourceOver];
-    // }
-
-  if (date == nil)
-    return;
+    }
 
   // --- Date
   
@@ -242,26 +251,6 @@
 
   // --- Time
   
-  // hourOfDay = [date hourOfDay];
-  // minuteOfHour = [date minuteOfHour];
-  // if (is24HourFormat == NO)
-  //   {
-  //     morning = NO;
-  //     if (hourOfDay == 0)
-  //       {
-  //         hourOfDay = 12;
-  //         morning = YES;
-  //       }
-  //     else if (hourOfDay < 12)
-  //       {
-  //         morning = YES;
-  //       }
-  //     else if (hourOfDay > 12)
-  //       {
-  //         hourOfDay -= 12;
-  //       }
-  //   }
-
   // Colon
   rectCenter = ceilf(timeDisplayRect.size.width/2 - colonRect.size.width/2) + timeOffset;
   colonDisplayRect = NSMakeRect(rectCenter, timeDisplayRect.origin.y,
@@ -373,13 +362,6 @@
                          fromRect:elRect
                         operation:NSCompositeSourceOver];
     }
-
-  lastHOD = hourOfDay;
-  lastMOH = minuteOfHour;
-  lastDOW = dayOfWeek;
-  lastDOM = dayOfMonth;
-  lastMOY = monthOfYear;
-  lastYOCE = yearOfCommonEra;
 }
 
 //-----------------------------------------------------------------------------
@@ -504,25 +486,35 @@
   // Draw updated time
   if (minuteOfHour != lastMOH ||hourOfDay != lastHOD)
     {
+      NSLog(@"setCalendarDate: TIME changed");
       [self displayRect:timeDisplayRect];
+      lastMOH = minuteOfHour;
+      lastHOD = hourOfDay;
     }
 
   // Draw updated day of week and day of month
   if (dayOfWeek != lastDOW || dayOfMonth != lastDOM)
     {
+      NSLog(@"setCalendarDate: DAY changed");
       [self displayRect:NSUnionRect(dowDisplayRect, dayDisplayRect)];
+      lastDOW = dayOfWeek;
+      lastDOM = dayOfMonth;
     }
 
   // Draw updated month
   if (monthOfYear != lastMOY)
     {
+      NSLog(@"setCalendarDate: MONTH changed");
       [self displayRect:monthDisplayRect];
+      lastMOY = monthOfYear;
     }
   
   // TODO: create and use yearRect
   if (yearOfCommonEra != lastYOCE)
     {
+      NSLog(@"setCalendarDate: YEAR changed");
       [self displayRect:yearDisplayRect];
+      lastYOCE = yearOfCommonEra;
     }
 
   // Draw only colon. 'colonDisplayRect' is calculated in first run of drawRect:
