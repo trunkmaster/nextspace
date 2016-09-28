@@ -41,9 +41,9 @@
 - (void)awakeFromNib
 {
   [window center];
-  [hour24Btn setState:[clockView shows24HourFormat]];
-  [showYearBtn setState:[clockView showsYear]];
-  [showColonBtn setState:[clockView showsLEDColon]];
+  [hour24Btn setState:[clockView is24HourFormat]];
+  [showYearBtn setState:[clockView isYearVisible]];
+  [showColonBtn setState:[clockView isColonVisible]];
   
   [clockView setCalendarDate:[NSCalendarDate calendarDate]];
 
@@ -86,11 +86,11 @@
 }
 - (void)setShowYear:(id)sender
 {
-  [clockView setShowsYear:[sender state]];
+  [clockView setYearVisible:[sender state]];
 }
 - (void)setShowColon:(id)sender
 {
-  [clockView setShowsLEDColon:[sender state]];
+  [clockView setColonVisible:[sender state]];
 }
 
 - (void)setLanguage:(id)sender

@@ -238,69 +238,68 @@
 
 ** TODO NXAppKit
    additions to and modification of AppKit classes
-*** TODO Version 1.0
-**** DONE NXIcon
-**** DONE NXIconLabel
-***** DONE Перевести сокращение текста на функцию в NXUtilities
-**** DONE NXIconView
-***** TODO -checkWrapDown что-то непонятное делает с размером view
-**** DONE NXSplitView
-     Modified NSSplitView:
-        + different divider size (e.g. 12px);
-        + configurable resizing constrains.
-**** DONE Progress bar, pie (NXProgress*)
-**** DONE NXSizer (moved from Workspace)
-**** DONE NXNumericField
-     Базовая функциональность реализована.
-     Добавить:
-     - при вводе '.':
-       - перемещать курсор перед следующей цифрой;
-       - выделять блок цифр (для целых все, для float перед или после точки);
-     - не удалять '.' клавишами Delete и Backspace.
-**** TODO NXClockView
-***** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
-***** DONE Создать тестовый модуль в NXAppKitDemo.
-      В этом модуле нужно, чтобы можно было:
-      - вводить произвольное время и дату;
-      - выбрать язык для отображения месяца и дня недели.
-      Может сразу реализовать календарь для Date.preferences?
-***** DONE Добавить языков
-      Сделать картинки с днями недели и месяцами для разных языков (.lproj).
-****** DONE English French, German, Italian, Spanish
-       clockbits.tiff из OPENSTEP.
-****** DONE Ukrainian
-****** DONE Russian
-****** DONE Dutch
-****** DONE Slovak
-****** DONE Hungarian
-***** DONE Расстояния между цифрами
-      Сейчас цифры близко прижимаются друг к другу.
-      Выбрать визуально оптимальный вариант.
-      В clockbits.tiff есть 2 строки с цифрами времени:
-      - верхняя - расстояние между цифрами одинаковое независимо от цифры;
-      - нижняя - похоже на моноширинный шрифт.
-      Может нижняя для режима 24-clock? Нужно проверить как это сделано
-      в OPENSTEP. Проверил - в обоих режимах расстояние между цифрами
-      одинаковое - цифры плотно прижаты друг к другу.
-***** DONE Реагировать на изменение глобальных настроек
-      ~/LibraryPreferences/.NextSpace/NXGlobalDomain - NXClockView24HourFormat
-***** DONE Рисовать год как картинку
-***** TODO Оптимизировать рисование (drawRect:)
-      Обновлять только те части, которые изменились.
-***** TODO Сделать настраиваемое мигание точек в часах
-***** TODO Добавить возможность загрузки clockbits снаружи
-**** TODO NXAlertPanel
-     Modified NSRunAlertPanel()
-**** TODO NXSavePanel, NXOpenPanel
-     Standard panels without icons, dirs-first sorting, without
-     keyboard focus in browser etc.
-**** TODO NXFindPanel
-     Generic find/replace panel
-       - find/replace panel for text (for editors, help panel etc.);
-       - find/replace view to incorporate as subview.
-*** TODO Version 2.0
-**** TODO NXHelpPanel
-     OpenStep's NSHelpPanel implementation
+* DONE NXIcon
+* DONE NXIconLabel
+*** DONE Перевести сокращение текста на функцию в NXUtilities
+* DONE NXIconView
+*** TODO -checkWrapDown что-то непонятное делает с размером view
+* DONE NXSplitView
+   Modified NSSplitView:
+      + different divider size (e.g. 12px);
+      + configurable resizing constrains.
+* DONE Progress bar, pie (NXProgress*)
+* DONE NXSizer (moved from Workspace)
+* DONE NXNumericField
+   Базовая функциональность реализована.
+   Добавить:
+   - при вводе '.':
+     - перемещать курсор перед следующей цифрой;
+     - выделять блок цифр (для целых все, для float перед или после точки);
+   - не удалять '.' клавишами Delete и Backspace.
+* TODO NXClockView
+** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
+** DONE Создать тестовый модуль в NXAppKitDemo.
+    В этом модуле нужно, чтобы можно было:
+    - вводить произвольное время и дату;
+    - выбрать язык для отображения месяца и дня недели.
+    Может сразу реализовать календарь для Date.preferences?
+** DONE Добавить языков
+    Сделать картинки с днями недели и месяцами для разных языков (.lproj).
+**** DONE English French, German, Italian, Spanish
+     clockbits.tiff из OPENSTEP.
+**** DONE Ukrainian
+**** DONE Russian
+**** DONE Dutch
+**** DONE Slovak
+**** DONE Hungarian
+** DONE Расстояния между цифрами
+    Сейчас цифры близко прижимаются друг к другу.
+    Выбрать визуально оптимальный вариант.
+    В clockbits.tiff есть 2 строки с цифрами времени:
+    - верхняя - расстояние между цифрами одинаковое независимо от цифры;
+    - нижняя - похоже на моноширинный шрифт.
+    Может нижняя для режима 24-clock? Нужно проверить как это сделано
+    в OPENSTEP. Проверил - в обоих режимах расстояние между цифрами
+    одинаковое - цифры плотно прижаты друг к другу.
+** DONE Реагировать на изменение глобальных настроек
+    ~/LibraryPreferences/.NextSpace/NXGlobalDomain - NXClockView24HourFormat
+** DONE Рисовать год как картинку
+** TODO Оптимизировать рисование (drawRect:)
+    Обновлять только те части, которые изменились.
+** TODO Сделать настраиваемое мигание точек в часах
+** TODO Добавить возможность загрузки clockbits снаружи
+* TODO NXAlertPanel
+   Modified NSRunAlertPanel()
+* TODO NXSavePanel, NXOpenPanel
+   Standard panels without icons, dirs-first sorting, without
+   keyboard focus in browser etc.
+* TODO NXFindPanel
+   Generic find/replace panel
+     - find/replace panel for text (for editors, help panel etc.);
+     - find/replace view to incorporate as subview.
+* Version 2.0
+*** TODO NXHelpPanel
+    OpenStep's NSHelpPanel implementation
 
 
 ** TODO NXFoundation
