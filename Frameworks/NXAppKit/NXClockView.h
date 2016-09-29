@@ -34,8 +34,7 @@
   BOOL is24HourFormat;
   BOOL isYearVisible;
   BOOL isTrackDefaults;
-  BOOL isColonVisible;
-  BOOL isColonBlinking;
+  BOOL isColonBlinking, isColonVisible;
   BOOL isMorning;
 
   NSImage *clockBits;
@@ -77,15 +76,10 @@
 - (void)set24HourFormat:(BOOL)flag;
 - (BOOL)is24HourFormat;
 
-/** Sets whether the receiver is to display a colon between the hour
-    and minute fields. */
-- (void)setColonVisible:(BOOL)flag;
-- (BOOL)isColonVisible;
-/** Set whether the receiver display real machine date. Colon blinking setting
-    accepted only if live = YES. */
-- (void)setAlive:(BOOL)live colonBlinking:(BOOL)blink;
+/** Set whether the receiver display real machine date. Alive state can be
+    determined by blinking colon in time field. */
+- (void)setAlive:(BOOL)live;
 - (BOOL)isAlive;
-- (BOOL)isColonBlinking;
 
 /// Sets the calendar date the receiver is to display.
 - (void)setCalendarDate:(NSCalendarDate *)aDate;

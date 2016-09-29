@@ -407,7 +407,7 @@ static id attributesInspector = nil;
   ASSIGN(computeSizeBtnImage, [computeSizeBtn image]);
   ASSIGN(computeSizeBtnAlternateImage, [computeSizeBtn alternateImage]);
   
-  [dateView setShowsYear:YES];
+  [dateView setYearVisible:YES];
 
   sizer = nil;
   

@@ -1,6 +1,7 @@
 
 #import "NXClockView.h"
 
+#import <Foundation/NSTimer.h>
 #import <AppKit/AppKit.h>
 #import <NXFoundation/NXDefaults.h>
 
@@ -21,11 +22,12 @@
   // because 'is24HourFormat' was not changed (set at the above line).
   [self set24HourFormat:is24HourFormat];
   isColonVisible = YES;
-  [self setColonVisible:YES];
   [self setYearVisible:YES];
+  isTrackDefaults = NO;
   [self setTracksDefaultsDatabase:YES];
-  [self setAlive:NO colonBlinking:NO];
+  [self setAlive:NO];
   date = nil;
+  lastDOW = lastDOM = lastMOY = lastHOD = lastMOH = lastYOCE = -1;
 
   // Tile: inside 'clockbits' image
   tileRect = NSMakeRect(191, 9, 64, 71);
@@ -60,7 +62,7 @@
   amRect    = NSMakeRect(162, 56, 13, 6);    // am
   pmRect    = NSMakeRect(175, 56, 12, 6);    // pm
 
-  yearDisplayRect = NSMakeRect(0, 2, 64, 6);
+  yearDisplayRect = NSMakeRect(14, 2, 38, 6);
   year_nums[0] = NSMakeRect(12,  8, 6, 6);
   year_nums[1] = NSMakeRect(0,  20, 2, 6);
   year_nums[2] = NSMakeRect(2,  20, 5, 6);
@@ -72,9 +74,10 @@
   year_nums[8] = NSMakeRect(0,   8, 6, 6);
   year_nums[9] = NSMakeRect(6,   8, 6, 6);
 
-  [self loadImageForLanguage:nil];
+  [self loadImageForLanguage:
+          [[[NSUserDefaults standardUserDefaults] objectForKey:@"NSLanguages"] objectAtIndex:0]];
 
-  // [self setNeedsDisplay:YES];
+  [self setNeedsDisplay:YES];
   
   return self;
 }
@@ -140,21 +143,32 @@
 
 - (void)update:(NSNotification *)notif
 {
+  // if (isAlive == YES)
+  //   {
+  isColonVisible = isColonVisible ? NO : YES;;
+    // }
   [self setCalendarDate:[NSCalendarDate date]];
 }
 
 - (void)drawRect:(NSRect)r
 {
-  float   hoffset;
-  // BOOL    morning;
-  CGFloat rectCenter;
-  NSRect  elRect;
-  NSPoint elPoint;
-  int     ampm_offset;
+  CGFloat   hoffset;
+  CGFloat   rectCenter;
+  NSRect    elRect;
+  NSPoint   elPoint;
+  NSInteger ampm_offset;
 
+  // Tile
+  if (NSIntersectsRect(r, [self bounds]) == YES)
+    {
+      // NSLog(@"NXClockView: draw TILE");
+      [clockBits compositeToPoint:NSMakePoint(0,0)
+                         fromRect:tileRect
+                        operation:NSCompositeSourceOver];
+    }
+  
   if (date == nil)
     {
-      
       [self setCalendarDate:[NSCalendarDate dateWithYear:1970
                                                    month:1
                                                      day:1
@@ -165,24 +179,13 @@
       return;
     }
 
-  // Tile
-  NSLog(@"NXClockView: drawRect: %@; bounds: %@",
-        NSStringFromRect(r), NSStringFromRect([self bounds]));
-  if (NSIntersectsRect(r, [self bounds]) == YES)
-    {
-      NSLog(@"NXClockView: draw TILE");
-      [clockBits compositeToPoint:NSMakePoint(0,0)
-                         fromRect:tileRect
-                        operation:NSCompositeSourceOver];
-    }
-
   // --- Date
   
   // Day of week
   // dayOfWeek = [date dayOfWeek];
   if (NSIntersectsRect(r, dowDisplayRect) == YES)
     {
-      NSLog(@"NXClockView: draw DAY OF WEEK");
+      // NSLog(@"NXClockView: draw DAY OF WEEK");
       elRect = mondayRect;
       elRect.origin.y -= (dayOfWeek > 0 ? dayOfWeek : 7) * mondayRect.size.height;
       rectCenter = dowDisplayRect.origin.x + ceilf(dowDisplayRect.size.width/2);
@@ -197,7 +200,7 @@
   // dayOfMonth = [date dayOfMonth];
   if (NSIntersectsRect(r, dayDisplayRect) == YES)
     {
-      NSLog(@"NXClockView: draw DAY OF MONTH");
+      // NSLog(@"NXClockView: draw DAY OF MONTH");
       rectCenter = dayDisplayRect.origin.x + ceilf(dayDisplayRect.size.width/2);
       if (dayOfMonth > 9)
         {
@@ -238,7 +241,7 @@
   // monthOfYear = [date monthOfYear];
   if (NSIntersectsRect(r, monthDisplayRect) == YES)
     {
-      NSLog(@"NXClockView: draw MONTH");
+      // NSLog(@"NXClockView: draw MONTH");
       elRect = januaryRect;
       elRect.origin.y -= monthOfYear * januaryRect.size.height;
       rectCenter = monthDisplayRect.origin.x + ceilf(monthDisplayRect.size.width/2);
@@ -255,16 +258,24 @@
   rectCenter = ceilf(timeDisplayRect.size.width/2 - colonRect.size.width/2) + timeOffset;
   colonDisplayRect = NSMakeRect(rectCenter, timeDisplayRect.origin.y,
                                 colonRect.size.width, colonRect.size.height);
-  if (NSIntersectsRect(r, colonDisplayRect) == YES && isColonVisible)
+  if (NSIntersectsRect(r, colonDisplayRect) == YES)
     {
       NSLog(@"NXClockView: draw COLON");
-      [clockBits compositeToPoint:colonDisplayRect.origin
-                         fromRect:colonRect
-                        operation:NSCompositeSourceOver];
-      // if (0) // if blinking enabled
-      //   {
-      //     [self setShowsLEDColon:!isColonVisible];
-      //   }
+      if (isAlive)
+        {
+          if (isColonVisible)
+            {
+              [clockBits compositeToPoint:colonDisplayRect.origin
+                                 fromRect:colonRect
+                                operation:NSCompositeSourceOver];
+            }
+        }
+      else
+        {
+          [clockBits compositeToPoint:colonDisplayRect.origin
+                             fromRect:colonRect
+                            operation:NSCompositeSourceOver];
+        }
     }
   
   // Hours
@@ -322,6 +333,7 @@
         }
     }
 
+  // Year
   if ((NSIntersectsRect(r, yearDisplayRect) == YES) &&
       (isYearVisible == YES))
     {
@@ -334,33 +346,34 @@
       hundreds = ((yearOfCommonEra % 1000) - tens) / 100;   // 2. 016
       thousands = (yearOfCommonEra - (hundreds + tens)) / 1000;
 
-      // TODO: implement and use yearRect
-      rectCenter = r.size.width/2;
-
-      // To the left from the center
-      elRect = year_nums[hundreds];
-      x = rectCenter - elRect.size.width;
-      [clockBits compositeToPoint:NSMakePoint(x, 2)
-                         fromRect:elRect
-                        operation:NSCompositeSourceOver];
+      rectCenter = yearDisplayRect.origin.x + yearDisplayRect.size.width/2;
+      x = rectCenter - ((year_nums[hundreds].size.width +
+                         year_nums[thousands].size.width +
+                         year_nums[tens].size.width +
+                         year_nums[nums].size.width) / 2);
+      
       elRect = year_nums[thousands];
-      x -= elRect.size.width;
-      [clockBits compositeToPoint:NSMakePoint(x, 2)
+      [clockBits compositeToPoint:NSMakePoint(x, yearDisplayRect.origin.y)
                          fromRect:elRect
                         operation:NSCompositeSourceOver];
-      
-      // To the right from the center
-      elRect = year_nums[tens];
-      x = rectCenter;
-      [clockBits compositeToPoint:NSMakePoint(x, 2)
-                         fromRect:elRect
-                        operation:NSCompositeSourceOver];
-      
       x += elRect.size.width;
-      elRect = year_nums[nums];
-      [clockBits compositeToPoint:NSMakePoint(x, 2)
+      
+      elRect = year_nums[hundreds];
+      [clockBits compositeToPoint:NSMakePoint(x, yearDisplayRect.origin.y)
                          fromRect:elRect
                         operation:NSCompositeSourceOver];
+      x += elRect.size.width;
+      
+      elRect = year_nums[tens];
+      [clockBits compositeToPoint:NSMakePoint(x, yearDisplayRect.origin.y)
+                         fromRect:elRect
+                        operation:NSCompositeSourceOver];
+      x += elRect.size.width;
+      
+      elRect = year_nums[nums];
+      [clockBits compositeToPoint:NSMakePoint(x, yearDisplayRect.origin.y)
+                         fromRect:elRect
+                         operation:NSCompositeSourceOver];
     }
 }
 
@@ -411,47 +424,35 @@
   return is24HourFormat;
 }
 
-- (void)setColonVisible:(BOOL)flag
-{
-  if (isColonVisible != flag)
-    {
-      isColonVisible = flag;
-       if (clockBits != nil)
-        {
-          [self displayRect:colonDisplayRect];
-        }
-    }
-}
-
-- (BOOL)isColonVisible
-{
-  return isColonVisible;
-}
-
-- (void)setAlive:(BOOL)live colonBlinking:(BOOL)blink
+- (void)setAlive:(BOOL)live
 {
   isAlive = live;
-  if (isAlive)
+  if (isAlive == YES)
     {
-      if (isColonVisible)
+      if (updateTimer == nil || [updateTimer isValid] == NO)
         {
-          isColonBlinking = blink;
+          updateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                         target:self
+                                                       selector:@selector(update:)
+                                                       userInfo:nil
+                                                        repeats:YES];
         }
     }
   else
     {
-      isColonBlinking = NO;
+      if (updateTimer != nil)
+        {
+          isColonVisible = YES;
+          [self setCalendarDate:[NSCalendarDate date]];
+          [updateTimer invalidate];
+          // [updateTimer release];
+        }
     }
 }
 
 - (BOOL)isAlive
 {
   return isAlive;
-}
-
-- (BOOL)isColonBlinking
-{
-  return isColonBlinking;
 }
 
 - (void)setCalendarDate:(NSCalendarDate *)aDate
@@ -519,7 +520,7 @@
 
   // Draw only colon. 'colonDisplayRect' is calculated in first run of drawRect:
   // depending on clock display format.
-  if (isColonVisible == YES && isColonBlinking == YES)
+  if (isAlive == YES)
     {
       [self displayRect:colonDisplayRect];
     }
@@ -558,6 +559,7 @@
           [dnc removeObserver:self];
         }
     }
+  isTrackDefaults = flag;
 }
 
 - (BOOL)tracksDefaultsDatabase
