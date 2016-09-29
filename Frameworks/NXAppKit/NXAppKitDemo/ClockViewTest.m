@@ -43,9 +43,10 @@
   [window center];
   [hour24Btn setState:[clockView is24HourFormat]];
   [showYearBtn setState:[clockView isYearVisible]];
-  [showColonBtn setState:[clockView isColonVisible]];
+  [makeAliveBtn setState:[clockView isAlive]];
   
   // [clockView setCalendarDate:[NSCalendarDate calendarDate]];
+  [clockView setNeedsDisplay:YES];
 
   [languageList
     addItemsWithTitles:[[NSUserDefaults standardUserDefaults]
@@ -88,9 +89,9 @@
 {
   [clockView setYearVisible:[sender state]];
 }
-- (void)setShowColon:(id)sender
+- (void)setAlive:(id)sender
 {
-  [clockView setColonVisible:[sender state]];
+  [clockView setAlive:[sender state]];
 }
 
 - (void)setLanguage:(id)sender

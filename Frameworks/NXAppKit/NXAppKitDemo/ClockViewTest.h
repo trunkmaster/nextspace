@@ -40,7 +40,7 @@
   
   id hour24Btn;
   id showYearBtn;
-  id showColonBtn;
+  id makeAliveBtn;
 
   id languageList;
 
@@ -54,6 +54,6 @@
 
 - (void)set24Hour:(id)sender;
 - (void)setShowYear:(id)sender;
-- (void)setShowColon:(id)sender;
+- (void)setAlive:(id)sender;
 
 @end

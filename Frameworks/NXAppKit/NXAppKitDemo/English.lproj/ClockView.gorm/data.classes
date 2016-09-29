@@ -13,7 +13,7 @@
     };
     ClockViewTest = {
 	Actions = (
-	    "setShowColon:",
+	    "setAlive:",
 	    "set24Hour:",
 	    "setDate:",
 	    "setShowYear:",
@@ -27,7 +27,7 @@
 	    hourField,
 	    minuteField,
 	    monthField,
-	    showColonBtn,
+	    makeAliveBtn,
 	    secondField,
 	    showYearBtn,
 	    yearField,
@@ -40,7 +40,7 @@
 	    "setLanguage:",
 	    "set24Hour:",
 	    "setDate:",
-	    "setShowColon:",
+	    "setAlive:",
 	    "setShowYear:",
 	    "showTextFieldsDemo:"
 	);
