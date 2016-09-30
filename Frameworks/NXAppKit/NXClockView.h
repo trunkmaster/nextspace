@@ -28,6 +28,7 @@
   NSInteger      yearOfCommonEra, lastYOCE;
 
   NSTimer *updateTimer;
+  BOOL    dateChanged;
 
   // Properties and state
   BOOL isAlive;
@@ -38,6 +39,8 @@
   BOOL isMorning;
 
   NSImage *clockBits;
+  NSImage *colonOnImage;
+  NSImage *colonOffImage;
   NSRect  tileRect;
 
   // Day of week, month, day
@@ -53,6 +56,7 @@
   NSRect  timeDisplayRect;
   NSRect  time_nums[10];
   NSRect  colonRect;
+  NSRect  noColonRect;
   NSRect  colonDisplayRect;
   NSRect  amRect;
   NSRect  pmRect;
@@ -62,7 +66,7 @@
   NSRect year_nums[10];
 }
 
-- (void)loadImageForLanguage:(NSString *)languageName;
+- (void)loadClockbitsForLanguage:(NSString *)languageName;
 
 - (void)sizeToFit;
 
