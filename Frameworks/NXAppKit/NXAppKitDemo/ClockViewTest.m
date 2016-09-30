@@ -96,7 +96,7 @@
 
 - (void)setLanguage:(id)sender
 {
-  [clockView loadImageForLanguage:[[languageList selectedItem] title]];
+  [clockView loadClockbitsForLanguage:[[languageList selectedItem] title]];
   [clockView setNeedsDisplay:YES];
 }
 
