@@ -690,7 +690,7 @@ static NXPower *power = nil;
   NSPoint iPoint;
   if (isMainDisplay)
     {
-      iSize = [[owner dockImage] size];
+      iSize = [owner.dockImage size];
       iPoint = NSMakePoint(rect.size.width-iSize.width-3,
                            rect.size.height-iSize.height-3);
       [[owner dockImage] compositeToPoint:iPoint
