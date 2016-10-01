@@ -78,37 +78,11 @@
   // Load clockbits for default language
   [self loadClockbitsForLanguage:nil];
 
-  NSBitmapImageRep *rep;
-  
-  colonOnImage = [[NSImage alloc] initWithSize:colonRect.size];
-  [colonOnImage lockFocus];
-  [clockBits drawAtPoint:NSMakePoint(0, 0)
-                fromRect:colonRect
-               operation:NSCompositeSourceOver
-                fraction:1.0];
-  rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
-  [colonOnImage addRepresentation:rep];
-  [rep release];
-  [colonOnImage unlockFocus];
-  
-  colonOffImage = [[NSImage alloc] initWithSize:colonRect.size];
-  [colonOffImage lockFocus];
-  [clockBits drawAtPoint:NSMakePoint(0, 0)
-                fromRect:noColonRect
-               operation:NSCompositeSourceOver
-                fraction:1.0];
-  rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
-  [colonOffImage addRepresentation:rep];
-  [rep release];
-  [colonOffImage unlockFocus];
-
-
-  // is24HourFormat = [[NXDefaults globalUserDefaults]
-  //                       boolForKey:@"NXClockView24HourFormat"];
-  // The next method call sets 'colonDisplayRect' ivar but will not cause drawing
-  // because 'is24HourFormat' was not changed (set at the above line).
-  [self set24HourFormat:[[NXDefaults globalUserDefaults]
-                          boolForKey:@"NXClockView24HourFormat"]];
+  // The next 2 method calls sets 'colonDisplayRect' ivar but will not
+  // cause drawing because 'is24HourFormat' was not changed
+  is24HourFormat = [[NXDefaults globalUserDefaults]
+                         boolForKey:@"NXClockView24HourFormat"];
+  [self set24HourFormat:is24HourFormat];
   
   [self setCalendarDate:[NSCalendarDate dateWithYear:1970
                                                month:1
@@ -120,6 +94,28 @@
   
   return self;
 }
+
+- (id)initWithFrame:(NSRect)frameRect
+          clockBits:(NSImage *)bits
+           tileRect:(NSRect)tileR
+     dowDisplayRect:(NSRect)dowDisplayR
+         mondayRect:(NSRect)mondayR
+     dayDisplayRect:(NSRect)dayDisplayR
+       firstDayRect:(NSRect)firstDayR
+   monthDisplayRect:(NSRect)monthDisplayR
+        januaryRect:(NSRect)januaryR
+    timeDisplayRect:(NSRect)timeDisplayR
+       timeNumRects:(NSRect *)timeNumRs
+          colonRect:(NSRect)colonR
+        noColonRect:(NSRect)noColonR
+             amRect:(NSRect)amR
+             pmRect:(NSRect)pmR
+    yearDisplayRect:(NSRect)yearDisplayR
+       yearNumRects:(NSRect *)yearNumRs
+{
+  return self;
+}
+  
 
 - (void)loadClockbitsForLanguage:(NSString *)languageName
 {
@@ -147,6 +143,36 @@
   if (clockBits == nil) // No resource for specified language
     {
       [self loadClockbitsForLanguage:@"English.lproj"];
+    }
+
+  // Create images for colon for performance purposes at [self drawRect] method:
+  // [clockBits compositeToPoint:fromRect:operation:] consumes too much CPU.
+  // [colon*Image compositeToPoint:operation:] more efficient.
+  if (clockBits != nil)
+    {
+      NSBitmapImageRep *rep;
+  
+      colonOnImage = [[NSImage alloc] initWithSize:colonRect.size];
+      [colonOnImage lockFocus];
+      [clockBits drawAtPoint:NSMakePoint(0, 0)
+                    fromRect:colonRect
+                   operation:NSCompositeSourceOver
+                    fraction:1.0];
+      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
+      [colonOnImage addRepresentation:rep];
+      [rep release];
+      [colonOnImage unlockFocus];
+  
+      colonOffImage = [[NSImage alloc] initWithSize:colonRect.size];
+      [colonOffImage lockFocus];
+      [clockBits drawAtPoint:NSMakePoint(0, 0)
+                    fromRect:noColonRect
+                   operation:NSCompositeSourceOver
+                    fraction:1.0];
+      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
+      [colonOffImage addRepresentation:rep];
+      [rep release];
+      [colonOffImage unlockFocus];
     }
 }
 
@@ -203,35 +229,22 @@
   NSPoint   elPoint;
   NSInteger ampm_offset;
 
-  // if (date == nil)
-  //   {
-  //     return;
-  //   }
-
-  // Time Colon
-  // rectCenter = ceilf(timeDisplayRect.size.width/2 - colonRect.size.width/2) + timeOffset;
-  // colonDisplayRect = NSMakeRect(rectCenter, timeDisplayRect.origin.y,
-  //                               colonRect.size.width, colonRect.size.height);
-  // if (NSIntersectsRect(r, colonDisplayRect) == YES)
-  //   {
-  // NSLog(@"NXClockView: draw COLON");
-  // if (isAlive)
-  //   {
-  if (isColonVisible)
-    {
-      [colonOnImage compositeToPoint:colonDisplayRect.origin
-                           operation:NSCompositeSourceAtop];
-    }
-  // }
-  else
-    {
-      [colonOffImage compositeToPoint:colonDisplayRect.origin
-                            operation:NSCompositeSourceAtop];
-    }
-    // }
-
   if (dateChanged == NO)
     {
+      if (isAlive)
+        {
+          if (isColonVisible)
+            {
+              [colonOnImage compositeToPoint:colonDisplayRect.origin
+                                   operation:NSCompositeSourceAtop];
+            }
+          else
+            {
+              [colonOffImage compositeToPoint:colonDisplayRect.origin
+                                    operation:NSCompositeSourceAtop];
+            }
+        }
+
       return;
     }
   
@@ -244,18 +257,6 @@
                         operation:NSCompositeSourceAtop];
     }
 
-  if (isColonVisible)
-    {
-      [colonOnImage compositeToPoint:colonDisplayRect.origin
-                           operation:NSCompositeSourceAtop];
-    }
-  else
-    {
-      [colonOffImage compositeToPoint:colonDisplayRect.origin
-                            operation:NSCompositeSourceAtop];
-    }
-
-  
   // --- Date
   
   // Day of week
@@ -352,6 +353,10 @@
                              fromRect:elRect
                             operation:NSCompositeSourceOver];
         }
+
+      // Time Colon
+      [colonOnImage compositeToPoint:colonDisplayRect.origin
+                           operation:NSCompositeSourceAtop];
 
       // Minutes
       hoffset = rectCenter + colonRect.size.width;
@@ -494,6 +499,7 @@
   isAlive = live;
   if (isAlive == YES)
     {
+      dateChanged = YES;
       [self update:nil];
       updateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                                      target:self
@@ -507,6 +513,7 @@
         {
           [updateTimer invalidate];
           isColonVisible = YES;
+          dateChanged = YES;
           [self displayRect:colonDisplayRect];
         }
     }

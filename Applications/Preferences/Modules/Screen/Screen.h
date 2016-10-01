@@ -33,9 +33,11 @@
 
 #import <Preferences.h>
 
+@class ScreenPreferences;
+
 @interface DisplayBox : NSBox
 {
-  id          owner;
+  ScreenPreferences *owner;
   NSRect      displayFrame;
   
   NSTextField *nameField;
