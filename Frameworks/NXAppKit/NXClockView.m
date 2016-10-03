@@ -95,28 +95,6 @@
   return self;
 }
 
-- (id)initWithFrame:(NSRect)frameRect
-          clockBits:(NSImage *)bits
-           tileRect:(NSRect)tileR
-     dowDisplayRect:(NSRect)dowDisplayR
-         mondayRect:(NSRect)mondayR
-     dayDisplayRect:(NSRect)dayDisplayR
-       firstDayRect:(NSRect)firstDayR
-   monthDisplayRect:(NSRect)monthDisplayR
-        januaryRect:(NSRect)januaryR
-    timeDisplayRect:(NSRect)timeDisplayR
-       timeNumRects:(NSRect *)timeNumRs
-          colonRect:(NSRect)colonR
-        noColonRect:(NSRect)noColonR
-             amRect:(NSRect)amR
-             pmRect:(NSRect)pmR
-    yearDisplayRect:(NSRect)yearDisplayR
-       yearNumRects:(NSRect *)yearNumRs
-{
-  return self;
-}
-  
-
 - (void)loadClockbitsForLanguage:(NSString *)languageName
 {
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
