@@ -1,0 +1,23 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "buttonPressed:"
+	);
+	Super = NSObject;
+    };
+    NXAlert = {
+	Actions = (
+	    "buttonPressed:"
+	);
+	Outlets = (
+	    first,
+	    msg,
+	    title,
+	    panel,
+	    second,
+	    third
+	);
+	Super = NSObject;
+    };
+}

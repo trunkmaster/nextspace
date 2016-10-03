@@ -256,7 +256,7 @@
      - перемещать курсор перед следующей цифрой;
      - выделять блок цифр (для целых все, для float перед или после точки);
    - не удалять '.' клавишами Delete и Backspace.
-*** TODO NXClockView
+*** DONE NXClockView
 **** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
 **** DONE Создать тестовый модуль в NXAppKitDemo.
     В этом модуле нужно, чтобы можно было:
@@ -291,16 +291,16 @@
       обновления в -displayRect:. Это нужно запомнить!
 **** DONE Сделать отключаемое мигание точек в часах
      По умолчанию - точки не должны мигать.
-**** TODO Добавить возможность загрузки clockbits снаружи
-     Получается громоздко и некрасиво. Лучше сделать subclass и переписать
-     initWithFrame: и drawRect:
+**** DONE Добавить возможность загрузки clockbits снаружи
+     Получается громоздко и некрасиво. Лучше сделать subclass и override
+     initWithFrame: и drawRect: в этом subclass.
 *** TODO NXAlertPanel
-   Modified NSRunAlertPanel()
+    Modified NSRunAlertPanel()
 *** TODO NXSavePanel, NXOpenPanel
-   Standard panels without icons, dirs-first sorting, without
-   keyboard focus in browser etc.
+    Standard panels without icons, dirs-first sorting, without
+    keyboard focus in browser etc.
 *** TODO NXFindPanel
-   Generic find/replace panel
+    Generic find/replace panel
      - find/replace panel for text (for editors, help panel etc.);
      - find/replace view to incorporate as subview.
 *** Version 2.0
