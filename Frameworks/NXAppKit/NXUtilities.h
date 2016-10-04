@@ -1,5 +1,4 @@
-/** @class NXUtilities
-    @brief The various utility functions wich can't be assigned to some class.
+/** @brief The various utility functions wich can't be assigned to some class.
 
     @author Sergii Stoian
 */
@@ -18,7 +17,14 @@ typedef enum {
   NXWordElement = 2
 } NXElementType;
 
-NSString *
-shortenString(NSString *fullString, CGFloat viewWidth, 
-              NSFont *font, NXElementType elementType, 
-              NXDotsPosition dotsPosition);
+NSString *shortenString(NSString *fullString,
+                        CGFloat viewWidth, 
+                        NSFont *font,
+                        NXElementType elementType, 
+                        NXDotsPosition dotsPosition);
+
+// NSInteger NXRunAlertPanel(NSString *title,
+//                           NSString *msg,
+//                           NSString *defaultButton,
+//                           NSString *alternateButton,
+//                           NSString *otherButton, ...);

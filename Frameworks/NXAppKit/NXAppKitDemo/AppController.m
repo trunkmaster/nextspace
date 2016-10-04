@@ -20,6 +20,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#import <NXAppKit/NXAlert.h>
 #import "AppController.h"
 
 @implementation AppController : NSObject
@@ -33,6 +34,13 @@
   TEST_RELEASE(numericFieldTest);
 
   [super dealloc];
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+  return NXRunAlertPanel(@"Test Alert panel",
+                         @"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.",
+                         @"Default", @"Alternate", @"Other");
 }
 
 //----------------------------------------------------------------------------

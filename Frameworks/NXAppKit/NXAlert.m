@@ -1,7 +1,18 @@
 /*
   Class:               NXAlert
   Inherits from:       NSObject
-  Class descritopn:    Owner of alert panel
+  Class descritopn:    This implementation of alert panel was created
+                       in attempt to mimic the behaviour of OPENSTEP's one.
+                       This behaviour can be described as following:
+                       - panel width is not changing on autosizing;
+                       - panel height is automatically changed but cannot be
+                         more than half of screen (2/4 of screen);
+                       - top edge of panel automatically placed on the center
+                         of topmost 1/4 of screen height;
+                       - panel brings application in front of other applications;
+                       Such hard limits of panel resizing was set up to push
+                       developers make some attention to desing of attantion
+                       panels conforming to "NeXT User Interface Guidelines".
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -20,26 +31,90 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "NXAlert.h"
+#import <NXSystem/NXScreen.h>
+#import "NXAlert.h"
 
 @implementation NXAlert
 
-- (id)init
+- (id)initWithTitle:(NSString *)titleText
+            message:(NSString *)messageText
+      defaultButton:(NSString *)defaultText
+    alternateButton:(NSString *)alternateText
+        otherButton:(NSString *)otherText
 {
-  if (![NSBundle loadNibNamed:@"NXAlert" owner:self])
+  if ([super init] == nil)
     {
-      NSLog(@"Cannot open NXAlert panel model file!\n");
       return nil;
     }
+  
+  if (![NSBundle loadNibNamed:@"NXAlertPanel" owner:self])
+    {
+      NSLog(@"Cannot open NXAlertPanel model file!");
+      return nil;
+    }
+  
+  [titleField setStringValue:titleText];
+  [defaultButton setStringValue:defaultText];
+  [alternateButton setStringValue:alternateText];
+  [otherButton setStringValue:otherText];
 
+  {
+    NSArray *messageLines = [messageText componentsSeparatedByString:@"\n"];
+    CGFloat fieldWidth;
+
+    fieldWidth = [messageField bounds].size.width;
+
+    for (NSString *l in messageLines)
+      {
+        if ([[messageField font] widthOfString:l] > fieldWidth)
+          {
+            // found line wider then message field
+          }
+      }
+  }
+  
+  [messageField setStringValue:messageText];
+  if ([messageText rangeOfString: @"\n"].location != NSNotFound)
+    {
+      [messageField setAlignment:NSLeftTextAlignment];
+    }
+  else
+    {
+      [messageField setAlignment:NSCenterTextAlignment];
+    }
+  
+  // NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
+  // NSPoint panelOrigin;
+
+  // [panel center];
+  // panelOrigin = [panel frame].origin;
+  // panelOrigin.y =
+  //   (screenSize.height - screenSize.height/4) - [panel frame].size.height;
+  // [panel setFrameOrigin:panelOrigin];
+
+  // [panel makeFirstResponder:defaultButton];
+  
   return self;
 }
 
+- (void)awakeFromNib
+{
+}
+
+- (void)sizeToFit
+{
+}
+
+- (NSInteger)runModal
+{
+  return [NSApp runModalForWindow:panel];
+}
+  
 - (void)buttonPressed:(id)sender
 {
   if ([NSApp modalWindow] != panel)
     {
-      NSLog(@"NXAalert panel buttonAction: when not in modal loop\n");
+      NSLog(@"NXAalert panel button pressed when not in modal loop.");
       return;
     }
   
@@ -48,7 +123,7 @@
 
 @end
 
-NSInteger NSRunAlertPanel(NSString *title,
+NSInteger NXRunAlertPanel(NSString *title,
                           NSString *msg,
                           NSString *defaultButton,
                           NSString *alternateButton,
@@ -56,7 +131,7 @@ NSInteger NSRunAlertPanel(NSString *title,
 {
   va_list    ap;
   NSString  *message;
-  NXAlert   *panel;
+  NXAlert   *alrtPanel;
   NSInteger result;
 
   va_start(ap, otherButton);
@@ -69,15 +144,20 @@ NSInteger NSRunAlertPanel(NSString *title,
       NSLog(@"%@", message);
       return NSAlertDefaultReturn;
     }
+  
   if (defaultButton == nil)
     {
       defaultButton = @"OK";
     }
 
-  panel = getSomePanel(&standardAlertPanel, defaultTitle, title, message,
-    defaultButton, alternateButton, otherButton);
-  result = [panel runModal];
-  NSReleaseAlertPanel(panel);
+  alrtPanel = [[NXAlert alloc] initWithTitle:title
+                                     message:message
+                               defaultButton:defaultButton
+                             alternateButton:alternateButton
+                                 otherButton:otherButton];
+
+  result = [alrtPanel runModal];
+  [alrtPanel release];
   
   return result;
 }

@@ -24,19 +24,25 @@
 
 @interface NXAlert : NSObject
 {
-  id first;
-  id msg;
-  id title;
-  id panel;
-  id second;
-  id third;
+  NSPanel     *panel;
+  NSTextField *titleField;
+  NSTextField *messageField;
+  NSButton    *defaultButton;
+  NSButton    *alternateButton;
+  NSButton    *otherButton;
+
+  NSString    *titleString;
+  NSString    *messageString;
+  NSString    *defaultString;
+  NSString    *alternateString;
+  NSString    *otherString;
 }
 
 - (void)buttonPressed:(id)sender;
 
 @end
 
-extern NSInteger NSRunAlertPanel(NSString *title,
+extern NSInteger NXRunAlertPanel(NSString *title,
                                  NSString *msg,
                                  NSString *defaultButton,
                                  NSString *alternateButton,
