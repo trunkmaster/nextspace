@@ -11,12 +11,13 @@
 	    "buttonPressed:"
 	);
 	Outlets = (
-	    first,
-	    msg,
-	    title,
+	    defaultButton,
+	    messageField,
+	    titleField,
 	    panel,
-	    second,
-	    third
+	    alternateButton,
+	    otherButton,
+	    icon
 	);
 	Super = NSObject;
     };

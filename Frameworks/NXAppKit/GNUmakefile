@@ -4,7 +4,7 @@
 GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 include $(GNUSTEP_MAKEFILES)/common.make
 
-SUBPROJECTS = NXAppKitDemo
+#SUBPROJECTS = NXAppKitDemo
 
 FRAMEWORK_NAME = NXAppKit
 VERSION = 0.6
@@ -25,7 +25,8 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXSizer.m \
 	NXSplitView.m \
 	NXNumericField.m \
-	NXUtilities.m
+	NXUtilities.m \
+	NXAlert.m
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXAppKit.h \
@@ -39,11 +40,12 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXSizer.h \
 	NXSplitView.h \
 	NXNumericField.h \
-	NXUtilities.h
+	NXUtilities.h \
+	NXAlert.h
 
 #$(FRAMEWORK_NAME)_RESOURCE_FILES=$(wildcard Images/*)
 
-$(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff
+$(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff NXAlertPanel.gorm
 $(FRAMEWORK_NAME)_LANGUAGES = \
 	English French German Italian Spanish \
 	Ukrainian Russian Dutch Slovak Hungarian
