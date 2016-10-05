@@ -54,25 +54,11 @@
     }
   
   [titleField setStringValue:titleText];
-  [defaultButton setStringValue:defaultText];
-  [alternateButton setStringValue:alternateText];
-  [otherButton setStringValue:otherText];
+  [icon setImage:[NSApp applicationIconImage]];
+  [defaultButton setTitle:defaultText];
+  [alternateButton setTitle:alternateText];
+  [otherButton setTitle:otherText];
 
-  {
-    NSArray *messageLines = [messageText componentsSeparatedByString:@"\n"];
-    CGFloat fieldWidth;
-
-    fieldWidth = [messageField bounds].size.width;
-
-    for (NSString *l in messageLines)
-      {
-        if ([[messageField font] widthOfString:l] > fieldWidth)
-          {
-            // found line wider then message field
-          }
-      }
-  }
-  
   [messageField setStringValue:messageText];
   if ([messageText rangeOfString: @"\n"].location != NSNotFound)
     {
@@ -82,34 +68,82 @@
     {
       [messageField setAlignment:NSCenterTextAlignment];
     }
-  
-  // NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
-  // NSPoint panelOrigin;
 
-  // [panel center];
-  // panelOrigin = [panel frame].origin;
-  // panelOrigin.y =
-  //   (screenSize.height - screenSize.height/4) - [panel frame].size.height;
-  // [panel setFrameOrigin:panelOrigin];
-
-  // [panel makeFirstResponder:defaultButton];
   
   return self;
 }
 
 - (void)awakeFromNib
 {
+  [titleField setRefusesFirstResponder:YES];
+  [messageField setRefusesFirstResponder:YES];
 }
 
 - (void)sizeToFit
 {
+  NSRect panelFrame = [panel frame];
+  // Buttons
+
+  // Message field
+  // NSArray  *messageLines = [[messageField stringValue] componentsSeparatedByString:@"\n"];
+  // NSString *s1, *s2;
+  CGFloat  fieldWidth, textWidth;
+  NSInteger linesNum;
+  NSFont   *font = [messageField font];
+
+  fieldWidth = [messageField bounds].size.width;
+  textWidth = [font widthOfString:[messageField stringValue]];
+  linesNum = (textWidth/fieldWidth);
+
+  if (linesNum > 1)
+    {
+      [messageField setAlignment:NSLeftTextAlignment];
+    }
+  else
+    {
+      [messageField setAlignment:NSCenterTextAlignment];
+    }
+
+  panelFrame.size.height += 17 * (linesNum-1);
+  [panel setFrame:panelFrame display:NO];
+
+  // for (NSString *l in messageLines)
+  //   {
+  //     if ([font widthOfString:l] > fieldWidth)
+  //       {
+  //         while ([font widthOfString:l] > fieldWidth)
+  //           {
+  //             s1 = [l substringWithRange:NSMakeRange(0, [l length]/2)];
+  //             s2 = [l substringWithRange:NSMakeRange([l length]/2, [l length]/2 - 1)];
+  //           }
+  //         // found line wider then message field
+  //       }
+  //   }  
 }
 
 - (NSInteger)runModal
 {
-  return [NSApp runModalForWindow:panel];
-}
+  NSInteger result;
+  NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
+  NSPoint panelOrigin;
   
+  [self sizeToFit];
+  [panel center];
+
+  // Place panel at top half of main display
+  panelOrigin = [panel frame].origin;
+  panelOrigin.y =
+    (screenSize.height - screenSize.height/4) - [panel frame].size.height;
+  [panel setFrameOrigin:panelOrigin];
+  [panel makeFirstResponder:defaultButton];
+  
+  [panel makeKeyAndOrderFront:self];
+  result = [NSApp runModalForWindow:panel];
+  [panel orderOut:self];
+  
+  return result;
+}
+
 - (void)buttonPressed:(id)sender
 {
   if ([NSApp modalWindow] != panel)

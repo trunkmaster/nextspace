@@ -26,6 +26,7 @@
 {
   NSPanel     *panel;
   NSTextField *titleField;
+  NSImageView *icon;
   NSTextField *messageField;
   NSButton    *defaultButton;
   NSButton    *alternateButton;
