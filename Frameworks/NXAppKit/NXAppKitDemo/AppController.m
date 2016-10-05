@@ -38,9 +38,12 @@
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-  return NXRunAlertPanel(@"Test Alert panel",
-                         @"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.",
-                         @"Default", @"Alternate", @"Other");
+  return NXRunAlertPanel(@"Log Out",
+                         @"Do you really want to logout?",
+                         @"Log Out", @"Power Off", @"Cancel");
+  // return NXRunAlertPanel(@"GNU Preamble",
+  //                        @"This program is free software; \nyou can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; \neither version 2 of the License, or (at your option) any later version.",
+  //                        @"Default", @"Alternate", @"Other");
 }
 
 //----------------------------------------------------------------------------
