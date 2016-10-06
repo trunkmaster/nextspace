@@ -90,23 +90,34 @@
   CGFloat  fieldWidth, textWidth;
   NSInteger linesNum;
   NSFont   *font = [messageField font];
-
+  // CGFloat  lineHeight = [font boundingRectForFont].size.height + 2;
+  CGFloat  lineHeight = [font defaultLineHeightForFont] + 1;
+  
   fieldWidth = [messageField bounds].size.width;
   textWidth = [font widthOfString:[messageField stringValue]];
   linesNum = (textWidth/fieldWidth);
 
+  // Set height of panel to the minimum size
+  panelFrame.size.height = 0;
+  [panel setFrame:panelFrame display:NO];
+  panelFrame = [panel frame];
+  
   if (linesNum > 1)
     {
+      NSRect frame = [messageField frame];
+      frame.origin.y -= lineHeight/2;
+      frame.size.height += lineHeight;
+      [messageField setFrame:frame];
       [messageField setAlignment:NSLeftTextAlignment];
+      
+      panelFrame.size.height += (lineHeight * (linesNum - 1));
+      [panel setFrame:panelFrame display:NO];
     }
   else
     {
-      [messageField setAlignment:NSCenterTextAlignment];
+      [messageField setAlignment:NSCenterTextAlignment];      
     }
-
-  panelFrame.size.height += 17 * (linesNum-1);
-  [panel setFrame:panelFrame display:NO];
-
+  
   // for (NSString *l in messageLines)
   //   {
   //     if ([font widthOfString:l] > fieldWidth)
@@ -118,7 +129,12 @@
   //           }
   //         // found line wider then message field
   //       }
-  //   }  
+  //   }
+
+  // Buttons
+  // [defaultButton sizeToFit];
+  // [alternateButton sizeToFit];
+  // [otherButton sizeToFit];
 }
 
 - (NSInteger)runModal
