@@ -1,0 +1,15 @@
+{
+    BrowserViewerColumnWidth = <*R150>;
+    OpenConsoleAtStart = NO;
+    RootShelfContents = {
+	(
+	    <*I1>,
+	    <*I0>
+	) = (
+	    "/"
+	);
+    };
+    RootViewerShelfSize = <*R76>;
+    ShelfIconSlotWidth = <*R100>;
+    ShelfIsResizable = <*I1>;
+}

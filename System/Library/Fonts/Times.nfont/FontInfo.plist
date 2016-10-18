@@ -1,0 +1,32 @@
+{
+    Faces = (
+	{
+	    Files = (
+		times.ttf
+	    );
+	    Name = Roman;
+	    PostScriptName = "Times";
+	},
+	{
+	    Files = (
+		timesbd.ttf
+	    );
+	    Name = Bold;
+	    PostScriptName = "Times-Bold";
+	},
+	{
+	    Files = (
+		timesbi.ttf
+	    );
+	    Name = BoldItalic;
+	    PostScriptName = "Times-BoldItalic";
+	},
+	{
+	    Files = (
+		timesi.ttf
+	    );
+	    Name = Italic;
+	    PostScriptName = "Times-Italic";
+	}
+    );
+}
