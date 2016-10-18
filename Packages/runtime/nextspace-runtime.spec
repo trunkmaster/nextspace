@@ -16,11 +16,11 @@ Source0:	gnustep-make-%{MAKE_VERSION}.tar.gz
 Source1:	gnustep-base-%{BASE_VERSION}.tar.gz
 Source2:	gnustep-gui-%{GUI_VERSION}.tar.gz
 Source3:	gnustep-back-%{BACK_VERSION}.tar.gz
-Patch0:         gnustep-back-ReadRect.m.patch
-Patch1:		gnustep-back-XGServerWindow.m.patch
+Patch0:         gnustep-back-art_ReadRect.m.patch
+Patch1:		gnustep-back-x11_XGServerWindow.m.patch
 Patch2:		gnustep-gui-Model_GNUmakefile.patch
-Patch3:		gnustep-back_art_GNUmakefile.preamble.patch
-Patch4:		gnustep-back_gsc_GNUmakefile.preamble.patch
+Patch3:		gnustep-back-art_GNUmakefile.preamble.patch
+Patch4:		gnustep-back-gsc_GNUmakefile.preamble.patch
 #Provides:	
 #Provides:	
 
