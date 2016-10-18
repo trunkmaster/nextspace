@@ -101,7 +101,7 @@ GNUstep Make and header files for GNUstep libraries.
 %patch2 -p0
 %patch3 -p0
 %patch4 -p0
-
+rm -rf %{buildroot}
 
 %build
 export CC=clang
@@ -122,6 +122,7 @@ make
 cd ..
 
 # Build Foundation (relies on installed gnustep-make)
+source %{buildroot}/Developer/Makefiles/GNUstep.sh
 export LDFLAGS="-L/usr/NextSpace/lib -lobjc -ldispatch"
 cd gnustep-base-%{BASE_VERSION}
 ./configure --disable-mixedabi
@@ -130,6 +131,7 @@ make
 cd ..
 
 export ADDITIONAL_INCLUDE_DIRS="-I%{buildroot}/Developer/Headers"
+export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Build AppKit
 cd gnustep-gui-%{GUI_VERSION}
@@ -142,16 +144,18 @@ cd ..
 # GUI backend
 cd gnustep-back-%{BACK_VERSION}
 export LDFLAGS+=" -lgnustep-gui"
-export PATH+=":%{buildroot}/Library/bin"
 ./configure \
     --enable-server=x11 \
     --enable-graphics=art \
     --with-name=art
 make
-#%{make_install} fonts=no
 
 
 %install
+export GNUSTEP_MAKEFILES=/Developer/Makefiles
+export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
+export QA_SKIP_BUILD_ROOT=1
+
 cd gnustep-make-%{MAKE_VERSION}
 %{make_install}
 cd ..
@@ -165,8 +169,7 @@ cd gnustep-gui-%{GUI_VERSION}
 cd ..
 
 cd gnustep-back-%{BACK_VERSION}
-%{make_install}
-rm -rf %{buildroot}/Library/Fonts
+%{make_install} fonts=no
 cd ..
 
 #%post
@@ -175,12 +178,12 @@ cd ..
 
 #%postun
 
-%files 
-/Library
-/usr/NextSpace
+%files
+/Library/
+/usr/NextSpace/
 
 %files devel
-/Developer
+/Developer/
 
 #%changelog
 #* Oct 7 2016 Sergii Stoian <stoyan255@ukr.net>
