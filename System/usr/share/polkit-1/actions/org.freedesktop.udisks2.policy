@@ -3,7 +3,7 @@
  "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
 <policyconfig>
-  <vendor>The udisks Project</vendor>
+  <vendor>The NextSpace Project</vendor>
   <vendor_url>http://udisks.freedesktop.org/</vendor_url>
   <icon_name>drive-removable-media</icon_name>
 
