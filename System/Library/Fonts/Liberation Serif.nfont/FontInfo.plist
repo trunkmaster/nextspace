@@ -1,0 +1,32 @@
+{
+    Faces = (
+	{
+	    Files = (
+		LiberationSerif-Regular.ttf
+	    );
+	    Name = Regular;
+	    PostScriptName = "Liberation Serif";
+	},
+	{
+	    Files = (
+		LiberationSerif-Bold.ttf
+	    );
+	    Name = Bold;
+	    PostScriptName = "Liberation Serif-Bold";
+	},
+	{
+	    Files = (
+		LiberationSerif-Italic.ttf
+	    );
+	    Name = Italic;
+	    PostScriptName = "Liberation Serif-Italic";
+	},
+	{
+	    Files = (
+		LiberationSerif-BoldItalic.ttf
+	    );
+	    Name = BoldItalic;
+	    PostScriptName = "Liberation Serif-BoldItalic";
+	}
+    );
+}

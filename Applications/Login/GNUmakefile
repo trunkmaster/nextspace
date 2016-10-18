@@ -30,7 +30,8 @@ Preferences
 Login_RESOURCE_FILES = \
 Resources/Login.gorm \
 Resources/GNUstep48x48.tiff \
-Resources/Login.plist \
+Resources/Login \
+Resources/loginwindow.service \
 Preferences/Login.preferences
 
 

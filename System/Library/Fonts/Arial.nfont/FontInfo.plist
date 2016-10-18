@@ -1,0 +1,32 @@
+{
+    Faces = (
+	{
+	    Files = (
+		arial.ttf
+	    );
+	    Name = Medium;
+	    PostScriptName = Arial;
+	},
+	{
+	    Files = (
+		arialbd.ttf
+	    );
+	    Name = Bold;
+	    PostScriptName = Arial-Bold;
+	},
+	{
+	    Files = (
+		arialbi.ttf
+	    );
+	    Name = BoldOblique;
+	    PostScriptName = Arial-BoldOblique;
+	},
+	{
+	    Files = (
+		ariali.ttf
+	    );
+	    Name = Oblique;
+	    PostScriptName = Arial-Oblique;
+	}
+    );
+}
