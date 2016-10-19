@@ -24,10 +24,10 @@ Requires:	libobjc2-devel
 %description devel
 Development files for libdispatch (includes kqueue and pthread_workqueue) 
 and libobjc. Also contains gnustep-make-2.6.7 to build nextspace-runtime and
-develop applications and tools for NextSpace and GNUstep environments.
+develop applications/tools for NextSpace and GNUstep environments.
 
 %prep
-%setup -c -T
+%setup -c
 
 %install
 cd nextspace-core-%{version}
@@ -46,7 +46,6 @@ mkdir %{buildroot}/Users
 /usr/NextSpace/etc/
 /usr/NextSpace/bin/GNUstepServices
 /usr/NextSpace/bin/openapp
-/usr/NextSpace/bin/opentool
 
 %files devel
 /Developer/
