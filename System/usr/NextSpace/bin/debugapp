@@ -1,0 +1,32 @@
+#!/bin/sh
+# debugapp
+#
+# Copyright (C) 2006 Free Software Foundation, Inc.
+#
+# Author: Nicola Pero <nicola.pero@meta-innovation.com>
+# Date: October 2006
+# 
+# This file is part of the GNUstep Makefile Package.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this library; see the file COPYING.
+# If not, write to the Free Software Foundation,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+# debugapp is now a wrapper over 'openapp'.
+
+# To pass control to openapp we use 'source' here, instead of 'exec',
+# because we want the help messages to display 'debugapp' as the
+# application name instead of 'openapp'.
+
+# Set debug mode
+openapp_debug_mode=yes;
+
+# Source openapp
+. openapp
+
