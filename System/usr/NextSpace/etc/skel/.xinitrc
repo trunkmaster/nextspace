@@ -13,7 +13,7 @@ fi
 ##############################################################################
 ### Environment variables
 ##############################################################################
-. /usr/NextSpace/etc/profile > $LOG_FILE  2>&1
+. /etc/profile.d/nextspace.sh > $LOG_FILE  2>&1
 
 ##############################################################################
 ### Xorg settings
@@ -34,14 +34,14 @@ xset r rate 200 40
 ##############################################################################
 # Should be systemd --user controlled services
 printf "Starting GNUstep services:" >> $LOG_FILE  2>&1
-/usr/NextSpace/etc/rc.d/GNUstep start >> $LOG_FILE  2>&1
+/usr/NextSpace/bin/GNUstepServices start >> $LOG_FILE  2>&1
 printf ".\n" >> $LOG_FILE  2>&1
 
 export GNUSTEP_USER_ROOT=$HOME/Library
 /usr/NextSpace/Apps/Workspace.app/Workspace >> $LOG_FILE  2>&1
 
 printf "Stopping GNUstep services:"
-/usr/NextSpace/etc/rc.d/GNUstep stop >> $LOG_FILE  2>&1
+/usr/NextSpace/bin/GNUstepServices stop >> $LOG_FILE  2>&1
 printf ".\n" >> $LOG_FILE  2>&1
 
 #exit 0

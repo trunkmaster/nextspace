@@ -11,8 +11,6 @@ PATH=$PATH:$HOME/.local/bin:$HOME/bin
 
 export PATH
 
-. /usr/NextSpace/etc/profile
-
 clear
 cd ~/
 echo "Welcome to the NeXT world!"

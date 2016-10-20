@@ -1,9 +1,4 @@
 {
-  Description = "Default ProjectCenter code editor (C, ObjectiveC, C++ files)";
-  ProvidesBrowserItems = YES;
-}
-
-{
   // optional
   desc = "Describe bundle for humans";
   // InspectorCommand, PreferencesModule, TextParser, ProjectType, whatever...
