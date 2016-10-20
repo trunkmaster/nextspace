@@ -12,17 +12,22 @@ Summary:        GNUstep libraries.
 Group:          Libraries/NextSpace
 License:        GPLv3
 URL:		http://www.gnustep.org
-Source0:	gnustep-make-%{MAKE_VERSION}.tar.gz
-Source1:	gnustep-base-%{BASE_VERSION}.tar.gz
-Source2:	gnustep-gui-%{GUI_VERSION}.tar.gz
-Source3:	gnustep-back-%{BACK_VERSION}.tar.gz
-Patch0:         gnustep-back-art_ReadRect.m.patch
-Patch1:		gnustep-back-x11_XGServerWindow.m.patch
-Patch2:		gnustep-gui-Model_GNUmakefile.patch
-Patch3:		gnustep-back-art_GNUmakefile.preamble.patch
+#Source0:	gnustep-make-%{MAKE_VERSION}.tar.gz
+Source0:	gnustep-base-%{BASE_VERSION}.tar.gz
+Source1:	gnustep-gui-%{GUI_VERSION}.tar.gz
+Source2:	gnustep-back-%{BACK_VERSION}.tar.gz
+
+Patch0:		gnustep-gui-Model_GNUmakefile.patch
+Patch1:         gnustep-back-art_ReadRect.m.patch
+Patch2:		gnustep-back-art_GNUmakefile.preamble.patch
+Patch3:		gnustep-back-x11_XGServerWindow.m.patch
 Patch4:		gnustep-back-gsc_GNUmakefile.preamble.patch
-#Provides:	
-#Provides:	
+
+Provides:	gnustep-base-%{BASE_VERSION}
+Provides:	gnustep-gui-%{GUI_VERSION}
+Provides:	gnustep-back-%{BACK_VERSION}
+
+BuildRequires:	gnustep-make
 
 # gnustep-base
 BuildRequires:	libffi-devel
@@ -83,19 +88,22 @@ Requires:	libXmu >= 1.1.2
 Requires:	libXt >= 1.1.4
 
 %description
-GNUstep libraries for NextSpace environment.
+GNUstep libraries - implementation of OpenStep (AppKit, Foundation).
 
 %package devel
-Summary: GNUstep Make and header files for GNUstep libraries.
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Summary:	OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
+Requires:	%{name}%{?_isa} = %{version}-%{release}
+Provides:	gnustep-base-devel
+Provides:	gnustep-gui-devel
+Provides:	gnustep-back-devel
 
 %description devel
-GNUstep Make and header files for GNUstep libraries.
+OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 
 #%pre
 
 %prep
-%setup -c -n nextspace-runtime -a 1 -a 2 -a 3
+%setup -c -n nextspace-runtime -a 1 -a 2
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
@@ -109,20 +117,20 @@ export CXX=clang++
 export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
-cd gnustep-make-%{MAKE_VERSION}
-./configure \
-    --with-config-file=/Library/Preferences/GNUstep.conf \
-    --enable-importing-config-file \
-    --enable-native-objc-exceptions \
-    --with-thread-lib=-lpthread \
-    --enable-objc-nonfragile-abi \
-    --enable-debug-by-default
-make
-%{make_install}
-cd ..
+#cd gnustep-make-%{MAKE_VERSION}
+#./configure \
+#    --with-config-file=/Library/Preferences/GNUstep.conf \
+#    --enable-importing-config-file \
+#    --enable-native-objc-exceptions \
+#    --with-thread-lib=-lpthread \
+#    --enable-objc-nonfragile-abi \
+#    --enable-debug-by-default
+#make
+#%{make_install}
+#cd ..
 
-# Build Foundation (relies on installed gnustep-make)
-source %{buildroot}/Developer/Makefiles/GNUstep.sh
+# Build Foundation (relies on gnustep-make included in nextspace-core-devel)
+source /Developer/Makefiles/GNUstep.sh
 export LDFLAGS="-L/usr/NextSpace/lib -lobjc -ldispatch"
 cd gnustep-base-%{BASE_VERSION}
 ./configure --disable-mixedabi
@@ -156,9 +164,9 @@ export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
 
-cd gnustep-make-%{MAKE_VERSION}
-%{make_install}
-cd ..
+#cd gnustep-make-%{MAKE_VERSION}
+#%{make_install}
+#cd ..
 
 cd gnustep-base-%{BASE_VERSION}
 %{make_install}
