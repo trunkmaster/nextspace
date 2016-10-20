@@ -34,7 +34,7 @@
 
 #import <udisks/udisks.h>
 
-#import "NXUDisksDrive.h"
+#import <NXSystem/NXUDisksDrive.h>
 
 @implementation NXUDisksDrive
 

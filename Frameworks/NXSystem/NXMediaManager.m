@@ -2,13 +2,13 @@
 //
 //
 
-#import "NXMediaManager.h"
+#import <NXSystem/NXMediaManager.h>
 
 #ifdef WITH_HAL
-#import "NXHALAdaptor.h"
+#import <NXSystem/NXHALAdaptor.h>
 #endif
 #ifdef WITH_UDISKS
-#import "NXUDisksAdaptor.h"
+#import <NXSystem/NXUDisksAdaptor.h>
 #endif
 
 // Volume events
