@@ -1,0 +1,86 @@
+# This is the GNUstep filesystem layout file.
+
+# override this prefix by using ./configure --prefix=xxx when
+# configuring.
+GNUSTEP_DEFAULT_PREFIX=/
+
+# This is where the gnustep-make Makefiles are installed.
+GNUSTEP_MAKEFILES=/Developer/Makefiles
+
+# This is where the user home directories are.  Only used to provide
+# NSUserDirectory in gnustep-base. Never used anywhere else.
+GNUSTEP_SYSTEM_USERS_DIR=/Users
+GNUSTEP_NETWORK_USERS_DIR=/Network/Users
+GNUSTEP_LOCAL_USERS_DIR=/Users
+
+# SYSTEM domain
+# This is where all NextSpace related file are installed.
+GNUSTEP_SYSTEM_APPS=/usr/NextSpace/Apps
+GNUSTEP_SYSTEM_ADMIN_APPS=/usr/NextSpace/Apps
+GNUSTEP_SYSTEM_WEB_APPS=/usr/NextSpace/WebApps
+GNUSTEP_SYSTEM_TOOLS=/usr/NextSpace/bin
+GNUSTEP_SYSTEM_ADMIN_TOOLS=/usr/NextSpace/sbin
+GNUSTEP_SYSTEM_LIBRARY=/usr/NextSpace
+GNUSTEP_SYSTEM_HEADERS=/usr/NextSpace/include
+GNUSTEP_SYSTEM_LIBRARIES=/usr/NextSpace/lib
+GNUSTEP_SYSTEM_DOC=/usr/NextSpace/Documentation
+GNUSTEP_SYSTEM_DOC_MAN=/usr/NextSpace/Documentation/man
+GNUSTEP_SYSTEM_DOC_INFO=/usr/NextSpace/Documentation/info
+
+# NETWORK domain
+# Until it will be used anywhere we use it as fake DEVELOPER domain.
+# Then we can install developer tools (Gorm, ProjectCenter, etc.) in
+# /Developer/Applications and have assosiated file extensions with tools.
+GNUSTEP_NETWORK_APPS=/Developer/Applications
+GNUSTEP_NETWORK_ADMIN_APPS=/Developer/Applications
+GNUSTEP_NETWORK_WEB_APPS=/Developer/WebApplications
+GNUSTEP_NETWORK_TOOLS=/Developer/bin
+GNUSTEP_NETWORK_ADMIN_TOOLS=/Developer/sbin
+GNUSTEP_NETWORK_LIBRARY=/Developer/Library
+GNUSTEP_NETWORK_HEADERS=/Developer/Headers
+GNUSTEP_NETWORK_LIBRARIES=/Developer/Libraries
+GNUSTEP_NETWORK_DOC=/Developer/Documentation
+GNUSTEP_NETWORK_DOC_MAN=/Developer/Documentation/man
+GNUSTEP_NETWORK_DOC_INFO=/Developer/Documentation/info
+
+# LOCAL domain
+# This is where GNUstep libraries and resources.
+# User visible NextSpace's applications also installed here.
+GNUSTEP_LOCAL_APPS=/Applications
+GNUSTEP_LOCAL_ADMIN_APPS=/Applications/Utilities
+GNUSTEP_LOCAL_WEB_APPS=/Library/WebApplications
+GNUSTEP_LOCAL_TOOLS=/Library/bin
+GNUSTEP_LOCAL_ADMIN_TOOLS=/Library/sbin
+GNUSTEP_LOCAL_LIBRARY=/Library
+GNUSTEP_LOCAL_HEADERS=/Developer/Headers
+GNUSTEP_LOCAL_LIBRARIES=/Library/Libraries
+GNUSTEP_LOCAL_DOC=/Library/Documentation
+GNUSTEP_LOCAL_DOC_MAN=/Library/Documentation/man
+GNUSTEP_LOCAL_DOC_INFO=/Library/Documentation/info
+
+# USER domain
+# Important: settings in the User should normally be relative paths,
+# and will be interpreted as relative to the user's directory.  This
+# allows each user to have their own domain to install things.  You
+# can set them to be absolute, mostly if you want to disable them
+# by setting them equal to the ones in the Network domain.
+GNUSTEP_USER_DIR_APPS=Applications
+GNUSTEP_USER_DIR_ADMIN_APPS=Applications/Utilities
+GNUSTEP_USER_DIR_WEB_APPS=Library/WebApplications
+GNUSTEP_USER_DIR_TOOLS=bin
+GNUSTEP_USER_DIR_ADMIN_TOOLS=sbin
+GNUSTEP_USER_DIR_LIBRARY=Library
+GNUSTEP_USER_DIR_HEADERS=Library/Headers
+GNUSTEP_USER_DIR_LIBRARIES=Library/Libraries
+GNUSTEP_USER_DIR_DOC=Library/Documentation
+GNUSTEP_USER_DIR_DOC_MAN=Library/Documentation/man
+GNUSTEP_USER_DIR_DOC_INFO=Library/Documentation/info
+# The name of the user config file.  This file can override
+# some settings in this file.  Usually used by users that want
+# to install things into their GNUstep user domain and/or have
+# many such domains.
+GNUSTEP_USER_CONFIG_FILE=Library/Preferences/GNUstep.conf
+# The name of the user directory where defaults (eg, preferences) are
+# stored.  If it does not start with a '/', it will be considered
+# relative to the user home directory.
+GNUSTEP_USER_DEFAULTS_DIR=Library/Preferences

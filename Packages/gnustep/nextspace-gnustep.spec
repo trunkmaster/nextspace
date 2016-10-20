@@ -4,7 +4,7 @@
 %define GUI_VERSION	0.24.1
 %define BACK_VERSION	0.24.1
 
-Name:           nextspace-runtime
+Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
 Release:        0%{?dist}
 Summary:        GNUstep libraries.
@@ -16,6 +16,10 @@ URL:		http://www.gnustep.org
 Source0:	gnustep-base-%{BASE_VERSION}.tar.gz
 Source1:	gnustep-gui-%{GUI_VERSION}.tar.gz
 Source2:	gnustep-back-%{BACK_VERSION}.tar.gz
+Source3:	gdomap.interfaces
+Source4:	gdomap.service
+Source5:	gdnc.service
+Source6:	gpbs.service
 
 Patch0:		gnustep-gui-Model_GNUmakefile.patch
 Patch1:         gnustep-back-art_ReadRect.m.patch
@@ -99,8 +103,7 @@ Provides:	gnustep-back-devel
 
 %description devel
 OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
-
-#%pre
+GNUstep Make installed with nextspace-core-devel package.
 
 %prep
 %setup -c -n nextspace-runtime -a 1 -a 2
@@ -111,6 +114,9 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 %patch4 -p0
 rm -rf %{buildroot}
 
+#
+# Build phase
+#
 %build
 export CC=clang
 export CXX=clang++
@@ -129,7 +135,7 @@ export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 #%{make_install}
 #cd ..
 
-# Build Foundation (relies on gnustep-make included in nextspace-core-devel)
+# Foundation (relies on gnustep-make included in nextspace-core-devel)
 source /Developer/Makefiles/GNUstep.sh
 export LDFLAGS="-L/usr/NextSpace/lib -lobjc -ldispatch"
 cd gnustep-base-%{BASE_VERSION}
@@ -141,7 +147,7 @@ cd ..
 export ADDITIONAL_INCLUDE_DIRS="-I%{buildroot}/Developer/Headers"
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
-# Build AppKit
+# Application Kit
 cd gnustep-gui-%{GUI_VERSION}
 export LDFLAGS+=" -L%{buildroot}/Library/Libraries -lgnustep-base"
 ./configure
@@ -149,7 +155,7 @@ make
 %{make_install}
 cd ..
 
-# GUI backend
+# Build ART GUI backend
 cd gnustep-back-%{BACK_VERSION}
 export LDFLAGS+=" -lgnustep-gui"
 ./configure \
@@ -158,7 +164,9 @@ export LDFLAGS+=" -lgnustep-gui"
     --with-name=art
 make
 
-
+#
+# Build install phase
+#
 %install
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
@@ -180,12 +188,16 @@ cd gnustep-back-%{BACK_VERSION}
 %{make_install} fonts=no
 cd ..
 
-#%post
+# systemd service files and config of gdomap
+mkdir -p %{buildroot}/usr/NextSpace/etc
+cp %{_sourcedir}/gdomap.interfaces %{buildroot}/usr/NextSpace/etc/
+mkdir -p %{buildroot}/usr/NextSpace/lib/systemd
+cp %{_sourcedir}/*.service %{buildroot}/usr/NextSpace/lib/systemd
 
-#%preun
 
-#%postun
-
+#
+# Files
+#
 %files
 /Library/
 /usr/NextSpace/
@@ -193,7 +205,27 @@ cd ..
 %files devel
 /Developer/
 
-#%changelog
-#* Oct 7 2016 Sergii Stoian <stoyan255@ukr.net>
-#- Initial spec for CentOS 7.
+#
+# Package install
+#
+#%pre
+
+%post
+systemctl enable /usr/NextSpace/lib/systemd/gdomap.service
+systemctl enable /usr/NextSpace/lib/systemd/gdnc.service
+systemctl enable /usr/NextSpace/lib/systemd/gpbs.service
+
+%preun
+systemctl disable /usr/NextSpace/lib/systemd/gdomap.service
+systemctl disable /usr/NextSpace/lib/systemd/gdnc.service
+systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
+
+#%postun
+systemctl disable /usr/NextSpace/lib/systemd/gdomap.service
+systemctl disable /usr/NextSpace/lib/systemd/gdnc.service
+systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
+
+%changelog
+* Thu Oct 20 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-0
+- Initial spec for CentOS 7.
 
