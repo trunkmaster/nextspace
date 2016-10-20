@@ -34,7 +34,7 @@
 
 #import <udisks/udisks.h>
 
-#import "NXUDisksVolume.h"
+#import <NXSystem/NXUDisksVolume.h>
 
 @implementation NXUDisksVolume
 

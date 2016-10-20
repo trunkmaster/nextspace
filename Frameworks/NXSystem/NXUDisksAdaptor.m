@@ -33,9 +33,9 @@
 #ifdef WITH_UDISKS
 
 #import <NXFoundation/NXFileManager.h>
-#import "NXUDisksAdaptor.h"
-#import "NXUDisksDrive.h"
-#import "NXUDisksVolume.h"
+#import <NXSystem/NXUDisksAdaptor.h>
+#import <NXSystem/NXUDisksDrive.h>
+#import <NXSystem/NXUDisksVolume.h>
 
 static NSNotificationCenter *notificationCenter;
 
@@ -606,7 +606,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
   NSString            *objectType;
   NXUDisksDrive       *drive;
   NXUDisksVolume      *volume;
-  NSMutableDictionary *info;
+  NSDictionary        *info;
   NSString            *message = nil;
   
   objectType = [pathComponents objectAtIndex:[pathComponents count] - 2];
