@@ -100,7 +100,7 @@ NSLock              *monitorLock = nil;
   int          i, count, link_count;
   NSNumber     *pathFD;
 
-  NSMutableDictionary *pathDict;
+  NSDictionary *pathDict;
 
   // Sanity checks
   if (in_fd < 0)

@@ -32,7 +32,7 @@ Requires:	nextspace-gnustep
 # NXFoundation
 Requires:	file-libs >= 5.11
 # NXSystem
-Requires:	udisks2 
+#Requires:	udisks2 
 Requires:	libudisks2 >= 2.1.2
 Requires:	dbus-libs >= 1.6.12
 Requires:	upower >= 0.99.2
@@ -62,20 +62,20 @@ export CXX=clang++
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":/usr/NextSpace/bin"
 
-cd NXSystem-%{SYSTEM_VERSION}
-make
-cd ..
+export ADDITIONAL_INCLUDE_DIRS="-I../NXFoundation-%{FOUNDATION_VERSION}/derived_src -I../NXSystem-%{SYSTEM_VERSION}/derived_src"
 
 cd NXFoundation-%{FOUNDATION_VERSION}
 make
 cd ..
 
-cd NXAppKit-%{APPKIT_VERSION}
-export ADDITIONAL_INCLUDE_DIRS="-I../"
-export LDFLAGS="-L../NXFoundation/NXFoundation.framework -lNXFoundation"
-make messages=yes
+cd NXSystem-%{SYSTEM_VERSION}
+make
 cd ..
 
+cd NXAppKit-%{APPKIT_VERSION}
+export LDFLAGS="-L../NXFoundation-%{FOUNDATION_VERSION}/NXFoundation.framework -lNXFoundation"
+make
+cd ..
 
 #
 # Build install phase
@@ -84,15 +84,15 @@ cd ..
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export QA_SKIP_BUILD_ROOT=1
 
-cd NXSystem
+cd NXSystem-%{SYSTEM_VERSION}
 %{make_install}
 cd ..
 
-cd NXFoundation
+cd NXFoundation-%{FOUNDATION_VERSION}
 %{make_install}
 cd ..
 
-cd NXAppKit
+cd NXAppKit-%{APPKIT_VERSION}
 %{make_install}
 cd ..
 
@@ -112,8 +112,8 @@ cd ..
 #%pre
 
 %post
-ln -s /usr/NextSpace/Frameworks/NXAppKit/Resources/Images /usr/NextSpace/Images
-ln -s /usr/NextSpace/Frameworks/NXAppKit/Resources/Fonts /Library/Fonts
+ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Images /usr/NextSpace/Images
+ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Fonts /Library/Fonts
 
 #%preun
 
