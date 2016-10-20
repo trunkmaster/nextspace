@@ -102,6 +102,29 @@
 *** TODO Networking
 
 
+** Packages
+   - llvm-3.8.0
+   - clang-3.8.0
+   - libdispatch-1.3
+   - libobjc2-1.8.2
+   - nextspace-core:
+     - gnustep-make (/Developer, openapp, gnustep-config)
+     - /etc: X11/Xresources, ld.so.conf.d, profile.d, udev
+     - /usr/NextSpace/etc/skel
+     - /usr/NextSpace/bin/GNUstepServices
+   - nextspace-runtime: 
+     - gnustep-base
+     - gnustep-gui
+     - gnustep-back
+     - /usr/NextSpace/lib/systemd/gdomap.service
+     - /usr/NextSpace/lib/systemd/gdnc.service
+     - /usr/NextSpace/lib/systemd/gpbs.service
+     - /usr/NextSpace/etc/gdomap.interfaces
+   - nextspace-frameworks:
+     - NXSystem: org.freedesktop.udisks2.policy
+     - NXFoundation
+     - NXAppKit: /usr/NextSpace/Images, /usr/NextSpace/Fonts
+
 * Linux - CentOS 7
 
 ** Изменения, которые я внес

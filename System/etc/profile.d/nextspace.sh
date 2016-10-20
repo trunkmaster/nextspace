@@ -1,10 +1,7 @@
-# GNUstep additions to /etc/profile: system-wide .profile file for 
-# the Bourne shell (sh(1)) and Bourne compatible shells (bash(1), 
-# ksh(1), ash(1), ...).
+# NextSpace additions to /etc/profile
 
 NS_PATH="/usr/NextSpace/bin:/Library/bin:/usr/NextSpace/sbin:/Library/sbin"
-SYS_PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:$HOME/bin"
-export PATH=$NS_PATH:$SYS_PATH
+export PATH=$NS_PATH:$PATH
 
 export MANPATH=:/Library/Documentation/man:/usr/NextSpace/Documentation/man
 
@@ -16,7 +13,7 @@ export MANPATH=:/Library/Documentation/man:/usr/NextSpace/Documentation/man
 #export LANGUAGES="English"
 
 # Instead of calling /Developer/Makefiles/GNUstep.sh set vars manually
-export GNUSTEP_MAKEFILES="/Developer/Makefiles"
+#export GNUSTEP_MAKEFILES="/Developer/Makefiles"
 # Only user home lib dir here. Others in /etc/ld.so.conf.d/nextspace.conf
 export LD_LIBRARY_PATH="$HOME/Library/Libraries"
 export GNUSTEP_PATHLIST="$HOME:/:/usr/NextSpace:/Network"
@@ -27,11 +24,3 @@ export COLUMNS
 export LC_CTYPE="en_US.UTF-8"
 
 export NS_SYSTEM="/usr/NextSpace"
-
-################# User specific environment and startup programs
-
-### Terminals
-#if [ "$TERM_PROGRAM" = "GNUstep_Terminal" ]; then
-#  export COLUMNS
-#    setterm -foreground black -background white -clear -store
-#fi

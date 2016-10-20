@@ -13,8 +13,6 @@ bindkey -e
 ###compinit
 # End of lines added by compinstall
 
-. /usr/NextSpace/etc/profile
-
 clear
 cd ~/
 echo "Welcome to the NeXT world!"
