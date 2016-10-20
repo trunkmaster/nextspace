@@ -55,11 +55,15 @@ BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libtiff-devel
+BuildRequires:	libao-devel
+BuildRequires:	libsndfile-devel
 #
 Requires:	giflib >= 4.1.6
 Requires:	libjpeg-turbo >= 1.2.90
 Requires:	libpng >= 1.5.13
 Requires:	libtiff >= 4.0.3
+Requires:	libao
+Requires:	libsndfile
 
 ## /Library/Bundles/GSPrinting/GSCUPS.bundle
 BuildRequires:	cups-devel
@@ -86,7 +90,7 @@ Requires:	freetype
 Requires:	mesa-libGL >= 10.6.5
 Requires:	libX11 >= 1.6.3
 Requires:	libXcursor >= 1.1.14
-Requires:	libXex >= 1.3.3
+Requires:	libXext >= 1.3.3
 Requires:	libXfixes >= 5.0.1
 Requires:	libXmu >= 1.1.2
 Requires:	libXt >= 1.1.4
@@ -106,7 +110,7 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-runtime -a 1 -a 2
+%setup -c -n nextspace-gnustep -a 1 -a 2
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
