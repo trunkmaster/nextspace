@@ -10,7 +10,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 #
 # Application
 #
-VERSION = 0.1
+VERSION = 0.5
 PACKAGE_NAME = Preferences
 APP_NAME = Preferences
 $(APP_NAME)_APPLICATION_ICON = Mask.tiff
