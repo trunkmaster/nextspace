@@ -72,7 +72,7 @@ mkdir %{buildroot}/Users
 /Library
 /Users
 /etc
-/usr/lib
+/usr/lib/systemd/logind.conf.d/lidswitch.conf
 /usr/NextSpace/Documentation/man/man1/open*.gz
 /usr/NextSpace/etc/
 /usr/NextSpace/bin/GNUstepServices
