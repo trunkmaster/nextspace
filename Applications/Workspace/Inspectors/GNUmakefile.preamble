@@ -12,7 +12,7 @@ ADDITIONAL_OBJCFLAGS += -Wno-import -Wno-unused -pipe
 ADDITIONAL_CFLAGS +=
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += -ldispatch -lkqueue -lpthread_workqueue
+ADDITIONAL_LDFLAGS += -ldispatch
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I../ -I../Operations

@@ -281,6 +281,7 @@
      - выделять блок цифр (для целых все, для float перед или после точки);
    - не удалять '.' клавишами Delete и Backspace.
 *** DONE NXClockView
+**** TODO При пустом NSLanguages Attributes Inspector падает
 **** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
 **** DONE Создать тестовый модуль в NXAppKitDemo.
     В этом модуле нужно, чтобы можно было:

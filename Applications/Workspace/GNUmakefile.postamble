@@ -21,23 +21,22 @@
 #   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 APP_WRAPPER = Workspace.app
-APP_WRAPPER_INSTALLED = $(GNUSTEP_SYSTEM_APPS)/$(APP_WRAPPER)
+APP_WRAPPER_INSTALLED = $(DESTDIR)/$(GNUSTEP_SYSTEM_APPS)/$(APP_WRAPPER)
 SHARED = obj
 
 before-all::
 ifneq ($(windowmaker), no)
-	@ mkdir -p $(APP_WRAPPER_INSTALLED)
 	@ echo "Making WindowMaker external components ... "
 	@ echo " Building raster graphics library in WM/wrlib ... "
-	@ cd WM/wrlib; make > /dev/null 2>&1
+	@ cd WM/wrlib; make
 	@ echo " Building WINGs library in WM/WINGs ... "
-	@ cd WM/WINGs; make > /dev/null 2>&1
+	@ cd WM/WINGs; make
 	@ echo " Building utilities in WM/util ..."
-	@ cd WM/util; make > /dev/null 2>&1
+	@ cd WM/util; make
 	@ echo " Preparing data in WM/WindowMaker ..."
-	@ cd WM/WindowMaker; make > /dev/null 2>&1
+	@ cd WM/WindowMaker; make
 	@ echo " Building documentation in WM/doc..."
-	@ cd WM/doc; make > /dev/null 2>&1
+	@ cd WM/doc; make
 endif
 
 after-all::
@@ -64,23 +63,28 @@ ifneq ($(windowmaker), no)
 	@ cd WM/util; make clean > /dev/null 2>&1
 endif
 
+before-install::
+ifneq ($(windowmaker), no)
+	@ mkdir -p $(APP_WRAPPER_INSTALLED)
+endif
+
 after-install::
 	@ echo " Copying header files into $(GNUSTEP_SYSTEM_HEADERS)/apps ..."
-	@ mkdir -p $(GNUSTEP_SYSTEM_HEADERS)/apps
-	@ cp Workspace.h $(GNUSTEP_SYSTEM_HEADERS)/apps
+	@ mkdir -p $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
+	@ cp Workspace.h $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
 ifneq ($(windowmaker), no)
 	@ echo "===> Installing WindowMaker resources ..."
-	@ cd WM/wrlib; make install > /dev/null 2>&1
-	@ cd WM/WINGs; make install > /dev/null 2>&1
-	@ cd WM/WindowMaker; make install > /dev/null 2>&1
+	@ cd WM/wrlib; make install DESTDIR=$(DESTDIR)
+	@ cd WM/WINGs; make install DESTDIR=$(DESTDIR)
+	@ cd WM/WindowMaker; make install DESTDIR=$(DESTDIR)
 # Rewrite some files
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f ../../usr_NextSpace/etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cd WM/doc; make install > /dev/null 2>&1
-	@ cd WM/util; make install > /dev/null 2>&1
+	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cd WM/doc; make install DESTDIR=$(DESTDIR)
+	@ cd WM/util; make install DESTDIR=$(DESTDIR)
 endif
 
 after-uninstall::
