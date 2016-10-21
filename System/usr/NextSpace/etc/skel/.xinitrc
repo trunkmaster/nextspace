@@ -1,19 +1,9 @@
 #!/bin/sh
 
 ##############################################################################
-### Prepare log file location
-##############################################################################
-GS_SECURE="/tmp/GNUstepSecure`id -u`/"
-LOG_FILE="$GS_SECURE/console.log"
-
-if [ ! -d $GS_SECURE ];then
-  mkdir $GS_SECURE
-fi
-
-##############################################################################
 ### Environment variables
 ##############################################################################
-. /etc/profile.d/nextspace.sh > $LOG_FILE  2>&1
+. /etc/profile.d/nextspace.sh
 
 ##############################################################################
 ### Xorg settings
@@ -31,17 +21,18 @@ xset r rate 200 40
 
 ##############################################################################
 ### Session
+### $LOGFILE, $NS_SYSTEM is defined in /etc/profile.d/nextspace.sh
 ##############################################################################
 # Should be systemd --user controlled services
-printf "Starting GNUstep services:" >> $LOG_FILE  2>&1
-/usr/NextSpace/bin/GNUstepServices start >> $LOG_FILE  2>&1
-printf ".\n" >> $LOG_FILE  2>&1
+printf "Starting GNUstep services:" >> $LOGFILE  2>&1
+$NS_SYSTEM/bin/GNUstepServices start >> $LOGFILE  2>&1
+printf ".\n" >> $LOGFILE  2>&1
 
 export GNUSTEP_USER_ROOT=$HOME/Library
-/usr/NextSpace/Apps/Workspace.app/Workspace >> $LOG_FILE  2>&1
+$NS_SYSTEM/Apps/Workspace.app/Workspace >> $LOGFILE  2>&1
 
 printf "Stopping GNUstep services:"
-/usr/NextSpace/bin/GNUstepServices stop >> $LOG_FILE  2>&1
-printf ".\n" >> $LOG_FILE  2>&1
+$NS_SYSTEM/bin/GNUstepServices stop >> $LOGFILE  2>&1
+printf ".\n" >> $LOGFILE  2>&1
 
 #exit 0
