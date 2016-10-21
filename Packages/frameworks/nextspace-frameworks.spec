@@ -73,7 +73,7 @@ make
 cd ..
 
 cd NXAppKit-%{APPKIT_VERSION}
-export LDFLAGS="-L../NXFoundation-%{FOUNDATION_VERSION}/NXFoundation.framework -lNXFoundation"
+#export LDFLAGS="-L../NXFoundation-%{FOUNDATION_VERSION}/NXFoundation.framework -lNXFoundation"
 make
 cd ..
 

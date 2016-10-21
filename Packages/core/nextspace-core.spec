@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.8
-Release:	4%{?dist}
+Release:	5%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -14,6 +14,7 @@ BuildRequires:  libobjc2-devel
 
 Requires:	libdispatch >= 1.3
 Requires:	libobjc2 >= 1.8.2
+Requires:	zsh
 
 %description
 Includes several components:
@@ -21,7 +22,7 @@ Includes several components:
   /usr/NextSpace/Documentation, /usr/NextSpace/bin);
 - OS configuration files (/etc: X11 font display config, paths for linker,
   user shell profile, udev rule to mount removable media under /media, 
-  /usr/NextSpace/etc/skel: user home dir skeleton);
+  /etc/skel: user home dir skeleton, tuned and logind settings);
 - GNUstep helper script: /usr/NextSpace/bin/GNUstepServices.
 
 %package devel
@@ -59,19 +60,19 @@ cd ..
 
 %install
 cd gnustep-make-%{MAKE_VERSION}
-%{make_install} GNUSTEP_INSTALLATION_DOMAIN=NETWORK
+%{make_install}
 rm %{buildroot}/usr/NextSpace/bin/opentool
 cd ..
 
 cd nextspace-core-%{version}
 cp -vr ./* %{buildroot}
 mkdir %{buildroot}/Users
-rm -r %{buildroot}/usr/share
 
 %files 
 /Library
 /Users
 /etc
+/usr/lib
 /usr/NextSpace/Documentation/man/man1/open*.gz
 /usr/NextSpace/etc/
 /usr/NextSpace/bin/GNUstepServices
@@ -87,6 +88,14 @@ rm -r %{buildroot}/usr/share
 /usr/NextSpace/Documentation/man/man7/GNUstep*.gz
 /usr/NextSpace/Documentation/man/man7/library-combo*
 
+%post
+useradd -D -b /Users -s /bin/zsh
+tuned-adm profile desktop
+
+%preun
+useradd -D -b /home -s /bin/bash
+tuned-adm profile balanced
+
 %changelog
-* Wed Oct 19 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-1
+* Wed Oct 19 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-5
 - Initial spec.
