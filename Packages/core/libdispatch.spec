@@ -5,7 +5,14 @@ Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
 URL:		http://swift.org
 Source0:	libdispatch-1.3.tgz
+# Getting libdispatch sources:
+# git clone https://github.com/apple/swift-corelibs-libdispatch libdispatch-1.3
+# cd libdispatch-1.3
+# git submodule init
+# git submodule update
 #Source1:	https://github.com/apple/swift-corelibs-libdispatch/archive/master.zip
+Patch0:		libdispatch-dispatch.h.patch
+Patch1:		libdispatch-bsdtests.c.patch
 
 BuildRequires:	autoconf
 BuildRequires:	libtool
@@ -50,6 +57,9 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 
 %prep
 %setup -q
+cd %{_builddir}
+%patch0 -p0
+%patch1 -p0
 
 %build
 #cd libdispatch-%{version}
