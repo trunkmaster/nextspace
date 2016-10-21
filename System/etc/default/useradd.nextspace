@@ -1,9 +1,0 @@
-# useradd defaults file
-GROUP=100
-HOME=/Users
-INACTIVE=-1
-EXPIRE=
-SHELL=/bin/bash
-SKEL=/usr/NextSpace/etc/skel
-CREATE_MAIL_SPOOL=yes
-
