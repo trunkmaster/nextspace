@@ -1,33 +1,20 @@
 #!/bin/sh
 #
-# Copyright (c) 2004-2009 Sergii Stoian
+# Script to start/stop user level GNUstep services
+# This script usually called when user session starts (e.g. .xinitrc)
+#
+# $UID, $USER, $LOGFILE is defined in /etc/profile.d/nextspace.sh
+#
+# Copyright (c) 2004-2016 Sergii Stoian
 #
 
-# PROVIDE: GNUstep
-# REQUIRE: NETWORK
-# BEFORE: LOGIN
-# KEYWORD:
-
-test -f /Developer/Makefiles/GNUstep.sh || exit 0
-. /Developer/Makefiles/GNUstep.sh
-. /usr/NextSpace/etc/profile
-
-ID=`/usr/bin/id -u`
-USER=`whoami`
-
-# Log file
-GS_SECURE="/tmp/GNUstepSecure"$ID
-LOGFILE="$GS_SECURE/console.log"
-if [ ! -d $GS_SECURE ];then
-    mkdir $GS_SECURE
-    chmod 700 $GS_SECURE
-fi
+. /etc/profile.d/nextspace.sh
 
 case "$1" in
 
 start)
 	printf "Starting GNUstep services:"
-	if [ "$ID" = "0" ];
+	if [ "$UID" = "0" ];
 	then
 	    gdomap -p > $LOGFILE 2>&1 &
 	    printf " gdomap"
@@ -40,13 +27,13 @@ start)
 	;;  
 stop)
 	printf "Stopping GNUstep services:"
-	killall -u me -9 gpbs
+	pkill -U $USER -9 gpbs
 	printf " gpbs"
-	killall -u me -9 gdnc
+	pkill -U $USER -9 gdnc
 	printf " gdnc"
-	if [ "$ID" = "0" ];
+	if [ "$UID" = "0" ];
 	then
-	    killall -9 gdomap
+	    pkill -9 gdomap
 	    printf " gdomap"
 	fi
 	printf ".\n"

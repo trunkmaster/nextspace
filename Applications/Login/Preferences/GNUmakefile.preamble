@@ -8,7 +8,7 @@ ADDITIONAL_OBJCFLAGS +=
 ADDITIONAL_CFLAGS +=
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -I$(GNUSTEP_SYSTEM_HEADERS)/apps
+ADDITIONAL_INCLUDE_DIRS += -I../../Preferences
 
 # Additional LDFLAGS to pass to the linker
 ADDITIONAL_LDFLAGS += 

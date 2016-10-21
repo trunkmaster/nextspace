@@ -14,8 +14,8 @@
 # Things to do after installing
 after-install::
 	@ echo " Copying header files into $(GNUSTEP_SYSTEM_HEADERS)/apps ..."
-	@ mkdir -p $(GNUSTEP_SYSTEM_HEADERS)/apps
-	@ cp Preferences.h $(GNUSTEP_SYSTEM_HEADERS)/apps
+	@ mkdir -p $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
+	@ cp Preferences.h $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
 
 # Things to do before uninstalling
 # before-uninstall::
@@ -23,7 +23,7 @@ after-install::
 # Things to do after uninstalling
 after-uninstall::
 	@ echo " Removing header files from $(GNUSTEP_SYSTEM_HEADERS)/apps ..."
-	@ rm $(GNUSTEP_SYSTEM_HEADERS)/apps/Preferences.h
+	@ rm $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps/Preferences.h
 
 # Things to do before cleaning
 # before-clean::
