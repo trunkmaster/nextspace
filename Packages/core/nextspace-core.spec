@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.8
-Release:	1%{?dist}
+Release:	4%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -66,6 +66,7 @@ cd ..
 cd nextspace-core-%{version}
 cp -vr ./* %{buildroot}
 mkdir %{buildroot}/Users
+rm -r %{buildroot}/usr/share
 
 %files 
 /Library
