@@ -12,8 +12,11 @@ export MANPATH=:/Library/Documentation/man:/usr/NextSpace/Documentation/man
 ### LANGUAGES moved into NSLanguages in NSGlobalDomain preferences
 #export LANGUAGES="English"
 
-# Instead of calling /Developer/Makefiles/GNUstep.sh set vars manually
-#export GNUSTEP_MAKEFILES="/Developer/Makefiles"
+# If development package was installed set Gnustep developer variable
+if [ -d /Developer/Makefiles ];then
+    export GNUSTEP_MAKEFILES="/Developer/Makefiles"
+fi
+
 # Only user home lib dir here. Others in /etc/ld.so.conf.d/nextspace.conf
 export LD_LIBRARY_PATH="$HOME/Library/Libraries"
 export GNUSTEP_PATHLIST="$HOME:/:/usr/NextSpace:/Network"
@@ -24,3 +27,13 @@ export COLUMNS
 export LC_CTYPE="en_US.UTF-8"
 
 export NS_SYSTEM="/usr/NextSpace"
+
+# Log file
+export USER=`whoami`
+GS_SECURE="/tmp/GNUstepSecure"$UID
+export LOGFILE="$GS_SECURE/console.log"
+if [ ! -d $GS_SECURE ];then
+    mkdir $GS_SECURE
+    chmod 700 $GS_SECURE
+fi
+        
