@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.8
-Release:	5%{?dist}
+Release:	6%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -71,7 +71,13 @@ mkdir %{buildroot}/Users
 %files 
 /Library
 /Users
-/etc
+/etc/ld.so.conf.d
+/etc/profile.d
+/etc/skel
+/etc/tuned
+/etc/udev
+/etc/X11
+/etc/polkit-1/rules.d/10-udisks2.rules
 /usr/lib/systemd/logind.conf.d/lidswitch.conf
 /usr/NextSpace/Documentation/man/man1/open*.gz
 /usr/NextSpace/etc/
