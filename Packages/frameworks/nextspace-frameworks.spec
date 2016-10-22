@@ -5,7 +5,7 @@
 
 Name:           nextspace-frameworks
 Version:        0.4
-Release:        0%{?dist}
+Release:        2%{?dist}
 Summary:        NextSpace core libraries.
 
 Group:          Libraries/NextSpace
@@ -32,7 +32,7 @@ Requires:	nextspace-gnustep
 # NXFoundation
 Requires:	file-libs >= 5.11
 # NXSystem
-#Requires:	udisks2 
+Requires:	udisks2
 Requires:	libudisks2 >= 2.1.2
 Requires:	dbus-libs >= 1.6.12
 Requires:	upower >= 0.99.2

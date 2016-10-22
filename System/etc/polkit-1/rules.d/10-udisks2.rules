@@ -1,0 +1,50 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.udisks2.filesystem-mount") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.filesystem-mount-other-seat")
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.ata-smart-update")
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.loop-setup") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.loop-delete-others") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.power-off-drive") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.power-off-drive-other-seat")
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.eject-media") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.eject-media-other-seat") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.ata-secure-erase") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.rescan") 
+    {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.udisks2.cancel-job") 
+    {
+        return "yes";
+    }
+});
