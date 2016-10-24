@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.8
-Release:	6%{?dist}
+Release:	7%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -18,7 +18,7 @@ Requires:	zsh
 
 %description
 Includes several components:
-- gnustep-make-2.6.7 (/Developer, /Library/Preferences/GNUstep.conf, 
+- gnustep-make-2.6.8 (/Developer, /Library/Preferences/GNUstep.conf, 
   /usr/NextSpace/Documentation, /usr/NextSpace/bin);
 - OS configuration files (/etc: X11 font display config, paths for linker,
   user shell profile, udev rule to mount removable media under /media, 
@@ -52,7 +52,6 @@ cd gnustep-make-%{MAKE_VERSION}
     --with-config-file=/Library/Preferences/GNUstep.conf \
     --with-layout=nextspace \
     --enable-native-objc-exceptions \
-    --with-thread-lib=-lpthread \
     --enable-objc-nonfragile-abi \
     --enable-debug-by-default
 make
@@ -67,6 +66,7 @@ cd ..
 cd nextspace-core-%{version}
 cp -vr ./* %{buildroot}
 mkdir %{buildroot}/Users
+rm -r %{buildroot}/usr/share
 
 %files 
 /Library
@@ -103,5 +103,8 @@ useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
+* Mon Oct 24 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-7
+- Remove --with-thread-lib from gnustep-make configure options.
+
 * Wed Oct 19 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-5
 - Initial spec.

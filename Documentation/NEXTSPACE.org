@@ -110,7 +110,7 @@
    - nextspace-core (rename to nextspace-runtime?):
      - gnustep-make (/Developer, openapp, gnustep-config)
      - /etc: X11/Xresources, ld.so.conf.d, profile.d, udev
-     - /usr/NextSpace/etc/skel
+     - /usr/etc/skel
      - /usr/NextSpace/bin/GNUstepServices
    - nextspace-gnustep: 
      - gnustep-base
@@ -121,7 +121,7 @@
      - /usr/NextSpace/lib/systemd/gpbs.service
      - /usr/NextSpace/etc/gdomap.interfaces
    - nextspace-frameworks:
-     - NXSystem: org.freedesktop.udisks2.policy
+     - NXSystem
      - NXFoundation
      - NXAppKit: /usr/NextSpace/Images, /usr/NextSpace/Fonts
 
@@ -357,8 +357,11 @@
 ****** DONE Поиск в /Library/Bundles
        Поиск в /Libray и ~/Library рекурсивный, поэтому объекты в Bundles тоже
        будут находиться.
-**** DONE NXDefaults
+**** TODO NXDefaults
      Reading/writing preferences (см. "Размещать файлы...").
+***** TODO Приложения перестали сохранять настройки
+      Возможно это связано с тем, что в NXDefaults не выполняется synchronize
+      после каждого изменения/записи.
 ***** DONE Размещать файлы NextSpace в ~/Library/Preferences/.NextSpace
 ****** /Мысли
        Тогда не нужно будет мучиться с расширением - стандартные настройки
