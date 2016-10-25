@@ -36,6 +36,7 @@
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
+#import <Foundation/NSTimer.h>
 
 #import <Foundation/NSUserDefaults.h>
 
@@ -160,8 +161,23 @@ static NXDefaults *sharedGlobalUserDefaults;
   [super dealloc];
 }
 
-// Writes volatile dictionary to file. On success sends notification to
-// all applications of current user if isGlobal == YES.
+- (void)setChanged:(BOOL)yn
+{
+  isChanged = yn;
+
+  if (syncTimer && ![syncTimer isValid])
+    {
+      syncTimer = [NSTimer scheduledTimerWithTimeInterval:3.0
+                                                   target:self
+                                                 selector:@selector(synchronize)
+                                                 userInfo:nil
+                                                  repeats:NO];
+    }
+}
+
+// Writes in-memory dictionary to file.
+// On success sends NXUserDefaultsDidChangeNotification.
+// If isGlobal == YES sends this notification to all applications of current user.
 - (BOOL)synchronize
 {
   if ([defaultsDict writeToFile:filePath atomically:NO] == YES)

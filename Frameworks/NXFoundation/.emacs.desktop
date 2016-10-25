@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun Sep 25 03:26:39 2016
+;; Created Tue Oct 25 18:39:15 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -21,8 +21,8 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.m"
   "NXDefaults.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  3736
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  2547
   '(3736 nil)
   nil
   nil
@@ -32,7 +32,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.h"
   "NXDefaults.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   994
   '(1189 nil)
   nil
@@ -43,7 +43,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXFileManager.m"
   "NXFileManager.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   197
   '(1231 nil)
   nil
@@ -76,7 +76,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.m"
   "NXBundle.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   4492
   '(1189 nil)
   nil
@@ -87,7 +87,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.h"
   "NXBundle.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -98,7 +98,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXFileManager.h"
   "NXFileManager.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   276
   '(258 nil)
   nil
