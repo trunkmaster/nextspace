@@ -31,9 +31,12 @@ extern NSString* const NXUserDefaultsDidChangeNotification;
  
 @interface NXDefaults : NSObject
 {
-  NSString            *filePath;
-  NSMutableDictionary *defaultsDict;
-  BOOL                isGlobal;
+  NSString		*filePath;
+  NSMutableDictionary	*defaultsDict;
+  BOOL			isGlobal;
+  
+  BOOL			isChanged;
+  NSTimer		*syncTimer;
 }
 
 + (NXDefaults *)systemDefaults;
