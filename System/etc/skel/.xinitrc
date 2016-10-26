@@ -25,14 +25,14 @@ xset r rate 200 40
 ##############################################################################
 # Should be systemd --user controlled services
 printf "Starting GNUstep services:" >> $LOGFILE  2>&1
-$NS_SYSTEM/bin/GNUstepServices start >> $LOGFILE  2>&1
+$NS_SYSTEM/bin/gnustep-services start >> $LOGFILE  2>&1
 printf ".\n" >> $LOGFILE  2>&1
 
 export GNUSTEP_USER_ROOT=$HOME/Library
 $NS_SYSTEM/Apps/Workspace.app/Workspace >> $LOGFILE  2>&1
 
 printf "Stopping GNUstep services:"
-$NS_SYSTEM/bin/GNUstepServices stop >> $LOGFILE  2>&1
+$NS_SYSTEM/bin/gnustep-services stop >> $LOGFILE  2>&1
 printf ".\n" >> $LOGFILE  2>&1
 
 #exit 0

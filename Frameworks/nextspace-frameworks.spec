@@ -4,16 +4,14 @@
 
 
 Name:           nextspace-frameworks
-Version:        0.4
+Version:        0.6
 Release:        2%{?dist}
 Summary:        NextSpace core libraries.
 
 Group:          Libraries/NextSpace
 License:        GPLv2
 URL:		http://www.gitlab.com/stoyan/nextspace
-Source0:	NXAppKit-%{APPKIT_VERSION}.tar.gz
-Source1:	NXFoundation-%{FOUNDATION_VERSION}.tar.gz
-Source2:	NXSystem-%{SYSTEM_VERSION}.tar.gz
+Source0:	nextspace-frameworks-%{version}.tar.gz
 
 Provides:	NXFoundation.so
 Provides:	NXSystem.so
@@ -51,7 +49,7 @@ Requires:	%{name}%{?_isa} = %{version}-%{release}
 Header file for NextSpace core libraries (NXSystem, NXFoundation, NXAppKit).
 
 %prep
-%setup -c nextspace-frameworks -a 1 -a 2
+%setup
 
 #
 # Build phase
@@ -64,17 +62,17 @@ export PATH+=":/usr/NextSpace/bin"
 
 export ADDITIONAL_INCLUDE_DIRS="-I../NXFoundation-%{FOUNDATION_VERSION}/derived_src -I../NXSystem-%{SYSTEM_VERSION}/derived_src"
 
-cd NXFoundation-%{FOUNDATION_VERSION}
+cd NXFoundation
 make
 cd ..
 
-cd NXSystem-%{SYSTEM_VERSION}
+cd NXSystem
 make
 cd ..
 
-cd NXAppKit-%{APPKIT_VERSION}
+cd NXAppKit
 #export LDFLAGS="-L../NXFoundation-%{FOUNDATION_VERSION}/NXFoundation.framework -lNXFoundation"
-make
+make messages=yes
 cd ..
 
 #

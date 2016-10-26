@@ -1,18 +1,17 @@
 # Defines
 %define	MAKE_VERSION	2.6.7
-%define BASE_VERSION	1.24.9
+%define BASE_VERSION	1.24.8
 %define GUI_VERSION	0.24.1
 %define BACK_VERSION	0.24.1
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        0%{?dist}
+Release:        1%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
 License:        GPLv3
 URL:		http://www.gnustep.org
-#Source0:	gnustep-make-%{MAKE_VERSION}.tar.gz
 Source0:	gnustep-base-%{BASE_VERSION}.tar.gz
 Source1:	gnustep-gui-%{GUI_VERSION}.tar.gz
 Source2:	gnustep-back-%{BACK_VERSION}.tar.gz
@@ -32,6 +31,7 @@ Provides:	gnustep-gui-%{GUI_VERSION}
 Provides:	gnustep-back-%{BACK_VERSION}
 
 BuildRequires:	gnustep-make
+BuildRequires:	clang = 3.4.2
 
 # gnustep-base
 BuildRequires:	libffi-devel
@@ -126,19 +126,6 @@ export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
-# Build gnustep-make to include in -devel package
-#cd gnustep-make-%{MAKE_VERSION}
-#./configure \
-#    --with-config-file=/Library/Preferences/GNUstep.conf \
-#    --enable-importing-config-file \
-#    --enable-native-objc-exceptions \
-#    --with-thread-lib=-lpthread \
-#    --enable-objc-nonfragile-abi \
-#    --enable-debug-by-default
-#make
-#%{make_install}
-#cd ..
-
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
 source /Developer/Makefiles/GNUstep.sh
 export LDFLAGS="-L/usr/NextSpace/lib -lobjc -ldispatch"
@@ -175,10 +162,6 @@ make
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
-
-#cd gnustep-make-%{MAKE_VERSION}
-#%{make_install}
-#cd ..
 
 cd gnustep-base-%{BASE_VERSION}
 %{make_install}
@@ -218,16 +201,15 @@ cp %{_sourcedir}/*.service %{buildroot}/usr/NextSpace/lib/systemd
 systemctl enable /usr/NextSpace/lib/systemd/gdomap.service
 systemctl enable /usr/NextSpace/lib/systemd/gdnc.service
 systemctl enable /usr/NextSpace/lib/systemd/gpbs.service
+systemctl start gdomap gdnc gpbs
 
 %preun
+systemctl stop gdomap gdnc gpbs
 systemctl disable /usr/NextSpace/lib/systemd/gdomap.service
 systemctl disable /usr/NextSpace/lib/systemd/gdnc.service
 systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
 
 #%postun
-systemctl disable /usr/NextSpace/lib/systemd/gdomap.service
-systemctl disable /usr/NextSpace/lib/systemd/gdnc.service
-systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
 
 %changelog
 * Thu Oct 20 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-0

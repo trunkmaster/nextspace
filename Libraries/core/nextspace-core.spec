@@ -2,11 +2,11 @@
 
 Name:		nextspace-core
 Version:	0.8
-Release:	7%{?dist}
+Release:	12%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
-Source0:	nextspace-core-%{version}.tgz
+Source0:	nextspace-os_files-%{version}.tar.gz
 Source1:	gnustep-make-%{MAKE_VERSION}.tar.gz
 Source2:	nextspace.fsl
 
@@ -23,7 +23,7 @@ Includes several components:
 - OS configuration files (/etc: X11 font display config, paths for linker,
   user shell profile, udev rule to mount removable media under /media, 
   /etc/skel: user home dir skeleton, tuned and logind settings);
-- GNUstep helper script: /usr/NextSpace/bin/GNUstepServices.
+- GNUstep helper script: /usr/NextSpace/bin/gnustep-services.
 
 %package devel
 Summary:	Development header files for NextSpace core components.
@@ -44,6 +44,7 @@ cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/gnustep-make-%{MAKE_VERSION}
 %build
 export CC=clang
 export CXX=clang++
+export OBJCFLAGS="-fobjc-runtime=gnustep-1.8"
 export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
@@ -52,7 +53,6 @@ cd gnustep-make-%{MAKE_VERSION}
     --with-config-file=/Library/Preferences/GNUstep.conf \
     --with-layout=nextspace \
     --enable-native-objc-exceptions \
-    --enable-objc-nonfragile-abi \
     --enable-debug-by-default
 make
 cd ..
@@ -63,8 +63,9 @@ cd gnustep-make-%{MAKE_VERSION}
 rm %{buildroot}/usr/NextSpace/bin/opentool
 cd ..
 
-cd nextspace-core-%{version}
-cp -vr ./* %{buildroot}
+cd nextspace-os_files-%{version}
+cp -vr ./etc %{buildroot}
+cp -vr ./usr %{buildroot}
 mkdir %{buildroot}/Users
 rm -r %{buildroot}/usr/share
 
@@ -81,7 +82,7 @@ rm -r %{buildroot}/usr/share
 /usr/lib/systemd/logind.conf.d/lidswitch.conf
 /usr/NextSpace/Documentation/man/man1/open*.gz
 /usr/NextSpace/etc/
-/usr/NextSpace/bin/GNUstepServices
+/usr/NextSpace/bin/gnustep-services
 /usr/NextSpace/bin/openapp
 
 %files devel
@@ -103,6 +104,12 @@ useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
+* Mon Oct 26 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-11
+- Add /Developer/Libraries into /etc/ld.so.conf.d/nextspace.conf
+
+* Mon Oct 25 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-10
+- Remove --enable-objc-nonfragile-abi from gnustep-make configure options.
+
 * Mon Oct 24 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-7
 - Remove --with-thread-lib from gnustep-make configure options.
 
