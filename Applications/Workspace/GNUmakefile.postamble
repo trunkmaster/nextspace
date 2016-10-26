@@ -79,11 +79,11 @@ ifneq ($(windowmaker), no)
 	@ cd WM/WINGs; make install DESTDIR=$(DESTDIR)
 	@ cd WM/WindowMaker; make install DESTDIR=$(DESTDIR)
 # Rewrite some files
-	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cp -f /usr/NextSpace/etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
+	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cd WM/doc; make install DESTDIR=$(DESTDIR)
 	@ cd WM/util; make install DESTDIR=$(DESTDIR)
 endif

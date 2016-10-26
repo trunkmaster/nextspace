@@ -86,6 +86,8 @@ static id GSLaunched(NSNotification *notification, BOOL active)
   NSDictionary			*apps = nil;
   BOOL				modified = NO;
 
+  NSLog(@"WorkspaceManager: GSLaunched() called");
+  
   if (path == nil)
     {
       path = [NSTemporaryDirectory()

@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.8
-Release:	13%{?dist}
+Release:	14%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -53,6 +53,7 @@ cd gnustep-make-%{MAKE_VERSION}
     --with-config-file=/Library/Preferences/GNUstep.conf \
     --with-layout=nextspace \
     --enable-native-objc-exceptions \
+    --enable-objc-nonfragile-abi \
     --enable-debug-by-default
 make
 cd ..
