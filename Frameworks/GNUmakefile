@@ -1,12 +1,14 @@
 #
-# GNUmakefile for CUBE frameworks
+# GNUmakefile for NextSpace frameworks
 #
 include $(GNUSTEP_MAKEFILES)/common.make
 
+PACKAGE_NAME = nextspace-frameworks
+VERSION = 0.6
 SUBPROJECTS = \
     NXFoundation \
     NXSystem \
-    NXAppKit \
+    NXAppKit
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/aggregate.make

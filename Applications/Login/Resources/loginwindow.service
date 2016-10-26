@@ -1,5 +1,5 @@
 [Unit]
-Description=CUBE Login Panel
+Description=NextSpace login panel
 After=gpbs.service
 Requires=gdomap.service gdnc.service gpbs.service
 

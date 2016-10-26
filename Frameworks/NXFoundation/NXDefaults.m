@@ -172,6 +172,7 @@ static NXDefaults *sharedGlobalUserDefaults;
                                                  selector:@selector(synchronize)
                                                  userInfo:nil
                                                   repeats:NO];
+      [NSTimer setShouldCleanUp:YES];
     }
 }
 
