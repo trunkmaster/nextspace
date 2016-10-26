@@ -45,7 +45,6 @@
 #import "Screen.h"
 
 @implementation ScreenPreferences
-
 @synthesize dockImage;
 @synthesize appIconYardImage;
 @synthesize iconYardImage;  

@@ -26,6 +26,7 @@
 
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSTimer.h>
 
 extern NSString* const NXUserDefaultsDidChangeNotification;
  

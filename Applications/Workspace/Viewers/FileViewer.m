@@ -450,6 +450,7 @@
 	     forKey:@"RootShelfContents"];
       [df setFloat:[shelf frame].size.height 
 	    forKey:@"RootViewerShelfSize"];
+      [df synchronize];
     }
   else if (isFolderViewer && [fm isWritableFileAtPath:rootPath])
     {
