@@ -1,0 +1,14 @@
+--- gnustep-gui-0.24.1.orig/Model/GNUmakefile	2010-02-11 20:21:07.000000000 +0200
++++ gnustep-gui-0.24.1/Model/GNUmakefile	2016-10-18 11:34:48.131818153 +0300
+@@ -66,9 +66,9 @@
+ ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_OBJ_DIR) 
+ ifeq ($(GUI_LIB), gnu)
+   ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR)
+-  ADDITIONAL_INCLUDE_DIRS = -I../Headers/Additions -I../Headers
++  ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers
+ else
+-  ADDITIONAL_INCLUDE_DIRS = -I../Headers/Additions
++  ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions
+ endif
+ 
+ ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)

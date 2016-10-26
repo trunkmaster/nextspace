@@ -2,60 +2,38 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Oct 25 18:39:15 2016
+;; Created Wed Oct 26 14:10:18 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXFoundation/")
+(setq default-directory "~/Developer/nextspace/Frameworks/NXFoundation/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("synchroniz" "synchr" "file" "NSLog"))
+(setq search-ring nil)
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Frameworks/NXFoundation/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Frameworks/NXFoundation/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Tools/Sizer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/FileMover/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/Communicator.*" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Viewers/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Operations/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/*.[hm]" "~/Developer/nextspace/Applications/Workspace/*.[hm]" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/Processes/GNUmakefile*" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/NXFoundation/" "~/Developer/nextspace/Frameworks/NXFoundation/GNUmakefile*" "~/Developer/nextspace/Frameworks/NXFoundation/*.[hm]" "~/Developer/nextspace/Frameworks/NXFoundation/" "~/Developer/nextspace/Frameworks/NXFoundation/GNUmakefile*" "~/Developer/nextspace/Frameworks/NXFoundation/*.[hm]" "~/Developer/nextspace/Frameworks/NXFoundation/" "~/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.m" "~/Developer/nextspace/Frameworks/NXFoundation/" "~/Developer/nextspace/Frameworks/NXFoundation/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Frameworks/NXFoundation/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Tools/Sizer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/FileMover/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Tools/Communicator.*" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Viewers/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Operations/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/*.[hm]" "~/Developer/nextspace/Applications/Workspace/*.[hm]" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications/Workspace/" "~/Developer/CUBE/Applications/Workspace" "~/Developer/CUBE/Applications" "~/Developer/CUBE/Applications/Workspace/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.m"
   "NXDefaults.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  2547
-  '(3736 nil)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  6179
+  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.h"
-  "NXDefaults.h"
+  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.h"
+  "NXBundle.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  994
-  '(1189 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXFileManager.m"
-  "NXFileManager.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  197
-  '(1231 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/GNUmakefile.preamble"
-  "GNUmakefile.preamble"
-  'fundamental-mode
-  '(yas-minor-mode)
-  350
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  1
   '(nil nil)
   nil
   nil
@@ -73,21 +51,32 @@
   '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.m"
-  "NXBundle.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  4492
-  '(1189 nil)
+  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'fundamental-mode
+  '(yas-minor-mode)
+  1
+  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.h"
-  "NXBundle.h"
+  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.m"
+  "NXBundle.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.h"
+  "NXDefaults.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -98,9 +87,20 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXFileManager.h"
   "NXFileManager.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  276
-  '(258 nil)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXFileManager.m"
+  "NXFileManager.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  1
+  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

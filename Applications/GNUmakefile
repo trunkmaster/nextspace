@@ -1,17 +1,17 @@
 #
 include $(GNUSTEP_MAKEFILES)/common.make
 
+PACKAGE_NAME = nextspace-applications
+VERSION = 0.6
 SUBPROJECTS = \
-Login \
-Workspace \
-Preferences \
-Terminal \
-TextEdit-4 \
-TimeMon \
-Review \
-OpenUp
-
-###WindowMaker \
+	Login \
+	Workspace \
+	Preferences \
+	Terminal \
+	TextEdit \
+	TimeMon \
+	Review \
+	OpenUp
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/aggregate.make

@@ -1,0 +1,13 @@
+export KQUEUE_CFLAGS=-I/usr/NextSpace/include/kqueue
+export KQUEUE_LIBS=-L/usr/NextSpace/lib
+export CFLAGS=-I/usr/NextSpace/include
+export LDFLAGS=-L/usr/NextSpace/lib
+./configure \
+--bindir=/usr/NextSpace/bin \
+--sbindir=/usr/NextSpace/sbin \
+--datarootdir=/usr/NextSpace/share \
+--libdir=/usr/NextSpace/lib \
+--includedir=/usr/NextSpace/include \
+--mandir=/usr/NextSpace/Documentation/man \
+--docdir=/usr/NextSpace/Documentation/doc \
+CC=clang CXX=clang++ 
