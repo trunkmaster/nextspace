@@ -60,7 +60,7 @@ export CXX=clang++
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":/usr/NextSpace/bin"
 
-export ADDITIONAL_INCLUDE_DIRS="-I../NXFoundation-%{FOUNDATION_VERSION}/derived_src -I../NXSystem-%{SYSTEM_VERSION}/derived_src"
+export ADDITIONAL_INCLUDE_DIRS="-I../NXFoundation/derived_src -I../NXSystem/derived_src"
 
 cd NXFoundation
 make
@@ -82,15 +82,15 @@ cd ..
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export QA_SKIP_BUILD_ROOT=1
 
-cd NXSystem-%{SYSTEM_VERSION}
+cd NXSystem
 %{make_install}
 cd ..
 
-cd NXFoundation-%{FOUNDATION_VERSION}
+cd NXFoundation
 %{make_install}
 cd ..
 
-cd NXAppKit-%{APPKIT_VERSION}
+cd NXAppKit
 %{make_install}
 cd ..
 
