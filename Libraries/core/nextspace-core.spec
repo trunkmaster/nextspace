@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.8
-Release:	12%{?dist}
+Release:	13%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -44,7 +44,7 @@ cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/gnustep-make-%{MAKE_VERSION}
 %build
 export CC=clang
 export CXX=clang++
-export OBJCFLAGS="-fobjc-runtime=gnustep-1.8"
+export OBJCFLAGS="-fblocks -fobjc-runtime=gnustep-1.8"
 export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
@@ -67,7 +67,6 @@ cd nextspace-os_files-%{version}
 cp -vr ./etc %{buildroot}
 cp -vr ./usr %{buildroot}
 mkdir %{buildroot}/Users
-rm -r %{buildroot}/usr/share
 
 %files 
 /Library
@@ -104,10 +103,11 @@ useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
-* Mon Oct 26 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-11
+* Wed Oct 26 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-11
 - Add /Developer/Libraries into /etc/ld.so.conf.d/nextspace.conf
+- Add -fblocks to OBJFLAGS
 
-* Mon Oct 25 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-10
+* Tue Oct 25 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-10
 - Remove --enable-objc-nonfragile-abi from gnustep-make configure options.
 
 * Mon Oct 24 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-7
