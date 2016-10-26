@@ -44,7 +44,7 @@
   [hour24Btn setState:[clockView is24HourFormat]];
   [showYearBtn setState:[clockView isYearVisible]];
   [makeAliveBtn setState:[clockView isAlive]];
-  
+
   // [clockView setCalendarDate:[NSCalendarDate calendarDate]];
   [clockView setNeedsDisplay:YES];
 
@@ -83,7 +83,7 @@
 {
   [[NXDefaults globalUserDefaults] setBool:[sender state]
                                     forKey:@"NXClockView24HourFormat"];
-  [[NXDefaults globalUserDefaults] synchronize];
+  //  [[NXDefaults globalUserDefaults] synchronize];
 }
 - (void)setShowYear:(id)sender
 {

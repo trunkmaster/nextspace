@@ -124,6 +124,8 @@ static NXDefaults *sharedGlobalUserDefaults;
       }
   }
 
+  syncTimer = nil;
+
   return self;
 }
 
@@ -154,25 +156,27 @@ static NXDefaults *sharedGlobalUserDefaults;
 
 - (void)dealloc
 {
-  // [self synchronize];
+  if (isChanged)
+    {
+      [self synchronize];
+    }
+  if (syncTimer) [syncTimer release];
   [defaultsDict release];
   [filePath release];
-
+  
   [super dealloc];
 }
 
-- (void)setChanged:(BOOL)yn
+- (void)setChanged
 {
-  isChanged = yn;
-
-  if (syncTimer && ![syncTimer isValid])
+  if (syncTimer == nil || ![syncTimer isValid])
     {
-      syncTimer = [NSTimer scheduledTimerWithTimeInterval:3.0
+      syncTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
                                                    target:self
                                                  selector:@selector(synchronize)
                                                  userInfo:nil
                                                   repeats:NO];
-      [NSTimer setShouldCleanUp:YES];
+      [syncTimer retain];
     }
 }
 
@@ -181,8 +185,18 @@ static NXDefaults *sharedGlobalUserDefaults;
 // If isGlobal == YES sends this notification to all applications of current user.
 - (BOOL)synchronize
 {
+  NSLog(@"NXDefaults: synchronize called.");
+  // Race condition: 
+  if (isChanged == YES) return YES;
+  
   if ([defaultsDict writeToFile:filePath atomically:NO] == YES)
     {
+      isChanged = NO;
+      if (syncTimer && [syncTimer isValid])
+        {
+          [syncTimer invalidate];
+        }
+      
       if (isGlobal == YES)
         {
           [[NSDistributedNotificationCenter
@@ -196,6 +210,7 @@ static NXDefaults *sharedGlobalUserDefaults;
             postNotificationName:NXUserDefaultsDidChangeNotification
                           object:self];
         }
+
       return YES;
     }
 
@@ -215,11 +230,13 @@ static NXDefaults *sharedGlobalUserDefaults;
            forKey:(NSString *)key
 {
   [defaultsDict setObject:value forKey:key];
+  [self setChanged];
 }
 
 - (void)removeObjectForKey:(NSString *)key
 {
   [defaultsDict removeObjectForKey:key];
+  [self setChanged];
 }
 
 - (float)floatForKey:(NSString *)key
@@ -238,9 +255,7 @@ static NXDefaults *sharedGlobalUserDefaults;
 - (void)setFloat:(float)value
           forKey:(NSString*)key
 {
-  NSNumber *n = [NSNumber numberWithFloat:value];
-
-  [self setObject:n forKey:key];
+  [self setObject:[NSNumber numberWithFloat:value] forKey:key];
 }
 
 - (NSInteger)integerForKey:(NSString *)key
@@ -259,9 +274,7 @@ static NXDefaults *sharedGlobalUserDefaults;
 - (void)setInteger:(NSInteger)value
             forKey:(NSString *)key
 {
-  NSNumber *n = [NSNumber numberWithInteger:value];
-
-  [self setObject:n forKey:key];
+  [self setObject:[NSNumber numberWithInteger:value] forKey:key];
 }
 
 - (BOOL)boolForKey:(NSString*)key
