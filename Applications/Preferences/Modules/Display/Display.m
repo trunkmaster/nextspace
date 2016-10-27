@@ -226,17 +226,31 @@ static NXDisplay *selectedDisplay = nil;
   // object in [NSDisplay allModes] array
   [self fillRateButton];
 
-  // Contrast
-  NSString *gammaString = [NSString stringWithFormat:@"%.2f",
-                                    [selectedDisplay gamma]];
-  [gammaSlider setFloatValue:[gammaString floatValue]];
-  [gammaField setStringValue:gammaString];
+  if ([selectedDisplay isGammaSupported] == YES)
+    {
+      [gammaSlider setEnabled:YES];
+      [gammaField setEnabled:YES];
+      [brightnessSlider setEnabled:YES];
+      [brightnessField setEnabled:YES];
+      // Contrast
+      NSString *gammaString = [NSString stringWithFormat:@"%.2f",
+                                        [selectedDisplay gamma]];
+      [gammaSlider setFloatValue:[gammaString floatValue]];
+      [gammaField setStringValue:gammaString];
 
-  // Brightness
-  CGFloat brightness = [selectedDisplay gammaBrightness];
-  [brightnessSlider setFloatValue:brightness * 100];
-  [brightnessField
-    setStringValue:[NSString stringWithFormat:@"%.0f", brightness * 100]];
+      // Brightness
+      CGFloat brightness = [selectedDisplay gammaBrightness];
+      [brightnessSlider setFloatValue:brightness * 100];
+      [brightnessField
+        setStringValue:[NSString stringWithFormat:@"%.0f", brightness * 100]];
+    }
+  else
+    {
+      [gammaSlider setEnabled:NO];
+      [gammaField setEnabled:NO];
+      [brightnessSlider setEnabled:NO];
+      [brightnessField setEnabled:NO];
+    }
 }
 
 - (IBAction)resolutionClicked:(id)sender
