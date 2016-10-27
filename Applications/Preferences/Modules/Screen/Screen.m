@@ -47,7 +47,7 @@
 @implementation ScreenPreferences
 @synthesize dockImage;
 @synthesize appIconYardImage;
-@synthesize iconYardImage;  
+@synthesize iconYardImage;
 
 static NXPower *power = nil;
 
