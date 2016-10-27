@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Mar 14 03:03:50 2016
+;; Created Thu Oct 27 16:01:33 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,32 +18,43 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
+  "NXDisplay.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  21233
+  '(22537 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
+  "NXDisplay.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  4666
+  '(3588 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.m"
   "NXScreen.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  27672
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  14794
   '(28063 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
-  "NXDisplay.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  8867
-  '(8867 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.h"
   "NXScreen.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   3703
   '(4278 nil)
   nil
@@ -51,34 +62,12 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
-  "NXDisplay.h"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  4278
-  '(3588 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXSystem.h"
   "NXSystem.h"
   'c-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/Tests/ScreenInfo.m"
-  "ScreenInfo.m"
-  'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
-  6554
-  '(6634 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -87,7 +76,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksAdaptor.m"
   "NXUDisksAdaptor.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   20485
   '(17309 nil)
   nil
@@ -98,7 +87,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksVolume.m"
   "NXUDisksVolume.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1649
   '(2723 nil)
   nil
@@ -109,7 +98,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksDrive.m"
   "NXUDisksDrive.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1882
   '(1867 nil)
   nil
@@ -120,7 +109,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXPower.h"
   "NXPower.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1998
   '(1978 nil)
   nil
@@ -131,7 +120,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXPower.m"
   "NXPower.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   2962
   '(2868 nil)
   nil
@@ -142,7 +131,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble"
   "GNUmakefile.preamble"
   'makefile-gmake-mode
-  nil
+  '(yas-minor-mode)
   1347
   '(1301 nil)
   nil
@@ -153,7 +142,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksAdaptor.h"
   "NXUDisksAdaptor.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1665
   '(1837 nil)
   nil
@@ -164,7 +153,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile"
   "GNUmakefile"
   'makefile-gmake-mode
-  nil
+  '(yas-minor-mode)
   407
   '(1013 nil)
   nil
@@ -175,7 +164,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMediaManager.h"
   "NXMediaManager.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   2720
   '(nil nil)
   nil
@@ -186,7 +175,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXSystemInfo.m"
   "NXSystemInfo.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   4855
   '(7331 nil)
   nil
@@ -197,7 +186,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/Linux/NXSystemInfo_Linux.m"
   "NXSystemInfo_Linux.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   3897
   '(4743 nil)
   nil
@@ -208,7 +197,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXSystemInfo.h"
   "NXSystemInfo.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   2361
   '(2323 nil)
   nil
@@ -219,7 +208,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/FreeBSD/NXFileSystem_FreeBSD.m"
   "NXFileSystem_FreeBSD.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   68
   '(1 nil)
   nil
@@ -230,7 +219,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/FreeBSD/NXSystemInfo_FreeBSD.m"
   "NXSystemInfo_FreeBSD.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -241,7 +230,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/FreeBSD/TRSysctl.h"
   "TRSysctl.h"
   'c-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -252,7 +241,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/FreeBSD/TRSysctlByName.h"
   "TRSysctlByName.h"
   'c-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -263,7 +252,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/Linux/NXFileSystemMonitor_Linux.m"
   "NXFileSystemMonitor_Linux.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -274,7 +263,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDeviceManager.h"
   "NXDeviceManager.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -285,7 +274,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDeviceManager.m"
   "NXDeviceManager.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -296,7 +285,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXFileSystem.h"
   "NXFileSystem.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -307,7 +296,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXFileSystem.m"
   "NXFileSystem.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -318,7 +307,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXFileSystemMonitor.h"
   "NXFileSystemMonitor.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -329,7 +318,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXFileSystemMonitor.m"
   "NXFileSystemMonitor.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -340,7 +329,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXHALAdaptor.h"
   "NXHALAdaptor.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -351,7 +340,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXHALAdaptor.m"
   "NXHALAdaptor.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -362,7 +351,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMediaManager.m"
   "NXMediaManager.m"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -373,7 +362,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksDrive.h"
   "NXUDisksDrive.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -384,7 +373,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXUDisksVolume.h"
   "NXUDisksVolume.h"
   'objc-mode
-  '(abbrev-mode auto-complete-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
   1
   '(nil nil)
   nil

@@ -634,11 +634,11 @@ find_last_non_clamped(CARD16 array[], int size)
 // from xrandr.c
 - (void)_getGamma
 {
-  XRROutputInfo      *output_info;
-  XRRCrtcGamma	     *crtc_gamma;
-  CGFloat            i1, v1, i2, v2;
-  int                size, middle, last_best, last_red, last_green, last_blue;
-  CARD16             *best_array;
+  XRROutputInfo	*output_info;
+  XRRCrtcGamma	*crtc_gamma;
+  CGFloat	i1, v1, i2, v2;
+  int		size, middle, last_best, last_red, last_green, last_blue;
+  CARD16	*best_array;
 
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
 
@@ -650,6 +650,8 @@ find_last_non_clamped(CARD16 array[], int size)
   
   if (!output_info->crtc)
     {
+      NSLog(@"NXDisplay: No display connected to output %s",
+            output_info->name);
       return;
     }
 
@@ -742,7 +744,7 @@ find_last_non_clamped(CARD16 array[], int size)
       // NSLog(@"NXDisplay _getGamma post: %f", gammaValue.red);
     }
 
-  XRRFreeGamma(crtc_gamma);  
+  XRRFreeGamma(crtc_gamma);
 }
 
 //---
@@ -757,7 +759,7 @@ find_last_non_clamped(CARD16 array[], int size)
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   
   if (!output_info->crtc) return NO;
-  
+
   size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
 
   if (size == 0 || [self uniqueID] == nil)
@@ -829,7 +831,7 @@ find_last_non_clamped(CARD16 array[], int size)
   XRRCrtcGamma  *gamma, *new_gamma;
   int           i, size;
 
-  if ([self isGammaSupported] == NO) return;
+  // if ([self isGammaSupported] == NO) return;
 
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   gamma = XRRGetCrtcGamma(xDisplay, output_info->crtc);

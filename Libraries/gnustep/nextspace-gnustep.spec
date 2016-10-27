@@ -6,7 +6,7 @@
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -112,7 +112,7 @@ GNUstep Make installed with nextspace-core-devel package.
 %prep
 %setup -c -n nextspace-gnustep -a 1 -a 2
 %patch0 -p0
-%patch1 -p0
+#%patch1 -p0
 %patch2 -p0
 %patch3 -p0
 %patch4 -p0
