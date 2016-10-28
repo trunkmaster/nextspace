@@ -1,0 +1,11 @@
+--- gnustep-gui-0.24.1.orig/Source/NSWindow.m	2016-10-27 22:04:22.053402864 +0300
++++ gnustep-gui-0.24.1/Source/NSWindow.m	2016-10-27 22:09:07.050624546 +0300
+@@ -603,7 +603,7 @@
+       [titleCell setDrawsBackground: YES];
+       [titleCell setBackgroundColor: [NSColor blackColor]];
+       [titleCell setTextColor: [NSColor whiteColor]];
+-      [titleCell setFont: [NSFont systemFontOfSize: 8]];
++      [titleCell setFont: [NSFont systemFontOfSize: 9]];
+     }
+   else
+     {

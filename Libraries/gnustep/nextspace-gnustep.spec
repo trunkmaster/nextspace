@@ -1,12 +1,11 @@
 # Defines
-%define	MAKE_VERSION	2.6.7
 %define BASE_VERSION	1.24.8
 %define GUI_VERSION	0.24.1
 %define BACK_VERSION	0.24.1
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        3%{?dist}
+Release:        5%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -20,18 +19,27 @@ Source4:	gdomap.service
 Source5:	gdnc.service
 Source6:	gpbs.service
 
-Patch0:		gnustep-gui-Model_GNUmakefile.patch
-Patch1:         gnustep-back-art_ReadRect.m.patch
-Patch2:		gnustep-back-art_GNUmakefile.preamble.patch
-Patch3:		gnustep-back-x11_XGServerWindow.m.patch
-Patch4:		gnustep-back-gsc_GNUmakefile.preamble.patch
+
+Patch0:		gnustep-base-GSConfig.h.in.patch
+Patch1:		gnustep-base-Languages_Korean.patch
+Patch2:		gnustep-gui-Model_GNUmakefile.patch
+Patch3:		gnustep-gui-NSWindow.m.patch
+Patch4:		gnustep-back-art_ReadRect.m.patch
+Patch5:		gnustep-back-art_GNUmakefile.preamble.patch
+Patch6:		gnustep-back-x11_XGServerWindow.m.patch
+Patch7:		gnustep-back-gsc_GNUmakefile.preamble.patch
 
 Provides:	gnustep-base-%{BASE_VERSION}
 Provides:	gnustep-gui-%{GUI_VERSION}
 Provides:	gnustep-back-%{BACK_VERSION}
 
+Conflicts:	gnustep-base
+Conflicts:	gnustep-filesystem
+Conflicts:	gnustep-gui
+Conflicts:	gnustep-back
+
 BuildRequires:	gnustep-make
-BuildRequires:	clang = 3.4.2
+BuildRequires:	clang >= 3.8.0
 
 # gnustep-base
 BuildRequires:	libffi-devel
@@ -112,10 +120,13 @@ GNUstep Make installed with nextspace-core-devel package.
 %prep
 %setup -c -n nextspace-gnustep -a 1 -a 2
 %patch0 -p0
-#%patch1 -p0
+%patch1 -p0
 %patch2 -p0
 %patch3 -p0
-%patch4 -p0
+#%patch4 -p0
+%patch5 -p0
+%patch6 -p0
+%patch7 -p0
 rm -rf %{buildroot}
 
 #
@@ -195,23 +206,45 @@ cp %{_sourcedir}/*.service %{buildroot}/usr/NextSpace/lib/systemd
 #
 # Package install
 #
+# for %pre and %post $1 = 1 - installation, 2 - upgrade
 #%pre
-
 %post
-systemctl enable /usr/NextSpace/lib/systemd/gdomap.service
-systemctl enable /usr/NextSpace/lib/systemd/gdnc.service
-systemctl enable /usr/NextSpace/lib/systemd/gpbs.service
-systemctl start gdomap gdnc gpbs
+if [ "$1" = "1" ]; then
+    # post-installation
+    systemctl enable /usr/NextSpace/lib/systemd/gdomap.service
+    systemctl enable /usr/NextSpace/lib/systemd/gdnc.service
+    systemctl enable /usr/NextSpace/lib/systemd/gpbs.service
+    systemctl start gdomap gdnc gpbs
+elif [ "$1" = "2" ]; then
+    # post-upgrade
+    echo "Please restart GNUstep services manually with command:"
+    echo "# systemctl restart gdomap gdnc gpbs"
+fi
 
+# for %preun and %postun $1 = 0 - uninstallation, 1 - upgrade. 
 %preun
-systemctl stop gdomap gdnc gpbs
-systemctl disable /usr/NextSpace/lib/systemd/gdomap.service
-systemctl disable /usr/NextSpace/lib/systemd/gdnc.service
-systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
-
+if [ "$1" = "0" ]; then
+    # prepare for uninstall
+    systemctl stop gdomap gdnc gpbs
+    systemctl disable /usr/NextSpace/lib/systemd/gdomap.service
+    systemctl disable /usr/NextSpace/lib/systemd/gdnc.service
+    systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
+elif  [ "$1" = "1" ]; then
+    # prepare for upgrade
+    echo "This is an upgrade. Do nothing with GNUstep services."
+fi
 #%postun
 
 %changelog
+* Fri Oct 28 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-5
+- Switch to minimum clang version 3.8.0 (libdispatch and libobjc2 built
+  with this version);
+- Add patch for Headers/GNUstepBase/GSConfig.h.in to silence clang-3.8
+  warning about __weak and __strong redefinition (backport from 
+  gnustep-base-1.24.9);
+- Add patch for miniwindow font (change size from 8 to 9) default value.
+- Backported from gnustep-base-1.24.9 changes to Languages/Korean.
+
 * Thu Oct 20 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-0
 - Initial spec for CentOS 7.
 
