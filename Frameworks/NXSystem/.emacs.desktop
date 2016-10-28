@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Oct 27 16:01:33 2016
+;; Created Thu Oct 27 23:17:35 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "NXDisplay.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
-  21233
-  '(22537 nil)
+  2972
+  '(24470 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
