@@ -76,7 +76,7 @@
   year_nums[9] = NSMakeRect(6,   8, 6, 6);
 
   // Load clockbits for default language
-  [self loadClockbitsForLanguage:nil];
+  [self loadClockbitsForLanguage:@"English"];
 
   // The next 2 method calls sets 'colonDisplayRect' ivar but will not
   // cause drawing because 'is24HourFormat' was not changed
@@ -98,30 +98,33 @@
 - (void)loadClockbitsForLanguage:(NSString *)languageName
 {
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  NSString *langDir;
+  NSString *langPath, *bitsPath;
 
   if (languageName == nil)
     {
-      languageName = [[[NSUserDefaults standardUserDefaults] objectForKey:@"NSLanguages"]
+      languageName = [[[NSUserDefaults standardUserDefaults]
+                        objectForKey:@"NSLanguages"]
                        objectAtIndex:0];
     }
-  
-  langDir = [languageName stringByAppendingPathExtension:@"lproj"];
-  
+
+  langPath = [bundle pathForResource:languageName ofType:@"lproj"];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:langPath] == YES)
+    {
+      bitsPath = [langPath stringByAppendingPathComponent:@"clockbits.tiff"];
+    }
+  else
+    {
+      bitsPath = [bundle pathForResource:@"clockbits"
+                                  ofType:@"tiff"
+                             inDirectory:@"English.lproj"];
+    }
+
+  // Release already loaded clockbits
   if (clockBits != nil)
     {
       [clockBits release];
     }
-
-  clockBits = [[NSImage alloc]
-		  initByReferencingFile:[bundle pathForResource:@"clockbits"
-                                                         ofType:@"tiff"
-                                                    inDirectory:langDir]];
-
-  if (clockBits == nil) // No resource for specified language
-    {
-      [self loadClockbitsForLanguage:@"English.lproj"];
-    }
+  clockBits = [[NSImage alloc] initByReferencingFile:bitsPath];
 
   // Create images for colon for performance purposes at [self drawRect] method:
   // [clockBits compositeToPoint:fromRect:operation:] consumes too much CPU.
@@ -136,7 +139,8 @@
                     fromRect:colonRect
                    operation:NSCompositeSourceOver
                     fraction:1.0];
-      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
+      rep = [[NSBitmapImageRep alloc]
+              initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
       [colonOnImage addRepresentation:rep];
       [rep release];
       [colonOnImage unlockFocus];
@@ -147,11 +151,13 @@
                     fromRect:noColonRect
                    operation:NSCompositeSourceOver
                     fraction:1.0];
-      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
+      rep = [[NSBitmapImageRep alloc]
+              initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
       [colonOffImage addRepresentation:rep];
       [rep release];
       [colonOffImage unlockFocus];
     }
+  dateChanged = YES;
 }
 
 - (void)dealloc
@@ -207,7 +213,10 @@
   NSPoint   elPoint;
   NSInteger ampm_offset;
 
-  if (dateChanged == NO)
+  // if (dateChanged == NO && !NSEqualRects(_bounds, r))
+  // If rect that needs to be update is rect for colon drawing
+  // do not update the rest of view.
+  if (NSEqualRects(r, colonDisplayRect) == YES)
     {
       if (isAlive)
         {
@@ -314,7 +323,8 @@
   // second digit of hour
   if (NSIntersectsRect(r, timeDisplayRect) == YES)
     {
-      rectCenter = ceilf(timeDisplayRect.size.width/2 - colonRect.size.width/2) + timeOffset;
+      rectCenter = ceilf(timeDisplayRect.size.width/2 - colonRect.size.width/2)
+        + timeOffset;
       // NSLog(@"NXClockView: draw TIME");
       elRect = time_nums[(hourOfDay % 10)];
       hoffset = rectCenter - elRect.size.width;
@@ -352,7 +362,8 @@
       if (is24HourFormat == NO)
         {
           hoffset = (timeDisplayRect.origin.x + timeDisplayRect.size.width) - 3;
-          ampm_offset = timeDisplayRect.origin.y + (timeDisplayRect.size.height-amRect.size.height)/2;
+          ampm_offset = timeDisplayRect.origin.y +
+            (timeDisplayRect.size.height-amRect.size.height)/2;
           if (isMorning)
             {
               hoffset -= amRect.size.width;
@@ -516,23 +527,23 @@
   // Draw updated time
   if (minuteOfHour != lastMOH || hourOfDay != lastHOD)
     {
-      // if (is24HourFormat == NO)
-      //   {
-      //     isMorning = NO;
-      //     if (hourOfDay == 0)
-      //       {
-      //         hourOfDay = 12;
-      //         isMorning = YES;
-      //       }
-      //     else if (hourOfDay < 12)
-      //       {
-      //         isMorning = YES;
-      //       }
-      //     else if (hourOfDay > 12)
-      //       {
-      //         hourOfDay -= 12;
-      //       }
-      //   }
+      if (is24HourFormat == NO)
+        {
+          isMorning = NO;
+          if (hourOfDay == 0)
+            {
+              hourOfDay = 12;
+              isMorning = YES;
+            }
+          else if (hourOfDay < 12)
+            {
+              isMorning = YES;
+            }
+          else if (hourOfDay > 12)
+            {
+              hourOfDay -= 12;
+            }
+        }
       // NSLog(@"setCalendarDate: TIME changed");
       dateChanged = YES;
       [self setNeedsDisplayInRect:timeDisplayRect];
