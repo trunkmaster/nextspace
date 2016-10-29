@@ -1,0 +1,9 @@
+*.app
+*.d
+*obj
+*.framework
+*derived_src
+*.preferences
+*.wsprefs
+*.bundle
+*.viewer
