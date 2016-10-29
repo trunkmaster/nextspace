@@ -192,12 +192,16 @@
      Failed to open VDPAU backend libvdpau_i965.so: cannot open shared object
      file: No such file or directory 
 
-*** TODO Питание
+*** DONE Питание
     При закрытии крышки засыпает.
     tuned, udisks2, upower
+    Решение: LidSwitchIgnoreInhibited=no в 
+    /usr/lib/systemd/logind.conf.d/lidswitch.conf.
+    Файл добавлен в nextspace-core.rpm.
 
 
 * GNUstep
+
 ** TODO Клик внутри неактивного окна не обрабатывается subview
    ...или не передается subview окном. NSFistResponder chain?
 ** TODO Font Panel resizing
@@ -235,6 +239,7 @@
 
 
 * WindowMaker
+
 ** TODO Вид miniwindow
 *** Preface
     Между WindowMaker и GNUstep есть разница.
@@ -286,8 +291,8 @@
      - перемещать курсор перед следующей цифрой;
      - выделять блок цифр (для целых все, для float перед или после точки);
    - не удалять '.' клавишами Delete и Backspace.
-*** TODO NXClockView
-**** TODO При пустом NSLanguages Attributes Inspector падает
+*** DONE NXClockView
+**** DONE При пустом NSLanguages Attributes Inspector падает
 **** DONE Держать картинки в одном TIFF или PNG, как в OPENSTEP
 **** DONE Создать тестовый модуль в NXAppKitDemo.
     В этом модуле нужно, чтобы можно было:
