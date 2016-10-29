@@ -1,6 +1,27 @@
---- gnustep-gui-0.24.1.orig/Source/NSWindow.m	2016-10-27 22:04:22.053402864 +0300
-+++ gnustep-gui-0.24.1/Source/NSWindow.m	2016-10-27 22:09:07.050624546 +0300
-@@ -603,7 +603,7 @@
+--- gnustep-gui-0.24.1.orig/Source/NSWindow.m	2014-12-26 09:59:29.000000000 +0200
++++ gnustep-gui-0.24.1/Source/NSWindow.m	2016-10-29 02:06:32.832182305 +0300
+@@ -479,7 +479,8 @@
+   
+   iconSize = GSGetIconSize();
+   
+-  tileImage = [[GSCurrentServer() iconTileImage] copy];
++  // tileImage = [[GSCurrentServer() iconTileImage] copy];
++  tileImage = [[NSImage imageNamed:@"common_MiniWindowTile"] copy];
+   [tileImage setScalesWhenResized: YES];
+   [tileImage setSize: iconSize];
+   
+@@ -512,8 +513,8 @@
+                                  iconSize.width - ((iconSize.width / 8) * 2),
+                                  iconSize.height - ((iconSize.height / 8) * 2))
+               inView: self];
+-  [titleCell drawWithFrame: NSMakeRect(1, iconSize.height - 12,
+-                                       iconSize.width - 2, 11)
++  [titleCell drawWithFrame: NSMakeRect(2, iconSize.height - 12,
++                                       iconSize.width - 3, 11)
+                     inView: self];
+ }
+ 
+@@ -603,7 +604,7 @@
        [titleCell setDrawsBackground: YES];
        [titleCell setBackgroundColor: [NSColor blackColor]];
        [titleCell setTextColor: [NSColor whiteColor]];
