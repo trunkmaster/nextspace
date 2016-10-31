@@ -118,7 +118,9 @@ static WDECallbackUpdate setWrapAppiconsInDock;
 static WDECallbackUpdate setStickyIcons;
 static WDECallbackUpdate setWidgetColor;
 static WDECallbackUpdate setIconTile;
+#ifdef NEXTSPACE
 static WDECallbackUpdate setMiniwindowTile;
+#endif
 static WDECallbackUpdate setWinTitleFont;
 static WDECallbackUpdate setMenuTitleFont;
 static WDECallbackUpdate setMenuTextFont;
@@ -554,8 +556,10 @@ WDefaultEntry optionList[] = {
 	    NULL, getBool, NULL, NULL, NULL},
 	{"IconBack", "(solid, gray)", NULL,
 	    NULL, getTexture, setIconTile, NULL, NULL},
+#ifdef NEXTSPACE
 	{"MiniwindowBack", "(solid, gray)", NULL,
 	    NULL, getTexture, setMiniwindowTile, NULL, NULL},
+#endif
 	{"TitleJustify", "center", seJustifications,
 	    &wPreferences.title_justification, getEnum, setJustify, NULL, NULL},
 	{"WindowTitleFont", DEF_TITLE_FONT, NULL,
@@ -2684,6 +2688,7 @@ static int setIconTile(WScreen * scr, WDefaultEntry * entry, void *tdata, void *
 	return (reset ? REFRESH_ICON_TILE : 0);
 }
 
+#ifdef NEXTSPACE
 static int setMiniwindowTile(WScreen * scr, WDefaultEntry * entry, void *tdata, void *foo)
 {
   Pixmap	pixmap;
@@ -2731,6 +2736,7 @@ static int setMiniwindowTile(WScreen * scr, WDefaultEntry * entry, void *tdata, 
 
   return (reset ? REFRESH_ICON_TILE : 0);
 }
+#endif
 
 static int setWinTitleFont(WScreen * scr, WDefaultEntry * entry, void *tdata, void *foo)
 {

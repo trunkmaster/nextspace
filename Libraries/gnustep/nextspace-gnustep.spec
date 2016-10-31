@@ -5,7 +5,7 @@
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -217,8 +217,10 @@ if [ "$1" = "1" ]; then
     systemctl start gdomap gdnc gpbs
 elif [ "$1" = "2" ]; then
     # post-upgrade
-    echo "Please restart GNUstep services manually with command:"
-    echo "# systemctl restart gdomap gdnc gpbs"
+    #echo "Please restart GNUstep services manually with command:"
+    #echo "# systemctl restart gdomap gdnc gpbs"
+    systemctl daemon-reload
+    systemctl restart gdomap gdnc gpbs
 fi
 
 # for %preun and %postun $1 = 0 - uninstallation, 1 - upgrade. 
@@ -231,11 +233,15 @@ if [ "$1" = "0" ]; then
     systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
 elif  [ "$1" = "1" ]; then
     # prepare for upgrade
-    echo "This is an upgrade. Do nothing with GNUstep services."
+    #echo "This is an upgrade. Do nothing with GNUstep services."
 fi
 #%postun
 
 %changelog
+* Mon Oct 31 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-6
+- Patch for NSWindow was updated: use common_MiniWindowTile.tiff for
+  miniwindows.
+
 * Fri Oct 28 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-5
 - Switch to minimum clang version 3.8.0 (libdispatch and libobjc2 built
   with this version);
