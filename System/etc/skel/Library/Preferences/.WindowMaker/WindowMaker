@@ -112,7 +112,7 @@
   
   CClipTitleColor = "#454045";
   ClipTitleColor = black;
-  ClipTitleFont = "Helvetica:pixelsize=10";
+  ClipTitleFont = "Helvetica:pixelsize=9";
   FTitleBack = (solid, black);
   FTitleColor = white;
   FrameBorderColor = black;
@@ -122,9 +122,10 @@
   HighlightColor = white;
   HighlightTextColor = black;
   IconBack = (tpixmap, "/Library/Images/common_Tile.tiff", "#000000");
+  MiniwindowBack = (tpixmap, "/Library/Images/common_MiniWindowTile.tiff", "#000000");
   IconTitleBack = black;
   IconTitleColor = white;
-  IconTitleFont = "Helvetica:pixelsize=10";
+  IconTitleFont = "Helvetica:pixelsize=9";
   LargeDisplayFont = "Helvetica:pixelsize=32";
   MenuDisabledColor = "#555555";
   MenuStyle = normal;
