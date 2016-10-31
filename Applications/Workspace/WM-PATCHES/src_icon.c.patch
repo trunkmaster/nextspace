@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/icon.c	2015-07-29 16:02:49.000000000 +0300
-+++ ./WM/src/icon.c	2015-08-01 22:34:00.300623069 +0300
+--- ./wmaker-crm_next/src/icon.c	2016-09-29 17:51:23.572381806 +0300
++++ ./WM/src/icon.c	2016-10-31 12:35:40.068495834 +0200
 @@ -51,7 +51,11 @@
  /**** Global varianebles ****/
  
@@ -12,3 +12,28 @@
  #define ICON_BORDER 3
  
  static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);
+@@ -254,7 +258,12 @@
+ 
+ 	switch (icon->tile_type) {
+ 	case TILE_NORMAL:
+-		tile = RCloneImage(scr->icon_tile);
++#ifdef NEXTSPACE
++ 		if (icon->show_title)
++		  tile = RCloneImage(scr->miniwindow_tile);
++		else
++#endif
++		  tile = RCloneImage(scr->icon_tile);
+ 		break;
+ 	case TILE_CLIP:
+ 		tile = RCloneImage(scr->clip_tile);
+@@ -313,8 +322,10 @@
+ 	RReleaseImage(tile);
+ 
+ 	/* Draw the icon's title background (without text) */
++#ifndef NEXTSPACE
+ 	if (icon->show_title)
+ 		drawIconTitleBackground(scr, pixmap, theight);
++#endif
+ 
+ 	icon->pixmap = pixmap;
+ }

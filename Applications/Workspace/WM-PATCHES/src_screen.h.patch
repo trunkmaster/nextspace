@@ -1,0 +1,12 @@
+--- ./wmaker-crm_next/src/screen.h	2016-09-29 17:51:23.552371806 +0300
++++ ./WM/src/screen.h	2016-10-31 12:43:30.847541473 +0200
+@@ -250,6 +250,9 @@
+     WMScreen *wmscreen;		       /* for widget library */
+ 
+     struct RImage *icon_tile;
++#ifdef NEXTSPACE
++    struct RImage *miniwindow_tile;
++#endif
+     struct RImage *clip_tile;          /* tile with arrows to change workspace */
+     struct RImage *drawer_tile;        /* tile for a drawer (tile + arrow) */
+     Pixmap icon_tile_pixmap;		/* For app supplied icons */

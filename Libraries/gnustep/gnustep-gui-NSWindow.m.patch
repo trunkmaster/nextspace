@@ -1,5 +1,5 @@
---- gnustep-gui-0.24.1.orig/Source/NSWindow.m	2014-12-26 09:59:29.000000000 +0200
-+++ gnustep-gui-0.24.1/Source/NSWindow.m	2016-10-29 02:06:32.832182305 +0300
+--- gnustep-gui-0.24.1.orig/Source/NSWindow.m	2016-10-27 22:04:22.053402864 +0300
++++ gnustep-gui-0.24.1/Source/NSWindow.m	2016-10-31 13:28:14.280311891 +0200
 @@ -479,7 +479,8 @@
    
    iconSize = GSGetIconSize();
@@ -17,7 +17,7 @@
 -  [titleCell drawWithFrame: NSMakeRect(1, iconSize.height - 12,
 -                                       iconSize.width - 2, 11)
 +  [titleCell drawWithFrame: NSMakeRect(2, iconSize.height - 12,
-+                                       iconSize.width - 3, 11)
++                                       iconSize.width - 3, 10)
                      inView: self];
  }
  
@@ -26,7 +26,7 @@
        [titleCell setBackgroundColor: [NSColor blackColor]];
        [titleCell setTextColor: [NSColor whiteColor]];
 -      [titleCell setFont: [NSFont systemFontOfSize: 8]];
-+      [titleCell setFont: [NSFont systemFontOfSize: 9]];
++      [titleCell setFont: [NSFont systemFontOfSize: 11]];
      }
    else
      {
