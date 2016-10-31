@@ -240,12 +240,11 @@ void wIconDestroy(WIcon *icon)
 
 static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
 {
-  XFillRectangle(dpy, pixmap, scr->icon_title_texture->normal_gc, 0, 0,
-                 wPreferences.icon_size, height + 1);
-  XDrawLine(dpy, pixmap, scr->icon_title_texture->light_gc, 0, 0, wPreferences.icon_size, 0);
-  XDrawLine(dpy, pixmap, scr->icon_title_texture->light_gc, 0, 0, 0, height + 1);
-  XDrawLine(dpy, pixmap, scr->icon_title_texture->dim_gc,
-  	  wPreferences.icon_size - 1, 0, wPreferences.icon_size - 1, height + 1);
+	XFillRectangle(dpy, pixmap, scr->icon_title_texture->normal_gc, 0, 0, wPreferences.icon_size, height + 1);
+	XDrawLine(dpy, pixmap, scr->icon_title_texture->light_gc, 0, 0, wPreferences.icon_size, 0);
+	XDrawLine(dpy, pixmap, scr->icon_title_texture->light_gc, 0, 0, 0, height + 1);
+	XDrawLine(dpy, pixmap, scr->icon_title_texture->dim_gc,
+		  wPreferences.icon_size - 1, 0, wPreferences.icon_size - 1, height + 1);
 }
 
 static void icon_update_pixmap(WIcon *icon, RImage *image)
@@ -259,11 +258,13 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
 
 	switch (icon->tile_type) {
 	case TILE_NORMAL:
-          if (icon->show_title)
-            tile = RCloneImage(scr->miniwindow_tile);
-          else
-            tile = RCloneImage(scr->icon_tile);
-          break;
+#ifdef NEXTSPACE
+ 		if (icon->show_title)
+		  tile = RCloneImage(scr->miniwindow_tile);
+		else
+#endif
+		  tile = RCloneImage(scr->icon_tile);
+		break;
 	case TILE_CLIP:
 		tile = RCloneImage(scr->clip_tile);
 		break;
@@ -321,8 +322,10 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
 	RReleaseImage(tile);
 
 	/* Draw the icon's title background (without text) */
-	/* if (icon->show_title) */
-	/* 	drawIconTitleBackground(scr, pixmap, theight); */
+#ifndef NEXTSPACE
+	if (icon->show_title)
+		drawIconTitleBackground(scr, pixmap, theight);
+#endif
 
 	icon->pixmap = pixmap;
 }

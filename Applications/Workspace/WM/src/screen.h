@@ -250,7 +250,9 @@ typedef struct _WScreen {
     WMScreen *wmscreen;		       /* for widget library */
 
     struct RImage *icon_tile;
+#ifdef NEXTSPACE
     struct RImage *miniwindow_tile;
+#endif
     struct RImage *clip_tile;          /* tile with arrows to change workspace */
     struct RImage *drawer_tile;        /* tile for a drawer (tile + arrow) */
     Pixmap icon_tile_pixmap;		/* For app supplied icons */
