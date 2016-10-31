@@ -2711,13 +2711,12 @@ static int setMiniwindowTile(WScreen * scr, WDefaultEntry * entry, void *tdata, 
     {
       reset = 1;
       RReleaseImage(scr->miniwindow_tile);
-      /* XFreePixmap(dpy, scr->miniwindow_tile_pixmap); */
     }
 
   scr->miniwindow_tile = img;
 
   /* put the icon in the noticeboard hint */
-  PropSetIconTileHint(scr, img);
+  /* PropSetIconTileHint(scr, img); */
 
   /* scr->icon_tile_pixmap = pixmap; */
 
