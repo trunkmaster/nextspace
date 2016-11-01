@@ -2,10 +2,11 @@
 %define BASE_VERSION	1.24.8
 %define GUI_VERSION	0.24.1
 %define BACK_VERSION	0.24.1
+%define GORM_VERSION	1.2.23
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -18,6 +19,7 @@ Source3:	gdomap.interfaces
 Source4:	gdomap.service
 Source5:	gdnc.service
 Source6:	gpbs.service
+Source7:	gorm-%{GORM_VERSION}.tar.gz
 
 
 Patch0:		gnustep-base-GSConfig.h.in.patch
@@ -118,7 +120,7 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-gnustep -a 1 -a 2
+%setup -c -n nextspace-gnustep -a 1 -a 2 -a 7
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
@@ -165,6 +167,11 @@ export LDFLAGS+=" -lgnustep-gui"
     --enable-graphics=art \
     --with-name=art
 make
+cd ..
+
+#Build GORM
+cd gorm-%{GORM_VERSION}
+make
 
 #
 # Build install phase
@@ -185,6 +192,10 @@ cd ..
 cd gnustep-back-%{BACK_VERSION}
 %{make_install} fonts=no
 cd ..
+
+cd gorm-%{GORM_VERSION}
+export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
+%{make_install}
 
 # systemd service files and config of gdomap
 mkdir -p %{buildroot}/usr/NextSpace/etc
@@ -238,6 +249,9 @@ fi
 #%postun
 
 %changelog
+* Tue Nov 1 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-7
+- gorm-1.2.23 was added.
+
 * Mon Oct 31 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-6
 - Patch for NSWindow was updated: use common_MiniWindowTile.tiff for
   miniwindows.
