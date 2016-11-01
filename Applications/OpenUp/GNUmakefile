@@ -20,7 +20,6 @@ OpenUp_LANGUAGES = English
 OpenUp_LOCALIZED_RESOURCE_FILES = OpenUp.gorm Localizable.strings
 OpenUp_RESOURCE_FILES = \
 defaults.plist \
-Info-gnustep.plist \
 servicesConfig.plist \
 filesConfig.plist \
 version \
