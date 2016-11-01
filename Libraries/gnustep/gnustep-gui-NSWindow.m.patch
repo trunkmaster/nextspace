@@ -26,7 +26,7 @@
        [titleCell setBackgroundColor: [NSColor blackColor]];
        [titleCell setTextColor: [NSColor whiteColor]];
 -      [titleCell setFont: [NSFont systemFontOfSize: 8]];
-+      [titleCell setFont: [NSFont systemFontOfSize: 11]];
++      [titleCell setFont: [NSFont systemFontOfSize: 9]];
      }
    else
      {

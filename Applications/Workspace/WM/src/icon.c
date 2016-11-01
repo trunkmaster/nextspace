@@ -792,7 +792,9 @@ static void update_icon_title(WIcon *icon)
 			x = (icon->core->width - 4) - w;
 		else
 			x = (icon->core->width - w) / 2;
-
+#ifdef NEXTSPACE
+                if (x < 2) x = 2;
+#endif
 		WMDrawString(scr->wmscreen, icon->core->window, scr->icon_title_color,
 			     scr->icon_title_font, x, 1, tmp, l);
 		wfree(tmp);
