@@ -557,6 +557,8 @@ static void updateTitlebar(WFrameWindow * fwin)
 	if (wPreferences.new_style == TS_NEW || fwin->titlebar->width != w)
 		fwin->flags.need_texture_remake = 1;
 
+	printf("Create window titlebar with height: %i = %i + %i + %i\n",
+               theight, WMFontHeight(*fwin->font), *fwin->title_clearance, TITLEBAR_EXTEND_SPACE);
 	wCoreConfigure(fwin->titlebar, x, 0, w, theight);
 }
 
