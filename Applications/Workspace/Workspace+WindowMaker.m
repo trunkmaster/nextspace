@@ -194,21 +194,21 @@ void WWMInitializeWindowMaker(int argc, char **argv)
 void WWMSetupFrameOffsetProperty()
 {
   int      count, nelements;
-  uint16_t offsets[] = { 1, 1, 24, 1,
-                         1, 1, 24, 1,
-                         1, 1, 24, 1,
-                         1, 1, 24, 1,
-                         1, 1, 24, 1,
-                         1, 1, 24, 1,
-                         1, 1, 24, 1,
-                         1, 1, 24, 9,
-                         1, 1, 24, 9,
-                         1, 1, 24, 9,
-                         1, 1, 24, 9,
-                         1, 1, 24, 9,
-                         1, 1, 24, 9,
-                         1, 1, 24, 9,
-                         1, 1, 24, 9};
+  uint16_t offsets[] = { 1, 1, 23, 1,
+                         1, 1, 23, 1,
+                         1, 1, 23, 1,
+                         1, 1, 23, 1,
+                         1, 1, 23, 1,
+                         1, 1, 23, 1,
+                         1, 1, 23, 1,
+                         1, 1, 23, 9,
+                         1, 1, 23, 9,
+                         1, 1, 23, 9,
+                         1, 1, 23, 9,
+                         1, 1, 23, 9,
+                         1, 1, 23, 9,
+                         1, 1, 23, 9,
+                         1, 1, 23, 9};
   
   XChangeProperty(dpy, wScreenWithNumber(0)->root_win,
                   XInternAtom(dpy, "_GNUSTEP_FRAME_OFFSETS", False),
