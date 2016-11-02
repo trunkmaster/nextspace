@@ -137,8 +137,8 @@
   MenuTitleColor = white;
   MenuTitleExtendSpace = 0;
   MenuTitleFont = "Helvetica:bold:pixelsize=12";
-  MenuTitleMaxHeight = 24;
-  MenuTitleMinHeight = 0;
+  MenuTitleMaxHeight = 22;
+  MenuTitleMinHeight = 22;
   ModifierKeyLabels = ("Shift+", "Control+", "Mod1+", "Mod2+", "Mod3+", "Mod4+", "Mod5+");
   PTitleBack = (solid, "#555555");
   PTitleColor = white;
@@ -152,8 +152,8 @@
   WidgetColor = (solid, "#aaaaaa");
   WindowTitleExtendSpace = 0;
   WindowTitleFont = "Helvetica:bold:pixelsize=12";
-  WindowTitleMaxHeight = 24;
-  WindowTitleMinHeight = 0;
+  WindowTitleMaxHeight = 22;
+  WindowTitleMinHeight = 22;
   WorkspaceMapBack = (solid, black);
 
   COMMENT = "/* keybindings */";
