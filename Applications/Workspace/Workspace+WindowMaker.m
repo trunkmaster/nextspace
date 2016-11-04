@@ -193,22 +193,31 @@ void WWMInitializeWindowMaker(int argc, char **argv)
 
 void WWMSetupFrameOffsetProperty()
 {
-  int      count, nelements;
-  uint16_t offsets[] = { 1, 1, 23, 1,
-                         1, 1, 23, 1,
-                         1, 1, 23, 1,
-                         1, 1, 23, 1,
-                         1, 1, 23, 1,
-                         1, 1, 23, 1,
-                         1, 1, 23, 1,
-                         1, 1, 23, 9,
-                         1, 1, 23, 9,
-                         1, 1, 23, 9,
-                         1, 1, 23, 9,
-                         1, 1, 23, 9,
-                         1, 1, 23, 9,
-                         1, 1, 23, 9,
-                         1, 1, 23, 9};
+  int		count, nelements;
+  NSUInteger	titleBarHeight;
+
+  // GSMenuBarHeight defines height for GNUstep menu title bar.
+  // WindowMaker window title bar height stored in
+  // ~/L/P/.WindowMaker/WindowMaker setting WindowTitle*Height.
+  // Should be 23
+  titleBarHeight = [[NSUserDefaults standardUserDefaults]
+                     floatForKey:@"GSMenuBarHeight"];
+    
+  uint16_t offsets[] = { 1, 1, titleBarHeight, 1,
+                         1, 1, titleBarHeight, 1,
+                         1, 1, titleBarHeight, 1,
+                         1, 1, titleBarHeight, 1,
+                         1, 1, titleBarHeight, 1,
+                         1, 1, titleBarHeight, 1,
+                         1, 1, titleBarHeight, 1,
+                         1, 1, titleBarHeight, 9,
+                         1, 1, titleBarHeight, 9,
+                         1, 1, titleBarHeight, 9,
+                         1, 1, titleBarHeight, 9,
+                         1, 1, titleBarHeight, 9,
+                         1, 1, titleBarHeight, 9,
+                         1, 1, titleBarHeight, 9,
+                         1, 1, titleBarHeight, 9};
   
   XChangeProperty(dpy, wScreenWithNumber(0)->root_win,
                   XInternAtom(dpy, "_GNUSTEP_FRAME_OFFSETS", False),
