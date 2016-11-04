@@ -307,7 +307,18 @@ static NSString *WMComputerShouldGoDownNotification =
   TEST_RELEASE(inspector);
   TEST_RELEASE(console);
   TEST_RELEASE(procPanel);
-  TEST_RELEASE(procManager);  
+  TEST_RELEASE(procManager);
+  
+  // Quit WindowManager, close all X11 applications.
+  if (useInternalWindowManager)
+    {
+      WWMShutdown(WSKillMode);
+      // // Trigger WindowMaker state variable
+      // SIG_WCHANGE_STATE(WSTATE_NEED_EXIT);
+      // // Generate some event to wake up WindowMaker GCD thread (wmaker_q)
+      // XWarpPointer(dpy, None, None, 0, 0, 0, 0, 100, 100);
+      // fprintf(stderr, "XWarpPointer called.\n");
+    }
 }
 
 @end
@@ -501,12 +512,18 @@ static NSString *WMComputerShouldGoDownNotification =
           return NO;
         }
 
+      if ([procManager terminateAllApps] == NO)
+        {
+          [NSApp activateIgnoringOtherApps:YES];
+          NSRunAlertPanel(_(@"Power Off"),
+                          _(@"Some application terminate power off process."),
+                          _(@"Dismiss"), nil, nil);
+          isQuitting = NO;
+          return NO;
+        }
+
+      // Close Workspace windows, hide Dock, quit WindowMaker
       [self _finishTerminateProcess];
-      // Quit WindowManager, close all X11 applications.
-      // if (useInternalWindowManager)
-      //   {
-      //     WWMShutdown(WSKillMode);
-      //   }
       
       return YES;
       break;
@@ -518,28 +535,17 @@ static NSString *WMComputerShouldGoDownNotification =
           return NO;
         }
         
-      if ([procManager terminateAllApps] == NO)
-        {
-          [NSApp activateIgnoringOtherApps:YES];
-          NSRunAlertPanel(_(@"Power Off"),
-                          _(@"Some application terminate power off process."),
-                          _(@"Dismiss"), nil, nil);
-          isQuitting = NO;
-          return NO;
-        }
-
-      [self _finishTerminateProcess];
+      // if ([procManager terminateAllApps] == NO)
+      //   {
+      //     [NSApp activateIgnoringOtherApps:YES];
+      //     NSRunAlertPanel(_(@"Power Off"),
+      //                     _(@"Some application terminate power off process."),
+      //                     _(@"Dismiss"), nil, nil);
+      //     isQuitting = NO;
+      //     return NO;
+      //   }
       
-      // Quit WindowManager, close all X11 applications.
-      if (useInternalWindowManager)
-        {
-          WWMShutdown(WSKillMode);
-          // // Trigger WindowMaker state variable
-          // SIG_WCHANGE_STATE(WSTATE_NEED_EXIT);
-          // // Generate some event to wake up WindowMaker GCD thread (wmaker_q)
-          // XWarpPointer(dpy, None, None, 0, 0, 0, 0, 100, 100);
-          // fprintf(stderr, "XWarpPointer called.\n");
-        }
+      [self _finishTerminateProcess];
       
       // Tell Login.app to shutdown a computer
       /*	  [[NSDistributedNotificationCenter 
