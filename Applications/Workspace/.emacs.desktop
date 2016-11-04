@@ -2,39 +2,39 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Nov  4 01:07:02 2016
+;; Created Fri Nov  4 11:26:45 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/WM/src/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("wFrameWindowCreate" "wFrameWindow" "Antialias" "setMini" "miniwindow_" "setMiniwindowTile" "setMini" "MiniwindowTile" "MiniWin" "drawIcon" "Mini" "setIconTile" "icon_tile_pixmap" "WREL_" "icon_tile" "tile"))
+(setq search-ring '("frame" "wFrameWindowCreate" "wFrameWindow" "Antialias" "setMini" "miniwindow_" "setMiniwindowTile" "setMini" "MiniwindowTile" "MiniWin" "drawIcon" "Mini" "setIconTile" "icon_tile_pixmap" "WREL_" "icon_tile"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Applications/Workspace/wmaker-crm_next/src/icon.c" "~/Developer/nextspace" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.WM" "~/Developer/nextspace/Applications/Workspace/GNUmakefile" "~/Developer/nextspace/Applications/Workspace/WM/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/WM/src/startup.c" "~/Developer/nextspace/Applications/Workspace/WM/src/main.c" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
-  "Workspace+WindowMaker.m"
-  'objc-mode
+  "/Users/me/Developer/nextspace/Applications/Workspace/WM/src/framewin.c"
+  "framewin.c"
+  'c-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  977
-  '(3188 nil)
+  29109
+  '(30758 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WM/src/framewin.c"
-  "framewin.c"
-  'c-mode
+  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
+  "Workspace+WindowMaker.m"
+  'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  16121
-  '(16694 nil)
+  18037
+  '(977 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
