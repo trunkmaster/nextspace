@@ -258,14 +258,17 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-  [NSApp deactivate];
+  if ([defaults boolForKey:@"NXAutoLaunch"])
+    {
+      [NSApp deactivate];
+    }
     
-    float f;
-    int ret;
-    CPUTime cp_time;
-    SEL stepSel = @selector(step);
-    NSMethodSignature *sig = [self methodSignatureForSelector:stepSel];  
-    NSDictionary *defs = [NSDictionary dictionaryWithObjectsAndKeys:
+  float f;
+  int ret;
+  CPUTime cp_time;
+  SEL stepSel = @selector(step);
+  NSMethodSignature *sig = [self methodSignatureForSelector:stepSel];  
+  NSDictionary *defs = [NSDictionary dictionaryWithObjectsAndKeys:
 	@"0.5",			@"UpdatePeriod",
 	@"4",			@"LagFactor",
 	@"16",			@"LayerFactor",
@@ -287,7 +290,7 @@
     [defaults registerDefaults:defs];
     [defaults synchronize];
 	
-	// Shoot out error codes if there was an error.
+    // Shoot out error codes if there was an error.
     if ((ret = la_init(cp_time)) ) 
       {
 	const id syslogs[] = {
@@ -330,10 +333,10 @@
     steps = 1;
     
     [colorFields readColors];
-    if ([defaults boolForKey:@"HideOnAutolaunch"]
-       && [defaults boolForKey:@"NXAutoLaunch"]) {
-      [NSApp hide:self];
-    }
+    // if ([defaults boolForKey:@"HideOnAutolaunch"]
+    //    && [defaults boolForKey:@"NXAutoLaunch"]) {
+    //   [NSApp hide:self];
+    // }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(id)sender
