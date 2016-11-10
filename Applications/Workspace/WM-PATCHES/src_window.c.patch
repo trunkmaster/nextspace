@@ -1,0 +1,15 @@
+--- ./wmaker-crm_next/src/window.c	2016-09-29 17:51:23.841516306 +0300
++++ ./WM/src/window.c	2016-11-10 13:01:03.051599496 +0200
+@@ -755,9 +755,10 @@
+ 
+ 	wwin->orig_main_window = wwin->main_window;
+ 
+-	if (wwin->flags.is_gnustep)
++	if (wwin->flags.is_gnustep) {
+ 		wwin->client_flags.shared_appicon = 0;
+-
++		wwin->defined_user_flags.shared_appicon = 0;
++	}
+ 	if (wwin->main_window) {
+ 		XTextProperty text_prop;
+ 
