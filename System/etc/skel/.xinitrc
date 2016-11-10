@@ -18,6 +18,8 @@ xrdb -merge /etc/X11/Xresources
 xset m 20/10 4
 # Keyboard repeat rate -> NXKeyboard
 xset r rate 200 40
+# X Window system beep -> NXSound
+xset b 30 40 100
 
 ##############################################################################
 ### Session
