@@ -755,9 +755,10 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
 	wwin->orig_main_window = wwin->main_window;
 
-	if (wwin->flags.is_gnustep)
+	if (wwin->flags.is_gnustep) {
 		wwin->client_flags.shared_appicon = 0;
-
+		wwin->defined_user_flags.shared_appicon = 0;
+	}
 	if (wwin->main_window) {
 		XTextProperty text_prop;
 
