@@ -46,7 +46,6 @@
 ***** Miniwindows (font, placing)
 ***** Pass mouse click
 ***** Drag and Drop Workspace<->Dock
-
 *** Многомониторные конфигурации
 **** Applying default layout on startup by Login.app
      Default layout use arranged monitors lined up in horizontal direction.
@@ -1839,6 +1838,9 @@
          В NEXTSTEP не используется такой shortcut - все переключение между
          окнами выполняется с помощью мыши (на окне, на appicon).
          Как это стоит реализовать?
+         Очевидно, нужно менять логику работы Focus*Key в WindowMaker-
+         показывать только по одной иконке на приложение. Переключение между
+         окнами должно работать через другой shortcut (Group*Key).
 ******* TODO Старт приложений с опцией '-NXAutoLaunch YES'
 ******** TODO запускаеся и отображает appicon
 ******** TODO меню НЕ отображается
