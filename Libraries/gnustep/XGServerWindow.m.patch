@@ -1,250 +1,44 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerWindow.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2016-11-10 16:32:27.436336388 +0200
-@@ -1593,6 +1593,11 @@
++++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2016-11-13 03:56:43.238891630 +0200
+@@ -2936,13 +2936,38 @@
+        */
+       if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
  	{
- 	  generic.flags.useWindowMakerIcons = NO;
- 	}
-+      // XChangeProperty(dpy, ROOT,
-+      //                 XInternAtom(dpy, "WM_CLIENT_LEADER", False),
-+      //                 XA_WINDOW,
-+      //                 32, PropModeReplace, 
-+      //                 (unsigned char *)&ROOT, 1);
-     }
-   generic.flags.appOwnsMiniwindow = YES;
-   if ([defs objectForKey: @"GSAppOwnsMiniwindow"] != nil
-@@ -2116,6 +2121,14 @@
-       [self _setNetWMIconFor: window->ident];
-     }
- 
-+  // if ((generic.wm & XGWM_WINDOWMAKER) != 0)
-+  //   {
-+  //     XChangeProperty(dpy, window->ident,
-+  //                     XInternAtom(dpy, "WM_CLIENT_LEADER", False),
-+  //                     XA_WINDOW,
-+  //                     32, PropModeReplace, 
-+  //                     (unsigned char *)&ROOT, 1);
-+  //   }
-   // Use the globally active input mode
-   window->gen_hints.flags = InputHint;
-   window->gen_hints.input = False;
-@@ -2751,7 +2764,7 @@
-     && (window->buffer_width != width || window->buffer_height != height)
-     && (window->gdriverProtocol & GDriverHandlesBacking) == 0)
-     {
--      [isa waitAllContexts];
-+      [object_getClass(self) waitAllContexts];
-       XFreePixmap(dpy, window->buffer);
-       window->buffer = 0;
-       if (window->alpha_buffer)
-@@ -2919,6 +2932,18 @@
- 
- 	  XSetWMHints(dpy, ROOT, &gen_hints);
- 	}
-+      else
-+        {
-+	  XWMHints gen_hints;
-+
-+	  gen_hints.flags = WindowGroupHint;
-+	  gen_hints.window_group = ROOT;
-+
-+	  XSetWMHints(dpy, window->ident, &gen_hints);
-+        }
-+
-+      fprintf(stderr, "gnustep-back: created window: 0x%lx group leader: 0x%lx\n",
-+              window->ident, ROOT);
- 
-       /*
-        * Tell the window manager what protocols this window conforms to.
-@@ -2940,10 +2965,15 @@
+-#if 0
++#if 1
  	  /* This doesn't appear to do anything useful, and, at least
  	     with WindowMaker, can cause the app to flicker and spuriously
  	     lose focus if the app icon is already visible.  */
 -	  if (op != NSWindowOut)
--	    {
++          NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++          
++	  if (op != NSWindowOut &&
++              window->map_state == IsUnmapped &&
++              [[defaults objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
+ 	    {
 -	      XMapRaised(dpy, ROOT);
--	    }
-+          /* In WindowMaker group leader (ROOT) always remains in IsUnmapped 
-+             state. If application doesn't have any visible windows application
-+             icon will never be shown. So without code below application without 
-+             menu at least will has no visible app icon.*/
-+          if (op != NSWindowOut && window->map_state == IsUnmapped)
-+            {
-+              fprintf(stderr, "gnustep-back: Map group leader.\n");
-+              XMapRaised(dpy, ROOT);
-+            }
++              // window->ignore_take_focus = YES; // <<<<
++              {
++                // Window info_win = wsmap->scr->info_window;
++                XEvent ev;
++
++                ev.xclient.type = ClientMessage;
++                // WM/src/startup.c
++                ev.xclient.message_type = XInternAtom(dpy,"WM_IGNORE_FOCUS_EVENTS", False);
++                ev.xclient.format = 32;
++                
++                // Inform WM to ignore focus events
++                ev.xclient.data.l[0] = True;
++                XSendEvent(dpy, ROOT, True, EnterWindowMask, &ev);
++
++                // Action
++                XMapWindow(dpy, ROOT); // <<<<
++
++                // Inform WM to process focus events again
++                ev.xclient.data.l[0] = False;
++                XSendEvent(dpy, ROOT, True, EnterWindowMask, &ev);
++              }
++              // window->ignore_take_focus = NO; // <<<<
+ 	    }
  #endif
  	  return;
- 	}
-@@ -3055,80 +3085,80 @@
-    * looks at the existing hints when re-mapping the window it will
-    * place the window in an old location.
-    */
--  if (op != NSWindowOut && window->map_state != IsViewable)
--    {
--      XMoveWindow(dpy, window->ident, window->siz_hints.x,
--	window->siz_hints.y);
--      setNormalHints(dpy, window);
--      /*
--       * Do we need to setup drag types when the window is mapped or will
--       * they work on the set up before mapping?
--       *
--       * [self _resetDragTypesForWindow: GSWindowWithNumber(window->number)];
--       */
--      if ((window->win_attrs.window_level != NSNormalWindowLevel) ||
--	  ((window->win_attrs.window_style &
--	    (NSIconWindowMask|NSMiniWindowMask)) != 0))
--        {
--	  /*
--	   * Make any window which assumes the desktop level act as the
--	   * background.
--	   */ 
--	  if (window->win_attrs.window_level == NSDesktopWindowLevel) 
--	    {
--	      [self _sendRoot: window->root 
--		    type: generic.netstates.net_wm_state_atom
--		    window: window->ident
--		    data0: _NET_WM_STATE_ADD
--		    data1: generic.netstates.net_wm_state_skip_taskbar_atom
--		    data2: generic.netstates.net_wm_state_sticky_atom
--		    data3: 1];
--	    }
--	  else
--	    {
--	      BOOL sticky = NO;
--	      NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
--
--	      [self _sendRoot: window->root 
--		    type: generic.netstates.net_wm_state_atom
--		    window: window->ident
--		    data0: _NET_WM_STATE_ADD
--		    data1: generic.netstates.net_wm_state_skip_taskbar_atom
--		    data2: generic.netstates.net_wm_state_skip_pager_atom
--                    data3: 1];
--
--	      if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
--		{
--		  sticky = [defs boolForKey: @"GSStickyAppIcons"];
--		}
--	      else if ((window->win_attrs.window_style & NSMiniWindowMask) != 0)
--		{
--		  sticky = [defs boolForKey: @"GSStickyMiniWindows"];
--		}
--	      if (sticky == YES)
--		{
--		  [self _sendRoot: window->root 
--			     type: generic.netstates.net_wm_state_atom
--			   window: window->ident
--			    data0: _NET_WM_STATE_ADD
--			    data1: generic.netstates.net_wm_state_sticky_atom
--			    data2: 0
--			    data3: 1];
--		}
--	    }
--	}
--
--      if (window->win_attrs.window_level == NSModalPanelWindowLevel)
--        {
--          [self _sendRoot: window->root 
--                     type: generic.netstates.net_wm_state_atom
--                   window: window->ident
--                    data0: _NET_WM_STATE_ADD
--                    data1: generic.netstates.net_wm_state_modal_atom
--                    data2: 0
--                    data3: 1];
--        }
--    }
-+  // if (op != NSWindowOut && window->map_state != IsViewable)
-+  //   {
-+  //     XMoveWindow(dpy, window->ident, window->siz_hints.x,
-+  //       window->siz_hints.y);
-+  //     setNormalHints(dpy, window);
-+  //     /*
-+  //      * Do we need to setup drag types when the window is mapped or will
-+  //      * they work on the set up before mapping?
-+  //      *
-+  //      * [self _resetDragTypesForWindow: GSWindowWithNumber(window->number)];
-+  //      */
-+  //     if ((window->win_attrs.window_level != NSNormalWindowLevel) ||
-+  //         ((window->win_attrs.window_style &
-+  //           (NSIconWindowMask|NSMiniWindowMask)) != 0))
-+  //       {
-+  //         /*
-+  //          * Make any window which assumes the desktop level act as the
-+  //          * background.
-+  //          */ 
-+  //         if (window->win_attrs.window_level == NSDesktopWindowLevel) 
-+  //           {
-+  //             [self _sendRoot: window->root 
-+  //       	    type: generic.netstates.net_wm_state_atom
-+  //       	    window: window->ident
-+  //       	    data0: _NET_WM_STATE_ADD
-+  //       	    data1: generic.netstates.net_wm_state_skip_taskbar_atom
-+  //       	    data2: generic.netstates.net_wm_state_sticky_atom
-+  //       	    data3: 1];
-+  //           }
-+  //         else
-+  //           {
-+  //             BOOL sticky = NO;
-+  //             NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-+
-+  //             [self _sendRoot: window->root 
-+  //       	    type: generic.netstates.net_wm_state_atom
-+  //       	    window: window->ident
-+  //       	    data0: _NET_WM_STATE_ADD
-+  //       	    data1: generic.netstates.net_wm_state_skip_taskbar_atom
-+  //       	    data2: generic.netstates.net_wm_state_skip_pager_atom
-+  //                   data3: 1];
-+
-+  //             if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
-+  //       	{
-+  //       	  sticky = [defs boolForKey: @"GSStickyAppIcons"];
-+  //       	}
-+  //             else if ((window->win_attrs.window_style & NSMiniWindowMask) != 0)
-+  //       	{
-+  //       	  sticky = [defs boolForKey: @"GSStickyMiniWindows"];
-+  //       	}
-+  //             if (sticky == YES)
-+  //       	{
-+  //       	  [self _sendRoot: window->root 
-+  //       		     type: generic.netstates.net_wm_state_atom
-+  //       		   window: window->ident
-+  //       		    data0: _NET_WM_STATE_ADD
-+  //       		    data1: generic.netstates.net_wm_state_sticky_atom
-+  //       		    data2: 0
-+  //       		    data3: 1];
-+  //       	}
-+  //           }
-+  //       }
-+
-+  //     if (window->win_attrs.window_level == NSModalPanelWindowLevel)
-+  //       {
-+  //         [self _sendRoot: window->root 
-+  //                    type: generic.netstates.net_wm_state_atom
-+  //                  window: window->ident
-+  //                   data0: _NET_WM_STATE_ADD
-+  //                   data1: generic.netstates.net_wm_state_modal_atom
-+  //                   data2: 0
-+  //                   data3: 1];
-+  //       }
-+  //   }
-   XFlush(dpy);
- }
- 
-@@ -3648,7 +3678,7 @@
-       values.foreground = window->xwn_attrs.background_pixel;
-       valuemask = (GCFunction | GCPlaneMask | GCClipMask | GCForeground);
-       XChangeGC(dpy, window->gc, valuemask, &values);
--      [isa waitAllContexts];
-+      [object_getClass(self) waitAllContexts];
-       if ((window->gdriverProtocol & GDriverHandlesExpose))
- 	{
- 	  /* Temporary protocol until we standardize the backing buffer */
-@@ -3723,7 +3753,7 @@
- 
-   if (width > 0 || height > 0)
-     {
--      [isa waitAllContexts];
-+      [object_getClass(self) waitAllContexts];
-       if ((window->gdriverProtocol & GDriverHandlesBacking))
- 	{
- 	  NSDebugLLog (@"XGFlush", 
