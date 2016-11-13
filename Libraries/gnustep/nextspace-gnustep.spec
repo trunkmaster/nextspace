@@ -169,10 +169,6 @@ export LDFLAGS+=" -lgnustep-gui"
 make
 cd ..
 
-#Build GORM
-cd gorm-%{GORM_VERSION}
-make
-
 #
 # Build install phase
 #
@@ -195,6 +191,9 @@ cd ..
 
 cd gorm-%{GORM_VERSION}
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
+#Build GORM
+cd gorm-%{GORM_VERSION}
+make
 %{make_install}
 
 # systemd service files and config of gdomap

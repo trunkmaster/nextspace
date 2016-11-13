@@ -1,127 +1,44 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerWindow.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2016-11-11 02:02:21.940508492 +0200
-@@ -2884,6 +2884,24 @@
-        * immediately before mapping the window ...
-        */
- 
-+      /*
-+       * When we are ordering a window in, we must ensure that the position
-+       * and size hints are set for the window - the window could have been
-+       * moved or resized by the window manager before it was ordered out,
-+       * in which case, we will have been notified of the new position, but
-+       * will not yet have updated the window hints, so if the window manager
-+       * looks at the existing hints when re-mapping the window it will
-+       * place the window in an old location.
-+       */
-+      if (window->map_state != IsViewable)
-+        {
-+          XMoveWindow(dpy, window->ident, window->siz_hints.x,
-+                      window->siz_hints.y);
-+          /* Set this to ignore any take focus events for this window */
-+          window->ignore_take_focus = YES;
-+        }
-+
-+      /* Set hints which were prepared in window:::: method...*/
-       setNormalHints(dpy, window);
-       XSetWMHints(dpy, window->ident, &window->gen_hints);
- 
-@@ -2936,15 +2954,15 @@
++++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2016-11-13 03:56:43.238891630 +0200
+@@ -2936,13 +2936,38 @@
         */
        if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
  	{
 -#if 0
--	  /* This doesn't appear to do anything useful, and, at least
--	     with WindowMaker, can cause the app to flicker and spuriously
--	     lose focus if the app icon is already visible.  */
++#if 1
+ 	  /* This doesn't appear to do anything useful, and, at least
+ 	     with WindowMaker, can cause the app to flicker and spuriously
+ 	     lose focus if the app icon is already visible.  */
 -	  if (op != NSWindowOut)
-+          /* If application doesn't show any window (including menu) at
-+             application startup time, application icon will be shown only after
-+             first window appearance.*/
++          NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++          
 +	  if (op != NSWindowOut &&
-+              ((generic.wm & XGWM_WINDOWMAKER) != 0) &&
-+              (window->map_state == IsUnmapped))
++              window->map_state == IsUnmapped &&
++              [[defaults objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
  	    {
 -	      XMapRaised(dpy, ROOT);
-+              XMapWindow(dpy, ROOT);
++              // window->ignore_take_focus = YES; // <<<<
++              {
++                // Window info_win = wsmap->scr->info_window;
++                XEvent ev;
++
++                ev.xclient.type = ClientMessage;
++                // WM/src/startup.c
++                ev.xclient.message_type = XInternAtom(dpy,"WM_IGNORE_FOCUS_EVENTS", False);
++                ev.xclient.format = 32;
++                
++                // Inform WM to ignore focus events
++                ev.xclient.data.l[0] = True;
++                XSendEvent(dpy, ROOT, True, EnterWindowMask, &ev);
++
++                // Action
++                XMapWindow(dpy, ROOT); // <<<<
++
++                // Inform WM to process focus events again
++                ev.xclient.data.l[0] = False;
++                XSendEvent(dpy, ROOT, True, EnterWindowMask, &ev);
++              }
++              // window->ignore_take_focus = NO; // <<<<
  	    }
--#endif
- 	  return;
- 	}
-       if ((window->win_attrs.window_style & NSMiniWindowMask) != 0)
-@@ -2983,25 +3001,7 @@
-     }
-   [self setwindowlevel: level : winNum];
- 
--  /*
--   * When we are ordering a window in, we must ensure that the position
--   * and size hints are set for the window - the window could have been
--   * moved or resized by the window manager before it was ordered out,
--   * in which case, we will have been notified of the new position, but
--   * will not yet have updated the window hints, so if the window manager
--   * looks at the existing hints when re-mapping the window it will
--   * place the window in an old location.
--   * We also set other hints and protocols supported by the window.
--   */
--  if (op != NSWindowOut && window->map_state != IsViewable)
--    {
--      XMoveWindow(dpy, window->ident, window->siz_hints.x,
--      	window->siz_hints.y);
--      setNormalHints(dpy, window);
--      /* Set this to ignore any take focus events for this window */
--      window->ignore_take_focus = YES;
--    }
--
-+  /* Window ordering */
-   switch (op)
-     {
-       case NSWindowBelow:
-@@ -3046,20 +3046,9 @@
-         XWithdrawWindow (dpy, window->ident, window->screen);
- 	break;
-     }
--  /*
--   * When we are ordering a window in, we must ensure that the position
--   * and size hints are set for the window - the window could have been
--   * moved or resized by the window manager before it was ordered out,
--   * in which case, we will have been notified of the new position, but
--   * will not yet have updated the window hints, so if the window manager
--   * looks at the existing hints when re-mapping the window it will
--   * place the window in an old location.
--   */
-+  
-   if (op != NSWindowOut && window->map_state != IsViewable)
-     {
--      XMoveWindow(dpy, window->ident, window->siz_hints.x,
--	window->siz_hints.y);
--      setNormalHints(dpy, window);
-       /*
-        * Do we need to setup drag types when the window is mapped or will
-        * they work on the set up before mapping?
-@@ -3393,9 +3382,14 @@
-               // work out for the main menu
-               //data[0] = generic.wintypes.win_topmenu_atom;
-               data[0] = generic.wintypes.win_dock_atom;
--              //len = 2;
-+              len = 1;
-               skipTaskbar = YES;
-             }
-+          /* FIXME: it is not correct to have one value these
-+             three different objects. Currently floating window can
-+             overlap torn-off menu or submenu. There's need to correct values
-+             in NSWindow.h - ot seems that WindowMaker uses only values and
-+             not use enum variable names.*/
-           else if (level == NSSubmenuWindowLevel
-                    || level == NSFloatingWindowLevel
-                    || level == NSTornOffMenuWindowLevel)
-@@ -3406,7 +3400,10 @@
-               data[1] = generic.wintypes.win_menu_atom;
-               len = 2;
- #else
--              data[0] = generic.wintypes.win_menu_atom;
-+              // if (level == NSFloatingWindowLevel)
-+                data[0] = generic.wintypes.win_utility_atom;
-+              // else
-+              //   data[0] = generic.wintypes.win_menu_atom;
-               len = 1;
  #endif
-               skipTaskbar = YES;
+ 	  return;
