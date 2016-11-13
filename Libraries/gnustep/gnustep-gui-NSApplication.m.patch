@@ -1,0 +1,33 @@
+--- gnustep-gui-0.24.1.orig/Source/NSApplication.m	2015-03-27 23:33:24.000000000 +0200
++++ gnustep-gui-0.24.1/Source/NSApplication.m	2016-11-13 04:13:22.654949748 +0200
+@@ -1101,6 +1101,7 @@
+       name: GSUnhideAllApplicationsNotification object: nil];
+ 
+   // Don't activate the application, when the delegate hid it
++  NSLog(@"NSApp: NXAutoLaunch = %@", [defs objectForKey: @"NXAutoLaunch"]);
+   if (![self isHidden])
+     {
+       [self activateIgnoringOtherApps: YES];
+@@ -1323,7 +1324,7 @@
+           NSWindow *menu_window= [[self mainMenu] window];
+           NSDebugLLog(@"Focus", @"No key on activation - make menu key");
+           [GSServerForWindow(menu_window) setinputfocus: 
+-                                [menu_window windowNumber]];
++				[menu_window windowNumber]];
+         }
+ 
+       info = [self _notificationUserInfo];
+@@ -1334,6 +1335,13 @@
+           postNotificationName: NSApplicationDidBecomeActiveNotification
+ 		      object: [NSWorkspace sharedWorkspace]
+           userInfo: info];
++
++      if ([[[NSUserDefaults standardUserDefaults]
++             objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
++        {
++          _app_is_active = NO;
++          [defaults removeSuiteNamed:NSArgumentDomain];
++        }
+     }
+ }
+ 
