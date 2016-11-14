@@ -1,6 +1,6 @@
 --- gnustep-gui-0.24.1.orig/Source/NSMenu.m	2015-01-11 23:56:27.000000000 +0200
 +++ gnustep-gui-0.24.1/Source/NSMenu.m	2016-11-13 01:49:32.171447867 +0200
-@@ -1794,11 +1794,19 @@
+@@ -1794,11 +1794,16 @@
  - (void) _showOnActivateApp: (NSNotification*)notification
  {
    if ([NSApp mainMenu] == self)
@@ -12,11 +12,8 @@
 +    {
 +      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 +  
-+      NSLog(@"NSMenu: NXAutoLaunch = %@", [defaults objectForKey: @"NXAutoLaunch"]);
-+  
 +      if (![[defaults objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
 +        {
-+          NSLog(@"Display main menu.");
 +          [self display];
 +          // we must make sure that any attached submenu is visible too.
 +          [[self attachedMenu] display];
