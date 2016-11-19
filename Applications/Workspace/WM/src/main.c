@@ -627,6 +627,7 @@ int real_main(int argc, char **argv)
 	/* for telling WPrefs what's the name of the wmaker binary being ran */
 	setenv("WMAKER_BIN_NAME", argv[0], 1);
 
+#ifndef NEXTSPACE
 	ArgCount = argc;
 	Arguments = wmalloc(sizeof(char *) * (ArgCount + 1));
 	for (i = 0; i < argc; i++) {
@@ -716,6 +717,7 @@ int real_main(int argc, char **argv)
 			}
 		}
 	}
+#endif // NEXTSPACE
 
 	if (!wPreferences.flags.noupdates) {
 		/* check existence of Defaults DB directory */

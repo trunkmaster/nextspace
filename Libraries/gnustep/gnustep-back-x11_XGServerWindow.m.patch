@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerWindow.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2016-11-13 03:56:43.238891630 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2016-11-19 02:14:31.468931989 +0200
 @@ -2936,13 +2936,38 @@
         */
        if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
@@ -42,3 +42,23 @@
  	    }
  #endif
  	  return;
+@@ -3397,7 +3422,6 @@
+               skipTaskbar = YES;
+             }
+           else if (level == NSSubmenuWindowLevel
+-                   || level == NSFloatingWindowLevel
+                    || level == NSTornOffMenuWindowLevel)
+             {
+ #ifdef USE_KDE_OVERRIDE
+@@ -3411,6 +3435,11 @@
+ #endif
+               skipTaskbar = YES;
+             }
++          else if (level == NSFloatingWindowLevel)
++            {
++              data[0] = generic.wintypes.win_utility_atom;
++              len = 1;
++            }
+           else if (level == NSDockWindowLevel
+                    || level == NSStatusWindowLevel)
+             {

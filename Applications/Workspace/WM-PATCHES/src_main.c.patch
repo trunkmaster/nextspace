@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/main.c	2015-07-29 16:02:49.000000000 +0300
-+++ ./WM/src/main.c	2015-08-25 02:17:07.278585171 +0300
+--- ./wmaker-crm_next/src/main.c	2015-05-25 22:23:53.403591613 +0300
++++ ./WM/src/main.c	2016-11-18 22:29:04.512208017 +0200
 @@ -105,7 +105,7 @@
  static int *wVisualID = NULL;
  static int wVisualID_len = 0;
@@ -52,7 +52,23 @@
  {
  	int i;
  	char *pos;
-@@ -808,6 +818,10 @@
+@@ -617,6 +627,7 @@
+ 	/* for telling WPrefs what's the name of the wmaker binary being ran */
+ 	setenv("WMAKER_BIN_NAME", argv[0], 1);
+ 
++#ifndef NEXTSPACE
+ 	ArgCount = argc;
+ 	Arguments = wmalloc(sizeof(char *) * (ArgCount + 1));
+ 	for (i = 0; i < argc; i++) {
+@@ -706,6 +717,7 @@
+ 			}
+ 		}
+ 	}
++#endif // NEXTSPACE
+ 
+ 	if (!wPreferences.flags.noupdates) {
+ 		/* check existence of Defaults DB directory */
+@@ -808,6 +820,10 @@
  #ifdef HAVE_INOTIFY
  	inotifyWatchConfig();
  #endif
