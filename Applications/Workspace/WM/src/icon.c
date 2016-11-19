@@ -238,6 +238,7 @@ void wIconDestroy(WIcon *icon)
 	wfree(icon);
 }
 
+#ifndef NEXTSPACE
 static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
 {
 	XFillRectangle(dpy, pixmap, scr->icon_title_texture->normal_gc, 0, 0, wPreferences.icon_size, height + 1);
@@ -246,6 +247,7 @@ static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
 	XDrawLine(dpy, pixmap, scr->icon_title_texture->dim_gc,
 		  wPreferences.icon_size - 1, 0, wPreferences.icon_size - 1, height + 1);
 }
+#endif /* NEXTSPACE */
 
 static void icon_update_pixmap(WIcon *icon, RImage *image)
 {
@@ -325,7 +327,7 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
 #ifndef NEXTSPACE
 	if (icon->show_title)
 		drawIconTitleBackground(scr, pixmap, theight);
-#endif
+#endif /* NEXTSPACE */
 
 	icon->pixmap = pixmap;
 }
