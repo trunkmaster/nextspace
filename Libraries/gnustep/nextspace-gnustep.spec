@@ -6,7 +6,7 @@
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -26,10 +26,11 @@ Patch0:		gnustep-base-GSConfig.h.in.patch
 Patch1:		gnustep-base-Languages_Korean.patch
 Patch2:		gnustep-gui-Model_GNUmakefile.patch
 Patch3:		gnustep-gui-NSWindow.m.patch
-Patch4:		gnustep-back-art_ReadRect.m.patch
-Patch5:		gnustep-back-art_GNUmakefile.preamble.patch
-Patch6:		gnustep-back-x11_XGServerWindow.m.patch
-Patch7:		gnustep-back-gsc_GNUmakefile.preamble.patch
+Patch4:		gnustep-gui-NSWindow.h.patch
+Patch5:		gnustep-back-art_ReadRect.m.patch
+Patch6:		gnustep-back-art_GNUmakefile.preamble.patch
+Patch7:		gnustep-back-x11_XGServerWindow.m.patch
+Patch8:		gnustep-back-gsc_GNUmakefile.preamble.patch
 
 Provides:	gnustep-base-%{BASE_VERSION}
 Provides:	gnustep-gui-%{GUI_VERSION}
@@ -125,10 +126,11 @@ GNUstep Make installed with nextspace-core-devel package.
 %patch1 -p0
 %patch2 -p0
 %patch3 -p0
-#%patch4 -p0
-%patch5 -p0
+%patch4 -p0
+#%patch5 -p0
 %patch6 -p0
 %patch7 -p0
+%patch8 -p0
 rm -rf %{buildroot}
 
 #
