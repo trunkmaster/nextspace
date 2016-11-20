@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/window.c	2016-09-29 17:51:23.841516306 +0300
-+++ ./WM/src/window.c	2016-11-10 13:01:03.051599496 +0200
+--- ./wmaker-crm_next/src/window.c	2016-10-23 02:37:18.520271255 +0300
++++ ./WM/src/window.c	2016-11-20 02:49:04.709568550 +0200
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -13,3 +13,19 @@
  	if (wwin->main_window) {
  		XTextProperty text_prop;
  
+@@ -1159,6 +1162,15 @@
+ 			y -= wwin->frame->top_width + wwin->frame->bottom_width;
+ 	}
+ 
++	/* We're starting managing already existed window at our startup.
++	 * Adjust window position so window will not be shifted down and right
++	 * after decorations added.
++	*/
++	if (scr->flags.startup) {
++	  x -= 1;
++	  y -= (wwin->frame->top_width + 1);
++	}
++
+ 	/*
+ 	 * wWindowConfigure() will init the client window's size
+ 	 * (wwin->client.{width,height}) and all other geometry
