@@ -782,7 +782,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
 #define ADEQUATE(x) ((x)!=None && (x)!=wwin->client_win && (x)!=fPtr->leader)
 
-		/* // only enter here if PropGetWMClass() succeds */
+		/* // only enter here if PropGetWMClass() succeeds */
 		PropGetWMClass(wwin->main_window, &class, &instance);
 		buffer = StrConcatDot(instance, class);
 
@@ -1160,6 +1160,15 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 		/* if gravity is to the south, account for the border sizes */
 		if (gy > 0)
 			y -= wwin->frame->top_width + wwin->frame->bottom_width;
+	}
+
+	/* We're starting managing already existed window at our startup.
+	 * Adjust window position so window will not be shifted down and right
+	 * after decorations added.
+	*/
+	if (scr->flags.startup) {
+	  x -= 1;
+	  y -= (wwin->frame->top_width + 1);
 	}
 
 	/*
