@@ -1,0 +1,35 @@
+--- ./wmaker-crm_next/src/GNUstep.h	2015-05-25 22:23:53.398591613 +0300
++++ ./WM/src/GNUstep.h	2016-11-19 01:55:25.178955380 +0200
+@@ -49,20 +49,20 @@
+  * range INT_MIN+1 to INT_MAX
+  */
+ enum {
+-    WMDesktopWindowLevel = -1000, /* GNUstep addition     */
+-    WMNormalWindowLevel = 0,
+-    WMFloatingWindowLevel = 3,
+-    WMSubmenuWindowLevel = 3,
+-    WMTornOffMenuWindowLevel = 3,
+-    WMMainMenuWindowLevel = 20,
+-    WMDockWindowLevel = 21,       /* Deprecated - use NSStatusWindowLevel */
+-    WMStatusWindowLevel = 21,
+-    WMModalPanelWindowLevel = 100,
+-    WMPopUpMenuWindowLevel = 101,
+-    WMScreenSaverWindowLevel = 1000
++                                    // OPENSTEP  // MacOS  // GNUstep
++  NSDesktopWindowLevel     = -1000, // --        // 2      // -1000
++  NSNormalWindowLevel      = 0,     // 0         // 3      // 0
++  NSFloatingWindowLevel    = 3,     // 3         // 4      // 3
++  NSDockWindowLevel        = 5,     // 5         // 6      // 21
++  NSSubmenuWindowLevel     = 10,    // 10        // 5      // 3
++  NSTornOffMenuWindowLevel = 10,    // --        // 5      // 3
++  NSMainMenuWindowLevel    = 20,    // 20        // 7      // 20
++  NSStatusWindowLevel      = 21,    // --        // 8      // 21
++  NSModalPanelWindowLevel  = 100,   // --        // 9      // 100
++  NSPopUpMenuWindowLevel   = 101,   // --        // 10     // 101
++  NSScreenSaverWindowLevel = 1000   // --        // 12     // 1000
+ };
+ 
+-
+ /* window attributes */
+ enum {
+     WMBorderlessWindowMask = 0,
