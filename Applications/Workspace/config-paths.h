@@ -1,1 +1,1 @@
-./WM/config-paths.h
+WindowMaker/config-paths.h

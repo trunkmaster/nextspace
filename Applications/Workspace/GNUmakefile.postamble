@@ -27,17 +27,17 @@ SHARED = obj
 before-all::
 ifneq ($(windowmaker), no)
 	@ echo "Making WindowMaker external components ... "
-	@ cd WM; make config-paths.h
+	@ cd $(WM_DIR); make config-paths.h
 	@ echo " Building raster graphics library in WM/wrlib ... "
-	@ cd WM/wrlib; make
+	@ cd $(WM_DIR)/wrlib; make
 	@ echo " Building WINGs library in WM/WINGs ... "
-	@ cd WM/WINGs; make
+	@ cd $(WM_DIR)/WINGs; make
 	@ echo " Building utilities in WM/util ..."
-	@ cd WM/util; make
+	@ cd $(WM_DIR)/util; make
 	@ echo " Preparing data in WM/WindowMaker ..."
-	@ cd WM/WindowMaker; make
+	@ cd $(WM_DIR)/WindowMaker; make
 	@ echo " Building documentation in WM/doc..."
-	@ cd WM/doc; make
+	@ cd $(WM_DIR)/doc; make
 endif
 
 after-all::
@@ -53,15 +53,15 @@ after-clean::
 ifneq ($(windowmaker), no)
 	@ echo "Making clean in WindowMaker ... "
 	@ echo " Cleaning in WM/wrlib ..."
-	@ cd WM/wrlib; make clean > /dev/null 2>&1
+	@ cd $(WM_DIR)/wrlib; make clean > /dev/null 2>&1
 	@ echo " Cleaning in WM/WINGs ..."
-	@ cd WM/WINGs; make clean > /dev/null 2>&1
+	@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
 	@ echo " Cleaning in WM/WindowMaker ..."
-	@ cd WM/WindowMaker; make clean > /dev/null 2>&1
+	@ cd $(WM_DIR)/WindowMaker; make clean > /dev/null 2>&1
 	@ echo " Cleaning in WM/doc ..."
-	@ cd WM/doc; make clean > /dev/null 2>&1
+	@ cd $(WM_DIR)/doc; make clean > /dev/null 2>&1
 	@ echo " Cleaning in WM/util ..."
-	@ cd WM/util; make clean > /dev/null 2>&1
+	@ cd $(WM_DIR)/util; make clean > /dev/null 2>&1
 endif
 
 before-install::
@@ -75,29 +75,29 @@ after-install::
 	@ cp Workspace.h $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
 ifneq ($(windowmaker), no)
 	@ echo "===> Installing WindowMaker resources ..."
-	@ cd WM/wrlib; make install DESTDIR=$(DESTDIR)
-	@ cd WM/WINGs; make install DESTDIR=$(DESTDIR)
-	@ cd WM/WindowMaker; make install DESTDIR=$(DESTDIR)
+	@ cd $(WM_DIR)/wrlib; make install DESTDIR=$(DESTDIR)
+	@ cd $(WM_DIR)/WINGs; make install DESTDIR=$(DESTDIR)
+	@ cd $(WM_DIR)/WindowMaker; make install DESTDIR=$(DESTDIR)
 # Rewrite some files
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMState $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cd WM/doc; make install DESTDIR=$(DESTDIR)
-	@ cd WM/util; make install DESTDIR=$(DESTDIR)
+	@ cd $(WM_DIR)/doc; make install DESTDIR=$(DESTDIR)
+	@ cd $(WM_DIR)/util; make install DESTDIR=$(DESTDIR)
 endif
 
 after-uninstall::
 ifneq ($(windowmaker), no)
 	@ echo "Uninstalling WM/wrlib ..."
-	@ cd WM/wrlib; make uninstall > /dev/null 2>&1
+	@ cd $(WM_DIR)/wrlib; make uninstall > /dev/null 2>&1
 	@ echo "Uninstalling WM/WINGs ..."
-	@ cd WM/WINGs; make uninstall > /dev/null 2>&1
+	@ cd $(WM_DIR)/WINGs; make uninstall > /dev/null 2>&1
 	@ echo "Uninstalling WM/WindowMaker ..."
-	@ cd WM/WindowMaker; make uninstall > /dev/null 2>&1
+	@ cd $(WM_DIR)/WindowMaker; make uninstall > /dev/null 2>&1
 	@ echo "Uninstalling WM/doc ..."
-	@ cd WM/doc; make uninstall > /dev/null 2>&1
+	@ cd $(WM_DIR)/doc; make uninstall > /dev/null 2>&1
 	@ echo "Uninstalling WM/util ..."
-	@ cd WM/util; make uninstall > /dev/null 2>&1
+	@ cd $(WM_DIR)/util; make uninstall > /dev/null 2>&1
 endif
