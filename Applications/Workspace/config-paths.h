@@ -1,1 +1,0 @@
-WindowMaker/config-paths.h
