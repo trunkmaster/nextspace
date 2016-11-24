@@ -1,0 +1,95 @@
+.TH "wmmenugen" "1" "16 May 2015"
+.SH "NAME"
+\fBwmmenugen\fR \- Window Maker PropList menu generator
+.PP
+.SH "SYNOPSIS"
+.B wmmenugen
+.RI [ options ...]
+.BI \-parser= <name>
+.IR fspec " [" fspec "...]"
+.BI \fR[\fP\-parser= <name>
+.IR fspec " [" fspec "...]...]"
+.SH "DESCRIPTION"
+.B wmmenugen
+generates a menu in the
+.I PropList
+format for Window Maker from the input file
+.IR fspec .
+In the case where
+.I fspec
+is a directory instead of a file, then
+.B wmmenugen
+will read all the files present in the hierarchy of this directory.
+.SH "OPTIONS"
+.TP
+.BR \-\-help ", " \-h
+print a help message with the list of options
+.TP
+.B \-parser
+specify the format of the file to be parsed
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes
+.SH "PARSERS"
+.B wmmenugen
+supports these file formats for input files:
+.TP
+.I wmconfig
+the format of the menu generation tool for X of the same name
+.TP
+.I xdg
+the format of the menu specification as defined by the
+.I FreeDesktop
+standard, currently at version 1.1
+.SH "RETURN VALUE"
+The exit status from the
+.B wmmenugen
+command provides information for the caller:
+.TP
+.B 0
+when the
+.I PropList
+menu was successfully generated on
+.IR stdout .
+.TP
+.B 1
+when a
+.I fspec
+caused a problem (non readable file, ...)
+.TP
+.B 2
+the arguments of the command line where not recognised
+.TP
+.B 3
+the program met an unexpected menu structure;
+you probably want to look at the section
+.B BUGS
+below.
+.SH "BUGS"
+If you get the exit status
+.B 3
+with the unclear error message about
+.IR "unprocessed levels on the stack" ,
+you encountered a limitation of
+.BR wmmenugen .
+It would be a good idea to prepare an archive with the files incriminated and submit them to the
+mailing list (wmaker-dev@lists.windowmaker.org) with you command line, so the team can work on
+improving the behaviour of the program on this case.
+.SH "SEE ALSO"
+.BR wmgenmenu (1),
+the tool to generate a default menu
+.PP
+the
+.I Wmconfig
+program can be found at:
+<http://www.arrishq.net/index.html>
+.PP
+the
+.I xdg
+specification can be found at:
+<http://standards.freedesktop.org/menu-spec/menu-spec-1.1.html>
+.SH "AUTHOR"
+wmmenugen is a part of Window Maker. It was written by Tamas TEVESZ.
+.PP
+This manpage was written by Rodolfo García Peñas (kix) for the
+Debian GNU/Linux system (but may be used by others).

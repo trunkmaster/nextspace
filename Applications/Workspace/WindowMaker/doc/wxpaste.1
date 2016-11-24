@@ -1,0 +1,46 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH wxpaste 1 "March 1998"
+.SH NAME
+wxpaste \- output a cutbuffer to stdout
+.SH SYNOPSIS
+.B wxpaste
+.RI [ options ]
+.SH DESCRIPTION
+.B wxpaste
+outputs the contents of the specified cutbuffer to stdout. If no cutbuffer
+is specified, the cutbuffer 0 will be used as default.
+.PP
+.SH OPTIONS
+.TP
+.BI \-\-cutbuffer " number"
+The data will be pasted from the specified cutbuffer, instead of the default
+0.
+.TP
+.BI \-display " display\-name"
+Specifies the display where wxpaste should look for the data to be pasted.
+.TP
+.B \-\-help
+print a help message with the list of options.
+.TP
+.BR \-\-selection " [\fIselection\-name\fP]"
+The data will be copied from the named selection. If cutting from the
+selection fails, the cutbuffer will be used. The default value for the
+selection name is PRIMARY.
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes.
+.PP
+.SH BUGS
+When used without a selection name, the \fI\-\-selection\fP option must be the last one.
+The syntax could be cleaned, but backwards compatibility prevents that...
+
+\fIINCR\fP and \fIMULTIPLE\fP selection types are not handled. Actually, only simple
+text selections are handled, which should be enough for most uses of a
+utility such as this.
+.SH SEE ALSO
+.BR wxcopy (1),
+.BR wmaker (1)
+.SH AUTHOR
+This man page was written by Marcelo Magallon <mmagallo@debian.org>.
+.PP
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>.

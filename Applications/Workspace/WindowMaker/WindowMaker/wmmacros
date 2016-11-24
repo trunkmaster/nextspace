@@ -1,0 +1,72 @@
+/*
+ * Some generic macros for WindowMaker configuration files
+ * 
+ */
+
+#ifndef WMMACROS_
+#define WMMACROS_
+
+#define HAVE_XLESS
+
+/*
+ * WS_BACK - sets the root background texture to VAL
+ */
+#define WS_BACK EXEC wdwrite WindowMaker WorkspaceBack 
+
+/*
+ * CLEARROOT - set the root background to nothing
+ */
+#define CLEARROOT xsetroot
+
+
+/*
+ * SETSTYLE FILE - loads a style file 
+ */
+#define SETSTYLE EXEC cd $HOME/GNUstep/Library/WindowMaker/Styles; setstyle 
+
+
+/*
+ * 
+ * MANUAL_SEARCH(ITEM) - search manual page for ITEM
+ * 
+ * You might need to change this according to what's the exit status of your 
+ * man(1). This is for the one that comes with Linux (RedHat)
+ */
+#ifdef HAVE_XLESS
+#define MANUAL_SEARCH(ITEM)          \
+        if ( man ITEM > /dev/null ); then \
+		man ITEM | xless;\
+	else \
+                xmessage -center -title "Manual Browser" \
+                        Sorry, but there is no manual page \
+                        entry for ITEM...;\
+        fi
+#else
+#define MANUAL_SEARCH(ITEM)          \
+        if ( man ITEM > /dev/null ); then \
+		xterm -e man ITEM; \
+	else \
+                xmessage -center -title "Manual Browser" \
+                        Sorry, but there is no manual page \
+                        entry for ITEM...;\
+        fi
+#endif
+
+
+/*
+ * Paths to system configuration directories
+ */
+#define THEMES_DIR		#wmdatadir#/Themes
+#define STYLES_DIR		#wmdatadir#/Styles
+#define ICON_SETS_DIR		#wmdatadir#/IconSets
+#define BACKGROUNDS_DIR		#wmdatadir#/Backgrounds
+
+
+#define StaticGray		0
+#define GrayScale		1
+#define StaticColor		2
+#define PseudoColor		3
+#define TrueColor		4
+#define DirectColor		5
+
+#endif

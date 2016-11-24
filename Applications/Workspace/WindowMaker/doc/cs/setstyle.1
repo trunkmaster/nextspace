@@ -1,0 +1,56 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH setstyle 1 "Leden 1999"
+.SH JMÉNO
+setstyle \- zmìní nastavení Window Makera související se stylem nebo
+zavede téma
+.SH SYNTAXE
+.B setstyle
+.I "[--no-fonts] [--help] [--version]"
+.I soubor se stylem
+.SH DESCRIPTION
+.B setstyle
+naèítá
+.I soubor se stylem
+a zapí¹e jeho obsah do domény Window Makera, èím¾ nastaví aktuální styl
+Window Makera. Jakmile je poskytnutá cesta, adresáø bude pova¾ovaný za balík
+s tématem a podla toho bude i zavedený. Jakmile je daný argument
+\fB\-\-no\-fonts\fP, nastavení související s fonty (\fIIconTitleFont\fP,
+\fIClipTitleFont\fP, \fIMenuTextFont\fP,
+\fIMenuTitleFont\fP, \fIWindowTitleFont\fP) v souboru se stylem budou
+ignorované.
+
+Pokud je uvedeno \fB\-\-no\-cursors\fP vlajky, definice kurzoru myši
+(\fINormalCursor\fP, \fIArrowCursor\fP, \fIMoveCursor\fP,
+\fIResizeCursor\fP,
+\fITopLeftResizeCursor\fP, \fITopRightResizeCursor\fP,
+\fIBottomLeftResizeCursor\fP, \fIBottomRightResizeCursor\fP,
+\fIVerticalResizeCursor\fP, \fIHorizontalResizeCursor\fP,
+\fIWaitCursor\fP, \fIQuestionCursor\fP, \fITextCursor\fP,
+\fISelectCursor\fP) ve stylu a tématu budou ignorovány.
+.SH VOLBY
+.TP
+.B \-\-no\-fonts
+ignorovat nastavení fontù v souboru se stylem.
+.TP
+.B \-\-help
+vypí¹e nápovìdu
+.TP
+.B \-\-version
+vypí¹e èíslo verze
+.SH PROMìNNÉ PROSTØEDÍ
+.IP GNUSTEP_USER_ROOT
+specifikuje cestu k adresáøi Defaults. Øetìzec "Defaults/" je pøidán k této
+promìnné, èím¾ se urèí umístìní databází. Jakmile promìnná není nastavená,
+tak její implicitní hodnota je "~/GNUstep"
+.SH SOUBORY
+.IP GNUSTEP_USER_ROOT/Defaults/WindowMaker
+Toto je soubor, který se zapí¹e.
+.SH PODÍVEJTE SE TAKÉ
+.BR getstyle (1),
+.BR wmaker (1)
+.SH AUTOR
+Autorem Window Makera je Alfredo K. Kojima <kojima@windowmaker.info>.
+.PP
+Tuto manuálovou stránku napsal Marcelo Magallon <mmagallo@debian.org>.
+.PP
+Do èe¹tiny pøelo¾il Jiøí Hnídek <jiri.hnidek@vslib.cz>.

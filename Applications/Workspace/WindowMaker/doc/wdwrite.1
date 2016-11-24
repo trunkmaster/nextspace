@@ -1,0 +1,38 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH wdwrite 1 "January 1999"
+.SH NAME
+wdwrite \- writes keys and values to the defaults database
+.SH SYNOPSIS
+.B wdwrite
+.I domain
+.I option
+.I value
+.SH DESCRIPTION
+.B wdwrite
+writes
+.I option
+and
+.I value
+to the specified
+.IR domain .
+.SH OPTIONS
+.TP
+.B \-\-help
+print a help message with the list of options
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes
+.SH ENVIRONMENT
+.IP GNUSTEP_USER_ROOT
+specifies the initial path for the Defaults directory. "Defaults/" is
+appended to this variable to determine the actual location of the
+databases. If the variable is not set, it defaults to "~/GNUstep"
+.SH FILES
+The domains reside in GNUSTEP_USER_ROOT/Defaults/
+.SH SEE ALSO
+.BR wdread (1),
+.BR wmaker (1)
+.SH AUTHOR
+This man page was written by Marcelo Magallon <mmagallo@debian.org>.
+.PP
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>.

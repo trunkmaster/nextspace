@@ -1,0 +1,97 @@
+
+                      WINGs - WINGs Is Not GNUstep
+
+                                   by
+
+                          Alfredo Kengi Kojima 
+                  
+                          kojima@windowmaker.info
+
+
+   WINGs is a small widget set with the N*XTSTEP look and feel. It's API
+is inspired in OpenStep and it's implementation borrows some ideas
+from Tk. It has a reasonable set of widgets, sufficient for building
+small applications (like a CDPlayer or hacking something like rxvt). It
+also has other functions that are usefull for applications, like a
+User Defaults alike configuration manager and a notification system.
+
+   The library is limited and it's design is a little sloppy, 
+so it's not intended to build large or complex applications, like 
+anything more complex than a CDPlayer. GNUstep should be used for such
+applications.
+
+   Since WINGs is written in C and is sort of low-level it is small
+and faster than say, Motif or even Athena. Knowing Xlib will help you to 
+workaround some of it's limitations, although you'll probably be able to 
+write something like a trivial tic-tac-toe game without knowing much Xlib.
+
+   Some of it's functions are designed to support the Window Maker window
+manager (see http://windowmaker.info) In fact, it's primary role is to
+support Window Maker. All other uses of it are just an added bonus.
+
+   It will help you to understand the API if you read the ApplicationKit
+reference manual, distributed as a PDF by Apple. The function names,
+structs and most of the intrinsics are very close to OpenStep classes. 
+
+
+Internationalization:
+---------------------
+
+    Change ~/GNUstep/Defaults/WMGLOBAL to set the desired font set and
+set MultiByteText = YES; to enable support for multibyte text.
+
+
+Widgets provided by WINGs:
+--------------------------
+
+- button (command button, radio, switch etc. - all buttons defined in OpenStep)
+- label
+- textfield
+- frame
+- window
+- popup menu button
+- scroller
+- selection list
+- browser
+- slider
+- scrollable view
+- color well
+- split view
+- tabbed view
+- progress indicator
+
+- selection (make pasteboard like?)
+- drag&drop
+
+- input box
+- file panel
+- color panel
+- alert panel 
+- font panel
+
+If you think you can code the following, please do. They are needed by
+WPrefs.app, but the number of other things I have to do is huge.
+
+- input method support (XIM). I have no idea of how to code it. People who use
+different characters than ASCII will have trouble editing menus without it...
+
+
+Wish list: (I don't have the know-how or time to do them)
+---------------------------------------------------------
+
+- text (with support for RTF)
+- matrix (like NSMatrix)
+- font manager (like NSFontManager)
+- finish other wigets
+- optimize list scrolling (XCopyArea() the area that's already drawn)
+- InterfaceMaker?
+- use XSetWMName and XSetWMIconName for the window/icon title setting.
+  This requires transforming the received text to a text property with
+  the proper encoding.
+
+Copyright
+---------
+
+WINGs is copyright (c) Alfredo K. Kojima and is licensed through the GNU
+Library General Public License (LGPL).
+

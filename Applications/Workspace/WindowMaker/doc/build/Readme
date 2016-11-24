@@ -1,0 +1,8 @@
+This directory contains the sources for the documentation about building
+the Window Maker project from sources.
+
+This documentation is meant to go into the distributed sources archive, but
+it is not supposed to be installed as it contains no relevant information.
+
+The documentaion are written in GNU Texinfo format and a script converts
+them into plain text for distribution.

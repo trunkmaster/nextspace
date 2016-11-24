@@ -1,0 +1,110 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH wmsetbg 1 "April 2015"
+.SH NAME
+wmsetbg \- sets the background on the X11 display
+.SH SYNOPSIS
+.B wmsetbg
+.RI [ \-display " display]"
+.RI [ \-\-update-domain " domain|" \-\-update-wmaker ]
+.RI [ options ]
+.RI [ image ]
+.SH DESCRIPTION
+.B wmsetbg
+reads the specified
+.I image
+(in any format supported by the
+.I WRaster
+library) and puts it on the root window. It can
+either scale the image or tile it to make it fit the root
+window. Window Maker uses this command internally to set the root
+window image on start up.
+.SH OPTIONS
+.TP
+.BR \-\-back\-color | \-b " \fIcolor\fP"
+the specified \fIcolor\fP is used as the background color for the
+\fItexture\fP.  Window Maker temporary sets the background to this
+color while loading and processing the texture.  You can specify colors
+using their X11 names or as an RGB triplet (either as "rgb:RR/GG/BB" or
+"#RRGGBB") (reference to appropriate manpage should be here).  In the
+later case \fIcolor\fB is a quoted string.
+.TP
+.BR \-\-center | \-e
+centers the \fIimage\fP in the screen
+.TP
+.BR \-\-colors | \-c " \fIcount\fP"
+limit the number of colors per channel to use for the image
+.TP
+.BR \-display " \fIdisplay\fP"
+connect to the X \fIdisplay\fP
+.TP
+.BR \-\-dither | \-d
+enable color dithering on \fIimage\fP
+.TP
+.BR \-\-fillscale | \-f
+scales the specified \fIimage\fP to fill screen while preserving aspect ratio
+.TP
+.BR \-\-help | \-h
+print a help message with the list of options
+.TP
+.BR \-\-match | \-m
+use the best-matching-color algorithm when converting image to indexed color palette
+.TP
+.BR \-\-maxscale | \-a
+scales the specified \fIimage\fP to fit inside the screen preserving its aspect ratio
+.TP
+.BR \-\-parse | \-p " \fItexture\fP"
+parses the specified \fItexture\fP as a \fIproplist style texture\fP
+.TP
+.BR \-\-scale | \-s
+scales the specified \fIimage\fP to fill the screen (default)
+.TP
+.BR \-\-smooth | \-S
+use a smooth scaling algorithm when resizing \fIimage\fP
+.TP
+.BR \-\-tile | \-t
+tiles the specified \fIimage\fP
+.TP
+.BR \-\-update\-domain | \-D " \fIdomain\fP"
+updates the specified \fIdomain\fP database
+.TP
+.BR \-\-update\-wmaker | \-u
+updates the Window Maker defaults database
+.TP
+.BR \-\-version | \-v
+print the version of Window Maker from which the program comes
+.TP
+.BR \-\-workspace | \-w " \fIworkspace\fP"
+update background only for the specified \fIworkspace\fP
+@USE_XINERAMA@.TP
+@USE_XINERAMA@.BR \-\-xinerama | \-X
+@USE_XINERAMA@stretch image across Xinerama heads
+.SH "INDEXED COLOR SCREENS"
+If your screen is not in a \fBTrue Color\fP configuration (generally sold as 16,777,216 colors) but
+in a indexed color mode (256 colors, 16 colors, ... which are based on a \fBColorMap\fP) then Window
+Maker may need to process the image to convert it to a limited number of colors before using it for
+a background image.
+
+There are two options to choose what algorithm you want to use:
+.TP
+.BR \-\-match " or " \-m
+Search for the closest matching color from the current colormap;
+this is the fastest algorithm but may lead to less good-looking result.
+.TP
+.BR \-\-dither " or " \-d
+Use a more complex algorithm which modify surrounding pixels to get a closer-looking color on average;
+this is slower but provides better looking images.
+.LP
+If none is specified, then it is Window Maker's configuration choice that will be used.
+
+You can also use the option \fB\-\-colors\fP to reduce the total number of colors from the \fIimage\fP
+before the algorithm is applied.
+The value specified with the option defines the number of possible values for each primary color
+(red, green and blue), for example \fI8\fP would reduce the image to use only 8*8*8=512 colors before
+applying the conversion algorithm.
+.SH SEE ALSO
+.BR wmaker (1)
+.SH AUTHOR
+This man page was written by Marcelo Magallon <mmagallo@debian.org>.
+.PP
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>.
+wmsetbg was written by Dan Pascu <dan@windowmaker.info>

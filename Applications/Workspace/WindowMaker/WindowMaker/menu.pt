@@ -1,0 +1,207 @@
+/*
+ * Definição do Menu de Aplicações para o WindowMaker
+ *
+ * Sintaxe:
+ *
+ * <Title> [SHORTCUT <tecla de atalho>] <Comando> <Parâmetros>
+ *
+ * <Title> é qualquer texto a ser usado como título. Deve estar entre aspas "
+ * 
+ * SHORTCUT especifica uma tecla de atalho para o item. <tecla de atalho> 
+ * tem a mesma sintaxe das teclas de atalho em $HOME/GNUstep/Defaults/WindowMaker
+ *
+ * Não é possível especificar teclas de atalho para MENU ou OPEN_MENU
+ * 
+ * <Command> é um dos seguintes comandos:
+ *	MENU - inicia definição de um (sub)menu
+ *	END  - termina definição de um (sub)menu
+ *	OPEN_MENU - abre um menu apartir de um arquivo, comando pipeado ou
+ *		conteúdo de um diretório com um comando opcional para cada
+ *		arquivo no diretório.
+ *	WORKSPACE_MENU - adiciona menu para operações sobre Áreas de Trabalho
+ *	EXEC <programa> - executa um programa
+ *	EXIT - termina o gerenciador de janelas
+ *	SHEXEC <command> - executa comando de shell (ex.: gimp > /dev/null)
+ *	RESTART [<gerenciador de janelas>] - reinicia o WindowMaker ou inicia 
+ *		 	outro gerenciador de janelas
+ *	REFRESH - força repintagem da área de trabalho
+ *	ARRANGE_ICONS - arruma os ícones na área de trabalho
+ *	SHUTDOWN - mata todos os programas (terminando a sessão do X)
+ *	SHOW_ALL - abre todas as janelas na área de trabalho
+ *	HIDE_OTHERS - esconde (hide) todas as janelas na área de trabalho,
+ *		exceto a que estiver ativa
+ *	SAVE_SESSION - salva o estado da área de trabalho, o que inclui
+ *		todos os programas em execução, informações relativas
+ *		a posição, tamanho, área de trabalho onde se localizam,
+ *		o dock ou clip de onde foi lançado e se a janela está 
+ *		miniaturizada, shadeada ou hideada. Também salva qual a área
+ *		de trabalho atual. Todas as informações serão restauradas
+ *		até que se use o comando SAVE_SESSION de novo ou CLEAR_SESSION.
+ *		Se SaveSessionOnExit = Yes; estiver definido no domínio 
+ *		WindowMaker ($HOME/GNUstep/Defaults/WindowMaker), então o 
+ *		salvamento da sessão é feito automaticamente quando o 
+ *		WindowMaker finalizar, apagando quaisquer SAVE_SESSION ou
+ *		CLEAR_SESSION usados anteriormente.
+ *	CLEAR_SESSION - apaga uma sessão salvada anteriormente. Este comando
+ *		não terá efeito algum se SaveSessionOnExit estiver habilitado.
+ *	INFO_PANEL - mostra a janela de informações do programa
+ *      LEGAL_PANEL - mostra janela de informacoes legais
+ *
+ * Sintaxe do OPEN_MENU:
+ *   1. Uso com outros arquivos de menu:
+ *	// abre o arquivo arquivo.menu que deve conter um menu válido
+ *	// e o insere naquela posição.
+ *	OPEN_MENU arquivo.menu
+ *   2. Uso com comandos pipeados:
+ *	// executa o comando e usa a sua saída para construir o menu.
+ *	// A saída do menu deve ser uma descrição de menu válida.
+ *	// O espaço entre o '|' e o comando é opcional.
+ *	OPEN_MENU | comando
+ *   3. Uso com diretórios:
+ *	// Abre um ou mais diretórios e constrói um menu com todos
+ *	// os subdiretórios e arquivos executáveis neles, em ordem
+ *	// alfabética.
+ *	OPEN_MENU /algum/diretório [/algum/outro/diretório ...]
+ *   4. Uso com diretórios e comando:
+ *	// Abre um ou mais diretórios e constrói um menu com todos os
+ *	// subdiretórios e arquivos legíveis neles em ordem alfabética,
+ *	// usando o comando para executar cada arquivo.
+ *
+ *	OPEN_MENU [-noext] /algum/dir [/algum/outro/dir ...] WITH comando -opções
+ *		
+ *
+ * <Parâmetros> é o programa a ser executado.
+ *
+ * ** Códigos especiais para o programa a ser executado:
+ * %s - substitui pela seleção atual
+ * %a(mensagem) - abre uma janela de entrada com a mensagem e substitui
+ *	pelo que for digitado nela
+ * %w - substitui pelo XID da janela selecionada
+ *
+ * Para ignorar caracteres especiais, tais como % e ", use \ na frente deles.
+ * ex: xterm -T "\"Hello World\""
+ *
+ * Também é possível usar caracteres de escape, como \n
+ *
+ * Cada comando MENU deve ter um END correspondente no fim.
+ *
+ * Exemplo:
+ *
+ * "Teste" MENU
+ *	"XTerm" EXEC xterm
+ *		// cria um submenu com o conteúdo de /usr/openwin/bin
+ *	"XView apps" OPEN_MENU "/usr/openwin/bin"
+ *		// alguns programas do X11 em vários diretórios
+ *	"X11 apps" OPEN_MENU /usr/X11/bin $HOME/bin/X11
+ *		// faz um submenu de papéis de parede
+ *	"Papel de Parede" OPEN_MENU $HOME/imagens /usr/share/imagens WITH wmsetbg -u -t
+ *		// insere o menu meu.menu 
+ *	"Style" OPEN_MENU meu.menu
+ * "Test" END
+ */
+
+#include "wmmacros"
+
+"Aplicações" MENU
+	"Informações" MENU
+		"Informações..." INFO_PANEL
+		"Informações Legais" LEGAL_PANEL
+		"Console do Sistema" EXEC xconsole
+		"Carga do Sistema" SHEXEC xosview || xload
+		"Lista de Processos" EXEC xterm -e top
+		"Leitor de Manual" EXEC xman
+	"Informações" END
+	"XTerm" EXEC xterm -sb 
+	"Rxvt" EXEC rxvt -bg black -fg white -fn fixed
+	"Áreas de Trabalho" WORKSPACE_MENU
+	"Aplicações" MENU
+		"Gráficos" MENU
+			"Gimp" SHEXEC gimp >/dev/null
+			"XV" EXEC xv
+			"XPaint" EXEC xpaint
+			"XFig" EXEC xfig
+		"Gráficos" END
+		"X File Manager" EXEC xfm
+		"OffiX Files" EXEC files
+		"LyX" EXEC lyx
+		"Netscape" EXEC netscape 
+  		"Ghostview" EXEC ghostview %a(Enter file to view)
+		"Acrobat" EXEC /usr/local/Acrobat3/bin/acroread %a(Enter PDF to view)
+  		"TkDesk" EXEC tkdesk
+	"Aplicações" END
+	"Editores" MENU
+		"XFte" EXEC xfte
+		"XEmacs" SHEXEC xemacs || emacs
+		"XJed" EXEC xjed 
+		"NEdit" EXEC nedit
+		"Xedit" EXEC xedit
+		"VI" EXEC xterm -e vi
+	"Editores" END
+	"Diversos" MENU
+		"Xmcd" SHEXEC xmcd 2> /dev/null
+		"Xplaycd" EXEC xplaycd
+		"Xmixer" EXEC xmixer
+	"Diversos" END
+	"Utilitários" MENU
+		"Calculadora" EXEC xcalc
+		"Propriedades da Janela" SHEXEC xprop | xmessage -center -title 'xprop' -file -
+		"Seletor de Fontes" EXEC xfontsel
+		"Emulador de Terminal" EXEC xminicom
+		"Lente de Aumento" EXEC xmag
+		"Colormap" EXEC xcmap
+		"XKill" EXEC xkill
+		"ASClock" EXEC asclock -shape
+		"Clipboard" EXEC xclipboard
+	"Utilitários" END
+
+	"Seleção" MENU
+		"Copiar" SHEXEC echo '%s' | wxcopy
+		"eMail Para" EXEC xterm -name mail -T "Pine" -e pine %s
+		"Navegar" EXEC netscape %s
+		"Procurar Manual" SHEXEC MANUAL_SEARCH(%s)
+	"Seleção" END
+
+	"Área de Trabalho" MENU
+		"Hide Outros" HIDE_OTHERS
+		"Mostrar Todos" SHOW_ALL
+		"Arrumar Ícones" ARRANGE_ICONS
+		"Refresh" REFRESH
+		"Lock" EXEC xlock -allowroot -usefirst
+		"Salvar Sessão" SAVE_SESSION
+		"Apagar Sessão Salvada" CLEAR_SESSION
+	"Área de Trabalho" END
+
+	"Aparência" MENU
+		"Temas" OPEN_MENU -noext THEMES_DIR $HOME/GNUstep/Library/WindowMaker/Themes WITH setstyle
+		"Estilos" OPEN_MENU -noext STYLES_DIR $HOME/GNUstep/Library/WindowMaker/Styles WITH setstyle
+		"Conjunto de Ícones" OPEN_MENU -noext ICON_SETS_DIR $HOME/GNUstep/Library/WindowMaker/IconSets WITH seticons
+		"Papéis de Parede" MENU
+			"Sólido" MENU
+                        	"Preto" WS_BACK '(solid, black)'
+                        	"Azul"  WS_BACK '(solid, "#505075")'
+				"Indigo" WS_BACK '(solid, "#243e6c")'
+				"Azul escuro" WS_BACK '(solid, "#224477")'
+                        	"Roxo" WS_BACK '(solid, "#554466")'
+                        	"Creme"  WS_BACK '(solid, "wheat4")'
+                        	"Cinza Escuro"  WS_BACK '(solid, "#333340")'
+                        	"Vinho" WS_BACK '(solid, "#400020")'
+			"Sólido" END
+			"Degradé" MENU
+				"Bandeira" WS_BACK '(mdgradient, green, green, yellow)'
+				"Céu" WS_BACK '(vgradient, blue4, white)'
+			"Degradé" END
+			"Imagens" OPEN_MENU -noext BACKGROUNDS_DIR $HOME/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -t
+		"Papéis de Parede" END
+		"Salvar Tema" SHEXEC getstyle -t $HOME/GNUstep/Library/WindowMaker/Themes/"%a(Nome do Tema)"
+		"Salvar Configuração de Ícones" SHEXEC geticonset $HOME/GNUstep/Library/WindowMaker/IconSets/"%a(Nome do Conjunto de Ícones)"
+	"Appearance" END
+
+	"Sair"	MENU
+		"Reiniciar" RESTART
+		"Iniciar AfterStep" RESTART afterstep
+		"Sair..."  EXIT
+		"Terminar Sessão..." SHUTDOWN
+	"Sair" END
+"Aplicações" END
+
+

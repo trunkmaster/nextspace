@@ -1,0 +1,43 @@
+#!/bin/sh
+
+#
+# Use this to gather data about your system and send me
+# the sysinfo.txt file with your bugreport, plus any error
+# messages you've received. This program should be run under X.
+#
+
+
+echo gathering information for bug tracking...
+
+uname -a > sysinfo.txt
+wmaker --version >> sysinfo.txt
+echo "=============== xdpyinfo ================" >> sysinfo.txt
+xdpyinfo >> sysinfo.txt
+echo "=============== env ================" >> sysinfo.txt
+env >> sysinfo.txt
+echo "=============== ldconfig ================" >> sysinfo.txt
+if [ `uname` = 'Linux' ]; then
+	/sbin/ldconfig -p >> sysinfo.txt
+else
+	/sbin/ldconfig -r >> sysinfo.txt
+fi
+echo "=============== config.cache ================" >> sysinfo.txt
+cat ../config.cache ../Version >> sysinfo.txt 2> /dev/null
+cat config.cache Version >> sysinfo.txt 2> /dev/null
+
+echo "=============== configuration dir ===========" >> sysinfo.txt
+WDIR=$HOME/GNUstep/Defaults
+if [ -d $WDIR ]; then
+	for i in WMGLOBAL WMRootMenu WMState WMWindowAttributes WindowMaker; do
+		if [ -f $WDIR/$i ]; then
+			echo "============== $i ========" >> sysinfo.txt
+			cat $WDIR/$i >> sysinfo.txt
+		fi
+	done
+else
+	echo "No config directory found" >> sysinfo.txt
+fi
+
+bzip2 -9f sysinfo.txt || gzip -9f sysinfo.txt
+
+echo done.
