@@ -48,6 +48,7 @@ $(APP_NAME)_RESOURCE_FILES = \
 # WindowMaker
 # Commandline option to make: windowmaker=yes
 ifneq ($(windowmaker), no)
+  WM_DIR = WM
   include GNUmakefile.WM
 endif
 

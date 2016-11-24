@@ -1,70 +1,62 @@
-#SUBPROJECTS += \
-#	WM/wrlib \
-#	WM/WINGs \
-#	WM/wmlib
-
-#$(APP_NAME)_OBJC_FILES += $(wildcard WindowMaker/*.m)
-#$(APP_NAME)_RESOURCE_FILES += WindowMaker/Resources/WindowMaker
-
 $(APP_NAME)_C_FILES = \
-	WM/src/actions.c \
-	WM/src/appicon.c \
-	WM/src/application.c \
-	WM/src/appmenu.c \
-	WM/src/balloon.c \
-	WM/src/client.c \
-	WM/src/colormap.c \
-	WM/src/cycling.c \
-	WM/src/defaults.c \
-	WM/src/dialog.c \
-	WM/src/dock.c \
-	WM/src/dockedapp.c \
-	WM/src/event.c \
-	WM/src/framewin.c \
-	WM/src/geomview.c \
-	WM/src/icon.c \
-	WM/src/main.c \
-	WM/src/menu.c \
-	WM/src/monitor.c \
-	WM/src/moveres.c \
-	WM/src/pixmap.c \
-	WM/src/placement.c \
-	WM/src/properties.c \
-	WM/src/resources.c \
-	WM/src/rootmenu.c \
-	WM/src/screen.c \
-	WM/src/session.c \
-	WM/src/shutdown.c \
-	WM/src/switchpanel.c \
-	WM/src/stacking.c \
-	WM/src/startup.c \
-	WM/src/superfluous.c \
-	WM/src/switchmenu.c \
-	WM/src/texture.c \
-	WM/src/usermenu.c \
-	WM/src/xinerama.c \
-	WM/src/xutil.c \
-	WM/src/wcore.c \
-	WM/src/wdefaults.c \
-	WM/src/window.c \
-	WM/src/winmenu.c \
-	WM/src/winspector.c \
-	WM/src/wmspec.c \
-	WM/src/workspace.c \
-	WM/src/wsmap.c \
-	WM/src/misc.c \
-	WM/src/xmodifier.c \
-	WM/src/xdnd.c \
-	WM/src/motif.c
+	$(WM_DIR)/src/actions.c \
+	$(WM_DIR)/src/appicon.c \
+	$(WM_DIR)/src/application.c \
+	$(WM_DIR)/src/appmenu.c \
+	$(WM_DIR)/src/balloon.c \
+	$(WM_DIR)/src/client.c \
+	$(WM_DIR)/src/colormap.c \
+	$(WM_DIR)/src/cycling.c \
+	$(WM_DIR)/src/defaults.c \
+	$(WM_DIR)/src/dialog.c \
+	$(WM_DIR)/src/dock.c \
+	$(WM_DIR)/src/dockedapp.c \
+	$(WM_DIR)/src/event.c \
+	$(WM_DIR)/src/framewin.c \
+	$(WM_DIR)/src/geomview.c \
+	$(WM_DIR)/src/icon.c \
+	$(WM_DIR)/src/main.c \
+	$(WM_DIR)/src/menu.c \
+	$(WM_DIR)/src/monitor.c \
+	$(WM_DIR)/src/moveres.c \
+	$(WM_DIR)/src/pixmap.c \
+	$(WM_DIR)/src/placement.c \
+	$(WM_DIR)/src/properties.c \
+	$(WM_DIR)/src/resources.c \
+	$(WM_DIR)/src/rootmenu.c \
+	$(WM_DIR)/src/screen.c \
+	$(WM_DIR)/src/session.c \
+	$(WM_DIR)/src/shutdown.c \
+	$(WM_DIR)/src/switchpanel.c \
+	$(WM_DIR)/src/stacking.c \
+	$(WM_DIR)/src/startup.c \
+	$(WM_DIR)/src/superfluous.c \
+	$(WM_DIR)/src/switchmenu.c \
+	$(WM_DIR)/src/texture.c \
+	$(WM_DIR)/src/usermenu.c \
+	$(WM_DIR)/src/xinerama.c \
+	$(WM_DIR)/src/xutil.c \
+	$(WM_DIR)/src/wcore.c \
+	$(WM_DIR)/src/wdefaults.c \
+	$(WM_DIR)/src/window.c \
+	$(WM_DIR)/src/winmenu.c \
+	$(WM_DIR)/src/winspector.c \
+	$(WM_DIR)/src/$(WM_DIR)spec.c \
+	$(WM_DIR)/src/workspace.c \
+	$(WM_DIR)/src/wsmap.c \
+	$(WM_DIR)/src/misc.c \
+	$(WM_DIR)/src/xmodifier.c \
+	$(WM_DIR)/src/xdnd.c \
+	$(WM_DIR)/src/motif.c
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-$(APP_NAME)_C_FILES += WM/src/osdep_bsd.c
+$(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_bsd.c
 endif
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-$(APP_NAME)_C_FILES += WM/src/osdep_linux.c
+$(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_linux.c
 endif
 
-#if WM_OSDEP_GENERIC
-#$(APP_NAME)_C_FILES += WM/src/osdep_stub.c
+#if $(WM_DIR)_OSDEP_GENERIC
+#$(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_stub.c
 #endif

@@ -1,27 +1,48 @@
-#./autogen.sh
+#!/bin/sh
 
-WM_APP="/usr/NextSpace/Apps/Workspace.app"
-export CFLAGS=-DNEXTSPACE
+WM_DIR="WM"
 
-./configure \
---enable-randr \
---enable-xinerama \
---disable-magick \
-\
---prefix=/usr/NextSpace \
---bindir=/usr/NextSpace/bin \
---libdir=/usr/NextSpace/lib \
---includedir=/usr/NextSpace/include \
---mandir=/usr/NextSpace/Documentation/man \
-\
---datadir=$WM_APP \
---sysconfdir=$WM_APP \
---localedir=$WM_APP \
---with-pixmapdir=$WM_APP/WindowMaker/Pixmaps \
-\
---with-gnustepdir=/usr/NextSpace \
-CC=clang CXX=clang++
+cd $WM_DIR
 
-#--disable-xft
-#--enable-gnome \
-#--enable-kde \
+if [ ! -x configure ];then
+    ./autogen.sh
+fi
+
+if [ ! -f Makefile ];then
+  WM_APP="/usr/NextSpace/Apps/Workspace.app"
+  export CFLAGS=-DNEXTSPACE
+
+  ./configure \
+  --enable-randr \
+  --enable-xinerama \
+  --disable-magick \
+  \
+  --prefix=/usr/NextSpace \
+  --bindir=/usr/NextSpace/bin \
+  --libdir=/usr/NextSpace/lib \
+  --includedir=/usr/NextSpace/include \
+  --mandir=/usr/NextSpace/Documentation/man \
+  \
+  --datadir=$WM_APP \
+  --sysconfdir=$WM_APP \
+  --localedir=$WM_APP \
+  --with-pixmapdir=$WM_APP/WindowMaker/Pixmaps \
+  \
+  --with-gnustepdir=/usr/NextSpace \
+  CC=clang CXX=clang++
+
+#  --disable-xft
+#  --enable-gnome \
+#  --enable-kde \
+fi
+
+if [ ! -f config-paths.h ];then
+    make config-paths.h
+fi
+
+cd ..
+
+rm config-paths.h
+ln -s $WM_DIR/config-paths.h config-paths.h
+rm config.h
+ln -s $WM_DIR/config.h config.h

@@ -1,1 +1,1 @@
-./WM/config.h
+WindowMaker/config.h
