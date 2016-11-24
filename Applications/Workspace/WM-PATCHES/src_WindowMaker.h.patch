@@ -1,0 +1,11 @@
+--- ./WindowMaker-0.95.7/src/WindowMaker.h	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/WindowMaker.h	2016-11-25 01:02:36.758505940 +0200
+@@ -56,7 +56,7 @@
+ 	WMNormalLevel = 0,
+ 	WMFloatingLevel = 3,
+ 	WMDockLevel = 5,
+-	WMSubmenuLevel = 15,
++	WMSubmenuLevel = 10,
+ 	WMMainMenuLevel = 20,
+ 	WMStatusLevel = 21,
+ 	WMModalLevel = 100,
