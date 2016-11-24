@@ -4,10 +4,10 @@ WM_DIR="WindowMaker"
 
 cd $WM_DIR
 
-if [ ! -x configure ];then
-    echo "===> 'configure' script not found. Running autogen.h..."
+#if [ ! -x configure ];then
+#    echo "===> 'configure' script not found. Running autogen.h..."
     ./autogen.sh
-fi
+#fi
 
 if [ ! -f Makefile ];then
     echo "===> 'Makefile' not found. Running configure script..."
