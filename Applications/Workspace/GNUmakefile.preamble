@@ -30,7 +30,7 @@ ifneq ($(windowmaker), no)
   ADDITIONAL_CFLAGS += -DNEXTSPACE -std=gnu89
   ADDITIONAL_OBJCFLAGS += -DNEXTSPACE
   ADDITIONAL_LDFLAGS += -ldispatch -ldl
-  ADDITIONAL_INCLUDE_DIRS += -I./WM/src -I./WM/WINGs -I./WM/wrlib
-  ADDITIONAL_LIB_DIRS += -L./WM/WINGs/.libs -L./WM/wrlib/.libs
+  ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/src -I./$(WM_DIR)/WINGs -I./$(WM_DIR)/wrlib
+  ADDITIONAL_LIB_DIRS += -L./$(WM_DIR)/WINGs/.libs -L./$(WM_DIR)/wrlib/.libs
   ADDITIONAL_GUI_LIBS += -lWUtil -lWINGs -lwraster -lXext -lXrandr -lXinerama
 endif
