@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WM_DIR="WM"
+WM_DIR="WindowMaker"
 
 cd $WM_DIR
 
