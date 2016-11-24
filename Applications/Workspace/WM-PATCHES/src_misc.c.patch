@@ -1,0 +1,52 @@
+--- ./WindowMaker-0.95.7/src/misc.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/misc.c	2016-11-24 23:21:31.035891076 +0200
+@@ -761,24 +761,24 @@
+ 	char buffer[256];
+ 	char *wr;
+ 
+-	void append_string(const char *text)
+-	{
+-		const char *string = text;
+-
+-		while (*string) {
+-			if (wr >= buffer + sizeof(buffer) - 1)
+-				break;
+-			*wr++ = *string++;
+-		}
++#define	append_string(text) \
++	{ \
++		const char *string = text; \
++ \
++		while (*string) { \
++			if (wr >= buffer + sizeof(buffer) - 1) \
++				break; \
++			*wr++ = *string++; \
++		} \
+ 	}
+ 
+-	void append_modifier(int modifier_index, const char *fallback_name)
+-	{
+-		if (wPreferences.modifier_labels[modifier_index]) {
+-			append_string(wPreferences.modifier_labels[modifier_index]);
+-		} else {
+-			append_string(fallback_name);
+-		}
++#define	append_modifier(modifier_index, fallback_name) \
++	{ \
++		if (wPreferences.modifier_labels[modifier_index]) { \
++			append_string(wPreferences.modifier_labels[modifier_index]); \
++		} else { \
++			append_string(fallback_name); \
++		} \
+ 	}
+ 
+ 	key_name = XKeysymToString(XkbKeycodeToKeysym(dpy, key.keycode, 0, 0));
+@@ -797,6 +797,8 @@
+ 	*wr = '\0';
+ 
+ 	return GetShortcutString(buffer);
++#undef append_modifier
++#undef append_astring
+ }
+ 
+ char *EscapeWM_CLASS(const char *name, const char *class)

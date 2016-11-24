@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/icon.c	2016-09-29 17:51:23.572381806 +0300
-+++ ./WM/src/icon.c	2016-10-31 12:35:40.068495834 +0200
+--- ./WindowMaker-0.95.7/src/icon.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/icon.c	2016-11-24 23:33:15.948123730 +0200
 @@ -51,7 +51,11 @@
  /**** Global varianebles ****/
  
@@ -12,7 +12,23 @@
  #define ICON_BORDER 3
  
  static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);
-@@ -254,7 +258,12 @@
+@@ -234,6 +238,7 @@
+ 	wfree(icon);
+ }
+ 
++#ifndef NEXTSPACE
+ static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
+ {
+ 	XFillRectangle(dpy, pixmap, scr->icon_title_texture->normal_gc, 0, 0, wPreferences.icon_size, height + 1);
+@@ -242,6 +247,7 @@
+ 	XDrawLine(dpy, pixmap, scr->icon_title_texture->dim_gc,
+ 		  wPreferences.icon_size - 1, 0, wPreferences.icon_size - 1, height + 1);
+ }
++#endif /* NEXTSPACE */
+ 
+ static void icon_update_pixmap(WIcon *icon, RImage *image)
+ {
+@@ -254,7 +260,12 @@
  
  	switch (icon->tile_type) {
  	case TILE_NORMAL:
@@ -26,7 +42,7 @@
  		break;
  	case TILE_CLIP:
  		tile = RCloneImage(scr->clip_tile);
-@@ -313,8 +322,10 @@
+@@ -313,8 +324,10 @@
  	RReleaseImage(tile);
  
  	/* Draw the icon's title background (without text) */
@@ -37,3 +53,14 @@
  
  	icon->pixmap = pixmap;
  }
+@@ -781,7 +794,9 @@
+ 			x = (icon->core->width - 4) - w;
+ 		else
+ 			x = (icon->core->width - w) / 2;
+-
++#ifdef NEXTSPACE
++                if (x < 2) x = 2;
++#endif /* NEXTSPACE */
+ 		WMDrawString(scr->wmscreen, icon->core->window, scr->icon_title_color,
+ 			     scr->icon_title_font, x, 1, tmp, l);
+ 		wfree(tmp);
