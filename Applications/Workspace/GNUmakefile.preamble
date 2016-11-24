@@ -27,7 +27,7 @@ ADDITIONAL_GUI_LIBS += -lNXSystem -lNXFoundation -lNXAppKit -lX11
 # WindowMaker addons
 #
 ifneq ($(windowmaker), no)
-  ADDITIONAL_CFLAGS += -DNEXTSPACE
+  ADDITIONAL_CFLAGS += -DNEXTSPACE -std=gnu89
   ADDITIONAL_OBJCFLAGS += -DNEXTSPACE
   ADDITIONAL_LDFLAGS += -ldispatch -ldl
   ADDITIONAL_INCLUDE_DIRS += -I./WM/src -I./WM/WINGs -I./WM/wrlib
