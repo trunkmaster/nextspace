@@ -1,0 +1,2365 @@
+# Hungarian translation of WPrefs
+# Copyright (C) 1998-2000 Free Software Foundation, Inc.
+# Horvath Szabolcs <horvathsz@penguinpowered.com>
+# thanks to magyar@lists.linux.hu.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Maker 0.95.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-18 00:14+0100\n"
+"PO-Revision-Date: 2014-02-18 00:33+0100\n"
+"Last-Translator: BALATON Zoltán <balaton@eik.bme.hu>\n"
+"Language-Team: Hungarian\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:300
+msgid "[Focused]"
+msgstr "Fókuszált ablak"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:301
+msgid "[Unfocused]"
+msgstr "Nem fókuszált ablak"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:302
+msgid "[Owner of Focused]"
+msgstr "A fókuszált ablak szülője"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:303
+msgid "[Resizebar]"
+msgstr "Átméretezősáv"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:304
+msgid "[Menu Title]"
+msgstr "Címsor"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:305
+msgid "[Menu Item]"
+msgstr "Menüpontok"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:306
+msgid "[Icon]"
+msgstr "Ikon"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1067
+msgid "Select File"
+msgstr "Válassz fájlt"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1431
+msgid "Focused Window"
+msgstr "Fókuszált ablak"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1436
+msgid "Unfocused Window"
+msgstr "Nem fókuszált ablak"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1441
+msgid "Owner of Focused Window"
+msgstr "A fókuszált ablak szülője"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1445
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1749
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:100
+msgid "Menu Title"
+msgstr "Menü cím"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1449
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1451
+msgid "Normal Item"
+msgstr "Normál"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1456
+msgid "Disabled Item"
+msgstr "Letiltott"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1465
+msgid "Highlighted"
+msgstr "Kiemelt"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1649
+msgid "Texture"
+msgstr "Minta"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1656
+msgid "Titlebar of Focused Window"
+msgstr "A fókuszált ablak címsora"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1657
+msgid "Titlebar of Unfocused Windows"
+msgstr "A nem fókuszált ablak címsora"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1658
+msgid "Titlebar of Focused Window's Owner"
+msgstr "A fókuszált ablak szülőjének címsora"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1659
+msgid "Window Resizebar"
+msgstr "Átméretezősáv"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1660
+msgid "Titlebar of Menus"
+msgstr "Menü címsor"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1661
+msgid "Menu Items"
+msgstr "Menüpontok"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1662
+msgid "Icon Background"
+msgstr "Ikonháttér"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1677
+msgid ""
+"Double click in the texture you want to use\n"
+"for the selected item."
+msgstr ""
+"Kattints duplán azon a mintázaton, amit\n"
+"használni szeretnél a kiválasztott típusnál."
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1689
+msgid "New"
+msgstr "Új"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1693
+msgid "Create a new texture."
+msgstr "Új mintázat készítése"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1700
+msgid "Extract..."
+msgstr "Kibont"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1704
+msgid "Extract texture(s) from a theme or a style file."
+msgstr "Mintázat(ok) kicsomagolása téma vagy stílus fájlból."
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1713
+msgid "Edit"
+msgstr "Szerkeszt"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1716
+msgid "Edit the highlighted texture."
+msgstr "A kiválasztott mintázat szerkesztése"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1723
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1202
+msgid "Delete"
+msgstr "Töröl"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1727
+msgid "Delete the highlighted texture."
+msgstr "A kiválasztott mintázat törlése"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1739
+msgid "Color"
+msgstr "Szín"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1746
+msgid "Focused Window Title"
+msgstr "A fókuszált ablak címsora"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1747
+msgid "Unfocused Window Title"
+msgstr "A nem fókuszált ablak címsora"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1748
+msgid "Owner of Focused Window Title"
+msgstr "A fókuszált ablak szülőjének címsora"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1750
+msgid "Menu Item Text"
+msgstr "Menüpont szöveg"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1751
+msgid "Disabled Menu Item Text"
+msgstr "Letiltott menüpont"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1752
+msgid "Menu Highlight Color"
+msgstr "Menü kiválasztás színe"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1753
+msgid "Highlighted Menu Text Color"
+msgstr "Kiválasztott menüpont szöveg színe"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1790
+msgid "Background"
+msgstr "Ikonháttér"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1802
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1377
+msgid "Browse..."
+msgstr "Választ..."
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1812
+msgid "Options"
+msgstr "Beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1819
+msgid "Menu Style"
+msgstr "Menü stílus"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1847
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:179
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:191
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:206
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:214
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:269
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:280
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:127
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:138
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:166
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:181
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:520
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:531
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:467
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:492
+#, c-format
+msgid "could not load icon file %s"
+msgstr "nem tudom betölteni ezt az ikon fájlt: %s"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1860
+msgid "Title Alignment"
+msgstr "Címsor igazítás"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1867
+msgid "Left"
+msgstr "Balra"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1870
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1391
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:287
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:189
+msgid "Center"
+msgstr "Középre"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:1873
+msgid "Right"
+msgstr "Jobbra"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:2076
+msgid "Appearance Preferences"
+msgstr "Megjelenés beállítása"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:2078
+msgid ""
+"Background texture configuration for windows,\n"
+"menus and icons."
+msgstr "Ablakok, menük és ikonok háttérmintázata."
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:2114
+msgid "Extract Texture"
+msgstr "Mintázatok kicsomagolása"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:2134
+msgid "Textures"
+msgstr "Mintázatok"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:2143
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:255
+msgid "Close"
+msgstr "Bezár"
+
+#: ../../../wmaker-crm/WPrefs.app/Appearance.c:2148
+msgid "Extract"
+msgstr "Kicsomagol"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:130
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:160
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:106
+#, c-format
+msgid "could not load image file %s"
+msgstr "a %s képet nem tudom betölteni"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:141
+msgid "Icon Slide Speed"
+msgstr "Ikon mozgás sebessége"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:147
+msgid "Shade Animation Speed"
+msgstr "Ablak felhúzás/leeresztés sebessége"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:206
+msgid "Smooth Scaling"
+msgstr "Kép simítás"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:237
+msgid ""
+"Smooth scaled background images, neutralizing\n"
+"the `pixelization' effect. This will slow\n"
+"down loading of background images considerably."
+msgstr ""
+"Simítás háttérképek nagyításánál, ami csökkenti\n"
+"a kockásodást. Ez jelentősen lelassítja a\n"
+"háttérképek betöltését."
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:247
+msgid "Titlebar Style"
+msgstr "Címsor stílusa"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:300
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:306
+msgid "Animations"
+msgstr "Animációk"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:317
+msgid ""
+"Disable/enable animations such as those shown\n"
+"for window miniaturization, shading etc."
+msgstr ""
+"Animációk ki/be kapcsolása (pl. ablak ikonná\n"
+"kicsinyítésnél, felhúzásnál, stb.)"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:324
+msgid "Superfluous"
+msgstr "Haszontalan"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:335
+msgid ""
+"Disable/enable `superfluous' features and\n"
+"animations. These include the `ghosting' of the\n"
+"dock when it's being moved to another side and\n"
+"the explosion animation when undocking icons."
+msgstr ""
+"További haszontalan jellemzők és animációk\n"
+"ki/bekapcsolása (pl. a dokk árnyképe mozgatáskor\n"
+"vagy az ikonok felrobbanása törléskor)"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:348
+msgid "Dithering colormap for 8bpp"
+msgstr "Színtérkép 256 színű megjelenítőknél"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:350
+msgid ""
+"Number of colors to reserve for Window Maker\n"
+"on displays that support only 8bpp (PseudoColor)."
+msgstr ""
+"A WindowMaker által fenntartott színek száma azokon\n"
+"a megjelenítőkön, amik csak 8 bites színmélységet támogatnak."
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:357
+msgid "Disable dithering in any visual/depth"
+msgstr "Árnyalás tiltása minden visual/színmélység esetén"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:378
+msgid ""
+"More colors for\n"
+"applications"
+msgstr ""
+"Több szín az\n"
+"alkalmazásoknak"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:385
+msgid ""
+"More colors for\n"
+"Window Maker"
+msgstr ""
+"Több szín a\n"
+"Window\n"
+"Makernek"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:434
+msgid "Other Configurations"
+msgstr "Egyéb beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/Configurations.c:435
+msgid ""
+"Animation speeds, titlebar styles, various option\n"
+"toggling and number of colors to reserve for\n"
+"Window Maker on 8bit displays."
+msgstr ""
+"Animáció sebessége, címsor stílusa, más opciók ki/be\n"
+"kapcsolása és a Window Maker által fenntartott színek\n"
+"száma 8 bites megjelenítőknél"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:55
+msgid "Before auto-expansion"
+msgstr "Szétnyitás előtt"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:56
+msgid "Before auto-collapsing"
+msgstr "Összecsukás előtt"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:57
+msgid "Before auto-raising"
+msgstr "Előrehozás előtt"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:58
+msgid "Before auto-lowering"
+msgstr "Hátravivés előtt"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:178
+msgid "Clip autocollapsing delays"
+msgstr "Kapocs automatikus ikon elrejtés késleltetései"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:180
+msgid "Clip autoraising delays"
+msgstr "Kapocs automatikus előre ugrás késleltetései"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:228
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:299
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:561
+msgid "ms"
+msgstr "ms"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:244
+msgid "Dock/Clip/Drawer"
+msgstr "Dokk/Kapocs/Fiók"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:264
+msgid ""
+"Disable/enable the application Dock (the\n"
+"vertical icon bar in the side of the screen)."
+msgstr ""
+"Alkalmazás dokk ki/bekapcsolása (a képernyő\n"
+"oldalán látható függőleges ikon sáv)."
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:268
+msgid ""
+"Disable/enable the Clip (that thing with\n"
+"a paper clip icon)."
+msgstr ""
+"A munkafelület Kapocs ki/bekapcsolása (az\n"
+"amin egy iratkapocs látható)"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:272
+msgid ""
+"Disable/enable Drawers (a dock that stores\n"
+"application icons horizontally). The dock is required."
+msgstr ""
+"Fiókok ki/bekapcsolása (olyan dokk ami vízszintes\n"
+"irányban rendszerezi az ikonokat). A dokk kell hozzá."
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:326
+msgid "Dock Preferences"
+msgstr "Dokk beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/Docks.c:328
+msgid ""
+"Dock and clip features.\n"
+"Enable/disable the Dock and Clip, and tune some delays."
+msgstr ""
+"A dokk és munkafelület Kapocs beállításai. Ki/bekapcsolás\n"
+"és késleltetések hangolása."
+
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:41
+msgid "Disable miniwindows (icons for minimized windows). For use with KDE/GNOME."
+msgstr "Miniablakok (ikonállapotú ablakok) letiltása. KDE/GNOME-hoz."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:44
+msgid "Do not set non-WindowMaker specific parameters (do not use xset)."
+msgstr "Window Makertől független beállítások tiltása (ne használjon xset-et)."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:47
+msgid "Automatically save session when exiting Window Maker."
+msgstr "Munkafelület állapot (session) automatikus mentése kilépéskor."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:50
+msgid "Use SaveUnder in window frames, icons, menus and other objects."
+msgstr "\"SaveUnder\" használata keretek, ikonok, menük és más objektumok alatt."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:53
+msgid "Disable confirmation panel for the Kill command."
+msgstr "Kilövés parancs végrehajtása megerősítés nélkül."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:56
+msgid "Disable selection animation for selected icons."
+msgstr "Az ikon kiválasztás animáció letiltása."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:59
+msgid "Smooth font edges (needs restart)."
+msgstr "Betűk élsimítása (újraindítás szükséges)."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:62
+msgid "Cycle windows only on the active head."
+msgstr "Ablakok közötti váltás csak az aktív képernyőn belül."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:65
+msgid "Ignore minimized windows when cycling."
+msgstr "Ikonállapotú ablakok kihagyása ablak váltás közben."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:68
+msgid "Show workspace title on Clip."
+msgstr "A munkafelület neve megjelenik a Kapcson."
+
+#. default:
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:71
+msgid "Highlight the icon of the application when it has the focus."
+msgstr "A fókuszban levő alkalmazás ikonjának kivilágítása."
+
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:75
+msgid "Enable keyboard language switch button in window titlebars."
+msgstr "Ablakonként megadható billentyűzetkiosztás."
+
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:181
+msgid "Expert User Preferences"
+msgstr "Haladó beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/Expert.c:183
+msgid ""
+"Options for people who know what they're doing...\n"
+"Also has some other misc. options."
+msgstr ""
+"Beállítási lehetőségek azoknak, akik tudják mit csinálnak...\n"
+"Illetve néhány, más kategóriába nem illő beállítás is található itt."
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:75
+#, c-format
+msgid "bad option value %s for option FocusMode. Using default Manual"
+msgstr "rossz érték a FocusMode-nál: \"%s\". Az alapértelmezett manuális módot használom."
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:87
+#, c-format
+msgid "bad option value %s for option ColormapMode. Using default Auto"
+msgstr "rossz érték a ColorMapMode-nál: \"%s\". Az alapértelmezett automatikus módot használom."
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:153
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:71
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:123
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:142
+#, c-format
+msgid "OFF"
+msgstr "KI"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:198
+msgid "Input Focus Mode"
+msgstr "Beviteli fókusz mód"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:206
+msgid "Manual:  Click on the window to set keyboard input focus"
+msgstr "Manuális:  Fókusz váltáshoz az ablakra kell kattintani"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:212
+msgid "Auto:  Set keyboard input focus to the window under the mouse pointer"
+msgstr "Automatikus:  A fókusz mindig azé az ablaké lesz, amely felett az egér mutató áll"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:225
+msgid "Install colormap from the window..."
+msgstr "Színtérkép ahhoz az ablakhoz..."
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:230
+msgid "...that has the input focus"
+msgstr "...amelyiké a beviteli fókusz"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:235
+msgid "...that's under the mouse pointer"
+msgstr "...amelyikre az egér mutat"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:244
+msgid "Automatic Window Raise Delay"
+msgstr "Automatikus ablak előrerakás késleltetése"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:316
+msgid "Do not let applications receive the click used to focus windows"
+msgstr "A fókuszálásra használt egérkattintást ne kapja meg az alkalmazás"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:321
+msgid "Automatically focus new windows"
+msgstr "Új ablakok automatikusan fókuszba kerülnek"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:326
+msgid "Raise window when switching focus with keyboard"
+msgstr "Billentyűvel váltott fókusznál az aktív ablak előtérbe is kerül"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:342
+msgid "Window Focus Preferences"
+msgstr "Fókusz beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/Focus.c:343
+msgid "Keyboard focus switching policy and related options."
+msgstr ""
+"Billentyűzet fókuszának és 8 bites megjelenítőkön a színtérkép\n"
+"váltásának beállításai és más kapcsolódó opciók."
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:99
+msgid "Window Title"
+msgstr "Ablak címsor felirat"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:101
+msgid "Menu Text"
+msgstr "Menüpont szöveg"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:102
+msgid "Icon Title"
+msgstr "Ikon címe"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:103
+msgid "Clip Title"
+msgstr "Kapocs felirata"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:104
+msgid "Desktop Caption"
+msgstr "Munkafelület neve"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:647
+msgid "Sample Text"
+msgstr "Példa:"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:664
+msgid "Family"
+msgstr "Típuscsalád"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:690
+msgid "Style"
+msgstr "Stílus"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:693
+msgid "Size"
+msgstr "Méret"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:725
+msgid "Font Configuration"
+msgstr "Betűtípus beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/FontSimple.c:727
+msgid "Configure fonts for Window Maker titlebars, menus etc."
+msgstr "A Window Maker címsorok, menük, stb. betűtípusainak beállításai."
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:166
+msgid "Icon Positioning"
+msgstr "Ikonok elhelyezése"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:212
+msgid "Icon Size"
+msgstr "Ikonméret"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:214
+msgid "The size of the dock/application icon and miniwindows"
+msgstr "A dokk/alkalmazás ikonok és miniablakok mérete"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:231
+msgid "Iconification Animation"
+msgstr "Animáció ikonállapotba tételnél"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:242
+msgid "Shrinking/Zooming"
+msgstr "Zsugorodás/Nagyítás"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:243
+msgid "Spinning/Twisting"
+msgstr "Pörgés/Forgás"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:244
+msgid "3D-flipping"
+msgstr "3D-átfordulás"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:245
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:790
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:795
+msgid "None"
+msgstr "Nincs"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:258
+msgid "Auto-arrange icons"
+msgstr "Ikonok automatikus elrendezése"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:260
+msgid "Keep icons and miniwindows arranged all the time."
+msgstr "Ikonok és miniablakok szétválogatása."
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:265
+msgid "Omnipresent miniwindows"
+msgstr "Miniablakok mindenütt láthatóak"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:267
+msgid "Make miniwindows be present in all workspaces."
+msgstr "A miniablakok minden munkafelületen jelenjenek meg."
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:272
+msgid "Single click activation"
+msgstr "Aktiválás egy kattintással"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:274
+msgid "Launch applications and restore windows with a single click."
+msgstr "Alkalmazások indítása és miniablakok visszaállítása egy kattintással."
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:329
+msgid "Icon Preferences"
+msgstr "Ikonjellemzők"
+
+#: ../../../wmaker-crm/WPrefs.app/Icons.c:331
+msgid ""
+"Icon/Miniwindow handling options. Icon positioning\n"
+"area, sizes of icons, miniaturization animation style."
+msgstr ""
+"Ikonok/miniablakok kezelésének beállítása. Ikonok\n"
+"elhelyezése, mérete, lekicsinyítés animációja."
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardSettings.c:68
+msgid "Initial Key Repeat"
+msgstr "Kezdeti billentyű-ismétlés"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardSettings.c:109
+msgid "Key Repeat Rate"
+msgstr "Billentyű-ismétlés sebessége"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardSettings.c:149
+msgid "Type here to test"
+msgstr "Itt tesztelheted:"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardSettings.c:164
+msgid "Keyboard Preferences"
+msgstr "Billentyűzet beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardSettings.c:166
+msgid "Not done"
+msgstr "Nincs kész"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:72
+msgid "Open applications menu"
+msgstr "Alkalmazások menü megnyitása"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:73
+msgid "Open window list menu"
+msgstr "Ablakok menü megnyitása"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:74
+msgid "Open window commands menu"
+msgstr "Ablak-parancsok menü megnyitása"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:75
+msgid "Hide active application"
+msgstr "Aktuális alkalmazás elrejtése"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:76
+msgid "Hide other applications"
+msgstr "Többi alkalmazás elrejtése"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:77
+msgid "Miniaturize active window"
+msgstr "Aktuális ablak ikonállapotba tétele"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:78
+msgid "Miniaturize all windows"
+msgstr "Az összes ablak ikonállapotba tétele"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:79
+msgid "Close active window"
+msgstr "Aktuális ablak bezárása"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:80
+msgid "Maximize active window"
+msgstr "Aktuális ablak teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:81
+msgid "Maximize active window vertically"
+msgstr "Aktuális ablak fűggölegesen teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:82
+msgid "Maximize active window horizontally"
+msgstr "Aktuális ablak vízszintesen teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:83
+msgid "Maximize active window left half"
+msgstr "Aktuális ablak balra teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:84
+msgid "Maximize active window right half"
+msgstr "Aktuális ablak jobbra teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:85
+msgid "Maximize active window top half"
+msgstr "Aktuális ablak felül teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:86
+msgid "Maximize active window bottom half"
+msgstr "Aktuális ablak alul teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:87
+msgid "Maximize active window left top corner"
+msgstr "Aktuális ablak bal felül teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:88
+msgid "Maximize active window right top corner"
+msgstr "Aktuális ablak jobb felül teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:89
+msgid "Maximize active window left bottom corner"
+msgstr "Aktuális ablak balra alul teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:90
+msgid "Maximize active window right bottom corner"
+msgstr "Aktuális ablak jobbra alul teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:91
+msgid "Maximus: Tiled maximization "
+msgstr "Csempézve teljes méretűre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:92
+msgid "Raise active window"
+msgstr "Aktuális ablak előtérbe"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:93
+msgid "Lower active window"
+msgstr "Aktuális ablak háttérbe"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:94
+msgid "Raise/Lower window under mouse pointer"
+msgstr "Egér mutató alatti ablak előtérbe/háttérbe"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:95
+msgid "Shade active window"
+msgstr "Aktuális ablak felhúzása"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:96
+msgid "Move/Resize active window"
+msgstr "Aktuális ablak mozgatása/átméretezése"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:97
+msgid "Select active window"
+msgstr "Aktuális ablak kijelölése"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:98
+msgid "Focus next window"
+msgstr "Fókusz a következő ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:99
+msgid "Focus previous window"
+msgstr "Fókusz az előző ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:100
+msgid "Focus next group window"
+msgstr "Fókusz a következő ablakra csoporton belül"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:101
+msgid "Focus previous group window"
+msgstr "Fókusz az előző ablakra csoporton belül"
+
+#. Workspace Related
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:104
+msgid "Switch to next workspace"
+msgstr "Váltás a következő munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:105
+msgid "Switch to previous workspace"
+msgstr "Váltás az előző munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:106
+msgid "Switch to last used workspace"
+msgstr "Váltás az utolsó munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:107
+msgid "Switch to next ten workspaces"
+msgstr "Váltás a következő tíz munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:108
+msgid "Switch to previous ten workspaces"
+msgstr "Váltás az előző tíz munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:109
+msgid "Switch to workspace 1"
+msgstr "Váltás az első munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:110
+msgid "Switch to workspace 2"
+msgstr "Váltás a második munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:111
+msgid "Switch to workspace 3"
+msgstr "Váltás a harmadik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:112
+msgid "Switch to workspace 4"
+msgstr "Váltás a negyedik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:113
+msgid "Switch to workspace 5"
+msgstr "Váltás az ötödik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:114
+msgid "Switch to workspace 6"
+msgstr "Váltás a hatodik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:115
+msgid "Switch to workspace 7"
+msgstr "Váltás a hetedik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:116
+msgid "Switch to workspace 8"
+msgstr "Váltás a nyolcadik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:117
+msgid "Switch to workspace 9"
+msgstr "Váltás a kilencedik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:118
+msgid "Switch to workspace 10"
+msgstr "Váltás a tizedik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:119
+msgid "Move window to next workspace"
+msgstr "Ablak a következő munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:120
+msgid "Move window to previous workspace"
+msgstr "Ablak az előző munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:121
+msgid "Move window to last used workspace"
+msgstr "Ablak az utolsó munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:122
+msgid "Move window to next ten workspaces"
+msgstr "Ablak a következő tíz munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:123
+msgid "Move window to previous ten workspaces"
+msgstr "Ablak az előző tíz munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:124
+msgid "Move window to workspace 1"
+msgstr "Ablak az első munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:125
+msgid "Move window to workspace 2"
+msgstr "Ablak a második munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:126
+msgid "Move window to workspace 3"
+msgstr "Ablak a harmadik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:127
+msgid "Move window to workspace 4"
+msgstr "Ablak a negyedik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:128
+msgid "Move window to workspace 5"
+msgstr "Ablak az ötödik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:129
+msgid "Move window to workspace 6"
+msgstr "Ablak a hatodik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:130
+msgid "Move window to workspace 7"
+msgstr "Ablak a hetedik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:131
+msgid "Move window to workspace 8"
+msgstr "Ablak a nyolcadik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:132
+msgid "Move window to workspace 9"
+msgstr "Ablak a kilencedik munkafelületre"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:133
+msgid "Move window to workspace 10"
+msgstr "Ablak a tizedik munkafelületre"
+
+#. Window Selection
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:136
+msgid "Shortcut for window 1"
+msgstr "Gyorsbillentyű az első ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:137
+msgid "Shortcut for window 2"
+msgstr "Gyorsbillentyű a második ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:138
+msgid "Shortcut for window 3"
+msgstr "Gyorsbillentyű a harmadik ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:139
+msgid "Shortcut for window 4"
+msgstr "Gyorsbillentyű a negyedik ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:140
+msgid "Shortcut for window 5"
+msgstr "Gyorsbillentyű az ötödik ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:141
+msgid "Shortcut for window 6"
+msgstr "Gyorsbillentyű a hatodik ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:142
+msgid "Shortcut for window 7"
+msgstr "Gyorsbillentyű a hetedik ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:143
+msgid "Shortcut for window 8"
+msgstr "Gyorsbillentyű a nyolcadik ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:144
+msgid "Shortcut for window 9"
+msgstr "Gyorsbillentyű a kilencedik ablakra"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:145
+msgid "Shortcut for window 10"
+msgstr "Gyorsbillentyű a tizedik ablakra"
+
+#. Misc.
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:148
+msgid "Launch new instance of application"
+msgstr "Alkalmazás új példányának indítása"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:149
+msgid "Switch to Next Screen/Monitor"
+msgstr "Következő képernyőre/monitorra vált"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:150
+msgid "Raise/Lower Dock"
+msgstr "Dokk előtérbe/háttérbe"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:151
+msgid "Raise/Lower Clip"
+msgstr "Kapocs előtérbe/háttérbe"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:153
+msgid "Toggle keyboard language"
+msgstr "Billentyűzet-kiosztás váltása"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:350
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:275
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1408
+msgid "Cancel"
+msgstr "Mégsem"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:352
+msgid "Press the desired shortcut key(s) or click Cancel to stop capturing."
+msgstr "Nyomd le a kívánt billentyű kombinációt vagy kattints a Mégsem gombra a tanulás leállításához"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:371
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:541
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:285
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:733
+msgid "Capture"
+msgstr "Megtanul"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:372
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:549
+msgid "Click on Capture to interactively define the shortcut key."
+msgstr "Kattints a \"Megtanul\" gombra ha interaktívan akarod megadni a gyorsbillentyű kombinációt."
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:498
+msgid "Actions"
+msgstr "Műveletek"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:525
+msgid "Shortcut"
+msgstr "Gyorsbillentyű"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:535
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:739
+msgid "Clear"
+msgstr "Töröl"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:590
+msgid "Keyboard Shortcut Preferences"
+msgstr "Gyorsbillentyű beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/KeyboardShortcuts.c:592
+msgid ""
+"Change the keyboard shortcuts for actions such\n"
+"as changing workspaces and opening menus."
+msgstr ""
+"Gyorsbillentyű kombinációk hozzárendelése műveletekhez,\n"
+"mint például munkafelület váltás, menük megnyitása, stb."
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:251
+msgid "Select Program"
+msgstr "Válassz programot"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:413
+msgid "New Items"
+msgstr "Új menüpontok"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:414
+msgid "Sample Commands"
+msgstr "Minta parancsok"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:415
+msgid "Sample Submenus"
+msgstr "Minta almenük"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:427
+msgid "Run Program"
+msgstr "Program futtatása"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:428
+msgid "Internal Command"
+msgstr "Beépített parancs"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:429
+msgid "Submenu"
+msgstr "Almenü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:430
+msgid "External Submenu"
+msgstr "Külső almenü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:431
+msgid "Generated Submenu"
+msgstr "Generált almenü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:432
+msgid "Generated PL Menu"
+msgstr "Generált PL menü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:433
+msgid "Directory Contents"
+msgstr "Könyvtár tartalma"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:434
+msgid "Workspace Menu"
+msgstr "Munkafelület menü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:435
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:792
+msgid "Window List Menu"
+msgstr "Ablakok menü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:454
+msgid "XTerm"
+msgstr "XTerm"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:457
+msgid "rxvt"
+msgstr "rxvt"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:460
+msgid "ETerm"
+msgstr "ETerm"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:463
+msgid "Run..."
+msgstr "Futtatás..."
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:464
+#, c-format
+msgid "%A(Run,Type command to run)"
+msgstr "%A(Futtatás,Adj meg egy parancsot)"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:466
+msgid "Firefox"
+msgstr "Firefox"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:469
+msgid "gimp"
+msgstr "gimp"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:472
+msgid "epic"
+msgstr "epic"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:475
+msgid "ee"
+msgstr "ee"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:478
+msgid "xv"
+msgstr "xv"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:481
+msgid "Evince"
+msgstr "Evince"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:484
+msgid "ghostview"
+msgstr "ghostview"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:487
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:758
+msgid "Exit Window Maker"
+msgstr "Kilépés"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:509
+msgid "Debian Menu"
+msgstr "Debian menü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:512
+msgid "RedHat Menu"
+msgstr "RedHat menü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:515
+msgid "Menu Conectiva"
+msgstr "Conectiva menü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:518
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:211
+msgid "Themes"
+msgstr "Témák"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:524
+msgid "Bg Images (scale)"
+msgstr "Hátterek (nagyít)"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:530
+msgid "Bg Images (tile)"
+msgstr "Hátterek (csempéz)"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:536
+msgid "Assorted XTerms"
+msgstr "Mindenféle XTerm"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:538
+msgid "XTerm Yellow on Blue"
+msgstr "XTerm kék-sárga"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:541
+msgid "XTerm White on Black"
+msgstr "XTerm fekete-fehér"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:544
+msgid "XTerm Black on White"
+msgstr "XTerm fehér-fekete"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:547
+msgid "XTerm Black on Beige"
+msgstr "XTerm bézs-fekete"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:550
+msgid "XTerm White on Green"
+msgstr "XTerm zöld-fehér"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:553
+msgid "XTerm White on Olive"
+msgstr "XTerm oliva-fehér"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:556
+msgid "XTerm Blue on Blue"
+msgstr "XTerm kék-kékkel"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:559
+msgid "XTerm BIG FONTS"
+msgstr "XTerm NAGY BETŰ"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:580
+msgid "Program to Run"
+msgstr "Futtatandó program"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:590
+msgid "Browse"
+msgstr "Választ"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:599
+msgid "Run the program inside a Xterm"
+msgstr "Program futtatása Xterm-ben"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:608
+msgid "Path for Menu"
+msgstr "Menü útvonal"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:619
+msgid ""
+"Enter the path for a file containing a menu\n"
+"or a list of directories with the programs you\n"
+"want to have listed in the menu. Ex:\n"
+"~/GNUstep/Library/WindowMaker/menu\n"
+"or\n"
+"/usr/bin ~/xbin"
+msgstr ""
+"Add meg egy menü-fájl útvonalát vagy könyvtárak\n"
+"listáját amelyekben található programokból fog\n"
+"állni a menü. Pl.\n"
+"~/GNUstep/Library/WindowMaker/menu\n"
+"vagy\n"
+"/usr/bin ~/bin"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:631
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:656
+msgid "Command"
+msgstr "Parancs"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:642
+msgid ""
+"Enter a command that outputs a menu\n"
+"definition to stdout when invoked."
+msgstr ""
+"Adj meg egy olyan parancsot ami egy menü\n"
+"definíciót ad a szabványos kimenetén."
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:647
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:672
+msgid ""
+"Cache menu contents after opening for\n"
+"the first time"
+msgstr ""
+"Menütartalom újrahasználata további\n"
+"megnyitásokkor (cache)"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:667
+msgid ""
+"Enter a command that outputs a proplist menu\n"
+"definition to stdout when invoked."
+msgstr ""
+"Adj meg egy olyan parancsot ami egy proplist\n"
+"menü definíciót ad a standard kimenetén."
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:681
+msgid "Command to Open Files"
+msgstr "Parancs a fájlok megnyitásához"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:692
+msgid ""
+"Enter the command you want to use to open the\n"
+"files in the directories listed below."
+msgstr ""
+"A lent felsorolt könyvtárakban található fájlok\n"
+"megnyitása az itt megadott paranccsal."
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:700
+msgid "Directories with Files"
+msgstr "Fájlok könyvtárai"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:711
+msgid "Strip extensions from file names"
+msgstr "Fájlnév kiterjesztések levágása"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:722
+msgid "Keyboard Shortcut"
+msgstr "Gyorsbillentyű"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:754
+msgid "Arrange Icons"
+msgstr "Ikonok elrendezése"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:755
+msgid "Hide All Windows Except For The Focused One"
+msgstr "Az aktív ablakon kívül a többi elrejtése"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:756
+msgid "Show All Windows"
+msgstr "Minden ablak mutatása"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:759
+msgid "Exit X Session"
+msgstr "Kilépés az X Sessionból"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:760
+msgid "Restart Window Maker"
+msgstr "Window Maker újraindítása"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:761
+msgid "Start Another Window Manager   : ("
+msgstr "Másik ablakkezelő indítása   : ("
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:763
+msgid "Save Current Session"
+msgstr "Session mentése"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:764
+msgid "Clear Saved Session"
+msgstr "Session törlése"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:765
+msgid "Refresh Screen"
+msgstr "Képernyő frissítése"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:766
+msgid "Open Info Panel"
+msgstr "Információs panel"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:767
+msgid "Open Copyright Panel"
+msgstr "Szerzői jogok panel"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:772
+msgid "Window Manager to Start"
+msgstr "Indítandó ablakkezelő"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:785
+msgid "Do not confirm action."
+msgstr "Nem kér megerősítést"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:792
+msgid ""
+"Instructions:\n"
+"\n"
+" - drag items from the left to the menu to add new items\n"
+" - drag items out of the menu to remove items\n"
+" - drag items in menu to change their position\n"
+" - drag items with Control pressed to copy them\n"
+" - double click in a menu item to change the label\n"
+" - click on a menu item to change related information"
+msgstr ""
+"Használati útmutató:\n"
+"\n"
+" - új elem hozzáadása: húzd át a bal oldali oszlopból a\n"
+"    menübe\n"
+" - elem eltávolítása: húzd ki a menüből\n"
+" - elemek sorrendjének változtatása: húzd át máshova a\n"
+"    menüben\n"
+" - menüpont lemásolása: húzd a Control gombot lenyomva\n"
+"    tartva\n"
+" - szöveg megváltoztatása: kattins rá duplán\n"
+" - menüpont szerkesztése: kattints rá egyszer"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1031
+#, c-format
+msgid "unknown command '%s' in menu"
+msgstr "ismeretlen parancs ('%s') a menüben"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1055
+msgid ": Execute Program"
+msgstr ": Program futtatás"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1059
+msgid ": Perform Internal Command"
+msgstr ": Belső parancs végrehajtás"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1063
+msgid ": Open a Submenu"
+msgstr ": Almenü megnyitás"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1067
+msgid ": Program Generated Submenu"
+msgstr ": Program által generált almenü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1071
+msgid ": Program Generated Proplist Submenu"
+msgstr ": Program által generált proplist almenü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1075
+msgid ": Directory Contents Menu"
+msgstr ": almenü könyvtár tartalmából"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1079
+msgid ": Open Workspaces Submenu"
+msgstr ": Munkafelületek almenü megnyitása"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1083
+msgid ": Open Window List Submenu"
+msgstr ": Ablakok almenü megnyitása"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1299
+msgid "Remove Submenu"
+msgstr "Almenü törlése"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1300
+msgid ""
+"Removing this item will destroy all items inside\n"
+"the submenu. Do you really want to do that?"
+msgstr ""
+"Ennek az elemnek az eltávolítása törli az almenüben\n"
+"levő összes elemet is. Biztos ezt akarod?"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1302
+msgid "Yes"
+msgstr "Igen"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1302
+msgid "No"
+msgstr "Nem"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1302
+msgid "Yes, don't ask again"
+msgstr "Igen, a többire is"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1440
+#, c-format
+msgid "Invalid menu command \"%s\" with label \"%s\" cleared"
+msgstr "Törölve: érvénytelen menü parancs \"%s\", címke: \"%s\""
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1443
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1501
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:687
+msgid "Warning"
+msgstr "Figyelmeztetés"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1443
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1476
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:123
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:143
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:566
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:644
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1402
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:84
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:636
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:640
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:660
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:672
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:678
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:687
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:718
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:722
+msgid "OK"
+msgstr "OK"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1472
+#, c-format
+msgid "Could not open default menu from '%s'"
+msgstr "Nem tudom megnyitni az alapértelmezett menüt innen: %s"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1476
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:121
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:140
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:566
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:642
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:83
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:636
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:640
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:657
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:668
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:678
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:718
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:722
+msgid "Error"
+msgstr "Hiba"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1502
+msgid ""
+"The menu file format currently in use is not supported\n"
+"by this tool. Do you want to discard the current menu\n"
+"to use this tool?"
+msgstr ""
+"A menü formátumot amit jelenleg használsz ez a program\n"
+"nem támogatja. Akarod törölni a jelenlegi menüdet és újat\n"
+"készíteni ezzel a programmal?"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1505
+msgid "Yes, Discard and Update"
+msgstr "Igen, töröld és frissítsd"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1505
+msgid "No, Keep Current Menu"
+msgstr "Nem, tartsd meg a mostani menüt"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1746
+msgid "Applications Menu Definition"
+msgstr "Alkalmazások menü"
+
+#: ../../../wmaker-crm/WPrefs.app/Menu.c:1748
+msgid "Edit the menu for launching applications."
+msgstr "Az indítható alkalmazások menüjének szerkesztése"
+
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:105
+msgid "Menu Scrolling Speed"
+msgstr "Menügörgetés sebessége"
+
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:153
+msgid "Submenu Alignment"
+msgstr "Almenü elrendezés"
+
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:197
+msgid "Always open submenus inside the screen, instead of scrolling."
+msgstr "Az almenük görgetés helyett mindig a képernyőn belül nyílnak meg."
+
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:202
+msgid "Scroll off-screen menus when pointer is moved over them."
+msgstr "A képernyőn kívüli menük görgetése ha az egér mutató odaér."
+
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:206
+msgid "Use h/j/k/l keys to select menu options."
+msgstr "Mozgás a menükben a h/j/k/l billentyűkkel."
+
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:222
+msgid "Menu Preferences"
+msgstr "Menü beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/MenuPreferences.c:224
+msgid ""
+"Menu usability related options. Scrolling speed,\n"
+"alignment of submenus etc."
+msgstr ""
+"Menük használati beállításai. Görgetés sebessége,\n"
+"almenük elrendezése, stb."
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:122
+msgid "Invalid mouse acceleration value. Must be a positive real value."
+msgstr "Érvénytelen egérgyorsulási érték. Pozitív valós számot adj meg."
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:142
+msgid "Invalid mouse acceleration threshold value. Must be the number of pixels to travel before accelerating."
+msgstr "Érvénytelen egérgyorsulási küszöbérték. Add meg hány pixelt lehet odébb vinni, mielőtt gyorsulna."
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:231
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:243
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:255
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:267
+#, c-format
+msgid "bad value %s for option %s"
+msgstr "hibás érték (%s) a \"%s\" opciónál"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:326
+#, c-format
+msgid "modifier key %s for option ModifierKey was not recognized. Using %s as default"
+msgstr "a (%s) módosító billentyűt (ModifierKey) nem ismerem. Az \"%s\" alapbeállítást használom."
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:347
+msgid "could not retrieve keyboard modifier mapping"
+msgstr "Nem tudom visszakeresni a billentyűzet-módosítót"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:441
+msgid "Mouse Speed"
+msgstr "Egér sebessége"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:454
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:410
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:426
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:368
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:380
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:399
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:411
+#, c-format
+msgid "could not load icon %s"
+msgstr "nem tudom betölteni ezt az ikont: %s"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:471
+msgid "Accel.:"
+msgstr "Gyorsulás:"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:482
+msgid "Threshold:"
+msgstr "Küszöbszint:"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:496
+msgid "Double-Click Delay"
+msgstr "Dupla kattintás késleltetése"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:539
+msgid "Test"
+msgstr "Kipróbál"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:569
+msgid "Workspace Mouse Actions"
+msgstr "Egérgombok a munkafelületen"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:574
+msgid "Disable mouse actions"
+msgstr "Egérműveletek letiltása"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:580
+msgid "Left Button"
+msgstr "Bal"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:590
+msgid "Middle Button"
+msgstr "Középső"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:600
+msgid "Right Button"
+msgstr "Jobb"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:610
+msgid "Mouse Wheel"
+msgstr "Kerék"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:632
+msgid "Mouse Grab Modifier"
+msgstr "Egérműveletek billentyű-módosítója"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:634
+msgid ""
+"Keyboard modifier to use for actions that\n"
+"involve dragging windows with the mouse,\n"
+"clicking inside the window."
+msgstr ""
+"A billentyű-módosító gombot olyan egérműveleteknél\n"
+"tudod használni, amikor az ablak területén belülre kattintasz.\n"
+"(pl.: Alt+Bal gomb: ablak mozgatása)"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:664
+#, c-format
+msgid "could not create %s"
+msgstr "nem tudom létrehozni ezt: %s"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:679
+#, c-format
+msgid "could not create temporary file %s"
+msgstr "nem tudom létrehozni a következő ideiglenes fájlt: %s"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:712
+#, c-format
+msgid "could not rename file %s to %s"
+msgstr "nem tudom átnevezni ezt a fájlt: \"%s\" erre: \"%s\""
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:781
+msgid "Shift"
+msgstr "Shift"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:782
+msgid "Lock"
+msgstr "Lock"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:783
+msgid "Control"
+msgstr "Control"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:784
+msgid "Mod1"
+msgstr "Mod1"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:785
+msgid "Mod2"
+msgstr "Mod2"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:786
+msgid "Mod3"
+msgstr "Mod3"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:787
+msgid "Mod4"
+msgstr "Mod4"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:788
+msgid "Mod5"
+msgstr "Mod5"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:791
+msgid "Applications Menu"
+msgstr "Alkalmazások menü"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:793
+msgid "Select Windows"
+msgstr "Ablakok kiválasztása"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:796
+msgid "Switch Workspaces"
+msgstr "Munkafelület váltás"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:800
+msgid "Mouse Preferences"
+msgstr "Egér beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/MouseSettings.c:802
+msgid ""
+"Mouse speed/acceleration, double click delay,\n"
+"mouse button bindings etc."
+msgstr ""
+"Egér sebessége, dupla kattintás késleltetése,\n"
+"egér gombjainak funkciója, stb."
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:78
+msgid "bad value in option IconPath. Using default path list"
+msgstr "rossz érték az IconPath értékénél. Az alapértelmezett útvonal listát használom."
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:95
+msgid "bad value in option PixmapPath. Using default path list"
+msgstr "rossz érték a PixmapPath értékénél. Az alapértelmezett útvonal listát használom."
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:140
+msgid "Select directory"
+msgstr "Válassz könyvtárat"
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:248
+msgid "Icon Search Paths"
+msgstr "Ikonok keresési útjai"
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:259
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:290
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1196
+msgid "Add"
+msgstr "Hozzáad"
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:266
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:297
+msgid "Remove"
+msgstr "Töröl"
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:279
+msgid "Pixmap Search Paths"
+msgstr "Képek keresési újai"
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:314
+msgid "Search Path Configuration"
+msgstr "Keresési útvonal beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/Paths.c:316
+msgid ""
+"Search paths to use when looking for pixmaps\n"
+"and icons."
+msgstr "Ikonok és bitképek elérési útja"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:73
+#, c-format
+msgid "1 pixel"
+msgstr "1 pixel"
+
+#. 2-4
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:76
+#, c-format
+msgid "%i pixels"
+msgstr "%i pixel"
+
+#. >4
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:79
+#, c-format
+msgid "%i pixels "
+msgstr "%i pixel "
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:217
+msgid "Size Display"
+msgstr "Méret megjelenítés"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:219
+msgid ""
+"The position or style of the window size\n"
+"display that's shown when a window is resized."
+msgstr ""
+"Az ablakméret megjelenésének helye vagy\n"
+"stílusa (akkor jelenik meg, amikor átméretezed)"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:225
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:245
+msgid "Corner of screen"
+msgstr "A képernyő sarkában"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:226
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:246
+msgid "Center of screen"
+msgstr "A képernyő közepén"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:227
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:247
+msgid "Center of resized window"
+msgstr "Az ablak közepén"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:228
+msgid "Technical drawing-like"
+msgstr "Méretnyilakkal"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:229
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:248
+msgid "Disabled"
+msgstr "Sehol"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:237
+msgid "Position Display"
+msgstr "Helyzet megjelenítés"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:239
+msgid ""
+"The position or style of the window position\n"
+"display that's shown when a window is moved."
+msgstr ""
+"Az ablakhelyzet megjelenésének helye vagy stílusa\n"
+"(akkor jelenik meg, amikor mozgatod az ablakot)"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:256
+msgid "Show balloon text for..."
+msgstr "Felugró súgó megjelenik..."
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:263
+msgid "incomplete window titles"
+msgstr "ha az ablak címsora hiányos"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:264
+msgid "miniwindow titles"
+msgstr "miniablak címsoránál"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:265
+msgid "application/dock icons"
+msgstr "alkalmazás/dokkolt ikonoknál"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:266
+msgid "internal help"
+msgstr "beépített segítségnél"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:274
+msgid "AppIcon bouncing"
+msgstr "Appikon pattogás"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:279
+msgid "Disable AppIcon bounce"
+msgstr "Patogás letiltása"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:284
+msgid "Bounce when the application wants attention"
+msgstr "Az appikon pattog ha az alkalmazás figyelmet kér"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:290
+msgid "Raise AppIcon when bouncing"
+msgstr "Ikonok előre hozása pattogáskor"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:298
+msgid "Workspace border"
+msgstr "Munkafelület keret"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:314
+msgid "Left/Right"
+msgstr "Bal/Jobb"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:319
+msgid "Top/Bottom"
+msgstr "Felül/Alul"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:335
+msgid "Miscellaneous Ergonomic Preferences"
+msgstr "Egyéb kényelmi beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/Preferences.c:336
+msgid ""
+"Various settings like balloon text, geometry\n"
+"displays etc."
+msgstr ""
+"Különböző beállítások, pl. felugró súgó,\n"
+"méret megjelenítés, stb."
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:293
+msgid "Saturation"
+msgstr "Telítettség"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:295
+msgid "Brightness"
+msgstr "Világosság"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:340
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:346
+msgid "Hue"
+msgstr "Árnyalat"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:563
+msgid "Could not load the selected file: "
+msgstr "A kiválasztott fájlt nem tudom betölteni: "
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:613
+msgid "Open Image"
+msgstr "Kép megnyitás"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:643
+msgid "The selected file does not contain a supported image."
+msgstr "A kiválasztott fájl nem tartalmaz támogatott képformátumot."
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:868
+#, c-format
+msgid "could not load file '%s': %s"
+msgstr "nem tudom betölteni '%s': %s"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:982
+#, c-format
+msgid "error creating texture %s"
+msgstr "hiba a %s mintázat létrehozásakor"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1141
+msgid "Texture Panel"
+msgstr "Mintázat"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1148
+msgid "Texture Name"
+msgstr "Mintanév"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1160
+msgid "Solid Color"
+msgstr "Egyszínű"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1161
+msgid "Gradient Texture"
+msgstr "Színátmenet-minta"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1162
+msgid "Simple Gradient Texture"
+msgstr "Egyszerű színátmenet-minta"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1163
+msgid "Textured Gradient"
+msgstr "Mintázott színátmenet"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1164
+msgid "Image Texture"
+msgstr "Kép"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1172
+msgid "Default Color"
+msgstr "Alap szín"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1184
+msgid "Gradient Colors"
+msgstr "Átmenet színei"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1273
+msgid "Direction"
+msgstr "Irány"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1301
+msgid "Gradient"
+msgstr "Átmenet"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1317
+msgid "Gradient Opacity"
+msgstr "Színátmenet áttetszőség"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1357
+msgid "Image"
+msgstr "Kép"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1389
+msgid "Tile"
+msgstr "Csempéz"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1390
+msgid "Scale"
+msgstr "Illeszt"
+
+#: ../../../wmaker-crm/WPrefs.app/TexturePanel.c:1392
+msgid "Maximize"
+msgstr "Nagyít"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:63
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:71
+msgid "Set"
+msgstr "Beállít"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:114
+msgid "Stop"
+msgstr "Stop"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:125
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:170
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:190
+msgid "Download"
+msgstr "Letöltés"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:139
+msgid "Save Current Theme"
+msgstr "Aktuális téma elmentése"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:148
+msgid "Load"
+msgstr "Betölt"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:153
+msgid "Install"
+msgstr "Telepít"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:160
+msgid "Tile of The Day"
+msgstr "A nap csempéje"
+
+#: ../../../wmaker-crm/WPrefs.app/Themes.c:180
+msgid "Bar of The Day"
+msgstr "A nap sávja"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:214
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:284
+msgid "Window Maker Preferences"
+msgstr "Window Maker beállítások"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:237
+msgid "Revert Page"
+msgstr "Visszavon egy oldalt"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:243
+msgid "Revert All"
+msgstr "Visszavon mindent"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:249
+msgid "Save"
+msgstr "Ment"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:261
+msgid "Balloon Help"
+msgstr "Felugró súgó"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:291
+#, c-format
+msgid "Version %s"
+msgstr "%s verzió"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:298
+msgid "Starting..."
+msgstr "Indul..."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:385
+#, c-format
+msgid "could not locate image file %s"
+msgstr "a képfájl (%s) helyét nem találom"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:439
+#, c-format
+msgid "could not process icon %s: %s"
+msgstr "a %s ikont nem tudom feldolgozni: %s"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:556
+#, c-format
+msgid "could not load image file %s:%s"
+msgstr "a képfájlt nem tudom betölteni %s:%s"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:573
+msgid "Loading Window Maker configuration files..."
+msgstr "Window Maker konfigurációs fájlok betöltése..."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:577
+msgid "Initializing configuration panels..."
+msgstr "Beállító panelek inicializálása..."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:635
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:717
+#, c-format
+msgid "Window Maker domain (%s) is corrupted!"
+msgstr "Window Maker domain (%s) megsérült!"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:639
+#, c-format
+msgid "Could not load Window Maker domain (%s) from defaults database."
+msgstr "A Window Maker domaint (%s) nem tudtam betölteni a beállítás adatbázisból."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:654
+msgid "could not extract version information from Window Maker"
+msgstr "nem tudom kideríteni a Window Maker verziószámát"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:655
+msgid "Make sure wmaker is in your search path."
+msgstr "Győzödj meg róla, hogy a wmaker benne van-e a keresési útvonalban."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:659
+msgid "Could not extract version from Window Maker. Make sure it is correctly installed and is in your PATH environment variable."
+msgstr "Nem tudom kideríteni a Window Maker verziószámát. Győzödj meg róla, hogy jól van-e felinstallálva és benne van-e a keresési útvonalban (PATH)"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:669
+msgid "Could not extract version from Window Maker. Make sure it is correctly installed and the path where it installed is in the PATH environment variable."
+msgstr "Nem tudom kideríteni a Window Maker verziószámát. Győzödj meg róla, hogy jól van-e felinstallálva és a hely, ahova telepítetted, benne van-e a keresési útvonalban (PATH)"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:676
+#, c-format
+msgid ""
+"WPrefs only supports Window Maker 0.18.0 or newer.\n"
+"The version installed is %i.%i.%i\n"
+msgstr ""
+"A WPrefs csak 0.18.0 vagy nagyobb verziószámú Window Makert\n"
+"támogat. A jelenlegi verzió: %i.%i.%i\n"
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:685
+#, c-format
+msgid "Window Maker %i.%i.%i, which is installed in your system, is not fully supported by this version of WPrefs."
+msgstr "A jelenleg telepített Window Makert (%i.%i.%i) nem támogatja teljesen ez a WPrefs verzió."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:698
+#, c-format
+msgid "could not run \"%s --global_defaults_path\"."
+msgstr "nem tudom futtatni a \"%s -global_defaults_path\" parancsot."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:721
+#, c-format
+msgid "Could not load global Window Maker domain (%s)."
+msgstr "a globális Window Maker domaint (%s) nem tudom betölteni."
+
+#: ../../../wmaker-crm/WPrefs.app/WPrefs.c:941
+#, c-format
+msgid "bad speed value for option %s; using default Medium"
+msgstr "Rossz sebesség-érték a %s kulcshoz; az alapértelmezett \"Közepes\"-t használom"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:167
+#, c-format
+msgid "bad option value %s in WindowPlacement. Using default value"
+msgstr "rossz érték (%s) a WindowPlacement opciónál. Az alapértelmezett értéket használom."
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:186
+msgid "invalid data in option WindowPlaceOrigin. Using default (0,0)"
+msgstr "érvénytelen adat a WindowPlaceOrigin beállításánál. (0,0)-t használok helyette."
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:275
+msgid "Window Placement"
+msgstr "Ablak lehelyezés"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:276
+msgid ""
+"How to place windows when they are first put\n"
+"on screen."
+msgstr ""
+"Hova kerüljön az ablak amikor először megjelenik\n"
+"a képernyőn."
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:282
+msgid "Automatic"
+msgstr "Automatikus"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:283
+msgid "Random"
+msgstr "Véletlenszerű"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:284
+msgid "Manual"
+msgstr "Kézi"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:285
+msgid "Cascade"
+msgstr "Lépcsőzetes"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:286
+msgid "Smart"
+msgstr "Ügyes"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:293
+msgid "Placement Origin"
+msgstr "Kiindulási hely"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:351
+msgid "Opaque Move/Resize"
+msgstr "Teli mozgatás/méretezés"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:352
+msgid ""
+"Whether the window contents or only a frame should\n"
+"be displayed during a move or resize.\n"
+msgstr ""
+"Az ablak mozgatása vagy átméretezése közben látszódjon-e\n"
+"az ablak tartalma vagy csak a kerete.\n"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:419
+msgid "by keyboard"
+msgstr "billentyűkkel"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:428
+msgid "When maximizing..."
+msgstr "Teljes méretűre állításkor..."
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:433
+msgid "...do not cover icons"
+msgstr "...ne fedje le az ikonokat"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:439
+msgid "...do not cover dock"
+msgstr "...ne fedje le a dokkokat"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:453
+msgid ""
+"Mod+Wheel\n"
+"resize increment"
+msgstr ""
+"Egér kerekes mére-\n"
+"tezés növekménye"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:463
+msgid "Edge Resistance"
+msgstr "Szegélyek vonzása"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:465
+msgid ""
+"Edge resistance will make windows `resist'\n"
+"being moved further for the defined threshold\n"
+"when moved against other windows or the edges\n"
+"of the screen."
+msgstr ""
+"A szegélyek vonzása megadja, hogy az ablak hogyan\n"
+"viselkedjen (taszítás vagy vonzás) egy másik\n"
+"objektum közelében (másik ablak vagy a képernyő\n"
+"széle mellett)."
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:484
+msgid "Resist"
+msgstr "Taszít"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:489
+msgid "Attract"
+msgstr "Vonz"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:502
+msgid "Open dialogs in the same workspace as their owners"
+msgstr "A dialógus ablakok szülőikkel azonos munkafelületen jelenjenek meg"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:524
+msgid "Window Handling Preferences"
+msgstr "Ablakok kezelésének jellemzői"
+
+#: ../../../wmaker-crm/WPrefs.app/WindowHandling.c:526
+msgid ""
+"Window handling options. Initial placement style\n"
+"edge resistance, opaque move etc."
+msgstr ""
+"Ablakok kezelésének tulajdonságai: kezdő hely meghatározása,\n"
+"szegély vonzása, tartalom mutatása mozgatáskor, stb."
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:118
+msgid "Workspace Navigation"
+msgstr "Munkafelület-navigálás"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:123
+msgid "Wrap to the first workspace from the last workspace"
+msgstr "Az utolsó munkafelületről visszalép az elsőre"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:139
+msgid "Switch workspaces while dragging windows"
+msgstr "Munkafelület váltás ablakok mozgatásakor"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:155
+msgid "Automatically create new workspaces"
+msgstr "Új munkafelületek automatikus létrehozása"
+
+#. WMSetLabelTextAlignment(panel->posL, WARight);
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:172
+msgid "Position of workspace name display"
+msgstr "Ide írja a munkafelület nevét:"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:188
+msgid "Disable"
+msgstr "Sehova"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:190
+msgid "Top"
+msgstr "Felülre"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:191
+msgid "Bottom"
+msgstr "Alulra"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:192
+msgid "Top/Left"
+msgstr "Balra felülre"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:193
+msgid "Top/Right"
+msgstr "Jobbra felülre"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:194
+msgid "Bottom/Left"
+msgstr "Balra alulra"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:195
+msgid "Bottom/Right"
+msgstr "Jobbra alulra"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:224
+msgid "Workspace Preferences"
+msgstr "Munkafelület jellemzők"
+
+#: ../../../wmaker-crm/WPrefs.app/Workspace.c:226
+msgid ""
+"Workspace navigation features\n"
+"and workspace name display settings."
+msgstr ""
+"Munkafelületek közötti mozgással és a munkafelület\n"
+"nevének megjelenítésével kapcsolatos beállítások."
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:62
+#, c-format
+msgid "usage: %s [options]\n"
+msgstr "használat: %s [opciók]\n"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:63
+msgid "options:"
+msgstr "opciók:"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:64
+msgid " -display <display>\tdisplay to be used"
+msgstr "-display <megjelenítő>\tmelyik megjelenítőt használja"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:65
+msgid " --version\t\tprint version number and exit"
+msgstr "--version\t\tkiírja a verziószámot és kilép"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:66
+msgid " --help\t\tprint this message and exit"
+msgstr "--help\t\tkiírja ezt a szöveget és kilép"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:133
+#, c-format
+msgid "too few arguments for %s"
+msgstr "túl kevés paraméter a következőhöz: %s"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:155
+msgid "X server does not support locale"
+msgstr "Az X server nem támogatja a fordítások használatát"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:158
+msgid "cannot set locale modifiers"
+msgstr "a helyi módosításokat nem tudom beállítani"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:164
+#, c-format
+msgid "could not open display %s"
+msgstr "nem tudom a %s megjelenítőt megnyitni"
+
+#: ../../../wmaker-crm/WPrefs.app/main.c:172
+msgid "could not initialize application"
+msgstr "az alkalmazást nem tudom inicializálni"
