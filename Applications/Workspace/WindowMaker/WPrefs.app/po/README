@@ -1,0 +1,28 @@
+File	Language		Current Maintainer
+------------------------------------------------------------------------------
+pt.po	Portuguese		Eliphas Levy Theodoro <eliphas@conectiva.com.br>
+hr.po	Croatian		Toni Biliæ <tbilic@oliver.efos.hr>
+fr.po	French			Bastien NOCERA <hadess@writeme.com>
+				Hadess <hadess@infonie.fr>
+				Antoine Hulin <antoine@origan.fdn.org>
+ko.po	Korean			Byeong-Chan Kim <redhands@linux.sarang.net>
+cs.po	Czech		 	Jiri Hnidek <Jiri.Hnidek@vslib.cz>
+ja.po	Japanese		Kazuhide Takahashi <kazu@dgra.ne.jp>
+				Takeo Hashimoto <HashimotoTakeo@mac.com>
+zh_TW.Big5.po Chinese		Li Wei Jih <lwj@manufacture.com.tw>
+zh_CN.po Chinese		Wang Jian <larkw@263.net>
+es.po   Spanish			Alvaro Herrera <alvherre@webhost.cl>
+fi.po	Finnish			Tomi Kajala <tomi@iki.fi>
+it.po	Italian			Michele Campeotto <micampe@f2s.com>
+ru.po	Russian			Igor P. Roboul <igor@srcso.sochi.su>
+de.po   German			Torsten Marek <torsten.marek@vbdnet.de>
+				Bernd Eggert <Bernd.Eggert@t-online.de>
+				Guido Scholz <guido.scholz@bayernline.de>
+hu.po   Hungarian		Horvath Szabolcs <horvathsz@penguinpowered.com>
+bg.po	Bulgarian		Slavei Karadjov <slaff@exco.net>
+				Anton Zinoviev <zinoviev@debian.org>
+sk.po   Slovak			Jan 'judas' Tomka <judas@linux.sk>
+et.po	Estonian		Ivar Smolin <okul@linux.ee>
+ca.po	Catalan			Ernest Adrogué <eadrogue@gmx.net>
+nl.po	Dutch			Alwin <translations@ziggo.nl>
+fy.po	Frisian			Alwin <translations@ziggo.nl>

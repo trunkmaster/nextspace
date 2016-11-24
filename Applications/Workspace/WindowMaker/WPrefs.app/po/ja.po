@@ -1,0 +1,2114 @@
+# modified by Yasuyuki Furukawa <yasu@on.cs.keio.ac.jp>
+#             Jun Nishii <nishii@postman.riken.go.jp>
+#             MANOME Tomonori <manome@itlb.te.noda.sut.ac.jp>
+#             Takeo Hashimoto <hashimototakeo@mac.com>
+# collaborated with members in wmaker-jp ML and Project Vine
+#
+# Last Update: for WindowMaker 0.95.2
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WPrefs.app \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-02-20 12:47+0900\n"
+"PO-Revision-Date: 2012-03-01 09:52+ZONE\n"
+"Last-Translator: Takeo Hashimoto <hashimototakeo@mac.com>\n"
+"Language-Team: Japanese \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../WPrefs.app/Appearance.c:1052
+msgid "Select File"
+msgstr "ファイルの選択"
+
+#: ../../WPrefs.app/Appearance.c:1408
+msgid "Focused Window"
+msgstr "フォーカスウィンドウ"
+
+#: ../../WPrefs.app/Appearance.c:1413
+msgid "Unfocused Window"
+msgstr "フォーカスされてないウィンドウ"
+
+#: ../../WPrefs.app/Appearance.c:1418
+msgid "Owner of Focused Window"
+msgstr "フォーカスウィンドウのオーナー"
+
+#: ../../WPrefs.app/Appearance.c:1422 ../../WPrefs.app/Appearance.c:1720
+#: ../../WPrefs.app/FontSimple.c:100
+msgid "Menu Title"
+msgstr "メニュータイトル"
+
+#: ../../WPrefs.app/Appearance.c:1426 ../../WPrefs.app/Appearance.c:1428
+msgid "Normal Item"
+msgstr "普通の項目"
+
+#: ../../WPrefs.app/Appearance.c:1433
+msgid "Disabled Item"
+msgstr "無効な項目"
+
+#: ../../WPrefs.app/Appearance.c:1442
+msgid "Highlighted"
+msgstr "ハイライト"
+
+#: ../../WPrefs.app/Appearance.c:1620
+msgid "Texture"
+msgstr "テクスチャ"
+
+#: ../../WPrefs.app/Appearance.c:1627
+msgid "Titlebar of Focused Window"
+msgstr "フォーカスウィンドウのタイトルバー"
+
+#: ../../WPrefs.app/Appearance.c:1628
+msgid "Titlebar of Unfocused Windows"
+msgstr "フォーカスのないウィンドウのタイトルバー"
+
+#: ../../WPrefs.app/Appearance.c:1629
+msgid "Titlebar of Focused Window's Owner"
+msgstr "フォーカスウィンドウのオーナーのタイトルバー"
+
+#: ../../WPrefs.app/Appearance.c:1630
+msgid "Window Resizebar"
+msgstr "リサイズバー"
+
+#: ../../WPrefs.app/Appearance.c:1631
+msgid "Titlebar of Menus"
+msgstr "メニューのタイトルバー"
+
+#: ../../WPrefs.app/Appearance.c:1632
+msgid "Menu Items"
+msgstr "メニュー項目"
+
+#: ../../WPrefs.app/Appearance.c:1633
+msgid "Icon Background"
+msgstr "アイコンの背景"
+
+#: ../../WPrefs.app/Appearance.c:1648
+msgid ""
+"Double click in the texture you want to use\n"
+"for the selected item."
+msgstr ""
+"選択した項目に使用したいテクスチャを\n"
+"ダブルクリックしてください"
+
+#: ../../WPrefs.app/Appearance.c:1660
+msgid "New"
+msgstr "新規"
+
+#: ../../WPrefs.app/Appearance.c:1664
+msgid "Create a new texture."
+msgstr "新規テクスチャの作成"
+
+#: ../../WPrefs.app/Appearance.c:1671
+msgid "Extract..."
+msgstr "抽出..."
+
+#: ../../WPrefs.app/Appearance.c:1675
+msgid "Extract texture(s) from a theme or a style file."
+msgstr "テーマやスタイルからテクスチャを抽出します."
+
+#: ../../WPrefs.app/Appearance.c:1684
+msgid "Edit"
+msgstr "編集"
+
+#: ../../WPrefs.app/Appearance.c:1687
+msgid "Edit the highlighted texture."
+msgstr "ハイライトされているテクスチャを編集します."
+
+#: ../../WPrefs.app/Appearance.c:1694 ../../WPrefs.app/TexturePanel.c:1197
+msgid "Delete"
+msgstr "削除"
+
+#: ../../WPrefs.app/Appearance.c:1698
+msgid "Delete the highlighted texture."
+msgstr "ハイライトされているテクスチャを削除します."
+
+#: ../../WPrefs.app/Appearance.c:1710
+msgid "Color"
+msgstr "色..."
+
+#: ../../WPrefs.app/Appearance.c:1717
+msgid "Focused Window Title"
+msgstr "フォーカスウィンドウのタイトル"
+
+#: ../../WPrefs.app/Appearance.c:1718
+msgid "Unfocused Window Title"
+msgstr "フォーカスされていないウィンドウのタイトル"
+
+#: ../../WPrefs.app/Appearance.c:1719
+msgid "Owner of Focused Window Title"
+msgstr "フォーカスウィンドウのオーナーのタイトル"
+
+#: ../../WPrefs.app/Appearance.c:1721
+msgid "Menu Item Text"
+msgstr "メニュー項目の文字"
+
+#: ../../WPrefs.app/Appearance.c:1722
+msgid "Disabled Menu Item Text"
+msgstr "無効なメニュー項目の文字"
+
+#: ../../WPrefs.app/Appearance.c:1723
+msgid "Menu Highlight Color"
+msgstr "ハイライトされたメニュー項目"
+
+#: ../../WPrefs.app/Appearance.c:1724
+msgid "Highlighted Menu Text Color"
+msgstr "ハイライトされたメニューの文字"
+
+#: ../../WPrefs.app/Appearance.c:1761
+msgid "Background"
+msgstr "背景"
+
+#: ../../WPrefs.app/Appearance.c:1773 ../../WPrefs.app/TexturePanel.c:1372
+msgid "Browse..."
+msgstr "参照..."
+
+#: ../../WPrefs.app/Appearance.c:1783
+msgid "Options"
+msgstr "オプション"
+
+#: ../../WPrefs.app/Appearance.c:1790
+msgid "Menu Style"
+msgstr "メニューのスタイル"
+
+#: ../../WPrefs.app/Appearance.c:1818 ../../WPrefs.app/Configurations.c:216
+#: ../../WPrefs.app/Configurations.c:228 ../../WPrefs.app/Focus.c:263
+#: ../../WPrefs.app/Focus.c:274 ../../WPrefs.app/MenuPreferences.c:127
+#: ../../WPrefs.app/MenuPreferences.c:138
+#: ../../WPrefs.app/MenuPreferences.c:166
+#: ../../WPrefs.app/MenuPreferences.c:181 ../../WPrefs.app/MouseSettings.c:514
+#: ../../WPrefs.app/MouseSettings.c:525 ../../WPrefs.app/WPrefs.c:478
+#: ../../WPrefs.app/WPrefs.c:503
+#, c-format
+msgid "could not load icon file %s"
+msgstr "アイコン %s がロードできません"
+
+#: ../../WPrefs.app/Appearance.c:1831
+msgid "Title Alignment"
+msgstr "タイトルの配置"
+
+#: ../../WPrefs.app/Appearance.c:1838
+msgid "Left"
+msgstr "左"
+
+#: ../../WPrefs.app/Appearance.c:1841 ../../WPrefs.app/TexturePanel.c:1386
+#: ../../WPrefs.app/Workspace.c:245
+msgid "Center"
+msgstr "中央"
+
+#: ../../WPrefs.app/Appearance.c:1844
+msgid "Right"
+msgstr "右"
+
+#: ../../WPrefs.app/Appearance.c:2049
+msgid "Appearance Preferences"
+msgstr "外観の設定 "
+
+#: ../../WPrefs.app/Appearance.c:2051
+msgid ""
+"Background texture configuration for windows,\n"
+"menus and icons."
+msgstr ""
+"ウィンドウ・メニュー・アイコンの\n"
+"背景やテクスチャを設定します."
+
+#: ../../WPrefs.app/Appearance.c:2087
+msgid "Extract Texture"
+msgstr "テクスチャの抽出"
+
+#: ../../WPrefs.app/Appearance.c:2107
+msgid "Textures"
+msgstr "テクスチャ"
+
+#: ../../WPrefs.app/Appearance.c:2116 ../../WPrefs.app/WPrefs.c:262
+msgid "Close"
+msgstr "閉じる"
+
+#: ../../WPrefs.app/Appearance.c:2121
+msgid "Extract"
+msgstr "抽出"
+
+#: ../../WPrefs.app/Configurations.c:131 ../../WPrefs.app/Configurations.c:137
+#: ../../WPrefs.app/MouseSettings.c:448 ../../WPrefs.app/WindowHandling.c:351
+#: ../../WPrefs.app/WindowHandling.c:363 ../../WPrefs.app/WindowHandling.c:382
+#: ../../WPrefs.app/WindowHandling.c:394 ../../WPrefs.app/Workspace.c:82
+#: ../../WPrefs.app/Workspace.c:93
+#, c-format
+msgid "could not load icon %s"
+msgstr "アイコン %s がロードできません"
+
+#: ../../WPrefs.app/Configurations.c:145 ../../WPrefs.app/Workspace.c:101
+#, c-format
+msgid "could not process icon %s: %s"
+msgstr "アイコン %s を処理できません: %s"
+
+#: ../../WPrefs.app/Configurations.c:167 ../../WPrefs.app/Workspace.c:150
+#, c-format
+msgid "could not load image file %s"
+msgstr "画像ファイル %s がロードできません"
+
+#: ../../WPrefs.app/Configurations.c:178
+msgid "Icon Slide Speed"
+msgstr "アイコン移動速度"
+
+#: ../../WPrefs.app/Configurations.c:184
+msgid "Shade Animation Speed"
+msgstr "シェードアニメーション速度"
+
+#: ../../WPrefs.app/Configurations.c:243
+msgid "Smooth Scaling"
+msgstr "滑らかな表示"
+
+#: ../../WPrefs.app/Configurations.c:244
+msgid ""
+"Smooth scaled background images, neutralizing\n"
+"the `pixelization' effect. This will slow\n"
+"down loading of background images considerably."
+msgstr ""
+"背景を滑らかにしてピクセルを目立たなくします.\n"
+"画像の読み込みがいささか遅くなるかもしれません"
+
+#: ../../WPrefs.app/Configurations.c:284
+msgid "Titlebar Style"
+msgstr "タイトルバー"
+
+#: ../../WPrefs.app/Configurations.c:337 ../../WPrefs.app/Configurations.c:343
+msgid "Animations"
+msgstr "アニメ"
+
+#: ../../WPrefs.app/Configurations.c:354
+msgid ""
+"Disable/enable animations such as those shown\n"
+"for window miniaturization, shading etc."
+msgstr ""
+"ウィンドウの最小化やシェードのときのアニメ表示\n"
+"を有効化/無効化します."
+
+#: ../../WPrefs.app/Configurations.c:361
+msgid "Superfluous"
+msgstr "特殊効果"
+
+#: ../../WPrefs.app/Configurations.c:372
+msgid ""
+"Disable/enable `superfluous' features and\n"
+"animations. These include the `ghosting' of the\n"
+"dock when it's being moved to another side and\n"
+"the explosion animation when undocking icons."
+msgstr ""
+"`おおげさな'表示とアニメを有効化/無効化\n"
+"します. ドックアイコンの移動時の影表示や\n"
+"ドック解除のときの爆発などがこれです."
+
+#: ../../WPrefs.app/Configurations.c:385
+msgid "Dithering colormap for 8bpp"
+msgstr "8bpp に合わせた減色"
+
+#: ../../WPrefs.app/Configurations.c:387
+msgid ""
+"Number of colors to reserve for Window Maker\n"
+"on displays that support only 8bpp (PseudoColor)."
+msgstr ""
+"8bpp しか対応していないディスプレイのときに\n"
+"Window Maker に予約する色の数."
+
+#: ../../WPrefs.app/Configurations.c:394
+msgid "Disable dithering in any visual/depth"
+msgstr "全ての色深度で減色を行わない"
+
+#: ../../WPrefs.app/Configurations.c:415
+msgid ""
+"More colors for\n"
+"applications"
+msgstr ""
+"アプリ\n"
+"優先"
+
+#: ../../WPrefs.app/Configurations.c:422
+msgid ""
+"More colors for\n"
+"Window Maker"
+msgstr ""
+"Window Maker\n"
+"優先"
+
+#: ../../WPrefs.app/Configurations.c:472
+msgid "Other Configurations"
+msgstr "その他の設定 "
+
+#: ../../WPrefs.app/Configurations.c:473
+msgid ""
+"Animation speeds, titlebar styles, various option\n"
+"toggling and number of colors to reserve for\n"
+"Window Maker on 8bit displays."
+msgstr ""
+"アニメの速度, タイトルバーのスタイル, 特殊効果,\n"
+"8bit 画面のために予約する色数などを設定します."
+
+#: ../../WPrefs.app/Expert.c:87
+msgid ""
+"Disable miniwindows (icons for minimized windows). For use with KDE/GNOME."
+msgstr "ミニウィンドウ(最小化時のアイコン表示)の無効化. KDE/GNOME 向け."
+
+#: ../../WPrefs.app/Expert.c:88
+msgid "Do not set non-WindowMaker specific parameters (do not use xset)."
+msgstr "WindowMaker以外のパラメータを与えない (xsetを使わない)"
+
+#: ../../WPrefs.app/Expert.c:89
+msgid "Automatically save session when exiting Window Maker."
+msgstr "Window Maker終了時に自動的にセッションを保存する"
+
+#: ../../WPrefs.app/Expert.c:90
+msgid "Use SaveUnder in window frames, icons, menus and other objects."
+msgstr "各ウィンドウ, アイコン, メニュー等の画像をメモリーに保持する"
+
+#: ../../WPrefs.app/Expert.c:91
+msgid "Disable confirmation panel for the Kill command."
+msgstr "強制終了時の確認パネルを表示しない"
+
+#: ../../WPrefs.app/Expert.c:92
+msgid "Disable selection animation for selected icons."
+msgstr "選択されたアイコンのアニメーションによる強調をしない"
+
+#: ../../WPrefs.app/Expert.c:93
+msgid "Smooth font edges (needs restart)."
+msgstr "フォントのふちを滑らかにする (要 再起動)"
+
+#: ../../WPrefs.app/Expert.c:94
+msgid "Launch applications and restore windows with a single click."
+msgstr "アプリの起動やウィンドウの復元をシングルクリックで行う"
+
+#: ../../WPrefs.app/Expert.c:95
+msgid "Cycle windows only on the active head."
+msgstr "ウィンドウ切替を現在アクティブなモニタに限定する (Xinerama用)"
+
+#: ../../WPrefs.app/Expert.c:96
+msgid "Show workspace title on Clip."
+msgstr "ワークスペースのタイトルをクリップに表示する"
+
+#: ../../WPrefs.app/Expert.c:97
+msgid "Bounce when the application wants attention"
+msgstr "注意喚起のためにアイコンが飛び跳ねるようにする"
+
+#: ../../WPrefs.app/Expert.c:98
+msgid "Raise AppIcon when bouncing"
+msgstr "アイコンが飛び跳ねる時に前面表示にする"
+
+#: ../../WPrefs.app/Expert.c:99
+msgid "Opaque Move,Resize with keyboard."
+msgstr "ウィンドウ内容を表示しての移動/サイズ変更をキーボードで行う"
+
+#: ../../WPrefs.app/Expert.c:141
+msgid "Expert User Preferences"
+msgstr "エキスパート設定 "
+
+#: ../../WPrefs.app/Expert.c:143
+msgid ""
+"Options for people who know what they're doing...\n"
+"Also have some other misc. options."
+msgstr ""
+"何をやってるかわかってる人のためのオプション設定です...\n"
+"雑多なオプションも含みます."
+
+#: ../../WPrefs.app/Focus.c:74
+#, c-format
+msgid "bad option value %s for option FocusMode. Using default Manual"
+msgstr "フォーカスモードオプション %s が不適切です. デフォルト値 手動 を使います"
+
+#: ../../WPrefs.app/Focus.c:86
+#, c-format
+msgid "bad option value %s for option ColormapMode. Using default Auto"
+msgstr "カラーマップオプション %s が不適切です. デフォルト値 自動 を使います"
+
+#: ../../WPrefs.app/Focus.c:192
+msgid "Input Focus Mode"
+msgstr "インプット・フォーカスの設定"
+
+#: ../../WPrefs.app/Focus.c:200
+msgid "Manual:  Click on the window to set keyboard input focus"
+msgstr "手動：フォーカスする ウィンドウ上でクリックする"
+
+#: ../../WPrefs.app/Focus.c:206
+msgid "Auto:  Set keyboard input focus to the window under the mouse pointer"
+msgstr "自動：マウスポインタで 自動的にフォーカスを取得"
+
+#: ../../WPrefs.app/Focus.c:219
+msgid "Install colormap from the window..."
+msgstr "カラーマップのウィンドウへの設定は..."
+
+#: ../../WPrefs.app/Focus.c:224
+msgid "...that has the input focus"
+msgstr "...フォーカスが移動した時に"
+
+#: ../../WPrefs.app/Focus.c:229
+msgid "...that's under the mouse pointer"
+msgstr "...マウスポインタがある時に"
+
+#: ../../WPrefs.app/Focus.c:238
+msgid "Automatic Window Raise Delay"
+msgstr "自動的に前面へ出すまでに"
+
+#: ../../WPrefs.app/Focus.c:293 ../../WPrefs.app/MouseSettings.c:555
+msgid "ms"
+msgstr "ms"
+
+#: ../../WPrefs.app/Focus.c:310
+msgid "Do not let applications receive the click used to focus windows"
+msgstr "フォーカス移動のためのマウスクリックを アプリケーションに渡さない"
+
+#: ../../WPrefs.app/Focus.c:315
+msgid "Automatically focus new windows"
+msgstr "新しいウィンドウに フォーカスを自動的に当てる"
+
+#: ../../WPrefs.app/Focus.c:332
+msgid "Window Focus Preferences"
+msgstr "ウィンドウフォーカスの設定 "
+
+#: ../../WPrefs.app/Focus.c:333
+msgid "Keyboard focus switching policy and related options."
+msgstr ""
+"ウィンドウフォーカスの切り替えポリシー, \n"
+"カラーマップの設定ポリシーなどを設定します."
+
+#: ../../WPrefs.app/FontSimple.c:99
+msgid "Window Title"
+msgstr "ウィンドウタイトル"
+
+#: ../../WPrefs.app/FontSimple.c:101
+msgid "Menu Text"
+msgstr "メニュー項目"
+
+#: ../../WPrefs.app/FontSimple.c:102
+msgid "Icon Title"
+msgstr "アイコンタイトル"
+
+#: ../../WPrefs.app/FontSimple.c:103
+msgid "Clip Title"
+msgstr "クリップタイトル"
+
+#: ../../WPrefs.app/FontSimple.c:104
+msgid "Desktop Caption"
+msgstr "デスクトップ名"
+
+#: ../../WPrefs.app/FontSimple.c:638
+msgid "Sample Text"
+msgstr "サンプル"
+
+#: ../../WPrefs.app/FontSimple.c:655
+msgid "Family"
+msgstr "フォント名"
+
+#: ../../WPrefs.app/FontSimple.c:681
+msgid "Style"
+msgstr "スタイル"
+
+#: ../../WPrefs.app/FontSimple.c:684
+msgid "Size"
+msgstr "サイズ"
+
+#: ../../WPrefs.app/FontSimple.c:717
+msgid "Font Configuration"
+msgstr "フォントの設定 "
+
+#: ../../WPrefs.app/FontSimple.c:719
+msgid "Configure fonts for Window Maker titlebars, menus etc."
+msgstr "タイトルバーやメニューに使うフォントを設定します."
+
+#: ../../WPrefs.app/Icons.c:165
+msgid "Icon Positioning"
+msgstr "アイコンの表示位置"
+
+#: ../../WPrefs.app/Icons.c:211
+msgid "Iconification Animation"
+msgstr "アイコン化のアニメーション"
+
+#: ../../WPrefs.app/Icons.c:222
+msgid "Shrinking/Zooming"
+msgstr "縮小/拡大"
+
+#: ../../WPrefs.app/Icons.c:223
+msgid "Spinning/Twisting"
+msgstr "回転/ひねり"
+
+#: ../../WPrefs.app/Icons.c:224
+msgid "3D-flipping"
+msgstr "３Ｄ回転"
+
+#: ../../WPrefs.app/Icons.c:225 ../../WPrefs.app/MouseSettings.c:784
+#: ../../WPrefs.app/MouseSettings.c:789
+msgid "None"
+msgstr "なし"
+
+#: ../../WPrefs.app/Icons.c:238
+msgid "Auto-arrange icons"
+msgstr "自動整列"
+
+#: ../../WPrefs.app/Icons.c:240
+msgid "Keep icons and miniwindows arranged all the time."
+msgstr "アイコンやミニウィンドウを常に整列された状態にします"
+
+#: ../../WPrefs.app/Icons.c:245
+msgid "Omnipresent miniwindows"
+msgstr "全てのワークスペースに表示"
+
+#: ../../WPrefs.app/Icons.c:247
+msgid "Make miniwindows be present in all workspaces."
+msgstr "ミニウィンドウが全てのワークスペースで表示されるようにします"
+
+#: ../../WPrefs.app/Icons.c:255
+msgid "Icon Size"
+msgstr "アイコンの大きさ"
+
+#: ../../WPrefs.app/Icons.c:257
+msgid "The size of the dock/application icon and miniwindows"
+msgstr "ドック,アイコン,ミニウィンドウの大きさ"
+
+#: ../../WPrefs.app/Icons.c:321
+msgid "Icon Preferences"
+msgstr "アイコンの設定 "
+
+#: ../../WPrefs.app/Icons.c:323
+msgid ""
+"Icon/Miniwindow handling options. Icon positioning\n"
+"area, sizes of icons, miniaturization animation style."
+msgstr ""
+"アイコン/ミニウィンドウの設定. アイコンの配置場所,\n"
+"アイコンの大きさ, 最小化のときのアニメ表示などを設定します."
+
+#: ../../WPrefs.app/KeyboardSettings.c:68
+msgid "Initial Key Repeat"
+msgstr "キーリピートの初期値"
+
+#: ../../WPrefs.app/KeyboardSettings.c:109
+msgid "Key Repeat Rate"
+msgstr "リピートの速度"
+
+#: ../../WPrefs.app/KeyboardSettings.c:149
+msgid "Type here to test"
+msgstr "ここでテスト出来ます"
+
+#: ../../WPrefs.app/KeyboardSettings.c:165
+msgid "Keyboard Preferences"
+msgstr "キーボードの設定"
+
+#: ../../WPrefs.app/KeyboardSettings.c:167
+msgid "Not done"
+msgstr "まだ"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:299 ../../WPrefs.app/Menu.c:273
+#: ../../WPrefs.app/TexturePanel.c:1403
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:301
+msgid "Press the desired shortcut key(s) or click Cancel to stop capturing."
+msgstr "設定したいショートカットキーを押してください. (キャンセルボタンで中止)"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:320
+#: ../../WPrefs.app/KeyboardShortcuts.c:536 ../../WPrefs.app/Menu.c:283
+#: ../../WPrefs.app/Menu.c:704
+msgid "Capture"
+msgstr "取り込み"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:321
+#: ../../WPrefs.app/KeyboardShortcuts.c:544
+msgid "Click on Capture to interactively define the shortcut key."
+msgstr ""
+"ショートカットを対話的\n"
+"に定義するには取り込み\n"
+"をクリックして下さい"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:440
+msgid "Actions"
+msgstr "アクション"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:454
+msgid "Open applications menu"
+msgstr "アプリケーション・メニューを開く"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:455
+msgid "Open window list menu"
+msgstr "ウィンドウ一覧メニューを開く"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:456
+msgid "Open window commands menu"
+msgstr "ウィンドウコマンド・メニューを開く"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:457
+msgid "Hide active application"
+msgstr "アクティブ・アプリケーションを隠す"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:458
+msgid "Hide other applications"
+msgstr "他のアプリケーションを隠す"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:459
+msgid "Miniaturize active window"
+msgstr "アクティブ・ウィンドウを最小化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:460
+msgid "Miniaturize all windows"
+msgstr "全てのウィンドウを最小化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:461
+msgid "Close active window"
+msgstr "アクティブ・ウィンドウを閉じる"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:462
+msgid "Maximize active window"
+msgstr "アクティブ・ウィンドウを最大化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:463
+msgid "Maximize active window vertically"
+msgstr "ウィンドウを縦方向に最大化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:464
+msgid "Maximize active window horizontally"
+msgstr "ウィンドウを横方向に最大化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:465
+msgid "Maximize active window left half"
+msgstr "アクティブ・ウィンドウを画面左半分で最大化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:466
+msgid "Maximize active window right half"
+msgstr "アクティブ・ウィンドウを画面右半分で最大化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:467
+msgid "Maximus: Tiled maximization "
+msgstr "空きエリア充填式最大化"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:468
+msgid "Raise active window"
+msgstr "アクティブ・ウィンドウを前面に"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:469
+msgid "Lower active window"
+msgstr "アクティブ・ウィンドウを背面に"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:470
+msgid "Raise/Lower window under mouse pointer"
+msgstr "マウスポインタ下のウィンドウを前面/背面に"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:471
+msgid "Shade active window"
+msgstr "アクティブ・ウィンドウを畳む"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:472
+msgid "Move/Resize active window"
+msgstr "アクティブ・ウィンドウの移動/拡大縮小"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:473
+msgid "Select active window"
+msgstr "アクティブ・ウィンドウの選択"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:474
+msgid "Focus next window"
+msgstr "フォーカスを次のウィンドウへ"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:475
+msgid "Focus previous window"
+msgstr "フォーカスを前のウィンドウへ"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:476
+msgid "Focus next group window"
+msgstr ""
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:477
+msgid "Focus previous group window"
+msgstr ""
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:478
+msgid "Switch to next workspace"
+msgstr "次のワークスペースへ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:479
+msgid "Switch to previous workspace"
+msgstr "前のワークスペースへ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:480
+msgid "Switch to next ten workspaces"
+msgstr "10個先のワークスペースへ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:481
+msgid "Switch to previous ten workspaces"
+msgstr "10個前のワークスペースへ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:482
+msgid "Switch to workspace 1"
+msgstr "ワークスペース1へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:483
+msgid "Switch to workspace 2"
+msgstr "ワークスペース2へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:484
+msgid "Switch to workspace 3"
+msgstr "ワークスペース3へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:485
+msgid "Switch to workspace 4"
+msgstr "ワークスペース4へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:486
+msgid "Switch to workspace 5"
+msgstr "ワークスペース5へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:487
+msgid "Switch to workspace 6"
+msgstr "ワークスペース6へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:488
+msgid "Switch to workspace 7"
+msgstr "ワークスペース7へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:489
+msgid "Switch to workspace 8"
+msgstr "ワークスペース8へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:490
+msgid "Switch to workspace 9"
+msgstr "ワークスペース9へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:491
+msgid "Switch to workspace 10"
+msgstr "ワークスペース10へ移動"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:492
+msgid "Shortcut for window 1"
+msgstr "ウィンドウ1へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:493
+msgid "Shortcut for window 2"
+msgstr "ウィンドウ2へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:494
+msgid "Shortcut for window 3"
+msgstr "ウィンドウ3へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:495
+msgid "Shortcut for window 4"
+msgstr "ウィンドウ4へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:496
+msgid "Shortcut for window 5"
+msgstr "ウィンドウ5へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:497
+msgid "Shortcut for window 6"
+msgstr "ウィンドウ6へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:498
+msgid "Shortcut for window 7"
+msgstr "ウィンドウ7へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:499
+msgid "Shortcut for window 8"
+msgstr "ウィンドウ8へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:500
+msgid "Shortcut for window 9"
+msgstr "ウィンドウ9へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:501
+msgid "Shortcut for window 10"
+msgstr "ウィンドウ10へのショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:502
+msgid "Switch to Next Screen/Monitor"
+msgstr "次のスクリーン/モニタへ"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:503
+msgid "Raise/Lower Dock"
+msgstr "ドックを前面/背面に"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:504
+msgid "Raise/Lower Clip"
+msgstr "クリップを前面/背面に"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:506
+msgid "Toggle keyboard language"
+msgstr "キーボードの言語切替え"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:520
+msgid "Shortcut"
+msgstr "ショートカット"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:530 ../../WPrefs.app/Menu.c:710
+msgid "Clear"
+msgstr "クリア"
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:586
+msgid "Keyboard Shortcut Preferences"
+msgstr "キーボードショートカットの設定 "
+
+#: ../../WPrefs.app/KeyboardShortcuts.c:588
+msgid ""
+"Change the keyboard shortcuts for actions such\n"
+"as changing workspaces and opening menus."
+msgstr ""
+"ワークスペースの変更やメニュー操作の時に使うの\n"
+"キーボードショートカットの割り当てを設定します."
+
+#: ../../WPrefs.app/Menu.c:249
+msgid "Select Program"
+msgstr "プログラム選択"
+
+#: ../../WPrefs.app/Menu.c:410
+msgid "New Items"
+msgstr "新規"
+
+#: ../../WPrefs.app/Menu.c:411
+msgid "Sample Commands"
+msgstr "サンプルコマンド"
+
+#: ../../WPrefs.app/Menu.c:412
+msgid "Sample Submenus"
+msgstr "サンプルサブメニュー"
+
+#: ../../WPrefs.app/Menu.c:424
+msgid "Run Program"
+msgstr "プログラム実行"
+
+#: ../../WPrefs.app/Menu.c:425
+msgid "Internal Command"
+msgstr "内部コマンド"
+
+#: ../../WPrefs.app/Menu.c:426
+msgid "Submenu"
+msgstr "サブメニュー"
+
+#: ../../WPrefs.app/Menu.c:427
+msgid "External Submenu"
+msgstr "外部サブメニュー"
+
+#: ../../WPrefs.app/Menu.c:428
+msgid "Generated Submenu"
+msgstr "自動生成のサブメニュー"
+
+#: ../../WPrefs.app/Menu.c:429
+msgid "Directory Contents"
+msgstr "ディレクトリの内容"
+
+#: ../../WPrefs.app/Menu.c:430
+msgid "Workspace Menu"
+msgstr "ワークスペースメニュー"
+
+#: ../../WPrefs.app/Menu.c:431 ../../WPrefs.app/MouseSettings.c:786
+msgid "Window List Menu"
+msgstr "ウィンドウ一覧メニュー"
+
+#: ../../WPrefs.app/Menu.c:450
+msgid "XTerm"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:453
+msgid "rxvt"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:456
+msgid "ETerm"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:459
+msgid "Run..."
+msgstr "実行..."
+
+#: ../../WPrefs.app/Menu.c:460
+#, c-format
+msgid "%A(Run,Type command to run)"
+msgstr "%A (実行するコマンドを入力)"
+
+#: ../../WPrefs.app/Menu.c:462
+msgid "Firefox"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:465
+msgid "gimp"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:468
+msgid "epic"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:471
+msgid "ee"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:474
+msgid "xv"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:477
+msgid "Evince"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:480
+msgid "ghostview"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:483 ../../WPrefs.app/Menu.c:729
+msgid "Exit Window Maker"
+msgstr "Window Maker を終了"
+
+#: ../../WPrefs.app/Menu.c:505
+msgid "Debian Menu"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:508
+msgid "RedHat Menu"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:511
+msgid "Menu Conectiva"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:514 ../../WPrefs.app/Themes.c:212
+msgid "Themes"
+msgstr "テーマ"
+
+#: ../../WPrefs.app/Menu.c:520
+msgid "Bg Images (scale)"
+msgstr "背景(拡大/縮小)"
+
+#: ../../WPrefs.app/Menu.c:526
+msgid "Bg Images (tile)"
+msgstr "背景(しきつめる)"
+
+#: ../../WPrefs.app/Menu.c:532
+msgid "Assorted XTerms"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:534
+msgid "XTerm Yellow on Blue"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:537
+msgid "XTerm White on Black"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:540
+msgid "XTerm Black on White"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:543
+msgid "XTerm Black on Beige"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:546
+msgid "XTerm White on Green"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:549
+msgid "XTerm White on Olive"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:552
+msgid "XTerm Blue on Blue"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:555
+msgid "XTerm BIG FONTS"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:576
+msgid "Program to Run"
+msgstr "実行するプログラム"
+
+#: ../../WPrefs.app/Menu.c:586
+msgid "Browse"
+msgstr "参照"
+
+#: ../../WPrefs.app/Menu.c:595
+msgid "Run the program inside a Xterm"
+msgstr ""
+
+#: ../../WPrefs.app/Menu.c:604
+msgid "Path for Menu"
+msgstr "メニューのパス"
+
+#: ../../WPrefs.app/Menu.c:615
+msgid ""
+"Enter the path for a file containing a menu\n"
+"or a list of directories with the programs you\n"
+"want to have listed in the menu. Ex:\n"
+"~/GNUstep/Library/WindowMaker/menu\n"
+"or\n"
+"/usr/X11R6/bin ~/xbin"
+msgstr ""
+"メニューを含むファイルへのパス, ないしは \n"
+"メニューに表示してほしいプログラムのある \n"
+"ディレクトリ. 例:\n"
+"~/GNUstep/Library/WindowMaker/menu\n"
+"とか, \n"
+"/usr/bin ~/xbin"
+
+#: ../../WPrefs.app/Menu.c:627
+msgid "Command"
+msgstr "コマンド"
+
+#: ../../WPrefs.app/Menu.c:638
+msgid ""
+"Enter a command that outputs a menu\n"
+"definition to stdout when invoked."
+msgstr ""
+"メニュー定義を出力するコマンドを\n"
+"入力してください"
+
+#: ../../WPrefs.app/Menu.c:643
+msgid ""
+"Cache menu contents after opening for\n"
+"the first time"
+msgstr ""
+"初回ロード時にメニューの内容を\n"
+"キャッシュする"
+
+#: ../../WPrefs.app/Menu.c:652
+msgid "Command to Open Files"
+msgstr "ファイルを開くコマンド"
+
+#: ../../WPrefs.app/Menu.c:663
+msgid ""
+"Enter the command you want to use to open the\n"
+"files in the directories listed below."
+msgstr ""
+"これらのディレクトリにあるファイルを開くときに\n"
+"使用するコマンドを入力してください"
+
+#: ../../WPrefs.app/Menu.c:671
+msgid "Directories with Files"
+msgstr "ファイルのあるディレクトリ"
+
+#: ../../WPrefs.app/Menu.c:682
+msgid "Strip extensions from file names"
+msgstr "拡張子を除去する"
+
+#: ../../WPrefs.app/Menu.c:693
+msgid "Keyboard Shortcut"
+msgstr "キーボードショートカット"
+
+#: ../../WPrefs.app/Menu.c:725
+msgid "Arrange Icons"
+msgstr "アイコンを整列"
+
+#: ../../WPrefs.app/Menu.c:726
+msgid "Hide All Windows Except For The Focused One"
+msgstr "フォーカスウィンドウ以外を隠す"
+
+#: ../../WPrefs.app/Menu.c:727
+msgid "Show All Windows"
+msgstr "全てのウィンドウを表示"
+
+#: ../../WPrefs.app/Menu.c:730
+msgid "Exit X Session"
+msgstr "X セッションを終了"
+
+#: ../../WPrefs.app/Menu.c:731
+msgid "Restart Window Maker"
+msgstr "Window Makerを再起動"
+
+#: ../../WPrefs.app/Menu.c:732
+msgid "Start Another Window Manager   : ("
+msgstr "ちがうウィンドウマネージャを起動 (-_-#"
+
+#: ../../WPrefs.app/Menu.c:734
+msgid "Save Current Session"
+msgstr "セッションを保存"
+
+#: ../../WPrefs.app/Menu.c:735
+msgid "Clear Saved Session"
+msgstr "セッションをクリア"
+
+#: ../../WPrefs.app/Menu.c:736
+msgid "Refresh Screen"
+msgstr "画面の再描画"
+
+#: ../../WPrefs.app/Menu.c:737
+msgid "Open Info Panel"
+msgstr "情報パネル"
+
+#: ../../WPrefs.app/Menu.c:738
+msgid "Open Copyright Panel"
+msgstr "著作権表示"
+
+#: ../../WPrefs.app/Menu.c:743
+msgid "Window Manager to Start"
+msgstr "起動するウィンドウマネージャ"
+
+#: ../../WPrefs.app/Menu.c:756
+msgid "Do not confirm action."
+msgstr "動作をいちいち確認しない"
+
+#: ../../WPrefs.app/Menu.c:763
+msgid ""
+"Instructions:\n"
+"\n"
+" - drag items from the left to the menu to add new items\n"
+" - drag items out of the menu to remove items\n"
+" - drag items in menu to change their position\n"
+" - drag items with Control pressed to copy them\n"
+" - double click in a menu item to change the label\n"
+" - click on a menu item to change related information"
+msgstr ""
+"編集方法:\n"
+"\n"
+" - 左から項目をメニューにドラッグして新しい項目を追加\n"
+" - メニューから項目をドラッグして削除\n"
+" - メニューの中で項目をドラッグして順番を入れ換える\n"
+" - コントロールキー+ドラッグで項目を複製\n"
+" - 項目でダブルクリックしてラベルを編集\n"
+" - 項目をクリックして関連情報を編集"
+
+#: ../../WPrefs.app/Menu.c:980
+#, c-format
+msgid "unknown command '%s' in menu"
+msgstr "メニュー内のコマンド '%s' は知りません"
+
+#: ../../WPrefs.app/Menu.c:1004
+msgid ": Execute Program"
+msgstr ": プログラムの実行"
+
+#: ../../WPrefs.app/Menu.c:1008
+msgid ": Perform Internal Command"
+msgstr ": 内部コマンドの呼び出し"
+
+#: ../../WPrefs.app/Menu.c:1012
+msgid ": Open a Submenu"
+msgstr ": サブメニューを開く"
+
+#: ../../WPrefs.app/Menu.c:1016
+msgid ": Program Generated Submenu"
+msgstr ": サブメニューを自動生成"
+
+#: ../../WPrefs.app/Menu.c:1020
+msgid ": Directory Contents Menu"
+msgstr ": メニューを含むディレクトリ"
+
+#: ../../WPrefs.app/Menu.c:1024
+msgid ": Open Workspaces Submenu"
+msgstr ": ワークスペースサブメニューを開く"
+
+#: ../../WPrefs.app/Menu.c:1028
+msgid ": Open Window List Submenu"
+msgstr ": ウィンドウ一覧サブメニューを開く"
+
+#: ../../WPrefs.app/Menu.c:1223
+msgid "Remove Submenu"
+msgstr "サブメニューの削除"
+
+#: ../../WPrefs.app/Menu.c:1224
+msgid ""
+"Removing this item will destroy all items inside\n"
+"the submenu. Do you really want to do that?"
+msgstr ""
+"この項目を削除するとサブメニューの中身も\n"
+"みんな破壊します. 本当に実行しますか? "
+
+#: ../../WPrefs.app/Menu.c:1226
+msgid "Yes"
+msgstr "はい"
+
+#: ../../WPrefs.app/Menu.c:1226
+msgid "No"
+msgstr "いいえ"
+
+#: ../../WPrefs.app/Menu.c:1226
+msgid "Yes, don't ask again"
+msgstr "はい, 以後確認しない"
+
+#: ../../WPrefs.app/Menu.c:1352
+#, c-format
+msgid "Invalid menu command \"%s\" with label \"%s\" cleared"
+msgstr "不正なメニューコマンド \"%s\" (\"%s\") は消されました"
+
+#: ../../WPrefs.app/Menu.c:1355 ../../WPrefs.app/Menu.c:1422
+#: ../../WPrefs.app/WPrefs.c:710
+msgid "Warning"
+msgstr "警告"
+
+#: ../../WPrefs.app/Menu.c:1355 ../../WPrefs.app/Menu.c:1394
+#: ../../WPrefs.app/MouseSettings.c:125 ../../WPrefs.app/MouseSettings.c:145
+#: ../../WPrefs.app/TexturePanel.c:555 ../../WPrefs.app/TexturePanel.c:633
+#: ../../WPrefs.app/TexturePanel.c:1397 ../../WPrefs.app/Themes.c:84
+#: ../../WPrefs.app/WPrefs.c:659 ../../WPrefs.app/WPrefs.c:663
+#: ../../WPrefs.app/WPrefs.c:683 ../../WPrefs.app/WPrefs.c:695
+#: ../../WPrefs.app/WPrefs.c:701 ../../WPrefs.app/WPrefs.c:710
+#: ../../WPrefs.app/WPrefs.c:741 ../../WPrefs.app/WPrefs.c:745
+msgid "OK"
+msgstr "了解"
+
+#: ../../WPrefs.app/Menu.c:1390
+#, c-format
+msgid "Could not open default menu from '%s'"
+msgstr "標準のメニューを '%s' から開けませんでした"
+
+#: ../../WPrefs.app/Menu.c:1394 ../../WPrefs.app/MouseSettings.c:123
+#: ../../WPrefs.app/MouseSettings.c:142 ../../WPrefs.app/TexturePanel.c:555
+#: ../../WPrefs.app/TexturePanel.c:631 ../../WPrefs.app/Themes.c:83
+#: ../../WPrefs.app/WPrefs.c:659 ../../WPrefs.app/WPrefs.c:663
+#: ../../WPrefs.app/WPrefs.c:680 ../../WPrefs.app/WPrefs.c:691
+#: ../../WPrefs.app/WPrefs.c:701 ../../WPrefs.app/WPrefs.c:741
+#: ../../WPrefs.app/WPrefs.c:745
+msgid "Error"
+msgstr "エラー"
+
+#: ../../WPrefs.app/Menu.c:1423
+msgid ""
+"The menu file format currently in use is not supported\n"
+"by this tool. Do you want to discard the current menu\n"
+"to use this tool?"
+msgstr ""
+"現在使われているメニューファイルの書式はこのツールでは\n"
+"サポートしていません. このツールを使うために,\n"
+"現在のメニューを破棄してしまってもいいですか?"
+
+#: ../../WPrefs.app/Menu.c:1426
+msgid "Yes, Discard and Update"
+msgstr "はい, 破棄して更新"
+
+#: ../../WPrefs.app/Menu.c:1426
+msgid "No, Keep Current Menu"
+msgstr "いいえ, 現状を維持"
+
+#: ../../WPrefs.app/Menu.c:1661
+msgid "Applications Menu Definition"
+msgstr "アプリケーション・メニューの定義"
+
+#: ../../WPrefs.app/Menu.c:1663
+msgid "Edit the menu for launching applications."
+msgstr "アプリを起動するためのメニューを設定します."
+
+#: ../../WPrefs.app/MenuPreferences.c:105
+msgid "Menu Scrolling Speed"
+msgstr "メニューのスクロール速度"
+
+#: ../../WPrefs.app/MenuPreferences.c:153
+msgid "Submenu Alignment"
+msgstr "サブメニューの並び"
+
+#: ../../WPrefs.app/MenuPreferences.c:199
+msgid ""
+"Always open submenus inside the screen, instead of scrolling."
+msgstr ""
+"スクロールしないでサブメニューを常に画面内に表示する."
+
+#: ../../WPrefs.app/MenuPreferences.c:204
+msgid "Scroll off-screen menus when pointer is moved over them."
+msgstr "画面からはみ出たメニューをポインタの移動に合わせてスクロールする"
+
+#: ../../WPrefs.app/MenuPreferences.c:208
+msgid "Use h/j/k/l keys to select menu options."
+msgstr "メニュー項目の選択に hjkl キーを使用する"
+
+#: ../../WPrefs.app/MenuPreferences.c:225
+msgid "Menu Preferences"
+msgstr "メニューの設定 "
+
+#: ../../WPrefs.app/MenuPreferences.c:227
+msgid ""
+"Menu usability related options. Scrolling speed,\n"
+"alignment of submenus etc."
+msgstr ""
+"メニューの使い心地関連のオプション.\n"
+"スクロール速度, サブメニューの配置方法などを設定します."
+
+#: ../../WPrefs.app/MouseSettings.c:124
+msgid "Invalid mouse acceleration value. Must be a positive real value."
+msgstr "マウス加速のパラメーターが不正です. 正の数値で指定します."
+
+#: ../../WPrefs.app/MouseSettings.c:144
+msgid ""
+"Invalid mouse acceleration threshold value. Must be the number of pixels to "
+"travel before accelerating."
+msgstr ""
+"マウス加速のパラメーターが不正です. 加速を開始するまでの移動量を"
+"ピクセルで指定します."
+
+#: ../../WPrefs.app/MouseSettings.c:231 ../../WPrefs.app/MouseSettings.c:243
+#: ../../WPrefs.app/MouseSettings.c:255 ../../WPrefs.app/MouseSettings.c:267
+#, c-format
+msgid "bad value %s for option %s"
+msgstr "値 %s はオプション %s の値として不正です"
+
+#: ../../WPrefs.app/MouseSettings.c:323
+#, c-format
+msgid ""
+"modifier key %s for option ModifierKey was not recognized. Using %s as "
+"default"
+msgstr "値 %s はModifierKeyとして解釈できません. 値 %s をデフォルトとして使います"
+
+#: ../../WPrefs.app/MouseSettings.c:344
+msgid "could not retrieve keyboard modifier mapping"
+msgstr "keyboard modifierマッピングを取得できませんでした"
+
+#: ../../WPrefs.app/MouseSettings.c:435
+msgid "Mouse Speed"
+msgstr "マウスの速度"
+
+#: ../../WPrefs.app/MouseSettings.c:465
+msgid "Accel.:"
+msgstr "加速度.:"
+
+#: ../../WPrefs.app/MouseSettings.c:476
+msgid "Threshold:"
+msgstr "しきい値:"
+
+#: ../../WPrefs.app/MouseSettings.c:490
+msgid "Double-Click Delay"
+msgstr "ダブルクリックの遅延"
+
+#: ../../WPrefs.app/MouseSettings.c:533
+msgid "Test"
+msgstr "テスト"
+
+#: ../../WPrefs.app/MouseSettings.c:563
+msgid "Workspace Mouse Actions"
+msgstr "ワークスペースでの動作"
+
+#: ../../WPrefs.app/MouseSettings.c:568
+msgid "Disable mouse actions"
+msgstr "マウス動作の使用停止"
+
+#: ../../WPrefs.app/MouseSettings.c:574
+msgid "Left Button"
+msgstr "左ボタン"
+
+#: ../../WPrefs.app/MouseSettings.c:584
+msgid "Middle Button"
+msgstr "中ボタン"
+
+#: ../../WPrefs.app/MouseSettings.c:594
+msgid "Right Button"
+msgstr "右ボタン"
+
+#: ../../WPrefs.app/MouseSettings.c:604
+msgid "Mouse Wheel"
+msgstr "ホイール"
+
+#: ../../WPrefs.app/MouseSettings.c:626
+msgid "Mouse Grab Modifier"
+msgstr "ウィンドウ操作するための修飾キー"
+
+#: ../../WPrefs.app/MouseSettings.c:628
+msgid ""
+"Keyboard modifier to use for actions that\n"
+"involve dragging windows with the mouse,\n"
+"clicking inside the window."
+msgstr ""
+"ここで設定するキーを押しながらウィンドウの\n"
+"内側からドラッグすることでウィンドウ自身を\n"
+"ドラッグすることができます."
+
+#: ../../WPrefs.app/MouseSettings.c:658
+#, c-format
+msgid "could not create %s"
+msgstr "%s を作成できません"
+
+#: ../../WPrefs.app/MouseSettings.c:673
+#, c-format
+msgid "could not create temporary file %s"
+msgstr "一時ファイル %s を作成できません"
+
+#: ../../WPrefs.app/MouseSettings.c:706
+#, c-format
+msgid "could not rename file %s to %s"
+msgstr "ファイル %s を %s に変更出来ません"
+
+#: ../../WPrefs.app/MouseSettings.c:775
+msgid "Shift"
+msgstr "シフト"
+
+#: ../../WPrefs.app/MouseSettings.c:776
+msgid "Lock"
+msgstr "ロック"
+
+#: ../../WPrefs.app/MouseSettings.c:777
+msgid "Control"
+msgstr "コントロール"
+
+#: ../../WPrefs.app/MouseSettings.c:778
+msgid "Mod1"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:779
+msgid "Mod2"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:780
+msgid "Mod3"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:781
+msgid "Mod4"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:782
+msgid "Mod5"
+msgstr ""
+
+#: ../../WPrefs.app/MouseSettings.c:785
+msgid "Applications Menu"
+msgstr "アプリケーションメニュー"
+
+#: ../../WPrefs.app/MouseSettings.c:787
+msgid "Select Windows"
+msgstr "ウィンドウの選択"
+
+#: ../../WPrefs.app/MouseSettings.c:790
+msgid "Switch Workspaces"
+msgstr "ワークスペースの切り替え"
+
+#: ../../WPrefs.app/MouseSettings.c:795
+msgid "Mouse Preferences"
+msgstr "マウスの設定 "
+
+#: ../../WPrefs.app/MouseSettings.c:797
+msgid ""
+"Mouse speed/acceleration, double click delay,\n"
+"mouse button bindings etc."
+msgstr ""
+"マウスの速度や加速度, ダブルクリックの遅延,\n"
+"ボタン配置の編集などを設定します."
+
+#: ../../WPrefs.app/Paths.c:78
+msgid "bad value in option IconPath. Using default path list"
+msgstr "アイコンのパスが不正です. デフォルトのパスを使用します"
+
+#: ../../WPrefs.app/Paths.c:95
+msgid "bad value in option PixmapPath. Using default path list"
+msgstr "Pixmapのパスが不正です. デフォルトのパスを使用します"
+
+#: ../../WPrefs.app/Paths.c:140
+msgid "Select directory"
+msgstr "ディレクトリの選択"
+
+#: ../../WPrefs.app/Paths.c:245
+msgid "Icon Search Paths"
+msgstr "アイコン検索パス"
+
+#: ../../WPrefs.app/Paths.c:256 ../../WPrefs.app/Paths.c:287
+#: ../../WPrefs.app/TexturePanel.c:1191
+msgid "Add"
+msgstr "追加"
+
+#: ../../WPrefs.app/Paths.c:263 ../../WPrefs.app/Paths.c:294
+msgid "Remove"
+msgstr "除去"
+
+#: ../../WPrefs.app/Paths.c:276
+msgid "Pixmap Search Paths"
+msgstr "Pixmap検索パス"
+
+#: ../../WPrefs.app/Paths.c:312
+msgid "Search Path Configuration"
+msgstr "検索パスの設定 "
+
+#: ../../WPrefs.app/Paths.c:314
+msgid ""
+"Search paths to use when looking for pixmaps\n"
+"and icons."
+msgstr ""
+"pixmap ファイルや アイコンファイルを探すための\n"
+"探索パスを設定します."
+
+#: ../../WPrefs.app/Preferences.c:69
+#, c-format
+msgid "OFF"
+msgstr "OFF"
+
+#: ../../WPrefs.app/Preferences.c:71
+#, c-format
+msgid "1 pixel"
+msgstr "1 ピクセル"
+
+#. 2-4
+#: ../../WPrefs.app/Preferences.c:74
+#, c-format
+msgid "%i pixels"
+msgstr "%i ピクセル"
+
+#. >4
+#: ../../WPrefs.app/Preferences.c:77
+#, c-format
+msgid "%i pixels "
+msgstr "%i ピクセル "
+
+#: ../../WPrefs.app/Preferences.c:216
+msgid "Size Display"
+msgstr "ウィンドウのサイズ表示"
+
+#: ../../WPrefs.app/Preferences.c:218
+msgid ""
+"The position or style of the window size\n"
+"display that's shown when a window is resized."
+msgstr ""
+"ウィンドウサイズが変更されるときのサイズ\n"
+"表示の場所やスタイル"
+
+#: ../../WPrefs.app/Preferences.c:224 ../../WPrefs.app/Preferences.c:244
+msgid "Corner of screen"
+msgstr "画面のコーナー"
+
+#: ../../WPrefs.app/Preferences.c:225 ../../WPrefs.app/Preferences.c:245
+msgid "Center of screen"
+msgstr "画面の中央"
+
+#: ../../WPrefs.app/Preferences.c:226 ../../WPrefs.app/Preferences.c:246
+msgid "Center of resized window"
+msgstr "ウィンドウの中央"
+
+#: ../../WPrefs.app/Preferences.c:227
+msgid "Technical drawing-like"
+msgstr "図面っぽく"
+
+#: ../../WPrefs.app/Preferences.c:228 ../../WPrefs.app/Preferences.c:247
+msgid "Disabled"
+msgstr "無効"
+
+#: ../../WPrefs.app/Preferences.c:236
+msgid "Position Display"
+msgstr "ウィンドウの位置表示"
+
+#: ../../WPrefs.app/Preferences.c:238
+msgid ""
+"The position or style of the window position\n"
+"display that's shown when a window is moved."
+msgstr ""
+"ウィンドウが移動したときのウィンドウの位置\n"
+"表示の場所やスタイル"
+
+#: ../../WPrefs.app/Preferences.c:255
+msgid "Show balloon text for..."
+msgstr "バルーンヘルプの表示は..."
+
+#: ../../WPrefs.app/Preferences.c:262
+msgid "incomplete window titles"
+msgstr "長いウィンドウのタイトル"
+
+#: ../../WPrefs.app/Preferences.c:263
+msgid "miniwindow titles"
+msgstr "ミニウィンドウのタイトル"
+
+#: ../../WPrefs.app/Preferences.c:264
+msgid "application/dock icons"
+msgstr "アイコン"
+
+#: ../../WPrefs.app/Preferences.c:265
+msgid "internal help"
+msgstr "内部ヘルプ"
+
+#: ../../WPrefs.app/Preferences.c:277
+msgid "Raise window when switching focus with keyboard"
+msgstr "キーボードによりフォーカスされたときウィンドウを前面に"
+
+#: ../../WPrefs.app/Preferences.c:283
+msgid ""
+"Enable keyboard language\n"
+"switch button in window titlebars."
+msgstr ""
+"ウィンドウのタイトルバーでキーボード\n"
+"による言語切り替えを有効化"
+
+#: ../../WPrefs.app/Preferences.c:292
+msgid "Workspace border"
+msgstr "ワークスペースの境界線"
+
+#: ../../WPrefs.app/Preferences.c:308
+msgid "Left/Right"
+msgstr "左/右"
+
+#: ../../WPrefs.app/Preferences.c:313
+msgid "Top/Bottom"
+msgstr "上/下"
+
+#: ../../WPrefs.app/Preferences.c:330
+msgid "Miscellaneous Ergonomic Preferences"
+msgstr "その他の操作性の設定 "
+
+#: ../../WPrefs.app/Preferences.c:331
+msgid ""
+"Various settings like balloon text, geometry\n"
+"displays etc."
+msgstr ""
+"バルーンヘルプやウィンドウサイズ変更時の表示方法など\n"
+"さまざまな項目を設定します."
+
+#: ../../WPrefs.app/TexturePanel.c:293
+msgid "Saturation"
+msgstr "彩度"
+
+#: ../../WPrefs.app/TexturePanel.c:295
+msgid "Brightness"
+msgstr "輝度"
+
+#: ../../WPrefs.app/TexturePanel.c:340 ../../WPrefs.app/TexturePanel.c:346
+msgid "Hue"
+msgstr "色相"
+
+#: ../../WPrefs.app/TexturePanel.c:552
+msgid "Could not load the selected file: "
+msgstr "選択したファイルが開けません: "
+
+#: ../../WPrefs.app/TexturePanel.c:602
+msgid "Open Image"
+msgstr "画像を開く"
+
+#: ../../WPrefs.app/TexturePanel.c:632
+msgid "The selected file does not contain a supported image."
+msgstr "選択したファイルには表示可能な画像が含まれていません."
+
+#: ../../WPrefs.app/TexturePanel.c:862
+#, c-format
+msgid "could not load file '%s': %s"
+msgstr "ファイルを読み込めません '%s': %s"
+
+#: ../../WPrefs.app/TexturePanel.c:976
+#, c-format
+msgid "error creating texture %s"
+msgstr "テクスチャの作成に失敗 %s"
+
+#: ../../WPrefs.app/TexturePanel.c:1136
+msgid "Texture Panel"
+msgstr "テクスチャパネル"
+
+#: ../../WPrefs.app/TexturePanel.c:1143
+msgid "Texture Name"
+msgstr "テクスチャの名前"
+
+#: ../../WPrefs.app/TexturePanel.c:1155
+msgid "Solid Color"
+msgstr "ベタ塗り"
+
+#: ../../WPrefs.app/TexturePanel.c:1156
+msgid "Gradient Texture"
+msgstr "グラデーション表示"
+
+#: ../../WPrefs.app/TexturePanel.c:1157
+msgid "Simple Gradient Texture"
+msgstr "単純なグラデージョン"
+
+#: ../../WPrefs.app/TexturePanel.c:1158
+msgid "Textured Gradient"
+msgstr "テクスチャでグラデーション"
+
+#: ../../WPrefs.app/TexturePanel.c:1159
+msgid "Image Texture"
+msgstr "テクスチャ画像"
+
+#: ../../WPrefs.app/TexturePanel.c:1167
+msgid "Default Color"
+msgstr "デフォルトの色"
+
+#: ../../WPrefs.app/TexturePanel.c:1179
+msgid "Gradient Colors"
+msgstr "グラデーションの色"
+
+#: ../../WPrefs.app/TexturePanel.c:1268
+msgid "Direction"
+msgstr "方向"
+
+#: ../../WPrefs.app/TexturePanel.c:1296
+msgid "Gradient"
+msgstr "変化度"
+
+#: ../../WPrefs.app/TexturePanel.c:1312
+msgid "Gradient Opacity"
+msgstr "不透明度"
+
+#: ../../WPrefs.app/TexturePanel.c:1352
+msgid "Image"
+msgstr "画像"
+
+#: ../../WPrefs.app/TexturePanel.c:1384
+msgid "Tile"
+msgstr "しきつめる"
+
+#: ../../WPrefs.app/TexturePanel.c:1385
+msgid "Scale"
+msgstr "拡大/縮小"
+
+#: ../../WPrefs.app/TexturePanel.c:1387
+msgid "Maximize"
+msgstr "最大化"
+
+#: ../../WPrefs.app/Themes.c:63 ../../WPrefs.app/Themes.c:71
+msgid "Set"
+msgstr "設定..."
+
+#: ../../WPrefs.app/Themes.c:114
+msgid "Stop"
+msgstr "停止"
+
+#: ../../WPrefs.app/Themes.c:125 ../../WPrefs.app/Themes.c:170
+#: ../../WPrefs.app/Themes.c:190
+msgid "Download"
+msgstr "ダウンロード"
+
+#: ../../WPrefs.app/Themes.c:139
+msgid "Save Current Theme"
+msgstr "現在のテーマを保存"
+
+#: ../../WPrefs.app/Themes.c:148
+msgid "Load"
+msgstr "読み込み"
+
+#: ../../WPrefs.app/Themes.c:153
+msgid "Install"
+msgstr "インストール"
+
+#: ../../WPrefs.app/Themes.c:160
+msgid "Tile of The Day"
+msgstr "今日のタイル"
+
+#: ../../WPrefs.app/Themes.c:180
+msgid "Bar of The Day"
+msgstr "今日のバー"
+
+#: ../../WPrefs.app/WPrefs.c:221 ../../WPrefs.app/WPrefs.c:291
+msgid "Window Maker Preferences"
+msgstr ""
+
+#: ../../WPrefs.app/WPrefs.c:244
+msgid "Revert Page"
+msgstr "ページを復帰"
+
+#: ../../WPrefs.app/WPrefs.c:250
+msgid "Revert All"
+msgstr "全てを復帰"
+
+#: ../../WPrefs.app/WPrefs.c:256
+msgid "Save"
+msgstr "保存"
+
+#: ../../WPrefs.app/WPrefs.c:268
+msgid "Balloon Help"
+msgstr "バルーンヘルプ"
+
+#: ../../WPrefs.app/WPrefs.c:298
+#, c-format
+msgid "Version %s"
+msgstr ""
+
+#: ../../WPrefs.app/WPrefs.c:305
+msgid "Starting..."
+msgstr "起動中..."
+
+#: ../../WPrefs.app/WPrefs.c:389
+#, c-format
+msgid "could not locate image file %s"
+msgstr "イメージファイル %s が見付かりません"
+
+#: ../../WPrefs.app/WPrefs.c:580
+#, c-format
+msgid "could not load image file %s:%s"
+msgstr "画像ファイル %s:%s を開けません"
+
+#: ../../WPrefs.app/WPrefs.c:597
+msgid "Loading Window Maker configuration files..."
+msgstr "Window Maker の設定ファイルを読み込み中..."
+
+#: ../../WPrefs.app/WPrefs.c:601
+msgid "Initializing configuration panels..."
+msgstr "設定パネルを初期化中..."
+
+#: ../../WPrefs.app/WPrefs.c:658 ../../WPrefs.app/WPrefs.c:740
+#, c-format
+msgid "Window Maker domain (%s) is corrupted!"
+msgstr "Maker のドメイン (%s) に障害!"
+
+#: ../../WPrefs.app/WPrefs.c:662
+#, c-format
+msgid "Could not load Window Maker domain (%s) from defaults database."
+msgstr "Window Maker domain (%s) をデフォルトデータベースから読み込めません."
+
+#: ../../WPrefs.app/WPrefs.c:677
+msgid "could not extract version information from Window Maker"
+msgstr "Window Maker からバージョン情報を取得できません"
+
+#: ../../WPrefs.app/WPrefs.c:678
+msgid "Make sure wmaker is in your search path."
+msgstr "wmaker がサーチパスに含まれているか確認して下さい"
+
+#: ../../WPrefs.app/WPrefs.c:682
+msgid ""
+"Could not extract version from Window Maker. Make sure it is correctly "
+"installed and is in your PATH environment variable."
+msgstr ""
+"Window Maker のバージョン情報を読み取れません. 適切にインストールされ, "
+"そこに PATH を通してあることを確認してください."
+
+#: ../../WPrefs.app/WPrefs.c:692
+msgid ""
+"Could not extract version from Window Maker. Make sure it is correctly "
+"installed and the path where it installed is in the PATH environment "
+"variable."
+msgstr ""
+"Window Maker のバージョン情報を読み取れません. 適切にインストールされ, "
+"そこに PATH を通してあることを確認してください."
+
+#: ../../WPrefs.app/WPrefs.c:699
+#, c-format
+msgid ""
+"WPrefs only supports Window Maker 0.18.0 or newer.\n"
+"The version installed is %i.%i.%i\n"
+msgstr ""
+"WPrefsはWindow Maker 0.18.0 以降をサポートしています.\n"
+"インストールされているのは %i.%i.%i です\n"
+
+#: ../../WPrefs.app/WPrefs.c:708
+#, c-format
+msgid ""
+"Window Maker %i.%i.%i, which is installed in your system, is not fully "
+"supported by this version of WPrefs."
+msgstr ""
+"あなたのシステムにインストールされているWindow Maker %i.%i.%i は, "
+"WPrefsのこのバージョンでは一部サポートしておりません."
+
+#: ../../WPrefs.app/WPrefs.c:721
+#, c-format
+msgid "could not run \"%s --global_defaults_path\"."
+msgstr "\"%s -global_defaults_path\" を実行できません."
+
+#: ../../WPrefs.app/WPrefs.c:744
+#, c-format
+msgid "Could not load global Window Maker domain (%s)."
+msgstr "Window Makerのグローバル・ドメイン(%s)を読み込めません."
+
+#: ../../WPrefs.app/WPrefs.c:964
+#, c-format
+msgid "bad speed value for option %s; using default Medium"
+msgstr "オプション %s のspeed値は不正です. デフォルト値を使用します."
+
+#: ../../WPrefs.app/WindowHandling.c:155
+#, c-format
+msgid "bad option value %s in WindowPlacement. Using default value"
+msgstr "ウインドウ配置オプション %s は不正です. デフォルト値を使用します."
+
+#: ../../WPrefs.app/WindowHandling.c:174
+msgid "invalid data in option WindowPlaceOrigin. Using default (0,0)"
+msgstr "配置の基準値が不正です. デフォルトの(0,0)を使用します."
+
+#: ../../WPrefs.app/WindowHandling.c:257
+msgid "Window Placement"
+msgstr "ウインドウの配置 "
+
+#: ../../WPrefs.app/WindowHandling.c:258
+msgid ""
+"How to place windows when they are first put\n"
+"on screen."
+msgstr ""
+"ウィンドウの初期表示を\n"
+"どう配置するか"
+
+#: ../../WPrefs.app/WindowHandling.c:264
+msgid "Automatic"
+msgstr "自動"
+
+#: ../../WPrefs.app/WindowHandling.c:265
+msgid "Random"
+msgstr "ランダム"
+
+#: ../../WPrefs.app/WindowHandling.c:266
+msgid "Manual"
+msgstr "手動"
+
+#: ../../WPrefs.app/WindowHandling.c:267
+msgid "Cascade"
+msgstr "ずらして重ねる"
+
+#: ../../WPrefs.app/WindowHandling.c:268
+msgid "Smart"
+msgstr "スマート"
+
+#: ../../WPrefs.app/WindowHandling.c:274
+msgid "Placement Origin"
+msgstr "配置の基準点"
+
+#: ../../WPrefs.app/WindowHandling.c:334
+msgid "Opaque Move/Resize"
+msgstr "表示しながら 移動/サイズ変更"
+
+#: ../../WPrefs.app/WindowHandling.c:335
+msgid ""
+"Whether the window contents or only a frame should\n"
+"be displayed during a move or resize.\n"
+msgstr ""
+"ウィンドウを移動したりサイズ変更したりする時に\n"
+"中身を表示したままにするか 枠線だけにするか を\n"
+"指定します\n"
+
+#: ../../WPrefs.app/WindowHandling.c:406
+msgid "When maximizing..."
+msgstr "最大化のときに..."
+
+#: ../../WPrefs.app/WindowHandling.c:411
+msgid "...do not cover icons"
+msgstr "...アイコンを覆わない"
+
+#: ../../WPrefs.app/WindowHandling.c:417
+msgid "...do not cover dock"
+msgstr "...ドックを覆わない"
+
+#: ../../WPrefs.app/WindowHandling.c:442
+msgid "Edge Resistance"
+msgstr "ふちでの抵抗"
+
+#: ../../WPrefs.app/WindowHandling.c:444
+msgid ""
+"Edge resistance will make windows `resist'\n"
+"being moved further for the defined threshold\n"
+"when moved against other windows or the edges\n"
+"of the screen."
+msgstr ""
+"他のウィンドウや画面のふちに向かって移動する時に\n"
+"ここで指定したしきい値まで '抵抗' して\n"
+"重なったり はみだしたりするのを防ぎます"
+
+#: ../../WPrefs.app/WindowHandling.c:463
+msgid "Resist"
+msgstr "抵抗する"
+
+#: ../../WPrefs.app/WindowHandling.c:468
+msgid "Attract"
+msgstr "ひっつく"
+
+#: ../../WPrefs.app/WindowHandling.c:482
+msgid "Open dialogs in the same workspace as their owners"
+msgstr ""
+"ダイアログはオーナーと同じ ワークスペースに表示する"
+
+#: ../../WPrefs.app/WindowHandling.c:505
+msgid "Window Handling Preferences"
+msgstr "ウィンドウ操作の設定 "
+
+#: ../../WPrefs.app/WindowHandling.c:507
+msgid ""
+"Window handling options. Initial placement style\n"
+"edge resistance, opaque move etc."
+msgstr ""
+"ウィンドウ操作のオプション. 初期表示のスタイルや\n"
+"移動/リサイズ時の表示のしかたなどを設定します."
+
+#: ../../WPrefs.app/Workspace.c:162
+msgid "Workspace Navigation"
+msgstr "ワークスペースの操作"
+
+#: ../../WPrefs.app/Workspace.c:167
+msgid "Wrap to the first workspace from the last workspace"
+msgstr "最後のワークスペースから 最初のワークスペースに"
+
+#: ../../WPrefs.app/Workspace.c:186
+msgid "Switch workspaces while dragging windows"
+msgstr "ドラッグ中にワークスペースの切り替え"
+
+#: ../../WPrefs.app/Workspace.c:205
+msgid "Automatically create new workspaces"
+msgstr "自動的に新しいワークスペースを作成"
+
+#: ../../WPrefs.app/Workspace.c:225
+msgid "Position of workspace name display"
+msgstr "ワークスペースの名前の表示位置"
+
+#: ../../WPrefs.app/Workspace.c:244
+msgid "Disable"
+msgstr "無効"
+
+#: ../../WPrefs.app/Workspace.c:246
+msgid "Top"
+msgstr "上"
+
+#: ../../WPrefs.app/Workspace.c:247
+msgid "Bottom"
+msgstr "下"
+
+#: ../../WPrefs.app/Workspace.c:248
+msgid "Top/Left"
+msgstr "左上"
+
+#: ../../WPrefs.app/Workspace.c:249
+msgid "Top/Right"
+msgstr "右上"
+
+#: ../../WPrefs.app/Workspace.c:250
+msgid "Bottom/Left"
+msgstr "左下"
+
+#: ../../WPrefs.app/Workspace.c:251
+msgid "Bottom/Right"
+msgstr "右下"
+
+#: ../../WPrefs.app/Workspace.c:259
+msgid "Dock/Clip"
+msgstr "ドック/クリップ"
+
+#: ../../WPrefs.app/Workspace.c:278
+msgid ""
+"Disable/enable the application Dock (the\n"
+"vertical icon bar in the side of the screen)."
+msgstr ""
+"ドック(画面右端のアイコンバー)の\n"
+"有効化/無効化"
+
+#: ../../WPrefs.app/Workspace.c:298
+msgid ""
+"Disable/enable the Clip (that thing with\n"
+"a paper clip icon)."
+msgstr ""
+"クリップ(紙クリップみたいなアイコンのアレ)\n"
+"の有効化/無効化"
+
+#: ../../WPrefs.app/Workspace.c:332
+msgid "Workspace Preferences"
+msgstr "ワークスペースの設定 "
+
+#: ../../WPrefs.app/Workspace.c:334
+msgid ""
+"Workspace navigation features.\n"
+"You can also enable/disable the Dock and Clip here."
+msgstr ""
+"ワークスペースの操作方法を設定します.\n"
+"ドック/クリップの有効化/無効化も設定できます."
+
+#: ../../WPrefs.app/main.c:52
+#, c-format
+msgid "usage: %s [options]\n"
+msgstr "使用方法: %s [オプション]\n"
+
+#: ../../WPrefs.app/main.c:53
+msgid "options:"
+msgstr "オプション:"
+
+#: ../../WPrefs.app/main.c:54
+msgid " -display <display>\tdisplay to be used"
+msgstr " -display <display>\tディスプレイの指定"
+
+#: ../../WPrefs.app/main.c:55
+msgid " --version\t\tprint version number and exit"
+msgstr " --version\t\tバージョンを表示してすぐ終了する"
+
+#: ../../WPrefs.app/main.c:56
+msgid " --help\t\tprint this message and exit"
+msgstr " --help\t\tこのメッセージを表示してすぐ終了する"
+
+#: ../../WPrefs.app/main.c:123
+#, c-format
+msgid "too few arguments for %s"
+msgstr "%sに対する引数が足りません"
+
+#: ../../WPrefs.app/main.c:145
+msgid "X server does not support locale"
+msgstr "Xサーバがロケール機能をサポートしていません"
+
+#: ../../WPrefs.app/main.c:148
+msgid "cannot set locale modifiers"
+msgstr "ロケールを設定できません"
+
+#: ../../WPrefs.app/main.c:154
+#, c-format
+msgid "could not open display %s"
+msgstr "ディスプレイ`%s'を開けません"
+
+#: ../../WPrefs.app/main.c:162
+msgid "could not initialize application"
+msgstr "アプリケーションの初期化に失敗"
+

@@ -56,7 +56,7 @@ enum {
 	WMNormalLevel = 0,
 	WMFloatingLevel = 3,
 	WMDockLevel = 5,
-	WMSubmenuLevel = 15,
+	WMSubmenuLevel = 10,
 	WMMainMenuLevel = 20,
 	WMStatusLevel = 21,
 	WMModalLevel = 100,
