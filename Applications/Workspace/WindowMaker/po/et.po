@@ -1,0 +1,1802 @@
+# Window Makeri eesti keele tõlge.
+# Estonian translation of Window Maker.
+#
+# Copyright (C) 2000, 2001, 2005, 2013 Free Software Foundation, Inc.
+# Ivar Smolin <okul@linux.ee>, 2000, 2001, 2005, 2013
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Maker 0.95.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-06-15 15:58+0300\n"
+"PO-Revision-Date: 2013-06-18 18:09+0300\n"
+"Last-Translator: Ivar Smolin <okul@linux.ee>\n"
+"Language-Team: Estonian <et@li.org>\n"
+"Language: et\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/appicon.c:373 ../src/dialog.c:563 ../src/dock.c:3023
+#: ../src/dockedapp.c:207 ../src/main.c:348 ../src/rootmenu.c:1646
+#: ../src/winspector.c:351 ../src/winspector.c:367
+msgid "Error"
+msgstr "Viga"
+
+#: ../src/appicon.c:374
+msgid "Could not open specified icon file"
+msgstr "Kirjeldatud ikoonifaili pole võimalik avada"
+
+#: ../src/appicon.c:374 ../src/dialog.c:405 ../src/dialog.c:466
+#: ../src/dialog.c:563 ../src/dialog.c:968 ../src/dialog.c:1599
+#: ../src/dock.c:442 ../src/dock.c:449 ../src/dock.c:471 ../src/dock.c:3023
+#: ../src/dockedapp.c:208 ../src/dockedapp.c:377 ../src/main.c:348
+#: ../src/rootmenu.c:1649 ../src/winspector.c:351 ../src/winspector.c:367
+msgid "OK"
+msgstr "Olgu"
+
+#: ../src/appicon.c:404 ../src/dock.c:220
+msgid ""
+" will be forcibly closed.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+" suletakse jõuga.\n"
+"Kõik salvestamata andmed lähevad kaotsi.\n"
+"Kas soovid seda teha?"
+
+#: ../src/appicon.c:411 ../src/dock.c:238 ../src/winmenu.c:120
+msgid "Kill Application"
+msgstr "Programmi kõrvaldamine"
+
+#: ../src/appicon.c:412 ../src/dock.c:239 ../src/winmenu.c:123
+msgid "Yes"
+msgstr "Jah"
+
+#: ../src/appicon.c:412 ../src/dock.c:239 ../src/winmenu.c:123
+msgid "No"
+msgstr "Ei"
+
+#.
+#. entry = wMenuAddCallback(menu, _("Select Shortcut"), NULL, NULL);
+#. wMenuEntrySetCascade(menu, entry, makeMakeShortcutMenu(scr));
+#.
+#: ../src/appicon.c:437 ../src/dock.c:1033 ../src/winmenu.c:462
+msgid "Launch"
+msgstr "Käivita programm"
+
+#: ../src/appicon.c:438 ../src/dock.c:1035 ../src/dock.c:3180
+msgid "Unhide Here"
+msgstr "Too siia töölauale"
+
+#: ../src/appicon.c:439 ../src/appicon.c:462 ../src/dock.c:1037
+#: ../src/dock.c:1039 ../src/dock.c:3192 ../src/winmenu.c:438
+msgid "Hide"
+msgstr "Peida"
+
+#: ../src/appicon.c:440
+msgid "Set Icon..."
+msgstr "Ikooni määramine..."
+
+#: ../src/appicon.c:441 ../src/dock.c:1043 ../src/rootmenu.c:223
+#: ../src/winmenu.c:468
+msgid "Kill"
+msgstr "Kõrvalda"
+
+#: ../src/appicon.c:460 ../src/dock.c:3190
+msgid "Unhide"
+msgstr "Too nähtavale"
+
+#: ../src/application.c:364
+#, c-format
+msgid "recreating missing icon '%s'"
+msgstr "puuduva ikooni '%s' uuestiloomine"
+
+#: ../src/defaults.c:725 ../src/defaults.c:840
+#, c-format
+msgid "Domain %s (%s) of global defaults database is corrupted!"
+msgstr "Üldiste vaikeväärtuste andmebaasi domeen %s (%s) on rikutud!"
+
+#: ../src/defaults.c:729
+#, c-format
+msgid "could not load domain %s from global defaults database"
+msgstr ""
+"domeeni %s pole võimalik globaalsete vaikeväärtuste andmebaasist laadida"
+
+#: ../src/defaults.c:774 ../src/defaults.c:788
+#, c-format
+msgid "invalid global menu file %s"
+msgstr "vigane globaalmenüü fail %s"
+
+#: ../src/defaults.c:826 ../src/defaults.c:917 ../src/defaults.c:956
+#: ../src/defaults.c:1006
+#, c-format
+msgid "Domain %s (%s) of defaults database is corrupted!"
+msgstr "Vaikeväärtuste andmebaasi domeen %s (%s) on rikutud!"
+
+#: ../src/defaults.c:830 ../src/defaults.c:939 ../src/defaults.c:992
+#: ../src/defaults.c:1016
+#, c-format
+msgid "could not load domain %s from user defaults database"
+msgstr "domeeni %s pole võimalik kasutaja vaikeväärtuste andmebaasist lugeda"
+
+#: ../src/defaults.c:859
+#, c-format
+msgid "could not load domain %s from global defaults database (%s)"
+msgstr ""
+"domeeni %s pole võimalik üldisest vaikeväärtuste andmebaasist (%s) laadida"
+
+#: ../src/defaults.c:982 ../src/screen.c:408
+#, c-format
+msgid "could not load logo image for panels: %s"
+msgstr "paneelidele pole logopilti võimalik laadida: %s"
+
+#. --------------------------- Local -----------------------
+#: ../src/defaults.c:1178 ../src/defaults.c:1301 ../src/defaults.c:1387
+#: ../src/defaults.c:1792 ../src/defaults.c:1808 ../src/defaults.c:1849
+#: ../src/defaults.c:1894 ../src/defaults.c:2301 ../src/wdefaults.c:532
+#: ../src/wdefaults.c:561
+#, c-format
+msgid "Wrong option format for key \"%s\". Should be %s."
+msgstr "Vigane vorming võtmele \"%s\". Peaks olema %s."
+
+#: ../src/defaults.c:1180 ../src/defaults.c:1253 ../src/defaults.c:1278
+#: ../src/defaults.c:1305 ../src/defaults.c:1317 ../src/defaults.c:1331
+#: ../src/defaults.c:1345 ../src/defaults.c:1391 ../src/defaults.c:1403
+#: ../src/defaults.c:1796 ../src/defaults.c:1813 ../src/defaults.c:1825
+#: ../src/defaults.c:1854 ../src/defaults.c:1870 ../src/defaults.c:1899
+#: ../src/defaults.c:1978 ../src/defaults.c:2306 ../src/defaults.c:2317
+#, c-format
+msgid "using default \"%s\" instead"
+msgstr "selle asemel kasutatakse vaikimisi \"%s\""
+
+#: ../src/defaults.c:1207
+#, c-format
+msgid "wrong option value for key \"%s\"; got \"%s\", should be one of %s."
+msgstr ""
+"vigane valikuväärtus võtmele \"%s\". Väärtuseks on \"%s\", kuid see peab "
+"olema üks väärtustest %s."
+
+#: ../src/defaults.c:1249
+#, c-format
+msgid "can't convert \"%s\" to boolean for key \"%s\""
+msgstr ""
+"väärtust \"%s\" pole võimalik võtme \"%s\" loogikaväärtuseks teisendada"
+
+#: ../src/defaults.c:1276
+#, c-format
+msgid "can't convert \"%s\" to integer for key \"%s\""
+msgstr ""
+"väärtust \"%s\" pole võimalik võtme \"%s\" täisarvuliseks väärtuseks "
+"teisendada"
+
+#: ../src/defaults.c:1313
+#, c-format
+msgid "Incorrect number of elements in array for key \"%s\"."
+msgstr "Vigane massiivi elementide arv võtmele \"%s\"."
+
+#: ../src/defaults.c:1327
+#, c-format
+msgid "Wrong value for key \"%s\". Should be Coordinate."
+msgstr "Vale väärtus võtmele \"%s\". Peaks olema koordinaat."
+
+#: ../src/defaults.c:1341
+#, c-format
+msgid "can't convert array to integers for \"%s\"."
+msgstr "väärtust pole võimalik \"%s\" täisarvude massiiviks teisendada."
+
+#: ../src/defaults.c:1506 ../src/defaults.c:1536 ../src/defaults.c:1552
+#: ../src/defaults.c:1581 ../src/defaults.c:1603 ../src/defaults.c:1654
+#: ../src/defaults.c:1693 ../src/defaults.c:1730 ../src/defaults.c:1746
+#, c-format
+msgid "\"%s\" is not a valid color name"
+msgstr "\"%s\" pole korrektne värvi nimetus"
+
+#: ../src/defaults.c:1518 ../src/defaults.c:1569
+msgid "bad number of arguments in gradient specification"
+msgstr "vigane argumentide arv hajusülemineku kirjelduses"
+
+#: ../src/defaults.c:1627
+msgid "too few arguments in multicolor gradient specification"
+msgstr "liiga vähe argumente mitmevärvilise hajusülemineku kirjelduses"
+
+#: ../src/defaults.c:1719
+msgid "bad number of arguments in textured gradient specification"
+msgstr "vigane argumentide arv tekstuuriga hajusülemineku kirjelduses"
+
+#: ../src/defaults.c:1762
+#, c-format
+msgid "bad opacity value for tgradient texture \"%s\". Should be [0..255]"
+msgstr ""
+"vigane tumeduse väärtus tgradient tekstuurile \"%s\". Peaks olema [0..255]"
+
+#: ../src/defaults.c:1779
+#, c-format
+msgid "invalid texture type %s"
+msgstr "vigane tekstuuri tüüp %s"
+
+#: ../src/defaults.c:1821
+#, c-format
+msgid "Error in texture specification for key \"%s\""
+msgstr "Viga võtme \"%s\" tekstuuri kirjelduses"
+
+#: ../src/defaults.c:1866
+msgid "Wrong type for workspace background. Should be a texture type."
+msgstr "Vigane töölaua tausta tüüp. Peaks olema tekstuur-tüüpi."
+
+#: ../src/defaults.c:1912
+#, c-format
+msgid "Wrong type for background of workspace %i. Should be a texture."
+msgstr "Vigane töölaua %i tausta tüüp. Peaks olema tekstuur-tüüpi."
+
+#: ../src/defaults.c:1951
+msgid "could not load any usable font!!!"
+msgstr "ei õnnestu laadida ühtki kasutuskõlblikku kirjatüüpi!!!"
+
+#: ../src/defaults.c:1974
+#, c-format
+msgid "could not get color for key \"%s\""
+msgstr "võtmele \"%s\" pole võimali värvi hankida"
+
+#: ../src/defaults.c:2026 ../src/rootmenu.c:432
+#, c-format
+msgid "%s: invalid key modifier \"%s\""
+msgstr "%s: vigane võtmemuutja \"%s\""
+
+#: ../src/defaults.c:2038
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\""
+msgstr "%s: vigane kiirklahvi kirjeldus \"%s\""
+
+#: ../src/defaults.c:2044
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\""
+msgstr "%s: vigane võti kiirklahvile \"%s\""
+
+#: ../src/defaults.c:2066
+#, c-format
+msgid "%s: modifier key %s is not valid"
+msgstr "%s: muuteklahv %s on vigane"
+
+#: ../src/defaults.c:2173
+#, c-format
+msgid "failed to open bitmap file \"%s\""
+msgstr "pildifaili \"%s\" pole võimalik avada"
+
+#: ../src/defaults.c:2176
+#, c-format
+msgid "\"%s\" is not a valid bitmap file"
+msgstr "\"%s\" ei ole korrektne pildifail"
+
+#: ../src/defaults.c:2179
+#, c-format
+msgid "out of memory reading bitmap file \"%s\""
+msgstr "pildifaili \"%s\" lugemisel lõppes mälu"
+
+#: ../src/defaults.c:2217 ../src/defaults.c:2250
+msgid "bad number of arguments in cursor specification"
+msgstr "vigane argumentide arv kursori kirjelduses"
+
+#: ../src/defaults.c:2233
+#, c-format
+msgid "unknown builtin cursor name \"%s\""
+msgstr "tundmatu sisseehitatud kursori nimi: \"%s\""
+
+#: ../src/defaults.c:2260 ../src/defaults.c:2272
+#, c-format
+msgid "could not find cursor bitmap file \"%s\""
+msgstr "kursori pildifaili \"%s\" pole võimalik leida"
+
+#: ../src/defaults.c:2313
+#, c-format
+msgid "Error in cursor specification for key \"%s\""
+msgstr "Viga võtme \"%s\" kursori kirjelduses"
+
+#: ../src/defaults.c:2378
+msgid "could not render texture for icon background"
+msgstr "tekstuuri pole võimalik ikooni taustapildiks renderdada"
+
+#: ../src/defaults.c:2892 ../src/defaults.c:2961
+#, c-format
+msgid "Invalid arguments for option \"%s\""
+msgstr "Vigased argumendid võtmele \"%s\""
+
+#: ../src/defaults.c:2898 ../src/defaults.c:2967
+#, c-format
+msgid "Could not find image \"%s\" for option \"%s\""
+msgstr "Pilti \"%s\" pole võtmele \"%s\" võimalik leida"
+
+#: ../src/defaults.c:2903 ../src/defaults.c:2975
+#, c-format
+msgid "Could not load image \"%s\" for option \"%s\""
+msgstr "Pilti \"%s\" pole võtmele \"%s\" võimalik laadida"
+
+#: ../src/defaults.c:2913
+msgid "Invalid split sizes for switch panel back image."
+msgstr ""
+
+#: ../src/defaults.c:2982
+#, c-format
+msgid "Invalid number of arguments for option \"%s\""
+msgstr "Vigane argumentide arv võtmele \"%s\""
+
+#: ../src/defaults.c:2997
+#, c-format
+msgid "Value for option \"%s\" must be an array of 7 strings"
+msgstr "Võtme \"%s\" väärtus peab olema seitsmest stringist koosnev massiiv"
+
+#: ../src/defaults.c:3011
+#, c-format
+msgid "Invalid argument for option \"%s\" item %d"
+msgstr "Vigane argument võtme \"%s\" %d. kirjele"
+
+#: ../src/dialog.c:126
+msgid "Save workspace state"
+msgstr "Töölaua olek salvestatakse"
+
+#: ../src/dialog.c:405 ../src/dialog.c:466 ../src/dialog.c:975
+#: ../src/dock.c:471 ../src/dockedapp.c:382 ../src/rootmenu.c:180
+#: ../src/rootmenu.c:223
+msgid "Cancel"
+msgstr "Loobu"
+
+#: ../src/dialog.c:558
+msgid "Could not open directory \"%s\":\n%s"
+msgstr "Pole võimalik avada kataloogi \"%s\":\n%s"
+
+#: ../src/dialog.c:608
+msgid "Could not load image file "
+msgstr "Pole võimalik avada pildifaili "
+
+#: ../src/dialog.c:902
+msgid "Directories"
+msgstr "Kataloogid"
+
+#: ../src/dialog.c:911
+msgid "Icons"
+msgstr "Ikoonid"
+
+#: ../src/dialog.c:944
+msgid "Preview"
+msgstr "Eelvaade"
+
+#: ../src/dialog.c:957
+msgid "File Name:"
+msgstr "Faili nimi:"
+
+#: ../src/dialog.c:981
+msgid "Choose File"
+msgstr "Vali fail"
+
+#: ../src/dialog.c:1000 ../src/dialog.c:1002
+msgid "Icon Chooser"
+msgstr "Ikoonivalik"
+
+#: ../src/dialog.c:1182
+msgid "Window Manager for X"
+msgstr "X-i aknahaldur"
+
+#: ../src/dialog.c:1184
+#, c-format
+msgid "Version %s"
+msgstr "Versioon %s"
+
+#: ../src/dialog.c:1205
+#, c-format
+msgid "Using visual 0x%x: %s %ibpp "
+msgstr "Kasutatakse visuaali 0x%x: %s %ibpp "
+
+#: ../src/dialog.c:1212
+msgid "(32 thousand colors)\n"
+msgstr "(32 tuhat värvi)\n"
+
+#: ../src/dialog.c:1215
+msgid "(64 thousand colors)\n"
+msgstr "(64 tuhat värvi)\n"
+
+#: ../src/dialog.c:1219
+msgid "(16 million colors)\n"
+msgstr "(16 miljonit värvi)\n"
+
+#: ../src/dialog.c:1222
+#, c-format
+msgid "(%d colors)\n"
+msgstr "(%d värvi)\n"
+
+#: ../src/dialog.c:1231
+#, c-format
+msgid "Total memory allocated: %i kB (in use: %i kB).\n"
+msgstr "Kogu eraldatud mälu: %i kB (kasutusel: %i kB).\n"
+
+#: ../src/dialog.c:1283
+msgid "Image formats: "
+msgstr "Pildivormingud: "
+
+#: ../src/dialog.c:1245
+msgid ""
+"\n"
+"Additional support for: WMSPEC"
+msgstr ""
+"\n"
+"Lisaks on toetatud: WMSPEC"
+
+#: ../src/dialog.c:1251
+msgid "\n"
+msgstr "\n"
+
+#: ../src/dialog.c:1253
+msgid "Solaris "
+msgstr "Solaris "
+
+#: ../src/dialog.c:1255
+msgid "Xinerama: "
+msgstr "Xinerama: "
+
+#: ../src/dialog.c:1287
+msgid "Info"
+msgstr "Andmed"
+
+#: ../src/dialog.c:1417
+msgid ""
+"    Window Maker is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"    Window Maker is distributed in the hope that it will be useful, but "
+"WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY "
+"or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for "
+"more details.\n"
+"\n"
+"    You should have received a copy of the GNU General Public License along "
+"with this program; if not, write to the Free Software Foundation, Inc., 51 "
+"Franklin Street, Fifth Floor, Boston, MA02110-1301 USA."
+msgstr ""
+"    Window Maker on vaba tarkvara. Te võite seda edasi "
+"levitada ja/või muuta vastavalt GNU Üldise Avaliku Litsentsi "
+"tingimustele, nagu need on Vaba Tarkvara Fondi poolt "
+"avaldatud; kas Litsentsi versioon number 2 või (vastavalt "
+"Teie valikule) ükskõik milline hilisem versioon.\n"
+"\n"
+"Seda programmi levitatakse lootuses, et see on kasulik, kuid "
+"ILMA IGASUGUSE GARANTIITA; isegi KESKMISE/TAVALISE KVALITEEDI "
+"GARANTIITA või SOBIVUSELE TEATUD KINDLAKS EESMÄRGIKS. "
+"Üksikasjade suhtes vaata GNU Üldist Avalikku Litsentsi.\n"
+"\n"
+"Te peaks olema saanud GNU Üldise Avaliku Litsentsi koopia "
+"koos selle programmiga, kui ei, siis kontakteeruge Free "
+"Software Foundation'iga järgneval aadressil: 51 Franklin "
+"Street, Fifth Floor, Boston, MA 02110-1301 USA."
+
+#: ../src/dialog.c:1387
+msgid "Legal"
+msgstr "Litsentsiandmed"
+
+#: ../src/dialog.c:1529
+msgid "cannot open connection for crashing dialog panel. Aborting."
+msgstr "krahhidialoogi paneeliga pole võimalik ühendust luua. Annan alla."
+
+#: ../src/dialog.c:1555
+msgid "Fatal error"
+msgstr "Fataalviga"
+
+#: ../src/dialog.c:1565
+#, c-format
+msgid "Window Maker received signal %i."
+msgstr "Window Maker võttis vastu signaali %i."
+
+#: ../src/dialog.c:1573
+msgid ""
+" This fatal error occured probably due to a bug. Please fill the included "
+"BUGFORM and report it to %s."
+msgstr ""
+" See fataalviga on arvatavasti põhjustatud programmi enese veast. Palun "
+"täida kaasasolev vigadest teatamise vorm (BUGFORM) ja saada see aadressil "
+"%s."
+
+#: ../src/dialog.c:1580
+msgid "What do you want to do now?"
+msgstr "Mida sa nüüd soovid teha?"
+
+#: ../src/dialog.c:1586
+msgid "Select action"
+msgstr "Tegevuse valimine"
+
+#: ../src/dialog.c:1587
+msgid "Abort and leave a core file"
+msgstr "Töö lõpetamine ja mälutõmmise salvestan"
+
+#: ../src/dialog.c:1588
+msgid "Restart Window Maker"
+msgstr "Window Makeri taaskäivitamine"
+
+#: ../src/dialog.c:1589
+msgid "Start alternate window manager"
+msgstr "Alternatiivse aknahalduri käivitamine"
+
+#: ../src/dock.c:170 ../src/menu.c:1768
+#, c-format
+msgid "Type the name for workspace %i:"
+msgstr "Sisesta töölaua %i nimi:"
+
+#: ../src/dock.c:171 ../src/dock.c:1002 ../src/dock.c:1004 ../src/dock.c:3099
+#: ../src/menu.c:1772
+msgid "Rename Workspace"
+msgstr "Töölaua ümbernimetamine"
+
+#: ../src/dock.c:437 ../src/dock.c:444
+msgid "Warning"
+msgstr "Hoiatus"
+
+#: ../src/dock.c:438
+msgid ""
+"Some icons cannot be made omnipresent. Please make sure that no other icon "
+"is docked in the same positions on the other workspaces and the Clip is not "
+"full in some workspace."
+msgstr ""
+"Mõningaid ikoone pole võimalik kõikidel töölaudadel nähtavaks teha. Veendu, "
+"et teistel töölaudadel ei ole ükski ikoon dokitud samale positsioonile ja "
+"Klamber ei ole mõnel töölaual täis."
+
+#: ../src/dock.c:445
+msgid ""
+"Icon cannot be made omnipresent. Please make sure that no other icon is "
+"docked in the same position on the other workspaces and the Clip is not full "
+"in some workspace."
+msgstr ""
+"Ikooni ei ole võimalik kõikidel töölaudadel nähtavaks teha. Veendu, et "
+"teistel töölaudadel ei ole ükski ikoon dokitud samale positsioonile ja "
+"Klamber ei ole mõnel töölaual täis."
+
+#: ../src/dock.c:469
+msgid "Workspace Clip"
+msgstr "Töölaua Klamber"
+
+#: ../src/dock.c:470
+msgid "All selected icons will be removed!"
+msgstr "Kõik valitud ikoonid eemaldatakse!"
+
+#: ../src/dock.c:520 ../src/dock.c:1015 ../src/dock.c:1017 ../src/dock.c:3135
+msgid "Keep Icon"
+msgstr "Hoia ikooni"
+
+#: ../src/dock.c:521 ../src/dock.c:1900 ../src/dock.c:2031
+msgid "Type the command used to launch the application"
+msgstr "Tipi korraldus, mida kasutada rakenduse käivitamiseks"
+
+#: ../src/dock.c:841
+#, c-format
+msgid "could not launch application %s"
+msgstr "rakendust %s pole võimalik käivitada"
+
+#: ../src/dock.c:892
+msgid "could not create workspace submenu for Clip menu"
+msgstr "ei õnnestu luua klambrimenüüle töölaua alammenüüd"
+
+#: ../src/dock.c:947
+msgid "could not create options submenu for Clip menu"
+msgstr "ei õnnestu luua klambrimenüüle valikute alammenüüd"
+
+#: ../src/dock.c:951 ../src/dock.c:992
+msgid "Keep on Top"
+msgstr "Hoia esiplaanil"
+
+#: ../src/dock.c:956
+msgid "Collapsed"
+msgstr "Ahendatud"
+
+#: ../src/dock.c:961
+msgid "Autocollapse"
+msgstr "Automaatselt ahenev"
+
+#: ../src/dock.c:966
+msgid "Autoraise"
+msgstr "Automaatselt esile tõusev"
+
+#: ../src/dock.c:971
+msgid "Autoattract Icons"
+msgstr "Ikoonide automaatne külgehaakimine"
+
+#: ../src/dock.c:997
+msgid "Clip Options"
+msgstr "Klambri valikud"
+
+#: ../src/dock.c:1006
+msgid "Selected"
+msgstr "Valitud"
+
+#: ../src/dock.c:1011 ../src/dock.c:1013 ../src/dock.c:3126
+msgid "Select All Icons"
+msgstr "Vali kõik ikoonid"
+
+#: ../src/dock.c:1019 ../src/dock.c:1021 ../src/dock.c:3143
+msgid "Move Icon To"
+msgstr "Teisalda ikoon->"
+
+#: ../src/dock.c:1026 ../src/dock.c:1028 ../src/dock.c:3154
+msgid "Remove Icon"
+msgstr "Eemalda ikoon"
+
+#: ../src/dock.c:1030
+msgid "Attract Icons"
+msgstr "Haagi ikoonid külge"
+
+#: ../src/dock.c:1041
+msgid "Settings..."
+msgstr "Sätted..."
+
+#: ../src/dock.c:1357 ../src/dock.c:1457
+#, c-format
+msgid "bad value in docked icon state info %s"
+msgstr "vigane väärtus dokitud ikooni olekuinfos %s "
+
+#: ../src/dock.c:1464
+#, c-format
+msgid "bad value in docked icon position %i,%i"
+msgstr "vigane väärtus dokitud ikooni asukohal %i,%i"
+
+#: ../src/dock.c:1483
+#, c-format
+msgid "bad value in dock state info:%s"
+msgstr "vigane väärtus doki olekuinfos:%s"
+
+#: ../src/dock.c:1700
+msgid "there are too many icons stored in dock. Ignoring what doesn't fit"
+msgstr ""
+"dokki on salvestatud liiga palju ikoone. Eiran neid, mida ei suuda hallata"
+
+#. icon->forced_dock = 1;
+#: ../src/dock.c:1899 ../src/dock.c:2030
+msgid "Dock Icon"
+msgstr "Dokin ikooni"
+
+#: ../src/dock.c:3021
+#, c-format
+msgid "Could not execute command \"%s\""
+msgstr "Ei õnnestu täita korraldust \"%s\""
+
+#: ../src/dock.c:3105
+msgid "Toggle Omnipresent"
+msgstr "Näita/ära näita kõigil töölaudadel"
+
+#: ../src/dock.c:3110 ../src/winmenu.c:411 ../src/winspector.c:1300
+msgid "Omnipresent"
+msgstr "Nähtav kõigil töölaudadel"
+
+#: ../src/dock.c:3124
+msgid "Unselect All Icons"
+msgstr "Tühista ikoonivalik"
+
+#: ../src/dock.c:3133
+msgid "Keep Icons"
+msgstr "Hoia ikoone"
+
+#: ../src/dock.c:3141
+msgid "Move Icons To"
+msgstr "Teisalda ikoonid->"
+
+#: ../src/dock.c:3152
+msgid "Remove Icons"
+msgstr "Eemalda ikoonid"
+
+#: ../src/dock.c:3182
+msgid "Bring Here"
+msgstr "Too siia"
+
+#: ../src/dockedapp.c:133
+#, c-format
+msgid "could not find icon %s, used in a docked application"
+msgstr "ei leia dokitud rakenduses kasutatavat ikooni %s"
+
+#: ../src/dockedapp.c:206
+#, c-format
+msgid "Could not open specified icon file: %s"
+msgstr "Ei õnnestu avada määratud ikoonifaili: %s"
+
+#: ../src/dockedapp.c:208
+msgid "Ignore"
+msgstr "Eira"
+
+#: ../src/dockedapp.c:299
+msgid "Start when Window Maker is started"
+msgstr "Käivitada koos Window Makeriga"
+
+#: ../src/dockedapp.c:304
+msgid "Lock (prevent accidental removal)"
+msgstr "Lukustatud (ei saa kogemata kustutada)"
+
+#: ../src/dockedapp.c:308
+msgid "Application path and arguments"
+msgstr "Rakenduse rada ja argumendid"
+
+#: ../src/dockedapp.c:319
+msgid "Command for middle-click launch"
+msgstr "Keskmise nupu korraldus"
+
+#: ../src/dockedapp.c:331
+#, c-format
+msgid "%s will be replaced with current selection"
+msgstr "%s asendatakse käesoleva valikuga"
+
+#: ../src/dockedapp.c:335
+msgid "Command for files dropped with DND"
+msgstr "Korraldus DND abil saadetud failidele"
+
+#: ../src/dockedapp.c:347
+#, c-format
+msgid "%d will be replaced with the file name"
+msgstr "%d asendatakse failinimega"
+
+#: ../src/dockedapp.c:350
+msgid "DND support was not compiled in"
+msgstr "DND tugi pole sisse kompileeritud"
+
+#: ../src/dockedapp.c:355
+msgid "Icon Image"
+msgstr "Ikooni pilt"
+
+#: ../src/dockedapp.c:366 ../src/winspector.c:1448
+msgid "Browse..."
+msgstr "Sirvi..."
+
+#: ../src/dockedapp.c:424
+msgid "Docked Application Settings"
+msgstr "Dokitud rakenduse sätted"
+
+#: ../src/framewin.c:633 ../src/framewin.c:725 ../src/menu.c:412
+#: ../src/texture.c:450
+#, c-format
+msgid "could not render texture: %s"
+msgstr "tekstuuri pole võimalik renderdada: %s"
+
+#: ../src/framewin.c:656 ../src/framewin.c:666 ../src/framewin.c:682
+#: ../src/framewin.c:693 ../src/framewin.c:700 ../src/framewin.c:707
+#: ../src/icon.c:321 ../src/menu.c:439
+#, c-format
+msgid "error rendering image:%s"
+msgstr "viga pildi renderdamisel:%s"
+
+#: ../src/framewin.c:753
+#, c-format
+msgid "error rendering image: %s"
+msgstr "viga pildi renderdamisel: %s"
+
+#: ../src/icon.c:167 ../src/wdefaults.c:424
+#, c-format
+msgid "error loading image file \"%s\": %s"
+msgstr "viga pildifaili \"%s\" laadimisel: %s"
+
+#: ../src/icon.c:429 ../src/icon.c:438
+#, c-format
+msgid "could not create directory %s"
+msgstr "kataloogi %s pole võimalik luua"
+
+#: ../src/icon.c:609
+#, c-format
+msgid "could not load default icon \"%s\":%s"
+msgstr "vaikimisi kasutatavat ikooni \"%s\" pole võimalik laadida:%s"
+
+#: ../src/icon.c:613
+#, c-format
+msgid "could not find default icon \"%s\""
+msgstr "vaikimisi kasutatavat ikooni \"%s\" pole võimalik leida"
+
+#: ../src/main.c:305
+msgid "failed to restart Window Maker."
+msgstr "Tõrge Window Makeri taaskäivitamisel."
+
+#: ../src/main.c:308
+#, c-format
+msgid "could not exec %s"
+msgstr "%s pole võimalik käivitada"
+
+#: ../src/main.c:346
+msgid "Could not execute command: "
+msgstr "Korraldust pole võimalik käivitada : "
+
+#: ../src/main.c:481
+#, c-format
+msgid "%s aborted.\n"
+msgstr "%s katkestatud.\n"
+
+#: ../src/main.c:490
+#, c-format
+msgid "Usage: %s [options]\n"
+msgstr "Kasutamine: %s [võtmed]\n"
+
+#: ../src/main.c:491
+msgid "The Window Maker window manager for the X window system"
+msgstr "Window Maker on X window systemi aknahaldur"
+
+#: ../src/main.c:493
+msgid " -display host:dpy\tdisplay to use"
+msgstr " -display host:dpy\tkasutatava kuva määramine"
+
+#: ../src/main.c:495
+msgid " --no-cpp \t\tdisable preprocessing of configuration files"
+msgstr " --no-cpp \t\tseadistusfailide eeltöötluse keelamine"
+
+#: ../src/main.c:497
+msgid " --no-dock\t\tdo not open the application Dock"
+msgstr " --no-dock\t\trakenduste doki avamise keelamine"
+
+#: ../src/main.c:498
+msgid " --no-clip\t\tdo not open the workspace Clip"
+msgstr " --no-clip\t\ttöölaua klambri avamise keelamine"
+
+#: ../src/main.c:499
+msgid " --no-autolaunch\tdo not autolaunch applications"
+msgstr " --no-autolaunch\trakenduste automaatse käivitamise keelamine"
+
+#: ../src/main.c:500
+msgid " --dont-restore\t\tdo not restore saved session"
+msgstr " --dont-restore\tsalvestatud seansi taastamise keelamine"
+
+#: ../src/main.c:502
+msgid " --locale locale\tlocale to use"
+msgstr " --locale locale\t\tkasutatava lokaadi määramine"
+
+#: ../src/main.c:504
+msgid ""
+" --create-stdcmap\tcreate the standard colormap hint in PseudoColor visuals"
+msgstr ""
+" --create-stdcmap\tstandardse värvikaardi vihje loomine PseudoColor "
+"visuaalile"
+
+#: ../src/main.c:505
+msgid " --visual-id visualid\tvisual id of visual to use"
+msgstr " --visual-id visualid\tkasutatava visuaali id"
+
+#: ../src/main.c:506
+msgid " --static\t\tdo not update or save configurations"
+msgstr " --static\t\tseadistusi ei salvestata ega uuendata"
+
+#: ../src/main.c:508
+msgid " --no-polling\t\tdo not periodically check for configuration updates"
+msgstr " --no-polling\t\tümberseadistustuste korrapärase kontrolli keelamine"
+
+#: ../src/main.c:510
+msgid " --version\t\tprint version and exit"
+msgstr " --version\t\tversiooninumbri väljastamine ja programmi töö lõpetamine"
+
+#: ../src/main.c:511
+msgid " --help\t\t\tshow this message"
+msgstr " --help\t\t\tselle teate näitamine"
+
+#: ../src/main.c:521
+#, c-format
+msgid "could not find user GNUstep directory (%s)."
+msgstr "kasutaja GNUstep kataloogi (%s) pole võimalik leida."
+
+#: ../src/main.c:524
+msgid ""
+"There was an error while creating GNUstep directory, please make sure you "
+"have installed Window Maker correctly and run wmaker.inst"
+msgstr ""
+"Viga GNUstep kataloogi loomise käigus. Palun veendu, et Window Maker on "
+"korrektselt paigaldatud ja käivita wmaker.inst"
+
+#: ../src/main.c:527
+#, c-format
+msgid "%s directory created with default configuration."
+msgstr "%s kataloog loodi vaikimisi seadistusega"
+
+#: ../src/main.c:545
+msgid ""
+"could not initialise an inotify instance. Changes to the defaults database "
+"will require a restart to take effect. Check your kernel!"
+msgstr ""
+"inotify instantsi pole võimalik lähtestada. Vaikeväärtuste andmebaasi "
+"muutuste rakendamiseks on vaja programm taaskäivitada. Kontrolli oma "
+"kernelit!"
+
+#: ../src/main.c:556
+#, c-format
+msgid ""
+"could not add an inotify watch on path %s. Changes to the defaults database "
+"will require a restart to take effect."
+msgstr ""
+"rajale %s pole võimalik inotify jälgijat määrata. Vaikeväärtuste andmebaasi "
+"muutuste rakendamiseks on vaja programm taaskäivitada."
+
+#: ../src/main.c:578
+#, c-format
+msgid "%s:could not execute initialization script"
+msgstr "%s:lähtestamisskripti pole võimalik käivitada"
+
+#: ../src/main.c:596
+#, c-format
+msgid "%s:could not execute exit script"
+msgstr "%s:lõpetamisskripti pole võimalik käivitada"
+
+#: ../src/main.c:634 ../src/main.c:711 ../src/main.c:718 ../src/main.c:725
+#, c-format
+msgid "too few arguments for %s"
+msgstr "liiga vähe argumente %s jaoks"
+
+#: ../src/main.c:729
+#, c-format
+msgid "bad value for visualid: \"%s\""
+msgstr "vigane visualid väärtus: \"%s\""
+
+#: ../src/main.c:742
+#, c-format
+msgid "%s: invalid argument '%s'\n"
+msgstr "%s: vigane argument '%s'\n"
+
+#: ../src/main.c:743
+#, c-format
+msgid "Try '%s --help' for more information\n"
+msgstr "Täiendava teabe saamiseks proovi kasutada '%s --help'\n"
+
+#: ../src/main.c:786
+msgid "X server does not support locale"
+msgstr "X server ei toeta lokaliseerimist"
+
+#: ../src/main.c:790
+msgid "cannot set locale modifiers"
+msgstr "lokaadimuujaid pole võimalik määrata"
+
+#: ../src/main.c:806
+#, c-format
+msgid "could not open display \"%s\""
+msgstr "kuva \"%s\" pole võimalik avada"
+
+#: ../src/menu.c:2341
+#, c-format
+msgid "bad value in menus state info: %s"
+msgstr "vigane väärtus menüüde olekuandmetes:%s"
+
+#: ../src/misc.c:57
+#, c-format
+msgid "could not define value for %s for cpp"
+msgstr "%s väärtust pole võimalik cpp jaoks kirjedada"
+
+#: ../src/misc.c:82
+#, c-format
+msgid "could not get password entry for UID %i"
+msgstr "UID %i paroolikirjet pole võimalik leida"
+
+#: ../src/misc.c:104
+#, c-format
+msgid "your machine is misconfigured. HOSTNAME is set to %s"
+msgstr "Teie masin on seadistamata. HOSTNAME väärtus on %s"
+
+#: ../src/misc.c:109
+#, c-format
+msgid "your machine is misconfigured. HOST is set to %s"
+msgstr "Teie masin on seadistamata. HOST väärtus on %s"
+
+#: ../src/misc.c:557 ../src/misc.c:562
+msgid "Program Arguments"
+msgstr "Programmi argumendid"
+
+#: ../src/misc.c:558 ../src/misc.c:563
+msgid "Enter command arguments:"
+msgstr "Sisesta käsu argumendid:"
+
+#: ../src/misc.c:607
+#, c-format
+msgid "out of memory during expansion of \"%s\""
+msgstr "mälu lõppes \"%s\" laiendamise käigus"
+
+#: ../src/misc.c:660
+#, c-format
+msgid "out of memory during expansion of \"%%w\""
+msgstr "mälu lõppes \"%%w\" laiendamise käigus"
+
+#: ../src/misc.c:677
+#, c-format
+msgid "out of memory during expansion of \"%%W\""
+msgstr "mälu lõppes \"%%W\" laiendamise käigus"
+
+#: ../src/misc.c:694
+#, c-format
+msgid "out of memory during expansion of \"%%a\""
+msgstr "mälu lõppes \"%%a\" laiendamise käigus"
+
+#: ../src/misc.c:723
+#, c-format
+msgid "out of memory during expansion of \"%%d\""
+msgstr "mälu lõppes \"%%d\" laiendamise käigus"
+
+#: ../src/misc.c:737
+msgid "selection not available"
+msgstr "valik ei ole kättesaadav"
+
+#: ../src/misc.c:744
+#, c-format
+msgid "out of memory during expansion of \"%%s\""
+msgstr "mälu lõppes \"%%s\" laiendamise käigus"
+
+#: ../src/misc.c:779 ../src/misc.c:785
+#, c-format
+msgid "bad window name value in %s state info"
+msgstr "vigane akna nimi %s olekuandmetes"
+
+#: ../src/misc.c:1013
+msgid "could not send message to background image helper"
+msgstr "taustapildi abiprogrammile pole võimalik teadet saata"
+
+#: ../src/resources.c:41
+#, c-format
+msgid "could not parse color \"%s\""
+msgstr "värvi \"%s\" pole võimalik analüüsida"
+
+#: ../src/resources.c:45
+#, c-format
+msgid "could not allocate color \"%s\""
+msgstr "värvi \"%s\" pole võimalik eraldada"
+
+#: ../src/rootmenu.c:179 ../src/rootmenu.c:180
+msgid "Exit"
+msgstr "Lõpeta"
+
+#: ../src/rootmenu.c:180
+msgid "Exit window manager?"
+msgstr "Kas lõpetada aknahalduri töö?"
+
+#: ../src/rootmenu.c:221
+msgid "Kill X session"
+msgstr "X-seansi kõrvaldamine"
+
+#: ../src/rootmenu.c:222
+msgid ""
+"Kill Window System session?\n"
+"(all applications will be closed)"
+msgstr ""
+"Kas kõrvaldada X-seanss?\n"
+"(kõik rakendused suletakse)"
+
+#: ../src/rootmenu.c:445
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\" for entry %s"
+msgstr "%s:vigane kiirklahvi kirjeldus \"%s\" kirjele %s"
+
+#: ../src/rootmenu.c:453
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\" for entry %s"
+msgstr "%s: vigane klahv kiirkorralduses \"%s\" kirjele %s"
+
+#: ../src/rootmenu.c:487
+#, c-format
+msgid "%s: unmatched '\"' in menu file"
+msgstr "%s: ebamäärane '\"' menüüfailis"
+
+#: ../src/rootmenu.c:536
+#, c-format
+msgid "%s: missing command"
+msgstr "%s: puuduv korraldus"
+
+#: ../src/rootmenu.c:586
+#, c-format
+msgid "invalid OPEN_MENU specification: %s"
+msgstr "vigane OPEN_MENU kirjeldus: %s"
+
+#: ../src/rootmenu.c:643
+#, c-format
+msgid "%s:could not stat menu"
+msgstr "%s:menüü rekvisiite pole võimalik tuvastada"
+
+#: ../src/rootmenu.c:651
+#, c-format
+msgid "%s:could not stat menu:%s"
+msgstr "%s:menüü rekvisiite pole võimalik tuvastada:%s"
+
+#: ../src/rootmenu.c:667
+#, c-format
+msgid "too many parameters in OPEN_MENU: %s"
+msgstr "liiga palju OPEN_MENU parameetreid: %s"
+
+#: ../src/rootmenu.c:709
+msgid ""
+"There are more than one WORKSPACE_MENU commands in the applications menu. "
+"Only one is allowed."
+msgstr ""
+"Rakenduste menüüs on mitu WORKSPACE_MENU korraldust. Lubatud on ainult üks."
+
+#: ../src/rootmenu.c:740
+msgid ""
+"There are more than one WINDOWS_MENU commands in the applications menu. Only "
+"one is allowed."
+msgstr ""
+"Rakenduste menüüs on mitu WINDOWS_MENU korraldust. Lubatud on ainult üks."
+
+#: ../src/rootmenu.c:745
+msgid "Window List"
+msgstr "Akende nimekiri"
+
+#: ../src/rootmenu.c:772 ../src/rootmenu.c:789 ../src/rootmenu.c:797
+#, c-format
+msgid "%s:missing parameter for menu command \"%s\""
+msgstr "%s:menüükorraldusel \"%s\" puuduvad parameetrid"
+
+#: ../src/rootmenu.c:861
+#, c-format
+msgid "%s:unknown command \"%s\" in menu config."
+msgstr "%s:menüü seadistuses on tundmatu käsk \"%s\"."
+
+#: ../src/rootmenu.c:868
+#, c-format
+msgid "%s:can't add shortcut for entry \"%s\""
+msgstr "%s:kiirkorraldust pole võimalik kirjele \"%s\" lisada"
+
+#: ../src/rootmenu.c:978
+#, c-format
+msgid "%s:maximal line size exceeded in menu config: %s"
+msgstr "%s:menüü seadistustes on suurim rea pikkus ületatud: %s"
+
+#: ../src/rootmenu.c:998 ../src/rootmenu.c:1073 ../src/rootmenu.c:1158
+#, c-format
+msgid "%s:missing command in menu config: %s"
+msgstr "%s:menüü seadistuses puudub korraldus: %s"
+
+#: ../src/rootmenu.c:1025
+#, c-format
+msgid "%s:syntax error in menu file:END declaration missing"
+msgstr "%s:menüüfaili süntaksi viga: puudub lõputunnus END"
+
+#: ../src/rootmenu.c:1047 ../src/rootmenu.c:1132
+msgid "could not make arguments for menu file preprocessor"
+msgstr "menüüfaili eeltöötlejale pole võimalik argumente luua"
+
+#: ../src/rootmenu.c:1053 ../src/rootmenu.c:1139
+#, c-format
+msgid "%s:could not open/preprocess menu file"
+msgstr "%s:menüüfaili pole võimalik avada või eeltöödelda"
+
+#: ../src/rootmenu.c:1064 ../src/rootmenu.c:1149
+#, c-format
+msgid "could not open menu file \"%s\": %s"
+msgstr "menüüfaili \"%s\" pole võimalik avada: %s"
+
+#: ../src/rootmenu.c:1084
+#, c-format
+msgid "%s:invalid menu file. MENU command is missing"
+msgstr "%s:vigane menüüfail. Puudub MENU käsk"
+
+#: ../src/rootmenu.c:1093
+msgid "error reading preprocessed menu data"
+msgstr "viga eeltöödeldud menüüandmete lugemisel"
+
+#: ../src/rootmenu.c:1169
+#, c-format
+msgid "%s:no title given for the root menu"
+msgstr "%s:juurmenüü pealkiri on puudu"
+
+#: ../src/rootmenu.c:1251 ../src/rootmenu.c:1323 ../src/rootmenu.c:1362
+#, c-format
+msgid "out of memory while constructing directory menu %s"
+msgstr "menüü %s loomise käigus lõppes mälu"
+
+#: ../src/rootmenu.c:1260
+#, c-format
+msgid "%s:could not stat file \"%s\" in menu directory"
+msgstr "%s:faili \"%s\" rekvisiite pole menüükataloogist võimalik lugeda"
+
+#: ../src/rootmenu.c:1412
+msgid "Commands"
+msgstr "Korraldused"
+
+#: ../src/rootmenu.c:1415
+msgid "Restart"
+msgstr "Taaskäivitamine"
+
+#: ../src/rootmenu.c:1416
+msgid "Exit..."
+msgstr "Lõpetamine..."
+
+#: ../src/rootmenu.c:1455
+#, c-format
+msgid "could not find menu file \"%s\" referenced in WMRootMenu"
+msgstr "WMRootMenu poolt viidatud menüüfaili \"%s\" pole võimalik leida"
+
+#: ../src/rootmenu.c:1461
+#, c-format
+msgid "could not access menu \"%s\" referenced in WMRootMenu"
+msgstr "WMRootMenu poolt viidatud menüüle \"%s\" pole võimalik ligi pääseda"
+
+#: ../src/rootmenu.c:1473
+#, c-format
+msgid ""
+"using default menu file \"%s\" as the menu referenced in WMRootMenu could "
+"not be found "
+msgstr ""
+"WMRootMenu poolt viidatud vaikimisi kasutatavat menüüfaili \"%s\" pole "
+"võimalik leida"
+
+#: ../src/rootmenu.c:1496 ../src/rootmenu.c:1570
+#, c-format
+msgid "%s:format error in root menu configuration \"%s\""
+msgstr "%s:vormingu viga juurmenüü seadistuses \"%s\""
+
+#: ../src/rootmenu.c:1647
+msgid ""
+"The applications menu could not be loaded. Look at the console output for a "
+"detailed description of the errors."
+msgstr ""
+"Rakenduste menüüd pole võimalik lugeda. Põhjalikuma vigade kirjelduse "
+"lugemiseks vaata konsooliväljundit."
+
+#: ../src/screen.c:617
+#, c-format
+msgid "could not initialize graphics library context: %s"
+msgstr "graafikateegi konteksti pole võimalik lähtestada: %s"
+
+#: ../src/screen.c:643
+msgid "could not initialize WINGs widget set"
+msgstr "WINGs vidinakomplekti pole võimalik lähtestada"
+
+#: ../src/screen.c:938
+#, c-format
+msgid "could not save session state in %s"
+msgstr "seansi olekut %s pole võimalik salvestada"
+
+#: ../src/session.c:151 ../src/wdefaults.c:548 ../src/winspector.c:410
+#, c-format
+msgid "can't convert \"%s\" to boolean"
+msgstr "väärtust \"%s\" pole võimalik tõeväärtuseks teisendada"
+
+#: ../src/stacking.c:75
+msgid "could not get window list!!"
+msgstr "akende nimekirja pole võimalik saada!!"
+
+#: ../src/startup.c:177
+#, c-format
+msgid "internal X error: %s"
+msgstr "sisemine X-i viga: %s"
+
+#: ../src/startup.c:671 ../src/startup.c:687 ../src/startup.c:693
+#, c-format
+msgid "could not read domain \"%s\" from defaults database"
+msgstr "domeeni \"%s\" pole võimalik vaikeväärtuste andmebaasist lugeda"
+
+#: ../src/startup.c:679
+#, c-format
+msgid "icon size is configured to %i, but it's too small. Using 16 instead"
+msgstr ""
+"ikooni suuruseks on määratud %i, kuid see on liiga väike. Kasutatakse "
+"suurust 16"
+
+#: ../src/startup.c:709
+msgid "XKB is not supported. KbdModeLock is automatically disabled."
+msgstr "Puudub XKB tugi. KbdModeLock on automaatselt keelatud."
+
+#: ../src/startup.c:728
+msgid "it seems that there is already a window manager running"
+msgstr "paistab, et mingi aknahaldur juba töötab"
+
+#: ../src/startup.c:734
+#, c-format
+msgid "could not manage screen %i"
+msgstr "ekraani %i pole võimalik hallata"
+
+#: ../src/startup.c:790
+msgid "could not manage any screen"
+msgstr "ühtegi ekraani pole võimalik hallata"
+
+#: ../src/switchmenu.c:129
+msgid "Windows"
+msgstr "Aknad"
+
+#: ../src/texture.c:327
+#, c-format
+msgid "image file \"%s\" used as texture could not be found."
+msgstr "tekstuuriks kasutatavat pildifaili \"%s\" pole võimalik leida."
+
+#: ../src/texture.c:332
+#, c-format
+msgid "could not load texture pixmap \"%s\":%s"
+msgstr "tekstuuri pildifaili \"%s\" pole võimalik laadida:%s"
+
+#: ../src/texture.c:454
+msgid "could not allocate image buffer"
+msgstr "pildipuhvrit pole võimalik eraldada"
+
+#: ../src/wdefaults.c:418
+#, c-format
+msgid "could not find icon file \"%s\""
+msgstr "ikoonifaili \"%s\" pole võimalik leida"
+
+#: ../src/window.c:2692 ../src/window.c:2848
+msgid ""
+"The NumLock, ScrollLock or similar key seems to be turned on. Turn it off or "
+"some mouse actions and keyboard shortcuts will not work."
+msgstr ""
+"Klahvid NumLock, ScrollLock (või sarnased) näivad olevat sisse lülitatud.\n"
+"Lülita need välja või muidu ei pruugi mõned hiiretoimingud ja klaviatuuri\n"
+"kiirkorraldused töötada."
+
+#: ../src/winmenu.c:122
+msgid ""
+"This will kill the application.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+"Programm suletakse jõuga.\n"
+"Kõik salvestamata andmed lähevad kaotsi.\n"
+"Kas soovid seda teha?"
+
+#: ../src/winmenu.c:276 ../src/winmenu.c:285
+msgid "Set Shortcut"
+msgstr "Määra kiirkorraldus"
+
+#: ../src/winmenu.c:359 ../src/winmenu.c:399
+msgid "could not create submenu for window menu"
+msgstr "ei õnnestu luua aknamenüü alammenüüd"
+
+#: ../src/winmenu.c:403
+msgid "Keep on top"
+msgstr "Hoia esiplaanil"
+
+#: ../src/winmenu.c:407
+msgid "Keep at bottom"
+msgstr "Hoia tagaplaanil"
+
+#.
+#. * Warning: If you make some change that affects the order of the
+#. * entries, you must update the command #defines in the top of
+#. * this file.
+#.
+#: ../src/winmenu.c:429 ../src/winmenu.c:527
+msgid "Maximize"
+msgstr "Maksimeeri"
+
+#: ../src/winmenu.c:432 ../src/winmenu.c:511
+msgid "Miniaturize"
+msgstr "Minimeeri"
+
+#: ../src/winmenu.c:435 ../src/winmenu.c:545
+msgid "Shade"
+msgstr "Keri kokku"
+
+#: ../src/winmenu.c:441
+msgid "Resize/Move"
+msgstr "Muuda suurust/liiguta"
+
+#: ../src/winmenu.c:444
+msgid "Select"
+msgstr "Vali"
+
+#: ../src/winmenu.c:447
+msgid "Move To"
+msgstr "Teisalda"
+
+#: ../src/winmenu.c:452
+msgid "Attributes..."
+msgstr "Rekvisiidid..."
+
+#: ../src/winmenu.c:454
+msgid "Options"
+msgstr "Valikud"
+
+#: ../src/winmenu.c:465
+msgid "Close"
+msgstr "Sulge"
+
+#: ../src/winmenu.c:505
+msgid "Deminiaturize"
+msgstr "Ava aken"
+
+#: ../src/winmenu.c:521
+msgid "Unmaximize"
+msgstr "Taasta suurus"
+
+#: ../src/winmenu.c:539
+msgid "Unshade"
+msgstr "Keri lahti"
+
+#: ../src/winspector.c:350
+#, c-format
+msgid "Could not find icon \"%s\" specified for this window"
+msgstr "Selle akna jaoks määratud ikooni \"%s\" pole võimalik leida"
+
+#: ../src/winspector.c:365
+#, c-format
+msgid "Could not open specified icon \"%s\":%s"
+msgstr "Kirjeldatud ikooni \"%s\" pole võimalik avada:%s"
+
+#: ../src/winspector.c:1065
+#, c-format
+msgid "Inspecting  %s.%s"
+msgstr "%s.%s vaatlemine"
+
+#: ../src/winspector.c:1088
+msgid "Click in the window you wish to inspect."
+msgstr "Kliki aknale, mida soovid vaadelda."
+
+#: ../src/winspector.c:1120
+msgid ""
+"The configuration will apply to all\n"
+"windows that have their WM_CLASS\n"
+"property set to the above selected\n"
+"name, when saved."
+msgstr ""
+"Seadistuste salvestamisel laieneb see\n"
+"kõigile akendele, mille WM_CLASS\n"
+"omadus on üks ülalloetletud nimedest."
+
+#: ../src/winspector.c:1145
+msgid "Save"
+msgstr "Salvesta"
+
+#: ../src/winspector.c:1153
+msgid "Apply"
+msgstr "Rakenda"
+
+#: ../src/winspector.c:1159
+msgid "Reload"
+msgstr "Taasta"
+
+#: ../src/winspector.c:1168 ../src/winspector.c:1178
+msgid "Window Specification"
+msgstr "Akna kirjeldus"
+
+#: ../src/winspector.c:1169
+msgid "Window Attributes"
+msgstr "Akna rekvisiidid"
+
+#: ../src/winspector.c:1170
+msgid "Advanced Options"
+msgstr "Laiendatud valikud"
+
+#: ../src/winspector.c:1171
+msgid "Icon and Initial Workspace"
+msgstr "Ikoon ja töölaud"
+
+#: ../src/winspector.c:1172
+msgid "Application Specific"
+msgstr "Rakendusele omane"
+
+#: ../src/winspector.c:1185
+msgid "Defaults for all windows"
+msgstr "Vaikimisi kõigile akendele"
+
+#: ../src/winspector.c:1238
+msgid "Select window"
+msgstr "Vali aken"
+
+#: ../src/winspector.c:1251
+msgid "Attributes"
+msgstr "Rekvisiidid"
+
+#: ../src/winspector.c:1262
+msgid "Disable titlebar"
+msgstr "Tiitliriba on peidus"
+
+#: ../src/winspector.c:1264
+msgid ""
+"Remove the titlebar of this window.\n"
+"To access the window commands menu of a window\n"
+"without it's titlebar, press Control+Esc (or the\n"
+"equivalent shortcut, if you changed the default\n"
+"settings)."
+msgstr ""
+"Aknalt tiitliriba eemaldamine. Ilma\n"
+"tiitliribata akna parameetreid saab\n"
+"muuta,vajutadades Control+Esc (või kui\n"
+"juhtklahve on muudetud, siis sellele\n"
+"vastavat klahvikombinatsiooni)."
+
+#: ../src/winspector.c:1270
+msgid "Disable resizebar"
+msgstr "Suuruse muutmise riba on peidus"
+
+#: ../src/winspector.c:1272
+msgid "Remove the resizebar of this window."
+msgstr "Akna suuruse muutmise riba eemaldamine sellelt aknalt."
+
+#: ../src/winspector.c:1275
+msgid "Disable close button"
+msgstr "Sulgemisnupp on peidus"
+
+#: ../src/winspector.c:1277
+msgid "Remove the `close window' button of this window."
+msgstr "Akna sulgemisnupu eemaldamine selle akna tiitliribalt."
+
+#: ../src/winspector.c:1280
+msgid "Disable miniaturize button"
+msgstr "Minimeerimisnupp on peidus"
+
+#: ../src/winspector.c:1282
+msgid "Remove the `miniaturize window' button of the window."
+msgstr "Akna minimeerimisnupu eemaldamine selle akna tiitliribalt."
+
+#: ../src/winspector.c:1285
+msgid "Disable border"
+msgstr "Raam on peidus"
+
+#: ../src/winspector.c:1287
+msgid "Remove the 1 pixel black border around the window."
+msgstr "Akna ümbert ühepikslise musta raami eemaldamine."
+
+#: ../src/winspector.c:1290
+msgid "Keep on top (floating)"
+msgstr "Aken hoitakse esiplaanil (ujuv)"
+
+#: ../src/winspector.c:1292
+msgid ""
+"Keep the window over other windows, not allowing\n"
+"them to cover it."
+msgstr "Akna hoidmine teiste akende peal."
+
+#: ../src/winspector.c:1295
+msgid "Keep at bottom (sunken)"
+msgstr "Aken hoitakse tagaplaanil (uputatud)"
+
+#: ../src/winspector.c:1297
+msgid "Keep the window under all other windows."
+msgstr "Akna hoidmine kõigi teiste akende all."
+
+#: ../src/winspector.c:1302
+msgid "Make window present in all workspaces."
+msgstr "Aken on nähtav kõigil töölaudadel."
+
+#: ../src/winspector.c:1305
+msgid "Start miniaturized"
+msgstr "Käivitatakse minimeerituna"
+
+#: ../src/winspector.c:1307
+msgid ""
+"Make the window be automatically miniaturized when it's\n"
+"first shown."
+msgstr ""
+"Akna automaatne minimeerimine selle\n"
+"esmasel näitamisel."
+
+#: ../src/winspector.c:1310
+msgid "Start maximized"
+msgstr "Käivitatakse maksimeerituna"
+
+#: ../src/winspector.c:1312
+msgid ""
+"Make the window be automatically maximized when it's\n"
+"first shown."
+msgstr ""
+"Akna automaatne maksimeerimine selle\n"
+"esmasel näitamisel."
+
+#: ../src/winspector.c:1315
+msgid "Full screen maximization"
+msgstr "Maksimeeritakse üle kogu ekraani"
+
+#: ../src/winspector.c:1317
+msgid ""
+"Make the window use the whole screen space when it's\n"
+"maximized. The titlebar and resizebar will be moved\n"
+"to outside the screen."
+msgstr ""
+"Akna suurendamise lubamine kogu ekraani ulatuses.\n"
+"Akna tiitliriba ja suuruse muutmise riba jäävad\n"
+"siis väljaspoole ekraani piirkonda."
+
+#: ../src/winspector.c:1333
+msgid "Advanced"
+msgstr "Laiendatud võimalused"
+
+#: ../src/winspector.c:1350
+msgid "Do not bind keyboard shortcuts"
+msgstr "Kiirklahvidele ei reageerita"
+
+#: ../src/winspector.c:1352
+msgid ""
+"Do not bind keyboard shortcuts from Window Maker\n"
+"when this window is focused. This will allow the\n"
+"window to receive all key combinations regardless\n"
+"of your shortcut configuration."
+msgstr ""
+"Fookuses oleval aknal keelatakse reageerimine\n"
+"Window Makeri kiirklahvidele. See võimaldab\n"
+"aknal vastu võtta kõiki klaviatuurilt tulevaid\n"
+"koode."
+
+#: ../src/winspector.c:1358
+msgid "Do not bind mouse clicks"
+msgstr "Hiirevajutustele ei reageerita"
+
+#: ../src/winspector.c:1360
+msgid ""
+"Do not bind mouse actions, such as `Alt'+drag\n"
+"in the window (when Alt is the modifier you have\n"
+"configured)."
+msgstr ""
+"Aknal keelatakse reageerimast hiiretoimingutele.\n"
+"Näiteks `Alt'+lohistamine (kui alt on määratud\n"
+"muuteklahviks)."
+
+#: ../src/winspector.c:1364
+msgid "Do not show in the window list"
+msgstr "Akende nimekirjas ei näidata"
+
+#: ../src/winspector.c:1366
+msgid "Do not list the window in the window list menu."
+msgstr "Akna nime ei näidata akende nimekirjas."
+
+#: ../src/winspector.c:1369
+msgid "Do not show in the switch panel"
+msgstr "Aknavahetuse paneelil ei näidata"
+
+#: ../src/winspector.c:1371
+msgid "Do not include in switch panel while cycling windows."
+msgstr "Akende vahetamisel ei näidata aknavahetuse paneelil."
+
+#: ../src/winspector.c:1374
+msgid "Do not let it take focus"
+msgstr "Akna fokuseerimine keelatud"
+
+#: ../src/winspector.c:1376
+msgid ""
+"Do not let the window take keyboard focus when you\n"
+"click on it."
+msgstr ""
+"Akna fokuseerimine on keelatud. Aknale ei\n"
+"mõju klaviatuurilt saabuvad vajutused."
+
+#: ../src/winspector.c:1379
+msgid "Keep inside screen"
+msgstr "Hoitakse ekraani alal"
+
+#: ../src/winspector.c:1381
+msgid ""
+"Do not allow the window to move itself completely\n"
+"outside the screen. For bug compatibility.\n"
+msgstr ""
+"Aknent ei saa väljaspoole ekraani pinda liigutada.\n"
+
+#: ../src/winspector.c:1385
+msgid "Ignore 'Hide Others'"
+msgstr "Eiratakse käsku 'Peida teised aknad'"
+
+#: ../src/winspector.c:1387
+msgid ""
+"Do not hide the window when issuing the\n"
+"`HideOthers' command."
+msgstr ""
+"Käsu \"Peida teised aknad\" korral\n"
+"akent ei peideta."
+
+#: ../src/winspector.c:1390
+msgid "Ignore 'Save Session'"
+msgstr "Seansi salvestamist eiratakse"
+
+#: ../src/winspector.c:1392
+msgid ""
+"Do not save the associated application in the\n"
+"session's state, so that it won't be restarted\n"
+"together with other applications when Window Maker\n"
+"starts."
+msgstr ""
+"Akna andmeid ei salvestata seansi andmetesse\n"
+"ja seetõttu ei käivitata rakendust koos seansi\n"
+"koosseisu kuuluvate akendega."
+
+#: ../src/winspector.c:1397
+msgid "Emulate application icon"
+msgstr "Rakenduse ikooni emuleeritakse"
+
+#: ../src/winspector.c:1399
+msgid ""
+"Make this window act as an application that provides\n"
+"enough information to Window Maker for a dockable\n"
+"application icon to be created."
+msgstr ""
+"Aknale luuakse dokitava rakenduse ikoon, mille alusel\n"
+"Window Maker on suuteline rakenduse oma ikooni looma."
+
+#: ../src/winspector.c:1404
+msgid "Focus across workspaces"
+msgstr "Fokuseeritav kõigilt töölaudadelt"
+
+#: ../src/winspector.c:1406
+msgid ""
+"Allow Window Maker to switch workspace to satisfy\n"
+"a focus request (annoying)."
+msgstr ""
+"Lubab Window Makeril akna fokuseerimispäringu korral\n"
+"lülituda akna töölauale (võib osutuda tüütuks)."
+
+#: ../src/winspector.c:1410
+msgid "Do not let it be minimized"
+msgstr "Akna minimeerimine keelatud"
+
+#: ../src/winspector.c:1412
+msgid ""
+"Do not let the window of this application be\n"
+"minimized.\n"
+msgstr ""
+"Selle rakenduse akena minimeerimise keelamine.\n"
+
+#: ../src/winspector.c:1417
+msgid "Disable language button"
+msgstr "Keelenupp on peidus"
+
+#: ../src/winspector.c:1419
+msgid "Remove the `toggle language' button of the window."
+msgstr ""
+"Keele sisse- ja väljalülitamise\n"
+"nupu eemaldamine akna tiitliribalt."
+
+#: ../src/winspector.c:1436
+msgid "Miniwindow Image"
+msgstr "Pisiakna pilt"
+
+#: ../src/winspector.c:1463
+msgid "Icon filename:"
+msgstr "Ikoonifaili nimi:"
+
+#: ../src/winspector.c:1474
+msgid "Ignore client supplied icon"
+msgstr "Kliendi enda ikooni eiratakse"
+
+#: ../src/winspector.c:1480
+msgid "Initial Workspace"
+msgstr "Töölaud, millel käivitatakse"
+
+#: ../src/winspector.c:1482
+msgid "The workspace to place the window when it's first shown."
+msgstr "Töölaua nimi, mille peal akent esimest korda näidatakse."
+
+#: ../src/winspector.c:1488
+msgid "Nowhere in particular"
+msgstr "Ei oma tähtsust"
+
+#: ../src/winspector.c:1505
+msgid "Application Attributes"
+msgstr "Rakenduse rekvisiidid"
+
+#: ../src/winspector.c:1516
+msgid "Start hidden"
+msgstr "Käivitatakse peidetuna"
+
+#: ../src/winspector.c:1518
+msgid "Automatically hide application when it's started."
+msgstr "Akna peitmine rakenduse käivitamise hetkel."
+
+#: ../src/winspector.c:1521
+msgid "No application icon"
+msgstr "Rakenduse ikoon on peidus"
+
+#: ../src/winspector.c:1523
+msgid ""
+"Disable the application icon for the application.\n"
+"Note that you won't be able to dock it anymore,\n"
+"and any icons that are already docked will stop\n"
+"working correctly."
+msgstr ""
+"Rakenduse ikooni keelamine. Sel juhul pole\n"
+"rakendust võimalik dokkida ja kõik selle\n"
+"rakenduse juba dokitud ikoonid ei toimi enam\n"
+"korrektselt."
+
+#: ../src/winspector.c:1529
+msgid "Shared application icon"
+msgstr "Rakenduse ikoon on jagatud"
+
+#: ../src/winspector.c:1531
+msgid ""
+"Use a single shared application icon for all of\n"
+"the instances of this application.\n"
+msgstr ""
+"Ühe jagatud ikooni kasutamine kõigi\n"
+"rakenduse instantside jaoks.\n"
+
+#: ../src/workspace.c:93 ../src/workspace.c:94 ../src/workspace.c:660
+#, c-format
+msgid "Workspace %i"
+msgstr "Töölaud %i"
+
+#: ../src/workspace.c:705
+msgid "Workspaces"
+msgstr "Töölauad"
+
+#: ../src/workspace.c:707
+msgid "could not create Workspace menu"
+msgstr "töölaua menüüd pole võimalik luua"
+
+#: ../src/workspace.c:714
+msgid "New"
+msgstr "Uus"
+
+#: ../src/workspace.c:715
+msgid "Destroy Last"
+msgstr "Eemalda viimane"

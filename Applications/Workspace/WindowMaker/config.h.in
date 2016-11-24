@@ -1,0 +1,277 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Define to 1 if you have the <bsd/string.h> header file. */
+#undef HAVE_BSD_STRING_H
+
+/* Define to 1 if you have the <ctype.h> header file. */
+#undef HAVE_CTYPE_H
+
+/* Define to 1 if you have the `dgettext' function. */
+#undef HAVE_DGETTEXT
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
+#undef HAVE_DOPRNT
+
+/* Define if EXIF can be used */
+#undef HAVE_EXIF
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
+/* Defined if the 'float'-typed math function are available (sinf, cosf) */
+#undef HAVE_FLOAT_MATHFUNC
+
+/* Define to 1 if you have the `gethostname' function. */
+#undef HAVE_GETHOSTNAME
+
+/* Define to 1 if you have the `gettext' function. */
+#undef HAVE_GETTEXT
+
+/* Check for inotify */
+#undef HAVE_INOTIFY
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <libintl.h> header file. */
+#undef HAVE_LIBINTL_H
+
+/* Define to 1 if you have the <limits.h> header file. */
+#undef HAVE_LIMITS_H
+
+/* Define to 1 if you have the `mallinfo' function. */
+#undef HAVE_MALLINFO
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `mkstemp' function. */
+#undef HAVE_MKSTEMP
+
+/* Define to 1 if you have the `poll' function. */
+#undef HAVE_POLL
+
+/* Define to 1 if you have the <poll.h> header file. */
+#undef HAVE_POLL_H
+
+/* Define if you have POSIX threads libraries and header files. */
+#undef HAVE_PTHREAD
+
+/* Have PTHREAD_PRIO_INHERIT. */
+#undef HAVE_PTHREAD_PRIO_INHERIT
+
+/* defined when GNU's secure_getenv function is available */
+#undef HAVE_SECURE_GETENV
+
+/* Define to 1 if you have the `select' function. */
+#undef HAVE_SELECT
+
+/* Define to 1 if you have the `setsid' function. */
+#undef HAVE_SETSID
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Defined if header "stdnoreturn.h" exists, it defines ISO C11 attribute
+   'noreturn' and it works */
+#undef HAVE_STDNORETURN
+
+/* Define to 1 if you have the `strcasecmp' function. */
+#undef HAVE_STRCASECMP
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define if strlcpy is available */
+#undef HAVE_STRLCAT
+
+/* Define to 1 if you have the `strncasecmp' function. */
+#undef HAVE_STRNCASECMP
+
+/* Define to 1 if you have the `sysconf' function. */
+#undef HAVE_SYSCONF
+
+/* Check for syslog */
+#undef HAVE_SYSLOG
+
+/* Define to 1 if you have the <syslog.h> header file. */
+#undef HAVE_SYSLOG_H
+
+/* Define to 1 if you have the <sys/inotify.h> header file. */
+#undef HAVE_SYS_INOTIFY_H
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#undef HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `vprintf' function. */
+#undef HAVE_VPRINTF
+
+/* define if your X server has XConvertCase() (set by configure) */
+#undef HAVE_XCONVERTCASE
+
+/* define if your X server has XInternAtoms() (set by configure) */
+#undef HAVE_XINTERNATOMS
+
+/* Internationalization (I18N) support (set by configure) */
+#undef I18N
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
+/* gettext domain to be used for menu translations */
+#undef MENU_TEXTDOMAIN
+
+/* defined by configure if the attribute is not defined on your platform */
+#undef O_NOFOLLOW
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to necessary symbol if this constant uses a non-standard name on
+   your system. */
+#undef PTHREAD_CREATE_JOINABLE
+
+/* Define as the return type of signal handlers (`int' or `void') */
+#undef RETSIGTYPE
+
+/* defined when the Solaris Xinerama extension was detected */
+#undef SOLARIS_XINERAMA
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
+/* define if you want user defined menus for applications */
+#undef USER_MENU
+
+/* Defined when user did not request to disable animations */
+#undef USE_ANIMATIONS
+
+/* Define if Boehm GC is to be used */
+#undef USE_BOEHM_GC
+
+/* whether Drag-and-Drop on the dock should be enabled */
+#undef USE_DOCK_XDND
+
+/* defined when valid GIF library with header was found */
+#undef USE_GIF
+
+/* define to support ICCCM protocol for window manager replacement */
+#undef USE_ICCCM_WMREPLACE
+
+/* defined when valid JPEG library with header was found */
+#undef USE_JPEG
+
+/* defined when MagickWand library with header was found */
+#undef USE_MAGICK
+
+/* Defined when used did not request to disable Motif WM hints */
+#undef USE_MWM_HINTS
+
+/* Define if Pango is to be used */
+#undef USE_PANGO
+
+/* defined when valid PNG library with header was found */
+#undef USE_PNG
+
+/* defined when valid RandR library with header was found */
+#undef USE_RANDR
+
+/* defined when valid TIFF library with header was found */
+#undef USE_TIFF
+
+/* defined when valid Webp library with header was found */
+#undef USE_WEBP
+
+/* defined when usable Xinerama library with header was found */
+#undef USE_XINERAMA
+
+/* defined when valid XPM library with header was found */
+#undef USE_XPM
+
+/* defined when valid XShape library with header was found */
+#undef USE_XSHAPE
+
+/* defined when valid XShm library with header was found */
+#undef USE_XSHM
+
+/* Version number of package */
+#undef VERSION
+
+/* Defines how to access the value of Pi */
+#undef WM_PI
+
+/* whether XKB language MODELOCK should be enabled */
+#undef XKB_MODELOCK
+
+/* Define to 1 if the X Window System is missing or not being used. */
+#undef X_DISPLAY_MISSING
+
+/* defined if the locale is initialized by X window */
+#undef X_LOCALE
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#undef inline
+#endif
+
+/* Defines the attribute to tell the compiler that a function never returns,
+   if the ISO C11 attribute does not work */
+#undef noreturn
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef pid_t
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#undef size_t
+
+#include "config-paths.h"

@@ -1,0 +1,320 @@
+#!/bin/sh
+#
+# Install Window Maker for the current user
+#
+
+# xx herbert
+if test "x$1" = "x--batch" ; then
+  BATCH="1"
+else
+  BATCH=""
+fi
+# /xx herbert
+
+# name of menu file we install (menu, plmenu)
+inst_menu=""
+
+LOCALE="${LC_ALL-${LC_MESSAGES-$LANG}}"
+
+# directory where system wide configuration is stored
+GLOBALDIR="#pkgdatadir#"
+GLOBALDEFDIR="#sysconfdir#"
+
+USERDIR="$HOME"
+
+VERSION="#version#"
+
+BINDIR="#bindir#"
+
+make_dir() {
+	mkdir "$1"
+	chmod +rwx "$1"
+}
+
+make_script() {
+	ISCRIPT="$1"
+
+	cat << EOF >> "$ISCRIPT"
+# Window Maker default X session startup script 
+
+PATH="\$PATH:$BINDIR"
+
+# If you login from xdm, uncomment this to make error messages appear
+# in the console window.
+#
+# tail -f "$HOME"/.xsession-errors > /dev/console &
+
+exec wmaker
+
+EOF
+	chmod +rx "$ISCRIPT"
+}
+
+
+#
+# Copy files considering special cases
+#
+copy() {
+	source="$1"
+	target="$2"
+	file="$(basename "$source")"
+	rm -f "$target"
+	if [ "$file" = "WindowMaker" ]; then
+		sed -e "s|~/GNUstep|$GSDIR|g" "$source" > "$target"
+	else
+		if test "x$GNUSTEP_USER_ROOT" = "x"; then
+			sed -e "s:#wmdatadir#:$GLOBALDIR:g" \
+					"$source" > "$target"
+		else
+			sed -e "s|\$HOME/GNUstep|$GSDIR|g" \
+				-e "s:#wmdatadir#:$GLOBALDIR:g" \
+					"$source" > "$target"
+		fi
+	fi
+}
+
+#
+# Generate WMRootmenu
+#
+GenerateMenu() {
+	wmgenmenu > $GSDIR/Defaults/WMRootMenu
+}
+
+echo "Installing WindowMaker $VERSION for current user..."
+
+
+if [ ! -d "$GLOBALDIR" ]; then
+      echo "Could not find global data files"
+      echo "Make sure you have installed Window Maker correctly"
+      exit 1
+fi
+
+if [ ! -d "$GLOBALDEFDIR" ]; then
+      echo "Could not find global configurations files"
+      echo "Make sure you have installed Window Maker correctly"
+      exit 1
+fi
+
+if [ ! -d "$USERDIR" ]; then
+      echo "Could not find user directory $USERDIR"
+      exit 1
+fi
+
+
+if test "x$GNUSTEP_USER_ROOT" = "x"; then
+	cd "$USERDIR"
+	GSDIR="$USERDIR/GNUstep"
+	if [ ! -d "$GSDIR" ]; then
+		echo "Creating $GSDIR user directory"
+		make_dir "$GSDIR"
+	fi
+else
+	GSDIR="$GNUSTEP_USER_ROOT"
+	if [ ! -d "$GSDIR" ]; then
+		# in this case, and in this case only, mkdir needs -p option
+		mkdir -p $GSDIR || {
+		    echo "Directory specified in GNUSTEP_USER_ROOT environment variable does not exist and could not be created"
+		    exit 1
+		}
+		chmod +rwx $GSDIR || exit 1
+	fi
+	cd "$GSDIR"
+	cd ..
+fi
+
+
+if [ ! -d "$GSDIR/Defaults" ]; then
+	make_dir "$GSDIR/Defaults"
+fi
+
+echo "Copying defaults database..."
+
+FILES="$(cd "$GLOBALDEFDIR" && ls -d *)"
+all=""
+for i in $FILES; do
+	if [ ! -d "$GLOBALDEFDIR/$i" ]; then
+		if [ -f "$GSDIR/Defaults/$i" -a -z "$BATCH" ]; then
+			echo "The configuration file \"$i\" already exists in your defaults database."
+			echo "Do you wish to replace it? <y/n/a> [n] $all"
+			if [ "$all" != "a" ]; then
+				read foo
+				if [ "$foo" = "a" -o "$foo" = "A" ]; then
+					all="a"
+				fi
+			fi
+			if [ "$foo" = "y" -o "$foo" = "Y" -o "$all" = "a" ]; then
+				copy "$GLOBALDEFDIR/$i" "$GSDIR/Defaults/$i"
+			fi
+		else
+			copy "$GLOBALDEFDIR/$i" "$GSDIR/Defaults/$i"
+		fi
+	fi
+done
+
+	GenerateMenu
+
+if [ ! -d "$GSDIR/Library/Icons/" ]; then
+      echo "Creating icon library directory $GSDIR/Library/Icons"
+      if [ ! -d "$GSDIR/Library" ]; then
+              make_dir "$GSDIR/Library"
+      fi
+      make_dir "$GSDIR/Library/Icons"
+fi
+
+
+if [ ! -d "$GSDIR/Library/WindowMaker/" ]; then
+      echo "Creating WindowMaker data library directory $GSDIR/Library/WindowMaker"
+      if [ ! -d "$GSDIR/Library" ]; then
+              make_dir "$GSDIR/Library"
+      fi
+      make_dir "$GSDIR/Library/WindowMaker"
+fi
+
+if [ ! -d "$GSDIR/Library/WindowMaker/Styles" ]; then
+	echo "Creating style library $GSDIR/Library/WindowMaker/Styles"
+	make_dir "$GSDIR/Library/WindowMaker/Styles"
+fi
+
+
+if [ ! -d "$GSDIR/Library/WindowMaker/Themes" ]; then
+	echo "Creating theme library $GSDIR/Library/WindowMaker/Themes"
+	make_dir  "$GSDIR/Library/WindowMaker/Themes"
+fi
+
+
+if [ ! -d "$GSDIR/Library/WindowMaker/Backgrounds" ]; then
+	echo "Creating bg image library $GSDIR/Library/WindowMaker/Backgrounds"
+	make_dir  "$GSDIR/Library/WindowMaker/Backgrounds"
+else
+	echo "Default Backgrounds directory already exists. Skipping..."
+fi
+
+
+if [ ! -d "$GSDIR/Library/WindowMaker/IconSets" ]; then
+	echo "Creating icon setup library $GSDIR/Library/WindowMaker/IconSets"
+	make_dir  "$GSDIR/Library/WindowMaker/IconSets"
+else
+	echo "Default IconSets directory already exists. Skipping..."
+fi
+
+
+if [ ! -d "$GSDIR/Library/WindowMaker/Pixmaps" ]; then
+	echo "Creating pixmap library $GSDIR/Library/WindowMaker/Pixmaps"
+	make_dir  "$GSDIR/Library/WindowMaker/Pixmaps"
+else
+	echo "Default Pixmaps directory already exists. Skipping..."
+fi
+
+
+if [ ! -d "$GSDIR/Library/WindowMaker/CachedPixmaps" ]; then
+	make_dir "$GSDIR/Library/WindowMaker/CachedPixmaps"
+fi
+
+if [ ! -d "$GSDIR/Library/WindowMaker/WPrefs" ]; then
+	make_dir "$GSDIR/Library/WindowMaker/WPrefs"
+fi
+
+if test -z "#LITE#" ; then
+FILES="$(cd "$GLOBALDIR" && ls menu menu.* plmenu plmenu.?? wmmacros)"
+for i in $FILES; do
+# xx herbert
+	if [ -f "$GSDIR/Library/WindowMaker/$i" -a -z "$BATCH" ]; then
+# /xx herbert
+		echo "The file \"$i\" already exists in $GSDIR/Library/WindowMaker"
+		echo "Do you wish to replace it? <y/n/a> [n] $all"
+		if [ "$all" != "a" ]; then
+			read foo
+			if [ "$foo" = "a" -o "$foo" = "A" ]; then
+				all="a"
+			fi
+		fi
+		if [ "$foo" = "y" -o "$foo" = "Y" -o "$foo" = "a" ]; then
+			copy "$GLOBALDIR/$i" "$GSDIR/Library/WindowMaker/$i"
+		fi
+	else
+		copy "$GLOBALDIR/$i" "$GSDIR/Library/WindowMaker/$i"
+	fi
+done
+fi
+
+cp "$GLOBALDIR/README.themes" "$GSDIR/Library/WindowMaker"
+cp "$GLOBALDIR/README" "$GSDIR/Library/WindowMaker"
+
+test -f "$GSDIR/Library/WindowMaker/autostart" || \
+    cp "$GLOBALDIR/autostart.sh" "$GSDIR/Library/WindowMaker/autostart"
+chmod +rx "$GSDIR/Library/WindowMaker/autostart"
+
+test -f "$GSDIR/Library/WindowMaker/exitscript" || \
+    cp "$GLOBALDIR/exitscript.sh" "$GSDIR/Library/WindowMaker/exitscript"
+chmod +rx "$GSDIR/Library/WindowMaker/exitscript"
+
+# xx herbert
+if test -n "$BATCH" ; then
+  echo "Installation Finished"
+  exit 0
+fi
+# /xx herbert
+
+
+#
+#######################
+
+DATE="$(date +%b%d.%T)"
+
+show_end_message() {
+
+echo
+echo "Installation Finished"
+echo
+echo "There are menus in 2 different file formats. The plain text format and"
+echo "the property list format. The plain text format is more flexible, but"
+echo "the menu in the property list format can be edited graphically. The"
+echo "menu that will be used by default is the property list one. Read"
+echo "    $GSDIR/Library/WindowMaker/README"
+echo "for information on how to change it."
+  if [ "${inst_menu%.*}" = "menu" ]; then
+echo "However, since you have locale set to $LOCALE and plmenu for such locale"
+echo "was not found, your WMRootMenu contains path to text formated menu:"
+echo "    $GSDIR/Library/WindowMaker/$inst_menu"
+  fi
+}
+
+wmaker_found=0
+for xinit in .xinitrc .Xclients .xsession; do
+     test ! -f "$HOME/$xinit" && continue
+	 res="$(grep wmaker "$HOME/$xinit")"
+     if test "x$res" != x; then
+     	wmaker_found=1
+	break
+     fi
+done
+if test "$wmaker_found" = 1; then
+	echo "Found Window Maker to already be your default window manager."
+	show_end_message
+	exit 0
+fi
+
+
+trap "show_end_message;exit" 2
+
+echo
+echo "Now the .xinitrc, .Xclients or .xsession script must be updated so that"
+echo "it calls wmaker when you start an X session."
+echo "Type the name of the file that must be changed (normally .xinitrc)."
+echo "If the file already exists, it will be backed up with a .old.$DATE "
+echo "extension"
+echo "If you want to edit it by hand, hit <Control>-C now."
+read file
+
+if test "x$file" = "x"; then
+	echo "Using .xinitrc as a default value"
+	file=.xinitrc
+fi
+
+if [ -f "$USERDIR/$file" ]; then
+	mv "$USERDIR/$file" "$USERDIR/$file.old.$DATE"
+fi
+
+make_script "$USERDIR/$file"
+
+show_end_message

@@ -1,0 +1,212 @@
+____________
+Introduction
+------------
+
+These notes are meant to help you in the process of making and submitting
+patches to the git repository of wmaker-crm.
+
+It assumes you have 'git' correctly installed and you have set the most
+basic configuration options via 'git config'. See the end of this file
+for an example .gitconfig.
+
+To clone the wmaker-crm repository you can do:
+
+git clone git://repo.or.cz/wmaker-crm.git
+
+You should note that the development occur in the #next branch, and
+patches are backported to #master when considered ok. So, you probably
+want to switch to #next branch, if not already done:
+
+git checkout next
+
+____________________
+Testing your changes
+--------------------
+
+If you want to raise the quality of your contribution, you are strongly
+encouraged to use at least this configure option:
+
+./configure --enable-debug
+
+This does not only enable debugging information, which you may need when
+testing your work, it also enables a number of extra compiler warning
+which help keeping safer code.
+
+You will probably want also to run this in the end, because it does some
+checks on the source tree:
+
+make check
+
+__________________________
+Producing a patch with git
+--------------------------
+
+You have the wmaker source and you want to write a patch in order to fix
+a bug or improve something. A possible work-flow is the following:
+
+# Optional: Create a new branch (to be safe in case you screw up)
+git checkout -b fixbug
+
+Now you fix the bug...
+
+# Check what you did, review etc
+git diff
+
+# if it looks good, commit your changes
+git commit -a
+
+Git will open the editor set in your .gitconfig and you'll have to write a
+commit message. Writing a good message is as important as the source code
+modifications you've just made! See "Writing the commit log" for advice.
+
+# Prepare the patch to submit to the mailing-list.
+# (use HEAD~2 if you want patches for the last 2 commits etc)
+git format-patch HEAD~1
+
+# If you have created your own branch, and want all your commits created
+# after the #next branch, you can use:
+git format-patch next
+
+
+In order to ensure consistency in the code, there's an extra step to
+check the patchs. You should run this script (inherited from the Linux
+kernel) on the patch files generated and fix your commits for what it
+reports:
+
+./checkpatch.pl 00*
+
+______________________
+Writing the commit log
+----------------------
+
+You had a motivation to write your patch, you studied the sources and you
+found a way to do what you wanted to do. This whole process takes time and
+other people will not want to invest that time to rediscover what you've
+already found.
+
+So the main reason for the commit message is to explain to other people what
+you did, _why_ and _how_. And you must assume that the person you must explain
+these things to will not be as familiar with the code you just modified as you
+are right after writing the patch -- and that includes yourself in a year or
+so. Be verbose in all the steps below.
+
+The good commit log will start with the reason for writing the patch.
+
+For example, if you use wmaker in some way and you expect that X happens but
+you get Y, you should say that very clearly. Sometimes that's enough for other
+more experienced people to know how to solve your issue. They will be able to
+judge your patch better if they know what you wanted to do -- sometimes there
+can be a better way to fix it.
+
+Then you should explain why the wmaker source leads to Y and not to X.
+
+Technical stuff can be expected at this point, e.g. "upon doing xyz in function
+foobar(), wmaker sets the variable foo to 'y' instead of setting it to 'x', and
+that will lead to blabla happening in function foobar_squared()...".
+
+And finally you explain how you fixed it.
+
+"You have to set foo to 'x', because then when the function foobar_squared() is
+called it will do X instead of Y because..."
+
+At this point other people will have a clear understanding of what you did with
+minimal effort. And that leads to better patch reviews.
+
+Furthermore, the above reasons should also tell you that you must not do
+more than one thing in the same patch. Again:
+
+       "Each patch must do one thing and one thing only."
+
+If your patch does too much of unrelated stuff, it makes reviewing a nightmare
+and long-term maintenance much worse (think about a patch which introduces a
+regression in the middle of many other nice improvements, and now you have to
+get rid of the regression without removing the improvements -- 'git revert'
+will not help you here).
+
+If you find yourself having troubles to write what you did in the commit
+message, perhaps you did too much. In this case you should split your patch
+into smaller unrelated pieces and produce a patch series. Unfortunately it's
+more work for you, but it's much better for wmaker.
+
+_____________________________________
+Sending the patch to the mailing list
+-------------------------------------
+
+Send your patches to:
+
+wmaker-dev@lists.windowmaker.org
+
+Please do not send patches to any individual developer unless you have a very
+good reason to avoid more people being able to comment (and improve) on your
+patches.
+
+The HIGHLY RECOMMENDED way to send a patch is to actually let Git do it for
+you, otherwise you may face the problems below. Doing this is really easy:
+
+# Tell git once how to send mails:
+#   (of course, replace smtp.example.com with your ISP's)
+git config --global sendemail.smtpserver "smtp.example.com"
+git config --global sendemail.validate   true
+git config sendemail.to "Window Maker Devel <wmaker-dev@lists.windowmaker.org>"
+
+# If you're sending more than 1 patch, you may be interested in having an
+# introduction mail for the batch:
+git format-patch  --cover-letter  next
+vi/emacs/nedit/whatever 0000-cover-letter.patch
+
+# When you're satisfied, ask Git to mail all the patches:
+git send-email 00*
+
+
+If you do not want or cannot let Git send them for you, please note that
+sending the patch _properly_ is not as trivial as you may think. Some mail
+clients convert TABs to spaces or word wrap long lines automatically, which
+will result in your patch being rejected as it will not apply with 'git apply'.
+
+You could send the patch as an attachement to the mail, but this generally
+makes it a bit harder to review, and a lot harder to comment on; that's why
+the preferred method is inlined patches (like Git does).
+
+Ideally your patch should contain a very good commit message that explains
+why you wrote the patch in the first place (see "Writing the commit log").
+In this case you can simply send the file(s) created in the 'git format-patch'
+step above as the sole content of your email to the mailing list. All your
+reasons and explanations will be in the commit log, and your email will look
+like:
+
+**********************************
+From: someone@someplace
+Subject: [PATCH] Fix something
+
+The commit message.
+
+The diff itself.
+
+**********************************
+
+Read the file email-clients.txt in the topdir of the wmaker-crm repository
+to be advised on how to tweak your email client to avoid common pitfalls.
+
+___________________
+Example .gitconfig
+-------------------
+
+[user]
+        name = Erwin Schrodinger
+        email = schrodinger@gmail.com
+[core]
+        editor = xjed
+[status]
+        showUntrackedFiles = no
+[color]
+        branch = auto
+        status = auto
+        diff = auto
+        ui = auto
+[apply]
+        whitespace = fix
+	
+
+
+
+

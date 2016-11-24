@@ -1,0 +1,69 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH getstyle 1 "January 1999"
+.SH "НАИМЕНОВАНИЕ"
+getstyle \- делает дамп темы оформления Window Maker.
+.SH "СИНТАКСИС"
+.B getstyle
+[[\-t|\-\-theme-options] [\-p|\-\-pack] [файл стиля]]
+.SH "ОПИСАНИЕ"
+.B getstyle
+может как произвести дамп стиля Window Maker в файл или на стандартный вывод,
+так как создать файл темы оформления. Тема оформления это директория,
+содержащая всё, что необходимо для распространения темы оформления, включая
+настройки стиля и используемую графику.
+
+Заметьте, что информация о стиле не читается из файлов глобальных настроек.
+
+По умолчанию сохраняются указанные опции:  \fITitleJustify\fP,
+\fIClipTitleFont\fP, \fIWindowTitleFont\fP, \fIMenuTitleFont\fP,
+\fIMenuTextFont\fP, \fIIconTitleFont\fP,
+\fILargeDisplayFont\fP, \fIHighlightColor\fP, \fIHighlightTextColor\fP,
+\fIClipTitleColor\fP, \fICClipTitleColor\fP, \fIFTitleColor\fP,
+\fIPTitleColor\fP, \fIUTitleColor\fP, \fIFTitleBack\fP,
+\fIPTitleBack\fP, \fIUTitleBack\fP, \fIResizebarBack\fP,
+\fIMenuTitleColor\fP, \fIMenuTextColor\fP, \fIMenuDisabledColor\fP,
+\fIMenuTitleBack\fP, \fIMenuTextBack\fP, \fIIconBack\fP,
+\fIIconTitleColor\fP, \fIIconTitleBack\fP, \fIFrameBorderWidth\fP,
+\fIFrameBorderColor\fP, \fIFrameSelectedBorderColor\fP,
+\fIMenuStyle\fP, \fIWindowTitleExtendSpace\fP,
+\fIMenuTitleExtendSpace\fP, и \fIMenuTextExtendSpace\fP.
+
+Если указан \fB\-t\fP или \fB\-\-theme-options\fP, то в дополнение к предыдущим
+опциям \fIтакже\fP сохраняется \fIWorkspaceBack\fP  вместе с пользовательскими
+настройками стиля курсора мыши
+(\fINormalCursor\fP, \fIArrowCursor\fP, \fIMoveCursor\fP,
+\fIResizeCursor\fP,
+\fITopLeftResizeCursor\fP, \fITopRightResizeCursor\fP,
+\fIBottomLeftResizeCursor\fP, \fIBottomRightResizeCursor\fP,
+\fIVerticalResizeCursor\fP, \fIHorizontalResizeCursor\fP,
+\fIWaitCursor\fP, \fIQuestionCursor\fP, \fITextCursor\fP,
+\fISelectCursor\fP), которые указаны.
+
+.SH "ОПЦИИ"
+.TP
+.B \-t
+Делает дамп связанных с темой оформления данных, включая фон корневого окна.
+Эта опция всегда включена при применении опции \-p.
+.TP
+.B \-p
+Создаёт тему оформления в директории, названной по имени темы с добавлением
+суффикса .themed.
+
+.SH "ОКРУЖЕНИЕ"
+.IP GNUSTEP_USER_ROOT
+Указывает начальный путь к папке Defaults. "Defaults/" приписывается к этой
+переменной, чтобы определить настоящее расположение данных. Если переменная не
+установлена, то её значение: "~/GNUstep".
+.SH "ФАЙЛЫ"
+.IP GNUSTEP_USER_ROOT/Defaults/WindowMaker
+В указанный файл идёт запись данных.
+.SH "СМОТРИ ТАКЖЕ"
+.BR setstyle (1),
+.BR wmaker (1)
+.SH "АВТОРЫ"
+Window Maker написан Alfredo K. Kojima <kojima@windowmaker.info>,
+Dan Pascu <dan@windowmaker.org> и дополнен вкладом многих людей по всему
+интернету.
+.PP
+Это руководство было написано Marcelo E. Magallon, <mmagallo@debian.org>.
+Перевод на русский язык осуществил NIR aka Ginko <faust@gmx.com>.

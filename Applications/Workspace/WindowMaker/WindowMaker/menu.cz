@@ -1,0 +1,143 @@
+// Text bellow is in czech, encoding ISO8829-2.
+//
+// Definice hlavního menu pro WindowMaker
+//
+// Syntaxe:
+//
+// <Titulek> <Příkaz> <Parametry>
+//
+// <Titulek> je jakýkoli řetěz znaků. Pokud obsahuje mezery musí být
+// 	uzavřen do uvozovek (")
+//
+// <Příkaz> může být jeden z následujících: 
+//	MENU - definice nové (sub)menu
+//	END  - konec definice nového menu
+//	EXEC <program> - provede se program
+//	EXIT - ukončí se WindowMaker
+//	RESTART [<window manager>] - restart WM nebo jiného správce oken
+//	REFRESH - obnoví okna na pracovní ploše
+//	ARRANGE_ICONS - srovná ikony
+//	SHUTDOWN - ukončí všechny klienty i X server
+//	WORKSPACE_MENU - přidá menu pro práci s pracovními plochami
+//	SHOW_ALL - obnoví všechna skrytá okna
+//	HIDE_OTHERS - skryje všechna okna (mimo zaměřeného, nebo toho, které
+//                    bylo naposledy zaměřeno)
+//
+// <Parameters> je program, který bude proveden.
+// 
+// Každý příkaz MENU musí mít odpovídající END. 
+// následující text je česky, kódován ISO8859-2.
+#include <wmmacros>
+
+"Hlavní menu" MENU
+	"Správce oken" MENU	
+		"Editace menu" SHEXEC xterm -T 'Editace menu' -e joe $HOME/GNUstep/Library/WindowMaker/menu
+	"Správce oken" END
+	"Info" MENU
+		"Info Panel..." INFO_PANEL
+		"Legal" LEGAL_PANEL	
+//		"Xosview" EXEC xosview
+		"Top"	EXEC xterm -e top
+		"Manuál" EXEC xman
+		"Info" EXEC xterm -T 'info' -e info
+		"Xwininfo" EXEC windebug|xless
+		"Xwinevent" EXEC xwinev
+	"Info" END
+	"XTerm" EXEC xterm -sb
+//	"XJed"	EXEC xjed
+        "Midnight commander"  EXEC xterm -name 'mc' -e mc -cm
+	"Pracovní plochy" WORKSPACE_MENU
+	"Aplikace" MENU
+		"Grafické" MENU
+			"Gimp" EXEC gimp
+			"XV" EXEC xv
+			"XPaint" EXEC xpaint
+			"XFig" EXEC xfig
+			"Gnuplot" EXEC xterm -T "GNU plot" -e gnuplot
+		"Grafické" END
+		"Vědecké" MENU
+			"Astro" EXEC xephem
+			"MuPAD" EXEC xmupad -bg grey -geometry 590x385
+		"Vědecké" END
+		"Vývojové" MENU
+			"X Gnu debbuger" EXEC xxgdb
+			"Emacs" EXEC emacs
+			"Resource editor" EXEC editres
+		"Vývojové" END
+                "Hry" MENU
+	    		"Bludišťě"      EXEC maze
+//              	"Karty "        EXEC spider
+			"Šachy "        EXEC xboard
+			"Xeyes"         EXEC xeyes -geometry 51x23
+			"Xlogo"         EXEC xlogo
+			"Brouci"        EXEC xroach
+            		"Xtetris"       EXEC xtetris -color
+			"Xvier"         EXEC xvier
+			"Xgas"          EXEC xgas
+	    		"Xkobo"         EXEC xkobo
+			"xboing"        EXEC xboing -sound
+			"XBill"         EXEC xbill
+			"Civilization"   EXEC civ
+		"Hry" END
+//		"X File Manager" EXEC xfm
+		"Správce souborů" EXEC files
+//		"LyX" EXEC lyx
+		"Netscape" EXEC netscape
+  		"Ghostview" EXEC ghostview
+		"Acrobat" EXEC /usr/local/Acrobat3/bin/acroread
+		"OpenDOS" EXEC runxdos
+//  		"TkDesk" EXEC tkdesk
+	"Aplikace" END
+	"Editory" MENU
+		"Emacs" EXEC emacs
+//		"XJed" EXEC xjed
+//		"NEdit" EXEC nedit
+		"Xedit" EXEC xedit
+//		"VI" EXEC xterm -e vi
+		"Joe" EXEC xterm -T 'Joe' -e joe
+	"Editory" END
+	"Různé" MENU
+//		"Xmcd" SHEXEC xmcd 2> /dev/null
+		"Xplaycd" EXEC xplaycd
+		"Xmixer" EXEC xmixer
+	"Různé" END
+	"Pomůcky" MENU
+		"Koš" EXEC trash
+		"Hodiny" EXEC xclock
+		"Kalkulátor" EXEC xcalc
+		"Výběr fontu" EXEC xfontsel
+		"Lupa" EXEC xmag
+		"Mapa barev" EXEC xcolormap
+		"XKill" EXEC xkill
+		"AfterstepClock" EXEC asclock -position +671+-1
+	"Pomůcky" END
+	"Pracovní plocha" MENU
+		"Barva" MENU
+			"-" EXEC CLEARROOT
+			"Černá" WS_BACK '(solid, black)'
+			"Modrá" WS_BACK '(solid, "#505075")'
+			"Purpurová" WS_BACK '(solid, "#554466")'
+			"Šedozelená" WS_BACK '(solid, "#554466")'
+			"Tmavě šedá" WS_BACK '(solid, "#333340")'
+			"Vínová"  WS_BACK '(solid, "#400020")'
+		"Barva" END
+#if (DEPTH>=8)
+// Setup some gradient schemes for newbies and lazy people
+// You must RESTART after selecting the gradient.
+#include <gradients.menu>
+#endif
+		"Skryj ostatní" HIDE_OTHERS
+		"Ukaž všechny" SHOW_ALL
+		"Srovnej ikony" ARRANGE_ICONS
+		"Obnov" REFRESH
+		"Zámek" EXEC xlock -allowroot -usefirst
+		"Ulož vzhled" EXEC SAVE_WORKSPACE
+	"Pracovní plocha" END
+	"Konec"	MENU
+// 'Restartovat' není opravdu příliš české slovo, najde někdo lepší ?
+		"Restartovat" RESTART
+//		"Start AfterStep" RESTART afterstep
+		"Ukončit..."  EXIT
+//		"Ukončit sezení..." SHUTDOWN
+	"Konec" END
+"Hlavní menu" END

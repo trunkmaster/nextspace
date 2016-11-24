@@ -1,0 +1,606 @@
+# Hungarian Translation for WINGs
+# Copyright (C)2014 BALATON Zoltan
+# This file is distributed under the same license as WINGs.
+# BALATON Zoltán <balaton@eik.bme.hu>, 2014
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Window Maker 0.95.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-18 00:14+0100\n"
+"PO-Revision-Date: 2014-02-18 00:25+0100\n"
+"Last-Translator: BALATON Zoltán <balaton@eik.bme.hu>\n"
+"Language-Team: Hungarian\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../wmaker-crm/WINGs/error.c:117
+msgid "fatal: "
+msgstr "végzetes hiba: "
+
+#: ../../../wmaker-crm/WINGs/error.c:124
+msgid "error: "
+msgstr "hiba: "
+
+#: ../../../wmaker-crm/WINGs/error.c:131
+msgid "warning: "
+msgstr "figyelmeztetés: "
+
+#: ../../../wmaker-crm/WINGs/findfile.c:58
+#, c-format
+msgid "could not get password entry for UID %i"
+msgstr "nem találtam jelszó bejegyzést a %i felhasználó azonosítóhoz"
+
+#: ../../../wmaker-crm/WINGs/findfile.c:87
+#, c-format
+msgid "could not get password entry for user %s"
+msgstr "nem találtam jelszó bejegyzést a \"%s\" nevű felhasználóhoz"
+
+#: ../../../wmaker-crm/WINGs/findfile.c:203
+#, c-format
+msgid "could not expand %s"
+msgstr "nem tudtam értelmezni: %s"
+
+#: ../../../wmaker-crm/WINGs/findfile.c:435
+#, c-format
+msgid "Could not open %s"
+msgstr "Nem sikerült megnyitni ezt: %s"
+
+#: ../../../wmaker-crm/WINGs/findfile.c:442
+#, c-format
+msgid "Could not create %s"
+msgstr "Nem sikerült létrehozni ezt: %s"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:78
+#, c-format
+msgid "syntax error in %s %s, line %i: %s"
+msgstr "formai hiba ebben: %s %s, %i. sor: %s"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:134
+msgid "Only string or data is supported for a proplist dictionary key"
+msgstr "proplist szótár kulcsa csak karakterlánc vagy adat típusú lehet"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:167
+#: ../../../wmaker-crm/WINGs/proplist.c:217
+#: ../../../wmaker-crm/WINGs/proplist.c:382
+#: ../../../wmaker-crm/WINGs/proplist.c:458
+#: ../../../wmaker-crm/WINGs/proplist.c:1048
+#: ../../../wmaker-crm/WINGs/proplist.c:1098
+#: ../../../wmaker-crm/WINGs/proplist.c:1245
+#: ../../../wmaker-crm/WINGs/proplist.c:1313
+#: ../../../wmaker-crm/WINGs/proplist.c:1418
+#: ../../../wmaker-crm/WINGs/proplist.c:1462
+msgid "Used proplist functions on non-WMPropLists objects"
+msgstr "proplist függvényt próbáltál használni nem WMPropList objektumon"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:635
+msgid "unterminated PropList string"
+msgstr "befejezetlen PropList karakterlánc"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:673
+msgid "unterminated PropList data"
+msgstr "befejezetlen PropList adat"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:681
+msgid "unterminated PropList data (missing hexdigit)"
+msgstr "befejezetlen PropList adat (hiányzó hexa számjegy)"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:693
+#: ../../../wmaker-crm/WINGs/proplist.c:698
+msgid "non hexdigit character in PropList data"
+msgstr "nem hexa számjegy karakter PropList adaton belül"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:730
+msgid "unterminated PropList array"
+msgstr "befejezetlen PropList tömb"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:738
+msgid "missing or unterminated PropList array"
+msgstr "hiányzó vagy befejezetlen PropList tömb"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:748
+msgid "could not get PropList array element"
+msgstr "nem találom a PropList tömb elemét"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:775
+msgid "unterminated PropList dictionary"
+msgstr "befejezetlen PropList szótár"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:792
+msgid "missing PropList dictionary key"
+msgstr "hiányzó PropList szótár kulcs"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:794
+msgid "missing PropList dictionary entry key or unterminated dictionary"
+msgstr "hiányzó PropList szótár kulcs vagy befejezetlen szótár"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:802
+msgid "error parsing PropList dictionary key"
+msgstr "hiba a PropList szótár kulcs értelmezése közben"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:810
+msgid "missing = in PropList dictionary entry"
+msgstr "hiányzó = a PropList szótár elemben"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:818
+msgid "error parsing PropList dictionary entry value"
+msgstr "hiba a PropList szótár elem értékenek értelmezése közben"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:826
+msgid "missing ; in PropList dictionary entry"
+msgstr "hiányzó ; a PropList szótár elemben"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:885
+msgid "was expecting a string, data, array or dictionary. If it's a string, try enclosing it with \"."
+msgstr "karakterlánc, adat, tömb vagy szótár típusra számítottam. Ha karakterláncot adtál meg, próbáld idézőjelbe tenni!"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:888
+msgid "Comments are not allowed inside WindowMaker owned domain files."
+msgstr "A Window Maker fájljaiban nem engedélyezettek a megjegyzések."
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1482
+#: ../../../wmaker-crm/WINGs/proplist.c:1547
+#: ../../../wmaker-crm/WINGs/proplist.c:1604
+msgid "extra data after end of property list"
+msgstr "extra adat a proplist vége után"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1522
+#, c-format
+msgid "could not get size for file '%s'"
+msgstr "nem tudtam lekérdezni a következő fájl méretet: '%s'"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1530
+#, c-format
+msgid "error reading from file '%s'"
+msgstr "nem tudtam beolvasni a következő fájlt: '%s'"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1575
+#, c-format
+msgid "%s:could not open menu file"
+msgstr "%s: nem tudtam megnyitni a menü fájlt"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1642
+#, c-format
+msgid "mkstemp (%s) failed"
+msgstr "mkstemp (%s) hibát adott"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1653
+#, c-format
+msgid "mktemp (%s) failed"
+msgstr "mktemp (%s) hibát adott"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1660
+#, c-format
+msgid "open (%s) failed"
+msgstr "open (%s) hibát adott"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1667
+#, c-format
+msgid "writing to file: %s failed"
+msgstr "hiba a következő fájl írásakor: %s"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1676
+#, c-format
+msgid "fclose (%s) failed"
+msgstr "fclose (%s) hibát adott"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1684
+#, c-format
+msgid "rename ('%s' to '%s') failed"
+msgstr "rename ('%s'-ről '%s'-re) hibát adott"
+
+#: ../../../wmaker-crm/WINGs/proplist.c:1755
+#, c-format
+msgid "Could not create component %s"
+msgstr "Nem sikerült létrehozni a %s elemet"
+
+#: ../../../wmaker-crm/WINGs/userdefaults.c:65
+msgid "variable GNUSTEP_USER_ROOT defined with invalid path, not used"
+msgstr "A GNUSTEP_USER_ROOT változó be van állítva, de rossz értékre. Nem használom"
+
+#. something happened with the file. just overwrite it
+#: ../../../wmaker-crm/WINGs/userdefaults.c:196
+#: ../../../wmaker-crm/WINGs/userdefaults.c:211
+#, c-format
+msgid "cannot read domain from file '%s' when syncing"
+msgstr "szinkronizálás közben nem tudtam a tartományt kiolvasni a '%s' fájlból"
+
+#: ../../../wmaker-crm/WINGs/wcolor.c:204
+#: ../../../wmaker-crm/WINGs/wcolor.c:214
+#: ../../../wmaker-crm/WINGs/wcolor.c:250
+#: ../../../wmaker-crm/WINGs/wcolor.c:288
+#, c-format
+msgid "could not allocate %s color"
+msgstr "nem sikerült lefoglalni ezt a színt: %s"
+
+#: ../../../wmaker-crm/WINGs/wcolor.c:204
+msgid "white"
+msgstr "fehér"
+
+#: ../../../wmaker-crm/WINGs/wcolor.c:214
+msgid "black"
+msgstr "fekete"
+
+#: ../../../wmaker-crm/WINGs/wcolor.c:250
+msgid "gray"
+msgstr "szürke"
+
+#: ../../../wmaker-crm/WINGs/wcolor.c:288
+msgid "dark gray"
+msgstr "sötétszürke"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:383
+msgid "Colors"
+msgstr "Színek"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:558
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2624
+msgid "Brightness"
+msgstr "Világosság"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:560
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:634
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:665
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:696
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:754
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:785
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:817
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:850
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1988
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2626
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2660
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2694
+msgid "Color Panel: Could not allocate memory"
+msgstr "Szín panel: nem sikerült a memória foglalás"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:632
+msgid "Red"
+msgstr "Piros"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:663
+msgid "Green"
+msgstr "Zöld"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:694
+msgid "Blue"
+msgstr "Kék"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:752
+msgid "Cyan"
+msgstr "Türkiz"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:783
+msgid "Magenta"
+msgstr "Lila"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:815
+msgid "Yellow"
+msgstr "Sárga"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:848
+msgid "Black"
+msgstr "Fekete"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:923
+msgid "Spectrum"
+msgstr "Spektrum"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:949
+msgid "Palette"
+msgstr "Paletta"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:954
+msgid "New from File..."
+msgstr "Új, fájlból..."
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:955
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1000
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1015
+msgid "Rename..."
+msgstr "Átnevez..."
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:956
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1001
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1016
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3086
+msgid "Remove"
+msgstr "Töröl"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:957
+msgid "Copy"
+msgstr "Másol"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:958
+msgid "New from Clipboard"
+msgstr "Új, vágólapról"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:977
+msgid "X11-Colors"
+msgstr "X11 színek"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:994
+msgid "Color"
+msgstr "Szín"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:999
+msgid "Add..."
+msgstr "Hozzáad..."
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1009
+msgid "List"
+msgstr "Lista"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1014
+msgid "New..."
+msgstr "Új..."
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1142
+#, c-format
+msgid "Color Panel: Could not create directory %s needed to store configurations"
+msgstr "Szín panel: Nem sikerült a beállítások tárolásához szükséges könyvtárat létrehozni: %s"
+
+#. Delete the file, it doesn't belong here
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1148
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2979
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2983
+msgid "File Error"
+msgstr "Fájl hiba"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1149
+msgid "Could not create ColorPanel configuration directory"
+msgstr "Nem sikerült létrehozni a Szín panel beállítás könyvtárát"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1150
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2980
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2985
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3010
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:227
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:596
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:611
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:712
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:890
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:534
+msgid "OK"
+msgstr "OK"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1156
+msgid "Color Panel: Could not find file"
+msgstr "Szín panel: nem találom a fájlt"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1352
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1413
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:1473
+msgid "Color Panel: X failed request"
+msgstr "Szín panel: hibás X kérés"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2658
+msgid "Saturation"
+msgstr "Telítettség"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2692
+msgid "Hue"
+msgstr "Árnyalat"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2918
+msgid "Open Palette"
+msgstr "Paletta megnyitás"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2980
+msgid "Invalid file format !"
+msgstr "Érvénytelen fájl formátum!"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2982
+#, c-format
+msgid "can't remove file %s"
+msgstr "nem sikerült törölni a következő fált: %s"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:2984
+msgid "Couldn't remove file from Configuration Directory !"
+msgstr "Nem sikerült törölni a fájlt a beállítás könyvtárból!"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3009
+msgid "Rename"
+msgstr "Átnevez"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3009
+msgid "Rename palette to:"
+msgstr "Paletta átnevezése erre:"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3010
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:236
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:611
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:712
+msgid "Cancel"
+msgstr "Mégsem"
+
+#. Careful, this palette exists already
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3026
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:712
+msgid "Warning"
+msgstr "Figyelem!"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3027
+msgid ""
+"Palette already exists !\n"
+"\n"
+"Overwrite ?"
+msgstr ""
+"Ez a paletta már létezik!\n"
+"\n"
+"Felülírjam?"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3027
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3086
+msgid "No"
+msgstr "Nem"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3027
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3086
+msgid "Yes"
+msgstr "Igen"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3058
+#, c-format
+msgid "Couldn't rename palette %s to %s"
+msgstr "Nem sikerült a paletta átnevezése %s-ről %s-re"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3081
+msgid "This will permanently remove the palette "
+msgstr "Ez véglegesen törli a következő palettát: "
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3083
+msgid ""
+".\n"
+"\n"
+"Are you sure you want to remove this palette ?"
+msgstr ""
+".\n"
+"\n"
+"Biztosan törölni akarod ezt a palettát?"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3105
+#, c-format
+msgid "Couldn't remove palette %s"
+msgstr "Nem sikerült törölni ezt a palettát: %s"
+
+#: ../../../wmaker-crm/WINGs/wcolorpanel.c:3395
+msgid "Color Panel: Color unspecified"
+msgstr "Szín panel: nincs megadva szín"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:216
+msgid "Name:"
+msgstr "Név: "
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:306
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:364
+msgid "Open"
+msgstr "Megnyit"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:322
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:370
+msgid "Save"
+msgstr "Ment"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:506
+#, c-format
+msgid "WINGs: could not open directory %s\n"
+msgstr "WINGs: nem tudom megnyitni a következő könyvtárat: %s\n"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:526
+#, c-format
+msgid "WINGs: could not stat %s\n"
+msgstr "WINGs: nem tudom lekérdezni a következő fájl adatait: %s\n"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:596
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:890
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:533
+msgid "Error"
+msgstr "Hiba"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:610
+msgid "Create Directory"
+msgstr "Új könyvtár"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:611
+msgid "Enter directory name"
+msgstr "Könyvtár neve"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:639
+#, c-format
+msgid "Can not create %s: %s"
+msgstr "Nem sikerült létrehozni: %s: %s"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:702
+#, c-format
+msgid "Can not find %s: %s"
+msgstr "Nem találom: %s: %s"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:708
+#, c-format
+msgid "Delete %s %s?"
+msgstr "Töröljem a következő %s: \"%s\"?"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:709
+msgid "directory"
+msgstr "könyvtárat"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:709
+msgid "file"
+msgstr "fájlt"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:716
+#, c-format
+msgid "Removing %s failed: %s"
+msgstr "Hiba \"%s\" törlésekor: %s"
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:749
+#, c-format
+msgid "An error occurred browsing '%s'."
+msgstr "Hiba történt a '%s' olvasásakor."
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:752
+#, c-format
+msgid "'%s' is not a directory."
+msgstr "Nem könyvtár: '%s'."
+
+#: ../../../wmaker-crm/WINGs/wfilepanel.c:890
+msgid "File does not exist."
+msgstr "Nem létező fájl."
+
+#: ../../../wmaker-crm/WINGs/wfont.c:37
+#, c-format
+msgid "invalid font: %s. Trying '%s'"
+msgstr "érvénytelen betűtípus: %s. Ezt próbálom helyette: '%s'"
+
+#: ../../../wmaker-crm/WINGs/wfont.c:227 ../../../wmaker-crm/WINGs/wfont.c:245
+#, c-format
+msgid "could not load font: %s."
+msgstr "nem tudtam betölteni ezt a betűtípust: %s."
+
+#. WMSetWidgetBackgroundColor(panel->win, WMWhiteColor(scr));
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:186
+msgid "Font Panel"
+msgstr "Betűtípus panel"
+
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:222
+msgid "The quick brown fox jumps over the lazy dog"
+msgstr "Árvíztűrő tükörfúrógép"
+
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:228
+msgid "Family"
+msgstr "Típuscsalád"
+
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:239
+msgid "Typeface"
+msgstr "Betűtípus"
+
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:250
+msgid "Size"
+msgstr "Méret"
+
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:269
+msgid "Set"
+msgstr "Beállít"
+
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:275
+msgid "Revert"
+msgstr "Elvet"
+
+#: ../../../wmaker-crm/WINGs/wfontpanel.c:534
+msgid "Could not init font config library\n"
+msgstr "Nem sikerült inicializálni a betűtípus konfigurációs könyvtárat\n"
+
+#: ../../../wmaker-crm/WINGs/widgets.c:389
+#, c-format
+msgid "WINGs: could not load widget images file: %s"
+msgstr "WINGs: nem tudtam betölteni a következő fájlt: %s"
+
+#: ../../../wmaker-crm/WINGs/widgets.c:724
+msgid "could not load any fonts. Make sure your font installation and locale settings are correct."
+msgstr "egyetlen betűtípust sem tudtam betölteni. Ellenőrizd a telepítést és a nemzetközi beállítások helyességét!"
+
+#: ../../../wmaker-crm/WINGs/wruler.c:175
+msgid "0   inches"
+msgstr "0   hüvelyk"

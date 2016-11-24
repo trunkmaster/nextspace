@@ -1,0 +1,45 @@
+- removed obsoleted RDestroyImage()
+- removed Hermes code.
+- Put back asm/mmx optimized code.
+
+- fixed a bug in RCombineAreaWithOpaqueness() (Brad <lists@anomie.yi.org>)       
+
+- Added retain/release mechanism to RImage by adding RRetainImage() and
+  RReleaseImage(). RDestroyImage() is an alias to RReleaseImage() now, but
+  will be removed in a future release because it no longer fits with the
+  semantics. Will be kept for a while to allow a smoother transition.
+  More about in NEWS
+- Fixed crashing for Pseudocolor visuals with BestMatchRendering
+- Small speed improvement for 24 and 32 bpp, if internal converter is used
+- Small speed improvement for generating gradients.
+- Fixed RSaveXPM() to output correct xpm images.
+- Fixed speckles (white dots) on dithered images (bug still present on the
+  PowerPC architecture, because on LinuxPPC char is unsigned by default, not
+  signed like on the other platforms).
+  Bug fixed by Philip Derrin <philipd@student.unsw.edu.au>
+- Fixed not working Grayscale visual (was crashing)
+- Fixed wrong display of images with alpha in StaticGray and GrayScale visuals
+
+
+- fixed code dependant on the order of evaluation. code like
+  *ptr++ = *ptr++ = *ptr++ = color;
+  is wrong, because there is no guarantee that ptr will be incremented
+  _between_ the assignment operations. it can be incremented after all 
+  assignment operations as well. Because of this both of these are valid
+  implementations for a compiler:
+   a. assign, increment, assign, increment, assign, increment
+   b. assign, assign, assign, increment by 3
+  In case b. only the first memory location of the 3 will be modified, being
+  assigned 3 times the same value, while the other 2 remain unchanged.
+  For example egcs-2.91.66 (and possibly gcc-2.95.x too) implement this in
+  the second way (like in case b.)
+  Also the order in which the assignement is made is undefined (left to right 
+  or right to left).
+
+- added RMakeCenteredImage()
+
+- Added code to draw pixels and lines. Both writing absolute values, or
+  offseting existing pixels with delta values are supported.
+- Remade the beveling code to be simpler, using the RAlterLine() functions.
+- Fixed some pixels in the bevels.
+- Changed RAlter* functions to more generic ROperate*

@@ -1,0 +1,71 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH getstyle 1 "April 2015"
+.SH NAME
+getstyle \- dumps the current Window Maker style related configuration or
+creates a theme pack.
+.SH SYNOPSIS
+.B getstyle
+.RI [ \-t | \-\-theme-options "] [" \-p | \-\-pack "] [" "style file" ]
+.SH DESCRIPTION
+.B getstyle
+can either dump the current Window Maker style related configuration
+information to a file/stdout or create a self-contained theme pack. A theme
+pack is a directory that contains everything that is needed for a
+redistributable theme, including the style information and pixmaps used by it.
+
+Note that style information stored in the global configuration of the
+system is not read.
+
+.SH OPTIONS
+.TP
+.B \-\-help
+print a help message with the list of options.
+.TP
+.BR \-\-pack " or " \-p
+creates a theme pack in the directory named by the theme name appended
+with the .themed suffix.
+.TP
+.BR \-\-theme-options " or " \-t
+dumps theme related information too, which includes the root background
+texture.  This option is always enabled when the \-p option is used.
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes.
+
+.SH "STYLE CONTENT"
+
+The following options are stored by default:
+.IR TitleJustify ", " ClipTitleFont ", " WindowTitleFont ", " MenuTitleFont ,
+.IR MenuTextFont ", " IconTitleFont ", " LargeDisplayFont ", " HighlightColor ,
+.IR HighlightTextColor ", " ClipTitleColor ", " CClipTitleColor ", " FTitleColor ,
+.IR PTitleColor ", " UTitleColor ", " FTitleBack ", " PTitleBack ,
+.IR UTitleBack ", " ResizebarBack ", " MenuTitleColor ", " MenuTextColor ,
+.IR MenuDisabledColor ", " MenuTitleBack ", " MenuTextBack ", " IconBack ,
+.IR IconTitleColor ", " IconTitleBack ", " FrameBorderWidth ", " FrameBorderColor ,
+.IR FrameSelectedBorderColor ", " MenuStyle ", " WindowTitleExtendSpace ,
+.IR MenuTitleExtendSpace ", and " MenuTextExtendSpace .
+
+If either \fB-t\fP or \fB--theme-options\fP is specified, in addition
+to the previous options, \fIWorkspaceBack\fP is also stored,
+along with any user-definable mouse cursor settings
+.RI ( NormalCursor ", " ArrowCursor ", " MoveCursor ", " ResizeCursor ,
+.IR TopLeftResizeCursor ", " TopRightResizeCursor ", " BottomLeftResizeCursor ,
+.IR BottomRightResizeCursor ", " VerticalResizeCursor ", " HorizontalResizeCursor ,
+.IR WaitCursor ", " QuestionCursor ", " TextCursor ", " SelectCursor )
+that are present.
+
+.SH ENVIRONMENT
+.IP GNUSTEP_USER_ROOT
+specifies the initial path for the Defaults directory. "Defaults/" is
+appended to this variable to determine the actual location of the
+databases. If the variable is not set, it defaults to "~/GNUstep"
+.SH FILES
+.IP GNUSTEP_USER_ROOT/Defaults/WindowMaker
+This is the actual file that gets written.
+.SH SEE ALSO
+.BR setstyle (1),
+.BR wmaker (1)
+.SH AUTHOR
+This man page was written by Marcelo Magallon <mmagallo@debian.org>.
+.PP
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>.
