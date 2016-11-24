@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/window.c	2016-10-23 02:37:18.520271255 +0300
-+++ ./WM/src/window.c	2016-11-20 02:49:04.709568550 +0200
+--- ./WindowMaker-0.95.7/src/window.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/window.c	2016-11-25 00:09:13.799571299 +0200
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -13,7 +13,7 @@
  	if (wwin->main_window) {
  		XTextProperty text_prop;
  
-@@ -1159,6 +1162,15 @@
+@@ -1161,6 +1162,15 @@
  			y -= wwin->frame->top_width + wwin->frame->bottom_width;
  	}
  

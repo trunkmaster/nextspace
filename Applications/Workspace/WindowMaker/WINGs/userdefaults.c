@@ -40,7 +40,11 @@ char *WMUserDefaultsDidChangeNotification = "WMUserDefaultsDidChangeNotification
 
 static void synchronizeUserDefaults(void *foo);
 
+#ifdef NEXTSPACE
+#define DEFAULTS_DIR "/Preferences/.WindowMaker"
+#else
 #define DEFAULTS_DIR "/Defaults"
+#endif
 #ifndef HAVE_INOTIFY
 /* Check defaults database for changes every this many milliseconds */
 /* XXX: this is shared with src/ stuff, put it in some common header */

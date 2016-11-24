@@ -51,7 +51,11 @@
 /**** Global varianebles ****/
 
 #define MOD_MASK wPreferences.modifier_mask
+#ifdef NEXTSPACE
+#define CACHE_ICON_PATH "/WindowMaker/CachedPixmaps"
+#else
 #define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
+#endif
 #define ICON_BORDER 3
 
 static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);
@@ -234,6 +238,7 @@ void wIconDestroy(WIcon *icon)
 	wfree(icon);
 }
 
+#ifndef NEXTSPACE
 static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
 {
 	XFillRectangle(dpy, pixmap, scr->icon_title_texture->normal_gc, 0, 0, wPreferences.icon_size, height + 1);
@@ -242,6 +247,7 @@ static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
 	XDrawLine(dpy, pixmap, scr->icon_title_texture->dim_gc,
 		  wPreferences.icon_size - 1, 0, wPreferences.icon_size - 1, height + 1);
 }
+#endif /* NEXTSPACE */
 
 static void icon_update_pixmap(WIcon *icon, RImage *image)
 {
@@ -254,7 +260,12 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
 
 	switch (icon->tile_type) {
 	case TILE_NORMAL:
-		tile = RCloneImage(scr->icon_tile);
+#ifdef NEXTSPACE
+ 		if (icon->show_title)
+		  tile = RCloneImage(scr->miniwindow_tile);
+		else
+#endif
+		  tile = RCloneImage(scr->icon_tile);
 		break;
 	case TILE_CLIP:
 		tile = RCloneImage(scr->clip_tile);
@@ -313,8 +324,10 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
 	RReleaseImage(tile);
 
 	/* Draw the icon's title background (without text) */
+#ifndef NEXTSPACE
 	if (icon->show_title)
 		drawIconTitleBackground(scr, pixmap, theight);
+#endif
 
 	icon->pixmap = pixmap;
 }
@@ -781,7 +794,9 @@ static void update_icon_title(WIcon *icon)
 			x = (icon->core->width - 4) - w;
 		else
 			x = (icon->core->width - w) / 2;
-
+#ifdef NEXTSPACE
+                if (x < 2) x = 2;
+#endif /* NEXTSPACE */
 		WMDrawString(scr->wmscreen, icon->core->window, scr->icon_title_color,
 			     scr->icon_title_font, x, 1, tmp, l);
 		wfree(tmp);

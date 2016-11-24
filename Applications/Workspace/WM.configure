@@ -5,44 +5,68 @@ WM_DIR="WindowMaker"
 cd $WM_DIR
 
 if [ ! -x configure ];then
+    echo "===> 'configure' script not found. Running autogen.h..."
     ./autogen.sh
 fi
 
 if [ ! -f Makefile ];then
-  WM_APP="/usr/NextSpace/Apps/Workspace.app"
-  export CFLAGS=-DNEXTSPACE
+    echo "===> 'Makefile' not found. Running configure script..."
+    WM_APP="/usr/NextSpace/Apps/Workspace.app"
+    export CFLAGS=-DNEXTSPACE
+    
+    ./configure \
+        --enable-randr \
+        --enable-xinerama \
+        --disable-magick \
+        \
+        --prefix=/usr/NextSpace \
+        --bindir=/usr/NextSpace/bin \
+        --libdir=/usr/NextSpace/lib \
+        --includedir=/usr/NextSpace/include \
+        --mandir=/usr/NextSpace/Documentation/man \
+        \
+        --datadir=$WM_APP \
+        --sysconfdir=$WM_APP \
+        --localedir=$WM_APP \
+        --with-pixmapdir=$WM_APP/WindowMaker/Pixmaps \
+        \
+        --with-gnustepdir=/usr/NextSpace \
+        CC=clang CXX=clang++
 
-  ./configure \
-  --enable-randr \
-  --enable-xinerama \
-  --disable-magick \
-  \
-  --prefix=/usr/NextSpace \
-  --bindir=/usr/NextSpace/bin \
-  --libdir=/usr/NextSpace/lib \
-  --includedir=/usr/NextSpace/include \
-  --mandir=/usr/NextSpace/Documentation/man \
-  \
-  --datadir=$WM_APP \
-  --sysconfdir=$WM_APP \
-  --localedir=$WM_APP \
-  --with-pixmapdir=$WM_APP/WindowMaker/Pixmaps \
-  \
-  --with-gnustepdir=/usr/NextSpace \
-  CC=clang CXX=clang++
+    #  --disable-xft
+    #  --enable-gnome
+    #  --enable-kde
 
-#  --disable-xft
-#  --enable-gnome \
-#  --enable-kde \
+fi
+
+if [ ! -f misc.hack_nf.c ];then
+    echo "==> Generating nested functions hack for file src/misc.c..."
+    cd src
+    make misc.hack_nf.c
+    cd ..
+fi
+if [ ! -f xmodifier.hack_nf.c ];then
+    echo "==> Generating nested functions hack for file src/xmodifier.c..."
+    cd src
+    make xmodifier.hack_nf.c
+    cd ..
 fi
 
 if [ ! -f config-paths.h ];then
+    echo "==> Generating config-paths.h..."
     make config-paths.h
 fi
 
 cd ..
 
-rm config-paths.h
+echo "Creating link to config-paths.h..."
+if [ -f config-paths.h ];then
+    rm config-paths.h
+fi
 ln -s $WM_DIR/config-paths.h config-paths.h
-rm config.h
+
+echo "Creating link to config.h..."
+if [ -f config.h ];then
+    rm config.h
+fi
 ln -s $WM_DIR/config.h config.h

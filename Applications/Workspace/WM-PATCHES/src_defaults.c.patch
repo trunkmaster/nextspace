@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/defaults.c	2016-09-29 17:51:24.771981308 +0300
-+++ ./WM/src/defaults.c	2016-10-31 12:41:02.353477590 +0200
+--- ./WindowMaker-0.95.7/src/defaults.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/defaults.c	2016-11-25 00:09:13.796571299 +0200
 @@ -118,6 +118,9 @@
  static WDECallbackUpdate setStickyIcons;
  static WDECallbackUpdate setWidgetColor;
