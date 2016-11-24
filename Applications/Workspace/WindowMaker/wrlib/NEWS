@@ -1,0 +1,34 @@
+** API and ABI modifications since wmaker 0.92.0
+
+RLightImage: ADDED
+
+
+----------------------------------------------------
+
+Sat Apr 21 09:12:09 EEST 2001 -Dan
+
+API change
+----------
+
+To allow a retain/release mechanism to be implemented for RImages, the
+following new functions were introduced:
+
+   RImage* RRetainImage(RImage* image);
+   void RReleaseImage(RImage* image);
+
+RDestroyImage() is now aliased to RReleaseImage(), but because it's no
+longer compatible with the new semantics, it was only kept to allow a
+smoother transition and the ability to run programs that were not updated
+yet.
+
+Do _NOT_ continue to use RDestroyImage(), because it will be removed in a
+future version. You should start using RReleaseImage() in your code, and
+also update all your existing programs to use RReleaseImage().
+
+Also keep in mind that its name is also misleading: RDestroyImage() no
+longer destroys images, unless they are not retained in some other place.
+
+All existing code will continue to function with the new lib, even if not
+recompiled, but you are encouraged to update your code to these changes
+
+

@@ -1,0 +1,126 @@
+//
+// Definición do Menu de Aplicacións para WindowMaker (en GALEGO)
+//
+// A sintaxe é:
+//
+// <Título> <Comando> <Parámetros> , onde :
+//
+// <Título> cadea de texto usada como o título.Ten que estar pecha entre ""
+//
+//
+// <Comando> un comando dos seguintes : 
+//	MENU - escomenza a definición do (sub)menú.
+//	END  - remata a definición do (sub)menu.
+//	EXEC <programa> - executa un programa externo
+//	SHEXEC <command> - executes a shell command (like gimp > /dev/null)
+//	EXIT - sae do xestor de fiestras
+//	RESTART [<xestor de fiestras>] - reinicializa WindowMaker ou
+//			arranca outro xestor de fiestras
+//	REFRESH - refresca o ecritorio
+//	ARRANGE_ICONS - ordena os iconos do escritorio
+//	SHUTDOWN - asasina tódalas aplicacións (e fecha a sesión das X)
+//	WORKSPACE_MENU - engade un submenú para as operacións da 
+//		 	area de traballo
+//	SHOW_ALL - mostra tódalas fiestras na área de traballo
+//	HIDE_OTHERS - oculta tódalas fiestras da area de traballo,
+//		excepto a que ten o foco (ou a ultima que haxa recibido o foco)
+//
+// <Parametros> é o programa a executar.
+// 
+// ** Opcións para a liña de comando EXEC :
+// %s - sustituese pola corrente seleción. Se a selección non é posible ,
+//      o comando é cancelado
+// %w - sustituese coa corrente ID da fiestra selecionada . Se non hay 
+//      xanelas selecionadas , non se devolve nada. 
+//
+// Pódese anular carácteres especiais (como % e ") co caracter \ :
+// exemplo: xterm -T "\"Boas mundo\""
+//
+// A cada estamento de MENU lle debe de corresponder un estamneto END ó final
+// Oxea os exemplos:
+
+#include <wmmacros>
+
+"Aplicacións" MENU
+	"Información" MENU
+		"Info Panel..." INFO_PANEL
+		"Legal" LEGAL_PANEL
+		"Carga do sistema" SHEXEC xosview || xload
+		"Lista de tarefas" EXEC rxvt -ls -fg white -bg black -fn vga -e top
+		"Manual" EXEC xman
+	"Información" END
+	"Emulador Terminal" EXEC rxvt -ls -fg white -bg black -fn vga
+	"XJed"	EXEC xjed 
+	"Areas de Traballo" WORKSPACE_MENU
+	"Aplicacións" MENU
+		"Gráficos" MENU
+			"Gimp" EXEC gimp
+			"XV" EXEC xv
+			"XPaint" EXEC xpaint
+			"XFig" EXEC xfig
+		"Gráficos" END
+		"X File Manager" EXEC xfm
+		"OffiX Files" EXEC files
+		"LyX" EXEC lyx
+		"Netscape" EXEC netscape 
+  		"Ghostview" EXEC ghostview
+		"Acrobat" EXEC /usr/local/Acrobat3/bin/acroread
+  		"TkDesk" EXEC tkdesk
+	"Aplicacións" END
+	"Editores" MENU
+		"XEmacs" SHEXEC xemacs || emacs
+		"XJed" EXEC xjed
+		"NEdit" EXEC nedit
+		"Xedit" EXEC xedit
+		"VI" EXEC xterm -e vi
+	"Editores" END
+	"Variedade" MENU
+		"Xmcd" SHEXEC xmcd 2> /dev/null
+		"Xplaycd" EXEC xplaycd
+		"Xmixer" EXEC xmixer
+	"Variedade" END
+	"Utiles" MENU
+		"Calculadora" EXEC xcalc
+		"Selector de fonte" EXEC xfontsel
+		"Lupa" EXEC xmag
+		"Mapa de cor" EXEC xcmap
+		"XKill" EXEC xkill
+		"ASClock" EXEC asclock -shape
+		"Portapapeis" EXEC xclipboard
+	"Utiles" END
+
+	"Selección" MENU
+		"Correo" EXEC xterm -name mail -T "Pine" -e pine %s
+		"Navegar" EXEC netscape %s
+		"Buscar no manual" EXEC xterm -name manualBrowser -e man %s
+	"Selección" END
+
+	"Area Traballo" MENU
+		"Fondo" MENU
+			"Ningún" EXEC CLEARROOT
+			"Negro" WS_BACK '(solid, black)'
+			"Azul"  WS_BACK '(solid, "#505075")'
+			"Violeta"  WS_BACK '(solid, "#554466")'
+			"Marelo"  WS_BACK '(solid, wheat4)'
+			"Gris oscuro"  WS_BACK '(solid, "#333340")'
+			"Granate"  WS_BACK '(solid, "#400020")'
+		"Fondo" END
+#if (DEPTH>8)
+// Debes de reinicializar para que os cambios se efectúen
+#include <gradients.menu>
+#endif
+		"Asasinar outras" HIDE_OTHERS
+		"Mostrar todas" SHOW_ALL
+		"Aliñar iconos" ARRANGE_ICONS
+		"Refrescar" REFRESH
+		"Fechar" EXEC xlock -allowroot -usefirst
+		"Grabar Area de traballo" EXEC SAVE_WORKSPACE
+	"Area Traballo" END
+	
+	"Sair"	MENU
+		"Reinicializar" RESTART
+		"Iniciar AfterStep" RESTART afterstep
+		"Sair..."  EXIT
+		"Sair da sesión..." SHUTDOWN
+	"Sair" END
+"Aplicacións" END

@@ -1,0 +1,205 @@
+/*
+ * Huvudmeny för WindowMaker.
+ *
+ * Syntaxen är:
+ *
+ * <Titel> [SHORTCUT <Genväg>] <Kommando> <Parametrar>
+ *
+ * <Titel> är en sträng som du vill använda som titel i menyn. Strängen
+ * måste omslutas med " om den innehåller mellanslag.
+ * 
+ * SHORTCUT anger en genväg för det menyalternativet. <Genväg> har likadan
+ * syntax som genvägarna i filen $HOME/GNUStep/Defaults/WindowMaker.
+ *
+ * Man kan inte ange en genväg för kommandona MENU och OPEN_MENU.
+ * 
+ * <Kommando> kan vara ett av följande: 
+ *	MENU - börjar (under)meny definition.
+ *	END  - avslutar (under)meny definition.
+ *	OPEN_MENU - öppnar en meny från en fil, pipe eller innehållet av
+ *		    en katalog och eventuellt föregå varje med ett kommando.
+ *	WORKSPACE_MENU - lägger till en undermeny med kommandon som påverkar
+ *			 arbetsbordet. Endast en workspace_menu är tillåten.
+ *      EXEC <program> - kör ett externt program.
+ *	SHEXEC <command> - executes a shell command (like gimp > /dev/null)
+ *	EXIT - avslutar WindowMaker.
+ *	RESTART [<fönsterhanterare>] - startar WindowMaker eller annan
+ *				       fönsterhanterare.
+ *	REFRESH - ritar om skärmbilden.
+ *	ARRANGE_ICONS - radar upp ikonerna på skrivbordet.
+ *	SHUTDOWN - dödar alla program och avslutar X-servern.
+ *	SHOW_ALL - visar alla (gömda) fönster på arbetsbordet.
+ *	HIDE_OTHERS - gömmer alla fönster på arbetsborder utom det som har
+ *		      fokus.
+ *	SAVE_SESSION - sparar utseendet på skrivbordet. Det inkluderar alla
+ *		       aktiva program (storlek, position, arbetsbord, vilken
+ *		       dock/clip som det startades ifrån, om det är minimerat,
+ *		       skugget eller gömt. Sparar också det aktiva arbets-
+ *		       bordet som användaren är på. Allting blir återställt
+ *		       vid uppstart tills nästa SAVE_SESSION eller
+ *		       CLEAR_SESSION kallas. Om SaveSessionOnExit = Yes i
+ *		       WindowMakers domänfil så sparas inställningarna
+ *		       automatiskt vid avslut. Detta överskrider alla
+ *		       SAVE_SESSION och CLEAR_SESSION (se nedan).
+ *	CLEAR_SESSION - raderar tidigare sparade inställningar från
+ *			SAVE_SESSION. Har ingen effekt om SaveSessionOnExit
+ *			är True.
+ *	INFO - visar ruta med info.
+ *
+ * OPEN_MENU syntax:
+ *   1. Filmenyhantering.
+ *	// öppnar fil.meny, som måste innehålla en giltig menyfil, och läser
+ *	// in innehållet på nuvarande positionen.
+ *	OPEN_MENU fil.meny
+ *   2. Pipe-menyhantering.
+ *	// Öppnar kommando och använder dess stdout för att konstruera
+ *	// menyn. Kommandots utdata måste vara giltig menysyntax. Mellan-
+ *	// slaget mellan '|' och själva kommandot är frivilligt.
+ *	OPEN_MENU | kommando
+ *   3. Kataloghantering.
+ *	// Öppnar en eller flera kataloger och konstruerar en meny med
+ *	// alla underkataloger och körbara filer i dom sorterade
+ *	// alfabetiskt.
+ *	OPEN_MENU /en/katalog [/en/annan/katalog ...]
+ *   4. Kataloghantering med program.
+ *	// Öppnar en eller flera kataloger och konstruerar en meny med
+ *	// alla underkataloger och körbara filer sorterade alfabetiskt.
+ *	// Placerar kommando för var och en.
+ *	OPEN_MENU /en/katalog [/en/annan/katalog ...] WITH kommando -argument
+ *
+ *
+ * <Parametrar> är programmet som skall startas.
+ *
+ * ** Alternativ för kommandoraden i EXEC:
+ * %s - byt ut mot den aktiva markeringen.
+ * %a(meddelande) - öppnar ett svarsfönster med meddelandet och sätter in
+ *		    din inskrivna text.
+ * %w - byt ut mot XID för fönstret som har fokus.
+ *
+ * Du kan använda '\' för att använda specialtecken (som % och ") som vanliga
+ * bokstäver, till exempel:
+ *    xterm -T "\"Hallå världen\""
+ *
+ * Du kan också använda C-liknande specialsekvenser, t ex \n.
+ *
+ * Varje MENU-uttryck måste ha ett matchande END-uttryck på slutet.
+ *
+ * Exempel:
+ *
+ * "Test" MENU
+ *	"XTerm" EXEC xterm
+ *		// skapar en undermeny med innehållet i /usr/openwin/bin
+ *	"XView apps" OPEN_MENU "/usr/openwin/bin"
+ *		// några X11-program i olika kataloger
+ *	"X11 apps" OPEN_MENU /usr/X11/bin $HOME/bin/X11
+ *		// sätt en bakgrundsbild
+ *	"Background" OPEN_MENU $HOME/images /usr/share/images WITH wmsetbg -u -t
+ *		// infogar style.menu här
+ *	"Style" OPEN_MENU style.menu
+ * "Test" END
+ */
+
+#include "wmmacros"
+
+"Program" MENU
+	"Info" MENU
+		"Informationsruta..." INFO_PANEL
+		"Licens..." LEGAL_PANEL
+		"Systemkonsoll" EXEC xconsole
+		"Systembelastning" SHEXEC xosview || xload
+		"Processlista" EXEC xterm -e top
+		"Manualläsare" EXEC xman
+	"Info" END
+	"XTerm" EXEC xterm -sb 
+	"Rxvt (fixed)" EXEC rxvt -bg black -fg white -fn fixed
+	"Rxvt (9x15)" EXEC rxvt -bg black -fg white -fn 9x15
+	"Arbetsbord" WORKSPACE_MENU
+	"Program" MENU
+		"Grafik" MENU
+			"Gimp" SHEXEC gimp >/dev/null
+			"XV" EXEC xv
+			"XPaint" EXEC xpaint
+			"XFig" EXEC xfig
+		"Grafik" END
+		"X Filhanterare" EXEC xfm
+		"OffiX Files" EXEC files
+		"LyX" EXEC lyx
+		"Netscape" EXEC netscape 
+  		"Ghostview" EXEC ghostview %a(Enter file to view)
+		"Acrobat" EXEC /usr/local/Acrobat3/bin/acroread %a(Skriv in PDF-fil som ska visas)
+  		"TkDesk" EXEC tkdesk
+	"Program" END
+	"Textredigerare" MENU
+		"XFte" EXEC xfte
+		"XEmacs" SHEXEC xemacs || emacs
+		"XJed" EXEC xjed 
+		"NEdit" EXEC nedit
+		"Xedit" EXEC xedit
+		"VI" EXEC xterm -e vi
+	"Textredigerare" END
+	"Diverse" MENU
+		"Xmcd" SHEXEC xmcd 2> /dev/null
+		"Xplaycd" EXEC xplaycd
+		"Xmixer" EXEC xmixer
+	"Diverse" END
+	"Verktyg" MENU
+		"Miniräknare" EXEC xcalc
+		"Window Properties" SHEXEC xprop | xmessage -center -title 'xprop' -file -
+		"Fontväljare" EXEC xfontsel
+		"Terminalemulator" EXEC xminicom
+		"Förstora" EXEC xmag
+		"Färgkarta" EXEC xcmap
+		"XKill" EXEC xkill
+		"ASClock" EXEC asclock -shape
+		"Klipphanterare" EXEC xclipboard
+	"Verktyg" END
+
+	"Markering" MENU
+		"Kopiera" SHEXEC echo '%s' | wxcopy
+		"Skicka e-mail" EXEC xterm -name mail -T "Pine" -e pine %s
+		"Gå till webbsida" EXEC netscape %s
+		"Sök i manualer" SHEXEC MANUAL_SEARCH(%s)
+	"Markering" END
+
+	"Arbetsbord" MENU
+		"Göm andra" HIDE_OTHERS
+		"Visa alla" SHOW_ALL
+		"Rada upp ikoner" ARRANGE_ICONS
+		"Uppdatera skärmen" REFRESH
+		"Lås" EXEC xlock -allowroot -usefirst
+		"Spara arbetsbord" SAVE_SESSION
+		"Rensa sparat arbetsbord" CLEAR_SESSION
+	"Arbetsbord" END
+
+	"Utseende" MENU
+		"Teman" OPEN_MENU -noext THEMES_DIR $HOME/GNUstep/Library/WindowMaker/Themes WITH setstyle
+		"Stilar" OPEN_MENU -noext STYLES_DIR $HOME/GNUstep/Library/WindowMaker/Styles WITH setstyle
+		"Ikonuppsättningar" OPEN_MENU -noext ICON_SETS_DIR $HOME/GNUstep/Library/WindowMaker/IconSets WITH seticons
+		"Bakgrund" MENU
+			"Enfärgat" MENU
+                        	"Svart" WS_BACK '(solid, black)'
+                        	"Blå"  WS_BACK '(solid, "#505075")'
+				"Indigo" WS_BACK '(solid, "#243e6c")'
+				"Mörkblå" WS_BACK '(solid, "#224477")'
+                        	"Lila" WS_BACK '(solid, "#554466")'
+                        	"Vete"  WS_BACK '(solid, "wheat4")'
+                        	"Mörkgrå"  WS_BACK '(solid, "#333340")'
+                        	"Vin" WS_BACK '(solid, "#400020")'
+			"Enfärgat" END
+			"Toningar" MENU
+				"Flagga" WS_BACK '(mdgradient, green, red, white, green)'
+				"Himmel" WS_BACK '(vgradient, blue4, white)'
+			"Toningar" END
+			"Bilder" OPEN_MENU -noext BACKGROUNDS_DIR $HOME/GNUstep/Library/WindowMaker/Backgrounds WITH wmsetbg -u -t
+		"Bakgrund" END
+		"Spara tema" SHEXEC getstyle -t $HOME/GNUstep/Library/WindowMaker/Themes/"%a(Theme name)"
+		"Spara ikonuppsättning" SHEXEC geticonset $HOME/GNUstep/Library/WindowMaker/IconSets/"%a(IconSet name)"
+	"Utseende" END
+
+	"Avsluta"	MENU
+		"Starta om" RESTART
+		"Starta AfterStep" RESTART afterstep
+		"Avsluta..."  EXIT
+		"Avsluta session..." SHUTDOWN
+	"Avsluta" END
+"Program" END

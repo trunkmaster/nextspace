@@ -1,0 +1,478 @@
+#
+# WindowMaker messages in swedish
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WindowMaker 0.65.1\n"
+"PO-Revision-Date: 1997-06-02 18:29:09-0300\n"
+"Last-Translator: John <forgoil@rsn.hk-r.se>\n"
+"Language-Team: Swedish \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: ../main.c:147
+msgid "Restart failed!!!"
+msgstr "Omstart misslyckades!!!"
+
+#: ../main.c:162
+msgid "%s aborted.\n"
+msgstr "%s avbruten.\n"
+
+#: ../main.c:170
+msgid "usage: %s [-options]\n"
+msgstr "användning: %s [-alternativ]\n"
+
+#: ../main.c:171
+msgid "options:"
+msgstr "alternativ:"
+
+#: ../main.c:173
+msgid " -nocpp \t\tdisable preprocessing of configuration files"
+msgstr " -nocpp \t\tstäng av preprocessing för konfigurationsfilerna"
+
+#: ../main.c:176
+msgid " -nodock\t\tdo not open the application Dock"
+msgstr " -nodock\t\töppna inte the Dock"
+
+#: ../main.c:178
+msgid " -locale locale\t\tlocale to use"
+msgstr " -locale locale\t\tlocale som skall användas"
+
+#: ../main.c:179
+msgid " -display host:dpy\tdisplay to use"
+msgstr " -display host:dpy\tdisplay som skall användas"
+
+#: ../main.c:180
+msgid " -version\t\tprint version and exit"
+msgstr " -version\t\tskriv ut version och avsluta"
+
+#: ../main.c:234
+msgid "cannot set locale %s"
+msgstr "kan inte sätta locale %s"
+
+#: ../main.c:235
+msgid "falling back to C locale"
+msgstr "går tillbaka till C locale"
+
+#: ../main.c:263
+msgid "X server does not support locale"
+msgstr "X servern har inte support för locale"
+
+#: ../main.c:266
+msgid "cannot set locale modifiers"
+msgstr "kan inte sätta locale-modifierare"
+
+#: ../main.c:276
+msgid "could not open display %s"
+msgstr "kunde inte öppna display %s"
+
+#: ../event.c:230
+msgid "stack overflow: too many dead processes"
+msgstr "stacken full: för många döda processer"
+
+#: ../startup.c:137
+msgid "internal X error: %s\n"
+msgstr "internt X-fel: %s\n"
+
+#: ../startup.c:152
+msgid "got signal %i (%s)\n"
+msgstr "fick signal %i (%s)\n"
+
+#: ../startup.c:154
+msgid "got signal %i\n"
+msgstr "fick signal %i\n"
+
+#: ../texture.c:317 ../texture.c:327
+msgid "unsupported visual/depth for gradients"
+msgstr "kan ej hantera gradienter på denna visual/färgdjup"
+
+#: ../menu.c:231
+msgid "wrealloc() failed while trying to add menu item"
+msgstr "wrealloc() misslyckades vid addering av ett menyval"
+
+#: ../pixmap.c:211
+msgid "could not load mask bitmap file \"%s\". Won't use mask"
+msgstr "kunde inte ladda maskfil \"%s\". Kommer inte att använda masken"
+
+#: ../image.c:183 ../image.c:889 ../pixmap.c:261
+msgid "could not load XPM file \"%s\""
+msgstr "kunde inte ladda XP- fil \"%s\""
+
+#: ../pixmap.c:264
+msgid "cannot load \"%s\": XPM support not compiled in"
+msgstr "kan inte ladda \"%s\": hantering av är inte inkompilerat"
+
+#: ../pixmap.c:271
+msgid "could not load XBM file \"%s\""
+msgstr "kunde inte ladda XBM-fil \"%s\""
+
+#: ../image.c:196 ../pixmap.c:275
+msgid "can't identify image file \"%s\""
+msgstr "kan inte identifiera bildfil \"%s\""
+
+#: ../image.c:200 ../pixmap.c:279
+msgid "unknown image format in \"%s\""
+msgstr "okänt bildformat i \"%s\""
+
+#: ../image.c:65 ../image.c:494
+msgid "can't load pixmap file \"%s\". Size too weird"
+msgstr "kan inte ladda pixmap-fil \"%s\". Storleken för underlig"
+
+#: ../image.c:83 ../image.c:746 ../image.c:768
+msgid "virtual memory exhausted during pixmap load. Not fatal..."
+msgstr "slut virtuellt minne vid laddning av pixmap. Inte fatalt..."
+
+#: ../image.c:100 ../image.c:510
+msgid "virtual memory exhausted. Continuing..."
+msgstr "slut virtuellt minne. Fortsätter..."
+
+#: ../image.c:186
+msgid "cannot load \"%s\": XPM format not supported"
+msgstr "kan inte ladda \"%s\": Kan ej hantera XPM-formatet"
+
+#. XPM
+#: ../image.c:191
+msgid "can't convert XBM file \"%s\" to internal format"
+msgstr "kan inte konvertera XBM-filen \"%s\" till det interna formatet"
+
+#: ../image.c:556 ../image.c:562 ../image.c:581
+msgid "virtual memory exhausted during XPM load."
+msgstr "slut virtuellt minne vid laddning av XPM"
+
+#: ../image.c:712 ../image.c:855
+msgid "could not convert image \"%s\" to internal format"
+msgstr "kunde inte konvertera bilden \"%s\" till det interna formatet"
+
+#: ../image.c:901
+msgid "can't load \"%s\": unknown image format"
+msgstr "kan inte ladda \"%s\": okänt bildformat"
+
+#: ../screen.c:83
+msgid "it seems that there already is a window manager running"
+msgstr "det verkar som en fönsterhanterare redan är igång"
+
+#: ../screen.c:234 ../screen.c:344
+msgid "could not parse color %s"
+msgstr "felaktig färgspecifikation %s"
+
+#: ../screen.c:289
+msgid "The following character sets are missing:"
+msgstr "Följande teckenuppsättningar saknas:"
+
+#: ../screen.c:293
+msgid "The string \"%s\" will be used in place"
+msgstr "Strängen \"%s\" kommer att användas istället"
+
+#: ../screen.c:295
+msgid "of any characters from those sets."
+msgstr "någon av de tecknena ifrån de uppsättningarna."
+
+#: ../screen.c:298
+msgid "could not create font set %s. Using fixed"
+msgstr "kunde inte skapa typsnitt %s. Använder fixed"
+
+#: ../screen.c:305
+msgid "could not load any usable font set"
+msgstr "kunde inte ladda någon användbar teckenuppsättning"
+
+#: ../screen.c:315
+msgid "could not load font %s. Using fixed"
+msgstr "kunde inte ladda typsnitt %s. Använder fixed"
+
+#: ../screen.c:318
+msgid "could not load any usable font"
+msgstr "kunde inte ladda någon användbart typsnitt"
+
+#: ../screen.c:439
+msgid "Gradient texture not supported for your display (PseudoColor %ibpp)"
+msgstr "Kan ej hantera \"gradient texture\" på denna display (PseudoColor %ibpp)"
+
+#: ../screen.c:442
+msgid "You must enable dithering to be able to use gradients with this display"
+msgstr "Du måste slå på dithering för att kunna använda gradienter med den här displayen"
+
+#: ../screen.c:456
+msgid "Gradient texture available only for PseudoColor and TrueColor displays"
+msgstr "Gradient texture är bara tillgänglig för PseudoColor- och TrueColor-displayer"
+
+#: ../screen.c:478
+msgid "could not allocate texture"
+msgstr "kunde inte allokera textur"
+
+#: ../screen.c:1058
+msgid "colormap size value(s) too large"
+msgstr "färgpalettens storleks värde(n) för stora"
+
+#: ../dialog.c:208 ../rootmenu.c:108
+msgid "Exit"
+msgstr "Avsluta"
+
+#: ../rootmenu.c:109
+msgid "Exit window manager?"
+msgstr "Avsluta fönsterhanterare?"
+
+#: ../rootmenu.c:128
+msgid "Close X session"
+msgstr "Stäng X-session"
+
+#: ../rootmenu.c:129
+msgid ""
+"Close Window System session?\n"
+"(all applications will be closed)"
+msgstr ""
+"Stäng fönstersystems sessionen?\n"
+"(alla applikatoner kommer att stängas)"
+
+#: ../rootmenu.c:217 ../rootmenu.c:314 ../rootmenu.c:496
+msgid "Switch to %i"
+msgstr "Byt till %i"
+
+#: ../rootmenu.c:283
+msgid "out of memory to store menu commands. Nuking it."
+msgstr "inget minne kvar för att spara menykommandon. Bombar det."
+
+#: ../rootmenu.c:303
+msgid "Workspaces"
+msgstr "Arbetsyta"
+
+#: ../rootmenu.c:305
+msgid "could not create Workspace menu"
+msgstr "kunde inte skapa arbetsytans meny"
+
+#: ../rootmenu.c:308
+msgid "New"
+msgstr "Ny"
+
+#: ../rootmenu.c:309
+msgid "Destroy Last"
+msgstr "Förstöra sista"
+
+#: ../rootmenu.c:350
+msgid "missing command in menu config: %s"
+msgstr "kommando saknas i menykonfigurationen: %s"
+
+#: ../rootmenu.c:390
+msgid "menu can only have one WORKSPACE_MENU"
+msgstr "menyn kan bara ha en WORKSPACE_MENU (arbetsytemeny)"
+
+#: ../rootmenu.c:406
+msgid "unknown command \"%s\" in menu config."
+msgstr "okänt kommando \"%s\" i menykonfigurationen."
+
+#: ../rootmenu.c:410
+msgid "syntax error in menu config. END declaration missing"
+msgstr "syntaxfel i menykonfigurationen. END-deklarationen saknas"
+
+#: ../rootmenu.c:435
+msgid "syntax error in menu config. %s"
+msgstr "syntaxfel i menykonfigurationen. %s"
+
+#: ../rootmenu.c:443
+msgid "no title given for the root menu"
+msgstr "ingen titel (title) angiven för rot menyn"
+
+#: ../rootmenu.c:455
+msgid "Commands"
+msgstr "Kommandon"
+
+#: ../rootmenu.c:456
+msgid "Exit..."
+msgstr "Avsluta..."
+
+#: ../rootmenu.c:573
+msgid "could not stat menu configuration file \"%s\""
+msgstr "kunde inte stat(2): menykonfigurationsfilen \"%s\""
+
+#: ../rootmenu.c:578
+msgid "no read permision to menu configuration file"
+msgstr "inga läsrättigheter till menykonfigurationsfilen"
+
+#: ../rootmenu.c:595
+msgid "could not make arguments for menu file preprocessor"
+msgstr "kunde inte skapa parametrar för förbehandling av menyfilen"
+
+#: ../rootmenu.c:603
+msgid "could not open menu configuration preprocessor"
+msgstr "kunde inte öppna menykonfigurations-preprocessorn"
+
+#: ../rootmenu.c:613
+msgid "couldn't open menu configuration file \"%s\""
+msgstr "kunde inte öppna menykonfigurationsfilen \"%s\""
+
+#: ../dock.c:689 ../rootmenu.c:646
+msgid "Error"
+msgstr "Fel"
+
+#: ../rootmenu.c:647
+msgid ""
+"Could not read menu configuration\n"
+"(see console log for details)"
+msgstr ""
+"Kunde inte läsa menykonfigurationen\n"
+"(se konsol loggen för detaljer)"
+
+
+#: ../dialog.c:196
+msgid "OK "
+msgstr "OK "
+
+#: ../dialog.c:210
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: ../resource.c:297 ../resource.c:359 ../resource.c:368 ../resource.c:497 ../resource.c:521 ../resource.c:530 ../resource.c:555
+msgid "%s: syntax error in line \"%s\""
+msgstr "%s: syntax fel på rad \"%s\""
+
+#: ../resource.c:309
+msgid "%s: invalid window attribute specification in \"%s\""
+msgstr "%s: felaktig fönsterattributspecifikation i \"%s\""
+
+#: ../resource.c:336
+msgid "%s: unknown attribute in line \"%s\""
+msgstr "%s: okänt attribut på rad \"%s\""
+
+#: ../resource.c:416 ../resource.c:425 ../resource.c:437
+msgid "%s:invalid kbd shortcut specification \"%s\""
+msgstr "%s:felaktig tangenbordsgenvägsspecifikation \"%s\""
+
+#: ../resource.c:477
+msgid "%s: expected section identifier but got %s"
+msgstr "%s: väntade sektions identifierare, men fick %s"
+
+#: ../resource.c:510
+msgid "%s: unknown option in line \"%s\""
+msgstr "%s: okänt alternativ på rad \"%s\""
+
+#: ../resource.c:559
+msgid "%s: invalid colormap size in line \"%s\""
+msgstr "%s: felaktig palettstorlek på rad \"%s\""
+
+#: ../resource.c:579
+msgid "%s: invalid geometry display type \"%s\". Shouldbe center, corner, floating or line"
+msgstr "%s: felaktig geometrivisningstyp \"%s\". Borde vara center, corner, floating eller line"
+
+#: ../resource.c:601
+msgid "%s: invalid focus mode \"%s.\" Should be manual, auto or semiauto"
+msgstr "%s: felaktig focus mode \"%s.\" Borde vara manual, auto eller semiauto"
+
+#: ../resource.c:619
+msgid "%s: invalid window placement mode \"%s\". Should be auto, cascade or manual"
+msgstr "%s: felaktigt window placement mode \"%s\". Borde vara auto, cascade eller manual"
+
+#: ../resource.c:639
+msgid "%s: invalid texture type \"%s\" Should be solid, dgradient, vgradient or hgradient"
+msgstr "%s: felaktigt texture type \"%s\" Borde vara solid, dgradient, vgradient eller hgradient"
+
+#: ../resource.c:666
+msgid "%s: invalid gradient spec. \"%s\""
+msgstr "%s: felaktig gradientspecifikation \"%s\""
+
+#: ../resource.c:685
+msgid "%s: invalid coordinate \"%s\""
+msgstr "%s: felaktig koordinat \"%s\""
+
+#: ../resource.c:701
+msgid "%s: invalid justification type \"%s\". Should be left, center or right"
+msgstr "%s: felaktig justification type \"%s\". Borde vara left, center eller right"
+
+#: ../resource.c:731
+msgid "could not make arguments for preference file preprocessor"
+msgstr "kunde inte skapa argument till preference-filens preprocessor"
+
+#: ../resource.c:737
+msgid "could not open preference file preprocessor"
+msgstr "kunde inte öppna preference-filens preprocessor"
+
+#: ../resource.c:744
+msgid "could not open configuration file: \"%s\""
+msgstr "kunde inte öppna konfigurationsfilen: \"%s\""
+
+#: ../resource.c:791
+msgid "could not find default icon \"%s\""
+msgstr "kunde inte hitta standardikonen \"%s\""
+
+#: ../resource.c:797
+msgid "could not find a preference file (%s) in \"%s\""
+msgstr "kunde inte hitta en preference-fil (%s) i \"%s\""
+
+#: ../resource.c:805
+msgid "could not find icon background \"%s\""
+msgstr "kunde inte hitta ikonbakgrunden \"%s\""
+
+#: ../raster.c:183
+msgid "invalid dither colormap size specification.disabling"
+msgstr "Felaktig storlek för dither-paletten. Slår av"
+
+#: ../raster.c:193
+msgid "Could not build PseudoColor color table\n"
+msgstr "Kunde inte skapa PseudoColor-färgtabell\n"
+
+#: ../misc.c:50
+msgid "could not define value for %s for cpp"
+msgstr "kunde inte definiera värde för %s till cpp"
+
+#: ../misc.c:80
+msgid "could not get password entry for UID %i"
+msgstr "kunde inte få lösenordspost för användar-ID %i"
+
+#: ../appmenu.c:114
+msgid "appmenu:could not create menu"
+msgstr "appmenu:kunde inte skapa meny"
+
+#: ../appmenu.c:145
+msgid "appmenu:could not create menu entry"
+msgstr "appmenu:kunde inte skapa menypost"
+
+#: ../stacking.c:89 ../stacking.c:148
+msgid "could not get window list!!"
+msgstr "kunde inte få fönsterlista!!"
+
+#: ../switchmenu.c:109
+msgid "Windows"
+msgstr "Fönster"
+
+#: ../dock.c:171
+msgid "could not open file \"%s\" to save Dock state"
+msgstr "kunde inte öppna filen \"%s\" för att spara Dockens tillstånd"
+
+#: ../dock.c:687
+msgid "Could not execute program \"%s\""
+msgstr "kunde inte köra program \"%s\""
+
+#: ../winmenu.c:119
+msgid "(Un)Maximize"
+msgstr "(O)Maximera"
+
+#: ../winmenu.c:126
+msgid "Miniaturize"
+msgstr "Minimera"
+
+#: ../winmenu.c:133
+msgid "(Un)Shade"
+msgstr "(O)Skugga"
+
+#: ../winmenu.c:140
+msgid "Hide"
+msgstr "Gömma"
+
+#: ../winmenu.c:146
+msgid "Hide Others"
+msgstr "Gömma Andra"
+
+#: ../winmenu.c:149
+msgid "Close"
+msgstr "Stäng"
+
+#: ../winmenu.c:156
+msgid "Kill"
+msgstr "Döda"
+
+#: ../generic/error.c:46
+msgid " fatal error: "
+msgstr " fatalt fel: "
+
+#: ../generic/error.c:72
+msgid " warning: "
+msgstr " varning: "

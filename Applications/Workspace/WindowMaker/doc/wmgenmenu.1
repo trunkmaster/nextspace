@@ -1,0 +1,35 @@
+.TH wmgenmenu 1 "15 August 2011"
+.SH "NAME"
+\fBwmgenmenu\fR \- Writes a menu structure usable as
+~/GNUstep/Defaults/WMRootMenu to stdout
+.PP
+.SH "SYNOPSIS"
+.B wmgenmenu
+.RI [ options ]
+.PP
+.SH "DESCRIPTION"
+\fBwmgenmenu\fR writes a menu structure usable as
+~/GNUstep/Defaults/WMRootMenu to stdout.
+
+The output format is a \fIPropList\fP.
+.PP
+.SH "OPTIONS"
+.TP
+.B \-\-help
+print a help message with the list of options
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes
+.PP
+.SH "BUGS"
+The program is using a built-in structure and list of applications, which means it cannot discover
+new programs, but it filters the programs that cannot be found in the \fBPATH\fP.
+.SH "SEE ALSO"
+.BR wmmenugen (1),
+.BR wmaker (1)
+.SH "AUTHOR"
+wmgenmenu is a part of Window Maker. It was written by Carlos R. Mafra and
+Tamas TEVESZ.
+.PP
+This manpage was written by Rodolfo García Peñas (kix) for the
+Debian GNU/Linux system (but may be used by others).

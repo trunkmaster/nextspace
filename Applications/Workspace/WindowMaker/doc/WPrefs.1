@@ -1,0 +1,58 @@
+.TH WPrefs 1 "March 2001"
+.SH NAME
+WPrefs \- Window Maker configuration tool
+.SH SYNOPSIS
+.B WPrefs
+.RI [ options ]
+.SH "DESCRIPTION"
+WPrefs.app is the preferences "editor" for the WindowMaker window manager. It
+can be used to set most of the preference options of WindowMaker and define
+it's applications menu. It also can change some settings that do not belong to
+WindowMaker.
+.PP
+Although WPrefs.app is designed to be easy to use, you should read the
+user guide to be fully aware of all available options and other features
+of WindowMaker that are not related to configuration.
+.PP
+\fIOnly options that have different values than what is found in the
+system-wide configuration file is saved.\fP
+.SH "OPTIONS"
+.TP
+.BI \-display " host:display.screen"
+specify display to use.
+.TP
+.B \-\-help
+print a help message with the list of options
+.TP
+.B \-\-version
+print the version of Window Maker from which the program comes
+.SH FILES
+.TP
+.B ~/GNUstep/Defaults/WindowMaker
+general Window Maker defaults.
+.TP
+.B /etc/GNUstep/Defaults/WindowMaker
+system wide Window Maker defaults.
+.TP
+.B ~/GNUstep/Defaults/WMRootMenu
+Contains the name of the file to read the root menu from or the
+menu itself, in property list format.
+.TP
+.B ~/GNUstep/Library/WindowMaker/autostart
+This script is automatically executed when Window Maker is started.  WPrefs
+saves the mouse speed configuration is saved as a call for xset here.
+.SH SEE ALSO
+The Window Maker User Guide
+.PP
+The Window Maker FAQ
+.PP
+.BR wmaker (1),
+.BR wdread (1),
+.BR wdwrite (1)
+.SH AUTHOR
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>,
+Dan Pascu <dan@windowmaker.info> with contributions from many people around
+the Internet.
+.PP
+This manual page was written by Marcelo E. Magallon, <mmagallo@debian.org>,
+for the Debian Project and might be used freely by others.

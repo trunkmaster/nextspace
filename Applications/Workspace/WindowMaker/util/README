@@ -1,0 +1,35 @@
+wm-oldmenu2new - converts between the plain text file menu format to the
+ 	 property list menu format.
+
+bughint- gathers some information for bug reporting
+
+geticonset- outputs the current set of icon assignments. Good for making 
+	themes.
+
+setstyle- load style settings from a style file and setup WindowMaker
+
+getstyle - gets current style settings and save into a file or create
+	a theme pack.
+
+seticons- merges icon definitions into WMWindowAttributes file
+
+
+wmaker.inst- quick and dirty script to install necessary files from 
+	global configuration to user's directory. Look in the script to
+	adapt it to your site.
+
+wxcopy- copy input file or stdin into X cutbuffer
+
+wxpaste- copy content of X cutbuffer into stdout
+
+wmsetbg- set the workspace background into a image and make it persist between
+	sessions.
+
+wdwrite- write data into the defaults database (configuration files).
+
+wdread- read Simple data from defaults database (for use in scripts for example)
+
+wmagnify- a program to magnify the area near the mouse pointer,
+	with real-time update
+
+wkdemenu.pl- convert a KDE menu into a wmaker menu (for pipe)

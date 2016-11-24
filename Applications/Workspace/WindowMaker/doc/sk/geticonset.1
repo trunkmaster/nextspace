@@ -1,0 +1,34 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH geticonset 1 "January 1999"
+.SH MENO
+geticonset \- extrahuje aktuálnu sadu ikon Window Makera
+.SH SYNTAX
+.B geticonset
+.I [voµby] [súbor]
+.SH POPIS
+.B geticonset
+naèíta doménu WMWindowAttributes a zapí¹e sadu nájdených ikon
+buï na ¹tandardný výstup alebo do
+.I súboru.
+.SH VO¥BY
+.TP
+.B \-\-help
+vypí¹e pomocný text
+.TP
+.B \-\-version
+vypí¹e èíslo verzie
+.SH PREMENNÉ PROSTREDIA
+.IP GNUSTEP_USER_ROOT
+¹pecifikuje cestu k adresáru Defaults. "Defaults/" je pridané k tejto
+premennej, èím sa urèí umiestnenie databáz. Ak premenná nie je nastavená,
+jej implicitná hodnota je "~/GNUstep"
+.SH SÚBORY
+.IP GNUSTEP_USER_ROOT/Defaults/WMWindowAttributes
+Toto je súbor, ktorý sa zapí¹e.
+.SH POZRI TIE®
+.BR seticons (1),
+.BR wmaker (1)
+.SH AUTOR
+Autorom Window Makera je Alfredo K. Kojima <kojima@windowmaker.info>.
+.PP
+Túto manuálovú stránku napísal Marcelo Magallon <mmagallo@debian.org>.

@@ -1,0 +1,27 @@
+{
+  WindowTitleFont = "Trebuchet MS,sans serif:bold:pixelsize=12";
+  MenuTitleFont = "Trebuchet MS,sans serif:bold:pixelsize=12";
+  MenuTextFont = "Trebuchet MS,sans serif:pixelsize=12";
+  IconTitleFont = "Arial,sans serif:pixelsize=9";
+  ClipTitleFont = "Verdana:bold:pixelsize=10";
+  LargeDisplayFont = "Trebuchet MS,sans serif:pixelsize=24";
+  HighlightColor = "#ffffff";
+  HighlightTextColor = "#000000";
+  ClipTitleColor = black;
+  CClipTitleColor = gray40;
+  FTitleColor = "#ffffff";
+  PTitleColor = "#ffffff";
+  UTitleColor = "#303030";
+  FTitleBack = (mdgradient, "#181818", "#5ba3bf", "#86b8a1");
+  PTitleBack = (mhgradient, "#5a5c66", "rgb:70/72/7e", "rgb:45/47/4e");
+  UTitleBack = (mhgradient, "#9e9aa6", "#91a18d", "#b8d4b7");
+  ResizebarBack = (mhgradient, "#9e9aa6", "#b09fb5", "#86879b");
+  MenuTitleColor = "#ffffff";
+  MenuTextColor = "#ffffff";
+  MenuDisabledColor = "#515151";
+  MenuTitleBack = (mdgradient, "#181818", "#5ba3bf", "#86b8a1");
+  MenuTextBack = (mhgradient, "#9e9aa6", "#91a18d", "#b8d4b7");
+  IconBack = (mdgradient, "#595d61", "#ddc672", "#cea387");
+  IconTitleColor = white;
+  IconTitleBack = "#18191f";
+}

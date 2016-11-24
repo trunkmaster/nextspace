@@ -1,0 +1,1783 @@
+# Japanese translation of Window Maker message catalog
+# Copyright (c) 1997, 1998 Alfredo K. Kojima
+# Yasuyuki Furukawa <yasu@on.cs.keio.ac.jp>, 1998
+# modified by Jun Nishii <nishii@postman.riken.go.jp>
+# modified by MANOME Tomonori <manome@itlb.te.noda.sut.ac.jp>
+# modified by Takeo Hashimoto <hashimototakeo@mac.com>
+# collaborated with members in wmaker-jp-ML and Project Vine
+#
+# Last Update: for version 0.95.2
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WindowMaker 0.95.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-02-20 12:42+0900\n"
+"PO-Revision-Date: 2012-03-01 09:52+ZONE\n"
+"Last-Translator: Takeo Hashimoto <hashimototakeo@mac.com>\n"
+"Language-Team: Japanese \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/appicon.c:345 ../src/dialog.c:563 ../src/dock.c:3041
+#: ../src/dockedapp.c:207 ../src/main.c:348 ../src/rootmenu.c:1701
+#: ../src/winspector.c:351 ../src/winspector.c:367
+msgid "Error"
+msgstr "エラー"
+
+#: ../src/appicon.c:346
+msgid "Could not open specified icon file"
+msgstr "指定のアイコンファイルが開けません"
+
+#: ../src/appicon.c:346 ../src/dialog.c:405 ../src/dialog.c:466
+#: ../src/dialog.c:563 ../src/dialog.c:969 ../src/dialog.c:1602
+#: ../src/dock.c:443 ../src/dock.c:450 ../src/dock.c:472 ../src/dock.c:3041
+#: ../src/dockedapp.c:208 ../src/dockedapp.c:378 ../src/main.c:348
+#: ../src/rootmenu.c:1704 ../src/winspector.c:351 ../src/winspector.c:367
+msgid "OK"
+msgstr "了解"
+
+#: ../src/appicon.c:376 ../src/dock.c:221
+msgid ""
+" will be forcibly closed.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+" を強制終了させます\n"
+"保存されていない変更は全て失われます\n"
+"終了させますか？ "
+
+#: ../src/appicon.c:383 ../src/dock.c:239 ../src/winmenu.c:119
+msgid "Kill Application"
+msgstr "アプリケーション強制終了"
+
+#: ../src/appicon.c:384 ../src/dock.c:240 ../src/winmenu.c:122
+msgid "Yes"
+msgstr "はい"
+
+#: ../src/appicon.c:384 ../src/dock.c:240 ../src/winmenu.c:122
+msgid "No"
+msgstr "いいえ"
+
+#: ../src/appicon.c:412 ../src/dock.c:1036 ../src/dock.c:3198
+msgid "Unhide Here"
+msgstr "このワークスペースで元に戻す"
+
+#: ../src/appicon.c:413 ../src/appicon.c:436 ../src/dock.c:1038
+#: ../src/dock.c:1040 ../src/dock.c:3210 ../src/winmenu.c:433
+msgid "Hide"
+msgstr "隠す"
+
+#: ../src/appicon.c:414
+msgid "Set Icon..."
+msgstr "アイコン設定..."
+
+#: ../src/appicon.c:415 ../src/dock.c:1044 ../src/rootmenu.c:224
+#: ../src/winmenu.c:460
+msgid "Kill"
+msgstr "強制終了"
+
+#: ../src/appicon.c:434 ../src/dock.c:3208
+msgid "Unhide"
+msgstr "元に戻す"
+
+#: ../src/application.c:362
+#, c-format
+msgid "recreating missing icon '%s'"
+msgstr "アイコン '%s' の再作成"
+
+#: ../src/defaults.c:711 ../src/defaults.c:835
+#, c-format
+msgid "Domain %s (%s) of global defaults database is corrupted!"
+msgstr "グローバル標準データベースのドメイン%s (%s)がおかしいです!"
+
+#: ../src/defaults.c:715
+#, c-format
+msgid "could not load domain %s from global defaults database"
+msgstr "グローバル標準データベースからドメイン %s をロードできません"
+
+#: ../src/defaults.c:760 ../src/defaults.c:774
+#, c-format
+msgid "invalid global menu file %s"
+msgstr "グローバルメニューファイル %s が間違っています"
+
+#: ../src/defaults.c:821 ../src/defaults.c:910 ../src/defaults.c:946
+#: ../src/defaults.c:996
+#, c-format
+msgid "Domain %s (%s) of defaults database is corrupted!"
+msgstr "標準データベースのドメイン %s (%s)がおかしいです!"
+
+#: ../src/defaults.c:825 ../src/defaults.c:930 ../src/defaults.c:982
+#: ../src/defaults.c:1009
+#, c-format
+msgid "could not load domain %s from user defaults database"
+msgstr "ユーザ標準データベースからドメイン %s をロードできません"
+
+#: ../src/defaults.c:854
+#, c-format
+msgid "could not load domain %s from global defaults database (%s)"
+msgstr "グローバル標準データベース(%s)からドメイン %s をロードできません"
+
+#: ../src/defaults.c:972 ../src/screen.c:408
+#, c-format
+msgid "could not load logo image for panels: %s"
+msgstr "パネル用のロゴ画像 %s が読み込めません"
+
+#. --------------------------- Local -----------------------
+#: ../src/defaults.c:1178 ../src/defaults.c:1301 ../src/defaults.c:1387
+#: ../src/defaults.c:1792 ../src/defaults.c:1808 ../src/defaults.c:1849
+#: ../src/defaults.c:1894 ../src/defaults.c:2301 ../src/wdefaults.c:541
+#: ../src/wdefaults.c:570
+#, c-format
+msgid "Wrong option format for key \"%s\". Should be %s."
+msgstr "\"%s\"に対するオプション形式が違います. %s型にして下さい"
+
+#: ../src/defaults.c:1180 ../src/defaults.c:1253 ../src/defaults.c:1278
+#: ../src/defaults.c:1305 ../src/defaults.c:1317 ../src/defaults.c:1331
+#: ../src/defaults.c:1345 ../src/defaults.c:1391 ../src/defaults.c:1403
+#: ../src/defaults.c:1796 ../src/defaults.c:1813 ../src/defaults.c:1825
+#: ../src/defaults.c:1854 ../src/defaults.c:1870 ../src/defaults.c:1899
+#: ../src/defaults.c:1978 ../src/defaults.c:2306 ../src/defaults.c:2317
+#, c-format
+msgid "using default \"%s\" instead"
+msgstr "代わりに標準の設定\"%s\"を使います"
+
+#: ../src/defaults.c:1207
+#, c-format
+msgid "wrong option value for key \"%s\"; got \"%s\", should be one of %s."
+msgstr "キー\"%s\"に対するオプションが違います(\"%s\"). %s のどれかにして下さい"
+
+#: ../src/defaults.c:1249
+#, c-format
+msgid "can't convert \"%s\" to boolean for key \"%s\""
+msgstr "\"%s\"(\"%s\"の引数)をboolean型へ変換できません"
+
+#: ../src/defaults.c:1276
+#, c-format
+msgid "can't convert \"%s\" to integer for key \"%s\""
+msgstr "\"%s\"(\"%s\"の引数)を整数(integer型)へ変換できません"
+
+#: ../src/defaults.c:1313
+#, c-format
+msgid "Incorrect number of elements in array for key \"%s\"."
+msgstr "\"%s\"に対する要素数が正しくありません"
+
+#: ../src/defaults.c:1327
+#, c-format
+msgid "Wrong value for key \"%s\". Should be Coordinate."
+msgstr "\"%s\"に対する指定が不正です. Coordinate型にしてください"
+
+#: ../src/defaults.c:1341
+#, c-format
+msgid "can't convert array to integers for \"%s\"."
+msgstr "\"%s\"に対して整数列へ変換できません"
+
+#: ../src/defaults.c:1506 ../src/defaults.c:1536 ../src/defaults.c:1552
+#: ../src/defaults.c:1581 ../src/defaults.c:1603 ../src/defaults.c:1654
+#: ../src/defaults.c:1693 ../src/defaults.c:1730 ../src/defaults.c:1746
+#, c-format
+msgid "\"%s\" is not a valid color name"
+msgstr "カラー名の指定\"%s\"が間違っています"
+
+#: ../src/defaults.c:1518 ../src/defaults.c:1569
+msgid "bad number of arguments in gradient specification"
+msgstr "グラデーション指定の引数の数が間違っています"
+
+#: ../src/defaults.c:1627
+msgid "too few arguments in multicolor gradient specification"
+msgstr "マルチカラーのグラデーション指定の引数が足りません"
+
+#: ../src/defaults.c:1719
+msgid "bad number of arguments in textured gradient specification"
+msgstr "テクスチャのグラデーション指定の引数の数が間違っています"
+
+#: ../src/defaults.c:1762
+#, c-format
+msgid "bad opacity value for tgradient texture \"%s\". Should be [0..255]"
+msgstr "不透明度に %s は指定できません. 0 から 255 で指定してください"
+
+#: ../src/defaults.c:1779
+#, c-format
+msgid "invalid texture type %s"
+msgstr "テクスチャのタイプ %s が不正です"
+
+#: ../src/defaults.c:1821
+#, c-format
+msgid "Error in texture specification for key \"%s\""
+msgstr "`%s'に対するテクスチャの指定エラーです"
+
+#: ../src/defaults.c:1866
+msgid "Wrong type for workspace background. Should be a texture type."
+msgstr "ワークスペース背景の形式が違います. Texture型にしてください"
+
+#: ../src/defaults.c:1912
+#, c-format
+msgid "Wrong type for background of workspace %i. Should be a texture."
+msgstr "ワークスペース %i の背景の形式が違います. Texture型にしてください"
+
+#: ../src/defaults.c:1951
+msgid "could not load any usable font!!!"
+msgstr "使用できるフォントが見当たりません!!!"
+
+#: ../src/defaults.c:1974
+#, c-format
+msgid "could not get color for key \"%s\""
+msgstr "\"%s\"に対する色が得られません"
+
+#: ../src/defaults.c:2026 ../src/rootmenu.c:438
+#, c-format
+msgid "%s: invalid key modifier \"%s\""
+msgstr "%s:キーの指定\"%s\"が間違っています"
+
+#: ../src/defaults.c:2038
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\""
+msgstr "%s:ショートカット\"%s\"のキー指定が間違っています"
+
+#: ../src/defaults.c:2044
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\""
+msgstr "%s:ショートカット\"%s\"のキー指定が間違っています"
+
+#: ../src/defaults.c:2066
+#, c-format
+msgid "%s: modifier key %s is not valid"
+msgstr "%s:キー%sの設定が適切でありません"
+
+#: ../src/defaults.c:2173
+#, c-format
+msgid "failed to open bitmap file \"%s\""
+msgstr "ビットマップファイル \"%s\" を開けません"
+
+#: ../src/defaults.c:2176
+#, c-format
+msgid "\"%s\" is not a valid bitmap file"
+msgstr "\"%s\" は正しいビットマップファイルではありません"
+
+#: ../src/defaults.c:2179
+#, c-format
+msgid "out of memory reading bitmap file \"%s\""
+msgstr "ビットマップファイル \"%s\" を読んでいるときにメモリが不足しました"
+
+#: ../src/defaults.c:2217 ../src/defaults.c:2250
+msgid "bad number of arguments in cursor specification"
+msgstr "カーソル指定の引数の数が間違っています"
+
+#: ../src/defaults.c:2233
+#, c-format
+msgid "unknown builtin cursor name \"%s\""
+msgstr "\"%s\" という名前のカーソルは組み込まれてません"
+
+#: ../src/defaults.c:2260 ../src/defaults.c:2272
+#, c-format
+msgid "could not find cursor bitmap file \"%s\""
+msgstr "カーソルビットマップ \"%s\" を見つけられません"
+
+#: ../src/defaults.c:2313
+#, c-format
+msgid "Error in cursor specification for key \"%s\""
+msgstr "\"%s\" に対するカーソルの指定エラーです"
+
+#: ../src/defaults.c:2378
+msgid "could not render texture for icon background"
+msgstr "アイコン背景のテクスチャのレンダリングができませんでした"
+
+#: ../src/defaults.c:2892 ../src/defaults.c:2961
+#, c-format
+msgid "Invalid arguments for option \"%s\""
+msgstr "無効な引数です '%s'"
+
+#: ../src/defaults.c:2898 ../src/defaults.c:2967
+#, c-format
+msgid "Could not find image \"%s\" for option \"%s\""
+msgstr "%s 指定で画像を読み込めません: %s"
+
+#: ../src/defaults.c:2903 ../src/defaults.c:2975
+#, c-format
+msgid "Could not load image \"%s\" for option \"%s\""
+msgstr "%s 指定で画像を読み込めません: %s"
+
+#: ../src/defaults.c:2913
+msgid "Invalid split sizes for switch panel back image."
+msgstr ""
+
+#: ../src/defaults.c:2982
+#, c-format
+msgid "Invalid number of arguments for option \"%s\""
+msgstr "オプション(\"%s\")の指定の引数の数が間違っています"
+
+#: ../src/defaults.c:2997
+#, c-format
+msgid "Value for option \"%s\" must be an array of 7 strings"
+msgstr ""
+
+#: ../src/defaults.c:3011
+#, c-format
+msgid "Invalid argument for option \"%s\" item %d"
+msgstr ""
+
+#: ../src/dialog.c:126
+msgid "Save workspace state"
+msgstr "ワークスペースの状態保存"
+
+#: ../src/dialog.c:405 ../src/dialog.c:466 ../src/dialog.c:976
+#: ../src/dock.c:472 ../src/dockedapp.c:383 ../src/rootmenu.c:180
+#: ../src/rootmenu.c:224
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../src/dialog.c:558
+msgid "Could not open directory \"%s\":\n%s"
+msgstr "ディレクトリを開けません \"%s\":\n%s"
+
+#: ../src/dialog.c:608
+msgid "Could not load image file "
+msgstr "画像ファイルを読み込めません"
+
+#: ../src/dialog.c:903
+msgid "Directories"
+msgstr "ディレクトリ"
+
+#: ../src/dialog.c:912
+msgid "Icons"
+msgstr "アイコン"
+
+#: ../src/dialog.c:945
+msgid "Preview"
+msgstr "プレビュー"
+
+#: ../src/dialog.c:958
+msgid "File Name:"
+msgstr "ファイル名:"
+
+#: ../src/dialog.c:982
+msgid "Choose File"
+msgstr "ファイル選択"
+
+#: ../src/dialog.c:1001 ../src/dialog.c:1003
+msgid "Icon Chooser"
+msgstr "アイコン選択"
+
+#: ../src/dialog.c:1184
+msgid "Window Manager for X"
+msgstr "Window Manager for X"
+
+#: ../src/dialog.c:1186
+#, c-format
+msgid "Version %s"
+msgstr "バージョン %s"
+
+#: ../src/dialog.c:1207
+#, c-format
+msgid "Using visual 0x%x: %s %ibpp "
+msgstr "Using visual 0x%x: %s %ibpp "
+
+#: ../src/dialog.c:1214
+msgid "(32 thousand colors)\n"
+msgstr "(3 万 2 千色)\n"
+
+#: ../src/dialog.c:1217
+msgid "(64 thousand colors)\n"
+msgstr "(6 万 4 千色)\n"
+
+#: ../src/dialog.c:1221
+msgid "(16 million colors)\n"
+msgstr "(1,600 万色)\n"
+
+#: ../src/dialog.c:1224
+#, c-format
+msgid "(%d colors)\n"
+msgstr "(%d 色)\n"
+
+#: ../src/dialog.c:1233
+#, c-format
+msgid "Total memory allocated: %i kB (in use: %i kB).\n"
+msgstr "割当メモリ: %i kB. 使用中メモリ: %i kB.\n"
+
+#: ../src/dialog.c:1283
+msgid "Image formats: "
+msgstr "画像形式: "
+
+#: ../src/dialog.c:1247
+msgid ""
+"\n"
+"Additional support for: WMSPEC"
+msgstr ""
+"\n"
+"拡張対応: "
+
+#: ../src/dialog.c:1253
+msgid "\n"
+msgstr ""
+
+#: ../src/dialog.c:1255
+msgid "Solaris "
+msgstr "Solaris "
+
+#: ../src/dialog.c:1257
+msgid "Xinerama: "
+msgstr "Xinerama: "
+
+#: ../src/dialog.c:1289
+msgid "Info"
+msgstr "情報 "
+
+#: ../src/dialog.c:1417
+msgid ""
+"    Window Maker is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"    Window Maker is distributed in the hope that it will be useful, but "
+"WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY "
+"or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for "
+"more details.\n"
+"\n"
+"    You should have received a copy of the GNU General Public License along "
+"with this program; if not, write to the Free Software Foundation, Inc., 51 "
+"Franklin Street, Fifth Floor, Boston, MA02110-1301 USA."
+msgstr ""
+
+#: ../src/dialog.c:1389
+msgid "Legal"
+msgstr ""
+
+#: ../src/dialog.c:1532
+msgid "cannot open connection for crashing dialog panel. Aborting."
+msgstr "ダイアログが壊れて接続できません. 中止します"
+
+#: ../src/dialog.c:1558
+msgid "Fatal error"
+msgstr "致命的なエラー"
+
+#: ../src/dialog.c:1568
+#, c-format
+msgid "Window Maker received signal %i."
+msgstr "Window Maker は シグナル %i を受けました."
+
+#: ../src/dialog.c:1576
+msgid ""
+" This fatal error occured probably due to a bug. Please fill the included "
+"BUGFORM and report it to %s."
+msgstr ""
+"この致命的なエラーはバグによるものかもしれません. 同梱のバグフォームを使って "
+"%s 宛てにレポートして下さい"
+
+#: ../src/dialog.c:1583
+msgid "What do you want to do now?"
+msgstr "さて, どうしますか?"
+
+#: ../src/dialog.c:1589
+msgid "Select action"
+msgstr "選んでください"
+
+#: ../src/dialog.c:1590
+msgid "Abort and leave a core file"
+msgstr "中止して core ファイルを残す"
+
+#: ../src/dialog.c:1591
+msgid "Restart Window Maker"
+msgstr "Window Maker を再起動する"
+
+#: ../src/dialog.c:1592
+msgid "Start alternate window manager"
+msgstr "かわりのウィンドウマネージャを起動する"
+
+#: ../src/dialog.c:1757
+msgid ""
+"Window Maker is part of the GNUstep project.\n"
+"The GNUstep project aims to create a free\n"
+"implementation of the OpenStep(tm) specification\n"
+"which is a object-oriented framework for\n"
+"creating advanced graphical, multi-platform\n"
+"applications. Additionally, a development and\n"
+"user desktop environment will be created on top\n"
+"of the framework. For more information about\n"
+"GNUstep, please visit: www.gnustep.org"
+msgstr ""
+
+#: ../src/dialog.c:1780
+msgid "About GNUstep"
+msgstr ""
+
+#: ../src/dock.c:170 ../src/menu.c:1768
+#, c-format
+msgid "Type the name for workspace %i:"
+msgstr "ワークスペース%iの名前を入力して下さい: "
+
+#: ../src/dock.c:171 ../src/dock.c:1003 ../src/dock.c:1005 ../src/dock.c:3117
+#: ../src/menu.c:1772
+msgid "Rename Workspace"
+msgstr "ワークスペース名の変更"
+
+#: ../src/dock.c:438 ../src/dock.c:445
+msgid "Warning"
+msgstr "警告"
+
+#: ../src/dock.c:439
+msgid ""
+"Some icons cannot be made omnipresent. Please make sure that no other icon "
+"is docked in the same positions on the other workspaces and the Clip is not "
+"full in some workspace."
+msgstr ""
+"いくつかのアイコンが「どこでも表示」にできません. 他のアイコンが違うワークス"
+"ペースで同じ場所にドックされていないことと, どこかのワークスペースでクリップ"
+"がいっぱいになっていないことを確認してください"
+
+#: ../src/dock.c:446
+msgid ""
+"Icon cannot be made omnipresent. Please make sure that no other icon is "
+"docked in the same position on the other workspaces and the Clip is not full "
+"in some workspace."
+msgstr ""
+"アイコンを「どこでも表示」にできません. 他のアイコンが違うワークスペースで同"
+"じ場所にドックされていないことと, どこかのワークスペースでクリップがいっぱい"
+"になっていないことを確認してください"
+
+#: ../src/dock.c:470
+msgid "Workspace Clip"
+msgstr "ワークスペース クリップ"
+
+#: ../src/dock.c:471
+msgid "All selected icons will be removed!"
+msgstr "選択されたアイコン全てが削除されます!"
+
+#: ../src/dock.c:521 ../src/dock.c:1016 ../src/dock.c:1018 ../src/dock.c:3153
+msgid "Keep Icon"
+msgstr "アイコンを保持する"
+
+#: ../src/dock.c:522 ../src/dock.c:1910 ../src/dock.c:2041
+msgid "Type the command used to launch the application"
+msgstr ""
+"このアプリケーションを起動するための\n"
+"コマンドを入力してください"
+
+#: ../src/dock.c:842
+#, c-format
+msgid "could not launch application %s"
+msgstr "アプリケーション%sを起動できません"
+
+#: ../src/dock.c:893
+msgid "could not create workspace submenu for Clip menu"
+msgstr "クリップメニューのワークスペースサブメニューが作成できません"
+
+#: ../src/dock.c:948
+msgid "could not create options submenu for Clip menu"
+msgstr "クリップメニューのオプションサブメニューが作成できません"
+
+#: ../src/dock.c:952 ../src/dock.c:993
+msgid "Keep on Top"
+msgstr "常に手前に表示"
+
+#: ../src/dock.c:957
+msgid "Collapsed"
+msgstr "折り畳む"
+
+#: ../src/dock.c:962
+msgid "Autocollapse"
+msgstr "自動的に折り畳む"
+
+#: ../src/dock.c:967
+msgid "Autoraise"
+msgstr "自動的に前面に表示"
+
+#: ../src/dock.c:972
+msgid "Autoattract Icons"
+msgstr "アイコンを自動的に引き寄せる"
+
+#: ../src/dock.c:998
+msgid "Clip Options"
+msgstr "クリップオプション"
+
+#: ../src/dock.c:1007
+msgid "Selected"
+msgstr "選択"
+
+#: ../src/dock.c:1012 ../src/dock.c:1014 ../src/dock.c:3144
+msgid "Select All Icons"
+msgstr "全てのアイコンの選択"
+
+#: ../src/dock.c:1020 ../src/dock.c:1022 ../src/dock.c:3161
+msgid "Move Icon To"
+msgstr "アイコンを移動"
+
+#: ../src/dock.c:1027 ../src/dock.c:1029 ../src/dock.c:3172
+msgid "Remove Icon"
+msgstr "アイコンを削除"
+
+#: ../src/dock.c:1031
+msgid "Attract Icons"
+msgstr "アイコンを引き寄せる"
+
+#: ../src/dock.c:1034
+msgid "Launch"
+msgstr "起動"
+
+#: ../src/dock.c:1042
+msgid "Settings..."
+msgstr "設定..."
+
+#: ../src/dock.c:1366 ../src/dock.c:1466
+#, c-format
+msgid "bad value in docked icon state info %s"
+msgstr "登録されたアイコンの情報%sに不正な内容があります"
+
+#: ../src/dock.c:1473
+#, c-format
+msgid "bad value in docked icon position %i,%i"
+msgstr "登録されたアイコンの位置(%i, %i)は不正な値です"
+
+#: ../src/dock.c:1492
+#, c-format
+msgid "bad value in dock state info:%s"
+msgstr ""
+
+#: ../src/dock.c:1709
+msgid "there are too many icons stored in dock. Ignoring what doesn't fit"
+msgstr "登録されたアイコンが多すぎます. 内容の一部は無効になります"
+
+#. icon->forced_dock = 1;
+#: ../src/dock.c:1909 ../src/dock.c:2040
+msgid "Dock Icon"
+msgstr "ドック登録アイコン"
+
+#: ../src/dock.c:3039
+#, c-format
+msgid "Could not execute command \"%s\""
+msgstr "コマンド\"%s\"を実行できません"
+
+#: ../src/dock.c:3123
+msgid "Toggle Omnipresent"
+msgstr "どこでも表示"
+
+#: ../src/dock.c:3128 ../src/winmenu.c:406 ../src/winspector.c:1302
+msgid "Omnipresent"
+msgstr "どこでも表示"
+
+#: ../src/dock.c:3142
+msgid "Unselect All Icons"
+msgstr "全てのアイコンの選択解除"
+
+#: ../src/dock.c:3151
+msgid "Keep Icons"
+msgstr "アイコンを保持する"
+
+#: ../src/dock.c:3159
+msgid "Move Icons To"
+msgstr "アイコンを移動"
+
+#: ../src/dock.c:3170
+msgid "Remove Icons"
+msgstr "アイコンを削除"
+
+#: ../src/dock.c:3200
+msgid "Bring Here"
+msgstr "持ってくる"
+
+#: ../src/dockedapp.c:133
+#, c-format
+msgid "could not find icon %s, used in a docked application"
+msgstr "登録されたドックアプリで使われているアイコン %s が見つかりません"
+
+#: ../src/dockedapp.c:206
+#, c-format
+msgid "Could not open specified icon file: %s"
+msgstr "指定のアイコンファイルが開けません: %s"
+
+#: ../src/dockedapp.c:208
+msgid "Ignore"
+msgstr "無視"
+
+#: ../src/dockedapp.c:300
+msgid "Start when Window Maker is started"
+msgstr "Window Maker 起動時に一緒に起動"
+
+#: ../src/dockedapp.c:305
+msgid "Lock (prevent accidental removal)"
+msgstr "ロックする (不慮の登録解除を予防)"
+
+#: ../src/dockedapp.c:309
+msgid "Application path and arguments"
+msgstr "アプリケーションのパスと引数"
+
+#: ../src/dockedapp.c:320
+msgid "Command for middle-click launch"
+msgstr "中ボタンクリックで起動されるコマンド"
+
+#: ../src/dockedapp.c:332
+#, c-format
+msgid "%s will be replaced with current selection"
+msgstr "%s は セレクションに置き換えられます"
+
+#: ../src/dockedapp.c:336
+msgid "Command for files dropped with DND"
+msgstr "DnD で落とされたファイル用のコマンド"
+
+#: ../src/dockedapp.c:348
+#, c-format
+msgid "%d will be replaced with the file name"
+msgstr "%d は ファイル名に置き換えられます"
+
+#: ../src/dockedapp.c:351
+msgid "DND support was not compiled in"
+msgstr "DnD対応でコンパイルされていません"
+
+#: ../src/dockedapp.c:356
+msgid "Icon Image"
+msgstr "アイコン画像"
+
+#: ../src/dockedapp.c:367 ../src/winspector.c:1450
+msgid "Browse..."
+msgstr "参照..."
+
+#: ../src/dockedapp.c:425
+msgid "Docked Application Settings"
+msgstr "ドックの登録アプリケーション設定"
+
+#: ../src/framewin.c:619 ../src/framewin.c:711 ../src/menu.c:412
+#: ../src/texture.c:453
+#, c-format
+msgid "could not render texture: %s"
+msgstr "テクスチャをレンダリングできません: %s"
+
+#: ../src/framewin.c:642 ../src/framewin.c:652 ../src/framewin.c:668
+#: ../src/framewin.c:679 ../src/framewin.c:686 ../src/framewin.c:693
+#: ../src/icon.c:330 ../src/menu.c:439
+#, c-format
+msgid "error rendering image:%s"
+msgstr "画像のレンダリングエラー: %s"
+
+#: ../src/framewin.c:739
+#, c-format
+msgid "error rendering image: %s"
+msgstr "画像のレンダリングエラー: %s"
+
+#: ../src/icon.c:215 ../src/wdefaults.c:421
+#, c-format
+msgid "error loading image file \"%s\": %s"
+msgstr "画像ファイル\"%s\"のロードエラー: %s"
+
+#: ../src/icon.c:438 ../src/icon.c:447
+#, c-format
+msgid "could not create directory %s"
+msgstr "ディレクトリ%sを作成できません"
+
+#: ../src/icon.c:696
+#, c-format
+msgid "could not find default icon \"%s\""
+msgstr "標準アイコン\"%s\"が見つかりません"
+
+#: ../src/icon.c:702
+#, c-format
+msgid "could not load default icon \"%s\":%s"
+msgstr "標準アイコン\"%s\"をロードできません:%s"
+
+#: ../src/main.c:305
+msgid "failed to restart Window Maker."
+msgstr "Window Maker の再起動に失敗しました."
+
+#: ../src/main.c:308
+#, c-format
+msgid "could not exec %s"
+msgstr "%s を実行できません"
+
+#: ../src/main.c:346
+msgid "Could not execute command: "
+msgstr "コマンドを実行できません: "
+
+#: ../src/main.c:418
+#, c-format
+msgid "%s aborted.\n"
+msgstr "%s は中断しました.\n"
+
+#: ../src/main.c:427
+#, c-format
+msgid "Usage: %s [options]\n"
+msgstr "使用法: %s [オプション]\n"
+
+#: ../src/main.c:428
+msgid "The Window Maker window manager for the X window system"
+msgstr "Window Maker -- X ウィンドウシステムのためのウィンドウマネージャ"
+
+#: ../src/main.c:430
+msgid " -display host:dpy\tdisplay to use"
+msgstr " -display ホスト:ID番号\tディスプレイの指定"
+
+#: ../src/main.c:432
+msgid " --no-cpp \t\tdisable preprocessing of configuration files"
+msgstr " --no-cpp \t\t設定ファイルをプリプロセッサにかけない"
+
+#: ../src/main.c:434
+msgid " --no-dock\t\tdo not open the application Dock"
+msgstr " --no-dock\t\tアプリケーション・ドックを開かない"
+
+#: ../src/main.c:435
+msgid " --no-clip\t\tdo not open the workspace Clip"
+msgstr " --no-clip\t\tアプリケーション・クリップ(Clip)を開かない"
+
+#: ../src/main.c:436
+msgid " --no-autolaunch\tdo not autolaunch applications"
+msgstr " --no-autolaunch\tアプリケーションの自動起動を行わない"
+
+#: ../src/main.c:437
+msgid " --dont-restore\t\tdo not restore saved session"
+msgstr " --dont-restore\t\t保存したセッションを復元しない"
+
+#: ../src/main.c:439
+msgid " --locale locale\tlocale to use"
+msgstr " --locale locale\t使用するlocaleの指定"
+
+#: ../src/main.c:441
+msgid ""
+" --create-stdcmap\tcreate the standard colormap hint in PseudoColor visuals"
+msgstr " --create-stdcmap\t擬似色解像度に標準カラーマップヒントを作成する"
+
+#: ../src/main.c:442
+msgid " --visual-id visualid\tvisual id of visual to use"
+msgstr " --visual-id ビジュアルID\tビジュアルIDの指定"
+
+#: ../src/main.c:443
+msgid " --static\t\tdo not update or save configurations"
+msgstr " static\t\tスタティックモードで起動(設定を保存／更新しない)"
+
+#: ../src/main.c:445
+msgid " --no-polling\t\tdo not periodically check for configuration updates"
+msgstr " --no-polling\t\t周期的に設定ファイルの更新をチェックしない"
+
+#: ../src/main.c:447
+msgid " --version\t\tprint version and exit"
+msgstr " --version\t\tバージョンを表示してすぐ終了する"
+
+#: ../src/main.c:448
+msgid " --help\t\t\tshow this message"
+msgstr " --help\t\tこのメッセージを表示"
+
+#: ../src/main.c:458
+#, c-format
+msgid "could not find user GNUstep directory (%s)."
+msgstr "ユーザのGNUstepディレクトリ(%s)が見つかりません"
+
+#: ../src/main.c:461
+msgid ""
+"There was an error while creating GNUstep directory, please make sure you "
+"have installed Window Maker correctly and run wmaker.inst"
+msgstr ""
+"ユーザのGNUstepディレクトリの作成に失敗しました,\n"
+"Window Makerが正しくインストールされていることを確認して, wmaker.instを実行し"
+"てください"
+
+#: ../src/main.c:464
+#, c-format
+msgid "%s directory created with default configuration."
+msgstr "デフォルト設定で %s ディレクトリが作成されました"
+
+#: ../src/main.c:482
+msgid ""
+"could not initialise an inotify instance. Changes to the defaults database "
+"will require a restart to take effect. Check your kernel!"
+msgstr ""
+
+#: ../src/main.c:493
+#, c-format
+msgid ""
+"could not add an inotify watch on path %s. Changes to the defaults database "
+"will require a restart to take effect."
+msgstr ""
+
+#: ../src/main.c:515
+#, c-format
+msgid "%s:could not execute initialization script"
+msgstr "%s:初期化スクリプトを実行できません"
+
+#: ../src/main.c:533
+#, c-format
+msgid "%s:could not execute exit script"
+msgstr "%s:終了スクリプトを実行できません"
+
+#: ../src/main.c:571 ../src/main.c:648 ../src/main.c:655 ../src/main.c:662
+#, c-format
+msgid "too few arguments for %s"
+msgstr "%sに対する引数が足りません"
+
+#: ../src/main.c:666
+#, c-format
+msgid "bad value for visualid: \"%s\""
+msgstr "ビジュアルIDの値が不正です: \"%s\""
+
+#: ../src/main.c:679
+#, c-format
+msgid "%s: invalid argument '%s'\n"
+msgstr "%s: 無効な引数です '%s'\n"
+
+#: ../src/main.c:680
+#, c-format
+msgid "Try '%s --help' for more information\n"
+msgstr "追加情報のために '%s --help' を試してみてください\n"
+
+#: ../src/main.c:723
+msgid "X server does not support locale"
+msgstr "Xサーバがロケール機能をサポートしていません"
+
+#: ../src/main.c:727
+msgid "cannot set locale modifiers"
+msgstr "ロケールを設定できません"
+
+#: ../src/main.c:743
+#, c-format
+msgid "could not open display \"%s\""
+msgstr "ディスプレイ`%s'を開けません"
+
+#: ../src/menu.c:2341
+#, c-format
+msgid "bad value in menus state info: %s"
+msgstr "メニューの情報 %s に不正な内容があります"
+
+#: ../src/misc.c:57
+#, c-format
+msgid "could not define value for %s for cpp"
+msgstr "cppの %sの値を定義できません"
+
+#: ../src/misc.c:82
+#, c-format
+msgid "could not get password entry for UID %i"
+msgstr "ユーザID %i のパスワードエントリを得られません"
+
+#: ../src/misc.c:104
+#, c-format
+msgid "your machine is misconfigured. HOSTNAME is set to %s"
+msgstr "あなたのマシンの設定がおかしいです. HOSTNAME が %s に設定されています"
+
+#: ../src/misc.c:109
+#, c-format
+msgid "your machine is misconfigured. HOST is set to %s"
+msgstr "あなたのマシンの設定がおかしいです. HOST が %s に設定されています"
+
+#: ../src/misc.c:558 ../src/misc.c:563
+msgid "Program Arguments"
+msgstr "プログラム引数"
+
+#: ../src/misc.c:559 ../src/misc.c:564
+msgid "Enter command arguments:"
+msgstr "コマンドライン引数を入力してください:"
+
+#: ../src/misc.c:608
+#, c-format
+msgid "out of memory during expansion of \"%s\""
+msgstr "\"%s\"の展開中にメモリが不足しました"
+
+#: ../src/misc.c:661
+#, c-format
+msgid "out of memory during expansion of \"%%w\""
+msgstr "\"%%w\"の展開中にメモリが不足しました"
+
+#: ../src/misc.c:678
+#, c-format
+msgid "out of memory during expansion of \"%%W\""
+msgstr "\"%%W\"の展開中にメモリが不足しました"
+
+#: ../src/misc.c:695
+#, c-format
+msgid "out of memory during expansion of \"%%a\""
+msgstr "\"%%a\"の展開中にメモリが不足しました"
+
+#: ../src/misc.c:724
+#, c-format
+msgid "out of memory during expansion of \"%%d\""
+msgstr "\"%%d\"の展開中にメモリが不足しました"
+
+#: ../src/misc.c:738
+msgid "selection not available"
+msgstr "セレクションが利用不能"
+
+#: ../src/misc.c:745
+#, c-format
+msgid "out of memory during expansion of \"%%s\""
+msgstr "\"%%s\"の展開中にメモリが不足しました"
+
+#: ../src/misc.c:780 ../src/misc.c:786
+#, c-format
+msgid "bad window name value in %s state info"
+msgstr "%s ステート情報中に不正なウィンドウ名があります"
+
+#: ../src/misc.c:1014
+msgid "could not send message to background image helper"
+msgstr "背景イメージヘルパーにメッセージを送信できません"
+
+#: ../src/resources.c:41
+#, c-format
+msgid "could not parse color \"%s\""
+msgstr "カラー\"%s\"の指定に誤りがあります"
+
+#: ../src/resources.c:45
+#, c-format
+msgid "could not allocate color \"%s\""
+msgstr "カラー\"%s\"を予約できません"
+
+#: ../src/rootmenu.c:179 ../src/rootmenu.c:180
+msgid "Exit"
+msgstr "終了"
+
+#: ../src/rootmenu.c:180
+msgid "Exit window manager?"
+msgstr "ウィンドウマネージャを終了しますか?"
+
+#: ../src/rootmenu.c:222
+msgid "Kill X session"
+msgstr "Xセッションの終了"
+
+#: ../src/rootmenu.c:223
+msgid ""
+"Kill Window System session?\n"
+"(all applications will be closed)"
+msgstr ""
+"ウィンドウシステムのセッションを終了しますか?\n"
+"(全てのアプリケーションが閉じられます)"
+
+#: ../src/rootmenu.c:451
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\" for entry %s"
+msgstr "%s:キーボードショートカットの設定\"%s\"が間違っています(%s)"
+
+#: ../src/rootmenu.c:459
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\" for entry %s"
+msgstr "%s:キーボードショートカット\"%s\"が間違っています(%s)"
+
+#: ../src/rootmenu.c:493
+#, c-format
+msgid "%s: unmatched '\"' in menu file"
+msgstr "%s: メニューファイル中, '\"'が対応していません"
+
+#: ../src/rootmenu.c:542
+#, c-format
+msgid "%s: missing command"
+msgstr "%s: コマンドの指定がありません"
+
+#: ../src/rootmenu.c:592
+#, c-format
+msgid "invalid OPEN_MENU specification: %s"
+msgstr "OPEN_MENU の指定が不適切です: %s"
+
+#: ../src/rootmenu.c:647
+#, c-format
+msgid "%s:could not stat menu"
+msgstr "%s:メニューをstatできません"
+
+#: ../src/rootmenu.c:655
+#, c-format
+msgid "%s:could not stat menu:%s"
+msgstr "%s:メニューをstatできません: %s"
+
+#: ../src/rootmenu.c:671
+#, c-format
+msgid "too many parameters in OPEN_MENU: %s"
+msgstr "OPEN_MENU のパラメータが多すぎます: %s"
+
+#: ../src/rootmenu.c:713
+msgid ""
+"There are more than one WORKSPACE_MENU commands in the applications menu. "
+"Only one is allowed."
+msgstr ""
+"アプリケーションメニュー中, WORKSPACE_MENU コマンドが複数存在します. "
+"定義できるのは一回だけです."
+
+#: ../src/rootmenu.c:744
+msgid ""
+"There are more than one WINDOWS_MENU commands in the applications menu. Only "
+"one is allowed."
+msgstr ""
+"アプリケーションメニュー中, WINDOWS_MENU コマンドが複数存在します. "
+"定義できるのは一回だけです."
+
+#: ../src/rootmenu.c:749
+msgid "Window List"
+msgstr "ウィンドウ一覧"
+
+#: ../src/rootmenu.c:776 ../src/rootmenu.c:793 ../src/rootmenu.c:801
+#, c-format
+msgid "%s:missing parameter for menu command \"%s\""
+msgstr "%s:メニューコマンド\"%s\"に対するパラメータがありません"
+
+#: ../src/rootmenu.c:865
+#, c-format
+msgid "%s:unknown command \"%s\" in menu config."
+msgstr "%s:メニュー設定中, 不正なコマンド\"%s\"があります."
+
+#: ../src/rootmenu.c:872
+#, c-format
+msgid "%s:can't add shortcut for entry \"%s\""
+msgstr "%s:エントリ\"%s\"のショートカットを登録できません"
+
+#: ../src/rootmenu.c:1014
+#, c-format
+msgid "%s:maximal line size exceeded in menu config: %s"
+msgstr "%s:メニュー設定の最大行数を越えました: %s"
+
+#: ../src/rootmenu.c:1035 ../src/rootmenu.c:1120 ../src/rootmenu.c:1214
+#, c-format
+msgid "%s:missing command in menu config: %s"
+msgstr "%s:メニュー設定にコマンドの指定がありません: %s"
+
+#: ../src/rootmenu.c:1062
+#, c-format
+msgid "%s:syntax error in menu file:END declaration missing"
+msgstr "%s:メニューファイルに文法エラーがあります: END の記述がありません"
+
+#: ../src/rootmenu.c:1088 ../src/rootmenu.c:1182
+msgid "could not make arguments for menu file preprocessor"
+msgstr "メニューファイル・プリプロセッサへの引数が作成できません"
+
+#: ../src/rootmenu.c:1094 ../src/rootmenu.c:1189
+#, c-format
+msgid "%s:could not open/preprocess menu file"
+msgstr "%s:メニューファイルのオープン／プリプロセスができません"
+
+#: ../src/rootmenu.c:1105 ../src/rootmenu.c:1199
+#, c-format
+msgid "could not open menu file \"%s\": %s"
+msgstr "メニューファイルを開けません \"%s\": %s"
+
+#: ../src/rootmenu.c:1131
+#, c-format
+msgid "%s:invalid menu file. MENU command is missing"
+msgstr "%s: メニューファイルが不適当です. MENU コマンドがありません"
+
+#: ../src/rootmenu.c:1139
+msgid "error reading preprocessed menu data"
+msgstr "プリプロセスされたメニューデータの読み込みにエラーが起きました"
+
+#: ../src/rootmenu.c:1225
+#, c-format
+msgid "%s:no title given for the root menu"
+msgstr "%s:ルートメニューのタイトルがありません"
+
+#: ../src/rootmenu.c:1306 ../src/rootmenu.c:1378 ../src/rootmenu.c:1417
+#, c-format
+msgid "out of memory while constructing directory menu %s"
+msgstr "ディレクトリメニュー%sの作成のためのメモリが不足しています"
+
+#: ../src/rootmenu.c:1315
+#, c-format
+msgid "%s:could not stat file \"%s\" in menu directory"
+msgstr "%s:メニューディレクトリのファイル\"%s\"をstatできません"
+
+#: ../src/rootmenu.c:1467
+msgid "Commands"
+msgstr "コマンド"
+
+#: ../src/rootmenu.c:1470
+msgid "Restart"
+msgstr "再起動"
+
+#: ../src/rootmenu.c:1471
+msgid "Exit..."
+msgstr "終了..."
+
+#: ../src/rootmenu.c:1510
+#, c-format
+msgid "could not find menu file \"%s\" referenced in WMRootMenu"
+msgstr "WMRootMenuで参照しているメニュー\"%s\"を見つけられません"
+
+#: ../src/rootmenu.c:1516
+#, c-format
+msgid "could not access menu \"%s\" referenced in WMRootMenu"
+msgstr "WMRootMenuで参照しているメニュー\"%s\"へアクセスできません"
+
+#: ../src/rootmenu.c:1528
+#, c-format
+msgid ""
+"using default menu file \"%s\" as the menu referenced in WMRootMenu could "
+"not be found "
+msgstr ""
+"WMRootMenuで参照しているメニュー見つからないので, デフォルトのメニューファイ"
+"ル \"%s\" を用います"
+
+#: ../src/rootmenu.c:1551 ../src/rootmenu.c:1625
+#, c-format
+msgid "%s:format error in root menu configuration \"%s\""
+msgstr "%s:ルートメニュー設定\"%s\"にフォーマットエラーがあります"
+
+#: ../src/rootmenu.c:1702
+msgid ""
+"The applications menu could not be loaded. Look at the console output for a "
+"detailed description of the errors."
+msgstr ""
+"アプリケーションメニューがロードできません. エラーの詳細はコンソールへの出力"
+"を参照してください"
+
+#: ../src/screen.c:685
+#, c-format
+msgid "could not initialize graphics library context: %s"
+msgstr "グラフィックライブラリコンテキストを初期化できません: %s"
+
+#: ../src/screen.c:711
+msgid "could not initialize WINGs widget set"
+msgstr "WINGs ウィジェットセットの初期化ができません"
+
+#: ../src/screen.c:1006
+#, c-format
+msgid "could not save session state in %s"
+msgstr "%s のセッション状態を保存できませんでした"
+
+#: ../src/session.c:151 ../src/wdefaults.c:557 ../src/winspector.c:410
+#, c-format
+msgid "can't convert \"%s\" to boolean"
+msgstr "\"%s\"を boolean型に変換できません"
+
+#: ../src/stacking.c:75
+msgid "could not get window list!!"
+msgstr "ウィンドウ一覧が得られません!!"
+
+#: ../src/startup.c:177
+#, c-format
+msgid "internal X error: %s"
+msgstr "X 内部エラー: %s"
+
+#: ../src/startup.c:672 ../src/startup.c:689 ../src/startup.c:695
+#, c-format
+msgid "could not read domain \"%s\" from defaults database"
+msgstr "標準データベースからドメイン\"%s\"を読み込むことができません"
+
+#: ../src/startup.c:681
+#, c-format
+msgid "icon size is configured to %i, but it's too small. Using 16 instead"
+msgstr ""
+"設定されているアイコンサイズ%iは小さすぎます. かわりにサイズ16を用います"
+
+#: ../src/startup.c:712
+msgid "XKB is not supported. KbdModeLock is automatically disabled."
+msgstr "XKB はサポートされていません. KbdModeLock は自動的に無効になります"
+
+#: ../src/startup.c:731
+msgid "it seems that there is already a window manager running"
+msgstr "既に他のウィンドウマネージャが立ち上がっているようです"
+
+#: ../src/startup.c:737
+#, c-format
+msgid "could not manage screen %i"
+msgstr "スクリーン %iを掌握できません"
+
+#: ../src/startup.c:794
+msgid "could not manage any screen"
+msgstr "掌握できるスクリーンがありません"
+
+#: ../src/switchmenu.c:129
+msgid "Windows"
+msgstr "ウィンドウ一覧"
+
+#: ../src/texture.c:272 ../src/texture.c:310
+#, c-format
+msgid "image file \"%s\" used as texture could not be found."
+msgstr "テクスチャ用画像ファイル\"%s\"が見つかりません"
+
+#: ../src/texture.c:277 ../src/texture.c:315
+#, c-format
+msgid "could not load texture pixmap \"%s\":%s"
+msgstr "テクスチャ画像\"%s\"をロードできません:%s"
+
+#: ../src/texture.c:457
+msgid "could not allocate image buffer"
+msgstr "画像バッファを予約できません"
+
+#: ../src/wdefaults.c:415
+#, c-format
+msgid "could not find icon file \"%s\""
+msgstr "アイコンファイル \"%s\"が見つかりません"
+
+#: ../src/window.c:2756 ../src/window.c:2914
+msgid ""
+"The NumLock, ScrollLock or similar key seems to be turned on. Turn it off or "
+"some mouse actions and keyboard shortcuts will not work."
+msgstr ""
+"NumLock, ScrollLock 等のキーがONになってませんかね.\n"
+"マウス機能やキーボードショートカットを正常に利用するにはOFFに切替えて下さい"
+
+#: ../src/winmenu.c:121
+msgid ""
+"This will kill the application.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+"このアプリケーションを強制終了させます.\n"
+"保存されていない変更は全て失われます.\n"
+"終了させますか？"
+
+#: ../src/winmenu.c:271 ../src/winmenu.c:280
+msgid "Set Shortcut"
+msgstr "ショートカット設定"
+
+#: ../src/winmenu.c:354 ../src/winmenu.c:394
+msgid "could not create submenu for window menu"
+msgstr "ウィンドウメニューにサブメニューを作れません"
+
+#: ../src/winmenu.c:398
+msgid "Keep on top"
+msgstr "常に手前に表示"
+
+#: ../src/winmenu.c:402
+msgid "Keep at bottom"
+msgstr "常に後ろに表示"
+
+#.
+#. * Warning: If you make some change that affects the order of the
+#. * entries, you must update the command #defines in the top of
+#. * this file.
+#.
+#: ../src/winmenu.c:424 ../src/winmenu.c:519
+msgid "Maximize"
+msgstr "最大化"
+
+#: ../src/winmenu.c:427 ../src/winmenu.c:503
+msgid "Miniaturize"
+msgstr "最小化"
+
+#: ../src/winmenu.c:430 ../src/winmenu.c:537
+msgid "Shade"
+msgstr "シェード"
+
+#: ../src/winmenu.c:436
+msgid "Resize/Move"
+msgstr "サイズ変更/移動"
+
+#: ../src/winmenu.c:439
+msgid "Select"
+msgstr "選択"
+
+#: ../src/winmenu.c:442
+msgid "Move To"
+msgstr "移動"
+
+#: ../src/winmenu.c:447
+msgid "Attributes..."
+msgstr "属性..."
+
+#: ../src/winmenu.c:449
+msgid "Options"
+msgstr "オプション"
+
+#.
+#. entry = wMenuAddCallback(menu, _("Select Shortcut"), NULL, NULL);
+#. wMenuEntrySetCascade(menu, entry, makeMakeShortcutMenu(scr));
+#.
+#: ../src/winmenu.c:457
+msgid "Close"
+msgstr "閉じる"
+
+#: ../src/winmenu.c:497
+msgid "Deminiaturize"
+msgstr "最小化解除"
+
+#: ../src/winmenu.c:513
+msgid "Unmaximize"
+msgstr "最大化解除"
+
+#: ../src/winmenu.c:531
+msgid "Unshade"
+msgstr "シェード解除"
+
+#: ../src/winspector.c:350
+#, c-format
+msgid "Could not find icon \"%s\" specified for this window"
+msgstr "このウィンドウへ指定されたアイコン\"%s\"が見つかりません"
+
+#: ../src/winspector.c:365
+#, c-format
+msgid "Could not open specified icon \"%s\":%s"
+msgstr "指定されたアイコン\"%s\"が開けません:%s"
+
+#: ../src/winspector.c:1067
+#, c-format
+msgid "Inspecting  %s.%s"
+msgstr "属性 ( %s.%s )"
+
+#: ../src/winspector.c:1090
+msgid "Click in the window you wish to inspect."
+msgstr "調査対象のウィンドウをクリックしてください."
+
+#: ../src/winspector.c:1122
+msgid ""
+"The configuration will apply to all\n"
+"windows that have their WM_CLASS\n"
+"property set to the above selected\n"
+"name, when saved."
+msgstr ""
+"この設定が保存されると, 上で\n"
+"指定されたWM_CLASSプロパティを\n"
+"持つ全てのウィンドウに適用されます."
+
+#: ../src/winspector.c:1147
+msgid "Save"
+msgstr "保存"
+
+#: ../src/winspector.c:1155
+msgid "Apply"
+msgstr "適用"
+
+#: ../src/winspector.c:1161
+msgid "Reload"
+msgstr "再読み込み"
+
+#: ../src/winspector.c:1170 ../src/winspector.c:1180
+msgid "Window Specification"
+msgstr "ウィンドウの指定"
+
+#: ../src/winspector.c:1171
+msgid "Window Attributes"
+msgstr "ウィンドウの属性"
+
+#: ../src/winspector.c:1172
+msgid "Advanced Options"
+msgstr "こだわりの設定"
+
+#: ../src/winspector.c:1173
+msgid "Icon and Initial Workspace"
+msgstr "アイコンとワークスペース"
+
+#: ../src/winspector.c:1174
+msgid "Application Specific"
+msgstr "アプリケーション固有の設定"
+
+#: ../src/winspector.c:1187
+msgid "Defaults for all windows"
+msgstr "全ウィンドウの標準"
+
+#: ../src/winspector.c:1240
+msgid "Select window"
+msgstr "ウィンドウの選択"
+
+#: ../src/winspector.c:1253
+msgid "Attributes"
+msgstr "属性"
+
+#: ../src/winspector.c:1264
+msgid "Disable titlebar"
+msgstr "タイトルバーを表示しない"
+
+#: ../src/winspector.c:1266
+msgid ""
+"Remove the titlebar of this window.\n"
+"To access the window commands menu of a window\n"
+"without it's titlebar, press Control+Esc (or the\n"
+"equivalent shortcut, if you changed the default\n"
+"settings)."
+msgstr ""
+"このウィンドウのタイトルバーを表示しなくします.\n"
+"タイトルバーのないウィンドウのメニューを表示するには, \n"
+"コントロールキー と エスケープキーを同時に押します\n"
+"(または, それに相当する, あなたが設定したショートカットキー)."
+
+#: ../src/winspector.c:1272
+msgid "Disable resizebar"
+msgstr "リサイズバーを表示しない"
+
+#: ../src/winspector.c:1274
+msgid "Remove the resizebar of this window."
+msgstr "このウィンドウのリサイズバーを表示しなくします"
+
+#: ../src/winspector.c:1277
+msgid "Disable close button"
+msgstr "クローズボタンを表示しない"
+
+#: ../src/winspector.c:1279
+msgid "Remove the `close window' button of this window."
+msgstr "このウィンドウのクローズボタンを表示しなくします"
+
+#: ../src/winspector.c:1282
+msgid "Disable miniaturize button"
+msgstr "最小化ボタンを表示しない"
+
+#: ../src/winspector.c:1284
+msgid "Remove the `miniaturize window' button of the window."
+msgstr "ウィンドウの最小化ボタンを表示しなくします"
+
+#: ../src/winspector.c:1287
+msgid "Disable border"
+msgstr "境界線を表示しない"
+
+#: ../src/winspector.c:1289
+msgid "Remove the 1 pixel black border around the window."
+msgstr "ウィンドウ周囲の 1ピクセルの境界を表示しなくします"
+
+#: ../src/winspector.c:1292
+msgid "Keep on top (floating)"
+msgstr "常に手前に表示"
+
+#: ../src/winspector.c:1294
+msgid ""
+"Keep the window over other windows, not allowing\n"
+"them to cover it."
+msgstr "常に手前に(浮いて)表示されます."
+
+#: ../src/winspector.c:1297
+msgid "Keep at bottom (sunken)"
+msgstr "常に後ろに表示"
+
+#: ../src/winspector.c:1299
+msgid "Keep the window under all other windows."
+msgstr "常に後ろに(沈んで)表示されます."
+
+#: ../src/winspector.c:1304
+msgid "Make window present in all workspaces."
+msgstr "全てのワークスペースで表示します"
+
+#: ../src/winspector.c:1307
+msgid "Start miniaturized"
+msgstr "最小化状態で起動する"
+
+#: ../src/winspector.c:1309
+msgid ""
+"Make the window be automatically miniaturized when it's\n"
+"first shown."
+msgstr "最初に起動された時に自動的に最小化するようにします."
+
+#: ../src/winspector.c:1312
+msgid "Start maximized"
+msgstr "最大化状態で起動する"
+
+#: ../src/winspector.c:1314
+msgid ""
+"Make the window be automatically maximized when it's\n"
+"first shown."
+msgstr "最初に起動された時に自動的に最大化するようにします."
+
+#: ../src/winspector.c:1317
+msgid "Full screen maximization"
+msgstr "全画面最大化"
+
+#: ../src/winspector.c:1319
+msgid ""
+"Make the window use the whole screen space when it's\n"
+"maximized. The titlebar and resizebar will be moved\n"
+"to outside the screen."
+msgstr ""
+"最大化した時に全画面を使用するようにします. \n"
+"タイトルバーとリサイズバーは画面の外にはみ出します."
+
+#: ../src/winspector.c:1335
+msgid "Advanced"
+msgstr "上級設定"
+
+#: ../src/winspector.c:1352
+msgid "Do not bind keyboard shortcuts"
+msgstr "キーボードと連動しない"
+
+#: ../src/winspector.c:1354
+msgid ""
+"Do not bind keyboard shortcuts from Window Maker\n"
+"when this window is focused. This will allow the\n"
+"window to receive all key combinations regardless\n"
+"of your shortcut configuration."
+msgstr ""
+"ウィンドウがフォーカスされている時に Window Maker の\n"
+"ショートカットキーが影響しないようにします. \n"
+"あなたの設定したショートカットも影響しないので, \n"
+"全てのキー操作をウィンドウに伝えることができます."
+
+#: ../src/winspector.c:1360
+msgid "Do not bind mouse clicks"
+msgstr "マウスクリックと連動しない"
+
+#: ../src/winspector.c:1362
+msgid ""
+"Do not bind mouse actions, such as `Alt'+drag\n"
+"in the window (when Alt is the modifier you have\n"
+"configured)."
+msgstr ""
+"ウィンドウ内でのマウスの動作(Alt+ドラッグなど)\n"
+"が影響しないようにします."
+
+#: ../src/winspector.c:1366
+msgid "Do not show in the window list"
+msgstr "ウィンドウ一覧に表示しない"
+
+#: ../src/winspector.c:1368
+msgid "Do not list the window in the window list menu."
+msgstr "ウィンドウ一覧にこのウィンドウを候補表示しません."
+
+#: ../src/winspector.c:1371
+msgid "Do not show in the switch panel"
+msgstr "ウィンドウ切替に表示しない"
+
+#: ../src/winspector.c:1373
+msgid "Do not include in switch panel while cycling windows."
+msgstr "ウィンドウ切替にこのウィンドウを表示しません."
+
+#: ../src/winspector.c:1376
+msgid "Do not let it take focus"
+msgstr "フォーカスしない"
+
+#: ../src/winspector.c:1378
+msgid ""
+"Do not let the window take keyboard focus when you\n"
+"click on it."
+msgstr ""
+"ウィンドウをクリックした時にもキーボードフォーカスを\n"
+"渡さないようにします."
+
+#: ../src/winspector.c:1381
+msgid "Keep inside screen"
+msgstr "スクリーンの内側に保持する"
+
+#: ../src/winspector.c:1383
+msgid ""
+"Do not allow the window to move itself completely\n"
+"outside the screen. For bug compatibility.\n"
+msgstr ""
+"ウィンドウが自身を完全に画面の外に移動させてしまわないようにします. \n"
+"(バグ互換性のため)\n"
+
+#: ../src/winspector.c:1387
+msgid "Ignore 'Hide Others'"
+msgstr "'他を隠す'を無視する"
+
+#: ../src/winspector.c:1389
+msgid ""
+"Do not hide the window when issuing the\n"
+"`HideOthers' command."
+msgstr "'他を隠す'コマンドが実行されても隠さないようにします."
+
+#: ../src/winspector.c:1392
+msgid "Ignore 'Save Session'"
+msgstr "'セッションの保存'を無視する."
+
+#: ../src/winspector.c:1394
+msgid ""
+"Do not save the associated application in the\n"
+"session's state, so that it won't be restarted\n"
+"together with other applications when Window Maker\n"
+"starts."
+msgstr ""
+"セッションの状態とこのアプリケーションの関連を保存\n"
+"しないようにします. 次に Window Maker が起動した時に\n"
+"このアプリケーションが自動的に起動しないようになります."
+
+#: ../src/winspector.c:1399
+msgid "Emulate application icon"
+msgstr "アプリアイコンのエミュレート"
+
+#: ../src/winspector.c:1401
+msgid ""
+"Make this window act as an application that provides\n"
+"enough information to Window Maker for a dockable\n"
+"application icon to be created."
+msgstr ""
+"このウィンドウがドック可能なアプリアイコンを\n"
+"自前で備えているかのように振る舞わせます."
+
+#: ../src/winspector.c:1406
+msgid "Focus across workspaces"
+msgstr "ワークスペースを跨いででもフォーカスする"
+
+#: ../src/winspector.c:1408
+msgid ""
+"Allow Window Maker to switch workspace to satisfy\n"
+"a focus request (annoying)."
+msgstr ""
+"フォーカス要求に対して Window Maker がワークスペースを\n"
+"切替えるようにします (微妙です)."
+
+#: ../src/winspector.c:1412
+msgid "Do not let it be minimized"
+msgstr "最小化しない"
+
+#: ../src/winspector.c:1414
+msgid ""
+"Do not let the window of this application be\n"
+"minimized.\n"
+msgstr ""
+"このアプリケーションのウィンドウは最小化しないようにします.\n"
+
+#: ../src/winspector.c:1419
+msgid "Disable language button"
+msgstr "言語の切替えの無効化"
+
+#: ../src/winspector.c:1421
+msgid "Remove the `toggle language' button of the window."
+msgstr "'言語を切り替える'ボタンを表示しなくします"
+
+#: ../src/winspector.c:1438
+msgid "Miniwindow Image"
+msgstr "ミニウィンドウ画像"
+
+#: ../src/winspector.c:1465
+msgid "Icon filename:"
+msgstr "アイコンファイル名:"
+
+#: ../src/winspector.c:1476
+msgid "Ignore client supplied icon"
+msgstr "アプリ自前のアイコンを無視"
+
+#: ../src/winspector.c:1482
+msgid "Initial Workspace"
+msgstr "起動時のワークスペース"
+
+#: ../src/winspector.c:1484
+msgid "The workspace to place the window when it's first shown."
+msgstr "このウィンドウが起動時に出現するワークスペース."
+
+#: ../src/winspector.c:1490
+msgid "Nowhere in particular"
+msgstr "特に指定しない"
+
+#: ../src/winspector.c:1507
+msgid "Application Attributes"
+msgstr "アプリケーション属性"
+
+#: ../src/winspector.c:1518
+msgid "Start hidden"
+msgstr "起動時に隠す"
+
+#: ../src/winspector.c:1520
+msgid "Automatically hide application when it's started."
+msgstr "アプリケーションの起動時に自動的に隠れるようにする."
+
+#: ../src/winspector.c:1523
+msgid "No application icon"
+msgstr "アプリアイコンを表示しない"
+
+#: ../src/winspector.c:1525
+msgid ""
+"Disable the application icon for the application.\n"
+"Note that you won't be able to dock it anymore,\n"
+"and any icons that are already docked will stop\n"
+"working correctly."
+msgstr ""
+"このアプリケーションのアプリアイコンを無効にします.\n"
+"注意: すると, ドックやクリップができなくなります. \n"
+"また, すでに登録されているドックも正しく動かなくなります."
+
+#: ../src/winspector.c:1531
+msgid "Shared application icon"
+msgstr "アプリアイコンを共有"
+
+#: ../src/winspector.c:1533
+msgid ""
+"Use a single shared application icon for all of\n"
+"the instances of this application.\n"
+msgstr ""
+"同じアプリが複数起動しているとき,\n"
+"アプリアイコンを１つにまとめます.\n"
+
+#: ../src/workspace.c:93 ../src/workspace.c:94 ../src/workspace.c:660
+#, c-format
+msgid "Workspace %i"
+msgstr "ワークスペース %i"
+
+#: ../src/workspace.c:704
+msgid "Workspaces"
+msgstr "ワークスペースの設定"
+
+#: ../src/workspace.c:706
+msgid "could not create Workspace menu"
+msgstr "ワークスペースメニューを作成できません"
+
+#: ../src/workspace.c:713
+msgid "New"
+msgstr "新しいワークスペースを作成"
+
+#: ../src/workspace.c:714
+msgid "Destroy Last"
+msgstr "最後のワークスペースを削除"

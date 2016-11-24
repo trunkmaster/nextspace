@@ -1,0 +1,476 @@
+# Romanian message file for WindowMaker
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WindowMaker 0.65.1\n"
+"PO-Revision-Date: 1998-09-08 22:00:00-0300\n"
+"Last-Translator: AndreiVuta(gigi_man@manag.pub.ro)\n"
+"Language-Team: Romanian \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: ../main.c:147
+msgid "Restart failed!!!"
+msgstr "Reinitializare esuata"
+
+#: ../main.c:162
+msgid "%s aborted.\n"
+msgstr "%s intrerupta.\n"
+
+#: ../main.c:170
+msgid "usage: %s [-options]\n"
+msgstr "folosire: %s [-optiunii]\n"
+
+#: ../main.c:171
+msgid "options:"
+msgstr "optiuni:"
+
+#: ../main.c:173
+msgid " -nocpp \t\tdisable preprocessing of configuration files"
+msgstr " -nocpp \t\tterminarea preprocesarii fisierelor de configurare"
+
+#: ../main.c:176
+msgid " -nodock\t\tdo not open the application Dock"
+msgstr " -nodock\t\tnu folositi aplicatia Dock"
+
+#: ../main.c:178
+msgid " -locale locale\t\tlocale to use"
+msgstr ""
+
+#: ../main.c:179
+msgid " -display host:dpy\tdisplay to use"
+msgstr " -display host:dpy\tconsola de folosire"
+
+#: ../main.c:180
+msgid " -version\t\tprint version and exit"
+msgstr " -version\t\ttipareste nr. versiunii si iesi"
+
+#: ../main.c:234
+msgid "cannot set locale %s"
+msgstr ""
+
+#: ../main.c:235
+msgid "falling back to C locale"
+msgstr ""
+
+#: ../main.c:263
+msgid "X server does not support locale"
+msgstr "X-serverul nu suporta local"
+
+#: ../main.c:266
+msgid "cannot set locale modifiers"
+msgstr ""
+
+#: ../main.c:276
+msgid "could not open display %s"
+msgstr "display-ul \"%s\" nu se poate deschide"
+
+#: ../event.c:230
+msgid "stack overflow: too many dead processes"
+msgstr "stack inundat: prea multe procese moarte"
+
+#: ../startup.c:137
+msgid "internal X error: %s\n"
+msgstr "eroare interna X: %s\n"
+
+#: ../startup.c:152
+msgid "got signal %i (%s)\n"
+msgstr ""
+
+#: ../startup.c:154
+msgid "got signal %i\n"
+msgstr ""
+
+#: ../texture.c:317 ../texture.c:327
+msgid "unsupported visual/depth for gradients"
+msgstr "visual/depth nesuportata de gradienti"
+
+#: ../menu.c:231
+msgid "wrealloc() failed while trying to add menu item"
+msgstr ""
+
+#: ../pixmap.c:211
+msgid "could not load mask bitmap file \"%s\". Won't use mask"
+msgstr "nu se poate incarca bitmap-ul \"%s\".Nu folositi mask."
+
+#: ../image.c:183 ../image.c:889 ../pixmap.c:261
+msgid "could not load XPM file \"%s\""
+msgstr "nu se poate incarca fisierul XPM \"%s\" ."
+
+#: ../pixmap.c:264
+msgid "cannot load \"%s\": XPM support not compiled in"
+msgstr "\"%s\" Suportul XPM nu este compilat"
+
+#: ../pixmap.c:271
+msgid "could not load XBM file \"%s\""
+msgstr "fisierul XBM \"%s\" nu se poate incarca "
+
+#: ../image.c:196 ../pixmap.c:275
+msgid "can't identify image file \"%s\""
+msgstr "fisierul grafic \"%s\" nu poate fi identificat"
+
+#: ../image.c:200 ../pixmap.c:279
+msgid "unknown image format in \"%s\""
+msgstr "format grafic necunoscut in \"%s\""
+
+#: ../image.c:65 ../image.c:494
+msgid "can't load pixmap file \"%s\". Size too weird"
+msgstr "fisierul pixmap \"%s\" nu se poate incarca. Dimensiuni ciudate"
+
+#: ../image.c:83 ../image.c:746 ../image.c:768
+msgid "virtual memory exhausted during pixmap load. Not fatal..."
+msgstr "memoria virtuala facuta zob la incarcarea PXM.Nu e fatal..."
+
+#: ../image.c:100 ../image.c:510
+msgid "virtual memory exhausted. Continuing..."
+msgstr "memoria virtuala terminata.Continuare..."
+
+#: ../image.c:186
+msgid "cannot load \"%s\": XPM format not supported"
+msgstr "\"%s\" nu se poate incarca. Formatul XPM nu e suportat"
+
+#. XPM
+#: ../image.c:191
+msgid "can't convert XBM file \"%s\" to internal format"
+msgstr "fisierul XBM \"%s\" nu poate fi convertit in format intern"
+
+#: ../image.c:556 ../image.c:562 ../image.c:581
+msgid "virtual memory exhausted during XPM load."
+msgstr "memoria virtuala a murit la incarcarea XPM-urilor"
+
+#: ../image.c:712 ../image.c:855
+msgid "could not convert image \"%s\" to internal format"
+msgstr "imaginea \"%s\" nu poate fi convertita la formatul intern "
+
+#: ../image.c:901
+msgid "can't load \"%s\": unknown image format"
+msgstr "\"%s\" nu poate fi incarcat: formatul imaginii necunoscut"
+
+#: ../screen.c:83
+msgid "it seems that there already is a window manager running"
+msgstr "se pare ca un alt WM e in executie"
+
+#: ../screen.c:234 ../screen.c:344
+msgid "could not parse color %s"
+msgstr "nu e posibila decodificarea culorii %s"
+
+#: ../screen.c:289
+msgid "The following character sets are missing:"
+msgstr ""
+
+#: ../screen.c:293
+msgid "The string \"%s\" will be used in place"
+msgstr ""
+
+#: ../screen.c:295
+msgid "of any characters from those sets."
+msgstr ""
+
+#: ../screen.c:298
+msgid "could not create font set %s. Using fixed"
+msgstr ""
+
+#: ../screen.c:305
+msgid "could not load any usable font set"
+msgstr ""
+
+#: ../screen.c:315
+msgid "could not load font %s. Using fixed"
+msgstr "fontul nu poate fi incarcat %s.Se foloseste fixed"
+
+#: ../screen.c:318
+msgid "could not load any usable font"
+msgstr "nu poate fi incarcat nici un font"
+
+#: ../screen.c:439
+msgid "Gradient texture not supported for your display (PseudoColor %ibpp)"
+msgstr "Textura gradientului nu e suportata de monitor (PseudoColor %ibpp)"
+
+#: ../screen.c:442
+msgid "You must enable dithering to be able to use gradients with this display"
+msgstr "Trebuie activat dithering-ul pt folosirea gradientilor cu acest monitor"
+
+#: ../screen.c:456
+msgid "Gradient texture available only for PseudoColor and TrueColor displays"
+msgstr "Textura gradientilor e disponibila numai pentru PseudoColor si TrueColor"
+
+#: ../screen.c:478
+msgid "could not allocate texture"
+msgstr "textura nu poate fi alocata"
+
+#: ../screen.c:1058
+msgid "colormap size value(s) too large"
+msgstr "valorile pt. dimensiunile  mapei de culori sunt prea mari"
+
+#: ../dialog.c:208 ../rootmenu.c:108
+msgid "Exit"
+msgstr "Iesire"
+
+#: ../rootmenu.c:109
+msgid "Exit window manager?"
+msgstr "Iesire WindowManager?"
+
+#: ../rootmenu.c:128
+msgid "Close X session"
+msgstr "Inchidere sesiune X"
+
+#: ../rootmenu.c:129
+msgid ""
+"Close Window System session?\n"
+"(all applications will be closed)"
+msgstr ""
+"Inchidere sesiune Window System?\n"
+"(toate aplicatiile vor fi inchise)"
+
+#: ../rootmenu.c:217 ../rootmenu.c:314 ../rootmenu.c:496
+msgid "Switch to %i"
+msgstr "Mutare catre a %i"
+
+#: ../rootmenu.c:283
+msgid "out of memory to store menu commands. Nuking it."
+msgstr "Memorie prea putina pt.inreg. comenzilor meniului. "
+
+#: ../rootmenu.c:303
+msgid "Workspace"
+msgstr ""
+
+#: ../rootmenu.c:305
+msgid "could not create Workspace menu"
+msgstr " Meniul Workspace nu poate fi creat"
+
+#: ../rootmenu.c:308
+msgid "New"
+msgstr "Nou"
+
+#: ../rootmenu.c:309
+msgid "Destroy Last"
+msgstr "Distrugerea ultimului"
+
+#: ../rootmenu.c:350
+msgid "missing command in menu config: %s"
+msgstr "lipseste comanda din configurarea meniului: %s"
+
+#: ../rootmenu.c:390
+msgid "menu can only have one WORKSPACE_MENU"
+msgstr "meniul nu poate avea decit un WORKSPACE_MENU "
+
+#: ../rootmenu.c:406
+msgid "unknown command \"%s\" in menu config."
+msgstr "comanda necunoscuta \"%s\" in configuratia meniului."
+
+#: ../rootmenu.c:410
+msgid "syntax error in menu config. END declaration missing"
+msgstr "eroare de sintaxa in configurarea  meniului.Lipseste END"
+
+#: ../rootmenu.c:435
+msgid "syntax error in menu config. %s"
+msgstr "eroare de sintaxa in configuratia meniului: %s"
+
+#: ../rootmenu.c:443
+msgid "no title given for the root menu"
+msgstr "lipseste titlul meniului din root"
+
+#: ../rootmenu.c:455
+msgid "Commands"
+msgstr "Comenzi"
+
+#: ../rootmenu.c:456
+msgid "Exit..."
+msgstr "Iesire..."
+
+#: ../rootmenu.c:573
+msgid "could not stat menu configuration file \"%s\""
+msgstr "fisierul de configurare nu poate fi accesat \"%s\""
+
+#: ../rootmenu.c:578
+msgid "no read permision to menu configuration file"
+msgstr "meniul de configurare nu poate fi citit"
+
+#: ../rootmenu.c:595
+msgid "could not make arguments for menu file preprocessor"
+msgstr "nu se pot construi argumente pt. meniul fisierului preprocessor"
+
+#: ../rootmenu.c:603
+msgid "could not open menu configuration preprocessor"
+msgstr "meniul de configurare preprocessor nu poate fi deschis"
+
+#: ../rootmenu.c:613
+msgid "couldn't open menu configuration file \"%s\""
+msgstr "meniul fisierului de configurare \"%s\" nu poate fi deschis"
+
+#: ../dock.c:689 ../rootmenu.c:646
+msgid "Error"
+msgstr "Eroare"
+
+#: ../rootmenu.c:647
+msgid ""
+"Could not read menu configuration\n"
+"(see console log for details)"
+msgstr ""
+"Configuratia meniului nu poate fi citita\n"
+"(vezi console log pt. detalii)"
+
+#: ../dialog.c:196
+msgid "OK "
+msgstr ""
+
+#: ../dialog.c:210
+msgid "Cancel"
+msgstr "Anulare"
+
+#: ../resource.c:297 ../resource.c:359 ../resource.c:368 ../resource.c:497 ../resource.c:521 ../resource.c:530 ../resource.c:555
+msgid "%s: syntax error in line \"%s\""
+msgstr "%s: eroare de sintaxa in linia \"%s\""
+
+#: ../resource.c:309
+msgid "%s: invalid window attribute specification in \"%s\""
+msgstr "%s: specificarea atributelor ferestrei invalida in \"%s\""
+
+#: ../resource.c:336
+msgid "%s: unknown attribute in line \"%s\""
+msgstr "%s: atribut invalid in linia \"%s\""
+
+#: ../resource.c:416 ../resource.c:425 ../resource.c:437
+msgid "%s:invalid kbd shortcut specification \"%s\""
+msgstr "%s:specificarea shortcut-ului tastaturii invalid \"%s\""
+
+#: ../resource.c:477
+msgid "%s: expected section identifier but got %s"
+msgstr "%s: %s este asteptat identificatorul de sectiune"
+
+#: ../resource.c:510
+msgid "%s: unknown option in line \"%s\""
+msgstr "%s: optiune necunoscuta in linia \"%s\""
+
+#: ../resource.c:559
+msgid "%s: invalid colormap size in line \"%s\""
+msgstr "%s: dimensiuni invalide ale hartii de culori in linia \"%s\""
+
+#: ../resource.c:579
+msgid "%s: invalid geometry display type \"%s\". Shouldbe center, corner, floating or line"
+msgstr "%s: tip de geometrie a monitorului invalid \"%s\". Valori permise: center, corner, floating sau line"
+
+#: ../resource.c:601
+msgid "%s: invalid focus mode \"%s.\" Should be manual, auto or semiauto"
+msgstr "%s: mod de focalizare invalid \"%s.\" Valori permise: manual, auto sau semiauto"
+
+#: ../resource.c:619
+msgid "%s: invalid window placement mode \"%s\". Should be auto, cascade or manual"
+msgstr "%s: modo al plasarii ferestrei invalid \"%s\". Valori permise: auto, cascade sau manual"
+
+#: ../resource.c:639
+msgid "%s: invalid texture type \"%s\" Should be solid, dgradient, vgradient or hgradient"
+msgstr "%s: tip de textura invalid \"%s\" Valori permise: solid, dgradient, vgradient sau hgradient"
+
+#: ../resource.c:666
+msgid "%s: invalid gradient spec. \"%s\""
+msgstr "%s: specificarea  gradientului invalida \"%s\""
+
+#: ../resource.c:685
+msgid "%s: invalid coordinate \"%s\""
+msgstr "%s: coordonata invalida \"%s\""
+
+#: ../resource.c:701
+msgid "%s: invalid justification type \"%s\". Should be left, center or right"
+msgstr "%s: tipul de justificare invalid \"%s\". Valori permise: left, center sau right"
+
+#: ../resource.c:731
+msgid "could not make arguments for preference file preprocessor"
+msgstr "nu se pot crea argumente pt. fisierul de configurare preprocesor"
+
+#: ../resource.c:737
+msgid "could not open preference file preprocessor"
+msgstr "nu se poate deschide fisierul de configurare preprocesor"
+
+#: ../resource.c:744
+msgid "could not open configuration file: \"%s\""
+msgstr "nu se poate deschide fisierul de configurare: \"%s\""
+
+#: ../resource.c:791
+msgid "could not find default icon \"%s\""
+msgstr "imposibil de gasit icon-ul predefinit \"%s\" "
+
+#: ../resource.c:797
+msgid "could not find a preference file (%s) in \"%s\""
+msgstr "fisierul de configurare (%s) nu se gaseste in \"%s\""
+
+#: ../resource.c:805
+msgid "could not find icon background \"%s\""
+msgstr "nu se poate gasi icon-ul de bakground \"%s\" "
+
+#: ../raster.c:183
+msgid "invalid dither colormap size specification.disabling"
+msgstr "specificarea marimii hartii de culori e invalida.  Dezactivare"
+
+#: ../raster.c:193
+msgid "Could not build PseudoColor color table\n"
+msgstr "Nu e posibila crearea PseudoColor\n"
+
+#: ../misc.c:50
+msgid "could not define value for %s for cpp"
+msgstr ""
+
+#: ../misc.c:80
+msgid "could not get password entry for UID %i"
+msgstr ""
+
+#: ../appmenu.c:114
+msgid "appmenu:could not create menu"
+msgstr ""
+
+#: ../appmenu.c:145
+msgid "appmenu:could not create menu entry"
+msgstr ""
+
+#: ../stacking.c:89 ../stacking.c:148
+msgid "could not get window list!!"
+msgstr ""
+
+#: ../switchmenu.c:109
+msgid "Windows"
+msgstr "Ferestre"
+
+#: ../dock.c:171
+msgid "could not open file \"%s\" to save Dock state"
+msgstr "e' fisierul \"%s\" nu se poate deschide pt. salvarea starii Dock-ului"
+
+#: ../dock.c:687
+msgid "Could not execute program \"%s\""
+msgstr "Nu se poate executa programul \"%s\" "
+
+#: ../winmenu.c:119
+msgid "(Un)Maximize"
+msgstr "(De)Maximizeaza"
+
+#: ../winmenu.c:126
+msgid "Miniaturize"
+msgstr "Miniaturizeaza"
+
+#: ../winmenu.c:133
+msgid "(Un)Shade"
+msgstr "(Des)Acopera??"
+
+#: ../winmenu.c:140
+msgid "Hide"
+msgstr "Ascunde"
+
+#: ../winmenu.c:146
+msgid "Hide Others"
+msgstr "Ascunde Celelalte"
+
+#: ../winmenu.c:149
+msgid "Close"
+msgstr "Inchide"
+
+#: ../winmenu.c:156
+msgid "Kill"
+msgstr "Omoara"
+
+#: ../generic/error.c:46
+msgid " fatal error: "
+msgstr " eroare fatala: "
+
+#: ../generic/error.c:72
+msgid " warning: "
+msgstr " avertisment: "

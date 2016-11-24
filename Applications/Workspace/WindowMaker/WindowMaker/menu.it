@@ -1,0 +1,129 @@
+//
+// Root Menu definizioni per WindowMaker
+//
+// Sintassi:
+//
+// <Titolo> <Comando> <Parametri>
+//
+// <Titolo> e' la stringa usata per il titolo. Deve essere racchiusa dagli apici
+// 	se contiene degli spazi
+//
+// <Comando> uno dei seguenti comandi: 
+//	MENU - inizio della definizione di un sottomenu 
+//	END  - fine della definizione di un sottomenu
+//	EXEC <programma> - esegue un programma
+//	SHEXEC <command> - executes a shell command (like gimp > /dev/null)
+//	EXIT - esce dal gestore di finestre (Window Manager)
+//	RESTART [<window manager>] - reinizializza WindowMaker o lancia un altro
+//			window manager
+//	REFRESH - ridisegna l'area di lavoro
+//	ARRANGE_ICONS - riordina le icone sull'area di lavoro 
+//	SHUTDOWN - uccide tutti i clienti (e chiude la sessione X window) 
+//	WORKSPACE_MENU - aggiunge un submenu per operazioni sull'area di lavoro
+//	SHOW_ALL - mostra tutte le finestre dell'area di lavoro
+//	HIDE_OTHERS -nasconde tutte le finestre dell'area di lavoro eccetto
+//		la finestra attiva (or the last one that received focus)
+//
+// <Parametri> e' il programma da eseguire.
+//
+// ** Opzioni per la linea di comando in EXEC:
+// %s - sostituisce con la selezione corrente. Se non e' disponibile nessuna
+//	selezione, il comando e' annullato
+// %w - sostituisce con l'identificativo della finestra correntemente   
+//	selezionata. Se nessuna finestra e' selezionata, viene restituito vuoto 
+// 
+// Si possono generare caratteri speciali (come % e ")  con il carattere \ :
+// esempio: xterm -T "\"ciao mondo\"" (ndt banale, no? )
+//
+// Ciascun comando MENU deve avere un comando END alla fine. 
+// Vedere esempio:
+
+
+#include <wmmacros>
+
+"Applicazioni" MENU
+	"Informazioni" MENU
+		"Info Panel..." INFO_PANEL
+		"Legal" LEGAL_PANEL
+		"Carico del Sistema" SHEXEC xosview || xload
+		"Lista dei Processi" EXEC xterm -e top
+		"Ricerca Manuali" EXEC xman
+	"Informazioni" END
+	"XTerm" SHEXEC xterm -sb || color-xterm -sb || xterm -sb
+	"XJed"	EXEC xjed 
+	"Area di lavoro" WORKSPACE_MENU
+	"Applicazioni" MENU
+		"Grafica" MENU
+			"Gimp" EXEC gimp
+			"XV" EXEC xv
+			"XPaint" EXEC xpaint
+			"XFig" EXEC xfig
+		"Grafica" END
+		"X File Manager" EXEC xfm
+		"OffiX Files" EXEC files
+		"LyX" EXEC lyx
+		"Netscape" EXEC netscape 
+  		"Ghostview" EXEC ghostview %a(Ghostview)
+                "XDvi" EXEC xdvi %a(XDvi)
+		"Acrobat" EXEC /usr/local/Acrobat3/bin/acroread %a(Acrobat)
+  		"TkDesk" EXEC tkdesk
+	"Applicazioni" END
+	"Editori" MENU
+		"XEmacs" SHEXEC xemacs || emacs
+		"XJed" EXEC xjed
+		"NEdit" EXEC nedit
+		"Xedit" EXEC xedit
+		"VI" EXEC xterm -e vi
+	"Editori" END
+	"Varie" MENU
+		"Xmcd" SHEXEC xmcd 2> /dev/null
+		"Xplaycd" EXEC xplaycd
+		"Xmixer" EXEC xmixer
+	"Varie" END
+	"Utilita'" MENU
+		"Calcolatore" EXEC xcalc
+		"Selezione Font" EXEC xfontsel
+		"Lente" EXEC xmag
+		"Mappa Colori" EXEC xcmap
+		"Assassinio X" EXEC xkill
+		"ASClock" EXEC asclock -shape
+		"Clipboard" EXEC xclipboard
+	"Utilita'" END
+
+	"Selezione" MENU
+		"Invio posta a.." EXEC xterm -name mail -T "Pine" -e pine %s
+	        "Navigare" SHEXEC netscape -noraise -remote \
+			'openURL(%s,new-window)' || netscape %s
+		"Ricerca nei Manuali" SHEXEC MANUAL_SEARCH(%s)
+	"Selezione" END
+
+	"Area di lavoro" MENU
+		"Nascondi Altri" HIDE_OTHERS
+		"Mostra Tutti" SHOW_ALL
+		"Riordina Icone" ARRANGE_ICONS
+		"Refresh" REFRESH
+		"Lock" EXEC xlock -allowroot -usefirst
+		"Sfondo" MENU
+			"Nessuno" EXEC CLEARROOT
+			"Nero" WS_BACK '(solid, black)'
+			"Blu"  WS_BACK '(solid, "#505075")'
+			"Rosso"  WS_BACK '(solid, "#554466")'
+			"Beige"  WS_BACK '(solid, wheat4)'
+			"Grigio scuro"  WS_BACK '(solid, "#333340")'
+			"Vinaccia"  WS_BACK '(solid, "#400020")'
+		"Sfondo" END
+#if (DEPTH>8)
+// Setup some gradient schemes for newbies and lazy people
+// E' necessario rieiniziare dopo avere selezionato il gradiente.
+#include <gradients.menu>
+#endif
+		"Salva area di lavoro" EXEC SAVE_WORKSPACE
+	"Area di lavoro" END
+	
+	"Uscire"	MENU
+		"Restart" RESTART
+		"Avviare AfterStep" RESTART afterstep
+		"Uscire..."  EXIT
+		"Uscire dalla sessione..." SHUTDOWN
+	"Uscire" END
+"Applicazioni" END

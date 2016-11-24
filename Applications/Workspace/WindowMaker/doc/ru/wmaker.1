@@ -1,0 +1,144 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH Window\ Maker 1 "August 1998"
+.SH "НАИМЕНОВАНИЕ"
+wmaker \- оконный менеджер для X11 эмулирующий интерфейс NEXTSTEP.
+.SH "СИНТАКСИС"
+.B wmaker
+.I "[\-options]"
+.SH "ОПИСАНИЕ"
+Window Maker это оконный менеджер для X11 эмулирующий интерфейс NEXTSTEP.
+Он пытается быть максимально похожим на интерфейс NeXT, но отличается при
+необходимости.
+.SH "ОПЦИИ"
+.TP
+.B \-\-no\-cpp
+Отключить препроцессор файлов конфигурации.
+.TP
+.B \-\-no\-dock
+Не показывать док.
+.TP
+.B \-\-no\-clip
+Не показывать скрепку-индикатор рабочего стола.
+.TP
+.B \-display host:display.screen
+Указать дисплей для использования.
+На машинах с несколькими мониторами Window Maker автоматически будет
+контролировать все экраны. Если Вы хотите, чтобы Window Maker запустился только
+на определённом экране, то Вам понадобится указать номер экрана с помощью опции
+.B \-display
+Например, если Вы хотите, чтобы Window Maker запустился только на первом
+экране, то команда запуска будет выглядеть как:
+.B wmaker \-display :0.1
+.TP
+.B \-\-version
+Указать номер версии и выйти.
+.TP
+.B \-\-visual\-id
+Указать ID графического режима. Смотрите
+.BR xdpyinfo (1)
+для списка доспупных графических режимов.
+.TP
+.B \-\-help
+Показать краткую справку.
+.PP
+.SH "ФАЙЛЫ"
+.TP
+.B ~/GNUstep/Defaults/WindowMaker
+Основные настройки Window Maker.
+.TP
+.B ~/GNUstep/Defaults/WMState
+Информация о доке (Dock) и индикаторе рабочих столов (Clip). НЕ редактируйте
+этот файл во время работы Window Maker. Он будет перезаписан.
+.TP
+.B ~/GNUstep/Defaults/WMRootMenu
+Содержит имя файла корневого меню или само меню в формате списка свойств.
+.TP
+.B ~/GNUstep/Defaults/WMWindowAttributes
+Атрибуты различных классов и копий приложений. Используйте редактор свойств
+(клик правой клавишей мыши на заголовке, в выпавшем меню выбрать пункт
+"Свойства...") вместо прямой модификации этого файла. Всего пара опций
+недоступны в редакторе свойств.
+.TP
+.B /usr/share/WindowMaker/Defaults/
+Все указанные выше файлы ЧИТАЮТСЯ из этой папки, в том случае, если они
+отсутствуют среди пользовательских настроек, за исключением WMState, который
+КОПИРУЕТСЯ. Не важно, откуда файлы считаны; если необходимо записать
+настройки в эти файлы, то они будут записаны также и в пользовательские.
+.TP
+.B ~/GNUstep/Library/WindowMaker/autostart
+Этот скрипт автоматически выполняется при старте Window Maker.
+.TP
+.B ~/GNUstep/Library/WindowMaker/exitscript
+Этот скрипт автоматически выполняется перед завершением работы Window Maker.
+.B Заметка:
+Если Вы хотите запустить из этого скрипта что либо требующее работы сервера X,
+то убедитесь, что вы не используете команду
+.I SHUTDOWN
+из корневого меню для выхода из Window Maker. В противном случае сервер X может
+быть остановлен до исполнения срипта.
+.TP
+.B ~/GNUstep/Library/WindowMaker/
+Здесь производится поиск файла меню, указанного в WMRootMenu…
+.TP
+.B /etc/X11/WindowMaker/
+и здесь. В указанном порядке. В том случае, если указан не абсолютный путь.
+.TP
+.B ~/GNUstep/Library/WindowMaker/Pixmaps/
+Здесь Window Maker производит поиск картинок.
+.TP
+.B ~/GNUstep/Library/WindowMaker/Backgrounds/
+Здесь Window Maker ищет обои.
+.TP
+.B ~/GNUstep/Library/WindowMaker/Styles/
+Здесь Window Maker производит поиск стилей (неправда… выглядит так, но Вам всё
+равно придётся указать полный путь; это просто место для красивой организации).
+.TP
+.B ~/GNUstep/Library/WindowMaker/Themes/
+Здесь Window Maker ищет файлы тем (там же).
+.TP
+.B /usr/share/WindowMaker/Pixmaps/
+Системные пиктограммы находятся здесь…
+.TP
+.B /usr/share/WindowMaker/Pixmaps/
+и здесь.
+.TP
+.B /usr/share/WindowMaker/Styles/
+Системные стили находятся здесь…
+.TP
+.B /usr/share/WindowMaker/Themes/
+Угадайте… ;-)
+.SH "ОКРУЖЕНИЕ"
+.IP GNUSTEP_USER_ROOT
+Указывает начальный путь к папке Defaults. "Defaults/" приписывается к этой
+переменной, чтобы определить настоящее расположение данных. Если переменная не
+установлена, то её значение: "~/GNUstep".
+.IP GNUSTEP_LOCAL_ROOT
+Указыввает расположение общесистемной папки \fBlocal\fP GNUstep
+(это полезно, например, в тех случаях, где общесистемные настройки находятся
+на сетевом ресурсе). Если эта переменная пуста, то поиск происходит то ищется
+переменная GNUSTEP_SYSTEM_ROOT.
+.IP GNUSTEP_SYSTEM_ROOT
+указывает общесистемное расположение папки GNUstep. Если эта переменная пуста,
+то её значение: /etc/GNUstep
+.SH "СМОТРИ ТАКЖЕ"
+The Window Maker User Guide
+.PP
+The Window Maker FAQ
+.PP
+.BR X (7),
+.BR wdwrite (1),
+.BR wxcopy (1),
+.BR geticonset (1),
+.BR seticons (1),
+.BR wmaker (1),
+.BR wxpaste (1),
+.BR getstyle (1),
+.BR setstyle (1),
+.BR wmsetbg (1)
+.SH "АВТОРЫ"
+Window Maker написан Alfredo K. Kojima <kojima@windowmaker.info>,
+Dan Pascu <dan@windowmaker.org> и дополнен вкладом многих людей по всему
+интернету.
+.PP
+Это руководство было написано Marcelo E. Magallon, <mmagallo@debian.org>.
+Перевод на русский язык осуществил NIR aka Ginko <faust@gmx.com>.

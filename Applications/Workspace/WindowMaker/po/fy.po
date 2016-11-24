@@ -1,0 +1,2156 @@
+# Translation into Western Frisian for Window Maker
+# Copyright (C) 2015 Window Maker Developers Team
+# This file is distributed under the same license as the windowmaker package.
+# Original by Alwin <translations@ziggo.nl>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wmaker-0.95.6+\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-06-14 16:10+0200\n"
+"PO-Revision-Date: 2015-06-14 00:00+0000\n"
+"Last-Translator: Alwin <translations@ziggo.nl>\n"
+"Language-Team: Western Frisian\n"
+"Language: fy\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/actions.c:1066
+#, c-format
+msgid "window \"%s\" has a severely broken WM_TRANSIENT_FOR hint"
+msgstr "finster \"%s\" hat in swier skansearre WM_TRANSIENT_FOR-hint"
+
+#: ../src/actions.c:1176
+#, c-format
+msgid "creation of mini-preview failed for window \"%s\""
+msgstr "miniatuer oanmeitsje mislearre foar finster \"%s\""
+
+#: ../src/appicon.c:542 ../src/dialog.c:583 ../src/dock.c:3367
+#: ../src/dockedapp.c:171 ../src/main.c:292 ../src/rootmenu.c:1670
+#: ../src/winspector.c:473 ../src/winspector.c:489
+msgid "Error"
+msgstr "Flater"
+
+#: ../src/appicon.c:543
+msgid "Could not open specified icon file"
+msgstr "Koe opjûn ikoanbestân net iepenje"
+
+#: ../src/appicon.c:544 ../src/dialog.c:428 ../src/dialog.c:489
+#: ../src/dialog.c:583 ../src/dialog.c:994 ../src/dialog.c:1660
+#: ../src/dock.c:452 ../src/dock.c:459 ../src/dock.c:506 ../src/dock.c:3367
+#: ../src/dock.c:4498 ../src/dockedapp.c:172 ../src/dockedapp.c:345
+#: ../src/main.c:292 ../src/rootmenu.c:1673 ../src/winspector.c:473
+#: ../src/winspector.c:489 ../src/winspector.c:848
+msgid "OK"
+msgstr "OK"
+
+#: ../src/appicon.c:574 ../src/dock.c:229
+msgid ""
+" will be forcibly closed.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+" sil twongen ôfsletten wurde.\n"
+"Net-bewarre wizigingen sille ferlern gean.\n"
+"Befêstigje a.j.w."
+
+#: ../src/appicon.c:581 ../src/dock.c:247 ../src/winmenu.c:253
+msgid "Kill Application"
+msgstr "Programma deadzje"
+
+#: ../src/appicon.c:582 ../src/dock.c:248 ../src/winmenu.c:256
+msgid "Yes"
+msgstr "Ja"
+
+#: ../src/appicon.c:582 ../src/dock.c:248 ../src/winmenu.c:256
+msgid "No"
+msgstr "Nee"
+
+#: ../src/appicon.c:607 ../src/dock.c:1278 ../src/dock.c:3548
+msgid "Unhide Here"
+msgstr "Hjir weromsette"
+
+#: ../src/appicon.c:608 ../src/appicon.c:632 ../src/dock.c:1280
+#: ../src/dock.c:1282 ../src/dock.c:3560 ../src/winmenu.c:88
+msgid "Hide"
+msgstr "Ferbergje"
+
+#: ../src/appicon.c:609 ../src/dock.c:1276 ../src/winmenu.c:94
+msgid "Launch"
+msgstr "Opstarte"
+
+#: ../src/appicon.c:610
+msgid "Set Icon..."
+msgstr "Ikoan ynstelle..."
+
+#: ../src/appicon.c:611 ../src/dock.c:1286 ../src/dock.c:1288
+#: ../src/dock.c:3578 ../src/rootmenu.c:233 ../src/winmenu.c:96
+msgid "Kill"
+msgstr "Deadzje"
+
+#: ../src/appicon.c:630 ../src/dock.c:3558
+msgid "Unhide"
+msgstr "Weromsette"
+
+#: ../src/appmenu.c:94 ../src/appmenu.c:110 ../src/appmenu.c:126
+#: ../src/appmenu.c:136 ../src/appmenu.c:173 ../src/appmenu.c:195
+#, c-format
+msgid "appmenu: bad menu entry \"%s\" in window %lx"
+msgstr "programmamenu: ferkearde menuyngong \"%s\" yn finster %lx"
+
+#: ../src/appmenu.c:98
+#, c-format
+msgid "appmenu: menu command size exceeded in window %lx"
+msgstr "programmamenu: oer menukommandolingte gongen yn finster %lx"
+
+#: ../src/appmenu.c:144 ../src/appmenu.c:154 ../src/appmenu.c:187
+#, c-format
+msgid "appmenu: out of memory creating menu for window %lx"
+msgstr "programmamenu: ûnthâldtekoart by menu oanmeitsje foar finster %lx"
+
+#: ../src/appmenu.c:219
+#, c-format
+msgid "appmenu: unknown version of WMMenu in window %lx: %s"
+msgstr "programmamenu: ûnbekende WMMenu-ferzje yn finster %lx: %s"
+
+#: ../src/defaults.c:871
+#, c-format
+msgid "Domain %s (%s) of global defaults database is corrupted!"
+msgstr "Domein %s (%s) út algemiene ynstellingendatabase is skansearre!"
+
+#: ../src/defaults.c:875
+#, c-format
+msgid "could not load domain %s from global defaults database"
+msgstr "koe domein %s net lade út algemiene ynstellingendatabase"
+
+#: ../src/defaults.c:920 ../src/defaults.c:934
+#, c-format
+msgid "invalid global menu file %s"
+msgstr "ûnjildich algemien menubestân %s"
+
+#: ../src/defaults.c:969 ../src/defaults.c:1048 ../src/defaults.c:1087
+#: ../src/defaults.c:1128
+#, c-format
+msgid "Domain %s (%s) of defaults database is corrupted!"
+msgstr "Domein %s (%s) út ynstellingendatabase is skansearre!"
+
+#: ../src/defaults.c:973 ../src/defaults.c:1070 ../src/defaults.c:1114
+#: ../src/defaults.c:1138
+#, c-format
+msgid "could not load domain %s from user defaults database"
+msgstr "koe domein %s net lade út brûkers-ynstellingendatabase"
+
+#: ../src/defaults.c:1227
+msgid ""
+"your configuration is using old syntax for Mini-Preview settings; consider "
+"running WPrefs.app to update"
+msgstr ""
+"jo konfiguraasje brûkt de âlde syntaks foar miniatuerynstellingen; fier "
+"WPrefs.app út om by te wurkje"
+
+#. --------------------------- Local -----------------------
+#: ../src/defaults.c:1336 ../src/defaults.c:1465 ../src/defaults.c:1560
+#: ../src/defaults.c:1968 ../src/defaults.c:1984 ../src/defaults.c:2029
+#: ../src/defaults.c:2078 ../src/defaults.c:2496 ../src/wdefaults.c:639
+#: ../src/wdefaults.c:668
+#, c-format
+msgid "Wrong option format for key \"%s\". Should be %s."
+msgstr "Ferkearde opsjefoarm foar 'key' \"%s\". Moat %s wêze."
+
+#: ../src/defaults.c:1338 ../src/defaults.c:1414 ../src/defaults.c:1442
+#: ../src/defaults.c:1469 ../src/defaults.c:1481 ../src/defaults.c:1495
+#: ../src/defaults.c:1509 ../src/defaults.c:1564 ../src/defaults.c:1576
+#: ../src/defaults.c:1972 ../src/defaults.c:1989 ../src/defaults.c:2001
+#: ../src/defaults.c:2034 ../src/defaults.c:2050 ../src/defaults.c:2083
+#: ../src/defaults.c:2166 ../src/defaults.c:2501 ../src/defaults.c:2512
+#, c-format
+msgid "using default \"%s\" instead"
+msgstr "brûkt standert \"%s\" yn plak dêrfan"
+
+#: ../src/defaults.c:1365
+#, c-format
+msgid "wrong option value for key \"%s\"; got \"%s\", should be one of %s."
+msgstr ""
+"ferkearde opsjewearde foar 'key' \"%s\"; krige \"%s\", moat ien fan %s wêze."
+
+#: ../src/defaults.c:1410
+#, c-format
+msgid "can't convert \"%s\" to boolean for key \"%s\""
+msgstr "kin \"%s\" net omsette nei 'boolean' foar 'key' \"%s\""
+
+#: ../src/defaults.c:1440
+#, c-format
+msgid "can't convert \"%s\" to integer for key \"%s\""
+msgstr "kin \"%s\" net omsette nei 'integer' foar 'key' \"%s\""
+
+#: ../src/defaults.c:1477
+#, c-format
+msgid "Incorrect number of elements in array for key \"%s\"."
+msgstr "Unkrekt oantal eleminten yn 'array' foar 'key' \"%s\"."
+
+#: ../src/defaults.c:1491
+#, c-format
+msgid "Wrong value for key \"%s\". Should be Coordinate."
+msgstr "Ferkearde wearde foar 'key' \"%s\". Moat koördinaat wêze."
+
+#: ../src/defaults.c:1505
+#, c-format
+msgid "can't convert array to integers for \"%s\"."
+msgstr "kin 'array' net omsette nei 'integers' foar \"%s\"."
+
+#: ../src/defaults.c:1682 ../src/defaults.c:1712 ../src/defaults.c:1728
+#: ../src/defaults.c:1757 ../src/defaults.c:1779 ../src/defaults.c:1830
+#: ../src/defaults.c:1869 ../src/defaults.c:1906 ../src/defaults.c:1922
+#, c-format
+msgid "\"%s\" is not a valid color name"
+msgstr "\"%s\" is gjin jildige kleurnamme"
+
+#: ../src/defaults.c:1694 ../src/defaults.c:1745
+msgid "bad number of arguments in gradient specification"
+msgstr "ferkeard oantal arguminten yn kleurferrinopjefte"
+
+#: ../src/defaults.c:1803
+msgid "too few arguments in multicolor gradient specification"
+msgstr "te min arguminten yn mearkleureferrinopjefte"
+
+#: ../src/defaults.c:1895
+msgid "bad number of arguments in textured gradient specification"
+msgstr "ferkeard oantal arguminten yn opjefte teksturearre kleurferrin"
+
+#: ../src/defaults.c:1938
+#, c-format
+msgid "bad opacity value for tgradient texture \"%s\". Should be [0..255]"
+msgstr ""
+"ferkearde trochsichtichheidswearde tekst. kleurferrin \"%s\". Moat [0..255] "
+"wêze"
+
+#: ../src/defaults.c:1955
+#, c-format
+msgid "invalid texture type %s"
+msgstr "ûnjildich tekstuertype %s"
+
+#: ../src/defaults.c:1997
+#, c-format
+msgid "Error in texture specification for key \"%s\""
+msgstr "Flater yn tekstueropjefte foar 'key' \"%s\""
+
+#: ../src/defaults.c:2046
+msgid "Wrong type for workspace background. Should be a texture type."
+msgstr "Ferkeard type foar wurkromte-eftergrûn. Moat in tekstuertype wêze."
+
+#: ../src/defaults.c:2096
+#, c-format
+msgid "Wrong type for background of workspace %i. Should be a texture."
+msgstr "Ferkeard type foar eftergrûn fan wurkromte %i. Moat in tekstuer wêze."
+
+#: ../src/defaults.c:2137
+msgid "could not load any usable font!!!"
+msgstr "koe gjin brûkber lettertype lade!!!"
+
+#: ../src/defaults.c:2162
+#, c-format
+msgid "could not get color for key \"%s\""
+msgstr "koe kleur net krije foar 'key' \"%s\""
+
+#: ../src/defaults.c:2218 ../src/rootmenu.c:470
+#, c-format
+msgid "%s: invalid key modifier \"%s\""
+msgstr "%s: ûnjildige toetsmodifikator \"%s\""
+
+#: ../src/defaults.c:2230
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\""
+msgstr "%s:ûnjildige fluchtoetsopjefte \"%s\""
+
+#: ../src/defaults.c:2236
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\""
+msgstr "%s:ûnjildige toets yn fluchkeppeling \"%s\""
+
+#: ../src/defaults.c:2261
+#, c-format
+msgid "%s: modifier key %s is not valid"
+msgstr "%s: modifikatortoets %s is net jildich"
+
+#: ../src/defaults.c:2368
+#, c-format
+msgid "failed to open bitmap file \"%s\""
+msgstr "iepenje bitmapbestân \"%s\" mislearre"
+
+#: ../src/defaults.c:2371
+#, c-format
+msgid "\"%s\" is not a valid bitmap file"
+msgstr "\"%s\" is gjin jildich bitmapbestân"
+
+#: ../src/defaults.c:2374
+#, c-format
+msgid "out of memory reading bitmap file \"%s\""
+msgstr "ûnthâldtekoart by ynlêze bitmapbestân \"%s\""
+
+#: ../src/defaults.c:2412 ../src/defaults.c:2445
+msgid "bad number of arguments in cursor specification"
+msgstr "ferkeard oantal arguminten yn kursoropjefte"
+
+#: ../src/defaults.c:2428
+#, c-format
+msgid "unknown builtin cursor name \"%s\""
+msgstr "ûnbekende ynboude kursornamme \"%s\""
+
+#: ../src/defaults.c:2455 ../src/defaults.c:2467
+#, c-format
+msgid "could not find cursor bitmap file \"%s\""
+msgstr "koe kursorbitmapbestân \"%s\" net fine"
+
+#: ../src/defaults.c:2508
+#, c-format
+msgid "Error in cursor specification for key \"%s\""
+msgstr "Flater yn kursoropjefte foar 'key' \"%s\""
+
+#: ../src/defaults.c:2633
+msgid "could not render texture for icon background"
+msgstr "koe tekstuer foar ikoaneftergrûn net werjaan"
+
+#: ../src/defaults.c:3109
+#, c-format
+msgid "Invalid arguments for background \"%s\""
+msgstr "Unjildige arguminten foar eftergrûn \"%s\""
+
+#: ../src/defaults.c:3346 ../src/defaults.c:3415
+#, c-format
+msgid "Invalid arguments for option \"%s\""
+msgstr "Unjildige arguminten foar opsje \"%s\""
+
+#: ../src/defaults.c:3352 ../src/defaults.c:3421
+#, c-format
+msgid "Could not find image \"%s\" for option \"%s\""
+msgstr "Koe ôfbylding \"%s\" foar opsje \"%s\" net fine"
+
+#: ../src/defaults.c:3357 ../src/defaults.c:3429
+#, c-format
+msgid "Could not load image \"%s\" for option \"%s\""
+msgstr "Koe ôfbylding \"%s\" foar opsje \"%s\" net lade"
+
+#: ../src/defaults.c:3367
+msgid "Invalid split sizes for switch panel back image."
+msgstr "Unjildige dielôfmjittings foar efterôfbylding skeakelpaniel."
+
+#: ../src/defaults.c:3436
+#, c-format
+msgid "Invalid number of arguments for option \"%s\""
+msgstr "Unjildich oantal arguminten foar opsje \"%s\""
+
+#: ../src/defaults.c:3452
+#, c-format
+msgid "Value for option \"%s\" must be an array of 7 strings"
+msgstr "Wearde foar opsje \"%s\" moat in 'array' fan 7 'strings' wêze"
+
+#: ../src/defaults.c:3466
+#, c-format
+msgid "Invalid argument for option \"%s\" item %d"
+msgstr "Unjildich argumint foar opsje \"%s\" item %d"
+
+#: ../src/dialog.c:131
+msgid "Save workspace state"
+msgstr "Wurkromtesteat bewarje"
+
+#: ../src/dialog.c:428 ../src/dialog.c:489 ../src/dialog.c:1001
+#: ../src/dock.c:506 ../src/dock.c:4498 ../src/dockedapp.c:350
+#: ../src/rootmenu.c:190 ../src/rootmenu.c:233
+msgid "Cancel"
+msgstr "Annulearje"
+
+#: ../src/dialog.c:581
+#, c-format
+msgid ""
+"Could not open directory \"%s\":\n"
+"%s"
+msgstr ""
+"Koe map \"%s\" net iepenje:\n"
+"%s"
+
+#: ../src/dialog.c:597
+#, c-format
+msgid "full path for file \"%s\" in \"%s\" is longer than %d bytes, skipped"
+msgstr ""
+"folslein paad foar bestân \"%s\" yn \"%s\" is langer as %d byte, oerslein"
+
+#: ../src/dialog.c:631
+msgid "Could not load image file "
+msgstr "Lade mislearre fan ôfbyldingsbestân "
+
+#: ../src/dialog.c:928
+msgid "Directories"
+msgstr "Mappen"
+
+#: ../src/dialog.c:937
+msgid "Icons"
+msgstr "Ikoanen"
+
+#: ../src/dialog.c:970
+msgid "Preview"
+msgstr "Foarbyld"
+
+#: ../src/dialog.c:983
+msgid "File Name:"
+msgstr "Bestânsnamme:"
+
+#: ../src/dialog.c:1007
+msgid "Choose File"
+msgstr "Kies bestân"
+
+#: ../src/dialog.c:1024
+msgid "Icon Chooser"
+msgstr "Ikoankiezer"
+
+#: ../src/dialog.c:1235
+msgid "Window Manager for X"
+msgstr "Finsterbehearder foar X"
+
+#: ../src/dialog.c:1237
+#, c-format
+msgid "Version %s"
+msgstr "Ferzje %s"
+
+#: ../src/dialog.c:1258
+#, c-format
+msgid "Using visual 0x%x: %s %ibpp "
+msgstr "Brûkt visual 0x%x: %s %i bpp "
+
+#: ../src/dialog.c:1265
+msgid "(32 thousand colors)\n"
+msgstr "(32 tûzen kleuren)\n"
+
+#: ../src/dialog.c:1268
+msgid "(64 thousand colors)\n"
+msgstr "(64 tûzen kleuren)\n"
+
+#: ../src/dialog.c:1272
+msgid "(16 million colors)\n"
+msgstr "(16 miljoen kleuren)\n"
+
+#: ../src/dialog.c:1275
+#, c-format
+msgid "(%d colors)\n"
+msgstr "(%d kleuren)\n"
+
+#: ../src/dialog.c:1285
+#, c-format
+msgid "Total memory allocated: %i kB (in use: %i kB, %d free chunks).\n"
+msgstr "Tawiisd ûnthâld: %i kB (brûkt: %i kB, %d blok frij).\n"
+
+#: ../src/dialog.c:1287
+#, c-format
+msgid "Total memory allocated: %i kB (in use: %i kB).\n"
+msgstr "Totaal tawiisd ûnthâld: %i kB (brûkt: %i kB).\n"
+
+#: ../src/dialog.c:1305
+msgid "Image formats: "
+msgstr "Ofb.foarmen: "
+
+#: ../src/dialog.c:1315
+msgid ""
+"\n"
+"Additional support for: "
+msgstr ""
+"\n"
+"Oanfoljende stipe: "
+
+#: ../src/dialog.c:1331 ../src/dialog.c:1344
+msgid "\n"
+msgstr "\n"
+
+#: ../src/dialog.c:1333
+msgid "Solaris "
+msgstr "Solaris "
+
+#: ../src/dialog.c:1335
+msgid "Xinerama: "
+msgstr "Xinerama: "
+
+#: ../src/dialog.c:1338
+#, c-format
+msgid "%d head(s) found."
+msgstr "%d kop(pen) fûn."
+
+#: ../src/dialog.c:1347
+msgid "supported"
+msgstr "stipe"
+
+#: ../src/dialog.c:1349
+msgid "unsupported"
+msgstr "net stipe"
+
+#: ../src/dialog.c:1375
+msgid "Info"
+msgstr "Ynfo"
+
+#: ../src/dialog.c:1450
+msgid ""
+"    Window Maker is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"    Window Maker is distributed in the hope that it will be useful, but "
+"WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY "
+"or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for "
+"more details.\n"
+"\n"
+"    You should have received a copy of the GNU General Public License along "
+"with this program; if not, write to the Free Software Foundation, Inc., 51 "
+"Franklin Street, Fifth Floor, Boston, MA02110-1301 USA."
+msgstr ""
+"Window Maker is vrije software; u mag het herdistribueren en/of wijzigen "
+"onder de voorwaarden van de GNU Algemene Publieke Licentie zoals "
+"gepubliceerd door de Free Software Foundation; onder version 2 van de "
+"Licentie, of (naar uw keuze) elke latere versie.\n"
+"\n"
+"Window Maker is gedistribueerd in de hoop dat het nuttig zal zijn, maar "
+"ZONDER ENIGE GARANTIE; zelfs zonder de impliciete garanties die GEBRUIKELIJK "
+"ZIJN IN DE HANDEL of voor BRUIKBAARHEID VOOR EEN SPECIFIEK DOEL. Zie de GNU "
+"Algemene Publieke Licentie voor meer details.\n"
+"\n"
+"U hoort een kopie van de GNU Algemene Publieke Licentie te hebben ontvangen "
+"samen met dit programma; als dat niet het geval is, schrijf naar de Free "
+"Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, "
+"MA02110-1301 USA."
+
+#: ../src/dialog.c:1470
+msgid "Legal"
+msgstr "Juridyske ynfo"
+
+#: ../src/dialog.c:1586 ../src/monitor.c:56
+msgid "cannot open connection for crashing dialog panel. Aborting."
+msgstr "kin ferbining foar crashdialoochpaniel net iepenje. Ofbrekke."
+
+#: ../src/dialog.c:1614
+msgid "Fatal error"
+msgstr "Unwerstelbere flater"
+
+#: ../src/dialog.c:1624
+#, c-format
+msgid "Window Maker received signal %i."
+msgstr "Window Maker ûntfong sinjaal %i."
+
+#. Comment for the PO file: the %s is an email address
+#: ../src/dialog.c:1632
+#, c-format
+msgid ""
+" This fatal error occured probably due to a bug. Please fill the included "
+"BUGFORM and report it to %s."
+msgstr ""
+" Dizze ûnwerstelbere flater trede mooglik op troch in bug. Folje a.j.w. "
+"bygeand BUGFORM yn, en rapportearje it oan %s."
+
+#: ../src/dialog.c:1641
+msgid "What do you want to do now?"
+msgstr "Wat wolle jo no dwaan?"
+
+#: ../src/dialog.c:1647
+msgid "Select action"
+msgstr "Aksje selektearje"
+
+#: ../src/dialog.c:1648
+msgid "Abort and leave a core file"
+msgstr "Ofbrekke en ûnthâlddump efterlitte"
+
+#: ../src/dialog.c:1649
+msgid "Restart Window Maker"
+msgstr "Window Maker werstarte"
+
+#: ../src/dialog.c:1650
+msgid "Start alternate window manager"
+msgstr "Oare finsterbehearder starte"
+
+#: ../src/dock.c:181 ../src/menu.c:1767
+#, c-format
+msgid "Type the name for workspace %i:"
+msgstr "Typ de namme foar wurkromte %i:"
+
+#: ../src/dock.c:182 ../src/dock.c:1242 ../src/dock.c:1244 ../src/dock.c:3460
+#: ../src/menu.c:1771
+msgid "Rename Workspace"
+msgstr "Wurkromte omneame"
+
+#: ../src/dock.c:447 ../src/dock.c:454 ../src/winspector.c:848
+msgid "Warning"
+msgstr "Warskôging"
+
+#: ../src/dock.c:448
+msgid ""
+"Some icons cannot be made omnipresent. Please make sure that no other icon "
+"is docked in the same positions on the other workspaces and the Clip is not "
+"full in some workspace."
+msgstr ""
+"Sommige ikoanen kinne net rûnombywêzich makke wurde. Soargje a.j.w. derfoar, "
+"dat gjin oar ikoan dokt is op deselde pleatsen yn de oare wurkromten, en de "
+"Clip net fol is yn iennige wurkromte."
+
+#: ../src/dock.c:455
+msgid ""
+"Icon cannot be made omnipresent. Please make sure that no other icon is "
+"docked in the same position on the other workspaces and the Clip is not full "
+"in some workspace."
+msgstr ""
+"Ikoan kin net rûnombywêzich makke wurde. Soargje a.j.w. derfoar, dat gjin "
+"oar ikoan dokt is op deselde pleats yn de oare wurkromten, en de Clip net "
+"fol is yn iennige wurkromte."
+
+#: ../src/dock.c:504
+msgid "Workspace Clip"
+msgstr "Wurkromteclip"
+
+#: ../src/dock.c:504 ../src/dock.c:4496
+msgid "Drawer"
+msgstr "Laad"
+
+#: ../src/dock.c:505
+msgid "All selected icons will be removed!"
+msgstr "Alle selektearre ikoanen sille ferwidere wurde!"
+
+#. can be: Unselect all icons
+#: ../src/dock.c:547 ../src/dock.c:1256 ../src/dock.c:1258 ../src/dock.c:3498
+msgid "Keep Icon"
+msgstr "Ikoan behâlde"
+
+#: ../src/dock.c:548 ../src/dock.c:2151 ../src/dock.c:2293
+msgid "Type the command used to launch the application"
+msgstr "Typ it brûkte programmaopstartkommando"
+
+#: ../src/dock.c:940
+#, c-format
+msgid "could not launch application %s"
+msgstr "koe programma %s net opstarte"
+
+#: ../src/dock.c:986
+msgid "could not create workspace submenu for Clip menu"
+msgstr "koe wurkromtesubmenu net oanmeitsje foar clipmenu"
+
+#: ../src/dock.c:1043
+msgid "could not create options submenu for Clip menu"
+msgstr "koe opsjesubmenu net oanmeitsje foar clipmenu"
+
+#: ../src/dock.c:1047 ../src/dock.c:1194
+msgid "Keep on Top"
+msgstr "Boppe-op hâlde"
+
+#: ../src/dock.c:1052
+msgid "Collapsed"
+msgstr "Ynskood"
+
+#: ../src/dock.c:1057
+msgid "Autocollapse"
+msgstr "Fansels skowe"
+
+#: ../src/dock.c:1062
+msgid "Autoraise"
+msgstr "Fansels ferheegje"
+
+#: ../src/dock.c:1067
+msgid "Autoattract Icons"
+msgstr "Fansels ikoanen oanlûke"
+
+#: ../src/dock.c:1182
+msgid "could not create options submenu for dock position menu"
+msgstr "koe opsjesubmenu net oanmeitsje foar dokposysjemenu"
+
+#: ../src/dock.c:1186
+msgid "Normal"
+msgstr "Normaal"
+
+#: ../src/dock.c:1190
+msgid "Auto raise & lower"
+msgstr "Fansels ferheegje & ferleegje"
+
+#: ../src/dock.c:1218
+msgid "Dock position"
+msgstr "Dokposysje"
+
+#: ../src/dock.c:1224
+msgid "Add a drawer"
+msgstr "Laad tafoegje"
+
+#: ../src/dock.c:1228
+msgid "Clip Options"
+msgstr "Clipopsjes"
+
+#. if (type == WM_DRAWER)
+#: ../src/dock.c:1230
+msgid "Drawer options"
+msgstr "Laadopsjes"
+
+#: ../src/dock.c:1247
+msgid "Selected"
+msgstr "Selektearre"
+
+#: ../src/dock.c:1252 ../src/dock.c:1254 ../src/dock.c:3488
+msgid "Select All Icons"
+msgstr "Alle ikoanen selektearje"
+
+#: ../src/dock.c:1261 ../src/dock.c:1263 ../src/dock.c:3508
+msgid "Move Icon To"
+msgstr "Ikoan ferpleatse nei"
+
+#: ../src/dock.c:1269 ../src/dock.c:1271 ../src/dock.c:3522
+msgid "Remove Icon"
+msgstr "Ikoan ferwiderje"
+
+#. can be: Remove Icons
+#: ../src/dock.c:1273
+msgid "Attract Icons"
+msgstr "Ikoanen oanlûke"
+
+#. can be: Unhide
+#: ../src/dock.c:1284
+msgid "Settings..."
+msgstr "Ynstellingen..."
+
+#: ../src/dock.c:1632 ../src/dock.c:1720
+#, c-format
+msgid "bad value in docked icon state info %s"
+msgstr "ferkearde wearde yn steatynfo dokt ikoan %s"
+
+#: ../src/dock.c:1743
+#, c-format
+msgid "bad value in dock state info:%s"
+msgstr "ferkearde wearde yn steatynfo Dok:%s"
+
+#: ../src/dock.c:1942
+msgid "there are too many icons stored in dock. Ignoring what doesn't fit"
+msgstr "der binne te folle ikoanen bewarre yn Dok. Negearret wat net past"
+
+#. icon->forced_dock = 1;
+#: ../src/dock.c:2150 ../src/dock.c:2292
+msgid "Dock Icon"
+msgstr "Dokikoan"
+
+#: ../src/dock.c:3365
+#, c-format
+msgid "Could not execute command \"%s\""
+msgstr "Koe kommando \"%s\" net útfiere"
+
+#: ../src/dock.c:3466
+msgid "Toggle Omnipresent"
+msgstr "Rûnombywêzich yn-/útskeakelje"
+
+#: ../src/dock.c:3471 ../src/winmenu.c:115 ../src/winspector.c:96
+msgid "Omnipresent"
+msgstr "Rûnombywêzich"
+
+#: ../src/dock.c:3486
+msgid "Unselect All Icons"
+msgstr "Alle ikoanen deselektearje"
+
+#: ../src/dock.c:3496
+msgid "Keep Icons"
+msgstr "Ikoanen behâlde"
+
+#: ../src/dock.c:3506
+msgid "Move Icons To"
+msgstr "Ikoanen ferpleatse nei"
+
+#: ../src/dock.c:3520
+msgid "Remove Icons"
+msgstr "Ikoanen ferwiderje"
+
+#: ../src/dock.c:3550
+msgid "Bring Here"
+msgstr "Hjir bringe"
+
+#: ../src/dock.c:3574
+msgid "Remove drawer"
+msgstr "Laad ferwiderje"
+
+#: ../src/dock.c:4497
+msgid "All icons in this drawer will be detached!"
+msgstr "Alle ikoanen yn dizze laad sille losmakke wurde!"
+
+#: ../src/dock.c:4882
+msgid "there are too many icons stored in drawer. Ignoring what doesn't fit"
+msgstr "der binne te folle ikoanen bewarre yn laad. Negearret wat net past"
+
+#: ../src/dockedapp.c:94
+#, c-format
+msgid "could not find icon %s, used in a docked application"
+msgstr "koe ikoan %s, brûkt yn in dokt programma, net fine"
+
+#: ../src/dockedapp.c:170
+#, c-format
+msgid "Could not open specified icon file: %s"
+msgstr "Koe opjûn ikoanbestân net iepenje: %s"
+
+#: ../src/dockedapp.c:172
+msgid "Ignore"
+msgstr "Negearje"
+
+#: ../src/dockedapp.c:264
+msgid "Start when Window Maker is started"
+msgstr "Starte as Window Maker start wurdt"
+
+#: ../src/dockedapp.c:269
+msgid "Lock (prevent accidental removal)"
+msgstr "Ofskoattelje (foarkomt b.û. ferwiderje)"
+
+#: ../src/dockedapp.c:273
+msgid "Application path and arguments"
+msgstr "Programmapaad en arguminten"
+
+#: ../src/dockedapp.c:284
+msgid "Command for middle-click launch"
+msgstr "Kommando foar opstarte mei middenklik"
+
+#: ../src/dockedapp.c:296
+#, c-format
+msgid "%s will be replaced with current selection"
+msgstr "%s wurdt ferfongen troch aktuele seleksje"
+
+#: ../src/dockedapp.c:300
+msgid "Command for dragged and dropped files"
+msgstr "Kommando foar fersleepte bestannen"
+
+#: ../src/dockedapp.c:312
+#, c-format
+msgid "%d will be replaced with the file name"
+msgstr "%d wurdt ferfongen troch de bestânsnamme"
+
+#: ../src/dockedapp.c:315
+msgid "XDnD support was not compiled in"
+msgstr "XDnD-stipe is net ynkompilearre"
+
+#: ../src/dockedapp.c:323
+msgid "Icon Image"
+msgstr "Ikoanôfbylding"
+
+#: ../src/dockedapp.c:334 ../src/winspector.c:1426
+msgid "Browse..."
+msgstr "Blêdzje..."
+
+#: ../src/dockedapp.c:392
+msgid "Docked Application Settings"
+msgstr "Ynstellingen dokt programma"
+
+#: ../src/event.c:328
+#, c-format
+msgid "read problem when trying to get INotify event: %s"
+msgstr "Ynlêsprobleem by probearje 'INotify event' te krije: %s"
+
+#: ../src/event.c:341
+msgid ""
+"the defaults database has been deleted! Restart Window Maker to create the "
+"database with the default settings"
+msgstr ""
+"de ynstellingendatabase is ferwidere! Werstart Window Maker om de database "
+"oan te meitsje mei de standertynstellingen"
+
+#: ../src/event.c:350
+msgid ""
+"the unit containing the defaults database has been unmounted. Setting --"
+"static mode. Any changes will not be saved."
+msgstr ""
+"de ienheid mei de ynstellingendatabase is afgekoppeld. Stelt '--static'-"
+"modus yn. Wizigingen sille net bewarre wurde."
+
+#: ../src/event.c:361
+msgid "Inotify: Reading config files in defaults database."
+msgstr "Inotify: Ynlêze konfiguraasjebestannen út ynstellingendatabase."
+
+#. an error has occured
+#: ../src/event.c:412
+msgid ""
+"select failed. The inotify instance will be closed. Changes to the defaults "
+"database will require a restart to take effect."
+msgstr ""
+"selektearje mislearre. It 'Inotify'-eksimplaar sil ôfsletten wurde. "
+"Wizigingen yn de ynstellingendatabase sille in werstart fereaskje om te "
+"wurkje."
+
+#: ../src/event.c:1013
+msgid "Got Reconfigure command"
+msgstr "Krige kommando 'werkonfigurearje'"
+
+#: ../src/event.c:1016
+#, c-format
+msgid "Got unknown command %s"
+msgstr "Krige ûnbekend kommando %s"
+
+#: ../src/event.c:1807
+#, c-format
+msgid "exec %A(Run,Type command to run:)"
+msgstr "exec %A(Utfiere,Typ út te fieren kommando:)"
+
+#: ../src/event.c:1985
+msgid "another window manager is replacing us!"
+msgstr "in oare finsterbehearder ferfangt ús!"
+
+#: ../src/framewin.c:660 ../src/framewin.c:750 ../src/menu.c:404
+#: ../src/texture.c:454
+#, c-format
+msgid "could not render texture: %s"
+msgstr "koe tekstuer net werjaan: %s"
+
+#: ../src/framewin.c:683 ../src/framewin.c:693 ../src/framewin.c:709
+#: ../src/framewin.c:720 ../src/framewin.c:727 ../src/framewin.c:733
+#: ../src/icon.c:311 ../src/menu.c:431
+#, c-format
+msgid "error rendering image:%s"
+msgstr "flater by werjaan ôfbylding:%s"
+
+#: ../src/framewin.c:778
+#, c-format
+msgid "error rendering image: %s"
+msgstr "flater by werjaan ôfbylding: %s"
+
+#: ../src/main.c:231
+msgid "failed to restart Window Maker."
+msgstr "Window Maker werstarte mislearre."
+
+#: ../src/main.c:234
+#, c-format
+msgid "could not exec %s"
+msgstr "koe kommando %s net útfiere"
+
+#: ../src/main.c:256
+#, c-format
+msgid "the display name has an unexpected syntax: \"%s\""
+msgstr "de skermnamme hat in ûnferwachte syntaks: \"%s\""
+
+#: ../src/main.c:290
+msgid "Could not execute command: "
+msgstr "Koe kommando net útfiere: "
+
+#: ../src/main.c:425
+#, c-format
+msgid "%s aborted.\n"
+msgstr "%s ôfbrutsen.\n"
+
+#: ../src/main.c:434
+#, c-format
+msgid "Usage: %s [options]\n"
+msgstr "Brûk: %s [opsjes]\n"
+
+#: ../src/main.c:435
+msgid "The Window Maker window manager for the X window system"
+msgstr "De Window Maker-finsterbehearder foar X Window System"
+
+#: ../src/main.c:437
+msgid " -display host:dpy\tdisplay to use"
+msgstr " -display host:dpy\tte brûke skerm"
+
+#: ../src/main.c:439
+msgid " --replace\t\treplace running window manager"
+msgstr " --replace\t\trinnende finsterbehearder ferfange"
+
+#: ../src/main.c:441
+msgid " --no-dock\t\tdo not open the application Dock"
+msgstr " --no-dock\t\tit programmadok net iepenje"
+
+#: ../src/main.c:442
+msgid " --no-clip\t\tdo not open the workspace Clip"
+msgstr " --no-clip\t\tde wurkromteclip net iepenje"
+
+#: ../src/main.c:443
+msgid " --no-autolaunch\tdo not autolaunch applications"
+msgstr " --no-autolaunch\tprogramma's net fansels opstarte"
+
+#: ../src/main.c:444
+msgid " --no-drawer\t\tdisable drawers in the dock"
+msgstr " --no-drawer\t\tde lade yn it dok útskeakelje"
+
+#: ../src/main.c:445
+msgid " --dont-restore\t\tdo not restore saved session"
+msgstr " --dont-restore\t\tbewarre sesje net fuortsette"
+
+#: ../src/main.c:447
+msgid " --locale locale\tlocale to use"
+msgstr " --locale locale\tte brûke lokalisaasje"
+
+#: ../src/main.c:449
+msgid " --visual-id visualid\tvisual id of visual to use"
+msgstr " --visual-id visualid\tte brûke 'visual id' foar kleurdjipte"
+
+#: ../src/main.c:450
+msgid " --static\t\tdo not update or save configurations"
+msgstr " --static\t\tynstellingen net bywurkje of bewarje"
+
+#: ../src/main.c:452
+msgid " --no-polling\t\tdo not periodically check for configuration updates"
+msgstr " --no-polling\t\tnet periodyk kontrolearje op bywurke ynstellingen"
+
+#: ../src/main.c:454
+msgid " --global_defaults_path\tprint the path for default config and exit"
+msgstr ""
+" --global_defaults_path\tpaad foar standertynstellingen ôfdrukke, en ôfslute"
+
+#: ../src/main.c:455
+msgid " --version\t\tprint version and exit"
+msgstr " --version\t\tferzje ôfdrukke, en ôfslute"
+
+#: ../src/main.c:456
+msgid " --help\t\t\tshow this message"
+msgstr " --help\t\t\tdizze boadskip toane"
+
+#: ../src/main.c:466
+#, c-format
+msgid "could not find user GNUstep directory (%s)."
+msgstr "koe brûkers-GNUstep-map (%s) net fine."
+
+#: ../src/main.c:469
+msgid ""
+"There was an error while creating GNUstep directory, please make sure you "
+"have installed Window Maker correctly and run wmaker.inst"
+msgstr ""
+"Der trede in flater op by oanmeitsje fan de GNUstep-map. Soargje a.j.w. "
+"derfoar dat jo Window Maker korrekt ynstallearre hawwe, en fier 'wmaker."
+"inst' út"
+
+#: ../src/main.c:472
+#, c-format
+msgid "%s directory created with default configuration."
+msgstr "map %s oanmakke mei standertynstellingen."
+
+#: ../src/main.c:491
+msgid ""
+"could not initialise an inotify instance. Changes to the defaults database "
+"will require a restart to take effect. Check your kernel!"
+msgstr ""
+"koe gjin 'inotify'-eksimplaar inisjalisearje. Wizigingen yn de "
+"ynstellingendatabase sille in werstart fereaskje om te wurkje. Kontrolearje "
+"jo kernel!"
+
+#: ../src/main.c:502
+#, c-format
+msgid ""
+"could not add an inotify watch on path %s. Changes to the defaults database "
+"will require a restart to take effect."
+msgstr ""
+"koe gjin 'inotify watch' tafoegje op paad %s. Wizigingen yn de "
+"ynstellingendatabase sille in werstart fereaskje om te wurkje."
+
+#: ../src/main.c:525
+#, c-format
+msgid "%s:could not execute initialization script"
+msgstr "%s:koe inisjalisearringsskript net útfiere"
+
+#: ../src/main.c:543
+#, c-format
+msgid "%s:could not execute exit script"
+msgstr "%s:koe ôfslutingsskript net útfiere"
+
+#: ../src/main.c:589 ../src/main.c:670 ../src/main.c:677 ../src/main.c:684
+#, c-format
+msgid "too few arguments for %s"
+msgstr "te min arguminten foar %s"
+
+#: ../src/main.c:638
+#, c-format
+msgid "option \"%s\" is deprecated, please remove it from your script"
+msgstr "opsje \"%s\" wurdt ôfret, ferwiderje it a.j.w. út jo skript"
+
+#: ../src/main.c:688
+#, c-format
+msgid "bad value for visualid: \"%s\""
+msgstr "ferkearde wearde foar 'visualid': \"%s\""
+
+#: ../src/main.c:697
+msgid ""
+"your version of Window Maker was compiled with INotify support, so \"--no-"
+"polling\" has no effect"
+msgstr ""
+"jo ferzje fan Window Maker is kompilearre mei INotify-stipe, dus \"--no-"
+"polling\" hat gjin effekt"
+
+#: ../src/main.c:703
+#, c-format
+msgid "%s: invalid argument '%s'\n"
+msgstr "%s: ûnjildich argumint '%s'\n"
+
+#: ../src/main.c:704
+#, c-format
+msgid "Try '%s --help' for more information\n"
+msgstr "Probearje '%s --help' foar mear ynformaasje\n"
+
+#: ../src/main.c:747
+msgid "X server does not support locale"
+msgstr "X-server stipet lokalisaasje net"
+
+#: ../src/main.c:751
+msgid "cannot set locale modifiers"
+msgstr "kin lokalisaasjemodifikators net ynstelle"
+
+#: ../src/main.c:767
+#, c-format
+msgid "could not open display \"%s\""
+msgstr "koe skerm \"%s\" net iepenje"
+
+#: ../src/menu.c:2350
+#, c-format
+msgid "bad value in menus state info: %s"
+msgstr "ferkearde wearde yn staetynfo menu's: %s"
+
+#: ../src/misc.c:476 ../src/misc.c:481
+msgid "Program Arguments"
+msgstr "Programma-arguminten"
+
+#: ../src/misc.c:477 ../src/misc.c:482
+msgid "Enter command arguments:"
+msgstr "Fier kommandoarguminten yn:"
+
+#: ../src/misc.c:523
+#, c-format
+msgid "out of memory during expansion of \"%s\""
+msgstr "ûnthâldtekoart by útwurkje fan \"%s\""
+
+#: ../src/misc.c:576 ../src/misc.c:593 ../src/misc.c:610 ../src/misc.c:633
+#: ../src/misc.c:654
+#, c-format
+msgid "out of memory during expansion of '%s' for command \"%s\""
+msgstr "ûnthâldtekoart by útwurkje fan '%s' foar kommando \"%s\""
+
+#: ../src/misc.c:647
+msgid "selection not available"
+msgstr "seleksje net beskikber"
+
+#: ../src/misc.c:689 ../src/misc.c:695
+#, c-format
+msgid "bad window name value in %s state info"
+msgstr "ferkearde finsternammewearde yn steatynfo %s"
+
+#: ../src/misc.c:922 ../src/misc.c:929 ../src/misc.c:945
+#, c-format
+msgid "%s failed, can't set workspace specific background image (%s)"
+msgstr ""
+"%s mislearre, kin wurkromtespesifike eftergrûnôfbylding (%s) net ynstelle"
+
+#: ../src/misc.c:957
+#, c-format
+msgid "could not execute \"%s\": %s"
+msgstr "koe \"%s\" net útfiere: %s"
+
+#: ../src/misc.c:965
+#, c-format
+msgid ""
+"could not set close-on-exec flag for bg_helper's communication file handle "
+"(%s)"
+msgstr ""
+
+#: ../src/misc.c:1005
+msgid "could not send message to background image helper"
+msgstr "koe berjocht nei eftergrûnôfbyldingshelper net ferstjoere"
+
+#: ../src/monitor.c:63
+msgid "trying to start alternate window manager..."
+msgstr "probearret oare finsterbehearder te starte..."
+
+#: ../src/monitor.c:69
+msgid "failed to start alternate window manager. Aborting."
+msgstr "starte oare finsterbehearder mislearre. Ofbrekke."
+
+#: ../src/monitor.c:98 ../src/monitor.c:101
+msgid "Error respawning Window Maker"
+msgstr "Flater by opnij starte Window Maker"
+
+#: ../src/monitor.c:108
+msgid "Error during monitoring of Window Maker process."
+msgstr "Flater by tafersjoch op Window Maker-proses."
+
+#: ../src/monitor.c:133
+#, c-format
+msgid "Window Maker exited due to a crash (signal %i) and will be restarted."
+msgstr ""
+"Window Maker sleat ôf troch in crash (sinjaal %i) en sil werstart wurde."
+
+#.
+#. *  1st %s is a function name
+#. *  2nd %s is an email address
+#. *  3rd %s is the name of the operating system
+#.
+#: ../src/osdep_stub.c:23
+#, c-format
+msgid ""
+"%s is not implemented on this platform; tell %s you are running %s release "
+"%s version %s"
+msgstr ""
+"%s is net ymplemintearre op dit platfoarm; meld %s dat jo %s, útjefte %s, "
+"ferzje %s brûke"
+
+#: ../src/resources.c:41
+#, c-format
+msgid "could not parse color \"%s\""
+msgstr "koe kleur \"%s\" net ferwurkje"
+
+#: ../src/resources.c:45
+#, c-format
+msgid "could not allocate color \"%s\""
+msgstr "koe kleur \"%s\" net tawize"
+
+#: ../src/rootmenu.c:189 ../src/rootmenu.c:190
+msgid "Exit"
+msgstr "Ofslute"
+
+#: ../src/rootmenu.c:190
+msgid "Exit window manager?"
+msgstr "Finsterbehearder ôfslute?"
+
+#: ../src/rootmenu.c:231
+msgid "Kill X session"
+msgstr "X-sesje deadzje"
+
+#: ../src/rootmenu.c:232
+msgid ""
+"Kill Window System session?\n"
+"(all applications will be closed)"
+msgstr ""
+"Deadzje Window System-sesje?\n"
+"(Alle programma's sille ôfsletten wurde.)"
+
+#: ../src/rootmenu.c:483
+#, c-format
+msgid "%s:invalid kbd shortcut specification \"%s\" for entry %s"
+msgstr "%s:ûnjildige fluchtoetsopjefte \"%s\" foar yngong %s"
+
+#: ../src/rootmenu.c:491
+#, c-format
+msgid "%s:invalid key in shortcut \"%s\" for entry %s"
+msgstr "%s:ûnjildige toets yn fluchkeppeling \"%s\" foar yngong %s"
+
+#: ../src/rootmenu.c:525
+#, c-format
+msgid "%s: unmatched '\"' in menu file"
+msgstr "%s: ûnkeppele '\"' yn menubestân"
+
+#: ../src/rootmenu.c:574
+#, c-format
+msgid "%s: missing command"
+msgstr "%s: ûntbrekkend kommando"
+
+#: ../src/rootmenu.c:630
+#, c-format
+msgid "invalid OPEN_MENU specification: %s"
+msgstr "ûnjildige OPEN_MENU-opjefte: %s"
+
+#: ../src/rootmenu.c:692
+#, c-format
+msgid "%s:could not stat menu"
+msgstr "%s:koe status menu net fêststelle"
+
+#: ../src/rootmenu.c:700
+#, c-format
+msgid "%s:could not stat menu:%s"
+msgstr "%s:koe status menu net fêststelle:%s"
+
+#: ../src/rootmenu.c:716
+#, c-format
+msgid "too many parameters in OPEN_MENU: %s"
+msgstr "te folle parameters yn OPEN_MENU: %s"
+
+#: ../src/rootmenu.c:754
+#, c-format
+msgid "invalid OPEN_PLMENU specification: %s"
+msgstr "ûnjildige OPEN_PLMENU-opjefte: %s"
+
+#: ../src/rootmenu.c:810
+msgid ""
+"There are more than one WORKSPACE_MENU commands in the applications menu. "
+"Only one is allowed."
+msgstr ""
+"Der stean mear as ien WORKSPACE_MENU-kommando's yn it programmamenu. Mar ien "
+"is tastien."
+
+#: ../src/rootmenu.c:841
+msgid ""
+"There are more than one WINDOWS_MENU commands in the applications menu. Only "
+"one is allowed."
+msgstr ""
+"Der stean mear as ien WINDOWS_MENU-kommando's yn it programmamenu. Mar ien "
+"is tastien."
+
+#: ../src/rootmenu.c:846
+msgid "Window List"
+msgstr "Finsterlist"
+
+#: ../src/rootmenu.c:873 ../src/rootmenu.c:890 ../src/rootmenu.c:907
+#: ../src/rootmenu.c:915
+#, c-format
+msgid "%s:missing parameter for menu command \"%s\""
+msgstr "%s:ûntbrekkende parameter foar menukommando \"%s\""
+
+#: ../src/rootmenu.c:979
+#, c-format
+msgid "%s:unknown command \"%s\" in menu config."
+msgstr "%s:ûnbekend kommando \"%s\" yn menukonfiguraasje."
+
+#: ../src/rootmenu.c:986
+#, c-format
+msgid "%s:can't add shortcut for entry \"%s\""
+msgstr "%s:kin fluchtoets foar yngong \"%s\" net tafoegje"
+
+#: ../src/rootmenu.c:1018 ../src/rootmenu.c:1064
+msgid "missing command in menu config"
+msgstr "ûntbrekkend kommando yn menukonfiguraasje"
+
+#: ../src/rootmenu.c:1046
+msgid "syntax error in menu file: END declaration missing"
+msgstr "syntaksflater yn menubestân: END-deklaraasje ûntbrekt"
+
+#: ../src/rootmenu.c:1078
+msgid "invalid menu, no menu title given"
+msgstr "ûnjildich menu, gjin menutitel opjûn"
+
+#: ../src/rootmenu.c:1097 ../src/rootmenu.c:1139 ../src/rootmenu.c:1169
+#: ../src/rootmenu.c:1183
+#, c-format
+msgid "could not open menu file \"%s\": %s"
+msgstr "koe menubestân \"%s\" net iepenje: %s"
+
+#: ../src/rootmenu.c:1140
+msgid "pipe command for PropertyList is too long"
+msgstr "PropertyList-kommando mei 'pipe' is te lang"
+
+#: ../src/rootmenu.c:1170
+msgid "pipe command is too long"
+msgstr "kommando mei 'pipe' is te lang"
+
+#: ../src/rootmenu.c:1291 ../src/rootmenu.c:1363 ../src/rootmenu.c:1401
+#, c-format
+msgid "out of memory while constructing directory menu %s"
+msgstr "ûnthâldtekoart by gearstalle mapmenu %s"
+
+#: ../src/rootmenu.c:1300
+#, c-format
+msgid "%s:could not stat file \"%s\" in menu directory"
+msgstr "%s:koe status bestân \"%s\" yn menumap net fêststelle"
+
+#: ../src/rootmenu.c:1450
+msgid "Commands"
+msgstr "Kommando's"
+
+#: ../src/rootmenu.c:1453
+msgid "Restart"
+msgstr "Werstarte"
+
+#: ../src/rootmenu.c:1454
+msgid "Exit..."
+msgstr "Ofslute..."
+
+#: ../src/rootmenu.c:1493
+#, c-format
+msgid "could not find menu file \"%s\" referenced in WMRootMenu"
+msgstr "koe menubestân \"%s\", ferwiisd yn WMRootMenu, net fine"
+
+#: ../src/rootmenu.c:1499
+#, c-format
+msgid "could not access menu \"%s\" referenced in WMRootMenu"
+msgstr "gjin tagong ta menu \"%s\", ferwiisd yn WMRootMenu"
+
+#: ../src/rootmenu.c:1511
+#, c-format
+msgid ""
+"using default menu file \"%s\" as the menu referenced in WMRootMenu could "
+"not be found "
+msgstr ""
+"standertmenubestân \"%s\" wurdt brûkt, want it menu ferwiisd yn WMRootMenu "
+"koe net fûn wurde "
+
+#: ../src/rootmenu.c:1534 ../src/rootmenu.c:1594
+#, c-format
+msgid "%s:format error in root menu configuration \"%s\""
+msgstr "%s:opmaakflater yn haadmenukonfiguraasje \"%s\""
+
+#: ../src/rootmenu.c:1671
+msgid ""
+"The applications menu could not be loaded. Look at the console output for a "
+"detailed description of the errors."
+msgstr ""
+"It programmamenu koe net laden wurde. Besjoch de terminaloutput foar in "
+"detaillearre beskriuwing fan de flaters."
+
+#: ../src/screen.c:136
+msgid "another window manager is running"
+msgstr "der rint in oare finsterbehearder"
+
+#: ../src/screen.c:137
+msgid "use the --replace flag to replace it"
+msgstr "brûk de '--replace'-opsje om him te ferfange"
+
+#: ../src/screen.c:165
+#, c-format
+msgid "waiting %lus for other window manager to exit"
+msgstr "wachtet %lus op ôfslute oare finsterbehearder"
+
+#: ../src/screen.c:176
+msgid "other window manager hasn't exited!"
+msgstr "oare finsterbehearder is net ôfsletten!"
+
+#: ../src/screen.c:180
+msgid "replacing the other window manager"
+msgstr "ferfangt de oare finsterbehearder"
+
+#: ../src/screen.c:512
+#, c-format
+msgid "could not load logo image for panels: %s"
+msgstr "koe logo-ôfbylding foar panielen net lade: %s"
+
+#: ../src/screen.c:696
+#, c-format
+msgid "can't create Context on screen %d, %s"
+msgstr "kin Context net oanmeitsje op skerm %d, %s"
+
+#: ../src/screen.c:710
+msgid "could not initialize WINGs widget set"
+msgstr "koe WINGs-bestjoeringseleminten net inisjalisearje"
+
+#: ../src/screen.c:1002
+#, c-format
+msgid "could not save session state in %s"
+msgstr "koe sesjesteat net bewarje yn %s"
+
+#: ../src/session.c:147 ../src/wdefaults.c:655 ../src/winspector.c:526
+#, c-format
+msgid "can't convert \"%s\" to boolean"
+msgstr "kin \"%s\" net omsette nei 'boolean'"
+
+#: ../src/stacking.c:70
+msgid "could not get window list!!"
+msgstr "koe finsterlist net krije!!"
+
+#: ../src/startup.c:118
+#, c-format
+msgid "internal X error: %s"
+msgstr "ynterne X-flater: %s"
+
+#: ../src/startup.c:568 ../src/startup.c:584 ../src/startup.c:590
+#, c-format
+msgid "could not read domain \"%s\" from defaults database"
+msgstr "koe domein \"%s\" net ynlêze út ynstellingendatabase"
+
+#: ../src/startup.c:576
+#, c-format
+msgid "icon size is configured to %i, but it's too small. Using 16 instead"
+msgstr "ynstelde ikoangrutte %i is te lyts. Brûkt 16 yn plak dêrfan"
+
+#: ../src/startup.c:606
+msgid "XKB is not supported. KbdModeLock is automatically disabled."
+msgstr "XKB wurdt net stipe. KbdModeLock is automatysk útskeakele."
+
+#: ../src/startup.c:636
+msgid "it seems that there is already a window manager running"
+msgstr "it liket dat al in finsterbehearder rint"
+
+#: ../src/startup.c:642
+#, c-format
+msgid "could not manage screen %i"
+msgstr "koe skerm %i net beheare"
+
+#: ../src/startup.c:706
+msgid "could not manage any screen"
+msgstr "koe gjin inkeld skerm beheare"
+
+#: ../src/superfluous.c:312
+#, c-format
+msgid "Impossible direction: %d"
+msgstr "Unmooglike rjochting: %d"
+
+#: ../src/switchmenu.c:121
+msgid "Windows"
+msgstr "Finsters"
+
+#: ../src/texture.c:331
+#, c-format
+msgid "image file \"%s\" used as texture could not be found."
+msgstr "ôfbyldingsbestân \"%s\", brûkt as tekstuer, net fûn."
+
+#: ../src/texture.c:336
+#, c-format
+msgid "could not load texture pixmap \"%s\":%s"
+msgstr "koe tekstuerpixmap \"%s\" net lade:%s"
+
+#: ../src/texture.c:458
+msgid "could not allocate image buffer"
+msgstr "koe ôfbyldingsbuffer net tawize"
+
+#: ../src/wdefaults.c:399
+#, c-format
+msgid "icon \"%s\" doesn't exist, check your config files"
+msgstr "ikoan \"%s\" bestiet net, kontrolearje jo konfiguraasjebestannen"
+
+#: ../src/wdefaults.c:430
+#, c-format
+msgid "error loading image file \"%s\": %s"
+msgstr "flater by lade ôfbyldingsbestân \"%s\": %s"
+
+#: ../src/wdefaults.c:466
+#, c-format
+msgid "could not find default icon \"%s\""
+msgstr "koe standertikoan \"%s\" net fine"
+
+#: ../src/window.c:2788 ../src/window.c:2950
+msgid ""
+"The NumLock, ScrollLock or similar key seems to be turned on. Turn it off or "
+"some mouse actions and keyboard shortcuts will not work."
+msgstr ""
+"De NumLock, ScrollLock of sokke toets liket ynskeakele te wêze. Skeakelje it "
+"út, of sommige mûsaksjes en fluchtoetsen sille net wurkje."
+
+#: ../src/winmenu.c:84 ../src/winmenu.c:660
+msgid "Maximize"
+msgstr "Maksimalisearje"
+
+#: ../src/winmenu.c:85
+msgid "Other maximization"
+msgstr "Oare maksimalisearring"
+
+#: ../src/winmenu.c:86 ../src/winmenu.c:643
+msgid "Miniaturize"
+msgstr "Miniaturisearje"
+
+#: ../src/winmenu.c:87 ../src/winmenu.c:679
+msgid "Shade"
+msgstr "Oprôlje"
+
+#: ../src/winmenu.c:89
+msgid "Resize/Move"
+msgstr "Fergrutsje/ferpleatse"
+
+#: ../src/winmenu.c:90 ../src/winmenu.c:696
+msgid "Select"
+msgstr "Selektearje"
+
+#: ../src/winmenu.c:91
+msgid "Move To"
+msgstr "Ferpleatse nei"
+
+#: ../src/winmenu.c:92
+msgid "Attributes..."
+msgstr "Eigenskippen..."
+
+#: ../src/winmenu.c:93
+msgid "Options"
+msgstr "Opsjes"
+
+#: ../src/winmenu.c:95
+msgid "Close"
+msgstr "Slute"
+
+#: ../src/winmenu.c:113
+msgid "Keep on top"
+msgstr "Boppe-op hâlde"
+
+#: ../src/winmenu.c:114
+msgid "Keep at bottom"
+msgstr "Underop hâlde"
+
+#: ../src/winmenu.c:126
+msgid "Maximize vertically"
+msgstr "Fertikaal maksimalisearje"
+
+#: ../src/winmenu.c:127
+msgid "Maximize horizontally"
+msgstr "Horizontaal maksimalisearje"
+
+#: ../src/winmenu.c:128
+msgid "Maximize left half"
+msgstr "Lofterhelte maksimalisearje"
+
+#: ../src/winmenu.c:129
+msgid "Maximize right half"
+msgstr "Rjochterhelte maksimalisearje"
+
+#: ../src/winmenu.c:130
+msgid "Maximize top half"
+msgstr "Boppehelte maksimalisearje"
+
+#: ../src/winmenu.c:131
+msgid "Maximize bottom half"
+msgstr "Underhelte maksimalisearje"
+
+#: ../src/winmenu.c:132
+msgid "Maximize left top corner"
+msgstr "Lofterboppehoeke maksimalisearje"
+
+#: ../src/winmenu.c:133
+msgid "Maximize right top corner"
+msgstr "Rjochterboppehoeke maksimalisearje"
+
+#: ../src/winmenu.c:134
+msgid "Maximize left bottom corner"
+msgstr "Lofterûnderhoeke maksimalisearje"
+
+#: ../src/winmenu.c:135
+msgid "Maximize right bottom corner"
+msgstr "Rjochterûnderhoeke maksimalisearje"
+
+#: ../src/winmenu.c:136
+msgid "Maximus: tiled maximization"
+msgstr "Maximus: tegelmaksimalisearring"
+
+#: ../src/winmenu.c:255
+msgid ""
+"This will kill the application.\n"
+"Any unsaved changes will be lost.\n"
+"Please confirm."
+msgstr ""
+"Dit sil it programma deadzje.\n"
+"Net-bewarre wizigingen sille ferlern gean.\n"
+"Befêstigje a.j.w."
+
+#: ../src/winmenu.c:408 ../src/winmenu.c:416
+msgid "Set Shortcut"
+msgstr "Ynstelde fluchtoets"
+
+#: ../src/winmenu.c:520 ../src/winmenu.c:545 ../src/winmenu.c:570
+msgid "could not create submenu for window menu"
+msgstr "koe submenu net oanmeitsje foar finstermenu"
+
+#: ../src/winmenu.c:637
+msgid "Deminiaturize"
+msgstr "Deminiaturisearje"
+
+#: ../src/winmenu.c:653
+msgid "Unmaximize"
+msgstr "Demaksimalisearje"
+
+#: ../src/winmenu.c:673
+msgid "Unshade"
+msgstr "Ofrôlje"
+
+#: ../src/winmenu.c:690
+msgid "Deselect"
+msgstr "Deselektearje"
+
+#: ../src/winspector.c:70
+msgid "Disable titlebar"
+msgstr "Titelbalke útskeakelje"
+
+#: ../src/winspector.c:71
+msgid ""
+"Remove the titlebar of this window.\n"
+"To access the window commands menu of a window\n"
+"without it's titlebar, press Control+Esc (or the\n"
+"equivalent shortcut, if you changed the default\n"
+"settings)."
+msgstr ""
+"Ferwiderje de titelbalke fan dit finster. Om it\n"
+"finsterkommandomenu te berikke fan in\n"
+"finster sûnder syn titelbalke, druk Control+Esc\n"
+"(of de oerienkomstige fluchtoets, as jo de\n"
+"standertynstellingen wizige hawwe)."
+
+#: ../src/winspector.c:77
+msgid "Disable resizebar"
+msgstr "Fergrutbalke útskeakelje"
+
+#: ../src/winspector.c:78
+msgid "Remove the resizebar of this window."
+msgstr "Ferwiderje de fergrutbalke fan dit finster."
+
+#: ../src/winspector.c:80
+msgid "Disable close button"
+msgstr "Knop 'slute' útskeakelje"
+
+#: ../src/winspector.c:81
+msgid "Remove the `close window' button of this window."
+msgstr "Ferwiderje de knop 'finster slute' fan dit finster."
+
+#: ../src/winspector.c:83
+msgid "Disable miniaturize button"
+msgstr "Knop 'miniaturisearje' útsk."
+
+#: ../src/winspector.c:84
+msgid "Remove the `miniaturize window' button of the window."
+msgstr "Ferwiderje de knop 'finster miniaturisearje' fan it finster."
+
+#: ../src/winspector.c:86
+msgid "Disable border"
+msgstr "Râne útskeakelje"
+
+#: ../src/winspector.c:87
+msgid "Remove the 1 pixel black border around the window."
+msgstr "Ferwiderje de swarte râne fan 1 pixel om it finster."
+
+#: ../src/winspector.c:89
+msgid "Keep on top (floating)"
+msgstr "Boppe-op hâlde (driuwend)"
+
+#: ../src/winspector.c:90
+msgid ""
+"Keep the window over other windows, not allowing\n"
+"them to cover it."
+msgstr ""
+"Hâld it finster boppe oare finsters, net tasteand\n"
+"dat se it bedekke."
+
+#: ../src/winspector.c:93
+msgid "Keep at bottom (sunken)"
+msgstr "Underop hâlde (fersonken)"
+
+#: ../src/winspector.c:94
+msgid "Keep the window under all other windows."
+msgstr "Hâld it finster del alle oare finsters."
+
+#: ../src/winspector.c:97
+msgid "Make window present in all workspaces."
+msgstr "Meitsje finster oanwêzich yn alle wurkromten."
+
+#: ../src/winspector.c:99
+msgid "Start miniaturized"
+msgstr "Miniaturisearre starte"
+
+#: ../src/winspector.c:100
+msgid ""
+"Make the window be automatically miniaturized when it's\n"
+"first shown."
+msgstr ""
+"Meitsje it finster fansels miniaturisearre, wannear't it\n"
+"foar it earst toand wurdt."
+
+#: ../src/winspector.c:103
+msgid "Start maximized"
+msgstr "Maksimalisearre starte"
+
+#: ../src/winspector.c:104
+msgid ""
+"Make the window be automatically maximized when it's\n"
+"first shown."
+msgstr ""
+"Meitsje it finster fansels maksimalisearre, wannear't it\n"
+"foar it earst toand wurdt."
+
+#: ../src/winspector.c:107
+msgid "Full screen maximization"
+msgstr "Skermfolj. maksimalisearring"
+
+#: ../src/winspector.c:108
+msgid ""
+"Make the window use the whole screen space when it's\n"
+"maximized. The titlebar and resizebar will be moved\n"
+"to outside the screen."
+msgstr ""
+"Lit it finster de hiele skermromte brûke, wannear't\n"
+"it miniaturisearre wurdt. De titel- en fergrutbalke sille\n"
+"bûten it skerm pleatst wurde."
+
+#: ../src/winspector.c:113
+msgid "Do not bind keyboard shortcuts"
+msgstr "Fluchtoetsen net ferbine"
+
+#: ../src/winspector.c:114
+msgid ""
+"Do not bind keyboard shortcuts from Window Maker\n"
+"when this window is focused. This will allow the\n"
+"window to receive all key combinations regardless\n"
+"of your shortcut configuration."
+msgstr ""
+"Ferbyn fluchtoetsen út Window Maker net, wannear't\n"
+"dit finster fokus hat. Dat stiet it finster ta alle\n"
+"toetskombinaasjes te ûntfange, likefolle jo\n"
+"fluchtoetsenkonfiguraasje."
+
+#: ../src/winspector.c:119
+msgid "Do not bind mouse clicks"
+msgstr "Mûsklikken net ferbine"
+
+#: ../src/winspector.c:120
+msgid ""
+"Do not bind mouse actions, such as `Alt'+drag\n"
+"in the window (when Alt is the modifier you have\n"
+"configured)."
+msgstr ""
+"Ferbyn mûsaksjes net, sa as 'Alt'+ferslepe\n"
+"yn it finster (as Alt de modifikator is dy't jo\n"
+"ynsteld hawwe)."
+
+#: ../src/winspector.c:124
+msgid "Do not show in the window list"
+msgstr "Net yn de finsterlist toane"
+
+#: ../src/winspector.c:125
+msgid "Do not list the window in the window list menu."
+msgstr "Fermeld it finster net yn it finsterlistmenu."
+
+#: ../src/winspector.c:127
+msgid "Do not show in the switch panel"
+msgstr "Net yn it skeakelpaniel toane"
+
+#: ../src/winspector.c:128
+msgid "Do not include in switch panel while cycling windows."
+msgstr ""
+"Nim net op yn it skeakelpaniel by wikselje fan\n"
+"finster."
+
+#: ../src/winspector.c:130
+msgid "Do not let it take focus"
+msgstr "Gjin fokus nimme litte"
+
+#: ../src/winspector.c:131
+msgid ""
+"Do not let the window take keyboard focus when you\n"
+"click on it."
+msgstr ""
+"Lit it finster gjin toetseboerdfokus nimme,\n"
+"wannear't jo derop klikke."
+
+#: ../src/winspector.c:134
+msgid "Keep inside screen"
+msgstr "Binnen it skerm hâlde"
+
+#: ../src/winspector.c:135
+msgid ""
+"Do not allow the window to move itself completely\n"
+"outside the screen. For bug compatibility.\n"
+msgstr ""
+"Stean it finster net ta, it folslein bûten it\n"
+"skerm te ferpleatse. Foar bugkompatibiliteit.\n"
+
+#: ../src/winspector.c:138
+msgid "Ignore 'Hide Others'"
+msgstr "'Oare ferbergje' negearje"
+
+#: ../src/winspector.c:139
+msgid ""
+"Do not hide the window when issuing the\n"
+"`HideOthers' command."
+msgstr ""
+"Ferbergje it finster net, wannear't it kommando\n"
+"'Oare ferbergje' jûn wurdt."
+
+#: ../src/winspector.c:142
+msgid "Ignore 'Save Session'"
+msgstr "'Sesje bewarje' negearje"
+
+#: ../src/winspector.c:143
+msgid ""
+"Do not save the associated application in the\n"
+"session's state, so that it won't be restarted\n"
+"together with other applications when Window Maker\n"
+"starts."
+msgstr ""
+"Bewarje it ferbûn programma net yn de\n"
+"sesjesteat, sadat it net werstart sil wurde\n"
+"tagelyk mei oare programma's, wannear't\n"
+"Window Maker start."
+
+#: ../src/winspector.c:148
+msgid "Emulate application icon"
+msgstr "Programma-ikoan emulearje"
+
+#: ../src/winspector.c:149
+msgid ""
+"Make this window act as an application that provides\n"
+"enough information to Window Maker for a dockable\n"
+"application icon to be created."
+msgstr ""
+"Lit dit finster it drage, as in programma dat\n"
+"foldwaande ynformaasje ferstrekt oan Window Maker,\n"
+"om in dokber programma-ikoan oan te meitsje."
+
+#: ../src/winspector.c:153
+msgid "Focus across workspaces"
+msgstr "Fokusje dwers troch wurkromten"
+
+#: ../src/winspector.c:154
+msgid ""
+"Allow Window Maker to switch workspace to satisfy\n"
+"a focus request (annoying)."
+msgstr ""
+"Stean Window Maker ta fan wurkromte te wikselje,\n"
+"om oan in fokusfersyk te foldwaan (hinderlik)."
+
+#: ../src/winspector.c:157
+msgid "Do not let it be minimized"
+msgstr "Net miniaturisearje litte"
+
+#: ../src/winspector.c:158
+msgid ""
+"Do not let the window of this application be\n"
+"minimized.\n"
+msgstr ""
+"Lit it finster fan dit programma net\n"
+"miniaturisearje.\n"
+
+#: ../src/winspector.c:162
+msgid "Disable language button"
+msgstr "Taalknop útskeakelje"
+
+#: ../src/winspector.c:163
+msgid "Remove the `toggle language' button of the window."
+msgstr "Ferwiderje de knop 'taal wikselje' fan it finster."
+
+#: ../src/winspector.c:167
+msgid "Start hidden"
+msgstr "Ferburgen starte"
+
+#: ../src/winspector.c:168
+msgid "Automatically hide application when it's started."
+msgstr ""
+"Ferbergje it programma fansels, wannear't start\n"
+"wurdt."
+
+#: ../src/winspector.c:170
+msgid "No application icon"
+msgstr "Gjin programma-ikoan"
+
+#: ../src/winspector.c:171
+msgid ""
+"Disable the application icon for the application.\n"
+"Note that you won't be able to dock it anymore,\n"
+"and any icons that are already docked will stop\n"
+"working correctly."
+msgstr ""
+"Skeakelje it programma-ikoan foar it programma\n"
+"út. Merk op, dat jo net mear yn steat sille wêze it\n"
+"te dokke, en ikoanen dy't al dokt binne, sille\n"
+"net mear korrekt wurkje."
+
+#: ../src/winspector.c:176
+msgid "Shared application icon"
+msgstr "Dield programma-ikoan"
+
+#: ../src/winspector.c:177
+msgid ""
+"Use a single shared application icon for all of\n"
+"the instances of this application.\n"
+msgstr ""
+"Brûk in inkeld dield programma-ikoan foar alle\n"
+"eksimplaren fan dit programma.\n"
+
+#: ../src/winspector.c:472
+#, c-format
+msgid "Could not find icon \"%s\" specified for this window"
+msgstr "Koe ikoan \"%s\", opjûn foar dit finster, net fine"
+
+#: ../src/winspector.c:487
+#, c-format
+msgid "Could not open specified icon \"%s\":%s"
+msgstr "Koe opjûn ikoan \"%s\" net iepenje:%s"
+
+#: ../src/winspector.c:847
+#, c-format
+msgid ""
+"Ignore client supplied icon is set, but icon filename textbox is empty. "
+"Using client supplied icon"
+msgstr ""
+"Negearje kliïnt levere ikoan ynsteld, mar Bestânsnamme ikoan is leech. Brûkt "
+"ikoan kliïnt"
+
+#: ../src/winspector.c:1034
+#, c-format
+msgid "Inspecting  %s.%s"
+msgstr "Ynspektearje  %s.%s"
+
+#: ../src/winspector.c:1059
+msgid "Click in the window you wish to inspect."
+msgstr "Klik yn it finster dat jo ynspektearje wolle."
+
+#: ../src/winspector.c:1083
+msgid ""
+"The configuration will apply to all\n"
+"windows that have their WM_CLASS\n"
+"property set to the above selected\n"
+"name, when saved."
+msgstr ""
+"De konfiguraasje wurdt tapast, op alle\n"
+"finsters dy't harren WM_CLASS-eigenskip\n"
+"ynsteld hawwe op de boppesteand\n"
+"selektearre namme, nei bewarje."
+
+#: ../src/winspector.c:1103
+msgid "Save"
+msgstr "Bewarje"
+
+#: ../src/winspector.c:1111
+msgid "Apply"
+msgstr "Tapasse"
+
+#: ../src/winspector.c:1117
+msgid "Reload"
+msgstr "Werlade"
+
+#: ../src/winspector.c:1126 ../src/winspector.c:1136
+msgid "Window Specification"
+msgstr "Finsterspesifikaasje"
+
+#: ../src/winspector.c:1127
+msgid "Window Attributes"
+msgstr "Finstereigenskippen"
+
+#: ../src/winspector.c:1128
+msgid "Advanced Options"
+msgstr "Avansearre opsjes"
+
+#: ../src/winspector.c:1129
+msgid "Icon and Initial Workspace"
+msgstr "Ikoan en inisjele wurkromte"
+
+#: ../src/winspector.c:1130
+msgid "Application Specific"
+msgstr "Programmaspesifyk"
+
+#: ../src/winspector.c:1143
+msgid "Defaults for all windows"
+msgstr "Standert foar alle finsters"
+
+#: ../src/winspector.c:1194
+msgid "Select window"
+msgstr "Finster selektearje"
+
+#: ../src/winspector.c:1338
+msgid "Attributes"
+msgstr "Eigenskippen"
+
+#: ../src/winspector.c:1355
+msgid ""
+"Shows the state that was asked by the application.\n"
+"You can use the checkbox on the right to change this setting;\n"
+"when it is grayed it means to follow application's choice."
+msgstr ""
+"Toant de steat dy't fersocht waard troch it programma. Jo kinne it\n"
+"seleksjehokje rjochts brûke, om dizze ynstelling te wizigje;\n"
+"wannear griis betsjut dat: programmafoarkar folgje."
+
+#: ../src/winspector.c:1382
+msgid "Advanced"
+msgstr "Avansearre"
+
+#: ../src/winspector.c:1414
+msgid "Miniwindow Image"
+msgstr "Ofbylding minyfinster"
+
+#: ../src/winspector.c:1431
+msgid "Icon filename:"
+msgstr "Bestânsnamme ikoan:"
+
+#: ../src/winspector.c:1442
+msgid "Ignore client supplied icon"
+msgstr "Negearje troch kliïnt levere ikoan"
+
+#: ../src/winspector.c:1448
+msgid "Initial Workspace"
+msgstr "Inisjele wurkromte"
+
+#: ../src/winspector.c:1450
+msgid "The workspace to place the window when it's first shown."
+msgstr ""
+"De wurkromte om it finster yn te pleatse,\n"
+"wannear't it foar it earst toand wurdt."
+
+#: ../src/winspector.c:1456
+msgid "Nowhere in particular"
+msgstr "Nearne yn it bysûnder"
+
+#: ../src/winspector.c:1477
+msgid "Application Attributes"
+msgstr "Programma-eigenskippen"
+
+#: ../src/workspace.c:100 ../src/workspace.c:715
+#, c-format
+msgid "Workspace %i"
+msgstr "Wurkromte %i"
+
+#: ../src/workspace.c:761
+msgid "Workspaces"
+msgstr "Wurkromten"
+
+#: ../src/workspace.c:763
+msgid "could not create Workspace menu"
+msgstr "koe wurkromtemenu net oanmeitsje"
+
+#: ../src/workspace.c:770
+msgid "New"
+msgstr "Nij"
+
+#: ../src/workspace.c:771
+msgid "Destroy Last"
+msgstr "Lêste ferneatigje"
+
+#: ../src/workspace.c:773
+msgid "Last Used"
+msgstr "Lêst brûkt"
+
+#: ../src/xdnd.c:255
+#, c-format
+msgid "wXDNDGetTypeList failed = %ld"
+msgstr ""
+
+#: ../src/xmodifier.c:134
+#, c-format
+msgid "key %s (0x%x) generates %s, which is generated by %s"
+msgstr "toets %s (0x%x) generearret %s dy't troch %s generearre wurdt"
+
+#: ../src/xmodifier.c:140
+#, c-format
+msgid "key %s (0x%x) generates %s, which is nonsensical"
+msgstr "toets %s (0x%x) generearret %s, wat ûnsinnich is"
+
+#: ../src/xmodifier.c:153
+#, c-format
+msgid "key %s (0x%x) generates both %s and %s, which is nonsensical"
+msgstr "toets %s (0x%x) generearret sawol %s as %s, wat ûnsinnich is"
+
+#: ../src/xmodifier.c:301
+#, c-format
+msgid "Can't convert keymask 0x%04X to a shortcut label"
+msgstr "Kin 'keymask' 0x%04X net omsette nei fluchtoetsbeneaming"
+
+# Keep next entries for wmaker-0.95.6
+msgid "invalid menu file, MENU command is missing"
+msgstr "ûnjildich menubestân, MENU-kommando ûntbrekt"
+
+msgid "no title given for the root menu"
+msgstr "gjin titel opjûn foar it haadmenu"
+
+msgid "out of memory during expansion of \"%%w\""
+msgstr "ûnthâldtekoart by útwurkje fan \"%%w\""
+
+msgid "out of memory during expansion of \"%%W\""
+msgstr "ûnthâldtekoart by útwurkje fan \"%%W\""
+
+msgid "out of memory during expansion of \"%%a\""
+msgstr "ûnthâldtekoart by útwurkje fan \"%%a\""
+
+msgid "out of memory during expansion of \"%%d\""
+msgstr "ûnthâldtekoart by útwurkje fan \"%%d\""
+
+msgid "out of memory during expansion of \"%%s\""
+msgstr "ûnthâldtekoart by útwurkje fan \"%%s\""
+
+msgid "%s:could not open menu file"
+msgstr "%s:koe menubestân net iepenje"
+
+msgid "Could not open directory "
+msgstr "Iepenje mislearre fan map "
+
+msgid ""
+"could not add an inotify watch on path %s.Changes to the defaults "
+"database will require a restart to take effect."
+msgstr ""
+"koe gjin 'inotify watch' tafoegje op paad %s. Wizigingen yn de "
+"ynstellingendatabase sille in werstart fereaskje om te wurkje."
+
+msgid ""
+"Do not bind mouse actions, such as `Alt'+drag\n"
+"in the window (when alt is the modifier you have\n"
+"configured)."
+msgstr ""
+"Ferbyn mûsaksjes net, sa as 'Alt'+ferslepe\n"
+"yn it finster (as Alt de modifikator is dy't jo\n"
+"ynsteld hawwe)."
+
+msgid "The workspace to place the window when it'sfirst shown."
+msgstr ""
+"De wurkromte om it finster yn te pleatse,\n"
+"wannear't it foar it earst toand wurdt."
+
+msgid ""
+" This fatal error occured probably due to a bug. Please fill the included "
+"BUGFORM and report it to bugs@windowmaker.info."
+msgstr ""
+" Dizze ûnwerstelbere flater trede mooglik op troch in bug. Folje a.j.w. "
+"bygeand BUGFORM yn, en rapportearje it oan wmaker-dev@lists.windowmaker.org."
+
+msgid ""
+"%s is not implemented on this platform; tell wmaker-dev@windowmaker.org you "
+"are running %s release %s version %s"
+msgstr ""
+"%s is net ymplemintearre op dit platfoarm; meld wmaker-dev@lists.windowmaker.org "
+"dat jo %s, útjefte %s, ferzje %s brûke"

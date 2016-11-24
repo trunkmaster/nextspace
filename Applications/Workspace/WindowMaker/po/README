@@ -1,0 +1,85 @@
+File	Language	Note	Current Maintainer
+------------------------------------------------------------------------------
+ja.po	Japanese	1	ABE Shige <sabe@ibm.net>
+				MANOME Tomonori <manome@itlb.te.noda.sut.ac.jp>
+				Takeo Hashimoto <HashimotoTakeo@mac.com>
+pt.po	Portuguese		Eliphas Levy Theodoro <eliphas@conectiva.com.br>
+de.po	German			Torsten Marek <torsten.marek@vbdnet.de>
+				Bernd Eggert <Bernd.Eggert@t-online.de>
+				Matthias Warkus <mawarkus@t-online.de>
+				Guido Scholz <guido.scholz@bayernline.de>
+es.po	Spanish			Quique <quique@sindominio.net>
+				Raul Benito Garcia <raul@fi.upm.es>
+ko.po	Korean		1,2	Byeong-Chan Kim <redhands@linux.sarang.net>
+sv.po	Swedish			John Forgoil <forgoil@rsn.hk-r.se>
+cs.po	Czech		3	Jiri Hnidek <Jiri.Hnidek@vslib.cz
+no.po	Norwegian		Marcus Ramberg <draven@mo.himolde.no>
+gl.po	Galician		Xose Vazquez Perez <xose.vazquez@gmail.com>
+fr.po	French			Bastien Nocera <hadess@hadess.net>
+				Jean-Francois BIGNOLLES <bignolle@grif.fr>
+				Antoine Hulin <antoine.hulin@origan.fdn.org>
+it.po	Italian			Michele Campeotto <micampe@f2s.com>
+ru.po	Russian			Alexey Vyskubov <alexey@piter-press.ru>
+  				Michael Sobolev <mss@transas.com>
+tr.po	Turkish  	        F. Kagan Gurkaynak <kgf@wpi.edu>
+fi.po	Finnish			Ville Hautamaki <villeh@cs.joensuu.fi>
+				Ramin Miraftabi <ramin@cs.joensuu.fi>
+				Tomi Kajala <tomi@iki.fi>
+hr.po	Croatian	3	Toni Bilic <tbilic@efos.hr>
+el.po	Greek			Nikolaos Papagrigoriou <papanikos@usa.net>
+pl.po	Polish			Piotr Dembiñski <pdemb@aurora.put.poznan.pl>
+ro.po	Romanian		Andrei Vuta <gigi_man@manag.pub.ro>
+da.po	Danish			Birger Langkjer <langkjer@post3.tele.dk>
+zh_TW.Big5.po Chinese		Li Wei Jih <lwj@manufacture.com.tw>
+zh_CN.po Chinese		Wang Jian <larkw@263.net>
+sk.po	Slovak			Jan 'judas' Tomka <judas@linux.sk>
+				Milan Hromada <mhromada@elas.sk>
+bg.po	Bulgarian		Slavei Karadjov <slaff@exco.net>
+				Anton Zinoviev <zinoviev@debian.org>
+hu.po   Hungarian		HORVATH Szabolcs <horvaths@inf.elte.hu>
+et.po   Estonian        	Ivar Smolin <okul@trenet.ee>
+ms.po	Malay			Hasbullah Bin Pit (sebol) <sebol@ikhlas.com>
+be.po	Belarusian		Ihar Viarheichyk <iverg@mail.ru>
+ca.po	Catalan			Ernest Adrogué <eadrogue@gmx.net>
+bs.po	Bosnian			Ahmet Mulalic <am@lugzdk.ba>
+hy.po   Armenian                Norayr Chilignaryan <chnorik@gmail.com>
+nl.po	Dutch			Alwin <translations@ziggo.nl>
+fy.po	Frisian			Alwin <translations@ziggo.nl>
+
+
+Some translations are based on previous translations by other people.
+The history of translations can be found in the po files.
+
+If you want to update a translation that's maintained by someone else
+please please please contact the original maintainer first. It's for
+your own good.
+
+
+Notes
+-----
+1. Multibyte character support must be enabled in WindowMaker. 
+
+2. WindowMaker must also be started from a terminal program that can
+display the messages in that language, like xterm that supports Korean
+characters.
+
+3. Uses iso8859-2 character set.
+
+
+Notes: 
+- if you update a translation of someone else, please contact the current
+maintainer, so that we don't have duplicate work. Also put a "history" log in
+the top of the file, like:
+#
+#  Portuguese Message Catalog
+#
+#  Version	Maintainer
+#  Original	Joe Shmoe
+#  0.17.5	Joao da Silva
+#
+
+You may also want to translate the menu definition file.
+
+--
+Alfredo Kojima <kojima@windowmaker.info>
+
