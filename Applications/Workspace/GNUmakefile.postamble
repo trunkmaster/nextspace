@@ -28,15 +28,15 @@ before-all::
 ifneq ($(windowmaker), no)
 	@ echo "Making WindowMaker external components ... "
 	@ cd $(WM_DIR); make config-paths.h
-	@ echo " Building raster graphics library in WM/wrlib ... "
+	@ echo " Building raster graphics library in $(WM_DIR)/wrlib ... "
 	@ cd $(WM_DIR)/wrlib; make
-	@ echo " Building WINGs library in WM/WINGs ... "
+	@ echo " Building WINGs library in $(WM_DIR)/WINGs ... "
 	@ cd $(WM_DIR)/WINGs; make
-	@ echo " Building utilities in WM/util ..."
+	@ echo " Building utilities in $(WM_DIR)/util ..."
 	@ cd $(WM_DIR)/util; make
-	@ echo " Preparing data in WM/WindowMaker ..."
+	@ echo " Preparing data in $(WM_DIR)/WindowMaker ..."
 	@ cd $(WM_DIR)/WindowMaker; make
-	@ echo " Building documentation in WM/doc..."
+	@ echo " Building documentation in $(WM_DIR)/doc..."
 	@ cd $(WM_DIR)/doc; make
 endif
 
@@ -52,15 +52,15 @@ after-all::
 after-clean::
 ifneq ($(windowmaker), no)
 	@ echo "Making clean in WindowMaker ... "
-	@ echo " Cleaning in WM/wrlib ..."
+	@ echo " Cleaning in $(WM_DIR)/wrlib ..."
 	@ cd $(WM_DIR)/wrlib; make clean > /dev/null 2>&1
-	@ echo " Cleaning in WM/WINGs ..."
+	@ echo " Cleaning in $(WM_DIR)/WINGs ..."
 	@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
-	@ echo " Cleaning in WM/WindowMaker ..."
+	@ echo " Cleaning in $(WM_DIR)/WindowMaker ..."
 	@ cd $(WM_DIR)/WindowMaker; make clean > /dev/null 2>&1
-	@ echo " Cleaning in WM/doc ..."
+	@ echo " Cleaning in $(WM_DIR)/doc ..."
 	@ cd $(WM_DIR)/doc; make clean > /dev/null 2>&1
-	@ echo " Cleaning in WM/util ..."
+	@ echo " Cleaning in $(WM_DIR)/util ..."
 	@ cd $(WM_DIR)/util; make clean > /dev/null 2>&1
 endif
 
@@ -90,14 +90,14 @@ endif
 
 after-uninstall::
 ifneq ($(windowmaker), no)
-	@ echo "Uninstalling WM/wrlib ..."
+	@ echo "Uninstalling $(WM_DIR)/wrlib ..."
 	@ cd $(WM_DIR)/wrlib; make uninstall > /dev/null 2>&1
-	@ echo "Uninstalling WM/WINGs ..."
+	@ echo "Uninstalling $(WM_DIR)/WINGs ..."
 	@ cd $(WM_DIR)/WINGs; make uninstall > /dev/null 2>&1
-	@ echo "Uninstalling WM/WindowMaker ..."
+	@ echo "Uninstalling $(WM_DIR)/WindowMaker ..."
 	@ cd $(WM_DIR)/WindowMaker; make uninstall > /dev/null 2>&1
-	@ echo "Uninstalling WM/doc ..."
+	@ echo "Uninstalling $(WM_DIR)/doc ..."
 	@ cd $(WM_DIR)/doc; make uninstall > /dev/null 2>&1
-	@ echo "Uninstalling WM/util ..."
+	@ echo "Uninstalling $(WM_DIR)/util ..."
 	@ cd $(WM_DIR)/util; make uninstall > /dev/null 2>&1
 endif

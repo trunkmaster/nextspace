@@ -1,8 +1,8 @@
 #!/bin/sh
 # Usage: ./WM.make_patch <subdirectory in WM tree> <filename>
 
-ORIG_WM=./wmaker-crm_next
-NEW_WM=./WM
+ORIG_WM=./WindowMaker-0.95.7
+NEW_WM=./WindowMaker
 PATCHES=./WM-PATCHES
 
 diff -Nru $ORIG_WM/$1/$2 $NEW_WM/$1/$2 > $PATCHES/$2.patch
