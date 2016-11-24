@@ -1317,9 +1317,14 @@ static void paintButton(WCoreWindow * button, WTexture * texture, unsigned long 
 			XSetForeground(dpy, copy_gc, scr->black_pixel);
 			XDrawRectangle(dpy, button->window, copy_gc, 0, 0, button->width - 1, button->height - 1);
 		} else if (wPreferences.new_style == TS_OLD) {
+#ifdef NEXTSPACE
+			wDrawBevel(button->window, button->width, button->height, scr->widget_texture, WREL_RAISED);
+			XFillRectangle(dpy, button->window, copy_gc, 1, 1, button->width-3, button->height-3);
+#else
 			XFillRectangle(dpy, button->window, copy_gc, 0, 0, button->width, button->height);
 			XSetForeground(dpy, copy_gc, scr->black_pixel);
 			XDrawRectangle(dpy, button->window, copy_gc, 0, 0, button->width, button->height);
+#endif
 		} else {
 			XFillRectangle(dpy, button->window, copy_gc, 0, 0, button->width-3, button->height-3);
 			XSetForeground(dpy, copy_gc, scr->black_pixel);
@@ -1363,6 +1368,9 @@ static void paintButton(WCoreWindow * button, WTexture * texture, unsigned long 
 						  left, 0, width, image->height, x, y);
 			} else {
 				if (wPreferences.new_style == TS_OLD) {
+#ifdef NEXTSPACE
+					XSetClipOrigin(dpy, copy_gc, 2, 2);
+#endif
 					XSetForeground(dpy, copy_gc, scr->dark_pixel);
 					XFillRectangle(dpy, button->window, copy_gc, 0, 0,
 						       button->width, button->height);

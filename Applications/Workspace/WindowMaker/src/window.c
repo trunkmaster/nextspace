@@ -755,9 +755,10 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
 	wwin->orig_main_window = wwin->main_window;
 
-	if (wwin->flags.is_gnustep)
+	if (wwin->flags.is_gnustep) {
 		wwin->client_flags.shared_appicon = 0;
-
+		wwin->defined_user_flags.shared_appicon = 0;
+	}
 	if (wwin->main_window) {
 		XTextProperty text_prop;
 
@@ -1159,6 +1160,15 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 		/* if gravity is to the south, account for the border sizes */
 		if (gy > 0)
 			y -= wwin->frame->top_width + wwin->frame->bottom_width;
+	}
+
+	/* We're starting managing already existed window at our startup.
+	 * Adjust window position so window will not be shifted down and right
+	 * after decorations added.
+	*/
+	if (scr->flags.startup) {
+	  x -= 1;
+	  y -= (wwin->frame->top_width + 1);
 	}
 
 	/*

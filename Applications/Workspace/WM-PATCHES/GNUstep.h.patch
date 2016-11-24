@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/GNUstep.h	2015-05-25 22:23:53.398591613 +0300
-+++ ./WM/src/GNUstep.h	2016-11-19 01:55:25.178955380 +0200
+--- ./WindowMaker-0.95.7/src/GNUstep.h	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/GNUstep.h	2016-11-25 00:09:13.796571299 +0200
 @@ -49,20 +49,20 @@
   * range INT_MIN+1 to INT_MAX
   */

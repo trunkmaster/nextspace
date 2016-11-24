@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/event.c	2015-07-29 16:02:49.000000000 +0300
-+++ ./WM/src/event.c	2016-01-15 18:13:11.449887062 +0200
+--- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/event.c	2016-11-25 00:09:13.797571299 +0200
 @@ -80,6 +80,7 @@
  #include "switchmenu.h"
  #include "wsmap.h"

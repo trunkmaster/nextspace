@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/WINGs/userdefaults.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/WINGs/userdefaults.c	2016-11-24 23:11:41.533326672 +0200
++++ ./WindowMaker/WINGs/userdefaults.c	2016-11-25 00:09:13.799571299 +0200
 @@ -40,7 +40,11 @@
  
  static void synchronizeUserDefaults(void *foo);
