@@ -80,6 +80,7 @@
 #include "switchmenu.h"
 #include "wsmap.h"
 
+#include <Workspace+WindowMaker.h>
 
 #define MOD_MASK wPreferences.modifier_mask
 
@@ -580,9 +581,16 @@ static void handleExtensions(XEvent * event)
 		 * XRRUpdateConfiguration when screen configuration change notify
 		 * events are generated */
 		XRRUpdateConfiguration(event);
+#ifdef NEXTSPACE                
+                for (int i = 0; i < w_global.screen_count; i++)
+                  {
+                    XWUpdateScreenInfo(wScreenWithNumber(i));
+                  }
+#else
 		WCHANGE_STATE(WSTATE_RESTARTING);
 		Shutdown(WSRestartPreparationMode);
 		Restart(NULL,True);
+#endif
 	}
 #endif
 }
@@ -669,7 +677,15 @@ static void handleDestroyNotify(XEvent * event)
 	int widx;
 
 	wwin = wWindowFor(window);
+        
+       
 	if (wwin) {
+#ifdef NEXTSPACE
+		dispatch_sync(workspace_q,
+		    ^{
+			XWApplicationDidCloseWindow(wwin);
+		    });
+#endif
 		wUnmanageWindow(wwin, False, True);
 	}
 

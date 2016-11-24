@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/framewin.c	2015-05-25 22:23:53.402591613 +0300
-+++ ./WM/src/framewin.c	2016-11-04 00:25:57.909566918 +0200
+--- ./WindowMaker-0.95.7/src/framewin.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/framewin.c	2016-11-25 00:09:13.797571299 +0200
 @@ -1317,9 +1317,14 @@
  			XSetForeground(dpy, copy_gc, scr->black_pixel);
  			XDrawRectangle(dpy, button->window, copy_gc, 0, 0, button->width - 1, button->height - 1);

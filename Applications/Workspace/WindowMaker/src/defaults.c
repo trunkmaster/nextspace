@@ -118,6 +118,9 @@ static WDECallbackUpdate setWrapAppiconsInDock;
 static WDECallbackUpdate setStickyIcons;
 static WDECallbackUpdate setWidgetColor;
 static WDECallbackUpdate setIconTile;
+#ifdef NEXTSPACE
+static WDECallbackUpdate setMiniwindowTile;
+#endif
 static WDECallbackUpdate setWinTitleFont;
 static WDECallbackUpdate setMenuTitleFont;
 static WDECallbackUpdate setMenuTextFont;
@@ -553,6 +556,10 @@ WDefaultEntry optionList[] = {
 	    NULL, getBool, NULL, NULL, NULL},
 	{"IconBack", "(solid, gray)", NULL,
 	    NULL, getTexture, setIconTile, NULL, NULL},
+#ifdef NEXTSPACE
+	{"MiniwindowBack", "(solid, gray)", NULL,
+	    NULL, getTexture, setMiniwindowTile, NULL, NULL},
+#endif
 	{"TitleJustify", "center", seJustifications,
 	    &wPreferences.title_justification, getEnum, setJustify, NULL, NULL},
 	{"WindowTitleFont", DEF_TITLE_FONT, NULL,
@@ -2680,6 +2687,56 @@ static int setIconTile(WScreen * scr, WDefaultEntry * entry, void *tdata, void *
 
 	return (reset ? REFRESH_ICON_TILE : 0);
 }
+
+#ifdef NEXTSPACE
+static int setMiniwindowTile(WScreen * scr, WDefaultEntry * entry, void *tdata, void *foo)
+{
+  Pixmap	pixmap;
+  RImage	*img;
+  WTexture	**texture = tdata;
+  int		reset = 0;
+
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) foo;
+
+  img = wTextureRenderImage(*texture, wPreferences.icon_size,
+                            wPreferences.icon_size,
+                            ((*texture)->any.type & WREL_BORDER_MASK)
+                            ? WREL_ICON : WREL_FLAT);
+  if (!img)
+    {
+      wwarning(_("could not render texture for miniwindow background"));
+      if (!entry->addr)
+        wTextureDestroy(scr, *texture);
+      return 0;
+    }
+  RConvertImage(scr->rcontext, img, &pixmap);
+
+  if (scr->miniwindow_tile)
+    {
+      reset = 1;
+      RReleaseImage(scr->miniwindow_tile);
+    }
+
+  scr->miniwindow_tile = img;
+
+  /* put the icon in the noticeboard hint */
+  /* PropSetIconTileHint(scr, img); */
+
+  /* scr->icon_tile_pixmap = pixmap; */
+
+  /* icon back color for shadowing */
+  /*  if (scr->icon_back_texture)
+    wTextureDestroy(scr, (WTexture *) scr->icon_back_texture);
+    scr->icon_back_texture = wTextureMakeSolid(scr, &((*texture)->any.color));*/
+
+  /* Free the texture as nobody else will use it, nor refer to it.  */
+  if (!entry->addr)
+    wTextureDestroy(scr, *texture);
+
+  return (reset ? REFRESH_ICON_TILE : 0);
+}
+#endif
 
 static int setWinTitleFont(WScreen * scr, WDefaultEntry * entry, void *tdata, void *foo)
 {

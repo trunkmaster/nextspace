@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/main.c	2015-05-25 22:23:53.403591613 +0300
-+++ ./WM/src/main.c	2016-11-18 22:29:04.512208017 +0200
+--- ./WindowMaker-0.95.7/src/main.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/main.c	2016-11-25 00:09:13.798571299 +0200
 @@ -105,7 +105,7 @@
  static int *wVisualID = NULL;
  static int wVisualID_len = 0;

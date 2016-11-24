@@ -105,7 +105,7 @@ static Bool multiHead = True;
 static int *wVisualID = NULL;
 static int wVisualID_len = 0;
 
-static int real_main(int argc, char **argv);
+int real_main(int argc, char **argv);
 
 int getWVisualID(int screen)
 {
@@ -492,7 +492,11 @@ static void inotifyWatchConfig(void)
 			   " Changes to the defaults database will require"
 			   " a restart to take effect. Check your kernel!"));
 	} else {
+#ifdef NEXTSPACE
+		watchPath = wdefaultspathfordomain("");
+#else
 		watchPath = wstrconcat(wusergnusteppath(), "/Defaults");
+#endif
 		/* Add the watch; really we are only looking for modify events
 		 * but we might want more in the future so check all events for now.
 		 * The individual events are checked for in event.c.
@@ -514,7 +518,11 @@ static void execInitScript(void)
 {
 	char *file, *paths;
 
+#ifdef NEXTSPACE
+	paths = wstrconcat(wusergnusteppath(), "/WindowMaker");
+#else
 	paths = wstrconcat(wusergnusteppath(), "/Library/WindowMaker");
+#endif
 	paths = wstrappend(paths, ":" DEF_CONFIG_PATHS);
 
 	file = wfindfile(paths, DEF_INIT_SCRIPT);
@@ -546,6 +554,7 @@ void ExecExitScript(void)
 	}
 }
 
+#ifndef NEXTSPACE
 int main(int argc, char **argv)
 {
 	int i_am_the_monitor, i, len;
@@ -604,8 +613,9 @@ int main(int argc, char **argv)
 	else
 		return real_main(argc, argv);
 }
+#endif // NEXTSPACE
 
-static int real_main(int argc, char **argv)
+int real_main(int argc, char **argv)
 {
 	int i;
 	char *pos;
@@ -617,6 +627,7 @@ static int real_main(int argc, char **argv)
 	/* for telling WPrefs what's the name of the wmaker binary being ran */
 	setenv("WMAKER_BIN_NAME", argv[0], 1);
 
+#ifndef NEXTSPACE
 	ArgCount = argc;
 	Arguments = wmalloc(sizeof(char *) * (ArgCount + 1));
 	for (i = 0; i < argc; i++) {
@@ -706,6 +717,7 @@ static int real_main(int argc, char **argv)
 			}
 		}
 	}
+#endif // NEXTSPACE
 
 	if (!wPreferences.flags.noupdates) {
 		/* check existence of Defaults DB directory */
@@ -808,6 +820,10 @@ static int real_main(int argc, char **argv)
 #ifdef HAVE_INOTIFY
 	inotifyWatchConfig();
 #endif
+#ifdef NEXTSPACE
+	return 0;
+#else
 	EventLoop();
 	return -1;
+#endif // NEXTSPACE
 }

@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/src/dialog.c	2015-07-29 16:02:49.000000000 +0300
-+++ ./WM/src/dialog.c	2015-08-01 22:32:49.700624794 +0300
+--- ./WindowMaker-0.95.7/src/dialog.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/dialog.c	2016-11-25 00:09:13.797571299 +0200
 @@ -177,7 +177,11 @@
  	char *filename = NULL;
  

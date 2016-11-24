@@ -177,7 +177,11 @@ static char *HistoryFileName(const char *name)
 	char *filename = NULL;
 
 	filename = wstrdup(wusergnusteppath());
+#ifdef NEXTSPACE
+	filename = wstrappend(filename, "/WindowMaker/History");
+#else
 	filename = wstrappend(filename, "/.AppInfo/WindowMaker/History");
+#endif
 	if (name && strlen(name)) {
 		filename = wstrappend(filename, ".");
 		filename = wstrappend(filename, name);

@@ -1,5 +1,5 @@
---- ./wmaker-crm_next/WINGs/wcolorpanel.c	2015-07-29 16:02:49.000000000 +0300
-+++ ./WM/WINGs/wcolorpanel.c	2015-08-01 22:32:01.606625969 +0300
+--- ./WindowMaker-0.95.7/WINGs/wcolorpanel.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/WINGs/wcolorpanel.c	2016-11-25 00:09:13.800571299 +0200
 @@ -397,7 +397,11 @@
  	panel->mode = WMWheelModeColorPanel;
  	panel->lastChanged = 0;
