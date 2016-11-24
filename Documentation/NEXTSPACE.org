@@ -1886,6 +1886,7 @@
 ******* DONE Включить последний стабильный релиз WindoMaker
 ******* DONE Перегенерировать патчи под новую версию
 ****** TODO Создать документ с описанием патчей для WindowMaker
+       Application/Workspace/WM-PATCHES/WindowMakerPatches.md
 ****** TODO Цвет виджетов WINGs
 ******* TODO Привести в соответствие с GNUstep
         Пока без диалогов WINGs полностью не обойтись, поэтому нужно привести
