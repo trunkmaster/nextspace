@@ -1882,11 +1882,12 @@
         (падение, kill -9).
         src_window.c.patch: @@ -1159,6 +1162,15 @@
 ****** DONE Создать документ с описанием патчей для GNUstep
+       Libraries/gnustep/README.md
 ****** DONE WindowMaker 0.95.7
 ******* DONE Включить последний стабильный релиз WindoMaker
 ******* DONE Перегенерировать патчи под новую версию
-****** TODO Создать документ с описанием патчей для WindowMaker
-       Application/Workspace/WM-PATCHES/WindowMakerPatches.md
+****** DONE Создать документ с описанием патчей для WindowMaker
+       Application/Workspace/WM-PATCHES/README.md
 ****** TODO Цвет виджетов WINGs
 ******* TODO Привести в соответствие с GNUstep
         Пока без диалогов WINGs полностью не обойтись, поэтому нужно привести
