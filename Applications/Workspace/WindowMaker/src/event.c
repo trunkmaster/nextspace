@@ -80,7 +80,9 @@
 #include "switchmenu.h"
 #include "wsmap.h"
 
+#ifdef NEXTSPACE
 #include <Workspace+WindowMaker.h>
+#endif
 
 #define MOD_MASK wPreferences.modifier_mask
 

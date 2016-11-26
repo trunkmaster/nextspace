@@ -1,14 +1,16 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2016-11-25 00:09:13.797571299 +0200
-@@ -80,6 +80,7 @@
++++ ./WindowMaker/src/event.c	2016-11-26 02:11:17.098381994 +0200
+@@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
  
++#ifdef NEXTSPACE
 +#include <Workspace+WindowMaker.h>
++#endif
  
  #define MOD_MASK wPreferences.modifier_mask
  
-@@ -580,9 +581,16 @@
+@@ -580,9 +583,16 @@
  		 * XRRUpdateConfiguration when screen configuration change notify
  		 * events are generated */
  		XRRUpdateConfiguration(event);
@@ -25,7 +27,7 @@
  	}
  #endif
  }
-@@ -669,7 +677,15 @@
+@@ -669,7 +679,15 @@
  	int widx;
  
  	wwin = wWindowFor(window);
