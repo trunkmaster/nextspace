@@ -1,14 +1,16 @@
 --- ./WindowMaker-0.95.7/src/application.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/application.c	2016-11-25 01:30:07.008472265 +0200
-@@ -37,6 +37,7 @@
++++ ./WindowMaker/src/application.c	2016-11-26 02:11:30.905381090 +0200
+@@ -37,6 +37,9 @@
  #include "dock.h"
  #include "defaults.h"
  
++#ifdef NEXTSPACE
 +#include <Workspace+WindowMaker.h>
++#endif
  
  /******** Local variables ********/
  
-@@ -100,6 +101,13 @@
+@@ -100,6 +103,13 @@
  		    wapp->app_icon->relaunching && wapp->main_window_desc->fake_group)
  			wDockFinishLaunch(wapp->app_icon);
  
@@ -22,7 +24,7 @@
  		return wapp;
  	}
  
-@@ -140,6 +148,13 @@
+@@ -140,6 +150,13 @@
  
  	create_appicon_for_application(wapp, wwin);
  
@@ -36,7 +38,7 @@
  	return wapp;
  }
  
-@@ -166,6 +181,15 @@
+@@ -166,6 +183,15 @@
  		return;
  	}
  

@@ -115,3 +115,6 @@ src/window.c:
       pixel) for windows which were already mapped before Workspace (and
       WindowMaker) started.
     
+WINGs/wcolor.c:
+
+    Make WINGs color of widgets match the GNUstep one.

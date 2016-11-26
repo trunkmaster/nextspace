@@ -37,7 +37,9 @@
 #include "dock.h"
 #include "defaults.h"
 
+#ifdef NEXTSPACE
 #include <Workspace+WindowMaker.h>
+#endif
 
 /******** Local variables ********/
 
