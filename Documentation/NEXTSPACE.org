@@ -1888,20 +1888,11 @@
 ******* DONE Перегенерировать патчи под новую версию
 ****** DONE Создать документ с описанием патчей для WindowMaker
        Application/Workspace/WM-PATCHES/README.md
-****** TODO Цвет виджетов WINGs
-******* TODO Привести в соответствие с GNUstep
+****** DONE Цвет виджетов WINGs
+******* DONE Привести в соответствие с GNUstep
         Пока без диалогов WINGs полностью не обойтись, поэтому нужно привести
         цвет в соответствие с GNUstep.
-******* TODO Создать и задокументировать патч
-****** TODO WINGs panels and menus
-       Нужно оставить действительно нужные (без которых трудно обойтись).
-       - Window Menu (right click on titlebar);
-       - Window Attributes Inspector;
-       - Dock icon menu;
-       - Dock Icon inspector;
-       - Attention panels on:
-         - inability to autostart app;
-         - force kill of window (Ctrl-Click on close titlebar button);
+******* DONE Создать и задокументировать патч
 ****** TODO Dock и IconYard
 ******* TODO Иконка 0
        - иконка 0 в доке не должна показывать статус незапущенного приложения
@@ -1975,6 +1966,15 @@
 ****** TODO Workspace: перезапуск при падениях, kill и т.д.
        Нужно подумать как организовать Restart Workspace без участия
        Login.app.
+****** TODO WINGs panels and menus
+       Нужно оставить действительно нужные (без которых трудно обойтись).
+       - Window Menu (right click on titlebar);
+       - Window Attributes Inspector;
+       - Dock icon menu;
+       - Dock Icon inspector;
+       - Attention panels on:
+         - inability to autostart app;
+         - force kill of window (Ctrl-Click on close titlebar button);
 ****** TODO WindowMaker RootMenu (Tools->Launcher)
        При правом клике на desktop должно отображаться главное меню
        Workspace.
