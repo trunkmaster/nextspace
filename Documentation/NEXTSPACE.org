@@ -1899,6 +1899,12 @@
          (троеточие) всегда;
        - иконка 0 должна иметь всегда одно и то же изображение на разных
          этапах старта Workspace;
+
+       startup.c: StartUp()
+         screen.c: wScreenRestoreState()
+           dock.c: wDockRestoreState()
+                   restore_icon_state()
+                   XMapWindow(dpy, aicon->icon->core->window)
 ******* TODO При старте размещать Dock и Icon Yard на primary display
         Вроде уже сделал. Нужно проверить.
         Side effect: могу залипнуть в Preferences.app/Display. :(
@@ -3358,3 +3364,78 @@
 *** TODO Индикатор состояния/скорости сети (Ethernet, WiFi)
 *** TODO Индикатор погоды: температура, влажность
 *** TODO Что делать с systray индикаторами приложений GNOME, KDE?
+
+* Fonts
+
+** Результаты экспериментов
+   ~/fonts.conf - вляет на приложениями, которые используют fontconfig.
+   На данный момент у меня это: WindoMaker, приложения GTK и Qt.
+   В gnustep-back ART не используется fontconfig, какие шрифты использовать
+   (bitmap или outline) решает сам backend.
+
+   Helvetica-Medium.ttf - содержит bitmap шрифты для размеров 8,10,12,14.
+   Обнаружил: для того, чтобы визуально шрифты были похожи на OPENSTEP нужно
+   использовать:
+   - размер на 1 pixelsize больше чем в OPENSTEP, кроме размера 12 (шрифт
+     перенесен из X11 .pcf);
+   - ширина строки Helvetica шире чем такая же Arial (например, из-за более
+     широкой русской буквы 'к', другого кернинга и т.д.);
+   - можно говорить, что Arial и Helvetica метрически идентичные поскольку
+     метрики совпадают.
+
+** Antializing
+   - для приложений fontconfig: использовать bitmap для шрифтов с pixelsize 12
+     и меньше;
+   - в GNUstep back-art жестко вшито использовть bitmap для определенные
+     размеров;
+   - в NSFont есть возможность выбирать тип отрисовки шрифтов
+     NSFontRenderingMode; может быть использован с помощью метода
+     screenFontWithRenderingMode:(NSFontRenderingMode)mode;
+   - идеальным вариантом было бы:
+     - использование режима NSFontAntialiasedRenderingMode если установлена
+       настройки отображать шрифты со сглаживанием;
+     - для размеров указанных в настройках использовать bitmap;
+     - приложения, которые имеют свои настройки antialising сами создают
+       NSFont и устанавливают NSFontRenderingMode.
+
+*** TODO Проверить ручное управление antialiasing с помощью NSFont
+
+*** TODO Где зашиты размеры bitmap в back-art?
+
+*** TODO Какой NSFontRenderingMode используется в GUI по-умлчанию?
+
+** Создание шрифта
+   Делается так: 
+   1. Взять BDF или PCF из пакета для X11 с кодировкой iso10646 и разрешением
+      75x75.
+   2. Берем TTF и создаем в нем Bitmap Strikes нужных размеров с включенной
+      галочкой "Create Rasterized Strikes (Not empy ones)".
+   3. Делаем импорт BDF/PCF в TTF. На вопрос fontforge заменять ли
+      сущетсвующие Bitmap Strikes отвечаем: "да".
+   4. Символы, которые есть в outline, но нет в bitmap, fontforge отмечает
+      красной рамкой. Для этих символов можно сгенерировать bitmap (Ctrl+B или
+      меню "Element->Regenrate Bitmap Glyphs...")
+   5. Правим начертания некрасивых bitmap'ов, вставляем недостающие.
+
+   В итоге получается шрифт, который:
+   - имеет outline для тех программ, которые хотят рисовать сглаженные шрифты
+     во всех размерах;
+   - для умных есть bitmap шрифты для некоторго набора размеров;
+   - bitmap шрифты из набора шрифтов X11 + сгенерированные из outline -
+     получается набор глифов, который соответствует outline.
+
+
+** TODO Helvetica
+   Outline: Helvetica World (основной), Arial (источник дополнительных
+   глифов)
+   Bitmap: AdobeMy - шрифты X11 с добавленными кириллическими символами
+*** TODO Helvetica Medium
+**** TODO Добавить символы из Arial и сгенерить Bitmap Strikes
+*** TODO Helvetica Bold
+*** TODO Helvetica Oblique
+*** TODO Helvetica Bold Oblique
+
+
+** TODO Ohlfs
+   Можно взять за основу Liberation Mono и добавить ручные Bitmap Strikes.
+   Битмапы можно брать из моего вручную сделанного ширфта и из Terminus.
