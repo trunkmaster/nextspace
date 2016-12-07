@@ -1,0 +1,14 @@
+{
+    ApplicationDescription = "Yahoo weather dock application";
+    ApplicationIcon = 32.png;
+    ApplicationName = Weather;
+    ApplicationRelease = 0.8;
+    Copyright = "Copyright (C) 200x";
+    CopyrightDescription = "Released under ...";
+    FullVersionID = 0.8;
+    NSExecutable = Weather;
+    NSIcon = 32.png;
+    NSMainNibFile = Weather.gorm;
+    NSPrincipalClass = NSApplication;
+    NSRole = Application;
+}

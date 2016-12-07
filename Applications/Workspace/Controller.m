@@ -390,7 +390,8 @@ static NSString *WMComputerShouldGoDownNotification =
   
   //NSUpdateDynamicServices(); -- app won't start
   //[[NSWorkspace sharedWorkspace] findApplications]; -- won't start
-  
+
+#if 0  
   // Set appicon image
   operatingSystem = [NXSystemInfo operatingSystem];
   if ([operatingSystem rangeOfString:@"CentOS"].location != NSNotFound)
@@ -412,6 +413,7 @@ static NSString *WMComputerShouldGoDownNotification =
     }
 
   [NSApp setApplicationIconImage:appImage];
+#endif
   
   procManager = [ProcessManager shared];
   // ProcessManager created - Workspace is ready to register applications.
