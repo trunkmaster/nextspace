@@ -21,16 +21,17 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <curl/curl.h>
-#include <errno.h>
-#include <getopt.h>
-#include <libgen.h>
-#include <libxml/tree.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <WINGs/WINGs.h>
+// #include <curl/curl.h>
+// #include <errno.h>
+// #include <getopt.h>
+// #include <libgen.h>
+// #include <libxml/tree.h>
+// #include <stdio.h>
+// #include <string.h>
+// #include <sys/stat.h>
+// #include <WINGs/WINGs.h>
 
+#import "YQL.h"
 #import "YahooForecast.h"
 
 @implementation YahooForecast : NSObject
@@ -40,6 +41,9 @@
   forecastList = [[NSMutableArray alloc] init];
   weatherCondition = [[NSMutableDictionary alloc] init];
   [weatherCondition setObject:forecastList forKey:@"Forecasts"];
+  
+  yql = [[YQL alloc] init];
+  
   return self;
 }
 
@@ -47,210 +51,100 @@
 {
   [weatherCondition release];
   [forecastList release];
+  [yql release];
+  
   [super dealloc];
 }
 
-- (void)setTitle:(const char*)title
-{
-  NSLog(@"Set title: %@", [NSString stringWithCString:title]);
-  [weatherCondition setObject:[NSString stringWithCString:title]
-                       forKey:@"Title"];
-}
-
-- (void)setTemperature:(xmlChar *)temp
-         conditionDesc:(xmlChar *)text
-         conditionCode:(xmlChar *)code
-{
-  NSString *imageName;
-  
-  [weatherCondition setObject:[NSString stringWithCString:(const char*)temp]
-                       forKey:@"Temperature"];
-  [weatherCondition setObject:[NSString stringWithCString:(const char*)text]
-                       forKey:@"Description"];
-
-  imageName = [NSString stringWithFormat:@"%s.png", code];
-  [weatherCondition setObject:[NSImage imageNamed:imageName]
-                       forKey:@"Image"];
-}
-
-- (void)appendForecastForDay:(xmlChar *)day
-                    highTemp:(xmlChar *)high
-                     lowTemp:(xmlChar *)low
-                 description:(xmlChar *)desc
+- (void)appendForecastForDay:(NSString *)day
+                    highTemp:(NSString *)high
+                     lowTemp:(NSString *)low
+                 description:(NSString *)desc
 {
   NSDictionary *dayForecast;
 
   dayForecast =
     [NSDictionary dictionaryWithObjectsAndKeys:
-                   [NSString stringWithCString:(const char*)day],  @"Day",
-                   [NSString stringWithCString:(const char*)high], @"High",
-                   [NSString stringWithCString:(const char*)low],  @"Low",
-                   [NSString stringWithCString:(const char*)desc], @"Description"];
+                    day,  @"Day",
+                  high, @"High",
+                  low,  @"Low",
+                  desc, @"Description",
+                  nil];
   NSLog(@"Append forecast: %@", dayForecast);
   [forecastList addObject:dayForecast];
 }
 
-/**************************************************
-from http://curl.haxx.se/libcurl/c/getinmemory.html
-***************************************************/
-struct MemoryStruct {
-  char *memory;
-  size_t size;
-};
-
-static size_t
-WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
+- (NSDictionary *)fetchWeatherWithWOEID:(NSString *)woeid
+                                zipCode:(NSString *)zip
+                                  units:(NSString *)units
 {
-  size_t realsize = size * nmemb;
-  struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+  // NSString	*w, *z, *u;
+  NSString	*queryString = @"select * from weather.forecast where";
+  NSDictionary	*results;
 
-  mem->memory = wrealloc(mem->memory, mem->size + realsize + 1);
-  memcpy(&(mem->memory[mem->size]), contents, realsize);
-  mem->size += realsize;
-  mem->memory[mem->size] = 0;
-
-  return realsize;
-}
-
-- (NSDictionary *)fetchWeatherWithWOEID:(char *)woeid
-                                zipCode:(char *)zip
-                                  units:(char *)units
-{
-  char		*url;
-  CURL		*curl_handle;
-  CURLcode	res;
-  struct MemoryStruct chunk;
-  xmlDocPtr	doc;
-  xmlNodePtr	cur;
-  int		i;
-
-  url = wstrdup("https://query.yahooapis.com/v1/public/yql?q="
-                "select%20*%20from%20weather.forecast%20where%20woeid");
-  if (strcmp(woeid, "") != 0)
+  if (!units || [units length] == 0)
+    units = @"c";
+  
+  if (woeid != nil && [woeid length] > 0)
     {
-      NSLog(@"Fetch forecast using WOEID.");
-      url = wstrappend(url, "%20%3D%20");
-      url = wstrappend(url, woeid);
+      queryString = [queryString stringByAppendingFormat:@" woeid=%@", woeid];
     }
   else
     {
-      url = wstrappend(url, "%20in%20(select%20woeid%20from%20"
-                       "geo.places(1)%20where%20text%3D%22");
-      url = wstrappend(url, zip);
-      url = wstrappend(url, "%22)");
+      queryString = [queryString stringByAppendingFormat:@" in (select woeid from geo.places(1) where text=%@", zip];
     }
-  url = wstrappend(url, "%20and%20u%3D'");
-  url = wstrappend(url, units);
-  url = wstrappend(url, "'&format=xml");
-  /* url = wstrdup("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20%3D%20924938&format=xml&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"); */
-
-  chunk.memory = wmalloc(1);
-  chunk.size = 0;
-
-  curl_global_init(CURL_GLOBAL_ALL);
-  curl_handle = curl_easy_init();
-  curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-  /* coverity[bad_sizeof] */
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
-  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-  NSLog(@"Fetching data from %s...", url);
-  res = curl_easy_perform(curl_handle);
-  NSLog(@"Fetching data finished.");
-  if (res != CURLE_OK)
+  
+  if (units != nil && [units length] > 0)
     {
-      [weatherCondition
-        setObject:[NSString stringWithCString:curl_easy_strerror(res)]
-           forKey:@"ErrorText"];
-      curl_easy_cleanup(curl_handle);
-      curl_global_cleanup();
-      wfree(chunk.memory);
-      return weatherCondition;
-    }
-  curl_easy_cleanup(curl_handle);
-  curl_global_cleanup();
-
-  doc = xmlParseMemory(chunk.memory, chunk.size);
-  // wfree(chunk.memory);
-  if (doc == NULL)
-    {
-      [weatherCondition setObject:@"Document was not parsed successfully."
-                           forKey:@"ErrorText"];
-      xmlFreeDoc(doc);
-      return weatherCondition;
+      queryString = [queryString stringByAppendingFormat:@" and u=%@", units];
     }
 
-  cur = xmlDocGetRootElement(doc);
-  if (cur == NULL)
-    {
-      [weatherCondition setObject:@"Empty info from Yahoo was received."
-                           forKey:@"ErrorText"];
-      xmlFreeDoc(doc);
-      return weatherCondition;
-    }
+  results = [yql query:queryString];
+  
+   // NSLog(@"%@", results[@"query"][@"count"]);
+   // NSLog(@"%@", results[@"query"][@"results"]);
 
-  for (i = 0; i < 3; i++)
+  // id itemForecast = results[@"query"][@"results"][@"channel"][@"item"][@"forecast"];
+
+  // NSLog(@"condition is a %@; forecast is a %@",
+  //       [itemCondition className], [itemForecast className]);
+  // NSLog(@"forecast # of items = %lu", [itemForecast count]);
+
+  // NSLog(@"Temp = %@ Text = %@ Code = %@",
+  //       itemCondition[@"temp"], itemCondition[@"text"], itemCondition[@"code"]);
+  
+  if (results)
     {
-      cur = cur->children;
-      if (cur == NULL)
+      NSString     *imageName;
+      NSDictionary *channel = results[@"query"][@"results"][@"channel"];
+        
+      [weatherCondition setObject:channel[@"title"]
+                           forKey:@"Title"];
+      [weatherCondition setObject:channel[@"item"][@"condition"][@"temp"]
+                           forKey:@"Temperature"];
+      [weatherCondition setObject:channel[@"item"][@"condition"][@"text"]
+                           forKey:@"Description"];
+
+      imageName = [NSString stringWithFormat:@"%@.png",
+                            channel[@"item"][@"condition"][@"code"]];
+      [weatherCondition setObject:[NSImage imageNamed:imageName]
+                           forKey:@"Image"];
+      
+      for (NSDictionary *forecast in channel[@"item"][@"forecast"])
         {
-          [weatherCondition setObject:@"Error occured while parsing Yahoo info."
-                               forKey:@"ErrorText"];
-          xmlFreeDoc(doc);
-          return weatherCondition;
+          [self appendForecastForDay:forecast[@"day"]
+                            highTemp:forecast[@"high"]
+                             lowTemp:forecast[@"low"]
+                         description:forecast[@"desc"]];
         }
+      
+      // if ([forecastList count] > 0)
+      //   {
+      //     [weatherCondition setObject:forecastList forKey:@"Forecasts"];
+      //   }
+      
+      [weatherCondition setObject:[NSDate date] forKey:@"Fetched"];
     }
-
-  while (cur != NULL)
-    {
-      if ((!xmlStrcmp(cur->name, (const xmlChar *)"item")))
-        {
-          cur = cur->children;
-          while (cur != NULL)
-            {
-              if ((!xmlStrcmp(cur->name, (const xmlChar *)"title")))
-                {
-                  if ((!xmlStrcmp(xmlNodeListGetString(doc, cur->children, 1),
-                                  (const xmlChar *)"City not found")))
-                    {
-                      [weatherCondition setObject:@"City was not found."
-                                           forKey:@"ErrorText"];
-                    }
-                  [self setTitle:(const char*)xmlNodeListGetString(doc, cur->children, 1)];
-
-                }
-              if ((!xmlStrcmp(cur->name, (const xmlChar *)"condition")))
-                {
-                  [self setTemperature:xmlGetProp(cur, (const xmlChar *)"temp")
-                         conditionDesc:xmlGetProp(cur, (const xmlChar *)"text")
-                         conditionCode:xmlGetProp(cur, (const xmlChar *)"code")];
-                }
-              if ((!xmlStrcmp(cur->name, (const xmlChar *)"forecast")))
-                {
-                  [self appendForecastForDay:xmlGetProp(cur, (const xmlChar *)"day")
-                                    highTemp:xmlGetProp(cur, (const xmlChar *)"high")
-                                     lowTemp:xmlGetProp(cur, (const xmlChar *)"low")
-                                 description:xmlGetProp(cur, (const xmlChar *)"text")];
-                }
-
-              cur = cur->next;
-            }
-        }
-      else
-        {
-          cur = cur->next;
-        }
-    }
-
-  if ([forecastList count] > 0)
-    {
-      [weatherCondition setObject:forecastList forKey:@"Forecasts"];
-    }
-
-  [weatherCondition setObject:[NSDate date] forKey:@"Fetched"];
-
-  xmlFreeDoc(doc);
-  /* finish parsing xml */
 
   return weatherCondition;
 }
