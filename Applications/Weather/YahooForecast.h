@@ -24,6 +24,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@class YQL;
+
 @interface YahooForecast : NSObject
 {
   // { Day = @""; Low = @""; High = @""; Description = @"";}
@@ -40,10 +42,11 @@
   //   ErrorText = @"";
   // }
   NSMutableDictionary *weatherCondition;
+  YQL                 *yql;
 }
 
-- (NSDictionary *)fetchWeatherWithWOEID:(char *)woeid
-                                zipCode:(char *)zip
-                                  units:(char *)units;
+- (NSDictionary *)fetchWeatherWithWOEID:(NSString *)woeid
+                                zipCode:(NSString *)zip
+                                  units:(NSString *)units;
 
 @end

@@ -20,9 +20,13 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#import <NXAppKit/NXAlert.h>
+
 #import "AppController.h"
 #import "WeatherView.h"
 #import "YahooForecast.h"
+
+#import "YQL.h"
 
 static NSUserDefaults *defaults = nil;
 
@@ -58,7 +62,7 @@ static NSUserDefaults *defaults = nil;
   if (weatherView)
     return;
   
-  weatherView = [[WeatherView alloc] initWithFrame:NSMakeRect(2, 2, 60, 60)];
+  weatherView = [[WeatherView alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)];
   [[NSApp iconWindow] setContentView:weatherView];
 
   timer = [NSTimer scheduledTimerWithTimeInterval:1800.0
@@ -122,19 +126,19 @@ static NSUserDefaults *defaults = nil;
 - (void)updateWeather:(NSTimer *)timer
 {
   NSDictionary *weather;
-  
+
   if (forecast == nil)
     {
       forecast = [[YahooForecast alloc] init];
     }
 
-  weather = [forecast fetchWeatherWithWOEID:"924938"
-                                    zipCode:""
-                                      units:"c"];
+  weather = [forecast fetchWeatherWithWOEID:@"924938"
+                                    zipCode:@""
+                                      units:@"c"];
 
   NSLog(@"Yahoo weather forecast: %@", weather);
 
-  if ([[weather objectForKey:@"ErrorText"] length] == 0)
+  if (weather)
     {
       [weatherView setImage:[weather objectForKey:@"Image"]];
       [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
@@ -142,6 +146,9 @@ static NSUserDefaults *defaults = nil;
   else
     {
       NSLog(@"Error getting data: %@", [weather objectForKey:@"ErrorText"]);
+      NXRunAlertPanel(@"Weather error",
+                      @"The error was occured while getting weather data.",
+                      @"Dismiss", nil, nil);
     }
 }
 

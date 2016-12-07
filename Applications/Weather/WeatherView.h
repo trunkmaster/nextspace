@@ -26,7 +26,8 @@
 @interface WeatherView : NSView
 {
   NSImageView *imageView;
-  NSTextField *temperature;
+  NSTextField *temperatureW;
+  NSTextField *temperatureB;
 }
 
 - (void)setImage:(NSImage *)image;
