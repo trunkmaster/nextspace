@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Dec  8 01:39:26 2016
+;; Created Thu Dec  8 19:10:44 2016
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,41 +22,41 @@
   "WeatherView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  1728
-  '(2631 nil)
+  940
+  '(1564 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Weather/WeatherView.h"
-  "WeatherView.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  998
-  '(998 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Weather/AppController.m"
   "AppController.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  1049
+  2085
   '(2964 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Weather/WeatherView.h"
+  "WeatherView.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  943
+  '(984 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Weather/YahooForecast.m"
   "YahooForecast.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  4699
-  '(4478 nil)
+  4059
+  '(4128 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -66,11 +66,22 @@
   "GNUmakefile"
   'makefile-gmake-mode
   '(yas-minor-mode)
-  753
-  '(744 nil)
+  693
+  '(729 nil)
   nil
   nil
   '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Weather/WeatherInfo.plist"
+  "WeatherInfo.plist"
+  'fundamental-mode
+  '(yas-minor-mode)
+  95
+  '(3 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Weather/YahooForecast.h"
@@ -123,17 +134,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   949
   '(890 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Weather/WeatherInfo.plist"
-  "WeatherInfo.plist"
-  'fundamental-mode
-  '(yas-minor-mode)
-  345
-  '(3 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

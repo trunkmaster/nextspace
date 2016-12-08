@@ -13,14 +13,14 @@ include $(GNUSTEP_MAKEFILES)/common.make
 VERSION = 0.5
 PACKAGE_NAME = Weather
 APP_NAME = Weather
-$(APP_NAME)_APPLICATION_ICON = Mask.tiff
+$(APP_NAME)_APPLICATION_ICON = Weather.png
 
 #SUBPROJECTS =
 
 #
 # Resource files
 #
-#$(APP_NAME)_RESOURCE_FILES = $(wildcard Resources/*.png)
+$(APP_NAME)_RESOURCE_FILES = Weather.png
 
 #
 # Localization

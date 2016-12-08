@@ -22,6 +22,8 @@
 
 #import "WeatherView.h"
 
+static int icon_number = 0;
+
 @implementation WeatherView : NSView
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)anEvent
@@ -31,20 +33,40 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
+  NSLog(@"mouseDown:");
   if ([event clickCount] >= 2)
     {
       [NSApp activateIgnoringOtherApps:YES];
     }
+  else
+    {
+      if (icon_number > 47)
+        icon_number = 0;
+      else
+        icon_number++;
+      
+      [self
+        setImage:[NSImage
+                   imageNamed:[NSString
+                                stringWithFormat:@"%i.png", icon_number]]];
+    }    
 }
 
 - (id)initWithFrame:(NSRect)frameRect
 {
   [super initWithFrame:frameRect];
 
-  imageView = [[NSImageView alloc] initWithFrame:NSMakeRect(8, 16, 48, 48)];
-  [imageView setImage:[NSImage imageNamed:@"na.png"]];
+  conditionImage = [[NSImage imageNamed:@"3200.png"] copy];
 
-  temperatureW = [[NSTextField alloc] initWithFrame:NSMakeRect(1, 1, 60, 18)];
+  // lightTempAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+  //                                  NSColorAttributeName,
+  //                                [NSColor lightGrayColor],
+  //                                NSFontAttributeName,
+  //                                [NSFont boldSystemFontOfSize:16]];
+  // tempString = [[NSMutableString alloc] initWithString:@"***"
+  //                                           attributes:];
+
+  temperatureW = [[NSTextField alloc] initWithFrame:NSMakeRect(9, 0, 46, 18)];
   [temperatureW setBezeled:NO];
   [temperatureW setBordered:NO];
   [temperatureW setDrawsBackground:NO];
@@ -55,7 +77,7 @@
   [temperatureW setTextColor:[NSColor lightGrayColor]];
   [temperatureW setStringValue:@"***"];
   
-  temperatureB = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 2, 60, 18)];
+  temperatureB = [[NSTextField alloc] initWithFrame:NSMakeRect(8, 1, 48, 18)];
   [temperatureB setBezeled:NO];
   [temperatureB setBordered:NO];
   [temperatureB setDrawsBackground:NO];
@@ -66,7 +88,6 @@
   [temperatureB setTextColor:[NSColor blackColor]];
   [temperatureB setStringValue:@"***"];
 
-  [self addSubview:imageView];
   [self addSubview:temperatureW];
   [self addSubview:temperatureB];
 
@@ -77,12 +98,15 @@
 {
   [[NSImage imageNamed:@"common_Tile"] compositeToPoint:NSMakePoint(0, 0)
                                               operation:NSCompositeSourceOver];
+  [conditionImage compositeToPoint:NSMakePoint(9, 14)
+                         operation:NSCompositeSourceOver];
   [super drawRect:rect];
 }
 
 - (void)dealloc
 {
-  [imageView release];
+  // [imageView release];
+  [conditionImage release];
   [temperatureW release];
   [temperatureB release];
   [super dealloc];
@@ -90,7 +114,12 @@
 
 - (void)setImage:(NSImage *)image
 {
-  [imageView setImage:image];
+  // [imageView setImage:image];
+  if (conditionImage != nil)
+    [conditionImage release];
+  
+  conditionImage = [image copy];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)setTemperature:(NSString *)temp
