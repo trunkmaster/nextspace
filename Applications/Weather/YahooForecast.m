@@ -106,6 +106,7 @@
 
   // id itemForecast = results[@"query"][@"results"][@"channel"][@"item"][@"forecast"];
 
+  // id itemCondition = results[@"query"][@"results"][@"channel"][@"item"][@"condition"];
   // NSLog(@"condition is a %@; forecast is a %@",
   //       [itemCondition className], [itemForecast className]);
   // NSLog(@"forecast # of items = %lu", [itemForecast count]);
@@ -113,7 +114,7 @@
   // NSLog(@"Temp = %@ Text = %@ Code = %@",
   //       itemCondition[@"temp"], itemCondition[@"text"], itemCondition[@"code"]);
   
-  if (results)
+  if (results != nil && [[results[@"query"] allKeys] count] > 0)
     {
       NSString     *imageName;
       NSDictionary *channel = results[@"query"][@"results"][@"channel"];
@@ -124,6 +125,8 @@
                            forKey:@"Temperature"];
       [weatherCondition setObject:channel[@"item"][@"condition"][@"text"]
                            forKey:@"Description"];
+      [weatherCondition setObject:channel[@"atmosphere"][@"humidity"]
+                           forKey:@"Humidity"];
 
       imageName = [NSString stringWithFormat:@"%@.png",
                             channel[@"item"][@"condition"][@"code"]];
@@ -138,11 +141,10 @@
                          description:forecast[@"desc"]];
         }
       
-      // if ([forecastList count] > 0)
-      //   {
-      //     [weatherCondition setObject:forecastList forKey:@"Forecasts"];
-      //   }
-      
+      [weatherCondition setObject:[NSDate date] forKey:@"Fetched"];
+    }
+  else
+    {
       [weatherCondition setObject:[NSDate date] forKey:@"Fetched"];
     }
 

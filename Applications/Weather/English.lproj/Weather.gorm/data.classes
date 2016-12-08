@@ -2,8 +2,15 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     AppController = {
 	Actions = (
+	    "updateWeather:"
 	);
 	Outlets = (
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "updateWeather:"
 	);
 	Super = NSObject;
     };
