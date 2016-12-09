@@ -23,16 +23,17 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@class SunkenString;
+
 @interface WeatherView : NSView
 {
-  NSImageView			*imageView;
-  NSImage			*conditionImage;
-  NSTextField			*temperatureW;
-  NSTextField			*temperatureB;
-  NSMutableAttributedString	*tempString;
+  NSImage	*conditionImage;
+  SunkenString	*temperature;
+  SunkenString	*humidity;
 }
 
 - (void)setImage:(NSImage *)image;
 - (void)setTemperature:(NSString *)temp;
+- (void)setHumidity:(NSString *)hum;
 
 @end
