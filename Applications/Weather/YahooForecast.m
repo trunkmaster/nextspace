@@ -21,16 +21,6 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-// #include <curl/curl.h>
-// #include <errno.h>
-// #include <getopt.h>
-// #include <libgen.h>
-// #include <libxml/tree.h>
-// #include <stdio.h>
-// #include <string.h>
-// #include <sys/stat.h>
-// #include <WINGs/WINGs.h>
-
 #import "YQL.h"
 #import "YahooForecast.h"
 
@@ -78,7 +68,6 @@
                                 zipCode:(NSString *)zip
                                   units:(NSString *)units
 {
-  // NSString	*w, *z, *u;
   NSString	*queryString = @"select * from weather.forecast where";
   NSDictionary	*results;
 
@@ -102,7 +91,7 @@
   results = [yql query:queryString];
   
    // NSLog(@"%@", results[@"query"][@"count"]);
-   // NSLog(@"%@", results[@"query"][@"results"]);
+  NSLog(@"%@", results[@"query"][@"results"]);
 
   // id itemForecast = results[@"query"][@"results"][@"channel"][@"item"][@"forecast"];
 
@@ -113,8 +102,11 @@
 
   // NSLog(@"Temp = %@ Text = %@ Code = %@",
   //       itemCondition[@"temp"], itemCondition[@"text"], itemCondition[@"code"]);
+
+  NSLog(@"results is a %@ (%lu)", [results className], [[results allKeys] count]);
   
-  if (results != nil && [[results[@"query"] allKeys] count] > 0)
+  if (results != nil &&
+      ![results[@"query"][@"results"] isKindOfClass:[NSNull class]])
     {
       NSString     *imageName;
       NSDictionary *channel = results[@"query"][@"results"][@"channel"];
@@ -145,7 +137,7 @@
     }
   else
     {
-      [weatherCondition setObject:[NSDate date] forKey:@"Fetched"];
+      NSLog(@"Error getting data from Yahoo!");
     }
 
   return weatherCondition;
