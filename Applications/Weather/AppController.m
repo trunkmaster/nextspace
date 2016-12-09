@@ -142,6 +142,7 @@ static NSUserDefaults *defaults = nil;
     {
       [weatherView setImage:[weather objectForKey:@"Image"]];
       [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
+      [weatherView setHumidity:[weather objectForKey:@"Humidity"]];
     }
   else
     {

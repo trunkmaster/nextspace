@@ -22,6 +22,86 @@
 
 #import "WeatherView.h"
 
+@interface SunkenString : NSObject
+{
+  NSMutableString *string;
+  NSDictionary    *stringAttrs;
+  NSDictionary    *highlightAttrs;
+}
+
+- (id)initWithString:(NSString *)text
+                font:(NSFont *)sFont
+          lightColor:(NSColor *)lColor
+           darkColor:(NSColor *)dColor;
+
+- (NSString *)stringValue;
+- (void)setStringValue:(NSString *)text;
+- (NSUInteger)width;
+
+- (void)drawAtPoint:(NSPoint)point;
+
+@end
+
+@implementation SunkenString
+
+- (id)initWithString:(NSString *)text
+                font:(NSFont *)sFont
+          lightColor:(NSColor *)lColor
+           darkColor:(NSColor *)dColor
+{
+  [super init];
+  
+  string = [[NSMutableString alloc] initWithString:text];
+
+  stringAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                dColor, NSForegroundColorAttributeName,
+                              sFont, NSFontAttributeName, nil];
+  [stringAttrs retain];
+  highlightAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   lColor, NSForegroundColorAttributeName,
+                                 sFont, NSFontAttributeName, nil];
+  [highlightAttrs retain];
+
+  return self;
+}
+
+- (void)dealloc
+{
+  [string release];
+  [stringAttrs release];
+  [highlightAttrs release];
+  
+  [super dealloc];
+}
+
+- (NSString *)stringValue
+{
+  return string;
+}
+
+- (void)setStringValue:(NSString *)text
+{
+  [string release];
+  string = [[NSMutableString alloc] initWithString:text];
+}
+
+- (NSUInteger)width
+{
+  return [[stringAttrs objectForKey:NSFontAttributeName] widthOfString:string];
+}
+
+- (void)drawAtPoint:(NSPoint)point
+{
+  point.x++;
+  point.y--;
+  [string drawAtPoint:point withAttributes:highlightAttrs];
+  point.x--;
+  point.y++;
+  [string drawAtPoint:point withAttributes:stringAttrs];
+}
+
+@end
+
 static int icon_number = 0;
 
 @implementation WeatherView : NSView
@@ -37,9 +117,9 @@ static int icon_number = 0;
   if ([event clickCount] >= 2)
     {
       [NSApp activateIgnoringOtherApps:YES];
-    }
-  else
-    {
+    // }
+  // else
+  //   {
       if (icon_number > 47)
         icon_number = 0;
       else
@@ -58,38 +138,17 @@ static int icon_number = 0;
 
   conditionImage = [[NSImage imageNamed:@"3200.png"] copy];
 
-  // lightTempAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-  //                                  NSColorAttributeName,
-  //                                [NSColor lightGrayColor],
-  //                                NSFontAttributeName,
-  //                                [NSFont boldSystemFontOfSize:16]];
-  // tempString = [[NSMutableString alloc] initWithString:@"***"
-  //                                           attributes:];
-
-  temperatureW = [[NSTextField alloc] initWithFrame:NSMakeRect(9, 0, 46, 18)];
-  [temperatureW setBezeled:NO];
-  [temperatureW setBordered:NO];
-  [temperatureW setDrawsBackground:NO];
-  [temperatureW setEditable:NO];
-  [temperatureW setSelectable:NO];
-  [temperatureW setAlignment:NSCenterTextAlignment];
-  [temperatureW setFont:[NSFont boldSystemFontOfSize:16]];
-  [temperatureW setTextColor:[NSColor lightGrayColor]];
-  [temperatureW setStringValue:@"***"];
+  temperature = [[SunkenString alloc]
+                  initWithString:@"°"
+                            font:[NSFont boldSystemFontOfSize:16]
+                      lightColor:[NSColor lightGrayColor]
+                       darkColor:[NSColor blackColor]];
   
-  temperatureB = [[NSTextField alloc] initWithFrame:NSMakeRect(8, 1, 48, 18)];
-  [temperatureB setBezeled:NO];
-  [temperatureB setBordered:NO];
-  [temperatureB setDrawsBackground:NO];
-  [temperatureB setEditable:NO];
-  [temperatureB setSelectable:NO];
-  [temperatureB setAlignment:NSCenterTextAlignment];
-  [temperatureB setFont:[NSFont boldSystemFontOfSize:16]];
-  [temperatureB setTextColor:[NSColor blackColor]];
-  [temperatureB setStringValue:@"***"];
-
-  [self addSubview:temperatureW];
-  [self addSubview:temperatureB];
+  humidity = [[SunkenString alloc]
+                  initWithString:@"%"
+                            font:[NSFont systemFontOfSize:10]
+                      lightColor:[NSColor grayColor]
+                       darkColor:[NSColor blackColor]];
 
   return self;
 }
@@ -98,17 +157,22 @@ static int icon_number = 0;
 {
   [[NSImage imageNamed:@"common_Tile"] compositeToPoint:NSMakePoint(0, 0)
                                               operation:NSCompositeSourceOver];
-  [conditionImage compositeToPoint:NSMakePoint(9, 14)
-                         operation:NSCompositeSourceOver];
+  [conditionImage
+    compositeToPoint:NSMakePoint(9, 60-[conditionImage size].height)
+           operation:NSCompositeSourceOver];
+  
+  [temperature drawAtPoint:NSMakePoint(8, 0)];
+  [humidity drawAtPoint:NSMakePoint(64-[humidity width]-4, 2)];
+  
   [super drawRect:rect];
 }
 
 - (void)dealloc
 {
-  // [imageView release];
   [conditionImage release];
-  [temperatureW release];
-  [temperatureB release];
+  [temperature release];
+  [humidity release];
+  
   [super dealloc];
 }
 
@@ -124,8 +188,12 @@ static int icon_number = 0;
 
 - (void)setTemperature:(NSString *)temp
 {
-  [temperatureW setStringValue:[NSString stringWithFormat:@"%@°", temp]];
-  [temperatureB setStringValue:[NSString stringWithFormat:@"%@°", temp]];
+  [temperature setStringValue:[NSString stringWithFormat:@"%@°", temp]];
+}
+
+- (void)setHumidity:(NSString *)hum
+{
+  [humidity setStringValue:[NSString stringWithFormat:@"%@%%", hum]];
 }
 
 @end
