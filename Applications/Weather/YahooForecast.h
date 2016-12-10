@@ -1,10 +1,14 @@
 /*
   Class:               YahooForecast
   Inherits from:       NSObject
-  Class descritopn:    Get and parse weather forecast from yahoo.com
+  Class descritopn:    Get and parse weather condition and forecast 
+                       from yahoo.com.
 
-  Copyright (C) 2014-2016 Doug Torrance <dtorrance@piedmont.edu>
   Copyright (C) 2016 Sergii Stoian <stoian255@ukr.net>
+
+  -query: method 
+  Created by Guilherme Chapiewski on 10/19/12.
+  Copyright (c) 2012 Guilherme Chapiewski. All rights reserved.
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,7 +26,6 @@
 */
 
 #import <Foundation/Foundation.h>
-#import <AppKit/AppKit.h>
 
 @class YQL;
 
@@ -42,11 +45,12 @@
   //   ErrorText = @"";
   // }
   NSMutableDictionary *weatherCondition;
-  YQL                 *yql;
 }
 
 - (NSDictionary *)fetchWeatherWithWOEID:(NSString *)woeid
                                 zipCode:(NSString *)zip
                                   units:(NSString *)units;
+
+- (NSDictionary *)query:(NSString *)statement;
 
 @end
