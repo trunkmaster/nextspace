@@ -26,8 +26,6 @@
 #import "WeatherView.h"
 #import "YahooForecast.h"
 
-#import "YQL.h"
-
 static NSUserDefaults *defaults = nil;
 
 @implementation AppController
