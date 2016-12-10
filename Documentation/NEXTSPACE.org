@@ -201,6 +201,11 @@
 
 * GNUstep
 
+** TODO Single click не получает NSIconWindow (appicon)
+   Решение находится в gnustep-back/x11/XGServerWindow.m
+   processEvent:. Если используется WindowMaker для appicon управление
+   передается WindowMaker и выполеняется выход из switch-case без
+   установленного 'event'. Поэтому NSEvent не передается приложению и окну.
 ** TODO Клик внутри неактивного окна не обрабатывается subview
    ...или не передается subview окном. NSFistResponder chain?
 ** TODO Font Panel resizing
@@ -3360,19 +3365,21 @@
 
 ** 8. Weather
    Индикатор погоды: температура, влажность
-*** TODO Сделать control с вдавленным или выпуклым текстом
+*** DONE Сделать control с вдавленным или выпуклым текстом
     Может пригодится не только здесь, но и в Workspace для отображения
     текущего workspace.
-*** TODO Отображение температуры и влажности на appicon
+    SunkenString в WeatherView.
+*** DONE Отображение температуры и влажности на appicon
 *** TODO Пункт меню: "Refresh"
-**** TODO Сделать работающим
+**** DONE Сделать работающим
 **** TODO Отображать на appicon статус обновления
 *** TODO Настройки
 **** TODO Город
 **** TODO Частота обновления
 **** TODO Units: celsius, farenheit
-*** TODO Прогноз погоды (Forecast) и подробности
-*** TODO Несколько городов на панели
+*** TODO Панель с прогнозом погоды (Forecast)
+**** TODO Несколько городов на панели
+
 
 ** Разное
 *** TODO Отображение текущего workspace'а в иконке WorkspaceManager

@@ -158,7 +158,8 @@ static int icon_number = 0;
   [[NSImage imageNamed:@"common_Tile"] compositeToPoint:NSMakePoint(0, 0)
                                               operation:NSCompositeSourceOver];
   [conditionImage
-    compositeToPoint:NSMakePoint(9, 60-[conditionImage size].height)
+    compositeToPoint:NSMakePoint((64-[conditionImage size].width)/2,
+                                 58-[conditionImage size].height)
            operation:NSCompositeSourceOver];
   
   [temperature drawAtPoint:NSMakePoint(8, 0)];
@@ -178,11 +179,17 @@ static int icon_number = 0;
 
 - (void)setImage:(NSImage *)image
 {
-  // [imageView setImage:image];
+  NSSize imageSize = [image size];
+  
   if (conditionImage != nil)
     [conditionImage release];
   
   conditionImage = [image copy];
+  [conditionImage setScalesWhenResized:YES];
+  imageSize.width -= 6;
+  imageSize.height -= 6;
+  [conditionImage setSize:imageSize];
+  
   [self setNeedsDisplay:YES];
 }
 

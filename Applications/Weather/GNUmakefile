@@ -42,7 +42,6 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 $(APP_NAME)_OBJC_FILES = \
 	AppController.m \
 	WeatherView.m \
-	YQL.m \
 	YahooForecast.m
 
 #

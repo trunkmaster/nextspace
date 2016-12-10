@@ -138,7 +138,7 @@ static NSUserDefaults *defaults = nil;
 
   NSLog(@"Yahoo weather forecast: %@", weather);
 
-  if (weather)
+  if (weather && [[weather objectForKey:@"ErrorText"] length] == 0)
     {
       [weatherView setImage:[weather objectForKey:@"Image"]];
       [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
