@@ -1,0 +1,45 @@
+--- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2016-12-11 00:20:36.633001788 +0200
+@@ -468,6 +468,21 @@
+         eventLocation = [self _XPointToOSPoint: eventLocation
+                                            for: cWin];
+ 
++        // create NSEvent
++        e = [NSEvent mouseEventWithType: eventType
++                     location: eventLocation
++                     modifierFlags: eventFlags
++         timestamp: (NSTimeInterval)generic.lastClick / 1000.0
++                     windowNumber: cWin->number
++                     context: gcontext
++                     eventNumber: xEvent.xbutton.serial
++                     clickCount: clickCount
++                     pressure: 1.0
++                     buttonNumber: buttonNumber /* FIXME */
++                     deltaX: deltaX
++                     deltaY: deltaY
++                     deltaZ: 0.];
++
+         if (generic.flags.useWindowMakerIcons == 1)
+           {
+             /*
+@@ -489,20 +504,6 @@
+               }
+           }
+ 
+-        // create NSEvent
+-        e = [NSEvent mouseEventWithType: eventType
+-                     location: eventLocation
+-                     modifierFlags: eventFlags
+-         timestamp: (NSTimeInterval)generic.lastClick / 1000.0
+-                     windowNumber: cWin->number
+-                     context: gcontext
+-                     eventNumber: xEvent.xbutton.serial
+-                     clickCount: clickCount
+-                     pressure: 1.0
+-                     buttonNumber: buttonNumber /* FIXME */
+-                     deltaX: deltaX
+-                     deltaY: deltaY
+-                     deltaZ: 0.];
+         break;
+ 
+       case ButtonRelease:
