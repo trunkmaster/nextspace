@@ -201,11 +201,6 @@
 
 * GNUstep
 
-** TODO Single click не получает NSIconWindow (appicon)
-   Решение находится в gnustep-back/x11/XGServerWindow.m
-   processEvent:. Если используется WindowMaker для appicon управление
-   передается WindowMaker и выполеняется выход из switch-case без
-   установленного 'event'. Поэтому NSEvent не передается приложению и окну.
 ** TODO Клик внутри неактивного окна не обрабатывается subview
    ...или не передается subview окном. NSFistResponder chain?
 ** TODO Font Panel resizing
@@ -229,6 +224,13 @@
    Пока ставить нельзя - сейчас творится какая-то хрень (в Workspace все
    посъезжало, splitview не работает, может что-то еще).
    Пока остаемся на стабильной версии, которая выпущена летом 2015-го.
+** DONE Single click не получает NSIconWindow (appicon)
+   Решение находится в gnustep-back/x11/XGServerWindow.m
+   processEvent:. Если используется WindowMaker для appicon управление
+   передается WindowMaker и выполеняется выход из switch-case без
+   установленного 'event'. Поэтому NSEvent не передается приложению и окну.
+
+   DONE: gnustep-back-x11_XGServerEvent.m.patch
 ** DONE Шрифт у иконки нечитаемый
    В WindowMaker и приложений GNUstep должны быть одинаковые шрифты
    у minwindow.
@@ -1910,9 +1912,6 @@
            dock.c: wDockRestoreState()
                    restore_icon_state()
                    XMapWindow(dpy, aicon->icon->core->window)
-******* TODO При старте размещать Dock и Icon Yard на primary display
-        Вроде уже сделал. Нужно проверить.
-        Side effect: могу залипнуть в Preferences.app/Display. :(
 ******* TODO Конфигурирование Dock (элементы, поведение)
 ******** TODO Workspace: запуск/останов приложений в Dock
          Управление запуском (при входе) и остановом (при выходе) из Workspace.
@@ -1937,6 +1936,9 @@
          5. Запустить приложение.
 ******** TODO Workspace: перелетание иконки из Workspace в IconYard
          ...потом создать иконку, показать иконку и засветить ее.
+******* DONE При старте размещать Dock и Icon Yard на primary display
+        Вроде уже сделал. Нужно проверить.
+        Side effect: могу залипнуть в Preferences.app/Display. :(
 ******* DONE Вид miniwindow
 ******** Preface
          Между WindowMaker и GNUstep есть разница.
@@ -3373,6 +3375,7 @@
 *** TODO Пункт меню: "Refresh"
 **** DONE Сделать работающим
 **** TODO Отображать на appicon статус обновления
+**** TODO Сделать что-то с тайм-аутом при остуствии соединения
 *** TODO Настройки
 **** TODO Город
 **** TODO Частота обновления

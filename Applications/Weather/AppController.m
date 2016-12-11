@@ -134,7 +134,7 @@ static NSUserDefaults *defaults = nil;
                                     zipCode:@""
                                       units:@"c"];
 
-  NSLog(@"Yahoo weather forecast: %@", weather);
+  // NSLog(@"Got Yahoo weather forecast. %@", weather);
 
   if (weather && [[weather objectForKey:@"ErrorText"] length] == 0)
     {
