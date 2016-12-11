@@ -138,7 +138,7 @@
                   low,  @"Low",
                   desc, @"Description",
                   nil];
-  NSLog(@"Append forecast: %@", dayForecast);
+  // NSLog(@"Append forecast: %@", dayForecast);
   [forecastList addObject:dayForecast];
 }
 
@@ -170,20 +170,25 @@
 
   results = [self query:queryString];
   
-   // NSLog(@"%@", results[@"query"][@"count"]);
-  NSLog(@"%@", results[@"query"][@"results"]);
+  // NSLog(@"%@", results[@"query"][@"count"]);
+  // NSLog(@"%@", results[@"query"][@"results"]);
 
-  // id itemForecast = results[@"query"][@"results"][@"channel"][@"item"][@"forecast"];
-
-  // id itemCondition = results[@"query"][@"results"][@"channel"][@"item"][@"condition"];
+  // id itemForecast =
+  //   results[@"query"][@"results"][@"channel"][@"item"][@"forecast"];
+  // id itemCondition =
+  //   results[@"query"][@"results"][@"channel"][@"item"][@"condition"];
+  
   // NSLog(@"condition is a %@; forecast is a %@",
   //       [itemCondition className], [itemForecast className]);
   // NSLog(@"forecast # of items = %lu", [itemForecast count]);
 
   // NSLog(@"Temp = %@ Text = %@ Code = %@",
-  //       itemCondition[@"temp"], itemCondition[@"text"], itemCondition[@"code"]);
+  //       itemCondition[@"temp"],
+  //       itemCondition[@"text"],
+  //       itemCondition[@"code"]);
 
-  NSLog(@"results is a %@ (%lu)", [results className], [[results allKeys] count]);
+  // NSLog(@"results is a %@ (%lu)",
+  //       [results className], [[results allKeys] count]);
   
   if (results != nil &&
       ![results[@"query"][@"results"] isKindOfClass:[NSNull class]])
@@ -219,7 +224,7 @@
     {
       [weatherCondition setObject:@"Error getting data from Yahoo!"
                            forKey:@"ErrorText"];
-      NSLog(@"Error getting data from Yahoo!");
+      NSLog(@"Error getting data from Yahoo! Results are: %@", results);
     }
 
   return weatherCondition;
@@ -228,45 +233,50 @@
 - (NSDictionary *)query:(NSString *)statement
 {
   NSString     *query;
-  NSString     *queryData;
+  // NSString     *queryData;
   NSData       *jsonData;
   NSError      *error = nil;
   NSDictionary *results = nil;
 
-  // Prepare YQL query using modified NSString method implemented above
+  // Prepare query using modified NSString method implemented above
   query = [NSString stringWithFormat:@"%@%@%@",
                     QUERY_PREFIX,
                     [statement stringByAddingPercentEscapes],
                     QUERY_SUFFIX];
   // NSLog(@"Yahoo query URL: %@", query);
+
+  // queryData = [NSString stringWithContentsOfURL:[NSURL URLWithString:query]
+  //                                      encoding:NSUTF8StringEncoding
+  //                                         error:&error];
+  // if (error)
+  //   {
+  //     NSLog(@"[%@ %@] NSURL error: %@",
+  //           NSStringFromClass([self class]),
+  //           NSStringFromSelector(_cmd),
+  //           error.localizedDescription);
+  //     return nil;
+  //   }
   
-  queryData = [NSString stringWithContentsOfURL:[NSURL URLWithString:query]
-                                       encoding:NSUTF8StringEncoding
-                                          error:&error];
-  if (error)
+  // if ((jsonData = [queryData dataUsingEncoding:NSUTF8StringEncoding]))
+  // Using above code doesn't always receive data from server.
+  // Data will be get from cache of NSURLHandler.
+  // TODO: something wrong with GNUstep code.
+  if ((jsonData = [[NSURL URLWithString:query] resourceDataUsingCache:NO]))
     {
-      NSLog(@"[%@ %@] NSURL error: %@",
-            NSStringFromClass([self class]),
-            NSStringFromSelector(_cmd),
-            error.localizedDescription);
-      return nil;
-    }
-  
-  if ((jsonData = [queryData dataUsingEncoding:NSUTF8StringEncoding]))
-    {
+      NSLog(@"Got %lu bytes with query: %@", [jsonData length], query);
       results = [NSJSONSerialization JSONObjectWithData:jsonData
                                                 options:0
                                                   error:&error];
+      if (error || !results)
+        {
+          NSLog(@"[%@ %@] JSON error: %@",
+                NSStringFromClass([self class]),
+                NSStringFromSelector(_cmd),
+                error.localizedDescription);
+          results = nil;
+        }
     }
 
-  if (error)
-    {
-      NSLog(@"[%@ %@] JSON error: %@",
-            NSStringFromClass([self class]),
-            NSStringFromSelector(_cmd),
-            error.localizedDescription);
-    }
-    
   return results;
 }
 

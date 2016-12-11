@@ -56,8 +56,16 @@
   [titleField setStringValue:titleText];
   [icon setImage:[NSApp applicationIconImage]];
   [defaultButton setTitle:defaultText];
-  [alternateButton setTitle:alternateText];
-  [otherButton setTitle:otherText];
+
+  if (alternateText == nil)
+    [alternateButton removeFromSuperview];
+  else
+    [alternateButton setTitle:alternateText];
+
+  if (otherText == nil)
+    [otherButton removeFromSuperview];
+  else
+    [otherButton setTitle:otherText];
 
   [messageField setStringValue:messageText];
   if ([messageText rangeOfString: @"\n"].location != NSNotFound)

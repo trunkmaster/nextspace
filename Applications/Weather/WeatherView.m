@@ -117,9 +117,9 @@ static int icon_number = 0;
   if ([event clickCount] >= 2)
     {
       [NSApp activateIgnoringOtherApps:YES];
-    // }
-  // else
-  //   {
+    }
+  else
+    {
       if (icon_number > 47)
         icon_number = 0;
       else
