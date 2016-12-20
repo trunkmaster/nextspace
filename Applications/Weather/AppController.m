@@ -20,7 +20,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import <NXAppKit/NXAlert.h>
+//#import <NXAppKit/NXAlert.h>
 
 #import "AppController.h"
 #import "WeatherView.h"
@@ -145,9 +145,9 @@ static NSUserDefaults *defaults = nil;
   else
     {
       NSLog(@"Error getting data: %@", [weather objectForKey:@"ErrorText"]);
-      NXRunAlertPanel(@"Weather error",
-                      @"The error was occured while getting weather data.",
-                      @"Dismiss", nil, nil);
+      // NXRunAlertPanel(@"Weather error",
+      //                 @"The error was occured while getting weather data.",
+      //                 @"Dismiss", nil, nil);
     }
 }
 
