@@ -1912,6 +1912,10 @@
            dock.c: wDockRestoreState()
                    restore_icon_state()
                    XMapWindow(dpy, aicon->icon->core->window)
+
+       Кажется стало понятно откуда берется "зубчатое" изображение иконки -
+       ее рисует WindowMaker из CachedPixmaps (там все иконки какие-то
+       странные) перед тем как приложение GNUstep рисует иконку в appicon.
 ******* TODO Конфигурирование Dock (элементы, поведение)
 ******** TODO Workspace: запуск/останов приложений в Dock
          Управление запуском (при входе) и остановом (при выходе) из Workspace.
