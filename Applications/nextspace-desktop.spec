@@ -28,14 +28,19 @@ BuildRequires:	pam-devel
 BuildRequires:	libXinerama-devel
 BuildRequires:	libXft-devel
 BuildRequires:	libXpm-devel
+BuildRequires:	libXmu-devel
 BuildRequires:	libexif-devel
 BuildRequires:	fontconfig-devel
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool
 #
 Requires:	nextspace-frameworks
 Requires:	fontconfig
 Requires:	libXft
 Requires:	libXinerama
 Requires:	libXpm
+Requires:	libXmu
 Requires:	libexif
 Requires:	xorg-x11-drv-evdev
 Requires:	xorg-x11-drv-intel
