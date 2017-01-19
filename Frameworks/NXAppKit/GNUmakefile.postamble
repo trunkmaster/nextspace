@@ -6,5 +6,7 @@ after-distclean::
 #	rm -fr Documentation
 
 after-install::
+	ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Versions/Current/Resources/Images /usr/NextSpace/Images
+#	ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Versions/Current/Resources/Fonts /Library/Fonts
 
 after-uninstall::
