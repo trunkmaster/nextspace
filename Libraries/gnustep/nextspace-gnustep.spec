@@ -1,3 +1,5 @@
+#%undefine _missing_build_ids_terminate_build
+
 # Defines
 %define BASE_VERSION	1.24.8
 %define GUI_VERSION	0.24.1
@@ -6,7 +8,7 @@
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -172,6 +174,8 @@ make
 cd ..
 
 # Build GORM
+export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
+export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
 cd gorm-%{GORM_VERSION}
 make
 
@@ -225,30 +229,31 @@ cp %{_sourcedir}/*.service %{buildroot}/usr/NextSpace/lib/systemd
 %post
 if [ "$1" = "1" ]; then
     # post-installation
-    systemctl enable /usr/NextSpace/lib/systemd/gdomap.service
-    systemctl enable /usr/NextSpace/lib/systemd/gdnc.service
-    systemctl enable /usr/NextSpace/lib/systemd/gpbs.service
-    systemctl start gdomap gdnc gpbs
+    systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
+    systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
+    systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
+    systemctl start gdomap gdnc gpbs;
 elif [ "$1" = "2" ]; then
     # post-upgrade
     #echo "Please restart GNUstep services manually with command:"
     #echo "# systemctl restart gdomap gdnc gpbs"
-    systemctl daemon-reload
-    systemctl restart gdomap gdnc gpbs
+    systemctl daemon-reload;
+    systemctl restart gdomap gdnc gpbs;
 fi
 
 # for %preun and %postun $1 = 0 - uninstallation, 1 - upgrade. 
 %preun
 if [ "$1" = "0" ]; then
     # prepare for uninstall
-    systemctl stop gdomap gdnc gpbs
-    systemctl disable /usr/NextSpace/lib/systemd/gdomap.service
-    systemctl disable /usr/NextSpace/lib/systemd/gdnc.service
-    systemctl disable /usr/NextSpace/lib/systemd/gpbs.service
+    systemctl stop gdomap gdnc gpbs;
+    systemctl disable gdomap.service;
+    systemctl disable gdnc.service;
+    systemctl disable gpbs.service;
 elif  [ "$1" = "1" ]; then
     # prepare for upgrade
-    #echo "This is an upgrade. Do nothing with GNUstep services."
+    echo "This is an upgrade. Do nothing with GNUstep services.";
 fi
+
 #%postun
 
 %changelog
