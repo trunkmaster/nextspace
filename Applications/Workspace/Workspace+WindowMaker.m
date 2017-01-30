@@ -202,6 +202,7 @@ void WWMSetupFrameOffsetProperty()
   // Should be 23
   titleBarHeight = [[NSUserDefaults standardUserDefaults]
                      floatForKey:@"GSMenuBarHeight"];
+  if (titleBarHeight < 23) titleBarHeight = 23;
     
   uint16_t offsets[] = { 1, 1, titleBarHeight, 1,
                          1, 1, titleBarHeight, 1,
