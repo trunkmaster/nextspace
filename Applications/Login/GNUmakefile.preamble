@@ -12,8 +12,8 @@ ADDITIONAL_OBJCFLAGS += -DHAVE_PAM -Wno-typedef-redefinition -fno-objc-arc
 ADDITIONAL_CFLAGS += 
 
 # Additional flags to pass to the linker
- ADDITIONAL_LDFLAGS += -lpam -lX11 -lXxf86vm -lNXFoundation -lNXSystem -ldispatch
-#-lXmu 
+ ADDITIONAL_LDFLAGS += -lpam -lX11 -lNXFoundation -lNXSystem -ldispatch
+#-lXmu -lXxf86vm 
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += 

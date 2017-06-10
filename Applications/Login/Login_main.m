@@ -113,7 +113,7 @@ int main(int argc, const char ** argv)
       setupDisplays();
       
       // TODO: StartupHook
-      // system([[loginDefaults objectForKey:@"StartupHook"] cString]);
+      system([[loginDefaults objectForKey:@"StartupHook"] cString]);
 
       // Since there is no window manager running yet, we'll want to
       // do window decorations ourselves
