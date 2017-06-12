@@ -25,6 +25,10 @@ BuildRequires:	nextspace-frameworks-devel
 # Login
 BuildRequires:	pam-devel
 # Workspace & WindowMaker
+BuildRequires:	giflib-devel
+BuildRequires:	libjpeg-turbo-devel
+BuildRequires:	libpng-devel
+BuildRequires:	libtiff-devel
 BuildRequires:	libXinerama-devel
 BuildRequires:	libXft-devel
 BuildRequires:	libXpm-devel
@@ -87,6 +91,7 @@ unset ADDITIONAL_INCLUDE_DIRS
 cd ..
 
 cd Workspace-%{WORKSPACE_VERSION}
+./WM.configure
 make
 cd ..
 
