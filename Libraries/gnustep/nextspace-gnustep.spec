@@ -8,7 +8,7 @@
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -23,16 +23,21 @@ Source5:	gdnc.service
 Source6:	gpbs.service
 Source7:	gorm-%{GORM_VERSION}.tar.gz
 
-
+# Changes backported from gnustep-base-1.24.9
 Patch0:		gnustep-base-GSConfig.h.in.patch
 Patch1:		gnustep-base-Languages_Korean.patch
-Patch2:		gnustep-gui-Model_GNUmakefile.patch
-Patch3:		gnustep-gui-NSWindow.m.patch
-Patch4:		gnustep-gui-NSWindow.h.patch
-Patch5:		gnustep-back-art_ReadRect.m.patch
-Patch6:		gnustep-back-art_GNUmakefile.preamble.patch
+# Build GNUstep libraries in one RPM package
+Patch2:		gnustep-back-art_GNUmakefile.preamble.patch
+Patch3:		gnustep-back-gsc_GNUmakefile.preamble.patch
+Patch4:		gnustep-gui-Model_GNUmakefile.patch
+# NS*WindowLevel: Changed values in enum to separate menus and floating panels.
+Patch5:		gnustep-gui-NSWindow.h.patch
+# Miniwnidow style
+Patch6:		gnustep-gui-NSWindow.m.patch
+# Autolaunching applications (-NXAutoLaunch option)
 Patch7:		gnustep-back-x11_XGServerWindow.m.patch
-Patch8:		gnustep-back-gsc_GNUmakefile.preamble.patch
+Patch8:		gnustep-gui-NSApplication.m.patch
+Patch9:		gnustep-gui-NSMenu.m.patch
 
 Provides:	gnustep-base-%{BASE_VERSION}
 Provides:	gnustep-gui-%{GUI_VERSION}
@@ -129,10 +134,11 @@ GNUstep Make installed with nextspace-core-devel package.
 %patch2 -p0
 %patch3 -p0
 %patch4 -p0
-#%patch5 -p0
+%patch5 -p0
 %patch6 -p0
 %patch7 -p0
 %patch8 -p0
+%patch9 -p0
 rm -rf %{buildroot}
 
 #
@@ -257,14 +263,18 @@ fi
 #%postun
 
 %changelog
-* Tue Nov 1 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-7
+* Mon Jun 12 2017 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-10
+- Comments are added to patches.
+- Pathes with implemented apps autolaunching are added.
+
+* Tue Nov 1 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-7
 - gorm-1.2.23 was added.
 
-* Mon Oct 31 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-6
+* Mon Oct 31 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-6
 - Patch for NSWindow was updated: use common_MiniWindowTile.tiff for
   miniwindows.
 
-* Fri Oct 28 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-5
+* Fri Oct 28 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-5
 - Switch to minimum clang version 3.8.0 (libdispatch and libobjc2 built
   with this version);
 - Add patch for Headers/GNUstepBase/GSConfig.h.in to silence clang-3.8
@@ -273,6 +283,6 @@ fi
 - Add patch for miniwindow font (change size from 8 to 9) default value.
 - Backported from gnustep-base-1.24.9 changes to Languages/Korean.
 
-* Thu Oct 20 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.9_0.24.1-0
+* Thu Oct 20 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-0
 - Initial spec for CentOS 7.
 
