@@ -1,0 +1,166 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH "Window Maker" 1 "February 2015"
+.SH NAME
+wmaker \- X11 window manager with a NEXTSTEP look
+.SH SYNOPSIS
+.B wmaker
+.I "[-options]"
+.SH "DESCRIPTION"
+Window Maker is a X11 window manager with a NEXTSTEP look. It tries to
+emulate NeXT's look as much as possible, but it deviates from it as
+necessary.
+.SH "OPTIONS"
+.TP
+.BI \-display " host:display.screen"
+specify display to use.
+On multiheaded machines, Window Maker will automatically manage all screens.
+If you want Window Maker to manage only a specific screen, you must supply
+the screen number you want to have managed with the
+.B \-display
+command line argument. For example, if you want Window Maker to manage only
+screen 1, start it as:
+.EX
+wmaker -display :0.1
+.EE
+.TP
+.B \-\-dont\-restore
+do not restore saved session
+.TP
+.B \-\-global_defaults_path
+print the path where the files for the default configuration are installed and exit
+.TP
+.B \-\-help
+print the list of command line options supported, one per line, and exit
+.TP
+.BI \-\-locale " locale"
+specify the locale (i18n language) to use; Window Maker will also set the variable
+.B LANG
+which will be inherited by all applications started from Window Maker
+.TP
+.B \-\-no\-autolaunch
+do not launch at start-up the applications that were marked in the configuration as autolanched
+.TP
+.B \-\-no\-clip
+do not show the workspace Clip
+.TP
+.B \-\-no\-dock
+do not show the application Dock
+.TP
+.B \-\-no\-drawer
+disable the Drawers in the Dock
+.TP
+.B \-\-static
+do not update or save automatically the configuration
+.TP
+.B \-\-version
+display Window Maker's version number and exit
+.TP
+.B \-\-visual\-id
+specify the ID of the visual to use; see
+.BR xdpyinfo (1)
+for a list of visuals available in your display
+.PP
+.SH FILES
+.TP
+.B ~/GNUstep/Defaults/WindowMaker
+general Window Maker defaults.
+.TP
+.B ~/GNUstep/Defaults/WMState
+information about the Dock and Clip. DON'T edit this while running
+Window Maker. It will be overwritten.
+.TP
+.B ~/GNUstep/Defaults/WMRootMenu
+Contains the name of the file to read the root menu from or the
+menu itself, in property list format.
+.TP
+.B ~/GNUstep/Defaults/WMWindowAttributes
+Attributes for different application classes and instances. Use the
+Attribute Editor (right drag the application's title bar, select
+Attributes) instead of modifying this file directly. There are just a
+few options not available using the Attributes Editor.
+.TP
+.B /usr/NextSpace/Apps/Workspace.app/WindowMaker/Defaults/
+All the above-mentioned files are READ from here if not found except
+for WMState, which is COPIED from here. No matter where they are read
+from, if it's necessary to write configuration changes back into this
+files, user's files will be written to.
+.TP
+.B ~/GNUstep/Library/WindowMaker/autostart
+This script is automatically executed when Window Maker is started.
+.TP
+.B ~/GNUstep/Library/WindowMaker/exitscript
+This script is automatically executed immediately before Window Maker is
+exited.
+.B Note:
+If you need to run something that requires the X server to be running
+from this script, make sure you do not use the
+.I SHUTDOWN
+command from the root menu to exit Window Maker. Otherwise, the X server
+might be shut down before the script is executed.
+.TP
+.B ~/GNUstep/Library/WindowMaker/
+The menu file indicated in WMRootMenu is looked for here...
+.TP
+.B /etc/X11/WindowMaker/
+and here, in that order. Unless, the indicated path is an absolute path.
+.TP
+.B ~/GNUstep/Library/WindowMaker/Pixmaps/
+Window Maker looks for \fBpixmaps\fP here
+.TP
+.B ~/GNUstep/Library/WindowMaker/Backgrounds/
+Window Maker looks for backgrounds here
+.TP
+.B ~/GNUstep/Library/WindowMaker/Styles/
+Window Maker looks for style files here (not true... it looks like it
+does, but you have to specify the full path anyway, it's just a place
+to keep things nicely ordered)
+.TP
+.B ~/GNUstep/Library/WindowMaker/Themes/
+Window Maker looks for theme files here (ibid)
+.TP
+.B /usr/NextSpace/Apps/Workspace.app/WindowMaker/Pixmaps/
+System-wide (Window Maker-specific) pixmaps are located here
+.TP
+.B /usr/NextSpace/Apps/Workspace.app/WindowMaker/Styles/
+System wide styles are here
+.TP
+.B /usr/NextSpace/Apps/Workspace.app/WindowMaker/Themes/
+Guess... ;-)
+.SH ENVIRONMENT
+.IP GNUSTEP_USER_ROOT
+specifies the initial path for the Defaults directory. "Defaults/" is
+appended to this variable to determine the actual location of the
+databases. If the variable is not set, it defaults to "~/GNUstep"
+.IP GNUSTEP_LOCAL_ROOT
+specifies the location of the system-wide \fBlocal\fP GNUstep
+directory (this is useful, for example, in those cases where the
+system-wide location is really a network wide location). If this
+variable is empty, GNUSTEP_SYSTEM_ROOT is looked for.
+.IP GNUSTEP_SYSTEM_ROOT
+specifies the location of the system-wide GNUstep directory. If this
+variable is empty, it defaults to /etc/GNUstep
+.SH SEE ALSO
+The Window Maker User Guide
+.PP
+The Window Maker FAQ
+.PP
+.BR WPrefs (1),
+.BR X (7),
+.BR wxcopy (1),
+.BR wxpaste (1),
+.BR geticonset (1),
+.BR seticons (1),
+.BR getstyle (1),
+.BR setstyle (1),
+.BR wmsetbg (1),
+.BR wmgenmenu (1),
+.BR wmmenugen (1),
+.BR wdread (1),
+.BR wdwrite (1)
+.SH AUTHOR
+Window Maker was written by Alfredo K. Kojima <kojima@windowmaker.info>,
+Dan Pascu <dan@windowmaker.info> with contributions from many people around
+the Internet.
+.PP
+This manual page was created by Marcelo E. Magallon, <mmagallo@debian.org>
+and is maintained by the Window Maker team.

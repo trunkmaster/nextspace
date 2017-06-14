@@ -1,0 +1,7 @@
+Name: WINGs
+Description: Small widget set with the NeXTStep(TM) look and feel
+Version: 0.95.7
+Requires: wrlib WUtil
+Libs: -L/usr/NextSpace/lib  -lWINGs
+Libs.private: -lXft    -lX11  -lXext -lm 
+Cflags: -I/usr/NextSpace/include  
