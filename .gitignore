@@ -7,3 +7,9 @@
 *.wsprefs
 *.bundle
 *.viewer
+*.o
+*.lo
+*.libs
+*.deps
+*.dir
+*~

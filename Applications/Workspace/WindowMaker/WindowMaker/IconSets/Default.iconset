@@ -1,0 +1,7 @@
+{
+  Logo.WMDock = {Icon = GNUstepGlow.tiff;};
+  Logo.WMPanel = {Icon = GNUstep.tiff;};
+  Logo.WMClip = {Icon = clip.tiff;};
+  WMDrawer = {Icon = Drawer.tiff;};
+  "*" = {Icon = defaultAppIcon.tiff;SharedAppIcon = Yes;};
+}
