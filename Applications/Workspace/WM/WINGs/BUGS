@@ -1,3 +1,0 @@
-- filepanel does not reread / . If you add new files in / they will not be
-  visible until the program is restarted. Closing and reopening the file
-  panel does not help.
