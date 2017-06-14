@@ -394,7 +394,10 @@ static NXScreen *systemScreen = nil;
                     [[systemDisplays objectAtIndex:i] outputName]);
             }
         }
-        }*/ 
+        }*/
+
+  TEST_RELEASE(old_connectedDisplays);
+  TEST_RELEASE(old_systemDisplays);
 
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
@@ -840,14 +843,14 @@ static NXScreen *systemScreen = nil;
         }
       @catch (NSException *exception)
         {
-          NXRunAlertPanel(@"Internal error", exception.description,
-                          @"Got it", nil, nil);
-          NSLog(@"Uncaught exception: %@", exception.description);
+          // NXRunAlertPanel(@"Internal error", exception.description,
+          //                 @"Got it", nil, nil);
+          NSLog(@"Exception occured during getting layou of displays: %@", exception.description);
           //     NSLog(@"Stack trace: %@", [exception callStackSymbols]);
         }
-      
+
       [layout addObject:d];
-      // [d release];
+      [d release];
     }
 
   return layout;
@@ -918,14 +921,14 @@ static NXScreen *systemScreen = nil;
   // Validate 'layout'
   if ([self validateLayout:layout] == NO)
     {
-      NSLog(@"NXScreen: Proposed layout ignored. Bailing out.");
+      NSLog(@"NXScreen: Proposed layout is invalid. Do nothing.");
       return NO;
     }
 
   // Calculate sizes of screen
   newPixSize = [self _sizeInPixelsForLayout:layout];
   mmSize = [self _sizeInMilimetersForLayout:layout];
-  NSLog(@"New screen size: %@ (%@), old %@(%@)",
+  NSLog(@"NXScreen: New screen size: %@ (%@), old %@(%@)",
         NSStringFromSize(newPixSize), NSStringFromSize(mmSize),
         NSStringFromSize(sizeInPixels), NSStringFromSize(sizeInMilimeters));
 
@@ -1108,8 +1111,8 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
               resolution = [d resolutionWithWidth:frame.size.width
                                            height:frame.size.height
                                              rate:0.0];
-              NSLog(@"Change resolution %@: %@",
-                    [d outputName], resolution);
+              NSLog(@"NXScreen: Change resolution %@: %@", [d outputName], resolution);
+              [d setResolution:resolution position:displayPosition];
               xShift = frame.size.width - displaySize.width;
             }
           else if ((frame.size.width == 0.0) || (frame.size.height == 0.0))
@@ -1120,7 +1123,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
                   // Shift active displays which are placed at right
                   xShift = -hiddenFrame.size.width;
                   [d setActive:NO];
-                  NSLog(@"Deactivate %@: resolution %@",
+                  NSLog(@"NXScreen: Deactivate %@: resolution %@",
                         [d outputName], [d resolution]);
                 }
             }
@@ -1136,7 +1139,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
                 {
                   xPoint = NSMaxX(frame);
                 }
-              NSLog(@"Arrange %@: shift by x:%f, frame: %@",
+              NSLog(@"NXScreen: Arrange %@: shift by x:%f, frame: %@",
                     [d outputName], xShift, NSStringFromRect([d frame]));
             }
         }
@@ -1154,7 +1157,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
             {
               xShift = frame.size.width;
             }
-          NSLog(@"Activate %@: set resolution %@, origin %@",
+          NSLog(@"NXScreen: Activate %@: set resolution %@, origin %@",
                 [d outputName], [d resolution], NSStringFromPoint(frame.origin));
         }
     }
