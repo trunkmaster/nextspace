@@ -36,6 +36,28 @@
 
 @implementation NXAlert
 
+- (void)createPanel
+{
+  panel = [[NSPanel alloc] initWithFrame:NSMakerRect(100,100,360,193)];
+  [panel setAutoresizingMask:(NSViewMaxXMargin | NSViewMinYMargin
+                              | NSViewWidthSizable)];
+  
+  icon = [[NSImageView alloc] initWithFrame:NSMakeRect(8,106,48,48)];
+  [icon setAutoresizingMask:(NSViewMaxXMargin | NSViewMaxYMargin)];
+  
+  titleField = [[NSTextField alloc] initWithFrame:NSMakeRect(8,106,48,48)];
+  [titleField setAutoresizingMask:(NSViewMaxXMargin | NSViewMaxYMargin
+                                   | NSViewWidthSizable)];
+  
+  messageField = [[NSTextField alloc] initWithFrame:NSMakeRect(64,119,289,22)];
+  [messageField setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
+  
+  NSButton    *defaultButton;
+  NSButton    *alternateButton;
+  NSButton    *otherButton;
+
+}
+
 - (id)initWithTitle:(NSString *)titleText
             message:(NSString *)messageText
       defaultButton:(NSString *)defaultText

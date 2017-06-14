@@ -45,6 +45,7 @@
 */
 
 #import <AppKit/NSGraphics.h>
+#import <NXAppKit/NXAlert.h>
 
 #import "NXDisplay.h"
 #import "NXScreen.h"
@@ -801,42 +802,52 @@ static NXScreen *systemScreen = nil;
   NSDictionary        *resolution;
   NSPoint             origin = NSMakePoint(0.0,0.0);
   NSDictionary        *properties;
-  
+
   for (NXDisplay *display in [self connectedDisplays])
     {
-      d = [[NSMutableDictionary alloc] init];
-      [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
-            forKey:NXDisplayIDKey];
-      [d setObject:[display outputName]
-            forKey:NXDisplayNameKey];
-      
-      [d setObject:[display resolution]
-            forKey:NXDisplayResolutionKey];
-      [d setObject:NSStringFromSize([display physicalSize])
-            forKey:NXDisplayPhSizeKey];
-
-      [d setObject:NSStringFromPoint([display frame].origin)
-            forKey:NXDisplayOriginKey];
-      [d setObject:NSStringFromPoint([display position])
-            forKey:NXDisplayPositionKey];
-      [d setObject:NSStringFromRect([display frame])
-            forKey:NXDisplayFrameKey];
-      [d setObject:NSStringFromRect([display hiddenFrame])
-            forKey:NXDisplayHiddenFrameKey];
-
-      [d setObject:([display isActive]) ? @"YES" : @"NO"
-            forKey:NXDisplayIsActiveKey];
-      [d setObject:([display isMain]) ? @"YES" : @"NO"
-            forKey:NXDisplayIsMainKey];
-
-      [d setObject:[display gammaDescription] forKey:NXDisplayGammaKey];
-      if ((properties = [display properties]))
+      d = [[[NSMutableDictionary alloc] init] autorelease];
+      @try
         {
-          [d setObject:properties forKey:NXDisplayPropertiesKey];
-        }
+          [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
+                forKey:NXDisplayIDKey];
+          [d setObject:[display outputName]
+                forKey:NXDisplayNameKey];
+      
+          [d setObject:[display resolution]
+                forKey:NXDisplayResolutionKey];
+          [d setObject:NSStringFromSize([display physicalSize])
+                forKey:NXDisplayPhSizeKey];
 
+          [d setObject:NSStringFromPoint([display frame].origin)
+                forKey:NXDisplayOriginKey];
+          [d setObject:NSStringFromPoint([display position])
+                forKey:NXDisplayPositionKey];
+          [d setObject:NSStringFromRect([display frame])
+                forKey:NXDisplayFrameKey];
+          [d setObject:NSStringFromRect([display hiddenFrame])
+                forKey:NXDisplayHiddenFrameKey];
+
+          [d setObject:([display isActive]) ? @"YES" : @"NO"
+                forKey:NXDisplayIsActiveKey];
+          [d setObject:([display isMain]) ? @"YES" : @"NO"
+                forKey:NXDisplayIsMainKey];
+
+          [d setObject:[display gammaDescription] forKey:NXDisplayGammaKey];
+          if ((properties = [display properties]))
+            {
+              [d setObject:properties forKey:NXDisplayPropertiesKey];
+            }
+        }
+      @catch (NSException *exception)
+        {
+          NXRunAlertPanel(@"Internal error", exception.description,
+                          @"Got it", nil, nil);
+          NSLog(@"Uncaught exception: %@", exception.description);
+          //     NSLog(@"Stack trace: %@", [exception callStackSymbols]);
+        }
+      
       [layout addObject:d];
-      [d release];
+      // [d release];
     }
 
   return layout;

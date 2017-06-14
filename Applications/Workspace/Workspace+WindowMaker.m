@@ -11,6 +11,7 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
+#import <NXAppKit/NXAlert.h>
 
 #import "Workspace+WindowMaker.h"
 #import "Operations/ProcessManager.h"
@@ -808,7 +809,12 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenSaveState(scr);
 
   // Save changed layout in user's preferences directory
-  [systemScreen saveCurrentDisplayLayout];
+  @try
+    {
+      [systemScreen performSelectorOnMainThread:@selector(saveCurrentDisplayLayout)
+                                     withObject:nil
+                                  waitUntilDone:YES];
+    }
   
   // NSLog(@"XRRScreenChangeNotify: END");
   XUnlockDisplay(dpy);

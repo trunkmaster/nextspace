@@ -113,7 +113,11 @@ int main(int argc, const char ** argv)
       setupDisplays();
       
       // TODO: StartupHook
-      system([[loginDefaults objectForKey:@"StartupHook"] cString]);
+      NSString *startupHook = [loginDefaults objectForKey:@"StartupHook"];
+      if (![startupHook isEqualToString:@""])
+        {
+          system([startupHook cString]);
+        }
 
       // Since there is no window manager running yet, we'll want to
       // do window decorations ourselves
