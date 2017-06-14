@@ -1,3 +1,0 @@
-# The Window Maker Appereance menu don't needs the menu.h
-# because the Window Maker menu is not Debian standard
-wmaker-common: menu-method-should-include-menu-h
