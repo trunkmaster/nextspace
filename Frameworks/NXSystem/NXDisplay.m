@@ -209,7 +209,7 @@
     {
       mode_info = [self _modeInfoForMode:output_info->modes[i]];
       rSize = NSMakeSize((CGFloat)mode_info.width, (CGFloat)mode_info.height);
-      rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
+      rRate = (CGFloat)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
       res = [NSDictionary dictionaryWithObjectsAndKeys:
                             NSStringFromSize(rSize), NXDisplaySizeKey,
                             [NSNumber numberWithFloat:rRate], NXDisplayRateKey,
@@ -225,7 +225,7 @@
       mode_info = [self _modeInfoForMode:crtc_info->mode];
       if (mode_info.width > 0 && mode_info.height > 0)
         {
-          // Actually there's dimensions of display:
+          // Actually there are dimensions of display:
           // 1. Resolution of monitor: mode_info.width x mode_info.height
           // 2. Logical size of display: crtc_info->width x crtc_info->height
           // Now I'm sticking to mode_info because I can't imagine real life
@@ -234,7 +234,7 @@
                              (CGFloat)crtc_info->y,
                              mode_info.width,
                              mode_info.height);
-          rate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
+          rate = (CGFloat)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
           currResolution = [self resolutionWithWidth:mode_info.width
                                               height:mode_info.height
                                                 rate:rate];
@@ -392,6 +392,21 @@
               max_rate = resRate;
             }
         }
+    }
+
+  // width, height and rate doesn't match any resolutions supported by display.
+  // Create new resolution and add to list of known resolutions.
+  if (resolution == nil)
+    {
+      NSLog(@"NXDisplay: Display is not set up with best resolution: %@", [self bestResolution]);
+      NSSize rSize = NSMakeSize(width, height);
+      NSNumber *rRate = [NSNumber numberWithFloat:refresh];
+  
+      resolution = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   NSStringFromSize(rSize), NXDisplaySizeKey,
+                                 rRate,NXDisplayRateKey,
+                                 nil];
+      [allResolutions addObject:resolution];
     }
 
   return resolution;
