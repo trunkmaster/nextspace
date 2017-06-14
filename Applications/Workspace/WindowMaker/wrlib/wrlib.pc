@@ -1,6 +1,0 @@
-Name: wrlib
-Description: Image manipulation and conversion library
-Version: 0.95.7
-Libs: -L/usr/NextSpace/lib  -lwraster
-Libs.private: -lXpm -lpng -ljpeg -lgif -ltiff  -lX11  -lXext -lm
-Cflags: -I/usr/NextSpace/include  
