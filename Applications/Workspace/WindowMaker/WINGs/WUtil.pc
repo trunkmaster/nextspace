@@ -1,0 +1,6 @@
+Name: WUtil
+Description: Utility library for WINGs
+Version: 0.95.7
+Libs: -L/usr/NextSpace/lib -lWUtil
+Libs.private: 
+Cflags: -I/usr/NextSpace/include
