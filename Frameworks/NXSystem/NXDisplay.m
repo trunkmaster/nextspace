@@ -393,11 +393,10 @@
             }
         }
     }
-#if 0
   // Combintation of 'width', 'height' and 'rate' doesn't match any resolutions
   // supported by display.
-  // It's quite normal situation inside VM - resolution list reported by VM doesn't
-  // consist current resolution of Xorg display if VM window was resized.
+  // It's quite normal situation inside VM - resolution list reported by VM
+  // doesn't consist current resolution of Xorg display if VM window was resized.
   // Create new resolution and add to list of known resolutions.
   if (resolution == nil)
     {
@@ -410,9 +409,8 @@
                                    NSStringFromSize(rSize), NXDisplaySizeKey,
                                  rRate,NXDisplayRateKey,
                                  nil];
-      [allResolutions addObject:resolution];
+      [allResolutions insertObject:resolution atIndex:1];
     }
-#endif
 
   return resolution;
 }
