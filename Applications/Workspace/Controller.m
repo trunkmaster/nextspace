@@ -510,7 +510,7 @@ static NSString *WMComputerShouldGoDownNotification =
   // Workspace quit.
   // Log Out and Power Off terminate quitting when some application won't stop,
   // some removable media won't unmount/eject (optional: think).
-  switch (NSRunAlertPanel(_(@"Log Out"),
+  switch (NXRunAlertPanel(_(@"Log Out"),
 			  _(@"Do you really want to log out?"),
 			  _(@"Log out"), _(@"Power off"), _(@"Cancel")))
     {
