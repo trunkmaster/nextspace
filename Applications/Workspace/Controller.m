@@ -47,6 +47,8 @@
 #import <Operations/Mounter.h>
 #import <Processes/Processes.h>
 
+#import <NXAppKit/NXAlert.h>
+
 static NSString *WorkspaceVersion = @"0.8";
 
 //============================================================================
@@ -479,6 +481,12 @@ static NSString *WMComputerShouldGoDownNotification =
          selector:@selector(mediaOperationDidEnd:)
              name:NXMediaOperationDidEnd
            object:mediaAdaptor];
+  
+  [nc addObserver:self
+         selector:@selector(exceptionHandler:)
+             name:@"NXSystemException"
+           object:nil];
+  
   [mediaAdaptor checkForRemovableMedia];
 
   // Show 'launched' state
@@ -962,6 +970,15 @@ static NSString *WMComputerShouldGoDownNotification =
           [systemScreen deactivateDisplay:builtinDisplay];
         }
     }
+}
+
+- (void)exceptionHandler:(NSNotification *)aNotif
+{
+  NSException *exception = [aNotif object];
+
+  NSLog(@"Workspace: received exception notification");
+  NXRunExceptionPanel(@"Internal error", exception.description,
+                      @"Got it", nil, nil);
 }
 
 @end
