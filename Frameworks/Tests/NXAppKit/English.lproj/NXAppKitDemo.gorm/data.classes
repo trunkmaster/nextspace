@@ -3,7 +3,9 @@
     AppController = {
 	Actions = (
 	    "showTextFieldsDemo:",
-	    "showClockViewDemo:"
+	    "showClockViewDemo:",
+	    "showSinglelineAlert:",
+	    "showMultilineAlert:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -14,7 +16,9 @@
     };
     FirstResponder = {
 	Actions = (
+	    "showSinglelineAlert:",
 	    "showClockViewDemo:",
+	    "showMultilineAlert:",
 	    "showTextFieldsDemo:"
 	);
 	Super = NSObject;

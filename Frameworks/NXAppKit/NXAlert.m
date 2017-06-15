@@ -6,12 +6,12 @@
                        This behaviour can be described as following:
                        - panel width is not changing on autosizing;
                        - panel height is automatically changed but cannot be
-                         more than half of screen (2/4 of screen);
+                         more than half of screen;
                        - top edge of panel automatically placed on the center
                          of topmost 1/4 of screen height;
                        - panel brings application in front of other applications;
                        Such hard limits of panel resizing was set up to push
-                       developers make some attention to desing of attantion
+                       developers make some attention to desing of alert
                        panels conforming to "NeXT User Interface Guidelines".
 
   Copyright (C) 2016 Sergii Stoian
@@ -36,7 +36,7 @@
 
 @implementation NXAlert
 
-// For exceptions loading GORM file is not an option (test in progress)
+//--- When GORM file cannot be used...
 - (void)createPanel
 {
   NSBox *horizontalLine;
@@ -114,7 +114,6 @@
      alternateBT:(NSString *)alternateText
          otherBT:(NSString *)otherText
 {
-  NSLog(@"NXAlert: setTitle... START");
   [titleField setStringValue:titleText];
   [defaultButton setTitle:defaultText];
 
@@ -137,7 +136,6 @@
     {
       [messageField setAlignment:NSCenterTextAlignment];
     }
-  NSLog(@"NXAlert: setTitle... START");
 }
 
 - (void)show
@@ -166,66 +164,82 @@
   
   [titleField setStringValue:titleText];
   [icon setImage:[NSApp applicationIconImage]];
+  
   [defaultButton setTitle:defaultText];
+  buttons = [[NSMutableArray alloc] initWithObjects:defaultButton,nil];
 
   if (alternateText == nil)
-    [alternateButton removeFromSuperview];
+    {
+      [alternateButton removeFromSuperview];
+    }
   else
-    [alternateButton setTitle:alternateText];
+    {
+      [alternateButton setTitle:alternateText];
+      [buttons addObect:alternateButton];
+    }
 
   if (otherText == nil)
-    [otherButton removeFromSuperview];
+    {
+      [otherButton removeFromSuperview];
+    }
   else
-    [otherButton setTitle:otherText];
+    {
+      [otherButton setTitle:otherText];
+      [buttons addObect:otherButton];
+    }
 
   [messageField setStringValue:messageText];
-  if ([messageText rangeOfString: @"\n"].location != NSNotFound)
-    {
-      [messageField setAlignment:NSLeftTextAlignment];
-    }
-  else
-    {
-      [messageField setAlignment:NSCenterTextAlignment];
-    }
-  
+
   return self;
 }
 
 - (void)awakeFromNib
 {
+  NSDictionary *selectedAttrs;
+  NSText       *fieldEditor;
+  
   [titleField setRefusesFirstResponder:YES];
   [messageField setRefusesFirstResponder:YES];
+  
+  selectedAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  [NSColor controlLightHighlightColor],
+                                NSBackgroundColorAttributeName,
+                                nil];
+  fieldEditor = [panel fieldEditor:YES forObject:messageField];
+  [(NSTextView *)fieldEditor setSelectedTextAttributes:selectedAttrs];
+}
+
+- (void)dealloc
+{
+  [buttons release];
 }
 
 - (void)sizeToFit
 {
-  NSRect panelFrame = [panel frame];
-  // Buttons
-
-  // Message field
-  // NSArray  *messageLines = [[messageField stringValue] componentsSeparatedByString:@"\n"];
-  // NSString *s1, *s2;
-  CGFloat  fieldWidth, textWidth;
+  NSRect    panelFrame;
+  NSRect    messageFrame;
+  CGFloat   fieldWidth, textWidth;
   NSInteger linesNum;
-  NSFont   *font = [messageField font];
-  // CGFloat  lineHeight = [font boundingRectForFont].size.height + 2;
-  CGFloat  lineHeight = [font defaultLineHeightForFont] + 1;
+  NSFont    *font = [messageField font];
+  CGFloat   lineHeight = [font defaultLineHeightForFont] + 1;
   
   fieldWidth = [messageField bounds].size.width;
   textWidth = [font widthOfString:[messageField stringValue]];
   linesNum = (textWidth/fieldWidth);
 
   // Set height of panel to the minimum size
+  panelFrame = [panel frame];
   panelFrame.size.height = 0;
   [panel setFrame:panelFrame display:NO];
   panelFrame = [panel frame];
   
+  messageFrame = [messageField frame];
+  messageFrame.origin.y -= lineHeight/2;
+  messageFrame.size.height += lineHeight;
+  [messageField setFrame:messageFrame];
+  
   if (linesNum > 1)
     {
-      NSRect frame = [messageField frame];
-      frame.origin.y -= lineHeight/2;
-      frame.size.height += lineHeight;
-      [messageField setFrame:frame];
       [messageField setAlignment:NSLeftTextAlignment];
       
       panelFrame.size.height += (lineHeight * (linesNum - 1));
@@ -233,24 +247,63 @@
     }
   else
     {
-      [messageField setAlignment:NSCenterTextAlignment];      
+      [messageField setAlignment:NSCenterTextAlignment];
     }
   
-  // for (NSString *l in messageLines)
-  //   {
-  //     if ([font widthOfString:l] > fieldWidth)
-  //       {
-  //         while ([font widthOfString:l] > fieldWidth)
-  //           {
-  //             s1 = [l substringWithRange:NSMakeRange(0, [l length]/2)];
-  //             s2 = [l substringWithRange:NSMakeRange([l length]/2, [l length]/2 - 1)];
-  //           }
-  //         // found line wider then message field
-  //       }
-  //   }
-
   // Buttons
+  NSRect   aFrame, bFrame;
+  NSSize   cSize;
+  CGFloat  maxWidth = 0.0, buttonWidth;
+  CGFloat  xShift;
+  NSButton *button;
+
+  for (int i = 0; i < [buttons count]; i++)
+    {
+      button = [buttons objectAtIndex:i];
+      
+      cSize = [[button cell] cellSize];
+      if (cSize.width > maxWidth)
+        {
+          maxWidth = cSize.width;
+        }
+    }
+  NSLog(@"Max button cell width = %f", maxWidth);
+
+  for (int i = 0; i < [buttons count]; i++)
+    {
+      button = [buttons objectAtIndex:i];
+      
+      aFrame = [button frame];
+      xShift = aFrame.size.width - maxWidth;
+      aFrame.origin.x += xShift;
+      aFrame.size.width = maxWidth;
+      [button setFrame:aFrame];
+    }
+  
+  // aFrame = [defaultButton frame];
   // [defaultButton sizeToFit];
+  // bFrame = [defaultButton frame];
+  // xShift = aFrame.size.width - bFrame.size.width;
+  // aFrame.origin.x += xShift;
+  // aFrame.size.width = bFrame.size.width;
+  // [defaultButton setFrame:aFrame];
+
+  // aFrame = [alternateButton frame];
+  // [alternateButton sizeToFit];
+  // bFrame = [alternateButton frame];
+  // xShift = aFrame.size.width - bFrame.size.width;
+  // aFrame.origin.x += xShift;
+  // aFrame.size.width = bFrame.size.width;
+  // [alternateButton setFrame:aFrame];
+
+  // aFrame = [otherButton frame];
+  // [otherButton sizeToFit];
+  // bFrame = [otherButton frame];
+  // xShift = aFrame.size.width - bFrame.size.width;
+  // aFrame.origin.x += xShift;
+  // aFrame.size.width = bFrame.size.width;
+  // [otherButton setFrame:aFrame];
+  
   // [alternateButton sizeToFit];
   // [otherButton sizeToFit];
 }
@@ -290,43 +343,6 @@
 }
 
 @end
-
-void NXRunExceptionPanel(NSString *title,
-                         NSString *msg,
-                         NSString *defaultButton,
-                         NSString *alternateButton,
-                         NSString *otherButton, ...)
-{
-  va_list    ap;
-  NSString  *message;
-  NXAlert   *excPanel;
-  NSInteger result;
-
-  va_start(ap, otherButton);
-  message = [NSString stringWithFormat:msg arguments:ap];
-  va_end(ap);
-
-  if (NSApp == nil)
-    {
-      // No NSApp ... not running in a gui application so just log.
-      NSLog(@"%@", message);
-      return;
-    }
-  
-  if (defaultButton == nil)
-    {
-      defaultButton = @"OK";
-    }
-
-  excPanel = [[NXAlert alloc] init];
-  [excPanel createPanel];
-  [excPanel setTitle:title
-             message:msg
-           defaultBT:defaultButton
-         alternateBT:alternateButton
-             otherBT:otherButton];
-  [excPanel show];
-}
 
 NSInteger NXRunAlertPanel(NSString *title,
                           NSString *msg,

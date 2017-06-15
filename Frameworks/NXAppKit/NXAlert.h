@@ -37,6 +37,8 @@
   NSString    *defaultString;
   NSString    *alternateString;
   NSString    *otherString;
+
+  NSMutableArray *buttons;
 }
 
 - (void)buttonPressed:(id)sender;
