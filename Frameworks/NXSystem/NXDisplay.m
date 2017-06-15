@@ -393,12 +393,16 @@
             }
         }
     }
-
-  // width, height and rate doesn't match any resolutions supported by display.
+#if 0
+  // Combintation of 'width', 'height' and 'rate' doesn't match any resolutions
+  // supported by display.
+  // It's quite normal situation inside VM - resolution list reported by VM doesn't
+  // consist current resolution of Xorg display if VM window was resized.
   // Create new resolution and add to list of known resolutions.
   if (resolution == nil)
     {
-      NSLog(@"NXDisplay: Display is not set up with best resolution: %@", [self bestResolution]);
+      NSLog(@"NXDisplay: Display is not set up with best resolution: %@",
+            [self bestResolution]);
       NSSize rSize = NSMakeSize(width, height);
       NSNumber *rRate = [NSNumber numberWithFloat:refresh];
   
@@ -408,6 +412,7 @@
                                  nil];
       [allResolutions addObject:resolution];
     }
+#endif
 
   return resolution;
 }

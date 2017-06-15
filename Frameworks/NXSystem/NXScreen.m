@@ -36,7 +36,7 @@
 //   Time        timestamp;
 //   Time        configTimestamp;
 //   int         ncrtc;
-//   RRCrtc      *crtcs;
+x//   RRCrtc      *crtcs;
 //   int         noutput;
 //   RROutput    *outputs;
 //   int         nmode;
@@ -843,14 +843,18 @@ static NXScreen *systemScreen = nil;
         }
       @catch (NSException *exception)
         {
-          // NXRunAlertPanel(@"Internal error", exception.description,
-          //                 @"Got it", nil, nil);
-          NSLog(@"Exception occured during getting layou of displays: %@", exception.description);
-          //     NSLog(@"Stack trace: %@", [exception callStackSymbols]);
+          // NXRunExceptionPanel(@"Internal error", exception.description,
+          //                     @"Got it", nil, nil);
+          [[NSNotificationCenter defaultCenter]
+            postNotificationName:@"NXSystemException"
+                          object:exception];
+          NSLog(@"Exception occured during getting layout of displays: %@",
+                exception.description);
+          // NSLog(@"Stack trace: %@", [exception callStackSymbols]);
         }
 
       [layout addObject:d];
-      [d release];
+      // [d release];
     }
 
   return layout;

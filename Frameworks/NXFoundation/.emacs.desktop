@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Oct 27 02:08:22 2016
+;; Created Thu Jun 15 00:35:26 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,7 +22,7 @@
   "NXDefaults.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  4992
+  3049
   '(5953 nil)
   nil
   nil

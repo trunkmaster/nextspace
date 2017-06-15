@@ -809,9 +809,7 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenSaveState(scr);
 
   // Save changed layout in user's preferences directory
-  [systemScreen performSelectorOnMainThread:@selector(saveCurrentDisplayLayout)
-                                 withObject:nil
-                              waitUntilDone:YES];
+  [systemScreen saveCurrentDisplayLayout];
  
   // NSLog(@"XRRScreenChangeNotify: END");
   XUnlockDisplay(dpy);

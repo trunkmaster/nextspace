@@ -41,7 +41,21 @@
 
 - (void)buttonPressed:(id)sender;
 
+- (void)createPanel;
+- (void)setTitle:(NSString *)titleText
+         message:(NSString *)messageText
+       defaultBT:(NSString *)defaultText
+     alternateBT:(NSString *)alternateText
+         otherBT:(NSString *)otherText;
+- (void)show;
+
 @end
+
+extern void NXRunExceptionPanel(NSString *title,
+                                NSString *msg,
+                                NSString *defaultButton,
+                                NSString *alternateButton,
+                                NSString *otherButton, ...);
 
 extern NSInteger NXRunAlertPanel(NSString *title,
                                  NSString *msg,
