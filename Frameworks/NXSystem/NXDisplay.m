@@ -379,11 +379,13 @@
       resRate = [[res objectForKey:NXDisplayRateKey] floatValue];
       if (resSize.width == width && resSize.height == height)
         {
-          if (refresh) // 'rate' != 0, search for exact resolution
+          // 'rate' was specified, search for exact resolution
+          if (refresh)
             {
-              if (refresh == resRate)
+              if ((float)refresh == (float)resRate)
                 {
                   resolution = res;
+                  break;
                 }
             }
           else if (resRate > max_rate) // search for resolution with max rate
