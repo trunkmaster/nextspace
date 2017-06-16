@@ -77,7 +77,7 @@
 
   // Get NEXTSPACE screen rect
   screen = [NXScreen sharedScreen];
-  NSLog(@"LoginWindow center: %@", screen);
+  [screen randrUpdateScreenResources];
   mainDisplay = [screen mainDisplay];
   if (!mainDisplay)
     {

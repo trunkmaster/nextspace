@@ -4,6 +4,8 @@
  
 #import <sys/wait.h>
 
+#import <NXAppKit/NXAlert.h>
+
 #import "Defaults.h"
 
 #import "Services.h"
@@ -127,22 +129,41 @@
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
+  TerminalWindowController *twc;
+  BOOL ask = NO;
+  
   if (![self numberOfActiveWindows])
     {
       return NSTerminateNow;
     }
 
-  [NSApp activateIgnoringOtherApps:YES];
-
-  if (NSRunAlertPanel((@"Quit"),
-		      (@"Do you really want to quit application?"),
-		      (@"Don't quit"), (@"Quit"), nil)
-      == NSAlertAlternateReturn)
+  for (NSString *windowKey in windows)
     {
-      return NSTerminateNow;
+      twc = [windows objectForKey:windowKey];
+      if ([[twc window] isDocumentEdited])
+        {
+          ask = YES;
+        }
     }
 
-  return NSTerminateLater;
+  if (ask)
+    {
+      [NSApp activateIgnoringOtherApps:YES];
+      if (NXRunAlertPanel((@"Quit"),
+                          (@"You have commands running in some terminal windows.\n"
+                           "Quit Terminal terminating running commands?"),
+                          (@"Don't quit"), (@"Quit"), nil)
+          == NSAlertAlternateReturn)
+        {
+          return NSTerminateNow;
+        }
+      else
+        {
+          return NSTerminateLater;
+        }
+    }
+
+  return NSTerminateNow;
 }
 
 - (void)quitAnyway:(id)sender

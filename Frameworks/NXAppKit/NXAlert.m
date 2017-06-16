@@ -218,7 +218,7 @@
   [super dealloc];
 }
 
-- (void)sizeToFit
+- (void)sizeToFitScreenSize:(NSSize)screenSize
 {
   NSRect    panelFrame;
   NSRect    messageFrame;
@@ -237,22 +237,40 @@
   [panel setFrame:panelFrame display:NO];
   panelFrame = [panel frame];
   
+  messageFrame = [messageField frame];
   if (linesNum > 1)
     {
-      messageFrame = [messageField frame];
-      messageFrame.origin.y -= lineHeight/2;
-      messageFrame.size.height += lineHeight;
-      [messageField setFrame:messageFrame];
-  
-      [messageField setAlignment:NSLeftTextAlignment];
+      CGFloat newMessageHeight;
+      panelFrame.size.height -= messageFrame.size.height;
+      newMessageHeight = (lineHeight * linesNum);
+      panelFrame.size.height += newMessageHeight;
       
-      panelFrame.size.height += (lineHeight * (linesNum - 1));
-      [panel setFrame:panelFrame display:NO];
+      while (panelFrame.size.height > (screenSize.height/2) && [font pointSize] > 11.0)
+        {
+          font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
+          textWidth = [font widthOfString:[messageField stringValue]];
+          linesNum = (textWidth/fieldWidth);
+          lineHeight = [font defaultLineHeightForFont] + 1;
+          
+          panelFrame.size.height -= newMessageHeight;
+          newMessageHeight = (lineHeight * linesNum);
+          panelFrame.size.height += newMessageHeight;
+          [messageField setFont:font];
+        }
+
+      panelFrame.origin.y = (screenSize.height - panelFrame.size.height)/2;
+      [messageField setAlignment:NSLeftTextAlignment];
     }
   else
     {
+      messageFrame.origin.y = messageFrame.origin.y + (messageFrame.size.height/2 - lineHeight/2);
+      messageFrame.size.height = lineHeight;
       [messageField setAlignment:NSCenterTextAlignment];
+      panelFrame.origin.y =
+        (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
     }
+  [messageField setFrame:messageFrame];
+  [panel setFrame:panelFrame display:NO];
   
   // Buttons
   NSRect   aFrame, bFrame;
@@ -294,25 +312,21 @@
 - (NSInteger)runModal
 {
   NSInteger result;
-  NSSize  screenSize;
-  // NSPoint panelOrigin;
-
   NXScreen *screen = [NXScreen sharedScreen];
-  screenSize = [screen sizeInPixels];
-  
-  [self sizeToFit];
-  [panel center];
+  NSSize    screenSize = [screen sizeInPixels];
 
-  // Place panel at top half of main display
+  [self sizeToFitScreenSize:[screen sizeInPixels]];
+
   NSRect panelFrame = [panel frame];
 
-  if (panelFrame.size.height > (screenSize.height/2))
-    {
-      panelFrame.size.height = screenSize.height/2;
-    }
+  // if (panelFrame.size.height > (screenSize.height/2))
+  //   {
+  //     panelFrame.size.height = screenSize.height/2;
+  //   }
   
-  panelFrame.origin.y =
-    (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
+  // Place panel at top half of main display
+  // panelFrame.origin.y =
+  //   (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
   [panel setFrame:panelFrame display:NO];
   [panel makeFirstResponder:defaultButton];
   
