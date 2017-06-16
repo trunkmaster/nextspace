@@ -306,7 +306,15 @@
      Получается громоздко и некрасиво. Лучше сделать subclass и override
      initWithFrame: и drawRect: в этом subclass.
 *** TODO NXAlertPanel
-    Modified NSRunAlertPanel()
+    Modified NSRunAlertPanel().
+**** TODO Максимальный размер панели
+     Если текст messageField не помещается в максимальны размер панели, есть
+     варианты:
+     1. Обрезать видимый текст. Нужно только убедиться в том, что не видно
+        часть строки внизу.
+     2. Создавать ScrollView с вертикальным scroll'ом.
+     3. Уменьшать размер текста, пока не поместиться.
+     Пойду посмотрю в NeXT UIG...
 *** TODO NXSavePanel, NXOpenPanel
     Standard panels without icons, dirs-first sorting, without
     keyboard focus in browser etc.
