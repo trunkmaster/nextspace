@@ -39,6 +39,7 @@
   NSString    *otherString;
 
   NSMutableArray *buttons;
+  NSUInteger  maxButtonWidth;
 }
 
 - (void)buttonPressed:(id)sender;

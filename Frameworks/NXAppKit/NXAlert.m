@@ -175,7 +175,7 @@
   else
     {
       [alternateButton setTitle:alternateText];
-      [buttons addObect:alternateButton];
+      [buttons addObject:alternateButton];
     }
 
   if (otherText == nil)
@@ -185,10 +185,12 @@
   else
     {
       [otherButton setTitle:otherText];
-      [buttons addObect:otherButton];
+      [buttons addObject:otherButton];
     }
 
   [messageField setStringValue:messageText];
+
+  maxButtonWidth = ([panel frame].size.width - 16 - 10) / 3;
 
   return self;
 }
@@ -211,7 +213,9 @@
 
 - (void)dealloc
 {
+  NSLog(@"NXAlert: -dealloc");
   [buttons release];
+  [super dealloc];
 }
 
 - (void)sizeToFit
@@ -233,13 +237,13 @@
   [panel setFrame:panelFrame display:NO];
   panelFrame = [panel frame];
   
-  messageFrame = [messageField frame];
-  messageFrame.origin.y -= lineHeight/2;
-  messageFrame.size.height += lineHeight;
-  [messageField setFrame:messageFrame];
-  
   if (linesNum > 1)
     {
+      messageFrame = [messageField frame];
+      messageFrame.origin.y -= lineHeight/2;
+      messageFrame.size.height += lineHeight;
+      [messageField setFrame:messageFrame];
+  
       [messageField setAlignment:NSLeftTextAlignment];
       
       panelFrame.size.height += (lineHeight * (linesNum - 1));
@@ -257,6 +261,7 @@
   CGFloat  xShift;
   NSButton *button;
 
+  // Determine button with widest text
   for (int i = 0; i < [buttons count]; i++)
     {
       button = [buttons objectAtIndex:i];
@@ -265,63 +270,50 @@
       if (cSize.width > maxWidth)
         {
           maxWidth = cSize.width;
+          if (maxWidth > maxButtonWidth)
+            {
+              maxWidth = maxButtonWidth;
+              break;
+            }
         }
     }
-  NSLog(@"Max button cell width = %f", maxWidth);
 
+  // Resize and reposition buttons
   for (int i = 0; i < [buttons count]; i++)
     {
       button = [buttons objectAtIndex:i];
       
       aFrame = [button frame];
       xShift = aFrame.size.width - maxWidth;
-      aFrame.origin.x += xShift;
+      aFrame.origin.x = panelFrame.size.width - (maxWidth + maxWidth*i) - (5 * i) - 8;
       aFrame.size.width = maxWidth;
       [button setFrame:aFrame];
     }
-  
-  // aFrame = [defaultButton frame];
-  // [defaultButton sizeToFit];
-  // bFrame = [defaultButton frame];
-  // xShift = aFrame.size.width - bFrame.size.width;
-  // aFrame.origin.x += xShift;
-  // aFrame.size.width = bFrame.size.width;
-  // [defaultButton setFrame:aFrame];
-
-  // aFrame = [alternateButton frame];
-  // [alternateButton sizeToFit];
-  // bFrame = [alternateButton frame];
-  // xShift = aFrame.size.width - bFrame.size.width;
-  // aFrame.origin.x += xShift;
-  // aFrame.size.width = bFrame.size.width;
-  // [alternateButton setFrame:aFrame];
-
-  // aFrame = [otherButton frame];
-  // [otherButton sizeToFit];
-  // bFrame = [otherButton frame];
-  // xShift = aFrame.size.width - bFrame.size.width;
-  // aFrame.origin.x += xShift;
-  // aFrame.size.width = bFrame.size.width;
-  // [otherButton setFrame:aFrame];
-  
-  // [alternateButton sizeToFit];
-  // [otherButton sizeToFit];
 }
 
 - (NSInteger)runModal
 {
   NSInteger result;
-  NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
-  NSPoint panelOrigin;
+  NSSize  screenSize;
+  // NSPoint panelOrigin;
+
+  NXScreen *screen = [NXScreen sharedScreen];
+  screenSize = [screen sizeInPixels];
   
   [self sizeToFit];
   [panel center];
 
   // Place panel at top half of main display
-  panelOrigin = [panel frame].origin;
-  panelOrigin.y =
-    (screenSize.height - screenSize.height/4) - [panel frame].size.height;
-  [panel setFrameOrigin:panelOrigin];
+  NSRect panelFrame = [panel frame];
+
+  if (panelFrame.size.height > (screenSize.height/2))
+    {
+      panelFrame.size.height = screenSize.height/2;
+    }
+  
+  panelFrame.origin.y =
+    (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
+  [panel setFrame:panelFrame display:NO];
   [panel makeFirstResponder:defaultButton];
   
   [panel makeKeyAndOrderFront:self];

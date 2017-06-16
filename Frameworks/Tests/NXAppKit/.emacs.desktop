@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Jun 15 19:12:23 2017
+;; Created Fri Jun 16 00:46:16 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -14,7 +14,7 @@
 (setq search-ring nil)
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Frameworks/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Documentation/OpenStep Confusion.md" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -22,11 +22,22 @@
   "AppController.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  2753
-  '(1125 nil)
+  4945
+  '(2984 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Documentation/OpenStep Confusion.md"
+  "OpenStep Confusion.md"
+  'markdown-mode
+  '(yas-minor-mode)
+  5914
+  '(121 nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-file-coding-system . undecided-dos)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/ClockViewTest.m"
