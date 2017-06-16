@@ -482,11 +482,6 @@ static NSString *WMComputerShouldGoDownNotification =
              name:NXMediaOperationDidEnd
            object:mediaAdaptor];
   
-  [nc addObserver:self
-         selector:@selector(exceptionHandler:)
-             name:@"NXSystemException"
-           object:nil];
-  
   [mediaAdaptor checkForRemovableMedia];
 
   // Show 'launched' state
@@ -970,15 +965,6 @@ static NSString *WMComputerShouldGoDownNotification =
           [systemScreen deactivateDisplay:builtinDisplay];
         }
     }
-}
-
-- (void)exceptionHandler:(NSNotification *)aNotif
-{
-  NSException *exception = [aNotif object];
-
-  NSLog(@"Workspace: received exception notification");
-  NXRunExceptionPanel(@"Internal error", exception.description,
-                      @"Got it", nil, nil);
 }
 
 @end
