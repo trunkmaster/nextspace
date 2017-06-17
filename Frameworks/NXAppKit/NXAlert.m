@@ -278,15 +278,12 @@
 
   // NSRect mDisplayRect = [[screen mainDisplay] frame];
   // NXRect gScreenRect = [[panel screen] frame]; // Get GNUstep screen rect
-  // Screen size possibly changes after application was started.
+  // Screen size possibly was changed after application start.
   // GNUstep information about screen size is obsolete. Adopt origin.y to
   // GNUstep screen coordinates.
   // TDOD: GNUstep back XGServer should be fixed to get real screen dimensions.
   panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
   panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
-  
-  // NSLog(@"NXAlert: screen size: %@ panel frame: %@",
-  //       NSStringFromSize(screenSize), NSStringFromRect(panelFrame));
   
   [messageField setFrame:messageFrame];
   [panel setFrame:panelFrame display:NO];
@@ -334,28 +331,12 @@
 {
   NSInteger result;
   NXScreen *screen = [NXScreen sharedScreen];
-  NSSize    screenSize;
 
   [screen randrUpdateScreenResources];
-  screenSize = [screen sizeInPixels];
-  NSLog(@"NXAlert: szcreen size: %@", NSStringFromSize(screenSize));
+  [self sizeToFitScreenSize:[screen sizeInPixels]];
 
-  [self sizeToFitScreenSize:screenSize];
-
-  // NSRect panelFrame = [panel frame];
-
-  // if (panelFrame.size.height > (screenSize.height/2))
-  //   {
-  //     panelFrame.size.height = screenSize.height/2;
-  //   }
-  
-  // Place panel at top half of main display
-  // panelFrame.origin.y =
-  //   (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
-  // [panel setFrame:panelFrame display:NO];
   [panel makeFirstResponder:defaultButton];
 
-  // [self center];
   [panel makeKeyAndOrderFront:self];
   result = [NSApp runModalForWindow:panel];
   [panel orderOut:self];
