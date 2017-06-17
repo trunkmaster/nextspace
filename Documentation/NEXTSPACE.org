@@ -224,6 +224,12 @@
    Пока ставить нельзя - сейчас творится какая-то хрень (в Workspace все
    посъезжало, splitview не работает, может что-то еще).
    Пока остаемся на стабильной версии, которая выпущена летом 2015-го.
+** TODO [NSScreen frame] и изменение рарешения
+   Нужно модифицировать back в части XGServerWindow.m. Сейчас widthxheight
+   берется с помощью макросов Xllib DisplayWidth, DisplayHeight, которые
+   возвращают значения полей структуры Screen (Xlib.h). При изменении
+   разрешения эти значения этих полей остаются такими, какими были при старте
+   приложения (XOpenDisplay). Возможно нужно будет привлекат XRandR.
 ** DONE Single click не получает NSIconWindow (appicon)
    Решение находится в gnustep-back/x11/XGServerWindow.m
    processEvent:. Если используется WindowMaker для appicon управление
@@ -307,14 +313,18 @@
      initWithFrame: и drawRect: в этом subclass.
 *** TODO NXAlertPanel
     Modified NSRunAlertPanel().
-**** TODO Максимальный размер панели
+**** DONE Максимальный размер панели
      Если текст messageField не помещается в максимальны размер панели, есть
      варианты:
      1. Обрезать видимый текст. Нужно только убедиться в том, что не видно
         часть строки внизу.
      2. Создавать ScrollView с вертикальным scroll'ом.
-     3. Уменьшать размер текста, пока не поместиться.
+     3. Уменьшать размер шрифта, пока текст не поместиться или делать окно
+        максимального размера, а текст пускай обрезается.
      Пойду посмотрю в NeXT UIG...
+     В UIG сказано о том, что ScrollView может добавляться если требуется
+     дополнительные объяснения для сообщения (кнопочка 'Explain' показывает
+     этот ScrollView). Поэтому пока останавливаемся на варианте №3.
 *** TODO NXSavePanel, NXOpenPanel
     Standard panels without icons, dirs-first sorting, without
     keyboard focus in browser etc.

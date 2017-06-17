@@ -322,7 +322,7 @@ static NXScreen *systemScreen = nil;
   
   if ([updateScreenLock tryLock] == NO)
     {
-      NSLog(@"NXScreen: unsuccessful attempt to update XRandR screen resources detected!");
+      NSLog(@"NXScreen: update of XRandR screen resources was unsuccessful!");
       return;
     }
     
