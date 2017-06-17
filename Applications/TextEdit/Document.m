@@ -33,6 +33,8 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 
+#import <NXAppKit/NXAlert.h>
+
 #import "Document.h"
 #import "MultiplePageView.h"
 #import "TextFinder.h"
@@ -715,7 +717,7 @@ static BOOL hyphenationSupported(void)
 {
   if (isRichText && ([textStorage length] > 0))
     {
-      int choice = NSRunAlertPanel (_(@"Make Plain Text"), 
+      int choice = NXRunAlertPanel (_(@"Make Plain Text"), 
                                     _(@"Convert document to plain text? This will lose fonts, colors, and other text attribute settings."), 
                                     _(@"OK"), _(@"Cancel"), nil);
       
@@ -763,7 +765,7 @@ static BOOL hyphenationSupported(void)
 {
   if (documentName) {
     NSString *fileName = [documentName lastPathComponent];
-    int choice = NSRunAlertPanel(_(@"Revert"), 
+    int choice = NXRunAlertPanel(_(@"Revert"), 
                                  _(@"Revert to saved version of %@?"), 
                                  _(@"OK"),
                                  _(@"Cancel"),
@@ -771,7 +773,7 @@ static BOOL hyphenationSupported(void)
                                  fileName);
     if (choice == NSAlertDefaultReturn) {
       if (![self loadFromPath: documentName encoding: encodingIfPlainText]) {
-        NSRunAlertPanel(_(@"Couldn't Revert"), 
+        NXRunAlertPanel(_(@"Couldn't Revert"), 
                         _(@"Couldn't revert to saved version of %@."), 
                         _(@"OK"),
                         nil,
@@ -830,7 +832,7 @@ static BOOL hyphenationSupported(void)
         if (![Document openDocumentWithPath:filename encoding:flag ? [[encodingPopupButton selectedItem] tag] : UnknownStringEncoding])
           {
             NSString *alternate = (cnt + 1 == numFiles) ? nil : _(@"Abort");
-            unsigned choice = NSRunAlertPanel(_(@"File system error"), 
+            unsigned choice = NXRunAlertPanel(_(@"File system error"), 
                                               _(@"Couldn't open file %@."), 
                                               _(@"OK"),
                                               alternate,
@@ -889,7 +891,7 @@ static BOOL hyphenationSupported(void)
 - (BOOL) canCloseDocument
 {
   if (isDocumentEdited) {
-    int result = NSRunAlertPanel (
+    int result = NXRunAlertPanel (
                                   _(@"Close"),
                                   _(@"Document has been edited. Save?"),
                                   _(@"Save"),
@@ -960,7 +962,7 @@ static BOOL hyphenationSupported(void)
         encodingForSaving = NSUTF8StringEncoding;
 
       if (haveToChangeType) {
-        NSRunAlertPanel(_( @"Save Plain Text"), 
+        NXRunAlertPanel(_( @"Save Plain Text"), 
                         _(@"Document can no longer be saved using its original %@ encoding. Please choose another encoding (%@ is one possibility)."), 
                         _(@"OK"),
                         nil,
@@ -998,7 +1000,7 @@ static BOOL hyphenationSupported(void)
       return YES;
 
     } else {
-      NSRunAlertPanel(@"Couldn't Save",
+      NXRunAlertPanel(@"Couldn't Save",
                       _(@"Couldn't save document as %@."),
                       _(@"OK"),
                       nil,
@@ -1170,7 +1172,7 @@ doubleClickedOnCell: (id <NSTextAttachmentCell>)cell
   }
 }
 
-- (unsigned int) draggingSourceOperationMaskForLocal:(BOOL)flag
+- (unsigned long) draggingSourceOperationMaskForLocal:(BOOL)flag
 {
   return NSDragOperationGeneric | NSDragOperationCopy;
 }
@@ -1531,7 +1533,7 @@ SetUpEncodingPopupButton (NSPopUpButton *popup, int selectedEncoding, BOOL inclu
     }
   } else {	/* Check to see if the default item is in there... */
     while (!defaultItemIsIncluded && cnt-- > 0) {
-      NSButtonCell	*item = [popup itemAtIndex:cnt];
+      id<NSMenuItem>	item = [popup itemAtIndex:cnt];
 
       if ([item tag] == UnknownStringEncoding)
         defaultItemIsIncluded = YES;
@@ -1549,7 +1551,7 @@ SetUpEncodingPopupButton (NSPopUpButton *popup, int selectedEncoding, BOOL inclu
   cnt = [popup numberOfItems];
 
   while (cnt-- > 0) {
-    NSButtonCell *item = [popup itemAtIndex: cnt];
+    id<NSMenuItem> item = [popup itemAtIndex: cnt];
     [item setEnabled: YES];
     if ([item tag] == selectedEncoding)
       [popup selectItemAtIndex: cnt];
