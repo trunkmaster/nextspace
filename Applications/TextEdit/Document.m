@@ -854,27 +854,31 @@ static BOOL hyphenationSupported(void)
 
 - (void) orderFrontFindPanel:(id)sender
 {
-  [[TextFinder sharedInstance] orderFrontFindPanel: sender];
+  [[self firstTextView] performFindPanelAction:sender];
+  // [[TextFinder sharedInstance] orderFrontFindPanel: sender];
 }
 
 - (void) findNext:(id)sender
 {
-  [[TextFinder sharedInstance] findNext: sender];
+  [[self firstTextView] performFindPanelAction:sender];
+  // [[TextFinder sharedInstance] findNext: sender];
 }
 
 - (void) findPrevious:(id)sender
 {
-  [[TextFinder sharedInstance] findPrevious: sender];
+  [[self firstTextView] performFindPanelAction:sender];
+ // [[TextFinder sharedInstance] findPrevious: sender];
 }
 
 - (void) enterSelection:(id)sender
 {
-  NSRange range = [[self firstTextView] selectedRange];
-  if (range.length) {
-    [[TextFinder sharedInstance] setFindString:[[textStorage string] substringWithRange:range]];
-  } else {
-    NSBeep ();
-  }
+  [[self firstTextView] performFindPanelAction:sender];
+  // NSRange range = [[self firstTextView] selectedRange];
+  // if (range.length) {
+  //   [[TextFinder sharedInstance] setFindString:[[textStorage string] substringWithRange:range]];
+  // } else {
+  //   NSBeep ();
+  // }
 }
 
 - (void) jumpToSelection:(id)sender

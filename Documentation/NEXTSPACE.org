@@ -263,7 +263,7 @@
    Modified NSSplitView:
       + different divider size (e.g. 12px);
       + configurable resizing constrains.
-*** DONE Progress bar, pie (NXProgress*)
+*** DONE NXProgress*: Bar, Pie 
 *** DONE NXSizer (moved from Workspace)
 *** DONE NXNumericField
    Базовая функциональность реализована.
@@ -311,7 +311,7 @@
 **** DONE Добавить возможность загрузки clockbits снаружи
      Получается громоздко и некрасиво. Лучше сделать subclass и override
      initWithFrame: и drawRect: в этом subclass.
-*** TODO NXAlertPanel
+*** DONE NXAlertPanel
     Modified NSRunAlertPanel().
 **** DONE Максимальный размер панели
      Если текст messageField не помещается в максимальны размер панели, есть
@@ -325,13 +325,13 @@
      В UIG сказано о том, что ScrollView может добавляться если требуется
      дополнительные объяснения для сообщения (кнопочка 'Explain' показывает
      этот ScrollView). Поэтому пока останавливаемся на варианте №3.
-*** TODO NXSavePanel, NXOpenPanel
-    Standard panels without icons, dirs-first sorting, without
-    keyboard focus in browser etc.
 *** TODO NXFindPanel
     Generic find/replace panel
      - find/replace panel for text (for editors, help panel etc.);
      - find/replace view to incorporate as subview.
+*** TODO NXSavePanel, NXOpenPanel
+    Standard panels without icons, dirs-first sorting, without
+    keyboard focus in browser.
 *** Version 2.0
 **** TODO NXHelpPanel
      OpenStep's NSHelpPanel implementation
@@ -3151,6 +3151,10 @@
     Протокол для бандлов лежит в /usr/NextSpace/apps/Preferences.h.
 *** DONE Появление/скрытие окна
 *** DONE Отображать иконки с учетом priority из bundle.registry
+*** DONE Старт без без появления меню
+    В Workspace и gnuste-back реализована опция -NXAutoLaunch, которая
+    приводит к желаемому результату. Теперь так стартуют еще Weather и
+    TimeMon.
 *** TODO Модули
 **** DONE Fonts: GNUstep font settings
      back-art-subpixel-text всегда устанавливается в '0'.
@@ -3248,7 +3252,6 @@
 **** TODO Window management
 *** TODO .preferences как документ открываемый Preferences
 *** TODO Все модули должны подстраиваться под размер окна
-*** TODO Старт без без появления меню
 
 
 ** 4. Terminal
@@ -3261,6 +3264,8 @@
 **** DONE Расположение на экране новосозданных окон
      Сделал собственное управление появление окон. cascadeTopLeftFromPoint 
      мне не нравится.
+**** TODO Шрифт Roboto рисуется с большими интервалами
+     Возможно это из-за того, что шфрифт декларируется как немоноширинный.
 **** TODO Preferences
 ***** DONE Переключение между разделами
       Не должны сбрасываться настройки, которые были изменены?

@@ -20,7 +20,6 @@
 	    "findPrevious:",
 	    "jumpToSelection:",
 	    "applicationShouldTerminate:",
-	    "oderFrontFindPanel:",
 	    "orderFrontFindPanel:",
 	    "orderFrontFontPanel:",
 	    "revert:",
