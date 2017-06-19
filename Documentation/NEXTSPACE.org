@@ -252,8 +252,11 @@
 
 * Frameworks
 
-** TODO NXAppKit
+** TODO NXAppKit [10/11]
    additions to and modification of AppKit classes
+*** TODO NXSavePanel, NXOpenPanel
+    Standard panels without icons, dirs-first sorting, without
+    keyboard focus in browser.
 *** DONE NXIcon
 *** DONE NXIconLabel
 *** DONE Перевести сокращение текста на функцию в NXUtilities
@@ -325,16 +328,16 @@
      В UIG сказано о том, что ScrollView может добавляться если требуется
      дополнительные объяснения для сообщения (кнопочка 'Explain' показывает
      этот ScrollView). Поэтому пока останавливаемся на варианте №3.
-*** TODO NXFindPanel
-    Generic find/replace panel
-     - find/replace panel for text (for editors, help panel etc.);
-     - find/replace view to incorporate as subview.
-*** TODO NXSavePanel, NXOpenPanel
-    Standard panels without icons, dirs-first sorting, without
-    keyboard focus in browser.
 *** Version 2.0
 **** TODO NXHelpPanel
      OpenStep's NSHelpPanel implementation
+
+**** TODO NXFindPanel
+    Generic find/replace panel
+     - find/replace panel for text (for editors, help panel etc.);
+     - find/replace view to incorporate as subview.
+    В приципе, работает и штатная панель. Может когда-нибудь можно будет
+    добавить поиск по regexp. Переношу в 'Version 2.0'.
 
 
 ** TODO NXFoundation
@@ -1147,9 +1150,12 @@
 
 
 ** 1. Login
-*** TODO Версия 1.0
+*** TODO Версия 1.0   [3/6]
 **** DONE Вход/выход без неожиданностей (core dumps)
 **** DONE Взаимодействие с Workspace Manager - Power Off
+**** DONE Shrink окна при старте пользовательской сессии
+     Реализовал shrinkPanel и shakePanel с помощью функций X11.
+     Через GNUstep получается медленно и с непредсказуемой скоростью.
 **** TODO Корректная работа с многомониторными конфигурациями
 ***** DONE Устанавливать display layout по-умолчанию
 ***** DONE Устанавливать сохраненный display layout
@@ -1161,16 +1167,13 @@
 ***** TODO Ловить подключение/отключение мониторов (как?)
 ***** TODO Обновлять информацию о мониторах после завершения сессии
 **** TODO Взаимодействие с Workspace Manager - Reboot
-**** DONE Shrink окна при старте пользовательской сессии
-     Реализовал shrinkPanel и shakePanel с помощью функций X11.
-     Через GNUstep получается медленно и с непредсказуемой скоростью.
 **** TODO Простой скринсейвер
      Что-то периодически перемещающееся по экрану или просто текст.
      NXSystem/NXPower?
-*** TODO Версия 2.0
+*** TODO Версия 2.0   [0/2]
 **** TODO Выдача панели при некорректном завершении пользовательской сессии
 **** TODO Перезапуск пользовательской сессии при её некорректном завершении
-*** TODO Когда-нибудь:
+*** TODO Когда-нибудь [0/3]
 **** TODO Взаимодействие с Workspace Manager - Hibernate
      Зависит от реализации hibernate в OC. В FreeBSD, насколько мне
      известно, с этим все плохо.
@@ -1938,8 +1941,17 @@
 ******** TODO Workspace: запуск/останов приложений в Dock
          Управление запуском (при входе) и остановом (при выходе) из Workspace.
          Другими словами не использовать встроенную функцию WindowMaker.
+******** TODO Workspace-Preferences-Dock
+         Автозапуск приложений, коммандная строка, Icon Image,
+         Middle-click launch, DnD command.
 ******** TODO Dock position
          Normal, Auto raise & lower, Keep on top.
+******** TODO Bring here
+         По идее это должно быть интегрировано в стандартное меню Windows.
+         А с приложениями X11 как?
+******** TODO Launch, Hide, Kill
+         Без Launch можно и обойтись, а вот Hide и Kill могут понадобиться,
+         особенно для приложений X11.
 ******* TODO Workspace: управление появлением/скрытием Dock и IconYard
 ******* TODO Workspace: отображение текущего 'WM workspace'
 ******* TODO Перетаскивание иконки приложения из Workspace в Dock
@@ -2225,14 +2237,12 @@
 ******** DONE Активация кликом не заголовке окна
          Также как с "Приложение с несколькими окнами".
 ***** TODO Recycler
-      - иконка в Dock - создавать программно из при старте Workspace; если в
-        Dock нет места - располагать как appicon внизу;
+      - иконка в Dock - создавать программно при старте Workspace;
+      - если в Dock нет места - располагать как appicon в IconYard;
+      - иконку нельзя удалить из Dock (Lock=Yes в WMState);
       - D'n'D в иконку из Workspace;
       - окно с файлами в Recycler (~/.Trash? а как с другими дисками?);
       - File->Empty Recycler;
-******* TODO Иконка в доке
-        - ее нельзя удалить из Dock (Lock=Yes в WMState);
-        - если нет свободного места, появляется в IconYard.
 **** TODO События Xrandr
      Вроде я давно уже все сделал. По крайней мере проверено в т.ч. в
      VirtualBox 4.3.40 - работает (изменение размера окна приводит к
@@ -2258,16 +2268,16 @@
         validateMenuItem нужно располагать там, куда указан target для
         конкретного menu item. В данном случае это FileViewer.
 ******* DONE ...должны работать во всех File Viewer
-****** DONE Элементы меню File...
+****** DONE Элементы меню File
 **** DONE Console: расположение, способ вывода
      Вывод делается в /tmp/GNUstepSecure<id -u>/console.log. Это секурно, лог
      удаляется при выходе из сессии (я, правда, не уверен, что это правильно).
 ***** DONE Консоль должна миниатюризироваться
-**** DONE Добавить сахара...
+**** DONE Добавить сахара
 ***** DONE Сделать иконку приложения по типу ОС
       CentOS, BSD. И NeXT если нужно будет полное впечатление от OPENSTEP.
 ***** DONE Info->Info Panel устанавливать иконку по типу ОС
-***** DONE Добавить Legal Panel...
+***** DONE Добавить Legal Panel
 **** DONE Переместить alert'ы на события NXMediaManager в Controller
      При выходе Workspace иногда сегфолтиться.
      Плюс не все AlertPanel (с предложением отключить устройство) показываются.
@@ -3088,7 +3098,7 @@
        Нужно подумать о вынесении кода по синхронизации пустых иконок/колонок 
        viewer и PathView в отдельный метод.
        Сделано: pathViewSyncEmptyColumns
-*** Версия > 1.0 [0/10]
+*** Версия > 1.0    [0/10]
     :PROPERTIES:
     :COOKIE_DATA: todo reccursive
     :END:
@@ -3118,7 +3128,7 @@
         (make_services) и обновляет меню 'Services'.
 **** TODO Viewers - отображение копируемых/перемещаемых объектов серым цветом пока процесс не завершен
 **** TODO Разместить исходники настроек viewer'ов рядом с исходниками viewer'ов
-*** Когда-нибудь [0/10]
+*** Когда-нибудь    [0/9]
 **** TODO Application content inspector (AppInspector)
      Добавить отображение сервисов, предоставляемых приложением.
 **** TODO Content inspector для .so, binary executable, shell
@@ -3132,12 +3142,12 @@
 **** TODO Анимация возврата иконки в Shelf
      При помещении объекта в Shelf иконка должна плавно скользить на место.
 **** TODO Processes->Background: имена в полях From: и To:
-     При манипуляциях с объектами с длинными путями текст в полях
-     From: и To: не всегда отличается. Нужно подумать на предмет
-     реализации сокращения с точками внутри. 
-     Задачка не совсем простая, поскольку нужно решить какие части
-     начала и конца пути стоит оставлять (и самое главное, как это
-     определить программно!).
+     При манипуляциях с объектами с длинными путями текст в полях From: и To:
+     не всегда отличается. Нужно подумать на предмет реализации сокращения с
+     точками внутри.
+     Задачка не совсем простая, поскольку нужно решить какие части начала и
+     конца пути стоит оставлять (и самое главное, как это определить
+     программно!).
 **** TODO Отчет о проблемных (Alert) файлах после завершения операции
 **** TODO Работа с архивами (+ отображение в Processes-Background processes), OpenUp?
 **** TODO Работа с сетевыми ФС: CIFS, NFS, FTP, SFTP (/Net?)
@@ -3209,7 +3219,7 @@
 ***** TODO Получать и изменять фон рабочего стола -> NXDisplay
       Не нашел возможности простого получения текущего цвета окна X11.
       Поэтому, сейчас предполагаю, что цвет был установлен такой, который
-      сохранен где-то в  ~/Library/Preferences.
+      сохранен в  ~/Library/Preferences/.NextSpace/NXGlobalDomain.
 ***** TODO Установка Backlight (если монитор поддерживает)
 **** TODO Screen: displays layout, on/off
 ***** DONE Устанавливать 'Main Display'
@@ -3226,7 +3236,9 @@
 ****** TODO Получать и отображать desktop background
        Нужно сначала реализовать это в модуле Display.
 **** TODO UNIX Expert
-     Используется Workspace Manager'ом.
+     - [ ] File Creation Mask
+     - [ ] Show hidden files
+     - [ ] Должно использоваться Workspace Manager'ом, NSSavePanel, NSOpenPanel.
 ***** TODO Нарисовать панель
 **** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
 **** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
