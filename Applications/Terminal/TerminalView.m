@@ -2646,8 +2646,11 @@ static int handled_mask= (NSDragOperationCopy |
 
   /* TODO: clear up font metrics issues with xlib/backart */
   // NSLog(@"NSFont %@ info %@ size %g %@ %d", font, [font fontInfo],
-  //       [font pointSize], NSStringFromRect([font boundingRectForGlyph: 'A']),
+  //       [font pointSize], NSStringFromRect([font boundingRectForFont]),
   //       [font glyphIsEncoded: 'A']);
+  // NSLog(@"NSFont advancement: %@",
+  //       NSStringFromSize([font advancementForGlyph:'W']));
+
   r = [font boundingRectForFont];
   fx0 = -r.origin.x;
   fy0 = -r.origin.y;

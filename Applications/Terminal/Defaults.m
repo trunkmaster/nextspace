@@ -150,13 +150,19 @@ static NSFont *terminalFont;
     {
       font = [Defaults terminalFont];
     }
-  
+
   s = [font boundingRectForFont].size;
+  s.width = [font advancementForGlyph:'M'].width;
   
-  if ([Defaults useMultiCellGlyphs])
-    {
-      s.width = [font boundingRectForGlyph:'A'].size.width;
-    }
+  // NSLog (@"Font %@ bounding rect: %@ XHeight: %f line height: %f",
+  //        [font fontName], NSStringFromSize(s),
+  //        [font xHeight], [font defaultLineHeightForFont]);
+
+  // TODO: Why this?
+  // if ([Defaults useMultiCellGlyphs])
+  //   {
+  //     s.width = [font boundingRectForGlyph:'A'].size.width;
+  //   }
   
   return s;
 }
