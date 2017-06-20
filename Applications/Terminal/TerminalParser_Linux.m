@@ -27,8 +27,6 @@
 
 #include "TerminalParser_Linux.h"
 
-// #include "TerminalViewPrefs.h"
-// #include "TerminalParser_LinuxPrefs.h"
 #import "Defaults.h"
 
 
@@ -184,8 +182,18 @@ static const unichar *_set_translate(int charset)
   [self _csi_J: 2];
 }
 
+//-------------------------------------------------------------------------------
+// ECMA-48 CSI sequences: CSI (or ESC [) is followed by a sequence of parameters,
+// at most NPAR(16), that are decimal numbers separated by semicolons.
+// The action of a CSI sequence is determined by its final character.
+//-------------------------------------------------------------------------------
 
--(void) _csi_J: (int) vpar
+// ESC [ J	ED	Erase display (default: from cursor to end of display).
+// 			ESC [ 1 J: erase from start to cursor.
+//			ESC [ 2 J: erase whole display.
+// 			ESC [ 3 J: erase whole display including scroll-back
+//			buffer (since Linux 3.0).
+- (void)_csi_J:(int)vpar
 {
   unsigned int count;
   int start;
@@ -210,8 +218,10 @@ static const unichar *_set_translate(int charset)
   [ts ts_putChar: video_erase_char  count: count  offset: start];
 }
 
-
--(void) _csi_K: (int)vpar
+// ESC [ K	EL	Erase line (default: from cursor to end of line).
+// 			ESC [ 1 K: erase from start of line to cursor.
+// 			ESC [ 2 K: erase whole line.
+- (void)_csi_K:(int)vpar
 {
   unsigned int count;
   int start;
@@ -235,7 +245,8 @@ static const unichar *_set_translate(int charset)
   [ts ts_putChar: video_erase_char  count: count  offset: start];
 }
 
--(void) _csi_X: (int)vpar /* erase the following vpar positions */
+// ESC [ X	ECH	Erase the indicated # of characters on current line.
+- (void)_csi_X:(int)vpar /* erase the following vpar positions */
 { /* not vt100? */
   int count;
 
@@ -247,7 +258,10 @@ static const unichar *_set_translate(int charset)
 }
 
 
--(void) _default_attr
+//-------------------------------------------------------------------------------
+// ESC [ m	SGR	Set attributes
+//			(see console_codes(4), ECMA-48 Set Graphics Rendition).
+- (void)_default_attr
 {
   intensity = 1;
   underline = 0;
@@ -256,12 +270,11 @@ static const unichar *_set_translate(int charset)
   color = def_color;
 }
 
--(void) _update_attr
+- (void)_update_attr
 {
-  video_erase_char.color=color;
-  video_erase_char.attr=(intensity)|(underline<<2)|(reverse<<3)|(blink<<4);
+  video_erase_char.color = color;
+  video_erase_char.attr = (intensity)|(underline<<2)|(reverse<<3)|(blink<<4);
 }
-
 
 static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 				       8,12,10,14, 9,13,11,15 };
@@ -270,92 +283,96 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 {
   int i;
 
-  for (i=0;i<=npar;i++)
+  for (i=0; i <= npar; i++)
     switch (par[i]) {
-    case 0:	/* all attributes off */
+    case 0:	// reset all attributes to their defaults
       [self _default_attr];
       break;
-    case 1:
+    case 1:	// set bold
       intensity = 2;
       break;
-    case 2:
+    case 2:	// set half-bright (simulated with color on a color display)
       intensity = 0;
       break;
-    case 4:
+    case 4:	// set  underscore (simulated with color on a color display)
       underline = 1;
       break;
-    case 5:
+    case 5:	// set blink
       blink = 1;
       break;
-    case 7:
+    case 7:	// set reverse video
       reverse = 1;
       break;
-    case 10: /* ANSI X3.64-1979 (SCO-ish?)
-              * Select primary font, don't display
-              * control chars if defined, don't set
-              * bit 8 on output.
-              */
+    case 10:	/* reset  selected mapping, display control flag, and toggle
+                 * meta flag (ECMA-48 says "primary font"). */
       translate = set_translate(charset == 0
                                 ? G0_charset
                                 : G1_charset,currcons);
       disp_ctrl = 0;
       toggle_meta = 0;
       break;
-    case 11: /* ANSI X3.64-1979 (SCO-ish?)
-              * Select first alternate font, lets
-              * chars < 32 be displayed as ROM chars.
-              */
+    case 11:	/* select null mapping, set display control flag, reset toggle
+                   meta flag (ECMA-48 says "first alternate font"). */
       translate = set_translate(IBMPC_MAP,currcons);
       disp_ctrl = 1;
       toggle_meta = 0;
       break;
-    case 12: /* ANSI X3.64-1979 (SCO-ish?)
-              * Select second alternate font, toggle
-              * high bit before displaying as ROM char.
-              */
+    case 12:	/* select null mapping, set display control flag, set toggle
+                   meta flag (ECMA-48 says "second  alternate  font"). The
+                   toggle meta flag causes the high bit of a byte to be toggled
+                   before the mapping table translation is done. */
       translate = set_translate(IBMPC_MAP,currcons);
       disp_ctrl = 1;
       toggle_meta = 1;
       break;
-    case 21:
-    case 22:
+    case 21:	// set normal intensity
+    case 22:	// set normal intensity
       intensity = 1;
       break;
-    case 24:
+    case 24:	// underline off
       underline = 0;
       break;
-    case 25:
+    case 25:	// blink off
       blink = 0;
       break;
-    case 27:
+    case 27:	// reverse video off
       reverse = 0;
       break;
-    case 38: /* ANSI X3.64-1979 (SCO-ish?)
-              * Enables underscore, white foreground
-              * with white underscore (Linux - use
-              * default foreground).
-              */
-      color = (def_color & 0x0f) | background;
+    case 38:	// set underscore on, set default foreground color
+      color = (def_color & 0x0f) | foreground;
       underline = 1;
       break;
-    case 39: /* ANSI X3.64-1979 (SCO-ish?)
-              * Disable underline option.
-              * Reset colour to default? It did this
-              * before...
-              */
-      color = (def_color & 0x0f) | background;
+    case 39:	// set underscore off, set default foreground color
+      color = (def_color & 0x0f) | foreground;
       underline = 0;
       break;
-    case 49:
-      color = (def_color & 0xf0) | foreground;
+    case 49:	// set default background color
+      color = (def_color & 0xf0) | background;
       break;
     default:
-      if (par[i] >= 30 && par[i] <= 37)
-        color = color_table[par[i]-30]
-          | background;
+      if ((par[i] >= 30 && par[i] <= 37))
+        {
+          fprintf(stderr, "TParser foreground color: %i\n", par[i]);
+          // color = color_table[par[i]-30] | foreground;
+          color = (color_table[par[i]-30]) | background;
+        }
+      else if (par[i] >= 90 && par[i] <= 97)
+        {
+          fprintf(stderr, "TParser foreground color: %i\n", par[i]);
+          color = (color_table[par[i]-90]) | background;
+          intensity = 0;
+          fprintf(stderr, "TParser char color: %i\n", color);
+        }
       else if (par[i] >= 40 && par[i] <= 47)
-        color = (color_table[par[i]-40]<<4)
-          | foreground;
+        {
+          fprintf(stderr, "TParser background color: %i\n", par[i]);
+          color = (color_table[par[i]-40]<<4) | foreground;
+        }
+      // else if (par[i] >= 100 && par[i] <= 107)
+      //   {
+      //     fprintf(stderr, "TParser background color: %i\n", par[i]);
+      //     // color = (color_table[par[i]-90]<<4) | foreground;
+      //   }
       break;
     }
 
@@ -363,16 +380,18 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 }
 
 
+//-------------------------------------------------------------------------------
+// ESC [ @	ICH	Insert the indicated # of blank characters.
 #define scrup(foo,t,b,nr,indirect_scroll) do {                          \
     int scrup_nr=nr;                                                    \
                                                                         \
     if (t+scrup_nr >= b)                                                \
       scrup_nr = b - t - 1;                                             \
-    if (b > height || t >= b || scrup_nr < 1)                           \
+    if (b > height || t >= b || scrup_nr < 1)                                \
       return;                                                           \
     [ts ts_scrollUp: t:b  rows: scrup_nr  save: indirect_scroll];       \
     [ts ts_putChar: video_erase_char  count: width*scrup_nr  offset: width*(b-scrup_nr)]; \
-  } while (0)
+    } while (0)
 
 #define scrdown(foo,t,b,nr) do {                                        \
     unsigned int step;                                                  \
@@ -398,8 +417,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     [ts ts_putChar: video_erase_char  count: nr  at: width-nr:y];       \
   } while (0)
 
-
--(void) _csi_at: (unsigned int)nr
+- (void)_csi_at:(unsigned int)nr
 {
   if (nr > width - x)
     nr = width - x;
@@ -408,7 +426,9 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   insert_char(currcons, nr);
 }
 
--(void) _csi_L: (unsigned int)nr
+//-------------------------------------------------------------------------------
+// ESC [ L	IL	Insert the indicated # of blank lines.
+- (void)_csi_L:(unsigned int)nr
 {
   if (nr > height - y)
     nr = height - y;
@@ -418,7 +438,9 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   scrdown(foo,y,bottom,nr);
 }
 
--(void) _csi_P: (unsigned int)nr
+//-------------------------------------------------------------------------------
+// ESC [ P	DCH	Delete the indicated # of characters on current line.
+- (void)_csi_P:(unsigned int)nr
 {
   if (nr > width - x)
     nr = width - x;
@@ -427,7 +449,8 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   delete_char(currcons, nr);
 }
 
--(void) _csi_M: (unsigned int)nr
+// ESC [ M	DL	Delete the indicated # of lines.
+- (void)_csi_M:(unsigned int)nr
 {
   if (nr > height - y)
     nr = height - y;
@@ -439,9 +462,8 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 #define set_kbd(foo)
 #define clr_kbd(foo)
 
-
-#define set_mode(foo,on_off) [self _set_mode: on_off]
--(void) _set_mode: (int) on_off
+#define set_mode(foo,on_off) [self _set_mode:on_off]
+- (void)_set_mode:(int) on_off
 {
   int i;
 
@@ -522,9 +544,8 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       }
 }
 
-
 #define setterm_command(foo) [self _setterm_command]
--(void) _setterm_command
+- (void)_setterm_command
 {
   NSDebugLLog(@"term",@"ignore _setterm_command %i\n",par[0]);
   /* TODO: will need _update_attr */
@@ -1204,7 +1225,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 /*
   Translates '\n' to '\r' when sending.
 */
--(void) sendString: (NSString *)s
+- (void)sendString:(NSString *)s
 {
   int l=[s length];
   unsigned int ucs;
@@ -1257,7 +1278,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     }
 }
 
--(void) handleKeyEvent: (NSEvent *)e
+- (void)handleKeyEvent:(NSEvent *)e
 {
   NSString *s=[e charactersIgnoringModifiers];
   unsigned int mask=[e modifierFlags];
