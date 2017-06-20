@@ -18,11 +18,11 @@ typedef struct
   unsigned char attr;
   /*
     bits
-    0,1   00000011 - 0x0-2 - intensity
+    0,1   00000011 - 0x0-2 - intensity (0:half-bright 1:normal 2:bold)
     2     00000100 - 0x4   - underline
     3     00001000 - 0x8   - reverse
     4     00010000 - 0x10  - blink
-    5     00100000 - 0x20  -  unused
+    5     00100000 - 0x20  - unused
     6     01000000 - 0x40  - used as a selected flag internally
     7     10000000 - 0x80  - used as a dirty flag internally
   */
