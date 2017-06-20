@@ -425,6 +425,8 @@ static void set_background(NSGraphicsContext *gc,
   float bh, bs, bb;    // hue, saturation, brightness
   int   bg = color>>4;
 
+  fprintf(stderr, "set_background: %i >>4 %i\n", color, bg);
+
   // if (bg == 0)
   //   {
   //     if (blackOnWhite)
@@ -448,63 +450,70 @@ static void set_background(NSGraphicsContext *gc,
   DPSsethsbcolor(gc,bh,bs,bb);
 }
 
+// color values:
+// 	0 - black		"\e[30"
+// 	1 - blue		"\e[34"
+// 	2 - green		"\e[32"
+// 	3 - cyan		"\e[36"
+// 	4 - red		"\e[31"
+// 	5 - magenta		"\e[35"
+// 	6 - yellow		"\e[33"
+// 	7 - lightgray	"\e[37"
+// intensity values:
+// 	0 - half-bright
+// 	1 - normal
+// 	2 - bold
 static void set_foreground(NSGraphicsContext *gc,
                            unsigned char color,
-                           unsigned char in,
+                           unsigned char intensity,
                            BOOL blackOnWhite)
 {
   int   fg = color;
   float h,s,b;
 
-  // if (color == 0 || color == 7)
-  //   {
-  //     DPSsethsbcolor(gc,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
-  //     return;
-  //   }
+  fprintf(stderr, "set_foreground: %i intensity: %i\n", color, intensity);
   
   if (blackOnWhite)
     {
-      // if (color == 0)
-      //   { fg = 7; in = 2; }  // Black becomes white
-      // else if (color == 7)
-      //   { fg = 0; in = 1; }  // White becomes black
-      // else
-      //   in = 3;              // Other colors are saturated
-      in = 1;
+      if (color == 0)
+        fg = 7;  // Black becomes white
+      else if (color == 7)
+        fg = 0;  // White becomes black
+      else
+        intensity = 0;  // Other colors are saturated
     }
 
   if (fg == 7)
     {
-      
     }
   else if (fg >= 8)
     {
-      in++;
+      intensity++;
       fg -= 8;
     }
 
   // Brightness
   if (fg == 0)
     {
-      if (in == 2)
-        b = 0.4;
+      if (intensity == 2)
+        b = 0.9;
       else
         b = 0.0;
     }
-  else if (in == 0)
-    b = 0.6;
-  else if (in == 1)
+  else if (intensity == 2) // bold
+    b = 1.0;
+  else if (intensity == 0) // half-bright
     b = 0.8;
-  else
+  else              // normal
     b = 1.0;
 
   // Hue
-  h=col_h[fg]/360.0;
+  h = col_h[fg]/360.0;
 
   // Saturation
   s = col_s[fg];
-  if (in == 2)
-    s *= 0.75;
+  // if (in == 2)
+  //   s *= 0.5;
 
   DPSsethsbcolor(gc,h,s,b);
 }
@@ -604,7 +613,7 @@ static void set_foreground(NSGraphicsContext *gc,
       DPSrectfill(cur,r.origin.x,a,r.size.width,b-a);
   }
   
-  /*  draw vertical black line next after scrollbar */
+  /* draw vertical black line next after scrollbar */
   if ((max_scrollback > 0) && (r.origin.x < border_x))
     {
       DPSsetgray(cur,0.0);
@@ -612,20 +621,20 @@ static void set_foreground(NSGraphicsContext *gc,
     }
 
   /* figure out what character cells might need redrawing */
-  r.origin.x-=border_x;
-  r.origin.y-=border_y;
+  r.origin.x -= border_x;
+  r.origin.y -= border_y;
 
   x0=floor(r.origin.x/fx);
   x1=ceil((r.origin.x+r.size.width)/fx);
-  if (x0<0) x0=0;
-  if (x1>=sx) x1=sx;
+  if (x0 < 0) x0 = 0;
+  if (x1 >= sx) x1 = sx;
 
-  y1=floor(r.origin.y/fy);
-  y0=ceil((r.origin.y+r.size.height)/fy);
-  y0=sy-y0;
-  y1=sy-y1;
-  if (y0<0) y0=0;
-  if (y1>=sy) y1=sy;
+  y1 = floor(r.origin.y/fy);
+  y0 = ceil((r.origin.y+r.size.height)/fy);
+  y0 = sy - y0;
+  y1 = sy - y1;
+  if (y0 < 0) y0 = 0;
+  if (y1 >= sy) y1 = sy;
 
   NSDebugLLog(@"draw",@"dirty (%i %i)-(%i %i)\n",x0,y0,x1,y1);
 
@@ -643,20 +652,20 @@ static void set_foreground(NSGraphicsContext *gc,
     /* Fill the background of dirty cells. Since the background doesn't
        change that often, runs of dirty cells with the same background color
        are combined and drawn with a single rectfill. */
-    l_color=0;
-    l_attr=0;
-    // set_foreground(cur,l_color,l_attr,blackOnWhite);
+    l_color = 0;
+    l_attr = 0;
     DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
     blackOnWhite = (WIN_BG_B > 0.5) ? YES : NO;
-    for (iy=y0;iy<y1;iy++)
+    //set_foreground(cur,l_color,l_attr,blackOnWhite);
+    for (iy = y0; iy < y1; iy++)
       {
-        ry=iy+current_scroll;
-        if (ry>=0)
-          ch=&SCREEN(x0,ry);
+        ry = iy + current_scroll;
+        if (ry >= 0)
+          ch = &SCREEN(x0,ry);
         else
-          ch=&sbuf[x0+(max_scrollback+ry)*sx];
+          ch = &sbuf[x0 + (max_scrollback + ry) * sx];
 
-        scr_y=(sy-1-iy)*fy+border_y;
+        scr_y = (sy - 1 - iy) * fy + border_y;
         /*
           #define R(scr_x,scr_y,fx,fy) \
           DPSgsave(cur); \
@@ -670,30 +679,30 @@ static void set_foreground(NSGraphicsContext *gc,
 
 #define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
         
-//------------------- BACKGROUND ---------------------------------------------
-        start_x=-1;
-        for (ix=x0;ix<x1;ix++,ch++)
+//------------------- BACKGROUND ------------------------------------------------
+        start_x = -1;
+        for (ix = x0; ix < x1; ix++,ch++)
           {
             if (!draw_all && !(ch->attr&0x80)) // no need to draw && not dirty
               {
-                if (start_x!=-1)
+                if (start_x != -1)
                   {
-                    scr_x=ix*fx+border_x;
+                    scr_x = ix * fx + border_x;
                     R(start_x,scr_y,scr_x-start_x,fy);
-                    start_x=-1;
+                    start_x = -1;
                   }
                 continue;
               }
 
-            scr_x=ix*fx+border_x;
+            scr_x = ix * fx + border_x;
 
-            if (ch->attr&0x8) //----------------------------------------- INVERSE
+            if (ch->attr & 0x8) //----------------------------------------- INVERSE
               {
-                color = ch->color&0x0f;
+                color = ch->color & 0x0f;
                 if (ch->attr&0x40) color ^= 0x0f;
                 if (color != l_color || (ch->attr&0x03) != l_attr)
                   {
-                    if (start_x!=-1)
+                    if (start_x != -1)
                       {
                         R(start_x,scr_y,scr_x-start_x,fy);
                         start_x=scr_x;
@@ -717,8 +726,8 @@ static void set_foreground(NSGraphicsContext *gc,
               }
             else //------------------------------------------------------- NORMAL
               {
-                color = ch->color&0xf0;
-                if (ch->attr&0x40) color ^= 0xf0; // selected // 11110000
+                color = ch->color & 0xf0;
+                if (ch->attr & 0x40) color ^= 0xf0; // selected // 11110000
                 if (color != l_color)
                   {
                     if (start_x != -1)
@@ -729,9 +738,9 @@ static void set_foreground(NSGraphicsContext *gc,
 
                     l_color = color;
                     l_attr = ch->attr&0x03;
-                    if ((ch->color&background) == 0) // default onsole color
+                    if ((ch->color & background) == 0) // default console color
                       {
-                        if (ch->attr&0x40) // selection
+                        if (ch->attr & 0x40) // selection
                           DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
                         else //-------------- normal
                           DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
@@ -743,68 +752,71 @@ static void set_foreground(NSGraphicsContext *gc,
                   }
               }
 
-            if (start_x==-1)
-              start_x=scr_x;
+            if (start_x == -1)
+              start_x = scr_x;
           }
 
-        if (start_x!=-1)
+        if (start_x != -1)
           {
-            scr_x=ix*fx+border_x;
+            scr_x = ix * fx + border_x;
             R(start_x,scr_y,scr_x-start_x,fy);
           }
       }
 //------------------- CHARACTERS ---------------------------------------------
     /* now draw any dirty characters */
-    for (iy=y0;iy<y1;iy++)
+    for (iy = y0; iy < y1; iy++)
       {
-        ry=iy+current_scroll;
-        if (ry>=0)
-          ch=&SCREEN(x0,ry);
+        ry = iy + current_scroll;
+        if (ry >= 0)
+          ch = &SCREEN(x0,ry);
         else
-          ch=&sbuf[x0+(max_scrollback+ry)*sx];
+          ch = &sbuf[x0 + (max_scrollback + ry) * sx];
 
-        scr_y=(sy-1-iy)*fy+border_y;
+        scr_y = (sy - 1 - iy) * fy + border_y;
 
-        for (ix=x0;ix<x1;ix++,ch++)
+        for (ix = x0; ix < x1; ix++,ch++)
           {
-            if (!draw_all && !(ch->attr&0x80))
+            if (!draw_all && !(ch->attr & 0x80))
               continue;
 
-            ch->attr&=0x7f;
+            ch->attr &= 0x7f;
 
-            scr_x=ix*fx+border_x;
+            scr_x = ix * fx + border_x;
 
             /* ~1700 cycles/change */
             if (ch->attr&0x02 || (ch->ch!=0 && ch->ch!=32))
               {
                 if (ch->attr&0x8) //------------------------------------- INVERSE
                   {
-                    color=ch->color&0xf0;
+                    color = ch->color & 0xf0;
                     if (ch->attr&0x40) color^=0xf0;
                     if (color!=l_color)
                       {
-                        l_color=color;
-                        l_attr=ch->attr&0x03;
+                        l_color = color;
+                        l_attr = ch->attr & 0x03;
                         DPSsethsbcolor(cur,INV_FG_H,INV_FG_S,INV_FG_B);
                         // set_background(cur,l_color,l_attr,blackOnWhite);
                       }
                   }
                 else //--------------------------------------------------- NORMAL
                   {
-                    color=ch->color&0x0f;
-                    // if (ch->attr&0x40) color^=0x0f;
+                    color = ch->color & 0x0f;
+                    if (ch->attr & 0x40) color^=0x0f;
                     if (color!=l_color || (ch->attr&0x03)!=l_attr)
                       {
-                        l_color=color;
-                        l_attr=ch->attr&0x03;
+                        l_color = color;
+                        l_attr = ch->attr & 0x03;
+                        fprintf(stderr, "character color: %i intensity: %i\n",
+                                ch->color, ch->attr);
                         // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        // if (ch->color>>4 == 0) // no BG color was set
-                        // if (!(ch->color & foreground))
-                        if ((ch->color&foreground) == 7 &&
-                            (ch->color&background) == 0)
+                        // if (ch->color>>4 == 0)      // no BG color was set
+                        if (!(ch->color & foreground)) // no FG color was set
+                        // if ((ch->color&foreground) == 7 &&
+                        //     (ch->color&background) == 0)
                           DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                         else              // terminal set character color
-                          set_foreground(cur,l_color,l_attr,blackOnWhite);
+                          set_foreground(cur,l_color,l_attr,
+                                         (blackOnWhite && (ch->color>>4 == 0)));
                       }
                   }
               }
