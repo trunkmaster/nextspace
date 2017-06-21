@@ -353,16 +353,15 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       if ((par[i] >= 30 && par[i] <= 37))
         {
           fprintf(stderr, "TParser foreground color: %i\n", par[i]);
-          // color = color_table[par[i]-30] | foreground;
-          color = (color_table[par[i]-30]) | background;
+          color = color_table[par[i]-30] | background;
         }
-      else if (par[i] >= 90 && par[i] <= 97)
-        {
-          fprintf(stderr, "TParser foreground color: %i\n", par[i]);
-          color = (color_table[par[i]-90]) | background;
-          intensity = 0;
-          fprintf(stderr, "TParser char color: %i\n", color);
-        }
+      // else if (par[i] >= 90 && par[i] <= 97)
+      //   {
+      //     fprintf(stderr, "TParser foreground color: %i\n", par[i]);
+      //     color = (color_table[par[i]-90]) | background;
+      //     intensity = 0;
+      //     fprintf(stderr, "TParser char color: %i\n", color);
+      //   }
       else if (par[i] >= 40 && par[i] <= 47)
         {
           fprintf(stderr, "TParser background color: %i\n", par[i]);

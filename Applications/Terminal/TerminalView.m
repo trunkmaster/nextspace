@@ -414,8 +414,8 @@ static CGFloat INV_FG_B;
 
 static int total_draw=0;
 
-static const float col_h[8]={  0,240,120,180,  0,300, 60,  0};
-static const float col_s[8]={0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0};
+static const float col_h[8]={  0, 240, 120, 180,   0, 300,  30,   0};
+static const float col_s[8]={0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
 
 static void set_background(NSGraphicsContext *gc,
                            unsigned char color,
@@ -455,10 +455,10 @@ static void set_background(NSGraphicsContext *gc,
 // 	1 - blue		"\e[34"
 // 	2 - green		"\e[32"
 // 	3 - cyan		"\e[36"
-// 	4 - red		"\e[31"
+// 	4 - red			"\e[31"
 // 	5 - magenta		"\e[35"
 // 	6 - yellow		"\e[33"
-// 	7 - lightgray	"\e[37"
+// 	7 - lightgray		"\e[37"
 // intensity values:
 // 	0 - half-bright
 // 	1 - normal
@@ -472,7 +472,10 @@ static void set_foreground(NSGraphicsContext *gc,
   float h,s,b;
 
   fprintf(stderr, "set_foreground: %i intensity: %i\n", color, intensity);
-  
+
+  // Selection?
+  if (fg >= 8) fg -= 8;
+
   if (blackOnWhite)
     {
       if (color == 0)
@@ -483,20 +486,11 @@ static void set_foreground(NSGraphicsContext *gc,
         intensity = 0;  // Other colors are saturated
     }
 
-  if (fg == 7)
-    {
-    }
-  else if (fg >= 8)
-    {
-      intensity++;
-      fg -= 8;
-    }
-
   // Brightness
   if (fg == 0)
     {
       if (intensity == 2)
-        b = 0.9;
+        b = 0.0;
       else
         b = 0.0;
     }
@@ -512,8 +506,8 @@ static void set_foreground(NSGraphicsContext *gc,
 
   // Saturation
   s = col_s[fg];
-  // if (in == 2)
-  //   s *= 0.5;
+  if (intensity == 2)
+    s *= 0.5;
 
   DPSsethsbcolor(gc,h,s,b);
 }
@@ -657,6 +651,10 @@ static void set_foreground(NSGraphicsContext *gc,
     DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
     blackOnWhite = (WIN_BG_B > 0.5) ? YES : NO;
     //set_foreground(cur,l_color,l_attr,blackOnWhite);
+    
+#define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
+        
+//------------------- BACKGROUND ------------------------------------------------
     for (iy = y0; iy < y1; iy++)
       {
         ry = iy + current_scroll;
@@ -666,33 +664,21 @@ static void set_foreground(NSGraphicsContext *gc,
           ch = &sbuf[x0 + (max_scrollback + ry) * sx];
 
         scr_y = (sy - 1 - iy) * fy + border_y;
-        /*
-          #define R(scr_x,scr_y,fx,fy) \
-          DPSgsave(cur); \
-          DPSsetgray(cur,0.0); \
-          DPSrectfill(cur,scr_x,scr_y,fx,fy); \
-          DPSgrestore(cur); \
-          DPSrectstroke(cur,scr_x,scr_y,fx,fy); \
-        */
 
         /* ~400 cycles/cell on average */
-
-#define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
-        
-//------------------- BACKGROUND ------------------------------------------------
         start_x = -1;
         for (ix = x0; ix < x1; ix++,ch++)
           {
-            if (!draw_all && !(ch->attr&0x80)) // no need to draw && not dirty
-              {
-                if (start_x != -1)
-                  {
-                    scr_x = ix * fx + border_x;
-                    R(start_x,scr_y,scr_x-start_x,fy);
-                    start_x = -1;
-                  }
-                continue;
-              }
+            // if (!draw_all && !(ch->attr&0x80)) // no need to draw && not dirty
+            //   {
+            //     if (start_x != -1)
+            //       {
+            //         scr_x = ix * fx + border_x;
+            //         R(start_x,scr_y,scr_x-start_x,fy);
+            //         start_x = -1;
+            //       }
+            //     continue;
+            //   }
 
             scr_x = ix * fx + border_x;
 
@@ -738,7 +724,14 @@ static void set_foreground(NSGraphicsContext *gc,
 
                     l_color = color;
                     l_attr = ch->attr&0x03;
+                    fprintf(stderr,
+                            "'%c' background color: %i (%i) intensity: %i FG: %i BG: %i\n",
+          ch->ch, ch->color, l_color, l_attr,
+          (ch->color & 0x0f),
+          ch->color>>4);
+
                     if ((ch->color & background) == 0) // default console color
+                    // if (color == 0) // default console color
                       {
                         if (ch->attr & 0x40) // selection
                           DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
@@ -762,7 +755,7 @@ static void set_foreground(NSGraphicsContext *gc,
             R(start_x,scr_y,scr_x-start_x,fy);
           }
       }
-//------------------- CHARACTERS ---------------------------------------------
+//------------------- CHARACTERS ------------------------------------------------
     /* now draw any dirty characters */
     for (iy = y0; iy < y1; iy++)
       {
@@ -776,17 +769,18 @@ static void set_foreground(NSGraphicsContext *gc,
 
         for (ix = x0; ix < x1; ix++,ch++)
           {
-            if (!draw_all && !(ch->attr & 0x80))
-              continue;
+            // if (!draw_all && !(ch->attr & 0x80))
+            //   continue;
 
             ch->attr &= 0x7f;
 
             scr_x = ix * fx + border_x;
 
+            //--- FOREGROUND
             /* ~1700 cycles/change */
             if (ch->attr&0x02 || (ch->ch!=0 && ch->ch!=32))
               {
-                if (ch->attr&0x8) //------------------------------------- INVERSE
+                if (ch->attr & 0x8) //----------------------------------- INVERSE
                   {
                     color = ch->color & 0xf0;
                     if (ch->attr&0x40) color^=0xf0;
@@ -801,87 +795,88 @@ static void set_foreground(NSGraphicsContext *gc,
                 else //--------------------------------------------------- NORMAL
                   {
                     color = ch->color & 0x0f;
-                    if (ch->attr & 0x40) color^=0x0f;
-                    if (color!=l_color || (ch->attr&0x03)!=l_attr)
+                    if (ch->attr & 0x40) color ^= 0x0f;
+                    if (color != l_color || (ch->attr & 0x03) != l_attr)
                       {
                         l_color = color;
                         l_attr = ch->attr & 0x03;
-                        fprintf(stderr, "character color: %i intensity: %i\n",
-                                ch->color, ch->attr);
+                        fprintf(stderr, "'%c' character color: %i (%i) intensity: %i FG: %i BG: %i\n",
+                                ch->ch, ch->color, l_color, ch->attr,
+                                (ch->color & 0x0f), ch->color>>4);
                         // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        // if (ch->color>>4 == 0)      // no BG color was set
-                        if (!(ch->color & foreground)) // no FG color was set
-                        // if ((ch->color&foreground) == 7 &&
-                        //     (ch->color&background) == 0)
-                          DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
-                        else              // terminal set character color
-                          set_foreground(cur,l_color,l_attr,
-                                         (blackOnWhite && (ch->color>>4 == 0)));
+                        // (ch->color>>4 == 0)      // no BG color was set
+                        // if (!(ch->color & foreground))  // no FG color was set
+                        // if (((ch->color & foreground) == 7) &&
+                        //      (ch->color>>4 == 0))
+                        //   DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+                        // else              // terminal set character color
+                        set_foreground(cur, l_color, l_attr, (ch->color>>4) == 0);
                       }
                   }
               }
 
-            /* font and encoding */
+            //--- FONTS & ENCODING
             if (ch->ch!=0 && ch->ch!=32 && ch->ch!=MULTI_CELL_GLYPH)
               {
                 total_draw++;
-                if ((ch->attr&3)==2)
+                if ((ch->attr&3) == 2)
                   {
-                    encoding=boldFont_encoding;
-                    f=boldFont;
+                    encoding = boldFont_encoding;
+                    f = boldFont;
                   }
                 else
                   {
-                    encoding=font_encoding;
-                    f=font;
+                    encoding = font_encoding;
+                    f = font;
                   }
-                if (f!=current_font)
+                if (f != current_font)
                   {
                     /* ~190 cycles/change */
                     [f set];
-                    current_font=f;
+                    current_font = f;
                   }
 
                 /* we short-circuit utf8 for performance with back-art */
                 /* TODO: short-circuit latin1 too? */
-                if (encoding==NSUTF8StringEncoding)
+                if (encoding == NSUTF8StringEncoding)
                   {
-                    unichar uch=ch->ch;
-                    if (uch>=0x800)
+                    unichar uch = ch->ch;
+                    if (uch >= 0x800)
                       {
-                        buf[2]=(uch&0x3f)|0x80;
-                        uch>>=6;
-                        buf[1]=(uch&0x3f)|0x80;
-                        uch>>=6;
-                        buf[0]=(uch&0x0f)|0xe0;
-                        buf[3]=0;
+                        buf[2] = (uch & 0x3f) | 0x80;
+                        uch >>= 6;
+                        buf[1] = (uch & 0x3f) | 0x80;
+                        uch >>= 6;
+                        buf[0] = (uch & 0x0f) | 0xe0;
+                        buf[3] = 0;
                       }
-                    else if (uch>=0x80)
+                    else if (uch >= 0x80)
                       {
-                        buf[1]=(uch&0x3f)|0x80;
-                        uch>>=6;
-                        buf[0]=(uch&0x1f)|0xc0;
-                        buf[2]=0;
+                        buf[1] = (uch & 0x3f) | 0x80;
+                        uch >>= 6;
+                        buf[0] = (uch & 0x1f) | 0xc0;
+                        buf[2] = 0;
                       }
                     else
                       {
-                        buf[0]=uch;
-                        buf[1]=0;
+                        buf[0] = uch;
+                        buf[1] = 0;
                       }
                   }
                 else
                   {
-                    unichar uch=ch->ch;
-                    if (uch<=0x80)
+                    unichar uch = ch->ch;
+                    if (uch <= 0x80)
                       {
-                        buf[0]=uch;
-                        buf[1]=0;
+                        buf[0] = uch;
+                        buf[1] = 0;
                       }
                     else
                       {
-                        unsigned char *pbuf=(unsigned char *)buf;
-                        unsigned int dlen=sizeof(buf)-1;
-                        GSFromUnicode(&pbuf,&dlen,&uch,1,encoding,NULL,GSUniTerminate);
+                        unsigned char *pbuf = (unsigned char *)buf;
+                        unsigned int dlen = sizeof(buf) - 1;
+                        GSFromUnicode(&pbuf,&dlen,&uch,1,encoding,NULL,
+                                      GSUniTerminate);
                       }
                   }
                 /* ~580 cycles */
@@ -905,13 +900,14 @@ static void set_foreground(NSGraphicsContext *gc,
                 /* ~3800 cycles total */
               }
 
-            /* underline */
-            if (ch->attr&0x4)
+            //--- UNDERLINE
+            if (ch->attr & 0x4)
               DPSrectfill(cur,scr_x,scr_y,fx,1);
           }
       }
   }
 
+//------------------- CURSOR ----------------------------------------------------
   if (draw_cursor)
     {
       float x,y;

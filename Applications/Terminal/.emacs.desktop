@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jun 20 19:33:00 2017
+;; Created Wed Jun 21 03:15:54 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -21,20 +21,20 @@
   "/Users/me/Developer/nextspace/Applications/Terminal/TerminalView.m"
   "TerminalView.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode)
-  21504
-  '(21485 nil)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  25799
+  '(21040 nil)
   nil
   nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/TerminalParser_Linux.m"
   "TerminalParser_Linux.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  11158
-  '(11224 nil)
+  10914
+  '(10491 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
@@ -44,7 +44,7 @@
   "Terminal.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  473
+  400
   '(821 nil)
   nil
   nil
