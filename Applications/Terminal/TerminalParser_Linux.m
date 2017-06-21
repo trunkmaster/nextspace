@@ -330,6 +330,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       intensity = 1;
       break;
     case 24:	// underline off
+      fprintf(stderr, "TParser: underline off\n");
       underline = 0;
       break;
     case 25:	// blink off
