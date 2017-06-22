@@ -303,11 +303,11 @@ NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
 @end
 
 @interface TerminalView (input) <RunLoopEvents>
--(void)closeProgram;
--(int)runShell;
--(int)runProgram: (NSString *)path
-   withArguments: (NSArray *)args
-    initialInput: (NSString *)d;
+- (void)closeProgram;
+- (int)runShell;
+- (int)runProgram:(NSString *)path
+    withArguments:(NSArray *)args
+     initialInput:(NSString *)d;
 @end
 
 
@@ -387,41 +387,6 @@ NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
   pending_scroll=0;
 }
 
-static NSColor    *cursorColor;
-static NSUInteger cursorStyle;
-// Window:Background
-static CGFloat WIN_BG_H;
-static CGFloat WIN_BG_S;
-static CGFloat WIN_BG_B;
-
-// Window:Selection
-static CGFloat WIN_SEL_H;
-static CGFloat WIN_SEL_S;
-static CGFloat WIN_SEL_B;
-
-// Text:Normal
-static CGFloat TEXT_NORM_H;
-static CGFloat TEXT_NORM_S;
-static CGFloat TEXT_NORM_B;
-
-// Text:Blink
-static CGFloat TEXT_BLINK_H;
-static CGFloat TEXT_BLINK_S;
-static CGFloat TEXT_BLINK_B;
-
-// Text:Bold
-static CGFloat TEXT_BOLD_H;
-static CGFloat TEXT_BOLD_S;
-static CGFloat TEXT_BOLD_B;
-
-// Text:Inverse
-static CGFloat INV_BG_H;
-static CGFloat INV_BG_S;
-static CGFloat INV_BG_B;
-static CGFloat INV_FG_H;
-static CGFloat INV_FG_S;
-static CGFloat INV_FG_B;
-
 static int total_draw=0;
 
 static const float col_h[8]={  0, 240, 120, 180,   0, 300,  30,   0};
@@ -437,25 +402,16 @@ static void set_background(NSGraphicsContext *gc,
 
   fprintf(stderr, "set_background: %i >>4 %i\n", color, bg);
 
-  // if (bg == 0)
-  //   {
-  //     if (blackOnWhite)
-  //       bb = 1.0;
-  //     else
-  //       bb=0.0;
-  //   }
-  // else
-  if (bg>=8)
-    {
-      bg-=8,bb=1.0;
-    }
-  else
-    {
-      bb=0.6;
-    }
+  if (bg >= 8)
+      bg -= 8;
   
-  bs=col_s[bg];
-  bh=col_h[bg]/360.0;
+  if (bg == 0)
+    bb = blackOnWhite ? 1.0 : 0.0;
+  else
+    bb = 0.6;
+  
+  bs = col_s[bg];
+  bh = col_h[bg] / 360.0;
 
   DPSsethsbcolor(gc,bh,bs,bb);
 }
@@ -479,7 +435,7 @@ static void set_foreground(NSGraphicsContext *gc,
                            BOOL blackOnWhite)
 {
   int   fg = color;
-  float h,s,b;
+  float h,s,b = 1.0;
 
   fprintf(stderr, "set_foreground: %i intensity: %i invert:%s \n",
           color, intensity, blackOnWhite ? "YES" : "NO");
@@ -488,29 +444,24 @@ static void set_foreground(NSGraphicsContext *gc,
   if (fg >= 8) fg -= 8;
 
   // Colors
+  // Here 'blackOnWhite' was set to YES if:
+  // - window background is light;
+  // - FG == BG
+  // - FG == 7, BG == 0
   if (blackOnWhite)
     {
       if (color == 0) // Black becomes white
-        {
-          fg = 7;
-        }
+        fg = 7;
       else if (color == 7)  // White becomes black
-        {
-          fg = 0;
-        }
+        fg = 0;
       else  // Other colors are saturated
-        {
-          intensity = 0;
-        }
+        intensity = 0;
     }
-  
-  // Brightness
-  b = 1.0;
-  
-  if (fg == 7)
+  else if (fg == 7)
     b = 0.6;
   
-  if (fg == 0) // block not matter what intensity is
+  // Brightness
+  if (fg == 0) // black not matter what intensity is
     b = 0.0;
   else if (intensity == 2) // bold
     b = 1.0;
@@ -746,7 +697,7 @@ static void set_foreground(NSGraphicsContext *gc,
                       }
                     else
                       {
-                        set_foreground(cur,l_color,l_attr,blackOnWhite);
+                        set_background(cur,l_color,l_attr,blackOnWhite);
                       }
                   }
               }
@@ -769,7 +720,9 @@ static void set_foreground(NSGraphicsContext *gc,
                             ch->ch, ch->color, l_color, l_attr,
                             (ch->color & 0x0f), ch->color>>4);
 
-                    if ((ch->color>>4) == 0) // BG == 0 or was not set
+                    // if ((ch->color>>4) == 0) // BG == 0 or was not set
+                    if (((ch->color & 0x0f) == (ch->color>>4)) ||
+                        (ch->color>>4) == 15)
                       {
                         if (ch->attr & 0x40) // selection BG
                           DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
@@ -778,7 +731,7 @@ static void set_foreground(NSGraphicsContext *gc,
                       }
                     else
                       {
-                        set_background(cur,l_color,l_attr,blackOnWhite);
+                        set_background(cur,l_color,l_attr,NO);
                       }
                   }
               }
@@ -874,15 +827,15 @@ static void set_foreground(NSGraphicsContext *gc,
                         // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         // if (((ch->color & foreground) == 7) ||
                         //     ((ch->color & foreground) == (ch->color>>4)))
-                        if ((ch->color & foreground) == (ch->color>>4))
-                          { // selection FG is the same as normal
+                        if (((ch->color & 0x0f) == 15 && (ch->color>>4) > 0) ||
+                            (ch->color & 0x0f) == (ch->color>>4))
+                          { // selection FG is the same as normal or default
                             DPSsethsbcolor(cur,
                                            TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                           }
-                        else // invert if BG == black and we have light BG
+                        else
                           {
-                            set_foreground(cur, l_color, l_attr,
-                                           blackOnWhite && (ch->color>>4 == 0));
+                            set_foreground(cur, l_color, l_attr, NO);
                           }
                       }
                   }
