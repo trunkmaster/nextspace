@@ -12,21 +12,21 @@
 		courbd.ttf
 	    );
 	    Name = Bold;
-	    PostScriptName = CourierBold;
+	    PostScriptName = Courier-Bold;
 	},
 	{
 	    Files = (
 		courbi.ttf
 	    );
 	    Name = BoldOblique;
-	    PostScriptName = CourierBoldOblique;
+	    PostScriptName = Courier-BoldOblique;
 	},
 	{
 	    Files = (
 		couri.ttf
 	    );
 	    Name = Oblique;
-	    PostScriptName = CourierOblique;
+	    PostScriptName = Courier-Oblique;
 	}
     );
 }

@@ -1420,7 +1420,8 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   width=w;
   height=h;
 
-  color=def_color=0x07;
+  // color=def_color=0x07;
+  color=def_color=0xff;
   [self _reset_terminal];
 
   iconv_charset=[[Defaults characterSet] cString];

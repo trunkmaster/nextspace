@@ -1,10 +1,11 @@
 /*
-copyright 2002 Alexander Malmberg <alexander@malmberg.org>
+  copyright 2002 Alexander Malmberg <alexander@malmberg.org>
+  Copyright 2015-2017 Sergii Stoian <stoyan255@gmail.com>
 
-This file is a part of Terminal.app. Terminal.app is free software; you
-can redistribute it and/or modify it under the terms of the GNU General
-Public License as published by the Free Software Foundation; version 2
-of the License. See COPYING or main.m for more information.
+  This file is a part of Terminal.app. Terminal.app is free software; you
+  can redistribute it and/or modify it under the terms of the GNU General
+  Public License as published by the Free Software Foundation; version 2
+  of the License. See COPYING or main.m for more information.
 */
 
 #ifndef TerminalView_h
@@ -19,7 +20,7 @@ extern NSString
 	*TerminalViewBecameNonIdleNotification,
 	*TerminalViewTitleDidChangeNotification;
 
-#include "Terminal.h"
+#import "Terminal.h"
 #import "TerminalParser_Linux.h"
 
 /* TODO: this is slightly ugly */
@@ -34,44 +35,47 @@ struct selection_range
 
 @interface TerminalView : NSView
 {
-  NSString *programPath;
-  NSString *childTerminalName;
-  int      childPID;
+  NSString	*title_window;
+  NSString	*title_miniwindow;
   
-  NSScroller *scroller;
-  BOOL       scroll_bottom_on_input;
+  NSString	*programPath;
+  NSString	*childTerminalName;
+  int		childPID;
 
-  NSFont *font,*boldFont;
-  int    font_encoding, boldFont_encoding;
-  BOOL   use_multi_cell_glyphs;
-  float  fx,fy,fx0,fy0;
+  int		master_fd;
+  NSFileHandle	*masterFDHandle;
+  
+  NSObject<TerminalParser> *tp;
 
-  BOOL blackOnWhite;
+  NSFont	*font;
+  NSFont	*boldFont;
+  int		font_encoding;
+  int		boldFont_encoding;
+  BOOL		use_multi_cell_glyphs;
+  float		fx,fy,fx0,fy0;
 
-  struct
-    {
-      int x0,y0,x1,y1;
-    } dirty;
+  BOOL		blackOnWhite;
 
-  int master_fd;
-  NSFileHandle *masterFDHandle;
+  struct {
+    int x0,y0,x1,y1;
+  } dirty;
 
-  unsigned char *write_buf;
-  int write_buf_len,write_buf_size;
+  NSScroller	*scroller;
+  BOOL		scroll_bottom_on_input;
 
-  int max_scrollback;
-  int sb_length, current_scroll;
-  screen_char_t *sbuf;
+  unsigned char	*write_buf;
+  int		write_buf_len, write_buf_size;
 
-  int sx,sy;
+  int		max_scrollback;
+  int		sb_length;
+  int		current_scroll;
+  screen_char_t	*sbuf;
+
+  int		sx,sy;
   screen_char_t *screen;
 
-  int cursor_x,cursor_y;
+  int cursor_x, cursor_y;
   int current_x,current_y;
-
-  NSString *title_window,*title_miniwindow;
-
-  NSObject<TerminalParser> *tp;
 
   int  draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */
   BOOL draw_cursor;
@@ -88,12 +92,48 @@ struct selection_range
 
   BOOL ignore_resize;
 
-  float border_x,border_y;
+  float border_x, border_y;
+
+  // Colors
+  NSColor	*cursorColor;
+  NSUInteger	cursorStyle;
+  // Window:Background
+  CGFloat	WIN_BG_H;
+  CGFloat	WIN_BG_S;
+  CGFloat	WIN_BG_B;
+
+  // Window:Selection
+  CGFloat	WIN_SEL_H;
+  CGFloat	WIN_SEL_S;
+  CGFloat	WIN_SEL_B;
+
+  // Text:Normal
+  CGFloat	TEXT_NORM_H;
+  CGFloat	TEXT_NORM_S;
+  CGFloat	TEXT_NORM_B;
+
+  // Text:Blink
+  CGFloat	TEXT_BLINK_H;
+  CGFloat	TEXT_BLINK_S;
+  CGFloat	TEXT_BLINK_B;
+
+  // Text:Bold
+  CGFloat	TEXT_BOLD_H;
+  CGFloat	TEXT_BOLD_S;
+  CGFloat	TEXT_BOLD_B;
+
+  // Text:Inverse
+  CGFloat	INV_BG_H;
+  CGFloat	INV_BG_S;
+  CGFloat	INV_BG_B;
+  CGFloat	INV_FG_H;
+  CGFloat	INV_FG_S;
+  CGFloat	INV_FG_B;
 }
 
 - (void)setIgnoreResize:(BOOL)ignore;
 
-- (void)setBorder: (float)x : (float)y;
+- (void)setBorder:(float)x :(float)y;
 
 - (void)setFont:(NSFont *)aFont;
 - (void)setBoldFont:(NSFont *)bFont;
