@@ -404,6 +404,16 @@ static CGFloat TEXT_NORM_H;
 static CGFloat TEXT_NORM_S;
 static CGFloat TEXT_NORM_B;
 
+// Text:Blink
+static CGFloat TEXT_BLINK_H;
+static CGFloat TEXT_BLINK_S;
+static CGFloat TEXT_BLINK_B;
+
+// Text:Bold
+static CGFloat TEXT_BOLD_H;
+static CGFloat TEXT_BOLD_S;
+static CGFloat TEXT_BOLD_B;
+
 // Text:Inverse
 static CGFloat INV_BG_H;
 static CGFloat INV_BG_S;
@@ -471,7 +481,8 @@ static void set_foreground(NSGraphicsContext *gc,
   int   fg = color;
   float h,s,b;
 
-  fprintf(stderr, "set_foreground: %i intensity: %i\n", color, intensity);
+  fprintf(stderr, "set_foreground: %i intensity: %i invert:%s \n",
+          color, intensity, blackOnWhite ? "YES" : "NO");
 
   // Selection?
   if (fg >= 8) fg -= 8;
@@ -479,29 +490,32 @@ static void set_foreground(NSGraphicsContext *gc,
   // Colors
   if (blackOnWhite)
     {
-      if (color == 0)
-        fg = 7;  // Black becomes white
-      else if (color == 7)
-        fg = 0;  // White becomes black
-      else
-        intensity = 0;  // Other colors are saturated
+      if (color == 0) // Black becomes white
+        {
+          fg = 7;
+        }
+      else if (color == 7)  // White becomes black
+        {
+          fg = 0;
+        }
+      else  // Other colors are saturated
+        {
+          intensity = 0;
+        }
     }
-
   
   // Brightness
-  if (fg == 0)
-    {
-      if (intensity == 2)
-        b = 0.0;
-      else
-        b = 0.0;
-    }
+  b = 1.0;
+  
+  if (fg == 7)
+    b = 0.6;
+  
+  if (fg == 0) // block not matter what intensity is
+    b = 0.0;
   else if (intensity == 2) // bold
     b = 1.0;
   else if (intensity == 0) // half-bright
-    b = 0.8;
-  else                     // normal
-    b = 1.0;
+    b *= 0.8;
 
   // Hue
   h = col_h[fg]/360.0;
@@ -510,20 +524,13 @@ static void set_foreground(NSGraphicsContext *gc,
   s = col_s[fg];
   if (intensity == 2)
     s *= 0.5;
-
-  // if (fg == 7)
-  //   {
-  //     h = TEXT_NORM_H;
-  //     s = TEXT_NORM_S;
-  //     b = TEXT_NORM_B;
-  //   }
   
   DPSsethsbcolor(gc, h, s, b);
 }
 
 - (void)updateColors:(NSDictionary *)prefs
 {
-  NSColor *winBG, *winSel, *winText, *invBG, *invFG;
+  NSColor *winBG, *winSel, *winText, *winBlink, *winBold, *invBG, *invFG;
 
   if (prefs)
     cursorColor = [[Defaults
@@ -557,7 +564,25 @@ static void set_foreground(NSGraphicsContext *gc,
   TEXT_NORM_H = [winText hueComponent];
   TEXT_NORM_S = [winText saturationComponent];
   TEXT_NORM_B = [winText brightnessComponent];
-  
+
+  if (prefs)
+    winBlink = [Defaults
+               colorFromDescription:[prefs objectForKey:TextBlinkColorKey]];
+  else
+    winBlink = [Defaults textBlinkColor];
+  TEXT_BLINK_H = [winText hueComponent];
+  TEXT_BLINK_S = [winText saturationComponent];
+  TEXT_BLINK_B = [winText brightnessComponent];
+
+  if (prefs)
+    winBold = [Defaults
+               colorFromDescription:[prefs objectForKey:TextBoldColorKey]];
+  else
+    winBold = [Defaults textBoldColor];
+  TEXT_BOLD_H = [winText hueComponent];
+  TEXT_BOLD_S = [winText saturationComponent];
+  TEXT_BOLD_B = [winText brightnessComponent];
+
   if (prefs)
     invBG = [Defaults
                colorFromDescription:[prefs objectForKey:TextInverseBGColorKey]];
@@ -678,16 +703,17 @@ static void set_foreground(NSGraphicsContext *gc,
         start_x = -1;
         for (ix = x0; ix < x1; ix++,ch++)
           {
-            // if (!draw_all && !(ch->attr&0x80)) // no need to draw && not dirty
-            //   {
-            //     if (start_x != -1)
-            //       {
-            //         scr_x = ix * fx + border_x;
-            //         R(start_x,scr_y,scr_x-start_x,fy);
-            //         start_x = -1;
-            //       }
-            //     continue;
-            //   }
+            /* no need to draw && not dirty */
+            if (!draw_all && !(ch->attr&0x80))
+              {
+                if (start_x != -1)
+                  {
+                    scr_x = ix * fx + border_x;
+                    R(start_x,scr_y,scr_x-start_x,fy);
+                    start_x = -1;
+                  }
+                continue;
+              }
 
             scr_x = ix * fx + border_x;
 
@@ -705,12 +731,17 @@ static void set_foreground(NSGraphicsContext *gc,
 
                     l_color=color;
                     l_attr=ch->attr&0x03;
+                    fprintf(stderr,
+                            "'%c' inverse BG char color: %i (%i) intensity: %i"
+                            " FG: %i BG: %i\n",
+                            ch->ch, ch->color, l_color, ch->attr,
+                            (ch->color & 0x0f), ch->color>>4);
                     if ((ch->color&foreground) == 7 ||
                         (ch->color&foreground) == 0)
                       {
-                        if (ch->attr & 0x40) // selection
-                          DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
-                        else
+                        // if (ch->attr & 0x40) // selection
+                        //   DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
+                        // else
                           DPSsethsbcolor(cur,INV_BG_H,INV_BG_S,INV_BG_B);
                       }
                     else
@@ -776,8 +807,9 @@ static void set_foreground(NSGraphicsContext *gc,
 
         for (ix = x0; ix < x1; ix++,ch++)
           {
-            // if (!draw_all && !(ch->attr & 0x80))
-            //   continue;
+            /* no need to draw && not dirty */
+            if (!draw_all && !(ch->attr & 0x80))
+              continue;
 
             ch->attr &= 0x7f;
 
@@ -799,7 +831,9 @@ static void set_foreground(NSGraphicsContext *gc,
                       {
                         l_color = color;
                         l_attr = ch->attr & 0x03;
-                        fprintf(stderr, "'%c' character color: %i (%i) intensity: %i FG: %i BG: %i\n",
+                        fprintf(stderr,
+                                "'%c' inverse char color: %i (%i) intensity: %i"
+                                " FG: %i BG: %i\n",
                                 ch->ch, ch->color, l_color, ch->attr,
                                 (ch->color & 0x0f), ch->color>>4);
                         
@@ -833,20 +867,22 @@ static void set_foreground(NSGraphicsContext *gc,
                         l_color = color;
                         l_attr = ch->attr & 0x03;
                         fprintf(stderr,
-                                "'%c' char color: %i (%i) attrs: %i FG: %i BG: %i\n",
+                                "'%c' char color: %i (%i) attrs: %i"
+                                " FG: %i BG: %i\n",
                                 ch->ch, ch->color, l_color, ch->attr,
                                 (ch->color & 0x0f), ch->color>>4);
-                        // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         // if (((ch->color & foreground) == 7) ||
                         //     ((ch->color & foreground) == (ch->color>>4)))
                         if ((ch->color & foreground) == (ch->color>>4))
                           { // selection FG is the same as normal
-                            DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+                            DPSsethsbcolor(cur,
+                                           TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                           }
-                        else
+                        else // invert if BG == black and we have light BG
                           {
                             set_foreground(cur, l_color, l_attr,
-                                           (blackOnWhite && (ch->color>>4 == 0)));
+                                           blackOnWhite && (ch->color>>4 == 0));
                           }
                       }
                   }
