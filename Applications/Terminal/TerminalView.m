@@ -1,6 +1,8 @@
 /*
-  copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
-  forkpty replacement, 2005-2008 Riccardo Mottola <rmottola@users.sf.net>
+  Copyright 
+  2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+  2005-2008, forkpty replacement,Riccardo Mottola <rmottola@users.sf.net>
+  2015-2017 Sergii Stoian <stoyan255@gmail.com>
 
   This file is a part of Terminal.app. Terminal.app is free software; you
   can redistribute it and/or modify it under the terms of the GNU General
@@ -509,7 +511,7 @@ static void set_foreground(NSGraphicsContext *gc,
   
   if (prefs)
     winText = [Defaults
-               colorFromDescription:[prefs objectForKey:TextNormalColorKey]];
+                colorFromDescription:[prefs objectForKey:TextNormalColorKey]];
   else
     winText = [Defaults textNormalColor];
   TEXT_NORM_H = [winText hueComponent];
@@ -518,21 +520,21 @@ static void set_foreground(NSGraphicsContext *gc,
 
   if (prefs)
     winBlink = [Defaults
-               colorFromDescription:[prefs objectForKey:TextBlinkColorKey]];
+                 colorFromDescription:[prefs objectForKey:TextBlinkColorKey]];
   else
     winBlink = [Defaults textBlinkColor];
-  TEXT_BLINK_H = [winText hueComponent];
-  TEXT_BLINK_S = [winText saturationComponent];
-  TEXT_BLINK_B = [winText brightnessComponent];
+  TEXT_BLINK_H = [winBlink hueComponent];
+  TEXT_BLINK_S = [winBlink saturationComponent];
+  TEXT_BLINK_B = [winBlink brightnessComponent];
 
   if (prefs)
     winBold = [Defaults
                colorFromDescription:[prefs objectForKey:TextBoldColorKey]];
   else
     winBold = [Defaults textBoldColor];
-  TEXT_BOLD_H = [winText hueComponent];
-  TEXT_BOLD_S = [winText saturationComponent];
-  TEXT_BOLD_B = [winText brightnessComponent];
+  TEXT_BOLD_H = [winBold hueComponent];
+  TEXT_BOLD_S = [winBold saturationComponent];
+  TEXT_BOLD_B = [winBold brightnessComponent];
 
   if (prefs)
     invBG = [Defaults
@@ -638,7 +640,16 @@ static void set_foreground(NSGraphicsContext *gc,
     //set_foreground(cur,l_color,l_attr,blackOnWhite);
     
 #define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
-        
+
+    /* Legend:
+      l_color - last used color in loop
+      color - local temporary color varialble
+      ch->color - 8-bit color value which holds: FG (4 lower) and BG (4 higher)
+      ch->color>>4   - returns BG color in range 0-15
+      ch->color&0xf0 - returns BG color in range 16-255
+      ch->color&0x0f - returns FG color in range 0-15
+    */
+    
 //------------------- BACKGROUND ------------------------------------------------
     for (iy = y0; iy < y1; iy++)
       {
@@ -683,34 +694,36 @@ static void set_foreground(NSGraphicsContext *gc,
 
                     l_color = color;
                     l_attr = ch->attr & 0x03;
+                    
                     fprintf(stderr,
-                            "'%c' inverse BG char color: %i (%i) intensity: %i"
+                            "'%c' BG INVERSE color: %i (%i) attrs: %i (in:%i sel:%i)"
                             " FG: %i BG: %i\n",
-                            ch->ch, ch->color, l_color, ch->attr,
-                            (ch->color>>4), (ch->color & 0x0f));
+                            ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
+                            (ch->color & 0x0f), (ch->color>>4));
+                    
                     if (ch->attr & 0x40) // selection
                       {
+                        fprintf(stderr, "'%c' \tBG INVERSE: setting WIN_SEL\n", ch->ch);
                         DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
                       }
-                    else if ((ch->color & 0x0f) == 15 ||
-                             (ch->color & 0x0f) == 15)
+                    else if ((ch->color & 0x0f) == 15 &&  // default foreground
+                             (ch->color & 0xf0) == 240)   // default background
                       {
-                        // if (ch->attr & 0x40) // selection
-                        //   DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
-                        // else
-                          DPSsethsbcolor(cur,INV_BG_H,INV_BG_S,INV_BG_B);
+                        fprintf(stderr, "'%c' \tBG INVERSE: setting INV_BG\n", ch->ch);
+                        DPSsethsbcolor(cur,INV_BG_H,INV_BG_S,INV_BG_B);
                       }
                     else
-                      {
-                        set_foreground(cur,l_color,l_attr,blackOnWhite);
+                      { // example: 'top' command column header background
+                        set_foreground(cur,l_color,l_attr,NO);
                       }
                   }
               }
             else //---------------------------------------------------- BG NORMAL
               {
                 color = ch->color & 0xf0;
-                if (ch->attr & 0x40) color ^= 0xf0; // selected // 11110000
-                if (color != l_color || (ch->attr & 0x03) != l_attr)
+                if (ch->attr & 0x40) color ^= 0xf0; // selected
+                
+                if (color != l_color || (ch->attr & 0x03) != l_attr || (ch->attr & 0x40))
                   {
                     if (start_x != -1)
                       {
@@ -719,20 +732,27 @@ static void set_foreground(NSGraphicsContext *gc,
                       }
 
                     l_color = color;
-                    l_attr = ch->attr&0x03;
-                    fprintf(stderr,
-                            "'%c' background color: %i (%i) intensity: %i FG: %i BG: %i\n",
-                            ch->ch, ch->color, l_color, l_attr,
-                            (ch->color & 0x0f), ch->color>>4);
+                    l_attr = ch->attr & 0x03;
 
-                    // if ((ch->color>>4) == 0) // BG == 0 or was not set
+                    fprintf(stderr,
+                            "'%c' BG NORMAL color: %i (%i) attrs: %i (in:%i sel:%i)"
+                            " FG: %i BG: %i\n",
+                            ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
+                             (ch->color & 0x0f), (ch->color>>4));
+                    
                     if (((ch->color & 0x0f) == (ch->color>>4)) ||
                         (ch->color>>4) == 15)
                       {
                         if (ch->attr & 0x40) // selection BG
-                          DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
+                          {
+                            fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_SEL\n", ch->ch);
+                            DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
+                          }
                         else // normal BG
-                          DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
+                          {
+                            fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_BG\n", ch->ch);
+                            DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
+                          }
                       }
                     else
                       {
@@ -775,7 +795,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
             //--- FOREGROUND
             /* ~1700 cycles/change */
-            if (ch->attr & 0x02 || (ch->ch!=0 && ch->ch!=32))
+            if ((ch->attr & 0x02) || (ch->ch!=0 && ch->ch!=32) || (ch->attr & 0x40))
               {
                 if (ch->attr & 0x8) //-------------------------------- FG INVERSE
                   {
@@ -787,58 +807,82 @@ static void set_foreground(NSGraphicsContext *gc,
                         l_color = color;
                         l_attr = ch->attr & 0x03;
                         fprintf(stderr,
-                                "'%c' inverse char color: %i (%i) intensity: %i"
+                                "'%c' FG INVERSE color: %i (%i) attrs: %i (in:%i sel:%i)"
                                 " FG: %i BG: %i\n",
-                                ch->ch, ch->color, l_color, ch->attr,
-                                (ch->color>>4), ch->color & 0x0f);
+                                ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
+                                (ch->color & 0x0f), (ch->color>>4));
                         
                         if (ch->attr & 0x40) // selection FG
-                          DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+                          {
+                            fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
+                            DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+                          }
                         else
-                          DPSsethsbcolor(cur,INV_FG_H,INV_FG_S,INV_FG_B);
-                        //set_background(cur,l_color,l_attr,blackOnWhite);
+                          {
+                            fprintf(stderr, "'%c' \tFG INVERSE: setting INV_FG\n", ch->ch);
+                            DPSsethsbcolor(cur,INV_FG_H,INV_FG_S,INV_FG_B);
+                            //set_background(cur,l_color,l_attr,blackOnWhite);
+                          }
                       }
                   }
                 else if (ch->attr & 0x10) //---------------------------- FG BLINK
                   {
-                    fprintf(stderr, "blink\n");
-                    color = ch->color & 0x0f;
-                    if (ch->attr & 0x40) color ^= 0x0f;
-                    // if (color != l_color)
-                    //   {
-                        fprintf(stderr, "blink-blink\n");
-                        l_color = color;
-                        l_attr = ch->attr & 0x03;
-                        DPSsethsbcolor(cur,360,1.0,1.0);
-                        // set_background(cur,l_color,l_attr,blackOnWhite);
-                      // }
+                    fprintf(stderr, "'%c' blink\n", ch->ch);
+                    if ((ch->attr & 0x10) != l_attr)
+                      {
+                        l_attr = ch->attr & 0x10;
+                        DPSsethsbcolor(cur,TEXT_BLINK_H,TEXT_BLINK_S,TEXT_BLINK_B);
+                      }
                   }
                 else //------------------------------------------------ FG NORMAL
                   {
                     color = ch->color & 0x0f;
                     if (ch->attr & 0x40) color ^= 0x0f;
                     
-                    if (color != l_color || (ch->attr & 0x03) != l_attr)
+                    if (color != l_color
+                        || (ch->attr & 0x03) != l_attr
+                        || (ch->attr & 0x40))
                       {
                         l_color = color;
                         l_attr = ch->attr & 0x03;
                         
                         fprintf(stderr,
-                                "'%c' char color: %i (%i) attrs: %i"
+                                "'%c' FG NORMAL color: %i (%i) attrs: %i (in:%i sel:%i)"
                                 " FG: %i BG: %i\n",
-                                ch->ch, ch->color, l_color, ch->attr,
-                                (ch->color & 0x0f), ch->color>>4);
+                                ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
+                                (ch->color & 0x0f), (ch->color>>4));
+
+                        // FG is white (7 or 15) and BG is not black (0)
+                        // if (((ch->color | 0x0f) == 15 && (ch->color>>4) > 0) ||
+                        //     (ch->color & 0x0f) == (ch->color>>4))
+                        //   { // selection FG is the same as normal or default
+                        //     fprintf(stderr, "'%c' \tFG NORMAL: setting TEXT_NORM\n", ch->ch);
+                        //     DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+                        //   }
+                        // else
+                        // if ((ch->color>>4) == 15 && (ch->color & 0x0f) == 0)
                         
-                        if (((ch->color & 0x0f) == 15 && (ch->color>>4) > 0) ||
-                            (ch->color & 0x0f) == (ch->color>>4))
-                          { // selection FG is the same as normal or default
+                        // Defaults
+                        // 15 on 15 - defaults
+                        // 15 on 3  - FG default, BG special
+                        // 15 on 0  - FG default, BG special
+                        // 0 on 15  - FG special, BG default. Should we treat it as 15/15?
+                        //
+                        // 7 on 0
+                        // 7 on 3
+                        // 7, 15, 0, !0
+                        
+                        if (color == 0 && (ch->color>>4) == 15)
+                          color = 15;
+                        
+                        if (color == 15 && (ch->color>>4) != 0)
+                          {
+                            fprintf(stderr, "'%c' \tFG NORMAL: setting TEXT_NORM\n", ch->ch);
                             DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                           }
-                        else if ((ch->color>>4) == 15 && (ch->color & 0x0f) == 0)
-                          DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                         else
                           {
-                            set_foreground(cur, l_color, l_attr, NO);
+                            set_foreground(cur, l_color, l_attr, blackOnWhite && (ch->color>>4) == 15);
                           }
                       }
                   }
@@ -977,14 +1021,14 @@ static void set_foreground(NSGraphicsContext *gc,
 
 - (void)setNeedsDisplayInRect:(NSRect)r
 {
-  draw_all=2;
+  draw_all = 2;
   [super setNeedsDisplayInRect:r];
 }
 
 - (void)setNeedsLazyDisplayInRect:(NSRect)r
 {
-  if (draw_all==1)
-    draw_all=0;
+  if (draw_all == 1)
+    draw_all = 0;
   [super setNeedsDisplayInRect:r];
 }
 
