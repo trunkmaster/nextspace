@@ -330,7 +330,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       intensity = 1;
       break;
     case 24:	// underline off
-      fprintf(stderr, "TParser: underline off\n");
+      // fprintf(stderr, "TParser: underline off\n");
       underline = 0;
       break;
     case 25:	// blink off
@@ -344,35 +344,23 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       underline = 1;
       break;
     case 39:	// set underscore off, set default foreground color
-      color = (def_color & 0x0f) | foreground;
+      color = (def_color & 0x0f) | background;
       underline = 0;
       break;
     case 49:	// set default background color
-      color = (def_color & 0xf0) | background;
+      color = (def_color & 0xf0) | foreground;
       break;
     default:
       if ((par[i] >= 30 && par[i] <= 37))
         {
-          fprintf(stderr, "TParser foreground color: %i\n", par[i]);
+          // fprintf(stderr, "TParser: foreground color: %i\n", par[i]);
           color = color_table[par[i]-30] | background;
         }
-      // else if (par[i] >= 90 && par[i] <= 97)
-      //   {
-      //     fprintf(stderr, "TParser foreground color: %i\n", par[i]);
-      //     color = (color_table[par[i]-90]) | background;
-      //     intensity = 0;
-      //     fprintf(stderr, "TParser char color: %i\n", color);
-      //   }
       else if (par[i] >= 40 && par[i] <= 47)
         {
-          fprintf(stderr, "TParser background color: %i\n", par[i]);
+          // fprintf(stderr, "TParser: background color: %i\n", par[i]);
           color = (color_table[par[i]-40]<<4) | foreground;
         }
-      // else if (par[i] >= 100 && par[i] <= 107)
-      //   {
-      //     fprintf(stderr, "TParser background color: %i\n", par[i]);
-      //     // color = (color_table[par[i]-90]<<4) | foreground;
-      //   }
       break;
     }
 
