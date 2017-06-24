@@ -389,7 +389,7 @@ NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
   pending_scroll=0;
 }
 
-static int total_draw=0;
+static int total_draw = 0;
 
 static const float col_h[8]={  0, 240, 120, 180,   0, 300,  30,   0};
 static const float col_s[8]={0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
@@ -402,7 +402,7 @@ static void set_background(NSGraphicsContext *gc,
   float bh, bs, bb;    // hue, saturation, brightness
   int   bg = color>>4;
 
-  fprintf(stderr, "set_background: %i >>4 %i\n", color, bg);
+  // fprintf(stderr, "set_background: %i >>4 %i\n", color, bg);
 
   if (bg >= 8)
       bg -= 8;
@@ -439,10 +439,9 @@ static void set_foreground(NSGraphicsContext *gc,
   int   fg = color;
   float h,s,b = 1.0;
 
-  fprintf(stderr, "set_foreground: %i intensity: %i invert:%s \n",
-          color, intensity, blackOnWhite ? "YES" : "NO");
+  // fprintf(stderr, "set_foreground: %i intensity: %i invert:%s \n",
+  //         color, intensity, blackOnWhite ? "YES" : "NO");
 
-  // Selection?
   if (fg >= 8) fg -= 8;
 
   // Colors
@@ -628,7 +627,7 @@ static void set_foreground(NSGraphicsContext *gc,
     float scr_y,scr_x,start_x;
 
     /* setting the color is slow, so we try to avoid it */
-    unsigned char l_color,l_attr,color;
+    unsigned char l_color,color,l_attr;
 
     /* Fill the background of dirty cells. Since the background doesn't
        change that often, runs of dirty cells with the same background color
@@ -637,7 +636,6 @@ static void set_foreground(NSGraphicsContext *gc,
     l_attr = 0;
     DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
     blackOnWhite = (WIN_BG_B > 0.5) ? YES : NO;
-    //set_foreground(cur,l_color,l_attr,blackOnWhite);
     
 #define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
 
@@ -682,9 +680,9 @@ static void set_foreground(NSGraphicsContext *gc,
             if (ch->attr & 0x8) //------------------------------------ BG INVERSE
               {
                 color = ch->color & 0x0f;
-                if (ch->attr & 0x40) color ^= 0x0f;
+                if (ch->attr & 0x40) color ^= 0xf0;
                 
-                if (color != l_color || (ch->attr & 0x03) != l_attr)
+                if (color != l_color || ch->attr != l_attr)
                   {
                     if (start_x != -1)
                       {
@@ -693,28 +691,30 @@ static void set_foreground(NSGraphicsContext *gc,
                       }
 
                     l_color = color;
-                    l_attr = ch->attr & 0x03;
+                    l_attr = ch->attr;
                     
-                    fprintf(stderr,
-                            "'%c' BG INVERSE color: %i (%i) attrs: %i (in:%i sel:%i)"
-                            " FG: %i BG: %i\n",
-                            ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
-                            (ch->color & 0x0f), (ch->color>>4));
+                    // fprintf(stderr,
+                    //         "'%c' BG INVERSE color: %i (%i)"
+                    //         " attrs: %i (in:%i sel:%i)"
+                    //         " FG: %i BG: %i\n",
+                    //         ch->ch, ch->color, l_color,
+                    //         ch->attr, l_attr & 0x03, l_attr & 0x40,
+                    //         (ch->color & 0x0f), (ch->color>>4));
                     
                     if (ch->attr & 0x40) // selection
                       {
-                        fprintf(stderr, "'%c' \tBG INVERSE: setting WIN_SEL\n", ch->ch);
+                        // fprintf(stderr, "'%c' \tBG INVERSE: setting WIN_SEL\n", ch->ch);
                         DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
                       }
                     else if ((ch->color & 0x0f) == 15 &&  // default foreground
-                             (ch->color & 0xf0) == 240)   // default background
+                             (ch->color>>4) == 15)        // default background
                       {
-                        fprintf(stderr, "'%c' \tBG INVERSE: setting INV_BG\n", ch->ch);
+                        // fprintf(stderr, "'%c' \tBG INVERSE: setting INV_BG\n", ch->ch);
                         DPSsethsbcolor(cur,INV_BG_H,INV_BG_S,INV_BG_B);
                       }
                     else
                       { // example: 'top' command column header background
-                        set_foreground(cur,l_color,l_attr,NO);
+                        set_foreground(cur, l_color, l_attr & 0x03, NO);
                       }
                   }
               }
@@ -723,7 +723,7 @@ static void set_foreground(NSGraphicsContext *gc,
                 color = ch->color & 0xf0;
                 if (ch->attr & 0x40) color ^= 0xf0; // selected
                 
-                if (color != l_color || (ch->attr & 0x03) != l_attr || (ch->attr & 0x40))
+                if (color != l_color || ch->attr != l_attr)
                   {
                     if (start_x != -1)
                       {
@@ -732,31 +732,35 @@ static void set_foreground(NSGraphicsContext *gc,
                       }
 
                     l_color = color;
-                    l_attr = ch->attr & 0x03;
+                    l_attr = ch->attr;
 
-                    fprintf(stderr,
-                            "'%c' BG NORMAL color: %i (%i) attrs: %i (in:%i sel:%i)"
-                            " FG: %i BG: %i\n",
-                            ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
-                             (ch->color & 0x0f), (ch->color>>4));
-                    
-                    if (((ch->color & 0x0f) == (ch->color>>4)) ||
-                        (ch->color>>4) == 15)
+                    // fprintf(stderr,
+                    //         "'%c' BG NORMAL color: %i (%i) attrs: %i (in:%i sel:%i)"
+                    //         " FG: %i BG: %i\n",
+                    //         ch->ch, ch->color, l_color, ch->attr, l_attr & 0x03,(ch->attr & 0x40),
+                    //         (ch->color & 0x0f), (ch->color>>4));
+
+                    // Window was resized and added empty chars have no attributes.
+                    // Set FG and BG to default values
+                    if ((color == 0 && (ch->color>>4) == 0) && ch->ch == 0)
                       {
-                        if (ch->attr & 0x40) // selection BG
-                          {
-                            fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_SEL\n", ch->ch);
-                            DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
-                          }
-                        else // normal BG
-                          {
-                            fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_BG\n", ch->ch);
-                            DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
-                          }
+                        ch->color = 255; // default FG/BG
+                        l_color = color = ch->color & 0xf0;
+                      }
+                    
+                    if (ch->attr & 0x40) // selection BG
+                      {
+                        // fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_SEL\n", ch->ch);
+                        DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
+                      }
+                    else if ((ch->color>>4) == 15) // default BG
+                      {
+                        // fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_BG\n", ch->ch);
+                        DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
                       }
                     else
                       {
-                        set_background(cur,l_color,l_attr,NO);
+                        set_background(cur, l_color, l_attr & 0x03, NO);
                       }
                   }
               }
@@ -789,49 +793,58 @@ static void set_foreground(NSGraphicsContext *gc,
             if (!draw_all && !(ch->attr & 0x80))
               continue;
 
+            // Clear dirty bit
             ch->attr &= 0x7f;
 
             scr_x = ix * fx + border_x;
 
             //--- FOREGROUND
             /* ~1700 cycles/change */
-            if ((ch->attr & 0x02) || (ch->ch!=0 && ch->ch!=32) || (ch->attr & 0x40))
+            if ((ch->attr & 0x02) || (ch->ch!=0 && ch->ch!=32))
               {
                 if (ch->attr & 0x8) //-------------------------------- FG INVERSE
                   {
                     color = ch->color & 0xf0;
-                    if (ch->attr & 0x40) color ^= 0xf0;
+                    if (ch->attr & 0x40) color ^= 0x0f;
                     
-                    if (color != l_color || (ch->attr & 0x03) != l_attr)
+                    if (color != l_color || ch->attr != l_attr)
                       {
                         l_color = color;
-                        l_attr = ch->attr & 0x03;
-                        fprintf(stderr,
-                                "'%c' FG INVERSE color: %i (%i) attrs: %i (in:%i sel:%i)"
-                                " FG: %i BG: %i\n",
-                                ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
-                                (ch->color & 0x0f), (ch->color>>4));
+                        l_attr = ch->attr;
                         
-                        if (ch->attr & 0x40) // selection FG
+                        // fprintf(stderr,
+                        //         "'%c' FG INVERSE color: %i (%i) attrs: %i (in:%i sel:%i)"
+                        //         " FG: %i BG: %i\n",
+                        //         ch->ch, ch->color, l_color, ch->attr, l_attr & 0x03,l_attr & 0x40,
+                        //         (ch->color & 0x0f), (ch->color>>4));
+                        
+                        if (l_attr & 0x40) // selection FG
                           {
-                            fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
+                            // fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
                             DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                           }
                         else
                           {
-                            fprintf(stderr, "'%c' \tFG INVERSE: setting INV_FG\n", ch->ch);
+                            // fprintf(stderr, "'%c' \tFG INVERSE: setting INV_FG\n", ch->ch);
                             DPSsethsbcolor(cur,INV_FG_H,INV_FG_S,INV_FG_B);
-                            //set_background(cur,l_color,l_attr,blackOnWhite);
                           }
                       }
                   }
                 else if (ch->attr & 0x10) //---------------------------- FG BLINK
                   {
-                    fprintf(stderr, "'%c' blink\n", ch->ch);
-                    if ((ch->attr & 0x10) != l_attr)
+                    // fprintf(stderr, "'%c' blink\n", ch->ch);
+                    if (ch->attr != l_attr)
                       {
-                        l_attr = ch->attr & 0x10;
-                        DPSsethsbcolor(cur,TEXT_BLINK_H,TEXT_BLINK_S,TEXT_BLINK_B);
+                        l_attr = ch->attr;
+                        if (l_attr & 0x40) // selection FG
+                          {
+                            // fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
+                            DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+                          }
+                        else
+                          {
+                            DPSsethsbcolor(cur,TEXT_BLINK_H,TEXT_BLINK_S,TEXT_BLINK_B);
+                          }
                       }
                   }
                 else //------------------------------------------------ FG NORMAL
@@ -839,50 +852,27 @@ static void set_foreground(NSGraphicsContext *gc,
                     color = ch->color & 0x0f;
                     if (ch->attr & 0x40) color ^= 0x0f;
                     
-                    if (color != l_color
-                        || (ch->attr & 0x03) != l_attr
-                        || (ch->attr & 0x40))
+                    if (color != l_color || ch->attr != l_attr)
                       {
                         l_color = color;
-                        l_attr = ch->attr & 0x03;
+                        l_attr = ch->attr;
                         
-                        fprintf(stderr,
-                                "'%c' FG NORMAL color: %i (%i) attrs: %i (in:%i sel:%i)"
-                                " FG: %i BG: %i\n",
-                                ch->ch, ch->color, l_color, ch->attr, l_attr,(ch->attr & 0x40),
-                                (ch->color & 0x0f), (ch->color>>4));
+                        // fprintf(stderr,
+                        //         "'%c' FG NORMAL color: %i (%i)"
+                        //         " attrs: %i (in:%i sel:%i)"
+                        //         " FG: %i BG: %i\n",
+                        //         ch->ch, ch->color, l_color,
+                        //         ch->attr, l_attr & 0x03, l_attr & 0x40,
+                        //         (ch->color & 0x0f), (ch->color>>4));
 
-                        // FG is white (7 or 15) and BG is not black (0)
-                        // if (((ch->color | 0x0f) == 15 && (ch->color>>4) > 0) ||
-                        //     (ch->color & 0x0f) == (ch->color>>4))
-                        //   { // selection FG is the same as normal or default
-                        //     fprintf(stderr, "'%c' \tFG NORMAL: setting TEXT_NORM\n", ch->ch);
-                        //     DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
-                        //   }
-                        // else
-                        // if ((ch->color>>4) == 15 && (ch->color & 0x0f) == 0)
-                        
-                        // Defaults
-                        // 15 on 15 - defaults
-                        // 15 on 3  - FG default, BG special
-                        // 15 on 0  - FG default, BG special
-                        // 0 on 15  - FG special, BG default. Should we treat it as 15/15?
-                        //
-                        // 7 on 0
-                        // 7 on 3
-                        // 7, 15, 0, !0
-                        
-                        if (color == 0 && (ch->color>>4) == 15)
-                          color = 15;
-                        
-                        if (color == 15 && (ch->color>>4) != 0)
+                        if (color == 15 || (ch->attr & 0x40))
                           {
-                            fprintf(stderr, "'%c' \tFG NORMAL: setting TEXT_NORM\n", ch->ch);
+                            // fprintf(stderr, "'%c' \tFG NORMAL: setting TEXT_NORM\n", ch->ch);
                             DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                           }
                         else
                           {
-                            set_foreground(cur, l_color, l_attr, blackOnWhite && (ch->color>>4) == 15);
+                            set_foreground(cur, l_color, l_attr & 0x03, NO);
                           }
                       }
                   }
@@ -1037,18 +1027,19 @@ static void set_foreground(NSGraphicsContext *gc,
 {
   int i;
   double t1,t2;
-  NSRect r=[self frame];
-  t1=[NSDate timeIntervalSinceReferenceDate];
-  total_draw=0;
-  for (i=0;i<100;i++)
+  NSRect r = [self frame];
+  
+  t1 = [NSDate timeIntervalSinceReferenceDate];
+  total_draw = 0;
+  for (i = 0; i < 100; i++)
     {
-      draw_all=2;
+      draw_all = 2;
       [self lockFocus];
-      [self drawRect: r];
-      [self unlockFocusNeedsFlush: NO];
+      [self drawRect:r];
+      [self unlockFocusNeedsFlush:NO];
     }
-  t2=[NSDate timeIntervalSinceReferenceDate];
-  t2-=t1;
+  t2 = [NSDate timeIntervalSinceReferenceDate];
+  t2 -= t1;
   fprintf(stderr,"%8.4f  %8.5f/redraw   total_draw=%i\n",t2,t2/i,total_draw);
 }
 
@@ -2457,8 +2448,8 @@ static int handled_mask= (NSDragOperationCopy |
       return;
     }
 
-  if (nsx<1) nsx=1;
-  if (nsy<1) nsy=1;
+  if (nsx < 1) nsx = 1;
+  if (nsy < 1) nsy = 1;
 
   if (nsx==sx && nsy==sy)
     {
@@ -2483,8 +2474,8 @@ static int handled_mask= (NSDragOperationCopy |
         free(nsbuf);
       return;
     }
-  memset(nscreen,0,sizeof(screen_char_t)*nsx*nsy);
-  memset(nsbuf,0,sizeof(screen_char_t)*nsx*max_scrollback);
+  memset(nscreen, 0, sizeof(screen_char_t) * nsx * nsy);
+  memset(nsbuf, 0, sizeof(screen_char_t) * nsx * max_scrollback);
 
   copy_sx=sx;
   if (copy_sx > nsx)
@@ -2512,8 +2503,8 @@ static int handled_mask= (NSDragOperationCopy |
   if (sy <= nsy && sb_length > 0 && line_shift > sb_length)
     line_shift = sb_length;
 
-  // NOTE: this part of code is not very short, but it's clear.
-  // Leave this as is.
+  // NOTE: this part of code is not very short, but it's clear and simple.
+  // Leave it as is.
   for (iy=-sb_length; iy<sy; iy++)
     {
       screen_char_t *src,*dst;
