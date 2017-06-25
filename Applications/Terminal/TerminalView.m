@@ -884,7 +884,10 @@ static void set_foreground(NSGraphicsContext *gc,
                   {
                     encoding = boldFont_encoding;
                     f = boldFont;
-                    DPSsethsbcolor(cur,TEXT_BOLD_H,TEXT_BOLD_S,TEXT_BOLD_B);
+                    if ((ch->color & 0x0f) == 15)
+                      {
+                        DPSsethsbcolor(cur,TEXT_BOLD_H,TEXT_BOLD_S,TEXT_BOLD_B);
+                      }
                   }
                 else
                   {
