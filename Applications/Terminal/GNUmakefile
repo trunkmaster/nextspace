@@ -23,6 +23,8 @@ Terminal_OBJC_FILES = \
 	\
 	Defaults.m\
 	\
+	SetTitlePanel.m\
+	\
 	Services.m \
 	ServicesPrefs.m \
 	ServicesParameterWindowController.m \
@@ -38,7 +40,8 @@ Terminal_OBJC_FILES = \
 Terminal_LANGUAGES = English
 Terminal_LOCALIZED_RESOURCE_FILES = \
 	Localizable.strings \
-	Terminal.gorm
+	Terminal.gorm \
+	SetTitlePanel.gorm
 
 Terminal_RESOURCE_FILES = \
 	Preferences/Preferences.bundle \

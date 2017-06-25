@@ -81,6 +81,10 @@ static Preferences *shared = nil;
     {
       [NSBundle loadNibNamed:@"PreferencesPanel" owner:self];
     }
+  else
+    {
+      [self switchMode:modeBtn];
+    }
   [window makeKeyAndOrderFront:nil];
 }
 
@@ -98,11 +102,11 @@ static Preferences *shared = nil;
 
   module = [prefModules objectForKey:[sender titleOfSelectedItem]];
   mView = [module view];
-  if ([modeContentBox contentView] != mView)
-    {
+  // if ([modeContentBox contentView] != mView)
+  //   {
       [(NSBox *)modeContentBox setContentView:mView];
       [module showDefault:self];
-    }
+    // }
 }
 
 @end

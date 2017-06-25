@@ -336,9 +336,7 @@ NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
 		} \
 	} while (0)
 
-
 #define SCREEN(x,y) (screen[(y)*sx+(x)])
-
 
 /* handle accumulated pending scrolls with a single composite */
 -(void) _handlePendingScroll: (BOOL)lockFocus
@@ -882,10 +880,11 @@ static void set_foreground(NSGraphicsContext *gc,
             if (ch->ch!=0 && ch->ch!=32 && ch->ch!=MULTI_CELL_GLYPH)
               {
                 total_draw++;
-                if ((ch->attr&3) == 2)
+                if ((ch->attr & 3) == 2)
                   {
                     encoding = boldFont_encoding;
                     f = boldFont;
+                    DPSsethsbcolor(cur,TEXT_BOLD_H,TEXT_BOLD_S,TEXT_BOLD_B);
                   }
                 else
                   {

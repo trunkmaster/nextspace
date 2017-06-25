@@ -66,6 +66,11 @@
   [self newWindowWithShell];
 }
 
+- (void)openSetTitlePanel:(id)sender
+{
+  [[Defaults shared] activateSetTitlePanel];
+}
+
 // - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 // {
 //   NSString *menuTitle = [[menuItem menu] title];

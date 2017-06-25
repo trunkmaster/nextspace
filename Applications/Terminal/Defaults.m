@@ -12,6 +12,7 @@
 
 #include "Terminal.h"
 #import "Defaults.h"
+#import "SetTitlePanel.h"
 
 @implementation Defaults
 
@@ -184,6 +185,8 @@ const NSUInteger TitleBarWindowSize  = 1<<4;
 static NSUInteger titleBarElements;
 static NSString   *titleBarCustomTitle;
 
+static SetTitlePanel *setTitlePanel;
+
 @implementation Defaults (TitleBar)
 + (void)readTitleBarDefaults
 {
@@ -207,6 +210,14 @@ static NSString   *titleBarCustomTitle;
 + (NSString *)customTitle
 {
   return titleBarCustomTitle;
+}
+- (void)activateSetTitlePanel
+{
+  if (setTitlePanel == nil)
+    {
+      setTitlePanel = [[SetTitlePanel alloc] init];
+    }
+  [setTitlePanel activatePanel];
 }
 @end
 
