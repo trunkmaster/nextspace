@@ -48,18 +48,14 @@
   return mask;
 }
 
+// Title bar display format:
+// CutomTitle -- ShellPath (DeviceName) WindowSize -- FileName
 - (void)_updateDemoTitleBar
 {
   NSUInteger elementsMask = [self _elementsMaskFromButtons];
   NSString   *title;
   TerminalWindowController *twc = [[NSApp mainWindow] windowController];
 
-  if (elementsMask & TitleBarCustomTitle)
-    {
-      [demoTitleBarField setStringValue:[customTitleField stringValue]];
-      return;
-    }
-  
   title = [NSString new];
   
   if (elementsMask & TitleBarShellPath)
@@ -71,12 +67,25 @@
   if (elementsMask & TitleBarWindowSize)
     title = [title stringByAppendingFormat:@"%@ ", [twc windowSize]];
   
+  if (elementsMask & TitleBarCustomTitle)
+    {
+      if ([title length] == 0)
+        {
+          title = [NSString stringWithFormat:@"%@ ",
+                            [customTitleField stringValue]];
+        }
+      else
+        {
+          title = [NSString stringWithFormat:@"%@ \u2014 %@",
+                            [customTitleField stringValue], title];
+        }
+    }
+
   if (elementsMask & TitleBarFileName)
     {
       if ([title length] == 0)
         {
-          title = [title stringByAppendingFormat:@"Terminal \u2014 %@",
-                         [twc fileName]];
+          title = [NSString stringWithFormat:@"%@", [twc fileName]];
         }
       else
         {
@@ -92,25 +101,13 @@
 {
   if ([customTitleBtn state] == NSOnState)
     {
-      [shellPathBth setEnabled:NO];
-      [deviceNameBtn setEnabled:NO];
-      [filenameBtn setEnabled:NO];
-      [windowSizeBtn setEnabled:NO];
-      
       [customTitleField setEditable:YES];
-      // [customTitleField setBackgroundColor:[NSColor whiteColor]];
       [customTitleField setTextColor:[NSColor blackColor]];
       [[view window] makeFirstResponder:customTitleField];
     }
   else
     {
-      [shellPathBth setEnabled:YES];
-      [deviceNameBtn setEnabled:YES];
-      [filenameBtn setEnabled:YES];
-      [windowSizeBtn setEnabled:YES];
-
       [customTitleField setEditable:NO];
-      // [customTitleField setBackgroundColor:[NSColor lightGrayColor]];
       [customTitleField setTextColor:[NSColor darkGrayColor]];
       [[view window] makeFirstResponder:window];
     }
@@ -135,7 +132,7 @@
 - (void)showDefault:(id)sender
 {
   NSUInteger titleBarMask = [Defaults titleBarElementsMask];
-  NSString   *cutomTitle = [Defaults customTitle];
+  NSString   *customTitle = [Defaults customTitle];
 
   [shellPathBth setState:(titleBarMask & TitleBarShellPath) ? 1 : 0];
   [deviceNameBtn setState:(titleBarMask & TitleBarDeviceName) ? 1 : 0];
@@ -143,8 +140,10 @@
   [windowSizeBtn setState:(titleBarMask & TitleBarWindowSize) ? 1 : 0];
   [customTitleBtn setState:(titleBarMask & TitleBarCustomTitle) ? 1 : 0];
 
-  if (!cutomTitle)
-    [customTitleField setStringValue:@""];
+  if (!customTitle)
+    [customTitleField setStringValue:@"Terminal"];
+  else
+    [customTitleField setStringValue:customTitle];
   
   [self setElements:self];
   [self _updateDemoTitleBar];
@@ -174,7 +173,7 @@
 }
 
 
-// Textfield delegate
+// TextField delegate
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {
   [self _updateDemoTitleBar];

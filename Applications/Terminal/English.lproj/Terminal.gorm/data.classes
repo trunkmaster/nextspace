@@ -3,7 +3,8 @@
     Controller = {
 	Actions = (
 	    "openWindow:",
-	    "openPreferences:"
+	    "openPreferences:",
+	    "openSetTitlePanel:"
 	);
 	Outlets = (
 	);
@@ -12,6 +13,7 @@
     FirstResponder = {
 	Actions = (
 	    "clearBuffer:",
+	    "openSetTitlePanel:",
 	    "openPreferences:",
 	    "openWindow:"
 	);

@@ -3281,12 +3281,12 @@
      Нет, все было из-за того, что для определения ширины шрифта
      использовался метод boundingBoxForFont. Заменил на advancementForGlyph и
      все стало хорошо.
-**** TODO Отображение нормального текста
+**** DONE Отображение нормального текста
     Должно отображаться след. образом:
     - если FG и BG совпадают - из настроек;
     - если цвет BG черный и blackOnWhite - не инвертировать;
     - если цвет BG не черный - заданным цветом;
-**** TODO White on Black
+**** DONE White on Black
      Для приложений, который действительно хотят белое на черном (в режиме,
      когда у терминала режим BlackOnWhite) нужно как-то определять, что
      действительно хочет приложение (MC, top и т.д.).
@@ -3295,25 +3295,48 @@
      Нужно подумать на предмет определения выставленного цвета по-умолчанию.
      Тогда можно будет отличить выставленный White On Black от цветов
      по-умолчанию.
-**** TODO Reverse video
+**** DONE Reverse video
      Если прокручивать 'man man' после строки 9 (отобржается пустая строка),
      у нижней статусной строка (начинается с " Manual page" отображается в
      инвертированном режиме) цвет текста меняется на цвет фона окна.
      Это не видно при белом цвете фона окна, поскольку цвет совпадает с INV_FG.
-**** TODO Пункты меню
-****** TODO Edit->Find
-****** TODO Edit->Select All
-****** TODO Font
-       Устанавливать шрифт и цвета для main window.
-****** TODO Shell->...
-**** TODO Сессии с поддержкой SSH
-**** TODO Выделять bold цветом и шрифтом
-**** TODO Выделять blink цветом, определенным в Preferences
-**** TODO Программа top не рисует заголовок (названия ресурсов процессов)
+**** DONE Выделять blink цветом, определенным в Preferences
+**** DONE Программа top не рисует заголовок (названия ресурсов процессов)
      Скорее всего просто рисуется белым по белому.
+**** DONE Выделять bold цветом и шрифтом
 **** TODO Preferences
+***** TODO При изменении main window считывать настройки с него
+      Похоже нужно пересмотреть подход к хранению и обновлению настроек.
+      Сейчас кажется логичным следующее:
+      - при вызове панели Preferences нужно, чтобы отображались настройки
+        main window;
+      - отображение настроек в UserDefaults должно показываться только по
+        нажатию кнопки "Show Default";
+      - при изменении настройки окна все, кто читает настройки этого окна,
+        должны перечитывать; например:
+        - открыто окно "Preferences-Title Bar", "Custom Title" == Off;
+        - открывает окно "Set Title" и меняем title, нажимаем кнопку "Set";
+        - Preferences делают "Custom Title" == On, меняют значение TextField
+          и обновляют текст sample;
+        - заголовок окна меняется с учетом установок Preferences и нового
+          Title.
+
+      В итоге, обрабатываться должно 2 типа настроек:
+      1. То, что храниться в UerDefaults (класс Defaults).
+      2. То, чем оперирует окно (класс TerminalWindow или Session?). Эти же
+         настройки хранятся в файле сессии *.term. Сохраняются при вызове
+         пункта меню "Shell->Save" и "Shell->Save As...".
+      При вызове "Preferences", "Set Title" настройки запрашиваются у
+      TerminalWindow.
+      При нажатии на кнопку "Set Default" отображаются настройки в 
 ***** TODO При изменении шрифта пересчитывать Bold...
       ...если в Color стоит галочка.
+***** TODO Startup
+****** TODO Auto-Launch
+       Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
+       Нужно только не показывать или прятать окно терминала.
+****** TODO Startup File
+****** DONE When Terminal Starts Up
 ***** DONE Переключение между разделами
       Не должны сбрасываться настройки, которые были изменены?
       В OPENSTEP сбрасываются. Пока оставим и здесь так.
@@ -3358,34 +3381,66 @@
 ****** DONE Font
 ***** DONE Linux Emulation
 ***** DONE Shell
-***** DONE Startup
-****** DONE When Terminal Starts Up
 ***** DONE Colors
 ****** DONE Cursor
 ****** DONE Window
 ****** DONE Text
 ****** DONE Черный шрифт на белом фоне by default
+**** TODO Set Title
+     В целом оперирует с настройкой "Custom Title".
+     Устанавливает параметр "Custom Title" в значение формата: 
+     	<CustomTitle>|Terminal -- <настройки Preferences->Title Bar> -- <FileName>
+     - через меню Shell->Set Title:
+       - устанавливает галочку "Custom Title" в Preferences->Title Bar;
+       - меняет значение текстового поля "Custom Title";
+       - обновляет заголовок текущего окна согласно установленному;
+     - если делать все тоже самое вручную через Preferences->Title Bar
+       заголовок активного окна меняется только после того, как будет нажата
+       кнопка "Set Window".
+**** TODO Sessions
+     Поддержка сессий это:
+     - возможность сохранять текущие настройки в отдельном файле 
+       (меню Shell->Save As...) в файлы ~/Librayry/Terminal/*.term;
+     - возможность выбрать из меню Shell->Open... сохраненные
+       настройки в файлах ~/Library/Terminal;
+     - меню "Shell->Save":
+       - выбрасывает диалог, если сессия не загружена;
+       - сохраняет настройки в файл загруженной сессии.
+     - в настройке Preferences->StartUp->StartUp File указывается загружаемая
+       сессия по-умолчанию;
+     - меню "Shell->New" загружает то, что указано в
+       Preferences->StartUp->StartUp File или настройки по-умолчанию
+**** TODO Keyboard
+     Command, Alternate, Control, Shift.
+     Проверить как передаются сочетания клавиш с этими модификаторами.
+     Сейчас известно что Command и Shift не передаются в любом случае.
 **** TODO Services
 ***** TODO Панель Info->Terminal Services...
 ***** TODO Проверить корректность работы различных параметров
 ***** TODO Проверить типы создания окон (shell, program)
-**** TODO Edit->Find panel
-     Искать по содержимому буфера. Если найдено скроллить к найденому.
+**** TODO Пункты меню
+****** TODO Edit->Find
+       Искать по содержимому буфера. Если найдено скроллить к найденому.
+****** TODO Edit->Select All
+       Выбирать не только видимый текст.
+****** TODO Font
+       Устанавливать шрифт и цвета для main window.
+       Соответственно модифицировать значения в Preferences (Window и Colors).
+****** TODO Shell
+     
 **** TODO Info Panel
      С прокручивающимся текстом в иконке терминала. ;)
 *** TODO > 1.0
-**** TODO Preferences -> Display -> Scrollback Buffer
-     Сейчас значение Unlimited приводит к установке значения lines=1024.
-     Нужно реализовать lazy механизм выделения памяти.
-**** TODO Preferences- > Display -> Wrap lines that are too long
-**** TODO Preferences -> Startup
-***** TODO Auto-Launch
-***** TODO Startup File
-**** TODO Preferences -> Colors -> Cursor -> Blinking
-**** TODO Activity monitor (+Preferences section)
-**** TODO Preferences -> Title Bar -> Xterm Title
-     От программ типа MidnightCommander.
-     [TerminalView ts_setTitle] вызыввается только если TERM=xterm.
+**** TODO Prefernces
+***** TODO Preferences -> Display -> Scrollback Buffer
+      Сейчас значение Unlimited приводит к установке значения lines=1024.
+      Нужно реализовать lazy механизм выделения памяти.
+***** TODO Preferences- > Display -> Wrap lines that are too long
+***** TODO Preferences -> Colors -> Cursor -> Blinking
+***** TODO Activity monitor (+Preferences section)
+***** TODO Preferences -> Title Bar -> Xterm Title
+      От программ типа MidnightCommander.
+      [TerminalView ts_setTitle] вызыввается только если TERM=xterm.
 
 
 ** 5. TextEdit
