@@ -210,14 +210,8 @@ static NSSize winMinimumSize;
 - (void)updateTitleBar:(NSNotification *)n
 {
   NSString *title;
+  NSString *miniTitle = [tView shellPath];
 
-  if (titleBarElementsMask & TitleBarCustomTitle)
-    {
-      [win setTitle:titleBarCustomTitle];
-      [win setMiniwindowTitle:titleBarCustomTitle];
-      return;
-    }
-  
   title = [NSString new];
   
   if (titleBarElementsMask & TitleBarShellPath)
@@ -229,12 +223,25 @@ static NSSize winMinimumSize;
   if (titleBarElementsMask & TitleBarWindowSize)
     title = [title stringByAppendingFormat:@"%@ ", [tView windowSize]];
   
+  if (titleBarElementsMask & TitleBarCustomTitle)
+    {
+      if ([title length] == 0)
+        {
+          title = [NSString stringWithFormat:@"%@ ", titleBarCustomTitle];
+        }
+      else
+        {
+          title = [NSString stringWithFormat:@"%@ \u2014 %@",
+                            titleBarCustomTitle, title];
+        }
+      miniTitle = titleBarCustomTitle;
+    }
+
   if (titleBarElementsMask & TitleBarFileName)
     {
       if ([title length] == 0)
         {
-          title = [title stringByAppendingFormat:@"Terminal \u2014 %@",
-                         [self fileName]];
+          title = [NSString stringWithFormat:@"%@", [self fileName]];
         }
       else
         {
@@ -243,7 +250,7 @@ static NSSize winMinimumSize;
     }
 
   [win setTitle:title];
-  [win setMiniwindowTitle:[tView shellPath]];
+  [win setMiniwindowTitle:miniTitle];
 }
 
 - (void)windowWillClose:(NSNotification *)n
@@ -319,6 +326,7 @@ static NSSize winMinimumSize;
       isWindowSizeChanged = YES;
     }
 
+  // Title Bar:
   if ((value = [prefs objectForKey:TitleBarElementsMaskKey]) &&
       [value intValue] != titleBarElementsMask)
     {
@@ -381,7 +389,6 @@ static NSSize winMinimumSize;
       [tView setNeedsDisplay:YES];
     }
 
-  // Title Bar:
   // Display:
   if ((value = [prefs objectForKey:ScrollBottomOnInputKey]))
     {
@@ -402,7 +409,7 @@ static NSSize winMinimumSize;
 
   //---  For TerminalParser usage only ---
   // TODO: First, GNUstep defaults should have reasonable settings (see
-  // comment in terminal parser about Command, Alternat and Control modifiers).
+  // comment in terminal parser about Command, Alternate and Control modifiers).
   // The best way is to create Preferences' Keyboard panel.
   // if ((value = [prefs objectForKey:CharacterSetKey]))
   // if ((value = [prefs objectForKey:CommandAsMetaKey]))

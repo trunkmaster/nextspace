@@ -73,6 +73,7 @@ extern const NSUInteger TitleBarWindowSize;
 + (void)readTitleBarDefaults;
 + (NSUInteger)titleBarElementsMask;
 + (NSString *)customTitle;
+- (void)activateSetTitlePanel;
 @end
 //----------------------------------------------------------------------------
 // Linux Emulation
