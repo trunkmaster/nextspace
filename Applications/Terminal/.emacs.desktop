@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun Jun 25 03:19:43 2017
+;; Created Mon Jun 26 01:16:30 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,19 +11,173 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("BG NORMAL" "set_background" "fprinf" "blackOnWhite" "set_foreground" "l_attr" "color" "def_color" "TEXT_BLINK" "top" "drawRect" "def_color" "border_x" "boldfontfo" "setFont" "boldFont"))
+(setq search-ring '("titleBarCustomTitle" "titleBarElementsMask" "fileName" "BG NORMAL" "set_background" "fprinf" "blackOnWhite" "set_foreground" "l_attr" "color" "def_color" "TEXT_BLINK" "top" "drawRect" "def_color" "border_x"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Documentation/NEXTSPACE.org" "~/Developer/nextspace/Applications/Terminal/LinuxColors.sh" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/Preferences/GNUmakefile*"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Terminal/SetTitlePanel.h" "~/Developer/nextspace/Applications/Terminal/SetTitlePanel.m" "~/Developer/nextspace/Documentation/NEXTSPACE.org" "~/Developer/nextspace/Applications/Terminal/LinuxColors.sh" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.m"
+  "TerminalWindow.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  11367
+  '(8471 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/TitleBarPrefs.m"
+  "TitleBarPrefs.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  4370
+  '(3566 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/Preferences.m"
+  "Preferences.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  2530
+  '(2521 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.h"
+  "Defaults.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  616
+  '(2001 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.m"
+  "Defaults.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  1606
+  '(5349 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.m"
+  "Controller.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  1343
+  '(1531 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/SetTitlePanel.m"
+  "SetTitlePanel.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  1341
+  '(1341 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/SetTitlePanel.h"
+  "SetTitlePanel.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  1094
+  '(1094 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  '(yas-minor-mode)
+  1189
+  '(669 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.h"
+  "TerminalWindow.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  616
+  '(627 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/TitleBarPrefs.h"
+  "TitleBarPrefs.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  105
+  '(111 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.h"
+  "Controller.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  209
+  '(572 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Label.m"
+  "Label.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  430
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/PrefBox.h"
+  "PrefBox.h"
+  'c-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  433
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/TerminalView.m"
   "TerminalView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode)
-  25670
-  '(25670 nil)
+  6677
+  '(25668 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
@@ -73,77 +227,11 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.m"
-  "Defaults.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  9853
-  '(4464 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Documentation/NEXTSPACE.org"
-  "NEXTSPACE.org"
-  'org-mode
-  '(auto-fill-mode yas-minor-mode)
-  165255
-  '(165871 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix) (truncate-lines . t)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.m"
-  "TerminalWindow.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  1908
-  '(10936 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.h"
-  "Defaults.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  3579
-  '(2480 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.h"
-  "TerminalWindow.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  674
-  '(627 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/Label.h"
   "Label.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
   1
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Label.m"
-  "Label.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  430
   '(nil nil)
   nil
   nil
@@ -181,39 +269,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/GNUmakefile"
-  "GNUmakefile"
-  'makefile-gmake-mode
-  '(yas-minor-mode)
-  1525
-  '(669 nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.m"
-  "Controller.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  62
-  '(3790 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.h"
-  "Controller.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  107
-  '(572 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/WindowPrefs.m"
@@ -266,28 +321,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
   126
   '(28 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/TitleBarPrefs.m"
-  "TitleBarPrefs.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  2626
-  '(2553 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/TitleBarPrefs.h"
-  "TitleBarPrefs.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  105
-  '(111 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -370,17 +403,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/Preferences.m"
-  "Preferences.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  2430
-  '(1846 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/main.m"
   "main.m"
   'objc-mode
@@ -431,17 +453,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
   174
   '(238 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/PrefBox.h"
-  "PrefBox.h"
-  'c-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  433
-  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
