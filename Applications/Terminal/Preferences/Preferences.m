@@ -72,10 +72,16 @@ static Preferences *shared = nil;
       ud = [NSUserDefaults standardUserDefaults];
     }
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(mainWindowDidChange:)
+           name:NSWindowDidBecomeMainNotification
+         object:nil];
+
   return self;
 }
 
-- (void)activate
+- (void)activatePanel
 {
   if (window == nil)
     {
@@ -95,6 +101,12 @@ static Preferences *shared = nil;
   [self switchMode:modeBtn];
 }
 
+- (void)closePanel
+{
+  [window close];
+}
+
+
 - (void)switchMode:(id)sender
 {
   id <PrefsModule> module;
@@ -108,5 +120,11 @@ static Preferences *shared = nil;
       [module showDefault:self];
     // }
 }
+
+- (void)mainWindowDidChange:(NSNotification *)notif
+{
+  NSLog(@"Prefrences: main window now: %@", [[notif object] title]);
+}
+
 
 @end

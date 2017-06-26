@@ -1332,7 +1332,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     case NSPageDownFunctionKey: str="\e[6~"; break;
 
     case 9: // tab
-	   if (mask&NSShiftKeyMask)
+	   if (mask & NSShiftKeyMask)
 	     str="\e[Z";
 	   else
 	     nstr=[e characters];
