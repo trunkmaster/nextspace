@@ -56,9 +56,29 @@
 }
 
 // --- Menu
+
+// "Terminal Preferences" panel
 - (void)openPreferences:(id)sender
 {
-  [[Defaults shared] activatePanel];
+  // load Preferences.bundle, send 'activate' to principal class
+  if (preferencesPanel == nil)
+    {
+      NSString *bundlePath;
+      NSBundle *bundle;
+
+      bundlePath = [[[NSBundle mainBundle] resourcePath]
+                     stringByAppendingPathComponent:@"Preferences.bundle"];
+
+      // NSLog(@"[Controller] Inspectors: %@", inspectorsPath);
+
+      bundle = [[NSBundle alloc] initWithPath:bundlePath];
+
+      // NSLog(@"[Controller] Inspectors Class: %@",
+      //       [inspectorsBundle principalClass]);
+      preferencesPanel = [[[bundle principalClass] alloc] init];
+    }
+  
+  [preferencesPanel activatePanel];
 }
 
 - (void)openWindow:(id)sender
@@ -66,10 +86,16 @@
   [self newWindowWithShell];
 }
 
+// "Set Title" panel
 - (void)openSetTitlePanel:(id)sender
 {
-  [[Defaults shared] activateSetTitlePanel];
+  if (setTitlePanel == nil)
+    {
+      setTitlePanel = [[SetTitlePanel alloc] init];
+    }
+  [setTitlePanel activatePanel];
 }
+
 
 // - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 // {
@@ -90,10 +116,6 @@
 // }
 
 // --- NSApplication delegate
-- (void)applicationWillTerminate:(NSNotification *)n
-{
-}
-
 - (void)applicationWillFinishLaunching:(NSNotification *)n
 {
   [TerminalView registerPasteboardTypes];
@@ -129,6 +151,21 @@
   else if ([Defaults startupAction] == OnStartCreateShell)
     {
       [self openWindow:self];
+    }
+}
+
+- (void)applicationWillTerminate:(NSNotification *)n
+{
+  if (preferencesPanel)
+    {
+      [preferencesPanel closePanel];
+      [preferencesPanel release];
+    }
+  
+  if (setTitlePanel)
+    {
+      [setTitlePanel closeSetTitlePanel:self];
+      [setTitlePanel release];
     }
 }
 
@@ -219,7 +256,7 @@
 
   {
     id o;
-    o=[properties objectForKey: @"CloseOnExit"];
+    o = [properties objectForKey: @"CloseOnExit"];
     if (o && [o respondsToSelector: @selector(boolValue)] &&
         ![o boolValue])
       {

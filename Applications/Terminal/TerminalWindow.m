@@ -166,6 +166,107 @@ static NSSize winMinimumSize;
   return self;
 }
 
+- initWithStartupFile:(NSString *)filePath
+{
+  NSRect     contentRect, windowRect;
+  NSUInteger styleMask;
+
+  Defaults defaults = [[Defaults alloc] initWithFile:filePath];
+
+  // Make cache of preferences
+  scrollBackEnabled = [defaults ];
+  terminalRows = [defaults windowHeight];
+  terminalColumns = [defaults windowWidth];
+  titleBarElementsMask = [Defaults titleBarElementsMask];
+  titleBarCustomTitle = [Defaults customTitle];
+
+  // Sizes
+  charCellSize = [Defaults characterCellSizeForFont:nil];
+  [self calculateSizes];
+  
+  windowCloseBehavior = [Defaults windowCloseBehavior];
+
+  contentRect = NSMakeRect(0, 0, winContentSize.width, winContentSize.height);
+  styleMask = (NSClosableWindowMask  | NSTitledWindowMask |
+               NSResizableWindowMask | NSMiniaturizableWindowMask);
+  win = [[NSWindow alloc] initWithContentRect:contentRect
+                                    styleMask:styleMask
+                                      backing:NSBackingStoreRetained
+                                        defer:YES];
+  
+  if (!(self = [super initWithWindow:win])) return nil;
+
+  windowRect = [win frame];
+  winMinimumSize.width += windowRect.size.width - winContentSize.width;
+  winMinimumSize.height += windowRect.size.height - winContentSize.height;
+  
+  [win setTitle:titleBarCustomTitle];
+  [win setDelegate:self];
+
+  [win setContentSize:winContentSize];
+  [win setResizeIncrements:NSMakeSize(charCellSize.width, charCellSize.height)];
+  [win setMinSize:winMinimumSize];
+
+  hBox = [[GSHbox alloc] init];
+
+  // Scroller
+  scroller = [[NSScroller alloc] initWithFrame:NSMakeRect(0,0,scrollerWidth,
+                                                          charCellSize.height)];
+  [scroller setArrowsPosition:NSScrollerArrowsMaxEnd];
+  [scroller setEnabled:YES];
+  [scroller setAutoresizingMask:NSViewHeightSizable];
+  if (scrollBackEnabled)
+    {
+      [hBox addView:scroller enablingXResizing:NO];
+      [scroller release];
+    }
+
+  // View
+  tView = [[TerminalView alloc] init];
+  [tView setIgnoreResize:YES];
+  [tView setAutoresizingMask:NSViewHeightSizable|NSViewWidthSizable];
+  [tView setScroller:scroller];
+  [hBox addView:tView];
+  [tView release];
+  [tView setIgnoreResize:NO];
+  [win makeFirstResponder:tView];
+
+  // if ([ud boolForKey:@"AddYBorders"])
+  //   [tView setBorder:4 :4];
+  // else
+    [tView setBorder:4 :2];
+
+  [win setContentView:hBox];
+  DESTROY(hBox);
+  
+  [win release];
+
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(preferencesDidChange:)
+           name:TerminalPreferencesDidChangeNotification
+         object:win];
+  
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(viewBecameIdle)
+           name:TerminalViewBecameIdleNotification
+         object:tView];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(viewBecameNonIdle)
+           name:TerminalViewBecameNonIdleNotification
+         object:tView];
+  
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(updateTitleBar:)
+           name:TerminalViewTitleDidChangeNotification
+         object:tView];
+
+  return self;
+}
+
 - (void)dealloc
 {
   NSLog(@"Window DEALLOC.");

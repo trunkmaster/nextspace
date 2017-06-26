@@ -1,19 +1,19 @@
 /** @class NXDefaults
 
-    This is a simplified version NSUserDefaults for use in NextSpace apps.
-    From NSUserDefaults differences is the following:
+    This is a light version of NSUserDefaults for use by NextSpace apps.
+    Differences with NSUserDefaults are the following:
     - access to user-level applications' defaults provided by
       +userDefaults and -initWithUserDefaults methods
       (located in ~/Library/Preferences/.NextSpace/<name of the app>);
     - access to system-level applications' defaults - via
       +systemDefaults and -initWithSystemDefaults
       (located in /usr/NextSpace/Preferences/<name of the app>);
-    - access to ~/Library/Preferences/.NextSpace/NXGobalDomain via
-      +globalUserDefaults and -initGlobalUserDefaults;
+    - access to ~/Library/Preferences/.NextSpace/NXGobalDomain provided with
+      +globalUserDefaults and -initGlobalUserDefaults methods;
     - file with defaults of any kind has no extension and stored in old
       OpenStep style;
     - all domains are persistent;
-    - there's not method of defaults registration (no -registerDefaults method).
+    - there's no method for defaults registration (no -registerDefaults method).
 
     User preferences are used by user controlled applications.
     System prefereences used by system controlled applications (like Login.app).
@@ -46,7 +46,7 @@ extern NSString* const NXUserDefaultsDidChangeNotification;
 
 /** Returns preferences located in /usr/NextSpace/Preferences */
 - (NXDefaults *)initWithSystemDefaults;
-/** Returns preferences located in /usr/NextSpace/Preferences/.NextSpace */
+/** Returns preferences located in ~/Library/Preferences/.NextSpace */
 - (NXDefaults *)initWithUserDefaults;
 /** Returns global NextSpace preferences 
     ~/Library/Preferences/.NextSpace/NXGlobalDomain */

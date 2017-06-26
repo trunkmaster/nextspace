@@ -4,6 +4,9 @@
 
 #import <AppKit/AppKit.h>
 
+#import "Preferences/Preferences.h"
+#import "SetTitlePanel.h"
+
 @interface Controller : NSObject
 {
   NSMutableArray      *idleList;
@@ -12,6 +15,9 @@
   
   BOOL                quitPanelOpen;
   int                 num_windows;
+
+  Preferences         *preferencesPanel;
+  SetTitlePanel	      *setTitlePanel;
 }
 
 @end

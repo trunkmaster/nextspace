@@ -12,22 +12,18 @@
 #ifndef TerminalView_h
 #define TerminalView_h
 
-#import <AppKit/NSView.h>
 #import <Foundation/NSFileHandle.h>
+#import <AppKit/NSScroller.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSMenu.h>
 
+#import "Terminal.h"
+#import "TerminalParser_Linux.h"
 
 extern NSString
 	*TerminalViewBecameIdleNotification,
 	*TerminalViewBecameNonIdleNotification,
 	*TerminalViewTitleDidChangeNotification;
-
-#import "Terminal.h"
-#import "TerminalParser_Linux.h"
-
-/* TODO: this is slightly ugly */
-//@class TerminalParser_Linux;
-
-@class NSScroller;
 
 struct selection_range
 {

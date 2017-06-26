@@ -41,7 +41,8 @@
   id modeContentBox;
 }
 
-- (void)activate;
+- (void)activatePanel;
+- (void)closePanel;
 - (void)switchMode:(id)sender;
 
 @end

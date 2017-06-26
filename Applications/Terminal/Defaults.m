@@ -9,10 +9,11 @@
 
 #import <Foundation/NSString.h>
 #import <AppKit/NSEvent.h>
+#import <AppKit/NSFont.h>
+#import <AppKit/NSGraphics.h>
 
 #include "Terminal.h"
 #import "Defaults.h"
-#import "SetTitlePanel.h"
 
 @implementation Defaults
 
@@ -43,29 +44,114 @@ static Defaults *shared = nil;
     }
 }
 
-//--- Preferences Panel
-- (void)activatePanel
+- (id)initWithFile:(NSString *)path
 {
-  // load Preferences.bundle, send 'activate' to principal class
-  if (preferencesPanel == nil)
-    {
-      NSString *bundlePath;
-      NSBundle *bundle;
+  self = [super init];
 
-      bundlePath = [[[NSBundle mainBundle] resourcePath]
-                     stringByAppendingPathComponent:@"Preferences.bundle"];
-
-      // NSLog(@"[Controller] Inspectors: %@", inspectorsPath);
-
-      bundle = [[NSBundle alloc] initWithPath:bundlePath];
-
-      // NSLog(@"[Controller] Inspectors Class: %@",
-      //       [inspectorsBundle principalClass]);
-      preferencesPanel = [[[bundle principalClass] alloc] init];
-    }
+  filePath = path;
+  defaults = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
   
-  [preferencesPanel activate];
+  [self readWindowDefaults];
+  // [self readColorsDefaults] called by -readWindowDefaults
+      
+  [self readTitleBarDefaults];
+  [self readDisplayDefaults];
+  [self readShellDefaults];
+  [self readLinuxDefaults];
+  [self readStartupDefaults];
 }
+
+- (BOOL)synchronize
+{
+  return [defaults writeToFile:filePath atomically:YES];
+}
+
+//-----------------------------------------------------------------------------
+#pragma mark - Values
+//-----------------------------------------------------------------------------
+
+- (id)objectForKey:(NSString *)key
+{
+  return [defaults objectForKey:key];
+}
+
+- (void)setObject:(id)value
+           forKey:(NSString *)key
+{
+  [defaults setObject:value forKey:key];
+  // [self setChanged];
+}
+
+- (void)removeObjectForKey:(NSString *)key
+{
+  [defaults removeObjectForKey:key];
+  // [self setChanged];
+}
+
+- (float)floatForKey:(NSString *)key
+{
+  id obj = [self objectForKey:key];
+
+  if (obj != nil && ([obj isKindOfClass:[NSString class]]
+		  || [obj isKindOfClass:[NSNumber class]]))
+    {
+      return [obj floatValue];
+    }
+
+  return 0.0;
+}
+
+- (void)setFloat:(float)value
+          forKey:(NSString*)key
+{
+  [self setObject:[NSNumber numberWithFloat:value] forKey:key];
+}
+
+- (NSInteger)integerForKey:(NSString *)key
+{
+  id obj = [self objectForKey:key];
+
+  if (obj != nil && ([obj isKindOfClass:[NSString class]]
+		  || [obj isKindOfClass:[NSNumber class]]))
+    {
+      return [obj integerValue];
+    }
+
+  return -1;
+}
+
+- (void)setInteger:(NSInteger)value
+            forKey:(NSString *)key
+{
+  [self setObject:[NSNumber numberWithInteger:value] forKey:key];
+}
+
+- (BOOL)boolForKey:(NSString*)key
+{
+  id obj = [self objectForKey:key];
+
+  if (obj != nil && ([obj isKindOfClass:[NSString class]]
+		  || [obj isKindOfClass:[NSNumber class]]))
+    {
+      return [obj boolValue];
+    }
+
+  return NO;
+}
+
+- (void)setBool:(BOOL)value
+         forKey:(NSString*)key
+{
+  if (value == YES)
+    {
+      [self setObject:@"YES" forKey:key];
+    }
+  else
+    {
+      [self setObject:@"NO" forKey:key];
+    }
+}
+
 
 @end
 
@@ -89,23 +175,23 @@ static BOOL addYBorders;
 static NSFont *terminalFont;
 //---
 @implementation Defaults (Window)
-+ (void)readWindowDefaults
+- (void)readWindowDefaults
 {
   NSString *s;
   float    size;
   
-  windowWidth = [ud integerForKey:WindowWidthKey];
-  windowHeight = [ud integerForKey:WindowHeightKey];
+  windowWidth = [defaults integerForKey:WindowWidthKey];
+  windowHeight = [defaults integerForKey:WindowHeightKey];
   if (windowWidth <= 0) windowWidth = DEFAULT_COLUMNS;
   if (windowHeight <= 0) windowHeight = DEFAULT_LINES;
   
-  windowCloseBehavior = [ud integerForKey:WindowCloseBehaviorKey];
-  // addYBorders = [ud boolForKey:AddYBordersKey];
+  windowCloseBehavior = [defaults integerForKey:WindowCloseBehaviorKey];
+  // addYBorders = [defaults boolForKey:AddYBordersKey];
   addYBorders = NO;
 
   // Normal font
-  size = [ud floatForKey:TerminalFontSizeKey];
-  s = [ud stringForKey:TerminalFontKey];
+  size = [defaults floatForKey:TerminalFontSizeKey];
+  s = [defaults stringForKey:TerminalFontKey];
   if (!s)
     {
       terminalFont = [[NSFont userFixedPitchFontOfSize:size] retain];
@@ -120,21 +206,21 @@ static NSFont *terminalFont;
     }
   
   // Try to find bold version of normal font
-  [Defaults readColorsDefaults];
+  [self readColorsDefaults];
 }
-+ (int)windowWidth
+- (int)windowWidth
 {
   return windowWidth;
 }
-+ (int)windowHeight
+- (int)windowHeight
 {
   return windowHeight;
 }
-+ (WindowCloseBehavior)windowCloseBehavior // 'When Shell Exits'
+- (WindowCloseBehavior)windowCloseBehavior // 'When Shell Exits'
 {
   return windowCloseBehavior;
 }
-+ (NSFont *)terminalFont
+- (NSFont *)terminalFont
 {
   NSFont *f = [terminalFont screenFont];
   
@@ -143,13 +229,13 @@ static NSFont *terminalFont;
    
   return terminalFont;
 }
-+ (NSSize)characterCellSizeForFont:(NSFont *)font
+- (NSSize)characterCellSizeForFont:(NSFont *)font
 {
   NSSize s;
 
   if (!font)
     {
-      font = [Defaults terminalFont];
+      font = [self terminalFont];
     }
 
   s = [font boundingRectForFont].size;
@@ -185,39 +271,29 @@ const NSUInteger TitleBarWindowSize  = 1<<4;
 static NSUInteger titleBarElements;
 static NSString   *titleBarCustomTitle;
 
-static SetTitlePanel *setTitlePanel;
-
 @implementation Defaults (TitleBar)
-+ (void)readTitleBarDefaults
+- (void)readTitleBarDefaults
 {
-  titleBarElements = [ud integerForKey:TitleBarElementsMaskKey];
+  titleBarElements = [defaults integerForKey:TitleBarElementsMaskKey];
   if (!titleBarElements)
     {
       titleBarElements = TitleBarShellPath |
                          TitleBarDeviceName |
                          TitleBarWindowSize;
     }
-  titleBarCustomTitle = [ud stringForKey:TitleBarCustomTitleKey];
+  titleBarCustomTitle = [defaults stringForKey:TitleBarCustomTitleKey];
   if (!titleBarCustomTitle)
     {
       titleBarCustomTitle = @"Terminal";
     }
 }
-+ (NSUInteger)titleBarElementsMask
+- (NSUInteger)titleBarElementsMask
 {
   return titleBarElements;
 }
-+ (NSString *)customTitle
+- (NSString *)customTitle
 {
   return titleBarCustomTitle;
-}
-- (void)activateSetTitlePanel
-{
-  if (setTitlePanel == nil)
-    {
-      setTitlePanel = [[SetTitlePanel alloc] init];
-    }
-  [setTitlePanel activatePanel];
 }
 @end
 
@@ -234,33 +310,33 @@ static NSString *characterSet;
 static BOOL useMultiCellGlyphs;
 //---
 @implementation Defaults (Linux)
-+ (void)readLinuxDefaults
+- (void)readLinuxDefaults
 {
-  characterSet=[[ud stringForKey:CharacterSetKey] retain];
+  characterSet=[[defaults stringForKey:CharacterSetKey] retain];
   if (!characterSet)
     {
       characterSet = @"utf-8";
     }
   
-  useMultiCellGlyphs = [ud boolForKey:UseMultiCellGlyphsKey];
+  useMultiCellGlyphs = [defaults boolForKey:UseMultiCellGlyphsKey];
   
-  commandAsMeta = [ud boolForKey:CommandAsMetaKey];
+  commandAsMeta = [defaults boolForKey:CommandAsMetaKey];
   
-  doubleEscape = [ud boolForKey:DoubleEscapeKey];
+  doubleEscape = [defaults boolForKey:DoubleEscapeKey];
 }
-+ (NSString *)characterSet
+- (NSString *)characterSet
 {
   return characterSet;
 }
-+ (BOOL)commandAsMeta
+- (BOOL)commandAsMeta
 {
   return commandAsMeta;
 }
-+ (BOOL)doubleEscape
+- (BOOL)doubleEscape
 {
   return doubleEscape;
 }
-+ (BOOL)useMultiCellGlyphs
+- (BOOL)useMultiCellGlyphs
 {
   return useMultiCellGlyphs;
 }
@@ -341,111 +417,111 @@ static NSFont *boldTerminalFont;
                             alpha:[[desc objectForKey:@"Alpha"] floatValue]];
 }
 
-+ (void)readColorsDefaults
+- (void)readColorsDefaults
 {
   NSDictionary *desc;
   
-  blackOnWhite = [ud boolForKey:BlackOnWhiteKey];
+  blackOnWhite = [defaults boolForKey:BlackOnWhiteKey];
 
-  cursorStyle = [ud integerForKey:CursorStyleKey];
+  cursorStyle = [defaults integerForKey:CursorStyleKey];
 
-  if (!(desc = [ud objectForKey:CursorColorKey]))
+  if (!(desc = [defaults objectForKey:CursorColorKey]))
     desc = [self descriptionFromColor:[NSColor grayColor]];
   cursorColor = [[self colorFromDescription:desc] retain];
 
-  if (!(desc = [ud objectForKey:WindowBGColorKey]))
+  if (!(desc = [defaults objectForKey:WindowBGColorKey]))
     desc = [self descriptionFromColor:[NSColor whiteColor]];
   windowBGColor = [[self colorFromDescription:desc] retain];
   
-  if (!(desc = [ud objectForKey:SelectionBGColorKey]))
+  if (!(desc = [defaults objectForKey:SelectionBGColorKey]))
     desc = [self descriptionFromColor:[NSColor lightGrayColor]];
   windowSELColor = [[self colorFromDescription:desc] retain];
 
-  if (!(desc = [ud objectForKey:TextNormalColorKey]))
+  if (!(desc = [defaults objectForKey:TextNormalColorKey]))
     desc = [self descriptionFromColor:[NSColor blackColor]];
   normalTextColor = [[self colorFromDescription:desc] retain];
 
-  if (!(desc = [ud objectForKey:TextBoldColorKey]))
+  if (!(desc = [defaults objectForKey:TextBoldColorKey]))
     desc = [self descriptionFromColor:[NSColor blackColor]];
   boldTextColor = [[self colorFromDescription:desc] retain];
 
-  if (!(desc = [ud objectForKey:TextBlinkColorKey]))
+  if (!(desc = [defaults objectForKey:TextBlinkColorKey]))
     desc = [self descriptionFromColor:[NSColor yellowColor]];
   blinkTextColor = [[self colorFromDescription:desc] retain];
 
-  if (!(desc = [ud objectForKey:TextInverseBGColorKey]))
+  if (!(desc = [defaults objectForKey:TextInverseBGColorKey]))
     desc = [self descriptionFromColor:[NSColor darkGrayColor]];
   inverseBGColor = [[self colorFromDescription:desc] retain];
   
-  if (!(desc = [ud objectForKey:TextInverseFGColorKey]))
+  if (!(desc = [defaults objectForKey:TextInverseFGColorKey]))
     desc = [self descriptionFromColor:[NSColor whiteColor]];
   inverseFGColor = [[self colorFromDescription:desc] retain];
     
-  useBoldTerminalFont = [ud boolForKey:TerminalFontUseBoldKey];
+  useBoldTerminalFont = [defaults boolForKey:TerminalFontUseBoldKey];
   
   // Try to find bold version of normal font
   if (boldTerminalFont) [boldTerminalFont release];
-  boldTerminalFont = [Defaults boldTerminalFontForFont:[Defaults terminalFont]];
+  boldTerminalFont = [self boldTerminalFontForFont:[self terminalFont]];
 }
-+ (BOOL)blackOnWhite
+- (BOOL)blackOnWhite
 {
   return blackOnWhite;
 }
-+ (const float *)brightnessForIntensities
+- (const float *)brightnessForIntensities
 {
   return brightness;
 }
-+ (const float *)saturationForIntensities
+- (const float *)saturationForIntensities
 {
   return saturation;
 }
-+ (int)cursorStyle
+- (int)cursorStyle
 {
   return cursorStyle;
 }
-+ (NSColor *)cursorColor
+- (NSColor *)cursorColor
 {
   return cursorColor;
 }
 
-+ (NSColor *)windowBackgroundColor
+- (NSColor *)windowBackgroundColor
 {
   return windowBGColor;
 }
-+ (NSColor *)windowSelectionColor
+- (NSColor *)windowSelectionColor
 {
   return windowSELColor;
 }
 // TODO:
-+ (BOOL)isCursorBlinking
+- (BOOL)isCursorBlinking
 {
   return NO;
 }
-+ (NSColor *)textNormalColor
+- (NSColor *)textNormalColor
 {
   return normalTextColor;
 }
-+ (NSColor *)textBoldColor
+- (NSColor *)textBoldColor
 {
   return boldTextColor;
 }
-+ (NSColor *)textBlinkColor
+- (NSColor *)textBlinkColor
 {
   return blinkTextColor;
 }
-+ (NSColor *)textInverseBackground
+- (NSColor *)textInverseBackground
 {
   return inverseBGColor;
 }
-+ (NSColor *)textInverseForeground
+- (NSColor *)textInverseForeground
 {
   return inverseFGColor;
 }
-+ (BOOL)useBoldTerminalFont
+- (BOOL)useBoldTerminalFont
 {
   return useBoldTerminalFont;
 }
-+ (NSFont *)boldTerminalFontForFont:(NSFont *)font
+- (NSFont *)boldTerminalFontForFont:(NSFont *)font
 {
   NSFont *boldFont = nil;
   
@@ -461,7 +537,7 @@ static NSFont *boldTerminalFont;
     }
   else
     {
-      boldFont = (font != nil) ? font : [Defaults terminalFont];
+      boldFont = (font != nil) ? font : [self terminalFont];
     }
 
   return boldFont;
@@ -482,24 +558,24 @@ static int  scrollBackLines;
 static BOOL scrollBottomOnInput;
 //---
 @implementation Defaults (Display)
-+ (void)checkDisplayDefaults
+- (void)checkDisplayDefaults
 {
-  if ([ud objectForKey:ScrollBackEnabledKey] == nil)
-    [ud setBool:YES forKey:ScrollBackEnabledKey];
+  if ([defaults objectForKey:ScrollBackEnabledKey] == nil)
+    [defaults setBool:YES forKey:ScrollBackEnabledKey];
     
-  if ([ud objectForKey:ScrollBackUnlimitedKey] == nil)
-    [ud setBool:NO forKey:ScrollBackUnlimitedKey];
+  if ([defaults objectForKey:ScrollBackUnlimitedKey] == nil)
+    [defaults setBool:NO forKey:ScrollBackUnlimitedKey];
   
-  if ([ud objectForKey:ScrollBackLinesKey] == nil)
-    [ud setInteger:256 forKey:ScrollBackLinesKey];
+  if ([defaults objectForKey:ScrollBackLinesKey] == nil)
+    [defaults setInteger:256 forKey:ScrollBackLinesKey];
   
-  if ([ud objectForKey:ScrollBottomOnInputKey] == nil)
-    [ud setBool:YES forKey:ScrollBottomOnInputKey];
+  if ([defaults objectForKey:ScrollBottomOnInputKey] == nil)
+    [defaults setBool:YES forKey:ScrollBottomOnInputKey];
 }
-+ (void)readDisplayDefaults
+- (void)readDisplayDefaults
 {
   [self checkDisplayDefaults];
-  scrollBackEnabled = [ud boolForKey:ScrollBackEnabledKey];
+  scrollBackEnabled = [defaults boolForKey:ScrollBackEnabledKey];
   
   if (scrollBackEnabled == NO)
     {
@@ -507,7 +583,7 @@ static BOOL scrollBottomOnInput;
       return;
     }
 
-  scrollBackUnlimited = [ud boolForKey:ScrollBackUnlimitedKey];
+  scrollBackUnlimited = [defaults boolForKey:ScrollBackUnlimitedKey];
   
   if (scrollBackUnlimited == YES)
     {
@@ -523,29 +599,29 @@ static BOOL scrollBottomOnInput;
     }
   else
     {
-      scrollBackLines = [ud integerForKey:ScrollBackLinesKey];
+      scrollBackLines = [defaults integerForKey:ScrollBackLinesKey];
       if (scrollBackLines <= 0) scrollBackLines = 256;
     }
 
-  scrollBottomOnInput = [ud boolForKey:ScrollBottomOnInputKey];
+  scrollBottomOnInput = [defaults boolForKey:ScrollBottomOnInputKey];
 }
 
-+ (int)scrollBackLines
+- (int)scrollBackLines
 {
   return scrollBackLines;
 }
-+ (BOOL)scrollBackEnabled
+- (BOOL)scrollBackEnabled
 {
   return scrollBackEnabled;
 }
-+ (BOOL)scrollBackUnlimited
+- (BOOL)scrollBackUnlimited
 {
   if (scrollBackEnabled == NO)
     return NO;
   
   return scrollBackUnlimited;
 }
-+ (BOOL)scrollBottomOnInput
+- (BOOL)scrollBottomOnInput
 {
   return scrollBottomOnInput;
 }
@@ -562,14 +638,14 @@ static NSString *shell;
 static BOOL loginShell;
 //---
 @implementation Defaults (Shell)
-+ (void)readShellDefaults
+- (void)readShellDefaults
 {
   if (shell)
     {
       [shell release];
       shell = nil;
     }
-  shell = [ud stringForKey:ShellKey];
+  shell = [defaults stringForKey:ShellKey];
   if (!shell && getenv("SHELL"))
     {
       shell = [NSString stringWithCString: getenv("SHELL")];
@@ -580,13 +656,13 @@ static BOOL loginShell;
     }
   shell = [shell retain];
   
-  loginShell = [ud boolForKey:LoginShellKey];
+  loginShell = [defaults boolForKey:LoginShellKey];
 }
-+ (NSString *)shell
+- (NSString *)shell
 {
   return shell;
 }
-+ (BOOL)loginShell
+- (BOOL)loginShell
 {
   return loginShell;
 }
@@ -604,24 +680,24 @@ static NSString      *startupFile;
 static BOOL          hideOnAutolaunch;
 
 @implementation Defaults (Startup)
-+ (void)readStartupDefaults
+- (void)readStartupDefaults
 {
-  startupAction = [ud integerForKey:StartupActionKey];
+  startupAction = [defaults integerForKey:StartupActionKey];
   if (startupAction == 0)
     startupAction = 3;
 
-  startupFile = [ud objectForKey:StartupFileKey];
-  hideOnAutolaunch = [ud boolForKey:HideOnAutolaunchKey];
+  startupFile = [defaults objectForKey:StartupFileKey];
+  hideOnAutolaunch = [defaults boolForKey:HideOnAutolaunchKey];
 }
-+ (StartupAction)startupAction
+- (StartupAction)startupAction
 {
   return startupAction;
 }
-+ (NSString *)startupFile
+- (NSString *)startupFile
 {
   return startupFile;
 }
-+ (BOOL)hideOnAutolaunch
+- (BOOL)hideOnAutolaunch
 {
   return hideOnAutolaunch;
 }
