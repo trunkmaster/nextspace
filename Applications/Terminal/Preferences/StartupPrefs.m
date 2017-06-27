@@ -16,6 +16,8 @@
 
   [NSBundle loadNibNamed:@"Startup" owner:self];
 
+  defs = [[Preferences shared] mainWindowDefaults];
+
   return self;
 }
 
@@ -37,15 +39,17 @@
 
 - (void)showDefault:(id)sender
 {
-  [actionsMatrix selectCellWithTag:[Defaults startupAction]];
-  [autolaunchBtn setState:[Defaults hideOnAutolaunch]];
+  defs = [[Preferences shared] mainWindowDefaults];
+  
+  [actionsMatrix selectCellWithTag:[defs startupAction]];
+  [autolaunchBtn setState:[defs hideOnAutolaunch]];
 }
 
 - (void)setAction:(id)sender
 {
-  [ud setInteger:[[actionsMatrix selectedCell] tag]
-          forKey:StartupActionKey];
-  [ud synchronize];
+  [defs setInteger:[[actionsMatrix selectedCell] tag]
+            forKey:StartupActionKey];
+  [defs synchronize];
 }
 - (void)setFilePath:(id)sender
 {

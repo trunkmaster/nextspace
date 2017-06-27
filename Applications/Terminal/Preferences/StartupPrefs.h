@@ -9,6 +9,8 @@
   id filePathField;
   id window;
   id view;
+
+  Defaults *defs;
 }
 - (void) setFilePath: (id)sender;
 - (void) setAction: (id)sender;
