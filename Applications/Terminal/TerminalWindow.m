@@ -17,8 +17,9 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSWindow.h>
 
-#import "TerminalWindow.h"
 #import "Controller.h"
+#import "Defaults.h"
+#import "TerminalWindow.h"
 #import "TerminalView.h"
 
 NSString *TerminalWindowNoMoreActiveWindowsNotification=
@@ -171,7 +172,7 @@ static NSSize winMinimumSize;
   NSRect     contentRect, windowRect;
   NSUInteger styleMask;
 
-  Defaults defaults = [[Defaults alloc] initWithFile:filePath];
+  defaults = [[Defaults alloc] initWithFile:filePath];
 
   // Make cache of preferences
   scrollBackEnabled = [defaults ];
@@ -284,6 +285,11 @@ static NSSize winMinimumSize;
 - (WindowCloseBehavior)closeBehavior
 {
   return windowCloseBehavior;
+}
+
+- (Defaults *)defaults
+{
+  return defaults;
 }
 
 // Title Bar elements

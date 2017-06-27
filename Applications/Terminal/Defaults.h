@@ -38,6 +38,8 @@ NSUserDefaults *ud;
 - (BOOL)boolForKey:(NSString*)key;
 - (void)setBool:(BOOL)value forKey:(NSString*)key;
 
+- (NSStr)stringForKey:(NSString*)key;
+
 @end
 
 // Used for per-window setting preferences ("Set Window" button).
@@ -65,12 +67,12 @@ typedef enum {
 } WindowCloseBehavior;
 
 @interface Defaults (Window)
-+ (void)readWindowDefaults;
-+ (int)windowWidth;
-+ (int)windowHeight;
-+ (WindowCloseBehavior)windowCloseBehavior; // 'When Shell Exits'
-+ (NSFont *)terminalFont;
-+ (NSSize)characterCellSizeForFont:(NSFont *)font;
+- (void)readWindowDefaults;
+- (int)windowWidth;
+- (int)windowHeight;
+- (WindowCloseBehavior)windowCloseBehavior; // 'When Shell Exits'
+- (NSFont *)terminalFont;
+- (NSSize)characterCellSizeForFont:(NSFont *)font;
 @end
 
 //----------------------------------------------------------------------------
@@ -86,9 +88,9 @@ extern const NSUInteger TitleBarFileName;
 extern const NSUInteger TitleBarWindowSize;
 
 @interface Defaults (TitleBar)
-+ (void)readTitleBarDefaults;
-+ (NSUInteger)titleBarElementsMask;
-+ (NSString *)customTitle;
+- (void)readTitleBarDefaults;
+- (NSUInteger)titleBarElementsMask;
+- (NSString *)customTitle;
 @end
 //----------------------------------------------------------------------------
 // Linux Emulation
@@ -99,11 +101,11 @@ extern NSString *CommandAsMetaKey;
 extern NSString *DoubleEscapeKey;
 
 @interface Defaults (Linux)
-+ (void)readLinuxDefaults;
-+ (NSString *)characterSet;
-+ (BOOL)commandAsMeta;
-+ (BOOL)doubleEscape;
-+ (BOOL)useMultiCellGlyphs;
+- (void)readLinuxDefaults;
+- (NSString *)characterSet;
+- (BOOL)commandAsMeta;
+- (BOOL)doubleEscape;
+- (BOOL)useMultiCellGlyphs;
 @end
 
 //----------------------------------------------------------------------------
@@ -132,23 +134,23 @@ extern NSString *TerminalFontUseBoldKey;
 + (NSDictionary *)descriptionFromColor:(NSColor *)color;
 + (NSColor *)colorFromDescription:(NSDictionary *)desc;
 
-+ (void)readColorsDefaults;
-+ (BOOL)blackOnWhite;
-+ (const float *)brightnessForIntensities;
-+ (const float *)saturationForIntensities;
-+ (int)cursorStyle;
-+ (NSColor *)cursorColor;
-+ (BOOL)useBoldTerminalFont;
-+ (NSFont *)boldTerminalFontForFont:(NSFont *)font;
+- (void)readColorsDefaults;
+- (BOOL)blackOnWhite;
+- (const float *)brightnessForIntensities;
+- (const float *)saturationForIntensities;
+- (int)cursorStyle;
+- (NSColor *)cursorColor;
+- (BOOL)useBoldTerminalFont;
+- (NSFont *)boldTerminalFontForFont:(NSFont *)font;
 // TODO:
-+ (NSColor *)windowBackgroundColor;
-+ (NSColor *)windowSelectionColor;
-+ (BOOL)isCursorBlinking;
-+ (NSColor *)textNormalColor;
-+ (NSColor *)textBoldColor;
-+ (NSColor *)textBlinkColor;
-+ (NSColor *)textInverseBackground;
-+ (NSColor *)textInverseForeground;
+- (NSColor *)windowBackgroundColor;
+- (NSColor *)windowSelectionColor;
+- (BOOL)isCursorBlinking;
+- (NSColor *)textNormalColor;
+- (NSColor *)textBoldColor;
+- (NSColor *)textBlinkColor;
+- (NSColor *)textInverseBackground;
+- (NSColor *)textInverseForeground;
 
 @end
 
@@ -161,11 +163,11 @@ extern NSString *ScrollBackUnlimitedKey;
 extern NSString *ScrollBottomOnInputKey;
 
 @interface Defaults (Display)
-+ (void)readDisplayDefaults;
-+ (int)scrollBackLines;
-+ (BOOL)scrollBackEnabled;
-+ (BOOL)scrollBackUnlimited;
-+ (BOOL)scrollBottomOnInput;
+- (void)readDisplayDefaults;
+- (int)scrollBackLines;
+- (BOOL)scrollBackEnabled;
+- (BOOL)scrollBackUnlimited;
+- (BOOL)scrollBottomOnInput;
 @end
 
 //----------------------------------------------------------------------------
@@ -175,9 +177,9 @@ extern NSString *ShellKey;
 extern NSString	*LoginShellKey;
 
 @interface Defaults (Shell)
-+ (void)readShellDefaults;
-+ (NSString *)shell;
-+ (BOOL)loginShell;
+- (void)readShellDefaults;
+- (NSString *)shell;
+- (BOOL)loginShell;
 @end
 
 //----------------------------------------------------------------------------
@@ -194,8 +196,8 @@ typedef enum {
 } StartupAction;
 
 @interface Defaults (Startup)
-+ (void)readStartupDefaults;
-+ (StartupAction)startupAction;
-+ (NSString *)startupFile;
-+ (BOOL)hideOnAutolaunch;
+- (void)readStartupDefaults;
+- (StartupAction)startupAction;
+- (NSString *)startupFile;
+- (BOOL)hideOnAutolaunch;
 @end

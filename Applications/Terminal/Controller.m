@@ -441,6 +441,17 @@
   [[NSApp delegate] checkActiveWindows];
 }
 
+- (Defaults *)defaultsForWindow:(NSWindow *)win
+{
+  for (TerminalWindowController *windowController in windows)
+    {
+      if ([windowController window] == win)
+        {
+          return [windowController defaults];
+        }
+    }
+}
+
 // TODO:
 // Terminal window can be run in 2 modes: 'Shell' and 'Program' (now it's
 // called 'Idle').
