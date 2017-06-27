@@ -26,7 +26,6 @@
 @interface PreferencesPanel : NSPanel
 {
   BOOL     fontPanelOpened;
-  NSWindow *mainWindow;
 }
 
 - (void)fontPanelOpened:(BOOL)isOpened;
@@ -39,11 +38,15 @@
   id window;
   id modeBtn;
   id modeContentBox;
+  
+  NSWindow *mainWindow;
 }
 
 - (void)activatePanel;
 - (void)closePanel;
 - (void)switchMode:(id)sender;
+
+- (Defaults *)mainWindowDefaults;
 
 @end
 

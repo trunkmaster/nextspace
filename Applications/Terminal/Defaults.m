@@ -12,7 +12,7 @@
 #import <AppKit/NSFont.h>
 #import <AppKit/NSGraphics.h>
 
-#include "Terminal.h"
+#import "Terminal.h"
 #import "Defaults.h"
 
 @implementation Defaults
@@ -28,6 +28,7 @@ static Defaults *shared = nil;
   return shared;
 }
 
+/*
 + (void)initialize
 {
   if (!ud)
@@ -43,6 +44,7 @@ static Defaults *shared = nil;
       [self readStartupDefaults];
     }
 }
+*/
 
 - (id)initWithFile:(NSString *)path
 {
@@ -59,6 +61,8 @@ static Defaults *shared = nil;
   [self readShellDefaults];
   [self readLinuxDefaults];
   [self readStartupDefaults];
+
+  return self;
 }
 
 - (BOOL)synchronize
@@ -152,6 +156,10 @@ static Defaults *shared = nil;
     }
 }
 
+- (NSString *)stringForKey:(NSString*)key
+{
+  return [defaults objectForKey:key];
+}
 
 @end
 
@@ -180,18 +188,18 @@ static NSFont *terminalFont;
   NSString *s;
   float    size;
   
-  windowWidth = [defaults integerForKey:WindowWidthKey];
-  windowHeight = [defaults integerForKey:WindowHeightKey];
+  windowWidth = [self integerForKey:WindowWidthKey];
+  windowHeight = [self integerForKey:WindowHeightKey];
   if (windowWidth <= 0) windowWidth = DEFAULT_COLUMNS;
   if (windowHeight <= 0) windowHeight = DEFAULT_LINES;
   
-  windowCloseBehavior = [defaults integerForKey:WindowCloseBehaviorKey];
+  windowCloseBehavior = [self integerForKey:WindowCloseBehaviorKey];
   // addYBorders = [defaults boolForKey:AddYBordersKey];
   addYBorders = NO;
 
   // Normal font
-  size = [defaults floatForKey:TerminalFontSizeKey];
-  s = [defaults stringForKey:TerminalFontKey];
+  size = [self floatForKey:TerminalFontSizeKey];
+  s = [self stringForKey:TerminalFontKey];
   if (!s)
     {
       terminalFont = [[NSFont userFixedPitchFontOfSize:size] retain];
@@ -274,14 +282,14 @@ static NSString   *titleBarCustomTitle;
 @implementation Defaults (TitleBar)
 - (void)readTitleBarDefaults
 {
-  titleBarElements = [defaults integerForKey:TitleBarElementsMaskKey];
+  titleBarElements = [self integerForKey:TitleBarElementsMaskKey];
   if (!titleBarElements)
     {
       titleBarElements = TitleBarShellPath |
                          TitleBarDeviceName |
                          TitleBarWindowSize;
     }
-  titleBarCustomTitle = [defaults stringForKey:TitleBarCustomTitleKey];
+  titleBarCustomTitle = [self stringForKey:TitleBarCustomTitleKey];
   if (!titleBarCustomTitle)
     {
       titleBarCustomTitle = @"Terminal";
@@ -312,17 +320,17 @@ static BOOL useMultiCellGlyphs;
 @implementation Defaults (Linux)
 - (void)readLinuxDefaults
 {
-  characterSet=[[defaults stringForKey:CharacterSetKey] retain];
+  characterSet=[[self stringForKey:CharacterSetKey] retain];
   if (!characterSet)
     {
       characterSet = @"utf-8";
     }
   
-  useMultiCellGlyphs = [defaults boolForKey:UseMultiCellGlyphsKey];
+  useMultiCellGlyphs = [self boolForKey:UseMultiCellGlyphsKey];
   
-  commandAsMeta = [defaults boolForKey:CommandAsMetaKey];
+  commandAsMeta = [self boolForKey:CommandAsMetaKey];
   
-  doubleEscape = [defaults boolForKey:DoubleEscapeKey];
+  doubleEscape = [self boolForKey:DoubleEscapeKey];
 }
 - (NSString *)characterSet
 {
@@ -421,43 +429,43 @@ static NSFont *boldTerminalFont;
 {
   NSDictionary *desc;
   
-  blackOnWhite = [defaults boolForKey:BlackOnWhiteKey];
+  blackOnWhite = [self boolForKey:BlackOnWhiteKey];
 
-  cursorStyle = [defaults integerForKey:CursorStyleKey];
+  cursorStyle = [self integerForKey:CursorStyleKey];
 
   if (!(desc = [defaults objectForKey:CursorColorKey]))
-    desc = [self descriptionFromColor:[NSColor grayColor]];
-  cursorColor = [[self colorFromDescription:desc] retain];
+    desc = [Defaults descriptionFromColor:[NSColor grayColor]];
+  cursorColor = [[Defaults colorFromDescription:desc] retain];
 
-  if (!(desc = [defaults objectForKey:WindowBGColorKey]))
-    desc = [self descriptionFromColor:[NSColor whiteColor]];
-  windowBGColor = [[self colorFromDescription:desc] retain];
+  if (!(desc = [self objectForKey:WindowBGColorKey]))
+    desc = [Defaults descriptionFromColor:[NSColor whiteColor]];
+  windowBGColor = [[Defaults colorFromDescription:desc] retain];
   
-  if (!(desc = [defaults objectForKey:SelectionBGColorKey]))
-    desc = [self descriptionFromColor:[NSColor lightGrayColor]];
-  windowSELColor = [[self colorFromDescription:desc] retain];
+  if (!(desc = [self objectForKey:SelectionBGColorKey]))
+    desc = [Defaults descriptionFromColor:[NSColor lightGrayColor]];
+  windowSELColor = [[Defaults colorFromDescription:desc] retain];
 
-  if (!(desc = [defaults objectForKey:TextNormalColorKey]))
-    desc = [self descriptionFromColor:[NSColor blackColor]];
-  normalTextColor = [[self colorFromDescription:desc] retain];
+  if (!(desc = [self objectForKey:TextNormalColorKey]))
+    desc = [Defaults descriptionFromColor:[NSColor blackColor]];
+  normalTextColor = [[Defaults colorFromDescription:desc] retain];
 
-  if (!(desc = [defaults objectForKey:TextBoldColorKey]))
-    desc = [self descriptionFromColor:[NSColor blackColor]];
-  boldTextColor = [[self colorFromDescription:desc] retain];
+  if (!(desc = [self objectForKey:TextBoldColorKey]))
+    desc = [Defaults descriptionFromColor:[NSColor blackColor]];
+  boldTextColor = [[Defaults colorFromDescription:desc] retain];
 
-  if (!(desc = [defaults objectForKey:TextBlinkColorKey]))
-    desc = [self descriptionFromColor:[NSColor yellowColor]];
-  blinkTextColor = [[self colorFromDescription:desc] retain];
+  if (!(desc = [self objectForKey:TextBlinkColorKey]))
+    desc = [Defaults descriptionFromColor:[NSColor yellowColor]];
+  blinkTextColor = [[Defaults colorFromDescription:desc] retain];
 
-  if (!(desc = [defaults objectForKey:TextInverseBGColorKey]))
-    desc = [self descriptionFromColor:[NSColor darkGrayColor]];
-  inverseBGColor = [[self colorFromDescription:desc] retain];
+  if (!(desc = [self objectForKey:TextInverseBGColorKey]))
+    desc = [Defaults descriptionFromColor:[NSColor darkGrayColor]];
+  inverseBGColor = [[Defaults colorFromDescription:desc] retain];
   
-  if (!(desc = [defaults objectForKey:TextInverseFGColorKey]))
-    desc = [self descriptionFromColor:[NSColor whiteColor]];
-  inverseFGColor = [[self colorFromDescription:desc] retain];
+  if (!(desc = [self objectForKey:TextInverseFGColorKey]))
+    desc = [Defaults descriptionFromColor:[NSColor whiteColor]];
+  inverseFGColor = [[Defaults colorFromDescription:desc] retain];
     
-  useBoldTerminalFont = [defaults boolForKey:TerminalFontUseBoldKey];
+  useBoldTerminalFont = [self boolForKey:TerminalFontUseBoldKey];
   
   // Try to find bold version of normal font
   if (boldTerminalFont) [boldTerminalFont release];
@@ -560,22 +568,22 @@ static BOOL scrollBottomOnInput;
 @implementation Defaults (Display)
 - (void)checkDisplayDefaults
 {
-  if ([defaults objectForKey:ScrollBackEnabledKey] == nil)
-    [defaults setBool:YES forKey:ScrollBackEnabledKey];
+  if ([self objectForKey:ScrollBackEnabledKey] == nil)
+    [self setBool:YES forKey:ScrollBackEnabledKey];
     
-  if ([defaults objectForKey:ScrollBackUnlimitedKey] == nil)
-    [defaults setBool:NO forKey:ScrollBackUnlimitedKey];
+  if ([self objectForKey:ScrollBackUnlimitedKey] == nil)
+    [self setBool:NO forKey:ScrollBackUnlimitedKey];
   
-  if ([defaults objectForKey:ScrollBackLinesKey] == nil)
-    [defaults setInteger:256 forKey:ScrollBackLinesKey];
+  if ([self objectForKey:ScrollBackLinesKey] == nil)
+    [self setInteger:256 forKey:ScrollBackLinesKey];
   
-  if ([defaults objectForKey:ScrollBottomOnInputKey] == nil)
-    [defaults setBool:YES forKey:ScrollBottomOnInputKey];
+  if ([self objectForKey:ScrollBottomOnInputKey] == nil)
+    [self setBool:YES forKey:ScrollBottomOnInputKey];
 }
 - (void)readDisplayDefaults
 {
   [self checkDisplayDefaults];
-  scrollBackEnabled = [defaults boolForKey:ScrollBackEnabledKey];
+  scrollBackEnabled = [self boolForKey:ScrollBackEnabledKey];
   
   if (scrollBackEnabled == NO)
     {
@@ -583,7 +591,7 @@ static BOOL scrollBottomOnInput;
       return;
     }
 
-  scrollBackUnlimited = [defaults boolForKey:ScrollBackUnlimitedKey];
+  scrollBackUnlimited = [self boolForKey:ScrollBackUnlimitedKey];
   
   if (scrollBackUnlimited == YES)
     {
@@ -599,11 +607,11 @@ static BOOL scrollBottomOnInput;
     }
   else
     {
-      scrollBackLines = [defaults integerForKey:ScrollBackLinesKey];
+      scrollBackLines = [self integerForKey:ScrollBackLinesKey];
       if (scrollBackLines <= 0) scrollBackLines = 256;
     }
 
-  scrollBottomOnInput = [defaults boolForKey:ScrollBottomOnInputKey];
+  scrollBottomOnInput = [self boolForKey:ScrollBottomOnInputKey];
 }
 
 - (int)scrollBackLines
@@ -645,7 +653,7 @@ static BOOL loginShell;
       [shell release];
       shell = nil;
     }
-  shell = [defaults stringForKey:ShellKey];
+  shell = [self stringForKey:ShellKey];
   if (!shell && getenv("SHELL"))
     {
       shell = [NSString stringWithCString: getenv("SHELL")];
@@ -656,7 +664,7 @@ static BOOL loginShell;
     }
   shell = [shell retain];
   
-  loginShell = [defaults boolForKey:LoginShellKey];
+  loginShell = [self boolForKey:LoginShellKey];
 }
 - (NSString *)shell
 {
@@ -682,12 +690,12 @@ static BOOL          hideOnAutolaunch;
 @implementation Defaults (Startup)
 - (void)readStartupDefaults
 {
-  startupAction = [defaults integerForKey:StartupActionKey];
+  startupAction = [self integerForKey:StartupActionKey];
   if (startupAction == 0)
     startupAction = 3;
 
-  startupFile = [defaults objectForKey:StartupFileKey];
-  hideOnAutolaunch = [defaults boolForKey:HideOnAutolaunchKey];
+  startupFile = [self objectForKey:StartupFileKey];
+  hideOnAutolaunch = [self boolForKey:HideOnAutolaunchKey];
 }
 - (StartupAction)startupAction
 {

@@ -78,6 +78,8 @@ static Preferences *shared = nil;
            name:NSWindowDidBecomeMainNotification
          object:nil];
 
+  mainWindow = [NSApp mainWindow];
+
   return self;
 }
 
@@ -124,7 +126,14 @@ static Preferences *shared = nil;
 - (void)mainWindowDidChange:(NSNotification *)notif
 {
   NSLog(@"Prefrences: main window now: %@", [[notif object] title]);
+  mainWindow = [notif object];
+  [self switchMode:self];
+  
 }
 
+- (Defaults *)mainWindowDefaults
+{
+  return [NSApp defaultsForWindow:mainWindow];
+}
 
 @end

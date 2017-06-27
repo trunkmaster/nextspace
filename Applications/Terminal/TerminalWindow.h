@@ -30,6 +30,7 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
 
 - (TerminalView *)terminalView;
 - (WindowCloseBehavior)closeBehavior;
+- (Defaults *)defaults; // returned by reference and can be changed
 // Title Bar elements
 - (NSString *)shellPath;
 - (NSString *)deviceName;
