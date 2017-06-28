@@ -1290,7 +1290,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   switch (ch)
     {
     case '\e':
-      if ([Defaults doubleEscape])
+      if ([[ts preferences] doubleEscape])
 	str="\e\e";
       else
 	str="\e";
@@ -1347,7 +1347,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     }
 
     {
-      BOOL commandAsMeta=[Defaults commandAsMeta];
+      BOOL commandAsMeta=[[ts preferences] commandAsMeta];
 
       /*
 	 Thanks to different keyboard layouts and dumb default key handling
@@ -1412,7 +1412,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   color=def_color=0xff;
   [self _reset_terminal];
 
-  iconv_charset=[[Defaults characterSet] cString];
+  iconv_charset=[[[ts preferences] characterSet] cString];
 
   if (strcmp(iconv_charset,"iso-8859-1"))
     {

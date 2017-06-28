@@ -43,237 +43,243 @@ of the License. See COPYING or main.m for more information.
 
 
 -(void) terminalService: (NSPasteboard *)pb
-	userData: (NSString *)name
-	error: (NSString **)error
+               userData: (NSString *)name
+                  error: (NSString **)error
 {
-	NSDictionary *info=[self _serviceInfoForName: name];
+  NSDictionary *info=[self _serviceInfoForName: name];
 
-	int type,input,ret_data,accepttypes;
-	NSString *cmdline;
-	NSString *data;
+  int type,input,ret_data,accepttypes;
+  NSString *cmdline;
+  NSString *data;
 
 
-	NSDebugLLog(@"service",@"run service %@\n",name);
-	if (!info)
-	{
-		NSString *s=
-			_(@"There is no terminal service called '%@'.\n"
-			  @"Your services list is probably out-of-date.\n"
-			  @"Run 'make_services' to update it.");
+  NSDebugLLog(@"service",@"run service %@\n",name);
+  if (!info)
+    {
+      NSString *s=
+        _(@"There is no terminal service called '%@'.\n"
+          @"Your services list is probably out-of-date.\n"
+          @"Run 'make_services' to update it.");
 
-		*error=[[NSString stringWithFormat: s, name] retain];
-		return;
-	}
+      *error=[[NSString stringWithFormat: s, name] retain];
+      return;
+    }
 
-	type=[[info objectForKey: Type] intValue];
-	ret_data=[[info objectForKey: ReturnData] intValue];
-	input=[[info objectForKey: Input] intValue];
-	cmdline=[info objectForKey: Commandline];
-	if ([info objectForKey: AcceptTypes])
-		accepttypes=[[info objectForKey: AcceptTypes] intValue];
-	else
-		accepttypes=ACCEPT_STRING;
+  type=[[info objectForKey: Type] intValue];
+  ret_data=[[info objectForKey: ReturnData] intValue];
+  input=[[info objectForKey: Input] intValue];
+  cmdline=[info objectForKey: Commandline];
+  if ([info objectForKey: AcceptTypes])
+    accepttypes=[[info objectForKey: AcceptTypes] intValue];
+  else
+    accepttypes=ACCEPT_STRING;
 
-	NSDebugLLog(@"service",@"cmdline='%@' %i %i %i %i",
-		cmdline,type,ret_data,input,accepttypes);
+  NSDebugLLog(@"service",@"cmdline='%@' %i %i %i %i",
+              cmdline,type,ret_data,input,accepttypes);
 
-	data=nil;
-	if (input && accepttypes&ACCEPT_STRING &&
-	    (data=[pb stringForType: NSStringPboardType]))
-	{
-	}
-	else if (input && accepttypes&ACCEPT_FILENAMES &&
-	    (data=[pb propertyListForType: NSFilenamesPboardType]))
-	{
-		NSDebugLLog(@"service",@"got filenames '%@' '%@' %i",data,[data class],[data isProxy]);
-	}
+  data=nil;
+  if (input && accepttypes&ACCEPT_STRING &&
+      (data=[pb stringForType: NSStringPboardType]))
+    {
+    }
+  else if (input && accepttypes&ACCEPT_FILENAMES &&
+           (data=[pb propertyListForType: NSFilenamesPboardType]))
+    {
+      NSDebugLLog(@"service",@"got filenames '%@' '%@' %i",data,[data class],[data isProxy]);
+    }
 
-	NSDebugLLog(@"service",@"got data '%@'",data);
+  NSDebugLLog(@"service",@"got data '%@'",data);
 
-	if (input==INPUT_STDIN)
-	{
-		if ([data isKindOfClass: [NSArray class]])
-			data=[(NSArray *)data componentsJoinedByString: @"\n"];
-	}
-	else if (input==INPUT_CMDLINE)
-	{
-		if (data && [data isKindOfClass: [NSArray class]])
-			data=[(NSArray *)data componentsJoinedByString: @" "];
-	}
+  if (input==INPUT_STDIN)
+    {
+      if ([data isKindOfClass: [NSArray class]])
+        data=[(NSArray *)data componentsJoinedByString: @"\n"];
+    }
+  else if (input==INPUT_CMDLINE)
+    {
+      if (data && [data isKindOfClass: [NSArray class]])
+        data=[(NSArray *)data componentsJoinedByString: @" "];
+    }
 
-	{
-		int i;
-		BOOL add_args;
-		NSMutableString *str=[cmdline mutableCopy];
-		unichar ch;
-		int p_pos;
+  {
+    int i;
+    BOOL add_args;
+    NSMutableString *str=[cmdline mutableCopy];
+    unichar ch;
+    int p_pos;
 
-		add_args=YES;
-		p_pos=-1;
-		for (i=0;i<[str length]-1;i++)
-		{
-			ch=[str characterAtIndex: i];
-			if (ch!='%')
-				continue;
-			ch=[str characterAtIndex: i+1];
-			if (ch=='%')
-			{
-				[str replaceCharactersInRange: NSMakeRange(i,1)
-					withString: @""];
-				continue;
-			}
-			if (ch=='s' && data && input==2)
-			{
-				add_args=NO;
-				[str replaceCharactersInRange: NSMakeRange(i,2)
-					withString: data];
-				i+=[data length];
-				continue;
-			}
-			if (ch=='p')
-			{
-				p_pos=i;
-				continue;
-			}
-		}
+    add_args=YES;
+    p_pos=-1;
+    for (i=0;i<[str length]-1;i++)
+      {
+        ch=[str characterAtIndex: i];
+        if (ch!='%')
+          continue;
+        ch=[str characterAtIndex: i+1];
+        if (ch=='%')
+          {
+            [str replaceCharactersInRange: NSMakeRange(i,1)
+                               withString: @""];
+            continue;
+          }
+        if (ch=='s' && data && input==2)
+          {
+            add_args=NO;
+            [str replaceCharactersInRange: NSMakeRange(i,2)
+                               withString: data];
+            i+=[data length];
+            continue;
+          }
+        if (ch=='p')
+          {
+            p_pos=i;
+            continue;
+          }
+      }
 
-		if (input==INPUT_CMDLINE && data && add_args)
-		{
-			[str appendString: @" "];
-			[str appendString: data];
-		}
-		cmdline=[str autorelease];
+    if (input==INPUT_CMDLINE && data && add_args)
+      {
+        [str appendString: @" "];
+        [str appendString: data];
+      }
+    cmdline=[str autorelease];
 
-		if (p_pos!=-1)
-		{
-			cmdline=[TerminalServicesParameterWindowController
+    if (p_pos!=-1)
+      {
+        cmdline=[TerminalServicesParameterWindowController
 				getCommandlineFrom: cmdline  selectRange: NSMakeRange(p_pos,2)
-				service: name];
-			if (!cmdline)
-			{
-				*error=[_(@"Service aborted by user.") retain];
-				return;
-			}
-		}
-	}
+                                           service: name];
+        if (!cmdline)
+          {
+            *error=[_(@"Service aborted by user.") retain];
+            return;
+          }
+      }
+  }
 
-	NSDebugLLog(@"service",@"final command line='%@'",cmdline);
+  NSDebugLLog(@"service",@"final command line='%@'",cmdline);
 
-	switch (type)
-	{
-	case TYPE_BACKGROUND:
-	{
-		NSTask *t=[[[NSTask alloc] init] autorelease];
-		NSPipe *sin,*sout;
-		NSFileHandle *in,*out;
+  switch (type)
+    {
+    case TYPE_BACKGROUND:
+      {
+        NSTask *t=[[[NSTask alloc] init] autorelease];
+        NSPipe *sin,*sout;
+        NSFileHandle *in,*out;
 
-		[t setLaunchPath: @"/bin/sh"];
-		[t setArguments: [NSArray arrayWithObjects: @"-c",cmdline,nil]];
+        [t setLaunchPath: @"/bin/sh"];
+        [t setArguments: [NSArray arrayWithObjects: @"-c",cmdline,nil]];
 
-		NSDebugLLog(@"service",@"t=%@",t);
+        NSDebugLLog(@"service",@"t=%@",t);
 
-		sin=[[[NSPipe alloc] init] autorelease];
-		[t setStandardInput: sin];
-		in=[sin fileHandleForWriting];
-		sout=[[[NSPipe alloc] init] autorelease];
-		[t setStandardOutput: sout];
-		out=[sout fileHandleForReading];
+        sin=[[[NSPipe alloc] init] autorelease];
+        [t setStandardInput: sin];
+        in=[sin fileHandleForWriting];
+        sout=[[[NSPipe alloc] init] autorelease];
+        [t setStandardOutput: sout];
+        out=[sout fileHandleForReading];
 
-		NSDebugLLog(@"service",@"launching");
-		[t launch];
+        NSDebugLLog(@"service",@"launching");
+        [t launch];
 
-		if (data && input==INPUT_STDIN)
-		{
-			NSDebugLLog(@"service",@"writing data");
-			[in writeData: [data dataUsingEncoding: NSUTF8StringEncoding]];
-		}
-		[in closeFile];
+        if (data && input==INPUT_STDIN)
+          {
+            NSDebugLLog(@"service",@"writing data");
+            [in writeData: [data dataUsingEncoding: NSUTF8StringEncoding]];
+          }
+        [in closeFile];
 
-/*		NSDebugLLog(@"service",@"waitUntilExit");
-		[t waitUntilExit];*/
+        /*		NSDebugLLog(@"service",@"waitUntilExit");
+                        [t waitUntilExit];*/
 
-		if (ret_data)
-		{
-			NSString *s;
-			NSData *result;
-			NSDebugLLog(@"service",@"get result");
-			result=[out readDataToEndOfFile];
-			NSDebugLLog(@"service",@"got data |%@|",result);
-			s=[[NSString alloc] initWithData: result encoding: NSUTF8StringEncoding];
-			s=[s autorelease];
-			NSDebugLLog(@"service",@"= '%@'",s);
+        if (ret_data)
+          {
+            NSString *s;
+            NSData *result;
+            NSDebugLLog(@"service",@"get result");
+            result=[out readDataToEndOfFile];
+            NSDebugLLog(@"service",@"got data |%@|",result);
+            s=[[NSString alloc] initWithData: result encoding: NSUTF8StringEncoding];
+            s=[s autorelease];
+            NSDebugLLog(@"service",@"= '%@'",s);
 
-			if (accepttypes==(ACCEPT_STRING|ACCEPT_FILENAMES))
-				[pb declareTypes: [NSArray arrayWithObjects:
-						NSStringPboardType,NSFilenamesPboardType,nil]
-					owner: self];
-			else if (accepttypes==ACCEPT_FILENAMES)
-				[pb declareTypes: [NSArray arrayWithObjects:
-						NSFilenamesPboardType,nil]
-					owner: self];
-			else if (accepttypes==ACCEPT_STRING)
-				[pb declareTypes: [NSArray arrayWithObjects:
-						NSStringPboardType,nil]
-					owner: self];
+            if (accepttypes==(ACCEPT_STRING|ACCEPT_FILENAMES))
+              [pb declareTypes: [NSArray arrayWithObjects:
+                                           NSStringPboardType,NSFilenamesPboardType,nil]
+                         owner: self];
+            else if (accepttypes==ACCEPT_FILENAMES)
+              [pb declareTypes: [NSArray arrayWithObjects:
+                                           NSFilenamesPboardType,nil]
+                         owner: self];
+            else if (accepttypes==ACCEPT_STRING)
+              [pb declareTypes: [NSArray arrayWithObjects:
+                                           NSStringPboardType,nil]
+                         owner: self];
 
-			if (accepttypes&ACCEPT_FILENAMES)
-			{
-				NSMutableArray *ma=[[[NSMutableArray alloc] init] autorelease];
-				int i,c=[s length];
-				NSRange cur;
+            if (accepttypes&ACCEPT_FILENAMES)
+              {
+                NSMutableArray *ma=[[[NSMutableArray alloc] init] autorelease];
+                int i,c=[s length];
+                NSRange cur;
 
-				for (i=0;i<c;)
-				{
-					for (;i<c && [s characterAtIndex: i]<=32;i++) ;
-					if (i==c)
-						break;
-					cur.location=i;
-					for (;i<c && [s characterAtIndex: i]>32;i++) ;
-					cur.length=i-cur.location;
-					[ma addObject: [s substringWithRange: cur]];
-				}
+                for (i=0;i<c;)
+                  {
+                    for (;i<c && [s characterAtIndex: i]<=32;i++) ;
+                    if (i==c)
+                      break;
+                    cur.location=i;
+                    for (;i<c && [s characterAtIndex: i]>32;i++) ;
+                    cur.length=i-cur.location;
+                    [ma addObject: [s substringWithRange: cur]];
+                  }
 
-				NSDebugLLog(@"service",@"returning filenames: %@",ma);
-				[pb setPropertyList: ma forType: NSFilenamesPboardType];
-			}
+                NSDebugLLog(@"service",@"returning filenames: %@",ma);
+                [pb setPropertyList: ma forType: NSFilenamesPboardType];
+              }
 
-			if (accepttypes&ACCEPT_STRING)
-				[pb setString: s  forType: NSStringPboardType];
+            if (accepttypes&ACCEPT_STRING)
+              [pb setString: s  forType: NSStringPboardType];
 
-			NSDebugLLog(@"service",@"return is set");
-		}
-		else
-		{
-			NSDebugLLog(@"service",@"ignoring output");
-			[out closeFile];
-			[t waitUntilExit];
-		}
+            NSDebugLLog(@"service",@"return is set");
+          }
+        else
+          {
+            NSDebugLLog(@"service",@"ignoring output");
+            [out closeFile];
+            [t waitUntilExit];
+          }
 
-		NSDebugLLog(@"service",@"clean up");
-	}
-		break;
+        NSDebugLLog(@"service",@"clean up");
+      }
+      break;
 
 
-	case TYPE_WINDOW_IDLE:
-	case TYPE_WINDOW_NEW:
-	{
-		TerminalWindowController *twc=nil;
+    case TYPE_WINDOW_IDLE:
+    case TYPE_WINDOW_NEW:
+      {
+        TerminalWindowController *twc=nil;
 
-		if (type==TYPE_WINDOW_IDLE)
-			twc=[[NSApp delegate] idleTerminalWindow];
-		if (!twc)
-			twc=[[NSApp delegate] newTerminalWindow];
+        if (type==TYPE_WINDOW_IDLE)
+          {
+            twc=[[NSApp delegate] idleTerminalWindow];
+            [twc showWindow:self];
+          }
+        if (!twc)
+          {
+            twc=[[NSApp delegate] createTerminalWindow];
+            [twc showWindow:self];
+          }
 
-		NSDebugLLog(@"service",@"got window %@",twc);
+        NSDebugLLog(@"service",@"got window %@",twc);
 
-		[[twc terminalView] runProgram: @"/bin/sh"
-			withArguments: [NSArray arrayWithObjects: @"-c",cmdline,nil]
-			initialInput: input==INPUT_STDIN?data:nil];
-	}
-		break;
+        [[twc terminalView] runProgram: @"/bin/sh"
+                         withArguments: [NSArray arrayWithObjects: @"-c",cmdline,nil]
+                          initialInput: input==INPUT_STDIN?data:nil];
+      }
+      break;
 
-	}
-	NSDebugLLog(@"service",@"return");
+    }
+  NSDebugLLog(@"service",@"return");
 }
 
 
