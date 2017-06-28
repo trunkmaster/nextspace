@@ -69,10 +69,10 @@ static Preferences *shared = nil;
                               nil];
   [prefModules retain];
 
-  if (!ud)
-    {
-      ud = [NSUserDefaults standardUserDefaults];
-    }
+  // if (!ud)
+  //   {
+  //     ud = [NSUserDefaults standardUserDefaults];
+  //   }
 
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -129,8 +129,9 @@ static Preferences *shared = nil;
 {
   id <PrefsModule> module;
 
-  NSLog(@"Prefrences: main window now: %@", [[notif object] title]);
-  // mainWindow = [notif object];
+  NSLog(@"Preferences: main window now: %@", [[notif object] title]);
+  // mainWindow = [NSApp mainWindow];
+  mainWindow = [notif object];
   
   module = [prefModules objectForKey:[modeBtn titleOfSelectedItem]];
   [module showWindow];
@@ -138,7 +139,8 @@ static Preferences *shared = nil;
 
 - (Defaults *)mainWindowPreferences
 {
-  return [(Controller *)NSApp preferencesForWindow:mainWindow];
+  // return [(Controller *)[NSApp delegate] preferencesForWindow:[NSApp mainWindow]]
+    return [[NSApp delegate] preferencesForWindow:mainWindow];
 }
 
 @end

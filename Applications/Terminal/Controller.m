@@ -142,13 +142,14 @@
       args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
       cmdline = [args componentsJoinedByString:@" "];
 
-      twc = [self newTerminalWindow];
+      twc = [self createTerminalWindow];
       [[twc terminalView]
         runProgram:@"/bin/sh"
         withArguments:[NSArray arrayWithObjects:@"-c",cmdline,nil]
         initialInput:nil];
+      [twc showWindow:self];
     }
-  else if ([[Defaults shared] startupAction] == OnStartCreateShell)
+  else //if ([[Defaults shared] startupAction] == OnStartCreateShell)
     {
       [self openWindow:self];
     }
@@ -229,10 +230,11 @@
 
   [NSApp activateIgnoringOtherApps:YES];
 
-  twc = [self newTerminalWindow];
+  twc = [self createTerminalWindow];
   [[twc terminalView] runProgram:filename
 		   withArguments:nil
 		    initialInput:nil];
+  [twc showWindow:self];
 
   return YES;
 }
@@ -261,10 +263,12 @@
         ![o boolValue])
       {
         twc = [self idleTerminalWindow];
+        [twc showWindow:self];        
       }
     else
       {
-        twc = [self newTerminalWindow];
+        twc = [self createTerminalWindow];
+        [twc showWindow:self];
       }
   }
 
@@ -304,13 +308,14 @@
 - (void)childWithPID:(int)pid didExit:(int)status
 {
   TerminalWindowController *twc;
-  int windowCloseBehavior = [[Defaults shared] windowCloseBehavior];
+  int                      windowCloseBehavior;
 
   NSLog(@"Child with pid: %i did exit(%i)", pid, status);
   
   twc = [windows objectForKey:[NSString stringWithFormat:@"%i",pid]];
   [twc setDocumentEdited:NO];
-  
+
+  windowCloseBehavior = [[twc preferences] windowCloseBehavior];
   if (windowCloseBehavior != WindowCloseNever)
     {
       if ((windowCloseBehavior == WindowCloseAlways) || (status == 0))
@@ -441,15 +446,19 @@
   [[NSApp delegate] checkActiveWindows];
 }
 
-- (Defaults *)preferencesForWindow:(NSWindow *)win
+- (id)preferencesForWindow:(NSWindow *)win
 {
-  for (TerminalWindowController *windowController in windows)
+  NSLog(@"Controller: searching for main window.");
+  for (TerminalWindowController *windowController in [windows allValues])
     {
       if ([windowController window] == win)
         {
-          return [windowController defaults];
+          NSLog(@"Controller: window found!");
+          return [windowController preferences];
         }
     }
+  
+  NSLog(@"Controller: window NOT found!");
   
   return nil;
 }
@@ -468,11 +477,7 @@
 // to normal when running program finishes.
 // Also in 'Program' mode window will never close despite the 'When Shell Exits'
 // preferences setting.
-// + (TerminalWindowController *)newWindowWithProgram:(NSString *)path
-// {
-// }
-
-- (TerminalWindowController *)newTerminalWindow
+- (TerminalWindowController *)createTerminalWindow
 {
   TerminalWindowController *twc;
 
@@ -494,20 +499,20 @@
       [[twc window] center];
     }
   
-  [twc showWindow:self];
-
   return twc;
 }
 
 - (TerminalWindowController *)newWindowWithShell
 {
-  TerminalWindowController *twc = [self newTerminalWindow];
+  TerminalWindowController *twc = [self createTerminalWindow];
   int pid;
 
   if (twc == nil) return nil;
 
   pid = [[twc terminalView] runShell];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
+  
+  [twc showWindow:self];
 
   if (timer == nil)
     {
@@ -522,6 +527,10 @@
   return twc;
 }
 
+// + (TerminalWindowController *)newWindowWithProgram:(NSString *)path
+// {
+// }
+
 - (TerminalWindowController *)idleTerminalWindow
 {
   NSDebugLLog(@"idle",@"get idle window from idle list: %@",idleList);
@@ -529,7 +538,7 @@
   if ([idleList count])
     return [idleList objectAtIndex:0];
   
-  return [self newTerminalWindow];
+  return [self createTerminalWindow];
 }
 
 

@@ -59,6 +59,8 @@
   NSWindow *mainWindow;
 }
 
++ shared;
+
 - (void)activatePanel;
 - (void)closePanel;
 - (void)switchMode:(id)sender;

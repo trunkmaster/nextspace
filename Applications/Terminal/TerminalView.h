@@ -91,6 +91,8 @@ struct selection_range
 
   float border_x, border_y;
 
+  id           defaults;
+
   // Colors
   NSColor	*cursorColor;
   NSUInteger	cursorStyle;
@@ -127,6 +129,9 @@ struct selection_range
   CGFloat	INV_FG_S;
   CGFloat	INV_FG_B;
 }
+
+- initWithPrefences:(id)preferences;
+- (id)preferences;
 
 - (void)setIgnoreResize:(BOOL)ignore;
 

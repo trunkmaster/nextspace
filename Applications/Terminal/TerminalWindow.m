@@ -25,8 +25,6 @@
 NSString *TerminalWindowNoMoreActiveWindowsNotification=
   @"TerminalWindowNoMoreActiveWindowsNotification";
 
-static id defaults;
-
 // Window
 static int terminalColumns;
 static int terminalRows;
@@ -124,7 +122,7 @@ static NSSize winMinimumSize;
     }
 
   // View
-  tView = [[TerminalView alloc] init];
+  tView = [[TerminalView alloc] initWithPrefences:defaults];
   [tView setIgnoreResize:YES];
   [tView setAutoresizingMask:NSViewHeightSizable|NSViewWidthSizable];
   [tView setScroller:scroller];
@@ -168,6 +166,7 @@ static NSSize winMinimumSize;
 
   return self;
 }
+
 - init
 {
   defaults = [Defaults shared]; // NSUserDefaults
@@ -178,7 +177,13 @@ static NSSize winMinimumSize;
 
 - initWithStartupFile:(NSString *)filePath
 {
-  defaults = [[Defaults alloc] initWithFile:filePath];
+  fileName = [filePath lastPathComponent];
+  
+  if (filePath == nil)
+    defaults = [[Defaults alloc] init];
+  else
+    defaults = [[Defaults alloc] initWithFile:filePath];
+  
   [self _setupWindow];
 
   return self;
@@ -203,7 +208,7 @@ static NSSize winMinimumSize;
   return windowCloseBehavior;
 }
 
-- (Defaults *)defaults
+- (Defaults *)preferences
 {
   return defaults;
 }
@@ -221,7 +226,7 @@ static NSSize winMinimumSize;
 
 - (NSString *)fileName
 {
-  return @"Default";
+  return fileName;
 }
 
 - (NSString *)windowSize
@@ -340,12 +345,14 @@ static NSSize winMinimumSize;
       [value intValue] != terminalRows)
     {
       terminalRows = [value intValue];
+      [defaults setInteger:terminalRows forKey:WindowHeightKey];
       isWindowSizeChanged = YES;
     }
   if ((value = [prefs objectForKey:WindowWidthKey]) &&
       [value intValue] != terminalColumns)
     {
       terminalColumns = [value intValue];
+      [defaults setInteger:terminalRows forKey:WindowHeightKey];
       isWindowSizeChanged = YES;
     }
 
@@ -406,8 +413,8 @@ static NSSize winMinimumSize;
   if ((value = [prefs objectForKey:TerminalFontKey]))
     {
       [tView setFont:[value screenFont]];
-      [tView setBoldFont:[Defaults boldTerminalFontForFont:value]];
-      charCellSize = [Defaults characterCellSizeForFont:value];
+      [tView setBoldFont:[defaults boldTerminalFontForFont:value]];
+      charCellSize = [defaults characterCellSizeForFont:value];
       isWindowSizeChanged = YES;
       [tView setNeedsDisplay:YES];
     }
