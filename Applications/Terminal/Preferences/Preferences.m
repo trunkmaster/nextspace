@@ -7,6 +7,8 @@
   of the License. See COPYING or main.m for more information.
 */
 
+#import "../Controller.h"
+#import "../Controller.h"
 #import "Preferences.h"
 
 #import "ColorsPrefs.h"
@@ -112,28 +114,31 @@ static Preferences *shared = nil;
 - (void)switchMode:(id)sender
 {
   id <PrefsModule> module;
-  NSView *mView;
+  NSView           *mView;
 
   module = [prefModules objectForKey:[sender titleOfSelectedItem]];
   mView = [module view];
-  // if ([modeContentBox contentView] != mView)
-  //   {
+  if ([modeContentBox contentView] != mView)
+    {
       [(NSBox *)modeContentBox setContentView:mView];
-      [module showDefault:self];
-    // }
+      [module showWindow];
+    }
 }
 
 - (void)mainWindowDidChange:(NSNotification *)notif
 {
+  id <PrefsModule> module;
+
   NSLog(@"Prefrences: main window now: %@", [[notif object] title]);
-  mainWindow = [notif object];
-  [self switchMode:self];
+  // mainWindow = [notif object];
   
+  module = [prefModules objectForKey:[modeBtn titleOfSelectedItem]];
+  [module showWindow];
 }
 
-- (Defaults *)mainWindowDefaults
+- (Defaults *)mainWindowPreferences
 {
-  return [NSApp defaultsForWindow:mainWindow];
+  return [(Controller *)NSApp preferencesForWindow:mainWindow];
 }
 
 @end

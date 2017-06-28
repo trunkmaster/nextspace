@@ -30,23 +30,26 @@
   return view;
 }
 
-- (void)showDefault:(id)sender
+- (void)showWindow
 {
-  [shellField setStringValue:[Defaults shell]];
-  [loginShellBtn setState:[Defaults loginShell]];
+  // prefs = [[Preferences shared] mainWindowPreferences];
 }
 
 - (BOOL)       control:(NSControl *)control
   textShouldEndEditing:(NSText *)fieldEditor
 {
-  [ud setObject:[control stringValue] forKey:ShellKey];
-  [Defaults readShellDefaults];
+  Defaults *defs = [Defaults shared];
+  
+  [defs setObject:[control stringValue] forKey:ShellKey];
+  [defs readShellDefaults];
   return YES;
 }
 - (void)setLoginShell:(id)sender
 {
-  [ud setBool:[loginShellBtn state] forKey:LoginShellKey];
-  [Defaults readShellDefaults];
+  Defaults *defs = [Defaults shared];
+  
+  [defs setBool:[loginShellBtn state] forKey:LoginShellKey];
+  [defs readShellDefaults];
 }
 
 @end

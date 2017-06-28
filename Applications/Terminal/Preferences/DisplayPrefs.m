@@ -63,47 +63,51 @@
 // Write values to UserDefaults
 - (void)setDefault:(id)sender
 {
+  Defaults *defs = [Defaults shared];
+  
   if ([bufferEnabledBtn state] == NSOffState)
-    [ud setBool:NO forKey:ScrollBackEnabledKey];
+    [defs setBool:NO forKey:ScrollBackEnabledKey];
   else
-    [ud setBool:YES forKey:ScrollBackEnabledKey];
+    [defs setBool:YES forKey:ScrollBackEnabledKey];
 
 
   if ([bufferLengthMatrix selectedColumn] == 0)
     {
-      [ud setBool:YES forKey:ScrollBackUnlimitedKey];
+      [defs setBool:YES forKey:ScrollBackUnlimitedKey];
     }
   else
     {
       // set length to value of textfield in UserDefaults
-      [ud setBool:NO forKey:ScrollBackUnlimitedKey];
-      [ud setInteger:[bufferLengthField intValue]
+      [defs setBool:NO forKey:ScrollBackUnlimitedKey];
+      [defs setInteger:[bufferLengthField intValue]
               forKey:ScrollBackLinesKey];
     }
   [self setBufferEnabled:bufferEnabledBtn];
 
   if ([scrollBottomBtn state] == NSOffState)
-    [ud setBool:NO forKey:ScrollBottomOnInputKey];
+    [defs setBool:NO forKey:ScrollBottomOnInputKey];
   else
-    [ud setBool:YES forKey:ScrollBottomOnInputKey];
+    [defs setBool:YES forKey:ScrollBottomOnInputKey];
 
-  [ud synchronize];
-  [Defaults readDisplayDefaults];
+  [defs synchronize];
+  [defs readDisplayDefaults];
 }
 // Reset onscreen controls to values stored in UserDefaults
 - (void)showDefault:(id)sender
 {
-  if ([Defaults scrollBackEnabled] == NO)
+  Defaults *defs = [Defaults shared];
+  
+  if ([defs scrollBackEnabled] == NO)
     {
       [bufferEnabledBtn setState:NSOffState];
     }
   else
     {
-      int sbLines = [Defaults scrollBackLines];
+      int sbLines = [defs scrollBackLines];
       
       [bufferEnabledBtn setState:NSOnState];
       
-      if ([Defaults scrollBackUnlimited] == YES)
+      if ([defs scrollBackUnlimited] == YES)
         [bufferLengthMatrix selectCellWithTag:0];
       else
         [bufferLengthMatrix selectCellWithTag:1];
@@ -112,7 +116,12 @@
     }
   
   [self setBufferEnabled:bufferEnabledBtn];
-  [scrollBottomBtn setState:[Defaults scrollBottomOnInput]];
+  [scrollBottomBtn setState:[defs scrollBottomOnInput]];
+}
+
+- (void)showWindow
+{
+  // prefs = [[Preferences shared] mainWindowPreferences];
 }
 // Set values set to visible window
 - (void)setWindow:(id)sender

@@ -16,8 +16,6 @@
 
   [NSBundle loadNibNamed:@"Startup" owner:self];
 
-  defs = [[Preferences shared] mainWindowDefaults];
-
   return self;
 }
 
@@ -37,29 +35,32 @@
   return view;
 }
 
-- (void)showDefault:(id)sender
+- (void)showWindow
 {
-  defs = [[Preferences shared] mainWindowDefaults];
-  
-  [actionsMatrix selectCellWithTag:[defs startupAction]];
-  [autolaunchBtn setState:[defs hideOnAutolaunch]];
+  // prefs = [[Preferences shared] mainWindowPreferences];
 }
 
 - (void)setAction:(id)sender
 {
+  Defaults *defs = [Defaults shared];
+  
   [defs setInteger:[[actionsMatrix selectedCell] tag]
             forKey:StartupActionKey];
   [defs synchronize];
 }
 - (void)setFilePath:(id)sender
 {
-  [ud setObject:[filePathField stringValue] forKey:StartupFileKey];
-  [ud synchronize]; 
+  Defaults *defs = [Defaults shared];
+  
+  [defs setObject:[filePathField stringValue] forKey:StartupFileKey];
+  [defs synchronize];
 }
 - (void)setAutolaunch:(id)sender
 {
-  [ud setBool:[autolaunchBtn state] forKey:HideOnAutolaunchKey];
-  [ud synchronize];  
+  Defaults *defs = [Defaults shared];
+  
+  [defs setBool:[autolaunchBtn state] forKey:HideOnAutolaunchKey];
+  [defs synchronize];
 }
 
 @end

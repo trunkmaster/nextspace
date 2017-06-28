@@ -6,6 +6,7 @@
 
 #import "Preferences/Preferences.h"
 #import "SetTitlePanel.h"
+#import "TerminalWindow.h"
 
 @interface Controller : NSObject
 {
@@ -28,7 +29,7 @@
 
 - (void)window:(TerminalWindowController *)twc becameIdle:(BOOL)idle;
 - (void)closeWindow:(TerminalWindowController *)twc;
-- (Defaults *)defaultsForWindow:(NSWindow *)win;
+- (Defaults *)preferencesForWindow:(NSWindow *)win;
 
 - (TerminalWindowController *)newTerminalWindow;
 - (TerminalWindowController *)newWindowWithShell;
