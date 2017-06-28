@@ -13,8 +13,8 @@ NSUserDefaults *ud;
 
 @interface Defaults : NSObject
 {
-  NSString            *filePath;
-  NSMutableDictionary *defaults;
+  NSString *filePath;
+  id       defaults; // NSUserDefaults or NSMutableDictionary
 }
 
 + shared;
@@ -38,7 +38,7 @@ NSUserDefaults *ud;
 - (BOOL)boolForKey:(NSString*)key;
 - (void)setBool:(BOOL)value forKey:(NSString*)key;
 
-- (NSStr)stringForKey:(NSString*)key;
+- (NSString *)stringForKey:(NSString*)key;
 
 @end
 

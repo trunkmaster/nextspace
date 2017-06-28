@@ -53,9 +53,9 @@
 @implementation TerminalApplication
 - (void)sendEvent:(NSEvent *)e
 {
-  if ([e type]==NSKeyDown && 
-      [e modifierFlags]&NSCommandKeyMask &&
-      [Defaults commandAsMeta])
+  if ([e type] == NSKeyDown && 
+      [e modifierFlags] & NSCommandKeyMask &&
+      [[Defaults shared] commandAsMeta])
     {
       NSDebugLLog(@"key",@"intercepting key equivalent");
       [[e window] sendEvent:e];

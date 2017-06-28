@@ -9,16 +9,32 @@
 
 #import <AppKit/AppKit.h>
 
+#import "../Defaults.h"
+
 @protocol PrefsModule
 
+// Name that will be added to popup button
 + (NSString *)name;
+// Returns view which contains controls to manipulate preferences
+- (NSView *)view;
+// Show preferences of main window
+- (void)showWindow;
+
+// The following methods are not defined by protocol by must carry the following
+// meaning:
+// - (void)setDefault:(id)sender;
+// 	Overwrites default preferences (~/Library/Preferences/Terminal.plist).
+// - (void)showDefault:(id)sender;
+// 	Reads from default preferences (~/Library/Preferences/Terminal.plist).
+// - (void)setWindow:(id)sender;
+// 	Send changed preferences to window. No files changed or updated.
+
+// Leave these here for informational purposes.
 // + (NSImage *)icon; // TODO
 // + (NSString *)shortcut; // TODO
 // + (NSUInteger)priority; // TODO
-- (NSView *)view;
 // - (BOOL)willShow; // TODO
 // - (BOOL)willHide; // TODO
-- (void)showDefault:(id)sender;
 // - (BOOL)isEdited; // TODO
 
 @end
@@ -26,6 +42,7 @@
 @interface PreferencesPanel : NSPanel
 {
   BOOL     fontPanelOpened;
+  NSWindow *mainWindow;
 }
 
 - (void)fontPanelOpened:(BOOL)isOpened;
@@ -46,8 +63,6 @@
 - (void)closePanel;
 - (void)switchMode:(id)sender;
 
-- (Defaults *)mainWindowDefaults;
+- (Defaults *)mainWindowPreferences;
 
 @end
-
-#import "../Defaults.h"

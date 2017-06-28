@@ -71,58 +71,69 @@
                             alpha:[[desc objectForKey:@"Alpha"] floatValue]];
 }
 
+// Overwrites default preferences (~/Library/Preferences/Terminal.plist).
 - (void)setDefault:(id)sender
 {
-  [ud setBool:[useBoldBtn state] forKey:TerminalFontUseBoldKey];
+  Defaults *defs = [Defaults shared];
+  
+  [defs setBool:[useBoldBtn state] forKey:TerminalFontUseBoldKey];
 
   // Cursor
-  [ud setObject:[Defaults descriptionFromColor:[cursorColorBtn color]]
-         forKey:CursorColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[cursorColorBtn color]]
+           forKey:CursorColorKey];
     
-  [ud setInteger:[[cursorStyleMatrix selectedCell] tag] forKey:CursorStyleKey];
+  [defs setInteger:[[cursorStyleMatrix selectedCell] tag] forKey:CursorStyleKey];
 
   // Window
-  [ud setObject:[self _descriptionFromColor:[windowBGColorBtn color]]
+  [defs setObject:[self _descriptionFromColor:[windowBGColorBtn color]]
          forKey:WindowBGColorKey];
-  [ud setObject:[self _descriptionFromColor:[windowSelectionColorBtn color]]
+  [defs setObject:[self _descriptionFromColor:[windowSelectionColorBtn color]]
          forKey:SelectionBGColorKey];
 
   // Text
-  [ud setObject:[self _descriptionFromColor:[normalTextColorBtn color]]
+  [defs setObject:[self _descriptionFromColor:[normalTextColorBtn color]]
          forKey:TextNormalColorKey];
-  [ud setObject:[self _descriptionFromColor:[blinkTextColorBtn color]]
+  [defs setObject:[self _descriptionFromColor:[blinkTextColorBtn color]]
          forKey:TextBlinkColorKey];
-  [ud setObject:[self _descriptionFromColor:[boldTextColorBtn color]]
+  [defs setObject:[self _descriptionFromColor:[boldTextColorBtn color]]
          forKey:TextBoldColorKey];
   
-  [ud setObject:[self _descriptionFromColor:[inverseTextBGColorBtn color]]
+  [defs setObject:[self _descriptionFromColor:[inverseTextBGColorBtn color]]
          forKey:TextInverseBGColorKey];
-  [ud setObject:[self _descriptionFromColor:[inverseTextFGColor color]]
+  [defs setObject:[self _descriptionFromColor:[inverseTextFGColor color]]
          forKey:TextInverseFGColorKey];
   
+  [defs synchronize];
   
-  [ud synchronize];
-  
-  [Defaults readColorsDefaults];
+  [defs readColorsDefaults];
 }
+// Reads from default preferences (~/Library/Preferences/Terminal.plist).
 - (void)showDefault:(id)sender
 {
+  Defaults *defs = [Defaults shared];
+  
   //Window
-  [windowBGColorBtn setColor:[Defaults windowBackgroundColor]];
-  [windowSelectionColorBtn setColor:[Defaults windowSelectionColor]];
-  [normalTextColorBtn setColor:[Defaults textNormalColor]];
-  [blinkTextColorBtn setColor:[Defaults textBlinkColor]];
-  [boldTextColorBtn setColor:[Defaults textBoldColor]];
+  [windowBGColorBtn setColor:[defs windowBackgroundColor]];
+  [windowSelectionColorBtn setColor:[defs windowSelectionColor]];
+  [normalTextColorBtn setColor:[defs textNormalColor]];
+  [blinkTextColorBtn setColor:[defs textBlinkColor]];
+  [boldTextColorBtn setColor:[defs textBoldColor]];
   
-  [inverseTextBGColorBtn setColor:[Defaults textInverseBackground]];
-  [inverseTextFGColor setColor:[Defaults textInverseForeground]];
+  [inverseTextBGColorBtn setColor:[defs textInverseBackground]];
+  [inverseTextFGColor setColor:[defs textInverseForeground]];
   
-  [useBoldBtn setState:([Defaults useBoldTerminalFont] == YES)];
+  [useBoldBtn setState:([defs useBoldTerminalFont] == YES)];
 
   // Cursor
-  [cursorColorBtn setColor:[Defaults cursorColor]];
-  [cursorStyleMatrix selectCellWithTag:[Defaults cursorStyle]];
+  [cursorColorBtn setColor:[defs cursorColor]];
+  [cursorStyleMatrix selectCellWithTag:[defs cursorStyle]];
 }
+// Show preferences of main window
+- (void)showWindow
+{
+  // prefs = [[Preferences shared] mainWindowPreferences];
+}
+// Send changed preferences to window. No files changed or updated.
 - (void)setWindow:(id)sender
 {
   NSMutableDictionary *prefs;
@@ -134,8 +145,9 @@
   [prefs setObject:[self _descriptionFromColor:[cursorColorBtn color]]
             forKey:CursorColorKey];
 
-  [prefs setObject:[NSNumber numberWithInteger:[[cursorStyleMatrix selectedCell] tag]]
-            forKey:CursorStyleKey];
+  [prefs
+    setObject:[NSNumber numberWithInteger:[[cursorStyleMatrix selectedCell] tag]]
+       forKey:CursorStyleKey];
   
   [prefs setObject:[self _descriptionFromColor:[windowBGColorBtn color]]
             forKey:WindowBGColorKey];
