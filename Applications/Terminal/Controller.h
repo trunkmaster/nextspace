@@ -29,9 +29,9 @@
 
 - (void)window:(TerminalWindowController *)twc becameIdle:(BOOL)idle;
 - (void)closeWindow:(TerminalWindowController *)twc;
-- (Defaults *)preferencesForWindow:(NSWindow *)win;
+- (id)preferencesForWindow:(NSWindow *)win;
 
-- (TerminalWindowController *)newTerminalWindow;
+- (TerminalWindowController *)createTerminalWindow;
 - (TerminalWindowController *)newWindowWithShell;
 - (TerminalWindowController *)idleTerminalWindow;
 

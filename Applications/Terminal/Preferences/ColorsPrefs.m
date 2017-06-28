@@ -79,7 +79,7 @@
   [defs setBool:[useBoldBtn state] forKey:TerminalFontUseBoldKey];
 
   // Cursor
-  [defs setObject:[Defaults descriptionFromColor:[cursorColorBtn color]]
+  [defs setObject:[self _descriptionFromColor:[cursorColorBtn color]]
            forKey:CursorColorKey];
     
   [defs setInteger:[[cursorStyleMatrix selectedCell] tag] forKey:CursorStyleKey];
@@ -131,7 +131,28 @@
 // Show preferences of main window
 - (void)showWindow
 {
-  // prefs = [[Preferences shared] mainWindowPreferences];
+  id prefs = [[Preferences shared] mainWindowPreferences];
+
+  if (!prefs)
+    NSLog(@"Main window preferences is empty. Do not update section.");
+  else
+    NSLog(@"Main window preferences: %@", prefs);
+  
+  //Window
+  [windowBGColorBtn setColor:[prefs windowBackgroundColor]];
+  [windowSelectionColorBtn setColor:[prefs windowSelectionColor]];
+  [normalTextColorBtn setColor:[prefs textNormalColor]];
+  [blinkTextColorBtn setColor:[prefs textBlinkColor]];
+  [boldTextColorBtn setColor:[prefs textBoldColor]];
+  
+  [inverseTextBGColorBtn setColor:[prefs textInverseBackground]];
+  [inverseTextFGColor setColor:[prefs textInverseForeground]];
+  
+  [useBoldBtn setState:([prefs useBoldTerminalFont] == YES)];
+
+  // Cursor
+  [cursorColorBtn setColor:[prefs cursorColor]];
+  [cursorStyleMatrix selectCellWithTag:[prefs cursorStyle]];
 }
 // Send changed preferences to window. No files changed or updated.
 - (void)setWindow:(id)sender

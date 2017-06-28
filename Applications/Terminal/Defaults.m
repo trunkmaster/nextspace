@@ -81,7 +81,7 @@ static Defaults *shared = nil;
 
 - (BOOL)synchronize
 {
-  if ([defaults isKindOfClass:[NSMutableDictionary class]])
+  if ([defaults isKindOfClass:[NSUserDefaults class]])
     return [defaults synchronize];
   else
     return [defaults writeToFile:filePath atomically:YES];

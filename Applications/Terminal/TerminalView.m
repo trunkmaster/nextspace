@@ -487,12 +487,13 @@ static void set_foreground(NSGraphicsContext *gc,
                      colorFromDescription:[prefs objectForKey:CursorColorKey]]
                     retain];
   else
-    cursorColor = [Defaults cursorColor];
+    cursorColor = [defaults cursorColor];
   
   if (prefs)
-    winBG = [Defaults colorFromDescription:[prefs objectForKey:WindowBGColorKey]];
+    winBG = [Defaults
+              colorFromDescription:[prefs objectForKey:WindowBGColorKey]];
   else
-    winBG = [Defaults windowBackgroundColor];
+    winBG = [defaults windowBackgroundColor];
   WIN_BG_H = [winBG hueComponent];
   WIN_BG_S = [winBG saturationComponent];
   WIN_BG_B = [winBG brightnessComponent];
@@ -501,7 +502,7 @@ static void set_foreground(NSGraphicsContext *gc,
     winSel = [Defaults
                colorFromDescription:[prefs objectForKey:SelectionBGColorKey]];
   else
-    winSel = [Defaults windowSelectionColor];
+    winSel = [defaults windowSelectionColor];
   WIN_SEL_H = [winSel hueComponent];
   WIN_SEL_S = [winSel saturationComponent];
   WIN_SEL_B = [winSel brightnessComponent];
@@ -510,7 +511,7 @@ static void set_foreground(NSGraphicsContext *gc,
     winText = [Defaults
                 colorFromDescription:[prefs objectForKey:TextNormalColorKey]];
   else
-    winText = [Defaults textNormalColor];
+    winText = [defaults textNormalColor];
   TEXT_NORM_H = [winText hueComponent];
   TEXT_NORM_S = [winText saturationComponent];
   TEXT_NORM_B = [winText brightnessComponent];
@@ -519,7 +520,7 @@ static void set_foreground(NSGraphicsContext *gc,
     winBlink = [Defaults
                  colorFromDescription:[prefs objectForKey:TextBlinkColorKey]];
   else
-    winBlink = [Defaults textBlinkColor];
+    winBlink = [defaults textBlinkColor];
   TEXT_BLINK_H = [winBlink hueComponent];
   TEXT_BLINK_S = [winBlink saturationComponent];
   TEXT_BLINK_B = [winBlink brightnessComponent];
@@ -528,7 +529,7 @@ static void set_foreground(NSGraphicsContext *gc,
     winBold = [Defaults
                colorFromDescription:[prefs objectForKey:TextBoldColorKey]];
   else
-    winBold = [Defaults textBoldColor];
+    winBold = [defaults textBoldColor];
   TEXT_BOLD_H = [winBold hueComponent];
   TEXT_BOLD_S = [winBold saturationComponent];
   TEXT_BOLD_B = [winBold brightnessComponent];
@@ -537,7 +538,7 @@ static void set_foreground(NSGraphicsContext *gc,
     invBG = [Defaults
                colorFromDescription:[prefs objectForKey:TextInverseBGColorKey]];
   else
-    invBG = [Defaults textInverseBackground];
+    invBG = [defaults textInverseBackground];
   INV_BG_H = [invBG hueComponent];
   INV_BG_S = [invBG saturationComponent];
   INV_BG_B = [invBG brightnessComponent];
@@ -546,7 +547,7 @@ static void set_foreground(NSGraphicsContext *gc,
     invFG = [Defaults
                colorFromDescription:[prefs objectForKey:TextInverseFGColorKey]];
   else
-    invFG = [Defaults textInverseForeground];
+    invFG = [defaults textInverseForeground];
   INV_FG_H = [invFG hueComponent];
   INV_FG_S = [invFG saturationComponent];
   INV_FG_B = [invFG brightnessComponent];
@@ -2331,9 +2332,9 @@ static void set_foreground(NSGraphicsContext *gc,
   NSString *arg0;
   NSString *path;
 
-  path = [Defaults shell];
+  path = [defaults shell];
   
-  if ([Defaults loginShell])
+  if ([defaults loginShell])
     arg0 = [@"-" stringByAppendingString:path];
   else
     arg0 = path;
@@ -2637,25 +2638,25 @@ static int handled_mask= (NSDragOperationCopy |
 // ---
 - initWithFrame:(NSRect)frame
 {
-  sx = [Defaults windowWidth];
-  sy = [Defaults windowHeight];
+  sx = [defaults windowWidth];
+  sy = [defaults windowHeight];
 
   if (!(self = [super initWithFrame:frame])) return nil;
 
-  [self setFont:[Defaults terminalFont]];
-  [self setBoldFont:[Defaults boldTerminalFontForFont:[Defaults terminalFont]]];
+  [self setFont:[defaults terminalFont]];
+  [self setBoldFont:[defaults boldTerminalFontForFont:[defaults terminalFont]]];
 
-  use_multi_cell_glyphs = [Defaults useMultiCellGlyphs];
-  blackOnWhite = [Defaults blackOnWhite];
+  use_multi_cell_glyphs = [defaults useMultiCellGlyphs];
+  // blackOnWhite = [Defaults blackOnWhite];
 
   screen = malloc(sizeof(screen_char_t)*sx*sy);
   memset(screen,0,sizeof(screen_char_t)*sx*sy);
   draw_all = 2;
 
-  max_scrollback = [Defaults scrollBackLines];
+  max_scrollback = [defaults scrollBackLines];
   sbuf = malloc(sizeof(screen_char_t)*sx*max_scrollback);
   memset(sbuf,0,sizeof(screen_char_t)*sx*max_scrollback);
-  scroll_bottom_on_input = [Defaults scrollBottomOnInput];
+  scroll_bottom_on_input = [defaults scrollBottomOnInput];
 
   tp = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
                                                       width:sx
@@ -2670,9 +2671,20 @@ static int handled_mask= (NSDragOperationCopy |
   childTerminalName = nil;
 
   [self updateColors:nil];
-  [self setCursorStyle:[Defaults cursorStyle]];
+  [self setCursorStyle:[defaults cursorStyle]];
 
   return self;
+}
+
+- initWithPrefences:(id)preferences
+{
+  defaults = preferences;
+  return [super init]; // -init calls -initWithFrame:
+}
+
+- (id)preferences
+{
+  return defaults;
 }
 
 - (void)dealloc
@@ -2713,7 +2725,7 @@ static int handled_mask= (NSDragOperationCopy |
   
   ASSIGN(font, aFont);
 
-  s = [Defaults characterCellSizeForFont:font];
+  s = [defaults characterCellSizeForFont:font];
   fx = s.width;
   fy = s.height;
 
