@@ -66,35 +66,41 @@
 
 - (void)setDefault:(id)sender
 {
-  NSFont *font;
+  Defaults *defs = [Defaults shared];
+  NSFont   *font;
   
-  [ud setInteger:[columnsField intValue] forKey:WindowWidthKey];
-  [ud setInteger:[rowsField intValue] forKey:WindowHeightKey];
+  [defs setInteger:[columnsField intValue] forKey:WindowWidthKey];
+  [defs setInteger:[rowsField intValue] forKey:WindowHeightKey];
 
-  [ud setInteger:[[shellExitMatrix selectedCell] tag]
+  [defs setInteger:[[shellExitMatrix selectedCell] tag]
           forKey:WindowCloseBehaviorKey];
 
   font = [fontField font];
-  [ud setObject:[font fontName] forKey:TerminalFontKey];
-  [ud setInteger:(int)[font pointSize] forKey:TerminalFontSizeKey];
+  [defs setObject:[font fontName] forKey:TerminalFontKey];
+  [defs setInteger:(int)[font pointSize] forKey:TerminalFontSizeKey];
 
-  [ud synchronize];
-  [Defaults readWindowDefaults];
-  [Defaults readColorsDefaults];
+  [defs synchronize];
+  [defs readWindowDefaults];
 }
 - (void)showDefault:(id)sender
 {
-  NSFont *font;
+  Defaults *defs = [Defaults shared];
+  NSFont   *font;
   
-  [columnsField setIntegerValue:[Defaults windowWidth]];
-  [rowsField setIntegerValue:[Defaults windowHeight]];
+  [columnsField setIntegerValue:[defs windowWidth]];
+  [rowsField setIntegerValue:[defs windowHeight]];
 
-  [shellExitMatrix selectCellWithTag:[Defaults windowCloseBehavior]];
+  [shellExitMatrix selectCellWithTag:[defs windowCloseBehavior]];
 
-  font = [Defaults terminalFont];
+  font = [defs terminalFont];
   [fontField setFont:font];
   [fontField setStringValue:[NSString stringWithFormat:@"%@ %.1f pt.",
                                       [font fontName], [font pointSize]]];  
+}
+
+- (void)showWindow
+{
+  // prefs = [[Preferences shared] mainWindowPreferences];
 }
 - (void)setWindow:(id)sender
 {

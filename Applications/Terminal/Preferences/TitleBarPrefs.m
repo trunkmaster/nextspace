@@ -118,21 +118,23 @@
 - (void)setDefault:(id)sender
 {
   NSUInteger titleBarMask = [self _elementsMaskFromButtons];
+  Defaults   *defs = [Defaults shared];
   
-  [ud setInteger:titleBarMask forKey:TitleBarElementsMaskKey];
+  [defs setInteger:titleBarMask forKey:TitleBarElementsMaskKey];
   if (titleBarMask & TitleBarCustomTitle)
     {
-      [ud setObject:[customTitleField stringValue]
-             forKey:TitleBarCustomTitleKey];
+      [defs setObject:[customTitleField stringValue]
+               forKey:TitleBarCustomTitleKey];
     }
 
-  [ud synchronize];
-  [Defaults readTitleBarDefaults];
+  [defs synchronize];
+  [defs readTitleBarDefaults];
 }
 - (void)showDefault:(id)sender
 {
-  NSUInteger titleBarMask = [Defaults titleBarElementsMask];
-  NSString   *customTitle = [Defaults customTitle];
+  Defaults   *defs = [Defaults shared];
+  NSUInteger titleBarMask = [defs titleBarElementsMask];
+  NSString   *customTitle = [defs customTitle];
 
   [shellPathBth setState:(titleBarMask & TitleBarShellPath) ? 1 : 0];
   [deviceNameBtn setState:(titleBarMask & TitleBarDeviceName) ? 1 : 0];
@@ -147,6 +149,11 @@
   
   [self setElements:self];
   [self _updateDemoTitleBar];
+}
+
+- (void)showWindow
+{
+  // prefs = [[Preferences shared] mainWindowPreferences];
 }
 - (void)setWindow:(id)sender
 {

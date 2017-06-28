@@ -70,39 +70,48 @@ static character_set_choice_t cs_choices[]={
 - (void)setDefault:(id)sender
 {
   int i = [charsetBtn indexOfSelectedItem];
+  Defaults *defs = [Defaults shared];
+  
   if (cs_choices[i].name != nil)
     {
-      [ud setObject:cs_choices[i].name forKey:CharacterSetKey];
+      [defs setObject:cs_choices[i].name forKey:CharacterSetKey];
     }
   else
     {
-      [ud setObject:@"" forKey:CharacterSetKey];
+      [defs setObject:@"" forKey:CharacterSetKey];
     }
-  [ud setBool:[handleMulticellBtn state] forKey:UseMultiCellGlyphsKey];
+  [defs setBool:[handleMulticellBtn state] forKey:UseMultiCellGlyphsKey];
 
-  [ud setBool:[escapeKeyBtn state] forKey:DoubleEscapeKey];
-  [ud setBool:[commandKeyBtn state] forKey:CommandAsMetaKey];
+  [defs setBool:[escapeKeyBtn state] forKey:DoubleEscapeKey];
+  [defs setBool:[commandKeyBtn state] forKey:CommandAsMetaKey];
   
-  [ud synchronize];
-  [Defaults readLinuxDefaults];
+  [defs synchronize];
+  [defs readLinuxDefaults];
 }
 - (void)showDefault:(id)sender
 {
-  NSString *characterSet = [Defaults characterSet];
   int i;
   character_set_choice_t *c;
+  Defaults *defs = [Defaults shared];
+  NSString *characterSet = [defs characterSet];
+  
   for (i=0,c=cs_choices;c->name;i++,c++)
     {
       if (c->name &&
-          [c->name caseInsensitiveCompare: characterSet] == NSOrderedSame)
+          [c->name caseInsensitiveCompare:characterSet] == NSOrderedSame)
         break;
     }
   [charsetBtn selectItemAtIndex:i];
   
-  [handleMulticellBtn setState:([Defaults useMultiCellGlyphs] == YES)];
+  [handleMulticellBtn setState:([defs useMultiCellGlyphs] == YES)];
 
-  [escapeKeyBtn setState:[Defaults doubleEscape]];
-  [commandKeyBtn setState:[Defaults commandAsMeta]];
+  [escapeKeyBtn setState:[defs doubleEscape]];
+  [commandKeyBtn setState:[defs commandAsMeta]];
+}
+
+- (void)showWindow
+{
+  // prefs = [[Preferences shared] mainWindowPreferences];
 }
 - (void)setWindow:(id)sender
 {

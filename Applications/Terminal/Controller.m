@@ -148,7 +148,7 @@
         withArguments:[NSArray arrayWithObjects:@"-c",cmdline,nil]
         initialInput:nil];
     }
-  else if ([Defaults startupAction] == OnStartCreateShell)
+  else if ([[Defaults shared] startupAction] == OnStartCreateShell)
     {
       [self openWindow:self];
     }
@@ -304,7 +304,7 @@
 - (void)childWithPID:(int)pid didExit:(int)status
 {
   TerminalWindowController *twc;
-  int windowCloseBehavior = [Defaults windowCloseBehavior];
+  int windowCloseBehavior = [[Defaults shared] windowCloseBehavior];
 
   NSLog(@"Child with pid: %i did exit(%i)", pid, status);
   
@@ -398,7 +398,7 @@
           // fprintf(stderr, "\tdone!\n");
           
           // [self childWithPID:pid didExit:status];
-          int windowCloseBehavior = [Defaults windowCloseBehavior];
+          int windowCloseBehavior = [[Defaults shared] windowCloseBehavior];
           [twc setDocumentEdited:NO];
 
           windowCloseBehavior = [twc closeBehavior];
@@ -441,7 +441,7 @@
   [[NSApp delegate] checkActiveWindows];
 }
 
-- (Defaults *)defaultsForWindow:(NSWindow *)win
+- (Defaults *)preferencesForWindow:(NSWindow *)win
 {
   for (TerminalWindowController *windowController in windows)
     {
@@ -450,6 +450,8 @@
           return [windowController defaults];
         }
     }
+  
+  return nil;
 }
 
 // TODO:

@@ -1,6 +1,13 @@
 /*
   Copyright (C) 2015 Sergii Stoian <stoyan255@ukr.net>
 
+  Defaults can provide access to user defaults file (~/L/P/Terminal.plist) and 
+  arbitrary file.
+  Access to NSUserDefaults file:
+  	[Defaults shared];
+  Acess to arbitrary file:
+  	[[Defaults alloc] initWithFile:"~/path/to/filename"];
+
   This file is a part of Terminal.app. Terminal.app is free software; you
   can redistribute it and/or modify it under the terms of the GNU General
   Public License as published by the Free Software Foundation; version 2
@@ -28,23 +35,24 @@ static Defaults *shared = nil;
   return shared;
 }
 
-/*
-+ (void)initialize
+- (id)init
 {
-  if (!ud)
-    {
-      ud = [NSUserDefaults standardUserDefaults];
-      [self readWindowDefaults];
-      // [self readColorsDefaults];
-      
-      [self readTitleBarDefaults];
-      [self readDisplayDefaults];
-      [self readShellDefaults];
-      [self readLinuxDefaults];
-      [self readStartupDefaults];
-    }
+  self = [super init];
+
+  filePath = nil;
+  defaults = [NSUserDefaults standardUserDefaults];
+  
+  [self readWindowDefaults];
+  // [self readColorsDefaults];
+  
+  [self readTitleBarDefaults];
+  [self readDisplayDefaults];
+  [self readShellDefaults];
+  [self readLinuxDefaults];
+  [self readStartupDefaults];
+
+  return self;
 }
-*/
 
 - (id)initWithFile:(NSString *)path
 {
@@ -65,9 +73,18 @@ static Defaults *shared = nil;
   return self;
 }
 
+- (void)dealloc
+{
+  [defaults dealloc];
+  [super dealloc];
+}
+
 - (BOOL)synchronize
 {
-  return [defaults writeToFile:filePath atomically:YES];
+  if ([defaults isKindOfClass:[NSMutableDictionary class]])
+    return [defaults synchronize];
+  else
+    return [defaults writeToFile:filePath atomically:YES];
 }
 
 //-----------------------------------------------------------------------------
