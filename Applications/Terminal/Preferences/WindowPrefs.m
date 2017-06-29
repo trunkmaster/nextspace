@@ -100,7 +100,8 @@
 
 - (void)showWindow
 {
-  // prefs = [[Preferences shared] mainWindowPreferences];
+  id prefs = [[Preferences shared] mainWindowPreferences];
+
 }
 - (void)setWindow:(id)sender
 {

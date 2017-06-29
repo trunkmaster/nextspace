@@ -20,10 +20,11 @@
 #import "Terminal.h"
 #import "TerminalParser_Linux.h"
 
-extern NSString
-	*TerminalViewBecameIdleNotification,
-	*TerminalViewBecameNonIdleNotification,
-	*TerminalViewTitleDidChangeNotification;
+#import "Defaults.h"
+
+extern NSString *TerminalViewBecameIdleNotification;
+extern NSString *TerminalViewBecameNonIdleNotification;
+extern NSString *TerminalViewTitleDidChangeNotification;
 
 struct selection_range
 {
@@ -91,7 +92,7 @@ struct selection_range
 
   float border_x, border_y;
 
-  id           defaults;
+  Defaults      *defaults;
 
   // Colors
   NSColor	*cursorColor;
@@ -131,7 +132,7 @@ struct selection_range
 }
 
 - initWithPrefences:(id)preferences;
-- (id)preferences;
+- (Defaults *)preferences;
 
 - (void)setIgnoreResize:(BOOL)ignore;
 

@@ -169,20 +169,25 @@ static NSSize winMinimumSize;
 
 - init
 {
-  defaults = [Defaults shared]; // NSUserDefaults
-  return [self _setupWindow];
-
+  self = [super init];
+  
+  [self initWithStartupFile:nil];
+  
   return self;
 }
 
 - initWithStartupFile:(NSString *)filePath
 {
-  fileName = [filePath lastPathComponent];
-  
   if (filePath == nil)
-    defaults = [[Defaults alloc] init];
+    {
+      defaults = [[Defaults alloc] init];
+      fileName = @"Default";
+    }
   else
-    defaults = [[Defaults alloc] initWithFile:filePath];
+    {
+      defaults = [[Defaults alloc] initWithFile:filePath];
+      fileName = [filePath lastPathComponent];
+    }
   
   [self _setupWindow];
 
@@ -194,6 +199,7 @@ static NSSize winMinimumSize;
   NSLog(@"Window DEALLOC.");
   
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  // [defaults release];
   [super dealloc];
 }
 
@@ -338,30 +344,27 @@ static NSSize winMinimumSize;
 {
   NSDictionary *prefs = [notif userInfo];
   id           value;
+  int          intValue;
   BOOL         isWindowSizeChanged = NO;
 
   //--- For Window usage only ---
-  if ((value = [prefs objectForKey:WindowHeightKey]) &&
-      [value intValue] != terminalRows)
+  if ((intValue = [defaults windowHeight]) && intValue != terminalRows)
     {
-      terminalRows = [value intValue];
-      [defaults setInteger:terminalRows forKey:WindowHeightKey];
+      terminalRows = intValue;
       isWindowSizeChanged = YES;
     }
-  if ((value = [prefs objectForKey:WindowWidthKey]) &&
-      [value intValue] != terminalColumns)
+  if ((intValue = [defaults windowWidth]) && intValue != terminalRows)
     {
-      terminalColumns = [value intValue];
-      [defaults setInteger:terminalRows forKey:WindowHeightKey];
+      terminalColumns = intValue;
       isWindowSizeChanged = YES;
     }
 
   // Title Bar:
-  if ((value = [prefs objectForKey:TitleBarElementsMaskKey]) &&
-      [value intValue] != titleBarElementsMask)
+  if ((intValue = [defaults titleBarElementsMask]) &&
+      intValue != titleBarElementsMask)
     {
-      titleBarElementsMask = [value intValue];
-      titleBarCustomTitle = [prefs objectForKey:TitleBarCustomTitleKey];
+      titleBarElementsMask = intValue;
+      titleBarCustomTitle = [defaults customTitle];
       [self updateTitleBar:nil];
     }
   

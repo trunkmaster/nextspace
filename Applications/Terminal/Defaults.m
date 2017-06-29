@@ -36,6 +36,7 @@ static Defaults *shared = nil;
   return shared;
 }
 
+// Store NSUserDefaults in 'defaults' ivar
 - (id)init
 {
   self = [super init];
@@ -56,6 +57,7 @@ static Defaults *shared = nil;
 }
 
 // Get Defaults instance with custom preferences file (*.term).
+// Create NSMutableDictionary and store it in 'defaults' ivar
 - (id)initWithFile:(NSString *)path
 {
   self = [super init];
@@ -239,9 +241,17 @@ static NSFont *terminalFont;
 {
   return windowWidth;
 }
+- (void)setWindowWidth:(int)width
+{
+  [self setInteger:width forKey:WindowWidthKey];
+}
 - (int)windowHeight
 {
   return windowHeight;
+}
+- (void)setWindowHeight:(int)height
+{
+  [self setInteger:height forKey:WindowHeightKey];
 }
 - (WindowCloseBehavior)windowCloseBehavior // 'When Shell Exits'
 {
