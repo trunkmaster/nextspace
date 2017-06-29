@@ -80,8 +80,6 @@
 
 #include "TerminalView.h"
 
-#import "Defaults.h"
-
 /* forkpty replacement */
 #ifdef USE_FORKPTY_REPLACEMENT
 #include <stdio.h> /* for stderr and perror*/
@@ -2676,13 +2674,13 @@ static int handled_mask= (NSDragOperationCopy |
   return self;
 }
 
-- initWithPrefences:(id)preferences
+- initWithPrefences:(Defaults *)preferences
 {
   defaults = preferences;
   return [super init]; // -init calls -initWithFrame:
 }
 
-- (id)preferences
+- (Defaults *)preferences
 {
   return defaults;
 }
