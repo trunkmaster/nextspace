@@ -3306,28 +3306,27 @@
 **** DONE Выделять bold цветом и шрифтом
 **** TODO Preferences
 ***** TODO Sessions
-      Поддержка сессий это:
-      - возможность сохранять текущие настройки в отдельном файле 
-        (меню Shell->Save As...) в файлы ~/Librayry/Terminal/*.term;
-      - возможность выбрать из меню Shell->Open... сохраненные
-        настройки в файлах ~/Library/Terminal;
-      - меню "Shell->Save":
-        - выбрасывает диалог, если сессия не загружена;
-        - сохраняет настройки в файл загруженной сессии.
-      - в настройке Preferences->StartUp->StartUp File указывается загружаемая
-        сессия по-умолчанию;
-      - меню "Shell->New" загружает то, что указано в
-        Preferences->StartUp->StartUp File или настройки по-умолчанию
+****** Поддержка сессий это:
+       - возможность сохранять текущие настройки в отдельном файле 
+         (меню Shell->Save As...) в файлы ~/Librayry/Terminal/*.term;
+       - возможность выбрать из меню Shell->Open... сохраненные
+         настройки в файлах ~/Library/Terminal;
+       - меню "Shell->Save":
+         - выбрасывает диалог, если сессия не загружена;
+         - сохраняет настройки в файл загруженной сессии.
+       - в настройке Preferences->StartUp->StartUp File указывается загружаемая
+         сессия по-умолчанию;
+       - меню "Shell->New" загружает то, что указано в
+         Preferences->StartUp->StartUp File или настройки по-умолчанию
 
-      Terminal.plist:
-      - загружается по-молчанию если не указан параметр "Startup File" в
-        Preferences;
-      - меняется при нажатии на кнопку "Set Default" в Preferences;
+       Terminal.plist:
+       - загружается по-молчанию если не указан параметр "Startup File" в
+         Preferences;
+       - меняется при нажатии на кнопку "Set Default" в Preferences;
 
-      <StartUpFile>.term:
-      - создается только через "Shell->Save" | "Shell->Save As";
-      - меняется только через "Shell->Save".
-
+       <StartUpFile>.term:
+       - создается только через "Shell->Save" | "Shell->Save As";
+       - меняется только через "Shell->Save".
 ****** Мысли, наброски
        _Ициализация:_
        1. *Shell | New*
@@ -3340,31 +3339,44 @@
        [Controller openWidndow]
          [Controller newWindowWithShell]
            [Controller createTerminalWindow]
-             [TerminalWindowController init]  <--- создание экземпляра Defaults (владелец)
-               defaults = [Defaults init]
+             [TerminalWindowController initWithStartupFile:]
+               defaults = [Defaults initWithFile:] <--- владелец TerminalWindowController
+
+       3. Дальше, созданный экземляр Defaults распространяется так:
+          [TerminalView initWithPreferences:defaults]
+            [TerminalParser_Linux initWithTerminalScreen:width:height:]
+          TerminalScreen == TerminalView, дает доступ к Defaults через метод
+          -preferences
        
        _Изменение_
-       1. 
+       1. Все классы получают доступ к экземпляру Defaults.
+       2. Изменения вносятся с помощью сеттеров.
+       3. synchronize в Defaults по-умолчанию не должен вызывваться -
+          вызывается классом, который вносит изменения.
+
        _Сохранение изменений_
        1. Info | Preferences | "Set Default"
          [Defaults synchronize]
            [NSUserDefaults synchronize]
        2. Shell | Save, Shell | Save As...
          [Defaults synchronize]
-           [NSMutableDictionary writeToFile:atomically:]          
+           [NSMutableDictionary writeToFile:atomically:]
 
        _Доступ к настройкам:_
        - Из Info | Preferences:
-         - [(Controller *)[NSApp delegate] preferencesForWindow]
+         [Preferences mainWindowPreferences]
+           [(Controller *)[NSApp delegate] preferencesForWindow]
              [TerminalWindowController preferences] - обращение к владельцу Defaults
        - Из TerminalView и TerminalParser:
-         - при инициализации TerminalWindowController передает ссылку на экземляр Defaults.
-           [TerminalView initWithPreferences:defaults]
+         - при инициализации TerminalWindowController передает ссылку на
+           экземляр Defaults. 
            [TerminalView initWithPreferences:defaults]
              [TerminalView initWithFrame:]
                [TerminalParser initWithTerminalScreen:(TerminalView)]
                  [(TerminalScreen)TerminalView preferences]
-         - дальше они обращаются к экземляру Defaults (defaults) напрямую.
+         - дальше они обращаются к экземляру Defaults (defaults), получая
+           ссылку у TerminalWindowController.
+****** TODO Создать сеттеры для всех настроек в Defaults
 ***** TODO При изменении main window считывать настройки с него
       Похоже нужно пересмотреть подход к хранению и обновлению настроек.
       Сейчас кажется логичным следующее:

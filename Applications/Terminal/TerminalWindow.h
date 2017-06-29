@@ -27,9 +27,11 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
   NSScroller   *scroller;
   TerminalView *tView;
 
-  id           defaults;
+  Defaults     *defaults;
   NSString     *fileName;
 }
+
+- initWithStartupFile:(NSString *)filePath;
 
 - (TerminalView *)terminalView;
 - (WindowCloseBehavior)closeBehavior;
