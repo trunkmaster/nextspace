@@ -3328,6 +3328,43 @@
       - создается только через "Shell->Save" | "Shell->Save As";
       - меняется только через "Shell->Save".
 
+****** Мысли, наброски
+       _Ициализация:_
+       1. *Shell | New*
+       [Controller openWidndow]
+         [Controller newWindowWithShell]
+           [Controller createTerminalWindow]
+             [TerminalWindowController init]  <--- создание экземпляра Defaults (владелец)
+               defaults = [Defaults init]
+       2. *Shell | Open...* (еще не сделано, но так должно быть.)
+       [Controller openWidndow]
+         [Controller newWindowWithShell]
+           [Controller createTerminalWindow]
+             [TerminalWindowController init]  <--- создание экземпляра Defaults (владелец)
+               defaults = [Defaults init]
+       
+       _Изменение_
+       1. 
+       _Сохранение изменений_
+       1. Info | Preferences | "Set Default"
+         [Defaults synchronize]
+           [NSUserDefaults synchronize]
+       2. Shell | Save, Shell | Save As...
+         [Defaults synchronize]
+           [NSMutableDictionary writeToFile:atomically:]          
+
+       _Доступ к настройкам:_
+       - Из Info | Preferences:
+         - [(Controller *)[NSApp delegate] preferencesForWindow]
+             [TerminalWindowController preferences] - обращение к владельцу Defaults
+       - Из TerminalView и TerminalParser:
+         - при инициализации TerminalWindowController передает ссылку на экземляр Defaults.
+           [TerminalView initWithPreferences:defaults]
+           [TerminalView initWithPreferences:defaults]
+             [TerminalView initWithFrame:]
+               [TerminalParser initWithTerminalScreen:(TerminalView)]
+                 [(TerminalScreen)TerminalView preferences]
+         - дальше они обращаются к экземляру Defaults (defaults) напрямую.
 ***** TODO При изменении main window считывать настройки с него
       Похоже нужно пересмотреть подход к хранению и обновлению настроек.
       Сейчас кажется логичным следующее:
@@ -3422,10 +3459,6 @@
      - если делать все тоже самое вручную через Preferences->Title Bar
        заголовок активного окна меняется только после того, как будет нажата
        кнопка "Set Window".
-**** TODO Keyboard
-     Command, Alternate, Control, Shift.
-     Проверить как передаются сочетания клавиш с этими модификаторами.
-     Сейчас известно что Command и Shift не передаются в любом случае.
 **** TODO Services
 ***** TODO Панель Info->Terminal Services...
 ***** TODO Проверить корректность работы различных параметров
@@ -3439,6 +3472,10 @@
        Устанавливать шрифт и цвета для main window.
        Соответственно модифицировать значения в Preferences (Window и Colors).
 ****** TODO Shell
+**** TODO Keyboard
+     Command, Alternate, Control, Shift.
+     Проверить как передаются сочетания клавиш с этими модификаторами.
+     Сейчас известно что Command и Shift не передаются в любом случае.
      
 **** TODO Info Panel
      С прокручивающимся текстом в иконке терминала. ;)
