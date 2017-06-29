@@ -26,6 +26,7 @@
 
 static Defaults *shared = nil;
 
+// Get Defaults instance with NSUserDefaults preferences.
 + shared
 {
   if (shared == nil)
@@ -54,6 +55,7 @@ static Defaults *shared = nil;
   return self;
 }
 
+// Get Defaults instance with custom preferences file (*.term).
 - (id)initWithFile:(NSString *)path
 {
   self = [super init];
