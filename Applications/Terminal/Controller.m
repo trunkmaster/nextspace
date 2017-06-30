@@ -447,6 +447,7 @@
 }
 
 - (id)preferencesForWindow:(NSWindow *)win
+                      live:(BOOL)isLive
 {
   NSLog(@"Controller: searching for main window.");
   for (TerminalWindowController *windowController in [windows allValues])
@@ -454,7 +455,10 @@
       if ([windowController window] == win)
         {
           NSLog(@"Controller: window found!");
-          return [windowController preferences];
+          if (isLive)
+            return [windowController livePreferences];
+          else
+            return [windowController preferences];
         }
     }
   
