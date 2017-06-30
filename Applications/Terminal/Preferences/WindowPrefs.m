@@ -64,70 +64,79 @@
   return;
 }
 
+- (void)_updateControls:(Defaults *)prefs
+{
+  NSFont *font;
+  
+  [columnsField setIntegerValue:[prefs windowWidth]];
+  [rowsField setIntegerValue:[prefs windowHeight]];
+
+  [shellExitMatrix selectCellWithTag:[prefs windowCloseBehavior]];
+
+  font = [prefs terminalFont];
+  [fontField setFont:font];
+  [fontField setStringValue:[NSString stringWithFormat:@"%@ %.1f pt.",
+                                      [font fontName], [font pointSize]]];
+}
+
+// Write to:
+// 	~/L/P/Terminal.plist if window use NSUserDefaults
+// 	~/L/Terminal/<name>.term if window use loaded startup file
 - (void)setDefault:(id)sender
 {
-  Defaults *defs = [Defaults shared];
-  NSFont   *font;
-  
-  [defs setInteger:[columnsField intValue] forKey:WindowWidthKey];
-  [defs setInteger:[rowsField intValue] forKey:WindowHeightKey];
+  Defaults *prefs = [[Preferences shared] mainWindowPreferences];
 
-  [defs setInteger:[[shellExitMatrix selectedCell] tag]
-          forKey:WindowCloseBehaviorKey];
+  [prefs setWindowWidth:[columnsField intValue]];
+  [prefs setWindowHeight:[rowsField intValue]];
 
-  font = [fontField font];
-  [defs setObject:[font fontName] forKey:TerminalFontKey];
-  [defs setInteger:(int)[font pointSize] forKey:TerminalFontSizeKey];
+  [prefs setWindowCloseBehavior:[[shellExitMatrix selectedCell] tag]];
 
-  [defs synchronize];
-  [defs readWindowDefaults];
+  [prefs setTerminalFont:[fontField font]];
+
+  [prefs synchronize];
+  [prefs readWindowDefaults];
 }
 - (void)showDefault:(id)sender
 {
-  Defaults *defs = [Defaults shared];
-  NSFont   *font;
-  
-  [columnsField setIntegerValue:[defs windowWidth]];
-  [rowsField setIntegerValue:[defs windowHeight]];
-
-  [shellExitMatrix selectCellWithTag:[defs windowCloseBehavior]];
-
-  font = [defs terminalFont];
-  [fontField setFont:font];
-  [fontField setStringValue:[NSString stringWithFormat:@"%@ %.1f pt.",
-                                      [font fontName], [font pointSize]]];  
+  [self _updateControls:[[Preferences shared] mainWindowPreferences]];
 }
 
+// Get current/live (may be changed) preferences
 - (void)showWindow
 {
-  id prefs = [[Preferences shared] mainWindowPreferences];
-
+  [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
 }
+// Fill empty Defaults with this module values and send it ti window
+// with notification.
 - (void)setWindow:(id)sender
 {
-  NSMutableDictionary *prefs;
-  NSNumber            *wcb;
+  Defaults *prefs;
 
-  if (![sender isKindOfClass:[NSButton class]]) return;
+  if (![sender isKindOfClass:[NSButton class]])
+    return;
   
-  prefs = [NSMutableDictionary new];
+  prefs = [[Dictionary alloc] init];
   
   // NSLog(@"Preferences:Window setWindow: %@ (sender:%@)",
   //       [[[NSApp mainWindow] windowController] className],
   //       [sender className]);
 
-  [prefs setObject:[columnsField stringValue] forKey:WindowWidthKey];
-  [prefs setObject:[rowsField stringValue] forKey:WindowHeightKey];
+  [prefs setWindowHeight:[columnsField intValue]];
+  [prefs setWindowWidth:[rowsField intValue]];
+  // [prefs setObject:[columnsField stringValue] forKey:WindowWidthKey];
+  // [prefs setObject:[rowsField stringValue] forKey:WindowHeightKey];
 
-  wcb = [NSNumber numberWithInt:[[shellExitMatrix selectedCell] tag]];
-  [prefs setObject:wcb forKey:WindowCloseBehaviorKey];
+  // wcb = [NSNumber numberWithInt:[[shellExitMatrix selectedCell] tag]];
+  // [prefs setObject:wcb forKey:WindowCloseBehaviorKey];
+  [prefs setWindowCloseBehavior:[[shellExitMatrix selectedCell] tag]];
 
-  [prefs setObject:[fontField font] forKey:TerminalFontKey];
+  // [prefs setObject:[fontField font] forKey:TerminalFontKey];
+  [prefs setTerminalFont:[fontField font]];
 
   [[NSNotificationCenter defaultCenter]
     postNotificationName:TerminalPreferencesDidChangeNotification
                   object:[NSApp mainWindow]
-                userInfo:prefs];
+                userInfo:[prefs autorelease]];
 }
 
 @end

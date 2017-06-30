@@ -19,6 +19,7 @@ NSUserDefaults *ud;
 
 + shared;
 
+- (id)initEmpty;
 - (id)initWithFile:(NSString *)filePath;
 - (BOOL)synchronize;
 
@@ -69,10 +70,14 @@ typedef enum {
 @interface Defaults (Window)
 - (void)readWindowDefaults;
 - (int)windowWidth;
+- (void)setWindowWidth:(int)width;
 - (int)windowHeight;
+- (void)setWindowHeight:(int)width;
 - (WindowCloseBehavior)windowCloseBehavior; // 'When Shell Exits'
+- (void)setWindowCloseBehavior:(WindowCloseBehavior)behavior;
 - (NSFont *)terminalFont;
-- (NSSize)characterCellSizeForFont:(NSFont *)font;
+- (void)setTerminalFont:(NSFont *)font;
++ (NSSize)characterCellSizeForFont:(NSFont *)font;
 @end
 
 //----------------------------------------------------------------------------
@@ -90,7 +95,9 @@ extern const NSUInteger TitleBarWindowSize;
 @interface Defaults (TitleBar)
 - (void)readTitleBarDefaults;
 - (NSUInteger)titleBarElementsMask;
+- (void)setTitleBarElementsMask:(NSUInteger)mask;
 - (NSString *)customTitle;
+- (void)setCustomTitle:(NSString *)title;
 @end
 //----------------------------------------------------------------------------
 // Linux Emulation
@@ -103,9 +110,14 @@ extern NSString *DoubleEscapeKey;
 @interface Defaults (Linux)
 - (void)readLinuxDefaults;
 - (NSString *)characterSet;
+- (void)setCaharacterSet:(NSString *)cSet;
 - (BOOL)commandAsMeta;
+- (void)setCommandAsMeta:(BOOL)yn;
 - (BOOL)doubleEscape;
+- (void)setDoubleEscape:(BOOL)yn;
 - (BOOL)useMultiCellGlyphs;
+- (void)setUseMultiCellGlyphs:(BOOL)yn;
+
 @end
 
 //----------------------------------------------------------------------------
@@ -179,7 +191,9 @@ extern NSString	*LoginShellKey;
 @interface Defaults (Shell)
 - (void)readShellDefaults;
 - (NSString *)shell;
+- (void)setShell:(NSString *)sh;
 - (BOOL)loginShell;
+- (void)setLoginShell:(BOOL)yn;
 @end
 
 //----------------------------------------------------------------------------
@@ -198,6 +212,9 @@ typedef enum {
 @interface Defaults (Startup)
 - (void)readStartupDefaults;
 - (StartupAction)startupAction;
+- (void)setStartupAction:(StartupAction)action;
 - (NSString *)startupFile;
+- (void)setStartupFile:(NSString *)filePath;
 - (BOOL)hideOnAutolaunch;
+- (void)setHideOnAutolaunch:(BOOL)yn;
 @end

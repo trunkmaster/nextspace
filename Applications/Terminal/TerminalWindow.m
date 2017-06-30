@@ -216,7 +216,15 @@ static NSSize winMinimumSize;
 
 - (Defaults *)preferences
 {
-  return defaults;
+  return preferences;
+}
+
+- (Defaults *)livePreferences
+{
+  if (livePreferences)
+    return livePreferences;
+  else
+    return defaults;
 }
 
 // Title Bar elements
@@ -342,37 +350,49 @@ static NSSize winMinimumSize;
 
 - (void)preferencesDidChange:(NSNotification *)notif
 {
-  NSDictionary *prefs = [notif userInfo];
-  id           value;
-  int          intValue;
-  BOOL         isWindowSizeChanged = NO;
+  Defaults *prefs = [notif userInfo];
+  id       value;
+  int      intValue;
+  BOOL     isWindowSizeChanged = NO;
+
+  if (!livePreferences)
+    {
+      livePreferences = [preferences copy];
+    }
 
   //--- For Window usage only ---
-  if ((intValue = [defaults windowHeight]) && intValue != terminalRows)
+  if ((intValue = [prefs windowHeight]) && intValue != terminalRows)
     {
       terminalRows = intValue;
       isWindowSizeChanged = YES;
+      [livePreferences setWindowHeight:intValue];
     }
-  if ((intValue = [defaults windowWidth]) && intValue != terminalRows)
+  if ((intValue = [prefs windowWidth]) && intValue != terminalRows)
     {
       terminalColumns = intValue;
       isWindowSizeChanged = YES;
+      [livePreferences setWindowWidth:intValue];
     }
 
   // Title Bar:
-  if ((intValue = [defaults titleBarElementsMask]) &&
+  if ((intValue = [prefs titleBarElementsMask]) &&
       intValue != titleBarElementsMask)
     {
       titleBarElementsMask = intValue;
-      titleBarCustomTitle = [defaults customTitle];
+      titleBarCustomTitle = [prefs customTitle];
       [self updateTitleBar:nil];
+      [livePreferences setTitleBarMask:titleBarElementsMask];
+      [livePreferences setCustomTitle:titleBarCustomTitle];
     }
   
-  if ((value = [prefs objectForKey:WindowCloseBehaviorKey]))
-    windowCloseBehavior = [value intValue];
+  if ((value = [prefs windowCloseBehavior]))
+    {
+      windowCloseBehavior = [value intValue];
+      [livePreferences setWindowCloseBehavior:windowCloseBehavior];      
+    }
 
   //--- For Window and View usage ---
-  if ((value = [prefs objectForKey:ScrollBackEnabledKey]) &&
+  if ((value = [prefs scrollBackEnabledKey]) &&
       [value boolValue] != scrollBackEnabled)
     {
       scrollBackEnabled = [value boolValue];
@@ -402,42 +422,56 @@ static NSSize winMinimumSize;
         }
       [win setContentView:hBox];
       isWindowSizeChanged = YES;
+      [livePreferences setScrollBackEnabled:[value boolValue]];
     }
 
-  if ((value = [prefs objectForKey:ScrollBackLinesKey]))
+  if ((value = [prefs scrollBackLines]))
     {
       if (scrollBackEnabled == YES)
-        [tView setScrollBufferMaxLength:[value intValue]];
+        {
+          [tView setScrollBufferMaxLength:[value intValue]];
+          [livePreferences setScrollBackBufferMaxLength:[value intValue]];
+        }
       else
-        [tView setScrollBufferMaxLength:0];
+        {
+          [tView setScrollBufferMaxLength:0];
+        }
     }
   
   //---  For TerminalView usage only ---
-  if ((value = [prefs objectForKey:TerminalFontKey]))
+  if ((value = [prefs terminalFont]))
     {
       [tView setFont:[value screenFont]];
-      [tView setBoldFont:[defaults boldTerminalFontForFont:value]];
-      charCellSize = [defaults characterCellSizeForFont:value];
-      isWindowSizeChanged = YES;
+      [tView setBoldFont:[Defaults boldTerminalFontForFont:value]];
+      charCellSize = [Defaults characterCellSizeForFont:value];
+      
+      [prefs setFont:value];
+      
+      iswindowsizechanged = YES;
       [tView setNeedsDisplay:YES];
     }
 
   // Display:
-  if ((value = [prefs objectForKey:ScrollBottomOnInputKey]))
+  if ((value = [prefs scrollBottomOnInput]))
     {
       [tView setScrollBottomOnInput:[value boolValue]];
+      [preferences setScrollBottomOnInput:[value boolValue]];
     }
   // Linux:
-  if ((value = [prefs objectForKey:UseMultiCellGlyphsKey]))
+  if ((value = [prefs useMultiCellGlyphs]))
     {
       [tView setUseMulticellGlyphs:[value boolValue]];
+      [preferences setUseMulticellGlyphs:[value boolValue]];
     }
   // Colors:
-  if ((value = [prefs objectForKey:CursorColorKey]))
+  if ((value = [prefs cursorColor]))
     {
-      [tView setCursorStyle:[[prefs objectForKey:CursorStyleKey] integerValue]];
+      [tView setCursorStyle:[prefs cursorStyle]];
       [tView updateColors:prefs];
       [tView setNeedsDisplayInRect:[tView frame]];
+      
+      [preferences setCursorColor:value];
+      [preferences setCursorStyle:[prefs cursorStyle]];
     }
 
   //---  For TerminalParser usage only ---
