@@ -115,7 +115,7 @@
   if (![sender isKindOfClass:[NSButton class]])
     return;
   
-  prefs = [[Dictionary alloc] init];
+  prefs = [[Defaults alloc] initEmpty];
   
   // NSLog(@"Preferences:Window setWindow: %@ (sender:%@)",
   //       [[[NSApp mainWindow] windowController] className],
