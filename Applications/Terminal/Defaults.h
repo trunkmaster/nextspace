@@ -145,24 +145,34 @@ extern NSString *TerminalFontUseBoldKey;
 
 + (NSDictionary *)descriptionFromColor:(NSColor *)color;
 + (NSColor *)colorFromDescription:(NSDictionary *)desc;
++ (NSFont *)boldTerminalFontForFont:(NSFont *)font;
 
 - (void)readColorsDefaults;
-- (BOOL)blackOnWhite;
-- (const float *)brightnessForIntensities;
-- (const float *)saturationForIntensities;
+// - (BOOL)blackOnWhite;
+// - (const float *)brightnessForIntensities;
+// - (const float *)saturationForIntensities;
 - (int)cursorStyle;
+- (void)setCursorStyle:(int)style;
 - (NSColor *)cursorColor;
-- (BOOL)useBoldTerminalFont;
-- (NSFont *)boldTerminalFontForFont:(NSFont *)font;
-// TODO:
+- (void)setCursorColor:(NSColor *)color;
 - (NSColor *)windowBackgroundColor;
+- (void)setWindowBackgroundColor:(NSColor *)color;
 - (NSColor *)windowSelectionColor;
+- (void)setWindowSelectionColor:(NSColor *)color;
 - (BOOL)isCursorBlinking;
+- (void)setCursorBlinking:(BOOL)yn;
 - (NSColor *)textNormalColor;
+- (void)setNormalColor:(NSColor *)color;
 - (NSColor *)textBoldColor;
+- (void)setTextBoldColor:(NSColor *)color;
 - (NSColor *)textBlinkColor;
+- (void)setTextBlinklColor:(NSColor *)color;
 - (NSColor *)textInverseBackground;
+- (void)setTextInverseBackground:(NSColor *)color;
 - (NSColor *)textInverseForeground;
+- (void)setTextInverseForeground:(NSColor *)color;
+- (BOOL)useBoldTerminalFont;
+- (void)setUseBoldTerminalFont:(BOOL)yn;
 
 @end
 
@@ -177,9 +187,13 @@ extern NSString *ScrollBottomOnInputKey;
 @interface Defaults (Display)
 - (void)readDisplayDefaults;
 - (int)scrollBackLines;
+- (void)setScrollBackLines:(int)lines;
 - (BOOL)scrollBackEnabled;
+- (void)setScrollBackEnabled:(BOOL)yn;
 - (BOOL)scrollBackUnlimited;
+- (void)setScrollBackUnlimited:(BOOL)yn;
 - (BOOL)scrollBottomOnInput;
+- (void)setScrollBottomOnInput:(BOOL)yn;
 @end
 
 //----------------------------------------------------------------------------

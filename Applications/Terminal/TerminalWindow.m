@@ -74,17 +74,17 @@ static NSSize winMinimumSize;
   NSUInteger styleMask;
 
   // Make cache of preferences
-  scrollBackEnabled = [defaults scrollBackEnabled];
-  terminalRows = [defaults windowHeight];
-  terminalColumns = [defaults windowWidth];
-  titleBarElementsMask = [defaults titleBarElementsMask];
-  titleBarCustomTitle = [defaults customTitle];
+  scrollBackEnabled = [preferences scrollBackEnabled];
+  terminalRows = [preferences windowHeight];
+  terminalColumns = [preferences windowWidth];
+  titleBarElementsMask = [preferences titleBarElementsMask];
+  titleBarCustomTitle = [preferences customTitle];
 
   // Sizes
-  charCellSize = [defaults characterCellSizeForFont:nil];
+  charCellSize = [Defaults characterCellSizeForFont:nil];
   [self calculateSizes];
   
-  windowCloseBehavior = [defaults windowCloseBehavior];
+  windowCloseBehavior = [preferences windowCloseBehavior];
 
   contentRect = NSMakeRect(0, 0, winContentSize.width, winContentSize.height);
   styleMask = (NSClosableWindowMask  | NSTitledWindowMask |
@@ -122,7 +122,7 @@ static NSSize winMinimumSize;
     }
 
   // View
-  tView = [[TerminalView alloc] initWithPrefences:defaults];
+  tView = [[TerminalView alloc] initWithPrefences:preferences];
   [tView setIgnoreResize:YES];
   [tView setAutoresizingMask:NSViewHeightSizable|NSViewWidthSizable];
   [tView setScroller:scroller];
@@ -180,12 +180,12 @@ static NSSize winMinimumSize;
 {
   if (filePath == nil)
     {
-      defaults = [[Defaults alloc] init];
+      preferences = [[Defaults alloc] init];
       fileName = @"Default";
     }
   else
     {
-      defaults = [[Defaults alloc] initWithFile:filePath];
+      preferences = [[Defaults alloc] initWithFile:filePath];
       fileName = [filePath lastPathComponent];
     }
   
@@ -199,7 +199,7 @@ static NSSize winMinimumSize;
   NSLog(@"Window DEALLOC.");
   
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  // [defaults release];
+  // [preferences release];
   [super dealloc];
 }
 
@@ -224,7 +224,7 @@ static NSSize winMinimumSize;
   if (livePreferences)
     return livePreferences;
   else
-    return defaults;
+    return preferences;
 }
 
 // Title Bar elements
@@ -353,6 +353,7 @@ static NSSize winMinimumSize;
   Defaults *prefs = [notif userInfo];
   id       value;
   int      intValue;
+  BOOL     boolValue;
   BOOL     isWindowSizeChanged = NO;
 
   if (!livePreferences)
@@ -381,21 +382,20 @@ static NSSize winMinimumSize;
       titleBarElementsMask = intValue;
       titleBarCustomTitle = [prefs customTitle];
       [self updateTitleBar:nil];
-      [livePreferences setTitleBarMask:titleBarElementsMask];
+      [livePreferences setTitleBarElementsMask:titleBarElementsMask];
       [livePreferences setCustomTitle:titleBarCustomTitle];
     }
   
-  if ((value = [prefs windowCloseBehavior]))
+  if ((intValue = [prefs windowCloseBehavior]))
     {
-      windowCloseBehavior = [value intValue];
-      [livePreferences setWindowCloseBehavior:windowCloseBehavior];      
+      windowCloseBehavior = intValue;
+      [livePreferences setWindowCloseBehavior:intValue];      
     }
 
   //--- For Window and View usage ---
-  if ((value = [prefs scrollBackEnabledKey]) &&
-      [value boolValue] != scrollBackEnabled)
+  if ((boolValue = [prefs scrollBackEnabled]) && boolValue != scrollBackEnabled)
     {
-      scrollBackEnabled = [value boolValue];
+      scrollBackEnabled = boolValue;
       if (scrollBackEnabled == YES)
         {
           [tView retain];
@@ -422,15 +422,15 @@ static NSSize winMinimumSize;
         }
       [win setContentView:hBox];
       isWindowSizeChanged = YES;
-      [livePreferences setScrollBackEnabled:[value boolValue]];
+      [livePreferences setScrollBackEnabled:boolValue];
     }
 
-  if ((value = [prefs scrollBackLines]))
+  if ((intValue = [prefs scrollBackLines]))
     {
       if (scrollBackEnabled == YES)
         {
-          [tView setScrollBufferMaxLength:[value intValue]];
-          [livePreferences setScrollBackBufferMaxLength:[value intValue]];
+          [tView setScrollBufferMaxLength:intValue];
+          [livePreferences setScrollBackLines:intValue];
         }
       else
         {
@@ -443,25 +443,25 @@ static NSSize winMinimumSize;
     {
       [tView setFont:[value screenFont]];
       [tView setBoldFont:[Defaults boldTerminalFontForFont:value]];
+      
+      [livePreferences setTerminalFont:value];
+      
       charCellSize = [Defaults characterCellSizeForFont:value];
-      
-      [prefs setFont:value];
-      
-      iswindowsizechanged = YES;
+      isWindowSizeChanged = YES;
       [tView setNeedsDisplay:YES];
     }
 
   // Display:
-  if ((value = [prefs scrollBottomOnInput]))
+  if ((boolValue = [prefs scrollBottomOnInput]))
     {
-      [tView setScrollBottomOnInput:[value boolValue]];
-      [preferences setScrollBottomOnInput:[value boolValue]];
+      [tView setScrollBottomOnInput:boolValue];
+      [livePreferences setScrollBottomOnInput:boolValue];
     }
   // Linux:
-  if ((value = [prefs useMultiCellGlyphs]))
+  if ((boolValue = [prefs useMultiCellGlyphs]))
     {
-      [tView setUseMulticellGlyphs:[value boolValue]];
-      [preferences setUseMulticellGlyphs:[value boolValue]];
+      [tView setUseMulticellGlyphs:boolValue];
+      [preferences setUseMultiCellGlyphs:boolValue];
     }
   // Colors:
   if ((value = [prefs cursorColor]))
@@ -475,7 +475,7 @@ static NSSize winMinimumSize;
     }
 
   //---  For TerminalParser usage only ---
-  // TODO: First, GNUstep defaults should have reasonable settings (see
+  // TODO: First, GNUstep preferences should have reasonable settings (see
   // comment in terminal parser about Command, Alternate and Control modifiers).
   // The best way is to create Preferences' Keyboard panel.
   // if ((value = [prefs objectForKey:CharacterSetKey]))

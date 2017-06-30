@@ -34,7 +34,8 @@
     }
 
   [titlePanel makeKeyAndOrderFront:self];
-  [titleField setStringValue:[Defaults customTitle]];
+  [titleField
+    setStringValue:[[[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:YES] customTitle]];
 }
 
 - (void)awakeFromNib

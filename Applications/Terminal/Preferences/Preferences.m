@@ -143,7 +143,7 @@ static Preferences *shared = nil;
 }
 
 - (Defaults *)mainWindowLivePreferences
-{
+ {
   return [[NSApp delegate] preferencesForWindow:mainWindow live:YES];
 }
 
