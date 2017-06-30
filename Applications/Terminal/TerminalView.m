@@ -2642,7 +2642,7 @@ static int handled_mask= (NSDragOperationCopy |
   if (!(self = [super initWithFrame:frame])) return nil;
 
   [self setFont:[defaults terminalFont]];
-  [self setBoldFont:[defaults boldTerminalFontForFont:[defaults terminalFont]]];
+  [self setBoldFont:[Defaults boldTerminalFontForFont:[defaults terminalFont]]];
 
   use_multi_cell_glyphs = [defaults useMultiCellGlyphs];
   // blackOnWhite = [Defaults blackOnWhite];
@@ -2723,7 +2723,7 @@ static int handled_mask= (NSDragOperationCopy |
   
   ASSIGN(font, aFont);
 
-  s = [defaults characterCellSizeForFont:font];
+  s = [Defaults characterCellSizeForFont:font];
   fx = s.width;
   fy = s.height;
 

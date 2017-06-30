@@ -288,7 +288,8 @@ static NSFont *terminalFont;
 
   if (!font)
     {
-      font = [self terminalFont];
+      // font = [self terminalFont];
+      return NSZeroSize;
     }
 
   s = [font boundingRectForFont].size;
@@ -395,7 +396,7 @@ static BOOL useMultiCellGlyphs;
 {
   if (characterSet) [characterSet release];
   
-  if (!cset)
+  if (!cSet)
     cSet = @"utf-8";
     
   [self setObject:cSet forKey:CharacterSetKey];
@@ -519,7 +520,7 @@ static NSFont *boldTerminalFont;
     }
   else
     {
-      boldFont = (font != nil) ? font : [self terminalFont];
+      return font;
     }
 
   return boldFont;
@@ -569,7 +570,7 @@ static NSFont *boldTerminalFont;
   
   // Try to find bold version of normal font
   if (boldTerminalFont) [boldTerminalFont release];
-  boldTerminalFont = [self boldTerminalFontForFont:[self terminalFont]];
+  boldTerminalFont = [Defaults boldTerminalFontForFont:[self terminalFont]];
 }
 - (BOOL)blackOnWhite
 {
@@ -587,46 +588,101 @@ static NSFont *boldTerminalFont;
 {
   return cursorStyle;
 }
+- (void)setCursorStyle:(int)style
+{
+  [self setInteger:style forKey:CursorStyleKey];
+  cursorStyle = style;
+}
 - (NSColor *)cursorColor
 {
   return cursorColor;
+}
+- (void)setCursorColor:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:CursorColorKey];
+  [self readColorsDefaults];
 }
 - (NSColor *)windowBackgroundColor
 {
   return windowBGColor;
 }
+- (void)setWindowBackgroundColor:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:WindowBGColorKey];
+  [self readColorsDefaults];  
+}
 - (NSColor *)windowSelectionColor
 {
   return windowSELColor;
+}
+- (void)setWindowSelectionColor:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:SelectionBGColorKey];
 }
 // TODO:
 - (BOOL)isCursorBlinking
 {
   return NO;
 }
+- (void)setCursorBlinking:(BOOL)yn
+{
+  // TODO
+}
 - (NSColor *)textNormalColor
 {
   return normalTextColor;
+}
+- (void)setNormalColor:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:TextNormalColorKey];
 }
 - (NSColor *)textBoldColor
 {
   return boldTextColor;
 }
+- (void)setTextBoldColor:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:TextBoldColorKey];
+}
 - (NSColor *)textBlinkColor
 {
   return blinkTextColor;
+}
+- (void)setTextBlinklColor:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:TextBlinkColorKey];
 }
 - (NSColor *)textInverseBackground
 {
   return inverseBGColor;
 }
+- (void)setTextInverseBackground:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:TextInverseBGColorKey];
+}
 - (NSColor *)textInverseForeground
 {
   return inverseFGColor;
 }
+- (void)setTextInverseForeground:(NSColor *)color
+{
+  [self setObject:[Defaults descriptionFromColor:color]
+           forKey:TextInverseFGColorKey];
+}
 - (BOOL)useBoldTerminalFont
 {
   return useBoldTerminalFont;
+}
+- (void)setUseBoldTerminalFont:(BOOL)yn
+{
+  [self setBool:yn forKey:TerminalFontUseBoldKey];
 }
 @end
 
@@ -696,9 +752,19 @@ static BOOL scrollBottomOnInput;
 {
   return scrollBackLines;
 }
+- (void)setScrollBackLines:(int)lines
+{
+  [self setInteger:lines forKey:ScrollBackLinesKey];
+  scrollBackLines = lines;
+}
 - (BOOL)scrollBackEnabled
 {
   return scrollBackEnabled;
+}
+- (void)setScrollBackEnabled:(BOOL)yn
+{
+  [self setBool:yn forKey:ScrollBackEnabledKey];
+  scrollBackEnabled = yn;
 }
 - (BOOL)scrollBackUnlimited
 {
@@ -707,9 +773,19 @@ static BOOL scrollBottomOnInput;
   
   return scrollBackUnlimited;
 }
+- (void)setScrollBackUnlimited:(BOOL)yn
+{
+  [self setBool:yn forKey:ScrollBackUnlimitedKey];
+  scrollBackUnlimited = yn;
+}
 - (BOOL)scrollBottomOnInput
 {
   return scrollBottomOnInput;
+}
+- (void)setScrollBottomOnInput:(BOOL)yn
+{
+  [self setBool:yn forKey:ScrollBottomOnInputKey];
+  scrollBottomOnInput = yn;
 }
 
 @end
@@ -797,9 +873,9 @@ static BOOL          hideOnAutolaunch;
 {
   return startupFile;
 }
-- (void)setStartupFile:(NSString *)filePath
+- (void)setStartupFile:(NSString *)path
 {
-  [self setObject:filePath forKey:StartupFileKey];
+  [self setObject:path forKey:StartupFileKey];
   startupFile = [self objectForKey:StartupFileKey];  
 }
 - (BOOL)hideOnAutolaunch
