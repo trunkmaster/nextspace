@@ -27,7 +27,8 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
   NSScroller   *scroller;
   TerminalView *tView;
 
-  Defaults     *defaults;
+  Defaults     *preferences;
+  Defaults     *livePreferences;
   NSString     *fileName;
 }
 
@@ -35,7 +36,13 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
 
 - (TerminalView *)terminalView;
 - (WindowCloseBehavior)closeBehavior;
-- (Defaults *)preferences; // returned by reference and can be changed
+// Returns preferences loaded and stored in file.
+- (Defaults *)preferences;
+// Returns preferences active for window. These type of preferences 
+// created when some options changed via "Info | Preferences" panel.
+// If preferences were not changed during the life of the window this
+// method returns preferences stored in file (defaults or session).
+- (Defaults *)livePreferences;
 // Title Bar elements
 - (NSString *)shellPath;
 - (NSString *)deviceName;

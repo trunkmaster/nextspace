@@ -66,5 +66,6 @@
 - (void)switchMode:(id)sender;
 
 - (Defaults *)mainWindowPreferences;
+- (Defaults *)mainWindowLivePreferences;
 
 @end

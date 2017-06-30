@@ -44,14 +44,23 @@ static Defaults *shared = nil;
   filePath = nil;
   defaults = [NSUserDefaults standardUserDefaults];
   
-  [self readWindowDefaults];
-  // [self readColorsDefaults];
-  
+  [self readWindowDefaults]; // [self readColorsDefaults];
   [self readTitleBarDefaults];
   [self readDisplayDefaults];
   [self readShellDefaults];
   [self readLinuxDefaults];
   [self readStartupDefaults];
+
+  return self;
+}
+
+// Empty mutable dictionary for use in Preferences modules.
+- (id)initEmpty
+{
+  self = [super init];
+  
+  filePath = nil;
+  defaults = [[NSMutableDictionary alloc] init];
 
   return self;
 }
@@ -65,9 +74,7 @@ static Defaults *shared = nil;
   filePath = path;
   defaults = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
   
-  [self readWindowDefaults];
-  // [self readColorsDefaults] called by -readWindowDefaults
-      
+  [self readWindowDefaults]; // [self readColorsDefaults]
   [self readTitleBarDefaults];
   [self readDisplayDefaults];
   [self readShellDefaults];
@@ -257,6 +264,10 @@ static NSFont *terminalFont;
 {
   return windowCloseBehavior;
 }
+- (void)setWindowCloseBehavior:(WindowCloseBehavior)behavior
+{
+  [self setInteger:behavior forKey:WindowCloseBehaviorKey];
+}
 - (NSFont *)terminalFont
 {
   NSFont *f = [terminalFont screenFont];
@@ -266,7 +277,12 @@ static NSFont *terminalFont;
    
   return terminalFont;
 }
-- (NSSize)characterCellSizeForFont:(NSFont *)font
+- (void)setTerminalFont:(NSFont *)font
+{
+  [self setObject:[font fontName] forKey:TerminalFontKey];
+  [self setInteger:(int)[font pointSize] forKey:TerminalFontSizeKey];
+}
++ (NSSize)characterCellSizeForFont:(NSFont *)font
 {
   NSSize s;
 
@@ -328,9 +344,19 @@ static NSString   *titleBarCustomTitle;
 {
   return titleBarElements;
 }
+- (void)setTitleBarElementsMask:(NSUInteger)mask
+{
+  [self setInteger:mask forKey:TitleBarElementsMaskKey];
+  titleBarElements = mask;
+}
 - (NSString *)customTitle
 {
   return titleBarCustomTitle;
+}
+- (void)setCustomTitle:(NSString *)title
+{
+  [self setObject:title forKey:TitleBarCustomTitleKey];
+  titleBarCustomTitle = [self objectForKey:TitleBarCustomTitleKey];
 }
 @end
 
@@ -349,7 +375,7 @@ static BOOL useMultiCellGlyphs;
 @implementation Defaults (Linux)
 - (void)readLinuxDefaults
 {
-  characterSet=[[self stringForKey:CharacterSetKey] retain];
+  characterSet = [[self stringForKey:CharacterSetKey] retain];
   if (!characterSet)
     {
       characterSet = @"utf-8";
@@ -365,17 +391,42 @@ static BOOL useMultiCellGlyphs;
 {
   return characterSet;
 }
+- (void)setCaharacterSet:(NSString *)cSet
+{
+  if (characterSet) [characterSet release];
+  
+  if (!cset)
+    cSet = @"utf-8";
+    
+  [self setObject:cSet forKey:CharacterSetKey];
+  cSet = [self objectForKey:CharacterSetKey];
+}
 - (BOOL)commandAsMeta
 {
   return commandAsMeta;
+}
+- (void)setCommandAsMeta:(BOOL)yn
+{
+  [self setBool:yn forKey:CommandAsMetaKey];
+  commandAsMeta = yn;
 }
 - (BOOL)doubleEscape
 {
   return doubleEscape;
 }
+- (void)setDoubleEscape:(BOOL)yn
+{
+  [self setBool:yn forKey:DoubleEscapeKey];
+  doubleEscape = yn;
+}
 - (BOOL)useMultiCellGlyphs
 {
   return useMultiCellGlyphs;
+}
+- (void)setUseMultiCellGlyphs:(BOOL)yn
+{
+  [self setBool:yn forKey:UseMultiCellGlyphsKey];
+  useMultiCellGlyphs = yn;
 }
 @end
 
@@ -443,7 +494,6 @@ static NSFont *boldTerminalFont;
                        alphaComponent, @"Alpha",
                        nil];
 }
-
 + (NSColor *)colorFromDescription:(NSDictionary *)desc
 {
 
@@ -452,6 +502,27 @@ static NSFont *boldTerminalFont;
                             green:[[desc objectForKey:@"Green"] floatValue]
                              blue:[[desc objectForKey:@"Blue"] floatValue]
                             alpha:[[desc objectForKey:@"Alpha"] floatValue]];
+}
++ (NSFont *)boldTerminalFontForFont:(NSFont *)font
+{
+  NSFont *boldFont = nil;
+  
+  if (font != nil && useBoldTerminalFont)
+    {
+      NSString *s;
+      float    size;
+
+      s = [NSString stringWithFormat:@"%@-Bold", [font fontName]];
+      size = [font pointSize];
+      boldFont = [[[NSFont fontWithName:s size:size] screenFont] retain];
+      // NSLog(@"Found Bold font: %@ [%@]", s, boldFont);
+    }
+  else
+    {
+      boldFont = (font != nil) ? font : [self terminalFont];
+    }
+
+  return boldFont;
 }
 
 - (void)readColorsDefaults
@@ -520,7 +591,6 @@ static NSFont *boldTerminalFont;
 {
   return cursorColor;
 }
-
 - (NSColor *)windowBackgroundColor
 {
   return windowBGColor;
@@ -558,27 +628,6 @@ static NSFont *boldTerminalFont;
 {
   return useBoldTerminalFont;
 }
-- (NSFont *)boldTerminalFontForFont:(NSFont *)font
-{
-  NSFont *boldFont = nil;
-  
-  if (font != nil && useBoldTerminalFont)
-    {
-      NSString *s;
-      float    size;
-
-      s = [NSString stringWithFormat:@"%@-Bold", [font fontName]];
-      size = [font pointSize];
-      boldFont = [[[NSFont fontWithName:s size:size] screenFont] retain];
-      NSLog(@"Found Bold font: %@ [%@]", s, boldFont);
-    }
-  else
-    {
-      boldFont = (font != nil) ? font : [self terminalFont];
-    }
-
-  return boldFont;
-}
 @end
 
 //----------------------------------------------------------------------------
@@ -595,7 +644,7 @@ static int  scrollBackLines;
 static BOOL scrollBottomOnInput;
 //---
 @implementation Defaults (Display)
-- (void)checkDisplayDefaults
+- (void)_checkDisplayDefaults
 {
   if ([self objectForKey:ScrollBackEnabledKey] == nil)
     [self setBool:YES forKey:ScrollBackEnabledKey];
@@ -611,7 +660,7 @@ static BOOL scrollBottomOnInput;
 }
 - (void)readDisplayDefaults
 {
-  [self checkDisplayDefaults];
+  [self _checkDisplayDefaults];
   scrollBackEnabled = [self boolForKey:ScrollBackEnabledKey];
   
   if (scrollBackEnabled == NO)
@@ -699,9 +748,19 @@ static BOOL loginShell;
 {
   return shell;
 }
+- (void)setShell:(NSString *)sh
+{
+  [self setObject:sh forKey:ShellKey];
+  [self readShellDefaults];
+}
 - (BOOL)loginShell
 {
   return loginShell;
+}
+- (void)setLoginShell:(BOOL)yn
+{
+  [self setBool:yn forKey:LoginShellKey];
+  loginShell = yn;
 }
 @end
 
@@ -720,8 +779,7 @@ static BOOL          hideOnAutolaunch;
 - (void)readStartupDefaults
 {
   startupAction = [self integerForKey:StartupActionKey];
-  if (startupAction == 0)
-    startupAction = 3;
+  if (startupAction == 0) startupAction = OnStartCreateShell;
 
   startupFile = [self objectForKey:StartupFileKey];
   hideOnAutolaunch = [self boolForKey:HideOnAutolaunchKey];
@@ -730,12 +788,27 @@ static BOOL          hideOnAutolaunch;
 {
   return startupAction;
 }
+- (void)setStartupAction:(StartupAction)action
+{
+  [self setInteger:action forKey:StartupActionKey];
+  startupAction = action;
+}
 - (NSString *)startupFile
 {
   return startupFile;
 }
+- (void)setStartupFile:(NSString *)filePath
+{
+  [self setObject:filePath forKey:StartupFileKey];
+  startupFile = [self objectForKey:StartupFileKey];  
+}
 - (BOOL)hideOnAutolaunch
 {
   return hideOnAutolaunch;
+}
+- (void)setHideOnAutolaunch:(BOOL)yn
+{
+  [self setBool:yn forKey:HideOnAutolaunchKey];
+  hideOnAutolaunch = yn;
 }
 @end

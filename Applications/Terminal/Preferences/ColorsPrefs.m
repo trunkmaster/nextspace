@@ -79,29 +79,29 @@
   [defs setBool:[useBoldBtn state] forKey:TerminalFontUseBoldKey];
 
   // Cursor
-  [defs setObject:[self _descriptionFromColor:[cursorColorBtn color]]
+  [defs setObject:[Defaults descriptionFromColor:[cursorColorBtn color]]
            forKey:CursorColorKey];
-    
+  
   [defs setInteger:[[cursorStyleMatrix selectedCell] tag] forKey:CursorStyleKey];
 
   // Window
-  [defs setObject:[self _descriptionFromColor:[windowBGColorBtn color]]
-         forKey:WindowBGColorKey];
-  [defs setObject:[self _descriptionFromColor:[windowSelectionColorBtn color]]
-         forKey:SelectionBGColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[windowBGColorBtn color]]
+           forKey:WindowBGColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[windowSelectionColorBtn color]]
+           forKey:SelectionBGColorKey];
 
   // Text
-  [defs setObject:[self _descriptionFromColor:[normalTextColorBtn color]]
-         forKey:TextNormalColorKey];
-  [defs setObject:[self _descriptionFromColor:[blinkTextColorBtn color]]
-         forKey:TextBlinkColorKey];
-  [defs setObject:[self _descriptionFromColor:[boldTextColorBtn color]]
-         forKey:TextBoldColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[normalTextColorBtn color]]
+           forKey:TextNormalColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[blinkTextColorBtn color]]
+           forKey:TextBlinkColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[boldTextColorBtn color]]
+           forKey:TextBoldColorKey];
   
-  [defs setObject:[self _descriptionFromColor:[inverseTextBGColorBtn color]]
-         forKey:TextInverseBGColorKey];
-  [defs setObject:[self _descriptionFromColor:[inverseTextFGColor color]]
-         forKey:TextInverseFGColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[inverseTextBGColorBtn color]]
+           forKey:TextInverseBGColorKey];
+  [defs setObject:[Defaults descriptionFromColor:[inverseTextFGColor color]]
+           forKey:TextInverseFGColorKey];
   
   [defs synchronize];
   
