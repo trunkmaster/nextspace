@@ -22,6 +22,7 @@
 */
 
 #import "SetTitlePanel.h"
+#import "Controller.h"
 #import "Defaults.h"
 
 @implementation SetTitlePanel : NSObject
@@ -34,8 +35,8 @@
     }
 
   [titlePanel makeKeyAndOrderFront:self];
-  [titleField
-    setStringValue:[[[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:YES] customTitle]];
+  [titleField setStringValue:[[[NSApp delegate] preferencesForWindow:[NSApp mainWindow]
+                                                                live:YES] customTitle]];
 }
 
 - (void)awakeFromNib
@@ -45,17 +46,13 @@
 
 - (void)setTitle:(id)sender
 {
-  NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-  NSUInteger     titleBarMask = [Defaults titleBarElementsMask];
+  Defaults   *prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow]
+                                                        live:YES];
+  NSUInteger titleBarMask = [prefs titleBarElementsMask];
 
-  titleBarMask |= TitleBarCustomTitle;
-  [ud setInteger:titleBarMask forKey:TitleBarElementsMaskKey];
+  [prefs setTitleBarElementsMask:(titleBarMask | TitleBarCustomTitle)];
   
-  [ud setObject:[titleField stringValue]
-         forKey:TitleBarCustomTitleKey];
-
-  [ud synchronize];
-  [Defaults readTitleBarDefaults];
+  [prefs setCustomTitle:[titleField stringValue]];
 
   [titlePanel close];
 }

@@ -476,76 +476,47 @@ static void set_foreground(NSGraphicsContext *gc,
   DPSsethsbcolor(gc, h, s, b);
 }
 
-- (void)updateColors:(NSDictionary *)prefs
+- (void)updateColors:(Defaults *)prefs
 {
   NSColor *winBG, *winSel, *winText, *winBlink, *winBold, *invBG, *invFG;
 
-  if (prefs)
-    cursorColor = [[Defaults
-                     colorFromDescription:[prefs objectForKey:CursorColorKey]]
-                    retain];
-  else
-    cursorColor = [defaults cursorColor];
+  if (!prefs)
+    prefs = defaults;
+
+  if (cursorColor) [cursorColor release];
+  cursorColor = [[prefs cursorColor] retain];
   
-  if (prefs)
-    winBG = [Defaults
-              colorFromDescription:[prefs objectForKey:WindowBGColorKey]];
-  else
-    winBG = [defaults windowBackgroundColor];
+  winBG = [prefs windowBackgroundColor];
   WIN_BG_H = [winBG hueComponent];
   WIN_BG_S = [winBG saturationComponent];
   WIN_BG_B = [winBG brightnessComponent];
   
-  if (prefs)
-    winSel = [Defaults
-               colorFromDescription:[prefs objectForKey:SelectionBGColorKey]];
-  else
-    winSel = [defaults windowSelectionColor];
+  winSel = [prefs windowSelectionColor];
   WIN_SEL_H = [winSel hueComponent];
   WIN_SEL_S = [winSel saturationComponent];
   WIN_SEL_B = [winSel brightnessComponent];
   
-  if (prefs)
-    winText = [Defaults
-                colorFromDescription:[prefs objectForKey:TextNormalColorKey]];
-  else
-    winText = [defaults textNormalColor];
+  winText = [prefs textNormalColor];
   TEXT_NORM_H = [winText hueComponent];
   TEXT_NORM_S = [winText saturationComponent];
   TEXT_NORM_B = [winText brightnessComponent];
 
-  if (prefs)
-    winBlink = [Defaults
-                 colorFromDescription:[prefs objectForKey:TextBlinkColorKey]];
-  else
-    winBlink = [defaults textBlinkColor];
+  winBlink = [prefs textBlinkColor];
   TEXT_BLINK_H = [winBlink hueComponent];
   TEXT_BLINK_S = [winBlink saturationComponent];
   TEXT_BLINK_B = [winBlink brightnessComponent];
 
-  if (prefs)
-    winBold = [Defaults
-               colorFromDescription:[prefs objectForKey:TextBoldColorKey]];
-  else
-    winBold = [defaults textBoldColor];
+  winBold = [prefs textBoldColor];
   TEXT_BOLD_H = [winBold hueComponent];
   TEXT_BOLD_S = [winBold saturationComponent];
   TEXT_BOLD_B = [winBold brightnessComponent];
 
-  if (prefs)
-    invBG = [Defaults
-               colorFromDescription:[prefs objectForKey:TextInverseBGColorKey]];
-  else
-    invBG = [defaults textInverseBackground];
+  invBG = [prefs textInverseBackground];
   INV_BG_H = [invBG hueComponent];
   INV_BG_S = [invBG saturationComponent];
   INV_BG_B = [invBG brightnessComponent];
   
-  if (prefs)
-    invFG = [Defaults
-               colorFromDescription:[prefs objectForKey:TextInverseFGColorKey]];
-  else
-    invFG = [defaults textInverseForeground];
+  invFG = [prefs textInverseForeground];
   INV_FG_H = [invFG hueComponent];
   INV_FG_S = [invFG saturationComponent];
   INV_FG_B = [invFG brightnessComponent];

@@ -81,8 +81,13 @@ static NSSize winMinimumSize;
   titleBarCustomTitle = [preferences customTitle];
 
   // Sizes
-  charCellSize = [Defaults characterCellSizeForFont:nil];
+  charCellSize = [Defaults characterCellSizeForFont:[preferences terminalFont]];
   [self calculateSizes];
+
+  NSLog(@"TerminalWindow: create window: %ix%i char cell:%@ window content:%@",
+        terminalColumns, terminalRows,
+        NSStringFromSize(charCellSize),
+        NSStringFromSize(winContentSize));
   
   windowCloseBehavior = [preferences windowCloseBehavior];
 
@@ -169,8 +174,6 @@ static NSSize winMinimumSize;
 
 - init
 {
-  self = [super init];
-  
   [self initWithStartupFile:nil];
   
   return self;
@@ -178,6 +181,8 @@ static NSSize winMinimumSize;
 
 - initWithStartupFile:(NSString *)filePath
 {
+  self = [super init];
+  
   if (filePath == nil)
     {
       preferences = [[Defaults alloc] init];
@@ -350,7 +355,7 @@ static NSSize winMinimumSize;
 
 - (void)preferencesDidChange:(NSNotification *)notif
 {
-  Defaults *prefs = [notif userInfo];
+  Defaults *prefs = [[notif userInfo] objectForKey:@"Preferences"];
   id       value;
   int      intValue;
   BOOL     boolValue;

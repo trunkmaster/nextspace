@@ -21,6 +21,7 @@ NSUserDefaults *ud;
 
 - (id)initEmpty;
 - (id)initWithFile:(NSString *)filePath;
+- (id)defaults;
 - (BOOL)synchronize;
 
 //-----------------------------------------------------------------------------
