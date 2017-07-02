@@ -90,6 +90,11 @@ static Defaults *shared = nil;
   [super dealloc];
 }
 
+- (id)defaults
+{
+  return defaults;
+}
+
 - (BOOL)synchronize
 {
   if ([defaults isKindOfClass:[NSUserDefaults class]])
