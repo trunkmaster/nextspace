@@ -131,7 +131,7 @@
 // Show preferences of main window
 - (void)showWindow
 {
-  id prefs = [[Preferences shared] mainWindowPreferences];
+  Defaults *prefs = [[Preferences shared] mainWindowPreferences];
 
   if (!prefs)
     NSLog(@"Main window preferences is empty. Do not update section.");

@@ -110,7 +110,8 @@
 // with notification.
 - (void)setWindow:(id)sender
 {
-  Defaults *prefs;
+  Defaults     *prefs;
+  NSDictionary *uInfo;
 
   if (![sender isKindOfClass:[NSButton class]])
     return;
@@ -133,10 +134,15 @@
   // [prefs setObject:[fontField font] forKey:TerminalFontKey];
   [prefs setTerminalFont:[fontField font]];
 
+  NSLog(@"WindowPrefs: setWindow: %@", [prefs defaults]);
+
+  uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
+  
   [[NSNotificationCenter defaultCenter]
     postNotificationName:TerminalPreferencesDidChangeNotification
                   object:[NSApp mainWindow]
-                userInfo:[prefs autorelease]];
+                userInfo:uInfo];
+  // [prefs release];
 }
 
 @end
