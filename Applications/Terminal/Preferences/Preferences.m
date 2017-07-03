@@ -23,20 +23,21 @@
 @implementation PreferencesPanel
 - (BOOL)canBecomeMainWindow
 {
-  return fontPanelOpened;
+  return NO;
+  // return fontPanelOpened;
 }
 - (void)fontPanelOpened:(BOOL)isOpened
 {
-  fontPanelOpened = isOpened;
-  if (isOpened == YES)
+  // fontPanelOpened = isOpened;
+  if (isOpened == NO)
     {
-      mainWindow = [NSApp mainWindow];
-      [self makeMainWindow];
+      [mainWindow makeMainWindow];
+      [self makeKeyAndOrderFront:mainWindow];
     }
   else
     {
-      [mainWindow makeMainWindow];
-      [self makeKeyWindow];
+      // mainWindow = [NSApp mainWindow];
+      // [self makeMainWindow];
     }
 }
 @end
@@ -130,7 +131,19 @@ static Preferences *shared = nil;
   id <PrefsModule> module;
 
   NSLog(@"Preferences: main window now: %@", [[notif object] title]);
-  // mainWindow = [NSApp mainWindow];
+
+  if ([[NSApp delegate] preferencesForWindow:[notif object] live:NO] == nil)
+    {
+      NSLog(@"Preferences: main window is not terminal window.");
+      return;
+    }
+
+  if (mainWindow == [notif object])
+    {
+      NSLog(@"Preferences: main terminal window left unchanged.");
+      return;
+    }
+  
   mainWindow = [notif object];
   
   module = [prefModules objectForKey:[modeBtn titleOfSelectedItem]];

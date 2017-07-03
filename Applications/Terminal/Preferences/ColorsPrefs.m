@@ -40,77 +40,35 @@
   [[NSColorPanel sharedColorPanel] setShowsAlpha:YES];
 }
 
-- (NSDictionary *)_descriptionFromColor:(NSColor *)color
-{
-  NSColor *rgbColor =  [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-  NSNumber *redComponent;
-  NSNumber *greenComponent;
-  NSNumber *blueComponent;
-  NSNumber *alphaComponent;
-
-  redComponent = [NSNumber numberWithFloat:[rgbColor redComponent]];
-  greenComponent = [NSNumber numberWithFloat:[rgbColor greenComponent]];
-  blueComponent = [NSNumber numberWithFloat:[rgbColor blueComponent]];
-  alphaComponent = [NSNumber numberWithFloat:[rgbColor alphaComponent]];
-
-  return [NSDictionary dictionaryWithObjectsAndKeys:
-                         redComponent, @"Red",
-                       greenComponent, @"Green",
-                       blueComponent,  @"Blue",
-                       alphaComponent, @"Alpha",
-                       nil];
-}
-
-- (NSColor *)_colorFromDescription:(NSDictionary *)desc
-{
-
-  return [NSColor
-           colorWithCalibratedRed:[[desc objectForKey:@"Red"] floatValue]
-                            green:[[desc objectForKey:@"Green"] floatValue]
-                             blue:[[desc objectForKey:@"Blue"] floatValue]
-                            alpha:[[desc objectForKey:@"Alpha"] floatValue]];
-}
-
 // Overwrites default preferences (~/Library/Preferences/Terminal.plist).
 - (void)setDefault:(id)sender
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
   
   [defs setBool:[useBoldBtn state] forKey:TerminalFontUseBoldKey];
 
   // Cursor
-  [defs setObject:[Defaults descriptionFromColor:[cursorColorBtn color]]
-           forKey:CursorColorKey];
-  
-  [defs setInteger:[[cursorStyleMatrix selectedCell] tag] forKey:CursorStyleKey];
+  [defs setCursorColor:[cursorColorBtn color]];
+  [defs setCursorStyle:[[cursorStyleMatrix selectedCell] tag]];
 
   // Window
-  [defs setObject:[Defaults descriptionFromColor:[windowBGColorBtn color]]
-           forKey:WindowBGColorKey];
-  [defs setObject:[Defaults descriptionFromColor:[windowSelectionColorBtn color]]
-           forKey:SelectionBGColorKey];
+  [defs setWindowBackgroundColor:[windowBGColorBtn color]];
+  [defs setWindowSelectionColor:[windowSelectionColorBtn color]];
 
   // Text
-  [defs setObject:[Defaults descriptionFromColor:[normalTextColorBtn color]]
-           forKey:TextNormalColorKey];
-  [defs setObject:[Defaults descriptionFromColor:[blinkTextColorBtn color]]
-           forKey:TextBlinkColorKey];
-  [defs setObject:[Defaults descriptionFromColor:[boldTextColorBtn color]]
-           forKey:TextBoldColorKey];
+  [defs setTextNormalColor:[normalTextColorBtn color]];
+  [defs setTextBlinklColor:[blinkTextColorBtn color]];
+  [defs setTextBoldColor:[boldTextColorBtn color]];
   
-  [defs setObject:[Defaults descriptionFromColor:[inverseTextBGColorBtn color]]
-           forKey:TextInverseBGColorKey];
-  [defs setObject:[Defaults descriptionFromColor:[inverseTextFGColor color]]
-           forKey:TextInverseFGColorKey];
+  [defs setTextInverseBackground:[inverseTextBGColorBtn color]];
+  [defs setTextInverseForeground:[inverseTextFGColor color]];
   
   [defs synchronize];
-  
-  [defs readColorsDefaults];
 }
 // Reads from default preferences (~/Library/Preferences/Terminal.plist).
 - (void)showDefault:(id)sender
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
   
   //Window
   [windowBGColorBtn setColor:[defs windowBackgroundColor]];
@@ -131,13 +89,8 @@
 // Show preferences of main window
 - (void)showWindow
 {
-  Defaults *prefs = [[Preferences shared] mainWindowPreferences];
+  Defaults *prefs = [[Preferences shared] mainWindowLivePreferences];
 
-  if (!prefs)
-    NSLog(@"Main window preferences is empty. Do not update section.");
-  else
-    NSLog(@"Main window preferences: %@", prefs);
-  
   //Window
   [windowBGColorBtn setColor:[prefs windowBackgroundColor]];
   [windowSelectionColorBtn setColor:[prefs windowSelectionColor]];
@@ -157,40 +110,38 @@
 // Send changed preferences to window. No files changed or updated.
 - (void)setWindow:(id)sender
 {
-  NSMutableDictionary *prefs;
+  Defaults     *prefs;
+  NSDictionary *uInfo;
 
   if (![sender isKindOfClass:[NSButton class]]) return;
   
-  prefs = [NSMutableDictionary new];
+  prefs = [[Defaults alloc] initEmpty];
   
-  [prefs setObject:[self _descriptionFromColor:[cursorColorBtn color]]
-            forKey:CursorColorKey];
+  [prefs setUseBoldTerminalFont:[useBoldBtn state]];
 
-  [prefs
-    setObject:[NSNumber numberWithInteger:[[cursorStyleMatrix selectedCell] tag]]
-       forKey:CursorStyleKey];
-  
-  [prefs setObject:[self _descriptionFromColor:[windowBGColorBtn color]]
-            forKey:WindowBGColorKey];
-  [prefs setObject:[self _descriptionFromColor:[windowSelectionColorBtn color]]
-            forKey:SelectionBGColorKey];
+  // Cursor
+  [prefs setCursorColor:[cursorColorBtn color]];
+  [prefs setCursorStyle:[[cursorStyleMatrix selectedCell] tag]];
 
-  [prefs setObject:[self _descriptionFromColor:[normalTextColorBtn color]]
-            forKey:TextNormalColorKey];
-  [prefs setObject:[self _descriptionFromColor:[blinkTextColorBtn color]]
-            forKey:TextBlinkColorKey];
-  [prefs setObject:[self _descriptionFromColor:[boldTextColorBtn color]]
-            forKey:TextBoldColorKey];
+  // Window
+  [prefs setWindowBackgroundColor:[windowBGColorBtn color]];
+  [prefs setWindowSelectionColor:[windowSelectionColorBtn color]];
+
+  // Text
+  [prefs setTextNormalColor:[normalTextColorBtn color]];
+  [prefs setTextBlinklColor:[blinkTextColorBtn color]];
+  [prefs setTextBoldColor:[boldTextColorBtn color]];
   
-  [prefs setObject:[self _descriptionFromColor:[inverseTextBGColorBtn color]]
-            forKey:TextInverseBGColorKey];
-  [prefs setObject:[self _descriptionFromColor:[inverseTextFGColor color]]
-            forKey:TextInverseFGColorKey];
+  [prefs setTextInverseBackground:[inverseTextBGColorBtn color]];
+  [prefs setTextInverseForeground:[inverseTextFGColor color]];
+
+  uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
+  [prefs release];
 
   [[NSNotificationCenter defaultCenter]
     postNotificationName:TerminalPreferencesDidChangeNotification
                   object:[NSApp mainWindow]
-                userInfo:prefs];
+                userInfo:uInfo];
 }
 
 @end

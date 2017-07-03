@@ -128,7 +128,6 @@
     }
 
   [defs synchronize];
-  [defs readTitleBarDefaults];
 }
 - (void)showDefault:(id)sender
 {

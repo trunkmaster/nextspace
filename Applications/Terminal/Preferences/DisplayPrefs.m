@@ -63,39 +63,37 @@
 // Write values to UserDefaults
 - (void)setDefault:(id)sender
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
   
   if ([bufferEnabledBtn state] == NSOffState)
-    [defs setBool:NO forKey:ScrollBackEnabledKey];
+    [defs setScrollBackEnabled:NO];
   else
-    [defs setBool:YES forKey:ScrollBackEnabledKey];
-
+    [defs setScrollBackEnabled:YES];
 
   if ([bufferLengthMatrix selectedColumn] == 0)
     {
-      [defs setBool:YES forKey:ScrollBackUnlimitedKey];
+      [defs setScrollBackUnlimited:YES];
     }
   else
     {
       // set length to value of textfield in UserDefaults
-      [defs setBool:NO forKey:ScrollBackUnlimitedKey];
-      [defs setInteger:[bufferLengthField intValue]
-              forKey:ScrollBackLinesKey];
+      [defs setScrollBackUnlimited:NO];
+      [defs setScrollBackLines:[bufferLengthField intValue]];
     }
+  
   [self setBufferEnabled:bufferEnabledBtn];
 
   if ([scrollBottomBtn state] == NSOffState)
-    [defs setBool:NO forKey:ScrollBottomOnInputKey];
+    [defs setScrollBottomOnInput:NO];
   else
-    [defs setBool:YES forKey:ScrollBottomOnInputKey];
+    [defs setScrollBottomOnInput:YES];
 
   [defs synchronize];
-  [defs readDisplayDefaults];
 }
 // Reset onscreen controls to values stored in UserDefaults
 - (void)showDefault:(id)sender
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
   
   if ([defs scrollBackEnabled] == NO)
     {
@@ -121,41 +119,66 @@
 
 - (void)showWindow
 {
-  // prefs = [[Preferences shared] mainWindowPreferences];
+  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
+  
+  if ([defs scrollBackEnabled] == NO)
+    {
+      [bufferEnabledBtn setState:NSOffState];
+    }
+  else
+    {
+      int sbLines = [defs scrollBackLines];
+      
+      [bufferEnabledBtn setState:NSOnState];
+      
+      if ([defs scrollBackUnlimited] == YES)
+        [bufferLengthMatrix selectCellWithTag:0];
+      else
+        [bufferLengthMatrix selectCellWithTag:1];
+      
+      [bufferLengthField setIntegerValue:sbLines];
+    }
+  
+  [self setBufferEnabled:bufferEnabledBtn];
+  [scrollBottomBtn setState:[defs scrollBottomOnInput]];
 }
 // Set values set to visible window
 - (void)setWindow:(id)sender
 {
-  NSDictionary *prefs;
-  NSString     *scrollBottom = @"YES";
-  NSString     *sbEnabled = @"YES";
-  NSString     *sbLines = @"0";
+  Defaults     *prefs;
+  NSDictionary *uInfo;
+  NSUInteger   sbLines;
 
   if (![sender isKindOfClass:[NSButton class]]) return;
 
-  scrollBottom = ([scrollBottomBtn state] == NSOffState) ? @"NO" : @"YES";
+  prefs = [[Defaults alloc] initEmpty];
+
+  [prefs
+    setScrollBottomOnInput:([scrollBottomBtn state] == NSOffState) ? NO : YES];
   
   if ([bufferEnabledBtn state] == NSOffState)
     {
-      sbEnabled = @"NO";
+      [prefs setScrollBackEnabled:NO];
     }
   else
     {
+      [prefs setScrollBackEnabled:YES];
+      
       if ([bufferLengthMatrix selectedColumn] == 0)
-        sbLines = [NSString stringWithFormat:@"%i", INT_MAX];
+        sbLines = INT_MAX;
       else
-        sbLines = [bufferLengthField stringValue];
+        sbLines = [bufferLengthField integerValue];
+
+      [prefs setScrollBackLines:sbLines];
     }
 
-  prefs = [NSDictionary dictionaryWithObjectsAndKeys:
-                          scrollBottom, ScrollBottomOnInputKey,
-                        sbEnabled, ScrollBackEnabledKey,
-                        sbLines, ScrollBackLinesKey, nil];
+  uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
+  [prefs release];
   
   [[NSNotificationCenter defaultCenter]
     postNotificationName:TerminalPreferencesDidChangeNotification
                   object:[NSApp mainWindow]
-                userInfo:prefs];
+                userInfo:uInfo];
 }
 
 @end
