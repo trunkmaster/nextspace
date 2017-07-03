@@ -84,10 +84,34 @@ static Defaults *shared = nil;
   return self;
 }
 
+- (id)initWithDefaults:(id)def
+{
+  self = [super init];
+  if ([def isKindOfClass:[NSUserDefaults class]])
+    {
+      NSDictionary *udd = [def persistentDomainForName:@"Terminal"];
+      defaults = [[NSMutableDictionary alloc] initWithDictionary:udd
+                                                       copyItems:NO];
+    }
+  else
+    {
+      defaults = [def copy];
+    }
+
+  return self;
+}
+
 - (void)dealloc
 {
   [defaults dealloc];
   [super dealloc];
+}
+
+- (id)copyWithZone:(NSZone*)zone
+{
+  Defaults *copy = [Defaults allocWithZone:zone];
+
+  return [copy initWithDefaults:defaults];
 }
 
 - (id)defaults

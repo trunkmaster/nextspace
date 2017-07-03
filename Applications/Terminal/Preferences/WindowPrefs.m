@@ -106,7 +106,7 @@
 {
   [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
 }
-// Fill empty Defaults with this module values and send it ti window
+// Fill empty Defaults with this module values and send it to window
 // with notification.
 - (void)setWindow:(id)sender
 {
@@ -122,19 +122,11 @@
   //       [[[NSApp mainWindow] windowController] className],
   //       [sender className]);
 
-  [prefs setWindowHeight:[columnsField intValue]];
-  [prefs setWindowWidth:[rowsField intValue]];
-  // [prefs setObject:[columnsField stringValue] forKey:WindowWidthKey];
-  // [prefs setObject:[rowsField stringValue] forKey:WindowHeightKey];
-
-  // wcb = [NSNumber numberWithInt:[[shellExitMatrix selectedCell] tag]];
-  // [prefs setObject:wcb forKey:WindowCloseBehaviorKey];
+  [prefs setWindowHeight:[rowsField intValue]];
+  [prefs setWindowWidth:[columnsField intValue]];
   [prefs setWindowCloseBehavior:[[shellExitMatrix selectedCell] tag]];
-
-  // [prefs setObject:[fontField font] forKey:TerminalFontKey];
   [prefs setTerminalFont:[fontField font]];
-
-  NSLog(@"WindowPrefs: setWindow: %@", [prefs defaults]);
+  [prefs readWindowDefaults];
 
   uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
   
@@ -142,7 +134,6 @@
     postNotificationName:TerminalPreferencesDidChangeNotification
                   object:[NSApp mainWindow]
                 userInfo:uInfo];
-  // [prefs release];
 }
 
 @end
