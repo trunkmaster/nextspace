@@ -41,7 +41,6 @@
   Defaults *defs = [Defaults shared];
   
   [defs setObject:[control stringValue] forKey:ShellKey];
-  [defs readShellDefaults];
   return YES;
 }
 - (void)setLoginShell:(id)sender
@@ -49,7 +48,6 @@
   Defaults *defs = [Defaults shared];
   
   [defs setBool:[loginShellBtn state] forKey:LoginShellKey];
-  [defs readShellDefaults];
 }
 
 @end

@@ -94,7 +94,6 @@
   [prefs setTerminalFont:[fontField font]];
 
   [prefs synchronize];
-  [prefs readWindowDefaults];
 }
 - (void)showDefault:(id)sender
 {
@@ -118,17 +117,13 @@
   
   prefs = [[Defaults alloc] initEmpty];
   
-  // NSLog(@"Preferences:Window setWindow: %@ (sender:%@)",
-  //       [[[NSApp mainWindow] windowController] className],
-  //       [sender className]);
-
   [prefs setWindowHeight:[rowsField intValue]];
   [prefs setWindowWidth:[columnsField intValue]];
   [prefs setWindowCloseBehavior:[[shellExitMatrix selectedCell] tag]];
   [prefs setTerminalFont:[fontField font]];
-  [prefs readWindowDefaults];
 
   uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
+  [prefs release];
   
   [[NSNotificationCenter defaultCenter]
     postNotificationName:TerminalPreferencesDidChangeNotification

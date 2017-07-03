@@ -86,7 +86,6 @@ static character_set_choice_t cs_choices[]={
   [defs setBool:[commandKeyBtn state] forKey:CommandAsMetaKey];
   
   [defs synchronize];
-  [defs readLinuxDefaults];
 }
 - (void)showDefault:(id)sender
 {
