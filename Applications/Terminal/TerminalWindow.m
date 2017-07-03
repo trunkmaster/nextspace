@@ -366,15 +366,20 @@ static NSSize winMinimumSize;
       livePreferences = [preferences copy];
     }
 
+  NSLog(@"TerminalWindow: changed preferences: %@", [prefs defaults]);
+
   //--- For Window usage only ---
-  if ((intValue = [prefs windowHeight]) && intValue != terminalRows)
+  if ((intValue = [prefs windowHeight]) && (intValue != terminalRows))
     {
+      NSLog(@"TerminalWindow: WindowHeight changed to %i", intValue);
       terminalRows = intValue;
       isWindowSizeChanged = YES;
       [livePreferences setWindowHeight:intValue];
     }
-  if ((intValue = [prefs windowWidth]) && intValue != terminalRows)
+  if ((intValue = [prefs windowWidth]) && (intValue != terminalColumns))
     {
+      intValue = [prefs windowWidth];
+      NSLog(@"TerminalWindow: WindowWidth changed to %i", intValue);
       terminalColumns = intValue;
       isWindowSizeChanged = YES;
       [livePreferences setWindowWidth:intValue];
@@ -466,17 +471,18 @@ static NSSize winMinimumSize;
   if ((boolValue = [prefs useMultiCellGlyphs]))
     {
       [tView setUseMulticellGlyphs:boolValue];
-      [preferences setUseMultiCellGlyphs:boolValue];
+      [livePreferences setUseMultiCellGlyphs:boolValue];
     }
   // Colors:
-  if ((value = [prefs cursorColor]))
+  if ((value = [prefs cursorColor]) && value != nil)
     {
+      NSLog(@"TerminalWindow: colors was changed: %@", value);
       [tView setCursorStyle:[prefs cursorStyle]];
       [tView updateColors:prefs];
       [tView setNeedsDisplayInRect:[tView frame]];
       
-      [preferences setCursorColor:value];
-      [preferences setCursorStyle:[prefs cursorStyle]];
+      [livePreferences setCursorColor:value];
+      [livePreferences setCursorStyle:[prefs cursorStyle]];
     }
 
   //---  For TerminalParser usage only ---
@@ -489,6 +495,8 @@ static NSSize winMinimumSize;
   if (isWindowSizeChanged)
     {
       [self calculateSizes];
+      NSLog(@"TerminalWindow: Window size changed. New content size = %@",
+            NSStringFromSize(winContentSize));
       [win setContentSize:winContentSize];
     }
 }
