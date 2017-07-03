@@ -11,7 +11,7 @@
 
 NSUserDefaults *ud;
 
-@interface Defaults : NSObject
+@interface Defaults : NSObject <NSCopying>
 {
   NSString *filePath;
   id       defaults; // NSUserDefaults or NSMutableDictionary
