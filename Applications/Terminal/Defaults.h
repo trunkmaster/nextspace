@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2015 Sergii Stoian <stoyan255@ukr.net>
+  Copyright (C) 2015-2017 Sergii Stoian <stoyan255@ukr.net>
 
   This file is a part of Terminal.app. Terminal.app is free software; you
   can redistribute it and/or modify it under the terms of the GNU General
@@ -69,7 +69,9 @@ typedef enum {
 } WindowCloseBehavior;
 
 @interface Defaults (Window)
-- (void)readWindowDefaults;
++ (NSSize)characterCellSizeForFont:(NSFont *)font;
++ (NSFont *)boldTerminalFontForFont:(NSFont *)font;
+
 - (int)windowWidth;
 - (void)setWindowWidth:(int)width;
 - (int)windowHeight;
@@ -78,7 +80,6 @@ typedef enum {
 - (void)setWindowCloseBehavior:(WindowCloseBehavior)behavior;
 - (NSFont *)terminalFont;
 - (void)setTerminalFont:(NSFont *)font;
-+ (NSSize)characterCellSizeForFont:(NSFont *)font;
 @end
 
 //----------------------------------------------------------------------------
@@ -94,7 +95,6 @@ extern const NSUInteger TitleBarFileName;
 extern const NSUInteger TitleBarWindowSize;
 
 @interface Defaults (TitleBar)
-- (void)readTitleBarDefaults;
 - (NSUInteger)titleBarElementsMask;
 - (void)setTitleBarElementsMask:(NSUInteger)mask;
 - (NSString *)customTitle;
@@ -109,7 +109,6 @@ extern NSString *CommandAsMetaKey;
 extern NSString *DoubleEscapeKey;
 
 @interface Defaults (Linux)
-- (void)readLinuxDefaults;
 - (NSString *)characterSet;
 - (void)setCaharacterSet:(NSString *)cSet;
 - (BOOL)commandAsMeta;
@@ -118,7 +117,6 @@ extern NSString *DoubleEscapeKey;
 - (void)setDoubleEscape:(BOOL)yn;
 - (BOOL)useMultiCellGlyphs;
 - (void)setUseMultiCellGlyphs:(BOOL)yn;
-
 @end
 
 //----------------------------------------------------------------------------
@@ -146,10 +144,7 @@ extern NSString *TerminalFontUseBoldKey;
 
 + (NSDictionary *)descriptionFromColor:(NSColor *)color;
 + (NSColor *)colorFromDescription:(NSDictionary *)desc;
-+ (NSFont *)boldTerminalFontForFont:(NSFont *)font;
 
-- (void)readColorsDefaults;
-// - (BOOL)blackOnWhite;
 // - (const float *)brightnessForIntensities;
 // - (const float *)saturationForIntensities;
 - (int)cursorStyle;
@@ -163,7 +158,7 @@ extern NSString *TerminalFontUseBoldKey;
 - (BOOL)isCursorBlinking;
 - (void)setCursorBlinking:(BOOL)yn;
 - (NSColor *)textNormalColor;
-- (void)setNormalColor:(NSColor *)color;
+- (void)setTextNormalColor:(NSColor *)color;
 - (NSColor *)textBoldColor;
 - (void)setTextBoldColor:(NSColor *)color;
 - (NSColor *)textBlinkColor;
@@ -174,7 +169,6 @@ extern NSString *TerminalFontUseBoldKey;
 - (void)setTextInverseForeground:(NSColor *)color;
 - (BOOL)useBoldTerminalFont;
 - (void)setUseBoldTerminalFont:(BOOL)yn;
-
 @end
 
 //----------------------------------------------------------------------------
@@ -186,7 +180,6 @@ extern NSString *ScrollBackUnlimitedKey;
 extern NSString *ScrollBottomOnInputKey;
 
 @interface Defaults (Display)
-- (void)readDisplayDefaults;
 - (int)scrollBackLines;
 - (void)setScrollBackLines:(int)lines;
 - (BOOL)scrollBackEnabled;
@@ -204,7 +197,6 @@ extern NSString *ShellKey;
 extern NSString	*LoginShellKey;
 
 @interface Defaults (Shell)
-- (void)readShellDefaults;
 - (NSString *)shell;
 - (void)setShell:(NSString *)sh;
 - (BOOL)loginShell;
@@ -225,7 +217,6 @@ typedef enum {
 } StartupAction;
 
 @interface Defaults (Startup)
-- (void)readStartupDefaults;
 - (StartupAction)startupAction;
 - (void)setStartupAction:(StartupAction)action;
 - (NSString *)startupFile;
