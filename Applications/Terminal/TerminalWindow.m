@@ -362,19 +362,17 @@ static NSSize winMinimumSize;
   int      intValue;
   BOOL     boolValue;
   BOOL     isWindowSizeChanged = NO;
+  NSFont   *font = nil;
 
   if (!livePreferences)
     {
       livePreferences = [preferences copy];
     }
 
-  NSLog(@"TerminalWindow: changed preferences: %@", [prefs defaults]);
-
   //--- For Window usage only ---
   if ((intValue = [prefs integerForKey:WindowHeightKey]) > 0 &&
       (intValue != terminalRows))
     {
-      NSLog(@"TerminalWindow: WindowHeight changed to %i", intValue);
       terminalRows = intValue;
       isWindowSizeChanged = YES;
       [livePreferences setWindowHeight:intValue];
@@ -383,7 +381,6 @@ static NSSize winMinimumSize;
       (intValue != terminalColumns))
     {
       intValue = [prefs windowWidth];
-      NSLog(@"TerminalWindow: WindowWidth changed to %i", intValue);
       terminalColumns = intValue;
       isWindowSizeChanged = YES;
       [livePreferences setWindowWidth:intValue];
@@ -395,9 +392,9 @@ static NSSize winMinimumSize;
     {
       titleBarElementsMask = intValue;
       titleBarCustomTitle = [prefs customTitle];
-      [self updateTitleBar:nil];
       [livePreferences setTitleBarElementsMask:titleBarElementsMask];
       [livePreferences setCustomTitle:titleBarCustomTitle];
+      [self updateTitleBar:nil];
     }
   
   if ((intValue = [prefs integerForKey:WindowCloseBehaviorKey]))
@@ -407,37 +404,40 @@ static NSSize winMinimumSize;
     }
 
   //--- For Window and View usage ---
-  if ((boolValue = [prefs boolForKey:ScrollBackEnabledKey]) &&
-      (boolValue != scrollBackEnabled))
+  if ([prefs objectForKey:ScrollBackEnabledKey])
     {
-      scrollBackEnabled = boolValue;
-      if (scrollBackEnabled == YES)
+      boolValue = [prefs boolForKey:ScrollBackEnabledKey];
+      if (boolValue != scrollBackEnabled)
         {
-          [tView retain];
-          [tView removeFromSuperview];
-          [hBox release];
-          hBox = [[GSHbox alloc] init];
+          scrollBackEnabled = boolValue;
+          if (scrollBackEnabled == YES)
+            {
+              [tView retain];
+              [tView removeFromSuperview];
+              [hBox release];
+              hBox = [[GSHbox alloc] init];
 
-          [hBox addView:scroller enablingXResizing:NO];
-          [scroller release];
-          [hBox addView:tView];
-          [tView release];
-        }
-      else
-        {
-          [tView retain];
-          [tView removeFromSuperview];
-          [scroller retain];
-          [scroller removeFromSuperview];
-          [hBox release];
-          hBox = [[GSHbox alloc] init];
+              [hBox addView:scroller enablingXResizing:NO];
+              [scroller release];
+              [hBox addView:tView];
+              [tView release];
+            }
+          else
+            {
+              [tView retain];
+              [tView removeFromSuperview];
+              [scroller retain];
+              [scroller removeFromSuperview];
+              [hBox release];
+              hBox = [[GSHbox alloc] init];
           
-          [hBox addView:tView];
-          [tView release];
+              [hBox addView:tView];
+              [tView release];
+            }
+          [win setContentView:hBox];
+          isWindowSizeChanged = YES;
+          [livePreferences setScrollBackEnabled:boolValue];
         }
-      [win setContentView:hBox];
-      isWindowSizeChanged = YES;
-      [livePreferences setScrollBackEnabled:boolValue];
     }
 
   if ([prefs objectForKey:ScrollBackLinesKey] != nil)
@@ -457,9 +457,8 @@ static NSSize winMinimumSize;
   //---  For TerminalView usage only ---
   if ([prefs objectForKey:TerminalFontKey])
     {
-      NSFont *font = [prefs terminalFont];
+      font = [prefs terminalFont];
       [tView setFont:font];
-      [tView setBoldFont:[Defaults boldTerminalFontForFont:font]];
       
       [livePreferences setTerminalFont:font];
       
@@ -483,7 +482,6 @@ static NSSize winMinimumSize;
   // Colors:
   if ((value = [prefs objectForKey:CursorColorKey]))
     {
-      NSLog(@"TerminalWindow: colors was changed: %@", value);
       [tView setCursorStyle:[prefs cursorStyle]];
       [tView updateColors:prefs]; // TODO
       [tView setNeedsDisplayInRect:[tView frame]];
@@ -501,6 +499,19 @@ static NSSize winMinimumSize;
       [livePreferences setUseBoldTerminalFont:[prefs useBoldTerminalFont]];
     }
 
+  // Bold font changed
+  if ([prefs objectForKey:TerminalFontUseBoldKey] ||
+      [prefs objectForKey:TerminalFontKey])
+    {
+      if (!font)
+        font = [livePreferences terminalFont];
+      
+      if ([livePreferences useBoldTerminalFont])
+        [tView setBoldFont:[Defaults boldTerminalFontForFont:font]];
+      else
+        [tView setBoldFont:font];
+    }
+
   //---  For TerminalParser usage only ---
   // TODO: First, GNUstep preferences should have reasonable settings (see
   // comment in terminal parser about Command, Alternate and Control modifiers).
@@ -511,8 +522,6 @@ static NSSize winMinimumSize;
   if (isWindowSizeChanged)
     {
       [self calculateSizes];
-      NSLog(@"TerminalWindow: Window size changed. New content size = %@",
-            NSStringFromSize(winContentSize));
       [win setContentSize:winContentSize];
     }
 }

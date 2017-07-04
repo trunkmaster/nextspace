@@ -446,27 +446,6 @@
   [[NSApp delegate] checkActiveWindows];
 }
 
-- (id)preferencesForWindow:(NSWindow *)win
-                      live:(BOOL)isLive
-{
-  NSLog(@"Controller: searching for main window.");
-  for (TerminalWindowController *windowController in [windows allValues])
-    {
-      if ([windowController window] == win)
-        {
-          NSLog(@"Controller: window found!");
-          if (isLive)
-            return [windowController livePreferences];
-          else
-            return [windowController preferences];
-        }
-    }
-  
-  NSLog(@"Controller: window NOT found!");
-  
-  return nil;
-}
-
 // TODO:
 // Terminal window can be run in 2 modes: 'Shell' and 'Program' (now it's
 // called 'Idle').
@@ -545,5 +524,28 @@
   return [self createTerminalWindow];
 }
 
+//-----------------------------------------------------------------------------
+// Preferences and sessions
+//---
+- (id)preferencesForWindow:(NSWindow *)win
+                      live:(BOOL)isLive
+{
+  // NSLog(@"Controller: searching for main window.");
+  for (TerminalWindowController *windowController in [windows allValues])
+    {
+      if ([windowController window] == win)
+        {
+          // NSLog(@"Controller: window found!");
+          if (isLive)
+            return [windowController livePreferences];
+          else
+            return [windowController preferences];
+        }
+    }
+  
+  // NSLog(@"Controller: window NOT found!");
+  
+  return nil;
+}
 
 @end

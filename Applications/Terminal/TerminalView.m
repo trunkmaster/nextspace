@@ -870,10 +870,10 @@ static void set_foreground(NSGraphicsContext *gc,
                     [f set];
                     current_font = f;
                   }
-
+                 
                 /* we short-circuit utf8 for performance with back-art */
                 /* TODO: short-circuit latin1 too? */
-                if (encoding == NSUTF8StringEncoding)
+                 if (encoding == NSUTF8StringEncoding)
                   {
                     unichar uch = ch->ch;
                     if (uch >= 0x800)
@@ -2613,10 +2613,17 @@ static int handled_mask= (NSDragOperationCopy |
   if (!(self = [super initWithFrame:frame])) return nil;
 
   [self setFont:[defaults terminalFont]];
-  [self setBoldFont:[Defaults boldTerminalFontForFont:[defaults terminalFont]]];
+  if ([defaults useBoldTerminalFont])
+    {
+      [self
+        setBoldFont:[Defaults boldTerminalFontForFont:[defaults terminalFont]]];
+    }
+  else
+    {
+      [self setBoldFont:[defaults terminalFont]];
+    }
 
   use_multi_cell_glyphs = [defaults useMultiCellGlyphs];
-  // blackOnWhite = [Defaults blackOnWhite];
 
   screen = malloc(sizeof(screen_char_t)*sx*sy);
   memset(screen,0,sizeof(screen_char_t)*sx*sy);
@@ -2631,7 +2638,7 @@ static int handled_mask= (NSDragOperationCopy |
                                                       width:sx
                                                      height:sy];
 
-  master_fd=-1;
+  master_fd = -1;
 
   [self registerForDraggedTypes:
           [NSArray arrayWithObjects:
@@ -2642,13 +2649,14 @@ static int handled_mask= (NSDragOperationCopy |
   [self updateColors:nil];
   [self setCursorStyle:[defaults cursorStyle]];
 
+
   return self;
 }
 
 - initWithPrefences:(Defaults *)preferences
 {
   defaults = preferences;
-  return [super init]; // -init calls -initWithFrame:
+  return [self initWithFrame:NSZeroRect];
 }
 
 - (Defaults *)preferences

@@ -30,6 +30,9 @@
   id titleField;
   id setBtn;
   id cancelBtn;
+
+  NSUInteger titleBarMask;
+  NSWindow   *mainWindow;
 }
 
 - (void)activatePanel;

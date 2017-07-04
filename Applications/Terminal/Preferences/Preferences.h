@@ -25,17 +25,17 @@
 // - (void)setDefault:(id)sender;
 // 	Overwrites default preferences (~/Library/Preferences/Terminal.plist).
 // - (void)showDefault:(id)sender;
-// 	Reads from default preferences (~/Library/Preferences/Terminal.plist).
+// 	Reads from default preferences.
 // - (void)setWindow:(id)sender;
 // 	Send changed preferences to window. No files changed or updated.
 
 // Leave these here for informational purposes.
-// + (NSImage *)icon; // TODO
-// + (NSString *)shortcut; // TODO
-// + (NSUInteger)priority; // TODO
-// - (BOOL)willShow; // TODO
-// - (BOOL)willHide; // TODO
-// - (BOOL)isEdited; // TODO
+// + (NSImage *)icon;
+// + (NSString *)shortcut;
+// + (NSUInteger)priority;
+// - (BOOL)willShow;
+// - (BOOL)willHide;
+// - (BOOL)isEdited;
 
 @end
 

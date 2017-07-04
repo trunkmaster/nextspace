@@ -232,7 +232,7 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
       fName = [NSString stringWithFormat:@"%@-Bold", [font fontName]];
       fSize = [font pointSize];
       boldFont = [[[NSFont fontWithName:fName size:fSize] screenFont] retain];
-      // NSLog(@"Found Bold font: %@ [%@]", s, boldFont);
+      // NSLog(@"Found Bold font: %f [%@]", fSize, [boldFont fontName]);
     }
   else
     {
@@ -269,7 +269,7 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
 
 - (int)windowWidth
 {
-  NSUInteger width = [self integerForKey:WindowWidthKey];
+  NSInteger width = [self integerForKey:WindowWidthKey];
   
   if (width <= 0)
     return DEFAULT_COLUMNS;
@@ -282,7 +282,7 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
 }
 - (int)windowHeight
 {
-  NSUInteger height = [self integerForKey:WindowHeightKey];
+  NSInteger height = [self integerForKey:WindowHeightKey];
   
   if (height <= 0)
     return DEFAULT_LINES;
@@ -312,14 +312,14 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
   fName = [self stringForKey:TerminalFontKey];
   if (!fSize)
     {
-      terminalFont = [[NSFont userFixedPitchFontOfSize:fSize] retain];
+      terminalFont = [NSFont userFixedPitchFontOfSize:fSize];
     }
   else
     {
-      terminalFont = [[NSFont fontWithName:fName size:fSize] retain];
+      terminalFont = [NSFont fontWithName:fName size:fSize];
       if (!terminalFont)
         {
-          terminalFont = [[NSFont userFixedPitchFontOfSize:fSize] retain];
+          terminalFont = [NSFont userFixedPitchFontOfSize:fSize];
         }
     }
 
@@ -500,7 +500,11 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 // }
 - (int)cursorStyle
 {
-  return [self integerForKey:CursorStyleKey];
+  NSInteger style = [self integerForKey:CursorStyleKey];
+
+  if (style < 0) style = 0;
+  
+  return style;
 }
 - (void)setCursorStyle:(int)style
 {
@@ -649,7 +653,9 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
 - (int)scrollBackLines
 {
   if ([self objectForKey:ScrollBackLinesKey] == nil)
-    [self setInteger:256 forKey:ScrollBackLinesKey];
+    {
+      [self setInteger:256 forKey:ScrollBackLinesKey];
+    }
   
   return [self integerForKey:ScrollBackLinesKey];
 }
