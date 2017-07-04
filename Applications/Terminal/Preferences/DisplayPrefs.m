@@ -142,6 +142,7 @@
   if ([bufferEnabledBtn state] == NSOffState)
     {
       [prefs setScrollBackEnabled:NO];
+      [prefs setScrollBackLines:0];
     }
   else
     {

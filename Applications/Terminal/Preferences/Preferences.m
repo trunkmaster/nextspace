@@ -70,11 +70,6 @@ static Preferences *shared = nil;
                               nil];
   [prefModules retain];
 
-  // if (!ud)
-  //   {
-  //     ud = [NSUserDefaults standardUserDefaults];
-  //   }
-
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(mainWindowDidChange:)
@@ -122,25 +117,25 @@ static Preferences *shared = nil;
   if ([modeContentBox contentView] != mView)
     {
       [(NSBox *)modeContentBox setContentView:mView];
-      [module showWindow];
     }
+  [module showWindow];
 }
 
 - (void)mainWindowDidChange:(NSNotification *)notif
 {
   id <PrefsModule> module;
 
-  NSLog(@"Preferences: main window now: %@", [[notif object] title]);
+  // NSLog(@"Preferences: main window now: %@", [[notif object] title]);
 
   if ([[NSApp delegate] preferencesForWindow:[notif object] live:NO] == nil)
     {
-      NSLog(@"Preferences: main window is not terminal window.");
+      // NSLog(@"Preferences: main window is not terminal window.");
       return;
     }
 
   if (mainWindow == [notif object])
     {
-      NSLog(@"Preferences: main terminal window left unchanged.");
+      // NSLog(@"Preferences: main terminal window left unchanged.");
       return;
     }
   

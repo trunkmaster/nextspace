@@ -32,7 +32,7 @@
 
 - (void)showWindow
 {
-  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
 
   [shellField setStringValue:[defs shell]];
   [loginShellBtn setState:[defs loginShell]];
