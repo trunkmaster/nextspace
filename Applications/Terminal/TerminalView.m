@@ -162,7 +162,8 @@ int ptyMakeControllingTty(int *slaveFd, const char *slaveName)
   return 0;
 }
 
-int openpty(int *amaster, int *aslave, char *name, const struct termios *termp, const struct winsize *winp)
+int openpty(int *amaster, int *aslave, char *name,
+            const struct termios *termp, const struct winsize *winp)
 {
     int fdm, fds;
     char *slaveName;
@@ -233,7 +234,8 @@ int openpty(int *amaster, int *aslave, char *name, const struct termios *termp, 
     return 0;
 }
 
-int forkpty (int *amaster, char *slaveName, const struct termios *termp, const struct winsize *winp)
+int forkpty (int *amaster, char *slaveName, const struct termios *termp,
+             const struct winsize *winp)
 {
   int fdm, fds; /* master and slave file descriptors */
   pid_t pid;
@@ -283,14 +285,12 @@ int forkpty (int *amaster, char *slaveName, const struct termios *termp, const s
 
 /* TODO */
 @interface NSView (unlockfocus)
--(void) unlockFocusNeedsFlush: (BOOL)flush;
+- (void)unlockFocusNeedsFlush:(BOOL)flush;
 @end
-
 
 NSString *TerminalViewBecameIdleNotification=@"TerminalViewBecameIdle";
 NSString *TerminalViewBecameNonIdleNotification=@"TerminalViewBecameNonIdle";
 NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
-
 
 @interface TerminalView (scrolling)
 - (void)_updateScroller;
@@ -311,9 +311,9 @@ NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
 @end
 
 
-/**
-   TerminalScreen protocol implementation and rendering methods
-**/
+//------------------------------------------------------------------------------
+//--- TerminalScreen protocol implementation and rendering methods
+//------------------------------------------------------------------------------
 
 @implementation TerminalView (display)
 
@@ -337,7 +337,7 @@ NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
 #define SCREEN(x,y) (screen[(y)*sx+(x)])
 
 /* handle accumulated pending scrolls with a single composite */
--(void) _handlePendingScroll: (BOOL)lockFocus
+- (void)_handlePendingScroll:(BOOL)lockFocus
 {
   float x0,y0,w,h,dx,dy;
 
@@ -389,7 +389,19 @@ static int total_draw = 0;
 
 static const float col_h[8]={  0, 240, 120, 180,   0, 300,  30,   0};
 static const float col_s[8]={0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
-
+// color values:
+// 	0 - black		"\e[30"
+// 	1 - blue		"\e[34"
+// 	2 - green		"\e[32"
+// 	3 - cyan		"\e[36"
+// 	4 - red			"\e[31"
+// 	5 - magenta		"\e[35"
+// 	6 - yellow		"\e[33"
+// 	7 - lightgray		"\e[37"
+// intensity values:
+// 	0 - half-bright
+// 	1 - normal
+// 	2 - bold
 static void set_background(NSGraphicsContext *gc,
                            unsigned char color,
                            unsigned char in,
@@ -414,19 +426,6 @@ static void set_background(NSGraphicsContext *gc,
   DPSsethsbcolor(gc,bh,bs,bb);
 }
 
-// color values:
-// 	0 - black		"\e[30"
-// 	1 - blue		"\e[34"
-// 	2 - green		"\e[32"
-// 	3 - cyan		"\e[36"
-// 	4 - red			"\e[31"
-// 	5 - magenta		"\e[35"
-// 	6 - yellow		"\e[33"
-// 	7 - lightgray		"\e[37"
-// intensity values:
-// 	0 - half-bright
-// 	1 - normal
-// 	2 - bold
 static void set_foreground(NSGraphicsContext *gc,
                            unsigned char color,
                            unsigned char intensity,
@@ -1016,14 +1015,16 @@ static void set_foreground(NSGraphicsContext *gc,
 }
 
 
--(void) ts_setTitle: (NSString *)new_title  type: (int)title_type
+- (void)ts_setTitle:(NSString *)new_title type:(int)title_type
 {
   NSLog(@"ts_setTitle: %@ [%i]", new_title, title_type);
   NSDebugLLog(@"ts",@"setTitle: %@  type: %i",new_title,title_type);
-  if (title_type==1 || title_type==0)
-    ASSIGN(title_miniwindow,new_title);
-  if (title_type==2 || title_type==0)
-    ASSIGN(title_window,new_title);
+  
+  if (title_type == 1 || title_type == 0)
+    ASSIGN(title_miniwindow, new_title);
+  
+  if (title_type == 2 || title_type == 0)
+    ASSIGN(title_window, new_title);
   
   [[NSNotificationCenter defaultCenter]
 		postNotificationName:TerminalViewTitleDidChangeNotification
@@ -1230,57 +1231,57 @@ static void set_foreground(NSGraphicsContext *gc,
 
 -(void) ts_shiftRow:(int)y at:(int)x0 delta:(int)delta
 {
-	screen_char_t *s,*d;
-	int x1,c;
-	NSDebugLLog(@"ts",@"shiftRow: %i  at: %i  delta: %i",
-		y,x0,delta);
+  screen_char_t *s,*d;
+  int x1,c;
+  NSDebugLLog(@"ts",@"shiftRow: %i  at: %i  delta: %i",
+              y,x0,delta);
 
-	if (y<0 || y>=sy) return;
-	if (x0<0 || x0>=sx) return;
+  if (y<0 || y>=sy) return;
+  if (x0<0 || x0>=sx) return;
 
-	if (current_y==y)
-	{
-		SCREEN(current_x,current_y).attr|=0x80;
-		draw_cursor=YES;
-	}
+  if (current_y==y)
+    {
+      SCREEN(current_x,current_y).attr|=0x80;
+      draw_cursor=YES;
+    }
 
-	s=&SCREEN(x0,y);
-	x1=x0+delta;
-	c=sx-x0;
-	if (x1<0)
-	{
-		x0-=x1;
-		c+=x1;
-		x1=0;
-	}
-	if (x1+c>sx)
-		c=sx-x1;
-	d=&SCREEN(x1,y);
-	memmove(d,s,sizeof(screen_char_t)*c);
-	if (!current_scroll)
-	{
-		float cx0,y0,w,h,dx,dy;
+  s=&SCREEN(x0,y);
+  x1=x0+delta;
+  c=sx-x0;
+  if (x1<0)
+    {
+      x0-=x1;
+      c+=x1;
+      x1=0;
+    }
+  if (x1+c>sx)
+    c=sx-x1;
+  d=&SCREEN(x1,y);
+  memmove(d,s,sizeof(screen_char_t)*c);
+  if (!current_scroll)
+    {
+      float cx0,y0,w,h,dx,dy;
 
-		if (pending_scroll)
-			[self _handlePendingScroll: YES];
+      if (pending_scroll)
+        [self _handlePendingScroll: YES];
 
-		cx0=x0*fx;
-		w=fx*c;
-		dx=x1*fx;
+      cx0=x0*fx;
+      w=fx*c;
+      dx=x1*fx;
 
-		y0=y*fy;
-		h=fy;
-		dy=y0;
+      y0=y*fy;
+      h=fy;
+      dy=y0;
 
-		y0=sy*fy-y0-h;
-		dy=sy*fy-dy-h;
-		[self lockFocus];
-		DPScomposite(GSCurrentContext(),border_x+cx0,border_y+y0,w,h,
-			[self gState],border_x+dx,border_y+dy,NSCompositeCopy);
-		[self unlockFocusNeedsFlush: NO];
-		num_scrolls++;
-	}
-	ADD_DIRTY(0,y,sx,1);
+      y0=sy*fy-y0-h;
+      dy=sy*fy-dy-h;
+      [self lockFocus];
+      DPScomposite(GSCurrentContext(),border_x+cx0,border_y+y0,w,h,
+                   [self gState],border_x+dx,border_y+dy,NSCompositeCopy);
+      [self unlockFocusNeedsFlush: NO];
+      num_scrolls++;
+    }
+  ADD_DIRTY(0,y,sx,1);
 }
 
 -(screen_char_t) ts_getCharAt:(int)x :(int)y
@@ -1353,7 +1354,7 @@ static void set_foreground(NSGraphicsContext *gc,
   int s;
   if (!use_multi_cell_glyphs)
     return 1;
-  s=ceil([font boundingRectForGlyph:ch].size.width/fx);
+  s = ceil([font boundingRectForGlyph:ch].size.width/fx);
   if (s<1)
     return 1;
   return s;
@@ -1371,9 +1372,9 @@ static void set_foreground(NSGraphicsContext *gc,
 @end
 
 
-/**
-   Scrolling
-**/
+//------------------------------------------------------------------------------
+//--- Scrolling
+//------------------------------------------------------------------------------
 
 @implementation TerminalView (scrolling)
 
@@ -1466,9 +1467,9 @@ static void set_foreground(NSGraphicsContext *gc,
 @end
 
 
-/**
-   Keyboard events
-**/
+//------------------------------------------------------------------------------
+//--- Keyboard events
+//------------------------------------------------------------------------------
 
 @implementation TerminalView (keyboard)
 
@@ -1534,9 +1535,9 @@ static void set_foreground(NSGraphicsContext *gc,
 @end
 
 
-/**
-   Selection, copy/paste/services
-**/
+//------------------------------------------------------------------------------
+//--- Selection, copy/paste/services
+//------------------------------------------------------------------------------
 
 @implementation TerminalView (selection)
 
@@ -1953,9 +1954,9 @@ static void set_foreground(NSGraphicsContext *gc,
 @end
 
 
-/**
-   Handle master_fd
-**/
+//------------------------------------------------------------------------------
+//--- Handle master_fd
+//------------------------------------------------------------------------------
 
 @implementation TerminalView (input)
 
@@ -2318,9 +2319,9 @@ static void set_foreground(NSGraphicsContext *gc,
 @end
 
 
-/**
-   drag'n'drop support
-**/
+//------------------------------------------------------------------------------
+//--- Drag and Drop support
+//------------------------------------------------------------------------------
 
 @implementation TerminalView (drag_n_drop)
 
@@ -2392,12 +2393,15 @@ static int handled_mask= (NSDragOperationCopy |
 @end
 
 
-/**
-   misc. stuff
-**/
+//------------------------------------------------------------------------------
+//--- Misc. stuff
+//------------------------------------------------------------------------------
 
 @implementation TerminalView
 
+// ---
+// Resize
+// ---
 - (void)_resizeTerminalTo:(NSSize)size
 {
   int nsx,nsy;
@@ -2581,7 +2585,6 @@ static int handled_mask= (NSDragOperationCopy |
   [self setNeedsDisplay:YES];
 }
 
-
 - (void)setFrame:(NSRect)frame
 {
   [super setFrame:frame];
@@ -2637,7 +2640,6 @@ static int handled_mask= (NSDragOperationCopy |
   tp = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
                                                       width:sx
                                                      height:sy];
-
   master_fd = -1;
 
   [self registerForDraggedTypes:
@@ -2648,7 +2650,6 @@ static int handled_mask= (NSDragOperationCopy |
 
   [self updateColors:nil];
   [self setCursorStyle:[defaults cursorStyle]];
-
 
   return self;
 }
@@ -2769,14 +2770,15 @@ static int handled_mask= (NSDragOperationCopy |
   use_multi_cell_glyphs = multicellGlyphs;
 }
  
- - (void)setCursorStyle:(NSUInteger)style
-  {
-    cursorStyle = style;
-  }
+- (void)setCursorStyle:(NSUInteger)style
+{
+  cursorStyle = style;
+}
+
 // ---
 // Title (window, icon)
 // ---
-- (NSString *)shellPath
+- (NSString *)programPath
 {
   return programPath;
 }
@@ -2794,32 +2796,9 @@ static int handled_mask= (NSDragOperationCopy |
   return ttyName;
 }
 
-- (NSString *)windowSize
+- (NSSize)windowSize
 {
-  return [NSString stringWithFormat:@"%ix%i", sx, sy];
-}
-
-- (NSString *)windowTitle
-{
-  NSString       *title;
-  NSString       *ttyName;
-  NSMutableArray *ttyPath = [[childTerminalName pathComponents] mutableCopy];
-  
-  [ttyPath removeObjectAtIndex:0]; // remove '/'
-  [ttyPath removeObjectAtIndex:0]; // remove 'dev'
-  ttyName = [ttyPath componentsJoinedByString:@"/"];
-  [ttyPath release];
-  
-  title = [NSString stringWithFormat:@"%@ (%@) %ix%i",
-                    programPath, ttyName, sx, sy];
-  ASSIGN(title_window, title);
-
-  return title_window;
-}
-
-- (NSString *)miniwindowTitle
-{
-  return title_miniwindow;
+  return NSMakeSize(sx,sy);
 }
 
 - (BOOL)isUserProgramRunning

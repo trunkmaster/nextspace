@@ -65,7 +65,7 @@
     title = [title stringByAppendingFormat:@"(%@) ", [twc deviceName]];
   
   if (elementsMask & TitleBarWindowSize)
-    title = [title stringByAppendingFormat:@"%@ ", [twc windowSize]];
+    title = [title stringByAppendingFormat:@"%@ ", [twc windowSizeString]];
   
   if (elementsMask & TitleBarCustomTitle)
     {
@@ -113,7 +113,7 @@
     [customTitleField setStringValue:customTitle];
   
   [self setElements:self];
-  [self _updateDemoTitleBar];  
+  [self _updateDemoTitleBar];
 }
 
 - (void)setElements:(id)sender

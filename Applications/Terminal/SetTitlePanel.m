@@ -37,9 +37,12 @@
     }
 
   prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:YES];
+  if (!prefs)
+    prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:NO];
+  
   titleBarMask = [prefs titleBarElementsMask];
   [titleField setStringValue:[prefs customTitle]];
-  
+
   [titlePanel makeKeyAndOrderFront:self];
   // [NSApp runModalForWindow:titlePanel];
 }
@@ -47,14 +50,18 @@
 - (void)awakeFromNib
 {
   [titlePanel makeFirstResponder:titleField];
-  [setBtn setShowsFirstResponder:NO];
-  [cancelBtn setShowsFirstResponder:NO];
 
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(mainWindowDidChange:)
            name:NSWindowDidBecomeMainNotification
          object:nil];
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super dealloc];
 }
 
 - (void)setTitle:(id)sender
@@ -87,6 +94,8 @@
   Defaults *prefs;
 
   prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:YES];
+  if (!prefs)
+    prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:NO];
   
   // Main window is not terminal window
   if (prefs == nil) return;

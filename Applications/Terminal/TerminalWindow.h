@@ -19,6 +19,7 @@
 #import "Defaults.h"
 
 NSString *TerminalWindowNoMoreActiveWindowsNotification;
+NSString *TerminalWindowSizeDidChangeNotification;
 
 @interface TerminalWindowController : NSWindowController
 {
@@ -30,6 +31,26 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
   Defaults     *preferences;
   Defaults     *livePreferences;
   NSString     *fileName;
+
+  // Window
+  int terminalColumns;
+  int terminalRows;
+  WindowCloseBehavior windowCloseBehavior;
+
+  // Title Bar
+  NSUInteger titleBarElementsMask;
+  NSString   *titleBarCustomTitle;
+
+  // Display
+  BOOL scrollBackEnabled;
+  // BOOL scrollBackUnlimited;
+  // int  scrollBackLines;
+  // BOOL scrollBottomOnInput;
+
+  int    scrollerWidth;
+  NSSize charCellSize;
+  NSSize winContentSize;
+  NSSize winMinimumSize;
 }
 
 - initWithStartupFile:(NSString *)filePath;
@@ -47,7 +68,7 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
 - (NSString *)shellPath;
 - (NSString *)deviceName;
 - (NSString *)fileName;
-- (NSString *)windowSize;
+- (NSString *)windowSizeString;
 
 @end
 
