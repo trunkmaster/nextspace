@@ -32,22 +32,25 @@
 
 - (void)showWindow
 {
-  // prefs = [[Preferences shared] mainWindowPreferences];
+  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
+
+  [shellField setStringValue:[defs shell]];
+  [loginShellBtn setState:[defs loginShell]];
 }
 
 - (BOOL)       control:(NSControl *)control
   textShouldEndEditing:(NSText *)fieldEditor
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
   
-  [defs setObject:[control stringValue] forKey:ShellKey];
+  [defs setShell:[control stringValue]];
   return YES;
 }
 - (void)setLoginShell:(id)sender
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
   
-  [defs setBool:[loginShellBtn state] forKey:LoginShellKey];
+  [defs setLoginShell:[loginShellBtn state]];
 }
 
 @end

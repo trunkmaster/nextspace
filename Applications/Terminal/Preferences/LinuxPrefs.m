@@ -66,32 +66,10 @@ static character_set_choice_t cs_choices[]={
   return view;
 }
 
-
-- (void)setDefault:(id)sender
-{
-  int i = [charsetBtn indexOfSelectedItem];
-  Defaults *defs = [Defaults shared];
-  
-  if (cs_choices[i].name != nil)
-    {
-      [defs setObject:cs_choices[i].name forKey:CharacterSetKey];
-    }
-  else
-    {
-      [defs setObject:@"" forKey:CharacterSetKey];
-    }
-  [defs setBool:[handleMulticellBtn state] forKey:UseMultiCellGlyphsKey];
-
-  [defs setBool:[escapeKeyBtn state] forKey:DoubleEscapeKey];
-  [defs setBool:[commandKeyBtn state] forKey:CommandAsMetaKey];
-  
-  [defs synchronize];
-}
-- (void)showDefault:(id)sender
+- (void)_updateControls:(Defaults *)defs
 {
   int i;
   character_set_choice_t *c;
-  Defaults *defs = [Defaults shared];
   NSString *characterSet = [defs characterSet];
   
   for (i=0,c=cs_choices;c->name;i++,c++)
@@ -108,10 +86,36 @@ static character_set_choice_t cs_choices[]={
   [commandKeyBtn setState:[defs commandAsMeta]];
 }
 
+- (void)setDefault:(id)sender
+{
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
+  int      i = [charsetBtn indexOfSelectedItem];
+ 
+  if (cs_choices[i].name != nil)
+    {
+      [defs setCharacterSet:cs_choices[i].name];
+    }
+  else
+    {
+      [defs setCharacterSet:nil];
+    }
+  [defs setUseMultiCellGlyphs:[handleMulticellBtn state]];
+
+  [defs setDoubleEscape:[escapeKeyBtn state]];
+  [defs setCommandAsMeta:[commandKeyBtn state]];
+  
+  [defs synchronize];
+}
+- (void)showDefault:(id)sender
+{
+  [self _updateControls:[[Preferences shared] mainWindowPreferences]];
+}
+
 - (void)showWindow
 {
-  // prefs = [[Preferences shared] mainWindowPreferences];
+  [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
 }
+// TODO
 - (void)setWindow:(id)sender
 {
   /* insert your code here */
