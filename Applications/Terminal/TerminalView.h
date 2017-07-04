@@ -132,10 +132,9 @@ struct selection_range
 }
 
 - initWithPrefences:(id)preferences;
-- (Defaults *)preferences;
+- (Defaults *)preferences; // used by terminal parser
 
 - (void)setIgnoreResize:(BOOL)ignore;
-
 - (void)setBorder:(float)x :(float)y;
 
 - (void)setFont:(NSFont *)aFont;
@@ -146,12 +145,10 @@ struct selection_range
 - (void)setUseMulticellGlyphs:(BOOL)multicellGlyphs;
 - (void)setCursorStyle:(NSUInteger)style;
 
-- (NSString *)shellPath;
+- (NSString *)programPath;
 - (NSString *)deviceName;
-- (NSString *)windowSize;
+- (NSSize)windowSize;
   
-- (NSString *)windowTitle;
-- (NSString *)miniwindowTitle;
 - (BOOL)isUserProgramRunning;
 
 + (void)registerPasteboardTypes;

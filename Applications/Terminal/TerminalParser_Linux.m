@@ -646,10 +646,10 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       if (vc_state==EStitle_buf)
         {
           NSString *new_title;
-          title_buf[title_len]=0;
-          new_title=[NSString stringWithCString: title_buf];
-          [ts ts_setTitle: new_title  type: title_type];
-          vc_state=ESnormal;
+          title_buf[title_len] = 0;
+          new_title = [NSString stringWithCString:title_buf];
+          [ts ts_setTitle:new_title type:title_type];
+          vc_state = ESnormal;
 
           return;
         }
@@ -1454,15 +1454,15 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   // y+=h-height;
   y = cursor_y;
 
-  width=w;
-  height=h;
-  top=0;
-  bottom=height;
+  width = w;
+  height = h;
+  top = 0;
+  bottom = height;
 
-  if (x>=width) x=width-1;
-  if (x<0) x=0;
-  if (y>=height) y=height-1;
-  if (y<0) y=0;
+  if (x >= width) x = width - 1;
+  if (x < 0) x = 0;
+  if (y >= height) y = height - 1;
+  if (y < 0) y = 0;
 }
 
 @end

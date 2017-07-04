@@ -150,7 +150,8 @@ static Preferences *shared = nil;
   Defaults *prefs;
   
   prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];
-  if (!prefs)
+
+  if (!prefs) // should never happen - live:NO means "startup preferences"
     prefs = [Defaults shared];
 
   return prefs;
@@ -161,6 +162,15 @@ static Preferences *shared = nil;
   Defaults *prefs;
   
   prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:YES];
+
+  // TODO: should we return defaults if no live preferences returned (no
+  // changes to preferences has happened)?
+  // FTOH, this method should be called by Preferences.bundle modules only.
+  // Modules will only read live preferences and never directly write them.
+  // Calling this method called to be sure that if livePreferences exists -
+  // read preferences from it.
+  // If module wants to change default preferences must call
+  // 'mainWindowPreferences' (implemented above).
   if (!prefs)
     prefs = [Defaults shared];
 

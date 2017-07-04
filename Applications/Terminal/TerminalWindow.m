@@ -22,28 +22,10 @@
 #import "TerminalWindow.h"
 #import "TerminalView.h"
 
-NSString *TerminalWindowNoMoreActiveWindowsNotification=
+NSString *TerminalWindowNoMoreActiveWindowsNotification =
   @"TerminalWindowNoMoreActiveWindowsNotification";
-
-// Window
-static int terminalColumns;
-static int terminalRows;
-static WindowCloseBehavior windowCloseBehavior;
-
-// Title Bar
-static NSUInteger titleBarElementsMask;
-static NSString   *titleBarCustomTitle;
-
-// Display
-static BOOL scrollBackEnabled;
-// static BOOL scrollBackUnlimited;
-// static int  scrollBackLines;
-// static BOOL scrollBottomOnInput;
-
-static int    scrollerWidth;
-static NSSize charCellSize;
-static NSSize winContentSize;
-static NSSize winMinimumSize;
+NSString *TerminalWindowSizeDidChangeNotification =
+  @"TerminalWindowSizeDidChangeNotification";
 
 @implementation TerminalWindowController
 
@@ -136,16 +118,40 @@ static NSSize winMinimumSize;
   [tView setIgnoreResize:NO];
   [win makeFirstResponder:tView];
 
-  // if ([ud boolForKey:@"AddYBorders"])
-  //   [tView setBorder:4 :4];
-  // else
-    [tView setBorder:4 :2];
+  [tView setBorder:4 :2];
 
   [win setContentView:hBox];
   DESTROY(hBox);
   
   [win release];
 
+  return self;
+}
+
+- init
+{
+  [self initWithStartupFile:nil];
+  
+  return self;
+}
+
+- initWithStartupFile:(NSString *)filePath
+{
+  self = [super init];
+
+  if (filePath == nil)
+    {
+      preferences = [[Defaults alloc] init];
+      fileName = @"Default";
+    }
+  else
+    {
+      preferences = [[Defaults alloc] initWithFile:filePath];
+      fileName = [filePath lastPathComponent];
+    }
+  
+  [self _setupWindow];
+  
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(preferencesDidChange:)
@@ -172,33 +178,6 @@ static NSSize winMinimumSize;
   return self;
 }
 
-- init
-{
-  [self initWithStartupFile:nil];
-  
-  return self;
-}
-
-- initWithStartupFile:(NSString *)filePath
-{
-  self = [super init];
-  
-  if (filePath == nil)
-    {
-      preferences = [[Defaults alloc] init];
-      fileName = @"Default";
-    }
-  else
-    {
-      preferences = [[Defaults alloc] initWithFile:filePath];
-      fileName = [filePath lastPathComponent];
-    }
-  
-  [self _setupWindow];
-
-  return self;
-}
-
 - (void)dealloc
 {
   NSLog(@"Window DEALLOC.");
@@ -219,23 +198,10 @@ static NSSize winMinimumSize;
   return windowCloseBehavior;
 }
 
-- (Defaults *)preferences
-{
-  return preferences;
-}
-
-- (Defaults *)livePreferences
-{
-  if (livePreferences)
-    return livePreferences;
-  else
-    return preferences;
-}
-
 // Title Bar elements
 - (NSString *)shellPath
 {
-  return [tView shellPath];
+  return [tView programPath];
 }
 
 - (NSString *)deviceName
@@ -248,27 +214,41 @@ static NSSize winMinimumSize;
   return fileName;
 }
 
-- (NSString *)windowSize
+- (NSString *)windowSizeString
 {
-  return [tView windowSize];
+  NSSize size = [tView windowSize];
+  
+  return [NSString stringWithFormat:@"%.0fx%.0f", size.width, size.height];
 }
 
 // --- Notifications ---
 - (void)updateTitleBar:(NSNotification *)n
 {
   NSString *title;
-  NSString *miniTitle = [tView shellPath];
+  NSString *miniTitle = [self shellPath];
 
   title = [NSString new];
   
   if (titleBarElementsMask & TitleBarShellPath)
-    title = [title stringByAppendingFormat:@"%@ ", [tView shellPath]];
+    title = [title stringByAppendingFormat:@"%@ ", [self shellPath]];
   
   if (titleBarElementsMask & TitleBarDeviceName)
-    title = [title stringByAppendingFormat:@"(%@) ", [tView deviceName]];
+    title = [title stringByAppendingFormat:@"(%@) ", [self deviceName]];
   
   if (titleBarElementsMask & TitleBarWindowSize)
-    title = [title stringByAppendingFormat:@"%@ ", [tView windowSize]];
+    {
+      // NSSize wSize = [tView windowSize];
+      // Defaults *prefs = [self livePreferences];
+      
+      // if (wSize.width != [prefs windowWidth])
+      //   [prefs setWindowWidth:wSize.width];
+      // if (wSize.height != [prefs windowHeight])
+      //   [prefs setWindowHeight:wSize.height];
+      title = [title stringByAppendingFormat:@"%@ ", [self windowSizeString]];
+      [[NSNotificationCenter defaultCenter]
+		postNotificationName:TerminalWindowSizeDidChangeNotification
+                              object:self];
+    }
   
   if (titleBarElementsMask & TitleBarCustomTitle)
     {
@@ -281,7 +261,6 @@ static NSSize winMinimumSize;
           title = [NSString stringWithFormat:@"%@ \u2014 %@",
                             titleBarCustomTitle, title];
         }
-      miniTitle = titleBarCustomTitle;
     }
 
   if (titleBarElementsMask & TitleBarFileName)
@@ -353,8 +332,19 @@ static NSSize winMinimumSize;
   [[NSApp delegate] window:self becameIdle:NO];
 }
 
-// Use explicit (by keys) reading of changed preferences.
-// Using Defaults methods always returns some values.
+// --- Preferences ---
+- (Defaults *)preferences
+{
+  return preferences;
+}
+
+- (Defaults *)livePreferences
+{
+  return livePreferences;
+}
+
+// Use explicit (by keys) reading of changed preferences to check some
+// setting was passwd to us. Using Defaults methods always returns some values.
 - (void)preferencesDidChange:(NSNotification *)notif
 {
   Defaults *prefs = [[notif userInfo] objectForKey:@"Preferences"];
@@ -387,12 +377,15 @@ static NSSize winMinimumSize;
     }
 
   // Title Bar:
-  if ((intValue = [prefs integerForKey:TitleBarElementsMaskKey]) &&
-      intValue != titleBarElementsMask)
+  if ([prefs objectForKey:TitleBarElementsMaskKey])
     {
-      titleBarElementsMask = intValue;
+      intValue = [prefs titleBarElementsMask];
+      if (intValue != titleBarElementsMask)
+        {
+          titleBarElementsMask = intValue;
+          [livePreferences setTitleBarElementsMask:intValue];
+        }
       titleBarCustomTitle = [prefs customTitle];
-      [livePreferences setTitleBarElementsMask:titleBarElementsMask];
       [livePreferences setCustomTitle:titleBarCustomTitle];
       [self updateTitleBar:nil];
     }
@@ -523,6 +516,9 @@ static NSSize winMinimumSize;
     {
       [self calculateSizes];
       [win setContentSize:winContentSize];
+      [[NSNotificationCenter defaultCenter]
+		postNotificationName:TerminalWindowSizeDidChangeNotification
+                              object:self];
     }
 }
 

@@ -22,6 +22,12 @@
 
   [NSBundle loadNibNamed:@"Window" owner:self];
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(showWindow)
+           name:TerminalWindowSizeDidChangeNotification
+         object:nil];
+  
   return self;
 }
 
@@ -33,6 +39,12 @@
   [[shellExitMatrix cellWithTag:2] setRefusesFirstResponder:YES];
   
   [view retain];
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super dealloc];
 }
 
 - (void)setFont:(id)sender
