@@ -152,12 +152,24 @@ static Preferences *shared = nil;
 
 - (Defaults *)mainWindowPreferences
 {
-  return [[NSApp delegate] preferencesForWindow:mainWindow live:NO];
+  Defaults *prefs;
+  
+  prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];
+  if (!prefs)
+    prefs = [Defaults shared];
+
+  return prefs;
 }
 
 - (Defaults *)mainWindowLivePreferences
 {
-  return [[NSApp delegate] preferencesForWindow:mainWindow live:YES];
+  Defaults *prefs;
+  
+  prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:YES];
+  if (!prefs)
+    prefs = [Defaults shared];
+
+  return prefs;
 }
 
 @end

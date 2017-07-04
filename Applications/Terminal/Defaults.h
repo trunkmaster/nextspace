@@ -110,7 +110,7 @@ extern NSString *DoubleEscapeKey;
 
 @interface Defaults (Linux)
 - (NSString *)characterSet;
-- (void)setCaharacterSet:(NSString *)cSet;
+- (void)setCharacterSet:(NSString *)cSet;
 - (BOOL)commandAsMeta;
 - (void)setCommandAsMeta:(BOOL)yn;
 - (BOOL)doubleEscape;

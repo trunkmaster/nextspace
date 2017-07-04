@@ -14,9 +14,9 @@
   id windowSizeBtn;
   id view;
 }
-- (void) setElements: (id)sender;
+- (void)setElements:(id)sender;
 
-- (void) setDefault: (id)sender;
-- (void) showDefault: (id)sender;
-- (void) setWindow: (id)sender;
+- (void)setDefault:(id)sender;
+- (void)showDefault:(id)sender;
+- (void)setWindow:(id)sender;
 @end

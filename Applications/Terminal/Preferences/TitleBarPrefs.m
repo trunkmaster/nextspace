@@ -29,7 +29,7 @@
   return view;
 }
 
-
+// Utility
 - (NSUInteger)_elementsMaskFromButtons
 {
   NSUInteger mask = 0;
@@ -96,6 +96,25 @@
   [demoTitleBarField setStringValue:title];
 }
 
+- (void)_updateControls:(Defaults *)defs
+{
+  NSUInteger titleBarMask = [defs titleBarElementsMask];
+  NSString   *customTitle = [defs customTitle];
+
+  [shellPathBth setState:(titleBarMask & TitleBarShellPath) ? 1 : 0];
+  [deviceNameBtn setState:(titleBarMask & TitleBarDeviceName) ? 1 : 0];
+  [filenameBtn setState:(titleBarMask & TitleBarFileName) ? 1 : 0];
+  [windowSizeBtn setState:(titleBarMask & TitleBarWindowSize) ? 1 : 0];
+  [customTitleBtn setState:(titleBarMask & TitleBarCustomTitle) ? 1 : 0];
+
+  if (!customTitle)
+    [customTitleField setStringValue:@"Terminal"];
+  else
+    [customTitleField setStringValue:customTitle];
+  
+  [self setElements:self];
+  [self _updateDemoTitleBar];  
+}
 
 - (void)setElements:(id)sender
 {
@@ -117,65 +136,50 @@
 
 - (void)setDefault:(id)sender
 {
+  Defaults   *defs = [[Preferences shared] mainWindowPreferences];
   NSUInteger titleBarMask = [self _elementsMaskFromButtons];
-  Defaults   *defs = [Defaults shared];
   
-  [defs setInteger:titleBarMask forKey:TitleBarElementsMaskKey];
+  [defs setTitleBarElementsMask:titleBarMask];
   if (titleBarMask & TitleBarCustomTitle)
     {
-      [defs setObject:[customTitleField stringValue]
-               forKey:TitleBarCustomTitleKey];
+      [defs setCustomTitle:[customTitleField stringValue]];
     }
 
   [defs synchronize];
 }
 - (void)showDefault:(id)sender
 {
-  Defaults   *defs = [Defaults shared];
-  NSUInteger titleBarMask = [defs titleBarElementsMask];
-  NSString   *customTitle = [defs customTitle];
-
-  [shellPathBth setState:(titleBarMask & TitleBarShellPath) ? 1 : 0];
-  [deviceNameBtn setState:(titleBarMask & TitleBarDeviceName) ? 1 : 0];
-  [filenameBtn setState:(titleBarMask & TitleBarFileName) ? 1 : 0];
-  [windowSizeBtn setState:(titleBarMask & TitleBarWindowSize) ? 1 : 0];
-  [customTitleBtn setState:(titleBarMask & TitleBarCustomTitle) ? 1 : 0];
-
-  if (!customTitle)
-    [customTitleField setStringValue:@"Terminal"];
-  else
-    [customTitleField setStringValue:customTitle];
-  
-  [self setElements:self];
-  [self _updateDemoTitleBar];
+  [self _updateControls:[[Preferences shared] mainWindowPreferences]];
 }
 
 - (void)showWindow
 {
-  // prefs = [[Preferences shared] mainWindowPreferences];
+  [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
 }
 - (void)setWindow:(id)sender
 {
-  NSMutableDictionary *prefs;
-  NSUInteger          titleBarMask;
+  Defaults     *prefs;
+  NSDictionary *uInfo;
+  NSUInteger   titleBarMask;
 
   if (![sender isKindOfClass:[NSButton class]]) return;
   
-  prefs = [NSMutableDictionary new];
+  prefs = [[Defaults alloc] initEmpty];
 
   titleBarMask = [self _elementsMaskFromButtons];
-  [prefs setObject:[NSNumber numberWithInt:titleBarMask]
-            forKey:TitleBarElementsMaskKey];
+  [prefs setTitleBarElementsMask:titleBarMask];
   if (titleBarMask & TitleBarCustomTitle)
     {
-      [prefs setObject:[customTitleField stringValue]
-                forKey:TitleBarCustomTitleKey];
+      [prefs setCustomTitle:[customTitleField stringValue]];
     }
+  
+  uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
+  [prefs release];
 
   [[NSNotificationCenter defaultCenter]
     postNotificationName:TerminalPreferencesDidChangeNotification
                   object:[NSApp mainWindow]
-                userInfo:prefs];
+                userInfo:uInfo];
 }
 
 

@@ -37,6 +37,31 @@
   return view;
 }
 
+// Utility
+- (void)_updateControls:(Defaults *)defs
+{
+  if ([defs scrollBackEnabled] == NO)
+    {
+      [bufferEnabledBtn setState:NSOffState];
+    }
+  else
+    {
+      int sbLines = [defs scrollBackLines];
+      
+      [bufferEnabledBtn setState:NSOnState];
+      
+      if ([defs scrollBackUnlimited] == YES)
+        [bufferLengthMatrix selectCellWithTag:0];
+      else
+        [bufferLengthMatrix selectCellWithTag:1];
+      
+      [bufferLengthField setIntegerValue:sbLines];
+    }
+  
+  [self setBufferEnabled:bufferEnabledBtn];
+  [scrollBottomBtn setState:[defs scrollBottomOnInput]];  
+}
+
 // Actions
 - (void)setBufferEnabled:(id)sender
 {
@@ -93,54 +118,12 @@
 // Reset onscreen controls to values stored in UserDefaults
 - (void)showDefault:(id)sender
 {
-  Defaults *defs = [[Preferences shared] mainWindowPreferences];
-  
-  if ([defs scrollBackEnabled] == NO)
-    {
-      [bufferEnabledBtn setState:NSOffState];
-    }
-  else
-    {
-      int sbLines = [defs scrollBackLines];
-      
-      [bufferEnabledBtn setState:NSOnState];
-      
-      if ([defs scrollBackUnlimited] == YES)
-        [bufferLengthMatrix selectCellWithTag:0];
-      else
-        [bufferLengthMatrix selectCellWithTag:1];
-      
-      [bufferLengthField setIntegerValue:sbLines];
-    }
-  
-  [self setBufferEnabled:bufferEnabledBtn];
-  [scrollBottomBtn setState:[defs scrollBottomOnInput]];
+  [self _updateControls:[[Preferences shared] mainWindowPreferences]];  
 }
 
 - (void)showWindow
 {
-  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
-  
-  if ([defs scrollBackEnabled] == NO)
-    {
-      [bufferEnabledBtn setState:NSOffState];
-    }
-  else
-    {
-      int sbLines = [defs scrollBackLines];
-      
-      [bufferEnabledBtn setState:NSOnState];
-      
-      if ([defs scrollBackUnlimited] == YES)
-        [bufferLengthMatrix selectCellWithTag:0];
-      else
-        [bufferLengthMatrix selectCellWithTag:1];
-      
-      [bufferLengthField setIntegerValue:sbLines];
-    }
-  
-  [self setBufferEnabled:bufferEnabledBtn];
-  [scrollBottomBtn setState:[defs scrollBottomOnInput]];
+  [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
 }
 // Set values set to visible window
 - (void)setWindow:(id)sender
