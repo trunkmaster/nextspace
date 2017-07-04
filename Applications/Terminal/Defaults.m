@@ -404,7 +404,7 @@ NSString *DoubleEscapeKey  = @"DoubleEscape";
     }
   return characterSet;
 }
-- (void)setCaharacterSet:(NSString *)cSet
+- (void)setCharacterSet:(NSString *)cSet
 {
   if (!cSet)
     cSet = @"utf-8";

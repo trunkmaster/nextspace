@@ -37,7 +37,11 @@
 
 - (void)showWindow
 {
-  // prefs = [[Preferences shared] mainWindowPreferences];
+  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
+
+  [actionsMatrix selectCellWithTag:[defs startupAction]];
+  [autolaunchBtn setState:[defs hideOnAutolaunch]];
+  [filePathField setStringValue:[defs startupFile]];
 }
 
 - (void)setAction:(id)sender
@@ -50,16 +54,16 @@
 }
 - (void)setFilePath:(id)sender
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
   
-  [defs setObject:[filePathField stringValue] forKey:StartupFileKey];
+  [defs setStartupFile:[filePathField stringValue]];
   [defs synchronize];
 }
 - (void)setAutolaunch:(id)sender
 {
-  Defaults *defs = [Defaults shared];
+  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
   
-  [defs setBool:[autolaunchBtn state] forKey:HideOnAutolaunchKey];
+  [defs setHideOnAutolaunch:[autolaunchBtn state]];
   [defs synchronize];
 }
 

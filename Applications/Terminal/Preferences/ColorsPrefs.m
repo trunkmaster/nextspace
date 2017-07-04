@@ -40,7 +40,27 @@
   [[NSColorPanel sharedColorPanel] setShowsAlpha:YES];
 }
 
-// Overwrites default preferences (~/Library/Preferences/Terminal.plist).
+- (void)_updateControls:(Defaults *)defs
+{
+  //Window
+  [windowBGColorBtn setColor:[defs windowBackgroundColor]];
+  [windowSelectionColorBtn setColor:[defs windowSelectionColor]];
+  [normalTextColorBtn setColor:[defs textNormalColor]];
+  [blinkTextColorBtn setColor:[defs textBlinkColor]];
+  [boldTextColorBtn setColor:[defs textBoldColor]];
+  
+  [inverseTextBGColorBtn setColor:[defs textInverseBackground]];
+  [inverseTextFGColor setColor:[defs textInverseForeground]];
+  
+  [useBoldBtn setState:([defs useBoldTerminalFont] == YES)];
+
+  // Cursor
+  [cursorColorBtn setColor:[defs cursorColor]];
+  [cursorStyleMatrix selectCellWithTag:[defs cursorStyle]];
+}
+  
+// Injects color settings into default preferences (Terminal.plist
+// or session file *.term).
 - (void)setDefault:(id)sender
 {
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
@@ -65,47 +85,15 @@
   
   [defs synchronize];
 }
-// Reads from default preferences (~/Library/Preferences/Terminal.plist).
+// Reads from loaded preferences (Terminal.plist or session file *.term).
 - (void)showDefault:(id)sender
 {
-  Defaults *defs = [[Preferences shared] mainWindowPreferences];
-  
-  //Window
-  [windowBGColorBtn setColor:[defs windowBackgroundColor]];
-  [windowSelectionColorBtn setColor:[defs windowSelectionColor]];
-  [normalTextColorBtn setColor:[defs textNormalColor]];
-  [blinkTextColorBtn setColor:[defs textBlinkColor]];
-  [boldTextColorBtn setColor:[defs textBoldColor]];
-  
-  [inverseTextBGColorBtn setColor:[defs textInverseBackground]];
-  [inverseTextFGColor setColor:[defs textInverseForeground]];
-  
-  [useBoldBtn setState:([defs useBoldTerminalFont] == YES)];
-
-  // Cursor
-  [cursorColorBtn setColor:[defs cursorColor]];
-  [cursorStyleMatrix selectCellWithTag:[defs cursorStyle]];
+  [self _updateControls:[[Preferences shared] mainWindowPreferences]];
 }
 // Show preferences of main window
 - (void)showWindow
 {
-  Defaults *prefs = [[Preferences shared] mainWindowLivePreferences];
-
-  //Window
-  [windowBGColorBtn setColor:[prefs windowBackgroundColor]];
-  [windowSelectionColorBtn setColor:[prefs windowSelectionColor]];
-  [normalTextColorBtn setColor:[prefs textNormalColor]];
-  [blinkTextColorBtn setColor:[prefs textBlinkColor]];
-  [boldTextColorBtn setColor:[prefs textBoldColor]];
-  
-  [inverseTextBGColorBtn setColor:[prefs textInverseBackground]];
-  [inverseTextFGColor setColor:[prefs textInverseForeground]];
-  
-  [useBoldBtn setState:([prefs useBoldTerminalFont] == YES)];
-
-  // Cursor
-  [cursorColorBtn setColor:[prefs cursorColor]];
-  [cursorStyleMatrix selectCellWithTag:[prefs cursorStyle]];
+  [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
 }
 // Send changed preferences to window. No files changed or updated.
 - (void)setWindow:(id)sender
