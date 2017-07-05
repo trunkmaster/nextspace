@@ -171,6 +171,11 @@ NSString *TerminalWindowSizeDidChangeNotification =
   
   [[NSNotificationCenter defaultCenter]
     addObserver:self
+       selector:@selector(updateWindowSize:)
+           name:TerminalViewSizeDidChangeNotification
+         object:tView];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
        selector:@selector(updateTitleBar:)
            name:TerminalViewTitleDidChangeNotification
          object:tView];
@@ -222,6 +227,27 @@ NSString *TerminalWindowSizeDidChangeNotification =
 }
 
 // --- Notifications ---
+- (void)updateWindowSize:(NSNotification *)n
+{
+  NSSize wSize = [[n object] windowSize];
+  
+  if (!livePreferences)
+    {
+      livePreferences = [preferences copy];
+    }
+      
+  if (wSize.width != [livePreferences windowWidth])
+    [livePreferences setWindowWidth:wSize.width];
+  if (wSize.height != [livePreferences windowHeight])
+    [livePreferences setWindowHeight:wSize.height];
+
+  [self updateTitleBar:n];
+  
+  [[NSNotificationCenter defaultCenter]
+		postNotificationName:TerminalWindowSizeDidChangeNotification
+                              object:self];
+}
+
 - (void)updateTitleBar:(NSNotification *)n
 {
   NSString *title;
@@ -237,17 +263,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
   
   if (titleBarElementsMask & TitleBarWindowSize)
     {
-      // NSSize wSize = [tView windowSize];
-      // Defaults *prefs = [self livePreferences];
-      
-      // if (wSize.width != [prefs windowWidth])
-      //   [prefs setWindowWidth:wSize.width];
-      // if (wSize.height != [prefs windowHeight])
-      //   [prefs setWindowHeight:wSize.height];
       title = [title stringByAppendingFormat:@"%@ ", [self windowSizeString]];
-      [[NSNotificationCenter defaultCenter]
-		postNotificationName:TerminalWindowSizeDidChangeNotification
-                              object:self];
     }
   
   if (titleBarElementsMask & TitleBarCustomTitle)

@@ -291,6 +291,7 @@ int forkpty (int *amaster, char *slaveName, const struct termios *termp,
 NSString *TerminalViewBecameIdleNotification=@"TerminalViewBecameIdle";
 NSString *TerminalViewBecameNonIdleNotification=@"TerminalViewBecameNonIdle";
 NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
+NSString *TerminalViewSizeDidChangeNotification=@"TerminalViewSizeDidChange";
 
 @interface TerminalView (scrolling)
 - (void)_updateScroller;
@@ -2591,7 +2592,7 @@ static int handled_mask= (NSDragOperationCopy |
   [self _resizeTerminalTo:frame.size];
   
   [[NSNotificationCenter defaultCenter]
-		postNotificationName:TerminalViewTitleDidChangeNotification
+		postNotificationName:TerminalViewSizeDidChangeNotification
                               object:self];
 }
 
@@ -2601,7 +2602,7 @@ static int handled_mask= (NSDragOperationCopy |
   [self _resizeTerminalTo:size];
   
   [[NSNotificationCenter defaultCenter]
-		postNotificationName:TerminalViewTitleDidChangeNotification
+		postNotificationName:TerminalViewSizeDidChangeNotification
                               object:self];
 }
 
