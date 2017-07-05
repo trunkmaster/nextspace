@@ -25,6 +25,7 @@
 extern NSString *TerminalViewBecameIdleNotification;
 extern NSString *TerminalViewBecameNonIdleNotification;
 extern NSString *TerminalViewTitleDidChangeNotification;
+extern NSString *TerminalViewSizeDidChangeNotification;
 
 struct selection_range
 {
