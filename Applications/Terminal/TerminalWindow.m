@@ -539,11 +539,15 @@ NSString *TerminalWindowSizeDidChangeNotification =
 }
 
 // --- Actions ---
+// NSFontPanel delegate method. Called when clicked "Set" button in font panel
+// or menu intems under Font submenu.
 - (void)changeFont:(id)sender
 {
   NSLog(@"TerminalWindow: changeFont:%@", [sender className]);
   if ([sender isKindOfClass:[NSFontManager class]]) // Font Panel
     {
+      NSLog(@"Selected font: %@",
+            [[NSFontManager sharedFontManager] selectedFont]);
     }
   else if ([sender isKindOfClass:[NSFont class]])   // Preferences
     {
