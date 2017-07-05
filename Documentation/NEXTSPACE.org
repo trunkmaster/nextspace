@@ -3306,8 +3306,16 @@
 **** DONE Выделять bold цветом и шрифтом
 **** TODO Preferences
 ***** TODO Window и Title Bar
-****** TODO при обновлении размера окна, поля Rows и Columns должны обновляться.
-****** TODO при изменении шрифта, пересчитывать и устанавливать занового resize increment.
+****** DONE при обновлении размера окна, поля Rows и Columns должны обновляться.
+       Получилось так:
+       - при изменении размера окно шлет TerminalView -setFrame: или
+         -setFrameSize:;
+       - TerminalView шлет Notification об изменении размера окна;
+       - Notification ловит TerminalWindow (-updateWindowSize:), меняет
+         livePreferences, шлет notification об изменении размера
+         TerminalWindow;
+       - Preferences/WindowPrefs ловит последний notification и обнвляет поля.
+****** TODO при изменении шрифта, пересчитывать и устанавливать заново resize increment.
 ***** TODO Startup
 ****** TODO Auto-Launch
        Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
