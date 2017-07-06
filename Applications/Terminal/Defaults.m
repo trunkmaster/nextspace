@@ -229,7 +229,7 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
   
   if (font != nil)
     {
-      fName = [NSString stringWithFormat:@"%@-Bold", [font fontName]];
+      fName = [NSString stringWithFormat:@"%@-Bold", [font familyName]];
       fSize = [font pointSize];
       boldFont = [[[NSFont fontWithName:fName size:fSize] screenFont] retain];
       // NSLog(@"Found Bold font: %f [%@]", fSize, [boldFont fontName]);

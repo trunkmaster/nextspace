@@ -3283,9 +3283,19 @@
 ****** TODO Window Preferences
        При изменении шрифта, пересчитывать и устанавливать заново resize
        increment.
+       UPDATE: все намного серьезней - нужно сделать review коду, который
+       устанавливает размер TerminalView, плюс разобраться со сменой resize
+       increment на лету. Есть ощущение, что оно не меняется.
 ****** TODO Font menu
        Устанавливать шрифт и цвета для main window.
        Соответственно модифицировать значения в Preferences (Window и Colors).
+       + Font Panel - почти, нужно при вызове назначать текущий фонт окна
+       + Bold - нужно менять на Bold Off и реально это обеспечить
+       + Italic - нужно менять на Italic Off и реально это обеспечить
+       + Larger
+       + Smaller
+****** TODO Обновлять FontPanel
+       ...устанавливать шрифт выбранного окна в FontPanel если открыта.
 ***** TODO Startup
 ****** TODO Auto-Launch
        Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
