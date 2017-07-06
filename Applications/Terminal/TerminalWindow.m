@@ -42,10 +42,10 @@ NSString *TerminalWindowSizeDidChangeNotification =
     NSMakeSize(charCellSize.width  * MIN_COLUMNS + scrollerWidth + 1,
                charCellSize.height * MIN_LINES + 1);
   // add the borders to the size
-  winContentSize.width += 8;
-  winContentSize.height += 3;
-  winMinimumSize.width += 8;
-  winMinimumSize.height += 3;
+  winContentSize.width += 4;
+  winContentSize.height += 2;
+  winMinimumSize.width += 4;
+  winMinimumSize.height += 2;
 
   return;
 }
@@ -469,11 +469,13 @@ NSString *TerminalWindowSizeDidChangeNotification =
       font = [prefs terminalFont];
       [tView setFont:font];
       
-      [livePreferences setTerminalFont:font];
-      
       charCellSize = [Defaults characterCellSizeForFont:font];
+      // Should be a separate method: font can be changed in defferent ways.
+      // [win setResizeIncrements:NSMakeSize(charCellSize.width,
+      //                                     charCellSize.height)];
       isWindowSizeChanged = YES;
-      [tView setNeedsDisplay:YES];
+      // [tView setNeedsDisplay:YES];
+      [livePreferences setTerminalFont:font];      
     }
 
   // Display:
