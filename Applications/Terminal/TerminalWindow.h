@@ -64,11 +64,15 @@ NSString *TerminalWindowSizeDidChangeNotification;
 // If preferences were not changed during the life of the window this
 // method returns preferences stored in file (defaults or session).
 - (Defaults *)livePreferences;
+- (Defaults *)livePreferencesCreateIfNotExist:(BOOL)create;
 // Title Bar elements
 - (NSString *)shellPath;
 - (NSString *)deviceName;
 - (NSString *)fileName;
 - (NSString *)windowSizeString;
+
+- (void)updateWindowSize:(NSSize)size;
+- (void)setFont:(NSFont *)newFont updateWindowSize:(BOOL)resizeWindow;
 
 @end
 
