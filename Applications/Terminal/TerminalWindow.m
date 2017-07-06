@@ -171,7 +171,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
   
   [[NSNotificationCenter defaultCenter]
     addObserver:self
-       selector:@selector(updateWindowSize:)
+       selector:@selector(viewSizeDidChange:)
            name:TerminalViewSizeDidChangeNotification
          object:tView];
   [[NSNotificationCenter defaultCenter]
@@ -227,25 +227,27 @@ NSString *TerminalWindowSizeDidChangeNotification =
 }
 
 // --- Notifications ---
-- (void)updateWindowSize:(NSNotification *)n
+- (void)viewSizeDidChange:(NSNotification *)n
 {
-  NSSize wSize = [[n object] windowSize];
+  [self updateWindowSize:[[n object] windowSize]];
   
-  if (!livePreferences)
-    {
-      livePreferences = [preferences copy];
-    }
-      
-  if (wSize.width != [livePreferences windowWidth])
-    [livePreferences setWindowWidth:wSize.width];
-  if (wSize.height != [livePreferences windowHeight])
-    [livePreferences setWindowHeight:wSize.height];
+  // NSSize wSize = [[n object] windowSize];
 
-  [self updateTitleBar:n];
+  // if (!livePreferences)
+  //   {
+  //     livePreferences = [preferences copy];
+  //   }
+      
+  // if (wSize.width != [livePreferences windowWidth])
+  //   [livePreferences setWindowWidth:wSize.width];
+  // if (wSize.height != [livePreferences windowHeight])
+  //   [livePreferences setWindowHeight:wSize.height];
+
+  // [self updateTitleBar:n];
   
-  [[NSNotificationCenter defaultCenter]
-		postNotificationName:TerminalWindowSizeDidChangeNotification
-                              object:self];
+  // [[NSNotificationCenter defaultCenter]
+  //       	postNotificationName:TerminalWindowSizeDidChangeNotification
+  //                             object:self];
 }
 
 - (void)updateTitleBar:(NSNotification *)n
@@ -359,21 +361,28 @@ NSString *TerminalWindowSizeDidChangeNotification =
   return livePreferences;
 }
 
+- (Defaults *)livePreferencesCreateIfNotExist:(BOOL)create
+{
+  if (!livePreferences && create == YES)
+    {
+      livePreferences = [preferences copy];
+    }
+  
+  return livePreferences;
+}
+
+
 // Use explicit (by keys) reading of changed preferences to check some
 // setting was passwd to us. Using Defaults methods always returns some values.
 - (void)preferencesDidChange:(NSNotification *)notif
 {
   Defaults *prefs = [[notif userInfo] objectForKey:@"Preferences"];
-  id       value;
   int      intValue;
   BOOL     boolValue;
   BOOL     isWindowSizeChanged = NO;
-  NSFont   *font = nil;
+  // NSFont   *font = nil;
 
-  if (!livePreferences)
-    {
-      livePreferences = [preferences copy];
-    }
+  [self livePreferencesCreateIfNotExist:YES];
 
   //--- For Window usage only ---
   if ((intValue = [prefs integerForKey:WindowHeightKey]) > 0 &&
@@ -464,34 +473,35 @@ NSString *TerminalWindowSizeDidChangeNotification =
     }
   
   //---  For TerminalView usage only ---
+  // Font changed
   if ([prefs objectForKey:TerminalFontKey])
-    {
-      font = [prefs terminalFont];
-      [tView setFont:font];
-      
-      charCellSize = [Defaults characterCellSizeForFont:font];
-      // Should be a separate method: font can be changed in defferent ways.
-      // [win setResizeIncrements:NSMakeSize(charCellSize.width,
-      //                                     charCellSize.height)];
+    { // Should be a separate method: font can be changed in defferent ways.
+      [self setFont:[prefs terminalFont] updateWindowSize:NO];
       isWindowSizeChanged = YES;
-      // [tView setNeedsDisplay:YES];
-      [livePreferences setTerminalFont:font];      
+    }
+  // Bold font changed
+  if ([prefs objectForKey:TerminalFontUseBoldKey])
+    {
+      [livePreferences setUseBoldTerminalFont:[prefs useBoldTerminalFont]];
+      [self setFont:nil updateWindowSize:NO];
     }
 
   // Display:
-  if ((boolValue = [prefs boolForKey:ScrollBottomOnInputKey]))
+  if ([prefs objectForKey:ScrollBottomOnInputKey])
     {
+      boolValue = [prefs scrollBottomOnInput];
       [tView setScrollBottomOnInput:boolValue];
       [livePreferences setScrollBottomOnInput:boolValue];
     }
   // Linux:
-  if ((boolValue = [prefs boolForKey:UseMultiCellGlyphsKey]))
+  if ([prefs objectForKey:UseMultiCellGlyphsKey])
     {
+      boolValue = [prefs useMultiCellGlyphs];
       [tView setUseMulticellGlyphs:boolValue];
       [livePreferences setUseMultiCellGlyphs:boolValue];
     }
   // Colors:
-  if ((value = [prefs objectForKey:CursorColorKey]))
+  if ([prefs objectForKey:CursorColorKey])
     {
       [tView setCursorStyle:[prefs cursorStyle]];
       [tView updateColors:prefs]; // TODO
@@ -508,19 +518,6 @@ NSString *TerminalWindowSizeDidChangeNotification =
       [livePreferences setTextInverseBackground:[prefs textInverseBackground]];
       [livePreferences setTextInverseForeground:[prefs textInverseForeground]];
       [livePreferences setUseBoldTerminalFont:[prefs useBoldTerminalFont]];
-    }
-
-  // Bold font changed
-  if ([prefs objectForKey:TerminalFontUseBoldKey] ||
-      [prefs objectForKey:TerminalFontKey])
-    {
-      if (!font)
-        font = [livePreferences terminalFont];
-      
-      if ([livePreferences useBoldTerminalFont])
-        [tView setBoldFont:[Defaults boldTerminalFontForFont:font]];
-      else
-        [tView setBoldFont:font];
     }
 
   //---  For TerminalParser usage only ---
@@ -541,18 +538,93 @@ NSString *TerminalWindowSizeDidChangeNotification =
 }
 
 // --- Actions ---
+// Update preferences. Don't do actual window resizing.
+- (void)updateWindowSize:(NSSize)size
+{
+  [self livePreferencesCreateIfNotExist:YES];
+      
+  if (size.width != [livePreferences windowWidth])
+    {
+      [livePreferences setWindowWidth:size.width];
+      terminalColumns = size.width;
+    }
+  if (size.height != [livePreferences windowHeight])
+    {
+      [livePreferences setWindowHeight:size.height];
+      terminalRows = size.height;
+    }
+
+  [self updateTitleBar:nil];
+  
+  [[NSNotificationCenter defaultCenter]
+		postNotificationName:TerminalWindowSizeDidChangeNotification
+                              object:self];
+}
+
+- (void)setFont:(NSFont *)newFont updateWindowSize:(BOOL)resizeWindow
+{
+  NSFont   *font;
+  Defaults *prefs = [self livePreferencesCreateIfNotExist:YES];
+  
+  // Font
+  if (newFont != nil)
+    {
+      font = [newFont screenFont];
+
+      [prefs setTerminalFont:font];
+
+      charCellSize = [Defaults characterCellSizeForFont:font];
+      [win setResizeIncrements:NSMakeSize(charCellSize.width,
+                                          charCellSize.height)];
+      [tView setFont:font];
+    }
+  else
+    {
+      font = [prefs terminalFont];
+    }
+
+  // Bold font
+  if ([prefs useBoldTerminalFont] == YES)
+    [tView setBoldFont:[Defaults boldTerminalFontForFont:font]];
+  else
+    [tView setBoldFont:font];
+
+  [tView setNeedsDisplay:YES];
+  
+  // Window
+  if (resizeWindow)
+    {
+      // TODO: it must be one place to update window size
+      // (TerminalView or TerminalWindow not both)
+      [self updateWindowSize:[tView windowSize]];
+      [self calculateSizes];
+      [win setContentSize:winContentSize];
+    }
+  
+  // [[NSNotificationCenter defaultCenter]
+  //       	postNotificationName:TerminalWindowSizeDidChangeNotification
+  //                             object:self];
+}
+
 // NSFontPanel delegate method. Called when clicked "Set" button in font panel
 // or menu intems under Font submenu.
 - (void)changeFont:(id)sender
 {
-  NSLog(@"TerminalWindow: changeFont:%@", [sender className]);
+  NSFont *font;
+  
   if ([sender isKindOfClass:[NSFontManager class]]) // Font Panel
     {
-      NSLog(@"Selected font: %@",
-            [[NSFontManager sharedFontManager] selectedFont]);
+      font = [livePreferences terminalFont];
+      if (font == nil) font = [preferences terminalFont];
+      
+      // NSLog(@"Selected font: %@ converted: %@", [sender selectedFont],
+      //       [sender convertFont:[preferences terminalFont]]);
+      
+      [self setFont:[sender convertFont:font] updateWindowSize:YES];
     }
-  else if ([sender isKindOfClass:[NSFont class]])   // Preferences
+  else
     {
+      NSLog(@"TerminalWindow: changeFont called by %@", [sender className]);
     }
 }
 
