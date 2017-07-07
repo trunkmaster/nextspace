@@ -113,7 +113,6 @@
     [customTitleField setStringValue:customTitle];
   
   [self setElements:self];
-  [self _updateDemoTitleBar];
 }
 
 - (void)setElements:(id)sender

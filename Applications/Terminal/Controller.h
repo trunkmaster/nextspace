@@ -12,10 +12,11 @@
 {
   NSMutableArray      *idleList;
   NSMutableDictionary *windows;
+  int                 num_windows;
+  NSWindow            *mainWindow;
   NSTimer             *timer;
   
   BOOL                quitPanelOpen;
-  int                 num_windows;
 
   Preferences         *preferencesPanel;
   SetTitlePanel	      *setTitlePanel;
@@ -27,16 +28,19 @@
 
 - (void)childWithPID:(int)pid didExit:(int)status;
 
-- (void)window:(TerminalWindowController *)twc becameIdle:(BOOL)idle;
-- (void)closeWindow:(TerminalWindowController *)twc;
-- (id)preferencesForWindow:(NSWindow *)win
-                      live:(BOOL)isLive;
+- (void)terminalWindow:(TerminalWindowController *)twc becameIdle:(BOOL)idle;
+- (void)closeTerminalWindow:(TerminalWindowController *)twc;
 
 - (TerminalWindowController *)createTerminalWindow;
 - (TerminalWindowController *)newWindowWithShell;
 - (TerminalWindowController *)idleTerminalWindow;
 
-- (int)numberOfActiveWindows;
-- (void)checkActiveWindows;
+- (int)numberOfActiveTerminalWindows;
+- (void)checkActiveTerminalWindows;
+- (int)pidForTerminalWindow:(TerminalWindowController *)twc;
+
+- (TerminalWindowController *)terminalWindowForWindow:(NSWindow *)win;
+- (id)preferencesForWindow:(NSWindow *)win
+                      live:(BOOL)isLive;
 
 @end

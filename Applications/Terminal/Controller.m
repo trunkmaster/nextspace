@@ -122,9 +122,14 @@
 
   [[NSNotificationCenter defaultCenter]
     addObserver:self
-       selector:@selector(noMoreActiveWindows:)
+       selector:@selector(noMoreActiveTerminalWindows:)
 	   name:TerminalWindowNoMoreActiveWindowsNotification
 	 object:nil];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(mainWindowDidChange:)
+           name:NSWindowDidBecomeMainNotification
+         object:nil];  
 }
 
 
@@ -133,7 +138,7 @@
   NSArray *args = [[NSProcessInfo processInfo] arguments];
     
   [NSApp setServicesProvider:[[TerminalServices alloc] init]];
-  
+
   if ([args count] > 1)
     {
       TerminalWindowController *twc;
@@ -175,7 +180,7 @@
   TerminalWindowController *twc;
   BOOL ask = NO;
   
-  if (![self numberOfActiveWindows])
+  if (![self numberOfActiveTerminalWindows])
     {
       return NSTerminateNow;
     }
@@ -302,6 +307,8 @@
 // Child shells management
 //---
 // Role of these methods are to create, monitor and close terminal windows
+// In method names 'Window' means NSWindow,
+// 'TerminalWindow' - TerminalWindowController
 //-----------------------------------------------------------------------------
 @implementation Controller (TerminalController)
 
@@ -325,7 +332,54 @@
     }
 }
 
-- (void)checkWindowsState
+- (void)mainWindowDidChange:(NSNotification *)notif
+{
+  NSFontManager *fm = [NSFontManager sharedFontManager];
+  NSFontPanel   *fp = [fm fontPanel:NO];
+  Defaults      *defs;
+
+  mainWindow = [notif object];
+  
+  if (fp == nil)
+    {
+      return;
+    }
+  
+  if ((defs = [self preferencesForWindow:mainWindow live:YES]) == nil)
+    {
+      if ((defs = [self preferencesForWindow:mainWindow live:NO]) == nil)
+        { // this is not terminal window
+          return;
+        }
+    }
+
+  [fm setSelectedFont:[defs terminalFont] isMultiple:NO];
+}
+
+- (void)noMoreActiveTerminalWindows:(NSNotification *)n
+{
+  if (quitPanelOpen) 
+    {
+      [NSApp replyToApplicationShouldTerminate:YES];
+    }
+}
+
+- (int)numberOfActiveTerminalWindows
+{
+  return [windows count] - [idleList count];
+}
+
+- (void)checkActiveTerminalWindows
+{
+  if (![self numberOfActiveTerminalWindows])
+    {
+      [[NSNotificationCenter defaultCenter]
+			postNotificationName:TerminalWindowNoMoreActiveWindowsNotification
+                                      object:self];
+    }
+}
+
+- (void)checkTerminalWindowsState
 {
   if ([windows count] <= 0)
     {
@@ -349,30 +403,7 @@
     }
 }
 
-- (void)noMoreActiveWindows:(NSNotification *)n
-{
-  if (quitPanelOpen) 
-    {
-      [NSApp replyToApplicationShouldTerminate:YES];
-    }
-}
-
-- (int)numberOfActiveWindows
-{
-  return [windows count] - [idleList count];
-}
-
-- (void)checkActiveWindows
-{
-  if (![self numberOfActiveWindows])
-    {
-      [[NSNotificationCenter defaultCenter]
-			postNotificationName:TerminalWindowNoMoreActiveWindowsNotification
-                                      object:self];
-    }
-}
-
-- (int)pidForWindow:(TerminalWindowController *)twc
+- (int)pidForTerminalWindow:(TerminalWindowController *)twc
 {
   NSArray *keys = [windows allKeys];
   int     pid = -1;
@@ -388,7 +419,20 @@
   return pid;
 }
 
-- (void)window:(TerminalWindowController *)twc becameIdle:(BOOL)idle
+- (TerminalWindowController *)terminalWindowForWindow:(NSWindow *)win
+{
+  for (TerminalWindowController *windowController in [windows allValues])
+    {
+      if ([windowController window] == win)
+        {
+          return windowController;
+        }
+    }
+  
+  return nil;
+}
+
+- (void)terminalWindow:(TerminalWindowController *)twc becameIdle:(BOOL)idle
 {
   if (idle)
     {
@@ -396,11 +440,11 @@
       
       [idleList addObject:twc];
       
-      if ((pid = [self pidForWindow:twc]) > 0)
+      if ((pid = [self pidForTerminalWindow:twc]) > 0)
         {
-          // fprintf(stderr, "Idle: Waiting for PID: %i...", pid);
+          fprintf(stderr, "Idle: Waiting for PID: %i...", pid);
           waitpid(pid, &status, 0);
-          // fprintf(stderr, "\tdone!\n");
+          fprintf(stderr, "\tdone!\n");
           
           // [self childWithPID:pid didExit:status];
           int windowCloseBehavior = [[Defaults shared] windowCloseBehavior];
@@ -422,18 +466,18 @@
     }
 
   
-  [[NSApp delegate] checkActiveWindows];
+  [[NSApp delegate] checkActiveTerminalWindows];
 }
 
 // TODO: TerminalWindowDidCloseNotification -> windowDidClose:(NSNotification*)n
-- (void)closeWindow:(TerminalWindowController *)twc
+- (void)closeTerminalWindow:(TerminalWindowController *)twc
 {
   int pid, status;
   
   if ([idleList containsObject:twc])
     [idleList removeObject:twc];
 
-  if ((pid = [self pidForWindow:twc]) > 0)
+  if ((pid = [self pidForTerminalWindow:twc]) > 0)
     {
       kill(pid, SIGKILL);
       // fprintf(stderr, "Close: Waiting for PID: %i...", pid);
@@ -443,7 +487,7 @@
       [windows removeObjectForKey:[NSString stringWithFormat:@"%i", pid]];
     }
    
-  [[NSApp delegate] checkActiveWindows];
+  [[NSApp delegate] checkActiveTerminalWindows];
 }
 
 // TODO:
@@ -500,11 +544,12 @@
   if (timer == nil)
     {
       timer =
-        [NSTimer scheduledTimerWithTimeInterval:2.0
-                                         target:self
-                                       selector:@selector(checkWindowsState)
-                                       userInfo:nil
-                                        repeats:YES];
+        [NSTimer
+          scheduledTimerWithTimeInterval:2.0
+                                  target:self
+                                selector:@selector(checkTerminalWindowsState)
+                                userInfo:nil
+                                 repeats:YES];
     }
 
   return twc;
@@ -530,20 +575,16 @@
 - (id)preferencesForWindow:(NSWindow *)win
                       live:(BOOL)isLive
 {
-  // NSLog(@"Controller: searching for main window.");
-  for (TerminalWindowController *windowController in [windows allValues])
-    {
-      if ([windowController window] == win)
-        {
-          // NSLog(@"Controller: window found!");
-          if (isLive)
-            return [windowController livePreferences];
-          else
-            return [windowController preferences];
-        }
-    }
+  TerminalWindowController *windowController;
   
-  // NSLog(@"Controller: window NOT found!");
+  windowController = [self terminalWindowForWindow:win];
+  if (windowController != nil)
+    {
+      if (isLive)
+        return [windowController livePreferences];
+      else
+        return [windowController preferences];
+    }
   
   return nil;
 }

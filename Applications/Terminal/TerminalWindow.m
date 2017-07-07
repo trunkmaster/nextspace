@@ -303,7 +303,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
   [tView closeProgram];
 
-  [[NSApp delegate] closeWindow:self];
+  [[NSApp delegate] closeTerminalWindow:self];
   
   [self autorelease];
 }
@@ -340,14 +340,14 @@ NSString *TerminalWindowSizeDidChangeNotification =
   t = [t stringByAppendingString:_(@" (idle)")];
   [[self window] setMiniwindowTitle:t];
   
-  [[NSApp delegate] window:self becameIdle:YES];
+  [[NSApp delegate] terminalWindow:self becameIdle:YES];
 }
 
 - (void)viewBecameNonIdle
 {
   NSDebugLLog(@"idle",@"%@ _becameNonIdle",self);
   
-  [[NSApp delegate] window:self becameIdle:NO];
+  [[NSApp delegate] terminalWindow:self becameIdle:NO];
 }
 
 // --- Preferences ---
@@ -606,8 +606,9 @@ NSString *TerminalWindowSizeDidChangeNotification =
   //                             object:self];
 }
 
-// NSFontPanel delegate method. Called when clicked "Set" button in font panel
-// or menu intems under Font submenu.
+// NSFontPanel delegate method.
+// Called when clicked "Set" button in font panel or menu items under Font
+// submenu.
 - (void)changeFont:(id)sender
 {
   NSFont *font;
