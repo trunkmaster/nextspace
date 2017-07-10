@@ -1706,33 +1706,39 @@ static void set_foreground(NSGraphicsContext *gc,
 }
 
 
+// Menu item "Edit > Copy"
 - (void)copy:(id)sender
 {
-  NSPasteboard *pb=[NSPasteboard generalPasteboard];
-  NSString *s=[self _selectionAsString];
+  NSPasteboard *pb = [NSPasteboard generalPasteboard];
+  NSString *s = [self _selectionAsString];
   if (!s)
     {
       NSBeep();
       return;
     }
-  [pb declareTypes: [NSArray arrayWithObject: NSStringPboardType]
-             owner: self];
-  [pb setString: s forType: NSStringPboardType];
+  [pb declareTypes:[NSArray arrayWithObject:NSStringPboardType]
+             owner:self];
+  [pb setString:s forType:NSStringPboardType];
 }
 
+// Menu item "Edit > Paste"
 - (void)paste:(id)sender
 {
-  NSPasteboard *pb=[NSPasteboard generalPasteboard];
-  NSString *type;
-  NSString *str;
+  NSPasteboard *pb = [NSPasteboard generalPasteboard];
+  NSString     *type;
+  NSString     *str;
 
-  type=[pb availableTypeFromArray: [NSArray arrayWithObject: NSStringPboardType]];
+  type = [pb
+           availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]];
   if (!type)
     return;
-  str=[pb stringForType: NSStringPboardType];
+  
+  str = [pb stringForType:NSStringPboardType];
   if (str)
-    [tp sendString: str];
+    [tp sendString:str];
 }
+
+// Menu item "Edit > Select All"
 // TODO: select all text including scrollback buffer
 - (void)selectAll:(id)sender
 {
@@ -2326,9 +2332,9 @@ static void set_foreground(NSGraphicsContext *gc,
 
 @implementation TerminalView (drag_n_drop)
 
-static int handled_mask= (NSDragOperationCopy |
-                          NSDragOperationPrivate |
-                          NSDragOperationGeneric);
+static int handled_mask = (NSDragOperationCopy |
+                           NSDragOperationPrivate |
+                           NSDragOperationGeneric);
 
 -(unsigned int) draggingEntered: (id<NSDraggingInfo>)sender
 {
@@ -2826,19 +2832,17 @@ static int handled_mask= (NSDragOperationCopy |
   [NSApp registerServicesMenuSendTypes:types returnTypes:nil];
 }
 
+// ---
+// Menu (Edit: Copy, Paste, Select All, Clear Buffer)
+// ---
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
   NSString *itemTitle = [menuItem title];
 
   if ([itemTitle isEqualToString:@"Clear Buffer"] && (sb_length <= 0))
-    {
-      return NO;
-    }
-  if ([itemTitle isEqualToString:@"Copy"] &&
-      (selection.length <= 0))
-    {
-      return NO;
-    }
+    return NO;
+  if ([itemTitle isEqualToString:@"Copy"] &&(selection.length <= 0))
+    return NO;
 
   return YES;
 }
