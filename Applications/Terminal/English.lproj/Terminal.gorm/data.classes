@@ -4,7 +4,10 @@
 	Actions = (
 	    "openWindow:",
 	    "openPreferences:",
-	    "openSetTitlePanel:"
+	    "openSetTitlePanel:",
+	    "addFontTrait:",
+	    "modifyFont:",
+	    "orderFrontFontPanel:"
 	);
 	Outlets = (
 	);
@@ -12,10 +15,16 @@
     };
     FirstResponder = {
 	Actions = (
+	    "addFontTrait:",
 	    "clearBuffer:",
-	    "openSetTitlePanel:",
+	    "modifyFont:",
+	    "modifyFontViaPanel:",
+	    "newAction:",
 	    "openPreferences:",
-	    "openWindow:"
+	    "openSetTitlePanel:",
+	    "openWindow:",
+	    "orderFrontFontPanel:",
+	    "removeFontTrait:"
 	);
 	Super = NSObject;
     };

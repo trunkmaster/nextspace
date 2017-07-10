@@ -96,41 +96,37 @@
   [setTitlePanel activatePanel];
 }
 
+// "Font" menu
 - (void)orderFrontFontPanel:(id)sender
 {
-  return;
+  [[NSFontManager sharedFontManager] orderFrontFontPanel:sender];
+}
+// Bold and Italic
+- (void)addFontTrait:(id)sender
+{
+  [[NSFontManager sharedFontManager] addFontTrait:sender];
+}
+// Larger and Smaller
+- (void)modifyFont:(id)sender
+{
+  [[NSFontManager sharedFontManager] modifyFont:sender];
 }
 
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
   NSString *menuTitle = [[menuItem menu] title];
-  NSString *itemTitle = [menuItem title];
+  // NSString *itemTitle = [menuItem title];
 
   if ([self terminalWindowForWindow:[NSApp keyWindow]] == nil)
     {
-      NSLog(@"Controller: Validate menu: %@: key window is not Terminal",
-            menuTitle);
-      if ([itemTitle isEqualToString:@"Font Panel"])
+      // NSLog(@"Controller: Validate menu: %@: key window is not Terminal",
+      //       menuTitle);
+      if ([menuTitle isEqualToString:@"Font"])
+        return NO;
+      if ([menuTitle isEqualToString:@"Find"])
         return NO;
     }
-  if ([menuTitle isEqualToString:@"Font"])
-    {
-      NSLog(@"Controller: Validate menu: %@ item: %@",
-            menuTitle, [menuItem title]);
-
-      // NSWindow *keyWindow = [NSApp keyWindow];
-    }
   
-  // if ([itemTitle isEqualToString:@"Clear Buffer"] && (sb_length <= 0))
-  //   {
-  //     return NO;
-  //   }
-  // if ([itemTitle isEqualToString:@"Copy"] &&
-  //     (selection.length <= 0))
-  //   {
-  //     return NO;
-  //   }
-
   return YES;
 }
 
@@ -150,7 +146,6 @@
            name:NSWindowDidBecomeMainNotification
          object:nil];  
 }
-
 
 - (void)applicationDidFinishLaunching:(NSNotification *)n
 {
@@ -173,9 +168,21 @@
         initialInput:nil];
       [twc showWindow:self];
     }
-  else //if ([[Defaults shared] startupAction] == OnStartCreateShell)
+  else
     {
-      [self openWindow:self];
+      switch ([[Defaults shared] startupAction])
+        {
+        case OnStartCreateShell:
+          [self openWindow:self];
+          break;
+        case OnStartOpenFile:
+          // TODO: open window with startupfile
+          // [TerminalWindow initWithStartupfile:]
+          break;
+        default:
+          // OnStartDoNothing == do nothing
+          break;
+        }
     }
 }
 
