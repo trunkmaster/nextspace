@@ -99,7 +99,14 @@
 // "Font" menu
 - (void)orderFrontFontPanel:(id)sender
 {
-  [[NSFontManager sharedFontManager] orderFrontFontPanel:sender];
+  NSFontManager *fm = [NSFontManager sharedFontManager];
+  TerminalWindowController *twc = [self terminalWindowForWindow:mainWindow];
+  Defaults *prefs = [twc livePreferences];
+
+  if (prefs == nil) prefs = [twc preferences];
+  
+  [fm setSelectedFont:[prefs terminalFont] isMultiple:NO];
+  [fm orderFrontFontPanel:sender];
 }
 // Bold and Italic
 - (void)addFontTrait:(id)sender
