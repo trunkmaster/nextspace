@@ -96,24 +96,43 @@
   [setTitlePanel activatePanel];
 }
 
+- (void)orderFrontFontPanel:(id)sender
+{
+  return;
+}
 
-// - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
-// {
-//   NSString *menuTitle = [[menuItem menu] title];
-//   NSWindow *keyWindow = [NSApp keyWindow];
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+{
+  NSString *menuTitle = [[menuItem menu] title];
+  NSString *itemTitle = [menuItem title];
 
-//   // NSLog(@"Validate menu: %@ item: %@", menuTitle, [menuItem title]);
+  if ([self terminalWindowForWindow:[NSApp keyWindow]] == nil)
+    {
+      NSLog(@"Controller: Validate menu: %@: key window is not Terminal",
+            menuTitle);
+      if ([itemTitle isEqualToString:@"Font Panel"])
+        return NO;
+    }
+  if ([menuTitle isEqualToString:@"Font"])
+    {
+      NSLog(@"Controller: Validate menu: %@ item: %@",
+            menuTitle, [menuItem title]);
 
-//   if ([menuTitle isEqualToString:@"Edit"])
-//     {
-//       if ([[menuItem title] isEqualToString:@"Clear Buffer"])
-//         {
-//           return NO;
-//         }
-//     }
+      // NSWindow *keyWindow = [NSApp keyWindow];
+    }
+  
+  // if ([itemTitle isEqualToString:@"Clear Buffer"] && (sb_length <= 0))
+  //   {
+  //     return NO;
+  //   }
+  // if ([itemTitle isEqualToString:@"Copy"] &&
+  //     (selection.length <= 0))
+  //   {
+  //     return NO;
+  //   }
 
-//   return YES;
-// }
+  return YES;
+}
 
 // --- NSApplication delegate
 - (void)applicationWillFinishLaunching:(NSNotification *)n
