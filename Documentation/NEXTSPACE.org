@@ -3290,6 +3290,8 @@
        + Smaller
        В OPENSTEP пукты 'Bold' и 'Italic' не активны всегда (или я не не
        нашел, в каком случае они активируются).
+       Нужно реализовать validateMenuItem в правильных местах. Сейчас это
+       TerminalView для 'Clear Buffer'.
 ****** DONE Window Preferences
        При изменении шрифта, пересчитывать и устанавливать заново resize
        increment.
