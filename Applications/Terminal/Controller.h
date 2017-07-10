@@ -8,7 +8,7 @@
 #import "SetTitlePanel.h"
 #import "TerminalWindow.h"
 
-@interface Controller : NSObject
+@interface Controller : NSObject <NSMenuValidation>
 {
   NSMutableArray      *idleList;
   NSMutableDictionary *windows;
