@@ -77,6 +77,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSScroller.h>
 #include <AppKit/DPSOperators.h>
+#import <AppKit/NSFontDescriptor.h>
 
 #include "TerminalView.h"
 
@@ -1738,6 +1739,57 @@ static void set_foreground(NSGraphicsContext *gc,
     [tp sendString:str];
 }
 
+// Menu item "Font > Copy Font"
+- (void)copyFont:(id)sender
+{
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
+  NSDictionary *dict;
+
+  // NSLog(@"TerminalView: copied font with attributes: %@",
+  //       [font fontDescriptor]);
+
+  // dict = [[font fontDescriptor] fontAttributes];
+  dict = [NSDictionary dictionaryWithObject:font forKey:@"NSFont"];
+  if (dict != nil)
+    {
+      [pb setData:[NSArchiver archivedDataWithRootObject:dict]
+          forType:NSFontPboardType];
+    }
+}
+
+// Menu item "Font > Paste Font"
+- (void)pasteFont:(id)sender
+{
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
+  NSData       *data = [pb dataForType:NSFontPboardType];
+  NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData:data];
+
+  NSLog(@"TerminalView: pasted font with attributes: %@", dict);
+
+  // if (dict != nil)
+  //   {
+  //     /* This is an attribute change, so we use a different range. */
+  //     NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  //     NSMutableDictionary *d;
+
+  //     if (aRange.location != NSNotFound &&
+  //         [self shouldChangeTextInRange: aRange
+  //                     replacementString: nil])
+  //       {
+  //         [_textStorage addAttributes: dict range: aRange];
+
+  //         d = [[self typingAttributes] mutableCopy];
+  //         [d addEntriesFromDictionary: dict];
+  //         [self setTypingAttributes: d];
+  //         RELEASE(d);
+  //         [self didChangeText];
+  //       }
+  //     return YES;
+  //   }
+  
+  // return NO;
+}
+
 // Menu item "Edit > Select All"
 // TODO: select all text including scrollback buffer
 - (void)selectAll:(id)sender
@@ -2336,28 +2388,29 @@ static int handled_mask = (NSDragOperationCopy |
                            NSDragOperationPrivate |
                            NSDragOperationGeneric);
 
--(unsigned int) draggingEntered: (id<NSDraggingInfo>)sender
+- (unsigned int)draggingEntered:(id<NSDraggingInfo>)sender
 {
-	NSArray *types=[[sender draggingPasteboard] types];
-	unsigned int mask=[sender draggingSourceOperationMask];
+  NSArray *types = [[sender draggingPasteboard] types];
+  unsigned int mask = [sender draggingSourceOperationMask];
 
-	NSDebugLLog(@"dragndrop",@"TerminalView draggingEntered mask=%x types=%@",mask,types);
+  NSDebugLLog(@"dragndrop",
+              @"TerminalView draggingEntered mask=%x types=%@",mask,types);
 
-	if (mask&handled_mask &&
-	    ([types containsObject: NSFilenamesPboardType] ||
-	     [types containsObject: NSStringPboardType]))
-		return NSDragOperationCopy;
-	return 0;
+  if ((mask & handled_mask) &&
+      ([types containsObject:NSFilenamesPboardType] ||
+       [types containsObject:NSStringPboardType]))
+    return NSDragOperationCopy;
+  return 0;
 }
 
 /* TODO: should I really have to implement this? */
--(BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
+- (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
-	NSDebugLLog(@"dragndrop",@"preparing for drag");
-	return YES;
+  NSDebugLLog(@"dragndrop",@"preparing for drag");
+  return YES;
 }
 
--(BOOL) performDragOperation: (id<NSDraggingInfo>)sender
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
   NSPasteboard *pb=[sender draggingPasteboard];
   NSArray *types=[pb types];
@@ -2826,9 +2879,15 @@ static int handled_mask = (NSDragOperationCopy |
 }
 
 
+// ---
+// Drag and drop
+// ---
 + (void)registerPasteboardTypes
 {
-  NSArray *types = [NSArray arrayWithObject:NSStringPboardType];
+  NSArray *types;
+  
+  types = [NSArray arrayWithObjects:NSStringPboardType, NSFilenamesPboardType, NSFontPboardType, nil];
+  
   [NSApp registerServicesMenuSendTypes:types returnTypes:nil];
 }
 
