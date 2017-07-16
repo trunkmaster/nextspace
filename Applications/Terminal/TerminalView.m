@@ -1744,15 +1744,20 @@ static void set_foreground(NSGraphicsContext *gc,
 {
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
   NSDictionary *dict;
+  NSData       *data;
 
   // NSLog(@"TerminalView: copied font with attributes: %@",
   //       [font fontDescriptor]);
 
   // dict = [[font fontDescriptor] fontAttributes];
+  // Fill in font attributes: font and color
+  NSLog(@"Copy font to Pasteboard: %@", pb);
   dict = [NSDictionary dictionaryWithObject:font forKey:@"NSFont"];
   if (dict != nil)
     {
-      [pb setData:[NSArchiver archivedDataWithRootObject:dict]
+      data = [NSArchiver archivedDataWithRootObject:dict];
+      NSLog(@"Terminal: %@ | Font copied: %@", [self deviceName], data);
+      [pb setData:data
           forType:NSFontPboardType];
     }
 }
@@ -1760,9 +1765,13 @@ static void set_foreground(NSGraphicsContext *gc,
 // Menu item "Font > Paste Font"
 - (void)pasteFont:(id)sender
 {
+  NSLog(@"Terminal: %@ | Start pasting font", [self deviceName]);
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
+  NSLog(@"1 Pasteboard: %@", pb);
   NSData       *data = [pb dataForType:NSFontPboardType];
+  NSLog(@"2 data: %@", data);
   NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData:data];
+  NSLog(@"3");
 
   NSLog(@"TerminalView: pasted font with attributes: %@", dict);
 
