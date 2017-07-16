@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Jul 12 02:43:29 2017
+;; Created Fri Jul 14 01:26:08 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,7 +22,7 @@
   "TerminalView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  45496
+  45942
   '(45400 nil)
   nil
   nil

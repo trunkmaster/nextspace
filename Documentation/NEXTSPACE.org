@@ -3281,7 +3281,7 @@
        - Preferences/WindowPrefs ловит последний notification и обнвляет поля.
 ***** TODO Fonts
 ****** TODO Font menu
-       Устанавливать шрифт и цвета для main window.
+       Устанавливать шриф для main window.
        Соответственно модифицировать значения в Preferences (Window и Colors).
        Нужно реализовать validateMenuItem в правильных местах. Сейчас это
        TerminalView для 'Clear Buffer'.
