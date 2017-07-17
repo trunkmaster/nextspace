@@ -3279,13 +3279,13 @@
          livePreferences, шлет notification об изменении размера
          TerminalWindow;
        - Preferences/WindowPrefs ловит последний notification и обнвляет поля.
-***** TODO Fonts
-****** TODO Font menu
+***** DONE Fonts
+****** DONE Font menu
        Устанавливать шриф для main window.
        Соответственно модифицировать значения в Preferences (Window и Colors).
        Нужно реализовать validateMenuItem в правильных местах. Сейчас это
        TerminalView для 'Clear Buffer'.
-******* TODO Copy Font, Paste Font
+******* DONE Copy Font, Paste Font
         Я не понял есть ли какое-то соглашение на этот счет. Судя по
         исходникам TextEdit и документации Apple такого соглашения нет.
         Но есть реализация copyFont: и pasteFont: в NSTextView. Я думаю, что
@@ -3293,7 +3293,12 @@
         информациюо шрифте как в NSTextView). В таком случае, будет
         совместимость с любым наследником NSTextView.
         Реализация будет считаться правильной если можно будет сделать Paste
-        Font в TextEdit.
+        Font из сделанного Copy Font TextEdit.
+        TextEdit при "Copy Font" создает NSDictionary:
+        {
+          @"NSColor" = *NSColor;
+          @"NSFont" = *NSFont;
+        }
 ******* DONE Bold
         В OPENSTEP пукты 'Bold' и 'Italic' не активны всегда (или я не не
         нашел, в каком случае они активируются).

@@ -62,24 +62,25 @@
 
 #include <sys/wait.h>
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSArchiver.h>
-#include <GNUstepBase/Unicode.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSScroller.h>
-#include <AppKit/DPSOperators.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSArchiver.h>
+#import <GNUstepBase/Unicode.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSPasteboard.h>
+#import <AppKit/NSDragging.h>
+#import <AppKit/NSEvent.h>
+#import <AppKit/NSGraphics.h>
+#import <AppKit/NSScroller.h>
+#import <AppKit/DPSOperators.h>
 #import <AppKit/NSFontDescriptor.h>
 
-#include "TerminalView.h"
+#import "TerminalWindow.h"
+#import "TerminalView.h"
 
 /* forkpty replacement */
 #ifdef USE_FORKPTY_REPLACEMENT
@@ -301,7 +302,7 @@ NSString *TerminalViewSizeDidChangeNotification=@"TerminalViewSizeDidChange";
 @end
 
 @interface TerminalView (selection)
--(void) _clearSelection;
+- (void)_clearSelection;
 @end
 
 @interface TerminalView (input) <RunLoopEvents>
@@ -1545,7 +1546,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
 - (NSString *)_selectionAsString
 {
-  int ofs=max_scrollback*sx;
+  int ofs = max_scrollback * sx;
   NSMutableString *mstr;
   NSString *tmp;
   unichar buf[32];
@@ -1553,19 +1554,19 @@ static void set_foreground(NSGraphicsContext *gc,
   int len,ws_len;
   int i,j;
 
-  if (selection.length==0)
+  if (selection.length == 0)
     return nil;
 
-  mstr=[[NSMutableString alloc] init];
-  j=selection.location+selection.length;
-  len=0;
-  for (i=selection.location;i<j;i++)
+  mstr = [[NSMutableString alloc] init];
+  j = selection.location + selection.length;
+  len = 0;
+  for (i = selection.location;i < j;i++)
     {
-      ws_len=0;
+      ws_len = 0;
       while (1)
         {
-          if (i<0)
-            ch=sbuf[ofs+i].ch;
+          if (i < 0)
+            ch = sbuf[ofs+i].ch;
           else
             ch=screen[i].ch;
 
@@ -1574,46 +1575,46 @@ static void set_foreground(NSGraphicsContext *gc,
           ws_len++;
           i++;
 
-          if (i%sx==0)
+          if (i%sx == 0)
             {
-              if (i>j)
+              if (i > j)
                 {
                   ws_len=0; /* make sure we break out of the outer loop */
                   break;
                 }
               if (len)
                 {
-                  tmp=[[NSString alloc] initWithCharacters: buf length: len];
-                  [mstr appendString: tmp];
+                  tmp=[[NSString alloc] initWithCharacters:buf length:len];
+                  [mstr appendString:tmp];
                   DESTROY(tmp);
-                  len=0;
+                  len = 0;
                 }
-              [mstr appendString: @"\n"];
-              ws_len=0;
+              [mstr appendString:@"\n"];
+              ws_len = 0;
               continue;
             }
         }
 
-      i-=ws_len;
+      i -= ws_len;
 
-      for (;i<j && ws_len;i++,ws_len--)
+      for (;i < j && ws_len;i++,ws_len--)
         {
-          buf[len++]=' ';
-          if (len==32)
+          buf[len++] = ' ';
+          if (len == 32)
             {
-              tmp=[[NSString alloc] initWithCharacters: buf length: 32];
-              [mstr appendString: tmp];
+              tmp = [[NSString alloc] initWithCharacters:buf length:32];
+              [mstr appendString:tmp];
               DESTROY(tmp);
-              len=0;
+              len = 0;
             }
         }
-      if (i>=j)
+      if (i >= j)
         break;
 
-      buf[len++]=ch;
-      if (len==32)
+      buf[len++] = ch;
+      if (len == 32)
         {
-          tmp=[[NSString alloc] initWithCharacters: buf length: 32];
+          tmp = [[NSString alloc] initWithCharacters:buf length:32];
           [mstr appendString: tmp];
           DESTROY(tmp);
           len=0;
@@ -1622,87 +1623,86 @@ static void set_foreground(NSGraphicsContext *gc,
 
   if (len)
     {
-      tmp=[[NSString alloc] initWithCharacters: buf length: len];
-      [mstr appendString: tmp];
+      tmp = [[NSString alloc] initWithCharacters:buf length:len];
+      [mstr appendString:tmp];
       DESTROY(tmp);
     }
 
   return AUTORELEASE(mstr);
 }
 
-
 - (void)_setSelection:(struct selection_range)s
 {
   int i,j,ofs2;
 
-  if (s.location<-sb_length*sx)
+  if (s.location < -sb_length * sx)
     {
-      s.length+=sb_length*sx+s.location;
-      s.location=-sb_length*sx;
+      s.length += sb_length * sx + s.location;
+      s.location =- sb_length * sx;
     }
-  if (s.location+s.length>sx*sy)
+  if (s.location + s.length > sx * sy)
     {
-      s.length=sx*sy-s.location;
+      s.length = sx * sy - s.location;
     }
 
   if (!s.length && !selection.length)
     return;
-  if (s.length==selection.length && s.location==selection.location)
+  if (s.length == selection.length && s.location == selection.location)
     return;
 
-  ofs2=max_scrollback*sx;
+  ofs2 = max_scrollback * sx;
 
-  j=selection.location+selection.length;
-  if (j>s.location)
-    j=s.location;
+  j = selection.location + selection.length;
+  if (j > s.location)
+    j = s.location;
 
-  for (i=selection.location;i<j && i<0;i++)
+  for (i = selection.location;i < j && i < 0;i++)
     {
-      sbuf[ofs2+i].attr&=0xbf;
-      sbuf[ofs2+i].attr|=0x80;
+      sbuf[ofs2+i].attr &= 0xbf;
+      sbuf[ofs2+i].attr |= 0x80;
     }
-  for (;i<j;i++)
+  for (;i < j;i++)
     {
-      screen[i].attr&=0xbf;
-      screen[i].attr|=0x80;
+      screen[i].attr &= 0xbf;
+      screen[i].attr |= 0x80;
     }
 
-  i=s.location+s.length;
-  if (i<selection.location)
-    i=selection.location;
-  j=selection.location+selection.length;
+  i = s.location + s.length;
+  if (i < selection.location)
+    i = selection.location;
+  j = selection.location + selection.length;
   for (;i<j && i<0;i++)
     {
-        sbuf[ofs2+i].attr&=0xbf;
-        sbuf[ofs2+i].attr|=0x80;
+      sbuf[ofs2+i].attr &= 0xbf;
+      sbuf[ofs2+i].attr |= 0x80;
     }
   for (;i<j;i++)
     {
-      screen[i].attr&=0xbf;
-      screen[i].attr|=0x80;
+      screen[i].attr &= 0xbf;
+      screen[i].attr |= 0x80;
     }
 
-  i=s.location;
-  j=s.location+s.length;
+  i = s.location;
+  j = s.location+s.length;
   for (;i<j && i<0;i++)
     {
-      if (!(sbuf[ofs2+i].attr&0x40))
-        sbuf[ofs2+i].attr|=0xc0;
+      if (!(sbuf[ofs2+i].attr & 0x40))
+        sbuf[ofs2+i].attr |= 0xc0;
     }
   for (;i<j;i++)
     {
-      if (!(screen[i].attr&0x40))
-        screen[i].attr|=0xc0;
+      if (!(screen[i].attr & 0x40))
+        screen[i].attr |= 0xc0;
     }
 
-  selection=s;
-  [self setNeedsLazyDisplayInRect: [self bounds]];
+  selection = s;
+  [self setNeedsLazyDisplayInRect:[self bounds]];
 }
 
 - (void)_clearSelection
 {
   struct selection_range s;
-  s.location=s.length=0;
+  s.location = s.length = 0;
   [self _setSelection:s];
 }
 
@@ -1711,14 +1711,13 @@ static void set_foreground(NSGraphicsContext *gc,
 - (void)copy:(id)sender
 {
   NSPasteboard *pb = [NSPasteboard generalPasteboard];
-  NSString *s = [self _selectionAsString];
+  NSString     *s = [self _selectionAsString];
   if (!s)
     {
       NSBeep();
       return;
     }
-  [pb declareTypes:[NSArray arrayWithObject:NSStringPboardType]
-             owner:self];
+  [pb declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
   [pb setString:s forType:NSStringPboardType];
 }
 
@@ -1746,57 +1745,54 @@ static void set_foreground(NSGraphicsContext *gc,
   NSDictionary *dict;
   NSData       *data;
 
-  // NSLog(@"TerminalView: copied font with attributes: %@",
-  //       [font fontDescriptor]);
+  if (pb)
+    [pb declareTypes:[NSArray arrayWithObject:NSFontPboardType] owner:nil];
+  else
+    return;
 
-  // dict = [[font fontDescriptor] fontAttributes];
-  // Fill in font attributes: font and color
-  NSLog(@"Copy font to Pasteboard: %@", pb);
+  // NSLog(@"Copy font to Pasteboard: %@", pb);
   dict = [NSDictionary dictionaryWithObject:font forKey:@"NSFont"];
   if (dict != nil)
     {
       data = [NSArchiver archivedDataWithRootObject:dict];
-      NSLog(@"Terminal: %@ | Font copied: %@", [self deviceName], data);
-      [pb setData:data
-          forType:NSFontPboardType];
+      if (data != nil)
+        {
+          [pb setData:data forType:NSFontPboardType];
+          // NSLog(@"Terminal: %@ | Font copied: %@", [self deviceName], data);
+        }
     }
 }
 
 // Menu item "Font > Paste Font"
 - (void)pasteFont:(id)sender
 {
-  NSLog(@"Terminal: %@ | Start pasting font", [self deviceName]);
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
-  NSLog(@"1 Pasteboard: %@", pb);
-  NSData       *data = [pb dataForType:NSFontPboardType];
-  NSLog(@"2 data: %@", data);
-  NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData:data];
-  NSLog(@"3");
+  NSData       *data;
+  NSDictionary *dict;
 
-  NSLog(@"TerminalView: pasted font with attributes: %@", dict);
-
-  // if (dict != nil)
-  //   {
-  //     /* This is an attribute change, so we use a different range. */
-  //     NSRange aRange = [self rangeForUserCharacterAttributeChange];
-  //     NSMutableDictionary *d;
-
-  //     if (aRange.location != NSNotFound &&
-  //         [self shouldChangeTextInRange: aRange
-  //                     replacementString: nil])
-  //       {
-  //         [_textStorage addAttributes: dict range: aRange];
-
-  //         d = [[self typingAttributes] mutableCopy];
-  //         [d addEntriesFromDictionary: dict];
-  //         [self setTypingAttributes: d];
-  //         RELEASE(d);
-  //         [self didChangeText];
-  //       }
-  //     return YES;
-  //   }
+  if (pb)
+    data = [pb dataForType:NSFontPboardType];
+  else
+    return;
   
-  // return NO;
+  if (data)
+    dict = [NSUnarchiver unarchiveObjectWithData:data];
+  else
+    return;
+  
+  // NSLog(@"TerminalView: %@ pasted font with attributes: %@",
+  //       [self deviceName], dict);
+
+  if (dict != nil)
+    {
+      NSFont *f = [dict objectForKey:@"NSFont"];
+      if (f != nil)
+        {
+          [(TerminalWindowController *)[[self window] delegate]
+              setFont:f
+              updateWindowSize:YES];
+        }
+    }
 }
 
 // Menu item "Edit > Select All"
@@ -1859,164 +1855,165 @@ static void set_foreground(NSGraphicsContext *gc,
    1   words
    2   lines
 */
--(struct selection_range) _selectionRangeAt: (int)pos  granularity: (int)g
+- (struct selection_range)_selectionRangeAt:(int)pos granularity:(int)g
 {
-	struct selection_range s;
+  struct selection_range s;
 
-	if (g==3)
-	{ /* select lines */
-		int l=floor(pos/(float)sx);
-		s.location=l*sx;
-		s.length=sx;
-		return s;
-	}
+  if (g==3)
+    { /* select lines */
+      int l=floor(pos/(float)sx);
+      s.location=l*sx;
+      s.length=sx;
+      return s;
+    }
 
-	if (g==2)
-	{ /* select words */
-		int ofs=max_scrollback*sx;
-		unichar ch,ch2;
-		NSCharacterSet *cs;
-		int i,j;
+  if (g==2)
+    { /* select words */
+      int ofs=max_scrollback*sx;
+      unichar ch,ch2;
+      NSCharacterSet *cs;
+      int i,j;
 
-		if (pos<0)
-			ch=sbuf[ofs+pos].ch;
-		else
-			ch=screen[pos].ch;
-		if (ch==0) ch=' ';
+      if (pos<0)
+        ch=sbuf[ofs+pos].ch;
+      else
+        ch=screen[pos].ch;
+      if (ch==0) ch=' ';
 
-		/* try to find a character set for this character */
-		cs=[NSCharacterSet alphanumericCharacterSet];
-		if (![cs characterIsMember: ch])
-			cs=[NSCharacterSet punctuationCharacterSet];
-		if (![cs characterIsMember: ch])
-			cs=[NSCharacterSet whitespaceCharacterSet];
-		if (![cs characterIsMember: ch])
-		{
-			s.location=pos;
-			s.length=1;
-			return s;
-		}
+      /* try to find a character set for this character */
+      cs=[NSCharacterSet alphanumericCharacterSet];
+      if (![cs characterIsMember: ch])
+        cs=[NSCharacterSet punctuationCharacterSet];
+      if (![cs characterIsMember: ch])
+        cs=[NSCharacterSet whitespaceCharacterSet];
+      if (![cs characterIsMember: ch])
+        {
+          s.location=pos;
+          s.length=1;
+          return s;
+        }
 
-		/* search the line backwards for a boundary */
-		j=floor(pos/(float)sx);
-		j*=sx;
-		for (i=pos-1;i>=j;i--)
-		{
-			if (i<0)
-				ch2=sbuf[ofs+i].ch;
-			else
-				ch2=screen[i].ch;
-			if (ch2==0) ch2=' ';
+      /* search the line backwards for a boundary */
+      j=floor(pos/(float)sx);
+      j*=sx;
+      for (i=pos-1;i>=j;i--)
+        {
+          if (i<0)
+            ch2=sbuf[ofs+i].ch;
+          else
+            ch2=screen[i].ch;
+          if (ch2==0) ch2=' ';
 
-			if (![cs characterIsMember: ch2])
-				break;
-		}
-		s.location=i+1;
+          if (![cs characterIsMember: ch2])
+            break;
+        }
+      s.location=i+1;
 
-		/* and forwards... */
-		j+=sx;
-		for (i=pos+1;i<j;i++)
-		{
-			if (i<0)
-				ch2=sbuf[ofs+i].ch;
-			else
-				ch2=screen[i].ch;
-			if (ch2==0) ch2=' ';
+      /* and forwards... */
+      j+=sx;
+      for (i=pos+1;i<j;i++)
+        {
+          if (i<0)
+            ch2=sbuf[ofs+i].ch;
+          else
+            ch2=screen[i].ch;
+          if (ch2==0) ch2=' ';
 
-			if (![cs characterIsMember: ch2])
-				break;
-		}
-		s.length=i-s.location;
-		return s;
-	}
+          if (![cs characterIsMember: ch2])
+            break;
+        }
+      s.length=i-s.location;
+      return s;
+    }
 
-	s.location=pos;
-	s.length=0;
+  s.location=pos;
+  s.length=0;
 
-	return s;
+  return s;
 }
 
--(void) mouseDown: (NSEvent *)e
+- (void)mouseDown:(NSEvent *)e
 {
-	int ofs0,ofs1,first;
-	NSPoint p;
-	struct selection_range s;
-	int g;
-	struct selection_range r0,r1;
+  int ofs0,ofs1,first;
+  NSPoint p;
+  struct selection_range s;
+  int g;
+  struct selection_range r0,r1;
 
 	
-	r0.location=r0.length=0;
-	r1=r0;
-	first=YES;
-	ofs0=0; /* get compiler to shut up */
-	g=[e clickCount];
-	while ([e type]!=NSLeftMouseUp)
-	{
-		p=[e locationInWindow];
+  r0.location=r0.length=0;
+  r1=r0;
+  first=YES;
+  ofs0=0; /* get compiler to shut up */
+  g=[e clickCount];
+  while ([e type]!=NSLeftMouseUp)
+    {
+      p=[e locationInWindow];
 
-		p=[self convertPoint: p  fromView: nil];
-		p.x=floor((p.x-border_x)/fx);
-		if (p.x<0) p.x=0;
-		if (p.x>=sx) p.x=sx-1;
-		p.y=ceil((p.y-border_y)/fy);
-		if (p.y<-1) p.y=-1;
-		if (p.y>sy) p.y=sy;
-		p.y=sy-p.y+current_scroll;
-		ofs1=((int)p.x)+((int)p.y)*sx;
+      p=[self convertPoint: p  fromView: nil];
+      p.x=floor((p.x-border_x)/fx);
+      if (p.x<0) p.x=0;
+      if (p.x>=sx) p.x=sx-1;
+      p.y=ceil((p.y-border_y)/fy);
+      if (p.y<-1) p.y=-1;
+      if (p.y>sy) p.y=sy;
+      p.y=sy-p.y+current_scroll;
+      ofs1=((int)p.x)+((int)p.y)*sx;
 
-		r1=[self _selectionRangeAt: ofs1  granularity: g];
-		if (first)
-		{
-			ofs0=ofs1;
-			first=0;
-			r0=r1;
-		}
+      r1=[self _selectionRangeAt: ofs1  granularity: g];
+      if (first)
+        {
+          ofs0=ofs1;
+          first=0;
+          r0=r1;
+        }
 
-		NSDebugLLog(@"select",@"ofs %i %i (%i+%i) (%i+%i)\n",
-			ofs0,ofs1,
-			r0.location,r0.length,
-			r1.location,r1.length);
+      NSDebugLLog(@"select",@"ofs %i %i (%i+%i) (%i+%i)\n",
+                  ofs0,ofs1,
+                  r0.location,r0.length,
+                  r1.location,r1.length);
 
-		if (ofs1>ofs0)
-		{
-			s.location=r0.location;
-			s.length=r1.location+r1.length-r0.location;
-		}
-		else
-		{
-			s.location=r1.location;
-			s.length=r0.location+r0.length-r1.location;
-		}
+      if (ofs1>ofs0)
+        {
+          s.location=r0.location;
+          s.length=r1.location+r1.length-r0.location;
+        }
+      else
+        {
+          s.location=r1.location;
+          s.length=r0.location+r0.length-r1.location;
+        }
 
-		[self _setSelection: s];
-		[self displayIfNeeded];
+      [self _setSelection: s];
+      [self displayIfNeeded];
 
-		e=[NSApp nextEventMatchingMask: NSLeftMouseDownMask|NSLeftMouseUpMask|
-		                                NSLeftMouseDraggedMask|NSMouseMovedMask
-			untilDate: [NSDate distantFuture]
-			inMode: NSEventTrackingRunLoopMode
-			dequeue: YES];
-	}
+      e=[NSApp nextEventMatchingMask: NSLeftMouseDownMask|NSLeftMouseUpMask|
+               NSLeftMouseDraggedMask|NSMouseMovedMask
+                           untilDate: [NSDate distantFuture]
+                              inMode: NSEventTrackingRunLoopMode
+                             dequeue: YES];
+    }
 
-	if (selection.length)
-	{
-		[self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: @"Selection"]
-			types: [NSArray arrayWithObject: NSStringPboardType]];
-	}
+  if (selection.length)
+    {
+      [self
+        writeSelectionToPasteboard:[NSPasteboard pasteboardWithName:@"Selection"]
+                             types:[NSArray arrayWithObject:NSStringPboardType]];
+    }
 }
 
--(void) otherMouseUp: (NSEvent *)e
+- (void)otherMouseUp:(NSEvent *)e
 {
-	NSPasteboard *pb=[NSPasteboard pasteboardWithName: @"Selection"];
-	NSString *type;
-	NSString *str;
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:@"Selection"];
+  NSString *type;
+  NSString *str;
 
-	type=[pb availableTypeFromArray: [NSArray arrayWithObject: NSStringPboardType]];
-	if (!type)
-		return;
-	str=[pb stringForType: NSStringPboardType];
-	if (str)
-		[tp sendString: str];
+  type=[pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]];
+  if (!type)
+    return;
+  str = [pb stringForType:NSStringPboardType];
+  if (str)
+    [tp sendString:str];
 }
 
 @end
@@ -2776,20 +2773,13 @@ static int handled_mask = (NSDragOperationCopy |
   fx = s.width;
   fy = s.height;
 
-  /* TODO: clear up font metrics issues with xlib/backart */
-  // NSLog(@"NSFont %@ info %@ size %g %@ %d", font, [font fontInfo],
-  //       [font pointSize], NSStringFromRect([font boundingRectForFont]),
-  //       [font glyphIsEncoded: 'A']);
-  // NSLog(@"NSFont advancement: %@",
-  //       NSStringFromSize([font advancementForGlyph:'W']));
-
   r = [font boundingRectForFont];
   fx0 = -r.origin.x;
   fy0 = -r.origin.y;
   font_encoding = [font mostCompatibleStringEncoding];
   
-  NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",-fx0,-fy0,fx,fy);
-  NSDebugLLog(@"term",@"Normal font encoding %i",font_encoding);
+  NSDebugLLog(@"term", @"Bounding (%g %g)+(%g %g)", -fx0, -fy0, fx, fy);
+  NSDebugLLog(@"term", @"Normal font encoding %i", font_encoding);
   
   draw_all = 2;
 }
@@ -2797,9 +2787,10 @@ static int handled_mask = (NSDragOperationCopy |
 - (void)setBoldFont:(NSFont *)bFont
 {
   ASSIGN(boldFont, bFont);
+  
   boldFont_encoding = [boldFont mostCompatibleStringEncoding];
   
-  NSDebugLLog(@"term",@"Bold font encoding %i",boldFont_encoding);
+  NSDebugLLog(@"term", @"Bold font encoding %i", boldFont_encoding);
     
   draw_all = 2;
 }
@@ -2909,8 +2900,18 @@ static int handled_mask = (NSDragOperationCopy |
 
   if ([itemTitle isEqualToString:@"Clear Buffer"] && (sb_length <= 0))
     return NO;
-  if ([itemTitle isEqualToString:@"Copy"] &&(selection.length <= 0))
+  if ([itemTitle isEqualToString:@"Copy"] && (selection.length <= 0))
     return NO;
+  if ([itemTitle isEqualToString:@"copy Font"])
+    {
+      
+    }
+  if ([itemTitle isEqualToString:@"Paste Font"])
+    {
+      NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
+      if ([pb dataForType:NSFontPboardType] == nil)
+        return NO;
+    }
 
   return YES;
 }
