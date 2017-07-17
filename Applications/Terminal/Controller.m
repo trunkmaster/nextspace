@@ -206,6 +206,13 @@
       [setTitlePanel closeSetTitlePanel:self];
       [setTitlePanel release];
     }
+
+  // Clear font pasteboard data
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
+  if ([pb dataForType:NSFontPboardType] != nil)
+    {
+      [pb setData:nil forType:NSFontPboardType];
+    }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -218,6 +225,9 @@
       return NSTerminateNow;
     }
 
+  // manually check state of windows
+  [self checkTerminalWindowsState];
+  
   for (NSString *windowKey in windows)
     {
       twc = [windows objectForKey:windowKey];

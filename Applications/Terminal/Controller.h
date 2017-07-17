@@ -37,6 +37,7 @@
 
 - (int)numberOfActiveTerminalWindows;
 - (void)checkActiveTerminalWindows;
+- (void)checkTerminalWindowsState;
 - (int)pidForTerminalWindow:(TerminalWindowController *)twc;
 
 - (TerminalWindowController *)terminalWindowForWindow:(NSWindow *)win;
