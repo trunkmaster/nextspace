@@ -36,6 +36,41 @@ static Defaults *shared = nil;
   return shared;
 }
 
++ (NSString *)sessionsDirectory
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString      *path;
+  BOOL          isDir;
+  
+  // Assume that ~/Library already exists
+  path = [NSString stringWithFormat:@"%@/Library/Terminal", NSHomeDirectory()];
+
+  if ([fm fileExistsAtPath:path isDirectory:&isDir])
+    {
+      if (!isDir)
+        {
+          NXRunAlertPanel(@"Session Directory",
+                          @"%@ exists and not a directory.\n"
+                          "Check your home directory layout",
+                          @"Ok", nil, nil, path);
+          return nil;
+        }
+    }
+  else
+    {
+      if ([fm createDirectoryAtPath:path attributes:nil] == NO)
+        {
+          NXRunAlertPanel(@"Session Directory",
+                          @"Error occured while creating directory %@.\n"
+                          "Check your home directory layout",
+                          @"Ok", nil, nil, path);
+          return nil;
+        }
+    }
+
+  return path;
+}
+
 // Store NSUserDefaults in 'defaults' ivar
 - (id)init
 {
@@ -68,6 +103,12 @@ static Defaults *shared = nil;
   defaults = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
 
   return self;
+}
+
+- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atom
+{
+  // filePath = [NSString stringWithFormat:(NSString *), ...]
+  return [defaults writeToFile:path atomically:YES];  
 }
 
 - (id)initWithDefaults:(id)def

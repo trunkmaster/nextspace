@@ -7,7 +7,10 @@
 	    "openSetTitlePanel:",
 	    "addFontTrait:",
 	    "modifyFont:",
-	    "orderFrontFontPanel:"
+	    "orderFrontFontPanel:",
+	    "saveSessionAs:",
+	    "openSession:",
+	    "saveSession:"
 	);
 	Outlets = (
 	);
@@ -19,12 +22,14 @@
 	    "clearBuffer:",
 	    "modifyFont:",
 	    "modifyFontViaPanel:",
-	    "newAction:",
+	    "saveSessionAs:",
 	    "openPreferences:",
+	    "openSession:",
 	    "openSetTitlePanel:",
 	    "openWindow:",
 	    "orderFrontFontPanel:",
-	    "removeFontTrait:"
+	    "removeFontTrait:",
+	    "saveSession:"
 	);
 	Super = NSObject;
     };
