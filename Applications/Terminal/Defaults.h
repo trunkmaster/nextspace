@@ -21,11 +21,12 @@ NSUserDefaults *ud;
 
 - (id)initEmpty;
 - (id)initWithFile:(NSString *)filePath;
+- (BOOL)writeToFile:(NSString *)fileName atomically:(BOOL)atom;
 - (id)defaults;
 - (BOOL)synchronize;
 
 //-----------------------------------------------------------------------------
-#pragma mark - Values
+// Values
 //-----------------------------------------------------------------------------
 - (id)objectForKey:(NSString *)key;
 - (void)setObject:(id)value forKey:(NSString *)key;
