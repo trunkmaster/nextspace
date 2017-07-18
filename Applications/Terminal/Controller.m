@@ -81,12 +81,86 @@
   [preferencesPanel activatePanel];
 }
 
+// Shell > New
 - (void)openWindow:(id)sender
 {
   [self newWindowWithShell];
 }
 
-// "Set Title" panel
+// Shell > Open...
+- (void)openSession:(id)sender
+{
+  NSOpenPanel *panel = [NSOpenPanel openPanel];
+  NSString    *path;
+
+  [panel setCanChooseDirectories:NO];
+  [panel setAllowsMultipleSelection:NO];
+  [panel setTitle:@"Open Shell"];
+  [panel setShowsHiddenFiles:NO];
+
+  path = [NSHomeDirectory() stringByAppendingPathComponent:@"Library"];
+
+  [panel runModalForDirectory:path
+                         file:@"Default"
+                        types:[NSArray arrayWithObject:@"term"]];
+}
+// Shell > Save
+- (void)saveSession:(id)sender
+{
+  TerminalWindowController *twc;
+  NSString *fileName;
+  BOOL isDefaultSession = NO;
+  BOOL isSessionChanged = NO;
+
+  twc = [self terminalWindowForWindow:[NSApp mainWindow]];
+  fileName = [twc fileName];
+  
+  isDefaultSession = [fileName isEqualToString:@"Default"];
+  if ([self preferencesForWindow:[NSApp mainWindow] live:YES] != nil)
+    {
+      isSessionChanged = YES;
+    }
+  if (!isDefaultSession)
+    {
+      if (!isSessionChanged)
+        {
+          // If session was opened from file and not changed - menu item must
+          // be disabled and this method must not be called!
+          NSLog(@"Shell > Save menu item should not be called!");
+        }
+      else
+        { // If session was opened from file and changed - save silently
+        }
+    }
+  else
+    { // If it's a default session (changed or not) - open "Save As..." panel
+      
+    }
+  
+}
+// Shell -> Save As...
+- (void)saveSessionAs:(id)sender
+{
+  TerminalWindowController *twc;
+  NSString    *fileName;
+  NSOpenPanel *panel = [NSSavePanel savePanel];
+  NSString    *path;
+
+  twc = [self terminalWindowForWindow:[NSApp mainWindow]];
+  fileName = [twc fileName];
+  
+  [panel setCanChooseDirectories:NO];
+  [panel setAllowsMultipleSelection:NO];
+  [panel setTitle:@"Save Shell"];
+  [panel setShowsHiddenFiles:NO];
+
+  path = [NSHomeDirectory() stringByAppendingPathComponent:@"Library"];
+
+  [panel runModalForDirectory:path
+                         file:@"Default"
+                        types:[NSArray arrayWithObject:@"term"]];
+}
+// Shell > Set Title...
 - (void)openSetTitlePanel:(id)sender
 {
   if (setTitlePanel == nil)
@@ -122,12 +196,19 @@
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
   NSString *menuTitle = [[menuItem menu] title];
-  // NSString *itemTitle = [menuItem title];
+  NSString *itemTitle = [menuItem title];
 
   if ([self terminalWindowForWindow:[NSApp keyWindow]] == nil)
     {
       // NSLog(@"Controller: Validate menu: %@: key window is not Terminal",
       //       menuTitle);
+      if ([itemTitle isEqualToString:@"Save"])
+        return NO;
+      if ([itemTitle isEqualToString:@"Save As..."])
+        return NO;
+      if ([itemTitle isEqualToString:@"Set Title..."])
+        return NO;
+      
       if ([menuTitle isEqualToString:@"Font"])
         return NO;
       if ([menuTitle isEqualToString:@"Find"])
