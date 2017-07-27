@@ -18,6 +18,7 @@ NSUserDefaults *ud;
 }
 
 + shared;
++ (NSString *)sessionsDirectory;
 
 - (id)initEmpty;
 - (id)initWithFile:(NSString *)filePath;
