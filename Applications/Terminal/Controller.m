@@ -108,7 +108,7 @@
 - (void)saveSession:(id)sender
 {
   TerminalWindowController *twc;
-  NSString *fileName;
+  NSString *sessionDir, *fileName, *filePath;
   BOOL isDefaultSession = NO;
   BOOL isSessionChanged = NO;
 
@@ -120,6 +120,13 @@
     {
       isSessionChanged = YES;
     }
+  
+  if ((sessionDir = [Defaults sessionsDirectory]) == nil)
+    return;
+  
+  fileName = [[twc fileName] stringByAppendingPathExtension:@"term"];
+  filePath = [sessionDir stringByAppendingPathComponent:fileName];
+  
   if (!isDefaultSession)
     {
       if (!isSessionChanged)
@@ -130,11 +137,14 @@
         }
       else
         { // If session was opened from file and changed - save silently
+          NSLog(@"Session was opened from file and changed - save silently");
+          [[twc preferences] writeToFile:filePath atomically:YES];
         }
     }
   else
     { // If it's a default session (changed or not) - open "Save As..." panel
-      
+      NSLog(@"It's a default session - open \"Save As...\" panel");
+      [self saveSessionAs:sender];
     }
   
 }
@@ -142,23 +152,38 @@
 - (void)saveSessionAs:(id)sender
 {
   TerminalWindowController *twc;
-  NSString    *fileName;
-  NSOpenPanel *panel = [NSSavePanel savePanel];
-  NSString    *path;
+  NSString    *fileName, *filePath;
+  NSSavePanel *panel = [NSSavePanel savePanel];
+  NSString    *sessionDir;
+  Defaults    *prefs;
 
   twc = [self terminalWindowForWindow:[NSApp mainWindow]];
-  fileName = [twc fileName];
   
-  [panel setCanChooseDirectories:NO];
-  [panel setAllowsMultipleSelection:NO];
-  [panel setTitle:@"Save Shell"];
+  // [panel setCanChooseDirectories:NO];
+  // [panel setAllowsMultipleSelection:NO];
+  [panel setTitle:@"Save Session As"];
   [panel setShowsHiddenFiles:NO];
 
-  path = [NSHomeDirectory() stringByAppendingPathComponent:@"Library"];
+  if ((sessionDir = [Defaults sessionsDirectory]) == nil)
+    return;
 
-  [panel runModalForDirectory:path
-                         file:@"Default"
-                        types:[NSArray arrayWithObject:@"term"]];
+  fileName = [[twc fileName] stringByAppendingPathExtension:@"term"];
+  filePath = [sessionDir stringByAppendingPathComponent:fileName];
+
+  if ([panel runModalForDirectory:sessionDir file:fileName] == NSOKButton)
+    {
+      filePath = [panel filename];
+      NSLog(@"Save As reached OK button: %@", filePath);
+      [[twc preferences] writeToFile:filePath atomically:YES];
+      // if ((prefs = [twc livePreferences]) != nil)
+      //   {
+      //     [prefs writeToFile:filePath atomically:YES];
+      //   }
+      // else
+      //   {
+      //     [[twc preferences] writeToFile:filePath atomically:YES];
+      //   }
+    }
 }
 // Shell > Set Title...
 - (void)openSetTitlePanel:(id)sender
