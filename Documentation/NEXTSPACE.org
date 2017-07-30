@@ -3392,19 +3392,26 @@
                  [(TerminalScreen)TerminalView preferences]
          - дальше они обращаются к экземляру Defaults (defaults), получая
            ссылку у TerminalWindowController.
+****** TODO Адаптировать Shell под Sessions
+       Добавить кнопки "Set Default", "Show Default" и "Set Window".
+       Варианты:
+       1. Одно поле с названием Shell, в которое можно указывать любую
+          команду.
+       2. Сделать 2 поля Shell с выбором из выпадающего списка (содержимое
+          файла /etc/shells) и поля Command, в которое вписывается команда.
 ****** DONE Создать сеттеры для всех настроек в Defaults
-****** TODO Defaults: добавить метод сохранения в файл
-****** TODO Shell | Save
+****** DONE Defaults: добавить метод сохранения в файл
+****** DONE Shell | Save
        Сохранет сессию, если была открыта в файл .term.
        Выбрасывает диалог 'Save As' если были загружены настройки
        по-умолчанию.
-****** TODO Shell | Save As
+****** DONE Shell | Save As
        Выбрасывает диалог 'Save As'.
        Если были загружены настройки по-умолчанию предлагаемое имя:
        Default.term; каталог стандарный для хранения сессий
        (~/Library/Terminal).
        Если была загружена сессия, предлагать имя <имя сессии>.term.
-****** TODO Shell | Open
+****** DONE Shell | Open
        Открывает диалог 'Open' с каталогом ~/Library/Terminal.
 ***** TODO Startup
 ****** TODO Startup File
