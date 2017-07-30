@@ -31,8 +31,12 @@
 - (void)terminalWindow:(TerminalWindowController *)twc becameIdle:(BOOL)idle;
 - (void)closeTerminalWindow:(TerminalWindowController *)twc;
 
-- (TerminalWindowController *)createTerminalWindow;
+- (void)setupTerminalWindow:(TerminalWindowController *)controller;
+- (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
+- (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
+- (TerminalWindowController *)newWindowWithProgram:(NSString *)program
+                                         arguments:(NSArray *)args;
 - (TerminalWindowController *)idleTerminalWindow;
 
 - (int)numberOfActiveTerminalWindows;

@@ -91,18 +91,26 @@
 - (void)openSession:(id)sender
 {
   NSOpenPanel *panel = [NSOpenPanel openPanel];
-  NSString    *path;
+  NSString    *sessionDir, *path;
 
   [panel setCanChooseDirectories:NO];
   [panel setAllowsMultipleSelection:NO];
   [panel setTitle:@"Open Shell"];
   [panel setShowsHiddenFiles:NO];
 
-  path = [NSHomeDirectory() stringByAppendingPathComponent:@"Library"];
+  if ((sessionDir = [Defaults sessionsDirectory]) == nil)
+    return;
 
-  [panel runModalForDirectory:path
-                         file:@"Default"
-                        types:[NSArray arrayWithObject:@"term"]];
+  if ([panel runModalForDirectory:sessionDir
+                             file:@"Default.term"
+                            types:[NSArray arrayWithObject:@"term"]]
+      == NSOKButton)
+    {
+      if ((path = [panel filename]) != nil)
+        {
+          [self newWindowWithStartupFile:path];
+        }
+    }  
 }
 // Shell > Save
 - (void)saveSession:(id)sender
@@ -138,7 +146,9 @@
       else
         { // If session was opened from file and changed - save silently
           NSLog(@"Session was opened from file and changed - save silently");
-          [[twc preferences] writeToFile:filePath atomically:YES];
+          Defaults *defs = [twc livePreferences];
+          if (defs == nil) defs = [twc preferences];
+          [defs writeToFile:filePath atomically:YES];
         }
     }
   else
@@ -159,9 +169,7 @@
 
   twc = [self terminalWindowForWindow:[NSApp mainWindow]];
   
-  // [panel setCanChooseDirectories:NO];
-  // [panel setAllowsMultipleSelection:NO];
-  [panel setTitle:@"Save Session As"];
+  [panel setTitle:@"Save Shell"];
   [panel setShowsHiddenFiles:NO];
 
   if ((sessionDir = [Defaults sessionsDirectory]) == nil)
@@ -173,16 +181,12 @@
   if ([panel runModalForDirectory:sessionDir file:fileName] == NSOKButton)
     {
       filePath = [panel filename];
-      NSLog(@"Save As reached OK button: %@", filePath);
-      [[twc preferences] writeToFile:filePath atomically:YES];
-      // if ((prefs = [twc livePreferences]) != nil)
-      //   {
-      //     [prefs writeToFile:filePath atomically:YES];
-      //   }
-      // else
-      //   {
-      //     [[twc preferences] writeToFile:filePath atomically:YES];
-      //   }
+      prefs = [twc livePreferences];
+      if (prefs == nil)
+        {
+          prefs = [twc preferences];
+        }
+      [prefs writeToFile:filePath atomically:YES];
     }
 }
 // Shell > Set Title...
@@ -268,25 +272,27 @@
 
   if ([args count] > 1)
     {
-      TerminalWindowController *twc;
+      // TerminalWindowController *twc;
       NSString *cmdline;
 
       args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
       cmdline = [args componentsJoinedByString:@" "];
 
-      twc = [self createTerminalWindow];
-      [[twc terminalView]
-        runProgram:@"/bin/sh"
-        withArguments:[NSArray arrayWithObjects:@"-c",cmdline,nil]
-        initialInput:nil];
-      [twc showWindow:self];
+      // twc = [self createTerminalWindow];
+      // [[twc terminalView]
+      //   runProgram:@"/bin/sh"
+      //   withArguments:[NSArray arrayWithObjects:@"-c",cmdline,nil]
+      //   initialInput:nil];
+      // [twc showWindow:self];
+      [self newWindowWithProgram:nil
+                       arguments:[NSArray arrayWithObjects:@"-c",cmdline,nil]];
     }
   else
     {
       switch ([[Defaults shared] startupAction])
         {
         case OnStartCreateShell:
-          [self openWindow:self];
+          [self newWindowWithShell];
           break;
         case OnStartOpenFile:
           // TODO: open window with startupfile
@@ -376,19 +382,18 @@
 - (BOOL)application:(NSApplication *)sender
  	   openFile:(NSString *)filename
 {
-  TerminalWindowController *twc;
+  // TerminalWindowController *twc;
 
   NSDebugLLog(@"Application",@"openFile: '%@'",filename);
 
-  // TODO: shouldn't ignore other apps
-
   [NSApp activateIgnoringOtherApps:YES];
 
-  twc = [self createTerminalWindow];
-  [[twc terminalView] runProgram:filename
-		   withArguments:nil
-		    initialInput:nil];
-  [twc showWindow:self];
+  // twc = [self createTerminalWindow];
+  // [[twc terminalView] runProgram:filename
+  //       	   withArguments:nil
+  //       	    initialInput:nil];
+  // [twc showWindow:self];
+  [self newWindowWithProgram:filename arguments:nil];
 
   return YES;
 }
@@ -406,22 +411,19 @@
 	      @"terminalRunProgram: %@ withArguments: %@ inDirectory: %@ properties: %@",
 	      path,args,directory,properties);
 
-  // TODO: shouldn't ignore other apps
-
   [NSApp activateIgnoringOtherApps:YES];
 
   {
-    id o;
-    o = [properties objectForKey: @"CloseOnExit"];
-    if (o && [o respondsToSelector: @selector(boolValue)] &&
-        ![o boolValue])
+    id o = [properties objectForKey:@"CloseOnExit"];
+    
+    if (o && [o respondsToSelector:@selector(boolValue)] && ![o boolValue])
       {
         twc = [self idleTerminalWindow];
-        [twc showWindow:self];        
+        [twc showWindow:self];
       }
     else
       {
-        twc = [self createTerminalWindow];
+        twc = [self newWindow];
         [twc showWindow:self];
       }
   }
@@ -653,38 +655,46 @@
 // to normal when running program finishes.
 // Also in 'Program' mode window will never close despite the 'When Shell Exits'
 // preferences setting.
-- (TerminalWindowController *)createTerminalWindow
-{
-  TerminalWindowController *twc;
 
-  twc = [[TerminalWindowController alloc] init];
-  [twc setDocumentEdited:YES];
+- (void)setupTerminalWindow:(TerminalWindowController *)controller
+{
+  [controller setDocumentEdited:YES];
   
-  NSArray *wins = [windows allValues];
-  if ([wins count] > 0)
+  if ([[windows allValues] count] > 0)
     {
       NSRect  mwFrame = [[NSApp mainWindow] frame];
       NSPoint wOrigin = mwFrame.origin;
 
-      wOrigin.x += [NSScroller scrollerWidth]+3;
+      wOrigin.x += [NSScroller scrollerWidth] + 3;
       wOrigin.y -= 24;
-      [[twc window] setFrameOrigin:wOrigin];
+      [[controller window] setFrameOrigin:wOrigin];
     }
   else
     {
-      [[twc window] center];
+      [[controller window] center];
     }
+}
+
+- (TerminalWindowController *)newWindow
+{
+  TerminalWindowController *twc = [[TerminalWindowController alloc] init];
   
+  if (twc == nil) return nil;
+  
+  [self setupTerminalWindow:twc];
+
   return twc;
 }
 
+
 - (TerminalWindowController *)newWindowWithShell
 {
-  TerminalWindowController *twc = [self createTerminalWindow];
+  TerminalWindowController *twc = [self newWindow];
   int pid;
 
   if (twc == nil) return nil;
-
+  // [self setupTerminalWindow:twc];
+  
   pid = [[twc terminalView] runShell];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
   
@@ -704,9 +714,41 @@
   return twc;
 }
 
-// + (TerminalWindowController *)newWindowWithProgram:(NSString *)path
-// {
-// }
+- (TerminalWindowController *)newWindowWithProgram:(NSString *)program
+                                         arguments:(NSArray *)args
+{
+  TerminalWindowController *twc = [self newWindow];
+  int pid;
+
+  // twc = [[TerminalWindowController alloc] init];
+  if (twc == nil) return nil;
+  // [self setupTerminalWindow:twc];
+
+  if (program == nil)
+    program = [[twc preferences] shell];
+  
+  pid = [[twc terminalView] runProgram:program
+                         withArguments:args
+                           inDirectory:nil
+                          initialInput:nil
+                                  arg0:program];
+  [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
+  
+  [twc showWindow:self];
+                            
+  if (timer == nil)
+    {
+      timer =
+        [NSTimer
+          scheduledTimerWithTimeInterval:2.0
+                                  target:self
+                                selector:@selector(checkTerminalWindowsState)
+                                userInfo:nil
+                                 repeats:YES];
+    }
+  
+  return twc;
+}
 
 - (TerminalWindowController *)idleTerminalWindow
 {
@@ -715,8 +757,53 @@
   if ([idleList count])
     return [idleList objectAtIndex:0];
   
-  return [self createTerminalWindow];
+  return [self newWindow];
 }
+
+- (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath
+{
+  TerminalWindowController *twc;
+  NSString *shell;
+  NSArray *args;
+  int pid;
+
+  twc = [[TerminalWindowController alloc] initWithStartupFile:filePath];
+  [self setupTerminalWindow:twc];
+  
+  args = [[[twc preferences] shell] componentsSeparatedByString:@" "];
+  shell = [[args objectAtIndex:0] copy];
+  if ([args count] > 1)
+    args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
+  else
+    args = nil;
+
+  NSLog(@"Create Terminal window with Startup File. Program: %@, arguments: %@",
+        shell, args);
+  
+  pid = [[twc terminalView] runProgram:shell
+                         withArguments:args
+                           inDirectory:nil
+                          initialInput:nil
+                                  arg0:shell];
+  [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
+
+  [shell release];
+  [twc showWindow:self];
+  
+  if (timer == nil)
+    {
+      timer =
+        [NSTimer
+          scheduledTimerWithTimeInterval:2.0
+                                  target:self
+                                selector:@selector(checkTerminalWindowsState)
+                                userInfo:nil
+                                 repeats:YES];
+    }
+  
+  return twc;
+}
+
 
 //-----------------------------------------------------------------------------
 // Preferences and sessions

@@ -56,9 +56,13 @@
   [fp setDelegate:self];
 
   // Tell PreferencesPanel about font panel opening
-  [(PreferencesPanel *)[view window] fontPanelOpened:YES];
+  // if ([[view window] isVisible] == YES)
+  //   {
+  //     [(PreferencesPanel *)[view window] fontPanelOpened:YES];
+  //   }
  
-  [fp makeKeyAndOrderFront:self];
+  // [fp makeKeyAndOrderFront:self];
+  [fp orderFront:self];
 }
 
 - (void)changeFont:(id)sender // Font panel callback
@@ -150,7 +154,11 @@
 - (void)windowWillClose:(NSNotification*)aNotification
 {
   // Tell PreferencesPanel about font panel closing
-  [(PreferencesPanel *)[view window] fontPanelOpened:NO];
+  // TODO: Actually this must handled by WindowMaker
+  if ([[view window] isVisible] == YES)
+    {
+      [(PreferencesPanel *)[view window] fontPanelOpened:NO];
+    }
 }
 
 @end

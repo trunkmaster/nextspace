@@ -266,7 +266,7 @@ of the License. See COPYING or main.m for more information.
           }
         if (!twc)
           {
-            twc=[[NSApp delegate] createTerminalWindow];
+            twc=[[NSApp delegate] newWindow];
             [twc showWindow:self];
           }
 
