@@ -147,9 +147,9 @@ NSString *TerminalWindowSizeDidChangeNotification =
   else
     {
       preferences = [[Defaults alloc] initWithFile:filePath];
-      fileName = [filePath lastPathComponent];
+      fileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
     }
-  
+
   [self _setupWindow];
   
   [[NSNotificationCenter defaultCenter]

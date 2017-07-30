@@ -19,6 +19,8 @@
 #import <AppKit/NSFont.h>
 #import <AppKit/NSGraphics.h>
 
+#import <NXAppKit/NXAlert.h>
+
 #import "Terminal.h"
 #import "Defaults.h"
 
@@ -76,9 +78,9 @@ static Defaults *shared = nil;
 {
   self = [super init];
 
-  filePath = nil;
-  defaults = [NSUserDefaults standardUserDefaults];
-
+  filePath = nil;  
+  defaults = [NSUserDefaults standardUserDefaults];  
+  
   return self;
 }
 
@@ -101,19 +103,25 @@ static Defaults *shared = nil;
 
   filePath = path;
   defaults = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
-
+ 
   return self;
 }
 
 - (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atom
 {
-  // filePath = [NSString stringWithFormat:(NSString *), ...]
+  if ([defaults isKindOfClass:[NSUserDefaults class]])
+    {
+      return [[defaults persistentDomainForName:@"Terminal"]
+               writeToFile:path atomically:YES];
+    }
+  
   return [defaults writeToFile:path atomically:YES];  
 }
 
 - (id)initWithDefaults:(id)def
 {
   self = [super init];
+  
   if ([def isKindOfClass:[NSUserDefaults class]])
     {
       NSDictionary *udd = [def persistentDomainForName:@"Terminal"];
@@ -122,7 +130,8 @@ static Defaults *shared = nil;
     }
   else
     {
-      defaults = [def copy];
+      defaults = [[NSMutableDictionary alloc] initWithDictionary:def
+                                                       copyItems:NO];
     }
 
   return self;

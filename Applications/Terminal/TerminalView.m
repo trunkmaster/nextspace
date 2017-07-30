@@ -2245,7 +2245,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
   cdirectory = [directory cString];
   
-  cpath=[path cString];
+  cpath = [path cString];
   programPath = [path copy];
   if (arg0)
     cargs[0] = [arg0 cString];

@@ -34,11 +34,11 @@
       [mainWindow makeMainWindow];
       [self makeKeyAndOrderFront:mainWindow];
     }
-  else
-    {
-      // mainWindow = [NSApp mainWindow];
-      // [self makeMainWindow];
-    }
+  // else
+  //   {
+  //     mainWindow = [NSApp mainWindow];
+  //     [self makeMainWindow];
+  //   }
 }
 @end
 
@@ -125,7 +125,7 @@ static Preferences *shared = nil;
 {
   id <PrefsModule> module;
 
-  // NSLog(@"Preferences: main window now: %@", [[notif object] title]);
+  NSLog(@"Preferences: main window now: %@", [[notif object] title]);
 
   if ([[NSApp delegate] preferencesForWindow:[notif object] live:NO] == nil)
     {
@@ -172,7 +172,7 @@ static Preferences *shared = nil;
   // If module wants to change default preferences must call
   // 'mainWindowPreferences' (implemented above).
   if (!prefs)
-    prefs = [Defaults shared];
+    prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];;
 
   return prefs;
 }
