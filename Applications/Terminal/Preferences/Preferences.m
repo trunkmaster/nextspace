@@ -151,28 +151,33 @@ static Preferences *shared = nil;
   
   prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];
 
-  if (!prefs) // should never happen - live:NO means "startup preferences"
+  // This is the case: no terminal windows opened.
+  if (!prefs)
     prefs = [Defaults shared];
 
   return prefs;
 }
 
+// This method should be called by Preferences.bundle modules only.
+// Modules will only read live preferences and never directly write them.
+// This method should be called to be sure if livePreferences exists -
+// and read them.
+// If module wants to change default preferences must call
+// 'mainWindowPreferences' (implemented above).
 - (Defaults *)mainWindowLivePreferences
 {
   Defaults *prefs;
   
   prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:YES];
 
-  // TODO: should we return defaults if no live preferences returned (no
-  // changes to preferences has happened)?
-  // FTOH, this method should be called by Preferences.bundle modules only.
-  // Modules will only read live preferences and never directly write them.
-  // Calling this method called to be sure that if livePreferences exists -
-  // read preferences from it.
-  // If module wants to change default preferences must call
-  // 'mainWindowPreferences' (implemented above).
   if (!prefs)
-    prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];;
+    prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];
+
+  // Caller wants live preferences but there's no main window visible.
+  // Sample case: no Terminal window exist and Terminal Prefernces panel was
+  // opened.
+  if (!prefs)
+    prefs = [self mainWindowPreferences];
 
   return prefs;
 }
