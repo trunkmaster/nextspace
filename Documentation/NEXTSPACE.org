@@ -3399,6 +3399,9 @@
           команду.
        2. Сделать 2 поля Shell с выбором из выпадающего списка (содержимое
           файла /etc/shells) и поля Command, в которое вписывается команда.
+****** TODO (?) Shell
+       Нужно сделать кнопки, чтобы была возможность в Session сохранять и
+       команду, которая запускается в терминале. Или нет?
 ****** DONE Создать сеттеры для всех настроек в Defaults
 ****** DONE Defaults: добавить метод сохранения в файл
 ****** DONE Shell | Save
@@ -3415,13 +3418,16 @@
        Открывает диалог 'Open' с каталогом ~/Library/Terminal.
 ***** TODO Startup
 ****** TODO Startup File
+       Implement setting and saving startup file.
 ****** TODO When Terminal Starts Up
+       - "Do nothing" - opens Terminal and creates no window.
+       - "Open the startup file" - creates Terminal window with startup file
+         that set in "Startup File" block.
+       - "Create a new shell window" - creates Terminal window with default
+         settings.
 ****** TODO Auto-Launch
        Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
        Нужно только не показывать или прятать окно терминала.
-***** TODO (?) Shell
-      Нужно сделать кнопки, чтобы была возможность в Session сохранять и
-      команду, которая запускается в терминале. Или нет?
 ***** TODO (?) Скролл колесом мышки
       Нужно скроллить по одной строке или как указано в Preferences.app?
 ***** TODO Colors
