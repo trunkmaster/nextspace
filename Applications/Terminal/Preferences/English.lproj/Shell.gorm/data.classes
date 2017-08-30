@@ -14,7 +14,10 @@
 	    loginShellBtn,
 	    shellField,
 	    window,
-	    view
+	    view,
+	    commandLabel,
+	    commandField,
+	    shellPopup
 	);
 	Super = NSObject;
     };

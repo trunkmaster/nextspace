@@ -22,6 +22,24 @@
 - (void)awakeFromNib
 {
   [view retain];
+
+  // Fill in Shell popup button with items from /etc/shells
+  // Omit 'nologin' as shell.
+  NSString  *shells = [NSString stringWithContentsOfFile:@"/etc/shells"];
+  NSString  *lString;
+  NSRange   lRange;
+  NSUInteger index, stringLength = [shells length];
+
+  [shellPopup removeAllItems];
+  for (index=0; index < stringLength;)
+    {
+      lRange = [shells lineRangeForRange:NSMakeRange(index, 0)];
+      lRange.length -= 1; // Do not include new line char
+      lString = [shells substringFromRange:lRange];
+      [shellPopup addItemWithTitle:lString];
+      index = lRange.location + lRange.length + 1;
+    }
+  [shellPopup addItemWithTitle:@"Arbitrary Command"];
 }
 
 // <PrefsModule>
@@ -32,10 +50,30 @@
 
 - (void)showWindow
 {
-  Defaults *defs = [[Preferences shared] mainWindowPreferences];
+  Defaults  *defs = [[Preferences shared] mainWindowPreferences];
+  NSString  *shellStr = [defs shell];
+  NSInteger shellIndex;
 
-  [shellField setStringValue:[defs shell]];
-  [loginShellBtn setState:[defs loginShell]];
+  shellIndex = [shellPopup indexOfItemWithTitle:shellStr];
+  if (shellIndex == -1)
+    {
+      [shellPopup selectItemWithTitle:@"Arbitrary Command"];
+      [loginShellBtn setEnabled:NO];
+      
+      [commandLabel setEnabled:YES];
+      [commandField setEnabled:YES];
+      [commandField setStringValue:shellStr];
+    }
+  else
+    {
+      [shellPopup selectItemWithTitle:shellStr];
+      [loginShellBtn setEnabled:YES];
+      [loginShellBtn setState:[defs loginShell]];
+      
+      [commandLabel setEnabled:NO];
+      [commandField setEnabled:NO];
+      [commandField setStringValue:@""];      
+    }
 }
 
 - (BOOL)       control:(NSControl *)control

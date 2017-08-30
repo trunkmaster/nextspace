@@ -4,8 +4,11 @@
 
 @interface ShellPrefs : NSObject <PrefsModule>
 {
+  id shellPopup;
   id loginShellBtn;
-  id shellField;
+  id shellField; //
+  id commandLabel;
+  id commandField;
   id window;
   id view;
 }
