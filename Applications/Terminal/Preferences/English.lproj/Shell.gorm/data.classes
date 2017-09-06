@@ -2,17 +2,22 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "setLoginShell:"
+	    "setWindow:",
+	    "setDefault:",
+	    "setShell:",
+	    "showDefault:"
 	);
 	Super = NSObject;
     };
     ShellPrefs = {
 	Actions = (
-	    "setLoginShell:"
+	    "setWindow:",
+	    "setDefault:",
+	    "setShell:",
+	    "showDefault:"
 	);
 	Outlets = (
 	    loginShellBtn,
-	    shellField,
 	    window,
 	    view,
 	    commandLabel,
