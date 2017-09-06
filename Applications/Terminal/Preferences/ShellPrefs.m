@@ -36,10 +36,13 @@
       lRange = [shells lineRangeForRange:NSMakeRange(index, 0)];
       lRange.length -= 1; // Do not include new line char
       lString = [shells substringFromRange:lRange];
-      [shellPopup addItemWithTitle:lString];
+      if ([lString rangeOfString:@"nologin"].location == NSNotFound)
+        {
+          [shellPopup addItemWithTitle:lString];
+        }
       index = lRange.location + lRange.length + 1;
     }
-  [shellPopup addItemWithTitle:@"Arbitrary Command"];
+  [shellPopup addItemWithTitle:@"Command"];
 }
 
 // <PrefsModule>
@@ -48,47 +51,91 @@
   return view;
 }
 
-- (void)showWindow
+- (void)_updateControls:(Defaults *)defs
 {
-  Defaults  *defs = [[Preferences shared] mainWindowPreferences];
-  NSString  *shellStr = [defs shell];
+  NSString  *shellStr;
   NSInteger shellIndex;
 
-  shellIndex = [shellPopup indexOfItemWithTitle:shellStr];
-  if (shellIndex == -1)
+  if (defs)
     {
-      [shellPopup selectItemWithTitle:@"Arbitrary Command"];
+      shellStr = [defs shell];
+      shellIndex = [shellPopup indexOfItemWithTitle:shellStr];
+  
+      if ([shellStr isEqualToString:@"Command"] || shellIndex == -1)
+        {
+          [shellPopup selectItemWithTitle:@"Command"];
+          [commandField setStringValue:shellStr];
+        }
+      else
+        {
+          [shellPopup selectItemWithTitle:shellStr];
+          [loginShellBtn setState:[defs loginShell]];
+        }
+    }
+
+  shellStr = [shellPopup titleOfSelectedItem];
+  if ([shellStr isEqualToString:@"Command"])
+    {
       [loginShellBtn setEnabled:NO];
+      [loginShellBtn setState:0];
       
       [commandLabel setEnabled:YES];
       [commandField setEnabled:YES];
-      [commandField setStringValue:shellStr];
     }
   else
     {
-      [shellPopup selectItemWithTitle:shellStr];
       [loginShellBtn setEnabled:YES];
-      [loginShellBtn setState:[defs loginShell]];
       
       [commandLabel setEnabled:NO];
       [commandField setEnabled:NO];
-      [commandField setStringValue:@""];      
+      [commandField setStringValue:@""];
     }
+}
+  
+- (void)showWindow
+{
+  [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
+}
+
+// Controls actions
+
+// Write values to UserDefaults
+- (void)setDefault:(id)sender
+{
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
+  NSString *shellStr = [shellPopup titleOfSelectedItem];
+
+  if ([shellStr isEqualToString:@"Command"])
+    {
+      [defs setShell:[commandField stringValue]];
+    }
+  else
+    {
+      [defs setShell:shellStr];
+      [defs setLoginShell:[loginShellBtn state]];
+    }  
+  [defs synchronize];
+}
+// Reset onscreen controls to values stored in UserDefaults
+- (void)showDefault:(id)sender
+{
+  [self _updateControls:[[Preferences shared] mainWindowPreferences]];
+}
+
+- (void)setWindow:(id)sender
+{
+  // Modify live preferences through notification
 }
 
 - (BOOL)       control:(NSControl *)control
   textShouldEndEditing:(NSText *)fieldEditor
 {
-  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
-  
-  [defs setShell:[control stringValue]];
   return YES;
 }
-- (void)setLoginShell:(id)sender
+
+- (void)setShell:(id)sender
 {
-  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
-  
-  [defs setLoginShell:[loginShellBtn state]];
+  [self _updateControls:nil];
 }
 
 @end
