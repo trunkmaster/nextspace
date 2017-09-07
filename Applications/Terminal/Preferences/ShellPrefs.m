@@ -108,6 +108,7 @@
   if ([shellStr isEqualToString:@"Command"])
     {
       [defs setShell:[commandField stringValue]];
+      [defs setLoginShell:NO];
     }
   else
     {
@@ -122,9 +123,37 @@
   [self _updateControls:[[Preferences shared] mainWindowPreferences]];
 }
 
+// Modify live preferences through notification
 - (void)setWindow:(id)sender
 {
-  // Modify live preferences through notification
+  Defaults     *prefs;
+  NSDictionary *uInfo;
+  NSString     *shellStr;
+
+  if (![sender isKindOfClass:[NSButton class]])
+    return;
+  
+  prefs = [[Defaults alloc] initEmpty];
+  
+  shellStr = [shellPopup titleOfSelectedItem];
+  if ([shellStr isEqualToString:@"Command"])
+    {
+      [prefs setShell:[commandField stringValue]];
+      [prefs setLoginShell:NO];
+    }
+  else
+    {
+      [prefs setShell:shellStr];
+      [prefs setLoginShell:[loginShellBtn state]];
+    }  
+
+  uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
+  [prefs release];
+  
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:TerminalPreferencesDidChangeNotification
+                  object:[NSApp mainWindow]
+                userInfo:uInfo];
 }
 
 - (BOOL)       control:(NSControl *)control
