@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Sep  7 00:22:04 2017
+;; Created Fri Sep  8 00:29:25 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Terminal/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -18,15 +18,48 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.m"
+  "TerminalWindow.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
+  13466
+  '(13464 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/ShellPrefs.m"
   "ShellPrefs.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  2704
-  '(2953 nil)
+  3300
+  '(2809 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/WindowPrefs.m"
+  "WindowPrefs.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
+  2323
+  '(3008 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.h"
+  "Defaults.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
+  6102
+  '(550 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/ShellPrefs.h"
@@ -95,17 +128,6 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/WindowPrefs.m"
-  "WindowPrefs.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  2737
-  '(3822 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/Controller.m"
   "Controller.m"
   'objc-mode
@@ -128,17 +150,6 @@
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.m"
-  "TerminalWindow.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  4199
-  '(4456 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/Services.m"
   "Services.m"
   'objc-mode
@@ -159,17 +170,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Defaults.h"
-  "Defaults.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  452
-  '(550 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/TerminalView.h"

@@ -373,7 +373,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
 
 // Use explicit (by keys) reading of changed preferences to check some
-// setting was passwd to us. Using Defaults methods always returns some values.
+// setting was passed to us. Using Defaults methods always returns some values.
 - (void)preferencesDidChange:(NSNotification *)notif
 {
   Defaults *prefs = [[notif userInfo] objectForKey:@"Preferences"];
@@ -492,6 +492,13 @@ NSString *TerminalWindowSizeDidChangeNotification =
       boolValue = [prefs scrollBottomOnInput];
       [tView setScrollBottomOnInput:boolValue];
       [livePreferences setScrollBottomOnInput:boolValue];
+    }
+
+  // Shell:
+  if ([prefs objectForKey:ShellKey])
+    {
+      [livePreferences setShell:[prefs objectForKey:ShellKey]];
+      [livePreferences setLoginShell:[prefs boolForKey:LoginShellKey]];
     }
   // Linux:
   if ([prefs objectForKey:UseMultiCellGlyphsKey])

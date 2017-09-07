@@ -3269,59 +3269,24 @@
 ** 4. Terminal
 *** TODO 1.0
 **** TODO Preferences
-***** DONE Window и Title Bar
-****** DONE при обновлении размера окна, поля Rows и Columns должны обновляться.
-       Получилось так:
-       - при изменении размера окно шлет TerminalView -setFrame: или
-         -setFrameSize:;
-       - TerminalView шлет Notification об изменении размера окна;
-       - Notification ловит TerminalWindow (-updateWindowSize:), меняет
-         livePreferences, шлет notification об изменении размера
-         TerminalWindow;
-       - Preferences/WindowPrefs ловит последний notification и обнвляет поля.
-***** DONE Fonts
-****** DONE Font menu
-       Устанавливать шриф для main window.
-       Соответственно модифицировать значения в Preferences (Window и Colors).
-       Нужно реализовать validateMenuItem в правильных местах. Сейчас это
-       TerminalView для 'Clear Buffer'.
-******* DONE Copy Font, Paste Font
-        Я не понял есть ли какое-то соглашение на этот счет. Судя по
-        исходникам TextEdit и документации Apple такого соглашения нет.
-        Но есть реализация copyFont: и pasteFont: в NSTextView. Я думаю, что
-        стоит ориетироваться на эту реализацию (а именн: писать в NSPasteboard
-        информациюо шрифте как в NSTextView). В таком случае, будет
-        совместимость с любым наследником NSTextView.
-        Реализация будет считаться правильной если можно будет сделать Paste
-        Font из сделанного Copy Font TextEdit.
-        TextEdit при "Copy Font" создает NSDictionary:
-        {
-          @"NSColor" = *NSColor;
-          @"NSFont" = *NSFont;
-        }
-******* DONE Bold
-        В OPENSTEP пукты 'Bold' и 'Italic' не активны всегда (или я не не
-        нашел, в каком случае они активируются).
-        Нужно ли менять на Bold Off и обратно? Не нужно, оставляю как есть.
-******* DONE Italic
-        В OPENSTEP пукты 'Bold' и 'Italic' не активны всегда (или я не не
-        нашел, в каком случае они активируются).
-        Нужно ли менять на Italic Off? Не нужно, оставляю как есть.
-******* DONE Font Panel
-        Устанавлиавет шрифт активного окна. Если нет окон - пункт меню
-        недоступен.
-******* DONE Larger
-******* DONE Smaller
-****** DONE Window Preferences
-       При изменении шрифта, пересчитывать и устанавливать заново resize
-       increment.
-       UPDATE: Сделалн, но все немного серьезней - нужно сделать review коду,
-       который устанавливает размер TerminalView. Создал новую задачу "Code
-       review..."
-****** DONE Обновлять FontPanel 
-       ...устанавливать шрифт выбранного окна в FontPanel открытого из
-       Preferences если окно терминала открыто.
-***** TODO Sessions
+***** TODO Startup
+****** TODO Startup File
+       Implement setting startup file with option "Open the startup file" in
+       "When Terminal Starts Up" section.
+****** TODO When Terminal Starts Up
+       - "Do nothing" - opens Terminal and creates no window.
+       - "Open the startup file" - creates Terminal window with startup file
+         that set in "Startup File" block.
+       - "Create a new shell window" - creates Terminal window with default
+         settings.
+****** TODO Auto-Launch
+       Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
+       Нужно только не показывать или прятать окно терминала.
+***** TODO (?) Скролл колесом мышки
+      Нужно скроллить по одной строке или как указано в Preferences.app?
+      Настройки мыши, который устанавливаются в Preferences должны читаться
+      Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
+***** DONE Sessions
 ****** Поддержка сессий это:
        - возможность сохранять текущие настройки в отдельном файле 
          (меню Shell->Save As...) в файлы ~/Librayry/Terminal/*.term;
@@ -3392,16 +3357,15 @@
                  [(TerminalScreen)TerminalView preferences]
          - дальше они обращаются к экземляру Defaults (defaults), получая
            ссылку у TerminalWindowController.
-****** TODO Адаптировать Shell под Sessions
+****** DONE Адаптировать Shell под Sessions
+       Нужно сделать кнопки, чтобы была возможность в Session сохранять и
+       команду, которая запускается в терминале.
        Добавить кнопки "Set Default", "Show Default" и "Set Window".
        Варианты:
        1. Одно поле с названием Shell, в которое можно указывать любую
           команду.
        2. Сделать 2 поля Shell с выбором из выпадающего списка (содержимое
           файла /etc/shells) и поля Command, в которое вписывается команда.
-****** TODO (?) Shell
-       Нужно сделать кнопки, чтобы была возможность в Session сохранять и
-       команду, которая запускается в терминале. Или нет?
 ****** DONE Создать сеттеры для всех настроек в Defaults
 ****** DONE Defaults: добавить метод сохранения в файл
 ****** DONE Shell | Save
@@ -3416,28 +3380,63 @@
        Если была загружена сессия, предлагать имя <имя сессии>.term.
 ****** DONE Shell | Open
        Открывает диалог 'Open' с каталогом ~/Library/Terminal.
-***** TODO Startup
-****** TODO Startup File
-       Implement setting and saving startup file.
-****** TODO When Terminal Starts Up
-       - "Do nothing" - opens Terminal and creates no window.
-       - "Open the startup file" - creates Terminal window with startup file
-         that set in "Startup File" block.
-       - "Create a new shell window" - creates Terminal window with default
-         settings.
-****** TODO Auto-Launch
-       Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
-       Нужно только не показывать или прятать окно терминала.
-***** TODO (?) Скролл колесом мышки
-      Нужно скроллить по одной строке или как указано в Preferences.app?
-***** TODO Colors
-****** TODO Пункт меню Font > Colors
-       Перетаскивание цвета на фон окна, текст, курсор в окне должно менять эти
-       цвета.
+***** DONE Colors
 ****** DONE Cursor
 ****** DONE Window
 ****** DONE Text
 ****** DONE Черный шрифт на белом фоне by default
+***** DONE Window и Title Bar
+****** DONE при обновлении размера окна, поля Rows и Columns должны обновляться.
+       Получилось так:
+       - при изменении размера окно шлет TerminalView -setFrame: или
+         -setFrameSize:;
+       - TerminalView шлет Notification об изменении размера окна;
+       - Notification ловит TerminalWindow (-updateWindowSize:), меняет
+         livePreferences, шлет notification об изменении размера
+         TerminalWindow;
+       - Preferences/WindowPrefs ловит последний notification и обнвляет поля.
+***** DONE Fonts
+****** DONE Font menu
+       Устанавливать шриф для main window.
+       Соответственно модифицировать значения в Preferences (Window и Colors).
+       Нужно реализовать validateMenuItem в правильных местах. Сейчас это
+       TerminalView для 'Clear Buffer'.
+******* DONE Copy Font, Paste Font
+        Я не понял есть ли какое-то соглашение на этот счет. Судя по
+        исходникам TextEdit и документации Apple такого соглашения нет.
+        Но есть реализация copyFont: и pasteFont: в NSTextView. Я думаю, что
+        стоит ориетироваться на эту реализацию (а именн: писать в NSPasteboard
+        информациюо шрифте как в NSTextView). В таком случае, будет
+        совместимость с любым наследником NSTextView.
+        Реализация будет считаться правильной если можно будет сделать Paste
+        Font из сделанного Copy Font TextEdit.
+        TextEdit при "Copy Font" создает NSDictionary:
+        {
+          @"NSColor" = *NSColor;
+          @"NSFont" = *NSFont;
+        }
+******* DONE Bold
+        В OPENSTEP пукты 'Bold' и 'Italic' не активны всегда (или я не не
+        нашел, в каком случае они активируются).
+        Нужно ли менять на Bold Off и обратно? Не нужно, оставляю как есть.
+******* DONE Italic
+        В OPENSTEP пукты 'Bold' и 'Italic' не активны всегда (или я не не
+        нашел, в каком случае они активируются).
+        Нужно ли менять на Italic Off? Не нужно, оставляю как есть.
+******* DONE Font Panel
+        Устанавлиавет шрифт активного окна. Если нет окон - пункт меню
+        недоступен.
+******* DONE Larger
+******* DONE Smaller
+****** DONE Window Preferences
+       При изменении шрифта, пересчитывать и устанавливать заново resize
+       increment.
+       UPDATE: Сделалн, но все немного серьезней - нужно сделать review коду,
+       который устанавливает размер TerminalView. Создал новую задачу "Code
+       review..."
+****** DONE Обновлять FontPanel 
+       ...устанавливать шрифт выбранного окна в FontPanel открытого из
+       Preferences если окно терминала открыто.
 ***** DONE При изменении main window считывать настройки с него
       Похоже нужно пересмотреть подход к хранению и обновлению настроек.
       Сейчас кажется логичным следующее:
@@ -3512,15 +3511,21 @@
 ***** TODO Панель Info->Terminal Services...
 ***** TODO Проверить корректность работы различных параметров
 ***** TODO Проверить типы создания окон (shell, program)
-**** TODO Пункты меню
-****** TODO Edit->Find
-       Искать по содержимому буфера. Если найдено скроллить к найденому.
-****** TODO Edit->Select All
-       Выбирать не только видимый текст.
-**** TODO Keyboard
-     Command, Alternate, Control, Shift.
-     Проверить как передаются сочетания клавиш с этими модификаторами.
-     Сейчас известно что Command и Shift не передаются в любом случае.     
+**** TODO Keyboard + Preferences | Linux Emulation
+***** TODO Keyboard
+      Command, Alternate, Control, Shift.
+      Проверить как передаются сочетания клавиш с этими модификаторами.
+      Сейчас известно что Command и Shift не передаются в любом случае.
+***** TODO Preferences | Linux Emulation
+      Проверить как работают и сохраняются настройки из раздела "Linux
+      Emulation".
+**** TODO Edit->Find
+     Искать по содержимому буфера. Если найдено скроллить к найденому.
+**** TODO Edit->Select All
+     Выбирать не только видимый текст.
+**** TODO Font->Colors
+     Перетаскивание цвета на фон окна, текст, курсор в окне должно менять эти
+     цвета.
 **** TODO Info Panel
      С прокручивающимся текстом в иконке терминала. ;)
 **** TODO Code review for set window and view size
