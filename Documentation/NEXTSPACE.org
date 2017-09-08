@@ -3272,10 +3272,6 @@
 ** 4. Terminal
 *** TODO 1.0
 **** TODO Preferences
-***** TODO (?) Скролл колесом мышки
-      Нужно скроллить по одной строке или как указано в Preferences.app?
-      Настройки мыши, который устанавливаются в Preferences должны читаться
-      Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
 ***** TODO Shell
 ****** TODO Параметры для Shell
        При выборе какого-то shell из PopUp метка "Command:" меняется на "Shell
@@ -3517,7 +3513,7 @@
 ****** DONE Font
 ***** DONE Linux Emulation
 **** TODO Services
-***** TODO Панель Info->Terminal Services...
+***** TODO Панель Info->Terminal Services
 ***** TODO Проверить корректность работы различных параметров
 ***** TODO Проверить типы создания окон (shell, program)
 **** TODO Keyboard + Preferences | Linux Emulation
@@ -3528,6 +3524,10 @@
 ***** TODO Preferences | Linux Emulation
       Проверить как работают и сохраняются настройки из раздела "Linux
       Emulation".
+**** TODO (?) Скролл колесом мышки
+     Нужно скроллить по одной строке или как указано в Preferences.app?
+     Настройки мыши, который устанавливаются в Preferences должны читаться
+     Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
 **** TODO Window state
      Если как shell указано что-то из /etc/shells, новое окно не дложно
      показывать "Edited" статус. 

@@ -1,10 +1,11 @@
 /*
-copyright 2002 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (C) 2002 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (C) 2015 Sergii Stoian <stoyan255@ukr.net>
 
-This file is a part of Terminal.app. Terminal.app is free software; you
-can redistribute it and/or modify it under the terms of the GNU General
-Public License as published by the Free Software Foundation; version 2
-of the License. See COPYING or main.m for more information.
+  This file is a part of Terminal.app. Terminal.app is free software; you
+  can redistribute it and/or modify it under the terms of the GNU General
+  Public License as published by the Free Software Foundation; version 2
+  of the License. See COPYING or main.m for more information.
 */
 
 #import <AppKit/AppKit.h>
@@ -30,17 +31,129 @@ of the License. See COPYING or main.m for more information.
 
 @implementation TerminalServices
 
-
--(NSDictionary *) _serviceInfoForName: (NSString *)name
++ (NSDictionary *)terminalServicesDictionary
 {
-	NSDictionary *d;
-	d=[TerminalServices terminalServicesDictionary];
-	d=[d objectForKey: name];
-	if (!d || ![d isKindOfClass: [NSDictionary class]])
-		return nil;
-	return d;
+  NSDictionary *d;
+  NSString     *dPath;
+
+  d = [[NSUserDefaults standardUserDefaults]
+        dictionaryForKey:@"TerminalServices"];
+  if (d)
+    return d;
+
+  dPath = [[NSBundle mainBundle] pathForResource:@"DefaultTerminalServices"
+                                         ofType:@"svcs"];
+  d = [[NSDictionary dictionaryWithContentsOfFile:dPath]
+        objectForKey:@"TerminalServices"];
+  return d;
 }
 
++ (void)updateServicesPlist
+{
+  NSMutableArray *a = [[NSMutableArray alloc] init];
+  NSDictionary   *d = [TerminalServices terminalServicesDictionary];
+  NSEnumerator   *e;
+  NSString       *name;
+
+  e = [d keyEnumerator];
+  while ((name = [e nextObject]))
+    {
+      int i;
+      NSString *key;
+      NSMutableDictionary *md;
+      NSDictionary *info;
+      NSArray *types;
+      NSString *menu_name;
+
+      info = [d objectForKey:name];
+
+      md = [[NSMutableDictionary alloc] init];
+      [md setObject:@"Terminal" forKey:@"NSPortName"];
+      [md setObject:@"terminalService" forKey:@"NSMessage"];
+      [md setObject:name forKey:@"NSUserData"];
+
+      // Services menu item in format "Terminal/Service Name"
+      if ([name characterAtIndex:0] == '/')
+        menu_name = [name substringFromIndex:1];
+      else
+        menu_name = [NSString stringWithFormat:@"%@/%@",@"Terminal",name];
+      [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                    menu_name,
+                                  @"default",nil]
+             forKey: @"NSMenuItem"];
+
+      // Key equivavelnt
+      key = [info objectForKey:Key];
+      if (key && [key length])
+        {
+          [md setObject: [NSDictionary dictionaryWithObjectsAndKeys:
+                                         key,@"default",nil]
+                 forKey: @"NSKeyEquivalent"];
+        }
+
+      // "Accept" block
+      if ([info objectForKey:AcceptTypes])
+        i = [[info objectForKey:AcceptTypes] intValue];
+      else
+        i = ACCEPT_STRING;
+      
+      if (i == (ACCEPT_STRING | ACCEPT_FILENAMES))
+        types = [NSArray arrayWithObjects:NSStringPboardType,NSFilenamesPboardType,nil];
+      else if (i == ACCEPT_FILENAMES)
+        types = [NSArray arrayWithObjects:NSFilenamesPboardType,nil];
+      else if (i == ACCEPT_STRING)
+        types = [NSArray arrayWithObjects:NSStringPboardType,nil];
+      else
+        types = nil;
+
+      // "Use Selection" block
+      i = [[info objectForKey:Input] intValue];
+      if (types && (i == INPUT_STDIN || i ==  INPUT_CMDLINE))
+        [md setObject:types forKey:@"NSSendTypes"];
+
+      // "Execution" block
+      i = [[info objectForKey:Type] intValue];
+      if (i == TYPE_BACKGROUND)
+        {
+          i = [[info objectForKey:ReturnData] intValue];
+          if (types && i==1)
+            [md setObject:types forKey:@"NSReturnTypes"];
+        }
+
+      [a addObject:md];
+      DESTROY(md);
+    }
+
+  {
+    NSString *path;
+
+    path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                NSUserDomainMask, YES)
+                                               lastObject];
+    path = [path stringByAppendingPathComponent:@"Services"];
+    path = [path stringByAppendingPathComponent:@"TerminalServices.plist"];
+
+    d = [NSDictionary dictionaryWithObject:a forKey:@"NSServices"];
+    [d writeToFile:path atomically:YES];
+  }
+
+  /* TODO: if a submenu of services is 'held' open when services are
+     reloaded, -gui crashes */
+
+  [[NSWorkspace sharedWorkspace] findApplications];
+}
+
+- (NSDictionary *)_serviceInfoForName:(NSString *)name
+{
+  NSDictionary *d;
+  
+  d = [[TerminalServices terminalServicesDictionary] objectForKey:name];
+  
+  if (!d || ![d isKindOfClass:[NSDictionary class]])
+    return nil;
+  
+  return d;
+}
 
 -(void) terminalService: (NSPasteboard *)pb
                userData: (NSString *)name
@@ -282,116 +395,6 @@ of the License. See COPYING or main.m for more information.
   NSDebugLLog(@"service",@"return");
 }
 
-
-+(void) updateServicesPlist
-{
-	NSMutableArray *a;
-	NSDictionary *d;
-	NSEnumerator *e;
-	NSString *name;
-
-	d=[TerminalServices terminalServicesDictionary];
-
-	a=[[NSMutableArray alloc] init];
-
-	e=[d keyEnumerator];
-	while ((name=[e nextObject]))
-	{
-		int i;
-		NSString *key;
-		NSMutableDictionary *md;
-		NSDictionary *info;
-		NSArray *types;
-		NSString *menu_name;
-
-		info=[d objectForKey: name];
-
-		md=[[NSMutableDictionary alloc] init];
-		[md setObject: @"Terminal" forKey: @"NSPortName"];
-		[md setObject: @"terminalService" forKey: @"NSMessage"];
-		[md setObject: name forKey: @"NSUserData"];
-
-		if ([name characterAtIndex: 0]=='/')
-			menu_name=[name substringFromIndex: 1];
-		else
-			menu_name=[NSString stringWithFormat: @"%@/%@",@"Terminal",name];
-		[md setObject: [NSDictionary dictionaryWithObjectsAndKeys:
-				menu_name,
-				@"default",nil]
-			forKey: @"NSMenuItem"];
-
-		key=[info objectForKey: Key];
-		if (key && [key length])
-		{
-			[md setObject: [NSDictionary dictionaryWithObjectsAndKeys:
-					key,@"default",nil]
-				forKey: @"NSKeyEquivalent"];
-		}
-
-		if ([info objectForKey: AcceptTypes])
-			i=[[info objectForKey: AcceptTypes] intValue];
-		else
-			i=ACCEPT_STRING;
-		if (i==(ACCEPT_STRING|ACCEPT_FILENAMES))
-			types=[NSArray arrayWithObjects: NSStringPboardType,NSFilenamesPboardType,nil];
-		else if (i==ACCEPT_FILENAMES)
-			types=[NSArray arrayWithObjects: NSFilenamesPboardType,nil];
-		else if (i==ACCEPT_STRING)
-			types=[NSArray arrayWithObjects: NSStringPboardType,nil];
-		else
-			types=nil;
-
-		i=[[info objectForKey: Input] intValue];
-		if (types && (i==INPUT_STDIN || i==INPUT_CMDLINE))
-			[md setObject: types
-				forKey: @"NSSendTypes"];
-
-		i=[[info objectForKey: Type] intValue];
-		if (i==TYPE_BACKGROUND)
-		{
-			i=[[info objectForKey: ReturnData] intValue];
-			if (types && i==1)
-				[md setObject: types
-					forKey: @"NSReturnTypes"];
-		}
-
-		[a addObject: md];
-		DESTROY(md);
-	}
-
-	{
-		NSString *path;
-
-		path=[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,NSUserDomainMask,YES)
-			lastObject];
-		path=[path stringByAppendingPathComponent: @"Services"];
-		path=[path stringByAppendingPathComponent: @"TerminalServices.plist"];
-
-		d=[NSDictionary dictionaryWithObject: a forKey: @"NSServices"];
-		[d writeToFile: path atomically: YES];
-	}
-
-	/* TODO: if a submenu of services is 'held' open when services are
-	reloaded, -gui crashes */
-
-	[[NSWorkspace sharedWorkspace] findApplications];
-}
-
-
-+(NSDictionary *) terminalServicesDictionary
-{
-	NSDictionary *d;
-
-	d=[[NSUserDefaults standardUserDefaults]
-		dictionaryForKey: @"TerminalServices"];
-	if (d) return d;
-
-	d=[NSDictionary dictionaryWithContentsOfFile:
-		[[NSBundle mainBundle] pathForResource: @"DefaultTerminalServices"
-			ofType: @"svcs"]];
-	d=[d objectForKey: @"TerminalServices"];
-	return d;
-}
 
 @end
 
