@@ -15,6 +15,7 @@
   int                 num_windows;
   NSWindow            *mainWindow;
   NSTimer             *timer;
+  BOOL                isAppAutoLaunched;
   
   BOOL                quitPanelOpen;
 
