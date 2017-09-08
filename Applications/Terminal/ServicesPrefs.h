@@ -17,16 +17,16 @@ of the License. See COPYING or main.m for more information.
 
 @interface TerminalServicesPrefs : NSObject <PrefBox>
 {
-	NSMutableDictionary *services;
-	NSMutableArray *service_list;
-	int current;
+  NSMutableDictionary *services;
+  NSMutableArray *service_list;
+  int current;
 
-	GSVbox *top;
-	NSTableView *list;
-	NSPopUpButton *pb_input,*pb_output,*pb_type;
-	NSTextField *tf_name,*tf_cmdline,*tf_key;
+  GSVbox *top;
+  NSTableView *list;
+  NSPopUpButton *pb_input,*pb_output,*pb_type;
+  NSTextField *tf_name,*tf_cmdline,*tf_key;
 
-	NSButton *cb_string,*cb_filenames;
+  NSButton *cb_string,*cb_filenames;
 }
 
 @end

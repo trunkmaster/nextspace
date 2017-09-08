@@ -29,49 +29,49 @@ of the License. See COPYING or main.m for more information.
 
 @implementation TerminalServicesPrefs
 
--(void) _update
+- (void)_update
 {
-	NSString *name,*new_name;
-	NSMutableDictionary *d;
-	int i;
+  NSString *name,*new_name;
+  NSMutableDictionary *d;
+  int i;
 
-	if (current<0)
-		return;
+  if (current<0)
+    return;
 
-	name=[service_list objectAtIndex: current];
-	new_name=[tf_name stringValue];
-	if (![new_name length])
-		new_name=name;
-	d=[services objectForKey: name];
-	if (!d)
-		d=[[NSMutableDictionary alloc] init];
+  name=[service_list objectAtIndex: current];
+  new_name=[tf_name stringValue];
+  if (![new_name length])
+    new_name=name;
+  d=[services objectForKey: name];
+  if (!d)
+    d=[[NSMutableDictionary alloc] init];
 
-	[d setObject: [tf_key stringValue]
-		forKey: Key];
-	[d setObject: [tf_cmdline stringValue]
-		forKey: Commandline];
-	[d setObject: [NSString stringWithFormat: @"%li",[pb_input indexOfSelectedItem]]
-		forKey: Input];
-	[d setObject: [NSString stringWithFormat: @"%li",[pb_output indexOfSelectedItem]]
-		forKey: ReturnData];
-	[d setObject: [NSString stringWithFormat: @"%li",[pb_type indexOfSelectedItem]]
-		forKey: Type];
+  [d setObject: [tf_key stringValue]
+        forKey: Key];
+  [d setObject: [tf_cmdline stringValue]
+        forKey: Commandline];
+  [d setObject: [NSString stringWithFormat: @"%li",[pb_input indexOfSelectedItem]]
+        forKey: Input];
+  [d setObject: [NSString stringWithFormat: @"%li",[pb_output indexOfSelectedItem]]
+        forKey: ReturnData];
+  [d setObject: [NSString stringWithFormat: @"%li",[pb_type indexOfSelectedItem]]
+        forKey: Type];
 
-	i=0;
-	if ([cb_string state]) i|=1;
-	if ([cb_filenames state]) i|=2;
-	[d setObject: [NSString stringWithFormat: @"%i",i]
-		forKey: AcceptTypes];
+  i=0;
+  if ([cb_string state]) i|=1;
+  if ([cb_filenames state]) i|=2;
+  [d setObject: [NSString stringWithFormat: @"%i",i]
+        forKey: AcceptTypes];
 
-	if (![name isEqual: new_name])
-	{
-		[services setObject: d
-			forKey: new_name];
-		[services removeObjectForKey: name];
-		[service_list replaceObjectAtIndex: current
-			withObject: new_name];
-		[list reloadData];
-	}
+  if (![name isEqual: new_name])
+    {
+      [services setObject: d
+                   forKey: new_name];
+      [services removeObjectForKey: name];
+      [service_list replaceObjectAtIndex: current
+                              withObject: new_name];
+      [list reloadData];
+    }
 }
 
 
