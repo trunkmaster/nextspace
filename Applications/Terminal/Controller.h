@@ -29,6 +29,7 @@
 - (void)childWithPID:(int)pid didExit:(int)status;
 
 - (void)terminalWindow:(TerminalWindowController *)twc becameIdle:(BOOL)idle;
+- (BOOL)isTerminalWindowIdle:(TerminalWindowController *)twc;
 - (void)closeTerminalWindow:(TerminalWindowController *)twc;
 
 - (void)setupTerminalWindow:(TerminalWindowController *)controller;

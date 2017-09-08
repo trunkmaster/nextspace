@@ -37,7 +37,7 @@
 
 - (void)showWindow
 {
-  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
+  Defaults *defs = [Defaults shared];
 
   [actionsMatrix selectCellWithTag:[defs startupAction]];
   [autolaunchBtn setState:[defs hideOnAutolaunch]];
@@ -54,10 +54,30 @@
 }
 - (void)setFilePath:(id)sender
 {
-  Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
-  
-  [defs setStartupFile:[filePathField stringValue]];
-  [defs synchronize];
+  NSOpenPanel *panel = [NSOpenPanel openPanel];
+  NSString    *sessionDir, *path;
+  Defaults    *defs = [[Preferences shared] mainWindowLivePreferences];
+
+  [panel setCanChooseDirectories:NO];
+  [panel setAllowsMultipleSelection:NO];
+  [panel setTitle:@"Set Startup File"];
+  [panel setShowsHiddenFiles:NO];
+
+  if ((sessionDir = [Defaults sessionsDirectory]) == nil)
+    return;
+
+  if ([panel runModalForDirectory:sessionDir
+                             file:@"Default.term"
+                            types:[NSArray arrayWithObject:@"term"]]
+      == NSOKButton)
+    {
+      if ((path = [panel filename]) != nil)
+        {
+          [filePathField setStringValue:path];
+          [defs setStartupFile:path];
+          [defs synchronize];
+        }
+    }
 }
 - (void)setAutolaunch:(id)sender
 {

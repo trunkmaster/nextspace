@@ -2296,7 +2296,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
       // fprintf(stderr, "Child process terminal: %s\n", ttyname(0));
 
-      execv(cpath,(char *const*)cargs);
+      execvp(cpath,(char *const*)cargs);
       
       fprintf(stderr,"Unable to spawn process '%s': %m!",cpath);
       exit(1);
@@ -2366,8 +2366,19 @@ static void set_foreground(NSGraphicsContext *gc,
 {
   NSString *arg0;
   NSString *path;
+  NSArray  *args = nil;
 
   path = [defaults shell];
+  args = [path componentsSeparatedByString:@" "];
+  if ([args count] > 1)
+    {
+      path = [args objectAtIndex:0];
+      args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
+    }
+  else
+    {
+      args = nil;
+    }
   
   if ([defaults loginShell])
     arg0 = [@"-" stringByAppendingString:path];
@@ -2375,7 +2386,7 @@ static void set_foreground(NSGraphicsContext *gc,
     arg0 = path;
   
   return [self runProgram:path
-            withArguments:nil
+            withArguments:args
               inDirectory:nil
              initialInput:nil
                      arg0:arg0];
@@ -2863,7 +2874,7 @@ static int handled_mask = (NSDragOperationCopy |
 
 - (BOOL)isUserProgramRunning
 {
-  return tcgetpgrp(master_fd) == childPID ? NO : YES;
+  return (master_fd == -1) || (tcgetpgrp(master_fd) == childPID) ? NO : YES;
 }
 
 

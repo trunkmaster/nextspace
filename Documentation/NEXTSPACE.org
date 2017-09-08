@@ -201,6 +201,9 @@
 
 * GNUstep
 
+** TODO -NXAutoLaunch
+*** TODO Должно скрываться не только основное меню, но и остальные
+*** TODO Нужно убирать из списка параметров?
 ** TODO Клик внутри неактивного окна не обрабатывается subview
    ...или не передается subview окном. NSFistResponder chain?
 ** TODO Font Panel resizing
@@ -3270,10 +3273,10 @@
 *** TODO 1.0
 **** TODO Preferences
 ***** TODO Startup
-****** TODO Startup File
+****** DONE Startup File
        Implement setting startup file with option "Open the startup file" in
        "When Terminal Starts Up" section.
-****** TODO When Terminal Starts Up
+****** DONE When Terminal Starts Up
        - "Do nothing" - opens Terminal and creates no window.
        - "Open the startup file" - creates Terminal window with startup file
          that set in "Startup File" block.
@@ -3281,11 +3284,18 @@
          settings.
 ****** TODO Auto-Launch
        Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
-       Нужно только не показывать или прятать окно терминала.
+       Нужно только не показывать или прятать окно терминала для режимов "Open
+       the startup file" и "Create a new shell window".
 ***** TODO (?) Скролл колесом мышки
       Нужно скроллить по одной строке или как указано в Preferences.app?
       Настройки мыши, который устанавливаются в Preferences должны читаться
       Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
+***** TODO Shell
+****** TODO Параметры для Shell
+       При выборе какого-то shell из PopUp метка "Command:" меняется на "Shell
+       Parameters:".
+****** TODO Не добавлять дублирующиеся значения в PopUp
+       Например, если есть "/bin/sh", то "/usr/bin/sh" уже не добавляется.
 ***** DONE Sessions
 ****** Поддержка сессий это:
        - возможность сохранять текущие настройки в отдельном файле 
@@ -3506,7 +3516,6 @@
 ****** DONE Window Size
 ****** DONE Font
 ***** DONE Linux Emulation
-***** DONE Shell
 **** TODO Services
 ***** TODO Панель Info->Terminal Services...
 ***** TODO Проверить корректность работы различных параметров
@@ -3519,6 +3528,12 @@
 ***** TODO Preferences | Linux Emulation
       Проверить как работают и сохраняются настройки из раздела "Linux
       Emulation".
+**** TODO Window state
+     Если как shell указано что-то из /etc/shells, новое окно не дложно
+     показывать "Edited" статус. 
+     Если запускается любая другая команда (например, 'ssh') - всегда
+     показывать "Edited" - нет возможности ловить запуск команды в стартовой
+     оболочке. Например, для 'ssh' команды запускаются на удаленном сервере...
 **** TODO Edit->Find
      Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO Edit->Select All
