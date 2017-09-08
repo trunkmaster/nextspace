@@ -42,6 +42,7 @@
   if (!(self=[super init])) return nil;
 
   windows = [[NSMutableDictionary alloc] init];
+  isAppAutoLaunched = NO;
   
   return self;
 }
@@ -50,6 +51,8 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
+  [timer invalidate];
+  
   [windows release];
 
   [super dealloc];
@@ -84,7 +87,7 @@
 // Shell > New
 - (void)openWindow:(id)sender
 {
-  [self newWindowWithShell];
+  [[self newWindowWithShell] showWindow:self];
 }
 
 // Shell > Open...
@@ -108,7 +111,7 @@
     {
       if ((path = [panel filename]) != nil)
         {
-          [self newWindowWithStartupFile:path];
+          [[self newWindowWithStartupFile:path] showWindow:self];
         }
     }  
 }
@@ -266,20 +269,57 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)n
 {
+  NSArray *args = [[NSProcessInfo processInfo] arguments];
+  NSArray *arguments;
+  TerminalWindowController *twc;
+
+  NSLog(@"Controller: applicationDidFinishLaunching");
+  
   [NSApp setServicesProvider:[[TerminalServices alloc] init]];
+
+  // Remove "Terminal" from argument list
+  arguments = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
+  // Check for -NXAutoLaunch
+  if ([arguments containsObject:@"-NXAutoLaunch"])
+    {
+      NSLog(@"Appplication arguments contains -NXAutoLaunch");
+      
+      NSUInteger index = [arguments indexOfObject:@"-NXAutoLaunch"];
+      if ([[arguments objectAtIndex:++index] isEqualToString:@"YES"])
+        {
+          isAppAutoLaunched = YES;
+        }
+    }
 
   switch ([[Defaults shared] startupAction])
     {
     case OnStartCreateShell:
-      [self newWindowWithShell];
+      twc = [self newWindowWithShell];
+      [twc showWindow:self];
       break;
     case OnStartOpenFile:
-      [self newWindowWithStartupFile:[[Defaults shared] startupFile]];
+      twc = [self newWindowWithStartupFile:[[Defaults shared] startupFile]];
+      [twc showWindow:self];
       break;
     default:
       // OnStartDoNothing == do nothing
       break;
     }
+
+  // By default "-NXAutoLaunch YES" option resigns active state from
+  // starting application.
+  if (isAppAutoLaunched == YES && [[Defaults shared] hideOnAutolaunch] == YES)
+    [NSApp hide:self];
+  else
+    [NSApp activateIgnoringOtherApps:YES];
+
+  // Activate timer for windows state checking
+  timer = [NSTimer
+            scheduledTimerWithTimeInterval:2.0
+                                    target:self
+                                  selector:@selector(checkTerminalWindowsState)
+                                  userInfo:nil
+                                   repeats:YES];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)n
@@ -346,55 +386,11 @@
   return NSTerminateNow;
 }
 
-- (void)quitAnyway:(id)sender
-{
-  [NSApp replyToApplicationShouldTerminate:YES];
-}
-
-- (void)dontQuit:(id)sender
-{
-  [NSApp replyToApplicationShouldTerminate:NO];
-}
-
 - (BOOL)application:(NSApplication *)sender
  	   openFile:(NSString *)filename
 {
-  NSArray *args = [[NSProcessInfo processInfo] arguments];
-  // TerminalWindowController *twc;
-
   NSLog(@"Open file: %@", filename);
-
-  NSDebugLLog(@"Application",@"openFile: '%@'",filename);
-
-  NSString *program;
-  NSArray  *arguments;
-
-  // Remove "Terminal" from argument list
-  arguments = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
-  // Check for -NXAutoLaunch
-  if ([arguments containsObject:@"-NXAutoLaunch"])
-    {
-      
-    }
   
-  program = [arguments objectAtIndex:0];
-  // Remove program from argument list
-  arguments = [arguments
-                    subarrayWithRange:NSMakeRange(1,[arguments count]-1)];
-
-  NSLog(@"Controller: run program '%@' with arguments %@",
-        program, arguments);
-  // [self newWindowWithProgram:program
-  //                  arguments:arguments];
-  // [NSApp activateIgnoringOtherApps:YES];
-
-  // twc = [self createTerminalWindow];
-  // [[twc terminalView] runProgram:filename
-  //       	   withArguments:nil
-  //       	    initialInput:nil];
-  // [twc showWindow:self];
-  // [self newWindowWithProgram:filename arguments:nil];
-
   return YES;
 }
 
@@ -533,11 +529,7 @@
 - (void)checkTerminalWindowsState
 {
   if ([windows count] <= 0)
-    {
-      [timer invalidate];
-      timer = nil;
-      return;
-    }
+    return;
 
   NSArray *wins = [windows allValues];
 
@@ -702,19 +694,6 @@
   
   pid = [[twc terminalView] runShell];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
-  
-  [twc showWindow:self];
-
-  if (timer == nil)
-    {
-      timer =
-        [NSTimer
-          scheduledTimerWithTimeInterval:2.0
-                                  target:self
-                                selector:@selector(checkTerminalWindowsState)
-                                userInfo:nil
-                                 repeats:YES];
-    }
 
   return twc;
 }
@@ -738,19 +717,6 @@
                           initialInput:nil
                                   arg0:program];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
-  
-  [twc showWindow:self];
-                            
-  if (timer == nil)
-    {
-      timer =
-        [NSTimer
-          scheduledTimerWithTimeInterval:2.0
-                                  target:self
-                                selector:@selector(checkTerminalWindowsState)
-                                userInfo:nil
-                                 repeats:YES];
-    }
   
   return twc;
 }
@@ -782,8 +748,8 @@
   else
     args = nil;
 
-  NSLog(@"Create Terminal window with Startup File: %@. Program: %@, arguments: %@",
-        filePath, shell, args);
+  NSLog(@"Create Terminal window with Startup File: %@."
+        " Program: %@, arguments: %@", filePath, shell, args);
   
   pid = [[twc terminalView] runProgram:shell
                          withArguments:args
@@ -793,18 +759,6 @@
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
 
   [shell release];
-  [twc showWindow:self];
-  
-  if (timer == nil)
-    {
-      timer =
-        [NSTimer
-          scheduledTimerWithTimeInterval:2.0
-                                  target:self
-                                selector:@selector(checkTerminalWindowsState)
-                                userInfo:nil
-                                 repeats:YES];
-    }
   
   return twc;
 }

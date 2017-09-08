@@ -3272,20 +3272,6 @@
 ** 4. Terminal
 *** TODO 1.0
 **** TODO Preferences
-***** TODO Startup
-****** DONE Startup File
-       Implement setting startup file with option "Open the startup file" in
-       "When Terminal Starts Up" section.
-****** DONE When Terminal Starts Up
-       - "Do nothing" - opens Terminal and creates no window.
-       - "Open the startup file" - creates Terminal window with startup file
-         that set in "Startup File" block.
-       - "Create a new shell window" - creates Terminal window with default
-         settings.
-****** TODO Auto-Launch
-       Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
-       Нужно только не показывать или прятать окно терминала для режимов "Open
-       the startup file" и "Create a new shell window".
 ***** TODO (?) Скролл колесом мышки
       Нужно скроллить по одной строке или как указано в Preferences.app?
       Настройки мыши, который устанавливаются в Preferences должны читаться
@@ -3296,6 +3282,20 @@
        Parameters:".
 ****** TODO Не добавлять дублирующиеся значения в PopUp
        Например, если есть "/bin/sh", то "/usr/bin/sh" уже не добавляется.
+***** DONE Startup
+****** DONE Startup File
+       Implement setting startup file with option "Open the startup file" in
+       "When Terminal Starts Up" section.
+****** DONE When Terminal Starts Up
+       - "Do nothing" - opens Terminal and creates no window.
+       - "Open the startup file" - creates Terminal window with startup file
+         that set in "Startup File" block.
+       - "Create a new shell window" - creates Terminal window with default
+         settings.
+****** DONE Auto-Launch
+       Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
+       Нужно только не показывать или прятать окно терминала для режимов "Open
+       the startup file" и "Create a new shell window".
 ***** DONE Sessions
 ****** Поддержка сессий это:
        - возможность сохранять текущие настройки в отдельном файле 
