@@ -79,7 +79,7 @@ static Defaults *shared = nil;
   self = [super init];
 
   filePath = nil;  
-  defaults = [NSUserDefaults standardUserDefaults];  
+  defaults = [NSUserDefaults standardUserDefaults];
   
   return self;
 }
