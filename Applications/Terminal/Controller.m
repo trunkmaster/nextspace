@@ -266,42 +266,19 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)n
 {
-  NSArray *args = [[NSProcessInfo processInfo] arguments];
-    
   [NSApp setServicesProvider:[[TerminalServices alloc] init]];
 
-  if ([args count] > 1)
+  switch ([[Defaults shared] startupAction])
     {
-      // TerminalWindowController *twc;
-      NSString *cmdline;
-
-      args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
-      cmdline = [args componentsJoinedByString:@" "];
-
-      // twc = [self createTerminalWindow];
-      // [[twc terminalView]
-      //   runProgram:@"/bin/sh"
-      //   withArguments:[NSArray arrayWithObjects:@"-c",cmdline,nil]
-      //   initialInput:nil];
-      // [twc showWindow:self];
-      [self newWindowWithProgram:nil
-                       arguments:[NSArray arrayWithObjects:@"-c",cmdline,nil]];
-    }
-  else
-    {
-      switch ([[Defaults shared] startupAction])
-        {
-        case OnStartCreateShell:
-          [self newWindowWithShell];
-          break;
-        case OnStartOpenFile:
-          // TODO: open window with startupfile
-          // [TerminalWindow initWithStartupfile:]
-          break;
-        default:
-          // OnStartDoNothing == do nothing
-          break;
-        }
+    case OnStartCreateShell:
+      [self newWindowWithShell];
+      break;
+    case OnStartOpenFile:
+      [self newWindowWithStartupFile:[[Defaults shared] startupFile]];
+      break;
+    default:
+      // OnStartDoNothing == do nothing
+      break;
     }
 }
 
@@ -382,18 +359,41 @@
 - (BOOL)application:(NSApplication *)sender
  	   openFile:(NSString *)filename
 {
+  NSArray *args = [[NSProcessInfo processInfo] arguments];
   // TerminalWindowController *twc;
+
+  NSLog(@"Open file: %@", filename);
 
   NSDebugLLog(@"Application",@"openFile: '%@'",filename);
 
-  [NSApp activateIgnoringOtherApps:YES];
+  NSString *program;
+  NSArray  *arguments;
+
+  // Remove "Terminal" from argument list
+  arguments = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
+  // Check for -NXAutoLaunch
+  if ([arguments containsObject:@"-NXAutoLaunch"])
+    {
+      
+    }
+  
+  program = [arguments objectAtIndex:0];
+  // Remove program from argument list
+  arguments = [arguments
+                    subarrayWithRange:NSMakeRange(1,[arguments count]-1)];
+
+  NSLog(@"Controller: run program '%@' with arguments %@",
+        program, arguments);
+  // [self newWindowWithProgram:program
+  //                  arguments:arguments];
+  // [NSApp activateIgnoringOtherApps:YES];
 
   // twc = [self createTerminalWindow];
   // [[twc terminalView] runProgram:filename
   //       	   withArguments:nil
   //       	    initialInput:nil];
   // [twc showWindow:self];
-  [self newWindowWithProgram:filename arguments:nil];
+  // [self newWindowWithProgram:filename arguments:nil];
 
   return YES;
 }
@@ -620,6 +620,11 @@
   [[NSApp delegate] checkActiveTerminalWindows];
 }
 
+- (BOOL)isTerminalWindowIdle:(TerminalWindowController *)twc
+{
+  return [idleList containsObject:twc];
+}
+
 // TODO: TerminalWindowDidCloseNotification -> windowDidClose:(NSNotification*)n
 - (void)closeTerminalWindow:(TerminalWindowController *)twc
 {
@@ -777,8 +782,8 @@
   else
     args = nil;
 
-  NSLog(@"Create Terminal window with Startup File. Program: %@, arguments: %@",
-        shell, args);
+  NSLog(@"Create Terminal window with Startup File: %@. Program: %@, arguments: %@",
+        filePath, shell, args);
   
   pid = [[twc terminalView] runProgram:shell
                          withArguments:args
