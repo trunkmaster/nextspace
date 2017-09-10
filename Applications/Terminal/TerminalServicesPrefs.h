@@ -10,12 +10,10 @@ of the License. See COPYING or main.m for more information.
 #ifndef ServicesPrefs_h
 #define ServicesPrefs_h
 
-#include "PrefBox.h"
-
 @class NSMutableDictionary,NSMutableArray;
 @class GSVbox,NSTableView,NSPopUpButton,NSTextField;
 
-@interface TerminalServicesPrefs : NSObject <PrefBox>
+@interface TerminalServicesPrefs : NSObject
 {
   NSMutableDictionary *services;
   NSMutableArray *service_list;

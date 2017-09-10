@@ -38,7 +38,7 @@ of the License. See COPYING or main.m for more information.
 - initWithCommandline: (NSString *)cmdline
           selectRange: (NSRange)r
               service: (NSString *)service_name
-{
+{ 
   NSWindow *win;
 
   win=[[NSPanel alloc] initWithContentRect: NSMakeRect(100,100,380,100)

@@ -15,24 +15,17 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/*#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSUserDefaults.h>*/
+#import <Foundation/NSDebug.h>
 
-#include <Foundation/NSDebug.h>
-
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSView.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSMenu.h>
+#import <AppKit/NSPanel.h>
+#import <AppKit/NSView.h>
 
 #import "Defaults.h"
-#include "Services.h"
-#include "TerminalView.h"
-#include "TerminalWindow.h"
+#import "TerminalServices.h"
+#import "TerminalView.h"
+#import "TerminalWindow.h"
 
 
 @interface Terminal : NSObject
@@ -40,8 +33,8 @@
 @end
 
 /* TODO */
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSEvent.h>
+#import <AppKit/NSWindow.h>
+#import <AppKit/NSEvent.h>
 
 @interface NSWindow (avoid_warnings)
 - (void)sendEvent:(NSEvent *)e;

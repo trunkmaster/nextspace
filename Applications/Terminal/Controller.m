@@ -13,8 +13,7 @@
 
 #import "Defaults.h"
 
-#import "Services.h"
-#import "ServicesPrefs.h"
+#import "TerminalServicesPanel.h"
 #import "TerminalView.h"
 #import "TerminalWindow.h"
 
@@ -65,7 +64,7 @@
 
 // --- Menu
 
-// "Terminal Preferences" panel
+// Info > Preferences
 - (void)openPreferences:(id)sender
 {
   // load Preferences.bundle, send 'activate' to principal class
@@ -87,6 +86,20 @@
     }
   
   [preferencesPanel activatePanel];
+}
+
+- (void)openServicesPanel:(id)sender
+{
+  // if (servicesPanel == nil)
+  //   {
+  //     if ([NSBundle loadNibNamed:@"TerminalServices" owner:self] == NO)
+  //       {
+  //         NSLog(@"Error loading NIB TerminalServices");
+  //         return;
+  //       }
+  //   }
+ 
+  // [servicesPanel activatePanel];
 }
 
 // Shell > New
