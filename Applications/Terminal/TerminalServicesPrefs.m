@@ -1,10 +1,11 @@
 /*
-copyright 2002 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (C) 2002 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (C) 2017 Sergii Stoian <stoyan255@ukr.net>
 
-This file is a part of Terminal.app. Terminal.app is free software; you
-can redistribute it and/or modify it under the terms of the GNU General
-Public License as published by the Free Software Foundation; version 2
-of the License. See COPYING or main.m for more information.
+  This file is a part of Terminal.app. Terminal.app is free software; you
+  can redistribute it and/or modify it under the terms of the GNU General
+  Public License as published by the Free Software Foundation; version 2
+  of the License. See COPYING or main.m for more information.
 */
 
 #include <Foundation/Foundation.h>
@@ -22,9 +23,9 @@ of the License. See COPYING or main.m for more information.
 #include <AppKit/NSOpenPanel.h>
 #include "Label.h"
 
-#include "ServicesPrefs.h"
+#include "TerminalServicesPrefs.h"
 
-#include "Services.h"
+#include "TerminalServices.h"
 
 
 @implementation TerminalServicesPrefs
@@ -35,16 +36,16 @@ of the License. See COPYING or main.m for more information.
   NSMutableDictionary *d;
   int i;
 
-  if (current<0)
+  if (current < 0)
     return;
 
-  name=[service_list objectAtIndex: current];
-  new_name=[tf_name stringValue];
+  name = [service_list objectAtIndex:current];
+  new_name = [tf_name stringValue];
   if (![new_name length])
-    new_name=name;
-  d=[services objectForKey: name];
+    new_name = name;
+  d = [services objectForKey:name];
   if (!d)
-    d=[[NSMutableDictionary alloc] init];
+    d = [[NSMutableDictionary alloc] init];
 
   [d setObject: [tf_key stringValue]
         forKey: Key];
@@ -126,14 +127,14 @@ of the License. See COPYING or main.m for more information.
 }
 
 
--(int) numberOfRowsInTableView: (NSTableView *)tv
+- (int)numberOfRowsInTableView: (NSTableView *)tv
 {
 	return [service_list count];
 }
 
--(id) tableView: (NSTableView *)tv  objectValueForTableColumn: (NSTableColumn *)tc  row: (int)row
+- (id)tableView:(NSTableView *)tv objectValueForTableColumn:(NSTableColumn *)tc  row:(int)row
 {
-	return [service_list objectAtIndex: row];
+  return [service_list objectAtIndex:row];
 }
 
 -(void) tableViewSelectionDidChange: (NSNotification *)n

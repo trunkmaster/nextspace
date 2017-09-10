@@ -67,21 +67,21 @@
 
 -(NSView *) autoSetupKeyViewChain: (NSView *) next
 {
-	int i,j;
-	NSView *v;
+  int i,j;
+  NSView *v;
 
-	for (i=0;i<_numberOfRows;i++)
-	{
-		for (j=_numberOfColumns-1;j>=0;j--)
-		{
-			if (_jails[i*_numberOfColumns+j])
-			{
-				v=[[(NSView *)_jails[i*_numberOfColumns+j] subviews] objectAtIndex: 0];
-				next=[v autoSetupKeyViewChain: next];
-			}
-		}
-	}
-	return next;
+  for (i=0;i<_numberOfRows;i++)
+    {
+      for (j=_numberOfColumns-1;j>=0;j--)
+        {
+          if (_jails[i*_numberOfColumns+j])
+            {
+              v=[[(NSView *)_jails[i*_numberOfColumns+j] subviews] objectAtIndex: 0];
+              next=[v autoSetupKeyViewChain: next];
+            }
+        }
+    }
+  return next;
 }
 
 @end

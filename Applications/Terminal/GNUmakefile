@@ -25,16 +25,15 @@ Terminal_OBJC_FILES = \
 	\
 	SetTitlePanel.m\
 	\
-	Services.m \
-	ServicesPrefs.m \
-	ServicesParameterWindowController.m \
+	TerminalServices.m \
+	TerminalServicesPanel.m \
 	\
 	TerminalWindow.m \
 	TerminalView.m \
-	TerminalParser_Linux.m \
-	\
-	autokeyviewchain.m \
-	Label.m
+	TerminalParser_Linux.m
+	# \
+	# autokeyviewchain.m \
+	# Label.m
 
 
 Terminal_LANGUAGES = English

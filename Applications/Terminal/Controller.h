@@ -12,6 +12,7 @@
 #import "Preferences/Preferences.h"
 #import "SetTitlePanel.h"
 #import "TerminalWindow.h"
+#import "TerminalServices.h"
 
 @interface Controller : NSObject <NSMenuValidation>
 {
@@ -25,6 +26,7 @@
   BOOL                quitPanelOpen;
 
   Preferences         *preferencesPanel;
+  TerminalServices    *servicesPanel;
   SetTitlePanel	      *setTitlePanel;
 }
 
