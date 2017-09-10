@@ -109,9 +109,29 @@
   [self tableViewSelectionDidChange:nil];
 }
 
+- init
+{
+  self = [super init];
+  if (panel == nil)
+    {
+      if ([NSBundle loadNibNamed:@"TerminalServices" owner:self] == NO)
+        {
+          NSLog(@"Error loading NIB TerminalServices");
+          return self;
+        }
+    }
+  
+  return self;
+}
+
 - (void)awakerFromNib
 {
   [serviceTable setDelegate:self];
+}
+
+- (void)activatePanel
+{
+  [panel orderFront:self];
 }
 
 - (void)dealloc

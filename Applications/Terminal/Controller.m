@@ -13,7 +13,7 @@
 
 #import "Defaults.h"
 
-#import "TerminalServicesPanel.h"
+#import "TerminalServices.h"
 #import "TerminalView.h"
 #import "TerminalWindow.h"
 
@@ -90,16 +90,12 @@
 
 - (void)openServicesPanel:(id)sender
 {
-  // if (servicesPanel == nil)
-  //   {
-  //     if ([NSBundle loadNibNamed:@"TerminalServices" owner:self] == NO)
-  //       {
-  //         NSLog(@"Error loading NIB TerminalServices");
-  //         return;
-  //       }
-  //   }
+  if (servicesPanel == nil)
+    {
+      servicesPanel = [[TerminalServicesPanel alloc] init];
+    }
  
-  // [servicesPanel activatePanel];
+  [servicesPanel activatePanel];
 }
 
 // Shell > New

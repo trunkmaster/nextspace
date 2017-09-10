@@ -23,6 +23,7 @@
 
   NSButton *cb_string,*cb_filenames;
 
+  id panel;
   // Table view
   id serviceTable;
   // Command and key equivalent
@@ -37,5 +38,7 @@
   // Execution
   id executeTypeBtn;
 }
+
+- (void)activatePanel;
 
 @end
