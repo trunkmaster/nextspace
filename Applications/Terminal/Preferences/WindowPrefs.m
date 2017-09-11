@@ -40,11 +40,9 @@
 
 - (void)awakeFromNib
 {
-  [shellExitMatrix setRefusesFirstResponder:YES];
-  [[shellExitMatrix cellWithTag:0] setRefusesFirstResponder:YES];
-  [[shellExitMatrix cellWithTag:1] setRefusesFirstResponder:YES];
-  [[shellExitMatrix cellWithTag:2] setRefusesFirstResponder:YES];
-  
+  for (id cell in [shellExitMatrix cells])
+    [cell setRefusesFirstResponder:YES];
+ 
   [view retain];
 }
 

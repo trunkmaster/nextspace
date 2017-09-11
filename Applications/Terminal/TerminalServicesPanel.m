@@ -60,25 +60,6 @@
   //   }
 }
 
-- (void)_save
-{
-  NSUserDefaults *ud;
-
-  if (!services) return;
-
-  [self _update];
-
-  ud = [NSUserDefaults standardUserDefaults];
-
-  if (![services isEqual:[TerminalServices terminalServicesDictionary]])
-    {
-      [ud setObject:[services copy]
-             forKey:@"TerminalServices"];
-
-      [TerminalServices updateServicesPlist];
-    }
-}
-
 - (void)_revert
 {
   NSDictionary *d;
@@ -103,6 +84,7 @@
   [serviceTable reloadData];
   current = -1;
   [self tableViewSelectionDidChange:nil];
+  [okBtn setEnabled:NO];
 }
 
 // --- Init and dealloc
@@ -131,6 +113,13 @@
   [serviceTable setHeaderView:nil];
   [serviceTable setCornerView:nil];
   [serviceTable setAutoresizesAllColumnsToFit:YES];
+
+  for (id cell in [selectionMatrix cells])
+    [cell setRefusesFirstResponder:YES];
+  for (id cell in [outputMatrix cells])
+    [cell setRefusesFirstResponder:YES];
+  for (id cell in [shellMatrix cells])
+    [cell setRefusesFirstResponder:YES];
   
   [self _revert];
   [serviceTable selectRow:0 byExtendingSelection:NO];
@@ -138,7 +127,8 @@
 
 - (void)activatePanel
 {
-  [panel orderFront:self];
+  [self _revert];
+  [panel makeKeyAndOrderFront:self];
 }
 
 - (void)dealloc
@@ -161,6 +151,23 @@
   return [serviceList objectAtIndex:row];
 }
 
+- (BOOL)    tableView:(NSTableView *)tableView
+shouldEditTableColumn:(NSTableColumn *)tableColumn
+                  row:(NSInteger)rowIndex
+{
+  NSString *oldName = [serviceList objectAtIndex:rowIndex];
+  NSCell   *cell = [tableColumn dataCellForRow:rowIndex];
+  NSRect   tFrame = [tableView frame];
+  
+  NSLog(@"Table should edit row %li location: %@",
+        rowIndex,
+        NSStringFromRect([tableView rectOfRow:rowIndex]));
+  NSLog(@"Table visible rect: %@",
+        NSStringFromRect([tableScrollView documentVisibleRect]));
+  [serviceTable scrollRowToVisible:rowIndex];
+  return NO;
+}
+
 - (void)tableViewSelectionDidChange:(NSNotification *)n
 {
   int r = [serviceTable selectedRow];
@@ -176,7 +183,6 @@
 
       name = [serviceList objectAtIndex:r];
       d = [services objectForKey:name];
-      NSLog(@"Service '%@' = %@", name, d);
 
       [commandTF setEditable:YES];
       [keyTF setEditable:YES];
@@ -188,7 +194,6 @@
 
       s = [d objectForKey:Commandline];
       [commandTF setStringValue:s?s:@""];
-      NSLog(@"Services click on '%@', CMD='%@'", name, s);
       
       s = [d objectForKey:Key];
       [keyTF setStringValue:s?s:@""];
@@ -234,6 +239,12 @@
   current = r;
 }
 
+// If any change was made
+- (void)markAsChanged:(id)sender
+{
+  [okBtn setEnabled:YES];
+}
+
 // "Remove" button
 - (void)removeService:(id)sender
 {
@@ -259,6 +270,33 @@
   [serviceTable reloadData];
   [serviceTable selectRow:[serviceList count]-1 byExtendingSelection:NO];
   [serviceTable scrollRowToVisible:[serviceList count]-1];
+}
+
+// "OK" button
+// Save services to ~/Library/Services/TerminalServices.plist
+- (void)saveServices:(id)sender
+{
+  NSUserDefaults *ud;
+
+  if (!services) return;
+
+  [self _update];
+
+  ud = [NSUserDefaults standardUserDefaults];
+
+  if (![services isEqual:[TerminalServices terminalServicesDictionary]])
+    {
+      [ud setObject:[services copy]
+             forKey:@"TerminalServices"];
+
+      [TerminalServices updateServicesPlist];
+    }
+}
+
+// "Save..." button
+- (void)saveServicesAs:(id)sender
+{
+  NSLog(@"Terminal Services: 'Save...' button was clicked.");
 }
 
 @end

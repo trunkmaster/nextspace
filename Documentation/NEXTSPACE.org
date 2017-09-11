@@ -3514,13 +3514,19 @@
 ***** DONE Linux Emulation
 **** TODO Services
 ***** TODO Панель Info->Terminal Services
+****** TODO Customized service name edit in list
+****** TODO Implement "Save..." button
+       "Save Service" panel with aux view with services selection to save to
+       alternate location (plist file).
+****** TODO Command line tooltip
+***** TODO Do we need "Idle" window type?
 ***** TODO Проверить корректность работы различных параметров
 ***** TODO Проверить типы создания окон (shell, program)
 **** TODO Keyboard + Preferences | Linux Emulation
 ***** TODO Keyboard
       Command, Alternate, Control, Shift.
       Проверить как передаются сочетания клавиш с этими модификаторами.
-      Сейчас известно что Command и Shift не передаются в любом случае.
+      Сейчас известно, что Command и Shift не передаются в любом случае.
 ***** TODO Preferences | Linux Emulation
       Проверить как работают и сохраняются настройки из раздела "Linux
       Emulation".
