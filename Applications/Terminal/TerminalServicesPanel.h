@@ -18,13 +18,10 @@
   NSMutableArray      *serviceList;
   int                 current;
 
-  // NSPopUpButton *pb_input,*pb_output,*pb_type;
-  // NSTextField *tf_name,*tf_cmdline,*tf_key;
-  // NSButton *cb_string,*cb_filenames;
-
   id panel;
   // Table view
   id serviceTable;
+  id tableScrollView;
   // Command and key equivalent
   id commandTF;
   id keyTF;
@@ -41,6 +38,8 @@
   id executeTypeBtn;
   id outputMatrix;
   id shellMatrix;
+
+  id okBtn;
 }
 
 - (void)activatePanel;
