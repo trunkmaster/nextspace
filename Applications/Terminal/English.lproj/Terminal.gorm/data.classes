@@ -10,7 +10,8 @@
 	    "orderFrontFontPanel:",
 	    "saveSessionAs:",
 	    "openSession:",
-	    "saveSession:"
+	    "saveSession:",
+	    "openServicesPanel:"
 	);
 	Outlets = (
 	);
@@ -22,14 +23,15 @@
 	    "clearBuffer:",
 	    "modifyFont:",
 	    "modifyFontViaPanel:",
-	    "saveSessionAs:",
+	    "openServicesPanel:",
 	    "openPreferences:",
 	    "openSession:",
 	    "openSetTitlePanel:",
 	    "openWindow:",
 	    "orderFrontFontPanel:",
 	    "removeFontTrait:",
-	    "saveSession:"
+	    "saveSession:",
+	    "saveSessionAs:"
 	);
 	Super = NSObject;
     };

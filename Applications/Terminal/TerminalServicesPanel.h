@@ -15,13 +15,12 @@
 @interface TerminalServicesPanel : NSObject
 {
   NSMutableDictionary *services;
-  NSMutableArray *serviceList;
-  int current;
+  NSMutableArray      *serviceList;
+  int                 current;
 
-  NSPopUpButton *pb_input,*pb_output,*pb_type;
-  NSTextField *tf_name,*tf_cmdline,*tf_key;
-
-  NSButton *cb_string,*cb_filenames;
+  // NSPopUpButton *pb_input,*pb_output,*pb_type;
+  // NSTextField *tf_name,*tf_cmdline,*tf_key;
+  // NSButton *cb_string,*cb_filenames;
 
   id panel;
   // Table view
@@ -30,6 +29,9 @@
   id commandTF;
   id keyTF;
 
+  // Selection
+  id selectionMatrix;
+
   // Accept
   id acceptFilesBtn;
   id acceptPlainTextBtn;
@@ -37,6 +39,8 @@
   
   // Execution
   id executeTypeBtn;
+  id outputMatrix;
+  id shellMatrix;
 }
 
 - (void)activatePanel;
