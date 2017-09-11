@@ -2,9 +2,11 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "markAsChanged:",
+	    "saveServicesAs:",
 	    "newService:",
 	    "removeService:",
-	    "save:"
+	    "saveServices:"
 	);
 	Super = NSObject;
     };
@@ -12,7 +14,9 @@
 	Actions = (
 	    "newService:",
 	    "removeService:",
-	    "save:"
+	    "saveServices:",
+	    "markAsChanged:",
+	    "saveServicesAs:"
 	);
 	Outlets = (
 	    acceptFilesBtn,
@@ -25,7 +29,9 @@
 	    panel,
 	    shellMatrix,
 	    outputMatrix,
-	    selectionMatrix
+	    selectionMatrix,
+	    tableScrollView,
+	    okBtn
 	);
 	Super = NSObject;
     };
