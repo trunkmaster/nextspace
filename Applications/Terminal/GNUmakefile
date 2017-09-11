@@ -40,7 +40,8 @@ Terminal_LANGUAGES = English
 Terminal_LOCALIZED_RESOURCE_FILES = \
 	Localizable.strings \
 	Terminal.gorm \
-	SetTitlePanel.gorm
+	SetTitlePanel.gorm \
+	TerminalServices.gorm
 
 Terminal_RESOURCE_FILES = \
 	Preferences/Preferences.bundle \
