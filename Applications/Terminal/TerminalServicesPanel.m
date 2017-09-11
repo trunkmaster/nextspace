@@ -13,9 +13,9 @@
 #import "TerminalServices.h"
 #import "TerminalServicesPanel.h"
 
-
 @implementation TerminalServicesPanel
 
+// --- Utility
 - (void)_update
 {
   NSString *name,*new_name;
@@ -26,38 +26,38 @@
     return;
 
   name = [serviceList objectAtIndex:current];
-  new_name = [tf_name stringValue];
-  if (![new_name length])
-    new_name = name;
+  // new_name = [tf_name stringValue];
+  // if (![new_name length])
+  //   new_name = name;
   d = [services objectForKey:name];
   if (!d)
     d = [[NSMutableDictionary alloc] init];
 
-  [d setObject:[tf_key stringValue]
-        forKey:Key];
-  [d setObject:[tf_cmdline stringValue]
+  [d setObject:[commandTF stringValue]
         forKey:Commandline];
-  [d setObject:[NSString stringWithFormat:@"%li",[pb_input indexOfSelectedItem]]
+  [d setObject:[keyTF stringValue]
+        forKey:Key];
+  [d setObject:[NSString stringWithFormat:@"%li",[[selectionMatrix selectedCell] tag]]
         forKey:Input];
-  [d setObject:[NSString stringWithFormat:@"%li",[pb_output indexOfSelectedItem]]
+  [d setObject:[NSString stringWithFormat:@"%li",[[outputMatrix selectedCell] tag]]
         forKey:ReturnData];
-  [d setObject:[NSString stringWithFormat:@"%li",[pb_type indexOfSelectedItem]]
+  [d setObject:[NSString stringWithFormat:@"%li",[executeTypeBtn indexOfSelectedItem]]
         forKey:Type];
 
   i=0;
-  if ([cb_string state]) i |= 1;
-  if ([cb_filenames state]) i |= 2;
+  if ([acceptPlainTextBtn state]) i |= 1;
+  if ([acceptFilesBtn state]) i |= 2;
   [d setObject:[NSString stringWithFormat:@"%i",i]
         forKey:AcceptTypes];
 
-  if (![name isEqual:new_name])
-    {
-      [services setObject:d forKey:new_name];
-      [services removeObjectForKey:name];
-      [serviceList replaceObjectAtIndex:current
-                              withObject:new_name];
-      [serviceTable reloadData];
-    }
+  // if (![name isEqual:new_name])
+  //   {
+  //     [services setObject:d forKey:new_name];
+  //     [services removeObjectForKey:name];
+  //     [serviceList replaceObjectAtIndex:current
+  //                            withObject:new_name];
+  //     [serviceTable reloadData];
+  //   }
 }
 
 - (void)_save
@@ -90,15 +90,11 @@
   services = [[NSMutableDictionary alloc] init];
   d = [TerminalServices terminalServicesDictionary];
 
-  {
-    NSEnumerator *e = [d keyEnumerator];
-    NSString     *key;
-    while ((key = [e nextObject]))
-      {
-        [services setObject:[[d objectForKey:key] mutableCopy]
-                     forKey:key];
-      }
-  }
+  for (NSString *key in [d allKeys])
+    {
+      [services setObject:[[d objectForKey:key] mutableCopy]
+                   forKey:key];
+    }
 
   serviceList = [[[services allKeys]
                     sortedArrayUsingSelector:@selector(compare:)]
@@ -109,6 +105,7 @@
   [self tableViewSelectionDidChange:nil];
 }
 
+// --- Init and dealloc
 - init
 {
   self = [super init];
@@ -124,9 +121,19 @@
   return self;
 }
 
-- (void)awakerFromNib
+- (void)awakeFromNib
 {
   [serviceTable setDelegate:self];
+  [serviceTable setDataSource:self];
+  [serviceTable setAllowsMultipleSelection:NO];
+  [serviceTable setAllowsColumnSelection:NO];
+  [serviceTable setAllowsEmptySelection:NO];
+  [serviceTable setHeaderView:nil];
+  [serviceTable setCornerView:nil];
+  [serviceTable setAutoresizesAllColumnsToFit:YES];
+  
+  [self _revert];
+  [serviceTable selectRow:0 byExtendingSelection:NO];
 }
 
 - (void)activatePanel
@@ -141,118 +148,117 @@
   [super dealloc];
 }
 
-
-
+// --- Controls
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
   return [serviceList count];
 }
 
-- (id)tableView:(NSTableView *)tv objectValueForTableColumn:(NSTableColumn *)tc  row:(int)row
+- (id)           tableView:(NSTableView *)tv
+ objectValueForTableColumn:(NSTableColumn *)tc
+                       row:(int)row
 {
   return [serviceList objectAtIndex:row];
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)n
 {
-  int r=[serviceTable selectedRow];
+  int r = [serviceTable selectedRow];
 
-  if (current>=0)
-    [self _update];
+  // if (current >= 0)
+  //   [self _update];
 
-  if (r>=0)
+  if (r >= 0)
     {
       int i;
       NSString *name,*s;
       NSDictionary *d;
 
-      name=[serviceList objectAtIndex: r];
-      d=[services objectForKey: name];
+      name = [serviceList objectAtIndex:r];
+      d = [services objectForKey:name];
+      NSLog(@"Service '%@' = %@", name, d);
 
-      [tf_name setEditable: YES];
-      [tf_cmdline setEditable: YES];
-      [tf_key setEditable: YES];
-      [pb_input setEnabled: YES];
-      [pb_output setEnabled: YES];
-      [pb_type setEnabled: YES];
-      [cb_string setEnabled: YES];
-      [cb_filenames setEnabled: YES];
+      [commandTF setEditable:YES];
+      [keyTF setEditable:YES];
+      [selectionMatrix setEnabled:YES];
+      [outputMatrix setEnabled:YES];
+      [executeTypeBtn setEnabled:YES];
+      [acceptPlainTextBtn setEnabled:YES];
+      [acceptFilesBtn setEnabled:YES];
 
-      [tf_name setStringValue: name];
+      s = [d objectForKey:Commandline];
+      [commandTF setStringValue:s?s:@""];
+      NSLog(@"Services click on '%@', CMD='%@'", name, s);
+      
+      s = [d objectForKey:Key];
+      [keyTF setStringValue:s?s:@""];
 
-      s=[d objectForKey: Key];
-      [tf_key setStringValue: s?s:@""];
-
-      s=[d objectForKey: Commandline];
-      [tf_cmdline setStringValue: s?s:@""];
-
-      i=[[d objectForKey: Type] intValue];
+      i = [[d objectForKey:Type] intValue];
       if (i<0 || i>2) i=0;
-      [pb_type selectItemAtIndex: i];
+      [executeTypeBtn selectItemAtIndex:i];
 
-      i=[[d objectForKey: Input] intValue];
-      if (i<0 || i>2) i=0;
-      [pb_input selectItemAtIndex: i];
+      i = [[d objectForKey:Input] intValue];
+      if (i<0 || i>2) i = 0;
+      [selectionMatrix selectCellWithTag:i];
 
-      i=[[d objectForKey: ReturnData] intValue];
-      if (i<0 || i>1) i=0;
-      [pb_output selectItemAtIndex: i];
+      i=[[d objectForKey:ReturnData] intValue];
+      if (i<0 || i>1) i = 0;
+      [outputMatrix selectCellWithTag:i];
 
-      if ([d objectForKey: AcceptTypes])
+      if ([d objectForKey:AcceptTypes])
         {
-          i=[[d objectForKey: AcceptTypes] intValue];
-          [cb_string setState: !!(i&1)];
-          [cb_filenames setState: !!(i&2)];
+          i = [[d objectForKey:AcceptTypes] intValue];
+          [acceptPlainTextBtn setState: !!(i&1)];
+          [acceptFilesBtn setState: !!(i&2)];
         }
       else
         {
-          [cb_string setState: 1];
-          [cb_filenames setState: 0];
+          [acceptPlainTextBtn setState: 1];
+          [acceptFilesBtn setState: 0];
         }
     }
   else
     {
-      [tf_name setEditable: NO];
-      [tf_cmdline setEditable: NO];
-      [tf_key setEditable: NO];
-      [pb_input setEnabled: NO];
-      [pb_output setEnabled: NO];
-      [pb_type setEnabled: NO];
-      [cb_string setEnabled: NO];
-      [cb_filenames setEnabled: NO];
+      [commandTF setEditable:NO];
+      [keyTF setEditable:NO];
+      [selectionMatrix setEnabled:NO];
+      [outputMatrix setEnabled:NO];
+      [executeTypeBtn setEnabled:NO];
+      [acceptPlainTextBtn setEnabled:NO];
+      [acceptFilesBtn setEnabled:NO];
 
-      [tf_name setStringValue: @""];
-      [tf_key setStringValue: @""];
-      [tf_cmdline setStringValue: @""];
+      [keyTF setStringValue:@""];
+      [commandTF setStringValue:@""];
     }
 
-  current=r;
+  current = r;
 }
 
 // "Remove" button
 - (void)removeService:(id)sender
 {
-	NSString *name;
-	if (current<0)
-		return;
-	[serviceTable deselectAll: self];
+  NSString *name;
+  if (current < 0)
+    return;
+  [serviceTable deselectAll:self];
 
-	name=[serviceList objectAtIndex: current];
-	[services removeObjectForKey: name];
-	[serviceList removeObjectAtIndex: current];
+  name = [serviceList objectAtIndex:current];
+  [services removeObjectForKey:name];
+  [serviceList removeObjectAtIndex:current];
 
-	[serviceTable reloadData];
-	current=-1;
-	[self tableViewSelectionDidChange: nil];
+  [serviceTable reloadData];
+  current=-1;
+  [self tableViewSelectionDidChange:nil];
 }
 
 // "New" button
-- (void)addService:(id)sender
+- (void)newService:(id)sender
 {
   NSString *n=_(@"Unnamed service");
-  [serviceList addObject: n];
+  [serviceList addObject:n];
   [serviceTable reloadData];
-  [serviceTable selectRow: [serviceList count]-1 byExtendingSelection: NO];
+  [serviceTable selectRow:[serviceList count]-1 byExtendingSelection:NO];
+  [serviceTable scrollRowToVisible:[serviceList count]-1];
 }
 
 @end

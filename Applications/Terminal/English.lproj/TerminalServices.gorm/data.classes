@@ -2,16 +2,16 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "new:",
-	    "remove:",
+	    "newService:",
+	    "removeService:",
 	    "save:"
 	);
 	Super = NSObject;
     };
     TerminalServicesPanel = {
 	Actions = (
-	    "new:",
-	    "remove:",
+	    "newService:",
+	    "removeService:",
 	    "save:"
 	);
 	Outlets = (
@@ -22,7 +22,10 @@
 	    executeTypeBtn,
 	    keyTF,
 	    serviceTable,
-	    panel
+	    panel,
+	    shellMatrix,
+	    outputMatrix,
+	    selectionMatrix
 	);
 	Super = NSObject;
     };
