@@ -1,970 +1,471 @@
-{\rtf0\ansi{\fonttbl\f2\fnil Times-Roman;\f3\ftech Symbol;\f0\fswiss Helvetica;}
-\paperw16220
-\paperh14020
-\margl120
-\margr0
-\f2\b0\i0\ulnone\ql\fs24\fi0\li0\gray0\fc0\cf0\up0\dn0 Release 4.0 Copyright 
-\f3 ã
-\f2 1996 by NeXT Software, Inc.  All Rights Reserved.\
-\
-
-\pard\tx2480\tx2860\tx3240\fs16\li2100\fc0\cf0 \
-
-\pard\tx2100\f0\b\fs84\fi-1380\li2100\fc0\cf0 	
-\f2\b0\i\fs88 The Terminal Application\
-
-\pard\fs16\fc0\cf0 \
-\
-\
-\
-\
-\
-\
-\
-
-\pard\tx2480\tx2860\tx3240\i0\fs28\li2100\fc0\cf0 Although you can run standard UNIX programs and commands on a NEXTSTEP computer, such programs aren't designed to be run directly from the workspace.  Traditional UNIX constructs such as standard input and standard output, which many UNIX-style programs depend on, aren't part of the workspace interface.\
-
-\fs16 \
-
-\fs28 To run these programs, you can use the Terminal application.  Terminal offers a number of useful features:\
-
-\fs16 \
-
-\fs28\fi-380\li2480 ·	Scrollers let you scroll backward to text that has already disappeared from the window.\
-
-\fs16 \
-
-\fs28 ·	Text can be copied and pasted within a Terminal window, between windows, or to and from other applications that support cutting and pasting, such as Mail and Edit.\
-
-\fs16 \
-
-\fs28 ·	Terminal has a Print command to let you print the contents of a window, and a Find command to let you search for text.\
-
-\fs16 \
-
-\fs28 ·	Terminal's Services menu lets you make interapplication requests, such as defining a word in Digital Webster
-\f3\fs18\up6 ä
-\f2\fs28\up0 or searching for references in the Digital Librarian
-\f3\fs18\up6 ä
-\f2\fs28\up0 .  You can also define your own Terminal services for use in other appications.\
-
-\fs16 \
-
-\fs28 ·	Terminal's Preferences command allows you to change the size, title bar text, emulation characteristics, and font properties of one or more Terminal windows.\
-
-\fs16 \
-
-\fs28 ·	Terminal provides strict VT100
-\f3\fs18\up6 ä
-\f2\fs28\up0  terminal emulation.  Every UNIX program or utility you run (such as Emacs or 
-\b vi
-\b0 ) should work as intended.\
-
-\fs16 \
-
-\fs28\fi0\li2100 The rest of this chapter describes Terminal in more detail.  \
-
-\fs16 \
-
-\pard\f0\b\li100\fc0\cf0 \
-\
-\
-\
-\
-
-\fs52 Introduction to Terminal\
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 A UNIX shell is a program that functions as an intermediary between you and the UNIX operating system.  As the shell runs, it prompts you for commands, interprets what you type, and passes the commands to the operating system for execution.  For more information about the two most common UNIX shells, the Bourne Shell and the C Shell, see their UNIX manual pages (
-\b sh
-\b0 (1) and 
-\b csh
-\b0 (1)).\
-
-\fs16 \
-
-\fs28 You start Terminal (located in 
-\b /NextApps
-\b0 ) from the workspace as you would any other application, by double-clicking its icon in the workspace or by using the Workspace Manager's Preferences command to make Terminal start up when you log in.  When Terminal starts up, it will (if configured to do so) create a new Terminal window using the default Preferences settings.  You can create additional Terminal windows as you need them using the New Shell command.  To change a window's characteristics, select the appropriate settings in the Preferences panel as described in the following section.\
-
-\fs16 \
-
-\pard\f0\b\li100\fc0\cf0 \
-\
-\
-\
-\
-
-\fs52 Setting Preferences\
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The Preferences command in the Info menu displays the Preferences panel, shown below.  The Preferences panel lets you change values and set new default values for various Terminal options.  For example, you can set the font properties of a particular window, or specify different default font properties to be used for new windows.  This section describes the various preferences.  The illustrations show the settings you start out with the first time you use the Terminal application.  As you click in shell windows, the Preferences panel shows the settings for the main window.\
-
-\fs16 \
-
-\fs28 Enter values and click buttons to specify new preferences, as described below.  You may need to click Set Window to set the new preferences (or, click Set Default to make the new settings be the default settings or Show Default to show the currently defined default settings).  New settings remain in effect until you change them.  However, some Preferences settings affect only new windows but others affect existing Terminal windows as well.  (Specifically, when no buttons appear at the bottom of the panel, settings are global and apply to all shell windows.)\
-
-\fs16 \
-
-\pard\fs28\fc0\cf0 \
-
-{\li2120{\NeXTGraphic3699 F7.tiff \width8040 \height5700
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\fs28\li2100\fc0\cf0 Preferences options are divided into the following seven groups:\
-
-\fs16 \
-
-\fs28\fi-380\li2480 ·	Window preferences\
-·	Title Bar preferences\
-·	VT100 Emulation preferences\
-·	Display preferences\
-·	Activity Monitor preferences\
-·	Shell preferences\
-·	Startup preferences\
-
-\fs16\fi0\li2100 \
-
-\fs28 Each group of options is displayed in its own view in the Preferences panel.  Select the view you want by clicking the button labeled Window at the top of the panel and dragging.\
-
-\fs16 \
-
-\pard\f0\b\li2100\fc0\cf0 \
-\
-\
-\
-
-\fs48 Window Preferences\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 You can use the Window Preferences panel to set the size and font of one or more Terminal windows.  If you click Set Window, the settings are applied to the Terminal window that's currently the main window.  If you want the settings to apply to new windows, click Set Default.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic4424 F16.tiff \width2640 \height1800
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 The Columns and Rows fields specify values for the number of columns and rows.  Even after setting the number of columns and rows, you can still resize the window, thereby changing the number of columns and rows for that window.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic4658 F19.tiff \width5280 \height1800
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 This field lets you specify what you want to have happen to a window when the shell running in it exits.  In some special situations, a window might not obey the default setting.  For example, double-clicking a command in the workspace results in a window that stays open even after the command finishes executing.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic4978 F20.tiff \width7860 \height1480
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Use the Font field to specify a font for one or more Terminal windows as follows:  \
-
-\fs16 \
-
-\fs28\fi-380\li2480 ·	Click the Set button to open the Font panel.\
-
-\fs16 \
-
-\fs28 ·	In the Font panel, select a font (note that only fixed-width fonts are listed) and font size.  Click the Set button in the Font panel to enter the settings in the Font field of the Preferences panel.\
-
-\fs16 \
-
-\fs28 ·	Click Set Window in the Preferences panel to set the font for just the main window, or click Set Default to make this font the default for new windows.\
-
-\fs16 \
-
-\pard\f0\b\li2100\fc0\cf0 \
-\
-\
-\
-
-\fs48 Title Bar Preferences\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 You can use the Title Bar view of the Preferences panel to configure the title bar of one or more Terminal windows.   If you click Set Window, the new settings you specify are applied to the Terminal window that's currently  the main window.  If you want the settings to apply to new windows you create, click Set Default.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic5824 F0.tiff \width7900 \height1420
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 This field provides a number of elements that you can include in the title bar of Terminal windows, including a ªcustom titleº element that you define yourself.  Any combination of elements can be used.  If no elements are selected, the title that's used is simply 
-\b Terminal
-\b0 .\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic6104 F10.tiff \width7780 \height660
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 To specify a custom title, enter it in the Custom Title field.  The custom title is used in the title bar, however, only if you click the Custom Title box in the Elements field above.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic6293 F11.tiff \width7860 \height1380
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 As you experiment with various combinations of elements, the sample title bar displayed in the Preferences panel is updated to show the effect of the current settings.\
-
-\fs16 \
-
-\pard\f0\b\li2100\fc0\cf0 \
-\
-\
-\
-
-\fs48 VT100 Emulation Preferences\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The VT100 Emulation view is used to set the VT100 characteristics of Terminal windows.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic6587 F4.tiff \width7840 \height2060
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 ªTranslate newlines to carriage returns when pastingº should normally be checked.  It's required by some other operating systems, and it works correctly for most UNIX programs.\
-
-\fs16 \
-
-\fs28 If ªGenerate VT100 codes from the keypadº is checked, the keys on the numeric keypad generate VT100 keypad sequences.  Otherwise, the keys on the numeric keypad generate the characters shown on the keys.  Holding down the Alternate key while pressing a key on the numeric keypad toggles the interpretation temporarily.\
-
-\fs16 \
-
-\fs28 If ªPerform strict VT100 emulationº is checked, some additional (and normally undesirable) aspects of VT100 emulation are strictly enforced:\
-
-\fs16 \
-
-\fs28\fi-380\li2480 ·	If you type a Delete character at the left edge of a Terminal window, the command-line cursor won't wrap around to the end of the previous line.  This may make it difficult to edit long command lines that wrap.\
-
-\fs16 \
-
-\fs28 ·	Strict DECCOLM handling is enforced.  Otherwise, the DECCOLM escape code to change the window's size is obeyed only if the new size is larger than the old size.\
-
-\fs16 \
-
-\fs28 ·	The + key on the numeric keypad generates a comma (,) character.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic7677 F9.tiff \width7840 \height1660
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 When ªAlternate key generates Escape sequencesº is selected, typing a character while you hold down the Alternate key causes a two-character sequence to be generatedÐan Escape character followed by the character you typed.  (This is useful when running Emacs, so you can use the Alternate key as a Meta key).  Click ªAlternate key generates special charactersº if you want Alternate key combinations to generate a single character with the high bit set.  Some programs interpret special characters in their own way, so this doesn't always work as expected; Emacs, for example, simply strips out the high bit from special characters.\
-
-\fs16 \
-
-\pard\f0\b\fs28\li2100\fc0\cf0 Note:  
-\f2\b0 If necessary, you can specify a character other than Escape as the first character in a two-character sequence.  To do so, use the 
-\b dwrite
-\b0  shell command to set the value of the Terminal 
-\b Meta
-\b0  variable to the decimal value of the desired character.\
-
-\fs16 \
-
-\f0\b \
-\
-\
-\
-
-\fs48 Display Preferences\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The Display view of the Preferences panel is used to set various display characteristics of  one or more Terminal windows.   If you click Set Window, the new settings you specify are applied to the Terminal window that's currently  the main window.  If you want the settings to apply to new windows you create, click Set Default.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic8925 F5.tiff \width7820 \height1200
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 If the Enabled box is checked, windows retain text that scrolls off the top of the window in a scrollback buffer, allowing text that's scrolled off the window to be scrolled back into view, copied, or printed.  Otherwise, text that scrolls off the top of the window can't be retrieved.  \
-
-\fs16 \
-
-\fs28 If you enable the scrollback buffer, you can choose to let it grow without limit or you can specify the maximum number of lines that you want saved.  Whichever you choose, you can use the Edit menu's Clear Buffer command at any time to clear the buffer.\
-
-\fs16 \
-
-\fs28 Although it's often useful, the scrollback buffer adds to the amount of memory that's used by the Terminal program, and is unnecessary in some Terminal windows (for example, one that's running a text editor such as Emacs rather than a UNIX shell).\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic9722 F6.tiff \width7840 \height1700
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 If the ªWrap lines that are too longº box is checked, characters that would extend beyond the right edge of the window wrap around to the beginning of the following line.  Otherwise, each line of text occupies only one line in the windowÐthe last character that fits on a line gets overwritten by subsequent characters that appear on that line.\
-
-\fs16 \
-
-\fs28 If the ªScroll to the bottom of the window when input is receivedº box is checked, typing in the Terminal window causes the window to scroll to the end of the buffer and display the insertion point (of course, if the insertion point happens to be already visible and positioned at the end of the buffer, no scrolling occurs).  Otherwise, typing never causes the window to scroll automatically.\
-
-\fs16 \
-
-\pard\f0\b\li2100\fc0\cf0 \
-\
-\
-\
-
-\fs48 Activity Monitor Preferences\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 Normally, Terminal tries to determine whether your Terminal windows are in active use (busy) by keeping tabs on the processes inside them.  If Terminal thinks something interesting is going on inside a window, it marks the window with a broken X.  As with unsaved document windows in other applications, you'll be prompted for confirmation before closing a busy window or quitting Terminal when there are busy windows.) \
-
-\fs16 \
-
-\fs28 To determine whether a window is clean (not busy), Terminal looks at information about processes it considers relevant.  For example, Terminal considers shells and a few other processes such as 
-\b su
-\b0  to be innocuous and in general will not mark windows busy on account of them.  Occasionally Terminal may be wrong about whether a window is clean or not.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic11275 F8.tiff \width3260 \height3680
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 You can designate additional clean command names in the Clean Commands list  (likely candidates are 
-\b rlogin
-\b0  and 
-\b telnet
-\b0 , shown here).  Commands you specify in this list aren't used in determining whether a window is busy or clean.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic11509 F17.tiff \width3280 \height560
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Click this button if you want to enable or disable activity monitoring.  When activity monitoring is off, Terminal always asks for confirmation before letting you quit.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic11683 F18.tiff \width4460 \height560
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Click this button if you want to specify whether or not background processes are considered relevant in determing whether a window is clean.  For example, a window running a background process could be considered clean, as long as the process is running happily in the background.  (The current process or one that you've explicitly suspended with Control-z will always cause the window to be classified as busy.)\
-
-\fs16 \
-
-\pard\f0\b\fs28\li2100\fc0\cf0 Note:  
-\f2\b0 Terminal can't respond to processes running on other machines, so you shouldn't rely on Terminal's process monitor when logged into a remote system.\
-
-\fs16 \
-
-\f0\b \
-\
-\
-\
-
-\fs48 Shell Preferences\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The Shell view of the Preferences panel is used to specify a shell or other program to be run in Terminal windows.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic12398 F12.tiff \width6360 \height660
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Use the Shell field to specify the absolute pathname of a shell or program to run on startup.  Possible values include 
-\b /bin/csh
-\b0 , 
-\b /bin/sh
-\b0 , 
-\b /bin/gdb
-\b0 , 
-\b /usr/bin/emacs
-\b0 , and 
-\b /usr/ucb/vi
-\b0 .\
-
-\fs16 \
-
-\pard\f0\b\fs28\li2100\fc0\cf0 Note:  
-\f2\b0 You must press the Return key after entering the pathname in order for the new value to be set.\
-
-\fs16 \
-
-\li0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic12688 F13.tiff \width2500 \height540
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 If the ªRead login scriptº box is checked (and you're using 
-\b csh
-\b0 ), Terminal runs your 
-\b .login
-\b0  file for each new Terminal window you open.  Otherwise, the 
-\b .login
-\b0  file is ignored.\
-
-\fs16 \
-
-\pard\f0\b\li2100\fc0\cf0 \
-\
-\
-\
-
-\fs48 Startup Preferences\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The Startup view of the Preferences panel lets you specify what happens when Terminal starts up.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic12992 F14.tiff \width4300 \height1980
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 When Terminal starts up you can have it do nothing (that is, create no windows), create one new shell window, or open a startup file (that is, a configuration file that specifies a collection of windows to open).  If you select ªOpen the startup file,º you need to make sure a startup file is specified in the Startup File portion of the panel, described below.\
-
-\fs16 \
-
-\fs28 For information about how to create a startup file, see ªSaving a Terminal Configuration for Later Use.º\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic13465 F1.tiff \width3620 \height1960
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Click here if you auto-launch the Terminal application and want it to be hidden initially.  This button has no effect if you don't auto-launch Terminal.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic13623 F15.tiff \width7860 \height1220
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Although you can have any number of Terminal configuration files in your 
-\b ~/Library/Terminal
-\b0  directory, you can specify only one as the startup file.  To specify a particular Terminal configuration file as the startup file, type its pathname in the Path field or click Set to open an Open panel in which to select the pathname.\
-
-\fs16 \
-
-\pard\f0\b\fs28\li2100\fc0\cf0 Note:  
-\f2\b0 The pathname you enter  must be an absolute pathname beginning with a slash (
-\b /
-\b0 ); characters such as 
-\b ~
-\b0  won't work.\
-
-\fs16 \
-
-\f0\b\li100 \
-\
-\
-\
-\
-
-\fs52 Saving a Terminal Configuration for Later Use\
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 Information about a window or set of windows can be saved to a file, allowing you to save your preferred configurations for later use.  Everything about each window is saved except the contents of the scrollback bufferÐthis includes the shell, the size and location of the window on the screen, the title bar and font characteristics, and whether or not the window is miniaturized.  To save a configuration, choose Save (or Save As) in the Shell menu.  Terminal appends a 
-\b .term
-\b0  file extension to the file name you specify.  Since Terminal looks for configuration files in your 
-\b ~/Library/Terminal
-\b0  directory, this is where you should save them.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-\
-
-\fs28 \
-
-{\li2120{\NeXTGraphic14775 F23.tiff \width7220 \height8060
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\fs28\li2100\fc0\cf0 When you first save the configuration (or whenever you choose Save As), you can choose whether you want just the main window or all windows saved to the file.  \
-
-\fs16 \
-
-\fs28 Once a window is associated with a file, you can use the Save command to  flush the settings out again without seeing a Save Panel, just as with other documents.   However, if more than one window belongs with that file, all the relevant windows will be resaved (the menu item indicates this by changing to Save Set).  This allows you to open your favorite set of files, rearrange the windows, then just choose Save to save them all back into the file.  There is no way to select a subset of the currently open windows to go into a new file. \
-
-\fs16 \
-
-\fs28 To open a configuration file, choose Open in the Shell menu.  To have a configuration file open automatically each time you start up Terminal, either check the box in the Save or Save As panel, or specify the filename in the Startup view of the Preferences panel.  \
-
-\fs16 \
-
-\pard\f0\b\li100\fc0\cf0 \
-\
-\
-\
-\
-
-\fs52 Printing the Contents of a Terminal Window\
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 To print all or part of the text in a Terminal window, open the Print panel by choosing Print in the main menu.  Terminal's Print panel is similar to the standard NEXTSTEP Print panel, but there are two options not contained on the standard panel.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic16052 F21.tiff \width3280 \height1660
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Click the Print button or the Don't Print button to specify whether or not text attributes (underlining and highlighting) are included in the printed output.  Print indicates that text attributes appear in the output; Don't Print indicates that the text attributes won't appear.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic16336 F22.tiff \width3300 \height1660
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 Click one of the three Range buttons to specify the range of text to be printed.  All indicates that the entire contents of the scrollback buffer should be printed.  Selection indicates that the selected text, whether visible or not, should be printed.  Visible indicates that the text that's visible in the window should be printed.\
-
-\fs16 \
-
-\pard\f0\b\li100\fc0\cf0 \
-\
-\
-\
-\
-
-\fs52 Finding Text in a Terminal Window \
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The Find panel lets you search for text in the main Terminal window.  To open the Find panel, choose Find Panel in the Find menu.\
-
-\fs16 \
-
-\pard\fc0\cf0 \
-
-\fs28 \
-
-{\li2120{\NeXTGraphic16848 F24.tiff \width6240 \height1740
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\pard\tx2480\tx2860\tx3240\li2100\fc0\cf0 The Find panel locates the next occurrence of a specified string, and can search either forwards or backwards.  In the Find field, enter the string to search for.  The controls in the Find panel have these effects:\
-
-\fs16 \
-
-\pard\tx6140\tx10180\f0\b\li2480\fc0\cf0 \
-
-\fs28 Control	Effect\
-
-\pard\tx6140\tx10420\f2\b0\fi-3660\li6140\fc0\cf0 Next	Selects the first occurrence of the Find string following the current selection or insertion point.  (Pressing the Return key has the same effect, but with one difference:  If you've used the keyboard alternative to display the panel, pressing Return causes the panel to disappear instead of remaining on the screen.)\
-
-\fs16 \
-
-\fs28 Previous	Selects the first occurrence of the Find string, searching backward from the current selection or insertion point.\
-
-\fs16 \
-
-\fs28 Ignore Case	Makes the find operation case-insensitive (that is, capitalization is ignored when determining a match).  If this box is unchecked, the search is case-sensitive.\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\fs28\li2100\fc0\cf0 If the end of the text is reached, Find continues searching from the beginning (conversely, when searching backward, if the beginning of the text is reached, Find continues searching from the end).\
-
-\fs16 \
-
-\fs28 If no instance of the Find string is located, Terminal beeps and the message ªNot Foundº appears in the Find panel.\
-
-\fs16 \
-
-\fs28 Commands in the Find menu (which is in the Edit menu) provide alternatives and shortcuts to using the Find panel.  There's also a Jump to Selection command for scrolling the insertion point into view.  For more information, see ªTerminal Command Referenceº at the end of this chapter.\
-
-\fs16 \
-
-\pard\f0\b\li100\fc0\cf0 \
-\
-\
-\
-\
-
-\fs52 Defining Services for Use in Other Applications\
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 Although by default Terminal doesn't make services available to other applications via the Services menu, Terminal does contain a Terminal Services panel that you can use to define any services you want Terminal to provide.\
-
-\fs16 \
-
-\fs28 To open the Terminal Services panel, choose Terminal Services in the Info menu.  If no Terminal services are defined, you'll see a panel asking if you want to load a set of example services.  You may find it useful to load and examine this set of examples, and then remove any you don't want to keep.\
-
-\fs16 \
-
-\pard\fs28\fc0\cf0 \
-
-{\li2120{\NeXTGraphic18891 F3.tiff \width5320 \height8000
-}
-,}\f2\b0\i0\ulnone\ql\fs28\fi0\li0\gray0\fc0\cf0\up0\dn0 \
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\fs28\li2100\fc0\cf0 Currently defined services are listed in the list at the top of the panel.  You can add new services, as well as redefine or delete existing commands.  \
-
-\fs16 \
-
-\fs28\fi-380\li2480 ·	To add a service, click the New button.  A new entry named New Service #1 is added to the service list.  Type the name that you'd like to appear in the Services menu, and then configure the service using the controls in the Terminal Services panel.  When you're done, click OK.\
-
-\fs16 \
-
-\fs28 ·	To delete a service, select it and click the Remove button.  \
-
-\fs16 \
-
-\fs28 ·	To modify a service definition, select its name and then redefine the service using the controls on the Terminal Services panel.  When you're done, click OK.\
-
-\fs16 \
-
-\fs28\fi0\li2100 The Accept field lets you specify what type of data the service accepts.  Click one or more of these buttons as appropriate.\
-
-\fs16 \
-
-\fs28 The Use Selection field lets you specify whether the selected text should be used as a command-line argument, or as input to the service.  Click one or the other as appropriate.\
-
-\fs16 \
-
-\fs28 The Execution field lets you specify various options that affect the execution of the service, such as whether the output is returned or discarded.\
-
-\fs16 \
-
-\fs28 When defining the service, you can use the tokens 
-\b %s
-\b0  and 
-\b %p
-\b0  to refer to the locations where the selection and prompted input are inserted, respectively.  Prompted input isn't requested unless 
-\b %p
-\b0  appears in the definition.  \
-
-\fs16 \
-
-\pard\f0\b\li100\fc0\cf0 \
-\
-\
-\
-\
-
-\fs52 Terminal Command Reference\
-
-\fs16 \
-\
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The following sections summarize the menus and commands available in Terminal.\
-
-\fs16 \
-
-\pard\f0\b\li2100\fc0\cf0 \
-\
-\
-\
-
-\fs48 Commands in the Main Menu\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 Terminal's main menu contains the standard Print, Windows, Services, Hide, and Quit commands.  The other commands and the submenus they open are described in the sections that follow.  Several standard commands are discussed here only in terms of their particular use in Terminal.\
-
-\fs16 \
-
-\pard\f0\b\li2100\fc0\cf0 \
-\
-\
-\
-
-\fs48 Commands in the Info Menu\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 Terminal's Info menu provides the standard Info Panel command, plus the following commands.\
-
-\fs16 \
-
-\pard\tx6140\tx10180\f0\b\fs28\li2480\fc0\cf0 Command	Description\
-
-\pard\tx6140\tx10420\f2\b0\fi-3660\li6140\fc0\cf0 Preferences	Opens the Preferences panel.  See ªSetting Preferences.º\
-
-\fs16 \
-
-\fs28 Terminal Services	Opens  the Terminal Services panel.  See ªDefining Services for Use in Other Applications.º\
-
-\fs16 \
-
-\f0\b\fi0\li2100 \
-\
-\
-\
-
-\fs48 Commands in the Shell Menu\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 Terminal's Shell menu provides the following commands.\
-
-\fs16 \
-
-\pard\tx6140\tx10180\f0\b\li2480\fc0\cf0 \
-
-\fs28 Command	Description\
-
-\pard\tx6140\tx10420\f2\b0\fi-3660\li6140\fc0\cf0 Open	Opens an existing shell window or set of shell windows that have previously been saved in a file using the Save (or Save As) command.\
-
-\fs16 \
-
-\fs28 New	Opens a new shell window, using the default settings.\
-
-\fs16 \
-
-\fs28 Run Command	Displays a panel in which you enter a UNIX command to be run.  The command is run in a new Terminal window.   (The command is displayed as the title of the window; when the process running in the window has completed, the title changes to ªDead Terminal.º)\
-
-\fs16 \
-
-\fs28 Save, Save As	Saves a window or set of windows to a file, allowing you to save and reuse your preferred configurations.  See ªSaving a Terminal Configuration for Later Use.º\
-
-\fs16 \
-
-\fs28 Set Title	Displays a panel for you to edit and set the current title of the window.  The Preferences panel allows greater control over thisÐyou can combine your own text with Terminal's automatically updated information.  See ªTitle Bar Preferencesª for more information.\
-
-\fs16 \
-
-\fs28 Steal Keys	Allows you to effectively debug an application from a shell window in which the GNU debugger is running.  The debugging process frequently involves alternately activating Terminal (to type debugger commands) and the other application (to test the application being debugged).  However, clicking to alternatively activate and deactivate the application being debugged causes the application to change its state in unpredictable ways.\
-
-\fs16 \
-
-\fs28 	To let you get around this problem, the Steal Keys command puts Terminal in a special debugging mode.  In this mode, Terminal can be activated or deactivated simply by moving the cursor into or out of the Terminal shell window.  Therefore, you can easily activate Terminal whenever you want to type a debugger command, without clicking and thus affecting the state of the application you're debugging.  \
-
-\fs16 \
-
-\fs28 	When you're ready to exit debugging mode, click in the Terminal window to make the Terminal main menu reappear, and then choose this command again (its name will have changed to Yield Keys).\
-
-\fs16 \
-
-\fs28 Page Layout	Displays the standard Page Layout panel, which lets you choose among various paper sizes, scaling factors, and orientations for text printed from the main window.\
-
-\fs16 \
-
-\f0\b\fi0\li2100 \
-\
-\
-\
-
-\fs48 Commands in the Edit Menu\
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 Terminal's Edit menu provides the standard editing and text-searching commands, which can be used for finding and editing text in a Terminal window.\
-
-\fs16 \
-
-\pard\tx6140\tx10180\f0\b\fs28\li2480\fc0\cf0 Command	Description\
-
-\pard\tx6140\tx10420\f2\b0\fi-3660\li6140\fc0\cf0 Cut, Copy,  Paste	These commands let you copy or move text, either between Terminal windows or between a Terminal window and another window that supports copying and pasting.  To duplicate text, select the text and choose Copy.  To insert the most recently cut or copied text at the Terminal window's command-line cursor location, choose Paste.\
-
-\fs16 \
-
-\fs28 	Copy puts a copy of the selected text onto the pasteboard, from where it can be pasted with the Paste command.  The pasteboard holds just one selection; each Copy operation overwrites the previous contents of the pasteboard.\
-
-\fs16 \
-
-\fs28 	
-\b Note:
-\b0   Cut is always disabled.  The only way to remove text from a Terminal window is to use the Clear Buffer command.\
-
-\fs16 \
-
-\fs28 Find	Displays a menu that contains commands for finding text, as described below in ªCommands in the Find Menu.º\
-
-\fs16 \
-
-\fs28 Clear Buffer	Removes text from the scrollback buffer, leaving just the current command line.\
-
-\fs16 \
-
-\fs28 Select All	Selects all the text in the main window.  This is useful, for example, when you want to copy the entire range of text to another application, such as Edit.\
-
-\fs16 \
-
-\f0\b\fi0\li2100 \
-\
-\
-\
-
-\fs48 Commands in the Find Menu \
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The Find menu contains commands that let you search for text in the main Terminal window.\
-
-\fs16 \
-
-\pard\tx6140\tx10180\f0\b\fs28\li2480\fc0\cf0 Command	Description\
-
-\pard\tx6140\tx10420\f2\b0\fi-3660\li6140\fc0\cf0 Find Panel	Opens the Find panel, which allows you to locate the next occurrence of a specified string.  For more information, see ªFinding Text in a Terminal Window.º\
-
-\fs16 \
-
-\fs28 Find Next, Find Previous	These are the standard Find menu commands.  The Find Next command performs the same function as the Next button in the Find panel, and Find Previous is the same as the Find panel's Previous button.\
-
-\fs16 \
-
-\fs28 Enter Selection	Copies the selected text in the main window into the Find panel's Find field, even if the Find panel isn't open or the key window.\
-
-\fs16 \
-
-\fs28 Jump to Selection	When the insertion point or current text selection isn't showing in the main window, the Jump to Selection command scrolls it into view.  If there's no insertion point or current text selection, this command scrolls to the end of the buffer.  \
-
-\fs16 \
-
-\fs28 	
-\b Note:
-\b0   Clicking in a Terminal window positions the insertion point where you clicked.  However, the insertion point isn't visible since it's not possible to perform any copy or paste operation on it.  This may cause some confusion, since the Jump to Selection command may sometimes jump to a location that doesn't appear to have any selected text associated with it.\
-
-\fs16 \
-
-\f0\b\fi0\li2100 \
-\
-\
-\
-
-\fs48 Commands in the Font Menu \
-
-\fs16 \
-
-\pard\tx2480\tx2860\tx3240\f2\b0\fs28\li2100\fc0\cf0 The Font menu contains the standard Font menu commands described in the 
-\i User's Reference Manual
-\i0 .  However, these commands apply to the entire contents of the Terminal window, not just to selected text.\
-
-\fs16 \
-
-\pard\tx6140\tx10180\f0\b\fs28\li2480\fc0\cf0 Command	Description\
-
-\pard\tx6140\tx10420\f2\b0\fi-3660\li6140\fc0\cf0 Font Panel	Displays the standard Font panel, which lets you choose among various fonts, typefaces, and font sizes.  However, only fixed-width fonts, such as Courier and Ohlfs, can be used in Terminal.  Also note that Ohlfs is strictly a screen fontÐtext displayed in Ohlfs prints as Courier instead.\
-
-\fs16 \
-
-\fs28 Bold, Italic	Makes the text in the main Terminal window become bold or italic.\
-
-\fs16 \
-
-\fs28 Larger, Smaller	Makes the text in the main Terminal window become larger or smaller.\
-
-\fs16 \
-
-\fs28 Copy Font, Paste Font	Copy Font copies the font settings of the main window, so that you can paste them into another window with the Paste Font command.\
-
-\fs16 \
-
+{\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f1\fswiss Helvetica;\f0\froman Times;}
+{\colortbl;\red0\green0\blue0;}
+\paperw16220\paperh13400\hyphauto1\hyphfactor0\pard\ql\f0\fs24\cf1 Release 4.0 Copyright \f1 \'A9\f0 1996 by NeXT Software, Inc.  All Rights Reserved.\par
+\par
+\pard\ql\fs16\pard\tx2480\tx2860\tx3240\li2100\ql \par
+\pard\ql\f1\fs84\b\pard\tx2100\li2100\fi-1380\ql \tab \f0\fs88\i\b0 The Terminal Application\par
+\pard\ql\fs16\pard\ql \par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\pard\ql\fs28\i0\pard\tx2480\tx2860\tx3240\li2100\ql Although you can run standard UNIX programs and commands on a NEXTSTEP computer, such programs aren\rquote t designed to be run directly from the workspace.  Traditional UNIX constructs such as standard input and standard output, which many UNIX-style programs depend on, aren\rquote t part of the workspace interface.\par
+\fs16 \par
+\fs28 To run these programs, you can use the Terminal application.  Terminal offers a number of useful features:\par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2480\fi-380\ql \'B7\tab Scrollers let you scroll backward to text that has already disappeared from the window.\par
+\fs16 \par
+\fs28 \'B7\tab Text can be copied and pasted within a Terminal window, between windows, or to and from other applications that support cutting and pasting, such as Mail and Edit.\par
+\fs16 \par
+\fs28 \'B7\tab Terminal has a Print command to let you print the contents of a window, and a Find command to let you search for text.\par
+\fs16 \par
+\fs28 \'B7\tab Terminal\rquote s Services menu lets you make interapplication requests, such as defining a word in Digital Webster\f1\fs18 \uc0 \u8482 \f0\fs28 or searching for references in the Digital Librarian\f1\fs18 \uc0 \u8482 \f0\fs28 .  You can also define your own Terminal services for use in other appications.\par
+\fs16 \par
+\fs28 \'B7\tab Terminal\rquote s Preferences command allows you to change the size, title bar text, emulation characteristics, and font properties of one or more Terminal windows.\par
+\fs16 \par
+\fs28 \'B7\tab Terminal provides strict VT100\f1\fs18 \uc0 \u8482 \f0\fs28  terminal emulation.  Every UNIX program or utility you run (such as Emacs or \b vi\b0 ) should work as intended.\par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2100\ql The rest of this chapter describes Terminal in more detail.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li100\ql \par
+\par
+\par
+\par
+\par
+\fs52 Introduction to Terminal\par
+\fs16 \par
+\par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql A UNIX shell is a program that functions as an intermediary between you and the UNIX operating system.  As the shell runs, it prompts you for commands, interprets what you type, and passes the commands to the operating system for execution.  For more information about the two most common UNIX shells, the Bourne Shell and the C Shell, see their UNIX manual pages (\b sh\b0 (1) and \b csh\b0 (1)).\par
+\fs16 \par
+\fs28 You start Terminal (located in \b /NextApps\b0 ) from the workspace as you would any other application, by double-clicking its icon in the workspace or by using the Workspace Manager\rquote s Preferences command to make Terminal start up when you log in.  When Terminal starts up, it will (if configured to do so) create a new Terminal window using the default Preferences settings.  You can create additional Terminal windows as you need them using the New Shell command.  To change a window\rquote s characteristics, select the appropriate settings in the Preferences panel as described in the following section.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li100\ql \par
+\par
+\par
+\par
+\par
+\fs52 Setting Preferences\par
+\fs16 \par
+\par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The Preferences command in the Info menu displays the Preferences panel, shown below.  The Preferences panel lets you change values and set new default values for various Terminal options.  For example, you can set the font properties of a particular window, or specify different default font properties to be used for new windows.  This section describes the various preferences.  The illustrations show the settings you start out with the first time you use the Terminal application.  As you click in shell windows, the Preferences panel shows the settings for the main window.\par
+\fs16 \par
+\fs28 Enter values and click buttons to specify new preferences, as described below.  You may need to click Set Window to set the new preferences (or, click Set Default to make the new settings be the default settings or Show Default to show the currently defined default settings).  New settings remain in effect until you change them.  However, some Preferences settings affect only new windows but others affect existing Terminal windows as well.  (Specifically, when no buttons appear at the bottom of the panel, settings are global and apply to all shell windows.)\par
+\fs16 \par
+\pard\ql\fs28\pard\ql \par
+\tab \cf0{{\NeXTGraphic F7.tiff \width8040 \height5700}\'AC}\cf1 \par
+\fs16 \par
+\par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2100\ql Preferences options are divided into the following seven groups:\par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2480\fi-380\ql \'B7\tab Window preferences\par
+\'B7\tab Title Bar preferences\par
+\'B7\tab VT100 Emulation preferences\par
+\'B7\tab Display preferences\par
+\'B7\tab Activity Monitor preferences\par
+\'B7\tab Shell preferences\par
+\'B7\tab Startup preferences\par
+\pard\ql\fs16\pard\tx2480\tx2860\tx3240\li2100\ql \par
+\fs28 Each group of options is displayed in its own view in the Preferences panel.  Select the view you want by clicking the button labeled Window at the top of the panel and dragging.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li2100\ql \par
+\par
+\par
+\par
+\fs48 Window Preferences\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql You can use the Window Preferences panel to set the size and font of one or more Terminal windows.  If you click Set Window, the settings are applied to the Terminal window that\rquote s currently the main window.  If you want the settings to apply to new windows, click Set Default.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F16.tiff \width2640 \height1800}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql The Columns and Rows fields specify values for the number of columns and rows.  Even after setting the number of columns and rows, you can still resize the window, thereby changing the number of columns and rows for that window.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F19.tiff \width5280 \height1800}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql This field lets you specify what you want to have happen to a window when the shell running in it exits.  In some special situations, a window might not obey the default setting.  For example, double-clicking a command in the workspace results in a window that stays open even after the command finishes executing.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F20.tiff \width7860 \height1480}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Use the Font field to specify a font for one or more Terminal windows as follows:  \par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2480\fi-380\ql \'B7\tab Click the Set button to open the Font panel.\par
+\fs16 \par
+\fs28 \'B7\tab In the Font panel, select a font (note that only fixed-width fonts are listed) and font size.  Click the Set button in the Font panel to enter the settings in the Font field of the Preferences panel.\par
+\fs16 \par
+\fs28 \'B7\tab Click Set Window in the Preferences panel to set the font for just the main window, or click Set Default to make this font the default for new windows.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li2100\ql \par
+\par
+\par
+\par
+\fs48 Title Bar Preferences\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql You can use the Title Bar view of the Preferences panel to configure the title bar of one or more Terminal windows.   If you click Set Window, the new settings you specify are applied to the Terminal window that\rquote s currently  the main window.  If you want the settings to apply to new windows you create, click Set Default.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F0.tiff \width7900 \height1420}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql This field provides a number of elements that you can include in the title bar of Terminal windows, including a \uc0 \u8220 custom title\u8221  element that you define yourself.  Any combination of elements can be used.  If no elements are selected, the title that\rquote s used is simply \b Terminal\b0 .\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F10.tiff \width7780 \height660}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql To specify a custom title, enter it in the Custom Title field.  The custom title is used in the title bar, however, only if you click the Custom Title box in the Elements field above.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F11.tiff \width7860 \height1380}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql As you experiment with various combinations of elements, the sample title bar displayed in the Preferences panel is updated to show the effect of the current settings.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li2100\ql \par
+\par
+\par
+\par
+\fs48 VT100 Emulation Preferences\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The VT100 Emulation view is used to set the VT100 characteristics of Terminal windows.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F4.tiff \width7840 \height2060}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql \uc0 \u8220 Translate newlines to carriage returns when pasting\u8221  should normally be checked.  It\rquote s required by some other operating systems, and it works correctly for most UNIX programs.\par
+\fs16 \par
+\fs28 If \uc0 \u8220 Generate VT100 codes from the keypad\u8221  is checked, the keys on the numeric keypad generate VT100 keypad sequences.  Otherwise, the keys on the numeric keypad generate the characters shown on the keys.  Holding down the Alternate key while pressing a key on the numeric keypad toggles the interpretation temporarily.\par
+\fs16 \par
+\fs28 If \uc0 \u8220 Perform strict VT100 emulation\u8221  is checked, some additional (and normally undesirable) aspects of VT100 emulation are strictly enforced:\par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2480\fi-380\ql \'B7\tab If you type a Delete character at the left edge of a Terminal window, the command-line cursor won\rquote t wrap around to the end of the previous line.  This may make it difficult to edit long command lines that wrap.\par
+\fs16 \par
+\fs28 \'B7\tab Strict DECCOLM handling is enforced.  Otherwise, the DECCOLM escape code to change the window\rquote s size is obeyed only if the new size is larger than the old size.\par
+\fs16 \par
+\fs28 \'B7\tab The + key on the numeric keypad generates a comma (,) character.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F9.tiff \width7840 \height1660}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql When \uc0 \u8220 Alternate key generates Escape sequences\u8221  is selected, typing a character while you hold down the Alternate key causes a two-character sequence to be generated\'D0an Escape character followed by the character you typed.  (This is useful when running Emacs, so you can use the Alternate key as a Meta key).  Click \u8220 Alternate key generates special characters\u8221  if you want Alternate key combinations to generate a single character with the high bit set.  Some programs interpret special characters in their own way, so this doesn\rquote t always work as expected; Emacs, for example, simply strips out the high bit from special characters.\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\li2100\ql Note:  \f0\b0 If necessary, you can specify a character other than Escape as the first character in a two-character sequence.  To do so, use the \b dwrite\b0  shell command to set the value of the Terminal \b Meta\b0  variable to the decimal value of the desired character.\par
+\fs16 \par
+\f1\b \par
+\par
+\par
+\par
+\fs48 Display Preferences\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The Display view of the Preferences panel is used to set various display characteristics of  one or more Terminal windows.   If you click Set Window, the new settings you specify are applied to the Terminal window that\rquote s currently  the main window.  If you want the settings to apply to new windows you create, click Set Default.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F5.tiff \width7820 \height1200}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql If the Enabled box is checked, windows retain text that scrolls off the top of the window in a scrollback buffer, allowing text that\rquote s scrolled off the window to be scrolled back into view, copied, or printed.  Otherwise, text that scrolls off the top of the window can\rquote t be retrieved.  \par
+\fs16 \par
+\fs28 If you enable the scrollback buffer, you can choose to let it grow without limit or you can specify the maximum number of lines that you want saved.  Whichever you choose, you can use the Edit menu\rquote s Clear Buffer command at any time to clear the buffer.\par
+\fs16 \par
+\fs28 Although it\rquote s often useful, the scrollback buffer adds to the amount of memory that\rquote s used by the Terminal program, and is unnecessary in some Terminal windows (for example, one that\rquote s running a text editor such as Emacs rather than a UNIX shell).\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F6.tiff \width7840 \height1700}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql If the \uc0 \u8220 Wrap lines that are too long\u8221  box is checked, characters that would extend beyond the right edge of the window wrap around to the beginning of the following line.  Otherwise, each line of text occupies only one line in the window\'D0the last character that fits on a line gets overwritten by subsequent characters that appear on that line.\par
+\fs16 \par
+\fs28 If the \uc0 \u8220 Scroll to the bottom of the window when input is received\u8221  box is checked, typing in the Terminal window causes the window to scroll to the end of the buffer and display the insertion point (of course, if the insertion point happens to be already visible and positioned at the end of the buffer, no scrolling occurs).  Otherwise, typing never causes the window to scroll automatically.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li2100\ql \par
+\par
+\par
+\par
+\fs48 Activity Monitor Preferences\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql Normally, Terminal tries to determine whether your Terminal windows are in active use (busy) by keeping tabs on the processes inside them.  If Terminal thinks something interesting is going on inside a window, it marks the window with a broken X.  As with unsaved document windows in other applications, you\rquote ll be prompted for confirmation before closing a busy window or quitting Terminal when there are busy windows.) \par
+\fs16 \par
+\fs28 To determine whether a window is clean (not busy), Terminal looks at information about processes it considers relevant.  For example, Terminal considers shells and a few other processes such as \b su\b0  to be innocuous and in general will not mark windows busy on account of them.  Occasionally Terminal may be wrong about whether a window is clean or not.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F8.tiff \width3260 \height3680}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql You can designate additional clean command names in the Clean Commands list  (likely candidates are \b rlogin\b0  and \b telnet\b0 , shown here).  Commands you specify in this list aren\rquote t used in determining whether a window is busy or clean.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F17.tiff \width3280 \height560}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Click this button if you want to enable or disable activity monitoring.  When activity monitoring is off, Terminal always asks for confirmation before letting you quit.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F18.tiff \width4460 \height560}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Click this button if you want to specify whether or not background processes are considered relevant in determing whether a window is clean.  For example, a window running a background process could be considered clean, as long as the process is running happily in the background.  (The current process or one that you\rquote ve explicitly suspended with Control-z will always cause the window to be classified as busy.)\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\li2100\ql Note:  \f0\b0 Terminal can\rquote t respond to processes running on other machines, so you shouldn\rquote t rely on Terminal\rquote s process monitor when logged into a remote system.\par
+\fs16 \par
+\f1\b \par
+\par
+\par
+\par
+\fs48 Shell Preferences\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The Shell view of the Preferences panel is used to specify a shell or other program to be run in Terminal windows.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F12.tiff \width6360 \height660}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Use the Shell field to specify the absolute pathname of a shell or program to run on startup.  Possible values include \b /bin/csh\b0 , \b /bin/sh\b0 , \b /bin/gdb\b0 , \b /usr/bin/emacs\b0 , and \b /usr/ucb/vi\b0 .\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\li2100\ql Note:  \f0\b0 You must press the Return key after entering the pathname in order for the new value to be set.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F13.tiff \width2500 \height540}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql If the \uc0 \u8220 Read login script\u8221  box is checked (and you\rquote re using \b csh\b0 ), Terminal runs your \b .login\b0  file for each new Terminal window you open.  Otherwise, the \b .login\b0  file is ignored.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li2100\ql \par
+\par
+\par
+\par
+\fs48 Startup Preferences\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The Startup view of the Preferences panel lets you specify what happens when Terminal starts up.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F14.tiff \width4300 \height1980}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql When Terminal starts up you can have it do nothing (that is, create no windows), create one new shell window, or open a startup file (that is, a configuration file that specifies a collection of windows to open).  If you select \uc0 \u8220 Open the startup file,\u8221  you need to make sure a startup file is specified in the Startup File portion of the panel, described below.\par
+\fs16 \par
+\fs28 For information about how to create a startup file, see \uc0 \u8220 Saving a Terminal Configuration for Later Use.\u8221 \par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F1.tiff \width3620 \height1960}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Click here if you auto-launch the Terminal application and want it to be hidden initially.  This button has no effect if you don\rquote t auto-launch Terminal.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F15.tiff \width7860 \height1220}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Although you can have any number of Terminal configuration files in your \b ~/Library/Terminal\b0  directory, you can specify only one as the startup file.  To specify a particular Terminal configuration file as the startup file, type its pathname in the Path field or click Set to open an Open panel in which to select the pathname.\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\li2100\ql Note:  \f0\b0 The pathname you enter  must be an absolute pathname beginning with a slash (\b /\b0 ); characters such as \b ~\b0  won\rquote t work.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li100\ql \par
+\par
+\par
+\par
+\par
+\fs52 Saving a Terminal Configuration for Later Use\par
+\fs16 \par
+\par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql Information about a window or set of windows can be saved to a file, allowing you to save your preferred configurations for later use.  Everything about each window is saved except the contents of the scrollback buffer\'D0this includes the shell, the size and location of the window on the screen, the title bar and font characteristics, and whether or not the window is miniaturized.  To save a configuration, choose Save (or Save As) in the Shell menu.  Terminal appends a \b .term\b0  file extension to the file name you specify.  Since Terminal looks for configuration files in your \b ~/Library/Terminal\b0  directory, this is where you should save them.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F23.tiff \width7220 \height8060}\'AC}\cf1 \par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2100\ql When you first save the configuration (or whenever you choose Save As), you can choose whether you want just the main window or all windows saved to the file.  \par
+\fs16 \par
+\fs28 Once a window is associated with a file, you can use the Save command to  flush the settings out again without seeing a Save Panel, just as with other documents.   However, if more than one window belongs with that file, all the relevant windows will be resaved (the menu item indicates this by changing to Save Set).  This allows you to open your favorite set of files, rearrange the windows, then just choose Save to save them all back into the file.  There is no way to select a subset of the currently open windows to go into a new file. \par
+\fs16 \par
+\fs28 To open a configuration file, choose Open in the Shell menu.  To have a configuration file open automatically each time you start up Terminal, either check the box in the Save or Save As panel, or specify the filename in the Startup view of the Preferences panel.  \par
+\fs16 \par
+\pard\ql\f1\b\pard\li100\ql \par
+\par
+\par
+\par
+\par
+\fs52 Printing the Contents of a Terminal Window\par
+\fs16 \par
+\par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql To print all or part of the text in a Terminal window, open the Print panel by choosing Print in the main menu.  Terminal\rquote s Print panel is similar to the standard NEXTSTEP Print panel, but there are two options not contained on the standard panel.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F21.tiff \width3280 \height1660}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Click the Print button or the Don\rquote t Print button to specify whether or not text attributes (underlining and highlighting) are included in the printed output.  Print indicates that text attributes appear in the output; Don\rquote t Print indicates that the text attributes won\rquote t appear.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F22.tiff \width3300 \height1660}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql Click one of the three Range buttons to specify the range of text to be printed.  All indicates that the entire contents of the scrollback buffer should be printed.  Selection indicates that the selected text, whether visible or not, should be printed.  Visible indicates that the text that\rquote s visible in the window should be printed.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li100\ql \par
+\par
+\par
+\par
+\par
+\fs52 Finding Text in a Terminal Window \par
+\fs16 \par
+\par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The Find panel lets you search for text in the main Terminal window.  To open the Find panel, choose Find Panel in the Find menu.\par
+\fs16 \par
+\pard\ql\pard\ql \par
+\fs28 \par
+\tab \cf0{{\NeXTGraphic F24.tiff \width6240 \height1740}\'AC}\cf1 \par
+\pard\ql\pard\tx2480\tx2860\tx3240\li2100\ql The Find panel locates the next occurrence of a specified string, and can search either forwards or backwards.  In the Find field, enter the string to search for.  The controls in the Find panel have these effects:\par
+\fs16 \par
+\pard\ql\f1\b\pard\tx6140\tx10180\li2480\ql \par
+\fs28 Control\tab Effect\par
+\pard\ql\f0\b0\pard\tx6140\tx10420\li6140\fi-3660\ql Next\tab Selects the first occurrence of the Find string following the current selection or insertion point.  (Pressing the Return key has the same effect, but with one difference:  If you\rquote ve used the keyboard alternative to display the panel, pressing Return causes the panel to disappear instead of remaining on the screen.)\par
+\fs16 \par
+\fs28 Previous\tab Selects the first occurrence of the Find string, searching backward from the current selection or insertion point.\par
+\fs16 \par
+\fs28 Ignore Case\tab Makes the find operation case-insensitive (that is, capitalization is ignored when determining a match).  If this box is unchecked, the search is case-sensitive.\par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2100\ql If the end of the text is reached, Find continues searching from the beginning (conversely, when searching backward, if the beginning of the text is reached, Find continues searching from the end).\par
+\fs16 \par
+\fs28 If no instance of the Find string is located, Terminal beeps and the message \uc0 \u8220 Not Found\u8221  appears in the Find panel.\par
+\fs16 \par
+\fs28 Commands in the Find menu (which is in the Edit menu) provide alternatives and shortcuts to using the Find panel.  There\rquote s also a Jump to Selection command for scrolling the insertion point into view.  For more information, see \uc0 \u8220 Terminal Command Reference\u8221  at the end of this chapter.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li100\ql \par
+\par
+\par
+\par
+\par
+\fs52 Defining Services for Use in Other Applications\par
+\fs16 \par
+\par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql Although by default Terminal doesn\rquote t make services available to other applications via the Services menu, Terminal does contain a Terminal Services panel that you can use to define any services you want Terminal to provide.\par
+\fs16 \par
+\fs28 To open the Terminal Services panel, choose Terminal Services in the Info menu.  If no Terminal services are defined, you\rquote ll see a panel asking if you want to load a set of example services.  You may find it useful to load and examine this set of examples, and then remove any you don\rquote t want to keep.\par
+\fs16 \par
+\pard\ql\fs28\pard\ql \par
+\tab \cf0{{\NeXTGraphic F3.tiff \width5320 \height8000}\'AC}\cf1 \par
+\fs16 \par
+\par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2100\ql Currently defined services are listed in the list at the top of the panel.  You can add new services, as well as redefine or delete existing commands.  \par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2480\fi-380\ql \'B7\tab To add a service, click the New button.  A new entry named New Service #1 is added to the service list.  Type the name that you\rquote d like to appear in the Services menu, and then configure the service using the controls in the Terminal Services panel.  When you\rquote re done, click OK.\par
+\fs16 \par
+\fs28 \'B7\tab To delete a service, select it and click the Remove button.  \par
+\fs16 \par
+\fs28 \'B7\tab To modify a service definition, select its name and then redefine the service using the controls on the Terminal Services panel.  When you\rquote re done, click OK.\par
+\fs16 \par
+\pard\ql\fs28\pard\tx2480\tx2860\tx3240\li2100\ql The Accept field lets you specify what type of data the service accepts.  Click one or more of these buttons as appropriate.\par
+\fs16 \par
+\fs28 The Use Selection field lets you specify whether the selected text should be used as a command-line argument, or as input to the service.  Click one or the other as appropriate.\par
+\fs16 \par
+\fs28 The Execution field lets you specify various options that affect the execution of the service, such as whether the output is returned or discarded.\par
+\fs16 \par
+\fs28 When defining the service, you can use the tokens \b %s\b0  and \b %p\b0  to refer to the locations where the selection and prompted input are inserted, respectively.  Prompted input isn\rquote t requested unless \b %p\b0  appears in the definition.  \par
+\fs16 \par
+\pard\ql\f1\b\pard\li100\ql \par
+\par
+\par
+\par
+\par
+\fs52 Terminal Command Reference\par
+\fs16 \par
+\par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The following sections summarize the menus and commands available in Terminal.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li2100\ql \par
+\par
+\par
+\par
+\fs48 Commands in the Main Menu\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql Terminal\rquote s main menu contains the standard Print, Windows, Services, Hide, and Quit commands.  The other commands and the submenus they open are described in the sections that follow.  Several standard commands are discussed here only in terms of their particular use in Terminal.\par
+\fs16 \par
+\pard\ql\f1\b\pard\li2100\ql \par
+\par
+\par
+\par
+\fs48 Commands in the Info Menu\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql Terminal\rquote s Info menu provides the standard Info Panel command, plus the following commands.\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\tx6140\tx10180\li2480\ql Command\tab Description\par
+\pard\ql\f0\b0\pard\tx6140\tx10420\li6140\fi-3660\ql Preferences\tab Opens the Preferences panel.  See \uc0 \u8220 Setting Preferences.\u8221 \par
+\fs16 \par
+\fs28 Terminal Services\tab Opens  the Terminal Services panel.  See \uc0 \u8220 Defining Services for Use in Other Applications.\u8221 \par
+\fs16 \par
+\pard\ql\f1\b\pard\tx6140\tx10420\li2100\ql \par
+\par
+\par
+\par
+\fs48 Commands in the Shell Menu\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql Terminal\rquote s Shell menu provides the following commands.\par
+\fs16 \par
+\pard\ql\f1\b\pard\tx6140\tx10180\li2480\ql \par
+\fs28 Command\tab Description\par
+\pard\ql\f0\b0\pard\tx6140\tx10420\li6140\fi-3660\ql Open\tab Opens an existing shell window or set of shell windows that have previously been saved in a file using the Save (or Save As) command.\par
+\fs16 \par
+\fs28 New\tab Opens a new shell window, using the default settings.\par
+\fs16 \par
+\fs28 Run Command\tab Displays a panel in which you enter a UNIX command to be run.  The command is run in a new Terminal window.   (The command is displayed as the title of the window; when the process running in the window has completed, the title changes to \uc0 \u8220 Dead Terminal.\u8221 )\par
+\fs16 \par
+\fs28 Save, Save As\tab Saves a window or set of windows to a file, allowing you to save and reuse your preferred configurations.  See \uc0 \u8220 Saving a Terminal Configuration for Later Use.\u8221 \par
+\fs16 \par
+\fs28 Set Title\tab Displays a panel for you to edit and set the current title of the window.  The Preferences panel allows greater control over this\'D0you can combine your own text with Terminal\rquote s automatically updated information.  See \uc0 \u8220 Title Bar Preferences\u8220  for more information.\par
+\fs16 \par
+\fs28 Steal Keys\tab Allows you to effectively debug an application from a shell window in which the GNU debugger is running.  The debugging process frequently involves alternately activating Terminal (to type debugger commands) and the other application (to test the application being debugged).  However, clicking to alternatively activate and deactivate the application being debugged causes the application to change its state in unpredictable ways.\par
+\fs16 \par
+\fs28 \tab To let you get around this problem, the Steal Keys command puts Terminal in a special debugging mode.  In this mode, Terminal can be activated or deactivated simply by moving the cursor into or out of the Terminal shell window.  Therefore, you can easily activate Terminal whenever you want to type a debugger command, without clicking and thus affecting the state of the application you\rquote re debugging.  \par
+\fs16 \par
+\fs28 \tab When you\rquote re ready to exit debugging mode, click in the Terminal window to make the Terminal main menu reappear, and then choose this command again (its name will have changed to Yield Keys).\par
+\fs16 \par
+\fs28 Page Layout\tab Displays the standard Page Layout panel, which lets you choose among various paper sizes, scaling factors, and orientations for text printed from the main window.\par
+\fs16 \par
+\pard\ql\f1\b\pard\tx6140\tx10420\li2100\ql \par
+\par
+\par
+\par
+\fs48 Commands in the Edit Menu\par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql Terminal\rquote s Edit menu provides the standard editing and text-searching commands, which can be used for finding and editing text in a Terminal window.\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\tx6140\tx10180\li2480\ql Command\tab Description\par
+\pard\ql\f0\b0\pard\tx6140\tx10420\li6140\fi-3660\ql Cut, Copy,  Paste\tab These commands let you copy or move text, either between Terminal windows or between a Terminal window and another window that supports copying and pasting.  To duplicate text, select the text and choose Copy.  To insert the most recently cut or copied text at the Terminal window\rquote s command-line cursor location, choose Paste.\par
+\fs16 \par
+\fs28 \tab Copy puts a copy of the selected text onto the pasteboard, from where it can be pasted with the Paste command.  The pasteboard holds just one selection; each Copy operation overwrites the previous contents of the pasteboard.\par
+\fs16 \par
+\fs28 \tab \b Note:\b0   Cut is always disabled.  The only way to remove text from a Terminal window is to use the Clear Buffer command.\par
+\fs16 \par
+\fs28 Find\tab Displays a menu that contains commands for finding text, as described below in \uc0 \u8220 Commands in the Find Menu.\u8221 \par
+\fs16 \par
+\fs28 Clear Buffer\tab Removes text from the scrollback buffer, leaving just the current command line.\par
+\fs16 \par
+\fs28 Select All\tab Selects all the text in the main window.  This is useful, for example, when you want to copy the entire range of text to another application, such as Edit.\par
+\fs16 \par
+\pard\ql\f1\b\pard\tx6140\tx10420\li2100\ql \par
+\par
+\par
+\par
+\fs48 Commands in the Find Menu \par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The Find menu contains commands that let you search for text in the main Terminal window.\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\tx6140\tx10180\li2480\ql Command\tab Description\par
+\pard\ql\f0\b0\pard\tx6140\tx10420\li6140\fi-3660\ql Find Panel\tab Opens the Find panel, which allows you to locate the next occurrence of a specified string.  For more information, see \uc0 \u8220 Finding Text in a Terminal Window.\u8221 \par
+\fs16 \par
+\fs28 Find Next, Find Previous\tab These are the standard Find menu commands.  The Find Next command performs the same function as the Next button in the Find panel, and Find Previous is the same as the Find panel\rquote s Previous button.\par
+\fs16 \par
+\fs28 Enter Selection\tab Copies the selected text in the main window into the Find panel\rquote s Find field, even if the Find panel isn\rquote t open or the key window.\par
+\fs16 \par
+\fs28 Jump to Selection\tab When the insertion point or current text selection isn\rquote t showing in the main window, the Jump to Selection command scrolls it into view.  If there\rquote s no insertion point or current text selection, this command scrolls to the end of the buffer.  \par
+\fs16 \par
+\fs28 \tab \b Note:\b0   Clicking in a Terminal window positions the insertion point where you clicked.  However, the insertion point isn\rquote t visible since it\rquote s not possible to perform any copy or paste operation on it.  This may cause some confusion, since the Jump to Selection command may sometimes jump to a location that doesn\rquote t appear to have any selected text associated with it.\par
+\fs16 \par
+\pard\ql\f1\b\pard\tx6140\tx10420\li2100\ql \par
+\par
+\par
+\par
+\fs48 Commands in the Font Menu \par
+\fs16 \par
+\pard\ql\f0\fs28\b0\pard\tx2480\tx2860\tx3240\li2100\ql The Font menu contains the standard Font menu commands described in the \i User\rquote s Reference Manual\i0 .  However, these commands apply to the entire contents of the Terminal window, not just to selected text.\par
+\fs16 \par
+\pard\ql\f1\fs28\b\pard\tx6140\tx10180\li2480\ql Command\tab Description\par
+\pard\ql\f0\b0\pard\tx6140\tx10420\li6140\fi-3660\ql Font Panel\tab Displays the standard Font panel, which lets you choose among various fonts, typefaces, and font sizes.  However, only fixed-width fonts, such as Courier and Ohlfs, can be used in Terminal.  Also note that Ohlfs is strictly a screen font\'D0text displayed in Ohlfs prints as Courier instead.\par
+\fs16 \par
+\fs28 Bold, Italic\tab Makes the text in the main Terminal window become bold or italic.\par
+\fs16 \par
+\fs28 Larger, Smaller\tab Makes the text in the main Terminal window become larger or smaller.\par
+\fs16 \par
+\fs28 Copy Font, Paste Font\tab Copy Font copies the font settings of the main window, so that you can paste them into another window with the Paste Font command.\par
+\fs16 \par
 }
