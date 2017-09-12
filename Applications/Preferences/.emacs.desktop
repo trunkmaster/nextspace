@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Oct 27 23:17:43 2016
+;; Created Tue Sep 12 16:10:41 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -21,8 +21,8 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
   "Display.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
-  5845
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  6677
   '(6521 nil)
   nil
   nil
@@ -32,7 +32,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.m"
   "Screen.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1294
   '(1294 nil)
   nil
@@ -43,7 +43,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.h"
   "Screen.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   2026
   '(1054 nil)
   nil
@@ -54,7 +54,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/AppController.m"
   "AppController.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   2504
   '(2504 nil)
   nil
@@ -65,7 +65,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"
   "PrefsController.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   4538
   '(2386 nil)
   nil
@@ -76,7 +76,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/ClockView.m"
   "ClockView.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   6028
   '(5964 nil)
   nil
@@ -120,7 +120,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
   "Localization.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   7576
   '(6089 nil)
   nil
@@ -142,7 +142,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list"
   "languages.list"
   'c-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1
   '(nil nil)
   nil
@@ -175,7 +175,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/keyboards.list"
   "keyboards.list"
   'c-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   2
   '(4719 nil)
   nil
@@ -186,7 +186,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.h"
   "Localization.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1382
   '(1374 nil)
   nil
@@ -197,7 +197,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/Font.m"
   "Font.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   5791
   '(6137 nil)
   nil
@@ -208,7 +208,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.m"
   "LanguageList.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   294
   '(2603 nil)
   nil
@@ -230,7 +230,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/ClockView.h"
   "ClockView.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1004
   '(nil nil)
   nil
@@ -241,7 +241,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.m"
   "Mouse.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1552
   '(1537 nil)
   nil
@@ -252,7 +252,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.h"
   "LanguageList.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   196
   '(196 nil)
   nil
@@ -263,7 +263,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/Font.h"
   "Font.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1606
   '(1654 nil)
   nil
@@ -274,7 +274,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
   "Display.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1272
   '(1425 nil)
   nil
@@ -285,7 +285,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
   "Keyboard.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   6658
   '(6622 nil)
   nil
@@ -296,7 +296,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Preferences.h"
   "Preferences.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   573
   '(1707 nil)
   nil
@@ -307,7 +307,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Power/Power.m"
   "Power.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1737
   '(1709 nil)
   nil
@@ -318,7 +318,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Password/Password.m"
   "Password.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   929
   '(911 nil)
   nil
@@ -329,7 +329,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Preferences_main.m"
   "Preferences_main.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   938
   '(nil nil)
   nil
@@ -340,7 +340,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.h"
   "PrefsController.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1303
   '(nil nil)
   nil
@@ -373,7 +373,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/AppController.h"
   "AppController.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1181
   '(1219 nil)
   nil
@@ -395,7 +395,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Password/Password.h"
   "Password.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   252
   '(116 nil)
   nil
@@ -450,7 +450,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Power/Power.h"
   "Power.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   945
   '(1 nil)
   nil
@@ -494,7 +494,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.h"
   "Mouse.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   931
   '(825 nil)
   nil
@@ -516,7 +516,7 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
   "Keyboard.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode irony-mode flycheck-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1106
   '(nil nil)
   nil
