@@ -1268,38 +1268,58 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 - (void)handleKeyEvent:(NSEvent *)e
 {
-  NSString *s=[e charactersIgnoringModifiers];
-  unsigned int mask=[e modifierFlags];
+  NSString *s = [e charactersIgnoringModifiers];
+  unsigned int mask = [e modifierFlags];
   unichar ch,ch2;
 
   const char *str;
   NSString *nstr;
 
-  if ([s length]>1)
+  if ([s length] > 1)
     {
-      s=[e characters];
+      s = [e characters];
       NSDebugLLog(@"key",@" writing '%@'\n",s);
-      [self sendString: s];
+      [self sendString:s];
       return;
     }
 
-  ch=[s characterAtIndex: 0];
-  str=NULL;
-  nstr=nil;
-  ch2=0;
+  ch = [s characterAtIndex:0];
+  str = NULL;
+  nstr = nil;
+  ch2 = 0;
   switch (ch)
     {
     case '\e':
       if ([[ts preferences] doubleEscape])
-	str="\e\e";
+	str = "\e\e";
       else
-	str="\e";
+	str = "\e";
       break;
 
-    case NSUpArrowFunctionKey   : str="\e[A"; break;
-    case NSDownArrowFunctionKey : str="\e[B"; break;
-    case NSLeftArrowFunctionKey : str="\e[D"; break;
-    case NSRightArrowFunctionKey: str="\e[C"; break;
+    case NSUpArrowFunctionKey   :
+      if (mask & NSShiftKeyMask)
+        str = "\e[1;2A";
+      else
+        str = "\e[A";
+      break;
+    case NSDownArrowFunctionKey :
+      if (mask & NSShiftKeyMask)
+        str ="\e[1;2B";
+      else
+        str = "\e[B";
+      break;
+    case NSLeftArrowFunctionKey :
+      if (mask & NSShiftKeyMask)
+        str = "\e[1;2D";
+      else
+        str = "\e[D";
+      break;
+    case NSRightArrowFunctionKey:
+      if (mask & NSShiftKeyMask)
+        str="\e[1;2C";
+      else
+        str="\e[C";
+      break;
 
     case NSF1FunctionKey : str="\e[[A"; break;
     case NSF2FunctionKey : str="\e[[B"; break;
@@ -1332,18 +1352,18 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     case NSPageDownFunctionKey: str="\e[6~"; break;
 
     case 9: // tab
-	   if (mask & NSShiftKeyMask)
-	     str="\e[Z";
-	   else
-	     nstr=[e characters];
-	   break;
+      if (mask & NSShiftKeyMask)
+        str="\e[Z";
+      else
+        nstr = [e characters];
+      break;
 
     case 8: ch2=0x7f; break;
     case 3: ch2=0x0d; break;
 
     default:
-	    nstr=[e characters];
-	    break;
+      nstr = [e characters];
+      break;
     }
 
     {
@@ -1362,43 +1382,53 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 	 left alt to be meta, and, if right alt is AltGr, right alt not to be
 	 meta. Thus, when command-as-meta option is active, we intercept
 	 command presses and treat them as meta, and we ignore alternate.
-
        */
 
-      if ((commandAsMeta && (mask&NSCommandKeyMask)) ||
-	  (!commandAsMeta && (mask&NSAlternateKeyMask)))
-	{
-	  NSDebugLLog(@"key",@"  meta");
-	  [ts ts_sendCString: "\e"];
-	}
+      // if ((commandAsMeta && (mask&NSCommandKeyMask)) ||
+      //     (!commandAsMeta && (mask&NSAlternateKeyMask)))
+      //   {
+      //     NSDebugLLog(@"key",@"  meta");
+      //     [ts ts_sendCString: "\e"];
+      //   }
+      // if ((mask & NSAlternateKeyMask) ||  // Alternate == Super
+      //     (mask & NSCommandKeyMask))      // Command == Alt
+      if (alternateAsMeta &&
+          (mask & NSAlternateKeyMask))       // Alternate == Super
+        {
+          NSDebugLLog(@"key",@"  meta");
+          [ts ts_sendCString:"\e"];
+        }
+
     }
 
   if (nstr)
     {
       NSDebugLLog(@"key",@"  send NSString '%@'",nstr);
-      [self sendString: nstr];
+      [self sendString:nstr];
     }
   else if (str)
     {
       NSDebugLLog(@"key",@"  send '%s'",str);
-      [ts ts_sendCString: str];
+      [ts ts_sendCString:str];
     }
-  else if (ch2>256)
+  else if (ch2 > 256)
     {
       NSDebugLLog(@"key",@"  couldn't send %04x",ch2);
       NSBeep();
     }
-  else if (ch2>0)
+  else if (ch2 > 0)
     {
       unsigned char tmp;
-      tmp=ch2;
+      tmp = ch2;
       NSDebugLLog(@"key",@"  send %02x",ch2);
-      [ts ts_sendCString: &tmp  length: 1];
+      [ts ts_sendCString:&tmp  length:1];
     }
 }
 
 
-- initWithTerminalScreen:(id<TerminalScreen>)ats  width:(int)w  height:(int)h
+- initWithTerminalScreen:(id<TerminalScreen>)ats
+                   width:(int)w
+                  height:(int)h
 {
   const char *iconv_charset;
 
