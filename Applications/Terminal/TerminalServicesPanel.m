@@ -18,7 +18,8 @@
 // --- Utility
 - (void)_update
 {
-  NSString *name,*new_name;
+  // NSString *name,*new_name;
+  NSString *name;
   NSMutableDictionary *d;
   int i;
 
@@ -135,10 +136,12 @@
 {
   DESTROY(services);
   DESTROY(serviceList);
+  DESTROY(nameChangeTF);
   [super dealloc];
 }
 
 // --- Controls
+// Services list table
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
   return [serviceList count];
@@ -155,16 +158,40 @@
 shouldEditTableColumn:(NSTableColumn *)tableColumn
                   row:(NSInteger)rowIndex
 {
-  NSString *oldName = [serviceList objectAtIndex:rowIndex];
   NSCell   *cell = [tableColumn dataCellForRow:rowIndex];
-  NSRect   tFrame = [tableView frame];
+  NSRect   rowFrame;
   
-  NSLog(@"Table should edit row %li location: %@",
-        rowIndex,
-        NSStringFromRect([tableView rectOfRow:rowIndex]));
-  NSLog(@"Table visible rect: %@",
-        NSStringFromRect([tableScrollView documentVisibleRect]));
+  // NSLog(@"Table should edit row %li location: %@",
+  //       rowIndex,
+  //       NSStringFromRect([tableView rectOfRow:rowIndex]));
+  // NSLog(@"Table visible rect: %@",
+  //       NSStringFromRect([tableScrollView documentVisibleRect]));
   [serviceTable scrollRowToVisible:rowIndex];
+
+  rowFrame = [tableView rectOfRow:rowIndex];
+  rowFrame.size.height += 5;
+  rowFrame.size.width += 4;
+  rowFrame.origin.y -= 2;
+  rowFrame.origin.x -= 2;
+  if (nameChangeTF == nil)
+    {
+      nameChangeTF = [[NSTextField alloc] initWithFrame:rowFrame];
+      [nameChangeTF setDelegate:self];
+      [nameChangeTF setBezeled:NO];
+      [nameChangeTF setBordered:YES];
+    }
+  else
+    {
+      [nameChangeTF setFrameOrigin:rowFrame.origin];
+    }
+
+  [nameChangeTF setTag:rowIndex];
+  [nameChangeTF setStringValue:[cell stringValue]];
+  
+  [tableView addSubview:nameChangeTF];
+  [panel makeFirstResponder:nameChangeTF];
+  [nameChangeTF selectText:self];
+  
   return NO;
 }
 
@@ -237,6 +264,30 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     }
 
   current = r;
+}
+
+// Service name change Text Field
+- (void)controlTextDidEndEditing:(NSNotification *)aNotif
+{
+  NSLog(@"textDidEndEditing");
+  if ([aNotif object] == nameChangeTF)
+    {
+      [serviceList replaceObjectAtIndex:[nameChangeTF tag]
+                             withObject:[nameChangeTF stringValue]];
+      [serviceTable reloadData];
+      [nameChangeTF removeFromSuperview];
+    }
+}
+
+- (BOOL)controlTextShouldEndEditing:(NSText *)aText
+{
+  NSLog(@"textShouldEndEditing");
+  // TODO: Check conflicting names
+  [serviceList replaceObjectAtIndex:[nameChangeTF tag]
+                         withObject:[nameChangeTF stringValue]];
+  [serviceTable reloadData];
+  
+  return YES;
 }
 
 // If any change was made
