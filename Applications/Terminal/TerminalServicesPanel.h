@@ -12,7 +12,7 @@
 @class NSMutableDictionary,NSMutableArray;
 @class GSVbox,NSTableView,NSPopUpButton,NSTextField;
 
-@interface TerminalServicesPanel : NSObject
+@interface TerminalServicesPanel : NSObject <NSTextFieldDelegate>
 {
   NSMutableDictionary *services;
   NSMutableArray      *serviceList;
@@ -22,6 +22,8 @@
   // Table view
   id serviceTable;
   id tableScrollView;
+  NSTextField *nameChangeTF;
+
   // Command and key equivalent
   id commandTF;
   id keyTF;
