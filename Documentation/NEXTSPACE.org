@@ -3514,7 +3514,8 @@
 ***** DONE Linux Emulation
 **** TODO Services
 ***** TODO Панель Info->Terminal Services
-****** TODO Customized service name edit in list
+****** DONE Customized service name edit in list
+****** TODO Use customized edit field for New service
 ****** TODO Implement "Save..." button
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).

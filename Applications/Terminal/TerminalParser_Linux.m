@@ -1392,8 +1392,8 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       //   }
       // if ((mask & NSAlternateKeyMask) ||  // Alternate == Super
       //     (mask & NSCommandKeyMask))      // Command == Alt
-      if (alternateAsMeta &&
-          (mask & NSAlternateKeyMask))       // Alternate == Super
+      // TODO: implement 'alternateAsMeta' option and use it here.
+      if (mask & NSAlternateKeyMask)       // Alternate == Super
         {
           NSDebugLLog(@"key",@"  meta");
           [ts ts_sendCString:"\e"];
