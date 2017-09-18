@@ -3515,14 +3515,14 @@
 **** TODO Services
 ***** TODO Панель Info->Terminal Services
 ****** DONE Customized service name edit in list
-****** TODO Use customized edit field for New service
+****** DONE Use customized edit field for New service
 ****** TODO Implement "Save..." button
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
 ****** TODO Command line tooltip
-***** TODO Do we need "Idle" window type?
-***** TODO Проверить корректность работы различных параметров
 ***** TODO Проверить типы создания окон (shell, program)
+      Do we need "Idle" window type?
+***** TODO Проверить корректность работы различных параметров
 **** TODO Keyboard + Preferences | Linux Emulation
 ***** TODO Keyboard
       Command, Alternate, Control, Shift.
@@ -3586,7 +3586,7 @@
      Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
 **** TODO Window state
      Если как shell указано что-то из /etc/shells, новое окно не дложно
-     показывать "Edited" статус. 
+     показывать "Edited" статус.
      Если запускается любая другая команда (например, 'ssh') - всегда
      показывать "Edited" - нет возможности ловить запуск команды в стартовой
      оболочке. Например, для 'ssh' команды запускаются на удаленном сервере...

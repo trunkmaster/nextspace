@@ -16,10 +16,10 @@
 @implementation TerminalServicesPanel
 
 // --- Utility
+/* Update selected service's dictionary */
 - (void)_update
 {
-  // NSString *name,*new_name;
-  NSString *name;
+  NSString *name, *new_name;
   NSMutableDictionary *d;
   int i;
 
@@ -27,38 +27,56 @@
     return;
 
   name = [serviceList objectAtIndex:current];
-  // new_name = [tf_name stringValue];
-  // if (![new_name length])
-  //   new_name = name;
+  if ([nameChangeTF superview] != nil)
+    {
+      new_name = [nameChangeTF stringValue];
+      if (![new_name length])
+        new_name = name;
+    }
+  else
+    {
+      new_name = name;
+    }
+  
   d = [services objectForKey:name];
-  if (!d)
-    d = [[NSMutableDictionary alloc] init];
+  if (!d) // New service arrived
+    {
+      d = [[NSMutableDictionary alloc] init];
+      [services setObject:d forKey:name];
+    }
 
-  [d setObject:[commandTF stringValue]
-        forKey:Commandline];
-  [d setObject:[keyTF stringValue]
-        forKey:Key];
-  [d setObject:[NSString stringWithFormat:@"%li",[[selectionMatrix selectedCell] tag]]
+  // "Command and Key Equivalent"
+  [d setObject:[commandTF stringValue] forKey:Commandline];
+  [d setObject:[keyTF stringValue] forKey:Key];
+  // "Use Selection"
+  [d setObject:[NSString stringWithFormat:@"%li",
+                         [[selectionMatrix selectedCell] tag]]
         forKey:Input];
-  [d setObject:[NSString stringWithFormat:@"%li",[[outputMatrix selectedCell] tag]]
-        forKey:ReturnData];
-  [d setObject:[NSString stringWithFormat:@"%li",[executeTypeBtn indexOfSelectedItem]]
+  // "Execution"
+  [d setObject:[NSString stringWithFormat:@"%li",
+                         [executeTypeBtn indexOfSelectedItem]]
         forKey:Type];
-
-  i=0;
+  [d setObject:[NSString stringWithFormat:@"%li",
+                         [[outputMatrix selectedCell] tag]]
+        forKey:ReturnData];
+  [d setObject:[NSString stringWithFormat:@"%li",
+                         [[shellMatrix selectedCell] tag]]
+        forKey:ExecuteInShell];
+  // "Accept"
+  i = 0;
   if ([acceptPlainTextBtn state]) i |= 1;
   if ([acceptFilesBtn state]) i |= 2;
-  [d setObject:[NSString stringWithFormat:@"%i",i]
+  [d setObject:[NSString stringWithFormat:@"%i", i]
         forKey:AcceptTypes];
 
-  // if (![name isEqual:new_name])
-  //   {
-  //     [services setObject:d forKey:new_name];
-  //     [services removeObjectForKey:name];
-  //     [serviceList replaceObjectAtIndex:current
-  //                            withObject:new_name];
-  //     [serviceTable reloadData];
-  //   }
+  if (![name isEqual:new_name]) // Service name changed
+    {
+      [services setObject:d forKey:new_name];
+      [services removeObjectForKey:name];
+      [serviceList replaceObjectAtIndex:current
+                             withObject:new_name];
+      [serviceTable reloadData];
+    }
 }
 
 - (void)_revert
@@ -158,14 +176,8 @@
 shouldEditTableColumn:(NSTableColumn *)tableColumn
                   row:(NSInteger)rowIndex
 {
-  NSCell   *cell = [tableColumn dataCellForRow:rowIndex];
-  NSRect   rowFrame;
+  NSRect rowFrame;
   
-  // NSLog(@"Table should edit row %li location: %@",
-  //       rowIndex,
-  //       NSStringFromRect([tableView rectOfRow:rowIndex]));
-  // NSLog(@"Table visible rect: %@",
-  //       NSStringFromRect([tableScrollView documentVisibleRect]));
   [serviceTable scrollRowToVisible:rowIndex];
 
   rowFrame = [tableView rectOfRow:rowIndex];
@@ -186,7 +198,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     }
 
   [nameChangeTF setTag:rowIndex];
-  [nameChangeTF setStringValue:[cell stringValue]];
+  [nameChangeTF setStringValue:[serviceList objectAtIndex:rowIndex]];
   
   [tableView addSubview:nameChangeTF];
   [panel makeFirstResponder:nameChangeTF];
@@ -199,8 +211,8 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
   int r = [serviceTable selectedRow];
 
-  // if (current >= 0)
-  //   [self _update];
+  if (current >= 0)
+    [self _update];
 
   if (r >= 0)
     {
@@ -272,36 +284,41 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   NSLog(@"textDidEndEditing");
   if ([aNotif object] == nameChangeTF)
     {
-      [serviceList replaceObjectAtIndex:[nameChangeTF tag]
-                             withObject:[nameChangeTF stringValue]];
-      [serviceTable reloadData];
+      [self _update];
       [nameChangeTF removeFromSuperview];
+      [self markAsChanged:self];
     }
-}
-
-- (BOOL)controlTextShouldEndEditing:(NSText *)aText
-{
-  NSLog(@"textShouldEndEditing");
-  // TODO: Check conflicting names
-  [serviceList replaceObjectAtIndex:[nameChangeTF tag]
-                         withObject:[nameChangeTF stringValue]];
-  [serviceTable reloadData];
-  
-  return YES;
 }
 
 // If any change was made
 - (void)markAsChanged:(id)sender
 {
-  [okBtn setEnabled:YES];
+  [self _update];
+  if (![services isEqual:[TerminalServices terminalServicesDictionary]])
+    {
+      [okBtn setEnabled:YES];
+      [panel setDocumentEdited:YES];
+    }
+  else
+    {
+      [okBtn setEnabled:NO];
+      [panel setDocumentEdited:NO];      
+    }
 }
+// - (void)markAsUnchanged:(id)sender
+// {
+//   [okBtn setEnabled:NO];
+//   [panel setDocumentEdited:NO];
+// }
 
 // "Remove" button
 - (void)removeService:(id)sender
 {
   NSString *name;
+  
   if (current < 0)
     return;
+  
   [serviceTable deselectAll:self];
 
   name = [serviceList objectAtIndex:current];
@@ -311,16 +328,28 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   [serviceTable reloadData];
   current=-1;
   [self tableViewSelectionDidChange:nil];
+  [self markAsChanged:self];
 }
 
 // "New" button
 - (void)newService:(id)sender
 {
-  NSString *n=_(@"Unnamed service");
+  NSString  *n = _(@"Unnamed service");
+  NSInteger row;
+  
   [serviceList addObject:n];
   [serviceTable reloadData];
-  [serviceTable selectRow:[serviceList count]-1 byExtendingSelection:NO];
-  [serviceTable scrollRowToVisible:[serviceList count]-1];
+  row = [serviceList count] - 1;
+  [serviceTable selectRow:row byExtendingSelection:NO];
+  [serviceTable scrollRowToVisible:row];
+
+  [self tableView:serviceTable
+        shouldEditTableColumn:[[serviceTable tableColumns] objectAtIndex:0]
+              row:row];
+  
+  current = row;
+  [self tableViewSelectionDidChange:nil];
+  [self markAsChanged:self];
 }
 
 // "OK" button
@@ -337,11 +366,13 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
   if (![services isEqual:[TerminalServices terminalServicesDictionary]])
     {
-      [ud setObject:[services copy]
-             forKey:@"TerminalServices"];
+      [ud setObject:[services copy] forKey:@"TerminalServices"];
+      [ud synchronize];
 
       [TerminalServices updateServicesPlist];
     }
+  
+  [self markAsChanged:self];
 }
 
 // "Save..." button
