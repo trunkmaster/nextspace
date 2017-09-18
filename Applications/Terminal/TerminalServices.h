@@ -34,6 +34,8 @@
 #define TYPE_WINDOW_IDLE 2 // "Run Service in the Idle Window"
 // 1 = "Return Output", 0 = "Discard Output"
 #define ReturnData @"ReturnData"
+// 1 = "Default Shell", 0 = "No Shell"
+#define ExecuteInShell @"ExecuteInShell"
 
 @interface TerminalServices : NSObject
 {
