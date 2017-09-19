@@ -290,7 +290,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     }
 }
 
-// If any change was made
+// Check if current dictionary was changed
 - (void)markAsChanged:(id)sender
 {
   [self _update];
@@ -305,11 +305,6 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
       [panel setDocumentEdited:NO];      
     }
 }
-// - (void)markAsUnchanged:(id)sender
-// {
-//   [okBtn setEnabled:NO];
-//   [panel setDocumentEdited:NO];
-// }
 
 // "Remove" button
 - (void)removeService:(id)sender
