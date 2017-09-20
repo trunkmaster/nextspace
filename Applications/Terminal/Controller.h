@@ -45,7 +45,8 @@
 - (TerminalWindowController *)newWindowWithShell;
 - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
 - (TerminalWindowController *)newWindowWithProgram:(NSString *)program
-                                         arguments:(NSArray *)args;
+                                         arguments:(NSArray *)args
+                                             input:(NSString *)input;
 - (TerminalWindowController *)idleTerminalWindow;
 
 - (int)numberOfActiveTerminalWindows;
