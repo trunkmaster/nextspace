@@ -142,6 +142,8 @@
   
   [self _revert];
   [serviceTable selectRow:0 byExtendingSelection:NO];
+
+  [commandTF setToolTip:@"If selection is to be placed on the command line, \nyou can mark the place to put it at with '%s' \n(otherwise it will be appended to the command line). \nYou can use '%%' to get a real '%'."];
 }
 
 - (void)activatePanel
