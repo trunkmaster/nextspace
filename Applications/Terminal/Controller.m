@@ -714,22 +714,19 @@
 
 - (TerminalWindowController *)newWindowWithProgram:(NSString *)program
                                          arguments:(NSArray *)args
+                                             input:(NSString *)input
 {
   TerminalWindowController *twc = [self newWindow];
   int pid;
 
-  // twc = [[TerminalWindowController alloc] init];
   if (twc == nil) return nil;
-  // [self setupTerminalWindow:twc];
-
+ 
   if (program == nil)
     program = [[twc preferences] shell];
   
   pid = [[twc terminalView] runProgram:program
                          withArguments:args
-                           inDirectory:nil
-                          initialInput:nil
-                                  arg0:program];
+                          initialInput:input];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
   
   return twc;
