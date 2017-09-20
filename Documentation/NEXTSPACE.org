@@ -3516,10 +3516,10 @@
 ***** TODO Панель Info->Terminal Services
 ****** DONE Customized service name edit in list
 ****** DONE Use customized edit field for New service
+****** DONE Command line tooltip
 ****** TODO Implement "Save..." button
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
-****** TODO Command line tooltip
 ***** TODO Проверить типы создания окон (shell, program)
       Do we need "Idle" window type?
 ***** TODO Проверить корректность работы различных параметров
