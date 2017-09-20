@@ -622,7 +622,6 @@
       [idleList removeObject:twc];
     }
 
-  
   [[NSApp delegate] checkActiveTerminalWindows];
 }
 
@@ -704,7 +703,6 @@
   int pid;
 
   if (twc == nil) return nil;
-  // [self setupTerminalWindow:twc];
   
   pid = [[twc terminalView] runShell];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];

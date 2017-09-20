@@ -139,24 +139,24 @@ of the License. See COPYING or main.m for more information.
 }
 
 
-+(NSString *) getCommandlineFrom: (NSString *)cmdline
-                     selectRange: (NSRange)r
-                         service: (NSString *)service_name
++ (NSString *)getCommandlineFrom:(NSString *)cmdline
+                     selectRange:(NSRange)r
+                         service:(NSString *)service_name
 {
   TerminalServicesParameterWindowController *wc;
   NSString *s;
   int result;
 
-  wc=[[self alloc] initWithCommandline: cmdline
-                           selectRange: r
-                               service: service_name];
-  [wc showWindow: self];
-  result=[NSApp runModalForWindow: [wc window]];
-  s=[wc _cmdline];
+  wc = [[self alloc] initWithCommandline:cmdline
+                             selectRange:r
+                                 service:service_name];
+  [wc showWindow:self];
+  result = [NSApp runModalForWindow:[wc window]];
+  s = [wc _cmdline];
   [wc close];
   DESTROY(wc);
 
-  if (result==NSRunStoppedResponse)
+  if (result == NSRunStoppedResponse)
     return s;
   else
     return nil;

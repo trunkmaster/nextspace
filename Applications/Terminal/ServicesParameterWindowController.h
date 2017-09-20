@@ -16,12 +16,12 @@ of the License. See COPYING or main.m for more information.
 
 @interface TerminalServicesParameterWindowController : NSWindowController
 {
-	NSTextField *tf_cmdline;
+  NSTextField *tf_cmdline;
 }
 
-+(NSString *) getCommandlineFrom: (NSString *)cmdline
-	selectRange: (NSRange)r
-	service: (NSString *)service_name;
++ (NSString *)getCommandlineFrom:(NSString *)cmdline
+                     selectRange:(NSRange)r
+                         service:(NSString *)service_name;
 
 @end
 
