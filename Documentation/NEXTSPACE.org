@@ -3522,7 +3522,8 @@
        alternate location (plist file).
 ***** TODO Проверить типы создания окон (shell, program)
       - Do we need "Idle" window type?
-      - Run in shell only if ExecuteInShell == 1
+      + Run in shell only if ExecuteInShell == 1
+***** TODO Implement "Add Arguments" panel
 ***** TODO Проверить корректность работы различных параметров
       - after "OK" button pressed futher changes won't change state of "OK"
         button and panel.
