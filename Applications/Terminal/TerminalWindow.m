@@ -415,10 +415,10 @@ NSString *TerminalWindowSizeDidChangeNotification =
       [self updateTitleBar:nil];
     }
   
-  if ((intValue = [prefs integerForKey:WindowCloseBehaviorKey]))
+  if ([prefs objectForKey:WindowCloseBehaviorKey])
     {
-      windowCloseBehavior = intValue;
-      [livePreferences setWindowCloseBehavior:intValue];
+      windowCloseBehavior = [prefs integerForKey:WindowCloseBehaviorKey];
+      [livePreferences setWindowCloseBehavior:windowCloseBehavior];
     }
 
   //--- For Window and View usage ---
