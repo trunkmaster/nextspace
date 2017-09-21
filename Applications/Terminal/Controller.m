@@ -58,6 +58,7 @@
   [timer invalidate];
   
   [windows release];
+  [idleList release];
 
   [super dealloc];
 }
@@ -267,6 +268,8 @@
 // --- NSApplication delegate
 - (void)applicationWillFinishLaunching:(NSNotification *)n
 {
+  idleList = [[NSMutableArray alloc] init];
+  
   [TerminalView registerPasteboardTypes];
 
   [[NSNotificationCenter defaultCenter]
@@ -408,8 +411,9 @@
   return YES;
 }
 
+/*
+// WTF???
 
-// TODO
 - (BOOL)terminalRunProgram:(NSString *)path
 	     withArguments:(NSArray *)args
 	       inDirectory:(NSString *)directory
@@ -447,7 +451,7 @@
   return YES;
 }
 
-// TODO
+// WTF???
 - (BOOL)terminalRunCommand:(NSString *)cmdline
 	       inDirectory:(NSString *)directory
 		properties:(NSDictionary *)properties
@@ -461,7 +465,7 @@
 		      inDirectory:directory
 		       properties:properties];
 }
-
+*/
 @end
 
 //-----------------------------------------------------------------------------
@@ -549,7 +553,12 @@
 
   for (TerminalWindowController *twc in wins)
     {
-      if ([[twc terminalView] isUserProgramRunning])
+      NSLog(@"%@: idleList contains = %i, user programm = %i ",
+            [twc shellPath],
+            [idleList containsObject:twc],
+            [[twc terminalView] isUserProgramRunning]);
+      if ([[twc terminalView] isUserProgramRunning] ||
+          [idleList containsObject:twc])
         {
           [twc setDocumentEdited:YES];
         }
@@ -594,7 +603,16 @@
   if (idle)
     {
       int pid, status;
+
+      // HACK: This is window running Services command. Ignore it.
+      if ([idleList containsObject:twc])
+        {
+          [idleList removeObject:twc];
+          [[NSApp delegate] checkActiveTerminalWindows];
+          return;          
+        }
       
+      NSLog(@"Window %@ became idle.", [twc shellPath]);
       [idleList addObject:twc];
       
       if ((pid = [self pidForTerminalWindow:twc]) > 0)
@@ -610,6 +628,8 @@
           windowCloseBehavior = [twc closeBehavior];
           if (windowCloseBehavior != WindowCloseNever)
             {
+              // WindowCloseAlways - "Always close the window"
+              // 'status == 0' - "Close the window if shell exits cleanly"
               if ((windowCloseBehavior == WindowCloseAlways) || (status == 0))
                 {
                   [twc close];
@@ -619,6 +639,7 @@
     }
   else
     {
+      NSLog(@"Window %@ became non idle.", [twc shellPath]);
       [idleList removeObject:twc];
     }
 
@@ -651,11 +672,9 @@
   [[NSApp delegate] checkActiveTerminalWindows];
 }
 
-// TODO:
-// Terminal window can be run in 2 modes: 'Shell' and 'Program' (now it's
-// called 'Idle').
+// Terminal window can be run in 2 modes: 'Shell' and 'Program'
 // 
-// In 'Shell' mode running shell is not considered as running program
+// In 'Shell' mode launched shell is not considered as running program
 // (close window button has normal state). Close window button change its state
 // to 'document edited' until some program executed in the shell (as aresult
 // shell has child process).
@@ -665,6 +684,58 @@
 // to normal when running program finishes.
 // Also in 'Program' mode window will never close despite the 'When Shell Exits'
 // preferences setting.
+
+- (BOOL)_noDuplicatesOf:(NSString *)string inside:(NSArray *)array
+{
+  for (NSString *s in array)
+    {
+      if ([[s lastPathComponent] isEqualToString:[string lastPathComponent]])
+        {
+          return NO;
+        }
+    }
+  return YES;
+}
+// Fill in array with items from /etc/shells
+// Omit 'nologin' as shell and duplicates (/bin/sh and /usr/bin/sh are
+// duplicates).
+- (NSArray *)shellList
+{
+  NSString  *etc_shells = [NSString stringWithContentsOfFile:@"/etc/shells"];
+  NSString  *lString;
+  NSRange   lRange;
+  NSUInteger index, stringLength = [etc_shells length];
+  NSMutableArray *shells = [[NSMutableArray alloc] init];
+
+  for (index=0; index < stringLength;)
+    {
+      lRange = [etc_shells lineRangeForRange:NSMakeRange(index, 0)];
+      lRange.length -= 1; // Do not include new line char
+      lString = [etc_shells substringFromRange:lRange];
+      if ([lString rangeOfString:@"nologin"].location == NSNotFound &&
+          [self _noDuplicatesOf:lString inside:shells])
+        {
+          [shells addObject:lString];
+        }
+      index = lRange.location + lRange.length + 1;
+    }
+
+  return [shells autorelease];
+}
+
+- (BOOL)isProgramInnocent:(NSString *)commandPath
+{
+  for (NSString *s in [self shellList])
+    {
+      if ([[s lastPathComponent]
+            isEqualToString:[commandPath lastPathComponent]])
+        {
+          return YES;
+        }
+    }
+  
+  return NO;
+}
 
 - (void)setupTerminalWindow:(TerminalWindowController *)controller
 {
@@ -696,7 +767,6 @@
   return twc;
 }
 
-
 - (TerminalWindowController *)newWindowWithShell
 {
   TerminalWindowController *twc = [self newWindow];
@@ -726,20 +796,13 @@
                          withArguments:args
                           initialInput:input];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
+  [idleList addObject:twc];
   
   return twc;
 }
 
-- (TerminalWindowController *)idleTerminalWindow
-{
-  NSDebugLLog(@"idle",@"get idle window from idle list: %@",idleList);
-  
-  if ([idleList count])
-    return [idleList objectAtIndex:0];
-  
-  return [self newWindow];
-}
-
+// Create window, and run shell.
+// Add window to 'windows' array.
 - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath
 {
   TerminalWindowController *twc;
