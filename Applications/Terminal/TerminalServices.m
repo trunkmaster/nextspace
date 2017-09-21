@@ -398,21 +398,21 @@
         //   }
         // if (!twc)
         //   {
-            twc = [[NSApp delegate] newWindow];
-            [twc showWindow:self];
-            [twc setDocumentEdited:NO];
+            // twc = [[NSApp delegate] newWindow];
+            // [twc showWindow:self];
+            // [twc setDocumentEdited:NO];
         //   }
 
         NSDebugLLog(@"service",@"got window %@",twc);
 
-        [[twc terminalView] runProgram:program
-                         withArguments:arguments
-                          initialInput:input == INPUT_STDIN ? data : nil];
-        // twc = [[NSApp delegate]
-        //         newWindowWithProgram:program
-        //                    arguments:arguments
-        //                        input:input == INPUT_STDIN ? data : nil];
-        // [twc showWindow:self];
+        // [[twc terminalView] runProgram:program
+        //                  withArguments:arguments
+        //                   initialInput:input == INPUT_STDIN ? data : nil];
+        twc = [[NSApp delegate]
+                newWindowWithProgram:program
+                           arguments:arguments
+                               input:input == INPUT_STDIN ? data : nil];
+        [twc showWindow:self];
       }
       break;
 

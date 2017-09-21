@@ -3276,7 +3276,7 @@
 ****** TODO Параметры для Shell
        При выборе какого-то shell из PopUp метка "Command:" меняется на "Shell
        Parameters:".
-****** TODO Не добавлять дублирующиеся значения в PopUp
+****** DONE Не добавлять дублирующиеся значения в PopUp
        Например, если есть "/bin/sh", то "/usr/bin/sh" уже не добавляется.
 ***** DONE Startup
 ****** DONE Startup File
@@ -3521,8 +3521,37 @@
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
 ***** TODO Проверить типы создания окон (shell, program)
-      - Do we need "Idle" window type?
-      + Run in shell only if ExecuteInShell == 1
+****** TODO Do we need "Idle" window type?
+       The answer is: not explicitly. Use it internally for running programs
+       and shells.
+// Window type and state:
+// 1. Normal - has running shell/command inside it. No other command was
+//             executed inside shell. Close button has normal state.
+//             Miniwindow displays animation on produced output.
+// 2. Edited - User start command/program inside shell.
+//             Programm running that started through Services.
+// 3. Idle   - 1) Command that started through "Services" exited.
+//                "[Process exited]" message printed.
+//                Close button has normal state.
+//             2) Shell/command exited and "When shell Exits" set to
+//                "Close the window if shell exitst cleanly" or
+//                "Never close the window".
+//                "[Process exited]" message was printed.
+//                Close button has normal state.
+
+// Commands running through Services menu in window must ignore
+// "When Shell Exits" preferences settings. Such windows must behave in this
+// way:
+// - while command is running window close button display edited state.
+// - when command exited window close button displays normal state and
+//  "[Process exited]" message displayed in window.
+// If window created through the -newWindowWithProgram:arguments:input: method
+// some events occured during window lifecycle:
+// - new window has added to 'windows' dictionary;
+// - when shell/command exited -terminalWindow:becameIdle: method has called;
+// - when -checkTerminalWindowsState called window close button may be changed.
+// For Services command window we should ignore first two events.
+****** DONE Run in shell only if ExecuteInShell == 1
 ***** TODO Implement "Add Arguments" panel
 ***** TODO Проверить корректность работы различных параметров
       - after "OK" button pressed futher changes won't change state of "OK"
