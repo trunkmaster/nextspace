@@ -7,7 +7,8 @@
   of the License. See COPYING or main.m for more information.
 */
 
-#include "ShellPrefs.h"
+#import "ShellPrefs.h"
+#import "../Controller.h"
 
 @implementation ShellPrefs
 
@@ -30,25 +31,8 @@
 {
   [view retain];
 
-  // Fill in Shell popup button with items from /etc/shells
-  // Omit 'nologin' as shell.
-  NSString  *shells = [NSString stringWithContentsOfFile:@"/etc/shells"];
-  NSString  *lString;
-  NSRange   lRange;
-  NSUInteger index, stringLength = [shells length];
-
   [shellPopup removeAllItems];
-  for (index=0; index < stringLength;)
-    {
-      lRange = [shells lineRangeForRange:NSMakeRange(index, 0)];
-      lRange.length -= 1; // Do not include new line char
-      lString = [shells substringFromRange:lRange];
-      if ([lString rangeOfString:@"nologin"].location == NSNotFound)
-        {
-          [shellPopup addItemWithTitle:lString];
-        }
-      index = lRange.location + lRange.length + 1;
-    }
+  [shellPopup addItemsWithTitles:[[NSApp delegate] shellList]];
   [shellPopup addItemWithTitle:@"Command"];
 }
 

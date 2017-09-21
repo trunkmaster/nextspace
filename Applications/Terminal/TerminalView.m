@@ -2305,7 +2305,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
   /* Set non-blocking mode for the descriptor. */
   flags = fcntl(master_fd,F_GETFL,0);
-  if (flags==-1)
+  if (flags == -1)
     {
       NSLog(@"Unable to set non-blocking mode: %m.");
     }
@@ -2315,15 +2315,15 @@ static void set_foreground(NSGraphicsContext *gc,
       fcntl(master_fd,F_SETFL,flags);
     }
 
-  rl=[NSRunLoop currentRunLoop];
+  rl = [NSRunLoop currentRunLoop];
   [rl addEvent:(void *)(intptr_t)master_fd
           type:ET_RDESC
        watcher:self
        forMode:NSDefaultRunLoopMode];
 
-  [[NSNotificationCenter defaultCenter]
-		postNotificationName:TerminalViewBecameNonIdleNotification
-                              object:self];
+  // [[NSNotificationCenter defaultCenter]
+  //       	postNotificationName:TerminalViewBecameNonIdleNotification
+  //                             object:self];
 
   // Setup titles
   DESTROY(title_window);

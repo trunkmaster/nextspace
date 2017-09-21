@@ -41,13 +41,13 @@
 - (void)closeTerminalWindow:(TerminalWindowController *)twc;
 
 - (void)setupTerminalWindow:(TerminalWindowController *)controller;
+- (NSArray *)shellList;
 - (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
 - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
 - (TerminalWindowController *)newWindowWithProgram:(NSString *)program
                                          arguments:(NSArray *)args
                                              input:(NSString *)input;
-- (TerminalWindowController *)idleTerminalWindow;
 
 - (int)numberOfActiveTerminalWindows;
 - (void)checkActiveTerminalWindows;
