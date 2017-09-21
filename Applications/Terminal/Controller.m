@@ -553,12 +553,14 @@
 
   for (TerminalWindowController *twc in wins)
     {
-      NSLog(@"%@: idleList contains = %i, user programm = %i ",
-            [twc shellPath],
-            [idleList containsObject:twc],
-            [[twc terminalView] isUserProgramRunning]);
+      // NSLog(@"%@: idleList contains = %i, user programm = %i ",
+      //       [twc shellPath],
+      //       [idleList containsObject:twc],
+      //       [[twc terminalView] isUserProgramRunning]);
+ 
       if ([[twc terminalView] isUserProgramRunning] ||
-          [idleList containsObject:twc])
+          [idleList containsObject:twc] ||
+          [self isProgramClear:[twc shellPath]] == NO)
         {
           [twc setDocumentEdited:YES];
         }
@@ -723,12 +725,12 @@
   return [shells autorelease];
 }
 
-- (BOOL)isProgramInnocent:(NSString *)commandPath
+// For now it's only a shells
+- (BOOL)isProgramClear:(NSString *)program
 {
   for (NSString *s in [self shellList])
     {
-      if ([[s lastPathComponent]
-            isEqualToString:[commandPath lastPathComponent]])
+      if ([[s lastPathComponent] isEqualToString:[program lastPathComponent]])
         {
           return YES;
         }

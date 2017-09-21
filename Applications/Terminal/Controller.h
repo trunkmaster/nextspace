@@ -42,6 +42,7 @@
 
 - (void)setupTerminalWindow:(TerminalWindowController *)controller;
 - (NSArray *)shellList;
+- (BOOL)isProgramClear:(NSString *)program;
 - (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
 - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
