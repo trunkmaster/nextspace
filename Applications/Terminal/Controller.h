@@ -28,6 +28,11 @@
   Preferences           *preferencesPanel;
   TerminalServicesPanel *servicesPanel;
   SetTitlePanel	        *setTitlePanel;
+
+  // Save As accessory
+  id accView;
+  id windowPopUp;
+  id loadAtStartupBtn;
 }
 
 @end
@@ -42,7 +47,7 @@
 
 - (void)setupTerminalWindow:(TerminalWindowController *)controller;
 - (NSArray *)shellList;
-- (BOOL)isProgramClear:(NSString *)program;
+- (BOOL)isProgramClean:(NSString *)program;
 - (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
 - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;

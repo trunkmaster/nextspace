@@ -181,17 +181,23 @@
 {
   TerminalWindowController *twc;
   NSString    *fileName, *filePath;
-  NSSavePanel *panel = [NSSavePanel savePanel];
+  NSSavePanel *panel;
   NSString    *sessionDir;
   Defaults    *prefs;
 
-  twc = [self terminalWindowForWindow:[NSApp mainWindow]];
-  
-  [panel setTitle:@"Save Shell"];
-  [panel setShowsHiddenFiles:NO];
-
   if ((sessionDir = [Defaults sessionsDirectory]) == nil)
     return;
+  
+  twc = [self terminalWindowForWindow:[NSApp mainWindow]];
+  
+  panel = [NSSavePanel savePanel];
+  [panel setTitle:@"Save Shell"];
+  [panel setShowsHiddenFiles:NO];
+  if (accView == nil)
+    {
+      [NSBundle loadNibNamed:@"SaveAsAccessory" owner:self];
+    }
+  [panel setAccessoryView:accView];
 
   fileName = [[twc fileName] stringByAppendingPathExtension:@"term"];
   filePath = [sessionDir stringByAppendingPathComponent:fileName];
@@ -206,6 +212,16 @@
         }
       [prefs writeToFile:filePath atomically:YES];
     }
+}
+- (void)setAVSaveWindows:(id)sender
+{
+  NSInteger saveAllWindows = 1;
+  saveAllWindows = [sender selectedTag] & saveAllWindows;
+  // NSLog(@"Save Shell: saveAllWindows == %li", saveAllWindows);
+}
+-(void)setAVOpenAtStartup:(id)sender
+{
+  
 }
 // Shell > Set Title...
 - (void)openSetTitlePanel:(id)sender
@@ -560,7 +576,7 @@
  
       if ([[twc terminalView] isUserProgramRunning] ||
           [idleList containsObject:twc] ||
-          [self isProgramClear:[twc shellPath]] == NO)
+          [self isProgramClean:[twc shellPath]] == NO)
         {
           [twc setDocumentEdited:YES];
         }
@@ -726,7 +742,7 @@
 }
 
 // For now it's only a shells
-- (BOOL)isProgramClear:(NSString *)program
+- (BOOL)isProgramClean:(NSString *)program
 {
   for (NSString *s in [self shellList])
     {
