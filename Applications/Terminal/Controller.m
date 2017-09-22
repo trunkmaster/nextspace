@@ -191,11 +191,12 @@
   twc = [self terminalWindowForWindow:[NSApp mainWindow]];
   
   panel = [NSSavePanel savePanel];
-  [panel setTitle:@"Save Shell"];
+  [panel setTitle:@"Save As"];
   [panel setShowsHiddenFiles:NO];
   if (accView == nil)
     {
       [NSBundle loadNibNamed:@"SaveAsAccessory" owner:self];
+      [accView retain];
     }
   [panel setAccessoryView:accView];
 
@@ -212,16 +213,14 @@
         }
       [prefs writeToFile:filePath atomically:YES];
     }
-}
-- (void)setAVSaveWindows:(id)sender
-{
-  NSInteger saveAllWindows = 1;
-  saveAllWindows = [sender selectedTag] & saveAllWindows;
-  // NSLog(@"Save Shell: saveAllWindows == %li", saveAllWindows);
-}
--(void)setAVOpenAtStartup:(id)sender
-{
-  
+  else
+    {
+      NSInteger saveAllWindows = 1, openAtStartup;
+      saveAllWindows = [windowPopUp selectedTag] & saveAllWindows;
+      openAtStartup = [loadAtStartupBtn state];
+      NSLog(@"Save Shell: saveAllWindows == %li; loadAtStartup == %li",
+            saveAllWindows, openAtStartup);
+    }
 }
 // Shell > Set Title...
 - (void)openSetTitlePanel:(id)sender
