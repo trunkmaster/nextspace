@@ -41,7 +41,8 @@ Terminal_LOCALIZED_RESOURCE_FILES = \
 	Localizable.strings \
 	Terminal.gorm \
 	SetTitlePanel.gorm \
-	TerminalServices.gorm
+	TerminalServices.gorm \
+	SaveAsAccessory.gorm
 
 Terminal_RESOURCE_FILES = \
 	Preferences/Preferences.bundle \
