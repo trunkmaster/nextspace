@@ -1,0 +1,22 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Controller = {
+	Actions = (
+	    "setAVOpenAtStartup:",
+	    "setAVSaveWindows:"
+	);
+	Outlets = (
+	    loadAtStartupBtn,
+	    accView,
+	    windowPopUp
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setAVOpenAtStartup:",
+	    "setAVSaveWindows:"
+	);
+	Super = NSObject;
+    };
+}

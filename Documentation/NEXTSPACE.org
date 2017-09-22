@@ -3238,13 +3238,20 @@
 ****** DONE Отображение Dock и Icon Yard на 'Main Display'
 ****** TODO Получать и отображать desktop background
        Нужно сначала реализовать это в модуле Display.
+**** TODO Keyboard
+***** TODO Command/Alternate
+***** TODO Repeat Rate
+***** TODO keyboard type, layouts
+***** TODO Shortcuts
+      GNUstep and WindowMaker.
+***** TODO Ввод кодов символов (Compose Key?)
+**** TODO Mouse
+     Acceleration, pointers, mouse wheel scroll.
 **** TODO UNIX Expert
      - [ ] File Creation Mask
      - [ ] Show hidden files
      - [ ] Должно использоваться Workspace Manager'ом, NSSavePanel, NSOpenPanel.
 ***** TODO Нарисовать панель
-**** TODO Keyboard: (Command, Alternate), repeat rate, shortcuts
-**** TODO Mouse: acceleration, pointers, количество линий при прокручивании колесом
 **** TODO Sound: input and output settings, system beep sound
 ***** TODO Нарисовать панель
 **** TODO Network
@@ -3292,7 +3299,7 @@
        Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
        Нужно только не показывать или прятать окно терминала для режимов "Open
        the startup file" и "Create a new shell window".
-***** DONE Sessions
+***** TODO Sessions
 ****** Поддержка сессий это:
        - возможность сохранять текущие настройки в отдельном файле 
          (меню Shell->Save As...) в файлы ~/Librayry/Terminal/*.term;
@@ -3363,6 +3370,7 @@
                  [(TerminalScreen)TerminalView preferences]
          - дальше они обращаются к экземляру Defaults (defaults), получая
            ссылку у TerminalWindowController.
+****** TODO Save As
 ****** DONE Адаптировать Shell под Sessions
        Нужно сделать кнопки, чтобы была возможность в Session сохранять и
        команду, которая запускается в терминале.
@@ -3379,11 +3387,13 @@
        Выбрасывает диалог 'Save As' если были загружены настройки
        по-умолчанию.
 ****** DONE Shell | Save As
-       Выбрасывает диалог 'Save As'.
-       Если были загружены настройки по-умолчанию предлагаемое имя:
-       Default.term; каталог стандарный для хранения сессий
-       (~/Library/Terminal).
-       Если была загружена сессия, предлагать имя <имя сессии>.term.
+******* TODO Реализовать возможность сохраненния нескольких окон.
+        Accesory view -> "What to save: Main Window | All Windows".
+******* DONE Диалог 'Save As'.
+        Если были загружены настройки по-умолчанию предлагаемое имя:
+        Default.term; каталог стандарный для хранения сессий
+        (~/Library/Terminal).
+        Если была загружена сессия, предлагать имя <имя сессии>.term.
 ****** DONE Shell | Open
        Открывает диалог 'Open' с каталогом ~/Library/Terminal.
 ***** DONE Colors
@@ -3556,7 +3566,11 @@
 ***** TODO Проверить корректность работы различных параметров
       - after "OK" button pressed futher changes won't change state of "OK"
         button and panel.
-**** TODO Keyboard + Preferences | Linux Emulation
+**** TODO Edit->Find
+     Искать по содержимому буфера. Если найдено скроллить к найденому.
+**** TODO Edit->Select All
+     Выбирать не только видимый текст.
+**** TODO (After: Preferences.app-Keyboard) Keyboard 
 ***** TODO Keyboard
       Command, Alternate, Control, Shift.
       Проверить как передаются сочетания клавиш с этими модификаторами.
@@ -3613,23 +3627,37 @@
 ***** TODO Preferences | Linux Emulation
       Проверить как работают и сохраняются настройки из раздела "Linux
       Emulation".
-**** TODO (?) Скролл колесом мышки
-     Нужно скроллить по одной строке или как указано в Preferences.app?
-     Настройки мыши, который устанавливаются в Preferences должны читаться
+***** TODO Перехватывать Crtl+s и Crtl+q
+      И добавлять в title bar "IO Stopped" (для Crtl+s).
+**** TODO (After: Preferences.app-Mouse) Скролл колесом мышки
+     Нужно скроллить как указано в Preferences.app.
+     Настройки мыши, которые устанавливаются в Preferences должны читаться
      Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
-**** TODO Window state
-     Если как shell указано что-то из /etc/shells, новое окно не дложно
-     показывать "Edited" статус.
-     Если запускается любая другая команда (например, 'ssh') - всегда
-     показывать "Edited" - нет возможности ловить запуск команды в стартовой
-     оболочке. Например, для 'ssh' команды запускаются на удаленном сервере...
-**** TODO Edit->Find
-     Искать по содержимому буфера. Если найдено скроллить к найденому.
-**** TODO Edit->Select All
-     Выбирать не только видимый текст.
 **** TODO Font->Colors
      Перетаскивание цвета на фон окна, текст, курсор в окне должно менять эти
      цвета.
+**** TODO Activity control
+***** TODO Раздел Preferences "Activity Monitor"
+***** TODO Window state
+      Если как shell указано что-то из /etc/shells, новое окно не дложно
+      показывать "Edited" статус.
+      Если запускается любая другая команда (например, 'ssh') - всегда
+      показывать "Edited" - нет возможности ловить запуск команды в стартовой
+      оболочке. Например, для 'ssh' команды запускаются на удаленном сервере...
+      Для команд запущенных через Services "Edited" показывается пока команда
+      выполняется и "Normal" когда команда завершилась
+***** TODO Процессы в окне терминала
+      Нужно как-то отслеживать запускаемые процессы в окне терминала.
+      Сейчас это реализовано через tcgetpgrp (ID группы процессов активного
+      терминала).
+***** TODO "Clean" Commands
+      Реализовать обнаружение команд, выполнение которых не должно менят
+      статус окна на "Edited".
+      Начало положено: в Controller реализован метод isProgramClean
+***** TODO Miniwindow
+      - добавлять в иконку приложения иконку со статусом приложения (killed,
+        stopped, suspended);
+      - отображать scrolling "Out" image если, что-то меняется.
 **** TODO Info Panel
      С прокручивающимся текстом в иконке терминала. ;)
 **** TODO Code review for set window and view size
@@ -3647,10 +3675,10 @@
      использовался метод boundingBoxForFont. Заменил на advancementForGlyph и
      все стало хорошо.
 **** DONE Отображение нормального текста
-    Должно отображаться след. образом:
-    - если FG и BG совпадают - из настроек;
-    - если цвет BG черный и blackOnWhite - не инвертировать;
-    - если цвет BG не черный - заданным цветом;
+     Должно отображаться след. образом:
+     - если FG и BG совпадают - из настроек;
+     - если цвет BG черный и blackOnWhite - не инвертировать;
+     - если цвет BG не черный - заданным цветом;
 **** DONE White on Black
      Для приложений, который действительно хотят белое на черном (в режиме,
      когда у терминала режим BlackOnWhite) нужно как-то определять, что
