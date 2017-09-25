@@ -3371,6 +3371,9 @@
          - дальше они обращаются к экземляру Defaults (defaults), получая
            ссылку у TerminalWindowController.
 ****** TODO Save As
+******* DONE Сохранять множество окон и вписывать в StartupFile
+******* TODO Переработать создание окон из session файла
+******* TODO Проверить работу нового кода
 ****** DONE Адаптировать Shell под Sessions
        Нужно сделать кнопки, чтобы была возможность в Session сохранять и
        команду, которая запускается в терминале.
@@ -3531,7 +3534,7 @@
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
 ***** TODO Проверить типы создания окон (shell, program)
-****** TODO Do we need "Idle" window type?
+****** DONE Do we need "Idle" window type?
        The answer is: not explicitly. Use it internally for running programs
        and shells.
 // Window type and state:

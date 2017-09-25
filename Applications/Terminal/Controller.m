@@ -188,38 +188,76 @@
   if ((sessionDir = [Defaults sessionsDirectory]) == nil)
     return;
   
-  twc = [self terminalWindowForWindow:[NSApp mainWindow]];
-  
   panel = [NSSavePanel savePanel];
   [panel setTitle:@"Save As"];
   [panel setShowsHiddenFiles:NO];
+
+  // Accessory view
   if (accView == nil)
     {
       [NSBundle loadNibNamed:@"SaveAsAccessory" owner:self];
       [accView retain];
     }
+  saveAsAllWindows = saveAsOpenAtStartup = 0;
+  [windowPopUp selectItemWithTag:saveAsAllWindows];
+  [loadAtStartupBtn setState:saveAsOpenAtStartup];
   [panel setAccessoryView:accView];
 
+  twc = [self terminalWindowForWindow:[NSApp mainWindow]];
   fileName = [[twc fileName] stringByAppendingPathExtension:@"term"];
   filePath = [sessionDir stringByAppendingPathComponent:fileName];
 
   if ([panel runModalForDirectory:sessionDir file:fileName] == NSOKButton)
     {
       filePath = [panel filename];
-      prefs = [twc livePreferences];
-      if (prefs == nil)
+      saveAsAllWindows = [windowPopUp selectedTag];
+      saveAsOpenAtStartup = [loadAtStartupBtn state];
+      if (saveAsAllWindows)
         {
-          prefs = [twc preferences];
+          NSMutableDictionary *sessionDict = [NSMutableDictionary new];
+          NSMutableArray      *winDefs = [NSMutableArray new];
+          // sessionDict = {MultipleWindows = YES; Windows = (dict, dict,...)}
+          // {
+          //   MultipleWindows = YES;
+          //   1 = {
+          //         Minimized = YES/NO;
+          //         Main = YES/NO;
+          //         Frame = {};
+          //         Defaults = {...};
+          //       }
+          // }
+          [sessionDict setObject:@"YES" forKey:@"MultipleWindows"];
+          for (twc in [windows allValues])
+            {
+              if ((prefs = [twc livePreferences]) == nil)
+                {
+                  prefs = [twc preferences];
+                }
+              [prefs setBool:[[twc window] isMiniaturized]
+                      forKey:@"WindowMiniatirized"];
+              [prefs setBool:[[twc window] isMainWindow] forKey:@"WindowMain"];
+              [prefs setObject:NSStringFromRect([[twc window] frame])
+                        forKey:@"WindowFrame"];
+              [winDefs addObject:[prefs dictionaryRep]];
+            }
+          [sessionDict setObject:winDefs forKey:@"Windows"];
+          [sessionDict writeToFile:filePath atomically:YES];
         }
-      [prefs writeToFile:filePath atomically:YES];
-    }
-  else
-    {
-      NSInteger saveAllWindows = 1, openAtStartup;
-      saveAllWindows = [windowPopUp selectedTag] & saveAllWindows;
-      openAtStartup = [loadAtStartupBtn state];
-      NSLog(@"Save Shell: saveAllWindows == %li; loadAtStartup == %li",
-            saveAllWindows, openAtStartup);
+      else
+        {
+          if ((prefs = [twc livePreferences]) == nil)
+            {
+              prefs = [twc preferences];
+            }
+          [prefs writeToFile:filePath atomically:YES];
+        }
+      if (saveAsOpenAtStartup)
+        {
+          Defaults *defs = [Defaults shared];
+          [defs setStartupFile:filePath];
+          [defs setStartupAction:OnStartOpenFile];
+          [defs synchronize];
+        }
     }
 }
 // Shell > Set Title...

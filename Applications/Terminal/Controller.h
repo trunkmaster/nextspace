@@ -33,6 +33,8 @@
   id accView;
   id windowPopUp;
   id loadAtStartupBtn;
+  NSInteger saveAsAllWindows, saveAsOpenAtStartup;
+
 }
 
 @end

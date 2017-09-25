@@ -107,17 +107,6 @@ static Defaults *shared = nil;
   return self;
 }
 
-- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atom
-{
-  if ([defaults isKindOfClass:[NSUserDefaults class]])
-    {
-      return [[defaults persistentDomainForName:@"Terminal"]
-               writeToFile:path atomically:YES];
-    }
-  
-  return [defaults writeToFile:path atomically:YES];  
-}
-
 - (id)initWithDefaults:(id)def
 {
   self = [super init];
@@ -150,9 +139,30 @@ static Defaults *shared = nil;
   [super dealloc];
 }
 
+- (NSDictionary *)dictionaryRep
+{
+  if ([defaults isKindOfClass:[NSUserDefaults class]])
+    {
+      return [defaults persistentDomainForName:@"Terminal"];
+    }
+  
+  return defaults;
+}
+
 - (id)defaults
 {
   return defaults;
+}
+
+- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atom
+{
+  if ([defaults isKindOfClass:[NSUserDefaults class]])
+    {
+      return [[defaults persistentDomainForName:@"Terminal"]
+               writeToFile:path atomically:YES];
+    }
+  
+  return [defaults writeToFile:path atomically:YES];
 }
 
 - (BOOL)synchronize
