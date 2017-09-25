@@ -3302,7 +3302,7 @@
 ***** TODO Sessions
 ****** Поддержка сессий это:
        - возможность сохранять текущие настройки в отдельном файле 
-         (меню Shell->Save As...) в файлы ~/Librayry/Terminal/*.term;
+         (меню Shell->Save As...) в файлы ~/Library/Terminal/*.term;
        - возможность выбрать из меню Shell->Open... сохраненные
          настройки в файлах ~/Library/Terminal;
        - меню "Shell->Save":

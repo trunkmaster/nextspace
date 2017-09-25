@@ -52,7 +52,9 @@
 - (BOOL)isProgramClean:(NSString *)program;
 - (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
-- (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
+// - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
+- (TerminalWindowController *)newWindowWithPreferences:(id)defs;
+- (void)openStartupFile:(NSString *)filePath;
 - (TerminalWindowController *)newWindowWithProgram:(NSString *)program
                                          arguments:(NSArray *)args
                                              input:(NSString *)input;

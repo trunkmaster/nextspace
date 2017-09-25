@@ -130,25 +130,39 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
 - init
 {
-  [self initWithStartupFile:nil];
+  // [self initWithStartupFile:nil];
+  [self initWithPreferences:nil];
+  // fileName = @"Default";
   
   return self;
 }
 
-- initWithStartupFile:(NSString *)filePath
+// - initWithStartupFile:(NSString *)filePath
+// {
+//   if (filePath == nil)
+//     {
+//       // preferences = [[Defaults alloc] init];
+//       [self initWithPreferences:[[Defaults alloc] init]];
+//       fileName = @"Default";
+//     }
+//   else
+//     {
+//       // preferences = [[Defaults alloc] initWithFile:filePath];
+//       preferences = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+//       [self initWithPreferences:preferences];
+//       fileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
+//     }
+//   return self;
+// }
+
+- initWithPreferences:(NSDictionary *)defs
 {
   self = [super init];
 
-  if (filePath == nil)
-    {
-      preferences = [[Defaults alloc] init];
-      fileName = @"Default";
-    }
+  if (defs == nil)
+    preferences = [[Defaults alloc] init];
   else
-    {
-      preferences = [[Defaults alloc] initWithFile:filePath];
-      fileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
-    }
+    preferences = [[Defaults alloc] initWithDefaults:defs];
 
   [self _setupWindow];
   
@@ -180,7 +194,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
            name:TerminalViewTitleDidChangeNotification
          object:tView];
 
-  return self;
+  return self;  
 }
 
 - (void)dealloc
@@ -216,6 +230,11 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
 - (NSString *)fileName
 {
+  // if (!fileName)
+  //   {
+  fileName = [[[self window] representedFilename] lastPathComponent];
+      // }
+  NSLog(@"%@ == %@", fileName, [[self window] representedFilename]);
   return fileName;
 }
 
