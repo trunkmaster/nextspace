@@ -126,7 +126,8 @@
     {
       if ((path = [panel filename]) != nil)
         {
-          [[self newWindowWithStartupFile:path] showWindow:self];
+          // [[self newWindowWithStartupFile:path] showWindow:self];
+          [self openStartupFile:path];
         }
     }  
 }
@@ -140,8 +141,10 @@
 
   twc = [self terminalWindowForWindow:[NSApp mainWindow]];
   fileName = [twc fileName];
+
+  if (fileName == nil || [fileName isEqualToString:@"Window"])
+    isDefaultSession = YES;
   
-  isDefaultSession = [fileName isEqualToString:@"Default"];
   if ([self preferencesForWindow:[NSApp mainWindow] live:YES] != nil)
     {
       isSessionChanged = YES;
@@ -149,9 +152,6 @@
   
   if ((sessionDir = [Defaults sessionsDirectory]) == nil)
     return;
-  
-  fileName = [[twc fileName] stringByAppendingPathExtension:@"term"];
-  filePath = [sessionDir stringByAppendingPathComponent:fileName];
   
   if (!isDefaultSession)
     {
@@ -166,6 +166,9 @@
           NSLog(@"Session was opened from file and changed - save silently");
           Defaults *defs = [twc livePreferences];
           if (defs == nil) defs = [twc preferences];
+          
+          fileName = [fileName stringByAppendingPathExtension:@"term"];
+          filePath = [sessionDir stringByAppendingPathComponent:fileName];  
           [defs writeToFile:filePath atomically:YES];
         }
     }
@@ -216,16 +219,8 @@
         {
           NSMutableDictionary *sessionDict = [NSMutableDictionary new];
           NSMutableArray      *winDefs = [NSMutableArray new];
+          
           // sessionDict = {MultipleWindows = YES; Windows = (dict, dict,...)}
-          // {
-          //   MultipleWindows = YES;
-          //   1 = {
-          //         Minimized = YES/NO;
-          //         Main = YES/NO;
-          //         Frame = {};
-          //         Defaults = {...};
-          //       }
-          // }
           [sessionDict setObject:@"YES" forKey:@"MultipleWindows"];
           for (twc in [windows allValues])
             {
@@ -234,7 +229,7 @@
                   prefs = [twc preferences];
                 }
               [prefs setBool:[[twc window] isMiniaturized]
-                      forKey:@"WindowMiniatirized"];
+                      forKey:@"WindowMiniaturized"];
               [prefs setBool:[[twc window] isMainWindow] forKey:@"WindowMain"];
               [prefs setObject:NSStringFromRect([[twc window] frame])
                         forKey:@"WindowFrame"];
@@ -251,6 +246,7 @@
             }
           [prefs writeToFile:filePath atomically:YES];
         }
+      
       if (saveAsOpenAtStartup)
         {
           Defaults *defs = [Defaults shared];
@@ -368,8 +364,9 @@
       [twc showWindow:self];
       break;
     case OnStartOpenFile:
-      twc = [self newWindowWithStartupFile:[[Defaults shared] startupFile]];
-      [twc showWindow:self];
+      // twc = [self newWindowWithStartupFile:[[Defaults shared] startupFile]];
+      // [twc showWindow:self];
+      [self openStartupFile:[[Defaults shared] startupFile]];
       break;
     default:
       // OnStartDoNothing == do nothing
@@ -460,6 +457,10 @@
  	   openFile:(NSString *)filename
 {
   NSLog(@"Open file: %@", filename);
+  if ([[filename pathExtension] isEqualToString:@"term"])
+    {
+      [self openStartupFile:filename];
+    }
   
   return YES;
 }
@@ -822,6 +823,7 @@
   return twc;
 }
 
+// Create default terminal window (Shell->New menu item, on app startup)
 - (TerminalWindowController *)newWindowWithShell
 {
   TerminalWindowController *twc = [self newWindow];
@@ -835,6 +837,8 @@
   return twc;
 }
 
+// Used for 'Services' purposes.
+// Created window will be added to 'windows' and 'idleList'
 - (TerminalWindowController *)newWindowWithProgram:(NSString *)program
                                          arguments:(NSArray *)args
                                              input:(NSString *)input
@@ -858,14 +862,46 @@
 
 // Create window, and run shell.
 // Add window to 'windows' array.
-- (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath
+// - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath
+// {
+//   TerminalWindowController *twc;
+//   NSString *shell;
+//   NSArray *args;
+//   int pid;
+
+//   twc = [[TerminalWindowController alloc] initWithStartupFile:filePath];
+//   [self setupTerminalWindow:twc];
+  
+//   args = [[[twc preferences] shell] componentsSeparatedByString:@" "];
+//   shell = [[args objectAtIndex:0] copy];
+//   if ([args count] > 1)
+//     args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
+//   else
+//     args = nil;
+
+//   NSLog(@"Create Terminal window with Startup File: %@."
+//         " Program: %@, arguments: %@", filePath, shell, args);
+  
+//   pid = [[twc terminalView] runProgram:shell
+//                          withArguments:args
+//                            inDirectory:nil
+//                           initialInput:nil
+//                                   arg0:shell];
+//   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
+
+//   [shell release];
+  
+//   return twc;
+// }
+
+- (TerminalWindowController *)newWindowWithPreferences:(id)defs
 {
   TerminalWindowController *twc;
   NSString *shell;
   NSArray *args;
   int pid;
 
-  twc = [[TerminalWindowController alloc] initWithStartupFile:filePath];
+  twc = [[TerminalWindowController alloc] initWithPreferences:defs];
   [self setupTerminalWindow:twc];
   
   args = [[[twc preferences] shell] componentsSeparatedByString:@" "];
@@ -875,9 +911,6 @@
   else
     args = nil;
 
-  NSLog(@"Create Terminal window with Startup File: %@."
-        " Program: %@, arguments: %@", filePath, shell, args);
-  
   pid = [[twc terminalView] runProgram:shell
                          withArguments:args
                            inDirectory:nil
@@ -886,10 +919,47 @@
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
 
   [shell release];
-  
+
   return twc;
 }
 
+- (void)openStartupFile:(NSString *)filePath
+{
+  NSDictionary             *fileDict;
+  NSDictionary             *defs;
+  TerminalWindowController *twc;
+  
+  fileDict = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+  if ([fileDict objectForKey:@"MultipleWindows"] != nil)
+    {
+      NSRect wFrame;
+      NSWindow *mWindow;
+      for (defs in [fileDict objectForKey:@"Windows"])
+        {
+          twc = [self newWindowWithPreferences:defs];
+          [self setupTerminalWindow:twc];
+          [[twc window] setRepresentedFilename:filePath];
+          wFrame = NSRectFromString([defs objectForKey:@"WindowFrame"]);
+          [[twc window] setFrameOrigin:wFrame.origin];
+          if ([[twc preferences] boolForKey:@"WindowMain"] == YES)
+            mWindow = [twc window];
+          [twc showWindow:self];
+        }
+      [mWindow makeKeyAndOrderFront:self];
+    }
+  else
+    {
+      defs = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+      twc = [self newWindowWithPreferences:defs];
+      [self setupTerminalWindow:twc];
+      [[twc window] setRepresentedFilename:filePath];
+      NSLog(@"Set represented filename: %@ == %@",
+            filePath, [[twc window] representedFilename]);
+      [defs release];
+      [twc showWindow:self];
+    }
+  [fileDict release];
+}
 
 //-----------------------------------------------------------------------------
 // Preferences and sessions
