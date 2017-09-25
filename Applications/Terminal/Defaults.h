@@ -22,8 +22,12 @@ NSUserDefaults *ud;
 
 - (id)initEmpty;
 - (id)initWithFile:(NSString *)filePath;
-- (BOOL)writeToFile:(NSString *)fileName atomically:(BOOL)atom;
+- (id)initWithDefaults:(id)def;
+
+- (NSDictionary *)dictionaryRep;
 - (id)defaults;
+
+- (BOOL)writeToFile:(NSString *)fileName atomically:(BOOL)atom;
 - (BOOL)synchronize;
 
 //-----------------------------------------------------------------------------
