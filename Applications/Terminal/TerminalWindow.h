@@ -54,7 +54,8 @@ NSString *TerminalWindowSizeDidChangeNotification;
   NSSize winMinimumSize;
 }
 
-- initWithStartupFile:(NSString *)filePath;
+// - initWithStartupFile:(NSString *)filePath;
+- initWithPreferences:(NSDictionary *)defs;
 
 - (TerminalView *)terminalView;
 - (WindowCloseBehavior)closeBehavior;
