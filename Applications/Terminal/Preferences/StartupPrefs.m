@@ -63,7 +63,7 @@
 {
   NSOpenPanel *panel = [NSOpenPanel openPanel];
   NSString    *sessionDir, *path;
-  Defaults    *defs = [[Preferences shared] mainWindowLivePreferences];
+  Defaults    *defs = [Defaults shared];
 
   [panel setCanChooseDirectories:NO];
   [panel setAllowsMultipleSelection:NO];
