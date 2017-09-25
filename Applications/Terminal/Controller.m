@@ -937,7 +937,6 @@
       for (defs in [fileDict objectForKey:@"Windows"])
         {
           twc = [self newWindowWithPreferences:defs];
-          [self setupTerminalWindow:twc];
           [[twc window] setRepresentedFilename:filePath];
           wFrame = NSRectFromString([defs objectForKey:@"WindowFrame"]);
           [[twc window] setFrameOrigin:wFrame.origin];
@@ -951,7 +950,6 @@
     {
       defs = [[NSDictionary alloc] initWithContentsOfFile:filePath];
       twc = [self newWindowWithPreferences:defs];
-      [self setupTerminalWindow:twc];
       [[twc window] setRepresentedFilename:filePath];
       NSLog(@"Set represented filename: %@ == %@",
             filePath, [[twc window] representedFilename]);
