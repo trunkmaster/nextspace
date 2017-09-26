@@ -3278,8 +3278,8 @@
 
 ** 4. Terminal
 *** TODO 1.0
-**** TODO Preferences
-***** TODO Shell
+**** DONE Preferences
+***** DONE Shell
 ****** DONE Не добавлять дублирующиеся значения в PopUp
        Например, если есть "/bin/sh", то "/usr/bin/sh" уже не добавляется.
 ***** DONE Startup
@@ -3540,7 +3540,7 @@
 ****** TODO Implement "Save..." button
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
-***** TODO Проверить типы создания окон (shell, program)
+***** DONE Проверить типы создания окон (shell, program)
 ****** DONE Do we need "Idle" window type?
        The answer is: not explicitly. Use it internally for running programs
        and shells.
@@ -3573,9 +3573,10 @@
 // For Services command window we should ignore first two events.
 ****** DONE Run in shell only if ExecuteInShell == 1
 ***** TODO Implement "Add Arguments" panel
-***** TODO Проверить корректность работы различных параметров
-      - after "OK" button pressed futher changes won't change state of "OK"
-        button and panel.
+***** TODO Статус кнопки "OK"
+      After "OK" button pressed futher changes won't change state of "OK"
+      button and panel.
+***** TODO Проверить запуска сервисов с различными параметрами
 **** TODO Edit->Find
      Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO Edit->Select All

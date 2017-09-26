@@ -43,6 +43,8 @@
 
 + (void)updateServicesPlist;
 
++ (NSString *)serviceDirectory;
+
 + (NSDictionary *)terminalServicesDictionary;
 
 @end
