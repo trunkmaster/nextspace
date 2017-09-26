@@ -3537,11 +3537,24 @@
 ****** DONE Customized service name edit in list
 ****** DONE Use customized edit field for New service
 ****** DONE Command line tooltip
+****** DONE Статус кнопки "OK"
+       After "OK" button pressed futher changes won't change state of "OK"
+       button and panel.
 ****** TODO Implement "Save..." button
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
-***** DONE Проверить типы создания окон (shell, program)
-****** DONE Do we need "Idle" window type?
+****** TODO polymorphicOpts
+       Переименовать outputMatrix в polymorphicMatrix. В зависимости от выбора
+       в executeTypeBtn менять надписи:
+       Run Service in the Background
+       + Return Output
+       - Discard Output
+       Run Service in a Window
+       + New Window
+       - Idle Window
+***** TODO Проверить типы создания окон (shell, program)
+****** TODO Do we need "Idle" window type?
+       В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
        The answer is: not explicitly. Use it internally for running programs
        and shells.
 // Window type and state:
@@ -3572,9 +3585,6 @@
 // - when -checkTerminalWindowsState called window close button may be changed.
 // For Services command window we should ignore first two events.
 ****** DONE Run in shell only if ExecuteInShell == 1
-***** DONE Статус кнопки "OK"
-      After "OK" button pressed futher changes won't change state of "OK"
-      button and panel.
 ***** TODO Implement "Add Arguments" panel
 ***** TODO Проверить запуск сервисов с различными параметрами
 ****** TODO %s

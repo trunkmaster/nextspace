@@ -38,13 +38,14 @@
   
   // Execution
   id executeTypeBtn;
-  id outputMatrix;
+  id outputMatrix; // polymorphicMatrix
   id shellMatrix;
 
   id okBtn;
 
   // Save Panel
   id accView;
+  id saveServicesTable;
 }
 
 - (void)activatePanel;

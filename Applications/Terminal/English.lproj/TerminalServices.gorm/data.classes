@@ -31,7 +31,9 @@
 	    outputMatrix,
 	    selectionMatrix,
 	    tableScrollView,
-	    okBtn
+	    okBtn,
+	    accView,
+	    saveServicesTable
 	);
 	Super = NSObject;
     };
