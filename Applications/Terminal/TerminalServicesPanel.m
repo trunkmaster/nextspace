@@ -53,12 +53,27 @@
                          [[selectionMatrix selectedCell] tag]]
         forKey:Input];
   // "Execution"
-  [d setObject:[NSString stringWithFormat:@"%li",
-                         [executeTypeBtn indexOfSelectedItem]]
-        forKey:Type];
-  [d setObject:[NSString stringWithFormat:@"%li",
-                         [[outputMatrix selectedCell] tag]]
-        forKey:ReturnData];
+  NSInteger execType = [executeTypeBtn indexOfSelectedItem];
+  NSInteger polyTag = [[outputMatrix selectedCell] tag];
+  switch (execType)
+    {
+    case 0:
+      [d setObject:[NSString stringWithFormat:@"%li", execType]
+            forKey:Type];
+      [d setObject:[NSString stringWithFormat:@"%li", polyTag]
+            forKey:ReturnData];
+      break;
+    case 1:
+      [d setObject:[NSString stringWithFormat:@"%li", execType + polyTag]
+            forKey:Type];
+      break;
+    }
+  // [d setObject:[NSString stringWithFormat:@"%li",
+  //                        [executeTypeBtn indexOfSelectedItem]]
+  //       forKey:Type];
+  // [d setObject:[NSString stringWithFormat:@"%li",
+  //                        [[outputMatrix selectedCell] tag]]
+  //       forKey:ReturnData];
   [d setObject:[NSString stringWithFormat:@"%li",
                          [[shellMatrix selectedCell] tag]]
         forKey:ExecuteInShell];
@@ -150,7 +165,17 @@
 
   [commandTF setToolTip:@"If selection is to be placed on the command line, \nyou can mark the place to put it at with '%s' \n(otherwise it will be appended to the command line). \nYou can use '%%' to get a real '%'."];
 
-  // [panel makeFirstResponder:okBtn];
+  [panel setDefaultButtonCell:[okBtn cell]];
+  
+  [accView retain];
+  [saveServicesTable setDelegate:self];
+  [saveServicesTable setDataSource:self];
+  [saveServicesTable setAllowsMultipleSelection:YES];
+  [saveServicesTable setAllowsColumnSelection:NO];
+  [saveServicesTable setAllowsEmptySelection:NO];
+  [saveServicesTable setHeaderView:nil];
+  [saveServicesTable setCornerView:nil];
+  [saveServicesTable setAutoresizesAllColumnsToFit:YES];
 }
 
 - (void)activatePanel
@@ -306,6 +331,21 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     {
       [panel setDefaultButtonCell:[okBtn cell]];
     }
+
+  if (sender == executeTypeBtn)
+    {
+      switch([executeTypeBtn indexOfSelectedItem])
+        {
+        case 0: // Run Service in the Background
+          [[outputMatrix cellWithTag:0] setTitle:@"Discard Output"]; // 0 + 0 = 0
+          [[outputMatrix cellWithTag:1] setTitle:@"Return Output"];  // 0 + 1 = 1
+          break;
+        case 1: // Run Service in a Window
+          [[outputMatrix cellWithTag:0] setTitle:@"Idle Window"]; // 1 + 0 = 1
+          [[outputMatrix cellWithTag:1] setTitle:@"New Window"];  // 1 + 1 = 2
+          break;
+        }
+    }
   
   [self _update];
   
@@ -390,22 +430,17 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
   NSSavePanel *savePanel = [NSSavePanel savePanel];
 
-  // [panel setTitle:@"Save As"];
+  [savePanel setTitle:@"Save Services"];
   [savePanel setShowsHiddenFiles:NO];
 
   // Accessory view
-  if (accView == nil)
-    {
-      [NSBundle loadNibNamed:@"SaveServiceAccessory" owner:self];
-      [accView retain];
-    }
-  // [windowPopUp selectItemWithTag:0];
-  // [loadAtStartupBtn setState:0];
   [savePanel setAccessoryView:accView];
+  [saveServicesTable reloadData];
   
   if ([savePanel runModalForDirectory:[TerminalServices serviceDirectory]
                                  file:nil] == NSOKButton)
     {
+      
     }
 }
 
