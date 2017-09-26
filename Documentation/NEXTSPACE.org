@@ -3572,11 +3572,14 @@
 // - when -checkTerminalWindowsState called window close button may be changed.
 // For Services command window we should ignore first two events.
 ****** DONE Run in shell only if ExecuteInShell == 1
-***** TODO Implement "Add Arguments" panel
-***** TODO Статус кнопки "OK"
+***** DONE Статус кнопки "OK"
       After "OK" button pressed futher changes won't change state of "OK"
       button and panel.
-***** TODO Проверить запуска сервисов с различными параметрами
+***** TODO Implement "Add Arguments" panel
+***** TODO Проверить запуск сервисов с различными параметрами
+****** TODO %s
+****** TODO %p
+****** TODO %s %p
 **** TODO Edit->Find
      Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO Edit->Select All

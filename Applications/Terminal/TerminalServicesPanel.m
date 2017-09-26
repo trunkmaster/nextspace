@@ -139,10 +139,18 @@
   for (id cell in [shellMatrix cells])
     [cell setRefusesFirstResponder:YES];
   
+  [acceptFilesBtn setRefusesFirstResponder:YES];
+  [acceptPlainTextBtn setRefusesFirstResponder:YES];
+  [acceptRichTextBtn setRefusesFirstResponder:YES];
+
+  [executeTypeBtn setRefusesFirstResponder:YES];
+  
   [self _revert];
   [serviceTable selectRow:0 byExtendingSelection:NO];
 
   [commandTF setToolTip:@"If selection is to be placed on the command line, \nyou can mark the place to put it at with '%s' \n(otherwise it will be appended to the command line). \nYou can use '%%' to get a real '%'."];
+
+  // [panel makeFirstResponder:okBtn];
 }
 
 - (void)activatePanel
@@ -294,8 +302,13 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // Check if current dictionary was changed
 - (void)markAsChanged:(id)sender
 {
+  if (sender == commandTF || sender == keyTF)
+    {
+      [panel setDefaultButtonCell:[okBtn cell]];
+    }
+  
   [self _update];
-  // if ([services hash] != [[TerminalServices terminalServicesDictionary] hash])
+  
   if (![services isEqual:[TerminalServices terminalServicesDictionary]])
     {
       [okBtn setEnabled:YES];
