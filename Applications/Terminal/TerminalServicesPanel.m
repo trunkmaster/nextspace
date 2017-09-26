@@ -92,8 +92,7 @@
 
   for (NSString *key in [d allKeys])
     {
-      [services setObject:[[d objectForKey:key] mutableCopy]
-                   forKey:key];
+      [services setObject:[[d objectForKey:key] mutableCopy] forKey:key];
     }
 
   serviceList = [[[services allKeys]
@@ -103,7 +102,7 @@
   [serviceTable reloadData];
   current = -1;
   [self tableViewSelectionDidChange:nil];
-  [okBtn setEnabled:NO];
+  [self markAsChanged:self];
 }
 
 // --- Init and dealloc
@@ -296,6 +295,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 - (void)markAsChanged:(id)sender
 {
   [self _update];
+  // if ([services hash] != [[TerminalServices terminalServicesDictionary] hash])
   if (![services isEqual:[TerminalServices terminalServicesDictionary]])
     {
       [okBtn setEnabled:YES];
@@ -369,13 +369,31 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
       [TerminalServices updateServicesPlist];
     }
   
-  [self markAsChanged:self];
+  [self _revert];
 }
 
 // "Save..." button
 - (void)saveServicesAs:(id)sender
 {
-  NSLog(@"Terminal Services: 'Save...' button was clicked.");
+  NSSavePanel *savePanel = [NSSavePanel savePanel];
+
+  // [panel setTitle:@"Save As"];
+  [savePanel setShowsHiddenFiles:NO];
+
+  // Accessory view
+  if (accView == nil)
+    {
+      [NSBundle loadNibNamed:@"SaveServiceAccessory" owner:self];
+      [accView retain];
+    }
+  // [windowPopUp selectItemWithTag:0];
+  // [loadAtStartupBtn setState:0];
+  [savePanel setAccessoryView:accView];
+  
+  if ([savePanel runModalForDirectory:[TerminalServices serviceDirectory]
+                                 file:nil] == NSOKButton)
+    {
+    }
 }
 
 @end

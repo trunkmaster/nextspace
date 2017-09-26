@@ -42,6 +42,9 @@
   id shellMatrix;
 
   id okBtn;
+
+  // Save Panel
+  id accView;
 }
 
 - (void)activatePanel;

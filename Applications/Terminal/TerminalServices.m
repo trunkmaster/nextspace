@@ -37,14 +37,24 @@
   return d;
 }
 
++ (NSString *)serviceDirectory
+{
+  NSString *path;
+
+  path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                              NSUserDomainMask, YES) lastObject];
+  path = [path stringByAppendingPathComponent:@"Services"];
+
+  return path;
+}
+
 + (void)updateServicesPlist
 {
   NSMutableArray *a = [[NSMutableArray alloc] init];
   NSDictionary   *d = [TerminalServices terminalServicesDictionary];
-  NSEnumerator   *e;
+  NSEnumerator   *e = [d keyEnumerator];
   NSString       *name;
 
-  e = [d keyEnumerator];
   while ((name = [e nextObject]))
     {
       int i;
@@ -114,13 +124,8 @@
     }
 
   {
-    NSString *path;
-
-    path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                                NSUserDomainMask, YES)
-                                               lastObject];
-    path = [path stringByAppendingPathComponent:@"Services"];
-    path = [path stringByAppendingPathComponent:@"TerminalServices.plist"];
+    NSString *path = [[TerminalServices serviceDirectory]
+                       stringByAppendingPathComponent:@"TerminalServices.plist"];
 
     d = [NSDictionary dictionaryWithObject:a forKey:@"NSServices"];
     [d writeToFile:path atomically:YES];
@@ -128,7 +133,6 @@
 
   /* TODO: if a submenu of services is 'held' open when services are
      reloaded, -gui crashes */
-
   [[NSWorkspace sharedWorkspace] findApplications];
 }
 
