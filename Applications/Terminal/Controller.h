@@ -33,8 +33,6 @@
   id accView;
   id windowPopUp;
   id loadAtStartupBtn;
-  NSInteger saveAsAllWindows, saveAsOpenAtStartup;
-
 }
 
 @end
@@ -53,7 +51,8 @@
 - (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
 // - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
-- (TerminalWindowController *)newWindowWithPreferences:(id)defs;
+- (TerminalWindowController *)newWindowWithPreferences:(id)defs
+                                           startupFile:(NSString *)path;
 - (void)openStartupFile:(NSString *)filePath;
 - (TerminalWindowController *)newWindowWithProgram:(NSString *)program
                                          arguments:(NSArray *)args
