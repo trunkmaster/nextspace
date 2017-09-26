@@ -2730,7 +2730,7 @@ static int handled_mask = (NSDragOperationCopy |
   return self;
 }
 
-- initWithPrefences:(Defaults *)preferences
+- initWithPreferences:(Defaults *)preferences
 {
   defaults = preferences;
   return [self initWithFrame:NSZeroRect];

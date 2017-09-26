@@ -99,11 +99,20 @@ static Defaults *shared = nil;
 // Create NSMutableDictionary and store it in 'defaults' ivar
 - (id)initWithFile:(NSString *)path
 {
+  if (path)
+    {
+      filePath = path;
+      defaults = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+    }
+  
+  if (defaults)
+    {
+      NSLog(@"Defaults: error loading file");
+      return nil;
+    }
+ 
   self = [super init];
 
-  filePath = path;
-  defaults = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
- 
   return self;
 }
 

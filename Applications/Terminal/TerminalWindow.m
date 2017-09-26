@@ -109,7 +109,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
     }
 
   // View
-  tView = [[TerminalView alloc] initWithPrefences:preferences];
+  tView = [[TerminalView alloc] initWithPreferences:preferences];
   [tView setIgnoreResize:YES];
   [tView setAutoresizingMask:NSViewHeightSizable|NSViewWidthSizable];
   [tView setScroller:scroller];
@@ -130,32 +130,13 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
 - init
 {
-  // [self initWithStartupFile:nil];
-  [self initWithPreferences:nil];
-  // fileName = @"Default";
+  [self initWithPreferences:nil startupFile:nil];
   
   return self;
 }
 
-// - initWithStartupFile:(NSString *)filePath
-// {
-//   if (filePath == nil)
-//     {
-//       // preferences = [[Defaults alloc] init];
-//       [self initWithPreferences:[[Defaults alloc] init]];
-//       fileName = @"Default";
-//     }
-//   else
-//     {
-//       // preferences = [[Defaults alloc] initWithFile:filePath];
-//       preferences = [[NSDictionary alloc] initWithContentsOfFile:filePath];
-//       [self initWithPreferences:preferences];
-//       fileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
-//     }
-//   return self;
-// }
-
 - initWithPreferences:(NSDictionary *)defs
+          startupFile:(NSString *)path
 {
   self = [super init];
 
@@ -165,6 +146,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
     preferences = [[Defaults alloc] initWithDefaults:defs];
 
   [self _setupWindow];
+  [[self window] setRepresentedFilename:path];
   
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -228,14 +210,11 @@ NSString *TerminalWindowSizeDidChangeNotification =
   return [tView deviceName];
 }
 
+// File name without extension
 - (NSString *)fileName
 {
-  // if (!fileName)
-  //   {
-  fileName = [[[self window] representedFilename] lastPathComponent];
-      // }
-  NSLog(@"%@ == %@", fileName, [[self window] representedFilename]);
-  return fileName;
+  return [[[[self window] representedFilename] lastPathComponent]
+           stringByDeletingPathExtension];
 }
 
 - (NSString *)windowSizeString
@@ -273,6 +252,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
 {
   NSString *title;
   NSString *miniTitle = [self shellPath];
+  NSString *file;
 
   title = [NSString new];
   
@@ -300,15 +280,16 @@ NSString *TerminalWindowSizeDidChangeNotification =
         }
     }
 
-  if (titleBarElementsMask & TitleBarFileName)
+  if ((titleBarElementsMask & TitleBarFileName) &&
+      (file = [self fileName]) != nil)
     {
       if ([title length] == 0)
         {
-          title = [NSString stringWithFormat:@"%@", [self fileName]];
+          title = [NSString stringWithFormat:@"%@", file];
         }
       else
         {
-          title = [title stringByAppendingFormat:@"\u2014 %@", [self fileName]];
+          title = [title stringByAppendingFormat:@"\u2014 %@", file];
         }
     }
 

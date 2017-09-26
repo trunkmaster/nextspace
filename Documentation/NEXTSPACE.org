@@ -3280,9 +3280,6 @@
 *** TODO 1.0
 **** TODO Preferences
 ***** TODO Shell
-****** TODO Параметры для Shell
-       При выборе какого-то shell из PopUp метка "Command:" меняется на "Shell
-       Parameters:".
 ****** DONE Не добавлять дублирующиеся значения в PopUp
        Например, если есть "/bin/sh", то "/usr/bin/sh" уже не добавляется.
 ***** DONE Startup
@@ -3299,7 +3296,7 @@
        Сейчас уже легко это можно реализовать с опцией -NXAutoLaunch.
        Нужно только не показывать или прятать окно терминала для режимов "Open
        the startup file" и "Create a new shell window".
-***** TODO Sessions
+***** DONE Sessions
 ****** Поддержка сессий это:
        - возможность сохранять текущие настройки в отдельном файле 
          (меню Shell->Save As...) в файлы ~/Library/Terminal/*.term;
@@ -3370,10 +3367,20 @@
                  [(TerminalScreen)TerminalView preferences]
          - дальше они обращаются к экземляру Defaults (defaults), получая
            ссылку у TerminalWindowController.
-****** TODO Save As
+****** DONE Save As
 ******* DONE Сохранять множество окон и вписывать в StartupFile
-******* TODO Переработать создание окон из session файла
-******* TODO Проверить работу нового кода
+******* DONE Переработать создание окон из session файла
+******* DONE Save для загруженного файла с множеством окон
+        Как должен рабтать в этом случае Shell->Save? Варианты:
+        1. Сохраняется только main window но через Save As.
+        2. Сохраняются все открытые  в данный момент окна.
+        3. Сохраняются все окна, которые были загружены из файла.
+        Можно сделать так:
+        - читаем содержимое файла, указанного в representedFilename;
+        - если файла нет, запускаем Save As;
+        - если файл есть читаем значение MultipleWindows: если YES -
+          сохраняем все окна, у которых representedFilename такой же.
+******* DONE Проверить работу нового кода
 ****** DONE Адаптировать Shell под Sessions
        Нужно сделать кнопки, чтобы была возможность в Session сохранять и
        команду, которая запускается в терминале.
@@ -3713,11 +3720,20 @@
        кнопка "Set Window".
 *** TODO > 1.0
 **** TODO Prefernces
-***** TODO Preferences -> Display -> Scrollback Buffer
+***** TODO Параметры для Shell
+      Варианты:
+      1. При выборе какого-то shell из PopUp метка "Command:" меняется на
+         "Shell Parameters:".
+      2. Выбор из выпадающего списка приводит к вставке в поле
+         "Command". Далее пользователь добавляет параметры, которые нужно.
+      С другой стороны пользотелю ничего не мешает выбрать "Command" из
+      выпадающего списка и вписать туда то, что ему хочется. Пока отбой и
+      перемещаю в версию > 1.0 на подумать.
+***** TODO Display -> Scrollback Buffer
       Сейчас значение Unlimited приводит к установке значения lines=1024.
       Нужно реализовать lazy механизм выделения памяти.
-***** TODO Preferences- > Display -> Wrap lines that are too long
-***** TODO Preferences -> Colors -> Cursor -> Blinking
+***** TODO Display -> Wrap lines that are too long
+***** TODO Colors -> Cursor -> Blinking
 ***** TODO Activity monitor (+Preferences section)
 ***** TODO Preferences -> Title Bar -> Xterm Title
       От программ типа MidnightCommander.
