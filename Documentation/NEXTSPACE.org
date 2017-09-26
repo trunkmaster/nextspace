@@ -3552,6 +3552,8 @@
        Run Service in a Window
        + New Window
        - Idle Window
+****** TODO Кнопка "Save" disabled если "OK" enabled
+****** TODO shellMatrix disabled если выбрана опция "Idle Window"
 ***** TODO Проверить типы создания окон (shell, program)
 ****** TODO Do we need "Idle" window type?
        В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
