@@ -30,8 +30,8 @@
 // "Execution" block
 #define Type @"Type"
 #define TYPE_BACKGROUND  0 // "Run Service in the Background"
-#define TYPE_WINDOW_NEW  1 // "Run Service in the New Window"
-#define TYPE_WINDOW_IDLE 2 // "Run Service in the Idle Window"
+#define TYPE_WINDOW_NEW  1 // "Run Service in the New Window"  1 + 1 = 2
+#define TYPE_WINDOW_IDLE 2 // "Run Service in the Idle Window" 1 + 0 = 1
 // 1 = "Return Output", 0 = "Discard Output"
 #define ReturnData @"ReturnData"
 // 1 = "Default Shell", 0 = "No Shell"
