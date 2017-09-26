@@ -132,49 +132,90 @@
     }  
 }
 // Shell > Save
+- (void)_saveMultiSession:(NSString *)path allWindows:(BOOL)all
+{
+  NSMutableDictionary *sessionDict = [NSMutableDictionary new];
+  NSMutableArray      *winDefs = [NSMutableArray new];
+  NSMutableArray      *winsToSave = [NSMutableArray new];
+  Defaults            *prefs;
+          
+  // sessionDict = {MultipleWindows = YES; Windows = (dict, dict,...)}
+  [sessionDict setObject:@"YES" forKey:@"MultipleWindows"];
+  if (all == NO)
+    {
+      // Save windows that have represented filename equal to 'path'.
+      for (TerminalWindowController *twc in [windows allValues])
+        {
+          if ([[[twc window] representedFilename] isEqualToString:path])
+            {
+              [winsToSave addObject:twc];
+            }
+        }
+    }
+  else
+    {
+      [winsToSave addObjectsFromArray:[windows allValues]];
+    }
+  
+  for (TerminalWindowController *twc in winsToSave)
+    {
+      if ((prefs = [twc livePreferences]) == nil)
+        {
+          prefs = [twc preferences];
+        }
+      [prefs setBool:[[twc window] isMiniaturized]
+              forKey:@"WindowMiniaturized"];
+      [prefs setBool:[[twc window] isMainWindow] forKey:@"WindowMain"];
+      [prefs setObject:NSStringFromRect([[twc window] frame])
+                forKey:@"WindowFrame"];
+      [winDefs addObject:[prefs dictionaryRep]];
+    }
+  [sessionDict setObject:winDefs forKey:@"Windows"];
+  [sessionDict writeToFile:path atomically:YES];
+}
 - (void)saveSession:(id)sender
 {
   TerminalWindowController *twc;
-  NSString *sessionDir, *fileName, *filePath;
-  BOOL isDefaultSession = NO;
-  BOOL isSessionChanged = NO;
+  NSString                 *filePath;
 
   twc = [self terminalWindowForWindow:[NSApp mainWindow]];
-  fileName = [twc fileName];
+  filePath = [[twc window] representedFilename];
 
-  if (fileName == nil || [fileName isEqualToString:@"Window"])
-    isDefaultSession = YES;
+  // Loaded startup file doesn't exist now
+  if (filePath &&
+      [[NSFileManager defaultManager] fileExistsAtPath:filePath] == NO)
+    filePath = nil;
   
-  if ([self preferencesForWindow:[NSApp mainWindow] live:YES] != nil)
+  // Loaded startup file exists
+  if (filePath != nil)
     {
-      isSessionChanged = YES;
-    }
-  
-  if ((sessionDir = [Defaults sessionsDirectory]) == nil)
-    return;
-  
-  if (!isDefaultSession)
-    {
-      if (!isSessionChanged)
+      // Main window preferences were changed
+      if ([self preferencesForWindow:[NSApp mainWindow] live:YES] != nil)
         {
-          // If session was opened from file and not changed - menu item must
-          // be disabled and this method must not be called!
-          NSLog(@"Shell > Save menu item should not be called!");
-        }
-      else
-        { // If session was opened from file and changed - save silently
-          NSLog(@"Session was opened from file and changed - save silently");
-          Defaults *defs = [twc livePreferences];
-          if (defs == nil) defs = [twc preferences];
+          // Check if startup file contains multiple windows
+          NSDictionary *existingStartup;
+          existingStartup = [NSDictionary dictionaryWithContentsOfFile:filePath];
           
-          fileName = [fileName stringByAppendingPathExtension:@"term"];
-          filePath = [sessionDir stringByAppendingPathComponent:fileName];  
-          [defs writeToFile:filePath atomically:YES];
+          if ([[existingStartup allKeys] containsObject:@"MultipleWindows"])
+            {// Save all windows loaded from specific file
+              NSLog(@"Save all windows loaded from file %@.", filePath);
+              [self _saveMultiSession:filePath allWindows:NO];
+            }
+          else
+            {// Save single window loaded from file
+              NSLog(@"Save single window loaded from file %@.", filePath);
+              Defaults *defs = [twc livePreferences];
+              if (defs == nil) defs = [twc preferences];
+          
+              [defs setObject:NSStringFromRect([[twc window] frame])
+                       forKey:@"WindowFrame"];
+              [defs writeToFile:filePath atomically:YES];
+            }
         }
     }
   else
     { // If it's a default session (changed or not) - open "Save As..." panel
-      NSLog(@"It's a default session - open \"Save As...\" panel");
+      NSLog(@"It's a default session - will open \"Save As...\" panel");
       [self saveSessionAs:sender];
     }
   
@@ -201,53 +242,40 @@
       [NSBundle loadNibNamed:@"SaveAsAccessory" owner:self];
       [accView retain];
     }
-  saveAsAllWindows = saveAsOpenAtStartup = 0;
-  [windowPopUp selectItemWithTag:saveAsAllWindows];
-  [loadAtStartupBtn setState:saveAsOpenAtStartup];
+  [windowPopUp selectItemWithTag:0]; // MainWindow
+  [loadAtStartupBtn setState:0];
   [panel setAccessoryView:accView];
 
   twc = [self terminalWindowForWindow:[NSApp mainWindow]];
-  fileName = [[twc fileName] stringByAppendingPathExtension:@"term"];
-  filePath = [sessionDir stringByAppendingPathComponent:fileName];
+  if ((filePath = [[twc window] representedFilename]) == nil)
+    {
+      fileName = @"Default.term";
+      filePath = [sessionDir stringByAppendingPathComponent:fileName];
+    }
+  else
+    {
+      fileName = [filePath lastPathComponent];
+    }
 
   if ([panel runModalForDirectory:sessionDir file:fileName] == NSOKButton)
     {
       filePath = [panel filename];
-      saveAsAllWindows = [windowPopUp selectedTag];
-      saveAsOpenAtStartup = [loadAtStartupBtn state];
-      if (saveAsAllWindows)
+      if ([windowPopUp selectedTag]) // All Windows
         {
-          NSMutableDictionary *sessionDict = [NSMutableDictionary new];
-          NSMutableArray      *winDefs = [NSMutableArray new];
-          
-          // sessionDict = {MultipleWindows = YES; Windows = (dict, dict,...)}
-          [sessionDict setObject:@"YES" forKey:@"MultipleWindows"];
-          for (twc in [windows allValues])
-            {
-              if ((prefs = [twc livePreferences]) == nil)
-                {
-                  prefs = [twc preferences];
-                }
-              [prefs setBool:[[twc window] isMiniaturized]
-                      forKey:@"WindowMiniaturized"];
-              [prefs setBool:[[twc window] isMainWindow] forKey:@"WindowMain"];
-              [prefs setObject:NSStringFromRect([[twc window] frame])
-                        forKey:@"WindowFrame"];
-              [winDefs addObject:[prefs dictionaryRep]];
-            }
-          [sessionDict setObject:winDefs forKey:@"Windows"];
-          [sessionDict writeToFile:filePath atomically:YES];
+          NSLog(@"Save all opened windows As %@.", filePath);
+          [self _saveMultiSession:filePath allWindows:YES];
         }
       else
         {
+          NSLog(@"Save single window As %@.", filePath);
           if ((prefs = [twc livePreferences]) == nil)
-            {
-              prefs = [twc preferences];
-            }
+            prefs = [twc preferences];
+          [prefs setObject:NSStringFromRect([[twc window] frame])
+                    forKey:@"WindowFrame"];
           [prefs writeToFile:filePath atomically:YES];
         }
       
-      if (saveAsOpenAtStartup)
+      if ([loadAtStartupBtn state])
         {
           Defaults *defs = [Defaults shared];
           [defs setStartupFile:filePath];
@@ -862,46 +890,16 @@
 
 // Create window, and run shell.
 // Add window to 'windows' array.
-// - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath
-// {
-//   TerminalWindowController *twc;
-//   NSString *shell;
-//   NSArray *args;
-//   int pid;
-
-//   twc = [[TerminalWindowController alloc] initWithStartupFile:filePath];
-//   [self setupTerminalWindow:twc];
-  
-//   args = [[[twc preferences] shell] componentsSeparatedByString:@" "];
-//   shell = [[args objectAtIndex:0] copy];
-//   if ([args count] > 1)
-//     args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
-//   else
-//     args = nil;
-
-//   NSLog(@"Create Terminal window with Startup File: %@."
-//         " Program: %@, arguments: %@", filePath, shell, args);
-  
-//   pid = [[twc terminalView] runProgram:shell
-//                          withArguments:args
-//                            inDirectory:nil
-//                           initialInput:nil
-//                                   arg0:shell];
-//   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
-
-//   [shell release];
-  
-//   return twc;
-// }
-
 - (TerminalWindowController *)newWindowWithPreferences:(id)defs
+                                           startupFile:(NSString *)path
 {
   TerminalWindowController *twc;
   NSString *shell;
   NSArray *args;
   int pid;
 
-  twc = [[TerminalWindowController alloc] initWithPreferences:defs];
+  twc = [[TerminalWindowController alloc] initWithPreferences:defs
+                                                  startupFile:path];
   [self setupTerminalWindow:twc];
   
   args = [[[twc preferences] shell] componentsSeparatedByString:@" "];
@@ -928,31 +926,34 @@
   NSDictionary             *fileDict;
   NSDictionary             *defs;
   TerminalWindowController *twc;
+  NSRect                   wFrame;
   
   fileDict = [[NSDictionary alloc] initWithContentsOfFile:filePath];
   if ([fileDict objectForKey:@"MultipleWindows"] != nil)
     {
-      NSRect wFrame;
       NSWindow *mWindow;
       for (defs in [fileDict objectForKey:@"Windows"])
         {
-          twc = [self newWindowWithPreferences:defs];
-          [[twc window] setRepresentedFilename:filePath];
+          twc = [self newWindowWithPreferences:defs
+                                   startupFile:filePath];
+          
           wFrame = NSRectFromString([defs objectForKey:@"WindowFrame"]);
           [[twc window] setFrameOrigin:wFrame.origin];
           if ([[twc preferences] boolForKey:@"WindowMain"] == YES)
             mWindow = [twc window];
           [twc showWindow:self];
+          if ([[twc preferences] boolForKey:@"WindowMiniaturized"] == YES)
+            [[twc window] miniaturize:self];
         }
       [mWindow makeKeyAndOrderFront:self];
     }
   else
     {
       defs = [[NSDictionary alloc] initWithContentsOfFile:filePath];
-      twc = [self newWindowWithPreferences:defs];
-      [[twc window] setRepresentedFilename:filePath];
-      NSLog(@"Set represented filename: %@ == %@",
-            filePath, [[twc window] representedFilename]);
+      twc = [self newWindowWithPreferences:defs
+                               startupFile:filePath];
+      wFrame = NSRectFromString([defs objectForKey:@"WindowFrame"]);
+      [[twc window] setFrameOrigin:wFrame.origin];
       [defs release];
       [twc showWindow:self];
     }

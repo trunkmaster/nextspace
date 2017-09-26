@@ -132,7 +132,7 @@ struct selection_range
   CGFloat	INV_FG_B;
 }
 
-- initWithPrefences:(id)preferences;
+- initWithPreferences:(id)preferences;
 - (Defaults *)preferences; // used by terminal parser
 
 - (void)setIgnoreResize:(BOOL)ignore;
