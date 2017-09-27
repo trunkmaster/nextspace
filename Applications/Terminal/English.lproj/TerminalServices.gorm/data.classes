@@ -33,7 +33,8 @@
 	    tableScrollView,
 	    okBtn,
 	    accView,
-	    saveServicesTable
+	    saveServicesTable,
+	    saveBtn
 	);
 	Super = NSObject;
     };

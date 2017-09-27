@@ -3540,25 +3540,26 @@
 ****** DONE Статус кнопки "OK"
        After "OK" button pressed futher changes won't change state of "OK"
        button and panel.
-****** TODO Implement "Save..." button
-       "Save Service" panel with aux view with services selection to save to
-       alternate location (plist file).
-****** TODO polymorphicOpts
-       Переименовать outputMatrix в polymorphicMatrix. В зависимости от выбора
-       в executeTypeBtn менять надписи:
+****** DONE outputMatrix
+       В зависимости от выбора в executeTypeBtn менять надписи:
        Run Service in the Background
        + Return Output
        - Discard Output
        Run Service in a Window
        + New Window
        - Idle Window
-****** TODO Кнопка "Save" disabled если "OK" enabled
-****** TODO shellMatrix disabled если выбрана опция "Idle Window"
+****** DONE Кнопка "Save" disabled если "OK" enabled
+****** DONE shellMatrix disabled если выбрана опция "Idle Window"
+****** TODO Implement "Save..." button
+       "Save Service" panel with aux view with services selection to save to
+       alternate location (plist file).
 ***** TODO Проверить типы создания окон (shell, program)
 ****** TODO Do we need "Idle" window type?
        В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
        The answer is: not explicitly. Use it internally for running programs
        and shells.
+       Idle Window это просто первое окно, на котором ничего не
+       выполняется. В это окно передается выполнение команды.
 // Window type and state:
 // 1. Normal - has running shell/command inside it. No other command was
 //             executed inside shell. Close button has normal state.
