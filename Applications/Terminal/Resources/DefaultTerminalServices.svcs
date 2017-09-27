@@ -2,116 +2,128 @@
     Description = "Default terminal services";
     TerminalServices = {
 	"Arithmetic Calculation" = {
-	    Commandline = "echo \"%s\" | bc";
+	    Commandline = "echo %s | bc";
 	    Input = 2;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
 	};
 	"Define word" = {
 	    AcceptTypes = 1;
-	    Commandline = "dict \"%s\"";
+	    Commandline = "dict %s";
 	    Input = 2;
 	    Key = "=";
-	    ReturnData = 0;
-	    Type = 2;
+	    ExecType = 1;
+            WindowType = 0;
 	};
 	"Fetch URL" = {
 	    AcceptTypes = 1;
-	    Commandline = "cd ~; wget \"%s\"";
+	    Commandline = "cd ~; wget %s";
 	    Input = 2;
 	    Key = "";
-	    ReturnData = 0;
-	    Type = 2;
+	    ExecType = 1;
+            WindowType = 0;
 	};
 	"Count lines" = {
 	    Commandline = "wc -l";
 	    Input = 1;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	"Count words" = {
 	    Commandline = wc;
 	    Input = 1;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	"Open shell here" = {
 	    AcceptTypes = 3;
-	    Commandline = "cd \"%s\" && exec $SHELL";
+	    Commandline = "cd %s && exec $SHELL";
 	    Input = 2;
 	    Key = "";
+	    ExecType = 1;
 	    ReturnData = 0;
-	    Type = 1;
+            ExecInShell = 1;
 	};
 	"Four-space hard tabs" = {
 	    Commandline = "expand | unexpand -t4";
 	    Input = 1;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
+            ExecInShell = 1;
 	};
 	"Sort lines" = {
 	    Commandline = sort;
 	    Input = 1;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	Time = {
 	    Commandline = date;
 	    Input = 0;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	"Wrap and reply" = {
 	    Commandline = "fmt -w 70 | sed -e \"s/^/> /\"";
 	    Input = 1;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
+            ExecInShell = 1;
 	};
 	"Wrap to 72 Columns" = {
 	    Commandline = "fmt -w 72";
 	    Input = 1;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 1;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	bunzip2 = {
 	    AcceptTypes = 2;
 	    Commandline = "bunzip2 %s";
 	    Input = 2;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 0;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	bzip2 = {
 	    AcceptTypes = 2;
 	    Commandline = "bzip2 %s";
 	    Input = 2;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 0;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	gunzip = {
 	    AcceptTypes = 2;
 	    Commandline = "gunzip %s";
 	    Input = 2;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 0;
-	    Type = 0;
+            ExecInShell = 0;
 	};
 	gzip = {
 	    AcceptTypes = 2;
 	    Commandline = "gzip %s";
 	    Input = 2;
 	    Key = "";
+	    ExecType = 0;
 	    ReturnData = 0;
-	    Type = 0;
+            ExecInShell = 0;
 	};
     };
 }

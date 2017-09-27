@@ -42,6 +42,7 @@
   id shellMatrix;
 
   id okBtn;
+  id saveBtn;
 
   // Save Panel
   id accView;
