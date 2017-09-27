@@ -48,35 +48,6 @@
   // "Command and Key Equivalent"
   [d setObject:[commandTF stringValue] forKey:Commandline];
   [d setObject:[keyTF stringValue] forKey:Key];
-  // "Use Selection"
-  [d setObject:[NSString stringWithFormat:@"%li",
-                         [[selectionMatrix selectedCell] tag]]
-        forKey:Input];
-  // "Execution"
-  NSInteger execType = [executeTypeBtn indexOfSelectedItem];
-  NSInteger polyTag = [[outputMatrix selectedCell] tag];
-  switch (execType)
-    {
-    case 0:
-      [d setObject:[NSString stringWithFormat:@"%li", execType]
-            forKey:Type];
-      [d setObject:[NSString stringWithFormat:@"%li", polyTag]
-            forKey:ReturnData];
-      break;
-    case 1:
-      [d setObject:[NSString stringWithFormat:@"%li", execType + polyTag]
-            forKey:Type];
-      break;
-    }
-  // [d setObject:[NSString stringWithFormat:@"%li",
-  //                        [executeTypeBtn indexOfSelectedItem]]
-  //       forKey:Type];
-  // [d setObject:[NSString stringWithFormat:@"%li",
-  //                        [[outputMatrix selectedCell] tag]]
-  //       forKey:ReturnData];
-  [d setObject:[NSString stringWithFormat:@"%li",
-                         [[shellMatrix selectedCell] tag]]
-        forKey:ExecuteInShell];
   // "Accept"
   i = 0;
   if ([acceptPlainTextBtn state]) i |= 1;
@@ -92,6 +63,20 @@
                              withObject:new_name];
       [serviceTable reloadData];
     }
+  // "Use Selection"
+  [d setObject:[NSString stringWithFormat:@"%li",
+                         [[selectionMatrix selectedCell] tag]]
+        forKey:Input];
+  // "Execution"
+  NSInteger execType = [executeTypeBtn indexOfSelectedItem];
+  NSInteger outTag = [[outputMatrix selectedCell] tag];
+  [d setObject:[NSString stringWithFormat:@"%li", execType]
+        forKey:ExecType];
+  [d setObject:[NSString stringWithFormat:@"%li", outTag]
+        forKey:(execType == EXEC_IN_BACKGROUND) ? ReturnData : WindowType];
+  [d setObject:[NSString stringWithFormat:@"%li",
+                         [[shellMatrix selectedCell] tag]]
+        forKey:ExecInShell];
 }
 
 - (void)_revert
@@ -259,11 +244,15 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
       [commandTF setEditable:YES];
       [keyTF setEditable:YES];
-      [selectionMatrix setEnabled:YES];
-      [outputMatrix setEnabled:YES];
-      [executeTypeBtn setEnabled:YES];
+      
       [acceptPlainTextBtn setEnabled:YES];
       [acceptFilesBtn setEnabled:YES];
+      [acceptRichTextBtn setEnabled:YES];
+      [selectionMatrix setEnabled:YES];
+      
+      [executeTypeBtn setEnabled:YES];
+      [outputMatrix setEnabled:YES];
+      [shellMatrix setEnabled:YES];
 
       s = [d objectForKey:Commandline];
       [commandTF setStringValue:s?s:@""];
@@ -271,18 +260,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
       s = [d objectForKey:Key];
       [keyTF setStringValue:s?s:@""];
 
-      i = [[d objectForKey:Type] intValue];
-      if (i<0 || i>2) i=0;
-      [executeTypeBtn selectItemAtIndex:i];
-
-      i = [[d objectForKey:Input] intValue];
-      if (i<0 || i>2) i = 0;
-      [selectionMatrix selectCellWithTag:i];
-
-      i=[[d objectForKey:ReturnData] intValue];
-      if (i<0 || i>1) i = 0;
-      [outputMatrix selectCellWithTag:i];
-
+      // "Accept"
       if ([d objectForKey:AcceptTypes])
         {
           i = [[d objectForKey:AcceptTypes] intValue];
@@ -294,28 +272,108 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
           [acceptPlainTextBtn setState: 1];
           [acceptFilesBtn setState: 0];
         }
+
+      // "Use Selection"
+      i = [[d objectForKey:Input] intValue];
+      if (i<0 || i>2) i = 0;
+      [selectionMatrix selectCellWithTag:i];
+
+      // "Execution"
+      i = [[d objectForKey:ExecType] intValue];
+      if (i<0 || i>1) i=0;
+      [executeTypeBtn selectItemAtIndex:i];
+
+      // outputMatrix
+      if (i == EXEC_IN_BACKGROUND)
+        i = [[d objectForKey:ReturnData] intValue];
+      else
+        i = [[d objectForKey:WindowType] intValue];
+      if (i<0 || i>1) i = 0;
+      [outputMatrix selectCellWithTag:i];
+      [self updateOutputMatrix];
+      
+      // shellMatrix
+      i = [[d objectForKey:ExecInShell] intValue];
+      if (i<0 || i>1) i = 0;
+      [shellMatrix selectCellWithTag:i];
+      [self updateShellMatrix];
     }
   else
     {
       [commandTF setEditable:NO];
+      [commandTF setStringValue:@""];
       [keyTF setEditable:NO];
-      [selectionMatrix setEnabled:NO];
-      [outputMatrix setEnabled:NO];
-      [executeTypeBtn setEnabled:NO];
+      [keyTF setStringValue:@""];
+      
       [acceptPlainTextBtn setEnabled:NO];
       [acceptFilesBtn setEnabled:NO];
-
-      [keyTF setStringValue:@""];
-      [commandTF setStringValue:@""];
+      [acceptRichTextBtn setEnabled:NO];
+      [selectionMatrix setEnabled:NO];
+      
+      [executeTypeBtn setEnabled:NO];
+      [outputMatrix setEnabled:NO];
+      [shellMatrix setEnabled:NO];
     }
 
   current = r;
 }
 
+- (void)updateOutputMatrix
+{
+  if ([executeTypeBtn indexOfSelectedItem] == EXEC_IN_BACKGROUND)
+    {
+      [[outputMatrix cellWithTag:0] setTitle:@"Discard Output"];
+      [[outputMatrix cellWithTag:1] setTitle:@"Return Output"];
+    }
+  else
+    {
+      [[outputMatrix cellWithTag:0] setTitle:@"Idle Window"];
+      [[outputMatrix cellWithTag:1] setTitle:@"New Window"];
+    }  
+}
+- (void)updateShellMatrix
+{
+  BOOL enabled = YES;
+  NSMutableAttributedString *aTitle;
+
+  // Run Service in a Window
+  if (([executeTypeBtn indexOfSelectedItem]) == EXEC_IN_WINDOW &&
+      ([[outputMatrix selectedCell] tag] == WINDOW_IDLE))
+    {
+      enabled = NO;
+    }
+
+  if (enabled)
+    {
+      [shellMatrix setEnabled:YES];
+      for (id cell in [shellMatrix cells])
+        {
+          aTitle = [[NSMutableAttributedString alloc]
+                         initWithAttributedString:[cell attributedTitle]];
+          [aTitle addAttribute:NSForegroundColorAttributeName
+                         value:[NSColor blackColor]
+                         range:NSMakeRange(0, [aTitle length])];
+          [cell setAttributedTitle:aTitle];
+        }      
+    }
+  else
+    {
+      [shellMatrix setEnabled:NO];
+      for (id cell in [shellMatrix cells])
+        {
+          aTitle = [[NSMutableAttributedString alloc]
+                         initWithAttributedString:[cell attributedTitle]];
+          [aTitle addAttribute:NSForegroundColorAttributeName
+                         value:[NSColor darkGrayColor]
+                         range:NSMakeRange(0, [aTitle length])];
+          [cell setAttributedTitle:aTitle];
+        }
+    }
+}
+
 // Service name change Text Field
 - (void)controlTextDidEndEditing:(NSNotification *)aNotif
 {
-  NSLog(@"textDidEndEditing");
   if ([aNotif object] == nameChangeTF)
     {
       [self _update];
@@ -327,36 +385,35 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // Check if current dictionary was changed
 - (void)markAsChanged:(id)sender
 {
-  if (sender == commandTF || sender == keyTF)
+  // if (sender == commandTF || sender == keyTF)
+  if ([[sender class] isKindOfClass:[NSTextField class]])
     {
       [panel setDefaultButtonCell:[okBtn cell]];
     }
 
   if (sender == executeTypeBtn)
     {
-      switch([executeTypeBtn indexOfSelectedItem])
-        {
-        case 0: // Run Service in the Background
-          [[outputMatrix cellWithTag:0] setTitle:@"Discard Output"]; // 0 + 0 = 0
-          [[outputMatrix cellWithTag:1] setTitle:@"Return Output"];  // 0 + 1 = 1
-          break;
-        case 1: // Run Service in a Window
-          [[outputMatrix cellWithTag:0] setTitle:@"Idle Window"]; // 1 + 0 = 1
-          [[outputMatrix cellWithTag:1] setTitle:@"New Window"];  // 1 + 1 = 2
-          break;
-        }
+      [self updateOutputMatrix];
+      sender = outputMatrix;
     }
-  
+
+  if (sender == outputMatrix)
+    {
+      [self updateShellMatrix];
+    }
+
   [self _update];
   
   if (![services isEqual:[TerminalServices terminalServicesDictionary]])
     {
       [okBtn setEnabled:YES];
+      [saveBtn setEnabled:NO];
       [panel setDocumentEdited:YES];
     }
   else
     {
       [okBtn setEnabled:NO];
+      [saveBtn setEnabled:YES];
       [panel setDocumentEdited:NO];      
     }
 }
@@ -436,12 +493,21 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   // Accessory view
   [savePanel setAccessoryView:accView];
   [saveServicesTable reloadData];
+  [saveServicesTable deselectAll:self];
   
   if ([savePanel runModalForDirectory:[TerminalServices serviceDirectory]
                                  file:nil] == NSOKButton)
     {
-      
+      NSEnumerator *rowsEnum = [saveServicesTable selectedRowEnumerator];
+      id row;
+
+      while (row = [rowsEnum nextObject])
+        {
+          NSLog(@"Save Services: selected service: %@",
+                [serviceList objectAtIndex:[row intValue]]);
+        }
     }
+  [panel makeKeyAndOrderFront:self];
 }
 
 @end

@@ -97,7 +97,8 @@
         i = ACCEPT_STRING;
       
       if (i == (ACCEPT_STRING | ACCEPT_FILENAMES))
-        types = [NSArray arrayWithObjects:NSStringPboardType,NSFilenamesPboardType,nil];
+        types = [NSArray
+                  arrayWithObjects:NSStringPboardType,NSFilenamesPboardType,nil];
       else if (i == ACCEPT_FILENAMES)
         types = [NSArray arrayWithObjects:NSFilenamesPboardType,nil];
       else if (i == ACCEPT_STRING)
@@ -111,8 +112,8 @@
         [md setObject:types forKey:@"NSSendTypes"];
 
       // "Execution" block
-      i = [[info objectForKey:Type] intValue];
-      if (i == TYPE_BACKGROUND)
+      i = [[info objectForKey:ExecType] intValue];
+      if (i == EXEC_IN_BACKGROUND)
         {
           i = [[info objectForKey:ReturnData] intValue];
           if (types && i==1)
@@ -173,15 +174,15 @@
     }
 
   // Extract fields from service info
-  type = [[info objectForKey:Type] intValue];
+  type = [[info objectForKey:ExecType] intValue];
   ret_data = [[info objectForKey:ReturnData] intValue];
   input = [[info objectForKey:Input] intValue];
-  cmdline=[info objectForKey:Commandline];
+  cmdline = [info objectForKey:Commandline];
   if ([info objectForKey:AcceptTypes])
     accepttypes = [[info objectForKey:AcceptTypes] intValue];
   else
     accepttypes = ACCEPT_STRING;
-  shell = [[info objectForKey:ExecuteInShell] intValue];
+  shell = [[info objectForKey:ExecInShell] intValue];
 
   NSDebugLLog(@"service",@"cmdline='%@' %i %i %i %i",
               cmdline,type,ret_data,input,accepttypes);
@@ -295,7 +296,7 @@
   // "Exectute" type
   switch (type)
     {
-    case TYPE_BACKGROUND:
+    case EXEC_IN_BACKGROUND:
       {
         NSTask *t = [[[NSTask alloc] init] autorelease];
         NSPipe *sin,*sout;
@@ -388,38 +389,36 @@
         NSDebugLLog(@"service",@"clean up");
       }
       break;
-
-
-    case TYPE_WINDOW_IDLE:
-    case TYPE_WINDOW_NEW:
+    case EXEC_IN_WINDOW:
       {
         TerminalWindowController *twc = nil;
-
-        // if (type == TYPE_WINDOW_IDLE)
-        //   {
-        //     twc = [[NSApp delegate] idleTerminalWindow];
-        //     [twc showWindow:self];
-        //   }
-        // if (!twc)
-        //   {
-            // twc = [[NSApp delegate] newWindow];
+        
+        if ([[info objectForKey:WindowType] intValue] == WINDOW_IDLE)
+          {
+            // twc = [[NSApp delegate] idleTerminalWindow];
             // [twc showWindow:self];
-            // [twc setDocumentEdited:NO];
-        //   }
+            NSDebugLLog(@"service",@"got window %@",twc);
+            // if (!twc)
+            //   {
+            //     twc = [[NSApp delegate] newWindow];
+            //     [twc showWindow:self];
+            //     [twc setDocumentEdited:NO];
+            //   }
+            // [[twc terminalView] runProgram:program
+            //                  withArguments:arguments
+            //                   initialInput:input == INPUT_STDIN ? data : nil];
+          }
+        else
+          {
+            twc = [[NSApp delegate]
+                    newWindowWithProgram:program
+                               arguments:arguments
+                                   input:input == INPUT_STDIN ? data : nil];
+            [twc showWindow:self];
+          }
 
-        NSDebugLLog(@"service",@"got window %@",twc);
-
-        // [[twc terminalView] runProgram:program
-        //                  withArguments:arguments
-        //                   initialInput:input == INPUT_STDIN ? data : nil];
-        twc = [[NSApp delegate]
-                newWindowWithProgram:program
-                           arguments:arguments
-                               input:input == INPUT_STDIN ? data : nil];
-        [twc showWindow:self];
       }
       break;
-
     }
   NSDebugLLog(@"service",@"return");
 }

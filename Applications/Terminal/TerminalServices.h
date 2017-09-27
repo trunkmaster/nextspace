@@ -18,8 +18,8 @@
 // "Accept" block
 #define AcceptTypes @"AcceptTypes"
 #define ACCEPT_STRING    1 // "Plain text"
-//#define ACCEPT_RICH      3 // "Rich text"
 #define ACCEPT_FILENAMES 2 // "Files"
+#define ACCEPT_RICH      3 // "Rich text"
 
 // "Use Selection" block
 #define Input @"Input"
@@ -28,14 +28,26 @@
 #define INPUT_CMDLINE 2 // "On Command Line"
 
 // "Execution" block
-#define Type @"Type"
-#define TYPE_BACKGROUND  0 // "Run Service in the Background"
-#define TYPE_WINDOW_NEW  1 // "Run Service in the New Window"  1 + 1 = 2
-#define TYPE_WINDOW_IDLE 2 // "Run Service in the Idle Window" 1 + 0 = 1
+// #define Type @"Type"
+// #define TYPE_BACKGROUND  0
+// #define TYPE_WINDOW_NEW  1
+// #define TYPE_WINDOW_IDLE 2
+
+// 0 - "Run Service in the Background", 1 = "Run Service in a Window"
+#define ExecType @"ExecType"
+#define EXEC_IN_BACKGROUND 0
+#define EXEC_IN_WINDOW     1
+
+// 1 = "New Window", 0 = "Idle Window"
+#define WindowType @"WindowType"
+#define WINDOW_IDLE 0
+#define WINDOW_NEW  1
+
 // 1 = "Return Output", 0 = "Discard Output"
 #define ReturnData @"ReturnData"
-// 1 = "Default Shell", 0 = "No Shell"
-#define ExecuteInShell @"ExecuteInShell"
+
+// 0 = "No Shell", 1 = "Default Shell"
+#define ExecInShell @"ExecInShell"
 
 @interface TerminalServices : NSObject
 {
