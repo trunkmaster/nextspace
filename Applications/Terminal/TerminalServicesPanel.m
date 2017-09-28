@@ -10,6 +10,7 @@
 
 #import <AppKit/AppKit.h>
 
+#import "Defaults.h"
 #import "TerminalServices.h"
 #import "TerminalServicesPanel.h"
 
@@ -526,8 +527,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // "Save..." button
 - (void)saveServicesAs:(id)sender
 {
-  NSSavePanel         *savePanel = [NSSavePanel savePanel];
-  NSMutableDictionary *
+  NSSavePanel *savePanel = [NSSavePanel savePanel];
 
   [savePanel setTitle:@"Save Services"];
   [savePanel setShowsHiddenFiles:NO];
@@ -536,23 +536,32 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   [saveServicesTable reloadData];
   // [saveServicesTable deselectAll:self]; // TODO: doesn't work
   for (int i=0; i < [saveServicesTable numberOfRows]; i++)
-    {
-      [saveServicesTable deselectRow:i];
-    }
+    [saveServicesTable deselectRow:i];
+  
   if (![savePanel accessoryView])
     [savePanel setAccessoryView:accView];
   
-  if ([savePanel runModalForDirectory:[TerminalServices serviceDirectory]
+  if ([savePanel runModalForDirectory:[Defaults sessionsDirectory]
                                  file:nil] == NSOKButton)
     {
-      NSEnumerator *rowsEnum = [saveServicesTable selectedRowEnumerator];
-      id row;
+      NSEnumerator   *rowsEnum = [saveServicesTable selectedRowEnumerator];
+      id             row;
+      NSMutableArray *sList = [NSMutableArray new];
+      NSString       *fName = [savePanel filename];
 
-      while (row = [rowsEnum nextObject])
+      while ((row = [rowsEnum nextObject]) != nil)
         {
-          NSLog(@"Save Services: selected service: %@",
-                [serviceList objectAtIndex:[row intValue]]);
+          [sList addObject:[serviceList objectAtIndex:[row intValue]]];
         }
+
+      if ([[fName pathExtension] isEqualToString:@""])
+        {
+          fName = [fName stringByAppendingPathExtension:@"plist"];
+        }
+      
+      [[TerminalServices plistForServiceNames:sList] writeToFile:fName
+                                                      atomically:YES];
+      [sList release];
     }
   [panel makeKeyAndOrderFront:self];
 }
