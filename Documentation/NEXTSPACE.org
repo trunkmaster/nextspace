@@ -3549,23 +3549,16 @@
        - Idle Window
 ****** DONE "Save" should be disabled if "OK" enabled
 ****** DONE shellMatrix disabled если выбрана опция "Idle Window"
-****** TODO Implement "Save..." button
+****** DONE Implement "Save..." button
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
+****** DONE Статус кнопки "OK"
+       After "OK" button pressed futher changes won't change state of "OK"
+       button and panel.
+****** TODO При добавлении проверять дубли
 ****** TODO Первый запуск панели Terminal Services
        Если определенных сервисов нет, спросить у пользователя загружать ли
        сэмплы (посмотреть в OPENSTEP).
-****** TODO Кнопка "OK"
-******* TODO Нажатие по клавише "Enter"
-        На данный момент все работает нормально ([panel
-        setDefaultButtonCell]), но не для NSTextField. Нажатие клавиши Enter
-        перехватывается окном (panel), редактирование завершается, кнопка "OK"
-        нажимется.
-        Должно быть: сначала принимается введенное значение (markAsChanged:),
-        второе нажатие на Enter должно нажимать кнопку.
-******* DONE Статус
-        After "OK" button pressed futher changes won't change state of "OK"
-        button and panel.
 ***** TODO Проверить типы создания окон (shell, program)
 ****** TODO Do we need "Idle" window type?
        В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
@@ -3606,10 +3599,10 @@
 ****** TODO %s
 ****** TODO %p
 ****** TODO %s %p
-**** TODO Edit->Find
-     Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO Edit->Select All
      Выбирать не только видимый текст.
+**** TODO Edit->Find
+     Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO (After: Preferences.app-Keyboard) Keyboard 
 ***** TODO Keyboard
       Command, Alternate, Control, Shift.
@@ -3764,7 +3757,6 @@
       Нужно реализовать lazy механизм выделения памяти.
 ***** TODO Display -> Wrap lines that are too long
 ***** TODO Colors -> Cursor -> Blinking
-***** TODO Activity monitor (+Preferences section)
 ***** TODO Preferences -> Title Bar -> Xterm Title
       От программ типа MidnightCommander.
       [TerminalView ts_setTitle] вызыввается только если TERM=xterm.

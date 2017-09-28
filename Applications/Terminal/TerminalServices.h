@@ -53,11 +53,10 @@
 {
 }
 
-+ (void)updateServicesPlist;
-
-+ (NSString *)serviceDirectory;
-
 + (NSDictionary *)terminalServicesDictionary;
++ (NSString *)serviceDirectory;
++ (NSDictionary *)plistForServiceNames:(NSArray *)services;
++ (void)updateServicesPlist;
 
 @end
 

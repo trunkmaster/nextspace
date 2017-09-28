@@ -9,6 +9,7 @@
 */
 
 #import <AppKit/AppKit.h>
+#import <NXAppKit/NXAlert.h>
 
 #import "TerminalServices.h"
 
@@ -30,6 +31,8 @@
   if (d)
     return d;
 
+  NXRunAlertPanel(@"Terminal Services", @"No services are define. Would you like to load a set of example services?", @"Load Examples", @"Don't Load", nil);
+
   dPath = [[NSBundle mainBundle] pathForResource:@"DefaultTerminalServices"
                                          ofType:@"svcs"];
   d = [[NSDictionary dictionaryWithContentsOfFile:dPath]
@@ -50,23 +53,20 @@
 
 + (NSDictionary *)plistForServiceNames:(NSArray *)services
 {
-}
-
-+ (void)updateServicesPlist
-{
   NSMutableArray *a = [[NSMutableArray alloc] init];
   NSDictionary   *d = [TerminalServices terminalServicesDictionary];
-  NSEnumerator   *e = [d keyEnumerator];
-  NSString       *name;
 
-  while ((name = [e nextObject]))
+  if (!services)
+    services = [d allKeys];
+
+  for (NSString *name in services)
     {
-      int i;
-      NSString *key;
       NSMutableDictionary *md;
-      NSDictionary *info;
-      NSArray *types;
-      NSString *menu_name;
+      NSDictionary	  *info;
+      NSString            *menu_name;
+      NSString            *key;
+      int                 i;
+      NSArray             *types;
 
       info = [d objectForKey:name];
 
@@ -81,11 +81,10 @@
       else
         menu_name = [NSString stringWithFormat:@"%@/%@",@"Terminal",name];
       [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    menu_name,
-                                  @"default",nil]
+                                    menu_name, @"default",nil]
              forKey: @"NSMenuItem"];
 
-      // Key equivavelnt
+      // Key equivalent
       key = [info objectForKey:Key];
       if (key && [key length])
         {
@@ -128,13 +127,16 @@
       DESTROY(md);
     }
 
-  {
-    NSString *path = [[TerminalServices serviceDirectory]
+  return [NSDictionary dictionaryWithObject:a forKey:@"NSServices"];
+}
+
++ (void)updateServicesPlist
+{
+  NSString *path = [[TerminalServices serviceDirectory]
                        stringByAppendingPathComponent:@"TerminalServices.plist"];
 
-    d = [NSDictionary dictionaryWithObject:a forKey:@"NSServices"];
-    [d writeToFile:path atomically:YES];
-  }
+  [[TerminalServices plistForServiceNames:nil] writeToFile:path
+                                                atomically:YES];
 
   /* TODO: if a submenu of services is 'held' open when services are
      reloaded, -gui crashes */
