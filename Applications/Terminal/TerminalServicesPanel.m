@@ -123,6 +123,8 @@
 
 - (void)awakeFromNib
 {
+  [panel setFrameAutosaveName:@"ServicesPanel"];
+  
   [serviceTable setDelegate:self];
   [serviceTable setDataSource:self];
   [serviceTable setAllowsMultipleSelection:NO];
@@ -222,6 +224,9 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   [tableView addSubview:nameChangeTF];
   [panel makeFirstResponder:nameChangeTF];
   [nameChangeTF selectText:self];
+  
+  // will be enabled in -controlTextDidEndEditing:
+  [[panel defaultButtonCell] setEnabled:NO];
   
   return NO;
 }
@@ -372,12 +377,33 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 }
 
 // Service name change Text Field
+- (void)controlTextDidBeginEditing:(NSNotification *)aNotif
+{
+  NSLog(@"TextField began editing.");
+}
 - (void)controlTextDidEndEditing:(NSNotification *)aNotif
 {
+  NSLog(@"TextField ended editing.");
   if ([aNotif object] == nameChangeTF)
     {
+      NSString *sName = [nameChangeTF stringValue];
+      NSArray  *sList;
+        
       [self _update];
       [nameChangeTF removeFromSuperview];
+      
+      sList = [serviceList sortedArrayUsingSelector:@selector(compare:)];
+      [serviceList release];
+      serviceList = [sList mutableCopy];
+      
+      [serviceTable selectRow:[sList indexOfObject:sName]
+         byExtendingSelection:NO];
+      [serviceTable scrollRowToVisible:[sList indexOfObject:sName]];
+      [self markAsChanged:self];
+    }
+  else if ([aNotif object] == commandTF)
+    {
+      NSLog(@"COMMAND");
       [self markAsChanged:self];
     }
 }
@@ -385,11 +411,15 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // Check if current dictionary was changed
 - (void)markAsChanged:(id)sender
 {
-  // if (sender == commandTF || sender == keyTF)
-  if ([[sender class] isKindOfClass:[NSTextField class]])
+  NSLog(@"First responder: %@", [[panel firstResponder] className]);
+  if ([panel firstResponder] == commandTF)
     {
-      [panel setDefaultButtonCell:[okBtn cell]];
+      NSLog(@"markAsChanged: first reponder is Command Text Field.");
     }
+  // if (sender == commandTF || sender == keyTF)
+  //   {
+  //     [panel setDefaultButtonCell:[okBtn cell]];
+  //   }
 
   if (sender == executeTypeBtn)
     {
@@ -441,8 +471,15 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // "New" button
 - (void)newService:(id)sender
 {
-  NSString  *n = _(@"Unnamed service");
-  NSInteger row;
+  NSString  *n;
+  NSInteger row, sc = 1;
+
+  for (NSString *s in serviceList)
+    {
+      if ([s rangeOfString:@"New Service"].location != NSNotFound)
+        sc++;
+    }
+  n = [NSString stringWithFormat:@"New Service #%li", sc];
   
   [serviceList addObject:n];
   [serviceTable reloadData];
@@ -450,13 +487,13 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   [serviceTable selectRow:row byExtendingSelection:NO];
   [serviceTable scrollRowToVisible:row];
 
-  [self tableView:serviceTable
-        shouldEditTableColumn:[[serviceTable tableColumns] objectAtIndex:0]
-              row:row];
-  
   current = row;
   [self tableViewSelectionDidChange:nil];
   [self markAsChanged:self];
+  
+  [self tableView:serviceTable
+        shouldEditTableColumn:[[serviceTable tableColumns] objectAtIndex:0]
+              row:row];  
 }
 
 // "OK" button
@@ -466,6 +503,10 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   NSUserDefaults *ud;
 
   if (!services) return;
+
+  // id fr = [panel firstResponder];
+  // if (fr == nameChangeTF || fr == commandTF || fr == keyTF)
+  //   return;
 
   [self _update];
 
@@ -485,15 +526,21 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // "Save..." button
 - (void)saveServicesAs:(id)sender
 {
-  NSSavePanel *savePanel = [NSSavePanel savePanel];
+  NSSavePanel         *savePanel = [NSSavePanel savePanel];
+  NSMutableDictionary *
 
   [savePanel setTitle:@"Save Services"];
   [savePanel setShowsHiddenFiles:NO];
 
   // Accessory view
-  [savePanel setAccessoryView:accView];
   [saveServicesTable reloadData];
-  [saveServicesTable deselectAll:self];
+  // [saveServicesTable deselectAll:self]; // TODO: doesn't work
+  for (int i=0; i < [saveServicesTable numberOfRows]; i++)
+    {
+      [saveServicesTable deselectRow:i];
+    }
+  if (![savePanel accessoryView])
+    [savePanel setAccessoryView:accView];
   
   if ([savePanel runModalForDirectory:[TerminalServices serviceDirectory]
                                  file:nil] == NSOKButton)
