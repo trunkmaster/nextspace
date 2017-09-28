@@ -48,6 +48,10 @@
   return path;
 }
 
++ (NSDictionary *)plistForServiceNames:(NSArray *)services
+{
+}
+
 + (void)updateServicesPlist
 {
   NSMutableArray *a = [[NSMutableArray alloc] init];
