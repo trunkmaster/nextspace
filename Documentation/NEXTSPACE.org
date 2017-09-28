@@ -255,14 +255,29 @@
 
 * Frameworks
 
-** TODO NXAppKit [10/11]
+** TODO NXAppKit [9/11]
    additions to and modification of AppKit classes
 *** TODO NXSavePanel, NXOpenPanel
     Standard panels without icons, dirs-first sorting, without
     keyboard focus in browser.
+*** TODO NXAlertPanel
+    Modified NSRunAlertPanel().
+    Нужно проверить еще раз с разным количеством строк. Наблюдал проблемы с
+    количеством строк == 3. Третья строка не отображается.
+**** DONE Максимальный размер панели
+     Если текст messageField не помещается в максимальны размер панели, есть
+     варианты:
+     1. Обрезать видимый текст. Нужно только убедиться в том, что не видно
+        часть строки внизу.
+     2. Создавать ScrollView с вертикальным scroll'ом.
+     3. Уменьшать размер шрифта, пока текст не поместиться или делать окно
+        максимального размера, а текст пускай обрезается.
+     Пойду посмотрю в NeXT UIG...
+     В UIG сказано о том, что ScrollView может добавляться если требуется
+     дополнительные объяснения для сообщения (кнопочка 'Explain' показывает
+     этот ScrollView). Поэтому пока останавливаемся на варианте №3.
 *** DONE NXIcon
 *** DONE NXIconLabel
-*** DONE Перевести сокращение текста на функцию в NXUtilities
 *** DONE NXIconView
 **** TODO -checkWrapDown что-то непонятное делает с размером view
 *** DONE NXSplitView
@@ -317,20 +332,7 @@
 **** DONE Добавить возможность загрузки clockbits снаружи
      Получается громоздко и некрасиво. Лучше сделать subclass и override
      initWithFrame: и drawRect: в этом subclass.
-*** DONE NXAlertPanel
-    Modified NSRunAlertPanel().
-**** DONE Максимальный размер панели
-     Если текст messageField не помещается в максимальны размер панели, есть
-     варианты:
-     1. Обрезать видимый текст. Нужно только убедиться в том, что не видно
-        часть строки внизу.
-     2. Создавать ScrollView с вертикальным scroll'ом.
-     3. Уменьшать размер шрифта, пока текст не поместиться или делать окно
-        максимального размера, а текст пускай обрезается.
-     Пойду посмотрю в NeXT UIG...
-     В UIG сказано о том, что ScrollView может добавляться если требуется
-     дополнительные объяснения для сообщения (кнопочка 'Explain' показывает
-     этот ScrollView). Поэтому пока останавливаемся на варианте №3.
+*** DONE Перевести сокращение текста на функцию в NXUtilities
 *** Version 2.0
 **** TODO NXHelpPanel
      OpenStep's NSHelpPanel implementation
@@ -3537,9 +3539,6 @@
 ****** DONE Customized service name edit in list
 ****** DONE Use customized edit field for New service
 ****** DONE Command line tooltip
-****** DONE Статус кнопки "OK"
-       After "OK" button pressed futher changes won't change state of "OK"
-       button and panel.
 ****** DONE outputMatrix
        В зависимости от выбора в executeTypeBtn менять надписи:
        Run Service in the Background
@@ -3548,11 +3547,25 @@
        Run Service in a Window
        + New Window
        - Idle Window
-****** DONE Кнопка "Save" disabled если "OK" enabled
+****** DONE "Save" should be disabled if "OK" enabled
 ****** DONE shellMatrix disabled если выбрана опция "Idle Window"
 ****** TODO Implement "Save..." button
        "Save Service" panel with aux view with services selection to save to
        alternate location (plist file).
+****** TODO Первый запуск панели Terminal Services
+       Если определенных сервисов нет, спросить у пользователя загружать ли
+       сэмплы (посмотреть в OPENSTEP).
+****** TODO Кнопка "OK"
+******* TODO Нажатие по клавише "Enter"
+        На данный момент все работает нормально ([panel
+        setDefaultButtonCell]), но не для NSTextField. Нажатие клавиши Enter
+        перехватывается окном (panel), редактирование завершается, кнопка "OK"
+        нажимется.
+        Должно быть: сначала принимается введенное значение (markAsChanged:),
+        второе нажатие на Enter должно нажимать кнопку.
+******* DONE Статус
+        After "OK" button pressed futher changes won't change state of "OK"
+        button and panel.
 ***** TODO Проверить типы создания окон (shell, program)
 ****** TODO Do we need "Idle" window type?
        В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
