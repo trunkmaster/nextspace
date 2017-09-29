@@ -3555,10 +3555,11 @@
 ****** DONE Статус кнопки "OK"
        After "OK" button pressed futher changes won't change state of "OK"
        button and panel.
-****** TODO При добавлении проверять дубли
-****** TODO Первый запуск панели Terminal Services
+****** DONE При добавлении проверять дубли
+****** DONE Первый запуск панели Terminal Services
        Если определенных сервисов нет, спросить у пользователя загружать ли
        сэмплы (посмотреть в OPENSTEP).
+***** TODO Implement "Add Arguments" panel
 ***** TODO Проверить типы создания окон (shell, program)
 ****** TODO Do we need "Idle" window type?
        В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
@@ -3594,7 +3595,6 @@
 // - when -checkTerminalWindowsState called window close button may be changed.
 // For Services command window we should ignore first two events.
 ****** DONE Run in shell only if ExecuteInShell == 1
-***** TODO Implement "Add Arguments" panel
 ***** TODO Проверить запуск сервисов с различными параметрами
 ****** TODO %s
 ****** TODO %p
