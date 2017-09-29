@@ -46,7 +46,7 @@ Terminal_LOCALIZED_RESOURCE_FILES = \
 
 Terminal_RESOURCE_FILES = \
 	Preferences/Preferences.bundle \
-	Resources/DefaultTerminalServices.svcs \
+	Resources/ExampleServices.svcs \
 	Resources/Terminal.tiff
 
 MAKE_STRINGS_OPTIONS = --aggressive-match --aggressive-remove

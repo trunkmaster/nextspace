@@ -9,6 +9,7 @@
 */
 
 #import <AppKit/AppKit.h>
+#import <NXAppKit/NXAlert.h>
 
 #import "Defaults.h"
 #import "TerminalServices.h"
@@ -150,6 +151,8 @@
   
   [self _revert];
   [serviceTable selectRow:0 byExtendingSelection:NO];
+  [self updateOutputMatrix];
+  [self updateShellMatrix];
 
   [commandTF setToolTip:@"If selection is to be placed on the command line, \nyou can mark the place to put it at with '%s' \n(otherwise it will be appended to the command line). \nYou can use '%%' to get a real '%'."];
 
@@ -380,15 +383,33 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // Service name change Text Field
 - (void)controlTextDidBeginEditing:(NSNotification *)aNotif
 {
-  NSLog(@"TextField began editing.");
+  if ([aNotif object] != nameChangeTF)
+    {
+      [okBtn setEnabled:YES];
+      [saveBtn setEnabled:NO];
+      [panel setDocumentEdited:YES];
+    }
 }
 - (void)controlTextDidEndEditing:(NSNotification *)aNotif
 {
-  NSLog(@"TextField ended editing.");
   if ([aNotif object] == nameChangeTF)
     {
       NSString *sName = [nameChangeTF stringValue];
       NSArray  *sList;
+
+      for (NSString *s in serviceList)
+        if ([s isEqualToString:sName])
+          {
+            NXRunAlertPanel(@"Terminal Services",
+                            @"Service with name \"%@\" already exist."
+                            @" Choose another name for service please.",
+                            @"OK", nil, nil, sName);
+            // TODO: in GNUstep/Workspace. Why focus is not returned to
+            // the last key window by default?
+            [panel makeKeyAndOrderFront:self];
+            [panel makeFirstResponder:nameChangeTF];
+            return;
+          }
         
       [self _update];
       [nameChangeTF removeFromSuperview];
@@ -400,11 +421,6 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
       [serviceTable selectRow:[sList indexOfObject:sName]
          byExtendingSelection:NO];
       [serviceTable scrollRowToVisible:[sList indexOfObject:sName]];
-      [self markAsChanged:self];
-    }
-  else if ([aNotif object] == commandTF)
-    {
-      NSLog(@"COMMAND");
       [self markAsChanged:self];
     }
 }
@@ -556,7 +572,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 
       if ([[fName pathExtension] isEqualToString:@""])
         {
-          fName = [fName stringByAppendingPathExtension:@"plist"];
+          fName = [fName stringByAppendingPathExtension:@"svcs"];
         }
       
       [[TerminalServices plistForServiceNames:sList] writeToFile:fName
