@@ -19,25 +19,45 @@
 #import "TerminalView.h"
 #import "Controller.h"
 
+static NSDictionary *servicesDictionary = nil;
+
 @implementation TerminalServices
 
 + (NSDictionary *)terminalServicesDictionary
 {
-  NSDictionary *d;
-  NSString     *dPath;
-
-  d = [[NSUserDefaults standardUserDefaults]
-        dictionaryForKey:@"TerminalServices"];
-  if (d)
-    return d;
-
-  NXRunAlertPanel(@"Terminal Services", @"No services are define. Would you like to load a set of example services?", @"Load Examples", @"Don't Load", nil);
-
-  dPath = [[NSBundle mainBundle] pathForResource:@"DefaultTerminalServices"
-                                         ofType:@"svcs"];
-  d = [[NSDictionary dictionaryWithContentsOfFile:dPath]
-        objectForKey:@"TerminalServices"];
-  return d;
+  NSDictionary *udServices;
+  
+  udServices = [[NSUserDefaults standardUserDefaults]
+                             dictionaryForKey:@"TerminalServices"];
+  if (udServices == nil && servicesDictionary == nil) // no defs, no decision
+    {
+      if (NXRunAlertPanel(@"Terminal Services",
+                          @"No services are define. "
+                          @"Would you like to load a set of example services?",
+                          @"Load Examples", @"Don't Load", nil) == NSOKButton)
+        {
+          NSString *dPath = [[NSBundle mainBundle]
+                                  pathForResource:@"ExampleServices"
+                                           ofType:@"svcs"];
+          servicesDictionary = [[[NSDictionary
+                                      dictionaryWithContentsOfFile:dPath]
+                                     objectForKey:@"TerminalServices"] copy];
+        }
+      else
+        {
+          servicesDictionary = [[NSDictionary alloc] init];
+        }
+    }
+  else if (udServices != nil) // there are defs, no decision
+    {
+      ASSIGN(servicesDictionary, udServices);
+    }
+  else if (servicesDictionary != nil) // no defs, decision was made
+    {
+      // just return 'servicesDictionary'
+    }
+  
+  return servicesDictionary;
 }
 
 + (NSString *)serviceDirectory
