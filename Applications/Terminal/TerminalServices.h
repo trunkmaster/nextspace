@@ -60,5 +60,14 @@
 
 @end
 
+@interface TerminalServices (AddArguments)
+{
+  NSTextField *tf_cmdline;
+}
++ (NSString *)getCommandlineFrom:(NSString *)cmdline
+                     selectRange:(NSRange)r
+                         service:(NSString *)service_name;
+@end
+
 #endif
 
