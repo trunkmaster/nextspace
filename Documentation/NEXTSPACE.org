@@ -3535,7 +3535,7 @@
 ****** DONE Font
 ***** DONE Linux Emulation
 **** TODO Services
-***** TODO Панель Info->Terminal Services
+***** DONE Панель Info->Terminal Services
 ****** DONE Customized service name edit in list
 ****** DONE Use customized edit field for New service
 ****** DONE Command line tooltip
