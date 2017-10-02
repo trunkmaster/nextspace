@@ -1,0 +1,27 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "closeSetTitlePanel:",
+	    "setTitle:"
+	);
+	Super = NSObject;
+    };
+    NSObject = {
+	Actions = (
+	    "closeSetTitlePanel:",
+	    "setTitle:"
+	);
+    };
+    SetTitlePanel = {
+	Actions = (
+	);
+	Outlets = (
+	    cancelBtn,
+	    titleField,
+	    setBtn,
+	    titlePanel
+	);
+	Super = NSObject;
+    };
+}
