@@ -2,25 +2,21 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "closeSetTitlePanel:",
-	    "setTitle:"
+	    "newAction:"
 	);
 	Super = NSObject;
     };
-    NSObject = {
+    TerminalServices = {
 	Actions = (
-	    "closeSetTitlePanel:",
-	    "setTitle:"
-	);
-    };
-    SetTitlePanel = {
-	Actions = (
+	    "cancel:",
+	    "ok:"
 	);
 	Outlets = (
 	    cancelBtn,
-	    titleField,
-	    setBtn,
-	    titlePanel
+	    commandField,
+	    addArgsPanel,
+	    okBtn,
+	    serviceNameField
 	);
 	Super = NSObject;
     };
