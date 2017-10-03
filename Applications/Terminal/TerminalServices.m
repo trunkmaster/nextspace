@@ -131,6 +131,11 @@ static NSDictionary *servicesDictionary = nil;
 
       // "Use Selection" block
       i = [[info objectForKey:Input] intValue];
+      // Do not insert 'NSSendTypes' key if 'Use Selection - On Cmd Line'
+      // option was set and command line doesn't have '%s' symbol.
+      if ([[info objectForKey:Commandline] rangeOfString:@"%s"].location
+          == NSNotFound && i == INPUT_CMDLINE)
+        i = INPUT_NO;
       if (types && (i == INPUT_STDIN || i ==  INPUT_CMDLINE))
         [md setObject:types forKey:@"NSSendTypes"];
 
@@ -215,15 +220,18 @@ static NSDictionary *servicesDictionary = nil;
 
   // "Accept"
   data = nil;
+  NSLog(@"NSStringPboardType: %@", [pb stringForType:NSStringPboardType]);
   if (input && accepttypes&ACCEPT_STRING &&
       (data = [pb stringForType:NSStringPboardType]))
     {
+      NSLog(@"Got NSStringPboardType");
     }
   else if (input && accepttypes&ACCEPT_FILENAMES &&
            (data = [pb propertyListForType:NSFilenamesPboardType]))
     {
       NSDebugLLog(@"service",@"got filenames '%@' '%@' %i",
                   data,[data class],[data isProxy]);
+      NSLog(@"Got NSFilenamesPboardType");
     }
 
   NSDebugLLog(@"service",@"got data '%@'",data);
@@ -239,6 +247,7 @@ static NSDictionary *servicesDictionary = nil;
       if (data && [data isKindOfClass:[NSArray class]])
         data = [(NSArray *)data componentsJoinedByString:@" "];
     }
+  NSLog(@"Services: got data: %@", data);
 
   // Process 'Command' service parameter
   {
@@ -250,7 +259,7 @@ static NSDictionary *servicesDictionary = nil;
 
     add_args = YES;
     p_pos = -1;
-    for (i = 0;i < [str length]-1; i++)
+    for (i = 0; i < [str length]-1; i++)
       {
         ch = [str characterAtIndex:i];
         if (ch != '%')
@@ -290,13 +299,14 @@ static NSDictionary *servicesDictionary = nil;
         cmdline = [self	getCommandlineFrom:cmdline
                                selectRange:NSMakeRange(p_pos,2)
                                    service:name];
-        NSLog(@"Command line now is: %@", cmdline);
         if (!cmdline)
           {
-            *error=[_(@"Service aborted by user.") retain];
+            // *error=[_(@"Service aborted by user.") retain];
             return;
           }
       }
+
+    NSLog(@"Services: got cmdline: %@", cmdline);
     
     // No Shell/Default shell
     if (shell)
@@ -450,27 +460,16 @@ static NSDictionary *servicesDictionary = nil;
   NSDebugLLog(@"service",@"return");
 }
 
-
 @end
 
 @implementation TerminalServices (AddArguments)
-
-- (void)cancel:(id)sender
-{
-  [NSApp stopModalWithCode:NSRunAbortedResponse];
-}
-
-- (void)ok:(id)sender
-{
-  [NSApp stopModalWithCode:NSRunStoppedResponse];
-}
 
 - (NSString *)getCommandlineFrom:(NSString *)cmdline
                      selectRange:(NSRange)r
                          service:(NSString *)service_name
 {
   NSString *s;
-  int result;
+  int      result;
 
   if (addArgsPanel == nil)
     {
@@ -482,14 +481,14 @@ static NSDictionary *servicesDictionary = nil;
     }
 
   [commandField setStringValue:cmdline];
+  [serviceNameField setStringValue:service_name];
+  [addArgsPanel makeKeyAndOrderFront:self];
   if (r.length)
     {
       NSText *text = [addArgsPanel fieldEditor:NO forObject:commandField];
       // printf("t=%@ r=%@\n",[t text],NSStringFromRange(r));
       [text setSelectedRange:r];
     }
-  [serviceNameField setStringValue:service_name];
-  [addArgsPanel makeKeyAndOrderFront:self];
   
   result = [NSApp runModalForWindow:addArgsPanel];
   s = [commandField stringValue];
@@ -501,5 +500,20 @@ static NSDictionary *servicesDictionary = nil;
     return nil;
 }
 
-@end
+- (void)awakeFromNib
+{
+  [addArgsPanel setFrameAutosaveName:@"AddArgumentsPanel"];
+  [addArgsPanel setDefaultButtonCell:[okBtn cell]];
+}
 
+- (void)cancel:(id)sender
+{
+  [NSApp stopModalWithCode:NSRunAbortedResponse];
+}
+
+- (void)ok:(id)sender
+{
+  [NSApp stopModalWithCode:NSRunStoppedResponse];
+}
+
+@end
