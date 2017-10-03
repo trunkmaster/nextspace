@@ -51,6 +51,11 @@
 
 @interface TerminalServices : NSObject
 {
+  id addArgsPanel;
+  id okBtn;
+  id cancelBtn;
+  id commandField;
+  id serviceNameField;
 }
 
 + (NSDictionary *)terminalServicesDictionary;
@@ -62,9 +67,8 @@
 
 @interface TerminalServices (AddArguments)
 {
-  NSTextField *tf_cmdline;
 }
-+ (NSString *)getCommandlineFrom:(NSString *)cmdline
+- (NSString *)getCommandlineFrom:(NSString *)cmdline
                      selectRange:(NSRange)r
                          service:(NSString *)service_name;
 @end
