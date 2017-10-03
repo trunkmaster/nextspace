@@ -66,8 +66,7 @@
 @end
 
 @interface TerminalServices (AddArguments)
-{
-}
+
 - (NSString *)getCommandlineFrom:(NSString *)cmdline
                      selectRange:(NSRange)r
                          service:(NSString *)service_name;
