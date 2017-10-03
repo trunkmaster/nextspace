@@ -42,7 +42,8 @@ Terminal_LOCALIZED_RESOURCE_FILES = \
 	Terminal.gorm \
 	SetTitlePanel.gorm \
 	TerminalServices.gorm \
-	SaveAsAccessory.gorm
+	SaveAsAccessory.gorm \
+	AddArguments.gorm
 
 Terminal_RESOURCE_FILES = \
 	Preferences/Preferences.bundle \
