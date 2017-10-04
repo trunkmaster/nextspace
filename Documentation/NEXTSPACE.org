@@ -3536,6 +3536,7 @@
 ***** DONE Linux Emulation
 **** TODO Services
 ***** DONE Панель Info->Terminal Services
+****** DONE При создании .plist проверять Send/Return Types
 ****** DONE Customized service name edit in list
 ****** DONE Use customized edit field for New service
 ****** DONE Command line tooltip
@@ -3555,26 +3556,43 @@
 ****** DONE Статус кнопки "OK"
        After "OK" button pressed futher changes won't change state of "OK"
        button and panel.
-****** DONE При добавлении проверять дубли
 ****** DONE Первый запуск панели Terminal Services
        Если определенных сервисов нет, спросить у пользователя загружать ли
        сэмплы (посмотреть в OPENSTEP).
+****** DONE При добавлении проверять дубли
+****** DONE Добавление сервиса и фокус
+       При добавлении сервиса после ввода его имени переводить фокус на поле
+       "Command and Key Equivalent".
+       По большому счету Command Field должно быть всегда в фокусе.
 ***** DONE Implement "Add Arguments" panel
-***** TODO Проверить запуск сервисов с различными параметрами
-****** TODO NSSendTypes и %s
+***** DONE Проверить запуск сервисов с различными параметрами
+****** DONE NSSendTypes и %s
        При генерации TerminalServices.plist NSSendTypes - для "On Cmd Line" -
        нужно добавлять только в том случае если в коммандной строке
        присутствует %s.
-****** TODO %s
-****** TODO %p
-****** TODO %s %p
+       Cases:
+       1. NSSendTypes есть (%s, On Cmd Line, Plain Text):
+          - текст не выделен, пункт меню неактивен.
+          - текс выделен, пукт меню активен, %s заменяется, без %s добавляется.
+       2. NSSendTypes нет (On Cmd Line, Plain Text)
+       Согласно документации Apple, NSSendTypes опциональное поле. Однако если
+       у сервиса нет такого поля, ему не передается Selection. Это вполне
+       логично, поскольку GNUstep не знает какую информацию можно передавать
+       сервису. Поэтому сервис не может принимать selection и при этом быть
+       доступным при отсутствии selection.
+       Для того, чтобы создать сервис, который принимает переменное число
+       аргументов нужно создать сервис с параметром %p. NSSendTypes не
+       создаются, соответственно selection не передается. Но при вызове
+       такого сервиса появляется панель "Add Arguments" в которую можно
+       сделать Paste или удалить выделенный %p для запуска команды без
+       параметра.
+****** DONE %s
+****** DONE %p
+****** DONE %s %p
 ***** TODO Проверить типы создания окон (shell, program)
-****** TODO Do we need "Idle" window type?
-       В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
+****** Do we need "Idle" window type?
        The answer is: not explicitly. Use it internally for running programs
        and shells.
-       Idle Window это просто первое окно, на котором ничего не
-       выполняется. В это окно передается выполнение команды.
 // Window type and state:
 // 1. Normal - has running shell/command inside it. No other command was
 //             executed inside shell. Close button has normal state.
@@ -3602,6 +3620,13 @@
 // - when shell/command exited -terminalWindow:becameIdle: method has called;
 // - when -checkTerminalWindowsState called window close button may be changed.
 // For Services command window we should ignore first two events.
+****** TODO Вернуть методы работы с Idle Window
+       В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
+       Idle Window это просто первое окно, в котором ничего не
+       выполняется. В это окно:
+       - передается выполнение команды;
+       или
+       - заменяется shell на выполняемую комманду.
 ****** DONE Run in shell only if ExecuteInShell == 1
 **** TODO Edit->Select All
      Выбирать не только видимый текст.

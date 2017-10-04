@@ -135,9 +135,13 @@ static NSDictionary *servicesDictionary = nil;
       // option was set and command line doesn't have '%s' symbol.
       if ([[info objectForKey:Commandline] rangeOfString:@"%s"].location
           == NSNotFound && i == INPUT_CMDLINE)
-        i = INPUT_NO;
+        {
+          i = INPUT_NO;
+        }
       if (types && (i == INPUT_STDIN || i ==  INPUT_CMDLINE))
-        [md setObject:types forKey:@"NSSendTypes"];
+        {
+          [md setObject:types forKey:@"NSSendTypes"];
+        }
 
       // "Execution" block
       i = [[info objectForKey:ExecType] intValue];
@@ -148,11 +152,21 @@ static NSDictionary *servicesDictionary = nil;
             [md setObject:types forKey:@"NSReturnTypes"];
         }
 
+      if (![md objectForKey:@"NSSendTypes"] &&
+          ![md objectForKey:@"NSReturnTypes"])
+        {
+          NXRunAlertPanel(@"Terminal Services", @"Service with name '%@' has neither Send nor Return values. Please specify '%%s' as command parameter or 'Return Output' in 'Execution' block. Services file was not saved.", @"OK", nil, nil, name);
+          DESTROY(md);
+          DESTROY(a);
+          return nil;
+        }
+
       [a addObject:md];
       DESTROY(md);
     }
 
-  return [NSDictionary dictionaryWithObject:a forKey:@"NSServices"];
+  return [NSDictionary dictionaryWithObject:[a autorelease]
+                                     forKey:@"NSServices"];
 }
 
 + (void)updateServicesPlist
