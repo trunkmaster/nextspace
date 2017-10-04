@@ -3717,6 +3717,7 @@
       статус окна на "Edited".
       Начало положено: в Controller реализован метод isProgramClean
 ***** TODO Miniwindow
+      Пока на уровне идеи:
       - добавлять в иконку приложения иконку со статусом приложения (killed,
         stopped, suspended);
       - отображать scrolling "Out" image если, что-то меняется.

@@ -13,8 +13,6 @@
 
 #import "TerminalServices.h"
 
-// #include "ServicesParameterWindowController.h"
-
 #import "TerminalWindow.h"
 #import "TerminalView.h"
 #import "Controller.h"
@@ -446,6 +444,7 @@ static NSDictionary *servicesDictionary = nil;
         
         if ([[info objectForKey:WindowType] intValue] == WINDOW_IDLE)
           {
+            NSLog(@"Run service '%@' in IDLE window", name);
             // twc = [[NSApp delegate] idleTerminalWindow];
             // [twc showWindow:self];
             NSDebugLLog(@"service",@"got window %@",twc);
