@@ -428,15 +428,15 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 // Check if current dictionary was changed
 - (void)markAsChanged:(id)sender
 {
-  NSLog(@"First responder: %@", [[panel firstResponder] className]);
-  if ([panel firstResponder] == commandTF)
+  // NSLog(@"First responder: %@", [[panel firstResponder] className]);
+  
+  if ([panel firstResponder] != commandTF)
     {
       NSLog(@"markAsChanged: first reponder is Command Text Field.");
+      [panel makeFirstResponder:commandTF];
+      [[panel fieldEditor:NO forObject:commandTF]
+        setSelectedRange:NSMakeRange([[commandTF stringValue] length], 0)];
     }
-  // if (sender == commandTF || sender == keyTF)
-  //   {
-  //     [panel setDefaultButtonCell:[okBtn cell]];
-  //   }
 
   if (sender == executeTypeBtn)
     {
