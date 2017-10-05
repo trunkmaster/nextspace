@@ -1847,9 +1847,9 @@ static void set_foreground(NSGraphicsContext *gc,
 {
   if (!selection.length)
     return nil;
-  if (st!=nil && ![st isEqual:NSStringPboardType])
+  if (st != nil && ![st isEqual:NSStringPboardType])
     return nil;
-  if (rt!=nil)
+  if (rt != nil)
     return nil;
   return self;
 }
@@ -1981,9 +1981,6 @@ static void set_foreground(NSGraphicsContext *gc,
         {
           s.location = r0.location;
           s.length = r1.location + r1.length - r0.location;
-          // Select last character in line if mouse at edge of window
-          if ((s.location + s.length) % sx == sx - 1)
-            s.length += 1;
         }
       else
         {
@@ -1991,6 +1988,10 @@ static void set_foreground(NSGraphicsContext *gc,
           s.length = r0.location + r0.length - r1.location;
         }
 
+      // Select last character in line if mouse at edge of window
+      if ((s.location + s.length) % sx == sx - 1)
+        s.length += 1;
+      
       [self _setSelection:s];
       [self displayIfNeeded];
 
