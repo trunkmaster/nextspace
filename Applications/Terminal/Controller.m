@@ -198,12 +198,12 @@
           
           if ([[existingStartup allKeys] containsObject:@"MultipleWindows"])
             {// Save all windows loaded from specific file
-              NSLog(@"Save all windows loaded from file %@.", filePath);
+              // NSLog(@"Save all windows loaded from file %@.", filePath);
               [self _saveMultiSession:filePath allWindows:NO];
             }
           else
             {// Save single window loaded from file
-              NSLog(@"Save single window loaded from file %@.", filePath);
+              // NSLog(@"Save single window loaded from file %@.", filePath);
               Defaults *defs = [twc livePreferences];
               if (defs == nil) defs = [twc preferences];
           
@@ -262,12 +262,12 @@
       filePath = [panel filename];
       if ([windowPopUp selectedTag]) // All Windows
         {
-          NSLog(@"Save all opened windows As %@.", filePath);
+          // NSLog(@"Save all opened windows As %@.", filePath);
           [self _saveMultiSession:filePath allWindows:YES];
         }
       else
         {
-          NSLog(@"Save single window As %@.", filePath);
+          // NSLog(@"Save single window As %@.", filePath);
           if ((prefs = [twc livePreferences]) == nil)
             prefs = [twc preferences];
           [prefs setObject:NSStringFromRect([[twc window] frame])
@@ -367,7 +367,7 @@
   NSArray *arguments;
   TerminalWindowController *twc;
 
-  NSLog(@"Controller: applicationDidFinishLaunching");
+  // NSLog(@"Controller: applicationDidFinishLaunching");
   
   [NSApp setServicesProvider:[[TerminalServices alloc] init]];
 
@@ -376,7 +376,7 @@
   // Check for -NXAutoLaunch
   if ([arguments containsObject:@"-NXAutoLaunch"])
     {
-      NSLog(@"Appplication arguments contains -NXAutoLaunch");
+      // NSLog(@"Appplication arguments contains -NXAutoLaunch");
       
       NSUInteger index = [arguments indexOfObject:@"-NXAutoLaunch"];
       if ([[arguments objectAtIndex:++index] isEqualToString:@"YES"])
@@ -392,8 +392,6 @@
       [twc showWindow:self];
       break;
     case OnStartOpenFile:
-      // twc = [self newWindowWithStartupFile:[[Defaults shared] startupFile]];
-      // [twc showWindow:self];
       [self openStartupFile:[[Defaults shared] startupFile]];
       break;
     default:
@@ -484,7 +482,7 @@
 - (BOOL)application:(NSApplication *)sender
  	   openFile:(NSString *)filename
 {
-  NSLog(@"Open file: %@", filename);
+  // NSLog(@"Open file: %@", filename);
   if ([[filename pathExtension] isEqualToString:@"term"])
     {
       [self openStartupFile:filename];
@@ -509,7 +507,7 @@
   TerminalWindowController *twc;
   int                      windowCloseBehavior;
 
-  NSLog(@"Child with pid: %i did exit(%i)", pid, status);
+  // NSLog(@"Child with pid: %i did exit(%i)", pid, status);
   
   twc = [windows objectForKey:[NSString stringWithFormat:@"%i",pid]];
   [twc setDocumentEdited:NO];
@@ -585,9 +583,9 @@
       //       [idleList containsObject:twc],
       //       [[twc terminalView] isUserProgramRunning]);
  
-      if ([[twc terminalView] isUserProgramRunning] ||
-          [idleList containsObject:twc] ||
-          [self isProgramClean:[twc shellPath]] == NO)
+      if (([[twc terminalView] isUserProgramRunning] ||
+           [self isProgramClean:[twc shellPath]] == NO) &&
+          [idleList containsObject:twc] == NO)
         {
           [twc setDocumentEdited:YES];
         }
@@ -633,14 +631,6 @@
     {
       int pid, status;
 
-      // HACK: This is window running Services command. Ignore it.
-      if ([idleList containsObject:twc])
-        {
-          [idleList removeObject:twc];
-          [[NSApp delegate] checkActiveTerminalWindows];
-          return;          
-        }
-      
       NSLog(@"Window %@ became idle.", [twc shellPath]);
       [idleList addObject:twc];
       
@@ -675,10 +665,23 @@
   [[NSApp delegate] checkActiveTerminalWindows];
 }
 
+// Idle window is window that doesn't run in 'Shell' or 'Program' mode.
+// Obviously it's a window that was not closed after command ended.
 - (BOOL)isTerminalWindowIdle:(TerminalWindowController *)twc
 {
   return [idleList containsObject:twc];
 }
+
+- (TerminalWindowController *)idleTerminalWindow
+{
+  NSDebugLLog(@"idle",@"get idle window from idle list: %@",idleList);
+
+  if ([idleList count])
+    return [idleList objectAtIndex:0];
+  else
+    return nil;
+}
+
 
 // TODO: TerminalWindowDidCloseNotification -> windowDidClose:(NSNotification*)n
 - (void)closeTerminalWindow:(TerminalWindowController *)twc
@@ -828,7 +831,6 @@
                          withArguments:args
                           initialInput:input];
   [windows setObject:twc forKey:[NSString stringWithFormat:@"%i",pid]];
-  [idleList addObject:twc];
   
   return twc;
 }

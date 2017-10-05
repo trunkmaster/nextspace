@@ -3534,7 +3534,7 @@
 ****** DONE Window Size
 ****** DONE Font
 ***** DONE Linux Emulation
-**** TODO Services
+**** DONE Services
 ***** DONE Панель Info->Terminal Services
 ****** DONE При создании .plist проверять Send/Return Types
 ****** DONE Customized service name edit in list
@@ -3589,7 +3589,7 @@
 ****** DONE %s
 ****** DONE %p
 ****** DONE %s %p
-***** TODO Проверить типы создания окон (shell, program)
+***** DONE Проверить типы создания окон (shell, program)
 ****** Do we need "Idle" window type?
        The answer is: not explicitly. Use it internally for running programs
        and shells.
@@ -3620,7 +3620,7 @@
 // - when shell/command exited -terminalWindow:becameIdle: method has called;
 // - when -checkTerminalWindowsState called window close button may be changed.
 // For Services command window we should ignore first two events.
-****** TODO Вернуть методы работы с Idle Window
+****** DONE Вернуть методы работы с Idle Window
        В свете polymorphicOpts нужно пересмотреть вопрос о Idle.
        Idle Window это просто первое окно, в котором ничего не
        выполняется. В это окно:

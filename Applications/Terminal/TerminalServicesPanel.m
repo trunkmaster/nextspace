@@ -432,7 +432,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
   
   if ([panel firstResponder] != commandTF)
     {
-      NSLog(@"markAsChanged: first reponder is Command Text Field.");
+      // NSLog(@"markAsChanged: first reponder is Command Text Field.");
       [panel makeFirstResponder:commandTF];
       [[panel fieldEditor:NO forObject:commandTF]
         setSelectedRange:NSMakeRange([[commandTF stringValue] length], 0)];
