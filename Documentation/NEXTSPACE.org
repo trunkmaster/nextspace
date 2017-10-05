@@ -3632,7 +3632,7 @@
 ***** DONE Выбирать не только видимый текст.
 ***** DONE Корректный скролл
       Несколько первых строчек некорректно отрисовываются при скролле.
-**** TODO Mouse selection & last char at EOL
+**** DONE Mouse selection & last char at EOL
 **** TODO Edit->Find
      Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO (After: Preferences.app-Keyboard) Keyboard 
