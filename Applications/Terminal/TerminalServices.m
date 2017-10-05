@@ -445,18 +445,23 @@ static NSDictionary *servicesDictionary = nil;
         if ([[info objectForKey:WindowType] intValue] == WINDOW_IDLE)
           {
             NSLog(@"Run service '%@' in IDLE window", name);
-            // twc = [[NSApp delegate] idleTerminalWindow];
-            // [twc showWindow:self];
+            twc = [[NSApp delegate] idleTerminalWindow];
             NSDebugLLog(@"service",@"got window %@",twc);
-            // if (!twc)
-            //   {
-            //     twc = [[NSApp delegate] newWindow];
-            //     [twc showWindow:self];
-            //     [twc setDocumentEdited:NO];
-            //   }
-            // [[twc terminalView] runProgram:program
-            //                  withArguments:arguments
-            //                   initialInput:input == INPUT_STDIN ? data : nil];
+            if (twc)
+              {
+                [twc showWindow:self];
+                [[twc terminalView] runProgram:program
+                                 withArguments:arguments
+                                  initialInput:input == INPUT_STDIN ? data : nil];
+              }
+            else
+              {
+                twc = [[NSApp delegate]
+                        newWindowWithProgram:program
+                                   arguments:arguments
+                                       input:input == INPUT_STDIN ? data : nil];
+                [twc showWindow:self];
+              }
           }
         else
           {
