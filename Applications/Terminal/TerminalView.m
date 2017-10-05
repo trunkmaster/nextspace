@@ -601,7 +601,7 @@ static void set_foreground(NSGraphicsContext *gc,
     /* Fill the background of dirty cells. Since the background doesn't
        change that often, runs of dirty cells with the same background color
        are combined and drawn with a single rectfill. */
-    l_color = 0;
+    l_color = -1;
     l_attr = 0;
     DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
     blackOnWhite = (WIN_BG_B > 0.5) ? YES : NO;
@@ -745,6 +745,8 @@ static void set_foreground(NSGraphicsContext *gc,
           }
       }
 //------------------- CHARACTERS ------------------------------------------------
+    l_color = -1;
+    l_attr = 0;
     /* now draw any dirty characters */
     for (iy = y0; iy < y1; iy++)
       {
@@ -769,8 +771,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
             //--- FOREGROUND
             /* ~1700 cycles/change */
-            // if ((ch->attr & 0x02) || (ch->ch!=0 && ch->ch!=32))
-            if ((ch->attr & 0x02) || (ch->ch!=0))
+            if ((ch->attr & 0x02) || (ch->ch != 0 && ch->ch != 32))
               {
                 if (ch->attr & 0x8) //-------------------------------- FG INVERSE
                   {
@@ -822,8 +823,7 @@ static void set_foreground(NSGraphicsContext *gc,
                     color = ch->color & 0x0f;
                     if (ch->attr & 0x40) color ^= 0x0f;
                     
-                    if (color != l_color || ch->attr != l_attr ||
-                        (ix == 0 && iy == 0))
+                    if (color != l_color || ch->attr != l_attr)
                       {
                         l_color = color;
                         l_attr = ch->attr;
@@ -842,7 +842,7 @@ static void set_foreground(NSGraphicsContext *gc,
                             //         "'%c' \tFG NORMAL: setting TEXT_NORM\n",
                             //         ch->ch);
                             DPSsethsbcolor(cur,
-                                           TEXT_NORM_H, TEXT_NORM_S, TEXT_NORM_B);
+                                           TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
                           }
                         else
                           {
