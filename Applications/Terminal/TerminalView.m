@@ -1982,7 +1982,7 @@ static void set_foreground(NSGraphicsContext *gc,
           s.location = r0.location;
           s.length = r1.location + r1.length - r0.location;
           // Select last character in line if mouse at edge of window
-          if (s.length % sx == sx-1)
+          if ((s.location + s.length) % sx == sx - 1)
             s.length += 1;
         }
       else

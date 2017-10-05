@@ -3628,10 +3628,11 @@
        или
        - заменяется shell на выполняемую комманду.
 ****** DONE Run in shell only if ExecuteInShell == 1
-**** TODO Edit->Select All
+**** DONE Edit->Select All
 ***** DONE Выбирать не только видимый текст.
-***** TODO Корректный скролл
+***** DONE Корректный скролл
       Несколько первых строчек некорректно отрисовываются при скролле.
+**** TODO Mouse selection & last char at EOL
 **** TODO Edit->Find
      Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO (After: Preferences.app-Keyboard) Keyboard 
@@ -3697,9 +3698,6 @@
      Нужно скроллить как указано в Preferences.app.
      Настройки мыши, которые устанавливаются в Preferences должны читаться
      Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
-**** TODO Font->Colors
-     Перетаскивание цвета на фон окна, текст, курсор в окне должно менять эти
-     цвета.
 **** TODO Activity control
 ***** TODO Раздел Preferences "Activity Monitor"
 ***** TODO Window state
@@ -3723,6 +3721,9 @@
       - добавлять в иконку приложения иконку со статусом приложения (killed,
         stopped, suspended);
       - отображать scrolling "Out" image если, что-то меняется.
+**** TODO Font->Colors
+     Перетаскивание цвета на фон окна, текст, курсор в окне должно менять эти
+     цвета.
 **** TODO Info Panel
      С прокручивающимся текстом в иконке терминала. ;)
 **** TODO Code review for set window and view size
@@ -3763,7 +3764,7 @@
      Скорее всего просто рисуется белым по белому.
 **** DONE Выделять bold цветом и шрифтом
 **** DONE Set Title
-     В целом оперирует с настройкой "Custom Title".
+     В целом оперирует настройкой "Custom Title".
      Устанавливает параметр "Custom Title" в значение формата: 
      	<CustomTitle>|Terminal -- <настройки Preferences->Title Bar> -- <FileName>
      - через меню Shell->Set Title:
@@ -3774,7 +3775,7 @@
        заголовок активного окна меняется только после того, как будет нажата
        кнопка "Set Window".
 *** TODO > 1.0
-**** TODO Prefernces
+**** TODO Preferences
 ***** TODO Параметры для Shell
       Варианты:
       1. При выборе какого-то shell из PopUp метка "Command:" меняется на
