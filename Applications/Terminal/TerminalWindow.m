@@ -66,10 +66,10 @@ NSString *TerminalWindowSizeDidChangeNotification =
   charCellSize = [Defaults characterCellSizeForFont:[preferences terminalFont]];
   [self calculateSizes];
 
-  NSLog(@"TerminalWindow: create window: %ix%i char cell:%@ window content:%@",
-        terminalColumns, terminalRows,
-        NSStringFromSize(charCellSize),
-        NSStringFromSize(winContentSize));
+  // NSLog(@"TerminalWindow: create window: %ix%i char cell:%@ window content:%@",
+  //       terminalColumns, terminalRows,
+  //       NSStringFromSize(charCellSize),
+  //       NSStringFromSize(winContentSize));
   
   windowCloseBehavior = [preferences windowCloseBehavior];
 
@@ -181,7 +181,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
 - (void)dealloc
 {
-  NSLog(@"Window DEALLOC.");
+  // NSLog(@"Window DEALLOC.");
   
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   // [preferences release];
@@ -299,7 +299,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
 - (void)windowWillClose:(NSNotification *)n
 {
-  NSLog(@"Window WILL close.");
+  // NSLog(@"Window WILL close.");
 
   [tView closeProgram];
 
@@ -310,7 +310,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
 
 - (BOOL)windowShouldClose:(id)sender
 {
-  NSLog(@"Window SHOULD close.");
+  // NSLog(@"Window SHOULD close.");
   if ([[self window] isDocumentEdited])
     {
       if (NSRunAlertPanel(@"Close",
@@ -632,7 +632,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
     }
   else
     {
-      NSLog(@"TerminalWindow: changeFont called by %@", [sender className]);
+      // NSLog(@"TerminalWindow: changeFont called by %@", [sender className]);
     }
 }
 

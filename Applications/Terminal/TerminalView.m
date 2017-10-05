@@ -2321,9 +2321,9 @@ static void set_foreground(NSGraphicsContext *gc,
        watcher:self
        forMode:NSDefaultRunLoopMode];
 
-  // [[NSNotificationCenter defaultCenter]
-  //       	postNotificationName:TerminalViewBecameNonIdleNotification
-  //                             object:self];
+  [[NSNotificationCenter defaultCenter]
+        	postNotificationName:TerminalViewBecameNonIdleNotification
+                              object:self];
 
   // Setup titles
   DESTROY(title_window);

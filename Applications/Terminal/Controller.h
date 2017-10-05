@@ -43,6 +43,7 @@
 
 - (void)terminalWindow:(TerminalWindowController *)twc becameIdle:(BOOL)idle;
 - (BOOL)isTerminalWindowIdle:(TerminalWindowController *)twc;
+- (TerminalWindowController *)idleTerminalWindow;
 - (void)closeTerminalWindow:(TerminalWindowController *)twc;
 
 - (void)setupTerminalWindow:(TerminalWindowController *)controller;
@@ -50,7 +51,6 @@
 - (BOOL)isProgramClean:(NSString *)program;
 - (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
-// - (TerminalWindowController *)newWindowWithStartupFile:(NSString *)filePath;
 - (TerminalWindowController *)newWindowWithPreferences:(id)defs
                                            startupFile:(NSString *)path;
 - (void)openStartupFile:(NSString *)filePath;
