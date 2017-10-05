@@ -527,9 +527,9 @@ static void set_foreground(NSGraphicsContext *gc,
 {
   int ix,iy;
   char buf[8];
-  NSGraphicsContext *cur=GSCurrentContext();
+  NSGraphicsContext *cur = GSCurrentContext();
   int x0,y0,x1,y1;
-  NSFont *f,*current_font=nil;
+  NSFont *f,*current_font = nil;
 
   int encoding;
 
@@ -573,13 +573,13 @@ static void set_foreground(NSGraphicsContext *gc,
   r.origin.x -= border_x;
   r.origin.y -= border_y;
 
-  x0=floor(r.origin.x/fx);
-  x1=ceil((r.origin.x+r.size.width)/fx);
+  x0 = floor(r.origin.x/fx);
+  x1 = ceil((r.origin.x + r.size.width)/fx);
   if (x0 < 0) x0 = 0;
   if (x1 >= sx) x1 = sx;
 
   y1 = floor(r.origin.y/fy);
-  y0 = ceil((r.origin.y+r.size.height)/fy);
+  y0 = ceil((r.origin.y + r.size.height)/fy);
   y0 = sy - y0;
   y1 = sy - y1;
   if (y0 < 0) y0 = 0;
@@ -587,8 +587,8 @@ static void set_foreground(NSGraphicsContext *gc,
 
   NSDebugLLog(@"draw",@"dirty (%i %i)-(%i %i)\n",x0,y0,x1,y1);
 
-  draw_cursor=draw_cursor || draw_all ||
-    (SCREEN(cursor_x,cursor_y).attr&0x80)!=0;
+  draw_cursor = draw_cursor || draw_all ||
+    (SCREEN(cursor_x,cursor_y).attr&0x80) != 0;
 
   {
     int ry;
@@ -603,7 +603,7 @@ static void set_foreground(NSGraphicsContext *gc,
        are combined and drawn with a single rectfill. */
     l_color = 0;
     l_attr = 0;
-    DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
+    DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
     blackOnWhite = (WIN_BG_B > 0.5) ? YES : NO;
     
 #define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
@@ -720,7 +720,7 @@ static void set_foreground(NSGraphicsContext *gc,
                     if (ch->attr & 0x40) // selection BG
                       {
                         // fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_SEL\n", ch->ch);
-                        DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
+                        DPSsethsbcolor(cur, WIN_SEL_H, WIN_SEL_S, WIN_SEL_B);
                       }
                     else if ((ch->color>>4) == 15) // default BG
                       {
@@ -741,7 +741,7 @@ static void set_foreground(NSGraphicsContext *gc,
         if (start_x != -1)
           {
             scr_x = ix * fx + border_x;
-            R(start_x,scr_y,scr_x-start_x,fy);
+            R(start_x, scr_y, scr_x - start_x, fy);
           }
       }
 //------------------- CHARACTERS ------------------------------------------------
@@ -769,7 +769,8 @@ static void set_foreground(NSGraphicsContext *gc,
 
             //--- FOREGROUND
             /* ~1700 cycles/change */
-            if ((ch->attr & 0x02) || (ch->ch!=0 && ch->ch!=32))
+            // if ((ch->attr & 0x02) || (ch->ch!=0 && ch->ch!=32))
+            if ((ch->attr & 0x02) || (ch->ch!=0))
               {
                 if (ch->attr & 0x8) //-------------------------------- FG INVERSE
                   {
@@ -821,7 +822,8 @@ static void set_foreground(NSGraphicsContext *gc,
                     color = ch->color & 0x0f;
                     if (ch->attr & 0x40) color ^= 0x0f;
                     
-                    if (color != l_color || ch->attr != l_attr)
+                    if (color != l_color || ch->attr != l_attr ||
+                        (ix == 0 && iy == 0))
                       {
                         l_color = color;
                         l_attr = ch->attr;
@@ -836,8 +838,11 @@ static void set_foreground(NSGraphicsContext *gc,
 
                         if (color == 15 || (ch->attr & 0x40))
                           {
-                            // fprintf(stderr, "'%c' \tFG NORMAL: setting TEXT_NORM\n", ch->ch);
-                            DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+                            // fprintf(stderr,
+                            //         "'%c' \tFG NORMAL: setting TEXT_NORM\n",
+                            //         ch->ch);
+                            DPSsethsbcolor(cur,
+                                           TEXT_NORM_H, TEXT_NORM_S, TEXT_NORM_B);
                           }
                         else
                           {
@@ -848,7 +853,7 @@ static void set_foreground(NSGraphicsContext *gc,
               }
 
             //--- FONTS & ENCODING
-            if (ch->ch!=0 && ch->ch!=32 && ch->ch!=MULTI_CELL_GLYPH)
+            if (ch->ch != 0 && ch->ch != 32 && ch->ch != MULTI_CELL_GLYPH)
               {
                 total_draw++;
                 if ((ch->attr & 3) == 2)
@@ -949,8 +954,8 @@ static void set_foreground(NSGraphicsContext *gc,
       float x,y;
       [cursorColor set];
 
-      x=cursor_x*fx+border_x;
-      y=(sy-1-cursor_y+current_scroll)*fy+border_y;
+      x = cursor_x * fx + border_x;
+      y = (sy - 1 - cursor_y + current_scroll) * fy + border_y;
 
       switch (cursorStyle)
         {
@@ -968,12 +973,12 @@ static void set_foreground(NSGraphicsContext *gc,
           DPSrectfill(cur,x,y,fx,fy*0.1);
           break;
         }
-      draw_cursor=NO;
+      draw_cursor = NO;
     }
 
   NSDebugLLog(@"draw",@"total_draw=%i",total_draw);
 
-  draw_all=1;
+  draw_all = 1;
 }
 
 
@@ -1394,76 +1399,76 @@ static void set_foreground(NSGraphicsContext *gc,
     }
 }
 
--(void) _scrollTo: (int)new_scroll  update: (BOOL)update
+- (void)_scrollTo:(int)new_scroll update:(BOOL)update
 {
-  if (new_scroll>0)
-    new_scroll=0;
-  if (new_scroll<-sb_length)
-    new_scroll=-sb_length;
+  if (new_scroll > 0)
+    new_scroll = 0;
+  
+  if (new_scroll < -sb_length)
+    new_scroll = -sb_length;
 
-  if (new_scroll==current_scroll)
+  if (new_scroll == current_scroll)
     return;
-  current_scroll=new_scroll;
+  
+  current_scroll =  new_scroll;
 
   if (update)
+    [self _updateScroller];
+
+  [self setNeedsDisplay:YES];
+}
+
+- (void)scrollWheel:(NSEvent *)e
+{
+  float delta = [e deltaY];
+  int   new_scroll;
+  int   mult;
+
+  if ([e modifierFlags] & NSShiftKeyMask)
+    mult = 1;
+  else if ([e modifierFlags] & NSControlKeyMask)
+    mult = sy;
+  else
+    mult = 5;
+
+  new_scroll = current_scroll-delta*mult;
+  [self _scrollTo:new_scroll update:YES];
+}
+
+- (void)_updateScroll:(id)sender
+{
+  int  new_scroll;
+  int  part = [scroller hitPart];
+  BOOL update = YES;
+
+  if (part == NSScrollerKnob ||
+      part == NSScrollerKnobSlot)
     {
-      [self _updateScroller];
+      float f = [scroller floatValue];
+      new_scroll = (f - 1.0) * sb_length;
+      update = NO;
     }
+  else if (part == NSScrollerDecrementLine)
+    new_scroll = current_scroll - 1;
+  else if (part == NSScrollerDecrementPage)
+    new_scroll = current_scroll - sy/2;
+  else if (part == NSScrollerIncrementLine)
+    new_scroll = current_scroll+1;
+  else if (part == NSScrollerIncrementPage)
+    new_scroll = current_scroll+sy/2;
+  else
+    return;
 
-  [self setNeedsDisplay: YES];
+  [self _scrollTo:new_scroll update:update];
 }
 
--(void) scrollWheel: (NSEvent *)e
+- (void)setScroller:(NSScroller *)sc
 {
-	float delta=[e deltaY];
-	int new_scroll;
-	int mult;
-
-	if ([e modifierFlags]&NSShiftKeyMask)
-		mult=1;
-	else if ([e modifierFlags]&NSControlKeyMask)
-		mult=sy;
-	else
-		mult=5;
-
-	new_scroll=current_scroll-delta*mult;
-	[self _scrollTo: new_scroll  update: YES];
-}
-
--(void) _updateScroll: (id)sender
-{
-	int new_scroll;
-	int part=[scroller hitPart];
-	BOOL update=YES;
-
-	if (part==NSScrollerKnob ||
-	    part==NSScrollerKnobSlot)
-	{
-		float f=[scroller floatValue];
-		new_scroll=(f-1.0)*sb_length;
-		update=NO;
-	}
-	else if (part==NSScrollerDecrementLine)
-		new_scroll=current_scroll-1;
-	else if (part==NSScrollerDecrementPage)
-		new_scroll=current_scroll-sy/2;
-	else if (part==NSScrollerIncrementLine)
-		new_scroll=current_scroll+1;
-	else if (part==NSScrollerIncrementPage)
-		new_scroll=current_scroll+sy/2;
-	else
-		return;
-
-	[self _scrollTo: new_scroll  update: update];
-}
-
--(void) setScroller: (NSScroller *)sc
-{
-	[scroller setTarget: nil];
-	ASSIGN(scroller,sc);
-	[self _updateScroller];
-	[scroller setTarget: self];
-	[scroller setAction: @selector(_updateScroll:)];
+  [scroller setTarget:nil];
+  ASSIGN(scroller,sc);
+  [self _updateScroller];
+  [scroller setTarget:self];
+  [scroller setAction:@selector(_updateScroll:)];
 }
 
 @end
@@ -1695,6 +1700,7 @@ static void set_foreground(NSGraphicsContext *gc,
     }
 
   selection = s;
+  draw_all = 2;
   [self setNeedsLazyDisplayInRect:[self bounds]];
 }
 
@@ -1799,8 +1805,8 @@ static void set_foreground(NSGraphicsContext *gc,
 - (void)selectAll:(id)sender
 {
   struct selection_range s;
-  s.location=0;
-  s.length=sx*sy;
+  s.location = 0 - (sb_length * sx);
+  s.length = (sx * sy) + (sb_length * sx);
   [self _setSelection:s];
 }
 
@@ -1858,75 +1864,75 @@ static void set_foreground(NSGraphicsContext *gc,
 {
   struct selection_range s;
 
-  if (g==3)
+  if (g == 3)
     { /* select lines */
-      int l=floor(pos/(float)sx);
-      s.location=l*sx;
-      s.length=sx;
+      int l = floor(pos/(float)sx);
+      s.location = l*sx;
+      s.length = sx;
       return s;
     }
 
-  if (g==2)
+  if (g == 2)
     { /* select words */
-      int ofs=max_scrollback*sx;
+      int ofs = max_scrollback * sx;
       unichar ch,ch2;
       NSCharacterSet *cs;
       int i,j;
 
-      if (pos<0)
-        ch=sbuf[ofs+pos].ch;
+      if (pos < 0)
+        ch = sbuf[ofs+pos].ch;
       else
-        ch=screen[pos].ch;
-      if (ch==0) ch=' ';
+        ch = screen[pos].ch;
+      if (ch == 0) ch = ' ';
 
       /* try to find a character set for this character */
-      cs=[NSCharacterSet alphanumericCharacterSet];
-      if (![cs characterIsMember: ch])
-        cs=[NSCharacterSet punctuationCharacterSet];
-      if (![cs characterIsMember: ch])
-        cs=[NSCharacterSet whitespaceCharacterSet];
-      if (![cs characterIsMember: ch])
+      cs = [NSCharacterSet alphanumericCharacterSet];
+      if (![cs characterIsMember:ch])
+        cs = [NSCharacterSet punctuationCharacterSet];
+      if (![cs characterIsMember:ch])
+        cs = [NSCharacterSet whitespaceCharacterSet];
+      if (![cs characterIsMember:ch])
         {
-          s.location=pos;
-          s.length=1;
+          s.location = pos;
+          s.length = 1;
           return s;
         }
 
       /* search the line backwards for a boundary */
-      j=floor(pos/(float)sx);
-      j*=sx;
-      for (i=pos-1;i>=j;i--)
+      j = floor(pos/(float)sx);
+      j *= sx;
+      for (i = pos-1; i >= j; i--)
         {
-          if (i<0)
-            ch2=sbuf[ofs+i].ch;
+          if (i < 0)
+            ch2 = sbuf[ofs+i].ch;
           else
-            ch2=screen[i].ch;
-          if (ch2==0) ch2=' ';
+            ch2 = screen[i].ch;
+          if (ch2 == 0) ch2 = ' ';
 
-          if (![cs characterIsMember: ch2])
+          if (![cs characterIsMember:ch2])
             break;
         }
-      s.location=i+1;
+      s.location = i + 1;
 
       /* and forwards... */
-      j+=sx;
-      for (i=pos+1;i<j;i++)
+      j += sx;
+      for (i = pos+1; i < j; i++)
         {
-          if (i<0)
-            ch2=sbuf[ofs+i].ch;
+          if (i < 0)
+            ch2 = sbuf[ofs+i].ch;
           else
             ch2=screen[i].ch;
-          if (ch2==0) ch2=' ';
+          if (ch2 == 0) ch2 = ' ';
 
-          if (![cs characterIsMember: ch2])
+          if (![cs characterIsMember:ch2])
             break;
         }
-      s.length=i-s.location;
+      s.length = i - s.location;
       return s;
     }
 
-  s.location=pos;
-  s.length=0;
+  s.location = pos;
+  s.length = 0;
 
   return s;
 }
@@ -1938,33 +1944,32 @@ static void set_foreground(NSGraphicsContext *gc,
   struct selection_range s;
   int g;
   struct selection_range r0,r1;
-
 	
-  r0.location=r0.length=0;
-  r1=r0;
-  first=YES;
-  ofs0=0; /* get compiler to shut up */
-  g=[e clickCount];
-  while ([e type]!=NSLeftMouseUp)
+  r0.location = r0.length = 0;
+  r1 = r0;
+  first = YES;
+  ofs0 = 0; /* get compiler to shut up */
+  g = [e clickCount];
+  while ([e type] != NSLeftMouseUp)
     {
-      p=[e locationInWindow];
+      p = [e locationInWindow];
 
-      p=[self convertPoint: p  fromView: nil];
-      p.x=floor((p.x-border_x)/fx);
-      if (p.x<0) p.x=0;
-      if (p.x>=sx) p.x=sx-1;
-      p.y=ceil((p.y-border_y)/fy);
-      if (p.y<-1) p.y=-1;
-      if (p.y>sy) p.y=sy;
-      p.y=sy-p.y+current_scroll;
-      ofs1=((int)p.x)+((int)p.y)*sx;
+      p = [self convertPoint:p fromView:nil];
+      p.x = floor((p.x - border_x)/fx);
+      if (p.x < 0) p.x = 0;
+      if (p.x >= sx) p.x = sx - 1;
+      p.y = ceil((p.y - border_y)/fy);
+      if (p.y < -1) p.y = -1;
+      if (p.y > sy) p.y = sy;
+      p.y = sy - p.y + current_scroll;
+      ofs1 = ((int)p.x) + ((int)p.y) * sx;
 
-      r1=[self _selectionRangeAt: ofs1  granularity: g];
+      r1 = [self _selectionRangeAt:ofs1 granularity:g];
       if (first)
         {
-          ofs0=ofs1;
-          first=0;
-          r0=r1;
+          ofs0 = ofs1;
+          first = 0;
+          r0 = r1;
         }
 
       NSDebugLLog(@"select",@"ofs %i %i (%i+%i) (%i+%i)\n",
@@ -1972,25 +1977,28 @@ static void set_foreground(NSGraphicsContext *gc,
                   r0.location,r0.length,
                   r1.location,r1.length);
 
-      if (ofs1>ofs0)
+      if (ofs1 > ofs0)
         {
-          s.location=r0.location;
-          s.length=r1.location+r1.length-r0.location;
+          s.location = r0.location;
+          s.length = r1.location + r1.length - r0.location;
+          // Select last character in line if mouse at edge of window
+          if (s.length % sx == sx-1)
+            s.length += 1;
         }
       else
         {
-          s.location=r1.location;
-          s.length=r0.location+r0.length-r1.location;
+          s.location = r1.location;
+          s.length = r0.location + r0.length - r1.location;
         }
 
-      [self _setSelection: s];
+      [self _setSelection:s];
       [self displayIfNeeded];
 
-      e=[NSApp nextEventMatchingMask: NSLeftMouseDownMask|NSLeftMouseUpMask|
-               NSLeftMouseDraggedMask|NSMouseMovedMask
-                           untilDate: [NSDate distantFuture]
-                              inMode: NSEventTrackingRunLoopMode
-                             dequeue: YES];
+      e = [NSApp nextEventMatchingMask:(NSLeftMouseDownMask|NSLeftMouseUpMask|
+                                        NSLeftMouseDraggedMask|NSMouseMovedMask)
+                             untilDate:[NSDate distantFuture]
+                                inMode:NSEventTrackingRunLoopMode
+                               dequeue:YES];
     }
 
   if (selection.length)
