@@ -1,3 +1,13 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    InfoPanel = {
+	Actions = (
+	);
+	Outlets = (
+	    appIcon,
+	    panel,
+	    versionField
+	);
+	Super = NSObject;
+    };
 }

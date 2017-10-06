@@ -65,6 +65,16 @@
 
 // --- Menu
 
+// Info > Info Panel...
+- (void)openInfoPanel
+{
+  if (infoPanel == nil)
+    {
+      infoPanel = [[SetTitlePanel alloc] init];
+    }
+  [setTitlePanel activatePanel];
+}
+
 // Info > Preferences
 - (void)openPreferences:(id)sender
 {

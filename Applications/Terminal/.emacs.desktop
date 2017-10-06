@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Oct  5 18:54:24 2017
+;; Created Fri Oct  6 18:55:09 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -14,9 +14,75 @@
 (setq search-ring '("l_" "setNeedsLazyDispla" "setSelection" "draw" "_setSelection" "selectAll" "NSLog" "BecameNon" "Idle" "becameIdle" "getComman" "executeTypeBtn" "newWindowWithShell" "persis" "li" "WindowClose"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Terminal/ServicesAddArgumentsPanel.[hm]" "~/Developer/nextspace/Applications/Terminal/ServicesParameterWindowController.[hm]" "~/Developer/nextspace/Applications/Terminal/GNUmakefile" "~/Developer/nextspace/Applications/Terminal/Resources/DefaultTerminalServices.svcs" "~/Developer/nextspace/Applications/Terminal/GNUmakefile" "~/Developer/nextspace/Applications/Terminal/TerminalServicesPanel.*" "~/Developer/nextspace/Applications/Terminal/TerminalServices*" "~/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.m" "~/Developer/nextspace/Applications/Terminal/SetTitlePanel.h" "~/Developer/nextspace/Applications/Terminal/SetTitlePanel.m" "~/Developer/nextspace/Documentation/NEXTSPACE.org" "~/Developer/nextspace/Applications/Terminal/LinuxColors.sh" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Terminal/InfoPanel.[hm]" "~/Developer/nextspace/Applications/Terminal/ServicesAddArgumentsPanel.[hm]" "~/Developer/nextspace/Applications/Terminal/ServicesParameterWindowController.[hm]" "~/Developer/nextspace/Applications/Terminal/GNUmakefile" "~/Developer/nextspace/Applications/Terminal/Resources/DefaultTerminalServices.svcs" "~/Developer/nextspace/Applications/Terminal/GNUmakefile" "~/Developer/nextspace/Applications/Terminal/TerminalServicesPanel.*" "~/Developer/nextspace/Applications/Terminal/TerminalServices*" "~/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.m" "~/Developer/nextspace/Applications/Terminal/SetTitlePanel.h" "~/Developer/nextspace/Applications/Terminal/SetTitlePanel.m" "~/Developer/nextspace/Documentation/NEXTSPACE.org" "~/Developer/nextspace/Applications/Terminal/LinuxColors.sh" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal" "~/Developer/nextspace/Applications/Terminal/" "~/Developer/nextspace/Applications/Terminal"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/InfoPanel.m"
+  "InfoPanel.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1923
+  '(1889 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/InfoPanel.h"
+  "InfoPanel.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1086
+  '(1086 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/SetTitlePanel.m"
+  "SetTitlePanel.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
+  1042
+  '(2488 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.m"
+  "Controller.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
+  1827
+  '(1750 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalServicesPanel.m"
+  "TerminalServicesPanel.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
+  3102
+  '(6477 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.h"
+  "Controller.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
+  556
+  '(1590 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/TerminalView.m"
   "TerminalView.m"
@@ -51,17 +117,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.m"
-  "Controller.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  9094
-  '(15891 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/TerminalServices.m"
   "TerminalServices.m"
   'objc-mode
@@ -71,28 +126,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/TerminalServicesPanel.m"
-  "TerminalServicesPanel.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  12192
-  '(12119 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/Controller.h"
-  "Controller.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  1727
-  '(1590 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/TerminalWindow.m"
@@ -412,17 +445,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Terminal/SetTitlePanel.m"
-  "SetTitlePanel.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode autopair-mode)
-  1064
-  '(2488 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Terminal/Preferences/GNUmakefile.preamble"
