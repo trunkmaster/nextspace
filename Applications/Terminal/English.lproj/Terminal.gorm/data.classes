@@ -11,7 +11,8 @@
 	    "saveSessionAs:",
 	    "openSession:",
 	    "saveSession:",
-	    "openServicesPanel:"
+	    "openServicesPanel:",
+	    "openInfoPanel:"
 	);
 	Outlets = (
 	);
@@ -23,8 +24,9 @@
 	    "clearBuffer:",
 	    "modifyFont:",
 	    "modifyFontViaPanel:",
-	    "openServicesPanel:",
+	    "openInfoPanel:",
 	    "openPreferences:",
+	    "openServicesPanel:",
 	    "openSession:",
 	    "openSetTitlePanel:",
 	    "openWindow:",
