@@ -16,6 +16,7 @@
 #import "TerminalServices.h"
 #import "TerminalView.h"
 #import "TerminalWindow.h"
+#import "TerminalFinder.h"
 
 #import "Controller.h"
 
@@ -43,7 +44,7 @@
 
 - init
 {
-  if (!(self=[super init])) return nil;
+  if (!(self = [super init])) return nil;
 
   windows = [[NSMutableDictionary alloc] init];
   isAppAutoLaunched = NO;
@@ -66,13 +67,13 @@
 // --- Menu
 
 // Info > Info Panel...
-- (void)openInfoPanel
+- (void)openInfoPanel:(id)sender
 {
   if (infoPanel == nil)
     {
-      infoPanel = [[SetTitlePanel alloc] init];
+      infoPanel = [[InfoPanel alloc] init];
     }
-  [setTitlePanel activatePanel];
+  [infoPanel activatePanel];
 }
 
 // Info > Preferences
@@ -302,6 +303,12 @@
       setTitlePanel = [[SetTitlePanel alloc] init];
     }
   [setTitlePanel activatePanel];
+}
+
+// Edit > Find > Find Panel...
+- (void)orderFrontFindPanel:(id)sender
+{
+  [[TerminalFinder sharedInstance] orderFrontFindPanel:self];
 }
 
 // "Font" menu
