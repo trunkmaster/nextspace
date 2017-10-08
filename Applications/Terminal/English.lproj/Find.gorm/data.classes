@@ -1,3 +1,14 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    TerminalFinder = {
+	Actions = (
+	);
+	Outlets = (
+	    findNextButton,
+	    findPanel,
+	    findTextField,
+	    ignoreCaseButton
+	);
+	Super = NSObject;
+    };
 }

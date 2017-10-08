@@ -32,5 +32,6 @@
 }
 
 - (void)activatePanel;
+- (void)showAnimation;
 
 @end

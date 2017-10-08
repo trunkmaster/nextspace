@@ -30,7 +30,11 @@ Terminal_OBJC_FILES = \
 	\
 	TerminalWindow.m \
 	TerminalView.m \
-	TerminalParser_Linux.m
+	TerminalParser_Linux.m \
+	\
+	InfoPanel.m\
+	\
+	TerminalFinder.m
 	# \
 	# autokeyviewchain.m \
 	# Label.m
@@ -43,12 +47,15 @@ Terminal_LOCALIZED_RESOURCE_FILES = \
 	SetTitlePanel.gorm \
 	TerminalServices.gorm \
 	SaveAsAccessory.gorm \
-	AddArguments.gorm
+	AddArguments.gorm \
+	Info.gorm \
+	Find.gorm
 
 Terminal_RESOURCE_FILES = \
 	Preferences/Preferences.bundle \
 	Resources/ExampleServices.svcs \
-	Resources/Terminal.tiff
+	Resources/Terminal.tiff \
+	Resources/ScrollingMach.tiff
 
 MAKE_STRINGS_OPTIONS = --aggressive-match --aggressive-remove
 
