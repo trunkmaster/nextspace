@@ -23,70 +23,59 @@
 
 #import "InfoPanel.h"
 #import "Controller.h"
-#import "Defaults.h"
 
 @implementation InfoPanel : NSObject
 
 - (void)activatePanel
 {
-  Defaults   *prefs;
-  
-  if (titlePanel == nil)
+  if (panel == nil)
     {
-      [NSBundle loadNibNamed:@"SetTitlePanel" owner:self];
+      [NSBundle loadNibNamed:@"Info" owner:self];
     }
-
-  prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:YES];
-  if (!prefs)
-    prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:NO];
-  
-  titleBarMask = [prefs titleBarElementsMask];
-  [titleField setStringValue:[prefs customTitle]];
-
-  [titlePanel makeKeyAndOrderFront:self];
-  // [NSApp runModalForWindow:titlePanel];
+  [panel makeKeyAndOrderFront:self];
+  // [NSTimer scheduledTimerWithTimeInterval:2.0
+  //                                  target:self
+  //                                selector:@selector(showAnimation)
+  //                                userInfo:nil
+  //                                 repeats:YES];
 }
 
 - (void)awakeFromNib
 {
-  [titlePanel makeFirstResponder:titleField];
-
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(mainWindowDidChange:)
-           name:NSWindowDidBecomeMainNotification
-         object:nil];
+  [versionField setStringValue:@"1.0"];
 }
 
 - (void)dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [super dealloc];
 }
 
-//--- Notifications and delagates
-- (void)mainWindowDidChange:(NSNotification *)notif
+- (void)showAnimation
 {
-  Defaults *prefs;
+  NSString *mPath = [[NSBundle mainBundle]
+                                   pathForResource:@"ScrollingMach"
+                                            ofType:@"tiff"];
+  NSImage *scrollingMach = [[NSImage alloc] initWithContentsOfFile:mPath];
+  NSImageView *machView;
 
-  prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:YES];
-  if (!prefs)
-    prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:NO];
-  
-  // Main window is not terminal window
-  if (prefs == nil) return;
+  machView = [[NSImageView alloc] initWithFrame:NSMakeRect(0,0,27,25)];
+  [machView setImageScaling:NSScaleNone];
+  [machView setImage:[scrollingMach autorelease]];
+  [[panel contentView] addSubview:machView];
+  [machView release];
 
-  // Main terminal window left unchanged
-  if (mainWindow == [notif object]) return;
-  
-  mainWindow = [notif object];
-  titleBarMask = [prefs titleBarElementsMask];
-  [titleField setStringValue:[prefs customTitle]];
+  for (int i = 0; i < 10; i++)
+    {
+      [machView lockFocus];
+      [scrollingMach compositeToPoint:NSMakePoint(0, 0)
+                             fromRect:NSMakeRect(0, i, 27, 25)
+                            operation:NSCompositeSourceOver];
+      [machView unlockFocus];
+      // [machView scrollRectToVisible:NSMakeRect(0, i, 27, 25)];
+      // [machView setNeedsDisplay:YES];
+    }
+
+  // [[panel contentView] removeSubview:machView];
 }
 
-- (void)controlTextDidEndEditing:(NSNotification *)aNotification
-{
-  // [titleField resignFirstResponder];
-  [titlePanel makeFirstResponder:setBtn];
-}
 @end

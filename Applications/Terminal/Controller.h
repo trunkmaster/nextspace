@@ -13,6 +13,7 @@
 #import "SetTitlePanel.h"
 #import "TerminalWindow.h"
 #import "TerminalServicesPanel.h"
+#import "InfoPanel.h"
 
 @interface Controller : NSObject <NSMenuValidation>
 {
@@ -28,6 +29,10 @@
   Preferences           *preferencesPanel;
   TerminalServicesPanel *servicesPanel;
   SetTitlePanel	        *setTitlePanel;
+  InfoPanel             *infoPanel;
+
+  // Find
+  NSWindow *findPanel;
 
   // Save As accessory
   id accView;
