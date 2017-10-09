@@ -2807,30 +2807,30 @@ static int handled_mask = (NSDragOperationCopy |
           else
             ch = screen[i].ch;
 
-          if (ch!=' ' && ch!=0 && ch!=MULTI_CELL_GLYPH)
+          // if (ch!=' ' && ch!=0 && ch!=MULTI_CELL_GLYPH)
             break;
           
-          ws_len++;
-          i++;
+          // ws_len++;
+          // i++;
 
-          if (i%sx == 0)
-            {
-              if (i > j)
-                {
-                  ws_len = 0; /* make sure we break out of the outer loop */
-                  break;
-                }
-              if (len)
-                {
-                  tmp = [[NSString alloc] initWithCharacters:buf length:len];
-                  [mstr appendString:tmp];
-                  DESTROY(tmp);
-                  len = 0;
-                }
-              [mstr appendString:@"\n"];
-              ws_len = 0;
-              continue;
-            }
+          // if (i%sx == 0)
+          //   {
+          //     if (i > j)
+          //       {
+          //         ws_len = 0; /* make sure we break out of the outer loop */
+          //         break;
+          //       }
+          //     if (len)
+          //       {
+          //         tmp = [[NSString alloc] initWithCharacters:buf length:len];
+          //         [mstr appendString:tmp];
+          //         DESTROY(tmp);
+          //         len = 0;
+          //       }
+          //     [mstr appendString:@"\n"];
+          //     ws_len = 0;
+          //     continue;
+          //   }
         }
 
       i -= ws_len;
