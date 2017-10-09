@@ -135,10 +135,10 @@ static id	sharedFindObject = nil;
 
 - (void)setFindString:(NSString *)string
 {
-  if ([string isEqualToString: findString])
+  if ([string isEqualToString:findString])
     return;
   
-  [findString autorelease];
+  [findString release];
   findString = [string copy];
 
   if (findTextField)
@@ -183,7 +183,7 @@ static id	sharedFindObject = nil;
       NSString		*textContents = [tView contentsOfTerminal];
       NSUInteger	textLength;
 
-      NSLog(@"Terminal contents:\n%@\n==================", textContents);
+      // NSLog(@"Terminal contents:\n%@\n==================", textContents);
       
       if (textContents && (textLength = [textContents length]))
         {
