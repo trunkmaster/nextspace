@@ -1,13 +1,23 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "findNext:",
+	    "findPrevious:"
+	);
+	Super = NSObject;
+    };
     TerminalFinder = {
 	Actions = (
+	    "findNext:",
+	    "findPrevious:"
 	);
 	Outlets = (
 	    findNextButton,
 	    findPanel,
 	    findTextField,
-	    ignoreCaseButton
+	    ignoreCaseButton,
+	    statusField
 	);
 	Super = NSObject;
     };

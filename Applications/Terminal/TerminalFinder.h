@@ -28,7 +28,7 @@
 - (NSPanel *)findPanel;
 
 /* Gets the first responder and returns it if it's an NSTextView */
-- (NSTextView *)textObjectToSearchIn;
+// - (NSTextView *)textObjectToSearchIn;
 
 /* Get/set the current find string. Will update UI if UI is loaded */
 - (NSString *)findString;
