@@ -42,7 +42,7 @@
 
 - (void)awakeFromNib
 {
-  [versionField setStringValue:@"1.0"];
+  [versionField setStringValue:@"0.98"];
 }
 
 - (void)dealloc

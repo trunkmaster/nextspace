@@ -24,6 +24,9 @@
 */
 
 #import <AppKit/AppKit.h>
+#import "Controller.h"
+#import "TerminalView.h"
+#import "TerminalWindow.h"
 #import "TerminalFinder.h"
 
 @implementation TerminalFinder
@@ -108,10 +111,12 @@ static id	sharedFindObject = nil;
           NSLog (@"Failed to load Find.gorm");
           NSBeep ();
         }
-      // if (self == sharedFindObject)
-      //   [[findTextField window] setFrameAutosaveName: @"Find"];
+      if (self == sharedFindObject)
+        [[findTextField window] setFrameAutosaveName:@"FindPanel"];
     }
   [findTextField setStringValue:[self findString]];
+  [statusField setStringValue:@""];
+  [findPanel setDefaultButtonCell:[findNextButton cell]];
 }
 
 - (void)dealloc
@@ -139,18 +144,18 @@ static id	sharedFindObject = nil;
   if (findTextField)
     {
       [findTextField setStringValue:string];
-      [findTextField selectText: nil];
+      [findTextField selectText:nil];
     }
 
   findStringChangedSinceLastPasteboardUpdate = YES;
 }
 
-- (NSTextView *)textObjectToSearchIn
-{
-  id	obj = [[NSApp mainWindow] firstResponder];
+// - (NSTextView *)textObjectToSearchIn
+// {
+//   id	obj = [[NSApp mainWindow] firstResponder];
 
-  return (obj && [obj isKindOfClass:[NSTextView class]]) ? obj : nil;
-}
+//   return (obj && [obj isKindOfClass:[NSTextView class]]) ? obj : nil;
+// }
 
 - (NSPanel *)findPanel
 {
@@ -166,15 +171,20 @@ static id	sharedFindObject = nil;
 */
 - (BOOL)find:(BOOL)direction
 {
-  NSTextView	*text = [self textObjectToSearchIn];
+  TerminalView	*tView;
 
+  tView = [[[NSApp delegate] terminalWindowForWindow:[NSApp mainWindow]]
+            terminalView];
+  
   lastFindWasSuccessful = NO;
 
-  if (text)
+  if (tView)
     {
-      NSString		*textContents = [text string];
-      unsigned int	textLength;
+      NSString		*textContents = [tView contentsOfTerminal];
+      NSUInteger	textLength;
 
+      NSLog(@"Terminal contents:\n%@\n==================", textContents);
+      
       if (textContents && (textLength = [textContents length]))
         {
           NSRange	range;
@@ -186,13 +196,13 @@ static id	sharedFindObject = nil;
             options |= NSCaseInsensitiveSearch;
 
           range = [textContents findString:[self findString]
-                             selectedRange:[text selectedRange]
+                             selectedRange:[tView selectedRange]
                                    options:options
                                       wrap:YES];
           if (range.length)
             {
-              [text setSelectedRange:range];
-              [text scrollRangeToVisible:range];
+              [tView setSelectedRange:range];
+              [tView scrollRangeToVisible:range];
               lastFindWasSuccessful = YES;
             }
         }
@@ -238,16 +248,20 @@ static id	sharedFindObject = nil;
 
 - (void)findNext:(id)sender
 {
+  NSLog(@"Find Next");
+  // findTextField should be set
   if (findTextField)
-    [self setFindString:[findTextField stringValue]];	/* findTextField should be set */
+    [self setFindString:[findTextField stringValue]];
 
   [self find:Forward];
 }
 
 - (void)findPrevious:(id)sender
 {
+  NSLog(@"Find Previous");
+  // findTextField should be set
   if (findTextField)
-    [self setFindString:[findTextField stringValue]];	/* findTextField should be set */
+    [self setFindString:[findTextField stringValue]];
 
   [self find:Backward];
 }
