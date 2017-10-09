@@ -306,7 +306,7 @@
 }
 
 // Edit > Find > Find Panel...
-- (void)orderFrontFindPanel:(id)sender
+- (void)openFindPanel:(id)sender
 {
   [[TerminalFinder sharedInstance] orderFrontFindPanel:self];
 }

@@ -35,10 +35,6 @@ Terminal_OBJC_FILES = \
 	InfoPanel.m\
 	\
 	TerminalFinder.m
-	# \
-	# autokeyviewchain.m \
-	# Label.m
-
 
 Terminal_LANGUAGES = English
 Terminal_LOCALIZED_RESOURCE_FILES = \

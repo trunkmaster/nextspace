@@ -1564,7 +1564,7 @@ static void set_foreground(NSGraphicsContext *gc,
   mstr = [[NSMutableString alloc] init];
   j = selection.location + selection.length;
   len = 0;
-  for (i = selection.location;i < j;i++)
+  for (i = selection.location; i < j; i++)
     {
       ws_len = 0;
       while (1)
@@ -1572,10 +1572,11 @@ static void set_foreground(NSGraphicsContext *gc,
           if (i < 0)
             ch = sbuf[ofs+i].ch;
           else
-            ch=screen[i].ch;
+            ch = screen[i].ch;
 
           if (ch!=' ' && ch!=0 && ch!=MULTI_CELL_GLYPH)
             break;
+          
           ws_len++;
           i++;
 
@@ -1583,12 +1584,12 @@ static void set_foreground(NSGraphicsContext *gc,
             {
               if (i > j)
                 {
-                  ws_len=0; /* make sure we break out of the outer loop */
+                  ws_len = 0; /* make sure we break out of the outer loop */
                   break;
                 }
               if (len)
                 {
-                  tmp=[[NSString alloc] initWithCharacters:buf length:len];
+                  tmp = [[NSString alloc] initWithCharacters:buf length:len];
                   [mstr appendString:tmp];
                   DESTROY(tmp);
                   len = 0;
@@ -1801,7 +1802,6 @@ static void set_foreground(NSGraphicsContext *gc,
 }
 
 // Menu item "Edit > Select All"
-// TODO: select all text including scrollback buffer
 - (void)selectAll:(id)sender
 {
   struct selection_range s;
@@ -2779,6 +2779,120 @@ static int handled_mask = (NSDragOperationCopy |
 }
 
 // ---
+// Contents of Terminal including scrollback buffer
+// ---
+- (NSString *)stringForRange:(NSRange)range
+{
+  int ofs = max_scrollback * sx;
+  NSMutableString *mstr;
+  NSString *tmp;
+  unichar buf[32];
+  unichar ch;
+  int len,ws_len;
+  int i,j;
+
+  if (range.length == 0)
+    return nil;
+
+  mstr = [[NSMutableString alloc] init];
+  j = range.location + range.length;
+  len = 0;
+  for (i = range.location; i < j; i++)
+    {
+      ws_len = 0;
+      while (1)
+        {
+          if (i < 0)
+            ch = sbuf[ofs+i].ch;
+          else
+            ch = screen[i].ch;
+
+          if (ch!=' ' && ch!=0 && ch!=MULTI_CELL_GLYPH)
+            break;
+          
+          ws_len++;
+          i++;
+
+          if (i%sx == 0)
+            {
+              if (i > j)
+                {
+                  ws_len = 0; /* make sure we break out of the outer loop */
+                  break;
+                }
+              if (len)
+                {
+                  tmp = [[NSString alloc] initWithCharacters:buf length:len];
+                  [mstr appendString:tmp];
+                  DESTROY(tmp);
+                  len = 0;
+                }
+              [mstr appendString:@"\n"];
+              ws_len = 0;
+              continue;
+            }
+        }
+
+      i -= ws_len;
+
+      for (;i < j && ws_len;i++,ws_len--)
+        {
+          buf[len++] = ' ';
+          if (len == 32)
+            {
+              tmp = [[NSString alloc] initWithCharacters:buf length:32];
+              [mstr appendString:tmp];
+              DESTROY(tmp);
+              len = 0;
+            }
+        }
+      if (i >= j)
+        break;
+
+      buf[len++] = ch;
+      if (len == 32)
+        {
+          tmp = [[NSString alloc] initWithCharacters:buf length:32];
+          [mstr appendString: tmp];
+          DESTROY(tmp);
+          len=0;
+        }
+    }
+
+  if (len)
+    {
+      tmp = [[NSString alloc] initWithCharacters:buf length:len];
+      [mstr appendString:tmp];
+      DESTROY(tmp);
+    }
+
+  return AUTORELEASE(mstr);
+}
+- (NSRange)selectedRange
+{
+  return NSMakeRange(selection.location, selection.length);
+}
+- (void)setSelectedRange:(NSRange)range
+{
+  struct selection_range s;
+  s.location = range.location;
+  s.length = range.length;
+  [self _setSelection:s];
+}
+- (void)scrollRangeToVisible:(NSRange)range
+{
+  NSLog(@"TerminalView: scrollRangeToVisible");
+}
+- (NSString *)contentsOfTerminal
+{
+  struct selection_range s;
+  s.location = 0 - (sb_length * sx);
+  s.length = (sx * sy) + (sb_length * sx);
+  
+  return [self stringForRange:NSMakeRange(s.location, s.length)];
+}
+
+// ---
 // Per-window preferences
 // ---
 - (void)setFont:(NSFont *)aFont
@@ -2921,9 +3035,9 @@ static int handled_mask = (NSDragOperationCopy |
     return NO;
   if ([itemTitle isEqualToString:@"Copy"] && (selection.length <= 0))
     return NO;
-  if ([itemTitle isEqualToString:@"copy Font"])
+  if ([itemTitle isEqualToString:@"Copy Font"])
     {
-      
+      // TODO
     }
   if ([itemTitle isEqualToString:@"Paste Font"])
     {
