@@ -175,12 +175,14 @@ static id	sharedFindObject = nil;
 
   tView = [[[NSApp delegate] terminalWindowForWindow:[NSApp mainWindow]]
             terminalView];
+
+  NSLog(@"TerminalView: %@", tView);
   
   lastFindWasSuccessful = NO;
 
   if (tView)
     {
-      NSString		*textContents = [tView contentsOfTerminal];
+      NSString		*textContents = [[tView stringRepresentation] copy];
       NSUInteger	textLength;
 
       // NSLog(@"Terminal contents:\n%@\n==================", textContents);
@@ -206,6 +208,7 @@ static id	sharedFindObject = nil;
               lastFindWasSuccessful = YES;
             }
         }
+      [textContents release];
     }
 
   if (!lastFindWasSuccessful)
@@ -217,6 +220,7 @@ static id	sharedFindObject = nil;
     {
       [statusField setStringValue: @""];
     }
+  
   return lastFindWasSuccessful;
 }
 
