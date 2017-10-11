@@ -138,7 +138,7 @@ struct selection_range
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 - (void)scrollRangeToVisible:(NSRange)range;
-- (NSString *)contentsOfTerminal;
+- (NSString *)stringRepresentation;
 
 - (void)setIgnoreResize:(BOOL)ignore;
 - (void)setBorder:(float)x :(float)y;

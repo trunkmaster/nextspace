@@ -27,6 +27,7 @@
 
 #include <math.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #ifdef __NetBSD__
 #  include <sys/types.h>
@@ -2781,81 +2782,40 @@ static int handled_mask = (NSDragOperationCopy |
 // ---
 // Contents of Terminal including scrollback buffer
 // ---
-- (NSString *)stringForRange:(NSRange)range
+- (NSString *)stringForRange:(struct selection_range)range
 {
   int ofs = max_scrollback * sx;
   NSMutableString *mstr;
   NSString *tmp;
   unichar buf[32];
   unichar ch;
-  int len,ws_len;
+  int len;
   int i,j;
 
   if (range.length == 0)
     return nil;
 
   mstr = [[NSMutableString alloc] init];
-  j = range.location + range.length;
+  j = abs(range.location) + range.length;
   len = 0;
   for (i = range.location; i < j; i++)
     {
-      ws_len = 0;
-      while (1)
-        {
-          if (i < 0)
-            ch = sbuf[ofs+i].ch;
-          else
-            ch = screen[i].ch;
+      if (i < 0)
+        ch = sbuf[ofs+i].ch;
+      else
+        ch = screen[i].ch;
 
-          // if (ch!=' ' && ch!=0 && ch!=MULTI_CELL_GLYPH)
-            break;
-          
-          // ws_len++;
-          // i++;
-
-          // if (i%sx == 0)
-          //   {
-          //     if (i > j)
-          //       {
-          //         ws_len = 0; /* make sure we break out of the outer loop */
-          //         break;
-          //       }
-          //     if (len)
-          //       {
-          //         tmp = [[NSString alloc] initWithCharacters:buf length:len];
-          //         [mstr appendString:tmp];
-          //         DESTROY(tmp);
-          //         len = 0;
-          //       }
-          //     [mstr appendString:@"\n"];
-          //     ws_len = 0;
-          //     continue;
-          //   }
-        }
-
-      i -= ws_len;
-
-      for (;i < j && ws_len;i++,ws_len--)
-        {
-          buf[len++] = ' ';
-          if (len == 32)
-            {
-              tmp = [[NSString alloc] initWithCharacters:buf length:32];
-              [mstr appendString:tmp];
-              DESTROY(tmp);
-              len = 0;
-            }
-        }
       if (i >= j)
         break;
 
       buf[len++] = ch;
+      
       if (len == 32)
         {
           tmp = [[NSString alloc] initWithCharacters:buf length:32];
-          [mstr appendString: tmp];
+          [mstr appendString:tmp];
           DESTROY(tmp);
-          len=0;
+          len = 0;
         }
     }
 
@@ -2866,6 +2826,8 @@ static int handled_mask = (NSDragOperationCopy |
       DESTROY(tmp);
     }
 
+  NSLog(@"TerminalView stringRepresentation length: %lu", [mstr length]);
+
   return AUTORELEASE(mstr);
 }
 - (NSRange)selectedRange
@@ -2875,21 +2837,25 @@ static int handled_mask = (NSDragOperationCopy |
 - (void)setSelectedRange:(NSRange)range
 {
   struct selection_range s;
+  
   s.location = range.location;
   s.length = range.length;
+  
   [self _setSelection:s];
 }
 - (void)scrollRangeToVisible:(NSRange)range
 {
   NSLog(@"TerminalView: scrollRangeToVisible");
 }
-- (NSString *)contentsOfTerminal
+- (NSString *)stringRepresentation
 {
   struct selection_range s;
-  s.location = 0 - (sb_length * sx);
+  
+  // s.location = -(sb_length * sx);
+  s.location = 0;
   s.length = (sx * sy) + (sb_length * sx);
   
-  return [self stringForRange:NSMakeRange(s.location, s.length)];
+  return [self stringForRange:s];
 }
 
 // ---
