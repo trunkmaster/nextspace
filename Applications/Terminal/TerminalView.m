@@ -1411,7 +1411,7 @@ static void set_foreground(NSGraphicsContext *gc,
   if (new_scroll == current_scroll)
     return;
   
-  current_scroll =  new_scroll;
+  current_scroll = new_scroll;
 
   if (update)
     [self _updateScroller];
@@ -2781,31 +2781,41 @@ static int handled_mask = (NSDragOperationCopy |
 
 // ---
 // Contents of Terminal including scrollback buffer
+// 
+// This is simplified version of _selectionAsString method.
+// The difference is while _selectionAsString returns string with new line
+// symbols at the end of Terminal window this method return plain conseqence
+// of chars. This is usefull for finding substring and setting selection to
+// position and length of buf[] array.
 // ---
-- (NSString *)stringForRange:(struct selection_range)range
+// - (NSString *)stringForRange:(struct selection_range)range
+- (NSString *)stringRepresentation
 {
-  int ofs = max_scrollback * sx;
-  NSMutableString *mstr;
-  NSString *tmp;
-  unichar buf[32];
-  unichar ch;
-  int len;
-  int i,j;
+  int			ofs = max_scrollback * sx;
+  NSMutableString	*mstr = [[NSMutableString alloc] init];
+  NSString		*tmp;
+  unichar		buf[32];
+  unichar      		ch;
+  int			start_index, end_index;
+  int			len;
 
-  if (range.length == 0)
-    return nil;
-
-  mstr = [[NSMutableString alloc] init];
-  j = abs(range.location) + range.length;
+  if (sb_length > 0)
+    start_index = -(sb_length * sx);
+  else
+    start_index = 0;
+  
+  end_index = sx * sy;
+  // j = abs(sb_length * sx) + range.length;
+  // range.length = scrollbuffer size + visible area size in terms of chars
   len = 0;
-  for (i = range.location; i < j; i++)
+  for (int i = start_index; i < end_index; i++)
     {
       if (i < 0)
         ch = sbuf[ofs+i].ch;
       else
         ch = screen[i].ch;
 
-      if (i >= j)
+      if (i >= end_index)
         break;
 
       buf[len++] = ch;
@@ -2828,17 +2838,44 @@ static int handled_mask = (NSDragOperationCopy |
 
   NSLog(@"TerminalView stringRepresentation length: %lu", [mstr length]);
 
-  return AUTORELEASE(mstr);
+  return mstr;
 }
 - (NSRange)selectedRange
 {
-  return NSMakeRange(selection.location, selection.length);
+  NSRange range = NSMakeRange(0, 0);
+
+  range.length = selection.length;
+
+  if (selection.location < 0)
+    range.location = (sb_length * sx) + selection.location;
+  
+  return range;
 }
 - (void)setSelectedRange:(NSRange)range
 {
   struct selection_range s;
-  
-  s.location = range.location;
+
+  NSLog(@"TerminalView -setSelectedRange");
+
+  if (sb_length > 0)
+    {
+      int scroll_to;
+
+      s.location = -(sb_length * sx) + range.location;
+      scroll_to = -(sb_length - floorf((float)(sb_length * sx)/s.location));
+      
+      NSLog(@"setSelectedRange: location=%lu, s.location=%i sb=%i, scroll=%i",
+            range.location, s.location, sb_length, scroll_to);
+      if (current_scroll != scroll_to)
+        [self _scrollTo:scroll_to update:YES];
+      else
+        s.location = range.location;      
+    }
+  else
+    {
+      s.location = range.location;      
+    }
+
   s.length = range.length;
   
   [self _setSelection:s];
@@ -2847,16 +2884,16 @@ static int handled_mask = (NSDragOperationCopy |
 {
   NSLog(@"TerminalView: scrollRangeToVisible");
 }
-- (NSString *)stringRepresentation
-{
-  struct selection_range s;
+// - (NSString *)stringRepresentation
+// {
+//   struct selection_range s;
   
-  // s.location = -(sb_length * sx);
-  s.location = 0;
-  s.length = (sx * sy) + (sb_length * sx);
+//   // s.location = -(sb_length * sx);
+//   s.location = -(sb_length * sx);
+//   s.length = (sx * sy) + (sb_length * sx);
   
-  return [self stringForRange:s];
-}
+//   return [self stringForRange:s];
+// }
 
 // ---
 // Per-window preferences
