@@ -185,7 +185,7 @@ static id	sharedFindObject = nil;
       NSString		*textContents = [[tView stringRepresentation] copy];
       NSUInteger	textLength;
 
-      // NSLog(@"Terminal contents:\n%@\n==================", textContents);
+       NSLog(@"Terminal contents length: %lu", [textContents length]);
       
       if (textContents && (textLength = [textContents length]))
         {
