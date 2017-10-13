@@ -13,7 +13,11 @@
 	    "saveSession:",
 	    "openServicesPanel:",
 	    "openInfoPanel:",
-	    "openFindPanel:"
+	    "openFindPanel:",
+	    "enterSelection:",
+	    "findNext:",
+	    "findPrevious:",
+	    "jumpToSelection:"
 	);
 	Outlets = (
 	);
@@ -29,6 +33,7 @@
 	    "jumpToSelection:",
 	    "modifyFont:",
 	    "modifyFontViaPanel:",
+	    "newAction:",
 	    "openFindPanel:",
 	    "openServicesPanel:",
 	    "openSession:",
