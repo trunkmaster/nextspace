@@ -310,6 +310,32 @@
 {
   [[TerminalFinder sharedInstance] orderFrontFindPanel:self];
 }
+- (void)findNext:(id)sender
+{
+  [[TerminalFinder sharedInstance] findNext:self];
+}
+- (void)findPrevious:(id)sender
+{
+  [[TerminalFinder sharedInstance] findPrevious:self];
+}
+- (void)enterSelection:(id)sender
+{
+  TerminalFinder *finder = [TerminalFinder sharedInstance];
+  NSString	 *string;
+  TerminalView   *tv;
+
+  tv = [[self terminalWindowForWindow:[NSApp keyWindow]] terminalView];
+  string = [[tv stringRepresentation] substringFromRange:[tv selectedRange]];
+
+  [finder setFindString:string];
+}
+- (void)jumpToSelection:(id)sender
+{
+  TerminalView *tv;
+
+  tv = [[self terminalWindowForWindow:[NSApp keyWindow]] terminalView];
+  [tv scrollRangeToVisible:[tv selectedRange]];
+}
 
 // "Font" menu
 - (void)orderFrontFontPanel:(id)sender
