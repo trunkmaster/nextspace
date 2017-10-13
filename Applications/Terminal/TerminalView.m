@@ -2848,6 +2848,8 @@ static int handled_mask = (NSDragOperationCopy |
 
   if (selection.location < 0)
     range.location = (sb_length * sx) + selection.location;
+  else
+    range.location = selection.location;
   
   return range;
 }
@@ -2855,45 +2857,18 @@ static int handled_mask = (NSDragOperationCopy |
 {
   struct selection_range s;
 
-  NSLog(@"TerminalView -setSelectedRange");
-
-  if (sb_length > 0)
-    {
-      int scroll_to;
-
-      s.location = -(sb_length * sx) + range.location;
-      scroll_to = -(sb_length - floorf((float)(sb_length * sx)/s.location));
-      
-      NSLog(@"setSelectedRange: location=%lu, s.location=%i sb=%i, scroll=%i",
-            range.location, s.location, sb_length, scroll_to);
-      if (current_scroll != scroll_to)
-        [self _scrollTo:scroll_to update:YES];
-      else
-        s.location = range.location;      
-    }
-  else
-    {
-      s.location = range.location;      
-    }
-
+  s.location = range.location - (sb_length * sx);
   s.length = range.length;
   
   [self _setSelection:s];
 }
 - (void)scrollRangeToVisible:(NSRange)range
 {
-  NSLog(@"TerminalView: scrollRangeToVisible");
+  int scroll_to;
+  
+  scroll_to = ((range.location/sx) - sb_length); // - sy/2;
+  [self _scrollTo:scroll_to update:YES];
 }
-// - (NSString *)stringRepresentation
-// {
-//   struct selection_range s;
-  
-//   // s.location = -(sb_length * sx);
-//   s.location = -(sb_length * sx);
-//   s.length = (sx * sy) + (sb_length * sx);
-  
-//   return [self stringForRange:s];
-// }
 
 // ---
 // Per-window preferences
