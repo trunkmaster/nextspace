@@ -1,6 +1,4 @@
 /*
-  Keyboard.m
-
   Controller class for Keyboard preferences bundle
 
   Author:	Sergii Stoian <stoyan255@ukr.net>
@@ -32,6 +30,8 @@
 #import <AppKit/NSButton.h>
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSMatrix.h>
+
+#import <NXFoundation/NXDefaults.h>
 
 #import "Keyboard.h"
 
@@ -175,9 +175,9 @@ static NSMutableDictionary      *domain = nil;
   [[sectionsMtrx cellWithTag:1] setRefusesFirstResponder:YES];
   [[sectionsMtrx cellWithTag:2] setRefusesFirstResponder:YES];
 
+  [shortcutsBrowser loadColumnZero];
   [shortcutsBrowser setTitle:@"Action" ofColumn:0];
   [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
-  [shortcutsBrowser loadColumnZero];
 
   [self sectionButtonClicked:sectionsMtrx];
 }
@@ -188,13 +188,10 @@ static NSMutableDictionary      *domain = nil;
     {
       if (![NSBundle loadNibNamed:@"Keyboard" owner:self])
         {
-          NSLog (@"Keyboard.preferences: Could not load NIB file, aborting.");
+          NSLog (@"Could not load Keyboard.gorm file.");
           return nil;
         }
     }
-
-  [shortcutsBrowser setTitle:@"Action" ofColumn:0];
-  [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
   
   return view;
 }
@@ -228,6 +225,31 @@ static NSMutableDictionary      *domain = nil;
     default:
       NSLog(@"Keyboard.preferences: Unknow section button was clicked!");
     }
+}
+
+@end
+
+@implementation Keyboard (KeyRepeat)
+
+- (void)repeatAction:(id)sender
+{
+  NXDefaults 		*defs = [[NXDefaults alloc] initWithUserDefaults];
+  NSMutableDictionary	*keybDefs;
+  
+  keybDefs = [[defs objectForKey:@"NXKeyboard"] mutableCopy];
+  if (sender == initialRepeatMtrx)
+    { // NXKeyboard-InitialKeyRepeat - delay in milliseconds before repeat
+      [keybDefs setInteger:[[sender selectedCell] tag]
+                    forKey:@"InitialKeyRepeat"];
+    }
+  else if (sender == repeatRateMtrx)
+    { // NXKeyboard - RepeatRate - num of repeates per second
+      [keybDefs setInteger:[[sender selectedCell] tag]
+                    forKey:@"RepeatRate"];
+    }
+
+  [defs setObject:keybDefs forKey:@"NXKeyboard"];
+  [defs synchronize];
 }
 
 @end
