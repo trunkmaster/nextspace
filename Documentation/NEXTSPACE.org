@@ -84,11 +84,17 @@
 
 
 ** Текущий видимый план
-   1. NXSsystem-NXScreen
-   2. NXFoundation-NXBundle
-   3. Application-Preferences-Display
-   4. Applications-Worksapce-Реакция на изменение настроек дисплеев
-
+   1. Applications-Preferences-Keyboard
+   2. Applications-Prefernces-Mouse
+   3. Terminal: Keyboard and mouse definite correct work
+   4. Terminal: activity control, Font menu completeness
+   5. NXSystem-NXScreen
+   6. Application-Preferences-Display
+   7. Workspace and Login correct displays operation
+   8. NXAppKit-NXAlertPanel: size changes for multiline messages
+   9. Workspace & Preferences: WindowMaker, Reycler, enhancements and bugfixes
+   10. NXAppKit-NXSavePanel,NXOpenPanel
+   11. NXFoundation-NXBundle
 
 ** Use cases
 *** TODO Look & feel
@@ -369,9 +375,9 @@
 ****** DONE Поиск в /Library/Bundles
        Поиск в /Libray и ~/Library рекурсивный, поэтому объекты в Bundles тоже
        будут находиться.
-**** TODO NXDefaults
+**** DONE NXDefaults
      Reading/writing preferences (см. "Размещать файлы...").
-***** TODO Приложения перестали сохранять настройки
+***** DONE Приложения перестали сохранять настройки
       Возможно это связано с тем, что в NXDefaults не выполняется synchronize
       после каждого изменения/записи.
 ***** DONE Размещать файлы NextSpace в ~/Library/Preferences/.NextSpace
@@ -3170,6 +3176,14 @@
     В Workspace и gnuste-back реализована опция -NXAutoLaunch, которая
     приводит к желаемому результату. Теперь так стартуют еще Weather и
     TimeMon.
+*** TODO Применение настроек при старте сессии
+    Нужно подумать как и где применять настройки при старте сессии.
+    Это касается:
+    - инициализации дисплееев
+    - раскладки клавиатуры
+    - настроек мыши и тачпада
+    - громкость звука
+    - активизации сетевых настроек
 *** TODO Модули
 **** DONE Fonts: GNUstep font settings
      back-art-subpixel-text всегда устанавливается в '0'.
@@ -3200,6 +3214,15 @@
 ***** DONE Measurement Unit
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 ***** DONE Обновлять примеры форматов после смены в списке языков
+**** TODO Keyboard
+***** TODO Command/Alternate
+***** TODO Repeat Rate
+***** TODO keyboard type, layouts
+***** TODO Shortcuts
+      GNUstep and WindowMaker.
+***** TODO Ввод кодов символов (Compose Key?)
+**** TODO Mouse
+     Acceleration, pointers, mouse wheel scroll.
 **** TODO Display: resolution, layout, gamma correction, wallpaper/color
 ***** DONE Изменение настроек не должно влиять на плавность изменения контролов
       Использовать dispatch & blocks?
@@ -3240,15 +3263,6 @@
 ****** DONE Отображение Dock и Icon Yard на 'Main Display'
 ****** TODO Получать и отображать desktop background
        Нужно сначала реализовать это в модуле Display.
-**** TODO Keyboard
-***** TODO Command/Alternate
-***** TODO Repeat Rate
-***** TODO keyboard type, layouts
-***** TODO Shortcuts
-      GNUstep and WindowMaker.
-***** TODO Ввод кодов символов (Compose Key?)
-**** TODO Mouse
-     Acceleration, pointers, mouse wheel scroll.
 **** TODO UNIX Expert
      - [ ] File Creation Mask
      - [ ] Show hidden files
@@ -3692,7 +3706,7 @@
 ***** TODO Preferences | Linux Emulation
       Проверить как работают и сохраняются настройки из раздела "Linux
       Emulation".
-***** TODO Перехватывать Crtl+s и Crtl+q
+***** TODO Отслеживать нажатия Crtl+s и Crtl+q
       И добавлять в title bar "IO Stopped" (для Crtl+s).
 **** TODO (After: Preferences.app-Mouse) Скролл колесом мышки
      Нужно скроллить как указано в Preferences.app.
