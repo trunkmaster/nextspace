@@ -1,6 +1,4 @@
 /*
-  Display.m
-
   Controller class for Keyboard preferences bundle
 
   Author:	Sergii Stoian <stoyan255@ukr.net>
@@ -31,15 +29,17 @@
 {
   id window;
   id view;
-  id captureBtn;
+  
+  id repeatBox;
   id initialRepeatMtrx;
-  id captureField;
   id repeatRateMtrx;
+  
+  id captureBtn;
+  id captureField;
   id shortcutsBrowser;
   id layoutsBox;
   id sectionBox;
   id sectionsMtrx;
-  id repeatBox;
   id shortcutsBox;
 
   NSImage *image;
