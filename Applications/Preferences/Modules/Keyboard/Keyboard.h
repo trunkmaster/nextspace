@@ -49,3 +49,7 @@
 - (void)sectionButtonClicked:(id)sender;
 
 @end
+
+@interface Keyboard (XKB)
+- (NSDictionary *)layoutsDictionary;
+@end
