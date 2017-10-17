@@ -22,6 +22,9 @@
   59 Temple Place - Suite 330
   Boston, MA  02111-1307, USA
 */
+
+#import <Foundation/Foundation.h>
+
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSNibLoading.h>
 #import <AppKit/NSView.h>
@@ -218,6 +221,7 @@ static NSMutableDictionary      *domain = nil;
       break;
     case 1: // Layouts
       [sectionBox setContentView:layoutsBox];
+      [self layoutsDictionary];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -239,17 +243,65 @@ static NSMutableDictionary      *domain = nil;
   keybDefs = [[defs objectForKey:@"NXKeyboard"] mutableCopy];
   if (sender == initialRepeatMtrx)
     { // NXKeyboard-InitialKeyRepeat - delay in milliseconds before repeat
-      [keybDefs setInteger:[[sender selectedCell] tag]
-                    forKey:@"InitialKeyRepeat"];
+      [keybDefs setObject:[NSNumber numberWithInt:[[sender selectedCell] tag]]
+                   forKey:@"InitialKeyRepeat"];
     }
   else if (sender == repeatRateMtrx)
     { // NXKeyboard - RepeatRate - num of repeates per second
-      [keybDefs setInteger:[[sender selectedCell] tag]
-                    forKey:@"RepeatRate"];
+      [keybDefs setObject:[NSNumber numberWithInt:[[sender selectedCell] tag]]
+                   forKey:@"RepeatRate"];
     }
 
   [defs setObject:keybDefs forKey:@"NXKeyboard"];
   [defs synchronize];
+}
+
+@end
+
+@implementation Keyboard (XKB)
+
+#define XKB_BASE_LST @"/usr/share/X11/xkb/rules/base.lst"
+
+- (NSDictionary *)parseXkbBaseList
+{
+  NSMutableDictionary	*dict = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary	*modeDict == nil;
+  NSString		*baseLst;
+  NSScanner		*scanner;
+  NSString		*lineString = @" ";
+  NSString		*sectionName, *columnOne, *columnTwo;
+  NSArray		*lineComponents;
+  // BOOL			layoutScanning = NO;
+
+  baseLst = [NSString stringWithContentsOfFile:XKB_BASE_LST];
+  scanner = [NSScanner scannerWithString:baseLst];
+
+  while ([scanner scanUpToString:@"\n" intoString:&lineString] == YES)
+    {
+      // New section start encountered
+      if ([lineString characterAtIndex:0] == '!')
+        {
+          if (modeDict != nil)
+            {
+              [dict addObject:modeDict forKey:sectionName];
+            }
+          
+          sectionName = [lineString substringFromIndex:2];
+          
+          // if ([sectionName isEqualToString:@"layout"] == YES)
+          //   layoutScanning = YES;
+          // if ([sectionName isEqualToString:@"layout"] == NO && layoutScanning == YES)
+          //   break;
+          
+          NSLog(@"Keyboard: found section: %@", sectionName);
+        }
+      else
+        { // Parse line and add into 'modeDict' dictionary
+          columnOne
+        }
+    }
+
+  return [dict autorelease];
 }
 
 @end

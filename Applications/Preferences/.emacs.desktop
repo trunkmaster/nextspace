@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Oct 17 02:21:59 2017
+;; Created Wed Oct 18 02:32:23 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -21,9 +21,20 @@
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
   "Keyboard.m"
   'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  10226
+  '(9395 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
+  "Keyboard.h"
+  'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  7904
-  '(8790 nil)
+  1300
+  '(1264 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -79,17 +90,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   2848
   '(2386 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
-  "Keyboard.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1012
-  '(998 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
