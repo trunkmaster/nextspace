@@ -221,7 +221,7 @@ static NSMutableDictionary      *domain = nil;
       break;
     case 1: // Layouts
       [sectionBox setContentView:layoutsBox];
-      [self layoutsDictionary];
+      [self parseXkbBaseList];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -262,16 +262,14 @@ static NSMutableDictionary      *domain = nil;
 
 #define XKB_BASE_LST @"/usr/share/X11/xkb/rules/base.lst"
 
-- (NSDictionary *)parseXkbBaseList
+- (void)parseXkbBaseList
 {
   NSMutableDictionary	*dict = [[NSMutableDictionary alloc] init];
-  NSMutableDictionary	*modeDict == nil;
+  NSMutableDictionary	*modeDict = [[NSMutableDictionary alloc] init];
   NSString		*baseLst;
   NSScanner		*scanner;
   NSString		*lineString = @" ";
-  NSString		*sectionName, *columnOne, *columnTwo;
-  NSArray		*lineComponents;
-  // BOOL			layoutScanning = NO;
+  NSString		*sectionName, *fileName;
 
   baseLst = [NSString stringWithContentsOfFile:XKB_BASE_LST];
   scanner = [NSScanner scannerWithString:baseLst];
@@ -281,27 +279,55 @@ static NSMutableDictionary      *domain = nil;
       // New section start encountered
       if ([lineString characterAtIndex:0] == '!')
         {
-          if (modeDict != nil)
+          if ([[modeDict allKeys] count] > 0)
             {
-              [dict addObject:modeDict forKey:sectionName];
+              [dict setObject:[modeDict copy] forKey:sectionName];
+              
+              fileName = [NSString
+                           stringWithFormat:@"/Users/me/Library/XKB_%@.list",
+                          sectionName];
+              [modeDict writeToFile:fileName atomically:YES];
+              // NSLog(@"%@: %@", sectionName, modeDict);
+              [modeDict removeAllObjects];
+              [modeDict release];
+              modeDict = [[NSMutableDictionary alloc] init];
             }
           
           sectionName = [lineString substringFromIndex:2];
-          
-          // if ([sectionName isEqualToString:@"layout"] == YES)
-          //   layoutScanning = YES;
-          // if ([sectionName isEqualToString:@"layout"] == NO && layoutScanning == YES)
-          //   break;
           
           NSLog(@"Keyboard: found section: %@", sectionName);
         }
       else
         { // Parse line and add into 'modeDict' dictionary
-          columnOne
+          NSMutableArray	*lineComponents;
+          NSString		*key;
+          NSMutableString	*value = [[NSMutableString alloc] init];
+          BOOL			add = NO;
+          
+          lineComponents = [[lineString componentsSeparatedByString:@" "]
+                             mutableCopy];
+          key = [lineComponents objectAtIndex:0];
+
+          for (int i = 1; i < [lineComponents count]; i++)
+            {
+              if (add == NO &&
+                  ![[lineComponents objectAtIndex:i] isEqualToString:@""])
+                {
+                  add = YES;
+                  [value appendFormat:@"%@", [lineComponents objectAtIndex:i]];
+                }
+              else if (add == YES)
+                [value appendFormat:@" %@", [lineComponents objectAtIndex:i]];
+            }
+          
+          [modeDict setObject:value forKey:key];
+          
+          [value release];
+          [lineComponents release];
         }
     }
-
-  return [dict autorelease];
+  [dict writeToFile:@"/Users/me/Library/Keyboards.list" atomically:YES];
+  [dict release];
 }
 
 @end
