@@ -51,5 +51,5 @@
 @end
 
 @interface Keyboard (XKB)
-- (NSDictionary *)layoutsDictionary;
+- (void)parseXkbBaseList;
 @end
