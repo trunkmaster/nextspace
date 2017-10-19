@@ -43,7 +43,6 @@
   id shortcutsBox;
 
   NSImage *image;
-  NSArray *layouts;
 }
 
 - (void)sectionButtonClicked:(id)sender;
