@@ -54,103 +54,6 @@ static NSMutableDictionary      *domain = nil;
   bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Keyboard" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
-
-  layouts = [NSArray arrayWithObjects:
-                       @"Dutch",		// nl,basic
-                     @"Dutch (standard)",	// nl, std
-                     @"Dutch (Macintosh)",	// nl, mac
-                     @"English (US)",
-                     @"English (US, with euro on 5)",
-                     @"English (US, international with dead keys)",
-                     @"English (US, alternative international)",
-                     @"English (Dvorak)",
-                     @"English (Dvorak, international with dead keys)",
-                     @"English (Dvorak alternative international no dead keys)",
-                     @"English (left handed Dvorak)",
-                     @"English (right handed Dvorak)",
-                     @"English (classic Dvorak)",
-                     @"English (programmer Dvorak)",
-                     @"English (Macintosh)",
-                     @"English (Colemak)",
-                     @"English (international AltGr dead keys)",
-                     @"English (US)",
-                     @"English (layout toggle on multiply/divide key)",
-                     @"English (Workman)",
-                     @"English (Workman, international with dead keys)",
-                     @"English (US, international AltGr Unicode combining)",
-                     @"English (US, international AltGr Unicode combining, alternative)",
-                     @"English (South Africa)",
-                     @"Esperanto",
-                     @"Esperanto (Portugal, Nativo)",
-                     @"French",
-                     @"French (Canada)",
-                     @"French (Canada, Dvorak)",
-                     @"French (Canada, legacy)",
-                     @"French (Democratic Republic of the Congo)",
-                     @"French (Switzerland)",
-                     @"French (Switzerland, Macintosh)",
-                     @"French (Cameroon)",
-                     @"French (alternative)",
-                     @"French (alternative, latin-9 only)",
-                     @"French (legacy, alternative)",
-                     @"French (Bepo, ergonomic, Dvorak way)",
-                     @"French (Bepo, ergonomic, Dvorak way, latin-9 only)",
-                     @"French (Dvorak)",
-                     @"French (Breton)",
-                     @"French (Macintosh)",
-                     @"French (Guinea)",
-                     @"French (Morocco)",
-                     @"French (Mali, alternative)",
-                     @"German",
-                     @"German (Austria)",
-                     @"German (Austria, Macintosh)",
-                     @"German (Switzerland)",
-                     @"German (Switzerland, legacy)",
-                     @"German (Switzerland, Macintosh)",
-                     @"German (legacy)",
-                     @"German (T3)",
-                     @"German (Dvorak)",
-                     @"German (Neo 2)",
-                     @"German (Macintosh)",
-                     @"German (qwerty)",
-                     @"German (US keyboard with German letters)",
-                     @"German (with Hungarian letters and no dead keys)",
-                     @"Hungarian",
-                     @"Hungarian (standard)",
-                     @"Hungarian (eliminate dead keys)",
-                     @"Hungarian (qwerty)",
-                     @"Hungarian (101/qwertz/comma/dead keys)",
-                     @"Hungarian (101/qwertz/comma/eliminate dead keys)",
-                     @"Hungarian (101/qwertz/dot/dead keys)",
-                     @"Hungarian (101/qwertz/dot/eliminate dead keys)",
-                     @"Hungarian (101/qwerty/comma/dead keys)",
-                     @"Hungarian (101/qwerty/comma/eliminate dead keys)",
-                     @"Hungarian (101/qwerty/dot/dead keys)",
-                     @"Hungarian (101/qwerty/dot/eliminate dead keys)",
-                     @"Hungarian (102/qwertz/comma/dead keys)",
-                     @"Hungarian (102/qwertz/comma/eliminate dead keys)",
-                     @"Hungarian (102/qwertz/dot/dead keys)",
-                     @"Hungarian (102/qwertz/dot/eliminate dead keys)",
-                     @"Hungarian (102/qwerty/comma/dead keys)",
-                     @"Hungarian (102/qwerty/comma/eliminate dead keys)",
-                     @"Hungarian (102/qwerty/dot/dead keys)",
-                     @"Hungarian (102/qwerty/dot/eliminate dead keys)",
-                     @"Italian",
-                     @"Korean",
-                     @"Russian",
-                     @"Slovak",
-                     @"Spanish",
-                     @"Traditional Chinese",
-                     @"Ukrainian",
-                     @"Ukrainian (legacy)",
-                     @"Ukrainian (WinKeys)",
-                     @"Ukrainian (typewriter)",
-                     @"Ukrainian (phonetic)",
-                     @"Ukrainian (standard RSTU)",
-                     @"Ukrainian (homophonic)",
-                     nil];
-  [layouts retain];
-
       
   return self;
 }
@@ -177,6 +80,7 @@ static NSMutableDictionary      *domain = nil;
   [[sectionsMtrx cellWithTag:0] setRefusesFirstResponder:YES];
   [[sectionsMtrx cellWithTag:1] setRefusesFirstResponder:YES];
   [[sectionsMtrx cellWithTag:2] setRefusesFirstResponder:YES];
+  [[sectionsMtrx cellWithTag:3] setRefusesFirstResponder:YES];
 
   [shortcutsBrowser loadColumnZero];
   [shortcutsBrowser setTitle:@"Action" ofColumn:0];
@@ -326,6 +230,14 @@ static NSMutableDictionary      *domain = nil;
           [lineComponents release];
         }
     }
+  
+  [dict setObject:[modeDict copy] forKey:sectionName];
+  fileName = [NSString stringWithFormat:@"/Users/me/Library/XKB_%@.list",
+                       sectionName];
+  [modeDict writeToFile:fileName atomically:YES];
+  [modeDict removeAllObjects];
+  [modeDict release];
+
   [dict writeToFile:@"/Users/me/Library/Keyboards.list" atomically:YES];
   [dict release];
 }
