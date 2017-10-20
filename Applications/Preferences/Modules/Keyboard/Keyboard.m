@@ -33,8 +33,10 @@
 #import <AppKit/NSButton.h>
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSMatrix.h>
+#import <AppKit/NSWindow.h>
 
 #import <NXFoundation/NXDefaults.h>
+#include <X11/XKBlib.h>
 
 #import "Keyboard.h"
 
@@ -67,24 +69,37 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)awakeFromNib
 {
+  NXDefaults *defs = [NXDefaults globalUserDefaults];
+    
   [view retain];
   [window release];
 
+  for (id c in [sectionsMtrx cells])
+    [c setRefusesFirstResponder:YES];
+
+  // Key Repeat
   [repeatBox retain];
   [repeatBox removeFromSuperview];
+  for (id c in [initialRepeatMtrx cells])
+    [c setRefusesFirstResponder:YES];
+  for (id c in [repeatRateMtrx cells])
+    [c setRefusesFirstResponder:YES];
+  [initialRepeatMtrx selectCellWithTag:[defs integerForKey:InitialRepeat]];
+  [repeatRateMtrx selectCellWithTag:[defs integerForKey:RepeatRate]];
+  
+  // Layouts
   [layoutsBox retain];
   [layoutsBox removeFromSuperview];
+  [layoutsList setHeaderView:nil];
+
+  // Shortcuts
   [shortcutsBox retain];
   [shortcutsBox removeFromSuperview];
-
-  [[sectionsMtrx cellWithTag:0] setRefusesFirstResponder:YES];
-  [[sectionsMtrx cellWithTag:1] setRefusesFirstResponder:YES];
-  [[sectionsMtrx cellWithTag:2] setRefusesFirstResponder:YES];
-  [[sectionsMtrx cellWithTag:3] setRefusesFirstResponder:YES];
-
   [shortcutsBrowser loadColumnZero];
   [shortcutsBrowser setTitle:@"Action" ofColumn:0];
   [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
+
+  // Options
 
   [self sectionButtonClicked:sectionsMtrx];
 }
@@ -135,29 +150,54 @@ static NSMutableDictionary      *domain = nil;
     }
 }
 
+//
+// Table delegate methods
+//
+- (int)numberOfRowsInTableView:(NSTableView *)tv
+{
+}
+
+- (id)           tableView:(NSTableView *)tv
+ objectValueForTableColumn:(NSTableColumn *)tc
+                       row:(int)row
+{
+}
+
 @end
 
 @implementation Keyboard (KeyRepeat)
 
 - (void)repeatAction:(id)sender
 {
-  NXDefaults 		*defs = [[NXDefaults alloc] initWithUserDefaults];
-  NSMutableDictionary	*keybDefs;
+  NXDefaults	*defs = [NXDefaults globalUserDefaults];
   
-  keybDefs = [[defs objectForKey:@"NXKeyboard"] mutableCopy];
   if (sender == initialRepeatMtrx)
     { // NXKeyboard-InitialKeyRepeat - delay in milliseconds before repeat
-      [keybDefs setObject:[NSNumber numberWithInt:[[sender selectedCell] tag]]
-                   forKey:@"InitialKeyRepeat"];
+      [defs setInteger:[[sender selectedCell] tag] forKey:InitialRepeat];
     }
   else if (sender == repeatRateMtrx)
     { // NXKeyboard - RepeatRate - num of repeates per second
-      [keybDefs setObject:[NSNumber numberWithInt:[[sender selectedCell] tag]]
-                   forKey:@"RepeatRate"];
+      [defs setInteger:[[sender selectedCell] tag] forKey:RepeatRate];
     }
 
-  [defs setObject:keybDefs forKey:@"NXKeyboard"];
   [defs synchronize];
+
+  {
+    XkbDescPtr xkb = XkbAllocKeyboard();
+    Display    *dpy = XOpenDisplay(NULL);
+
+    if (!xkb)
+      {
+        NSLog(@"No XKB extension found!");
+        return;
+      }
+    XkbGetControls(dpy, XkbRepeatKeysMask, xkb);
+    xkb->ctrls->repeat_delay = (int)[defs integerForKey:InitialRepeat];
+    xkb->ctrls->repeat_interval = 1000/(int)[defs integerForKey:RepeatRate];
+    XkbSetControls(dpy, XkbRepeatKeysMask, xkb);
+    XCloseDisplay(dpy);
+  }
+  [[sender window] makeFirstResponder:repeatTestField];
 }
 
 @end
