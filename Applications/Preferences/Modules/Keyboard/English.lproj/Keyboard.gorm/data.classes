@@ -2,27 +2,34 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "repeatAction:",
 	    "sectionButtonClicked:"
 	);
 	Super = NSObject;
     };
     Keyboard = {
 	Actions = (
-	    "sectionButtonClicked:"
+	    "sectionButtonClicked:",
+	    "repeatAction:"
 	);
 	Outlets = (
 	    window,
 	    view,
-	    captureBtn,
 	    initialRepeatMtrx,
-	    captureField,
 	    repeatRateMtrx,
-	    shortcutsBrowser,
 	    layoutsBox,
 	    sectionsMtrx,
 	    repeatBox,
 	    sectionBox,
-	    shortcutsBox
+	    shortcutsBox,
+	    layoutAddBtn,
+	    layoutDownBtn,
+	    layoutRemoveBtn,
+	    layoutShortcutSetBtn,
+	    layoutUpBtn,
+	    layoutList,
+	    layoutShortcutTextField,
+	    repeatTestField
 	);
 	Super = NSObject;
     };

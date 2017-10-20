@@ -22,24 +22,39 @@
   	59 Temple Place - Suite 330
   	Boston, MA  02111-1307, USA
 */
-#import <AppKit/NSImage.h>
+#import <AppKit/AppKit.h>
 #import <Preferences.h>
+
+NSString *InitialRepeat = @"KeyboardInitialKeyRepeat";
+NSString *RepeatRate = @"KeyboardRepeatRate";
+NSString *LayoutsList = @"LayoutsList";
+NSString *LSwitchShortcut = @"LayoutSwitchShortcut";
 
 @interface Keyboard : NSObject <PrefsModule>
 {
   id window;
   id view;
-  
+  id sectionBox;
+  id sectionsMtrx;
+
+  // Key Repeat
   id repeatBox;
   id initialRepeatMtrx;
   id repeatRateMtrx;
-  
-  id captureBtn;
-  id captureField;
-  id shortcutsBrowser;
+  id repeatTestField;
+
+  // Layouts
   id layoutsBox;
-  id sectionBox;
-  id sectionsMtrx;
+  NSTableView *layoutsList;
+  id layoutAddBtn;
+  id layoutRemoveBtn;
+  id layoutUpBtn;
+  id layoutDownBtn;
+  id layoutShortcutSetBtn;
+  id layoutShortcutTextField;
+
+  // Shortcuts
+  id shortcutsBrowser;
   id shortcutsBox;
 
   NSImage *image;
