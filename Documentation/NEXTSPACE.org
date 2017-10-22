@@ -1073,7 +1073,7 @@
 *** TODO [#B] NXKeyboard - type, input languages, shortcuts, repeat rate
 **** TODO Keyboard type (Xorg keyboard types)
 **** TODO Input languages (Xkb layouts)
-**** TODO Repeate rate (Xorg)
+**** DONE Repeate rate (Xorg)
 **** TODO Control, Alternate, Command mapping (GNUstep)
      Из Terminal:
      /*
@@ -3215,9 +3215,10 @@
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 ***** DONE Обновлять примеры форматов после смены в списке языков
 **** TODO Keyboard
+***** DONE Repeat Rate
+***** TODO Layouts
 ***** TODO Command/Alternate
-***** TODO Repeat Rate
-***** TODO keyboard type, layouts
+***** TODO Keyboard Model
 ***** TODO Shortcuts
       GNUstep and WindowMaker.
 ***** TODO Ввод кодов символов (Compose Key?)

@@ -36,6 +36,7 @@
 #import <AppKit/NSWindow.h>
 
 #import <NXFoundation/NXDefaults.h>
+#import <NXSystem/NXKeyboard.h>
 #include <X11/XKBlib.h>
 
 #import "Keyboard.h"
@@ -70,6 +71,7 @@ static NSMutableDictionary      *domain = nil;
 - (void)awakeFromNib
 {
   NXDefaults *defs = [NXDefaults globalUserDefaults];
+  NXKeyboard *keyb = [NXKeyboard new];
     
   [view retain];
   [window release];
@@ -84,13 +86,30 @@ static NSMutableDictionary      *domain = nil;
     [c setRefusesFirstResponder:YES];
   for (id c in [repeatRateMtrx cells])
     [c setRefusesFirstResponder:YES];
-  [initialRepeatMtrx selectCellWithTag:[defs integerForKey:InitialRepeat]];
-  [repeatRateMtrx selectCellWithTag:[defs integerForKey:RepeatRate]];
+
+  if (![initialRepeatMtrx selectCellWithTag:[keyb initialRepeat]])
+    {
+      if ([defs integerForKey:InitialRepeat] < 0)
+        [initialRepeatMtrx selectCellWithTag:200];
+      else
+        [initialRepeatMtrx
+            selectCellWithTag:[defs integerForKey:InitialRepeat]];
+      [self repeatAction:initialRepeatMtrx];
+    }
+    
+  if (![repeatRateMtrx selectCellWithTag:[keyb repeatRate]])
+    {
+      if ([defs integerForKey:RepeatRate] < 0)
+        [repeatRateMtrx selectCellWithTag:40];
+      else
+        [repeatRateMtrx selectCellWithTag:[defs integerForKey:RepeatRate]];
+      [self repeatAction:repeatRateMtrx];
+    }
   
   // Layouts
   [layoutsBox retain];
   [layoutsBox removeFromSuperview];
-  [layoutsList setHeaderView:nil];
+  [layoutList setHeaderView:nil];
 
   // Shortcuts
   [shortcutsBox retain];
@@ -140,7 +159,6 @@ static NSMutableDictionary      *domain = nil;
       break;
     case 1: // Layouts
       [sectionBox setContentView:layoutsBox];
-      [self parseXkbBaseList];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -155,12 +173,27 @@ static NSMutableDictionary      *domain = nil;
 //
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
+  if (tv == layoutList)
+    {
+    }
+  else if (tv == layoutShortcutList)
+    {
+    }
+  return 0;
 }
 
 - (id)           tableView:(NSTableView *)tv
  objectValueForTableColumn:(NSTableColumn *)tc
                        row:(int)row
 {
+  if (tv == layoutList)
+    {
+    }
+  else if (tv == layoutShortcutList)
+    {
+    }
+
+  return nil;
 }
 
 @end
@@ -170,116 +203,49 @@ static NSMutableDictionary      *domain = nil;
 - (void)repeatAction:(id)sender
 {
   NXDefaults	*defs = [NXDefaults globalUserDefaults];
+  NXKeyboard	*keyb = [NXKeyboard new];
   
   if (sender == initialRepeatMtrx)
     { // NXKeyboard-InitialKeyRepeat - delay in milliseconds before repeat
       [defs setInteger:[[sender selectedCell] tag] forKey:InitialRepeat];
+      [keyb setInitialRepeat:[defs integerForKey:InitialRepeat]];
     }
   else if (sender == repeatRateMtrx)
     { // NXKeyboard - RepeatRate - num of repeates per second
       [defs setInteger:[[sender selectedCell] tag] forKey:RepeatRate];
+      [keyb setRepeatRate:[defs integerForKey:RepeatRate]];
     }
 
   [defs synchronize];
 
-  {
-    XkbDescPtr xkb = XkbAllocKeyboard();
-    Display    *dpy = XOpenDisplay(NULL);
-
-    if (!xkb)
-      {
-        NSLog(@"No XKB extension found!");
-        return;
-      }
-    XkbGetControls(dpy, XkbRepeatKeysMask, xkb);
-    xkb->ctrls->repeat_delay = (int)[defs integerForKey:InitialRepeat];
-    xkb->ctrls->repeat_interval = 1000/(int)[defs integerForKey:RepeatRate];
-    XkbSetControls(dpy, XkbRepeatKeysMask, xkb);
-    XCloseDisplay(dpy);
-  }
   [[sender window] makeFirstResponder:repeatTestField];
 }
 
 @end
 
-@implementation Keyboard (XKB)
+@implementation Keyboard (Layouts)
 
-#define XKB_BASE_LST @"/usr/share/X11/xkb/rules/base.lst"
-
-- (void)parseXkbBaseList
+// "Add.." button action
+- (void)layoutAdd:(id)sender
 {
-  NSMutableDictionary	*dict = [[NSMutableDictionary alloc] init];
-  NSMutableDictionary	*modeDict = [[NSMutableDictionary alloc] init];
-  NSString		*baseLst;
-  NSScanner		*scanner;
-  NSString		*lineString = @" ";
-  NSString		*sectionName, *fileName;
-
-  baseLst = [NSString stringWithContentsOfFile:XKB_BASE_LST];
-  scanner = [NSScanner scannerWithString:baseLst];
-
-  while ([scanner scanUpToString:@"\n" intoString:&lineString] == YES)
+  // if (!layoutAddPanel)
+  //   {
+  //     layoutAddPanel = [[AddLayoutPanel alloc]
+  //                         initWithXKBDictionary:[self xkbBaseListDictionary]];
+  //   }
+  // [layoutAddPanel orderFront];
+}
+- (void)layoutRemove:(id)sender
+{
+}
+- (void)layoutMove:(id)sender
+{
+  if (sender == layoutUpBtn)
     {
-      // New section start encountered
-      if ([lineString characterAtIndex:0] == '!')
-        {
-          if ([[modeDict allKeys] count] > 0)
-            {
-              [dict setObject:[modeDict copy] forKey:sectionName];
-              
-              fileName = [NSString
-                           stringWithFormat:@"/Users/me/Library/XKB_%@.list",
-                          sectionName];
-              [modeDict writeToFile:fileName atomically:YES];
-              // NSLog(@"%@: %@", sectionName, modeDict);
-              [modeDict removeAllObjects];
-              [modeDict release];
-              modeDict = [[NSMutableDictionary alloc] init];
-            }
-          
-          sectionName = [lineString substringFromIndex:2];
-          
-          NSLog(@"Keyboard: found section: %@", sectionName);
-        }
-      else
-        { // Parse line and add into 'modeDict' dictionary
-          NSMutableArray	*lineComponents;
-          NSString		*key;
-          NSMutableString	*value = [[NSMutableString alloc] init];
-          BOOL			add = NO;
-          
-          lineComponents = [[lineString componentsSeparatedByString:@" "]
-                             mutableCopy];
-          key = [lineComponents objectAtIndex:0];
-
-          for (int i = 1; i < [lineComponents count]; i++)
-            {
-              if (add == NO &&
-                  ![[lineComponents objectAtIndex:i] isEqualToString:@""])
-                {
-                  add = YES;
-                  [value appendFormat:@"%@", [lineComponents objectAtIndex:i]];
-                }
-              else if (add == YES)
-                [value appendFormat:@" %@", [lineComponents objectAtIndex:i]];
-            }
-          
-          [modeDict setObject:value forKey:key];
-          
-          [value release];
-          [lineComponents release];
-        }
     }
-  
-  [dict setObject:[modeDict copy] forKey:sectionName];
-  fileName = [NSString stringWithFormat:@"/Users/me/Library/XKB_%@.list",
-                       sectionName];
-  [modeDict writeToFile:fileName atomically:YES];
-  [modeDict removeAllObjects];
-  [modeDict release];
-
-  [dict writeToFile:@"/Users/me/Library/Keyboards.list" atomically:YES];
-  [dict release];
+  else if (sender == layoutDownBtn)
+    {
+    }
 }
 
 @end
