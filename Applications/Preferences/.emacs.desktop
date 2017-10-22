@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Oct 20 19:07:00 2017
+;; Created Sun Oct 22 03:20:11 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -14,7 +14,7 @@
 (setq search-ring '("Scree" "owner" "dockImage" "no_colo" "1" "speedbar" "sr-s" "NSMouse" "mouseLocal" "languageList" "fontCategoryNam" "fontCate" "owner" "selectedDisplay" "bundle" "owner"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/keyboards.list" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/keyboards.list" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Preferences"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -22,11 +22,44 @@
   "Keyboard.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  3860
-  '(3732 nil)
+  2993
+  '(2188 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
+  "Keyboard.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  1766
+  '(1766 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.m"
+  "AddLayoutPanel.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1033
+  '(928 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h"
+  "AddLayoutPanel.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1116
+  '(1116 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
@@ -35,17 +68,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   6069
   '(6089 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
-  "Keyboard.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1326
-  '(1144 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
