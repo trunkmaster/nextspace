@@ -24,6 +24,7 @@
 */
 #import <AppKit/AppKit.h>
 #import <Preferences.h>
+// #import "AddLayoutPanel.h"
 
 NSString *InitialRepeat = @"KeyboardInitialKeyRepeat";
 NSString *RepeatRate = @"KeyboardRepeatRate";
@@ -45,13 +46,15 @@ NSString *LSwitchShortcut = @"LayoutSwitchShortcut";
 
   // Layouts
   id layoutsBox;
-  NSTableView *layoutsList;
+  NSTableView 		*layoutList;
+  // AddLayoutPanel	*layoutAddPanel;
   id layoutAddBtn;
   id layoutRemoveBtn;
   id layoutUpBtn;
   id layoutDownBtn;
   id layoutShortcutSetBtn;
   id layoutShortcutTextField;
+  id layoutShortcutList;
 
   // Shortcuts
   id shortcutsBrowser;
@@ -64,6 +67,6 @@ NSString *LSwitchShortcut = @"LayoutSwitchShortcut";
 
 @end
 
-@interface Keyboard (XKB)
-- (void)parseXkbBaseList;
+@interface Keyboard (KeyRepeat)
+- (void)repeatAction:(id)sender;
 @end

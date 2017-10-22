@@ -2,6 +2,7 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "layoutAdd:",
 	    "repeatAction:",
 	    "sectionButtonClicked:"
 	);
@@ -10,7 +11,8 @@
     Keyboard = {
 	Actions = (
 	    "sectionButtonClicked:",
-	    "repeatAction:"
+	    "repeatAction:",
+	    "layoutAdd:"
 	);
 	Outlets = (
 	    window,
