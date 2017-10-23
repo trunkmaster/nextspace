@@ -45,6 +45,7 @@ NSString *LSwitchShortcut = @"LayoutSwitchShortcut";
   id repeatTestField;
 
   // Layouts
+  NXKeyboard *keyboard;
   id layoutsBox;
   NSTableView 		*layoutList;
   // AddLayoutPanel	*layoutAddPanel;
