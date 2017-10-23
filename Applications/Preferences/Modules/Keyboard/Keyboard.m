@@ -65,6 +65,7 @@ static NSMutableDictionary      *domain = nil;
 {
   NSLog(@"KeyboardPrefs -dealloc");
   [image release];
+  if (keyboard) [keyboard release];
   [super dealloc];
 }
 
@@ -110,6 +111,9 @@ static NSMutableDictionary      *domain = nil;
   [layoutsBox retain];
   [layoutsBox removeFromSuperview];
   [layoutList setHeaderView:nil];
+  [layoutList setDelegate:self];
+  [layoutList setDataSource:self];
+  [layoutList reloadData];
 
   // Shortcuts
   [shortcutsBox retain];
@@ -175,6 +179,9 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
+      if (!keyboard)
+        keyboard = [[NXKeyboard alloc] init];
+      return [[keyboard layoutList] count];
     }
   else if (tv == layoutShortcutList)
     {
@@ -188,6 +195,11 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
+      if (!keyboard)
+        keyboard = [[NXKeyboard alloc] init];
+      return [[[[keyboard layoutList] allValues]
+                sortedArrayUsingSelector:@selector(compare:)]
+               objectAtIndex:row];
     }
   else if (tv == layoutShortcutList)
     {
