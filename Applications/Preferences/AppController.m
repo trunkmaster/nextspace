@@ -24,7 +24,8 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <NXSystem/NXScreen.h>
+#import <NXFoundation/NXDefaults.h>
+#import <NXSystem/NXKeyboard.h>
 
 #import "AppController.h"
 #import "ClockView.h"
@@ -70,7 +71,21 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
 {
-  [NSApp hide:self];
+  // Here will be applied various preferences to desktop/system:
+  // keyboard, mouse, sound, power management.
+  // Display preferences applied in Workspace Manager because displayes must
+  // be configured before window management starts.
+  
+  // Apply preferences only if we're autolaunched.
+  // NSApplication removed arguments (-NXAutoLaunch YES) to omit flickering.
+  // We've just finished launching and not active == we've autolaunched
+  if ([NSApp isActive] == NO)
+    {
+      NXDefaults *defs = [NXDefaults globalUserDefaults];
+      
+      NSLog(@"Configure keyboard...");
+      [NXKeyboard configureWithDefaults:defs];
+    }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
