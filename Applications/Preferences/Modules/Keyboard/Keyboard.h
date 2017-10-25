@@ -26,11 +26,6 @@
 #import <Preferences.h>
 // #import "AddLayoutPanel.h"
 
-NSString *InitialRepeat = @"KeyboardInitialKeyRepeat";
-NSString *RepeatRate = @"KeyboardRepeatRate";
-NSString *LayoutsList = @"LayoutsList";
-NSString *LSwitchShortcut = @"LayoutSwitchShortcut";
-
 @interface Keyboard : NSObject <PrefsModule>
 {
   id window;

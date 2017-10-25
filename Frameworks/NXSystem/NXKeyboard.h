@@ -33,7 +33,7 @@
   NSDictionary *optionDict;
 }
 
-- (void)configureWithDefaults:(NXDefaults *)defs;
++ (void)configureWithDefaults:(NXDefaults *)defs;
 
 - (NSDictionary *)modelList;
 - (NSString *)model;
@@ -52,5 +52,13 @@
 - (void)setInitialRepeat:(NSInteger)delay;
 - (NSInteger)repeatRate;
 - (void)setRepeatRate:(NSInteger)rate;
+- (void)setInitialRepeat:(NSInteger)delay rate:(NSInteger)rate;
 
 @end
+
+// NXGlobalDomain keys. Strings are started with NXKeyboard prefix
+extern NSString *InitialRepeat;
+extern NSString *RepeatRate;
+extern NSString *Layouts;
+extern NSString *SwitchLayoutKey; // 'grp:' - switching to another layout
+extern NSString *ComposeKey;      // 'compose:' - position of Compose key

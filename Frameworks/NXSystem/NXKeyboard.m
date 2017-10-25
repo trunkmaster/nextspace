@@ -23,7 +23,24 @@
 #import "NXKeyboard.h"
 #include <X11/XKBlib.h>
 
+NSString *InitialRepeat = @"NXKeyboardInitialKeyRepeat";
+NSString *RepeatRate = @"NXKeyboardRepeatRate";
+NSString *Layouts = @"NXKeyboardLayouts";
+NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
+
 @implementation NXKeyboard : NSObject
+
++ (void)configureWithDefaults:(NXDefaults *)defs
+{
+  NSInteger initialRepeat, repeatRate;
+  NXKeyboard *keyb = [NXKeyboard new];
+  
+  if ((initialRepeat = [defs integerForKey:InitialRepeat]) < 0)
+    initialRepeat = 0;
+  if ((repeatRate = [defs integerForKey:RepeatRate]) < 0)
+    repeatRate = 0;
+  [keyb setInitialRepeat:initialRepeat rate:repeatRate];  
+}
 
 - (NSDictionary *)_parseVariantString:(NSString *)value
 {
@@ -128,10 +145,6 @@
   if (optionDict)  [optionDict release];
 
   [super dealloc];
-}
-
-- (void)configureWithDefaults:(NXDefaults *)defs
-{
 }
 
 - (NSDictionary *)modelList
@@ -278,6 +291,10 @@
 - (void)setRepeatRate:(NSInteger)rate
 {
   [self _setXKBRepeat:0 rate:rate];
+}
+- (void)setInitialRepeat:(NSInteger)delay rate:(NSInteger)rate
+{
+  [self _setXKBRepeat:delay rate:rate];
 }
 
 @end
