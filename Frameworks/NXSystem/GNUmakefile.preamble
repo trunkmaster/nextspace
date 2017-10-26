@@ -42,7 +42,7 @@ endif
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
   ADDITIONAL_LDFLAGS += `pkg-config --libs udisks2 dbus-1 upower-glib`
 #  ADDITIONAL_LDFLAGS += -lkqueue -ldispatch -lpthread_workqueue
-  ADDITIONAL_LDFLAGS += -ldispatch
+  ADDITIONAL_LDFLAGS += -ldispatch -lxkbfile
 endif
 
 ### Additional library directories the linker should search
