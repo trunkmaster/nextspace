@@ -37,7 +37,7 @@
 
 #import <NXFoundation/NXDefaults.h>
 #import <NXSystem/NXKeyboard.h>
-#include <X11/XKBlib.h>
+//#include <X11/XKBlib.h>
 
 #import "Keyboard.h"
 
@@ -163,6 +163,7 @@ static NSMutableDictionary      *domain = nil;
       break;
     case 1: // Layouts
       [sectionBox setContentView:layoutsBox];
+      [NXKeyboard currentServerConfig];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
