@@ -22,6 +22,7 @@
 
 #import "NXKeyboard.h"
 #include <X11/XKBlib.h>
+#include <X11/extensions/XKBrules.h>
 
 NSString *InitialRepeat = @"NXKeyboardInitialKeyRepeat";
 NSString *RepeatRate = @"NXKeyboardRepeatRate";
@@ -183,9 +184,49 @@ NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
 }
 
 // TODO
-- (NSString *)layout
++ (NSDictionary *)currentServerConfig
 {
-  return nil;
+  Display 		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	vd;
+  NSMutableDictionary	*config = [NSMutableDictionary dictionary];
+
+  dpy = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
+  if (!XkbRF_GetNamesProp(dpy, &file, &vd) || !file)
+    {
+      NSLog(@"NXKeyboard: error reading XKB properties!");
+      return nil;
+    }
+
+  NSLog(@"NXKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Rules file: %s",
+        vd.model, vd.layout, vd.variant, file);
+  NSArray *layouts, *variants, *options;
+  layouts = [[NSString stringWithCString:vd.layout]
+              componentsSeparatedByString:@","];
+  variants = [[NSString stringWithCString:vd.variant]
+               componentsSeparatedByString:@","];
+  options = [[NSString stringWithCString:vd.options]
+               componentsSeparatedByString:@","];
+
+  NSUInteger lc = [layouts count];
+  NSUInteger vc = [variants count];
+  NSUInteger length = lc > vc  ? lc : vc;
+  NSString   *l, *v;
+  NSMutableDictionary *layoutConfig = [NSMutableDictionary dictionary];
+
+  // NSLog(@"NXKeyboard Layouts: %@", layouts);
+  // NSLog(@"NXKeyboard Variants: %@", variants);
+  
+  for (NSUInteger i = 0; i < length; i++)
+    {
+      l = (i >= lc) ? @"" : [layouts objectAtIndex:i];
+      v = (i >= vc) ? @"" : [variants objectAtIndex:i];      
+      [layoutConfig setObject:v forKey:l];
+    }
+  [config setObject:layoutConfig forKey:@"NXKeyboardLayouts"];
+  NSLog(@"NXKeyboard: gathered config: %@", config);
+  
+  return config;
 }
 // TODO
 - (void)addLayout:(NSString *)name

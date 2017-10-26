@@ -40,7 +40,7 @@
 - (void)setModel:(NSString *)name;
 
 - (NSDictionary *)layoutList;
-- (NSString *)layout;
++ (NSDictionary *)currentServerConfig;
 - (void)addLayout:(NSString *)name;
 - (void)removeLayout:(NSString *)name;
 - (void)setLayoutList:(NSArray *)layouts variants:(NSArray *)variants;
