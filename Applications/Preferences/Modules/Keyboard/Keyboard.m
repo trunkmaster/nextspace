@@ -114,6 +114,7 @@ static NSMutableDictionary      *domain = nil;
   [layoutList setDelegate:self];
   [layoutList setDataSource:self];
   [layoutList reloadData];
+  [layoutList deselectAll:self];
 
   // Shortcuts
   [shortcutsBox retain];
@@ -180,9 +181,13 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
-      if (!keyboard)
-        keyboard = [[NXKeyboard alloc] init];
-      return [[keyboard layoutList] count];
+      NSDictionary *layouts = [NXKeyboard currentServerConfig];
+      layouts = [[NXKeyboard currentServerConfig]
+                  objectForKey:@"NXKeyboardLayouts"];
+      return [layouts count];
+      // if (!keyboard)
+      //   keyboard = [[NXKeyboard alloc] init];
+      // return [[keyboard layoutList] count];
     }
   else if (tv == layoutShortcutList)
     {
@@ -196,11 +201,16 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
+      NSArray *layouts = [[NXKeyboard currentServerConfig]
+                                objectForKey:@"NXKeyboardLayouts"];
+      
       if (!keyboard)
         keyboard = [[NXKeyboard alloc] init];
-      return [[[[keyboard layoutList] allValues]
-                sortedArrayUsingSelector:@selector(compare:)]
-               objectAtIndex:row];
+      
+      return [keyboard nameForLayout:[layouts objectAtIndex:row]];
+      // return [[[[keyboard layoutList] allValues]
+      //           sortedArrayUsingSelector:@selector(compare:)]
+      //          objectAtIndex:row];
     }
   else if (tv == layoutShortcutList)
     {

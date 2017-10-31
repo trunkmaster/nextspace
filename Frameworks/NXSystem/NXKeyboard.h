@@ -44,9 +44,11 @@
 - (void)addLayout:(NSString *)name;
 - (void)removeLayout:(NSString *)name;
 - (void)setLayoutList:(NSArray *)layouts variants:(NSArray *)variants;
+- (NSString *)nameForLayout:(NSString *)layoutCode;
 // Return list of dictionaries with keys: Layout, Desc.
-- (NSDictionary *)variantsForLayout:(NSString *)layout;
-
+- (NSDictionary *)variantListForKey:(NSString *)field value:(NSString *)value;
+- (NSDictionary *)variantListForLayout:(NSString *)layout;
+- (NSDictionary *)variantListForLanguage:(NSString *)language;
 
 - (NSInteger)initialRepeat;
 - (void)setInitialRepeat:(NSInteger)delay;
@@ -60,5 +62,7 @@
 extern NSString *InitialRepeat;
 extern NSString *RepeatRate;
 extern NSString *Layouts;
+extern NSString *Model;
+extern NSString *Options;
 extern NSString *SwitchLayoutKey; // 'grp:' - switching to another layout
 extern NSString *ComposeKey;      // 'compose:' - position of Compose key

@@ -27,7 +27,12 @@
 NSString *InitialRepeat = @"NXKeyboardInitialKeyRepeat";
 NSString *RepeatRate = @"NXKeyboardRepeatRate";
 NSString *Layouts = @"NXKeyboardLayouts";
-NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
+NSString *Variants = @"NXKeyboardVariants";
+NSString *Model = @"NXKeyboardModel";
+NSString *Options = @"NXKeyboardOptions";
+NSString *SwitchLayout = @"SwitchLayoutKey";
+NSString *Compose = @"ComposeKey";
+
 
 @implementation NXKeyboard : NSObject
 
@@ -43,12 +48,38 @@ NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
   [keyb setInitialRepeat:initialRepeat rate:repeatRate];  
 }
 
+// Converts string like
+// "us: English (US, alternative international)" into dictionary:
+// {
+//   Layout = us;
+//   Language = English;
+//   Description = "US, alternative international";
+// }
 - (NSDictionary *)_parseVariantString:(NSString *)value
 {
-  NSArray *comps = [value componentsSeparatedByString:@": "];
-  NSArray *keys = [NSArray arrayWithObjects:@"Layout", @"Desc", nil];
+  NSArray *comps;
+  NSArray *layout;
+  NSArray *language;
+  NSArray *keys;
+  NSMutableDictionary *dictionary;
 
-  return [NSDictionary dictionaryWithObjects:comps forKeys:keys];
+  layout = [value componentsSeparatedByString:@": "];
+  language = [[layout objectAtIndex:1] componentsSeparatedByString:@" ("];
+
+  comps = [[NSArray arrayWithObject:[layout objectAtIndex:0]]
+            arrayByAddingObjectsFromArray:language];
+
+  // NSLog(@"Variant array: %@", comps);
+
+  dictionary = [NSMutableDictionary dictionary];
+  [dictionary setObject:[comps objectAtIndex:0] forKey:@"Layout"];
+  if ([comps count] > 1)
+    [dictionary setObject:[comps objectAtIndex:1] forKey:@"Language"];
+  if ([comps count] > 2)
+    [dictionary setObject:[[[comps objectAtIndex:2] componentsSeparatedByString:@")"] objectAtIndex:0]
+                   forKey:@"Description"];
+    
+  return dictionary;
 }
 
 - (NSDictionary *)_xkbBaseListDictionary
@@ -171,6 +202,9 @@ NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
 {
 }
 
+//
+// Layout
+// 
 - (NSDictionary *)layoutList
 {
   if (!layoutDict)
@@ -206,25 +240,31 @@ NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
   variants = [[NSString stringWithCString:vd.variant]
                componentsSeparatedByString:@","];
   options = [[NSString stringWithCString:vd.options]
-               componentsSeparatedByString:@","];
+              componentsSeparatedByString:@","];
 
-  NSUInteger lc = [layouts count];
-  NSUInteger vc = [variants count];
-  NSUInteger length = lc > vc  ? lc : vc;
-  NSString   *l, *v;
-  NSMutableDictionary *layoutConfig = [NSMutableDictionary dictionary];
+  // NSUInteger lc = [layouts count];
+  // NSUInteger vc = [variants count];
+  // NSUInteger length = lc > vc  ? lc : vc;
+  // NSString   *l, *v;
+  // NSMutableDictionary *layoutConfig = [NSMutableDictionary dictionary];
 
-  // NSLog(@"NXKeyboard Layouts: %@", layouts);
-  // NSLog(@"NXKeyboard Variants: %@", variants);
+  NSLog(@"NXKeyboard Layouts: %@", layouts);
+  NSLog(@"NXKeyboard Variants: %@", variants);
   
-  for (NSUInteger i = 0; i < length; i++)
-    {
-      l = (i >= lc) ? @"" : [layouts objectAtIndex:i];
-      v = (i >= vc) ? @"" : [variants objectAtIndex:i];      
-      [layoutConfig setObject:v forKey:l];
-    }
-  [config setObject:layoutConfig forKey:@"NXKeyboardLayouts"];
-  NSLog(@"NXKeyboard: gathered config: %@", config);
+  // for (NSUInteger i = 0; i < length; i++)
+  //   {
+  //     l = (i >= lc) ? @"" : [layouts objectAtIndex:i];
+  //     v = (i >= vc) ? @"" : [variants objectAtIndex:i];
+  //     [layoutConfig setObject:v forKey:l];
+  //   }
+  // [config setObject:layoutConfig forKey:@"NXKeyboardLayouts"];
+
+  [config setObject:layouts forKey:Layouts];
+  [config setObject:variants forKey:Variants];
+  [config setObject:options forKey:Options];
+  [config setObject:[NSString stringWithCString:vd.model] forKey:Model];
+  
+  [config writeToFile:@"/Users/me/Library/NXKeyboard" atomically:YES];
   
   return config;
 }
@@ -241,7 +281,20 @@ NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
 {
 }
 
-- (NSDictionary *)variantsForLayout:(NSString *)layout
+- (NSString *)nameForLayout:(NSString *)layoutCode
+{
+  if (!layoutDict)
+    {
+      layoutDict = [[NSDictionary alloc]
+                     initWithDictionary:[[self _xkbBaseListDictionary]
+                                          objectForKey:@"layout"]];
+    }
+
+  return [layoutDict objectForKey:layoutCode];
+}
+
+- (NSDictionary *)variantListForKey:(NSString *)field
+                              value:(NSString *)value
 {
   NSMutableDictionary	*layoutVariants;
   NSDictionary		*variant;
@@ -257,13 +310,23 @@ NSString *SwitchLayoutKey = @"NXKeyboardSwitchLayoutKey";
   for (NSString *key in [variantDict allKeys])
     {
       variant = [variantDict objectForKey:key];
-      if ([[variant objectForKey:@"Layout"] isEqualToString:layout])
+      if ([[variant objectForKey:field] isEqualToString:value])
         {
           [layoutVariants setObject:variant forKey:key];
         }
     }
 
   return [layoutVariants autorelease];
+}
+  
+- (NSDictionary *)variantListForLayout:(NSString *)layout
+{
+  return [self variantListForKey:@"Layout" value:layout];
+}
+
+- (NSDictionary *)variantListForLanguage:(NSString *)language
+{
+  return [self variantListForKey:@"Language" value:language];
 }
 
 //
