@@ -10,7 +10,8 @@ Keyboard_LANGUAGES = \
 	English
 
 Keyboard_LOCALIZED_RESOURCE_FILES = \
-	Keyboard.gorm
+	Keyboard.gorm \
+	AddLayoutPanel.gorm
 
 Keyboard_RESOURCE_FILES = \
 	Resources/Keyboard.tiff \
