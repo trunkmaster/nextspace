@@ -18,10 +18,12 @@ Keyboard_RESOURCE_FILES = \
 	Resources/bundle.registry
 
 Keyboard_OBJC_FILES = \
-	Keyboard.m
+	Keyboard.m \
+	AddLayoutPanel.m
 
 Keyboard_HEADERS = \
-	Keyboard.h
+	Keyboard.h \
+	AddLayoutPanel.h
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/bundle.make

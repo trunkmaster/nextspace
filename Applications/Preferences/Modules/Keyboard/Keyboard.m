@@ -113,7 +113,6 @@ static NSMutableDictionary      *domain = nil;
   [layoutList setHeaderView:nil];
   [layoutList setDelegate:self];
   [layoutList setDataSource:self];
-  [layoutList reloadData];
   [layoutList deselectAll:self];
 
   // Shortcuts
@@ -163,8 +162,8 @@ static NSMutableDictionary      *domain = nil;
       [sectionBox setContentView:repeatBox];
       break;
     case 1: // Layouts
+      [layoutList reloadData];
       [sectionBox setContentView:layoutsBox];
-      [NXKeyboard currentServerConfig];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -251,12 +250,12 @@ static NSMutableDictionary      *domain = nil;
 // "Add.." button action
 - (void)layoutAdd:(id)sender
 {
-  // if (!layoutAddPanel)
-  //   {
-  //     layoutAddPanel = [[AddLayoutPanel alloc]
-  //                         initWithXKBDictionary:[self xkbBaseListDictionary]];
-  //   }
-  // [layoutAddPanel orderFront];
+  if (!layoutAddPanel)
+    {
+      layoutAddPanel = [[AddLayoutPanel alloc]
+                         initWithKeyboard:[NXKeyboard new]];
+    }
+  [NSApp runModalForWindow:[layoutAddPanel panel]];
 }
 - (void)layoutRemove:(id)sender
 {
