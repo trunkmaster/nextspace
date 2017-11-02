@@ -24,7 +24,7 @@
 */
 #import <AppKit/AppKit.h>
 #import <Preferences.h>
-// #import "AddLayoutPanel.h"
+#import "AddLayoutPanel.h"
 
 @interface Keyboard : NSObject <PrefsModule>
 {
@@ -43,7 +43,7 @@
   NXKeyboard *keyboard;
   id layoutsBox;
   NSTableView 		*layoutList;
-  // AddLayoutPanel	*layoutAddPanel;
+  AddLayoutPanel	*layoutAddPanel;
   id layoutAddBtn;
   id layoutRemoveBtn;
   id layoutUpBtn;
