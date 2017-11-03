@@ -6,8 +6,7 @@
 	);
 	Outlets = (
 	    browser,
-	    panel,
-	    selectByLanguageBtn
+	    panel
 	);
 	Super = NSObject;
     };
