@@ -298,6 +298,7 @@ NSString *Compose = @"ComposeKey";
 {
   NSMutableDictionary	*layoutVariants;
   NSDictionary		*variant;
+  NSString		*title;
     
   if (!variantDict)
     {
@@ -312,7 +313,12 @@ NSString *Compose = @"ComposeKey";
       variant = [variantDict objectForKey:key];
       if ([[variant objectForKey:field] isEqualToString:value])
         {
-          [layoutVariants setObject:variant forKey:key];
+          title = [variant objectForKey:@"Description"];
+          if (!title)
+            title = [variant objectForKey:@"Language"];
+          
+          // [layoutVariants setObject:variant forKey:key];
+          [layoutVariants setObject:title forKey:key];
         }
     }
 
