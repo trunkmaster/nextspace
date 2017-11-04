@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Nov  3 02:56:39 2017
+;; Created Sat Nov  4 03:25:42 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "AddLayoutPanel.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2021
-  '(2172 nil)
+  4172
+  '(4242 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
@@ -33,8 +33,8 @@
   "AddLayoutPanel.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1074
-  '(1195 nil)
+  1238
+  '(1239 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))

@@ -6,7 +6,9 @@
 	);
 	Outlets = (
 	    browser,
-	    panel
+	    panel,
+	    addBtn,
+	    infoField
 	);
 	Super = NSObject;
     };
@@ -15,5 +17,12 @@
 	    "addLayout:"
 	);
 	Super = NSObject;
+    };
+    NewClass = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = AddLayoutPanel;
     };
 }
