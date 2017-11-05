@@ -39,8 +39,12 @@
   id repeatRateMtrx;
   id repeatTestField;
 
-  // Layouts
+  // -- Layouts
+  // Data
   NXKeyboard *keyboard;
+  NSArray    *layouts;
+  NSArray    *variants;
+  // GUI
   id layoutsBox;
   NSTableView 		*layoutList;
   AddLayoutPanel	*layoutAddPanel;
@@ -65,4 +69,8 @@
 
 @interface Keyboard (KeyRepeat)
 - (void)repeatAction:(id)sender;
+@end
+
+@interface Keyboard (Layouts)
+- (void)updateLayoutList;
 @end

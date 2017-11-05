@@ -41,9 +41,9 @@
 
 - (NSDictionary *)layoutList;
 + (NSDictionary *)currentServerConfig;
-- (void)addLayout:(NSString *)name;
+- (void)addLayout:(NSString *)layout variant:(NSString *)variant;
 - (void)removeLayout:(NSString *)name;
-- (void)setLayoutList:(NSArray *)layouts variants:(NSArray *)variants;
+- (void)setLayouts:(NSArray *)layouts variants:(NSArray *)variants;
 - (NSString *)nameForLayout:(NSString *)layoutCode;
 // Return list of dictionaries with keys: Layout, Desc.
 - (NSDictionary *)variantListForKey:(NSString *)field value:(NSString *)value;

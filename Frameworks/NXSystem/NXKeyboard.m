@@ -202,9 +202,9 @@ NSString *Compose = @"ComposeKey";
 {
 }
 
-//
-// Layout
-// 
+//------------------------------------------------------------------------------
+// Layouts
+//------------------------------------------------------------------------------
 - (NSDictionary *)layoutList
 {
   if (!layoutDict)
@@ -242,11 +242,7 @@ NSString *Compose = @"ComposeKey";
   options = [[NSString stringWithCString:vd.options]
               componentsSeparatedByString:@","];
 
-  // NSUInteger lc = [layouts count];
-  // NSUInteger vc = [variants count];
-  // NSUInteger length = lc > vc  ? lc : vc;
-  // NSString   *l, *v;
-  // NSMutableDictionary *layoutConfig = [NSMutableDictionary dictionary];
+  XCloseDisplay(dpy);
 
   NSLog(@"NXKeyboard Layouts: %@", layouts);
   NSLog(@"NXKeyboard Variants: %@", variants);
@@ -269,15 +265,66 @@ NSString *Compose = @"ComposeKey";
   return config;
 }
 // TODO
-- (void)addLayout:(NSString *)name
+- (void)addLayout:(NSString *)layout variant:(NSString *)variant
 {
+  NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", layout, variant);
+  
+  Display		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	xkb_vars;
+  NSString		*varString;
+  NSDictionary		*config = [NXKeyboard currentServerConfig];
+  NSArray		*layouts = [config objectForKey:@"NXKeyboardLayouts"];
+  NSArray		*variants = [config objectForKey:@"NXKeyboardVariants"];
+
+  dpy = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
+  if (!XkbRF_GetNamesProp(dpy, &file, &xkb_vars) || !file)
+    {
+      NSLog(@"[NXKeyboard] error reading XKB properties!");
+      return;
+    }
+
+  varString = [NSString stringWithFormat:@"%s,%@", xkb_vars.layout, layout];
+  xkb_vars.layout = strdup([varString cString]);
+
+  if (variant)
+    {
+      varString = [NSString stringWithFormat:@"%s,%@",
+                            xkb_vars.variant, variant];
+      xkb_vars.variant = strdup([varString cString]);
+    }
+
+  XkbComponentNamesRec	rnames;
+  XkbRF_RulesPtr 	rules;
+  XkbDescPtr		xkb;
+
+  rules = XkbRF_Load("/usr/share/X11/xkb/rules/evdev", "C", True, True);
+  if (rules != NULL)
+    {
+      XkbRF_GetComponents(rules, &xkb_vars, &rnames);
+      xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,
+                                 XkbGBN_AllComponentsMask,
+                                 XkbGBN_AllComponentsMask &
+                                 (~XkbGBN_GeometryMask), True);
+      if (!xkb)
+        {
+          NSLog(@"[NXKeyboard] Cannot load new keyboard description.");
+          return;
+        }
+    }
+  else
+    NSLog(@"\n[NXKeyboard] failed to load rules file!\n");  
+
+  XkbRF_SetNamesProp(dpy, file, &xkb_vars);
+  XSync(dpy, False);
+  XCloseDisplay(dpy);
 }
-// TODO
+// TODO: removes variant that corresponds to layout 'name'
 - (void)removeLayout:(NSString *)name
 {
 }
 // TODO
-- (void)setLayoutList:(NSArray *)layouts variants:(NSArray *)variants
+- (void)setLayouts:(NSArray *)layouts variants:(NSArray *)variants
 {
 }
 
@@ -335,9 +382,9 @@ NSString *Compose = @"ComposeKey";
   return [self variantListForKey:@"Language" value:language];
 }
 
-//
+//------------------------------------------------------------------------------
 // Initial Repeat and Repeat Rate
-// 
+//------------------------------------------------------------------------------
 
 - (void)_setXKBRepeat:(NSInteger)repeat rate:(NSInteger)rate
 {
