@@ -123,7 +123,6 @@ static NSMutableDictionary      *domain = nil;
   [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
 
   // Options
-
   [self sectionButtonClicked:sectionsMtrx];
 }
 
@@ -162,7 +161,7 @@ static NSMutableDictionary      *domain = nil;
       [sectionBox setContentView:repeatBox];
       break;
     case 1: // Layouts
-      [layoutList reloadData];
+      [self updateLayoutList];
       [sectionBox setContentView:layoutsBox];
       break;
     case 2: // Shortcuts
@@ -180,13 +179,7 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
-      NSDictionary *layouts = [NXKeyboard currentServerConfig];
-      layouts = [[NXKeyboard currentServerConfig]
-                  objectForKey:@"NXKeyboardLayouts"];
       return [layouts count];
-      // if (!keyboard)
-      //   keyboard = [[NXKeyboard alloc] init];
-      // return [[keyboard layoutList] count];
     }
   else if (tv == layoutShortcutList)
     {
@@ -200,16 +193,7 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
-      NSArray *layouts = [[NXKeyboard currentServerConfig]
-                                objectForKey:@"NXKeyboardLayouts"];
-      
-      if (!keyboard)
-        keyboard = [[NXKeyboard alloc] init];
-      
       return [keyboard nameForLayout:[layouts objectAtIndex:row]];
-      // return [[[[keyboard layoutList] allValues]
-      //           sortedArrayUsingSelector:@selector(compare:)]
-      //          objectAtIndex:row];
     }
   else if (tv == layoutShortcutList)
     {
@@ -247,6 +231,21 @@ static NSMutableDictionary      *domain = nil;
 
 @implementation Keyboard (Layouts)
 
+- (void)updateLayoutList
+{
+  if (!keyboard)
+    keyboard = [[NXKeyboard alloc] init];
+
+  if (layouts) [layouts release];
+  layouts = [[[NXKeyboard currentServerConfig]
+                  objectForKey:@"NXKeyboardLayouts"] copy];
+  if (variants) [variants release];
+  variants = [[[NXKeyboard currentServerConfig]
+                  objectForKey:@"NXKeyboardVariants"] copy];
+  
+  [layoutList reloadData];
+}
+
 // "Add.." button action
 - (void)layoutAdd:(id)sender
 {
@@ -255,7 +254,8 @@ static NSMutableDictionary      *domain = nil;
       layoutAddPanel = [[AddLayoutPanel alloc]
                          initWithKeyboard:[NXKeyboard new]];
     }
-  [NSApp runModalForWindow:[layoutAddPanel panel]];
+  // [NSApp runModalForWindow:[layoutAddPanel panel]];
+  [layoutAddPanel orderFront:self];
 }
 - (void)layoutRemove:(id)sender
 {
