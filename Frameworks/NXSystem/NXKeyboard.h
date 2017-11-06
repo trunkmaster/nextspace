@@ -31,6 +31,8 @@
   NSDictionary *modelDict;
   NSDictionary *variantDict;
   NSDictionary *optionDict;
+
+  NSDictionary *serverConfig;
 }
 
 + (void)configureWithDefaults:(NXDefaults *)defs;
@@ -39,17 +41,19 @@
 - (NSString *)model;
 - (void)setModel:(NSString *)name;
 
-- (NSDictionary *)layoutList;
-+ (NSDictionary *)currentServerConfig;
-- (void)addLayout:(NSString *)layout variant:(NSString *)variant;
-- (void)removeLayout:(NSString *)name;
-- (void)setLayouts:(NSArray *)layouts variants:(NSArray *)variants;
+// --- Layouts
+- (NSDictionary *)availableLayouts;
 - (NSString *)nameForLayout:(NSString *)layoutCode;
-// Return list of dictionaries with keys: Layout, Desc.
-- (NSDictionary *)variantListForKey:(NSString *)field value:(NSString *)value;
+- (NSString *)nameForVariant:(NSString *)variantCode;
 - (NSDictionary *)variantListForLayout:(NSString *)layout;
 - (NSDictionary *)variantListForLanguage:(NSString *)language;
 
+- (NSArray *)layouts;
+- (NSArray *)variants;
+- (void)addLayout:(NSString *)layout variant:(NSString *)variant;
+- (void)removeLayout:(NSString *)name;
+
+// --- Initial Repeat and Repeat Rate
 - (NSInteger)initialRepeat;
 - (void)setInitialRepeat:(NSInteger)delay;
 - (NSInteger)repeatRate;
