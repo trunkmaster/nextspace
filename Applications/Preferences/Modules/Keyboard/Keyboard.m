@@ -193,7 +193,17 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
-      return [keyboard nameForLayout:[layouts objectAtIndex:row]];
+      NSString *title, *variant;
+      
+      title = [keyboard nameForLayout:[layouts objectAtIndex:row]];
+      // variant = [variants objectAtIndex:row];
+      // if (![variant isEqualToString:@""])
+      //   {
+      //     title = [NSString stringWithFormat:@"%@, %@",
+      //                       title, [keyboard nameForVariant:variant]];
+      //   }
+        
+      return title;
     }
   else if (tv == layoutShortcutList)
     {
@@ -237,11 +247,12 @@ static NSMutableDictionary      *domain = nil;
     keyboard = [[NXKeyboard alloc] init];
 
   if (layouts) [layouts release];
-  layouts = [[[NXKeyboard currentServerConfig]
-                  objectForKey:@"NXKeyboardLayouts"] copy];
+  layouts = [[keyboard layouts] copy];
+  
   if (variants) [variants release];
-  variants = [[[NXKeyboard currentServerConfig]
-                  objectForKey:@"NXKeyboardVariants"] copy];
+  variants = [[keyboard variants] copy];
+
+  NSLog(@"[Keyboard] layout: %@ variant: %@", layouts, variants);
   
   [layoutList reloadData];
 }

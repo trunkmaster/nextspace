@@ -205,7 +205,11 @@ NSString *Compose = @"ComposeKey";
 //------------------------------------------------------------------------------
 // Layouts
 //------------------------------------------------------------------------------
-- (NSDictionary *)layoutList
+
+//
+// Reading XKB_BASE_LST
+//
+- (NSDictionary *)availableLayouts
 {
   if (!layoutDict)
     {
@@ -215,117 +219,6 @@ NSString *Compose = @"ComposeKey";
     }
 
   return layoutDict;
-}
-
-// TODO
-+ (NSDictionary *)currentServerConfig
-{
-  Display 		*dpy;
-  char			*file = NULL;
-  XkbRF_VarDefsRec	vd;
-  NSMutableDictionary	*config = [NSMutableDictionary dictionary];
-
-  dpy = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
-  if (!XkbRF_GetNamesProp(dpy, &file, &vd) || !file)
-    {
-      NSLog(@"NXKeyboard: error reading XKB properties!");
-      return nil;
-    }
-
-  NSLog(@"NXKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Rules file: %s",
-        vd.model, vd.layout, vd.variant, file);
-  NSArray *layouts, *variants, *options;
-  layouts = [[NSString stringWithCString:vd.layout]
-              componentsSeparatedByString:@","];
-  variants = [[NSString stringWithCString:vd.variant]
-               componentsSeparatedByString:@","];
-  options = [[NSString stringWithCString:vd.options]
-              componentsSeparatedByString:@","];
-
-  XCloseDisplay(dpy);
-
-  NSLog(@"NXKeyboard Layouts: %@", layouts);
-  NSLog(@"NXKeyboard Variants: %@", variants);
-  
-  // for (NSUInteger i = 0; i < length; i++)
-  //   {
-  //     l = (i >= lc) ? @"" : [layouts objectAtIndex:i];
-  //     v = (i >= vc) ? @"" : [variants objectAtIndex:i];
-  //     [layoutConfig setObject:v forKey:l];
-  //   }
-  // [config setObject:layoutConfig forKey:@"NXKeyboardLayouts"];
-
-  [config setObject:layouts forKey:Layouts];
-  [config setObject:variants forKey:Variants];
-  [config setObject:options forKey:Options];
-  [config setObject:[NSString stringWithCString:vd.model] forKey:Model];
-  
-  [config writeToFile:@"/Users/me/Library/NXKeyboard" atomically:YES];
-  
-  return config;
-}
-// TODO
-- (void)addLayout:(NSString *)layout variant:(NSString *)variant
-{
-  NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", layout, variant);
-  
-  Display		*dpy;
-  char			*file = NULL;
-  XkbRF_VarDefsRec	xkb_vars;
-  NSString		*varString;
-  NSDictionary		*config = [NXKeyboard currentServerConfig];
-  NSArray		*layouts = [config objectForKey:@"NXKeyboardLayouts"];
-  NSArray		*variants = [config objectForKey:@"NXKeyboardVariants"];
-
-  dpy = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
-  if (!XkbRF_GetNamesProp(dpy, &file, &xkb_vars) || !file)
-    {
-      NSLog(@"[NXKeyboard] error reading XKB properties!");
-      return;
-    }
-
-  varString = [NSString stringWithFormat:@"%s,%@", xkb_vars.layout, layout];
-  xkb_vars.layout = strdup([varString cString]);
-
-  if (variant)
-    {
-      varString = [NSString stringWithFormat:@"%s,%@",
-                            xkb_vars.variant, variant];
-      xkb_vars.variant = strdup([varString cString]);
-    }
-
-  XkbComponentNamesRec	rnames;
-  XkbRF_RulesPtr 	rules;
-  XkbDescPtr		xkb;
-
-  rules = XkbRF_Load("/usr/share/X11/xkb/rules/evdev", "C", True, True);
-  if (rules != NULL)
-    {
-      XkbRF_GetComponents(rules, &xkb_vars, &rnames);
-      xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,
-                                 XkbGBN_AllComponentsMask,
-                                 XkbGBN_AllComponentsMask &
-                                 (~XkbGBN_GeometryMask), True);
-      if (!xkb)
-        {
-          NSLog(@"[NXKeyboard] Cannot load new keyboard description.");
-          return;
-        }
-    }
-  else
-    NSLog(@"\n[NXKeyboard] failed to load rules file!\n");  
-
-  XkbRF_SetNamesProp(dpy, file, &xkb_vars);
-  XSync(dpy, False);
-  XCloseDisplay(dpy);
-}
-// TODO: removes variant that corresponds to layout 'name'
-- (void)removeLayout:(NSString *)name
-{
-}
-// TODO
-- (void)setLayouts:(NSArray *)layouts variants:(NSArray *)variants
-{
 }
 
 - (NSString *)nameForLayout:(NSString *)layoutCode
@@ -340,12 +233,12 @@ NSString *Compose = @"ComposeKey";
   return [layoutDict objectForKey:layoutCode];
 }
 
-- (NSDictionary *)variantListForKey:(NSString *)field
+// Return list of dictionaries with keys: Layout, Desc.
+- (NSDictionary *)_variantListForKey:(NSString *)field
                               value:(NSString *)value
 {
   NSMutableDictionary	*layoutVariants;
   NSDictionary		*variant;
-  NSString		*title;
     
   if (!variantDict)
     {
@@ -360,26 +253,196 @@ NSString *Compose = @"ComposeKey";
       variant = [variantDict objectForKey:key];
       if ([[variant objectForKey:field] isEqualToString:value])
         {
-          title = [variant objectForKey:@"Description"];
-          if (!title)
-            title = [variant objectForKey:@"Language"];
-          
-          // [layoutVariants setObject:variant forKey:key];
-          [layoutVariants setObject:title forKey:key];
+          [layoutVariants setObject:[self nameForVariant:key]
+                             forKey:key];
         }
     }
 
   return [layoutVariants autorelease];
 }
+
+- (NSString *)nameForVariant:(NSString *)variantCode
+{
+  NSDictionary	*variant;
+  NSString	*title;
   
+  if (!variantDict)
+    {
+      variantDict = [[NSDictionary alloc]
+                      initWithDictionary:[[self _xkbBaseListDictionary]
+                                           objectForKey:@"variant"]];
+    }
+
+  variant = [variantDict objectForKey:variantCode];
+  title = [variant objectForKey:@"Description"];
+  if (!title)
+    title = [variant objectForKey:@"Language"];
+
+  return title;
+}
+
 - (NSDictionary *)variantListForLayout:(NSString *)layout
 {
-  return [self variantListForKey:@"Layout" value:layout];
+  return [self _variantListForKey:@"Layout" value:layout];
 }
 
 - (NSDictionary *)variantListForLanguage:(NSString *)language
 {
-  return [self variantListForKey:@"Language" value:language];
+  return [self _variantListForKey:@"Language" value:language];
+}
+
+//
+// Retrieving and changing XKB configuration
+// 
+
+// Closing Display is must be done by caller
+- (Display *)_getXkbVariables:(XkbRF_VarDefsRec *)var_defs
+                         file:(char **)rules_file
+{
+  Display *dpy;
+
+  dpy = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
+  if (!XkbRF_GetNamesProp(dpy, rules_file, var_defs) || !rules_file)
+    {
+      NSLog(@"NXKeyboard: error reading XKB properties!");
+      XCloseDisplay(dpy);
+      return NULL;
+    }
+
+  return dpy;
+}
+
+- (NSDictionary *)_serverConfig
+{
+  Display 		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	vd;
+  NSMutableDictionary	*config;
+
+  if ((dpy = [self _getXkbVariables:&vd file:&file]) == NULL)
+    return nil;
+  else
+    XCloseDisplay(dpy);
+  
+  NSLog(@"NXKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Rules file: %s",
+        vd.model, vd.layout, vd.variant, file);
+
+  config = [NSMutableDictionary dictionary];
+  [config setObject:[NSString stringWithCString:vd.layout] forKey:Layouts];
+  [config setObject:[NSString stringWithCString:vd.variant] forKey:Variants];
+  [config setObject:[NSString stringWithCString:vd.options] forKey:Options];
+  [config setObject:[NSString stringWithCString:vd.model] forKey:Model];
+  
+  [config writeToFile:@"/Users/me/Library/NXKeyboard" atomically:YES];
+  
+  return config;
+}
+
+- (BOOL)_applyServerConfig:(XkbRF_VarDefsRec)xkb_vars
+                      file:(char *)file
+                forDisplay:(Display *)dpy
+{
+  XkbComponentNamesRec	rnames;
+  XkbRF_RulesPtr 	rules;
+  XkbDescPtr		xkb;
+
+  rules = XkbRF_Load("/usr/share/X11/xkb/rules/evdev", "C", True, True);
+  if (rules != NULL)
+    {
+      XkbRF_GetComponents(rules, &xkb_vars, &rnames);
+      xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,
+                                 XkbGBN_AllComponentsMask,
+                                 XkbGBN_AllComponentsMask &
+                                 (~XkbGBN_GeometryMask), True);
+      if (!xkb)
+        {
+          NSLog(@"[NXKeyboard] Fialed to load new keyboard description.");
+          return NO;
+        }
+    }
+  else
+    {
+      NSLog(@"[NXKeyboard] Failed to load XKB rules!");
+    }
+
+  XkbRF_SetNamesProp(dpy, file, &xkb_vars);
+  XSync(dpy, False);
+
+  return YES;
+}
+
+- (NSArray *)layouts
+{
+  NSString *l = [[self _serverConfig] objectForKey:Layouts];
+
+  return [l componentsSeparatedByString:@","];
+}
+
+- (NSArray *)variants
+{
+  NSArray  *l = [self layouts];
+  NSString *v = [[self _serverConfig] objectForKey:Variants];
+  NSArray  *va = [v componentsSeparatedByString:@","];
+
+  if ([l count] > [va count])
+    va = [va arrayByAddingObject:@""];
+
+  return va;
+}
+
+- (void)addLayout:(NSString *)layout variant:(NSString *)variant
+{
+  Display		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	xkb_vars;
+  NSString		*varString;
+  NSArray		*layouts, *variants;
+
+  NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", layout, variant);
+
+  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
+    return;
+  
+  layouts = [[NSString stringWithCString:xkb_vars.layout]
+                  componentsSeparatedByString:@","];
+  variants = [[NSString stringWithCString:xkb_vars.variant]
+                   componentsSeparatedByString:@","];
+  
+  varString = [NSString stringWithFormat:@"%s,%@", xkb_vars.layout, layout];
+  xkb_vars.layout = strdup([varString cString]);
+
+  if (variant)
+    {
+      if (xkb_vars.variant == NULL)
+        {  // Normally, it's one case: variants is empty
+          varString = [NSString new];
+          for (NSString *l in layouts)
+            varString = [varString stringByAppendingString:@","];
+          varString = [varString stringByAppendingString:variant];
+        }
+      else
+        {
+          varString = [NSString stringWithFormat:@"%s,%@",
+                                xkb_vars.variant, variant];
+        }
+      xkb_vars.variant = strdup([varString cString]);
+    }
+
+  NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
+        xkb_vars.layout, xkb_vars.variant);
+  
+  [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
+
+  XCloseDisplay(dpy);
+  
+  // Update cached configuration
+  if (serverConfig) [serverConfig release];
+  serverConfig = [[self _serverConfig] retain];
+}
+
+// TODO: removes variant that corresponds to layout 'name'
+- (void)removeLayout:(NSString *)name
+{
 }
 
 //------------------------------------------------------------------------------
