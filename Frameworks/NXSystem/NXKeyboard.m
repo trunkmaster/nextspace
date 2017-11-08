@@ -45,7 +45,11 @@ NSString *Compose = @"ComposeKey";
     initialRepeat = 0;
   if ((repeatRate = [defs integerForKey:RepeatRate]) < 0)
     repeatRate = 0;
-  [keyb setInitialRepeat:initialRepeat rate:repeatRate];  
+  [keyb setInitialRepeat:initialRepeat rate:repeatRate];
+
+  // [keyb setLayouts:[defs objectForKey:Layouts]
+  //         variants:[defs objectForKey:Variants]
+  //          options:[defs objectForKey:Options]];
 }
 
 // Converts string like
@@ -233,6 +237,26 @@ NSString *Compose = @"ComposeKey";
   return [layoutDict objectForKey:layoutCode];
 }
 
+- (NSString *)nameForVariant:(NSString *)variantCode
+{
+  NSDictionary	*variant;
+  NSString	*title;
+  
+  if (!variantDict)
+    {
+      variantDict = [[NSDictionary alloc]
+                      initWithDictionary:[[self _xkbBaseListDictionary]
+                                           objectForKey:@"variant"]];
+    }
+
+  variant = [variantDict objectForKey:variantCode];
+  title = [variant objectForKey:@"Description"];
+  if (!title)
+    title = [variant objectForKey:@"Language"];
+
+  return title;
+}
+
 // Return list of dictionaries with keys: Layout, Desc.
 - (NSDictionary *)_variantListForKey:(NSString *)field
                               value:(NSString *)value
@@ -259,26 +283,6 @@ NSString *Compose = @"ComposeKey";
     }
 
   return [layoutVariants autorelease];
-}
-
-- (NSString *)nameForVariant:(NSString *)variantCode
-{
-  NSDictionary	*variant;
-  NSString	*title;
-  
-  if (!variantDict)
-    {
-      variantDict = [[NSDictionary alloc]
-                      initWithDictionary:[[self _xkbBaseListDictionary]
-                                           objectForKey:@"variant"]];
-    }
-
-  variant = [variantDict objectForKey:variantCode];
-  title = [variant objectForKey:@"Description"];
-  if (!title)
-    title = [variant objectForKey:@"Language"];
-
-  return title;
 }
 
 - (NSDictionary *)variantListForLayout:(NSString *)layout
@@ -390,7 +394,7 @@ NSString *Compose = @"ComposeKey";
   return va;
 }
 
-- (void)addLayout:(NSString *)layout variant:(NSString *)variant
+- (void)addLayout:(NSString *)lCode variant:(NSString *)vCode
 {
   Display		*dpy;
   char			*file = NULL;
@@ -398,7 +402,7 @@ NSString *Compose = @"ComposeKey";
   NSString		*varString;
   NSArray		*layouts, *variants;
 
-  NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", layout, variant);
+  NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", lCode, vCode);
 
   if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
     return;
@@ -408,22 +412,29 @@ NSString *Compose = @"ComposeKey";
   variants = [[NSString stringWithCString:xkb_vars.variant]
                    componentsSeparatedByString:@","];
   
-  varString = [NSString stringWithFormat:@"%s,%@", xkb_vars.layout, layout];
+  varString = [NSString stringWithFormat:@"%s,%@", xkb_vars.layout, lCode];
   xkb_vars.layout = strdup([varString cString]);
 
-  if (variant)
+  if (vCode)
     {
       if (xkb_vars.variant == NULL)
         {  // Normally, it's one case: variants is empty
           varString = [NSString new];
           for (NSString *l in layouts)
             varString = [varString stringByAppendingString:@","];
-          varString = [varString stringByAppendingString:variant];
+          varString = [varString stringByAppendingString:vCode];
         }
       else
         {
-          varString = [NSString stringWithFormat:@"%s,%@",
-                                xkb_vars.variant, variant];
+          NSInteger lc = [layouts count];
+          NSInteger vc = [variants count];
+          
+          varString = [NSString stringWithCString:xkb_vars.variant];
+          for (int i = 0; i < (lc - vc); i++)
+            varString = [varString stringByAppendingString:@","];
+          varString = [varString stringByAppendingFormat:@",%@", vCode];
+          // varString = [NSString stringWithFormat:@"%s,%@",
+          //                       xkb_vars.variant, variant];
         }
       xkb_vars.variant = strdup([varString cString]);
     }
@@ -441,8 +452,52 @@ NSString *Compose = @"ComposeKey";
 }
 
 // TODO: removes variant that corresponds to layout 'name'
-- (void)removeLayout:(NSString *)name
+- (void)removeLayout:(NSString *)lCode variant:(NSString *)vCode
 {
+  Display		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	xkb_vars;
+  NSString		*varString;
+  NSMutableArray	*layouts, *variants;
+  NSUInteger		lIndex;
+
+  NSLog(@"[NXKeyboard] removeLayout:%@", lCode);
+
+  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
+    return;
+  
+  layouts = [[[NSString stringWithCString:xkb_vars.layout]
+                  componentsSeparatedByString:@","] mutableCopy];
+  variants = [[[NSString stringWithCString:xkb_vars.variant]
+                   componentsSeparatedByString:@","] mutableCopy];
+  
+  lIndex = [layouts indexOfObject:lCode];
+  for (lIndex = 0; lIndex < [layouts count]; lIndex++)
+    {
+      if ([[layouts objectAtIndex:lIndex] isEqualToString:lCode] &&
+          (!vCode || [vCode isEqualToString:@""] ||
+           [[variants objectAtIndex:lIndex] isEqualToString:vCode]))
+        break;
+    }
+  [layouts removeObjectAtIndex:lIndex];
+  if (lIndex < [variants count])
+    [variants removeObjectAtIndex:lIndex];
+  
+  xkb_vars.layout = strdup([[layouts componentsJoinedByString:@","] cString]);
+  xkb_vars.variant = strdup([[variants componentsJoinedByString:@","] cString]);
+
+  [layouts release];
+  [variants release];
+  
+  NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
+        xkb_vars.layout, xkb_vars.variant);
+  
+  [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
+
+  XCloseDisplay(dpy);
+  // Update cached configuration
+  if (serverConfig) [serverConfig release];
+  serverConfig = [[self _serverConfig] retain];
 }
 
 //------------------------------------------------------------------------------

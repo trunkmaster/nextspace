@@ -114,6 +114,8 @@ static NSMutableDictionary      *domain = nil;
   [layoutList setDelegate:self];
   [layoutList setDataSource:self];
   [layoutList deselectAll:self];
+  [layoutList setTarget:self];
+  [layoutList setAction:@selector(layoutClicked:)];
 
   // Shortcuts
   [shortcutsBox retain];
@@ -123,6 +125,8 @@ static NSMutableDictionary      *domain = nil;
   [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
 
   // Options
+  [optionsBox retain];
+  
   [self sectionButtonClicked:sectionsMtrx];
 }
 
@@ -162,10 +166,14 @@ static NSMutableDictionary      *domain = nil;
       break;
     case 1: // Layouts
       [self updateLayoutList];
+      [layoutList selectRow:0 byExtendingSelection:NO];
       [sectionBox setContentView:layoutsBox];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
+      break;
+    case 3: // Options
+      [sectionBox setContentView:optionsBox];
       break;
     default:
       NSLog(@"Keyboard.preferences: Unknow section button was clicked!");
@@ -179,6 +187,7 @@ static NSMutableDictionary      *domain = nil;
 {
   if (tv == layoutList)
     {
+      [layoutAddBtn setEnabled:([layouts count] < 4) ? YES : NO];
       return [layouts count];
     }
   else if (tv == layoutShortcutList)
@@ -196,12 +205,12 @@ static NSMutableDictionary      *domain = nil;
       NSString *title, *variant;
       
       title = [keyboard nameForLayout:[layouts objectAtIndex:row]];
-      // variant = [variants objectAtIndex:row];
-      // if (![variant isEqualToString:@""])
-      //   {
-      //     title = [NSString stringWithFormat:@"%@, %@",
-      //                       title, [keyboard nameForVariant:variant]];
-      //   }
+      variant = [variants objectAtIndex:row];
+      if (![variant isEqualToString:@""])
+        {
+          title = [NSString stringWithFormat:@"%@, %@",
+                            title, [keyboard nameForVariant:variant]];
+        }
         
       return title;
     }
@@ -210,6 +219,23 @@ static NSMutableDictionary      *domain = nil;
     }
 
   return nil;
+}
+
+// - (BOOL)selectionShouldChangeInTableView:(NSTableView *)tv
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
+{
+  NSTableView *tv = [aNotification object];
+
+  NSLog(@"Selection Did Change: %@", [tv className]);
+  
+  if (tv == layoutList)
+    {
+      NSInteger selRow = [tv selectedRow];
+  
+      [layoutRemoveBtn setEnabled:[tv numberOfRows] > 1 ? YES : NO];
+      [layoutUpBtn setEnabled:(selRow == 0) ? NO : YES];
+      [layoutDownBtn setEnabled:(selRow == [tv numberOfRows]-1) ? NO : YES];
+    }
 }
 
 @end
@@ -270,6 +296,14 @@ static NSMutableDictionary      *domain = nil;
 }
 - (void)layoutRemove:(id)sender
 {
+  NSInteger selRow = [layoutList selectedRow];
+  
+  [keyboard removeLayout:[layouts objectAtIndex:selRow]
+                 variant:[variants objectAtIndex:selRow]];
+  
+  [self updateLayoutList];
+  [layoutList selectRow:(selRow > 0) ? selRow-1 : 0
+              byExtendingSelection:NO];
 }
 - (void)layoutMove:(id)sender
 {

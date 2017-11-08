@@ -3,6 +3,8 @@
     FirstResponder = {
 	Actions = (
 	    "layoutAdd:",
+	    "layoutRemove:",
+	    "layoutMove:",
 	    "repeatAction:",
 	    "sectionButtonClicked:"
 	);
@@ -12,7 +14,9 @@
 	Actions = (
 	    "sectionButtonClicked:",
 	    "repeatAction:",
-	    "layoutAdd:"
+	    "layoutAdd:",
+	    "layoutRemove:",
+	    "layoutMove:"
 	);
 	Outlets = (
 	    window,
@@ -31,7 +35,8 @@
 	    layoutUpBtn,
 	    layoutList,
 	    layoutShortcutTextField,
-	    repeatTestField
+	    repeatTestField,
+	    optionsBox
 	);
 	Super = NSObject;
     };
