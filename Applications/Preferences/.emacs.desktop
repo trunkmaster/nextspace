@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Nov  6 04:01:55 2017
+;; Created Wed Nov  8 03:06:33 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/")
+(setq default-directory "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name "/Developer/Headers/TAGS")
 (setq tags-table-list '("/Developer/Headers/TAGS"))
@@ -22,40 +22,40 @@
   "Keyboard.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  4745
-  '(4821 nil)
+  3554
+  '(3544 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.m"
-  "AddLayoutPanel.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  3451
-  '(3303 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
   "Keyboard.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1209
-  '(1139 nil)
+  1569
+  '(952 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.m"
+  "AddLayoutPanel.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  3575
+  '(4555 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h"
   "AddLayoutPanel.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1196
+  1043
   '(1341 nil)
   nil
   nil

@@ -28,6 +28,8 @@
 
 @interface Keyboard : NSObject <PrefsModule>
 {
+  NSImage *image;
+  
   id window;
   id view;
   id sectionBox;
@@ -60,7 +62,8 @@
   id shortcutsBrowser;
   id shortcutsBox;
 
-  NSImage *image;
+  // Options
+  id optionsBox;
 }
 
 - (void)sectionButtonClicked:(id)sender;
