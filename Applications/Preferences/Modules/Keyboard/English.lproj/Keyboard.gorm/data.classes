@@ -24,7 +24,7 @@
 	    initialRepeatMtrx,
 	    repeatRateMtrx,
 	    layoutsBox,
-	    sectionsMtrx,
+	    sectionsBtn,
 	    repeatBox,
 	    sectionBox,
 	    shortcutsBox,
@@ -36,7 +36,12 @@
 	    layoutList,
 	    layoutShortcutTextField,
 	    repeatTestField,
-	    optionsBox
+	    optionsBox,
+	    capsLockBox,
+	    composeBox,
+	    controlBox,
+	    keypadBox,
+	    swapBox
 	);
 	Super = NSObject;
     };
