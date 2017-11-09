@@ -25,6 +25,7 @@ BuildRequires:	libudisks2-devel
 BuildRequires:	dbus-devel
 BuildRequires:	upower-devel
 BuildRequires:	libXrandr-devel
+BuildRequires:	libxkbfile-devel
 
 Requires:	nextspace-gnustep
 # NXFoundation
@@ -36,6 +37,7 @@ Requires:	dbus-libs >= 1.6.12
 Requires:	upower >= 0.99.2
 Requires:	glib2 >= 2.42.2
 Requires:	libXrandr >= 1.4.2
+Requires:	libxkbfile >= 1.0.9
 
 
 %description
