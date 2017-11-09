@@ -1,0 +1,75 @@
+  lv3                  Key to choose 3rd level
+  lv3:switch           Right Ctrl
+  lv3:menu_switch      Menu
+  lv3:win_switch       Any Win key
+  lv3:lwin_switch      Left Win
+  lv3:rwin_switch      Right Win
+  lv3:alt_switch       Any Alt key
+  lv3:lalt_switch      Left Alt
+  lv3:ralt_switch      Right Alt
+  lv3:ralt_switch_multikey Right Alt, Shift+Right Alt key is Compose
+  lv3:ralt_alt         Right Alt key never chooses 3rd level
+  lv3:enter_switch     Enter on keypad
+  lv3:caps_switch      Caps Lock
+  lv3:bksl_switch      Backslash
+  lv3:lsgt_switch      &lt;Less/Greater&gt;
+  lv3:caps_switch_latch Caps Lock chooses 3rd level, acts as onetime lock when pressed together with another 3rd-level-chooser
+  lv3:bksl_switch_latch Backslash chooses 3rd level, acts as onetime lock when pressed together with another 3rd-level-chooser
+  lv3:lsgt_switch_latch &lt;Less/Greater&gt; chooses 3rd level, acts as onetime lock when pressed together with another 3rd-level-chooser
+
+  
+//  compat               Miscellaneous compatibility options
+  srvrkeys:none        Special keys (Ctrl+Alt+&lt;key&gt;) handled in a server
+  apple:alupckeys      Apple Aluminium Keyboard: emulate PC keys (Print, Scroll Lock, Pause, Num Lock)
+  shift:breaks_caps    Shift cancels Caps Lock
+  misc:typo            Enable extra typographic characters
+  shift:both_capslock  Both Shift keys together toggle Caps Lock
+  shift:both_capslock_cancel Both Shift keys together activate Caps Lock, one Shift key deactivates
+  shift:both_shiftlock Both Shift keys together toggle ShiftLock
+  keypad:pointerkeys   Shift + NumLock toggles PointerKeys
+  grab:break_actions   Allow breaking grabs with keyboard actions (warning: security risk)
+  grab:debug           Allow grab and window tree logging
+  currencysign         Adding currency signs to certain keys
+  eurosign:e           Euro on E
+  eurosign:2           Euro on 2
+  eurosign:4           Euro on 4
+  eurosign:5           Euro on 5
+  rupeesign:4          Rupee on 4
+  lv5                  Key to choose 5th level
+  lv5:lsgt_switch_lock &lt;Less/Greater&gt; chooses 5th level, locks when pressed together with another 5th-level-chooser
+  lv5:ralt_switch_lock Right Alt chooses 5th level, locks when pressed together with another 5th-level-chooser
+  lv5:lwin_switch_lock Left Win chooses 5th level, locks when pressed together with another 5th-level-chooser
+  lv5:rwin_switch_lock Right Win chooses 5th level, locks when pressed together with another 5th-level-chooser
+  nbsp                 Using space key to input non-breakable space character
+  nbsp:none            Usual space at any level
+  nbsp:level2          Non-breakable space character at second level
+  nbsp:level3          Non-breakable space character at third level
+  nbsp:level3s         Non-breakable space character at third level, nothing at fourth level
+  nbsp:level3n         Non-breakable space character at third level, thin non-breakable space character at fourth level
+  nbsp:level4          Non-breakable space character at fourth level
+  nbsp:level4n         Non-breakable space character at fourth level, thin non-breakable space character at sixth level
+  nbsp:level4nl        Non-breakable space character at fourth level, thin non-breakable space character at sixth level (via Ctrl+Shift)
+  nbsp:zwnj2           Zero-width non-joiner character at second level
+  nbsp:zwnj2zwj3       Zero-width non-joiner character at second level, zero-width joiner character at third level
+  nbsp:zwnj2zwj3nb4    Zero-width non-joiner character at second level, zero-width joiner character at third level, non-breakable space character at fourth level
+  nbsp:zwnj2nb3        Zero-width non-joiner character at second level, non-breakable space character at third level
+  nbsp:zwnj2nb3s       Zero-width non-joiner character at second level, non-breakable space character at third level, nothing at fourth level
+  nbsp:zwnj2nb3zwj4    Zero-width non-joiner character at second level, non-breakable space character at third level, zero-width joiner at fourth level
+  nbsp:zwnj2nb3nnb4    Zero-width non-joiner character at second level, non-breakable space character at third level, thin non-breakable space at fourth level
+  nbsp:zwnj3zwj4       Zero-width non-joiner character at third level, zero-width joiner at fourth level
+  japan                Japanese keyboard options
+  japan:kana_lock      Kana Lock key is locking
+  japan:nicola_f_bs    NICOLA-F style Backspace
+  japan:hztg_escape    Make Zenkaku Hankaku an additional ESC
+  korean               Korean Hangul/Hanja keys
+  korean:hw_keys       Hardware Hangul/Hanja keys
+  korean:ralt_rctrl    Right Alt as Hangul, right Ctrl as Hanja
+  korean:rctrl_ralt    Right Ctrl as Hangul, right Alt as Hanja
+  esperanto            Adding Esperanto supersigned letters
+  esperanto:qwerty     To the corresponding key in a Qwerty layout
+  esperanto:dvorak     To the corresponding key in a Dvorak layout
+  esperanto:colemak    To the corresponding key in a Colemak layout
+  solaris              Maintain key compatibility with old Solaris keycodes
+  solaris:sun_compat   Sun Key compatibility
+  terminate            Key sequence to kill the X server
+  terminate:ctrl_alt_bksp Ctrl + Alt + Backspace
