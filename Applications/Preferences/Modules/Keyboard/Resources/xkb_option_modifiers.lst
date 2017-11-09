@@ -1,0 +1,69 @@
+// Ctrl key position
+  ctrl:nocaps          Caps Lock as Ctrl
+  ctrl:lctrl_meta      Left Ctrl as Meta
+  ctrl:swapcaps        Swap Ctrl and Caps Lock
+  ctrl:ac_ctrl         At left of 'A'
+  ctrl:aa_ctrl         At bottom left
+  ctrl:rctrl_ralt      Right Ctrl as Right Alt
+  ctrl:menu_rctrl      Menu as Right Ctrl
+  ctrl:swap_lalt_lctl  Swap Left Alt key with Left Ctrl key
+  ctrl:swap_lwin_lctl  Swap Left Win key with Left Ctrl key
+  ctrl:swap_rwin_rctl  Swap Right Win key with Right Ctrl key
+  ctrl:swap_lalt_lctl_lwin Left Alt as Ctrl, Left Ctrl as Win, Left Win as Alt
+  
+// Caps Lock key behavior
+  caps:internal        Caps Lock uses internal capitalization; Shift "pauses" Caps Lock
+  caps:internal_nocancel Caps Lock uses internal capitalization; Shift doesn't affect Caps Lock
+  caps:shift           Caps Lock acts as Shift with locking; Shift "pauses" Caps Lock
+  caps:shift_nocancel  Caps Lock acts as Shift with locking; Shift doesn't affect Caps Lock
+  caps:capslock        Caps Lock toggles normal capitalization of alphabetic characters
+  caps:shiftlock       Caps Lock toggles ShiftLock (affects all keys)
+  caps:swapescape      Swap ESC and Caps Lock
+  caps:escape          Make Caps Lock an additional ESC
+  caps:backspace       Make Caps Lock an additional Backspace
+  caps:super           Make Caps Lock an additional Super
+  caps:hyper           Make Caps Lock an additional Hyper
+  caps:menu            Make Caps Lock an additional Menu key
+  caps:numlock         Make Caps Lock an additional Num Lock
+  caps:ctrl_modifier   Caps Lock is also a Ctrl
+  caps:none            Caps Lock is disabled
+
+// Command/Alternate key behaviour
+// Several terms: Meta, Hyper, Alt - mapped to Command
+// altwin               Alt/Win key behavior
+#Meta
+  altwin:meta_alt      Alt and Meta are on Alt keys
+  altwin:meta_win      Meta is mapped to Win keys
+  altwin:left_meta_win Meta is mapped to Left Win
+#Windows
+  altwin:alt_win       Alt is mapped to Win keys (and the usual Alt keys)
+  altwin:ctrl_win      Ctrl is mapped to Win keys (and the usual Ctrl keys)
+  altwin:ctrl_alt_win  Ctrl is mapped to Alt keys, Alt is mapped to Win keys
+  altwin:hyper_win     Hyper is mapped to Win keys
+  altwin:alt_super_win Alt is mapped to Right Win, Super to Menu
+  
+  altwin:swap_lalt_lwin Left Alt is swapped with Left Win
+  altwin:swap_alt_win  Alt is swapped with Win
+  
+  altwin:prtsc_rwin    Win is mapped to PrtSc (and the usual Win key)
+  altwin:menu          Add the standard behavior to Menu key
+
+// Position of Compose key
+  compose:ralt         Right Alt
+  compose:rctrl        Right Ctrl
+  compose:rwin         Right Win
+  compose:lctrl        Left Ctrl
+  compose:lwin         Left Win
+  compose:menu         Menu
+  compose:caps         Caps Lock
+  compose:102          &lt;Less/Greater&gt;
+  compose:paus         Pause
+  compose:prsc         PrtSc
+  compose:sclk         Scroll Lock
+  compose:lwin-altgr   3rd level of Left Win
+  compose:rwin-altgr   3rd level of Right Win
+  compose:menu-altgr   3rd level of Menu
+  compose:lctrl-altgr  3rd level of Left Ctrl
+  compose:rctrl-altgr  3rd level of Right Ctrl
+  compose:caps-altgr   3rd level of Caps Lock
+  compose:102-altgr    3rd level of &lt;Less/Greater&gt;

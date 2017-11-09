@@ -1,0 +1,25 @@
+// keypad - Layout of numeric keypad
+  keypad:legacy        Legacy
+  keypad:oss           Unicode additions (arrows and math operators)
+  keypad:future        Unicode additions (arrows and math operators; math operators on default level)
+  keypad:legacy_wang   Legacy Wang 724
+  keypad:oss_wang      Wang 724 keypad with Unicode additions (arrows and math operators)
+  keypad:future_wang   Wang 724 keypad with Unicode additions (arrows and math operators; math operators on default level)
+  keypad:hex           Hexadecimal
+  keypad:atm           ATM/phone-style
+
+// kpdl - Numeric keypad delete key behaviour
+  kpdl:dot             Legacy key with dot
+  kpdl:comma           Legacy key with comma
+  kpdl:dotoss          Four-level key with dot
+  kpdl:dotoss_latin9   Four-level key with dot, Latin-9 only
+  kpdl:commaoss        Four-level key with comma
+  kpdl:momayyezoss     Four-level key with momayyez
+  kpdl:kposs           Four-level key with abstract separators
+  kpdl:semi            Semicolon on third level
+
+// Numpad behaviour
+  numpad:pc            Default numeric keypad keys
+  numpad:mac           Numeric keypad keys always enter digits (as in Mac OS)
+  numpad:microsoft     NumLock on: digits, Shift switches to arrow keys, Numlock off: always arrow keys (as in MS Windows)
+  numpad:shift3        Shift does not cancel Num Lock, chooses 3rd level instead
