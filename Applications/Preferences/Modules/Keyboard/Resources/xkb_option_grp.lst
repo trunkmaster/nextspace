@@ -1,0 +1,56 @@
+// grp - Switching to another layout
+
+// While pressed	Position	Key	NS Name
+#  grp:switch		Right		Alt	Right Command
+#  grp:rwin_switch	Right		Win	Right Alternate
+  grp:rctrl_switch	Right		Ctrl	Right Control
+#  grp:lswitch		Left		Alt	Left Command
+#  grp:lwin_switch	Left		Win	Left Alternate
+#  grp:win_switch	Any		Win	Alternate
+  grp:caps_switch	Any		Caps Lock, Alt+Caps Lock does the original capslock action
+
+// Sigle key			Position	Key		NS Name
+  grp:toggle			Right		Alt		Right Command
+  grp:rwin_toggle		Right		Win		Right Alternate
+  grp:rctrl_toggle		Right		Ctrl		Right Control
+  grp:rshift_toggle		Right 		Shift		Right Shift
+  grp:lalt_toggle		Left		Alt		Left Command
+  grp:lwin_toggle		Left 		Win		Left Alternate
+  grp:lctrl_toggle		Left		Ctrl		Left Control
+  grp:lshift_toggle		Left		Shift		Left Shift
+  grp:caps_toggle		Any		Caps Lock	Alpha Lock
+  grp:menu_toggle		Any		Menu		?
+  grp:sclk_toggle		Any		Scroll Lock	?
+  
+// Combinations			Position	Combitation	NS Combination
+  grp:ctrl_alt_toggle		Any		Alt + Ctrl	Command + Control
+  grp:alt_shift_toggle		Any		Alt + Shift	Command + Shift
+  grp:alt_space_toggle		Any		Alt + Space	Command + Space
+  grp:ctrl_shift_toggle		Any		Ctrl + Shift	Control + Shift
+  grp:win_space_toggle		Any		Win + Space	Alternate + Space
+  
+  grp:lalt_lshift_toggle	Left		Alt + Shift	Left Command + Left Shift
+  grp:lctrl_lwin_toggle		Left		Ctrl + Win	Left Control + Left Alternate
+  
+  grp:lctrl_lshift_toggle	Left		Ctrl + Shift	Left Control + Left Shift
+  grp:rctrl_rshift_toggle	Right		Ctrl + Shift	Right Control + Right Shift
+  
+  grp:alts_toggle		Both		Alt		Both Commands
+  grp:ctrls_toggle		Both		Ctrl		Both Controls
+  grp:shifts_toggle		Both		Shift		Both Shifts
+
+// Key combinations with Caps Lock
+  grp:shift_caps_toggle		Any		Shift + Caps Lock	Shift + Alpha Lock
+  grp:alt_caps_toggle		Any		Alt + Caps Lock		Command + Alpha Lock
+
+// Layout bounded		First			Last
+  grp:shift_caps_switch		Caps Lock		Shift + Caps Lock
+  grp:win_menu_switch		Left Win		Right Win/Menu
+  grp:lctrl_rctrl_switch	Left Ctrl		Right Ctrl
+  grp:lctrl_lwin_rctrl_menu	Left Ctrl + Left Win	Right Ctrl + Menu
+
+// grp_led - Use keyboard LED to show alternative layout
+  grp_led:num          Num Lock
+  grp_led:caps         Caps Lock
+  grp_led:scroll       Scroll Lock
+  
