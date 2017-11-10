@@ -124,8 +124,12 @@ static NSMutableDictionary      *domain = nil;
   [shortcutsBrowser setTitle:@"Action" ofColumn:0];
   [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
 
-  // Options
-  [optionsBox retain];
+  //
+  [keypadBox retain];
+  [composeBox retain];
+  [controlBox retain];
+  [capsLockBox retain];
+  [swapBox retain];
   
   [self sectionButtonClicked:sectionsMtrx];
 }
@@ -159,7 +163,7 @@ static NSMutableDictionary      *domain = nil;
 //
 - (void)sectionButtonClicked:(id)sender
 {
-  switch ([[sender selectedCell] tag])
+  switch ([[sender selectedItem] tag])
     {
     case 0: // Key Repeat
       [sectionBox setContentView:repeatBox];
@@ -172,8 +176,20 @@ static NSMutableDictionary      *domain = nil;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
       break;
-    case 3: // Options
-      [sectionBox setContentView:optionsBox];
+    case 3: // Numeric Keypad
+      [sectionBox setContentView:keypadBox];
+      break;
+    case 4: // Compose Character Key
+      [sectionBox setContentView:composeBox];
+      break;
+    case 5: // Control Key
+      [sectionBox setContentView:controlBox];
+      break;
+    case 6: // Caps Lock
+      [sectionBox setContentView:capsLockBox];
+      break;
+    case 7: // Key Swapping
+      [sectionBox setContentView:swapBox];
       break;
     default:
       NSLog(@"Keyboard.preferences: Unknow section button was clicked!");
