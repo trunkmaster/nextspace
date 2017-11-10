@@ -62,8 +62,20 @@
   id shortcutsBrowser;
   id shortcutsBox;
 
-  // Options
-  id optionsBox;
+  // Numeric Keypad
+  id keypadBox;
+
+  // Compose Character
+  id composeBox;
+
+  // Control Key
+  id controlBox;
+
+  // Caps Lock
+  id capsLockBox;
+
+  // Key Swapping
+  id swapBox;
 }
 
 - (void)sectionButtonClicked:(id)sender;
