@@ -1,0 +1,42 @@
+{
+  /* The commented out keys below disable normal usage of that keys.*/
+  /* "Right Command" = "grp:toggle"; */
+  /* "Right Alternate" = "grp:rwin_toggle"; */
+  /* "Right Control" = "grp:rctrl_toggle"; */
+  /* "Right Shift" = "grp:rshift_toggle"; */
+  /* "Left Command" = "grp:lalt_toggle"; */
+  /* "Left Alternate" = "grp:lwin_toggle"; */
+  /* "Left Control" = "grp:lctrl_toggle"; */
+  /* "Left Shift" = "grp:lshift_toggle"; */
+  "Caps Lock" = {
+    Option = "grp:caps_toggle";
+    Predicate = { NXKeyboardCapsLock = "Caps Lock"; };
+  };
+  "Menu" = "grp:menu_toggle";
+  "Scroll Lock" = {
+    Option = "grp:sclk_toggle";
+    Predicate = { NXKeyboardCompose = "!Scroll Lock"; };
+  };
+  "Command + Space" = "grp:alt_space_toggle";
+  "Alternate + Space" = "grp:win_space_toggle";
+  "Command + Control" = "grp:ctrl_alt_toggle";
+  "Command + Shift" = "grp:alt_shift_toggle";
+  "Command + Caps Lock" = {
+    Option = "grp:alt_caps_toggle";
+    Predicate = { NXKeyboardCapsLock = "Caps Lock"; };
+  };
+  "Left Command + Left Shift" = "grp:lalt_lshift_toggle";
+    
+  "Control + Shift" = "grp:ctrl_shift_toggle";
+  "Left Control + Left Alternate" = "grp:lctrl_lwin_toggle";
+  "Left Control + Left Shift" = "grp:lctrl_lshift_toggle";
+  "Right Control + Right Shift" = "grp:rctrl_rshift_toggle";
+    
+  "Both Commands" = "grp:alts_toggle";
+  "Both Controls" = "grp:ctrls_toggle";
+  "Both Shifts" = "grp:shifts_toggle";
+  "Shift + Caps Lock" = {
+    Option = "grp:shift_caps_toggle";
+    Predicate = { NXKeyboardCapsLock = "Caps Lock"; };
+  };
+}
