@@ -57,6 +57,8 @@ static NSMutableDictionary      *domain = nil;
   bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Keyboard" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+
+  keyboard = [[NXKeyboard alloc] init];
       
   return self;
 }
@@ -72,13 +74,13 @@ static NSMutableDictionary      *domain = nil;
 - (void)awakeFromNib
 {
   NXDefaults *defs = [NXDefaults globalUserDefaults];
-  NXKeyboard *keyb = [NXKeyboard new];
     
   [view retain];
   [window release];
 
-  for (id c in [sectionsMtrx cells])
-    [c setRefusesFirstResponder:YES];
+  // for (id c in [sectionsMtrx cells])
+  //   [c setRefusesFirstResponder:YES];
+  [sectionsBtn setRefusesFirstResponder:YES];
 
   // Key Repeat
   [repeatBox retain];
@@ -88,7 +90,7 @@ static NSMutableDictionary      *domain = nil;
   for (id c in [repeatRateMtrx cells])
     [c setRefusesFirstResponder:YES];
 
-  if (![initialRepeatMtrx selectCellWithTag:[keyb initialRepeat]])
+  if (![initialRepeatMtrx selectCellWithTag:[keyboard initialRepeat]])
     {
       if ([defs integerForKey:InitialRepeat] < 0)
         [initialRepeatMtrx selectCellWithTag:200];
@@ -98,7 +100,7 @@ static NSMutableDictionary      *domain = nil;
       [self repeatAction:initialRepeatMtrx];
     }
     
-  if (![repeatRateMtrx selectCellWithTag:[keyb repeatRate]])
+  if (![repeatRateMtrx selectCellWithTag:[keyboard repeatRate]])
     {
       if ([defs integerForKey:RepeatRate] < 0)
         [repeatRateMtrx selectCellWithTag:40];
@@ -110,28 +112,28 @@ static NSMutableDictionary      *domain = nil;
   // Layouts
   [layoutsBox retain];
   [layoutsBox removeFromSuperview];
-  [layoutList setHeaderView:nil];
+  // [layoutList setHeaderView:nil];
   [layoutList setDelegate:self];
   [layoutList setDataSource:self];
   [layoutList deselectAll:self];
   [layoutList setTarget:self];
   [layoutList setAction:@selector(layoutClicked:)];
+  [layoutShortcutBtn setRefusesFirstResponder:YES];
+  [self initSwitchLayoutShortcuts];
 
   // Shortcuts
   [shortcutsBox retain];
   [shortcutsBox removeFromSuperview];
   [shortcutsBrowser loadColumnZero];
-  [shortcutsBrowser setTitle:@"Action" ofColumn:0];
-  [shortcutsBrowser setTitle:@"Shortcut" ofColumn:1];
+  [shortcutsBrowser setTitle:@"Group" ofColumn:0];
+  [shortcutsBrowser setTitle:@"Action" ofColumn:1];
+  // [shortcutsBrowser setTitle:@"Shortcut" ofColumn:2];
 
   //
   [keypadBox retain];
-  [composeBox retain];
-  [controlBox retain];
-  [capsLockBox retain];
-  [swapBox retain];
+  [modifiersBox retain];
   
-  [self sectionButtonClicked:sectionsMtrx];
+  [self sectionButtonClicked:sectionsBtn];
 }
 
 - (NSView *)view
@@ -169,9 +171,9 @@ static NSMutableDictionary      *domain = nil;
       [sectionBox setContentView:repeatBox];
       break;
     case 1: // Layouts
-      [self updateLayoutList];
-      [layoutList selectRow:0 byExtendingSelection:NO];
       [sectionBox setContentView:layoutsBox];
+      [self updateLayouts];
+      [layoutList selectRow:0 byExtendingSelection:NO];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -179,17 +181,8 @@ static NSMutableDictionary      *domain = nil;
     case 3: // Numeric Keypad
       [sectionBox setContentView:keypadBox];
       break;
-    case 4: // Compose Character Key
-      [sectionBox setContentView:composeBox];
-      break;
-    case 5: // Control Key
-      [sectionBox setContentView:controlBox];
-      break;
-    case 6: // Caps Lock
-      [sectionBox setContentView:capsLockBox];
-      break;
-    case 7: // Key Swapping
-      [sectionBox setContentView:swapBox];
+    case 4: // Compose, Caps Lock, Command/Alternate swap
+      [sectionBox setContentView:modifiersBox];
       break;
     default:
       NSLog(@"Keyboard.preferences: Unknow section button was clicked!");
@@ -237,7 +230,6 @@ static NSMutableDictionary      *domain = nil;
   return nil;
 }
 
-// - (BOOL)selectionShouldChangeInTableView:(NSTableView *)tv
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
   NSTableView *tv = [aNotification object];
@@ -261,17 +253,16 @@ static NSMutableDictionary      *domain = nil;
 - (void)repeatAction:(id)sender
 {
   NXDefaults	*defs = [NXDefaults globalUserDefaults];
-  NXKeyboard	*keyb = [NXKeyboard new];
   
   if (sender == initialRepeatMtrx)
     { // NXKeyboard-InitialKeyRepeat - delay in milliseconds before repeat
       [defs setInteger:[[sender selectedCell] tag] forKey:InitialRepeat];
-      [keyb setInitialRepeat:[defs integerForKey:InitialRepeat]];
+      [keyboard setInitialRepeat:[defs integerForKey:InitialRepeat]];
     }
   else if (sender == repeatRateMtrx)
     { // NXKeyboard - RepeatRate - num of repeates per second
       [defs setInteger:[[sender selectedCell] tag] forKey:RepeatRate];
-      [keyb setRepeatRate:[defs integerForKey:RepeatRate]];
+      [keyboard setRepeatRate:[defs integerForKey:RepeatRate]];
     }
 
   [defs synchronize];
@@ -283,32 +274,42 @@ static NSMutableDictionary      *domain = nil;
 
 @implementation Keyboard (Layouts)
 
-- (void)updateLayoutList
+- (void)updateLayouts
 {
-  if (!keyboard)
-    keyboard = [[NXKeyboard alloc] init];
-
+  NXDefaults	*defs = [NXDefaults globalUserDefaults];
+  
   if (layouts) [layouts release];
   layouts = [[keyboard layouts] copy];
-  
   if (variants) [variants release];
   variants = [[keyboard variants] copy];
-
-  NSLog(@"[Keyboard] layout: %@ variant: %@", layouts, variants);
+  
+  [defs setObject:layouts forKey:Layouts];
+  [defs setObject:variants forKey:Variants];
+  [defs synchronize];
   
   [layoutList reloadData];
 }
 
 // "Add.." button action
-- (void)layoutAdd:(id)sender
+- (void)showAddLayoutPanel:sender
 {
   if (!layoutAddPanel)
     {
       layoutAddPanel = [[AddLayoutPanel alloc]
                          initWithKeyboard:[NXKeyboard new]];
     }
-  // [NSApp runModalForWindow:[layoutAddPanel panel]];
+  // [NSApp runModalForWindow:[layoutAddPanel panel]] stops clock in appicon.
   [layoutAddPanel orderFront:self];
+}
+- (void)addLayout:(NSString *)layout variant:(NSString *)variant
+{
+  [keyboard addLayout:layout variant:variant];
+  [self updateLayouts];
+  
+  [[layoutAddPanel panel] close];
+  
+  [layoutList selectRow:[layoutList numberOfRows]-1
+              byExtendingSelection:NO];
 }
 - (void)layoutRemove:(id)sender
 {
@@ -317,7 +318,7 @@ static NSMutableDictionary      *domain = nil;
   [keyboard removeLayout:[layouts objectAtIndex:selRow]
                  variant:[variants objectAtIndex:selRow]];
   
-  [self updateLayoutList];
+  [self updateLayouts];
   [layoutList selectRow:(selRow > 0) ? selRow-1 : 0
               byExtendingSelection:NO];
 }
@@ -329,6 +330,91 @@ static NSMutableDictionary      *domain = nil;
   else if (sender == layoutDownBtn)
     {
     }
+}
+
+// Change layout shortcut
+- (void)initSwitchLayoutShortcuts
+{
+  NSString	*lSwitchFile;
+  id 		value;
+  id		item;
+  NSString	*shortcut = nil;
+    
+  lSwitchFile = [bundle pathForResource:@"LayoutSwitchKeys" ofType:@"plist"];
+  layoutSwitchKeys = [[NSDictionary alloc] initWithContentsOfFile:lSwitchFile];
+  
+  [layoutShortcutBtn removeAllItems];
+  [layoutShortcutBtn addItemWithTitle:@"None"];
+
+  // 'options' may contain 'grp:', 'compose:', etc.
+  options = [[keyboard options] copy];
+  for (NSString *k in [layoutSwitchKeys allKeys])
+    {
+      [layoutShortcutBtn addItemWithTitle:k];
+      item = [layoutShortcutBtn itemWithTitle:k];
+      
+      value = [layoutSwitchKeys objectForKey:k];
+      if ([value isKindOfClass:[NSDictionary class]])
+        {
+          value = [value objectForKey:@"Option"];
+          [item setEnabled:NO];
+        }
+      [item setRepresentedObject:value];
+      
+      if ([options containsObject:value])
+        shortcut = [k copy];
+    }
+  if (shortcut)
+    {
+      [layoutShortcutBtn selectItemWithTitle:shortcut];
+      [shortcut release];
+    }
+  else
+    [layoutShortcutBtn selectItemWithTitle:@"None"];
+
+  // Refresh defaults with actual X11 settings
+  [[NXDefaults globalUserDefaults] setObject:options forKey:Options];
+  [[NXDefaults globalUserDefaults] synchronize];
+}
+
+// Replaces "NXKeyboardOptions" array item that contains "grp:" substring.
+- (void)setLayoutShortcut:(id)sender
+{
+  NXDefaults		*defs = [NXDefaults globalUserDefaults];
+  NSMutableArray	*mOptions = [options mutableCopy];
+  id			selectedOption;
+  BOOL			isOptionReplaced = NO;
+
+  selectedOption = [[layoutShortcutBtn selectedItem] representedObject];
+  
+  NSLog(@"[Keyboard] selected option: %@", selectedOption);
+  
+  for (NSString *opt in mOptions)
+    {
+      if ([opt rangeOfString:@"grp:"].location != NSNotFound)
+        {
+          [mOptions replaceObjectAtIndex:[mOptions indexOfObject:opt]
+                              withObject:selectedOption];
+          isOptionReplaced = YES;
+          break;
+        }
+    }
+
+  if (isOptionReplaced == NO)
+    {
+      [mOptions addObject:selectedOption];
+    }
+  
+  if ([keyboard setOptions:mOptions] == YES)
+    {
+      [defs setObject:mOptions forKey:Options];
+      [defs synchronize];
+      
+      [options release];
+      options = [[keyboard options] copy];
+    }
+  
+  [mOptions release];
 }
 
 @end

@@ -86,6 +86,9 @@ NSString *Compose = @"ComposeKey";
   return dictionary;
 }
 
+//
+// Reading XKB_BASE_LST. Default is '/usr/share/X11/xkb/rules/base.lst'.
+//
 - (NSDictionary *)_xkbBaseListDictionary
 {
   NSMutableDictionary	*dict = [[NSMutableDictionary alloc] init];
@@ -118,7 +121,7 @@ NSString *Compose = @"ComposeKey";
           
           sectionName = [lineString substringFromIndex:2];
           
-          NSLog(@"Keyboard: found section: %@", sectionName);
+          // NSLog(@"Keyboard: found section: %@", sectionName);
         }
       else
         { // Parse line and add into 'modeDict' dictionary
@@ -168,7 +171,7 @@ NSString *Compose = @"ComposeKey";
   [modeDict removeAllObjects];
   [modeDict release];
 
-  [dict writeToFile:@"/Users/me/Library/Keyboards.list" atomically:YES];
+  // [dict writeToFile:@"/Users/me/Library/Keyboards.list" atomically:YES];
   
   return [dict autorelease];
 }
@@ -210,9 +213,6 @@ NSString *Compose = @"ComposeKey";
 // Layouts
 //------------------------------------------------------------------------------
 
-//
-// Reading XKB_BASE_LST
-//
 - (NSDictionary *)availableLayouts
 {
   if (!layoutDict)
@@ -337,7 +337,7 @@ NSString *Compose = @"ComposeKey";
   [config setObject:[NSString stringWithCString:vd.options] forKey:Options];
   [config setObject:[NSString stringWithCString:vd.model] forKey:Model];
   
-  [config writeToFile:@"/Users/me/Library/NXKeyboard" atomically:YES];
+  // [config writeToFile:@"/Users/me/Library/NXKeyboard" atomically:YES];
   
   return config;
 }
@@ -388,10 +388,17 @@ NSString *Compose = @"ComposeKey";
   NSString *v = [[self _serverConfig] objectForKey:Variants];
   NSArray  *va = [v componentsSeparatedByString:@","];
 
-  if ([l count] > [va count])
+  while ([l count] > [va count])
     va = [va arrayByAddingObject:@""];
 
   return va;
+}
+
+// TODO
+- (void)setLayouts:(NSArray *)layouts variant:(NSArray *)shortcuts
+{
+  // Make code generic for use in addLayout:variant: and removeLayout:variant:
+  // This will be used for keyboard initialization (Preferrences startup).
 }
 
 - (void)addLayout:(NSString *)lCode variant:(NSString *)vCode
@@ -402,7 +409,7 @@ NSString *Compose = @"ComposeKey";
   NSString		*varString;
   NSArray		*layouts, *variants;
 
-  NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", lCode, vCode);
+  // NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", lCode, vCode);
 
   if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
     return;
@@ -433,14 +440,12 @@ NSString *Compose = @"ComposeKey";
           for (int i = 0; i < (lc - vc); i++)
             varString = [varString stringByAppendingString:@","];
           varString = [varString stringByAppendingFormat:@",%@", vCode];
-          // varString = [NSString stringWithFormat:@"%s,%@",
-          //                       xkb_vars.variant, variant];
         }
       xkb_vars.variant = strdup([varString cString]);
     }
 
-  NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
-        xkb_vars.layout, xkb_vars.variant);
+  // NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
+  //       xkb_vars.layout, xkb_vars.variant);
   
   [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
 
@@ -461,7 +466,7 @@ NSString *Compose = @"ComposeKey";
   NSMutableArray	*layouts, *variants;
   NSUInteger		lIndex;
 
-  NSLog(@"[NXKeyboard] removeLayout:%@", lCode);
+  // NSLog(@"[NXKeyboard] removeLayout:%@", lCode);
 
   if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
     return;
@@ -489,8 +494,8 @@ NSString *Compose = @"ComposeKey";
   [layouts release];
   [variants release];
   
-  NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
-        xkb_vars.layout, xkb_vars.variant);
+  // NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
+  //       xkb_vars.layout, xkb_vars.variant);
   
   [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
 
@@ -511,7 +516,7 @@ NSString *Compose = @"ComposeKey";
 
   if (!dpy)
     {
-      NSLog(@"Can't open Display! This program must be run in X Window System.");
+      NSLog(@"Can't open Display! This program must be run in X Window.");
       return;
     }
   if (!xkb)
@@ -536,7 +541,7 @@ NSString *Compose = @"ComposeKey";
 
   if (!dpy)
     {
-      NSLog(@"Can't open Display! This program must be run in X Window System.");
+      NSLog(@"Can't open Display! This program must be run in X Window.");
       return NULL;
     }
   if (!xkb)
@@ -570,6 +575,55 @@ NSString *Compose = @"ComposeKey";
 - (void)setInitialRepeat:(NSInteger)delay rate:(NSInteger)rate
 {
   [self _setXKBRepeat:delay rate:rate];
+}
+
+//------------------------------------------------------------------------------
+// Various options
+//------------------------------------------------------------------------------
+
+- (NSArray *)options
+{
+  NSString *options = [[self _serverConfig] objectForKey:Options];
+  return [options componentsSeparatedByString:@","];
+}
+
+- (BOOL)setOptions:(NSArray *)opts
+{
+  NSString		*optsString;
+  Display		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	xkb_vars;
+  BOOL			success = NO;
+
+  // NSLog(@"[NXKeyboard] setOptions:%@", opts);
+
+  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
+    success = NO;
+  else
+    success = YES;
+
+  if (success)
+    {
+      optsString = [opts componentsJoinedByString:@","];
+      xkb_vars.options = strdup([optsString cString]);
+
+      // NSLog(@"[NXKeyboard] new options: %s", xkb_vars.options);
+  
+      if ([self _applyServerConfig:xkb_vars file:file forDisplay:dpy] == NO)
+        success = NO;
+    }
+
+  if (dpy)
+    XCloseDisplay(dpy);
+
+  if (success)
+    {
+      // Update cached configuration
+      if (serverConfig) [serverConfig release];
+      serverConfig = [[self _serverConfig] retain];
+    }
+
+  return success;
 }
 
 @end

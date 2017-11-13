@@ -60,12 +60,17 @@
 - (void)setRepeatRate:(NSInteger)rate;
 - (void)setInitialRepeat:(NSInteger)delay rate:(NSInteger)rate;
 
+// --- Various options
+- (NSArray *)options;
+- (BOOL)setOptions:(NSArray *)opts;
+
 @end
 
 // NXGlobalDomain keys. Strings are started with NXKeyboard prefix
 extern NSString *InitialRepeat;
 extern NSString *RepeatRate;
 extern NSString *Layouts;
+extern NSString *Variants;
 extern NSString *Model;
 extern NSString *Options;
 extern NSString *SwitchLayoutKey; // 'grp:' - switching to another layout

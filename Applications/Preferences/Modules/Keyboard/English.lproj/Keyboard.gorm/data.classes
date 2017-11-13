@@ -2,11 +2,12 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "layoutAdd:",
-	    "layoutRemove:",
 	    "layoutMove:",
+	    "layoutRemove:",
+	    "setLayoutShortcut:",
 	    "repeatAction:",
-	    "sectionButtonClicked:"
+	    "sectionButtonClicked:",
+	    "showAddLayoutPanel:"
 	);
 	Super = NSObject;
     };
@@ -14,9 +15,10 @@
 	Actions = (
 	    "sectionButtonClicked:",
 	    "repeatAction:",
-	    "layoutAdd:",
+	    "showAddLayoutPanel:",
 	    "layoutRemove:",
-	    "layoutMove:"
+	    "layoutMove:",
+	    "setLayoutShortcut:"
 	);
 	Outlets = (
 	    window,
@@ -31,17 +33,15 @@
 	    layoutAddBtn,
 	    layoutDownBtn,
 	    layoutRemoveBtn,
-	    layoutShortcutSetBtn,
+	    layoutShortcutTypeBtn,
 	    layoutUpBtn,
 	    layoutList,
-	    layoutShortcutTextField,
+	    layoutShortcutBtn,
 	    repeatTestField,
-	    optionsBox,
-	    capsLockBox,
-	    composeBox,
-	    controlBox,
+	    modifiersBox,
 	    keypadBox,
-	    swapBox
+	    swapBox,
+	    shortcutsBrowser
 	);
 	Super = NSObject;
     };

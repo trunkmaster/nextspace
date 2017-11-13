@@ -33,7 +33,7 @@
   id window;
   id view;
   id sectionBox;
-  id sectionsMtrx;
+  id sectionsBtn;
 
   // Key Repeat
   id repeatBox;
@@ -43,9 +43,11 @@
 
   // -- Layouts
   // Data
-  NXKeyboard *keyboard;
-  NSArray    *layouts;
-  NSArray    *variants;
+  NXKeyboard	*keyboard;
+  NSArray    	*layouts;
+  NSArray    	*variants;
+  NSArray    	*options;
+  NSDictionary	*layoutSwitchKeys;
   // GUI
   id layoutsBox;
   NSTableView 		*layoutList;
@@ -54,28 +56,19 @@
   id layoutRemoveBtn;
   id layoutUpBtn;
   id layoutDownBtn;
-  id layoutShortcutSetBtn;
-  id layoutShortcutTextField;
+  id layoutShortcutTypeBtn;
+  NSPopUpButton *layoutShortcutBtn;
   id layoutShortcutList;
 
   // Shortcuts
-  id shortcutsBrowser;
   id shortcutsBox;
+  id shortcutsBrowser;
 
   // Numeric Keypad
   id keypadBox;
 
   // Compose Character
-  id composeBox;
-
-  // Control Key
-  id controlBox;
-
-  // Caps Lock
-  id capsLockBox;
-
-  // Key Swapping
-  id swapBox;
+  id modifiersBox;
 }
 
 - (void)sectionButtonClicked:(id)sender;
@@ -87,5 +80,7 @@
 @end
 
 @interface Keyboard (Layouts)
-- (void)updateLayoutList;
+- (void)updateLayouts;
+- (void)addLayout:(NSString *)layout variant:(NSString *)variant;
+- (void)initSwitchLayoutShortcuts;
 @end
