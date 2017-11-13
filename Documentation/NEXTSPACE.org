@@ -3230,11 +3230,17 @@
 **** TODO Keyboard
 ***** DONE Repeat Rate
 ***** TODO Layouts
-***** TODO Command/Alternate
-***** TODO Keyboard Model
+***** TODO Modifiers
+****** TODO Command/Alternate Swap
+****** TODO Compose Character Key
+****** TODO Caps Lock Key (Alpha Lock)
+***** TODO Numeric Keypad
+****** TODO Delete Key
+****** TODO Behaviour
+****** TODO Num Lock state upon startup (login)
 ***** TODO Shortcuts
       GNUstep and WindowMaker.
-***** TODO Ввод кодов символов (Compose Key?)
+***** TODO Keyboard Model
 **** TODO Mouse
      Acceleration, pointers, mouse wheel scroll.
 **** TODO Display: resolution, layout, gamma correction, wallpaper/color
@@ -3258,10 +3264,10 @@
       Стоит реализовать в NXAppKit. После реализации в NXAppKit использовать
       здесь.
 ***** TODO Отложенное сохранение настроек для gamma и brightness
-***** TODO Получать и изменять фон рабочего стола -> NXDisplay
+***** TODO Получать и изменять desktop background -> NXDisplay
       Не нашел возможности простого получения текущего цвета окна X11.
       Поэтому, сейчас предполагаю, что цвет был установлен такой, который
-      сохранен в  ~/Library/Preferences/.NextSpace/NXGlobalDomain.
+      сохранен в ~/Library/Preferences/.NextSpace/NXGlobalDomain.
 ***** TODO Установка Backlight (если монитор поддерживает)
 **** TODO Screen: displays layout, on/off
 ***** DONE Устанавливать 'Main Display'
@@ -3277,12 +3283,12 @@
 ****** DONE Отображение Dock и Icon Yard на 'Main Display'
 ****** TODO Получать и отображать desktop background
        Нужно сначала реализовать это в модуле Display.
+**** TODO Sound: input and output settings, system beep sound
+***** TODO Нарисовать панель
 **** TODO UNIX Expert
      - [ ] File Creation Mask
      - [ ] Show hidden files
      - [ ] Должно использоваться Workspace Manager'ом, NSSavePanel, NSOpenPanel.
-***** TODO Нарисовать панель
-**** TODO Sound: input and output settings, system beep sound
 ***** TODO Нарисовать панель
 **** TODO Network
 ***** TODO Нарисовать панель
