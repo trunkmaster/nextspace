@@ -100,7 +100,7 @@ This is the FontInfo.plist file in that directory:
       Foundry = "Monotype Typography";
       Packager = "Jeff Teunissen <deek@d2dc.net>";
       Version = 2.82;
-  }
+    }
 
 ## Rendering Hints
 
