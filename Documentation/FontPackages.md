@@ -1,4 +1,4 @@
-Source: GNUstep Wiki (http://wiki.gnustep.org/index.php/Nfont_packages)
+Source: GNUstep Wiki [http://wiki.gnustep.org/index.php/Nfont_packages]
 
 # Nfonts packages
 
