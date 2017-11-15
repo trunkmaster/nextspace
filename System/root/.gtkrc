@@ -1,0 +1,134 @@
+gtk-icon-sizes = "panel-menu=24,24"
+
+style "bluecurve-default"
+{
+  GtkMenuItem::selected_shadow_type = out
+  GtkWidget::interior_focus = 1
+  GtkButton::default_border = { 0, 0, 0, 0 }
+  GtkButton::default_outside_border = { 0, 0, 0, 0 }
+  GtkRange::trough_border = 0
+
+  GtkWidget::focus_padding = 1
+
+  GtkPaned::handle_size = 6
+
+  GtkRange::slider_width = 15
+  GtkRange::stepper_size = 15
+  GtkScrollbar::min_slider_length = 30
+  GtkCheckButton::indicator_size = 12
+  GtkMenuBar::internal-padding = 0
+
+  #GtkOptionMenu::indicator_size = { 11, 6 }
+  #GtkOptionMenu::indicator_spacing = { 4, 5, 2, 2 }
+
+  GtkTreeView::expander_size = 14
+  GtkExpander::expander_size = 16
+
+  xthickness = 1
+  ythickness = 1
+
+  font_name       = "Helvetica 10"
+  bg[NORMAL]      = "#aaaaaa"
+  bg[PRELIGHT]    = "#aaaaaa"
+  bg[ACTIVE]      = "#777777"
+  bg[SELECTED]    = "#aaaaaa"
+  bg[INSENSITIVE] = "#aaaaaa"
+
+  base[SELECTED]  = "#aaaaaa"
+  base[ACTIVE]    = "#5e7ab7"
+  base[INSENSITIVE] = "#c8c8c8"
+
+  text[NORMAL]    = "#000000"
+  text[PRELIGHT]  = "#000000"
+  text[SELECTED]  = "#000000"
+  text[ACTIVE]    = "#000000"
+
+  fg[NORMAL]      = "#000000"
+  fg[ACTIVE]      = "#000000"
+  fg[PRELIGHT]    = "#000000"
+  fg[SELECTED]    = "#000000"
+  fg[INSENSITIVE] = "#555555"
+
+#  engine "qtcurve" 
+#  {
+#    contrast = 1.0
+#  }
+}
+
+style "bluecurve-wide" = "bluecurve-default"
+{
+  xthickness = 2
+  ythickness = 2
+}
+
+style "bluecurve-tasklist" = "bluecurve-default"
+{
+  xthickness = 5
+  ythickness = 3
+}
+
+style "bluecurve-menu" = "bluecurve-default"
+{
+  xthickness = 3
+  ythickness = 3
+}
+
+style "bluecurve-menu-item" = "bluecurve-default"
+{
+  xthickness = 3
+  ythickness = 3 
+
+  bg[SELECTED]  = "#aaaaaa"
+  fg[PRELIGHT]  = "#000000"
+}
+
+style "bluecurve-menu-itembar" = "bluecurve-default"
+{
+  xthickness = 3
+  ythickness = 3
+}
+
+style "bluecurve-tree" = "bluecurve-default"
+{
+  xthickness = 2
+  ythickness = 2
+}
+
+style "bluecurve-frame-title" = "bluecurve-default"
+{
+  fg[NORMAL] = "#404040"
+}
+
+style "bluecurve-panel" = "bluecurve-default"
+{
+  xthickness = 3
+  ythickness = 3
+}
+
+style "bluecurve-tooltips" = "bluecurve-default"
+{
+  xthickness = 4
+  ythickness = 4
+  bg[NORMAL] = "#ffffcc"
+  bg[ACTIVE] = "#ffffcc"
+}
+
+class "GtkWidget" style "bluecurve-default"
+
+class "GtkButton" style "bluecurve-wide"
+class "GtkRange" style "bluecurve-wide"
+class "GtkFrame" style "bluecurve-wide"
+class "GtkStatusbar" style "bluecurve-wide"
+class "GtkMenu" style "bluecurve-menu"
+class "GtkMenuItem" style "bluecurve-menu-item"
+widget_class "*.<GtkMenuItem>.*" style "bluecurve-menu-item"
+class "GtkEntry" style "bluecurve-wide"
+widget_class "*.tooltips.*.GtkToggleButton" style "bluecurve-tooltips"
+widget_class "*.GtkTreeView.GtkButton" style "bluecurve-tree"
+widget_class "*.GtkCTree.GtkButton" style "bluecurve-tree"
+widget_class "*.GtkList.GtkButton" style "bluecurve-tree"
+widget_class "*.GtkCList.GtkButton" style "bluecurve-tree"
+widget_class "*.GtkFrame.GtkLabel" style "bluecurve-frame-title"
+#class "MetaFrames" style "metacity-frame"
+widget_class "BasePWidget.GtkEventBox.GtkTable.GtkFrame" style "bluecurve-panel"
+widget "gtk-tooltips" style "bluecurve-tooltips"

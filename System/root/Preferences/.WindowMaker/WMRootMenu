@@ -1,0 +1,23 @@
+(
+  "WindowMaker",
+  (
+    Info,
+    ("Info Panel...", INFO_PANEL),
+    (Legal..., LEGAL_PANEL)
+  ),
+  ("Run...", EXEC, "%A(Run, Type command to run:)"),
+  ("XTerm", EXEC, "xterm -sb"),
+  (
+    Session,
+    ("Refresh Screen", REFRESH),
+    ("Clear Session", CLEAR_SESSION),
+    ("Save Session", SAVE_SESSION),
+    ("Kill Session...", SHUTDOWN)
+  ),
+  (Windows, WINDOWS_MENU),
+  (Workspaces, WORKSPACE_MENU),
+  ("Arrange Icons", ARRANGE_ICONS),
+  ("Hide Others", HIDE_OTHERS),
+  ("Show All", SHOW_ALL),
+  (Restart, RESTART)
+)
