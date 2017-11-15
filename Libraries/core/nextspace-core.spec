@@ -67,12 +67,18 @@ cd ..
 cd nextspace-os_files-%{version}
 cp -vr ./etc %{buildroot}
 cp -vr ./usr %{buildroot}
+cp -vr ./root %{buildroot}
 mkdir %{buildroot}/Users
 
 %files 
 /Library
 /Users
-/root
+/root/Library
+/root/.config
+/root/.fonts
+/root/.gtkrc
+/root/.gtkrc-2.0
+/root/fonts.conf
 /etc/ld.so.conf.d
 /etc/profile.d
 /etc/skel
@@ -105,6 +111,10 @@ useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
+* Wed Nov 15 2016 Sergii Stoian <stoyan255@ukr.net> 0.9-1
+- Defaults ~/Library/Preferences were added for the root user.
+- Midnight Commander user's ini file was removed.
+
 * Wed Oct 26 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-11
 - Add /Developer/Libraries into /etc/ld.so.conf.d/nextspace.conf
 - Add -fblocks to OBJFLAGS
