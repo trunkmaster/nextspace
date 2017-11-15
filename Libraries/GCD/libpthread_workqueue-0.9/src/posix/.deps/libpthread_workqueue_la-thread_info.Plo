@@ -1,1 +1,0 @@
-src/posix/libpthread_workqueue_la-thread_info.lo: src/posix/thread_info.c
