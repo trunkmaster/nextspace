@@ -1,0 +1,15 @@
+{
+  Workspace.GNUstep = {Icon = "GNUstep.tiff";};
+  Preferences.GNUstep = {Icon = "/Applications/Preferences.app/Resources/English.lproj/Preferences.png";};
+  TimeMon.GNUstep = {Icon = "/Applications/TimeMon.app/Resources/TimeMon.tiff";};
+  Terminal.GNUstep = {Icon = "/Applications/Terminal.app/Resources/Terminal.tiff";};
+  TextEdit.GNUstep = {Icon = "/Applications/TextEdit.app/Resources/Edit.tiff";};
+  Recycler.GNUstep = {Icon = recycler.tiff;};
+  Logo.WMDock = {Icon = GNUstep.tiff;};
+  Logo.WMPanel = {Icon = GNUstep48x48.tiff;};
+  Logo.WMClip = {Icon = clip.tiff;};
+  WMDrawer = {Icon = Drawer.tiff;};
+  "*.Firefox" = {Icon = Firefox.png;};
+  "*.Thunderbird" = {Icon = Thunderbird.png;};
+  "*" = {Icon = XWindow.tiff; SharedAppIcon = Yes;};
+}

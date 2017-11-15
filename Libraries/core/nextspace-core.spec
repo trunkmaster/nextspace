@@ -1,8 +1,8 @@
 %define MAKE_VERSION    2.6.8
 
 Name:		nextspace-core
-Version:	0.8
-Release:	14%{?dist}
+Version:	0.9
+Release:	1%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -72,6 +72,7 @@ mkdir %{buildroot}/Users
 %files 
 /Library
 /Users
+/root
 /etc/ld.so.conf.d
 /etc/profile.d
 /etc/skel
