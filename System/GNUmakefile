@@ -7,7 +7,7 @@ PACKAGE_NAME = nextspace-os_files
 VERSION = 0.9
 
 RESOURCE_SET_NAME = nextspace-os_files
-$(RESOURCE_SET_NAME)_RESOURCE_FILES = etc usr
+$(RESOURCE_SET_NAME)_RESOURCE_FILES = etc usr root
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/resource-set.make
