@@ -1,0 +1,60 @@
+{
+    FontCopyright = "Copyright 2015 Google Inc. All Rights Reserved.";
+    Foundry = "Google";
+    Faces = (
+	{
+	    Files = (
+		RobotoMono-Regular.ttf
+	    );
+	    Name = Regular;
+	    PostScriptName = "RobotoMono-Regular";
+	    Weight = 400;
+	    RenderHints_hack = 0x010203;
+	},
+	{
+	    Files = (
+		RobotoMono-Bold.ttf
+	    );
+	    Name = Bold;
+	    PostScriptName = "RobotoMono-Bold";
+	    Weight = 700;
+	    RenderHints_hack = 0x010203;
+	},
+	{
+	    Files = (
+		RobotoMono-Italic.ttf
+	    );
+	    Name = Italic;
+	    PostScriptName = "RobotoMono-Italic";
+	    Weight = 400;
+	    RenderHints_hack = 0x010203;
+	},
+	{
+	    Files = (
+		RobotoMono-BoldItalic.ttf
+	    );
+	    Name = BoldItalic;
+	    PostScriptName = "RobotoMono-BoldItalic";
+	    Weight = 700;
+	    RenderHints_hack = 0x010203;
+	},
+	{
+	    Files = (
+		RobotoMono-Medium.ttf
+	    );
+	    Name = Medium;
+	    PostScriptName = "RobotoMono-Medium";
+	    Weight = 500;
+	    RenderHints_hack = 0x010203;
+	},
+	{
+	    Files = (
+		RobotoMono-MediumItalic.ttf
+	    );
+	    Name = MediumItalic;
+	    PostScriptName = "RobotoMono-MediumItalic";
+	    Weight = 500;
+	    RenderHints_hack = 0x010203;
+	},
+    );
+}
