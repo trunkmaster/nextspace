@@ -3229,15 +3229,15 @@
 ***** DONE Обновлять примеры форматов после смены в списке языков
 **** TODO Keyboard
 ***** DONE Repeat Rate
-***** TODO Layouts
-***** TODO Modifiers
-****** TODO Command/Alternate Swap
-****** TODO Compose Character Key
-****** TODO Caps Lock Key (Alpha Lock)
+***** DONE Layouts
 ***** TODO Numeric Keypad
 ****** TODO Delete Key
 ****** TODO Behaviour
 ****** TODO Num Lock state upon startup (login)
+***** TODO Modifiers
+****** TODO Command/Alternate Swap
+****** TODO Compose Character Key
+****** TODO Caps Lock Key (Alpha Lock)
 ***** TODO Shortcuts
       GNUstep and WindowMaker.
 ***** TODO Keyboard Model
