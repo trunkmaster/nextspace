@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Nov 13 02:09:32 2017
+;; Created Sun Nov 19 02:58:51 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -21,9 +21,9 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.m"
   "NXKeyboard.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  11725
-  '(11578 nil)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  16709
+  '(16580 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
@@ -32,9 +32,9 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.h"
   "NXKeyboard.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1058
-  '(2058 nil)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  1895
+  '(1894 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
