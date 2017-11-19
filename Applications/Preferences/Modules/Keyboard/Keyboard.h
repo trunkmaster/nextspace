@@ -86,3 +86,9 @@
 - (void)addLayout:(NSString *)layout variant:(NSString *)variant;
 - (void)initSwitchLayoutShortcuts;
 @end
+
+@interface Keyboard (NumPad)
+- (void)updateNumpad;
+- (void)deleteKeyMtrxClicked:(id)sender;
+- (void)numpadMtrxClicked:(id)sender;
+@end
