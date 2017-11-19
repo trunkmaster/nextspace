@@ -179,12 +179,17 @@ static NSMutableDictionary      *domain = nil;
       [sectionBox setContentView:layoutsBox];
       [self updateLayouts];
       [layoutList selectRow:0 byExtendingSelection:NO];
+      if (!options)
+        options = [[keyboard options] copy];
       [self initSwitchLayoutShortcuts];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
       break;
     case 3: // Numeric Keypad
+      if (!options)
+        options = [[keyboard options] copy];
+      [self updateNumpad];
       [sectionBox setContentView:keypadBox];
       break;
     case 4: // Compose, Caps Lock, Command/Alternate swap
@@ -369,8 +374,6 @@ static NSMutableDictionary      *domain = nil;
   [layoutShortcutBtn addItemWithTitle:@"None"];
   [[layoutShortcutBtn itemWithTitle:@"None"] setRepresentedObject:@""];
 
-  // 'options' may contain 'grp:', 'compose:', etc.
-  options = [[keyboard options] copy];
   for (NSString *k in [layoutSwitchKeys allKeys])
     {
       [layoutShortcutBtn addItemWithTitle:k];
@@ -447,4 +450,102 @@ static NSMutableDictionary      *domain = nil;
   [mOptions release];
 }
 
+@end
+
+@implementation Keyboard (NumPad)
+
+- (BOOL)_setOption:(NSString *)option
+{
+  NSString 		*optType;
+  NSMutableArray	*mOptions = [options mutableCopy];
+  BOOL			FOUND = NO;
+  BOOL			SUCCESS = NO;
+  NXDefaults		*defs = [NXDefaults globalUserDefaults];
+
+  optType = [[option componentsSeparatedByString:@":"] objectAtIndex:0];
+  for (NSString *opt in mOptions)
+    {
+      if ([opt rangeOfString:optType].location != NSNotFound)
+        {
+          FOUND = YES;
+          [mOptions replaceObjectAtIndex:[mOptions indexOfObject:opt]
+                              withObject:option];
+        }
+    }
+
+  if (FOUND == NO)
+    {
+      [mOptions addObject:option];
+    }
+  
+  SUCCESS = [keyboard setLayouts:nil variants:nil options:mOptions];
+  if (SUCCESS == YES)
+    {
+      [defs setObject:mOptions forKey:Options];
+      [defs synchronize];
+      
+      [options release];
+      options = [[keyboard options] copy];
+    }
+  
+  [mOptions release];
+
+  return SUCCESS;
+}
+
+- (void)updateNumpad
+{
+  if ([options containsObject:@"kpdl:comma"])
+    [deleteKeyMtrx selectCellWithTag:1];
+  else
+    {
+      [deleteKeyMtrx selectCellWithTag:0];
+      if ([options containsObject:@"kpdl:dot"] == NO)
+        {
+          [self _setOption:@"kpdl:dot"];
+        }
+    }
+
+  if ([options containsObject:@"numpad:mac"])
+    [numpadMtrx selectCellWithTag:2];  // Always enter digits
+  else if ([options containsObject:@"numpad:microsoft"])
+    [numpadMtrx selectCellWithTag:1];  // Default+
+  else
+    {
+      [numpadMtrx selectCellWithTag:0]; // Default "numpad:pc"
+      if ([options containsObject:@"numpad:pc"] == NO)
+        {
+          [self _setOption:@"numpad:pc"];
+        }
+    }
+}
+
+- (void)deleteKeyMtrxClicked:(id)sender
+{
+  switch([[sender selectedCell] tag])
+    {
+    case 0:
+      [self _setOption:@"kpdl:dot"];
+      break;
+    case 1:
+      [self _setOption:@"kpdl:comma"];
+      break;
+    }
+}
+
+- (void)numpadMtrxClicked:(id)sender
+{
+  switch([[sender selectedCell] tag])
+    {
+    case 0:
+      [self _setOption:@"numpad:pc"];
+      break;
+    case 1:
+      [self _setOption:@"numpad:microsoft"];
+      break;
+    case 2:
+      [self _setOption:@"numpad:mac"];
+      break;
+    }
+}
 @end
