@@ -119,7 +119,6 @@ static NSMutableDictionary      *domain = nil;
   [layoutList setTarget:self];
   [layoutList setAction:@selector(layoutClicked:)];
   [layoutShortcutBtn setRefusesFirstResponder:YES];
-  [self initSwitchLayoutShortcuts];
 
   // Shortcuts
   [shortcutsBox retain];
@@ -129,8 +128,14 @@ static NSMutableDictionary      *domain = nil;
   [shortcutsBrowser setTitle:@"Action" ofColumn:1];
   // [shortcutsBrowser setTitle:@"Shortcut" ofColumn:2];
 
-  //
+  // Numeric Keypad
   [keypadBox retain];
+  for (id c in [deleteKeyMtrx cells])
+    [c setRefusesFirstResponder:YES];
+  for (id c in [numpadMtrx cells])
+    [c setRefusesFirstResponder:YES];
+
+  // Modifiers
   [modifiersBox retain];
   
   [self sectionButtonClicked:sectionsBtn];
@@ -174,6 +179,7 @@ static NSMutableDictionary      *domain = nil;
       [sectionBox setContentView:layoutsBox];
       [self updateLayouts];
       [layoutList selectRow:0 byExtendingSelection:NO];
+      [self initSwitchLayoutShortcuts];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -324,12 +330,28 @@ static NSMutableDictionary      *domain = nil;
 }
 - (void)layoutMove:(id)sender
 {
+  NSInteger	 selRow = [layoutList selectedRow];
+  NSMutableArray *mLayouts = [layouts mutableCopy];
+  NSMutableArray *mVariants = [variants mutableCopy];
+  NSString	 *sl, *sv;
+  
+  sl = [layouts objectAtIndex:selRow];
+  sv = [variants objectAtIndex:selRow];
+  [mLayouts removeObjectAtIndex:selRow];
+  [mVariants removeObjectAtIndex:selRow];
+  
   if (sender == layoutUpBtn)
-    {
-    }
+    selRow--;
   else if (sender == layoutDownBtn)
-    {
-    }
+    selRow++;
+  
+  [mLayouts insertObject:sl atIndex:selRow];
+  [mVariants insertObject:sv atIndex:selRow];
+  
+  [keyboard setLayouts:mLayouts variants:mVariants options:nil];
+  [self updateLayouts];
+    
+  [layoutList selectRow:selRow byExtendingSelection:NO];
 }
 
 // Change layout shortcut
@@ -345,6 +367,7 @@ static NSMutableDictionary      *domain = nil;
   
   [layoutShortcutBtn removeAllItems];
   [layoutShortcutBtn addItemWithTitle:@"None"];
+  [[layoutShortcutBtn itemWithTitle:@"None"] setRepresentedObject:@""];
 
   // 'options' may contain 'grp:', 'compose:', etc.
   options = [[keyboard options] copy];
@@ -393,8 +416,15 @@ static NSMutableDictionary      *domain = nil;
     {
       if ([opt rangeOfString:@"grp:"].location != NSNotFound)
         {
-          [mOptions replaceObjectAtIndex:[mOptions indexOfObject:opt]
-                              withObject:selectedOption];
+          if ([selectedOption isEqualToString:@""] == NO)
+            {
+              [mOptions replaceObjectAtIndex:[mOptions indexOfObject:opt]
+                                  withObject:selectedOption];
+            }
+          else
+            {
+              [mOptions removeObject:opt];
+            }
           isOptionReplaced = YES;
           break;
         }
@@ -405,7 +435,6 @@ static NSMutableDictionary      *domain = nil;
       [mOptions addObject:selectedOption];
     }
   
-  // if ([keyboard setOptions:mOptions] == YES)
   if ([keyboard setLayouts:nil variants:nil options:mOptions] == YES)
     {
       [defs setObject:mOptions forKey:Options];

@@ -66,6 +66,8 @@
 
   // Numeric Keypad
   id keypadBox;
+  id deleteKeyMtrx;
+  id numpadMtrx;
 
   // Compose Character
   id modifiersBox;

@@ -41,7 +41,9 @@
 	    modifiersBox,
 	    keypadBox,
 	    swapBox,
-	    shortcutsBrowser
+	    shortcutsBrowser,
+	    deleteKeyMtrx,
+	    numpadMtrx
 	);
 	Super = NSObject;
     };

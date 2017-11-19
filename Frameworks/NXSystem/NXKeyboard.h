@@ -41,7 +41,7 @@
 - (NSString *)model;
 - (void)setModel:(NSString *)name;
 
-// --- Layouts
+// --- Layouts and options
 - (NSDictionary *)availableLayouts;
 - (NSString *)nameForLayout:(NSString *)layoutCode;
 - (NSString *)nameForVariant:(NSString *)variantCode;
@@ -63,10 +63,6 @@
 - (NSInteger)repeatRate;
 - (void)setRepeatRate:(NSInteger)rate;
 - (void)setInitialRepeat:(NSInteger)delay rate:(NSInteger)rate;
-
-// --- Various options
-- (NSArray *)options;
-- (BOOL)setOptions:(NSArray *)opts;
 
 @end
 
