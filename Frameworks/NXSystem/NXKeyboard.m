@@ -40,16 +40,18 @@ NSString *Compose = @"ComposeKey";
 {
   NSInteger initialRepeat, repeatRate;
   NXKeyboard *keyb = [NXKeyboard new];
-  
+
+  // Key Repeat
   if ((initialRepeat = [defs integerForKey:InitialRepeat]) < 0)
     initialRepeat = 0;
   if ((repeatRate = [defs integerForKey:RepeatRate]) < 0)
     repeatRate = 0;
   [keyb setInitialRepeat:initialRepeat rate:repeatRate];
 
-  // [keyb setLayouts:[defs objectForKey:Layouts]
-  //         variants:[defs objectForKey:Variants]
-  //          options:[defs objectForKey:Options]];
+  // Layouts, Numeric Keypad, Modifiers
+  [keyb setLayouts:[defs objectForKey:Layouts]
+          variants:[defs objectForKey:Variants]
+           options:[defs objectForKey:Options]];
 }
 
 // Converts string like
@@ -299,7 +301,7 @@ NSString *Compose = @"ComposeKey";
 // Retrieving and changing XKB configuration
 // 
 
-// Closing Display is must be done by caller
+// Return 'Display' must be closed by caller
 - (Display *)_getXkbVariables:(XkbRF_VarDefsRec *)var_defs
                          file:(char **)rules_file
 {
@@ -394,88 +396,42 @@ NSString *Compose = @"ComposeKey";
   return va;
 }
 
-// TODO
-- (void)setLayouts:(NSArray *)layouts variant:(NSArray *)shortcuts
-{
-  // Make code generic for use in addLayout:variant: and removeLayout:variant:
-  // This will be used for keyboard initialization (Preferrences startup).
-}
-
 - (void)addLayout:(NSString *)lCode variant:(NSString *)vCode
 {
-  Display		*dpy;
-  char			*file = NULL;
-  XkbRF_VarDefsRec	xkb_vars;
-  NSString		*varString;
-  NSArray		*layouts, *variants;
-
-  // NSLog(@"[NXKeyboard] addLayout:%@ variant:%@", lCode, vCode);
-
-  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
-    return;
-  
-  layouts = [[NSString stringWithCString:xkb_vars.layout]
-                  componentsSeparatedByString:@","];
-  variants = [[NSString stringWithCString:xkb_vars.variant]
-                   componentsSeparatedByString:@","];
-  
-  varString = [NSString stringWithFormat:@"%s,%@", xkb_vars.layout, lCode];
-  xkb_vars.layout = strdup([varString cString]);
+  NSMutableArray *layouts = [[self layouts] mutableCopy];
+  NSMutableArray *variants = [[self variants] mutableCopy];
 
   if (vCode)
     {
-      if (xkb_vars.variant == NULL)
-        {  // Normally, it's one case: variants is empty
-          varString = [NSString new];
-          for (NSString *l in layouts)
-            varString = [varString stringByAppendingString:@","];
-          varString = [varString stringByAppendingString:vCode];
-        }
-      else
-        {
-          NSInteger lc = [layouts count];
-          NSInteger vc = [variants count];
+      NSInteger lc = [layouts count];
+      NSInteger vc = [variants count];
           
-          varString = [NSString stringWithCString:xkb_vars.variant];
-          for (int i = 0; i < (lc - vc); i++)
-            varString = [varString stringByAppendingString:@","];
-          varString = [varString stringByAppendingFormat:@",%@", vCode];
-        }
-      xkb_vars.variant = strdup([varString cString]);
+      for (int i = 0; i < (lc - vc); i++)
+        [variants addObject:@""];
+      
+      [variants addObject:vCode];
     }
-
-  // NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
-  //       xkb_vars.layout, xkb_vars.variant);
+  else
+    {
+      [variants addObject:@""];
+    }
   
-  [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
+  [layouts addObject:lCode];
 
-  XCloseDisplay(dpy);
-  
-  // Update cached configuration
-  if (serverConfig) [serverConfig release];
-  serverConfig = [[self _serverConfig] retain];
+  // NSLog(@"[NXKeyboard] addLayout new config: layouts: %@ variants: %@",
+  //       layouts, variants);
+
+  [self setLayouts:layouts variants:variants options:nil];
+  [layouts release];
+  [variants release];
 }
 
-// TODO: removes variant that corresponds to layout 'name'
 - (void)removeLayout:(NSString *)lCode variant:(NSString *)vCode
 {
-  Display		*dpy;
-  char			*file = NULL;
-  XkbRF_VarDefsRec	xkb_vars;
-  NSString		*varString;
-  NSMutableArray	*layouts, *variants;
-  NSUInteger		lIndex;
+  NSMutableArray *layouts = [[self layouts] mutableCopy];
+  NSMutableArray *variants = [[self variants] mutableCopy];
+  NSUInteger	 lIndex;
 
-  // NSLog(@"[NXKeyboard] removeLayout:%@", lCode);
-
-  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
-    return;
-  
-  layouts = [[[NSString stringWithCString:xkb_vars.layout]
-                  componentsSeparatedByString:@","] mutableCopy];
-  variants = [[[NSString stringWithCString:xkb_vars.variant]
-                   componentsSeparatedByString:@","] mutableCopy];
-  
   lIndex = [layouts indexOfObject:lCode];
   for (lIndex = 0; lIndex < [layouts count]; lIndex++)
     {
@@ -488,21 +444,52 @@ NSString *Compose = @"ComposeKey";
   if (lIndex < [variants count])
     [variants removeObjectAtIndex:lIndex];
   
-  xkb_vars.layout = strdup([[layouts componentsJoinedByString:@","] cString]);
-  xkb_vars.variant = strdup([[variants componentsJoinedByString:@","] cString]);
-
+  [self setLayouts:layouts variants:variants options:nil];
   [layouts release];
   [variants release];
-  
-  // NSLog(@"[NXKeyboard] new config: layouts: %s variants: %s",
-  //       xkb_vars.layout, xkb_vars.variant);
-  
-  [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
+}
+
+// This will be used for keyboard initialization (Preferrences startup).
+- (BOOL)setLayouts:(NSArray *)layouts
+          variants:(NSArray *)variants
+           options:(NSArray *)options
+{
+  Display		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	xkb_vars;
+  BOOL			success = NO;
+
+  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
+    return NO;
+
+  if (layouts)
+    {
+      xkb_vars.layout =
+        strdup([[layouts componentsJoinedByString:@","] cString]);
+    }
+  if (variants)
+    {
+      xkb_vars.variant =
+        strdup([[variants componentsJoinedByString:@","] cString]);
+    }
+  if (options)
+    {
+      xkb_vars.options =
+        strdup([[options componentsJoinedByString:@","] cString]);
+    }
+
+  success = [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
 
   XCloseDisplay(dpy);
+
   // Update cached configuration
-  if (serverConfig) [serverConfig release];
-  serverConfig = [[self _serverConfig] retain];
+  if (success == YES)
+    {
+      if (serverConfig) [serverConfig release];
+      serverConfig = [[self _serverConfig] retain];
+    }
+  
+  return success;
 }
 
 //------------------------------------------------------------------------------
@@ -598,23 +585,17 @@ NSString *Compose = @"ComposeKey";
   // NSLog(@"[NXKeyboard] setOptions:%@", opts);
 
   if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
-    success = NO;
-  else
-    success = YES;
+    return NO;
 
-  if (success)
-    {
-      optsString = [opts componentsJoinedByString:@","];
-      xkb_vars.options = strdup([optsString cString]);
+  optsString = [opts componentsJoinedByString:@","];
+  xkb_vars.options = strdup([optsString cString]);
 
-      // NSLog(@"[NXKeyboard] new options: %s", xkb_vars.options);
+  // NSLog(@"[NXKeyboard] new options: %s", xkb_vars.options);
   
-      if ([self _applyServerConfig:xkb_vars file:file forDisplay:dpy] == NO)
-        success = NO;
-    }
-
-  if (dpy)
-    XCloseDisplay(dpy);
+  if ([self _applyServerConfig:xkb_vars file:file forDisplay:dpy] == YES)
+    success = YES;
+  
+  XCloseDisplay(dpy);
 
   if (success)
     {
