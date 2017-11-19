@@ -212,7 +212,7 @@ NSString *Compose = @"ComposeKey";
 }
 
 //------------------------------------------------------------------------------
-// Layouts
+// Layouts and options
 //------------------------------------------------------------------------------
 
 - (NSDictionary *)availableLayouts
@@ -330,8 +330,8 @@ NSString *Compose = @"ComposeKey";
   else
     XCloseDisplay(dpy);
   
-  NSLog(@"NXKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Rules file: %s",
-        vd.model, vd.layout, vd.variant, file);
+  NSLog(@"NXKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Options: '%s' Rules file: %s",
+        vd.model, vd.layout, vd.variant, vd.options, file);
 
   config = [NSMutableDictionary dictionary];
   [config setObject:[NSString stringWithCString:vd.layout] forKey:Layouts];
@@ -394,6 +394,24 @@ NSString *Compose = @"ComposeKey";
     va = [va arrayByAddingObject:@""];
 
   return va;
+}
+
+- (NSArray *)options
+{
+  NSString	 *optString = [[self _serverConfig] objectForKey:Options];
+  NSMutableArray *optArray;
+  NSArray	 *options;
+
+  optArray = [[optString componentsSeparatedByString:@","] mutableCopy];
+
+  for (unsigned int i = 0; i < [optArray count]; i++)
+    if ([[optArray objectAtIndex:i] isEqualToString:@""])
+      [optArray removeObjectAtIndex:i];
+
+  options = [NSArray arrayWithArray:optArray];
+  [optArray release];
+  
+  return options;
 }
 
 - (void)addLayout:(NSString *)lCode variant:(NSString *)vCode
@@ -562,49 +580,6 @@ NSString *Compose = @"ComposeKey";
 - (void)setInitialRepeat:(NSInteger)delay rate:(NSInteger)rate
 {
   [self _setXKBRepeat:delay rate:rate];
-}
-
-//------------------------------------------------------------------------------
-// Various options
-//------------------------------------------------------------------------------
-
-- (NSArray *)options
-{
-  NSString *options = [[self _serverConfig] objectForKey:Options];
-  return [options componentsSeparatedByString:@","];
-}
-
-- (BOOL)setOptions:(NSArray *)opts
-{
-  NSString		*optsString;
-  Display		*dpy;
-  char			*file = NULL;
-  XkbRF_VarDefsRec	xkb_vars;
-  BOOL			success = NO;
-
-  // NSLog(@"[NXKeyboard] setOptions:%@", opts);
-
-  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
-    return NO;
-
-  optsString = [opts componentsJoinedByString:@","];
-  xkb_vars.options = strdup([optsString cString]);
-
-  // NSLog(@"[NXKeyboard] new options: %s", xkb_vars.options);
-  
-  if ([self _applyServerConfig:xkb_vars file:file forDisplay:dpy] == YES)
-    success = YES;
-  
-  XCloseDisplay(dpy);
-
-  if (success)
-    {
-      // Update cached configuration
-      if (serverConfig) [serverConfig release];
-      serverConfig = [[self _serverConfig] retain];
-    }
-
-  return success;
 }
 
 @end
