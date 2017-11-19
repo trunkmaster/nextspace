@@ -405,7 +405,8 @@ static NSMutableDictionary      *domain = nil;
       [mOptions addObject:selectedOption];
     }
   
-  if ([keyboard setOptions:mOptions] == YES)
+  // if ([keyboard setOptions:mOptions] == YES)
+  if ([keyboard setLayouts:nil variants:nil options:mOptions] == YES)
     {
       [defs setObject:mOptions forKey:Options];
       [defs synchronize];

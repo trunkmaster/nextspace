@@ -50,8 +50,12 @@
 
 - (NSArray *)layouts;
 - (NSArray *)variants;
+- (NSArray *)options;
 - (void)addLayout:(NSString *)lCode variant:(NSString *)vCode;
 - (void)removeLayout:(NSString *)lCode variant:(NSString *)vCode;
+- (BOOL)setLayouts:(NSArray *)layouts
+          variants:(NSArray *)variants
+           options:(NSArray *)options;
 
 // --- Initial Repeat and Repeat Rate
 - (NSInteger)initialRepeat;
