@@ -2,11 +2,13 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "deleteKeyMtrxClicked:",
 	    "layoutMove:",
 	    "layoutRemove:",
-	    "setLayoutShortcut:",
+	    "numpadMtrxClicked:",
 	    "repeatAction:",
 	    "sectionButtonClicked:",
+	    "setLayoutShortcut:",
 	    "showAddLayoutPanel:"
 	);
 	Super = NSObject;
@@ -18,7 +20,9 @@
 	    "showAddLayoutPanel:",
 	    "layoutRemove:",
 	    "layoutMove:",
-	    "setLayoutShortcut:"
+	    "setLayoutShortcut:",
+	    "deleteKeyMtrxClicked:",
+	    "numpadMtrxClicked:"
 	);
 	Outlets = (
 	    window,

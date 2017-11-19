@@ -79,6 +79,7 @@
 - (void)orderFront:(Keyboard *)kPreferences
 {
   kPrefs = kPreferences;
+  [panel center];
   [panel makeKeyAndOrderFront:self];
 }
 
