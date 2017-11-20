@@ -458,26 +458,24 @@ static NSMutableDictionary      *domain = nil;
 {
   NSString 		*optType;
   NSMutableArray	*mOptions = [options mutableCopy];
-  BOOL			FOUND = NO;
   BOOL			SUCCESS = NO;
   NXDefaults		*defs = [NXDefaults globalUserDefaults];
+  NSInteger		optIndex = -1;
 
   optType = [[option componentsSeparatedByString:@":"] objectAtIndex:0];
   for (NSString *opt in mOptions)
     {
       if ([opt rangeOfString:optType].location != NSNotFound)
         {
-          FOUND = YES;
-          [mOptions replaceObjectAtIndex:[mOptions indexOfObject:opt]
-                              withObject:option];
+          optIndex = [mOptions indexOfObject:opt];
         }
     }
-
-  if (FOUND == NO)
+  if (optIndex > 0)
     {
-      [mOptions addObject:option];
+      [mOptions removeObjectAtIndex:optIndex];
     }
-  
+  [mOptions addObject:option];
+
   SUCCESS = [keyboard setLayouts:nil variants:nil options:mOptions];
   if (SUCCESS == YES)
     {
@@ -548,4 +546,5 @@ static NSMutableDictionary      *domain = nil;
       break;
     }
 }
+
 @end
