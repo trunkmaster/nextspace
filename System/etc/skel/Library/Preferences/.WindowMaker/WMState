@@ -12,7 +12,7 @@
       },
       {
         Position = "0,1";
-        Command = "/Applications/Preferences.app/Preferences";
+        Command = "/Applications/Preferences.app/Preferences -NXAutoLaunch YES";
         Name = Preferences.GNUstep;
         AutoLaunch = Yes;
         Forced = No;
@@ -21,7 +21,7 @@
       },
       {
         Position = "0,2";
-        Command = "/Applications/TimeMon.app/TimeMon";
+        Command = "/Applications/TimeMon.app/TimeMon -NXAutoLaunch YES";
         Name = TimeMon.GNUstep;
         AutoLaunch = Yes;
         Forced = No;
