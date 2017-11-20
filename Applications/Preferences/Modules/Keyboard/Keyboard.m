@@ -137,6 +137,12 @@ static NSMutableDictionary      *domain = nil;
 
   // Modifiers
   [modifiersBox retain];
+  [composeBtn setRefusesFirstResponder:YES];
+  for (id c in [swapCAMtrx cells])
+    [c setRefusesFirstResponder:YES];
+  [capsLockBtn setRefusesFirstResponder:YES];
+  for (id c in [capsLockMtrx cells])
+    [c setRefusesFirstResponder:YES];
   
   [self sectionButtonClicked:sectionsBtn];
 }
@@ -193,6 +199,9 @@ static NSMutableDictionary      *domain = nil;
       [sectionBox setContentView:keypadBox];
       break;
     case 4: // Compose, Caps Lock, Command/Alternate swap
+      if (!options)
+        options = [[keyboard options] copy];
+      [self initModifiers];
       [sectionBox setContentView:modifiersBox];
       break;
     default:
@@ -390,6 +399,7 @@ static NSMutableDictionary      *domain = nil;
       if ([options containsObject:value])
         shortcut = [k copy];
     }
+  [layoutSwitchKeys release];
   if (shortcut)
     {
       [layoutShortcutBtn selectItemWithTitle:shortcut];
@@ -470,7 +480,7 @@ static NSMutableDictionary      *domain = nil;
           optIndex = [mOptions indexOfObject:opt];
         }
     }
-  if (optIndex > 0)
+  if (optIndex >= 0)
     {
       [mOptions removeObjectAtIndex:optIndex];
     }
@@ -489,6 +499,22 @@ static NSMutableDictionary      *domain = nil;
   [mOptions release];
 
   return SUCCESS;
+}
+
+- (NSString *)_optionWithType:(NSString *)type
+{
+  NSString *optType;
+  NSString *opt = nil;
+  
+  for (NSString *o in options)
+    {
+      optType = [[o componentsSeparatedByString:@":"] objectAtIndex:0];
+      if ([optType isEqualToString:type])
+        opt = [o copy];
+      break;
+    }
+
+  return opt;
 }
 
 - (void)updateNumpad
@@ -545,6 +571,106 @@ static NSMutableDictionary      *domain = nil;
       [self _setOption:@"numpad:mac"];
       break;
     }
+}
+
+@end
+
+@implementation Keyboard (Modifiers)
+
+- (void)initModifiers
+{
+  NSString     *aFile;
+  NSDictionary *aDict;
+  id 		value;
+  id		item;
+  NSString	*selected;
+
+  // Compose Character Key
+  aFile = [bundle pathForResource:@"ComposeCharacterKey" ofType:@"plist"];
+  aDict = [[NSDictionary alloc] initWithContentsOfFile:aFile];
+  
+  [composeBtn removeAllItems];
+  [composeBtn addItemWithTitle:@"None"];
+  [[composeBtn itemWithTitle:@"None"] setRepresentedObject:@""];
+  
+  selected = nil;
+  for (NSString *k in [aDict allKeys])
+    {
+      [composeBtn addItemWithTitle:k];
+      item = [composeBtn itemWithTitle:k];
+      value = [aDict objectForKey:k];
+      [item setRepresentedObject:value];
+      
+      if ([options containsObject:value])
+        selected = [k copy];
+    }
+  [aDict release];
+  if (selected)
+    {
+      [composeBtn selectItemWithTitle:selected];
+      [selected release];
+    }
+  else
+    [composeBtn selectItemWithTitle:@"None"];
+
+  // Command and Alternate Swap
+  NSString *caOption = [self _optionWithType:@"altwin"];
+  if (!caOption)
+    [swapCAMtrx selectItemWithTag:0]; // No swap
+  else if ([caOption isEqualToString:@"altwin:swap_lalt_lwin"])
+    [swapCAMtrx selectItemWithTag:1]; // At the left side of keyboard
+  else if ([caOption isEqualToString:@"altwin:swap_alt_win"])
+    [swapCAMtrx selectItemWithTag:2]; // At both sides
+    
+  return;
+
+  // Caps Lock Key
+  aFile = [bundle pathForResource:@"CapsLockKey" ofType:@"plist"];
+  aDict = [[NSDictionary alloc] initWithContentsOfFile:aFile];
+  
+  [capsLockBtn removeAllItems];
+
+  selected = nil;
+  for (NSString *k in [aDict allKeys])
+    {
+      [capsLockBtn addItemWithTitle:k];
+      item = [capsLockBtn itemWithTitle:k];
+      value = [aDict objectForKey:k];
+      [item setRepresentedObject:value];
+      
+      if ([options containsObject:value])
+        selected = [k copy];
+    }
+  [aDict release];
+  if (selected)
+    {
+      [capsLockMtrx selectItemWithTag:0];
+      [capsLockBtn setEnabled:NO];
+      [capsLockBtn selectItemWithTitle:selected];
+      [selected release];
+    }
+  else
+    {
+      [capsLockMtrx selectItemWithTag:1];
+      [capsLockBtn setEnabled:NO];
+    }
+}
+
+- (void)updateModifiers
+{
+}
+
+- (void)composeBtnClicked:(id)sender
+{
+}
+- (void)swapCAMtrxClicked:(id)sender
+{
+}
+- (void)capsLockBtnClicked:(id)sender
+{
+}
+- (void)capsLockMtrxClicked:(id)sender
+{
 }
 
 @end
