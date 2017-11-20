@@ -1,0 +1,21 @@
+{
+  None = "";
+  Menu = "compose:menu";
+  "Caps Lock" = "compose:caps";
+  Pause = "compose:paus";
+  "Print Screen" = "compose:prsc";
+  "Scroll Lock" = "compose:sclk";
+  "Left Ctrl" = "compose:lctrl";
+  "Right Ctrl" = "compose:rctrl";
+  "Left Win" = "compose:lwin";
+  "Right Win" = "compose:rwin";
+  /* compose:ralt         Right Alt*/
+  /* compose:102          &lt;Less/Greater&gt; */
+  /* compose:lwin-altgr   3rd level of Left Win */
+  /* compose:rwin-altgr   3rd level of Right Win */
+  /* compose:menu-altgr   3rd level of Menu */
+  /* compose:lctrl-altgr  3rd level of Left Ctrl */
+  /* compose:rctrl-altgr  3rd level of Right Ctrl */
+  /* compose:caps-altgr   3rd level of Caps Lock */
+  /* compose:102-altgr    3rd level of &lt;Less/Greater&gt; */
+}

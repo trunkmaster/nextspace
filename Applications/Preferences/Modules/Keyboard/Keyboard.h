@@ -69,8 +69,12 @@
   id deleteKeyMtrx;
   id numpadMtrx;
 
-  // Compose Character
+  // Modifiers
   id modifiersBox;
+  id composeBtn;
+  id swapCAMtrx;
+  id capsLockBtn;
+  id capsLockMtrx;
 }
 
 - (void)sectionButtonClicked:(id)sender;
@@ -91,4 +95,9 @@
 - (void)updateNumpad;
 - (void)deleteKeyMtrxClicked:(id)sender;
 - (void)numpadMtrxClicked:(id)sender;
+@end
+
+@interface Keyboard (Modifiers)
+- (void)initModifiers;
+- (void)updateModifiers;
 @end
