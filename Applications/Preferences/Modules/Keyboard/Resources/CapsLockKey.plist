@@ -1,0 +1,26 @@
+{
+  /* Caps Lock toggles normal capitalization of alphabetic characters */
+  "Caps Lock" = "caps:capslock";
+  /* Caps Lock is also a Ctrl */
+  Control = "caps:ctrl_modifier";
+  /* Make Caps Lock an additional Backspace */
+  Backspace = "caps:backspace";
+  /* Make Caps Lock an additional ESC */
+  Escape = "caps:escape";
+  /* Make Caps Lock an additional Hyper */
+  Hyper = "caps:hyper";
+  /* Make Caps Lock an additional Super */
+  Win = "caps:super";
+  /* Make Caps Lock an additional Menu key */
+  Menu = "caps:menu";
+  /* Make Caps Lock an additional Num Lock */
+  NumLock = "caps:numlock";
+  
+  /* caps:internal		Caps Lock uses internal capitalization; Shift "pauses" Caps Lock */
+  /* caps:internal_nocancel	Caps Lock uses internal capitalization; Shift doesn't affect Caps Lock */
+  /* caps:shift			Caps Lock acts as Shift with locking; Shift "pauses" Caps Lock */
+  /* caps:shift_nocancel		Caps Lock acts as Shift with locking; Shift doesn't affect Caps Lock */
+  /* caps:shiftlock		Caps Lock toggles ShiftLock (affects all keys) */
+  /* caps:swapescape		Swap ESC and Caps Lock */
+  /* caps:none			Caps Lock is disabled */
+}

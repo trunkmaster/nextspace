@@ -2,14 +2,18 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "capsLockBtnClicked:",
+	    "composeBtnClicked:",
 	    "deleteKeyMtrxClicked:",
 	    "layoutMove:",
 	    "layoutRemove:",
+	    "capsLockMtrx:",
 	    "numpadMtrxClicked:",
 	    "repeatAction:",
 	    "sectionButtonClicked:",
 	    "setLayoutShortcut:",
-	    "showAddLayoutPanel:"
+	    "showAddLayoutPanel:",
+	    "swapCAMtrxClicked:"
 	);
 	Super = NSObject;
     };
@@ -22,7 +26,11 @@
 	    "layoutMove:",
 	    "setLayoutShortcut:",
 	    "deleteKeyMtrxClicked:",
-	    "numpadMtrxClicked:"
+	    "numpadMtrxClicked:",
+	    "capsLockBtnClicked:",
+	    "composeBtnClicked:",
+	    "capsLockMtrx:",
+	    "swapCAMtrxClicked:"
 	);
 	Outlets = (
 	    window,
@@ -47,7 +55,11 @@
 	    swapBox,
 	    shortcutsBrowser,
 	    deleteKeyMtrx,
-	    numpadMtrx
+	    numpadMtrx,
+	    capsLockBtn,
+	    composeKeyBtn,
+	    capsLockMtrx,
+	    swapCAMtrx
 	);
 	Super = NSObject;
     };

@@ -16,7 +16,9 @@ Keyboard_LOCALIZED_RESOURCE_FILES = \
 Keyboard_RESOURCE_FILES = \
 	Resources/Keyboard.tiff \
 	Resources/bundle.registry \
-	Resources/LayoutSwitchKeys.plist
+	Resources/LayoutSwitchKeys.plist \
+	Resources/ComposeCharacterKey.plist \
+	Resources/CapsLockKey.plist
 
 Keyboard_OBJC_FILES = \
 	Keyboard.m \
