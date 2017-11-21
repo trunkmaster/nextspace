@@ -195,7 +195,7 @@ static NSMutableDictionary      *domain = nil;
     case 3: // Numeric Keypad
       if (!options)
         options = [[keyboard options] copy];
-      [self updateNumpad];
+      [self initNumpad];
       [sectionBox setContentView:keypadBox];
       break;
     case 4: // Compose, Caps Lock, Command/Alternate swap
@@ -656,7 +656,8 @@ static NSMutableDictionary      *domain = nil;
   else
     {
       [capsLockMtrx selectCellWithTag:0];
-      [capsLockBtn selectItemWithTitle:opt];
+      [capsLockBtn
+        selectItemWithTitle:[[aDict allKeysForObject:opt] lastObject]];
     }
   [opt release];
 }
