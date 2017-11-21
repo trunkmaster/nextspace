@@ -3240,7 +3240,7 @@
 ****** DONE Compose Character Key
 ****** DONE Caps Lock Key (Alpha Lock)
 ***** TODO Shortcuts
-      GNUstep and WindowMaker.
+      GNUstep and WindowMaker (learn xmodifier.c).
 ***** TODO Keyboard Model
 **** TODO Mouse
      Acceleration, pointers, mouse wheel scroll.
