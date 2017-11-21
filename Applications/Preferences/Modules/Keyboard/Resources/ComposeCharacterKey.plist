@@ -1,5 +1,4 @@
 {
-  None = "";
   Menu = "compose:menu";
   "Caps Lock" = "compose:caps";
   Pause = "compose:paus";
