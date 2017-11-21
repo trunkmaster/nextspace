@@ -7,7 +7,7 @@
 	    "deleteKeyMtrxClicked:",
 	    "layoutMove:",
 	    "layoutRemove:",
-	    "capsLockMtrx:",
+	    "capsLockMtrxClicked:",
 	    "numpadMtrxClicked:",
 	    "repeatAction:",
 	    "sectionButtonClicked:",
@@ -29,7 +29,7 @@
 	    "numpadMtrxClicked:",
 	    "capsLockBtnClicked:",
 	    "composeBtnClicked:",
-	    "capsLockMtrx:",
+	    "capsLockMtrxClicked:",
 	    "swapCAMtrxClicked:"
 	);
 	Outlets = (
