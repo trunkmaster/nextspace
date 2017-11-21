@@ -1,0 +1,120 @@
+{
+  /* 
+     Meta == Alt?
+     Mod1 == Alt?
+     Mod2 == ?
+     Mod3 == ?
+     Mod4 == Super?
+     Mod5 == ?
+  */
+  WindowMaker = {
+    KeyboardMapping =
+    {
+   /* ModifierKeyLabels = ("Shift+", "Control+", "Alt+",  "Mod2+", "Mod3+", "Super+", "Mod5+"); */
+      ModifierKeyLabels = ("Shift+", "Control+", "Mod1+", "Mod2+", "Mod3+", "Mod4+",  "Mod5+");
+      ModifierKey = Mod4;
+    }
+    WindowResizing =
+    {
+      MoveResizeKey = None;
+
+      ShadeKey 	=	"Mod1+KP_Subtract";
+
+      MaximizeKey = 	"Mod1+KP_Add";
+      MaximusKey = 	None;
+      
+      VMaximizeKey = 	"Mod4+Up"; 	/* Maximize vertically */
+      HMaximizeKey = 	"Mod4+Right";	/* Maximize horizontally */
+      
+      LHMaximizeKey = 	None;		/* Maximize left half */
+      RHMaximizeKey = 	None;		/* Maximize right half */
+      THMaximizeKey = 	None;		/* Maximize top half */
+      BHMaximizeKey = 	None;		/* Maximize bottom half */
+      
+      LTCMaximizeKey = 	None;		/* Maximize left top corner */
+      RTCMaximizeKey = 	None;		/* Maximize right top corner */
+      LBCMaximizeKey = 	None;		/* Maximize left bottom  corner */
+      RBCMaximizeKey = 	None;		/* Maximize right bottom corner */
+    }
+
+    WindowOrdering =
+    {
+      CloseKey = 	None;			/* Cmd+w */
+      HideKey = 	None;			/* Cmd+h */
+      HideOthersKey = 	None;			/* Cmd+H */
+      MiniaturizeKey = 	None;			/* Cmd+m */
+      MinimizeAllKey = 	None;			/* Cmd+M */
+      FocusNextKey = 	"Meta+Tab";		/* Cmd+Tab */
+      FocusPrevKey = 	"Meta+Shift+Tab";
+      GroupNextKey = 	None;	"Meta+`"	/* Cmd+` */
+      GroupPrevKey = 	None;	"Meta+Shift+`"	/* Cmd+~ */
+      RaiseKey = 	None;
+      LowerKey = None;
+      RaiseLowerKey = 	None;
+      OmnipresentKey = 	None;
+    }
+
+    Dock =
+    {
+      DockRaiseLowerKey = None; /* Cmd+D ?*/
+    }
+
+    Workspaces =
+    {
+      PrevWorkspaceKey = "Control+Left";
+      NextWorkspaceKey = "Control+Right";
+      PrevWorkspaceLayerKey = None;
+      LastWorkspaceKey = None;
+      MoveToLastWorkspaceKey = None;
+      MoveToNextWorkspaceKey = None;
+      MoveToNextWorkspaceLayerKey = None;
+      MoveToPrevWorkspaceKey = None;
+      MoveToPrevWorkspaceLayerKey = None;
+      MoveToWorkspace10Key = None;
+      MoveToWorkspace1Key = None;
+      MoveToWorkspace2Key = None;
+      MoveToWorkspace3Key = None;
+      MoveToWorkspace4Key = None;
+      MoveToWorkspace5Key = None;
+      MoveToWorkspace6Key = None;
+      MoveToWorkspace7Key = None;
+      MoveToWorkspace8Key = None;
+      MoveToWorkspace9Key = None;
+      NextWorkspaceLayerKey = None;
+      Workspace10Key = None;
+      Workspace1Key = None;
+      Workspace2Key = None;
+      Workspace3Key = None;
+      Workspace4Key = None;
+      Workspace5Key = None;
+      Workspace6Key = None;
+      Workspace7Key = None;
+      Workspace8Key = None;
+      Workspace9Key = None;
+      WorkspaceMapKey = None;
+    }
+    
+    RunKey = 		None;	/* ? */
+    ScreenSwitchKey =	None;	/* ? */
+    SelectKey =		None;	/* draws white border around window */
+    WindowListKey =	None;	/* RMB click on desktop */
+    WindowMenuKey =	None;	/* RMB click on titlebar */
+    WindowRelaunchKey =	None;	/* RMB click on titlebar -> Launch? */
+    
+    Unusable =
+    {
+      /* ClipRaiseLowerKey = None; */
+      /* ViKeyMenus = NO; ? */
+      /* WindowShortcut10Key = None; */
+      /* WindowShortcut1Key = None; */
+      /* WindowShortcut2Key = None; */
+      /* WindowShortcut3Key = None; */
+      /* WindowShortcut4Key = None; */
+      /* WindowShortcut5Key = None; */
+      /* WindowShortcut6Key = None; */
+      /* WindowShortcut7Key = None; */
+      /* WindowShortcut8Key = None; */
+      /* WindowShortcut9Key = None; */
+    }
+  }
+}
