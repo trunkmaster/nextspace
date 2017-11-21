@@ -71,7 +71,7 @@
 
   // Modifiers
   id modifiersBox;
-  id composeBtn;
+  id composeKeyBtn;
   id swapCAMtrx;
   id capsLockBtn;
   id capsLockMtrx;
@@ -92,12 +92,9 @@
 @end
 
 @interface Keyboard (NumPad)
-- (void)updateNumpad;
-- (void)deleteKeyMtrxClicked:(id)sender;
-- (void)numpadMtrxClicked:(id)sender;
+- (void)initNumpad;
 @end
 
 @interface Keyboard (Modifiers)
 - (void)initModifiers;
-- (void)updateModifiers;
 @end

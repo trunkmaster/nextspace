@@ -137,7 +137,7 @@ static NSMutableDictionary      *domain = nil;
 
   // Modifiers
   [modifiersBox retain];
-  [composeBtn setRefusesFirstResponder:YES];
+  [composeKeyBtn setRefusesFirstResponder:YES];
   for (id c in [swapCAMtrx cells])
     [c setRefusesFirstResponder:YES];
   [capsLockBtn setRefusesFirstResponder:YES];
@@ -264,6 +264,66 @@ static NSMutableDictionary      *domain = nil;
       [layoutUpBtn setEnabled:(selRow == 0) ? NO : YES];
       [layoutDownBtn setEnabled:(selRow == [tv numberOfRows]-1) ? NO : YES];
     }
+}
+
+//
+// Options utility methods
+// 
+- (NSString *)_optionWithType:(NSString *)type
+{
+  NSString *optType;
+  NSString *opt = nil;
+  
+  for (NSString *o in options)
+    {
+      optType = [[o componentsSeparatedByString:@":"] objectAtIndex:0];
+      if ([optType isEqualToString:type])
+        {
+          opt = [o copy];
+          break;
+        }
+    }
+
+  return opt;
+}
+
+- (BOOL)_setOption:(NSString *)option
+{
+  NXDefaults		*defs = [NXDefaults globalUserDefaults];
+  NSMutableArray	*mOptions = [options mutableCopy];
+  NSString 		*optType;
+  NSString		*savedOption;
+  BOOL			SUCCESS = NO;
+
+  optType = [[option componentsSeparatedByString:@":"] objectAtIndex:0];
+  savedOption = [self _optionWithType:optType];
+  
+  if ([option isEqualToString:@""] == NO)
+    {
+      if (savedOption)
+        [mOptions replaceObjectAtIndex:[mOptions indexOfObject:savedOption]
+                            withObject:option];
+      else
+        [mOptions addObject:option];
+    }
+  else if (savedOption)
+    {
+      [mOptions removeObject:savedOption];
+    }
+
+ SUCCESS = [keyboard setLayouts:nil variants:nil options:mOptions];
+  if (SUCCESS == YES)
+    {
+      [defs setObject:mOptions forKey:Options];
+      [defs synchronize];
+      
+      [options release];
+      options = [[keyboard options] copy];
+    }
+  
+  [mOptions release];
+
+  return SUCCESS;
 }
 
 @end
@@ -423,8 +483,6 @@ static NSMutableDictionary      *domain = nil;
 
   selectedOption = [[layoutShortcutBtn selectedItem] representedObject];
   
-  NSLog(@"[Keyboard] selected option: %@", selectedOption);
-  
   for (NSString *opt in mOptions)
     {
       if ([opt rangeOfString:@"grp:"].location != NSNotFound)
@@ -464,60 +522,7 @@ static NSMutableDictionary      *domain = nil;
 
 @implementation Keyboard (NumPad)
 
-- (BOOL)_setOption:(NSString *)option
-{
-  NSString 		*optType;
-  NSMutableArray	*mOptions = [options mutableCopy];
-  BOOL			SUCCESS = NO;
-  NXDefaults		*defs = [NXDefaults globalUserDefaults];
-  NSInteger		optIndex = -1;
-
-  optType = [[option componentsSeparatedByString:@":"] objectAtIndex:0];
-  for (NSString *opt in mOptions)
-    {
-      if ([opt rangeOfString:optType].location != NSNotFound)
-        {
-          optIndex = [mOptions indexOfObject:opt];
-        }
-    }
-  if (optIndex >= 0)
-    {
-      [mOptions removeObjectAtIndex:optIndex];
-    }
-  [mOptions addObject:option];
-
-  SUCCESS = [keyboard setLayouts:nil variants:nil options:mOptions];
-  if (SUCCESS == YES)
-    {
-      [defs setObject:mOptions forKey:Options];
-      [defs synchronize];
-      
-      [options release];
-      options = [[keyboard options] copy];
-    }
-  
-  [mOptions release];
-
-  return SUCCESS;
-}
-
-- (NSString *)_optionWithType:(NSString *)type
-{
-  NSString *optType;
-  NSString *opt = nil;
-  
-  for (NSString *o in options)
-    {
-      optType = [[o componentsSeparatedByString:@":"] objectAtIndex:0];
-      if ([optType isEqualToString:type])
-        opt = [o copy];
-      break;
-    }
-
-  return opt;
-}
-
-- (void)updateNumpad
+- (void)initNumpad
 {
   if ([options containsObject:@"kpdl:comma"])
     [deleteKeyMtrx selectCellWithTag:1];
@@ -583,94 +588,114 @@ static NSMutableDictionary      *domain = nil;
   NSDictionary *aDict;
   id 		value;
   id		item;
-  NSString	*selected;
+  NSString	*opt;
 
   // Compose Character Key
   aFile = [bundle pathForResource:@"ComposeCharacterKey" ofType:@"plist"];
   aDict = [[NSDictionary alloc] initWithContentsOfFile:aFile];
   
-  [composeBtn removeAllItems];
-  [composeBtn addItemWithTitle:@"None"];
-  [[composeBtn itemWithTitle:@"None"] setRepresentedObject:@""];
-  
-  selected = nil;
+  [composeKeyBtn removeAllItems];
+  [composeKeyBtn addItemWithTitle:@"None"];
+  [[composeKeyBtn itemWithTitle:@"None"] setRepresentedObject:@""];
   for (NSString *k in [aDict allKeys])
     {
-      [composeBtn addItemWithTitle:k];
-      item = [composeBtn itemWithTitle:k];
+      [composeKeyBtn addItemWithTitle:k];
+      item = [composeKeyBtn itemWithTitle:k];
       value = [aDict objectForKey:k];
       [item setRepresentedObject:value];
-      
-      if ([options containsObject:value])
-        selected = [k copy];
     }
   [aDict release];
-  if (selected)
+
+  opt = [self _optionWithType:@"compose"];
+  if (opt)
     {
-      [composeBtn selectItemWithTitle:selected];
-      [selected release];
+      [composeKeyBtn
+        selectItemWithTitle:[[aDict allKeysForObject:opt] lastObject]];
     }
   else
-    [composeBtn selectItemWithTitle:@"None"];
-
+    {
+      [composeKeyBtn selectItemWithTitle:@"None"];
+    }
+  [opt release];
+  
   // Command and Alternate Swap
-  NSString *caOption = [self _optionWithType:@"altwin"];
-  if (!caOption)
-    [swapCAMtrx selectItemWithTag:0]; // No swap
-  else if ([caOption isEqualToString:@"altwin:swap_lalt_lwin"])
-    [swapCAMtrx selectItemWithTag:1]; // At the left side of keyboard
-  else if ([caOption isEqualToString:@"altwin:swap_alt_win"])
-    [swapCAMtrx selectItemWithTag:2]; // At both sides
-    
-  return;
-
+  opt = [self _optionWithType:@"altwin"];
+  if ([opt isEqualToString:@"altwin:swap_lalt_lwin"])
+    [swapCAMtrx selectCellWithTag:1]; // At the left side of keyboard
+  else if ([opt isEqualToString:@"altwin:swap_alt_win"])
+    [swapCAMtrx selectCellWithTag:2]; // At both sides
+  else
+    [swapCAMtrx selectCellWithTag:0]; // No swap
+  [opt release];
+  
   // Caps Lock Key
   aFile = [bundle pathForResource:@"CapsLockKey" ofType:@"plist"];
   aDict = [[NSDictionary alloc] initWithContentsOfFile:aFile];
   
   [capsLockBtn removeAllItems];
-
-  selected = nil;
   for (NSString *k in [aDict allKeys])
     {
       [capsLockBtn addItemWithTitle:k];
       item = [capsLockBtn itemWithTitle:k];
       value = [aDict objectForKey:k];
       [item setRepresentedObject:value];
-      
-      if ([options containsObject:value])
-        selected = [k copy];
     }
   [aDict release];
-  if (selected)
+  
+  opt = [self _optionWithType:@"caps"];
+  if (opt == nil)
     {
-      [capsLockMtrx selectItemWithTag:0];
+      [capsLockMtrx selectCellWithTag:0];
+      [capsLockBtn selectItemWithTitle:@"Caps Lock"];
+    }
+  else if ([opt isEqualToString:@"caps:none"])
+    {
+      [capsLockMtrx selectCellWithTag:1];
       [capsLockBtn setEnabled:NO];
-      [capsLockBtn selectItemWithTitle:selected];
-      [selected release];
     }
   else
     {
-      [capsLockMtrx selectItemWithTag:1];
-      [capsLockBtn setEnabled:NO];
+      [capsLockMtrx selectCellWithTag:0];
+      [capsLockBtn selectItemWithTitle:opt];
     }
+  [opt release];
 }
-
-- (void)updateModifiers
-{
-}
-
 - (void)composeBtnClicked:(id)sender
 {
+  [self _setOption:[[sender selectedItem] representedObject]];
 }
 - (void)swapCAMtrxClicked:(id)sender
 {
+  switch([[sender selectedCell] tag])
+    {
+    case 0:
+      [self _setOption:@""];
+      break;
+    case 1:
+      [self _setOption:@"altwin:swap_lalt_lwin"];
+      break;
+    case 2:
+      [self _setOption:@"altwin:swap_alt_win"];
+      break;
+    }
 }
 - (void)capsLockBtnClicked:(id)sender
 {
+  [self _setOption:[[sender selectedItem] representedObject]];
 }
 - (void)capsLockMtrxClicked:(id)sender
 {
+  switch([[sender selectedCell] tag])
+    {
+    case 0:
+      [capsLockBtn setEnabled:YES];
+      [self _setOption:[[capsLockBtn selectedItem] representedObject]];
+      break;
+    case 1:
+      [capsLockBtn setEnabled:NO];
+      [self _setOption:@"caps:none"];
+      break;
+    }
 }
 
 @end
