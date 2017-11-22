@@ -37,7 +37,6 @@
 
 #import <NXFoundation/NXDefaults.h>
 #import <NXSystem/NXKeyboard.h>
-//#include <X11/XKBlib.h>
 
 #import "Keyboard.h"
 
@@ -430,7 +429,6 @@ static NSMutableDictionary      *domain = nil;
   [layoutList selectRow:selRow byExtendingSelection:NO];
 }
 
-// Change layout shortcut
 - (void)initSwitchLayoutShortcuts
 {
   NSString	*lSwitchFile;
@@ -441,6 +439,7 @@ static NSMutableDictionary      *domain = nil;
   lSwitchFile = [bundle pathForResource:@"LayoutSwitchKeys" ofType:@"plist"];
   layoutSwitchKeys = [[NSDictionary alloc] initWithContentsOfFile:lSwitchFile];
   
+  [layoutShortcutBtn setAutoenablesItems:NO];
   [layoutShortcutBtn removeAllItems];
   [layoutShortcutBtn addItemWithTitle:@"None"];
   [[layoutShortcutBtn itemWithTitle:@"None"] setRepresentedObject:@""];
@@ -451,17 +450,16 @@ static NSMutableDictionary      *domain = nil;
       item = [layoutShortcutBtn itemWithTitle:k];
       
       value = [layoutSwitchKeys objectForKey:k];
-      if ([value isKindOfClass:[NSDictionary class]])
-        {
-          value = [value objectForKey:@"Option"];
-          [item setEnabled:NO];
-        }
       [item setRepresentedObject:value];
       
-      if ([options containsObject:value])
+      if (([value isKindOfClass:[NSDictionary class]] &&
+           [options containsObject:[value objectForKey:@"Option"]])
+          || [options containsObject:value])
         shortcut = [k copy];
     }
   [layoutSwitchKeys release];
+  [self updateSwitchLayoutShortcuts];
+  
   if (shortcut)
     {
       [layoutShortcutBtn selectItemWithTitle:shortcut];
@@ -475,6 +473,25 @@ static NSMutableDictionary      *domain = nil;
   [[NXDefaults globalUserDefaults] synchronize];
 }
 
+- (void)updateSwitchLayoutShortcuts
+{
+  id	repObject;
+
+  for (NSMenuItem *item in [layoutShortcutBtn itemArray])
+    {
+      [item setEnabled:YES];
+      repObject = [item representedObject];
+      if ([repObject isKindOfClass:[NSDictionary class]])
+        {
+          for (NSString *o in [repObject objectForKey:@"ConflictsWithOptions"])
+            {
+              if ([options containsObject:o])
+                [item setEnabled:NO]; 
+            }
+        }
+    }
+}
+
 // Replaces "NXKeyboardOptions" array item that contains "grp:" substring.
 - (void)setLayoutShortcut:(id)sender
 {
@@ -484,6 +501,8 @@ static NSMutableDictionary      *domain = nil;
   BOOL			isOptionReplaced = NO;
 
   selectedOption = [[layoutShortcutBtn selectedItem] representedObject];
+  if ([selectedOption isKindOfClass:[NSDictionary class]])
+    selectedOption = [selectedOption objectForKey:@"Option"];
   
   for (NSString *opt in mOptions)
     {
