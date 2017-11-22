@@ -1,0 +1,46 @@
+_Actions called with shortcut that uses Command Key_
+| Action              | Menu/Option                      | GNUstep               | Workspace          |
+|---------------------+----------------------------------+-----------------------+--------------------|
+|---------------------+----------------------------------+-----------------------+--------------------|
+| Close window        | GS: Windows -> Close Window      | Command + w           | Mod1 + w           |
+|                     | WM: CloseKey                     |                       |                    |
+|---------------------+----------------------------------+-----------------------+--------------------|
+| Miniaturize window  | GS: Windows -> Minaturize Window | Command + m           | Mod1 + m           |
+|                     | WM: MiniaturizeKey               |                       |                    |
+|---------------------+----------------------------------+-----------------------+--------------------|
+| Hide all windows of | GS: Hide                         | Command + h           | Mod1 + h           |
+| the application     | WM: HideKey                      |                       |                    |
+|---------------------+----------------------------------+-----------------------+--------------------|
+| Quit application    | GS: Quit                         | Command + q           | ?                  |
+|---------------------+----------------------------------+-----------------------+--------------------|
+| Hide                |                                  |                       |                    |
+|---------------------+----------------------------------+-----------------------+--------------------|
+| Switch focus to the | GS: None                         | Command + Tab         | Mod1 + Tab         |
+| next window         | WM: FocusNextKey                 |                       |                    |
+|---------------------+----------------------------------+-----------------------+--------------------|
+| Switch focus to the | GS: None                         | Command + Shift + Tab | Mod1 + Shift + Tab |
+| previous window     |                                  |                       |                    |
+
+_Window manager specific shortcuts (Workspace/WindowMaker)_
+| Action                                | Option            | Shortcut            |
+|---------------------------------------+-------------------+---------------------|
+|                                       |                   |                     |
+| Order front "Run" panel               | RunKey            | Mod4 + R            |
+| Start new instance of application     | WindowRelaunchKey | Mod4 + Shift + R    |
+| Hide windows of inactive applications | HideOthersKey     | Mod1 + Shift + H    |
+| Miniaturize all windows of this       | MiniaturizeAllKey | Mod1 + Shift + M    |
+| application                           |                   |                     |
+| Change ordering level of Dock         | DockRaiseLowerKey | Mod4 + Shift + D    |
+|                                       |                   |                     |
+| Shade window                          | ShadeKey          | Mod4 + KP_Substract |
+| Maximize window at all edges          | MaximizeKey       | Mod4 + KP_Add       |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |
+|                                       |                   |                     |

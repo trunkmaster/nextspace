@@ -41,6 +41,8 @@
 - (NSString *)model;
 - (void)setModel:(NSString *)name;
 
+- (void)setNumLockState:(NSInteger)state;
+
 // --- Layouts and options
 - (NSDictionary *)availableLayouts;
 - (NSString *)nameForLayout:(NSString *)layoutCode;
@@ -73,5 +75,4 @@ extern NSString *Layouts;
 extern NSString *Variants;
 extern NSString *Model;
 extern NSString *Options;
-extern NSString *SwitchLayoutKey; // 'grp:' - switching to another layout
-extern NSString *ComposeKey;      // 'compose:' - position of Compose key
+extern NSString *NumLockState;
