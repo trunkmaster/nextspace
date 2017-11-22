@@ -1,5 +1,5 @@
 {
-  COMMENT = "/* static options */";
+  COMMENT = "/* ===== Static Options ======================================= */";
   
   ClipMergedInDock = NO;
   ColormapSize = 4;
@@ -14,7 +14,7 @@
   ModifierKey = Mod4;
   NewStyle = "old";
 
-  COMMENT = "/* dynamic options */";
+  COMMENT = "/* ===== Dynamic Options ====================================== */";
 
   AdvanceToNewWorkspace = NO;
   AlignSubmenus = YES;
@@ -104,7 +104,7 @@
   WrapAppiconsInDock = NO;
   WrapMenus = NO;
 
-  COMMENT = "/* style options */";
+  COMMENT = "/* ===== Style Options ======================================== */";
 
   WorkspaceSpecificBack = ();
   COMMENT = "/* WorkspaceBack must come after WorkspaceSpecificBack or WorkspaceBack wont know WorkspaceSpecificBack was also specified and 2 copies of wmsetbg will be launched */";
@@ -112,7 +112,7 @@
   
   CClipTitleColor = "#454045";
   ClipTitleColor = black;
-  ClipTitleFont = "Helvetica:pixelsize=9";
+  ClipTitleFont = "Helvetica:pixelsize=10";
   FTitleBack = (solid, black);
   FTitleColor = white;
   FrameBorderColor = black;
@@ -125,7 +125,7 @@
   MiniwindowBack = (tpixmap, "/Library/Images/common_MiniWindowTile.tiff", "#000000");
   IconTitleBack = black;
   IconTitleColor = white;
-  IconTitleFont = "Helvetica:pixelsize=9";
+  IconTitleFont = "Helvetica:pixelsize=10";
   LargeDisplayFont = "Helvetica:pixelsize=32";
   MenuDisabledColor = "#555555";
   MenuStyle = normal;
@@ -139,7 +139,7 @@
   MenuTitleFont = "Helvetica:bold:pixelsize=12";
   MenuTitleMaxHeight = 22;
   MenuTitleMinHeight = 22;
-  ModifierKeyLabels = ("Shift+", "Control+", "Mod1+", "Mod2+", "Mod3+", "Mod4+", "Mod5+");
+  ModifierKeyLabels = ("Shift+", "Control+", "Mod1+",  "Mod2+", "Mod3+", "Mod4+",  "Mod5+");
   PTitleBack = (solid, "#555555");
   PTitleColor = white;
   ResizebarBack = (solid, "#aaaaaa");
@@ -156,29 +156,62 @@
   WindowTitleMinHeight = 22;
   WorkspaceMapBack = (solid, black);
 
-  COMMENT = "/* keybindings */";
+  COMMENT = "/* ===== Keyboard Shortcuts =================================== */";
 
-  BHMaximizeKey = None;
-  ClipRaiseLowerKey = None;
-  CloseKey = None;
-  DockRaiseLowerKey = None;
-  FocusNextKey = "Meta+Tab";
-  FocusPrevKey = "Meta+Shift+Tab";
-  GroupNextKey = None;
-  GroupPrevKey = None;
-  HMaximizeKey = "Mod4+Right";
-  HideKey = None;
-  HideOthersKey = None;
-  LBCMaximizeKey = None;
-  LHMaximizeKey = None;
-  LTCMaximizeKey = None;
-  LastWorkspaceKey = None;
-  LowerKey = None;
-  MaximizeKey = "Mod1+KP_Add";
-  MaximusKey = None;
+  COMMENT        = "/* --- Window Resizing --- */";
+  MoveResizeKey  = None;
+  MaximusKey     = "Mod4+KP_5";
+  ShadeKey       = "Mod4+KP_Subtract";
+  MaximizeKey    = "Mod4+KP_Add";
+  VMaximizeKey   = "Mod4+Up";
+  HMaximizeKey   = "Mod4+Right";
+  LHMaximizeKey  = "Mod4+KP_4";
+  RHMaximizeKey  = "Mod4+KP_6";
+  THMaximizeKey  = "Mod4+KP_8";
+  BHMaximizeKey  = "Mod4+KP_2";
+  LTCMaximizeKey = "Mod4+KP_7";
+  RTCMaximizeKey = "Mod4+KP_9";
+  LBCMaximizeKey = "Mod4+KP_1";
+  RBCMaximizeKey = "Mod4+KP_3";
+
+  COMMENT        = "/* --- Window Ordering --- */";
+  CloseKey       = None;
+  HideKey        = None;
+  HideOthersKey  = None;
   MiniaturizeKey = None;
   MinimizeAllKey = None;
-  MoveResizeKey = None;
+  
+  COMMENT           = "/* --- Focus switch --- */";
+  FocusNextKey      = "Mod4+Tab";
+  FocusPrevKey      = "Mod4+Shift+Tab";
+  GroupNextKey      = None;
+  GroupPrevKey      = None;
+  RaiseKey          = None;
+  LowerKey          = None;
+  RaiseLowerKey     = None;
+  OmnipresentKey    = None;
+  ClipRaiseLowerKey = None;
+  DockRaiseLowerKey = None;
+  
+  COMMENT       = "/* --- Menus --- */";
+  RootMenuKy    = None;
+  WindowListKey = None;
+  WindowMenuKey = None;
+  
+  COMMENT           = "/* --- Misc --- */";
+  RunKey            = "Mod4+R";
+  WindowRelaunchKey = "Mod4+Shift+R";
+  ScreenSwitchKey   = None;
+  SelectKey         = None;
+  
+  COMMENT          = "/* --- Workspaces --- */";
+  NextWorkspaceKey = "Control+Right";
+  PrevWorkspaceKey = "Control+Left";
+  
+  WorkspaceMapKey = None;
+  LastWorkspaceKey = None;
+  NextWorkspaceLayerKey = None;
+  PrevWorkspaceLayerKey = None;
   MoveToLastWorkspaceKey = None;
   MoveToNextWorkspaceKey = None;
   MoveToNextWorkspaceLayerKey = None;
@@ -194,26 +227,6 @@
   MoveToWorkspace7Key = None;
   MoveToWorkspace8Key = None;
   MoveToWorkspace9Key = None;
-  NextWorkspaceKey = "Control+Right";
-  NextWorkspaceLayerKey = None;
-  OmnipresentKey = None;
-  PrevWorkspaceKey = "Control+Left";
-  PrevWorkspaceLayerKey = None;
-  RBCMaximizeKey = None;
-  RHMaximizeKey = None;
-  RTCMaximizeKey = None;
-  RaiseKey = None;
-  RaiseLowerKey = None;
-  RootMenuKy = None;
-  RunKey = None;
-  ScreenSwitchKey = None;
-  SelectKey = None;
-  ShadeKey = "Mod1+KP_Subtract";
-  THMaximizeKey = None;
-  VMaximizeKey = "Mod4+Up";
-  WindowListKey = None;
-  WindowMenuKey = None;
-  WindowRelaunchKey = None;
   WindowShortcut10Key = None;
   WindowShortcut1Key = None;
   WindowShortcut2Key = None;
@@ -234,9 +247,8 @@
   Workspace7Key = None;
   Workspace8Key = None;
   Workspace9Key = None;
-  WorkspaceMapKey = None;
   
-  COMMENT = "/* mouse cursors */";
+  COMMENT = "/* ===== Mouse Cursors ======================================== */";
   
   ArrowCursor = (builtin, top_left_arrow);
   BottomLeftResizeCursor = (builtin, bottom_left_corner);

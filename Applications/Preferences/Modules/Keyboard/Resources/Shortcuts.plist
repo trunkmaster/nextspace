@@ -1,16 +1,18 @@
 {
   /* 
-     Meta == Alt?
-     Mod1 == Alt?
-     Mod2 == ?
-     Mod3 == ?
-     Mod4 == Super?
-     Mod5 == ?
+     Control == Control
+     Shift   == Shift
+     Meta    == Alt/Command
+     Mod1    == Alt/Command
+     Mod2    == ?
+     Mod3    == ?
+     Mod4    == Super/Alternate
+     Mod5    == ?
   */
   WindowMaker = {
     KeyboardMapping =
     {
-   /* ModifierKeyLabels = ("Shift+", "Control+", "Alt+",  "Mod2+", "Mod3+", "Super+", "Mod5+"); */
+   /* ModifierKeyLabels = ("Shift+", "Control+", "Alt+",  "?????", "?????", "Super+", "?????"); */
       ModifierKeyLabels = ("Shift+", "Control+", "Mod1+", "Mod2+", "Mod3+", "Mod4+",  "Mod5+");
       ModifierKey = Mod4;
     }
@@ -18,38 +20,38 @@
     {
       MoveResizeKey = None;
 
-      ShadeKey 	=	"Mod1+KP_Subtract";
+      ShadeKey 	=	"Mod4+KP_Subtract";
 
-      MaximizeKey = 	"Mod1+KP_Add";
+      MaximizeKey = 	"Mod4+KP_Add";
       MaximusKey = 	None;
       
       VMaximizeKey = 	"Mod4+Up"; 	/* Maximize vertically */
       HMaximizeKey = 	"Mod4+Right";	/* Maximize horizontally */
       
-      LHMaximizeKey = 	None;		/* Maximize left half */
-      RHMaximizeKey = 	None;		/* Maximize right half */
-      THMaximizeKey = 	None;		/* Maximize top half */
-      BHMaximizeKey = 	None;		/* Maximize bottom half */
+      LHMaximizeKey = 	"Mod4+KP_4";	/* Maximize left half */
+      RHMaximizeKey = 	"Mod4+KP_6"	/* Maximize right half */
+      THMaximizeKey = 	"Mod4+KP_8";	/* Maximize top half */
+      BHMaximizeKey = 	"Mod4+KP_2";	/* Maximize bottom half */
       
-      LTCMaximizeKey = 	None;		/* Maximize left top corner */
-      RTCMaximizeKey = 	None;		/* Maximize right top corner */
-      LBCMaximizeKey = 	None;		/* Maximize left bottom  corner */
-      RBCMaximizeKey = 	None;		/* Maximize right bottom corner */
+      LTCMaximizeKey = 	"Mod4+KP_7";	/* Maximize left top corner */
+      RTCMaximizeKey = 	"Mod4+KP_9";	/* Maximize right top corner */
+      LBCMaximizeKey = 	"Mod4+KP_1";	/* Maximize left bottom  corner */
+      RBCMaximizeKey = 	"Mod4+KP_3";	/* Maximize right bottom corner */
     }
 
     WindowOrdering =
     {
-      CloseKey = 	None;			/* Cmd+w */
-      HideKey = 	None;			/* Cmd+h */
-      HideOthersKey = 	None;			/* Cmd+H */
-      MiniaturizeKey = 	None;			/* Cmd+m */
-      MinimizeAllKey = 	None;			/* Cmd+M */
-      FocusNextKey = 	"Meta+Tab";		/* Cmd+Tab */
-      FocusPrevKey = 	"Meta+Shift+Tab";
-      GroupNextKey = 	None;	"Meta+`"	/* Cmd+` */
-      GroupPrevKey = 	None;	"Meta+Shift+`"	/* Cmd+~ */
+      CloseKey = 	"Mod1+w";		/* Cmd+w */
+      HideKey = 	"Mod1+h";		/* Cmd+h */
+      HideOthersKey = 	"Mod1+H";		/* Cmd+H */
+      MiniaturizeKey = 	"Mod1+m";		/* Cmd+m */
+      MinimizeAllKey = 	"Mod1+M";			/* Cmd+M */
+      FocusNextKey = 	"Mod1+Tab";		/* Cmd+Tab */
+      FocusPrevKey = 	"Mod1+Shift+Tab";
+      GroupNextKey = 	None;
+      GroupPrevKey = 	None;
       RaiseKey = 	None;
-      LowerKey = None;
+      LowerKey = 	None;
       RaiseLowerKey = 	None;
       OmnipresentKey = 	None;
     }
@@ -99,7 +101,7 @@
     SelectKey =		None;	/* draws white border around window */
     WindowListKey =	None;	/* RMB click on desktop */
     WindowMenuKey =	None;	/* RMB click on titlebar */
-    WindowRelaunchKey =	None;	/* RMB click on titlebar -> Launch? */
+    WindowRelaunchKey =	None;	/* RMB click on titlebar -> Launch */
     
     Unusable =
     {
