@@ -3228,9 +3228,9 @@
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 ***** DONE Обновлять примеры форматов после смены в списке языков
 **** TODO Keyboard
-***** TODO Layouts
-****** TODO Honour 'Modifiers section'
 ***** TODO (?) Keyboard Model
+***** DONE Layouts
+****** DONE Honour 'Modifiers section'
 ***** DONE Repeat Rate
 ***** DONE Numeric Keypad
 ****** DONE Delete Key

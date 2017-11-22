@@ -90,6 +90,7 @@
 - (void)updateLayouts;
 - (void)addLayout:(NSString *)layout variant:(NSString *)variant;
 - (void)initSwitchLayoutShortcuts;
+- (void)updateSwitchLayoutShortcuts;
 @end
 
 @interface Keyboard (NumPad)
