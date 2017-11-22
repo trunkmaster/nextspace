@@ -134,6 +134,8 @@ static NSMutableDictionary      *domain = nil;
     [c setRefusesFirstResponder:YES];
   for (id c in [numpadMtrx cells])
     [c setRefusesFirstResponder:YES];
+  for (id c in [numLockStateMtrx cells])
+    [c setRefusesFirstResponder:YES];
 
   // Modifiers
   [modifiersBox retain];
@@ -536,9 +538,14 @@ static NSMutableDictionary      *domain = nil;
     }
 
   if ([options containsObject:@"numpad:mac"])
-    [numpadMtrx selectCellWithTag:2];  // Always enter digits
+    {
+      [numpadMtrx selectCellWithTag:2];  // Always enter digits
+      [numLockStateMtrx setEnabled:NO];
+    }
   else if ([options containsObject:@"numpad:microsoft"])
-    [numpadMtrx selectCellWithTag:1];  // Default+
+    {
+      [numpadMtrx selectCellWithTag:1];  // Default+
+    }
   else
     {
       [numpadMtrx selectCellWithTag:0]; // Default "numpad:pc"
@@ -547,6 +554,15 @@ static NSMutableDictionary      *domain = nil;
           [self _setOption:@"numpad:pc"];
         }
     }
+
+  NSInteger numLockState;
+  
+  numLockState = [[NXDefaults globalUserDefaults] integerForKey:NumLockState];
+  [numLockStateMtrx selectCellWithTag:numLockState];
+  if ([[numpadMtrx selectedCell] tag] != 2 )
+    [keyboard setNumLockState:numLockState];
+  else
+    [keyboard setNumLockState:0];
 }
 
 - (void)deleteKeyMtrxClicked:(id)sender
@@ -564,18 +580,30 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)numpadMtrxClicked:(id)sender
 {
+  [numLockStateMtrx setEnabled:YES];
   switch([[sender selectedCell] tag])
     {
     case 0:
       [self _setOption:@"numpad:pc"];
+      [keyboard setNumLockState:[[numLockStateMtrx selectedCell] tag]];
       break;
     case 1:
       [self _setOption:@"numpad:microsoft"];
+      [keyboard setNumLockState:[[numLockStateMtrx selectedCell] tag]];
       break;
     case 2:
       [self _setOption:@"numpad:mac"];
+      [numLockStateMtrx setEnabled:NO];
+      [keyboard setNumLockState:0];
       break;
     }
+}
+
+- (void)numLockMtrxClicked:(id)sender
+{
+  [[NXDefaults globalUserDefaults] setInteger:[[sender selectedCell] tag]
+                                       forKey:NumLockState];
+  [keyboard setNumLockState:[[sender selectedCell] tag]];
 }
 
 @end
