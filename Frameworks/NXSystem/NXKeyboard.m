@@ -216,7 +216,7 @@ NSString *NumLockState = @"NXKeyboardNumLockState";
 {
   Display	*dpy = XOpenDisplay(NULL);
   XkbDescPtr	xkb;
-  unsigned int	mask;
+  unsigned int	mask = 0;
   char		*modifier_atom;
   
   xkb = XkbGetKeyboard(dpy, XkbAllComponentsMask, XkbUseCoreKbd);
@@ -229,6 +229,7 @@ NSString *NumLockState = @"NXKeyboardNumLockState";
       if (modifier_atom != NULL && strcmp("NumLock", modifier_atom) == 0)
         {
           XkbVirtualModsToReal(xkb, 1 << i, &mask);
+          break;
         }
     }
   XkbFreeKeyboard(xkb, 0, True);
