@@ -10,18 +10,22 @@
      Mod5    == ?
   */
   WindowMaker = {
-    KeyboardMapping =
-    {
+    General = {
    /* ModifierKeyLabels = ("Shift+", "Control+", "Alt+",  "?????", "?????", "Super+", "?????"); */
       ModifierKeyLabels = ("Shift+", "Control+", "Mod1+", "Mod2+", "Mod3+", "Mod4+",  "Mod5+");
-      ModifierKey = Mod4;
+      ModifierKey	= Mod4;			/* Used for window moving Mod4+Click+Drag */
+      RunKey 		= "Mod4+R";		/* Order front "Run" panel */
+      WindowRelaunchKey = "Mod4+Shift+R";	/* RMB click on titlebar -> Launch */
+      ScreenSwitchKey   = None;			/* ? */
+      SelectKey 	= None;			/* draws white border around window */
+      WindowListKey 	= None;			/* RMB click on desktop */
+      WindowMenuKey 	= None;			/* RMB click on titlebar */
     }
-    WindowResizing =
-    {
+    
+    WindowResizing = {
       MoveResizeKey = None;
-
+      
       ShadeKey 	=	"Mod4+KP_Subtract";
-
       MaximizeKey = 	"Mod4+KP_Add";
       MaximusKey = 	None;
       
@@ -39,30 +43,27 @@
       RBCMaximizeKey = 	"Mod4+KP_3";	/* Maximize right bottom corner */
     }
 
-    WindowOrdering =
-    {
-      CloseKey = 	"Mod1+w";		/* Cmd+w */
-      HideKey = 	"Mod1+h";		/* Cmd+h */
-      HideOthersKey = 	"Mod1+H";		/* Cmd+H */
-      MiniaturizeKey = 	"Mod1+m";		/* Cmd+m */
-      MinimizeAllKey = 	"Mod1+M";			/* Cmd+M */
-      FocusNextKey = 	"Mod1+Tab";		/* Cmd+Tab */
-      FocusPrevKey = 	"Mod1+Shift+Tab";
-      GroupNextKey = 	None;
-      GroupPrevKey = 	None;
-      RaiseKey = 	None;
-      LowerKey = 	None;
-      RaiseLowerKey = 	None;
-      OmnipresentKey = 	None;
+    WindowOrdering = {
+      CloseKey		= "Mod1+w";		/* Cmd+w */
+      HideKey 		= "Mod1+h";		/* Cmd+h */
+      HideOthersKey 	= "Mod1+H";		/* Cmd+H */
+      MiniaturizeKey 	= "Mod1+m";		/* Cmd+m */
+      MinimizeAllKey 	= "Mod1+M";		/* Cmd+M */
+      FocusNextKey 	= "Mod1+Tab";		/* Cmd+Tab */
+      FocusPrevKey 	= "Mod1+Shift+Tab";
+      GroupNextKey 	= None;
+      GroupPrevKey 	= None;
+      RaiseKey 		= None;
+      LowerKey 		= None;
+      RaiseLowerKey 	= None;
+      OmnipresentKey 	= None;
     }
 
-    Dock =
-    {
-      DockRaiseLowerKey = None; /* Cmd+D ?*/
+    Dock = {
+      DockRaiseLowerKey = None; /* Mod4+Shift+D ?*/
     }
 
-    Workspaces =
-    {
+    Workspaces = {
       PrevWorkspaceKey = "Control+Left";
       NextWorkspaceKey = "Control+Right";
       PrevWorkspaceLayerKey = None;
@@ -96,15 +97,7 @@
       WorkspaceMapKey = None;
     }
     
-    RunKey = 		None;	/* ? */
-    ScreenSwitchKey =	None;	/* ? */
-    SelectKey =		None;	/* draws white border around window */
-    WindowListKey =	None;	/* RMB click on desktop */
-    WindowMenuKey =	None;	/* RMB click on titlebar */
-    WindowRelaunchKey =	None;	/* RMB click on titlebar -> Launch */
-    
-    Unusable =
-    {
+    Unusable = {
       /* ClipRaiseLowerKey = None; */
       /* ViKeyMenus = NO; ? */
       /* WindowShortcut10Key = None; */
@@ -118,5 +111,57 @@
       /* WindowShortcut8Key = None; */
       /* WindowShortcut9Key = None; */
     }
+  }
+  GNUstep = {
+    /* ===== Reserved keyboard shortcuts ===== */
+    /* Edit menu */
+    "Cut"			= "Command + x";
+    "Copy"			= "Command + c";
+    "Paste"			= "Command + v";
+    "Select All"		= "Command + a";
+    "Undo"			= "Command + z";
+    /* */
+    "Close Window"		= "Command + w";	CloseKey	"Mod1 + w";
+    "Miniaturize Window"	= "Command + m";	MiniaturizeKey	"Mod1 + m";
+    "Hide"			= "Command + h";	HideKey		"Mod1 + h";
+    "Quit"			= "Command + q";
+    "Help"			= "Command + ?";
+    "Print"			= "Command + p";
+    "Open"			= "Command + o";
+    "New"			= "Command + n";
+    "Save"			= "Command + s";
+    
+    /* ===== Required (if you use some functionality) ===== */
+    /* If use use Find */
+    "Find panel..."		= "Command + f";
+    "Find Next"			= "Command + g";
+    "Find Previous"		= "Command + d";
+    "Enter Selection"		= "Command + e";
+    "Jump To Selection"		= "Command + j";
+    /* If you use Fonts */
+    "Font Panel..."		= "Command + t";
+    "Bold"			= "Command + b";
+    "Italic"			= "Command + i";
+    "Colors..."			= "Command + C";
+    /* Other */
+    "Check Spelling"		= "Command + ;";
+
+    /* ===== Recommended (it's a good style) ===== */
+    "Show Ruler"		= "Command + r";
+    "Copy Ruler"		= "Command + 1";
+    "Pase Ruler"		= "Command + 2";
+    "Copy Font"			= "Command + 3";
+    "Paste Font"		= "Command + 4";
+    "Page Layout"		= "Command + P";
+    "Save As"			= "Command + S";
+    "Paste and Link"		= "Command + V";
+
+    /* TODO: Other useful (OpenStep UIG, section 3.20) */
+    "Top of Page/Page Up"	= "Control + Up";
+    "Bottom of Page/Page Down"	= "Control + Down";
+    "Start of Word"		= "Shift + Left";	"Command + Left";
+    "End of Word"		= "Shift + Right";	"Command + Right";
+    "Start of Word Line Above"	= "Shift + Up";		"Command + Up";
+    "End of Word at Line Below"	= "Shift + Down";	"Command + Down";
   }
 }

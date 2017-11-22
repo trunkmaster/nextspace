@@ -68,6 +68,7 @@
   id keypadBox;
   id deleteKeyMtrx;
   id numpadMtrx;
+  id numLockStateMtrx;
 
   // Modifiers
   id modifiersBox;

@@ -3,11 +3,12 @@
     FirstResponder = {
 	Actions = (
 	    "capsLockBtnClicked:",
+	    "capsLockMtrxClicked:",
 	    "composeBtnClicked:",
 	    "deleteKeyMtrxClicked:",
 	    "layoutMove:",
 	    "layoutRemove:",
-	    "capsLockMtrxClicked:",
+	    "numLockMtrxClicked:",
 	    "numpadMtrxClicked:",
 	    "repeatAction:",
 	    "sectionButtonClicked:",
@@ -30,7 +31,8 @@
 	    "capsLockBtnClicked:",
 	    "composeBtnClicked:",
 	    "capsLockMtrxClicked:",
-	    "swapCAMtrxClicked:"
+	    "swapCAMtrxClicked:",
+	    "numLockMtrxClicked:"
 	);
 	Outlets = (
 	    window,
@@ -59,7 +61,8 @@
 	    capsLockBtn,
 	    composeKeyBtn,
 	    capsLockMtrx,
-	    swapCAMtrx
+	    swapCAMtrx,
+	    numLockStateMtrx
 	);
 	Super = NSObject;
     };

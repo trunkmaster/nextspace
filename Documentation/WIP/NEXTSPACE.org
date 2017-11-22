@@ -3192,11 +3192,11 @@
 *** TODO Применение настроек при старте сессии
     Нужно подумать как и где применять настройки при старте сессии.
     Это касается:
-    - инициализации дисплееев
-    - раскладки клавиатуры
-    - настроек мыши и тачпада
-    - громкость звука
-    - активизации сетевых настроек
+    - инициализации дисплееев 		-> Workspace
+    - настройки клавиатуры 		-> Preferences (via NXSystem)
+    - настроек мыши и тачпада		-> Preferences (via NXSystem)
+    - громкость звука			-> Preferences (via NXSystem)
+    - активизации сетевых настроек 	-> NetworkManager?
 *** TODO Модули
 **** DONE Fonts: GNUstep font settings
      back-art-subpixel-text всегда устанавливается в '0'.
@@ -3228,20 +3228,18 @@
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 ***** DONE Обновлять примеры форматов после смены в списке языков
 **** TODO Keyboard
-***** DONE Repeat Rate
 ***** TODO Layouts
 ****** TODO Honour 'Modifiers section'
-***** TODO Numeric Keypad
+***** TODO (?) Keyboard Model
+***** DONE Repeat Rate
+***** DONE Numeric Keypad
 ****** DONE Delete Key
 ****** DONE Behaviour
-****** TODO Num Lock state upon startup (login)
+****** DONE Num Lock state upon startup (login)
 ***** DONE Modifiers
 ****** DONE Command/Alternate Swap
 ****** DONE Compose Character Key
 ****** DONE Caps Lock Key (Alpha Lock)
-***** TODO Shortcuts
-      GNUstep and WindowMaker (learn xmodifier.c).
-***** TODO Keyboard Model
 **** TODO Mouse
      Acceleration, pointers, mouse wheel scroll.
 **** TODO Display: resolution, layout, gamma correction, wallpaper/color
@@ -3303,13 +3301,16 @@
 *** TODO WindowMaker settings
 **** TODO Настройки GNUstep и WindowMaker
      Нужно думать как организовать работу так, чтобы ничего не забыть.
+**** TODO Shortcuts
+     GNUstep and WindowMaker (learn xmodifier.c).
+     Я прихожу к мнению, что Shortcuts больше относиться к WindowMaker, чем
+     к Preferences. А значит эти настройки должны пойти в Workspace.*** TODO .preferences as document associated with Preferences
 **** TODO Menu, Dock, icons
      - Default menu location;
      - WindowMaker Dock settings: Dock position, hiding, etc.
      - Dock placement on multi-monitor configuration = on Main Display;
      - Bottom icons placement = on Main Display;
 **** TODO Window management
-*** TODO .preferences как документ открываемый Preferences
 *** TODO Все модули должны подстраиваться под размер окна
 
 

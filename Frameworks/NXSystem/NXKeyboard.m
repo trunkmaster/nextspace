@@ -30,9 +30,7 @@ NSString *Layouts = @"NXKeyboardLayouts";
 NSString *Variants = @"NXKeyboardVariants";
 NSString *Model = @"NXKeyboardModel";
 NSString *Options = @"NXKeyboardOptions";
-NSString *SwitchLayout = @"SwitchLayoutKey";
-NSString *Compose = @"ComposeKey";
-
+NSString *NumLockState = @"NXKeyboardNumLockState";
 
 @implementation NXKeyboard : NSObject
 
@@ -52,6 +50,10 @@ NSString *Compose = @"ComposeKey";
   [keyb setLayouts:[defs objectForKey:Layouts]
           variants:[defs objectForKey:Variants]
            options:[defs objectForKey:Options]];
+  if ([[defs objectForKey:Options] containsObject:@"numpad:mac"] == NO)
+    [keyb setNumLockState:[defs integerForKey:NumLockState]];
+  else
+    [keyb setNumLockState:0];
 }
 
 // Converts string like
@@ -200,15 +202,46 @@ NSString *Compose = @"ComposeKey";
   return modelDict;
 }
 
-// TODO
 - (NSString *)model
 {
-  return nil;
+  return [serverConfig objectForKey:Model];
 }
 
 // TODO
 - (void)setModel:(NSString *)name
 {
+}
+
+- (void)setNumLockState:(NSInteger)state
+{
+  Display	*dpy = XOpenDisplay(NULL);
+  XkbDescPtr	xkb;
+  unsigned int	mask;
+  char		*modifier_atom;
+  
+  xkb = XkbGetKeyboard(dpy, XkbAllComponentsMask, XkbUseCoreKbd);
+  if (!xkb || !xkb->names)
+    return;
+    
+  for (int i = 0; i < XkbNumVirtualMods; i++)
+    {
+      modifier_atom = XGetAtomName(xkb->dpy, xkb->names->vmods[i]);
+      if (modifier_atom != NULL && strcmp("NumLock", modifier_atom) == 0)
+        {
+          XkbVirtualModsToReal(xkb, 1 << i, &mask);
+        }
+    }
+  XkbFreeKeyboard(xkb, 0, True);
+  
+  if(mask == 0)
+    return;
+
+  if (state > 0)
+    XkbLockModifiers(dpy, XkbUseCoreKbd, mask, mask);
+  else
+    XkbLockModifiers(dpy, XkbUseCoreKbd, mask, 0);
+  
+  XCloseDisplay(dpy);
 }
 
 //------------------------------------------------------------------------------
