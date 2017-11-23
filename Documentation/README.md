@@ -3,7 +3,7 @@
 
 NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS.
 
-![NEXTSPACE example] https://github.com/trunkmaster/nextspace/blob/master/Documentation/NEXTSPACE_Screenshot.png
+![NEXTSPACE example](https://github.com/trunkmaster/nextspace/blob/master/Documentation/NEXTSPACE_Screenshot.png)
 
 ## Why am I doing this?
 1. I like look, feel and design principles of NeXTstep.
