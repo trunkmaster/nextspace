@@ -364,8 +364,8 @@ NSString *NumLockState = @"NXKeyboardNumLockState";
   else
     XCloseDisplay(dpy);
   
-  NSLog(@"NXKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Options: '%s' Rules file: %s",
-        vd.model, vd.layout, vd.variant, vd.options, file);
+  // NSLog(@"NXKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Options: '%s' Rules file: %s",
+  //       vd.model, vd.layout, vd.variant, vd.options, file);
 
   config = [NSMutableDictionary dictionary];
   [config setObject:[NSString stringWithCString:vd.layout] forKey:Layouts];
