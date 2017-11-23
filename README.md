@@ -11,7 +11,7 @@ NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org
 3. As main developer of [ProjectCenter](http://www.gnustep.org/experience/ProjectCenter.html) (IDE for GNUstep) I need desktop environment where ProjectCenter can be developed, tested and integrated with.
 4. Maybe some day it will become interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
 
-Unlike other 'real' and 'serious' projects I've not defined target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray lines, flat controls, acid colours, transparency). I like this accurate, clear, grayish, boring UI that just works...
+Unlike other 'real' and 'serious' projects I've not defined target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray blurry lines, flat controls, acid colours, transparency). I like this accurate, clear, grayish, boring UI that just not hinder to get my job done...
 
 ## What NEXTSPACE is?
 #### Core technologies it is based on:
