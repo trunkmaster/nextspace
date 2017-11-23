@@ -12,34 +12,42 @@ NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org
 Unlike other 'real' and 'serious' projects I've not defined target audience for NEXTSPACE, I intentionally left outside modern UI design trends (fancy animations, shadows, gray lines, flat controls, acid colours). I like this accurate, clear, grayish, boring UI that just works...
 
 ## What NEXTSPACE is?
-####Core technologies for development of NEXTSPACE:
-* CentOS Linux 7 and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
-* Compiler: Clang 3.8.1
-* Objective-C runtime: libobjc2 by Devid Chisnall (https://github.com/gnustep/libobjc2).
-* Multithreading: libdispatch by Apple (https://github.com/apple/swift-corelibs-libdispatch).
-* GNUstep libraries: http://www.gnustep.org this is where I started from. Additional functionality and fixes will go upstream when will be ready.
-* WindowMaker: great window manager. All changes I've packaged as a patches which can be pushed to upstream project.
-####Frameworks:
+#### Core technologies for development of NEXTSPACE:
+* [CentOS Linux 7](https://www.centos.org) and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
+* Compiler: [Clang](http://www.llvm.org/) 3.8.1
+* Objective-C runtime: [libobjc2](https://github.com/gnustep/libobjc2) by David Chisnall .
+* Multithreading: [libdispatch](https://github.com/apple/swift-corelibs-libdispatch) by Apple.
+* [OpenStep](https://en.wikipedia.org/wiki/OpenStep) implementation: [GNUstep](http://www.gnustep.org). This is where I started from back in 2001. Additional functionality and fixes will go upstream when it will be ready.
+* [WindowMaker](https://windowmaker.org/): great window manager. It is still alive and in active development. All changes I'm packaging as a set of patches (to the original 0.95.7 version) which can be pushed to upstream project later.
+#### Frameworks:
 * NXAppKit: GUI classess that can be usefull in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
 * NXSystem: system-specific classes goes here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
 * NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
-#####Applications:
+'NX' prefix is a tribute to the NeXTSTEP classes back in early 90th and has no connection to original NeXT's API.
+##### Applications:
 * Login: simple login panel where you enter your user name and password.
-* Workspace: file manager, window manager, process manager, dock.
-* Preferences: settings for locale, fonts, displays (size, arrangment), keyboard, mouse, sound, network, power management.
-* Terminal: terminal with Linux console emulation.
-* TextEdit: simple text editor that supports RTF and RTFD.
-* Review: image viewer.
-Everything else is optional and will be developed upon completion listed above.
+* Workspace: file manager, window manager, process manager, dock, inspectors, finder, console messages and preferences for mentioned these parts.
+* Preferences: settings for locale, fonts, displays (size, arrangment), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Prefrences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
+* Terminal: terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site.
+* TextEdit: simple text editor that supports RTF and RTFD. It is simple application from NeXT Developer demos.
+* Review: image viewer. Nothing interesting yet. Maybe replaced by some other image and document (PDF, PostScript, etc.) viewing application in future.
+Everything else is optional and will be developed upon completion of core applications listed above. Among them:
+* TimeMon: system load monitoring. Version from GNustep Application Project.
+* Weather: Shows weather conditions from Yahoo! weather site. Proof of concept (no preferences, no forecast, shows weather for Kyiv, Ukraine).
 
 ## Status of implementaion
 Login - 90%
+
 Workspace - 70% (finish WindowMaker integration, implement icon and list views, Finder, fix stability issues)
+
 Terminal - 95% (implement activity control, apply colours with drag and drop into terminal window)
+
 TextEdit - as is.
 
+Review - early development.
+
 ## I will not plan to do
-* Porting to other Linux distributions and operating systems. However, NEXTSPACE was designed to be portable.
+* Porting to other Linux distributions and operating systems for now. I want fast, accurate and stable version for CentOS 7 at last. However, NEXTSPACE was designed to be portable and this point maybe changed in future.
 * WindowMaker only fork (Workspace includes WindowMaker though).
-* GNOME, KDE rival in terms of visual effects.
-* MacOS X like implementation in terms of design. There is another good place for this -- Étoilé (http://etoileos.com).
+* GNOME, KDE, MacOS rival in terms of visual effects, modern design principles, look and feel.
+* MacOS X like desktop paradigm. There is another good place for this -- [Étoilé](http://etoileos.com).
