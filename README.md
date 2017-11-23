@@ -22,7 +22,7 @@ Everything else is optional and will be developed upon completion of core applic
 * NXAppKit: GUI classess that can be usefull in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
 * NXSystem: system-specific classes go here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
 * NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
->'NX' prefix is a tribute to the NeXTstep classes back in early 90th and has no connection to original NeXT's API.
+>'NX' prefix is a tribute to the NeXTstep classes back in early 90th but has no connection to original NeXT's API.
 
 #### Core technologies it is based on:
 * [CentOS Linux 7](https://www.centos.org) and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
