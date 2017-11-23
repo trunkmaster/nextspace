@@ -1,7 +1,7 @@
 # NEXTSPACE
 -------------------------------------------------------------------------------
 
-NEXTSPACE is desktop environment that brings NeXTSTEP [https://en.wikipedia.org/wiki/NeXTSTEP] look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS.
+NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS.
 
 ## Why am I doing this?
     1. I like look, feel and design principles of NeXTstep.
