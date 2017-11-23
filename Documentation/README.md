@@ -1,7 +1,7 @@
 # NEXTSPACE
 
 NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS. It is developed with ["OpenStep User Interface Guidelines"](www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf) in mind.
-> If you've noticed or ever bothered with naming convention all of these "NeXTSTEP, NextStep", here is [explanation](https://github.com/trunkmaster/nextspace/blob/master/Documentation/OpenStep Confusion.md).
+> If you've noticed or ever bothered with naming convention all of these "NeXTSTEP, NextStep", here is [explanation](https://github.com/trunkmaster/nextspace/blob/master/Documentation/OpenStep\ Confusion.md).
 
 ![NEXTSPACE example](https://github.com/trunkmaster/nextspace/blob/master/Documentation/NEXTSPACE_Screenshot.png)
 
