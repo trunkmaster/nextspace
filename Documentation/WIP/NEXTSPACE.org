@@ -3227,8 +3227,7 @@
 ***** DONE Measurement Unit
       NSMeasurementUnit = Centimeters | Inches | Points | Picas
 ***** DONE Обновлять примеры форматов после смены в списке языков
-**** TODO Keyboard
-***** TODO (?) Keyboard Model
+**** DONE Keyboard
 ***** DONE Layouts
 ****** DONE Honour 'Modifiers section'
 ***** DONE Repeat Rate
@@ -3304,13 +3303,14 @@
 **** TODO Shortcuts
      GNUstep and WindowMaker (learn xmodifier.c).
      Я прихожу к мнению, что Shortcuts больше относиться к WindowMaker, чем
-     к Preferences. А значит эти настройки должны пойти в Workspace.*** TODO .preferences as document associated with Preferences
+     к Preferences. А значит эти настройки должны пойти в Workspace.
 **** TODO Menu, Dock, icons
      - Default menu location;
      - WindowMaker Dock settings: Dock position, hiding, etc.
      - Dock placement on multi-monitor configuration = on Main Display;
      - Bottom icons placement = on Main Display;
 **** TODO Window management
+*** TODO .preferences as document associated with Preferences
 *** TODO Все модули должны подстраиваться под размер окна
 
 
@@ -3686,7 +3686,7 @@
 
       Если при нажатом Alt(Command) или Super(Alternate) передавать '\e':
       - <Super+кнопка> работает всегда.
-      - <Alt+конпка> - работает, если нет такого сочетания в меню. Другими
+      - <Alt+кн кнопка> - работает, если нет такого сочетания в меню. Другими
         словами, сочетания клавиш app menu выше приоритетом.
 
       Design rules:
