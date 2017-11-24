@@ -18,7 +18,7 @@ Simple login panel where you enter your user name and password.
 ### Preferences
 Settings for locale, fonts, displays (size, arrangment), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Prefrences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
 ![Localization](Documentation/Preferences-Localization.png) ![Display](Documentation/Preferences-Display.png)
-### Terminal: 
+### Terminal
 Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancement to original application are:
 * Preferences and Services panels are rewritten from scratch.
 * Numerous fixes and enhancements in: color management (background, foreground can be any and can be configured in preferences, bold, blink, inverse, cursor colours), cursor placement fixes on scrolling and window resizing, 'Clear Buffer' menu item, 'Set Title' menu item.
