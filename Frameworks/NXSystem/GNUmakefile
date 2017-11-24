@@ -46,6 +46,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXUDisksVolume.h \
 	\
 	NXKeyboard.h \
+	NXMouse.h \
 	\
 	NXPower.h
 
