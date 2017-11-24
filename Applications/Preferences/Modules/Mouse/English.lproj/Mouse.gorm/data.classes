@@ -3,16 +3,22 @@
     FirstResponder = {
 	Actions = (
 	    "enableSubpixelChanged:",
+	    "speedMtrxClicked:",
+	    "doubleClickMtrxClicked:",
 	    "subpixelModeChanged:"
 	);
 	Super = NSObject;
     };
     Mouse = {
 	Actions = (
+	    "speedMtrxClicked:",
+	    "doubleClickMtrxClicked:"
 	);
 	Outlets = (
 	    view,
-	    window
+	    window,
+	    doubleClickMtrx,
+	    speedMtrx
 	);
 	Super = NSObject;
     };

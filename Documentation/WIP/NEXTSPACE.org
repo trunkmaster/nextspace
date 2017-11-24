@@ -1085,7 +1085,7 @@
 **** TODO Hibernate/Sleep
 *** TODO [#B] NXKeyboard - type, input languages, shortcuts, repeat rate
 **** TODO Keyboard type (Xorg keyboard types)
-**** TODO Input languages (Xkb layouts)
+**** DONE Input languages (Xkb layouts)
 **** DONE Repeate rate (Xorg)
 **** TODO Control, Alternate, Command mapping (GNUstep)
      Из Terminal:
@@ -3193,7 +3193,7 @@
     Нужно подумать как и где применять настройки при старте сессии.
     Это касается:
     - инициализации дисплееев 		-> Workspace
-    - настройки клавиатуры 		-> Preferences (via NXSystem)
+    + настройки клавиатуры 		-> Preferences (via NXSystem)
     - настроек мыши и тачпада		-> Preferences (via NXSystem)
     - громкость звука			-> Preferences (via NXSystem)
     - активизации сетевых настроек 	-> NetworkManager?
@@ -3294,7 +3294,7 @@
 **** TODO Login: screensaver, hooks, display hostname
 **** TODO Date & Time
 ***** TODO Нарисовать панель
-**** TODO Password/Users?
+**** TODO Password
 **** TODO Services: enable/disable
 ***** TODO Нарисовать панель
 *** TODO WindowMaker settings
@@ -3734,6 +3734,9 @@
      Нужно скроллить как указано в Preferences.app.
      Настройки мыши, которые устанавливаются в Preferences должны читаться
      Workspace(WindowMaker) и другими приложениями(в данном случае Terminal).
+     NXMouseWheelScroll - как скроллить обычном режиме.
+     Control + Scroll - 1 line.
+     Shift + Scroll - 1 page.
 **** TODO Activity control
 ***** TODO Раздел Preferences "Activity Monitor"
 ***** TODO Window state
