@@ -25,8 +25,8 @@ Terminal with Linux console emulation. I've started with version created by Alex
 * Now you can search through the text displayed in Terminal window (Find panel).
 * Session management: you can save window with all settings that are set in preferences panel (including shell/command) to a file and then open it. Configuration with multiple windows supported.
 ![Terminals](Documentation/Terminals.png)
-### TextEdit: 
-simple text editor that supports RTF and RTFD. It is simple application from NeXT Developer demos.
+### TextEdit
+Simple text editor that supports RTF and RTFD. It is simple application from NeXT Developer demos.
 ### Review
 Image viewer. Nothing interesting yet. Maybe replaced by some other image and document (PDF, PostScript, etc.) viewing application in future.
 
@@ -34,13 +34,13 @@ Everything else is optional and will be developed upon completion of core applic
 * TimeMon: system load monitoring. Version from GNustep Application Project.
 * Weather: Shows weather conditions from Yahoo! weather site. Proof of concept (no preferences, no forecast, shows weather for Kyiv, Ukraine).
 
-#### Frameworks:
+## Frameworks
 * NXAppKit: GUI classess that can be usefull in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
 * NXSystem: system-specific classes go here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
 * NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
 >'NX' prefix is a tribute to the NeXTstep classes back in early 90th but has no connection to original NeXT's API.
 
-#### Core technologies it is based on:
+## Core technologies it is based on
 * [CentOS Linux 7](https://www.centos.org) and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
 * Compiler: [Clang](http://www.llvm.org/) 3.8.1
 * Objective-C runtime: [libobjc2](https://github.com/gnustep/libobjc2) by David Chisnall.
@@ -67,4 +67,4 @@ Unlike other 'real' and 'serious' projects I've not defined target audience for 
 * Porting to other Linux distributions and operating systems for now. I want fast, accurate and stable version for CentOS 7 at last. However, NEXTSPACE was designed to be portable and this point maybe changed in future.
 * WindowMaker only fork (Workspace includes WindowMaker though).
 * GNOME, KDE, MacOS rival in terms of visual effects, modern design principles, look and feel.
-* MacOS X like desktop paradigm. There is another good place for this -- [Étoilé](http://etoileos.com).
+* Implement MacOS X like desktop paradigm. There is another good place for this -- [Étoilé](http://etoileos.com).
