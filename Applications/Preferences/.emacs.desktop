@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Nov 22 23:20:42 2017
+;; Created Thu Nov 23 18:52:24 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name "/Developer/Headers/TAGS")
 (setq tags-table-list '("/Developer/Headers/TAGS"))
