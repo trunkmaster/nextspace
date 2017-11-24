@@ -9,8 +9,8 @@ NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org
 #### Applications:
 * Login: simple login panel where you enter your user name and password.
 * Workspace: file manager, window manager, process manager, dock, inspectors, finder, console messages and preferences for mentioned the parts of Workspace.
-* Preferences: settings for locale, fonts, displays (size, arrangment), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Prefrences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
-![Localization](Documentation/Preferences-Localization.png) ![Fonts](Documentation/Preferences-Fonts.png) ![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) ![Keyboard](Documentation/Preferences-Keyboard-Layouts.png) ![Mouse](Documentation/Preferences-Mouse.png)
+* Preferences: settings for locale, fonts, displays (size, arrangment), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Prefrences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).![Localization](Documentation/Preferences-Localization.png) 
+![Fonts](Documentation/Preferences-Fonts.png) ![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) ![Keyboard](Documentation/Preferences-Keyboard-Layouts.png) ![Mouse](Documentation/Preferences-Mouse.png)
 * Terminal: terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site.
 * TextEdit: simple text editor that supports RTF and RTFD. It is simple application from NeXT Developer demos.
 * Review: image viewer. Nothing interesting yet. Maybe replaced by some other image and document (PDF, PostScript, etc.) viewing application in future.
