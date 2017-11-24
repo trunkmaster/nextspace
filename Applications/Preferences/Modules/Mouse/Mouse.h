@@ -24,15 +24,18 @@
   59 Temple Place - Suite 330
   Boston, MA  02111-1307, USA
 */
+#import <AppKit/NSMatrix.h>
 #import <AppKit/NSImage.h>
 #import <Preferences.h>
 
 @interface Mouse: NSObject <PrefsModule>
 {
+  NSImage *image;
+  
   id view;
-id window;
-
-NSImage *image;
+  id window;
+  id speedMtrx;
+  id doubleClickMtrx;
 }
 
 @end

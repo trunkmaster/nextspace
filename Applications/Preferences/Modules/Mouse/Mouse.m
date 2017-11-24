@@ -29,6 +29,8 @@
 #import <AppKit/NSScrollView.h>
 #import <AppKit/NSScroller.h>
 
+#import <NXSystem/NXMouse.h>
+
 #import "Mouse.h"
 
 @implementation Mouse
@@ -62,6 +64,18 @@ static NSMutableDictionary      *domain = nil;
 {
   [view retain];
   [window release];
+
+  for (id c in [speedMtrx cells])
+    [c setRefusesFirstResponder:YES];
+  for (id c in [doubleClickMtrx cells])
+    [c setRefusesFirstResponder:YES];
+
+  NXMouse *mouse = [NXMouse new];
+
+  NSLog(@"[Mouse] current acceleration = %li times, threshold = %li pixels",
+        [mouse acceleration], [mouse accelerationThreshold]);
+  [speedMtrx selectCellWithTag:[mouse acceleration]];
+  [mouse release];
 }
 
 - (NSView *)view
@@ -91,6 +105,17 @@ static NSMutableDictionary      *domain = nil;
 //
 // Action methods
 //
+- (void)speedMtrxClicked:(id)sender
+{
+  NXMouse *mouse = [NXMouse new];
+  NSUInteger tag = [[sender selectedCell] tag];
+  
+  [mouse setAcceleration:tag threshold:tag];
+  [mouse release];
+}
+- (void)doubleClickMtrxClicked:(id)sender
+{
+}
 
 @end
 
