@@ -3672,6 +3672,12 @@
 **** DONE Edit->Find
      Искать по содержимому буфера. Если найдено скроллить к найденому.
 **** TODO (After: Preferences.app-Keyboard) Keyboard 
+     Super (Win)
+     - Terminal		Meta (Terminal Preferences > Linux Emulation >
+       			Alternate Key > Alternate key generates Escape
+       			sequences).
+     - WindowMaker	Mod4 (используется почти во всех shortcut'ах)
+     - GNUstep		Alternate (по идее нигде не используется)
 ***** TODO Keyboard
       Command, Alternate, Control, Shift.
       Проверить как передаются сочетания клавиш с этими модификаторами.
@@ -3686,7 +3692,7 @@
 
       Если при нажатом Alt(Command) или Super(Alternate) передавать '\e':
       - <Super+кнопка> работает всегда.
-      - <Alt+кн кнопка> - работает, если нет такого сочетания в меню. Другими
+      - <Alt+кнопка> - работает, если нет такого сочетания в меню. Другими
         словами, сочетания клавиш app menu выше приоритетом.
 
       Design rules:
