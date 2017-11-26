@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Nov 23 18:52:14 2017
+;; Created Sun Nov 26 02:39:34 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -14,9 +14,42 @@
 (setq search-ring '("NXKeyboard" "found" "frame" "Display is no" "randrUpdate" "sizeInPix" "size" "Exceptio" "Exception" "resolution" "systemSc" "current" "setMain" "currResol" "resoltion" "mode-line"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile" "~/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.h" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.h" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble" "~/rpmbuild/SPECS/nextspace-gnustep.spec" "~/Developer/nextspace/Applications/Login/Controller.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.h" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Weather/YQL.[hm]" "~/Developer/nextspace/Applications/Weather/WeatherInfo.plist" "~/Developer/nextspace/Applications/Weather/YahooForecast.m" "~/Developer/nextspace/Applications/Weather/YahooForecast.h" "~/Developer/nextspace/Applications/Weather/wmforecast.c" "~/Developer/nextspace/Applications/Weather/GNUmakefile*" "~/Developer/nextspace/Applications/Weather/WeatherView.m"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/NXSystem/NXMouse.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile" "~/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.h" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.h" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble" "~/rpmbuild/SPECS/nextspace-gnustep.spec" "~/Developer/nextspace/Applications/Login/Controller.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.h" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Weather/YQL.[hm]" "~/Developer/nextspace/Applications/Weather/WeatherInfo.plist" "~/Developer/nextspace/Applications/Weather/YahooForecast.m" "~/Developer/nextspace/Applications/Weather/YahooForecast.h" "~/Developer/nextspace/Applications/Weather/wmforecast.c" "~/Developer/nextspace/Applications/Weather/GNUmakefile*"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMouse.m"
+  "NXMouse.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  2152
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMouse.h"
+  "NXMouse.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1343
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.h"
+  "NXKeyboard.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  2301
+  '(2496 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.m"
   "NXKeyboard.m"
@@ -27,17 +60,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.h"
-  "NXKeyboard.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  2495
-  '(2496 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble"
