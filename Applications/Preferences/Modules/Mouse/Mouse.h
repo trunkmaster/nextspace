@@ -36,6 +36,8 @@
   id window;
   id speedMtrx;
   id doubleClickMtrx;
+  id wheelScrollSlider;
+  id wheelScrollField;
 }
 
 @end
