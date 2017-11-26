@@ -26,6 +26,7 @@
 
 #import <NXFoundation/NXDefaults.h>
 #import <NXSystem/NXKeyboard.h>
+#import <NXSystem/NXMouse.h>
 
 #import "AppController.h"
 #import "ClockView.h"
@@ -85,6 +86,10 @@ static NSUserDefaults *defaults = nil;
       
       NSLog(@"Configure keyboard...");
       [NXKeyboard configureWithDefaults:defs];
+      NXMouse *mouse = [NXMouse new];
+      [mouse setAcceleration:[defs integerForKey:Acceleration]
+                   threshold:[defs integerForKey:Threshold]];
+      [mouse release];
     }
 }
 

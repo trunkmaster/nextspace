@@ -107,14 +107,33 @@ static NSMutableDictionary      *domain = nil;
 //
 - (void)speedMtrxClicked:(id)sender
 {
-  NXMouse *mouse = [NXMouse new];
-  NSUInteger tag = [[sender selectedCell] tag];
+  NXDefaults	*defs = [NXDefaults globalUserDefaults];
+  NXMouse	*mouse = [NXMouse new];
+  NSUInteger	tag = [[sender selectedCell] tag];
   
   [mouse setAcceleration:tag threshold:tag];
   [mouse release];
+
+  [defs setInteger:tag forKey:Acceleration];
+  [defs setInteger:tag forKey:Threshold];
 }
 - (void)doubleClickMtrxClicked:(id)sender
 {
+  // GNUstep:
+  // 1. Write to the NSGlobalDomain -> GSDoubleClickDelay
+  // 2. Set new value to GNUstep backend
+  // WindowMaker:
+  // Write to ~/L/P/.WindowMaker/WindowMaker -> DoubleClickTime
+}
+
+- (void)setWheelScroll:(id)sender
+{
+  if (sender == wheelScrollSlider)
+    {
+    }
+  else if (sender == wheelScrollField)
+    {
+    }
 }
 
 @end

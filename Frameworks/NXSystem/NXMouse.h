@@ -41,8 +41,8 @@
 
 @end
 
-extern NSString *Speed;
-extern NSString *SpeedTheshold;
+extern NSString *Acceleration;
+extern NSString *Threshold;
 extern NSString *DoubleClickTime;
 extern NSString *WheelScroll;
 extern NSString *CursorTheme;
