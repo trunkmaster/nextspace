@@ -2,23 +2,27 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "enableSubpixelChanged:",
-	    "speedMtrxClicked:",
 	    "doubleClickMtrxClicked:",
-	    "subpixelModeChanged:"
+	    "enableSubpixelChanged:",
+	    "setWheelScroll:",
+	    "subpixelModeChanged:",
+	    "wheelScrollSliderMoved:"
 	);
 	Super = NSObject;
     };
     Mouse = {
 	Actions = (
-	    "speedMtrxClicked:",
-	    "doubleClickMtrxClicked:"
+	    "doubleClickMtrxClicked:",
+	    "setWheelScroll:",
+	    "wheelScrollSliderMoved:"
 	);
 	Outlets = (
 	    view,
 	    window,
 	    doubleClickMtrx,
-	    speedMtrx
+	    speedMtrx,
+	    wheelScrollSlider,
+	    wheelScrollField
 	);
 	Super = NSObject;
     };

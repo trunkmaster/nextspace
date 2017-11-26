@@ -26,8 +26,8 @@
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <X11/Xlib.h>
 
-NSString *Speed = @"NXMouseSpeed";
-NSString *SpeedTheshold = @"NXMouseSpeedThreshold";
+NSString *Acceleration = @"NXMouseAcceleration";
+NSString *Threshold = @"NXMouseThreshold";
 NSString *DoubleClickTime = @"NXMouseDoubleClickTime";
 NSString *WheelScroll = @"NXMouseWheelScroll";
 NSString *CursorTheme = @"NXMouseCursorTheme";

@@ -3240,7 +3240,15 @@
 ****** DONE Compose Character Key
 ****** DONE Caps Lock Key (Alpha Lock)
 **** TODO Mouse
-     Acceleration, pointers, mouse wheel scroll.
+***** DONE Acceleration
+***** TODO Double-Click Delay
+****** TODO Write WindowMaker and NSGlobalDomain
+****** TODO Implement using option in GNUstep backend
+***** TODO Mouse wheel scroll
+****** TODO Write to NSGlobalDomain
+****** TODO Implement using option in NSScrollView
+       Option is a multiplier to the scroll height value.
+***** TODO Pointers
 **** TODO Display: resolution, layout, gamma correction, wallpaper/color
 ***** DONE Изменение настроек не должно влиять на плавность изменения контролов
       Использовать dispatch & blocks?
