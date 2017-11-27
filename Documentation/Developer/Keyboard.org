@@ -1,202 +1,113 @@
-* General thoughts
+Общие мысли
 
-  AFAIK, there are several modifiers usage styles:
-  • Control — main modifier in Windows, GNOME, KDE. Shift и Alt — used as
-    additional modifier (for example, Ctrl+Shift+F in Visio).
-  • Command — NeXT, Apple — physically located where Alt key located at PC-style
-    keyboard. This is essential from UX point of view.
-  • Alt — Maya, WindowMaker, Emacs — applications use Alt as additional modifier
-    for quite important actions.
-  • Super — AKA Win — used for system specific actions (window management, lock
-    screen, etc).
+Во времена NEXTSTEP было множество клавиатур и принципов работы с приложениями. Насколько я знаю, первыми кто озаботился какими-либо правилами взаимодействия человека с программами была компания IBM. Они создали книжку, по которой всем разработчикам рекомендовалось проектировать свои программы — Common User Access (CUA). После IBM стало хорошим тоном создавать свои Design Guidelines — Apple, Microsoft, GNOME, KDE и т.д.
 
-* Terminology
+Насколько мне известно сейчас существуют несколько школ использования модификаторов:
+• Control — Windows, GNOME, KDE. Shift и Alt — дополняющие (например, Ctrl+Shift+F в Visio).  Super используется для системных нужд (управление окнами, вызов всяких системных полезных штучек).
+• Command — NeXT, Apple — расположен физически на клавиатуре там же, где у PC расположен Alt.
+• Alt — Maya, WindowMaker, Emacs — не то, чтобы основной модификатор, но встречаются для выполнения важных действий.
+• Super — она же Win — используется для управления окнами и всякими Windows-специфичными вещами (управление окнами, вызов всяких системных полезных штучек).
 
-Here is the mapping of modifiers on PC keyboard based on keys physical
-location on NeXT keyboard.
-|---------------+----------------------------+------------------+-----------+-----------|
-| Modifier name | Location on PC keyboards   | Xorg keysym      | NeXTSTEP  | NEXTSPACE |
-|---------------+----------------------------+------------------+-----------+-----------|
-| Alt           | Labeled 'Alt' and 'Alt Gr' | Alt_L, Alt_R     | Command   | Command   |
-| Ctrl          | Labeled 'Ctrl'             | Ctrl_L, Ctrl_R   | Control   | Control   |
-| Super         | Labeled with Windows logo  | Super_L, Super_R | Alternate | Alternate |
-|               |                            |                  |           |           |
+Кнопка Command(Alt) всегда используется для привычных действий в других приложениях (Cmd-C - Copy, Cmd-V - Paste и т.д.). Alternate используется в:
+      • Terminal: например для Emacs
+      • Управлении окнами (Alternate-Up/Down/Left/Right)
+      • Управлении сессией - Alternate-Scroll Lock - Lock Screen
+Другие приложения X Window обычно используют Control (IBM CUA).
 
-** Command
-   Default modifier in AppKit. Mapped to the Alt_L and Alt_R. Menu item
-   shortcuts has no special symbol or image. All menu shortcut labels mean
-   usage of 'Command + letter'.
+_Terminology_
 
-** Alternate
-   Mapped to the Super. Menu item shortcut labels shown with
-   italics. Application specific shortcuts (not recommended).
+Alt - label on PC keyboard. Xorg keysyms: Alt_L, Alt_R
+Ctrl - label on PC keyboard. Xorg keysyms: Ctrl_L, Ctrl_R 
+Super - on most PC keyboards labeled with Windows logo. Keysyms: Super_L, Super_R
+Meta - this not a specific key and has special meaning for some applications. For example in Emacs in Terminal it is a Super or Esc.
+Command - default modifier in AppKit. Mapped to the Alt_L and Alt_R. Menu item shortcuts has no special symbol or image. All menu shortcuts (Copy c) mean usage of Command+letter.
+Alternate - Mapped to the Super. Menu item shortcuts shown with italics. Application specific shortcuts (not recommended).
+Control - name for NEXTSPACE (was used in NeXTSTEP). Mapped to the Ctrl_L and Ctrl_R.
 
-** Meta
-   This not a specific key and has special meaning for some applications. For
-   example in Emacs in Terminal it is a Super or Esc.
+_Design Rules_
 
-** Compose Character Key
-   From Wikipedia:
-   A compose key (sometimes called multi key) is a key on a computer keyboard that
-   indicates that the following (usually 2 or more) keystrokes trigger the
-   insertion of an alternate character, typically a precomposed character or a
-   symbol.
-   For instance typing Compose followed by ~ and then n will insert ñ.
+Command   == Alt   == Alt_L and Alt_R      == Mod1
+Alternate == Super == Super_L and Super_R  == Mod4
+Control   == Ctrl  == Ctrl_L and Ctrl_R    == Ctrl
+Shift     == Shift == Shift_L and Shift_R  == Shift
 
+*Command*
 
-* Design Rules
+    WindowMaker = Mod1		Mod1+m, Mod1+w, Mod1+h
+    Xorg        = Alt_L, Alr_R
+    Emacs GUI   = Meta
+    Terminal    = Command
+    AppKit      = Command
 
-  Command   == Alt   == Alt_L and Alt_R      == Mod1
-  Alternate == Super == Super_L and Super_R  == Mod4
-  Control   == Ctrl  == Ctrl_L and Ctrl_R    == Ctrl
-  Shift     == Shift == Shift_L and Shift_R  == Shift
-  
-  Note: if you want to use some shortcuts in your application that overlapped
-  with shortcuts bound to menu items — your shortcuts will ignored and actions
-  connected to menu items will be called. Application level (AppKit, menu items,
-  popup buttons etc.) shortcuts have higher priority.
-  
-  Actions in application uses Command modifier.
-  Actions that involve desktop manipulation called with Alternate modifier.
-  X Window applications usually uses CUA standard (Control or Ctrl modifier).
+• AppKit — Command (вызов пунктов меню, перемещение по тексту и т.д.);
+• Workspace/WindowMaker — should not be used exept the following:
+	Command+m (Mod1+m) - Miniaturize window. If AppKit (GNUstep) window
+	focused: do not miniaturize and send keypress to application.
+	Command+w (Mod1+m) - Close window. If AppKit (GNUstep) window
+	focused: do not close window and send keypress to application.
+	Command+h (Mod1+h) - Hide application windows. If AppKit (GNUstep)
+	application active: do not hide windows and send keypress to
+	application.
+• X Window applications (Qt, GTK+) пользуются на свое усмотрение за исключением
+сочетаний, которые интерпретируются Workspace/WindowMaker (описано в
+предыдущем пункте).
 
-** Command
+*Alternate* (Super, Win)
 
-   |-------------+--------------+------------------------------|
-   | Context     | Name         | Overlapping shortcuts        |
-   |-------------+--------------+------------------------------|
-   | WindowMaker | Mod1         | Mod1 + m, Mod1 + w, Mod1 + h |
-   | Xorg        | Alt_L, Alt_R |                              |
-   | Emacs GTK   | Meta         |                              |
-   | Terminal    | Command      |                              |
-   | AppKit      | Command      |                              |
-   
-   
-   • AppKit — Command (вызов пунктов меню, перемещение по тексту и т.д.);
-   • WindowMaker — should not use exept the following actions:
-   Command + m (Mod1 + m) - Miniaturize window. If AppKit (GNUstep) window
-   focused: do not miniaturize and send keypress to application.
-   Command + w (Mod1 + m) - Close window. If AppKit (GNUstep) window
-   focused: do not close window and send keypress to application.
-   Command + h (Mod1 + h) - Hide application windows. If AppKit (GNUstep)
-   application active: do not hide windows and send keypress to
-   application.
-   • X Window applications (Qt, GTK+) пользуются на свое усмотрение за исключением
-   сочетаний, которые интерпретируются Workspace/WindowMaker (описано в
-   предыдущем пункте).
-
-** Alternate (Super, Win)
-
-   |-------------+------------------+-----------------------|
-   | Context     | Name             | Overlapping shortcuts |
-   |-------------+------------------+-----------------------|
-   | WindowMaker | Mod4             |                       |
-   | Xorg        | Super_L, Super_R |                       |
-   | Emacs GTK   | Meta             |                       |
-   | Terminal    | Meta             |                       |
-   | AppKit      | Alternate        |                       |
+    WindowMaker = Mode4
+    Xorg        = Super_L, Super_R
     Terminal    = Meta (sends Escape sequence)
-    • AppKit - Alternate (например при перетаскивании мышкой файлов и нажатом
-      Super меняется тип опреации с Move на Copy).
-    • Workspace - Super (Mod4), используется для управления окнами и
-      workspaces: перемещение, изменение размеров, тайлинг, переключение между
-      workspaces, переключение между окнами одного приложения (Super-Tab),
-      перетаскивание и изменение размеров окон (Super-RMB Click, Super-LMB
-      Click).
-    • Приложения X Window - сейчас не могу припомнить приложения, которые
-      используют Super как модификатор в приложении. Наоборот - да: в инструкции
-      по установке Maya на Linux есть указание переназначить модификатор в GNOME
-      с Alt на Super.
-    • Terminal + Emacs - Terminal использует Super как замену Alt в Emacs
-      (генерирует Escape-последовательность, которая воспринимается Emacs как
-      нажатие Alt+ в консоли Linux).
+	• AppKit - Alternate (например при перетаскивании мышкой файлов и нажатом Super меняется тип опреации с Move на Copy).
+	• Workspace - Super (Mod4), используется для управления окнами и workspaces: перемещение, изменение размеров, тайлинг, переключение между workspaces, переключение между окнами одного приложения (Super-Tab), перетаскивание и изменение размеров окон (Super-RMB Click, Super-LMB Click).
+	• Приложения X Window - сейчас не могу припомнить приложения, которые используют Super как модификатор в приложении. Наоборот - да: в инструкции по установке Maya на Linux есть указание переназначить модификатор в GNOME с Alt на Super.
+	• Terminal + Emacs - Terminal использует Super как замену Alt в Emacs (генерирует Escape-последовательность, которая воспринимается Emacs как нажатие Alt+ в консоли Linux).
 
-** Control & Shift
-   Тут никаких проблем - Control и Shift являются сами собой и различными
-   приложениями интерпретируются как есть.
-   Приложения X Window (GNOME, KDE, Qt, GTK+) используют Control как основной
-   модификатор приложений (вызов меню, перемещение по тексту и т.д.).
-   В приложениях GNUstep Control, как правило, не используется. За исключением: в
-   WindowMaker - переключение между workspaces (нужно что-то с этим делать), а в
-   приложениях X Window это сочетание клавиш используется для перемещения по
-   тексту. В MacOS такой проблемы нет, поскольку приложения используют для
-   перемещения по тексту сочетание клавиш Command+стрелки. Но, в принципе, эту
-   привычку можно поменять на Super+стрелки в Workspace/WindowMaker.
-   
-   There are some usefull/comfort shortcuts users may tend do see:
-   Ctrl-Insert, Shift-Delete, Shift-Insert — Copy/Cut/Paste
-   Ctrl-Home, Ctrl-End — Beginning/End of the document
-   Ctrl-Left, Ctrl-Right — Go one word left/right.
-   
-   Caveats: Control-Home, Control-End не работает в Emacs. Похоже это такая же
-   ситуация как и с Shift.
+*Control & Shift*
 
+Тут никаких проблем - Control и Shift являются сами собой и различными приложениями интерпретируются как есть.
+Приложения X Window (GNOME, KDE, Qt, GTK+) используют Control как основной
+модификатор приложений (вызов меню, перемещение по тексту и т.д.). 
+В приложениях GNUstep Control, как правило, не используется. За исключением: в
+WindowMaker - переключение между workspaces (нужно что-то с этим делать), а в
+приложениях X Window это сочетание клавиш используется для перемещения по
+тексту. В MacOS такой проблемы нет, поскольку приложения используют для
+перемещения по тексту сочетание клавиш Command+стрелки. Но, в принципе, эту
+привычку можно поменять на Super+стрелки в Workspace/WindowMaker.
 
-* Terminal: Shift и другие сочетания модификаторов (Shift-Alt, Ctrl-Alt, Ctrl-Alt-Shift)
+There are some usefull/comfort shortcuts users may tend do see:
+	Ctrl-Insert, Shift-Delete, Shift-Insert — Copy/Cut/Paste
+	Ctrl-Home, Ctrl-End — Beginning/End of the document
+	Ctrl-Left, Ctrl-Right — Go one word left/right.
 
-  Терминальные программы пользуются ncurses, которая в свою очередь пользуется
-  terminfo. Terminal изначально был реализован с использованием парсера Linux
-  Console. Соответственно при запуске приложений переменная TERM выставляется в
-  значение 'linux'. Файл terminfo 'linux' описывает возможности консоли
-  Linux. Консоль Linux не поддерживает модификатор Shift.
-  
-  В xterm эта проблема решена следующим образом в файл terminfo внесены
-  расширения, которые описывают char sequences для (например, для Shift-Up это
-  '\e1;2A'. Соответственно, приложение терминала может транслировать нажатие
-  сочетания клавиш в соответствующий char sequence.
-  
-  По-идее всю недостающую функциональность нужно добавить в terminfo-файл linux,
-  назвать его linuxterm, положить его в ~/.terminfo и выставлять переменную
-  TERM=linuxterm при создании окна терминала. Но видимо не все так просто. Просто
-  перекомпилированный файл xterm работает не так (например, Shift-Right/Left
-  работает, а Shift-Up/Down - нет).
+Caveats: Control-Home, Control-End не работает в Emacs. Похоже это такая же
+ситуация как и с Shift.
 
-* Actions called with shortcut that uses Command Key
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Action              | Menu/Option                      | GNUstep               | WindowMaker        |
-|                     | GS - GNUstep, WM - WindowMaker   |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Close window        | GS: Windows -> Close Window      | Command + w           | Mod1 + w           |
-|                     | WM: CloseKey                     |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Miniaturize window  | GS: Windows -> Minaturize Window | Command + m           | Mod1 + m           |
-|                     | WM: MiniaturizeKey               |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Hide all windows of | GS: Hide                         | Command + h           | Mod1 + h           |
-| the application     | WM: HideKey                      |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Quit application    | GS: Quit                         | Command + q           | ?                  |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Hide                |                                  |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Switch focus to the | GS: None                         | Command + Tab         | Mod1 + Tab         |
-| next window         | WM: FocusNextKey                 |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Switch focus to the | GS: None                         | Command + Shift + Tab | Mod1 + Shift + Tab |
-| previous window     |                                  |                       |                    |
+*Compose Key*
+Это специальная кнопка, с которой еще предстоит разобраться.
 
-* Window manager specific shortcuts (Workspace/WindowMaker)
-|---------------------------------------+-------------------+---------------------|
-| Action                                | Option            | Shortcut            |
-|---------------------------------------+-------------------+---------------------|
-|                                       |                   |                     |
-| Order front "Run" panel               | RunKey            | Mod4 + R            |
-| Start new instance of application     | WindowRelaunchKey | Mod4 + Shift + R    |
-| Hide windows of inactive applications | HideOthersKey     | Mod1 + Shift + H    |
-| Miniaturize all windows of this       | MiniaturizeAllKey | Mod1 + Shift + M    |
-| application                           |                   |                     |
-| Change ordering level of Dock         | DockRaiseLowerKey | Mod4 + Shift + D    |
-|                                       |                   |                     |
-| Shade window                          | ShadeKey          | Mod4 + KP_Substract |
-| Maximize window at all edges          | MaximizeKey       | Mod4 + KP_Add       |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
+Alternate и Command
+
+Note: if you want to use some shortcuts in your application that overlapped with shortcuts bound to menu items — your shortcuts will ignored and actions connected to menu items will be called. Application level (AppKit, menu items, popup buttons etc.) shortcuts have higher priority.
+
+1. Command always used for AppKit applications (GNUstep, NextSpace).
+Text elements (NSTextView, NSTextField):
+	Left/Right	Word Left/Right
+	Home/End	Begin/End of document
+	PgUp/PgDown	Page Up/Down with selected line at center
+2. Alternate used for:
+	Window management: 	Up, Down, Left, Right
+	Keyboard layouts switching: 	Space
+	Screen Lock:	ScrLck
+	Terminal.app (Treat as Meta):	Generates "\e"
+
+So actions in application context called by using shortcuts with Command modifier.
+Actions that involve desktop manipulation called with Alternate+ shortcuts.
+X Window applications usually uses CUA standard.
+      
+Terminal: Shift и другие сочетания модификаторов (Shift-Alt, Ctrl-Alt, Ctrl-Alt-Shift)
+
+Терминальные программы пользуются ncurses, которая в свою очередь пользуется terminfo. Terminal изначально был реализован с использованием парсера Linux Console. Соответственно при запуске приложений переменная TERM выставляется в значение 'linux'. Файл terminfo 'linux' описывает возможности консоли Linux. Консоль Linux не поддерживает модификатор Shift.
+
+В xterm эта проблема решена следующим образом в файл terminfo внесены расширения, которые описывают char sequences для (например, для Shift-Up это '\e1;2A'. Соответственно, приложение терминала может транслировать нажатие сочетания клавиш в соответствующий char sequence.
+
+По-идее всю недостающую функциональность нужно добавить в terminfo-файл linux, назвать его linuxterm, положить его в ~/.terminfo и выставлять переменную TERM=linuxterm при создании окна терминала. Но видимо не все так просто. Просто перекомпилированный файл xterm работает не так (например, Shift-Right/Left работает, а Shift-Up/Down - нет).
