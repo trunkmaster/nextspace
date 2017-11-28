@@ -1,19 +1,19 @@
-{\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f0\fswiss Helvetica;\f1\fnil Terminus;}
-\paperw13040\paperh11240\hyphauto1\hyphfactor0\pard\ql\f0\fs24 Source: http://wiki.gnustep.org/index.php/Nfont_packages\par
+{\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f0\fswiss Helvetica;\f2\fnil Terminus;\f1\froman Times;}
+\paperw13040\paperh11240\hyphauto1\hyphfactor0\f0\fs24\pard\ql Source: http://wiki.gnustep.org/index.php/Nfont_packages\par
 \fs36 \par
-Nfonts packages\fs24 \par
+\pard\ql\f1\fs88\i\pard\tx2020\tx2400\ql Nfonts packages\f0\fs24\i0 \par
 \par
-The Arts backend manages fonts using so-called nfonts.\par
-Nfonts are hand-crafted directories with a plist file and the font files, where the backend can find additional information to the fonts.\par
-System-wide available Nfont directories are usually installed to $GNUSTEP_SYSTEM_ROOT/Library/Fonts/.\par
+\f1\fs28 The Arts backend manages fonts using so-called nfonts.\par
+\pard\ql\pard\tx0\tx1940\ql Nfonts are hand-crafted directories with a plist file and the font files, where the backend can find additional information to the fonts.\par
+\pard\ql\pard\tx2020\tx2400\ql System-wide available Nfont directories are usually installed to $GNUSTEP_SYSTEM_ROOT/Library/Fonts/.\par
 \par
-Creating a nfont is mainly a trivial task, so there are tools to help you creating them. One of them is alexm\rquote s mknfonts package.\par
+Creating a nfont is mainly a trivial task, so there are tools to help you creating them. One of them is alexm\rquote s mknfonts package.\f0\fs24 \par
+\pard\ql\pard\ql \par
+\fs52\b Example\fs24\b0 \par
 \par
-\fs36 Example\fs24 \par
+\f1\fs28 A typical nfont folder - in this case Arial.nfont packaged by Jeff Teunissen (Deek) - looks like this:\f0\fs24 \par
 \par
-A typical nfont folder - in this case Arial.nfont packaged by Jeff Teunissen (Deek) - looks like this:\par
-\par
-\f1 Arial.nfont/\par
+\f2 Arial.nfont/\par
 Arial.nfont/ariali.ttf\par
 Arial.nfont/arial.ttf\par
 Arial.nfont/arialbi.ttf\par
@@ -22,9 +22,9 @@ Arial.nfont/FontInfo.plist\par
 Arial.nfont/arialblk.ttf\par
 \par
 \f0 \par
-This is the FontInfo.plist file in that directory:\par
+\f1\fs28 This is the FontInfo.plist file in that directory:\f0\fs24 \par
 \par
-\f1 \{\par
+\f2 \{\par
   Description = "Monotype Arial, WGL4 Character Set";\par
   Faces = (\par
     \{\par
@@ -106,11 +106,11 @@ This is the FontInfo.plist file in that directory:\par
   Version = 2.82;\par
 \}\par
 \f0 \par
-\fs36 Rendering Hints\fs24 \par
+\fs52\b Rendering Hints\fs24\b0 \par
 \par
-There\rquote s a hack for encoding rendering hints into Nfonts packages. You provide them using the \b RenderHints_hack\b0  value. It\rquote s a 24-bit value (usually given in hexadecimal form), where the highest-order byte contains information on if we want to use antialiasing by default and the two following bytes contain hinting information for antialiased displays and non-antialiased displays.\par
+\f1\fs28 There\rquote s a hack for encoding rendering hints into Nfonts packages. You provide them using the\f0\fs24  \f1\fs28\b RenderHints_hack\b0  value. It\rquote s a 24-bit value (usually given in hexadecimal form), where the highest-order byte contains information on if we want to use antialiasing by default and the two following bytes contain hinting information for antialiased displays and non-antialiased displays.\f0\fs24 \par
 \par
-\f1 <-- high-order bits                       low-order bits -->\par
+\f2 <-- high-order bits                       low-order bits -->\par
 [  0 0 0 0 0 0 0 D  |  0 0 0 0 0 0 A A  | 0 0 0 0 0 0 N N  ]\par
                  |                 \\ /                \\ /\par
       antialiasing switch           |                  |\par
@@ -118,15 +118,15 @@ There\rquote s a hack for encoding rendering hints into Nfonts packages. You pro
                      on antialiased displays    on non-antialiased displays\f0 \par
 \par
 \par
-The rendering hint types are as follows:\par
+\f1\fs28 The rendering hint types are as follows:\par
 \par
-    \rquote 0\rquote  - unhinted, use only the font geometry\par
-    \rquote 1\rquote  - use FreeType\rquote s auto-hinter\par
-    \rquote 2\rquote  - use instructions in the font, if present\par
-    \rquote 3\rquote  - force automatic hinting \par
+\pard\ql\pard\tx13000\ql     \rquote \f2\fs24 0\f1\fs28 \rquote  - unhinted, use only the font geometry\par
+\pard\ql\pard\ql     \rquote \f2\fs24 1\f1\fs28 \rquote  - use FreeType\rquote s auto-hinter\par
+    \rquote \f2\fs24 2\f1\fs28 \rquote  - use instructions in the font, if present\par
+    \rquote \f2\fs24 3\f1\fs28 \rquote  - force automatic hinting \f0\fs24 \par
 \par
 \par
-\fs36 Rendering Hint example\fs24 \par
+\fs48\b Rendering Hint example\fs24\b0 \par
 \par
-Let\rquote s say we have a \f1 RenderHints_hack\f0  value of \f1 0x010203\f0 . This would then mean "use antialiasing, on antialiased displays use instructions in the font and on unantialiased displays force automatic hinting".\par
+\f1\fs28 Let\rquote s say we have a \i RenderHints_hack\i0  value of \f2\fs24 0x010203\f1\fs28 . This would then mean "use antialiasing, on antialiased displays use instructions in the font and on unantialiased displays force automatic hinting".\f0\fs24 \par
 }
