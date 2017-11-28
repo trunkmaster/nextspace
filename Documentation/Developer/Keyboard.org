@@ -1,19 +1,15 @@
 * General thoughts
 
 AFAIK, there are several modifiers usage styles:
-
 • Control — main modifier in Windows, GNOME, KDE. Shift и Alt — used as
-  additional modifier (for example, Ctrl+Shift+F in Visio).
-
+            additional modifier (for example, Ctrl+Shift+F in Visio).
 • Command — NeXT, Apple — physically located where Alt key located at PC-style
-    keyboard. This is essential from UX point of view.
-
+            keyboard. This is essential from UX point of view.
 • Alt — Maya, WindowMaker, Emacs — applications use Alt as additional modifier
-    for quite important actions.
-
+        for quite important actions.
 • Super — AKA Win — used for system specific actions (window management, lock
-    screen, etc).
-
+          screen, etc).
+          
 * Terminology
 
 Here is the mapping of modifiers on PC keyboard based on keys physical
