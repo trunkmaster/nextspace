@@ -9,6 +9,9 @@ AFAIK, there are several modifiers usage styles:
         for quite important actions.
 - Super — AKA Win — used for system specific actions (window management, lock
           screen, etc).
+On Linux existing applications use different keyboard usage style.
+This obvious that we need to use keyboard modifiers with respect to as much as possible applications.
+It is not a simple thing.
           
 * Terminology
 
