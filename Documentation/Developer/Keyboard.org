@@ -18,6 +18,7 @@ possible application usage styles. It is not a simple thing.
 In this part of documentation I want to define some rules for applications
 running inside NEXTSPACE environment.
           
+
 * Definitions
 
 Here is the mapping of modifiers on PC keyboard based on physical location of
@@ -34,28 +35,31 @@ Further sections of this document uses names Control, Alternate, Command, Shift.
 
 *Command*
 
-Default modifier for NEXTSPACE applications. Mapped to the Alt_L and
-Alt_R. Menu item has no special symbol or image for shortcut label. All menu
- shortcut labels mean usage of 'Command + letter'.
+Default modifier for NEXTSPACE applications. Mapped to the *Alt*. Menu item has
+no special symbol or image for shortcut label. All menu shortcut labels mean
+usage of *Command + letter*.
 
 *Alternate*
 
-Mapped to the Super. Menu item shortcut labels shown with italics. Application
-specific shortcuts (not recommended) may use this modifier if no free letters
-for Command modifier shortcuts.
+Mapped to the *Super(Win)* key. Menu item shortcut labels shown with
+italics. Application specific shortcuts (not recommended) may use this modifier
+if no free letters for Command modifier shortcuts.
 
 *Control, Shift*
+
 This keys has the same meaning everywhere.
 
 ** Special modifiers
 
 *Meta*
+
 This not a specific key and has special meaning for some applications. For
 example Emacs in Terminal maps it to a Super. If your application will use some
 embedded applications don't use Alternate+ shortcuts for application's GUI
 elements (menu, popup button).
 
 *Compose Character Key*
+
 From Wikipedia:
 "A compose key (sometimes called multi key) is a key on a computer keyboard
 that indicates that the following (usually 2 or more) keystrokes trigger the
@@ -64,6 +68,7 @@ symbol. For instance typing Compose followed by ~ and then n will insert ñ."
 
 
 * Reserved keyboard shortcuts
+
 You cannot use these reserved characters as shortcuts for any other
 commands. If your application does not allow the user to open files, it will
 not have an Open command and must not use Command-o as a keyboard shortcuts.
@@ -94,6 +99,7 @@ application's window similar to AppKit one.
 This section is based on "Reserved Keyboard Alternatives" of "OpenStep User
 Interface Guidelines" document.
 
+
 * Required keyboard shortcuts
 
 If your application provides a function listed in table, you must use the
@@ -122,7 +128,9 @@ on this list.
 This section is based on "Required Keyboard Alternatives" of "OpenStep User
 Interface Guidelines" document.
 
-* Window manager specific shortcuts (Workspace/WindowMaker)
+
+* Reserved shortcuts for window manager actions
+
 |---------------------------------------+----------------------+---------------------|
 | Action                                | Configuration Option | Shortcut            |
 |---------------------------------------+----------------------+---------------------|
@@ -138,6 +146,7 @@ Interface Guidelines" document.
 |                                       |                      |                     |
 | Switch focus to the next window       | FocusNextKey         | Mod1 + Tab          |
 | Switch focus to the prevoious window  | FocusPrevKey         | Mod1 + Shift + Tab  |
+
 
 * Design Rules
 
