@@ -9,11 +9,11 @@ As far as I know, there are several modifiers usage styles:
 - Super(Win) — Windows, GNOME - used for system specific actions (window
   management, lock screen, dashboard, etc).
 
-On Linux there are some applications use it's own keyboard usage style (Emacs,
+On Linux there are some applications that has it's own keyboard usage style (Emacs,
 Blender, Maya). Usually it's applications that not bound to specific DE.
 
 This obvious that I need to use keyboard modifiers with respect to as much as
-possible application usage styles. It is not a simple thing.
+possible application usage styles.
 
 In this part of documentation I want to define some rules for applications
 running inside NEXTSPACE environment.
