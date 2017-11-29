@@ -26,7 +26,6 @@ keys on NeXT keyboard.
 |-----------+----------------------+------------------+--------------------+-------------|
 | Key name  | Physical location    | Xorg keysym      | NeXTSTEP/NEXTSPACE | WindowMaker |
 |-----------+----------------------+------------------+--------------------+-------------|
-|-----------+----------------------+------------------+--------------------+-------------|
 | Alt       | 'Alt' and 'Alt Gr'   | Alt_L, Alt_R     | Command            | Mod1        |
 | Ctrl      | 'Ctrl'               | Ctrl_L, Ctrl_R   | Control            | Control     |
 | Super,Win | Between Alt and Ctrl | Super_L, Super_R | Alternate          | Mod4        |
@@ -67,6 +66,7 @@ that indicates that the following (usually 2 or more) keystrokes trigger the
 insertion of an alternate character, typically a precomposed character or a
 symbol. For instance typing Compose followed by ~ and then n will insert ñ."
 
+
 * Design Rules
 
 - if you want to use some shortcuts in your application that overlapped
@@ -82,6 +82,7 @@ popup buttons etc.) shortcuts have higher priority.
 
 - If you plan to use Alternate as key modifier for shortcut in your application,
 please check if this shortcut is not used for window management functions.
+
 
 * Reserved keyboard shortcuts
 
@@ -147,18 +148,18 @@ Interface Guidelines" document.
 
 * Reserved shortcuts for window manager actions
 
-|---------------------------------------+----------------------+---------------------|
-| Action                                | Configuration Option | Shortcut            |
-|---------------------------------------+----------------------+---------------------|
-| Order front "Run" panel               | RunKey               | Mod4 + R            |
-| Start new instance of application     | WindowRelaunchKey    | Mod4 + Shift + R    |
-| Hide windows of inactive applications | HideOthersKey        | Mod1 + Shift + H    |
-| Miniaturize all windows of this       | MiniaturizeAllKey    | Mod1 + Shift + M    |
-| application                           |                      |                     |
-| Change ordering level of Dock         | DockRaiseLowerKey    | Mod4 + Shift + D    |
-|                                       |                      |                     |
-| Shade window                          | ShadeKey             | Mod4 + KP_Substract |
-| Maximize window at all edges          | MaximizeKey          | Mod4 + KP_Add       |
-|                                       |                      |                     |
-| Switch focus to the next window       | FocusNextKey         | Mod1 + Tab          |
-| Switch focus to the prevoious window  | FocusPrevKey         | Mod1 + Shift + Tab  |
+|---------------------------------------------+----------------------+---------------------|
+| Action                                      | Configuration Option | Shortcut            |
+|---------------------------------------------+----------------------+---------------------|
+| Order front "Run" panel                     | RunKey               | Mod4 + R            |
+| Start new instance of application           | WindowRelaunchKey    | Mod4 + Shift + R    |
+| Hide windows of inactive applications       | HideOthersKey        | Mod1 + Shift + H    |
+| Miniaturize all windows of this application | MiniaturizeAllKey    | Mod1 + Shift + M    |
+|                                             |                      |                     |
+| Change ordering level of Dock               | DockRaiseLowerKey    | Mod4 + Shift + D    |
+|                                             |                      |                     |
+| Shade window                                | ShadeKey             | Mod4 + KP_Substract |
+| Maximize window at all edges                | MaximizeKey          | Mod4 + KP_Add       |
+|                                             |                      |                     |
+| Switch focus to the next window             | FocusNextKey         | Mod1 + Tab          |
+| Switch focus to the prevoious window        | FocusPrevKey         | Mod1 + Shift + Tab  |
