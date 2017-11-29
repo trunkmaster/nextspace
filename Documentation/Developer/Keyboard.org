@@ -26,6 +26,7 @@ keys on NeXT keyboard.
 |-----------+----------------------+------------------+--------------------+-------------|
 | Key name  | Physical location    | Xorg keysym      | NeXTSTEP/NEXTSPACE | WindowMaker |
 |-----------+----------------------+------------------+--------------------+-------------|
+|-----------+----------------------+------------------+--------------------+-------------|
 | Alt       | 'Alt' and 'Alt Gr'   | Alt_L, Alt_R     | Command            | Mod1        |
 | Ctrl      | 'Ctrl'               | Ctrl_L, Ctrl_R   | Control            | Control     |
 | Super,Win | Between Alt and Ctrl | Super_L, Super_R | Alternate          | Mod4        |
