@@ -1,67 +1,164 @@
-* General thoughts
+* Introduction
 
-AFAIK, there are several modifiers usage styles:
-- Control — main modifier in Windows, GNOME, KDE. Shift и Alt — used as
-            additional modifier (for example, Ctrl+Shift+F in Visio).
+As far as I know, there are several modifiers usage styles:
+- Ctrl - Windows, GNOME, KDE. Shift and Alt — used as additional modifiers.
 - Command — NeXT, Apple — physically located where Alt key located at PC-style
-            keyboard. This is essential from UX point of view.
-- Alt — Maya, WindowMaker, Emacs — applications use Alt as additional modifier
-        for quite important actions.
-- Super — AKA Win — used for system specific actions (window management, lock
-          screen, etc).
-On Linux existing applications use different keyboard usage style.
-This obvious that we need to use keyboard modifiers with respect to as much as possible applications.
-It is not a simple thing.
+  keyboard. This is essential from UX point of view.
+- Alt(Meta) — WindowMaker — applications use Alt as additional modifier
+  for quite important actions.
+- Super(Win) — Windows, GNOME - used for system specific actions (window
+  management, lock screen, dashboard, etc).
+
+On Linux there are some applications use it's own keyboard usage style (Emacs,
+Blender, Maya). Usually it's applications that not bound to specific DE.
+
+This obvious that I need to use keyboard modifiers with respect to as much as
+possible application usage styles. It is not a simple thing.
+
+In this part of documentation I want to define some rules for applications
+running inside NEXTSPACE environment.
           
-* Terminology
+* Definitions
 
-Here is the mapping of modifiers on PC keyboard based on keys physical
-location on NeXT keyboard.
-|---------------+----------------------------+------------------+-----------+-----------|
-| Modifier name | Location on PC keyboards   | Xorg keysym      | NeXTSTEP  | NEXTSPACE |
-|---------------+----------------------------+------------------+-----------+-----------|
-| Alt           | Labeled 'Alt' and 'Alt Gr' | Alt_L, Alt_R     | Command   | Command   |
-| Ctrl          | Labeled 'Ctrl'             | Ctrl_L, Ctrl_R   | Control   | Control   |
-| Super         | Labeled with Windows logo  | Super_L, Super_R | Alternate | Alternate |
-|               |                            |                  |           |           |
+Here is the mapping of modifiers on PC keyboard based on physical location of
+keys on NeXT keyboard.
+|-----------+----------------------+------------------+--------------------+-------------|
+| Key name  | Physical location    | Xorg keysym      | NeXTSTEP/NEXTSPACE | WindowMaker |
+|-----------+----------------------+------------------+--------------------+-------------|
+| Alt       | 'Alt' and 'Alt Gr'   | Alt_L, Alt_R     | Command            | Mod1        |
+| Ctrl      | 'Ctrl'               | Ctrl_L, Ctrl_R   | Control            | Control     |
+| Super,Win | Between Alt and Ctrl | Super_L, Super_R | Alternate          | Mod4        |
+| Shift     | Shift                | Shift_L, Shift_R | Shift              | Shift       |
 
-** Command
-   Default modifier in AppKit. Mapped to the Alt_L and Alt_R. Menu item
-   shortcuts has no special symbol or image. All menu shortcut labels mean
-   usage of 'Command + letter'.
+Further sections of this document uses names Control, Alternate, Command, Shift.
 
-** Alternate
-   Mapped to the Super. Menu item shortcut labels shown with
-   italics. Application specific shortcuts (not recommended).
+*Command*
 
-** Meta
-   This not a specific key and has special meaning for some applications. For
-   example in Emacs in Terminal it is a Super or Esc.
+Default modifier for NEXTSPACE applications. Mapped to the Alt_L and
+Alt_R. Menu item has no special symbol or image for shortcut label. All menu
+ shortcut labels mean usage of 'Command + letter'.
 
-** Compose Character Key
-   From Wikipedia:
-   A compose key (sometimes called multi key) is a key on a computer keyboard that
-   indicates that the following (usually 2 or more) keystrokes trigger the
-   insertion of an alternate character, typically a precomposed character or a
-   symbol.
-   For instance typing Compose followed by ~ and then n will insert ñ.
+*Alternate*
 
+Mapped to the Super. Menu item shortcut labels shown with italics. Application
+specific shortcuts (not recommended) may use this modifier if no free letters
+for Command modifier shortcuts.
+
+*Control, Shift*
+This keys has the same meaning everywhere.
+
+** Special modifiers
+
+*Meta*
+This not a specific key and has special meaning for some applications. For
+example Emacs in Terminal maps it to a Super. If your application will use some
+embedded applications don't use Alternate+ shortcuts for application's GUI
+elements (menu, popup button).
+
+*Compose Character Key*
+From Wikipedia:
+"A compose key (sometimes called multi key) is a key on a computer keyboard
+that indicates that the following (usually 2 or more) keystrokes trigger the
+insertion of an alternate character, typically a precomposed character or a
+symbol. For instance typing Compose followed by ~ and then n will insert ñ."
+
+
+* Reserved keyboard shortcuts
+You cannot use these reserved characters as shortcuts for any other
+commands. If your application does not allow the user to open files, it will
+not have an Open command and must not use Command-o as a keyboard shortcuts.
+|----------------------+--------------------+----------+-------------|
+| Keyboard Alternative | Command            | Menu     | WindowMaker |
+|----------------------+--------------------+----------+-------------|
+| Command-?            | Help               | Info     |             |
+| Command-n            | New                | Document |             |
+| Command-o            | Open               | Document |             |
+| Command-s            | Save               | Document |             |
+| Command-a            | Select All         | Edit     |             |
+| Command-c            | Copy               | Edit     |             |
+| Command-v            | Paste              | Edit     |             |
+| Command-x            | Cut                | Edit     |             |
+| Command-z            | Undo               | Edit     |             |
+| Command-m            | Miniaturize Window | Windows  |             |
+| Command-w            | Close Window       | Windows  | Mod1-w      |
+| Command-h            | Hide               | Main     | Mod1-h      |
+| Command-p            | Print              | Main     |             |
+| Command-q            | Quit               | Main     | Mod1-q      |
+
+Shortcuts specified in "WindowMaker" column overlap menu item keybard
+alternatives. If such shortcut pressed over the GNUstep application
+WindowMaker do nothing with windows and send shortcut to AppKit. If such
+shortcut pressed over the X11 application WindowMaker process the action to
+application's window similar to AppKit one.
+
+This section is based on "Reserved Keyboard Alternatives" of "OpenStep User
+Interface Guidelines" document.
+
+* Required keyboard shortcuts
+
+If your application provides a function listed in table, you must use the
+command and required keyboard alternative assigned to it. For example, if the
+application has a Find panel, you must use Command-f as the keyboard
+alternative for bringing it up.
+
+If the application does not implement a listed function (it does not have a
+Find panel), you can assign its required keyboard alternative (Command-f) to
+another menu command. However, to preserve interapplication consistency, it
+is strongly recommended that you first try to use characters other than those
+on this list.
+|----------------------+-------------------+--------|
+| Keyboard Alternative | Command           | Menu   |
+|----------------------+-------------------+--------|
+| Command-;            | Check Spelling    | Edit   |
+| Command-b            | Bold (Unbold)     | Font   |
+| Command-d            | Find Previous     | Find   |
+| Command-e            | Enter Selection   | Find   |
+| Command-f            | Find Panel        | Find   |
+| Command-g            | Find Next         | Find   |
+| Command-i            | Italic (Unitalic) | Font   |
+| Command-t            | Font Panel        | Font   |
+| Command-C            | Colors            | Varies |
+
+This section is based on "Required Keyboard Alternatives" of "OpenStep User
+Interface Guidelines" document.
+
+* Window manager specific shortcuts (Workspace/WindowMaker)
+|---------------------------------------+----------------------+---------------------|
+| Action                                | Configuration Option | Shortcut            |
+|---------------------------------------+----------------------+---------------------|
+| Order front "Run" panel               | RunKey               | Mod4 + R            |
+| Start new instance of application     | WindowRelaunchKey    | Mod4 + Shift + R    |
+| Hide windows of inactive applications | HideOthersKey        | Mod1 + Shift + H    |
+| Miniaturize all windows of this       | MiniaturizeAllKey    | Mod1 + Shift + M    |
+| application                           |                      |                     |
+| Change ordering level of Dock         | DockRaiseLowerKey    | Mod4 + Shift + D    |
+|                                       |                      |                     |
+| Shade window                          | ShadeKey             | Mod4 + KP_Substract |
+| Maximize window at all edges          | MaximizeKey          | Mod4 + KP_Add       |
+|                                       |                      |                     |
+| Switch focus to the next window       | FocusNextKey         | Mod1 + Tab          |
+| Switch focus to the prevoious window  | FocusPrevKey         | Mod1 + Shift + Tab  |
 
 * Design Rules
 
-  Command   == Alt   == Alt_L and Alt_R      == Mod1
-  Alternate == Super == Super_L and Super_R  == Mod4
-  Control   == Ctrl  == Ctrl_L and Ctrl_R    == Ctrl
-  Shift     == Shift == Shift_L and Shift_R  == Shift
+Command   == Alt   == Alt_L and Alt_R      == Mod1
+Alternate == Super == Super_L and Super_R  == Mod4
+Control   == Ctrl  == Ctrl_L and Ctrl_R    == Ctrl
+Shift     == Shift == Shift_L and Shift_R  == Shift
   
   Note: if you want to use some shortcuts in your application that overlapped
   with shortcuts bound to menu items — your shortcuts will ignored and actions
   connected to menu items will be called. Application level (AppKit, menu items,
   popup buttons etc.) shortcuts have higher priority.
   
-  Actions in application uses Command modifier.
-  Actions that involve desktop manipulation called with Alternate modifier.
-  X Window applications usually uses CUA standard (Control or Ctrl modifier).
+Actions in application uses Command modifier for keyboard alternatives.
+
+Actions that involve desktop manipulation called with Alternate modifier.
+
+X Window applications usually uses CUA standard (Control or Ctrl modifier).
+
+If you plan to use Alternate as key modifier for shortcut in your application,
+please check if this shortcut is not used for window management functions.
 
 ** Command
 
@@ -133,73 +230,3 @@ location on NeXT keyboard.
    
    Caveats: Control-Home, Control-End не работает в Emacs. Похоже это такая же
    ситуация как и с Shift.
-
-
-* Terminal: Shift и другие сочетания модификаторов (Shift-Alt, Ctrl-Alt, Ctrl-Alt-Shift)
-
-  Терминальные программы пользуются ncurses, которая в свою очередь пользуется
-  terminfo. Terminal изначально был реализован с использованием парсера Linux
-  Console. Соответственно при запуске приложений переменная TERM выставляется в
-  значение 'linux'. Файл terminfo 'linux' описывает возможности консоли
-  Linux. Консоль Linux не поддерживает модификатор Shift.
-  
-  В xterm эта проблема решена следующим образом в файл terminfo внесены
-  расширения, которые описывают char sequences для (например, для Shift-Up это
-  '\e1;2A'. Соответственно, приложение терминала может транслировать нажатие
-  сочетания клавиш в соответствующий char sequence.
-  
-  По-идее всю недостающую функциональность нужно добавить в terminfo-файл linux,
-  назвать его linuxterm, положить его в ~/.terminfo и выставлять переменную
-  TERM=linuxterm при создании окна терминала. Но видимо не все так просто. Просто
-  перекомпилированный файл xterm работает не так (например, Shift-Right/Left
-  работает, а Shift-Up/Down - нет).
-
-* Actions called with shortcut that uses Command Key
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Action              | Menu/Option                      | GNUstep               | WindowMaker        |
-|                     | GS - GNUstep, WM - WindowMaker   |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Close window        | GS: Windows -> Close Window      | Command + w           | Mod1 + w           |
-|                     | WM: CloseKey                     |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Miniaturize window  | GS: Windows -> Minaturize Window | Command + m           | Mod1 + m           |
-|                     | WM: MiniaturizeKey               |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Hide all windows of | GS: Hide                         | Command + h           | Mod1 + h           |
-| the application     | WM: HideKey                      |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Quit application    | GS: Quit                         | Command + q           | ?                  |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Hide                |                                  |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Switch focus to the | GS: None                         | Command + Tab         | Mod1 + Tab         |
-| next window         | WM: FocusNextKey                 |                       |                    |
-|---------------------+----------------------------------+-----------------------+--------------------|
-| Switch focus to the | GS: None                         | Command + Shift + Tab | Mod1 + Shift + Tab |
-| previous window     |                                  |                       |                    |
-
-* Window manager specific shortcuts (Workspace/WindowMaker)
-|---------------------------------------+-------------------+---------------------|
-| Action                                | Option            | Shortcut            |
-|---------------------------------------+-------------------+---------------------|
-|                                       |                   |                     |
-| Order front "Run" panel               | RunKey            | Mod4 + R            |
-| Start new instance of application     | WindowRelaunchKey | Mod4 + Shift + R    |
-| Hide windows of inactive applications | HideOthersKey     | Mod1 + Shift + H    |
-| Miniaturize all windows of this       | MiniaturizeAllKey | Mod1 + Shift + M    |
-| application                           |                   |                     |
-| Change ordering level of Dock         | DockRaiseLowerKey | Mod4 + Shift + D    |
-|                                       |                   |                     |
-| Shade window                          | ShadeKey          | Mod4 + KP_Substract |
-| Maximize window at all edges          | MaximizeKey       | Mod4 + KP_Add       |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
-|                                       |                   |                     |
