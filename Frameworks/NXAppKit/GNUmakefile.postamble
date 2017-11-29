@@ -1,13 +1,25 @@
 
 after-clean::
-#	rm -rf Documentation
 
 after-distclean::
-#	rm -fr Documentation
 
 after-install::
-	ln -s $(DESTDIR)/usr/NextSpace/Frameworks/NXAppKit.framework/Versions/Current/Resources/Images /usr/NextSpace/Images
-	ln -s $(DESTDIR)/usr/NextSpace/Frameworks/NXAppKit.framework/Versions/Current/Resources/Fonts /Library/Fonts
+# 	Create link in Local domain if Images or Fonts exist in System domain
+	if [ -e $(GNUSTEP_SYSTEM_LIBRARY)/Images ]; then \
+	  if [ ! -e $(GNUSTEP_LOCAL_LIBRARY)/Images ]; then \
+	    ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Images $(GNUSTEP_LOCAL_LIBRARY); \
+	  fi \
+	else \
+	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Images $(GNUSTEP_SYSTEM_LIBRARY)/Images; \
+	fi
+
+	if [ -e $(GNUSTEP_SYSTEM_LIBRARY)/Fonts ]; then \
+	  if [ ! -e $(GNUSTEP_LOCAL_LIBRARY)/Fonts ]; then \
+	    ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Fonts $(GNUSTEP_LOCAL_LIBRARY); \
+	  fi \
+	else \
+	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Fonts $(GNUSTEP_SYSTEM_LIBRARY)/Fonts; \
+	fi
 
 after-uninstall::
 	rm -r $(DESTDIR)/usr/NextSpace/Images

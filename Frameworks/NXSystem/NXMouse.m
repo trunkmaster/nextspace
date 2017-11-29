@@ -23,7 +23,6 @@
 
 #import "NXMouse.h"
 
-#import <GNUstepGUI/GSDisplayServer.h>
 #import <X11/Xlib.h>
 
 NSString *Acceleration = @"NXMouseAcceleration";
@@ -36,31 +35,37 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
 
 - (NSInteger)acceleration
 {
-  Display *dpy = [GSCurrentServer() serverDevice];
+  Display *dpy = XOpenDisplay(NULL);
   int     accel_numerator, accel_denominator, threshold;
 
   XGetPointerControl(dpy, &accel_numerator, &accel_denominator, &threshold);
+  
+  XCloseDisplay(dpy);
 
   return accel_numerator/accel_denominator;
 }
 - (NSInteger)accelerationThreshold
 {
-  Display *dpy = [GSCurrentServer() serverDevice];
+  Display *dpy = XOpenDisplay(NULL);
   int     accel_numerator, accel_denominator, threshold;
 
   XGetPointerControl(dpy, &accel_numerator, &accel_denominator, &threshold);
+
+  XCloseDisplay(dpy);
 
   return threshold;
 }
 - (void)setAcceleration:(NSInteger)speed threshold:(NSInteger)pixels
 {
-  Display   *dpy = [GSCurrentServer() serverDevice];
+  Display   *dpy = XOpenDisplay(NULL);
   NSInteger accel_numerator, accel_denominator, threshold;
   BOOL      changeAcceleration = (speed > 0) ? YES : NO;
   BOOL      changeTreshold = (pixels > 0) ? YES : NO;
 
   XChangePointerControl(dpy, changeAcceleration, changeTreshold,
                         speed, 1, pixels);
+
+  XCloseDisplay(dpy);
 }
 
 - (NSInteger)doubleClickTime
