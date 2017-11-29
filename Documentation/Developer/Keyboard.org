@@ -67,6 +67,21 @@ that indicates that the following (usually 2 or more) keystrokes trigger the
 insertion of an alternate character, typically a precomposed character or a
 symbol. For instance typing Compose followed by ~ and then n will insert ñ."
 
+* Design Rules
+
+- if you want to use some shortcuts in your application that overlapped
+with shortcuts bound to menu items — your shortcuts will ignored and actions
+connected to menu items will be called. Application level (AppKit, menu items,
+popup buttons etc.) shortcuts have higher priority.
+  
+- Actions in application uses Command modifier for keyboard alternatives.
+
+- Actions that involve desktop manipulation called with Alternate modifier.
+
+- X Window applications usually uses CUA standard (Control or Ctrl modifier).
+
+- If you plan to use Alternate as key modifier for shortcut in your application,
+please check if this shortcut is not used for window management functions.
 
 * Reserved keyboard shortcuts
 
@@ -147,96 +162,3 @@ Interface Guidelines" document.
 |                                       |                      |                     |
 | Switch focus to the next window       | FocusNextKey         | Mod1 + Tab          |
 | Switch focus to the prevoious window  | FocusPrevKey         | Mod1 + Shift + Tab  |
-
-
-* Design Rules
-
-Command   == Alt   == Alt_L and Alt_R      == Mod1
-Alternate == Super == Super_L and Super_R  == Mod4
-Control   == Ctrl  == Ctrl_L and Ctrl_R    == Ctrl
-Shift     == Shift == Shift_L and Shift_R  == Shift
-  
-  Note: if you want to use some shortcuts in your application that overlapped
-  with shortcuts bound to menu items — your shortcuts will ignored and actions
-  connected to menu items will be called. Application level (AppKit, menu items,
-  popup buttons etc.) shortcuts have higher priority.
-  
-Actions in application uses Command modifier for keyboard alternatives.
-
-Actions that involve desktop manipulation called with Alternate modifier.
-
-X Window applications usually uses CUA standard (Control or Ctrl modifier).
-
-If you plan to use Alternate as key modifier for shortcut in your application,
-please check if this shortcut is not used for window management functions.
-
-** Command
-
-   |-------------+--------------+------------------------------|
-   | Context     | Name         | Overlapping shortcuts        |
-   |-------------+--------------+------------------------------|
-   | WindowMaker | Mod1         | Mod1 + m, Mod1 + w, Mod1 + h |
-   | Xorg        | Alt_L, Alt_R |                              |
-   | Emacs GTK   | Meta         |                              |
-   | Terminal    | Command      |                              |
-   | AppKit      | Command      |                              |
-   
-   
-   • AppKit — Command (вызов пунктов меню, перемещение по тексту и т.д.);
-   • WindowMaker — should not use exept the following actions:
-   Command + m (Mod1 + m) - Miniaturize window. If AppKit (GNUstep) window
-   focused: do not miniaturize and send keypress to application.
-   Command + w (Mod1 + m) - Close window. If AppKit (GNUstep) window
-   focused: do not close window and send keypress to application.
-   Command + h (Mod1 + h) - Hide application windows. If AppKit (GNUstep)
-   application active: do not hide windows and send keypress to
-   application.
-   • X Window applications (Qt, GTK+) пользуются на свое усмотрение за исключением
-   сочетаний, которые интерпретируются Workspace/WindowMaker (описано в
-   предыдущем пункте).
-
-** Alternate (Super, Win)
-
-   |-------------+------------------+-----------------------|
-   | Context     | Name             | Overlapping shortcuts |
-   |-------------+------------------+-----------------------|
-   | WindowMaker | Mod4             |                       |
-   | Xorg        | Super_L, Super_R |                       |
-   | Emacs GTK   | Meta             |                       |
-   | Terminal    | Meta             |                       |
-   | AppKit      | Alternate        |                       |
-    Terminal    = Meta (sends Escape sequence)
-    • AppKit - Alternate (например при перетаскивании мышкой файлов и нажатом
-      Super меняется тип опреации с Move на Copy).
-    • Workspace - Super (Mod4), используется для управления окнами и
-      workspaces: перемещение, изменение размеров, тайлинг, переключение между
-      workspaces, переключение между окнами одного приложения (Super-Tab),
-      перетаскивание и изменение размеров окон (Super-RMB Click, Super-LMB
-      Click).
-    • Приложения X Window - сейчас не могу припомнить приложения, которые
-      используют Super как модификатор в приложении. Наоборот - да: в инструкции
-      по установке Maya на Linux есть указание переназначить модификатор в GNOME
-      с Alt на Super.
-    • Terminal + Emacs - Terminal использует Super как замену Alt в Emacs
-      (генерирует Escape-последовательность, которая воспринимается Emacs как
-      нажатие Alt+ в консоли Linux).
-
-** Control & Shift
-   Тут никаких проблем - Control и Shift являются сами собой и различными
-   приложениями интерпретируются как есть.
-   Приложения X Window (GNOME, KDE, Qt, GTK+) используют Control как основной
-   модификатор приложений (вызов меню, перемещение по тексту и т.д.).
-   В приложениях GNUstep Control, как правило, не используется. За исключением: в
-   WindowMaker - переключение между workspaces (нужно что-то с этим делать), а в
-   приложениях X Window это сочетание клавиш используется для перемещения по
-   тексту. В MacOS такой проблемы нет, поскольку приложения используют для
-   перемещения по тексту сочетание клавиш Command+стрелки. Но, в принципе, эту
-   привычку можно поменять на Super+стрелки в Workspace/WindowMaker.
-   
-   There are some usefull/comfort shortcuts users may tend do see:
-   Ctrl-Insert, Shift-Delete, Shift-Insert — Copy/Cut/Paste
-   Ctrl-Home, Ctrl-End — Beginning/End of the document
-   Ctrl-Left, Ctrl-Right — Go one word left/right.
-   
-   Caveats: Control-Home, Control-End не работает в Emacs. Похоже это такая же
-   ситуация как и с Shift.
