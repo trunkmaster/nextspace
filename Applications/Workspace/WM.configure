@@ -1,16 +1,13 @@
 #!/bin/sh
 
 WM_DIR="WindowMaker"
-
 cd $WM_DIR
-
-#if [ ! -x configure ];then
-#    echo "===> 'configure' script not found. Running autogen.h..."
-    ./autogen.sh
-#fi
 
 if [ ! -f Makefile ];then
     echo "===> 'Makefile' not found. Running configure script..."
+    if [ ! -f config.h ]; then
+        ./autogen.sh
+    fi
     WM_APP="/usr/NextSpace/Apps/Workspace.app"
     export CFLAGS=-DNEXTSPACE
     
@@ -36,7 +33,6 @@ if [ ! -f Makefile ];then
     #  --disable-xft
     #  --enable-gnome
     #  --enable-kde
-
 fi
 
 if [ ! -f misc.hack_nf.c ];then

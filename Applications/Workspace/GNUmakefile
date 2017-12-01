@@ -46,7 +46,7 @@ $(APP_NAME)_RESOURCE_FILES = \
 	$(wildcard Processes/English.lproj)
 
 # WindowMaker
-# Commandline option to make: windowmaker=yes
+# Commandline option to make it separate application: windowmaker=yes
 ifneq ($(windowmaker), no)
   WM_DIR = WindowMaker
   include GNUmakefile.WM

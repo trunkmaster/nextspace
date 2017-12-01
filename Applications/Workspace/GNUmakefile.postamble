@@ -26,6 +26,8 @@ SHARED = obj
 
 before-all::
 ifneq ($(windowmaker), no)
+	@ echo "Preparing WindowMaker part of Workspace..."
+	@ ./WM.configure
 	@ echo "Making WindowMaker external components ... "
 	@ cd $(WM_DIR); make config-paths.h
 	@ echo " Building raster graphics library in $(WM_DIR)/wrlib ... "

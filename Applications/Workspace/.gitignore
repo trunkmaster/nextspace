@@ -10,6 +10,8 @@
 *config.h
 *config.log
 *config.status
+/WindowMaker/INSTALL-WMAKER
+/WindowMaker/README.i18n
 /WindowMaker/WindowMaker/Defaults/WMRootMenu
 /WindowMaker/WindowMaker/Defaults/WMState
 /WindowMaker/WindowMaker/Defaults/WMWindowAttributes
