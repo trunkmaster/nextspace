@@ -114,6 +114,7 @@
       if (([self launchCommand:scriptCommand]) != 0)
 	{
 	  NSLog(@"Error launching session script command %@", commandName);
+          break;
 	}
     }
 }
@@ -178,7 +179,8 @@
   setenv("DISPLAY", env_display, 1);
   free(env_display);
   
-  // Set for WindowMaker part of Workspace to find its preferences and other stuff
+  // Set for WindowMaker part of Workspace to find its preferences
+  // and other stuff
   env_gs_user_root = malloc(strlen(user->pw_dir) + strlen("/Library") + 1);
   strcpy(env_gs_user_root, user->pw_dir);
   strcat(env_gs_user_root, "/Library");
@@ -256,9 +258,11 @@
 	{
 	  fprintf(stderr, "<launchCommand> %s is STOPPED\n", executable);
 	}
-
-//      fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
-//	      executable, status);
+      else
+        {
+          fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
+                  executable, status);
+        }
 
       break;
     }
