@@ -1,18 +1,18 @@
 [Unit]
-Description=NextSpace login panel
+Description=NEXTSPACE login panel
 After=gpbs.service
 Requires=gdomap.service gdnc.service gpbs.service
 
 [Service]
-#Environment=LD_LIBRARY_PATH=/Library/Libraries
+### Environment=LD_LIBRARY_PATH=/Library/Libraries
 StandardOutput=syslog
 StandardError=syslog
 SyslogLevel=info
-#SyslogFacility=local0
-ExecStart=/usr/NextSpace/bin/openapp Login
-ExecStop=/bin/kill -INT $MAINPID
+#### SyslogFacility=local0
+ExecStart=/usr/NextSpace/Apps/Login.app/Login
+### ExecStop=/bin/kill -INT $MAINPID
 KillMode=process
-Restart=on-failure
+Restart=on-success
 RestartSec=2s
 
 [Install]
