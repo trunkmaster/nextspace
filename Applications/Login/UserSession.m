@@ -120,9 +120,9 @@
 
 - (BOOL)setUserEnvironment
 {
-  struct passwd *user;
-  char          *displayEnv;
-
+  struct passwd	*user;
+  char		*env_display;
+  char		*env_gs_user_root;
   user = getpwnam([userName cString]);
   endpwent();
   if (user == NULL)
@@ -131,14 +131,14 @@
       return NO;
     }
 
-  // go to the user's home directory
+  // Go to the user's home directory
   if (chdir(user->pw_dir) != 0)
     {
       NSLog(_(@"Unable to change to the user's home directory %s:%s\n"
 	      @"Staying where I am now."), user->pw_dir, strerror(errno));
     }
 
-  // lower our priviledges
+  // Lower our priviledges
   if (initgroups(user->pw_name, user->pw_gid) != 0)
     {
 /*      NSRunAlertPanel(_(@"Login"),
@@ -167,39 +167,23 @@
 	    user->pw_uid, strerror(errno));
       return NO;
     }
-		      
-/*  mail = alloc(strlen(_PATH_MAILDIR) + strlen(pw->pw_name) + 2);
-  strcpy(mail, _PATH_MAILDIR);
-  strcat(mail, "/");
-  strcat(mail, pw->pw_name);
-  setenv("MAIL", mail, 1);*/
 
-  // save the value of the DISPLAY environment var
-  displayEnv = strdup(getenv("DISPLAY"));
-
-  setenv("DISPLAY", displayEnv, 1);
+  // General environment variables
   setenv("USER", user->pw_name, 1);
   setenv("LOGNAME", user->pw_name, 1);
   setenv("HOME", user->pw_dir, 1);
   setenv("SHELL", user->pw_shell, 1);
 
-  free(displayEnv);
-  displayEnv = NULL;
-/*  if (user->pw_uid == 0)
-    {
-      // include "sbin" directories in the path for
-      // priviledged users.
-      setenv("PATH", "/usr/local/bin/X11:/usr/bin/X11:"
-	     "/usr/local/sbin:/usr/local/bin:"
-	     "/usr/sbin:/usr/bin:/sbin:/bin", 1);
-    }
-  else
-    {
-      setenv("PATH", "/usr/local/bin/X11:/usr/bin/X11:"
-	     "/usr/local/bin:/usr/bin:/bin", 1);
-    }*/
-
-//  NSLog (@"PATH=%s", getenv("PATH"));
+  env_display = strdup(getenv("DISPLAY"));
+  setenv("DISPLAY", displayEnv, 1);
+  free(env_display);
+  
+  // Set for WindowMaker part of Workspace to find its preferences and other stuff
+  env_gs_user_root = malloc(strlen(user->pw_dir) + strlen("/Library") + 1);
+  strcpy(env_gs_user_root, user->pw_dir);
+  strcat(env_gs_user_root, "/Library");
+  setenv("GNUSTEP_USER_ROOT", env_gs_user_root, 1);
+  free(env_gs_user_root);
 
   return YES;
 }
