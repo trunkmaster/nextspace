@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Dec  1 17:49:20 2017
+;; Created Wed Dec  6 19:32:03 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,10 +11,10 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("setUserEnvironment" "Unable" "center" "writeT" "write" "NXScreen" "NEXTSPACE" "NXScreen" "cursor" "authenticate" "shrink" "shake" "shrink" "hideWindow"))
+(setq search-ring '("UserSession" "setUserEnvironment" "Unable" "center" "writeT" "write" "NXScreen" "NEXTSPACE" "NXScreen" "cursor" "authenticate" "shrink" "shake" "shrink" "hideWindow"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Login/UserSession.m" "~/Developer/nextspace/Applications/Login/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Login/GNUmakefile.postamble" "~/Developer/nextspace/Applications/Login/Preferences/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Login/GNUmakefile" "~/Developer/nextspace/Applications/Login/Preferences/Resources/bundle.registry" "~/Developer/nextspace/Applications/Login/Preferences/GNUmakefile" "~/Developer/nextspace/Applications/Login/Preferences/*.m" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Font/Resources/bundle.registry" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/PreferencesInfo.plist" "~/Developer/nextspace/Applications/Preferences/GNUmakefile.*" "~/Developer/nextspace/Applications/Preferences/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/*.[hm]" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WM/src/screen.c"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Login/Resources/loginwindow.service" "~/Developer/nextspace/Applications/Login/UserSession.m" "~/Developer/nextspace/Applications/Login/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Login/GNUmakefile.postamble" "~/Developer/nextspace/Applications/Login/Preferences/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Login/GNUmakefile" "~/Developer/nextspace/Applications/Login/Preferences/Resources/bundle.registry" "~/Developer/nextspace/Applications/Login/Preferences/GNUmakefile" "~/Developer/nextspace/Applications/Login/Preferences/*.m" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Font/Resources/bundle.registry" "~/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/PreferencesInfo.plist" "~/Developer/nextspace/Applications/Preferences/GNUmakefile.*" "~/Developer/nextspace/Applications/Preferences/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/*.[hm]" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.[hm]" "~/Developer/nextspace/Applications/Workspace/Preferences.[hm]" "~/Developer/nextspace/Applications/Workspace/Inspectors/Inspector.[hm]" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSMenu.m" "~/Developer/nextspace/Applications/TimeMon/Percentages.m" "~/Developer/NextSpace/Libraries/GNUstep/gnustep-gui-0.24.1/Source/NSWindow.m" "~/Developer/nextspace/Applications/Workspace/WM-PATCHES/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WM/src/dock.c"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -22,8 +22,19 @@
   "UserSession.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  5069
-  '(943 nil)
+  4496
+  '(4392 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/Resources/loginwindow.service"
+  "loginwindow.service"
+  'fundamental-mode
+  '(yas-minor-mode)
+  360
+  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,8 +44,19 @@
   "Controller.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  8051
+  4726
   '(74 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/LoginWindow.m"
+  "LoginWindow.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  2572
+  '(1104 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -68,17 +90,6 @@
   '(yas-minor-mode)
   677
   '(677 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/LoginWindow.m"
-  "LoginWindow.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  2433
-  '(2300 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
