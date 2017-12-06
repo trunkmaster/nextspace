@@ -175,7 +175,7 @@
   setenv("SHELL", user->pw_shell, 1);
 
   env_display = strdup(getenv("DISPLAY"));
-  setenv("DISPLAY", displayEnv, 1);
+  setenv("DISPLAY", env_display, 1);
   free(env_display);
   
   // Set for WindowMaker part of Workspace to find its preferences and other stuff
