@@ -21,6 +21,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#import <NXAppKit/NXAlert.h>
 #import "Controller.h"
 #import "UserSession.h"
 
@@ -142,9 +143,9 @@
   // Lower our priviledges
   if (initgroups(user->pw_name, user->pw_gid) != 0)
     {
-/*      NSRunAlertPanel(_(@"Login"),
-		      _(@"Unable to set user's supplementary groups: %s. "), 
-		      nil, nil, nil, strerror(errno));*/
+      NXRunAlertPanel(@"Login",
+		      @"Unable to set user's supplementary groups: %s. ",
+		      nil, nil, nil, strerror(errno));
       NSLog(_(@"Unable to set user's supplementary groups: %s. "
 	      @"Exiting."), strerror(errno));
       return NO;
@@ -152,18 +153,18 @@
 
   if (setgid(user->pw_gid) != 0)
     {
-/*      NSRunAlertPanel(_(@"Login"),
-		      _(@"Unable to set the user's GID (%d): %s. Exiting."), 
-		      nil, nil, nil, user->pw_gid, strerror(errno));*/
+      NXRunAlertPanel(@"Login",
+		      @"Unable to set the user's GID (%d): %s. Exiting.",
+		      nil, nil, nil, user->pw_gid, strerror(errno));
       NSLog(_(@"Unable to set the user's GID (%d): %s. Exiting."),
 	    user->pw_gid, strerror(errno));
       return NO;
     }
   if (setuid(user->pw_uid) != 0)
     {
-/*      NSRunAlertPanel(_(@"Login"),
+      NXRunAlertPanel(_(@"Login"),
 		      _(@"Unable to set the user's UID (%d): %s. Exiting."), 
-		      nil, nil, nil, user->pw_uid, strerror(errno));*/
+		      nil, nil, nil, user->pw_uid, strerror(errno));
       NSLog(_(@"Unable to set the user's UID (%d): %s. Exiting."),
 	    user->pw_uid, strerror(errno));
       return NO;
