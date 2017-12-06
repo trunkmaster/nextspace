@@ -85,7 +85,7 @@
 - (void)launchSession
 {
   int     i;
-  NSArray *scriptKeys = [sessionScript allKeys];
+  NSArray *scriptKeys = [[sessionScript allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
   int     sc = [scriptKeys count];
 
   NSLog(@"launchSession: %@", sessionScript);
@@ -222,7 +222,7 @@
       args[i] = [[command objectAtIndex:i] cString];
       fprintf(stderr, "<launchCommand> Added argument: %s\n", args[i]);
     }
-  args[ac+1] = NULL;
+  args[ac] = NULL;
 
   pid = fork();
   switch (pid)
@@ -235,6 +235,10 @@
 		  getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
 	  execv(executable, (char**)args);
 	}
+      else
+        {
+          exit(1);
+        }
       break;
     default:
       // Wait for command to finish launching
