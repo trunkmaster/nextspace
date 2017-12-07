@@ -213,8 +213,8 @@ void *alloc(int size)
 {
   NSString *user = [session sessionName];
 
-//  NSLog(@"Session WILL close for user \'%@\' [%lu]", 
-//	user, [session retainCount]);
+  // NSLog(@"Session WILL close for user \'%@\' [%lu]", 
+  //       user, [session retainCount]);
   NSThread *mct = [NSThread currentThread];
   NSLog(@"Main thread[%@:%p]: %lu [main=%i]", 
 	[mct name], mct, [mct retainCount], [mct isMainThread]);
