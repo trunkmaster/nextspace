@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun Nov 26 02:39:34 2017
+;; Created Thu Nov 30 01:39:05 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,11 +22,22 @@
   "NXMouse.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2152
-  '(nil nil)
+  2073
+  '(1798 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'makefile-gmake-mode
+  '(yas-minor-mode)
+  1
+  '(1104 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMouse.h"
@@ -60,17 +71,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble"
-  "GNUmakefile.preamble"
-  'fundamental-mode
-  '(yas-minor-mode)
-  1566
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/GNUmakefile"
