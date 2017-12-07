@@ -41,12 +41,12 @@ int startWindowServer()
   Display        *xDisplay = NULL;
 
   setenv("DISPLAY", ":0.0", 0);
-  setenv("HOME", "/private/root", 1);
+  setenv("HOME", "/root", 1);
   setenv("USER", "root", 0);
 
-  NSLog(@"DISPLAY = %s", getenv("DISPLAY"));
-  NSLog(@"HOME = %s", getenv("HOME"));
-  NSLog(@"USER = %s", getenv("USER"));
+  // NSLog(@"DISPLAY = %s", getenv("DISPLAY"));
+  // NSLog(@"HOME = %s", getenv("HOME"));
+  // NSLog(@"USER = %s", getenv("USER"));
 
   if ((xDisplay = XOpenDisplay(NULL)) == NULL)
     {

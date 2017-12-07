@@ -21,7 +21,6 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import <NXAppKit/NXAlert.h>
 #import "Controller.h"
 #import "UserSession.h"
 
@@ -198,7 +197,7 @@
   for (i = 1; i < ac; i++)
     {     
       args[i] = [[command objectAtIndex:i] cString];
-      fprintf(stderr, "<launchCommand> Added argument: %s\n", args[i]);
+      fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
     }
   args[ac] = NULL;
 
@@ -206,19 +205,21 @@
   switch (pid)
     {
     case 0:
-      fprintf(stderr, "<launchCommand> Executing %s\n", executable);
+      fprintf(stderr, "[fork] Executing %s\n", executable);
       if ([self setUserEnvironment] == YES)
 	{
-	  fprintf(stderr, "<launchCommand> %s, %s, %s\n",
+	  fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
 		  getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
-	  execv(executable, (char**)args);
+	  status = execv(executable, (char**)args);
 	}
       // If forked process goes here - something went wrong: aborting.
+      fprintf(stderr, "[fork] 'execv' returned error %i (%i:%s). Aborting.\n",
+              status, errno, strerror(errno));
       abort();
       break;
     default:
       // Wait for command to finish launching
-      fprintf(stderr, "Waiting for PID: %i\n", pid);
+      fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
       wpid = waitpid(pid, &status, 0);
       if (wpid == -1)
 	{
@@ -233,7 +234,7 @@
 	}
       else if (WIFSIGNALED(status))
 	{
-	  fprintf(stderr, "<launchCommand> %s KILLED with signal %d", 
+	  fprintf(stderr, "<launchCommand> %s KILLED with signal %d\n", 
 		  executable, WTERMSIG(status));
 	  if (WCOREDUMP(status))
 	    {
