@@ -143,9 +143,6 @@
   // Lower our priviledges
   if (initgroups(user->pw_name, user->pw_gid) != 0)
     {
-      NXRunAlertPanel(@"Login",
-		      @"Unable to set user's supplementary groups: %s. ",
-		      nil, nil, nil, strerror(errno));
       NSLog(_(@"Unable to set user's supplementary groups: %s. "
 	      @"Exiting."), strerror(errno));
       return NO;
@@ -153,18 +150,12 @@
 
   if (setgid(user->pw_gid) != 0)
     {
-      NXRunAlertPanel(@"Login",
-		      @"Unable to set the user's GID (%d): %s. Exiting.",
-		      nil, nil, nil, user->pw_gid, strerror(errno));
       NSLog(_(@"Unable to set the user's GID (%d): %s. Exiting."),
 	    user->pw_gid, strerror(errno));
       return NO;
     }
   if (setuid(user->pw_uid) != 0)
     {
-      NXRunAlertPanel(_(@"Login"),
-		      _(@"Unable to set the user's UID (%d): %s. Exiting."), 
-		      nil, nil, nil, user->pw_uid, strerror(errno));
       NSLog(_(@"Unable to set the user's UID (%d): %s. Exiting."),
 	    user->pw_uid, strerror(errno));
       return NO;
@@ -222,10 +213,8 @@
 		  getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
 	  execv(executable, (char**)args);
 	}
-      else
-        {
-          exit(1);
-        }
+      // If forked process goes here - something went wrong: aborting.
+      abort();
       break;
     default:
       // Wait for command to finish launching
@@ -272,4 +261,3 @@
 }
 
 @end
-
