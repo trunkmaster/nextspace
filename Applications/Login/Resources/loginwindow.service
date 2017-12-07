@@ -1,19 +1,39 @@
 [Unit]
-Description=NEXTSPACE login panel
-After=gpbs.service
+Description=NEXTSPACE Login Panel
+
+# replaces the getty
+Conflicts=getty@tty1.service
+After=getty@tty1.service
 Requires=gdomap.service gdnc.service gpbs.service
 
+# replaces plymouth-quit since it quits plymouth on its own
+Conflicts=plymouth-quit.service
+After=plymouth-quit.service
+
+# Needs all the dependencies of the services it's replacing
+# pulled from getty@.service and plymouth-quit.service
+# (except for plymouth-quit-wait.service since it waits until
+# plymouth is quit, which we do)
+After=rc-local.service plymouth-start.service systemd-user-sessions.service
+
+# GDM takes responsibility for stopping plymouth, so if it fails
+# for any reason, make sure plymouth still stops
+OnFailure=plymouth-quit.service
+
 [Service]
-### Environment=LD_LIBRARY_PATH=/Library/Libraries
-StandardOutput=syslog
-StandardError=syslog
-SyslogLevel=info
-#### SyslogFacility=local0
 ExecStart=/usr/NextSpace/Apps/Login.app/Login
-### ExecStop=/bin/kill -INT $MAINPID
+ExecStartPost=-/bin/bash -c "TERM=linux /usr/bin/clear > /dev/tty1"
 KillMode=process
+#KillMode=mixed
 Restart=on-success
 RestartSec=2s
+#Restart=always
+IgnoreSIGPIPE=no
+#BusName=org.gnome.DisplayManager
+StandardOutput=syslog
+StandardError=inherit
+SyslogLevel=info
+#EnvironmentFile=-/etc/locale.conf
 
 [Install]
-WantedBy=multi-user.target
+Alias=display-manager.service
