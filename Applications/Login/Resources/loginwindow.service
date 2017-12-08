@@ -1,10 +1,13 @@
 [Unit]
 Description=NEXTSPACE Login Panel
 
+# Dependencies to GNUstep services
+# TODO: gpbs should start after Xorg was started.
+Requires=gdomap.service gdnc.service gpbs.service
+
 # replaces the getty
 Conflicts=getty@tty1.service
 After=getty@tty1.service
-Requires=gdomap.service gdnc.service gpbs.service
 
 # replaces plymouth-quit since it quits plymouth on its own
 Conflicts=plymouth-quit.service

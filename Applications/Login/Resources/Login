@@ -1,16 +1,14 @@
 {
     LastLoggedInUser = "";
-    LoginHook = (
-    );
-    LogoutHook = (
-    );
+    LoginHook = ();
+    LogoutHook = ();
     RebootCommand = "/sbin/shutdown -r now";
     ShutdownCommand = "/sbin/shutdown -h now";
     ShutdownHook = "";
     StartupHook = "";
     SystemSessionScript = {
 	1 = (
-	    "/usr/NextSpace/bin/GNUstepServices",
+	    "/usr/NextSpace/bin/gnustep-services",
 	    start
 	);
 	2 = (
@@ -21,17 +19,21 @@
 	    stop
 	);
     };
+    WorkspaceManagerCommand = (
+	"/usr/NextSpace/Apps/Workspace.app/Workspace"
+    );
     UserSessionScripts = (
-	".xinitrc",
-	".xsession"
+	"!.xinitrc",
+	"!.xsession"
     );
     WindowServerCommand = (
 	"/bin/Xorg",
 	"-br",
-        "-background",
-        "none",
-	"-nolisten",
-	"tcp"
+        "-background", "none",
+        "-noreset",
+        "-seat", "seat0",
+	"-nolisten", "tcp",
+        "vt1"
     );
     WindowServerLayouts = {
 	DefaultLayout = VESA;
@@ -65,7 +67,4 @@
 	    VendorID = 80EE;
 	};
     };
-    WorkspaceManagerCommand = (
-	"/usr/NextSpace/Apps/Workspace.app/Workspace"
-    );
 }
