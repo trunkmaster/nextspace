@@ -34,6 +34,34 @@
 NSTask     *xorgTask = nil;
 NXDefaults *loginDefaults = nil;
 
+// --- Plymouth ---
+BOOL isPlymouthRunning()
+{
+  int res = system("/usr/bin/plymouth --ping");
+
+  return (res == 0) ? YES : NO;
+}
+
+void plymouthDeactivate()
+{
+  if (isPlymouthRunning() == YES)
+    {
+      system("/usr/bin/plymouth deactivate");
+    }
+}
+
+void plymouthQuit(BOOL withTransition)
+{
+  if (isPlymouthRunning() == NO)
+    return;
+  
+  if (withTransition)
+    system("/usr/bin/plymouth quit --retain-splash");
+  else
+    system("/usr/bin/plymouth quit");
+}
+
+// --- X11 ---
 int startWindowServer()
 {
   NSMutableArray *serverArgs;
@@ -104,9 +132,12 @@ int main(int argc, const char ** argv)
   // Defaults
   loginDefaults = [NXDefaults systemDefaults];
 
+  plymouthDeactivate();
+
   // Start Window Server (Xorg)
   if (!startWindowServer())
     {
+      plymouthQuit(YES);
       // Setup layout and gamma.
       // Inital brightess was set to 0.0. Displays will be lighten in
       // [NSApp applicationDidFinishLaunching].
