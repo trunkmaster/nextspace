@@ -28,11 +28,12 @@
     );
     WindowServerCommand = (
 	"/bin/Xorg",
-	"-br",
-        "-background", "none",
+	":0",
         "-noreset",
+        "-background", "none",
         "-seat", "seat0",
 	"-nolisten", "tcp",
+        "-keeptty",
         "vt1"
     );
     WindowServerLayouts = {
