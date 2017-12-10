@@ -91,8 +91,10 @@ static NXDefaults *sharedGlobalUserDefaults;
 - (NXDefaults *)initDefaultsWithPath:(NSSearchPathDomainMask)domainMask
                               domain:(NSString *)domainName
 {
-  NSArray  *searchPath;
-  NSString *pathFormat;
+  NSArray	*searchPath;
+  NSString	*pathFormat;
+  NSString	*defsDir;
+  NSFileManager	*fileManager = [NSFileManager defaultManager];
 
   self = [super init];
 
@@ -106,23 +108,30 @@ static NXDefaults *sharedGlobalUserDefaults;
 
   filePath = [[NSString alloc] initWithFormat:pathFormat,
                     [searchPath objectAtIndex:0], domainName];
-  
-  {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
 
-    if ([fileManager fileExistsAtPath:filePath])
-      {
-        defaultsDict = 
-          [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
-        NSLog(@"NXDefaults: defaults loaded from file %@", filePath);
-      }
-    else
-      {
-        defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
-        [defaultsDict retain];
-        NSLog(@"NXDefaults: defaults created for file %@", filePath);
-      }
-  }
+  // Create directories if needed
+  defsDir = [filePath stringByDeletingLastPathComponent];
+  if (![fileManager fileExistsAtPath:defsDir])
+    {
+      [fileManager createDirectoryAtPath:defsDir
+             withIntermediateDirectories:YES
+                              attributes:nil
+                                   error:0];
+    }
+
+  // Create or load defaults from file
+  if ([fileManager fileExistsAtPath:filePath])
+    {
+      defaultsDict = 
+        [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+      NSLog(@"NXDefaults: defaults loaded from file %@", filePath);
+    }
+  else
+    {
+      defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
+      [defaultsDict retain];
+      NSLog(@"NXDefaults: defaults created for file %@", filePath);
+    }
 
   syncTimer = nil;
 
