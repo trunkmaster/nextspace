@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jun 20 12:04:00 2017
+;; Created Sun Dec 10 21:57:22 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXFoundation/")
+(setq default-directory "~/Developer/nextspace/Frameworks/NXFoundation/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -21,9 +21,9 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.m"
   "NXDefaults.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
-  4126
-  '(5953 nil)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  3121
+  '(4424 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -32,7 +32,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXDefaults.h"
   "NXDefaults.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1160
   '(nil nil)
   nil
@@ -43,7 +43,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/ClockViewTest.m"
   "ClockViewTest.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1597
   '(1597 nil)
   nil
@@ -54,7 +54,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.h"
   "NXBundle.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1
   '(nil nil)
   nil
@@ -87,7 +87,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXBundle.m"
   "NXBundle.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1
   '(nil nil)
   nil
@@ -98,7 +98,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXFileManager.h"
   "NXFileManager.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1
   '(nil nil)
   nil
@@ -109,7 +109,7 @@
   "/Users/me/Developer/nextspace/Frameworks/NXFoundation/NXFileManager.m"
   "NXFileManager.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode flycheck-mode hs-minor-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   1
   '(nil nil)
   nil
