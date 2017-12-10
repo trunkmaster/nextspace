@@ -84,7 +84,7 @@
 
 - (void)launchSession
 {
-  int     i;
+  int     i, ret;
   NSArray *scriptKeys = [[sessionScript allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
   int     sc = [scriptKeys count];
 
@@ -111,7 +111,9 @@
 	  continue;
 	}
 
-      if (([self launchCommand:scriptCommand]) != 0)
+      ret = [self launchCommand:scriptCommand
+                      logAppend:(i==0) ? NO : YES];
+      if (ret != 0)
 	{
 	  NSLog(@"Error launching session script command %@", commandName);
           break;
@@ -122,10 +124,10 @@
 - (BOOL)setUserEnvironment
 {
   struct passwd	*user;
-  char		*env_display;
-  char		*env_gs_user_root;
+  
   user = getpwnam([userName cString]);
   endpwent();
+  
   if (user == NULL)
     {
       NSLog(_(@"Unable to get credentials of user %@! Exiting."), userName);
@@ -165,23 +167,40 @@
   setenv("LOGNAME", user->pw_name, 1);
   setenv("HOME", user->pw_dir, 1);
   setenv("SHELL", user->pw_shell, 1);
+  setenv("LC_CTYPE", "en_US.UTF-8", 1);
+  setenv("DISPLAY", ":0", 1);
 
-  env_display = strdup(getenv("DISPLAY"));
-  setenv("DISPLAY", env_display, 1);
-  free(env_display);
+  setenv("PATH", [[NSString stringWithFormat:@"/usr/NextSpace/bin:/Library/bin:/usr/NextSpace/sbin:/Library/sbin:%s", getenv("PATH")] cString], 1);
+  setenv("LD_LIBRARY_PATH", [[NSString stringWithFormat:@"%s/Library/Libraries", user->pw_dir] cString], 1);
+  setenv("GNUSTEP_PATHLIST", [[NSString stringWithFormat:@"%s:/:/usr/NextSpace:/Network", user->pw_dir] cString], 1);
+  
+  setenv("INFOPATH", [[NSString stringWithFormat:@"%s/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info", user->pw_dir] cString], 1);
   
   // Set for WindowMaker part of Workspace to find its preferences
   // and other stuff
-  env_gs_user_root = malloc(strlen(user->pw_dir) + strlen("/Library") + 1);
-  strcpy(env_gs_user_root, user->pw_dir);
-  strcat(env_gs_user_root, "/Library");
-  setenv("GNUSTEP_USER_ROOT", env_gs_user_root, 1);
-  free(env_gs_user_root);
+  setenv("GNUSTEP_USER_ROOT", [[NSString stringWithFormat:@"%s/Library", user->pw_dir] cString], 1);
 
+  // For developers
+  setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);
+
+  // Log file for session use
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString	*logDir = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u", user->pw_uid];
+  BOOL		isDir;
+
+  if (![fm fileExistsAtPath:logDir isDirectory:&isDir])
+    {
+      [fm createDirectoryAtPath:logDir
+          withIntermediateDirectories:YES
+                     attributes:[NSDictionary dictionaryWithObject:@"700" forKey:NSFilePosixPermissions]
+                          error:0];
+    }
+  setenv("NS_LOGFILE", [[logDir stringByAppendingPathComponent:@"console.log"] cString], 1);
+  
   return YES;
 }
 
-- (int)launchCommand:(NSArray *)command
+- (int)launchCommand:(NSArray *)command logAppend:(BOOL)append
 {
   const char *executable = NULL;
   int        ac = [command count];
@@ -210,6 +229,16 @@
 	{
 	  fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
 		  getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
+          if (append)
+            {
+              freopen(getenv("NS_LOGFILE"), "a", stderr);
+              freopen(getenv("NS_LOGFILE"), "a", stdout);
+            }
+          else
+            {
+              freopen(getenv("NS_LOGFILE"), "w+", stderr);
+              freopen(getenv("NS_LOGFILE"), "w+", stdout);
+            }
 	  status = execv(executable, (char**)args);
 	}
       // If forked process goes here - something went wrong: aborting.
@@ -221,13 +250,14 @@
       // Wait for command to finish launching
       fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
       wpid = waitpid(pid, &status, 0);
-      if (wpid == -1)
-	{
-	  fprintf(stderr, "<launchCommand> waitpid (%i) error (%s)\n", 
-		  pid, strerror(errno));
-	  return 1;
-	}
-      else if (WIFEXITED(status))
+      // if (wpid == -1)
+      //   {
+      //     fprintf(stderr, "<launchCommand> waitpid (%i) error (%s)\n", 
+      //   	  pid, strerror(errno));
+      //     return 0;
+      //   }
+      // else
+      if (WIFEXITED(status))
 	{
 	  fprintf(stderr, "<launchCommand> %s EXITED with code %d(%d)\n", 
 		  executable, WEXITSTATUS(status), status);
