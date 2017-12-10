@@ -150,7 +150,7 @@ void *alloc(int size)
 
   if (sessionScript == nil)
     { // Nothing to start
-      NSRunAlertPanel(@"Login failed", 
+      NXRunAlertPanel(@"Login failed", 
 		      @"Couldn't find session script\n"
 		      "Please check preferences of Login application.", 
 		      nil, nil, nil);
@@ -340,7 +340,7 @@ void *alloc(int size)
 
 - (void)openLoginPreferences
 {
-  prefs = [[NXDefaults alloc] initWithSystemDefaults];
+  prefs = [[NXDefaults alloc] initWithUserDefaults];
 }
 
 - (NSString *)shutdownCommand

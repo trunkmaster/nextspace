@@ -130,7 +130,20 @@ int main(int argc, const char ** argv)
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
   // Defaults
-  loginDefaults = [NXDefaults systemDefaults];
+  loginDefaults = [NXDefaults userDefaults];
+  if (![[loginDefaults objectForKey:@"WindowServerCommand"] isKindOfClass:[NSArray class]])
+    {
+      NSString     *defsPath;
+      NSDictionary *defs;
+      defsPath = [[[NSString stringWithCString:argv[0]] stringByDeletingLastPathComponent]
+                   stringByAppendingPathComponent:@"Resources/Login"];
+      defs = [NSDictionary dictionaryWithContentsOfFile:defsPath];
+      for (NSString *key in [defs allKeys])
+        {
+          [loginDefaults setObject:[defs objectForKey:key] forKey:key];
+        }
+      [loginDefaults synchronize];
+    }
 
   plymouthDeactivate();
 
