@@ -53,7 +53,7 @@
 
 - (BOOL)setUserEnvironment;
 
-- (int)launchCommand:(NSArray *)command;
+- (int)launchCommand:(NSArray *)command logAppend:(BOOL)append;
 
 @end
 
