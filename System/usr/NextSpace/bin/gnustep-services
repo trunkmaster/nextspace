@@ -5,7 +5,7 @@
 #
 # $UID, $USER, $LOGFILE is defined in /etc/profile.d/nextspace.sh
 #
-# Copyright (c) 2004-2016 Sergii Stoian
+# Copyright (c) 2004-2017 Sergii Stoian
 #
 
 . /etc/profile.d/nextspace.sh
@@ -16,12 +16,12 @@ start)
 	printf "Starting GNUstep services:"
 	if [ "$UID" = "0" ];
 	then
-	    gdomap -p > $LOGFILE 2>&1 &
+	    gdomap -p -a /usr/NextSpace/etc/gdomap.interfaces &
 	    printf " gdomap"
 	fi
-	gdnc --daemon > $LOGFILE 2>&1 &
+	gdnc --daemon &
 	printf " gdnc"
-	gpbs --daemon > $LOGFILE 2>&1 &
+	gpbs --daemon &
 	printf " gpbs"
 	printf ".\n"
 	;;  
