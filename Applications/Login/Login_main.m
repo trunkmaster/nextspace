@@ -150,6 +150,7 @@ int main(int argc, const char ** argv)
   // Start Window Server (Xorg)
   if (!startWindowServer())
     {
+      system("xrdb -merge /etc/X11/Xresources.nextspace");
       plymouthQuit(YES);
       // Setup layout and gamma.
       // Inital brightess was set to 0.0. Displays will be lighten in

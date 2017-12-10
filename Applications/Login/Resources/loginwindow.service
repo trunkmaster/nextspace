@@ -3,7 +3,7 @@ Description=NEXTSPACE Login Panel
 
 # Dependencies to GNUstep services
 # TODO: gpbs should start after Xorg was started.
-Requires=gdomap.service gdnc.service gpbs.service
+Requires=gdomap.service
 
 # replaces the getty
 Conflicts=getty@tty1.service
