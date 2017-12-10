@@ -15,7 +15,7 @@
 	    "/usr/NextSpace/Apps/Workspace.app/Workspace"
 	);
 	3 = (
-	    "/usr/NextSpace/bin/GNUstepServices",
+	    "/usr/NextSpace/bin/gnustep-services",
 	    stop
 	);
     };
