@@ -22,6 +22,7 @@
 */
 
 #include <X11/Xlib.h>
+#import <unistd.h>
 
 #import <AppKit/NSApplication.h>
 #import <NXFoundation/NXDefaults.h>
@@ -125,13 +126,35 @@ void setupDisplays()
   [screen applyDisplayLayout:layout];
 }
 
+void startPasteboardService()
+{
+  const char *args[3];
+  int        pid = 0;
+
+  args[0] = "/Library/bin/gpbs";
+  args[1] = "--daemon";
+  args[2] = NULL;
+  
+  pid = fork();
+  switch (pid)
+    {
+    case 0:
+      execv("/Library/bin/gpbs", (char**)args);
+      abort();
+      break;
+    default:
+      break;
+    }
+}
+
 int main(int argc, const char ** argv)
 {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
   // Defaults
   loginDefaults = [NXDefaults userDefaults];
-  if (![[loginDefaults objectForKey:@"WindowServerCommand"] isKindOfClass:[NSArray class]])
+  if (![[loginDefaults objectForKey:@"WindowServerCommand"]
+         isKindOfClass:[NSArray class]])
     {
       NSString     *defsPath;
       NSDictionary *defs;
@@ -151,6 +174,8 @@ int main(int argc, const char ** argv)
   if (!startWindowServer())
     {
       system("xrdb -merge /etc/X11/Xresources.nextspace");
+      // system("/Library/bin/gpbs --daemon");
+      startPasteboardService();
       plymouthQuit(YES);
       // Setup layout and gamma.
       // Inital brightess was set to 0.0. Displays will be lighten in
