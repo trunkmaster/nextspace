@@ -1,27 +1,12 @@
 {
     LastLoggedInUser = "";
-    RebootCommand = "/sbin/shutdown -r now";
-    ShutdownCommand = "/sbin/shutdown -h now";
-    ShutdownHook = "";
     StartupHook = "";
-    SystemSessionScript = {
-	1 = (
-	    "/usr/NextSpace/bin/gnustep-services",
-	    start
-	);
-	2 = (
-	    "/usr/NextSpace/Apps/Workspace.app/Workspace"
-	);
-	3 = (
-	    "/usr/NextSpace/bin/gnustep-services",
-	    stop
-	);
-    };
-    SystemSessionScript = (
+    ShutdownHook = "";
+    DefaultSessionScript = (
         ("/usr/NextSpace/bin/gnustep-services", "start"),
         ("/usr/NextSpace/Apps/Workspace.app/Workspace"),
         ("/usr/NextSpace/bin/gnustep-services", "stop")
-    };
+    );
     UserSessionScripts = (
 	"!.xinitrc",
 	"!.xsession"
@@ -36,6 +21,8 @@
         "-keeptty",
         "vt1"
     );
+    RebootCommand = "/sbin/shutdown -r now";
+    ShutdownCommand = "/sbin/shutdown -h now";
     WindowServerLayouts = {
 	DefaultLayout = VESA;
 	Intel = {

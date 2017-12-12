@@ -102,77 +102,106 @@ void *alloc(int size)
 //=============================================================================
 @implementation Controller (UserSession)
 
-- (void)openSessionForUser:(NSString *)user
+- (id)defaultsForKey:(NSString *)key forUser:(NSString *)user
 {
-  NSString		*homeDir = NSHomeDirectoryForUser(user);
+  NSString	*pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
+  NSString	*homeDir = NSHomeDirectoryForUser(user);
+  NSString	*defsPath;
+  NSDictionary	*defs;
+  
+  defsPath = [NSString stringWithFormat:pathFormat, homeDir];
+  defs = [NSDictionary dictionaryWithContentsOfFile:defsPath];
+
+  return [defs objectForKey:key];
+}
+
+- (NSArray *)sessionScriptForUser:(NSString *)user
+{
+  NSString		*homeDir;
   NSFileManager		*fm = [NSFileManager defaultManager];
   NSString		*path = nil;
-  NSArray		*userSessionScripts = nil;
+  NSArray		*userSessionCommand = nil, *uss;
   NSMutableArray	*sessionScript = nil;
-  NSEnumerator		*e;
-
-  // Clear password ivar for security reasons
-  [password setStringValue:nil];
+  NSString		*hook;
 
   sessionScript = [NSMutableArray new];
+  homeDir = NSHomeDirectoryForUser(user);
+    
+  // Logout hook
+  hook = [self defaultsForKey:@"LoginHook" forUser:user];
+  if (hook != nil) [sessionScript addObject:hook];
   
-  // Prepare session script for passing to UserSession
-  userSessionScripts = [prefs objectForKey:@"UserSessionScripts"];
-  if (userSessionScripts != nil)
+  // E.g. "~/.xinitrc", "~/.xsession"
+  uss = [prefs objectForKey:@"UserSessionScripts"];
+  for (path in uss)
     {
-      e = [userSessionScripts objectEnumerator];
-      while ((path = [e nextObject]) != nil)
-	{
-	  path = [homeDir stringByAppendingPathComponent:path];
-	  if ([fm fileExistsAtPath:path])
-	    {
-	      break;
-	    }
-	}
-
-      if (path != nil)
-	{
-	  [sessionScript addObject:[NSArray arrayWithObjects:path, nil]];
-	}
+      path = [homeDir stringByAppendingPathComponent:path];
+      if ([fm fileExistsAtPath:path])
+        {
+          userSessionCommand = [NSArray arrayWithObjects:path, nil];
+          break;
+        }
     }
 
+  NSLog(@"User session command: %@", userSessionCommand);
+  
+  if (userSessionCommand)
+    {
+      [sessionScript addObject:userSessionCommand];
+    }
+  else // Try system session script
+    {
+      [sessionScript
+        addObjectsFromArray:[prefs objectForKey:@"DefaultSessionScript"]];
+    }
+    
+  NSLog(@"Default session script: %@",
+        [prefs objectForKey:@"DefaultSessionScript"]);
+  
+  // Logout hook
+  hook = [self defaultsForKey:@"LogoutHook" forUser:user];
+  if (hook != nil) [sessionScript addObject:hook];
+  
   NSLog(@"User session script: %@", sessionScript);
  
-  // Try system session script
-  if (sessionScript == nil)
-    {
-      sessionScript = [[prefs objectForKey:@"SystemSessionScript"] mutableCopy];
-    }
+  return [sessionScript autorelease];
+}
 
-  if (sessionScript == nil)
+- (void)openSessionForUser:(NSString *)user
+{
+  NSArray	*sessionScript;
+  UserSession	*aSession;
+
+  sessionScript = [self sessionScriptForUser:user];
+  // Set up session attributes
+  aSession = [[UserSession alloc] init];
+  [userSessions setObject:aSession forKey:user]; // remember user session
+  [aSession setSessionName:user];
+  if (sessionScript == nil || [sessionScript count] == 0)
     { // Nothing to start
+      NSLog(@"Login failed: Couldn't find session script");
       NXRunAlertPanel(@"Login failed", 
-		      @"Couldn't find session script\n"
-		      "Please check preferences of Login application.", 
-		      nil, nil, nil);
+         	      @"Couldn't find session script\n"
+         	      "Please check preferences of Login application.", 
+         	      nil, nil, nil);
+      [self userSessionWillClose:aSession];
+      [aSession release];
       return;
     }
-
-  // Set up session attributes
-  UserSession *aSession = [[UserSession alloc] init];
-
   [aSession setSessionScript:sessionScript];
-  [aSession setSessionName:user];
-  [userSessions setObject:aSession forKey:user]; // remember user session
 
-  [sessionScript release];
-//  [user release];
-  [aSession release];
-
-  NSThread *mct = [NSThread currentThread];
-  [mct setName:@"MainLoginThread"];
-  NSLog(@"Main thread[%@:%p]: %lu [main=%i]", 
-	[mct name], mct, [mct retainCount], [mct isMainThread]);
+  // NSThread *mct = [NSThread currentThread];
+  // [mct setName:@"MainLoginThread"];
+  // NSLog(@"Main thread[%@:%p]: %lu [main=%i]", 
+  //       [mct name], mct, [mct retainCount], [mct isMainThread]);
 
   // --- GCD code ---
-  dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+  dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,
+                                                  0);
   dispatch_async(gq, ^{ [self launchUserSession:aSession]; });
   // ----------------
+  
+  [aSession release];
 }
 
 // Executed inside libdispatch thread
@@ -208,11 +237,11 @@ void *alloc(int size)
 {
   NSString *user = [session sessionName];
 
-  // NSLog(@"Session WILL close for user \'%@\' [%lu]", 
-  //       user, [session retainCount]);
-  NSThread *mct = [NSThread currentThread];
-  NSLog(@"Main thread[%@:%p]: %lu [main=%i]", 
-	[mct name], mct, [mct retainCount], [mct isMainThread]);
+  NSLog(@"Session WILL close for user \'%@\' [%lu]", 
+        user, [session retainCount]);
+  // NSThread *mct = [NSThread currentThread];
+  // NSLog(@"Main thread[%@:%p]: %lu [main=%i]", 
+  //       [mct name], mct, [mct retainCount], [mct isMainThread]);
 
   if ([userSessions objectForKey:user] == nil)
     {
@@ -468,14 +497,14 @@ void *alloc(int size)
 
 - (BOOL)authenticateUser:(NSString *)user
 {
-//  pam_handle_t    *handle;
   struct pam_conv conv;
 
   conv.conv = ConversationFunction;
   if (pam_start("login", [user cString], &conv, &PAM_handle) != PAM_SUCCESS)
     {
       NSLog(@"Failed to initialize PAM");
-//      NSRunAlertPanel(_(@"Failed to initialize PAM"), nil, nil, nil, nil);
+      NXRunAlertPanel(@"Login authentication",
+                      @"Failed to initialize PAM", nil, nil, nil);
       return NO;
     }
   
@@ -547,11 +576,13 @@ void *alloc(int size)
       [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
       [self hideWindow];
       
+      // Clear password ivar for security reasons
+      // [password setStringValue:@""];
+
       NSLog(@"Controller, username: %@", user);
-      [self setLastLoggedInUser:user];
-      NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
+      // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
       [self openSessionForUser:user];
-      NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
+      // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
     }
   else
     {
