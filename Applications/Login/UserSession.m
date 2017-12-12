@@ -38,13 +38,10 @@
 
 @implementation UserSession
 
-- (id)initWithOwner:(Controller *)owner
-	     script:(NSDictionary *)script
-	       name:(NSString *)name
+- (id)initWithScript:(NSArray *)script
+                name:(NSString *)name
 {
   self = [super init];
-
-  NSLog(@"INIT session with name: %@", name);
 
   [self setSessionScript:script];
   [self setSessionName:name];
@@ -67,7 +64,7 @@
   [super dealloc];
 }
 
-- (void)setSessionScript:(NSDictionary *)script
+- (void)setSessionScript:(NSArray *)script
 {
   sessionScript = [script copy];
 }
@@ -88,33 +85,23 @@
 // 3. LogoutHook (~/L/P/.N/Login)
 - (void)launchSession
 {
-  // int     i, ret;
   int ret;
-  // NSArray *scriptKeys = [[sessionScript allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-  // int     sc = [scriptKeys count];
 
   NSLog(@"launchSession: %@", sessionScript);
 
-  // for (i = 0; i < sc; i++)
   for (NSArray *scriptCommand in sessionScript)
     {
-      // NSArray  *scriptCommand = nil;
       NSString *commandName = nil; 
 
-      // scriptCommand = [sessionScript objectForKey:[scriptKeys objectAtIndex:i]];
       if ([scriptCommand count] == 0)
-	{
-	  continue;
-	}
+        continue;
 
       commandName = [scriptCommand objectAtIndex:0];
 
       NSLog(@"SESSION: starting command %@", commandName);
 
       if (commandName == nil || [commandName isEqualToString:@""])
-	{
-	  continue;
-	}
+        continue;
 
       ret = [self launchCommand:scriptCommand
                       logAppend:([sessionScript indexOfObject:scriptCommand]==0) ? NO : YES];

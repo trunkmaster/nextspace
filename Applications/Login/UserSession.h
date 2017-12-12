@@ -37,11 +37,10 @@
 
 // ---
 
-- (id)initWithOwner:(Controller *)owner
-	     script:(NSDictionary *)script
-	       name:(NSString *)name;
+- (id)initWithScript:(NSArray *)script
+                name:(NSString *)name;
 
-- (void)setSessionScript:(NSDictionary *)script;
+- (void)setSessionScript:(NSArray *)script;
 - (void)setSessionName:(NSString *)name;
 - (NSString *)sessionName;
 
