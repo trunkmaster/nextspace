@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Dec 12 18:05:01 2017
+;; Created Wed Dec 13 00:42:59 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,12 +18,34 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/UserSession.m"
+  "UserSession.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1297
+  '(1904 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Login/Controller.m"
   "Controller.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  14578
-  '(13286 nil)
+  5506
+  '(6415 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Login/UserSession.h"
+  "UserSession.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1375
+  '(1333 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -40,34 +62,12 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/UserSession.m"
-  "UserSession.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1223
-  '(1055 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Login/Resources/Login"
   "Login"
   'fundamental-mode
   '(yas-minor-mode)
   83
   '(532 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Login/UserSession.h"
-  "UserSession.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1205
-  '(1206 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

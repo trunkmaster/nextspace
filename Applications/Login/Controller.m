@@ -169,26 +169,28 @@ void *alloc(int size)
 
 - (void)openSessionForUser:(NSString *)user
 {
-  NSArray	*sessionScript;
-  UserSession	*aSession;
+  // NSArray	*sessionScript;
+   UserSession	*aSession;
 
-  sessionScript = [self sessionScriptForUser:user];
-  // Set up session attributes
-  aSession = [[UserSession alloc] init];
-  [userSessions setObject:aSession forKey:user]; // remember user session
-  [aSession setSessionName:user];
-  if (sessionScript == nil || [sessionScript count] == 0)
-    { // Nothing to start
-      NSLog(@"Login failed: Couldn't find session script");
-      NXRunAlertPanel(@"Login failed", 
-         	      @"Couldn't find session script\n"
-         	      "Please check preferences of Login application.", 
-         	      nil, nil, nil);
-      [self userSessionWillClose:aSession];
-      [aSession release];
-      return;
-    }
-  [aSession setSessionScript:sessionScript];
+  // sessionScript = [self sessionScriptForUser:user];
+  // // Set up session attributes
+  // aSession = [[UserSession alloc] init];
+  // [userSessions setObject:aSession forKey:user]; // remember user session
+  // [aSession setSessionName:user];
+  // if (sessionScript == nil || [sessionScript count] == 0)
+  //   { // Nothing to start
+  //     NSLog(@"Login failed: Couldn't find session script");
+  //     NXRunAlertPanel(@"Login failed", 
+  //        	      @"Couldn't find session script\n"
+  //        	      "Please check preferences of Login application.", 
+  //        	      nil, nil, nil);
+  //     [self userSessionWillClose:aSession];
+  //     [aSession release];
+  //     return;
+  //   }
+  // [aSession setSessionScript:sessionScript];
+
+  aSession = [[UserSession alloc] initWithOwner:self name:user];
 
   // NSThread *mct = [NSThread currentThread];
   // [mct setName:@"MainLoginThread"];
@@ -220,13 +222,13 @@ void *alloc(int size)
 
   @autoreleasepool
     {
-      NSString *threadName;
+      // NSString *threadName;
 
-      threadName = [NSString stringWithFormat:@"UserSessionThread_%@",
-                             [session sessionName]];
-      [[NSThread currentThread] setName:threadName];
+      // threadName = [NSString stringWithFormat:@"UserSessionThread_%@",
+      //                        [session sessionName]];
+      // [[NSThread currentThread] setName:threadName];
 
-      [session launchSession];
+      [session launch];
       [self performSelectorOnMainThread:@selector(userSessionWillClose:) 
 			     withObject:session
 			  waitUntilDone:YES];
