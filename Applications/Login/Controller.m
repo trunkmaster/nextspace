@@ -104,16 +104,18 @@ void *alloc(int size)
 
 - (void)openSessionForUser:(NSString *)user
 {
-  NSString            *homeDir = NSHomeDirectoryForUser(user);
-  NSFileManager       *fm = [NSFileManager defaultManager];
-  NSString            *path = nil;
-  NSArray             *userSessionScripts = nil;
-  NSMutableDictionary *sessionScript = nil;
-  NSEnumerator        *e;
+  NSString		*homeDir = NSHomeDirectoryForUser(user);
+  NSFileManager		*fm = [NSFileManager defaultManager];
+  NSString		*path = nil;
+  NSArray		*userSessionScripts = nil;
+  NSMutableArray	*sessionScript = nil;
+  NSEnumerator		*e;
 
   // Clear password ivar for security reasons
   [password setStringValue:nil];
 
+  sessionScript = [NSMutableArray new];
+  
   // Prepare session script for passing to UserSession
   userSessionScripts = [prefs objectForKey:@"UserSessionScripts"];
   if (userSessionScripts != nil)
@@ -130,13 +132,7 @@ void *alloc(int size)
 
       if (path != nil)
 	{
-	  sessionScript = [NSMutableDictionary new];
-	  [sessionScript setObject:[prefs objectForKey:@"LoginHook"]
-			    forKey:@"1"];
-	  [sessionScript setObject:[NSArray arrayWithObjects:path, nil]
-			    forKey:@"2"];
-	  [sessionScript setObject:[prefs objectForKey:@"LogoutHook"]
-			    forKey:@"3"];
+	  [sessionScript addObject:[NSArray arrayWithObjects:path, nil]];
 	}
     }
 
@@ -195,17 +191,16 @@ void *alloc(int size)
 
   @autoreleasepool
     {
-      NSThread *ct = [NSThread currentThread];
+      NSString *threadName;
 
-      [ct setName:[NSString stringWithFormat:@"UserSessionThread_%@",[session sessionName]]];
+      threadName = [NSString stringWithFormat:@"UserSessionThread_%@",
+                             [session sessionName]];
+      [[NSThread currentThread] setName:threadName];
 
       [session launchSession];
       [self performSelectorOnMainThread:@selector(userSessionWillClose:) 
 			     withObject:session
 			  waitUntilDone:YES];
-
-      NSLog(@"Session thread[%@:%p]: %lu [main=%i]", 
-	    [ct name], ct, [ct retainCount], [ct isMainThread]);
     }
 }
 

@@ -1,11 +1,11 @@
 /*
    UserSession.h
    Setup and start user desktop session.
-   (?) Process user session requests.
+   Process user session requests.
 
-   This file is part of CUBE.
+   This file is part of NEXTSPACE.
 
-   Copyright (C) 2011 
+   Copyright (C) 2011 Sergii Stoian <stoyan255@gmail.com>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
   NSMutableDictionary *threadDict;
 
   NSString            *userName;
-  NSDictionary        *sessionScript;
+  NSArray             *sessionScript;
 }
 
 // ---
@@ -42,18 +42,14 @@
 	       name:(NSString *)name;
 
 - (void)setSessionScript:(NSDictionary *)script;
-
 - (void)setSessionName:(NSString *)name;
+- (NSString *)sessionName;
 
 // ---
 
-- (NSString *)sessionName;
-
 - (void)launchSession;
-
-- (BOOL)setUserEnvironment;
-
 - (int)launchCommand:(NSArray *)command logAppend:(BOOL)append;
+- (BOOL)setUserEnvironment;
 
 @end
 

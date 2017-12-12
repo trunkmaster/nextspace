@@ -1,7 +1,5 @@
 {
     LastLoggedInUser = "";
-    LoginHook = ();
-    LogoutHook = ();
     RebootCommand = "/sbin/shutdown -r now";
     ShutdownCommand = "/sbin/shutdown -h now";
     ShutdownHook = "";
@@ -19,9 +17,11 @@
 	    stop
 	);
     };
-    WorkspaceManagerCommand = (
-	"/usr/NextSpace/Apps/Workspace.app/Workspace"
-    );
+    SystemSessionScript = (
+        ("/usr/NextSpace/bin/gnustep-services", "start"),
+        ("/usr/NextSpace/Apps/Workspace.app/Workspace"),
+        ("/usr/NextSpace/bin/gnustep-services", "stop")
+    };
     UserSessionScripts = (
 	"!.xinitrc",
 	"!.xsession"
