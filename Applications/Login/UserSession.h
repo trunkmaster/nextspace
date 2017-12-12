@@ -37,8 +37,8 @@
 
 // ---
 
-- (id)initWithScript:(NSArray *)script
-                name:(NSString *)name;
+- (id)initWithOwner:(Controller *)controller
+               name:(NSString *)name;
 
 - (void)setSessionScript:(NSArray *)script;
 - (void)setSessionName:(NSString *)name;
@@ -46,9 +46,11 @@
 
 // ---
 
-- (void)launchSession;
-- (int)launchCommand:(NSArray *)command logAppend:(BOOL)append;
-- (BOOL)setUserEnvironment;
+// - (void)launchSession;
+- (void)launch;
+- (int)launchCommand:(NSArray *)command
+           logAppend:(BOOL)append
+                wait:(BOOL)isWait;
 
 @end
 

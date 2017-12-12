@@ -38,12 +38,13 @@
 
 @implementation UserSession
 
-- (id)initWithScript:(NSArray *)script
-                name:(NSString *)name
+- (id)initWithOwner:(Controller *)controller
+               name:(NSString *)name
 {
   self = [super init];
 
-  [self setSessionScript:script];
+  appController = controller;
+
   [self setSessionName:name];
 
   return self;
@@ -83,129 +84,85 @@
 // 1. LoginHook (~/L/P/.N/Login)
 // 2. sessionScript
 // 3. LogoutHook (~/L/P/.N/Login)
-- (void)launchSession
+// - (void)launchSession
+// {
+//   int ret;
+
+//   NSLog(@"launchSession: %@", sessionScript);
+
+//   for (NSArray *scriptCommand in sessionScript)
+//     {
+//       NSString *commandName = nil; 
+
+//       if ([scriptCommand count] == 0)
+//         continue;
+
+//       commandName = [scriptCommand objectAtIndex:0];
+
+//       NSLog(@"SESSION: starting command %@", commandName);
+
+//       if (commandName == nil || [commandName isEqualToString:@""])
+//         continue;
+
+//       ret = [self launchCommand:scriptCommand
+//                       logAppend:([sessionScript indexOfObject:scriptCommand]==0) ? NO : YES];
+//       if (ret != 0)
+// 	{
+// 	  NSLog(@"Error launching session script command %@", commandName);
+//           break;
+// 	}
+//     }
+// }
+
+- (id)defaultsForKey:(NSString *)key
 {
-  int ret;
+  NSString	*pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
+  NSString	*homeDir = NSHomeDirectoryForUser(userName);
+  NSString	*defsPath;
+  NSDictionary	*defs;
+  
+  defsPath = [NSString stringWithFormat:pathFormat, homeDir];
+  defs = [NSDictionary dictionaryWithContentsOfFile:defsPath];
 
-  NSLog(@"launchSession: %@", sessionScript);
-
-  for (NSArray *scriptCommand in sessionScript)
-    {
-      NSString *commandName = nil; 
-
-      if ([scriptCommand count] == 0)
-        continue;
-
-      commandName = [scriptCommand objectAtIndex:0];
-
-      NSLog(@"SESSION: starting command %@", commandName);
-
-      if (commandName == nil || [commandName isEqualToString:@""])
-        continue;
-
-      ret = [self launchCommand:scriptCommand
-                      logAppend:([sessionScript indexOfObject:scriptCommand]==0) ? NO : YES];
-      if (ret != 0)
-	{
-	  NSLog(@"Error launching session script command %@", commandName);
-          break;
-	}
-    }
+  return [defs objectForKey:key];
 }
 
-- (int)launchCommand:(NSArray *)command logAppend:(BOOL)append
+#define GS @"/usr/NextSpace/bin/gnustep-services"
+#define WM @"/usr/NextSpace/Apps/Workspace.app/Workspace"
+
+- (void)launch
 {
-  const char *executable = NULL;
-  int        ac = [command count];
-  const char *args[ac+1];
-  int        i;
-  int        pid=0;
-  int        status=0;
-  pid_t      wpid;
-
-  executable = [[command objectAtIndex:0] fileSystemRepresentation];
-  args[0] = executable;
-
-  for (i = 1; i < ac; i++)
-    {     
-      args[i] = [[command objectAtIndex:i] cString];
-      fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
-    }
-  args[ac] = NULL;
-
-  pid = fork();
-  switch (pid)
+  int 		ret;
+  NSArray	*hook;
+  
+  // GNUstep services start
+  ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"start", nil]
+                  logAppend:NO
+                       wait:YES];
+  // LoginHook
+  hook = [self defaultsForKey:@"LoginHook"];
+  if (hook && [hook isKindOfClass:[NSArray class]])
     {
-    case 0:
-      fprintf(stderr, "[fork] Executing %s\n", executable);
-      if ([self setUserEnvironment] == YES)
-	{
-	  fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
-		  getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
-          if (append)
-            {
-              freopen(getenv("NS_LOGFILE"), "a", stderr);
-              freopen(getenv("NS_LOGFILE"), "a", stdout);
-            }
-          else
-            {
-              freopen(getenv("NS_LOGFILE"), "w+", stderr);
-              freopen(getenv("NS_LOGFILE"), "w+", stdout);
-            }
-	  status = execv(executable, (char**)args);
-	}
-      // If forked process goes here - something went wrong: aborting.
-      fprintf(stderr, "[fork] 'execv' returned error %i (%i:%s). Aborting.\n",
-              status, errno, strerror(errno));
-      abort();
-      break;
-    default:
-      // Wait for command to finish launching
-      fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
-      wpid = waitpid(pid, &status, 0);
-      // if (wpid == -1)
-      //   {
-      //     fprintf(stderr, "<launchCommand> waitpid (%i) error (%s)\n", 
-      //   	  pid, strerror(errno));
-      //     return 0;
-      //   }
-      // else
-      if (WIFEXITED(status))
-	{
-	  fprintf(stderr, "<launchCommand> %s EXITED with code %d(%d)\n", 
-		  executable, WEXITSTATUS(status), status);
-	}
-      else if (WIFSIGNALED(status))
-	{
-	  fprintf(stderr, "<launchCommand> %s KILLED with signal %d\n", 
-		  executable, WTERMSIG(status));
-	  if (WCOREDUMP(status))
-	    {
-	      fprintf(stderr, " (CORE DUMPED)\n");
-	    }
-	  else
-	    {
-	      fprintf(stderr, "\n");
-	    }
-	}
-      else if (WIFSTOPPED(status))
-	{
-	  fprintf(stderr, "<launchCommand> %s is STOPPED\n", executable);
-	}
-      else
-        {
-          fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
-                  executable, status);
-        }
-
-      break;
+      ret = [self launchCommand:hook logAppend:YES wait:NO];
     }
-
-  return status;
+  // Workspace Manager
+  ret = [self launchCommand:[NSArray arrayWithObjects:WM, nil]
+                  logAppend:YES
+                       wait:YES];
+  // LogoutHook
+  hook = [self defaultsForKey:@"LogoutHook"];
+  if (hook && [hook isKindOfClass:[NSArray class]])
+    {
+      ret = [self launchCommand:hook logAppend:YES wait:YES];
+    }
+  // Stop GNUstep services
+  ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"stop", nil]
+                  logAppend:YES
+                       wait:YES];
 }
 
 // Called for every launched command  (launchCommand:)
-- (BOOL)setUserEnvironment
+- (BOOL)_setUserEnvironment
 {
   struct passwd	*user;
   
@@ -282,6 +239,101 @@
   setenv("NS_LOGFILE", [[logDir stringByAppendingPathComponent:@"console.log"] cString], 1);
   
   return YES;
+}
+
+- (int)launchCommand:(NSArray *)command
+           logAppend:(BOOL)append
+                wait:(BOOL)isWait
+{
+  const char *executable = NULL;
+  int        ac = [command count];
+  const char *args[ac+1];
+  int        i;
+  int        pid=0;
+  int        status=0;
+  pid_t      wpid;
+
+  executable = [[command objectAtIndex:0] fileSystemRepresentation];
+  args[0] = executable;
+
+  for (i = 1; i < ac; i++)
+    {     
+      args[i] = [[command objectAtIndex:i] cString];
+      fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
+    }
+  args[ac] = NULL;
+
+  pid = fork();
+  switch (pid)
+    {
+    case 0:
+      fprintf(stderr, "[fork] Executing %s\n", executable);
+      if ([self _setUserEnvironment] == YES)
+	{
+	  fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
+		  getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
+          if (append)
+            {
+              freopen(getenv("NS_LOGFILE"), "a", stderr);
+              freopen(getenv("NS_LOGFILE"), "a", stdout);
+            }
+          else
+            {
+              freopen(getenv("NS_LOGFILE"), "w+", stderr);
+              freopen(getenv("NS_LOGFILE"), "w+", stdout);
+            }
+	  status = execv(executable, (char**)args);
+	}
+      // If forked process goes here - something went wrong: aborting.
+      fprintf(stderr, "[fork] 'execv' returned error %i (%i:%s). Aborting.\n",
+              status, errno, strerror(errno));
+      abort();
+      break;
+    default:
+      // Wait for command to finish launching
+      fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
+      if (isWait == NO)
+        break;
+      wpid = waitpid(pid, &status, 0);
+      // if (wpid == -1)
+      //   {
+      //     fprintf(stderr, "<launchCommand> waitpid (%i) error (%s)\n", 
+      //   	  pid, strerror(errno));
+      //     return 0;
+      //   }
+      // else
+      if (WIFEXITED(status))
+	{
+	  fprintf(stderr, "<launchCommand> %s EXITED with code %d(%d)\n", 
+		  executable, WEXITSTATUS(status), status);
+	}
+      else if (WIFSIGNALED(status))
+	{
+	  fprintf(stderr, "<launchCommand> %s KILLED with signal %d\n", 
+		  executable, WTERMSIG(status));
+	  if (WCOREDUMP(status))
+	    {
+	      fprintf(stderr, " (CORE DUMPED)\n");
+	    }
+	  else
+	    {
+	      fprintf(stderr, "\n");
+	    }
+	}
+      else if (WIFSTOPPED(status))
+	{
+	  fprintf(stderr, "<launchCommand> %s is STOPPED\n", executable);
+	}
+      else
+        {
+          fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
+                  executable, status);
+        }
+
+      break;
+    }
+
+  return status;
 }
 
 @end
