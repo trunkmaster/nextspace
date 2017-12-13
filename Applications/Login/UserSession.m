@@ -117,7 +117,7 @@
     }
 }
 
-- (id)defaultsForKey:(NSString *)key
+- (id)userDefaultsObjectForKey:(NSString *)key
 {
   NSString	*pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
   NSString	*homeDir = NSHomeDirectoryForUser(userName);
@@ -143,15 +143,12 @@
   ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"start", nil]
                   logAppend:NO
                        wait:YES];
-  // LoginHook - array of arrays
-  hook = [self defaultsForKey:@"LoginHook"];
-  if (hook && [hook isKindOfClass:[NSArray class]])
+  // LoginHook - must be a string
+  hook = [self userDefaultsObjectForKey:@"LoginHook"];
+  if (hook && [hook isKindOfClass:[NSString class]])
     {
-      for (NSArray *h in hook)
-        {
-          if ([hook isKindOfClass:[NSArray class]])
-            ret = [self launchCommand:h logAppend:YES wait:NO];
-        }
+      ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
+                      logAppend:YES wait:NO];
     }
   // Workspace Manager
   ret = [self launchCommand:[NSArray arrayWithObjects:WM, nil]
@@ -162,14 +159,11 @@
       message = @"Workspace Manager quit with error.";
     }
   // LogoutHook
-  hook = [self defaultsForKey:@"LogoutHook"];
-  if (hook && [hook isKindOfClass:[NSArray class]])
+  hook = [self userDefaultsObjectForKey:@"LogoutHook"];
+  if (hook && [hook isKindOfClass:[NSString class]])
     {
-      for (NSArray *h in hook)
-        {
-          if ([hook isKindOfClass:[NSArray class]])
-            ret = [self launchCommand:h logAppend:YES wait:NO];
-        }
+      ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
+                      logAppend:YES wait:NO];
     }
   // Stop GNUstep services
   ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"stop", nil]
