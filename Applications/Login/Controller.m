@@ -170,7 +170,7 @@ void *alloc(int size)
 - (void)openSessionForUser:(NSString *)user
 {
   // NSArray	*sessionScript;
-   UserSession	*aSession;
+  UserSession	*aSession;
 
   // sessionScript = [self sessionScriptForUser:user];
   // // Set up session attributes
@@ -191,6 +191,8 @@ void *alloc(int size)
   // [aSession setSessionScript:sessionScript];
 
   aSession = [[UserSession alloc] initWithOwner:self name:user];
+  [userSessions setObject:aSession forKey:user]; // remember user session
+  [aSession release];
 
   // NSThread *mct = [NSThread currentThread];
   // [mct setName:@"MainLoginThread"];
@@ -202,8 +204,6 @@ void *alloc(int size)
                                                   0);
   dispatch_async(gq, ^{ [self launchUserSession:aSession]; });
   // ----------------
-  
-  [aSession release];
 }
 
 // Executed inside libdispatch thread
@@ -223,7 +223,6 @@ void *alloc(int size)
   @autoreleasepool
     {
       // NSString *threadName;
-
       // threadName = [NSString stringWithFormat:@"UserSessionThread_%@",
       //                        [session sessionName]];
       // [[NSThread currentThread] setName:threadName];
@@ -258,6 +257,11 @@ void *alloc(int size)
     {
       [self showWindow];
     }
+}
+
+- (void)showSessionMessage:(NSString *)message
+{
+  NXRunAlertPanel(@"Login", message, @"OK", nil, nil);
 }
 
 @end
