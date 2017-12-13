@@ -65,11 +65,6 @@
   [super dealloc];
 }
 
-- (void)setSessionScript:(NSArray *)script
-{
-  sessionScript = [script copy];
-}
-
 - (void)setSessionName:(NSString *)name
 {
   userName = [name copy];
@@ -80,39 +75,47 @@
   return userName;
 }
 
+- (void)setSessionScript:(NSArray *)script
+{
+  sessionScript = [script copy];
+}
+
 // Starts:
 // 1. LoginHook (~/L/P/.N/Login)
 // 2. sessionScript
 // 3. LogoutHook (~/L/P/.N/Login)
-// - (void)launchSession
-// {
-//   int ret;
+- (void)launchSessionScript
+{
+  int  ret;
+  BOOL appendToLog;
 
-//   NSLog(@"launchSession: %@", sessionScript);
+  NSLog(@"launchSession: %@", sessionScript);
 
-//   for (NSArray *scriptCommand in sessionScript)
-//     {
-//       NSString *commandName = nil; 
+  for (NSArray *scriptCommand in sessionScript)
+    {
+      NSString *commandName = nil;
 
-//       if ([scriptCommand count] == 0)
-//         continue;
+      if ([scriptCommand count] == 0)
+        continue;
 
-//       commandName = [scriptCommand objectAtIndex:0];
+      commandName = [scriptCommand objectAtIndex:0];
 
-//       NSLog(@"SESSION: starting command %@", commandName);
+      NSLog(@"SESSION: starting command %@", commandName);
 
-//       if (commandName == nil || [commandName isEqualToString:@""])
-//         continue;
+      if (commandName == nil || [commandName isEqualToString:@""])
+        continue;
 
-//       ret = [self launchCommand:scriptCommand
-//                       logAppend:([sessionScript indexOfObject:scriptCommand]==0) ? NO : YES];
-//       if (ret != 0)
-// 	{
-// 	  NSLog(@"Error launching session script command %@", commandName);
-//           break;
-// 	}
-//     }
-// }
+      appendToLog = ([sessionScript indexOfObject:scriptCommand]==0) ? NO : YES;
+      ret = [self launchCommand:scriptCommand
+                      logAppend:appendToLog
+                           wait:YES];
+      if (ret != 0)
+	{
+	  NSLog(@"Error launching session script command %@", commandName);
+          break;
+	}
+    }
+}
 
 - (id)defaultsForKey:(NSString *)key
 {
@@ -134,31 +137,51 @@
 {
   int 		ret;
   NSArray	*hook;
+  NSString	*message = nil;
   
   // GNUstep services start
   ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"start", nil]
                   logAppend:NO
                        wait:YES];
-  // LoginHook
+  // LoginHook - array of arrays
   hook = [self defaultsForKey:@"LoginHook"];
   if (hook && [hook isKindOfClass:[NSArray class]])
     {
-      ret = [self launchCommand:hook logAppend:YES wait:NO];
+      for (NSArray *h in hook)
+        {
+          if ([hook isKindOfClass:[NSArray class]])
+            ret = [self launchCommand:h logAppend:YES wait:NO];
+        }
     }
   // Workspace Manager
   ret = [self launchCommand:[NSArray arrayWithObjects:WM, nil]
                   logAppend:YES
                        wait:YES];
+  if (ret != 0)
+    {
+      message = @"Workspace Manager quit with error.";
+    }
   // LogoutHook
   hook = [self defaultsForKey:@"LogoutHook"];
   if (hook && [hook isKindOfClass:[NSArray class]])
     {
-      ret = [self launchCommand:hook logAppend:YES wait:YES];
+      for (NSArray *h in hook)
+        {
+          if ([hook isKindOfClass:[NSArray class]])
+            ret = [self launchCommand:h logAppend:YES wait:NO];
+        }
     }
   // Stop GNUstep services
   ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"stop", nil]
                   logAppend:YES
                        wait:YES];
+
+  if (message)
+    {
+      [appController performSelectorOnMainThread:@selector(showSessionMessage:)
+                                      withObject:message
+                                   waitUntilDone:YES];
+    }
 }
 
 // Called for every launched command  (launchCommand:)
@@ -259,7 +282,7 @@
   for (i = 1; i < ac; i++)
     {     
       args[i] = [[command objectAtIndex:i] cString];
-      fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
+      // fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
     }
   args[ac] = NULL;
 
@@ -270,8 +293,8 @@
       fprintf(stderr, "[fork] Executing %s\n", executable);
       if ([self _setUserEnvironment] == YES)
 	{
-	  fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
-		  getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
+	  // fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
+	  //         getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
           if (append)
             {
               freopen(getenv("NS_LOGFILE"), "a", stderr);
@@ -290,10 +313,11 @@
       abort();
       break;
     default:
-      // Wait for command to finish launching
-      fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
       if (isWait == NO)
         break;
+      
+      // Wait for command to finish launching
+      fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
       wpid = waitpid(pid, &status, 0);
       // if (wpid == -1)
       //   {
