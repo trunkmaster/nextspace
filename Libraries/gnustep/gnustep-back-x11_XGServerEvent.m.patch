@@ -1,23 +1,71 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2017-12-15 02:06:04.312365256 +0200
-@@ -367,21 +367,30 @@
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2017-12-15 18:15:33.498638990 +0200
+@@ -42,6 +42,7 @@
+ #include <Foundation/NSUserDefaults.h>
+ #include <Foundation/NSRunLoop.h>
+ #include <Foundation/NSDebug.h>
++#include <Foundation/NSDistributedNotificationCenter.h>
+ 
+ #include "x11/XGServerWindow.h"
+ #include "x11/XGInputServer.h"
+@@ -313,6 +314,9 @@
+ 
+ /*
+  */
++static NSInteger clickTime;
++static NSInteger clickMove;
++static NSInteger mouseScrollMultiplier;
+ - (NSPoint) _XPointToOSPoint: (NSPoint)x for: (void*)window
+ {
+   gswindow_device_t *win = (gswindow_device_t*)window;
+@@ -329,6 +333,37 @@
+   return o;
+ }
+ 
++- (void) initializeMouse
++{
++  [self mouseOptionsChanged:nil];
++  [[NSDistributedNotificationCenter defaultCenter]
++    addObserver: self
++       selector: @selector(mouseOptionsChanged:)
++           name: @"GSMouseOptionsDidChangeNotification"
++         object: nil];
++}
++
++- (void) mouseOptionsChanged: (NSNotification *)aNotif
++{
++  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
++
++  [defs synchronize];
++
++  clickTime = [defs integerForKey:@"GSDoubleClickTime"];
++  if (clickTime < 250)
++    clickTime = 250;
++  
++  clickMove = [defs integerForKey:@"GSDoubleClickMove"];
++  if (clickMove < 3)
++    clickMove = 3;
++
++  mouseScrollMultiplier = [defs integerForKey:@"GSMouseScrollMultiplier"];
++  if (mouseScrollMultiplier == 0)
++    mouseScrollMultiplier = 1;
++  
++  NSLog(@"[GSBackend] clickTime = %lu, clickMove = %lu",
++        clickTime, clickMove);
++}
+ 
+ - (void) processEvent: (XEvent *) event
+ {
+@@ -367,21 +402,21 @@
           */
          {
            BOOL incrementCount = YES;
-+          NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-+          NSInteger clickTime = [defs integerForKey:@"GSDoubleClickTime"];
-+          NSInteger clickMove = [defs integerForKey:@"GSDoubleClickMove"];
- 
+-
 -#define CLICK_TIME 300
 -#define CLICK_MOVE 3
-+          if (clickTime < 250) clickTime = 250;
-+          if (clickMove < 3) clickMove = 3;
 +          
-+          NSLog(@"[GSBackend] clickTime = %lu, clickMove = %lu",
-+                clickTime, clickMove);
++          if (clickTime == 0) [self initializeMouse];
 +         
-+// #define CLICK_TIME 300
-+// #define CLICK_MOVE 3
            if (xEvent.xbutton.time
 -            >= (unsigned long)(generic.lastClick + CLICK_TIME))
 +            >= (unsigned long)(generic.lastClick + clickTime))
@@ -38,3 +86,36 @@
              incrementCount = NO;
  
            if (incrementCount == YES)
+@@ -426,28 +461,28 @@
+         else if (xEvent.xbutton.button == generic.upMouse
+           && generic.upMouse != 0)
+           {
+-            deltaY = 1.;
++            deltaY = 1. * mouseScrollMultiplier;
+             eventType = NSScrollWheel;
+             buttonNumber = generic.upMouse;
+           }
+         else if (xEvent.xbutton.button == generic.downMouse
+           && generic.downMouse != 0)
+           {
+-            deltaY = -1.;
++            deltaY = -1. * mouseScrollMultiplier;
+             eventType = NSScrollWheel;
+             buttonNumber = generic.downMouse;
+           }
+         else if (xEvent.xbutton.button == generic.scrollLeftMouse
+           && generic.scrollLeftMouse != 0)
+           {
+-            deltaX = -1.;
++            deltaX = -1. * mouseScrollMultiplier;
+             eventType = NSScrollWheel;
+             buttonNumber = generic.scrollLeftMouse;
+           }
+         else if (xEvent.xbutton.button == generic.scrollRightMouse
+           && generic.scrollRightMouse != 0)
+           {
+-            deltaX = 1.;
++            deltaX = 1. * mouseScrollMultiplier;
+             eventType = NSScrollWheel;
+             buttonNumber = generic.scrollRightMouse;
+           }
