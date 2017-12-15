@@ -74,7 +74,9 @@ static NSMutableDictionary      *domain = nil;
 
   NSLog(@"[Mouse] current acceleration = %li times, threshold = %li pixels",
         [mouse acceleration], [mouse accelerationThreshold]);
+  
   [speedMtrx selectCellWithTag:[mouse acceleration]];
+  [doubleClickMtrx selectCellWithTag:[defaults integerForKey:@"GSDoubleClickTime"]];
   [mouse release];
 }
 
@@ -119,28 +121,54 @@ static NSMutableDictionary      *domain = nil;
 }
 - (void)doubleClickMtrxClicked:(id)sender
 {
+  NSNumber *value;
   // GNUstep:
   // 1. Write to the NSGlobalDomain -> GSDoubleClickTime
-  [defaults setInteger:[[doubleClickMtrx selectedCell] tag]
-                forKey:@"GSDoubleClickTime"];
-  [domain setObject:[defaults objectForKey:@"GSDoubleClickTime"]
-             forKey:@"GSDoubleClickTime"];
-  [defaults removeObjectForKey:@"GSDoubleClickTime"];
+  // [defaults setInteger:[[doubleClickMtrx selectedCell] tag]
+  //               forKey:@"GSDoubleClickTime"];
+  value = [NSNumber numberWithInteger:[[doubleClickMtrx selectedCell] tag]];
+  [domain setObject:value forKey:@"GSDoubleClickTime"];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
   [defaults synchronize];
+  
+  [[NSDistributedNotificationCenter defaultCenter]
+               postNotificationName:@"GSMouseOptionsDidChangeNotification"
+                             object:nil];
   // 2. Set new value to GNUstep backend
   // WindowMaker:
   // Write to ~/L/P/.WindowMaker/WindowMaker -> DoubleClickTime
+  NSString *wmDefaultsFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
+  NSString *wmDefaultsPath;
+  NSMutableDictionary *wmDefaults;
+
+  wmDefaultsPath = [NSString stringWithFormat:wmDefaultsFormat, NSHomeDirectory()];
+  wmDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:wmDefaultsPath];
+  [wmDefaults setObject:[value stringValue] forKey:@"DoubleClickTime"];
+  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
 }
 
 - (void)setWheelScroll:(id)sender
 {
+  NSNumber *value;
+  
   if (sender == wheelScrollSlider)
     {
+      [wheelScrollField setIntValue:[wheelScrollSlider integerValue]];
     }
   else if (sender == wheelScrollField)
     {
+      [wheelScrollSlider setIntValue:[wheelScrollField integerValue]];
+      [wheelScrollField setIntValue:[wheelScrollSlider integerValue]];
     }
+  
+  value = [NSNumber numberWithInteger:[wheelScrollField integerValue]];
+  [domain setObject:value forKey:@"GSMouseScrollMultiplier"];
+  [defaults setPersistentDomain:domain forName:NSGlobalDomain];
+  [defaults synchronize];
+  
+  [[NSDistributedNotificationCenter defaultCenter]
+               postNotificationName:@"GSMouseOptionsDidChangeNotification"
+                             object:nil];
 }
 
 @end

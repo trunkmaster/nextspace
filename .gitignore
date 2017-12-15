@@ -13,3 +13,4 @@
 *.deps
 *.dir
 *~
+*.emacs.desktop
