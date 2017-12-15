@@ -1,0 +1,40 @@
+--- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2017-12-15 02:06:04.312365256 +0200
+@@ -367,21 +367,30 @@
+          */
+         {
+           BOOL incrementCount = YES;
++          NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
++          NSInteger clickTime = [defs integerForKey:@"GSDoubleClickTime"];
++          NSInteger clickMove = [defs integerForKey:@"GSDoubleClickMove"];
+ 
+-#define CLICK_TIME 300
+-#define CLICK_MOVE 3
++          if (clickTime < 250) clickTime = 250;
++          if (clickMove < 3) clickMove = 3;
++          
++          NSLog(@"[GSBackend] clickTime = %lu, clickMove = %lu",
++                clickTime, clickMove);
++         
++// #define CLICK_TIME 300
++// #define CLICK_MOVE 3
+           if (xEvent.xbutton.time
+-            >= (unsigned long)(generic.lastClick + CLICK_TIME))
++            >= (unsigned long)(generic.lastClick + clickTime))
+             incrementCount = NO;
+           else if (generic.lastClickWindow != xEvent.xbutton.window)
+             incrementCount = NO;
+-          else if ((generic.lastClickX - xEvent.xbutton.x) > CLICK_MOVE)
++          else if ((generic.lastClickX - xEvent.xbutton.x) > clickMove)
+             incrementCount = NO;
+-          else if ((generic.lastClickX - xEvent.xbutton.x) < -CLICK_MOVE)
++          else if ((generic.lastClickX - xEvent.xbutton.x) < -clickMove)
+             incrementCount = NO;
+-          else if ((generic.lastClickY - xEvent.xbutton.y) > CLICK_MOVE)
++          else if ((generic.lastClickY - xEvent.xbutton.y) > clickMove)
+             incrementCount = NO;
+-          else if ((generic.lastClickY - xEvent.xbutton.y) < -CLICK_MOVE)
++          else if ((generic.lastClickY - xEvent.xbutton.y) < -clickMove)
+             incrementCount = NO;
+ 
+           if (incrementCount == YES)
