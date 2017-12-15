@@ -120,7 +120,10 @@ static NSMutableDictionary      *domain = nil;
 - (void)doubleClickMtrxClicked:(id)sender
 {
   // GNUstep:
-  // 1. Write to the NSGlobalDomain -> GSDoubleClickDelay
+  // 1. Write to the NSGlobalDomain -> GSDoubleClickTime
+  [[NSUserDefaults standardUserDefaults]
+    setInteger:[[doubleClickMtrx selectedCell] tag]
+        forKey:@"GSDoubleClickTime"];
   // 2. Set new value to GNUstep backend
   // WindowMaker:
   // Write to ~/L/P/.WindowMaker/WindowMaker -> DoubleClickTime
