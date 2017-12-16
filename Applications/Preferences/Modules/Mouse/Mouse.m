@@ -146,6 +146,9 @@ static NSMutableDictionary      *domain = nil;
   [wmDefaults setObject:[value stringValue] forKey:@"DoubleClickTime"];
   [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
 }
+- (void)setTreshold:(id)sender
+{
+}
 
 - (void)setWheelScroll:(id)sender
 {

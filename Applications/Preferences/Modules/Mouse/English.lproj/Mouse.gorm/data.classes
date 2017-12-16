@@ -4,6 +4,7 @@
 	Actions = (
 	    "doubleClickMtrxClicked:",
 	    "enableSubpixelChanged:",
+	    "setTreshold:",
 	    "setWheelScroll:",
 	    "subpixelModeChanged:",
 	    "wheelScrollSliderMoved:"
@@ -14,7 +15,8 @@
 	Actions = (
 	    "doubleClickMtrxClicked:",
 	    "setWheelScroll:",
-	    "wheelScrollSliderMoved:"
+	    "wheelScrollSliderMoved:",
+	    "setTreshold:"
 	);
 	Outlets = (
 	    view,
@@ -22,7 +24,9 @@
 	    doubleClickMtrx,
 	    speedMtrx,
 	    wheelScrollSlider,
-	    wheelScrollField
+	    wheelScrollField,
+	    tresholdSlider,
+	    tresholdField
 	);
 	Super = NSObject;
     };

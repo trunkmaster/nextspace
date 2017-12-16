@@ -38,6 +38,8 @@
   id doubleClickMtrx;
   id wheelScrollSlider;
   id wheelScrollField;
+  id tresholdField;
+  id tresholdSlider;
 }
 
 @end
