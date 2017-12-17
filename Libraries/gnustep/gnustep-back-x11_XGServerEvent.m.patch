@@ -42,7 +42,7 @@
 +  if (clickTime < 250)
 +    clickTime = 250;
 +  
-+  clickMove = [defs integerForKey:@"GSMouseMoveTreshold"];
++  clickMove = [defs integerForKey:@"GSMouseMoveThreshold"];
 +  if (clickMove < 3)
 +    clickMove = 3;
 +

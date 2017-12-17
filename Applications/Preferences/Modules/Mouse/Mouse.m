@@ -62,6 +62,9 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)awakeFromNib
 {
+  NXMouse   *mouse = [NXMouse new];
+  NSInteger value;
+
   [view retain];
   [window release];
 
@@ -70,14 +73,24 @@ static NSMutableDictionary      *domain = nil;
   for (id c in [doubleClickMtrx cells])
     [c setRefusesFirstResponder:YES];
 
-  NXMouse *mouse = [NXMouse new];
-
   NSLog(@"[Mouse] current acceleration = %li times, threshold = %li pixels",
         [mouse acceleration], [mouse accelerationThreshold]);
   
   [speedMtrx selectCellWithTag:[mouse acceleration]];
-  [doubleClickMtrx selectCellWithTag:[defaults integerForKey:@"GSDoubleClickTime"]];
   [mouse release];
+  
+  [doubleClickMtrx
+    selectCellWithTag:[defaults integerForKey:@"GSDoubleClickTime"]];
+
+  value = [defaults integerForKey:@"GSMouseMoveThreshold"];
+  if (value == 0) value = 3;
+  [tresholdSlider setIntegerValue:value];
+  [tresholdField setIntegerValue:value];
+
+  value = [defaults integerForKey:@"GSMouseScrollMultiplier"];
+  if (value == 0) value = 1;
+  [wheelScrollSlider setIntegerValue:value];
+  [wheelScrollField setIntegerValue:value];
 }
 
 - (NSView *)view
@@ -148,11 +161,42 @@ static NSMutableDictionary      *domain = nil;
 }
 - (void)setTreshold:(id)sender
 {
+  NSNumber   *value;
+  NXDefaults *nxDefs;
+  NXMouse    *mouse;
+  
+  if (sender == tresholdSlider)
+    {
+      [tresholdField setIntValue:[tresholdSlider integerValue]];
+    }
+  else if (sender == tresholdField)
+    {
+      [tresholdSlider setIntValue:[tresholdField integerValue]];
+      [tresholdField setIntValue:[tresholdSlider integerValue]];
+    }
+  
+  value = [NSNumber numberWithInteger:[tresholdField integerValue]];
+  [domain setObject:value forKey:@"GSMouseMoveThreshold"];
+  [defaults setPersistentDomain:domain forName:NSGlobalDomain];
+  [defaults synchronize];
+
+  mouse = [NXMouse new];
+  nxDefs = [NXDefaults globalUserDefaults];
+  [nxDefs setInteger:[value integerValue] forKey:Threshold];
+  [nxDefs synchronizeq];
+  [mouse setAcceleration:[nxDefs integerForKey:Acceleration]
+               threshold:[nxDefs integerForKey:Threshold]];
+  [mouse release];
+  
+  [[NSDistributedNotificationCenter defaultCenter]
+               postNotificationName:@"GSMouseOptionsDidChangeNotification"
+                             object:nil];
 }
 
 - (void)setWheelScroll:(id)sender
 {
-  NSNumber *value;
+  NSNumber   *value;
+  NXDefaults *nxDefs;
   
   if (sender == wheelScrollSlider)
     {
@@ -168,6 +212,9 @@ static NSMutableDictionary      *domain = nil;
   [domain setObject:value forKey:@"GSMouseScrollMultiplier"];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
   [defaults synchronize];
+
+  nxDefs = [NXDefaults globalUserDefaults];
+  [nxDefs setInteger:[value integerValue] forKey:@""];
   
   [[NSDistributedNotificationCenter defaultCenter]
                postNotificationName:@"GSMouseOptionsDidChangeNotification"
