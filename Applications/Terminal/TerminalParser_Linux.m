@@ -886,7 +886,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     switch(c) {
     case 'G': case '`':
       if (par[0]) par[0]--;
-      gotoxy(currcons,par[0],y);
+      gotoxy(currcons, par[0], y);
       return;
     case 'A':
       if (!par[0]) par[0]++;
@@ -1367,14 +1367,14 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     }
 
     {
-      BOOL commandAsMeta=[[ts preferences] commandAsMeta];
+      BOOL alternateAsMeta = [[ts preferences] alternateAsMeta];
 
       /*
 	 Thanks to different keyboard layouts and dumb default key handling
 	 in GNUstep, this is a bit complex. There seem to be two main cases:
 
 	 a. GNUstep has been correctly configured. Command is really command,
-	 alternate is really alternate, and is used as meta. AltGr isn't
+	 Alternate is really Alternate, and is used as meta. AltGr isn't
 	 anything at all. No special options necessary.
 
 	 b. GNUstep is using the default settings. Left alt is command, right
@@ -1384,21 +1384,14 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 	 command presses and treat them as meta, and we ignore alternate.
        */
 
-      // if ((commandAsMeta && (mask&NSCommandKeyMask)) ||
-      //     (!commandAsMeta && (mask&NSAlternateKeyMask)))
-      //   {
-      //     NSDebugLLog(@"key",@"  meta");
-      //     [ts ts_sendCString: "\e"];
-      //   }
-      // if ((mask & NSAlternateKeyMask) ||  // Alternate == Super
-      //     (mask & NSCommandKeyMask))      // Command == Alt
-      // TODO: implement 'alternateAsMeta' option and use it here.
-      if (mask & NSAlternateKeyMask)       // Alternate == Super
+      // Here we're assuming that Alternate == Super.
+      // Command == Alt and is used for GNUstep shorcuts.
+      // This is a cae 'a' from the comment above. This is right thing.
+      if ((mask & NSAlternateKeyMask) && alternateAsMeta)
         {
           NSDebugLLog(@"key",@"  meta");
           [ts ts_sendCString:"\e"];
         }
-
     }
 
   if (nstr)

@@ -17,6 +17,7 @@
   id handleMulticellBtn;
   id commandKeyBtn;
   id escapeKeyBtn;
+  id alternateKeyMtrx;
   id window;
   id view;
 }
