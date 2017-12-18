@@ -11,14 +11,13 @@
 
 static NSString *characterSet;
 
-
 typedef struct
 {
   NSString *name;
   NSString *display_name;
 } character_set_choice_t;
 
-static character_set_choice_t cs_choices[]={
+static character_set_choice_t cs_choices[] = {
   {@"utf-8"             ,__(@"Unicode")},
   {@"iso-8859-1"        ,__(@"West Europe, Latin-1")},
   {@"iso-8859-2"        ,__(@"East Europe, Latin-2")},
@@ -50,13 +49,13 @@ static character_set_choice_t cs_choices[]={
   character_set_choice_t *c;
 
   [charsetBtn removeAllItems];
-  for (i=0,c=cs_choices;c->display_name;i++,c++)
+  for (i = 0,c = cs_choices; c->display_name;i++, c++)
     {
       NSString *title;
       if (c->name)
         {
           title = [NSString stringWithFormat: @"%@ (%@)",
-                            c->display_name,c->name];
+                            c->display_name, c->name];
         }
       else
         {
@@ -65,6 +64,9 @@ static character_set_choice_t cs_choices[]={
       [charsetBtn addItemWithTitle:title];
     }
   [view retain];
+
+  for (id c in [alternateKeyMtrx cells])
+    [c setRefusesFirstResponder:YES];
 }
 
 // <PrefsModule>
@@ -90,7 +92,7 @@ static character_set_choice_t cs_choices[]={
   [handleMulticellBtn setState:([defs useMultiCellGlyphs] == YES)];
 
   [escapeKeyBtn setState:[defs doubleEscape]];
-  [commandKeyBtn setState:[defs commandAsMeta]];
+  [alternateKeyMtrx selectCellWithTag:[defs alternateAsMeta] ? 1 : 0];
 }
 
 - (void)setDefault:(id)sender
@@ -109,7 +111,7 @@ static character_set_choice_t cs_choices[]={
   [defs setUseMultiCellGlyphs:[handleMulticellBtn state]];
 
   [defs setDoubleEscape:[escapeKeyBtn state]];
-  [defs setCommandAsMeta:[commandKeyBtn state]];
+  [defs setAlternateAsMeta:[[alternateKeyMtrx selectedCell] tag]];
   
   [defs synchronize];
 }
@@ -126,6 +128,36 @@ static character_set_choice_t cs_choices[]={
 - (void)setWindow:(id)sender
 {
   /* insert your code here */
+}
+
+// Actions
+- (void)setCharset:(id)sender
+{
+  
+}
+
+- (void)setMultiCellGlyphs:(id)sender
+{
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
+
+  [defs setUseMultiCellGlyphs:[handleMulticellBtn state]];
+  [defs synchronize];
+}
+
+- (void)setEscapeKey:(id)sender
+{
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
+
+  [defs setDoubleEscape:[escapeKeyBtn state]];
+  [defs synchronize];
+}
+
+- (void)setAlternateKey:(id)sender
+{
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
+  
+  [defs setAlternateAsMeta:[[alternateKeyMtrx selectedCell] tag]];
+  [defs synchronize];
 }
 
 @end

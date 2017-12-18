@@ -458,7 +458,7 @@ const NSUInteger TitleBarWindowSize  = 1<<4;
 //---
 NSString *CharacterSetKey  = @"Linux_CharacterSet";
 NSString *UseMultiCellGlyphsKey = @"UseMultiCellGlyphs";
-NSString *CommandAsMetaKey = @"CommandAsMeta";
+NSString *AlternateAsMetaKey = @"AlternateAsMeta";
 NSString *DoubleEscapeKey  = @"DoubleEscape";
 //---
 @implementation Defaults (Linux)
@@ -480,13 +480,21 @@ NSString *DoubleEscapeKey  = @"DoubleEscape";
     
   [self setObject:cSet forKey:CharacterSetKey];
 }
-- (BOOL)commandAsMeta
-{
-  return [self boolForKey:CommandAsMetaKey];
+- (BOOL)alternateAsMeta
+{ // Don't use boolForKey: we need to return YES if option is not set.
+  id obj = [self objectForKey:AlternateAsMetaKey];
+
+  if (obj != nil && ([obj isKindOfClass:[NSString class]]
+                     || [obj isKindOfClass:[NSNumber class]]))
+    {
+      return [obj boolValue];
+    }
+
+  return YES;
 }
-- (void)setCommandAsMeta:(BOOL)yn
+- (void)setAlternateAsMeta:(BOOL)yn
 {
-  [self setBool:yn forKey:CommandAsMetaKey];
+  [self setBool:yn forKey:AlternateAsMetaKey];
 }
 - (BOOL)doubleEscape
 {
@@ -841,7 +849,7 @@ NSString *HideOnAutolaunchKey = @"HideOnAutolaunch";
 @implementation Defaults (Startup)
 - (StartupAction)startupAction
 {
-  if ([self integerForKey:StartupActionKey] == 0)
+  if ([self integerForKey:StartupActionKey] == -1)
     [self setStartupAction:OnStartCreateShell];
   
   return [self integerForKey:StartupActionKey];
