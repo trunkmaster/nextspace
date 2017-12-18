@@ -183,7 +183,7 @@ static NSMutableDictionary      *domain = nil;
   mouse = [NXMouse new];
   nxDefs = [NXDefaults globalUserDefaults];
   [nxDefs setInteger:[value integerValue] forKey:Threshold];
-  [nxDefs synchronizeq];
+  [nxDefs synchronize];
   [mouse setAcceleration:[nxDefs integerForKey:Acceleration]
                threshold:[nxDefs integerForKey:Threshold]];
   [mouse release];
