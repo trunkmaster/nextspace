@@ -48,7 +48,7 @@
 {
   if ([e type] == NSKeyDown && 
       [e modifierFlags] & NSCommandKeyMask &&
-      [[Defaults shared] commandAsMeta])
+      [[Defaults shared] alternateAsMeta])
     {
       NSDebugLLog(@"key",@"intercepting key equivalent");
       [[e window] sendEvent:e];
