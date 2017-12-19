@@ -501,11 +501,29 @@ NSString *TerminalWindowSizeDidChangeNotification =
       [livePreferences setLoginShell:[prefs boolForKey:LoginShellKey]];
     }
   // Linux:
+  if ([prefs objectForKey:CharacterSetKey])
+    {
+      NSString *cs = [prefs objectForKey:CharacterSetKey];
+      [tView setCharset:cs];
+      [livePreferences setCharacterSet:cs];
+    }
   if ([prefs objectForKey:UseMultiCellGlyphsKey])
     {
       boolValue = [prefs useMultiCellGlyphs];
       [tView setUseMulticellGlyphs:boolValue];
       [livePreferences setUseMultiCellGlyphs:boolValue];
+    }
+  if ([prefs objectForKey:DoubleEscapeKey])
+    {
+      boolValue = [prefs doubleEscape];
+      [tView setDoubleEscape:boolValue];
+      [livePreferences setDoubleEscape:boolValue];
+    }
+  if ([prefs objectForKey:AlternateAsMetaKey])
+    {
+      boolValue = [prefs alternateAsMeta];
+      [tView setAlternateAsMeta:boolValue];
+      [livePreferences setAlternateAsMeta:boolValue];
     }
   // Colors:
   if ([prefs objectForKey:CursorColorKey])

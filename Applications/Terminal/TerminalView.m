@@ -2936,14 +2936,26 @@ static int handled_mask = (NSDragOperationCopy |
   scroll_bottom_on_input = scrollBottom;
 }
 
+- (void)setCursorStyle:(NSUInteger)style
+{
+  cursorStyle = style;
+}
+
+- (void)setCharset:(NSString *)charsetName
+{
+  [tp setCharset:charsetName];
+}
 - (void)setUseMulticellGlyphs:(BOOL)multicellGlyphs
 {
   use_multi_cell_glyphs = multicellGlyphs;
 }
- 
-- (void)setCursorStyle:(NSUInteger)style
+- (void)setDoubleEscape:(BOOL)doubleEscape
 {
-  cursorStyle = style;
+  [tp setDoubleEscape:doubleEscape];
+}
+- (void)setAlternateAsMeta:(BOOL)altAsMeta
+{
+  [tp setAlternateAsMeta:altAsMeta];
 }
 
 // ---

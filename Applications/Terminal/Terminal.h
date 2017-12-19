@@ -66,6 +66,10 @@ complete. (TODO check this) */
                        cursorY:(int)cursor_y;
 - (void)handleKeyEvent:(NSEvent *)e;
 - (void)sendString:(NSString *)str;
+
+- (void)setCharset:(NSString *)charsetName;
+- (void)setDoubleEscape:(BOOL)doubleEscape;
+- (void)setAlternateAsMeta:(BOOL)altAsMeta;
 @end
 
 #endif

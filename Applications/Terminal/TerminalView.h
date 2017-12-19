@@ -148,8 +148,12 @@ struct selection_range
 - (int)scrollBufferLength;
 - (void)setScrollBufferMaxLength:(int)lines;
 - (void)setScrollBottomOnInput:(BOOL)scrollBottom;
-- (void)setUseMulticellGlyphs:(BOOL)multicellGlyphs;
 - (void)setCursorStyle:(NSUInteger)style;
+
+- (void)setCharset:(NSString *)charsetName;
+- (void)setUseMulticellGlyphs:(BOOL)multicellGlyphs;
+- (void)setDoubleEscape:(BOOL)doubleEscape;
+- (void)setAlternateAsMeta:(BOOL)altAsMeta;
 
 - (NSString *)programPath;
 - (NSString *)deviceName;
