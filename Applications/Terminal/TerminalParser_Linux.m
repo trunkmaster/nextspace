@@ -29,7 +29,6 @@
 
 #import "Defaults.h"
 
-
 #include "charmaps.h"
 
 #define set_translate(charset,foo) _set_translate(charset)
@@ -1446,24 +1445,24 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
   iconv_charset = [[[ts preferences] characterSet] cString];
 
-  if (strcmp(iconv_charset, "iso-8859-1"))
+  if (strcmp(iconv_charset, "ISO-8859-1"))
     {
-      iconv_state = iconv_open("ucs-4", iconv_charset);
+      iconv_state = iconv_open("UCS-4", iconv_charset);
       if (iconv_state == (iconv_t)-1)
         {
           iconv_state = NULL;
           NSLog(@"Warning: unable to create iconv handle for conversion from '%s'!",
                 iconv_charset);
-          NSLog(@"Falling back to iso-8859-1 (latin1).");
+          NSLog(@"Falling back to ISO-8859-1 (Latin1).");
         }
 
-      iconv_input_state = iconv_open(iconv_charset, "ucs-4");
+      iconv_input_state = iconv_open(iconv_charset, "UCS-4");
       if (iconv_input_state == (iconv_t)-1)
         {
           iconv_input_state=NULL;
           NSLog(@"Warning: unable to create iconv handle for conversion to '%s'!",
                 iconv_charset);
-          NSLog(@"Falling back to iso-8859-1 (latin1).");
+          NSLog(@"Falling back to ISO-8859-1 (Latin1).");
         }
     }
 

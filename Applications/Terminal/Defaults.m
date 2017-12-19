@@ -469,7 +469,7 @@ NSString *DoubleEscapeKey  = @"DoubleEscape";
   characterSet = [self stringForKey:CharacterSetKey];
   if (!characterSet)
     {
-      characterSet = @"utf-8";
+      characterSet = @"UTF-8";
     }
   return characterSet;
 }

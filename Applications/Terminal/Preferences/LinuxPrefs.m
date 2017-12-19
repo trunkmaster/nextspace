@@ -18,10 +18,10 @@ typedef struct
 } character_set_choice_t;
 
 static character_set_choice_t cs_choices[] = {
-  {@"utf-8"             ,__(@"Unicode")},
-  {@"iso-8859-1"        ,__(@"West Europe, Latin-1")},
-  {@"iso-8859-2"        ,__(@"East Europe, Latin-2")},
-  {@"big-5"             ,__(@"Traditional Chinese")},
+  {@"UTF-8"             ,__(@"Unicode")},
+  {@"ISO-8859-1"        ,__(@"West Europe, Latin-1")},
+  {@"ISO-8859-2"        ,__(@"East Europe, Latin-2")},
+  {@"BIG-5"             ,__(@"Traditional Chinese")},
   {nil                  ,__(@"Custom, leave unchanged")},
   {nil                  ,nil}
 };
@@ -133,7 +133,13 @@ static character_set_choice_t cs_choices[] = {
 // Actions
 - (void)setCharset:(id)sender
 {
+  NSString *csName;
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
   
+  csName = cs_choices[[charsetBtn indexOfSelectedItem]].name;
+  NSLog(@"Selected charset: %@", csName);
+  [defs setCharacterSet:csName];
+  [defs synchronize];
 }
 
 - (void)setMultiCellGlyphs:(id)sender
