@@ -73,37 +73,44 @@ static const unichar *_set_translate(int charset)
 @implementation TerminalParser_Linux
 
 
-#define gotoxy(foo,new_x,new_y)                 \
+#define gotoxy(foo, new_x, new_y)               \
   do {                                          \
     int min_y, max_y;                           \
+    int _x, _y;                                 \
                                                 \
     if (new_x < 0)                              \
-      x = 0;                                    \
+      _x = 0;                                   \
     else                                        \
       if (new_x >= width)                       \
-        x = width - 1;                          \
+        _x = width - 1;                         \
       else                                      \
-        x = new_x;                              \
-    if (decom) {                                \
-      min_y = top;                              \
-      max_y = bottom;                           \
-    } else {                                    \
-      min_y = 0;                                \
-      max_y = height;                           \
-    }                                           \
-    if (new_y < min_y)                          \
-      y = min_y;                                \
-    else if (new_y >= max_y)                    \
-      y = max_y - 1;                            \
+        _x = new_x;                             \
+    if (decom)                                  \
+      {                                         \
+        min_y = top;                            \
+        max_y = bottom;                         \
+      }                                         \
     else                                        \
-      y = new_y;                                \
+      {                                         \
+        min_y = 0;                              \
+        max_y = height;                         \
+      }                                         \
+    if (new_y < min_y)                          \
+      _y = min_y;                               \
+    else if (new_y >= max_y)                    \
+      _y = max_y - 1;                           \
+    else                                        \
+      _y = new_y;                               \
+    x = _x;                                     \
+    y = _y;                                     \
     [ts ts_goto:x :y];                          \
   } while (0)
 
-#define gotoxay(foo,nx,ny) gotoxy(foo,nx,decom?top+ny:ny)
+#define gotoxay(foo, nx, ny) gotoxy(foo, nx, decom?top+ny:ny)
 
 
-#define save_cur(foo) do {                      \
+#define save_cur(foo)                           \
+  do {                                          \
     saved_x	= x;                            \
     saved_y	= y;                            \
     s_intensity	= intensity;                    \
@@ -116,21 +123,23 @@ static const unichar *_set_translate(int charset)
     saved_G1	= G1_charset;                   \
   } while (0)
 
-#define restore_cur(foo) do {                                           \
-    gotoxy(currcons,saved_x,saved_y);                                   \
-    intensity	= s_intensity;                                          \
-    underline	= s_underline;                                          \
-    blink	= s_blink;                                              \
-    reverse	= s_reverse;                                            \
-    charset	= s_charset;                                            \
-    color	= s_color;                                              \
-    G0_charset	= saved_G0;                                             \
-    G1_charset	= saved_G1;                                             \
-    translate	= set_translate(charset ? G1_charset : G0_charset,currcons); \
-  } while (0)
+#define restore_cur(foo)                                                \
+    do {                                                                \
+      gotoxy(currcons,saved_x,saved_y);                                 \
+      intensity	= s_intensity;                                          \
+      underline	= s_underline;                                          \
+      blink	= s_blink;                                              \
+      reverse	= s_reverse;                                            \
+      charset	= s_charset;                                            \
+      color	= s_color;                                              \
+      G0_charset = saved_G0;                                            \
+      G1_charset = saved_G1;                                            \
+      translate	= set_translate(charset?G1_charset:G0_charset,          \
+                                currcons);                              \
+    } while (0)
 
 
--(void) _reset_terminal
+- (void)_reset_terminal
 {
   top		= 0;
   bottom	= height;
@@ -173,13 +182,13 @@ static const unichar *_set_translate(int charset)
   [self _default_attr];
   [self _update_attr];
 
-  tab_stop[0]= 0x01010100;
-  tab_stop[1]=tab_stop[2]=tab_stop[3]=tab_stop[4]=
-    tab_stop[5]=tab_stop[6]=tab_stop[7]=0x01010101;
+  tab_stop[0] = 0x01010100;
+  tab_stop[1] = tab_stop[2] = tab_stop[3] = tab_stop[4] =
+    tab_stop[5] = tab_stop[6] = tab_stop[7] = 0x01010101;
 
-  gotoxy(currcons,0,0);
+  gotoxy(currcons, 0, 0);
   save_cur(currcons);
-  [self _csi_J: 2];
+  [self _csi_J:2];
 }
 
 //-------------------------------------------------------------------------------
