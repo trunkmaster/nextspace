@@ -1,7 +1,7 @@
 /*
   Copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
-  Copyright 2005 forkpty replacement,Riccardo Mottola <rmottola@users.sf.net>
-  Copyright 2015 Sergii Stoian <stoyan255@gmail.com>
+  Copyright 2005 forkpty replacement, Riccardo Mottola <rmottola@users.sf.net>
+  Copyright 2015-2017 Sergii Stoian <stoyan255@gmail.com>
 
   This file is a part of Terminal.app. Terminal.app is free software; you
   can redistribute it and/or modify it under the terms of the GNU General
@@ -337,7 +337,7 @@ NSString *TerminalViewSizeDidChangeNotification=@"TerminalViewSizeDidChange";
 		} \
 	} while (0)
 
-#define SCREEN(x,y) (screen[(y)*sx+(x)])
+#define SCREEN(x, y) (screen[(y) * sx + (x)])
 
 /* handle accumulated pending scrolls with a single composite */
 - (void)_handlePendingScroll:(BOOL)lockFocus
@@ -1002,7 +1002,7 @@ static void set_foreground(NSGraphicsContext *gc,
 }
 
 
--(void) benchmark: (id)sender
+- (void)benchmark:(id)sender
 {
   int i;
   double t1,t2;
@@ -1040,111 +1040,111 @@ static void set_foreground(NSGraphicsContext *gc,
 }
 
 
--(void) ts_goto:(int)x :(int)y
+- (void)ts_goto:(int)x :(int)y
 {
   NSDebugLLog(@"ts",@"goto: %i:%i",x,y);
-  cursor_x=x;
-  cursor_y=y;
-  if (cursor_x>=sx) cursor_x=sx-1;
-  if (cursor_x<0) cursor_x=0;
-  if (cursor_y>=sy) cursor_y=sy-1;
-  if (cursor_y<0) cursor_y=0;
+  cursor_x = x;
+  cursor_y = y;
+  if (cursor_x >= sx) cursor_x = sx - 1;
+  if (cursor_x < 0) cursor_x=0;
+  if (cursor_y >= sy) cursor_y = sy - 1;
+  if (cursor_y < 0) cursor_y = 0;
 }
 
--(void) ts_putChar:(screen_char_t)ch  count:(int)c  at:(int)x :(int)y
+- (void)ts_putChar:(screen_char_t)ch count:(int)c at:(int)x :(int)y
 {
-	int i;
-	screen_char_t *s;
+  int i;
+  screen_char_t *s;
 
-	NSDebugLLog(@"ts",@"putChar: '%c' %02x %02x count: %i at: %i:%i",
-		ch.ch,ch.color,ch.attr,c,x,y);
+  NSDebugLLog(@"ts",@"putChar: '%c' %02x %02x count: %i at: %i:%i",
+              ch.ch,ch.color,ch.attr,c,x,y);
 
-	if (y<0 || y>=sy) return;
-	if (x+c>sx)
-		c=sx-x;
-	if (x<0)
-	{
-		c-=x;
-		x=0;
-	}
-	s=&SCREEN(x,y);
-	ch.attr|=0x80;
-	for (i=0;i<c;i++)
-		*s++=ch;
-	ADD_DIRTY(x,y,c,1);
+  if (y < 0 || y >= sy) return;
+  if (x + c > sx)
+    c = sx - x;
+  if (x < 0)
+    {
+      c -= x;
+      x = 0;
+    }
+  s = &SCREEN(x, y);
+  ch.attr |= 0x80;
+  for (i = 0; i < c; i++)
+    *s ++= ch;
+  ADD_DIRTY(x, y, c, 1);
 }
 
--(void) ts_putChar:(screen_char_t)ch  count:(int)c  offset:(int)ofs
+- (void)ts_putChar:(screen_char_t)ch count:(int)c offset:(int)ofs
 {
-	int i;
-	screen_char_t *s;
+  int i;
+  screen_char_t *s;
 
-	NSDebugLLog(@"ts",@"putChar: '%c' %02x %02x count: %i offset: %i",
-		ch.ch,ch.color,ch.attr,c,ofs);
+  NSDebugLLog(@"ts",@"putChar: '%c' %02x %02x count: %i offset: %i",
+              ch.ch,ch.color,ch.attr,c,ofs);
 
-	if (ofs+c>sx*sy)
-		c=sx*sy-ofs;
-	if (ofs<0)
-	{
-		c-=ofs;
-		ofs=0;
-	}
-	s=&SCREEN(ofs,0);
-	ch.attr|=0x80;
-	for (i=0;i<c;i++)
-		*s++=ch;
-	ADD_DIRTY(0,0,sx,sy); /* TODO */
+  if (ofs + c > sx * sy)
+    c = sx * sy - ofs;
+  if (ofs < 0)
+    {
+      c -= ofs;
+      ofs = 0;
+    }
+  s = &SCREEN(ofs, 0);
+  ch.attr |= 0x80;
+  for (i = 0; i < c; i++)
+    *s ++= ch;
+  ADD_DIRTY(0, 0, sx, sy); /* TODO */
 }
 
--(void) ts_scrollUp:(int)t :(int)b rows:(int)nr save:(BOOL)save
+- (void)ts_scrollUp:(int)t :(int)b rows:(int)nr save:(BOOL)save
 {
   screen_char_t *d, *s;
 
   NSDebugLLog(@"ts",@"scrollUp: %i:%i  rows: %i  save: %i",
               t,b,nr,save);
 
-  if (save && t==0 && b==sy) /* TODO? */
+  if (save && (t == 0) && (b == sy)) /* TODO? */
     {
       int num;
-      if (nr<max_scrollback)
+      if (nr < max_scrollback)
         {
-          memmove(sbuf,&sbuf[sx*nr],
-                  sizeof(screen_char_t)*sx*(max_scrollback-nr));
+          memmove(sbuf, &sbuf[sx * nr],
+                  sizeof(screen_char_t) * sx * (max_scrollback - nr));
           num=nr;
         }
       else
-        num=max_scrollback;
+        num = max_scrollback;
 
-      if (num<sy)
+      if (num < sy)
         {
-          memmove(&sbuf[sx*(max_scrollback-num)],screen,
+          memmove(&sbuf[sx * (max_scrollback - num)], screen,
                   num*sx*sizeof(screen_char_t));
         }
       else
         {
-          memmove(&sbuf[sx*(max_scrollback-num)],screen,
+          memmove(&sbuf[sx * (max_scrollback - num)],screen,
                   sy*sx*sizeof(screen_char_t));
 
           /* TODO: should this use video_erase_char? */
-          memset(&sbuf[sx*(max_scrollback-num+sy)],0,
+          memset(&sbuf[sx * (max_scrollback - num + sy)], 0,
                  sx*(num-sy)*sizeof(screen_char_t));
         }
-      sb_length+=num;
-      if (sb_length>max_scrollback)
-        sb_length=max_scrollback;
+      sb_length += num;
+      if (sb_length > max_scrollback)
+        sb_length = max_scrollback;
     }
 
   if (t+nr >= b)
     nr = b - t - 1;
   if (b > sy || t >= b || nr < 1)
     return;
-  d = &SCREEN(0,t);
-  s = &SCREEN(0,t+nr);
+  d = &SCREEN(0, t);
+  s = &SCREEN(0, t + nr);
 
-  if (current_y>=t && current_y<=b)
+  if (current_y >= t && current_y <= b)
     {
-      SCREEN(current_x,current_y).attr|=0x80;
-      draw_cursor=YES;
+      SCREEN(current_x, current_y).attr |= 0x80;
+      draw_cursor = YES;
       /*
         TODO: does this properly handle the case when the cursor is in
         an area that gets scrolled 'over'?
@@ -1157,145 +1157,147 @@ static void set_foreground(NSGraphicsContext *gc,
   memmove(d, s, (b-t-nr) * sx * sizeof(screen_char_t));
   if (!current_scroll)
     {
-      if (t==0 && b==sy)
+      if (t == 0 && b == sy)
         {
-          pending_scroll-=nr;
+          pending_scroll -= nr;
+        }
+      else
+        {
+          float x0, y0, w, h, dx, dy;
+
+          if (pending_scroll)
+            [self _handlePendingScroll:YES];
+
+          x0 = 0;
+          w = fx * sx;
+          y0 = (t + nr) * fy;
+          h = (b - t - nr) * fy;
+          dx = 0;
+          dy = t * fy;
+          y0 = sy * fy - y0 - h;
+          dy = sy * fy - dy - h;
+          [self lockFocus];
+          DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
+                       [self gState],border_x+dx,border_y+dy,NSCompositeCopy);
+          [self unlockFocusNeedsFlush:NO];
+          num_scrolls++;
+        }
+    }
+  ADD_DIRTY(0, t, sx, b - t);
+}
+
+- (void)ts_scrollDown:(int)t :(int)b rows:(int)nr
+{
+  screen_char_t *s;
+  unsigned int step;
+
+  NSDebugLLog(@"ts",@"scrollDown: %i:%i  rows: %i",
+              t,b,nr);
+
+  if (t + nr >= b)
+    nr = b - t - 1;
+  if (b > sy || t >= b || nr < 1)
+    return;
+  s = &SCREEN(0, t);
+  step = sx * nr;
+  if (current_y >= t && current_y <= b)
+    {
+      SCREEN(current_x, current_y).attr |= 0x80;
+      draw_cursor = YES;
+    }
+  memmove(s + step, s, (b-t-nr)*sx*sizeof(screen_char_t));
+  if (!current_scroll)
+    {
+      if (t == 0 && b == sy)
+        {
+          pending_scroll += nr;
         }
       else
         {
           float x0,y0,w,h,dx,dy;
 
           if (pending_scroll)
-            [self _handlePendingScroll: YES];
+            [self _handlePendingScroll:YES];
 
-          x0=0;
-          w=fx*sx;
-          y0=(t+nr)*fy;
-          h=(b-t-nr)*fy;
-          dx=0;
-          dy=t*fy;
-          y0=sy*fy-y0-h;
-          dy=sy*fy-dy-h;
+          x0 = 0;
+          w = fx * sx;
+          y0 = (t) * fy;
+          h = (b - t - nr) * fy;
+          dx = 0;
+          dy = (t + nr) * fy;
+          y0 = sy * fy - y0 - h;
+          dy = sy * fy - dy - h;
           [self lockFocus];
-          DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
-                       [self gState],border_x+dx,border_y+dy,NSCompositeCopy);
-          [self unlockFocusNeedsFlush: NO];
+          DPScomposite(GSCurrentContext(),border_x + x0, border_y + y0, w, h,
+                       [self gState], border_x + dx,border_y + dy,
+                       NSCompositeCopy);
+          [self unlockFocusNeedsFlush:NO];
           num_scrolls++;
         }
     }
-  ADD_DIRTY(0,t,sx,b-t);
+  ADD_DIRTY(0, t, sx, b - t);
 }
 
--(void) ts_scrollDown:(int)t :(int)b  rows:(int)nr
-{
-	screen_char_t *s;
-	unsigned int step;
-
-	NSDebugLLog(@"ts",@"scrollDown: %i:%i  rows: %i",
-		t,b,nr);
-
-	if (t+nr >= b)
-		nr = b - t - 1;
-	if (b > sy || t >= b || nr < 1)
-		return;
-	s = &SCREEN(0,t);
-	step = sx * nr;
-	if (current_y>=t && current_y<=b)
-	{
-		SCREEN(current_x,current_y).attr|=0x80;
-		draw_cursor=YES;
-	}
-	memmove(s + step, s, (b-t-nr)*sx*sizeof(screen_char_t));
-	if (!current_scroll)
-	{
-		if (t==0 && b==sy)
-		{
-			pending_scroll+=nr;
-		}
-		else
-		{
-			float x0,y0,w,h,dx,dy;
-
-			if (pending_scroll)
-				[self _handlePendingScroll: YES];
-
-			x0=0;
-			w=fx*sx;
-			y0=(t)*fy;
-			h=(b-t-nr)*fy;
-			dx=0;
-			dy=(t+nr)*fy;
-			y0=sy*fy-y0-h;
-			dy=sy*fy-dy-h;
-			[self lockFocus];
-			DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
-				[self gState],border_x+dx,border_y+dy,NSCompositeCopy);
-			[self unlockFocusNeedsFlush: NO];
-			num_scrolls++;
-		}
-	}
-	ADD_DIRTY(0,t,sx,b-t);
-}
-
--(void) ts_shiftRow:(int)y at:(int)x0 delta:(int)delta
+- (void)ts_shiftRow:(int)y at:(int)x0 delta:(int)delta
 {
   screen_char_t *s,*d;
   int x1,c;
   NSDebugLLog(@"ts",@"shiftRow: %i  at: %i  delta: %i",
               y,x0,delta);
 
-  if (y<0 || y>=sy) return;
-  if (x0<0 || x0>=sx) return;
+  if (y < 0 || y >= sy) return;
+  if (x0 < 0 || x0 >= sx) return;
 
-  if (current_y==y)
+  if (current_y == y)
     {
-      SCREEN(current_x,current_y).attr|=0x80;
-      draw_cursor=YES;
+      SCREEN(current_x, current_y).attr |= 0x80;
+      draw_cursor = YES;
     }
 
-  s=&SCREEN(x0,y);
-  x1=x0+delta;
-  c=sx-x0;
-  if (x1<0)
+  s = &SCREEN(x0, y);
+  x1 = x0 + delta;
+  c = sx - x0;
+  if (x1 < 0)
     {
-      x0-=x1;
-      c+=x1;
-      x1=0;
+      x0 -= x1;
+      c += x1;
+      x1 = 0;
     }
-  if (x1+c>sx)
-    c=sx-x1;
-  d=&SCREEN(x1,y);
-  memmove(d,s,sizeof(screen_char_t)*c);
+  if (x1 + c > sx)
+    c = sx - x1;
+  d = &SCREEN(x1, y);
+  memmove(d, s, sizeof(screen_char_t) * c);
   if (!current_scroll)
     {
       float cx0,y0,w,h,dx,dy;
 
       if (pending_scroll)
-        [self _handlePendingScroll: YES];
+        [self _handlePendingScroll:YES];
 
-      cx0=x0*fx;
-      w=fx*c;
-      dx=x1*fx;
+      cx0 = x0 * fx;
+      w = fx * c;
+      dx = x1 * fx;
 
-      y0=y*fy;
-      h=fy;
-      dy=y0;
+      y0 = y * fy;
+      h = fy;
+      dy = y0;
 
-      y0=sy*fy-y0-h;
-      dy=sy*fy-dy-h;
+      y0 = sy * fy - y0 - h;
+      dy = sy * fy - dy - h;
       [self lockFocus];
-      DPScomposite(GSCurrentContext(),border_x+cx0,border_y+y0,w,h,
-                   [self gState],border_x+dx,border_y+dy,NSCompositeCopy);
-      [self unlockFocusNeedsFlush: NO];
+      DPScomposite(GSCurrentContext(),border_x + cx0, border_y + y0, w, h,
+                   [self gState], border_x + dx, border_y + dy,
+                   NSCompositeCopy);
+      [self unlockFocusNeedsFlush:NO];
       num_scrolls++;
     }
-  ADD_DIRTY(0,y,sx,1);
+  ADD_DIRTY(0, y, sx, 1);
 }
 
--(screen_char_t) ts_getCharAt:(int)x :(int)y
+- (screen_char_t)ts_getCharAt:(int)x :(int)y
 {
-	NSDebugLLog(@"ts",@"getCharAt: %i:%i",x,y);
-	return SCREEN(x,y);
+  NSDebugLLog(@"ts",@"getCharAt: %i:%i", x, y);
+  return SCREEN(x, y);
 }
 
 
@@ -1317,37 +1319,37 @@ static void set_foreground(NSGraphicsContext *gc,
   if (write_buf_len+len > write_buf_size)
     {
       /* Round up to nearest multiple of 512 bytes. */
-      write_buf_size=(write_buf_len+len+511)&~511;
-      write_buf=realloc(write_buf,write_buf_size);
+      write_buf_size = (write_buf_len + len + 511) &~ 511;
+      write_buf = realloc(write_buf, write_buf_size);
     }
-  memcpy(&write_buf[write_buf_len],data,len);
+  memcpy(&write_buf[write_buf_len], data, len);
   write_buf_len += len;
 }
 
--(void) ts_sendCString: (const char *)msg
+- (void)ts_sendCString:(const char *)msg
 {
-  [self ts_sendCString: msg  length: strlen(msg)];
+  [self ts_sendCString:msg length:strlen(msg)];
 }
--(void) ts_sendCString:(const char *)msg length:(int)len
+- (void)ts_sendCString:(const char *)msg length:(int)len
 {
   int l;
-  if (master_fd==-1)
+  if (master_fd == -1)
     return;
 
   if (write_buf_len)
     {
-      [self addDataToWriteBuffer: msg  length: len];
+      [self addDataToWriteBuffer:msg length:len];
       return;
     }
 
-  l=write(master_fd,msg,len);
-  if (l!=len)
+  l = write(master_fd, msg, len);
+  if (l != len)
     {
-      if (errno!=EAGAIN)
+      if (errno != EAGAIN)
         NSLog(@"Unexpected error while writing: %m.");
-      if (l<0)
-        l=0;
-      [self addDataToWriteBuffer:&msg[l] length:len-l];
+      if (l < 0)
+        l = 0;
+      [self addDataToWriteBuffer:&msg[l] length:len - l];
     }
 }
 
@@ -1363,7 +1365,7 @@ static void set_foreground(NSGraphicsContext *gc,
   if (!use_multi_cell_glyphs)
     return 1;
   s = ceil([font boundingRectForGlyph:ch].size.width/fx);
-  if (s<1)
+  if (s < 1)
     return 1;
   return s;
 }

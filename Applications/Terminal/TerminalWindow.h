@@ -1,6 +1,6 @@
 /*
-  Copyright (C) 2002 Alexander Malmberg <alexander@malmberg.org>
-  Copyright (C) 2015 Sergii Stoian <stoyan255@ukr.net>
+  Copyright (c) 2002 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (c) 2015-2017 Sergii Stoian <stoyan255@gmail.com>
   
   This file is a part of Terminal.app. Terminal.app is free software; you
   can redistribute it and/or modify it under the terms of the GNU General

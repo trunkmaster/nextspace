@@ -4,7 +4,7 @@
   Class descritopn:    Panel to show information about application.
                        Called from menu Info->Info Panel...
 
-  Copyright (C) 2017 Sergii Stoian
+  Copyright (c) 2015-2017 Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
