@@ -1423,18 +1423,18 @@ static void set_foreground(NSGraphicsContext *gc,
 
 - (void)scrollWheel:(NSEvent *)e
 {
-  float delta = [e deltaY];
+  float delta = [e deltaY]; // with multiplier applied in XGServerEvent.m
+  float shift;
   int   new_scroll;
-  int   mult;
 
   if ([e modifierFlags] & NSShiftKeyMask)
-    mult = 1;
+    shift = delta < 0 ? -1 : 1;		// one line
   else if ([e modifierFlags] & NSControlKeyMask)
-    mult = sy;
+    shift = delta < 0 ? -sy : sy;	// one page
   else
-    mult = 5;
+    shift = delta;			// as specified by backend
 
-  new_scroll = current_scroll-delta*mult;
+  new_scroll = current_scroll - shift;
   [self _scrollTo:new_scroll update:YES];
 }
 
@@ -1502,12 +1502,12 @@ static void set_foreground(NSGraphicsContext *gc,
         {
           if (ch == NSPageUpFunctionKey)
             {
-              [self _scrollTo:current_scroll-sy+1 update:YES];
+              [self _scrollTo:current_scroll - sy + 1 update:YES];
               return;
             }
           if (ch == NSPageDownFunctionKey)
             {
-              [self _scrollTo:current_scroll+sy-1 update:YES];
+              [self _scrollTo:current_scroll + sy - 1 update:YES];
               return;
             }
         }
@@ -1515,7 +1515,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
   /* don't check until we get here so we handle scrollback page-up/down
      even when the view's idle */
-  if (master_fd==-1)
+  if (master_fd == -1)
     return;
 
   [tp handleKeyEvent:e];
