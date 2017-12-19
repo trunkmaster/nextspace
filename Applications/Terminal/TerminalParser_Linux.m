@@ -1425,31 +1425,31 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 {
   const char *iconv_charset;
 
-  if (!(self=[super init])) return nil;
-  ts=ats;
+  if (!(self = [super init])) return nil;
+  ts = ats;
 
-  width=w;
-  height=h;
+  width = w;
+  height = h;
 
   // color=def_color=0x07;
-  color=def_color=0xff;
+  color = def_color=0xff;
   [self _reset_terminal];
 
-  iconv_charset=[[[ts preferences] characterSet] cString];
+  iconv_charset = [[[ts preferences] characterSet] cString];
 
-  if (strcmp(iconv_charset,"iso-8859-1"))
+  if (strcmp(iconv_charset, "iso-8859-1"))
     {
-      iconv_state=iconv_open("ucs-4",iconv_charset);
-      if (iconv_state==(iconv_t)-1)
+      iconv_state = iconv_open("ucs-4", iconv_charset);
+      if (iconv_state == (iconv_t)-1)
         {
-          iconv_state=NULL;
+          iconv_state = NULL;
           NSLog(@"Warning: unable to create iconv handle for conversion from '%s'!",
                 iconv_charset);
           NSLog(@"Falling back to iso-8859-1 (latin1).");
         }
 
-      iconv_input_state=iconv_open(iconv_charset,"ucs-4");
-      if (iconv_input_state==(iconv_t)-1)
+      iconv_input_state = iconv_open(iconv_charset, "ucs-4");
+      if (iconv_input_state == (iconv_t)-1)
         {
           iconv_input_state=NULL;
           NSLog(@"Warning: unable to create iconv handle for conversion to '%s'!",
