@@ -127,7 +127,30 @@ static character_set_choice_t cs_choices[] = {
 // TODO
 - (void)setWindow:(id)sender
 {
-  /* insert your code here */
+  Defaults     *prefs;
+  NSDictionary *uInfo;
+
+  if (![sender isKindOfClass:[NSButton class]]) return;
+  
+  prefs = [[Defaults alloc] initEmpty];
+
+  // Character Set
+  [prefs setCharacterSet:cs_choices[[charsetBtn indexOfSelectedItem]].name];
+  [prefs setUseMultiCellGlyphs:[handleMulticellBtn state]];
+
+  // Escape Key
+  [prefs setDoubleEscape:[escapeKeyBtn state]];
+
+  // Alternate Key
+  [prefs setAlternateAsMeta:[[alternateKeyMtrx selectedCell] tag]];
+
+  uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
+  [prefs release];
+
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:TerminalPreferencesDidChangeNotification
+                  object:[NSApp mainWindow]
+                userInfo:uInfo];
 }
 
 // Actions
@@ -137,7 +160,6 @@ static character_set_choice_t cs_choices[] = {
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
   
   csName = cs_choices[[charsetBtn indexOfSelectedItem]].name;
-  NSLog(@"Selected charset: %@", csName);
   [defs setCharacterSet:csName];
   [defs synchronize];
 }

@@ -66,6 +66,9 @@ of the License. See COPYING or main.m for more information.
 
   iconv_t iconv_state;
   iconv_t iconv_input_state;
+  
+  BOOL alternateAsMeta;
+  BOOL sendDoubleEscape;
 }
 @end
 

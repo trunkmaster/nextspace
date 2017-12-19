@@ -643,7 +643,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   } while (0)
 
 #define VT102ID "\033[?6c"
-#define respond_ID(foo) do { [ts ts_sendCString: VT102ID]; } while (0)
+#define respond_ID(foo) do { [ts ts_sendCString:VT102ID]; } while (0)
 
 
   switch (c)
@@ -1298,34 +1298,34 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   switch (ch)
     {
     case '\e':
-      if ([[ts preferences] doubleEscape])
+      if (sendDoubleEscape)
 	str = "\e\e";
       else
 	str = "\e";
       break;
 
     case NSUpArrowFunctionKey   :
-      if (mask & NSShiftKeyMask)
-        str = "\e[1;2A";
-      else
+      // if (mask & NSShiftKeyMask)
+      //   str = "\e[1;2A"; // xterm
+      // else
         str = "\e[A";
       break;
     case NSDownArrowFunctionKey :
-      if (mask & NSShiftKeyMask)
-        str ="\e[1;2B";
-      else
+      // if (mask & NSShiftKeyMask)
+      //   str ="\e[1;2B"; // xterm
+      // else
         str = "\e[B";
       break;
     case NSLeftArrowFunctionKey :
-      if (mask & NSShiftKeyMask)
-        str = "\e[1;2D";
-      else
+      // if (mask & NSShiftKeyMask)
+      //   str = "\e[1;2D"; // xterm
+      // else
         str = "\e[D";
       break;
     case NSRightArrowFunctionKey:
-      if (mask & NSShiftKeyMask)
-        str="\e[1;2C";
-      else
+      // if (mask & NSShiftKeyMask)
+      //   str="\e[1;2C"; //xterm
+      // else
         str="\e[C";
       break;
 
@@ -1375,8 +1375,6 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     }
 
     {
-      BOOL alternateAsMeta = [[ts preferences] alternateAsMeta];
-
       /*
 	 Thanks to different keyboard layouts and dumb default key handling
 	 in GNUstep, this is a bit complex. There seem to be two main cases:
@@ -1391,10 +1389,11 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 	 meta. Thus, when command-as-meta option is active, we intercept
 	 command presses and treat them as meta, and we ignore alternate.
        */
-
-      // Here we're assuming that Alternate == Super.
-      // Command == Alt and is used for GNUstep shorcuts.
-      // This is a cae 'a' from the comment above. This is right thing.
+      /* 
+         Here we're assuming that Alternate == Super.
+         Command == Alt and is used for GNUstep shorcuts.
+         This is a cae 'a' from the comment above. This is right thing.
+      */
       if ((mask & NSAlternateKeyMask) && alternateAsMeta)
         {
           NSDebugLLog(@"key",@"  meta");
@@ -1427,23 +1426,9 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 }
 
 
-- initWithTerminalScreen:(id<TerminalScreen>)ats
-                   width:(int)w
-                  height:(int)h
+- (void)setCharset:(NSString *)charsetName
 {
-  const char *iconv_charset;
-
-  if (!(self = [super init])) return nil;
-  ts = ats;
-
-  width = w;
-  height = h;
-
-  // color=def_color=0x07;
-  color = def_color=0xff;
-  [self _reset_terminal];
-
-  iconv_charset = [[[ts preferences] characterSet] cString];
+  const char *iconv_charset = [charsetName cString];
 
   if (strcmp(iconv_charset, "ISO-8859-1"))
     {
@@ -1465,6 +1450,39 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
           NSLog(@"Falling back to ISO-8859-1 (Latin1).");
         }
     }
+  else
+    {
+      iconv_state = NULL;
+      iconv_input_state = NULL;
+    }
+}
+- (void)setDoubleEscape:(BOOL)doubleEscape
+{
+  sendDoubleEscape = doubleEscape;
+}
+- (void)setAlternateAsMeta:(BOOL)altAsMeta
+{
+  alternateAsMeta = altAsMeta;
+}
+
+
+- initWithTerminalScreen:(id<TerminalScreen>)ats
+                   width:(int)w
+                  height:(int)h
+{
+  if (!(self = [super init])) return nil;
+  ts = ats;
+
+  width = w;
+  height = h;
+
+  // color=def_color=0x07;
+  color = def_color=0xff;
+  [self _reset_terminal];
+
+  [self setCharset:[[ts preferences] characterSet]];
+  sendDoubleEscape = [[ts preferences] doubleEscape];
+  alternateAsMeta = [[ts preferences] alternateAsMeta];
 
   return self;
 }

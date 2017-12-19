@@ -111,7 +111,7 @@ extern const NSUInteger TitleBarWindowSize;
 //---
 extern NSString *CharacterSetKey;
 extern NSString *UseMultiCellGlyphsKey;
-extern NSString *CommandAsMetaKey;
+extern NSString *AlternateAsMetaKey;
 extern NSString *DoubleEscapeKey;
 
 @interface Defaults (Linux)
