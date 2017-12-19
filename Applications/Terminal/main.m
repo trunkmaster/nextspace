@@ -1,5 +1,6 @@
 /*
-  copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (c) 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (c) 2015-2017 Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,7 +27,6 @@
 #import "TerminalServices.h"
 #import "TerminalView.h"
 #import "TerminalWindow.h"
-
 
 @interface Terminal : NSObject
 

@@ -1,10 +1,5 @@
 /*
-  Class:               SetTitlePanel
-  Inherits from:       NSObject
-  Class descritopn:    Panel for setting cutom title to terminal window.
-                       Called from menu Shell->Set Title...
-
-  Copyright (C) 2017 Sergii Stoian
+  Copyright (C) 2017 Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,6 +14,9 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+ Descritopn: Panel for setting cutom title to terminal window.
+             Called from menu Shell->Set Title...
 */
 
 #import "SetTitlePanel.h"

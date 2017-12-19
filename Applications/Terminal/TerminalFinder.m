@@ -1,26 +1,14 @@
 /*
-  TerminalFinder.m
+  Based on TextFinder from TextEdit application. Original copyright:
+  --------------------------------------------------------------------
+  Copyright (c) 1995-1996, NeXT Software, Inc.
+  All rights reserved.
+  Author: Ali Ozer
 
-  Based on TextFinder from TextEdit application:
-  	Copyright (c) 1995-1996, NeXT Software, Inc.
-  	All rights reserved.
-  	Author: Ali Ozer
-
-  	You may freely copy, distribute and reuse the code in this example.
-  	NeXT disclaims any warranty of any kind, expressed or implied,
-  	as to its fitness for any particular use.
-
- 	 Find and replace functionality with a minimal panel...
-
-  In addition to including this class and FindPanel.nib in your app, you
-  probably need to hook up the following action methods in your document
-  object (or whatever object is first responder) to call the appropriate
-  methods in [TextFinder sharedInstance]:
-
-  orderFrontFindPanel:
-  findNext:
-  findPrevious:
-  enterSelection: (calls setFindString:)
+  You may freely copy, distribute and reuse the code in this example.
+  NeXT disclaims any warranty of any kind, expressed or implied,
+  as to its fitness for any particular use.
+  --------------------------------------------------------------------
 */
 
 #import <AppKit/AppKit.h>

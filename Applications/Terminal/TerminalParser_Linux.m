@@ -1,5 +1,6 @@
 /*
-  copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (c) 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+  Copyright (c) 2017 Sergii Stoian <stoyan255@gmail.com>
 
   This file is a part of Terminal.app. Terminal.app is free software; you
   can redistribute it and/or modify it under the terms of the GNU General
@@ -39,41 +40,37 @@ static const unichar *_set_translate(int charset)
   return translate_maps[charset];
 }
 
-
 @interface TerminalParser_Linux (private)
 
-#define csi_J(foo,vpar) [self _csi_J: vpar]
-#define csi_K(foo,vpar) [self _csi_K: vpar]
-#define csi_L(foo,vpar) [self _csi_L: vpar]
-#define csi_M(foo,vpar) [self _csi_M: vpar]
-#define csi_P(foo,vpar) [self _csi_P: vpar]
-#define csi_X(foo,vpar) [self _csi_X: vpar]
-#define csi_at(foo,vpar) [self _csi_at: vpar]
+#define csi_J(foo,vpar) [self _csi_J:vpar]
+#define csi_K(foo,vpar) [self _csi_K:vpar]
+#define csi_L(foo,vpar) [self _csi_L:vpar]
+#define csi_M(foo,vpar) [self _csi_M:vpar]
+#define csi_P(foo,vpar) [self _csi_P:vpar]
+#define csi_X(foo,vpar) [self _csi_X:vpar]
+#define csi_at(foo,vpar) [self _csi_at:vpar]
 #define csi_m(foo) [self _csi_m]
 
--(void) _csi_J: (int)vpar;
--(void) _csi_K: (int)vpar;
--(void) _csi_L: (unsigned int)vpar;
--(void) _csi_M: (unsigned int)vpar;
--(void) _csi_P: (unsigned int)vpar;
--(void) _csi_X: (int)vpar;
--(void) _csi_at: (unsigned int)vpar;
--(void) _csi_m;
+- (void)_csi_J:(int)vpar;
+- (void)_csi_K:(int)vpar;
+- (void)_csi_L:(unsigned int)vpar;
+- (void)_csi_M:(unsigned int)vpar;
+- (void)_csi_P:(unsigned int)vpar;
+- (void)_csi_X:(int)vpar;
+- (void)_csi_at:(unsigned int)vpar;
+- (void)_csi_m;
 
--(void) _default_attr;
--(void) _update_attr;
+- (void)_default_attr;
+- (void)_update_attr;
 
 @end
 
 
 #define SCREEN(x,y) ((x)+(y)*width)
 
-
 @implementation TerminalParser_Linux
 
-
-#define gotoxy(foo, new_x, new_y)               \
-  do {                                          \
+#define gotoxy(foo, new_x, new_y) do {          \
     int min_y, max_y;                           \
     int _x, _y;                                 \
                                                 \
@@ -108,34 +105,32 @@ static const unichar *_set_translate(int charset)
 #define gotoxay(foo, nx, ny) gotoxy(foo, nx, decom?top+ny:ny)
 
 
-#define save_cur(foo)                           \
-  do {                                          \
-    saved_x	= x;                            \
-    saved_y	= y;                            \
-    s_intensity	= intensity;                    \
-    s_underline	= underline;                    \
-    s_blink	= blink;                        \
-    s_reverse	= reverse;                      \
-    s_charset	= charset;                      \
-    s_color	= color;                        \
-    saved_G0	= G0_charset;                   \
-    saved_G1	= G1_charset;                   \
+#define save_cur(foo) do {    \
+    saved_x	= x;          \
+    saved_y	= y;          \
+    s_intensity	= intensity;  \
+    s_underline	= underline;  \
+    s_blink	= blink;      \
+    s_reverse	= reverse;    \
+    s_charset	= charset;    \
+    s_color	= color;      \
+    saved_G0	= G0_charset; \
+    saved_G1	= G1_charset; \
   } while (0)
 
-#define restore_cur(foo)                                                \
-    do {                                                                \
-      gotoxy(currcons,saved_x,saved_y);                                 \
-      intensity	= s_intensity;                                          \
-      underline	= s_underline;                                          \
-      blink	= s_blink;                                              \
-      reverse	= s_reverse;                                            \
-      charset	= s_charset;                                            \
-      color	= s_color;                                              \
-      G0_charset = saved_G0;                                            \
-      G1_charset = saved_G1;                                            \
-      translate	= set_translate(charset?G1_charset:G0_charset,          \
-                                currcons);                              \
-    } while (0)
+#define restore_cur(foo) do {                                   \
+    gotoxy(currcons, saved_x, saved_y);                         \
+    intensity  = s_intensity;                                   \
+    underline  = s_underline;                                   \
+    blink      = s_blink;                                       \
+    reverse    = s_reverse;                                     \
+    charset    = s_charset;                                     \
+    color      = s_color;                                       \
+    G0_charset = saved_G0;                                      \
+    G1_charset = saved_G1;                                      \
+    translate  = set_translate(charset?G1_charset:G0_charset,   \
+                               currcons);                       \
+  } while (0)
 
 
 - (void)_reset_terminal
@@ -378,39 +373,51 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 //-------------------------------------------------------------------------------
 // ESC [ @	ICH	Insert the indicated # of blank characters.
-#define scrup(foo,t,b,nr,indirect_scroll) do {                          \
-    int scrup_nr=nr;                                                    \
-                                                                        \
-    if (t+scrup_nr >= b)                                                \
-      scrup_nr = b - t - 1;                                             \
-    if (b > height || t >= b || scrup_nr < 1)                                \
-      return;                                                           \
-    [ts ts_scrollUp: t:b  rows: scrup_nr  save: indirect_scroll];       \
-    [ts ts_putChar: video_erase_char  count: width*scrup_nr  offset: width*(b-scrup_nr)]; \
-    } while (0)
-
-#define scrdown(foo,t,b,nr) do {                                        \
-    unsigned int step;                                                  \
-    int scrdown_nr=nr;                                                  \
-                                                                        \
-    if (t+scrdown_nr >= b)                                              \
-      scrdown_nr = b - t - 1;                                           \
-    if (b > height || t >= b || scrdown_nr < 1)                         \
-      return;                                                           \
-    step = width * scrdown_nr;                                          \
-    [ts ts_scrollDown: t:b  rows: scrdown_nr];                          \
-    [ts ts_putChar: video_erase_char  count: step  offset: t*width];    \
+#define scrup(foo,t,b,nr,indirect_scroll) do {  \
+    int scrup_nr = nr;                          \
+                                                \
+    if (t+scrup_nr >= b)                        \
+      scrup_nr = b - t - 1;                     \
+    if (b > height || t >= b || scrup_nr < 1)   \
+      return;                                   \
+    [ts ts_scrollUp:t:b                         \
+               rows:scrup_nr                    \
+               save:indirect_scroll];           \
+    [ts ts_putChar:video_erase_char             \
+             count:width*scrup_nr               \
+            offset:width*(b-scrup_nr)];         \
   } while (0)
 
-
-#define insert_char(foo,nr) do {                                \
-    [ts ts_shiftRow: y  at: x  delta: nr];                      \
-    [ts ts_putChar: video_erase_char  count: nr  at: x:y];      \
+#define scrdown(foo, t, b, nr) do {             \
+    unsigned int step;                          \
+    int scrdown_nr = nr;                        \
+                                                \
+    if ((t + scrdown_nr) >= b)                  \
+      scrdown_nr = b - t - 1;                   \
+    if (b > height || t >= b || scrdown_nr < 1) \
+      return;                                   \
+    step = width * scrdown_nr;                  \
+    [ts ts_scrollDown:t:b                       \
+        rows:scrdown_nr];                       \
+    [ts ts_putChar:video_erase_char             \
+             count:step                         \
+            offset:t*width];                    \
   } while (0)
 
-#define delete_char(foo,nr) do {                                        \
-    [ts ts_shiftRow: y  at: x+nr  delta: -nr];                          \
-    [ts ts_putChar: video_erase_char  count: nr  at: width-nr:y];       \
+#define insert_char(foo, nr) do {               \
+    [ts ts_shiftRow:y at:x delta:nr];           \
+    [ts ts_putChar:video_erase_char             \
+             count:nr                           \
+                at:x:y];                        \
+  } while (0)
+
+#define delete_char(foo, nr) do {               \
+    [ts ts_shiftRow:y                           \
+                 at:x+nr                        \
+              delta:-nr];                       \
+    [ts ts_putChar:video_erase_char             \
+             count:nr                           \
+                at:width-nr:y];                 \
   } while (0)
 
 - (void)_csi_at:(unsigned int)nr
@@ -604,22 +611,23 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 - (void)processByte:(unsigned char)c
 {
-#define lf() do {                                                       \
-    if (y+1==bottom)                                                    \
-      {                                                                 \
-	scrup(foo,top,bottom,1,(top==0 && bottom==height)?YES:NO);      \
-      }                                                                 \
-    else if (y<height-1)                                                \
-      {                                                                 \
-	y++;                                                            \
-	[ts ts_goto:x :y];                                              \
-      }                                                                 \
+#define lf() do {                                   \
+    if ((y + 1) == bottom)                          \
+      {                                             \
+      scrup(foo, top, bottom, 1,                    \
+            (top==0 && bottom==height) ? YES : NO); \
+      }                                             \
+    else if (y < (height - 1))                      \
+      {                                             \
+	y++;                                        \
+	[ts ts_goto:x :y];                          \
+      }                                             \
   } while (0)
 
 #define ri() do {                               \
     if (y==top)                                 \
       {                                         \
-        scrdown(foo,top,bottom,1);              \
+        scrdown(foo, top, bottom, 1);           \
       }                                         \
     else if (y>0)                               \
       {                                         \
@@ -630,21 +638,20 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 #define cr() do { x=0; [ts ts_goto:x :y]; } while (0)
 
-
-#define cursor_report(foo,bar) do {                             \
-    char buf[40];                                               \
-                                                                \
-    sprintf(buf, "\033[%d;%dR", y + (decom ? top+1 : 1), x+1);  \
-    [ts ts_sendCString: buf];                                   \
+#define cursor_report(foo,bar) do {             \
+    char buf[40];                               \
+                                                \
+    sprintf(buf, "\033[%d;%dR",                 \
+            y + (decom ? top+1 : 1), x+1);      \
+    [ts ts_sendCString:buf];                    \
   } while (0)
 
 #define status_report(foo) do {                 \
-    [ts ts_sendCString: "\033[0n"];             \
+    [ts ts_sendCString:"\033[0n"];              \
   } while (0)
 
 #define VT102ID "\033[?6c"
 #define respond_ID(foo) do { [ts ts_sendCString:VT102ID]; } while (0)
-
 
   switch (c)
     {
@@ -1109,30 +1116,31 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
       }
     else
 
-#define PUTCH                                                   \
-      if (x>=width && decawm)                                   \
-        {                                                       \
-          cr();                                                 \
-          lf();                                                 \
-        }                                                       \
-      char_width=[ts relativeWidthOfCharacter: ch.ch];          \
-      if (decim)                                                \
-        [ts ts_shiftRow: y  at: x  delta: char_width];          \
-      [ts ts_putChar: ch  count: 1  at: x:y];                   \
-      if (x<width)                                              \
-        {                                                       \
-          x++;                                                  \
-          char_width--;                                         \
-          if (char_width+x>width)                               \
-            char_width=width-x;                                 \
-          if (char_width>0)                                     \
-            {                                                   \
-              ch.ch=MULTI_CELL_GLYPH;                           \
-              [ts ts_putChar: ch  count: char_width  at: x:y];  \
-              x+=char_width;                                    \
-            }                                                   \
-          [ts ts_goto:x :y];                                    \
+#define PUTCH                                                           \
+      if ((x >= width) && decawm)                                       \
+        {                                                               \
+          cr();                                                         \
+          lf();                                                         \
+        }                                                               \
+      char_width = [ts relativeWidthOfCharacter:ch.ch];                 \
+      if (decim)                                                        \
+        [ts ts_shiftRow:y at:x delta:char_width];                       \
+      [ts ts_putChar:ch count:1  at:x:y];                               \
+      if (x < width)                                                    \
+        {                                                               \
+          x++;                                                          \
+          char_width--;                                                 \
+          if ((char_width + x) > width)                                 \
+            char_width = width - x;                                     \
+          if (char_width > 0)                                           \
+            {                                                           \
+              ch.ch = MULTI_CELL_GLYPH;                                 \
+              [ts ts_putChar:ch count:char_width at:x:y];               \
+              x += char_width;                                          \
+            }                                                           \
+          [ts ts_goto:x :y];                                            \
         }
+      
 
       {
         screen_char_t ch;
@@ -1223,34 +1231,34 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 */
 - (void)sendString:(NSString *)s
 {
-  int l=[s length];
-  unsigned int ucs;
-  int i;
+  int		l = [s length];
+  unsigned int	ucs;
+  int		i;
 
   if (iconv_input_state)
     {
-      int *inp;
-      size_t insize;
-      char *outp;
-      char buf[16+1];
-      size_t outsize;
-      int ret;
+      int	*inp;
+      size_t	insize;
+      char	*outp;
+      char	buf[16+1];
+      size_t	outsize;
+      int	ret;
 
-      for (i=0;i<l;i++)
+      for (i = 0; i < l; i++)
 	{
-	  ucs=[s characterAtIndex: i];
-	  if (ucs=='\n')
-	    ucs='\r';
-	  ucs=htonl(ucs);
+	  ucs = [s characterAtIndex:i];
+	  if (ucs == '\n') ucs = '\r';
+	  ucs = htonl(ucs);
 
-	  inp=&ucs;
-	  insize=4;
-	  outsize=sizeof(buf);
-	  outp=buf;
-          ret=iconv(iconv_input_state, (char **)&inp, &insize, &outp, &outsize);
-	  if (outsize!=sizeof(buf))
+	  inp = &ucs;
+	  insize = 4;
+	  outsize = sizeof(buf);
+	  outp = buf;
+          ret = iconv(iconv_input_state, (char **)&inp,
+                      &insize, &outp, &outsize);
+	  if (outsize != sizeof(buf))
 	    {
-	      [ts ts_sendCString: buf  length: sizeof(buf)-outsize];
+	      [ts ts_sendCString:buf  length:sizeof(buf) - outsize];
 	    }
 	  else
 	    NSBeep();
@@ -1259,14 +1267,14 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
   else
     {
       unsigned char buf;
-      for (i=0;i<l;i++)
+      for (i = 0; i < l; i++)
 	{
-	  ucs=[s characterAtIndex: i];
-	  if (ucs=='\n') ucs='\r';
-	  if (ucs<256)
+	  ucs = [s characterAtIndex:i];
+	  if (ucs == '\n') ucs = '\r';
+	  if (ucs < 256)
 	    {
-	      buf=ucs;
-	      [ts ts_sendCString: &buf  length: 1];
+	      buf = ucs;
+	      [ts ts_sendCString:&buf length:1];
 	    }
 	  else
 	    NSBeep();
@@ -1276,17 +1284,16 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 - (void)handleKeyEvent:(NSEvent *)e
 {
-  NSString *s = [e charactersIgnoringModifiers];
-  unsigned int mask = [e modifierFlags];
-  unichar ch,ch2;
-
-  const char *str;
-  NSString *nstr;
+  NSString	*s = [e charactersIgnoringModifiers];
+  unsigned int	mask = [e modifierFlags];
+  unichar 	ch, ch2;
+  const char	*str;
+  NSString	*nstr;
 
   if ([s length] > 1)
     {
       s = [e characters];
-      NSDebugLLog(@"key",@" writing '%@'\n",s);
+      NSDebugLLog(@"key",@" writing '%@'\n", s);
       [self sendString:s];
       return;
     }
@@ -1304,19 +1311,19 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 	str = "\e";
       break;
 
-    case NSUpArrowFunctionKey   :
+    case NSUpArrowFunctionKey:
       // if (mask & NSShiftKeyMask)
       //   str = "\e[1;2A"; // xterm
       // else
         str = "\e[A";
       break;
-    case NSDownArrowFunctionKey :
+    case NSDownArrowFunctionKey:
       // if (mask & NSShiftKeyMask)
       //   str ="\e[1;2B"; // xterm
       // else
         str = "\e[B";
       break;
-    case NSLeftArrowFunctionKey :
+    case NSLeftArrowFunctionKey:
       // if (mask & NSShiftKeyMask)
       //   str = "\e[1;2D"; // xterm
       // else
@@ -1361,44 +1368,47 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
     case 9: // tab
       if (mask & NSShiftKeyMask)
-        str="\e[Z";
+        str = "\e[Z";
       else
         nstr = [e characters];
       break;
 
-    case 8: ch2=0x7f; break;
-    case 3: ch2=0x0d; break;
+    case 8:
+      ch2 = 0x7f;
+      break;
+      
+    case 3:
+      ch2 = 0x0d;
+      break;
 
     default:
       nstr = [e characters];
       break;
     }
 
+  /*
+    Thanks to different keyboard layouts and dumb default key handling
+    in GNUstep, this is a bit complex. There seem to be two main cases:
+
+    a. GNUstep has been correctly configured. Command is really command,
+    Alternate is really Alternate, and is used as meta. AltGr isn't
+    anything at all. No special options necessary.
+
+    b. GNUstep is using the default settings. Left alt is command, right
+    alt (which might be AltGr) is alternate. Users seem to actually want
+    left alt to be meta, and, if right alt is AltGr, right alt not to be
+    meta. Thus, when command-as-meta option is active, we intercept
+    command presses and treat them as meta, and we ignore alternate.
+  */
+  /* 
+     Here we're assuming that Alternate == Super.
+     Command == Alt and is used for GNUstep shorcuts.
+     This is a cae 'a' from the comment above. This is right thing.
+  */
+  if ((mask & NSAlternateKeyMask) && alternateAsMeta)
     {
-      /*
-	 Thanks to different keyboard layouts and dumb default key handling
-	 in GNUstep, this is a bit complex. There seem to be two main cases:
-
-	 a. GNUstep has been correctly configured. Command is really command,
-	 Alternate is really Alternate, and is used as meta. AltGr isn't
-	 anything at all. No special options necessary.
-
-	 b. GNUstep is using the default settings. Left alt is command, right
-	 alt (which might be AltGr) is alternate. Users seem to actually want
-	 left alt to be meta, and, if right alt is AltGr, right alt not to be
-	 meta. Thus, when command-as-meta option is active, we intercept
-	 command presses and treat them as meta, and we ignore alternate.
-       */
-      /* 
-         Here we're assuming that Alternate == Super.
-         Command == Alt and is used for GNUstep shorcuts.
-         This is a cae 'a' from the comment above. This is right thing.
-      */
-      if ((mask & NSAlternateKeyMask) && alternateAsMeta)
-        {
-          NSDebugLLog(@"key",@"  meta");
-          [ts ts_sendCString:"\e"];
-        }
+      NSDebugLLog(@"key",@"  meta");
+      [ts ts_sendCString:"\e"];
     }
 
   if (nstr)
@@ -1418,13 +1428,11 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     }
   else if (ch2 > 0)
     {
-      unsigned char tmp;
-      tmp = ch2;
-      NSDebugLLog(@"key",@"  send %02x",ch2);
-      [ts ts_sendCString:&tmp  length:1];
+      unsigned char tmp = ch2;
+      NSDebugLLog(@"key",@"  send %02x", ch2);
+      [ts ts_sendCString:&tmp length:1];
     }
 }
-
 
 - (void)setCharset:(NSString *)charsetName
 {
@@ -1452,7 +1460,12 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
     }
   else
     {
+      if (iconv_state)
+        iconv_close(iconv_state);
       iconv_state = NULL;
+      
+      if (iconv_input_state)
+        iconv_close(iconv_input_state);
       iconv_input_state = NULL;
     }
 }
