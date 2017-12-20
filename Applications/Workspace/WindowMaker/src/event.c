@@ -93,6 +93,9 @@ static void handleColormapNotify(XEvent *event);
 static void handleMapNotify(XEvent *event);
 static void handleUnmapNotify(XEvent *event);
 static void handleButtonPress(XEvent *event);
+#ifdef NEXTSPACE
+static void handleButtonRelease(XEvent * event);
+#endif
 static void handleExpose(XEvent *event);
 static void handleDestroyNotify(XEvent *event);
 static void handleConfigureRequest(XEvent *event);
@@ -232,6 +235,11 @@ void DispatchEvent(XEvent * event)
 		handleUnmapNotify(event);
 		break;
 
+#ifdef NEXTSPACE
+	case ButtonRelease:
+		handleButtonRelease(event);
+          break;
+#endif
 	case ButtonPress:
 		handleButtonPress(event);
 		break;
@@ -584,10 +592,9 @@ static void handleExtensions(XEvent * event)
 		 * events are generated */
 		XRRUpdateConfiguration(event);
 #ifdef NEXTSPACE                
-                for (int i = 0; i < w_global.screen_count; i++)
-                  {
-                    XWUpdateScreenInfo(wScreenWithNumber(i));
-                  }
+		for (int i = 0; i < w_global.screen_count; i++) {
+			XWUpdateScreenInfo(wScreenWithNumber(i));
+		}
 #else
 		WCHANGE_STATE(WSTATE_RESTARTING);
 		Shutdown(WSRestartPreparationMode);
@@ -679,14 +686,9 @@ static void handleDestroyNotify(XEvent * event)
 	int widx;
 
 	wwin = wWindowFor(window);
-        
-       
 	if (wwin) {
 #ifdef NEXTSPACE
-		dispatch_sync(workspace_q,
-		    ^{
-			XWApplicationDidCloseWindow(wwin);
-		    });
+		dispatch_sync(workspace_q, ^{ XWApplicationDidCloseWindow(wwin); });
 #endif
 		wUnmanageWindow(wwin, False, True);
 	}
@@ -831,6 +833,16 @@ static void handleButtonPress(XEvent * event)
 		} else if (event->xbutton.button == Button2 && wPreferences.mouse_button2 != WA_NONE) {
 			executeButtonAction(scr, event, wPreferences.mouse_button2);
 		} else if (event->xbutton.button == Button3 && wPreferences.mouse_button3 != WA_NONE) {
+#ifdef NEXTSPACE
+                  /* fprintf(stderr, "WindowMaker, ButtonPress: focused window class: %s\n", */
+                  /*         scr->focused_window->wm_class); */
+                  if (!strcmp(scr->focused_window->wm_class, "GNUstep"))
+                    {
+			XSendEvent(dpy, scr->focused_window->client_win, True,
+                                   ButtonPressMask, event);
+                    }
+                  else
+#endif
 			executeButtonAction(scr, event, wPreferences.mouse_button3);
 		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
 			executeButtonAction(scr, event, wPreferences.mouse_button8);
@@ -890,6 +902,19 @@ static void handleButtonPress(XEvent * event)
 		scr->last_click_window = event->xbutton.window;
 	}
 }
+
+#ifdef NEXTSPACE
+static void handleButtonRelease(XEvent * event)
+{
+  WScreen *scr = wScreenForRootWindow(event->xbutton.root);
+  
+  if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
+    if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
+      XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
+    }
+  }
+}
+#endif
 
 static void handleMapNotify(XEvent * event)
 {

@@ -194,7 +194,7 @@
   DockRaiseLowerKey = None;
   
   COMMENT       = "/* --- Menus --- */";
-  RootMenuKy    = None;
+  RootMenuKey   = None;
   WindowListKey = None;
   WindowMenuKey = None;
   
