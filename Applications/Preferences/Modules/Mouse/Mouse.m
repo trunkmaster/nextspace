@@ -124,6 +124,16 @@ static NSMutableDictionary      *domain = nil;
   return image;
 }
 
+- (NSDictionary *)_windowMakerDefaults
+{
+  NSString *wmDefaultsFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
+  NSString *wmDefaultsPath;
+
+  wmDefaultsPath = [NSString stringWithFormat:wmDefaultsFormat, NSHomeDirectory()];
+  
+  return [NSDictionary dictionaryWithContentsOfFile:wmDefaultsPath];
+}
+
 //
 // Action methods
 //
@@ -141,7 +151,8 @@ static NSMutableDictionary      *domain = nil;
 }
 - (void)doubleClickMtrxClicked:(id)sender
 {
-  NSNumber *value;
+  NSNumber     *value;
+  
   // GNUstep:
   // 1. Write to the NSGlobalDomain -> GSDoubleClickTime
   // [defaults setInteger:[[doubleClickMtrx selectedCell] tag]
@@ -270,6 +281,23 @@ static NSMutableDictionary      *domain = nil;
   [handImageView setEnabled:state];
   [menuRightBtn setEnabled:state];
   [menuLeftBtn setEnabled:state];
+
+  // Set WindowMaker preferences. WindowMaker updates it automatically.
+  NSString *wmDefaultsFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
+  NSString *wmDefaultsPath;
+  NSMutableDictionary *wmDefaults;
+
+  wmDefaultsPath = [NSString stringWithFormat:wmDefaultsFormat, NSHomeDirectory()];
+  wmDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:wmDefaultsPath];
+  if (state == NSOnState)
+    {
+      [wmDefaults setObject:@"NO" forKey:@"DisableWSMouseActions"];
+    }
+  else
+    {
+      [wmDefaults setObject:@"YES" forKey:@"DisableWSMouseActions"];
+    }
+  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
 }
 
 @end
