@@ -28,6 +28,7 @@
 #import <AppKit/NSNibLoading.h>
 #import <AppKit/NSScrollView.h>
 #import <AppKit/NSScroller.h>
+#import <AppKit/NSAffineTransform.h>
 
 #import <NXSystem/NXMouse.h>
 
@@ -91,6 +92,10 @@ static NSMutableDictionary      *domain = nil;
   if (value == 0) value = 1;
   [wheelScrollSlider setIntegerValue:value];
   [wheelScrollField setIntegerValue:value];
+
+  for (id c in [menuMtrx cells])
+    [c setRefusesFirstResponder:YES];
+
 }
 
 - (NSView *)view
@@ -192,7 +197,6 @@ static NSMutableDictionary      *domain = nil;
                postNotificationName:@"GSMouseOptionsDidChangeNotification"
                              object:nil];
 }
-
 - (void)setWheelScroll:(id)sender
 {
   NSNumber   *value;
@@ -219,6 +223,44 @@ static NSMutableDictionary      *domain = nil;
   [[NSDistributedNotificationCenter defaultCenter]
                postNotificationName:@"GSMouseOptionsDidChangeNotification"
                              object:nil];
+}
+
+- (NSImage *)_flipImage:(NSImage *)sourceImage
+{
+  NSBitmapImageRep  *rep;
+  NSImage           *img;
+  NSAffineTransform *transform = [NSAffineTransform transform];
+
+  rep = [NSBitmapImageRep
+          imageRepWithData:[sourceImage TIFFRepresentation]];
+  img = [[NSImage alloc]
+          initWithSize:NSMakeSize(rep.pixelsWide, rep.pixelsHigh)];
+  
+  [img lockFocus];
+  [transform translateXBy:rep.pixelsWide yBy:0];
+  [transform scaleXBy:-1 yBy:1];
+  [transform concat];
+  [rep drawInRect:NSMakeRect(0, 0, rep.pixelsWide, rep.pixelsHigh)];
+  [img unlockFocus];
+
+  return [img autorelease];
+}
+
+- (void)setMenuButtonHand:(id)sender
+{
+  NSLog(@"Button sender state %li", [sender state]);
+  // if (sender == menuRightBtn || sender == menuLeftBtn)
+  //   {
+  //     [sender setState:NSOnState];
+  //     // [menuLeftBtn setState:NSOffState];
+  //     [(sender == menuLeftBtn) ? menuRightBtn : menuLeftBtn
+  //                                     setState:NSOffState];
+  //     [handImage setImage:[self _flipImage:[handImageView image]]];
+  //   }
+}
+
+- (void)setMenuButtonEnabled:(id)sender
+{
 }
 
 @end
