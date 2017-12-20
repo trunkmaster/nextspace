@@ -31,6 +31,7 @@
 @interface Mouse: NSObject <PrefsModule>
 {
   NSImage *image;
+  NSImage *handImage;
   
   id view;
   id window;
@@ -40,6 +41,10 @@
   id wheelScrollField;
   id tresholdField;
   id tresholdSlider;
+  id menuMtrx;
+  id menuLeftBtn;
+  id menuRightBtn;
+  id handImageView;
 }
 
 @end

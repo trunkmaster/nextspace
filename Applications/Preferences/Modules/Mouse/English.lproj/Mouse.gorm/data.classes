@@ -4,6 +4,8 @@
 	Actions = (
 	    "doubleClickMtrxClicked:",
 	    "enableSubpixelChanged:",
+	    "setMenuButtonEnabled:",
+	    "setMenuButtonHand:",
 	    "setTreshold:",
 	    "setWheelScroll:",
 	    "subpixelModeChanged:",
@@ -16,7 +18,9 @@
 	    "doubleClickMtrxClicked:",
 	    "setWheelScroll:",
 	    "wheelScrollSliderMoved:",
-	    "setTreshold:"
+	    "setTreshold:",
+	    "setMenuButtonEnabled:",
+	    "setMenuButtonHand:"
 	);
 	Outlets = (
 	    view,
@@ -26,7 +30,12 @@
 	    wheelScrollSlider,
 	    wheelScrollField,
 	    tresholdSlider,
-	    tresholdField
+	    tresholdField,
+	    handImageView,
+	    menuLeftBtn,
+	    menuRightBtn,
+	    newOutlet,
+	    menuMtrx
 	);
 	Super = NSObject;
     };
