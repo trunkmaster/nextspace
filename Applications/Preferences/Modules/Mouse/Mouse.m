@@ -29,6 +29,7 @@
 #import <AppKit/NSScrollView.h>
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSAffineTransform.h>
+#import <AppKit/NSButton.h>
 
 #import <NXSystem/NXMouse.h>
 
@@ -58,6 +59,7 @@ static NSMutableDictionary      *domain = nil;
 {
   NSLog(@"Mouse -dealloc");
   [image release];
+  [handImage release];
   [super dealloc];
 }
 
@@ -95,7 +97,7 @@ static NSMutableDictionary      *domain = nil;
 
   for (id c in [menuMtrx cells])
     [c setRefusesFirstResponder:YES];
-
+  handImage = [[handImageView image] copy];
 }
 
 - (NSView *)view
@@ -249,18 +251,25 @@ static NSMutableDictionary      *domain = nil;
 - (void)setMenuButtonHand:(id)sender
 {
   NSLog(@"Button sender state %li", [sender state]);
-  // if (sender == menuRightBtn || sender == menuLeftBtn)
-  //   {
-  //     [sender setState:NSOnState];
-  //     // [menuLeftBtn setState:NSOffState];
-  //     [(sender == menuLeftBtn) ? menuRightBtn : menuLeftBtn
-  //                                     setState:NSOffState];
-  //     [handImage setImage:[self _flipImage:[handImageView image]]];
-  //   }
+  if (sender == menuRightBtn && [sender state] == NSOnState)
+    {
+      [handImageView setImage:handImage];
+    }
+  if (sender == menuLeftBtn && [sender state] == NSOnState)
+    {
+      [handImageView setImage:[self _flipImage:[handImageView image]]];
+    }
+  [sender setState:NSOnState];
+  [(sender == menuLeftBtn) ? menuRightBtn : menuLeftBtn setState:NSOffState];
 }
 
 - (void)setMenuButtonEnabled:(id)sender
 {
+  NSInteger state = [[sender selectedCell] tag];
+
+  [handImageView setEnabled:state];
+  [menuRightBtn setEnabled:state];
+  [menuLeftBtn setEnabled:state];
 }
 
 @end
