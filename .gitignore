@@ -1,3 +1,4 @@
+*.emacs.desktop
 *.app
 *.d
 *obj
@@ -13,4 +14,3 @@
 *.deps
 *.dir
 *~
-*.emacs.desktop

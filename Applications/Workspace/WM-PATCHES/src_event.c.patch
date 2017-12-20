@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2016-11-26 02:11:17.098381994 +0200
++++ ./WindowMaker/src/event.c	2017-12-20 18:34:41.971397374 +0200
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -10,15 +10,36 @@
  
  #define MOD_MASK wPreferences.modifier_mask
  
-@@ -580,9 +583,16 @@
+@@ -90,6 +93,9 @@
+ static void handleMapNotify(XEvent *event);
+ static void handleUnmapNotify(XEvent *event);
+ static void handleButtonPress(XEvent *event);
++#ifdef NEXTSPACE
++static void handleButtonRelease(XEvent * event);
++#endif
+ static void handleExpose(XEvent *event);
+ static void handleDestroyNotify(XEvent *event);
+ static void handleConfigureRequest(XEvent *event);
+@@ -229,6 +235,11 @@
+ 		handleUnmapNotify(event);
+ 		break;
+ 
++#ifdef NEXTSPACE
++	case ButtonRelease:
++		handleButtonRelease(event);
++          break;
++#endif
+ 	case ButtonPress:
+ 		handleButtonPress(event);
+ 		break;
+@@ -580,9 +591,15 @@
  		 * XRRUpdateConfiguration when screen configuration change notify
  		 * events are generated */
  		XRRUpdateConfiguration(event);
 +#ifdef NEXTSPACE                
-+                for (int i = 0; i < w_global.screen_count; i++)
-+                  {
-+                    XWUpdateScreenInfo(wScreenWithNumber(i));
-+                  }
++		for (int i = 0; i < w_global.screen_count; i++) {
++			XWUpdateScreenInfo(wScreenWithNumber(i));
++		}
 +#else
  		WCHANGE_STATE(WSTATE_RESTARTING);
  		Shutdown(WSRestartPreparationMode);
@@ -27,19 +48,50 @@
  	}
  #endif
  }
-@@ -669,7 +679,15 @@
- 	int widx;
+@@ -670,6 +687,9 @@
  
  	wwin = wWindowFor(window);
-+        
-+       
  	if (wwin) {
 +#ifdef NEXTSPACE
-+		dispatch_sync(workspace_q,
-+		    ^{
-+			XWApplicationDidCloseWindow(wwin);
-+		    });
++		dispatch_sync(workspace_q, ^{ XWApplicationDidCloseWindow(wwin); });
 +#endif
  		wUnmanageWindow(wwin, False, True);
  	}
  
+@@ -813,6 +833,16 @@
+ 		} else if (event->xbutton.button == Button2 && wPreferences.mouse_button2 != WA_NONE) {
+ 			executeButtonAction(scr, event, wPreferences.mouse_button2);
+ 		} else if (event->xbutton.button == Button3 && wPreferences.mouse_button3 != WA_NONE) {
++#ifdef NEXTSPACE
++                  fprintf(stderr, "WindowMaker, ButtonPress: focused window class: %s\n",
++                          scr->focused_window->wm_class);
++                  if (!strcmp(scr->focused_window->wm_class, "GNUstep"))
++                    {
++			XSendEvent(dpy, scr->focused_window->client_win, True,
++                                   ButtonPressMask, event);
++                    }
++                  else
++#endif
+ 			executeButtonAction(scr, event, wPreferences.mouse_button3);
+ 		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
+ 			executeButtonAction(scr, event, wPreferences.mouse_button8);
+@@ -873,6 +903,19 @@
+ 	}
+ }
+ 
++#ifdef NEXTSPACE
++static void handleButtonRelease(XEvent * event)
++{
++  WScreen *scr = wScreenForRootWindow(event->xbutton.root);
++  
++  if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
++    if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
++      XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
++    }
++  }
++}
++#endif
++
+ static void handleMapNotify(XEvent * event)
+ {
+ 	WWindow *wwin;
