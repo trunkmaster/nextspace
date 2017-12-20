@@ -30,6 +30,7 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSAffineTransform.h>
 #import <AppKit/NSButton.h>
+#import <AppKit/NSEvent.h>
 
 #import <NXSystem/NXMouse.h>
 
@@ -272,6 +273,22 @@ static NSMutableDictionary      *domain = nil;
     }
   [sender setState:NSOnState];
   [(sender == menuLeftBtn) ? menuRightBtn : menuLeftBtn setState:NSOffState];
+  if (sender == menuLeftBtn)
+    {
+      [domain setObject:[NSNumber numberWithInteger:NSLeftMouseDown]
+                 forKey:@"GSMenuButton"];
+    }
+  else
+    {
+      [domain setObject:[NSNumber numberWithInteger:NSRightMouseDown]
+                 forKey:@"GSMenuButton"];
+    }
+  [defaults setPersistentDomain:domain forName:NSGlobalDomain];
+  [defaults synchronize];
+  
+  [[NSDistributedNotificationCenter defaultCenter]
+               postNotificationName:@"GSMouseOptionsDidChangeNotification"
+                             object:nil];
 }
 
 - (void)setMenuButtonEnabled:(id)sender
@@ -282,13 +299,33 @@ static NSMutableDictionary      *domain = nil;
   [menuRightBtn setEnabled:state];
   [menuLeftBtn setEnabled:state];
 
+  if (state == NSOffState)
+    {
+      [domain setObject:0 forKey:@"GSMenuButton"];
+    }
+  else
+    {
+      NSNumber *value;
+      if ([menuLeftBtn state] == NSOnState)
+        value = [NSNumber numberWithInteger:NSLeftMouseDown];
+      else
+        value = [NSNumber numberWithInteger:NSRightMouseDown];
+      [domain setObject:value forKey:@"GSMenuButton"];
+    }
+  [defaults setPersistentDomain:domain forName:NSGlobalDomain];
+  [defaults synchronize];
+  
+  [[NSDistributedNotificationCenter defaultCenter]
+               postNotificationName:@"GSMouseOptionsDidChangeNotification"
+                             object:nil];
+
   // Set WindowMaker preferences. WindowMaker updates it automatically.
-  NSString *wmDefaultsFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
-  NSString *wmDefaultsPath;
+  NSString *wmdFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
+  NSString *wmdPath;
   NSMutableDictionary *wmDefaults;
 
-  wmDefaultsPath = [NSString stringWithFormat:wmDefaultsFormat, NSHomeDirectory()];
-  wmDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:wmDefaultsPath];
+  wmdPath = [NSString stringWithFormat:wmdFormat, NSHomeDirectory()];
+  wmDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:wmdPath];
   if (state == NSOnState)
     {
       [wmDefaults setObject:@"NO" forKey:@"DisableWSMouseActions"];
@@ -297,7 +334,7 @@ static NSMutableDictionary      *domain = nil;
     {
       [wmDefaults setObject:@"YES" forKey:@"DisableWSMouseActions"];
     }
-  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+  [wmDefaults writeToFile:wmdPath atomically:YES];
 }
 
 @end

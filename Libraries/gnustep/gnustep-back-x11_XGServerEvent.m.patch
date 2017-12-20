@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2017-12-16 02:01:38.889066229 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2017-12-20 22:32:55.424003107 +0200
 @@ -42,6 +42,7 @@
  #include <Foundation/NSUserDefaults.h>
  #include <Foundation/NSRunLoop.h>
@@ -8,17 +8,18 @@
  
  #include "x11/XGServerWindow.h"
  #include "x11/XGInputServer.h"
-@@ -313,6 +314,9 @@
+@@ -313,6 +314,10 @@
  
  /*
   */
 +static NSInteger clickTime;
 +static NSInteger clickMove;
 +static NSInteger mouseScrollMultiplier;
++static BOOL        swapMouseButtons = NO;
  - (NSPoint) _XPointToOSPoint: (NSPoint)x for: (void*)window
  {
    gswindow_device_t *win = (gswindow_device_t*)window;
-@@ -329,6 +333,37 @@
+@@ -329,6 +334,47 @@
    return o;
  }
  
@@ -49,14 +50,24 @@
 +  mouseScrollMultiplier = [defs integerForKey:@"GSMouseScrollMultiplier"];
 +  if (mouseScrollMultiplier == 0)
 +    mouseScrollMultiplier = 1;
++
++  switch ([defs integerForKey:@"GSMenuButton"])
++    {
++    case NSLeftMouseDown:
++      swapMouseButtons = YES;
++      break;
++    default:
++      swapMouseButtons = NO;
++      break;
++    }
 +  
-+  NSLog(@"[GSBackend] clickTime = %lu, clickMove = %lu",
-+        clickTime, clickMove);
++  // NSLog(@"[GSBackend] clickTime = %lu, clickMove = %lu",
++  //       clickTime, clickMove);
 +}
  
  - (void) processEvent: (XEvent *) event
  {
-@@ -367,21 +402,21 @@
+@@ -367,21 +413,21 @@
           */
          {
            BOOL incrementCount = YES;
@@ -86,7 +97,42 @@
              incrementCount = NO;
  
            if (incrementCount == YES)
-@@ -426,28 +461,28 @@
+@@ -408,14 +454,30 @@
+ 
+         if (xEvent.xbutton.button == generic.lMouse)
+           {
+-            eventType = NSLeftMouseDown;
+-            buttonNumber = generic.lMouse;
++            if (swapMouseButtons)
++              {
++                eventType = NSRightMouseDown;
++                buttonNumber = generic.rMouse;
++              }
++            else
++              {
++                eventType = NSLeftMouseDown;
++                buttonNumber = generic.lMouse;
++              }
+           }
+         else if (xEvent.xbutton.button == generic.rMouse
+           && generic.rMouse != 0)
+           {
+-            eventType = NSRightMouseDown;
+-            buttonNumber = generic.rMouse;
++            if (swapMouseButtons)
++              {
++                eventType = NSLeftMouseDown;
++                buttonNumber = generic.lMouse;
++              }
++            else
++              {
++                eventType = NSRightMouseDown;
++                buttonNumber = generic.rMouse;
++              }
+           }
+         else if (xEvent.xbutton.button == generic.mMouse
+           && generic.mMouse != 0)
+@@ -426,28 +488,28 @@
          else if (xEvent.xbutton.button == generic.upMouse
            && generic.upMouse != 0)
            {
