@@ -95,6 +95,7 @@
   // [[currentModule view] removeFromSuperview];
   [prefsViews release];
   [loadedBundles release];
+  [window release];
   
   [super dealloc];
 }

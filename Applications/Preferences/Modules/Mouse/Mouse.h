@@ -30,6 +30,7 @@
 
 @interface Mouse: NSObject <PrefsModule>
 {
+  NXMouse *mouse;
   NSImage *image;
   NSImage *handImage;
   
