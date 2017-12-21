@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Dec 21 01:12:32 2017
+;; Created Thu Dec 21 19:13:18 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,19 +22,41 @@
   "Mouse.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  2257
-  '(9249 nil)
+  6146
+  '(5980 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.h"
-  "Mouse.h"
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
+  "Keyboard.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  10420
+  '(7410 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"
+  "PrefsController.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1175
-  '(825 nil)
+  427
+  '(1537 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.h"
+  "PrefsController.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  1132
+  '(876 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -44,8 +66,8 @@
   "AppController.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  2469
-  '(2283 nil)
+  2639
+  '(2739 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -55,8 +77,19 @@
   "AppController.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1251
+  1011
   '(1219 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.h"
+  "Mouse.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  958
+  '(948 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -71,17 +104,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
-  "Keyboard.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  7465
-  '(7410 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist"
@@ -148,28 +170,6 @@
   nil
   nil
   '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.h"
-  "PrefsController.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  64
-  '(876 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"
-  "PrefsController.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1
-  '(6306 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"

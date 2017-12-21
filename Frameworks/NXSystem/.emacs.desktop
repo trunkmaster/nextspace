@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Nov 30 01:39:05 2017
+;; Created Thu Dec 21 19:13:22 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,19 @@
   "NXMouse.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2073
-  '(1798 nil)
+  6691
+  '(6504 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMouse.h"
+  "NXMouse.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1030
+  '(1030 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -38,17 +49,6 @@
   nil
   nil
   '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXMouse.h"
-  "NXMouse.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1343
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.h"

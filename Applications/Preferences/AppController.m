@@ -100,16 +100,11 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  // [prefsController release];
+  [prefsController release];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification*)aNotification
 {
-  // NSLog(@"Application became active!");
-  // if (prefsController)
-  //   {
-  //     [[prefsController window] makeKeyWindow];
-  //   }
 }
 
 - (BOOL)application:(NSApplication *)application openFile:(NSString *)fileName

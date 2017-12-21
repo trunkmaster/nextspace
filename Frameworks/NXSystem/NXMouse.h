@@ -26,8 +26,10 @@
 
 @interface NXMouse : NSObject
 {
-  NSDictionary *serverConfig;
-  NSDictionary *defaultsCache;
+  NSUserDefaults      *userDefaults;
+  
+  NSDictionary        *serverConfig;
+  NSDictionary        *defaultsCache;
 }
 
 - (NSInteger)acceleration;
@@ -38,6 +40,7 @@
 - (void)setDoubleClickTime:(NSUInteger)miliseconds;
 
 - (NSInteger)wheelScrollLines;
+- (void)setWheelScrollLines:(NSInteger)lines;
 
 @end
 
@@ -45,4 +48,6 @@ extern NSString *Acceleration;
 extern NSString *Threshold;
 extern NSString *DoubleClickTime;
 extern NSString *WheelScroll;
+extern NSString *MenuButtonEnabled;
+extern NSString *MenuButtonHand;
 extern NSString *CursorTheme;
