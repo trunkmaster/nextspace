@@ -829,19 +829,21 @@ static void handleButtonPress(XEvent * event)
 
 	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
 		if (event->xbutton.button == Button1 && wPreferences.mouse_button1 != WA_NONE) {
+#ifdef NEXTSPACE
+			if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
+				XSendEvent(dpy, scr->focused_window->client_win, True, ButtonPressMask, event);
+			}
+			else
+#endif
 			executeButtonAction(scr, event, wPreferences.mouse_button1);
 		} else if (event->xbutton.button == Button2 && wPreferences.mouse_button2 != WA_NONE) {
 			executeButtonAction(scr, event, wPreferences.mouse_button2);
 		} else if (event->xbutton.button == Button3 && wPreferences.mouse_button3 != WA_NONE) {
 #ifdef NEXTSPACE
-                  /* fprintf(stderr, "WindowMaker, ButtonPress: focused window class: %s\n", */
-                  /*         scr->focused_window->wm_class); */
-                  if (!strcmp(scr->focused_window->wm_class, "GNUstep"))
-                    {
-			XSendEvent(dpy, scr->focused_window->client_win, True,
-                                   ButtonPressMask, event);
-                    }
-                  else
+			if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
+				XSendEvent(dpy, scr->focused_window->client_win, True, ButtonPressMask, event);
+			}
+			else
 #endif
 			executeButtonAction(scr, event, wPreferences.mouse_button3);
 		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
