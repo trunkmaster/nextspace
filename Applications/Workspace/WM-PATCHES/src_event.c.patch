@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2017-12-20 18:34:41.971397374 +0200
++++ ./WindowMaker/src/event.c	2017-12-21 00:38:34.775865172 +0200
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -58,24 +58,30 @@
  		wUnmanageWindow(wwin, False, True);
  	}
  
-@@ -813,6 +833,16 @@
+@@ -809,10 +829,22 @@
+ 
+ 	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
+ 		if (event->xbutton.button == Button1 && wPreferences.mouse_button1 != WA_NONE) {
++#ifdef NEXTSPACE
++			if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
++				XSendEvent(dpy, scr->focused_window->client_win, True, ButtonPressMask, event);
++			}
++			else
++#endif
+ 			executeButtonAction(scr, event, wPreferences.mouse_button1);
  		} else if (event->xbutton.button == Button2 && wPreferences.mouse_button2 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button2);
  		} else if (event->xbutton.button == Button3 && wPreferences.mouse_button3 != WA_NONE) {
 +#ifdef NEXTSPACE
-+                  fprintf(stderr, "WindowMaker, ButtonPress: focused window class: %s\n",
-+                          scr->focused_window->wm_class);
-+                  if (!strcmp(scr->focused_window->wm_class, "GNUstep"))
-+                    {
-+			XSendEvent(dpy, scr->focused_window->client_win, True,
-+                                   ButtonPressMask, event);
-+                    }
-+                  else
++			if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
++				XSendEvent(dpy, scr->focused_window->client_win, True, ButtonPressMask, event);
++			}
++			else
 +#endif
  			executeButtonAction(scr, event, wPreferences.mouse_button3);
  		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button8);
-@@ -873,6 +903,19 @@
+@@ -873,6 +905,19 @@
  	}
  }
  

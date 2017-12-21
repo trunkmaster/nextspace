@@ -66,8 +66,9 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)awakeFromNib
 {
-  NXMouse   *mouse = [NXMouse new];
-  NSInteger value;
+  NXMouse	*mouse = [NXMouse new];
+  NXDefaults	*defs = [NXDefaults globalUserDefaults];
+  NSInteger	value;
 
   [view retain];
   [window release];
@@ -77,17 +78,28 @@ static NSMutableDictionary      *domain = nil;
   for (id c in [doubleClickMtrx cells])
     [c setRefusesFirstResponder:YES];
 
-  NSLog(@"[Mouse] current acceleration = %li times, threshold = %li pixels",
-        [mouse acceleration], [mouse accelerationThreshold]);
-  
-  [speedMtrx selectCellWithTag:[mouse acceleration]];
-  [mouse release];
-  
-  [doubleClickMtrx
-    selectCellWithTag:[defaults integerForKey:@"GSDoubleClickTime"]];
+  // NSLog(@"[Mouse] current acceleration = %li times, threshold = %li pixels",
+  //       [mouse acceleration], [mouse accelerationThreshold]);
 
+  // Mouse speed
+  [speedMtrx selectCellWithTag:[mouse acceleration]];
+  [defs setInteger:value forKey:Acceleration];
+  [mouse release];
+
+  // Double-Click Delay
+  value = [defaults integerForKey:@"GSDoubleClickTime"];
+  if (value == 0)
+    value = [defs integerForKey:DoubleClickTime];
+  if (value == -1)
+    value = 300;
+  [doubleClickMtrx selectCellWithTag:value];
+
+  // Threshold
   value = [defaults integerForKey:@"GSMouseMoveThreshold"];
-  if (value == 0) value = 3;
+  if (value == 0)
+    value = [defs integerForKey:Threshold];
+  if (value == 0)
+    value = 3;
   [tresholdSlider setIntegerValue:value];
   [tresholdField setIntegerValue:value];
 
@@ -276,12 +288,12 @@ static NSMutableDictionary      *domain = nil;
   if (sender == menuLeftBtn)
     {
       [domain setObject:[NSNumber numberWithInteger:NSLeftMouseDown]
-                 forKey:@"GSMenuButton"];
+                 forKey:@"GSMenuButtonEvent"];
     }
   else
     {
       [domain setObject:[NSNumber numberWithInteger:NSRightMouseDown]
-                 forKey:@"GSMenuButton"];
+                 forKey:@"GSMenuButtonEvent"];
     }
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
   [defaults synchronize];
@@ -299,9 +311,11 @@ static NSMutableDictionary      *domain = nil;
   [menuRightBtn setEnabled:state];
   [menuLeftBtn setEnabled:state];
 
+  // NSGlobalDomain
   if (state == NSOffState)
     {
-      [domain setObject:0 forKey:@"GSMenuButton"];
+      [domain setObject:[NSNumber numberWithBool:NO]
+                 forKey:@"GSMenuButtonEnabled"];
     }
   else
     {
@@ -310,7 +324,10 @@ static NSMutableDictionary      *domain = nil;
         value = [NSNumber numberWithInteger:NSLeftMouseDown];
       else
         value = [NSNumber numberWithInteger:NSRightMouseDown];
-      [domain setObject:value forKey:@"GSMenuButton"];
+      [domain setObject:value forKey:@"GSMenuButtonEvent"];
+      [domain setObject:[NSNumber numberWithBool:YES]
+                 forKey:@"GSMenuButtonEnabled"];
+
     }
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
   [defaults synchronize];
