@@ -34,7 +34,7 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 endif
 
 ### Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += -lXrandr -lxkbfile
+ADDITIONAL_LDFLAGS += -lXrandr -lxkbfile -lXcursor
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
   ADDITIONAL_LDFLAGS += `pkg-config --libs hal`
 endif

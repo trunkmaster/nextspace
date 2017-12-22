@@ -24,6 +24,7 @@
 #import "NXMouse.h"
 
 #import <X11/Xlib.h>
+#import <X11/Xcursor/Xcursor.h>
 
 NSString *Acceleration = @"NXMouseAcceleration";
 NSString *Threshold = @"NXMouseThreshold";
@@ -195,6 +196,47 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   isMenuButtonEnabled = enabled;
   menuButtonEvent = eventType;
 }
+
+- (NSArray *)availableCursorThemes
+{
+  // NSArray 		*themePaths;
+  // NSFileManager		*fm = [NSFileManager defaultManager];
+  // NSEnumerator		*e;
+  // NSMutableArray	*themes;
+
+  // themePaths = [NSArray arrayWithObjects:@"/usr/share/icons", @"~/.icons"];
+
+  return [NSArray arrayWithObjects:@"default", @"Adwaita", @"Bluecurve",
+                  @"Bluecurve-inverse", @"LBluecurve", @"LBluecurve-inverse",
+                  nil];
+}
+
+- (NSString *)cursorTheme
+{
+  Display 	*dpy = XOpenDisplay(NULL);
+  NSString	*themeName = nil;
+  
+  // XcursorSetTheme(dpy, "Blecurve");
+  themeName = [NSString stringWithCString:XcursorGetTheme(dpy)];
+  fprintf(stderr, "Cursor theme: %s\n", XcursorGetTheme(dpy));
+  XCloseDisplay(dpy);
+
+  return themeName;
+}
+
+- (void)setCursorTheme:(NSString *)themeName
+{
+  Display *dpy = XOpenDisplay(NULL);
+  XcursorBool res;
+  
+  res = XcursorSetTheme(dpy, [themeName cString]);
+  Cursor handle = XcursorLibraryLoadCursor(dpy, "left_ptr");
+  XDefineCursor(dpy, RootWindow(dpy, 0), handle);
+  XFreeCursor(dpy, handle);
+  XFlush(dpy);
+  XCloseDisplay(dpy);
+}
+
 
 - (void)_setGSDefaultsObject:(id)object forKey:(NSString *)key
 {

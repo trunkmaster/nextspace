@@ -46,6 +46,7 @@
   id menuLeftBtn;
   id menuRightBtn;
   id handImageView;
+  id cursorsBtn;
 }
 
 @end

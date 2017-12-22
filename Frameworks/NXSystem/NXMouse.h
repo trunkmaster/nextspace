@@ -54,6 +54,10 @@
 - (void)setMenuButtonEnabled:(BOOL)enabled
                   menuButton:(NSUInteger)eventType;
 
+- (NSArray *)availableCursorThemes;
+- (NSString *)cursorTheme;
+- (void)setCursorTheme:(NSString *)themeName;
+
 - (void)saveToDefaults;
 
 @end

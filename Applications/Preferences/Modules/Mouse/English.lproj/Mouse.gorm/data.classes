@@ -4,6 +4,7 @@
 	Actions = (
 	    "doubleClickMtrxClicked:",
 	    "enableSubpixelChanged:",
+	    "setCursorTheme:",
 	    "setMenuButtonEnabled:",
 	    "setMenuButtonHand:",
 	    "setTreshold:",
@@ -20,7 +21,8 @@
 	    "wheelScrollSliderMoved:",
 	    "setTreshold:",
 	    "setMenuButtonEnabled:",
-	    "setMenuButtonHand:"
+	    "setMenuButtonHand:",
+	    "setCursorTheme:"
 	);
 	Outlets = (
 	    view,
@@ -34,8 +36,8 @@
 	    handImageView,
 	    menuLeftBtn,
 	    menuRightBtn,
-	    newOutlet,
-	    menuMtrx
+	    menuMtrx,
+	    cursorsBtn
 	);
 	Super = NSObject;
     };
