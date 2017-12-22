@@ -31,6 +31,7 @@
 #import <AppKit/NSAffineTransform.h>
 #import <AppKit/NSButton.h>
 #import <AppKit/NSEvent.h>
+#import <AppKit/NSPopUpButton.h>
 
 #import <NXSystem/NXMouse.h>
 
@@ -105,6 +106,11 @@ static NSMutableDictionary      *domain = nil;
     [self setMenuButtonHand:menuLeftBtn];
   else
     [self setMenuButtonHand:menuRightBtn];
+
+  // Cursors
+  [cursorsBtn removeAllItems];
+  [cursorsBtn addItemsWithTitles:[mouse availableCursorThemes]];
+  NSLog(@"Current cursor theme name: %@", [mouse cursorTheme]);
 }
 
 - (NSView *)view
@@ -229,6 +235,12 @@ static NSMutableDictionary      *domain = nil;
   
   [mouse setMenuButtonEnabled:isEnabled menuButton:button];  
   [mouse saveToDefaults];
+}
+
+- (void)setCursorTheme:(id)sender
+{
+  [mouse setCursorTheme:[cursorsBtn titleOfSelectedItem]];
+  NSLog(@"Current cursor theme name: %@", [mouse cursorTheme]);
 }
 
 @end
