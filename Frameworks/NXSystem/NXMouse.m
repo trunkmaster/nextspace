@@ -4,7 +4,7 @@
   Class descritopn:	Mouse configuration manipulation (speed, 
 			double click time, cursor themes)
 
-  Copyright (C) 2017 Sergii Stoian <stoyan255@ukr.net>
+  Copyright (C) 2017 Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,94 +37,65 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
 
 - (id)init
 {
+  NSString *wmdFormat;
+  
   self = [super init];
   
-  userDefaults = [NSUserDefaults standardUserDefaults];
+  gsDefaults = [NSUserDefaults standardUserDefaults];
+  nxDefaults = [NXDefaults globalUserDefaults];
+  
+  wmdFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
+  wmDefaultsPath = [[NSString alloc] initWithFormat:wmdFormat,
+                                     NSHomeDirectory()];
+  wmDefaults = [[NSMutableDictionary alloc]
+                 initWithContentsOfFile:wmDefaultsPath];
+  
+  acceleration = [self acceleration];
+  threshold = [self accelerationThreshold];
+  doubleClickTime = [self doubleClickTime];
+  wheelScrollLines = [self wheelScrollLines];
+  isMenuButtonEnabled = [self isMenuButtonEnabled];
+  menuButtonEvent = [self menuButton];
+
+  [self saveToDefaults];
   
   return self;
 }
 
 - (void)dealloc
 {
+  [wmDefaultsPath release];
+  [wmDefaults release];
   [super dealloc];
-}
-
-- (void)_setWMDefaultsObject:(id)object forKey:(NSString *)key
-{
-  NSString *wmdFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
-  NSString *wmdPath;
-  NSMutableDictionary *wmDefaults;
-
-  wmdPath = [NSString stringWithFormat:wmdFormat, NSHomeDirectory()];
-  wmDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:wmdPath];
-  
-  [wmDefaults setObject:[object stringValue] forKey:key];
-  [wmDefaults writeToFile:wmdPath atomically:YES];
-  
-  [wmDefaults release];              
-}
-
-- (void)_setGSDefaultsObject:(id)object forKey:(NSString *)key
-{
-  NSMutableDictionary *globalDomain;
-  
-  globalDomain = [[userDefaults persistentDomainForName:NSGlobalDomain]
-                   mutableCopy];
-  
-  [globalDomain setObject:object forKey:key];
-  [userDefaults setPersistentDomain:globalDomain forName:NSGlobalDomain];
-  [userDefaults synchronize];
-  
-  [globalDomain release];
-  
-  [[NSDistributedNotificationCenter defaultCenter]
-               postNotificationName:@"GSMouseOptionsDidChangeNotification"
-                             object:nil];
 }
 
 - (NSInteger)acceleration
 {
   Display    *dpy;
-  int        accel_numerator, accel_denominator, threshold;
+  int        accel_numerator, accel_denominator, accel_threshold;
   NSInteger  accel;
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
 
   dpy = XOpenDisplay(NULL);
-  XGetPointerControl(dpy, &accel_numerator, &accel_denominator, &threshold);
+  XGetPointerControl(dpy, &accel_numerator, &accel_denominator,
+                     &accel_threshold);
   XCloseDisplay(dpy);
 
   accel = accel_numerator/accel_denominator;
-
-  if (accel != [defs integerForKey:Acceleration])
-    {
-      [defs setInteger:accel forKey:Acceleration];
-      [defs synchronize];
-    }
 
   return accel;
 }
 - (NSInteger)accelerationThreshold
 {
   Display    *dpy;
-  int        accel_numerator, accel_denominator, threshold;
+  int        accel_numerator, accel_denominator, accel_threshold;
   NXDefaults *defs = [NXDefaults globalUserDefaults];
 
   dpy = XOpenDisplay(NULL);
-  XGetPointerControl(dpy, &accel_numerator, &accel_denominator, &threshold);
+  XGetPointerControl(dpy, &accel_numerator, &accel_denominator,
+                     &accel_threshold);
   XCloseDisplay(dpy);
 
-  if (threshold != [defs integerForKey:Threshold])
-    {
-      [defs setInteger:threshold forKey:Threshold];
-      [defs synchronize];
-    }
-  if (threshold != [userDefaults integerForKey:@"GSMouseMoveThreshold"])
-    {
-      [self _setGSDefaultsObject:[NSNumber numberWithInteger:threshold]
-                          forKey:@"GSMouseMoveThreshold"];
-    }
-  
-  return threshold;
+  return accel_threshold;
 }
 - (void)setAcceleration:(NSInteger)speed threshold:(NSInteger)pixels
 {
@@ -149,93 +120,186 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
 
 - (NSInteger)doubleClickTime
 {
-  NSInteger  clickTime;
-  BOOL       mustUpdateDefaults = NO;
-  
-  clickTime = [userDefaults integerForKey:@"GSDoubleClickTime"];
-  if (clickTime == 0)
+  NSInteger time;
+
+  time = [gsDefaults integerForKey:@"GSDoubleClickTime"];
+  if (time == 0)
     {
-      mustUpdateDefaults = YES;
-      clickTime = [[NXDefaults globalUserDefaults]
-                    integerForKey:DoubleClickTime];
-      if (clickTime == -1)
-        clickTime = 300;
+      time = [nxDefaults integerForKey:DoubleClickTime];
+      if (time == -1)
+        time = 300;
     }
 
-  if (mustUpdateDefaults == YES)
-    {
-      [self setDoubleClickTime:clickTime];
-    }
-  
-  return clickTime;
+  return time;
 }
 - (void)setDoubleClickTime:(NSUInteger)miliseconds
 {
-  NSNumber   *value = [NSNumber numberWithInteger:miliseconds];
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
-  
-  // GNUstep
-  [self _setGSDefaultsObject:value forKey:@"GSDoubleClickTime"];
-  
-  // WindowMaker:
-  [self _setWMDefaultsObject:value forKey:@"DoubleClickTime"];
-
-  // NEXTSPACE: in case if GNUstep file was edited outside of NEXTSPACE.
-  [defs setInteger:miliseconds forKey:DoubleClickTime];
-  [defs synchronize];
+  doubleClickTime = miliseconds;
 }
 
 - (NSInteger)wheelScrollLines
 {
   NSInteger  lines;
-  BOOL       mustUpdateDefaults = NO;
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
   
-  lines = [userDefaults integerForKey:@"GSMouseScrollMultiplier"];
+  lines = [gsDefaults integerForKey:@"GSMouseScrollMultiplier"];
   if (lines == 0)
     {
-      mustUpdateDefaults = YES;
-      lines = [[NXDefaults globalUserDefaults] integerForKey:WheelScroll];
+      lines = [nxDefaults integerForKey:WheelScroll];
       if (lines == -1)
         lines = 3;
-    }
-  
-  if (mustUpdateDefaults == YES)
-    {
-      [self setWheelScrollLines:lines];
     }
   
   return lines;
 }
 - (void)setWheelScrollLines:(NSInteger)lines
 {
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
-  
-  // GNUstep
-  [self _setGSDefaultsObject:[NSNumber numberWithInteger:lines]
-                      forKey:@"GSMouseScrollMultiplier"];
-  
-  // NEXTSPACE: in case if GNUstep file was edited outside of NEXTSPACE.
-  [defs setInteger:lines forKey:WheelScroll];
-  [defs synchronize];
+  wheelScrollLines = lines;
 }
 
 - (BOOL)isMenuButtonEnabled
 {
-  BOOL enabled = YES;
+  BOOL     enabled = YES;
+  NSString *s;
 
+  s = [gsDefaults objectForKey:@"GSMenuButtonEnabled"];
+  if (s != nil)
+    {
+      enabled = [s isEqualToString:@"YES"];
+    }
+  else
+    {
+      s = [nxDefaults objectForKey:MenuButtonEnabled];
+      if (s != nil)
+        enabled = [s isEqualToString:@"YES"];
+    }
  
   return enabled;
 }
-- (void)setMenuButtonEnabled:(BOOL)enabled
-                  menuButton:(NSEventType)eventType
+- (NSUInteger)menuButton
 {
-  NSString *string = enabled ? @"YES" : @"NO";
-
-  [self _setGSDefaultsObject:[NSNumber numberWithInteger:eventType]
-                      forKey:@"GSMenuButtonEvent"];
-  [self _setGSDefaultsObject:string forKey:@"GSMenuButtonEnabled"];
+  NSInteger event;
+  
+  event = [gsDefaults integerForKey:@"GSMouseScrollMultiplier"];
+  if (event == 0)
+    {
+      event = [nxDefaults integerForKey:WheelScroll];
+      if (event == -1)
+        event = 3; // NSRightMouseDown
+    }
+  
+  return event;
+}
+- (void)setMenuButtonEnabled:(BOOL)enabled
+                  menuButton:(NSUInteger)eventType
+{
+  isMenuButtonEnabled = enabled;
+  menuButtonEvent = eventType;
 }
 
+- (void)_setGSDefaultsObject:(id)object forKey:(NSString *)key
+{
+  NSMutableDictionary *globalDomain;
+  
+  globalDomain = [[gsDefaults persistentDomainForName:NSGlobalDomain]
+                   mutableCopy];
+  
+  [globalDomain setObject:object forKey:key];
+  [gsDefaults setPersistentDomain:globalDomain forName:NSGlobalDomain];
+  [gsDefaults synchronize];
+  
+  [globalDomain release];
+}
+
+- (void)saveToDefaults
+{
+  BOOL sendNotification = NO;
+  
+  // Acceleration
+  if (acceleration != [nxDefaults integerForKey:Acceleration])
+    {
+      [nxDefaults setInteger:acceleration forKey:Acceleration];
+      [nxDefaults synchronize];
+    }
+
+  // Threshold
+  if (threshold != [nxDefaults integerForKey:Threshold])
+    {
+      [nxDefaults setInteger:threshold forKey:Threshold];
+      [nxDefaults synchronize];
+    }
+  if (threshold != [gsDefaults integerForKey:@"GSMouseMoveThreshold"])
+    {
+      [self _setGSDefaultsObject:[NSNumber numberWithInteger:threshold]
+                          forKey:@"GSMouseMoveThreshold"];
+      sendNotification = YES;
+    }
+  
+  // Double-Click Delay
+  if (doubleClickTime != [gsDefaults integerForKey:@"GSDoubleClickTime"])
+    {
+      [self _setGSDefaultsObject:[NSNumber numberWithInteger:doubleClickTime]
+                          forKey:@"GSDoubleClickTime"];
+      sendNotification = YES;
+    }
+  if (doubleClickTime !=
+      [[wmDefaults objectForKey:@"DoubleClickTime"] integerValue])
+    {
+      [wmDefaults setObject:[NSString stringWithFormat:@"%li",doubleClickTime]
+                     forKey:@"DoubleClickTime"];
+      [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+    }
+  if (doubleClickTime != [nxDefaults integerForKey:DoubleClickTime])
+    {
+      [nxDefaults setInteger:doubleClickTime forKey:DoubleClickTime];
+    }
+
+  // Mouse Wheel Scrolls
+  if (wheelScrollLines != [gsDefaults integerForKey:@"GSMouseScrollMultiplier"])
+    {
+      [self _setGSDefaultsObject:[NSNumber numberWithInteger:wheelScrollLines]
+                          forKey:@"GSMouseScrollMultiplier"];
+      sendNotification = YES;
+    }
+  if (wheelScrollLines != [nxDefaults integerForKey:WheelScroll])
+    {
+      [nxDefaults setInteger:wheelScrollLines forKey:WheelScroll];
+    }
+
+  // Menu Button
+  NSString *s = isMenuButtonEnabled ? @"YES" : @"NO";
+  if (![[gsDefaults objectForKey:@"GSMenuButtonEnabled"] isEqualToString:s])
+    {
+      [self _setGSDefaultsObject:s forKey:@"GSMenuButtonEnabled"];
+      sendNotification = YES;
+    }
+  if (menuButtonEvent != [gsDefaults integerForKey:@"GSMenuButtonEvent"])
+    {
+      [self _setGSDefaultsObject:[NSNumber numberWithInteger:menuButtonEvent]
+                          forKey:@"GSMenuButtonEvent"];
+      sendNotification = YES;
+    }
+  s = isMenuButtonEnabled ? @"NO" : @"YES";
+  if (![[wmDefaults objectForKey:@"DisableWSMouseActions"] isEqualToString:s])
+    {
+      [wmDefaults setObject:s forKey:@"DisableWSMouseActions"];
+      [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+    }
+  if (menuButtonEvent != [nxDefaults integerForKey:MenuButtonHand])
+    {
+      [nxDefaults setInteger:menuButtonEvent forKey:MenuButtonHand];
+    }
+  if (isMenuButtonEnabled != [nxDefaults boolForKey:MenuButtonEnabled])
+    {
+      [nxDefaults setBool:isMenuButtonEnabled forKey:MenuButtonEnabled];
+    }
+
+  // Notify GNUstep backend about mouse preferences change
+  if (sendNotification == YES)
+    {
+      [[NSDistributedNotificationCenter defaultCenter]
+               postNotificationName:@"GSMouseOptionsDidChangeNotification"
+                             object:nil];
+    }
+}
 
 @end

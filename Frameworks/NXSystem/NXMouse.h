@@ -26,10 +26,17 @@
 
 @interface NXMouse : NSObject
 {
-  NSUserDefaults      *userDefaults;
+  NSUserDefaults	*gsDefaults;
+  NXDefaults		*nxDefaults;
+  NSMutableDictionary	*wmDefaults;
+  NSString		*wmDefaultsPath;
   
-  NSDictionary        *serverConfig;
-  NSDictionary        *defaultsCache;
+  NSInteger	acceleration;
+  NSInteger	threshold;
+  NSInteger	doubleClickTime;
+  NSInteger	wheelScrollLines;
+  BOOL		isMenuButtonEnabled;
+  NSInteger	menuButtonEvent;
 }
 
 - (NSInteger)acceleration;
@@ -41,6 +48,13 @@
 
 - (NSInteger)wheelScrollLines;
 - (void)setWheelScrollLines:(NSInteger)lines;
+
+- (BOOL)isMenuButtonEnabled;
+- (NSUInteger)menuButton;
+- (void)setMenuButtonEnabled:(BOOL)enabled
+                  menuButton:(NSUInteger)eventType;
+
+- (void)saveToDefaults;
 
 @end
 

@@ -36,11 +36,11 @@
 
 #import "Mouse.h"
 
-@implementation Mouse
-
 static NSBundle                 *bundle = nil;
 static NSUserDefaults           *defaults = nil;
 static NSMutableDictionary      *domain = nil;
+
+@implementation Mouse
 
 - (id)init
 {
@@ -99,6 +99,12 @@ static NSMutableDictionary      *domain = nil;
   for (id c in [menuMtrx cells])
     [c setRefusesFirstResponder:YES];
   handImage = [[handImageView image] copy];
+  
+  [menuMtrx selectCellWithTag:[mouse isMenuButtonEnabled]];
+  if ([mouse menuButton] == NSLeftMouseDown)
+    [self setMenuButtonHand:menuLeftBtn];
+  else
+    [self setMenuButtonHand:menuRightBtn];
 }
 
 - (NSView *)view
@@ -131,10 +137,12 @@ static NSMutableDictionary      *domain = nil;
 - (void)speedMtrxClicked:(id)sender
 {
   [mouse setAcceleration:[[sender selectedCell] tag] threshold:0];
+  [mouse saveToDefaults];
 }
 - (void)doubleClickMtrxClicked:(id)sender
 {
   [mouse setDoubleClickTime:[[doubleClickMtrx selectedCell] tag]];
+  [mouse saveToDefaults];
 }
 - (void)setTreshold:(id)sender
 {
@@ -149,6 +157,7 @@ static NSMutableDictionary      *domain = nil;
     }
   
   [mouse setAcceleration:0 threshold:[tresholdField integerValue]];
+  [mouse saveToDefaults];
 }
 - (void)setWheelScroll:(id)sender
 {
@@ -163,6 +172,7 @@ static NSMutableDictionary      *domain = nil;
     }
 
   [mouse setWheelScrollLines:[wheelScrollField integerValue]];
+  [mouse saveToDefaults];
 }
 
 - (NSImage *)_flipImage:(NSImage *)sourceImage
@@ -187,6 +197,7 @@ static NSMutableDictionary      *domain = nil;
 }
 - (void)setMenuButtonHand:(id)sender
 {
+  NSEventType button;
   NSLog(@"Button sender state %li", [sender state]);
   if (sender == menuRightBtn && [sender state] == NSOnState)
     {
@@ -198,87 +209,26 @@ static NSMutableDictionary      *domain = nil;
     }
   [sender setState:NSOnState];
   [(sender == menuLeftBtn) ? menuRightBtn : menuLeftBtn setState:NSOffState];
-  if (sender == menuLeftBtn)
-    {
-      [domain setObject:[NSNumber numberWithInteger:NSLeftMouseDown]
-                 forKey:@"GSMenuButtonEvent"];
-    }
-  else
-    {
-      [domain setObject:[NSNumber numberWithInteger:NSRightMouseDown]
-                 forKey:@"GSMenuButtonEvent"];
-    }
-  [defaults setPersistentDomain:domain forName:NSGlobalDomain];
-  [defaults synchronize];
-  
-  [[NSDistributedNotificationCenter defaultCenter]
-               postNotificationName:@"GSMouseOptionsDidChangeNotification"
-                             object:nil];
+
+  button = (sender == menuLeftBtn) ? NSLeftMouseDown : NSRightMouseDown;
+  [mouse setMenuButtonEnabled:YES menuButton:button];
+  [mouse saveToDefaults];
 }
 - (void)setMenuButtonEnabled:(id)sender
 {
-  NSInteger state = [[sender selectedCell] tag];
-  NSNumber  *menuButton;
+  NSInteger  state = [[sender selectedCell] tag];
+  NSUInteger button;
+  BOOL       isEnabled;
 
   [handImageView setEnabled:state];
   [menuRightBtn setEnabled:state];
   [menuLeftBtn setEnabled:state];
 
-  if ([menuLeftBtn state] == NSOnState)
-    value = [NSNumber numberWithInteger:NSLeftMouseDown];
-  else
-    value = [NSNumber numberWithInteger:NSRightMouseDown];
+  button = [menuLeftBtn state] ? NSLeftMouseDown : NSRightMouseDown;
+  isEnabled = [[sender selectedCell] tag] ? YES : NO;
   
-  // NSGlobalDomain
-  if (state == NSOffState)
-    {
-      [mouse setMenuButtonEnabled:NO];
-    }
-  else
-    {
-      
-      [mouse setMenuButtonEnabled:YES menuButton:value];
-    }
-  if (state == NSOffState)
-    {
-      [domain setObject:[NSNumber numberWithBool:NO]
-                 forKey:@"GSMenuButtonEnabled"];
-    }
-  else
-    {
-      NSNumber *value;
-      if ([menuLeftBtn state] == NSOnState)
-        value = [NSNumber numberWithInteger:NSLeftMouseDown];
-      else
-        value = [NSNumber numberWithInteger:NSRightMouseDown];
-      [domain setObject:value forKey:@"GSMenuButtonEvent"];
-      [domain setObject:[NSNumber numberWithBool:YES]
-                 forKey:@"GSMenuButtonEnabled"];
-
-    }
-  [defaults setPersistentDomain:domain forName:NSGlobalDomain];
-  [defaults synchronize];
-  
-  [[NSDistributedNotificationCenter defaultCenter]
-               postNotificationName:@"GSMouseOptionsDidChangeNotification"
-                             object:nil];
-
-  // Set WindowMaker preferences. WindowMaker updates it automatically.
-  NSString *wmdFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
-  NSString *wmdPath;
-  NSMutableDictionary *wmDefaults;
-
-  wmdPath = [NSString stringWithFormat:wmdFormat, NSHomeDirectory()];
-  wmDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:wmdPath];
-  if (state == NSOnState)
-    {
-      [wmDefaults setObject:@"NO" forKey:@"DisableWSMouseActions"];
-    }
-  else
-    {
-      [wmDefaults setObject:@"YES" forKey:@"DisableWSMouseActions"];
-    }
-  [wmDefaults writeToFile:wmdPath atomically:YES];
+  [mouse setMenuButtonEnabled:isEnabled menuButton:button];  
+  [mouse saveToDefaults];
 }
 
 @end
