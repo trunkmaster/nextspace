@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Dec 21 19:13:18 2017
+;; Created Fri Dec 22 02:42:47 2017
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "Mouse.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  6146
-  '(5980 nil)
+  5081
+  '(6010 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
