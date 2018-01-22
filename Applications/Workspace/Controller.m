@@ -396,7 +396,7 @@ static NSString *WMComputerShouldGoDownNotification =
   //NSUpdateDynamicServices();
   //[[NSWorkspace sharedWorkspace] findApplications];
 
-#if 0
+#if 1
   // Set appicon image
   operatingSystem = [NXSystemInfo operatingSystem];
   if ([operatingSystem rangeOfString:@"CentOS"].location != NSNotFound)

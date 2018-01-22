@@ -281,7 +281,7 @@ void WWMDockStateLoad(void)
   btn->launching = 1;
   btn->running = 0;
   btn->lock = 1;
-  wAppIconPaint(btn);
+  // wAppIconPaint(btn);
 }
 
 void WWMDockShowIcons(WDock *dock)
@@ -301,7 +301,7 @@ void WWMDockShowIcons(WDock *dock)
     }
   dock->mapped = 1;
 
-  // dockIconPaint(btn);
+  wAppIconPaint(btn);
 }
 
 // -- Should be called from already existing @autoreleasepool ---
