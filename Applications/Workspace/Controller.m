@@ -31,6 +31,9 @@
 #import <NXSystem/NXSystemInfo.h>
 #import <NXSystem/NXMediaManager.h>
 #import <NXSystem/NXFileSystemMonitor.h>
+#import <NXSystem/NXScreen.h>
+#import <NXSystem/NXDisplay.h>
+#import <NXSystem/NXPower.h>
 
 #import "Workspace+WindowMaker.h"
 
@@ -390,10 +393,10 @@ static NSString *WMComputerShouldGoDownNotification =
   NSImage  *appImage;
   NSString *operatingSystem;
   
-  //NSUpdateDynamicServices(); -- app won't start
-  //[[NSWorkspace sharedWorkspace] findApplications]; -- won't start
+  //NSUpdateDynamicServices();
+  //[[NSWorkspace sharedWorkspace] findApplications];
 
-#if 0  
+#if 0
   // Set appicon image
   operatingSystem = [NXSystemInfo operatingSystem];
   if ([operatingSystem rangeOfString:@"CentOS"].location != NSNotFound)
@@ -418,16 +421,12 @@ static NSString *WMComputerShouldGoDownNotification =
 #endif
   
   procManager = [ProcessManager shared];
-  // ProcessManager created - Workspace is ready to register applications.
-  // Invoke Dock apps autolaunch.
-  if (procManager && useInternalWindowManager)
-    {
-      wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
-    }
 
-  // Detect lid close/open events
   if (useInternalWindowManager)
     {
+      systemScreen = [NXScreen new];
+      
+      // Detect lid close/open events
       systemPower = [NXPower new];
       [systemPower startEventsMonitor];
       [[NSNotificationCenter defaultCenter]
@@ -484,10 +483,12 @@ static NSString *WMComputerShouldGoDownNotification =
   
   [mediaAdaptor checkForRemovableMedia];
 
-  // Show 'launched' state
+  // ProcessManager created - Workspace is ready to register applications.
+  // Show Dock and start applications in it
   if (useInternalWindowManager)
     {
-      WWMSetDockAppiconState(0, 0);
+      WWMDockShowIcons(wScreenWithNumber(0)->dock);
+      wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
     }
 }
 
