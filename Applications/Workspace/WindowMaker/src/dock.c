@@ -854,7 +854,9 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
 	btn->icon->core->descriptor.handle_leavenotify = clipLeaveNotify;
 	btn->icon->core->descriptor.parent_type = WCLASS_DOCK_ICON;
 	btn->icon->core->descriptor.parent = btn;
+#ifndef NEXTSPACE
 	XMapWindow(dpy, btn->icon->core->window);
+#endif
 	btn->x_pos = x_pos;
 	btn->y_pos = 0;
 	btn->docked = 1;
