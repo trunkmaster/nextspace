@@ -1,0 +1,14 @@
+--- ./WindowMaker-0.95.7/src/dock.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/dock.c	2018-01-22 01:04:41.880317277 +0200
+@@ -1959,9 +1959,10 @@
+ 				ChangeStackingLevel(aicon->icon->core, WMDockLevel);
+ 
+ 			wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
++#ifndef NEXTSPACE
+ 			if (!dock->collapsed)
+ 				XMapWindow(dpy, aicon->icon->core->window);
+-
++#endif
+ 			wRaiseFrame(aicon->icon->core);
+ 
+ 			dock->icon_count++;

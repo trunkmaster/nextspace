@@ -174,7 +174,6 @@ int main(int argc, const char ** argv)
   if (!startWindowServer())
     {
       system("xrdb -merge /etc/X11/Xresources.nextspace");
-      // system("/Library/bin/gpbs --daemon");
       startPasteboardService();
       plymouthQuit(YES);
       // Setup layout and gamma.

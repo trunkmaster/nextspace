@@ -32,6 +32,8 @@
 @class Inspector;
 @class Processes;
 @class ProcessManager;
+@class NXScreen;
+@class NXPower;
 
 @interface Controller : NSObject
 {
@@ -48,6 +50,9 @@
   id machineType, cpuType, cpuClock, memory;
   id baseVersion, guiVersion;
 
+  NXScreen *systemScreen;
+  NXPower  *systemPower;
+  
   FileViewer          *rootViewer;
   NSMutableArray      *fileViewers;
   NXFileSystemMonitor *fileSystemMonitor;

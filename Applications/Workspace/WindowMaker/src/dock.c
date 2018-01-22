@@ -1959,9 +1959,10 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
 				ChangeStackingLevel(aicon->icon->core, WMDockLevel);
 
 			wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
+#ifndef NEXTSPACE
 			if (!dock->collapsed)
 				XMapWindow(dpy, aicon->icon->core->window);
-
+#endif
 			wRaiseFrame(aicon->icon->core);
 
 			dock->icon_count++;

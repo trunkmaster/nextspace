@@ -12,6 +12,7 @@
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 #import <NXAppKit/NXAlert.h>
+#import <NXSystem/NXScreen.h>
 
 #import "Workspace+WindowMaker.h"
 #import "Operations/ProcessManager.h"
@@ -25,6 +26,16 @@ extern char *GetCommandForWindow(Window win);
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
 //-----------------------------------------------------------------------------
+BOOL xIsWindowServerReady(void)
+{
+  Display *xdpy = XOpenDisplay(NULL);
+  BOOL    ready = (xdpy == NULL ? NO : YES);
+
+  if (ready) XCloseDisplay(xdpy);
+
+  return ready;
+}
+
 static int CantManageScreen = 0;
 
 static int xAlreadyRunningErrorHandler(Display *dpy, XErrorEvent *error)
@@ -115,7 +126,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   
   // Initialize Xlib support for concurrent threads.
   XInitThreads();
-  
+
   memset(&w_global, 0, sizeof(w_global));
   w_global.program.state = WSTATE_NORMAL;
   w_global.program.signal_state = WSTATE_NORMAL;
@@ -138,31 +149,25 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   snprintf(str, len, "DISPLAY=%s", DisplayName);
   putenv(str);
 
-  // Check WMState user file (Dock state)
-  @autoreleasepool { WWMStateCheck(); }
+  @autoreleasepool {
+    // Check WMState user file (Dock state)
+    if (WWMStateCheck() == nil)
+      {
+        NSLog(@"Dock contents cannot be restored. Show only Workspace application icon.");
+      }
+    // Restore display layout
+    [[[NXScreen new] autorelease] applySavedDisplayLayout];
+  }
 
   // WM/src/main.c
   real_main(argc, argv);
 
+  WWMDockStateLoad();
+  
   //--- Below this point WindowMaker was initialized
 
   // TODO: go through all screens
-  XWUpdateScreenInfo(wScreenWithNumber(0));
-
-  // Set properties of icon 0 in dock to Workspace
-  {
-    WAppIcon *btn;
-
-    btn = wScreenWithNumber(0)->dock->icon_array[0];
-    btn->wm_class = "GNUstep";
-    btn->wm_instance = "Workspace";
-    btn->command = "NEXTSPACE internal: don't edit it!";
-    btn->auto_launch = 0;
-    btn->launching = 1;
-    // btn->running = 1;
-    btn->lock = 1;
-    wAppIconPaint(btn);
-  }
+  // XWUpdateScreenInfo(wScreenWithNumber(0));
 
   // Dock startup activities
   // {
@@ -254,11 +259,57 @@ void WWMSetupSignalHandling(void)
   // signal(SIGUSR2, SIG_DFL); // WindowMaker reread defaults - OK
 }
 
+// ----------------------------
+// --- Dock
+// ----------------------------
+
+void WWMDockStateLoad(void)
+{
+  WMPropList *state;
+  WAppIcon *btn;
+
+  // Load WMState dictionary
+  state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state, WMCreatePLString("Dock"));
+  wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0), state, WM_DOCK);
+
+  // Setup main button properties
+  btn = wScreenWithNumber(0)->dock->icon_array[0];
+  btn->wm_class = "GNUstep";
+  btn->wm_instance = "Workspace";
+  btn->command = "NEXTSPACE internal: don't edit it!";
+  btn->auto_launch = 0;
+  btn->launching = 1;
+  btn->running = 0;
+  btn->lock = 1;
+  wAppIconPaint(btn);
+}
+
+void WWMDockShowIcons(WDock *dock)
+{
+  WAppIcon *btn;
+
+  if (dock == NULL)
+    return;
+
+  btn = dock->icon_array[0];
+  // moveDock(dock, btn->x_pos, btn->y_pos);
+
+  for (int i = 0; i < dock->max_icons; i++)
+    {
+      if (dock->icon_array[i])
+        XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
+    }
+  dock->mapped = 1;
+
+  // dockIconPaint(btn);
+}
+
 // -- Should be called from already existing @autoreleasepool ---
 
 // Returns path to user WMState if exist.
 // Returns 'nil' if user WMState doesn't exist and cannot
 // be recovered from Workspace.app/WindowMaker directory.
+// TODO: rename to WWMDockStateCheck
 NSString *WWMStateCheck(void)
 {
   NSString      *userDefPath, *appDefPath;
@@ -767,7 +818,7 @@ void XWUpdateScreenInfo(WScreen *scr)
 
   XLockDisplay(dpy);
 
-  // NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
+  NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
 
   // 1. Update screen dimensions
   scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, scr->screen));
@@ -790,10 +841,19 @@ void XWUpdateScreenInfo(WScreen *scr)
   // 3. Update WindowMaker info about usable area
   wScreenUpdateUsableArea(scr);
 
-  // 4.1 Get info about main display
-  [systemScreen randrUpdateScreenResources];
-  dRect = [[systemScreen mainDisplay] frame];
-  dWidth = dRect.origin.x + dRect.size.width;
+  @autoreleasepool {
+    NXScreen *systemScreen = [NXScreen new];
+    
+    // 4.1 Get info about main display
+    [systemScreen randrUpdateScreenResources];
+    dRect = [[systemScreen mainDisplay] frame];
+    dWidth = dRect.origin.x + dRect.size.width;
+    
+    // Save changed layout in user's preferences directory
+    [systemScreen saveCurrentDisplayLayout];
+
+    [systemScreen release];
+  }
   
   // 4.2 Move Dock
   // Place Dock into main display with changed usable area.
@@ -809,7 +869,7 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenSaveState(scr);
 
   // Save changed layout in user's preferences directory
-  [systemScreen saveCurrentDisplayLayout];
+  // [systemScreen saveCurrentDisplayLayout];
  
   // NSLog(@"XRRScreenChangeNotify: END");
   XUnlockDisplay(dpy);

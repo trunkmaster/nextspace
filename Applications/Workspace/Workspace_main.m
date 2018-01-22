@@ -23,8 +23,11 @@
 
 int main(int argc, const char **argv)
 {
-  systemPower = nil;
-  systemScreen = nil;
+  if (xIsWindowServerReady() == NO)
+    {
+      NSLog(@"X Window server is not ready on display '%s'", getenv("DISPLAY"));
+      exit(1);
+    }
   
 #ifdef NEXTSPACE
   useInternalWindowManager = !xIsWindowManagerAlreadyRunning();
@@ -32,27 +35,21 @@ int main(int argc, const char **argv)
     {
       NSLog(@"Starting Workspace Manager...");
 
-      systemScreen = [[NXScreen alloc] init];
-      
-      //--- Apply saved Display layout
-      @autoreleasepool
-        {
-          NSLog(@"Apply saved display layout...");
-          [systemScreen applySavedDisplayLayout];
-        }
-
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);
 
+      NSLog(@"=== Initializing WindowMaker... ===");
       //--- WindowMaker queue -----------------------------------------------
       dispatch_sync(wmaker_q,
                     ^{
                       WWMInitializeWindowMaker(argc, (char **)argv);
                     });
+      NSLog(@"=== WindowMaker initialized! ===");
 
       // Start X11 EventLoop in parallel
       dispatch_async(wmaker_q, ^{ EventLoop(); });
       
+      NSLog(@"=== Starting Workspace application... ===");
       //--- Workspace (GNUstep) queue ---------------------------------------
       dispatch_sync(workspace_q,
                     ^{

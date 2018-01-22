@@ -34,15 +34,10 @@ dispatch_queue_t wmaker_q;
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
 
+BOOL xIsWindowServerReady(void);
 BOOL xIsWindowManagerAlreadyRunning(void);
 
 BOOL     useInternalWindowManager;
-
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXDisplay.h>
-NXScreen *systemScreen; // initialized in Workspace_main
-#import <NXSystem/NXPower.h>
-NXPower  *systemPower;  // initialized in Controller
 
 //-----------------------------------------------------------------------------
 // Calls related to internals of WindowMaker.
@@ -69,6 +64,9 @@ void WWMSetupFrameOffsetProperty();
 void WWMSetDockAppiconState(int index_in_dock, int launching);
 // Disable some signal handling inside WindowMaker code.
 void WWMSetupSignalHandling(void);
+
+void WWMDockStateLoad(void);
+void WWMDockShowIcons(WDock *dock);
 
 //--- Logout/PowerOff related activities
 void WWMWipeDesktop(WScreen * scr);
