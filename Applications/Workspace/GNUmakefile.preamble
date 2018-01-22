@@ -3,7 +3,7 @@
 #
 
 # Additional flags to pass to the preprocessor
-ADDITIONAL_CPPFLAGS += -DWITH_UPOWER
+ADDITIONAL_CPPFLAGS += -DWITH_UPOWER -DREVISION=\"$(REVISION)\"
 
 # Additional flags to pass to Objective C compiler
 ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
