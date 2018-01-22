@@ -33,7 +33,7 @@ int main(int argc, const char **argv)
   useInternalWindowManager = !xIsWindowManagerAlreadyRunning();
   if (useInternalWindowManager)
     {
-      NSLog(@"Starting Workspace Manager...");
+      NSLog(@"Starting Workspace Manager [%s]...", REVISION);
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);

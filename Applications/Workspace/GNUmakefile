@@ -23,6 +23,8 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = Workspace
 VERSION = 0.8
+#REVISION = "`git log -n 1 --date=short --format=format:"%ad.%h"`"
+REVISION = "`git log -n 1 --date=short --format=format:"%h, %ad"`"
 APP_NAME = Workspace
 
 SUBPROJECTS = \
