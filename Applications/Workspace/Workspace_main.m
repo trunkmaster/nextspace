@@ -25,7 +25,7 @@ int main(int argc, const char **argv)
 {
   if (xIsWindowServerReady() == NO)
     {
-      NSLog(@"X Window server is not ready on display '%s'", getenv("DISPLAY"));
+      fprintf(stderr, "[Workspace] X Window server is not ready on display '%s'\n", getenv("DISPLAY"));
       exit(1);
     }
   
@@ -33,23 +33,23 @@ int main(int argc, const char **argv)
   useInternalWindowManager = !xIsWindowManagerAlreadyRunning();
   if (useInternalWindowManager)
     {
-      NSLog(@"Starting Workspace Manager [%s]...", REVISION);
+      fprintf(stderr,"[Workspace] === Starting Workspace Manager [%s]... ===\n", REVISION);
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);
 
-      NSLog(@"=== Initializing WindowMaker... ===");
+      fprintf(stderr, "[Workspace] === Initializing WindowMaker... ===\n");
       //--- WindowMaker queue -----------------------------------------------
       dispatch_sync(wmaker_q,
                     ^{
                       WWMInitializeWindowMaker(argc, (char **)argv);
                     });
-      NSLog(@"=== WindowMaker initialized! ===");
+      fprintf(stderr, "[Workspace] === WindowMaker initialized! ===\n");
 
       // Start X11 EventLoop in parallel
       dispatch_async(wmaker_q, ^{ EventLoop(); });
       
-      NSLog(@"=== Starting Workspace application... ===");
+      fprintf(stderr, "[Workspace] === Starting Workspace application... ===\n");
       //--- Workspace (GNUstep) queue ---------------------------------------
       dispatch_sync(workspace_q,
                     ^{
