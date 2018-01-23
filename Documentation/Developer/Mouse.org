@@ -1,0 +1,60 @@
+* Mouse cursors
+There are several ways to set mouse cursor:
+1. Directly call to Xcursor's Xorg extension functions. Cursor names defined in
+   /usr/include/X11/cursorfont.h and start with "XC_" prefix.
+2. Using NSCursor and call class methods that returns standard cursors.
+3. Using NSCursor and providing image to it.
+
+Method 1 is used by X11 applications like WindowMaker to set cursor image for
+specific operation.
+Method 2 used by AppKit applications that doesn't have its own cursors and want to
+use standard ones.
+Method 3 used by AppKit applications that have its own cursors and want to set
+cursors for specific actions.
+
+In general, X11 and Xcursor extension have no rules for using mouse cursors.
+This document was written to define those rules for NEXTSPACE applications.
+
+For X11 cursor names I use Adwaita cursor theme which is the "de facto" standard.
+
+** Resize cursors
+resize*Cursor: - T-shaped cursor with arrow. These types of cursor are
+designed to use inside applications (resizing NSSplitView, resizing columns in
+NSTableView etc.).
+These cursors has names prefixed with "sb_" (sb_down_arrow, sb_up_arrow,
+sb_right_arrow, sb_left_arrow, sb_h_double_arrow, sb_v_double_arrow) inside
+Xorg themes directory.
+
+Workspace use it's own resizing cursors. These cursors are plain-shaped
+(without perpendicular lines to arrow plane).
+
+** Drag and Drop
+Move operation cursor - green arrow. Recoloured version of arrow cursor
+(arrowCursor:). This cursor is set by AppKit on move drag and drop operation.
+Adwaita theme name: "dnd-move". 
+Copy operarion cursor - dragCopyCursor: method. Adwaita theme: "dnd-copy". 
+Link operation cursor - dragLinkCursor: method. Adwaita theme: "dnd-link".
+
+Workspace use the same images as AppKit does.
+
+** Grabbing
+Some applications need to use some sort of drag and drop: grabbing. It is not
+drag and drop by nature (e.g. dragging document or image to scroll visible
+rectangle).
+Application should indicate possibility of such operation by "open hand"
+cursor (openHandCursor: NSCursor's method, no analog in Xorg) while mouse is
+over part of application window that can be grabbed. Clicking and holding mouse
+button action must change cursor image to "closed hand" (closedHandCursor:
+method, "fleur" cursor in Xorg).
+
+Workspace use it's own grabbing cursor: four-side arrows image. Used for
+dragging windows.
+
+** Contextual menu cursor
+Used only inside applications.
+AppKit: contextualMenuCursor:.
+Adwaita: context-menu.
+Every view that has special context menu (called by right-clicking on it:
+replaced application menu) should change cursor image on mouse enter.
+
+** Text cursors
