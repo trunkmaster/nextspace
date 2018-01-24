@@ -2,7 +2,7 @@
 There are several ways to set mouse cursor:
 1. Directly call to Xcursor's Xorg extension functions. Cursor names defined in
    /usr/include/X11/cursorfont.h and start with "XC_" prefix.
-2. Using NSCursor and call class methods that returns standard cursors.
+2. Using NSCursor class methods that returns standard cursors.
 3. Using NSCursor and providing image to it.
 
 Method 1 is used by X11 applications like WindowMaker to set cursor image for
@@ -21,17 +21,18 @@ For X11 cursor names I use Adwaita cursor theme which is the "de facto" standard
 resize*Cursor: - T-shaped cursor with arrow. These types of cursor are
 designed to use inside applications (resizing NSSplitView, resizing columns in
 NSTableView etc.).
+
 These cursors has names prefixed with "sb_" (sb_down_arrow, sb_up_arrow,
 sb_right_arrow, sb_left_arrow, sb_h_double_arrow, sb_v_double_arrow) inside
 Xorg themes directory.
 
-Workspace use it's own resizing cursors. These cursors are plain-shaped
+Workspace use it's own resizing cursors. These cursors are plain-shaped arrows
 (without perpendicular lines to arrow plane).
 
 ** Drag and Drop
 Move operation cursor - green arrow. Recoloured version of arrow cursor
 (arrowCursor:). This cursor is set by AppKit on move drag and drop operation.
-Adwaita theme name: "dnd-move". 
+Adwaita theme name: "dnd-move".
 Copy operarion cursor - dragCopyCursor: method. Adwaita theme: "dnd-copy". 
 Link operation cursor - dragLinkCursor: method. Adwaita theme: "dnd-link".
 
@@ -58,3 +59,83 @@ Every view that has special context menu (called by right-clicking on it:
 replaced application menu) should change cursor image on mouse enter.
 
 ** Text cursors
+** Summary of mouse cursors
+| Adwaita             | NSCursor method            | WindowMaker setting       |
+|---------------------+----------------------------+---------------------------|
+|                     |                            |                           |
+| all-scroll          |                            |                           |
+| bd_double_arrow     |                            |                           |
+| bottom_left_corner  |                            | BottomLeftResizeCursor    |
+| bottom_right_corner |                            | BottomRightResizeCursor   |
+| bottom_side         |                            |                           |
+| bottom_tee          |                            |                           |
+| cell                |                            |                           |
+| circle              |                            |                           |
+| context-menu        | contextualMenuCursor:      |                           |
+| cross               | crosshairCursor:           | SelectCursor              |
+| crossed_circle      | operationNotAllowedCursor: |                           |
+| dnd-ask             |                            |                           |
+| dnd-copy            |                            |                           |
+| dnd-link            |                            |                           |
+| dnd-move            |                            |                           |
+| dnd-no-drop         |                            |                           |
+| dnd-none            |                            |                           |
+| dotbox              |                            |                           |
+| fd_double_arrow     |                            |                           |
+| grabbing            | closedHandCursor:          | MoveCursor                |
+| hand1               | openHandCursor:            |                           |
+| hand2               | pontingHandCursor:         |                           |
+| left_ptr            | arrowCursor:               | ArrowCursor, NormalCursor |
+| left_ptr_watch      |                            |                           |
+| left_side           |                            |                           |
+| left_tee            |                            |                           |
+| link                |                            |                           |
+| ll_angle            |                            |                           |
+| lr_angle            |                            |                           |
+| move                |                            |                           |
+| pencil              |                            |                           |
+| plus                |                            |                           |
+| pointer-move        |                            |                           |
+| question_arrow      |                            | QuestionCursor            |
+| right_ptr           |                            |                           |
+| right_side          |                            |                           |
+| right_tee           |                            |                           |
+| s-resize            |                            |                           |
+| sb_down_arrow       |                            |                           |
+| sb_h_double_arrow   |                            | HorizontalResizeCursor    |
+| sb_left_arrow       |                            |                           |
+| sb_right_arrow      |                            |                           |
+| sb_up_arrow         |                            |                           |
+| sb_v_double_arrow   |                            | VerticalResizeCursor      |
+| tcross              |                            |                           |
+| top_left_corner     |                            | TopLeftResizeCursor       |
+| top_right_corner    |                            | TopRightResizeCursor      |
+| top_side            |                            |                           |
+| top_tee             |                            |                           |
+| ul_angle            |                            |                           |
+| ur_angle            |                            |                           |
+| vertical-text       |                            |                           |
+| watch               |                            | WaitCursor                |
+| X_cursor            |                            |                           |
+| xterm               | IBeamCursor:               | TextCursor                |
+| zoom-in             |                            |                           |
+| zoom-out            |                            |                           |
+
+NextSpace applications specific cursors.
+(~/Developer/nextspace/Frameworks/Tests/NXAppKit/Cursors/NextSpace/cursors)
+| Method                  | File                |
+|-------------------------+---------------------|
+| disappearingItemCursor: |                     |
+| resizeDownCursor:       | resizeDown.xmc      |
+| reesizeLeftCursor:      | resizeLeft.xmc      |
+| resizeLeftRightCursor:  | resizeLeftRight.xmc |
+| resizeRightCursor:      | resizeRight.xmc     |
+| resizeUpCursor:         | resizeUp.xmc        |
+| resizeUpDownCursor:     | resizeUpDown.xmc    |
+| dragCopyCursor:         | dragCopy.png        |
+| dragLinkCursor:         |                     |
+
+WindowMaker specific ~/Library/Preferences/.WindowMaker/WindowMaker
+| Setting name | Current value |
+|--------------+---------------|
+| ResizeCursor | sizing        |
