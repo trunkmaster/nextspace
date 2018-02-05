@@ -27,7 +27,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	NXAppKitDemo.gorm \
 	NumericField.gorm \
 	NumericField.rtf \
-	ClockView.gorm
+	ClockView.gorm \
+	Cursors.gorm
 #
 # Class files
 #
@@ -35,7 +36,8 @@ $(APP_NAME)_OBJC_FILES += \
 	NXAppKitDemo_main.m \
 	AppController.m \
 	NumericFieldTest.m \
-	ClockViewTest.m
+	ClockViewTest.m \
+	CursorsTest.m
 
 #
 # Makefiles

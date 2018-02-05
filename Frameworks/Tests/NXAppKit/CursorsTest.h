@@ -23,12 +23,35 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@interface CursorBox : NSBox
+{
+  NSCursor *_cursor;
+}
+
+- (void)setCursor:(NSCursor *)c;
+
+@end
+
 @interface CursorsTest : NSObject
 {
   id window;
-  id integerTextField;
-  id floatTextField;
-  id testDescription;
+  CursorBox *arrowField;
+  CursorBox *IBeamField;
+  CursorBox *closedHandField;
+  CursorBox *conextualMenuField;
+  CursorBox *crosshairField;
+  CursorBox *disappearingItemField;
+  CursorBox *dragCopyField;
+  CursorBox *dragLinkField;
+  CursorBox *openHandField;
+  CursorBox *operationNotAllowedField;
+  CursorBox *pointingHandField;
+  CursorBox *resizeDownField;
+  CursorBox *resizeLeftField;
+  CursorBox *resizeLeftRightField;
+  CursorBox *resizeRightField;
+  CursorBox *resizeUpDownField;
+  CursorBox *resizeUpField;
 }
 
 - (void)show;
