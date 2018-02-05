@@ -93,4 +93,13 @@
                   @"Wiskey", @"Beer", @"Vodka");
 }
 
+- (void)showCursorsTest:(id)sender
+{
+  if (cursorsTest == nil)
+    {
+      cursorsTest = [[CursorsTest alloc] init];
+    }
+  [cursorsTest show];
+}
+
 @end

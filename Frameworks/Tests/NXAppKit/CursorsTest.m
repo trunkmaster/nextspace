@@ -22,6 +22,24 @@
 
 #import "CursorsTest.h"
 
+@implementation CursorBox
+
+- (void)setCursor:(NSCursor *)c
+{
+  _cursor = c;
+}
+
+// NSView override
+- (void)resetCursorRects
+{
+  if (!_cursor)
+    _cursor = [NSCursor arrowCursor];
+  
+  [[self superview] addCursorRect:[self frame] cursor:_cursor];
+}
+
+@end
+
 @implementation CursorsTest : NSObject
 
 - (id)init
@@ -39,7 +57,28 @@
 
 - (void)awakeFromNib
 {
-  [window center];  
+  [arrowField setCursor:[NSCursor arrowCursor]];
+  [IBeamField setCursor:[NSCursor IBeamCursor]];
+  
+  [closedHandField setCursor:[NSCursor closedHandCursor]];
+  [crosshairField setCursor:[NSCursor crosshairCursor]];
+  [disappearingItemField setCursor:[NSCursor disappearingItemCursor]];
+  [openHandField setCursor:[NSCursor openHandCursor]];
+  [pointingHandField setCursor:[NSCursor pointingHandCursor]];
+  
+  [resizeDownField setCursor:[NSCursor resizeDownCursor]];
+  [resizeLeftField setCursor:[NSCursor resizeLeftCursor]];
+  [resizeLeftRightField setCursor:[NSCursor resizeLeftRightCursor]];
+  [resizeRightField setCursor:[NSCursor resizeRightCursor]];
+  [resizeUpField setCursor:[NSCursor resizeUpCursor]];
+  [resizeUpDownField setCursor:[NSCursor resizeUpDownCursor]];
+
+  [conextualMenuField setCursor:[NSCursor contextualMenuCursor]];
+  [dragCopyField setCursor:[NSCursor dragCopyCursor]];
+  [dragLinkField setCursor:[NSCursor dragLinkCursor]];
+  [operationNotAllowedField setCursor:[NSCursor operationNotAllowedCursor]];
+  
+  [window center];
 }
 
 - (void)show

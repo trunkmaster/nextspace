@@ -24,11 +24,13 @@
 #import <AppKit/AppKit.h>
 #import "NumericFieldTest.h"
 #import "ClockViewTest.h"
+#import "CursorsTest.h"
 
 @interface AppController : NSObject
 {
   NumericFieldTest *numericFieldTest;
   ClockViewTest    *clockViewTest;
+  CursorsTest      *cursorsTest;
 }
 
 @end
