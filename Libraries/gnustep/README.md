@@ -78,12 +78,20 @@ Miniwnidow style
       * @@ -479,7 +479,7 @@
         Use "common_MiniWindowTile.tiff" as a tile image for miniwindows.
     
-    * @@ -512,8 +512,8 @@
-      Justify horizontal postion and width of miniwindow title text. Now
-      titletext doean't overlap miniwindow border.
+      * @@ -512,8 +512,8 @@
+        Justify horizontal postion and width of miniwindow title text. Now
+        titletext doean't overlap miniwindow border.
 
-    * @@ -603,7 +603,7 @@
-      Set miniwindow title font pixel size to 9 instead of 8.
+      * @@ -603,7 +603,7 @@
+        Set miniwindow title font pixel size to 9 instead of 8.
+
+Mouse cursors
+=============
+    * gnustep-back-x11_XGServerWindow.m.patch
+	* @@ -4301,25 +4330,31 @@
+	  Change names of cursors to conform new design paradigm.
+	* @@ -4398,7 +4433,7 @@
+	  Fixed typo in "BGRA" name format.
 
 Temporary, in test, postponed
 =============================
