@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerWindow.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2016-11-19 02:14:31.468931989 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-02-06 01:54:38.655058343 +0200
 @@ -2936,13 +2936,38 @@
         */
        if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
@@ -62,3 +62,50 @@
            else if (level == NSDockWindowLevel
                     || level == NSStatusWindowLevel)
              {
+@@ -4301,25 +4330,31 @@
+       cursor = XCreateFontCursor(dpy, XC_crosshair);
+       break;
+     case GSDisappearingItemCursor:
+-      cursor = XCreateFontCursor(dpy, XC_shuttle);
++      cursor = XCreateFontCursor(dpy, XC_pirate);
+       break;
+-    case GSPointingHandCursor:
++    case GSClosedHandCursor:
++      cursor = XCreateFontCursor(dpy, XC_fleur);
++      break;
++    case GSOpenHandCursor:
+       cursor = XCreateFontCursor(dpy, XC_hand1);
+       break;
++    case GSPointingHandCursor:
++      cursor = XCreateFontCursor(dpy, XC_hand2);
++      break;
+     case GSResizeDownCursor:
+-      cursor = XCreateFontCursor(dpy, XC_bottom_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_down_arrow);
+       break;
+     case GSResizeLeftCursor:
+-      cursor = XCreateFontCursor(dpy, XC_left_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_left_arrow);
+       break;
+     case GSResizeLeftRightCursor:
+       cursor = XCreateFontCursor(dpy, XC_sb_h_double_arrow);
+       break;
+     case GSResizeRightCursor:
+-      cursor = XCreateFontCursor(dpy, XC_right_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_right_arrow);
+       break;
+     case GSResizeUpCursor:
+-      cursor = XCreateFontCursor(dpy, XC_top_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_up_arrow);
+       break;
+     case GSResizeUpDownCursor:
+       cursor = XCreateFontCursor(dpy, XC_sb_v_double_arrow);
+@@ -4398,7 +4433,7 @@
+     // FIXME: Factor this out
+     // Convert RGBA unpacked to ARGB packed
+     // NB Packed ARGB values are layed out as ARGB on big endian systems
+-    // and as BDRA on low endian systems
++    // and as BGRA on low endian systems
+     {
+       NSInteger stride;
+       NSInteger x, y;

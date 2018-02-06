@@ -26,6 +26,7 @@ BuildRequires:	dbus-devel
 BuildRequires:	upower-devel
 BuildRequires:	libXrandr-devel
 BuildRequires:	libxkbfile-devel
+BuildRequires:	libXcursor-devel
 
 Requires:	nextspace-gnustep
 # NXFoundation
@@ -38,6 +39,7 @@ Requires:	upower >= 0.99.2
 Requires:	glib2 >= 2.42.2
 Requires:	libXrandr >= 1.4.2
 Requires:	libxkbfile >= 1.0.9
+Requires:	libXcursor >= 1.1.14
 
 
 %description
