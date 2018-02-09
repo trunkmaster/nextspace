@@ -1996,8 +1996,8 @@ static int getResizeDirection(WWindow * wwin, int x, int y, int dy, int flags)
 		int ydir = (abs(y) < (wwin->client.height / 2)) ? UP : DOWN;
 
 		/* How much resize space is allowed */
-		int spacew = abs(wwin->client.width / 3);
-		int spaceh = abs(wwin->client.height / 3);
+		int spacew = wwin->client.width / 3;
+		int spaceh = wwin->client.height / 3;
 
 		/* Determine where x fits */
 		if ((abs(x) > wwin->client.width/2 - spacew/2) &&
@@ -2040,6 +2040,9 @@ static int getResizeDirection(WWindow * wwin, int x, int y, int dy, int flags)
 	return dir;
 }
 
+#include <X11/extensions/Xfixes.h>
+//#include <X11/extensions/XInput2.h>
+
 void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 {
 	XEvent event;
@@ -2068,6 +2071,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 		    ? wGetHeadForWindow(wwin)
 		    : scr->xine_info.primary_head);
 	int opaqueResize = wPreferences.opaque_resize;
+
+        PointerBarrier h_barrier = 0;
+        PointerBarrier v_barrier = 0;
 
 	if (!IS_RESIZABLE(wwin))
 		return;
@@ -2137,6 +2143,26 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 				fw = rw;
 				fh = rh - vert_border;
 				wWindowConstrainSize(wwin, (unsigned int *)&fw, (unsigned int *)&fh);
+
+                                if (fh <= wwin->normal_hints->min_height && h_barrier == 0)
+                                  {
+                                    fprintf(stderr, "[Workspace] window has reached minimum HEIGHT.\n");
+                                    fprintf(stderr, "[Workspace] create barrier at %i.\n", event.xmotion.y_root);
+                                    h_barrier = XFixesCreatePointerBarrier (dpy, root,
+                                                                            0, event.xmotion.y_root,
+                                                                            DisplayWidth(dpy,DefaultScreen (dpy)), event.xmotion.y_root,
+                                                                            BarrierPositiveY, 0, NULL);
+                                  }
+                                if (fw <= wwin->normal_hints->min_width && v_barrier == 0)
+                                  {
+                                    fprintf(stderr, "[Workspace] window has reached minimum WIDTH.\n");
+                                    fprintf(stderr, "[Workspace] create barrier at %i.\n", event.xmotion.x_root);
+                                    v_barrier = XFixesCreatePointerBarrier (dpy, root,
+                                                                            event.xmotion.x_root, 0,
+                                                                            event.xmotion.x_root, DisplayHeight(dpy,DefaultScreen (dpy)),
+                                                                            BarrierPositiveX, 0, NULL);
+                                  }
+                                
 				fh += vert_border;
 				if (res & LEFT)
 					fx = rx2 - fw + 1;
@@ -2145,7 +2171,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 				if (res & UP)
 					fy = ry2 - fh + 1;
 				else if (res & DOWN)
-					fy = ry1;
+                                  fy = ry1;
 			} else if (abs(orig_x - event.xmotion.x_root) >= MOVE_THRESHOLD
 				   || abs(orig_y - event.xmotion.y_root) >= MOVE_THRESHOLD) {
 				int tx, ty;
@@ -2253,6 +2279,18 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 				if (!opaqueResize)
 					drawTransparentFrame(wwin, fx, fy, fw, fh);
 
+                                if (h_barrier > 0)
+                                  {
+                                    XFixesDestroyPointerBarrier(dpy, h_barrier);
+                                    h_barrier = 0;
+                                  }
+                                if (v_barrier > 0)
+                                  {
+                                    XFixesDestroyPointerBarrier(dpy, v_barrier);
+                                    v_barrier = 0;
+                                  }
+
+                                
 				XUngrabKeyboard(dpy, CurrentTime);
 				WMUnmapWidget(scr->gview);
 				XUngrabServer(dpy);
