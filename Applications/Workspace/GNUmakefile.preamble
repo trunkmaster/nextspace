@@ -32,5 +32,5 @@ ifneq ($(windowmaker), no)
   ADDITIONAL_LDFLAGS += -ldispatch -ldl
   ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/src -I./$(WM_DIR)/WINGs -I./$(WM_DIR)/wrlib
   ADDITIONAL_LIB_DIRS += -L./$(WM_DIR)/WINGs/.libs -L./$(WM_DIR)/wrlib/.libs
-  ADDITIONAL_GUI_LIBS += -lWUtil -lWINGs -lwraster -lXext -lXrandr -lXinerama
+  ADDITIONAL_GUI_LIBS += -lWUtil -lWINGs -lwraster -lXext -lXrandr -lXinerama -lXfixes
 endif

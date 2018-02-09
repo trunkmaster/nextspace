@@ -34,6 +34,7 @@ BuildRequires:	libXft-devel
 BuildRequires:	libXpm-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libexif-devel
+BuildRequires:	libXfixes-devel
 BuildRequires:	fontconfig-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -45,6 +46,7 @@ Requires:	libXft
 Requires:	libXinerama
 Requires:	libXpm
 Requires:	libXmu
+Requires:	libXfixes
 Requires:	libexif
 Requires:	xorg-x11-drv-evdev
 Requires:	xorg-x11-drv-intel
