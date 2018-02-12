@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Feb 12 03:20:31 2018
+;; Created Mon Feb 12 18:25:36 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "moveres.c"
   'c-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  58540
-  '(67458 nil)
+  59450
+  '(60186 nil)
   nil
   nil
   '((tab-width . 2) (buffer-file-coding-system . undecided-unix)))

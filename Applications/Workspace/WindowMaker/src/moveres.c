@@ -2072,12 +2072,16 @@ typedef struct {
   PointerBarrier v_max;
 } MouseBarriers;
 
-MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root)
+MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root,
+                                      int res)
 {
 	WScreen *scr = wwin->screen_ptr;
 	Window root = scr->root_win;
-	int vert_border = wwin->frame->top_width + wwin->frame->bottom_width;
+	int v_border = wwin->frame->top_width + wwin->frame->bottom_width;
+  int h_border = 2;
+  int v_offset, h_offset;
   int y, x;
+  int barr_dir;
   MouseBarriers barriers;
 
   barriers.h_min = 0;
@@ -2085,16 +2089,29 @@ MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root)
   barriers.v_min = 0;
   barriers.v_max = 0;
 
-  fprintf(stderr, "[Workspace] Vertical border height = %i\n", vert_border);
-  fprintf(stderr, "[Workspace] Window minimum height = %i\n", wwin->normal_hints->min_height);
-  fprintf(stderr, "[Workspace] Window minimum max = %i\n", wwin->normal_hints->max_height);
+  if (res == LEFT)
+    {
+      v_offset = wwin->frame_y + wwin->client.height + v_border - y_root;
+      h_offset = x_root - wwin->frame_x;
+    }
+  else
+    {
+      v_offset = wwin->frame_y + wwin->client.height + v_border - y_root;
+      h_offset = wwin->frame_x + wwin->client.width + h_border - x_root;
+    }
+
+  fprintf(stderr, "[Workspace] Window height minimum = %i\n", wwin->normal_hints->min_height);
+  fprintf(stderr, "[Workspace] Window height maximum = %i\n", wwin->normal_hints->max_height);
   fprintf(stderr, "[Workspace] mouse click at y = %i, window bottom y = %i\n",
-          y_root, (wwin->frame_y + wwin->client.height + vert_border));
+          y_root, (wwin->frame_y + wwin->client.height + v_border));
+  fprintf(stderr, "[Workspace] Window width minimum = %i\n", wwin->normal_hints->min_width);
+  fprintf(stderr, "[Workspace] Window width maximum = %i\n", wwin->normal_hints->max_width);
+  fprintf(stderr, "[Workspace] mouse click at x = %i, window right side x = %i\n",
+          x_root, (wwin->frame_x + wwin->client.width + h_border));
 
   if (wwin->normal_hints->min_height > 0)
     {
-      y = wwin->frame_y + wwin->normal_hints->min_height + vert_border;
-      y -= wwin->frame_y + wwin->client.height + vert_border - y_root;
+      y = (wwin->frame_y + wwin->normal_hints->min_height + v_border) - v_offset;
       barriers.h_min = XFixesCreatePointerBarrier (dpy, root,
                                                    0, y,
                                                    scr->scr_width, y,
@@ -2102,8 +2119,7 @@ MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root)
     }
   if (wwin->normal_hints->max_height < scr->scr_height)
     {
-      y = wwin->frame_y + wwin->normal_hints->max_height + vert_border;
-      y -= wwin->frame_y + wwin->client.height + vert_border - y_root - 1;
+      y = (wwin->frame_y + wwin->normal_hints->max_height + v_border) - v_offset;
       barriers.h_max = XFixesCreatePointerBarrier (dpy, root,
                                                    0, y,
                                                    scr->scr_width, y,
@@ -2112,21 +2128,37 @@ MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root)
 
   if (wwin->normal_hints->min_width > 0)
     {
-      x = wwin->frame_x + wwin->normal_hints->min_width;
-      x -= (wwin->frame_x + wwin->client.width - x_root - 2);
+      if (res == LEFT)
+        {
+          x = (wwin->frame_x + (wwin->client.width - wwin->normal_hints->min_width) + h_border) + h_offset;
+          barr_dir = BarrierNegativeX;
+        }
+      else
+        {
+          x = (wwin->frame_x + wwin->normal_hints->min_width + h_border) - h_offset;
+          barr_dir = BarrierPositiveX;
+        }
       barriers.v_min = XFixesCreatePointerBarrier (dpy, root,
                                                    x, 0,
                                                    x, scr->scr_height,
-                                                   BarrierPositiveX, 0, NULL);
+                                                   barr_dir, 0, NULL);
     }
   if (wwin->normal_hints->max_width < scr->scr_width)
     {
-      x = wwin->frame_x + wwin->normal_hints->max_width;
-      x -= wwin->frame_x + wwin->client.width - x_root;
+      if (res == LEFT)
+        {
+          x = (wwin->frame_x - (wwin->normal_hints->max_width - wwin->client.width) - h_border) + h_offset;
+          barr_dir = BarrierPositiveX;
+        }
+      else
+        {
+          x = (wwin->frame_x + wwin->normal_hints->max_width + h_border) - h_offset;
+          barr_dir = BarrierNegativeX;
+        }
       barriers.v_max = XFixesCreatePointerBarrier (dpy, root,
                                                    x, 0,
                                                    x, scr->scr_height,
-                                                   BarrierNegativeX, 0, NULL);
+                                                   barr_dir, 0, NULL);
     }
 
   return barriers;
@@ -2183,8 +2215,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 	shiftl = XKeysymToKeycode(dpy, XK_Shift_L);
 	shiftr = XKeysymToKeycode(dpy, XK_Shift_R);
 
-  if (ev->type == ButtonPress)
-    barriers = wMouseSetResizeBarriers(wwin, ev->xbutton.x_root, ev->xbutton.y_root);
+  /* Set barriers early to catch correct click coordinates */
+  /* if (ev->type == ButtonPress) */
+  /*   barriers = wMouseSetResizeBarriers(wwin, ev->xbutton.x_root, ev->xbutton.y_root); */
 
 	while (1) {
 		WMMaskEvent(dpy, KeyPressMask | ButtonMotionMask
@@ -2281,8 +2314,8 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 					fy = ry2 - fh + 1;
 				else if (res & DOWN)
 					fy = ry1;
-			} else /*if (abs(orig_x - event.xmotion.x_root) >= MOVE_THRESHOLD
-               || abs(orig_y - event.xmotion.y_root) >= MOVE_THRESHOLD)*/ {
+			} else if (abs(orig_x - event.xmotion.x_root) >= MOVE_THRESHOLD
+               || abs(orig_y - event.xmotion.y_root) >= MOVE_THRESHOLD) {
 				int tx, ty;
 				Window junkw;
 				int flags;
@@ -2302,7 +2335,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 
 				res = getResizeDirection(wwin, tx, ty, orig_y - event.xmotion.y_root, flags);
 
-        /* barriers = wMouseSetResizeBarriers(wwin, event.xmotion.x_root, event.xmotion.y_root); */
+        barriers = wMouseSetResizeBarriers(wwin, orig_x, orig_y, res);
         
 				/* if (res == (UP | LEFT)) */
         /*   cursor = wPreferences.cursor[WCUR_TOPLEFTRESIZE]; */
@@ -2404,6 +2437,11 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 
 				wWindowConfigure(wwin, fx, fy, fw, fh - vert_border);
 				wWindowSynthConfigureNotify(wwin);
+        
+        fprintf(stderr, "[Workspace] mouse release at y = %i, window bottom y = %i\n",
+                event.xbutton.y_root, (wwin->frame_y + wwin->client.height + vert_border));
+        fprintf(stderr, "[Workspace] mouse release at x = %i, window right x = %i\n",
+                event.xbutton.x_root, (wwin->frame_x + wwin->client.width + 2));
 			}
 			return;
 
