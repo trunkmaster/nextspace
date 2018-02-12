@@ -2043,6 +2043,95 @@ static int getResizeDirection(WWindow * wwin, int x, int y, int dy, int flags)
 #include <X11/extensions/Xfixes.h>
 //#include <X11/extensions/XInput2.h>
 
+Cursor wMouseCursorForResize(int resize_direction)
+{
+	Cursor cursor = wPreferences.cursor[WCUR_ARROW];
+	
+	if (resize_direction == (UP | LEFT))
+		cursor = wPreferences.cursor[WCUR_TOPLEFTRESIZE];
+	else if (resize_direction == (UP | RIGHT))
+		cursor = wPreferences.cursor[WCUR_TOPRIGHTRESIZE];
+	else if (resize_direction == (DOWN | LEFT))
+		cursor = wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE];
+	else if (resize_direction == (DOWN | RIGHT))
+		cursor = wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE];
+	else if (resize_direction == DOWN || resize_direction == UP)
+		cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
+	else if (resize_direction & (DOWN | UP))
+		cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
+	else if (resize_direction & (LEFT | RIGHT))
+		cursor = wPreferences.cursor[WCUR_HORIZONRESIZE];
+
+  return cursor;
+}
+
+typedef struct {
+  PointerBarrier h_min;
+  PointerBarrier h_max;
+  PointerBarrier v_min;
+  PointerBarrier v_max;
+} MouseBarriers;
+
+MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root)
+{
+	WScreen *scr = wwin->screen_ptr;
+	Window root = scr->root_win;
+	int vert_border = wwin->frame->top_width + wwin->frame->bottom_width;
+  int y, x;
+  MouseBarriers barriers;
+
+  barriers.h_min = 0;
+  barriers.h_max = 0;
+  barriers.v_min = 0;
+  barriers.v_max = 0;
+
+  fprintf(stderr, "[Workspace] Vertical border height = %i\n", vert_border);
+  fprintf(stderr, "[Workspace] Window minimum height = %i\n", wwin->normal_hints->min_height);
+  fprintf(stderr, "[Workspace] Window minimum max = %i\n", wwin->normal_hints->max_height);
+  fprintf(stderr, "[Workspace] mouse click at y = %i, window bottom y = %i\n",
+          y_root, (wwin->frame_y + wwin->client.height + vert_border));
+
+  if (wwin->normal_hints->min_height > 0)
+    {
+      y = wwin->frame_y + wwin->normal_hints->min_height + vert_border;
+      y -= wwin->frame_y + wwin->client.height + vert_border - y_root;
+      barriers.h_min = XFixesCreatePointerBarrier (dpy, root,
+                                                   0, y,
+                                                   scr->scr_width, y,
+                                                   BarrierPositiveY, 0, NULL);
+    }
+  if (wwin->normal_hints->max_height < scr->scr_height)
+    {
+      y = wwin->frame_y + wwin->normal_hints->max_height + vert_border;
+      y -= wwin->frame_y + wwin->client.height + vert_border - y_root - 1;
+      barriers.h_max = XFixesCreatePointerBarrier (dpy, root,
+                                                   0, y,
+                                                   scr->scr_width, y,
+                                                   BarrierNegativeY, 0, NULL);
+    }
+
+  if (wwin->normal_hints->min_width > 0)
+    {
+      x = wwin->frame_x + wwin->normal_hints->min_width;
+      x -= (wwin->frame_x + wwin->client.width - x_root - 2);
+      barriers.v_min = XFixesCreatePointerBarrier (dpy, root,
+                                                   x, 0,
+                                                   x, scr->scr_height,
+                                                   BarrierPositiveX, 0, NULL);
+    }
+  if (wwin->normal_hints->max_width < scr->scr_width)
+    {
+      x = wwin->frame_x + wwin->normal_hints->max_width;
+      x -= wwin->frame_x + wwin->client.width - x_root;
+      barriers.v_max = XFixesCreatePointerBarrier (dpy, root,
+                                                   x, 0,
+                                                   x, scr->scr_height,
+                                                   BarrierNegativeX, 0, NULL);
+    }
+
+  return barriers;
+}
+
 void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 {
 	XEvent event;
@@ -2068,12 +2157,11 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 	int original_fw = fw;
 	int original_fh = fh;
 	int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
-		    ? wGetHeadForWindow(wwin)
-		    : scr->xine_info.primary_head);
+              ? wGetHeadForWindow(wwin)
+              : scr->xine_info.primary_head);
 	int opaqueResize = wPreferences.opaque_resize;
 
-	PointerBarrier h_barrier = 0;
-	PointerBarrier v_barrier = 0;
+  MouseBarriers barriers;
   Cursor cursor, new_cursor;
 
 	if (!IS_RESIZABLE(wwin))
@@ -2094,6 +2182,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 	ry2 = fy + fh - 1;
 	shiftl = XKeysymToKeycode(dpy, XK_Shift_L);
 	shiftr = XKeysymToKeycode(dpy, XK_Shift_R);
+
+  if (ev->type == ButtonPress)
+    barriers = wMouseSetResizeBarriers(wwin, ev->xbutton.x_root, ev->xbutton.y_root);
 
 	while (1) {
 		WMMaskEvent(dpy, KeyPressMask | ButtonMotionMask
@@ -2145,38 +2236,34 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 				fh = rh - vert_border;
 				wWindowConstrainSize(wwin, (unsigned int *)&fw, (unsigned int *)&fh);
 
-				if (fh <= wwin->normal_hints->min_height)
-				  {
-            if (h_barrier == 0)
+        if (fh <= wwin->normal_hints->min_height ||
+            fh >= wwin->normal_hints->max_height ||
+            fw <= wwin->normal_hints->min_width  ||
+            fw >= wwin->normal_hints->max_width)
+          {
+            if (fh <= wwin->normal_hints->min_height)
+              new_cursor = wPreferences.cursor[WCUR_DOWNRESIZE];
+            else if (fh >= wwin->normal_hints->max_height)
+              new_cursor = wPreferences.cursor[WCUR_UPRESIZE];
+            else if (fw <= wwin->normal_hints->min_width)
               {
-                fprintf(stderr, "[Workspace] window has reached minimum HEIGHT.\n");
-                fprintf(stderr, "[Workspace] create barrier at %i.\n", event.xmotion.y_root);
-                h_barrier = XFixesCreatePointerBarrier (dpy, root,
-                                                        0, event.xmotion.y_root,
-                                                        DisplayWidth(dpy,DefaultScreen (dpy)),
-                                                        event.xmotion.y_root,
-                                                        BarrierPositiveY, 0, NULL);
+                if (cursor == wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE])
+                  new_cursor = wPreferences.cursor[WCUR_LEFTRESIZE];
+                else if (cursor == wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE])
+                  new_cursor = wPreferences.cursor[WCUR_RIGHTRESIZE];
               }
-						new_cursor = wPreferences.cursor[WCUR_DOWNRESIZE];
-				  }
+            else if (fw >= wwin->normal_hints->max_width)
+              {
+                if (cursor == wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE])
+                  new_cursor = wPreferences.cursor[WCUR_RIGHTRESIZE];
+                else if (cursor == wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE])
+                  new_cursor = wPreferences.cursor[WCUR_LEFTRESIZE];
+              }
+          }
         else
           {
-            new_cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
+            new_cursor = wMouseCursorForResize(res);
           }
-        
-				if (fw <= wwin->normal_hints->min_width && v_barrier == 0)
-				  {
-				    fprintf(stderr, "[Workspace] window has reached minimum WIDTH.\n");
-				    fprintf(stderr, "[Workspace] create barrier at %i.\n", event.xmotion.x_root);
-				    v_barrier = XFixesCreatePointerBarrier (dpy, root,
-                                                    event.xmotion.x_root, 0,
-                                                    event.xmotion.x_root, DisplayHeight(dpy,DefaultScreen (dpy)),
-                                                    BarrierPositiveX, 0, NULL);
-            if (cursor == wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE])
-              new_cursor = wPreferences.cursor[WCUR_LEFTRESIZE];
-            else if (cursor == wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE])
-              new_cursor = wPreferences.cursor[WCUR_RIGHTRESIZE];
-				  }
 
         if (cursor != new_cursor)
           {
@@ -2194,8 +2281,8 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 					fy = ry2 - fh + 1;
 				else if (res & DOWN)
 					fy = ry1;
-			} else if (abs(orig_x - event.xmotion.x_root) >= MOVE_THRESHOLD
-				   || abs(orig_y - event.xmotion.y_root) >= MOVE_THRESHOLD) {
+			} else /*if (abs(orig_x - event.xmotion.x_root) >= MOVE_THRESHOLD
+               || abs(orig_y - event.xmotion.y_root) >= MOVE_THRESHOLD)*/ {
 				int tx, ty;
 				Window junkw;
 				int flags;
@@ -2215,24 +2302,26 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 
 				res = getResizeDirection(wwin, tx, ty, orig_y - event.xmotion.y_root, flags);
 
-				if (res == (UP | LEFT))
-          cursor = wPreferences.cursor[WCUR_TOPLEFTRESIZE];
-				else if (res == (UP | RIGHT))
-          cursor = wPreferences.cursor[WCUR_TOPRIGHTRESIZE];
-				else if (res == (DOWN | LEFT))
-          cursor = wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE];
-				else if (res == (DOWN | RIGHT))
-          cursor = wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE];
-				else if (res == DOWN || res == UP)
-          cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
-				else if (res & (DOWN | UP))
-          cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
-				else if (res & (LEFT | RIGHT))
-          cursor = wPreferences.cursor[WCUR_HORIZONRESIZE];
+        /* barriers = wMouseSetResizeBarriers(wwin, event.xmotion.x_root, event.xmotion.y_root); */
+        
+				/* if (res == (UP | LEFT)) */
+        /*   cursor = wPreferences.cursor[WCUR_TOPLEFTRESIZE]; */
+				/* else if (res == (UP | RIGHT)) */
+        /*   cursor = wPreferences.cursor[WCUR_TOPRIGHTRESIZE]; */
+				/* else if (res == (DOWN | LEFT)) */
+        /*   cursor = wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE]; */
+				/* else if (res == (DOWN | RIGHT)) */
+        /*   cursor = wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE]; */
+				/* else if (res == DOWN || res == UP) */
+        /*   cursor = wPreferences.cursor[WCUR_VERTICALRESIZE]; */
+				/* else if (res & (DOWN | UP)) */
+        /*   cursor = wPreferences.cursor[WCUR_VERTICALRESIZE]; */
+				/* else if (res & (LEFT | RIGHT)) */
+        /*   cursor = wPreferences.cursor[WCUR_HORIZONRESIZE]; */
 
 				XChangeActivePointerGrab(dpy, ButtonMotionMask
 																 | ButtonReleaseMask | ButtonPressMask,
-																 cursor, CurrentTime);
+																 wMouseCursorForResize(res), CurrentTime);
         
 				XGrabKeyboard(dpy, root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
 
@@ -2248,6 +2337,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 
 				started = 1;
 			}
+
 			if (started) {
 				if (!opaqueResize)
 					drawTransparentFrame(wwin, orig_fx, orig_fy, orig_fw, orig_fh);
@@ -2284,6 +2374,17 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 		case ButtonRelease:
 			if (event.xbutton.button != ev->xbutton.button)
 				break;
+      
+      fprintf(stderr, "[Workspace] mouse button release on resize bar.\n");
+      
+        if (barriers.h_min > 0)
+          XFixesDestroyPointerBarrier(dpy, barriers.h_min);
+        if (barriers.h_max > 0)
+          XFixesDestroyPointerBarrier(dpy, barriers.h_max);
+        if (barriers.v_min > 0)
+          XFixesDestroyPointerBarrier(dpy, barriers.v_min);
+        if (barriers.v_max > 0)
+          XFixesDestroyPointerBarrier(dpy, barriers.v_max);                                
 
 			if (started) {
 				showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
@@ -2291,18 +2392,6 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 				if (!opaqueResize)
 					drawTransparentFrame(wwin, fx, fy, fw, fh);
 
-                                if (h_barrier > 0)
-                                  {
-                                    XFixesDestroyPointerBarrier(dpy, h_barrier);
-                                    h_barrier = 0;
-                                  }
-                                if (v_barrier > 0)
-                                  {
-                                    XFixesDestroyPointerBarrier(dpy, v_barrier);
-                                    v_barrier = 0;
-                                  }
-
-                                
 				XUngrabKeyboard(dpy, CurrentTime);
 				WMUnmapWidget(scr->gview);
 				XUngrabServer(dpy);
