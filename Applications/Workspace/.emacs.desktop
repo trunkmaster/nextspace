@@ -2,19 +2,19 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Feb 13 18:49:04 2018
+;; Created Wed Feb 14 19:08:12 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("wMouseRes" "wMouseResizeWindow" "res" "WCUR" "mainIcon" "mainIconCreate" "wDockTrackWindowLaunch" "dockIconPaint" "wDockRest" "MapWindow" "HideIcons" "XWUpda" "NEXTSPACE" "handleButtonPress" "windowmaps" "_startBack"))
+(setq search-ring '("Cursor" "CURS" "cursor_table" "bottom_left" "bottom" "ResizeCur" "wMouseRes" "wMouseResizeWindow" "res" "WCUR" "mainIcon" "mainIconCreate" "wDockTrackWindowLaunch" "dockIconPaint" "wDockRest" "MapWindow"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/moveres.c" "~/Developer/nextspace/Applications/Workspace/GNUmakefile" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.*" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/event.c" "~/Developer/nextspace/Applications/Workspace/Workspace_main.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/GNUstep/gui-trunk/Source/NSWindow.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/moveres.c" "~/Developer/nextspace/Applications/Workspace/GNUmakefile" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.*" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/event.c" "~/Developer/nextspace/Applications/Workspace/Workspace_main.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/GNUstep/gui-trunk/Source/NSWindow.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -22,8 +22,8 @@
   "moveres.c"
   'c-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  62895
-  '(65190 nil)
+  69767
+  '(69815 nil)
   nil
   nil
   '((tab-width . 2) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -33,8 +33,8 @@
   "defaults.c"
   'c-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  34662
-  '(34588 nil)
+  33832
+  '(12500 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -44,8 +44,8 @@
   "WindowMaker.h"
   'c-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  3515
-  '(1 nil)
+  13601
+  '(5726 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

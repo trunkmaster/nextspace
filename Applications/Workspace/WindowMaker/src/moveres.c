@@ -2404,6 +2404,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 
 				res = getResizeDirection(wwin, tx, ty, orig_y - event.xmotion.y_root, flags);
 
+        /* barriers = wMouseSetResizeBarriers(wwin, orig_x, orig_y, res); */
+        /* barriers = wMouseSetResizeBarriers(wwin, event.xmotion.x_root, */
+        /*                                    event.xmotion.y_root, orig_x, orig_y, res); */
         barriers = wMouseSetResizeBarriers(wwin, orig_x, orig_y, res);
         
         cursor = wMouseResizeCursor(wwin, res, fw, fh);

@@ -825,13 +825,13 @@ WDefaultEntry optionList[] = {
 	    NULL, getCursor, setCursor, NULL, NULL},
 	{"HorizontalResizeCursor", "(builtin, sb_h_double_arrow)", (void *)WCUR_HORIZONRESIZE,
 	    NULL, getCursor, setCursor, NULL, NULL},
-	{"UpResizeCursor", "(builtin, top_side)", (void *)WCUR_UPRESIZE,
+	{"UpResizeCursor", "(builtin, sb_up_arrow)", (void *)WCUR_UPRESIZE,
 	    NULL, getCursor, setCursor, NULL, NULL},
-	{"DownResizeCursor", "(builtin, bottom_side)", (void *)WCUR_DOWNRESIZE,
+	{"DownResizeCursor", "(builtin, sb_down_arrow)", (void *)WCUR_DOWNRESIZE,
 	    NULL, getCursor, setCursor, NULL, NULL},
-	{"LeftResizeCursor", "(builtin, left_side)", (void *)WCUR_LEFTRESIZE,
+	{"LeftResizeCursor", "(builtin, sb_left_arrow)", (void *)WCUR_LEFTRESIZE,
 	    NULL, getCursor, setCursor, NULL, NULL},
-	{"RightResizeCursor", "(builtin, right_side)", (void *)WCUR_RIGHTRESIZE,
+	{"RightResizeCursor", "(builtin, sb_right_arrow)", (void *)WCUR_RIGHTRESIZE,
 	    NULL, getCursor, setCursor, NULL, NULL},
 	{"WaitCursor", "(builtin, watch)", (void *)WCUR_WAIT,
 	    NULL, getCursor, setCursor, NULL, NULL},
@@ -2394,6 +2394,7 @@ static void check_bitmap_status(int status, const char *filename, Pixmap bitmap)
 	}
 }
 
+#include <X11/Xcursor/Xcursor.h>
 /*
  * (none)
  * (builtin, <cursor_name>)
@@ -2419,7 +2420,8 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
 	if (strcasecmp(val, "none") == 0) {
 		status = 1;
 		*cursor = None;
-	} else if (strcasecmp(val, "builtin") == 0) {
+	}
+        else if (strcasecmp(val, "builtin") == 0) {
 		int i;
 		int cursor_id = CURSOR_ID_NONE;
 
@@ -2445,7 +2447,8 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
 			*cursor = XCreateFontCursor(dpy, cursor_id);
 			status = 1;
 		}
-	} else if (strcasecmp(val, "bitmap") == 0) {
+	}
+        else if (strcasecmp(val, "bitmap") == 0) {
 		char *bitmap_name;
 		char *mask_name;
 		int bitmap_status;
@@ -2496,7 +2499,26 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
 		check_bitmap_status(mask_status, mask_name, mask);
 		wfree(bitmap_name);
 		wfree(mask_name);
-	}
+
+        }
+        else if (strcasecmp(val, "library") == 0) {
+		if (nelem != 2) {
+			wwarning(_("bad number of arguments in cursor specification"));
+			return (status);
+		}
+		elem = WMGetFromPLArray(pl, 1);
+		if (!elem || !WMIsPLString(elem)) {
+			return (status);
+		}
+		val = WMGetFromPLString(elem);
+
+                *cursor = XcursorLibraryLoadCursor(dpy, val);
+                status = 1;
+
+		/* if (CURSOR_ID_NONE == cursor_id) { */
+		/* 	wwarning(_("unknown builtin cursor name \"%s\""), val); */
+		/* } */
+        }
 	return (status);
 }
 
