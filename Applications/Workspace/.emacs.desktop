@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Feb 15 18:12:50 2018
+;; Created Fri Feb 16 01:55:20 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
+(setq default-directory "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,8 @@
   "moveres.c"
   'c-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  58379
-  '(61983 nil)
+  56424
+  '(61392 nil)
   nil
   nil
   '((tab-width . 8) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
