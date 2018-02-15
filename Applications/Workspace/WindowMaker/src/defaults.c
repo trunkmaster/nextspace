@@ -2394,7 +2394,9 @@ static void check_bitmap_status(int status, const char *filename, Pixmap bitmap)
 	}
 }
 
+#ifdef NEXTSPACE
 #include <X11/Xcursor/Xcursor.h>
+#endif
 /*
  * (none)
  * (builtin, <cursor_name>)
@@ -2420,8 +2422,7 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
 	if (strcasecmp(val, "none") == 0) {
 		status = 1;
 		*cursor = None;
-	}
-        else if (strcasecmp(val, "builtin") == 0) {
+	} else if (strcasecmp(val, "builtin") == 0) {
 		int i;
 		int cursor_id = CURSOR_ID_NONE;
 
@@ -2447,8 +2448,7 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
 			*cursor = XCreateFontCursor(dpy, cursor_id);
 			status = 1;
 		}
-	}
-        else if (strcasecmp(val, "bitmap") == 0) {
+	} else if (strcasecmp(val, "bitmap") == 0) {
 		char *bitmap_name;
 		char *mask_name;
 		int bitmap_status;
@@ -2499,9 +2499,9 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
 		check_bitmap_status(mask_status, mask_name, mask);
 		wfree(bitmap_name);
 		wfree(mask_name);
-
-        }
-        else if (strcasecmp(val, "library") == 0) {
+	}
+#ifdef NEXTSPACE
+	else if (strcasecmp(val, "library") == 0) {
 		if (nelem != 2) {
 			wwarning(_("bad number of arguments in cursor specification"));
 			return (status);
@@ -2512,13 +2512,14 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
 		}
 		val = WMGetFromPLString(elem);
 
-                *cursor = XcursorLibraryLoadCursor(dpy, val);
-                status = 1;
+		*cursor = XcursorLibraryLoadCursor(dpy, val);
+		status = 1;
 
-		/* if (CURSOR_ID_NONE == cursor_id) { */
-		/* 	wwarning(_("unknown builtin cursor name \"%s\""), val); */
-		/* } */
-        }
+		if (cursor == NULL) {
+			wwarning(_("unknown builtin cursor name \"%s\""), val);
+		}
+	}
+#endif
 	return (status);
 }
 

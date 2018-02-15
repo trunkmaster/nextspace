@@ -118,3 +118,28 @@ src/window.c:
 WINGs/wcolor.c:
 
     Make WINGs color of widgets match the GNUstep one.
+
+Mouse and cursors
+-----------------
+
+New code that requires additional libraries (Xcursor, Xfixes) ifdef'ed.
+
+src/WindowMaker.h:
+
+    New values for oneway mouse cursors (up, down, left, right) were added:
+    WCUR_UPRESIZE, WCUR_DOWNRESIZE, WCUR_LEFTRESIZE, WCUR_RIGHTRESIZE.
+
+src/defaults.c:
+
+    - New defaults were added for oneway mouse cursors: UpResizeCursor, 
+      DownResizeCursor, LeftResizeCursors, RightResizeCursors.
+    - Process new type mouse cursors - "library". These types of cursors
+      are loaded with libXcursor Xorg extention. Values are treated as
+      cursor file names inside current theme.
+
+src/moveres.c:
+
+    New mouse cursor behavior when reached minimum/maximum window size: 
+        - mouse cursors stops moving;
+        - mouse cursor changes to image hinting to user appropriate resize 
+          direction.

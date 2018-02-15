@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/defaults.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/defaults.c	2016-11-25 00:09:13.796571299 +0200
++++ ./WindowMaker/src/defaults.c	2018-02-15 16:36:38.038898005 +0200
 @@ -118,6 +118,9 @@
  static WDECallbackUpdate setStickyIcons;
  static WDECallbackUpdate setWidgetColor;
@@ -21,7 +21,59 @@
  	{"TitleJustify", "center", seJustifications,
  	    &wPreferences.title_justification, getEnum, setJustify, NULL, NULL},
  	{"WindowTitleFont", DEF_TITLE_FONT, NULL,
-@@ -2681,6 +2688,56 @@
+@@ -818,6 +825,14 @@
+ 	    NULL, getCursor, setCursor, NULL, NULL},
+ 	{"HorizontalResizeCursor", "(builtin, sb_h_double_arrow)", (void *)WCUR_HORIZONRESIZE,
+ 	    NULL, getCursor, setCursor, NULL, NULL},
++	{"UpResizeCursor", "(builtin, sb_up_arrow)", (void *)WCUR_UPRESIZE,
++	    NULL, getCursor, setCursor, NULL, NULL},
++	{"DownResizeCursor", "(builtin, sb_down_arrow)", (void *)WCUR_DOWNRESIZE,
++	    NULL, getCursor, setCursor, NULL, NULL},
++	{"LeftResizeCursor", "(builtin, sb_left_arrow)", (void *)WCUR_LEFTRESIZE,
++	    NULL, getCursor, setCursor, NULL, NULL},
++	{"RightResizeCursor", "(builtin, sb_right_arrow)", (void *)WCUR_RIGHTRESIZE,
++	    NULL, getCursor, setCursor, NULL, NULL},
+ 	{"WaitCursor", "(builtin, watch)", (void *)WCUR_WAIT,
+ 	    NULL, getCursor, setCursor, NULL, NULL},
+ 	{"QuestionCursor", "(builtin, question_arrow)", (void *)WCUR_QUESTION,
+@@ -2379,6 +2394,9 @@
+ 	}
+ }
+ 
++#ifdef NEXTSPACE
++#include <X11/Xcursor/Xcursor.h>
++#endif
+ /*
+  * (none)
+  * (builtin, <cursor_name>)
+@@ -2482,6 +2500,26 @@
+ 		wfree(bitmap_name);
+ 		wfree(mask_name);
+ 	}
++#ifdef NEXTSPACE
++	else if (strcasecmp(val, "library") == 0) {
++		if (nelem != 2) {
++			wwarning(_("bad number of arguments in cursor specification"));
++			return (status);
++		}
++		elem = WMGetFromPLArray(pl, 1);
++		if (!elem || !WMIsPLString(elem)) {
++			return (status);
++		}
++		val = WMGetFromPLString(elem);
++
++		*cursor = XcursorLibraryLoadCursor(dpy, val);
++		status = 1;
++
++		if (cursor == NULL) {
++			wwarning(_("unknown builtin cursor name \"%s\""), val);
++		}
++	}
++#endif
+ 	return (status);
+ }
+ 
+@@ -2681,6 +2719,56 @@
  	return (reset ? REFRESH_ICON_TILE : 0);
  }
  
