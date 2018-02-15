@@ -2190,7 +2190,6 @@ MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root, int
 	{// Left
 	  h_offset = x_root - wwin->frame_x;
 	  x = (wwin->frame_x - h_border - gap) + h_offset;
-	  fprintf(stderr, "[Left max barrier] h_offset = %i gap = %i\n", h_offset, gap);
 	  barriers.wl_max = XFixesCreatePointerBarrier (dpy, root,
 							x, 0,
 							x, scr->scr_height,
@@ -2200,7 +2199,6 @@ MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root, int
 	{// Right
 	  h_offset = wwin->frame_x + wwin->client.width + h_border - x_root;
 	  x = (wwin->frame_x + wwin->client.width + gap + h_border + 1) - h_offset;
-	  fprintf(stderr, "[Right max barrier] h_offset = %i gap = %i\n", h_offset, gap);
 	  barriers.wr_max = XFixesCreatePointerBarrier (dpy, root,
 							x, 0,
 							x, scr->scr_height,

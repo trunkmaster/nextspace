@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/moveres.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/moveres.c	2018-02-15 18:09:15.900440002 +0200
++++ ./WindowMaker/src/moveres.c	2018-02-16 01:54:22.369475753 +0200
 @@ -1996,8 +1996,8 @@
  		int ydir = (abs(y) < (wwin->client.height / 2)) ? UP : DOWN;
  
@@ -11,7 +11,7 @@
  
  		/* Determine where x fits */
  		if ((abs(x) > wwin->client.width/2 - spacew/2) &&
-@@ -2040,6 +2040,188 @@
+@@ -2040,6 +2040,186 @@
  	return dir;
  }
  
@@ -165,7 +165,6 @@
 +	{// Left
 +	  h_offset = x_root - wwin->frame_x;
 +	  x = (wwin->frame_x - h_border - gap) + h_offset;
-+	  fprintf(stderr, "[Left max barrier] h_offset = %i gap = %i\n", h_offset, gap);
 +	  barriers.wl_max = XFixesCreatePointerBarrier (dpy, root,
 +							x, 0,
 +							x, scr->scr_height,
@@ -175,7 +174,6 @@
 +	{// Right
 +	  h_offset = wwin->frame_x + wwin->client.width + h_border - x_root;
 +	  x = (wwin->frame_x + wwin->client.width + gap + h_border + 1) - h_offset;
-+	  fprintf(stderr, "[Right max barrier] h_offset = %i gap = %i\n", h_offset, gap);
 +	  barriers.wr_max = XFixesCreatePointerBarrier (dpy, root,
 +							x, 0,
 +							x, scr->scr_height,
@@ -200,7 +198,7 @@
  void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
  {
  	XEvent event;
-@@ -2068,6 +2250,11 @@
+@@ -2068,6 +2248,11 @@
  		    ? wGetHeadForWindow(wwin)
  		    : scr->xine_info.primary_head);
  	int opaqueResize = wPreferences.opaque_resize;
@@ -212,7 +210,7 @@
  
  	if (!IS_RESIZABLE(wwin))
  		return;
-@@ -2137,6 +2324,15 @@
+@@ -2137,6 +2322,15 @@
  				fw = rw;
  				fh = rh - vert_border;
  				wWindowConstrainSize(wwin, (unsigned int *)&fw, (unsigned int *)&fh);
@@ -228,7 +226,7 @@
  				fh += vert_border;
  				if (res & LEFT)
  					fx = rx2 - fw + 1;
-@@ -2167,34 +2363,29 @@
+@@ -2167,34 +2361,29 @@
  
  				res = getResizeDirection(wwin, tx, ty, orig_y - event.xmotion.y_root, flags);
  
@@ -286,7 +284,7 @@
  
  				XGrabKeyboard(dpy, root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
  
-@@ -2211,6 +2402,10 @@
+@@ -2211,6 +2400,10 @@
  				started = 1;
  			}
  			if (started) {
@@ -297,7 +295,7 @@
  				if (!opaqueResize)
  					drawTransparentFrame(wwin, orig_fx, orig_fy, orig_fw, orig_fh);
  
-@@ -2246,6 +2441,8 @@
+@@ -2246,6 +2439,8 @@
  		case ButtonRelease:
  			if (event.xbutton.button != ev->xbutton.button)
  				break;
