@@ -1,6 +1,38 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerWindow.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-02-06 01:54:38.655058343 +0200
-@@ -2936,13 +2936,38 @@
++++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-02-16 23:06:59.562372042 +0200
+@@ -121,11 +121,6 @@
+       return nil;
+     }
+ 
+-/*
+-  We should rather convert the image to a bitmap representation here via 
+-  the following code, but this is currently not supported by the libart backend
+-
+-{
+   NSSize size = [image size];
+ 
+   [image lockFocus];
+@@ -133,9 +128,9 @@
+             NSMakeRect(0, 0, size.width, size.height)];
+   AUTORELEASE(rep);
+   [image unlockFocus];
+-} 
+-*/
+ 
++  return rep;
++/*
+   rep = (NSBitmapImageRep *)[image bestRepresentationForDevice: nil];
+   if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
+     {
+@@ -153,6 +148,7 @@
+                                     bytesPerRow: 0
+                                    bitsPerPixel: 0];
+     }
++*/
+ }
+ 
+ 
+@@ -2936,13 +2932,38 @@
         */
        if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
  	{
@@ -42,7 +74,7 @@
  	    }
  #endif
  	  return;
-@@ -3397,7 +3422,6 @@
+@@ -3397,7 +3418,6 @@
                skipTaskbar = YES;
              }
            else if (level == NSSubmenuWindowLevel
@@ -50,7 +82,7 @@
                     || level == NSTornOffMenuWindowLevel)
              {
  #ifdef USE_KDE_OVERRIDE
-@@ -3411,6 +3435,11 @@
+@@ -3411,6 +3431,11 @@
  #endif
                skipTaskbar = YES;
              }
@@ -62,7 +94,7 @@
            else if (level == NSDockWindowLevel
                     || level == NSStatusWindowLevel)
              {
-@@ -4301,25 +4330,31 @@
+@@ -4301,25 +4326,31 @@
        cursor = XCreateFontCursor(dpy, XC_crosshair);
        break;
      case GSDisappearingItemCursor:
@@ -100,7 +132,7 @@
        break;
      case GSResizeUpDownCursor:
        cursor = XCreateFontCursor(dpy, XC_sb_v_double_arrow);
-@@ -4398,7 +4433,7 @@
+@@ -4398,7 +4429,7 @@
      // FIXME: Factor this out
      // Convert RGBA unpacked to ARGB packed
      // NB Packed ARGB values are layed out as ARGB on big endian systems
