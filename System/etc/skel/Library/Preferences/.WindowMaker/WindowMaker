@@ -30,6 +30,9 @@
   ClipAutoraiseDelay = 600;
   ColormapMode = "auto";
   CycleWorkspaces = NO;
+  CycleActiveHeadOnly = NO;
+  CycleIgnoreMinimized = NO;
+  DialogHistoryLines = 500;
   DisableAnimations = NO;
   DisableBlinking = NO;
   DisableWSMouseActions = NO;
@@ -250,21 +253,22 @@
   
   COMMENT = "/* ===== Mouse Cursors ======================================== */";
   
-  ArrowCursor = (builtin, top_left_arrow);
-  BottomLeftResizeCursor = (builtin, bottom_left_corner);
-  BottomRightResizeCursor = (builtin, bottom_right_corner);
-  CycleActiveHeadOnly = NO;
-  CycleIgnoreMinimized = NO;
-  DialogHistoryLines = 500;
-  HorizontalResizeCursor = (builtin, sb_h_double_arrow);
+  ArrowCursor = (builtin, "left_ptr");
+  BottomLeftResizeCursor = (library, "fd_double_arrow");
+  TopRightResizeCursor = (library, "fd_double_arrow");
+  BottomRightResizeCursor = (library, "bd_double_arrow");
+  TopLeftResizeCursor = (library, "bd_double_arrow");
+  HorizontalResizeCursor = (library, "wm_h_double_arrow");
+  VerticalResizeCursor = (library, "wm_v_double_arrow");
+  UpResizeCursor = (library, "wm_up_arrow");
+  DownResizeCursor = (library, "wm_down_arrow");
+  LeftResizeCursor = (library, "wm_left_arrow");
+  RightResizeCursor = (library, "wm_right_arrow");
   MoveCursor = (builtin, fleur);
   NormalCursor = (builtin, left_ptr);
   QuestionCursor = (builtin, question_arrow);
   ResizeCursor = (builtin, sizing);
   SelectCursor = (builtin, cross);
   TextCursor = (builtin, xterm);
-  TopLeftResizeCursor = (builtin, top_left_corner);
-  TopRightResizeCursor = (builtin, top_right_corner);
-  VerticalResizeCursor = (builtin, sb_v_double_arrow);
   WaitCursor = (builtin, watch);
 }
