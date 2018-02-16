@@ -94,14 +94,14 @@ convert ./images/dragLink.png ../Images/dragLinkCursor.tiff
 #24  7  5 ./images/dnd-move.png
 convert ./images/dnd-move.png ../Images/dragMoveCursor.tiff
 #24 11  8 ./images/resizeDown.png
-convert ./images/resizeDown.png ../Images/resizeDownCursor.tiff
+#convert ./images/resizeDown.png ../Images/resizeDownCursor.tiff
 #24 14 10 ./images/resizeLeft.png
-convert ./images/resizeLeft.png ../Images/resizeLeftCursor.tiff
+#convert ./images/resizeLeft.png ../Images/resizeLeftCursor.tiff
 #24 10 10 ./images/resizeLeftRight.png
-convert ./images/resizeLeftRight.png ../Images/resizeLeftRightCursor.tiff
+#convert ./images/resizeLeftRight.png ../Images/resizeLeftRightCursor.tiff
 #24  7 11 ./images/resizeRight.png
-convert ./images/resizeRight.png ../Images/resizeRightCursor.tiff
+#convert ./images/resizeRight.png ../Images/resizeRightCursor.tiff
 #24 10 14 ./images/resizeUp.png
-convert ./images/resizeUp.png ../Images/resizeUpCursor.tiff
+#convert ./images/resizeUp.png ../Images/resizeUpCursor.tiff
 #24 10 10 ./images/resizeUpDown.png
-convert ./images/resizeUpDown.png ../Images/resizeUpDownCursor.tiff
+#convert ./images/resizeUpDown.png ../Images/resizeUpDownCursor.tiff
