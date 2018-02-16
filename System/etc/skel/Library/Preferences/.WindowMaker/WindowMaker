@@ -264,7 +264,7 @@
   DownResizeCursor = (library, "wm_down_arrow");
   LeftResizeCursor = (library, "wm_left_arrow");
   RightResizeCursor = (library, "wm_right_arrow");
-  MoveCursor = (builtin, fleur);
+  MoveCursor = (library, move);
   NormalCursor = (builtin, left_ptr);
   QuestionCursor = (builtin, question_arrow);
   ResizeCursor = (builtin, sizing);
