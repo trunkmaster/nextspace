@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Dec 22 16:45:55 2017
+;; Created Sat Feb 17 02:02:06 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXSystem/")
+(setq default-directory "~/Developer/nextspace/Frameworks/NXSystem/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,8 @@
   "NXMouse.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  6059
-  '(6126 nil)
+  3850
+  '(5867 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,8 +33,8 @@
   "NXMouse.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1030
-  '(1030 nil)
+  1795
+  '(1795 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

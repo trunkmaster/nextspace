@@ -56,7 +56,6 @@
 
 - (NSArray *)availableCursorThemes;
 - (NSString *)cursorTheme;
-- (void)setCursorTheme:(NSString *)themeName;
 
 - (void)saveToDefaults;
 
