@@ -127,7 +127,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   if (time == 0)
     {
       time = [nxDefaults integerForKey:DoubleClickTime];
-      if (time == -1)
+      if (time ==0 || time == -1)
         time = 300;
     }
 
@@ -146,7 +146,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   if (lines == 0)
     {
       lines = [nxDefaults integerForKey:WheelScroll];
-      if (lines == -1)
+      if (lines == 0 || lines == -1)
         lines = 3;
     }
   
@@ -222,19 +222,6 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   XCloseDisplay(dpy);
 
   return themeName;
-}
-
-- (void)setCursorTheme:(NSString *)themeName
-{
-  Display *dpy = XOpenDisplay(NULL);
-  XcursorBool res;
-  
-  res = XcursorSetTheme(dpy, [themeName cString]);
-  Cursor handle = XcursorLibraryLoadCursor(dpy, "left_ptr");
-  XDefineCursor(dpy, RootWindow(dpy, 0), handle);
-  XFreeCursor(dpy, handle);
-  XFlush(dpy);
-  XCloseDisplay(dpy);
 }
 
 
