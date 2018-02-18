@@ -91,10 +91,11 @@
 
 - (void)loadRowsFromArray:(NSArray *)array
 {
-  NSCell       *cell;
-  NSBundle     *baseBundle = [NSBundle bundleForLibrary:@"gnustep-base"];
-  NSString     *languagePath, *languageName;
-  NSDictionary *languageDesc;
+  NSCell        *cell;
+  NSBundle      *baseBundle = [NSBundle bundleForLibrary:@"gnustep-base"];
+  NSString      *languagePath, *languageName;
+  NSDictionary  *languageDesc;
+  NSFileManager *fm = [NSFileManager defaultManager];
   
   for (int i=0; i < [array count]; i++)
     {
@@ -102,6 +103,9 @@
       languagePath = [baseBundle pathForResource:languageName
                                           ofType:@""
                                      inDirectory:@"Languages"];
+      if ([fm fileExistsAtPath:languagePath] == NO)
+        continue;
+      
       languageDesc = [NSDictionary dictionaryWithContentsOfFile:languagePath];
       
       [self addRow];
