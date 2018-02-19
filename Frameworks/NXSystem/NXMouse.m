@@ -216,6 +216,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   menuButtonEvent = eventType;
 }
 
+// TODO
 - (NSArray *)availableCursorThemes
 {
   // NSArray 		*themePaths;
@@ -230,6 +231,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
                   nil];
 }
 
+// TODO
 - (NSString *)cursorTheme
 {
   Display 	*dpy = XOpenDisplay(NULL);

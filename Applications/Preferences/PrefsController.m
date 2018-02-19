@@ -118,9 +118,13 @@
   NSString        *buttonCaption = [[sender selectedCell] title];
   id<PrefsModule> module;
   NSView          *view;
+  NSRect          buttonRect;
 
   module = [prefsViews objectForKey:buttonCaption];
   view = [module view];
+
+  buttonRect = [sender cellFrameAtRow:0 column:[sender selectedColumn]];
+  [iconList scrollRectToVisible:buttonRect];
   
   [prefsViewBox setContentView:view];
   [view setNeedsDisplay:YES];
