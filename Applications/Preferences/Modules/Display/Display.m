@@ -300,8 +300,11 @@ static NXDisplay *selectedDisplay = nil;
 
 - (IBAction)backgroundChanged:(id)sender
 {
-  NSLog(@"Display: backgroundChanged");
-  [systemScreen setBackgroundColor:[colorBtn color]];
+  // NSLog(@"Display: backgroundChanged");
+  if ([systemScreen setBackgroundColor:[colorBtn color]] == YES)
+    {
+      // TODO: save color into NXGlobalDomain
+    }
 }
 
 //

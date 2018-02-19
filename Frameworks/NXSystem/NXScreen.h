@@ -102,7 +102,7 @@
 - (NSUInteger)colorDepth;
 
 - (NSColor *)backgroundColor;
-- (void)setBackgroundColor:(NSColor *)color;
+- (BOOL)setBackgroundColor:(NSColor *)color;
  
 - (NSArray *)allDisplays;
 - (NSArray *)activeDisplays;
