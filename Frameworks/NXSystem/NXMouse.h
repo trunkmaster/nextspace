@@ -35,6 +35,7 @@
   NSInteger	threshold;
   NSInteger	doubleClickTime;
   NSInteger	wheelScrollLines;
+  NSInteger	wheelControlScrollLines;
   BOOL		isMenuButtonEnabled;
   NSInteger	menuButtonEvent;
 }
@@ -48,6 +49,8 @@
 
 - (NSInteger)wheelScrollLines;
 - (void)setWheelScrollLines:(NSInteger)lines;
+- (NSInteger)wheelControlScrollLines;
+- (void)setWheelControlScrollLines:(NSInteger)lines;
 
 - (BOOL)isMenuButtonEnabled;
 - (NSUInteger)menuButton;

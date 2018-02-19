@@ -34,6 +34,7 @@
 #import <AppKit/NSPopUpButton.h>
 
 #import <NXSystem/NXMouse.h>
+#import <NXAppKit/NXNumericField.h>
 
 #import "Mouse.h"
 
@@ -90,11 +91,15 @@ static NSMutableDictionary      *domain = nil;
 
   // Threshold
   [tresholdSlider setIntegerValue:[mouse accelerationThreshold]];
+  [tresholdField setMinimumValue:1];
+  [tresholdField setMaximumValue:7];
   [tresholdField setIntegerValue:[mouse accelerationThreshold]];
 
   // Mouse Wheel Scrolls
-  [wheelScrollSlider setIntegerValue:[mouse wheelScrollLines]];
+  [wheelScrollField setMinimumValue:1];
   [wheelScrollField setIntegerValue:[mouse wheelScrollLines]];
+  [wheelControlScrollField setMinimumValue:1];
+  [wheelControlScrollField setIntegerValue:[mouse wheelControlScrollLines]];
 
   // Menu Button
   for (id c in [menuMtrx cells])
@@ -108,9 +113,9 @@ static NSMutableDictionary      *domain = nil;
     [self setMenuButtonHand:menuRightBtn];
 
   // Cursors
-  [cursorsBtn removeAllItems];
-  [cursorsBtn addItemsWithTitles:[mouse availableCursorThemes]];
-  NSLog(@"Current cursor theme name: %@", [mouse cursorTheme]);
+  // [cursorsBtn removeAllItems];
+  // [cursorsBtn addItemsWithTitles:[mouse availableCursorThemes]];
+  // NSLog(@"Current cursor theme name: %@", [mouse cursorTheme]);
 }
 
 - (NSView *)view
@@ -167,17 +172,8 @@ static NSMutableDictionary      *domain = nil;
 }
 - (void)setWheelScroll:(id)sender
 {
-  if (sender == wheelScrollSlider)
-    {
-      [wheelScrollField setIntValue:[wheelScrollSlider integerValue]];
-    }
-  else if (sender == wheelScrollField)
-    {
-      [wheelScrollSlider setIntValue:[wheelScrollField integerValue]];
-      [wheelScrollField setIntValue:[wheelScrollSlider integerValue]];
-    }
-
   [mouse setWheelScrollLines:[wheelScrollField integerValue]];
+  [mouse setWheelControlScrollLines:[wheelControlScrollField integerValue]];
   [mouse saveToDefaults];
 }
 
@@ -239,8 +235,8 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)setCursorTheme:(id)sender
 {
-  [mouse setCursorTheme:[cursorsBtn titleOfSelectedItem]];
-  NSLog(@"Current cursor theme name: %@", [mouse cursorTheme]);
+  // [mouse setCursorTheme:[cursorsBtn titleOfSelectedItem]];
+  // NSLog(@"Current cursor theme name: %@", [mouse cursorTheme]);
 }
 
 @end

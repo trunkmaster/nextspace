@@ -30,6 +30,7 @@ NSString *Acceleration = @"NXMouseAcceleration";
 NSString *Threshold = @"NXMouseThreshold";
 NSString *DoubleClickTime = @"NXMouseDoubleClickTime";
 NSString *WheelScroll = @"NXMouseWheelScroll";
+NSString *WheelControlScroll = @"NXMouseWheelControlScroll";
 NSString *MenuButtonEnabled = @"NXMenuButtonEnabled";
 NSString *MenuButtonHand = @"NXMenuButtonHand";
 NSString *CursorTheme = @"NXMouseCursorTheme";
@@ -155,6 +156,24 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
 - (void)setWheelScrollLines:(NSInteger)lines
 {
   wheelScrollLines = lines;
+}
+- (NSInteger)wheelControlScrollLines
+{
+  NSInteger  lines;
+  
+  // lines = [gsDefaults integerForKey:@"GSMouseScrollMultiplier"];
+  // if (lines == 0)
+  //   {
+      lines = [nxDefaults integerForKey:WheelControlScroll];
+      if (lines == 0 || lines == -1)
+        lines = 1;
+    // }
+  
+  return lines;
+}
+- (void)setWheelControlScrollLines:(NSInteger)lines
+{
+  wheelControlScrollLines = lines;
 }
 
 - (BOOL)isMenuButtonEnabled
@@ -292,6 +311,10 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   if (wheelScrollLines != [nxDefaults integerForKey:WheelScroll])
     {
       [nxDefaults setInteger:wheelScrollLines forKey:WheelScroll];
+    }
+  if (wheelControlScrollLines != [nxDefaults integerForKey:WheelControlScroll])
+    {
+      [nxDefaults setInteger:wheelControlScrollLines forKey:WheelControlScroll];
     }
 
   // Menu Button
