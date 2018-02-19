@@ -500,6 +500,7 @@ static NXScreen *systemScreen = nil;
   
   XSetWindowBackground(xDisplay, xRootWindow, xColor.pixel);
   XClearWindow(xDisplay, xRootWindow);
+  XSync(xDisplay, False);
   return YES;
 }
 
