@@ -38,14 +38,14 @@
   id window;
   id speedMtrx;
   id doubleClickMtrx;
-  id wheelScrollSlider;
-  id wheelScrollField;
   id tresholdField;
   id tresholdSlider;
   id menuMtrx;
   id menuLeftBtn;
   id menuRightBtn;
   id handImageView;
+  id wheelScrollField;
+  id wheelControlScrollField;
   id cursorsBtn;
 }
 

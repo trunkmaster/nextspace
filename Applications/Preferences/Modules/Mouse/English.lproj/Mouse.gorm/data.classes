@@ -9,8 +9,7 @@
 	    "setMenuButtonHand:",
 	    "setTreshold:",
 	    "setWheelScroll:",
-	    "subpixelModeChanged:",
-	    "wheelScrollSliderMoved:"
+	    "subpixelModeChanged:"
 	);
 	Super = NSObject;
     };
@@ -18,7 +17,6 @@
 	Actions = (
 	    "doubleClickMtrxClicked:",
 	    "setWheelScroll:",
-	    "wheelScrollSliderMoved:",
 	    "setTreshold:",
 	    "setMenuButtonEnabled:",
 	    "setMenuButtonHand:",
@@ -29,7 +27,6 @@
 	    window,
 	    doubleClickMtrx,
 	    speedMtrx,
-	    wheelScrollSlider,
 	    wheelScrollField,
 	    tresholdSlider,
 	    tresholdField,
@@ -37,8 +34,16 @@
 	    menuLeftBtn,
 	    menuRightBtn,
 	    menuMtrx,
-	    cursorsBtn
+	    cursorsBtn,
+	    wheelControlScrollField
 	);
 	Super = NSObject;
+    };
+    NXNumericField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
     };
 }
