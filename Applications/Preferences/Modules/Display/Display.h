@@ -25,7 +25,6 @@
   Boston, MA  02111-1307, USA
 */
 
-// #import <AppKit/NibDeclarations.h>
 #import <AppKit/NSImage.h>
 #import <AppKit/NSColorWell.h>
 #import <Preferences.h>
@@ -47,9 +46,10 @@
   id reflectionBtn;
   NSColorWell *colorBtn;
 
-  NSImage *image;
-
-  NXScreen *systemScreen;
+  NSImage   *image;
+  NXScreen  *systemScreen;
+  NXDisplay *selectedDisplay;
+  NSColor   *desktopBackground;
 }
 
 //

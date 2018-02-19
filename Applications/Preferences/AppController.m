@@ -27,6 +27,7 @@
 #import <NXFoundation/NXDefaults.h>
 #import <NXSystem/NXKeyboard.h>
 #import <NXSystem/NXMouse.h>
+#import <NXSystem/NXScreen.h>
 
 #import "AppController.h"
 #import "ClockView.h"
@@ -84,12 +85,23 @@ static NSUserDefaults *defaults = nil;
     {
       NXDefaults *defs = [NXDefaults globalUserDefaults];
       
-      NSLog(@"Configure keyboard...");
+      NSLog(@"Configuring Keyboard...");
       [NXKeyboard configureWithDefaults:defs];
+      
+      NSLog(@"Configuring Mouse...");
       NXMouse *mouse = [NXMouse new];
       [mouse setAcceleration:[defs integerForKey:Acceleration]
                    threshold:[defs integerForKey:Threshold]];
       [mouse release];
+      
+      NSLog(@"Configuring Desktop background...");
+      NSDictionary *dBack = [defs objectForKey:@"NXDesktopBackgroundColor"];
+      NSColor *back = [NSColor
+                            colorWithDeviceRed:[dBack[@"Red"] floatValue]
+                                         green:[dBack[@"Green"] floatValue]
+                                          blue:[dBack[@"Blue"] floatValue]
+                                         alpha:1.0];
+      [(NXScreen *)[NXScreen sharedScreen] setBackgroundColor:back];
     }
 }
 

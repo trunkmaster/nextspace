@@ -35,6 +35,7 @@
 #import <AppKit/NSMatrix.h>
 #import <AppKit/NSSlider.h>
 
+#import <NXFoundation/NXDefaults.h>
 #import <NXAppKit/NXNumericField.h>
 
 #import <NXSystem/NXScreen.h>
@@ -47,8 +48,6 @@
 #import "Display.h"
 
 @implementation DisplayPrefs
-
-static NXDisplay *selectedDisplay = nil;
 
 - (id)init
 {
@@ -99,8 +98,17 @@ static NXDisplay *selectedDisplay = nil;
   [rotationBtn setEnabled:NO];
   [reflectionBtn setEnabled:NO];
 
-  // { // Window background
-  // }
+  { // Desktop background
+    NXDefaults   *defs = [NXDefaults globalUserDefaults];
+    NSDictionary *dBack = [defs objectForKey:@"NXDesktopBackgroundColor"];
+    desktopBackground = [NSColor
+                          colorWithDeviceRed:[dBack[@"Red"] floatValue]
+                                       green:[dBack[@"Green"] floatValue]
+                                        blue:[dBack[@"Blue"] floatValue]
+                                       alpha:1.0];
+    [colorBtn setColor:desktopBackground];
+    // [systemScreen setBackgroundColor:desktopBackground];
+  }
 
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -300,9 +308,19 @@ static NXDisplay *selectedDisplay = nil;
 
 - (IBAction)backgroundChanged:(id)sender
 {
-  // NSLog(@"Display: backgroundChanged");
-  if ([systemScreen setBackgroundColor:[colorBtn color]] == YES)
+  NSColor *color = [sender color];
+    
+  // NSLog(@"Display: backgroundChanged: %@", [sender className]);
+  if ([systemScreen setBackgroundColor:color] == YES)
     {
+      NXDefaults   *defs = [NXDefaults globalUserDefaults];
+      NSDictionary *dBack;
+
+      dBack = @{@"Red":   [NSNumber numberWithFloat:[color redComponent]],
+                @"Green": [NSNumber numberWithFloat:[color greenComponent]],
+                @"Blue":  [NSNumber numberWithFloat:[color blueComponent]],
+                @"Alpha": [NSNumber numberWithFloat:1.0]};
+      [defs setObject:dBack forKey:@"NXDesktopBackgroundColor"];
       // TODO: save color into NXGlobalDomain
     }
 }
