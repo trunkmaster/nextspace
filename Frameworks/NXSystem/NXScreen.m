@@ -468,33 +468,39 @@ static NXScreen *systemScreen = nil;
   return nil;
 }
 
-- (void)setBackgroundColor:(NSColor *)color
+- (BOOL)setBackgroundColor:(NSColor *)color
 {
-  Screen *xScreen = DefaultScreenOfDisplay(xDisplay);
-  XColor xColor;
-  char   *x_color_spec;
-  
-  // color = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
-  // xf.red   = 65535 * [color redComponent];
-  // xf.green = 65535 * [color greenComponent];
-  // xf.blue  = 65535 * [color blueComponent];
+  NSColor	*rgbColor;
+  unsigned	red, green, blue;
+  NSString	*rgbSpec;
+  char		*x_color_spec;
+  Screen	*xScreen = DefaultScreenOfDisplay(xDisplay);
+  XColor	xColor;
 
-  x_color_spec = (char *)[[NSString stringWithFormat:@"rgb:%x/%x/%x",
-                                    (int)(65535 * [color redComponent]),
-                                    (int)(65535 * [color greenComponent]),
-                                    (int)(65535 * [color blueComponent])]
-                           cString];
-  fprintf(stderr, "Set root window background: %s\n", x_color_spec);
+  rgbColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
   
-  XParseColor(xDisplay, xScreen->cmap, x_color_spec, &xColor);
+  red   = (unsigned)(255/(1/[rgbColor redComponent]));
+  green = (unsigned)(255/(1/[rgbColor greenComponent]));
+  blue  = (unsigned)(255/(1/[rgbColor blueComponent]));
+  rgbSpec = [NSString stringWithFormat:@"rgb:%.2x/%.2x/%.2x", red, green, blue];
   
-  // NSDebugLLog(@"XGTrace", @"setbackgroundcolor: %@ %d", color, win);
-  // xf = [self xColorFromColor: xf forScreen: window->screen];
-  // window->xwn_attrs.background_pixel = xf.pixel;
+  x_color_spec = (char *)[rgbSpec cString];
+  
+  if (!XParseColor(xDisplay, xScreen->cmap, x_color_spec, &xColor))
+    {
+      fprintf(stderr,"NXScreen: unknown color \"%s\"\n", x_color_spec);
+      return NO;
+    }
+  if (!XAllocColor(xDisplay, xScreen->cmap, &xColor))
+    {
+      fprintf(stderr, "NXScreen: unable to allocate color for \"%s\"\n",
+              x_color_spec);
+      return NO;
+    }
   
   XSetWindowBackground(xDisplay, xRootWindow, xColor.pixel);
-  XSync(xDisplay, False);
   XClearWindow(xDisplay, xRootWindow);
+  return YES;
 }
 
 //
