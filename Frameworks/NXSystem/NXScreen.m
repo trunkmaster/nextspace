@@ -46,6 +46,7 @@ x//   RRCrtc      *crtcs;
 
 #import <AppKit/NSGraphics.h>
 #import <NXAppKit/NXAlert.h>
+#import <NXFoundation/NXDefaults.h>
 
 #import "NXDisplay.h"
 #import "NXScreen.h"
@@ -455,6 +456,14 @@ static NXScreen *systemScreen = nil;
 
 - (NSColor *)backgroundColor
 {
+  NXDefaults   *defs = [NXDefaults globalUserDefaults];
+  NSDictionary *dBack = [defs objectForKey:@"NXDesktopBackgroundColor"];
+  NSColor      *cBack;
+  
+  cBack = [NSColor colorWithDeviceRed:[dBack[@"Red"] floatValue]
+                                green:[dBack[@"Green"] floatValue]
+                                 blue:[dBack[@"Blue"] floatValue]
+                                alpha:1.0];
   // XWindowAttributes attrs;
   // XGCValues gc_values;
   
@@ -464,8 +473,29 @@ static NXScreen *systemScreen = nil;
   // XGetGCValues(xDisplay, xScreen->default_gc, GCBackground, &gc_values);
 
   // fprintf(stderr, "Desktop background: %lu\n", gc_values.background);
+  {
+    // Pixmap root_pixmap;
+    Atom act_type;
+    int act_format;
+    unsigned long nitems, bytes_after;
+    unsigned char *data = NULL;
+    Atom _XROOTPMAP_ID = XInternAtom(display, "_XROOTPMAP_ID", False);
+    XImage *pixel_image;
 
-  return nil;
+    if (XGetWindowProperty(display, *root, _XROOTPMAP_ID, 0, 1, False,
+                           XA_PIXMAP, &act_type, &act_format, &nitems, &bytes_after,
+                           &data) == Success)
+      {
+        if (data)
+          {
+            pixel_image = XGetImage(display, *((Pixmap *) data),
+                                    0, 0, 1, 1, ~0, ZPixmap);
+            XFree(data);
+          }
+      }
+  }
+
+  return cBack;
 }
 
 - (BOOL)setBackgroundColor:(NSColor *)color

@@ -2,28 +2,50 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Feb 19 16:33:48 2018
+;; Created Tue Feb 20 02:48:03 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name "/Developer/Headers/TAGS")
 (setq tags-table-list '("/Developer/Headers/TAGS"))
-(setq search-ring '("image" "keyboard" "sort" "ServerC" "Pref" "Scree" "owner" "dockImage" "no_colo" "1" "speedbar" "sr-s" "NSMouse" "mouseLocal" "languageList" "fontCategoryNam"))
+(setq search-ring '("image" "selectedDispla" "image" "keyboard" "sort" "ServerC" "Pref" "Scree" "owner" "dockImage" "no_colo" "1" "speedbar" "sr-s" "NSMouse" "mouseLocal"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/LayoutSwitchKeys.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/xkb_option_grp.lst" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Layouts" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/keyboards.list" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list" "~/Developer/nextspace/Applications/Preferences/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
+  "Keyboard.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  17573
+  '(7410 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/AppController.m"
+  "AppController.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  2604
+  '(2627 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
   "Display.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  8003
-  '(1131 nil)
+  2664
+  '(2664 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
@@ -33,8 +55,19 @@
   "PrefsController.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  3167
+  3069
   '(3167 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
+  "Display.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  1252
+  '(1310 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -73,17 +106,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
-  "Display.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1245
-  '(1425 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.m"
   "LanguageList.m"
   'objc-mode
@@ -115,28 +137,6 @@
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
-  "Keyboard.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  10420
-  '(7410 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/AppController.m"
-  "AppController.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  2639
-  '(2739 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/AppController.h"
