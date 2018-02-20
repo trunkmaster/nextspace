@@ -95,8 +95,8 @@ static NSUserDefaults *defaults = nil;
       [mouse release];
       
       NSLog(@"Configuring Desktop background...");
-      NSColor *back = [[NXScreen sharedScreen] backgroundColor];
-      [(NXScreen *)[NXScreen sharedScreen] setBackgroundColor:back];
+      NXScreen *screen = [NXScreen sharedScreen];
+      [screen setBackgroundColor:[screen savedBackgroundColor]];
     }
 }
 

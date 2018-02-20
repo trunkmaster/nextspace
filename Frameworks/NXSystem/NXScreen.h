@@ -101,6 +101,9 @@
 - (NSSize)sizeInMilimeters;
 - (NSUInteger)colorDepth;
 
+/** Returns color saved in defaults with key NXDesktopBackgroundBolor */
+- (NSColor *)savedBackgroundColor;
+/** Returns current color root window. On failure returns saved color. */
 - (NSColor *)backgroundColor;
 - (BOOL)setBackgroundColor:(NSColor *)color;
  

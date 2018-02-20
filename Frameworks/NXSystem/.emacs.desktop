@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Feb 20 03:05:35 2018
+;; Created Tue Feb 20 16:37:53 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Frameworks/NXSystem/")
+(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXSystem/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,8 @@
   "NXScreen.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  14317
-  '(13778 nil)
+  12828
+  '(13109 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -33,8 +33,8 @@
   "NXScreen.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  3085
-  '(4294 nil)
+  3618
+  '(3618 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
