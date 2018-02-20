@@ -717,7 +717,7 @@ static NSMutableDictionary      *domain = nil;
   switch([[sender selectedCell] tag])
     {
     case 0:
-      [self _setOption:@""];
+      [self _setOption:@"altwin:none"];
       break;
     case 1:
       [self _setOption:@"altwin:swap_lalt_lwin"];

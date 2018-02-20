@@ -98,17 +98,10 @@
   [rotationBtn setEnabled:NO];
   [reflectionBtn setEnabled:NO];
 
-  { // Desktop background
-    NXDefaults   *defs = [NXDefaults globalUserDefaults];
-    NSDictionary *dBack = [defs objectForKey:@"NXDesktopBackgroundColor"];
-    desktopBackground = [NSColor
-                          colorWithDeviceRed:[dBack[@"Red"] floatValue]
-                                       green:[dBack[@"Green"] floatValue]
-                                        blue:[dBack[@"Blue"] floatValue]
-                                       alpha:1.0];
-    [colorBtn setColor:desktopBackground];
-    // [systemScreen setBackgroundColor:desktopBackground];
-  }
+  // Desktop background
+  desktopBackground = [systemScreen backgroundColor];
+  [colorBtn setColor:desktopBackground];
+  [systemScreen setBackgroundColor:desktopBackground];
 
   [[NSNotificationCenter defaultCenter]
     addObserver:self
