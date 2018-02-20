@@ -47,6 +47,7 @@ x//   RRCrtc      *crtcs;
 #import <AppKit/NSGraphics.h>
 #import <NXAppKit/NXAlert.h>
 #import <NXFoundation/NXDefaults.h>
+#include <X11/Xatom.h>
 
 #import "NXDisplay.h"
 #import "NXScreen.h"
@@ -454,47 +455,51 @@ static NXScreen *systemScreen = nil;
   return (NSUInteger)depth;
 }
 
-- (NSColor *)backgroundColor
+- (NSColor *)savedBackgroundColor
 {
-  NXDefaults   *defs = [NXDefaults globalUserDefaults];
-  NSDictionary *dBack = [defs objectForKey:@"NXDesktopBackgroundColor"];
-  NSColor      *cBack;
+  NSDictionary	*dBack;
+  NSColor	*cBack;
   
+  dBack =  [[NXDefaults globalUserDefaults]
+                               objectForKey:@"NXDesktopBackgroundColor"];
   cBack = [NSColor colorWithDeviceRed:[dBack[@"Red"] floatValue]
                                 green:[dBack[@"Green"] floatValue]
                                  blue:[dBack[@"Blue"] floatValue]
                                 alpha:1.0];
-  // XWindowAttributes attrs;
-  // XGCValues gc_values;
   
-  // XGetWindowAttributes(xDisplay, xRootWindow, &attrs);
-  
-  // xScreen = DefaultScreenOfDisplay(xDisplay);
-  // XGetGCValues(xDisplay, xScreen->default_gc, GCBackground, &gc_values);
+  return cBack;
+}
 
-  // fprintf(stderr, "Desktop background: %lu\n", gc_values.background);
-  {
-    // Pixmap root_pixmap;
-    Atom act_type;
-    int act_format;
-    unsigned long nitems, bytes_after;
-    unsigned char *data = NULL;
-    Atom _XROOTPMAP_ID = XInternAtom(display, "_XROOTPMAP_ID", False);
-    XImage *pixel_image;
+- (NSColor *)backgroundColor
+{
+  XWindowAttributes	attrs;
+  XImage		*image;
+  unsigned long		pixel;
+  NSColor		*cBack = nil;
 
-    if (XGetWindowProperty(display, *root, _XROOTPMAP_ID, 0, 1, False,
-                           XA_PIXMAP, &act_type, &act_format, &nitems, &bytes_after,
-                           &data) == Success)
-      {
-        if (data)
-          {
-            pixel_image = XGetImage(display, *((Pixmap *) data),
-                                    0, 0, 1, 1, ~0, ZPixmap);
-            XFree(data);
-          }
-      }
-  }
+  // Try to get background color from root window pixel at (0,0).
+  // Other pixels have random values. Perhaps because root window background
+  // is set with XSetWindowBackground function and:
+  // "XSetWindowBackground uses a pixmap of undefined size filled with the pixel
+  // value you passed" [XSetWindowBackground(3)].
+  if (XGetWindowAttributes(xDisplay, xRootWindow, &attrs) != 0)
+    {
+      image = XGetImage(xDisplay, xRootWindow, 0, 0,
+                        attrs.width, attrs.height, AllPlanes, ZPixmap);
+      if (image != NULL)
+        {
+          pixel = XGetPixel(image, 0, 0);
+          cBack = [NSColor colorWithDeviceRed:(CGFloat)(pixel>>16)/255.0
+                                        green:(CGFloat)((pixel&0x00ff00)>>8)/255.0
+                                         blue:(CGFloat)(pixel&0x0000ff)/255.0
+                                        alpha:1.0];
+          XDestroyImage(image);
+        }
+    }
 
+  if (!cBack)
+    cBack = [self savedBackgroundColor];
+    
   return cBack;
 }
 
@@ -509,9 +514,9 @@ static NXScreen *systemScreen = nil;
 
   rgbColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
   
-  red   = (unsigned)(255/(1/[rgbColor redComponent]));
-  green = (unsigned)(255/(1/[rgbColor greenComponent]));
-  blue  = (unsigned)(255/(1/[rgbColor blueComponent]));
+  red     = (unsigned)(255/(1/[rgbColor redComponent]));
+  green   = (unsigned)(255/(1/[rgbColor greenComponent]));
+  blue    = (unsigned)(255/(1/[rgbColor blueComponent]));
   rgbSpec = [NSString stringWithFormat:@"rgb:%.2x/%.2x/%.2x", red, green, blue];
   
   x_color_spec = (char *)[rgbSpec cString];
