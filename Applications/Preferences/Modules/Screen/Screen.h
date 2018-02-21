@@ -30,52 +30,11 @@
 #import <AppKit/NSTextField.h>
 
 #import <NXSystem/NXScreen.h>
+#import <NXSystem/NXPower.h>
 
 #import <Preferences.h>
 
-@class ScreenPreferences;
-
-@interface DisplayBox : NSBox
-{
-  ScreenPreferences *owner;
-  NSRect      displayFrame;
-  
-  NSTextField *nameField;
-  NSColor     *bgColor;
-  NSColor     *fgColor;
-  
-  BOOL isMainDisplay;
-  BOOL isActiveDisplay;
-  BOOL isSelected;
-}
-
-- initWithFrame:(NSRect)frameRect
-        display:(NXDisplay *)aDisplay
-          owner:(id)prefs; // ugly
-
-- (void)setDisplayFrame:(NSRect)rect;
-- (NSRect)displayFrame;
-
-- (void)setName:(NSString *)name;
-- (NSString *)name;
-
-- (void)setActive:(BOOL)active;
-- (BOOL)isActive;
-- (void)setMain:(BOOL)isMain;
-- (BOOL)isMain;
-- (void)setSelected:(BOOL)selected;
-@end
-
-@class ScreenPreferences;
-
-@interface ScreenCanvas : NSBox
-{
-  ScreenPreferences *owner;
-}
-
-- (void)mouseDown:(NSEvent *)theEvent
-            inBox:(DisplayBox *)box;
-@end
+@class DisplayBox;
 
 @interface ScreenPreferences: NSObject <PrefsModule>
 {
@@ -89,7 +48,8 @@
   NSImage *image;
 
   NXScreen *systemScreen;
-  
+  NXPower  *power;
+ 
   NSMutableArray *displayBoxList;
   DisplayBox     *selectedBox;
   CGFloat scaleFactor;

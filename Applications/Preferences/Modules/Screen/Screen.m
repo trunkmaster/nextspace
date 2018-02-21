@@ -24,6 +24,7 @@
   59 Temple Place - Suite 330
   Boston, MA  02111-1307, USA
 */
+
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSNibLoading.h>
 #import <AppKit/NSView.h>
@@ -40,16 +41,15 @@
 #import <AppKit/NSPanel.h>
 
 #import <NXSystem/NXDisplay.h>
-#import <NXSystem/NXPower.h>
 
+#import "DisplayBox.h"
 #import "Screen.h"
 
 @implementation ScreenPreferences
+
 @synthesize dockImage;
 @synthesize appIconYardImage;
 @synthesize iconYardImage;
-
-static NXPower *power = nil;
 
 - (id)init
 {
@@ -86,6 +86,7 @@ static NXPower *power = nil;
   [displayBoxList release];
 
   [systemScreen release];
+  [power release];
   
   [super dealloc];
 }
@@ -96,6 +97,7 @@ static NXPower *power = nil;
   [window release];
 
   systemScreen = [[NXScreen alloc] init];
+  
   // Get info about monitors and layout
   displayBoxList = [[NSMutableArray alloc] init];
   [self updateDisplayBoxList];
@@ -172,7 +174,7 @@ static NXPower *power = nil;
 {
   NXDisplay *display;
   
-  display = [systemScreen displayWithName:[selectedBox name]];
+  display = [systemScreen displayWithName:selectedBox.displayName];
   // NXScreen -> [NXDisplay setMain:] -> [NXScreen _refreshDisplaysInfo]
   // [NXDisplay setMain:] will generate NXScreenDidChangeNotification.
   [systemScreen setMainDisplay:display];
@@ -182,7 +184,7 @@ static NXPower *power = nil;
 {
   NXDisplay *display;
   
-  display = [systemScreen displayWithName:[selectedBox name]];
+  display = [systemScreen displayWithName:selectedBox.displayName];
   
   if ([[sender title] isEqualToString:@"Disable"])
     {
@@ -212,7 +214,7 @@ static NXPower *power = nil;
   for (db in displayBoxList)
     {
       // if ([[db display] isActive])
-      if ([[systemScreen displayWithName:[db name]] isActive])
+      if ([[systemScreen displayWithName:db.displayName] isActive])
         {
           [db setSelected:YES];
           break;
@@ -277,8 +279,8 @@ static NXPower *power = nil;
       dBoxRect.size.height = floor(displayRect.size.height*scaleFactor);
 
       dBox = [[DisplayBox alloc] initWithFrame:dBoxRect display:d owner:self];
-      [dBox setDisplayFrame:displayRect];
-      [dBox setName:[d outputName]];
+      dBox.displayFrame = displayRect;
+      dBox.displayName = [d outputName];
       [dBox setActive:[d isActive]];
       [dBox setMain:[d isMain]];
       if ([displays indexOfObject:d] != 0)
@@ -398,317 +400,6 @@ static NXPower *power = nil;
                 [builtinDisplay outputName]);
           [systemScreen deactivateDisplay:builtinDisplay];
         }
-    }
-}
-
-@end
-
-@implementation ScreenCanvas
-
-- initWithFrame:(NSRect)frameRect
-{
-  self = [super initWithFrame:frameRect];
-  [self setBorderType:NSBezelBorder];
-  [self setTitlePosition:NSNoTitle];
-  [self setFillColor:[NSColor grayColor]];
-  [self setContentViewMargins:NSMakeSize(0, 0)];
-
-  return self;
-}
-
-- (void)drawRect:(NSRect)rect
-{
-  [super drawRect:rect];
-
-  [_fill_color set];
-  NSRectFill([[self contentView] frame]);
-
-  // CGFloat f, lines = rect.size.height;
-  // CGFloat pattern[2] = {1};
-  // [[NSColor darkGrayColor] set];
-  // PSsetdash(pattern, 1, 0);
-  // for (f=2; f<lines-2; f++)
-  //   {
-  //     PSmoveto(2, f);
-  //     PSlineto(rect.size.width, f);
-  //     f++;
-  //     PSmoveto(3, f);
-  //     PSlineto(rect.size.width-2, f);
-  //   }
-  // PSstroke();
-}
-
-- (void)mouseDown:(NSEvent *)theEvent
-            inBox:(DisplayBox *)box
-{
-  // NSArray    *boxes = [self subviews];
-  NSRect     boxRect = [box frame];
-  NSPoint    location, initialLocation, lastLocation;
-  
-  NSWindow   *window = [self window];
-  NSRect     superFrame = [self frame];
-  NSRect     displayFrame = [box displayFrame];
-  NSPoint    initialOrigin, boxOrigin;
-  NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
-                          | NSPeriodicMask | NSOtherMouseUpMask
-                          | NSRightMouseUpMask);
-  NSDate     *theDistantFuture = [NSDate distantFuture];
-  BOOL       done = NO;
-
-  initialOrigin = boxOrigin = boxRect.origin;
-  initialLocation = lastLocation = [theEvent locationInWindow];
-
-  [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
-
-  while (!done)
-    {
-      theEvent = [NSApp nextEventMatchingMask:eventMask
-                                    untilDate:theDistantFuture
-                                       inMode:NSEventTrackingRunLoopMode
-                                      dequeue:YES];
-
-      switch ([theEvent type])
-        {
-        case NSRightMouseUp:
-        case NSOtherMouseUp:
-        case NSLeftMouseUp:
-          // NSLog(@"Mouse UP.");
-          done = YES;
-          break;
-        case NSPeriodic:
-          location = [window mouseLocationOutsideOfEventStream];
-          if (NSEqualPoints(location, lastLocation) == NO &&
-              (fabs(location.x - initialLocation.x) > 5 ||
-               fabs(location.y - initialLocation.y) > 5))
-            {
-              if (displayFrame.origin.x > 0 ||
-                  boxOrigin.x > initialOrigin.x ||
-                  (location.x - lastLocation.x) > 0)
-                {
-                  boxOrigin.x += (location.x - lastLocation.x);
-                  if (boxOrigin.x < 0)
-                    {
-                      boxOrigin.x = 0;
-                    }
-                  else if ((boxOrigin.x + boxRect.size.width)
-                           > superFrame.size.width)
-                    {
-                      boxOrigin.x =
-                        superFrame.size.width - boxRect.size.width;
-                    }
-                }
-                  
-              boxOrigin.y += (location.y - lastLocation.y);
-              if (boxOrigin.y < 0)
-                {
-                  boxOrigin.y = 0;
-                }
-              else if ((boxOrigin.y + boxRect.size.height)
-                       > superFrame.size.height)
-                {
-                  boxOrigin.y = superFrame.size.height - boxRect.size.height;
-                }
-                  
-              [box setFrameOrigin:boxOrigin];
-              [self setNeedsDisplay:YES];
-                  
-              lastLocation = location;
-            }
-          break;
-
-        default:
-          break;
-        }
-    }
-  [NSEvent stopPeriodicEvents];
-
-  if (NSEqualPoints(initialLocation, lastLocation) == YES)
-    {
-      [owner displayBoxClicked:box];
-    }
-}
-
-@end
-
-@implementation DisplayBox
-
-- initWithFrame:(NSRect)frameRect
-        display:(NXDisplay *)aDisplay
-          owner:(id)prefs
-{
-  NSRect nameRect;
-  
-  self = [super initWithFrame:frameRect];
-  [self setBorderType:NSLineBorder];
-  [self setTitlePosition:NSNoTitle];
-  [self setContentViewMargins:NSMakeSize(1, 1)];
-
-  owner = prefs;
-  
-  // display = aDisplay;
-
-  nameRect = frameRect;
-  nameRect.size.height = 15;
-  nameRect.origin.x = 0;
-  nameRect.origin.y = (frameRect.size.height - nameRect.size.height)/2;
-
-  nameField = [[NSTextField alloc] initWithFrame:nameRect];
-  [nameField setEditable:NO];
-  [nameField setSelectable:NO];
-  [nameField setDrawsBackground:NO];
-  [nameField setTextColor:[NSColor whiteColor]];
-  [nameField setAlignment:NSCenterTextAlignment];
-  [nameField setBezeled:NO];
-
-  [self addSubview:nameField];
-  [nameField release];
-  
-  isMainDisplay = NO;
-
-  return self;
-}
-
-- (void)dealloc
-{
-  NSLog(@"Screen: display box %@: -dealloc", [nameField stringValue]);
-  [super dealloc];
-}
-
-- (void)setDisplayFrame:(NSRect)rect
-{
-  displayFrame = rect;
-}
-
-- (NSRect)displayFrame
-{
-  return displayFrame;
-}
-
-- (void)setName:(NSString *)name
-{
-  [nameField setStringValue:name];
-}
-
-- (NSString *)name
-{
-  return [nameField stringValue];
-}
-
-- (void)setActive:(BOOL)active
-{
-  NSColor *color;
-  
-  if (active)
-    {
-      // TODO: get desktop background color
-      color = [NSColor colorWithDeviceRed:83.0/255.0
-                                    green:83.0/255.0
-                                     blue:116.0/255.0
-                                    alpha:1];
-      [nameField setTextColor:[NSColor whiteColor]];
-    }
-  else
-    {
-      color = [NSColor darkGrayColor];
-      [nameField setTextColor:[NSColor lightGrayColor]];
-    }
-  ASSIGN(bgColor, color);
-  
-  isActiveDisplay = active;
-  
-  [[self superview] setNeedsDisplay:YES];
-}
-
-- (BOOL)isActive
-{
-  return isActiveDisplay;
-}
-
-- (void)setMain:(BOOL)isMain
-{
-  isMainDisplay = isMain;
-  [[self superview] setNeedsDisplay:YES];
-}
-
-- (BOOL)isMain
-{
-  return isMainDisplay;
-}
-
-- (void)setSelected:(BOOL)selected
-{
-  isSelected = selected;
-  [self setNeedsDisplay:YES];
-}
-
-- (void)mouseDown:(NSEvent *)theEvent
-{
-  if ([theEvent clickCount] >= 2)
-    {
-      // Set main display
-    }
-  else
-    {
-      [(ScreenCanvas *)[[self superview] superview] mouseDown:theEvent
-                                                        inBox:self];
-    }
-}
-
-- (void)drawRect:(NSRect)rect
-{
-  [super drawRect:rect];
-
-  [bgColor set];
-  NSRectFill([[self contentView] frame]);
-
-  // Draw red frame
-  if (isSelected)
-    {
-      NSColor *selColor;
-
-      selColor = [NSColor colorWithDeviceRed:1.0
-                                       green:221.0/255.0
-                                        blue:0.0
-                                       alpha:1];
-
-      // [[NSColor yellowColor] set];
-      [selColor set];
-      PSnewpath();
-      PSmoveto(1.5,1.5);
-      PSlineto(1.5, rect.size.height-1.5);
-      PSlineto(rect.size.width-1.5, rect.size.height-1.5);
-      PSlineto(rect.size.width-1.5, 1.5);
-      PSlineto(1.5, 1.5);
-      PSstroke();
-    }
-
-  if (!isActiveDisplay) return;
-  
-  // Draw dock and icon yard
-  NSSize  iSize;
-  NSPoint iPoint;
-  if (isMainDisplay)
-    {
-      iSize = [owner.dockImage size];
-      iPoint = NSMakePoint(rect.size.width-iSize.width-3,
-                           rect.size.height-iSize.height-3);
-      [[owner dockImage] compositeToPoint:iPoint
-                                operation:NSCompositeSourceOver];
-      
-      iSize = [[owner appIconYardImage] size];
-      iPoint = NSMakePoint(3,3);
-      [[owner appIconYardImage] compositeToPoint:iPoint
-                                       operation:NSCompositeSourceOver];
-    }
-  else
-    {
-      iPoint = NSMakePoint(3,3);
-      iSize = [[owner iconYardImage] size];
-      [[owner iconYardImage] compositeToPoint:iPoint
-                                    operation:NSCompositeSourceOver];
-      iPoint.x += iSize.width;
-      [[owner iconYardImage] compositeToPoint:iPoint
-                                    operation:NSCompositeSourceOver];
     }
 }
 
