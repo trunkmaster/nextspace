@@ -89,6 +89,7 @@
   moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
   [box setCursor:[NSCursor closedHandCursor]];
   [[box cursor] mouseEntered:nil];
+  
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
 
   while (!done)
@@ -105,7 +106,6 @@
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
           [box setCursor:[NSCursor openHandCursor]];
-          [[box cursor] mouseEntered:nil];
           done = YES;
           break;
         case NSPeriodic:
