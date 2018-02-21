@@ -69,7 +69,7 @@
             inBox:(DisplayBox *)box
 {
   // NSArray    *boxes = [self subviews];
-  NSRect     boxRect = [box frame];
+  NSRect     boxFrame = [box frame];
   NSPoint    location, initialLocation, lastLocation;
   
   NSWindow   *window = [self window];
@@ -83,7 +83,7 @@
   BOOL       done = NO;
   NSInteger  moveThreshold;
 
-  initialOrigin = boxOrigin = boxRect.origin;
+  initialOrigin = boxOrigin = boxFrame.origin;
   initialLocation = lastLocation = [theEvent locationInWindow];
 
   moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
@@ -122,11 +122,10 @@
                 {
                   boxOrigin.x = 0;
                 }
-              else if ((boxOrigin.x + boxRect.size.width)
-                       > superFrame.size.width)
+              else if ((boxOrigin.x + boxFrame.size.width)
+                       >= (superFrame.size.width - 4))
                 {
-                  boxOrigin.x =
-                    superFrame.size.width - boxRect.size.width;
+                  boxOrigin.x = superFrame.size.width - boxFrame.size.width - 4;
                 }
                   
               boxOrigin.y += (location.y - lastLocation.y);
@@ -134,10 +133,10 @@
                 {
                   boxOrigin.y = 0;
                 }
-              else if ((boxOrigin.y + boxRect.size.height)
-                       > superFrame.size.height)
+              else if ((boxOrigin.y + boxFrame.size.height)
+                       >= (superFrame.size.height - 4))
                 {
-                  boxOrigin.y = superFrame.size.height - boxRect.size.height;
+                  boxOrigin.y = superFrame.size.height - boxFrame.size.height - 4;
                 }
                   
               [box setFrameOrigin:boxOrigin];

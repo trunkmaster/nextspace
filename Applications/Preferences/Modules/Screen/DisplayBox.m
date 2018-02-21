@@ -48,7 +48,7 @@
 
   nameRect = frameRect;
   nameRect.size.height = 15;
-  nameRect.size.width -= 2;
+  nameRect.size.width -= 15;
   nameRect.origin.x = 0;
   nameRect.origin.y = (frameRect.size.height - nameRect.size.height)/2;
 
@@ -123,7 +123,7 @@
   _cursor = c;
   [_cursor retain];
   
-  [[self window] resetCursorRects];
+  // [[self window] resetCursorRects];
 }
 
 - (NSCursor *)cursor
@@ -141,7 +141,8 @@
 
   if (!_cursor)
     {
-      [self setCursor:[NSCursor arrowCursor]];
+      _cursor = [NSCursor arrowCursor];
+      [_cursor retain];
     }
   else
     {
@@ -167,6 +168,7 @@
 
 - (void)drawRect:(NSRect)rect
 {
+  NSLog(@"[DisplayBox] drawRect: %@", NSStringFromRect(rect));
   [super drawRect:rect];
 
   [nameField setStringValue:displayName];
