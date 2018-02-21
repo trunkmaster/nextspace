@@ -488,7 +488,16 @@ static NXScreen *systemScreen = nil;
                         attrs.width, attrs.height, AllPlanes, ZPixmap);
       if (image != NULL)
         {
-          pixel = XGetPixel(image, 0, 0);
+          pixel = XGetPixel(image, attrs.width-1, attrs.height-1); // magic
+          // fprintf(stderr, "X Offset: %i\n", image->xoffset);
+          // fprintf(stderr, "BP Red: %lu (%f)\n",
+          //         (attrs.backing_pixel), (CGFloat)(attrs.backing_pixel>>16)/255.0);
+          // fprintf(stderr, "Red  : %lu (%f)\n",
+          //         (pixel>>16), (CGFloat)(pixel>>16)/255.0);
+          // fprintf(stderr, "Green: %lu (%f)\n",
+          //         ((pixel&0x00ff00)>>8), (CGFloat)((pixel&0x00ff00)>>8)/255.0);
+          // fprintf(stderr, "Blue : %lu (%f)\n",
+          //         (pixel&0x0000ff), (CGFloat)(pixel&0x0000ff)/255.0);
           cBack = [NSColor colorWithDeviceRed:(CGFloat)(pixel>>16)/255.0
                                         green:(CGFloat)((pixel&0x00ff00)>>8)/255.0
                                          blue:(CGFloat)(pixel&0x0000ff)/255.0

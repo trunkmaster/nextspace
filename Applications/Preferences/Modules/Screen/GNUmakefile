@@ -7,7 +7,9 @@ $(BUNDLE_NAME)_PRINCIPAL_CLASS = ScreenPreferences
 $(BUNDLE_NAME)_STANDARD_INSTALL = no
 
 $(BUNDLE_NAME)_OBJC_FILES= \
-	Screen.m
+	Screen.m \
+	ScreenCanvas.m \
+	DisplayBox.m
 
 $(BUNDLE_NAME)_HEADERS= \
 	Screen.h
