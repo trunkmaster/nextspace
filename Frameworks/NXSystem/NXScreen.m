@@ -462,10 +462,20 @@ static NXScreen *systemScreen = nil;
   
   dBack =  [[NXDefaults globalUserDefaults]
                                objectForKey:@"NXDesktopBackgroundColor"];
-  cBack = [NSColor colorWithDeviceRed:[dBack[@"Red"] floatValue]
-                                green:[dBack[@"Green"] floatValue]
-                                 blue:[dBack[@"Blue"] floatValue]
-                                alpha:1.0];
+  if (dBack)
+    {
+      cBack = [NSColor colorWithDeviceRed:[dBack[@"Red"] floatValue]
+                                    green:[dBack[@"Green"] floatValue]
+                                     blue:[dBack[@"Blue"] floatValue]
+                                    alpha:1.0];
+    }
+  else
+    {
+      cBack = [NSColor colorWithDeviceRed:83.0/255.0
+                                    green:83.0/255.0
+                                     blue:116.0/255.0
+                                    alpha:1.0];
+    }
   
   return cBack;
 }
@@ -488,7 +498,7 @@ static NXScreen *systemScreen = nil;
                         attrs.width, attrs.height, AllPlanes, ZPixmap);
       if (image != NULL)
         {
-          pixel = XGetPixel(image, attrs.width-1, attrs.height-1); // magic
+          pixel = XGetPixel(image, attrs.width-1, attrs.height-1); // magic: works in VM
           // fprintf(stderr, "X Offset: %i\n", image->xoffset);
           // fprintf(stderr, "BP Red: %lu (%f)\n",
           //         (attrs.backing_pixel), (CGFloat)(attrs.backing_pixel>>16)/255.0);

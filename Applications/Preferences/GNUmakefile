@@ -21,9 +21,9 @@ SUBPROJECTS = \
 	Modules/Keyboard \
 	Modules/Mouse \
 	Modules/Display \
+	Modules/Screen \
 	Modules/Power \
 	Modules/Password
-#	Modules/Screen \
 
 #
 # Resource files

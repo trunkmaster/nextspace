@@ -1,6 +1,4 @@
 /*
-  Screen.m
-
   Controller class for Screen preferences bundle
 
   Author:	Sergii Stoian <stoyan255@ukr.net>
