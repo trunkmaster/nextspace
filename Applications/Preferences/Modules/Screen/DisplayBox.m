@@ -80,7 +80,7 @@
   
   if (active)
     {
-      color = [[NXScreen sharedScreen] backgroundColor];
+      color = [[NXScreen sharedScreen] savedBackgroundColor];
       [nameField setTextColor:[NSColor whiteColor]];
     }
   else
@@ -136,19 +136,19 @@
 {
   NSView *contentView = [[self window] contentView];
   
-  NSLog(@"DisplayBox: resetCursorRects");
+  // NSLog(@"DisplayBox: resetCursorRects");
   [[self superview] discardCursorRects];
 
   if (!_cursor)
     {
-      NSLog(@"DisplayBox: _cursor == nil");
-      _cursor = [NSCursor arrowCursor];
+      [self setCursor:[NSCursor arrowCursor]];
     }
   else
     {
       [contentView addCursorRect:[contentView frame]
                           cursor:[NSCursor arrowCursor]];
     }
+  
   [[self superview] addCursorRect:[self frame] cursor:_cursor];
 }
 
