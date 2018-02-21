@@ -1,5 +1,5 @@
 /*
-  Controller class for Screen preferences bundle
+  Class implementing screen canvas for Screen preferences
 
   Author:	Sergii Stoian <stoyan255@ukr.net>
   Date:		2015
@@ -22,47 +22,16 @@
   59 Temple Place - Suite 330
   Boston, MA  02111-1307, USA
 */
-
-#import <AppKit/NSImage.h>
-#import <AppKit/NSBox.h>
-#import <AppKit/NSTextField.h>
-
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXPower.h>
 
-#import <Preferences.h>
+#import <Screen.h>
 
-@class DisplayBox;
-
-@interface ScreenPreferences: NSObject <PrefsModule>
+@interface ScreenCanvas : NSBox
 {
-  id view;
-  id window;
-  id canvas;
-  id setMainBtn;
-  id setStateBtn;
-  id arrangeBtn;
-
-  NSImage *image;
-
-  NXScreen *systemScreen;
-  NXPower  *power;
- 
-  NSMutableArray *displayBoxList;
-  DisplayBox     *selectedBox;
-  CGFloat scaleFactor;
+  ScreenPreferences *owner;
 }
 
-@property (readonly) NSImage *dockImage;
-@property (readonly) NSImage *appIconYardImage;
-@property (readonly) NSImage *iconYardImage;
-
-- (void)updateDisplayBoxList;
-
-- (NSPoint)pointAtLayoutEdge:(NSInteger)edge
-                      forBox:(DisplayBox *)box;
-- (void)arrangeDisplayBoxes;
-
-- (void)displayBoxClicked:(DisplayBox *)sender;
-
+- (void)mouseDown:(NSEvent *)theEvent
+            inBox:(DisplayBox *)box;
 @end
