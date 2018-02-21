@@ -41,12 +41,13 @@
   id repeatRateMtrx;
   id repeatTestField;
 
-  // -- Layouts
   // Data
+  NSArray    	*options;
+  
+  // -- Layouts
   NXKeyboard	*keyboard;
   NSArray    	*layouts;
   NSArray    	*variants;
-  NSArray    	*options;
   NSDictionary	*layoutSwitchKeys;
   // GUI
   id layoutsBox;
@@ -62,7 +63,6 @@
 
   // Shortcuts
   id shortcutsBox;
-  id shortcutsBrowser;
 
   // Numeric Keypad
   id keypadBox;

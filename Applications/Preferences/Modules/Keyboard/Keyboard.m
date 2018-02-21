@@ -77,8 +77,6 @@ static NSMutableDictionary      *domain = nil;
   [view retain];
   [window release];
 
-  // for (id c in [sectionsMtrx cells])
-  //   [c setRefusesFirstResponder:YES];
   [sectionsBtn setRefusesFirstResponder:YES];
 
   // Key Repeat
@@ -122,10 +120,6 @@ static NSMutableDictionary      *domain = nil;
   // Shortcuts
   [shortcutsBox retain];
   [shortcutsBox removeFromSuperview];
-  [shortcutsBrowser loadColumnZero];
-  [shortcutsBrowser setTitle:@"Group" ofColumn:0];
-  [shortcutsBrowser setTitle:@"Action" ofColumn:1];
-  // [shortcutsBrowser setTitle:@"Shortcut" ofColumn:2];
 
   // Numeric Keypad
   [keypadBox retain];
@@ -292,14 +286,14 @@ static NSMutableDictionary      *domain = nil;
 {
   NXDefaults		*defs = [NXDefaults globalUserDefaults];
   NSMutableArray	*mOptions = [options mutableCopy];
-  NSString 		*optType;
+  NSArray		*optComponents;
   NSString		*savedOption;
   BOOL			SUCCESS = NO;
 
-  optType = [[option componentsSeparatedByString:@":"] objectAtIndex:0];
-  savedOption = [self _optionWithType:optType];
+  optComponents = [option componentsSeparatedByString:@":"];
+  savedOption = [self _optionWithType:optComponents[0]];
   
-  if ([option isEqualToString:@""] == NO)
+  if ([[optComponents lastObject] isEqualToString:@""] == NO)
     {
       if (savedOption)
         [mOptions replaceObjectAtIndex:[mOptions indexOfObject:savedOption]
@@ -643,7 +637,7 @@ static NSMutableDictionary      *domain = nil;
   
   [composeKeyBtn removeAllItems];
   [composeKeyBtn addItemWithTitle:@"None"];
-  [[composeKeyBtn itemWithTitle:@"None"] setRepresentedObject:@""];
+  [[composeKeyBtn itemWithTitle:@"None"] setRepresentedObject:@"compose:"];
   for (NSString *k in [aDict allKeys])
     {
       [composeKeyBtn addItemWithTitle:k];
@@ -717,7 +711,7 @@ static NSMutableDictionary      *domain = nil;
   switch([[sender selectedCell] tag])
     {
     case 0:
-      [self _setOption:@"altwin:none"];
+      [self _setOption:@"altwin:"];
       break;
     case 1:
       [self _setOption:@"altwin:swap_lalt_lwin"];
