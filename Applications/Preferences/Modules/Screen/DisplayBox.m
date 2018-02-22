@@ -124,6 +124,7 @@
   [_cursor retain];
   
   // [[self window] resetCursorRects];
+  [self resetCursorRects];
 }
 
 - (NSCursor *)cursor
@@ -168,7 +169,8 @@
 
 - (void)drawRect:(NSRect)rect
 {
-  NSLog(@"[DisplayBox] drawRect: %@", NSStringFromRect(rect));
+  NSRect boxFrame = [self frame];
+  
   [super drawRect:rect];
 
   [nameField setStringValue:displayName];
@@ -190,9 +192,9 @@
       [selColor set];
       PSnewpath();
       PSmoveto(1.5,1.5);
-      PSlineto(1.5, rect.size.height-1.5);
-      PSlineto(rect.size.width-1.5, rect.size.height-1.5);
-      PSlineto(rect.size.width-1.5, 1.5);
+      PSlineto(1.5, boxFrame.size.height-1.5);
+      PSlineto(boxFrame.size.width-1.5, boxFrame.size.height-1.5);
+      PSlineto(boxFrame.size.width-1.5, 1.5);
       PSlineto(1.5, 1.5);
       PSstroke();
     }
@@ -200,13 +202,11 @@
   if (!isActiveDisplay) return;
   
   // Draw dock and icon yard
-  NSSize  iSize;
-  NSPoint iPoint;
+  NSSize  iSize = [owner.dockImage size];
+  NSPoint iPoint = NSMakePoint(boxFrame.size.width-iSize.width-3,
+                               boxFrame.size.height-iSize.height-3);
   if (isMainDisplay)
     {
-      iSize = [owner.dockImage size];
-      iPoint = NSMakePoint(rect.size.width-iSize.width-3,
-                           rect.size.height-iSize.height-3);
       [owner.dockImage compositeToPoint:iPoint
                               operation:NSCompositeSourceOver];
       

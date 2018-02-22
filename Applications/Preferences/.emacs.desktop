@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Feb 21 19:17:20 2018
+;; Created Thu Feb 22 01:58:44 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,44 +11,55 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name "/Developer/Headers/TAGS")
 (setq tags-table-list '("/Developer/Headers/TAGS"))
-(setq search-ring '("options" "_setOption" "bgColor" "image" "selectedDispla" "image" "keyboard" "sort" "ServerC" "Pref" "Scree" "owner" "dockImage" "no_colo" "1" "speedbar"))
+(setq search-ring '("displayFra" "bgColor" "options" "_setOption" "bgColor" "image" "selectedDispla" "image" "keyboard" "sort" "ServerC" "Pref" "Scree" "owner" "dockImage" "no_colo"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m" "~/Developer/nextspace/Applications/Preferences/Modules/Expert/*" "~/Developer/nextspace/Applications/Preferences/Modules/UNIX/*" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/LayoutSwitchKeys.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/xkb_option_grp.lst" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Layouts" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m"
-  "DisplayBox.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  3253
-  '(2960 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m"
   "ScreenCanvas.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  3198
-  '(3194 nil)
+  3315
+  '(3283 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m"
+  "DisplayBox.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  2813
+  '(2852 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.h"
   "DisplayBox.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1451
+  1092
   '(1451 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.m"
+  "Screen.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  8086
+  '(1242 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.h"
@@ -73,17 +84,6 @@
   '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.m"
-  "Screen.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1331
-  '(4 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile"
   "GNUmakefile<4>"
   'makefile-gmake-mode
@@ -104,61 +104,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/Expert.m"
-  "Expert.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1775
-  '(841 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/Expert.h"
-  "Expert.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  911
-  '(4 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/GNUmakefile.preamble"
-  "GNUmakefile.preamble<7>"
-  'fundamental-mode
-  '(yas-minor-mode)
-  1
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/GNUmakefile"
-  "GNUmakefile<10>"
-  'makefile-gmake-mode
-  '(yas-minor-mode)
-  248
-  '(429 nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  nil
-  "Resources"
-  'dired-mode
-  '(yas-minor-mode)
-  252
-  '(nil nil)
-  t
-  '("/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/Resources/")
-  nil)
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.m"
