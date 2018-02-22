@@ -88,7 +88,7 @@
 
   moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
   [box setCursor:[NSCursor closedHandCursor]];
-  [[box cursor] mouseEntered:nil];
+  [[box cursor] mouseEntered:theEvent];
   
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
 
@@ -105,11 +105,20 @@
         case NSOtherMouseUp:
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
+          location = [window mouseLocationOutsideOfEventStream];
           [box setCursor:[NSCursor openHandCursor]];
+          if (NSPointInRect(location, boxFrame))
+            [[box cursor] mouseEntered:theEvent];
+          else
+            [[NSCursor arrowCursor] set];
           done = YES;
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
+          
+          if (!NSPointInRect(location, superFrame))
+            break;
+          
           if (NSEqualPoints(location, lastLocation) == NO &&
               (fabs(location.x - initialLocation.x) > moveThreshold ||
                fabs(location.y - initialLocation.y) > moveThreshold))
@@ -140,7 +149,8 @@
                 }
                   
               [box setFrameOrigin:boxOrigin];
-              [[box cursor] mouseEntered:nil];
+              [[box cursor] mouseEntered:theEvent];
+              // [[box cursor] set];
               [self setNeedsDisplay:YES];
                   
               lastLocation = location;
