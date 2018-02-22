@@ -30,6 +30,7 @@
 @interface ScreenCanvas : NSBox
 {
   ScreenPreferences *owner;
+  BOOL              isMouseDragged;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
