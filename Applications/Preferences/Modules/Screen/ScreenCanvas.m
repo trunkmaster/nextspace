@@ -40,6 +40,8 @@
   [self setFillColor:[NSColor grayColor]];
   [self setContentViewMargins:NSMakeSize(0, 0)];
 
+  isMouseDragged = NO;
+  
   return self;
 }
 
@@ -49,6 +51,8 @@
 
   [_fill_color set];
   NSRectFill([[self contentView] frame]);
+
+  [self resetCursorRects];
 
   // CGFloat f, lines = rect.size.height;
   // CGFloat pattern[2] = {1};
@@ -63,6 +67,22 @@
   //     PSlineto(rect.size.width-2, f);
   //   }
   // PSstroke();
+}
+
+- (void)resetCursorRects
+{
+  NSLog(@"ScreenCanvas: resetCursorRects");
+
+  if (isMouseDragged == NO)
+    {
+      [[self window] discardCursorRects];
+      // [self addCursorRect:[self frame] cursor:[NSCursor arrowCursor]];
+      // [[NSCursor arrowCursor] set];
+      for (NSView *sview in [[self contentView] subviews])
+        {
+          [sview resetCursorRects];
+        }
+    }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -87,8 +107,9 @@
   initialLocation = lastLocation = [theEvent locationInWindow];
 
   moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
-  [box setCursor:[NSCursor closedHandCursor]];
-  [[box cursor] mouseEntered:theEvent];
+  [[NSCursor closedHandCursor] push];
+  isMouseDragged = YES;
+  box.isDragged = YES;
   
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
 
@@ -105,12 +126,12 @@
         case NSOtherMouseUp:
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
-          location = [window mouseLocationOutsideOfEventStream];
-          [box setCursor:[NSCursor openHandCursor]];
-          if (NSPointInRect(location, boxFrame))
-            [[box cursor] mouseEntered:theEvent];
-          else
-            [[NSCursor arrowCursor] set];
+          [NSCursor pop];
+          isMouseDragged = NO;
+          box.isDragged = NO;
+          [self resetCursorRects];
+          if (NSPointInRect(location, [box frame]))
+            [[NSCursor openHandCursor] mouseEntered:theEvent];
           done = YES;
           break;
         case NSPeriodic:
@@ -149,8 +170,6 @@
                 }
                   
               [box setFrameOrigin:boxOrigin];
-              [[box cursor] mouseEntered:theEvent];
-              // [[box cursor] set];
               [self setNeedsDisplay:YES];
                   
               lastLocation = location;

@@ -29,6 +29,7 @@
 
 @synthesize displayFrame;
 @synthesize displayName;
+@synthesize isDragged;
 
 - initWithFrame:(NSRect)frameRect
         display:(NXDisplay *)aDisplay
@@ -40,7 +41,6 @@
   [self setBorderType:NSLineBorder];
   [self setTitlePosition:NSNoTitle];
   [self setContentViewMargins:NSMakeSize(1, 1)];
-  [self setCursor:[NSCursor openHandCursor]];
 
   owner = prefs;
   
@@ -117,41 +117,20 @@
   [self setNeedsDisplay:YES];
 }
 
-- (void)setCursor:(NSCursor *)c
-{
-  if (_cursor) [_cursor release];
-  _cursor = c;
-  [_cursor retain];
-  
-  // [[self window] resetCursorRects];
-  [self resetCursorRects];
-}
-
-- (NSCursor *)cursor
-{
-  return _cursor;
-}
-
 // NSView override
 - (void)resetCursorRects
 {
-  NSView *contentView = [[self window] contentView];
-  
-  // NSLog(@"DisplayBox: resetCursorRects");
-  [[self superview] discardCursorRects];
-
-  if (!_cursor)
+  if (isDragged == NO)
     {
-      _cursor = [NSCursor arrowCursor];
-      [_cursor retain];
+      NSCursor *cursor = [NSCursor openHandCursor];
+      NSPoint  mouseLocation;
+      
+      NSLog(@"DisplayBox: resetCursorRects");
+      [[self superview] addCursorRect:[self frame] cursor:cursor];
+      mouseLocation = [[self window] mouseLocationOutsideOfEventStream];
+      if (NSPointInRect(mouseLocation, [self frame]))
+        [cursor mouseEntered:nil];
     }
-  else
-    {
-      [contentView addCursorRect:[contentView frame]
-                          cursor:[NSCursor arrowCursor]];
-    }
-  
-  [[self superview] addCursorRect:[self frame] cursor:_cursor];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent

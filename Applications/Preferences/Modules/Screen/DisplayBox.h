@@ -37,13 +37,11 @@
   BOOL isMainDisplay;
   BOOL isActiveDisplay;
   BOOL isSelected;
-
-@private
-  NSCursor *_cursor;
 }
 
 @property NSRect displayFrame;
 @property (assign) NSString *displayName;
+@property BOOL isDragged;
 
 - initWithFrame:(NSRect)frameRect
         display:(NXDisplay *)aDisplay
@@ -54,8 +52,5 @@
 - (void)setMain:(BOOL)isMain;
 - (BOOL)isMain;
 - (void)setSelected:(BOOL)selected;
-
-- (void)setCursor:(NSCursor *)c;
-- (NSCursor *)cursor;
 
 @end
