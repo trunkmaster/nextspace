@@ -52,7 +52,7 @@
   [_fill_color set];
   NSRectFill([[self contentView] frame]);
 
-  [self resetCursorRects];
+  // [self resetCursorRects];
 
   // CGFloat f, lines = rect.size.height;
   // CGFloat pattern[2] = {1};
@@ -73,28 +73,28 @@
 {
   NSLog(@"ScreenCanvas: resetCursorRects");
 
-  if (isMouseDragged == NO)
-    {
+  // if (isMouseDragged == NO)
+  //   {
       [[self window] discardCursorRects];
-      // [self addCursorRect:[self frame] cursor:[NSCursor arrowCursor]];
       // [[NSCursor arrowCursor] set];
+      // [[self superview] addCursorRect:[self frame] cursor:[NSCursor arrowCursor]];
       for (NSView *sview in [[self contentView] subviews])
         {
-          [sview resetCursorRects];
+          // [sview resetCursorRects];
+          [self addCursorRect:[sview frame]
+                       cursor:[NSCursor openHandCursor]];
         }
-    }
+    // }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
             inBox:(DisplayBox *)box
 {
-  // NSArray    *boxes = [self subviews];
   NSRect     boxFrame = [box frame];
   NSPoint    location, initialLocation, lastLocation;
   
   NSWindow   *window = [self window];
   NSRect     superFrame = [self frame];
-  // NSRect     displayFrame = box.displayFrame;
   NSPoint    initialOrigin, boxOrigin;
   NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                           | NSPeriodicMask | NSOtherMouseUpMask
@@ -108,8 +108,8 @@
 
   moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
   [[NSCursor closedHandCursor] push];
-  isMouseDragged = YES;
-  box.isDragged = YES;
+  // isMouseDragged = YES;
+  // box.isDragged = YES;
   
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
 
@@ -126,12 +126,22 @@
         case NSOtherMouseUp:
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
+          // isMouseDragged = NO;
+          // box.isDragged = NO;
           [NSCursor pop];
-          isMouseDragged = NO;
-          box.isDragged = NO;
           [self resetCursorRects];
-          if (NSPointInRect(location, [box frame]))
-            [[NSCursor openHandCursor] mouseEntered:theEvent];
+          [self setNeedsDisplay:YES];
+          /*          location = [window mouseLocationOutsideOfEventStream];
+          NSRect brGlobal = [self convertRect:[box frame]
+                                       toView:[window contentView]];
+          if (NSPointInRect(location, brGlobal))
+            {
+              NSLog(@"Mouse: %@", NSStringFromPoint(location));
+              NSLog(@"Box  : %@", NSStringFromRect(brGlobal));
+              // [[NSCursor arrowCursor] set];
+              // [[NSCursor openHandCursor] mouseEntered:theEvent];
+              [[NSCursor openHandCursor] push];
+              }*/
           done = YES;
           break;
         case NSPeriodic:
