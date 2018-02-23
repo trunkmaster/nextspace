@@ -29,7 +29,6 @@
 
 @synthesize displayFrame;
 @synthesize displayName;
-@synthesize isDragged;
 
 - initWithFrame:(NSRect)frameRect
         display:(NXDisplay *)aDisplay
@@ -118,22 +117,6 @@
 }
 
 // NSView override
-/*
-- (void)resetCursorRects
-{
-  if (isDragged == NO)
-    {
-      NSCursor *cursor = [NSCursor openHandCursor];
-      NSPoint  mouseLocation;
-      
-      // NSLog(@"DisplayBox: resetCursorRects");
-      [[self superview] addCursorRect:[self frame] cursor:cursor];
-      // mouseLocation = [[self window] mouseLocationOutsideOfEventStream];
-      // if (NSPointInRect(mouseLocation, [self frame]))
-      //   [cursor mouseEntered:nil];
-    }
-}
-*/
 - (void)mouseDown:(NSEvent *)theEvent
 {
   if ([theEvent clickCount] >= 2)
