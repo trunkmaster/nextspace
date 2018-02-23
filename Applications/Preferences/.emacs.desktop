@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Feb 22 19:16:53 2018
+;; Created Fri Feb 23 13:28:37 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,34 +18,34 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m"
-  "DisplayBox.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  3088
-  '(2983 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m"
   "ScreenCanvas.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  3952
-  '(3910 nil)
+  3925
+  '(2221 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m"
+  "DisplayBox.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  2718
+  '(2680 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.h"
   "DisplayBox.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1412
-  '(1412 nil)
+  1145
+  '(1145 nil)
   nil
   nil
   '((buffer-file-coding-system . utf-8-unix)))
