@@ -71,30 +71,24 @@
 
 - (void)resetCursorRects
 {
-  NSLog(@"ScreenCanvas: resetCursorRects");
+  // NSLog(@"ScreenCanvas: resetCursorRects");
 
-  // if (isMouseDragged == NO)
-  //   {
-      [[self window] discardCursorRects];
-      // [[NSCursor arrowCursor] set];
-      // [[self superview] addCursorRect:[self frame] cursor:[NSCursor arrowCursor]];
-      for (NSView *sview in [[self contentView] subviews])
-        {
-          // [sview resetCursorRects];
-          [self addCursorRect:[sview frame]
-                       cursor:[NSCursor openHandCursor]];
-        }
-    // }
+  [[self window] discardCursorRects];
+  for (NSView *sview in [[self contentView] subviews])
+    {
+      [self addCursorRect:[sview frame]
+                   cursor:[NSCursor openHandCursor]];
+    }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
             inBox:(DisplayBox *)box
 {
+  NSWindow   *window = [self window];
+  NSRect     canvasFrame = [[self contentView] frame];
   NSRect     boxFrame = [box frame];
   NSPoint    location, initialLocation, lastLocation;
   
-  NSWindow   *window = [self window];
-  NSRect     superFrame = [self frame];
   NSPoint    initialOrigin, boxOrigin;
   NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                           | NSPeriodicMask | NSOtherMouseUpMask
@@ -108,8 +102,6 @@
 
   moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
   [[NSCursor closedHandCursor] push];
-  // isMouseDragged = YES;
-  // box.isDragged = YES;
   
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
 
@@ -126,28 +118,19 @@
         case NSOtherMouseUp:
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
-          // isMouseDragged = NO;
-          // box.isDragged = NO;
+          // Reset mouse cursor to cursor befor mouse down - openHandCursor.
+          // TODO: on momentary mouse down/up (without drag) cursor turns
+          // into arrowCursor. This is wrong. Perhaps this is due to old and
+          // new cursor rects intersection.
           [NSCursor pop];
           [self resetCursorRects];
           [self setNeedsDisplay:YES];
-          /*          location = [window mouseLocationOutsideOfEventStream];
-          NSRect brGlobal = [self convertRect:[box frame]
-                                       toView:[window contentView]];
-          if (NSPointInRect(location, brGlobal))
-            {
-              NSLog(@"Mouse: %@", NSStringFromPoint(location));
-              NSLog(@"Box  : %@", NSStringFromRect(brGlobal));
-              // [[NSCursor arrowCursor] set];
-              // [[NSCursor openHandCursor] mouseEntered:theEvent];
-              [[NSCursor openHandCursor] push];
-              }*/
           done = YES;
           break;
         case NSPeriodic:
           location = [window mouseLocationOutsideOfEventStream];
           
-          if (!NSPointInRect(location, superFrame))
+          if (!NSPointInRect(location, [self frame]))
             break;
           
           if (NSEqualPoints(location, lastLocation) == NO &&
@@ -163,9 +146,9 @@
                   boxOrigin.x = 0;
                 }
               else if ((boxOrigin.x + boxFrame.size.width)
-                       >= (superFrame.size.width - 4))
+                       >= canvasFrame.size.width)
                 {
-                  boxOrigin.x = superFrame.size.width - boxFrame.size.width - 4;
+                  boxOrigin.x = canvasFrame.size.width - boxFrame.size.width;
                 }
                   
               boxOrigin.y += (location.y - lastLocation.y);
@@ -174,9 +157,9 @@
                   boxOrigin.y = 0;
                 }
               else if ((boxOrigin.y + boxFrame.size.height)
-                       >= (superFrame.size.height - 4))
+                       >= canvasFrame.size.height)
                 {
-                  boxOrigin.y = superFrame.size.height - boxFrame.size.height - 4;
+                  boxOrigin.y = canvasFrame.size.height - boxFrame.size.height;
                 }
                   
               [box setFrameOrigin:boxOrigin];

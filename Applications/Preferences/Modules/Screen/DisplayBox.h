@@ -41,7 +41,6 @@
 
 @property NSRect displayFrame;
 @property (assign) NSString *displayName;
-@property BOOL isDragged;
 
 - initWithFrame:(NSRect)frameRect
         display:(NXDisplay *)aDisplay
