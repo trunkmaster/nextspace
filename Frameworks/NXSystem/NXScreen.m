@@ -816,15 +816,14 @@ static NXScreen *systemScreen = nil;
       [d setObject:NSStringFromRect(NSMakeRect(0,0,0,0))
             forKey:NXDisplayHiddenFrameKey];
 
-      if ([display isBuiltin] && [NXPower isLidClosed])
+      if ([display isBuiltin] || [NXPower isLidClosed])
         {
           [d setObject:@"NO" forKey:NXDisplayIsActiveKey];
           [d setObject:@"NO" forKey:NXDisplayIsMainKey];
         }
       else
         {
-          [d setObject:@"YES"
-                forKey:NXDisplayIsActiveKey];
+          [d setObject:@"YES" forKey:NXDisplayIsActiveKey];
           [d setObject:([display isMain]) ? @"YES" : @"NO"
                 forKey:NXDisplayIsMainKey];
         }
@@ -848,10 +847,9 @@ static NXScreen *systemScreen = nil;
       [layout addObject:d];
       [d release];
 
-      if (arrange && ([display isBuiltin] && ![NXPower isLidClosed]))
+      if (arrange && (![display isBuiltin] || ![NXPower isLidClosed]))
         {
-          origin.x +=
-            NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]).width;
+          origin.x += NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]).width;
         }
     }
 
