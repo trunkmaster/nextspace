@@ -221,7 +221,7 @@ static NXScreen *systemScreen = nil;
   xDisplay = XOpenDisplay(getenv("DISPLAY"));
   if (!xDisplay)
     {
-      NSLog(@"Can't open Xorg display.");
+      NSLog(@"Can't open Xorg display. Please setup DISPLAY environment variable.");
       return nil;
     }
 
@@ -232,9 +232,9 @@ static NXScreen *systemScreen = nil;
     XRRQueryExtension(xDisplay, &event_base, &error_base);
     XRRQueryVersion(xDisplay, &major_version, &minor_version);
 
-    NSLog(@"XRandR %i.%i, event base:%i, error base:%i",
-          major_version, minor_version,
-          event_base, error_base);
+    NSDebugLLog(@"Display", @"XRandR %i.%i, event base:%i, error base:%i",
+                major_version, minor_version,
+                event_base, error_base);
   }
 
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
@@ -328,7 +328,7 @@ static NXScreen *systemScreen = nil;
       return;
     }
     
-  NSLog(@"NXScreen: randrUpdateScreenResources: START");
+  NSDebugLLog(@"Display", @"NXScreen: randrUpdateScreenResources: START");
   
   // Reread screen resources
   if (screen_resources)
@@ -359,7 +359,7 @@ static NXScreen *systemScreen = nil;
                               screen:self
                             xDisplay:xDisplay];
       
-      // Set hiddenFrame for inactive displays
+      // Set hiddenFrame for inactive display
       if (![display isActive] && !initialUpdate)
         {
           NSRect hfRect;
@@ -407,7 +407,7 @@ static NXScreen *systemScreen = nil;
 
   [updateScreenLock unlock];
   
-  NSLog(@"NXScreen: randrUpdateScreenResources: END");
+  NSDebugLLog(@"Display", @"NXScreen: randrUpdateScreenResources: END");
   
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NXScreenDidUpdateNotification

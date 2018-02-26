@@ -294,6 +294,11 @@
 
 - (CGFloat)dpi
 {
+  // NSLog(@"NXDisplay DPI: %.0f points, %.0f mm",
+  //       frame.size.height, physicalSize.height);
+  if ((frame.size.height <= 0) || (physicalSize.height <= 0))
+    return .0;
+    
   return (25.4 * frame.size.height) / physicalSize.height;
 }
 
@@ -670,23 +675,26 @@ find_last_non_clamped(CARD16 array[], int size)
   
   if (!output_info->crtc)
     {
-      NSLog(@"NXDisplay: No display connected to output %s",
-            output_info->name);
+      NSDebugLLog(@"Display",@"NXDisplay: No display connected to output %s",
+                  output_info->name);
       return;
     }
 
   size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
   if (!size)
     {
-      NSLog(@"NXDisplay: Failed to get size of gamma for output %s",
-            output_info->name);
+      NSDebugLLog(@"Display",
+                  @"NXDisplay: Failed to get size of gamma for output %s",
+                  output_info->name);
       return;
     }
 
   crtc_gamma = XRRGetCrtcGamma(xDisplay, output_info->crtc);
   if (!crtc_gamma)
     {
-      NSLog(@"NXDisplay: Failed to get gamma for output %s", output_info->name);
+      NSDebugLLog(@"Display",
+                  @"NXDisplay: Failed to get gamma for output %s",
+                  output_info->name);
       return;
     }
 
