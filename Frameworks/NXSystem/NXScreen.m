@@ -816,7 +816,7 @@ static NXScreen *systemScreen = nil;
       [d setObject:NSStringFromRect(NSMakeRect(0,0,0,0))
             forKey:NXDisplayHiddenFrameKey];
 
-      if ([display isBuiltin] || [NXPower isLidClosed])
+      if ([display isBuiltin] && [NXPower isLidClosed])
         {
           [d setObject:@"NO" forKey:NXDisplayIsActiveKey];
           [d setObject:@"NO" forKey:NXDisplayIsMainKey];
