@@ -270,7 +270,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"NXDisplay %@: -dealloc", outputName);
+  NSDebugLLog(@"dealloc", @"NXDisplay %@: -dealloc", outputName);
 
   // NSLog(@"NXDisplay %@: resolution count: %lu; reaint count: %lu",
   //       outputName, [allResolutions count], [allResolutions retainCount]);
