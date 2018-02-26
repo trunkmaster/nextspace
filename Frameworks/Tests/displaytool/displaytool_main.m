@@ -129,12 +129,15 @@ void printMountableVolumes(NSArray *volumes)
 }
 */
 
-void listDisplays(NSArray *displays)
+void listDisplays(NSArray *displays, NSString *title)
 {
   NSDictionary	*resolution;
   NSSize	size;
   NSPoint	position;
   
+  fprintf(stderr, "------\n");
+  fprintf(stderr, " %s\n", [title cString]);
+  fprintf(stderr, "---------------------------------------------------------------------------------\n");
   fprintf(stderr, " Name \tConnected\t Lid   \tActive \t Main  \t DPI \tResolution\tPosition\n");
   fprintf(stderr, "------\t---------\t-------\t-------\t-------\t-----\t----------\t--------\n");
   for (NXDisplay *d in displays)
@@ -184,37 +187,37 @@ int main(int argc, char *argv[])
   NSAutoreleasePool	*pool = [NSAutoreleasePool new];
   NXScreen		*screen = [NXScreen sharedScreen];
 
+  if (argc == 1)
+    listDisplays([screen activeDisplays], @"Active displays");
+  
   for (int i=1; i < argc; i++)
     {
       if (argv[i][0] == '-')
         {
           if (strcmp(argv[i], "-listAll") == 0)
             {
-              fprintf(stderr, "\n------------------------\n");
-              fprintf(stderr, " All registered displays\n");
-              fprintf(stderr, "---------------------------------------------------------------------------------\n");
-              listDisplays([screen allDisplays]);
+              listDisplays([screen allDisplays], @"All registered displays");
             }
           else if (strcmp(argv[i], "-listActive") == 0)
             {
-              fprintf(stderr, "\n----------------\n");
-              fprintf(stderr, " Active displays\n");
-              fprintf(stderr, "---------------------------------------------------------------------------------\n");
-              listDisplays([screen activeDisplays]);
+              listDisplays([screen activeDisplays], @"Active displays");
             }
           else if (strcmp(argv[i], "-details") == 0)
             {
               displayDetails([screen displayWithName:[NSString stringWithCString:argv[++i]]]);
             }
           else
-            fprintf(stderr, "Unknown parameter specified: %s\n", argv[i]);
+            {
+              fprintf(stderr, "Unknown parameter specified: %s\n", argv[i]);
+            }
         }
       else
         {
           fprintf(stderr, "No parameters specified.\n");
         }
     }
-
+  
+  [screen release];
   [pool release];
 
   return 0;

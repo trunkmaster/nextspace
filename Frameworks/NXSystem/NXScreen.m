@@ -269,7 +269,7 @@ static NXScreen *systemScreen = nil;
 
 - (void)dealloc
 {
-  NSLog(@"NXScreen: dealloc");
+  NSDebugLLog(@"dealloc", @"NXScreen: -dealloc");
   
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
 
