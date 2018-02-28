@@ -96,7 +96,11 @@ static NSUserDefaults *defaults = nil;
       
       NSLog(@"Configuring Desktop background...");
       NXScreen *screen = [NXScreen sharedScreen];
-      [screen setBackgroundColor:[screen savedBackgroundColor]];
+      CGFloat red, green, blue;
+      if ([screen savedBackgroundColorRed:&red green:&green blue:&blue] == YES)
+        {
+          [screen setBackgroundColorRed:red green:green blue:blue];
+        }
     }
 }
 
