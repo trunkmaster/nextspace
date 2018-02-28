@@ -153,7 +153,8 @@ void WWMInitializeWindowMaker(int argc, char **argv)
     // Check WMState user file (Dock state)
     if (WWMStateCheck() == nil)
       {
-        NSLog(@"Dock contents cannot be restored. Show only Workspace application icon.");
+        NSLog(@"[Workspace] Dock contents cannot be restored."
+              " Show only Workspace application icon.");
       }
     // Restore display layout
     [[[NXScreen new] autorelease] applySavedDisplayLayout];
@@ -162,12 +163,16 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   // WM/src/main.c
   real_main(argc, argv);
 
+  // Just load saved Dock state without icons drawing.
+  // Dock appears on screen after call to WWMDockShowIcons in
+  // Controller's -applicationDidFinishLaunching method.
   WWMDockStateLoad();
   
   //--- Below this point WindowMaker was initialized
 
   // TODO: go through all screens
-  // XWUpdateScreenInfo(wScreenWithNumber(0));
+  // Adjust WM elements placing
+  XWUpdateScreenInfo(wScreenWithNumber(0));
 
   // Dock startup activities
   // {
@@ -269,8 +274,10 @@ void WWMDockStateLoad(void)
   WAppIcon *btn;
 
   // Load WMState dictionary
-  state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state, WMCreatePLString("Dock"));
-  wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0), state, WM_DOCK);
+  state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state,
+                                WMCreatePLString("Dock"));
+  wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0),
+                                                 state, WM_DOCK);
 
   // Setup main button properties
   btn = wScreenWithNumber(0)->dock->icon_array[0];
