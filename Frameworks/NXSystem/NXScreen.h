@@ -102,10 +102,16 @@
 - (NSUInteger)colorDepth;
 
 /** Returns color saved in defaults with key NXDesktopBackgroundBolor */
-- (NSColor *)savedBackgroundColor;
+- (BOOL)savedBackgroundColorRed:(CGFloat *)redComponent
+                          green:(CGFloat *)greenComponent
+                           blue:(CGFloat *)blueComponent;
 /** Returns current color root window. On failure returns saved color. */
-- (NSColor *)backgroundColor;
-- (BOOL)setBackgroundColor:(NSColor *)color;
+- (BOOL)backgroundColorRed:(CGFloat *)redComponent
+                     green:(CGFloat *)greenComponent
+                      blue:(CGFloat *)blueComponent;
+- (BOOL)setBackgroundColorRed:(CGFloat)redComponent
+                        green:(CGFloat)greenComponent
+                         blue:(CGFloat)blueComponent;
  
 - (NSArray *)allDisplays;
 - (NSArray *)activeDisplays;

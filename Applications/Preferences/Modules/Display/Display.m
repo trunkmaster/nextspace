@@ -99,9 +99,18 @@
   [reflectionBtn setEnabled:NO];
 
   // Desktop background
-  desktopBackground = [systemScreen backgroundColor];
-  [colorBtn setColor:desktopBackground];
-  [systemScreen setBackgroundColor:desktopBackground];
+  CGFloat red, green, blue;
+  if ([systemScreen backgroundColorRed:&red green:&green blue:&blue] == YES)
+    {
+      desktopBackground = [NSColor colorWithDeviceRed:red
+                                                green:green
+                                                 blue:blue
+                                                alpha:1.0];
+      [colorBtn setColor:desktopBackground];
+      [systemScreen setBackgroundColorRed:red
+                                    green:green
+                                     blue:blue];
+    }
 
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -302,9 +311,12 @@
 - (IBAction)backgroundChanged:(id)sender
 {
   NSColor *color = [sender color];
+  NSColor *rgbColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
     
   // NSLog(@"Display: backgroundChanged: %@", [sender className]);
-  if ([systemScreen setBackgroundColor:color] == YES)
+  if ([systemScreen setBackgroundColorRed:[rgbColor redComponent]
+                                    green:[rgbColor greenComponent]
+                                     blue:[rgbColor blueComponent]] == YES)
     {
       NXDefaults   *defs = [NXDefaults globalUserDefaults];
       NSDictionary *dBack;
@@ -314,7 +326,6 @@
                 @"Blue":  [NSNumber numberWithFloat:[color blueComponent]],
                 @"Alpha": [NSNumber numberWithFloat:1.0]};
       [defs setObject:dBack forKey:@"NXDesktopBackgroundColor"];
-      // TODO: save color into NXGlobalDomain
     }
 }
 

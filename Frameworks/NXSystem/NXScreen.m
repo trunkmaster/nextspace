@@ -455,37 +455,41 @@ static NXScreen *systemScreen = nil;
   return (NSUInteger)depth;
 }
 
-- (NSColor *)savedBackgroundColor
+- (BOOL)savedBackgroundColorRed:(CGFloat *)redComponent
+                          green:(CGFloat *)greenComponent
+                           blue:(CGFloat *)blueComponent
 {
   NSDictionary	*dBack;
-  NSColor	*cBack;
+  BOOL		success = NO;
   
   dBack =  [[NXDefaults globalUserDefaults]
                                objectForKey:@"NXDesktopBackgroundColor"];
   if (dBack)
     {
-      cBack = [NSColor colorWithDeviceRed:[dBack[@"Red"] floatValue]
-                                    green:[dBack[@"Green"] floatValue]
-                                     blue:[dBack[@"Blue"] floatValue]
-                                    alpha:1.0];
+      *redComponent = [dBack[@"Red"] floatValue];
+      *greenComponent = [dBack[@"Green"] floatValue];
+      *blueComponent = [dBack[@"Blue"] floatValue];
+      success = YES;
     }
   else
     {
-      cBack = [NSColor colorWithDeviceRed:83.0/255.0
-                                    green:83.0/255.0
-                                     blue:116.0/255.0
-                                    alpha:1.0];
+      *redComponent = 83.0/255.0;
+      *greenComponent = 83.0/255.0;
+      *blueComponent = 116.0/255.0;
+      success = YES;
     }
   
-  return cBack;
+  return success;
 }
 
-- (NSColor *)backgroundColor
+- (BOOL)backgroundColorRed:(CGFloat *)redComponent
+                     green:(CGFloat *)greenComponent
+                      blue:(CGFloat *)blueComponent
 {
   XWindowAttributes	attrs;
   XImage		*image;
   unsigned long		pixel;
-  NSColor		*cBack = nil;
+  BOOL			success = NO;
 
   // Try to get background color from root window pixel at (0,0).
   // Other pixels have random values. Perhaps because root window background
@@ -508,34 +512,44 @@ static NXScreen *systemScreen = nil;
           //         ((pixel&0x00ff00)>>8), (CGFloat)((pixel&0x00ff00)>>8)/255.0);
           // fprintf(stderr, "Blue : %lu (%f)\n",
           //         (pixel&0x0000ff), (CGFloat)(pixel&0x0000ff)/255.0);
-          cBack = [NSColor colorWithDeviceRed:(CGFloat)(pixel>>16)/255.0
-                                        green:(CGFloat)((pixel&0x00ff00)>>8)/255.0
-                                         blue:(CGFloat)(pixel&0x0000ff)/255.0
-                                        alpha:1.0];
+          // cBack = [NSColor colorWithDeviceRed:(CGFloat)(pixel>>16)/255.0
+          //                               green:(CGFloat)((pixel&0x00ff00)>>8)/255.0
+          //                                blue:(CGFloat)(pixel&0x0000ff)/255.0
+          //                               alpha:1.0];
+          *redComponent = (CGFloat)(pixel>>16)/255.0;
+          *greenComponent = (CGFloat)((pixel&0x00ff00)>>8)/255.0;
+          *blueComponent = (CGFloat)(pixel&0x0000ff)/255.0;
           XDestroyImage(image);
+          success = YES;
         }
     }
 
-  if (!cBack)
-    cBack = [self savedBackgroundColor];
+  if (success == NO)
+    {
+      success = [self savedBackgroundColorRed:redComponent
+                                        green:greenComponent
+                                         blue:blueComponent];
+    }
+  
     
-  return cBack;
+  return success;
 }
 
-- (BOOL)setBackgroundColor:(NSColor *)color
+- (BOOL)setBackgroundColorRed:(CGFloat)redComponent
+                        green:(CGFloat)greenComponent
+                         blue:(CGFloat)blueComponent
 {
-  NSColor	*rgbColor;
   unsigned	red, green, blue;
   NSString	*rgbSpec;
   char		*x_color_spec;
   Screen	*xScreen = DefaultScreenOfDisplay(xDisplay);
   XColor	xColor;
 
-  rgbColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+  // rgbColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
   
-  red     = (unsigned)(255/(1/[rgbColor redComponent]));
-  green   = (unsigned)(255/(1/[rgbColor greenComponent]));
-  blue    = (unsigned)(255/(1/[rgbColor blueComponent]));
+  red     = (unsigned)(255/(1/redComponent));
+  green   = (unsigned)(255/(1/greenComponent));
+  blue    = (unsigned)(255/(1/blueComponent));
   rgbSpec = [NSString stringWithFormat:@"rgb:%.2x/%.2x/%.2x", red, green, blue];
   
   x_color_spec = (char *)[rgbSpec cString];
