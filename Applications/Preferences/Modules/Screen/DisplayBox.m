@@ -75,11 +75,18 @@
 
 - (void)setActive:(BOOL)active
 {
+  CGFloat red, green, blue;
   NSColor *color;
   
   if (active)
     {
-      color = [[NXScreen sharedScreen] savedBackgroundColor];
+      [[NXScreen sharedScreen] savedBackgroundColorRed:&red
+                                                 green:&green
+                                                  blue:&blue];
+      color = [NSColor colorWithDeviceRed:red
+                                    green:green
+                                     blue:blue
+                                    alpha:1.0];
       [nameField setTextColor:[NSColor whiteColor]];
     }
   else
