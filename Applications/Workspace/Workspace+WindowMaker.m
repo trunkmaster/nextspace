@@ -849,7 +849,7 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenUpdateUsableArea(scr);
 
   @autoreleasepool {
-    NXScreen *systemScreen = [NXScreen new];
+    NXScreen *systemScreen = [[NXScreen new] autorelease];
     
     // 4.1 Get info about main display
     dRect = [[systemScreen mainDisplay] frame];
@@ -857,8 +857,6 @@ void XWUpdateScreenInfo(WScreen *scr)
     
     // Save changed layout in user's preferences directory
     [systemScreen saveCurrentDisplayLayout];
-
-    [systemScreen release];
   }
   
   // 4.2 Move Dock
@@ -882,10 +880,9 @@ void XWUpdateScreenInfo(WScreen *scr)
 
   // NSLog(@"Sending NXScreenDidChangeNotification...");
   // Send notification to active NXScreen applications.
-  // Our NXScreen should skip updating screen info.
   [[NSDistributedNotificationCenter defaultCenter]
      postNotificationName:NXScreenDidChangeNotification
-                   object:@"WorkspaceManager"];
+                   object:nil];
 }
 
 #endif //NEXTSPACE
