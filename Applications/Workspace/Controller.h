@@ -50,7 +50,6 @@
   id machineType, cpuType, cpuClock, memory;
   id baseVersion, guiVersion;
 
-  NXScreen *systemScreen;
   NXPower  *systemPower;
   
   FileViewer          *rootViewer;
