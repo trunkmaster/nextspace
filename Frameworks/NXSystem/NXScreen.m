@@ -404,7 +404,7 @@ static NXScreen *systemScreen = nil;
   
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NXScreenDidUpdateNotification
-                  object:nil];
+                  object:self];
 }
 
 - (RRCrtc)randrFindFreeCRTC
