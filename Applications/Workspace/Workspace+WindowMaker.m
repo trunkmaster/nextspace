@@ -852,7 +852,6 @@ void XWUpdateScreenInfo(WScreen *scr)
     NXScreen *systemScreen = [NXScreen new];
     
     // 4.1 Get info about main display
-    [systemScreen randrUpdateScreenResources];
     dRect = [[systemScreen mainDisplay] frame];
     dWidth = dRect.origin.x + dRect.size.width;
     
