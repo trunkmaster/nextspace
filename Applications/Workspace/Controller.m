@@ -305,7 +305,6 @@ static NSString *WMComputerShouldGoDownNotification =
     {
       [systemPower stopEventsMonitor];
       [systemPower release];
-      [systemScreen release];
     }
         
   // Workspace Tools
@@ -424,8 +423,6 @@ static NSString *WMComputerShouldGoDownNotification =
 
   if (useInternalWindowManager)
     {
-      systemScreen = [NXScreen new];
-      
       // Detect lid close/open events
       systemPower = [NXPower new];
       [systemPower startEventsMonitor];
@@ -940,8 +937,9 @@ static NSString *WMComputerShouldGoDownNotification =
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   NXDisplay *builtinDisplay = nil;
+  NXScreen  *screen = [NXScreen new];
 
-  for (NXDisplay *d in [systemScreen connectedDisplays])
+  for (NXDisplay *d in [screen connectedDisplays])
     {
       if ([d isBuiltin])
         {
@@ -952,20 +950,20 @@ static NSString *WMComputerShouldGoDownNotification =
   
   if (builtinDisplay)
     {
-      [systemScreen randrUpdateScreenResources];
       if (![systemPower isLidClosed] && ![builtinDisplay isActive])
         {
           NSLog(@"Workspace: activating display %@",
                 [builtinDisplay outputName]);
-          [systemScreen activateDisplay:builtinDisplay];
+          [screen activateDisplay:builtinDisplay];
         }
       else if ([systemPower isLidClosed] && [builtinDisplay isActive])
         {
           NSLog(@"Workspace: DEactivating display %@",
                 [builtinDisplay outputName]);
-          [systemScreen deactivateDisplay:builtinDisplay];
+          [screen deactivateDisplay:builtinDisplay];
         }
     }
+  [screen release];
 }
 
 @end
