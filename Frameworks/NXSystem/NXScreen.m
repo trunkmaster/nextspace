@@ -293,14 +293,7 @@ static NXScreen *systemScreen = nil;
 // XRRScreenResources update will generate NXScreenDidUpdateNotification.
 - (void)randrScreenDidChange:(NSNotification *)aNotif
 {
-  if ([[[NSProcessInfo processInfo] processName] isEqualToString:@"Workspace"]
-      && [[aNotif object] isEqualToString:@"WorkspaceManager"])
-    {
-      NSLog(@"NXScreen: received NXScreenDidChangeNotification "
-            "inside Workspace Manager. Skip updating XRandR screen resources. "
-            "Assuming it's already done.");
-      return;
-    }
+  NSDebugLLog(@"Display", @"NXScreen: NXScreenDidChangeNotification received.");
   
   [self randrUpdateScreenResources];
 }
