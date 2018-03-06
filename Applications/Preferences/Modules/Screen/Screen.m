@@ -85,6 +85,7 @@
 
   [systemScreen release];
   [power release];
+  [view release];
   
   [super dealloc];
 }
@@ -94,7 +95,7 @@
   [view retain];
   [window release];
 
-  systemScreen = [[NXScreen alloc] init];
+  systemScreen = [NXScreen new];
   
   // Get info about monitors and layout
   displayBoxList = [[NSMutableArray alloc] init];
@@ -104,7 +105,7 @@
     addObserver:self
        selector:@selector(screenDidUpdate:)
            name:NXScreenDidUpdateNotification
-         object:nil];
+         object:systemScreen];
 
   // Open/close lid events
   power = [NXPower new];

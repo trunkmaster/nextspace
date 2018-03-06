@@ -70,8 +70,8 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   [image release];
-  // [systemScreen release];
-  // [view release];
+  [systemScreen release];
+  [view release];
   [super dealloc];
 }
 
@@ -80,7 +80,7 @@
   [view retain];
   [window release];
 
-  systemScreen = [[NXScreen alloc] init];
+  systemScreen = [NXScreen new];
 
   // Setup NXNumericField float constraints
   [gammaField setMinimumValue:0.1];
@@ -116,7 +116,7 @@
     addObserver:self
        selector:@selector(screenDidUpdate:)
            name:NXScreenDidUpdateNotification
-         object:nil];
+         object:systemScreen];
 
   // if (!XInitThreads())
   //   NSLog(@"Display: multi-threading is not initialized!");
