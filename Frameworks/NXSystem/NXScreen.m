@@ -991,30 +991,29 @@ static NXScreen *systemScreen = nil;
   // Calculate sizes of screen
   newPixSize = [self _sizeInPixelsForLayout:layout];
   mmSize = [self _sizeInMilimetersForLayout:layout];
-  NSLog(@"NXScreen: New screen size: %@ (%@), old %@(%@)",
-        NSStringFromSize(newPixSize), NSStringFromSize(mmSize),
-        NSStringFromSize(sizeInPixels), NSStringFromSize(sizeInMilimeters));
+  NSLog(@"NXScreen: New screen size: %@, old %@",
+        NSStringFromSize(newPixSize), NSStringFromSize(sizeInPixels));
 
   [updateScreenLock lock];
   
   // Deactivate displays with current width or height bigger
   // than new screen size. Otherwise [NXDisplay setResolution...] will fail with
   // XRandR error and application will be terminated.
-  for (NXDisplay *d in [self connectedDisplays])
-    {
-      [d setResolution:[NXDisplay zeroResolution] position:[d frame].origin];
-    }
+  // for (NXDisplay *d in [self connectedDisplays])
+  //   {
+  //     [d setResolution:[NXDisplay zeroResolution] position:[d frame].origin];
+  //   }
 
-  // Set new screen size for new layout
-  NSLog(@"NXScreen: set new screen size: START");
-  // XGrabServer(xDisplay);
-  XRRSetScreenSize(xDisplay, xRootWindow,
-                   (int)newPixSize.width, (int)newPixSize.height,
-                   (int)mmSize.width, (int)mmSize.height);
-  // XUngrabServer(xDisplay);
-  // XFlush(xDisplay);
-  NSLog(@"NXScreen: set new screen size: END");
-  sizeInPixels = newPixSize;
+  // If new screen size is BIGGER - set new screen size here
+  if (newPixSize.width > sizeInPixels.width ||
+      newPixSize.height > sizeInPixels.height)
+    {
+      NSLog(@"NXScreen: set new BIGGER screen size: START");
+      XRRSetScreenSize(xDisplay, xRootWindow,
+                       (int)newPixSize.width, (int)newPixSize.height,
+                       (int)mmSize.width, (int)mmSize.height);
+      NSLog(@"NXScreen: set new BIGGER screen size: END");
+    }
   
   // Set resolution and gamma to displays
   mainDisplay = nil;
@@ -1023,8 +1022,9 @@ static NXScreen *systemScreen = nil;
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
       display = [self displayWithName:displayName];
 
-      // Do not set resolution for already deactivated displays
-      // (code block right before XRRSetScreenSize() call).
+      // // Do not set resolution for already deactivated displays
+      // // (code block right before XRRSetScreenSize() call).
+      // Set resolution to displays marked as active in layout
       if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
             isEqualToString:@"YES"])
         {
@@ -1047,8 +1047,26 @@ static NXScreen *systemScreen = nil;
           [display setGammaFromDescription:gamma];
           lastActiveDisplay = display;
         }
+      else // Setting zero resolution to display disables it.
+        {
+          [display setResolution:[NXDisplay zeroResolution]
+                        position:[display frame].origin];
+        }
     }
 
+  // If new screen size is SMALLER - set new screen size here
+  if (newPixSize.width < sizeInPixels.width ||
+      newPixSize.height < sizeInPixels.height)
+    {
+      NSLog(@"NXScreen: set new SMALLER screen size: START");
+      XRRSetScreenSize(xDisplay, xRootWindow,
+                       (int)newPixSize.width, (int)newPixSize.height,
+                       (int)mmSize.width, (int)mmSize.height);
+      NSLog(@"NXScreen: set new SMALLER screen size: END");
+    }
+  
+  sizeInPixels = newPixSize;
+  
   // No active main displays left. Set main to last processed with loop above.
   if (!mainDisplay)
     {

@@ -197,6 +197,8 @@ int main(int argc, char *argv[])
 {
   NSAutoreleasePool	*pool = [NSAutoreleasePool new];
   NXScreen		*screen = [NXScreen sharedScreen];
+  NXDisplay		*display = nil;
+  BOOL			setMode, showDetails;
 
   if (argc == 1)
     {
@@ -216,9 +218,13 @@ int main(int argc, char *argv[])
             {
               listDisplays([screen activeDisplays], @"Active displays");
             }
-          else if (strcmp(argv[i], "-details") == 0)
+          else if (strcmp(argv[i], "-details") == 0 && (i+1 < argc))
             {
               displayDetails([screen displayWithName:[NSString stringWithCString:argv[++i]]]);
+            }
+          else if (strcmp(argv[i], "-display") == 0)
+            {
+              display = [screen displayWithName:[NSString stringWithCString:argv[++i]]];
             }
           else
             {
@@ -230,7 +236,14 @@ int main(int argc, char *argv[])
           fprintf(stderr, "No parameters specified.\n");
         }
     }
-  
+
+  if (display)
+    if (showDetails)
+      displayDetails(display);
+    else if (setMode)
+      setMode()
+      
+
   [screen release];
   [pool release];
 
