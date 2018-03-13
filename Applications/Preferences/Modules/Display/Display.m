@@ -179,6 +179,8 @@
 
 - (void)setResolution
 {
+  NSArray *newLayout;
+  
   // Set resolution only to active display.
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive])
@@ -266,10 +268,18 @@
 - (IBAction)resolutionClicked:(id)sender
 {
   [self fillRateButton];
-  [self setResolution];
-  
   NSLog(@"resolutionClicked: Selected resolution: %@",
         [[rateBtn selectedCell] representedObject]);
+  
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  
+  [self setResolution];
+  
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(screenDidUpdate:)
+           name:NXScreenDidUpdateNotification
+         object:systemScreen];  
 }
 
 - (IBAction)rateClicked:(id)sender
