@@ -2,16 +2,16 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Mar  8 03:13:23 2018
+;; Created Tue Mar 20 19:22:58 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Frameworks/NXSystem/")
+(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXSystem/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("<->" "setResolution" "NSColor" "NSDeviceRGBColorSpace" "No displa" "mm_width" "XRand" "lid" "Lid" "NXKeyboard" "found" "frame" "Display is no" "randrUpdate" "sizeInPix" "size"))
+(setq search-ring '("currResol" "physicalSize" "outputName" "NXScreenDidUpdate" "<->" "setResolution" "NSColor" "NSDeviceRGBColorSpace" "No displa" "mm_width" "XRand" "lid" "Lid" "NXKeyboard" "found" "frame"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Frameworks/NXSystem/NXPower.m" "~/Developer/nextspace/Frameworks/NXSystem/NXMouse.[hm]" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile" "~/Developer/nextspace/Frameworks/NXSystem/NXKeyboard.h" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.h" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble" "~/rpmbuild/SPECS/nextspace-gnustep.spec" "~/Developer/nextspace/Applications/Login/Controller.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.h" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Weather/YQL.[hm]" "~/Developer/nextspace/Applications/Weather/WeatherInfo.plist" "~/Developer/nextspace/Applications/Weather/YahooForecast.m" "~/Developer/nextspace/Applications/Weather/YahooForecast.h" "~/Developer/nextspace/Applications/Weather/wmforecast.c"))
@@ -22,8 +22,8 @@
   "NXScreen.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  32553
-  '(31654 nil)
+  27742
+  '(38399 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -32,9 +32,20 @@
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
   "NXDisplay.m"
   'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode irony-mode)
+  8545
+  '(2016 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
+  "NXDisplay.h"
+  'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  17696
-  '(20691 nil)
+  2906
+  '(2972 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -57,17 +68,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   2145
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.h"
-  "NXDisplay.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  5231
-  '(2844 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

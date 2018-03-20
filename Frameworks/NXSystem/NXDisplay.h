@@ -51,8 +51,8 @@ typedef struct _NXGammaValue NXGammaValue;
   XRRScreenResources	*screen_resources;
   RROutput		output_id;
 
-  NSString       	*outputName;		// name of Xrandr output (VGA)
-  NSSize         	physicalSize;		// physical size in milimeters
+  // NSString       	*outputName;		// name of Xrandr output (VGA)
+  // NSSize         	physicalSize;		// physical size in milimeters
   Connection     	connectionState;	// RandR connection state
   NSMutableArray 	*allResolutions;	// width, height, rate
   
@@ -73,6 +73,10 @@ typedef struct _NXGammaValue NXGammaValue;
   BOOL			isActive;
 }
 
+@property (readonly) NSString *outputName;
+@property (readonly) NSSize physicalSize;
+@property (readonly) BOOL isBuiltin;
+
 + (NSDictionary *)zeroResolution;
 
 - (id)initWithOutputInfo:(RROutput)output
@@ -80,10 +84,10 @@ typedef struct _NXGammaValue NXGammaValue;
                   screen:(NXScreen *)scr
                 xDisplay:(Display *)x_display;
 
-- (NSString *)outputName; // LVDS, VGA, DVI, HDMI
-- (NSSize)physicalSize;   // in milimetres
+// - (NSString *)outputName; // LVDS, VGA, DVI, HDMI
+// - (NSSize)physicalSize;   // in milimetres
 - (CGFloat)dpi;           // calculated from frame and phys. size
-- (BOOL)isBuiltin;        // decision base on outputName
+// - (BOOL)isBuiltin;        // decision base on outputName
 
 //------------------------------------------------------------------------------
 //--- Resolution and refresh rate
