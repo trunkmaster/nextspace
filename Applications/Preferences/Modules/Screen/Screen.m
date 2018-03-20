@@ -199,7 +199,8 @@
 
 - (void)arrangeDisplays:(id)sender
 {
-  [self updateDisplayBoxList];
+  [systemScreen applyDisplayLayout:[systemScreen arrangeDisplays]];
+  // [self updateDisplayBoxList];
 }
 
 //

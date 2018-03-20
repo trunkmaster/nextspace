@@ -919,6 +919,11 @@ static NXScreen *systemScreen = nil;
   return layout;
 }
 
+// Differs from -currentLayout with these:
+- (NSArray *)proposedLayout
+{
+}
+
 - (BOOL)validateLayout:(NSArray *)layout
 {
   NSDictionary *gamma;
@@ -1022,8 +1027,6 @@ static NXScreen *systemScreen = nil;
       displayName = [displayLayout objectForKey:NXDisplayNameKey];
       display = [self displayWithName:displayName];
 
-      // // Do not set resolution for already deactivated displays
-      // // (code block right before XRRSetScreenSize() call).
       // Set resolution to displays marked as active in layout
       if ([[displayLayout objectForKey:NXDisplayIsActiveKey]
             isEqualToString:@"YES"])
@@ -1197,7 +1200,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
               xShift = frame.size.width - displaySize.width;
             }
           else if ((frame.size.width == 0.0) || (frame.size.height == 0.0))
-            {
+            { // 'frame' is zeroed, check if 'hiddenFrame' is not and deactivate if it's true.
               hiddenFrame = [d hiddenFrame];
               if (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0)
                 { // Deactivate ('frame' saved in 'hiddenFrame')

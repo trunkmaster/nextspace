@@ -88,6 +88,9 @@
 
 @implementation NXDisplay
 
+// @synthesize outputName;
+// @synthesize physicalSize;
+
 + (NSDictionary *)zeroResolution
 {
   NSString *zeroSizeString = NSStringFromSize(NSMakeSize(0,0));
@@ -198,8 +201,8 @@
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output);
 
   // Output (connection port)
-  outputName = [[NSString alloc] initWithCString:output_info->name];
-  physicalSize = NSMakeSize((CGFloat)output_info->mm_width,
+  _outputName = [[NSString alloc] initWithCString:output_info->name];
+  _physicalSize = NSMakeSize((CGFloat)output_info->mm_width,
                             (CGFloat)output_info->mm_height);
   connectionState = output_info->connection;
 
@@ -242,7 +245,8 @@
           isActive = YES;
           
           XRRFreeCrtcInfo(crtc_info);
-          
+
+          _isBuiltin = [self _isBuiltin];
           // Primary display
           isMain = [self isMain];
         }
@@ -270,51 +274,51 @@
 
 - (void)dealloc
 {
-  NSDebugLLog(@"dealloc", @"NXDisplay %@: -dealloc", outputName);
+  NSDebugLLog(@"dealloc", @"NXDisplay %@: -dealloc", _outputName);
 
   // NSLog(@"NXDisplay %@: resolution count: %lu; reaint count: %lu",
   //       outputName, [allResolutions count], [allResolutions retainCount]);
   // [allResolutions release];
   
   [properties release];
-  [outputName release];
+  [_outputName release];
 
   [super dealloc];
 }
 
-- (NSString *)outputName
-{
-  return outputName;
-}
+// - (NSString *)outputName
+// {
+//   return _outputName;
+// }
 
-- (NSSize)physicalSize
-{
-  return physicalSize;
-}
+// - (NSSize)physicalSize
+// {
+//   return _physicalSize;
+// }
 
 - (CGFloat)dpi
 {
   // NSLog(@"NXDisplay DPI: %.0f points, %.0f mm",
-  //       frame.size.height, physicalSize.height);
-  if ((frame.size.height <= 0) || (physicalSize.height <= 0))
+  //       frame.size.height, _physicalSize.height);
+  if ((frame.size.height <= 0) || (_physicalSize.height <= 0))
     return .0;
     
-  return (25.4 * frame.size.height) / physicalSize.height;
+  return (25.4 * frame.size.height) / _physicalSize.height;
 }
 
 // Names are coming from kernel video and drm drivers:
 //   eDP - Embedded DisplayPort
 //   LVDS - Low-Voltage Differential Signaling
 // If returns YES monitor will be deactivated on LID close.
-- (BOOL)isBuiltin
+- (BOOL)_isBuiltin
 {
-  if (!outputName)
+  if (!_outputName)
     return NO;
   
-  if (([outputName rangeOfString:@"LVDS"].location != NSNotFound))
+  if (([_outputName rangeOfString:@"LVDS"].location != NSNotFound))
     return YES;
   
-  if (([outputName rangeOfString:@"eDP"].location != NSNotFound))
+  if (([_outputName rangeOfString:@"eDP"].location != NSNotFound))
     return YES;
 
   return NO;
@@ -629,7 +633,7 @@
 {
   if (isActive && yn == YES)
     {
-      NSLog(@"%@: become main display.", outputName);
+      NSLog(@"%@: become main display.", _outputName);
       XRRSetOutputPrimary(xDisplay,
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);
@@ -1201,7 +1205,7 @@ property_value(Display *dpy,
 
   if ([displayID length] < 1)
     {
-      displayID = outputName;
+      displayID = _outputName;
     }
   
   return displayID;
