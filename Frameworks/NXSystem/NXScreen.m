@@ -863,7 +863,8 @@ static NXScreen *systemScreen = nil;
   return [layout copy];
 }
 
-// Create layout description from monitors(displays) information
+// Create layout description from monitors(displays) actual (visible by user)
+// information.
 - (NSArray *)currentLayout
 {
   NSMutableDictionary *d;
@@ -887,6 +888,7 @@ static NXScreen *systemScreen = nil;
           [d setObject:NSStringFromSize([display physicalSize])
                 forKey:NXDisplayPhSizeKey];
 
+          // TODO: what is actually used Origin or Position?
           [d setObject:NSStringFromPoint([display frame].origin)
                 forKey:NXDisplayOriginKey];
           [d setObject:NSStringFromPoint([display position])
@@ -917,11 +919,6 @@ static NXScreen *systemScreen = nil;
     }
 
   return layout;
-}
-
-// Differs from -currentLayout with these:
-- (NSArray *)proposedLayout
-{
 }
 
 - (BOOL)validateLayout:(NSArray *)layout
@@ -1134,16 +1131,16 @@ static NXScreen *systemScreen = nil;
 
 // Returns changed layout description.
 // Should process the following cases:
-// 1. Active = "YES", "frame.size" != {0,0} and differs from "Resolution"."Size"
+// 1. Active = "YES" and "frame.size" != {0,0} and differs from "Resolution"."Size"
 // 	Change resolution requested:
 // 	- change "Resolution",
 // 	- adjust other active displays' origins if needed.
-// 2. Active = "NO", 'frame.size' != {0,0}
+// 2. Active = "NO" and 'frame.size' != {0,0}
 // 	Display activation requested:
 // 	- change Active to "YES";
 // 	- set resolution and origin;
 // 	- adjust other active displays' origins if needed.
-// 3. Active = "YES", 'frame.size' = {0,0}, 'hiddenFrame.size' != {0,0}
+// 3. Active == "YES" and 'frame.size' == {0,0} and 'hiddenFrame.size' != {0,0}
 // 	Display deactivation requested:
 // 	- 'hiddenFrame' will restored by randrUpdateScreenResources;
 // 	- Set Active to "NO";
@@ -1163,6 +1160,102 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
     return NSOrderedDescending;
   else
     return NSOrderedSame;
+}
+
+// This is new verion of -arrangeDisplays.
+// Differs from -currentLayout with these: changes if needed resolutions and
+// positions of display in returned layout description without changing actual
+// properties of displays. If you need to propagate changes to displays use
+// -applyDisplayLayout:.
+- (NSArray *)proposedDisplayLayout
+{
+  NSArray	*sortedDisplays;
+  NSArray	*currentLayout = [self currentLayout];
+  NSArray	*newLayout;
+  NSRect	dFrame, dHiddenFrame;
+  NSSize	dSize;
+  NSPoint	dPosition;
+  NSDictionary	*dResolution, resolution;
+  CGFloat	xShift = 0.0, yShift = 0.0, xPoint = 0.0;
+
+  // Displays sorted by origin.x from left to right
+  sortedDisplays = [[self connectedDisplays]
+                     sortedArrayUsingFunction:compareDisplays
+                                      context:NULL];
+  
+  for (NSMutableDictionary *d in currentLayout)
+    {
+      frame = [d objectForKey:NXDisplayFrameKey];
+      dResolution = [d objectForKey:NXDisplayResolutionKey];
+      dSize = NSSizeFromString([dResolution objectForKey:@"Size"]);
+      dPosition = NSPointFromString([d objectForKey:NXDisplayPositionKey]);
+
+      if ([d isActive] == YES)
+        {
+          if (!NSIsEmptyRect(dFrame) &&
+              (!NSEqualSizes(dFrame.size, dSize) ||
+               !NSEqualPoints(dFrame.origin, dPosition)))
+            { // 1. Change resolution to 'frame'
+              resolution = [d resolutionWithWidth:dFrame.size.width
+                                           height:dFrame.size.height
+                                             rate:0.0];
+              NSLog(@"NXScreen: Change resolution %@: %@", [d outputName], resolution);
+
+              [dResolution setObject:resolution];
+              [d setObject:dResolution forKey:NXDisplayResolutionKey];
+              // [d setResolution:resolution position:displayPosition];
+              xShift = frame.size.width - displaySize.width;
+            }
+          else if ((frame.size.width == 0.0) || (frame.size.height == 0.0))
+            { // 'frame' is zeroed, check if 'hiddenFrame'
+              hiddenFrame = [d hiddenFrame];
+              if (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0)
+                { // 3. Deactivate ('frame' saved in 'hiddenFrame')
+                  // Shift active displays which are placed at right
+                  xShift = -hiddenFrame.size.width;
+                  [d setActive:NO];
+                  NSLog(@"NXScreen: Deactivate %@: resolution %@",
+                        [d outputName], [d resolution]);
+                }
+            }
+          else 
+            { // Arrange active
+              if ((xShift > 0) || (frame.origin.x > 0))
+                {
+                  [d setFrame:NSMakeRect(frame.origin.x+xShift, frame.origin.y,
+                                         frame.size.width, frame.size.height)];
+                }
+              // Save rightmost X point for displays that will be activated
+              if (NSMaxX(frame) > xPoint)
+                {
+                  xPoint = NSMaxX(frame);
+                }
+              NSLog(@"NXScreen: Arrange %@: shift by x:%f, frame: %@",
+                    [d outputName], xShift, NSStringFromRect([d frame]));
+            }
+        }
+      else if ([d isActive] == NO && !NSIsEmptyRect(frame))
+        { // Activate, use 'frame'
+          if (xPoint)
+            {
+              frame = [d frame];
+              frame.origin.x = xPoint;
+              [d setFrame:frame];
+            }
+          [d setActive:YES];
+
+          if (frame.origin.x == 0)
+            {
+              xShift = frame.size.width;
+            }
+          NSLog(@"NXScreen: Activate %@: set resolution %@, origin %@",
+                [d outputName], [d resolution], NSStringFromPoint(frame.origin));
+        }
+    }
+
+  newLayout = [self currentLayout];
+
+  return newLayout;
 }
 
 - (NSArray *)arrangeDisplays
