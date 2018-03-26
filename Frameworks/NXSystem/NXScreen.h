@@ -136,6 +136,7 @@
 - (BOOL)saveCurrentDisplayLayout;
 - (BOOL)applySavedDisplayLayout;
 
+- (NSArray *)proposedDisplayLayout;
 - (NSArray *)arrangeDisplays;
 
 @end
