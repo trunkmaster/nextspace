@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Mar 23 18:12:52 2018
+;; Created Mon Mar 26 19:19:16 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,18 +22,29 @@
   "NXScreen.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  37390
-  '(37462 nil)
+  36818
+  '(39186 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.h"
+  "NXScreen.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  4892
+  '(4857 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m"
   "NXDisplay.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode irony-mode)
-  8545
+  11660
   '(2016 nil)
   nil
   nil
@@ -46,17 +57,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
   2906
   '(2972 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXSystem/NXScreen.h"
-  "NXScreen.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  3986
-  '(3986 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
