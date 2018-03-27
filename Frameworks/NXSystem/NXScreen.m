@@ -678,21 +678,18 @@ static NXScreen *systemScreen = nil;
 - (void)activateDisplay:(NXDisplay *)display
 {
   NSArray *newLayout;
-  NSRect  hiddenFrame;
-  NSRect  bestFrame;
+  // NSRect  hiddenFrame;
 
-  NSLog(@"NXSystem: activate display: %@", [display outputName]);
+  NSLog(@"NXSystem: activate display: %@", display.outputName);
 
-  hiddenFrame = [display hiddenFrame];
-  if (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0)
+  if (NSIsEmptyRect(display.hiddenFrame) == NO)
     {
-      [display setFrame:hiddenFrame];
+      display.frame = display.hiddenFrame;
     }
   else
     {
-      bestFrame.size = NSSizeFromString([[display bestResolution]
-                                          objectForKey:NXDisplaySizeKey]);
-      [display setFrame:bestFrame];
+      display.frame.size = NSSizeFromString([[display bestResolution]
+                                              objectForKey:NXDisplaySizeKey]);
     }
   
   // newLayout = [self arrangeDisplays];
@@ -883,7 +880,7 @@ static NXScreen *systemScreen = nil;
           [d setObject:[display outputName]
                 forKey:NXDisplayNameKey];
       
-          [d setObject:[display resolution]
+          [d setObject:display.activeResolution
                 forKey:NXDisplayResolutionKey];
           [d setObject:NSStringFromSize([display physicalSize])
                 forKey:NXDisplayPhSizeKey];
@@ -1131,14 +1128,15 @@ static NXScreen *systemScreen = nil;
 
 // Returns changed layout description.
 // Should process the following cases:
-// 1. Active = "YES" and "frame.size" != {0,0} and differs from "Resolution"."Size"
+// 1. Active = "YES" and "frame.size" != {0,0} and
+//    differs from "Resolution{Size}"
 // 	Change resolution requested:
 // 	- change "Resolution",
 // 	- adjust other active displays' origins if needed.
 // 2. Active = "NO" and 'frame.size' != {0,0}
 // 	Display activation requested:
 // 	- change Active to "YES";
-// 	- set resolution and origin;
+// 	- set resolution and origin from 'frame';
 // 	- adjust other active displays' origins if needed.
 // 3. Active == "YES" and 'frame.size' == {0,0} and 'hiddenFrame.size' != {0,0}
 // 	Display deactivation requested:
@@ -1268,8 +1266,8 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
   for (NXDisplay *d in sortedDisplays)
     {
       frame = [d frame];
-      displaySize = NSSizeFromString([[d resolution] objectForKey:@"Size"]);
-      displayPosition = [d position];
+      displaySize = NSSizeFromString([d.activeResolution objectForKey:@"Size"]);
+      displayPosition = d.activePosition;
       if ([d isActive] == YES)
         {
           // if ((frame.size.width > 0 && frame.size.height > 0)
@@ -1293,7 +1291,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
                   xShift = -hiddenFrame.size.width;
                   [d setActive:NO];
                   NSLog(@"NXScreen: Deactivate %@: resolution %@",
-                        [d outputName], [d resolution]);
+                        [d outputName], d.activeResolution);
                 }
             }
           else 
@@ -1327,7 +1325,7 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
               xShift = frame.size.width;
             }
           NSLog(@"NXScreen: Activate %@: set resolution %@, origin %@",
-                [d outputName], [d resolution], NSStringFromPoint(frame.origin));
+                [d outputName], d.activeResolution, NSStringFromPoint(frame.origin));
         }
     }
 
