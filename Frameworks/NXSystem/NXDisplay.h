@@ -51,17 +51,11 @@ typedef struct _NXGammaValue NXGammaValue;
   XRRScreenResources	*screen_resources;
   RROutput		output_id;
 
-  // NSString       	*outputName;		// name of Xrandr output (VGA)
-  // NSSize         	physicalSize;		// physical size in milimeters
   Connection     	connectionState;	// RandR connection state
   NSMutableArray 	*allResolutions;	// width, height, rate
   
-  NSDictionary		*currResolution;
-  NSPoint               currPosition;
-  
-  NSRect   		frame;			// logical rect of monitor
-  NSRect   		hiddenFrame;		// for inactive monitor
-  CGFloat  		rate;			// refresh rate (75.0)
+  // NSRect   		frame;			// logical rect of monitor
+  // NSRect   		hiddenFrame;		// for inactive monitor
   CGFloat  		dpiValue;		// calculated DPI
 
   NXGammaValue		gammaValue;
@@ -73,9 +67,9 @@ typedef struct _NXGammaValue NXGammaValue;
   BOOL			isActive;
 }
 
-@property (readonly) NSString *outputName;
-@property (readonly) NSSize physicalSize;
-@property (readonly) BOOL isBuiltin;
+@property (readonly) NSString *outputName;  // LVDS, VGA, DVI, HDMI
+@property (readonly) NSSize physicalSize;  // in milimetres
+@property (readonly) BOOL isBuiltin;  // determined by outputName
 
 + (NSDictionary *)zeroResolution;
 
@@ -84,34 +78,48 @@ typedef struct _NXGammaValue NXGammaValue;
                   screen:(NXScreen *)scr
                 xDisplay:(Display *)x_display;
 
-// - (NSString *)outputName; // LVDS, VGA, DVI, HDMI
-// - (NSSize)physicalSize;   // in milimetres
 - (CGFloat)dpi;           // calculated from frame and phys. size
-// - (BOOL)isBuiltin;        // decision base on outputName
 
 //------------------------------------------------------------------------------
-//--- Resolution and refresh rate
+//--- Resolution, refresh rate
 //------------------------------------------------------------------------------
+//--- Getters for resolutions supported by display
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
 - (NSDictionary *)largestResolution;
 - (NSDictionary *)bestResolution;
+- (BOOL)isSupportedResolution:(NSDictionary *)resolution;
 - (NSDictionary *)resolutionWithWidth:(CGFloat)width
                                height:(CGFloat)height
                                  rate:(CGFloat)refresh;
-- (NSDictionary *)resolution;   // Current resolution of monitor
-- (BOOL)isSupportedResolution:(NSDictionary *)resolution;
-- (CGFloat)refreshRate;         // Monitor refresh rate for resolution
-- (NSPoint)position;
+
+//--- Active (visible to user) resolution of display
+// These values may only be changed with -setResolution:position: method.
+@property (readonly) NSDictionary *activeResolution;  // {Size=; Rate=}
+@property (readonly) CGFloat activeRate;  // Refresh rate for resolution
+@property (readonly) NSPoint activePosition;
+
+//--- Setter
 - (void)setResolution:(NSDictionary *)resolution
              position:(NSPoint)position;
 
 //------------------------------------------------------------------------------
-//--- Monitor attributes cache
+//--- Properties which aimed to process requests by NXScreen
+// frame - holds active resolution and position of display.
+//         If 'frame.size' differs from resolultion's 'Size' it means resolution
+//         change was requested.
+//         If frame.size holds zeros - display deactivation requested.
+//         'hiddenFrame.size' must hold non-zero values.
+// hiddenFrame - if holds non-zero values - display deactivation was requested
+//               or display already deactivated.
+// When display is deactivated resolution and origin values are set to 0.
 //------------------------------------------------------------------------------
-- (NSRect)frame;                   // cache resolution and origin
-- (void)setFrame:(NSRect)newFrame; // update cache (won't change monitor)
-- (NSRect)hiddenFrame;
-- (void)setHiddenFrame:(NSRect)hFrame;
+// - (NSRect)frame;                   // cache resolution and origin
+// - (void)setFrame:(NSRect)newFrame; // update cache (won't change monitor)
+// - (NSRect)hiddenFrame;
+// - (void)setHiddenFrame:(NSRect)hFrame;
+@property NSRect frame;  // logical rect of monitor
+@property NSRect hiddenFrame;  // logical rect for inactive monitor
+
 
 //------------------------------------------------------------------------------
 //--- Monitor state

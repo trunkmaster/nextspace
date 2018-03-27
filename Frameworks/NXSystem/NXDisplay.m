@@ -103,7 +103,7 @@
 }
 
 //------------------------------------------------------------------------------
-//--- XRandR utility functions
+//--- Utility
 //------------------------------------------------------------------------------
 - (XRRModeInfo)_modeInfoForMode:(RRMode)mode
 {
@@ -160,7 +160,7 @@
       resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
       if (resSize.width == mode_info.width &&
           resSize.height == mode_info.height &&
-          [[res objectForKey:NXDisplayRateKey] floatValue] == rate)
+          [[res objectForKey:NXDisplayRateKey] floatValue] == _activeRate)
         {
           break;
         }
@@ -171,6 +171,24 @@
     }
 
   return res;
+}
+
+// Names are coming from kernel video and drm drivers:
+//   eDP - Embedded DisplayPort
+//   LVDS - Low-Voltage Differential Signaling
+// If returns YES monitor will be deactivated on LID close.
+- (BOOL)_isBuiltin
+{
+  if (!_outputName)
+    return NO;
+  
+  if (([_outputName rangeOfString:@"LVDS"].location != NSNotFound))
+    return YES;
+  
+  if (([_outputName rangeOfString:@"eDP"].location != NSNotFound))
+    return YES;
+
+  return NO;
 }
 
 //------------------------------------------------------------------------------
@@ -233,15 +251,15 @@
           // 2. Logical size of display: crtc_info->width x crtc_info->height
           // Now I'm sticking to mode_info because I can't imagine real life
           // use case when logical size need to be bigger than resolution.
-          frame = NSMakeRect((CGFloat)crtc_info->x,
-                             (CGFloat)crtc_info->y,
-                             mode_info.width,
-                             mode_info.height);
-          rate = (CGFloat)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
-          currResolution = [self resolutionWithWidth:mode_info.width
-                                              height:mode_info.height
-                                                rate:rate];
-          currPosition = frame.origin;
+          _frame = NSMakeRect((CGFloat)crtc_info->x,
+                              (CGFloat)crtc_info->y,
+                              mode_info.width,
+                              mode_info.height);
+          _activeRate = (CGFloat)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
+          _activeResolution = [self resolutionWithWidth:mode_info.width
+                                                 height:mode_info.height
+                                                   rate:_activeRate];
+          _activePosition = _frame.origin;
           isActive = YES;
           
           XRRFreeCrtcInfo(crtc_info);
@@ -253,11 +271,11 @@
     }
   else if ([allResolutions count] > 0)
     {
-      ASSIGN (currResolution, [NXDisplay zeroResolution]);
-      currPosition = NSMakePoint(0,0);
-      hiddenFrame.origin = currPosition;
-      hiddenFrame.size = NSSizeFromString([[self bestResolution]
-                                            objectForKey:NXDisplaySizeKey]);
+      ASSIGN (_activeResolution, [NXDisplay zeroResolution]);
+      _activePosition = NSMakePoint(0,0);
+      _hiddenFrame.origin = _activePosition;
+      _hiddenFrame.size = NSSizeFromString([[self bestResolution]
+                                             objectForKey:NXDisplaySizeKey]);
     }
   
   XRRFreeOutputInfo(output_info);
@@ -286,42 +304,14 @@
   [super dealloc];
 }
 
-// - (NSString *)outputName
-// {
-//   return _outputName;
-// }
-
-// - (NSSize)physicalSize
-// {
-//   return _physicalSize;
-// }
-
 - (CGFloat)dpi
 {
   // NSLog(@"NXDisplay DPI: %.0f points, %.0f mm",
   //       frame.size.height, _physicalSize.height);
-  if ((frame.size.height <= 0) || (_physicalSize.height <= 0))
+  if ((_frame.size.height <= 0) || (_physicalSize.height <= 0))
     return .0;
     
-  return (25.4 * frame.size.height) / _physicalSize.height;
-}
-
-// Names are coming from kernel video and drm drivers:
-//   eDP - Embedded DisplayPort
-//   LVDS - Low-Voltage Differential Signaling
-// If returns YES monitor will be deactivated on LID close.
-- (BOOL)_isBuiltin
-{
-  if (!_outputName)
-    return NO;
-  
-  if (([_outputName rangeOfString:@"LVDS"].location != NSNotFound))
-    return YES;
-  
-  if (([_outputName rangeOfString:@"eDP"].location != NSNotFound))
-    return YES;
-
-  return NO;
+  return (25.4 * _frame.size.height) / _physicalSize.height;
 }
 
 //------------------------------------------------------------------------------
@@ -352,7 +342,7 @@
       mps = resSize.width * resSize.height;
       r = [[res objectForKey:NXDisplayRateKey] floatValue];
       
-      if ((mps == mpixels) && (r > rate))
+      if ((mps == mpixels) && (r > _activeRate))
         {
           mode = res;
         }
@@ -372,6 +362,18 @@
 - (NSDictionary *)bestResolution
 {
   return [allResolutions objectAtIndex:0];
+}
+
+- (BOOL)isSupportedResolution:(NSDictionary *)resolution
+{
+  NSSize dSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
+
+  if (dSize.width == 0 && dSize.height == 0)
+    { // resolution 0x0 used for display deactivation - accept it
+      return YES;
+    }
+  
+  return !([self _modeForResolution:resolution] == 0);
 }
 
 - (NSDictionary *)resolutionWithWidth:(CGFloat)width
@@ -426,38 +428,12 @@
   return resolution;
 }
 
-// Returns resolution which equals visible frame dimensions and saved rate value.
-- (NSDictionary *)resolution // {Size=; Rate=}
-{
-  return currResolution;
-}
-
-- (BOOL)isSupportedResolution:(NSDictionary *)resolution
-{
-  NSSize dSize = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
-
-  if (dSize.width == 0 && dSize.height == 0)
-    { // resolution 0x0 used for display deactivation - accept it
-      return YES;
-    }
-  
-  return !([self _modeForResolution:resolution] == 0);
-}
-
-- (CGFloat)refreshRate
-{
-  return rate;
-}
-
-- (NSPoint)position
-{
-  return currPosition;
-}
-
-// Sets resolution without changing layout of displays.
-// Updates 'frame', 'rate' and 'currResolution' ivars.
-// Doesn't change 'isActive' ivar.
-// If you want to relayout displays with new resolution use
+// Actually sets resolution of display device without changing layout.
+// Updates '_frame', '_activeRate', '_activeResolution' and '_activePosition'
+// ivars.
+// Doesn't change 'isActive' ivar but if display was deactivated setting
+// resolution to non-zero value activates it.
+// If you want to set resolution and relayout displays with new resolution use
 // [NXScreen setDisplay:resolution:] instead.
 - (void)setResolution:(NSDictionary *)resolution
              position:(NSPoint)position
@@ -530,50 +506,17 @@
                        crtc_info->noutput);
     }
 
-  // Update frame, so currResolution.size == frame.size and
-  // currPosition == frame.origin
-  frame = NSMakeRect(position.x, position.y,
-                     resolutionSize.width, resolutionSize.height);
+  // Update _frame, so _activeResolution{Size} == _frame.size
+  _frame = NSMakeRect(position.x, position.y,
+                      resolutionSize.width, resolutionSize.height);
 
   // Save values which represent current monitor state
-  ASSIGN(currResolution, resolution);
-  rate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
-  currPosition = position;
+  ASSIGN(_activeResolution, resolution);
+  _activeRate = [[resolution objectForKey:NXDisplayRateKey] floatValue];
+  _activePosition = position;
   
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
-}
-
-//------------------------------------------------------------------------------
-//--- Monitor attributes cache
-// Won't change real mode of monitor or placement in layout.
-// When display is deactivated resolution and origin values are set to 0.
-// After that NXScreen update list of NXDisplays (with zeroed resolution and
-// origin). So on activation we can get resolution from [self bestResolution]
-// but we have no idea where activated display should be place to.
-// In fact, we may cache only origin values but, for consitency, also cache
-// resoltion dimensions.
-//------------------------------------------------------------------------------
-- (NSRect)frame
-{
-  return frame;
-}
-
-- (void)setFrame:(NSRect)newFrame
-{
-  frame = newFrame;
-}
-
-// Hidden frame set for inactive display.
-// Should be used for correct placing of display on activation.
-- (NSRect)hiddenFrame
-{
-  return hiddenFrame;
-}
-
-- (void)setHiddenFrame:(NSRect)hFrame
-{
-  hiddenFrame = hFrame;
 }
 
 //------------------------------------------------------------------------------
@@ -592,28 +535,37 @@
   return isActive;
 }
 
-// Changes 'currResolution' ivar without setting resolution to monitor.
+// Changes '_activeResolution' ivar without setting resolution to monitor.
 // Used for preparation to apply new display layout.
 - (void)setActive:(BOOL)active
 {
-  NSDictionary *res;
+  NSDictionary *resolution;
   
   if (active == YES) // activation
     {
-      res = [self resolutionWithWidth:frame.size.width
-                               height:frame.size.height
-                                 rate:0.0];
+      if (NSIsEmptyRect(_hiddenFrame) == NO)
+        {
+          _frame = _hiddenFrame;
+          _hiddenFrame = NSZeroRect();
+        }
+      else
+        {
+          _frame.size = NSSizeFromString([[display bestResolution]
+                                                  objectForKey:NXDisplaySizeKey]);
+        }
+      resolution = [self resolutionWithWidth:_frame.size.width
+                                      height:_frame.size.height
+                                        rate:0.0];
     }
   else // deactivation
     {
-      // res = [NSDictionary dictionaryWithObjectsAndKeys:
-      //                       NSStringFromSize(NSMakeSize(0,0)), NXDisplaySizeKey,
-      //                        [NSNumber numberWithFloat:0.0], NXDisplayRateKey,
-      //                     nil];
+      _hiddenFrame = _frame;
+      _frame = NSZeroRect();
       res = [NXDisplay zeroResolution];
     }
 
-  ASSIGN(currResolution, res);
+  // Synchronize _frame and _activeResolution
+  ASSIGN(_activeResolution, resolution);
   isActive = active;
 }
 
