@@ -726,9 +726,6 @@ static NXScreen *systemScreen = nil;
   // [display setFrame:NSMakeRect(dRect.origin.x, dRect.origin.y, 0, 0)];
 
   [display setActive:NO];
-  // hiddenFrame = display.hiddenFrame;
-  // hiddenFrame.origin = [self positionForDisplay:display isActivated:NO];
-  // display.hiddenFrame = hiddenFrame;
   
   // Prepare new layout taking into account frame and hiddenFrame.
   // Major focus is on frame.origin of all active displays.
@@ -739,6 +736,8 @@ static NXScreen *systemScreen = nil;
   XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
   XUnlockDisplay(xDisplay);
+
+  [[self currentLayout] writeToFile:@"Display.config" atomically:YES];
 }
 
 - (void)setDisplay:(NXDisplay *)display
@@ -875,14 +874,13 @@ static NXScreen *systemScreen = nil;
   return [layout copy];
 }
 
-// Create layout description from monitors(displays) actual (visible by user)
+// Create layout description from displays' actual (visible by user)
 // information.
 - (NSArray *)currentLayout
 {
   NSMutableDictionary *d;
   NSMutableArray      *layout = [NSMutableArray new];
   NSDictionary        *resolution;
-  NSPoint             origin = NSMakePoint(0.0,0.0);
   NSDictionary        *properties;
 
   for (NXDisplay *display in [self connectedDisplays])
@@ -1020,11 +1018,11 @@ static NXScreen *systemScreen = nil;
   if (newPixSize.width > sizeInPixels.width ||
       newPixSize.height > sizeInPixels.height)
     {
-      NSLog(@"NXScreen: set new BIGGER screen size: START");
+      // NSLog(@"NXScreen: set new BIGGER screen size: START");
       XRRSetScreenSize(xDisplay, xRootWindow,
                        (int)newPixSize.width, (int)newPixSize.height,
                        (int)mmSize.width, (int)mmSize.height);
-      NSLog(@"NXScreen: set new BIGGER screen size: END");
+      // NSLog(@"NXScreen: set new BIGGER screen size: END");
     }
   
   // Set resolution and gamma to displays
@@ -1048,9 +1046,9 @@ static NXScreen *systemScreen = nil;
           origin = NSRectFromString([displayLayout
                                        objectForKey:NXDisplayFrameKey]).origin;
           
-          NSLog(@"NXScreen: set resolution to %@: START", [display outputName]);
+          // NSLog(@"NXScreen: set resolution to %@: START", [display outputName]);
           [display setResolution:resolution position:origin];
-          NSLog(@"NXScreen: set resolution to %@: END", [display outputName]);
+          // NSLog(@"NXScreen: set resolution to %@: END", [display outputName]);
           XFlush(xDisplay);
 
           gamma = [displayLayout objectForKey:NXDisplayGammaKey];
@@ -1060,7 +1058,7 @@ static NXScreen *systemScreen = nil;
       else // Setting zero resolution to display disables it.
         {
           [display setResolution:[NXDisplay zeroResolution]
-                        position:[display frame].origin];
+                        position:[display hiddenFrame].origin];
         }
     }
 
@@ -1068,11 +1066,11 @@ static NXScreen *systemScreen = nil;
   if (newPixSize.width < sizeInPixels.width ||
       newPixSize.height < sizeInPixels.height)
     {
-      NSLog(@"NXScreen: set new SMALLER screen size: START");
+      // NSLog(@"NXScreen: set new SMALLER screen size: START");
       XRRSetScreenSize(xDisplay, xRootWindow,
                        (int)newPixSize.width, (int)newPixSize.height,
                        (int)mmSize.width, (int)mmSize.height);
-      NSLog(@"NXScreen: set new SMALLER screen size: END");
+      // NSLog(@"NXScreen: set new SMALLER screen size: END");
     }
   
   sizeInPixels = newPixSize;
