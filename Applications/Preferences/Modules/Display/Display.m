@@ -229,7 +229,7 @@
                              size.width, size.height];
       [resolutionBtn addItemWithTitle:resolution];
     }
-  r = [selectedDisplay resolution];
+  r = [selectedDisplay activeResolution];
   size = NSSizeFromString([r objectForKey:@"Size"]);
   resolution = [NSString stringWithFormat:@"%.0fx%.0f",
                          size.width, size.height];

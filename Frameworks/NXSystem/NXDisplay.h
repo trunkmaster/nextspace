@@ -54,8 +54,6 @@ typedef struct _NXGammaValue NXGammaValue;
   Connection     	connectionState;	// RandR connection state
   NSMutableArray 	*allResolutions;	// width, height, rate
   
-  // NSRect   		frame;			// logical rect of monitor
-  // NSRect   		hiddenFrame;		// for inactive monitor
   CGFloat  		dpiValue;		// calculated DPI
 
   NXGammaValue		gammaValue;
