@@ -123,9 +123,9 @@ void listDisplays(NSArray *displays, NSString *title)
   fprintf(stderr, "------\t---------\t-------\t-------\t-------\t-----\t----------\t--------\n");
   for (NXDisplay *d in displays)
     {
-      resolution = [d resolution];
+      resolution = [d activeResolution];
       size = NSSizeFromString([resolution objectForKey:@"Size"]);
-      position = [d position];
+      position = d.frame.origin;
       fprintf(stderr, "%s\t  %s\t\t%s\t  %s\t%s\t%.0f\t%4.0fx%4.0f\t%.0f,%.0f\n",
               [[d outputName] cString],
               ([d isConnected]) ? "Yes" : "No",
@@ -153,11 +153,11 @@ void displayDetails(NXDisplay *display)
   size = [display physicalSize];
   fprintf(stderr, "Physical size (mm)\t: %.0f x %.0f\n", size.width, size.height);
   fprintf(stderr, "Dot per inch\t\t: %.0f\n", [display dpi]);
-  size = NSSizeFromString([[display resolution] objectForKey:@"Size"]);
+  size = NSSizeFromString([[display activeResolution] objectForKey:@"Size"]);
   fprintf(stderr, "Resolution\t\t: %.0f x %.0f\n", size.width, size.height);
   size = NSSizeFromString([[display bestResolution] objectForKey:NXDisplaySizeKey]);
   fprintf(stderr, "Preferred resolution\t: %.0f x %.0f\n", size.width, size.height);
-  point = [display position];
+  point = [display frame].origin;
   fprintf(stderr, "Position on screen\t: %.0f, %.0f\n", point.x, point.y);
   fprintf(stderr, "Frame\t\t\t: %s\n", [NSStringFromRect([display frame]) cString]);
   fprintf(stderr, "Hidden frame\t\t: %s\n", [NSStringFromRect([display hiddenFrame]) cString]);
@@ -237,11 +237,11 @@ int main(int argc, char *argv[])
         }
     }
 
-  if (display)
-    if (showDetails)
-      displayDetails(display);
-    else if (setMode)
-      setMode()
+  // if (display)
+  //   if (showDetails)
+  //     displayDetails(display);
+  //   else if (setMode)
+  //     setMode()
       
 
   [screen release];

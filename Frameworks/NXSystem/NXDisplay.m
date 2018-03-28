@@ -546,11 +546,11 @@
       if (NSIsEmptyRect(_hiddenFrame) == NO)
         {
           _frame = _hiddenFrame;
-          _hiddenFrame = NSZeroRect();
+          _hiddenFrame = NSZeroRect;
         }
       else
         {
-          _frame.size = NSSizeFromString([[display bestResolution]
+          _frame.size = NSSizeFromString([[self bestResolution]
                                                   objectForKey:NXDisplaySizeKey]);
         }
       resolution = [self resolutionWithWidth:_frame.size.width
@@ -560,8 +560,8 @@
   else // deactivation
     {
       _hiddenFrame = _frame;
-      _frame = NSZeroRect();
-      res = [NXDisplay zeroResolution];
+      _frame = NSZeroRect;
+      resolution = [NXDisplay zeroResolution];
     }
 
   // Synchronize _frame and _activeResolution
