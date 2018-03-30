@@ -256,6 +256,27 @@ static NXScreen *systemScreen = nil;
         }
     }
 
+  // Restore some Display attributes from saved layout (if any)
+  NSArray *layout = [self savedDisplayLayout];
+  id	  attribute;
+  if (layout != nil)
+    {
+      for (NXDisplay *d in systemDisplays)
+        {
+          attribute = [self objectForKey:NXDisplayHiddenFrameKey
+                              forDisplay:d
+                                inLayout:layout];
+          if (attribute != nil && [attribute isKindOfClass:[NSString class]])
+            [d setHiddenFrame:NSRectFromString(attribute)];
+          
+          // attribute = [self objectForKey:NXDisplayGammaKey
+          //                     forDisplay:d
+          //                       inLayout:layout];
+          // if (attribute != nil && [attribute isKindOfClass:[NSDictionary class]])
+          //   [d setGammaFromDescription:attribute];
+        }
+    }
+
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   [[NSDistributedNotificationCenter defaultCenter]
     addObserver:self
@@ -1119,6 +1140,35 @@ static NXScreen *systemScreen = nil;
     }
   
   return [[self currentLayout] writeToFile:configFile atomically:YES];
+}
+
+- (NSArray *)savedDisplayLayout
+{
+  NSArray  *layout = nil;
+  NSString *configPath = [self _displayConfigFileName];
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:configPath])
+    {
+      layout = [NSArray arrayWithContentsOfFile:configPath];
+    }
+
+  return layout;
+}
+
+- (id)objectForKey:(NSString *)key
+        forDisplay:(NXDisplay *)display
+          inLayout:(NSArray *)layout
+{
+  for (NSDictionary *dDesc in layout)
+    {
+      if ([[dDesc objectForKey:@"Name"] isEqualToString:display.outputName] &&
+          [[dDesc objectForKey:@"ID"] isEqual:[display uniqueID]])
+        {
+          return [dDesc objectForKey:key];
+        }
+    }
+
+  return nil;
 }
 
 - (BOOL)applySavedDisplayLayout
