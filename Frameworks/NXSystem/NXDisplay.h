@@ -83,7 +83,7 @@ typedef struct _NXGammaValue NXGammaValue;
 //------------------------------------------------------------------------------
 //--- Getters for resolutions supported by display
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
-- (NSDictionary *)largestResolution;
+// - (NSDictionary *)largestResolution;
 - (NSDictionary *)bestResolution;
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution;
 - (NSDictionary *)resolutionWithWidth:(CGFloat)width
@@ -111,13 +111,8 @@ typedef struct _NXGammaValue NXGammaValue;
 //               or display already deactivated.
 // When display is deactivated resolution and origin values are set to 0.
 //------------------------------------------------------------------------------
-// - (NSRect)frame;                   // cache resolution and origin
-// - (void)setFrame:(NSRect)newFrame; // update cache (won't change monitor)
-// - (NSRect)hiddenFrame;
-// - (void)setHiddenFrame:(NSRect)hFrame;
 @property NSRect frame;  // logical rect of monitor
 @property NSRect hiddenFrame;  // logical rect for inactive monitor
-
 
 //------------------------------------------------------------------------------
 //--- Monitor state
@@ -134,13 +129,13 @@ typedef struct _NXGammaValue NXGammaValue;
 - (void)_getGamma;
 - (BOOL)isGammaSupported;
 
-// Get
+// Gettters
 - (NSDictionary *)gammaDescription;
 - (void)setGammaFromDescription:(NSDictionary *)gammaDict;
 - (CGFloat)gamma;
 - (CGFloat)gammaBrightness;
 
-// Set
+// Settters
 - (void)setGammaRed:(CGFloat)gammaRed
               green:(CGFloat)gammaGreen
                blue:(CGFloat)gammaBlue

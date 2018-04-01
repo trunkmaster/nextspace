@@ -65,6 +65,7 @@ NSString *NXDisplayIDKey = @"ID";
 NSString *NXDisplayNameKey = @"Name";
 NSString *NXDisplayFrameKey = @"Frame";
 NSString *NXDisplayHiddenFrameKey = @"FrameHidden";
+NSString *NXDisplayFrameRateKey = @"FrameRate";
 NSString *NXDisplayResolutionKey = @"Resolution";
 NSString *NXDisplaySizeKey = @"Size";
 NSString *NXDisplayRateKey = @"Rate";
@@ -82,6 +83,8 @@ static NXScreen *systemScreen = nil;
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout;
 - (NSSize)_sizeInMilimeters;
 - (NSSize)_sizeInMilimetersForLayout:(NSArray *)layout;
+- (NSString *)_displayConfigFileName;
+- (void)_restoreDisplaysAttributesFromLayout:(NSArray *)layout;
 @end
 
 @implementation NXScreen (Private)
@@ -114,24 +117,20 @@ static NXScreen *systemScreen = nil;
 - (NSSize)_sizeInPixelsForLayout:(NSArray *)layout
 {
   CGFloat      width = 0.0, height = 0.0, w = 0.0, h = 0.0;
-  NSSize       size;
-  NSPoint      origin;
-  NSDictionary *resolution;
+  NSRect       frame;
   
   for (NSDictionary *display in layout)
     {
       if ([[display objectForKey:NXDisplayIsActiveKey] isEqualToString:@"NO"])
         continue;
       
-      origin =
-        NSRectFromString([display objectForKey:NXDisplayFrameKey]).origin;
-      resolution = [display objectForKey:NXDisplayResolutionKey];
-      size = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
+      frame =
+        NSRectFromString([display objectForKey:NXDisplayFrameKey]);
           
-      w = origin.x + size.width;
+      w = frame.origin.x + frame.size.width;
       if (w > width) width = w;
 
-      h = origin.y + size.height;
+      h = frame.origin.y + frame.size.height;
       if (h > height) height = h;
     }
 
@@ -199,6 +198,61 @@ static NXScreen *systemScreen = nil;
   return NSMakeSize(width, height);
 }
 
+- (NSString *)_displayConfigFileName
+{
+  NSUInteger layoutHash = 0;
+  NSString   *configDir;
+
+  // Construct path to config file
+  configDir = [LAYOUTS_DIR stringByExpandingTildeInPath];
+  
+  for (NXDisplay *d in [self connectedDisplays])
+    {
+      layoutHash += [[d uniqueID] hash];
+    }
+  
+  return [NSString stringWithFormat:@"%@/Displays-%lu.config",
+                   configDir, layoutHash];
+}
+
+// Restore some Display attributes from saved layout (if any)
+- (void)_restoreDisplaysAttributesFromLayout:(NSArray *)layout
+{
+  id	 attribute;
+  NSRect hiddenFrame, frame;
+  
+  if (layout == nil)
+    return;
+  
+  for (NXDisplay *d in systemDisplays)
+    {
+      // FrameHidden
+      attribute = [self objectForKey:NXDisplayHiddenFrameKey
+                          forDisplay:d
+                            inLayout:layout];
+      if (attribute != nil && [attribute isKindOfClass:[NSString class]])
+        {
+          hiddenFrame = NSRectFromString(attribute);
+          if ([d isActive] == NO)
+            {
+              if (NSIsEmptyRect(hiddenFrame) == NO)
+                {
+                  d.hiddenFrame = hiddenFrame;
+                }
+              else
+                {
+                  attribute = [self objectForKey:NXDisplayFrameKey
+                                      forDisplay:d
+                                        inLayout:layout];
+                  d.hiddenFrame = NSRectFromString(attribute);
+                }
+            }
+        }
+
+      // TODO: GammaSaved
+    }
+}
+
 @end
 
 @implementation NXScreen
@@ -257,25 +311,7 @@ static NXScreen *systemScreen = nil;
     }
 
   // Restore some Display attributes from saved layout (if any)
-  NSArray *layout = [self savedDisplayLayout];
-  id	  attribute;
-  if (layout != nil)
-    {
-      for (NXDisplay *d in systemDisplays)
-        {
-          attribute = [self objectForKey:NXDisplayHiddenFrameKey
-                              forDisplay:d
-                                inLayout:layout];
-          if (attribute != nil && [attribute isKindOfClass:[NSString class]])
-            [d setHiddenFrame:NSRectFromString(attribute)];
-          
-          // attribute = [self objectForKey:NXDisplayGammaKey
-          //                     forDisplay:d
-          //                       inLayout:layout];
-          // if (attribute != nil && [attribute isKindOfClass:[NSDictionary class]])
-          //   [d setGammaFromDescription:attribute];
-        }
-    }
+  [self _restoreDisplaysAttributesFromLayout:[self savedDisplayLayout]];
 
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   [[NSDistributedNotificationCenter defaultCenter]
@@ -737,28 +773,17 @@ static NXScreen *systemScreen = nil;
 
 - (void)deactivateDisplay:(NXDisplay *)display
 {
-  // NSRect  dRect = [display frame];
   NSArray *newLayout;
-  NSRect  hiddenFrame;
-
-  // Save current frame in hidden frame
-  // [display setHiddenFrame:NSMakeRect(dRect.origin.x,dRect.origin.y,
-  //                                    dRect.size.width, dRect.size.height)];
-  // [display setFrame:NSMakeRect(dRect.origin.x, dRect.origin.y, 0, 0)];
 
   [display setActive:NO];
   
-  // Prepare new layout taking into account frame and hiddenFrame.
-  // Major focus is on frame.origin of all active displays.
-  // newLayout = [self arrangeDisplays];
-  // newLayout = [self proposedDisplayLayout];
   newLayout = [self currentLayout];
 
   XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
   XUnlockDisplay(xDisplay);
 
-  [[self currentLayout] writeToFile:@"Display.config" atomically:YES];
+  // [[self currentLayout] writeToFile:@"Display.config" atomically:YES];
 }
 
 - (void)setDisplay:(NXDisplay *)display
@@ -768,8 +793,12 @@ static NXScreen *systemScreen = nil;
   NSArray *newLayout;
 
   frame.size = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
+  display.frame = frame;
   
-  newLayout = [self arrangeDisplays];
+  // newLayout = [self arrangeDisplays];
+  
+  newLayout = [self currentLayout];
+  
   [self applyDisplayLayout:newLayout];
 }
 
@@ -821,6 +850,7 @@ static NXScreen *systemScreen = nil;
   NSDictionary        *resolution;
   NSPoint             origin = NSMakePoint(0.0,0.0);
   NSSize              size;
+  NSRect              frame;
   NSDictionary        *properties;
   
   for (NXDisplay *display in [self connectedDisplays])
@@ -834,26 +864,30 @@ static NXScreen *systemScreen = nil;
       else if ([systemDisplays indexOfObject:display] == 0)
         [display setMain:YES];
         
-      // Preferred resolution always at first position.
-      resolution = [display bestResolution];
-      size = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
-      
       d = [[NSMutableDictionary alloc] init];
       [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
             forKey:NXDisplayIDKey];
       [d setObject:[display outputName]
             forKey:NXDisplayNameKey];
       
+      // Preferred resolution always at first position.
+      resolution = [display bestResolution];
+      frame = NSZeroRect;
+      frame.size = NSSizeFromString([resolution
+                                      objectForKey:NXDisplaySizeKey]);
+      frame.origin = origin;
+      // TODO: do not set resolution
       [d setObject:resolution
             forKey:NXDisplayResolutionKey];
       [d setObject:NSStringFromSize([display physicalSize])
             forKey:NXDisplayPhSizeKey];
       
-      [d setObject:NSStringFromRect(NSMakeRect(origin.x, origin.y,
-                                               size.width, size.height))
+      [d setObject:NSStringFromRect(frame)
             forKey:NXDisplayFrameKey];
-      [d setObject:NSStringFromRect(NSMakeRect(0,0,0,0))
+      [d setObject:NSStringFromRect(NSZeroRect)
             forKey:NXDisplayHiddenFrameKey];
+      [d setObject:[resolution objectForKey:NXDisplayRateKey]
+            forKey:NXDisplayFrameRateKey];
 
       if ([display isBuiltin] && [NXPower isLidClosed])
         {
@@ -914,8 +948,8 @@ static NXScreen *systemScreen = nil;
           [d setObject:[display outputName]
                 forKey:NXDisplayNameKey];
       
-          [d setObject:display.activeResolution
-                forKey:NXDisplayResolutionKey];
+          // [d setObject:display.activeResolution
+          //       forKey:NXDisplayResolutionKey];
           [d setObject:NSStringFromSize([display physicalSize])
                 forKey:NXDisplayPhSizeKey];
 
@@ -923,6 +957,8 @@ static NXScreen *systemScreen = nil;
                 forKey:NXDisplayFrameKey];
           [d setObject:NSStringFromRect([display hiddenFrame])
                 forKey:NXDisplayHiddenFrameKey];
+          [d setObject:[display.activeResolution objectForKey:NXDisplayRateKey]
+                forKey:NXDisplayFrameRateKey];
 
           [d setObject:([display isActive]) ? @"YES" : @"NO"
                 forKey:NXDisplayIsActiveKey];
@@ -1007,10 +1043,10 @@ static NXScreen *systemScreen = nil;
   NXDisplay    *display;
   NSString     *displayName;
   NSDictionary *gamma;
+  NSRect       frame;
+  NSNumber     *frameRate;
   NSDictionary *resolution;
   NSPoint      origin;
-  CGFloat      brightness;
-  NSDictionary *nullResolution;
 
   // Validate 'layout'
   if ([self validateLayout:layout] == NO)
@@ -1027,14 +1063,6 @@ static NXScreen *systemScreen = nil;
 
   [updateScreenLock lock];
   
-  // Deactivate displays with current width or height bigger
-  // than new screen size. Otherwise [NXDisplay setResolution...] will fail with
-  // XRandR error and application will be terminated.
-  // for (NXDisplay *d in [self connectedDisplays])
-  //   {
-  //     [d setResolution:[NXDisplay zeroResolution] position:[d frame].origin];
-  //   }
-
   // If new screen size is BIGGER - set new screen size here
   if (newPixSize.width > sizeInPixels.width ||
       newPixSize.height > sizeInPixels.height)
@@ -1062,14 +1090,18 @@ static NXScreen *systemScreen = nil;
 
           if ([display isMain])
             mainDisplay = display;
-          
-          resolution = [displayLayout objectForKey:NXDisplayResolutionKey];
-          origin = NSRectFromString([displayLayout
-                                       objectForKey:NXDisplayFrameKey]).origin;
-          
-          // NSLog(@"NXScreen: set resolution to %@: START", [display outputName]);
-          [display setResolution:resolution position:origin];
-          // NSLog(@"NXScreen: set resolution to %@: END", [display outputName]);
+
+          frame = NSRectFromString([displayLayout
+                                     objectForKey:NXDisplayFrameKey]);
+          frameRate = [displayLayout objectForKey:NXDisplayFrameRateKey];
+          resolution = [display resolutionWithWidth:frame.size.width
+                                             height:frame.size.height
+                                               rate:[frameRate floatValue]];
+          // NSLog(@"NXScreen: set resolution to %@: START",
+          //       [display outputName]);
+          [display setResolution:resolution position:frame.origin];
+          // NSLog(@"NXScreen: set resolution to %@: END",
+          //       [display outputName]);
           XFlush(xDisplay);
 
           gamma = [displayLayout objectForKey:NXDisplayGammaKey];
@@ -1108,23 +1140,6 @@ static NXScreen *systemScreen = nil;
 }
 
 // --- Saving and reading
-- (NSString *)_displayConfigFileName
-{
-  NSUInteger layoutHash = 0;
-  NSString   *configDir;
-
-  // Construct path to config file
-  configDir = [LAYOUTS_DIR stringByExpandingTildeInPath];
-  
-  for (NXDisplay *d in [self connectedDisplays])
-    {
-      layoutHash += [[d uniqueID] hash];
-    }
-  
-  return [NSString stringWithFormat:@"%@/Displays-%lu.config",
-                   configDir, layoutHash];
-}
-
 - (BOOL)saveCurrentDisplayLayout
 {
   NSString *configFile = [self _displayConfigFileName];
@@ -1187,6 +1202,85 @@ static NXScreen *systemScreen = nil;
   return [self applyDisplayLayout:[self defaultLayout:YES]];
 }
 
+NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
+                                        NSDictionary *displayB,
+                                        void *context)
+{
+  NSPoint aPoint, bPoint;
+  BOOL    aIsActive, bIsActive;
+
+  aPoint = NSRectFromString([displayA objectForKey:NXDisplayFrameKey]).origin;
+  bPoint = NSRectFromString([displayB objectForKey:NXDisplayFrameKey]).origin;
+  
+  aIsActive = [[displayB objectForKey:NXDisplayIsActiveKey]
+                isEqualToString:@"YES"];
+  bIsActive = [[displayB objectForKey:NXDisplayIsActiveKey]
+                isEqualToString:@"YES"];
+  
+  NSLog(@"%@ <-> %@", NSStringFromPoint(aPoint), NSStringFromPoint(bPoint));
+
+  if (aPoint.x < bPoint.x && aIsActive)
+    return  NSOrderedAscending;
+  else if (aPoint.x > bPoint.x && bIsActive)
+    return NSOrderedDescending;
+  else
+    return NSOrderedSame;
+}
+
+// This is new verion of -arrangeDisplays.
+// Changes only position of displays.
+// Return layout description with adjusted disoplays position without changing
+// actual properties of displays.
+// If you need to propagate changes to displays use -applyDisplayLayout: with
+// returned layout description as an argument.
+- (NSArray *)proposedDisplayLayout
+{
+  NSMutableArray *layout;
+  NSString	 *dName;
+  NSRect	 dFrame, dHiddenFrame, frame, dLastFrame;
+  NSSize	 dSize;
+  NSPoint	 dPosition;
+  NSDictionary	 *dResolution, *resolution;
+  CGFloat	 xShift = 0.0, yShift = 0.0, xPoint = 0.0;
+  NSUInteger	 index;
+
+  layout = [[[self currentLayout]
+                     sortedArrayUsingFunction:compareLayoutEntries
+                                      context:NULL] mutableCopy];
+  dLastFrame = NSMakeRect(0,0,0,0);
+  for (NSMutableDictionary *d in layout)
+    {
+      index = [layout indexOfObject:d];
+
+      dName = [d objectForKey:NXDisplayNameKey];
+      dFrame = NSRectFromString([d objectForKey:NXDisplayFrameKey]);
+      dPosition = dFrame.origin;
+
+      if ([[d objectForKey:NXDisplayIsActiveKey] isEqualToString:@"YES"])
+        {
+          if ((xShift > 0) || (dFrame.origin.x > 0))
+            {
+              frame = NSMakeRect(dFrame.origin.x + xShift,
+                                 dFrame.origin.y,
+                                 dFrame.size.width,
+                                 dFrame.size.height);
+              [d setObject:NSStringFromRect(frame)
+                    forKey:NXDisplayFrameKey];
+            }
+          // Save rightmost X point for displays that will be activated
+          if (NSMaxX(dFrame) > xPoint)
+            {
+              xPoint = NSMaxX(dFrame);
+            }
+          // NSLog(@"NXScreen: Arrange %@: shift by x:%f, frame: %@",
+          //       dName, xShift, NSStringFromRect(frame));
+        }
+      dLastFrame = dFrame;
+    }
+
+  return [layout autorelease];
+}
+
 // Returns changed layout description.
 // Should process the following cases:
 // 1. Active = "YES" and "frame.size" != {0,0} and
@@ -1219,94 +1313,6 @@ compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
     return NSOrderedDescending;
   else
     return NSOrderedSame;
-}
-
-// This is new verion of -arrangeDisplays.
-// Differs from -currentLayout with these: changes if needed resolutions and
-// positions of display in returned layout description without changing actual
-// properties of displays. If you need to propagate changes to displays use
-// -applyDisplayLayout:.
-- (NSArray *)proposedDisplayLayout
-{
-  NSMutableArray *layout = [[self currentLayout] mutableCopy];
-  NSString	 *dName;
-  NSRect	 dFrame, dHiddenFrame, frame, dLastFrame;
-  NSSize	 dSize;
-  NSPoint	 dPosition;
-  NSDictionary	 *dResolution, *resolution;
-  CGFloat	 xShift = 0.0, yShift = 0.0, xPoint = 0.0;
-  NSUInteger	 index;
-
-  dLastFrame = NSMakeRect(0,0,0,0);
-  for (NSMutableDictionary *d in layout)
-    {
-      index = [layout indexOfObject:d];
-
-      dName = [d objectForKey:NXDisplayNameKey];
-      dFrame = NSRectFromString([d objectForKey:NXDisplayFrameKey]);
-      dPosition = dFrame.origin;
-      dHiddenFrame = NSRectFromString([d objectForKey:NXDisplayHiddenFrameKey]);
-      dResolution = [d objectForKey:NXDisplayResolutionKey];
-      dSize = NSSizeFromString([dResolution objectForKey:@"Size"]);
-
-      if ([[d objectForKey:NXDisplayIsActiveKey] isEqualToString:@"YES"])
-        {
-          if (!NSIsEmptyRect(dFrame) &&
-              (!NSEqualSizes(dFrame.size, dSize) ||
-               !NSEqualPoints(dFrame.origin, dPosition)))
-            { // 1. Change resolution to 'frame'
-              resolution = [[self displayWithName:dName]
-                             resolutionWithWidth:dFrame.size.width
-                                          height:dFrame.size.height
-                                            rate:0.0];
-              [d setObject:resolution forKey:NXDisplayResolutionKey];
-              [d setObject:NSStringFromRect(dFrame) forKey:NXDisplayFrameKey];
-              xShift = dFrame.size.width - dSize.width;
-              NSLog(@"NXScreen: Change resolution for %@ to %@",
-                    dName, resolution);
-            }
-          else if (NSIsEmptyRect(dFrame) == YES &&
-                   NSIsEmptyRect(dHiddenFrame) == NO)
-            { // 3. Deactivate ('frame' saved in 'hiddenFrame')
-              [d setObject:@"NO" forKey:NXDisplayIsActiveKey];
-              NSLog(@"NXScreen: Deactivate %@", dName);
-            }
-          else 
-            { // Arrange active
-              // if ((xShift > 0) || (dFrame.origin.x > 0))
-              //   {
-              //     frame = NSMakeRect(dFrame.origin.x+xShift, dFrame.origin.y,
-              //                        dFrame.size.width, dFrame.size.height);
-              //     [d setObject:NSStringFromRect(frame) forKey:NXDisplayFrameKey];
-              //   }
-              // // Save rightmost X point for displays that will be activated
-              // if (NSMaxX(dFrame) > xPoint)
-              //   {
-              //     xPoint = NSMaxX(dFrame);
-              //   }
-              // NSLog(@"NXScreen: Arrange %@: shift by x:%f, frame: %@",
-              //       dName, xShift, NSStringFromRect(frame));
-            }
-        }
-      else if ([[d objectForKey:NXDisplayIsActiveKey] isEqualToString:@"NO"]
-               && !NSIsEmptyRect(dFrame))
-        { // 2. Activate, use 'dFrame'
-          // NSPoint origin = dFrame.origin;
-          resolution = [[self displayWithName:dName]
-                             resolutionWithWidth:dFrame.size.width
-                                          height:dFrame.size.height
-                                            rate:0.0];
-          [d setObject:resolution forKey:NXDisplayResolutionKey];
-          [d setObject:@"YES" forKey:NXDisplayIsActiveKey];
-
-          NSLog(@"NXScreen: Activate %@: set resolution %@, origin %@",
-                dName, NSStringFromRect(dFrame),
-                NSStringFromPoint(dFrame.origin));
-        }
-      dLastFrame = dFrame;
-    }
-
-  return [layout autorelease];
 }
 
 - (NSArray *)arrangeDisplays
