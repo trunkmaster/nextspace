@@ -327,36 +327,36 @@
 
 // Select largest resolution supported by monitor
 // UNUSED
-- (NSDictionary *)largestResolution
-{
-  NSDictionary *mode=nil, *res;
-  NSSize       resSize;
-  int          mpixels=0, mps, res_count;
-  float        rRate=0.0, r;
+// - (NSDictionary *)largestResolution
+// {
+//   NSDictionary *mode=nil, *res;
+//   NSSize       resSize;
+//   int          mpixels=0, mps, res_count;
+//   float        rRate=0.0, r;
 
-  res_count = [allResolutions count];
-  for (int i=0; i<res_count; i++)
-    {
-      res = [allResolutions objectAtIndex:i];
-      resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
-      mps = resSize.width * resSize.height;
-      r = [[res objectForKey:NXDisplayRateKey] floatValue];
+//   res_count = [allResolutions count];
+//   for (int i=0; i<res_count; i++)
+//     {
+//       res = [allResolutions objectAtIndex:i];
+//       resSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
+//       mps = resSize.width * resSize.height;
+//       r = [[res objectForKey:NXDisplayRateKey] floatValue];
       
-      if ((mps == mpixels) && (r > _activeRate))
-        {
-          mode = res;
-        }
-      else if (mps > mpixels)
-        {
-          mpixels = mps;
-          mode = res;
-        }
-    }
+//       if ((mps == mpixels) && (r > _activeRate))
+//         {
+//           mode = res;
+//         }
+//       else if (mps > mpixels)
+//         {
+//           mpixels = mps;
+//           mode = res;
+//         }
+//     }
 
-  if (!mode) mode = [allResolutions objectAtIndex:0];
+//   if (!mode) mode = [allResolutions objectAtIndex:0];
   
-  return mode;
-}
+//   return mode;
+// }
 
 // First entry in list of supported resolutions
 - (NSDictionary *)bestResolution
@@ -560,7 +560,7 @@
   else // deactivation
     {
       _hiddenFrame = _frame;
-      _frame = NSZeroRect;
+      _frame = NSMakeRect(0,0,0,0);
       resolution = [NXDisplay zeroResolution];
     }
 
