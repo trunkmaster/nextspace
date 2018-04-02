@@ -124,8 +124,7 @@ static NXScreen *systemScreen = nil;
       if ([[display objectForKey:NXDisplayIsActiveKey] isEqualToString:@"NO"])
         continue;
       
-      frame =
-        NSRectFromString([display objectForKey:NXDisplayFrameKey]);
+      frame = NSRectFromString([display objectForKey:NXDisplayFrameKey]);
           
       w = frame.origin.x + frame.size.width;
       if (w > width) width = w;
@@ -762,10 +761,8 @@ static NXScreen *systemScreen = nil;
   NSLog(@"NXSystem: activate display: %@ with frame: %@",
         display.outputName, NSStringFromRect(display.frame));
 
-  // newLayout = [self arrangeDisplays];
-  // newLayout = [self proposedDisplayLayout];
-  newLayout = [self currentLayout];
-  
+  newLayout = [self proposedDisplayLayout];
+ 
   XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
   XUnlockDisplay(xDisplay);
@@ -777,7 +774,7 @@ static NXScreen *systemScreen = nil;
 
   [display setActive:NO];
   
-  newLayout = [self currentLayout];
+  newLayout = [self proposedDisplayLayout];
 
   XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
@@ -796,10 +793,9 @@ static NXScreen *systemScreen = nil;
   display.frame = frame;
   
   // newLayout = [self arrangeDisplays];
+  // newLayout = [self currentLayout];
   
-  newLayout = [self currentLayout];
-  
-  [self applyDisplayLayout:newLayout];
+  [self applyDisplayLayout:[self proposedDisplayLayout]];
 }
 
 - (void)setDisplay:(NXDisplay *)display
@@ -1012,13 +1008,13 @@ static NXScreen *systemScreen = nil;
         }
 
       // Is resolution supported by monitor?
-      resolution = [d objectForKey:NXDisplayResolutionKey];
-      if (![[self displayWithName:dName] isSupportedResolution:resolution])
-        {
-          NSLog(@"NXScreen: monitor %@ doesn't support resolution %@.",
-                dName, [resolution objectForKey:NXDisplaySizeKey]);
-          return NO;
-        }
+      // resolution = [d objectForKey:NXDisplayResolutionKey];
+      // if (![[self displayWithName:dName] isSupportedResolution:resolution])
+      //   {
+      //     NSLog(@"NXScreen: monitor %@ doesn't support resolution %@.",
+      //           dName, [resolution objectForKey:NXDisplaySizeKey]);
+      //     return NO;
+      //   }
       
       if (!(gamma = [d objectForKey:NXDisplayGammaKey]) ||
           ![gamma objectForKey:NXDisplayGammaRedKey] ||
@@ -1202,6 +1198,7 @@ static NXScreen *systemScreen = nil;
   return [self applyDisplayLayout:[self defaultLayout:YES]];
 }
 
+// --- Arrangement
 NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
                                         NSDictionary *displayB,
                                         void *context)
@@ -1236,13 +1233,8 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
 - (NSArray *)proposedDisplayLayout
 {
   NSMutableArray *layout;
-  NSString	 *dName;
-  NSRect	 dFrame, dHiddenFrame, frame, dLastFrame;
-  NSSize	 dSize;
-  NSPoint	 dPosition;
-  NSDictionary	 *dResolution, *resolution;
-  CGFloat	 xShift = 0.0, yShift = 0.0, xPoint = 0.0;
-  NSUInteger	 index;
+  NSRect	 dFrame, dLastFrame;
+  CGFloat	 midX, midY;
 
   layout = [[[self currentLayout]
                      sortedArrayUsingFunction:compareLayoutEntries
@@ -1250,31 +1242,36 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
   dLastFrame = NSMakeRect(0,0,0,0);
   for (NSMutableDictionary *d in layout)
     {
-      index = [layout indexOfObject:d];
-
-      dName = [d objectForKey:NXDisplayNameKey];
+      if ([[d objectForKey:NXDisplayIsActiveKey] isEqualToString:@"NO"])
+        continue;
+        
       dFrame = NSRectFromString([d objectForKey:NXDisplayFrameKey]);
-      dPosition = dFrame.origin;
-
-      if ([[d objectForKey:NXDisplayIsActiveKey] isEqualToString:@"YES"])
+      if (NSIsEmptyRect(dLastFrame) == NO)
         {
-          if ((xShift > 0) || (dFrame.origin.x > 0))
-            {
-              frame = NSMakeRect(dFrame.origin.x + xShift,
-                                 dFrame.origin.y,
-                                 dFrame.size.width,
-                                 dFrame.size.height);
-              [d setObject:NSStringFromRect(frame)
-                    forKey:NXDisplayFrameKey];
-            }
-          // Save rightmost X point for displays that will be activated
-          if (NSMaxX(dFrame) > xPoint)
-            {
-              xPoint = NSMaxX(dFrame);
-            }
-          // NSLog(@"NXScreen: Arrange %@: shift by x:%f, frame: %@",
-          //       dName, xShift, NSStringFromRect(frame));
+          midX = NSMinX(dLastFrame) + dLastFrame.size.width/2;
+          if (dFrame.origin.x >= midX)
+            dFrame.origin.x = dLastFrame.origin.x + dLastFrame.size.width;
+          else if (dFrame.origin.x < midX)
+            dFrame.origin.x -= dLastFrame.size.width;
+              
+          midY = NSMinY(dLastFrame) + dLastFrame.size.height/2;
+          if (dFrame.origin.y >= midY)
+            dFrame.origin.y = dLastFrame.origin.y + dLastFrame.size.height;
+          else if (dFrame.origin.y < midY && dFrame.origin.y >= dLastFrame.origin.y)
+            dFrame.origin.y = dLastFrame.origin.y;
+          else
+            dFrame.origin.y -= dFrame.size.height;
         }
+      else
+        {
+          dFrame.origin = dLastFrame.origin;
+        }
+      
+      [d setObject:NSStringFromRect(dFrame) forKey:NXDisplayFrameKey];
+      
+      NSLog(@"NXScreen: %@ new frame: %@",
+            [d objectForKey:NXDisplayNameKey], NSStringFromRect(dFrame));
+      
       dLastFrame = dFrame;
     }
 
