@@ -135,13 +135,13 @@
 - (BOOL)applyDisplayLayout:(NSArray *)layout;
 - (BOOL)saveCurrentDisplayLayout;
 - (NSArray *)savedDisplayLayout;
+- (BOOL)applySavedDisplayLayout;
 - (id)objectForKey:(NSString *)key
         forDisplay:(NXDisplay *)display
           inLayout:(NSArray *)layout;
-- (BOOL)applySavedDisplayLayout;
 
 - (NSArray *)proposedDisplayLayout;
-- (NSArray *)arrangeDisplays;
+// - (NSArray *)arrangeDisplays;
 
 @end
 
@@ -161,7 +161,7 @@ extern NSString *NXDisplayIDKey;
 extern NSString *NXDisplayNameKey;
 extern NSString *NXDisplayFrameKey;
 extern NSString *NXDisplayHiddenFrameKey;
-extern NSString *NXDisplayResolutionKey;
+extern NSString *NXDisplayFrameRateKey;
 extern NSString *NXDisplaySizeKey;
 extern NSString *NXDisplayRateKey;
 extern NSString *NXDisplayPhSizeKey;

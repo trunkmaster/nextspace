@@ -524,10 +524,7 @@
 //------------------------------------------------------------------------------
 - (BOOL)isConnected
 {
-  if (connectionState == RR_Connected)
-    return YES;
-  
-  return NO;
+  return (connectionState == RR_Connected) ? YES : NO;
 }
 
 - (BOOL)isActive
@@ -550,8 +547,9 @@
         }
       else
         {
-          _frame.size = NSSizeFromString([[self bestResolution]
-                                                  objectForKey:NXDisplaySizeKey]);
+          _frame.size =
+            NSSizeFromString([[self bestResolution]
+                               objectForKey:NXDisplaySizeKey]);
         }
       resolution = [self resolutionWithWidth:_frame.size.width
                                       height:_frame.size.height
@@ -770,26 +768,47 @@ find_last_non_clamped(CARD16 array[], int size)
   return [d autorelease];
 }
 
+- (NXGammaValue)gammaFromDescription:(NSDictionary *)desc
+{
+  CGFloat      red, green, blue, brightness;
+  NXGammaValue gamma;
+  
+  if (!desc)
+    return gammaValue;
+  
+  red = [[desc objectForKey:NXDisplayGammaRedKey] floatValue];
+  green = [[desc objectForKey:NXDisplayGammaGreenKey] floatValue];
+  blue = [[desc objectForKey:NXDisplayGammaBlueKey] floatValue];
+  
+  gamma.red = (red == 0.0) ? 1.0 : red;
+  gamma.green = (green == 0.0) ? 1.0 : green;
+  gamma.blue = (blue == 0.0) ? 1.0 : blue;
+
+  return gamma;
+}
+
 - (void)setGammaFromDescription:(NSDictionary *)gammaDict
 {
-  // if (!gammaDict || !isActive)
+  NSString *red, *green, *blue, *brightness;
+  
   if (!gammaDict)
+    return;
+  
+  gammaValue = [self gammaFromDescription:gammaDict];
+  gammaBrightness = [[gammaDict objectForKey:NXDisplayGammaBrightnessKey]
+                      floatValue];
+
+  // We're done - gammaValue contains GammaSaved
+  if (!isActive)
     return;
 
   NSLog(@"setGammaFromDescription: %f : %f : %f",
-        [[gammaDict objectForKey:NXDisplayGammaRedKey] floatValue],
-        [[gammaDict objectForKey:NXDisplayGammaGreenKey] floatValue],
-        [[gammaDict objectForKey:NXDisplayGammaBlueKey] floatValue]);
+        gammaValue.red, gammaValue.green, gammaValue.blue);
   
-  [self
-    setGammaRed:[[gammaDict objectForKey:NXDisplayGammaRedKey]
-                  floatValue]
-          green:[[gammaDict objectForKey:NXDisplayGammaGreenKey]
-                  floatValue]
-           blue:[[gammaDict objectForKey:NXDisplayGammaBlueKey]
-                  floatValue]
-     brightness:[[gammaDict objectForKey:NXDisplayGammaBrightnessKey]
-                  floatValue]];
+  [self setGammaRed:gammaValue.red
+              green:gammaValue.green
+               blue:gammaValue.blue
+         brightness:gammaBrightness];
 }
 
 - (CGFloat)gamma
@@ -869,7 +888,6 @@ find_last_non_clamped(CARD16 array[], int size)
 
 - (void)setGamma:(CGFloat)value
 {
-  // NSLog(@"NXDisplay setGamma: %f", value);
   [self setGammaRed:value
               green:value
                blue:value
@@ -969,8 +987,7 @@ find_last_non_clamped(CARD16 array[], int size)
 //--- Display properties
 //------------------------------------------------------------------------------
 
-id
-property_value(Display *dpy,
+id property_value(Display *dpy,
                int value_format, /* 8, 16, 32 */
                Atom value_type,  /* XA_{ATOM,INTEGER,CARDINAL} */
                const void *value_bytes)
