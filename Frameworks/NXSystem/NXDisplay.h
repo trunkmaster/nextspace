@@ -62,7 +62,7 @@ typedef struct _NXGammaValue NXGammaValue;
   NSMutableDictionary	*properties;
   
   BOOL			isMain;
-  BOOL			isActive;
+  // BOOL			isActive;
 }
 
 @property (readonly) NSString *outputName;  // LVDS, VGA, DVI, HDMI

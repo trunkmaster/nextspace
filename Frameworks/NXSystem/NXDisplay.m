@@ -213,7 +213,7 @@
   screen_resources = scr_res;
 
   isMain = NO;
-  isActive = NO;
+  // isActive = NO;
   output_id = output;
   
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output);
@@ -260,7 +260,7 @@
                                                  height:mode_info.height
                                                    rate:_activeRate];
           _activePosition = _frame.origin;
-          isActive = YES;
+          // isActive = YES;
           
           XRRFreeCrtcInfo(crtc_info);
 
@@ -496,7 +496,8 @@
 
 - (BOOL)isActive
 {
-  return isActive;
+  return (NSIsEmptyRect(_frame)) ? NO : YES;
+  // return isActive;
 }
 
 // Changes '_activeResolution' ivar without setting resolution to monitor.
@@ -531,7 +532,7 @@
 
   // Synchronize _frame and _activeResolution
   ASSIGN(_activeResolution, resolution);
-  isActive = active;
+  // isActive = active;
 }
 
 - (BOOL)isMain
@@ -548,7 +549,7 @@
 
 - (void)setMain:(BOOL)yn
 {
-  if (isActive && yn == YES)
+  if ([self isActive] && yn == YES)
     {
       NSLog(@"%@: become main display.", _outputName);
       XRRSetOutputPrimary(xDisplay,
@@ -766,7 +767,7 @@ find_last_non_clamped(CARD16 array[], int size)
                       floatValue];
 
   // We're done - gammaValue is set but display is not ready
-  if (!isActive)
+  if (![self isActive])
     return;
 
   NSLog(@"setGammaFromDescription: %f : %f : %f",
