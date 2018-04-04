@@ -856,7 +856,7 @@ void XWUpdateScreenInfo(WScreen *scr)
     dWidth = dRect.origin.x + dRect.size.width;
     
     // Save changed layout in user's preferences directory
-    [systemScreen saveCurrentDisplayLayout];
+    // [systemScreen saveCurrentDisplayLayout];
   }
   
   // 4.2 Move Dock

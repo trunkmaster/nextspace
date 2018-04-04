@@ -318,6 +318,8 @@ static NXScreen *systemScreen = nil;
         }
     }
 
+  useAutosave = NO;
+
   // Restore some Display attributes from saved layout (if any)
   [self _restoreDisplaysAttributesFromLayout:[self savedDisplayLayout]];
 
@@ -329,6 +331,11 @@ static NXScreen *systemScreen = nil;
          object:nil];
 
   return self;
+}
+
+- (void)setUseAutosave:(BOOL)yn
+{
+  useAutosave = yn;
 }
 
 - (void)dealloc
@@ -762,13 +769,15 @@ static NXScreen *systemScreen = nil;
   NSArray *newLayout;
   NSRect frame;
   
+  NSLog(@"NXSystem: prepare to activate display: %@ with hiddenFrame: %@",
+        display.outputName, NSStringFromRect(display.hiddenFrame));
+  NSLog(@"NXSystem: prepare to activate display: %@ with frame: %@",
+        display.outputName, NSStringFromRect(display.frame));  
+  
   [display setActive:YES];
   // frame = display.frame;
   // frame.origin = [self positionForDisplay:display isActivated:YES];
   // display.frame = display.hiddenFrame;
-  
-  NSLog(@"NXSystem: activate display: %@ with frame: %@",
-        display.outputName, NSStringFromRect(display.frame));
   
   newLayout = [self proposedDisplayLayout];
  
@@ -791,6 +800,11 @@ static NXScreen *systemScreen = nil;
   XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
   XUnlockDisplay(xDisplay);
+  
+  NSLog(@"NXSystem: deactivated display: %@ with frame: %@",
+        display.outputName, NSStringFromRect(display.frame));
+  NSLog(@"NXSystem: deactivated display: %@ with hiddenFrame: %@",
+        display.outputName, NSStringFromRect(display.hiddenFrame));
 }
 
 - (void)setDisplay:(NXDisplay *)display
@@ -1131,6 +1145,11 @@ static NXScreen *systemScreen = nil;
   if (!mainDisplay)
     {
       [lastActiveDisplay setMain:YES];
+    }
+
+  if (useAutosave == YES)
+    {
+      [self saveCurrentDisplayLayout];
     }
 
   [updateScreenLock unlock];

@@ -96,6 +96,7 @@
   [window release];
 
   systemScreen = [NXScreen new];
+  [systemScreen setUseAutosave:YES];
   
   // Get info about monitors and layout
   displayBoxList = [[NSMutableArray alloc] init];
@@ -174,7 +175,6 @@
   NXDisplay *display;
   
   display = [systemScreen displayWithName:selectedBox.displayName];
-  // NXScreen -> [NXDisplay setMain:] -> [NXScreen _refreshDisplaysInfo]
   // [NXDisplay setMain:] will generate NXScreenDidChangeNotification.
   [systemScreen setMainDisplay:display];
 }
@@ -187,12 +187,10 @@
   
   if ([[sender title] isEqualToString:@"Disable"])
     {
-      // [systemScreen deactivateDisplay:[selectedBox display]];
       [systemScreen deactivateDisplay:display];
     }
   else
     {
-      // [systemScreen activateDisplay:[selectedBox display]];
       [systemScreen activateDisplay:display];
     }
 }

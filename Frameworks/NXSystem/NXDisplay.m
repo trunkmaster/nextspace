@@ -558,7 +558,7 @@
   else // deactivation
     {
       _hiddenFrame = _frame;
-      _frame = NSMakeRect(0,0,0,0);
+      _frame = NSZeroRect;
       resolution = [NXDisplay zeroResolution];
     }
 
@@ -798,7 +798,7 @@ find_last_non_clamped(CARD16 array[], int size)
   gammaBrightness = [[gammaDict objectForKey:NXDisplayGammaBrightnessKey]
                       floatValue];
 
-  // We're done - gammaValue contains GammaSaved
+  // We're done - gammaValue is set but display is not ready
   if (!isActive)
     return;
 

@@ -82,6 +82,8 @@
   Display        *xDisplay;
   Window         xRootWindow;
 
+  BOOL useAutosave;
+
   NSLock *updateScreenLock;
   
   XRRScreenResources *screen_resources;
@@ -92,6 +94,7 @@
 }
 
 + (id)sharedScreen;
+- (void)setUseAutosave:(BOOL)yn;
 
 - (XRRScreenResources *)randrScreenResources;
 - (void)randrUpdateScreenResources;
