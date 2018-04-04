@@ -217,7 +217,7 @@ static NXScreen *systemScreen = nil;
 - (void)_restoreDisplaysAttributesFromLayout:(NSArray *)layout
 {
   id	       attribute;
-  NSRect       hiddenFrame, frame;
+  NSRect       hiddenFrame;
   NSDictionary *props;
   
   if (layout == nil)
@@ -232,14 +232,6 @@ static NXScreen *systemScreen = nil;
       if (attribute != nil && [attribute isKindOfClass:[NSString class]])
         {
           hiddenFrame = NSRectFromString(attribute);
-          if (hiddenFrame.origin.x == 0)
-            {
-              props = [d properties];
-              hiddenFrame.origin.x = [[[[props objectForKey:@"suggested X"]
-                                        objectForKey:@"Value"] lastObject]
-                                       floatValue];
-              NSLog(@"Suggested X: %f", hiddenFrame.origin.x);
-            }
           NSLog(@"[NXScreen] %@ restore hiddenFrame: %@",
                 d.outputName, attribute);
           if ([d isActive] == NO && NSIsEmptyRect(hiddenFrame) == NO)
@@ -248,7 +240,7 @@ static NXScreen *systemScreen = nil;
             }
         }
 
-      // GammaSaved
+      // Gamma
       attribute = [self objectForKey:NXDisplayGammaKey
                           forDisplay:d
                             inLayout:layout];
@@ -678,12 +670,8 @@ static NXScreen *systemScreen = nil;
 
 - (NXDisplay *)displayWithName:(NSString *)name
 {
-  NXDisplay *display;
-  
-  // for (NXDisplay *display in systemDisplays)
-  for (NSUInteger i = 0; i < [systemDisplays count]; i++)
+  for (NXDisplay *display in systemDisplays)
     {
-      display = [systemDisplays objectAtIndex:i];
       if ([[display outputName] isEqualToString:name])
         return display;
     }
@@ -809,14 +797,13 @@ static NXScreen *systemScreen = nil;
 //    Screen size is: 3200x1080.
 
 // Resolutions of all connected monitors will be set to preferred (first in
-// list of supported) with  highest refresh rate for that
-// resolution. Origin of first monitor in Xrandr list will be (0,0). Other
-// monitors will lined horizontally from left to right (second monitor's
-// origin X will be the width of first one, third's - sum of widths of first
-// and second monitors etc.).
+// list of supported) with highest refresh rate for that resolution. Origin of
+// first monitor in Xrandr list will be (0,0). Other monitors will lined
+// horizontally from left to right (second monitor's origin X will be the width
+// of first one, third's - sum of widths of first and second monitors etc.).
 // All monitor's Y position = 0.
 // All newly connected monitors will be placed rightmost (despite the current
-// layout of existing monitors).
+// layout of monitors).
 - (NSArray *)defaultLayout:(BOOL)arrange
 {
   NSMutableDictionary *d;
@@ -1194,8 +1181,6 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
   bIsActive = [[displayB objectForKey:NXDisplayIsActiveKey]
                 isEqualToString:@"YES"];
   
-  NSLog(@"%@ <-> %@", NSStringFromPoint(aPoint), NSStringFromPoint(bPoint));
-
   if (aPoint.x < bPoint.x && aIsActive)
     return  NSOrderedAscending;
   else if (aPoint.x > bPoint.x && bIsActive)
