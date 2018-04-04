@@ -320,9 +320,6 @@ static NXScreen *systemScreen = nil;
 
   useAutosave = NO;
 
-  // Restore some Display attributes from saved layout (if any)
-  [self _restoreDisplaysAttributesFromLayout:[self savedDisplayLayout]];
-
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   [[NSDistributedNotificationCenter defaultCenter]
     addObserver:self
@@ -381,10 +378,7 @@ static NXScreen *systemScreen = nil;
 
 - (void)randrUpdateScreenResources
 {
-  NSMutableArray *old_connectedDisplays = nil;
-  NSArray        *old_systemDisplays, *connectedDisplays;
-  NXDisplay      *display;
-  BOOL           initialUpdate = NO;
+  NXDisplay *display;
   
   if ([updateScreenLock tryLock] == NO)
     {
@@ -404,14 +398,11 @@ static NXScreen *systemScreen = nil;
   // Create/clean display information local cache.
   if (systemDisplays)
     {
-      old_connectedDisplays = [[self connectedDisplays] mutableCopy];
-      old_systemDisplays = [systemDisplays copy];
       [systemDisplays removeAllObjects];
     }
   else
     {
       systemDisplays = [[NSMutableArray alloc] init];
-      initialUpdate = YES;
     }
 
   // Update displays info
@@ -423,47 +414,12 @@ static NXScreen *systemScreen = nil;
                               screen:self
                             xDisplay:xDisplay];
       
-      // Set hiddenFrame for inactive display
-      if (![display isActive] && !initialUpdate)
-        {
-          NSRect hfRect;
-          hfRect = [[self displayWithID:[display uniqueID]] hiddenFrame];
-          [display setHiddenFrame:hfRect];
-        }
-      
       [systemDisplays addObject:display];
       [display release];
     }
 
-  /*  connectedDisplays = [self connectedDisplays];
-  NSLog(@"NXScreen: old display count: %lu, new display count: %lu",
-        [old_connectedDisplays count], [connectedDisplays count]);
-
-  if ((old_connectedDisplays && connectedDisplays) &&
-      ([old_connectedDisplays count] != [connectedDisplays count]))
-    {
-      for (int i=0; [systemDisplays count]; i++)
-        {
-          display = [systemDisplays objectAtIndex:i];
-          if ([display isConnected] !=
-              [[old_systemDisplays objectAtIndex:i] isConnected])
-            {
-              if ([display isConnected] == NO)
-                {// monitor was disconnected
-                  // deactivate monitor, arrange, apply layout
-                }
-              else
-                {// monitor was connected
-                  // deactivate monitor, arrange, apply layout
-                }
-              NSLog(@"NXScreen: monitor %@ set isConnected state!",
-                    [[systemDisplays objectAtIndex:i] outputName]);
-            }
-        }
-        }*/
-
-  TEST_RELEASE(old_connectedDisplays);
-  TEST_RELEASE(old_systemDisplays);
+  // Restore some Display attributes from saved layout (if any)
+  [self _restoreDisplaysAttributesFromLayout:[self savedDisplayLayout]];
 
   // Update screen dimensions
   sizeInPixels = [self _sizeInPixels];
@@ -722,8 +678,12 @@ static NXScreen *systemScreen = nil;
 
 - (NXDisplay *)displayWithName:(NSString *)name
 {
-  for (NXDisplay *display in systemDisplays)
+  NXDisplay *display;
+  
+  // for (NXDisplay *display in systemDisplays)
+  for (NSUInteger i = 0; i < [systemDisplays count]; i++)
     {
+      display = [systemDisplays objectAtIndex:i];
       if ([[display outputName] isEqualToString:name])
         return display;
     }
