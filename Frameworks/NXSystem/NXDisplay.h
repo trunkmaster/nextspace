@@ -83,7 +83,6 @@ typedef struct _NXGammaValue NXGammaValue;
 //------------------------------------------------------------------------------
 //--- Getters for resolutions supported by display
 - (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
-// - (NSDictionary *)largestResolution;
 - (NSDictionary *)bestResolution;
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution;
 - (NSDictionary *)resolutionWithWidth:(CGFloat)width
