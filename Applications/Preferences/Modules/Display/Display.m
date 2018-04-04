@@ -81,6 +81,7 @@
   [window release];
 
   systemScreen = [NXScreen new];
+  [systemScreen setUseAutosave:YES];
 
   // Setup NXNumericField float constraints
   [gammaField setMinimumValue:0.1];
