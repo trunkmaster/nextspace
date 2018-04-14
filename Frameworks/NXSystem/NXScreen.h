@@ -143,7 +143,7 @@
         forDisplay:(NXDisplay *)display
           inLayout:(NSArray *)layout;
 
-- (NSArray *)proposedDisplayLayout;
+- (NSArray *)arrangedDisplayLayout;
 // - (NSArray *)arrangeDisplays;
 
 @end
