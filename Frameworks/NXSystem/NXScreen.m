@@ -727,7 +727,7 @@ static NXScreen *systemScreen = nil;
   // frame.origin = [self positionForDisplay:display isActivated:YES];
   // display.frame = display.hiddenFrame;
   
-  newLayout = [self proposedDisplayLayout];
+  newLayout = [self arrangedDisplayLayout];
  
   NSLog(@"NXSystem: activate display: %@ with frame: %@",
         display.outputName, NSStringFromRect(display.frame));
@@ -743,7 +743,7 @@ static NXScreen *systemScreen = nil;
 
   [display setActive:NO];
   
-  newLayout = [self proposedDisplayLayout];
+  newLayout = [self arrangedDisplayLayout];
 
   XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
@@ -764,7 +764,7 @@ static NXScreen *systemScreen = nil;
   frame.size = NSSizeFromString([resolution objectForKey:NXDisplaySizeKey]);
   display.frame = frame;
   
-  [self applyDisplayLayout:[self proposedDisplayLayout]];
+  [self applyDisplayLayout:[self arrangedDisplayLayout]];
 }
 
 - (void)setDisplay:(NXDisplay *)display
@@ -777,7 +777,7 @@ static NXScreen *systemScreen = nil;
       frame.origin = position;
       [display setFrame:frame];
   
-      [self applyDisplayLayout:[self proposedDisplayLayout]];
+      [self applyDisplayLayout:[self arrangedDisplayLayout]];
     }
 }
 //------------------------------------------------------------------------------
@@ -1195,7 +1195,7 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
 // actual properties of displays.
 // If you need to propagate changes to displays use -applyDisplayLayout: with
 // returned layout description as an argument.
-- (NSArray *)proposedDisplayLayout
+- (NSArray *)arrangedDisplayLayout
 {
   NSMutableArray *layout;
   NSRect	 dFrame, dLastFrame;
@@ -1204,6 +1204,7 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
   layout = [[[self currentLayout]
                      sortedArrayUsingFunction:compareLayoutEntries
                                       context:NULL] mutableCopy];
+  // At this point displays in layout are sorted at X axis.
   dLastFrame = NSMakeRect(0,0,0,0);
   for (NSMutableDictionary *d in layout)
     {
@@ -1211,27 +1212,28 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
         continue;
         
       dFrame = NSRectFromString([d objectForKey:NXDisplayFrameKey]);
-      if (NSIsEmptyRect(dLastFrame) == NO)
-        {
-          midX = NSMinX(dLastFrame) + dLastFrame.size.width/2;
-          if (dFrame.origin.x >= midX)
-            dFrame.origin.x = dLastFrame.origin.x + dLastFrame.size.width;
-          else if (dFrame.origin.x < midX)
-            dFrame.origin.x -= dFrame.size.width;
+      dFrame.origin.x = NSMaxX(dLastFrame);
+      // if (NSIsEmptyRect(dLastFrame) == NO)
+      //   {
+      //     midX = NSMinX(dLastFrame) + dLastFrame.size.width/2;
+      //     if (dFrame.origin.x >= midX)
+      //       dFrame.origin.x = dLastFrame.origin.x + dLastFrame.size.width;
+      //     else if (dFrame.origin.x < midX)
+      //       dFrame.origin.x -= dFrame.size.width;
               
-          midY = NSMinY(dLastFrame) + dLastFrame.size.height/2;
-          if (dFrame.origin.y >= midY)
-            dFrame.origin.y = dLastFrame.origin.y + dLastFrame.size.height;
-          else if (dFrame.origin.y < midY &&
-                   dFrame.origin.y >= dLastFrame.origin.y)
-            dFrame.origin.y = dLastFrame.origin.y;
-          else
-            dFrame.origin.y -= dFrame.size.height;
-        }
-      else
-        {
-          dFrame.origin = dLastFrame.origin;
-        }
+      //     midY = NSMinY(dLastFrame) + dLastFrame.size.height/2;
+      //     if (dFrame.origin.y >= midY)
+      //       dFrame.origin.y = dLastFrame.origin.y + dLastFrame.size.height;
+      //     else if (dFrame.origin.y < midY &&
+      //              dFrame.origin.y >= dLastFrame.origin.y)
+      //       dFrame.origin.y = dLastFrame.origin.y;
+      //     else
+      //       dFrame.origin.y -= dFrame.size.height;
+      //   }
+      // else
+      //   {
+      //     dFrame.origin = dLastFrame.origin;
+      //   }
       
       [d setObject:NSStringFromRect(dFrame) forKey:NXDisplayFrameKey];
       
