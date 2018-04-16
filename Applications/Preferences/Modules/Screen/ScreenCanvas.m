@@ -81,6 +81,27 @@
     }
 }
 
+- (void)slideDisplayBox:(DisplayBox *)box to:(NSPoint)endPoint
+{
+  NSPoint startPoint = [box frame].origin;
+  NSPoint movePoint;
+  CGFloat xStep, yStep;
+
+  xStep = (startPoint.x - endPoint.x) / 20;
+  yStep = (startPoint.y - endPoint.y) / 20;
+
+  movePoint = startPoint;
+  // while ((xStep > 0 && movePoint.x > endPoint.x) &&
+  //        (xStep < 0 && movePoint.x < endPoint.x))
+  for (int i=0; i<20; i++ )
+    {
+      movePoint.x -= xStep;
+      movePoint.y -= yStep;
+      [box setFrameOrigin:movePoint];
+      [self setNeedsDisplay:YES];
+    }
+}
+
 - (void)mouseDown:(NSEvent *)theEvent
             inBox:(DisplayBox *)box
 {
@@ -118,6 +139,10 @@
         case NSOtherMouseUp:
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
+          if ([owner isDisplyBoxIntersects:box] == YES)
+            {
+              [self slideDisplayBox:box to:initialOrigin];
+            }
           // Reset mouse cursor to cursor befor mouse down - openHandCursor.
           // TODO: on momentary mouse down/up (without drag) cursor turns
           // into arrowCursor. This is wrong. Perhaps this is due to old and

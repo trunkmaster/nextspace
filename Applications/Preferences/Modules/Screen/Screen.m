@@ -299,6 +299,21 @@
   [self selectFirstEnabledMonitor];
 }
 
+- (BOOL)isDisplyBoxIntersects:(DisplayBox *)box
+{
+  NSRect boxFrame = [box frame];
+
+  for (DisplayBox *db in displayBoxList)
+    {
+      if (db == box)
+        continue;
+      if (NSIntersectsRect(boxFrame, [db frame]) == YES)
+        return YES;
+    }
+
+  return NO;
+}
+
 // edge: NSMinXEdge, NSMaxXEdge, NSMinYEdge, NSMaxYEdge
 - (NSPoint)pointAtLayoutEdge:(NSInteger)edge
                       forBox:(DisplayBox *)box
@@ -399,6 +414,11 @@
           [systemScreen deactivateDisplay:builtinDisplay];
         }
     }
+}
+
+- (void)displayBoxPositionDidChange:(NSNotification *)aNotif
+{
+  
 }
 
 @end
