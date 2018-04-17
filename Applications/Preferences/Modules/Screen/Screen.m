@@ -197,7 +197,7 @@
 
 - (void)arrangeDisplays:(id)sender
 {
-  [systemScreen applyDisplayLayout:[systemScreen proposedDisplayLayout]];
+  [systemScreen applyDisplayLayout:[systemScreen arrangedDisplayLayout]];
   [self updateDisplayBoxList];
 }
 
@@ -297,21 +297,6 @@
 
   [self arrangeDisplayBoxes];
   [self selectFirstEnabledMonitor];
-}
-
-- (BOOL)isDisplyBoxIntersects:(DisplayBox *)box
-{
-  NSRect boxFrame = [box frame];
-
-  for (DisplayBox *db in displayBoxList)
-    {
-      if (db == box)
-        continue;
-      if (NSIntersectsRect(boxFrame, [db frame]) == YES)
-        return YES;
-    }
-
-  return NO;
 }
 
 // edge: NSMinXEdge, NSMaxXEdge, NSMinYEdge, NSMaxYEdge

@@ -25,6 +25,7 @@
 #import <AppKit/AppKit.h>
 
 #import <NXSystem/NXMouse.h>
+#import <GNUstepGUI/GSDisplayServer.h>
 
 #import "ScreenCanvas.h"
 #import "DisplayBox.h"
@@ -81,25 +82,105 @@
     }
 }
 
-- (void)slideDisplayBox:(DisplayBox *)box to:(NSPoint)endPoint
+- (DisplayBox *)lowerBoxForBox:(DisplayBox *)box
 {
-  NSPoint startPoint = [box frame].origin;
-  NSPoint movePoint;
-  CGFloat xStep, yStep;
+  NSRect     boxFrame = [box frame];
+  DisplayBox *boxUnder = nil;
 
-  xStep = (startPoint.x - endPoint.x) / 20;
-  yStep = (startPoint.y - endPoint.y) / 20;
-
-  movePoint = startPoint;
-  // while ((xStep > 0 && movePoint.x > endPoint.x) &&
-  //        (xStep < 0 && movePoint.x < endPoint.x))
-  for (int i=0; i<20; i++ )
+  for (DisplayBox *db in [[self contentView] subviews])
     {
-      movePoint.x -= xStep;
-      movePoint.y -= yStep;
-      [box setFrameOrigin:movePoint];
-      [self setNeedsDisplay:YES];
+      if (db == box)
+        continue;
+      
+      if (NSIntersectsRect(boxFrame, [db frame]) == YES)
+        {
+          boxUnder = db;
+          break;
+        }
     }
+
+  return boxUnder;
+}
+
+- (DisplayBox *)closestBoxForBox:(DisplayBox *)box
+{
+  NSPoint    closestPoint = NSMakePoint(CGFLOAT_MAX, CGFLOAT_MAX);
+  DisplayBox *closestBox = nil;
+
+  for (DisplayBox *db in [[self contentView] subviews])
+    {
+      if (db == box)
+        continue;
+      
+      if (closestPoint.x > db.frame.origin.x &&
+          closestPoint.y > db.frame.origin.y)
+        {
+          closestPoint = db.frame.origin;
+          closestBox = db;
+        }
+    }
+
+  return closestBox;
+}
+
+- (void)slideBox:(DisplayBox *)box initialOrigin:(NSPoint)origin
+{
+  DisplayBox *closestBox = [self closestBoxForBox:box];
+
+  if (closestBox != nil)
+    {
+      NSPoint buCPoint = [closestBox centerPoint];
+      NSPoint bCPoint = [box centerPoint];
+      
+      if (bCPoint.x < buCPoint.x)
+        {
+          if (bCPoint.x < NSMinX(closestBox.frame))
+            origin.x = NSMinX(closestBox.frame) - box.frame.size.width;
+          else
+            origin.x = NSMinX(closestBox.frame);
+        }
+      else if (bCPoint.x > buCPoint.x)
+        {
+          if (bCPoint.x > NSMaxX(closestBox.frame))
+            origin.x = NSMaxX(closestBox.frame);
+          else
+            origin.x = NSMaxX(closestBox.frame) - box.frame.size.width;
+        }
+      
+      if (bCPoint.y < buCPoint.y)
+        {
+          if (bCPoint.y < NSMinY(closestBox.frame))
+            origin.y = NSMinY(closestBox.frame) - box.frame.size.height;
+          else
+            origin.y = NSMinY(closestBox.frame);
+        }
+      else if (bCPoint.y > buCPoint.y)
+        {
+          if (bCPoint.y > NSMaxY(closestBox.frame))
+            origin.y = NSMaxY(closestBox.frame);
+          else
+            origin.y = NSMaxY(closestBox.frame) - box.frame.size.height;
+        }
+    }
+
+  // {
+  //   NSBitmapImageRep	*imgRep;
+  //   NSImage		*image;
+
+  //   [box lockFocus];
+  //   imgRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:[box bounds]];
+  //   [box unlockFocus];
+  //   image = [[NSImage alloc] initWithData:[imgRep TIFFRepresentation]];
+
+  //   [[NSWorkspace sharedWorkspace]
+  //     slideImage:image
+  //           from:[self convertRectToBase:box.frame].origin
+  //             to:origin];
+  //   [imgRep release];
+  //   [image release];
+  // }
+
+  [box setFrameOrigin:origin];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -139,10 +220,7 @@
         case NSOtherMouseUp:
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
-          if ([owner isDisplyBoxIntersects:box] == YES)
-            {
-              [self slideDisplayBox:box to:initialOrigin];
-            }
+          [self slideBox:box initialOrigin:initialOrigin];
           // Reset mouse cursor to cursor befor mouse down - openHandCursor.
           // TODO: on momentary mouse down/up (without drag) cursor turns
           // into arrowCursor. This is wrong. Perhaps this is due to old and
