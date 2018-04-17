@@ -58,7 +58,6 @@
 @property (readonly) NSImage *iconYardImage;
 
 - (void)updateDisplayBoxList;
-- (BOOL)isDisplyBoxIntersects:(DisplayBox *)box;
 
 - (NSPoint)pointAtLayoutEdge:(NSInteger)edge
                       forBox:(DisplayBox *)box;

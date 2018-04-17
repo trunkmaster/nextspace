@@ -123,6 +123,11 @@
   [self setNeedsDisplay:YES];
 }
 
+- (NSPoint)centerPoint
+{
+  return NSMakePoint(NSMidX(self.frame), NSMidY(self.frame));
+}
+
 // NSView override
 - (void)mouseDown:(NSEvent *)theEvent
 {

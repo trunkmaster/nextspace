@@ -51,5 +51,6 @@
 - (void)setMain:(BOOL)isMain;
 - (BOOL)isMain;
 - (void)setSelected:(BOOL)selected;
+- (NSPoint)centerPoint;
 
 @end
