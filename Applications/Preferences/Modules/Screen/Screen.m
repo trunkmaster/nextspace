@@ -116,6 +116,12 @@
        selector:@selector(lidDidChange:)
            name:NXPowerLidDidChangeNotification
          object:power];
+  
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(displayBoxPositionDidChange:)
+           name:@"DisplayBoxPositionDidChange"
+         object:nil];
 }
 
 - (NSView *)view
@@ -195,10 +201,23 @@
     }
 }
 
-- (void)arrangeDisplays:(id)sender
+- (void)revertArrangement:(id)sender
 {
   [systemScreen applyDisplayLayout:[systemScreen arrangedDisplayLayout]];
   [self updateDisplayBoxList];
+  
+  [revertBtn setEnabled:NO];
+  [applyBtn setEnabled:NO];
+}
+
+- (void)applyArrangement:(id)sender
+{
+  NSLog(@"Convert DisplayBox positions and set to NXDisplay.");
+
+  
+  
+  [revertBtn setEnabled:NO];
+  [applyBtn setEnabled:NO];
 }
 
 //
@@ -352,6 +371,7 @@
         {
           // Place inactive display at right from active
           dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
+          dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
         }
       if ([dBox isActive] == YES || [displayBoxList indexOfObject:dBox] == 0)
         {
@@ -403,7 +423,8 @@
 
 - (void)displayBoxPositionDidChange:(NSNotification *)aNotif
 {
-  
+  [revertBtn setEnabled:YES];
+  [applyBtn setEnabled:YES];  
 }
 
 @end

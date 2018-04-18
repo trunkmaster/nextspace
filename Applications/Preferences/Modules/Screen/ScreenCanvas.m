@@ -126,6 +126,7 @@
 - (void)slideBox:(DisplayBox *)box initialOrigin:(NSPoint)origin
 {
   DisplayBox *closestBox = [self closestBoxForBox:box];
+  NSPoint    initialOrigin = origin;
 
   if (closestBox != nil)
     {
@@ -181,6 +182,65 @@
   // }
 
   [box setFrameOrigin:origin];
+
+  if (NSEqualPoints(initialOrigin, origin) == NO)
+    {
+      [[NSNotificationCenter defaultCenter]
+        postNotificationName:@"DisplayBoxPositionDidChange"
+                      object:box];
+    }
+}
+
+- (void)centerBoxes
+{
+  CGFloat xOffset = .0, yOffset = .0;
+  NSRect  groupRect = NSMakeRect(0,0,0,0);
+  NSPoint bOrigin;
+  
+  for (DisplayBox *db in [[self contentView] subviews])
+    {
+      NSLog(@"box = %@, groupRect = %@",
+            NSStringFromRect(db.frame), NSStringFromRect(groupRect));
+      if (db.frame.origin.x < groupRect.origin.x)
+        {
+          groupRect.size.width += NSMinX(groupRect) - NSMinX(db.frame);
+          groupRect.origin.x = db.frame.origin.x;
+        }
+      else if (db.frame.origin.x >= groupRect.origin.x)
+        {
+          if (NSMaxX(db.frame) > NSMaxX(groupRect))
+            groupRect.size.width += db.frame.size.width;
+          if (groupRect.origin.x == 0 || groupRect.origin.x > db.frame.origin.x)
+            groupRect.origin.x = db.frame.origin.x;
+        }
+      
+      if (db.frame.origin.y < groupRect.origin.y)
+        {
+          groupRect.size.height += NSMinY(groupRect) - NSMinY(db.frame);
+          groupRect.origin.y = db.frame.origin.y;
+        }
+      else if (db.frame.origin.y >= groupRect.origin.y)
+        {
+          if (NSMaxY(db.frame) > NSMaxY(groupRect))
+            groupRect.size.height += db.frame.size.height;
+          if (groupRect.origin.y == 0 || groupRect.origin.y > db.frame.origin.y)
+            groupRect.origin.y = db.frame.origin.y;
+        }
+    }
+  
+  // NSLog(@"canvas = %.0f group = %.0f",
+  //       NSWidth([self frame]), NSWidth(groupRect));
+  xOffset = floorf(((NSWidth([self frame]) - NSWidth(groupRect)) / 2));
+  yOffset = floorf(((NSHeight([self frame]) - NSHeight(groupRect)) / 2));
+  // NSLog(@"groupRect = %@", NSStringFromRect(groupRect));
+  // NSLog(@"xOffset = %.0f", xOffset);
+  for (DisplayBox *db in [[self contentView] subviews])
+    {
+      bOrigin = db.frame.origin;
+      bOrigin.x = (bOrigin.x - groupRect.origin.x) + xOffset;
+      bOrigin.y = (bOrigin.y - groupRect.origin.y) + yOffset;
+      [db setFrameOrigin:bOrigin];
+    }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -220,7 +280,11 @@
         case NSOtherMouseUp:
         case NSLeftMouseUp:
           // NSLog(@"Mouse UP.");
-          [self slideBox:box initialOrigin:initialOrigin];
+          if (NSEqualPoints(initialLocation, location) == NO)
+            {
+              [self slideBox:box initialOrigin:initialOrigin];
+              [self centerBoxes];
+            }
           // Reset mouse cursor to cursor befor mouse down - openHandCursor.
           // TODO: on momentary mouse down/up (without drag) cursor turns
           // into arrowCursor. This is wrong. Perhaps this is due to old and
@@ -240,9 +304,6 @@
               (fabs(location.x - initialLocation.x) > moveThreshold ||
                fabs(location.y - initialLocation.y) > moveThreshold))
             {
-              // if (displayFrame.origin.x > 0 ||
-              //     boxOrigin.x > initialOrigin.x ||
-              //     (location.x - lastLocation.x) > 0)
               boxOrigin.x += (location.x - lastLocation.x);
               if (boxOrigin.x < 0)
                 {

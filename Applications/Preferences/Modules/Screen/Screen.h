@@ -41,7 +41,8 @@
   id canvas;
   id setMainBtn;
   id setStateBtn;
-  id arrangeBtn;
+  id applyBtn;
+  id revertBtn;
 
   NSImage *image;
 
@@ -61,7 +62,6 @@
 
 - (NSPoint)pointAtLayoutEdge:(NSInteger)edge
                       forBox:(DisplayBox *)box;
-- (void)arrangeDisplayBoxes;
 
 - (void)displayBoxClicked:(DisplayBox *)sender;
 
