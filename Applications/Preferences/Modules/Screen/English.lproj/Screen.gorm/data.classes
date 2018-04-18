@@ -2,7 +2,8 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "arrangeDisplays:",
+	    "revertArrangement:",
+	    "applyArrangement:",
 	    "setDisplayState:",
 	    "setMainDisplay:"
 	);
@@ -18,17 +19,19 @@
     };
     ScreenPreferences = {
 	Actions = (
-	    "arrangeDisplays:",
+	    "revertArrangement:",
 	    "setDisplayState:",
-	    "setMainDisplay:"
+	    "setMainDisplay:",
+	    "applyArrangement:"
 	);
 	Outlets = (
 	    view,
 	    window,
 	    canvas,
-	    arrangeBtn,
+	    applyBtn,
 	    setMainBtn,
-	    setStateBtn
+	    setStateBtn,
+	    revertBtn
 	);
 	Super = NSObject;
     };
