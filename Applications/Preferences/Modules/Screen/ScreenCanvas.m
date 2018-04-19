@@ -191,12 +191,11 @@
     }
 }
 
-- (void)centerBoxes
+- (NSRect)boxGroupRect
 {
-  CGFloat xOffset = .0, yOffset = .0;
-  NSRect  groupRect = NSMakeRect(0,0,0,0);
-  NSPoint bOrigin;
-  
+  NSRect groupRect = NSMakeRect(0,0,0,0);
+
+  // Calculate the groupRect
   for (DisplayBox *db in [[self contentView] subviews])
     {
       NSLog(@"box = %@, groupRect = %@",
@@ -227,13 +226,23 @@
             groupRect.origin.y = db.frame.origin.y;
         }
     }
-  
+
+  return groupRect;
+}
+
+- (void)centerBoxes
+{
+  CGFloat xOffset = .0, yOffset = .0;
+  NSRect  groupRect = [self boxGroupRect];
+  NSPoint bOrigin;
+
   // NSLog(@"canvas = %.0f group = %.0f",
   //       NSWidth([self frame]), NSWidth(groupRect));
   xOffset = floorf(((NSWidth([self frame]) - NSWidth(groupRect)) / 2));
   yOffset = floorf(((NSHeight([self frame]) - NSHeight(groupRect)) / 2));
   // NSLog(@"groupRect = %@", NSStringFromRect(groupRect));
   // NSLog(@"xOffset = %.0f", xOffset);
+  
   for (DisplayBox *db in [[self contentView] subviews])
     {
       bOrigin = db.frame.origin;

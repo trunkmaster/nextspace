@@ -1149,20 +1149,26 @@ static NXScreen *systemScreen = nil;
   return [self applyDisplayLayout:[self defaultLayout:YES]];
 }
 
-- (id)objectForKey:(NSString *)key
-        forDisplay:(NXDisplay *)display
-          inLayout:(NSArray *)layout
+- (NSDictionary *)descriptionOfDisplay:(NXDisplay *)display
+                              inLayout:(NSArray *)layout
 {
   for (NSDictionary *dDesc in layout)
     {
       if ([[dDesc objectForKey:@"Name"] isEqualToString:display.outputName] &&
           [[dDesc objectForKey:@"ID"] isEqual:[display uniqueID]])
         {
-          return [dDesc objectForKey:key];
+          return dDesc;
         }
     }
 
   return nil;
+}
+
+- (id)objectForKey:(NSString *)key
+        forDisplay:(NXDisplay *)display
+          inLayout:(NSArray *)layout
+{
+  return [[self descriptionOfDisplay:display inLayout:layout] objectForKey:key];
 }
 
 // --- Arrangement

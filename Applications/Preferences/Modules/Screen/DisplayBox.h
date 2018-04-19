@@ -41,6 +41,7 @@
 
 @property NSRect displayFrame;
 @property (assign) NSString *displayName;
+@property (readonly) NXDisplay *display;
 
 - initWithFrame:(NSRect)frameRect
         display:(NXDisplay *)aDisplay

@@ -139,6 +139,8 @@
 - (BOOL)saveCurrentDisplayLayout;
 - (NSArray *)savedDisplayLayout;
 - (BOOL)applySavedDisplayLayout;
+- (NSDictionary *)descriptionOfDisplay:(NXDisplay *)display
+                              inLayout:(NSArray *)layout;
 - (id)objectForKey:(NSString *)key
         forDisplay:(NXDisplay *)display
           inLayout:(NSArray *)layout;

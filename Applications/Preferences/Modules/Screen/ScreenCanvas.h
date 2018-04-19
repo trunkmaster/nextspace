@@ -33,6 +33,8 @@
   BOOL              isMouseDragged;
 }
 
+- (NSRect)boxGroupRect;
+  
 - (void)mouseDown:(NSEvent *)theEvent
             inBox:(DisplayBox *)box;
 @end
