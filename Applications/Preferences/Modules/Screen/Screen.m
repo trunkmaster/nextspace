@@ -210,11 +210,88 @@
   [applyBtn setEnabled:NO];
 }
 
+NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
+                                       DisplayBox *displayB,
+                                       void *context)
+{
+  NSPoint aPoint = displayA.frame.origin;
+  NSPoint bPoint = displayB.frame.origin;
+  BOOL    aIsActive, bIsActive;
+
+  aIsActive = [displayA.display isActive];
+  bIsActive = [displayB.display isActive];
+
+  if (aIsActive == NO && bIsActive == YES)
+    return NSOrderedDescending;
+  else if (aIsActive == YES && bIsActive == NO)
+    return NSOrderedAscending;
+
+  if (aPoint.x < bPoint.x || aPoint.y < bPoint.y)
+    return NSOrderedAscending;
+  else
+    return NSOrderedDescending;
+}
+
 - (void)applyArrangement:(id)sender
 {
   NSLog(@"Convert DisplayBox positions and set to NXDisplay.");
 
-  
+  NSArray             *dbList;
+  NSArray             *layout = [systemScreen currentLayout];
+  NSMutableArray      *newLayout = [NSMutableArray new];
+  NSMutableDictionary *displayDesc;
+  NSRect              boxFrame, boxLastFrame;
+  NSRect              displayFrame, displayLastFrame;
+
+  dbList = [displayBoxList sortedArrayUsingFunction:compareDisplayBoxes
+                                            context:NULL];
+  displayLastFrame = NSMakeRect(0,0,0,0);
+  for (DisplayBox *db in dbList)
+    {
+      // 1. Get frame of NXDisplay
+      displayFrame = db.display.frame;
+
+      // 2. Calculate NSPoint for NXDisplay
+      boxFrame = db.frame;
+
+      if (NSIsEmptyRect(displayLastFrame))
+        displayFrame.origin.x = 0;
+      else if (NSMinX(boxFrame) == NSMinX(boxLastFrame)) // top|bottom: left aligned
+        displayFrame.origin.x = displayLastFrame.origin.x;
+      else if (NSMaxX(boxFrame) == NSMaxX(boxLastFrame)) // top|bottom: right aligned
+        displayFrame.origin.x = NSMaxX(displayLastFrame) - NSWidth(displayFrame);
+      else if (NSMaxX(boxFrame) > NSMaxX(boxLastFrame))  // right
+        displayFrame.origin.x += displayLastFrame.size.width;
+      else                                         // left - starts new row of displays
+        displayFrame.origin.x = NSMinX(displayLastFrame) - NSWidth(displayFrame);
+
+      if (NSIsEmptyRect(displayLastFrame))
+        displayFrame.origin.y = 0;
+      else if (NSMinY(boxFrame) == NSMinY(boxLastFrame)) // right|left: bottom aligned
+        displayFrame.origin.y = displayLastFrame.origin.y;
+      else if (NSMaxY(boxFrame) == NSMaxY(boxLastFrame)) // right|left: top aligned
+        displayFrame.origin.y = NSMaxY(displayLastFrame) - NSWidth(displayFrame);
+      else if (NSMaxY(boxFrame) > NSMaxY(boxLastFrame))  // top
+        displayFrame.origin.y += NSHeight(displayLastFrame);
+      else // bottom - should neve be called
+        displayFrame.origin.x = NSMinY(displayLastFrame) - NSHeight(displayFrame);
+      
+      displayLastFrame = displayFrame;
+      boxLastFrame = boxFrame;
+      
+      // 3. Change frame origin of NXDisplay in layout description
+      displayDesc = [[systemScreen descriptionOfDisplay:db.display
+                                               inLayout:layout] mutableCopy];
+      [displayDesc setObject:NSStringFromRect(displayFrame)
+                      forKey:NXDisplayFrameKey];
+      NSLog(@"Set frame for %@: %@", db.displayName, NSStringFromRect(displayFrame));
+      [newLayout addObject:displayDesc];
+      [displayDesc release];
+    }
+
+  // [systemScreen applyDisplayLayout:newLayout];
+  // [newLayout writeToFile:@"PreferencesDisplays.config" atomically:YES];
+  [newLayout release];
   
   [revertBtn setEnabled:NO];
   [applyBtn setEnabled:NO];

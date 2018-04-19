@@ -43,7 +43,7 @@
 
   owner = prefs;
   
-  // display = aDisplay;
+  _display = aDisplay;
 
   nameRect = frameRect;
   nameRect.size.height = 15;
