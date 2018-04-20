@@ -662,10 +662,15 @@ static NXScreen *systemScreen = nil;
   [self randrUpdateScreenResources];
 }
 
-// TODO
 - (NXDisplay *)displayAtPoint:(NSPoint)point
 {
-  return [systemDisplays objectAtIndex:0];
+  for (NXDisplay *display in systemDisplays)
+    {
+      if (NSPointInRect(points, [display frame]) == YES)
+        return display;
+    }
+  
+  return nil;
 }
 
 - (NXDisplay *)displayWithName:(NSString *)name
