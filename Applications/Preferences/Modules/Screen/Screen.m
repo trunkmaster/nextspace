@@ -40,6 +40,7 @@
 
 #import <NXSystem/NXDisplay.h>
 
+#import  "ScreenCanvas.h"
 #import "DisplayBox.h"
 #import "Screen.h"
 
@@ -236,12 +237,14 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
 {
   NSLog(@"Convert DisplayBox positions and set to NXDisplay.");
 
-  NSArray             *dbList;
-  NSArray             *layout = [systemScreen currentLayout];
-  NSMutableArray      *newLayout = [NSMutableArray new];
-  NSMutableDictionary *displayDesc;
-  NSRect              boxFrame, boxLastFrame;
-  NSRect              displayFrame, displayLastFrame;
+  NSArray		*dbList;
+  NSArray		*layout = [systemScreen currentLayout];
+  NSMutableArray	*newLayout = [NSMutableArray new];
+  NSMutableDictionary	*displayDesc;
+  NSRect		boxGroupRect = [canvas boxGroupRect];
+  NSRect		boxFrame, boxLastFrame;
+  NSRect		displayFrame, displayLastFrame;
+  CGFloat		xOffset = .0, yOffset = .0;
 
   dbList = [displayBoxList sortedArrayUsingFunction:compareDisplayBoxes
                                             context:NULL];
@@ -254,27 +257,35 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
       // 2. Calculate NSPoint for NXDisplay
       boxFrame = db.frame;
 
-      if (NSIsEmptyRect(displayLastFrame))
+      if (NSIsEmptyRect(displayLastFrame) &&
+          boxFrame.origin.x == boxGroupRect.origin.x)
         displayFrame.origin.x = 0;
       else if (NSMinX(boxFrame) == NSMinX(boxLastFrame)) // top|bottom: left aligned
         displayFrame.origin.x = displayLastFrame.origin.x;
       else if (NSMaxX(boxFrame) == NSMaxX(boxLastFrame)) // top|bottom: right aligned
         displayFrame.origin.x = NSMaxX(displayLastFrame) - NSWidth(displayFrame);
       else if (NSMaxX(boxFrame) > NSMaxX(boxLastFrame))  // right
-        displayFrame.origin.x += displayLastFrame.size.width;
+        displayFrame.origin.x = displayLastFrame.size.width;
       else                                         // left - starts new row of displays
         displayFrame.origin.x = NSMinX(displayLastFrame) - NSWidth(displayFrame);
+      
+      if (displayFrame.origin.x < xOffset)
+        xOffset = fabs(displayFrame.origin.x);
 
-      if (NSIsEmptyRect(displayLastFrame))
+      if (NSIsEmptyRect(displayLastFrame) &&
+          boxFrame.origin.y == boxGroupRect.origin.y)
         displayFrame.origin.y = 0;
       else if (NSMinY(boxFrame) == NSMinY(boxLastFrame)) // right|left: bottom aligned
         displayFrame.origin.y = displayLastFrame.origin.y;
       else if (NSMaxY(boxFrame) == NSMaxY(boxLastFrame)) // right|left: top aligned
-        displayFrame.origin.y = NSMaxY(displayLastFrame) - NSWidth(displayFrame);
+        displayFrame.origin.y = NSMaxY(displayLastFrame) - NSHeight(displayFrame);
       else if (NSMaxY(boxFrame) > NSMaxY(boxLastFrame))  // top
-        displayFrame.origin.y += NSHeight(displayLastFrame);
-      else // bottom - should neve be called
-        displayFrame.origin.x = NSMinY(displayLastFrame) - NSHeight(displayFrame);
+        displayFrame.origin.y = NSHeight(displayLastFrame);
+      else // bottom - should never be called
+        displayFrame.origin.y = NSMinY(displayLastFrame) - NSHeight(displayFrame);
+      
+      if (displayFrame.origin.y < yOffset)
+        yOffset = fabs(displayFrame.origin.y);
       
       displayLastFrame = displayFrame;
       boxLastFrame = boxFrame;
@@ -287,6 +298,19 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
       NSLog(@"Set frame for %@: %@", db.displayName, NSStringFromRect(displayFrame));
       [newLayout addObject:displayDesc];
       [displayDesc release];
+    }
+
+  if (xOffset > 0 || yOffset > 0)
+    {
+      for (NSMutableDictionary *d in newLayout)
+        {
+          displayFrame = NSRectFromString([d objectForKey:NXDisplayFrameKey]);
+          displayFrame.origin.x += xOffset;
+          displayFrame.origin.y += yOffset;
+          NSLog(@"Adjust frame for %@: %@", [d objectForKey:NXDisplayNameKey],
+                NSStringFromRect(displayFrame));
+          [d setObject:NSStringFromRect(displayFrame) forKey:NXDisplayFrameKey];
+        }
     }
 
   // [systemScreen applyDisplayLayout:newLayout];
