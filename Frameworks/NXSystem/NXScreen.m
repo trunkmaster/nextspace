@@ -666,7 +666,7 @@ static NXScreen *systemScreen = nil;
 {
   for (NXDisplay *display in systemDisplays)
     {
-      if (NSPointInRect(points, [display frame]) == YES)
+      if (NSPointInRect(point, [display frame]) == YES)
         return display;
     }
   
