@@ -31,6 +31,20 @@
 #import "DisplayBox.h"
 #import "Screen.h"
 
+@interface ContentView : NSView
+{
+}
+@end
+
+@implementation ContentView
+
+- (BOOL)isFlipped
+{
+  return YES;
+}
+
+@end
+
 @implementation ScreenCanvas
 
 - initWithFrame:(NSRect)frameRect
@@ -40,6 +54,7 @@
   [self setTitlePosition:NSNoTitle];
   [self setFillColor:[NSColor grayColor]];
   [self setContentViewMargins:NSMakeSize(0, 0)];
+  [self setContentView:[ContentView new]];
 
   isMouseDragged = NO;
   
@@ -323,8 +338,9 @@
                 {
                   boxOrigin.x = canvasFrame.size.width - boxFrame.size.width;
                 }
-                  
-              boxOrigin.y += (location.y - lastLocation.y);
+
+              // Content view is flipped - reverse increment
+              boxOrigin.y -= (location.y - lastLocation.y);
               if (boxOrigin.y < 0)
                 {
                   boxOrigin.y = 0;

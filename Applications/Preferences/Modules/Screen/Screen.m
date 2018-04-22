@@ -313,7 +313,7 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
         }
     }
 
-  // [systemScreen applyDisplayLayout:newLayout];
+  [systemScreen applyDisplayLayout:newLayout];
   // [newLayout writeToFile:@"PreferencesDisplays.config" atomically:YES];
   [newLayout release];
   
@@ -415,7 +415,8 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
       [dBox release];
     }
 
-  [self arrangeDisplayBoxes];
+  // [self arrangeDisplayBoxes];
+  [(ScreenCanvas *)canvas centerBoxes];
   [self selectFirstEnabledMonitor];
 }
 
@@ -478,7 +479,8 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
         {
           dRect.origin.x += xOffset;
         }
-      dRect.origin.y += (yOffset - dRect.size.height);
+      // dRect.origin.y += (yOffset - dRect.size.height);
+      dRect.origin.y += yOffset;
       [dBox setFrame:dRect];
     }
 }
