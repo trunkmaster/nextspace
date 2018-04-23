@@ -282,7 +282,11 @@
   // GNUstep information about screen size is obsolete. Adopt origin.y to
   // GNUstep screen coordinates.
   // TDOD: GNUstep back XGServer should be fixed to get real screen dimensions.
+  NSPoint mouseLocation = [panel mouseLocationOutsideOfEventStream];
+  NXDisplay *display = [[NXScreen sharedScreen] displayAtPoint:mouseLocation];
+  
   panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
+  panelFrame.origin.x = display.frame.origin
   panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
   
   [messageField setFrame:messageFrame];

@@ -31,12 +31,12 @@
 #import "DisplayBox.h"
 #import "Screen.h"
 
-@interface ContentView : NSView
+@interface FlippedView : NSView
 {
 }
 @end
 
-@implementation ContentView
+@implementation FlippedView
 
 - (BOOL)isFlipped
 {
@@ -54,7 +54,7 @@
   [self setTitlePosition:NSNoTitle];
   [self setFillColor:[NSColor grayColor]];
   [self setContentViewMargins:NSMakeSize(0, 0)];
-  [self setContentView:[ContentView new]];
+  [self setContentView:[[FlippedView new] autorelease]];
 
   isMouseDragged = NO;
   
@@ -208,38 +208,37 @@
 
 - (NSRect)boxGroupRect
 {
-  NSRect groupRect = NSMakeRect(0,0,0,0);
+  NSRect groupRect = NSMakeRect(-1,-1,0,0);
 
-  // Calculate the groupRect
   for (DisplayBox *db in [[self contentView] subviews])
     {
-      NSLog(@"box = %@, groupRect = %@",
-            NSStringFromRect(db.frame), NSStringFromRect(groupRect));
       if (db.frame.origin.x < groupRect.origin.x)
-        {
+        { // Extend to the left
           groupRect.size.width += NSMinX(groupRect) - NSMinX(db.frame);
           groupRect.origin.x = db.frame.origin.x;
         }
-      else if (db.frame.origin.x >= groupRect.origin.x)
-        {
+      else
+        { // Extend to the right
           if (NSMaxX(db.frame) > NSMaxX(groupRect))
             groupRect.size.width += db.frame.size.width;
-          if (groupRect.origin.x == 0 || groupRect.origin.x > db.frame.origin.x)
+          if (groupRect.origin.x < 0 ) // this is the first time we'll touch it
             groupRect.origin.x = db.frame.origin.x;
         }
       
       if (db.frame.origin.y < groupRect.origin.y)
-        {
+        { // Extend to the top
           groupRect.size.height += NSMinY(groupRect) - NSMinY(db.frame);
           groupRect.origin.y = db.frame.origin.y;
         }
-      else if (db.frame.origin.y >= groupRect.origin.y)
-        {
+      else
+        { // Extend to the bottom
           if (NSMaxY(db.frame) > NSMaxY(groupRect))
             groupRect.size.height += db.frame.size.height;
-          if (groupRect.origin.y == 0 || groupRect.origin.y > db.frame.origin.y)
+          if (groupRect.origin.y < 0)  // this is the first time we'll touch it
             groupRect.origin.y = db.frame.origin.y;
         }
+      NSLog(@"box = %@, groupRect = %@",
+            NSStringFromRect(db.frame), NSStringFromRect(groupRect));
     }
 
   return groupRect;
@@ -256,13 +255,15 @@
   xOffset = floorf(((NSWidth([self frame]) - NSWidth(groupRect)) / 2));
   yOffset = floorf(((NSHeight([self frame]) - NSHeight(groupRect)) / 2));
   // NSLog(@"groupRect = %@", NSStringFromRect(groupRect));
-  // NSLog(@"xOffset = %.0f", xOffset);
+  // NSLog(@"xOffset = %.0f, yOffset = %.0f", xOffset, yOffset);
   
   for (DisplayBox *db in [[self contentView] subviews])
     {
       bOrigin = db.frame.origin;
+      // NSLog(@"initial box origin = %@", NSStringFromPoint(bOrigin));
       bOrigin.x = (bOrigin.x - groupRect.origin.x) + xOffset;
       bOrigin.y = (bOrigin.y - groupRect.origin.y) + yOffset;
+      // NSLog(@"set new box origin = %@", NSStringFromPoint(bOrigin));
       [db setFrameOrigin:bOrigin];
     }
 }
