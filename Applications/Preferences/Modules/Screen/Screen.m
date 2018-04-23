@@ -380,16 +380,10 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   // Create and add display boxes
   for (NXDisplay *d in displays)
     {
-      displayRect = [d frame];
       if ([d isActive] == NO)
-        {
-          NSDictionary *res = [[d allResolutions] objectAtIndex:0];
-          NSSize       dSize;
-          
-          dSize = NSSizeFromString([res objectForKey:NXDisplaySizeKey]);
-          displayRect.size.width = dSize.width;
-          displayRect.size.height = dSize.height;
-        }
+        displayRect = d.hiddenFrame;
+      else
+        displayRect = d.frame;
       
       dBoxRect.origin.x = floor(displayRect.origin.x*scaleFactor);
       dBoxRect.origin.y = floor(displayRect.origin.y*scaleFactor);
@@ -472,7 +466,6 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
       if ([dBox isActive] == NO)
         {
           // Place inactive display at right from active
-          dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
           dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
         }
       if ([dBox isActive] == YES || [displayBoxList indexOfObject:dBox] == 0)
