@@ -1029,7 +1029,7 @@ static NXScreen *systemScreen = nil;
   [updateScreenLock lock];
   
   // If new screen size is BIGGER - set new screen size here
-  if (newPixSize.width > sizeInPixels.width ||
+  if (newPixSize.width > sizeInPixels.width &&
       newPixSize.height > sizeInPixels.height)
     {
       // NSLog(@"NXScreen: set new BIGGER screen size: START");
