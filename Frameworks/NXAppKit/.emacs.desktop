@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Apr 23 12:16:44 2018
+;; Created Tue Apr 24 00:44:05 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXAppKit/")
+(setq default-directory "~/Developer/nextspace/Frameworks/NXAppKit/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,8 @@
   "NXAlert.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  10000
-  '(9958 nil)
+  10402
+  '(10318 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

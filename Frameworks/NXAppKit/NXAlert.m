@@ -32,6 +32,7 @@
 */
 
 #import <NXSystem/NXScreen.h>
+#import <NXSystem/NXDisplay.h>
 #import "NXAlert.h"
 
 @implementation NXAlert
@@ -284,10 +285,21 @@
   // TDOD: GNUstep back XGServer should be fixed to get real screen dimensions.
   NSPoint mouseLocation = [panel mouseLocationOutsideOfEventStream];
   NXDisplay *display = [[NXScreen sharedScreen] displayAtPoint:mouseLocation];
-  
-  panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
-  panelFrame.origin.x = display.frame.origin
-  panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
+
+  // NSLog(@"NXAlert: display at mouse is %@ (%@), screen size: %@",
+  //       display.outputName, NSStringFromRect(display.frame),
+  //       NSStringFromSize(screenSize));
+  if (display)
+    {
+      panelFrame.origin.y = (screenSize.height - display.frame.size.height) + (display.frame.size.height/2);
+      panelFrame.origin.x = display.frame.origin.x + ((display.frame.size.width - panelFrame.size.width)/2);
+      // NSLog(@"NXAlert: panel origin: %@", NSStringFromPoint(panelFrame.origin));
+    }
+  else
+    {
+      panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
+      panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
+    }
   
   [messageField setFrame:messageFrame];
   [panel setFrame:panelFrame display:NO];
