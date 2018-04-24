@@ -60,9 +60,6 @@
 
 - (void)updateDisplayBoxList;
 
-- (NSPoint)pointAtLayoutEdge:(NSInteger)edge
-                      forBox:(DisplayBox *)box;
-
 - (void)displayBoxClicked:(DisplayBox *)sender;
 
 @end
