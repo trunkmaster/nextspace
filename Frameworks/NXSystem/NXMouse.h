@@ -57,6 +57,8 @@
 - (void)setMenuButtonEnabled:(BOOL)enabled
                   menuButton:(NSUInteger)eventType;
 
+- (NSPoint)locationOnScreen;
+  
 - (NSArray *)availableCursorThemes;
 - (NSString *)cursorTheme;
 

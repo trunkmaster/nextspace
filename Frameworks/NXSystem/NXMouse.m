@@ -71,6 +71,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   [super dealloc];
 }
 
+// Acceleration
 - (NSInteger)acceleration
 {
   Display    *dpy;
@@ -120,6 +121,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
                       forKey:@"GSMouseMoveThreshold"];
 }
 
+// Double click
 - (NSInteger)doubleClickTime
 {
   NSInteger time;
@@ -139,6 +141,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   doubleClickTime = miliseconds;
 }
 
+// Scroll wheel
 - (NSInteger)wheelScrollLines
 {
   NSInteger  lines;
@@ -161,13 +164,9 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
 {
   NSInteger  lines;
   
-  // lines = [gsDefaults integerForKey:@"GSMouseScrollMultiplier"];
-  // if (lines == 0)
-  //   {
-      lines = [nxDefaults integerForKey:WheelControlScroll];
-      if (lines == 0 || lines == -1)
-        lines = 1;
-    // }
+  lines = [nxDefaults integerForKey:WheelControlScroll];
+  if (lines == 0 || lines == -1)
+    lines = 1;
   
   return lines;
 }
@@ -176,6 +175,7 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
   wheelControlScrollLines = lines;
 }
 
+// Menu button
 - (BOOL)isMenuButtonEnabled
 {
   BOOL     enabled = YES;
@@ -214,6 +214,24 @@ NSString *CursorTheme = @"NXMouseCursorTheme";
 {
   isMenuButtonEnabled = enabled;
   menuButtonEvent = eventType;
+}
+
+- (NSPoint)locationOnScreen
+{
+  Display	*dpy;
+  Window	root_window, rwindow, cwindow;
+  int		root_x, root_y, win_x, win_y;
+  unsigned int	mask;
+    
+  dpy = XOpenDisplay(NULL);
+  
+  root_window = RootWindow(dpy, DefaultScreen(dpy));
+  XQueryPointer(dpy, root_window, &rwindow, &cwindow,
+                &root_x, &root_y, &win_x, &win_y, &mask);
+  
+  XCloseDisplay(dpy);
+
+  return NSMakePoint((CGFloat)root_x, (CGFloat)root_y);
 }
 
 // TODO
