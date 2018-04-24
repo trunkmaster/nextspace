@@ -770,8 +770,8 @@ find_last_non_clamped(CARD16 array[], int size)
   if (![self isActive])
     return;
 
-  NSLog(@"setGammaFromDescription: %f : %f : %f",
-        gammaValue.red, gammaValue.green, gammaValue.blue);
+  // NSLog(@"setGammaFromDescription: %f : %f : %f",
+  //       gammaValue.red, gammaValue.green, gammaValue.blue);
   
   [self setGammaRed:gammaValue.red
               green:gammaValue.green

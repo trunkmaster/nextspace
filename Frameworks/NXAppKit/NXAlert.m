@@ -33,6 +33,7 @@
 
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXDisplay.h>
+#import <NXSystem/NXMouse.h>
 #import "NXAlert.h"
 
 @implementation NXAlert
@@ -277,22 +278,22 @@
         (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
     }
 
+  // TODO: GNUstep back XGServer should be fixed to get real screen dimensions.
   // NSRect mDisplayRect = [[screen mainDisplay] frame];
   // NXRect gScreenRect = [[panel screen] frame]; // Get GNUstep screen rect
   // Screen size possibly was changed after application start.
   // GNUstep information about screen size is obsolete. Adopt origin.y to
   // GNUstep screen coordinates.
-  // TDOD: GNUstep back XGServer should be fixed to get real screen dimensions.
-  NSPoint mouseLocation = [panel mouseLocationOutsideOfEventStream];
-  NXDisplay *display = [[NXScreen sharedScreen] displayAtPoint:mouseLocation];
+  NXScreen  *screen = [[NXScreen new] autorelease];
+  NXMouse   *mouse = [[NXMouse new] autorelease];
+  NXDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
 
-  // NSLog(@"NXAlert: display at mouse is %@ (%@), screen size: %@",
-  //       display.outputName, NSStringFromRect(display.frame),
-  //       NSStringFromSize(screenSize));
   if (display)
     {
-      panelFrame.origin.y = (screenSize.height - display.frame.size.height) + (display.frame.size.height/2);
-      panelFrame.origin.x = display.frame.origin.x + ((display.frame.size.width - panelFrame.size.width)/2);
+      panelFrame.origin.x = display.frame.origin.x +
+        (display.frame.size.width/2 - panelFrame.size.width/2);
+      panelFrame.origin.y = (screenSize.height - display.frame.size.height) +
+        (display.frame.size.height/2) + panelFrame.size.height/2;
       // NSLog(@"NXAlert: panel origin: %@", NSStringFromPoint(panelFrame.origin));
     }
   else
@@ -348,7 +349,6 @@
   NSInteger result;
   NXScreen *screen = [[NXScreen new] autorelease];
 
-  [screen randrUpdateScreenResources];
   [self sizeToFitScreenSize:[screen sizeInPixels]];
 
   [panel makeFirstResponder:defaultButton];
