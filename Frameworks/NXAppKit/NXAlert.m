@@ -359,8 +359,8 @@
       panelFrame.origin.x = display.frame.origin.x;
       panelFrame.origin.x += display.frame.size.width/2 - panelFrame.size.width/2;
       
-      panelFrame.origin.y = screenSize.height - display.frame.size.height;
-      panelFrame.origin.y += display.frame.size.height/2 + panelFrame.size.height/2;
+      panelFrame.origin.y = screenSize.height - (display.frame.origin.y + display.frame.size.height);
+      panelFrame.origin.y += (display.frame.size.height * 0.75) - panelFrame.size.height/2;
       // NSLog(@"NXAlert: panel origin: %@", NSStringFromPoint(panelFrame.origin));
     }
   else
