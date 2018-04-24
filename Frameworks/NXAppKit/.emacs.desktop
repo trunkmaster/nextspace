@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Apr 24 00:44:05 2018
+;; Created Wed Apr 25 01:06:49 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "NXAlert.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  10402
-  '(10318 nil)
+  12108
+  '(12024 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
