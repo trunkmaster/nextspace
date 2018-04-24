@@ -342,6 +342,7 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   [self displayBoxClicked:db];
 }
 
+// Translates NXDisplay coordinates into ScreenCanvas coordinates
 - (void)updateDisplayBoxList
 {
   NSArray *displays;
@@ -412,70 +413,6 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   // [self arrangeDisplayBoxes];
   [(ScreenCanvas *)canvas centerBoxes];
   [self selectFirstEnabledMonitor];
-}
-
-// edge: NSMinXEdge, NSMaxXEdge, NSMinYEdge, NSMaxYEdge
-- (NSPoint)pointAtLayoutEdge:(NSInteger)edge
-                      forBox:(DisplayBox *)box
-{
-  NSPoint point = NSMakePoint(0,0);
-  NSRect  dRect;
-  
-  for (DisplayBox *dBox in displayBoxList)
-    {
-      if (dBox == box) continue;
-      
-      dRect = [dBox frame];
-      if (edge == NSMaxXEdge) // right
-        {
-          point.x = MAX(NSMaxX(dRect), point.x);
-        }
-      else if (edge == NSMaxYEdge) // top
-        {
-          point.y = MAX(NSMaxY(dRect), point.y);
-        }
-    }
-
-  return point;
-}
-
-- (void)arrangeDisplayBoxes
-{
-  NSRect  dRect, sRect = [canvas frame];
-  NSSize  screenSize = [systemScreen sizeInPixels];
-  CGFloat xOffset, yOffset;
-
-  // Include inactive display into screen size
-  for (DisplayBox *dBox in displayBoxList)
-    {
-      dRect = [dBox frame];
-      if ([dBox isActive] == NO)
-        {
-          screenSize.width += [dBox displayFrame].size.width;
-        }
-    }
-  xOffset = floor((sRect.size.width - (screenSize.width * scaleFactor))/2);
-  
-  // Align boxes at that top edge
-  yOffset = floor(sRect.size.height -
-                  (sRect.size.height - (screenSize.height * scaleFactor))/2);
-
-  for (DisplayBox *dBox in displayBoxList)
-    {
-      dRect = [dBox frame];
-      if ([dBox isActive] == NO)
-        {
-          // Place inactive display at right from active
-          dRect.origin.x = [self pointAtLayoutEdge:NSMaxXEdge forBox:dBox].x;
-        }
-      if ([dBox isActive] == YES || [displayBoxList indexOfObject:dBox] == 0)
-        {
-          dRect.origin.x += xOffset;
-        }
-      // dRect.origin.y += (yOffset - dRect.size.height);
-      dRect.origin.y += yOffset;
-      [dBox setFrame:dRect];
-    }
 }
 
 //
