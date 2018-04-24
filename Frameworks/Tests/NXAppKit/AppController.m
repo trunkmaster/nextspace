@@ -86,6 +86,18 @@
                   @"Ok", nil, nil);  
 }
 
+- (void)show3LineAlert:(id)sender
+{
+  NXRunAlertPanel(@"Alert with 3 line message",
+                  @"This is the FIRST line.\n"
+                  "This is the SECOND line.\n"
+                  "This is the THIRD line.\n",
+                  @"Dismiss", nil, nil);
+  // NXRunAlertPanel(@"Alert with 3 line message",
+  //                 @"This is the FIRST line This is the SECOND line. This is the THIRD line.",
+  //                 @"Dismiss", nil, nil);
+}
+
 - (void)showSinglelineAlert:(id)sender
 {
   NXRunAlertPanel(@"Alert with single line message",

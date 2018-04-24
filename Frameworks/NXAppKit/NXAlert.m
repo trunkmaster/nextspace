@@ -226,86 +226,35 @@
   [super dealloc];
 }
 
-- (void)sizeToFitScreenSize:(NSSize)screenSize
+// --- Utility
+
+- (CGFloat)numberOfLinesForText:(NSString *)text
+                           font:(NSFont *)font
+                          width:(CGFloat)viewWidth
 {
-  NSRect    panelFrame;
-  NSRect    messageFrame;
-  CGFloat   fieldWidth, textWidth;
-  NSInteger linesNum;
-  NSFont    *font = [messageField font];
-  CGFloat   lineHeight = [font defaultLineHeightForFont] + 1;
+  CGFloat	numberOfLines = .0, lineWidth;
+  NSUInteger	stringLength, i;
+  NSRange	lineRange;
   
-  fieldWidth = [messageField bounds].size.width;
-  textWidth = [font widthOfString:[messageField stringValue]];
-  linesNum = (textWidth/fieldWidth);
-
-  // Set height of panel to the minimum size
-  panelFrame = [panel frame];
-  // panelFrame.size.height = [panel minSize].height;
-  
-  messageFrame = [messageField frame];
-  if (linesNum > 1)
+  // Check for new line characters ('\n')
+  stringLength = [text length];
+  for (i = 0, numberOfLines = .0; i < stringLength; numberOfLines++)
     {
-      CGFloat newMessageHeight;
-      
-      panelFrame.size.height -= messageFrame.size.height;
-      newMessageHeight = (lineHeight * linesNum);
-      panelFrame.size.height += newMessageHeight;
-      
-      while (panelFrame.size.height > (screenSize.height/2) && [font pointSize] > 11.0)
-        {
-          font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
-          textWidth = [font widthOfString:[messageField stringValue]];
-          linesNum = (textWidth/fieldWidth);
-          lineHeight = [font defaultLineHeightForFont] + 1;
-          
-          panelFrame.size.height -= newMessageHeight;
-          newMessageHeight = (lineHeight * linesNum);
-          panelFrame.size.height += newMessageHeight;
-          [messageField setFont:font];
-        }
-      [messageField setAlignment:NSLeftTextAlignment];
-
-      panelFrame.origin.y = (screenSize.height - panelFrame.size.height)/2;
-    }
-  else
-    {
-      messageFrame.origin.y = messageFrame.origin.y + (messageFrame.size.height/2 - lineHeight/2);
-      messageFrame.size.height = lineHeight;
-      [messageField setAlignment:NSCenterTextAlignment];
-      
-      panelFrame.origin.y =
-        (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
-    }
-
-  // TODO: GNUstep back XGServer should be fixed to get real screen dimensions.
-  // NSRect mDisplayRect = [[screen mainDisplay] frame];
-  // NXRect gScreenRect = [[panel screen] frame]; // Get GNUstep screen rect
-  // Screen size possibly was changed after application start.
-  // GNUstep information about screen size is obsolete. Adopt origin.y to
-  // GNUstep screen coordinates.
-  NXScreen  *screen = [[NXScreen new] autorelease];
-  NXMouse   *mouse = [[NXMouse new] autorelease];
-  NXDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
-
-  if (display)
-    {
-      panelFrame.origin.x = display.frame.origin.x +
-        (display.frame.size.width/2 - panelFrame.size.width/2);
-      panelFrame.origin.y = (screenSize.height - display.frame.size.height) +
-        (display.frame.size.height/2) + panelFrame.size.height/2;
-      // NSLog(@"NXAlert: panel origin: %@", NSStringFromPoint(panelFrame.origin));
-    }
-  else
-    {
-      panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
-      panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
+      lineRange = [text lineRangeForRange:NSMakeRange(i, 0)];
+      i = NSMaxRange(lineRange);
+      lineWidth = [font widthOfString:[text substringWithRange:lineRange]];
+      numberOfLines += floorf(lineWidth / viewWidth);
     }
   
-  [messageField setFrame:messageFrame];
-  [panel setFrame:panelFrame display:NO];
+  // NSLog(@"NXAlert: number of lines: %.2f", lines);
   
-  // Buttons
+  return numberOfLines;
+}
+
+#define B_SPACING 5
+#define B_OFFSET 8
+- (void)arrangeButtons
+{
   NSRect   aFrame, bFrame;
   NSSize   cSize;
   CGFloat  maxWidth = 0.0, buttonWidth;
@@ -338,11 +287,96 @@
       
       aFrame = [button frame];
       xShift = aFrame.size.width - maxWidth;
-      aFrame.origin.x = panelFrame.size.width - (maxWidth + maxWidth*i) - (5 * i) - 8;
+      aFrame.origin.x = panel.frame.size.width - (maxWidth + maxWidth*i);
+      aFrame.origin.x -= (B_SPACING * i) + B_OFFSET;
       aFrame.size.width = maxWidth;
       [button setFrame:aFrame];
     }  
 }
+
+- (void)sizeToFitScreenSize:(NSSize)screenSize
+{
+  NSRect    panelFrame;
+  NSRect    messageFrame;
+  CGFloat   fieldWidth, textWidth;
+  CGFloat   linesNum;
+  NSFont    *font = [messageField font];
+  CGFloat   lineHeight = [font defaultLineHeightForFont];
+
+  fieldWidth = [messageField bounds].size.width;
+  linesNum = [self numberOfLinesForText:[messageField stringValue]
+                                   font:font
+                                  width:fieldWidth];
+  
+  panelFrame = [panel frame];
+  messageFrame = [messageField frame];
+  if (linesNum > 1)
+    {
+      CGFloat newMessageHeight;
+      
+      panelFrame.size.height -= messageFrame.size.height;
+      newMessageHeight = (lineHeight * linesNum);
+      panelFrame.size.height += newMessageHeight;
+      
+      while (panelFrame.size.height > (screenSize.height*0.75) && [font pointSize] > 11.0)
+        {
+          font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
+          lineHeight = [font defaultLineHeightForFont] + 2;
+          linesNum = [self numberOfLinesForText:[messageField stringValue]
+                                           font:font
+                                          width:fieldWidth];
+          
+          panelFrame.size.height -= newMessageHeight;
+          newMessageHeight = (lineHeight * linesNum);
+          panelFrame.size.height += newMessageHeight;
+          
+          [messageField setFont:font];
+        }
+      [messageField setAlignment:NSLeftTextAlignment];
+
+      panelFrame.origin.y = (screenSize.height - panelFrame.size.height)/2;
+    }
+  else
+    {
+      messageFrame.origin.y = messageFrame.origin.y + (messageFrame.size.height/2 - lineHeight/2);
+      messageFrame.size.height = lineHeight;
+      [messageField setAlignment:NSCenterTextAlignment];
+      
+      panelFrame.origin.y =
+        (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
+    }
+
+  // TODO: GNUstep back XGServer should be fixed to get real screen dimensions.
+  // Screen size possibly was changed after application start.
+  // GNUstep information about screen size is obsolete. Adopt origin.y to
+  // GNUstep screen coordinates.
+  NXScreen  *screen = [[NXScreen new] autorelease];
+  NXMouse   *mouse = [[NXMouse new] autorelease];
+  NXDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
+
+  if (display)
+    {
+      panelFrame.origin.x = display.frame.origin.x;
+      panelFrame.origin.x += display.frame.size.width/2 - panelFrame.size.width/2;
+      
+      panelFrame.origin.y = screenSize.height - display.frame.size.height;
+      panelFrame.origin.y += display.frame.size.height/2 + panelFrame.size.height/2;
+      // NSLog(@"NXAlert: panel origin: %@", NSStringFromPoint(panelFrame.origin));
+    }
+  else
+    {
+      panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
+      panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
+    }
+  
+  [messageField setFrame:messageFrame];
+  [panel setFrame:panelFrame display:NO];
+
+  // Buttons
+  [self arrangeButtons];
+}
+
+// --- Actions
 
 - (NSInteger)runModal
 {
