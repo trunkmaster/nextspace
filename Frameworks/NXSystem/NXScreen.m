@@ -232,8 +232,8 @@ static NXScreen *systemScreen = nil;
       if (attribute != nil && [attribute isKindOfClass:[NSString class]])
         {
           hiddenFrame = NSRectFromString(attribute);
-          NSLog(@"[NXScreen] %@ restore hiddenFrame: %@",
-                d.outputName, attribute);
+          NSDebugLLog(@"Screen", @"[NXScreen] %@ restore hiddenFrame: %@",
+                      d.outputName, attribute);
           if ([d isActive] == NO && NSIsEmptyRect(hiddenFrame) == NO)
             {
               d.hiddenFrame = hiddenFrame;
@@ -285,7 +285,7 @@ static NXScreen *systemScreen = nil;
     XRRQueryExtension(xDisplay, &event_base, &error_base);
     XRRQueryVersion(xDisplay, &major_version, &minor_version);
 
-    NSDebugLLog(@"Display", @"XRandR %i.%i, event base:%i, error base:%i",
+    NSDebugLLog(@"Screen", @"XRandR %i.%i, event base:%i, error base:%i",
                 major_version, minor_version,
                 event_base, error_base);
   }
@@ -299,7 +299,7 @@ static NXScreen *systemScreen = nil;
   // Initially we set primary display to first active
   if ([self mainDisplay] == nil)
     {
-      NSLog(@"NXScreen: main display not found, setting first active as main.");
+      NSDebugLLog(@"Screen", @"NXScreen: main display not found, setting first active as main.");
       for (NXDisplay *display in systemDisplays)
         {
           if ([display isActive])
@@ -353,7 +353,7 @@ static NXScreen *systemScreen = nil;
 // XRRScreenResources update will generate NXScreenDidUpdateNotification.
 - (void)randrScreenDidChange:(NSNotification *)aNotif
 {
-  NSDebugLLog(@"Display", @"NXScreen: NXScreenDidChangeNotification received.");
+  NSDebugLLog(@"Screen", @"NXScreen: NXScreenDidChangeNotification received.");
   
   [self randrUpdateScreenResources];
 }
@@ -374,11 +374,11 @@ static NXScreen *systemScreen = nil;
   
   if ([updateScreenLock tryLock] == NO)
     {
-      NSLog(@"NXScreen: update of XRandR screen resources was unsuccessful!");
+      NSDebugLLog(@"Screen", @"NXScreen: update of XRandR screen resources was unsuccessful!");
       return;
     }
     
-  NSDebugLLog(@"Display", @"NXScreen: randrUpdateScreenResources: START");
+  NSDebugLLog(@"Screen", @"NXScreen: randrUpdateScreenResources: START");
   
   // Reread screen resources
   if (screen_resources)
@@ -419,7 +419,7 @@ static NXScreen *systemScreen = nil;
 
   [updateScreenLock unlock];
   
-  NSDebugLLog(@"Display", @"NXScreen: randrUpdateScreenResources: END");
+  NSDebugLLog(@"Screen", @"NXScreen: randrUpdateScreenResources: END");
   
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NXScreenDidUpdateNotification
@@ -722,10 +722,12 @@ static NXScreen *systemScreen = nil;
   NSArray *newLayout;
   NSRect frame;
   
-  NSLog(@"NXSystem: prepare to activate display: %@ with hiddenFrame: %@",
-        display.outputName, NSStringFromRect(display.hiddenFrame));
-  NSLog(@"NXSystem: prepare to activate display: %@ with frame: %@",
-        display.outputName, NSStringFromRect(display.frame));  
+  NSDebugLLog(@"Screen",
+              @"NXSystem: prepare to activate display: %@ with hiddenFrame: %@",
+              display.outputName, NSStringFromRect(display.hiddenFrame));
+  NSDebugLLog(@"Screen",
+              @"NXSystem: prepare to activate display: %@ with frame: %@",
+              display.outputName, NSStringFromRect(display.frame));  
   
   [display setActive:YES];
   // frame = display.frame;
@@ -734,8 +736,9 @@ static NXScreen *systemScreen = nil;
   
   newLayout = [self arrangedDisplayLayout];
  
-  NSLog(@"NXSystem: activate display: %@ with frame: %@",
-        display.outputName, NSStringFromRect(display.frame));
+  NSDebugLLog(@"Screen",
+              @"NXSystem: activate display: %@ with frame: %@",
+              display.outputName, NSStringFromRect(display.frame));
 
   XLockDisplay(xDisplay);
   [self applyDisplayLayout:newLayout];
@@ -754,10 +757,12 @@ static NXScreen *systemScreen = nil;
   [self applyDisplayLayout:newLayout];
   XUnlockDisplay(xDisplay);
   
-  NSLog(@"NXSystem: deactivated display: %@ with frame: %@",
-        display.outputName, NSStringFromRect(display.frame));
-  NSLog(@"NXSystem: deactivated display: %@ with hiddenFrame: %@",
-        display.outputName, NSStringFromRect(display.hiddenFrame));
+  NSDebugLLog(@"Screen",
+              @"NXSystem: deactivated display: %@ with frame: %@",
+              display.outputName, NSStringFromRect(display.frame));
+  NSDebugLLog(@"Screen",
+              @"NXSystem: deactivated display: %@ with hiddenFrame: %@",
+              display.outputName, NSStringFromRect(display.hiddenFrame));
 }
 
 - (void)setDisplay:(NXDisplay *)display
@@ -962,7 +967,7 @@ static NXScreen *systemScreen = nil;
       // ID
       if (![self displayWithID:[d objectForKey:NXDisplayIDKey]])
         { // Some display is not connected - use default layout
-          NSLog(@"NXScreen: monitor %@ is not connected.", dName);
+          NSDebugLLog(@"Screen", @"NXScreen: monitor %@ is not connected.", dName);
           return NO;
         }
 
@@ -971,8 +976,9 @@ static NXScreen *systemScreen = nil;
       if ([[d objectForKey:NXDisplayIsActiveKey] isEqualToString:@"YES"] &&
           (dFrame.size.width <= 0 || dFrame.size.height <= 0))
         { // Display resolution or origin not found
-          NSLog(@"NXScreen: monitor %@ has no saved resolution or origin.",
-                dName);
+          NSDebugLLog(@"Screen",
+                      @"NXScreen: monitor %@ has no saved resolution or origin.",
+                      dName);
           return NO;
         }
 
@@ -991,7 +997,7 @@ static NXScreen *systemScreen = nil;
           ![gamma objectForKey:NXDisplayGammaBlueKey] ||
           ![gamma objectForKey:NXDisplayGammaBrightnessKey])
         { // Something wrong with saved gamma
-          NSLog(@"NXScreen: display %@ no saved gamma", dName);
+          NSDebugLLog(@"Screen", @"NXScreen: display %@ no saved gamma", dName);
           return NO;
         }
     }
@@ -1016,15 +1022,16 @@ static NXScreen *systemScreen = nil;
   // Validate 'layout'
   if ([self validateLayout:layout] == NO)
     {
-      NSLog(@"NXScreen: Proposed layout is invalid. Do nothing.");
+      NSDebugLLog(@"Screen",
+                  @"NXScreen: Proposed layout is invalid. Do nothing.");
       return NO;
     }
 
   // Calculate sizes of screen
   newPixSize = [self _sizeInPixelsForLayout:layout];
   mmSize = [self _sizeInMilimetersForLayout:layout];
-  NSLog(@"NXScreen: New screen size: %@, old %@",
-        NSStringFromSize(newPixSize), NSStringFromSize(sizeInPixels));
+  NSDebugLLog(@"Screen", @"NXScreen: New screen size: %@, old %@",
+              NSStringFromSize(newPixSize), NSStringFromSize(sizeInPixels));
 
   [updateScreenLock lock];
   
@@ -1062,11 +1069,7 @@ static NXScreen *systemScreen = nil;
           resolution = [display resolutionWithWidth:frame.size.width
                                              height:frame.size.height
                                                rate:[frameRate floatValue]];
-          // NSLog(@"NXScreen: set resolution to %@: START",
-          //       [display outputName]);
           [display setResolution:resolution position:frame.origin];
-          // NSLog(@"NXScreen: set resolution to %@: END",
-          //       [display outputName]);
           XFlush(xDisplay);
 
           lastActiveDisplay = display;
@@ -1146,11 +1149,12 @@ static NXScreen *systemScreen = nil;
 
   if (layout)
     {
-      NSLog(@"Apply display layout saved in %@", [self _displayConfigFileName]);
+      NSLog(@"NXScreen: Apply display layout saved in %@",
+            [self _displayConfigFileName]);
       return [self applyDisplayLayout:layout];
     }
   
-  NSLog(@"Apply automatic default display layout");
+  NSLog(@"NXScreen: Apply automatic default display layout");
   return [self applyDisplayLayout:[self defaultLayout:YES]];
 }
 
@@ -1224,32 +1228,12 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
         
       dFrame = NSRectFromString([d objectForKey:NXDisplayFrameKey]);
       dFrame.origin.x = NSMaxX(dLastFrame);
-      // if (NSIsEmptyRect(dLastFrame) == NO)
-      //   {
-      //     midX = NSMinX(dLastFrame) + dLastFrame.size.width/2;
-      //     if (dFrame.origin.x >= midX)
-      //       dFrame.origin.x = dLastFrame.origin.x + dLastFrame.size.width;
-      //     else if (dFrame.origin.x < midX)
-      //       dFrame.origin.x -= dFrame.size.width;
-              
-      //     midY = NSMinY(dLastFrame) + dLastFrame.size.height/2;
-      //     if (dFrame.origin.y >= midY)
-      //       dFrame.origin.y = dLastFrame.origin.y + dLastFrame.size.height;
-      //     else if (dFrame.origin.y < midY &&
-      //              dFrame.origin.y >= dLastFrame.origin.y)
-      //       dFrame.origin.y = dLastFrame.origin.y;
-      //     else
-      //       dFrame.origin.y -= dFrame.size.height;
-      //   }
-      // else
-      //   {
-      //     dFrame.origin = dLastFrame.origin;
-      //   }
       
       [d setObject:NSStringFromRect(dFrame) forKey:NXDisplayFrameKey];
       
-      NSLog(@"NXScreen: %@ new frame: %@",
-            [d objectForKey:NXDisplayNameKey], NSStringFromRect(dFrame));
+      NSDebugLLog(@"Screen", @"NXScreen: %@ new frame: %@",
+                  [d objectForKey:NXDisplayNameKey],
+                  NSStringFromRect(dFrame));
       
       dLastFrame = dFrame;
     }
@@ -1257,126 +1241,6 @@ NSComparisonResult compareLayoutEntries(NSDictionary *displayA,
   return [layout autorelease];
 }
 
-// Returns changed layout description.
-// Should process the following cases:
-// 1. Active = "YES" and "frame.size" != {0,0} and
-//    differs from "Resolution{Size}"
-// 	Change resolution requested:
-// 	- change "Resolution",
-// 	- adjust other active displays' origins if needed.
-// 2. Active = "NO" and 'frame.size' != {0,0}
-// 	Display activation requested:
-// 	- change Active to "YES";
-// 	- set resolution and origin from 'frame';
-// 	- adjust other active displays' origins if needed.
-// 3. Active == "YES" and 'frame.size' == {0,0} and 'hiddenFrame.size' != {0,0}
-// 	Display deactivation requested:
-// 	- 'hiddenFrame' will restored by randrUpdateScreenResources;
-// 	- Set Active to "NO";
-// 	- adjust other active displays' origins if needed.
-/*
-NSComparisonResult
-compareDisplays(NXDisplay *displayA, NXDisplay *displayB, void *context)
-{
-  NSPoint aPoint = [displayA frame].origin;
-  NSPoint bPoint = [displayB frame].origin;
-
-  NSLog(@"%@ <-> %@", NSStringFromPoint(aPoint), NSStringFromPoint(bPoint));
-
-  if (aPoint.x < bPoint.x)
-    return  NSOrderedAscending;
-  else if (aPoint.x > bPoint.x)
-    return NSOrderedDescending;
-  else
-    return NSOrderedSame;
-}
-
-- (NSArray *)arrangeDisplays
-{
-  NSArray      *newLayout;
-  NSRect       frame, hiddenFrame;
-  NSSize       displaySize;
-  NSPoint      displayPosition;
-  NSArray      *sortedDisplays;
-  NSDictionary *resolution;
-  CGFloat      xShift = 0.0, yShift = 0.0, xPoint = 0.0;
-
-  // Displays sorted by origin.x from left to right
-  sortedDisplays = [[self connectedDisplays]
-                     sortedArrayUsingFunction:compareDisplays
-                                      context:NULL];
-  
-  for (NXDisplay *d in sortedDisplays)
-    {
-      frame = [d frame];
-      displaySize = NSSizeFromString([d.activeResolution objectForKey:@"Size"]);
-      displayPosition = d.activePosition;
-      if ([d isActive] == YES)
-        {
-          // if ((frame.size.width > 0 && frame.size.height > 0)
-          if (!NSIsEmptyRect(frame) &&
-              (!NSEqualSizes(frame.size, displaySize) ||
-               !NSEqualPoints(frame.origin, displayPosition)))
-            {// Change resolution to 'frame'
-              resolution = [d resolutionWithWidth:frame.size.width
-                                           height:frame.size.height
-                                             rate:0.0];
-              NSLog(@"NXScreen: Change resolution %@: %@", [d outputName], resolution);
-              [d setResolution:resolution position:displayPosition];
-              xShift = frame.size.width - displaySize.width;
-            }
-          else if ((frame.size.width == 0.0) || (frame.size.height == 0.0))
-            { // 'frame' is zeroed, check if 'hiddenFrame' is not and deactivate if it's true.
-              hiddenFrame = [d hiddenFrame];
-              if (hiddenFrame.size.width > 0 && hiddenFrame.size.height > 0)
-                { // Deactivate ('frame' saved in 'hiddenFrame')
-                  // Shift active displays which are placed at right
-                  xShift = -hiddenFrame.size.width;
-                  [d setActive:NO];
-                  NSLog(@"NXScreen: Deactivate %@: resolution %@",
-                        [d outputName], d.activeResolution);
-                }
-            }
-          else 
-            { // Arrange active
-              if ((xShift > 0) || (frame.origin.x > 0))
-                {
-                  [d setFrame:NSMakeRect(frame.origin.x+xShift, frame.origin.y,
-                                         frame.size.width, frame.size.height)];
-                }
-              // Save rightmost X point for displays that will be activated
-              if (NSMaxX(frame) > xPoint)
-                {
-                  xPoint = NSMaxX(frame);
-                }
-              NSLog(@"NXScreen: Arrange %@: shift by x:%f, frame: %@",
-                    [d outputName], xShift, NSStringFromRect([d frame]));
-            }
-        }
-      else if ([d isActive] == NO && !NSIsEmptyRect(frame))
-        { // Activate, use 'frame'
-          if (xPoint)
-            {
-              frame = [d frame];
-              frame.origin.x = xPoint;
-              [d setFrame:frame];
-            }
-          [d setActive:YES];
-
-          if (frame.origin.x == 0)
-            {
-              xShift = frame.size.width;
-            }
-          NSLog(@"NXScreen: Activate %@: set resolution %@, origin %@",
-                [d outputName], d.activeResolution, NSStringFromPoint(frame.origin));
-        }
-    }
-
-  newLayout = [self currentLayout];
-
-  return newLayout;
-}
-*/
 //------------------------------------------------------------------------------
 // Video adapters
 //------------------------------------------------------------------------------

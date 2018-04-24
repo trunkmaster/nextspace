@@ -346,7 +346,7 @@
 - (NSInteger)runModal
 {
   NSInteger result;
-  NXScreen *screen = [NXScreen sharedScreen];
+  NXScreen *screen = [[NXScreen new] autorelease];
 
   [screen randrUpdateScreenResources];
   [self sizeToFitScreenSize:[screen sizeInPixels]];
