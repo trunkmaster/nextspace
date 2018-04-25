@@ -49,10 +49,10 @@ Everything else is optional and will be developed upon completion of core applic
 * [WindowMaker](https://windowmaker.org/): great window manager. It is still alive and in active development. All changes I'm packaging as a set of patches (to the original 0.95.7 version) which can be pushed to upstream project later.
 
 ## Status of implementaion
-* [Login][https://github.com/trunkmaster/nextspace/projects/6]
-* [Workspace][https://github.com/trunkmaster/nextspace/projects/4]
-* [Preferences][https://github.com/trunkmaster/nextspace/projects/2]
-* [Terminal][https://github.com/trunkmaster/nextspace/projects/3]
+* [Login](https://github.com/trunkmaster/nextspace/projects/6)
+* [Workspace](https://github.com/trunkmaster/nextspace/projects/4)
+* [Preferences](https://github.com/trunkmaster/nextspace/projects/2)
+* [Terminal](https://github.com/trunkmaster/nextspace/projects/3)
 * TextEdit - as is.
 * Review - early development.
 
