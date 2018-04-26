@@ -410,7 +410,6 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
       [dBox release];
     }
 
-  // [self arrangeDisplayBoxes];
   [(ScreenCanvas *)canvas centerBoxes];
   [self selectFirstEnabledMonitor];
 }

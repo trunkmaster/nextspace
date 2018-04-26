@@ -1060,9 +1060,21 @@ static NXScreen *systemScreen = nil;
             isEqualToString:@"YES"])
         {
           if ([display isBuiltin] && [NXPower isLidClosed])
-            continue;
+            {
+              // set 'frame' to preserve it in 'hiddenFrame' on deactivate
+              frame = NSRectFromString([displayLayout
+                                         objectForKey:NXDisplayFrameKey]);
+              display.frame = frame;
+              // save 'frame' in 'hiddenFrame'
+              [display setActive:NO];
+              // deactivate
+              [display setResolution:[NXDisplay zeroResolution]
+                            position:display.hiddenFrame.origin];
+              continue;
+            }
 
-          if ([[displayLayout objectForKey:NXDisplayIsMainKey] isEqualToString:@"YES"])
+          if ([[displayLayout objectForKey:NXDisplayIsMainKey]
+                isEqualToString:@"YES"])
             mainDisplay = display;
 
           frame = NSRectFromString([displayLayout

@@ -497,7 +497,6 @@
 - (BOOL)isActive
 {
   return (NSIsEmptyRect(_frame)) ? NO : YES;
-  // return isActive;
 }
 
 // Changes '_activeResolution' ivar without setting resolution to monitor.
@@ -532,7 +531,6 @@
 
   // Synchronize _frame and _activeResolution
   ASSIGN(_activeResolution, resolution);
-  // isActive = active;
 }
 
 - (BOOL)isMain
