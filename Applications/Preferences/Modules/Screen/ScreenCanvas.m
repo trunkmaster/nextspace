@@ -232,10 +232,10 @@
         }
       else
         { // Extend to the bottom
-          if (NSMaxY(db.frame) > NSMaxY(groupRect))
-            groupRect.size.height += db.frame.size.height;
           if (groupRect.origin.y < 0)  // this is the first time we'll touch it
             groupRect.origin.y = db.frame.origin.y;
+          if (NSMaxY(db.frame) > NSMaxY(groupRect))
+            groupRect.size.height += NSMaxY(db.frame) - NSMaxY(groupRect);
         }
       NSLog(@"box = %@, groupRect = %@",
             NSStringFromRect(db.frame), NSStringFromRect(groupRect));
