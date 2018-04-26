@@ -660,6 +660,8 @@ static NXScreen *systemScreen = nil;
       [d setMain:(d == display) ? YES : NO];
     }
   [self randrUpdateScreenResources];
+  if (useAutosave)
+    [self saveCurrentDisplayLayout];
 }
 
 - (NXDisplay *)displayAtPoint:(NSPoint)point
@@ -1060,7 +1062,7 @@ static NXScreen *systemScreen = nil;
           if ([display isBuiltin] && [NXPower isLidClosed])
             continue;
 
-          if ([display isMain])
+          if ([[displayLayout objectForKey:NXDisplayIsMainKey] isEqualToString:@"YES"])
             mainDisplay = display;
 
           frame = NSRectFromString([displayLayout
@@ -1097,7 +1099,14 @@ static NXScreen *systemScreen = nil;
   sizeInPixels = newPixSize;
   
   // No active main displays left. Set main to last processed with loop above.
-  if (!mainDisplay)
+  if (mainDisplay)
+    {
+      if ([mainDisplay isMain] == NO)
+        {
+          [mainDisplay setMain:YES];
+        }
+    }
+  else
     {
       [lastActiveDisplay setMain:YES];
     }
