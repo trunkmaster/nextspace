@@ -60,6 +60,8 @@
   imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
+  XInitThreads();
+  
   return self;
 }
 
@@ -180,8 +182,6 @@
 
 - (void)setResolution
 {
-  NSArray *newLayout;
-  
   // Set resolution only to active display.
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive])
