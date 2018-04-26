@@ -108,7 +108,7 @@
 - (BOOL)savedBackgroundColorRed:(CGFloat *)redComponent
                           green:(CGFloat *)greenComponent
                            blue:(CGFloat *)blueComponent;
-/** Returns current color root window. On failure returns saved color. */
+/** Returns current color of root window. On failure returns saved color. */
 - (BOOL)backgroundColorRed:(CGFloat *)redComponent
                      green:(CGFloat *)greenComponent
                       blue:(CGFloat *)blueComponent;
@@ -123,7 +123,6 @@
 - (NXDisplay *)mainDisplay;
 - (void)setMainDisplay:(NXDisplay *)display;
 
-// TODO
 - (NXDisplay *)displayAtPoint:(NSPoint)point;
 - (NXDisplay *)displayWithName:(NSString *)name;
 - (NXDisplay *)displayWithID:(id)uniqueID;
@@ -146,7 +145,6 @@
           inLayout:(NSArray *)layout;
 
 - (NSArray *)arrangedDisplayLayout;
-// - (NSArray *)arrangeDisplays;
 
 @end
 
