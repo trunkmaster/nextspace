@@ -60,7 +60,8 @@
   imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  XInitThreads();
+  if (!XInitThreads())
+    NSLog(@"Display: multi-threading is not initialized!");
   
   return self;
 }
@@ -73,6 +74,7 @@
   
   [image release];
   [systemScreen release];
+  if (saveConfigTimer) [saveConfigTimer release];
   [view release];
   [super dealloc];
 }
@@ -120,9 +122,6 @@
        selector:@selector(screenDidUpdate:)
            name:NXScreenDidUpdateNotification
          object:systemScreen];
-
-  // if (!XInitThreads())
-  //   NSLog(@"Display: multi-threading is not initialized!");
 }
 
 - (NSView *)view
@@ -205,6 +204,12 @@
     }
   
   [self monitorsListClicked:monitorsList];
+}
+
+- (void)saveDisplayConfig
+{
+  NSLog(@"Display: save current Display.confg");
+  [systemScreen saveCurrentDisplayLayout];
 }
 
 //
@@ -294,6 +299,17 @@
 - (IBAction)sliderMoved:(id)sender
 {
   CGFloat value = [sender floatValue];
+
+  if (saveConfigTimer && [saveConfigTimer isValid])
+    {
+      [saveConfigTimer invalidate];
+    }
+  saveConfigTimer = [NSTimer scheduledTimerWithTimeInterval:2
+                                                     target:self
+                                                   selector:@selector(saveDisplayConfig)
+                                                   userInfo:nil
+                                                    repeats:NO];
+  [saveConfigTimer retain];
   
   if (sender == gammaSlider)
     {

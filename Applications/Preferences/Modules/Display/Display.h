@@ -50,6 +50,8 @@
   NXScreen  *systemScreen;
   NXDisplay *selectedDisplay;
   NSColor   *desktopBackground;
+
+  NSTimer   *saveConfigTimer;
 }
 
 //
