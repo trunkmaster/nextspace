@@ -96,6 +96,7 @@ extern NSString *SessionDidCloseNotification;
 @interface Controller (XWindowSystem)
 
 - (void)setRootWindowBackground;
+- (void)placeMouseCursor;
 - (void)setWindowVisible:(BOOL)flag;
 - (void)hideWindow;
 - (void)showWindow;
