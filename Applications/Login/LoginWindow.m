@@ -72,24 +72,21 @@
 - (void)center
 {
   NXScreen  *screen = nil;
-  NXDisplay *mainDisplay = nil;
-  NSRect    mDisplayRect, gScreenRect, windowRect;
+  NXDisplay *display = nil;
+  NSRect    displayRect, gScreenRect, windowRect;
   NSPoint   newOrigin;
-  NXMouse   *mouse = [[NXMouse new] autorelease];
 
   // Get NEXTSPACE screen rect
   screen = [[NXScreen new] autorelease];
-  // [screen randrUpdateScreenResources];
-  mainDisplay = [screen displayAtPoint:[mouse locationOnScreen]];
-  if (!mainDisplay)
+  display = [screen displayWithMouseCursor];
+  if (!display)
     {
-      mainDisplay = [screen mainDisplay];
-      if (!mainDisplay)
-        mainDisplay = [[screen activeDisplays] objectAtIndex:0];
+      display = [screen mainDisplay];
+      if (!display)
+        display = [[screen activeDisplays] objectAtIndex:0];
     }
-  
-  mDisplayRect = [mainDisplay frame];
-  NSLog(@"NEXTSPACE screen size: %@", NSStringFromRect(mDisplayRect));
+  displayRect = [display frame];
+  NSLog(@"NEXTSPACE screen size: %@", NSStringFromRect(displayRect));
 
   // Get GNUstep screen rect
   gScreenRect = [[self screen] frame];
@@ -99,10 +96,10 @@
   windowRect = [self frame];
     
   // Calculate the new position of the window.
-  newOrigin.x = mDisplayRect.size.width/2 - windowRect.size.width/2;
-  newOrigin.x += mDisplayRect.origin.x;
-  newOrigin.y = mDisplayRect.size.height/2 - windowRect.size.height/2;
-  newOrigin.y += gScreenRect.size.height - mDisplayRect.size.height;
+  newOrigin.x = displayRect.size.width/2 - windowRect.size.width/2;
+  newOrigin.x += displayRect.origin.x;
+  newOrigin.y = displayRect.size.height/2 - windowRect.size.height/2;
+  newOrigin.y += gScreenRect.size.height - displayRect.size.height;
 
   // Set the origin
   [self setFrameOrigin:newOrigin];
@@ -163,9 +160,6 @@
 - (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy
 {
   NSRect    windowRect = [self frame];
-  NXScreen  *screen;
-  NXMouse   *mouse;
-  NXDisplay *mainDisplay;
   NSRect    mDisplayRect;
   GC        gc;
   Pixmap    pixmap;
@@ -173,10 +167,7 @@
   int       x, y, width, height, xo, wo;
 
   // Get NEXTSPACE screen rect
-  mouse = [[NXMouse new] autorelease];
-  screen = [[NXScreen new] autorelease];
-  mainDisplay = [screen displayAtPoint:[mouse locationOnScreen]];
-  mDisplayRect = [mainDisplay frame];
+  mDisplayRect = [[[[NXScreen new] autorelease] displayWithMouseCursor] frame];
   
   xo = x = (int)windowRect.origin.x;
   y = (int)(mDisplayRect.size.height - windowRect.size.height)/2;
