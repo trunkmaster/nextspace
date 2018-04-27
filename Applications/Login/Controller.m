@@ -35,6 +35,7 @@
 #import <dispatch/dispatch.h>
 
 #import <NXSystem/NXDisplay.h>
+#import <NXSystem/NXMouse.h>
 #import <NXAppKit/NXAlert.h>
 
 static NSString
@@ -277,14 +278,13 @@ void *alloc(int size)
   xDisplay = [xServer serverDevice];
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   xPanelWindow = (Window)[xServer windowDevice:[window windowNumber]];
+  
+  [self placeMouseCursor];  
 }
 
 - (void)setRootWindowBackground
 {
   XSetWindowAttributes winattrs;
-
-  // TODO: Leave it for future experiments...
-  // XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0, 100, 100);
 
   winattrs.cursor = XCreateFontCursor(xDisplay, XC_left_ptr);
   XChangeWindowAttributes(xDisplay, xRootWindow, CWCursor, &winattrs);
@@ -292,6 +292,16 @@ void *alloc(int size)
   XSetWindowBackground(xDisplay, xRootWindow, 5460853L);
   XClearWindow(xDisplay, xRootWindow);
   XSync(xDisplay, false);
+}
+
+- (void)placeMouseCursor
+{
+  NXMouse   *mouse = [[NXMouse new] autorelease];
+  NXDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
+  
+  XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0,
+               (int)display.frame.origin.x + 50,
+               (int)display.frame.origin.y + 50);
 }
 
 - (void)setWindowVisible:(BOOL)flag
@@ -310,7 +320,6 @@ void *alloc(int size)
     }
   else
     {
-      // TODO: Implement shrinking of window
       XUngrabKeyboard(xDisplay, CurrentTime);
       XWithdrawWindow(xDisplay, xPanelWindow, DefaultScreen(xDisplay));
     }

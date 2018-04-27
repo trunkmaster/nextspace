@@ -37,6 +37,7 @@
 
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXDisplay.h>
+#import <NXSystem/NXMouse.h>
 
 #import "Controller.h"
 #import "LoginWindow.h"
@@ -74,15 +75,19 @@
   NXDisplay *mainDisplay = nil;
   NSRect    mDisplayRect, gScreenRect, windowRect;
   NSPoint   newOrigin;
+  NXMouse   *mouse = [[NXMouse new] autorelease];
 
   // Get NEXTSPACE screen rect
-  screen = [NXScreen sharedScreen];
-  [screen randrUpdateScreenResources];
-  mainDisplay = [screen mainDisplay];
+  screen = [[NXScreen new] autorelease];
+  // [screen randrUpdateScreenResources];
+  mainDisplay = [screen displayAtPoint:[mouse locationOnScreen]];
   if (!mainDisplay)
     {
-      mainDisplay = [[screen activeDisplays] objectAtIndex:0];
+      mainDisplay = [screen mainDisplay];
+      if (!mainDisplay)
+        mainDisplay = [[screen activeDisplays] objectAtIndex:0];
     }
+  
   mDisplayRect = [mainDisplay frame];
   NSLog(@"NEXTSPACE screen size: %@", NSStringFromRect(mDisplayRect));
 
@@ -157,13 +162,22 @@
 
 - (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy
 {
-  NSRect windowRect = [self frame];
-  NSRect mDisplayRect = [[[NXScreen sharedScreen] mainDisplay] frame];
-  GC     gc;
-  Pixmap pixmap;
-  XImage *windowSnap;
-  int    x, y, width, height, xo, wo;
+  NSRect    windowRect = [self frame];
+  NXScreen  *screen;
+  NXMouse   *mouse;
+  NXDisplay *mainDisplay;
+  NSRect    mDisplayRect;
+  GC        gc;
+  Pixmap    pixmap;
+  XImage    *windowSnap;
+  int       x, y, width, height, xo, wo;
 
+  // Get NEXTSPACE screen rect
+  mouse = [[NXMouse new] autorelease];
+  screen = [[NXScreen new] autorelease];
+  mainDisplay = [screen displayAtPoint:[mouse locationOnScreen]];
+  mDisplayRect = [mainDisplay frame];
+  
   xo = x = (int)windowRect.origin.x;
   y = (int)(mDisplayRect.size.height - windowRect.size.height)/2;
   wo = width = (int)windowRect.size.width;
