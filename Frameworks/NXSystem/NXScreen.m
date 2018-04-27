@@ -52,6 +52,7 @@ x//   RRCrtc      *crtcs;
 #import "NXDisplay.h"
 #import "NXScreen.h"
 #import "NXPower.h"
+#import "NXMouse.h"
 
 // Displays.config field keys
 NSString *NXDisplayIsActiveKey = @"Active";
@@ -673,6 +674,18 @@ static NXScreen *systemScreen = nil;
     }
   
   return nil;
+}
+
+- (NXDisplay *)displayWithMouseCursor
+{
+  NXMouse   *mouse;
+  NXDisplay *display;
+
+  mouse = [NXMouse new];
+  display = [self displayAtPoint:[mouse locationOnScreen]];
+  [mouse release];
+
+  return display;
 }
 
 - (NXDisplay *)displayWithName:(NSString *)name

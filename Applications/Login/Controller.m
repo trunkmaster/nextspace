@@ -274,12 +274,18 @@ void *alloc(int size)
 
 - (void)initXApp
 {
+  NXDisplay *display;
+  
   xServer = GSCurrentServer();
   xDisplay = [xServer serverDevice];
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   xPanelWindow = (Window)[xServer windowDevice:[window windowNumber]];
-  
-  [self placeMouseCursor];  
+
+  // Set initial position of mouse cursor
+  display = [screen displayWithMouseCursor];
+  XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0,
+               (int)display.frame.origin.x + 50,
+               (int)display.frame.origin.y + 50);
 }
 
 - (void)setRootWindowBackground
@@ -292,16 +298,6 @@ void *alloc(int size)
   XSetWindowBackground(xDisplay, xRootWindow, 5460853L);
   XClearWindow(xDisplay, xRootWindow);
   XSync(xDisplay, false);
-}
-
-- (void)placeMouseCursor
-{
-  NXMouse   *mouse = [[NXMouse new] autorelease];
-  NXDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
-  
-  XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0,
-               (int)display.frame.origin.x + 50,
-               (int)display.frame.origin.y + 50);
 }
 
 - (void)setWindowVisible:(BOOL)flag

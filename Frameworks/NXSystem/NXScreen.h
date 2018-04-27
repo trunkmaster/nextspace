@@ -124,6 +124,7 @@
 - (void)setMainDisplay:(NXDisplay *)display;
 
 - (NXDisplay *)displayAtPoint:(NSPoint)point;
+- (NXDisplay *)displayWithMouseCursor;
 - (NXDisplay *)displayWithName:(NSString *)name;
 - (NXDisplay *)displayWithID:(id)uniqueID;
 
