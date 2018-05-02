@@ -2,27 +2,71 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Apr 27 15:36:41 2018
+;; Created Thu May  3 02:07:30 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name "/Developer/Headers/TAGS")
 (setq tags-table-list '("/Developer/Headers/TAGS"))
 (setq search-ring '("newLayou" "arrange" "pointAt" "NXScreen" "DidUpda" "savedBackground" "setCursor" "setCurs" "displayFra" "bgColor" "options" "_setOption" "bgColor" "image" "selectedDispla" "image"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m" "~/Developer/nextspace/Applications/Preferences/Modules/Expert/*" "~/Developer/nextspace/Applications/Preferences/Modules/UNIX/*" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/LayoutSwitchKeys.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/xkb_option_grp.lst" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Layouts" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Preferences/Modules/Expert/*.[hm]" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m" "~/Developer/nextspace/Applications/Preferences/Modules/Expert/*" "~/Developer/nextspace/Applications/Preferences/Modules/UNIX/*" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/LayoutSwitchKeys.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/xkb_option_grp.lst" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Layouts" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/Expert.m"
+  "Expert.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1697
+  '(1711 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.m"
+  "Mouse.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  1862
+  '(4473 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/Expert.h"
+  "Expert.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  867
+  '(868 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
+  "Localization.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  3115
+  '(6089 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
   "Display.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  1930
+  2042
   '(5478 nil)
   nil
   nil
@@ -194,17 +238,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.m"
-  "Mouse.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  4437
-  '(4473 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.h"
   "Mouse.h"
   'objc-mode
@@ -225,17 +258,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
-  "Localization.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  3915
-  '(6089 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list"

@@ -22,11 +22,19 @@ typedef enum {
   NXSortByOwner = 5 // + NXSortByName
 } NXSortType;
 
+extern NSString *SortFileBy;
+extern NSString *ShowHiddenFiles;
+
 @interface NXFileManager : NSObject
 {
 }
 
 + (NXFileManager *)sharedManager;
+
+- (BOOL)isShowHiddenFiles;
+- (void)setShowHiddenFiles:(BOOL)yn;
+- (NXSortType)sortFilesBy;
+- (void)setSortFilesBy:(NXSortType)type;
 
 - (NSArray *)sortedDirectoryContentsAtPath:(NSString *)path;
 

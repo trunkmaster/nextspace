@@ -7,10 +7,12 @@ $(BUNDLE_NAME)_PRINCIPAL_CLASS = Expert
 $(BUNDLE_NAME)_STANDARD_INSTALL = no
 
 $(BUNDLE_NAME)_OBJC_FILES= \
-	Expert.m
+	Expert.m \
+	WMPermissions.m
 
 $(BUNDLE_NAME)_HEADERS= \
-	Expert.h
+	Expert.h \
+	WMPermissions.h
 
 $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/Expert.tiff \
@@ -18,7 +20,7 @@ $(BUNDLE_NAME)_RESOURCE_FILES = \
 
 $(BUNDLE_NAME)_LANGUAGES = \
 	English
-$(BUNDLE_NAME)_LOCALIZED_RESOURCE_FILES= Expert.gorm
+$(BUNDLE_NAME)_LOCALIZED_RESOURCE_FILES = Expert.gorm
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/bundle.make

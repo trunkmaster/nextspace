@@ -16,6 +16,9 @@
 #import "NXDefaults.h"
 #import "NXFileManager.h"
 
+NSString *SortFileBy = @"NXSortFilesBy";
+NSString *ShowHiddenFiles = @"NXShowHiddenFiles";
+
 static NXFileManager *sharedManager;
 static NSString      *dirPath;
 
@@ -139,6 +142,24 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
 {
   [super dealloc];
 }
+
+// --- Preferences
+
+- (BOOL)isShowHiddenFiles
+{
+  return NO;
+}
+- (void)setShowHiddenFiles:(BOOL)yn
+{
+}
+- (NXSortType)sortFilesBy
+{
+  return NXSortByKind;
+}
+- (void)setSortFilesBy:(NXSortType)type
+{
+}
+
 
 // --- Directory contents (obsolete)
 

@@ -26,12 +26,20 @@
 #import <AppKit/NSImage.h>
 #import <Preferences.h>
 
+#import <NXFoundation/NXDefaults.h>
+
 @interface Expert: NSObject <PrefsModule>
 {
   id view;
   id window;
 
-  NSImage *image;
+  id sortByBtn;
+  id showHiddenFilesBtn;
+  id privateWindowServerBtn;
+  id privateSoundServerBtn;
+
+  NXDefaults	*defaults;
+  NSImage	*image;
 }
 
 @end

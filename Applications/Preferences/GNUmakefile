@@ -23,7 +23,8 @@ SUBPROJECTS = \
 	Modules/Display \
 	Modules/Screen \
 	Modules/Power \
-	Modules/Password
+	Modules/Password \
+	Modules/Expert
 
 #
 # Resource files
@@ -36,7 +37,8 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Display/Display.preferences \
 	Modules/Screen/Screen.preferences \
 	Modules/Power/Power.preferences \
-	Modules/Password/Password.preferences
+	Modules/Password/Password.preferences \
+	Modules/Expert/Expert.preferences
 
 #
 # Localization
