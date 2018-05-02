@@ -126,13 +126,6 @@ static id dirInspector = nil;
   return self;
 }
 
-// "SortBy" field values are:
-// 0 - Name
-// 1 - Kind (folders first + by name)
-// 2 - Type
-// 3 - Date
-// 4 - Size
-// 5 - Owner
 - revert:sender
 {
   NSString *path = nil;
@@ -153,10 +146,9 @@ static id dirInspector = nil;
   if (folderDefaults == nil)
     {
       ASSIGN(folderDefaults, [NSMutableDictionary new]);
-      // Default sort method is 'Name' with tag '0'
-      [folderDefaults setObject:[NSNumber numberWithInt:0] forKey:@"SortBy"];
+      [folderDefaults setObject:[NSNumber numberWithInt:NXSortByKind]
+                         forKey:@"SortBy"];
     }
-
   [sortByMatrix selectCellWithTag:
                   [[folderDefaults objectForKey:@"SortBy"] intValue]];
 

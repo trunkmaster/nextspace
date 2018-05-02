@@ -1,0 +1,12 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Expert = {
+	Actions = (
+	);
+	Outlets = (
+	    view,
+	    window
+	);
+	Super = NSObject;
+    };
+}
