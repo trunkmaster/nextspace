@@ -640,7 +640,7 @@
     }
   else
     {
-      sortType = 0; // 'Name'
+      sortType = NXSortByKind;
     }
   
   return [xfm directoryContentsAtPath:path
