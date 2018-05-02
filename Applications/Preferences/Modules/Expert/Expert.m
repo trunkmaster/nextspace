@@ -23,24 +23,20 @@
   Boston, MA  02111-1307, USA
 */
 #import <AppKit/AppKit.h>
+#import <NXFoundation/NXFileManager.h>
 
 #import "Expert.h"
 
 @implementation Expert
 
-static NSBundle                 *bundle = nil;
-static NSUserDefaults           *defaults = nil;
-static NSMutableDictionary      *domain = nil;
 
 - (id)init
 {
   self = [super init];
   
-  defaults = [NSUserDefaults standardUserDefaults];
-  domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
-
-  bundle = [NSBundle bundleForClass:[self class]];
-  NSString *imagePath = [bundle pathForResource:@"Power" ofType:@"tiff"];
+  defaults = [NXDefaults globalUserDefaults];
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  NSString *imagePath = [bundle pathForResource:@"Expert" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
       
   return self;
@@ -48,7 +44,7 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)dealloc
 {
-  NSLog(@"Power -dealloc");
+  NSLog(@"Expert -dealloc");
   [image release];
   [super dealloc];
 }
@@ -57,6 +53,16 @@ static NSMutableDictionary      *domain = nil;
 {
   [view retain];
   [window release];
+
+  [sortByBtn setRefusesFirstResponder:YES];
+  [showHiddenFilesBtn setRefusesFirstResponder:YES];
+  [privateWindowServerBtn setRefusesFirstResponder:YES];
+  [privateSoundServerBtn setRefusesFirstResponder:YES];
+
+  [sortByBtn
+    selectItemWithTag:[[NXFileManager sharedManager] sortFilesBy]];
+  [showHiddenFilesBtn
+    setState:[[NXFileManager sharedManager] isShowHiddenFiles]];
 }
 
 - (NSView *)view

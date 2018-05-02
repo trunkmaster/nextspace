@@ -5,7 +5,11 @@
 	);
 	Outlets = (
 	    view,
-	    window
+	    window,
+	    privateSoundServerBtn,
+	    privateWindowServerBtn,
+	    showHiddenFilesBtn,
+	    sortByBtn
 	);
 	Super = NSObject;
     };
