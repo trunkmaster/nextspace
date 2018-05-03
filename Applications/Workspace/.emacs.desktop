@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu May  3 15:46:17 2018
+;; Created Thu May  3 16:49:07 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
+(setq default-directory "~/Developer/nextspace/Applications/Workspace/Viewers/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,8 @@
   "FileViewer.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  19092
-  '(58476 nil)
+  58802
+  '(58410 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,7 +33,7 @@
   "FileViewer.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2124
+  1254
   '(nil nil)
   nil
   nil
@@ -44,7 +44,18 @@
   "BrowserViewer.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  7131
+  12619
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/BrowserViewer.h"
+  "BrowserViewer.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  996
   '(nil nil)
   nil
   nil
@@ -89,17 +100,6 @@
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   909
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/BrowserViewer.h"
-  "BrowserViewer.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  996
   '(nil nil)
   nil
   nil
