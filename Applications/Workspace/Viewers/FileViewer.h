@@ -72,6 +72,10 @@
 
   NSTimer *checkTimer;
 
+  // Preferences
+  BOOL      showHiddenFiles;
+  NSInteger sortFilesBy;
+
   // Dragging
   NXIconView *draggedSource;
   PathIcon   *draggedIcon;

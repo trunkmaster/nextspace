@@ -2,7 +2,7 @@
    FileViewer.m
    The workspace manager's file viewer.
 
-   Copyright (C) 2006-2013 Sergii Stoian
+   Copyright (C) 2006-2018 Sergii Stoian
    Copyright (C) 2005 Saso Kiselkov
 
    This program is free software; you can redistribute it and/or modify
@@ -278,11 +278,18 @@
              name:NXFileSystemChangedAtPath
            object:nil];
 
+  // Global user preferences changes
+  [[NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+    addObserver:self
+       selector:@selector(globalUserPreferencesDidChange:)
+           name:NXUserDefaultsDidChangeNotification
+         object:nil];
+  
   // Notifications from BGOperation
  [nc addObserver:self
-	 selector:@selector(fileOperationDidStart:)
-	     name:WMOperationDidCreateNotification
-	   object:nil];
+        selector:@selector(fileOperationDidStart:)
+            name:WMOperationDidCreateNotification
+          object:nil];
   [nc addObserver:self
 	 selector:@selector(fileOperationDidEnd:)
 	     name:WMOperationWillDestroyNotification
@@ -631,22 +638,23 @@
   NXFileManager *xfm = [NXFileManager sharedManager];
   NSString      *path = [rootPath stringByAppendingPathComponent:relPath];
   NSDictionary  *folderDefaults;
-  NXSortType    sortType;
   
   // Get sorted directory contents
   if ((folderDefaults = [[NXDefaults userDefaults] objectForKey:path]) != nil)
     {
-      sortType = [[folderDefaults objectForKey:@"SortBy"] intValue];
+      sortFilesBy = [[folderDefaults objectForKey:@"SortBy"] intValue];
     }
   else
     {
-      sortType = NXSortByKind;
+      sortFilesBy = [xfm sortFilesBy];
     }
+
+  showHiddenFiles = [xfm isShowHiddenFiles];
   
   return [xfm directoryContentsAtPath:path
                               forPath:targetPath
-                             sortedBy:sortType
-                           showHidden:NO];
+                             sortedBy:sortFilesBy
+                           showHidden:showHiddenFiles];
 }
 
 //=============================================================================
@@ -1959,6 +1967,20 @@
     {
       [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
     }
+}
+
+- (void)globalUserPreferencesDidChange:(NSNotification *)aNotif
+{
+  NXFileManager *xfm = [NXFileManager sharedManager];
+  BOOL          hidden = [xfm isShowHiddenFiles];
+  NXSortType    sort = [xfm sortFilesBy];
+
+  if ((showHiddenFiles != hidden) || (sortFilesBy != sort))
+    {
+      [viewer reloadPath:[self displayedPath]];
+    }
+    
+  NSLog(@"[Workspace]: NXGlobalDomain was changed.");
 }
 
 
