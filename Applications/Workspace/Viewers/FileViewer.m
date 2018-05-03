@@ -1969,6 +1969,8 @@
     }
 }
 
+// --- Preferences (NXGlobalDomain) changes
+
 - (void)globalUserPreferencesDidChange:(NSNotification *)aNotif
 {
   NXFileManager *xfm = [NXFileManager sharedManager];
@@ -1977,7 +1979,7 @@
 
   if ((showHiddenFiles != hidden) || (sortFilesBy != sort))
     {
-      [viewer reloadPath:[self displayedPath]];
+      [viewer displayPath:[self displayedPath] selection:selection];
     }
     
   NSLog(@"[Workspace]: NXGlobalDomain was changed.");
