@@ -128,8 +128,9 @@ static id dirInspector = nil;
 
 - revert:sender
 {
-  NSString *path = nil;
-  NSArray  *files = nil;
+  NSString   *path = nil;
+  NSArray    *files = nil;
+  NXSortType sortType;
 
   ASSIGN(folderDefaults, nil);
   
@@ -145,12 +146,17 @@ static id dirInspector = nil;
 
   if (folderDefaults == nil)
     {
-      ASSIGN(folderDefaults, [NSMutableDictionary new]);
-      [folderDefaults setObject:[NSNumber numberWithInt:NXSortByKind]
+      ASSIGN(folderDefaults, [[NSMutableDictionary new] autorelease]);
+      sortType = [[NXFileManager sharedManager] sortFilesBy];
+      [folderDefaults setObject:[NSNumber numberWithInt:sortType]
                          forKey:@"SortBy"];
     }
-  [sortByMatrix selectCellWithTag:
-                  [[folderDefaults objectForKey:@"SortBy"] intValue]];
+  else
+    {
+      sortType = [[folderDefaults objectForKey:@"SortBy"] intValue];
+    }
+
+  [sortByMatrix selectCellWithTag:sortType];
 
   // Buttons state and title, window edited state
   return [super revert:self];
