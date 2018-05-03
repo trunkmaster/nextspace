@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu May  3 02:07:30 2018
+;; Created Thu May  3 13:42:36 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/")
+(setq default-directory "~/Developer/nextspace/Applications/Preferences/Modules/Expert/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name "/Developer/Headers/TAGS")
 (setq tags-table-list '("/Developer/Headers/TAGS"))
@@ -22,8 +22,8 @@
   "Expert.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1697
-  '(1711 nil)
+  2295
+  '(2345 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

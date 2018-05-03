@@ -16,7 +16,8 @@
 #import "NXDefaults.h"
 #import "NXFileManager.h"
 
-NSString *SortFileBy = @"NXSortFilesBy";
+// Preferences used by File Viewer, NSOpenPanel and NSSavePanel
+NSString *SortFilesBy = @"NXSortFilesBy";
 NSString *ShowHiddenFiles = @"NXShowHiddenFiles";
 
 static NXFileManager *sharedManager;
@@ -147,17 +148,26 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
 
 - (BOOL)isShowHiddenFiles
 {
-  return NO;
+  return [[NXDefaults globalUserDefaults] boolForKey:ShowHiddenFiles];
 }
 - (void)setShowHiddenFiles:(BOOL)yn
 {
+  [[NXDefaults globalUserDefaults] setBool:yn forKey:ShowHiddenFiles];
 }
 - (NXSortType)sortFilesBy
 {
-  return NXSortByKind;
+  NSInteger type;
+
+  type = [[NXDefaults globalUserDefaults] integerForKey:SortFilesBy];
+  
+  if (type == -1)
+    type = NXSortByKind;
+  
+  return type;
 }
 - (void)setSortFilesBy:(NXSortType)type
 {
+  [[NXDefaults globalUserDefaults] setInteger:type forKey:SortFilesBy];
 }
 
 

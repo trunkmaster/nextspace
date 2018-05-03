@@ -93,5 +93,15 @@
 // Action methods
 //
 
+- (void)setSortBy:(id)sender
+{
+  [[NXFileManager sharedManager] setSortFilesBy:[[sender selectedItem] tag]];
+}
+
+- (void)setShowHiddenFiles:(id)sender
+{
+  [[NXFileManager sharedManager] setShowHiddenFiles:[sender state]];
+}
+
 @end
 

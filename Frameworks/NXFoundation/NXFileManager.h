@@ -22,7 +22,8 @@ typedef enum {
   NXSortByOwner = 5 // + NXSortByName
 } NXSortType;
 
-extern NSString *SortFileBy;
+// Preferences used by File Viewer, NSOpenPanel and NSSavePanel
+extern NSString *SortFilesBy;
 extern NSString *ShowHiddenFiles;
 
 @interface NXFileManager : NSObject

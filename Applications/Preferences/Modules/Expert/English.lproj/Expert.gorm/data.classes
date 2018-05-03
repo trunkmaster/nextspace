@@ -2,6 +2,8 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     Expert = {
 	Actions = (
+	    "setShowHiddenFiles:",
+	    "setSortBy:"
 	);
 	Outlets = (
 	    view,
@@ -10,6 +12,13 @@
 	    privateWindowServerBtn,
 	    showHiddenFilesBtn,
 	    sortByBtn
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setShowHiddenFiles:",
+	    "setSortBy:"
 	);
 	Super = NSObject;
     };
