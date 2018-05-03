@@ -475,7 +475,7 @@ NSPoint WWMCreateLaunchingIcon(NSString *wmName,
     }
   
   // 2. Otherwise create appicon and set its state to launching
-  /*  if (iconFound == NO)
+  if (iconFound == NO)
     {
       Window   leader;
       WWindow  *wLeader;
@@ -517,14 +517,15 @@ NSPoint WWMCreateLaunchingIcon(NSString *wmName,
 
       fprintf(stderr, "*** X window created\n");
       
-      wLeader = wWindowFor(leader);
-      fprintf(stderr, "*** WindowMaker window created\n");
+      // wLeader = wWindowFor(leader);
+      wLeader = wManageWindow(wScreenWithNumber(0), leader);
+      fprintf(stderr, "*** WindowMaker window created.\n");
       
-      // appIcon = _wAppIconCreate(wLeader);
+      appIcon = _wAppIconCreate(wLeader);
 
-      // fprintf(stderr, "*** Created app icon coordinates: %i.%i\n",
-      //         appIcon->x_pos, appIcon->y_pos);
-    }*/
+       fprintf(stderr, "*** Created app icon coordinates: %i.%i\n",
+               appIcon->x_pos, appIcon->y_pos);
+    }
 
   return iconPoint;
 }

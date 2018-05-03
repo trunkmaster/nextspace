@@ -2260,7 +2260,6 @@
   NSString     *filePath;
   NSString     *fileName;
 
-  // Sender is not shelf icon.
   // "Return" key press in *Viewer, File->Open menu item, double click
   if (![sender isKindOfClass:[PathIcon class]] || 
       ![[sender superview] isKindOfClass:[ShelfView class]])
@@ -2272,7 +2271,7 @@
   while ((filePath = [e nextObject]) != nil)
     {
       NSLog(@"openFile: %@", filePath);
-      // 1. Get destination point of app icon (Dock, Icons)
+      // 1. Get destination point of app icon (Dock, IconYard)
       // 2. Slide image to that point
       // 3. Turn on app icon launching state
       // 4. Launch application
