@@ -630,7 +630,6 @@ static NSString		*_rootPath = @"/";
   if ([fileType isEqualToString:NSApplicationFileType]) // .app
     {
       NSString *wmName;
-      WAppIcon *appIcon;
       
       appName = [[fullPath lastPathComponent] stringByDeletingPathExtension];
       
@@ -639,7 +638,7 @@ static NSString		*_rootPath = @"/";
         return YES;
 
       wmName = [NSString stringWithFormat:@"%@.GNUstep", appName];
-      appIcon = WWMCreateLaunchingIcon(wmName, anImage, point);
+      WWMCreateLaunchingIcon(wmName, anImage, point);
       
       if ([self launchApplication:fullPath] == NO)
         {
@@ -648,7 +647,6 @@ static NSString		*_rootPath = @"/";
                           nil, nil, nil, [fullPath lastPathComponent]);
           return NO;
         }
-      WWMDestroyLaunchingIcon(appIcon);
       return YES;
     }
   else if ([[appName pathExtension] isEqualToString:@"app"])

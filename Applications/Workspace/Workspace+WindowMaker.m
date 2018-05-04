@@ -8,6 +8,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xlocale.h>
 #include <X11/Xatom.h>
+#include <X11/extensions/Xinerama.h>
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
@@ -17,11 +18,11 @@
 #import "Workspace+WindowMaker.h"
 #import "Operations/ProcessManager.h"
 
-// defined and set in WindowMaker
+// WindowMaker functions and vars
 extern Display *dpy;
-
-// WindowMaker functions
 extern char *GetCommandForWindow(Window win);
+// WindowMaker/src/main.c
+extern int real_main(int argc, char **argv);
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -115,9 +116,7 @@ NSString *fullPathForCommand(NSString *command)
 // 'WWM' prefix is a vector of calls 'Workspace->WindowMaker'
 //-----------------------------------------------------------------------------
 
-// WM/src/main.c
-extern int real_main(int argc, char **argv);
-
+static WAppIcon **launchingIcons;
 void WWMInitializeWindowMaker(int argc, char **argv)
 {
   int  len;
@@ -151,7 +150,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
 
   @autoreleasepool {
     // Check WMState user file (Dock state)
-    if (WWMStateCheck() == nil)
+    if (WWMDockStateCheck() == nil)
       {
         NSLog(@"[Workspace] Dock contents cannot be restored."
               " Show only Workspace application icon.");
@@ -160,7 +159,10 @@ void WWMInitializeWindowMaker(int argc, char **argv)
     [[[NXScreen new] autorelease] applySavedDisplayLayout];
   }
 
-  // WM/src/main.c
+  // Initialize array of appicons with launching state.
+  launchingIcons = wmalloc(16 * sizeof(WAppIcon));
+
+  // external function (WindowMaker/src/main.c)
   real_main(argc, argv);
 
   // Just load saved Dock state without icons drawing.
@@ -316,8 +318,7 @@ void WWMDockShowIcons(WDock *dock)
 // Returns path to user WMState if exist.
 // Returns 'nil' if user WMState doesn't exist and cannot
 // be recovered from Workspace.app/WindowMaker directory.
-// TODO: rename to WWMDockStateCheck
-NSString *WWMStateCheck(void)
+NSString *WWMDockStateCheck(void)
 {
   NSString      *userDefPath, *appDefPath;
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -341,16 +342,21 @@ NSString *WWMStateCheck(void)
   return userDefPath;
 }
 
-NSDictionary *WWMStateLoad(void)
+// Returns NSDictionary representation of WMState file
+NSDictionary *WWMDockState(void)
 {
   NSDictionary *wmstateDict;
 
-  wmstateDict = [[NSDictionary alloc] initWithContentsOfFile:WWMStateCheck()];
+  wmstateDict = [[NSDictionary alloc]
+                  initWithContentsOfFile:WWMDockStateCheck()];
 
   return wmstateDict;
 }
 
-NSString *WWMStateDockAppsKey()
+// --- Save and Load
+
+// Returns resolution-dependant dictionary key for Dock state
+NSString *WWMStateDockAppsKey(void)
 {
   NSArray  *dockApps;
   NSString *appsKey;
@@ -358,34 +364,34 @@ NSString *WWMStateDockAppsKey()
   appsKey = [NSString stringWithFormat:@"Applications%i",
                       wScreenWithNumber(0)->scr_height];
   
-  dockApps = [[WWMStateLoad() objectForKey:@"Dock"] objectForKey:appsKey];
+  dockApps = [[WWMDockState() objectForKey:@"Dock"] objectForKey:appsKey];
   if (!dockApps || [dockApps count] == 0)
     {
-//      [appsKey release];
       appsKey = @"Applications";
     }
 
-//  [dockApps release];
-  
   return appsKey;
 }
 
 NSArray *WWMStateDockAppsLoad(void)
 {
-  return [[WWMStateLoad() objectForKey:@"Dock"] objectForKey:WWMStateDockAppsKey()];
+  return [[WWMDockState() objectForKey:@"Dock"]
+           objectForKey:WWMStateDockAppsKey()];
 }
 
 void WWMStateDockAppsSave(NSArray *dockIcons)
 {
-  NSMutableDictionary *wmstateDict = [WWMStateLoad() mutableCopy];
+  NSMutableDictionary *wmstateDict = [WWMDockState() mutableCopy];
   NSString            *filePath;
       
   [wmstateDict setObject:dockIcons forKey:WWMStateDockAppsKey()];
-  if ((filePath = WWMStateCheck()))
+  if ((filePath = WWMDockStateCheck()))
     {
       [wmstateDict writeToFile:filePath atomically:YES];
     }
 }
+
+// --- Autostart
 
 NSArray *WWMStateAutostartApps(void)
 {
@@ -403,42 +409,40 @@ NSArray *WWMStateAutostartApps(void)
   return autostartList;
 }
 
-#include <stacking.h>
-#include <placement.h>
-// static WAppIcon *_wAppIconCreate(WWindow *leader_win)
-// {
-//   WAppIcon *aicon;
+NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret)
+{
+  NSRect  mdRect = [[[NXScreen sharedScreen] mainDisplay] frame];
+  NSPoint iconPoint = {0,0};
 
-//   aicon = wmalloc(sizeof(WAppIcon));
-//   wretain(aicon);
-//   aicon->yindex = -1;
-//   aicon->xindex = -1;
-//   aicon->prev = NULL;
-//   aicon->next = NULL;
+  // Add all launch icons to stack list to calculate position for new one
+  for (int i=0; i < 16; i++)
+    {
+      if (launchingIcons[i] == NULL)
+        break;
+      if (launchingIcons[i] != NULL)
+        {
+          AddToStackList(launchingIcons[i]->icon->core);
+        }
+    }
 
-//   if (leader_win->wm_class)
-//     aicon->wm_class = wstrdup(leader_win->wm_class);
+  // Calculate postion for new launch icon
+  PlaceIcon(wScreenWithNumber(0), x_ret, y_ret, 0);
+  iconPoint.x = (CGFloat)*x_ret;
+  iconPoint.y = mdRect.size.height - (*y_ret + 64);
 
-//   if (leader_win->wm_instance)
-//     aicon->wm_instance = wstrdup(leader_win->wm_instance);
+  // Remove all launch icons from stack list to place appicons over them
+  for (int i=0; i < 16; i++)
+    {
+      if (launchingIcons[i] == NULL)
+        break;
+      if (launchingIcons[i] != NULL)
+        {
+          RemoveFromStackList(launchingIcons[i]->icon->core);
+        }
+    }
 
-//   aicon->icon = icon_create_for_wwindow(leader_win);
-  
-// // #ifdef USE_DOCK_XDND
-// //   wXDNDMakeAwareness(aicon->icon->core->window);
-// // #endif
-
-//   /* will be overriden if docked */
-//   aicon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
-//   // aicon->icon->core->descriptor.handle_expose = iconExpose;
-//   aicon->icon->core->descriptor.parent_type = WCLASS_APPICON;
-//   aicon->icon->core->descriptor.parent = aicon;
-//   AddToStackList(aicon->icon->core);
-//   aicon->icon->show_title = 0;
-
-//   return aicon;
-// }
-
+  return iconPoint;
+}
 // wmName is in 'wm_instance.wm_class' format
 WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
                                  NSPoint sourcePoint)
@@ -450,12 +454,13 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
   NSArray    *wmNameParts = [wmName componentsSeparatedByString:@"."];
   const char *wmInstance = [[wmNameParts objectAtIndex:0] cString];
   const char *wmClass = [[wmNameParts objectAtIndex:1] cString];
-  
+
   // 1. Search for icon in dock and set its state to launching
   for (int i=0; i < dock->icon_count; i++)
     {
       appIcon = dock->icon_array[i];
-      if (!strcmp(appIcon->wm_instance, wmInstance) &&
+      if (appIcon != NULL && appIcon->docked && !appIcon->destroyed &&
+          !strcmp(appIcon->wm_instance, wmInstance) &&
           !strcmp(appIcon->wm_class, wmClass))
         {
           iconPoint.x = appIcon->x_pos;
@@ -482,88 +487,47 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
       NSRect mdRect = [[[NXScreen sharedScreen] mainDisplay] frame];
       int    x_ret = 0, y_ret = 0;
       
-      PlaceIcon(wScreenWithNumber(0), &x_ret, &y_ret, 0);
-      iconPoint.x = (CGFloat)x_ret;
-      iconPoint.y = mdRect.size.height - (y_ret + 64);
-      
-      appIcon = wAppIconCreateForDock(wScreenWithNumber(0), NULL, (char *)wmInstance, (char *)wmClass, TILE_NORMAL);
+      appIcon = wAppIconCreateForDock(wScreenWithNumber(0), NULL,
+                                      (char *)wmInstance, (char *)wmClass,
+                                      TILE_NORMAL);
       appIcon->icon->core->descriptor.handle_mousedown = NULL;
-      RemoveFromStackList(appIcon->icon->core);
-      wAppIconMove(appIcon, x_ret, y_ret);
       appIcon->launching = 1;
+      RemoveFromStackList(appIcon->icon->core);
+      
+      for (int i=0; i < 16; i++)
+        {
+          if (launchingIcons[i] == NULL)
+            {
+              launchingIcons[i] = appIcon;
+              break;
+            }
+        }
+      
+      // PlaceIcon(wScreenWithNumber(0), &x_ret, &y_ret, 0);
+      // iconPoint.x = (CGFloat)x_ret;
+      // iconPoint.y = mdRect.size.height - (y_ret + 64);
+      // wAppIconMove(appIcon, x_ret, y_ret);
+      iconPoint = _pointForNewLaunchingIcon(&x_ret, &y_ret);
+      wAppIconMove(appIcon, x_ret, y_ret);
+      // NSLog(@"[Workspace] new icon point for '%@': %@",
+      //       wmName, NSStringFromPoint(iconPoint));
       
       [[NSApp delegate] slideImage:anImage
                               from:sourcePoint
                                 to:iconPoint];
-      // NSLog(@"[Workspace] new icon point for '%@': %@ {%i,%i}",
-      //       wmName, NSStringFromPoint(iconPoint), x_ret, y_ret);
 
       wAppIconPaint(appIcon);
       XMapWindow(dpy, appIcon->icon->core->window);
       XSync(dpy, False);
     }
-
-  //
-  /*
-  if (iconFound == NO)
-    {
-      Window   leader;
-      WWindow  *wLeader;
-      WAppIcon *appIcon;
-
-      fprintf(stderr, "*** Creating X window...\n");
-      {
-        XSizeHints mysizehints;
-        XWMHints   mywmhints;
-        char       *Geometry = "";
-        XClassHint classHint;
-        int        dummy = 0, borderwidth = 1;
-
-        // Create a window to hold the stuff
-        mysizehints.flags = USSize | USPosition;
-        mysizehints.x = 0;
-        mysizehints.y = 0;
-
-        XWMGeometry(dpy, DefaultScreen(dpy), Geometry, NULL,
-                    borderwidth, &mysizehints,
-                    &mysizehints.x, &mysizehints.y,
-                    &mysizehints.width, &mysizehints.height, &dummy);
-
-        mysizehints.width = 10;
-        mysizehints.height = 10;
-        
-        leader = XCreateSimpleWindow(dpy, DefaultRootWindow(dpy),
-                                     mysizehints.x, mysizehints.y,
-                                     mysizehints.width, mysizehints.height,
-                                     borderwidth,
-                                     BlackPixel(dpy, 0),
-                                     WhitePixel(dpy, 0));
-
-        // XSetWMNormalHints(dpy, leader, &mysizehints);
-        classHint.res_name = (char *)wmInstance;
-        classHint.res_class = (char *)wmClass;
-        XSetClassHint(dpy, leader, &classHint);
-      }
-
-      fprintf(stderr, "*** X window created\n");
-      
-      // wLeader = wWindowFor(leader);
-      // wLeader = wManageWindow(wScreenWithNumber(0), leader);
-      fprintf(stderr, "*** WindowMaker window created.\n");
-      
-      fprintf(stderr, "*** Created app icon coordinates: %i.%i\n",
-              appIcon->x_pos, appIcon->y_pos);
-    }
-  */
-
+  
   return appIcon;
 }
 
 void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
 {
-  wAppIconDestroy(appIcon);  
+  wAppIconDestroy(appIcon);
 }
-
 
 //--- End of functions which require existing @autorelease pool ---
 
@@ -603,7 +567,7 @@ void WWMWipeDesktop(WScreen * scr)
             }
         }
     }
-  
+
   XSync(dpy, False);
 }
 
@@ -635,6 +599,8 @@ void WWMShutdown(WShutdownMode mode)
       wNETWMCleanup(scr); // Delete _NET_* Atoms
     }
   // ExecExitScript();
+  
+  wfree(launchingIcons);
   
   RShutdown(); /* wrlib clean exit */
   wutil_shutdown();  /* WUtil clean-up */
@@ -719,13 +685,28 @@ NSDictionary *WXApplicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   return (NSDictionary *)appInfo;
 }
 
-// Will be called by WindowMaker in global queue with high-priority
+// Called by WindowMaker in GCD global high-priority queue
 // (com.apple.root.high-priority)
 void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
 {
   NSNotification *notif = nil;
   NSDictionary   *appInfo = nil;
+  char           *wm_instance, *wm_class;
 
+  wm_instance = wapp->main_window_desc->wm_instance;
+  wm_class = wapp->main_window_desc->wm_class;
+  for (int i = 0; i < 16; i++)
+    {
+      if (launchingIcons[i] != NULL &&
+          !strcmp(wm_instance, launchingIcons[i]->wm_instance) &&
+          !strcmp(wm_class, launchingIcons[i]->wm_class))
+        {
+          WWMDestroyLaunchingIcon(launchingIcons[i]);
+          launchingIcons[i] = NULL;
+          break;
+        }
+    }
+  
   if (!strcmp(wapp->main_window_desc->wm_class,"GNUstep"))
     return;
 
@@ -744,9 +725,9 @@ void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
   NSLog(@"W+WM: XWApplicationDidCreate: %@", appInfo);
   
   notif = [NSNotification 
-            notificationWithName:NSWorkspaceDidLaunchApplicationNotification
-                          object:appInfo
-                        userInfo:appInfo];
+             notificationWithName:NSWorkspaceDidLaunchApplicationNotification
+                           object:appInfo
+                         userInfo:appInfo];
   // [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
   [[ProcessManager shared] applicationDidLaunch:notif];
 }
@@ -853,7 +834,6 @@ static void moveDock(WDock *dock, int new_x, int new_y)
     }
 }
 
-#include <X11/extensions/Xinerama.h>
 void XWUpdateScreenInfo(WScreen *scr)
 {
   NSRect dRect;
