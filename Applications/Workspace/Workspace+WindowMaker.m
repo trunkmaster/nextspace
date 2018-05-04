@@ -404,77 +404,107 @@ NSArray *WWMStateAutostartApps(void)
 }
 
 #include <stacking.h>
-static WAppIcon *_wAppIconCreate(WWindow *leader_win)
-{
-  WAppIcon *aicon;
+#include <placement.h>
+// static WAppIcon *_wAppIconCreate(WWindow *leader_win)
+// {
+//   WAppIcon *aicon;
 
-  aicon = wmalloc(sizeof(WAppIcon));
-  wretain(aicon);
-  aicon->yindex = -1;
-  aicon->xindex = -1;
-  aicon->prev = NULL;
-  aicon->next = NULL;
+//   aicon = wmalloc(sizeof(WAppIcon));
+//   wretain(aicon);
+//   aicon->yindex = -1;
+//   aicon->xindex = -1;
+//   aicon->prev = NULL;
+//   aicon->next = NULL;
 
-  if (leader_win->wm_class)
-    aicon->wm_class = wstrdup(leader_win->wm_class);
+//   if (leader_win->wm_class)
+//     aicon->wm_class = wstrdup(leader_win->wm_class);
 
-  if (leader_win->wm_instance)
-    aicon->wm_instance = wstrdup(leader_win->wm_instance);
+//   if (leader_win->wm_instance)
+//     aicon->wm_instance = wstrdup(leader_win->wm_instance);
 
-  aicon->icon = icon_create_for_wwindow(leader_win);
+//   aicon->icon = icon_create_for_wwindow(leader_win);
   
-// #ifdef USE_DOCK_XDND
-//   wXDNDMakeAwareness(aicon->icon->core->window);
-// #endif
+// // #ifdef USE_DOCK_XDND
+// //   wXDNDMakeAwareness(aicon->icon->core->window);
+// // #endif
 
-  /* will be overriden if docked */
-  aicon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
-  // aicon->icon->core->descriptor.handle_expose = iconExpose;
-  aicon->icon->core->descriptor.parent_type = WCLASS_APPICON;
-  aicon->icon->core->descriptor.parent = aicon;
-  AddToStackList(aicon->icon->core);
-  aicon->icon->show_title = 0;
+//   /* will be overriden if docked */
+//   aicon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
+//   // aicon->icon->core->descriptor.handle_expose = iconExpose;
+//   aicon->icon->core->descriptor.parent_type = WCLASS_APPICON;
+//   aicon->icon->core->descriptor.parent = aicon;
+//   AddToStackList(aicon->icon->core);
+//   aicon->icon->show_title = 0;
 
-  return aicon;
-}
+//   return aicon;
+// }
 
 // wmName is in 'wm_instance.wm_class' format
-NSPoint WWMCreateLaunchingIcon(NSString *wmName,
-                               NSImage *anImage,
-                               NSPoint sourcePoint)
+WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
+                                 NSPoint sourcePoint)
 {
-  NSPoint  iconPoint = {0, 0};
-  BOOL     iconFound = NO;
-  WDock    *dock = wScreenWithNumber(0)->dock;
-  WAppIcon *icon;
-  int      i;
+  NSPoint    iconPoint = {0, 0};
+  BOOL       iconFound = NO;
+  WDock      *dock = wScreenWithNumber(0)->dock;
+  WAppIcon   *appIcon;
   NSArray    *wmNameParts = [wmName componentsSeparatedByString:@"."];
   const char *wmInstance = [[wmNameParts objectAtIndex:0] cString];
   const char *wmClass = [[wmNameParts objectAtIndex:1] cString];
   
   // 1. Search for icon in dock and set its state to launching
-  for (i=0; i < dock->icon_count; i++)
+  for (int i=0; i < dock->icon_count; i++)
     {
-      icon = dock->icon_array[i];
-      if (!strcmp(icon->wm_instance, wmInstance) &&
-          !strcmp(icon->wm_class, wmClass))
+      appIcon = dock->icon_array[i];
+      if (!strcmp(appIcon->wm_instance, wmInstance) &&
+          !strcmp(appIcon->wm_class, wmClass))
         {
-          iconPoint.x = icon->x_pos;
-          iconPoint.y = wScreenWithNumber(0)->scr_height - icon->y_pos - 64;
+          iconPoint.x = appIcon->x_pos;
+          iconPoint.y = wScreenWithNumber(0)->scr_height - appIcon->y_pos - 64;
 
           [[NSApp delegate] slideImage:anImage
                                   from:sourcePoint
                                     to:iconPoint];
           
-          icon->launching = 1;
-          wAppIconPaint(icon);
+          appIcon->launching = 1;
+          wAppIconPaint(appIcon);
 
           iconFound = YES;
+          appIcon = NULL;
           break;
         }
     }
-  
-  // 2. Otherwise create appicon and set its state to launching
+
+  // 2. Search for icon in IconYard
+
+  // 3. Otherwise create appicon and set its state to launching
+  if (iconFound == NO)
+    {
+      NSRect mdRect = [[[NXScreen sharedScreen] mainDisplay] frame];
+      int    x_ret = 0, y_ret = 0;
+      
+      PlaceIcon(wScreenWithNumber(0), &x_ret, &y_ret, 0);
+      iconPoint.x = (CGFloat)x_ret;
+      iconPoint.y = mdRect.size.height - (y_ret + 64);
+      
+      appIcon = wAppIconCreateForDock(wScreenWithNumber(0), NULL, (char *)wmInstance, (char *)wmClass, TILE_NORMAL);
+      appIcon->icon->core->descriptor.handle_mousedown = NULL;
+      RemoveFromStackList(appIcon->icon->core);
+      wAppIconMove(appIcon, x_ret, y_ret);
+      appIcon->launching = 1;
+      
+      [[NSApp delegate] slideImage:anImage
+                              from:sourcePoint
+                                to:iconPoint];
+      // NSLog(@"[Workspace] new icon point for '%@': %@ {%i,%i}",
+      //       wmName, NSStringFromPoint(iconPoint), x_ret, y_ret);
+
+      wAppIconPaint(appIcon);
+      XMapWindow(dpy, appIcon->icon->core->window);
+      XSync(dpy, False);
+    }
+
+  //
+  /*
   if (iconFound == NO)
     {
       Window   leader;
@@ -518,17 +548,22 @@ NSPoint WWMCreateLaunchingIcon(NSString *wmName,
       fprintf(stderr, "*** X window created\n");
       
       // wLeader = wWindowFor(leader);
-      wLeader = wManageWindow(wScreenWithNumber(0), leader);
+      // wLeader = wManageWindow(wScreenWithNumber(0), leader);
       fprintf(stderr, "*** WindowMaker window created.\n");
       
-      appIcon = _wAppIconCreate(wLeader);
-
-       fprintf(stderr, "*** Created app icon coordinates: %i.%i\n",
-               appIcon->x_pos, appIcon->y_pos);
+      fprintf(stderr, "*** Created app icon coordinates: %i.%i\n",
+              appIcon->x_pos, appIcon->y_pos);
     }
+  */
 
-  return iconPoint;
+  return appIcon;
 }
+
+void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
+{
+  wAppIconDestroy(appIcon);  
+}
+
 
 //--- End of functions which require existing @autorelease pool ---
 

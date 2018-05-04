@@ -42,6 +42,7 @@
 #import <NXFoundation/NXDefaults.h>
 #import <NXFoundation/NXFileManager.h>
 #import <NXSystem/NXMediaManager.h>
+#import <NXAppKit/NXAlert.h>
 
 #import "Workspace+WindowMaker.h"
 
@@ -604,14 +605,14 @@ static NSString		*_rootPath = @"/";
           inView:(NSView*)aView
 {
   NSString      *fileType = nil, *appName = nil;
-  NSPoint       destPoint;
+  NSPoint       destPoint = {0,0};
   NSFileManager *fm = [NSFileManager defaultManager];
   NSDictionary  *fattrs = nil;
 
   if (![fm fileExistsAtPath:fullPath])
     {
-      NSRunAlertPanel(_(@"Workspace"),
-                      _(@"File '%@' doesn not exists!"), 
+      NXRunAlertPanel(_(@"Workspace"),
+                      _(@"File '%@' does not exists!"), 
                       nil, nil, nil, [fullPath lastPathComponent]);
       return NO;
     }
@@ -619,42 +620,49 @@ static NSString		*_rootPath = @"/";
   // Sliding coordinates
   point = [[aView window]
             convertBaseToScreen:[aView convertPoint:point toView:nil]];
-  // TODO: Make integration with Window Manager
-  destPoint = NSMakePoint(32, 32);
 
-  // Get file type from self and 
+  // Get file type and application name
   [self getInfoForFile:fullPath application:&appName type:&fileType];
-  fattrs = [fm fileAttributesAtPath:fullPath traverseLink:YES];
+  // fattrs = [fm fileAttributesAtPath:fullPath traverseLink:YES];
 
-  NSLog(@"[Workspace] openFile: with app: %@", appName);
+  NSLog(@"[Workspace] openFile: type '%@' with app: %@", fileType, appName);
   
   if ([fileType isEqualToString:NSApplicationFileType]) // .app
     {
       NSString *wmName;
+      WAppIcon *appIcon;
       
       appName = [[fullPath lastPathComponent] stringByDeletingPathExtension];
-        
+      
       // Don't launch ourself
-      if ([appName isEqualToString:@"Workspace"])
-	{
-	  return YES;
-	}
+      if ([appName isEqualToString:@"Workspace.app"])
+        return YES;
 
       wmName = [NSString stringWithFormat:@"%@.GNUstep", appName];
-      destPoint = WWMCreateLaunchingIcon(wmName, anImage, point);
-      if (destPoint.x == 0 && destPoint.y == 0)
-        {
-          [self slideImage:anImage from:point to:destPoint];
-        }
+      appIcon = WWMCreateLaunchingIcon(wmName, anImage, point);
       
       if ([self launchApplication:fullPath] == NO)
         {
-          NSRunAlertPanel(_(@"Workspace"),
+          NXRunAlertPanel(_(@"Workspace"),
                           _(@"Failed to start application \"%@\""), 
                           nil, nil, nil, [fullPath lastPathComponent]);
           return NO;
         }
+      WWMDestroyLaunchingIcon(appIcon);
       return YES;
+    }
+  else if ([[appName pathExtension] isEqualToString:@"app"])
+    {
+      NSString *wmName;
+      
+      // TODO: get WMName from application's Info-gnustep.plist
+      wmName = [NSString stringWithFormat:@"%@.GNUstep",
+                         [appName stringByDeletingPathExtension]];
+      WWMCreateLaunchingIcon(wmName, anImage, point);
+      
+      return [self openFile:fullPath
+                   withApplication:appName
+                   andDeactivate:YES];
     }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
            [fileType isEqualToString:NSFilesystemFileType] ||
