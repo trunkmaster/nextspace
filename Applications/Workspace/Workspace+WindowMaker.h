@@ -30,6 +30,9 @@ dispatch_queue_t wmaker_q;
 #include <shutdown.h> // Shutdown(), WSxxxMode
 #include <client.h>
 #include <wmspec.h>
+// Appicons placement
+#include <stacking.h>
+#include <placement.h>
 
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
@@ -37,7 +40,7 @@ dispatch_queue_t wmaker_q;
 BOOL xIsWindowServerReady(void);
 BOOL xIsWindowManagerAlreadyRunning(void);
 
-BOOL     useInternalWindowManager;
+BOOL useInternalWindowManager;
 
 //-----------------------------------------------------------------------------
 // Calls related to internals of WindowMaker.
@@ -46,8 +49,9 @@ BOOL     useInternalWindowManager;
 
 //--- Login related activities
 // -- Should be called from already existing @autoreleasepool ---
-NSString     *WWMStateCheck(void);
-NSDictionary *WWMStateLoad(void);
+NSString     *WWMDockStateCheck(void);
+void         WWMDockStateLoad(void);
+NSDictionary *WWMDockState(void);
 
 NSString *WWMStateDockAppsKey();
 NSArray  *WWMStateDockAppsLoad(void);
