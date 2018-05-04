@@ -54,9 +54,10 @@ NSArray  *WWMStateDockAppsLoad(void);
 void      WWMStateDockAppsSave(NSArray *dockIcons);
 NSArray  *WWMStateAutostartApps(void);
 
-NSPoint WWMCreateLaunchingIcon(NSString *wmName,
+WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
                                NSImage *anImage,
                                NSPoint sourcePoint);
+void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
 //--- End of functions which require existing @autorelease pool ---
 
 void WWMInitializeWindowMaker(int argc, char **argv);
