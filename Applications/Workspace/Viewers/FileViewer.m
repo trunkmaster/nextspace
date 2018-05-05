@@ -2275,9 +2275,10 @@
       // 2. Slide image to that point
       // 3. Turn on app icon launching state
       // 4. Launch application
+      image = [[NSApp delegate] iconForFile:filePath];
 
       if ([[NSApp delegate] openFile:filePath
-                           fromImage:[[NSApp delegate] iconForFile:filePath]
+                           fromImage:image
                                   at:NSMakePoint(0, 0)
                               inView:sender] == NO)
         {
