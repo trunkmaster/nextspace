@@ -528,7 +528,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
           [[NSApp delegate] slideImage:anImage
                                   from:sourcePoint
                                     to:iconPoint];
-          if (!appIcon->running && !appIcon->launching && !appIcon->destroyed)
+          if (appIcon->docked && !appIcon->running)
             {
               appIcon->launching = 1;
               wAppIconPaint(appIcon);
