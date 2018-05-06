@@ -119,19 +119,7 @@ static NXDefaults *sharedGlobalUserDefaults;
                                    error:0];
     }
 
-  // Create or load defaults from file
-  if ([fileManager fileExistsAtPath:filePath])
-    {
-      defaultsDict = 
-        [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
-      NSLog(@"NXDefaults: defaults loaded from file %@", filePath);
-    }
-  else
-    {
-      defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
-      [defaultsDict retain];
-      NSLog(@"NXDefaults: defaults created for file %@", filePath);
-    }
+  [self reload];
 
   syncTimer = nil;
 
@@ -187,6 +175,27 @@ static NXDefaults *sharedGlobalUserDefaults;
                                                   repeats:NO];
       [syncTimer retain];
     }
+}
+
+- (NXDefaults *)reload
+{
+  NSFileManager	*fileManager = [NSFileManager defaultManager];
+
+  if (defaultsDict)
+    [defaultsDict release];
+  
+  // Create or load defaults from file
+  if ([fileManager fileExistsAtPath:filePath])
+    {
+      defaultsDict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+    }
+  else
+    {
+      defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
+      [defaultsDict retain];
+    }
+
+  return self;
 }
 
 // Writes in-memory dictionary to file.

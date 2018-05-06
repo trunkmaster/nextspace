@@ -2255,10 +2255,9 @@
 // File
 - (void)open:(id)sender
 {
-  NSEnumerator *e;
-  NSImage      *image;
-  NSString     *filePath;
-  NSString     *fileName;
+  NSImage        *image;
+  NSString       *filePath;
+  NSMutableArray *extensions;
 
   // "Return" key press in *Viewer, File->Open menu item, double click
   if (![sender isKindOfClass:[PathIcon class]] || 
@@ -2267,12 +2266,22 @@
       sender = [[pathView icons] lastObject];
     }
 
-  e = [[sender paths] objectEnumerator];
-  while ((filePath = [e nextObject]) != nil)
+  // For multiple files:
+  // For each type call openFile:fromImage:at:inView with 'image' for first
+  // file in list (flying icon) and 'nil' for the rest (no flying icon).
+  extensions = [NSMutableArray new];
+  for (filePath in [sender paths])
     {
-      NSLog(@"openFile: %@", filePath);
-      image = [[NSApp delegate] iconForFile:filePath];
-
+      if ([extensions containsObject:[filePath pathExtension]] == NO)
+        {
+          [extensions addObject:[filePath pathExtension]];
+          image = [[NSApp delegate] iconForFile:filePath];
+        }
+      else
+        {
+          image = nil;
+        }
+      
       if ([[NSApp delegate] openFile:filePath
                            fromImage:image
                                   at:NSMakePoint((64-image.size.width)/2, 0)
@@ -2281,6 +2290,8 @@
           break;
         }
     }
+
+  [extensions release];
 }
 
 - (void)openAsFolder:(id)sender

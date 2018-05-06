@@ -596,7 +596,7 @@ static NSString		*_rootPath = @"/";
 //-----------------------------------------------------------------------------
 - (BOOL)openFile:(NSString*)fullPath
 {
-  return [self openFile:fullPath withApplication:nil];
+  return [self openFile:fullPath withApplication:nil andDeactivate:YES];
 }
 
 - (BOOL)openFile: (NSString*)fullPath
@@ -662,6 +662,14 @@ static NSString		*_rootPath = @"/";
         }
       return YES;
     }
+  else if ([fileType isEqualToString:NSDirectoryFileType] ||
+           [fileType isEqualToString:NSFilesystemFileType] ||
+           [wrappers containsObject:[fullPath pathExtension]])
+    {
+      // Open new FileViewer window
+      [self openNewViewerIfNotExistRootedAt:fullPath];
+      return YES;
+    }
   else if (appName)
     { // .app found for opening file type
       
@@ -694,14 +702,6 @@ static NSString		*_rootPath = @"/";
                           nil, nil, nil, appName, [fullPath lastPathComponent]);
           return NO;
         }
-      return YES;
-    }
-  else if ([fileType isEqualToString:NSDirectoryFileType] ||
-           [fileType isEqualToString:NSFilesystemFileType] ||
-           [wrappers containsObject:[fullPath pathExtension]])
-    {
-      // Open new FileViewer window
-      [self openNewViewerIfNotExistRootedAt:fullPath];
       return YES;
     }
   else // File

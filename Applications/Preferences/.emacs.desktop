@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu May  3 13:42:36 2018
+;; Created Mon May  7 01:56:45 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,7 +22,7 @@
   "Expert.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2295
+  2296
   '(2345 nil)
   nil
   nil
