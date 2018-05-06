@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri May  4 03:10:57 2018
+;; Created Sun May  6 03:48:56 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,41 +11,52 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("openFile" "open:" "directorySortMethodChang" "directoryCon" "NXScreen" "systemScreen" "NXScre" "XRR" "NEXTSPACE" "WCUR_" "ifdef" "NEXTSPA" "UPRES" "Cursor" "CURS" "cursor_table"))
+(setq search-ring '("slideImage" "slide" "openFile" "open:" "directorySortMethodChang" "directoryCon" "NXScreen" "systemScreen" "NXScre" "XRR" "NEXTSPACE" "WCUR_" "ifdef" "NEXTSPA" "UPRES" "Cursor"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Preferences/EffectPrefs/EffectPrefs.m" "~/Developer/nextspace/Applications/Workspace/Inspectors/FolderInspector.m" "~/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/BrowserViewer.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/moveres.c" "~/Developer/nextspace/Applications/Workspace/GNUmakefile" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.preamble" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.*" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/event.c" "~/Developer/nextspace/Applications/Workspace/Workspace_main.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Controller.m"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m"
-  "Controller+NSWorkspace.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  19299
-  '(19305 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
   "Workspace+WindowMaker.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  16696
-  '(16648 nil)
+  15502
+  '(14093 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m"
+  "Controller+NSWorkspace.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  20639
+  '(19788 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.h"
   "Workspace+WindowMaker.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1829
-  '(1829 nil)
+  1780
+  '(1780 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m"
+  "FileViewer.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  67017
+  '(66872 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -57,17 +68,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   2517
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m"
-  "FileViewer.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  67325
-  '(66498 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

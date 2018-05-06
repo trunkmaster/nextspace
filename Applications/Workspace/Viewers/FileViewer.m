@@ -2271,15 +2271,11 @@
   while ((filePath = [e nextObject]) != nil)
     {
       NSLog(@"openFile: %@", filePath);
-      // 1. Get destination point of app icon (Dock, IconYard)
-      // 2. Slide image to that point
-      // 3. Turn on app icon launching state
-      // 4. Launch application
       image = [[NSApp delegate] iconForFile:filePath];
 
       if ([[NSApp delegate] openFile:filePath
                            fromImage:image
-                                  at:NSMakePoint(0, 0)
+                                  at:NSMakePoint((64-image.size.width)/2, 0)
                               inView:sender] == NO)
         {
           break;
