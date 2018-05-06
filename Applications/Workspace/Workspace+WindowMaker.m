@@ -482,24 +482,9 @@ NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret)
       if (appIcon)
         AddToStackList(appIcon->icon->core);
     }
-  // appIcon = scr->app_icon_list;
-  // while (appIcon && appIcon->next)
-  //   {
-  //     if (appIcon->launching)
-  //       AddToStackList(appIcon->icon->core);
-  //     appIcon = appIcon->next;
-  //   }
   
   // Calculate postion for new launch icon
   PlaceIcon(wScreenWithNumber(0), x_ret, y_ret, 0);
-  // for (int i=0; i < DOCK_MAX_ICONS; i++)
-  //   {
-  //     if (launchingIcons[i] != NULL)
-  //       {
-  //         NSLog(@"+ %i", launchingIcons[i]->x_pos);
-  //         *x_ret += i * ICON_WIDTH;
-  //       }
-  //   }
   iconPoint.x = (CGFloat)*x_ret;
   iconPoint.y = mdRect.size.height - (*y_ret + ICON_HEIGHT);
 
@@ -510,19 +495,14 @@ NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret)
       if (appIcon)
         RemoveFromStackList(appIcon->icon->core);
     }
-  // appIcon = scr->app_icon_list;
-  // while (appIcon && appIcon->next)
-  //   {
-  //     if (appIcon->launching)
-  //       RemoveFromStackList(appIcon->icon->core);
-  //     appIcon = appIcon->next;
-  //   }
 
   return iconPoint;
 }
 // wmName is in 'wm_instance.wm_class' format
+static NSLock *raceLock = nil;
 WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
-                                 NSPoint sourcePoint)
+                                 NSPoint sourcePoint,
+                                 NSString *imagePath)
 {
   NSPoint    iconPoint = {0, 0};
   BOOL       iconFound = NO;
@@ -531,7 +511,6 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
   NSArray    *wmNameParts = [wmName componentsSeparatedByString:@"."];
   const char *wmInstance = [[wmNameParts objectAtIndex:0] cString];
   const char *wmClass = [[wmNameParts objectAtIndex:1] cString];
-  NSLock     *raceLock = nil;
 
   if (!raceLock) raceLock = [NSLock new];
   [raceLock lock];
@@ -543,12 +522,13 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
       if (!strcmp(appIcon->wm_instance, wmInstance) &&
           !strcmp(appIcon->wm_class, wmClass))
         {
-          iconPoint.x = appIcon->x_pos;
+          iconPoint.x = appIcon->x_pos + ((ICON_WIDTH - [anImage size].width)/2);
           iconPoint.y = wScreenWithNumber(0)->scr_height - appIcon->y_pos - 64;
+          iconPoint.y += (ICON_WIDTH - [anImage size].width)/2;
           [[NSApp delegate] slideImage:anImage
                                   from:sourcePoint
                                     to:iconPoint];
-          if (!appIcon->running)
+          if (!appIcon->running && !appIcon->launching && !appIcon->destroyed)
             {
               appIcon->launching = 1;
               wAppIconPaint(appIcon);
@@ -571,6 +551,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
       appIcon->icon->core->descriptor.handle_mousedown = NULL;
       appIcon->launching = 1;
       _AddLaunchingIcon(appIcon);
+      wIconChangeImageFile(appIcon->icon, [imagePath cString]);
       // NSLog(@"First icon in launching list for: %s.%s",
       //       launchingIcons->wm_instance, launchingIcons->wm_class);
 
@@ -771,7 +752,7 @@ void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
     {
       WWMDestroyLaunchingIcon(appIcon);
     }
-
+  
   if (!strcmp(wm_class,"GNUstep"))
     return;
 

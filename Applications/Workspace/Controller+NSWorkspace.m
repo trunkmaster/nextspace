@@ -612,7 +612,7 @@ static NSString		*_rootPath = @"/";
   if (![fm fileExistsAtPath:fullPath])
     {
       NXRunAlertPanel(_(@"Workspace"),
-                      _(@"File '%@' does not exists!"), 
+                      _(@"File '%@' does not exist!"), 
                       nil, nil, nil, [fullPath lastPathComponent]);
       return NO;
     }
@@ -627,40 +627,74 @@ static NSString		*_rootPath = @"/";
 
   NSLog(@"[Workspace] openFile: type '%@' with app: %@", fileType, appName);
   
-  if ([fileType isEqualToString:NSApplicationFileType]) // .app
-    {
-      NSString *wmName;
+  if ([fileType isEqualToString:NSApplicationFileType])
+    { // .app should be launched
+      NSString     *wmName;
+      NSBundle     *appBundle;
+      NSDictionary *appInfo;
+      NSString     *iconPath;
       
-      appName = [[fullPath lastPathComponent] stringByDeletingPathExtension];
+      appName = [fullPath lastPathComponent];
       
       // Don't launch ourself
       if ([appName isEqualToString:@"Workspace.app"])
         return YES;
 
-      wmName = [NSString stringWithFormat:@"%@.GNUstep", appName];
-      WWMCreateLaunchingIcon(wmName, anImage, point);
+      appBundle = [self bundleForApp:appName];
+      appInfo = [appBundle infoDictionary];
+      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
+                                     ofType:nil];
+      
+      wmName = [appInfo objectForKey:@"NSExecutable"];
+      if ([[wmName componentsSeparatedByString:@"."] count] == 1)
+        {
+          wmName = [NSString stringWithFormat:@"%@.GNUstep",
+                             [appName stringByDeletingPathExtension]];
+        }
+      WWMCreateLaunchingIcon(wmName, anImage, point, iconPath);
       
       if ([self launchApplication:fullPath] == NO)
         {
           NXRunAlertPanel(_(@"Workspace"),
                           _(@"Failed to start application \"%@\""), 
-                          nil, nil, nil, [fullPath lastPathComponent]);
+                          nil, nil, nil, appName);
           return NO;
         }
       return YES;
     }
-  else if ([[appName pathExtension] isEqualToString:@"app"])
-    {
-      NSString *wmName;
+  else if (appName)
+    { // .app found for opening file type
       
-      // TODO: get WMName from application's Info-gnustep.plist
-      wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                         [appName stringByDeletingPathExtension]];
-      WWMCreateLaunchingIcon(wmName, anImage, point);
+      NSBundle     *appBundle;
+      NSDictionary *appInfo;
+      NSString     *wmName;
+      NSString     *iconPath;
       
-      return [self openFile:fullPath
-                   withApplication:appName
-                   andDeactivate:YES];
+      appBundle = [self bundleForApp:appName];
+      if (appBundle)
+        {
+          appInfo = [appBundle infoDictionary];
+          iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
+                                         ofType:nil];
+      
+          wmName = [appInfo objectForKey:@"NSExecutable"];
+          if ([[wmName componentsSeparatedByString:@"."] count] == 1)
+            {
+              wmName = [NSString stringWithFormat:@"%@.GNUstep",
+                                 [appName stringByDeletingPathExtension]];
+            }
+      
+          WWMCreateLaunchingIcon(wmName, anImage, point, iconPath);
+        }
+      
+      if (![self openFile:fullPath withApplication:appName andDeactivate:YES])
+        {
+          NXRunAlertPanel(_(@"Workspace"),
+                          _(@"Failed to start application \"%@\" for file \"%@\""), 
+                          nil, nil, nil, appName, [fullPath lastPathComponent]);
+          return NO;
+        }
+      return YES;
     }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
            [fileType isEqualToString:NSFilesystemFileType] ||
@@ -672,8 +706,6 @@ static NSString		*_rootPath = @"/";
     }
   else // File
     {
-      [self slideImage:anImage from:point to:destPoint];
-
       return [self openFile:fullPath
                    withApplication:appName
                    andDeactivate:YES];
