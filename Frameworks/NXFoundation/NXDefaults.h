@@ -52,6 +52,7 @@ extern NSString* const NXUserDefaultsDidChangeNotification;
     ~/Library/Preferences/.NextSpace/NXGlobalDomain */
 - (NXDefaults *)initWithGlobalUserDefaults;
 
+- (NXDefaults *)reload;
 - (BOOL)synchronize;
 
 - (id)objectForKey:(NSString *)key;

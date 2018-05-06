@@ -147,29 +147,20 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
 
 - (BOOL)isShowHiddenFiles
 {
-  NXDefaults *defs;
-
-  defs = [[[NXDefaults alloc] initWithGlobalUserDefaults] autorelease];
-  
-  return [defs boolForKey:ShowHiddenFiles];
+  return [[[NXDefaults globalUserDefaults] reload] boolForKey:ShowHiddenFiles];
 }
 - (void)setShowHiddenFiles:(BOOL)yn
 {
-  NXDefaults *defs;
-
-  defs = [[[NXDefaults alloc] initWithGlobalUserDefaults] autorelease];
+  NXDefaults *defs = [[NXDefaults globalUserDefaults] reload];
   
   [defs setBool:yn forKey:ShowHiddenFiles];
+  [defs synchronize];
 }
 - (NXSortType)sortFilesBy
 {
-  NSInteger  type;
-  NXDefaults *defs;
+  NXDefaults *defs = [[NXDefaults globalUserDefaults] reload];
+  NSInteger  type = [defs integerForKey:SortFilesBy];
 
-  defs = [[[NXDefaults alloc] initWithGlobalUserDefaults] autorelease];
-
-  type = [defs integerForKey:SortFilesBy];
-  
   if (type == -1)
     type = NXSortByKind;
   
@@ -178,11 +169,10 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
 
 - (void)setSortFilesBy:(NXSortType)type
 {
-  NXDefaults *defs;
-
-  defs = [[[NXDefaults alloc] initWithGlobalUserDefaults] autorelease];
+  NXDefaults *defs = [[NXDefaults globalUserDefaults] reload];
 
   [defs setInteger:type forKey:SortFilesBy];
+  [defs synchronize];
 }
 
 // --- Directory contents (obsolete)
