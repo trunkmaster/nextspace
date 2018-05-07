@@ -349,6 +349,37 @@ NSDictionary *WWMDockState(void)
   return wmstateDict;
 }
 
+NSImage *WWMImageForDockedApp(NSInteger row)
+{
+  WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[row];
+  NSImage  *icon = nil;
+  
+  if (btn->icon->file_image)
+    {
+      RImage           *image = btn->icon->file_image;
+      NSBitmapImageRep *rep = nil;
+
+      icon = [[NSImage alloc] init];
+
+      rep = [[NSBitmapImageRep alloc]
+               initWithBitmapDataPlanes:&image->data
+                             pixelsWide:image->width
+                             pixelsHigh:image->height
+                          bitsPerSample:8
+                        samplesPerPixel:(image->format == RRGBAFormat) ? 4 : 3
+                               hasAlpha:(image->format == RRGBAFormat) ? YES : NO
+                               isPlanar:NO
+                         colorSpaceName:NSDeviceRGBColorSpace
+                            bytesPerRow:0
+                           bitsPerPixel:0];
+      [icon addRepresentation:rep];
+      [rep release];
+      
+      [icon autorelease];
+    }
+  return icon;
+}
+
 // --- Save and Load
 
 // Returns resolution-dependant dictionary key for Dock state

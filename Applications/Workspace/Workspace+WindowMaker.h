@@ -52,6 +52,7 @@ BOOL useInternalWindowManager;
 NSString     *WWMDockStateCheck(void);
 void         WWMDockStateLoad(void);
 NSDictionary *WWMDockState(void);
+NSImage      *WWMImageForDockedApp(NSInteger row);
 
 NSString *WWMStateDockAppsKey();
 NSArray  *WWMStateDockAppsLoad(void);
