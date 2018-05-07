@@ -634,13 +634,12 @@ static NSString		*_rootPath = @"/";
       NSDictionary *appInfo;
       NSString     *iconPath;
       
-      appName = [fullPath lastPathComponent];
-      
-      // Don't launch ourself
-      if ([appName isEqualToString:@"Workspace.app"])
+      // Don't launch ourself and Login panel
+      if ([appName isEqualToString:@"Workspace"] ||
+          [appName isEqualToString:@"Login"])
         return YES;
 
-      appBundle = [self bundleForApp:appName];
+      appBundle = [[NSBundle alloc] initWithPath:fullPath];
       appInfo = [appBundle infoDictionary];
       iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
                                      ofType:nil];
@@ -649,7 +648,7 @@ static NSString		*_rootPath = @"/";
       if ([[wmName componentsSeparatedByString:@"."] count] == 1)
         {
           wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                             [appName stringByDeletingPathExtension]];
+                             [wmName stringByDeletingPathExtension]];
         }
       WWMCreateLaunchingIcon(wmName, anImage, point, iconPath);
       
