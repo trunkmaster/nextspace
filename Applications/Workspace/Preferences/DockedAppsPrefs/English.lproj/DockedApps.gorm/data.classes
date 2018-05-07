@@ -1,3 +1,30 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    DockedAppsPrefs = {
+	Actions = (
+	    "setAppShowSingle:",
+	    "setAppAutostarted:",
+	    "setAppLocked:"
+	);
+	Outlets = (
+	    appList,
+	    appNameField,
+	    appPathField,
+	    appiconBtn,
+	    autostartBtn,
+	    window,
+	    lockedBtn,
+	    box,
+	    showOnHiddenDockBtn
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setAppShowSingle:",
+	    "setAppAutostarted:",
+	    "setAppLocked:"
+	);
+	Super = NSObject;
+    };
 }
