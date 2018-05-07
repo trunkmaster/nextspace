@@ -1,5 +1,5 @@
 /*
-   "Docked Applications" preferences.
+   "Dock" preferences.
 
    Copyright (C) 2018 Sergii Stoian
 
@@ -18,15 +18,15 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import "DockedAppsPrefs.h"
+#import "DockPrefs.h"
 #import <NXFoundation/NXDefaults.h>
 #import <Workspace+WindowMaker.h>
 
-@implementation DockedAppsPrefs
+@implementation DockPrefs
 
 - (void)dealloc
 {
-  NSDebugLLog(@"DockedAppsPrefs", @"DockedAppsPrefs: dealloc");
+  NSDebugLLog(@"DockPrefs", @"DockPrefs: dealloc");
 
   TEST_RELEASE(box);
 
@@ -51,8 +51,6 @@
   [appList deselectAll:self];
   [appList setTarget:self];
   [appList setAction:@selector(appListClicked:)];
-
-  [appList reloadData];
 }
 
 - (NSString *)moduleName
@@ -64,7 +62,7 @@
 {
   if (box == nil)
     {
-      [NSBundle loadNibNamed:@"DockedAppsPrefs" owner:self];
+      [NSBundle loadNibNamed:@"DockPrefs" owner:self];
     }
 
   return box;
@@ -73,6 +71,10 @@
 //
 // Table delegate methods
 //
+- (void)appListClicked:(id)sender
+{
+}
+
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
   if (!dockState)
@@ -89,71 +91,48 @@
   
   if (tc == [appList tableColumnWithIdentifier:@"autostart"])
     {
-      if ([[dockItem objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"] ||
-          [[dockItem objectForKey:@"Name"] isEqualToString:@"Workspace.GNUstep"])
-        return [NSImage imageNamed:@"CheckMark"];
+      if ([[dockItem objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"])
+        {
+          return [NSImage imageNamed:@"commonSwitchOn"];
+        }
       else
-        return nil;
+        {
+          return [NSImage imageNamed:@"commonSwitchOff"];
+        }
     }
   else
     {
-      NSString *appName = [dockItem objectForKey:@"Name"];
-
-      if ([[appName pathExtension] isEqualToString:@"GNUstep"])
-        appName = [appName stringByDeletingPathExtension];
-      else
-        appName = [appName pathExtension];
-      
-      if ([appName isEqualToString:@"Workspace"])
-        {
-          [[tc dataCellForRow:row] setEnabled:NO];
-        }
-      else
-        {
-          [[tc dataCellForRow:row] setEnabled:YES];
-        }
-      
-      return appName;
+      return [dockItem objectForKey:@"Name"];
     }
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-  NSTableView  *tv = [aNotification object];
-  NSInteger    selRow = [tv selectedRow];
-  NSDictionary *dockItem = [dockState objectAtIndex:selRow];
-  NSString     *appName = [dockItem objectForKey:@"Name"];
+  NSTableView *tv = [aNotification object];
 
-  if ([[appName pathExtension] isEqualToString:@"GNUstep"])
-    appName = [appName stringByDeletingPathExtension];
-  else
-    appName = [appName pathExtension];
+  NSLog(@"Selection Did Change: %@", [tv className]);
   
-  [appNameField setStringValue:appName];
- 
-  if ([appName isEqualToString:@"Workspace"])
-    {
-      [appiconBtn setImage:[NSApp applicationIconImage]];
-      [appPathField setStringValue:@"/usr/NextSpace/Apps/Workspace.app"];
-      [autostartBtn setState:NSOnState];
-      [lockedBtn setState:NSOnState];
-    }
-  else
-    {
-      [appiconBtn setImage:WWMImageForDockedApp(selRow)];
-      [appPathField setStringValue:[dockItem objectForKey:@"Command"]];
-      [autostartBtn
-        setState:([[dockItem objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"]) ? NSOnState : NSOffState];
-      [lockedBtn
-        setState:([[dockItem objectForKey:@"Lock"] isEqualToString:@"Yes"]) ? NSOnState : NSOffState];
-    }
+  // if (tv == layoutList)
+  //   {
+  //     NSInteger selRow = [tv selectedRow];
+  
+  //     [layoutRemoveBtn setEnabled:[tv numberOfRows] > 1 ? YES : NO];
+  //     [layoutUpBtn setEnabled:(selRow == 0) ? NO : YES];
+  //     [layoutDownBtn setEnabled:(selRow == [tv numberOfRows]-1) ? NO : YES];
+  //   }
 }
 
 // --- Button
 
 - (void)revert:sender
 {
-  [appList reloadData];
+//   [sender setEnabled:NO];
+//   [[NXDefaults userDefaults] removeObjectForKey:BrowserViewerColumnWidth];
+//   [[NSNotificationCenter defaultCenter]
+//     postNotificationName:BrowserViewerColumnWidthDidChangeNotification
+// 		  object:self];
+
+//   [self setupArrows];
 }
 
 @end
