@@ -53,6 +53,7 @@
   [appList setAction:@selector(appListClicked:)];
 
   [appList reloadData];
+  [appList selectRow:0 byExtendingSelection:NO];
 }
 
 - (NSString *)moduleName
@@ -153,7 +154,14 @@
 
 - (void)revert:sender
 {
+  NSInteger selRow = [appList selectedRow];
+  
   [appList reloadData];
+
+  if (selRow > [appList numberOfRows]-1)
+    [appList selectRow:0 byExtendingSelection:NO];
+  else
+    [appList selectRow:selRow byExtendingSelection:NO];
 }
 
 @end
