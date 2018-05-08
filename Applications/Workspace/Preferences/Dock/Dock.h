@@ -23,7 +23,7 @@
 
 #import <Protocols/PrefsModule.h>
 
-@interface DockedAppsPrefs : NSObject <PrefsModule>
+@interface DockPrefs : NSObject <PrefsModule>
 {
   id    window;
   id	box;

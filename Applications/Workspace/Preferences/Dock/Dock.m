@@ -18,15 +18,15 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import "DockedAppsPrefs.h"
+#import "DockPrefs.h"
 #import <NXFoundation/NXDefaults.h>
 #import <Workspace+WindowMaker.h>
 
-@implementation DockedAppsPrefs
+@implementation DockPrefs
 
 - (void)dealloc
 {
-  NSDebugLLog(@"DockedAppsPrefs", @"DockedAppsPrefs: dealloc");
+  NSDebugLLog(@"DockPrefs", @"DockPrefs: dealloc");
 
   TEST_RELEASE(box);
 
@@ -64,7 +64,7 @@
 {
   if (box == nil)
     {
-      [NSBundle loadNibNamed:@"DockedAppsPrefs" owner:self];
+      [NSBundle loadNibNamed:@"DockPrefs" owner:self];
     }
 
   return box;
