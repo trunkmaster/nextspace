@@ -27,7 +27,7 @@
 #import <NXAppKit/NXUtilities.h>
 
 #import <Workspace.h>
-#import <Preferences/BrowserPrefs/BrowserPrefs.h>
+#import <Preferences/Browser/BrowserPrefs.h>
 
 #import "BrowserViewer.h"
 
