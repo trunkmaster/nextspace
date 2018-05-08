@@ -49,8 +49,8 @@
 #import <Operations/FileMover.h>
 #import <Operations/Sizer.h>
 
-#import <Preferences/ShelfPrefs/ShelfPrefs.h>
-#import <Preferences/BrowserPrefs/BrowserPrefs.h>
+#import <Preferences/Shelf/ShelfPrefs.h>
+#import <Preferences/Browser/BrowserPrefs.h>
 
 #define NOTIFICATION_CENTER [NSNotificationCenter defaultCenter]
 #define WIN_MIN_HEIGHT 380

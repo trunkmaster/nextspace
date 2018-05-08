@@ -1,7 +1,7 @@
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-BUNDLE_NAME=BrowserPrefs
+BUNDLE_NAME=Browser
 BUNDLE_EXTENSION=.wsprefs
 
 $(BUNDLE_NAME)_OBJC_FILES=$(wildcard *.m)

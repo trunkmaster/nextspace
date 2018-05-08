@@ -1,7 +1,7 @@
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-BUNDLE_NAME=IconPrefs
+BUNDLE_NAME=Shelf
 BUNDLE_EXTENSION=.wsprefs
 
 $(BUNDLE_NAME)_OBJC_FILES=$(wildcard *.m)
