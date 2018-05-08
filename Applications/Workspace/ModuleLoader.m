@@ -43,7 +43,7 @@
   ASSIGN(viewerBundles,
          [ld loadBundlesOfType:@"viewer"
                       protocol:@protocol(Viewer)
-                   inDirectory:[[NSBundle mainBundle] bundlePath]]); 
+                   inDirectory:[[NSBundle mainBundle] bundlePath]]);
 }
 
 - (void)loadPreferences

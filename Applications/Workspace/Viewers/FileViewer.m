@@ -2258,6 +2258,7 @@
   NSImage        *image;
   NSString       *filePath;
   NSMutableArray *extensions;
+  NSString	 *ext;
 
   // "Return" key press in *Viewer, File->Open menu item, double click
   if (![sender isKindOfClass:[PathIcon class]] || 
@@ -2269,10 +2270,12 @@
   // For multiple files:
   // For each type call openFile:fromImage:at:inView with 'image' for first
   // file in list (flying icon) and 'nil' for the rest (no flying icon).
-  extensions = [NSMutableArray new];
+  extensions = [[NSMutableArray new] autorelease];
   for (filePath in [sender paths])
     {
-      if ([extensions containsObject:[filePath pathExtension]] == NO)
+      ext = [filePath pathExtension];
+      if ([ext isEqualToString:@"app"] == YES ||
+          [extensions containsObject:ext] == NO)
         {
           [extensions addObject:[filePath pathExtension]];
           image = [[NSApp delegate] iconForFile:filePath];
@@ -2290,8 +2293,6 @@
           break;
         }
     }
-
-  [extensions release];
 }
 
 - (void)openAsFolder:(id)sender
