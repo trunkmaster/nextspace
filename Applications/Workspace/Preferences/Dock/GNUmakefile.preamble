@@ -16,6 +16,7 @@ ADDITIONAL_LDFLAGS +=
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I../.. -I../../WindowMaker/src
+ADDITIONAL_INCLUDE_DIRS += -I../../WindowMaker/wrlib -I../../WindowMaker/WINGs
 
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += 

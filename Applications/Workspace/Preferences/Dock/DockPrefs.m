@@ -1,5 +1,5 @@
 /*
-   "Docked Applications" preferences.
+   "Dock" preferences.
 
    Copyright (C) 2018 Sergii Stoian
 
@@ -57,7 +57,7 @@
 
 - (NSString *)moduleName
 {
-  return _(@"Docked Applications");
+  return _(@"Dock");
 }
 
 - (NSView *)view

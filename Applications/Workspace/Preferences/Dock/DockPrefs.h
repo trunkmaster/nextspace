@@ -1,5 +1,5 @@
 /*
-   "Docked Applications" preferences.
+   "Dock" preferences.
 
    Copyright (C) 2018 Sergii Stoian
 
