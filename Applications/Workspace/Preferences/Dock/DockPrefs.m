@@ -1,5 +1,6 @@
 /*
    "Dock" preferences.
+   Manipulates with options of on-screen Dock and saves its state.
 
    Copyright (C) 2018 Sergii Stoian
 
@@ -43,17 +44,22 @@
   [showOnHiddenDockBtn setRefusesFirstResponder:YES];
   [autostartBtn setRefusesFirstResponder:YES];
   [lockedBtn setRefusesFirstResponder:YES];
-  [appiconBtn setRefusesFirstResponder:YES];
+  [iconBtn setRefusesFirstResponder:YES];
+  [iconBtn setButtonType:NSMomentaryLightButton];
 
   [appList setHeaderView:nil];
   [appList setDelegate:self];
   [appList setDataSource:self];
   [appList deselectAll:self];
   [appList setTarget:self];
-  [appList setAction:@selector(appListClicked:)];
+  [appList setDoubleAction:@selector(appListDoubleClicked:)];
+  [appList setRefusesFirstResponder:YES];
 
   [appList reloadData];
   [appList selectRow:0 byExtendingSelection:NO];
+
+  [appIconBtn setRefusesFirstResponder:YES];
+
 }
 
 - (NSString *)moduleName
@@ -76,30 +82,29 @@
 //
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
-  if (!dockState)
-    dockState = WWMStateDockAppsLoad();
-  
-  return [dockState count];
+  return WWMDockAppsCount();
 }
 
 - (id)           tableView:(NSTableView *)tv
  objectValueForTableColumn:(NSTableColumn *)tc
                        row:(int)row
 {
-  NSDictionary *dockItem = [dockState objectAtIndex:row];
+  NSString *appName = WWMDockAppName(row);
+
   
   if (tc == [appList tableColumnWithIdentifier:@"autostart"])
     {
-      if ([[dockItem objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"] ||
-          [[dockItem objectForKey:@"Name"] isEqualToString:@"Workspace.GNUstep"])
+      if (WWMIsDockAppAutolaunch(row) ||
+          [appName isEqualToString:@"Workspace.GNUstep"])
         return [NSImage imageNamed:@"CheckMark"];
       else
         return nil;
+
+      if ([appName isEqualToString:@"Workspace.GNUstep"])
+        [[tc dataCellForRow:row] setEnabled:NO];
     }
   else
     {
-      NSString *appName = [dockItem objectForKey:@"Name"];
-
       if ([[appName pathExtension] isEqualToString:@"GNUstep"])
         appName = [appName stringByDeletingPathExtension];
       else
@@ -122,35 +127,74 @@
 {
   NSTableView  *tv = [aNotification object];
   NSInteger    selRow = [tv selectedRow];
-  NSDictionary *dockItem = [dockState objectAtIndex:selRow];
-  NSString     *appName = [dockItem objectForKey:@"Name"];
+  NSString     *appName = WWMDockAppName(selRow);
 
   if ([[appName pathExtension] isEqualToString:@"GNUstep"])
     appName = [appName stringByDeletingPathExtension];
   else
     appName = [appName pathExtension];
   
-  [appNameField setStringValue:appName];
+  [nameField setStringValue:appName];
  
   if ([appName isEqualToString:@"Workspace"])
     {
-      [appiconBtn setImage:[NSApp applicationIconImage]];
-      [appPathField setStringValue:@"/usr/NextSpace/Apps/Workspace.app"];
+      [autostartBtn setEnabled:NO];
+      [lockedBtn setEnabled:NO];
+      
+      [iconBtn setImage:[NSApp applicationIconImage]];
+      [pathField setStringValue:@""];
+      [autostartBtn setState:NSOnState];
       [autostartBtn setState:NSOnState];
       [lockedBtn setState:NSOnState];
     }
   else
     {
-      [appiconBtn setImage:WWMImageForDockedApp(selRow)];
-      [appPathField setStringValue:[dockItem objectForKey:@"Command"]];
+      [autostartBtn setEnabled:YES];
+      [lockedBtn setEnabled:YES];
+      
+      [iconBtn setImage:WWMDockAppImage(selRow)];
+      [pathField setStringValue:WWMDockAppCommand(selRow)];
       [autostartBtn
-        setState:([[dockItem objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"]) ? NSOnState : NSOffState];
+        setState:WWMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
       [lockedBtn
-        setState:([[dockItem objectForKey:@"Lock"] isEqualToString:@"Yes"]) ? NSOnState : NSOffState];
+        setState:WWMIsDockAppLocked(selRow) ? NSOnState : NSOffState];
     }
+
+  if ([appPanel isVisible])
+    [self appSettingsPanelUpdate];
+}
+
+- (BOOL)tableView:(NSTableView *)tv
+  shouldSelectRow:(NSInteger)row
+{
+  NSString *value = WWMDockAppName(row);
+
+  if (!value || [value isEqualToString:@".NoApplication"])
+    return NO;
+
+  return YES;
+}
+
+- (void)appListDoubleClicked:(id)sender
+{
+  WWMSetDockAppAutolaunch([appList selectedRow], ![autostartBtn state]);
+  
+  [autostartBtn setState:![autostartBtn state]];
+  [appList reloadData];
 }
 
 // --- Button
+
+- (void)setAppAutostarted:(id)sender
+{
+  WWMSetDockAppAutolaunch([appList selectedRow], [autostartBtn state]);
+  [appList reloadData];
+}
+
+- (void)setAppLocked:(id)sender
+{
+  WWMSetDockAppLocked([appList selectedRow], [lockedBtn state]);
+}
 
 - (void)revert:sender
 {
@@ -162,6 +206,58 @@
     [appList selectRow:0 byExtendingSelection:NO];
   else
     [appList selectRow:selRow byExtendingSelection:NO];
+}
+
+@end
+
+@implementation DockPrefs (AppSettings)
+
+- (void)appSettingsPanelUpdate
+{
+  NSInteger selRow = [appList selectedRow];
+  NSString  *appName = WWMDockAppName(selRow);
+
+  if ([[appName pathExtension] isEqualToString:@"GNUstep"])
+    {
+      [appMiddleClickField setEnabled:NO];
+      [appDndCommandField setEnabled:NO];
+    }
+  else
+    {
+      [appMiddleClickField setEnabled:YES];
+      [appDndCommandField setEnabled:YES];
+    }
+  
+  [appNameField setStringValue:appName];
+  [appIconBtn setImage:WWMDockAppImage(selRow)];
+  [appCommandField setStringValue:WWMDockAppCommand(selRow)];
+}
+
+- (void)showAppSettingsPanel:(id)sender
+{
+  NSString  *appName = WWMDockAppName([appList selectedRow]);
+
+  if (!appName ||
+      [appName isEqualToString:@"Workspace.GNUstep"] ||
+      [appName isEqualToString:@"Recycler.GNUstep"])
+    return;
+  
+  [self appSettingsPanelUpdate];
+  
+  [appPanel makeKeyAndOrderFront:[iconBtn window]];
+  [appPanel makeFirstResponder:appCommandField];
+}
+
+- (void)setAppCommand:(id)sender
+{
+}
+
+- (void)setAppMiddleClick:(id)sender
+{
+}
+
+- (void)setDndCommand:(id)sender
+{
 }
 
 @end

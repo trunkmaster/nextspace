@@ -25,19 +25,31 @@
 
 @interface DockPrefs : NSObject <PrefsModule>
 {
-  id    window;
-  id	box;
-  id    appList;
-  id    appNameField;
-  id    appPathField;
-  id	appiconBtn;
-  id	autostartBtn;
-  id	showOnHiddenDockBtn;
-  id	lockedBtn;
-
-  NSArray *dockState;
+  // Dock
+  id window;
+  id box;
+  id iconBtn;
+  id nameField;
+  id appList;
+  id pathField;
+  id autostartBtn;
+  id lockedBtn;
+  id showOnHiddenDockBtn;
+  // Application
+  id appPanel;
+  id appIconBtn;
+  id appNameField;
+  id appCommandField;
+  id appMiddleClickField;
+  id appDndCommandField;
 }
 
 - (void)revert:sender;
+
+@end
+
+@interface DockPrefs (AppSettings)
+
+- (void)appSettingsPanelUpdate;
 
 @end
