@@ -49,15 +49,24 @@ BOOL useInternalWindowManager;
 
 //--- Login related activities
 // -- Should be called from already existing @autoreleasepool ---
-NSString     *WWMDockStateCheck(void);
-void         WWMDockStateLoad(void);
-NSDictionary *WWMDockState(void);
-NSImage      *WWMImageForDockedApp(NSInteger row);
 
-NSString *WWMStateDockAppsKey();
-NSArray  *WWMStateDockAppsLoad(void);
-void      WWMStateDockAppsSave(NSArray *dockIcons);
-NSArray  *WWMStateAutostartApps(void);
+void WWMDockStateInit(void);
+void WWMDockShowIcons(WDock *dock);
+
+NSInteger WWMDockAppsCount();
+BOOL      WWMIsDockAppAutolaunch(int position);
+void      WWMSetDockAppAutolaunch(int position, BOOL autolaunch);
+BOOL      WWMIsDockAppLocked(int position);
+void      WWMSetDockAppLocked(int position, BOOL lock);
+NSString  *WWMDockAppName(int position);
+NSImage   *WWMDockAppImage(int position);
+NSString  *WWMDockAppCommand(int position);
+
+NSString     *WWMDockStatePath(void);
+NSString     *WWMDockStateAppsKey();
+NSArray      *WWMDockStateApps(void);
+NSArray      *WWMStateAutostartApps(void);
+NSDictionary *WWMDockState(void);
 
 WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
                                  NSPoint sourcePoint,

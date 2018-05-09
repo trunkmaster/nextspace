@@ -149,7 +149,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
 
   @autoreleasepool {
     // Check WMState user file (Dock state)
-    if (WWMDockStateCheck() == nil)
+    if (WWMDockStatePath() == nil)
       {
         NSLog(@"[Workspace] Dock contents cannot be restored."
               " Show only Workspace application icon.");
@@ -164,7 +164,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   // Just load saved Dock state without icons drawing.
   // Dock appears on screen after call to WWMDockShowIcons in
   // Controller's -applicationDidFinishLaunching method.
-  WWMDockStateLoad();
+  WWMDockStateInit();
   
   //--- Below this point WindowMaker was initialized
 
@@ -266,7 +266,7 @@ void WWMSetupSignalHandling(void)
 // --- Dock
 // ----------------------------
 
-void WWMDockStateLoad(void)
+void WWMDockStateInit(void)
 {
   WMPropList *state;
   WAppIcon *btn;
@@ -314,7 +314,7 @@ void WWMDockShowIcons(WDock *dock)
 // Returns path to user WMState if exist.
 // Returns 'nil' if user WMState doesn't exist and cannot
 // be recovered from Workspace.app/WindowMaker directory.
-NSString *WWMDockStateCheck(void)
+NSString *WWMDockStatePath(void)
 {
   NSString      *userDefPath, *appDefPath;
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -338,27 +338,125 @@ NSString *WWMDockStateCheck(void)
   return userDefPath;
 }
 
-// Returns NSDictionary representation of WMState file
-NSDictionary *WWMDockState(void)
+// Saves dock on-screen state 
+void WWMDockStateSave(void)
 {
-  NSDictionary *wmstateDict;
+  WScreen    *scr = NULL;
+  WMPropList *old_state = NULL;
 
-  wmstateDict = [[NSDictionary alloc]
-                  initWithContentsOfFile:WWMDockStateCheck()];
-
-  return wmstateDict;
+  for (int i = 0; i < w_global.screen_count; i++)
+    {
+      scr = wScreenWithNumber(i);
+      wScreenSaveState(scr);
+      // old_state = scr->session_state;
+      // scr->session_state = WMCreatePLDictionary(NULL, NULL);
+      
+      // wDockSaveState(scr, old_state);
+      // WMReleasePropList(old_state);
+      // wDockSaveState(scr, scr->session_state);
+    }
 }
 
-NSImage *WWMImageForDockedApp(NSInteger row)
+// --- Appicons getters/setters of on-screen Dock
+
+NSInteger WWMDockAppsCount()
 {
-  WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[row];
-  NSImage  *icon = nil;
+  WScreen *scr = wScreenWithNumber(XDefaultScreen(dpy));
+  WDock   *dock = scr->dock;
+
+  if (!dock)
+    return 0;
+  else
+    return dock->max_icons;
+    // return dock->icon_count;
+}
+
+WAppIcon *_appiconInDockPosition(int position)
+{
+  WScreen  *scr = wScreenWithNumber(XDefaultScreen(dpy));
+  WDock    *dock = scr->dock;
+
+  if (!dock || position > dock->max_icons-1)
+    return NULL;
+
+  for (int i=0; i < dock->max_icons; i++)
+    {
+      if (!dock->icon_array[i])
+        continue;
+      
+      if (dock->icon_array[i]->yindex == position)
+        return dock->icon_array[i];
+    }
   
-  if (btn->icon->file_image)
+  return NULL;
+}
+
+BOOL WWMIsDockAppAutolaunch(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (!appicon || appicon->auto_launch == 0)
+    return NO;
+  else
+    return YES;
+}
+
+void WWMSetDockAppAutolaunch(int position, BOOL autolaunch)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (appicon)
+    {
+      appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
+      WWMDockStateSave();
+    }
+}
+
+
+BOOL WWMIsDockAppLocked(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (!appicon || appicon->lock == 0)
+    return NO;
+  else
+    return YES;
+}
+
+void WWMSetDockAppLocked(int position, BOOL lock)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (appicon)
+    {
+      appicon->lock = (lock == YES) ? 1 : 0;
+      WWMDockStateSave();
+    }
+}
+
+NSString *WWMDockAppName(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+
+  if (appicon)
+    return [NSString stringWithFormat:@"%s.%s",
+                     appicon->wm_instance, appicon->wm_class];
+  else
+    return @".NoApplication";
+}
+
+NSImage *WWMDockAppImage(int position)
+{
+  WAppIcon *btn = _appiconInDockPosition(position);
+  NSImage  *icon = nil;
+
+  if (btn && btn->icon && btn->icon->file_image)
     {
       RImage           *image = btn->icon->file_image;
       NSBitmapImageRep *rep = nil;
 
+      NSLog(@"W+W: icon image file: %s", btn->icon->file);
+  
       icon = [[NSImage alloc] init];
 
       rep = [[NSBitmapImageRep alloc]
@@ -380,10 +478,30 @@ NSImage *WWMImageForDockedApp(NSInteger row)
   return icon;
 }
 
-// --- Save and Load
+// TODO: write to WindowMaker 'WMWindowAttributes' file
+void WWMSetDockAppImage(NSString *path)
+{
+}
 
-// Returns resolution-dependant dictionary key for Dock state
-NSString *WWMStateDockAppsKey(void)
+NSString *WWMDockAppCommand(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+
+  if (appicon)
+    return [NSString stringWithCString:appicon->command];
+  else
+    return nil;
+}
+
+// TODO
+void WWMSetDockAppCommand(NSString *path)
+{
+}
+// --- Misc
+
+// Returns resolution-dependant dictionary key for Dock state.
+// If not found return "Applications".
+NSString *WWMDockStateAppsKey(void)
 {
   NSArray  *dockApps;
   NSString *appsKey;
@@ -400,29 +518,28 @@ NSString *WWMStateDockAppsKey(void)
   return appsKey;
 }
 
-NSArray *WWMStateDockAppsLoad(void)
+NSArray *WWMDockStateApps(void)
 {
   return [[WWMDockState() objectForKey:@"Dock"]
-           objectForKey:WWMStateDockAppsKey()];
+           objectForKey:WWMDockStateAppsKey()];
 }
 
-void WWMStateDockAppsSave(NSArray *dockIcons)
-{
-  NSMutableDictionary *wmstateDict = [WWMDockState() mutableCopy];
-  NSString            *filePath;
+// void WWMDockStateAppsSave(NSArray *dockIcons)
+// {
+//   NSMutableDictionary *wmState = [WWMDockState() mutableCopy];
+//   NSString            *filePath;
       
-  [wmstateDict setObject:dockIcons forKey:WWMStateDockAppsKey()];
-  if ((filePath = WWMDockStateCheck()))
-    {
-      [wmstateDict writeToFile:filePath atomically:YES];
-    }
-}
-
-// --- Autostart
+//   [wmState setObject:dockIcons forKey:WWMDockStateAppsKey()];
+//   if ((filePath = WWMDockStatePath()))
+//     {
+//       [wmState writeToFile:filePath atomically:YES];
+//     }
+//   [wmState release];
+// }
 
 NSArray *WWMStateAutostartApps(void)
 {
-  NSArray        *dockIcons = WWMStateDockAppsLoad();
+  NSArray        *dockIcons = WWMDockStateApps();
   NSDictionary   *dIcon;
   NSMutableArray *autostartList = [NSMutableArray new];
 
@@ -435,6 +552,18 @@ NSArray *WWMStateAutostartApps(void)
     }
   return autostartList;
 }
+
+// Returns NSDictionary representation of WMState file
+NSDictionary *WWMDockState(void)
+{
+  NSDictionary *wmState;
+
+  wmState = [[NSDictionary alloc] initWithContentsOfFile:WWMDockStatePath()];
+
+  return [wmState autorelease];
+}
+
+// --- Launching appicons
 
 // It is array of pointers to WAppIcon.
 // These pointers also placed into WScreen->app_icon_list.

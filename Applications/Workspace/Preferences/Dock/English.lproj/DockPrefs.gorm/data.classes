@@ -1,29 +1,47 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
-    DockedAppsPrefs = {
+    DockPrefs = {
 	Actions = (
 	    "setAppShowSingle:",
 	    "setAppAutostarted:",
-	    "setAppLocked:"
+	    "setAppLocked:",
+	    "setIcon:",
+	    "showAppSettingsPanel:",
+	    "setAppIcon:",
+	    "setAppCommand:",
+	    "setAppDndCommand:",
+	    "setAppMiddleClick:"
 	);
 	Outlets = (
 	    appList,
-	    appNameField,
-	    appPathField,
-	    appiconBtn,
+	    nameField,
+	    pathField,
+	    iconBtn,
 	    autostartBtn,
 	    window,
 	    lockedBtn,
 	    box,
-	    showOnHiddenDockBtn
+	    showOnHiddenDockBtn,
+	    appCommandField,
+	    appDndCommandField,
+	    appIconBtn,
+	    appMiddleClickField,
+	    appPanel,
+	    appNameField
 	);
 	Super = NSObject;
     };
     FirstResponder = {
 	Actions = (
-	    "setAppShowSingle:",
 	    "setAppAutostarted:",
-	    "setAppLocked:"
+	    "setAppCommand:",
+	    "setAppDndCommand:",
+	    "setAppIcon:",
+	    "setAppLocked:",
+	    "setAppMiddleClick:",
+	    "setAppShowSingle:",
+	    "setIcon:",
+	    "showAppSettingsPanel:"
 	);
 	Super = NSObject;
     };
