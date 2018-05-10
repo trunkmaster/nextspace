@@ -114,7 +114,7 @@ NSString *fullPathForCommand(NSString *command)
 // WindowMaker releated functions: call WindowMaker functions, change
 // WindowMaker behaviour, change WindowMaker runtime variables.
 // 'WWM' prefix is a vector of calls 'Workspace->WindowMaker'
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void WWMInitializeWindowMaker(int argc, char **argv)
 {
@@ -262,10 +262,88 @@ void WWMSetupSignalHandling(void)
   // signal(SIGUSR2, SIG_DFL); // WindowMaker reread defaults - OK
 }
 
+// --- Logout
+void WWMWipeDesktop(WScreen * scr)
+{
+  Window       rootWindow, parentWindow;
+  Window       *childrenWindows;
+  unsigned int nChildrens, i;
+  WWindow      *wwin;
+  WApplication *wapp;
+    
+  XQueryTree(dpy, DefaultRootWindow(dpy),
+             &rootWindow, &parentWindow,
+             &childrenWindows, &nChildrens);
+    
+  for (i=0; i < nChildrens; i++)
+    {
+      wapp = wApplicationOf(childrenWindows[i]);
+      if (wapp)
+        {
+          wwin = wapp->main_window_desc;
+          if (!strcmp(wwin->wm_class, "GNUstep"))
+            {
+              continue;
+            }
+          else
+            {
+              if (wwin->protocols.DELETE_WINDOW)
+                {
+                  wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
+                                      w_global.timestamp.last_event);
+                }
+              else
+                {
+                  wClientKill(wwin);
+                }
+            }
+        }
+    }
+
+  XSync(dpy, False);
+}
+
+void WWMShutdown(WShutdownMode mode)
+{
+  int i;
+
+  fprintf(stderr, "*** Shutting down Window Manager...\n");
+  
+  for (i = 0; i < w_global.screen_count; i++)
+    {
+      WScreen *scr;
+
+      scr = wScreenWithNumber(i);
+      if (scr)
+        {
+          if (scr->helper_pid)
+            {
+              kill(scr->helper_pid, SIGKILL);
+            }
+
+          wScreenSaveState(scr);
+
+          if (mode == WSKillMode)
+            WWMWipeDesktop(scr);
+          else
+            RestoreDesktop(scr);
+        }
+      wNETWMCleanup(scr); // Delete _NET_* Atoms
+    }
+  // ExecExitScript();
+
+  if (launchingIcons) free(launchingIcons);
+  
+  RShutdown(); /* wrlib clean exit */
+  wutil_shutdown();  /* WUtil clean-up */
+}
+
+
 // ----------------------------
 // --- Dock
 // ----------------------------
 
+// --- Login
 void WWMDockStateInit(void)
 {
   WMPropList *state;
@@ -287,6 +365,8 @@ void WWMDockStateInit(void)
   btn->running = 0;
   btn->lock = 1;
   // wAppIconPaint(btn);
+
+  launchingIcons = NULL;
 }
 
 void WWMDockShowIcons(WDock *dock)
@@ -338,16 +418,16 @@ NSString *WWMDockStatePath(void)
   return userDefPath;
 }
 
-// Saves dock on-screen state 
+// Saves dock on-screen state into WMState file
 void WWMDockStateSave(void)
 {
-  WScreen    *scr = NULL;
-  WMPropList *old_state = NULL;
+  // WScreen    *scr = NULL;
+  // WMPropList *old_state = NULL;
 
   for (int i = 0; i < w_global.screen_count; i++)
     {
-      scr = wScreenWithNumber(i);
-      wScreenSaveState(scr);
+      wScreenSaveState(wScreenWithNumber(i));
+      // scr = wScreenWithNumber(i);
       // old_state = scr->session_state;
       // scr->session_state = WMCreatePLDictionary(NULL, NULL);
       
@@ -357,9 +437,53 @@ void WWMDockStateSave(void)
     }
 }
 
+// Returns NSDictionary representation of WMState file
+NSDictionary *WWMDockState(void)
+{
+  NSDictionary *wmState;
+
+  wmState = [[NSDictionary alloc] initWithContentsOfFile:WWMDockStatePath()];
+
+  return [wmState autorelease];
+}
+
+NSArray *WWMDockStateApps(void)
+{
+  NSArray  *dockApps;
+  NSString *appsKey;
+      
+  appsKey = [NSString stringWithFormat:@"Applications%i",
+                      wScreenWithNumber(0)->scr_height];
+  
+  dockApps = [[WWMDockState() objectForKey:@"Dock"] objectForKey:appsKey];
+  if (!dockApps || [dockApps count] == 0)
+    {
+      [[WWMDockState() objectForKey:@"Dock"] objectForKey:@"Applications"];
+    }
+
+  return dockApps;
+}
+
+NSArray *WWMStateAutostartApps(void)
+{
+  NSArray        *dockIcons = WWMDockStateApps();
+  NSDictionary   *dIcon;
+  NSMutableArray *autostartList = [NSMutableArray new];
+
+  for (dIcon in dockIcons)
+    {
+      if ([[dIcon objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"])
+        {
+          [autostartList addObject:dIcon];
+        }
+    }
+  
+  return [autostartList autorelease];
+}
+
 // --- Appicons getters/setters of on-screen Dock
 
-NSInteger WWMDockAppsCount()
+NSInteger WWMDockAppsCount(void)
 {
   WScreen *scr = wScreenWithNumber(XDefaultScreen(dpy));
   WDock   *dock = scr->dock;
@@ -391,49 +515,6 @@ WAppIcon *_appiconInDockPosition(int position)
   return NULL;
 }
 
-BOOL WWMIsDockAppAutolaunch(int position)
-{
-  WAppIcon *appicon = _appiconInDockPosition(position);
-    
-  if (!appicon || appicon->auto_launch == 0)
-    return NO;
-  else
-    return YES;
-}
-
-void WWMSetDockAppAutolaunch(int position, BOOL autolaunch)
-{
-  WAppIcon *appicon = _appiconInDockPosition(position);
-    
-  if (appicon)
-    {
-      appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
-      WWMDockStateSave();
-    }
-}
-
-
-BOOL WWMIsDockAppLocked(int position)
-{
-  WAppIcon *appicon = _appiconInDockPosition(position);
-    
-  if (!appicon || appicon->lock == 0)
-    return NO;
-  else
-    return YES;
-}
-
-void WWMSetDockAppLocked(int position, BOOL lock)
-{
-  WAppIcon *appicon = _appiconInDockPosition(position);
-    
-  if (appicon)
-    {
-      appicon->lock = (lock == YES) ? 1 : 0;
-      WWMDockStateSave();
-    }
-}
-
 NSString *WWMDockAppName(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
@@ -450,37 +531,89 @@ NSImage *WWMDockAppImage(int position)
   WAppIcon *btn = _appiconInDockPosition(position);
   NSImage  *icon = nil;
 
-  if (btn && btn->icon && btn->icon->file_image)
-    {
-      RImage           *image = btn->icon->file_image;
-      NSBitmapImageRep *rep = nil;
-
-      NSLog(@"W+W: icon image file: %s", btn->icon->file);
+  // if (!btn)
+  //   NSLog(@"Dock icon at position %i not found!", position);
+  // else
+  //   NSLog(@"W+W: searching dock icon for: %s", btn->wm_instance);
   
-      icon = [[NSImage alloc] init];
+  if (btn)
+    {
+      NSLog(@"W+W: icon image file: %s", btn->icon->file);
+      if (btn->icon->file)
+        { // Docked and not running application
+          icon = [[NSImage alloc]
+                   initWithContentsOfFile:[NSString stringWithCString:btn->icon->file]];
+          if (!icon)
+            {
+              // TODO: convert RImage date into NSImage
+            }
+        }
+      else
+        {
+          NSString     *appName;
+          NSDictionary *appDesc;
 
-      rep = [[NSBitmapImageRep alloc]
-               initWithBitmapDataPlanes:&image->data
-                             pixelsWide:image->width
-                             pixelsHigh:image->height
-                          bitsPerSample:8
-                        samplesPerPixel:(image->format == RRGBAFormat) ? 4 : 3
-                               hasAlpha:(image->format == RRGBAFormat) ? YES : NO
-                               isPlanar:NO
-                         colorSpaceName:NSDeviceRGBColorSpace
-                            bytesPerRow:0
-                           bitsPerPixel:0];
-      [icon addRepresentation:rep];
-      [rep release];
-      
-      [icon autorelease];
+          if (!strcmp(btn->wm_class, "GNUstep"))
+            appName = [NSString stringWithCString:btn->wm_instance];
+          else
+            appName = [NSString stringWithCString:btn->wm_class];
+          appDesc = [[ProcessManager shared] _applicationWithName:appName];
+          NSLog(@"Application %@ description: %@", appName, appDesc);
+          
+          if (!strcmp(btn->wm_class, "GNUstep"))
+            icon = [[NSApp delegate] iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
+          else
+            icon = [appDesc objectForKey:@"NSApplicationIcon"];
+          
+          [icon retain];
+        }
+      [icon autorelease];      
     }
   return icon;
 }
-
 // TODO: write to WindowMaker 'WMWindowAttributes' file
 void WWMSetDockAppImage(NSString *path)
 {
+}
+
+BOOL WWMIsDockAppAutolaunch(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (!appicon || appicon->auto_launch == 0)
+    return NO;
+  else
+    return YES;
+}
+void WWMSetDockAppAutolaunch(int position, BOOL autolaunch)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (appicon)
+    {
+      appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
+      WWMDockStateSave();
+    }
+}
+
+BOOL WWMIsDockAppLocked(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (!appicon || appicon->lock == 0)
+    return NO;
+  else
+    return YES;
+}
+void WWMSetDockAppLocked(int position, BOOL lock)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+    
+  if (appicon)
+    {
+      appicon->lock = (lock == YES) ? 1 : 0;
+      WWMDockStateSave();
+    }
 }
 
 NSString *WWMDockAppCommand(int position)
@@ -492,75 +625,9 @@ NSString *WWMDockAppCommand(int position)
   else
     return nil;
 }
-
 // TODO
 void WWMSetDockAppCommand(NSString *path)
 {
-}
-// --- Misc
-
-// Returns resolution-dependant dictionary key for Dock state.
-// If not found return "Applications".
-NSString *WWMDockStateAppsKey(void)
-{
-  NSArray  *dockApps;
-  NSString *appsKey;
-      
-  appsKey = [NSString stringWithFormat:@"Applications%i",
-                      wScreenWithNumber(0)->scr_height];
-  
-  dockApps = [[WWMDockState() objectForKey:@"Dock"] objectForKey:appsKey];
-  if (!dockApps || [dockApps count] == 0)
-    {
-      appsKey = @"Applications";
-    }
-
-  return appsKey;
-}
-
-NSArray *WWMDockStateApps(void)
-{
-  return [[WWMDockState() objectForKey:@"Dock"]
-           objectForKey:WWMDockStateAppsKey()];
-}
-
-// void WWMDockStateAppsSave(NSArray *dockIcons)
-// {
-//   NSMutableDictionary *wmState = [WWMDockState() mutableCopy];
-//   NSString            *filePath;
-      
-//   [wmState setObject:dockIcons forKey:WWMDockStateAppsKey()];
-//   if ((filePath = WWMDockStatePath()))
-//     {
-//       [wmState writeToFile:filePath atomically:YES];
-//     }
-//   [wmState release];
-// }
-
-NSArray *WWMStateAutostartApps(void)
-{
-  NSArray        *dockIcons = WWMDockStateApps();
-  NSDictionary   *dIcon;
-  NSMutableArray *autostartList = [NSMutableArray new];
-
-  for (dIcon in dockIcons)
-    {
-      if ([[dIcon objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"])
-        {
-          [autostartList addObject:dIcon];
-        }
-    }
-  return autostartList;
-}
-
-// Returns NSDictionary representation of WMState file
-NSDictionary *WWMDockState(void)
-{
-  NSDictionary *wmState;
-
-  wmState = [[NSDictionary alloc] initWithContentsOfFile:WWMDockStatePath()];
-
-  return [wmState autorelease];
 }
 
 // --- Launching appicons
@@ -569,7 +636,7 @@ NSDictionary *WWMDockState(void)
 // These pointers also placed into WScreen->app_icon_list.
 // Launching icons number is much smaller, but I use DOCK_MAX_ICONS
 // (defined in WindowMaker/src/wconfig.h) as references number.
-static WAppIcon **launchingIcons = NULL;
+// static WAppIcon **launchingIcons = NULL;
 void _AddLaunchingIcon(WAppIcon *appicon)
 {
   if (!launchingIcons)
@@ -745,81 +812,6 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
 
 //--- End of functions which require existing @autorelease pool ---
 
-void WWMWipeDesktop(WScreen * scr)
-{
-  Window       rootWindow, parentWindow;
-  Window       *childrenWindows;
-  unsigned int nChildrens, i;
-  WWindow      *wwin;
-  WApplication *wapp;
-    
-  XQueryTree(dpy, DefaultRootWindow(dpy),
-             &rootWindow, &parentWindow,
-             &childrenWindows, &nChildrens);
-    
-  for (i=0; i < nChildrens; i++)
-    {
-      wapp = wApplicationOf(childrenWindows[i]);
-      if (wapp)
-        {
-          wwin = wapp->main_window_desc;
-          if (!strcmp(wwin->wm_class, "GNUstep"))
-            {
-              continue;
-            }
-          else
-            {
-              if (wwin->protocols.DELETE_WINDOW)
-                {
-                  wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
-                                      w_global.timestamp.last_event);
-                }
-              else
-                {
-                  wClientKill(wwin);
-                }
-            }
-        }
-    }
-
-  XSync(dpy, False);
-}
-
-void WWMShutdown(WShutdownMode mode)
-{
-  int i;
-
-  fprintf(stderr, "*** Shutting down Window Manager...\n");
-  
-  for (i = 0; i < w_global.screen_count; i++)
-    {
-      WScreen *scr;
-
-      scr = wScreenWithNumber(i);
-      if (scr)
-        {
-          if (scr->helper_pid)
-            {
-              kill(scr->helper_pid, SIGKILL);
-            }
-
-          wScreenSaveState(scr);
-
-          if (mode == WSKillMode)
-            WWMWipeDesktop(scr);
-          else
-            RestoreDesktop(scr);
-        }
-      wNETWMCleanup(scr); // Delete _NET_* Atoms
-    }
-  // ExecExitScript();
-
-  if (launchingIcons) free(launchingIcons);
-  
-  RShutdown(); /* wrlib clean exit */
-  wutil_shutdown();  /* WUtil clean-up */
-}
-
 //-----------------------------------------------------------------------------
 // Workspace functions which are called from WindowMaker code.
 // Most calls are coming from X11 EventLoop().
@@ -827,7 +819,7 @@ void WWMShutdown(WShutdownMode mode)
 //-----------------------------------------------------------------------------
 
 //--- Application management
-NSDictionary *WXApplicationInfoForWApp(WApplication *wapp, WWindow *wwin)
+NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
 {
   NSMutableDictionary *appInfo = [NSMutableDictionary dictionary];
   NSString            *xAppName = nil;
@@ -930,7 +922,7 @@ void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
   // NSApplicationProcessIdentifier=NSString*
   // NSApplicationIcon=NSImage*
   // NSApplicationPath=NSString*
-  appInfo = WXApplicationInfoForWApp(wapp, wwin);
+  appInfo = _applicationInfoForWApp(wapp, wwin);
   NSLog(@"W+WM: XWApplicationDidCreate: %@", appInfo);
   
   notif = [NSNotification 
@@ -965,7 +957,7 @@ void XWApplicationDidDestroy(WApplication *wapp)
           wapp->main_window_desc->wm_instance, 
           wapp->main_window_desc->wm_class);
 
-  appInfo = WXApplicationInfoForWApp(wapp, wapp->main_window_desc);
+  appInfo = _applicationInfoForWApp(wapp, wapp->main_window_desc);
   NSLog(@"W+WM: XWApplicationDidDestroy: %@", appInfo);
   
   notif = [NSNotification 
