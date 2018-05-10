@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu May 10 14:58:24 2018
+;; Created Fri May 11 02:53:18 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
+(setq default-directory "~/Developer/nextspace/Applications/Workspace/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,11 +22,22 @@
   "Workspace+WindowMaker.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  13043
-  '(12518 nil)
+  15934
+  '(15475 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'fundamental-mode
+  '(yas-minor-mode)
+  139
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockPrefs.m"
@@ -277,17 +288,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   3584
   '(3583 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile.preamble"
-  "GNUmakefile.preamble"
-  'fundamental-mode
-  '(yas-minor-mode)
-  139
-  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
