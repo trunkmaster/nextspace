@@ -10,6 +10,8 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/Xinerama.h>
 
+#include <wraster.h>
+
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 #import <NXAppKit/NXAlert.h>
@@ -529,6 +531,7 @@ NSString *WWMDockAppName(int position)
 NSImage *WWMDockAppImage(int position)
 {
   WAppIcon *btn = _appiconInDockPosition(position);
+  NSString *iconPath;
   NSImage  *icon = nil;
 
   // if (!btn)
@@ -541,12 +544,48 @@ NSImage *WWMDockAppImage(int position)
       NSLog(@"W+W: icon image file: %s", btn->icon->file);
       if (btn->icon->file)
         { // Docked and not running application
-          icon = [[NSImage alloc]
-                   initWithContentsOfFile:[NSString stringWithCString:btn->icon->file]];
-          if (!icon)
+          iconPath = [NSString stringWithCString:btn->icon->file];
+          if ([[iconPath pathExtension] isEqualToString:@"xpm"])
             {
-              // TODO: convert RImage date into NSImage
+              RImage           *r_image;
+              NSBitmapImageRep *rep;
+              NSImage          *icon;
+
+              NSLog(@"Loading XPM image from file: %@", iconPath);
+
+              r_image = RLoadImage(wScreenWithNumber(0)->rcontext, btn->icon->file, 0);
+              if (!r_image)
+                {
+                  NSLog(@"wraster image load failed for file: %s", btn->icon->file);
+                }
+
+              unsigned char *data = [r_image->height];
+              // *data = (unsigned char*)malloc((r_image->width * r_image->height) + 1);
+              for (int i=0; i < r_image->width-1; i++)
+                {
+                  memcpy(data[i], &r_image->data+(r_image->width*i), r_image->width);
+                }
+              //data[0] = r_image->data;
+              rep = [[NSBitmapImageRep alloc]
+                      initWithBitmapDataPlanes:data
+                                    pixelsWide:r_image->width
+                                    pixelsHigh:r_image->height
+                                 bitsPerSample:8
+                               samplesPerPixel:4
+                                      hasAlpha:YES
+                                      isPlanar:YES
+                                colorSpaceName:NSDeviceRGBColorSpace
+                                   bytesPerRow:(r_image->width * r_image->height)
+                                  bitsPerPixel:32];
+              icon = [[NSImage alloc] init];
+              [icon addRepresentation:rep];
+              [rep release];
             }
+          else
+            {
+              icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+            }
+          // [icon autorelease];
         }
       else
         {
@@ -565,9 +604,10 @@ NSImage *WWMDockAppImage(int position)
           else
             icon = [appDesc objectForKey:@"NSApplicationIcon"];
           
-          [icon retain];
+          // [icon retain];
         }
-      [icon autorelease];      
+      if (!icon)
+        icon = [NSImage imageNamed:@"NXUnknownApplication"];
     }
   return icon;
 }
