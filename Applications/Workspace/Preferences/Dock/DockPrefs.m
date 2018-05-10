@@ -191,11 +191,6 @@
   [appList reloadData];
 }
 
-- (void)setAppLocked:(id)sender
-{
-  WWMSetDockAppLocked([appList selectedRow], [lockedBtn state]);
-}
-
 - (void)revert:sender
 {
   NSInteger selRow = [appList selectedRow];
@@ -246,6 +241,11 @@
   
   [appPanel makeKeyAndOrderFront:[iconBtn window]];
   [appPanel makeFirstResponder:appCommandField];
+}
+
+- (void)setAppLocked:(id)sender
+{
+  WWMSetDockAppLocked([appList selectedRow], [lockedBtn state]);
 }
 
 - (void)setAppCommand:(id)sender

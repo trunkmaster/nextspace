@@ -47,13 +47,28 @@ BOOL useInternalWindowManager;
 // 'WWM' prefix is a vector of calls 'Workspace->WindowMaker'
 //-----------------------------------------------------------------------------
 
-//--- Login related activities
-// -- Should be called from already existing @autoreleasepool ---
+void WWMInitializeWindowMaker(int argc, char **argv);
+void WWMSetupFrameOffsetProperty();
+void WWMSetDockAppiconState(int index_in_dock, int launching);
+// Disable some signal handling inside WindowMaker code.
+void WWMSetupSignalHandling(void);
 
+// --- Logout/PowerOff related activities
+void WWMWipeDesktop(WScreen * scr);
+void WWMShutdown(WShutdownMode mode);
+
+// --- Dock
 void WWMDockStateInit(void);
 void WWMDockShowIcons(WDock *dock);
+// - Should be called from already existing @autoreleasepool
+NSString     *WWMDockStatePath(void);
+NSDictionary *WWMDockState(void);
+NSArray      *WWMDockStateApps(void);
+NSArray      *WWMStateAutostartApps(void);
 
-NSInteger WWMDockAppsCount();
+// Appicons getters/setters of on-screen Dock
+WAppIcon  **launchingIcons;
+NSInteger WWMDockAppsCount(void);
 BOOL      WWMIsDockAppAutolaunch(int position);
 void      WWMSetDockAppAutolaunch(int position, BOOL autolaunch);
 BOOL      WWMIsDockAppLocked(int position);
@@ -62,30 +77,11 @@ NSString  *WWMDockAppName(int position);
 NSImage   *WWMDockAppImage(int position);
 NSString  *WWMDockAppCommand(int position);
 
-NSString     *WWMDockStatePath(void);
-NSString     *WWMDockStateAppsKey();
-NSArray      *WWMDockStateApps(void);
-NSArray      *WWMStateAutostartApps(void);
-NSDictionary *WWMDockState(void);
-
 WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
                                  NSPoint sourcePoint,
                                  NSString *imagePath);
 void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
-//--- End of functions which require existing @autorelease pool ---
-
-void WWMInitializeWindowMaker(int argc, char **argv);
-void WWMSetupFrameOffsetProperty();
-void WWMSetDockAppiconState(int index_in_dock, int launching);
-// Disable some signal handling inside WindowMaker code.
-void WWMSetupSignalHandling(void);
-
-void WWMDockStateLoad(void);
-void WWMDockShowIcons(WDock *dock);
-
-//--- Logout/PowerOff related activities
-void WWMWipeDesktop(WScreen * scr);
-void WWMShutdown(WShutdownMode mode);
+// - End of functions which require existing @autorelease pool
 
 #endif //__Foundation_h_GNUSTEP_BASE_INCLUDE
 
