@@ -43,7 +43,6 @@
 
   [showOnHiddenDockBtn setRefusesFirstResponder:YES];
   [autostartBtn setRefusesFirstResponder:YES];
-  [lockedBtn setRefusesFirstResponder:YES];
   [iconBtn setRefusesFirstResponder:YES];
   [iconBtn setButtonType:NSMomentaryLightButton];
 
@@ -59,7 +58,7 @@
   [appList selectRow:0 byExtendingSelection:NO];
 
   [appIconBtn setRefusesFirstResponder:YES];
-
+  [appLockedBtn setRefusesFirstResponder:YES];
 }
 
 - (NSString *)moduleName
@@ -139,25 +138,20 @@
   if ([appName isEqualToString:@"Workspace"])
     {
       [autostartBtn setEnabled:NO];
-      [lockedBtn setEnabled:NO];
       
       [iconBtn setImage:[NSApp applicationIconImage]];
       [pathField setStringValue:@""];
       [autostartBtn setState:NSOnState];
       [autostartBtn setState:NSOnState];
-      [lockedBtn setState:NSOnState];
     }
   else
     {
       [autostartBtn setEnabled:YES];
-      [lockedBtn setEnabled:YES];
       
       [iconBtn setImage:WWMDockAppImage(selRow)];
       [pathField setStringValue:WWMDockAppCommand(selRow)];
       [autostartBtn
         setState:WWMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
-      [lockedBtn
-        setState:WWMIsDockAppLocked(selRow) ? NSOnState : NSOffState];
     }
 
   if ([appPanel isVisible])
@@ -212,20 +206,31 @@
   NSInteger selRow = [appList selectedRow];
   NSString  *appName = WWMDockAppName(selRow);
 
+  [appNameField setStringValue:appName];
+  [appIconBtn setImage:WWMDockAppImage(selRow)];
+  [appCommandField setStringValue:WWMDockAppCommand(selRow)];
+  [appLockedBtn setState:WWMIsDockAppLocked(selRow)];
+  if ([appName isEqualToString:@"Workspace.GNUstep"] ||
+      [appName isEqualToString:@"Recycler.GNUstep"])
+    {
+      [appLockedBtn setEnabled:NO];
+    }
+
   if ([[appName pathExtension] isEqualToString:@"GNUstep"])
     {
       [appMiddleClickField setEnabled:NO];
       [appDndCommandField setEnabled:NO];
+      [appMiddleClickField setStringValue:@""];
+      [appDndCommandField setStringValue:@""];
     }
   else
     {
+      [appLockedBtn setEnabled:YES];
       [appMiddleClickField setEnabled:YES];
       [appDndCommandField setEnabled:YES];
-    }
-  
-  [appNameField setStringValue:appName];
-  [appIconBtn setImage:WWMDockAppImage(selRow)];
-  [appCommandField setStringValue:WWMDockAppCommand(selRow)];
+      [appMiddleClickField setStringValue:WWMDockAppPasteCommand(selRow)];
+      [appDndCommandField setStringValue:WWMDockAppDndCommand(selRow)];
+    }  
 }
 
 - (void)showAppSettingsPanel:(id)sender
@@ -243,21 +248,32 @@
   [appPanel makeFirstResponder:appCommandField];
 }
 
+- (void)setAppIcon:(id)sender
+{
+}
+
 - (void)setAppLocked:(id)sender
 {
-  WWMSetDockAppLocked([appList selectedRow], [lockedBtn state]);
+  WWMSetDockAppLocked([appList selectedRow],
+                      [sender state]);
 }
 
 - (void)setAppCommand:(id)sender
 {
+  WWMSetDockAppCommand([appList selectedRow],
+                       [[sender stringValue] cString]);
 }
 
-- (void)setAppMiddleClick:(id)sender
+- (void)setAppPasteCommand:(id)sender
 {
+  WWMSetDockAppPasteCommand([appList selectedRow],
+                            [[sender stringValue] cString]);
 }
 
-- (void)setDndCommand:(id)sender
+- (void)setAppDndCommand:(id)sender
 {
+  WWMSetDockAppDndCommand([appList selectedRow],
+                          [[sender stringValue] cString]);
 }
 
 @end
