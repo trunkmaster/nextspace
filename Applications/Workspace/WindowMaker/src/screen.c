@@ -898,7 +898,6 @@ void wScreenRestoreState(WScreen * scr)
 	if (!scr->session_state)
 		scr->session_state = WMCreatePLDictionary(NULL, NULL);
 
-#ifndef NEXTSPACE
 	if (!wPreferences.flags.nodock) {
 		state = WMGetFromPLDictionary(scr->session_state, dDock);
 		scr->dock = wDockRestoreState(scr, state, WM_DOCK);
@@ -920,7 +919,6 @@ void wScreenRestoreState(WScreen * scr)
 		}
 		wDrawersRestoreState(scr);
 	}
-#endif
 
 	wWorkspaceRestoreState(scr);
 	wScreenUpdateUsableArea(scr);

@@ -141,6 +141,9 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   memset(&wPreferences, 0, sizeof(wPreferences));
   // wDockDoAutoLaunch() called in applicationDidFinishLaunching of Workspace
   wPreferences.flags.noautolaunch = 1;
+  wPreferences.flags.nodock = 0;
+  wPreferences.flags.noclip = 1;
+  wPreferences.flags.nodrawer = 1;
 
   // DISPLAY environment var
   DisplayName = XDisplayName(DisplayName);
@@ -162,12 +165,12 @@ void WWMInitializeWindowMaker(int argc, char **argv)
 
   // external function (WindowMaker/src/main.c)
   real_main(argc, argv);
-
+  
   // Just load saved Dock state without icons drawing.
   // Dock appears on screen after call to WWMDockShowIcons in
   // Controller's -applicationDidFinishLaunching method.
   WWMDockStateInit();
-  
+
   //--- Below this point WindowMaker was initialized
 
   // TODO: go through all screens
@@ -351,21 +354,23 @@ void WWMDockStateInit(void)
   WAppIcon *btn;
 
   // Load WMState dictionary
-  state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state,
-                                WMCreatePLString("Dock"));
-  wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0),
-                                                 state, WM_DOCK);
+  if (wPreferences.flags.nodock)
+    {
+      state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state,
+                                    WMCreatePLString("Dock"));
+      wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0),
+                                                     state, WM_DOCK);
+    }
 
-  // Setup main button properties
+  // Setup main button properties to let Dock correctrly register Workspace
   btn = wScreenWithNumber(0)->dock->icon_array[0];
   btn->wm_class = "GNUstep";
   btn->wm_instance = "Workspace";
   btn->command = "NEXTSPACE internal: don't edit it!";
-  btn->auto_launch = 0;
-  btn->launching = 1;
-  btn->running = 0;
+  btn->auto_launch = 0; // disable autolaunch by WindowMaker's functions
+  btn->launching = 1;   // tell Dock to wait for Workspace
+  btn->running = 0;     // ...and we're not running yet
   btn->lock = 1;
-  // wAppIconPaint(btn);
 
   launchingIcons = NULL;
 }
