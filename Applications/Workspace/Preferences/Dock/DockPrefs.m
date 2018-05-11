@@ -207,12 +207,15 @@
   NSString  *appName = WWMDockAppName(selRow);
 
   [appNameField setStringValue:appName];
-  [appIconBtn setImage:WWMDockAppImage(selRow)];
+  [appIconView setImage:WWMDockAppImage(selRow)];
   [appCommandField setStringValue:WWMDockAppCommand(selRow)];
   [appLockedBtn setState:WWMIsDockAppLocked(selRow)];
+  
   if ([appName isEqualToString:@"Workspace.GNUstep"] ||
       [appName isEqualToString:@"Recycler.GNUstep"])
     {
+      [appCommandField setEnabled:NO];
+      [appCommandField setStringValue:@"NEXTSPACE internal"];
       [appLockedBtn setEnabled:NO];
     }
 
@@ -226,6 +229,7 @@
   else
     {
       [appLockedBtn setEnabled:YES];
+      [appCommandField setEnabled:YES];
       [appMiddleClickField setEnabled:YES];
       [appDndCommandField setEnabled:YES];
       [appMiddleClickField setStringValue:WWMDockAppPasteCommand(selRow)];

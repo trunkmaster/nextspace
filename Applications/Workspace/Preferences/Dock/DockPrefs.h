@@ -37,6 +37,7 @@
   id showOnHiddenDockBtn;
   // Application
   id appPanel;
+  id appIconView;
   id appIconBtn;
   id appNameField;
   id appCommandField;
