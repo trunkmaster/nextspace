@@ -22,10 +22,11 @@
 	    box,
 	    appCommandField,
 	    appDndCommandField,
-	    appIconBtn,
+	    appIconView,
 	    appMiddleClickField,
 	    appPanel,
-	    appNameField
+	    appNameField,
+	    appIconBtn
 	);
 	Super = NSObject;
     };
