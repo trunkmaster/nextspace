@@ -52,9 +52,10 @@
 
 #define MOD_MASK wPreferences.modifier_mask
 #ifdef NEXTSPACE
-#define CACHE_ICON_PATH "/WindowMaker/CachedPixmaps"
+	#define CACHE_ICON_PATH "/WindowMaker/CachedPixmaps"
+	#include <Workspace+WindowMaker.h>
 #else
-#define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
+	#define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
 #endif
 #define ICON_BORDER 3
 
@@ -521,10 +522,14 @@ char *wIconStore(WIcon *icon)
 		return NULL;
 	}
 
+#ifdef NEXTSPACE
+	path = XWSaveRasterImageAsTIFF(image, path);
+#else
 	if (!RSaveImage(image, path, "XPM")) {
 		wfree(path);
 		path = NULL;
 	}
+#endif /* NEXTSPACE */
 
 	RReleaseImage(image);
 

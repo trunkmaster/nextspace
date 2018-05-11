@@ -1,18 +1,20 @@
 --- ./WindowMaker-0.95.7/src/icon.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/icon.c	2016-11-24 23:33:15.948123730 +0200
-@@ -51,7 +51,11 @@
++++ ./WindowMaker/src/icon.c	2018-05-11 17:35:21.155005001 +0300
+@@ -51,7 +51,12 @@
  /**** Global varianebles ****/
  
  #define MOD_MASK wPreferences.modifier_mask
+-#define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
 +#ifdef NEXTSPACE
-+#define CACHE_ICON_PATH "/WindowMaker/CachedPixmaps"
++	#define CACHE_ICON_PATH "/WindowMaker/CachedPixmaps"
++	#include <Workspace+WindowMaker.h>
 +#else
- #define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
++	#define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
 +#endif
  #define ICON_BORDER 3
  
  static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);
-@@ -234,6 +238,7 @@
+@@ -234,6 +239,7 @@
  	wfree(icon);
  }
  
@@ -20,7 +22,7 @@
  static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
  {
  	XFillRectangle(dpy, pixmap, scr->icon_title_texture->normal_gc, 0, 0, wPreferences.icon_size, height + 1);
-@@ -242,6 +247,7 @@
+@@ -242,6 +248,7 @@
  	XDrawLine(dpy, pixmap, scr->icon_title_texture->dim_gc,
  		  wPreferences.icon_size - 1, 0, wPreferences.icon_size - 1, height + 1);
  }
@@ -28,7 +30,7 @@
  
  static void icon_update_pixmap(WIcon *icon, RImage *image)
  {
-@@ -254,7 +260,12 @@
+@@ -254,7 +261,12 @@
  
  	switch (icon->tile_type) {
  	case TILE_NORMAL:
@@ -42,7 +44,7 @@
  		break;
  	case TILE_CLIP:
  		tile = RCloneImage(scr->clip_tile);
-@@ -313,8 +324,10 @@
+@@ -313,8 +325,10 @@
  	RReleaseImage(tile);
  
  	/* Draw the icon's title background (without text) */
@@ -53,7 +55,22 @@
  
  	icon->pixmap = pixmap;
  }
-@@ -781,7 +794,9 @@
+@@ -508,10 +522,14 @@
+ 		return NULL;
+ 	}
+ 
++#ifdef NEXTSPACE
++	path = XWSaveRasterImageAsTIFF(image, path);
++#else
+ 	if (!RSaveImage(image, path, "XPM")) {
+ 		wfree(path);
+ 		path = NULL;
+ 	}
++#endif /* NEXTSPACE */
+ 
+ 	RReleaseImage(image);
+ 
+@@ -781,7 +799,9 @@
  			x = (icon->core->width - 4) - w;
  		else
  			x = (icon->core->width - w) / 2;

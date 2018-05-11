@@ -528,87 +528,95 @@ NSString *WWMDockAppName(int position)
     return @".NoApplication";
 }
 
+NSImage *_imageForRasterImage(RImage *r_image)
+{
+  BOOL		   hasAlpha = (r_image->format == RRGBAFormat) ? YES : NO;
+  NSBitmapImageRep *rep = nil;
+  NSImage          *image = nil;
+
+  rep = [[NSBitmapImageRep alloc]
+               initWithBitmapDataPlanes:&r_image->data
+                             pixelsWide:r_image->width
+                             pixelsHigh:r_image->height
+                          bitsPerSample:8
+                        samplesPerPixel:hasAlpha ? 4 : 3
+                               hasAlpha:hasAlpha
+                               isPlanar:NO
+                         colorSpaceName:NSDeviceRGBColorSpace
+                            bytesPerRow:0
+                           bitsPerPixel:hasAlpha ? 32 : 24];
+
+  if (rep)
+    {
+      image = [[NSImage alloc] init];
+      [image addRepresentation:rep];
+      [rep release];
+    }
+
+  return [image autorelease];
+}
+
+char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
+{
+  NSImage  *image = _imageForRasterImage(r_image);
+  NSData   *tiffRep = [image TIFFRepresentation];
+  NSString *filePath;
+
+  filePath = [NSString stringWithCString:file_path];
+  wfree(file_path);
+  
+  if (![[filePath pathExtension] isEqualToString:@"tiff"])
+    {
+      filePath = [filePath stringByDeletingPathExtension];
+      filePath = [filePath stringByAppendingPathExtension:@"tiff"];
+    }
+  
+  [tiffRep writeToFile:filePath atomically:YES];
+  [image release];
+
+  return wstrdup([filePath cString]);
+}
+
 NSImage *WWMDockAppImage(int position)
 {
-  WAppIcon *btn = _appiconInDockPosition(position);
-  NSString *iconPath;
-  NSImage  *icon = nil;
+  WAppIcon     *btn = _appiconInDockPosition(position);
+  NSString     *iconPath;
+  NSString     *appName;
+  NSDictionary *appDesc;
+  NSImage      *icon = nil;
 
-  // if (!btn)
-  //   NSLog(@"Dock icon at position %i not found!", position);
-  // else
-  //   NSLog(@"W+W: searching dock icon for: %s", btn->wm_instance);
-  
   if (btn)
     {
-      NSLog(@"W+W: icon image file: %s", btn->icon->file);
+      // NSLog(@"W+W: icon image file: %s", btn->icon->file);
       if (btn->icon->file)
         { // Docked and not running application
           iconPath = [NSString stringWithCString:btn->icon->file];
-          if ([[iconPath pathExtension] isEqualToString:@"xpm"])
-            {
-              RImage           *r_image;
-              NSBitmapImageRep *rep;
-              NSImage          *icon;
-
-              NSLog(@"Loading XPM image from file: %@", iconPath);
-
-              r_image = RLoadImage(wScreenWithNumber(0)->rcontext, btn->icon->file, 0);
-              if (!r_image)
-                {
-                  NSLog(@"wraster image load failed for file: %s", btn->icon->file);
-                }
-
-              unsigned char *data = [r_image->height];
-              // *data = (unsigned char*)malloc((r_image->width * r_image->height) + 1);
-              for (int i=0; i < r_image->width-1; i++)
-                {
-                  memcpy(data[i], &r_image->data+(r_image->width*i), r_image->width);
-                }
-              //data[0] = r_image->data;
-              rep = [[NSBitmapImageRep alloc]
-                      initWithBitmapDataPlanes:data
-                                    pixelsWide:r_image->width
-                                    pixelsHigh:r_image->height
-                                 bitsPerSample:8
-                               samplesPerPixel:4
-                                      hasAlpha:YES
-                                      isPlanar:YES
-                                colorSpaceName:NSDeviceRGBColorSpace
-                                   bytesPerRow:(r_image->width * r_image->height)
-                                  bitsPerPixel:32];
-              icon = [[NSImage alloc] init];
-              [icon addRepresentation:rep];
-              [rep release];
-            }
-          else
-            {
-              icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
-            }
-          // [icon autorelease];
+          icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+          [icon autorelease];
         }
       else
         {
-          NSString     *appName;
-          NSDictionary *appDesc;
-
           if (!strcmp(btn->wm_class, "GNUstep"))
             appName = [NSString stringWithCString:btn->wm_instance];
           else
             appName = [NSString stringWithCString:btn->wm_class];
+          
           appDesc = [[ProcessManager shared] _applicationWithName:appName];
-          NSLog(@"Application %@ description: %@", appName, appDesc);
           
           if (!strcmp(btn->wm_class, "GNUstep"))
-            icon = [[NSApp delegate] iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
+            {
+              icon = [[NSApp delegate]
+                       iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
+            }
           else
-            icon = [appDesc objectForKey:@"NSApplicationIcon"];
-          
-          // [icon retain];
+            {
+              icon = [appDesc objectForKey:@"NSApplicationIcon"];
+            }
         }
       if (!icon)
         icon = [NSImage imageNamed:@"NXUnknownApplication"];
     }
+  
   return icon;
 }
 // TODO: write to WindowMaker 'WMWindowAttributes' file
@@ -881,8 +889,7 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
     }
   else
     {
-      [appInfo setObject:@"-1"
-        	  forKey:@"NSApplicationProcessIdentifier"];
+      [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
     }
 
   // NSApplicationPath = NSString*
@@ -892,8 +899,7 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
       xAppPath = fullPathForCommand([NSString stringWithCString:app_command]);
       if (xAppPath)
         {
-          [appInfo setObject:xAppPath
-                      forKey:@"NSApplicationPath"];
+          [appInfo setObject:xAppPath forKey:@"NSApplicationPath"];
         }
     }
   else
@@ -906,26 +912,8 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
   if (wapp->app_icon->icon->file_image)
     {
-      RImage           *image = wapp->app_icon->icon->file_image;
-      NSBitmapImageRep *rep = nil;
-      NSImage          *icon = [[NSImage alloc] init];
-
-      rep = [[NSBitmapImageRep alloc]
-               initWithBitmapDataPlanes:&image->data
-                             pixelsWide:image->width
-                             pixelsHigh:image->height
-                          bitsPerSample:8
-                        samplesPerPixel:(image->format == RRGBAFormat) ? 4 : 3
-                               hasAlpha:(image->format == RRGBAFormat) ? YES : NO
-                               isPlanar:NO
-                         colorSpaceName:NSDeviceRGBColorSpace
-                            bytesPerRow:0
-                           bitsPerPixel:0];
-      [icon addRepresentation:rep];
-      [rep release];
-      
-      [appInfo setObject:icon forKey:@"NSApplicationIcon"];
-      [icon release];
+      [appInfo setObject:_imageForRasterImage(wapp->app_icon->icon->file_image)
+                  forKey:@"NSApplicationIcon"];
     }
 
   return (NSDictionary *)appInfo;

@@ -90,6 +90,8 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
 // Workspace callbacks for WindowMaker.
 //-----------------------------------------------------------------------------
 
+char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
+  
 // Applications creation and destroying
 void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin);
 void XWApplicationDidAddWindow(WApplication *wapp, WWindow *wwin);
