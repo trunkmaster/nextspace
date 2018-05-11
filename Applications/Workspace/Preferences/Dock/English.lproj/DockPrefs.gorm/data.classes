@@ -2,7 +2,6 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     DockPrefs = {
 	Actions = (
-	    "setAppShowSingle:",
 	    "setAppAutostarted:",
 	    "setAppLocked:",
 	    "setIcon:",
@@ -10,7 +9,7 @@
 	    "setAppIcon:",
 	    "setAppCommand:",
 	    "setAppDndCommand:",
-	    "setAppMiddleClick:"
+	    "setAppPasteCommand:"
 	);
 	Outlets = (
 	    appList,
@@ -19,9 +18,8 @@
 	    iconBtn,
 	    autostartBtn,
 	    window,
-	    lockedBtn,
+	    appLockedBtn,
 	    box,
-	    showOnHiddenDockBtn,
 	    appCommandField,
 	    appDndCommandField,
 	    appIconBtn,
@@ -38,8 +36,7 @@
 	    "setAppDndCommand:",
 	    "setAppIcon:",
 	    "setAppLocked:",
-	    "setAppMiddleClick:",
-	    "setAppShowSingle:",
+	    "setAppPasteCommand:",
 	    "setIcon:",
 	    "showAppSettingsPanel:"
 	);

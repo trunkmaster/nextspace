@@ -69,13 +69,18 @@ NSArray      *WWMStateAutostartApps(void);
 // Appicons getters/setters of on-screen Dock
 WAppIcon  **launchingIcons;
 NSInteger WWMDockAppsCount(void);
+NSString  *WWMDockAppName(int position);
+NSImage   *WWMDockAppImage(int position);
 BOOL      WWMIsDockAppAutolaunch(int position);
 void      WWMSetDockAppAutolaunch(int position, BOOL autolaunch);
 BOOL      WWMIsDockAppLocked(int position);
 void      WWMSetDockAppLocked(int position, BOOL lock);
-NSString  *WWMDockAppName(int position);
-NSImage   *WWMDockAppImage(int position);
 NSString  *WWMDockAppCommand(int position);
+void      WWMSetDockAppCommand(int position, const char *command);
+NSString  *WWMDockAppPasteCommand(int position);
+void      WWMSetDockAppPasteCommand(int postion, const char *command);
+NSString  *WWMDockAppDndCommand(int position);
+void      WWMSetDockAppDndCommand(int position, const char *command);
 
 WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
                                  NSPoint sourcePoint,

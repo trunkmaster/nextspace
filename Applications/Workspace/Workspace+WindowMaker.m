@@ -340,12 +340,11 @@ void WWMShutdown(WShutdownMode mode)
   wutil_shutdown();  /* WUtil clean-up */
 }
 
-
 // ----------------------------
 // --- Dock
 // ----------------------------
 
-// --- Login
+// --- Init
 void WWMDockStateInit(void)
 {
   WMPropList *state;
@@ -619,9 +618,10 @@ NSImage *WWMDockAppImage(int position)
   
   return icon;
 }
-// TODO: write to WindowMaker 'WMWindowAttributes' file
+// TODO
 void WWMSetDockAppImage(NSString *path)
 {
+  // write to WindowMaker 'WMWindowAttributes' file
 }
 
 BOOL WWMIsDockAppAutolaunch(int position)
@@ -673,12 +673,63 @@ NSString *WWMDockAppCommand(int position)
   else
     return nil;
 }
-// TODO
-void WWMSetDockAppCommand(NSString *path)
+void WWMSetDockAppCommand(int position, const char *command)
 {
+  WAppIcon *appicon = _appiconInDockPosition(position);
+  
+  if (appicon)
+    {
+      wfree(appicon->command);
+      appicon->command = wstrdup(command);
+      WWMDockStateSave();
+    }
 }
 
+NSString *WWMDockAppPasteCommand(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+
+  if (appicon)
+    return [NSString stringWithCString:appicon->paste_command];
+  else
+    return nil;
+}
+void WWMSetDockAppPasteCommand(int position, const char *command)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+  
+  if (appicon)
+    {
+      wfree(appicon->paste_command);
+      appicon->paste_command = wstrdup(command);
+      WWMDockStateSave();
+    }
+}
+
+NSString *WWMDockAppDndCommand(int position)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+
+  if (appicon)
+    return [NSString stringWithCString:appicon->dnd_command];
+  else
+    return nil;
+}
+void WWMSetDockAppDndCommand(int position, const char *command)
+{
+  WAppIcon *appicon = _appiconInDockPosition(position);
+  
+  if (appicon)
+    {
+      wfree(appicon->dnd_command);
+      appicon->dnd_command = wstrdup(command);
+      WWMDockStateSave();
+    }
+}
+
+// ----------------------------
 // --- Launching appicons
+// ----------------------------
 
 // It is array of pointers to WAppIcon.
 // These pointers also placed into WScreen->app_icon_list.

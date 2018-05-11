@@ -33,7 +33,7 @@
   id appList;
   id pathField;
   id autostartBtn;
-  id lockedBtn;
+  id appLockedBtn;
   id showOnHiddenDockBtn;
   // Application
   id appPanel;
