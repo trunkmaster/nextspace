@@ -821,6 +821,45 @@ static NSString *WMComputerShouldGoDownNotification =
   [[Launcher shared] activate];
 }
 
+// Dock
+- (void)setDockVisibility:(id)sender
+{
+  WScreen *scr = wScreenWithNumber(0);
+
+  if ([[sender title] isEqualToString:@"Hide"])
+    {
+      WWMDockHideIcons(scr->dock);
+      wScreenUpdateUsableArea(scr);
+      if (!scr->dock->mapped)
+        [sender setTitle:@"Show"];
+    }
+  else
+    {
+      WWMDockShowIcons(scr->dock);
+      wScreenUpdateUsableArea(scr);
+      if (scr->dock->mapped)
+        [sender setTitle:@"Hide"];
+    }
+}
+- (void)setDockCollapse:(id)sender
+{
+  WScreen *scr = wScreenWithNumber(0);
+  
+  if ([[sender title] isEqualToString:@"Collapse"])
+    {
+      WWMDockCollapse(scr->dock);
+      if (scr->dock->collapsed)
+        [sender setTitle:@"Uncollapse"];
+    }
+  else
+    {
+      WWMDockUncollapse(scr->dock);
+      if (!scr->dock->collapsed)
+        [sender setTitle:@"Collapse"];
+    }
+  
+}
+
 //--- Validation
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {

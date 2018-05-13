@@ -377,22 +377,57 @@ void WWMDockStateInit(void)
 
 void WWMDockShowIcons(WDock *dock)
 {
-  WAppIcon *btn;
+  int start_icon, max_icons;
 
-  if (dock == NULL)
+  if (dock == NULL || dock->mapped)
     return;
 
-  btn = dock->icon_array[0];
-  // moveDock(dock, btn->x_pos, btn->y_pos);
-
-  for (int i = 0; i < dock->max_icons; i++)
+  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++)
     {
       if (dock->icon_array[i])
         XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
     }
   dock->mapped = 1;
+}
+void WWMDockHideIcons(WDock *dock)
+{
+  int  max_icons;
 
-  wAppIconPaint(btn);
+  if (dock == NULL || !dock->mapped)
+    return;
+
+  max_icons = dock->collapsed ? 1 : dock->max_icons;
+
+  for (int i = 0; i < max_icons; i++)
+    {
+      if (dock->icon_array[i])
+        XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
+    }
+  dock->mapped = 0;
+}
+void WWMDockUncollapse(WDock *dock)
+{
+  if (dock == NULL || !dock->collapsed)
+    return;
+
+  for (int i = 1; dock->max_icons; i++)
+    {
+      if (dock->icon_array[i])
+        XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
+    }
+  dock->collapsed = 0;
+}
+void WWMDockCollapse(WDock *dock)
+{
+  if (dock == NULL || dock->collapsed || !dock->mapped)
+    return;
+
+  for (int i = 1; i < dock->max_icons; i++)
+    {
+      if (dock->icon_array[i])
+        XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
+    }
+  dock->collapsed = 1;
 }
 
 // -- Should be called from already existing @autoreleasepool ---
