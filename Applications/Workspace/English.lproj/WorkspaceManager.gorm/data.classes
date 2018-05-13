@@ -19,7 +19,9 @@
 	    "updateViewers:",
 	    "showLauncher:",
 	    "initializeDisk:",
-	    "checkForDisks:"
+	    "checkForDisks:",
+	    "setDockVisibility:",
+	    "setDockCollapse:"
 	);
 	Outlets = (
 	    deviceManager,
@@ -30,6 +32,7 @@
     };
     FirstResponder = {
 	Actions = (
+	    "checkForDisks:",
 	    "compress:",
 	    "destroy:",
 	    "duplicate:",
@@ -37,10 +40,11 @@
 	    "emptyRecycler:",
 	    "initializeDisk:",
 	    "logOut:",
-	    "checkForDisks:",
+	    "setDockCollapse:",
 	    "newFolder:",
 	    "newViewer:",
 	    "openAsFolder:",
+	    "setDockVisibility:",
 	    "showAttributesInspector:",
 	    "showConsole:",
 	    "showContentsInspector:",

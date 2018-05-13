@@ -60,6 +60,9 @@ void WWMShutdown(WShutdownMode mode);
 // --- Dock
 void WWMDockStateInit(void);
 void WWMDockShowIcons(WDock *dock);
+void WWMDockHideIcons(WDock *dock);
+void WWMDockUncollapse(WDock *dock);
+void WWMDockCollapse(WDock *dock);
 // - Should be called from already existing @autoreleasepool
 NSString     *WWMDockStatePath(void);
 NSDictionary *WWMDockState(void);

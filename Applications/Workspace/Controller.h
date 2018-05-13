@@ -105,5 +105,6 @@
 - (void)saveLegalToFile:(id)sender;
 
 - (void)showLauncher:sender;
+- (void)setDockVisibility:(id)sender;
 
 @end
