@@ -2,28 +2,28 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun May 13 03:00:30 2018
+;; Created Sun May 20 03:37:39 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
+(setq default-directory "~/Developer/nextspace/Applications/Workspace/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("NEXTSP" "appIcon" "_applicationWithName" "ProcessManager" "WWMDockStateLoad" "WWMDockStateCheck" "WWMDockStateCheck(void)                                                 |{...}                                                                              " "iconForFile" "slideImage" "slide" "openFile" "open:" "directorySortMethodChang" "directoryCon" "NXScreen" "systemScreen"))
+(setq search-ring '("wDockHide" "C" "programm" "flags" "w_g" "NEXTSP" "appIcon" "_applicationWithName" "ProcessManager" "WWMDockStateLoad" "WWMDockStateCheck" "WWMDockStateCheck(void)                                                 |{...}                                                                              " "iconForFile" "slideImage" "slide" "openFile"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/DockPrefs/*" "~/Developer/nextspace/Applications/Workspace/Preferences/DockedAppsPrefs/*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Preferences/EffectPrefs/EffectPrefs.m" "~/Developer/nextspace/Applications/Workspace/Inspectors/FolderInspector.m" "~/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/BrowserViewer.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/moveres.c" "~/Developer/nextspace/Applications/Workspace/GNUmakefile"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/DockPrefs/*" "~/Developer/nextspace/Applications/Workspace/Preferences/DockedAppsPrefs/*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Preferences/EffectPrefs/EffectPrefs.m" "~/Developer/nextspace/Applications/Workspace/Inspectors/FolderInspector.m" "~/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/BrowserViewer.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
   "Controller.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
-  21895
-  '(21931 nil)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  13386
+  '(13465 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,19 +33,63 @@
   "Workspace+WindowMaker.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  11211
-  '(11231 nil)
+  11573
+  '(12080 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace_main.m"
+  "Workspace_main.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1707
+  '(1561 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c"
+  "dock.c"
+  'c-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  80511
+  '(52432 nil)
+  nil
+  nil
+  '((tab-width . 2) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.h"
   "Workspace+WindowMaker.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1922
+  1266
   '(1922 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.h"
+  "dock.h"
+  'c-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  2175
+  '(966 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c"
+  "screen.c"
+  'c-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  18316
+  '(28533 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -62,28 +106,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c"
-  "screen.c"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  28533
-  '(28533 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace_main.m"
-  "Workspace_main.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1822
-  '(869 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m"
   "Controller+NSWorkspace.m"
   'objc-mode
@@ -93,17 +115,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c"
-  "dock.c"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  52432
-  '(23221 nil)
-  nil
-  nil
-  '((tab-width . 2) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockPrefs.m"
@@ -271,17 +282,6 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c"
-  "defaults.c"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  34240
-  '(1282 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/moveres.c"
   "moveres.c"
   'c-mode
@@ -299,28 +299,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   3584
   '(3583 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h"
-  "screen.h"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.h"
-  "dock.h"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1
-  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

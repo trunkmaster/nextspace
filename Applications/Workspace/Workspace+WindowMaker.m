@@ -512,6 +512,7 @@ void WWMDockAutoLaunch(WDock *dock)
   WAppIcon    *btn;
   WSavedState *state;
   char        *command = NULL;
+  NSString    *cmd;
 
   for (int i = 0; i < dock->max_icons; i++)
     {
@@ -525,9 +526,9 @@ void WWMDockAutoLaunch(WDock *dock)
       btn->drop_launch = 0;
       btn->paste_launch = 0;
 
+      // Add '-NXAutoLaunch YES' to GNUstep application parameters
       if (!strcmp(btn->wm_class, "GNUstep"))
-        {// Add '-NXAutoLaunch YES'
-          NSString *cmd;
+        {
           cmd = [NSString stringWithCString:btn->command];
           if ([cmd rangeOfString:@"NXAutoLaunch"].location == NSNotFound)
             {
@@ -537,14 +538,16 @@ void WWMDockAutoLaunch(WDock *dock)
           wfree(btn->command);
           btn->command = wstrdup([cmd cString]);
         }
-      
+
       wDockLaunchWithState(btn, state);
-      
-      if (command)
+
+      // Return 'command' field into initial state (without -NXAutoLaunch)
+      if (!strcmp(btn->wm_class, "GNUstep"))
         {
           wfree(btn->command);
           btn->command = wstrdup(command);
           wfree(command);
+          command = NULL;
         }
     }  
 }
@@ -1054,6 +1057,11 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
       [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
         	  forKey:@"NSApplicationProcessIdentifier"];
     }
+  else if ((app_pid = wapp->app_icon->pid) > 0)
+    {
+      [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
+        	  forKey:@"NSApplicationProcessIdentifier"];
+    }
   else
     {
       [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
@@ -1065,9 +1073,10 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
     {
       xAppPath = fullPathForCommand([NSString stringWithCString:app_command]);
       if (xAppPath)
-        {
-          [appInfo setObject:xAppPath forKey:@"NSApplicationPath"];
-        }
+        [appInfo setObject:xAppPath forKey:@"NSApplicationPath"];
+      else
+        [appInfo setObject:[NSString stringWithCString:app_command]
+                    forKey:@"NSApplicationPath"];
     }
   else
     {
