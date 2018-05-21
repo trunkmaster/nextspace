@@ -389,38 +389,20 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
-  NSImage  *appImage;
-  NSString *operatingSystem;
-  
   //NSUpdateDynamicServices();
   //[[NSWorkspace sharedWorkspace] findApplications];
 
-#if 1
-  // Set appicon image
-  operatingSystem = [NXSystemInfo operatingSystem];
-  if ([operatingSystem rangeOfString:@"CentOS"].location != NSNotFound)
-    {
-      appImage = [NSImage imageNamed:@"App-CentOS-48"];
-    }
-  else if ([operatingSystem rangeOfString:@"RedHat"].location != NSNotFound)
-    {
-      appImage = [NSImage imageNamed:@"App-RedHat-48"];
-    }
-  else
-    {
-      appImage = [NSImage imageNamed:@"App-NeXT"];
-    }
-
-  if (!appImage)
-    {
-      appImage = [NSImage imageNamed:@"GNustep48x48"];
-    }
-
-  [NSApp setApplicationIconImage:appImage];
-#endif
-  
   procManager = [ProcessManager shared];
 
+  // ProcessManager created - Workspace is ready to register applications.
+  // Show Dock and start applications in it
+  if (useInternalWindowManager)
+    {
+      // WWMDockShowIcons(wScreenWithNumber(0)->dock);
+      // wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
+      WWMDockAutoLaunch(wScreenWithNumber(0)->dock);
+    }
+  
   if (useInternalWindowManager)
     {
       // Detect lid close/open events
@@ -479,14 +461,6 @@ static NSString *WMComputerShouldGoDownNotification =
            object:mediaAdaptor];
   
   [mediaAdaptor checkForRemovableMedia];
-
-  // ProcessManager created - Workspace is ready to register applications.
-  // Show Dock and start applications in it
-  if (useInternalWindowManager)
-    {
-      WWMDockShowIcons(wScreenWithNumber(0)->dock);
-      wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
-    }
 }
 
 

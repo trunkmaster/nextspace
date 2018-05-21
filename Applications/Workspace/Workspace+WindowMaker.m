@@ -16,6 +16,7 @@
 #import <Foundation/Foundation.h>
 #import <NXAppKit/NXAlert.h>
 #import <NXSystem/NXScreen.h>
+#import <NXSystem/NXSystemInfo.h>
 
 #import "Workspace+WindowMaker.h"
 #import "Operations/ProcessManager.h"
@@ -77,6 +78,23 @@ BOOL xIsWindowManagerAlreadyRunning(void)
       XCloseDisplay(xDisplay);
       return NO;
     }
+}
+
+NSString *_applicationIconPath(void)
+{
+  NSString *iconName;
+  NSString *operatingSystem;
+  
+  operatingSystem = [NXSystemInfo operatingSystem];
+  NSLog(@"Operating System: %@", operatingSystem);
+  if ([operatingSystem rangeOfString:@"CentOS"].location != NSNotFound)
+    iconName = @"App-CentOS-48";
+  else if ([operatingSystem rangeOfString:@"RedHat"].location != NSNotFound)
+    iconName = @"App-RedHat-48";
+  else
+    iconName = @"App-NeXT";
+
+  return [[NSBundle mainBundle] pathForImageResource:iconName];
 }
 
 //--- Below this line X Window related functions is TODO
@@ -177,25 +195,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   // Adjust WM elements placing
   XWUpdateScreenInfo(wScreenWithNumber(0));
 
-  // Dock startup activities
-  // {
-  //   WAppIcon **icon_array = wScreenWithNumber(0)->dock->icon_array;
-  //   WAppIcon *btn;
-  //   int      i, icon_count;
-
-  //   icon_count = wScreenWithNumber(0)->dock->icon_count;
-  //   for (i=1; i < icon_count; i++)
-  //     {
-  //       btn = icon_array[i];
-  //       if (btn->auto_launch)
-  //         {
-  //           fprintf(stderr, "*** WindowMaker+: appicon %i state -> launching\n",
-  //                   i);
-  //           btn->launching = 1;
-  //           wAppIconPaint(btn);
-  //         }
-  //     }
-  // }
+  WWMDockShowIcons(wScreenWithNumber(0)->dock);
 
   // Unmanage some signals which are managed by GNUstep part of Workspace
   WWMSetupSignalHandling();
@@ -351,7 +351,7 @@ void WWMShutdown(WShutdownMode mode)
 void WWMDockStateInit(void)
 {
   WMPropList *state;
-  WAppIcon *btn;
+  WAppIcon   *btn;
 
   // Load WMState dictionary
   if (wPreferences.flags.nodock)
@@ -371,7 +371,9 @@ void WWMDockStateInit(void)
   btn->launching = 1;   // tell Dock to wait for Workspace
   btn->running = 0;     // ...and we're not running yet
   btn->lock = 1;
-
+  
+  WWMSetDockAppImage(_applicationIconPath(), 0);
+  
   launchingIcons = NULL;
 }
 
@@ -505,21 +507,46 @@ NSArray *WWMDockStateApps(void)
   return dockApps;
 }
 
-NSArray *WWMStateAutostartApps(void)
+void WWMDockAutoLaunch(WDock *dock)
 {
-  NSArray        *dockIcons = WWMDockStateApps();
-  NSDictionary   *dIcon;
-  NSMutableArray *autostartList = [NSMutableArray new];
+  WAppIcon    *btn;
+  WSavedState *state;
+  char        *command = NULL;
 
-  for (dIcon in dockIcons)
+  for (int i = 0; i < dock->max_icons; i++)
     {
-      if ([[dIcon objectForKey:@"AutoLaunch"] isEqualToString:@"Yes"])
-        {
-          [autostartList addObject:dIcon];
+      btn = dock->icon_array[i];
+      if (!btn || !btn->auto_launch ||
+          !btn->command || btn->running || btn->launching)
+        continue;
+
+      state = wmalloc(sizeof(WSavedState));
+      state->workspace = 0;
+      btn->drop_launch = 0;
+      btn->paste_launch = 0;
+
+      if (!strcmp(btn->wm_class, "GNUstep"))
+        {// Add '-NXAutoLaunch YES'
+          NSString *cmd;
+          cmd = [NSString stringWithCString:btn->command];
+          if ([cmd rangeOfString:@"NXAutoLaunch"].location == NSNotFound)
+            {
+              cmd = [cmd stringByAppendingString:@" -NXAutoLaunch YES"];
+            }
+          command = wstrdup(btn->command);
+          wfree(btn->command);
+          btn->command = wstrdup([cmd cString]);
         }
-    }
-  
-  return [autostartList autorelease];
+      
+      wDockLaunchWithState(btn, state);
+      
+      if (command)
+        {
+          wfree(btn->command);
+          btn->command = wstrdup(command);
+          wfree(command);
+        }
+    }  
 }
 
 // --- Appicons getters/setters of on-screen Dock
@@ -659,9 +686,58 @@ NSImage *WWMDockAppImage(int position)
   return icon;
 }
 // TODO
-void WWMSetDockAppImage(NSString *path)
+void WWMSetDockAppImage(NSString *path, int position)
 {
+  WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[position];
+  RImage   *rimage;
+    
+  if (btn->icon->file)
+    {
+      wfree(btn->icon->file);
+      btn->icon->file = wstrdup([path cString]);
+    }
+
+  rimage = RLoadImage(wScreenWithNumber(0)->rcontext, btn->icon->file, 0);
+
+  if (!rimage)
+    return;
+  
+  if (btn->icon->file_image)
+    {
+      RReleaseImage(btn->icon->file_image);
+      btn->icon->file_image = NULL;
+    }
+  btn->icon->file_image = RRetainImage(rimage);
+  
   // write to WindowMaker 'WMWindowAttributes' file
+  NSMutableDictionary *wa, *appAttrs;
+  NSString *waPath, *appKey;
+
+  waPath = [WWMDockStatePath() stringByDeletingLastPathComponent];
+  waPath = [waPath stringByAppendingPathComponent:@"WMWindowAttributes"];
+  
+  wa = [[NSMutableDictionary alloc] initWithContentsOfFile:waPath];
+  appKey = [NSString stringWithFormat:@"%s.%s",
+                     btn->wm_instance, btn->wm_class];
+  appAttrs = [wa objectForKey:appKey];
+  if (!appAttrs)
+    appAttrs = [NSMutableDictionary new];
+  
+  [appAttrs setObject:[NSString stringWithCString:btn->icon->file]
+               forKey:@"Icon"];
+  [appAttrs setObject:@"YES" forKey:@"AlwaysUserIcon"];
+
+  if (position == 0)
+    {
+      [wa setObject:appAttrs forKey:@"Logo.WMDock"];
+      [wa setObject:appAttrs forKey:@"Logo.WMPanel"];
+    }
+  
+  [wa setObject:appAttrs forKey:appKey];
+  [wa writeToFile:waPath atomically:YES];
+  [wa release];
+  
+  wIconUpdate(btn->icon);
 }
 
 BOOL WWMIsDockAppAutolaunch(int position)

@@ -42,6 +42,8 @@ BOOL xIsWindowManagerAlreadyRunning(void);
 
 BOOL useInternalWindowManager;
 
+NSString *_applicationIconPath(void);
+
 //-----------------------------------------------------------------------------
 // Calls related to internals of WindowMaker.
 // 'WWM' prefix is a vector of calls 'Workspace->WindowMaker'
@@ -67,13 +69,14 @@ void WWMDockCollapse(WDock *dock);
 NSString     *WWMDockStatePath(void);
 NSDictionary *WWMDockState(void);
 NSArray      *WWMDockStateApps(void);
-NSArray      *WWMStateAutostartApps(void);
+void         WWMDockAutoLaunch(WDock *dock);
 
 // Appicons getters/setters of on-screen Dock
 WAppIcon  **launchingIcons;
 NSInteger WWMDockAppsCount(void);
 NSString  *WWMDockAppName(int position);
 NSImage   *WWMDockAppImage(int position);
+void      WWMSetDockAppImage(NSString *path, int position);
 BOOL      WWMIsDockAppAutolaunch(int position);
 void      WWMSetDockAppAutolaunch(int position, BOOL autolaunch);
 BOOL      WWMIsDockAppLocked(int position);
