@@ -8,5 +8,5 @@
   );
   ApplicationRelease = 1.0;
   NSIcon = GNUstep48x48.tiff;
-  ApplicationIcon = GNUstep;
+  ApplicationIcon = App-CentOS-48;
 }
