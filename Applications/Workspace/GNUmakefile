@@ -23,9 +23,11 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = Workspace
 VERSION = 0.8
-#REVISION = "`git log -n 1 --date=short --format=format:"%ad.%h"`"
 REVISION = "`git log -n 1 --date=short --format=format:"%h, %ad"`"
 APP_NAME = Workspace
+OS_NAME=`./os-release`
+$(APP_NAME)_APPLICATION_ICON = App-$(OS_NAME)-48.tiff
+$(APP_NAME)_MAIN_MODEL_FILE = WorkspaceManager
 
 SUBPROJECTS = \
 	Viewers/BrowserViewer \
