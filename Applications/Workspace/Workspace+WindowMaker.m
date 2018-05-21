@@ -679,7 +679,6 @@ NSImage *WWMDockAppImage(int position)
   
   return icon;
 }
-// TODO
 void WWMSetDockAppImage(NSString *path, int position, BOOL save)
 {
   WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[position];
