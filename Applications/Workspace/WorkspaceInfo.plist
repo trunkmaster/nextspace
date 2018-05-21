@@ -1,0 +1,7 @@
+{
+  ApplicationRelease = 0.8;
+  Authors = (
+    "Saso Kiselkov",
+    "Sergii Stoian"
+  );
+}

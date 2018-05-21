@@ -80,23 +80,6 @@ BOOL xIsWindowManagerAlreadyRunning(void)
     }
 }
 
-NSString *_applicationIconPath(void)
-{
-  NSString *iconName;
-  NSString *operatingSystem;
-  
-  operatingSystem = [NXSystemInfo operatingSystem];
-  NSLog(@"Operating System: %@", operatingSystem);
-  if ([operatingSystem rangeOfString:@"CentOS"].location != NSNotFound)
-    iconName = @"App-CentOS-48";
-  else if ([operatingSystem rangeOfString:@"RedHat"].location != NSNotFound)
-    iconName = @"App-RedHat-48";
-  else
-    iconName = @"App-NeXT";
-
-  return [[NSBundle mainBundle] pathForImageResource:iconName];
-}
-
 //--- Below this line X Window related functions is TODO
 
 // TODO: Move to NXFoundation/NXFileManager
@@ -352,6 +335,8 @@ void WWMDockStateInit(void)
 {
   WMPropList *state;
   WAppIcon   *btn;
+  NSString *iconName;
+  NSString *iconPath;
 
   // Load WMState dictionary
   if (wPreferences.flags.nodock)
@@ -371,8 +356,14 @@ void WWMDockStateInit(void)
   btn->launching = 1;   // tell Dock to wait for Workspace
   btn->running = 0;     // ...and we're not running yet
   btn->lock = 1;
+
+  // Set icon image before GNUstep application sets it
+  iconName = [NSString stringWithCString:APP_ICON];
+  iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == NO)
+    iconPath = [[NSBundle mainBundle] pathForImageResource:@"GNUstep48x48.tiff"];
   
-  WWMSetDockAppImage(_applicationIconPath(), 0);
+  WWMSetDockAppImage(iconPath, 0, NO);
   
   launchingIcons = NULL;
 }
@@ -689,7 +680,7 @@ NSImage *WWMDockAppImage(int position)
   return icon;
 }
 // TODO
-void WWMSetDockAppImage(NSString *path, int position)
+void WWMSetDockAppImage(NSString *path, int position, BOOL save)
 {
   WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[position];
   RImage   *rimage;
@@ -712,33 +703,36 @@ void WWMSetDockAppImage(NSString *path, int position)
     }
   btn->icon->file_image = RRetainImage(rimage);
   
-  // write to WindowMaker 'WMWindowAttributes' file
-  NSMutableDictionary *wa, *appAttrs;
-  NSString *waPath, *appKey;
-
-  waPath = [WWMDockStatePath() stringByDeletingLastPathComponent];
-  waPath = [waPath stringByAppendingPathComponent:@"WMWindowAttributes"];
-  
-  wa = [[NSMutableDictionary alloc] initWithContentsOfFile:waPath];
-  appKey = [NSString stringWithFormat:@"%s.%s",
-                     btn->wm_instance, btn->wm_class];
-  appAttrs = [wa objectForKey:appKey];
-  if (!appAttrs)
-    appAttrs = [NSMutableDictionary new];
-  
-  [appAttrs setObject:[NSString stringWithCString:btn->icon->file]
-               forKey:@"Icon"];
-  [appAttrs setObject:@"YES" forKey:@"AlwaysUserIcon"];
-
-  if (position == 0)
+  // Write to WindowMaker 'WMWindowAttributes' file
+  if (save == YES)
     {
-      [wa setObject:appAttrs forKey:@"Logo.WMDock"];
-      [wa setObject:appAttrs forKey:@"Logo.WMPanel"];
-    }
+      NSMutableDictionary *wa, *appAttrs;
+      NSString *waPath, *appKey;
+
+      waPath = [WWMDockStatePath() stringByDeletingLastPathComponent];
+      waPath = [waPath stringByAppendingPathComponent:@"WMWindowAttributes"];
   
-  [wa setObject:appAttrs forKey:appKey];
-  [wa writeToFile:waPath atomically:YES];
-  [wa release];
+      wa = [[NSMutableDictionary alloc] initWithContentsOfFile:waPath];
+      appKey = [NSString stringWithFormat:@"%s.%s",
+                         btn->wm_instance, btn->wm_class];
+      appAttrs = [wa objectForKey:appKey];
+      if (!appAttrs)
+        appAttrs = [NSMutableDictionary new];
+  
+      [appAttrs setObject:[NSString stringWithCString:btn->icon->file]
+                   forKey:@"Icon"];
+      [appAttrs setObject:@"YES" forKey:@"AlwaysUserIcon"];
+
+      if (position == 0)
+        {
+          [wa setObject:appAttrs forKey:@"Logo.WMDock"];
+          [wa setObject:appAttrs forKey:@"Logo.WMPanel"];
+        }
+  
+      [wa setObject:appAttrs forKey:appKey];
+      [wa writeToFile:waPath atomically:YES];
+      [wa release];
+    }
   
   wIconUpdate(btn->icon);
 }
