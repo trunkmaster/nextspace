@@ -360,10 +360,8 @@ void WWMDockStateInit(void)
   // Set icon image before GNUstep application sets it
   iconName = [NSString stringWithCString:APP_ICON];
   iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
-  if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == NO)
-    iconPath = [[NSBundle mainBundle] pathForImageResource:@"GNUstep48x48.tiff"];
-  
-  WWMSetDockAppImage(iconPath, 0, NO);
+  if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == YES)
+    WWMSetDockAppImage(iconPath, 0, NO);
   
   launchingIcons = NULL;
 }
