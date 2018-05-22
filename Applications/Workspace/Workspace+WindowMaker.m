@@ -333,10 +333,11 @@ void WWMShutdown(WShutdownMode mode)
 // --- Init
 void WWMDockStateInit(void)
 {
+  WDock      *dock;
   WMPropList *state;
   WAppIcon   *btn;
-  NSString *iconName;
-  NSString *iconPath;
+  NSString   *iconName;
+  NSString   *iconPath;
 
   // Load WMState dictionary
   if (wPreferences.flags.nodock)
@@ -347,11 +348,12 @@ void WWMDockStateInit(void)
                                                      state, WM_DOCK);
     }
 
+  dock = wScreenWithNumber(0)->dock;
   // Setup main button properties to let Dock correctrly register Workspace
-  btn = wScreenWithNumber(0)->dock->icon_array[0];
+  btn = dock->icon_array[0];
   btn->wm_class = "GNUstep";
   btn->wm_instance = "Workspace";
-  btn->command = "NEXTSPACE internal: don't edit it!";
+  btn->command = "Workspace Manager";
   btn->auto_launch = 0; // disable autolaunch by WindowMaker's functions
   btn->launching = 1;   // tell Dock to wait for Workspace
   btn->running = 0;     // ...and we're not running yet
@@ -362,8 +364,63 @@ void WWMDockStateInit(void)
   iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
   if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == YES)
     WWMSetDockAppImage(iconPath, 0, NO);
+
+  // Create Recycler icon
+  WWMDockAddRecycler(wScreenWithNumber(0));
   
   launchingIcons = NULL;
+}
+
+void WWMDockInitRecycler(WScreen *scr, WAppIcon *btn)
+{
+  NSString *iconPath;
+  
+  btn->running = 1;
+  btn->launching = 0;
+  btn->lock = 1;
+  btn->icon->owner = scr->dock->icon_array[0]->icon->owner;
+  iconPath = [[NSBundle mainBundle] pathForImageResource:@"recycler.tiff"];
+  NSLog(@"Recycler icon: %@", iconPath);
+  WWMSetDockAppImage(iconPath, btn->yindex, NO);
+}
+
+void WWMDockAddRecycler(WScreen *scr)
+{
+  WDock    *dock = scr->dock;
+  WAppIcon *btn;
+  int      rec_pos;
+  NSString *iconPath;
+ 
+  // Check if Recycler already here
+  btn = scr->app_icon_list;
+  while (btn->next)
+    {
+      if (!strcmp(btn->wm_instance, "Recycler"))
+        {
+          NSLog(@"Recycler already here. Set up properties.");
+          WWMDockInitRecycler(scr, btn);
+          return;
+        }
+      btn = btn->next;
+    }
+
+  // Search for position in Dock for new Recycler
+  for (rec_pos = dock->max_icons-1; rec_pos > 0; rec_pos--)
+    {
+      if ((btn = dock->icon_array[rec_pos]) == NULL)
+        break;
+    }
+
+  if (rec_pos > 0) // There is a space in Dock
+    {
+      btn = wAppIconCreateForDock(scr, "Workspace Manager's Recycler",
+                                  "Recycler", "GNUstep", TILE_NORMAL);
+      WWMDockInitRecycler(scr, btn);
+      wDockAttachIcon(dock, btn, 0, rec_pos, NO);
+    }
+  else // No space in Dock
+    {
+    }
 }
 
 void WWMDockShowIcons(WDock *dock)
@@ -506,6 +563,7 @@ void WWMDockAutoLaunch(WDock *dock)
   for (int i = 0; i < dock->max_icons; i++)
     {
       btn = dock->icon_array[i];
+
       if (!btn || !btn->auto_launch ||
           !btn->command || btn->running || btn->launching)
         continue;
@@ -679,14 +737,27 @@ NSImage *WWMDockAppImage(int position)
 }
 void WWMSetDockAppImage(NSString *path, int position, BOOL save)
 {
-  WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[position];
+  WDock    *dock = wScreenWithNumber(0)->dock;
+  WAppIcon *btn;
   RImage   *rimage;
-    
+
+  for (int i = 0; i < wScreenWithNumber(0)->dock->max_icons; i++)
+    {
+      btn = dock->icon_array[i];
+      if (btn->yindex == position)
+        break;
+    }
+  
+  NSLog(@"Set image for '%s' (%i)", btn->wm_instance, position);
+
+  // if (!btn->icon)
+  //   return;
+  
   if (btn->icon->file)
     {
       wfree(btn->icon->file);
-      btn->icon->file = wstrdup([path cString]);
     }
+  btn->icon->file = wstrdup([path cString]);
 
   rimage = RLoadImage(wScreenWithNumber(0)->rcontext, btn->icon->file, 0);
 
