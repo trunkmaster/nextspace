@@ -59,9 +59,10 @@ void WWMShutdown(WShutdownMode mode);
 
 // --- Dock
 void WWMDockStateInit(void);
-void WWMDockInitRecycler(WScreen *scr, WAppIcon *btn);
+
+Window WWMDockRecyclerSetup(void);
 void WWMDockRecyclerSetIconWindow(Window win);
-void WWMDockRecyclerAdd(WScreen *scr);
+void WWMDockRecyclerAddIconWindow(Window win);
 Window WWMDockRecyclerWindow();
 
 void WWMDockShowIcons(WDock *dock);

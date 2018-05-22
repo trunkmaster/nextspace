@@ -388,6 +388,7 @@ static NSString *WMComputerShouldGoDownNotification =
   return YES;
 }
 
+#include <startup.h>
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
   //NSUpdateDynamicServices();
@@ -401,16 +402,25 @@ static NSString *WMComputerShouldGoDownNotification =
     {
       NSWindow         *rIconWindow;
       RecyclerIconView *rIconView;
-      Window           iconWin = WWMDockRecyclerWindow();
+      Window           iconWin = WWMDockRecyclerSetup();
       
       rIconWindow = [[RecyclerIconWindow alloc] initWithWindowRef:&iconWin];
+      // rIconWindow = [[RecyclerIconWindow alloc]
+      //                 initWithContentRect:NSMakeRect(0,0,64,64)
+      //                           styleMask:NSIconWindowMask
+      //                             backing:NSBackingStoreRetained
+      //                               defer:NO
+      //                              screen:nil];
       rIconView = [[RecyclerIconView alloc]
                           initWithFrame:NSMakeRect(0,0,64,64)];
-      [rIconView setImage:[NSImage imageNamed:@"recycler"]];
+      [rIconView setImage:[NSImage imageNamed:@"recyclerFull"]];
       [rIconWindow setContentView:rIconView];
       [rIconView release];
-      [rIconWindow orderFrontRegardless];
       
+      [rIconWindow orderFrontRegardless];
+      // WWMDockRecyclerAddIconWindow([rIconWindow windowNumber]);
+      // WWMDockRecyclerSetIconWindow([rIconWindow windowNumber]);
+
       // WWMDockShowIcons(wScreenWithNumber(0)->dock);
       // wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
       WWMDockAutoLaunch(wScreenWithNumber(0)->dock);
