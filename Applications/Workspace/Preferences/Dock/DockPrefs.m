@@ -94,12 +94,14 @@
   if (tc == [appList tableColumnWithIdentifier:@"autostart"])
     {
       if (WWMIsDockAppAutolaunch(row) ||
-          [appName isEqualToString:@"Workspace.GNUstep"])
+          [appName isEqualToString:@"Workspace.GNUstep"] ||
+          [appName isEqualToString:@"Recycler.GNUstep"])
         return [NSImage imageNamed:@"CheckMark"];
       else
         return nil;
 
-      if ([appName isEqualToString:@"Workspace.GNUstep"])
+      if ([appName isEqualToString:@"Workspace.GNUstep"] ||
+          [appName isEqualToString:@"Recycler.GNUstep"])
         [[tc dataCellForRow:row] setEnabled:NO];
     }
   else
@@ -109,7 +111,8 @@
       else
         appName = [appName pathExtension];
       
-      if ([appName isEqualToString:@"Workspace"])
+      if ([appName isEqualToString:@"Workspace"] ||
+          [appName isEqualToString:@"Recycler"])
         {
           [[tc dataCellForRow:row] setEnabled:NO];
         }
