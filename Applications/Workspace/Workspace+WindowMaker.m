@@ -366,12 +366,31 @@ void WWMDockStateInit(void)
     WWMSetDockAppImage(iconPath, 0, NO);
 
   // Create Recycler icon
-  WWMDockAddRecycler(wScreenWithNumber(0));
+  WWMDockRecyclerAdd(wScreenWithNumber(0));
   
   launchingIcons = NULL;
 }
 
-void WWMDockInitRecycler(WScreen *scr, WAppIcon *btn)
+// -- Recycler
+
+WAppIcon *_recyclerAppIcon(WScreen *scr)
+{
+  WDock    *dock = scr->dock;
+  WAppIcon *btn = NULL;
+ 
+  btn = scr->app_icon_list;
+  while (btn->next)
+    {
+      if (!strcmp(btn->wm_instance, "Recycler"))
+        return btn;
+      
+      btn = btn->next;
+    }
+
+  return NULL;
+}
+
+void WWMDockRecyclerInit(WScreen *scr, WAppIcon *btn)
 {
   NSString *iconPath;
   
@@ -379,12 +398,27 @@ void WWMDockInitRecycler(WScreen *scr, WAppIcon *btn)
   btn->launching = 0;
   btn->lock = 1;
   btn->icon->owner = scr->dock->icon_array[0]->icon->owner;
+  btn->icon->core->descriptor.handle_mousedown = NULL;
+  // btn->icon->core->descriptor.handle_mousedown = appIconMouseDown;
+  btn->icon->core->descriptor.parent = scr->dock->icon_array[0];
   iconPath = [[NSBundle mainBundle] pathForImageResource:@"recycler.tiff"];
-  NSLog(@"Recycler icon: %@", iconPath);
-  WWMSetDockAppImage(iconPath, btn->yindex, NO);
+  // NSLog(@"Recycler icon: %@", iconPath);
+  // WWMSetDockAppImage(iconPath, btn->yindex, NO);
 }
 
-void WWMDockAddRecycler(WScreen *scr)
+void WWMDockRecyclerSetIconWindow(Window win)
+{
+  WAppIcon *btn = _recyclerAppIcon(wScreenWithNumber(0));
+
+  if (btn)
+    {
+      NSLog(@"Set icon window to: %s", btn->command);
+      btn->icon->icon_win = win;
+      wIconUpdate(btn->icon);
+    }
+}
+
+void WWMDockRecyclerAdd(WScreen *scr)
 {
   WDock    *dock = scr->dock;
   WAppIcon *btn;
@@ -392,18 +426,14 @@ void WWMDockAddRecycler(WScreen *scr)
   NSString *iconPath;
  
   // Check if Recycler already here
-  btn = scr->app_icon_list;
-  while (btn->next)
+  btn = _recyclerAppIcon(scr);
+  if (btn != NULL)
     {
-      if (!strcmp(btn->wm_instance, "Recycler"))
-        {
-          NSLog(@"Recycler already here. Set up properties.");
-          WWMDockInitRecycler(scr, btn);
-          return;
-        }
-      btn = btn->next;
+      NSLog(@"Recycler already here. Set up properties.");
+      WWMDockRecyclerInit(scr, btn);
+      return;
     }
-
+    
   // Search for position in Dock for new Recycler
   for (rec_pos = dock->max_icons-1; rec_pos > 0; rec_pos--)
     {
@@ -415,12 +445,17 @@ void WWMDockAddRecycler(WScreen *scr)
     {
       btn = wAppIconCreateForDock(scr, "Workspace Manager's Recycler",
                                   "Recycler", "GNUstep", TILE_NORMAL);
-      WWMDockInitRecycler(scr, btn);
+      WWMDockRecyclerInit(scr, btn);
       wDockAttachIcon(dock, btn, 0, rec_pos, NO);
     }
   else // No space in Dock
     {
     }
+}
+
+Window WWMDockRecyclerWindow()
+{
+  return _recyclerAppIcon(wScreenWithNumber(0))->icon->core->window;
 }
 
 void WWMDockShowIcons(WDock *dock)

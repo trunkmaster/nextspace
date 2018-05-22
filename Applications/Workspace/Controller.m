@@ -43,6 +43,7 @@
 #import "Viewers/FileViewer.h"
 #import "Preferences.h"
 #import "Launcher.h"
+#import "Recycler.h"
 
 #import "ModuleLoader.h"
 
@@ -398,6 +399,18 @@ static NSString *WMComputerShouldGoDownNotification =
   // Show Dock and start applications in it
   if (useInternalWindowManager)
     {
+      NSWindow         *rIconWindow;
+      RecyclerIconView *rIconView;
+      Window           iconWin = WWMDockRecyclerWindow();
+      
+      rIconWindow = [[RecyclerIconWindow alloc] initWithWindowRef:&iconWin];
+      rIconView = [[RecyclerIconView alloc]
+                          initWithFrame:NSMakeRect(0,0,64,64)];
+      [rIconView setImage:[NSImage imageNamed:@"recycler"]];
+      [rIconWindow setContentView:rIconView];
+      [rIconView release];
+      [rIconWindow orderFrontRegardless];
+      
       // WWMDockShowIcons(wScreenWithNumber(0)->dock);
       // wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
       WWMDockAutoLaunch(wScreenWithNumber(0)->dock);
