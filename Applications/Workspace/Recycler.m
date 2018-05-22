@@ -41,7 +41,7 @@
 - (void)rightMouseDown:(NSEvent *)theEvent
 {
   NSLog(@"Recycler: RMB click!");
-  [NSApp rightMouseDown:theEvent];
+  [super rightMouseDown:theEvent];
 }
 
 @end
