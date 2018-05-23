@@ -1,9 +1,90 @@
 /* All Rights reserved */
 
-#import "Recycler.h"
 #import <GNUstepGUI/GSDisplayServer.h>
+#import "Recycler.h"
 
-@implementation	RecyclerIconWindow
+@implementation	RecyclerIcon
+
++ (WAppIcon *)createAppIconForDock:(WDock *)dock
+{
+  WScreen  *scr = dock->screen_ptr;
+  WAppIcon *btn = NULL;
+  int      rec_pos;
+ 
+  // Search for position in Dock for new Recycler
+  for (rec_pos = dock->max_icons-1; rec_pos > 0; rec_pos--)
+    {
+      if ((btn = dock->icon_array[rec_pos]) == NULL)
+        break;
+    }
+
+  if (rec_pos > 0) // There is a space in Dock
+    {
+      btn = wAppIconCreateForDock(scr, "Workspace Manager's Recycler",
+                                  "Recycler", "GNUstep", TILE_NORMAL);
+
+      btn->yindex = rec_pos;
+      btn->running = 1;
+      btn->launching = 0;
+      btn->lock = 1;
+    }
+  else // No space in Dock
+    {
+      NSLog(@"Recycler: no space in the Dock for Recycler icon.");
+    }
+
+  return btn;
+}
+
++ (WAppIcon *)recyclerAppIconForDock:(WDock *)dock
+{
+  WScreen  *scr = dock->screen_ptr;
+  WAppIcon *btn = NULL;
+ 
+  btn = scr->app_icon_list;
+  while (btn->next)
+    {
+      if (!strcmp(btn->wm_instance, "Recycler"))
+        return btn;
+      
+      btn = btn->next;
+    }
+
+  btn = [RecyclerIcon createAppIconForDock:dock];
+
+  return btn;
+}
+
+- initWithDock:(WDock *)dock
+{
+  XClassHint classhint;
+  
+  dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
+  
+  if (dockIcon == NULL)
+    {
+      NSLog(@"Recycler Dock icon creation failed!");
+      return nil;
+    }
+
+  self = [super initWithWindowRef:&dockIcon->icon->core->window];
+  
+  classhint.res_name = "Recycler";
+  classhint.res_class = "GNUstep";
+  XSetClassHint(dpy, dockIcon->icon->core->window, &classhint);
+  
+  view = [[RecyclerView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
+  [view setImage:[NSImage imageNamed:@"recyclerFull"]];
+  [self setContentView:view];
+  [view release];
+
+  return self;
+}
+
+- (WAppIcon *)dockIcon
+{
+  return dockIcon;
+}
 
 - (BOOL)canBecomeMainWindow
 {
@@ -46,7 +127,7 @@
 
 @end
 
-@implementation RecyclerIconView
+@implementation RecyclerView
 
 // Class variables
 static NSCell *dragCell = nil;

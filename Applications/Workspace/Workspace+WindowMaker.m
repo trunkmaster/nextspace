@@ -332,6 +332,7 @@ void WWMShutdown(WShutdownMode mode)
 // ----------------------------
 
 // --- Init
+#import "Recycler.h"
 void WWMDockStateInit(void)
 {
   WDock      *dock;
@@ -341,13 +342,13 @@ void WWMDockStateInit(void)
   NSString   *iconPath;
 
   // Load WMState dictionary
-  if (wPreferences.flags.nodock)
-    {
-      state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state,
-                                    WMCreatePLString("Dock"));
-      wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0),
-                                                     state, WM_DOCK);
-    }
+  // if (wPreferences.flags.nodock)
+  //   {
+  //     state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state,
+  //                                   WMCreatePLString("Dock"));
+  //     wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0),
+  //                                                    state, WM_DOCK);
+  //   }
 
   dock = wScreenWithNumber(0)->dock;
   // Setup main button properties to let Dock correctrly register Workspace
@@ -367,7 +368,9 @@ void WWMDockStateInit(void)
     WWMSetDockAppImage(iconPath, 0, NO);
 
   // Create Recycler icon
-  // WWMDockRecyclerAdd(wScreenWithNumber(0));
+  // WWMDockRecyclerSetup();
+  // btn = [RecyclerIcon recyclerAppIconForDock:dock];
+  // wDockAttachIcon(dock, btn, 0, btn->yindex, NO);
   
   launchingIcons = NULL;
 }
@@ -394,17 +397,36 @@ WAppIcon *_recyclerAppIcon(WScreen *scr)
 void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 {
   fprintf(stderr, "Recycler: mouse down from WindowMaker!\n");
-  // wHandleAppIconMove(desc->parent, event);
-  if (event->xbutton.button == Button3)
+  if (event->xbutton.button == Button1)
     {
-      XSendEvent(dpy, [[NSApp iconWindow] windowNumber],
-                 False, ButtonPressMask, event);
+      // XSync(dpy, 0);
+      // XAllowEvents(dpy, ReplayPointer, CurrentTime);
+      // XSync(dpy, 0);
+      // XSendEvent(dpy, [[NSApp iconWindow] windowNumber],
+      //            True, ButtonPressMask, event);
+      wHandleAppIconMove(desc->parent, event);
+    }
+  else if (event->xbutton.button == Button3)
+    {
+      WAppIcon *aicon = desc->parent;
+      // XSendEvent(dpy, wScreenWithNumber(0)->focused_window->client_win,
+      //            True, ButtonPressMask, event);
+      XSync(dpy, 0);
+      XAllowEvents(dpy, ReplayPointer, CurrentTime);
+      XSync(dpy, 0);
+      XSendEvent(dpy, aicon->icon->icon_win,
+                 True, ButtonPressMask, event);
     }
 }
 
 void _recyclerAppIconInit(WScreen *scr, WAppIcon *btn)
 {
-  NSString *iconPath;
+  NSString   *iconPath;
+  XClassHint classhint;
+  
+  classhint.res_name = "Recycler";
+  classhint.res_class = "GNUstep";
+  XSetClassHint(dpy, btn->icon->core->window, &classhint);
   
   btn->running = 1;
   btn->launching = 0;
@@ -481,7 +503,19 @@ void WWMDockRecyclerAddIconWindow(Window win)
   WScreen *scr = icon->core->screen_ptr;
   unsigned int w = 64, h = 64, d;
 
-  icon->icon_win = win;
+  NSLog(@"Workspace core window %lu, Recycler core window %lu (%lu)",
+        scr->dock->icon_array[0]->icon->core->window,
+        icon->core->window, win);
+
+  XClassHint classhint;
+  classhint.res_name = "Recycler";
+  classhint.res_class = "GNUstep";
+  XSetClassHint(dpy, win, &classhint);
+
+  // XGetWindowAttributes(dpy, icon->core->window, &attr);
+  // XChangeWindowAttributes(dpy, win, , &attr);
+  icon->core->window = win;
+  // icon->icon_win = win;
   
   /* Reparent the dock application to the icon */
 
@@ -490,19 +524,19 @@ void WWMDockRecyclerAddIconWindow(Window win)
   // getSize(icon->icon_win, &w, &h, &d);
 
   /* Set the background pixmap */
-  XSetWindowBackgroundPixmap(dpy, icon->core->window, scr->icon_tile_pixmap);
+  // XSetWindowBackgroundPixmap(dpy, icon->core->window, scr->icon_tile_pixmap);
 
   /* Set the icon border */
-  XSetWindowBorderWidth(dpy, icon->icon_win, 0);
+  // XSetWindowBorderWidth(dpy, icon->icon_win, 0);
 
   /* Put the dock application in the icon */
-  XReparentWindow(dpy, icon->icon_win, icon->core->window,
-                  (wPreferences.icon_size - w) / 2,
-                  (wPreferences.icon_size - h) / 2);
+  // XReparentWindow(dpy, icon->icon_win, icon->core->window,
+  //                 (wPreferences.icon_size - w) / 2,
+  //                 (wPreferences.icon_size - h) / 2);
 
   /* Show it and save */
-  XMapWindow(dpy, icon->icon_win);
-  XAddToSaveSet(dpy, icon->icon_win);
+  // XMapWindow(dpy, icon->icon_win);
+  // XAddToSaveSet(dpy, icon->icon_win);
 
   /* Needed to move the icon clicking on the application part */
   // if ((XGetWindowAttributes(dpy, icon->icon_win, &attr)) &&
@@ -518,12 +552,12 @@ void WWMDockRecyclerAddIconWindow(Window win)
                         None, wPreferences.cursor[WCUR_ARROW]);
     // }  
 }
-
+/*
 Window WWMDockRecyclerWindow()
 {
   return _recyclerAppIcon(wScreenWithNumber(0))->icon->core->window;
 }
-
+*/
 void WWMDockShowIcons(WDock *dock)
 {
   int start_icon, max_icons;

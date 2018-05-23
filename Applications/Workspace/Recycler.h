@@ -1,12 +1,22 @@
 /* All Rights reserved */
 
 #include <AppKit/AppKit.h>
+#import "Workspace+WindowMaker.h"
 
-@interface RecyclerIconWindow : NSWindow
+@interface RecyclerView : NSView
+- (void)setImage:(NSImage *)anImage;
 @end
 
-@interface RecyclerIconView : NSView
+@interface RecyclerIcon : NSWindow
+{
+  WAppIcon     *dockIcon;
+  RecyclerView *view;
+}
 
-- (void)setImage:(NSImage *)anImage;
++ (WAppIcon *)createAppIconForDock:(WDock *)dock;
++ (WAppIcon *)recyclerAppIconForDock:(WDock *)dock;
+  
+- initWithDock:(WDock *)dock;
+- (WAppIcon *)dockIcon;
 
 @end
