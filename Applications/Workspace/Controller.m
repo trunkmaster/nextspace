@@ -400,11 +400,21 @@ static NSString *WMComputerShouldGoDownNotification =
   // Show Dock and start applications in it
   if (useInternalWindowManager)
     {
-      NSWindow         *rIconWindow;
+      WDock        *dock = wScreenWithNumber(0)->dock;
+      RecyclerIcon *wmRecycler = [[RecyclerIcon alloc] initWithDock:dock];
+      WAppIcon     *btn = [wmRecycler dockIcon];
+
+      wDockAttachIcon(dock, btn, 0, btn->yindex, NO);
+      XMapWindow(dpy, btn->icon->core->window);
+      
+      [wmRecycler orderFrontRegardless];      
+      
+      /*
       RecyclerIconView *rIconView;
-      Window           iconWin = WWMDockRecyclerSetup();
+      Window           iconWin = WWMDockRecyclerWindow();
       
       rIconWindow = [[RecyclerIconWindow alloc] initWithWindowRef:&iconWin];
+      XUnmapWindow(dpy, iconWin);
       // rIconWindow = [[RecyclerIconWindow alloc]
       //                 initWithContentRect:NSMakeRect(0,0,64,64)
       //                           styleMask:NSIconWindowMask
@@ -416,12 +426,17 @@ static NSString *WMComputerShouldGoDownNotification =
       [rIconView setImage:[NSImage imageNamed:@"recyclerFull"]];
       [rIconWindow setContentView:rIconView];
       [rIconView release];
-      
-      [rIconWindow orderFrontRegardless];
-      // WWMDockRecyclerAddIconWindow([rIconWindow windowNumber]);
-      // WWMDockRecyclerSetIconWindow([rIconWindow windowNumber]);
 
-      // WWMDockShowIcons(wScreenWithNumber(0)->dock);
+      // [rIconWindow orderFrontRegardless];
+      // iconWin = (Window)[GSCurrentServer()
+      //                       windowDevice:[rIconWindow windowNumber]];
+      // WWMDockRecyclerAddIconWindow(iconWin);
+
+      // [rIconWindow orderFrontRegardless];
+      // WWMDockRecyclerSetIconWindow([rIconWindow windowNumber]);
+      */
+
+      // WWMDockShowIcons(dock);
       // wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
       WWMDockAutoLaunch(wScreenWithNumber(0)->dock);
     }
