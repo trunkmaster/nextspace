@@ -58,12 +58,12 @@ void WWMWipeDesktop(WScreen * scr);
 void WWMShutdown(WShutdownMode mode);
 
 // --- Dock
-void WWMDockStateInit(void);
+void WWMDockInit(void);
 
-Window WWMDockRecyclerSetup(void);
-void WWMDockRecyclerSetIconWindow(Window win);
-void WWMDockRecyclerAddIconWindow(Window win);
-Window WWMDockRecyclerWindow();
+// Window WWMDockRecyclerSetup(void);
+// void WWMDockRecyclerSetIconWindow(Window win);
+// void WWMDockRecyclerAddIconWindow(Window win);
+// Window WWMDockRecyclerWindow();
 
 void WWMDockShowIcons(WDock *dock);
 void WWMDockHideIcons(WDock *dock);
