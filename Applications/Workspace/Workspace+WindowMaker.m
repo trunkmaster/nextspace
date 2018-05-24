@@ -20,6 +20,7 @@
 #import <NXSystem/NXSystemInfo.h>
 
 #import "Workspace+WindowMaker.h"
+#import "Controller.h"
 #import "Operations/ProcessManager.h"
 
 // WindowMaker functions and vars
@@ -171,7 +172,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   // Just load saved Dock state without icons drawing.
   // Dock appears on screen after call to WWMDockShowIcons in
   // Controller's -applicationDidFinishLaunching method.
-  WWMDockStateInit();
+  WWMDockInit();
 
   //--- Below this point WindowMaker was initialized
 
@@ -333,24 +334,14 @@ void WWMShutdown(WShutdownMode mode)
 
 // --- Init
 #import "Recycler.h"
-void WWMDockStateInit(void)
+void WWMDockInit(void)
 {
-  WDock      *dock;
+  WDock      *dock = wScreenWithNumber(0)->dock;
   WMPropList *state;
   WAppIcon   *btn;
   NSString   *iconName;
   NSString   *iconPath;
 
-  // Load WMState dictionary
-  // if (wPreferences.flags.nodock)
-  //   {
-  //     state = WMGetFromPLDictionary(wScreenWithNumber(0)->session_state,
-  //                                   WMCreatePLString("Dock"));
-  //     wScreenWithNumber(0)->dock = wDockRestoreState(wScreenWithNumber(0),
-  //                                                    state, WM_DOCK);
-  //   }
-
-  dock = wScreenWithNumber(0)->dock;
   // Setup main button properties to let Dock correctrly register Workspace
   btn = dock->icon_array[0];
   btn->wm_class = "GNUstep";
@@ -360,6 +351,7 @@ void WWMDockStateInit(void)
   btn->launching = 1;   // tell Dock to wait for Workspace
   btn->running = 0;     // ...and we're not running yet
   btn->lock = 1;
+  wAppIconPaint(btn);
 
   // Set icon image before GNUstep application sets it
   iconName = [NSString stringWithCString:APP_ICON];
@@ -367,16 +359,21 @@ void WWMDockStateInit(void)
   if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == YES)
     WWMSetDockAppImage(iconPath, 0, NO);
 
-  // Create Recycler icon
-  // WWMDockRecyclerSetup();
-  // btn = [RecyclerIcon recyclerAppIconForDock:dock];
-  // wDockAttachIcon(dock, btn, 0, btn->yindex, NO);
+  // Setup Recycler icon
+  btn = [RecyclerIcon recyclerAppIconForDock:dock];
+  btn->running = 1;
+  btn->launching = 0;
+  btn->lock = 1;
+  btn->command = "";
+  btn->dnd_command = "";
+  btn->paste_command = "";
+  wAppIconPaint(btn);
   
   launchingIcons = NULL;
 }
 
 // -- Recycler
-
+/*
 WAppIcon *_recyclerAppIcon(WScreen *scr)
 {
   WDock    *dock = scr->dock;
@@ -517,28 +514,28 @@ void WWMDockRecyclerAddIconWindow(Window win)
   icon->core->window = win;
   // icon->icon_win = win;
   
-  /* Reparent the dock application to the icon */
+  // Reparent the dock application to the icon
 
-  /* We need the application size to center it
-   * and show in the correct position */
+  // We need the application size to center it
+  //  * and show in the correct position
   // getSize(icon->icon_win, &w, &h, &d);
 
-  /* Set the background pixmap */
+  // Set the background pixmap
   // XSetWindowBackgroundPixmap(dpy, icon->core->window, scr->icon_tile_pixmap);
 
-  /* Set the icon border */
+  // Set the icon border
   // XSetWindowBorderWidth(dpy, icon->icon_win, 0);
 
-  /* Put the dock application in the icon */
+  // Put the dock application in the icon
   // XReparentWindow(dpy, icon->icon_win, icon->core->window,
   //                 (wPreferences.icon_size - w) / 2,
   //                 (wPreferences.icon_size - h) / 2);
 
-  /* Show it and save */
+  // Show it and save
   // XMapWindow(dpy, icon->icon_win);
   // XAddToSaveSet(dpy, icon->icon_win);
 
-  /* Needed to move the icon clicking on the application part */
+  // Needed to move the icon clicking on the application part
   // if ((XGetWindowAttributes(dpy, icon->icon_win, &attr)) &&
   //     (attr.all_event_masks & ButtonPressMask))
   //   {
@@ -552,12 +549,14 @@ void WWMDockRecyclerAddIconWindow(Window win)
                         None, wPreferences.cursor[WCUR_ARROW]);
     // }  
 }
+*/
 /*
 Window WWMDockRecyclerWindow()
 {
   return _recyclerAppIcon(wScreenWithNumber(0))->icon->core->window;
 }
 */
+
 void WWMDockShowIcons(WDock *dock)
 {
   int start_icon, max_icons;

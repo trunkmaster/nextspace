@@ -286,7 +286,16 @@ static NSString *WMComputerShouldGoDownNotification =
 
   // Close XWindow applications - wipeDesktop?
   
-  // Hide Dock
+  if (useInternalWindowManager)
+    {
+      // Hide Dock
+      WWMDockHideIcons(wScreenWithNumber(0)->dock);
+      if (wmRecycler)
+        {
+          [wmRecycler close];
+          [wmRecycler release];
+        }
+    }
   
   // NSLog(@"Application should terminate fileSystemMonitor RC: %lu",
   //       [fileSystemMonitor retainCount]);
@@ -401,13 +410,9 @@ static NSString *WMComputerShouldGoDownNotification =
   if (useInternalWindowManager)
     {
       WDock        *dock = wScreenWithNumber(0)->dock;
-      RecyclerIcon *wmRecycler = [[RecyclerIcon alloc] initWithDock:dock];
-      WAppIcon     *btn = [wmRecycler dockIcon];
-
-      wDockAttachIcon(dock, btn, 0, btn->yindex, NO);
-      XMapWindow(dpy, btn->icon->core->window);
-      
-      [wmRecycler orderFrontRegardless];      
+      wmRecycler = [[RecyclerIcon alloc] initWithDock:dock];
+      [wmRecycler orderFrontRegardless];
+      // XSync(dpy, True);
       
       /*
       RecyclerIconView *rIconView;
@@ -438,7 +443,7 @@ static NSString *WMComputerShouldGoDownNotification =
 
       // WWMDockShowIcons(dock);
       // wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
-      WWMDockAutoLaunch(wScreenWithNumber(0)->dock);
+      WWMDockAutoLaunch(dock);
     }
   
   if (useInternalWindowManager)
@@ -648,6 +653,11 @@ static NSString *WMComputerShouldGoDownNotification =
 - (Processes *)processesPanel
 {
   return procPanel;
+}
+
+- (RecyclerIcon *)recyclerIcon
+{
+  return wmRecycler;
 }
 
 

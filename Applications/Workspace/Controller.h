@@ -34,6 +34,7 @@
 @class ProcessManager;
 @class NXScreen;
 @class NXPower;
+@class RecyclerIcon;
 
 @interface Controller : NSObject
 {
@@ -72,6 +73,8 @@
   NSNotificationCenter	*_workspaceCenter;
   BOOL			_fileSystemChanged;
   BOOL			_userDefaultsChanged;
+
+  RecyclerIcon		*wmRecycler;
 }
 
 - (FileViewer *)openNewViewerRootedAt:(NSString *)path;
@@ -85,6 +88,7 @@
 - (NXFileSystemMonitor *)fileSystemMonitor;
 - (id<MediaManager>)mediaManager;
 - (Processes *)processesPanel;
+- (RecyclerIcon *)recyclerIcon;
 
 - (void)emptyRecycler:(id)sender;
 - (void)showConsole:(id)sender;

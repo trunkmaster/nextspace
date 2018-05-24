@@ -3,6 +3,51 @@
 #import <GNUstepGUI/GSDisplayServer.h>
 #import "Recycler.h"
 
+static RecyclerIcon *recyclerIcon = nil;
+
+// WindowMaker's callback funtion on mouse click
+void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
+{
+  fprintf(stderr, "Recycler: mouse down (window: %lu (%lu) subwindow: %lu)!\n",
+          event->xbutton.window, event->xbutton.root, event->xbutton.subwindow);
+  NSEvent     *theEvent;
+  NSPoint     eventLocation = NSMakePoint(event->xbutton.x, event->xbutton.y);
+  NSEventType eventType = 0;
+      
+  // eventLocation = [recyclerIcon convertBaseToScreen:eventLocation];
+
+  if (event->xbutton.button == Button1)
+    {
+      // eventType = NSLeftMouseDown;
+      wHandleAppIconMove(desc->parent, event);
+    }
+  else if (event->xbutton.button == Button3)
+    {
+      // Window win = (Window)[GSCurrentServer()
+      //                          windowDevice:[[NSApp mainWindow] windowNumber]];
+      event->xbutton.window = event->xbutton.root;
+      XSendEvent(dpy, event->xbutton.root, False, ButtonPressMask, event);
+      // eventType = NSRightMouseDown;
+    }
+  
+  if (eventType)
+    {
+      theEvent =
+        [NSEvent mouseEventWithType:eventType
+                           location:eventLocation
+                      modifierFlags:0
+                          timestamp: (NSTimeInterval)event->xbutton.time / 1000.0
+                       windowNumber:[recyclerIcon windowNumber]
+                            context:[recyclerIcon graphicsContext]
+                        eventNumber:event->xbutton.serial
+                         clickCount:1
+                           pressure:1.0];
+
+      [recyclerIcon performSelectorOnMainThread:@selector(sendEvent:)
+                                     withObject:theEvent
+                                  waitUntilDone:NO];
+    }
+}
 @implementation	RecyclerIcon
 
 + (WAppIcon *)createAppIconForDock:(WDock *)dock
@@ -20,17 +65,12 @@
 
   if (rec_pos > 0) // There is a space in Dock
     {
-      btn = wAppIconCreateForDock(scr, "Workspace Manager's Recycler",
-                                  "Recycler", "GNUstep", TILE_NORMAL);
-
+      btn = wAppIconCreateForDock(scr, "", "Recycler", "GNUstep", TILE_NORMAL);
       btn->yindex = rec_pos;
-      btn->running = 1;
-      btn->launching = 0;
-      btn->lock = 1;
     }
   else // No space in Dock
     {
-      NSLog(@"Recycler: no space in the Dock for Recycler icon.");
+      NSLog(@"Recycler: no space in the Dock. Not implemented yet...");
     }
 
   return btn;
@@ -39,20 +79,26 @@
 + (WAppIcon *)recyclerAppIconForDock:(WDock *)dock
 {
   WScreen  *scr = dock->screen_ptr;
-  WAppIcon *btn = NULL;
+  WAppIcon *btn, *rec_btn = NULL;
  
   btn = scr->app_icon_list;
   while (btn->next)
     {
       if (!strcmp(btn->wm_instance, "Recycler"))
-        return btn;
-      
+        {
+          rec_btn = btn;
+          break;
+        }
       btn = btn->next;
     }
 
-  btn = [RecyclerIcon createAppIconForDock:dock];
-
-  return btn;
+  if (!rec_btn)
+    {
+      rec_btn = [RecyclerIcon createAppIconForDock:dock];
+      wDockAttachIcon(dock, rec_btn, 0, rec_btn->yindex, NO);
+    }
+  
+  return rec_btn;
 }
 
 - initWithDock:(WDock *)dock
@@ -60,25 +106,26 @@
   XClassHint classhint;
   
   dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
-  
+ 
   if (dockIcon == NULL)
     {
       NSLog(@"Recycler Dock icon creation failed!");
       return nil;
     }
 
-  self = [super initWithWindowRef:&dockIcon->icon->core->window];
-  
+  dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
   classhint.res_name = "Recycler";
   classhint.res_class = "GNUstep";
   XSetClassHint(dpy, dockIcon->icon->core->window, &classhint);
   
+  recyclerIcon = [super initWithWindowRef:&dockIcon->icon->core->window];
+  
   view = [[RecyclerView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
   [view setImage:[NSImage imageNamed:@"recyclerFull"]];
-  [self setContentView:view];
+  [recyclerIcon setContentView:view];
   [view release];
 
-  return self;
+  return recyclerIcon;
 }
 
 - (WAppIcon *)dockIcon
@@ -121,7 +168,10 @@
 
 - (void)rightMouseDown:(NSEvent *)theEvent
 {
-  NSLog(@"Recycler: RMB click!");
+  Window win = (Window)[GSCurrentServer()
+                           windowDevice:[recyclerIcon windowNumber]];
+  NSLog(@"Recycler: RMB click! Server: %@ Window: %lu",
+        GSCurrentServer(), win);
   [super rightMouseDown:theEvent];
 }
 
