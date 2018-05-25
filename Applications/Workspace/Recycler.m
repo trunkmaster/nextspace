@@ -1,17 +1,18 @@
 /* All Rights reserved */
 
 #import <GNUstepGUI/GSDisplayServer.h>
+#import <NXAppKit/NXAlert.h>
 #import "Recycler.h"
 
-static RecyclerIcon *recyclerIcon = nil;
+static Recycler *recycler = nil;
 
 // WindowMaker's callback funtion on mouse click.
 // LMB click goes to dock app core window.
 // RMB click goes to root window (handles by event.c in WindowMaker).
 void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 {
-  // fprintf(stderr, "Recycler: mouse down (window: %lu (%lu) subwindow: %lu)!\n",
-  //         event->xbutton.window, event->xbutton.root, event->xbutton.subwindow);
+  fprintf(stderr, "Recycler: mouse down (window: %lu (%lu) subwindow: %lu)!\n",
+          event->xbutton.window, event->xbutton.root, event->xbutton.subwindow);
   NSEvent   *theEvent;
   WAppIcon  *aicon = desc->parent;
   NSInteger clickCount = 1;
@@ -31,15 +32,15 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
                            location:NSMakePoint(event->xbutton.x, event->xbutton.y)
                       modifierFlags:0
                           timestamp:(NSTimeInterval)event->xbutton.time / 1000.0
-                       windowNumber:[recyclerIcon windowNumber]
-                            context:[recyclerIcon graphicsContext]
+                       windowNumber:[[recycler appIcon] windowNumber]
+                            context:[[recycler appIcon] graphicsContext]
                         eventNumber:event->xbutton.serial
                          clickCount:clickCount
                            pressure:1.0];
 
-      [[recyclerIcon contentView] performSelectorOnMainThread:@selector(mouseDown:)
-                                                   withObject:theEvent
-                                                waitUntilDone:NO];
+      [recycler performSelectorOnMainThread:@selector(mouseDown:)
+                                 withObject:theEvent
+                              waitUntilDone:NO];
       
     }
   else if (event->xbutton.button == Button3)
@@ -103,39 +104,6 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   return rec_btn;
 }
 
-- initWithDock:(WDock *)dock
-{
-  XClassHint classhint;
-  
-  dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
- 
-  if (dockIcon == NULL)
-    {
-      NSLog(@"Recycler Dock icon creation failed!");
-      return nil;
-    }
-
-  dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
-
-  classhint.res_name = "Recycler";
-  classhint.res_class = "GNUstep";
-  XSetClassHint(dpy, dockIcon->icon->core->window, &classhint);
-  
-  recyclerIcon = [super initWithWindowRef:&dockIcon->icon->core->window];
-  
-  view = [[RecyclerView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
-  [view setImage:[NSImage imageNamed:@"recyclerDeposit"]];
-  [recyclerIcon setContentView:view];
-  [view release];
-
-  return recyclerIcon;
-}
-
-- (WAppIcon *)dockIcon
-{
-  return dockIcon;
-}
-
 - (BOOL)canBecomeMainWindow
 {
   return NO;
@@ -169,18 +137,9 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
     _windowLevel = NSDockWindowLevel;
 }
 
-- (void)rightMouseDown:(NSEvent *)theEvent
-{
-  Window win = (Window)[GSCurrentServer()
-                           windowDevice:[recyclerIcon windowNumber]];
-  NSLog(@"Recycler: RMB click! Server: %@ Window: %lu",
-        GSCurrentServer(), win);
-  [super rightMouseDown:theEvent];
-}
-
 @end
 
-@implementation RecyclerView
+@implementation RecyclerIconView
 
 // Class variables
 static NSCell *dragCell = nil;
@@ -219,9 +178,44 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   return YES;
 }
 
-- (void)concludeDragOperation:(id<NSDraggingInfo>)sender
+- (void)drawRect:(NSRect)rect
 {
+  NSSize iconSize = NSMakeSize(64,64);
+  // NSSize iconSize = GSGetIconSize();
+  
+  NSLog(@"Recycler View: drawRect!");
+  
+  [tileCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
+  		   inView:self];
+  [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
+        	   inView:self];
 }
+
+- (id)initWithFrame:(NSRect)frame
+{
+  self = [super initWithFrame:frame];
+  [self registerForDraggedTypes:[NSArray arrayWithObjects:
+                                           NSFilenamesPboardType, nil]];
+  return self;
+}
+
+- (void)setImage:(NSImage *)anImage
+{
+  NSImage *imgCopy = [anImage copy];
+
+  if (imgCopy)
+    {
+      NSSize imageSize = [imgCopy size];
+
+      [imgCopy setScalesWhenResized:YES];
+      [imgCopy setSize:scaledIconSizeForSize(imageSize)];
+    }
+  [dragCell setImage:imgCopy];
+  RELEASE(imgCopy);
+  [self setNeedsDisplay:YES];
+}
+
+// --- Drag and Drop
 
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
@@ -237,87 +231,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   return NSDragOperationGeneric;
 }
-
-- (void)drawRect:(NSRect)rect
-{
-  NSSize iconSize = NSMakeSize(64,64);
-  // NSSize iconSize = GSGetIconSize();
-  
-  NSLog(@"Recycler: drawRect!");
-  
-  [tileCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
-  		   inView:self];
-  [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
-		   inView:self];
-  
-  if ([NSApp isHidden])
-    {
-      NSRectEdge mySides[] = {NSMinXEdge, NSMinYEdge, NSMaxXEdge, NSMaxYEdge};
-      CGFloat    myGrays[] = {NSBlack, NSWhite, NSWhite, NSBlack};
-      NSDrawTiledRects(NSMakeRect(4, 4, 3, 2), rect, mySides, myGrays, 4);
-    }
-}
-
-- (id)initWithFrame:(NSRect)frame
-{
-  self = [super initWithFrame:frame];
-  [self registerForDraggedTypes:[NSArray arrayWithObjects:
-                                           NSFilenamesPboardType, nil]];
-  return self;
-}
-
-- (void)mouseDown:(NSEvent*)theEvent
-{
-  NSLog(@"Recycler View: mouse down!");
-
-  if ([theEvent clickCount] >= 2)
-    {
-      NSLog(@"Recycler View: show Recycler window");
-      /* if not hidden raise windows which are possibly obscured. */
-      if ([NSApp isHidden] == NO)
-        {
-          NSArray *windows = RETAIN(GSOrderedWindows());
-          NSWindow *aWin;
-          NSEnumerator *iter = [windows reverseObjectEnumerator];
-          
-          while ((aWin = [iter nextObject]))
-            { 
-              if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
-                  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
-                  && aWin != [self window] 
-                  && ([aWin styleMask] & NSMiniWindowMask) == 0)
-                {
-                  [aWin orderFrontRegardless];
-                }
-            }
-	
-          if ([NSApp isActive] == YES)
-            {
-              if ([NSApp keyWindow] != nil)
-                {
-                  [[NSApp keyWindow] orderFront: self];
-                }
-              else if ([NSApp mainWindow] != nil)
-                {
-                  [[NSApp mainWindow] makeKeyAndOrderFront: self];
-                }
-              else
-                {
-                  /* We need give input focus to some window otherwise we'll 
-                     never get keyboard events. FIXME: doesn't work. */
-                  NSWindow *menu_window= [[NSApp mainMenu] window];
-                  NSDebugLLog(@"Focus",
-                              @"No key on activation - make menu key");
-                  [GSServerForWindow(menu_window) setinputfocus:
-                                      [menu_window windowNumber]];
-                }
-            }
-	  
-          RELEASE(windows);
-        }
-      [NSApp unhide:self]; // or activate or do nothing.
-    }
-}                                                        
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
@@ -346,20 +259,174 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   return NO;
 }
 
-- (void)setImage:(NSImage *)anImage
+- (void)concludeDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSImage *imgCopy = [anImage copy];
+}
 
-  if (imgCopy)
+@end
+
+@implementation Recycler
+
+- initWithDock:(WDock *)dock
+{
+  XClassHint classhint;
+  BOOL       isDir;
+
+  recycler = self = [super init];
+  
+  dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
+ 
+  if (dockIcon == NULL)
     {
-      NSSize imageSize = [imgCopy size];
-
-      [imgCopy setScalesWhenResized: YES];
-      [imgCopy setSize: scaledIconSizeForSize(imageSize)];
+      NSLog(@"Recycler Dock icon creation failed!");
+      return nil;
     }
-  [dragCell setImage: imgCopy];
-  RELEASE(imgCopy);
-  [self setNeedsDisplay: YES];
+
+  dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
+
+  classhint.res_name = "Recycler";
+  classhint.res_class = "GNUstep";
+  XSetClassHint(dpy, dockIcon->icon->core->window, &classhint);
+  
+  appIcon = [[RecyclerIcon alloc] initWithWindowRef:&dockIcon->icon->core->window];
+  
+  recyclerPath = [NSString stringWithFormat:@"%@/.Recycler", NSHomeDirectory()];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:recyclerPath
+                                           isDirectory:&isDir] == NO)
+    {
+      if ([[NSFileManager defaultManager] createDirectoryAtPath:recyclerPath
+                                                     attributes:nil] == NO)
+        {
+          NXRunAlertPanel(_(@"Workspace"),
+                          _(@"Your Recycler storage doesn't exist and cannot"
+                            " be created at path: %@."),
+                          _(@"Dismiss"), nil, nil, recyclerPath);
+          // THINK: is it possible to not be able to create directory in $HOME?
+        }
+      // TODO: validate contents of exixsting directory: Was it created by Workspace?
+    }
+  else if (isDir == NO)
+    {
+      NXRunAlertPanel(_(@"Workspace"),
+                      _(@"Your Recycler storage is not directory.\n"
+                        "Do you want to disable or recover Recycler?.\n"
+                        "'Recover' operation destroys existing file '.Recycler'"
+                        " in your home directory."),
+                      _(@"Disable"), _(@"Recover"), nil);
+      // TODO: on disable Recycler icon should be removed from screen.
+    }
+
+  appIconView = [[RecyclerIconView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
+  [self updateIconImage];
+  [appIcon setContentView:appIconView];
+  [appIconView release];
+
+  return self;
+}
+
+- (WAppIcon *)dockIcon
+{
+  return dockIcon;
+}
+
+- (RecyclerIcon *)appIcon
+{
+  return appIcon;
+}
+
+- (void)awakeFromNib
+{
+  [panelView setVerticalScroller:nil];
+  filesView = [[NXIconView alloc] initWithFrame:[panelView frame]];
+  [panelView setDocumentView:filesView];
+
+  [panelIcon setImage:[self iconImage]];
+}
+
+- (void)showPanel
+{
+  if (panel == nil)
+    {
+      if (![NSBundle loadNibNamed:@"Recycler" owner:self])
+        {
+          NSLog(@"Error loading Recycler.gorm!");
+        }
+    }
+  
+  [panel makeKeyAndOrderFront:self];
+}
+
+- (void)mouseDown:(NSEvent*)theEvent
+{
+  NSLog(@"Recycler: mouse down!");
+
+  if ([theEvent clickCount] >= 2)
+    {
+      NSLog(@"Recycler: show Recycler window");
+      [self showPanel];
+      
+      /* if not hidden raise windows which are possibly obscured. */
+      if ([NSApp isHidden] == NO)
+        {
+          NSArray *windows = RETAIN(GSOrderedWindows());
+          NSWindow *aWin;
+          NSEnumerator *iter = [windows reverseObjectEnumerator];
+          
+          while ((aWin = [iter nextObject]))
+            { 
+              if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
+                  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
+                  && aWin != appIcon
+                  && ([aWin styleMask] & NSMiniWindowMask) == 0)
+                {
+                  [aWin orderFrontRegardless];
+                }
+            }
+	
+          if ([NSApp isActive] == YES)
+            {
+              if ([NSApp keyWindow] != nil)
+                {
+                  [[NSApp keyWindow] orderFront:self];
+                }
+              else if ([NSApp mainWindow] != nil)
+                {
+                  [[NSApp mainWindow] makeKeyAndOrderFront:self];
+                }
+              else
+                {
+                  /* We need give input focus to some window otherwise we'll 
+                     never get keyboard events. FIXME: doesn't work. */
+                  NSWindow *menu_window = [[NSApp mainMenu] window];
+                  NSDebugLLog(@"Focus",
+                              @"No key on activation - make menu key");
+                  [GSServerForWindow(menu_window)
+                      setinputfocus:[menu_window windowNumber]];
+                }
+            }
+	  
+          RELEASE(windows);
+        }
+      [NSApp unhide:self]; // or activate or do nothing.
+    }
+}
+
+// Actions
+
+- (NSImage *)iconImage
+{
+  return iconImage;
+}
+- (void)updateIconImage
+{
+  if ([[[NSFileManager defaultManager] directoryContentsAtPath:recyclerPath] count])
+    iconImage = [NSImage imageNamed:@"recyclerFull"];
+  else
+    iconImage = [NSImage imageNamed:@"recycler"];
+  
+  [appIconView setImage:iconImage];
+  if (panel)
+    [panelIcon setImage:[self iconImage]];
 }
 
 @end

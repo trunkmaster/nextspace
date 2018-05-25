@@ -290,10 +290,10 @@ static NSString *WMComputerShouldGoDownNotification =
     {
       // Hide Dock
       WWMDockHideIcons(wScreenWithNumber(0)->dock);
-      if (wmRecycler)
+      if (recycler)
         {
-          [wmRecycler close];
-          [wmRecycler release];
+          [[recycler appIcon] close];
+          [recycler release];
         }
     }
   
@@ -427,7 +427,7 @@ static NSString *WMComputerShouldGoDownNotification =
                name:NXPowerLidDidChangeNotification
              object:systemPower];
       
-      wmRecycler = [[RecyclerIcon alloc] initWithDock:dock];
+      recycler = [[Recycler alloc] initWithDock:dock];
       WWMDockAutoLaunch(dock);
     }
   
@@ -480,10 +480,10 @@ static NSString *WMComputerShouldGoDownNotification =
 
   if (useInternalWindowManager)
     {
-      WAppIcon *btn = [wmRecycler dockIcon];
+      WAppIcon *btn = [recycler dockIcon];
 
       btn->icon->owner = btn->dock->icon_array[0]->icon->owner;
-      [wmRecycler orderFrontRegardless];
+      [[recycler appIcon] orderFrontRegardless];
     }
 }
 
@@ -635,12 +635,6 @@ static NSString *WMComputerShouldGoDownNotification =
 {
   return procPanel;
 }
-
-- (RecyclerIcon *)recyclerIcon
-{
-  return wmRecycler;
-}
-
 
 //============================================================================
 // Application menu
