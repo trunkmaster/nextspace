@@ -409,45 +409,15 @@ static NSString *WMComputerShouldGoDownNotification =
   // Show Dock and start applications in it
   if (useInternalWindowManager)
     {
-      WDock        *dock = wScreenWithNumber(0)->dock;
-      wmRecycler = [[RecyclerIcon alloc] initWithDock:dock];
-      [wmRecycler orderFrontRegardless];
-      // XSync(dpy, True);
-      
-      /*
-      RecyclerIconView *rIconView;
-      Window           iconWin = WWMDockRecyclerWindow();
-      
-      rIconWindow = [[RecyclerIconWindow alloc] initWithWindowRef:&iconWin];
-      XUnmapWindow(dpy, iconWin);
-      // rIconWindow = [[RecyclerIconWindow alloc]
-      //                 initWithContentRect:NSMakeRect(0,0,64,64)
-      //                           styleMask:NSIconWindowMask
-      //                             backing:NSBackingStoreRetained
-      //                               defer:NO
-      //                              screen:nil];
-      rIconView = [[RecyclerIconView alloc]
-                          initWithFrame:NSMakeRect(0,0,64,64)];
-      [rIconView setImage:[NSImage imageNamed:@"recyclerFull"]];
-      [rIconWindow setContentView:rIconView];
-      [rIconView release];
-
-      // [rIconWindow orderFrontRegardless];
-      // iconWin = (Window)[GSCurrentServer()
-      //                       windowDevice:[rIconWindow windowNumber]];
-      // WWMDockRecyclerAddIconWindow(iconWin);
-
-      // [rIconWindow orderFrontRegardless];
-      // WWMDockRecyclerSetIconWindow([rIconWindow windowNumber]);
-      */
-
       // WWMDockShowIcons(dock);
       // wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
-      WWMDockAutoLaunch(dock);
+      // WWMDockAutoLaunch(dock);
     }
   
   if (useInternalWindowManager)
     {
+      WDock *dock = wScreenWithNumber(0)->dock;
+      
       // Detect lid close/open events
       systemPower = [NXPower new];
       [systemPower startEventsMonitor];
@@ -456,6 +426,9 @@ static NSString *WMComputerShouldGoDownNotification =
            selector:@selector(lidDidChange:)
                name:NXPowerLidDidChangeNotification
              object:systemPower];
+      
+      wmRecycler = [[RecyclerIcon alloc] initWithDock:dock];
+      WWMDockAutoLaunch(dock);
     }
   
   return;
@@ -504,6 +477,14 @@ static NSString *WMComputerShouldGoDownNotification =
            object:mediaAdaptor];
   
   [mediaAdaptor checkForRemovableMedia];
+
+  if (useInternalWindowManager)
+    {
+      WAppIcon *btn = [wmRecycler dockIcon];
+
+      btn->icon->owner = btn->dock->icon_array[0]->icon->owner;
+      [wmRecycler orderFrontRegardless];
+    }
 }
 
 

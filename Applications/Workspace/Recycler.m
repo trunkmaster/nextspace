@@ -19,7 +19,8 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   if (event->xbutton.button == Button1)
     {
       // eventType = NSLeftMouseDown;
-      wHandleAppIconMove(desc->parent, event);
+      appIconMouseDown(desc, event);
+      // wHandleAppIconMove(desc->parent, event);
     }
   else if (event->xbutton.button == Button3)
     {
@@ -36,18 +37,19 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
         [NSEvent mouseEventWithType:eventType
                            location:eventLocation
                       modifierFlags:0
-                          timestamp: (NSTimeInterval)event->xbutton.time / 1000.0
+                          timestamp:(NSTimeInterval)event->xbutton.time / 1000.0
                        windowNumber:[recyclerIcon windowNumber]
                             context:[recyclerIcon graphicsContext]
                         eventNumber:event->xbutton.serial
                          clickCount:1
                            pressure:1.0];
 
-      [recyclerIcon performSelectorOnMainThread:@selector(sendEvent:)
-                                     withObject:theEvent
-                                  waitUntilDone:NO];
+      [[recyclerIcon contentView] performSelectorOnMainThread:@selector(mouseDown:)
+                                                   withObject:theEvent
+                                                waitUntilDone:NO];
     }
 }
+
 @implementation	RecyclerIcon
 
 + (WAppIcon *)createAppIconForDock:(WDock *)dock
@@ -114,6 +116,17 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
     }
 
   dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
+
+  // recyclerIcon = [super initWithContentRect:NSMakeRect(0,0,64,64)
+  //                                 styleMask:NSIconWindowMask
+  //                                   backing:NSBackingStoreRetained
+  //                                     defer:YES
+  //                                    screen:nil];
+  // Window iconWin = (Window)[GSCurrentServer()
+  //                              windowDevice:[recyclerIcon windowNumber]];
+  // dockIcon->icon->core->window = iconWin;
+  // dockIcon->icon->icon_win = iconWin;
+  
   classhint.res_name = "Recycler";
   classhint.res_class = "GNUstep";
   XSetClassHint(dpy, dockIcon->icon->core->window, &classhint);
@@ -121,7 +134,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   recyclerIcon = [super initWithWindowRef:&dockIcon->icon->core->window];
   
   view = [[RecyclerView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
-  [view setImage:[NSImage imageNamed:@"recyclerFull"]];
+  [view setImage:[NSImage imageNamed:@"recyclerDeposit"]];
   [recyclerIcon setContentView:view];
   [view release];
 
@@ -161,8 +174,8 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   [self setExcludedFromWindowsMenu:YES];
   [self setReleasedWhenClosed:NO];
   
-  // if ([[NSUserDefaults standardUserDefaults] 
-  //       boolForKey: @"GSAllowWindowsOverIcons"] == YES)
+  if ([[NSUserDefaults standardUserDefaults] 
+        boolForKey: @"GSAllowWindowsOverIcons"] == YES)
     _windowLevel = NSDockWindowLevel;
 }
 
@@ -173,6 +186,11 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   NSLog(@"Recycler: RMB click! Server: %@ Window: %lu",
         GSCurrentServer(), win);
   [super rightMouseDown:theEvent];
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+  NSLog(@"Recycler icon: mouse down!");  
 }
 
 @end
