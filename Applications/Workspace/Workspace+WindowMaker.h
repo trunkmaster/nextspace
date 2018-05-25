@@ -59,16 +59,11 @@ void WWMShutdown(WShutdownMode mode);
 
 // --- Dock
 void WWMDockInit(void);
-
-// Window WWMDockRecyclerSetup(void);
-// void WWMDockRecyclerSetIconWindow(Window win);
-// void WWMDockRecyclerAddIconWindow(Window win);
-// Window WWMDockRecyclerWindow();
-
 void WWMDockShowIcons(WDock *dock);
 void WWMDockHideIcons(WDock *dock);
 void WWMDockUncollapse(WDock *dock);
 void WWMDockCollapse(WDock *dock);
+
 // - Should be called from already existing @autoreleasepool
 NSString     *WWMDockStatePath(void);
 NSDictionary *WWMDockState(void);

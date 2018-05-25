@@ -5,48 +5,48 @@
 
 static RecyclerIcon *recyclerIcon = nil;
 
-// WindowMaker's callback funtion on mouse click
+// WindowMaker's callback funtion on mouse click.
+// LMB click goes to dock app core window.
+// RMB click goes to root window (handles by event.c in WindowMaker).
 void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 {
-  fprintf(stderr, "Recycler: mouse down (window: %lu (%lu) subwindow: %lu)!\n",
-          event->xbutton.window, event->xbutton.root, event->xbutton.subwindow);
-  NSEvent     *theEvent;
-  NSPoint     eventLocation = NSMakePoint(event->xbutton.x, event->xbutton.y);
-  NSEventType eventType = 0;
+  // fprintf(stderr, "Recycler: mouse down (window: %lu (%lu) subwindow: %lu)!\n",
+  //         event->xbutton.window, event->xbutton.root, event->xbutton.subwindow);
+  NSEvent   *theEvent;
+  WAppIcon  *aicon = desc->parent;
+  NSInteger clickCount = 1;
       
-  // eventLocation = [recyclerIcon convertBaseToScreen:eventLocation];
-
+  XUngrabPointer(dpy, CurrentTime);
+  
   if (event->xbutton.button == Button1)
     {
-      // eventType = NSLeftMouseDown;
-      appIconMouseDown(desc, event);
-      // wHandleAppIconMove(desc->parent, event);
-    }
-  else if (event->xbutton.button == Button3)
-    {
-      // Window win = (Window)[GSCurrentServer()
-      //                          windowDevice:[[NSApp mainWindow] windowNumber]];
-      event->xbutton.window = event->xbutton.root;
-      XSendEvent(dpy, event->xbutton.root, False, ButtonPressMask, event);
-      // eventType = NSRightMouseDown;
-    }
+      if (IsDoubleClick(aicon->dock->screen_ptr, event))
+        clickCount = 2;
+
+      // Handle move of icon
+      wHandleAppIconMove(desc->parent, event);
   
-  if (eventType)
-    {
       theEvent =
-        [NSEvent mouseEventWithType:eventType
-                           location:eventLocation
+        [NSEvent mouseEventWithType:NSLeftMouseDown
+                           location:NSMakePoint(event->xbutton.x, event->xbutton.y)
                       modifierFlags:0
                           timestamp:(NSTimeInterval)event->xbutton.time / 1000.0
                        windowNumber:[recyclerIcon windowNumber]
                             context:[recyclerIcon graphicsContext]
                         eventNumber:event->xbutton.serial
-                         clickCount:1
+                         clickCount:clickCount
                            pressure:1.0];
 
       [[recyclerIcon contentView] performSelectorOnMainThread:@selector(mouseDown:)
                                                    withObject:theEvent
                                                 waitUntilDone:NO];
+      
+    }
+  else if (event->xbutton.button == Button3)
+    {
+      // This will bring menu of active application on screen at mouse pointer
+      event->xbutton.window = event->xbutton.root;
+      XSendEvent(dpy, event->xbutton.root, False, ButtonPressMask, event);
     }
 }
 
@@ -117,16 +117,6 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 
   dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
 
-  // recyclerIcon = [super initWithContentRect:NSMakeRect(0,0,64,64)
-  //                                 styleMask:NSIconWindowMask
-  //                                   backing:NSBackingStoreRetained
-  //                                     defer:YES
-  //                                    screen:nil];
-  // Window iconWin = (Window)[GSCurrentServer()
-  //                              windowDevice:[recyclerIcon windowNumber]];
-  // dockIcon->icon->core->window = iconWin;
-  // dockIcon->icon->icon_win = iconWin;
-  
   classhint.res_name = "Recycler";
   classhint.res_class = "GNUstep";
   XSetClassHint(dpy, dockIcon->icon->core->window, &classhint);
@@ -188,11 +178,6 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   [super rightMouseDown:theEvent];
 }
 
-- (void)mouseDown:(NSEvent *)theEvent
-{
-  NSLog(@"Recycler icon: mouse down!");  
-}
-
 @end
 
 @implementation RecyclerView
@@ -214,11 +199,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 + (void)initialize
 {
-  NSImage	*tileImage;
-  NSSize	iconSize = NSMakeSize(64,64);
+  NSImage *tileImage;
+  NSSize  iconSize = NSMakeSize(64,64);
 
   // iconSize = GSGetIconSize();
-  /* _appIconInit will set our image */
   dragCell = [[NSCell alloc] initImageCell:nil];
   [dragCell setBordered:NO];
   
@@ -288,6 +272,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   if ([theEvent clickCount] >= 2)
     {
+      NSLog(@"Recycler View: show Recycler window");
       /* if not hidden raise windows which are possibly obscured. */
       if ([NSApp isHidden] == NO)
         {
@@ -330,52 +315,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	  
           RELEASE(windows);
         }
-      [NSApp unhide: self]; // or activate or do nothing.
-    }
-  else
-    {
-      NSPoint	lastLocation;
-      NSPoint	location;
-      NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-	| NSPeriodicMask | NSOtherMouseUpMask | NSRightMouseUpMask;
-      NSDate	*theDistantFuture = [NSDate distantFuture];
-      BOOL	done = NO;
-
-      lastLocation = [theEvent locationInWindow];
-      [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.02];
-
-      while (!done)
-	{
-	  theEvent = [NSApp nextEventMatchingMask: eventMask
-					untilDate: theDistantFuture
-					   inMode: NSEventTrackingRunLoopMode
-					  dequeue: YES];
-	
-	  switch ([theEvent type])
-	    {
-            case NSRightMouseUp:
-            case NSOtherMouseUp:
-            case NSLeftMouseUp:
-	      /* any mouse up means we're done */
-              done = YES;
-              break;
-            case NSPeriodic:
-              location = [_window mouseLocationOutsideOfEventStream];
-              if (NSEqualPoints(location, lastLocation) == NO)
-                {
-                  NSPoint	origin = [_window frame].origin;
-
-                  origin.x += (location.x - lastLocation.x);
-                  origin.y += (location.y - lastLocation.y);
-                  [_window setFrameOrigin: origin];
-                }
-              break;
-
-            default:
-              break;
-	    }
-	}
-      [NSEvent stopPeriodicEvents];
+      [NSApp unhide:self]; // or activate or do nothing.
     }
 }                                                        
 
