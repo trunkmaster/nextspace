@@ -3,6 +3,8 @@
 #include <AppKit/AppKit.h>
 #import <NXAppKit/NXIconView.h>
 
+#import <NXSystem/NXFileSystemMonitor.h>
+
 #import "Workspace+WindowMaker.h"
 
 @interface RecyclerIconView : NSView
@@ -31,6 +33,9 @@
   WAppIcon         *dockIcon;
   NSImage          *iconImage;
   NSString         *recyclerPath;
+  NSUInteger       itemsCount;
+  
+  NXFileSystemMonitor *fileSystemMonitor;
 
   // Panel
   NSPanel      *panel;

@@ -1,0 +1,13 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Recycler = {
+	Actions = (
+	);
+	Outlets = (
+	    panelView,
+	    panel,
+	    panelIcon
+	);
+	Super = NSObject;
+    };
+}
