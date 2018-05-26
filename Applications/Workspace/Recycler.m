@@ -2,6 +2,7 @@
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <NXAppKit/NXAlert.h>
+#import "Controller.h"
 #import "Recycler.h"
 
 static Recycler *recycler = nil;
@@ -290,7 +291,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   
   appIcon = [[RecyclerIcon alloc] initWithWindowRef:&dockIcon->icon->core->window];
   
-  recyclerPath = [NSString stringWithFormat:@"%@/.Recycler", NSHomeDirectory()];
+  recyclerPath = [[NSString stringWithFormat:@"%@/.Recycler", NSHomeDirectory()]
+                   retain];
   if ([[NSFileManager defaultManager] fileExistsAtPath:recyclerPath
                                            isDirectory:&isDir] == NO)
     {
@@ -321,7 +323,26 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [appIcon setContentView:appIconView];
   [appIconView release];
 
+  fileSystemMonitor = [[NSApp delegate] fileSystemMonitor];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(fileSystemChangedAtPath:)
+           name:NXFileSystemChangedAtPath
+         object:nil];
+  [fileSystemMonitor addPath:recyclerPath];
+
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  
+  [appIcon release];
+  [fileSystemMonitor removePath:recyclerPath];
+  [recyclerPath release];
+  
+  [super dealloc];
 }
 
 - (WAppIcon *)dockIcon
@@ -336,7 +357,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 - (void)awakeFromNib
 {
-  [panelView setVerticalScroller:nil];
+  [panel setFrameAutosaveName:@"Recycler"];
+  
+  [panelView setHasHorizontalScroller:YES];
+  [panelView setHasVerticalScroller:NO];
   filesView = [[NXIconView alloc] initWithFrame:[panelView frame]];
   [panelView setDocumentView:filesView];
 
@@ -419,14 +443,26 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 }
 - (void)updateIconImage
 {
-  if ([[[NSFileManager defaultManager] directoryContentsAtPath:recyclerPath] count])
+  itemsCount = [[[NSFileManager defaultManager]
+                  directoryContentsAtPath:recyclerPath] count];
+  
+  if (itemsCount)
     iconImage = [NSImage imageNamed:@"recyclerFull"];
   else
     iconImage = [NSImage imageNamed:@"recycler"];
   
   [appIconView setImage:iconImage];
+  
   if (panel)
     [panelIcon setImage:[self iconImage]];
+}
+- (void)fileSystemChangedAtPath:(NSNotification *)notif
+{
+  NSDictionary *changes = [notif userInfo];
+  NSString     *changedPath = [changes objectForKey:@"ChangedPath"];
+
+  if ([changedPath isEqualToString:recyclerPath])
+    [self updateIconImage];
 }
 
 @end

@@ -364,10 +364,10 @@ void WWMDockInit(void)
   btn->running = 1;
   btn->launching = 0;
   btn->lock = 1;
-  btn->command = "";
-  btn->dnd_command = "";
-  btn->paste_command = "";
-  wAppIconPaint(btn);
+  btn->command = NULL;
+  btn->dnd_command = NULL;
+  btn->paste_command = NULL;
+  wAppIconPaint(btn);  
   
   launchingIcons = NULL;
 }

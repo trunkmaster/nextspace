@@ -18,6 +18,7 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXIcon.m \
 	NXIconLabel.m \
 	NXIconView.m \
+	NXIconBadge.m \
 	NXProgressBar.m \
 	NXProgressPie.m \
 	NXProgressView.m \
@@ -33,6 +34,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXIcon.h \
 	NXIconLabel.h \
 	NXIconView.h \
+	NXIconBadge.h \
 	NXProgressBar.h \
 	NXProgressPie.h \
 	NXProgressView.h \
