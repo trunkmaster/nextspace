@@ -2,6 +2,7 @@
 
 #include <AppKit/AppKit.h>
 #import <NXAppKit/NXIconView.h>
+#import <NXAppKit/NXIconBadge.h>
 
 #import <NXSystem/NXFileSystemMonitor.h>
 
@@ -18,17 +19,13 @@
 + (WAppIcon *)createAppIconForDock:(WDock *)dock;
 + (WAppIcon *)recyclerAppIconForDock:(WDock *)dock;
   
-// - initWithDock:(WDock *)dock;
-// - (WAppIcon *)dockIcon;
-// - (NSImage *)iconImage;
-// - (void)updateIconImage;
-
 @end
 
 @interface Recycler : NSObject
 {
   RecyclerIcon     *appIcon;
   RecyclerIconView *appIconView;
+  NXIconBadge      *badge;
 
   WAppIcon         *dockIcon;
   NSImage          *iconImage;
@@ -47,7 +44,8 @@
 - initWithDock:(WDock *)dock;
 - (WAppIcon *)dockIcon;
 - (RecyclerIcon *)appIcon;
+- (NSUInteger)itemsCount;
 
-- (void)mouseDown:(NSEvent*)theEvent;
+- (void)purge;
 
 @end

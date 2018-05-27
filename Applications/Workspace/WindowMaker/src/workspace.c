@@ -50,6 +50,9 @@
 #include "xinerama.h"
 #include "event.h"
 #include "wsmap.h"
+#ifdef NEXTSPACE
+#include <Workspace+WindowMaker.h>
+#endif // NEXTSPACE        
 
 #define MC_NEW          0
 #define MC_DESTROY_LAST 1
@@ -436,6 +439,9 @@ void wWorkspaceChange(WScreen *scr, int workspace)
 
 	if (workspace != scr->current_workspace)
 		wWorkspaceForceChange(scr, workspace);
+#ifdef NEXTSPACE
+	XWMWorkspaceDidChange(scr, workspace);
+#endif // NEXTSPACE        
 }
 
 void wWorkspaceRelativeChange(WScreen * scr, int amount)

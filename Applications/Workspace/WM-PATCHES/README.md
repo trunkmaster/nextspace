@@ -114,6 +114,11 @@ src/window.c:
     - Fix moving down on height of title bar and right on border width (1
       pixel) for windows which were already mapped before Workspace (and
       WindowMaker) started.
+
+src/workspace.c:
+
+    - Call XWWorkspaceDidChange() to update current workspace badge in
+      Workspace application icon.
     
 WINGs/wcolor.c:
 

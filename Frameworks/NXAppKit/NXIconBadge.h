@@ -21,24 +21,24 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import <AppKit/NSTextView.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSText.h>
 
 @interface NXIconBadge : NSView
 {
   NSMutableString *string;
-  NSDictionary    *stringAttrs;
-  NSDictionary    *highlightAttrs;
+  NSDictionary    *textAttrs;
+  NSDictionary    *shadowAttrs;
 }
 
-- (id)initWithString:(NSString *)text
-                font:(NSFont *)sFont
-          lightColor:(NSColor *)lColor
-           darkColor:(NSColor *)dColor;
+- (id)initWithPoint:(NSPoint)position
+               text:(NSString *)text
+               font:(NSFont *)font
+          textColor:(NSColor *)tColor
+        shadowColor:(NSColor *)sColor;
 
 - (NSString *)stringValue;
 - (void)setStringValue:(NSString *)text;
-- (NSUInteger)width;
-
-- (void)drawAtPoint:(NSPoint)point;
+- (void)setAlignment:(NSTextAlignment)mode;
 
 @end

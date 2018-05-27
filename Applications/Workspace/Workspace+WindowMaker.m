@@ -1215,11 +1215,11 @@ void XWApplicationDidCloseWindow(WWindow *wwin)
 
 // Used for changing focus to Workspace when no window left to set focus to
 // TODO
-void xActivateWorkspace(void)
+void XWMWorkspaceDidChange(WScreen *scr, int workspace)
 {
-  NSLog(@"xActivateWorkspace");
-//  [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
+  [[NSApp delegate] updateWorkspaceBadge];
   [NSApp activateIgnoringOtherApps:YES];
+  [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
 }
 
 // Screen resizing

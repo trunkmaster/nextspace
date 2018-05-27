@@ -23,6 +23,7 @@
 #import <AppKit/AppKit.h>
 #import <NXSystem/NXFileSystemMonitor.h>
 #import <NXSystem/NXMediaManager.h>
+#import <NXAppKit/NXIconBadge.h>
 
 #import "Console.h"
 
@@ -74,6 +75,7 @@
   BOOL			_fileSystemChanged;
   BOOL			_userDefaultsChanged;
 
+  NXIconBadge		*workspaceBadge;
   Recycler		*recycler;
 }
 
@@ -82,6 +84,9 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif;
 
+//============================================================================
+// Access to Workspace data via NSApp
+//============================================================================
 - (FileViewer *)rootViewer;
 - (FileViewer *)fileViewerForWindow:(NSWindow *)window;
 - (Inspector *)inspectorPanel;
@@ -89,6 +94,14 @@
 - (id<MediaManager>)mediaManager;
 - (Processes *)processesPanel;
 
+//============================================================================
+// Appicon badges
+//============================================================================
+- (void)updateWorkspaceBadge;
+
+//============================================================================
+// Application menu
+//============================================================================
 - (void)emptyRecycler:(id)sender;
 - (void)showConsole:(id)sender;
 - (void)newViewer:(id)sender;

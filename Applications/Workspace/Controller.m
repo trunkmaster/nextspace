@@ -295,6 +295,7 @@ static NSString *WMComputerShouldGoDownNotification =
           [[recycler appIcon] close];
           [recycler release];
         }
+      [workspaceBadge release];
     }
   
   // NSLog(@"Application should terminate fileSystemMonitor RC: %lu",
@@ -397,7 +398,6 @@ static NSString *WMComputerShouldGoDownNotification =
   return YES;
 }
 
-#include <startup.h>
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
   //NSUpdateDynamicServices();
@@ -417,6 +417,16 @@ static NSString *WMComputerShouldGoDownNotification =
   if (useInternalWindowManager)
     {
       WDock *dock = wScreenWithNumber(0)->dock;
+
+      workspaceBadge = [[NXIconBadge alloc]
+                         initWithPoint:NSMakePoint(5,48)
+                                  text:@"0"
+                                  font:[NSFont systemFontOfSize:9]
+                             textColor:[NSColor blackColor]
+                           shadowColor:[NSColor whiteColor]];
+      [[[NSApp iconWindow] contentView] addSubview:workspaceBadge];
+      [workspaceBadge release];
+      [self updateWorkspaceBadge];
       
       // Detect lid close/open events
       systemPower = [NXPower new];
@@ -637,6 +647,18 @@ static NSString *WMComputerShouldGoDownNotification =
 }
 
 //============================================================================
+// Appicon badges
+//============================================================================
+- (void)updateWorkspaceBadge
+{
+  NSString *wsCurrent;
+  
+  wsCurrent = [NSString stringWithFormat:@"%i",
+                        wScreenWithNumber(0)->current_workspace+1];
+  [workspaceBadge setStringValue:wsCurrent];
+}
+
+//============================================================================
 // Application menu
 //============================================================================
 
@@ -716,7 +738,7 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (void)emptyRecycler:(id)sender
 {
-  /* insert your code here */
+  [recycler purge];
 }
 
 // Disk
@@ -869,7 +891,9 @@ static NSString *WMComputerShouldGoDownNotification =
   if ([menuTitle isEqualToString:@"File"])
     {
       // Not implemented yet
-      if ([[menuItem title] isEqualToString:@"Empty Recycler"]) return NO;
+      if ([[menuItem title] isEqualToString:@"Empty Recycler"])
+        if ([recycler itemsCount] == 0)
+          return NO;
     }
   
   if ([menuTitle isEqualToString:@"Disk"])
