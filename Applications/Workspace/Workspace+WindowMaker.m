@@ -1218,8 +1218,8 @@ void XWApplicationDidCloseWindow(WWindow *wwin)
 void XWMWorkspaceDidChange(WScreen *scr, int workspace)
 {
   [[NSApp delegate] updateWorkspaceBadge];
-  [NSApp activateIgnoringOtherApps:YES];
-  [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
+  // [NSApp activateIgnoringOtherApps:YES];
+  // [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
 }
 
 // Screen resizing
