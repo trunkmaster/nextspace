@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sat May 26 04:17:30 2018
+;; Created Sun May 27 03:17:07 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "NXIconBadge.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2956
-  '(2637 nil)
+  3081
+  '(3025 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,8 +33,8 @@
   "NXIconBadge.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1131
-  '(1140 nil)
+  1306
+  '(1120 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
