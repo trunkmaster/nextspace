@@ -27,32 +27,58 @@
 
 @implementation NXIconBadge
 
-- (id)initWithString:(NSString *)text
-                font:(NSFont *)sFont
-          lightColor:(NSColor *)lColor
-           darkColor:(NSColor *)dColor
++ (NSSize)sizeForString:(NSString *)text
+               withFont:(NSFont *)sFont
 {
-  [super init];
+  NSSize size = NSMakeSize(0,0);
+
+  size.width = [sFont widthOfString:text] + 2;
+  size.height = [sFont boundingRectForFont].size.height;
+
+  return size;
+}
+
+- (id)initWithPoint:(NSPoint)position
+               text:(NSString *)text
+               font:(NSFont *)font
+          textColor:(NSColor *)tColor
+        shadowColor:(NSColor *)sColor
+{
+  NSRect rect = NSMakeRect(position.x, position.y, 0, 0);
+  rect.size = [NXIconBadge sizeForString:text withFont:font];
+  
+  [super initWithFrame:rect];
   
   string = [[NSMutableString alloc] initWithString:text];
 
-  stringAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                dColor, NSForegroundColorAttributeName,
-                              sFont, NSFontAttributeName, nil];
-  [stringAttrs retain];
-  highlightAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   lColor, NSForegroundColorAttributeName,
-                                 sFont, NSFontAttributeName, nil];
-  [highlightAttrs retain];
+  if (tColor)
+    {
+      textAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  tColor, NSForegroundColorAttributeName,
+                                font, NSFontAttributeName, nil];
+      [textAttrs retain];
+    }
+
+  if (sColor)
+    {
+      shadowAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    sColor, NSForegroundColorAttributeName,
+                                  font, NSFontAttributeName, nil];
+      [shadowAttrs retain];
+    }
 
   return self;
+}
+
+- (void)setAlignment:(NSTextAlignment)mode
+{
 }
 
 - (void)dealloc
 {
   [string release];
-  [stringAttrs release];
-  [highlightAttrs release];
+  [textAttrs release];
+  [shadowAttrs release];
   
   [super dealloc];
 }
@@ -61,26 +87,42 @@
 {
   return string;
 }
-
 - (void)setStringValue:(NSString *)text
 {
-  [string release];
-  string = [[NSMutableString alloc] initWithString:text];
+  NSRect vFrame = [self frame];
+  NSFont *font = [textAttrs objectForKey:NSFontAttributeName];
+
+  [string setString:text];
+
+  // Adopt size of view to the new string
+  vFrame.size = [NXIconBadge sizeForString:string withFont:font];
+  
+  [self setFrame:vFrame];
+  [self setNeedsDisplay:YES];
 }
 
-- (NSUInteger)width
+- (void)drawRect:(NSRect)rect
 {
-  return [[stringAttrs objectForKey:NSFontAttributeName] widthOfString:string];
-}
+  NSRect  vFrame = [self frame];
+  NSPoint point = vFrame.origin;
 
-- (void)drawAtPoint:(NSPoint)point
-{
-  point.x++;
-  point.y--;
-  [string drawAtPoint:point withAttributes:highlightAttrs];
-  point.x--;
-  point.y++;
-  [string drawAtPoint:point withAttributes:stringAttrs];
+  point.x = 0;
+  point.y = 0;
+
+  [super drawRect:rect];
+  
+  if (shadowAttrs)
+    {
+      point.x++;
+      point.y--;
+      [string drawAtPoint:point withAttributes:shadowAttrs];
+    }
+  if (textAttrs)
+    {
+      point.x--;
+      point.y++;
+      [string drawAtPoint:point withAttributes:textAttrs];
+    }
 }
 
 @end

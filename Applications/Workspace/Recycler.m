@@ -190,6 +190,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   		   inView:self];
   [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
         	   inView:self];
+
+  // for (NSView *sv in [self subviews])
+  //   {
+  //     [sv drawRect:rect];
+  //   }
 }
 
 - (id)initWithFrame:(NSRect)frame
@@ -319,10 +324,20 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     }
 
   appIconView = [[RecyclerIconView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
-  [self updateIconImage];
   [appIcon setContentView:appIconView];
   [appIconView release];
 
+  // Badge on appicon with number of items inside
+  badge = [[NXIconBadge alloc] initWithPoint:NSMakePoint(2,51)
+                                        text:@"0"
+                                        font:[NSFont systemFontOfSize:9]
+                                   textColor:[NSColor blackColor]
+                                 shadowColor:[NSColor whiteColor]];
+  [appIconView addSubview:badge];
+  [badge release];
+
+  [self updateIconImage];
+  
   fileSystemMonitor = [[NSApp delegate] fileSystemMonitor];
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -435,8 +450,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     }
 }
 
-// Actions
-
 - (NSImage *)iconImage
 {
   return iconImage;
@@ -447,15 +460,28 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
                   directoryContentsAtPath:recyclerPath] count];
   
   if (itemsCount)
-    iconImage = [NSImage imageNamed:@"recyclerFull"];
+    {
+      iconImage = [NSImage imageNamed:@"recyclerFull"];
+      [badge setStringValue:[NSString stringWithFormat:@"%lu", itemsCount]];
+    }
   else
-    iconImage = [NSImage imageNamed:@"recycler"];
+    {
+      iconImage = [NSImage imageNamed:@"recycler"];
+      [badge setStringValue:@""];
+    }
+  
   
   [appIconView setImage:iconImage];
   
   if (panel)
     [panelIcon setImage:[self iconImage]];
 }
+
+- (NSUInteger)itemsCount
+{
+  return itemsCount;
+}
+
 - (void)fileSystemChangedAtPath:(NSNotification *)notif
 {
   NSDictionary *changes = [notif userInfo];
@@ -463,6 +489,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   if ([changedPath isEqualToString:recyclerPath])
     [self updateIconImage];
+}
+
+- (void)purge
+{
 }
 
 @end
