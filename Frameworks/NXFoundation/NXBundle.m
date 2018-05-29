@@ -19,7 +19,7 @@ static NXBundle *shared = nil;
 }
 
 //-----------------------------------------------------------------------------
-//--- Searching and registering
+//--- Generic bundles
 //-----------------------------------------------------------------------------
 
 // Returns list of bundles' absolute paths located in 'dirPath'.
@@ -99,6 +99,9 @@ static NXBundle *shared = nil;
   return bundlePaths;
 }
 
+//-----------------------------------------------------------------------------
+//--- Bundles with Resources/bundle.registry file
+//-----------------------------------------------------------------------------
 // Returned dictionary contains:
 //  (NSString *)              (NSDictionary *)
 // "full path to the bundle" = {bundle.registry contents}
@@ -148,15 +151,81 @@ static NXBundle *shared = nil;
       NSString *ps1, *ps2;
       NSNumber *p1, *p2;
 
-      ps1 = [[registry objectForKey:path1] objectForKey:@"priority"];
+      ps1 = [[bundleRegistry objectForKey:path1] objectForKey:@"priority"];
+      if (!ps1) ps1 = @"1000";
       p1 = [NSNumber numberWithInt:[ps1 intValue]];
-      ps2 = [[registry objectForKey:path2] objectForKey:@"priority"];
+      
+      ps2 = [[bundleRegistry objectForKey:path2] objectForKey:@"priority"];
+      if (!ps2) ps2 = @"1000";
       p2 = [NSNumber numberWithInt:[ps2 intValue]];
 
       return [p1 compare:p2];
     };
 
   return [paths sortedArrayUsingComparator:sortByPriority];  
+}
+
+- (NSArray *)loadRegisteredBundles:(NSDictionary *)bundleRegistry
+                              type:(NSString *)registryType
+                          protocol:(Protocol *)aProtocol
+ {
+  NSArray        *sortedBPaths = [self sortedBundlesPaths:bundleRegistry];
+  NSString       *bType;
+  NSString       *bExecutable;
+  NSBundle       *bundle;
+  Class          bClass;
+  NSMutableArray *loadedBundles = [NSMutableArray new];
+
+  for (NSString *bPath in sortedBPaths)
+    {
+      // Check type
+      bType = [[bundleRegistry objectForKey:bPath] objectForKey:@"type"];
+      if (![bType isEqualToString:registryType])
+        {
+          NSLog(@"Module \"%@\" according to bundle.registry"
+                " is not '%@' module! Bundle loading was stopped.",
+                bPath, registryType);
+          continue;
+        }
+
+      // Load module
+      if ((bundle = [NSBundle bundleWithPath:bPath]))
+        {
+          bExecutable = [[bundle infoDictionary] objectForKey:@"NSExecutable"];
+          if (!bExecutable)
+            {
+              NSLog (@"Bundle `%@' has no executable!", bPath);
+              continue;
+            }
+        }
+      
+      bClass = [bundle principalClass];
+
+      // Check if bundle already loaded
+      for (id b in loadedBundles)
+        {
+          if ([[b class] isKindOfClass:bClass])
+            {
+              NSLog(@"Module \"%@\" with principal class \"%@\" is "
+                    "already loaded, skipping.", bPath, [b className]);
+              continue;
+            }
+        }
+
+      // Conforming to protocol check
+      if (![bClass conformsToProtocol:aProtocol])
+        {
+          NSLog (@"Principal class '%@' of '%@' bundle does not conform to the "
+                 "'%@' protocol.", NSStringFromClass(bClass), bPath,
+                 NSStringFromProtocol(aProtocol));
+          continue;
+        }
+
+      // Add bundle to the list
+      [loadedBundles addObject:[bClass new]];
+    }
+
+  return [loadedBundles autorelease];
 }
 
 //-----------------------------------------------------------------------------

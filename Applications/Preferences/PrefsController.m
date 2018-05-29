@@ -49,7 +49,6 @@
   self = [super init];
   
   prefsViews = [[NSMutableDictionary alloc] init];
-  loadedBundles = [[NSMutableDictionary alloc] init];
   
   return self;
 }
@@ -94,7 +93,6 @@
   
   // [[currentModule view] removeFromSuperview];
   [prefsViews release];
-  [loadedBundles release];
   [window release];
   
   [super dealloc];
@@ -136,14 +134,16 @@
 //
 // Modules
 //
-
 - (BOOL)registerPrefsModule:(id)aPrefsModule
 {
   NSButtonCell	*button = [[NSButtonCell alloc] init];
   NSString	*caption = [aPrefsModule buttonCaption];
 
   if (!caption)
-    return NO;
+    {
+      [button release];
+      return NO;
+    }
   
   if ([prefsViews objectForKey:caption] != aPrefsModule)
     {
@@ -163,92 +163,24 @@
 
   [iconList addColumnWithCells:[NSArray arrayWithObject:button]];
   [iconList sizeToCells];
+  [button release];
 
   return YES;
 }
 
-- (NSArray *)sortModules:(NSDictionary *)registry
-{
-  NSArray *paths = [registry allKeys];
-
-  id sortByPriority = ^(NSString *path1, NSString *path2)
-    {
-      NSString *ps1, *ps2;
-      NSNumber *p1, *p2;
-
-      ps1 = [[registry objectForKey:path1] objectForKey:@"priority"];
-      p1 = [NSNumber numberWithInt:[ps1 intValue]];
-      ps2 = [[registry objectForKey:path2] objectForKey:@"priority"];
-      p2 = [NSNumber numberWithInt:[ps2 intValue]];
-
-      return [p1 compare:p2];
-    };
-
-  return [paths sortedArrayUsingComparator:sortByPriority];
-}
-
 - (void)loadBundles
 {
-  NSDictionary	*bRegistry;
-  NSBundle	*bundle;
-  NSString	*bExecutable;
-  Class		bClass;
+  NSDictionary *bRegistry;
+  NSArray      *modules;
 
   bRegistry = [[NXBundle shared] registerBundlesOfType:@"preferences"
                                                 atPath:nil];
-  
-  NSArray *sortedModulesPaths = [self sortModules:bRegistry];
-
-  for (NSString *bPath in sortedModulesPaths)
+  modules = [[NXBundle shared] loadRegisteredBundles:bRegistry
+                                                type:@"Preferences"
+                                            protocol:@protocol(PrefsModule)];
+  for (id b in modules)
     {
-      // Check type
-      if (![[[bRegistry objectForKey:bPath] objectForKey:@"type"]
-             isEqualToString:@"Preferences"])
-        {
-          NSLog(@"Module \"%@\" according to bundle.registry"
-                " is not Preferences module! Bundle loading was stopped.",
-                bPath);
-          continue;
-        }
-
-      // Load module
-      if ((bundle = [NSBundle bundleWithPath:bPath]))
-      {
-        bExecutable = [[bundle infoDictionary] objectForKey:@"NSExecutable"];
-        if (!bExecutable)
-          {
-            NSLog (@"Bundle `%@' has no executable!", bPath);
-            continue;
-          }
-
-        // Check if already loaded
-        if ([loadedBundles objectForKey:bExecutable])
-          {
-            NSLog(@"Module \"%@\" is already loaded, skipping.", bPath);
-            continue;
-          }
-      }
-
-      // Conforming to protocol check
-      bClass = [bundle principalClass];
-      if (![bClass conformsToProtocol:@protocol(PrefsModule)])
-        {
-          NSLog (@"Principal class of '%@' bundle does not conform to the "
-                 "PrefsModule protocol.", bPath);
-          return;
-        }
-
-      if ([self registerPrefsModule:[[bClass alloc] init]] == YES)
-        {
-          [loadedBundles setObject:bundle forKey:bExecutable];
-          [bundle release];
-        }
+      [self registerPrefsModule:b];
     }
 }
-
-- (NSDictionary *)loadedBundles
-{
-  return loadedBundles;
-}
-
 @end

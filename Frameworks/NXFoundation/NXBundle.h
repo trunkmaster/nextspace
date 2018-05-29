@@ -122,6 +122,10 @@
 - (NSDictionary *)registerBundlesOfType:(NSString *)fileExtension
                                  atPath:(NSString *)dirPath;
 
+- (NSArray *)loadRegisteredBundles:(NSDictionary *)bundleRegistry
+                              type:(NSString *)registryType
+                          protocol:(Protocol *)aProtocol;
+
 //-----------------------------------------------------------------------------
 //--- Validating and loading
 //-----------------------------------------------------------------------------
