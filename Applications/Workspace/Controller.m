@@ -496,6 +496,7 @@ static NSString *WMComputerShouldGoDownNotification =
       if (btn)
         {
           btn->icon->owner = dock->icon_array[0]->icon->owner;
+          btn->main_window = dock->icon_array[0]->main_window;
           [[recycler appIcon] orderFrontRegardless];
         }
     }

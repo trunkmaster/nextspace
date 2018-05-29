@@ -26,7 +26,8 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
         clickCount = 2;
 
       // Handle move of icon
-      wHandleAppIconMove(desc->parent, event);
+      if (aicon->dock)
+        wHandleAppIconMove(aicon, event);
   
       theEvent =
         [NSEvent mouseEventWithType:NSLeftMouseDown
@@ -57,10 +58,12 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 + (int)positionInDock:(WDock *)dock
 {
   WAppIcon *btn;
-  int      rec_pos;
+  int      rec_pos, new_max_icons;
  
-  // Search for position in Dock for new Recycler
-  for (rec_pos = dock->max_icons-1; rec_pos > 0; rec_pos--)
+  new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
+  
+ // Search for position in Dock for new Recycler
+  for (rec_pos = new_max_icons-1; rec_pos > 0; rec_pos--)
     {
       if ((btn = dock->icon_array[rec_pos]) == NULL)
         break;
@@ -81,11 +84,35 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   return btn;
 }
 
++ (void)rebuildDock:(WDock *)dock
+{
+  int new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
+  WAppIcon **new_icon_array = wmalloc(sizeof(WAppIcon *) * new_max_icons);
+
+  dock->icon_count = 0;
+  for (int i=0; i < new_max_icons; i++)
+    {
+      NSLog(@"%i", i);
+      if (dock->icon_array[i] == NULL || i >= dock->max_icons)
+        {
+          new_icon_array[i] = NULL;
+        }
+      else 
+        {
+          new_icon_array[i] = dock->icon_array[i];
+          dock->icon_count++;
+        }
+    }
+  wfree(dock->icon_array);
+  dock->icon_array = new_icon_array;
+  dock->max_icons = new_max_icons;
+}
+
 + (WAppIcon *)recyclerAppIconForDock:(WDock *)dock
 {
   WScreen  *scr = dock->screen_ptr;
   WAppIcon *btn, *rec_btn = NULL;
-  int      new_yindex = 0;
+  int      new_yindex = 0, new_max_icons;
  
   btn = scr->app_icon_list;
   while (btn->next)
@@ -105,50 +132,42 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
     }
   
   new_yindex = [RecyclerIcon positionInDock:dock];
-  
-  if (rec_btn->dock)
-    { // attached to Dock
-      if ((rec_btn->yindex > dock->max_icons-1 && new_yindex == 0) ||
-          rec_btn->yindex == 0)
+  new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
+
+  if (rec_btn->docked &&
+      (rec_btn->yindex > new_max_icons-1 && new_yindex == 0))
+    {
+      NSLog(@"Recycler: detach");
+      wDockDetach(dock, rec_btn);
+    }
+  else if (rec_btn->docked)
+    {
+      [RecyclerIcon rebuildDock:dock];
+      new_yindex = [RecyclerIcon positionInDock:dock];
+      if (rec_btn->yindex != new_yindex && new_yindex > 0)
         {
-          // if (!rec_btn->command)
-          // rec_btn->command = wstrdup("-");
-          wDockDetach(dock, rec_btn);
-        }
-      else if (rec_btn->yindex != new_yindex && new_yindex > 0)
-        {
+          NSLog(@"Recycler: reattach");
           wDockReattachIcon(dock, rec_btn, 0, new_yindex);
         }
     }
-  else
-    { // just created
-      if (new_yindex < dock->max_icons && new_yindex > 0)
+  else if (!rec_btn->docked && new_yindex > 0)
+    {
+      [RecyclerIcon rebuildDock:dock];
+      new_yindex = [RecyclerIcon positionInDock:dock];
+      if (new_yindex > 0)
         {
+          NSLog(@"Recycler: attach");
           wDockAttachIcon(dock, rec_btn, 0, new_yindex, NO);
         }
     }
-
-  // if (!rec_btn) // no appicon in Dock
-  //   {
-  //     rec_btn = [RecyclerIcon createAppIconForDock:dock];
-      
-  //     if (rec_btn && rec_btn->index > 0)
-  //       wDockAttachIcon(dock, rec_btn, 0, rec_btn->yindex, NO);
-  //     else
-  //       NSLog(@"Recycler: no space for appicon in the Dock!");
-  //   }
-  // else // appicon is attached to Dock
-  //   {
-  //     if (rec_btn->yindex > dock->max_icons)
-  //       {
-  //         int new_yindex = [RecyclerIcon positionInDock:dock];
-          
-  //         if (new_yindex > 0)
-  //           wDockReattachIcon(dock, rec_btn, 0, new_yindex);
-  //         else
-  //           wDockDetach(dock, rec_btn);
-  //       }
-  //   }
+  
+  rec_btn->running = 1;
+  rec_btn->launching = 0;
+  rec_btn->lock = 1;
+  rec_btn->command = wstrdup("-");
+  rec_btn->dnd_command = NULL;
+  rec_btn->paste_command = NULL;
+  rec_btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
   
   return rec_btn;
 }
