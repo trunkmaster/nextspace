@@ -22,7 +22,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   
   if (event->xbutton.button == Button1)
     {
-      if (IsDoubleClick(aicon->dock->screen_ptr, event))
+      if (IsDoubleClick(aicon->icon->owner->screen_ptr, event))
         clickCount = 2;
 
       // Handle move of icon
@@ -54,10 +54,9 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 
 @implementation	RecyclerIcon
 
-+ (WAppIcon *)createAppIconForDock:(WDock *)dock
++ (int)positionInDock:(WDock *)dock
 {
-  WScreen  *scr = dock->screen_ptr;
-  WAppIcon *btn = NULL;
+  WAppIcon *btn;
   int      rec_pos;
  
   // Search for position in Dock for new Recycler
@@ -67,15 +66,17 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
         break;
     }
 
-  if (rec_pos > 0) // There is a space in Dock
-    {
-      btn = wAppIconCreateForDock(scr, "", "Recycler", "GNUstep", TILE_NORMAL);
-      btn->yindex = rec_pos;
-    }
-  else // No space in Dock
-    {
-      NSLog(@"Recycler: no space in the Dock. Not implemented yet...");
-    }
+  return rec_pos;
+}
+
++ (WAppIcon *)createAppIconForDock:(WDock *)dock
+{
+  WAppIcon *btn;
+  int      rec_pos = [RecyclerIcon positionInDock:dock];
+ 
+  btn = wAppIconCreateForDock(dock->screen_ptr, "", "Recycler", "GNUstep",
+                              TILE_NORMAL);
+  btn->yindex = rec_pos;
 
   return btn;
 }
@@ -84,6 +85,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 {
   WScreen  *scr = dock->screen_ptr;
   WAppIcon *btn, *rec_btn = NULL;
+  int      new_yindex = 0;
  
   btn = scr->app_icon_list;
   while (btn->next)
@@ -98,9 +100,55 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 
   if (!rec_btn)
     {
-      rec_btn = [RecyclerIcon createAppIconForDock:dock];
-      wDockAttachIcon(dock, rec_btn, 0, rec_btn->yindex, NO);
+      rec_btn = wAppIconCreateForDock(dock->screen_ptr, "-", "Recycler",
+                                      "GNUstep", TILE_NORMAL);
     }
+  
+  new_yindex = [RecyclerIcon positionInDock:dock];
+  
+  if (rec_btn->dock)
+    { // attached to Dock
+      if ((rec_btn->yindex > dock->max_icons-1 && new_yindex == 0) ||
+          rec_btn->yindex == 0)
+        {
+          // if (!rec_btn->command)
+          // rec_btn->command = wstrdup("-");
+          wDockDetach(dock, rec_btn);
+        }
+      else if (rec_btn->yindex != new_yindex && new_yindex > 0)
+        {
+          wDockReattachIcon(dock, rec_btn, 0, new_yindex);
+        }
+    }
+  else
+    { // just created
+      if (new_yindex < dock->max_icons && new_yindex > 0)
+        {
+          wDockAttachIcon(dock, rec_btn, 0, new_yindex, NO);
+        }
+    }
+
+  // if (!rec_btn) // no appicon in Dock
+  //   {
+  //     rec_btn = [RecyclerIcon createAppIconForDock:dock];
+      
+  //     if (rec_btn && rec_btn->index > 0)
+  //       wDockAttachIcon(dock, rec_btn, 0, rec_btn->yindex, NO);
+  //     else
+  //       NSLog(@"Recycler: no space for appicon in the Dock!");
+  //   }
+  // else // appicon is attached to Dock
+  //   {
+  //     if (rec_btn->yindex > dock->max_icons)
+  //       {
+  //         int new_yindex = [RecyclerIcon positionInDock:dock];
+          
+  //         if (new_yindex > 0)
+  //           wDockReattachIcon(dock, rec_btn, 0, new_yindex);
+  //         else
+  //           wDockDetach(dock, rec_btn);
+  //       }
+  //   }
   
   return rec_btn;
 }

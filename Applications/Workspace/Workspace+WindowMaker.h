@@ -93,6 +93,8 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
 void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
 // - End of functions which require existing @autorelease pool
 
+NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret);
+
 #endif //__Foundation_h_GNUSTEP_BASE_INCLUDE
 
 //-----------------------------------------------------------------------------

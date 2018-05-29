@@ -170,8 +170,6 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   real_main(argc, argv);
   
   // Just load saved Dock state without icons drawing.
-  // Dock appears on screen after call to WWMDockShowIcons in
-  // Controller's -applicationDidFinishLaunching method.
   WWMDockInit();
 
   //--- Below this point WindowMaker was initialized
@@ -361,15 +359,49 @@ void WWMDockInit(void)
 
   // Setup Recycler icon
   btn = [RecyclerIcon recyclerAppIconForDock:dock];
-  btn->running = 1;
-  btn->launching = 0;
-  btn->lock = 1;
-  btn->command = NULL;
-  btn->dnd_command = NULL;
-  btn->paste_command = NULL;
-  wAppIconPaint(btn);  
+  // if (btn->yindex > dock->max_icons-1)
+  //   {
+  //     wretain(btn);
+  //     wDockDetach(dock, btn);
+  //     wfree(btn);
+  //     btn = [RecyclerIcon createAppIconForDock:dock];
+  //     wDockAttachIcon(dock, btn, 0, btn->yindex, NO);
+  //   }
+  if (btn)
+    {
+      btn->running = 1;
+      btn->launching = 0;
+      btn->lock = 1;
+      btn->command = "-";
+      btn->dnd_command = NULL;
+      btn->paste_command = NULL;
+      wAppIconPaint(btn);
+    }
   
   launchingIcons = NULL;
+}
+void WWMDockUpdateRecyclerIcon(WDock *dock)
+{
+  WAppIcon *btn = [RecyclerIcon recyclerAppIconForDock:dock];
+  // int x,y;
+  
+  // if (btn && btn->dock && (btn->yindex > dock->max_icons-1))
+  //   {
+  //     btn->dock = NULL;
+  //     btn->docked = 0;
+  //     wretain(btn);
+  //     wDockDetach(dock, btn);
+
+  //     // _pointForNewLaunchingIcon(&x, &y);
+  //     // y = dock->screen_ptr->scr_height - y;
+  //     // wAppIconMove(btn, x, dock->screen_ptr->scr_height-64);
+  //   }
+  // else if (btn && btn->dock)
+  //   {
+  //     wDockReattachIcon(dock, btn, 0, dock->max_icons-1);
+  //   }
+  
+  // wfree(btn);
 }
 void WWMDockShowIcons(WDock *dock)
 {
@@ -1044,6 +1076,7 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
 // Workspace functions which are called from WindowMaker code.
 // Most calls are coming from X11 EventLoop().
 // 'XW' prefix is a vector of calls 'WindowMaker(X)->Workspace(W)'
+// All the functions below are executed insise 'wwmaker_q' GCD queue.
 //-----------------------------------------------------------------------------
 
 //--- Application management
@@ -1213,8 +1246,7 @@ void XWApplicationDidCloseWindow(WWindow *wwin)
   [[ProcessManager shared] applicationDidTerminateSubprocess:notif];
 }
 
-// Used for changing focus to Workspace when no window left to set focus to
-// TODO
+// TODO: Use for changing focus to Workspace when no window left to set focus to
 void XWMWorkspaceDidChange(WScreen *scr, int workspace)
 {
   [[NSApp delegate] updateWorkspaceBadge];
@@ -1294,6 +1326,8 @@ void XWUpdateScreenInfo(WScreen *scr)
   // Place Dock into main display with changed usable area.
   // moveDock(scr->dock,
   //          (scr->scr_width - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
+  scr->dock->max_icons = scr->scr_height / wPreferences.icon_size;
+  WWMDockUpdateRecyclerIcon(scr->dock);
   moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
   
   // 5. Move IconYard

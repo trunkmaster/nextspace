@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun May 27 03:17:03 2018
+;; Created Sun May 27 03:24:44 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -18,6 +18,17 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
+  "Workspace+WindowMaker.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  35077
+  '(35077 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
   "Controller.m"
   'objc-mode
@@ -27,17 +38,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
-  "Workspace+WindowMaker.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  34847
-  '(35033 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Recycler.m"
