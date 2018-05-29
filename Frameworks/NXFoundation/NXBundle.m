@@ -137,6 +137,28 @@ static NXBundle *shared = nil;
   return bundlesRegistry;
 }
 
+// Return array of paths to bundles sorted by 'priority' field in registry
+// that is returned by -registerBundlesOftype:atPath
+- (NSArray *)sortedBundlesPaths:(NSDictionary *)bundleRegistry
+{
+  NSArray *paths = [bundleRegistry allKeys];
+
+  id sortByPriority = ^(NSString *path1, NSString *path2)
+    {
+      NSString *ps1, *ps2;
+      NSNumber *p1, *p2;
+
+      ps1 = [[registry objectForKey:path1] objectForKey:@"priority"];
+      p1 = [NSNumber numberWithInt:[ps1 intValue]];
+      ps2 = [[registry objectForKey:path2] objectForKey:@"priority"];
+      p2 = [NSNumber numberWithInt:[ps2 intValue]];
+
+      return [p1 compare:p2];
+    };
+
+  return [paths sortedArrayUsingComparator:sortByPriority];  
+}
+
 //-----------------------------------------------------------------------------
 //--- Validating and loading
 //-----------------------------------------------------------------------------
