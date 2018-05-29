@@ -33,6 +33,7 @@
 }
 
 + shared;
+- (void)loadModules;
 - (void) activate;
 
 - (void) switchModule: (id)sender;
