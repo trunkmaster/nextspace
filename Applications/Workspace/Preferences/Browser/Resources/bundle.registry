@@ -1,0 +1,6 @@
+{
+  type = WSPreferences;
+  mode = Browser;
+  class = BrowserPrefs;
+  priority = 2;
+}

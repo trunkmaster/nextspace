@@ -3,6 +3,7 @@
    The preferences panel controller.
 
    Copyright (C) 2005 Saso Kiselkov
+   Copyright (C) 2016 Sergii Stoian
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,9 +21,9 @@
 */
 
 #import <AppKit/AppKit.h>
+#import <NXFoundation/NXBundle.h>
 
 #import "Preferences.h"
-#import "ModuleLoader.h"
 
 @implementation Preferences
 
@@ -37,16 +38,6 @@ static Preferences * shared = nil;
   return shared;
 }
 
-- (void)activate
-{
-  if (panel == nil)
-    {
-      [NSBundle loadNibNamed:@"Preferences" owner:self];
-    }
-
-  [panel makeKeyAndOrderFront:nil];
-}
-
 - (void)dealloc
 {
   TEST_RELEASE(prefs);
@@ -58,27 +49,54 @@ static Preferences * shared = nil;
 {
   [panel setFrameAutosaveName:@"Preferences"];
 
-  ASSIGN(prefs, [[ModuleLoader shared] preferencesModules]);
+  // ASSIGN(prefs, [[ModuleLoader shared] preferencesModules]);
 
   [popup removeAllItems];
-  [popup addItemsWithTitles:[[prefs allKeys] sortedArrayUsingSelector:
-	  @selector(caseInsensitiveCompare:)]];
+  [self loadModules];
 
-  if ([prefs count] > 0)
+  if ([popup numberOfItems] > 0)
     {
       [popup selectItemAtIndex:0];
       [self switchModule:popup];
     }
 }
 
+- (void)loadModules
+{
+  NSDictionary *mRegistry;
+  NSArray      *modules;
+  NSString     *title;
+
+  mRegistry = [[NXBundle shared]
+                registerBundlesOfType:@"wsprefs"
+                               atPath:[[NSBundle mainBundle] bundlePath]];
+  modules = [[NXBundle shared] loadRegisteredBundles:mRegistry
+                                                type:@"WSPreferences"
+                                            protocol:@protocol(PrefsModule)];
+  for (id<PrefsModule> b in modules)
+    {
+      title = [b moduleName];
+      [popup addItemWithTitle:title];
+      [[popup itemWithTitle:title] setRepresentedObject:b];
+    }
+}
+
+- (void)activate
+{
+  if (panel == nil)
+    {
+      [NSBundle loadNibNamed:@"Preferences" owner:self];
+    }
+
+  [panel makeKeyAndOrderFront:nil];
+}
+
 - (void)switchModule:(id)sender
 {
   id <PrefsModule> module;
 
-  module = [prefs objectForKey:[sender titleOfSelectedItem]];
+  module = [[sender selectedItem] representedObject];
   [(NSBox *)box setContentView:[module view]];
-//  [panel setTitle:[NSString stringWithFormat:_(@"%@ Preferences"), 
-//    [module moduleName]]];
 }
 
 @end

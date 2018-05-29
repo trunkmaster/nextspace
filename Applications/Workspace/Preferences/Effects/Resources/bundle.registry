@@ -1,0 +1,6 @@
+{
+  type = WSPreferences;
+  mode = "Effects";
+  class = EffectsPrefs;
+  priority = 99;
+}
