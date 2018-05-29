@@ -358,50 +358,9 @@ void WWMDockInit(void)
     WWMSetDockAppImage(iconPath, 0, NO);
 
   // Setup Recycler icon
-  btn = [RecyclerIcon recyclerAppIconForDock:dock];
-  // if (btn->yindex > dock->max_icons-1)
-  //   {
-  //     wretain(btn);
-  //     wDockDetach(dock, btn);
-  //     wfree(btn);
-  //     btn = [RecyclerIcon createAppIconForDock:dock];
-  //     wDockAttachIcon(dock, btn, 0, btn->yindex, NO);
-  //   }
-  if (btn)
-    {
-      btn->running = 1;
-      btn->launching = 0;
-      btn->lock = 1;
-      btn->command = "-";
-      btn->dnd_command = NULL;
-      btn->paste_command = NULL;
-      wAppIconPaint(btn);
-    }
+  [RecyclerIcon recyclerAppIconForDock:dock];
   
   launchingIcons = NULL;
-}
-void WWMDockUpdateRecyclerIcon(WDock *dock)
-{
-  WAppIcon *btn = [RecyclerIcon recyclerAppIconForDock:dock];
-  // int x,y;
-  
-  // if (btn && btn->dock && (btn->yindex > dock->max_icons-1))
-  //   {
-  //     btn->dock = NULL;
-  //     btn->docked = 0;
-  //     wretain(btn);
-  //     wDockDetach(dock, btn);
-
-  //     // _pointForNewLaunchingIcon(&x, &y);
-  //     // y = dock->screen_ptr->scr_height - y;
-  //     // wAppIconMove(btn, x, dock->screen_ptr->scr_height-64);
-  //   }
-  // else if (btn && btn->dock)
-  //   {
-  //     wDockReattachIcon(dock, btn, 0, dock->max_icons-1);
-  //   }
-  
-  // wfree(btn);
 }
 void WWMDockShowIcons(WDock *dock)
 {
@@ -1317,6 +1276,8 @@ void XWUpdateScreenInfo(WScreen *scr)
     // 4.1 Get info about main display
     dRect = [[systemScreen mainDisplay] frame];
     dWidth = dRect.origin.x + dRect.size.width;
+    scr->scr_width = (int)[systemScreen sizeInPixels].width;
+    scr->scr_height = (int)[systemScreen sizeInPixels].height;
     
     // Save changed layout in user's preferences directory
     // [systemScreen saveCurrentDisplayLayout];
@@ -1324,10 +1285,7 @@ void XWUpdateScreenInfo(WScreen *scr)
   
   // 4.2 Move Dock
   // Place Dock into main display with changed usable area.
-  // moveDock(scr->dock,
-  //          (scr->scr_width - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
-  scr->dock->max_icons = scr->scr_height / wPreferences.icon_size;
-  WWMDockUpdateRecyclerIcon(scr->dock);
+  [RecyclerIcon recyclerAppIconForDock:scr->dock];
   moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
   
   // 5. Move IconYard
