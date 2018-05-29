@@ -491,9 +491,13 @@ static NSString *WMComputerShouldGoDownNotification =
   if (useInternalWindowManager)
     {
       WAppIcon *btn = [recycler dockIcon];
+      WDock    *dock = wScreenWithNumber(0)->dock;
 
-      btn->icon->owner = btn->dock->icon_array[0]->icon->owner;
-      [[recycler appIcon] orderFrontRegardless];
+      if (btn)
+        {
+          btn->icon->owner = dock->icon_array[0]->icon->owner;
+          [[recycler appIcon] orderFrontRegardless];
+        }
     }
 }
 
