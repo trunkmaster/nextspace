@@ -213,28 +213,16 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 static NSCell *dragCell = nil;
 static NSCell *tileCell = nil;
 
-static NSSize scaledIconSizeForSize(NSSize imageSize)
-{
-  NSSize iconSize, retSize;
-  
-  // iconSize = GSGetIconSize();
-  iconSize = NSMakeSize(64,64);
-  retSize.width = imageSize.width * iconSize.width / 64;
-  retSize.height = imageSize.height * iconSize.height / 64;
-  return retSize;
-}
-
 + (void)initialize
 {
   NSImage *tileImage;
   NSSize  iconSize = NSMakeSize(64,64);
 
-  // iconSize = GSGetIconSize();
   dragCell = [[NSCell alloc] initImageCell:nil];
   [dragCell setBordered:NO];
   
   tileImage = [[GSCurrentServer() iconTileImage] copy];
-  [tileImage setScalesWhenResized:YES];
+  [tileImage setScalesWhenResized:NO];
   [tileImage setSize:iconSize];
   tileCell = [[NSCell alloc] initImageCell:tileImage];
   RELEASE(tileImage);
@@ -249,7 +237,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void)drawRect:(NSRect)rect
 {
   NSSize iconSize = NSMakeSize(64,64);
-  // NSSize iconSize = GSGetIconSize();
   
   NSLog(@"Recycler View: drawRect!");
   
@@ -257,11 +244,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   		   inView:self];
   [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
         	   inView:self];
-
-  // for (NSView *sv in [self subviews])
-  //   {
-  //     [sv drawRect:rect];
-  //   }
 }
 
 - (id)initWithFrame:(NSRect)frame
@@ -274,45 +256,66 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 - (void)setImage:(NSImage *)anImage
 {
-  NSImage *imgCopy = [anImage copy];
-
-  if (imgCopy)
-    {
-      NSSize imageSize = [imgCopy size];
-
-      [imgCopy setScalesWhenResized:YES];
-      [imgCopy setSize:scaledIconSizeForSize(imageSize)];
-    }
-  [dragCell setImage:imgCopy];
-  RELEASE(imgCopy);
+  [dragCell setImage:anImage];
   [self setNeedsDisplay:YES];
 }
 
 // --- Drag and Drop
 
+static int imageNumber;
+static NSDate *date = nil;
+static NSTimeInterval tInterval = 0;
+
+- (void)animate
+{
+  NSString *imageName;
+
+  if (([NSDate timeIntervalSinceReferenceDate] - tInterval) < 0.1)
+    return;
+
+  tInterval = [NSDate timeIntervalSinceReferenceDate];
+  
+  if (++imageNumber > 4) imageNumber = 1;
+
+  imageName = [NSString stringWithFormat:@"recycler-%i", imageNumber];
+  
+  [self setImage:[NSImage imageNamed:imageName]];
+}
+
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
   NSLog(@"Recycler: dragging entered!");
-  return NSDragOperationGeneric;
+  
+  tInterval = [NSDate timeIntervalSinceReferenceDate];
+  
+  return NSDragOperationMove;
 }
 
 - (void)draggingExited:(id<NSDraggingInfo>)sender
 {
+  NSLog(@"Recycler: dragging exited!");
+
+  [recycler updateIconImage];
 }
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
 {
-  return NSDragOperationGeneric;
+  NSLog(@"Recycler: dragging updated");
+  [self animate];
+  return NSDragOperationMove;
 }
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
+  NSLog(@"Recycler: prepare fo dragging");
   return YES;
 }
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
-  // NSArray	*types;
+  NSLog(@"Recycler: perform dragging");
+  [recycler updateIconImage];
+ // NSArray	*types;
   // NSPasteboard	*dragPb;
 
   // dragPb = [sender draggingPasteboard];
@@ -334,6 +337,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 - (void)concludeDragOperation:(id<NSDraggingInfo>)sender
 {
+  NSLog(@"Recycler: conclude dragging");
+  // if (timer && [timer isValid])
+  //   {
+  //     [timer invalidate];
+  //     [self setImage:[NSImage imageNamed:@"recycler"]];
+  //   }
 }
 
 @end

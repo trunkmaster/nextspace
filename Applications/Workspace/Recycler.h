@@ -9,6 +9,9 @@
 #import "Workspace+WindowMaker.h"
 
 @interface RecyclerIconView : NSView
+{
+  NSTimer *timer;
+}
 - (void)setImage:(NSImage *)anImage;
 @end
 
@@ -45,6 +48,7 @@
 - (WAppIcon *)dockIcon;
 - (RecyclerIcon *)appIcon;
 - (NSUInteger)itemsCount;
+- (void)updateIconImage;
 
 - (void)purge;
 
