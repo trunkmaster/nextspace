@@ -48,6 +48,9 @@
 - (WAppIcon *)dockIcon;
 - (RecyclerIcon *)appIcon;
 - (NSUInteger)itemsCount;
+- (NSString *)path;
+
+- (void)setIconImage:(NSImage *)image;
 - (void)updateIconImage;
 
 - (void)purge;

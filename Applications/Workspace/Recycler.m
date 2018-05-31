@@ -297,7 +297,6 @@ static NSTimeInterval tInterval = 0;
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
 {
-  // NSLog(@"Recycler: dragging updated");
   [self animate];
   return NSDragOperationDelete;
 }
@@ -310,36 +309,48 @@ static NSTimeInterval tInterval = 0;
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
+  BOOL			result = NO;
+  NSPasteboard		*dragPb = [sender draggingPasteboard];
+  NSArray		*types = [dragPb types];
+  NSString		*dbPath;
+  NSMutableDictionary	*db;
+  NSFileManager		*fm = [NSFileManager defaultManager];
+
+  dbPath = [[recycler path] stringByAppendingPathComponent:@".recycler.db"];
+  if ([fm fileExistsAtPath:dbPath])
+    db = [[NSMutableDictionary alloc] initWithContentsOfFile:dbPath];
+  else
+    db = [NSMutableDictionary new];
+  
   NSLog(@"Recycler: perform dragging");
+  
+  [recycler setIconImage:[NSImage imageNamed:@"recyclerDeposit"]];
+  
+  if ([types containsObject:NSFilenamesPboardType] == YES)
+    {
+      NSArray *names = [dragPb propertyListForType:NSFilenamesPboardType];
+  
+      for (NSString *itemPath in names)
+        {
+          NSLog(@"Moving to trash '%@'", itemPath);
+          [fm moveItemAtPath:itemPath
+                      toPath:[[recycler path] stringByAppendingPathComponent:[itemPath lastPathComponent]]
+                       error:NULL];
+          [db setObject:itemPath forKey:[itemPath lastPathComponent]];
+          NSLog(@"Recycler: write DB into %@", dbPath);
+          [db writeToFile:dbPath atomically:YES];
+        }
+      result = YES;
+    }
+
+  [db release];
   [recycler updateIconImage];
- // NSArray	*types;
-  // NSPasteboard	*dragPb;
-
-  // dragPb = [sender draggingPasteboard];
-  // types = [dragPb types];
-  // if ([types containsObject: NSFilenamesPboardType] == YES)
-  //   {
-  //     NSArray	*names = [dragPb propertyListForType: NSFilenamesPboardType];
-  //     NSUInteger index;
-
-  //     [NSApp activateIgnoringOtherApps: YES];
-  //     for (index = 0; index < [names count]; index++)
-  //       {
-  //         [NSApp _openDocument: [names objectAtIndex: index]];
-  //       }
-  //     return YES;
-  //   }
-  return NO;
+  return result;
 }
 
 - (void)concludeDragOperation:(id<NSDraggingInfo>)sender
 {
   NSLog(@"Recycler: conclude dragging");
-  // if (timer && [timer isValid])
-  //   {
-  //     [timer invalidate];
-  //     [self setImage:[NSImage imageNamed:@"recycler"]];
-  //   }
 }
 
 @end
@@ -422,6 +433,18 @@ static NSTimeInterval tInterval = 0;
   return self;
 }
 
+- (void)awakeFromNib
+{
+  [panel setFrameAutosaveName:@"Recycler"];
+  
+  [panelView setHasHorizontalScroller:YES];
+  [panelView setHasVerticalScroller:NO];
+  filesView = [[NXIconView alloc] initWithFrame:[panelView frame]];
+  [panelView setDocumentView:filesView];
+
+  [panelIcon setImage:[self iconImage]];
+}
+
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -443,16 +466,49 @@ static NSTimeInterval tInterval = 0;
   return appIcon;
 }
 
-- (void)awakeFromNib
+- (NSString *)path
 {
-  [panel setFrameAutosaveName:@"Recycler"];
-  
-  [panelView setHasHorizontalScroller:YES];
-  [panelView setHasVerticalScroller:NO];
-  filesView = [[NXIconView alloc] initWithFrame:[panelView frame]];
-  [panelView setDocumentView:filesView];
+  return recyclerPath;
+}
 
-  [panelIcon setImage:[self iconImage]];
+- (NSImage *)iconImage
+{
+  return iconImage;
+}
+- (void)setIconImage:(NSImage *)image
+{
+  [appIconView setImage:image];
+}
+- (void)updateIconImage
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  
+  itemsCount = [[fm directoryContentsAtPath:recyclerPath] count];
+
+  if ([fm fileExistsAtPath:[recyclerPath stringByAppendingPathComponent:@".recycler.db"]])
+    itemsCount--;
+    
+  if (itemsCount)
+    {
+      iconImage = [NSImage imageNamed:@"recyclerFull"];
+      [badge setStringValue:[NSString stringWithFormat:@"%lu", itemsCount]];
+    }
+  else
+    {
+      iconImage = [NSImage imageNamed:@"recycler"];
+      [badge setStringValue:@""];
+    }
+  
+  
+  [appIconView setImage:iconImage];
+  
+  if (panel)
+    [panelIcon setImage:[self iconImage]];
+}
+
+- (NSUInteger)itemsCount
+{
+  return itemsCount;
 }
 
 - (void)showPanel
@@ -521,38 +577,6 @@ static NSTimeInterval tInterval = 0;
         }
       [NSApp unhide:self]; // or activate or do nothing.
     }
-}
-
-- (NSImage *)iconImage
-{
-  return iconImage;
-}
-- (void)updateIconImage
-{
-  itemsCount = [[[NSFileManager defaultManager]
-                  directoryContentsAtPath:recyclerPath] count];
-  
-  if (itemsCount)
-    {
-      iconImage = [NSImage imageNamed:@"recyclerFull"];
-      [badge setStringValue:[NSString stringWithFormat:@"%lu", itemsCount]];
-    }
-  else
-    {
-      iconImage = [NSImage imageNamed:@"recycler"];
-      [badge setStringValue:@""];
-    }
-  
-  
-  [appIconView setImage:iconImage];
-  
-  if (panel)
-    [panelIcon setImage:[self iconImage]];
-}
-
-- (NSUInteger)itemsCount
-{
-  return itemsCount;
 }
 
 - (void)fileSystemChangedAtPath:(NSNotification *)notif
