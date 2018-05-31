@@ -33,6 +33,7 @@
   WAppIcon         *dockIcon;
   NSImage          *iconImage;
   NSString         *recyclerPath;
+  NSString         *recyclerDBPath;
   NSUInteger       itemsCount;
   
   NXFileSystemMonitor *fileSystemMonitor;
