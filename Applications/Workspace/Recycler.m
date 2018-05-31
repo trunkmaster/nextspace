@@ -229,23 +229,6 @@ static NSCell *tileCell = nil;
   [tileCell setBordered:NO];
 }
 
-- (BOOL)acceptsFirstMouse:(NSEvent*)theEvent
-{
-  return YES;
-}
-
-- (void)drawRect:(NSRect)rect
-{
-  NSSize iconSize = NSMakeSize(64,64);
-  
-  NSLog(@"Recycler View: drawRect!");
-  
-  [tileCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
-  		   inView:self];
-  [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
-        	   inView:self];
-}
-
 - (id)initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame:frame];
@@ -254,10 +237,27 @@ static NSCell *tileCell = nil;
   return self;
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent*)theEvent
+{
+  return YES;
+}
+
 - (void)setImage:(NSImage *)anImage
 {
   [dragCell setImage:anImage];
   [self setNeedsDisplay:YES];
+}
+
+- (void)drawRect:(NSRect)rect
+{
+  NSSize iconSize = NSMakeSize(64,64);
+  
+  // NSLog(@"Recycler View: drawRect!");
+  
+  [tileCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
+  		   inView:self];
+  [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height)
+        	   inView:self];
 }
 
 // --- Drag and Drop
@@ -284,25 +284,22 @@ static NSTimeInterval tInterval = 0;
 
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"Recycler: dragging entered!");
-  
+  // NSLog(@"Recycler: dragging entered!");
   tInterval = [NSDate timeIntervalSinceReferenceDate];
-  
-  return NSDragOperationMove;
+  return NSDragOperationDelete;
 }
 
 - (void)draggingExited:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"Recycler: dragging exited!");
-
+  // NSLog(@"Recycler: dragging exited!");
   [recycler updateIconImage];
 }
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"Recycler: dragging updated");
+  // NSLog(@"Recycler: dragging updated");
   [self animate];
-  return NSDragOperationMove;
+  return NSDragOperationDelete;
 }
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender

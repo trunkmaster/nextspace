@@ -2,5 +2,5 @@
   type = WSPreferences;
   mode = Shelf;
   class = ShelfPrefs;
-  priority = 1;
+  priority = 0;
 }

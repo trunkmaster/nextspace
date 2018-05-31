@@ -1,0 +1,6 @@
+{
+  type = WSPreferences;
+  mode = Workspaces;
+  class = WorkspacesPrefs;
+  priority = 1;
+}

@@ -418,14 +418,6 @@ static NSString *WMComputerShouldGoDownNotification =
     {
       WDock *dock = wScreenWithNumber(0)->dock;
 
-      workspaceBadge = [[NXIconBadge alloc]
-                         initWithPoint:NSMakePoint(5,48)
-                                  text:@"0"
-                                  font:[NSFont systemFontOfSize:9]
-                             textColor:[NSColor blackColor]
-                           shadowColor:[NSColor whiteColor]];
-      [[[NSApp iconWindow] contentView] addSubview:workspaceBadge];
-      [workspaceBadge release];
       [self updateWorkspaceBadge];
       
       // Detect lid close/open events
@@ -654,13 +646,41 @@ static NSString *WMComputerShouldGoDownNotification =
 //============================================================================
 // Appicon badges
 //============================================================================
+- (void)createWorkspaceBadge
+{
+  workspaceBadge = [[NXIconBadge alloc]
+                             initWithPoint:NSMakePoint(5,48)
+                                      text:@"0"
+                                      font:[NSFont systemFontOfSize:9]
+                                 textColor:[NSColor blackColor]
+                               shadowColor:[NSColor whiteColor]];
+  [[[NSApp iconWindow] contentView] addSubview:workspaceBadge];
+  [workspaceBadge release];
+  [self updateWorkspaceBadge];
+}
+
 - (void)updateWorkspaceBadge
 {
   NSString *wsCurrent;
-  
-  wsCurrent = [NSString stringWithFormat:@"%i",
-                        wScreenWithNumber(0)->current_workspace+1];
-  [workspaceBadge setStringValue:wsCurrent];
+
+  if ([[NXDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"])
+    {
+      if (!workspaceBadge)
+        {
+          [self createWorkspaceBadge];
+        }
+      wsCurrent = [NSString stringWithFormat:@"%i",
+                            wScreenWithNumber(0)->current_workspace+1];
+      [workspaceBadge setStringValue:wsCurrent];
+    }
+  else
+    {
+      if (workspaceBadge)
+        {
+          [workspaceBadge removeFromSuperview];
+          workspaceBadge = nil;
+        }
+    }
 }
 
 //============================================================================

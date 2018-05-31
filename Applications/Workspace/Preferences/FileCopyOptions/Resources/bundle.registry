@@ -2,5 +2,5 @@
   type = WSPreferences;
   mode = "File Copy Options";
   class = FileCopyPrefs;
-  priority = 4;
+  priority = 3;
 }
