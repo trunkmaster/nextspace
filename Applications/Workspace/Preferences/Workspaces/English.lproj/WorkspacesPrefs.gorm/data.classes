@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setShowInDock:"
+	);
+	Super = NSObject;
+    };
+    WorkspacesPrefs = {
+	Actions = (
+	    "setShowInDock:"
+	);
+	Outlets = (
+	    showInDockBtn,
+	    window,
+	    box
+	);
+	Super = NSObject;
+    };
+}

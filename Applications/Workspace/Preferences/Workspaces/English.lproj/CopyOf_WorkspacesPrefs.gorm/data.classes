@@ -1,0 +1,46 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    DockPrefs = {
+	Actions = (
+	    "setAppAutostarted:",
+	    "setAppLocked:",
+	    "setIcon:",
+	    "showAppSettingsPanel:",
+	    "setAppIcon:",
+	    "setAppCommand:",
+	    "setAppDndCommand:",
+	    "setAppPasteCommand:"
+	);
+	Outlets = (
+	    appList,
+	    nameField,
+	    pathField,
+	    iconBtn,
+	    autostartBtn,
+	    window,
+	    appLockedBtn,
+	    box,
+	    appCommandField,
+	    appDndCommandField,
+	    appIconView,
+	    appMiddleClickField,
+	    appPanel,
+	    appNameField,
+	    appIconBtn
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setAppAutostarted:",
+	    "setAppCommand:",
+	    "setAppDndCommand:",
+	    "setAppIcon:",
+	    "setAppLocked:",
+	    "setAppPasteCommand:",
+	    "setIcon:",
+	    "showAppSettingsPanel:"
+	);
+	Super = NSObject;
+    };
+}
