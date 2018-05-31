@@ -345,6 +345,7 @@ static NSTimeInterval tInterval = 0;
 
   [db release];
   [recycler updateIconImage];
+  
   return result;
 }
 
@@ -382,6 +383,8 @@ static NSTimeInterval tInterval = 0;
   
   recyclerPath = [[NSString stringWithFormat:@"%@/.Recycler", NSHomeDirectory()]
                    retain];
+  recyclerDBPath = [recyclerPath stringByAppendingPathComponent:@".recycler.db"];
+  
   if ([[NSFileManager defaultManager] fileExistsAtPath:recyclerPath
                                            isDirectory:&isDir] == NO)
     {
@@ -448,9 +451,10 @@ static NSTimeInterval tInterval = 0;
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [fileSystemMonitor removePath:recyclerPath];
   
   [appIcon release];
-  [fileSystemMonitor removePath:recyclerPath];
+  [recyclerDBPath release];
   [recyclerPath release];
   
   [super dealloc];
@@ -475,10 +479,12 @@ static NSTimeInterval tInterval = 0;
 {
   return iconImage;
 }
+
 - (void)setIconImage:(NSImage *)image
 {
   [appIconView setImage:image];
 }
+
 - (void)updateIconImage
 {
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -590,6 +596,32 @@ static NSTimeInterval tInterval = 0;
 
 - (void)purge
 {
+  NSFileManager 	*fm = [NSFileManager defaultManager];
+  NSArray		*items = [fm directoryContentsAtPath:recyclerPath];
+  NSMutableDictionary	*db = nil;
+
+  // Database
+  if ([fm fileExistsAtPath:recyclerDBPath])
+    db = [[NSMutableDictionary alloc] initWithContentsOfFile:recyclerDBPath];
+
+  // Items removal
+  for (NSString *itemPath in items)
+    {
+      if ([itemPath isEqualToString:[recyclerDBPath lastPathComponent]])
+        continue;
+
+      itemPath = [recyclerPath stringByAppendingPathComponent:itemPath];
+      if ([fm removeItemAtPath:itemPath error:NULL] && db)
+        {
+          [db removeObjectForKey:[itemPath lastPathComponent]];
+          [db writeToFile:recyclerDBPath atomically:YES];
+        }
+    }
+
+  if (db)
+    [db release];
+  
+  [recycler updateIconImage];
 }
 
 @end
