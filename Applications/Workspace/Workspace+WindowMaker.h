@@ -112,6 +112,8 @@ void XWApplicationDidCloseWindow(WWindow *wwin);
 
 // Called from WM/src/event.c on update of XrandR screen configuration
 void XWUpdateScreenInfo(WScreen *scr);
-void XWMWorkspaceDidChange(WScreen *scr, int workspace);
+void XWWorkspaceDidChange(WScreen *scr, int workspace);
+#include <dock.h> // to silence icon.c compile error
+void XWDockContentDidChange(WDock *dock);
 
 #endif //NEXTSPACE

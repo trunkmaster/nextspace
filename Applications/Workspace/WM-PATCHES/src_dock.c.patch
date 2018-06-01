@@ -1,6 +1,17 @@
 --- ./WindowMaker-0.95.7/src/dock.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/dock.c	2018-01-22 18:12:44.020000000 +0200
-@@ -854,7 +854,9 @@
++++ ./WindowMaker/src/dock.c	2018-06-01 17:19:04.170585000 +0300
+@@ -60,6 +60,10 @@
+ #include "misc.h"
+ #include "event.h"
+ 
++#ifndef NEXTSPACE
++#include <Workspace+WindowMaker.h>
++#endif
++
+ /**** Local variables ****/
+ #define CLIP_REWIND       1
+ #define CLIP_IDLE         0
+@@ -854,7 +858,9 @@
  	btn->icon->core->descriptor.handle_leavenotify = clipLeaveNotify;
  	btn->icon->core->descriptor.parent_type = WCLASS_DOCK_ICON;
  	btn->icon->core->descriptor.parent = btn;
@@ -10,7 +21,7 @@
  	btn->x_pos = x_pos;
  	btn->y_pos = 0;
  	btn->docked = 1;
-@@ -1959,9 +1961,10 @@
+@@ -1959,9 +1965,10 @@
  				ChangeStackingLevel(aicon->icon->core, WMDockLevel);
  
  			wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
@@ -22,3 +33,35 @@
  			wRaiseFrame(aicon->icon->core);
  
  			dock->icon_count++;
+@@ -2237,6 +2244,10 @@
+ 		icon->paste_command = wmalloc(len);
+ 		snprintf(icon->paste_command, len, "%s %%s", icon->command);
+ 	}
++  
++#ifdef NEXTSPACE
++	XWDockContentDidChange(dock);
++#endif
+ 
+ 	return True;
+ }
+@@ -2256,6 +2267,10 @@
+ 
+ 	icon->x_pos = dock->x_pos + x * ICON_SIZE;
+ 	icon->y_pos = dock->y_pos + y * ICON_SIZE;
++  
++#ifdef NEXTSPACE
++	XWDockContentDidChange(dock);
++#endif
+ }
+ 
+ Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, int y)
+@@ -2455,6 +2470,9 @@
+ 	}
+ 	if (dock->auto_collapse || dock->auto_raise_lower)
+ 		clipLeave(dock);
++#ifdef NEXTSPACE
++	XWDockContentDidChange(dock);
++#endif
+ }
+ 
+ /*

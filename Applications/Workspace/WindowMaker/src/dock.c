@@ -60,6 +60,10 @@
 #include "misc.h"
 #include "event.h"
 
+#ifndef NEXTSPACE
+#include <Workspace+WindowMaker.h>
+#endif
+
 /**** Local variables ****/
 #define CLIP_REWIND       1
 #define CLIP_IDLE         0
@@ -2240,6 +2244,10 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
 		icon->paste_command = wmalloc(len);
 		snprintf(icon->paste_command, len, "%s %%s", icon->command);
 	}
+  
+#ifdef NEXTSPACE
+	XWDockContentDidChange(dock);
+#endif
 
 	return True;
 }
@@ -2259,6 +2267,10 @@ void wDockReattachIcon(WDock *dock, WAppIcon *icon, int x, int y)
 
 	icon->x_pos = dock->x_pos + x * ICON_SIZE;
 	icon->y_pos = dock->y_pos + y * ICON_SIZE;
+  
+#ifdef NEXTSPACE
+	XWDockContentDidChange(dock);
+#endif
 }
 
 Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, int y)
@@ -2458,6 +2470,9 @@ void wDockDetach(WDock *dock, WAppIcon *icon)
 	}
 	if (dock->auto_collapse || dock->auto_raise_lower)
 		clipLeave(dock);
+#ifdef NEXTSPACE
+	XWDockContentDidChange(dock);
+#endif
 }
 
 /*
