@@ -1,0 +1,106 @@
+--- gnustep-gui-0.24.1.orig/Source/GSDragView.m	2013-02-18 22:29:10.000000000 +0200
++++ gnustep-gui-0.24.1/Source/GSDragView.m	2018-06-01 15:10:03.217042502 +0300
+@@ -510,20 +510,37 @@
+     {
+     case NSDragOperationNone:
+       name = @"NoCursor";
+-      iname = @"common_noCursor";
++      iname = @"dragNoneCursor";
++      // newCursor = [NSCursor operationNotAllowedCursor];
+       break;
+     case NSDragOperationCopy:
+       name = @"CopyCursor";
+-      iname = @"common_copyCursor";
++      iname = @"dragCopyCursor";
+       break;
+     case NSDragOperationLink:
+       name = @"LinkCursor";
+-      iname = @"common_linkCursor";
++      iname = @"dragLinkCursor";
++      break;
++    case NSDragOperationMove:
++      name = @"MoveCursor";
++      iname = @"dragMoveCursor";
++      // newCursor = [NSCursor greenArrowCursor];
++      break;
++    case NSDragOperationDelete:
++      name = @"DeleteCursor";
++      iname = @"dragDeleteCursor";
++      // newCursor = [NSCursor disappearingItemCursor];
+       break;
+     case NSDragOperationGeneric:
++      name = @"GenericCursor";
++      iname = @"dragGenericCursor";
++      // newCursor = [NSCursor closedHandCursor];
+       break;
+     default:
+       // FIXME: Should not happen, add warning?
++      name = @"EveryCursor";
++      iname = @"dragEveryCursor";
++      // newCursor = [NSCursor closedHandCursor];
+       break;
+     }
+ 
+@@ -538,35 +555,35 @@
+ 	  RELEASE(newCursor);
+ 	}
+     }
+-  if (newCursor == nil)
+-    {
+-      name = @"ArrowCursor";
+-      newCursor = [cursors objectForKey: name];
+-      if (newCursor == nil)
+-	{
+-	  /* Make our own arrow cursor, since we want to color it */
+-	  void *c;
++  // if (newCursor == nil)
++  //   {
++  //     name = @"ArrowCursor";
++  //     newCursor = [cursors objectForKey: name];
++  //     if (newCursor == nil)
++  //       {
++  //         /* Make our own arrow cursor, since we want to color it */
++  //         void *c;
+ 	  
+-	  newCursor = [[NSCursor alloc] initWithImage: nil];
+-	  [GSCurrentServer() standardcursor: GSArrowCursor : &c];
+-	  [newCursor _setCid: c];
+-	  [cursors setObject: newCursor forKey: name];
+-	  RELEASE(newCursor);
+-	}
+-    }
++  //         newCursor = [[NSCursor alloc] initWithImage: nil];
++  //         [GSCurrentServer() standardcursor: GSArrowCursor : &c];
++  //         [newCursor _setCid: c];
++  //         [cursors setObject: newCursor forKey: name];
++  //         RELEASE(newCursor);
++  //       }
++  //   }
+   
+-  if ((targetWindowRef != 0) && mask != NSDragOperationNone)
+-    {
+-      [GSCurrentServer() recolorcursor: [NSColor greenColor] 
+-		      : [NSColor blackColor] 
+-		      : [newCursor _cid]];
+-    }
+-  else
+-    {
+-      [GSCurrentServer() recolorcursor: [NSColor blackColor] 
+-		      : [NSColor whiteColor] 
+-		      : [newCursor _cid]];
+-    }
++  // if ((targetWindowRef != 0) && mask != NSDragOperationNone)
++  //   {
++  //     [GSCurrentServer() recolorcursor: [NSColor greenColor] 
++  //       	      : [NSColor blackColor] 
++  //       	      : [newCursor _cid]];
++  //   }
++  // else
++  //   {
++  //     [GSCurrentServer() recolorcursor: [NSColor blackColor] 
++  //       	      : [NSColor whiteColor] 
++  //       	      : [newCursor _cid]];
++  //   }
+ 
+   [newCursor set];
+ }
