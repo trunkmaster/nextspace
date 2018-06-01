@@ -60,7 +60,7 @@
 #include "misc.h"
 #include "event.h"
 
-#ifndef NEXTSPACE
+#ifdef NEXTSPACE
 #include <Workspace+WindowMaker.h>
 #endif
 
