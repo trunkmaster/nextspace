@@ -440,7 +440,7 @@ void wWorkspaceChange(WScreen *scr, int workspace)
 	if (workspace != scr->current_workspace)
 		wWorkspaceForceChange(scr, workspace);
 #ifdef NEXTSPACE
-	XWMWorkspaceDidChange(scr, workspace);
+	XWWorkspaceDidChange(scr, workspace);
 #endif // NEXTSPACE        
 }
 

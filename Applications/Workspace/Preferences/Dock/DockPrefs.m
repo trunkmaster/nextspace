@@ -59,6 +59,11 @@
 
   [appIconBtn setRefusesFirstResponder:YES];
   [appLockedBtn setRefusesFirstResponder:YES];
+
+  [[NSNotificationCenter defaultCenter] addObserver:appList
+                                           selector:@selector(reloadData)
+                                               name:@"WMDockContentDidChange"
+                                             object:nil];
 }
 
 - (NSString *)moduleName

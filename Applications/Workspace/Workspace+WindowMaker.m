@@ -1205,14 +1205,6 @@ void XWApplicationDidCloseWindow(WWindow *wwin)
   [[ProcessManager shared] applicationDidTerminateSubprocess:notif];
 }
 
-// TODO: Use for changing focus to Workspace when no window left to set focus to
-void XWMWorkspaceDidChange(WScreen *scr, int workspace)
-{
-  [[NSApp delegate] updateWorkspaceBadge];
-  // [NSApp activateIgnoringOtherApps:YES];
-  // [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
-}
-
 // Screen resizing
 static void moveDock(WDock *dock, int new_x, int new_y)
 {
@@ -1306,6 +1298,26 @@ void XWUpdateScreenInfo(WScreen *scr)
   [[NSDistributedNotificationCenter defaultCenter]
      postNotificationName:NXScreenDidChangeNotification
                    object:nil];
+}
+
+// TODO: Use for changing focus to Workspace when no window left to set focus to
+void XWWorkspaceDidChange(WScreen *scr, int workspace)
+{
+  [[NSApp delegate] updateWorkspaceBadge];
+  // [NSApp activateIgnoringOtherApps:YES];
+  // [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
+}
+
+void XWDockContentDidChange(WDock *dock)
+{
+  NSNotification *notif;
+  
+  notif = [NSNotification 
+            notificationWithName:@"WMDockContentDidChange"
+                          object:nil
+                        userInfo:nil];
+
+  [[NSNotificationCenter defaultCenter] postNotification:notif];
 }
 
 #endif //NEXTSPACE
