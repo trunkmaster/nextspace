@@ -2,6 +2,8 @@
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <NXAppKit/NXAlert.h>
+#import <Operations/ProcessManager.h>
+
 #import "Controller.h"
 #import "Recycler.h"
 
@@ -315,7 +317,9 @@ static NSTimeInterval tInterval = 0;
   NSString		*dbPath;
   NSMutableDictionary	*db;
   NSFileManager		*fm = [NSFileManager defaultManager];
-
+  NSMutableArray 	*items;
+  NSString		*sourceDir;
+    
   dbPath = [[recycler path] stringByAppendingPathComponent:@".recycler.db"];
   if ([fm fileExistsAtPath:dbPath])
     db = [[NSMutableDictionary alloc] initWithContentsOfFile:dbPath];
@@ -328,18 +332,25 @@ static NSTimeInterval tInterval = 0;
   
   if ([types containsObject:NSFilenamesPboardType] == YES)
     {
-      NSArray *names = [dragPb propertyListForType:NSFilenamesPboardType];
-  
-      for (NSString *itemPath in names)
+      NSString *name, *path;
+      
+      items = [[dragPb propertyListForType:NSFilenamesPboardType] mutableCopy];
+      sourceDir = [[items objectAtIndex:0] stringByDeletingLastPathComponent];
+
+      for (NSUInteger i = 0; i < [items count]; i++)
         {
-          NSLog(@"Moving to trash '%@'", itemPath);
-          [fm moveItemAtPath:itemPath
-                      toPath:[[recycler path] stringByAppendingPathComponent:[itemPath lastPathComponent]]
-                       error:NULL];
-          [db setObject:itemPath forKey:[itemPath lastPathComponent]];
-          NSLog(@"Recycler: write DB into %@", dbPath);
-          [db writeToFile:dbPath atomically:YES];
+          path = [items objectAtIndex:i];
+          name = [path lastPathComponent];
+          [db setObject:[path stringByDeletingLastPathComponent] forKey:name];
+          [items replaceObjectAtIndex:i withObject:name];
         }
+
+      [[ProcessManager shared] startOperationWithType:MoveOperation
+                                               source:sourceDir
+                                               target:[recycler path]
+                                                files:items];
+      [items release];
+      [db writeToFile:dbPath atomically:YES];
       result = YES;
     }
 
@@ -381,9 +392,10 @@ static NSTimeInterval tInterval = 0;
   
   appIcon = [[RecyclerIcon alloc] initWithWindowRef:&dockIcon->icon->core->window];
   
-  recyclerPath = [[NSString stringWithFormat:@"%@/.Recycler", NSHomeDirectory()]
-                   retain];
+  recyclerPath = [NSHomeDirectory() stringByAppendingPathComponent:@".Recycler"];
+  [recyclerPath retain];
   recyclerDBPath = [recyclerPath stringByAppendingPathComponent:@".recycler.db"];
+  [recyclerDBPath retain];
   
   if ([[NSFileManager defaultManager] fileExistsAtPath:recyclerPath
                                            isDirectory:&isDir] == NO)
@@ -597,29 +609,38 @@ static NSTimeInterval tInterval = 0;
 - (void)purge
 {
   NSFileManager 	*fm = [NSFileManager defaultManager];
-  NSArray		*items = [fm directoryContentsAtPath:recyclerPath];
+  NSMutableArray	*items = [[fm directoryContentsAtPath:recyclerPath] mutableCopy];
   NSMutableDictionary	*db = nil;
 
   // Database
   if ([fm fileExistsAtPath:recyclerDBPath])
     db = [[NSMutableDictionary alloc] initWithContentsOfFile:recyclerDBPath];
 
-  // Items removal
+  // Remove .recycler.db from itmes list
   for (NSString *itemPath in items)
     {
       if ([itemPath isEqualToString:[recyclerDBPath lastPathComponent]])
-        continue;
-
-      itemPath = [recyclerPath stringByAppendingPathComponent:itemPath];
-      if ([fm removeItemAtPath:itemPath error:NULL] && db)
         {
-          [db removeObjectForKey:[itemPath lastPathComponent]];
-          [db writeToFile:recyclerDBPath atomically:YES];
+          [items removeObjectAtIndex:[items indexOfObject:itemPath]];
+          break;
         }
     }
-
+  
+  [[ProcessManager shared] startOperationWithType:DeleteOperation
+                                           source:recyclerPath
+                                           target:nil
+                                            files:items];
+  
   if (db)
-    [db release];
+    {
+      for (NSString *item in items)
+        {
+          [db removeObjectForKey:item];
+        }
+      [db writeToFile:recyclerDBPath atomically:YES];
+      [db release];
+    }
+  [items release];
   
   [recycler updateIconImage];
 }

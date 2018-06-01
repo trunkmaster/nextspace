@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu May 31 15:47:19 2018
+;; Created Fri Jun  1 14:54:43 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,19 +11,63 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("draggingSourceMask" "ForLoca" "_recyc" "WorkspaceChange" "fileSyste" "fileSystem" "fileSystemChangedAtPath" "fileSystemMonitor" "GSCurre" "_application" "Autolaunched" "wDockHide" "C" "programm" "flags" "w_g"))
+(setq search-ring '("GSCurr" "draggingSourceMask" "ForLoca" "_recyc" "WorkspaceChange" "fileSyste" "fileSystem" "fileSystemChangedAtPath" "fileSystemMonitor" "GSCurre" "_application" "Autolaunched" "wDockHide" "C" "programm" "flags"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/DockPrefs/*" "~/Developer/nextspace/Applications/Workspace/Preferences/DockedAppsPrefs/*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Preferences/EffectPrefs/EffectPrefs.m" "~/Developer/nextspace/Applications/Workspace/Inspectors/FolderInspector.m" "~/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/BrowserViewer.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/DockPrefs/*" "~/Developer/nextspace/Applications/Workspace/Preferences/DockedAppsPrefs/*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Preferences/EffectPrefs/EffectPrefs.m" "~/Developer/nextspace/Applications/Workspace/Inspectors/FolderInspector.m" "~/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m" "~/Developer/nextspace/Applications/Workspace/Viewers/BrowserViewer/BrowserViewer.m" "~/Developer/nextspace/Applications/Workspace"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m"
+  "ProcessManager.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  14338
+  '(14106 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Recycler.m"
+  "Recycler.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  9456
+  '(9426 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
   "Controller.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  11321
-  '(11864 nil)
+  18036
+  '(18013 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Controller.h"
+  "Controller.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  2756
+  '(2733 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m"
+  "FileViewer.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  3347
+  '(36267 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -35,28 +79,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   969
   '(1386 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Controller.h"
-  "Controller.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2910
-  '(2910 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/FileViewer.m"
-  "FileViewer.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  42737
-  '(36267 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -79,17 +101,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   1457
   '(95 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Recycler.m"
-  "Recycler.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  6556
-  '(6556 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -288,17 +299,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   1137
   '(1121 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m"
-  "ProcessManager.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  8570
-  '(1536 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

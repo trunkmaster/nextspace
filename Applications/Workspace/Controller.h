@@ -93,6 +93,7 @@
 - (NXFileSystemMonitor *)fileSystemMonitor;
 - (id<MediaManager>)mediaManager;
 - (Processes *)processesPanel;
+- (Recycler *)recycler;
 
 //============================================================================
 // Appicon badges

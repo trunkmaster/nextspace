@@ -643,6 +643,11 @@ static NSString *WMComputerShouldGoDownNotification =
   return procPanel;
 }
 
+- (Recycler *)recycler
+{
+  return recycler;
+}
+
 //============================================================================
 // Appicon badges
 //============================================================================

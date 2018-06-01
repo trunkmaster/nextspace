@@ -22,6 +22,7 @@
 
 #import <sys/types.h>
 #import <signal.h>
+#import <NXAppKit/NXAlert.h>
 
 #import "Controller.h"
 #import "Processes/Processes.h"
@@ -424,8 +425,11 @@ static BOOL      _workspaceQuitting = NO;
                       target:(NSString *)dest
                        files:(NSArray *)files
 {
-  BGOperation *newOperation = nil;
-  NSString    *message = nil;
+  BGOperation	*newOperation = nil;
+  NSString	*message = nil;
+  NSString	*format;
+  NSString	*object;
+   
   
   switch (opType)
     {
@@ -441,18 +445,9 @@ static BOOL      _workspaceQuitting = NO;
       break;
     case MoveOperation:
       {
-        NSString *recyclerPath;
-
-        recyclerPath = [NSHomeDirectory()
-                           stringByAppendingPathComponent:@".Trash"];
-      
-        // Must be in Recycler class.
-        if ([dest isEqualToString:recyclerPath])
+        if ([dest isEqualToString:[[[NSApp delegate] recycler] path]])
           {
-            NSString *format;
-            NSString *object;
-   
-            if (files && [files count] > 1)
+            if ([files count] > 1)
               {
                 message = @"Do you really want to recycle selected files?";
               }
@@ -465,7 +460,7 @@ static BOOL      _workspaceQuitting = NO;
                 format = @"Do you really want to recycle \n%@?";
                 message = [NSString stringWithFormat:format, object];
               }
-            if (NSRunAlertPanel(_(@"Workspace"), message,
+            if (NXRunAlertPanel(_(@"Workspace"), message,
                                 _(@"Recycle"), _(@"Cancel"), nil) 
                 != NSAlertDefaultReturn)
               {
@@ -482,10 +477,11 @@ static BOOL      _workspaceQuitting = NO;
       break;
     case DeleteOperation:
       {
-        NSString *format;
-        NSString *object;
-   
-        if (files && [files count] > 1)
+        if ([src isEqualToString:[[[NSApp delegate] recycler] path]])
+          {
+            message = @"Do you really want to destroy items in Recycler?";
+          }
+        else if (files && [files count] > 1)
           {
             format = @"Do you really want to destroy selected files in \n%@?";
             message = [NSString stringWithFormat:format, src];
@@ -500,7 +496,7 @@ static BOOL      _workspaceQuitting = NO;
             message = [NSString stringWithFormat:format, object];
           }
         
-        if (NSRunAlertPanel(_(@"Workspace"),message,
+        if (NXRunAlertPanel(_(@"Workspace"),message,
                             _(@"Destroy"), _(@"Cancel"), nil) 
             != NSAlertDefaultReturn)
           {
