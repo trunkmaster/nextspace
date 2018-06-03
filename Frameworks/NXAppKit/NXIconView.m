@@ -385,12 +385,12 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   unsigned index;
 
   // constrain the x coord to the current width
-  if (aSlot.x >= (int) slotsWide)
+  if (aSlot.x >= (int)slotsWide)
     {
       aSlot.x = slotsWide-1;
     }
 
-  if (lastIcon.x <= aSlot.x && lastIcon.y <= aSlot.y)
+  if (lastIcon.x <= aSlot.x || lastIcon.y <= aSlot.y)
     {
       lastIcon = aSlot;
     }
@@ -436,7 +436,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   [anIcon putIntoView:self
 	      atPoint:PointForSlot(slotSize, aSlot)];
   [anIcon setMaximumCollapsedLabelWidth:
-    slotSize.width - maximumCollapsedLabelWidthSpace];
+            slotSize.width - maximumCollapsedLabelWidthSpace];
 
   [anIcon setTarget:self];
   [anIcon setAction:@selector(iconClicked:)];
@@ -607,21 +607,21 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 	[icons count], slotsWide, slotSize.width, 
         newFrame.size.width, superRect.size.width);*/
 
-  // if (adjustsToFillEnclosingScrollView == YES
-  //     && [self enclosingScrollView] != nil)
-  //   {
-  //     NSRect r = [[[self enclosingScrollView] contentView] frame];
+  if (adjustsToFillEnclosingScrollView == YES
+      && [self enclosingScrollView] != nil)
+    {
+      NSRect r = [[[self enclosingScrollView] contentView] frame];
 
-  //     if (r.size.width < newFrame.size.width
-  //   	  && (newFrame.size.width - r.size.width) < slotSize.width)
-  //       {
-  //         newFrame.size.width = r.size.width;
-  //       }
-  //     if (r.size.height > newFrame.size.height)
-  //       {
-  //         newFrame.size.height = r.size.height;
-  //       }
-  //   }
+      if (r.size.width < newFrame.size.width
+    	  && (newFrame.size.width - r.size.width) < slotSize.width)
+        {
+          newFrame.size.width = r.size.width;
+        }
+      if (r.size.height > newFrame.size.height)
+        {
+          newFrame.size.height = r.size.height;
+        }
+    }
 
   [self setFrame:newFrame];
   [self relayoutIcons];
