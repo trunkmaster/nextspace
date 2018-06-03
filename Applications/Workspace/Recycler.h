@@ -56,4 +56,7 @@
 
 - (void)purge;
 
+- (void)displayPath:(NSString *)dirPath
+          selection:(NSArray *)filenames;
+
 @end

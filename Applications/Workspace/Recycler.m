@@ -4,6 +4,10 @@
 #import <NXAppKit/NXAlert.h>
 #import <Operations/ProcessManager.h>
 
+#import <NXAppKit/NXIcon.h>
+#import <NXAppKit/NXIconLabel.h>
+#import <NXFoundation/NXFileManager.h>
+
 #import "Controller.h"
 #import "Recycler.h"
 
@@ -453,9 +457,26 @@ static NSTimeInterval tInterval = 0;
   [panel setFrameAutosaveName:@"Recycler"];
   
   [panelView setHasHorizontalScroller:YES];
-  [panelView setHasVerticalScroller:NO];
-  filesView = [[NXIconView alloc] initWithFrame:[panelView frame]];
+  [panelView setHasVerticalScroller:YES];
+  
+  filesView = [[NXIconView alloc] initWithFrame:[[panelView contentView] frame]];
+  // filesView = [[[NXIconView alloc] initSlotsWide:3] autorelease];
+
+  // [self iconSlotWidthChanged:nil];
+
+  [filesView setDelegate:self];
+  [filesView setTarget:self];
+  [filesView setDoubleAction:@selector(open:)];
+  [filesView setDragAction:@selector(iconDragged:event:)];
+  [filesView setSendsDoubleActionOnReturn:YES];
+  
+  [filesView
+    registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+
   [panelView setDocumentView:filesView];
+  [filesView setFrame:NSMakeRect(0, 0,
+                                 [[panelView contentView] frame].size.width, 0)];
+  [filesView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 
   [panelIcon setImage:[self iconImage]];
 }
@@ -540,6 +561,7 @@ static NSTimeInterval tInterval = 0;
     }
   
   [panel makeKeyAndOrderFront:self];
+  [self displayPath:recyclerPath selection:nil];
 }
 
 - (void)mouseDown:(NSEvent*)theEvent
@@ -643,6 +665,54 @@ static NSTimeInterval tInterval = 0;
   [items release];
   
   [recycler updateIconImage];
+}
+
+// -- NXIconView delegate
+
+- (void)displayPath:(NSString *)dirPath
+          selection:(NSArray *)filenames
+{
+  NSString 		*filename;
+  NSMutableArray	*icons;
+  NSMutableSet		*selected = [[NSMutableSet new] autorelease];
+  NSFileManager		*fm = [NSFileManager defaultManager];
+  NXFileManager		*xfm = [NXFileManager sharedManager];
+  NSArray		*items;
+
+  icons = [NSMutableArray array];
+
+  items = [xfm directoryContentsAtPath:dirPath
+                               forPath:nil
+                              sortedBy:[xfm sortFilesBy]
+                            showHidden:[xfm isShowHiddenFiles]];
+  for (filename in items)
+    {
+      NSString *path = [dirPath stringByAppendingPathComponent:filename];
+      NXIcon   *anIcon;
+
+      anIcon = [[NXIcon new] autorelease];
+      [anIcon setLabelString:filename];
+      [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
+      [anIcon setDelegate:self];
+      [anIcon
+        registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+      [[anIcon label] setIconLabelDelegate:self];
+
+      [icons addObject:anIcon];
+      if (![fm isReadableFileAtPath:path])
+        [anIcon setDimmed:YES];
+      
+      if ([filenames containsObject:filename])
+        [selected addObject:anIcon];
+    }
+
+  NSLog(@"Recycler: fill with %lu icons", [icons count]);
+  [filesView fillWithIcons:icons];
+  
+  if ([selected count] != 0)
+    [filesView selectIcons:selected];
+  else
+    [filesView scrollPoint:NSZeroPoint];
 }
 
 @end
