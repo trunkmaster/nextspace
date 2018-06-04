@@ -114,4 +114,13 @@
   [cursorsTest show];
 }
 
+- (void)showIconViewTest:(id)sender
+{
+  if (iconViewTest == nil)
+    {
+      iconViewTest = [[IconViewTest alloc] init];
+    }
+  [iconViewTest show];
+}
+
 @end

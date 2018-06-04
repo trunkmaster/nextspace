@@ -21,7 +21,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m"
   "AppController.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   4709
   '(5219 nil)
   nil
@@ -65,7 +65,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.h"
   "AppController.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   1125
   '(nil nil)
   nil
@@ -76,7 +76,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/NumericFieldTest.m"
   "NumericFieldTest.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   1706
   '(nil nil)
   nil
@@ -87,7 +87,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/ClockViewTest.m"
   "ClockViewTest.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   2285
   '(2916 nil)
   nil
@@ -98,7 +98,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/ClockViewTest.h"
   "ClockViewTest.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -109,7 +109,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/NXAppKitDemo_main.m"
   "NXAppKitDemo_main.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   1
   '(nil nil)
   nil
@@ -120,7 +120,7 @@
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/NumericFieldTest.h"
   "NumericFieldTest.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode flycheck-mode irony-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   1
   '(nil nil)
   nil

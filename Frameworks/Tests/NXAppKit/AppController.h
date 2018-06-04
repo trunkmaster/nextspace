@@ -25,12 +25,14 @@
 #import "NumericFieldTest.h"
 #import "ClockViewTest.h"
 #import "CursorsTest.h"
+#import "IconViewTest.h"
 
 @interface AppController : NSObject
 {
   NumericFieldTest *numericFieldTest;
   ClockViewTest    *clockViewTest;
   CursorsTest      *cursorsTest;
+  IconViewTest     *iconViewTest;
 }
 
 @end

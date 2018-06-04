@@ -28,7 +28,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	NumericField.gorm \
 	NumericField.rtf \
 	ClockView.gorm \
-	Cursors.gorm
+	Cursors.gorm \
+	IconView.gorm
 #
 # Class files
 #
@@ -37,7 +38,8 @@ $(APP_NAME)_OBJC_FILES += \
 	AppController.m \
 	NumericFieldTest.m \
 	ClockViewTest.m \
-	CursorsTest.m
+	CursorsTest.m \
+	IconViewTest.m
 
 #
 # Makefiles
