@@ -7,6 +7,7 @@
 #import <NXAppKit/NXIcon.h>
 #import <NXAppKit/NXIconLabel.h>
 #import <NXFoundation/NXFileManager.h>
+#import <NXFoundation/NXDefaults.h>
 
 #import "Controller.h"
 #import "Recycler.h"
@@ -454,15 +455,20 @@ static NSTimeInterval tInterval = 0;
 
 - (void)awakeFromNib
 {
+  NSSize iconSize;
+  
   [panel setFrameAutosaveName:@"Recycler"];
   
-  [panelView setHasHorizontalScroller:YES];
+  [panelView setHasHorizontalScroller:NO];
   [panelView setHasVerticalScroller:YES];
-  
-  filesView = [[NXIconView alloc] initWithFrame:[[panelView contentView] frame]];
-  // filesView = [[[NXIconView alloc] initSlotsWide:3] autorelease];
 
-  // [self iconSlotWidthChanged:nil];
+  iconSize = [NXIconView defaultSlotSize];
+  if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"])
+    {
+      iconSize.width = [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+      [NXIconView setDefaultSlotSize:iconSize];
+   }
+  filesView = [[NXIconView alloc] initWithFrame:[[panelView contentView] frame]];
 
   [filesView setDelegate:self];
   [filesView setTarget:self];
@@ -479,6 +485,12 @@ static NSTimeInterval tInterval = 0;
   [filesView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 
   [panelIcon setImage:[self iconImage]];
+
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(iconWidthDidChange:)
+           name:@"IconSlotWidthDidChangeNotification"
+         object:nil];
 }
 
 - (void)dealloc
@@ -559,7 +571,8 @@ static NSTimeInterval tInterval = 0;
           NSLog(@"Error loading Recycler.gorm!");
         }
     }
-  
+
+  [filesView removeAllIcons];
   [panel makeKeyAndOrderFront:self];
   [self displayPath:recyclerPath selection:nil];
 }
@@ -713,6 +726,15 @@ static NSTimeInterval tInterval = 0;
     [filesView selectIcons:selected];
   else
     [filesView scrollPoint:NSZeroPoint];
+}
+
+- (void)iconWidthDidChange:(NSNotification *)notification
+{
+  NXDefaults *df = [NXDefaults userDefaults];
+  NSSize     slotSize = [filesView slotSize];
+
+  slotSize.width = [df floatForKey:@"IconSlotWidth"];
+  [filesView setSlotSize:slotSize];
 }
 
 @end
