@@ -122,37 +122,6 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   [super dealloc];
 }
 
-// when we are resized update the slotsWide ivar, adjust if necessary and
-// relayout the icons accordingly
-- (void)resizeWithOldSuperviewSize:(NSSize)s
-{
-  [super resizeWithOldSuperviewSize:s];
-
-//  NSLog(@"[NXIconView -resizeWithOldSuperviewSize] width: %0.f slot width: %0.f", 
-//	[self frame].size.width, slotSize.width);
-
-  if (_autoresizingMask & NSViewWidthSizable)
-    {
-      slotsWide = floorf([self frame].size.width / slotSize.width);
-    }
-  else
-    {
-      slotsWide = ceilf([self frame].size.width / slotSize.width);
-    }
-
-  slotsTall = ceilf([self frame].size.height / slotSize.height);
-  
-  if (autoAdjustsToFitIcons)
-    {
-      [self adjustToFitIcons];
-    }
-  else
-    {
-      [self adjustFrame];
-    }
-  //[self relayoutIcons];
-}
-
 - initWithFrame:(NSRect)r
 {
   [super initWithFrame:r];
@@ -176,6 +145,8 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   if (slotsWide == 0)
     slotsWide = 1;
 
+  lastIcon = NXMakeIconSlot(-1, 0);
+
   selectedIconSlot.x = -1;
 
   maximumCollapsedLabelWidthSpace =
@@ -190,42 +161,25 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
                  NSMakeRect(0, 0, newSlotsWide * defaultSlotSize.width, 0)];
 }
 
-- (NSArray *)icons
-{
-  NSMutableArray *array = [NSMutableArray array];
-  NSEnumerator   *e = [icons objectEnumerator];
-  NXIcon         *icon;
-  Class          iconClass = [NXIcon class];
-
-  while ((icon = [e nextObject]) != nil)
-    {
-      if ([icon isKindOfClass:iconClass])
-	{
-      	  [array addObject:icon];
-	}
-    }
-
-  return [[array copy] autorelease];
-}
-
+//------------------------------------------------------------------------------
+// Changing contents (icons add/removal)
+//------------------------------------------------------------------------------
 - (void)addIcon:(NXIcon *)anIcon
 {
   NXIconSlot slot;
+  NSUInteger i, n;
 
   slot.x = 0;
   slot.y = 0;
 
   if (numHoles != 0)
     {
-      NSUInteger i, n;
-      Class      nullClass = [NSNull class];
-
       // find a free spot - there _must_ be something, because
       // we remember to have some holes somewhere
       // NSLog(@"[NXIconView] icons: %@", icons);
-      for (i=0, n=[icons count]; i<n; i++)
+      for (i = 0, n = [icons count]; i < n; i++)
 	{
-	  if ([[icons objectAtIndex:i] isKindOfClass:nullClass])
+	  if ([[icons objectAtIndex:i] isKindOfClass:[NSNull class]])
 	    {
 	      slot = SlotFromIndex(slotsWide, i);
 	      break;
@@ -243,17 +197,21 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     }
   else
     {
-      NSLog(@"[NXIconView] no holes! lastIcon.x=%i, lastIcon.y=%i",
-            lastIcon.x, lastIcon.y);
+      // NSLog(@"[NXIconView] no holes! lastIcon.x=%i, lastIcon.y=%i",
+      //       lastIcon.x, lastIcon.y);
       slot = lastIcon;
       slot.x++;
-      if (slotsTall == 0 || slot.x >= slotsWide)
+      if (slot.x >= slotsWide)
 	{
-	  slotsTall++;
+          if (slotsTall == 0)
+            slotsTall++;
 	  slot.x = 0;
 	  slot.y++;
 	}
     }
+
+  // NSLog(@"Put icon '%@' into slot {%i, %i}", [anIcon labelString],
+  //       slot.x, slot.y);
   
   [self putIcon:anIcon intoSlot:slot];
 }
@@ -278,6 +236,70 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     {
       [self adjustToFitIcons];
     }
+}
+
+- (void)putIcon:(NXIcon *)anIcon
+       intoSlot:(NXIconSlot)aSlot
+{
+  unsigned index;
+
+  // constrain the x coord to the current width
+  if (aSlot.x >= (int)slotsWide)
+    {
+      aSlot.x = slotsWide-1;
+    }
+
+  if (lastIcon.x <= aSlot.x || lastIcon.y <= aSlot.y)
+    {
+      lastIcon = aSlot;
+    }
+
+  index = IndexFromSlot(slotsWide, aSlot);
+
+  if (index >= [icons count])
+    {
+      // enlarge - the slot is greater than our current height
+      unsigned i;
+
+      slotsTall = aSlot.y + 1;
+      for (i = [icons count]; i < index; i++)
+        {
+          [icons addObject:[NSNull null]];
+          numHoles++;
+        }
+      [icons addObject:anIcon];
+      if (autoAdjustsToFitIcons)
+	{
+	  [self adjustToFitIcons];
+	}
+    }
+  else
+    {
+      // put into an existing slot
+      NXIcon *oldIcon;
+
+      oldIcon = [icons objectAtIndex:index];
+      if ([oldIcon isKindOfClass:[NSNull class]])
+	{
+	  numHoles--;
+	}
+      else
+	{
+	  [oldIcon removeFromSuperview];
+	}
+
+      [icons replaceObjectAtIndex:index withObject:anIcon];
+    }
+
+  [anIcon putIntoView:self
+	      atPoint:PointForSlot(slotSize, aSlot)];
+  [anIcon setMaximumCollapsedLabelWidth:
+            slotSize.width - maximumCollapsedLabelWidthSpace];
+
+  [anIcon setTarget:self];
+  [anIcon setAction:@selector(iconClicked:)];
+  [anIcon setDragAction:@selector(iconDragged:event:)];
+  [anIcon setDoubleAction:@selector(iconDoubleClicked:)];
 }
 
 - (void)removeIcon:(NXIcon *)anIcon
@@ -368,7 +390,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
   slotsTall = 0;
   numHoles = 0;
-  lastIcon = NXMakeIconSlot(0, 0);
+  lastIcon = NXMakeIconSlot(-1, 0);
 
   selectedIconSlot.x = -1;
   selectedIconSlot.y = -1;
@@ -379,69 +401,35 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     }
 }
 
-- (void)putIcon:(NXIcon *)anIcon
-       intoSlot:(NXIconSlot)aSlot
+- (void)setFillsWithHoleWhenRemovingIcon:(BOOL)flag
 {
-  unsigned index;
+  fillWithHoleWhenRemovingIcon = flag;
+}
 
-  // constrain the x coord to the current width
-  if (aSlot.x >= (int)slotsWide)
+- (BOOL)fillsWithHoleWhenRemovingIcon
+{
+  return fillWithHoleWhenRemovingIcon;
+}
+
+//------------------------------------------------------------------------------
+// Accessory
+//------------------------------------------------------------------------------
+- (NSArray *)icons
+{
+  NSMutableArray *array = [NSMutableArray array];
+  NSEnumerator   *e = [icons objectEnumerator];
+  NXIcon         *icon;
+  Class          iconClass = [NXIcon class];
+
+  while ((icon = [e nextObject]) != nil)
     {
-      aSlot.x = slotsWide-1;
-    }
-
-  if (lastIcon.x <= aSlot.x || lastIcon.y <= aSlot.y)
-    {
-      lastIcon = aSlot;
-    }
-
-  index = IndexFromSlot(slotsWide, aSlot);
-
-  if (index >= [icons count])
-    {
-      // enlarge - the slot is greater than our current height
-      unsigned i;
-      NSNull   *null = [NSNull null];
-
-      slotsTall = aSlot.y+1;
-      for (i=[icons count]; i < index; i++)
-        {
-          [icons addObject:null];
-          numHoles++;
-        }
-      [icons addObject:anIcon];
-      if (autoAdjustsToFitIcons)
+      if ([icon isKindOfClass:iconClass])
 	{
-	  [self adjustToFitIcons];
+      	  [array addObject:icon];
 	}
     }
-  else
-    {
-      // put into an existing slot
-      NXIcon *oldIcon;
 
-      oldIcon = [icons objectAtIndex:index];
-      if ([oldIcon isKindOfClass:[NSNull class]])
-	{
-	  numHoles--;
-	}
-      else
-	{
-	  [oldIcon removeFromSuperview];
-	}
-
-      [icons replaceObjectAtIndex:index withObject:anIcon];
-    }
-
-  [anIcon putIntoView:self
-	      atPoint:PointForSlot(slotSize, aSlot)];
-  [anIcon setMaximumCollapsedLabelWidth:
-            slotSize.width - maximumCollapsedLabelWidthSpace];
-
-  [anIcon setTarget:self];
-  [anIcon setAction:@selector(iconClicked:)];
-  [anIcon setDragAction:@selector(iconDragged:event:)];
-  [anIcon setDoubleAction:@selector(iconDoubleClicked:)];
+  return [[array copy] autorelease];
 }
 
 - (NXIcon *)iconInSlot:(NXIconSlot)aSlot
@@ -474,6 +462,9 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     return SlotFromIndex(slotsWide, i);
 }
 
+//------------------------------------------------------------------------------
+// Sizes and autosizing
+//------------------------------------------------------------------------------
 - (void)setSlotSize:(NSSize)newSlotSize
 {
   CGFloat    viewWidth = 0.0;
@@ -573,22 +564,63 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   return adjustsToFillEnclosingScrollView;
 }
 
-- (void)setFillsWithHoleWhenRemovingIcon:(BOOL)flag
+// Override of NSView method.
+// when we are resized update the slotsWide ivar, adjust if necessary and
+// relayout the icons accordingly
+- (void)resizeWithOldSuperviewSize:(NSSize)s
 {
-  fillWithHoleWhenRemovingIcon = flag;
-}
+  [super resizeWithOldSuperviewSize:s];
 
-- (BOOL)fillsWithHoleWhenRemovingIcon
-{
-  return fillWithHoleWhenRemovingIcon;
+//  NSLog(@"[NXIconView -resizeWithOldSuperviewSize] width: %0.f slot width: %0.f", 
+//	[self frame].size.width, slotSize.width);
+
+  if (_autoresizingMask & NSViewWidthSizable)
+    {
+      slotsWide = floorf([self frame].size.width / slotSize.width);
+    }
+  else
+    {
+      slotsWide = ceilf([self frame].size.width / slotSize.width);
+    }
+
+  slotsTall = ceilf([self frame].size.height / slotSize.height);
+  
+  if (autoAdjustsToFitIcons)
+    {
+      [self adjustToFitIcons];
+    }
+  else
+    {
+      [self adjustFrame];
+    }
+  //[self relayoutIcons];
 }
 
 - (void)adjustToFitIcons
 {
   NSRect newFrame = [self frame];
 
-  // NSLog(@">>>>[NXIconView adjustToFitIcons]<<<");
+  NSLog(@">>>>[NXIconView adjustToFitIcons]<<<");
 
+  // The number of columns
+  if (adjustsToFillEnclosingScrollView == YES
+      && [self enclosingScrollView] != nil)
+    {
+      NSRect r = [[[self enclosingScrollView] contentView] frame];
+
+      slotsWide = floorf(r.size.width / slotSize.width);
+      
+      // if (r.size.width < newFrame.size.width
+      //     && (newFrame.size.width - r.size.width) < slotSize.width)
+      //   {
+      //     newFrame.size.width = r.size.width;
+      //   }
+      // if (r.size.height > newFrame.size.height)
+      //   {
+      //     newFrame.size.height = r.size.height;
+      //   }
+    }
+  
   // The number of rows
   if (!isSlotsTallFixed)
     {
@@ -600,28 +632,13 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   // Width of icon view (recalculate for one-row icon view)
   // MAGIC NUMBER: 2. Removing this magic number makes scrolling with scroller 
   // arrow buttons weird.
-  newFrame.size.width = slotSize.width * slotsWide - 2;
+  newFrame.size.width = slotSize.width * slotsWide;
 
-  /*  NSLog(@"[NXIconView] icons: %i slots: %i slot.width: %f"  \
+  NSLog(@"[NXIconView] icons: %lu slots: %i slot.width: %f"  \
         " width: %f super width: %f",
-	[icons count], slotsWide, slotSize.width, 
-        newFrame.size.width, superRect.size.width);*/
-
-  if (adjustsToFillEnclosingScrollView == YES
-      && [self enclosingScrollView] != nil)
-    {
-      NSRect r = [[[self enclosingScrollView] contentView] frame];
-
-      if (r.size.width < newFrame.size.width
-    	  && (newFrame.size.width - r.size.width) < slotSize.width)
-        {
-          newFrame.size.width = r.size.width;
-        }
-      if (r.size.height > newFrame.size.height)
-        {
-          newFrame.size.height = r.size.height;
-        }
-    }
+        [icons count], slotsWide, slotSize.width, 
+        newFrame.size.width,
+        [[[self enclosingScrollView] contentView] frame].size.width);
 
   [self setFrame:newFrame];
   [self relayoutIcons];
@@ -703,6 +720,10 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 {
   return slotsTall;
 }
+
+//------------------------------------------------------------------------------
+// Selection and actions
+//------------------------------------------------------------------------------
 
 - (void)setSelectable:(BOOL)flag
 {
@@ -1255,7 +1276,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     }
 }
 
-// TODO: This method change view frame in unpredictable manner.
+// TODO: This method changes view frame in unpredictable manner.
 // For example, if icon dragged in/out of view (Shelf in Workspace)
 // Maybe i'll return to it during Workspace's Icon Viewer cleanup
 // Used only in -removeIcon: (commented out for now)
