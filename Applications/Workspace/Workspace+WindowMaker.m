@@ -687,11 +687,6 @@ void WWMSetDockAppImage(NSString *path, int position, BOOL save)
         break;
     }
   
-  NSLog(@"Set image for '%s' (%i)", btn->wm_instance, position);
-
-  // if (!btn->icon)
-  //   return;
-  
   if (btn->icon->file)
     {
       wfree(btn->icon->file);
@@ -961,13 +956,13 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
   if (!raceLock) raceLock = [NSLock new];
   [raceLock lock];
 
-  NSLog(@"Create icon for: %s.%s", wmInstance, wmClass);
+  // NSLog(@"Create icon for: %s.%s", wmInstance, wmClass);
   
   // 1. Search for existing icon in IconYard and Dock
   appIcon = scr->app_icon_list;
   while (appIcon->next)
     {
-      NSLog(@"Analyzing: %s.%s", appIcon->wm_instance, appIcon->wm_class);
+      // NSLog(@"Analyzing: %s.%s", appIcon->wm_instance, appIcon->wm_class);
       if (!strcmp(appIcon->wm_instance, wmInstance) &&
           !strcmp(appIcon->wm_class, wmClass))
         {

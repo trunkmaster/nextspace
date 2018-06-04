@@ -871,13 +871,15 @@
 //   2. User has changed column (browser) width. Actions:
 //      - ask viewer for width of column and column count
 //      - window adopt its width without changing columns count in viewer
-// Magic numbers:
-//   20 = 8*2(side space between viewer and window edge) + 2*2(size of viewer sunken frame)
+#define WINDOW_BORDER_WIDTH   1 // window border that drawn by window manager
+#define WINDOW_CONTENT_OFFSET 8 // side space between viewer and window edge
+#define SUNKEN_FRAME_WIDTH    2 // size of viewer sunken frame
+#define WINDOW_INNER_OFFSET   ((WINDOW_BORDER_WIDTH + WINDOW_CONTENT_OFFSET + SUNKEN_FRAME_WIDTH) * 2)
 - (void)updateWindowWidth:(id)sender
 {
   NSRect       frame;
   NSScrollView *sv;
-  NSSize       s;
+  NSSize       s, windowMinSize;
   NSScroller   *scroller;
   CGFloat      sValue;
 
@@ -900,15 +902,19 @@
   // column width and column count.
   // THINK: Do we need to store ivars for Viewer parameters?
   viewerColumnWidth = [viewer columnWidth];
-  viewerColumnCount= roundf((frame.size.width - 20) / viewerColumnWidth);
+  viewerColumnCount =
+    roundf((frame.size.width - WINDOW_INNER_OFFSET) / viewerColumnWidth);
   [viewer setColumnCount:viewerColumnCount];
   [viewer setColumnWidth:viewerColumnWidth];
-  NSLog(@"[FileViewer updateWindowWidth]: column count: %lu",
-        viewerColumnCount);
+  NSLog(@"[FileViewer updateWindowWidth]: column count: %lu (width = %.0f)",
+        viewerColumnCount, viewerColumnWidth);
+
+  windowMinSize = NSMakeSize((2 * viewerColumnWidth) + WINDOW_INNER_OFFSET,
+                             WIN_MIN_HEIGHT);
 
   if (sender == window)
     {
-      [window setMinSize:NSMakeSize((2 * viewerColumnWidth)+20, WIN_MIN_HEIGHT)];
+      [window setMinSize:windowMinSize];
       [window setResizeIncrements:NSMakeSize(viewerColumnWidth, 1)];
       return;
     }
@@ -919,8 +925,8 @@
 
   // --- Resize window
   NSLog(@"[FileViewer] window width: %f", frame.size.width);
-  frame.size.width = (viewerColumnCount * viewerColumnWidth) + 20;
-  [window setMinSize:NSMakeSize((2 * viewerColumnWidth)+20, WIN_MIN_HEIGHT)];
+  frame.size.width = (viewerColumnCount * viewerColumnWidth) + WINDOW_INNER_OFFSET;
+  [window setMinSize:windowMinSize];
   [window setResizeIncrements:NSMakeSize(viewerColumnWidth, 1)];
   [window setFrame:frame display:NO];
 
@@ -1566,12 +1572,19 @@
   CGFloat    rangeStart;
   NSInteger  emptyCols;
 
-  rangeStart = rintf((iconsNum - viewerColumnCount) * [aScroller floatValue]);
+  NSLog(@"0. [FileViewer] document visible rect: %@",
+        NSStringFromRect([scrollView documentVisibleRect]));
+  NSLog(@"0. [FileViewer] document rect: %@",
+        NSStringFromRect([pathView frame]));
+  NSLog(@"0. [FileViewer] scroll view rect: %@",
+        NSStringFromRect([scrollView frame]));
+
+  rangeStart = rintf((iconsNum - viewerColumnCount) * sValue);
   r = NSMakeRange(rangeStart, viewerColumnCount);
 
   NSLog(@"1. [FileViewer] trackScroller: value %f proportion: %f," 
         @"scrolled to range: %0.f - %lu", 
-	[aScroller floatValue], [aScroller knobProportion], 
+	sValue, [aScroller knobProportion], 
         rangeStart, viewerColumnCount);
 
   // Update viewer display

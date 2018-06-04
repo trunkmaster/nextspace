@@ -99,7 +99,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   dock->icon_count = 0;
   for (int i=0; i < new_max_icons; i++)
     {
-      NSLog(@"%i", i);
+      // NSLog(@"%i", i);
       if (dock->icon_array[i] == NULL || i >= dock->max_icons)
         {
           new_icon_array[i] = NULL;

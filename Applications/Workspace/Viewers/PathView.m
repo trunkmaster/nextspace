@@ -50,7 +50,7 @@
 
   multipleSelection = [[PathIcon alloc] init];
   [multipleSelection setIconImage:multiImage];
-  [multipleSelection setLabelString:@"Multiple elements"];
+  [multipleSelection setLabelString:@"Multiple items"];
   [multipleSelection setEditable:NO];
   
   path = nil;
