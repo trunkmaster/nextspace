@@ -571,8 +571,8 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 {
   [super resizeWithOldSuperviewSize:s];
 
-//  NSLog(@"[NXIconView -resizeWithOldSuperviewSize] width: %0.f slot width: %0.f", 
-//	[self frame].size.width, slotSize.width);
+  // NSLog(@"[NXIconView -resizeWithOldSuperviewSize] width: %0.f slot width: %0.f", 
+  //       [self frame].size.width, slotSize.width);
 
   if (_autoresizingMask & NSViewWidthSizable)
     {
@@ -609,16 +609,6 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       NSRect r = [[[self enclosingScrollView] contentView] frame];
 
       slotsWide = floorf(r.size.width / slotSize.width);
-      
-      // if (r.size.width < newFrame.size.width
-      //     && (newFrame.size.width - r.size.width) < slotSize.width)
-      //   {
-      //     newFrame.size.width = r.size.width;
-      //   }
-      // if (r.size.height > newFrame.size.height)
-      //   {
-      //     newFrame.size.height = r.size.height;
-      //   }
     }
   
   // The number of rows
@@ -629,9 +619,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
   // Height of icon view
   newFrame.size.height = slotSize.height * slotsTall;
-  // Width of icon view (recalculate for one-row icon view)
-  // MAGIC NUMBER: 2. Removing this magic number makes scrolling with scroller 
-  // arrow buttons weird.
+  // Width of icon view
   newFrame.size.width = slotSize.width * slotsWide;
 
   NSLog(@"[NXIconView] icons: %lu slots: %i slot.width: %f"  \
