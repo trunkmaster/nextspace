@@ -462,19 +462,18 @@ static NSTimeInterval tInterval = 0;
   [panelView setHasHorizontalScroller:NO];
   [panelView setHasVerticalScroller:YES];
 
-  iconSize = [NXIconView defaultSlotSize];
-  if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"])
-    {
-      iconSize.width = [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
-      [NXIconView setDefaultSlotSize:iconSize];
-   }
   filesView = [[NXIconView alloc] initWithFrame:[[panelView contentView] frame]];
-
   [filesView setDelegate:self];
   [filesView setTarget:self];
   [filesView setDoubleAction:@selector(open:)];
   [filesView setDragAction:@selector(iconDragged:event:)];
   [filesView setSendsDoubleActionOnReturn:YES];
+  iconSize = [NXIconView defaultSlotSize];
+  if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"])
+    {
+      iconSize.width = [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+      [filesView setSlotSize:iconSize];
+   }
   
   [filesView
     registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
@@ -554,7 +553,14 @@ static NSTimeInterval tInterval = 0;
   [appIconView setImage:iconImage];
   
   if (panel)
-    [panelIcon setImage:[self iconImage]];
+    {
+      [panelIcon setImage:[self iconImage]];
+      if (itemsCount != 1)
+        [panelItems
+          setStringValue:[NSString stringWithFormat:@"%lu items", itemsCount]];
+      else
+        [panelItems setStringValue:@"1 item"];
+    }
 }
 
 - (NSUInteger)itemsCount
@@ -572,6 +578,7 @@ static NSTimeInterval tInterval = 0;
         }
     }
 
+  [self updateIconImage];
   [filesView removeAllIcons];
   [panel makeKeyAndOrderFront:self];
   [self displayPath:recyclerPath selection:nil];

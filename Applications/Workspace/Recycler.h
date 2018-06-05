@@ -41,6 +41,7 @@
   // Panel
   NSPanel      *panel;
   NSImageView  *panelIcon;
+  NSTextField  *panelItems;
   NSScrollView *panelView;
   NXIconView   *filesView;
 }

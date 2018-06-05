@@ -15,6 +15,9 @@
   NSTextField  *panelItemsCount;
   NSScrollView *panelView;
   NXIconView   *filesView;
+
+  NSOperationQueue *opQ;
+  NSOperation      *pathLoaderOp;
 }
 
 - (void)show;
@@ -23,5 +26,21 @@
 
 - (void)displayPath:(NSString *)dirPath
           selection:(NSArray *)filenames;
+
+@end
+
+// Using NSOperation https://developer.apple.com/library/archive/technotes/tn2109/_index.html
+@interface PathLoader : NSOperation
+{
+  NXIconView *iconView;
+  NSString   *directoryPath;
+  NSArray    *selectedFiles;
+}
+
+@property (atomic, assign, readonly ) NSInteger itemsCount;
+
+- (id)initWithIconView:(NXIconView *)view
+                  path:(NSString *)dirPath
+             selection:(NSArray *)filenames;
 
 @end

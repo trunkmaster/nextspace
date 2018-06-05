@@ -40,7 +40,7 @@ typedef struct {
   /** Marks the number of holes in the `icons' array - if its not
     zero then we can search for holes inside the view when adding
     icons. */
-  unsigned numHoles;
+  unsigned int numHoles;
 
   /** Contains the slot of the last added icon so we can more
     quickly determine the last icon's location without
@@ -48,9 +48,9 @@ typedef struct {
   NXIconSlot lastIcon;
 
   /// The number of slots the view is wide.
-  unsigned int slotsWide,
-	       /// The number of slots the view is tall.
-	       slotsTall;
+  unsigned int slotsWide;
+  /// The number of slots the view is tall.
+  unsigned int slotsTall;
 
   /** The space that we leave empty to the sides of icon's
     collapsed labels (so that the collapsed labels won't touch). */

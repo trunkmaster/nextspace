@@ -6,7 +6,8 @@
 	Outlets = (
 	    panelView,
 	    panel,
-	    panelIcon
+	    panelIcon,
+	    panelItems
 	);
 	Super = NSObject;
     };
