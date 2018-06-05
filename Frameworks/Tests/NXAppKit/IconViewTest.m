@@ -46,7 +46,7 @@
     registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 
   [panelView setDocumentView:filesView];
-  [filesView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+  [filesView setAutoresizingMask:NSViewWidthSizable];
 
   // [panelIcon setImage:[NSImage imageNamed:@"recyclerFull"]];
   
@@ -70,8 +70,8 @@
 // static dispatch_queue_t display_path_q;
 - (void)show
 {
+  [filesView removeAllIcons];
   [panel makeKeyAndOrderFront:self];
-  // [self displayPath:recyclerPath selection:nil];
 
   if (pathLoaderOp != nil)
     [pathLoaderOp cancel];
@@ -79,8 +79,8 @@
   pathLoaderOp = [[PathLoader alloc] initWithIconView:filesView
                                                  path:recyclerPath
                                             selection:nil];
-  // [opQ addOperation:pathLoaderOp];
-  [pathLoaderOp start];
+  [pathLoaderOp addObserver:self forKeyPath:@"isFinished" options:0 context:&self->itemsCount];
+  [opQ addOperation:pathLoaderOp];
   
   // if (!display_path_q)
   //   display_path_q = dispatch_queue_create("ns.test.nxappkit", NULL);
@@ -104,8 +104,9 @@
   NXIcon                *anIcon;
   NSUInteger            slotsWide, x;
 
-  icons = [NSMutableArray array];
+  // icons = [NSMutableArray array];
 
+  NSLog(@"Begin path loading...");
   items = [xfm directoryContentsAtPath:dirPath
                                forPath:nil
                               sortedBy:[xfm sortFilesBy]
@@ -155,6 +156,21 @@
     [filesView selectIcons:selected];
   else
     [filesView scrollPoint:NSZeroPoint];
+  
+  NSLog(@"End path loading...");
+}
+
+// -- NSOperation
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  PathLoader *op = object;
+    
+  NSLog(@"Observer of '%@' was called.", keyPath);
+  [panelItemsCount setStringValue:[NSString stringWithFormat:@"%lu items",
+                                            op.itemsCount]];
 }
 
 @end
@@ -186,7 +202,7 @@
   NXIcon		*anIcon;
   NSUInteger		slotsWide, x;
 
-// #pragma unused(icons)
+#pragma unused(icons)
 
   NSLog(@"Begin path loading...");
   
@@ -195,9 +211,10 @@
                               sortedBy:[xfm sortFilesBy]
                             showHidden:YES];
 
-  _itemsCount = [items count];
-
   slotsWide = [iconView slotsWide];
+
+  self.itemsCount = [icons count];
+  
   x = 0;
   for (filename in items)
     {
@@ -205,8 +222,8 @@
 
       anIcon = [[NXIcon new] autorelease];
       [anIcon setLabelString:filename];
-      [[anIcon label] setIconLabelDelegate:self];
       [anIcon setIconImage:[[NSWorkspace sharedWorkspace] iconForFile:path]];
+      [[anIcon label] setIconLabelDelegate:self];
       [anIcon setDelegate:self];
       [anIcon
         registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
@@ -237,6 +254,13 @@
     [iconView selectIcons:selected];
   else
     [iconView scrollPoint:NSZeroPoint];
+
+  NSLog(@"End path loading...");
+}
+
+- (BOOL)isReady
+{
+  return YES;
 }
 
 @end

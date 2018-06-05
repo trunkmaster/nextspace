@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jun  5 15:45:29 2018
+;; Created Wed Jun  6 02:48:41 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/")
+(setq default-directory "~/Developer/nextspace/Frameworks/Tests/NXAppKit/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -22,8 +22,19 @@
   "IconViewTest.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1532
-  '(772 nil)
+  4876
+  '(4676 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.h"
+  "IconViewTest.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  819
+  '(190 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -35,17 +46,6 @@
   '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   5647
   '(5759 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.h"
-  "IconViewTest.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  317
-  '(190 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

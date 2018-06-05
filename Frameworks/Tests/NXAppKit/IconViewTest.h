@@ -37,7 +37,7 @@
   NSArray    *selectedFiles;
 }
 
-@property (atomic, assign, readonly ) NSInteger itemsCount;
+@property (atomic, assign, readwrite) NSInteger itemsCount;
 
 - (id)initWithIconView:(NXIconView *)view
                   path:(NSString *)dirPath
