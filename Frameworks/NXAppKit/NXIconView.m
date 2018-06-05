@@ -114,14 +114,9 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   return defaultMaximumCollapsedLabelWidthSpace;
 }
 
-- (void)dealloc
-{
-  TEST_RELEASE(icons);
-  TEST_RELEASE(selectedIcons);
-
-  [super dealloc];
-}
-
+//------------------------------------------------------------------------------
+// Initialization and deallocation
+//------------------------------------------------------------------------------
 - initWithFrame:(NSRect)r
 {
   [super initWithFrame:r];
@@ -161,9 +156,39 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
                  NSMakeRect(0, 0, newSlotsWide * defaultSlotSize.width, 0)];
 }
 
+- (void)dealloc
+{
+  TEST_RELEASE(icons);
+  TEST_RELEASE(selectedIcons);
+
+  [super dealloc];
+}
+
 //------------------------------------------------------------------------------
 // Changing contents (icons add/removal)
 //------------------------------------------------------------------------------
+- (void)fillWithIcons:(NSArray *)someIcons
+{
+  BOOL         saved = autoAdjustsToFitIcons;
+  NSEnumerator *e;
+  NXIcon       *icon;
+
+  autoAdjustsToFitIcons = NO;
+  [self removeAllIcons];
+
+  e = [someIcons objectEnumerator];
+  while ((icon = [e nextObject]) != nil)
+    {
+      [self addIcon:icon];
+    }
+
+  autoAdjustsToFitIcons = saved;
+  if (autoAdjustsToFitIcons)
+    {
+      [self adjustToFitIcons];
+    }
+}
+
 - (void)addIcon:(NXIcon *)anIcon
 {
   NXIconSlot slot;
@@ -216,28 +241,6 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   [self putIcon:anIcon intoSlot:slot];
 }
 
-- (void)fillWithIcons:(NSArray *)someIcons
-{
-  BOOL         saved = autoAdjustsToFitIcons;
-  NSEnumerator *e;
-  NXIcon       *icon;
-
-  autoAdjustsToFitIcons = NO;
-  [self removeAllIcons];
-
-  e = [someIcons objectEnumerator];
-  while ((icon = [e nextObject]) != nil)
-    {
-      [self addIcon:icon];
-    }
-
-  autoAdjustsToFitIcons = saved;
-  if (autoAdjustsToFitIcons)
-    {
-      [self adjustToFitIcons];
-    }
-}
-
 - (void)putIcon:(NXIcon *)anIcon
        intoSlot:(NXIconSlot)aSlot
 {
@@ -269,9 +272,9 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
         }
       [icons addObject:anIcon];
       if (autoAdjustsToFitIcons)
-	{
-	  [self adjustToFitIcons];
-	}
+        {
+          [self adjustToFitIcons];
+        }
     }
   else
     {
@@ -332,7 +335,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       [icons removeObjectAtIndex:i];
     }
 
-  //[self checkWrapDown];
+  // [self checkWrapDown];
 }
 
 - (void)removeIcons:(NSArray *)someIcons
@@ -412,7 +415,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 }
 
 //------------------------------------------------------------------------------
-// Accessory
+// Access to icons
 //------------------------------------------------------------------------------
 - (NSArray *)icons
 {
@@ -593,14 +596,15 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     {
       [self adjustFrame];
     }
-  //[self relayoutIcons];
+  
+  [self relayoutIcons];
 }
 
 - (void)adjustToFitIcons
 {
   NSRect newFrame = [self frame];
 
-  NSLog(@">>>>[NXIconView adjustToFitIcons]<<<");
+  // NSLog(@">>>>[NXIconView adjustToFitIcons]<<<");
 
   // The number of columns
   if (adjustsToFillEnclosingScrollView == YES
@@ -622,11 +626,11 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   // Width of icon view
   newFrame.size.width = slotSize.width * slotsWide;
 
-  NSLog(@"[NXIconView] icons: %lu slots: %i slot.width: %f"  \
-        " width: %f super width: %f",
-        [icons count], slotsWide, slotSize.width, 
-        newFrame.size.width,
-        [[[self enclosingScrollView] contentView] frame].size.width);
+  // NSLog(@"[NXIconView] icons: %lu slots: %i slot.width: %f"  \
+  //       " width: %f super width: %f",
+  //       [icons count], slotsWide, slotSize.width, 
+  //       newFrame.size.width,
+  //       [[[self enclosingScrollView] contentView] frame].size.width);
 
   [self setFrame:newFrame];
   [self relayoutIcons];
@@ -645,20 +649,17 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     }
   else
     {
-      // Width of icon view (recalculate for one-row icon view)
-      // MAGIC NUMBER: 2. Removing this magic number makes scrolling with
-      // scroller arrow buttons weird.
-      newFrame.size.width = slotSize.width * slotsWide - 2;
+      newFrame.size.width = slotSize.width * slotsWide;
     }
 
-  // if (_autoresizingMask & NSViewHeightSizable)
-  //   {
-  //     newFrame.size.height = [[self superview] bounds].size.height;
-  //   }
-  // else
-  //   {
-  //     newFrame.size.height = slotSize.height * slotsTall;
-  //   }
+  if (_autoresizingMask & NSViewHeightSizable)
+    {
+      newFrame.size.height = [[self superview] bounds].size.height;
+    }
+  else
+    {
+      newFrame.size.height = slotSize.height * slotsTall;
+    }
 
   [self setFrame:newFrame];
   [self relayoutIcons];
@@ -710,7 +711,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 }
 
 //------------------------------------------------------------------------------
-// Selection and actions
+// Selection
 //------------------------------------------------------------------------------
 
 - (void)setSelectable:(BOOL)flag
@@ -755,6 +756,9 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   return allowsAlphanumericSelection;
 }
 
+//------------------------------------------------------------------------------
+// Target and actions
+//------------------------------------------------------------------------------
 - (void)setSendsDoubleActionOnReturn:(BOOL)flag
 {
   sendsDoubleActionOnReturn = flag;

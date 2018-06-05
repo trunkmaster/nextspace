@@ -368,7 +368,7 @@
 
   // Shelf
   shelf = [[ShelfView alloc] initWithFrame:NSMakeRect(0,0,SPLIT_DEF_WIDTH,76)];
-  [shelf setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+  [shelf setAutoresizingMask:NSViewWidthSizable];
   [splitView addSubview:shelf];
   // [self configureShelf];
 
