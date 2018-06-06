@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Jun  6 02:48:41 2018
+;; Created Wed Jun  6 18:00:08 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -22,8 +22,8 @@
   "IconViewTest.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  4876
-  '(4676 nil)
+  5180
+  '(7458 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,8 +33,8 @@
   "IconViewTest.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  819
-  '(190 nil)
+  577
+  '(182 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
