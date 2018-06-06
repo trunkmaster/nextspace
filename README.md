@@ -24,7 +24,8 @@ Terminal with Linux console emulation. I've started with version created by Alex
 * Preferences and Services panels are rewritten from scratch.
 * Numerous fixes and enhancements in: color management (background, foreground can be any and can be configured in preferences, bold, blink, inverse, cursor colours), cursor placement fixes on scrolling and window resizing, 'Clear Buffer' and 'Set Title' menu items.
 * Now you can search through the text displayed in Terminal window (Find panel).
-* Session management: you can save window with all settings that are set in preferences panel (including shell/command) to a file and then open it. Configuration with multiple windows supported.
+* Session management: you can save window with all settings that are set in preferences panel (including shell/command) to a file and then open it. Configuration with multiple windows is supported.
+
 ![Terminals](Documentation/Terminals.png)
 
 ### TextEdit
