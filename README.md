@@ -15,8 +15,10 @@ Simple login panel where you enter your user name and password.
 * Process - shows information about X11 and GNUstep applications, background processes of file manager.
 * Media - automatically mounts removable media, has menu item to eject/unmount removables.
 * Other: inspectors, finder, console messages and preferences for mentioned the parts of Workspace.
+
 ### Preferences
 Settings for locale, fonts, displays (size, arrangment), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Prefrences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
+
 ![Localization](Documentation/Preferences-Localization.png) ![Display](Documentation/Preferences-Display.png)
 
 ### Terminal
