@@ -372,6 +372,110 @@ static NSTimeInterval tInterval = 0;
 
 @end
 
+@implementation ItemsLoader
+
+- (id)initWithIconView:(NXIconView *)view
+                status:(NSTextField *)status
+                  path:(NSString *)dirPath
+             selection:(NSArray *)filenames
+{
+  if (self != nil)
+    {
+      iconView = view;
+      statusField = status;
+      directoryPath = dirPath;
+      selectedFiles = filenames;
+    }
+
+  return self;
+}
+
+- (void)main
+{
+  NSString 		*filename;
+  NSMutableArray	*icons = [NSMutableArray array];
+  NSMutableSet		*selected = [[NSMutableSet new] autorelease];
+  NSFileManager		*fm = [NSFileManager defaultManager];
+  NXFileManager		*xfm = [NXFileManager sharedManager];
+  NSMutableArray	*items;
+  NSString		*path;
+  NXIcon		*anIcon;
+  NSUInteger		slotsWide, x;
+  NSInteger             ind;
+
+  [statusField performSelectorOnMainThread:@selector(setStringValue:)
+                                withObject:@"Loading items list..."
+                             waitUntilDone:YES];
+  NSLog(@"Operation: Begin path loading...");
+  
+  items = [[xfm directoryContentsAtPath:directoryPath
+                               forPath:nil
+                              sortedBy:[xfm sortFilesBy]
+                            showHidden:YES] mutableCopy];
+
+  _itemsCount = [items count];
+  
+  ind = [items indexOfObject:@".recycler.db"];
+  if (ind != NSNotFound) {
+    [items removeObjectAtIndex:ind];
+    _itemsCount--;
+  }
+  
+  x = 0;
+  slotsWide = [iconView slotsWide];
+  for (filename in items)
+    {
+      path = [directoryPath stringByAppendingPathComponent:filename];
+
+      anIcon = [[NXIcon new] autorelease];
+      [anIcon setLabelString:filename];
+      [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
+      [[anIcon label] setIconLabelDelegate:self];
+      [anIcon setDelegate:self];
+      [anIcon
+        registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+
+      // if (![fm isReadableFileAtPath:path])
+      //   [anIcon setDimmed:YES];
+      
+      if ([selectedFiles containsObject:filename])
+        [selected addObject:anIcon];
+
+      // [icons addObject:anIcon];      
+      [iconView performSelectorOnMainThread:@selector(addIcon:)
+                                 withObject:anIcon
+                              waitUntilDone:YES];
+      x++;
+      if (x >= slotsWide)
+        {
+          [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
+                                     withObject:nil
+                                  waitUntilDone:YES];
+          x = 0;
+        }
+    }
+
+  // NSLog(@"Recycler: fill with %lu icons", [icons count]);
+  // [filesView fillWithIcons:icons];
+  
+  if ([selected count] != 0)
+    [iconView selectIcons:selected];
+  else
+    [iconView scrollPoint:NSZeroPoint];
+
+  NSLog(@"Operation: End path loading...");
+  [statusField performSelectorOnMainThread:@selector(setStringValue:)
+                                withObject:@""
+                             waitUntilDone:YES];
+}
+
+- (BOOL)isReady
+{
+  return YES;
+}
+
+@end
+
 @implementation Recycler
 
 - initWithDock:(WDock *)dock
@@ -485,6 +589,9 @@ static NSTimeInterval tInterval = 0;
 
   [panelIcon setImage:[self iconImage]];
 
+  operationQ = [[NSOperationQueue alloc] init];
+  itemsLoader = nil;
+
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(iconWidthDidChange:)
@@ -500,6 +607,13 @@ static NSTimeInterval tInterval = 0;
   [appIcon release];
   [recyclerDBPath release];
   [recyclerPath release];
+
+  [operationQ release];
+  if (itemsLoader) {
+    [itemsLoader removeObserver:self forKeyPath:@"isFinished"];
+    [itemsLoader cancel];
+    [itemsLoader release];
+  }
   
   [super dealloc];
 }
@@ -549,7 +663,6 @@ static NSTimeInterval tInterval = 0;
       [badge setStringValue:@""];
     }
   
-  
   [appIconView setImage:iconImage];
   
   if (panel)
@@ -579,63 +692,36 @@ static NSTimeInterval tInterval = 0;
     }
 
   [self updateIconImage];
+  
   [filesView removeAllIcons];
+
+  if (itemsLoader != nil) {
+    [itemsLoader cancel];
+    [itemsLoader release];
+  }
+
+  itemsLoader = [[ItemsLoader alloc] initWithIconView:filesView
+                                               status:nil
+                                                 path:recyclerPath
+                                            selection:nil];
+  [itemsLoader addObserver:self
+                forKeyPath:@"isFinished"
+                   options:0
+                   context:&self->itemsCount];
+  [operationQ addOperation:itemsLoader];
+  
   [panel makeKeyAndOrderFront:self];
-  [self displayPath:recyclerPath selection:nil];
+  
+  // [self displayPath:recyclerPath selection:nil];
 }
 
 - (void)mouseDown:(NSEvent*)theEvent
 {
-  NSLog(@"Recycler: mouse down!");
+  // NSLog(@"Recycler: mouse down!");
 
   if ([theEvent clickCount] >= 2)
     {
-      NSLog(@"Recycler: show Recycler window");
       [self showPanel];
-      
-      /* if not hidden raise windows which are possibly obscured. */
-      if ([NSApp isHidden] == NO)
-        {
-          NSArray *windows = RETAIN(GSOrderedWindows());
-          NSWindow *aWin;
-          NSEnumerator *iter = [windows reverseObjectEnumerator];
-          
-          while ((aWin = [iter nextObject]))
-            { 
-              if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
-                  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
-                  && aWin != appIcon
-                  && ([aWin styleMask] & NSMiniWindowMask) == 0)
-                {
-                  [aWin orderFrontRegardless];
-                }
-            }
-	
-          if ([NSApp isActive] == YES)
-            {
-              if ([NSApp keyWindow] != nil)
-                {
-                  [[NSApp keyWindow] orderFront:self];
-                }
-              else if ([NSApp mainWindow] != nil)
-                {
-                  [[NSApp mainWindow] makeKeyAndOrderFront:self];
-                }
-              else
-                {
-                  /* We need give input focus to some window otherwise we'll 
-                     never get keyboard events. FIXME: doesn't work. */
-                  NSWindow *menu_window = [[NSApp mainMenu] window];
-                  NSDebugLLog(@"Focus",
-                              @"No key on activation - make menu key");
-                  [GSServerForWindow(menu_window)
-                      setinputfocus:[menu_window windowNumber]];
-                }
-            }
-	  
-          RELEASE(windows);
-        }
-      [NSApp unhide:self]; // or activate or do nothing.
     }
 }
 
@@ -668,11 +754,20 @@ static NSTimeInterval tInterval = 0;
         }
     }
   
-  [[ProcessManager shared] startOperationWithType:DeleteOperation
-                                           source:recyclerPath
-                                           target:nil
-                                            files:items];
+  if (![[ProcessManager shared] startOperationWithType:DeleteOperation
+                                                source:recyclerPath
+                                                target:nil
+                                                 files:items])
+    {
+      return;
+    }
   
+  if (itemsLoader)
+    [itemsLoader cancel];
+
+  if (filesView)
+    [filesView removeAllIcons];
+
   if (db)
     {
       for (NSString *item in items)
@@ -687,54 +782,17 @@ static NSTimeInterval tInterval = 0;
   [recycler updateIconImage];
 }
 
-// -- NXIconView delegate
-
-- (void)displayPath:(NSString *)dirPath
-          selection:(NSArray *)filenames
+// -- NSOperation
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
 {
-  NSString 		*filename;
-  NSMutableArray	*icons;
-  NSMutableSet		*selected = [[NSMutableSet new] autorelease];
-  NSFileManager		*fm = [NSFileManager defaultManager];
-  NXFileManager		*xfm = [NXFileManager sharedManager];
-  NSArray		*items;
-
-  icons = [NSMutableArray array];
-
-  items = [xfm directoryContentsAtPath:dirPath
-                               forPath:nil
-                              sortedBy:[xfm sortFilesBy]
-                            showHidden:[xfm isShowHiddenFiles]];
-  for (filename in items)
-    {
-      NSString *path = [dirPath stringByAppendingPathComponent:filename];
-      NXIcon   *anIcon;
-
-      anIcon = [[NXIcon new] autorelease];
-      [anIcon setLabelString:filename];
-      [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
-      [anIcon setDelegate:self];
-      [anIcon
-        registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-      [[anIcon label] setIconLabelDelegate:self];
-
-      [icons addObject:anIcon];
-      if (![fm isReadableFileAtPath:path])
-        [anIcon setDimmed:YES];
-      
-      if ([filenames containsObject:filename])
-        [selected addObject:anIcon];
-    }
-
-  NSLog(@"Recycler: fill with %lu icons", [icons count]);
-  [filesView fillWithIcons:icons];
-  
-  if ([selected count] != 0)
-    [filesView selectIcons:selected];
-  else
-    [filesView scrollPoint:NSZeroPoint];
+  NSLog(@"Observer of '%@' was called.", keyPath);
+  [panelItems setStringValue:[NSString stringWithFormat:@"%lu items",
+                                       itemsLoader.itemsCount]];
 }
-
+// -- NXIconView helper
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
   NXDefaults *df = [NXDefaults userDefaults];

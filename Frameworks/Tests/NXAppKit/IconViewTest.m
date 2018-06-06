@@ -28,7 +28,8 @@
 - (void)awakeFromNib
 {
   [panel setFrameAutosaveName:@"IconViewTest"];
-  
+  [panel setDelegate:self];
+
   [panelView setHasHorizontalScroller:NO];
   [panelView setHasVerticalScroller:YES];
   
@@ -56,6 +57,7 @@
 
 - (void)dealloc
 {
+  if (pathLoaderOp) [pathLoaderOp release];
   [recyclerPath release];
   
   [super dealloc];
@@ -70,13 +72,19 @@
 // static dispatch_queue_t display_path_q;
 - (void)show
 {
+  [panelStatusField setStringValue:@""];
+  [panelItemsCount setStringValue:@""];
+  
   [filesView removeAllIcons];
   [panel makeKeyAndOrderFront:self];
 
-  if (pathLoaderOp != nil)
+  if (pathLoaderOp != nil) {
     [pathLoaderOp cancel];
+    [pathLoaderOp release];
+  }
 
   pathLoaderOp = [[PathLoader alloc] initWithIconView:filesView
+                                               status:panelStatusField
                                                  path:recyclerPath
                                             selection:nil];
   [pathLoaderOp addObserver:self forKeyPath:@"isFinished" options:0 context:&self->itemsCount];
@@ -95,7 +103,7 @@
           selection:(NSArray *)filenames
 {
   NSString 		*filename;
-  NSMutableArray	*icons;
+  // NSMutableArray	*icons;
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   NSFileManager		*fm = [NSFileManager defaultManager];
   NXFileManager		*xfm = [NXFileManager sharedManager];
@@ -106,7 +114,7 @@
 
   // icons = [NSMutableArray array];
 
-  NSLog(@"Begin path loading...");
+  NSLog(@"GCD: Begin path loading...");
   items = [xfm directoryContentsAtPath:dirPath
                                forPath:nil
                               sortedBy:[xfm sortFilesBy]
@@ -157,7 +165,7 @@
   else
     [filesView scrollPoint:NSZeroPoint];
   
-  NSLog(@"End path loading...");
+  NSLog(@"GCD: End path loading...");
 }
 
 // -- NSOperation
@@ -166,11 +174,9 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  PathLoader *op = object;
-    
   NSLog(@"Observer of '%@' was called.", keyPath);
   [panelItemsCount setStringValue:[NSString stringWithFormat:@"%lu items",
-                                            op.itemsCount]];
+                                            pathLoaderOp.itemsCount]];
 }
 
 @end
@@ -178,11 +184,13 @@
 @implementation PathLoader
 
 - (id)initWithIconView:(NXIconView *)view
+                status:(NSTextField *)status
                   path:(NSString *)dirPath
              selection:(NSArray *)filenames
 {
   if (self != nil) {
     iconView = view;
+    statusField = status;
     directoryPath = dirPath;
     selectedFiles = filenames;
   }
@@ -202,20 +210,20 @@
   NXIcon		*anIcon;
   NSUInteger		slotsWide, x;
 
-#pragma unused(icons)
-
-  NSLog(@"Begin path loading...");
+  [statusField performSelectorOnMainThread:@selector(setStringValue:)
+                                withObject:@"Loading items list..."
+                             waitUntilDone:YES];
+  NSLog(@"Operation: Begin path loading...");
   
   items = [xfm directoryContentsAtPath:directoryPath
                                forPath:nil
                               sortedBy:[xfm sortFilesBy]
                             showHidden:YES];
 
-  slotsWide = [iconView slotsWide];
-
-  self.itemsCount = [icons count];
+  _itemsCount = [items count];
   
   x = 0;
+  slotsWide = [iconView slotsWide];
   for (filename in items)
     {
       path = [directoryPath stringByAppendingPathComponent:filename];
@@ -228,12 +236,13 @@
       [anIcon
         registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 
-      if (![fm isReadableFileAtPath:path])
-        [anIcon setDimmed:YES];
+      // if (![fm isReadableFileAtPath:path])
+      //   [anIcon setDimmed:YES];
       
       if ([selectedFiles containsObject:filename])
         [selected addObject:anIcon];
-      
+
+      // [icons addObject:anIcon];      
       [iconView performSelectorOnMainThread:@selector(addIcon:)
                                  withObject:anIcon
                               waitUntilDone:YES];
@@ -255,7 +264,10 @@
   else
     [iconView scrollPoint:NSZeroPoint];
 
-  NSLog(@"End path loading...");
+  NSLog(@"Operation: End path loading...");
+  [statusField performSelectorOnMainThread:@selector(setStringValue:)
+                                withObject:@""
+                             waitUntilDone:YES];
 }
 
 - (BOOL)isReady

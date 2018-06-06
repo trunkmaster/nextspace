@@ -3,6 +3,24 @@
 #include <AppKit/AppKit.h>
 #import <NXAppKit/NXIconView.h>
 
+// Using NSOperation https://developer.apple.com/library/archive/technotes/tn2109/_index.html
+@interface PathLoader : NSOperation
+{
+  NXIconView  *iconView;
+  NSTextField *statusField;
+  NSString    *directoryPath;
+  NSArray     *selectedFiles;
+}
+
+@property (atomic, assign, readonly) NSInteger itemsCount;
+
+- (id)initWithIconView:(NXIconView *)view
+                status:(NSTextField *)status
+                  path:(NSString *)dirPath
+             selection:(NSArray *)filenames;
+
+@end
+
 @interface IconViewTest : NSObject
 {
   NSImage          *iconImage;
@@ -13,11 +31,12 @@
   NSPanel      *panel;
   NSImageView  *panelIcon;
   NSTextField  *panelItemsCount;
+  NSTextField  *panelStatusField;
   NSScrollView *panelView;
   NXIconView   *filesView;
 
   NSOperationQueue *opQ;
-  NSOperation      *pathLoaderOp;
+  PathLoader       *pathLoaderOp;
 }
 
 - (void)show;
@@ -29,18 +48,3 @@
 
 @end
 
-// Using NSOperation https://developer.apple.com/library/archive/technotes/tn2109/_index.html
-@interface PathLoader : NSOperation
-{
-  NXIconView *iconView;
-  NSString   *directoryPath;
-  NSArray    *selectedFiles;
-}
-
-@property (atomic, assign, readwrite) NSInteger itemsCount;
-
-- (id)initWithIconView:(NXIconView *)view
-                  path:(NSString *)dirPath
-             selection:(NSArray *)filenames;
-
-@end
