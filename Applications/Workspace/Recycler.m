@@ -325,7 +325,7 @@ static NSTimeInterval tInterval = 0;
   NSMutableArray 	*items;
   NSString		*sourceDir;
     
-  dbPath = [[recycler path] stringByAppendingPathComponent:@".recycler.db"];
+  dbPath = [recycler.path stringByAppendingPathComponent:@".recycler.db"];
   if ([fm fileExistsAtPath:dbPath])
     db = [[NSMutableDictionary alloc] initWithContentsOfFile:dbPath];
   else
@@ -478,44 +478,44 @@ static NSTimeInterval tInterval = 0;
 
 @implementation Recycler
 
-- initWithDock:(WDock *)dock
+- (id)initWithDock:(WDock *)dock
 {
   XClassHint classhint;
   BOOL       isDir;
 
   recycler = self = [super init];
   
-  dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
+  _dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
  
-  if (dockIcon == NULL)
+  if (_dockIcon == NULL)
     {
       NSLog(@"Recycler Dock icon creation failed!");
       return nil;
     }
 
-  dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
+  _dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
 
   classhint.res_name = "Recycler";
   classhint.res_class = "GNUstep";
-  XSetClassHint(dpy, dockIcon->icon->core->window, &classhint);
+  XSetClassHint(dpy, _dockIcon->icon->core->window, &classhint);
   
-  appIcon = [[RecyclerIcon alloc] initWithWindowRef:&dockIcon->icon->core->window];
+  _appIcon = [[RecyclerIcon alloc] initWithWindowRef:&_dockIcon->icon->core->window];
   
-  recyclerPath = [NSHomeDirectory() stringByAppendingPathComponent:@".Recycler"];
-  [recyclerPath retain];
-  recyclerDBPath = [recyclerPath stringByAppendingPathComponent:@".recycler.db"];
+  _path = [NSHomeDirectory() stringByAppendingPathComponent:@".Recycler"];
+  [_path retain];
+  recyclerDBPath = [_path stringByAppendingPathComponent:@".recycler.db"];
   [recyclerDBPath retain];
   
-  if ([[NSFileManager defaultManager] fileExistsAtPath:recyclerPath
+  if ([[NSFileManager defaultManager] fileExistsAtPath:_path
                                            isDirectory:&isDir] == NO)
     {
-      if ([[NSFileManager defaultManager] createDirectoryAtPath:recyclerPath
+      if ([[NSFileManager defaultManager] createDirectoryAtPath:_path
                                                      attributes:nil] == NO)
         {
           NXRunAlertPanel(_(@"Workspace"),
                           _(@"Your Recycler storage doesn't exist and cannot"
                             " be created at path: %@."),
-                          _(@"Dismiss"), nil, nil, recyclerPath);
+                          _(@"Dismiss"), nil, nil, _path);
           // THINK: is it possible to not be able to create directory in $HOME?
         }
       // TODO: validate contents of exixsting directory: Was it created by Workspace?
@@ -532,7 +532,7 @@ static NSTimeInterval tInterval = 0;
     }
 
   appIconView = [[RecyclerIconView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
-  [appIcon setContentView:appIconView];
+  [_appIcon setContentView:appIconView];
   [appIconView release];
 
   // Badge on appicon with number of items inside
@@ -552,7 +552,7 @@ static NSTimeInterval tInterval = 0;
        selector:@selector(fileSystemChangedAtPath:)
            name:NXFileSystemChangedAtPath
          object:nil];
-  [fileSystemMonitor addPath:recyclerPath];
+  [fileSystemMonitor addPath:_path];
 
   return self;
 }
@@ -602,11 +602,11 @@ static NSTimeInterval tInterval = 0;
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [fileSystemMonitor removePath:recyclerPath];
+  [fileSystemMonitor removePath:_path];
   
-  [appIcon release];
+  [_appIcon release];
   [recyclerDBPath release];
-  [recyclerPath release];
+  [_path release];
 
   [operationQ release];
   if (itemsLoader) {
@@ -616,21 +616,6 @@ static NSTimeInterval tInterval = 0;
   }
   
   [super dealloc];
-}
-
-- (WAppIcon *)dockIcon
-{
-  return dockIcon;
-}
-
-- (RecyclerIcon *)appIcon
-{
-  return appIcon;
-}
-
-- (NSString *)path
-{
-  return recyclerPath;
 }
 
 - (NSImage *)iconImage
@@ -647,15 +632,15 @@ static NSTimeInterval tInterval = 0;
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   
-  itemsCount = [[fm directoryContentsAtPath:recyclerPath] count];
+  _itemsCount = [[fm directoryContentsAtPath:_path] count];
 
-  if ([fm fileExistsAtPath:[recyclerPath stringByAppendingPathComponent:@".recycler.db"]])
-    itemsCount--;
+  if ([fm fileExistsAtPath:[_path stringByAppendingPathComponent:@".recycler.db"]])
+    _itemsCount--;
     
-  if (itemsCount)
+  if (_itemsCount)
     {
       iconImage = [NSImage imageNamed:@"recyclerFull"];
-      [badge setStringValue:[NSString stringWithFormat:@"%lu", itemsCount]];
+      [badge setStringValue:[NSString stringWithFormat:@"%lu", _itemsCount]];
     }
   else
     {
@@ -665,20 +650,40 @@ static NSTimeInterval tInterval = 0;
   
   [appIconView setImage:iconImage];
   
-  if (panel)
-    {
-      [panelIcon setImage:[self iconImage]];
-      if (itemsCount != 1)
-        [panelItems
-          setStringValue:[NSString stringWithFormat:@"%lu items", itemsCount]];
-      else
-        [panelItems setStringValue:@"1 item"];
-    }
 }
 
-- (NSUInteger)itemsCount
+- (void)updatePanel
 {
-  return itemsCount;
+  NSString *iconLabel;
+  
+  if (!panel)
+    return;
+
+  // Panel icon image
+  [panelIcon setImage:[self iconImage]];
+  if (_itemsCount != 1)
+    iconLabel = [NSString stringWithFormat:@"%lu items", _itemsCount];
+  else
+    iconLabel = @"1 item";
+  [panelItems setStringValue:iconLabel];
+  
+  [filesView removeAllIcons];
+
+  if (itemsLoader != nil) {
+    [itemsLoader cancel];
+    [itemsLoader release];
+  }
+
+  itemsLoader = [[ItemsLoader alloc] initWithIconView:filesView
+                                               status:nil
+                                                 path:_path
+                                            selection:nil];
+  [itemsLoader addObserver:self
+                forKeyPath:@"isFinished"
+                   options:0
+                   context:&self->_itemsCount];
+  [operationQ addOperation:itemsLoader];
+  
 }
 
 - (void)showPanel
@@ -692,27 +697,9 @@ static NSTimeInterval tInterval = 0;
     }
 
   [self updateIconImage];
-  
-  [filesView removeAllIcons];
-
-  if (itemsLoader != nil) {
-    [itemsLoader cancel];
-    [itemsLoader release];
-  }
-
-  itemsLoader = [[ItemsLoader alloc] initWithIconView:filesView
-                                               status:nil
-                                                 path:recyclerPath
-                                            selection:nil];
-  [itemsLoader addObserver:self
-                forKeyPath:@"isFinished"
-                   options:0
-                   context:&self->itemsCount];
-  [operationQ addOperation:itemsLoader];
+  [self updatePanel];
   
   [panel makeKeyAndOrderFront:self];
-  
-  // [self displayPath:recyclerPath selection:nil];
 }
 
 - (void)mouseDown:(NSEvent*)theEvent
@@ -725,19 +712,10 @@ static NSTimeInterval tInterval = 0;
     }
 }
 
-- (void)fileSystemChangedAtPath:(NSNotification *)notif
-{
-  NSDictionary *changes = [notif userInfo];
-  NSString     *changedPath = [changes objectForKey:@"ChangedPath"];
-
-  if ([changedPath isEqualToString:recyclerPath])
-    [self updateIconImage];
-}
-
 - (void)purge
 {
   NSFileManager 	*fm = [NSFileManager defaultManager];
-  NSMutableArray	*items = [[fm directoryContentsAtPath:recyclerPath] mutableCopy];
+  NSMutableArray	*items = [[fm directoryContentsAtPath:_path] mutableCopy];
   NSMutableDictionary	*db = nil;
 
   // Database
@@ -755,7 +733,7 @@ static NSTimeInterval tInterval = 0;
     }
   
   if (![[ProcessManager shared] startOperationWithType:DeleteOperation
-                                                source:recyclerPath
+                                                source:_path
                                                 target:nil
                                                  files:items])
     {
@@ -792,7 +770,7 @@ static NSTimeInterval tInterval = 0;
   [panelItems setStringValue:[NSString stringWithFormat:@"%lu items",
                                        itemsLoader.itemsCount]];
 }
-// -- NXIconView helper
+// -- Notifications
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
   NXDefaults *df = [NXDefaults userDefaults];
@@ -800,6 +778,18 @@ static NSTimeInterval tInterval = 0;
 
   slotSize.width = [df floatForKey:@"IconSlotWidth"];
   [filesView setSlotSize:slotSize];
+}
+
+- (void)fileSystemChangedAtPath:(NSNotification *)notif
+{
+  NSDictionary *changes = [notif userInfo];
+  NSString     *changedPath = [changes objectForKey:@"ChangedPath"];
+
+  if ([changedPath isEqualToString:_path])
+    {
+      [self updateIconImage];
+      [self updatePanel];
+    }
 }
 
 @end

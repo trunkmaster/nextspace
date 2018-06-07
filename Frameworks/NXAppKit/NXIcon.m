@@ -348,18 +348,18 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (void)setDimmed:(BOOL)dimm
 {
   if (isDimmed != dimm) {
-      NSColor * textColor;
+    NSColor *textColor;
 
-      isDimmed = dimm;
-      [self setNeedsDisplay: YES];
+    isDimmed = dimm;
+    [self setNeedsDisplay:YES];
 
-      if (isDimmed == YES)
-	textColor = [NSColor darkGrayColor];
-      else
-	textColor = [NSColor blackColor];
+    if (isDimmed == YES)
+      textColor = [NSColor darkGrayColor];
+    else
+      textColor = [NSColor blackColor];
 
-      [shortLabel setTextColor: textColor];
-      [longLabel setTextColor: textColor];
+    [shortLabel setTextColor:textColor];
+    [longLabel setTextColor:textColor];
   }
 }
 
@@ -556,18 +556,26 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 }
 
 //-----------------------------------------------------------------------------
-// Dragging
+// Dragging (NSDraggingSource)
+//-----------------------------------------------------------------------------
+- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+  return [delegate draggingSourceOperationMaskForLocal:isLocal
+						  icon:self];
+}
+
+//-----------------------------------------------------------------------------
+// Dragging (NSDraggingDestination)
 //-----------------------------------------------------------------------------
 
-// Drag actions
-/*
+// Before the Image is Released
+
 - (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
       [delegate respondsToSelector:@selector(draggingEntered:icon:)]) 
     {
-      dragEnteredResult = [delegate draggingEntered:sender
-					       icon:self];
+      dragEnteredResult = [delegate draggingEntered:sender icon:self];
       return dragEnteredResult;
     }
   else
@@ -592,18 +600,18 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (void)draggingExited:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector: @selector(draggingExited:icon:)])
-	  [delegate draggingExited: sender icon: self];
+      [delegate respondsToSelector:@selector(draggingExited:icon:)])
+    [delegate draggingExited:sender icon:self];
 }
 
-// Drop actions
+// After the Image is Released
 
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
       [delegate respondsToSelector:@selector(prepareForDragOperation:icon:)])
     {
-      return [delegate prepareForDragOperation: sender icon: self];
+      return [delegate prepareForDragOperation:sender icon:self];
     }
   else
     {
@@ -616,7 +624,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   if (delegate &&
       [delegate respondsToSelector:@selector(performDragOperation:icon:)])
     {
-      return [delegate performDragOperation: sender icon: self];
+      return [delegate performDragOperation:sender icon:self];
     }
   else
     {
@@ -628,8 +636,8 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 {
   if (delegate &&
       [delegate respondsToSelector:
-   @selector(concludeDragOperation:icon:)])
-   [delegate concludeDragOperation: sender icon: self];
+                  @selector(concludeDragOperation:icon:)])
+    [delegate concludeDragOperation:sender icon:self];
 }
 
 - (void)draggingEnded:(id <NSDraggingInfo>)sender
@@ -639,12 +647,6 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 	   [delegate draggingEnded: sender icon: self];
 }
 
-- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
-{
-  return [delegate draggingSourceOperationMaskForLocal:isLocal
-						  icon:self];
-}
-*/
 //-----------------------------------------------------------------------------
 // Overridings
 //-----------------------------------------------------------------------------

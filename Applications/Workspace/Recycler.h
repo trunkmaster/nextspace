@@ -32,7 +32,7 @@
   NSArray     *selectedFiles;
 }
 
-@property (atomic, assign, readonly) NSInteger itemsCount;
+@property (atomic, readonly) NSInteger itemsCount;
 
 - (id)initWithIconView:(NXIconView *)view
                 status:(NSTextField *)status
@@ -43,15 +43,11 @@
 
 @interface Recycler : NSObject
 {
-  RecyclerIcon     *appIcon;
   RecyclerIconView *appIconView;
   NXIconBadge      *badge;
 
-  WAppIcon         *dockIcon;
   NSImage          *iconImage;
-  NSString         *recyclerPath;
   NSString         *recyclerDBPath;
-  NSUInteger       itemsCount;
   
   NXFileSystemMonitor *fileSystemMonitor;
 
@@ -67,11 +63,16 @@
   ItemsLoader      *itemsLoader;
 }
 
-- initWithDock:(WDock *)dock;
-- (WAppIcon *)dockIcon;
-- (RecyclerIcon *)appIcon;
-- (NSUInteger)itemsCount;
-- (NSString *)path;
+@property (atomic, readonly) WAppIcon *dockIcon;
+@property (atomic, readonly) RecyclerIcon *appIcon;
+@property (atomic, readonly) NSString *path;
+@property (atomic, readonly) NSInteger itemsCount;
+
+- (id)initWithDock:(WDock *)dock;
+// - (WAppIcon *)dockIcon;
+// - (RecyclerIcon *)appIcon;
+// - (NSUInteger)itemsCount;
+// - (NSString *)path;
 
 - (void)setIconImage:(NSImage *)image;
 - (void)updateIconImage;
