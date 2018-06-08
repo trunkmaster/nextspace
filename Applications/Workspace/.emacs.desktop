@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Jun  8 03:30:26 2018
+;; Created Fri Jun  8 20:06:53 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,10 +11,10 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("ForLocal" "pbTypes" "shelfIconDragged" "createIconForPaths" "XWDock" "GSCurr" "draggingSourceMask" "ForLoca" "_recyc" "WorkspaceChange" "fileSyste" "fileSystem" "fileSystemChangedAtPath" "fileSystemMonitor" "GSCurre" "_application"))
+(setq search-ring '("iconsDragge" "ProcessMan" "Icon" "_recyclerMouseDown" "ForLocal" "pbTypes" "shelfIconDragged" "createIconForPaths" "XWDock" "GSCurr" "draggingSourceMask" "ForLoca" "_recyc" "WorkspaceChange" "fileSyste" "fileSystem"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/DockPrefs/*" "~/Developer/nextspace/Applications/Workspace/Preferences/DockedAppsPrefs/*" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Controller+NSWorkspace.m" "~/Developer/nextspace/Applications/Workspace"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/RecyclerIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/DockPrefs/*" "~/Developer/nextspace/Applications/Workspace/Preferences/DockedAppsPrefs/*" "~/Developer/nextspace/Applications/Workspace"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -22,11 +22,66 @@
   "Recycler.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  23707
-  '(23707 nil)
+  1685
+  '(2595 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/RecyclerIcon.m"
+  "RecyclerIcon.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  8584
+  '(46 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Recycler.h"
+  "Recycler.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  887
+  '(218 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/RecyclerIcon.h"
+  "RecyclerIcon.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  209
+  '(90 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  '(yas-minor-mode)
+  1384
+  '(1018 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m"
+  "PathIcon.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  4192
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m"
@@ -68,17 +123,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   1
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Recycler.h"
-  "Recycler.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1264
-  '(1591 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -258,17 +302,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/GNUmakefile"
-  "GNUmakefile"
-  'makefile-gmake-mode
-  '(yas-minor-mode)
-  1046
-  '(1018 nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist"
