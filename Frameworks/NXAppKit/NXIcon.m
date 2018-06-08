@@ -16,11 +16,11 @@
     @author Saso Kiselkov, Sergii Stoian
 */
 
-#import "NXIcon.h"
-
 #import <AppKit/AppKit.h>
+#import <NXSystem/NXMouse.h>
 #import "math.h"
 
+#import "NXIcon.h"
 #import "NXIconLabel.h"
 
 @interface NXIcon (Private)
@@ -433,6 +433,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (void)mouseDown:(NSEvent *)ev
 {
   int clickCount;
+  NSInteger moveThreshold = [[NXMouse new] accelerationThreshold];
 
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown)
     {
@@ -459,8 +460,8 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 	{
 	  NSPoint endPoint = [ev locationInWindow];
 
-	  if (absolute_value(startPoint.x - endPoint.x) > 5 ||
-	      absolute_value(startPoint.y - endPoint.y) > 5)
+	  if (absolute_value(startPoint.x - endPoint.x) > moveThreshold ||
+	      absolute_value(startPoint.y - endPoint.y) > moveThreshold)
 	    {
 	      [target performSelector:dragAction
 			   withObject:self
@@ -558,7 +559,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 //-----------------------------------------------------------------------------
 // Dragging (NSDraggingSource)
 //-----------------------------------------------------------------------------
-- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
   return [delegate draggingSourceOperationMaskForLocal:isLocal
 						  icon:self];
@@ -570,8 +571,9 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 
 // Before the Image is Released
 
-- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
+  NSLog(@"[NXIcon] draggingEntered");
   if (delegate &&
       [delegate respondsToSelector:@selector(draggingEntered:icon:)]) 
     {
@@ -584,7 +586,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
     }
 }
 
-- (unsigned int)draggingUpdated:(id <NSDraggingInfo>)sender
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
       [delegate respondsToSelector:@selector(draggingUpdated:icon:)])
@@ -599,6 +601,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 
 - (void)draggingExited:(id <NSDraggingInfo>)sender
 {
+  NSLog(@"[NXIcon] draggingExited");
   if (delegate &&
       [delegate respondsToSelector:@selector(draggingExited:icon:)])
     [delegate draggingExited:sender icon:self];
