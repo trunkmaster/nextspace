@@ -97,49 +97,41 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   [shortLabel setSelectable:NO];
 
   if ((fontDict = [df objectForKey:@"NXIconLabelFont"])
-      && [fontDict isKindOfClass:[NSDictionary class]])
-    {
-      float    size = 0.0;
-      NSString *name = [fontDict objectForKey:@"Name"];
+      && [fontDict isKindOfClass:[NSDictionary class]]) {
+    float    size = 0.0;
+    NSString *name = [fontDict objectForKey:@"Name"];
 
-      if ([fontDict objectForKey: @"Size"])
-	{
-	  size = [[fontDict objectForKey:@"Size"] floatValue];
-	}
-
-      if (name)
-	{
-  	  [shortLabel setFont:[NSFont fontWithName:name size:size]];
-	}
-      else
-	{
-	  [shortLabel setFont:[NSFont systemFontOfSize:size]];
-	}
+    if ([fontDict objectForKey: @"Size"]) {
+      size = [[fontDict objectForKey:@"Size"] floatValue];
     }
+
+    if (name) {
+      [shortLabel setFont:[NSFont fontWithName:name size:size]];
+    }
+    else {
+      [shortLabel setFont:[NSFont systemFontOfSize:size]];
+    }
+  }
 
   [longLabel setDrawsBackground:YES];
   [longLabel setBackgroundColor:bgColor];
 
   if ((fontDict = [df objectForKey:@"NXLongIconLabelFont"])
-      && [fontDict isKindOfClass:[NSDictionary class]])
-    {
-      float    size = 0.0;
-      NSString *name = [fontDict objectForKey:@"Name"];
-
-      if ([fontDict objectForKey: @"Size"])
-	{
-	  size = [[fontDict objectForKey: @"Size"] floatValue];
-	}
-
-      if (name)
-	{
-	  [longLabel setFont:[NSFont fontWithName:name size:size]];
-	}
-      else
-	{
-	  [longLabel setFont:[NSFont systemFontOfSize:size]];
-	}
+      && [fontDict isKindOfClass:[NSDictionary class]]) {
+    float    size = 0.0;
+    NSString *name = [fontDict objectForKey:@"Name"];
+    
+    if ([fontDict objectForKey: @"Size"]) {
+      size = [[fontDict objectForKey: @"Size"] floatValue];
     }
+
+    if (name) {
+      [longLabel setFont:[NSFont fontWithName:name size:size]];
+    }
+    else {
+      [longLabel setFont:[NSFont systemFontOfSize:size]];
+    }
+  }
 
   maximumCollapsedLabelWidth = defaultMaximumCollapsedLabelWidth;
   showsExpandedLabelWhenSelected = YES;
@@ -573,7 +565,6 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
-  NSLog(@"[NXIcon] draggingEntered");
   if (delegate &&
       [delegate respondsToSelector:@selector(draggingEntered:icon:)]) 
     {
@@ -601,7 +592,6 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 
 - (void)draggingExited:(id <NSDraggingInfo>)sender
 {
-  NSLog(@"[NXIcon] draggingExited");
   if (delegate &&
       [delegate respondsToSelector:@selector(draggingExited:icon:)])
     [delegate draggingExited:sender icon:self];
