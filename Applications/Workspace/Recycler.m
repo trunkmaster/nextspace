@@ -14,6 +14,8 @@
 
 @implementation ItemsLoader
 
+static NSMutableArray *fileList = nil;
+
 - (id)initWithIconView:(NXIconView *)view
                 status:(NSTextField *)status
                   path:(NSString *)dirPath
@@ -41,7 +43,7 @@
   NSString		*path;
   PathIcon		*anIcon;
   NSUInteger		slotsWide, x;
-  NSInteger             ind;
+  NSInteger             dbFileIndex;
 
   NSLog(@"Operation: Begin path loading...");
   
@@ -52,8 +54,8 @@
 
   _itemsCount = [items count];
   
-  ind = [items indexOfObject:@".recycler.db"];
-  if (ind != NSNotFound) {
+  dbFileIndex = [items indexOfObject:@".recycler.db"];
+  if (dbFileIndex != NSNotFound) {
     [items removeObjectAtIndex:ind];
     _itemsCount--;
   }
@@ -61,28 +63,33 @@
   x = 0;
   slotsWide = [iconView slotsWide];
   for (filename in items) {
-    path = [directoryPath stringByAppendingPathComponent:filename];
-
-    anIcon = [[PathIcon new] autorelease];
-    [anIcon setLabelString:filename];
-    [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
-    [anIcon setPaths:[NSArray arrayWithObject:path]];
-    [anIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
-
-    if ([selectedFiles containsObject:filename]) {
-      [selected addObject:anIcon];
+    if ([self iconForLabel:filename inView:view]) {
+      
     }
+    else {
+      path = [directoryPath stringByAppendingPathComponent:filename];
 
-    // [icons addObject:anIcon];      
-    [iconView performSelectorOnMainThread:@selector(addIcon:)
-                               withObject:anIcon
-                            waitUntilDone:YES];
-    x++;
-    if (x >= slotsWide) {
-      [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
-                                 withObject:nil
+      anIcon = [[PathIcon new] autorelease];
+      [anIcon setLabelString:filename];
+      [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
+      [anIcon setPaths:[NSArray arrayWithObject:path]];
+      [anIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
+
+      if ([selectedFiles containsObject:filename]) {
+        [selected addObject:anIcon];
+      }
+
+      // [icons addObject:anIcon];      
+      [iconView performSelectorOnMainThread:@selector(addIcon:)
+                                 withObject:anIcon
                               waitUntilDone:YES];
-      x = 0;
+      x++;
+      if (x >= slotsWide) {
+        [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
+                                   withObject:nil
+                                waitUntilDone:YES];
+        x = 0;
+      }
     }
   }
 
@@ -102,6 +109,17 @@
 - (BOOL)isReady
 {
   return YES;
+}
+
+- (NXIcon *)iconForLabel:(NSString *)label inView:(NXIconView *)view
+{
+  for (NXIcon *icon in [view icons]) {
+    if ([label isEqualToString:[[icon label] stringValue]]) {
+      return icon;
+    }
+  }
+
+  return nil;
 }
 
 @end
@@ -293,14 +311,14 @@
     iconLabel = @"1 item";
   [panelItems setStringValue:iconLabel];
   
-  [filesView removeAllIcons];
+  // [filesView removeAllIcons];
 
   if (itemsLoader != nil) {
     [itemsLoader cancel];
     [itemsLoader release];
   }
 
-  [panelItems setStringValue:@"Loading items..."];
+  [panelItems setStringValue:@"Busy..."];
   
   itemsLoader = [[ItemsLoader alloc] initWithIconView:filesView
                                                status:nil
@@ -448,19 +466,19 @@
 {
   return YES;
 }
-- (void)draggedImage: (NSImage*)image
-             endedAt: (NSPoint)screenPoint
-           operation: (NSDragOperation)operation
+- (void)draggedImage:(NSImage*)image
+             endedAt:(NSPoint)screenPoint
+           deposited:(BOOL)didDeposit
 {
   NSLog(@"draggedImage:endedAt:operation:");
-  if (operation == NSDragOperationNone) {
-    [draggedIcon setDimmed:NO];
-    [draggedIcon setSelected:YES];
-  }
-  else {
+  if (didDeposit == NO) {
     // [draggedIcon retain];
     // [filesView removeIcon:draggedIcon];
     // [draggedIcon release];
+  }
+  else {
+    [draggedIcon setDimmed:NO];
+    [draggedIcon setSelected:YES];
   }
 }
 
@@ -498,11 +516,10 @@
   NSDictionary *changes = [notif userInfo];
   NSString     *changedPath = [changes objectForKey:@"ChangedPath"];
 
-  if ([changedPath isEqualToString:_path])
-    {
-      [self updateIconImage];
-      [self updatePanel];
-    }
+  if ([changedPath isEqualToString:_path]) {
+    [self updateIconImage];
+    [self updatePanel];
+  }
 }
 
 @end
