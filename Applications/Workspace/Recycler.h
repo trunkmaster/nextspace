@@ -6,23 +6,10 @@
 #import <NXAppKit/NXIconBadge.h>
 #import <NXSystem/NXFileSystemMonitor.h>
 
+#import <Viewers/PathIcon.h>
+
+#import "RecyclerIcon.h"
 #import "Workspace+WindowMaker.h"
-
-@interface RecyclerIconView : NSView
-{
-  NSTimer *timer;
-}
-- (void)setImage:(NSImage *)anImage;
-@end
-
-@interface RecyclerIcon : NSWindow
-{
-}
-
-+ (WAppIcon *)createAppIconForDock:(WDock *)dock;
-+ (WAppIcon *)recyclerAppIconForDock:(WDock *)dock;
-  
-@end
 
 @interface ItemsLoader : NSOperation
 {
@@ -63,8 +50,8 @@
   ItemsLoader		*itemsLoader;
   
   // Dragging
-  NXIconView		*draggedSource;
-  NXIcon		*draggedIcon;
+  id			draggedSource;
+  PathIcon		*draggedIcon;
   NSDragOperation	draggingSourceMask;
 }
 
@@ -77,6 +64,7 @@
 
 - (void)setIconImage:(NSImage *)image;
 - (void)updateIconImage;
+- (void)updatePanel;
 
 - (void)purge;
 
