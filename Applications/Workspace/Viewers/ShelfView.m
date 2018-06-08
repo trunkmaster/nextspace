@@ -250,7 +250,7 @@ NXIconSlot lastSlotDragEntered;
 
 - (unsigned int)draggingUpdated:(id <NSDraggingInfo>)sender
 {
-//  NSLog(@"[ShelfView] draggingUpdated");
+  NSLog(@"[ShelfView] draggingUpdated");
   if (savedDragResult == NO)
     {
       return NSDragOperationNone;

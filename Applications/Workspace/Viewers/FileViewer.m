@@ -1332,10 +1332,8 @@
 
   [draggedIcon setSelected:NO];
 
-//  iconLocation.x += iconFrame.size.height/2;
-//  iconLocation.y += iconFrame.size.width;
   iconLocation.x += 8;
-  iconLocation.y += iconFrame.size.width - 8;
+  iconLocation.y += iconFrame.size.width - 16;
 
   if (iconSlot.x == 0 && iconSlot.y == 0)
     {
@@ -1460,10 +1458,8 @@
   draggedSource = pathView;
   draggedIcon = sender;
 
-//  iconLocation.x += iconFrame.size.height/2;
-//  iconLocation.y += iconFrame.size.width;
-  iconLocation.x += 9;
-  iconLocation.y += iconFrame.size.width - 10;
+  iconLocation.x += 8;
+  iconLocation.y += iconFrame.size.width - 16;
 
   if ([[pathView icons] lastObject] != sender)
     {

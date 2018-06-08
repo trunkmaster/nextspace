@@ -2,31 +2,75 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jun  5 03:07:06 2018
+;; Created Fri Jun  8 03:30:39 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Frameworks/NXAppKit/")
+(setq default-directory "/Users/me/Developer/nextspace/Frameworks/NXAppKit/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("enclosingScrollView" "NXScreen" "setFrame" "center" "windowmaps" "_startBack" "_initBackend" "Exceptio" "Exception" "resolution" "systemSc" "current" "setMain" "currResol" "resoltion" "mode-line"))
+(setq search-ring '("target" "enclosingScrollView" "NXScreen" "setFrame" "center" "windowmaps" "_startBack" "_initBackend" "Exceptio" "Exception" "resolution" "systemSc" "current" "setMain" "currResol" "resoltion"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Frameworks/NXAppKit/NXIconView.m" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile" "~/Developer/nextspace/Applications/Weather/WeatherView.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXIconBadge.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.postamble" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile.postamble" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/GNUstep/gui-trunk/Source/NSWindow.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.h" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble" "~/rpmbuild/SPECS/nextspace-gnustep.spec" "~/Developer/nextspace/Applications/Login/Controller.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.h" "~/Developer/nextspace/Applications/Workspace/"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXAppKit/NXIcon.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXIconView.m" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile" "~/Developer/nextspace/Applications/Weather/WeatherView.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXIconBadge.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.postamble" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile.postamble" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/GNUstep/gui-trunk/Source/NSWindow.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.h" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble" "~/rpmbuild/SPECS/nextspace-gnustep.spec" "~/Developer/nextspace/Applications/Login/Controller.m" "~/Developer/nextspace/Applications/Workspace/Operations/BGOperation.m"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXAppKit/NXIcon.m"
+  "NXIcon.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  12492
+  '(12492 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXAppKit/NXIcon.h"
+  "NXIcon.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  4862
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXAppKit/NXIconView.m"
   "NXIconView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  13739
+  27299
   '(13739 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'fundamental-mode
+  '(yas-minor-mode)
+  305
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.postamble"
+  "GNUmakefile.postamble"
+  'makefile-gmake-mode
+  '(yas-minor-mode)
+  715
+  '(835 nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/NXAppKit/NXIconBadge.m"
@@ -71,17 +115,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.postamble"
-  "GNUmakefile.postamble"
-  'makefile-gmake-mode
-  '(yas-minor-mode)
-  715
-  '(835 nil)
-  nil
-  nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m"

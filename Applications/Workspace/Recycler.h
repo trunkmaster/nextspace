@@ -43,24 +43,29 @@
 
 @interface Recycler : NSObject
 {
-  RecyclerIconView *appIconView;
-  NXIconBadge      *badge;
+  RecyclerIconView	*appIconView;
+  NXIconBadge		*badge;
 
-  NSImage          *iconImage;
-  NSString         *recyclerDBPath;
+  NSImage		*iconImage;
+  NSString		*recyclerDBPath;
   
-  NXFileSystemMonitor *fileSystemMonitor;
+  NXFileSystemMonitor	*fileSystemMonitor;
 
   // Panel
-  NSPanel      *panel;
-  NSImageView  *panelIcon;
-  NSTextField  *panelItems;
-  NSScrollView *panelView;
-  NXIconView   *filesView;
+  NSPanel		*panel;
+  NSImageView		*panelIcon;
+  NSTextField		*panelItems;
+  NSScrollView		*panelView;
+  NXIconView		*filesView;
 
   // Items loader
-  NSOperationQueue *operationQ;
-  ItemsLoader      *itemsLoader;
+  NSOperationQueue	*operationQ;
+  ItemsLoader		*itemsLoader;
+  
+  // Dragging
+  NXIconView		*draggedSource;
+  NXIcon		*draggedIcon;
+  NSDragOperation	draggingSourceMask;
 }
 
 @property (atomic, readonly) WAppIcon *dockIcon;
@@ -69,10 +74,6 @@
 @property (atomic, readonly) NSInteger itemsCount;
 
 - (id)initWithDock:(WDock *)dock;
-// - (WAppIcon *)dockIcon;
-// - (RecyclerIcon *)appIcon;
-// - (NSUInteger)itemsCount;
-// - (NSString *)path;
 
 - (void)setIconImage:(NSImage *)image;
 - (void)updateIconImage;

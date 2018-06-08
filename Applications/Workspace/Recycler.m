@@ -430,8 +430,8 @@ static NSTimeInterval tInterval = 0;
       anIcon = [[NXIcon new] autorelease];
       [anIcon setLabelString:filename];
       [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
-      [[anIcon label] setIconLabelDelegate:self];
-      [anIcon setDelegate:self];
+      // [[anIcon label] setIconLabelDelegate:recycler];
+      [anIcon setDelegate:recycler];
       [anIcon
         registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 
@@ -569,9 +569,9 @@ static NSTimeInterval tInterval = 0;
   filesView = [[NXIconView alloc] initWithFrame:[[panelView contentView] frame]];
   [filesView setDelegate:self];
   [filesView setTarget:self];
-  [filesView setDoubleAction:@selector(open:)];
   [filesView setDragAction:@selector(iconDragged:event:)];
-  [filesView setSendsDoubleActionOnReturn:YES];
+  // [filesView setDoubleAction:@selector(open:)];
+  // [filesView setSendsDoubleActionOnReturn:YES];
   iconSize = [NXIconView defaultSlotSize];
   if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"])
     {
@@ -682,8 +682,7 @@ static NSTimeInterval tInterval = 0;
                 forKeyPath:@"isFinished"
                    options:0
                    context:&self->_itemsCount];
-  [operationQ addOperation:itemsLoader];
-  
+  [operationQ addOperation:itemsLoader];  
 }
 
 - (void)showPanel
@@ -769,7 +768,93 @@ static NSTimeInterval tInterval = 0;
   NSLog(@"Observer of '%@' was called.", keyPath);
   [panelItems setStringValue:[NSString stringWithFormat:@"%lu items",
                                        itemsLoader.itemsCount]];
+  for (NXIcon *icon in [filesView icons]) {
+    [icon setTarget:self];
+    [icon setDragAction:@selector(iconsDraggedInFilesView:withEvent:)];
+  }
 }
+
+// IconView actions
+- (void)iconsDraggedInFilesView:(id)sender withEvent:(NSEvent *)event
+{
+  NSRect       iconFrame = [sender frame];
+  NSPoint      iconLocation = iconFrame.origin;
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
+  NSArray      *pbTypes = nil;
+  
+  iconLocation.x += 8;
+  iconLocation.y += iconFrame.size.width - 16;
+
+  draggedSource = filesView;
+  draggedIcon = sender;
+  draggingSourceMask = NSDragOperationMove;
+
+  [draggedIcon setSelected:NO];
+  [draggedIcon setDimmed:YES];
+  // Icon will be added back in draggingEntered:icon:
+  // [filesView removeIcon:sender];
+  
+  // Pasteboard info for 'draggedIcon'
+  // pbTypes = [NSArray arrayWithObjects:NSFilenamesPboardType,NSGeneralPboardType,
+  //                    nil];
+  // [pb declareTypes:pbTypes owner:nil];
+  // [pb setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
+  // if ((iconInfo = [draggedIcon info]) != nil)
+  //   {
+  //     [pb setPropertyList:iconInfo forType:NSGeneralPboardType];
+  //   }
+
+  [filesView dragImage:[draggedIcon iconImage]
+                    at:iconLocation
+                offset:NSZeroSize
+                 event:event
+            pasteboard:pb
+                source:draggedSource
+             slideBack:YES];
+}
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+                                              iconView:(NXIconView *)sender
+{
+  NSLog(@"[Recycler] draggingSourceOperationMaskForLocal:");
+  return NSDragOperationMove;
+}
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+  NSLog(@"[Recycler] draggingEntered: %@", [(NSObject *)sender className]);
+  return NSDragOperationMove;
+}
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+{
+  NSLog(@"[Recycler] draggingUpdated: %@", [(NSObject *)sender className]);
+  // [filesView removeIcon:icon];
+  return NSDragOperationMove;
+}
+- (void)draggingExited:(id <NSDraggingInfo>)sender
+{
+  NSLog(@"[Recycler] draggingExited: %@", [(NSObject *)sender className]);
+  // [filesView removeIcon:icon];
+}
+
+// Icon actions
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+                              icon:(NXIcon *)icon
+{
+  NSLog(@"[Recycler] draggingEntered:icon:");
+  return NSDragOperationMove;
+}
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+                              icon:(NXIcon *)icon
+{
+  NSLog(@"[Recycler] draggingUpdated:icon:");
+  return NSDragOperationMove;
+}
+- (void)draggingExited:(id <NSDraggingInfo>)sender
+                  icon:(NXIcon *)icon
+{
+  NSLog(@"[Recycler] draggingOperationExited:icon:");
+  [filesView removeIcon:icon];
+}
+
 // -- Notifications
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
