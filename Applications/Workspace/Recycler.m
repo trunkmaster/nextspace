@@ -106,7 +106,6 @@ static NSMutableArray *fileList = nil;
     [anIcon setLabelString:filename];
     [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
     [anIcon setPaths:[NSArray arrayWithObject:path]];
-    [anIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
 
     if ([selectedFiles containsObject:filename]) {
       [selected addObject:anIcon];
@@ -132,9 +131,9 @@ static NSMutableArray *fileList = nil;
   }
 
   NSLog(@"Operation: End path loading...");
-  [statusField performSelectorOnMainThread:@selector(setStringValue:)
-                                withObject:@""
-                             waitUntilDone:YES];
+  // [statusField performSelectorOnMainThread:@selector(setStringValue:)
+  //                               withObject:@""
+  //                            waitUntilDone:YES];
 }
 
 - (BOOL)isReady
@@ -254,6 +253,7 @@ static NSMutableArray *fileList = nil;
   [filesView setDelegate:self];
   [filesView setTarget:self];
   [filesView setDragAction:@selector(filesView:iconDragged:withEvent:)];
+  [filesView setAutoAdjustsToFitIcons:NO];
   // [filesView setDoubleAction:@selector(open:)];
   // [filesView setSendsDoubleActionOnReturn:YES];
   iconSize = [NXIconView defaultSlotSize];
@@ -330,8 +330,6 @@ static NSMutableArray *fileList = nil;
     iconLabel = @"1 item";
   [panelItems setStringValue:iconLabel];
   
-  // [filesView removeAllIcons];
-
   if (itemsLoader != nil) {
     [itemsLoader cancel];
     [itemsLoader release];
@@ -339,8 +337,6 @@ static NSMutableArray *fileList = nil;
 
   [panelItems setStringValue:@"Busy..."];
 
-  [filesView setAutoAdjustsToFitIcons:NO];
-  
   itemsLoader = [[ItemsLoader alloc] initWithIconView:filesView
                                                status:nil
                                                  path:_path
@@ -438,9 +434,9 @@ static NSMutableArray *fileList = nil;
     [icon setDelegate:self];
     [icon setTarget:self];
     [icon setDragAction:@selector(iconDragged:withEvent:)];
+    [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
   }
 
-  [filesView setAutoAdjustsToFitIcons:YES];
   [filesView adjustToFitIcons];
 }
 
