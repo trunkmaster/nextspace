@@ -460,7 +460,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   NSUInteger i = [icons indexOfObjectIdenticalTo:anIcon];
 
   if (i == NSNotFound)
-    return NXMakeIconSlot(NSNotFound, NSNotFound);
+    return NXMakeIconSlot(-1, -1);
   else
     return SlotFromIndex(slotsWide, i);
 }
@@ -1105,6 +1105,11 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 - (void)selectIcons:(NSSet *)someIcons
 {
   [self updateSelectionWithIcons:someIcons modifierFlags:0];
+}
+
+- (void)selectIcons:(NSSet *)someIcons withModifiers:(unsigned)flags
+{
+  [self updateSelectionWithIcons:someIcons modifierFlags:flags];
 }
 
 - (NSSet *)selectedIcons

@@ -7,6 +7,7 @@
 #import <math.h>
 #import <AppKit/AppKit.h>
 
+#import "Recycler.h"
 #import "PathIcon.h"
 #import "ShelfView.h"
 
@@ -168,7 +169,7 @@ NXIconSlot lastSlotDragEntered;
 
       slot = [self slotForIcon:icon];
 
-      if (slot.x == NSNotFound)
+      if (slot.x == -1)
 	{
 	  [NSException raise: NSInternalInconsistencyException
 		      format: @"ShelfView: in `-storableRepresentation':"
@@ -212,10 +213,11 @@ NXIconSlot lastSlotDragEntered;
   NSDictionary *info;
   NXIconSlot   iconSlot;
 
-  NSLog(@"[ShelfView] -draggingEntered (source:%@)",
-        [[sender draggingSource] className]);
+  // NSLog(@"[ShelfView] -draggingEntered (source:%@)",
+  //       [[sender draggingSource] className]);
 
-  if (delegate == nil)
+  if (delegate == nil ||
+      [[sender draggingSource] isKindOfClass:[Recycler class]])
     {
       savedDragResult = NO;
       return NSDragOperationNone;
@@ -250,11 +252,10 @@ NXIconSlot lastSlotDragEntered;
 
 - (unsigned int)draggingUpdated:(id <NSDraggingInfo>)sender
 {
-  NSLog(@"[ShelfView] draggingUpdated");
-  if (savedDragResult == NO)
-    {
-      return NSDragOperationNone;
-    }
+  // NSLog(@"[ShelfView] draggingUpdated");
+  if (savedDragResult == NO) {
+    return NSDragOperationNone;
+  }
 
   return [self updateDraggedIconToDrag:sender];
 }

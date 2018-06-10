@@ -441,6 +441,7 @@ static NSMutableArray *fileList = nil;
   }
 
   [filesView setAutoAdjustsToFitIcons:YES];
+  [filesView adjustToFitIcons];
 }
 
 // IconView actions
