@@ -291,6 +291,7 @@ typedef struct {
 
 /** Causes the receiver to select all icons it contains. */
 - (void)selectAll:sender;
+- (void)deselectAll:sender;
 
 /** Must have NSDraggingSource protocol method*/
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal;

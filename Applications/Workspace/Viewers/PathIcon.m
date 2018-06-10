@@ -23,7 +23,6 @@
 			 | NSRightMouseUpMask);
   NSEvent   *event = nil;
 
-
   event = [[self window]
     nextEventMatchingMask:eventMask
 		untilDate:[NSDate dateWithTimeIntervalSinceNow:0.30]
@@ -65,9 +64,9 @@
 // Overriding
 - (void)mouseDown:(NSEvent *)ev
 {
-  int    clickCount;
-  NXIcon *lastSelected = nil;
-  NSArray *slctdIcons;
+  int        clickCount;
+  NSArray    *slctdIcons;
+  NXIconView *superView = (NXIconView *)[self superview];
 
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown)
     {
@@ -76,81 +75,56 @@
 
 //  NSLog(@"PathIcon: mouseDown");
 
-  slctdIcons = [[(NXIconView *)[self superview] selectedIcons] allObjects];
-  if ([slctdIcons count] > 0)
-    {
-      lastSelected = [slctdIcons objectAtIndex:0];
-      [lastSelected setSelected:NO];
-    }
-  [self setSelected:YES];
+  // [superView selectIcons:[NSSet setWithObject:self]];
     
   clickCount = [ev clickCount];
   modifierFlags = [ev modifierFlags];
+  
+  [superView updateSelectionWithIcons:[NSSet setWithObject:self]
+                        modifierFlags:modifierFlags];
 
   // Dragging
-  if ([target respondsToSelector:dragAction])
-    {
-      NSPoint startPoint = [ev locationInWindow];
-      unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+  if ([target respondsToSelector:dragAction]) {
+    NSPoint startPoint = [ev locationInWindow];
+    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
 
-//      NSLog(@"[PathIcon-mouseDown]: DRAGGING");
+    //      NSLog(@"[PathIcon-mouseDown]: DRAGGING");
 
-      while ([(ev = [[self window] nextEventMatchingMask:mask 
-					 untilDate:[NSDate distantFuture]
-					    inMode:NSEventTrackingRunLoopMode
-					   dequeue:YES])
-	     type] != NSLeftMouseUp)
-	{
-	  NSPoint endPoint = [ev locationInWindow];
-
-	  if (absolute_value(startPoint.x - endPoint.x) > 3 ||
-	      absolute_value(startPoint.y - endPoint.y) > 3)
-	    {
-	      [target performSelector:dragAction
-			   withObject:self
-			   withObject:ev];
-	      if (self != lastSelected)
-		{
-		  [self setSelected:NO];
-		}
-	      if (lastSelected &&
-		  self != lastSelected)
-		{
-		  [lastSelected setSelected:YES];
-		  [_window makeFirstResponder:[[lastSelected label] nextKeyView]];
-		}
-	      return;
-	    }
-	}
+    while ([(ev = [[self window] nextEventMatchingMask:mask 
+                                             untilDate:[NSDate distantFuture]
+                                                inMode:NSEventTrackingRunLoopMode
+                                               dequeue:YES])
+	     type] != NSLeftMouseUp) {
+      NSPoint endPoint = [ev locationInWindow];
+      
+      if (absolute_value(startPoint.x - endPoint.x) > 3 ||
+          absolute_value(startPoint.y - endPoint.y) > 3) {
+        [target performSelector:dragAction
+                     withObject:self
+                     withObject:ev];
+        return;
+      }
     }
+  }
 
   [_window makeFirstResponder:[longLabel nextKeyView]];
 
   // Clicking
-  if (clickCount == 2)
-    {
-//      NSLog(@"[PathIcon-mouseDown]: CLICK=2");
-      if ([target respondsToSelector:doubleAction])
-	{
-	  [target performSelector:doubleAction withObject:self];
-	}
+  if (clickCount == 2) {
+    if ([target respondsToSelector:doubleAction]) {
+      [target performSelector:doubleAction withObject:self];
     }
-  else if (clickCount == 1)
-    {
-//      NSLog(@"[PathIcon-mouseDown]: CLICK=1");
-
-      // Double clicked
-      if (!doubleClickPassesClick
-	  && [self _waitForSecondMouseClick] != nil)
-	{
-	  return;
-	}
-
-      if ([target respondsToSelector:action])
-	{
-	  [target performSelector:action withObject:self];
-	}
+  }
+  else if (clickCount == 1 || clickCount > 2) {
+    // Double clicked
+    if (!doubleClickPassesClick && [self _waitForSecondMouseClick] != nil) {
+      return;
     }
+    // [_window makeFirstResponder:[[self label] nextKeyView]];
+    if ([target respondsToSelector:action]) {
+      [target performSelector:action withObject:self];
+    }
+  }  
 }
 
 // Addons

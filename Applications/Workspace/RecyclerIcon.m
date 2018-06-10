@@ -1,6 +1,7 @@
 /* */
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <Operations/ProcessManager.h>
+#import <Viewers/ShelfView.h>
 
 #import "Recycler.h"
 #import "RecyclerIcon.h"
@@ -97,14 +98,17 @@ static NSTimeInterval tInterval = 0;
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
 {
-  [self animate];
+  if ([[sender draggingSource] isKindOfClass:[ShelfView class]] == NO) {
+    [self animate];
+  }
+  
   return NSDragOperationDelete;
 }
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
   NSLog(@"Recycler: prepare fo dragging");
-  return YES;
+  return ([sender draggingSourceOperationMask] == NSDragOperationNone) ? NO : YES;
 }
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
@@ -362,4 +366,3 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 }
 
 @end
-

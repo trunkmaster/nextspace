@@ -1159,7 +1159,7 @@
   NSString *wmFileType = nil;
   NSString *appName = nil;
 
-  NSLog(@"FileViewer: Shelf icon CLICKED! %@", path);
+  // NSLog(@"FileViewer: Shelf icon CLICKED! %@", path);
 
   if (![[NXDefaults userDefaults] boolForKey:@"DontSlideIconsFromShelf"])
     {
@@ -1233,7 +1233,7 @@
         }
     }
 
-  NSLog(@"PATH[%@] -> %@", wmFileType, path);
+  // NSLog(@"PATH[%@] -> %@", wmFileType, path);
   [self displayPath:path selection:filenames sender:shelf];
   [shelf selectIcons:nil]; // deselect all selected icons
 }
@@ -1241,14 +1241,9 @@
 - (void)shelfIconDoubleClicked:sender
 {
   PathIcon *selectedIcon = [[sender selectedIcons] anyObject];
-  NSString *path = [[selectedIcon paths] objectAtIndex:0];
 
-  // if (![path isEqualToString:rootPath])
-  //   {
-      [selectedIcon setDimmed:YES];
-
-      [self open:selectedIcon];
-    // }
+  [selectedIcon setDimmed:YES];
+  [self open:selectedIcon];
 
   [shelf selectIcons:nil];
   [selectedIcon setDimmed:NO];

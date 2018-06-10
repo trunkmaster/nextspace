@@ -294,15 +294,15 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       [icons replaceObjectAtIndex:index withObject:anIcon];
     }
 
-  [anIcon putIntoView:self
-	      atPoint:PointForSlot(slotSize, aSlot)];
-  [anIcon setMaximumCollapsedLabelWidth:
-            slotSize.width - maximumCollapsedLabelWidthSpace];
-
   [anIcon setTarget:self];
   [anIcon setAction:@selector(iconClicked:)];
   [anIcon setDragAction:@selector(iconDragged:event:)];
   [anIcon setDoubleAction:@selector(iconDoubleClicked:)];
+  
+  [anIcon putIntoView:self
+	      atPoint:PointForSlot(slotSize, aSlot)];
+  [anIcon setMaximumCollapsedLabelWidth:
+            slotSize.width - maximumCollapsedLabelWidthSpace];
 }
 
 - (void)removeIcon:(NXIcon *)anIcon
@@ -1114,9 +1114,10 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
 - (void)selectAll:sender
 {
-  if (allowsMultipleSelection)
+  if (allowsMultipleSelection) {
     [self updateSelectionWithIcons:[NSSet setWithArray:icons]
 		     modifierFlags:NSShiftKeyMask];
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -1325,83 +1326,70 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   NSSet               *sel;
 
   // if passed a nil argument, assume as if it were an empty set
-  if (someIcons == nil)
-    {
-      someIcons = [[NSSet new] autorelease];
-    }
+  if (someIcons == nil) {
+    someIcons = [[NSSet new] autorelease];
+  }
 
-  if (flags == NSShiftKeyMask)
-    {
-      mode = NXIconSelectionAdditiveMode;
-    }
-  else if (flags == NSControlKeyMask)
-    {
-      mode = NXIconSelectionSubtractiveMode;
-    }
-  else
-    {
-      mode = NXIconSelectionExclusiveMode;
-    }
+  if (flags == NSShiftKeyMask) {
+    mode = NXIconSelectionAdditiveMode;
+  }
+  else if (flags == NSControlKeyMask) {
+    mode = NXIconSelectionSubtractiveMode;
+  }
+  else {
+    mode = NXIconSelectionExclusiveMode;
+  }
 
   if ([delegate respondsToSelector:
-		@selector(iconView:shouldSelectIcons:selectionMode:)])
-    {
-      someIcons = [delegate iconView:self
-  		   shouldSelectIcons:someIcons
-  		       selectionMode:mode];
-    }
+		@selector(iconView:shouldSelectIcons:selectionMode:)]) {
+    someIcons = [delegate iconView:self
+                          shouldSelectIcons:someIcons
+                     selectionMode:mode];
+  }
 
   if (mode == NXIconSelectionSubtractiveMode)
     {
       [someIcons makeObjectsPerform:@selector(deselect:)];
       [selectedIcons minusSet:someIcons];
     }
-  else if (allowsMultipleSelection)
-    {
-      if (mode == NXIconSelectionAdditiveMode)
-	{
-	  [someIcons makeObjectsPerform:@selector(select:)];
-	  [selectedIcons unionSet:someIcons];
-	}
-      else
-	{
-	  [selectedIcons makeObjectsPerform:@selector(deselect:)];
-	  [selectedIcons setSet:someIcons];
-	  [selectedIcons makeObjectsPerform:@selector(select:)];
-	}
+  else if (allowsMultipleSelection) {
+    if (mode == NXIconSelectionAdditiveMode) {
+      [someIcons makeObjectsPerform:@selector(select:)];
+      [selectedIcons unionSet:someIcons];
     }
-  else
-    {
-      NXIcon *icon;
-
+    else {
       [selectedIcons makeObjectsPerform:@selector(deselect:)];
-      [selectedIcons removeAllObjects];
-
-      if ([someIcons count] == 1)
-	{
-	  icon = [someIcons anyObject];
-	  [selectedIcons addObject:icon];
-	  [icon select:nil];
-	}
-      else if ([someIcons count] > 1)
-	{
-  	  [NSException raise:NSInvalidArgumentException
-  		      format:_(@"NXIconView:requested the selection "
-  				@"of several icons in an icon view "
-  				@"which doesn't allow multiple selection")];
-	}
+      [selectedIcons setSet:someIcons];
+      [selectedIcons makeObjectsPerform:@selector(select:)];
     }
+  }
+  else {
+    NXIcon *icon;
 
-  if ([selectedIcons count] != 0)
-    {
+    [selectedIcons makeObjectsPerform:@selector(deselect:)];
+    [selectedIcons removeAllObjects];
+
+    if ([someIcons count] == 1) {
+      icon = [someIcons anyObject];
+      [selectedIcons addObject:icon];
+      [icon select:nil];
+    }
+    else if ([someIcons count] > 1) {
+      [NSException raise:NSInvalidArgumentException
+                  format:_(@"NXIconView:requested the selection "
+                           @"of several icons in an icon view "
+                           @"which doesn't allow multiple selection")];
+    }
+  }
+
+  if ([selectedIcons count] != 0) {
       NSEnumerator *e;
       NXIcon       *ic;
       NSRect       r;
 
       r = [[selectedIcons anyObject] frame];
       e = [selectedIcons objectEnumerator];
-      while ((ic = [e nextObject]) != nil)
-	{
+      while ((ic = [e nextObject]) != nil) {
   	  r = NSUnionRect(r, NSUnionRect([ic frame], [[ic label] frame]));
 	}
 
@@ -1411,8 +1399,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   sel = [[selectedIcons copy] autorelease];
 
   if ([delegate respondsToSelector:
-		@selector(iconView:didChangeSelectionTo:)])
-    {
+		@selector(iconView:didChangeSelectionTo:)]) {
       [delegate iconView:self didChangeSelectionTo:sel];
     }
 
