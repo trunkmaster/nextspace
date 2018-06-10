@@ -341,7 +341,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 {
   if (isDimmed != dimm) {
     NSColor *textColor;
-
+    
     isDimmed = dimm;
     [self setNeedsDisplay:YES];
 

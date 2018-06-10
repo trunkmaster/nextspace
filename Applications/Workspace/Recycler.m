@@ -32,10 +32,46 @@ static NSMutableArray *fileList = nil;
   return self;
 }
 
+- (NXIcon *)_iconForLabel:(NSString *)label inView:(NXIconView *)view
+{
+  for (NXIcon *icon in [view icons]) {
+    if ([label isEqualToString:[[icon label] text]]) {
+      return icon;
+    }
+  }
+
+  return nil;
+}
+- (void)_optimizeItems:(NSMutableArray *)items
+              fileView:(NXIconView *)view
+{
+  NXIcon         *icon;
+  NSMutableArray *itemsCopy = [items mutableCopy];
+  NSArray        *iconsCopy = [[view icons] copy];
+
+  // Remove non-existing items
+  for (NXIcon *icon in iconsCopy) {
+    if ([items indexOfObject:[[icon label] text]] == NSNotFound) {
+      [view removeIcon:icon];
+    }
+  }
+
+  // Leave in `items` array items to add.
+  for (NSString *filename in itemsCopy) {
+    icon = [self _iconForLabel:filename inView:view];
+    if (icon) {
+      [items removeObject:filename];
+    }
+  }
+  [itemsCopy release];
+  
+  // [view performSelectorOnMainThread:@selector(adjustToFitIcons)
+  //                        withObject:nil
+  //                     waitUntilDone:YES];
+}
+
 - (void)main
 {
-  NSString 		*filename;
-  NSMutableArray	*icons = [NSMutableArray array];
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   NSFileManager		*fm = [NSFileManager defaultManager];
   NXFileManager		*xfm = [NXFileManager sharedManager];
@@ -56,40 +92,35 @@ static NSMutableArray *fileList = nil;
   
   dbFileIndex = [items indexOfObject:@".recycler.db"];
   if (dbFileIndex != NSNotFound) {
-    [items removeObjectAtIndex:ind];
+    [items removeObjectAtIndex:dbFileIndex];
     _itemsCount--;
   }
   
   x = 0;
   slotsWide = [iconView slotsWide];
-  for (filename in items) {
-    if ([self iconForLabel:filename inView:view]) {
-      
+  [self _optimizeItems:items fileView:iconView];
+  for (NSString *filename in items) {
+    path = [directoryPath stringByAppendingPathComponent:filename];
+
+    anIcon = [[PathIcon new] autorelease];
+    [anIcon setLabelString:filename];
+    [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
+    [anIcon setPaths:[NSArray arrayWithObject:path]];
+    [anIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
+
+    if ([selectedFiles containsObject:filename]) {
+      [selected addObject:anIcon];
     }
-    else {
-      path = [directoryPath stringByAppendingPathComponent:filename];
 
-      anIcon = [[PathIcon new] autorelease];
-      [anIcon setLabelString:filename];
-      [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
-      [anIcon setPaths:[NSArray arrayWithObject:path]];
-      [anIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
-
-      if ([selectedFiles containsObject:filename]) {
-        [selected addObject:anIcon];
-      }
-
-      // [icons addObject:anIcon];      
-      [iconView performSelectorOnMainThread:@selector(addIcon:)
-                                 withObject:anIcon
+    [iconView performSelectorOnMainThread:@selector(addIcon:)
+                               withObject:anIcon
+                            waitUntilDone:YES];
+    x++;
+    if (x >= slotsWide) {
+      [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
+                                 withObject:nil
                               waitUntilDone:YES];
-      x++;
-      if (x >= slotsWide) {
-        [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
-                                   withObject:nil
-                                waitUntilDone:YES];
-        x = 0;
-      }
+      x = 0;
     }
   }
 
@@ -109,17 +140,6 @@ static NSMutableArray *fileList = nil;
 - (BOOL)isReady
 {
   return YES;
-}
-
-- (NXIcon *)iconForLabel:(NSString *)label inView:(NXIconView *)view
-{
-  for (NXIcon *icon in [view icons]) {
-    if ([label isEqualToString:[[icon label] stringValue]]) {
-      return icon;
-    }
-  }
-
-  return nil;
 }
 
 @end
@@ -292,8 +312,7 @@ static NSMutableArray *fileList = nil;
       [badge setStringValue:@""];
     }
   
-  [appIconView setImage:iconImage];
-  
+  [appIconView setImage:iconImage];  
 }
 
 - (void)updatePanel
@@ -319,6 +338,8 @@ static NSMutableArray *fileList = nil;
   }
 
   [panelItems setStringValue:@"Busy..."];
+
+  [filesView setAutoAdjustsToFitIcons:NO];
   
   itemsLoader = [[ItemsLoader alloc] initWithIconView:filesView
                                                status:nil
@@ -328,7 +349,7 @@ static NSMutableArray *fileList = nil;
                 forKeyPath:@"isFinished"
                    options:0
                    context:&self->_itemsCount];
-  [operationQ addOperation:itemsLoader];  
+  [operationQ addOperation:itemsLoader];
 }
 
 - (void)showPanel
@@ -418,6 +439,8 @@ static NSMutableArray *fileList = nil;
     [icon setTarget:self];
     [icon setDragAction:@selector(iconDragged:withEvent:)];
   }
+
+  [filesView setAutoAdjustsToFitIcons:YES];
 }
 
 // IconView actions
@@ -460,7 +483,7 @@ static NSMutableArray *fileList = nil;
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
   NSLog(@"[Recycler] draggingSourceOperationMaskForLocal:");
-  return NSDragOperationMove;
+  return draggingSourceMask;
 }
 - (BOOL)ignoreModifierKeysWhileDragging
 {
@@ -472,13 +495,8 @@ static NSMutableArray *fileList = nil;
 {
   NSLog(@"draggedImage:endedAt:operation:");
   if (didDeposit == NO) {
-    // [draggedIcon retain];
-    // [filesView removeIcon:draggedIcon];
-    // [draggedIcon release];
-  }
-  else {
-    [draggedIcon setDimmed:NO];
     [draggedIcon setSelected:YES];
+    [draggedIcon setDimmed:NO];
   }
 }
 
@@ -487,13 +505,13 @@ static NSMutableArray *fileList = nil;
                               icon:(NXIcon *)icon
 {
   // NSLog(@"[Recycler] draggingEntered:icon:");
-  return NSDragOperationMove;
+  return draggingSourceMask;
 }
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
                               icon:(NXIcon *)icon
 {
   // NSLog(@"[Recycler] draggingUpdated:icon:");
-  return NSDragOperationMove;
+  return draggingSourceMask;
 }
 - (void)draggingExited:(id <NSDraggingInfo>)sender
                   icon:(NXIcon *)icon
