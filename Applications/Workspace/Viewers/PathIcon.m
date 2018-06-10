@@ -8,6 +8,7 @@
 
 #import <AppKit/AppKit.h>
 #import <NXSystem/NXSystemInfo.h>
+#import <NXSystem/NXMouse.h>
 
 #import "Controller+NSWorkspace.h"
 #import "FileViewer.h"
@@ -67,6 +68,7 @@
   int        clickCount;
   NSArray    *slctdIcons;
   NXIconView *superView = (NXIconView *)[self superview];
+  NSInteger  threshold = [[[NXMouse new] autorelease] accelerationThreshold];
 
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown)
     {
@@ -80,8 +82,8 @@
   clickCount = [ev clickCount];
   modifierFlags = [ev modifierFlags];
   
-  [superView updateSelectionWithIcons:[NSSet setWithObject:self]
-                        modifierFlags:modifierFlags];
+  [superView selectIcons:[NSSet setWithObject:self]
+           withModifiers:modifierFlags];
 
   // Dragging
   if ([target respondsToSelector:dragAction]) {
@@ -97,8 +99,8 @@
 	     type] != NSLeftMouseUp) {
       NSPoint endPoint = [ev locationInWindow];
       
-      if (absolute_value(startPoint.x - endPoint.x) > 3 ||
-          absolute_value(startPoint.y - endPoint.y) > 3) {
+      if (absolute_value(startPoint.x - endPoint.x) > threshold ||
+          absolute_value(startPoint.y - endPoint.y) > threshold) {
         [target performSelector:dragAction
                      withObject:self
                      withObject:ev];
