@@ -20,67 +20,9 @@ NXIconSlot lastSlotDragEntered;
 
 @interface ShelfView (Private)
 
-- (unsigned int)updateDraggedIconToDrag:(id <NSDraggingInfo>)dragInfo;
-
 @end
 
 @implementation ShelfView (Private)
-
-- (unsigned int)updateDraggedIconToDrag:(id <NSDraggingInfo>)dragInfo
-{
-  NSSize     mySlotSize = [self slotSize];
-  NSPoint    p = [self convertPoint:[dragInfo draggingLocation]
-	   		   fromView:nil];
-  NXIconSlot slot = NXMakeIconSlot(floorf(p.x / mySlotSize.width),
-				   floorf(p.y / mySlotSize.height));
-  NXIcon     *icon;
-
-
-  // Draging hasn't leave shelf yet and no slot for drop
-  if (slot.x >= [self slotsWide])
-    {
-      slot.x = [self slotsWide]-1;
-    }
-  if (slot.y >= [self slotsTall])
-    {
-      slot.y = [self slotsTall]-1;
-    }
-
-  if (lastSlotDragEntered.x == slot.x &&
-      lastSlotDragEntered.y == slot.y)
-    {
-      return draggedMask;
-    }
-  else
-    {
-      lastSlotDragEntered.x = slot.x;
-      lastSlotDragEntered.y = slot.y;
-    }
-
-  icon = [self iconInSlot:slot];
-  draggedMask = NSDragOperationMove;
-//  NSLog(@"DRAG: slot.x,y: %i,%i slotsWide: %i icon:%@", slot.x, slot.y, slotsWide, icon);
-
-  if (icon == nil)
-    {
-      id draggingSource = [dragInfo draggingSource];
-      if ([draggingSource class] != [self class])
-	{
-	  draggedMask = NSDragOperationCopy;
-	}
-      if ([draggedIcon superview])
-	{
-	  [self removeIcon:draggedIcon];
-	}
-      [self putIcon:draggedIcon intoSlot:slot];
-    }
-  else if (icon != draggedIcon)
-    {
-      draggedMask = NSDragOperationNone;
-    }
-
-  return draggedMask;
-}
 
 @end
 
@@ -126,15 +68,6 @@ NXIconSlot lastSlotDragEntered;
 
 - (void)reconstructFromRepresentation:(NSDictionary *)aDict
 {
-  // BOOL notifyDelegateIconDraggedIn;
-  // notifyDelegateIconDraggedIn = 
-  //   [self respondsToSelector:@selector(didAcceptIcon:inDrag:)];
-  // if (delegate == nil) {
-  //   NSLog(@"ShelfView: `-reconstructFromRepresentation:' "
-  //         @"requested but no delegate was set");
-  //   return;
-  // }
-
   for (NSArray *key in [aDict allKeys]) {
     NSArray    *paths;
     NXIconSlot slot;
@@ -157,10 +90,7 @@ NXIconSlot lastSlotDragEntered;
     }
 
     icon = [self createIconForPaths:paths];
-    if (icon)	{
-      [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
-      [icon setDelegate:self];
-      [icon setPaths:paths];
+    if (icon) {
       [self putIcon:icon intoSlot:slot];
     }
   }
@@ -168,37 +98,30 @@ NXIconSlot lastSlotDragEntered;
 
 - (NSDictionary *)storableRepresentation
 {
-  NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-  NSEnumerator        *e = [[self icons] objectEnumerator];
-  PathIcon            *icon;
+  NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
   Class               nullClass = [NSNull class];
 
-  while ((icon = [e nextObject]) != nil)
-    {
-      NXIconSlot slot;
+  for (PathIcon *icon in [self icons]) {
+    NXIconSlot slot;
 
-      if ([icon isKindOfClass:nullClass] || [[icon paths] count] > 1)
-	{
-	  continue;
-	}
-
-      slot = [self slotForIcon:icon];
-
-      if (slot.x == -1)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		      format: @"ShelfView: in `-storableRepresentation':"
-                       @" Unable to deteremine the slot for an icon that"
-                       @" _must_ be present"];
-	}
-
-      [dict setObject:[icon paths]
-	       forKey:[NSArray arrayWithObjects:
-                                 [NSNumber numberWithInt:slot.x],
-                                 [NSNumber numberWithInt:slot.y], nil]];
+    if ([icon isKindOfClass:nullClass] || [[icon paths] count] > 1) {
+      continue;
     }
 
-  return [[dict copy] autorelease];
+    slot = [self slotForIcon:icon];
+
+    if (slot.x == -1) {
+      [NSException raise:NSInternalInconsistencyException
+                  format:@"ShelfView: in `-storableRepresentation':"
+                   @" Unable to deteremine the slot for an icon that"
+                   @" _must_ be present"];
+    }
+
+    [dict setObject:[icon paths] forKey:@[[NSNumber numberWithInt:slot.x],
+                                          [NSNumber numberWithInt:slot.y]]];
+  }
+
+  return [dict autorelease];
 }
 
 - (void)addIcon:(NXIcon *)anIcon
@@ -277,8 +200,8 @@ NXIconSlot lastSlotDragEntered;
   [selectedIcon setDimmed:YES];
   [_owner open:selectedIcon];
 
-  [self selectIcons:nil];
   [selectedIcon setDimmed:NO];
+  [self selectIcons:nil];
 }
 
 - (NSArray *)pathsForDrag:(id <NSDraggingInfo>)draggingInfo
@@ -320,6 +243,8 @@ NXIconSlot lastSlotDragEntered;
   [icon setDelegate:self];
   [icon setDoubleClickPassesClick:NO];
   [icon setEditable:NO];
+  [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+  [[icon label] setNextKeyView:[[_owner viewer] view]];
 
   return icon;
 }
@@ -403,12 +328,12 @@ NXIconSlot lastSlotDragEntered;
 {
   NSLog(@"[ShelfView] draggingSourceOperationMaskForLocal: %@",
         [sender className]);
-  if (isLocal == NO) {
-    return NSDragOperationDelete;
-  }
-  else {
+  // if (isLocal == NO) {
+  //   return NSDragOperationDelete;
+  // }
+  // else {
     return NSDragOperationMove;
-  }
+  // }
 }
 
 - (void)draggedImage:(NSImage *)image
@@ -439,6 +364,62 @@ NXIconSlot lastSlotDragEntered;
 
 // --- NSDraggingDestination
 
+- (unsigned int)updateDraggedIconToDrag:(id <NSDraggingInfo>)dragInfo
+{
+  NSSize     mySlotSize = [self slotSize];
+  NSPoint    p = [self convertPoint:[dragInfo draggingLocation]
+	   		   fromView:nil];
+  NXIconSlot slot = NXMakeIconSlot(floorf(p.x / mySlotSize.width),
+				   floorf(p.y / mySlotSize.height));
+  NXIcon     *icon;
+
+
+  // Draging hasn't leave shelf yet and no slot for drop
+  if (slot.x >= [self slotsWide])
+    {
+      slot.x = [self slotsWide]-1;
+    }
+  if (slot.y >= [self slotsTall])
+    {
+      slot.y = [self slotsTall]-1;
+    }
+
+  if (lastSlotDragEntered.x == slot.x &&
+      lastSlotDragEntered.y == slot.y)
+    {
+      return draggedMask;
+    }
+  else
+    {
+      lastSlotDragEntered.x = slot.x;
+      lastSlotDragEntered.y = slot.y;
+    }
+
+  icon = [self iconInSlot:slot];
+  draggedMask = NSDragOperationMove;
+//  NSLog(@"DRAG: slot.x,y: %i,%i slotsWide: %i icon:%@", slot.x, slot.y, slotsWide, icon);
+
+  if (icon == nil)
+    {
+      id draggingSource = [dragInfo draggingSource];
+      if ([draggingSource class] != [self class])
+	{
+	  draggedMask = NSDragOperationCopy;
+	}
+      if ([draggedIcon superview])
+	{
+	  [self removeIcon:draggedIcon];
+	}
+      [self putIcon:draggedIcon intoSlot:slot];
+    }
+  else if (icon != draggedIcon)
+    {
+      draggedMask = NSDragOperationNone;
+    }
+
+  return draggedMask;
+}
+
 // - Before the Image is Released
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
@@ -447,8 +428,8 @@ NXIconSlot lastSlotDragEntered;
   NSDictionary *info;
   NXIconSlot   iconSlot;
 
-  // NSLog(@"[ShelfView] -draggingEntered (source:%@)",
-  //       [[sender draggingSource] className]);
+  NSLog(@"[ShelfView] -draggingEntered (source:%@)",
+        [[sender draggingSource] className]);
 
   if (delegate == nil ||
       [[sender draggingSource] isKindOfClass:[Recycler class]])

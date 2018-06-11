@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun Jun 10 03:39:34 2018
+;; Created Mon Jun 11 02:41:07 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,7 +11,7 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("updateSelection" "selectIcon" "setSelected" "removeIcon" "remove" "Label" "mouse" "target" "enclosingScrollView" "NXScreen" "setFrame" "center" "windowmaps" "_startBack" "_initBackend" "Exceptio"))
+(setq search-ring '("NSNotFound" "NS" "NXMakeIconSlot" "NXMakeSlot" "NSMake" "slotForIcon" "modifier" "updateSelection" "update" "selectA;;" "updateSelection" "selectIcon" "setSelected" "removeIcon" "remove" "Label"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Frameworks/NXAppKit/NXIconLabel.h" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXAppKit/NXIcon.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXIconView.m" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile" "~/Developer/nextspace/Applications/Weather/WeatherView.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXIconBadge.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.postamble" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile.postamble" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/GNUstep/gui-trunk/Source/NSWindow.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXSystem/" "~/.emacs" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.*" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.*" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.*" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.m" "~/Developer/nextspace/Frameworks/NXAppKit/NXAlert.h" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/GNUmakefile.preamble" "~/Developer/nextspace/Frameworks/NXSystem/NXDisplay.m" "~/Developer/nextspace/Frameworks/NXSystem/NXScreen.m" "~/Developer/nextspace/Applications/Workspace/GNUmakefile.postamble" "~/rpmbuild/SPECS/nextspace-gnustep.spec" "~/Developer/nextspace/Applications/Login/Controller.m"))
@@ -22,8 +22,8 @@
   "NXIconView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  31928
-  '(24952 nil)
+  27570
+  '(7868 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
@@ -33,8 +33,8 @@
   "NXIconView.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  10350
-  '(1864 nil)
+  968
+  '(946 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

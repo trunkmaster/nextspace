@@ -1090,7 +1090,6 @@
 // Shelf
 //=============================================================================
 
-// TODO: name it 'restoreShelf'
 - (void)restoreShelf
 {
   NXDefaults   *df = [NXDefaults userDefaults];
@@ -1114,8 +1113,7 @@
       paths = [NSArray arrayWithObject:rootPath];
     }
   }
-  else {// Copy of RootViewer
-    // ...get current shelf rep of RootViewer
+  else { // Copy of RootViewer... get current shelf rep of RootViewer
     shelfRep = [[[NSApp delegate] rootViewer] shelfRepresentation];
   }
 
@@ -1124,12 +1122,11 @@
   }
   else {
     icon = [shelf createIconForPaths:paths];
-    [[icon label] setNextKeyView:[viewer view]];
     [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
   }
 
-  [[shelf icons] makeObjectsPerformSelector:@selector(setDelegate:)
-                                 withObject:shelf];
+  // [[shelf icons] makeObjectsPerformSelector:@selector(setDelegate:)
+  //                                withObject:shelf];
 
   [shelf checkIfContentsExist];
   [shelf shelfAddMountedRemovableMedia];
