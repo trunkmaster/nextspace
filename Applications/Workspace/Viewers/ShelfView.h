@@ -36,8 +36,6 @@
 - (void)checkIfContentsExist;
 - (void)shelfAddMountedRemovableMedia;
 - (PathIcon *)createIconForPaths:(NSArray *)paths;
-- (void)didAcceptIcon:(PathIcon *)anIcon
-               inDrag:(id <NSDraggingInfo>)draggingInfo;
 
 /** Instructs the shelf to reconstruct it's contents from the
     provided meta-information dictionary. */

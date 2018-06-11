@@ -16,15 +16,7 @@
 #import "PathIcon.h"
 #import "ShelfView.h"
 
-NXIconSlot lastSlotDragEntered;
-
-@interface ShelfView (Private)
-
-@end
-
-@implementation ShelfView (Private)
-
-@end
+static NXIconSlot lastSlotDragEntered;
 
 @implementation ShelfView
 
@@ -91,6 +83,8 @@ NXIconSlot lastSlotDragEntered;
 
     icon = [self createIconForPaths:paths];
     if (icon) {
+      [icon setDelegate:self];
+      [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
       [self putIcon:icon intoSlot:slot];
     }
   }
@@ -195,12 +189,9 @@ NXIconSlot lastSlotDragEntered;
 
 - (void)iconDoubleClicked:(id)sender
 {
-  PathIcon *selectedIcon = sender;
-
-  [selectedIcon setDimmed:YES];
-  [_owner open:selectedIcon];
-
-  [selectedIcon setDimmed:NO];
+  [sender setDimmed:YES];
+  [_owner open:sender];
+  [sender setDimmed:NO];
   [self selectIcons:nil];
 }
 
@@ -240,23 +231,11 @@ NXIconSlot lastSlotDragEntered;
     [icon setIconImage:[[NSApp delegate] iconForFile:path]];
   }
   [icon setPaths:paths];
-  [icon setDelegate:self];
   [icon setDoubleClickPassesClick:NO];
   [icon setEditable:NO];
-  [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
   [[icon label] setNextKeyView:[[_owner viewer] view]];
 
   return icon;
-}
-
-- (void)didAcceptIcon:(PathIcon *)anIcon
-               inDrag:(id <NSDraggingInfo>)draggingInfo
-{
-  // NSLog(@"[FileViewer] didAcceptIcon in shelf");
-  if ([[anIcon paths] count] == 1) {
-    [anIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
-  }
-  [anIcon setDelegate:self];
 }
 
 - (void)iconDragged:(id)sender event:(NSEvent *)ev
@@ -286,11 +265,13 @@ NXIconSlot lastSlotDragEntered;
   }
 
   // Pasteboard info for 'draggedIcon'
-  [pb declareTypes:@[NSFilenamesPboardType,NSGeneralPboardType] owner:nil];
+  [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
   [pb setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
-  if ((iconInfo = [draggedIcon info]) != nil) {
-    [pb setPropertyList:iconInfo forType:NSGeneralPboardType];
-  }
+  // FIXME: setting the propery list below renders icon undraggable (no dragged icon)
+  // [pb declareTypes:@[NSFilenamesPboardType,NSGeneralPboardType] owner:nil];
+  // if ((iconInfo = [draggedIcon info]) != nil) {
+  //   [pb setPropertyList:iconInfo forType:NSGeneralPboardType];
+  // }
 
   [self dragImage:[draggedIcon iconImage]
                at:iconLocation
@@ -328,94 +309,83 @@ NXIconSlot lastSlotDragEntered;
 {
   NSLog(@"[ShelfView] draggingSourceOperationMaskForLocal: %@",
         [sender className]);
-  // if (isLocal == NO) {
-  //   return NSDragOperationDelete;
-  // }
-  // else {
-    return NSDragOperationMove;
-  // }
+  return NSDragOperationMove;
 }
 
-- (void)draggedImage:(NSImage *)image
-	     endedAt:(NSPoint)screenPoint
-	   operation:(NSDragOperation)operation
-{
-  NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu", operation);
-  NXIconSlot iconSlot = [self slotForIcon:draggedIcon];
-  NSPoint    windowPoint = [[_owner window] convertScreenToBase:screenPoint];
-  NSPoint    shelfPoint = [self convertPoint:windowPoint fromView:nil];
+// - (void)draggedImage:(NSImage *)image
+// 	     endedAt:(NSPoint)screenPoint
+// 	   operation:(NSDragOperation)operation
+// {
+//   NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu", operation);
+//   NXIconSlot iconSlot = [self slotForIcon:draggedIcon];
+//   NSPoint    windowPoint = [[_owner window] convertScreenToBase:screenPoint];
+//   NSPoint    shelfPoint = [self convertPoint:windowPoint fromView:nil];
 
-  [draggedIcon setDimmed:NO];
+//   // Root icon must never be moved or removed
+//   if (iconSlot.x == 0 && iconSlot.y == 0) {
+//     return;
+//   }
 
-  // Root icon must never be moved or removed
-  if (iconSlot.x == 0 && iconSlot.y == 0)
-    {
-      return;
-    }
+//   NSLog(@"windowPoint %@ shelfPoint %@", 
+//         NSStringFromPoint(windowPoint), NSStringFromPoint(shelfPoint));
 
-  NSLog(@"windowPoint %@ shelfPoint %@", 
-        NSStringFromPoint(windowPoint), NSStringFromPoint(shelfPoint));
-
-  [draggedIcon release];
+//   if (draggedIcon) {
+//     [draggedIcon setDimmed:NO];
+//     [draggedIcon release];
       
-  draggedSource = nil;
-  draggedIcon = nil;
-}
+//     draggedSource = nil;
+//     draggedIcon = nil;
+//   }
+// }
 
 // --- NSDraggingDestination
 
 - (unsigned int)updateDraggedIconToDrag:(id <NSDraggingInfo>)dragInfo
 {
-  NSSize     mySlotSize = [self slotSize];
-  NSPoint    p = [self convertPoint:[dragInfo draggingLocation]
-	   		   fromView:nil];
-  NXIconSlot slot = NXMakeIconSlot(floorf(p.x / mySlotSize.width),
-				   floorf(p.y / mySlotSize.height));
-  NXIcon     *icon;
+  NSPoint    mouseLocation;
+  NXIconSlot slotUnderMouse;
+  NXIcon     *icon = nil;
 
+  mouseLocation = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
+  slotUnderMouse = NXMakeIconSlot(floorf(mouseLocation.x / slotSize.width),
+                                  floorf(mouseLocation.y / slotSize.height));
 
   // Draging hasn't leave shelf yet and no slot for drop
-  if (slot.x >= [self slotsWide])
-    {
-      slot.x = [self slotsWide]-1;
-    }
-  if (slot.y >= [self slotsTall])
-    {
-      slot.y = [self slotsTall]-1;
-    }
+  if (slotUnderMouse.x >=  slotsWide) {
+    slotUnderMouse.x = slotsWide - 1;
+  }
+  if (slotUnderMouse.y >= slotsTall) {
+    slotUnderMouse.y = slotsTall - 1;
+  }
 
-  if (lastSlotDragEntered.x == slot.x &&
-      lastSlotDragEntered.y == slot.y)
-    {
-      return draggedMask;
-    }
-  else
-    {
-      lastSlotDragEntered.x = slot.x;
-      lastSlotDragEntered.y = slot.y;
-    }
+  if (lastSlotDragEntered.x == slotUnderMouse.x &&
+      lastSlotDragEntered.y == slotUnderMouse.y) {
+    return draggedMask;
+  }
+  
+  // NSLog(@"DRAG: slot.x,y: %i,%i last slot.x,y: %i,%i slotsWide: %i icon:%@",
+  //       slot.x, slot.y, lastSlotDragEntered.x, lastSlotDragEntered.y,
+  //       slotsWide, icon);
+  
+  lastSlotDragEntered.x = slotUnderMouse.x;
+  lastSlotDragEntered.y = slotUnderMouse.y;
 
-  icon = [self iconInSlot:slot];
+  icon = [self iconInSlot:slotUnderMouse];
   draggedMask = NSDragOperationMove;
-//  NSLog(@"DRAG: slot.x,y: %i,%i slotsWide: %i icon:%@", slot.x, slot.y, slotsWide, icon);
 
-  if (icon == nil)
-    {
-      id draggingSource = [dragInfo draggingSource];
-      if ([draggingSource class] != [self class])
-	{
-	  draggedMask = NSDragOperationCopy;
-	}
-      if ([draggedIcon superview])
-	{
-	  [self removeIcon:draggedIcon];
-	}
-      [self putIcon:draggedIcon intoSlot:slot];
+  if (icon == nil) {
+    id draggingSource = [dragInfo draggingSource];
+    if ([draggingSource class] != [self class]) {
+      draggedMask = NSDragOperationCopy;
     }
-  else if (icon != draggedIcon)
-    {
-      draggedMask = NSDragOperationNone;
+    else if ([draggedIcon superview]) {
+      [self removeIcon:draggedIcon];
     }
+    [self putIcon:draggedIcon intoSlot:slotUnderMouse];
+  }
+  else if (icon != draggedIcon) {
+    draggedMask = NSDragOperationNone;
+  }
 
   return draggedMask;
 }
@@ -452,13 +422,10 @@ NXIconSlot lastSlotDragEntered;
       savedDragResult = NO;
       return NSDragOperationNone;
     }
-  else
-    {
-      [draggedIcon setInfo:[[sender draggingPasteboard]
+  
+  [draggedIcon setInfo:[[sender draggingPasteboard]
                              propertyListForType:NSGeneralPboardType]];
-      [draggedIcon setIconImage:[sender draggedImage]];
-    }
-
+  [draggedIcon setIconImage:[sender draggedImage]];
   [draggedIcon setDimmed:YES];
 
   savedDragResult = YES;
@@ -479,12 +446,14 @@ NXIconSlot lastSlotDragEntered;
 {
   NSLog(@"[ShelfView] draggingExited");
 
-  [self removeIcon:draggedIcon];
+  if (draggedIcon && [draggedIcon superview]) {
+    [self removeIcon:draggedIcon];
+    [draggedIcon release];
+    draggedIcon = nil;
+  }
 
   lastSlotDragEntered.x = -1;
   lastSlotDragEntered.y = -1;
-  DESTROY(draggedIcon);
-  draggedIcon = nil;
 }
 
 // - After the Image is Released
@@ -497,10 +466,8 @@ NXIconSlot lastSlotDragEntered;
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
   NSLog(@"[ShelfView] performDragOperation");
-  if ([delegate respondsToSelector:@selector(shelf:didAcceptIcon:inDrag:)])
-    {
-      [delegate shelf:self didAcceptIcon:draggedIcon inDrag:sender];
-    }
+  [draggedIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
+  [draggedIcon setDelegate:self];
 
   return YES;
 }
@@ -509,12 +476,14 @@ NXIconSlot lastSlotDragEntered;
 {
   NSLog(@"[ShelfView] concludeDragOperation");
 
-  [draggedIcon setDimmed:NO];
+  if (draggedIcon && [draggedIcon superview]) {
+    [draggedIcon setDimmed:NO];
+    [draggedIcon release];
+    draggedIcon = nil;
+  }
 
   lastSlotDragEntered.x = -1;
   lastSlotDragEntered.y = -1;
-  DESTROY(draggedIcon);
-  draggedIcon = nil;
 }
 
 // --- NSView overridings

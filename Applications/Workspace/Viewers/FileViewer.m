@@ -362,6 +362,7 @@
                                      owner:self];
   [shelf setAutoresizingMask:NSViewWidthSizable];
   [splitView addSubview:shelf];
+  NSLog(@"Shelf created with slots tall: %i", [shelf slotsTall]);
   // [self configureShelf];
 
   // Bottom part of split view
@@ -1125,8 +1126,8 @@
     [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
   }
 
-  // [[shelf icons] makeObjectsPerformSelector:@selector(setDelegate:)
-  //                                withObject:shelf];
+  [[shelf icons] makeObjectsPerformSelector:@selector(setDelegate:)
+                                 withObject:shelf];
 
   [shelf checkIfContentsExist];
   [shelf shelfAddMountedRemovableMedia];
@@ -1743,9 +1744,9 @@
 // volumeDid* methods are for updating views.
 - (void)volumeDidMount:(NSNotification *)notif
 {
-  NSString     *mountPoint = [[notif userInfo] objectForKey:@"MountPoint"];
-  PathIcon     *icon;
-  NSString     *iconPath;
+  NSString *mountPoint = [[notif userInfo] objectForKey:@"MountPoint"];
+  PathIcon *icon;
+  NSString *iconPath;
 
   // NSLog(@"Volume '%@' did mount at path: %@",
   //       [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
@@ -1759,11 +1760,13 @@
     }
   }
 
-  // No icon exists - create and add new
-  icon = [shelf createIconForPaths:[NSArray arrayWithObject:mountPoint]];
+  // No icon in the Shelf exists - create and add new
+  icon = [shelf createIconForPaths:@[mountPoint]];
   if (icon) {
-    [shelf didAcceptIcon:icon inDrag:nil];
+    NSLog(@"Adding icon to the Shelf with info: %@", [notif userInfo]);
     [icon setInfo:[notif userInfo]];
+    [icon setDelegate:shelf];
+    [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
     [shelf addIcon:icon];
   }
 }
