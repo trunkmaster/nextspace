@@ -48,6 +48,8 @@
 
 - (void)iconSlotWidthChanged:(NSNotification *)notif;
 
+- (unsigned int)updateDraggedIconToDrag:(id <NSDraggingInfo>)dragInfo;
+
 @end
 
 /// Methods for a shelf view's delegate.
