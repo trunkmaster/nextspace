@@ -49,7 +49,7 @@
 #import <Operations/FileMover.h>
 #import <Operations/Sizer.h>
 
-#import <Preferences/Shelf/ShelfPrefs.h>
+// #import <Preferences/Shelf/ShelfPrefs.h>
 #import <Preferences/Browser/BrowserPrefs.h>
 
 #define NOTIFICATION_CENTER [NSNotificationCenter defaultCenter]
@@ -205,15 +205,6 @@
 
   // Window content adjustments
   [nc addObserver:self
-	 selector:@selector(shelfIconSlotWidthChanged:)
-	     name:ShelfIconSlotWidthDidChangeNotification
-	   object:nil];
-  [nc addObserver:self
-	 selector:@selector(shelfResizableStateChanged:)
-	     name:ShelfResizableStateDidChangeNotification
-	   object:nil];
-  
-  [nc addObserver:self
 	 selector:@selector(browserColumnWidthChanged:)
 	     name:BrowserViewerColumnWidthDidChangeNotification
 	   object:nil];
@@ -265,7 +256,7 @@
 
   // Configure Shelf later after viewer loaded path to make 
   // setNextKeyView working correctly
-  [self configureShelf];
+  [self restoreShelf];
 
   // Make initial placement of disk and operation info labels
   [self updateInfoLabels:nil];
@@ -367,7 +358,8 @@
   // [bogusWindow release];
 
   // Shelf
-  shelf = [[ShelfView alloc] initWithFrame:NSMakeRect(0,0,SPLIT_DEF_WIDTH,76)];
+  shelf = [[ShelfView alloc] initWithFrame:NSMakeRect(0,0,SPLIT_DEF_WIDTH,76)
+                                     owner:self];
   [shelf setAutoresizingMask:NSViewWidthSizable];
   [splitView addSubview:shelf];
   // [self configureShelf];
@@ -515,7 +507,19 @@
   return [shelf storableRepresentation];
 }
 
-// --- Path manipulations
+- (id<Viewer>)viewer
+{
+  return viewer;
+}
+
+- (PathView *)pathView
+{
+  return pathView;
+}
+
+//=============================================================================
+// Path manipulations
+//=============================================================================
 // displayedPath - relative path which displayed in PathView and Viewer
 // relativePath == displayedPath == path
 // absolutePath - absolute file system path starting from root of file system
@@ -778,7 +782,7 @@
     }
   
   // check the shelf contents as well
-  [self checkShelfContentsExist];
+  [shelf checkIfContentsExist];
 
   fullPath = [rootPath stringByAppendingPathComponent:relativePath];
   
@@ -1046,350 +1050,89 @@
 {
   // TODO
 }
+- (void)slideToPathFromShelfIcon:(PathIcon *)shelfIcon
+{
+  unsigned    offset;
+  NSPoint     startPoint, endPoint;
+  NSString    *path;
+  NSView      *view = [pathView enclosingScrollView];
+  NSSize      svSize = [view frame].size;
+  unsigned    numPathComponents;
+  NSImage     *image = [shelfIcon iconImage];
+  NSSize      imageSize = [image size];
+
+  path = [[shelfIcon paths] objectAtIndex:0];
+  numPathComponents = [[path pathComponents] count];
+  if (numPathComponents >= viewerColumnCount) {
+    offset = viewerColumnCount;
+  }
+  else {
+    offset = numPathComponents;
+  }
+
+  endPoint = NSMakePoint((svSize.width / viewerColumnCount) *
+                         (offset - 0.5) - imageSize.width / 2,
+                         svSize.height * 0.55);
+  endPoint = [view convertPoint:endPoint toView:nil];
+  endPoint = [window convertBaseToScreen:endPoint];
+
+  startPoint = NSMakePoint([shelfIcon iconSize].width / 2 - 
+                           imageSize.width / 2,
+                           [shelfIcon iconSize].height / 2 - 
+                           imageSize.height / 2);
+  startPoint = [shelfIcon convertPoint:startPoint toView:nil];
+  startPoint = [window convertBaseToScreen:startPoint];
+
+  [[NSWorkspace sharedWorkspace] slideImage:image from:startPoint to:endPoint];
+}
 
 //=============================================================================
 // Shelf
 //=============================================================================
 
-- (void)configureShelf
+// TODO: name it 'restoreShelf'
+- (void)restoreShelf
 {
   NXDefaults   *df = [NXDefaults userDefaults];
   NSDictionary *shelfRep = nil;
   NSArray      *paths = nil;
   PathIcon     *icon = nil;
 
-  [self shelfIconSlotWidthChanged:nil];
-  
-  [shelf setTarget:self];
-  [shelf setDelegate:self];
-  [shelf setAction:@selector(shelfIconClicked:)];
-  [shelf setDoubleAction:@selector(shelfIconDoubleClicked:)];
-  [shelf setDragAction:@selector(shelfIconDragged:event:)];
-  [shelf 
-    registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+  [shelf iconSlotWidthChanged:nil];
+ 
+  if (isRootViewer) {
+    shelfRep = [df objectForKey:@"RootShelfContents"];
+    if (!shelfRep || [shelfRep count] == 0) {
+      shelfRep = nil;
+      paths = [NSArray arrayWithObject:NSHomeDirectory()];
+    }
+  }
+  else if (isFolderViewer) {
+    shelfRep = [self dotDirObjectForKey:@"ShelfContents"];
+    if (!shelfRep || [shelfRep count] == 0) {
+      shelfRep = nil;
+      paths = [NSArray arrayWithObject:rootPath];
+    }
+  }
+  else {// Copy of RootViewer
+    // ...get current shelf rep of RootViewer
+    shelfRep = [[[NSApp delegate] rootViewer] shelfRepresentation];
+  }
 
-  if (isRootViewer)
-    {
-      shelfRep = [df objectForKey:@"RootShelfContents"];
-      if (!shelfRep || [shelfRep count] == 0)
-	{
-	  shelfRep = nil;
-	  paths = [NSArray arrayWithObject:NSHomeDirectory()];
-	}
-    }
-  else if (isFolderViewer)
-    {
-      shelfRep = [self dotDirObjectForKey:@"ShelfContents"];
-      if (!shelfRep || [shelfRep count] == 0)
-	{
-	  shelfRep = nil;
-	  paths = [NSArray arrayWithObject:rootPath];
-	}
-    }
-  else // Copy of RootViewer
-    {
-      // ...get current shelf rep of RootViewer
-      shelfRep = [[[NSApp delegate] rootViewer] shelfRepresentation];
-    }
-
-  if (shelfRep)
-    {
-      [shelf reconstructFromRepresentation:shelfRep];
-    }
-  else
-    {
-      icon = [self shelf:shelf createIconForPaths:paths];
-      [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
-    }
+  if (shelfRep) {
+    [shelf reconstructFromRepresentation:shelfRep];
+  }
+  else {
+    icon = [shelf createIconForPaths:paths];
+    [[icon label] setNextKeyView:[viewer view]];
+    [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
+  }
 
   [[shelf icons] makeObjectsPerformSelector:@selector(setDelegate:)
-                                 withObject:self];
+                                 withObject:shelf];
 
-  [self checkShelfContentsExist];
-  [self shelfAddMountedRemovableMedia];
-}
-
-- (void)checkShelfContentsExist
-{
-  NSEnumerator  *e;
-  NSArray       *icons;
-  PathIcon      *icon;
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *path;
-
-  NSDebugLLog(@"FileViewer", @">>>>>>>>> checkShelfContentsExist");
-
-  icons = [shelf icons];
-  e = [icons objectEnumerator];
-  while ((icon = [e nextObject]) != nil)
-    {
-      path = [[icon paths] objectAtIndex:0];
-      if (![fm fileExistsAtPath:path])
-	{
-	  NSLog(@"Shelf element %@ doesn't exist.", path);
-	  [shelf removeIcon:icon];
-	}
-    }
-}
-
-- (void)shelfAddMountedRemovableMedia
-{
-  NSArray        *mountPoints = [mediaManager mountedRemovableMedia];
-  NSEnumerator   *e = [mountPoints objectEnumerator];
-  NSString       *mp;
-  NSDictionary   *info;
-  NSNotification *notif;
-
-  while ((mp = [e nextObject]) != nil)
-    {
-      info = [NSDictionary dictionaryWithObject:mp forKey:@"MountPoint"];
-      notif = [NSNotification notificationWithName:NXVolumeMounted
-                                            object:mediaManager
-                                          userInfo:info];
-      [self volumeDidMount:notif];
-    }
-}
-
-- (void)shelfIconClicked:sender
-{
-  PathIcon *selectedIcon = [[sender selectedIcons] anyObject];
-  NSString *path = [[selectedIcon paths] objectAtIndex:0];
-  NSArray  *filenames = nil;
-  NSString *fmFileType = nil;
-  NSString *wmFileType = nil;
-  NSString *appName = nil;
-
-  // NSLog(@"FileViewer: Shelf icon CLICKED! %@", path);
-
-  if (![[NXDefaults userDefaults] boolForKey:@"DontSlideIconsFromShelf"])
-    {
-      NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-      unsigned    offset;
-      NSPoint     startPoint, endPoint;
-      NSView      *view = [pathView enclosingScrollView];
-      NSSize      svSize = [view frame].size;
-      unsigned    numPathComponents;
-      NSImage     *icon = [selectedIcon iconImage];
-      NSSize      iconSize = [icon size];
-
-      numPathComponents = [[path pathComponents] count];
-      if (numPathComponents >= viewerColumnCount)
-	{
-	  offset = viewerColumnCount;
-	}
-      else
-	{
-	  offset = numPathComponents;
-	}
-
-      endPoint = NSMakePoint((svSize.width / viewerColumnCount) *
-			     (offset - 0.5) - iconSize.width / 2,
-			     svSize.height * 0.55);
-      endPoint = [view convertPoint: endPoint toView: nil];
-      endPoint = [window convertBaseToScreen: endPoint];
-
-      startPoint = NSMakePoint([selectedIcon iconSize].width / 2 - 
-			       iconSize.width / 2,
-			       [selectedIcon iconSize].height / 2 - 
-			       iconSize.height / 2);
-      startPoint = [selectedIcon convertPoint:startPoint toView:nil];
-      startPoint = [window convertBaseToScreen:startPoint];
-
-      [ws slideImage:icon from:startPoint to:endPoint];
-    }
-  else
-    {
-      [sender display];
-    }
-
-  // FilesystemInterface accepts relative paths so made 'path' variable
-  // contents as relative path
-  if (isFolderViewer)
-    {
-      if ([path isEqualToString:rootPath])
-	{
-	  path = @"/";
-	}
-      else
-	{
-	  path = [path substringFromIndex:[rootPath length]];
-	}
-    }
-
-  // For wrappers (bundle, etc.). fileTypeAtPath returns NSPlainFileType
-  fmFileType = [[[NSFileManager defaultManager] fileAttributesAtPath:path
-                                                        traverseLink:NO]
-                 fileType];
-  if (![fmFileType isEqualToString:NSFileTypeDirectory])
-    {
-      [(NSWorkspace *)[NSApp delegate] getInfoForFile:path
-                                          application:&appName
-                                                 type:&wmFileType];
-      if (![wmFileType isEqualToString:NSDirectoryFileType]
-          && ![fmFileType isEqualToString:NSFilesystemFileType])
-        {
-          filenames = [NSArray arrayWithObject:[path lastPathComponent]];
-          path = [path stringByDeletingLastPathComponent];
-        }
-    }
-
-  // NSLog(@"PATH[%@] -> %@", wmFileType, path);
-  [self displayPath:path selection:filenames sender:shelf];
-  [shelf selectIcons:nil]; // deselect all selected icons
-}
-
-- (void)shelfIconDoubleClicked:sender
-{
-  PathIcon *selectedIcon = [[sender selectedIcons] anyObject];
-
-  [selectedIcon setDimmed:YES];
-  [self open:selectedIcon];
-
-  [shelf selectIcons:nil];
-  [selectedIcon setDimmed:NO];
-}
-
-- (NSArray *)shelf:(ShelfView *)aShelf
-      pathsForDrag:(id <NSDraggingInfo>)draggingInfo
-{
-  NSArray *paths;
-
-  paths = [[draggingInfo draggingPasteboard]
-            propertyListForType:NSFilenamesPboardType];
-
-  if (![paths isKindOfClass:[NSArray class]] || [paths count] != 1)
-    {
-      return nil;
-    }
-
-  return paths;
-}
-
-- (PathIcon *)shelf:(ShelfView *)aShelf
- createIconForPaths:(NSArray *)paths
-{
-  PathIcon *icon;
-  NSString *path;
-  NSString *relativePath;
-
-  if ((path = [paths objectAtIndex:0]) == nil)
-    {
-      return nil;
-    }
-
-  // make sure its a subpath of our current root path
-  if ([path rangeOfString:rootPath].location != 0)
-    {
-      return nil;
-    }
-  relativePath = [path substringFromIndex:[rootPath length]];
-
-  icon = [[PathIcon new] autorelease];
-  if ([paths count] == 1)
-    {
-      [icon setIconImage:[[NSApp delegate] iconForFile:path]];
-    }
-  [icon setPaths:paths];
-  [icon setDelegate:self];
-  [icon setDoubleClickPassesClick:NO];
-  [icon setEditable:NO];
-  [[icon label] setNextKeyView:[viewer view]];
-
-  return icon;
-}
-
-- (void) shelf:(ShelfView *)aShelf
- didAcceptIcon:(PathIcon *)anIcon
-	inDrag:(id <NSDraggingInfo>)draggingInfo
-{
-  // NSLog(@"[FileViewer] didAcceptIcon in shelf");
-  if ([[anIcon paths] count] == 1)
-    {
-      [anIcon 
-        registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-    }
-  [anIcon setDelegate:self];
-}
-
-- (void)shelfIconDragged:sender event:(NSEvent *)ev
-{
-  NSDictionary *iconInfo;
-  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
-  NSArray      *pbTypes = nil;
-  NSRect       iconFrame = [sender frame];
-  NSPoint      iconLocation = iconFrame.origin;
-  NXIconSlot   iconSlot = [shelf slotForIcon:sender];
-
-  NSLog(@"FileViewer:shelfIconDragged");
-
-  draggedSource = shelf;
-  draggedIcon = sender;
-
-  [draggedIcon setSelected:NO];
-
-  iconLocation.x += 8;
-  iconLocation.y += iconFrame.size.width - 16;
-
-  if (iconSlot.x == 0 && iconSlot.y == 0)
-    {
-      draggingSourceMask = (NSDragOperationMove|NSDragOperationCopy);
-    }
-  else
-    {
-      draggingSourceMask = (NSDragOperationMove|NSDragOperationCopy);
-      [draggedIcon setDimmed:YES];
-      [shelf removeIcon:draggedIcon];
-    }
-
-  // Pasteboard info for 'draggedIcon'
-  pbTypes = [NSArray arrayWithObjects:NSFilenamesPboardType,NSGeneralPboardType,
-                     nil];
-  [pb declareTypes:pbTypes owner:nil];
-  [pb setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
-  if ((iconInfo = [draggedIcon info]) != nil)
-    {
-      [pb setPropertyList:iconInfo forType:NSGeneralPboardType];
-    }
-
-  [shelf dragImage:[draggedIcon iconImage]
-		at:iconLocation
-	    offset:NSZeroSize
-	     event:ev
-	pasteboard:pb
-	    source:draggedSource
-	 slideBack:NO];
-}
-
-// --- Notifications
-
-- (void)shelfIconSlotWidthChanged:(NSNotification *)notif
-{
-  NXDefaults *df = [NXDefaults userDefaults];
-  NSSize     slotSize = [shelf slotSize];
-  CGFloat    width = 0.0;
-
-  if ((width = [df floatForKey:ShelfIconSlotWidth]) > 0.0)
-    {
-      slotSize.width = width;
-    }
-  else
-    {
-      slotSize.width = SHELF_LABEL_WIDTH;
-    }
-  [shelf setSlotSize:slotSize];
-}
-
-- (void)shelfResizableStateChanged:(NSNotification *)notif
-{
-  NSInteger rState =
-    [[NXDefaults userDefaults] integerForKey:@"ShelfIsResizable"];
-
-  // NSLog(@"[FileViewer] shelfResizableStateChanged");
-
-    if (rState == 0)
-    [splitView setResizableState:0];
-  else
-    [splitView setResizableState:1];
+  [shelf checkIfContentsExist];
+  [shelf shelfAddMountedRemovableMedia];
 }
 
 //=============================================================================
@@ -1786,6 +1529,14 @@
 //=============================================================================
 // Notifications
 //=============================================================================
+- (void)shelfResizableStateChanged:(NSNotification *)notif
+{
+  NSInteger rState;
+
+  rState = [[NXDefaults userDefaults] integerForKey:@"ShelfIsResizable"];
+  [splitView setResizableState:rState];
+}
+
 - (void)browserColumnWidthChanged:(NSNotification *)notif
 {
   [self updateWindowWidth:viewer];
@@ -1995,33 +1746,29 @@
 // volumeDid* methods are for updating views.
 - (void)volumeDidMount:(NSNotification *)notif
 {
-  NSEnumerator *e = [[shelf icons] objectEnumerator];
-  PathIcon     *icon;
   NSString     *mountPoint = [[notif userInfo] objectForKey:@"MountPoint"];
+  PathIcon     *icon;
   NSString     *iconPath;
-  NSDictionary *ui;
 
   // NSLog(@"Volume '%@' did mount at path: %@",
   //       [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
 
-  while ((icon = [e nextObject]) != nil)
-    {
-      iconPath = [[icon paths] objectAtIndex:0];
-      if ([mountPoint isEqualToString:iconPath])
-	{
-	  [icon setIconImage:[[NSApp delegate] iconForFile:iconPath]];
-	  return;
-	}
+  // Check if mounted removable icon already exist in the Shelf
+  for (icon in [shelf icons]) {
+    iconPath = [[icon paths] objectAtIndex:0];
+    if ([mountPoint isEqualToString:iconPath]) {
+      [icon setIconImage:[[NSApp delegate] iconForFile:iconPath]];
+      return;
     }
+  }
 
-  icon = [self shelf:shelf
-               createIconForPaths:[NSArray arrayWithObject:mountPoint]];
-  if (icon)
-    {
-      [self shelf:shelf didAcceptIcon:icon inDrag:nil];
-      [icon setInfo:[notif userInfo]];
-      [shelf addIcon:icon];
-    }
+  // No icon exists - create and add new
+  icon = [shelf createIconForPaths:[NSArray arrayWithObject:mountPoint]];
+  if (icon) {
+    [shelf didAcceptIcon:icon inDrag:nil];
+    [icon setInfo:[notif userInfo]];
+    [shelf addIcon:icon];
+  }
 }
 
 - (void)volumeDidUnmount:(NSNotification *)notif
@@ -2094,32 +1841,7 @@
 	     endedAt:(NSPoint)screenPoint
 	   operation:(NSDragOperation)operation
 {
-//  NSLog(@"draggedImage:endedAt:operation:%i", operation);
-
-  if (draggedSource == shelf)
-    {
-      NXIconSlot iconSlot = [shelf slotForIcon:draggedIcon];
-      NSPoint    windowPoint = [window convertScreenToBase:screenPoint];
-      NSPoint    shelfPoint = [shelf convertPoint:windowPoint fromView:nil];
-
-      [draggedIcon setDimmed:NO];
-
-      // Root icon must never be moved or removed
-      if (iconSlot.x == 0 && iconSlot.y == 0)
-	{
-	  return;
-	}
-
-      NSLog(@"windowPoint %@ shelfPoint %@", 
-	    NSStringFromPoint(windowPoint), NSStringFromPoint(shelfPoint));
-
-      // TODO: Check correctness of drag&drop inside shelf
-      if (operation == NSDragOperationNone && 
-	  !NSPointInRect(screenPoint, [window frame]))
-	{
-	  [shelf removeIcon:draggedIcon];
-	}
-    }
+  NSLog(@"[FileViewer] draggedImage:endedAt:operation:%lu", operation);
 
   draggedSource = nil;
   draggedIcon = nil;

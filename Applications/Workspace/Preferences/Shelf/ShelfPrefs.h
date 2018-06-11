@@ -27,14 +27,13 @@
 #define SHELF_MIN_LABEL_WIDTH 40
 #define SHELF_MAX_LABEL_WIDTH 100
 
-NSString *ShelfIconSlotWidth =
-  @"ShelfIconSlotWidth";
-NSString *ShelfIsResizable =
-  @"ShelfIsResizable";
+NSString *ShelfIconSlotWidth = @"ShelfIconSlotWidth";
+NSString *ShelfIsResizable = @"ShelfIsResizable";
 NSString *ShelfIconSlotWidthDidChangeNotification =
   @"ShelfIconSlotWidthDidChangeNotification";
 NSString *ShelfResizableStateDidChangeNotification =
   @"ShelfResizableStateDidChangeNotification";
+
 
 @interface ShelfPrefs : NSObject <PrefsModule>
 {

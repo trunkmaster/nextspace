@@ -91,6 +91,8 @@
 - (BOOL)isFolderViewer;
 - (NSWindow *)window;
 - (NSDictionary *)shelfRepresentation;
+- (id<Viewer>)viewer;
+- (PathView *)pathView;
 
 - (NSString *)rootPath;
 - (NSString *)displayedPath;
@@ -115,6 +117,7 @@
 
 //=============================================================================
 - (void)scrollDisplayToRange:(NSRange)aRange;
+- (void)slideToPathFromShelfIcon:(NXIcon *)shelfIcon;
 
 //=============================================================================
 // Menu
@@ -136,27 +139,7 @@
 //=============================================================================
 // Shelf
 //=============================================================================
-- (void)configureShelf;
-
-- (void)checkShelfContentsExist;
-
-- (void)shelfAddMountedRemovableMedia;
-
-- (void)shelfIconClicked:sender;
-
-- (void)shelfIconDoubleClicked:sender;
-
-- (NSArray *)shelf:(ShelfView *)aShelf
-      pathsForDrag:(id <NSDraggingInfo>)draggingInfo;
-
-- (PathIcon *)   shelf:(ShelfView *)aShelf
-    createIconForPaths:(NSArray *)paths;
-
-- (void) shelf:(ShelfView *)aShelf
- didAcceptIcon:(PathIcon *)anIcon
-	inDrag:(id <NSDraggingInfo>)draggingInfo;
-
-- (void)shelfIconDragged:sender event:(NSEvent *)ev;
+- (void)restoreShelf;
 
 //=============================================================================
 // Path View
@@ -215,10 +198,12 @@
 //=============================================================================
 // Notifications
 //=============================================================================
-- (void)shelfIconSlotWidthChanged:(NSNotification *)notif;
+// - (void)shelfIconSlotWidthChanged:(NSNotification *)notif;
 - (void)shelfResizableStateChanged:(NSNotification *)notif;
 - (void)updateDiskInfo;
 - (void)updateInfoLabels:(NSNotification *)notif;
+- (void)volumeDidMount:(NSNotification *)notif;
+- (void)volumeDidUnmount:(NSNotification *)notif;
 
 //=============================================================================
 // Dragging

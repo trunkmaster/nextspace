@@ -1,6 +1,7 @@
 
 #import <NXAppKit/NXIconView.h>
 
+@class FileViewer;
 @class PathIcon;
 @protocol NSDraggingInfo;
 
@@ -21,24 +22,31 @@
 */
 @interface ShelfView : NXIconView
 {
+  FileViewer *_owner;
+
+  // Dragging
   BOOL       savedDragResult;
+  NXIconView *draggedSource;
   PathIcon   *draggedIcon;
   NSUInteger draggedMask;
 }
 
+- initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;
+// - (void)configure;
+- (void)checkIfContentsExist;
+- (void)shelfAddMountedRemovableMedia;
+- (PathIcon *)createIconForPaths:(NSArray *)paths;
+- (void)didAcceptIcon:(PathIcon *)anIcon
+               inDrag:(id <NSDraggingInfo>)draggingInfo;
+
 /** Instructs the shelf to reconstruct it's contents from the
     provided meta-information dictionary. */
-- (void) reconstructFromRepresentation: (NSDictionary *) aDict;
+- (void)reconstructFromRepresentation:(NSDictionary *)aDict;
 /** Returns a dictionary representation of the shelf's contents, suitable
     to be stored in e.g. a file or the defaults database. */
-- (NSDictionary *) storableRepresentation;
+- (NSDictionary *)storableRepresentation;
 
-- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender;
-- (unsigned int)draggingUpdated:(id <NSDraggingInfo>)sender;
-- (void)draggingExited:(id <NSDraggingInfo>)sender;
-
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender;
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender;
+- (void)iconSlotWidthChanged:(NSNotification *)notif;
 
 @end
 
