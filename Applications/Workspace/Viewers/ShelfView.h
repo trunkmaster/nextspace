@@ -25,7 +25,7 @@
   FileViewer *_owner;
 
   // Dragging
-  BOOL       savedDragResult;
+  // BOOL       savedDragResult;
   NXIconView *draggedSource;
   PathIcon   *draggedIcon;
   NSUInteger draggedMask;
@@ -45,8 +45,6 @@
 - (NSDictionary *)storableRepresentation;
 
 - (void)iconSlotWidthChanged:(NSNotification *)notif;
-
-- (unsigned int)updateDraggedIconToDrag:(id <NSDraggingInfo>)dragInfo;
 
 @end
 

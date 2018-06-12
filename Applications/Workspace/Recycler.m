@@ -460,12 +460,11 @@ static NSMutableArray *fileList = nil;
   [draggedIcon setDimmed:YES];
   
   // Pasteboard info for 'draggedIcon'
-  [pasteBoard declareTypes:@[NSFilenamesPboardType, NSGeneralPboardType]
-                     owner:nil];
+  [pasteBoard declareTypes:@[NSFilenamesPboardType] owner:nil];
   [pasteBoard setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
-  if ((iconInfo = [draggedIcon info]) != nil) {
-    [pasteBoard setPropertyList:iconInfo forType:NSGeneralPboardType];
-  }
+  // if ((iconInfo = [draggedIcon info]) != nil) {
+  //   [pasteBoard setPropertyList:iconInfo forType:NSGeneralPboardType];
+  // }
 
   [filesView dragImage:[draggedIcon iconImage]
                     at:iconLocation
@@ -480,7 +479,7 @@ static NSMutableArray *fileList = nil;
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
   NSLog(@"[Recycler] draggingSourceOperationMaskForLocal:");
-  return draggingSourceMask;
+  return NSDragOperationMove;
 }
 - (BOOL)ignoreModifierKeysWhileDragging
 {
