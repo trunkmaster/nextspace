@@ -27,6 +27,7 @@
   // Dragging
   // BOOL       savedDragResult;
   NXIconView *draggedSource;
+  NSArray    *draggedPaths;
   PathIcon   *draggedIcon;
   NSUInteger draggedMask;
 }
