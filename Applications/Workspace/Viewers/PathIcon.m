@@ -212,41 +212,38 @@
   //       [[sender draggingSource] className], [self className], 
   //       sourcePaths, destPath, [delegate className]);
 
-  if ([sender draggingSource] == self)
-    {
-      // Dragging to itself - source and dest paths are equal!
-      draggingMask = NSDragOperationNone;
-    }
+  if ([sender draggingSource] == self) {
+    // Dragging to itself - source and dest paths are equal!
+    draggingMask = NSDragOperationNone;
+  }
   else if (![sourcePaths isKindOfClass:[NSArray class]] 
-	   || [sourcePaths count] == 0)
-    {
-      NSLog(@"sourcePaths bad!!!");
-      draggingMask = NSDragOperationNone;
-    }
+	   || [sourcePaths count] == 0) {
+    NSLog(@"sourcePaths bad!!!");
+    draggingMask = NSDragOperationNone;
+  }
   else if (delegate &&
            [delegate respondsToSelector:
-                       @selector(draggingDestinationMaskForPaths:intoPath:)])
-    {
-      draggingMask = [delegate draggingDestinationMaskForPaths:sourcePaths
-                                                      intoPath:destPath];
-    }
-  else
-    {
-      draggingMask = NSDragOperationNone;
-    }
+                       @selector(draggingDestinationMaskForPaths:intoPath:)]) {
+    draggingMask = [delegate draggingDestinationMaskForPaths:sourcePaths
+                                                    intoPath:destPath];
+  }
+  else {
+    // draggingMask = [sender draggingSourceOperationMask];
+    // NSLog(@"[PathIcon] draggingEntered: last resort - %i", draggingMask);
+    draggingMask = NSDragOperationNone;
+  }
 
-  if (draggingMask != NSDragOperationNone)
-    {
-      // NSWorkspace?
-      [self setIconImage:[[NSApp delegate] openIconForDirectory:destPath]];
-    }
+  if (draggingMask != NSDragOperationNone) {
+    // NSWorkspace?
+    [self setIconImage:[[NSApp delegate] openIconForDirectory:destPath]];
+  }
 
   return draggingMask;
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
-//  NSLog(@"[PathIcon] draggingUpdated");
+  // NSLog(@"[PathIcon] draggingUpdated: mask - %i", draggingMask);
   return draggingMask;
 }
 
