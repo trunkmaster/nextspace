@@ -7,6 +7,7 @@
 #import <math.h>
 #import <AppKit/AppKit.h>
 #import <NXFoundation/NXDefaults.h>
+#import <NXFoundation/NXFileManager.h>
 
 #import <Preferences/Shelf/ShelfPrefs.h>
 #import <Viewers/FileViewer.h>
@@ -361,20 +362,20 @@ static NXIconSlot lastSlotDragEntered;
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)dragInfo
 {
   NSPasteboard *pasteBoard = [dragInfo draggingPasteboard];
-  id           dragSource = [dragInfo draggingSource];
-  NSArray      *paths;
   NXIconSlot   iconSlot;
 
-  paths = [pasteBoard propertyListForType:NSFilenamesPboardType];
+  draggedPaths = [pasteBoard propertyListForType:NSFilenamesPboardType];
+  draggedSource = [dragInfo draggingSource];
   
-  NSLog(@"[ShelfView] -draggingEntered (source:%@)", [dragSource className]);
-  NSLog(@"[ShelfView] -draggingEntered with paths: %@)", paths);
+  NSLog(@"[ShelfView] -draggingEntered (source:%@)", [draggedSource className]);
+  NSLog(@"[ShelfView] -draggingEntered with paths: %@)", draggedPaths);
   
-  if (![paths isKindOfClass:[NSArray class]] || [paths count] == 0) {
+  if (![draggedPaths isKindOfClass:[NSArray class]]
+      || [draggedPaths count] == 0) {
     draggedMask = NSDragOperationNone;
   }
   else {
-    ASSIGN(draggedIcon, [self createIconForPaths:paths]);
+    ASSIGN(draggedIcon, [self createIconForPaths:draggedPaths]);
     if (draggedIcon == nil) {
       draggedMask = NSDragOperationNone;
     }
@@ -386,6 +387,12 @@ static NXIconSlot lastSlotDragEntered;
   }
 
   return draggedMask;
+}
+
+// FIXME: pretender to be moved into NXFileManager
+- (BOOL)_isPath:(NSString *)parentPath containsPath:(NSString *)childPath
+{
+  return [NXIntersectionPath(parentPath, childPath) isEqualToString:parentPath];
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)dragInfo
@@ -424,10 +431,13 @@ static NXIconSlot lastSlotDragEntered;
   icon = [self iconInSlot:slotUnderMouse];
   draggedMask = NSDragOperationMove;
 
+  NSString *path = [draggedPaths lastObject];
+  
   if (icon == nil) {
-    id draggingSource = [dragInfo draggingSource];
-    
-    if ([draggingSource isKindOfClass:[PathView class]]) {
+    if ([self _isPath:[_owner rootPath] containsPath:path] == NO) {
+      draggedMask = NSDragOperationNone;
+    }
+    else if ([draggedSource isKindOfClass:[PathView class]]) {
       draggedMask = NSDragOperationCopy;
     }
     else {
@@ -479,7 +489,7 @@ static NXIconSlot lastSlotDragEntered;
             [[sender draggingSource] className]);
     }
   }
-  return NO;
+  return YES;
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
