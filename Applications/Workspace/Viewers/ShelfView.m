@@ -307,10 +307,11 @@ static NXIconSlot lastSlotDragEntered;
 // --- NSDraggingSource
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
-  NSLog(@"[ShelfView] draggingSourceOperationMaskForLocal:");
+  NSLog(@"[ShelfView] draggingSourceOperationMaskForLocal: %@",
+        isLocal ? @"YES" : @"NO");
   NXIconSlot iconSlot = [self slotForIcon:[[self selectedIcons] anyObject]];
 
-  if (iconSlot.x == 0 && iconSlot.y == 0) {
+  if ((iconSlot.x == 0 && iconSlot.y == 0) || isLocal == NO) {
     draggedMask = NSDragOperationCopy;
   }
   else {
