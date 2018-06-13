@@ -25,10 +25,12 @@
   FileViewer *_owner;
 
   // Dragging
-  // BOOL       savedDragResult;
   NXIconView *draggedSource;
   NSArray    *draggedPaths;
   PathIcon   *draggedIcon;
+  NXIconSlot lastSlotDragEntered;
+  NXIconSlot lastSlotDragExited;
+  NSPoint    dragPoint;
   NSUInteger draggedMask;
 }
 

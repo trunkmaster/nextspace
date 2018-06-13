@@ -17,8 +17,6 @@
 #import "PathIcon.h"
 #import "ShelfView.h"
 
-static NXIconSlot lastSlotDragEntered;
-
 @implementation ShelfView
 
 - (void)dealloc
@@ -321,40 +319,37 @@ static NXIconSlot lastSlotDragEntered;
   return draggedMask;
 }
 
-// - (void)draggedImage:(NSImage *)image
-// 	     endedAt:(NSPoint)screenPoint
-// 	   operation:(NSDragOperation)operation
-// {
-//   NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu", operation);
-//   NXIconSlot iconSlot = [self slotForIcon:draggedIcon];
-//   // NSPoint    windowPoint = [[_owner window] convertScreenToBase:screenPoint];
-//   // NSPoint    shelfPoint = [self convertPoint:windowPoint fromView:nil];
+- (void)draggedImage:(NSImage *)image
+             beganAt:(NSPoint)screenPoint
+{
+  dragPoint = screenPoint;
+}
 
-//   // Root icon must never be moved or removed
-//   if (iconSlot.x == 0 && iconSlot.y == 0) {
-//     return;
-//   }
+- (void)draggedImage:(NSImage *)image
+	     endedAt:(NSPoint)screenPoint
+	   operation:(NSDragOperation)operation
+{
+  NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu", operation);
 
-//   // NSLog(@"windowPoint %@ shelfPoint %@", 
-//   //       NSStringFromPoint(windowPoint), NSStringFromPoint(shelfPoint));
+  if (draggedMask == NSDragOperationCopy) {
+    [[NSApp delegate] slideImage:[draggedIcon iconImage]
+                            from:screenPoint
+                              to:dragPoint];
+    [self putIcon:draggedIcon intoSlot:lastSlotDragExited];
+    [draggedIcon setDimmed:NO];
+    [draggedIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
+    [draggedIcon setDelegate:self];    
+  }
 
-//   if (operation != NSDragOperationNone) {
-//     if (draggedIcon && [draggedIcon superview]) {
-//       [self removeIcon:draggedIcon];
-//       [draggedIcon release];
-//     }
-//   }
-//   else if (draggedIcon) {
-//     [draggedIcon setDimmed:NO];
-//     [draggedIcon release];
-//   }
-
-//   draggedSource = nil;
-//   draggedIcon = nil;
-//   lastSlotDragEntered.x = -1;
-//   lastSlotDragEntered.y = -1;
-//   draggedMask = NSDragOperationNone;
-// }
+  [draggedIcon release];
+  draggedIcon = nil;
+  draggedSource = nil;
+  lastSlotDragEntered.x = -1;
+  lastSlotDragEntered.y = -1;
+  lastSlotDragExited.x = -1;
+  lastSlotDragExited.y = -1;
+  draggedMask = NSDragOperationNone;
+}
 
 // --- NSDraggingDestination
 
@@ -466,10 +461,11 @@ static NXIconSlot lastSlotDragEntered;
 
   if (draggedIcon && [draggedIcon superview]) {
     [self removeIcon:draggedIcon];
-    [draggedIcon release];
-    draggedIcon = nil;
+    // [draggedIcon release];
+    // draggedIcon = nil;
   }
 
+  lastSlotDragExited = lastSlotDragEntered;
   lastSlotDragEntered.x = -1;
   lastSlotDragEntered.y = -1;
 }

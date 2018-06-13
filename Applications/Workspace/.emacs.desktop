@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jun 12 17:12:37 2018
+;; Created Wed Jun 13 13:37:44 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/")
+(setq default-directory "~/Developer/nextspace/Applications/Workspace/Viewers/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -18,12 +18,12 @@
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m"
-  "PathIcon.m"
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m"
+  "ShelfView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  5505
-  '(6448 nil)
+  13581
+  '(13236 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,11 +33,33 @@
   "Recycler.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  13986
+  13764
   '(12880 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.h"
+  "ShelfView.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  1480
+  '(1480 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m"
+  "PathIcon.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  5505
+  '(6448 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Recycler.h"
@@ -62,17 +84,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m"
-  "ShelfView.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  8545
-  '(376 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathView.m"
   "PathView.m"
   'objc-mode
@@ -90,17 +101,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   960
   '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.h"
-  "ShelfView.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1480
-  '(1480 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
