@@ -331,7 +331,10 @@
 {
   NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu", operation);
 
-  if (draggedMask == NSDragOperationCopy) {
+  [self iconInSlot:lastSlotDragExited];
+
+  if ((draggedMask == NSDragOperationCopy)
+      && ![self iconInSlot:lastSlotDragExited]) {
     [[NSApp delegate] slideImage:[draggedIcon iconImage]
                             from:screenPoint
                               to:dragPoint];
@@ -344,10 +347,12 @@
   [draggedIcon release];
   draggedIcon = nil;
   draggedSource = nil;
+  
   lastSlotDragEntered.x = -1;
   lastSlotDragEntered.y = -1;
   lastSlotDragExited.x = -1;
   lastSlotDragExited.y = -1;
+  
   draggedMask = NSDragOperationNone;
 }
 
@@ -459,15 +464,17 @@
   NSLog(@"[ShelfView] -dragginExited (source:%@)",
         [[dragInfo draggingSource] className]);
 
-  if (draggedIcon && [draggedIcon superview]) {
-    [self removeIcon:draggedIcon];
-    // [draggedIcon release];
-    // draggedIcon = nil;
-  }
-
   lastSlotDragExited = lastSlotDragEntered;
   lastSlotDragEntered.x = -1;
   lastSlotDragEntered.y = -1;
+  
+  if (lastSlotDragExited.x == 0 && lastSlotDragExited.y == 0) {
+    return;
+  }
+
+  if (draggedIcon && [draggedIcon superview]) {
+    [self removeIcon:draggedIcon];
+  }
 }
 
 // - After the Image is Released
