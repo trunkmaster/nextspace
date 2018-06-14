@@ -87,7 +87,7 @@ static NSTimeInterval tInterval = 0;
 {
   // NSLog(@"Recycler: dragging entered!");
   tInterval = [NSDate timeIntervalSinceReferenceDate];
-  return NSDragOperationDelete;
+  return (NSDragOperationMove | NSDragOperationDelete);
 }
 
 - (void)draggingExited:(id<NSDraggingInfo>)sender
@@ -98,11 +98,9 @@ static NSTimeInterval tInterval = 0;
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
 {
-  if ([[sender draggingSource] isKindOfClass:[ShelfView class]] == NO) {
-    [self animate];
-  }
+  [self animate];
   
-  return NSDragOperationDelete;
+  return (NSDragOperationMove | NSDragOperationDelete);
 }
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender

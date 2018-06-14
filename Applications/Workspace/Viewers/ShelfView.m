@@ -312,8 +312,11 @@
   if ((iconSlot.x == 0 && iconSlot.y == 0) || isLocal == NO) {
     draggedMask = NSDragOperationCopy;
   }
-  else {
+  else if (isLocal == YES) {
     draggedMask = NSDragOperationMove;
+  }
+  else {
+    draggedMask = NSDragOperationDelete;
   }
   
   return draggedMask;
