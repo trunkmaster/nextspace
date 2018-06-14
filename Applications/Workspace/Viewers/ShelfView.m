@@ -329,12 +329,13 @@
 	     endedAt:(NSPoint)screenPoint
 	   operation:(NSDragOperation)operation
 {
-  NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu", operation);
-
-  [self iconInSlot:lastSlotDragExited];
+  NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu mask:%lu",
+        operation, draggedMask);
 
   if ((draggedMask == NSDragOperationCopy)
       && ![self iconInSlot:lastSlotDragExited]) {
+    NSLog(@"Operation is Copy and no icon in slot [%i,%i]",
+          lastSlotDragEntered.x, lastSlotDragEntered.y);
     [[NSApp delegate] slideImage:[draggedIcon iconImage]
                             from:screenPoint
                               to:dragPoint];
@@ -360,6 +361,26 @@
 
 // - Before the Image is Released
 
+- (BOOL)_isAcceptDragFromSource:(id)dSource
+                      withPaths:(NSArray *)dPaths
+{
+  if (![dPaths isKindOfClass:[NSArray class]] || [dPaths count] == 0) {
+    return NO;
+  }
+  else if ([dSource isKindOfClass:[Recycler class]]) {
+    return NO;
+  }
+  else {
+    NSString *p1 = [_owner rootPath];
+    NSString *p2 = [dPaths lastObject];
+    if ([NXIntersectionPath(p1, p2) isEqualToString:p1] == NO) {
+      return NO;
+    }
+  }
+
+  return YES;
+}
+
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)dragInfo
 {
   NSPasteboard *pasteBoard = [dragInfo draggingPasteboard];
@@ -371,8 +392,8 @@
   NSLog(@"[ShelfView] -draggingEntered (source:%@)", [draggedSource className]);
   NSLog(@"[ShelfView] -draggingEntered with paths: %@)", draggedPaths);
   
-  if (![draggedPaths isKindOfClass:[NSArray class]]
-      || [draggedPaths count] == 0) {
+  if ([self _isAcceptDragFromSource:draggedSource
+                          withPaths:draggedPaths] == NO) {
     draggedMask = NSDragOperationNone;
   }
   else {
@@ -388,12 +409,6 @@
   }
 
   return draggedMask;
-}
-
-// FIXME: pretender to be moved into NXFileManager
-- (BOOL)_isPath:(NSString *)parentPath containsPath:(NSString *)childPath
-{
-  return [NXIntersectionPath(parentPath, childPath) isEqualToString:parentPath];
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)dragInfo
@@ -432,10 +447,9 @@
   icon = [self iconInSlot:slotUnderMouse];
   draggedMask = NSDragOperationMove;
 
-  NSString *path = [draggedPaths lastObject];
-  
   if (icon == nil) {
-    if ([self _isPath:[_owner rootPath] containsPath:path] == NO) {
+    if ([self _isAcceptDragFromSource:draggedSource
+                            withPaths:draggedPaths] == NO) {
       draggedMask = NSDragOperationNone;
     }
     else if ([draggedSource isKindOfClass:[PathView class]]) {
@@ -449,7 +463,7 @@
       [self removeIcon:draggedIcon];
     }
     
-    if (draggedIcon) {
+    if (draggedIcon && draggedMask != NSDragOperationNone) {
       [self putIcon:draggedIcon intoSlot:slotUnderMouse];
     }
   }
@@ -464,17 +478,17 @@
   NSLog(@"[ShelfView] -dragginExited (source:%@)",
         [[dragInfo draggingSource] className]);
 
-  lastSlotDragExited = lastSlotDragEntered;
-  lastSlotDragEntered.x = -1;
-  lastSlotDragEntered.y = -1;
+  // if (lastSlotDragExited.x == 0 && lastSlotDragExited.y == 0) {
+  //   return;
+  // }
   
-  if (lastSlotDragExited.x == 0 && lastSlotDragExited.y == 0) {
-    return;
-  }
-
   if (draggedIcon && [draggedIcon superview]) {
     [self removeIcon:draggedIcon];
   }
+  lastSlotDragExited.x = lastSlotDragEntered.x;
+  lastSlotDragExited.y = lastSlotDragEntered.y;
+  lastSlotDragEntered.x = -1;
+  lastSlotDragEntered.y = -1;  
 }
 
 // - After the Image is Released
@@ -511,8 +525,8 @@
 
   if (draggedIcon && [draggedIcon superview]) {
     [draggedIcon setDimmed:NO];
-    [draggedIcon release];
-    draggedIcon = nil;
+    // [draggedIcon release];
+    // draggedIcon = nil;
   }
 
   lastSlotDragEntered.x = -1;
