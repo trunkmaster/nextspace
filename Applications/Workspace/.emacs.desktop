@@ -2,19 +2,19 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Jun 14 16:01:39 2018
+;; Created Thu Jun 14 16:24:27 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Applications/Workspace/Viewers/")
+(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring '("sa" "sheld" "Shelf" "awakeFrom" "_wait" "iconsDragge" "ProcessMan" "Icon" "_recyclerMouseDown" "ForLocal" "pbTypes" "shelfIconDragged" "createIconForPaths" "XWDock" "GSCurr" "draggingSourceMask"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/PathView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/RecyclerIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/*.[hm]" "~/Developer/nextspace/Applications/Workspace/Processes/Processes.m"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/PathView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/RecyclerIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -22,7 +22,7 @@
   "ShelfView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  13121
+  10275
   '(11852 nil)
   nil
   nil

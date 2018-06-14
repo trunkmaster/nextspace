@@ -431,6 +431,7 @@ static NSMutableArray *fileList = nil;
   [panelItems setStringValue:[NSString stringWithFormat:@"%lu items",
                                        itemsLoader.itemsCount]];
   for (NXIcon *icon in [filesView icons]) {
+    [icon setEditable:NO];
     [icon setDelegate:self];
     [icon setTarget:self];
     [icon setDragAction:@selector(iconDragged:withEvent:)];
