@@ -206,7 +206,7 @@
   destPath = [paths objectAtIndex:0];
 
   NSLog(@"[PathIcon] draggingEntered: %@(%@) -> %@",
-        [(NSObject* )sender className], [delegate className], destPath);
+        [[sender draggingSource] className], [delegate className], destPath);
 
   // NSLog(@"[PathIcon] draggingEntered (%@->%@): %@ --> %@ delegate: %@", 
   //       [[sender draggingSource] className], [self className], 
