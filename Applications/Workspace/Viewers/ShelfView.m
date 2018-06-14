@@ -333,13 +333,13 @@
         operation, draggedMask);
 
   if ((draggedMask == NSDragOperationCopy)
-      && ![self iconInSlot:lastSlotDragExited]) {
+      && ![self iconInSlot:lastSlotDragEntered]) {
     NSLog(@"Operation is Copy and no icon in slot [%i,%i]",
           lastSlotDragEntered.x, lastSlotDragEntered.y);
     [[NSApp delegate] slideImage:[draggedIcon iconImage]
                             from:screenPoint
                               to:dragPoint];
-    [self putIcon:draggedIcon intoSlot:lastSlotDragExited];
+    [self putIcon:draggedIcon intoSlot:lastSlotDragEntered];
     [draggedIcon setDimmed:NO];
     [draggedIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
     [draggedIcon setDelegate:self];    
@@ -432,8 +432,10 @@
     slotUnderMouse.y = slotsTall - 1;
   }
 
+  icon = [self iconInSlot:slotUnderMouse];
   if (lastSlotDragEntered.x == slotUnderMouse.x &&
-      lastSlotDragEntered.y == slotUnderMouse.y) {
+      lastSlotDragEntered.y == slotUnderMouse.y &&
+      icon != nil) {
     return draggedMask;
   }
   
@@ -444,7 +446,6 @@
   lastSlotDragEntered.x = slotUnderMouse.x;
   lastSlotDragEntered.y = slotUnderMouse.y;
 
-  icon = [self iconInSlot:slotUnderMouse];
   draggedMask = NSDragOperationMove;
 
   if (icon == nil) {
@@ -468,7 +469,8 @@
     }
   }
 
-  NSLog(@"[Shelf] draggingUpdated draggedMask=%lu", draggedMask);
+  NSLog(@"[Shelf] draggingUpdated draggedMask=%lu slot: {%i,%i}",
+        draggedMask, lastSlotDragEntered.x, lastSlotDragEntered.y);
 
   return draggedMask;
 }
@@ -487,8 +489,8 @@
   }
   lastSlotDragExited.x = lastSlotDragEntered.x;
   lastSlotDragExited.y = lastSlotDragEntered.y;
-  lastSlotDragEntered.x = -1;
-  lastSlotDragEntered.y = -1;  
+  // lastSlotDragEntered.x = -1;
+  // lastSlotDragEntered.y = -1;  
 }
 
 // - After the Image is Released
@@ -529,8 +531,8 @@
     // draggedIcon = nil;
   }
 
-  lastSlotDragEntered.x = -1;
-  lastSlotDragEntered.y = -1;
+  // lastSlotDragEntered.x = -1;
+  // lastSlotDragEntered.y = -1;
 }
 
 // --- NSView overridings
