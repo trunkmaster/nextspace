@@ -1157,8 +1157,8 @@
 //   [sv setHasHorizontalScroller:YES];
 //   [sv setBackgroundColor:[NSColor windowBackgroundColor]];
 
-//   [pathView setTarget:self];
-//   [pathView setDelegate:self];
+//   [pathView setTarget:pathView];
+//   [pathView setDelegate:pathView];
 //   [pathView setDragAction:@selector(pathViewIconDragged:event:)];
 //   [pathView setDoubleAction:@selector(open:)];
 //   [pathView setIconDragTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
