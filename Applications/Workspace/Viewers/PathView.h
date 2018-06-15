@@ -1,20 +1,28 @@
 
 #import <NXAppKit/NXIconView.h>
 
-@class NSArray, NSString;
-@class NSImage;
-
-@class NXIcon, PathIcon;
+@class NSArray, NSString, NSImage;
+@class PathIcon;
+@class FileViewer;
 
 @interface PathView : NXIconView
 {
+  FileViewer *_owner;
+
   NSString *path;
   NSArray  *files;
   NSArray  *iconDragTypes;
   PathIcon *multipleSelection;
   NSImage  *arrowImage;
   NSImage  *multiImage;
+  
+  // Dragging
+  NXIconView *draggedSource;
+  PathIcon   *draggedIcon;
+  unsigned   draggingSourceMask;
 }
+
+- initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;
 
 - (void)displayDirectory:(NSString *)aPath andFiles:(NSArray *)aFiles;
 
@@ -22,11 +30,16 @@
 - (NSArray *)files;
 - (void)setNumberOfEmptyColumns:(NSInteger)num;
 - (NSInteger)numberOfEmptyColumns;
-
 - (NSArray *)pathsForIcon:(NXIcon *)anIcon;
-
 - (void)setIconDragTypes:(NSArray *)types;
 - (NSArray *)iconDragTypes;
+
+- (void)setPath:(NSString *)relativePath
+      selection:(NSArray *)filenames;
+- (void)syncEmptyColumns;
+
+- (void)constrainScroller:(NSScroller *)aScroller;
+- (void)trackScroller:(NSScroller *)aScroller;
 
 @end
 
@@ -40,9 +53,6 @@
 
 - (NSImage *)pathView:(PathView *)aPathView
    imageForIconAtPath:(NSString *)aPath;
-
-- (NSString *)pathView:(PathView *)aPathView
-    labelForIconAtPath:(NSString *)aPath;
 
 - (void)pathView:(PathView *)aPathView
  didChangePathTo:(NSString *)newPath;
