@@ -65,64 +65,49 @@
 // Overriding
 - (void)mouseDown:(NSEvent *)ev
 {
-  int        clickCount;
-  NSArray    *slctdIcons;
-  NXIconView *superView = (NXIconView *)[self superview];
-  NSInteger  threshold = [[[NXMouse new] autorelease] accelerationThreshold];
-
-  if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown)
-    {
-      return;
-    }
-
-//  NSLog(@"PathIcon: mouseDown");
-
-  // [superView selectIcons:[NSSet setWithObject:self]];
-    
+  NSInteger clickCount;
+  
+  if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown) {
+    return;
+  }
+  // NSLog(@"PathIcon: mouseDown: %@", paths);
+  
   clickCount = [ev clickCount];
   modifierFlags = [ev modifierFlags];
   
-  [superView selectIcons:[NSSet setWithObject:self]
-           withModifiers:modifierFlags];
-
+  [(NXIconView *)[self superview] selectIcons:[NSSet setWithObject:self]
+                                withModifiers:modifierFlags];
+  
   // Dragging
   if ([target respondsToSelector:dragAction]) {
-    NSPoint startPoint = [ev locationInWindow];
-    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
-
-    //      NSLog(@"[PathIcon-mouseDown]: DRAGGING");
-
-    while ([(ev = [[self window] nextEventMatchingMask:mask 
-                                             untilDate:[NSDate distantFuture]
-                                                inMode:NSEventTrackingRunLoopMode
-                                               dequeue:YES])
-	     type] != NSLeftMouseUp) {
+    // NSLog(@"[PathIcon-mouseDown]: DRAGGING");
+    NSPoint   startPoint = [ev locationInWindow];
+    NSInteger eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+    NSInteger moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
+    
+    while ([(ev = [_window nextEventMatchingMask:eventMask])
+             type] != NSLeftMouseUp) {
       NSPoint endPoint = [ev locationInWindow];
-      
-      if (absolute_value(startPoint.x - endPoint.x) > threshold ||
-          absolute_value(startPoint.y - endPoint.y) > threshold) {
-        [target performSelector:dragAction
-                     withObject:self
-                     withObject:ev];
+      if (absolute_value(startPoint.x - endPoint.x) > moveThreshold ||
+          absolute_value(startPoint.y - endPoint.y) > moveThreshold) {
+        [target performSelector:dragAction withObject:self withObject:ev];
         return;
       }
     }
   }
-
   [_window makeFirstResponder:[longLabel nextKeyView]];
-
   // Clicking
   if (clickCount == 2) {
+    // NSLog(@"PathIcon: 2 mouseDown: %@", paths);
     if ([target respondsToSelector:doubleAction]) {
       [target performSelector:doubleAction withObject:self];
     }
   }
   else if (clickCount == 1 || clickCount > 2) {
-    // Double clicked
+    // NSLog(@"PathIcon: 1 || >2 mouseDown: %@", paths);
     if (!doubleClickPassesClick && [self _waitForSecondMouseClick] != nil) {
       return;
     }
-    // [_window makeFirstResponder:[[self label] nextKeyView]];
     if ([target respondsToSelector:action]) {
       [target performSelector:action withObject:self];
     }
