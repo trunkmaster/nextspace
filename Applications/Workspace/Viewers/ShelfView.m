@@ -31,10 +31,10 @@
 
   _owner = fileViewer;
   
-  [self setAllowsMultipleSelection:NO];
-  [self setAllowsArrowsSelection:NO];
-  [self setAllowsAlphanumericSelection:NO];
-  [self setAutoAdjustsToFitIcons:NO];
+  autoAdjustsToFitIcons = NO;
+  allowsMultipleSelection = NO;
+  allowsArrowsSelection = NO;
+  allowsAlphanumericSelection = NO;
   
   [self setTarget:self];
   [self setDelegate:self];
