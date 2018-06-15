@@ -79,7 +79,6 @@
   // Dragging
   NXIconView *draggedSource;
   PathIcon   *draggedIcon;
-  unsigned   draggingSourceMask;
 }
 
 - initRootedAtPath:(NSString *)aRootPath
@@ -148,23 +147,6 @@
 - (void)restoreShelf;
 
 //=============================================================================
-// Path View
-//=============================================================================
-// - (void)configurePathView;
-// - (void)setPathViewPath:(NSString *)relativePath
-// 	      selection:(NSArray *)filenames;
-// - (void)pathViewIconDragged:sender event:(NSEvent *)ev;
-// - (NSImage *)pathView:(PathView *)aPathView
-//    imageForIconAtPath:(NSString *)aPath;
-// - (void)pathView:(PathView *)aPathView
-//  didChangePathTo:(NSString *)newPath;
-// - (void)pathViewSyncEmptyColumns;
-
-// // --- Scroller delegate
-// - (void)constrainScroller:(NSScroller *)aScroller;
-// - (void)trackScroller:(NSScroller *)aScroller;
-
-//=============================================================================
 // Splitview
 //=============================================================================
 - (void)         splitView:(NSSplitView *)sender
@@ -203,12 +185,10 @@
 //=============================================================================
 // Dragging
 //=============================================================================
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
-                                              iconView:(NXIconView *)sender;
 // - Dragging source helper
-- (unsigned int)draggingSourceOperationMaskForPaths:(NSArray *)filenames;
+- (NSDragOperation)draggingSourceOperationMaskForPaths:(NSArray *)paths;
 // - Dragging destination helper
-- (unsigned int)draggingDestinationMaskForPaths:(NSArray *)paths
-				       intoPath:(NSString *)destPath;
+- (NSDragOperation)draggingDestinationMaskForPaths:(NSArray *)paths
+                                          intoPath:(NSString *)destPath;
 
 @end

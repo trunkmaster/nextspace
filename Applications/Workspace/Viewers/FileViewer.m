@@ -1142,220 +1142,7 @@
 }
 
 //=============================================================================
-// PathView
-//=============================================================================
-
-// - (void)configurePathView
-// {
-//   PathViewScroller *scroller;
-//   NSScrollView     *sv;
-
-//   sv = [pathView enclosingScrollView];
-//   scroller = [[PathViewScroller new] autorelease];
-//   [scroller setDelegate:self];
-//   [sv setHorizontalScroller:scroller];
-//   [sv setHasHorizontalScroller:YES];
-//   [sv setBackgroundColor:[NSColor windowBackgroundColor]];
-
-//   [pathView setTarget:pathView];
-//   [pathView setDelegate:pathView];
-//   [pathView setDragAction:@selector(pathViewIconDragged:event:)];
-//   [pathView setDoubleAction:@selector(open:)];
-//   [pathView setIconDragTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-// }
-
-// - (void)setPathViewPath:(NSString *)relativePath
-// 	      selection:(NSArray *)filenames
-// {
-//   PathIcon    *pathIcon;
-//   NXIconLabel *pathIconLabel;
-
-//   [pathView displayDirectory:relativePath andFiles:filenames];
-//   [pathView scrollPoint:NSMakePoint([pathView frame].size.width, 0)];
-
-// //  NSLog(@"PathView icons=%i path components=%i", 
-// //	[pathViewIcons count], [[relativePath pathComponents] count]);
-
-//   // Last icon
-//   pathIcon = [[pathView icons] lastObject];
-//   // Using [viewer keyView] leads to segfault if 'keyView' changed (reloaded)
-//   // on the fly
-//   [pathIcon setNextKeyView:[viewer view]];
-
-//   // Last icon label
-//   pathIconLabel = [pathIcon label];
-//   [pathIconLabel setNextKeyView:[viewer view]];
-
-//   [[pathView icons] makeObjectsPerform:@selector(setDelegate:)
-//    			    withObject:self];
-// }
-
-// // --- PathView delegate
-
-// - (void)pathViewIconDragged:sender event:(NSEvent *)ev
-// {
-//   NSArray      *paths;
-//   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
-//   NSRect       iconFrame = [sender frame];
-//   NSPoint      iconLocation = iconFrame.origin;
-
-//   draggedSource = pathView;
-//   draggedIcon = sender;
-
-//   iconLocation.x += 8;
-//   iconLocation.y += iconFrame.size.width - 16;
-
-//   if ([[pathView icons] lastObject] != sender) {
-//       [sender setSelected:NO];
-//     }
-
-//   paths = [draggedIcon paths];
-//   draggingSourceMask = [self draggingSourceOperationMaskForPaths:paths];
-
-//   [pb declareTypes:[NSArray arrayWithObject:NSFilenamesPboardType] owner:nil];
-//   [pb setPropertyList:paths forType:NSFilenamesPboardType];
-
-//   [pathView dragImage:[sender iconImage]
-// 		   at:iconLocation //[ev locationInWindow]
-// 	       offset:NSZeroSize
-// 		event:ev
-// 	   pasteboard:pb
-// 	       source:draggedSource
-// 	    slideBack:YES];
-// }
-
-// - (NSImage *)pathView:(PathView *)aPathView
-//    imageForIconAtPath:(NSString *)aPath
-// {
-//   NSString *fullPath;
-  
-//   //  NSLog(@"[FileViewer] imageForIconAtPath: %@", aPath);
-  
-//   fullPath = [rootPath stringByAppendingPathComponent:aPath];
-//   return [[NSApp delegate] iconForFile:fullPath];
-// }
-
-// - (void)pathView:(PathView *)aPathView
-//  didChangePathTo:(NSString *)newPath
-// {
-//   // Path view can change path only to directory
-//   [self displayPath:newPath selection:nil sender:pathView];
-// }
-
-// - (void)pathViewSyncEmptyColumns
-// {
-//   NSUInteger numEmptyCols = 0;
-
-//   // Update cahed column attributes here.
-//   viewerColumnWidth = [viewer columnWidth];
-//   viewerColumnCount = [viewer columnCount];
-
-//   // Set empty columns to PathView
-//   numEmptyCols = [viewer numberOfEmptyColumns];
-
-//   NSDebugLLog(@"FilViewer", @"pathViewSyncEmptyColumns: selection: %@",
-//               selection);
-
-//   // Browser has empty columns and file(s) selected
-//   if (selection && [selection count] >= 1 && numEmptyCols > 0)
-//     {
-//       numEmptyCols--;
-//     }
-//   [pathView setNumberOfEmptyColumns:numEmptyCols];
-// }
-
-//=============================================================================
-// Scroller delegate
-//=============================================================================
-
-// // Called when user drag scroller's knob
-// - (void)constrainScroller:(NSScroller *)aScroller
-// {
-//   NSUInteger num = [pathView slotsWide] - viewerColumnCount;
-//   CGFloat    v;
-
-//   NSLog(@"[FileViewer -contrainScroller] PathView # of icons: %lu", 
-// 	[[pathView icons] count]);
-
-//   if (num == 0)
-//     {
-//       v = 0.0;
-//       [aScroller setFloatValue:0.0 knobProportion:1.0];
-//     }
-//   else
-//     {
-//       v = rintf(num * [aScroller floatValue]) / num;
-//       [aScroller setFloatValue:v];
-//     }
-
-//   [pathView scrollRectToVisible:
-//               NSMakeRect(([pathView frame].size.width - 
-//                           [[pathView superview] frame].size.width) * v, 0,
-//                          [[pathView superview] frame].size.width, 0)];
-// }
-
-// // Called whenver user click on PathView's scrollbar
-// - (void)trackScroller:(NSScroller *)aScroller
-// {
-//   NSUInteger iconsNum = [pathView slotsWide];
-//   CGFloat    sValue = [aScroller floatValue];
-//   NSRange    r;
-//   CGFloat    rangeStart;
-//   NSInteger  emptyCols;
-
-//   // NSLog(@"0. [FileViewer] document visible rect: %@",
-//   //       NSStringFromRect([scrollView documentVisibleRect]));
-//   // NSLog(@"0. [FileViewer] document rect: %@",
-//   //       NSStringFromRect([pathView frame]));
-//   // NSLog(@"0. [FileViewer] scroll view rect: %@",
-//   //       NSStringFromRect([scrollView frame]));
-
-//   rangeStart = rintf((iconsNum - viewerColumnCount) * sValue);
-//   r = NSMakeRange(rangeStart, viewerColumnCount);
-
-//   // NSLog(@"1. [FileViewer] trackScroller: value %f proportion: %f," 
-//   //       @"scrolled to range: %0.f - %lu", 
-//   //       sValue, [aScroller knobProportion], 
-//   //       rangeStart, viewerColumnCount);
-
-//   // Update viewer display
-//   [viewer scrollToRange:r];
-
-//   // Synchronize positions of icons in PathView and columns 
-//   // in BrowserViewer
-//   NSArray *files = [pathView files];
-
-//   if (files != nil && [files count] > 0) // file selected
-//     {
-//       if (iconsNum - (iconsNum * sValue) <= 1.0)
-// 	{ // scrolled maximum to the right 
-// 	  // scroller value close to 1.0 (e.g. 0.98)
-// 	  [viewer setNumberOfEmptyColumns:1];
-// 	}
-//       else
-// 	{
-//           [self pathViewSyncEmptyColumns];
-// 	}
-//     }
-//   else
-//     {
-//       [self pathViewSyncEmptyColumns];
-//     }
-
-//   // Set keyboard focus to last visible column
-//   [viewer becomeFirstResponder];
-
-//   /*  NSLog(@"2. [FileViewer] trackScroller: value %f proportion: %f," 
-//         @"scrolled to range: %0.f - %i", 
-// 	[aScroller floatValue], [aScroller knobProportion], 
-//         rangeStart, viewerColumnCount);
-
-//   NSLog(@"3. [FileViewer] PathView slotsWide = %i, viewerColumnCount = %i", 
-// 	[pathView slotsWide], viewerColumnCount);*/
-// }
-
-//=============================================================================
-// Viewer delegate
+// Viewer delegate (BrowserViewer, IconViewer, ListViewer, etc.)
 //=============================================================================
 
 // Called when viewer contains NXIcons with editable label (IconViewer)
@@ -1831,15 +1618,6 @@
 
 // --- NSDraggingSource (NXIconView delegate methods)
 
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
-                                              iconView:(NXIconView *)sender
-{
-  NSLog(@"[FileViewer] draggingSourceOperationMaskForLocal: %@",
-        [sender className]);
-  return draggingSourceMask;
-}
-
-
 - (void)draggedImage:(NSImage *)image
 	     endedAt:(NSPoint)screenPoint
 	   operation:(NSDragOperation)operation
@@ -1851,18 +1629,16 @@
 }
 
 // - Dragging Source helper
-- (unsigned int)draggingSourceOperationMaskForPaths:(NSArray *)filenames
+- (NSDragOperation)draggingSourceOperationMaskForPaths:(NSArray *)paths
 {
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSEnumerator  *e;
-  NSString      *filePath;
-  NSString      *parentPath;
-  unsigned int  mask;
+  NSFileManager  *fileManager = [NSFileManager defaultManager];
+  NSString       *filePath;
+  NSString       *parentPath;
+  NSDragOperation mask;
 
-  if ([filenames count] == 0)
-    {
-      return NSDragOperationNone;
-    }
+  if ([paths count] == 0) {
+    return NSDragOperationNone;
+  }
 
 //  NSLog(@"[FileViewer] draggingSourceOperationMaskForPaths: %@", filenames);
 
@@ -1870,77 +1646,67 @@
          NSDragOperationMove | NSDragOperationDelete;
 
   // Get first object from array
-  filePath = [filenames objectAtIndex:0];
+  filePath = [paths objectAtIndex:0];
   parentPath = [filePath stringByDeletingLastPathComponent];
 
-  // Check if file is root '/' or directory containing file is not writable.
-  // If so, restrict operation to Copy and Link
-  if (([filenames count] == 1 && [filePath isEqualToString:@"/"])
-      || ![fileManager isWritableFileAtPath:parentPath])
-    {
-      mask &= ~(NSDragOperationMove | NSDragOperationDelete);
-    }
+  // Remove Move and Delete operations if `path` is root '/' or
+  // directory containing file is not writable.
+  if (([paths count] == 1 && [filePath isEqualToString:@"/"]) ||
+      ![fileManager isWritableFileAtPath:parentPath]) {
+    mask &= ~(NSDragOperationMove | NSDragOperationDelete);
+  }
 
   // Check if files can be read
-  e = [filenames objectEnumerator];
-  while ((filePath = [e nextObject]) != nil)
-    {
-      if (![fileManager isReadableFileAtPath:filePath])
-	{
-	  mask = NSDragOperationNone;
-	}
+  for (NSString *path in paths) {
+    if (![fileManager isReadableFileAtPath:path]) {
+      mask = NSDragOperationNone;
     }
+  }
 
   return mask;
 }
 
 // - Dragging Destination helper
-- (unsigned int)draggingDestinationMaskForPaths:(NSArray *)paths
-				       intoPath:(NSString *)destPath
+- (NSDragOperation)draggingDestinationMaskForPaths:(NSArray *)paths
+                                          intoPath:(NSString *)destPath
 {
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString     *path;
-  NSEnumerator *e;
   unsigned int mask = (NSDragOperationCopy | NSDragOperationMove | 
                       NSDragOperationLink | NSDragOperationDelete);
 
-  if (![fileManager isWritableFileAtPath:destPath])
-    {
-      NSLog(@"[FileViewer] %@ is not writable!", destPath);
-      return NSDragOperationNone;
-    }
+  if (![fileManager isWritableFileAtPath:destPath]) {
+    NSLog(@"[FileViewer] %@ is not writable!", destPath);
+    return NSDragOperationNone;
+  }
 
   if (![[[fileManager fileAttributesAtPath:destPath traverseLink:YES]
-	fileType] isEqualToString:NSFileTypeDirectory])
-    {
-      NSLog(@"[FileViewer] %@ == NSFileTypeDirectory!", destPath);
-      return NSDragOperationNone;
-    }
+	fileType] isEqualToString:NSFileTypeDirectory]) {
+    NSLog(@"[FileViewer] destination path `%@` is not a directory!", destPath);
+    return NSDragOperationNone;
+  }
 
-  e = [paths objectEnumerator];
-  while ((path = [e nextObject]) != nil)
+  for (NSString *path in paths)
     {
       NSRange r;
 
-      if (![fileManager isDeletableFileAtPath:path])
-	{
-	  NSLog(@"[FileViewer] file %@ is not deletable!", path);
-	  mask ^= NSDragOperationMove;
-	}
+      if (![fileManager isDeletableFileAtPath:path]) {
+        NSLog(@"[FileViewer] path %@ can not be deleted."
+              @"Disabling Move and Delete operation.", path);
+        mask ^= (NSDragOperationMove | NSDragOperationDelete);
+      }
 
-      if ([path isEqualToString:destPath])
-	{
-	  NSLog(@"[FileViewer] %@ == %@", path, destPath);
-	  return NSDragOperationNone;
-	}
+      if ([path isEqualToString:destPath]) {
+        NSLog(@"[FileViewer] source and destination paths are equal "
+              @"(%@ == %@)", path, destPath);
+        return NSDragOperationNone;
+      }
 
-      if ([[path stringByDeletingLastPathComponent] isEqualToString:destPath])
-	{
-	  NSLog(@"[FileViewer] %@ == %@ (2)", path, destPath);
-	  return NSDragOperationNone;
-	}
+      if ([[path stringByDeletingLastPathComponent] isEqualToString:destPath]) {
+        NSLog(@"[FileViewer] `%@` already exists in `%@`", path, destPath);
+        return NSDragOperationNone;
+      }
 
-      r = [destPath rangeOfString: path];
+      r = [destPath rangeOfString:path];
       if (r.location == 0 && r.length != NSNotFound)
 	{
 	  NSLog(@"[FileViewer] r.location == 0 && NSNotFound for %@", path);
