@@ -94,6 +94,9 @@
 - (id<Viewer>)viewer;
 - (PathView *)pathView;
 
+//=============================================================================
+// Path manipulations
+//=============================================================================
 - (NSString *)rootPath;
 - (NSString *)displayedPath;
 - (NSString *)absolutePath; // rootPath + displayedPath for FolderViewers
@@ -103,6 +106,9 @@
 - (NSString *)pathFromAbsolutePath:(NSString *)absolutePath;
 - (NSArray *)absolutePathsForPaths:(NSArray *)relPaths;
 
+//=============================================================================
+// Actions
+//=============================================================================
 - (NSArray *)checkSelection:(NSArray *)filenames
 		     atPath:(NSString *)relativePath;
 - (void)validatePath:(NSString **)relativePath
@@ -144,29 +150,19 @@
 //=============================================================================
 // Path View
 //=============================================================================
+// - (void)configurePathView;
+// - (void)setPathViewPath:(NSString *)relativePath
+// 	      selection:(NSArray *)filenames;
+// - (void)pathViewIconDragged:sender event:(NSEvent *)ev;
+// - (NSImage *)pathView:(PathView *)aPathView
+//    imageForIconAtPath:(NSString *)aPath;
+// - (void)pathView:(PathView *)aPathView
+//  didChangePathTo:(NSString *)newPath;
+// - (void)pathViewSyncEmptyColumns;
 
-- (void)configurePathView;
-
-- (void)setPathViewPath:(NSString *)relativePath
-	      selection:(NSArray *)filenames;
-
-- (void)pathViewIconDragged:sender event:(NSEvent *)ev;
-
-- (NSImage *)pathView:(PathView *)aPathView
-   imageForIconAtPath:(NSString *)aPath;
-
-- (NSString *)pathView:(PathView *)aPathView
-    labelForIconAtPath:(NSString *)aPath;
-
-- (void)pathView:(PathView *)aPathView
- didChangePathTo:(NSString *)newPath;
-
-- (void)pathViewSyncEmptyColumns;
-
-// --- Scroller delegate
-- (void)constrainScroller:(NSScroller *)aScroller;
-
-- (void)trackScroller:(NSScroller *)aScroller;
+// // --- Scroller delegate
+// - (void)constrainScroller:(NSScroller *)aScroller;
+// - (void)trackScroller:(NSScroller *)aScroller;
 
 //=============================================================================
 // Splitview
@@ -198,7 +194,6 @@
 //=============================================================================
 // Notifications
 //=============================================================================
-// - (void)shelfIconSlotWidthChanged:(NSNotification *)notif;
 - (void)shelfResizableStateChanged:(NSNotification *)notif;
 - (void)updateDiskInfo;
 - (void)updateInfoLabels:(NSNotification *)notif;
@@ -208,23 +203,12 @@
 //=============================================================================
 // Dragging
 //=============================================================================
-
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
                                               iconView:(NXIconView *)sender;
-
 // - Dragging source helper
 - (unsigned int)draggingSourceOperationMaskForPaths:(NSArray *)filenames;
 // - Dragging destination helper
 - (unsigned int)draggingDestinationMaskForPaths:(NSArray *)paths
 				       intoPath:(NSString *)destPath;
-
-/*- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
-	       		   icon:(PathIcon *)icon;
-
-- (void)draggingExited:(id <NSDraggingInfo>)sender
-		  icon:(PathIcon *)icon;
-
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-			icon:(PathIcon *)icon;*/
 
 @end

@@ -152,7 +152,7 @@
   // Just to avoid .gorm loading ineterference manually construct 
   // File Viewer window.
   [self awakeFromNib];
-  [self configurePathView];
+  // [self configurePathView];
 
   // Load the viewer
   [self useViewer:[[ModuleLoader shared] preferredViewer]];
@@ -382,14 +382,19 @@
   [scrollView setAutoresizingMask:(NSViewWidthSizable 
 				   |NSViewMaxXMargin|NSViewMinYMargin)];
 
-  pathView = [[PathView alloc] 
-               initWithFrame:NSMakeRect(0,0,SPLIT_DEF_WIDTH-4,98)];
+  pathView = [[PathView alloc] initWithFrame:NSMakeRect(0,0,SPLIT_DEF_WIDTH-4,98)
+                                       owner:self];
   [pathView setAutoresizingMask:0];
   [scrollView setDocumentView:pathView];
   [pathView release];
   [containerBox addSubview:scrollView];
   [scrollView release];
   // [self configurePathView];
+  PathViewScroller *scroller = [[PathViewScroller new] autorelease];
+  [scroller setDelegate:pathView];
+  [scrollView setHorizontalScroller:scroller];
+  [scrollView setHasHorizontalScroller:YES];
+  [scrollView setBackgroundColor:[NSColor windowBackgroundColor]];
 
   // Box to place viewers
   box = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,SPLIT_DEF_WIDTH,206)];
@@ -804,8 +809,11 @@
   // Path View
   if (pathView)
     {
-      [self setPathViewPath:displayedPath selection:selection];
-      [self pathViewSyncEmptyColumns];
+      [pathView setPath:displayedPath selection:selection];
+      // Update cahed column attributes here.
+      viewerColumnWidth = [viewer columnWidth];
+      viewerColumnCount = [viewer columnCount];
+      [pathView syncEmptyColumns];
     }
 
   [viewer becomeFirstResponder];
@@ -943,7 +951,7 @@
     }
   // Set scroller value after window resizing (GNUstep bug?)
   [scroller setFloatValue:sValue];
-  [self constrainScroller:scroller];
+  [pathView constrainScroller:scroller];
 
   // PathView icon slot size
   s = [pathView slotSize];
@@ -1137,223 +1145,214 @@
 // PathView
 //=============================================================================
 
-- (void)configurePathView
-{
-  PathViewScroller *scroller;
-  NSScrollView     *sv;
+// - (void)configurePathView
+// {
+//   PathViewScroller *scroller;
+//   NSScrollView     *sv;
 
-  sv = [pathView enclosingScrollView];
-  scroller = [[PathViewScroller new] autorelease];
-  [scroller setDelegate:self];
-  [sv setHorizontalScroller:scroller];
-  [sv setHasHorizontalScroller:YES];
-  [sv setBackgroundColor:[NSColor windowBackgroundColor]];
+//   sv = [pathView enclosingScrollView];
+//   scroller = [[PathViewScroller new] autorelease];
+//   [scroller setDelegate:self];
+//   [sv setHorizontalScroller:scroller];
+//   [sv setHasHorizontalScroller:YES];
+//   [sv setBackgroundColor:[NSColor windowBackgroundColor]];
 
-  [pathView setTarget:self];
-  [pathView setDelegate:self];
-  [pathView setDragAction:@selector(pathViewIconDragged:event:)];
-  [pathView setDoubleAction:@selector(open:)];
-  [pathView setIconDragTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-}
+//   [pathView setTarget:self];
+//   [pathView setDelegate:self];
+//   [pathView setDragAction:@selector(pathViewIconDragged:event:)];
+//   [pathView setDoubleAction:@selector(open:)];
+//   [pathView setIconDragTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+// }
 
-- (void)setPathViewPath:(NSString *)relativePath
-	      selection:(NSArray *)filenames
-{
-  PathIcon    *pathIcon;
-  NXIconLabel *pathIconLabel;
+// - (void)setPathViewPath:(NSString *)relativePath
+// 	      selection:(NSArray *)filenames
+// {
+//   PathIcon    *pathIcon;
+//   NXIconLabel *pathIconLabel;
 
-  [pathView displayDirectory:relativePath andFiles:filenames];
-  [pathView scrollPoint:NSMakePoint([pathView frame].size.width, 0)];
+//   [pathView displayDirectory:relativePath andFiles:filenames];
+//   [pathView scrollPoint:NSMakePoint([pathView frame].size.width, 0)];
 
-//  NSLog(@"PathView icons=%i path components=%i", 
-//	[pathViewIcons count], [[relativePath pathComponents] count]);
+// //  NSLog(@"PathView icons=%i path components=%i", 
+// //	[pathViewIcons count], [[relativePath pathComponents] count]);
 
-  // Last icon
-  pathIcon = [[pathView icons] lastObject];
-  // Using [viewer keyView] leads to segfault if 'keyView' changed (reloaded)
-  // on the fly
-  [pathIcon setNextKeyView:[viewer view]];
+//   // Last icon
+//   pathIcon = [[pathView icons] lastObject];
+//   // Using [viewer keyView] leads to segfault if 'keyView' changed (reloaded)
+//   // on the fly
+//   [pathIcon setNextKeyView:[viewer view]];
 
-  // Last icon label
-  pathIconLabel = [pathIcon label];
-  [pathIconLabel setNextKeyView:[viewer view]];
+//   // Last icon label
+//   pathIconLabel = [pathIcon label];
+//   [pathIconLabel setNextKeyView:[viewer view]];
 
-  [[pathView icons] makeObjectsPerform:@selector(setDelegate:)
-   			    withObject:self];
-}
+//   [[pathView icons] makeObjectsPerform:@selector(setDelegate:)
+//    			    withObject:self];
+// }
 
-// --- PathView delegate
+// // --- PathView delegate
 
-- (void)pathViewIconDragged:sender event:(NSEvent *)ev
-{
-  NSArray      *paths;
-  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
-  NSRect       iconFrame = [sender frame];
-  NSPoint      iconLocation = iconFrame.origin;
+// - (void)pathViewIconDragged:sender event:(NSEvent *)ev
+// {
+//   NSArray      *paths;
+//   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
+//   NSRect       iconFrame = [sender frame];
+//   NSPoint      iconLocation = iconFrame.origin;
 
-  draggedSource = pathView;
-  draggedIcon = sender;
+//   draggedSource = pathView;
+//   draggedIcon = sender;
 
-  iconLocation.x += 8;
-  iconLocation.y += iconFrame.size.width - 16;
+//   iconLocation.x += 8;
+//   iconLocation.y += iconFrame.size.width - 16;
 
-  if ([[pathView icons] lastObject] != sender)
-    {
-      [sender setSelected:NO];
-    }
+//   if ([[pathView icons] lastObject] != sender) {
+//       [sender setSelected:NO];
+//     }
 
-  paths = [draggedIcon paths];
-  draggingSourceMask = [self draggingSourceOperationMaskForPaths:paths];
+//   paths = [draggedIcon paths];
+//   draggingSourceMask = [self draggingSourceOperationMaskForPaths:paths];
 
-  [pb declareTypes:[NSArray arrayWithObject:NSFilenamesPboardType] owner:nil];
-  [pb setPropertyList:paths forType:NSFilenamesPboardType];
+//   [pb declareTypes:[NSArray arrayWithObject:NSFilenamesPboardType] owner:nil];
+//   [pb setPropertyList:paths forType:NSFilenamesPboardType];
 
-  [pathView dragImage:[sender iconImage]
-		   at:iconLocation //[ev locationInWindow]
-	       offset:NSZeroSize
-		event:ev
-	   pasteboard:pb
-	       source:draggedSource
-	    slideBack:YES];
-}
+//   [pathView dragImage:[sender iconImage]
+// 		   at:iconLocation //[ev locationInWindow]
+// 	       offset:NSZeroSize
+// 		event:ev
+// 	   pasteboard:pb
+// 	       source:draggedSource
+// 	    slideBack:YES];
+// }
 
-- (NSImage *)pathView:(PathView *)aPathView
-   imageForIconAtPath:(NSString *)aPath
-{
-  NSString *fullPath;
+// - (NSImage *)pathView:(PathView *)aPathView
+//    imageForIconAtPath:(NSString *)aPath
+// {
+//   NSString *fullPath;
   
-  //  NSLog(@"[FileViewer] imageForIconAtPath: %@", aPath);
+//   //  NSLog(@"[FileViewer] imageForIconAtPath: %@", aPath);
   
-  fullPath = [rootPath stringByAppendingPathComponent:aPath];
-  return [[NSApp delegate] iconForFile:fullPath];
-}
+//   fullPath = [rootPath stringByAppendingPathComponent:aPath];
+//   return [[NSApp delegate] iconForFile:fullPath];
+// }
 
-// TODO: remove?
-- (NSString *)pathView:(PathView *)aPathView
-    labelForIconAtPath:(NSString *)aPath
-{
-  // return [iface labelForFile:aPath];
-  return @"-";
-}
+// - (void)pathView:(PathView *)aPathView
+//  didChangePathTo:(NSString *)newPath
+// {
+//   // Path view can change path only to directory
+//   [self displayPath:newPath selection:nil sender:pathView];
+// }
 
-- (void)pathView:(PathView *)aPathView
- didChangePathTo:(NSString *)newPath
-{
-  // Path view can change path only to directory
-  [self displayPath:newPath selection:nil sender:pathView];
-}
+// - (void)pathViewSyncEmptyColumns
+// {
+//   NSUInteger numEmptyCols = 0;
 
-- (void)pathViewSyncEmptyColumns
-{
-  NSUInteger numEmptyCols = 0;
+//   // Update cahed column attributes here.
+//   viewerColumnWidth = [viewer columnWidth];
+//   viewerColumnCount = [viewer columnCount];
 
-  // Update cahed column attributes here.
-  viewerColumnWidth = [viewer columnWidth];
-  viewerColumnCount = [viewer columnCount];
+//   // Set empty columns to PathView
+//   numEmptyCols = [viewer numberOfEmptyColumns];
 
-  // Set empty columns to PathView
-  numEmptyCols = [viewer numberOfEmptyColumns];
+//   NSDebugLLog(@"FilViewer", @"pathViewSyncEmptyColumns: selection: %@",
+//               selection);
 
-  NSDebugLLog(@"FilViewer", @"pathViewSyncEmptyColumns: selection: %@",
-              selection);
-
-  // Browser has empty columns and file(s) selected
-  if (selection && [selection count] >= 1 && numEmptyCols > 0)
-    {
-      numEmptyCols--;
-    }
-  [pathView setNumberOfEmptyColumns:numEmptyCols];
-}
+//   // Browser has empty columns and file(s) selected
+//   if (selection && [selection count] >= 1 && numEmptyCols > 0)
+//     {
+//       numEmptyCols--;
+//     }
+//   [pathView setNumberOfEmptyColumns:numEmptyCols];
+// }
 
 //=============================================================================
 // Scroller delegate
 //=============================================================================
 
-// Called when user drag scroller's knob
-- (void)constrainScroller:(NSScroller *)aScroller
-{
-  NSUInteger num = [pathView slotsWide] - viewerColumnCount;
-  CGFloat    v;
+// // Called when user drag scroller's knob
+// - (void)constrainScroller:(NSScroller *)aScroller
+// {
+//   NSUInteger num = [pathView slotsWide] - viewerColumnCount;
+//   CGFloat    v;
 
-  NSLog(@"[FileViewer -contrainScroller] PathView # of icons: %lu", 
-	[[pathView icons] count]);
+//   NSLog(@"[FileViewer -contrainScroller] PathView # of icons: %lu", 
+// 	[[pathView icons] count]);
 
-  if (num == 0)
-    {
-      v = 0.0;
-      [aScroller setFloatValue:0.0 knobProportion:1.0];
-    }
-  else
-    {
-      v = rintf(num * [aScroller floatValue]) / num;
-      [aScroller setFloatValue:v];
-    }
+//   if (num == 0)
+//     {
+//       v = 0.0;
+//       [aScroller setFloatValue:0.0 knobProportion:1.0];
+//     }
+//   else
+//     {
+//       v = rintf(num * [aScroller floatValue]) / num;
+//       [aScroller setFloatValue:v];
+//     }
 
-  [pathView scrollRectToVisible:
-              NSMakeRect(([pathView frame].size.width - 
-                          [[pathView superview] frame].size.width) * v, 0,
-                         [[pathView superview] frame].size.width, 0)];
-}
+//   [pathView scrollRectToVisible:
+//               NSMakeRect(([pathView frame].size.width - 
+//                           [[pathView superview] frame].size.width) * v, 0,
+//                          [[pathView superview] frame].size.width, 0)];
+// }
 
-// Called whenver user click on PathView's scrollbar
-- (void)trackScroller:(NSScroller *)aScroller
-{
-  NSUInteger iconsNum = [pathView slotsWide];
-  CGFloat    sValue = [aScroller floatValue];
-  NSRange    r;
-  CGFloat    rangeStart;
-  NSInteger  emptyCols;
+// // Called whenver user click on PathView's scrollbar
+// - (void)trackScroller:(NSScroller *)aScroller
+// {
+//   NSUInteger iconsNum = [pathView slotsWide];
+//   CGFloat    sValue = [aScroller floatValue];
+//   NSRange    r;
+//   CGFloat    rangeStart;
+//   NSInteger  emptyCols;
 
-  NSLog(@"0. [FileViewer] document visible rect: %@",
-        NSStringFromRect([scrollView documentVisibleRect]));
-  NSLog(@"0. [FileViewer] document rect: %@",
-        NSStringFromRect([pathView frame]));
-  NSLog(@"0. [FileViewer] scroll view rect: %@",
-        NSStringFromRect([scrollView frame]));
+//   // NSLog(@"0. [FileViewer] document visible rect: %@",
+//   //       NSStringFromRect([scrollView documentVisibleRect]));
+//   // NSLog(@"0. [FileViewer] document rect: %@",
+//   //       NSStringFromRect([pathView frame]));
+//   // NSLog(@"0. [FileViewer] scroll view rect: %@",
+//   //       NSStringFromRect([scrollView frame]));
 
-  rangeStart = rintf((iconsNum - viewerColumnCount) * sValue);
-  r = NSMakeRange(rangeStart, viewerColumnCount);
+//   rangeStart = rintf((iconsNum - viewerColumnCount) * sValue);
+//   r = NSMakeRange(rangeStart, viewerColumnCount);
 
-  NSLog(@"1. [FileViewer] trackScroller: value %f proportion: %f," 
-        @"scrolled to range: %0.f - %lu", 
-	sValue, [aScroller knobProportion], 
-        rangeStart, viewerColumnCount);
+//   // NSLog(@"1. [FileViewer] trackScroller: value %f proportion: %f," 
+//   //       @"scrolled to range: %0.f - %lu", 
+//   //       sValue, [aScroller knobProportion], 
+//   //       rangeStart, viewerColumnCount);
 
-  // Update viewer display
-  [viewer scrollToRange:r];
+//   // Update viewer display
+//   [viewer scrollToRange:r];
 
-  // Synchronize positions of icons in PathView and columns 
-  // in BrowserViewer
-  NSArray *files = [pathView files];
+//   // Synchronize positions of icons in PathView and columns 
+//   // in BrowserViewer
+//   NSArray *files = [pathView files];
 
-  if (files != nil && [files count] > 0) // file selected
-    {
-      if (iconsNum - (iconsNum * sValue) <= 1.0)
-	{ // scrolled maximum to the right 
-	  // scroller value close to 1.0 (e.g. 0.98)
-	  [viewer setNumberOfEmptyColumns:1];
-	}
-      else
-	{
-          [self pathViewSyncEmptyColumns];
-	}
-    }
-  else
-    {
-      [self pathViewSyncEmptyColumns];
-    }
+//   if (files != nil && [files count] > 0) // file selected
+//     {
+//       if (iconsNum - (iconsNum * sValue) <= 1.0)
+// 	{ // scrolled maximum to the right 
+// 	  // scroller value close to 1.0 (e.g. 0.98)
+// 	  [viewer setNumberOfEmptyColumns:1];
+// 	}
+//       else
+// 	{
+//           [self pathViewSyncEmptyColumns];
+// 	}
+//     }
+//   else
+//     {
+//       [self pathViewSyncEmptyColumns];
+//     }
 
-  // Set keyboard focus to last visible column
-  [viewer becomeFirstResponder];
+//   // Set keyboard focus to last visible column
+//   [viewer becomeFirstResponder];
 
-  /*  NSLog(@"2. [FileViewer] trackScroller: value %f proportion: %f," 
-        @"scrolled to range: %0.f - %i", 
-	[aScroller floatValue], [aScroller knobProportion], 
-        rangeStart, viewerColumnCount);
+//   /*  NSLog(@"2. [FileViewer] trackScroller: value %f proportion: %f," 
+//         @"scrolled to range: %0.f - %i", 
+// 	[aScroller floatValue], [aScroller knobProportion], 
+//         rangeStart, viewerColumnCount);
 
-  NSLog(@"3. [FileViewer] PathView slotsWide = %i, viewerColumnCount = %i", 
-	[pathView slotsWide], viewerColumnCount);*/
-}
+//   NSLog(@"3. [FileViewer] PathView slotsWide = %i, viewerColumnCount = %i", 
+// 	[pathView slotsWide], viewerColumnCount);*/
+// }
 
 //=============================================================================
 // Viewer delegate
@@ -1504,10 +1503,14 @@
   // NSLog(@"[FileViewer windowDidResize:] viewer column count: %lu", 
   //       [(NSBrowser *)[viewer view] numberOfVisibleColumns]);
 
+  // Update cahed column attributes here.
+  viewerColumnWidth = [viewer columnWidth];
+  viewerColumnCount = [viewer columnCount];
+  
   // Update column attributes here.
   // Call to updateWindowWidth: leads to segfault because of active
   // resizing operation.
-  [self pathViewSyncEmptyColumns];
+  [pathView syncEmptyColumns];
   [self updateInfoLabels:nil];
 }
 

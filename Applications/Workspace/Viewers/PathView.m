@@ -7,10 +7,12 @@
 #import <NXAppKit/NXIcon.h>
 #import <NXAppKit/NXIconLabel.h>
 
-#import "PathView.h"
+#import "FileViewer.h"
 #import "PathIcon.h"
+#import "PathView.h"
+#import "PathViewScroller.h"
 
-@implementation PathView //: NXIconView
+@implementation PathView
 
 - (void)dealloc
 {
@@ -22,11 +24,32 @@
   [super dealloc];
 }
 
-- initWithFrame:(NSRect)r
+// - initWithFrame:(NSRect)r 
+- initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer
 {
-  [super initWithFrame:r];
+  // PathViewScroller *scroller;
+  // NSScrollView     *sv;
 
-  // -adjustToFitIcons will be called
+  self = [super initWithFrame:r];
+
+  _owner = fileViewer;
+
+  // sv = [self enclosingScrollView];
+  // scroller = [[PathViewScroller new] autorelease];
+  // [scroller setDelegate:self];
+  // [sv setHorizontalScroller:scroller];
+  // [sv setHasHorizontalScroller:YES];
+  // [sv setBackgroundColor:[NSColor windowBackgroundColor]];
+  
+  [self setTarget:self];
+  [self setDelegate:self];
+  // [self setAction:@selector(iconClicked:)];
+  [self setDoubleAction:@selector(iconDoubleClicked:)];
+  [self setDragAction:@selector(pathViewIconDragged:event:)];
+  // [self registerForDraggedTypes:@[NSFilenamesPboardType]];
+  [self setIconDragTypes:@[NSFilenamesPboardType]];
+  
+ // -adjustToFitIcons will be called
   autoAdjustsToFitIcons = YES; 
   // path view frame will be set inside -adjustToFitIcons
   adjustsToFillEnclosingScrollView = NO;
@@ -181,9 +204,8 @@
 	    }
 	  [_icon deselect:nil];
       	  [_icon setEditable:NO];
-	  [_icon setIconImage:[delegate pathView:self 
-                                        imageForIconAtPath:_path]];
-	  [_icon setPaths:[delegate absolutePathsForPaths:[NSArray arrayWithObject:_path]]];
+	  [_icon setIconImage:[self imageForIconAtPath:_path]];
+	  [_icon setPaths:[_owner absolutePathsForPaths:@[_path]]];
 	}
     }
 
@@ -213,8 +235,8 @@
 	    }
 	  [_icon deselect:nil];
       	  [_icon setEditable:NO];
-          [_icon setIconImage:[delegate pathView:self imageForIconAtPath:_path]];
-	  [_icon setPaths:[delegate absolutePathsForPaths:[NSArray arrayWithObject:_path]]];
+          [_icon setIconImage:[self imageForIconAtPath:_path]];
+	  [_icon setPaths:[_owner absolutePathsForPaths:@[_path]]];
 	}
       else
 	{
@@ -234,8 +256,7 @@
 	      [self setSlotsWide:i+1];
 	      [self putIcon:multipleSelection intoSlot:NXMakeIconSlot(i,0)];
 	    }
-	  [multipleSelection
-            setPaths:[delegate absolutePathsForPaths:relPaths]];
+	  [multipleSelection setPaths:[_owner absolutePathsForPaths:relPaths]];
 	}
     }
 
@@ -253,7 +274,7 @@
   if ([aFiles count] == 1)
     {
       _path = [aPath stringByAppendingPathComponent:[aFiles objectAtIndex:0]];
-      [_icon setIconImage:[delegate pathView:self imageForIconAtPath:_path]];
+      [_icon setIconImage:[self imageForIconAtPath:_path]];
     }
 
   [self selectIcons:[NSSet setWithObject:_icon]];
@@ -303,28 +324,27 @@
 
   [super iconClicked:sender];
 
-  if (![delegate respondsToSelector:@selector(pathView:didChangePathTo:)])
-    {
-      return;
-    }
+  // if (![delegate respondsToSelector:@selector(pathView:didChangePathTo:)])
+  //   {
+  //     return;
+  //   }
 
   // do not select the last icon
-  if ([icons lastObject] == sender)
-    {
-      return;
-    }
+  if ([icons lastObject] == sender) {
+    return;
+  }
 
   iconPaths = [self pathsForIcon:sender];
-  if ([iconPaths count] > 1)
-    {
-//      NSLog(@"[PathView:iconClicked:] icon with multiple paths clicked!");
-      return;
-    }
+  if ([iconPaths count] > 1) {
+    //      NSLog(@"[PathView:iconClicked:] icon with multiple paths clicked!");
+    return;
+  }
   newPath = [iconPaths objectAtIndex:0];
 
 //  NSLog(@"[PathView] iconClicked with path: %@", newPath);
 
-  [delegate pathView:self didChangePathTo:newPath];
+  // [delegate pathView:self didChangePathTo:newPath];
+  [_owner displayPath:newPath selection:nil sender:self];
 }
 
 - (void)iconDoubleClicked:sender
@@ -332,7 +352,7 @@
   // only allow the last icon to be double-clicked
   if ([icons lastObject] == sender)
     {
-      [super iconDoubleClicked:sender];
+      [_owner open:sender];
     }
 }
 
@@ -362,7 +382,9 @@
       NSEnumerator *pathEnum = [[path pathComponents] objectEnumerator];
       NSEnumerator *iconEnum = [icons objectEnumerator];
 
-      do newPath = [newPath stringByAppendingPathComponent:[pathEnum nextObject]];
+      do {
+        newPath = [newPath stringByAppendingPathComponent:[pathEnum nextObject]];
+      }
       while ([iconEnum nextObject] != icon);
 
       return [NSArray arrayWithObject:newPath];
@@ -393,8 +415,200 @@
 
 - (BOOL)acceptsFirstResponder
 {
-  // Do nothing. It prevents first responder stealing.
+  // It prevents first responder stealing.
   return NO;
 }
+
+//=============================================================================
+// PathView (from FileViewer)
+//=============================================================================
+
+// - (void)configurePathView
+// {
+//   PathViewScroller *scroller;
+//   NSScrollView     *sv;
+
+//   sv = [pathView enclosingScrollView];
+//   scroller = [[PathViewScroller new] autorelease];
+//   [scroller setDelegate:self];
+//   [sv setHorizontalScroller:scroller];
+//   [sv setHasHorizontalScroller:YES];
+//   [sv setBackgroundColor:[NSColor windowBackgroundColor]];
+
+//   [pathView setTarget:self];
+//   [pathView setDelegate:self];
+//   [pathView setDragAction:@selector(pathViewIconDragged:event:)];
+//   [pathView setDoubleAction:@selector(open:)];
+//   [pathView setIconDragTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+// }
+
+- (void)setPath:(NSString *)relativePath
+      selection:(NSArray *)filenames
+{
+  PathIcon    *pathIcon;
+  NXIconLabel *pathIconLabel;
+
+  [self displayDirectory:relativePath andFiles:filenames];
+  [self scrollPoint:NSMakePoint([self frame].size.width, 0)];
+
+//  NSLog(@"PathView icons=%i path components=%i", 
+//	[pathViewIcons count], [[relativePath pathComponents] count]);
+
+  // Last icon
+  pathIcon = [[self icons] lastObject];
+  // Using [viewer keyView] leads to segfault if 'keyView' changed (reloaded)
+  // on the fly
+  [pathIcon setNextKeyView:[[_owner viewer] view]];
+
+  // Last icon label
+  pathIconLabel = [pathIcon label];
+  [pathIconLabel setNextKeyView:[[_owner viewer] view]];
+
+  [icons makeObjectsPerform:@selector(setDelegate:)
+                 withObject:self];
+}
+
+// --- PathView delegate
+
+- (void)pathViewIconDragged:sender event:(NSEvent *)ev
+{
+  NSArray      *paths;
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
+  NSRect       iconFrame = [sender frame];
+  NSPoint      iconLocation = iconFrame.origin;
+
+  draggedSource = self;
+  draggedIcon = [sender retain];
+
+  iconLocation.x += 8;
+  iconLocation.y += iconFrame.size.width - 16;
+
+  if ([icons lastObject] != sender) {
+    [sender setSelected:NO];
+  }
+
+  paths = [draggedIcon paths];
+  draggingSourceMask = [_owner draggingSourceOperationMaskForPaths:paths];
+
+  [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
+  [pb setPropertyList:paths forType:NSFilenamesPboardType];
+
+  [self dragImage:[sender iconImage]
+               at:iconLocation //[ev locationInWindow]
+           offset:NSZeroSize
+            event:ev
+       pasteboard:pb
+           source:draggedSource
+        slideBack:YES];
+}
+
+- (NSImage *)imageForIconAtPath:(NSString *)aPath
+{
+  NSString *fullPath = [[_owner rootPath] stringByAppendingPathComponent:aPath];
+  //  NSLog(@"[FileViewer] imageForIconAtPath: %@", aPath);
+  fullPath = [[_owner rootPath] stringByAppendingPathComponent:aPath];
+  return [[NSApp delegate] iconForFile:fullPath];
+}
+
+- (void)syncEmptyColumns
+{
+  NSUInteger numEmptyCols = 0;
+  id<Viewer> viewer = [_owner viewer];
+  NSArray    *selection = [_owner selection];
+
+  // Set empty columns to PathView
+  numEmptyCols = [viewer numberOfEmptyColumns];
+
+  NSDebugLLog(@"FilViewer", @"pathViewSyncEmptyColumns: selection: %@",
+              selection);
+
+  // Browser has empty columns and file(s) selected
+  if (selection && [selection count] >= 1 && numEmptyCols > 0) {
+    numEmptyCols--;
+  }
+  [self setNumberOfEmptyColumns:numEmptyCols];
+}
+
+//=============================================================================
+// Scroller delegate
+//=============================================================================
+
+// Called when user drag scroller's knob
+- (void)constrainScroller:(NSScroller *)aScroller
+{
+  NSUInteger num = slotsWide - [[_owner viewer] columnCount];
+  CGFloat    v;
+  NSRect     visibleRect, superRect;
+
+  NSLog(@"[FileViewer -contrainScroller] PathView # of icons: %lu",
+        [icons count]);
+
+  if (num == 0) {
+    v = 0.0;
+    [aScroller setFloatValue:0.0 knobProportion:1.0];
+  }
+  else {
+    v = rintf(num * [aScroller floatValue]) / num;
+    [aScroller setFloatValue:v];
+  }
+
+  superRect = [[self superview] frame];
+  visibleRect = NSMakeRect(([self frame].size.width - superRect.size.width) * v,
+                           0, superRect.size.width, 0);
+  [self scrollRectToVisible:visibleRect];
+}
+
+// Called whenver user click on PathView's scrollbar
+- (void)trackScroller:(NSScroller *)aScroller
+{
+  id<Viewer> viewer = [_owner viewer];
+  CGFloat    scrollerValue = [aScroller floatValue];
+  CGFloat    rangeStart;
+
+  // NSLog(@"0. [FileViewer] document visible rect: %@",
+  //       NSStringFromRect([scrollView documentVisibleRect]));
+  // NSLog(@"0. [FileViewer] document rect: %@",
+  //       NSStringFromRect([pathView frame]));
+  // NSLog(@"0. [FileViewer] scroll view rect: %@",
+  //       NSStringFromRect([scrollView frame]));
+
+  rangeStart = rintf((slotsWide - [viewer columnCount]) * scrollerValue);
+
+  // NSLog(@"1. [FileViewer] trackScroller: value %f proportion: %f," 
+  //       @"scrolled to range: %0.f - %lu", 
+  //       sValue, [aScroller knobProportion], 
+  //       rangeStart, viewerColumnCount);
+
+  // Update viewer display
+  [viewer scrollToRange:NSMakeRange(rangeStart, [viewer columnCount])];
+
+  // Synchronize positions of icons in PathView and columns 
+  // in BrowserViewer
+  if (files != nil && [files count] > 0) { // file selected
+    if (slotsWide - (slotsWide * scrollerValue) <= 1.0) {
+      // scrolled maximum to the right 
+      // scroller value close to 1.0 (e.g. 0.98)
+      [viewer setNumberOfEmptyColumns:1];
+    }
+    else {
+      [self syncEmptyColumns];
+    }
+  }
+  else {
+    [self syncEmptyColumns];
+  }
+
+  // Set keyboard focus to last visible column
+  [viewer becomeFirstResponder];
+
+  /*  NSLog(@"2. [FileViewer] trackScroller: value %f proportion: %f," 
+        @"scrolled to range: %0.f - %i", 
+	[aScroller floatValue], [aScroller knobProportion], 
+        rangeStart, viewerColumnCount);
+
+  NSLog(@"3. [FileViewer] PathView slotsWide = %i, viewerColumnCount = %i", 
+	[pathView slotsWide], viewerColumnCount);*/
+}
+
 
 @end
