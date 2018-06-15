@@ -9,54 +9,33 @@
 {
   FileViewer *_owner;
 
-  NSString *path;
-  NSArray  *files;
-  NSArray  *iconDragTypes;
-  PathIcon *multipleSelection;
-  NSImage  *arrowImage;
-  NSImage  *multiImage;
+  NSString *_path;
+  NSArray  *_files;
+  NSArray  *_iconDragTypes;
+  PathIcon *_multiIcon;
+  NSImage  *_multiImage;
+  NSImage  *_arrowImage;
   
   // Dragging
-  NXIconView *draggedSource;
-  PathIcon   *draggedIcon;
-  unsigned   draggingSourceMask;
+  NXIconView *_dragSource;
+  PathIcon   *_dragIcon;
+  unsigned   _dragMask;
 }
 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;
 
 - (void)displayDirectory:(NSString *)aPath andFiles:(NSArray *)aFiles;
-
+- (void)setPath:(NSString *)relativePath selection:(NSArray *)filenames;
 - (NSString *)path;
 - (NSArray *)files;
+
 - (void)setNumberOfEmptyColumns:(NSInteger)num;
 - (NSInteger)numberOfEmptyColumns;
-- (NSArray *)pathsForIcon:(NXIcon *)anIcon;
-- (void)setIconDragTypes:(NSArray *)types;
-- (NSArray *)iconDragTypes;
-
-- (void)setPath:(NSString *)relativePath
-      selection:(NSArray *)filenames;
 - (void)syncEmptyColumns;
+
+- (NSArray *)pathsForIcon:(NXIcon *)anIcon;
 
 - (void)constrainScroller:(NSScroller *)aScroller;
 - (void)trackScroller:(NSScroller *)aScroller;
-
-@end
-
-// All paths are relative to path file viewer opened with.
-// Example:
-//  - file viewer opened as folder viewer rooted at path '/Users/me'
-//  - path view calling delegate method
-//    pathView:imageForIconAtPath:@"/Library/Preferences" means that
-//    file viewer must return icon for folder '/Users/me/Library/Prefernces'
-@protocol XSPathViewDelegate
-
-- (NSImage *)pathView:(PathView *)aPathView
-   imageForIconAtPath:(NSString *)aPath;
-
-- (void)pathView:(PathView *)aPathView
- didChangePathTo:(NSString *)newPath;
-
-- (NSArray *)absolutePathsForPaths:(NSArray *)relPaths;
 
 @end
