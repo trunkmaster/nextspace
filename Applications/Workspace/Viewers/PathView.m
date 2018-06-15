@@ -16,10 +16,10 @@
 
 - (void)dealloc
 {
-  TEST_RELEASE(path);
-  TEST_RELEASE(files);
-  TEST_RELEASE(multipleSelection);
-  TEST_RELEASE(iconDragTypes);
+  TEST_RELEASE(_path);
+  TEST_RELEASE(_files);
+  TEST_RELEASE(_multiIcon);
+  TEST_RELEASE(_iconDragTypes);
 
   [super dealloc];
 }
@@ -27,83 +27,75 @@
 // - initWithFrame:(NSRect)r 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer
 {
-  // PathViewScroller *scroller;
-  // NSScrollView     *sv;
+  PathViewScroller *scroller;
+  NSScrollView     *sv;
 
   self = [super initWithFrame:r];
 
   _owner = fileViewer;
 
-  // sv = [self enclosingScrollView];
-  // scroller = [[PathViewScroller new] autorelease];
-  // [scroller setDelegate:self];
-  // [sv setHorizontalScroller:scroller];
-  // [sv setHasHorizontalScroller:YES];
-  // [sv setBackgroundColor:[NSColor windowBackgroundColor]];
-  
-  [self setTarget:self];
-  [self setDelegate:self];
-  // [self setAction:@selector(iconClicked:)];
-  [self setDoubleAction:@selector(iconDoubleClicked:)];
-  [self setDragAction:@selector(pathViewIconDragged:event:)];
-  // [self registerForDraggedTypes:@[NSFilenamesPboardType]];
-  [self setIconDragTypes:@[NSFilenamesPboardType]];
-  
- // -adjustToFitIcons will be called
-  autoAdjustsToFitIcons = YES; 
-  // path view frame will be set inside -adjustToFitIcons
-  adjustsToFillEnclosingScrollView = NO;
-  fillWithHoleWhenRemovingIcon = NO;
-  // NXIconView will not try to create multirow view
-  isSlotsTallFixed = YES;
-  slotsTall = 1;
-
-  selectable = YES;
+  // Options
   allowsMultipleSelection = NO;
   allowsArrowsSelection = NO;
   allowsAlphanumericSelection = NO;
+  autoAdjustsToFitIcons = YES; 
+  adjustsToFillEnclosingScrollView = NO;
+  fillWithHoleWhenRemovingIcon = NO;
+  isSlotsTallFixed = YES;
+  slotsTall = 1;
 
-  arrowImage = [[NSImage alloc]
+  sv = [self enclosingScrollView];
+  scroller = [[PathViewScroller new] autorelease];
+  [scroller setDelegate:self];
+  [sv setHorizontalScroller:scroller];
+  [sv setHasHorizontalScroller:YES];
+  [sv setBackgroundColor:[NSColor windowBackgroundColor]];
+  
+  [self setDelegate:self];
+  [self setTarget:self];
+  [self setAction:@selector(iconClicked:)];
+  [self setDoubleAction:@selector(iconDoubleClicked:)];
+  [self setDragAction:@selector(pathViewIconDragged:event:)];
+  [self registerForDraggedTypes:@[NSFilenamesPboardType]];
+
+  ASSIGN(_iconDragTypes, @[NSFilenamesPboardType]);
+  [icons makeObjectsPerform:@selector(unregisterDraggedTypes)];
+  [icons makeObjectsPerform:@selector(registerForDraggedTypes:)
+		 withObject:_iconDragTypes];
+  
+  _arrowImage = [[NSImage alloc]
     initByReferencingFile:[[NSBundle bundleForClass:[self class]]
 	  pathForResource:@"RightArrow" ofType: @"tiff"]];
 
-  multiImage = [[NSImage alloc]
+  _multiImage = [[NSImage alloc]
     initByReferencingFile:[[NSBundle bundleForClass:[self class]]
 	  pathForResource:@"MultipleSelection" ofType: @"tiff"]];
 
-  multipleSelection = [[PathIcon alloc] init];
-  [multipleSelection setIconImage:multiImage];
-  [multipleSelection setLabelString:@"Multiple items"];
-  [multipleSelection setEditable:NO];
-  
-  path = nil;
-  files = nil;
-
-  target = self;
-  action = @selector(changePath:);
+  _multiIcon = [[PathIcon alloc] init];
+  [_multiIcon setIconImage:_multiImage];
+  [_multiIcon setLabelString:@"Multiple items"];
+  [_multiIcon setEditable:NO];
+  // this is not a dragging destination
+  [_multiIcon unregisterDraggedTypes];
 
   return self;
 }
 
 - (void)drawRect:(NSRect)r
 {
-  unsigned int i, n;
-
 //  NSLog(@"drawRect of PathView at origin: %.0f, %.0f with size: %.0f x %.0f", 
 //	r.origin.x, r.origin.y, r.size.width, r.size.height);
 
-  for (i=1, n = [icons count]; i<n; i++)
-    {
-      NSPoint p;
+  for (unsigned int i=1, n = [icons count]; i<n; i++) {
+    NSPoint p;
       
-      p = NSMakePoint((i * slotSize.width) - ([arrowImage size].width + 5),
-		      slotSize.height/2);
+    p = NSMakePoint((i * slotSize.width) - ([_arrowImage size].width + 5),
+                    slotSize.height/2);
       
-      p.x = floorf(p.x);
-      p.y = floorf(p.y);
-      [arrowImage compositeToPoint:p
-			 operation:NSCompositeSourceOver];
-    }
+    p.x = floorf(p.x);
+    p.y = floorf(p.y);
+    [_arrowImage compositeToPoint:p operation:NSCompositeSourceOver];
+  }
 
   [super drawRect:r];
 }
@@ -114,24 +106,21 @@
   NSUInteger componentsCount = [[aPath pathComponents] count];
   NSUInteger i, n;
   NSUInteger lii; // last icon index in array of icons
-  PathIcon   *_icon;
-  NSString   *_path = @"";
+  PathIcon   *icon;
+  NSString   *path = @"";
 
-  if (delegate == nil)
-    {
-      NSLog(@"PathView: attempt to set path without a delegate "
-	      @"assigned to define the icons to use.");
-
-      return;
-    }
+  if (delegate == nil) {
+    NSLog(@"PathView: attempt to set path without a delegate "
+          @"assigned to define the icons to use.");
+    return;
+  }
 
   length = [aPath length];
 
   // Remove a trailing "/" character from 'aPath'
-  if (length > 1 && [aPath characterAtIndex:length-1] == '/')
-    {
-      aPath = [aPath substringToIndex:length-1];
-    }
+  if (length > 1 && [aPath characterAtIndex:length-1] == '/') {
+    aPath = [aPath substringToIndex:length-1];
+  }
 
   // NSLog(@"[PathView] displayDirectory:%@(%i) andFiles:%@", 
   //       aPath, [[aPath pathComponents] count], aFiles);
@@ -139,10 +128,9 @@
   // NSLog(@"1. [PathView] icons count: %i components: %i", 
   //       [icons count], componentsCount);
 
-  if ([icons count] > [self slotsWide])
-    {
-      NSLog(@"WARNING!!! # of icons > slotsWide! PathView must have 1 row!");
-    }
+  if ([icons count] > [self slotsWide]) {
+    NSLog(@"WARNING!!! # of icons > slotsWide! PathView must have 1 row!");
+  }
 
   // Always clear last time selection
   // [[icons lastObject] deselect:nil];
@@ -150,150 +138,160 @@
 
   // Remove trailing icons
   lii = componentsCount;
-  if ([aFiles count] > 0)
-    {
-      lii++;
-    }
+  if ([aFiles count] > 0) {
+    lii++;
+  }
 
-  for (n=[icons count], i=lii; i<n; i++)
-    {
-      PathIcon *itr = nil;
+  for (n = [icons count], i = lii; i < n; i++) {
+    PathIcon *itr = nil;
 
-      // NSLog(@"[PathView] remove icon [%@] in slot: %i(%i)", 
-      //       [icons lastObject], i, [icons count]);
-      //      [self removeIconInSlot:NXMakeIconSlot(i,0)];
-      itr = [icons lastObject];
-      [self removeIcon:itr];
-    }
-  if ([icons lastObject] == multipleSelection)
-    {
-      // to avoid setting attributes by file selection
-      [self removeIcon:multipleSelection];
-    }
+    // NSLog(@"[PathView] remove icon [%@] in slot: %i(%i)", 
+    //       [icons lastObject], i, [icons count]);
+    //      [self removeIconInSlot:NXMakeIconSlot(i,0)];
+    itr = [icons lastObject];
+    [self removeIcon:itr];
+  }
+  if ([icons lastObject] == _multiIcon) {
+    // to avoid setting attributes by file selection
+    [self removeIcon:_multiIcon];
+  }
 
   // NSLog(@"2. [PathView] icons count: %i components: %i", 
   //       [icons count], componentsCount);
 
   // Set icons for path of "folders"
-  // If path == aPath only file selection changed (see below).
-  if (![path isEqualToString:aPath])
-    {
-      NSArray *pathComponents = [aPath pathComponents];
+  if (![path isEqualToString:aPath]) {
+    NSArray *pathComponents = [aPath pathComponents];
 
-      ASSIGN(path, aPath);
+    ASSIGN(_path, aPath);
 
-      for (i=0; i<componentsCount; i++)
-	{
-	  NSString *component = [pathComponents objectAtIndex:i];
+    for (i = 0; i < componentsCount; i++) {
+      NSString *component = [pathComponents objectAtIndex:i];
 
-	  _path = [_path stringByAppendingPathComponent:component];
+      path = [path stringByAppendingPathComponent:component];
 
-	  if (i < [icons count])
-	    {
-	      _icon = [icons objectAtIndex:i];
-	    }
-	  else
-	    {
-	      // NSLog(@"[PathView] creating new icon with path: %@ (%i,0)",
-              //       _path, i);
-	      _icon = [[PathIcon new] autorelease];
-	      [_icon setLabelString:@"-"];
-	      [_icon registerForDraggedTypes:iconDragTypes];
-	      [self setSlotsWide:i+1];
-	      [self putIcon:_icon intoSlot:NXMakeIconSlot(i, 0)];
-	    }
-	  [_icon deselect:nil];
-      	  [_icon setEditable:NO];
-	  [_icon setIconImage:[self imageForIconAtPath:_path]];
-	  [_icon setPaths:[_owner absolutePathsForPaths:@[_path]]];
-	}
+      if (i < [icons count]) {
+        icon = [icons objectAtIndex:i];
+      }
+      else {
+        NSLog(@"[PathView] creating new icon with path: %@ (%lu,0)", path, i);
+        icon = [[PathIcon new] autorelease];
+        [icon setLabelString:@"-"];
+        [icon registerForDraggedTypes:_iconDragTypes];
+        [self setSlotsWide:i+1];
+        [self putIcon:icon intoSlot:NXMakeIconSlot(i, 0)];
+      }
+      [icon deselect:nil];
+      [icon setEditable:NO];
+      [icon setIconImage:[self imageForPath:path]];
+      [icon setPaths:[_owner absolutePathsForPaths:@[path]]];
     }
+  }
 
   // files == nil also make sense later
-  ASSIGN(files, aFiles);
+  ASSIGN(_files, aFiles);
 
   // Set icon for file or files
-  if (files != nil && [files count] > 0)
-    {
-      i = componentsCount;
+  if (_files != nil && [_files count] > 0) {
+    i = componentsCount;
 
-      if ([files count] == 1)
-	{
-	  _path = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
-	  if ([icons count] > i)
-	    {
-	      _icon = [icons objectAtIndex:i];
-	    }
-	  else
-	    {
-	      // NSLog(@"[PathView] creating new icon with path: %@", _path);
-	      _icon = [[PathIcon new] autorelease];
-	      [_icon setLabelString:@"-"];
-	      [_icon registerForDraggedTypes:iconDragTypes];
-	      [self setSlotsWide:i+1];
-	      [self putIcon:_icon intoSlot:NXMakeIconSlot(i, 0)];
-	    }
-	  [_icon deselect:nil];
-      	  [_icon setEditable:NO];
-          [_icon setIconImage:[self imageForIconAtPath:_path]];
-	  [_icon setPaths:[_owner absolutePathsForPaths:@[_path]]];
-	}
-      else
-	{
-	  NSEnumerator   *e = [files objectEnumerator];
-	  NSString       *file;
-	  NSMutableArray *relPaths = [[NSMutableArray new] autorelease];
-          NXIcon         *icon;
-
-	  while((file = [e nextObject]))
-	    {
-	      _path = [path stringByAppendingPathComponent:file];
-	      [relPaths addObject:_path];
-	    }
-
-	  if ([icons indexOfObjectIdenticalTo:multipleSelection] == NSNotFound) 
-	    {
-	      [self setSlotsWide:i+1];
-	      [self putIcon:multipleSelection intoSlot:NXMakeIconSlot(i,0)];
-	    }
-	  [multipleSelection setPaths:[_owner absolutePathsForPaths:relPaths]];
-	}
+    if ([_files count] == 1) {
+      path = [path stringByAppendingPathComponent:[_files objectAtIndex:0]];
+      if ([icons count] > i) {
+        icon = [icons objectAtIndex:i];
+      }
+      else {
+        // NSLog(@"[PathView] creating new icon with path: %@", path);
+        icon = [[PathIcon new] autorelease];
+        [icon setLabelString:@"-"];
+        [icon registerForDraggedTypes:_iconDragTypes];
+        [self setSlotsWide:i+1];
+        [self putIcon:icon intoSlot:NXMakeIconSlot(i, 0)];
+      }
+      [icon deselect:nil];
+      [icon setEditable:NO];
+      [icon setIconImage:[self imageForPath:path]];
+      [icon setPaths:[_owner absolutePathsForPaths:@[path]]];
     }
+    else {
+      NSMutableArray *relPaths = [[NSMutableArray new] autorelease];
 
+      for(NSString *file in _files) {
+        path = [path stringByAppendingPathComponent:file];
+        [relPaths addObject:path];
+      }
+
+      if ([icons indexOfObjectIdenticalTo:_multiIcon] == NSNotFound) {
+        [self setSlotsWide:i + 1];
+        [self putIcon:_multiIcon intoSlot:NXMakeIconSlot(i,0)];
+      }
+      [_multiIcon setPaths:[_owner absolutePathsForPaths:relPaths]];
+    }
+  }
+ 
   // First icon
   [[icons objectAtIndex:0] setEditable:NO];
 
   // Last icon
-  _icon = [icons lastObject];
-  if ([icons count] > 1 && _icon != multipleSelection)
-    {
-      [_icon setEditable:YES];
-    }
+  icon = [icons lastObject];
+  if ([icons count] > 1 && icon != _multiIcon) {
+    [icon setEditable:YES];
+  }
   
   // Update last icon in case of contents or attributes changes
-  if ([aFiles count] == 1)
-    {
-      _path = [aPath stringByAppendingPathComponent:[aFiles objectAtIndex:0]];
-      [_icon setIconImage:[self imageForIconAtPath:_path]];
-    }
+  if ([aFiles count] == 1) {
+    path = [aPath stringByAppendingPathComponent:[aFiles objectAtIndex:0]];
+    [icon setIconImage:[self imageForPath:path]];
+  }
 
-  [self selectIcons:[NSSet setWithObject:_icon]];
+  [self selectIcons:[NSSet setWithObject:icon]];
 
-  [[_icon label] setIconLabelDelegate:delegate];
+  [[icon label] setIconLabelDelegate:delegate];
+  // Setting delegate for icons performed in setPath:selection
+}
 
-  // Setting delegate for icons performed in setPathViewPath:selection
-/*  [icons makeObjectsPerform:@selector(setDelegate:)
-		 withObject:delegate];*/
+- (void)setPath:(NSString *)relativePath selection:(NSArray *)filenames
+{
+  PathIcon    *pathIcon;
+  NXIconLabel *pathIconLabel;
+  id<Viewer>  theViewer = [_owner viewer];
+
+  [self displayDirectory:relativePath andFiles:filenames];
+  [self scrollPoint:NSMakePoint([self frame].size.width, 0)];
+
+//  NSLog(@"PathView icons=%i path components=%i", 
+//	[pathViewIcons count], [[relativePath pathComponents] count]);
+
+  // Last icon
+  pathIcon = [icons lastObject];
+  // Using [viewer keyView] leads to segfault if 'keyView' changed (reloaded)
+  // on the fly
+  [pathIcon setNextKeyView:[theViewer view]];
+
+  // Last icon label
+  pathIconLabel = [pathIcon label];
+  [pathIconLabel setNextKeyView:[theViewer view]];
+
+  [icons makeObjectsPerform:@selector(setDelegate:)
+                 withObject:self];
+}
+
+- (NSImage *)imageForPath:(NSString *)aPath
+{
+  NSString *fullPath = [[_owner rootPath] stringByAppendingPathComponent:aPath];
+  //  NSLog(@"[FileViewer] imageForIconAtPath: %@", aPath);
+  fullPath = [[_owner rootPath] stringByAppendingPathComponent:aPath];
+  return [[NSApp delegate] iconForFile:fullPath];
 }
 
 - (NSString *)path
 {
-  return path;
+  return _path;
 }
 
 - (NSArray *)files
 {
-  return files;
+  return _files;
 }
 
 // Called by dispatcher (FileViewer-displayPath:...) according to 
@@ -317,199 +315,6 @@
   return [self slotsWide] - [icons count];
 }
 
-- (void)iconClicked:sender
-{
-  NSArray  *iconPaths;
-  NSString *newPath = @"";
-
-  [super iconClicked:sender];
-
-  // if (![delegate respondsToSelector:@selector(pathView:didChangePathTo:)])
-  //   {
-  //     return;
-  //   }
-
-  // do not select the last icon
-  if ([icons lastObject] == sender) {
-    return;
-  }
-
-  iconPaths = [self pathsForIcon:sender];
-  if ([iconPaths count] > 1) {
-    //      NSLog(@"[PathView:iconClicked:] icon with multiple paths clicked!");
-    return;
-  }
-  newPath = [iconPaths objectAtIndex:0];
-
-//  NSLog(@"[PathView] iconClicked with path: %@", newPath);
-
-  // [delegate pathView:self didChangePathTo:newPath];
-  [_owner displayPath:newPath selection:nil sender:self];
-}
-
-- (void)iconDoubleClicked:sender
-{
-  // only allow the last icon to be double-clicked
-  if ([icons lastObject] == sender)
-    {
-      [_owner open:sender];
-    }
-}
-
-- (NSArray *)pathsForIcon:(NXIcon *)icon
-{
-  NSUInteger idx = [icons indexOfObjectIdenticalTo:icon];
-
-  if (idx == NSNotFound)
-    return nil;
-
-  if ([files count] > 0 && icon == [icons lastObject])
-    {
-      NSMutableArray *array = [NSMutableArray array];
-      NSEnumerator   *e = [files objectEnumerator];
-      NSString       *filename;
-
-      while ((filename = [e nextObject]) != nil)
-	{
-	  [array addObject:[path stringByAppendingPathComponent:filename]];
-	}
-
-      return [[array copy] autorelease];
-    }
-  else
-    {
-      NSString     *newPath = @"";
-      NSEnumerator *pathEnum = [[path pathComponents] objectEnumerator];
-      NSEnumerator *iconEnum = [icons objectEnumerator];
-
-      do {
-        newPath = [newPath stringByAppendingPathComponent:[pathEnum nextObject]];
-      }
-      while ([iconEnum nextObject] != icon);
-
-      return [NSArray arrayWithObject:newPath];
-    }
-}
-
-- (void)setIconDragTypes:(NSArray *)types
-{
-  ASSIGN(iconDragTypes, types);
-
-  [icons makeObjectsPerform:@selector(unregisterDraggedTypes)];
-  [icons makeObjectsPerform:@selector(registerForDraggedTypes:)
-		 withObject:iconDragTypes];
-
-  // this is no dragging destination
-  [multipleSelection unregisterDraggedTypes];
-}
-
-- (NSArray *)iconDragTypes
-{
-  return iconDragTypes;
-}
-
-- (void)mouseDown:(NSEvent *)ev
-{
-  // Do nothing. It prevents icons deselection.
-}
-
-- (BOOL)acceptsFirstResponder
-{
-  // It prevents first responder stealing.
-  return NO;
-}
-
-//=============================================================================
-// PathView (from FileViewer)
-//=============================================================================
-
-// - (void)configurePathView
-// {
-//   PathViewScroller *scroller;
-//   NSScrollView     *sv;
-
-//   sv = [pathView enclosingScrollView];
-//   scroller = [[PathViewScroller new] autorelease];
-//   [scroller setDelegate:self];
-//   [sv setHorizontalScroller:scroller];
-//   [sv setHasHorizontalScroller:YES];
-//   [sv setBackgroundColor:[NSColor windowBackgroundColor]];
-
-//   [pathView setTarget:self];
-//   [pathView setDelegate:self];
-//   [pathView setDragAction:@selector(pathViewIconDragged:event:)];
-//   [pathView setDoubleAction:@selector(open:)];
-//   [pathView setIconDragTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-// }
-
-- (void)setPath:(NSString *)relativePath
-      selection:(NSArray *)filenames
-{
-  PathIcon    *pathIcon;
-  NXIconLabel *pathIconLabel;
-
-  [self displayDirectory:relativePath andFiles:filenames];
-  [self scrollPoint:NSMakePoint([self frame].size.width, 0)];
-
-//  NSLog(@"PathView icons=%i path components=%i", 
-//	[pathViewIcons count], [[relativePath pathComponents] count]);
-
-  // Last icon
-  pathIcon = [[self icons] lastObject];
-  // Using [viewer keyView] leads to segfault if 'keyView' changed (reloaded)
-  // on the fly
-  [pathIcon setNextKeyView:[[_owner viewer] view]];
-
-  // Last icon label
-  pathIconLabel = [pathIcon label];
-  [pathIconLabel setNextKeyView:[[_owner viewer] view]];
-
-  [icons makeObjectsPerform:@selector(setDelegate:)
-                 withObject:self];
-}
-
-// --- PathView delegate
-
-- (void)pathViewIconDragged:sender event:(NSEvent *)ev
-{
-  NSArray      *paths;
-  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
-  NSRect       iconFrame = [sender frame];
-  NSPoint      iconLocation = iconFrame.origin;
-
-  draggedSource = self;
-  draggedIcon = [sender retain];
-
-  iconLocation.x += 8;
-  iconLocation.y += iconFrame.size.width - 16;
-
-  if ([icons lastObject] != sender) {
-    [sender setSelected:NO];
-  }
-
-  paths = [draggedIcon paths];
-  draggingSourceMask = [_owner draggingSourceOperationMaskForPaths:paths];
-
-  [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
-  [pb setPropertyList:paths forType:NSFilenamesPboardType];
-
-  [self dragImage:[sender iconImage]
-               at:iconLocation //[ev locationInWindow]
-           offset:NSZeroSize
-            event:ev
-       pasteboard:pb
-           source:draggedSource
-        slideBack:YES];
-}
-
-- (NSImage *)imageForIconAtPath:(NSString *)aPath
-{
-  NSString *fullPath = [[_owner rootPath] stringByAppendingPathComponent:aPath];
-  //  NSLog(@"[FileViewer] imageForIconAtPath: %@", aPath);
-  fullPath = [[_owner rootPath] stringByAppendingPathComponent:aPath];
-  return [[NSApp delegate] iconForFile:fullPath];
-}
-
 - (void)syncEmptyColumns
 {
   NSUInteger numEmptyCols = 0;
@@ -529,6 +334,128 @@
   [self setNumberOfEmptyColumns:numEmptyCols];
 }
 
+- (void)iconClicked:sender
+{
+  NSArray *pathList;
+
+  NSLog(@"[PathView] icon clicked, sender: %@ %@",
+        [sender className], [self pathsForIcon:sender]);
+  if ([sender isKindOfClass:[PathView class]]) {
+    [super iconClicked:sender];
+    return;
+  }
+  // do not unselect the last icon
+  if ([icons lastObject] == sender) {
+    return;
+  }
+  pathList = [self pathsForIcon:sender];
+  if ([pathList count] > 1) {
+    return;
+  }
+  [_owner displayPath:[pathList lastObject] selection:nil sender:self];
+}
+
+- (void)iconDoubleClicked:sender
+{
+  // only allow the last icon to be double-clicked
+  if ([icons lastObject] == sender) {
+    [_owner open:sender];
+  }
+  else {
+    // double-click can be received by not last icon if PathView content
+    // was scrolled between first and second click.
+    [self selectIcons:[NSSet setWithObject:[icons lastObject]]];
+  }
+}
+
+- (NSArray *)pathsForIcon:(NXIcon *)icon
+{
+  NSUInteger idx = [icons indexOfObjectIdenticalTo:icon];
+
+  if (idx == NSNotFound) {
+    return nil;
+  }
+
+  if ([_files count] > 0 && icon == [icons lastObject]) {
+    NSMutableArray *array = [NSMutableArray array];
+
+    for (NSString *filename in _files) {
+      [array addObject:[_path stringByAppendingPathComponent:filename]];
+    }
+    return [[array copy] autorelease];
+  }
+  else {
+    NSString     *newPath = @"";
+    NSEnumerator *pathEnum = [[_path pathComponents] objectEnumerator];
+    NSEnumerator *iconEnum = [icons objectEnumerator];
+
+    do {
+      newPath = [newPath stringByAppendingPathComponent:[pathEnum nextObject]];
+    }
+    while ([iconEnum nextObject] != icon);
+
+    return [NSArray arrayWithObject:newPath];
+  }
+}
+
+- (void)mouseDown:(NSEvent *)ev
+{
+  // Do nothing. It prevents icons deselection.
+}
+
+- (BOOL)acceptsFirstResponder
+{
+  // It prevents first responder stealing.
+  return NO;
+}
+
+//=============================================================================
+// NXIconView delegate
+//=============================================================================
+- (void)pathViewIconDragged:sender event:(NSEvent *)ev
+{
+  NSArray      *paths;
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
+  NSRect       iconFrame = [sender frame];
+  NSPoint      iconLocation = iconFrame.origin;
+
+  _dragSource = self;
+  _dragIcon = [sender retain];
+
+  iconLocation.x += 8;
+  iconLocation.y += iconFrame.size.width - 16;
+
+  if ([icons lastObject] != sender) {
+    [sender setSelected:NO];
+  }
+
+  paths = [_dragIcon paths];
+  _dragMask = [_owner draggingSourceOperationMaskForPaths:paths];
+
+  [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
+  [pb setPropertyList:paths forType:NSFilenamesPboardType];
+
+  [self dragImage:[_dragIcon iconImage]
+               at:iconLocation //[ev locationInWindow]
+           offset:NSZeroSize
+            event:ev
+       pasteboard:pb
+           source:_dragSource
+        slideBack:YES];
+}
+
+//=============================================================================
+// Drag and drop
+//=============================================================================
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+  if (isLocal != NO) {
+    return NSDragOperationCopy;
+  }
+
+  return _dragMask;
+}
+  
 //=============================================================================
 // Scroller delegate
 //=============================================================================
@@ -584,7 +511,7 @@
 
   // Synchronize positions of icons in PathView and columns 
   // in BrowserViewer
-  if (files != nil && [files count] > 0) { // file selected
+  if (_files != nil && [_files count] > 0) { // file selected
     if (slotsWide - (slotsWide * scrollerValue) <= 1.0) {
       // scrolled maximum to the right 
       // scroller value close to 1.0 (e.g. 0.98)
@@ -609,6 +536,5 @@
   NSLog(@"3. [FileViewer] PathView slotsWide = %i, viewerColumnCount = %i", 
 	[pathView slotsWide], viewerColumnCount);*/
 }
-
 
 @end
