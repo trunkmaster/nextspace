@@ -425,7 +425,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (void)mouseDown:(NSEvent *)ev
 {
   int clickCount;
-  NSInteger moveThreshold = [[NXMouse new] accelerationThreshold];
+  NSInteger moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
 
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown)
     {
