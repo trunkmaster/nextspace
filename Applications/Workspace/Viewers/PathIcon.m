@@ -180,46 +180,77 @@
 
 // --- NSDraggingDestination
 
+#define PASTEBOARD [sender draggingPasteboard]
+
+- (NSDragOperation)_draggingDestinationMaskForPaths:(NSArray *)sourcePaths
+                                           intoPath:(NSString *)destPath
+{
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString      *realPath;
+  unsigned int  mask = (NSDragOperationCopy | NSDragOperationMove | 
+                        NSDragOperationLink | NSDragOperationDelete);
+
+  if ([fileManager isWritableFileAtPath:destPath] == NO) {
+    NSLog(@"[FileViewer] %@ is not writable!", destPath);
+    return NSDragOperationNone;
+  }
+
+  if ([[[fileManager fileAttributesAtPath:destPath traverseLink:YES]
+         fileType] isEqualToString:NSFileTypeDirectory] == NO) {
+    NSLog(@"[FileViewer] destination path `%@` is not a directory!", destPath);
+    return NSDragOperationNone;
+  }
+
+  for (NSString *path in sourcePaths) {
+    NSRange r;
+
+    if ([fileManager isDeletableFileAtPath:path] == NO) {
+      NSLog(@"[FileViewer] path %@ can not be deleted."
+            @"Disabling Move and Delete operation.", path);
+      mask ^= (NSDragOperationMove | NSDragOperationDelete);
+    }
+
+    if ([path isEqualToString:destPath]) {
+      NSLog(@"[FileViewer] source and destination paths are equal "
+            @"(%@ == %@)", path, destPath);
+      return NSDragOperationNone;
+    }
+
+    if ([[path stringByDeletingLastPathComponent] isEqualToString:destPath]) {
+      NSLog(@"[FileViewer] `%@` already exists in `%@`", path, destPath);
+      return NSDragOperationNone;
+    }
+  }
+
+  return mask;
+}
+
 // - Before the Image is Released
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
   NSString *destPath;
   NSArray  *sourcePaths;
 
-  sourcePaths = [[sender draggingPasteboard]
-                  propertyListForType:NSFilenamesPboardType];
+  sourcePaths = [PASTEBOARD propertyListForType:NSFilenamesPboardType];
   destPath = [paths objectAtIndex:0];
-
+  
   NSLog(@"[PathIcon] draggingEntered: %@(%@) -> %@",
         [[sender draggingSource] className], [delegate className], destPath);
 
-  // NSLog(@"[PathIcon] draggingEntered (%@->%@): %@ --> %@ delegate: %@", 
-  //       [[sender draggingSource] className], [self className], 
-  //       sourcePaths, destPath, [delegate className]);
-
   if ([sender draggingSource] == self) {
-    // Dragging to itself - source and dest paths are equal!
     draggingMask = NSDragOperationNone;
   }
   else if (![sourcePaths isKindOfClass:[NSArray class]] 
 	   || [sourcePaths count] == 0) {
-    NSLog(@"sourcePaths bad!!!");
+    NSLog(@"[PathIcon] source path list is not NSArray or NSArray is empty!");
     draggingMask = NSDragOperationNone;
-  }
-  else if (delegate &&
-           [delegate respondsToSelector:
-                       @selector(draggingDestinationMaskForPaths:intoPath:)]) {
-    draggingMask = [delegate draggingDestinationMaskForPaths:sourcePaths
-                                                    intoPath:destPath];
   }
   else {
-    // draggingMask = [sender draggingSourceOperationMask];
-    // NSLog(@"[PathIcon] draggingEntered: last resort - %i", draggingMask);
-    draggingMask = NSDragOperationNone;
+    draggingMask = [self _draggingDestinationMaskForPaths:sourcePaths
+                                                 intoPath:destPath];
   }
-
+  
   if (draggingMask != NSDragOperationNone) {
-    // NSWorkspace?
     [self setIconImage:[[NSApp delegate] openIconForDirectory:destPath]];
   }
 
@@ -252,36 +283,33 @@
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
   NSMutableArray *filenames = [NSMutableArray array];
-  NSArray        *sourcePaths = [[sender draggingPasteboard]
-                                  propertyListForType: NSFilenamesPboardType];
-  NSEnumerator   *e = [sourcePaths objectEnumerator];
-  NSString       *sourceDir, * path;
+  NSArray        *sourcePaths;
+  NSString       *sourceDir;
   unsigned int   mask;
   unsigned int   opType = NSDragOperationNone;
 
-  sourceDir = [[sourcePaths objectAtIndex: 0]
-                stringByDeletingLastPathComponent];
-
+  sourcePaths = [PASTEBOARD propertyListForType:NSFilenamesPboardType];
   // construct an array holding only the trailing filenames
-  while ((path = [e nextObject]) != nil)
-    {
-      [filenames addObject:[path lastPathComponent]];
-    }
+  for (NSString *path in sourcePaths) {
+    [filenames addObject:[path lastPathComponent]];
+  }
 
   mask = [sender draggingSourceOperationMask];
-
-  if (mask & NSDragOperationMove)
-    // opType = NSDragOperationMove;
+  
+  if (mask & NSDragOperationMove) {
     opType = MoveOperation;
-  else if (mask & NSDragOperationCopy)
-    // opType = NSDragOperationCopy;
+  }
+  else if (mask & NSDragOperationCopy) {
     opType = CopyOperation;
-  else if (mask & NSDragOperationLink)
-    // opType = NSDragOperationLink;
+  }
+  else if (mask & NSDragOperationLink) {
     opType = LinkOperation;
-  else
+  }
+  else {
     return NO;
+  }
 
+  sourceDir = [[sourcePaths objectAtIndex:0] stringByDeletingLastPathComponent];
   [[ProcessManager shared] startOperationWithType:opType
                                            source:sourceDir
                                            target:[paths objectAtIndex:0]
