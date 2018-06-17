@@ -55,7 +55,7 @@
   [self setTarget:self];
   [self setAction:@selector(iconClicked:)];
   [self setDoubleAction:@selector(iconDoubleClicked:)];
-  [self setDragAction:@selector(pathViewIconDragged:event:)];
+  [self setDragAction:@selector(iconDragged:event:)];
   [self registerForDraggedTypes:@[NSFilenamesPboardType]];
 
   ASSIGN(_iconDragTypes, @[NSFilenamesPboardType]);
@@ -412,7 +412,7 @@
 //=============================================================================
 // NXIconView delegate
 //=============================================================================
-- (void)pathViewIconDragged:sender event:(NSEvent *)ev
+- (void)iconDragged:sender event:(NSEvent *)ev
 {
   NSArray      *paths;
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
@@ -449,10 +449,6 @@
 //=============================================================================
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
-  if (isLocal != NO) {
-    return NSDragOperationCopy;
-  }
-
   return _dragMask;
 }
   
