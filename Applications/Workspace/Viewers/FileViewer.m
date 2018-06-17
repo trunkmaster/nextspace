@@ -1607,26 +1607,11 @@
 //   ShelfView (with PathIcon).
 //   
 //   Dragging consequnce is the following:
-//   - starts with calling 'dragAction'
-//       pathViewIconDragged:event:
-//       shelfIconDragged:event: 
+//   - starts with calling 'dragAction' - iconDragged:event:
 //   - 'dragAction' calls draggingSourceOperationMaskForPaths:
 //   - draggingSourceOperationMaskForPaths: defines 'draggingSourceMask' ivar
 //   - NSDraggingDestination methods implemented in PathIcon
-//   - draggingDestinationMaskForPaths:intoPath: called by draggingEntered:
 //=============================================================================
-
-// --- NSDraggingSource (NXIconView delegate methods)
-
-- (void)draggedImage:(NSImage *)image
-	     endedAt:(NSPoint)screenPoint
-	   operation:(NSDragOperation)operation
-{
-  NSLog(@"[FileViewer] draggedImage:endedAt:operation:%lu", operation);
-
-  draggedSource = nil;
-  draggedIcon = nil;
-}
 
 // - Dragging Source helper
 - (NSDragOperation)draggingSourceOperationMaskForPaths:(NSArray *)paths
@@ -1662,57 +1647,6 @@
       mask = NSDragOperationNone;
     }
   }
-
-  return mask;
-}
-
-// - Dragging Destination helper
-- (NSDragOperation)draggingDestinationMaskForPaths:(NSArray *)paths
-                                          intoPath:(NSString *)destPath
-{
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  unsigned int mask = (NSDragOperationCopy | NSDragOperationMove | 
-                      NSDragOperationLink | NSDragOperationDelete);
-
-  if (![fileManager isWritableFileAtPath:destPath]) {
-    NSLog(@"[FileViewer] %@ is not writable!", destPath);
-    return NSDragOperationNone;
-  }
-
-  if (![[[fileManager fileAttributesAtPath:destPath traverseLink:YES]
-	fileType] isEqualToString:NSFileTypeDirectory]) {
-    NSLog(@"[FileViewer] destination path `%@` is not a directory!", destPath);
-    return NSDragOperationNone;
-  }
-
-  for (NSString *path in paths)
-    {
-      NSRange r;
-
-      if (![fileManager isDeletableFileAtPath:path]) {
-        NSLog(@"[FileViewer] path %@ can not be deleted."
-              @"Disabling Move and Delete operation.", path);
-        mask ^= (NSDragOperationMove | NSDragOperationDelete);
-      }
-
-      if ([path isEqualToString:destPath]) {
-        NSLog(@"[FileViewer] source and destination paths are equal "
-              @"(%@ == %@)", path, destPath);
-        return NSDragOperationNone;
-      }
-
-      if ([[path stringByDeletingLastPathComponent] isEqualToString:destPath]) {
-        NSLog(@"[FileViewer] `%@` already exists in `%@`", path, destPath);
-        return NSDragOperationNone;
-      }
-
-      r = [destPath rangeOfString:path];
-      if (r.location == 0 && r.length != NSNotFound)
-	{
-	  NSLog(@"[FileViewer] r.location == 0 && NSNotFound for %@", path);
-	  mask ^= (NSDragOperationCopy | NSDragOperationMove);
-	}
-    }
 
   return mask;
 }

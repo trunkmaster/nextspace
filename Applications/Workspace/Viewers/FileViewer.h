@@ -187,8 +187,5 @@
 //=============================================================================
 // - Dragging source helper
 - (NSDragOperation)draggingSourceOperationMaskForPaths:(NSArray *)paths;
-// - Dragging destination helper
-- (NSDragOperation)draggingDestinationMaskForPaths:(NSArray *)paths
-                                          intoPath:(NSString *)destPath;
 
 @end

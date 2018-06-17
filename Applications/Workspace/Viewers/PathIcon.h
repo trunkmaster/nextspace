@@ -10,7 +10,6 @@
 
 #import <NXAppKit/NXIcon.h>
 
-@class FileSystemInterface;
 @protocol NSDraggingInfo;
 
 @interface PathIcon : NXIcon
