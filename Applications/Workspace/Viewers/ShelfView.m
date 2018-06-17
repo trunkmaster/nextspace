@@ -237,6 +237,26 @@
   return icon;
 }
 
+// --- Notifications
+
+- (void)iconSlotWidthChanged:(NSNotification *)notif
+{
+  NXDefaults *df = [NXDefaults userDefaults];
+  NSSize     size = [self slotSize];
+  CGFloat    width = 0.0;
+
+  if ((width = [df floatForKey:ShelfIconSlotWidth]) > 0.0) {
+    size.width = width;
+  }
+  else {
+    size.width = SHELF_LABEL_WIDTH;
+  }
+  [self setSlotSize:size];
+}
+
+//=============================================================================
+// NXIconView delegate
+//=============================================================================
 - (void)iconDragged:(id)sender event:(NSEvent *)ev
 {
   NSDictionary *iconInfo;
@@ -279,23 +299,6 @@
        pasteboard:pb
            source:draggedSource
         slideBack:NO];
-}
-
-// --- Notifications
-
-- (void)iconSlotWidthChanged:(NSNotification *)notif
-{
-  NXDefaults *df = [NXDefaults userDefaults];
-  NSSize     size = [self slotSize];
-  CGFloat    width = 0.0;
-
-  if ((width = [df floatForKey:ShelfIconSlotWidth]) > 0.0) {
-    size.width = width;
-  }
-  else {
-    size.width = SHELF_LABEL_WIDTH;
-  }
-  [self setSlotSize:size];
 }
 
 //============================================================================
