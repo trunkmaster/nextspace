@@ -2418,17 +2418,22 @@ static int handled_mask = (NSDragOperationCopy |
 
 - (unsigned int)draggingEntered:(id<NSDraggingInfo>)sender
 {
-  NSArray *types = [[sender draggingPasteboard] types];
+  NSArray      *types = [[sender draggingPasteboard] types];
   unsigned int mask = [sender draggingSourceOperationMask];
 
   NSDebugLLog(@"dragndrop",
               @"TerminalView draggingEntered mask=%x types=%@",mask,types);
 
-  if ((mask & handled_mask) &&
-      ([types containsObject:NSFilenamesPboardType] ||
-       [types containsObject:NSStringPboardType]))
+  if (!(mask & handled_mask)) {
+    return NSDragOperationNone;    
+  }
+      
+  if ([types containsObject:NSFilenamesPboardType] ||
+      [types containsObject:NSStringPboardType]) {
     return NSDragOperationCopy;
-  return 0;
+  }
+  
+  return NSDragOperationNone;
 }
 
 /* TODO: should I really have to implement this? */
@@ -2440,40 +2445,39 @@ static int handled_mask = (NSDragOperationCopy |
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSPasteboard *pb=[sender draggingPasteboard];
-  NSArray *types=[pb types];
-  unsigned int mask=[sender draggingSourceOperationMask];
+  NSPasteboard *pb = [sender draggingPasteboard];
+  NSArray      *types = [pb types];
+  unsigned int mask = [sender draggingSourceOperationMask];
 
   NSDebugLLog(@"dragndrop",@"performDrag %x %@",mask,types);
 
-  if (!(mask&handled_mask))
+  if (!(mask&handled_mask)) {
     return NO;
+  }
 
-  if ([types containsObject: NSFilenamesPboardType])
-    {
+  if ([types containsObject:NSFilenamesPboardType]) {
       NSArray *data;
-      int i,c;
+      int     i,c;
 
-      data=[pb propertyListForType: NSFilenamesPboardType];
-      if (!data)
-        data=[NSUnarchiver unarchiveObjectWithData: [pb dataForType: NSFilenamesPboardType]];
+      data=[pb propertyListForType:NSFilenamesPboardType];
+      if (!data) {
+        data = [NSUnarchiver
+                 unarchiveObjectWithData:[pb dataForType:NSFilenamesPboardType]];
+      }
 
-      c=[data count];
-
-      for (i=0;i<c;i++)
-        {
-          [tp sendString: @" "];
-          [tp sendString: [data objectAtIndex: i]];
-        }
+      c = [data count];
+      for (i = 0; i < c; i++) {
+        [tp sendString:@" "];
+        [tp sendString:[data objectAtIndex:i]];
+      }
       return YES;
     }
 
-  if ([types containsObject: NSStringPboardType])
-    {
-      NSString *str=[pb stringForType: NSStringPboardType];
-      [tp sendString: str];
-      return YES;
-    }
+  if ([types containsObject:NSStringPboardType]) {
+    NSString *str = [pb stringForType:NSStringPboardType];
+    [tp sendString:str];
+    return YES;
+  }
 
   return NO;
 }
