@@ -1,0 +1,11 @@
+--- ./WindowMaker-0.95.7/src/superfluous.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/superfluous.c	2018-06-18 12:49:52.925972502 +0300
+@@ -152,7 +152,7 @@
+ 	color.red = 0xff;
+ 	color.green = 0xff;
+ 	color.blue = 0xff;
+-	color.alpha = 200;
++	color.alpha = 100;
+ 
+ 	RClearImage(back, &color);
+ 	RConvertImage(scr->rcontext, back, &pixmap);

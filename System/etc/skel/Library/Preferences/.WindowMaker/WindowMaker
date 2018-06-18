@@ -93,7 +93,7 @@
   SnapEdgeDetect = 1;
   StickyIcons = YES;
   StrictWindozeCycle = YES;
-  Superfluous = NO;
+  Superfluous = YES;
   SwitchPanelOnlyOpen = NO;
   UseSaveUnders = NO;
   ViKeyMenus = NO;
