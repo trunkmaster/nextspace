@@ -1,10 +1,10 @@
 --- ./WindowMaker-0.95.7/src/dock.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/dock.c	2018-06-01 17:19:04.170585000 +0300
++++ ./WindowMaker/src/dock.c	2018-06-18 17:02:06.725090501 +0300
 @@ -60,6 +60,10 @@
  #include "misc.h"
  #include "event.h"
  
-+#ifndef NEXTSPACE
++#ifdef NEXTSPACE
 +#include <Workspace+WindowMaker.h>
 +#endif
 +
@@ -65,3 +65,38 @@
  }
  
  /*
+@@ -2509,11 +2527,20 @@
+ 		 * - we are not right over it, and
+ 		 * - we are not the main tile of a drawer.
+ 		 * In the latter case, we are called from handleDockMove. */
+-		if (icon->dock != dock && ex_x != 0 &&
++		if (icon->dock != dock &&
++#ifdef NEXTSPACE
++			ex_x > DOCK_DETTACH_THRESHOLD &&
++#else
++			ex_x !=0 &&
++#endif
+ 			!(icon->dock && icon->dock->type == WM_DRAWER && icon == icon->dock->icon_array[0]))
+ 			return False;
+ 
+-		if (!redocking && ex_x != 0)
++#ifdef NEXTSPACE
++		if (!redocking && ex_x > DOCK_DETTACH_THRESHOLD)
++#else
++		if (!redocking && ex_x != 0) {
++#endif
+ 			return False;
+ 
+ 		if (getDrawer(scr, ex_y)) /* Return false so that the drawer gets it. */
+@@ -2589,7 +2616,11 @@
+ 		} else {	/* !redocking */
+ 
+ 			/* if slot is free and the icon is close enough, return it */
++#ifdef NEXTSPACE
++			if (!aicon && abs(ex_x) <= DOCK_DETTACH_THRESHOLD) {
++#else
+ 			if (!aicon && ex_x == 0) {
++#endif
+ 				*ret_x = 0;
+ 				*ret_y = ex_y;
+ 				return True;

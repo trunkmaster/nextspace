@@ -152,7 +152,7 @@ Pixmap MakeGhostIcon(WScreen * scr, Drawable drawable)
 	color.red = 0xff;
 	color.green = 0xff;
 	color.blue = 0xff;
-	color.alpha = 200;
+	color.alpha = 100;
 
 	RClearImage(back, &color);
 	RConvertImage(scr->rcontext, back, &pixmap);

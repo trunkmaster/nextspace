@@ -2,28 +2,28 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Jun 15 03:09:41 2018
+;; Created Fri Jun 15 19:20:58 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Applications/Workspace/")
+(setq default-directory "~/Developer/nextspace/Applications/Workspace/Viewers/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("iconCl" "declareTypes" "DeclareTypes" "absolutePathsForPaths" "imageForIconAtPath" "imageForIcon" "syncEmpty" "didChangePath" "pathsForIcon" "imageForIcon" "labelForIcon" "abbrev" "sa" "sheld" "Shelf" "awakeFrom"))
+(setq search-ring '("drag" "slctd" "mo" "pathView" "dragSource" "iconDragTypes" "files" "files " "path " "_path" "_icon" "iconDrag" "setIconDragTypes" "setIconDrag" "changePath" "configure"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/PathView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/RecyclerIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Dock/DockedAppsPrefs.*"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace" "~/Developer/nextspace/" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/PathView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/RecyclerIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathView.m"
-  "PathView.m"
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m"
+  "ShelfView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  8679
-  '(1163 nil)
+  5517
+  '(658 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,30 +33,19 @@
   "FileViewer.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  45160
-  '(11176 nil)
+  50360
+  '(52627 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m"
-  "ShelfView.m"
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathView.m"
+  "PathView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  6263
-  '(2413 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathView.h"
-  "PathView.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  943
-  '(311 nil)
+  12207
+  '(9779 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -66,8 +55,41 @@
   "FileViewer.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  2121
-  '(2018 nil)
+  6037
+  '(2088 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m"
+  "PathIcon.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  2561
+  '(2987 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h"
+  "PathIcon.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  504
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathView.h"
+  "PathView.h"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  532
+  '(729 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -95,34 +117,12 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m"
-  "PathIcon.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  5505
-  '(6448 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Recycler.h"
   "Recycler.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   887
   '(218 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h"
-  "PathIcon.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  504
-  '(nil nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -142,7 +142,7 @@
   "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
   "Controller.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode auto-complete-mode)
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
   17766
   '(18013 nil)
   nil
