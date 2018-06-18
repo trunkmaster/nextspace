@@ -139,7 +139,8 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   slotsWide = roundf(r.size.width / slotSize.width);
   if (slotsWide == 0)
     slotsWide = 1;
-
+  slotsTall = 1;
+  
   lastIcon = NXMakeIconSlot(-1, 0);
 
   selectedIconSlot.x = -1;
