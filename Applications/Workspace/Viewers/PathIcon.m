@@ -15,6 +15,8 @@
 
 #import "Workspace+WindowMaker.h"
 #import <superfluous.h>
+#import <defaults.h>
+
 #import "Controller+NSWorkspace.h"
 #import "FileViewer.h"
 #import <Operations/ProcessManager.h>
@@ -28,6 +30,8 @@
 - (void)_setCid:(void *)val;
 @end
 @interface GSDragView (GNUstepPrivate)
+{
+}
 - (void)_clearupWindow;
 - (BOOL)_updateOperationMask:(NSEvent*) theEvent;
 - (void)_setCursor;
@@ -49,168 +53,24 @@
 
 static WAppIcon *wAppIcon;
 static WScreen  *wScreen;
-static Bool dockable, ondock;
-static int shad_x, shad_y;
+static Drawable wGhostIcon;
+static Bool    dockable, ondock;
+static int     dock_x, dock_y;
 
-static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
+- (WAppIcon *)_appIconForInstance:(const char *)wm_instance class:(const char *)wm_class
 {
-  WIcon *icon;
+  WAppIcon *appicon = wScreen->app_icon_list;
 
-  icon = wmalloc(sizeof(WIcon));
-  icon->core = wCoreCreateTopLevel(scr, coord_x, coord_y,
-                                   wPreferences.icon_size, wPreferences.icon_size,
-                                   0, scr->w_depth, scr->w_visual, scr->w_colormap,
-                                   scr->white_pixel);
-
-  /* will be overriden if this is a application icon */
-  icon->core->descriptor.handle_mousedown = NULL;
-  icon->core->descriptor.handle_expose = NULL;
-  icon->core->descriptor.parent_type = WCLASS_APPICON;
-  icon->core->descriptor.parent = icon;
-
-  icon->core->stacking = wmalloc(sizeof(WStacking));
-  icon->core->stacking->above = NULL;
-  icon->core->stacking->under = NULL;
-  icon->core->stacking->window_level = NORMAL_ICON_LEVEL;
-  icon->core->stacking->child_of = NULL;
-
-  /* Icon image */
-  icon->file = NULL;
-  icon->file_image = NULL;
-
-  return icon;
+  while (appicon) {
+    if (!strcmp(wm_instance, appicon->wm_instance) &&
+        !strcmp(wm_class, appicon->wm_class)) {
+      return appicon;
+    }
+    appicon = appicon->next;
+  }
+  
+  return NULL;
 }
-
-// - (void)_clearupWindow
-// {
-//   [_window setFrame:NSZeroRect display:NO];
-//   [_window orderOut:nil];
-// }
-
-// - (BOOL)_updateOperationMask:(NSEvent*) theEvent
-// {
-//   NSUInteger mod = [theEvent modifierFlags];
-//   NSDragOperation oldOperationMask = operationMask;
-
-//   if (operationMask == NSDragOperationIgnoresModifiers) {
-//     return NO;
-//   }
-  
-//   if (mod & NSControlKeyMask) {
-//     operationMask = NSDragOperationLink;
-//   }
-//   else if (mod & NSAlternateKeyMask) {
-//     operationMask = NSDragOperationCopy;
-//   }
-//   else if (mod & NSCommandKeyMask) {
-//     operationMask = NSDragOperationGeneric;
-//   }
-//   else {
-//     operationMask = NSDragOperationEvery;
-//   }
-
-//   return (operationMask != oldOperationMask);
-// }
-
-// - (void)_setCursor
-// {
-//   NSCursor *newCursor;
-//   NSString *name;
-//   NSString *iname;
-//   NSDragOperation mask;
-
-//   mask = dragMask & operationMask;
-//   if (targetWindowRef != 0) {
-//     mask &= targetMask;
-//   }
-
-//   // NSLog (@"drag, operation, target mask = (%x, %x, %x), dnd aware = %d\n",
-//   //        (unsigned int)dragMask, (unsigned int)operationMask, (unsigned int)targetMask,
-//   //        (targetWindowRef != 0));
-  
-//   if (cursors == nil) {
-//     cursors = RETAIN([NSMutableDictionary dictionary]);
-//   }
-  
-//   name = nil;
-//   newCursor = nil;
-//   iname = nil;
-//   switch (mask) {
-//   case NSDragOperationNone:
-//     name = @"NoCursor";
-//     iname = @"dragNoneCursor";
-//     break;
-//   case NSDragOperationCopy:
-//     name = @"CopyCursor";
-//     iname = @"dragCopyCursor";
-//     break;
-//   case NSDragOperationLink:
-//     name = @"LinkCursor";
-//     iname = @"dragLinkCursor";
-//     break;
-//   case NSDragOperationDelete:
-//     name = @"DeleteCursor";
-//     iname = @"dragDeleteCursor";
-//     break;
-//   default:
-//     if (targetWindowRef != 0) {
-//       name = @"MoveCursor";
-//       iname = @"dragMoveCursor";
-//     }
-//     break;
-//   }
-
-//   if (name != nil) {
-//     newCursor = [cursors objectForKey: name];
-//     if (newCursor == nil) {
-//       NSImage *image = [NSImage imageNamed:iname];
-//       newCursor = [[NSCursor alloc] initWithImage:image];
-//       [cursors setObject:newCursor forKey:name];
-//       RELEASE(newCursor);
-//     }
-//   }
-//   if (newCursor == nil) {
-//     name = @"ArrowCursor";
-//     newCursor = [cursors objectForKey:name];
-//     if (newCursor == nil) {
-//       void *c;
-	  
-//       newCursor = [[NSCursor alloc] initWithImage:nil];
-//       [GSCurrentServer() standardcursor:GSArrowCursor :&c];
-//       [newCursor _setCid:c];
-//       [cursors setObject:newCursor forKey:name];
-//       RELEASE(newCursor);
-//     }
-//   }
-
-//   [newCursor set];
-// }
-
-// - (void)_sendLocalEvent:(GSAppKitSubtype)subtype
-//                  action:(NSDragOperation)action
-//                position:(NSPoint)eventLocation
-//               timestamp:(NSTimeInterval)time
-//                toWindow:(NSWindow*)dWindow
-// {
-//   NSEvent           *e;
-//   NSGraphicsContext *context = GSCurrentContext();
-//   // FIXME: Should store this once
-//   NSInteger dragWindowRef;
-
-//   dragWindowRef = (NSInteger)(intptr_t)[GSServerForWindow(_window)
-//                                            windowDevice:[_window windowNumber]];
-//   eventLocation = [dWindow convertScreenToBase:eventLocation];
-//   e = [NSEvent otherEventWithType:NSAppKitDefined
-// 	                 location:eventLocation
-// 	            modifierFlags:0
-// 	                timestamp:time
-// 	             windowNumber:[dWindow windowNumber]
-// 	                  context:context
-// 	                  subtype:subtype
-// 	                    data1:dragWindowRef
-// 	                    data2:action];
-//   [NSApp _postAndSendEvent:e];
-// }
 
 - (WAppIcon *)_createWMAppIcon:(NSString *)path
 {
@@ -220,7 +80,6 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
   NSString     *exec, *wmClass, *wmInstance;
   NSArray      *execParts;
   RImage       *r_image;
-  Drawable     wGhostIcon;
   WAppIcon     *appIcon;
 
   NSLog(@"[GSDragView] create appicon for: %@", path);
@@ -228,6 +87,8 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
   if (!path || [[path pathExtension] isEqualToString:@"app"] == NO) {
     return NULL;
   }
+  
+  wScreen = wScreenWithNumber(0);
 
   appBundle = [NSBundle bundleWithPath:path];
   if (appBundle) {
@@ -249,37 +110,42 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
       wmClass = @"GNUstep";
     }
     commandPath = [path stringByAppendingPathComponent:exec];
+    
+    // Appicon for this application already exists on screen
+    appIcon = [self _appIconForInstance:[wmInstance cString]
+                                  class:[wmClass cString]];
+    if (appIcon) return NULL;
   }
   else {
     return NULL;
   }
   
-  wScreen = wScreenWithNumber(0);
   appIcon = wAppIconCreateForDock(wScreen, [commandPath cString],
                                   [wmInstance cString], [wmClass cString],
                                   TILE_NORMAL);
   r_image = RLoadImage(wScreen->rcontext, [iconPath cString], 0);
   // RConvertImage(wScreen->rcontext, r_image, &x_pixmap);
 
-  // RemoveFromStackList(appIcon->icon->core);
-  // appIcon->icon = icon_create_core(wScreen, 0, 0);
-  // appIcon->icon->tile_type = TILE_NORMAL;
   appIcon->icon->file = wstrdup([iconPath cString]);
   appIcon->icon->file_image = RCloneImage(r_image);
   wfree(r_image);
   wIconUpdate(appIcon->icon);
-  // AddToStackList(appIcon->icon->core);
   
   wGhostIcon = MakeGhostIcon(wScreen, appIcon->icon->pixmap);
   XSetWindowBackgroundPixmap(dpy, wScreen->dock_shadow, wGhostIcon);
   XClearWindow(dpy, wScreen->dock_shadow);
+  
+  Window wins[2]; /* Managing shadow window */
+  wins[0] = appIcon->icon->core->window;
+  wins[1] = wScreen->dock_shadow;
+  XRestackWindows(dpy, wins, 2);
 
   return appIcon;
 }
 
 - (void)_updateDockIcon:(NSPoint)screenPoint
 {
-  int dock_x, dock_y;
+  int shad_x, shad_y;
 
   // NSLog(@"Screen resolution: %@", NSStringFromRect([GSCurrentServer() boundsForScreen:0]));
   screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - screenPoint.y;
@@ -303,6 +169,38 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
     XUnmapWindow(dpy, wScreen->dock_shadow);
     ondock = 0;
   }
+}
+
+- (void)_appIconCleanupOnDock:(BOOL)onDock dockable:(BOOL)isDockable
+{
+  NSPoint screenPoint;
+  
+  if (onDock != NO) {
+    wDefaultChangeIcon(wAppIcon->wm_instance, wAppIcon->wm_class, wAppIcon->icon->file);
+    if (!wDockAttachIcon(wScreen->dock, wAppIcon, dock_x, dock_y, YES)) {
+      NSLog(@"[PathIcon] WARNING: the icon was not docked!");
+    }
+    wAppIcon->running = 0;
+    wAppIcon->launching = 0;
+    wAppIcon->editing = 0;
+    // wAppIcon->relaunching = 0;
+    // wAppIcon->auto_launch = 0;
+    // wAppIcon->forced_dock = 0;
+    // wIconUpdate(wAppIcon->icon);
+    screenPoint.x = wAppIcon->x_pos;
+    screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - wAppIcon->y_pos;
+    screenPoint.y -= wPreferences.icon_size/2;
+    [self _slideDraggedImageTo:screenPoint numberOfSteps:10 delay:0.01 waitAfterSlide:NO];
+    wAppIconPaint(wAppIcon);
+    XMapWindow(dpy, wAppIcon->icon->core->window);
+  }
+  if (isDockable != NO) {
+    XUnmapWindow(dpy, wScreen->dock_shadow);
+    XSetWindowBackground(dpy, wScreen->dock_shadow, wScreen->white_pixel);
+    XFreePixmap(dpy, wGhostIcon);
+  }
+  wAppIcon = NULL;
+  dock_x = dock_y = -1;
 }
 
 - (void)_handleDrag:(NSEvent*)theEvent slidePoint:(NSPoint)slidePoint
@@ -352,6 +250,7 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
   NSArray *paths = [dragPasteboard propertyListForType:NSFilenamesPboardType];
   wAppIcon = [self _createWMAppIcon:[paths objectAtIndex:0]];
   dockable = (wAppIcon == NULL) ? NO : YES;
+  ondock = NO;
   
   // --- Setup the event loop ------------------------------------------
   [self _updateAndMoveImageToCorrectPosition];
@@ -370,17 +269,14 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
   [NSEvent stopPeriodicEvents];
   [self _updateAndMoveImageToCorrectPosition];
 
-  if (ondock != NO) {
-    wDockAttachIcon(wScreen->dock, wAppIcon, shad_x, shad_y, YES);
-  }
-  if (dockable != NO) {
-    XUnmapWindow(dpy, wScreen->dock_shadow);
-  }
+  [self _appIconCleanupOnDock:ondock dockable:dockable];
+  
   NSDebugLLog(@"NSDragging", @"dnd ending %d\n", targetWindowRef);
 
   // --- Deposit the drop ----------------------------------------------
-  if ((targetWindowRef != 0) &&
-      ((targetMask & dragMask & operationMask) != NSDragOperationNone)) {
+  if (((targetWindowRef != 0) &&
+       ((targetMask & dragMask & operationMask) != NSDragOperationNone)) ||
+      (ondock == YES)) {
     [self _clearupWindow];
     [cursorBeforeDrag set];
     NSDebugLLog(@"NSDragging", @"sending dnd drop\n");
@@ -402,7 +298,7 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
   }
   else {
     if (slideBack) {
-      [self slideDraggedImageTo: slidePoint];
+      [self slideDraggedImageTo:slidePoint];
     }
     [self _clearupWindow];
     [cursorBeforeDrag set];
@@ -538,153 +434,6 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
     }
 }
   
-// - (void) _updateAndMoveImageToCorrectPosition
-// {
-//   //--- Store old values -----------------------------------------------------
-//   NSWindow *oldDestWindow = destWindow;
-//   BOOL oldDestExternal = destExternal;
-//   int mouseWindowRef; 
-//   BOOL changeCursor = NO;
- 
-//   //--- Move drag image to the new position -----------------------------------
-//   [self _moveDraggedImageToNewPosition];
-
-//   if ([dragSource respondsToSelector:@selector(draggedImage:movedTo:)])
-//     {
-//       [dragSource draggedImage: [self draggedImage] movedTo: dragPosition];
-//     }
-
-//   //--- Determine target window ---------------------------------------------
-//   destWindow = [self windowAcceptingDnDunder: dragPosition
-//                                    windowRef: &mouseWindowRef];
-
-//   // If we are not hovering above a window that we own
-//   // we are dragging to an external application.
-//   destExternal = (mouseWindowRef != 0) && (destWindow == nil);
-            
-//   if (destWindow != nil)
-//     {
-//       dragPoint = [destWindow convertScreenToBase: dragPosition];
-//     }
-            
-//   NSDebugLLog(@"NSDragging", @"mouse window %d (%@) at %@\n",
-//     mouseWindowRef, destWindow, NSStringFromPoint(dragPosition));
-            
-//   //--- send exit message if necessary -------------------------------------
-//   if ((mouseWindowRef != targetWindowRef) && targetWindowRef)
-//     {
-//       /* If we change windows and the old window is dnd aware, we send an
-//          dnd exit */
-//       NSDebugLLog(@"NSDragging", @"sending dnd exit\n");
-                
-//       if (oldDestWindow != nil)   
-//         {
-//           [self _sendLocalEvent: GSAppKitDraggingExit
-//                          action: dragMask & operationMask
-//                        position: NSZeroPoint
-//                       timestamp: dragSequence
-//                        toWindow: oldDestWindow];
-//         }  
-//       else
-//         {  
-//           [self sendExternalEvent: GSAppKitDraggingExit
-//                            action: dragMask & operationMask
-//                          position: NSZeroPoint
-//                         timestamp: dragSequence
-//                          toWindow: targetWindowRef];
-//         }
-//     }
-
-//   //  Reset drag mask when we switch from external to internal or back
-//   if (oldDestExternal != destExternal)
-//     {
-//       NSDragOperation newMask;
-
-//       if ([dragSource respondsToSelector:
-//                         @selector(draggingSourceOperationMaskForLocal:)])
-//         {
-//           newMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
-//         }
-//       else
-//         {
-//           newMask = NSDragOperationCopy | NSDragOperationLink |
-//             NSDragOperationGeneric | NSDragOperationPrivate;
-//         }
-
-//       if (newMask != dragMask)
-//         {
-//           dragMask = newMask;
-//           changeCursor = YES;
-//         }
-//     }
-
-//   if (mouseWindowRef == targetWindowRef && targetWindowRef)  
-//     { 
-//       // same window, sending update
-//       NSDebugLLog(@"NSDragging", @"sending dnd pos\n");
-
-//       // FIXME: We should only send this when the destination wantsPeriodicDraggingUpdates
-//       if (destWindow != nil)
-//         {
-//           [self _sendLocalEvent: GSAppKitDraggingUpdate
-//                          action: dragMask & operationMask
-//                        position: dragPosition
-//                       timestamp: dragSequence
-//                        toWindow: destWindow];
-//         }
-//       else 
-//         {
-//           [self sendExternalEvent: GSAppKitDraggingUpdate 
-//                            action: dragMask & operationMask
-//                          position: dragPosition
-//                         timestamp: dragSequence
-//                          toWindow: targetWindowRef];
-//         }
-//     }
-//   else if (mouseWindowRef != 0)
-//     {
-//       // FIXME: We might force the cursor update here, if the
-//       // target wants to change the cursor.
-//       NSDebugLLog(@"NSDragging", @"sending dnd enter/pos\n");
-      
-//       if (destWindow != nil)
-//         {
-//           [self _sendLocalEvent: GSAppKitDraggingEnter
-//                          action: dragMask
-//                        position: dragPosition
-//                       timestamp: dragSequence
-//                        toWindow: destWindow];
-//         }
-//       else
-//         {
-//           [self sendExternalEvent: GSAppKitDraggingEnter
-//                            action: dragMask
-//                          position: dragPosition
-//                         timestamp: dragSequence
-//                          toWindow: mouseWindowRef];
-//         }
-//     }
-
-//   if (targetWindowRef != mouseWindowRef)
-//     {
-//       targetWindowRef = mouseWindowRef;
-//       changeCursor = YES;
-//     }
-  
-//   if (changeCursor)
-//     {
-//       [self _setCursor];
-//     }
-// }
-
-// - (void) _moveDraggedImageToNewPosition
-// {
-//   dragPosition = newPosition;
-//   [GSServerForWindow(_window) movewindow:
-//     NSMakePoint(newPosition.x - offset.width, newPosition.y - offset.height) 
-//     : [_window windowNumber]];
-// }
-
 - (void)_slideDraggedImageTo:(NSPoint)screenPoint
                numberOfSteps:(int)steps
                        delay:(float)delay
