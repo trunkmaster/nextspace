@@ -2527,20 +2527,11 @@ Bool wDockSnapIcon(WDock *dock, WAppIcon *icon, int req_x, int req_y, int *ret_x
 		 * - we are not right over it, and
 		 * - we are not the main tile of a drawer.
 		 * In the latter case, we are called from handleDockMove. */
-		if (icon->dock != dock &&
-#ifdef NEXTSPACE
-			ex_x > DOCK_DETTACH_THRESHOLD &&
-#else
-			ex_x !=0 &&
-#endif
+		if (icon->dock != dock && ex_x != 0 &&
 			!(icon->dock && icon->dock->type == WM_DRAWER && icon == icon->dock->icon_array[0]))
 			return False;
 
-#ifdef NEXTSPACE
-		if (!redocking && ex_x > DOCK_DETTACH_THRESHOLD)
-#else
-		if (!redocking && ex_x != 0) {
-#endif
+		if (!redocking && ex_x != 0)
 			return False;
 
 		if (getDrawer(scr, ex_y)) /* Return false so that the drawer gets it. */
@@ -2616,11 +2607,7 @@ Bool wDockSnapIcon(WDock *dock, WAppIcon *icon, int req_x, int req_y, int *ret_x
 		} else {	/* !redocking */
 
 			/* if slot is free and the icon is close enough, return it */
-#ifdef NEXTSPACE
-			if (!aicon && abs(ex_x) <= DOCK_DETTACH_THRESHOLD) {
-#else
 			if (!aicon && ex_x == 0) {
-#endif
 				*ret_x = 0;
 				*ret_y = ex_y;
 				return True;
