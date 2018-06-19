@@ -209,7 +209,7 @@ static NSDragOperation savedMask;
     wAppIconPaint(wAppIcon);
     XMapWindow(dpy, wAppIcon->icon->core->window);
   }
-  else {
+  else if (wAppIcon) {
     wAppIconDestroy(wAppIcon);
     wAppIcon = NULL;
   }
