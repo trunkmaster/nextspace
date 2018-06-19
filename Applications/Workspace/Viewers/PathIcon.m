@@ -300,6 +300,10 @@ static int     dock_x, dock_y;
     if (slideBack) {
       [self slideDraggedImageTo:slidePoint];
     }
+    else {
+      DoKaboom(wScreen, (Window)[GSCurrentServer() windowDevice:[_window windowNumber]],
+               newPosition.x, [GSCurrentServer() boundsForScreen:0].size.height - newPosition.y);
+    }
     [self _clearupWindow];
     [cursorBeforeDrag set];
     deposited = NO;
