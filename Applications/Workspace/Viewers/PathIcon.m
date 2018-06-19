@@ -56,6 +56,7 @@ static WScreen  *wScreen;
 static Drawable wGhostIcon;
 static Bool    dockable, ondock;
 static int     dock_x, dock_y;
+static NSDragOperation savedMask;
 
 - (WAppIcon *)_appIconForInstance:(const char *)wm_instance class:(const char *)wm_class
 {
@@ -63,7 +64,11 @@ static int     dock_x, dock_y;
 
   while (appicon) {
     if (!strcmp(wm_instance, appicon->wm_instance) &&
-        !strcmp(wm_class, appicon->wm_class)) {
+        !strcmp(wm_class, appicon->wm_class) &&
+        !appicon->running && !appicon->launching & !appicon->docked) {
+      NSLog(@"Appicon found: destroyed=%i running=%i launching=%i docked=%i editing=%i",
+            appicon->destroyed, appicon->running, appicon->launching, appicon->docked,
+            appicon->editing);
       return appicon;
     }
     appicon = appicon->next;
@@ -164,10 +169,19 @@ static int     dock_x, dock_y;
       XMapWindow(dpy, wScreen->dock_shadow);
       ondock = 1;
     }
+    NSCursor *newCursor = [cursors objectForKey:@"MoveCursor"];
+    if (newCursor == nil) {
+      NSImage *image = [NSImage imageNamed:@"dragMoveCursor"];
+      newCursor = [[NSCursor alloc] initWithImage:image];
+      [cursors setObject:newCursor forKey:@"MoveCursor"];
+      RELEASE(newCursor);
+    }
+    [newCursor set];
   }
   else if (ondock) {
     XUnmapWindow(dpy, wScreen->dock_shadow);
     ondock = 0;
+    [self _setCursor];
   }
 }
 
@@ -191,17 +205,23 @@ static int     dock_x, dock_y;
     screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - wAppIcon->y_pos;
     screenPoint.y -= wPreferences.icon_size/2;
     [self _slideDraggedImageTo:screenPoint numberOfSteps:10 delay:0.01 waitAfterSlide:NO];
+    wIconUpdate(wAppIcon->icon);
     wAppIconPaint(wAppIcon);
     XMapWindow(dpy, wAppIcon->icon->core->window);
+  }
+  else {
+    wAppIconDestroy(wAppIcon);
+    wAppIcon = NULL;
   }
   if (isDockable != NO) {
     XUnmapWindow(dpy, wScreen->dock_shadow);
     XSetWindowBackground(dpy, wScreen->dock_shadow, wScreen->white_pixel);
     XFreePixmap(dpy, wGhostIcon);
   }
-  wAppIcon = NULL;
   dock_x = dock_y = -1;
 }
+
+// --- Overridings
 
 - (void)_handleDrag:(NSEvent*)theEvent slidePoint:(NSPoint)slidePoint
 {
