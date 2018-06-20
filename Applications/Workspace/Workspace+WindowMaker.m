@@ -364,56 +364,54 @@ void WWMDockInit(void)
 }
 void WWMDockShowIcons(WDock *dock)
 {
-  int start_icon, max_icons;
-
-  if (dock == NULL || dock->mapped)
+  if (dock == NULL || dock->mapped) {
     return;
-
-  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++)
-    {
-      if (dock->icon_array[i])
-        XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
+  }
+  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++) {
+    if (dock->icon_array[i]) {
+      XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
     }
+  }
+  XSync(dpy, False);
   dock->mapped = 1;
 }
 void WWMDockHideIcons(WDock *dock)
 {
-  int  max_icons;
-
-  if (dock == NULL || !dock->mapped)
+  if (dock == NULL || !dock->mapped) {
     return;
-
-  max_icons = dock->collapsed ? 1 : dock->max_icons;
-
-  for (int i = 0; i < max_icons; i++)
-    {
-      if (dock->icon_array[i])
-        XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
+  }
+  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++) {
+    if (dock->icon_array[i]) {
+      XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
     }
+  }
+  XSync(dpy, False);
   dock->mapped = 0;
 }
 void WWMDockUncollapse(WDock *dock)
 {
-  if (dock == NULL || !dock->collapsed)
+  if (dock == NULL || !dock->collapsed) {
     return;
-
-  for (int i = 1; dock->max_icons; i++)
-    {
-      if (dock->icon_array[i])
-        XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
+  }
+  for (int i = 1; i < dock->max_icons; i++) {
+    if (dock->icon_array[i]) {
+      XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
     }
+  }
+  XSync(dpy, False);
   dock->collapsed = 0;
 }
 void WWMDockCollapse(WDock *dock)
 {
-  if (dock == NULL || dock->collapsed || !dock->mapped)
+  if (dock == NULL || dock->collapsed || !dock->mapped) {
     return;
-
-  for (int i = 1; i < dock->max_icons; i++)
-    {
-      if (dock->icon_array[i])
-        XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
+  }
+  for (int i = 1; i < dock->max_icons; i++) {
+    if (dock->icon_array[i]) {
+      XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
     }
+  }
+  XSync(dpy, False);
   dock->collapsed = 1;
 }
 
