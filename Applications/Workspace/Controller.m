@@ -894,19 +894,18 @@ static NSString *WMComputerShouldGoDownNotification =
 {
   WScreen *scr = wScreenWithNumber(0);
   
-  if ([[sender title] isEqualToString:@"Collapse"])
-    {
-      WWMDockCollapse(scr->dock);
-      if (scr->dock->collapsed)
-        [sender setTitle:@"Uncollapse"];
+  if ([[sender title] isEqualToString:@"Collapse"]) {
+    WWMDockCollapse(scr->dock);
+    if (scr->dock->collapsed) {
+      [sender setTitle:@"Uncollapse"];
     }
-  else
-    {
-      WWMDockUncollapse(scr->dock);
-      if (!scr->dock->collapsed)
-        [sender setTitle:@"Collapse"];
+  }
+  else {
+    WWMDockUncollapse(scr->dock);
+    if (!scr->dock->collapsed) {
+      [sender setTitle:@"Collapse"];
     }
-  
+  }  
 }
 
 //--- Validation
@@ -918,31 +917,34 @@ static NSString *WMComputerShouldGoDownNotification =
 
   // NSLog(@"Validate menu: %@ item: %@", menuTitle, [menuItem title]);
 
-  if ([menuTitle isEqualToString:@"File"])
-    {
+  if ([menuTitle isEqualToString:@"File"]) {
       // Not implemented yet
-      if ([[menuItem title] isEqualToString:@"Empty Recycler"])
-        if ([recycler itemsCount] == 0)
-          return NO;
+    if ([[menuItem title] isEqualToString:@"Empty Recycler"]) {
+      if ([recycler itemsCount] == 0) {
+        return NO;
+      }
     }
-  
-  if ([menuTitle isEqualToString:@"Disk"])
-    {
-      if ([[menuItem title] isEqualToString:@"Initialize..."]) return NO;
-      if ([[menuItem title] isEqualToString:@"Check For Disks"] &&
-          !mediaAdaptor) return NO;
+  }
+  else if ([menuTitle isEqualToString:@"Dock"]) {
+    if ([[menuItem title] isEqualToString:@"Collapse"] ||
+        [[menuItem title] isEqualToString:@"Uncollapse"]) {
+      if (!wScreenWithNumber(0)->dock->mapped) {
+        return NO;
+      }
     }
-
-  if ([menuTitle isEqualToString:@"Inspector"])
-    {
-      if (!fileViewer)
-        {
-          if ([[menuItem title] isEqualToString:@"Attributes"]) return NO;
-          if ([[menuItem title] isEqualToString:@"Contents"]) return NO;
-          if ([[menuItem title] isEqualToString:@"Tools"]) return NO;
-          if ([[menuItem title] isEqualToString:@"Permissions"]) return NO;
-        }
-    }
+  }
+  else if ([menuTitle isEqualToString:@"Disk"]) {
+    if ([[menuItem title] isEqualToString:@"Initialize..."]) return NO;
+    if ([[menuItem title] isEqualToString:@"Check For Disks"] && !mediaAdaptor) return NO;
+  }
+  else if ([menuTitle isEqualToString:@"Inspector"]) {
+      if (!fileViewer) {
+        if ([[menuItem title] isEqualToString:@"Attributes"]) return NO;
+        if ([[menuItem title] isEqualToString:@"Contents"]) return NO;
+        if ([[menuItem title] isEqualToString:@"Tools"]) return NO;
+        if ([[menuItem title] isEqualToString:@"Permissions"]) return NO;
+      }
+  }
 
   return YES;
 }
