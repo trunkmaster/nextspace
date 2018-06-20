@@ -246,7 +246,7 @@
 
   [self selectIcons:[NSSet setWithObject:icon]];
 
-  [[icon label] setIconLabelDelegate:delegate];
+  [[icon label] setIconLabelDelegate:_owner];
   // Setting delegate for icons performed in setPath:selection
 }
 
