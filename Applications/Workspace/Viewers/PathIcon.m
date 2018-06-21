@@ -669,26 +669,6 @@ static NSDragOperation savedMask;
 // Drag and drop
 //============================================================================
 
-// - (void)dragImage:(NSImage*)anImage
-//                at:(NSPoint)baseLocation
-//            offset:(NSSize)initialOffset
-//             event:(NSEvent*)event
-//        pasteboard:(NSPasteboard*)pboard
-//            source:(id)sourceObject
-//         slideBack:(BOOL)slideFlag
-// {
-//   id dragView = [GSServerForWindow(self) dragInfo];
-
-//   [NSApp preventWindowOrdering];
-//   [dragView dragImage:anImage
-//                    at:[_window convertBaseToScreen:baseLocation]
-//                offset:initialOffset
-//                 event:event
-//            pasteboard:pboard
-//                source:sourceObject
-//             slideBack:slideFlag];
-// }
-
 // --- NSDraggingSource must have 'draggingSourceOperationMaskForLocal:'
 // catched by enclosing view (PathView, ShelfView) and dispathed to
 // 'delegate' - FileViewer 'draggingSourceOperationMaskForLocal:iconView:'
@@ -775,7 +755,7 @@ static NSDragOperation savedMask;
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
-  NSLog(@"[PathIcon] draggingUpdated: mask - %i", draggingMask);
+  // NSLog(@"[PathIcon] draggingUpdated: mask - %i", draggingMask);
   return draggingMask;
 }
 

@@ -1627,8 +1627,8 @@
 
 //  NSLog(@"[FileViewer] draggingSourceOperationMaskForPaths: %@", filenames);
 
-  mask = NSDragOperationCopy | NSDragOperationLink |
-         NSDragOperationMove | NSDragOperationDelete;
+  mask = (NSDragOperationCopy | NSDragOperationLink |
+          NSDragOperationMove | NSDragOperationDelete);
 
   // Get first object from array
   filePath = [paths objectAtIndex:0];
