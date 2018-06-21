@@ -6,6 +6,7 @@
 
 #import <math.h>
 #import <AppKit/AppKit.h>
+#import <GNUstepGUI/GSDragView.h>
 #import <NXFoundation/NXDefaults.h>
 #import <NXFoundation/NXFileManager.h>
 
@@ -338,13 +339,13 @@
   NSLog(@"[ShelfView] draggedImage:endedAt:operation:%lu mask:%lu",
         operation, draggedMask);
 
-  if ((draggedMask == NSDragOperationCopy)
-      && ![self iconInSlot:lastSlotDragEntered]) {
+  if ((draggedMask == NSDragOperationCopy) &&
+      ![self iconInSlot:lastSlotDragEntered]) {
     NSLog(@"Operation is Copy and no icon in slot [%i,%i]",
           lastSlotDragEntered.x, lastSlotDragEntered.y);
-    [[NSApp delegate] slideImage:[draggedIcon iconImage]
-                            from:screenPoint
-                              to:dragPoint];
+    // [[NSApp delegate] slideImage:image
+    //                         from:screenPoint
+    //                           to:dragPoint];
     [self putIcon:draggedIcon intoSlot:lastSlotDragEntered];
     [draggedIcon setDimmed:NO];
     [draggedIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
