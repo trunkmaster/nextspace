@@ -77,7 +77,6 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
 {
-  [NSApp hide:self];
   [self updateWeather:nil];
 }
 
@@ -125,10 +124,9 @@ static NSUserDefaults *defaults = nil;
 {
   NSDictionary *weather;
 
-  if (forecast == nil)
-    {
-      forecast = [[YahooForecast alloc] init];
-    }
+  if (forecast == nil) {
+    forecast = [[YahooForecast alloc] init];
+  }
 
   weather = [forecast fetchWeatherWithWOEID:@"924938"
                                     zipCode:@""
@@ -136,19 +134,14 @@ static NSUserDefaults *defaults = nil;
 
   // NSLog(@"Got Yahoo weather forecast. %@", weather);
 
-  if (weather && [[weather objectForKey:@"ErrorText"] length] == 0)
-    {
-      [weatherView setImage:[weather objectForKey:@"Image"]];
-      [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
-      [weatherView setHumidity:[weather objectForKey:@"Humidity"]];
-    }
-  else
-    {
-      NSLog(@"Error getting data: %@", [weather objectForKey:@"ErrorText"]);
-      // NXRunAlertPanel(@"Weather error",
-      //                 @"The error was occured while getting weather data.",
-      //                 @"Dismiss", nil, nil);
-    }
+  if (weather && [[weather objectForKey:@"ErrorText"] length] == 0) {
+    [weatherView setImage:[weather objectForKey:@"Image"]];
+    [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
+    [weatherView setHumidity:[weather objectForKey:@"Humidity"]];
+  }
+  else {
+    NSLog(@"Error getting data: %@", [weather objectForKey:@"ErrorText"]);
+  }
 }
 
 @end
