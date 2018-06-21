@@ -148,3 +148,10 @@ src/moveres.c:
         - mouse cursors stops moving;
         - mouse cursor changes to image hinting to user appropriate resize 
           direction.
+Misc
+----
+
+src/appicon.c:
+
+    Call DoKaboom() through dispatch_async() to prevent effect from blocking
+    Workspace user interaction.
