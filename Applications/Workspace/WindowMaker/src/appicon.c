@@ -54,6 +54,9 @@
 #ifdef USE_DOCK_XDND
 #include "xdnd.h"
 #endif
+#ifdef NEXTSPACE
+#include <Workspace+WindowMaker.h>
+#endif /* NEXTSPACE */
 
 /*
  * icon_file for the dock is got from the preferences file by
@@ -1048,7 +1051,13 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
 							 */
 							if (aicon->icon->selected)
 								wIconSelect(aicon->icon);
-							DoKaboom(scr, aicon->icon->core->window, x, y);
+#ifdef NEXTSPACE
+							dispatch_async(workspace_q, ^{
+#endif
+									DoKaboom(scr, aicon->icon->core->window, x, y);
+#ifdef NEXTSPACE
+                });
+#endif
 						}
 					}
 					wDockDetach(originalDock, aicon);
