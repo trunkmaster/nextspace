@@ -142,7 +142,7 @@ static int icon_number = 0;
                   initWithString:@"°"
                             font:[NSFont boldSystemFontOfSize:16]
                       lightColor:[NSColor lightGrayColor]
-                       darkColor:[NSColor blackColor]];
+                       darkColor:[NSColor blackColor]]; // another option from Gimp: H:0 S:100 V:53
   
   humidity = [[SunkenString alloc]
                   initWithString:@"%"
@@ -159,7 +159,7 @@ static int icon_number = 0;
                                               operation:NSCompositeSourceOver];
   [conditionImage
     compositeToPoint:NSMakePoint((64-[conditionImage size].width)/2,
-                                 58-[conditionImage size].height)
+                                 60-[conditionImage size].height)
            operation:NSCompositeSourceOver];
   
   [temperature drawAtPoint:NSMakePoint(8, 0)];
@@ -185,10 +185,10 @@ static int icon_number = 0;
     [conditionImage release];
   
   conditionImage = [image copy];
-  [conditionImage setScalesWhenResized:YES];
-  imageSize.width -= 6;
-  imageSize.height -= 6;
-  [conditionImage setSize:imageSize];
+  [conditionImage setScalesWhenResized:NO];
+//  imageSize.width -= 6;
+//  imageSize.height -= 6;
+//  [conditionImage setSize:imageSize];
   
   [self setNeedsDisplay:YES];
 }
