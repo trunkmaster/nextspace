@@ -321,10 +321,10 @@ static NSDragOperation savedMask;
     }
     else {
       GSDisplayServer *x_server = GSCurrentServer();
-      DoKaboom(wScreen,
-               (Window)[x_server windowDevice:[_window windowNumber]],
-               newPosition.x,
-               [x_server boundsForScreen:0].size.height - newPosition.y);
+      dispatch_async(workspace_q, ^{
+          DoKaboom(wScreen, (Window)[x_server windowDevice:[_window windowNumber]],
+                   newPosition.x, [x_server boundsForScreen:0].size.height - newPosition.y);
+        });
     }
     [self _clearupWindow];
     [cursorBeforeDrag set];
