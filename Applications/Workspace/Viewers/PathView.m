@@ -426,6 +426,7 @@
 
   if ([icons lastObject] != sender) {
     [sender setSelected:NO];
+    [[icons lastObject] setSelected:YES];
   }
 
   paths = [_dragIcon paths];
