@@ -93,8 +93,6 @@ static NSDragOperation savedMask;
     return NULL;
   }
   
-  wScreen = wScreenWithNumber(0);
-
   appBundle = [NSBundle bundleWithPath:path];
   if (appBundle) {
     appInfo = [NSDictionary dictionaryWithContentsOfFile:
@@ -268,6 +266,7 @@ static NSDragOperation savedMask;
 
   // --- Create WindowMaker appicon -----------------------------------
   NSArray *paths = [dragPasteboard propertyListForType:NSFilenamesPboardType];
+  wScreen = wScreenWithNumber(0);
   wAppIcon = [self _createWMAppIcon:[paths objectAtIndex:0]];
   dockable = (wAppIcon == NULL) ? NO : YES;
   ondock = NO;
@@ -321,8 +320,11 @@ static NSDragOperation savedMask;
       [self slideDraggedImageTo:slidePoint];
     }
     else {
-      DoKaboom(wScreen, (Window)[GSCurrentServer() windowDevice:[_window windowNumber]],
-               newPosition.x, [GSCurrentServer() boundsForScreen:0].size.height - newPosition.y);
+      GSDisplayServer *x_server = GSCurrentServer();
+      DoKaboom(wScreen,
+               (Window)[x_server windowDevice:[_window windowNumber]],
+               newPosition.x,
+               [x_server boundsForScreen:0].size.height - newPosition.y);
     }
     [self _clearupWindow];
     [cursorBeforeDrag set];
