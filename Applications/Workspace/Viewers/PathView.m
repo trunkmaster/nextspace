@@ -431,8 +431,6 @@
   paths = [_dragIcon paths];
   _dragMask = [_owner draggingSourceOperationMaskForPaths:paths];
 
-  NSLog(@"[PathView] icon dragged with paths: %@", paths);
-
   [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
   [pb setPropertyList:paths forType:NSFilenamesPboardType];
 
