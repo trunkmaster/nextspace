@@ -142,7 +142,10 @@ static int icon_number = 0;
                   initWithString:@"°"
                             font:[NSFont boldSystemFontOfSize:16]
                       lightColor:[NSColor lightGrayColor]
-                       darkColor:[NSColor blackColor]]; // another option from Gimp: H:0 S:100 V:53
+                       darkColor:[NSColor colorWithCalibratedRed:(100.0/255.0)
+                                                           green:0.0
+                                                            blue:0.0
+                                                           alpha:1.0]];
   
   humidity = [[SunkenString alloc]
                   initWithString:@"%"
@@ -158,12 +161,11 @@ static int icon_number = 0;
   [[NSImage imageNamed:@"common_Tile"] compositeToPoint:NSMakePoint(0, 0)
                                               operation:NSCompositeSourceOver];
   [conditionImage
-    compositeToPoint:NSMakePoint((64-[conditionImage size].width)/2,
-                                 60-[conditionImage size].height)
+    compositeToPoint:NSMakePoint((64 - [conditionImage size].width)/2, 20)
            operation:NSCompositeSourceOver];
   
-  [temperature drawAtPoint:NSMakePoint(8, 0)];
-  [humidity drawAtPoint:NSMakePoint(64-[humidity width]-4, 2)];
+  [temperature drawAtPoint:NSMakePoint(8, 1)];
+  [humidity drawAtPoint:NSMakePoint(64-[humidity width]-4, 5)];
   
   [super drawRect:rect];
 }
@@ -179,16 +181,11 @@ static int icon_number = 0;
 
 - (void)setImage:(NSImage *)image
 {
-  NSSize imageSize = [image size];
-  
-  if (conditionImage != nil)
+  if (conditionImage != nil) {
     [conditionImage release];
-  
+  }
   conditionImage = [image copy];
   [conditionImage setScalesWhenResized:NO];
-//  imageSize.width -= 6;
-//  imageSize.height -= 6;
-//  [conditionImage setSize:imageSize];
   
   [self setNeedsDisplay:YES];
 }
