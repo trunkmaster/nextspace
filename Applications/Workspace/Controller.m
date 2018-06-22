@@ -908,6 +908,25 @@ static NSString *WMComputerShouldGoDownNotification =
   }  
 }
 
+// Icon Yard
+- (void)setIconYardVisibility:(id)sender
+{
+  WScreen *scr = wScreenWithNumber(0);
+
+  if ([[sender title] isEqualToString:@"Hide"]) {
+    WWMIconYardHideIcons(scr);
+    // wScreenUpdateUsableArea(scr);
+    // if (!scr->dock->mapped)
+    [sender setTitle:@"Show"];
+  }
+  else {
+    WWMIconYardShowIcons(scr);
+    // wScreenUpdateUsableArea(scr);
+    // if (scr->dock->mapped)
+    [sender setTitle:@"Hide"];
+  }
+}
+
 //--- Validation
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
