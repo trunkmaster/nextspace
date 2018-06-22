@@ -293,13 +293,15 @@
   //   [pb setPropertyList:iconInfo forType:NSGeneralPboardType];
   // }
 
+  isRootIconDragged = (iconSlot.x == 0 && iconSlot.y == 0) ? YES : NO;
+  
   [self dragImage:[draggedIcon iconImage]
                at:iconLocation
            offset:NSZeroSize
             event:ev
        pasteboard:pb
            source:draggedSource
-        slideBack:NO];
+        slideBack:isRootIconDragged];
 }
 
 //============================================================================
@@ -340,12 +342,10 @@
         operation, draggedMask);
 
   if ((draggedMask == NSDragOperationCopy) &&
-      ![self iconInSlot:lastSlotDragEntered]) {
+      ![self iconInSlot:lastSlotDragEntered] &&
+      isRootIconDragged == NO) {
     NSLog(@"Operation is Copy and no icon in slot [%i,%i]",
           lastSlotDragEntered.x, lastSlotDragEntered.y);
-    // [[NSApp delegate] slideImage:image
-    //                         from:screenPoint
-    //                           to:dragPoint];
     [self putIcon:draggedIcon intoSlot:lastSlotDragEntered];
     [draggedIcon setDimmed:NO];
     [draggedIcon registerForDraggedTypes:@[NSFilenamesPboardType]];
