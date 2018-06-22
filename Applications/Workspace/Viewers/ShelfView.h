@@ -32,6 +32,8 @@
   NXIconSlot lastSlotDragExited;
   NSPoint    dragPoint;
   NSUInteger draggedMask;
+
+  BOOL       isRootIconDragged;
 }
 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;
