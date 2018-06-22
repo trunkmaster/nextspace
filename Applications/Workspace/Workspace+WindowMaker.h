@@ -57,6 +57,10 @@ void WWMSetupSignalHandling(void);
 void WWMWipeDesktop(WScreen * scr);
 void WWMShutdown(WShutdownMode mode);
 
+// --- Icon Yard
+void WWMIconYardShowIcons(WScreen *screen);
+void WWMIconYardHideIcons(WScreen *screen);
+
 // --- Dock
 void WWMDockInit(void);
 void WWMDockShowIcons(WDock *dock);
