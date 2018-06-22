@@ -51,7 +51,7 @@
 @end
 @implementation GSDragView (Private)
 
-static WAppIcon *wAppIcon;
+static WAppIcon *wAppIconNew;
 static WScreen  *wScreen;
 static Drawable wGhostIcon;
 static Bool    dockable, ondock;
@@ -64,8 +64,7 @@ static NSDragOperation savedMask;
 
   while (appicon) {
     if (!strcmp(wm_instance, appicon->wm_instance) &&
-        !strcmp(wm_class, appicon->wm_class) &&
-        !appicon->running && !appicon->launching & !appicon->docked) {
+        !strcmp(wm_class, appicon->wm_class)) {
       NSLog(@"Appicon found: destroyed=%i running=%i launching=%i docked=%i editing=%i",
             appicon->destroyed, appicon->running, appicon->launching, appicon->docked,
             appicon->editing);
@@ -77,52 +76,66 @@ static NSDragOperation savedMask;
   return NULL;
 }
 
-- (WAppIcon *)_createWMAppIcon:(NSString *)path
+// if valid returns dictionary with keys: @"Instance", @"Class", @"Command"
+- (NSDictionary *)_validateAppForPath:(NSString *)appPath
 {
-  NSBundle     *appBundle;
-  NSDictionary *appInfo;
-  NSString     *iconPath, *commandPath;
-  NSString     *exec, *wmClass, *wmInstance;
-  NSArray      *execParts;
-  RImage       *r_image;
-  WAppIcon     *appIcon;
+  NSBundle            *appBundle;
+  NSDictionary        *appInfo;
+  NSString            *iconPath;
+  NSString            *wmClass, *wmInstance, *exec,  *commandPath;
+  NSArray             *execParts;
+  NSMutableDictionary *wmAppInfo = nil;
 
-  NSLog(@"[GSDragView] create appicon for: %@", path);
+  NSLog(@"[GSDragView] check if application icon already exist: %@", appPath);
 
-  if (!path || [[path pathExtension] isEqualToString:@"app"] == NO) {
-    return NULL;
+  if (!appPath || [[appPath pathExtension] isEqualToString:@"app"] == NO) {
+    return nil;
   }
   
-  appBundle = [NSBundle bundleWithPath:path];
+  appBundle = [NSBundle bundleWithPath:appPath];
   if (appBundle) {
     appInfo = [NSDictionary dictionaryWithContentsOfFile:
                               [appBundle pathForResource:@"Info-gnustep"
                                                   ofType:@"plist"]];
     iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
                                    ofType:nil];
-    if (!iconPath) return NULL;
-    
+    // Unknown icon
+    if (!iconPath) {
+      return nil;
+    }
+
     exec = [appInfo objectForKey:@"NSExecutable"];
     execParts = [exec componentsSeparatedByString:@"."];
-    if ([execParts count] > 1) {
+    if ([execParts count] > 1) { // App wraper for X11 application
       wmInstance = [execParts objectAtIndex:0];
       wmClass = [execParts objectAtIndex:1];
     }
-    else {
+    else { // GNUstep application
       wmInstance = exec;
       wmClass = @"GNUstep";
     }
-    commandPath = [path stringByAppendingPathComponent:exec];
-    
-    // Appicon for this application already exists on screen
-    appIcon = [self _appIconForInstance:[wmInstance cString]
-                                  class:[wmClass cString]];
-    if (appIcon) return NULL;
-  }
-  else {
-    return NULL;
+    commandPath = [appPath stringByAppendingPathComponent:exec];
+        
+    wmAppInfo = [NSMutableDictionary dictionary];
+    [wmAppInfo setObject:commandPath forKey:@"Command"];
+    [wmAppInfo setObject:wmInstance forKey:@"Instance"];
+    [wmAppInfo setObject:wmClass forKey:@"Class"];
+    [wmAppInfo setObject:iconPath forKey:@"Icon"];
   }
   
+  return wmAppInfo;
+}
+
+- (WAppIcon *)_createAppIconForInstance:(NSString *)wmInstance
+                                  class:(NSString *)wmClass
+                                command:(NSString *)commandPath
+                              imagePath:(NSString *)iconPath
+{
+  RImage   *r_image;
+  WAppIcon *appIcon;
+
+  NSLog(@"[GSDragView] create appicon for: %@.%@", wmInstance, wmClass);
+
   appIcon = wAppIconCreateForDock(wScreen, [commandPath cString],
                                   [wmInstance cString], [wmClass cString],
                                   TILE_NORMAL);
@@ -150,13 +163,15 @@ static NSDragOperation savedMask;
 {
   int shad_x, shad_y;
 
+  if (dockable == NO) return;
+
   // NSLog(@"Screen resolution: %@", NSStringFromRect([GSCurrentServer() boundsForScreen:0]));
   screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - screenPoint.y;
   screenPoint.y -= wPreferences.icon_size;
   
   // fprintf(stderr, "New position: %i,%i\n", (int)screenPoint.x, (int)screenPoint.y);
       
-  if (wDockSnapIcon(wScreen->dock, wAppIcon,
+  if (wDockSnapIcon(wScreen->dock, wAppIconNew,
                     (int)screenPoint.x, (int)screenPoint.y,
                     &dock_x, &dock_y, 1) == YES) {
     // fprintf(stderr, "Position in Dock for dragged icon is: %i\n", dock_y);
@@ -188,29 +203,29 @@ static NSDragOperation savedMask;
   NSPoint screenPoint;
   
   if (onDock != NO) {
-    wDefaultChangeIcon(wAppIcon->wm_instance, wAppIcon->wm_class, wAppIcon->icon->file);
-    if (!wDockAttachIcon(wScreen->dock, wAppIcon, dock_x, dock_y, YES)) {
+    wDefaultChangeIcon(wAppIconNew->wm_instance, wAppIconNew->wm_class, wAppIconNew->icon->file);
+    if (!wDockAttachIcon(wScreen->dock, wAppIconNew, dock_x, dock_y, YES)) {
       NSLog(@"[PathIcon] WARNING: the icon was not docked!");
     }
-    wAppIcon->running = 0;
-    wAppIcon->launching = 0;
-    wAppIcon->editing = 0;
-    // wAppIcon->relaunching = 0;
-    // wAppIcon->auto_launch = 0;
-    // wAppIcon->forced_dock = 0;
-    // wIconUpdate(wAppIcon->icon);
-    screenPoint.x = wAppIcon->x_pos;
-    screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - wAppIcon->y_pos;
+    wAppIconNew->running = 0;
+    wAppIconNew->launching = 0;
+    wAppIconNew->editing = 0;
+    // wAppIconNew->relaunching = 0;
+    // wAppIconNew->auto_launch = 0;
+    // wAppIconNew->forced_dock = 0;
+    // wIconUpdate(wAppIconNew->icon);
+    screenPoint.x = wAppIconNew->x_pos;
+    screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - wAppIconNew->y_pos;
     screenPoint.y -= wPreferences.icon_size/2;
     [self _slideDraggedImageTo:screenPoint numberOfSteps:10 delay:0.01 waitAfterSlide:NO];
-    wIconUpdate(wAppIcon->icon);
-    wAppIconPaint(wAppIcon);
-    XMapWindow(dpy, wAppIcon->icon->core->window);
+    wIconUpdate(wAppIconNew->icon);
+    wAppIconPaint(wAppIconNew);
+    XMapWindow(dpy, wAppIconNew->icon->core->window);
   }
-  else if (wAppIcon) {
-    wAppIconDestroy(wAppIcon);
-    wAppIcon = NULL;
+  else if (wAppIconNew) {
+    wAppIconDestroy(wAppIconNew);
   }
+  wAppIconNew = NULL;
   if (isDockable != NO) {
     XUnmapWindow(dpy, wScreen->dock_shadow);
     XSetWindowBackground(dpy, wScreen->dock_shadow, wScreen->white_pixel);
@@ -264,11 +279,24 @@ static NSDragOperation savedMask;
                 NSDragOperationGeneric | NSDragOperationPrivate);
   }
 
-  // --- Create WindowMaker appicon -----------------------------------
-  NSArray *paths = [dragPasteboard propertyListForType:NSFilenamesPboardType];
+  // --- Get WindowMaker appicon -----------------------------------
+  NSArray      *paths = [dragPasteboard propertyListForType:NSFilenamesPboardType];
+  NSDictionary *wmAppInfo;
+  WAppIcon     *wAppIcon = NULL;
   wScreen = wScreenWithNumber(0);
-  wAppIcon = [self _createWMAppIcon:[paths objectAtIndex:0]];
-  dockable = (wAppIcon == NULL) ? NO : YES;
+  if ((wmAppInfo = [self _validateAppForPath:[paths objectAtIndex:0]]) != nil) {
+    // Try to find existing appicon
+    wAppIcon = [self _appIconForInstance:[[wmAppInfo objectForKey:@"Instance"] cString]
+                                   class:[[wmAppInfo objectForKey:@"Class"] cString]];
+    if (!wAppIcon) {
+      // Create new
+      wAppIconNew = [self _createAppIconForInstance:[wmAppInfo objectForKey:@"Instance"]
+                                              class:[wmAppInfo objectForKey:@"Class"]
+                                            command:[wmAppInfo objectForKey:@"Command"]
+                                          imagePath:[wmAppInfo objectForKey:@"Icon"]];
+    }
+  }
+  dockable = (wAppIcon == NULL && wAppIconNew != NULL) ? YES : NO;
   ondock = NO;
   
   // --- Setup the event loop ------------------------------------------
