@@ -327,6 +327,60 @@ void WWMShutdown(WShutdownMode mode)
 }
 
 // ----------------------------
+// --- Icon Yard
+// ----------------------------
+void WWMIconYardShowIcons(WScreen *screen)
+{
+  WAppIcon *appicon = screen->app_icon_list;
+  WWindow  *w_window;
+  
+  // Miniwindows
+  w_window = screen->focused_window;
+  while (w_window) {
+    if (w_window && w_window->icon) {
+      XMapWindow(dpy, w_window->icon->core->window);
+    }
+    w_window = w_window->prev;
+  }
+  
+  // Appicons
+  appicon = screen->app_icon_list;
+  while (appicon) {
+    if (!appicon->docked) {
+      XMapWindow(dpy, appicon->icon->core->window);
+    }
+    appicon = appicon->next;
+  }
+  
+  XSync(dpy, False);
+}
+void WWMIconYardHideIcons(WScreen *screen)
+{
+  WAppIcon *appicon = screen->app_icon_list;
+  WWindow  *w_window;
+
+  // Miniwindows
+  w_window = screen->focused_window;
+  while (w_window) {
+    if (w_window && w_window->icon) {
+      XUnmapWindow(dpy, w_window->icon->core->window);
+    }
+    w_window = w_window->prev;
+  }
+
+  // Appicons
+  appicon = screen->app_icon_list;
+  while (appicon) {
+    if (!appicon->docked) {
+      XUnmapWindow(dpy, appicon->icon->core->window);
+    }
+    appicon = appicon->next;
+  }
+  
+  XSync(dpy, False);
+}
+
+// ----------------------------
 // --- Dock
 // ----------------------------
 
@@ -413,79 +467,6 @@ void WWMDockCollapse(WDock *dock)
   }
   XSync(dpy, False);
   dock->collapsed = 1;
-}
-
-void WWMIconYardShowIcons(WScreen *screen)
-{
-  WAppIcon *appicon = screen->app_icon_list;
-  WMBag *stacking_list = screen->stacking_list;
-  WCoreWindow *w_core_window;
-  WWindow *w_window;
-  WIcon *w_icon;
-  WMBagIterator bag_iterator = NULL;
-
-  w_core_window = WMBagFirst(stacking_list, &bag_iterator);
-  do {
-    if (w_core_window && w_core_window->window) {
-      w_window = wWindowFor(w_core_window->window);
-      if (w_window && w_window->icon) {
-        fprintf(stderr, "[Workspace] found miniwindow for %s.%s\n",
-                w_window->wm_instance, w_window->wm_class);
-        XMapWindow(dpy, w_window->icon->core->window);
-      }
-    }    
-  }
-  while ((w_core_window = WMBagNext(stacking_list, &bag_iterator)));
-  
-  appicon = screen->app_icon_list;
-  while (appicon) {
-    if (!appicon->docked) {
-      NSLog(@"%s appicon is not docked: destroyed=%i running=%i launching=%i docked=%i editing=%i",
-            appicon->wm_instance,
-            appicon->destroyed, appicon->running, appicon->launching, appicon->docked,
-            appicon->editing);
-      XMapWindow(dpy, appicon->icon->core->window);
-    }
-    appicon = appicon->next;
-  }
-  
-  XSync(dpy, False);
-}
-void WWMIconYardHideIcons(WScreen *screen)
-{
-  WAppIcon *appicon = screen->app_icon_list;
-  WMBag *stacking_list = screen->stacking_list;
-  WCoreWindow *w_core_window;
-  WWindow *w_window;
-  WIcon *w_icon;
-  WMBagIterator bag_iterator = NULL;
-
-  w_core_window = WMBagFirst(stacking_list, &bag_iterator);
-  do {
-    if (w_core_window && w_core_window->window) {
-      w_window = wWindowFor(w_core_window->window);
-      if (w_window && w_window->icon) {
-        fprintf(stderr, "[Workspace] found miniwindow for %s.%s\n",
-                w_window->wm_instance, w_window->wm_class);
-        XUnmapWindow(dpy, w_window->icon->core->window);
-      }
-    }    
-  }
-  while ((w_core_window = WMBagNext(stacking_list, &bag_iterator)));
-
-  appicon = screen->app_icon_list;
-  while (appicon) {
-    if (!appicon->docked) {
-      NSLog(@"%s appicon is not docked: destroyed=%i running=%i launching=%i docked=%i editing=%i",
-            appicon->wm_instance,
-            appicon->destroyed, appicon->running, appicon->launching, appicon->docked,
-            appicon->editing);
-      XUnmapWindow(dpy, appicon->icon->core->window);
-    }
-    appicon = appicon->next;
-  }
-  
-  XSync(dpy, False);
 }
 
 // -- Should be called from already existing @autoreleasepool ---
