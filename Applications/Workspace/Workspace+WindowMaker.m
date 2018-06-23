@@ -353,6 +353,7 @@ void WWMIconYardShowIcons(WScreen *screen)
   }
   
   XSync(dpy, False);
+  screen->flags.icon_yard_mapped = 1;
 }
 void WWMIconYardHideIcons(WScreen *screen)
 {
@@ -378,6 +379,7 @@ void WWMIconYardHideIcons(WScreen *screen)
   }
   
   XSync(dpy, False);
+  screen->flags.icon_yard_mapped = 0;
 }
 
 // ----------------------------
