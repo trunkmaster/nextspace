@@ -21,6 +21,9 @@ after-install::
 	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Fonts $(GNUSTEP_SYSTEM_LIBRARY)/Fonts; \
 	fi
 
+#	Copy my versions of existing GNUstep common_ images
+	cp Resources/GNUstepImages/*.tiff $(GNUSTEP_LOCAL_LIBRARY)/Images;
+
 after-uninstall::
 	rm -r $(DESTDIR)/usr/NextSpace/Images
 	rm -r $(DESTDIR)/Library/Fonts
