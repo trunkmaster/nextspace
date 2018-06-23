@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/screen.h	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/screen.h	2016-11-25 00:09:13.798571299 +0200
++++ ./WindowMaker/src/screen.h	2018-06-23 17:03:42.206353500 +0300
 @@ -250,6 +250,9 @@
      WMScreen *wmscreen;		       /* for widget library */
  
@@ -10,3 +10,13 @@
      struct RImage *clip_tile;          /* tile with arrows to change workspace */
      struct RImage *drawer_tile;        /* tile for a drawer (tile + arrow) */
      Pixmap icon_tile_pixmap;		/* For app supplied icons */
+@@ -310,6 +313,9 @@
+         unsigned int doing_alt_tab:1;
+         unsigned int jump_back_pending:1;
+         unsigned int ignore_focus_events:1;
++#ifdef NEXTSPACE
++        unsigned int icon_yard_mapped:1;
++#endif
+     } flags;
+ } WScreen;
+ 
