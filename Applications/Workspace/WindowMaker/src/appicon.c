@@ -245,7 +245,12 @@ void paint_app_icon(WApplication *wapp)
 	    wapp->app_icon->next == NULL && wapp->app_icon->prev == NULL)
 		add_to_appicon_list(scr, wapp->app_icon);
 
+#ifdef NEXTSPACE
+	if ((!attracting_dock || !wapp->app_icon->attracted || !attracting_dock->collapsed) &&
+      scr->flags.icon_yard_mapped)
+#else
 	if (!attracting_dock || !wapp->app_icon->attracted || !attracting_dock->collapsed)
+#endif
 		XMapWindow(dpy, icon->core->window);
 
 	if (wPreferences.auto_arrange_icons && !wapp->app_icon->attracted)

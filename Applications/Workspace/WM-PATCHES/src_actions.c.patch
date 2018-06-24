@@ -1,0 +1,28 @@
+--- ./WindowMaker-0.95.7/src/actions.c	2015-08-11 21:41:14.000000000 +0300
++++ ./WindowMaker/src/actions.c	2018-06-24 23:50:38.202915884 +0300
+@@ -1133,7 +1133,6 @@
+ 			PlaceIcon(wwin->screen_ptr, &wwin->icon_x, &wwin->icon_y, wGetHeadForWindow(wwin));
+ 
+ 		wwin->icon = icon_create_for_wwindow(wwin);
+-		wwin->icon->mapped = 1;
+ 
+ 		/* extract the window screenshot everytime, as the option can be enable anytime */
+ 		if (wwin->client_win && wwin->flags.mapped) {
+@@ -1211,9 +1210,15 @@
+ 	wwin->flags.skip_next_animation = 0;
+ 
+ 	if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon) {
+-		if (wwin->screen_ptr->current_workspace == wwin->frame->workspace ||
+-		    IS_OMNIPRESENT(wwin) || wPreferences.sticky_icons)
++		if ((wwin->screen_ptr->current_workspace == wwin->frame->workspace ||
++		     IS_OMNIPRESENT(wwin) || wPreferences.sticky_icons)
++#ifdef NEXTSPACE
++		    && wwin->screen_ptr->flags.icon_yard_mapped
++#endif
++        ) {
+ 			XMapWindow(dpy, wwin->icon->core->window);
++			wwin->icon->mapped = 1;
++		}
+ 
+ 		AddToStackList(wwin->icon->core);
+ 		wLowerFrame(wwin->icon->core);

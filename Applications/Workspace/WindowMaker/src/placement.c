@@ -66,7 +66,11 @@ iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
 		   (((WIcon *) parent)->owner->frame->workspace == workspace
 		    || IS_OMNIPRESENT(((WIcon *) parent)->owner)
 		    || wPreferences.sticky_icons)
-		   && ((WIcon *) parent)->mapped) {
+		   && (((WIcon *) parent)->mapped
+#ifdef NEXTSPACE
+                       ||!((WIcon *) parent)->owner->screen_ptr->flags.icon_yard_mapped)
+#endif
+                   ) {
 
 		*retX = ((WIcon *) parent)->owner->icon_x;
 		*retY = ((WIcon *) parent)->owner->icon_y;
