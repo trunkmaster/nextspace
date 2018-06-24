@@ -172,6 +172,9 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   // Just load saved Dock state without icons drawing.
   WWMDockInit();
 
+  // Icon Yard setup
+  wScreenWithNumber(0)->flags.icon_yard_mapped = 1;
+
   //--- Below this point WindowMaker was initialized
 
   // TODO: go through all screens
@@ -333,12 +336,14 @@ void WWMIconYardShowIcons(WScreen *screen)
 {
   WAppIcon *appicon = screen->app_icon_list;
   WWindow  *w_window;
-  
+
   // Miniwindows
   w_window = screen->focused_window;
   while (w_window) {
-    if (w_window && w_window->icon) {
+    if (w_window && w_window->flags.miniaturized &&
+        w_window->icon && !w_window->icon->mapped ) {
       XMapWindow(dpy, w_window->icon->core->window);
+      w_window->icon->mapped = 1;
     }
     w_window = w_window->prev;
   }
@@ -354,6 +359,7 @@ void WWMIconYardShowIcons(WScreen *screen)
   
   XSync(dpy, False);
   screen->flags.icon_yard_mapped = 1;
+  // wArrangeIcons(screen, True);
 }
 void WWMIconYardHideIcons(WScreen *screen)
 {
@@ -363,8 +369,10 @@ void WWMIconYardHideIcons(WScreen *screen)
   // Miniwindows
   w_window = screen->focused_window;
   while (w_window) {
-    if (w_window && w_window->icon) {
+    if (w_window && w_window->flags.miniaturized &&
+        w_window->icon && w_window->icon->mapped ) {
       XUnmapWindow(dpy, w_window->icon->core->window);
+      w_window->icon->mapped = 0;
     }
     w_window = w_window->prev;
   }

@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/appicon.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/appicon.c	2018-06-22 01:08:11.602203350 +0300
++++ ./WindowMaker/src/appicon.c	2018-06-24 23:35:55.576878060 +0300
 @@ -54,6 +54,9 @@
  #ifdef USE_DOCK_XDND
  #include "xdnd.h"
@@ -10,7 +10,20 @@
  
  /*
   * icon_file for the dock is got from the preferences file by
-@@ -1048,7 +1051,13 @@
+@@ -242,7 +245,12 @@
+ 	    wapp->app_icon->next == NULL && wapp->app_icon->prev == NULL)
+ 		add_to_appicon_list(scr, wapp->app_icon);
+ 
++#ifdef NEXTSPACE
++	if ((!attracting_dock || !wapp->app_icon->attracted || !attracting_dock->collapsed) &&
++      scr->flags.icon_yard_mapped)
++#else
+ 	if (!attracting_dock || !wapp->app_icon->attracted || !attracting_dock->collapsed)
++#endif
+ 		XMapWindow(dpy, icon->core->window);
+ 
+ 	if (wPreferences.auto_arrange_icons && !wapp->app_icon->attracted)
+@@ -1048,7 +1056,13 @@
  							 */
  							if (aicon->icon->selected)
  								wIconSelect(aicon->icon);
