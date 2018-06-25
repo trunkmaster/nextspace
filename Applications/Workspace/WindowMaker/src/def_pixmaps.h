@@ -46,7 +46,6 @@ static char *PRED_CLOSE_XPM[] = {
     ". .XXXX. .",
     " .XXXXXX. "};
 
-
 static char *PRED_BROKEN_CLOSE_XPM[] = {
     "10 10 3 1",
     " 	c #000000",
@@ -63,22 +62,38 @@ static char *PRED_BROKEN_CLOSE_XPM[] = {
     ". .XXXX. .",
     " .XXXXXX. "};
 
+/* static char *PRED_KILL_XPM[] = { */
+/*     "10 10 3 1", */
+/*     " 	c #000000", */
+/*     ".	c #616561", */
+/*     "X	c None", */
+/*     " .XXXXXX. ", */
+/*     ". XXXXXX .", */
+/*     "XXXXXXXXXX", */
+/*     "XXX .. XXX", */
+/*     "XXX.  .XXX", */
+/*     "XXX.  .XXX", */
+/*     "XXX .. XXX", */
+/*     "XXXXXXXXXX", */
+/*     ". XXXXXX .", */
+/*     " .XXXXXX. "}; */
 
 static char *PRED_KILL_XPM[] = {
-    "10 10 3 1",
-    " 	c #000000",
-    ".	c #616561",
-    "X	c None",
-    " .XXXXXX. ",
-    ". XXXXXX .",
-    "XXXXXXXXXX",
-    "XXX .. XXX",
-    "XXX.  .XXX",
-    "XXX.  .XXX",
-    "XXX .. XXX",
-    "XXXXXXXXXX",
-    ". XXXXXX .",
-    " .XXXXXX. "};
+"10 10 4 1",
+" 	c None",
+".	c #555555",
+"+	c #000000",
+"@	c #777777",
+".+  ..  +.",
+"++..++..++",
+" .++++++. ",
+" .+@++@+. ",
+" .+ ++ +. ",
+" .++++++. ",
+"  .+  +.  ",
+" .+.++.+. ",
+"++.    .++",
+".+      +."};
 
 
 static char *PRED_ICONIFY_XPM[] = {
@@ -98,21 +113,37 @@ static char *PRED_ICONIFY_XPM[] = {
 };
 
 static char *PRED_MAXIMIZE_XPM[] = {
-    "10 10 4 1",
-    " 	c None",
-    ".	c #000000",
-    "+	c #555555",
-    "@	c #AAAAAA",
-    "...+@@+...",
-    "..+@@@@+..",
-    ".+.+@@+.+.",
-    "+@+.@@.+@+",
-    "@@@@@@@@@@",
-    "@@@@@@@@@@",
-    "+@+.@@.+@+",
-    ".+.+@@+.+.",
-    "..+@@@@+..",
-    "...+@@+..."};
+"10 10 3 1",
+" 	c None",
+".	c #000000",
+"+	c #555555",
+"...+  +...",
+"..+    +..",
+".+.+  +.+.",
+"+ +.  .+ +",
+"          ",
+"          ",
+"+ +.  .+ +",
+".+.+  +.+.",
+"..+    +..",
+"...+  +..."};
+
+static char *PRED_RESTORE_xpm[] = {
+"10 10 3 1",
+" 	c None",
+".	c #000000",
+"+	c #555555",
+".+ +  + +.",
+"+.+.  .+.+",
+" +..  ..+ ",
+"+...  ...+",
+"          ",
+"          ",
+"+...  ...+",
+" +..  ..+ ",
+"+.+.  .+.+",
+".+ +  + +."};
+
 
 static char *NEXT_CLOSE_XPM[] = {
 "10 10 69 1",
@@ -195,7 +226,6 @@ static char *NEXT_CLOSE_XPM[] = {
 "~pqrgs(tuv",
 "%wxx'-p8tn",
 "yzAB7C8enD"};
-
 
 static char *NEXT_BROKEN_CLOSE_XPM[] = {
 "10 10 8 1",
