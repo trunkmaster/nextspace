@@ -315,6 +315,7 @@ typedef struct _WScreen {
         unsigned int ignore_focus_events:1;
 #ifdef NEXTSPACE
         unsigned int icon_yard_mapped:1;
+        unsigned int modifier_pressed:1;
 #endif
     } flags;
 } WScreen;
