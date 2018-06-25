@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/window.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/window.c	2016-11-25 00:09:13.799571299 +0200
++++ ./WindowMaker/src/window.c	2018-06-25 17:34:18.542942000 +0300
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -29,3 +29,52 @@
  	/*
  	 * wWindowConfigure() will init the client window's size
  	 * (wwin->client.{width,height}) and all other geometry
+@@ -1314,7 +1324,10 @@
+ 		}
+ 	}
+ 	wWindowResetMouseGrabs(wwin);
+-
++#ifdef NEXTSPACE
++        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
++        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
++#endif
+ 	if (!WFLAGP(wwin, no_bind_keys))
+ 		wWindowSetKeyGrabs(wwin);
+ 
+@@ -1457,7 +1470,7 @@
+ 	wSetFocusTo(scr, wwin);
+ 	wWindowResetMouseGrabs(wwin);
+ 	wWindowSetKeyGrabs(wwin);
+-
++        
+ 	return wwin;
+ }
+ 
+@@ -2212,7 +2225,12 @@
+ 			if (fwin->lbutton_image && !fwin->lbutton_image->shared)
+ 				wPixmapDestroy(fwin->lbutton_image);
+ 
+-			fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
++#ifdef NEXTSPACE
++			if (scr->flags.modifier_pressed)
++				fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
++			else
++#endif
++				fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
+ 		}
+ 	}
+ #ifdef XKB_BUTTON_HINT
+@@ -2266,7 +2284,12 @@
+ 			if (fwin->rbutton_image && !fwin->rbutton_image->shared)
+ 				wPixmapDestroy(fwin->rbutton_image);
+ 
+-			fwin->rbutton_image = scr->b_pixmaps[WBUT_CLOSE];
++#ifdef NEXTSPACE
++			if (scr->flags.modifier_pressed)
++				fwin->rbutton_image = scr->b_pixmaps[WBUT_KILL];
++			else
++#endif
++				fwin->rbutton_image = scr->b_pixmaps[WBUT_CLOSE];
+ 		}
+ 	}
+ 

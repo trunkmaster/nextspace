@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-05-30 16:37:16.439454499 +0300
++++ ./WindowMaker/src/event.c	2018-06-25 15:19:10.934163500 +0300
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -10,18 +10,31 @@
  
  #define MOD_MASK wPreferences.modifier_mask
  
-@@ -90,6 +93,9 @@
+@@ -90,6 +93,10 @@
  static void handleMapNotify(XEvent *event);
  static void handleUnmapNotify(XEvent *event);
  static void handleButtonPress(XEvent *event);
 +#ifdef NEXTSPACE
 +static void handleButtonRelease(XEvent * event);
++static void handleKeyRelease(XEvent * event);
 +#endif
  static void handleExpose(XEvent *event);
  static void handleDestroyNotify(XEvent *event);
  static void handleConfigureRequest(XEvent *event);
-@@ -229,6 +235,11 @@
- 		handleUnmapNotify(event);
+@@ -209,6 +216,11 @@
+ 		handleKeyPress(event);
+ 		break;
+ 
++#ifdef NEXTSPACE
++	case KeyRelease:
++		handleKeyRelease(event);
++		break;
++#endif
+ 	case MotionNotify:
+ 		handleMotionNotify(event);
+ 		break;
+@@ -237,6 +249,11 @@
+ 		handleExpose(event);
  		break;
  
 +#ifdef NEXTSPACE
@@ -29,10 +42,10 @@
 +		handleButtonRelease(event);
 +          break;
 +#endif
- 	case ButtonPress:
- 		handleButtonPress(event);
+ 	case PropertyNotify:
+ 		handlePropertyNotify(event);
  		break;
-@@ -580,9 +591,15 @@
+@@ -580,9 +597,15 @@
  		 * XRRUpdateConfiguration when screen configuration change notify
  		 * events are generated */
  		XRRUpdateConfiguration(event);
@@ -48,7 +61,7 @@
  	}
  #endif
  }
-@@ -670,6 +687,9 @@
+@@ -670,6 +693,9 @@
  
  	wwin = wWindowFor(window);
  	if (wwin) {
@@ -58,7 +71,7 @@
  		wUnmanageWindow(wwin, False, True);
  	}
  
-@@ -809,11 +829,28 @@
+@@ -809,11 +835,28 @@
  
  	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
  		if (event->xbutton.button == Button1 && wPreferences.mouse_button1 != WA_NONE) {
@@ -87,7 +100,7 @@
  		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button8);
  		}else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
-@@ -873,6 +910,19 @@
+@@ -873,6 +916,19 @@
  	}
  }
  
@@ -107,3 +120,49 @@
  static void handleMapNotify(XEvent * event)
  {
  	WWindow *wwin;
+@@ -1385,10 +1441,19 @@
+ #ifdef KEEP_XKB_LOCK_STATUS
+ 	XkbStateRec staterec;
+ #endif				/*KEEP_XKB_LOCK_STATUS */
+-
+ 	/* ignore CapsLock */
+ 	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
+ 
++#ifdef NEXTSPACE
++  /* fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n", */
++  /*         event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers); */
++  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
++    /* fprintf(stderr, "[WindowMaker] Alternate modifier was pressed.\n"); */
++    scr->flags.modifier_pressed = 1;
++    wWindowUpdateButtonImages(wwin);
++  }
++#endif
++
+ 	for (i = 0; i < WKBD_LAST; i++) {
+ 		if (wKeyBindings[i].keycode == 0)
+ 			continue;
+@@ -1866,7 +1931,23 @@
+ #endif	/* KEEP_XKB_LOCK_STATUS */
+ 	}
+ }
+-
++#ifdef NEXTSPACE
++static void handleKeyRelease(XEvent * event)
++{
++	WScreen *scr = wScreenForRootWindow(event->xkey.root);
++	WWindow *wwin = scr->focused_window;
++  
++  /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
++  /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
++  /* if (event->xkey.state == MOD_MASK) { */
++
++  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
++    /* fprintf(stderr, "[WindowMaker] Alternate modifier was released.\n"); */
++    scr->flags.modifier_pressed = 0;
++    wWindowUpdateButtonImages(wwin);
++  }
++}
++#endif
+ static void handleMotionNotify(XEvent * event)
+ {
+ 	WScreen *scr = wScreenForRootWindow(event->xmotion.root);
