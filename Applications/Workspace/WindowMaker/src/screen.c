@@ -268,6 +268,11 @@ static void allocButtonPixmaps(WScreen * scr)
 	if (pix)
 		pix->shared = 1;
 	scr->b_pixmaps[WBUT_ICONIFY] = pix;
+        
+        pix = wPixmapCreateFromXPMData(scr, PRED_MAXIMIZE_XPM);
+	if (pix)
+		pix->shared = 1;
+	scr->b_pixmaps[WBUT_MAXIMIZE] = pix;
 #ifdef XKB_BUTTON_HINT
 	if (wPreferences.new_style == TS_NEXT) {
 		pix = wPixmapCreateFromXPMData(scr, NEXT_XKBGROUP1_XPM);
