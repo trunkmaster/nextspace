@@ -829,6 +829,12 @@ static void handleButtonPress(XEvent * event)
 
 	scr = wScreenForRootWindow(event->xbutton.root);
 
+#ifdef NEXTSPACE
+  // reset current focused window button beacuse ButtonPress may change focus
+	scr->flags.modifier_pressed = 0;
+	wWindowUpdateButtonImages(scr->focused_window);
+#endif
+
 #ifdef BALLOON_TEXT
 	wBalloonHide(scr);
 #endif
@@ -1447,11 +1453,19 @@ static void handleKeyPress(XEvent * event)
 #ifdef NEXTSPACE
   /* fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers); */
-  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
-    /* fprintf(stderr, "[WindowMaker] Alternate modifier was pressed.\n"); */
-    scr->flags.modifier_pressed = 1;
-    wWindowUpdateButtonImages(wwin);
-  }
+  /* fprintf(stderr, "[WindowMaker] handleKeyPress: XK_Super_L == %i XSuper_R == %i\n", */
+  /*         XKeysymToKeycode(dpy, XK_Super_L), XKeysymToKeycode(dpy, XK_Super_R)); */
+	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
+       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
+			modifiers == 0) {
+		scr->flags.modifier_pressed = 1;
+		wWindowUpdateButtonImages(wwin);
+		return;
+	}
+	else {
+		scr->flags.modifier_pressed = 0;
+		wWindowUpdateButtonImages(wwin);
+	}
 #endif
 
 	for (i = 0; i < WKBD_LAST; i++) {
@@ -1939,10 +1953,8 @@ static void handleKeyRelease(XEvent * event)
   
   /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
-  /* if (event->xkey.state == MOD_MASK) { */
-
-  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
-    /* fprintf(stderr, "[WindowMaker] Alternate modifier was released.\n"); */
+	if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
+       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
     scr->flags.modifier_pressed = 0;
     wWindowUpdateButtonImages(wwin);
   }

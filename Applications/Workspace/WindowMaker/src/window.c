@@ -1324,12 +1324,13 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 		}
 	}
 	wWindowResetMouseGrabs(wwin);
+	if (!WFLAGP(wwin, no_bind_keys))
+		wWindowSetKeyGrabs(wwin);
+  
 #ifdef NEXTSPACE
         wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
         XSelectInput(dpy, wwin->client_win, wwin->event_mask);
 #endif
-	if (!WFLAGP(wwin, no_bind_keys))
-		wWindowSetKeyGrabs(wwin);
 
 	WMPostNotificationName(WMNManaged, wwin, NULL);
 	wColormapInstallForWindow(scr, scr->cmap_window);

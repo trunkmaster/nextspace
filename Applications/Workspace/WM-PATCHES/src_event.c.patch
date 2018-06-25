@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-06-25 15:19:10.934163500 +0300
++++ ./WindowMaker/src/event.c	2018-06-26 00:09:18.177558997 +0300
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -71,7 +71,19 @@
  		wUnmanageWindow(wwin, False, True);
  	}
  
-@@ -809,11 +835,28 @@
+@@ -803,17 +829,40 @@
+ 
+ 	scr = wScreenForRootWindow(event->xbutton.root);
+ 
++#ifdef NEXTSPACE
++  // reset current focused window button beacuse ButtonPress may change focus
++	scr->flags.modifier_pressed = 0;
++	wWindowUpdateButtonImages(scr->focused_window);
++#endif
++
+ #ifdef BALLOON_TEXT
+ 	wBalloonHide(scr);
+ #endif
  
  	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
  		if (event->xbutton.button == Button1 && wPreferences.mouse_button1 != WA_NONE) {
@@ -100,7 +112,7 @@
  		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button8);
  		}else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
-@@ -873,6 +916,19 @@
+@@ -873,6 +922,19 @@
  	}
  }
  
@@ -120,7 +132,7 @@
  static void handleMapNotify(XEvent * event)
  {
  	WWindow *wwin;
-@@ -1385,10 +1441,19 @@
+@@ -1385,10 +1447,27 @@
  #ifdef KEEP_XKB_LOCK_STATUS
  	XkbStateRec staterec;
  #endif				/*KEEP_XKB_LOCK_STATUS */
@@ -131,17 +143,25 @@
 +#ifdef NEXTSPACE
 +  /* fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n", */
 +  /*         event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers); */
-+  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
-+    /* fprintf(stderr, "[WindowMaker] Alternate modifier was pressed.\n"); */
-+    scr->flags.modifier_pressed = 1;
-+    wWindowUpdateButtonImages(wwin);
-+  }
++  /* fprintf(stderr, "[WindowMaker] handleKeyPress: XK_Super_L == %i XSuper_R == %i\n", */
++  /*         XKeysymToKeycode(dpy, XK_Super_L), XKeysymToKeycode(dpy, XK_Super_R)); */
++	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
++       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
++			modifiers == 0) {
++		scr->flags.modifier_pressed = 1;
++		wWindowUpdateButtonImages(wwin);
++		return;
++	}
++	else {
++		scr->flags.modifier_pressed = 0;
++		wWindowUpdateButtonImages(wwin);
++	}
 +#endif
 +
  	for (i = 0; i < WKBD_LAST; i++) {
  		if (wKeyBindings[i].keycode == 0)
  			continue;
-@@ -1866,7 +1931,23 @@
+@@ -1866,7 +1945,21 @@
  #endif	/* KEEP_XKB_LOCK_STATUS */
  	}
  }
@@ -154,10 +174,8 @@
 +  
 +  /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
 +  /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
-+  /* if (event->xkey.state == MOD_MASK) { */
-+
-+  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
-+    /* fprintf(stderr, "[WindowMaker] Alternate modifier was released.\n"); */
++	if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
++       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
 +    scr->flags.modifier_pressed = 0;
 +    wWindowUpdateButtonImages(wwin);
 +  }
