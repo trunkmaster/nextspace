@@ -1324,7 +1324,10 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 		}
 	}
 	wWindowResetMouseGrabs(wwin);
-
+#ifdef NEXTSPACE
+        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
+        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
+#endif
 	if (!WFLAGP(wwin, no_bind_keys))
 		wWindowSetKeyGrabs(wwin);
 
@@ -1467,7 +1470,7 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
 	wSetFocusTo(scr, wwin);
 	wWindowResetMouseGrabs(wwin);
 	wWindowSetKeyGrabs(wwin);
-
+        
 	return wwin;
 }
 
@@ -2222,7 +2225,12 @@ void wWindowUpdateButtonImages(WWindow *wwin)
 			if (fwin->lbutton_image && !fwin->lbutton_image->shared)
 				wPixmapDestroy(fwin->lbutton_image);
 
-			fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
+#ifdef NEXTSPACE
+			if (scr->flags.modifier_pressed)
+				fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
+			else
+#endif
+				fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
 		}
 	}
 #ifdef XKB_BUTTON_HINT
@@ -2276,7 +2284,12 @@ void wWindowUpdateButtonImages(WWindow *wwin)
 			if (fwin->rbutton_image && !fwin->rbutton_image->shared)
 				wPixmapDestroy(fwin->rbutton_image);
 
-			fwin->rbutton_image = scr->b_pixmaps[WBUT_CLOSE];
+#ifdef NEXTSPACE
+			if (scr->flags.modifier_pressed)
+				fwin->rbutton_image = scr->b_pixmaps[WBUT_KILL];
+			else
+#endif
+				fwin->rbutton_image = scr->b_pixmaps[WBUT_CLOSE];
 		}
 	}
 
