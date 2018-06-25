@@ -95,6 +95,7 @@ static void handleUnmapNotify(XEvent *event);
 static void handleButtonPress(XEvent *event);
 #ifdef NEXTSPACE
 static void handleButtonRelease(XEvent * event);
+static void handleKeyRelease(XEvent * event);
 #endif
 static void handleExpose(XEvent *event);
 static void handleDestroyNotify(XEvent *event);
@@ -215,6 +216,11 @@ void DispatchEvent(XEvent * event)
 		handleKeyPress(event);
 		break;
 
+#ifdef NEXTSPACE
+	case KeyRelease:
+		handleKeyRelease(event);
+		break;
+#endif
 	case MotionNotify:
 		handleMotionNotify(event);
 		break;
@@ -235,11 +241,6 @@ void DispatchEvent(XEvent * event)
 		handleUnmapNotify(event);
 		break;
 
-#ifdef NEXTSPACE
-	case ButtonRelease:
-		handleButtonRelease(event);
-          break;
-#endif
 	case ButtonPress:
 		handleButtonPress(event);
 		break;
@@ -248,6 +249,11 @@ void DispatchEvent(XEvent * event)
 		handleExpose(event);
 		break;
 
+#ifdef NEXTSPACE
+	case ButtonRelease:
+		handleButtonRelease(event);
+          break;
+#endif
 	case PropertyNotify:
 		handlePropertyNotify(event);
 		break;
@@ -1435,9 +1441,18 @@ static void handleKeyPress(XEvent * event)
 #ifdef KEEP_XKB_LOCK_STATUS
 	XkbStateRec staterec;
 #endif				/*KEEP_XKB_LOCK_STATUS */
-
 	/* ignore CapsLock */
 	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
+
+#ifdef NEXTSPACE
+  /* fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n", */
+  /*         event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers); */
+  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
+    /* fprintf(stderr, "[WindowMaker] Alternate modifier was pressed.\n"); */
+    scr->flags.modifier_pressed = 1;
+    wWindowUpdateButtonImages(wwin);
+  }
+#endif
 
 	for (i = 0; i < WKBD_LAST; i++) {
 		if (wKeyBindings[i].keycode == 0)
@@ -1916,7 +1931,23 @@ static void handleKeyPress(XEvent * event)
 #endif	/* KEEP_XKB_LOCK_STATUS */
 	}
 }
+#ifdef NEXTSPACE
+static void handleKeyRelease(XEvent * event)
+{
+	WScreen *scr = wScreenForRootWindow(event->xkey.root);
+	WWindow *wwin = scr->focused_window;
+  
+  /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
+  /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
+  /* if (event->xkey.state == MOD_MASK) { */
 
+  if (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) {
+    /* fprintf(stderr, "[WindowMaker] Alternate modifier was released.\n"); */
+    scr->flags.modifier_pressed = 0;
+    wWindowUpdateButtonImages(wwin);
+  }
+}
+#endif
 static void handleMotionNotify(XEvent * event)
 {
 	WScreen *scr = wScreenForRootWindow(event->xmotion.root);
