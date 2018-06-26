@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/window.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/window.c	2018-06-26 17:02:29.052550500 +0300
++++ ./WindowMaker/src/window.c	2018-06-26 22:29:23.754123341 +0300
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -95,17 +95,19 @@
  }
  
  void wWindowResetMouseGrabs(WWindow * wwin)
-@@ -3100,6 +3129,13 @@
+@@ -3100,6 +3129,15 @@
  			wapp = wApplicationOf(wwin->main_window);
  			if (wapp && !WFLAGP(wwin, no_appicon))
  				wHideApplication(wapp);
++#ifdef NEXTSPACE
 +		} else if (event->xbutton.state & MOD_MASK) {
-+                  if (wwin->flags.maximized) {
-+                    wMaximizeWindow(wwin, 0);                    
-+                  }
-+                  else {
-+                    wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
-+                  }
++			if (wwin->flags.maximized) {
++				wMaximizeWindow(wwin, 0);                    
++			}
++			else {
++				wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
++			}
++#endif
  		} else if (event->xbutton.state == 0) {
  			wIconifyWindow(wwin);
  		}
