@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-06-26 17:14:57.953813999 +0300
++++ ./WindowMaker/src/event.c	2018-06-26 18:42:14.919988500 +0300
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -71,7 +71,7 @@
  		wUnmanageWindow(wwin, False, True);
  	}
  
-@@ -803,17 +829,42 @@
+@@ -803,17 +829,43 @@
  
  	scr = wScreenForRootWindow(event->xbutton.root);
  
@@ -90,20 +90,21 @@
  	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
  		if (event->xbutton.button == Button1 && wPreferences.mouse_button1 != WA_NONE) {
 +#ifdef NEXTSPACE
-+			if (scr->focused_window && !strcmp(scr->focused_window->wm_class, "GNUstep")) {
-+				XSendEvent(dpy, scr->focused_window->client_win, True, ButtonPressMask, event);
++			if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
++				XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
 +			}
-+			else
-+#endif
++			else {
++				XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
++			}
++#else
  			executeButtonAction(scr, event, wPreferences.mouse_button1);
++#endif
  		} else if (event->xbutton.button == Button2 && wPreferences.mouse_button2 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button2);
  		} else if (event->xbutton.button == Button3 && wPreferences.mouse_button3 != WA_NONE) {
 +#ifdef NEXTSPACE
-+			if (scr->focused_window) {
-+				if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
-+					XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
-+				}
++			if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
++				XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
 +			}
 +			else {
 +				XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
@@ -114,7 +115,7 @@
  		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button8);
  		}else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
-@@ -873,6 +924,19 @@
+@@ -873,6 +925,19 @@
  	}
  }
  
@@ -124,7 +125,7 @@
 +	WScreen *scr = wScreenForRootWindow(event->xbutton.root);
 +
 +	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
-+		if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
++		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
 +			XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
 +		}
 +	}
@@ -134,7 +135,7 @@
  static void handleMapNotify(XEvent * event)
  {
  	WWindow *wwin;
-@@ -1385,10 +1449,33 @@
+@@ -1385,10 +1450,33 @@
  #ifdef KEEP_XKB_LOCK_STATUS
  	XkbStateRec staterec;
  #endif				/*KEEP_XKB_LOCK_STATUS */
@@ -169,7 +170,7 @@
  	for (i = 0; i < WKBD_LAST; i++) {
  		if (wKeyBindings[i].keycode == 0)
  			continue;
-@@ -1866,7 +1953,27 @@
+@@ -1866,7 +1954,27 @@
  #endif	/* KEEP_XKB_LOCK_STATUS */
  	}
  }
