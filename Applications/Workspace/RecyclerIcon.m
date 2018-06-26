@@ -209,7 +209,8 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
     {
       // This will bring menu of active application on screen at mouse pointer
       event->xbutton.window = event->xbutton.root;
-      XSendEvent(dpy, event->xbutton.root, False, ButtonPressMask, event);
+      // XSendEvent(dpy, event->xbutton.root, False, ButtonPressMask, event);
+      XSendEvent(dpy, aicon->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
     }
 }
 
