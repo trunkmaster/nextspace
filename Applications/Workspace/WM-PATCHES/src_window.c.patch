@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/window.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/window.c	2018-06-26 11:18:50.381367002 +0300
++++ ./WindowMaker/src/window.c	2018-06-26 17:02:29.052550500 +0300
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -29,22 +29,19 @@
  	/*
  	 * wWindowConfigure() will init the client window's size
  	 * (wwin->client.{width,height}) and all other geometry
-@@ -1314,9 +1324,13 @@
+@@ -1314,10 +1324,9 @@
  		}
  	}
  	wWindowResetMouseGrabs(wwin);
 -
  	if (!WFLAGP(wwin, no_bind_keys))
  		wWindowSetKeyGrabs(wwin);
+-
 +  
-+#ifdef NEXTSPACE
-+        /* wwin->event_mask |= (KeyPressMask | KeyReleaseMask); */
-+        /* XSelectInput(dpy, wwin->client_win, wwin->event_mask); */
-+#endif
- 
  	WMPostNotificationName(WMNManaged, wwin, NULL);
  	wColormapInstallForWindow(scr, scr->cmap_window);
-@@ -1457,7 +1471,7 @@
+ 
+@@ -1457,7 +1466,7 @@
  	wSetFocusTo(scr, wwin);
  	wWindowResetMouseGrabs(wwin);
  	wWindowSetKeyGrabs(wwin);
@@ -53,7 +50,7 @@
  	return wwin;
  }
  
-@@ -2212,7 +2226,16 @@
+@@ -2212,7 +2221,16 @@
  			if (fwin->lbutton_image && !fwin->lbutton_image->shared)
  				wPixmapDestroy(fwin->lbutton_image);
  
@@ -71,7 +68,7 @@
  		}
  	}
  #ifdef XKB_BUTTON_HINT
-@@ -2266,7 +2289,12 @@
+@@ -2266,7 +2284,12 @@
  			if (fwin->rbutton_image && !fwin->rbutton_image->shared)
  				wPixmapDestroy(fwin->rbutton_image);
  
@@ -85,18 +82,20 @@
  		}
  	}
  
-@@ -2567,6 +2595,10 @@
+@@ -2567,6 +2590,12 @@
  	}
  
  	wRootMenuBindShortcuts(wwin->frame->core->window);
 +#ifdef NEXTSPACE
-+        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
-+        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
++  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_L), 0, wwin->client_win, True,
++    GrabModeAsync, GrabModeAsync);
++  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_R), 0, wwin->client_win, True,
++    GrabModeAsync, GrabModeAsync);
 +#endif
  }
  
  void wWindowResetMouseGrabs(WWindow * wwin)
-@@ -3100,6 +3132,13 @@
+@@ -3100,6 +3129,13 @@
  			wapp = wApplicationOf(wwin->main_window);
  			if (wapp && !WFLAGP(wwin, no_appicon))
  				wHideApplication(wapp);

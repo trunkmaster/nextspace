@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-06-26 11:20:20.320313999 +0300
++++ ./WindowMaker/src/event.c	2018-06-26 17:14:57.953813999 +0300
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -71,14 +71,16 @@
  		wUnmanageWindow(wwin, False, True);
  	}
  
-@@ -803,17 +829,40 @@
+@@ -803,17 +829,42 @@
  
  	scr = wScreenForRootWindow(event->xbutton.root);
  
 +#ifdef NEXTSPACE
 +  // reset current focused window button beacuse ButtonPress may change focus
-+	scr->flags.modifier_pressed = 0;
-+	wWindowUpdateButtonImages(scr->focused_window);
++  if (scr->focused_window && scr->focused_window->client_win != scr->no_focus_win) {
++    scr->flags.modifier_pressed = 0;
++    wWindowUpdateButtonImages(scr->focused_window);
++  }
 +#endif
 +
  #ifdef BALLOON_TEXT
@@ -112,7 +114,7 @@
  		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button8);
  		}else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
-@@ -873,6 +922,19 @@
+@@ -873,6 +924,19 @@
  	}
  }
  
@@ -132,7 +134,7 @@
  static void handleMapNotify(XEvent * event)
  {
  	WWindow *wwin;
-@@ -1385,10 +1447,27 @@
+@@ -1385,10 +1449,33 @@
  #ifdef KEEP_XKB_LOCK_STATUS
  	XkbStateRec staterec;
  #endif				/*KEEP_XKB_LOCK_STATUS */
@@ -141,18 +143,24 @@
  	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
  
 +#ifdef NEXTSPACE
-+  /* fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n", */
-+  /*         event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers); */
++  fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n",
++          event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers);
++  /* fprintf(stderr, "[WindowMaker] no_focus: %lu event: %lu focused: %lu frame: %lu\n", */
++  /*         scr->no_focus_win, event->xkey.window, wwin->client_win, wwin->frame->core->window); */
 +  /* fprintf(stderr, "[WindowMaker] handleKeyPress: XK_Super_L == %i XSuper_R == %i\n", */
 +  /*         XKeysymToKeycode(dpy, XK_Super_L), XKeysymToKeycode(dpy, XK_Super_R)); */
 +	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
 +       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
 +			modifiers == 0) {
-+		scr->flags.modifier_pressed = 1;
-+		wWindowUpdateButtonImages(wwin);
++    if (wwin && wwin->client_win != scr->no_focus_win &&
++        event->xkey.window != event->xkey.root) {
++      scr->flags.modifier_pressed = 1;
++      wWindowUpdateButtonImages(wwin);
++    }
 +		return;
 +	}
-+	else {
++	else if (event->xkey.window != event->xkey.root &&
++           event->xkey.window != scr->no_focus_win) {
 +		scr->flags.modifier_pressed = 0;
 +		wWindowUpdateButtonImages(wwin);
 +	}
@@ -161,7 +169,7 @@
  	for (i = 0; i < WKBD_LAST; i++) {
  		if (wKeyBindings[i].keycode == 0)
  			continue;
-@@ -1866,7 +1945,21 @@
+@@ -1866,7 +1953,27 @@
  #endif	/* KEEP_XKB_LOCK_STATUS */
  	}
  }
@@ -172,12 +180,18 @@
 +	WScreen *scr = wScreenForRootWindow(event->xkey.root);
 +	WWindow *wwin = scr->focused_window;
 +  
++  if (event->xkey.window == event->xkey.root ||
++      event->xkey.window == scr->no_focus_win) {
++    return;
++  }
 +  /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
 +  /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
 +	if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
 +       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
-+    scr->flags.modifier_pressed = 0;
-+    wWindowUpdateButtonImages(wwin);
++    if (wwin) {
++      scr->flags.modifier_pressed = 0;
++      wWindowUpdateButtonImages(wwin);
++    }
 +  }
 +}
 +#endif
