@@ -128,7 +128,7 @@ static char *PRED_MAXIMIZE_XPM[] = {
 "..+    +..",
 "...+  +..."};
 
-static char *PRED_RESTORE_xpm[] = {
+static char *PRED_RESTORE_XPM[] = {
 "10 10 3 1",
 " 	c None",
 ".	c #000000",

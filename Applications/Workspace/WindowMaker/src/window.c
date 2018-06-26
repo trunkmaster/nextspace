@@ -1328,8 +1328,8 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 		wWindowSetKeyGrabs(wwin);
   
 #ifdef NEXTSPACE
-        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
-        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
+        /* wwin->event_mask |= (KeyPressMask | KeyReleaseMask); */
+        /* XSelectInput(dpy, wwin->client_win, wwin->event_mask); */
 #endif
 
 	WMPostNotificationName(WMNManaged, wwin, NULL);
@@ -2227,9 +2227,13 @@ void wWindowUpdateButtonImages(WWindow *wwin)
 				wPixmapDestroy(fwin->lbutton_image);
 
 #ifdef NEXTSPACE
-			if (scr->flags.modifier_pressed)
-				fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
-			else
+			if (scr->flags.modifier_pressed) {
+                          if (wwin->flags.maximized) {
+                            fwin->lbutton_image = scr->b_pixmaps[WBUT_RESTORE];
+                          } else {
+                            fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
+                          }
+                        } else
 #endif
 				fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
 		}
@@ -2591,6 +2595,10 @@ void wWindowSetKeyGrabs(WWindow * wwin)
 	}
 
 	wRootMenuBindShortcuts(wwin->frame->core->window);
+#ifdef NEXTSPACE
+        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
+        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
+#endif
 }
 
 void wWindowResetMouseGrabs(WWindow * wwin)
@@ -3124,6 +3132,13 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 			wapp = wApplicationOf(wwin->main_window);
 			if (wapp && !WFLAGP(wwin, no_appicon))
 				wHideApplication(wapp);
+		} else if (event->xbutton.state & MOD_MASK) {
+                  if (wwin->flags.maximized) {
+                    wMaximizeWindow(wwin, 0);                    
+                  }
+                  else {
+                    wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
+                  }
 		} else if (event->xbutton.state == 0) {
 			wIconifyWindow(wwin);
 		}
