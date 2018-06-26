@@ -3129,13 +3129,15 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 			wapp = wApplicationOf(wwin->main_window);
 			if (wapp && !WFLAGP(wwin, no_appicon))
 				wHideApplication(wapp);
+#ifdef NEXTSPACE
 		} else if (event->xbutton.state & MOD_MASK) {
-                  if (wwin->flags.maximized) {
-                    wMaximizeWindow(wwin, 0);                    
-                  }
-                  else {
-                    wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
-                  }
+			if (wwin->flags.maximized) {
+				wMaximizeWindow(wwin, 0);                    
+			}
+			else {
+				wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
+			}
+#endif
 		} else if (event->xbutton.state == 0) {
 			wIconifyWindow(wwin);
 		}
