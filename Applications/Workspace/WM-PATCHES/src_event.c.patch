@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-06-26 00:09:18.177558997 +0300
++++ ./WindowMaker/src/event.c	2018-06-26 11:20:20.320313999 +0300
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
