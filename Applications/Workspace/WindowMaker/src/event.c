@@ -831,8 +831,10 @@ static void handleButtonPress(XEvent * event)
 
 #ifdef NEXTSPACE
   // reset current focused window button beacuse ButtonPress may change focus
-	scr->flags.modifier_pressed = 0;
-	wWindowUpdateButtonImages(scr->focused_window);
+  if (scr->focused_window && scr->focused_window->client_win != scr->no_focus_win) {
+    scr->flags.modifier_pressed = 0;
+    wWindowUpdateButtonImages(scr->focused_window);
+  }
 #endif
 
 #ifdef BALLOON_TEXT
@@ -1451,18 +1453,24 @@ static void handleKeyPress(XEvent * event)
 	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
 #ifdef NEXTSPACE
-  /* fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n", */
-  /*         event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers); */
+  fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n",
+          event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers);
+  /* fprintf(stderr, "[WindowMaker] no_focus: %lu event: %lu focused: %lu frame: %lu\n", */
+  /*         scr->no_focus_win, event->xkey.window, wwin->client_win, wwin->frame->core->window); */
   /* fprintf(stderr, "[WindowMaker] handleKeyPress: XK_Super_L == %i XSuper_R == %i\n", */
   /*         XKeysymToKeycode(dpy, XK_Super_L), XKeysymToKeycode(dpy, XK_Super_R)); */
 	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
 			modifiers == 0) {
-		scr->flags.modifier_pressed = 1;
-		wWindowUpdateButtonImages(wwin);
+    if (wwin && wwin->client_win != scr->no_focus_win &&
+        event->xkey.window != event->xkey.root) {
+      scr->flags.modifier_pressed = 1;
+      wWindowUpdateButtonImages(wwin);
+    }
 		return;
 	}
-	else {
+	else if (event->xkey.window != event->xkey.root &&
+           event->xkey.window != scr->no_focus_win) {
 		scr->flags.modifier_pressed = 0;
 		wWindowUpdateButtonImages(wwin);
 	}
@@ -1951,12 +1959,18 @@ static void handleKeyRelease(XEvent * event)
 	WScreen *scr = wScreenForRootWindow(event->xkey.root);
 	WWindow *wwin = scr->focused_window;
   
+  if (event->xkey.window == event->xkey.root ||
+      event->xkey.window == scr->no_focus_win) {
+    return;
+  }
   /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
 	if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
-    scr->flags.modifier_pressed = 0;
-    wWindowUpdateButtonImages(wwin);
+    if (wwin) {
+      scr->flags.modifier_pressed = 0;
+      wWindowUpdateButtonImages(wwin);
+    }
   }
 }
 #endif
