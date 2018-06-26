@@ -286,6 +286,7 @@ WMRect wGetRectForHead(WScreen * scr, int head)
 	return rect;
 }
 
+// FIXME: what does `noicon` mean? "Don't cover icons"? "Don't take into account icons?"
 WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool noicons)
 {
 	WArea totalArea, usableArea;
@@ -306,7 +307,7 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
 
 	if (noicons) {
 		/* check if user wants dock covered */
-		if (scr->dock && wPreferences.no_window_over_dock && wAppIconTouchesHead(scr->dock->icon_array[0], head)) {
+		if (scr->dock && scr->dock->mapped && wPreferences.no_window_over_dock && wAppIconTouchesHead(scr->dock->icon_array[0], head)) {
 			int offset = wPreferences.icon_size + DOCK_EXTRA_SPACE;
 
 			if (scr->dock->on_right_side)
@@ -314,6 +315,15 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
 			else
 				usableArea.x1 += offset;
 		}
+
+    // scr->totalUsableArea includes right-side Dock but excludes Icon Yard.
+    // scr->usableArea covers full display (head) resolution.
+    // FIXME: will it be more logical to synchronize var names and meaning? like this:
+    // 	`usableArea` =  display size - Dock - Icon Yard
+    // 	`totalUsableAraea` = display size
+    if (!scr->flags.icon_yard_mapped) {
+      usableArea.y2 += wPreferences.icon_size;
+    }
 
 		/* check if icons are on the same side as dock, and adjust if not done already */
 		if (scr->dock && wPreferences.no_window_over_icons && !wPreferences.no_window_over_dock && (wPreferences.icon_yard & IY_VERT)) {
