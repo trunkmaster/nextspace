@@ -844,20 +844,21 @@ static void handleButtonPress(XEvent * event)
 	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
 		if (event->xbutton.button == Button1 && wPreferences.mouse_button1 != WA_NONE) {
 #ifdef NEXTSPACE
-			if (scr->focused_window && !strcmp(scr->focused_window->wm_class, "GNUstep")) {
-				XSendEvent(dpy, scr->focused_window->client_win, True, ButtonPressMask, event);
+			if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
+				XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
 			}
-			else
-#endif
+			else {
+				XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
+			}
+#else
 			executeButtonAction(scr, event, wPreferences.mouse_button1);
+#endif
 		} else if (event->xbutton.button == Button2 && wPreferences.mouse_button2 != WA_NONE) {
 			executeButtonAction(scr, event, wPreferences.mouse_button2);
 		} else if (event->xbutton.button == Button3 && wPreferences.mouse_button3 != WA_NONE) {
 #ifdef NEXTSPACE
-			if (scr->focused_window) {
-				if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
-					XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
-				}
+			if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
+				XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
 			}
 			else {
 				XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
@@ -930,7 +931,7 @@ static void handleButtonRelease(XEvent * event)
 	WScreen *scr = wScreenForRootWindow(event->xbutton.root);
 
 	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
-		if (!strcmp(scr->focused_window->wm_class, "GNUstep")) {
+		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
 			XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
 		}
 	}
