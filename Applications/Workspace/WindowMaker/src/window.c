@@ -1327,11 +1327,6 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 	if (!WFLAGP(wwin, no_bind_keys))
 		wWindowSetKeyGrabs(wwin);
   
-#ifdef NEXTSPACE
-        /* wwin->event_mask |= (KeyPressMask | KeyReleaseMask); */
-        /* XSelectInput(dpy, wwin->client_win, wwin->event_mask); */
-#endif
-
 	WMPostNotificationName(WMNManaged, wwin, NULL);
 	wColormapInstallForWindow(scr, scr->cmap_window);
 
@@ -2596,8 +2591,10 @@ void wWindowSetKeyGrabs(WWindow * wwin)
 
 	wRootMenuBindShortcuts(wwin->frame->core->window);
 #ifdef NEXTSPACE
-        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
-        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_L), 0, wwin->client_win, True,
+    GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_R), 0, wwin->client_win, True,
+    GrabModeAsync, GrabModeAsync);
 #endif
 }
 
