@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Jun 25 18:25:56 2018
+;; Created Wed Jun 27 01:34:16 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,22 +11,66 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("Click" "XSelec" "NEXTS" "modif" "wWindowUpdateButton" "U" "WB" "PRED_CLOSE" "wWindowSetKeyGrabs" "icon_y" "yard" "slideback" "_dragg" "wXDND" "XDND" "Restac"))
+(setq search-ring '("totalUsableArea" "wMaxUsa" "MaximizeWindow" "Click" "XSelec" "NEXTS" "modif" "wWindowUpdateButton" "U" "WB" "PRED_CLOSE" "wWindowSetKeyGrabs" "icon_y" "yard" "slideback" "_dragg"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_kill.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/framewin.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_next_kill.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_next_unmax.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_next_max.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_kill.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_pixmaps.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Libraries/gnustep/gnustep-gui-0.24.1/Source/GSDragView.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/superfluous.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/appicon.c"))
+(setq file-name-history '("~/Developer/nextspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/xinerama.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/actions.c" "~/Developer/nextspace/" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_kill.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/framewin.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_next_kill.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_next_unmax.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_next_max.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_kill.xpm" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_pixmaps.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/xinerama.c"
+  "xinerama.c"
+  'c-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  7406
+  '(7425 nil)
+  nil
+  nil
+  '((tab-width . 2) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/actions.c"
+  "actions.c"
+  'c-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  11053
+  '(11053 nil)
+  nil
+  nil
+  '((tab-width . 2) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c"
+  "screen.c"
+  'c-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  24858
+  '(19846 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/window.c"
   "window.c"
   'c-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  64586
-  '(38491 nil)
+  87954
+  '(88406 nil)
   nil
   nil
-  '((buffer-file-coding-system . undecided-unix)))
+  '((tab-width . 2) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/event.c"
+  "event.c"
+  'c-mode
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
+  38675
+  '(38670 nil)
+  nil
+  nil
+  '((tab-width . 2) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_pixmaps.h"
@@ -35,17 +79,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   2222
   '(2209 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/def_kill.xpm"
-  "def_kill.xpm"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode image-minor-mode)
-  255
-  '(44 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -60,17 +93,6 @@
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/event.c"
-  "event.c"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  24129
-  '(38387 nil)
-  nil
-  nil
-  '((tab-width . 2) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/WindowMaker.h"
@@ -95,17 +117,6 @@
   '((buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.c"
-  "screen.c"
-  'c-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  7813
-  '(7784 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m"
   "Workspace+WindowMaker.m"
   'objc-mode
@@ -120,7 +131,7 @@
   "/Users/me/Developer/nextspace/Applications/Workspace/Controller.m"
   "Controller.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode auto-complete-mode)
   23922
   '(24148 nil)
   nil
