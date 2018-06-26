@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/window.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/window.c	2018-06-25 23:17:53.914621934 +0300
++++ ./WindowMaker/src/window.c	2018-06-26 11:18:50.381367002 +0300
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -38,8 +38,8 @@
  		wWindowSetKeyGrabs(wwin);
 +  
 +#ifdef NEXTSPACE
-+        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
-+        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
++        /* wwin->event_mask |= (KeyPressMask | KeyReleaseMask); */
++        /* XSelectInput(dpy, wwin->client_win, wwin->event_mask); */
 +#endif
  
  	WMPostNotificationName(WMNManaged, wwin, NULL);
@@ -53,21 +53,25 @@
  	return wwin;
  }
  
-@@ -2212,7 +2226,12 @@
+@@ -2212,7 +2226,16 @@
  			if (fwin->lbutton_image && !fwin->lbutton_image->shared)
  				wPixmapDestroy(fwin->lbutton_image);
  
 -			fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
 +#ifdef NEXTSPACE
-+			if (scr->flags.modifier_pressed)
-+				fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
-+			else
++			if (scr->flags.modifier_pressed) {
++                          if (wwin->flags.maximized) {
++                            fwin->lbutton_image = scr->b_pixmaps[WBUT_RESTORE];
++                          } else {
++                            fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
++                          }
++                        } else
 +#endif
 +				fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
  		}
  	}
  #ifdef XKB_BUTTON_HINT
-@@ -2266,7 +2285,12 @@
+@@ -2266,7 +2289,12 @@
  			if (fwin->rbutton_image && !fwin->rbutton_image->shared)
  				wPixmapDestroy(fwin->rbutton_image);
  
@@ -81,3 +85,28 @@
  		}
  	}
  
+@@ -2567,6 +2595,10 @@
+ 	}
+ 
+ 	wRootMenuBindShortcuts(wwin->frame->core->window);
++#ifdef NEXTSPACE
++        wwin->event_mask |= (KeyPressMask | KeyReleaseMask);
++        XSelectInput(dpy, wwin->client_win, wwin->event_mask);
++#endif
+ }
+ 
+ void wWindowResetMouseGrabs(WWindow * wwin)
+@@ -3100,6 +3132,13 @@
+ 			wapp = wApplicationOf(wwin->main_window);
+ 			if (wapp && !WFLAGP(wwin, no_appicon))
+ 				wHideApplication(wapp);
++		} else if (event->xbutton.state & MOD_MASK) {
++                  if (wwin->flags.maximized) {
++                    wMaximizeWindow(wwin, 0);                    
++                  }
++                  else {
++                    wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
++                  }
+ 		} else if (event->xbutton.state == 0) {
+ 			wIconifyWindow(wwin);
+ 		}

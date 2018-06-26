@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/def_pixmaps.h	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/def_pixmaps.h	2018-06-25 18:10:38.256253999 +0300
++++ ./WindowMaker/src/def_pixmaps.h	2018-06-26 11:17:50.744563500 +0300
 @@ -46,7 +46,6 @@
      ". .XXXX. .",
      " .XXXXXX. "};
@@ -86,7 +86,7 @@
 +"..+    +..",
 +"...+  +..."};
 +
-+static char *PRED_RESTORE_xpm[] = {
++static char *PRED_RESTORE_XPM[] = {
 +"10 10 3 1",
 +" 	c None",
 +".	c #000000",
