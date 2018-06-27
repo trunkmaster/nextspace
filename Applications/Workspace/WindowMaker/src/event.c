@@ -831,10 +831,13 @@ static void handleButtonPress(XEvent * event)
 
 #ifdef NEXTSPACE
   // reset current focused window button beacuse ButtonPress may change focus
-  if (scr->focused_window && scr->focused_window->client_win != scr->no_focus_win) {
-    scr->flags.modifier_pressed = 0;
-    wWindowUpdateButtonImages(scr->focused_window);
-  }
+  WWindow *wwin = scr->focused_window;
+	if (wwin && wwin->client_win != scr->no_focus_win &&
+			event->xbutton.window != wwin->frame->left_button->window &&
+			event->xbutton.window != wwin->frame->right_button->window) {
+		scr->flags.modifier_pressed = 0;
+		wWindowUpdateButtonImages(scr->focused_window);
+	}
 #endif
 
 #ifdef BALLOON_TEXT
