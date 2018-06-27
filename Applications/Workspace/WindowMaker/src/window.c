@@ -2084,6 +2084,14 @@ void wWindowConfigure(WWindow *wwin, int req_x, int req_y, int req_width, int re
 	int synth_notify = False;
 	int resize;
 
+  /* if window size is guaranteed to fail - fix it to some reasonable
+   * defaults. original report was a problem with VirtualBox VM. */
+	if (req_height > SHRT_MAX)
+		req_height = 480;
+  
+	if (req_width > SHRT_MAX)
+		req_height = 640;
+           
 	resize = (req_width != wwin->client.width || req_height != wwin->client.height);
 	/*
 	 * if the window is being moved but not resized then
