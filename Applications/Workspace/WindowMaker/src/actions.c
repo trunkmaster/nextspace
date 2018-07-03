@@ -129,6 +129,12 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	WApplication *oapp = NULL, *napp = NULL;
 	int wasfocused;
 
+  if (WINDOW_LEVEL(wwin) == WMPopUpLevel ||
+      WINDOW_LEVEL(wwin) == WMMainMenuLevel ||
+      WINDOW_LEVEL(wwin) == WMSubmenuLevel ||
+      WINDOW_LEVEL(wwin) == WMDockLevel)
+    return;
+  
 	if (scr->flags.ignore_focus_events || compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
 		return;
 
