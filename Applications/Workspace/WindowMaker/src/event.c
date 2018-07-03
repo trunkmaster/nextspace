@@ -833,10 +833,12 @@ static void handleButtonPress(XEvent * event)
   // reset current focused window button beacuse ButtonPress may change focus
   WWindow *wwin = scr->focused_window;
 	if (wwin && wwin->client_win != scr->no_focus_win &&
+      wwin->frame->left_button &&
 			event->xbutton.window != wwin->frame->left_button->window &&
+      wwin->frame->right_button &&
 			event->xbutton.window != wwin->frame->right_button->window) {
 		scr->flags.modifier_pressed = 0;
-		wWindowUpdateButtonImages(scr->focused_window);
+		wWindowUpdateButtonImages(wwin);
 	}
 #endif
 
@@ -1981,6 +1983,41 @@ static void handleKeyRelease(XEvent * event)
 static void handleMotionNotify(XEvent * event)
 {
 	WScreen *scr = wScreenForRootWindow(event->xmotion.root);
+
+#ifdef NEXTSPACE
+	WWindow *wwin = wWindowFor(event->xmotion.window);
+
+	if (event->xmotion.state == 0) {
+		return;
+	}
+
+  fprintf(stderr, "[handleMotionNotify] window: %lu state:%i (%i)\n",
+          event->xmotion.window, event->xmotion.state, Button1Mask);
+  
+  fprintf(stderr, "[handleMotionNotify] event window:%lu window:%lu titlebar:%lu resizebar:%lu\n",
+          event->xmotion.window,
+          wwin->client_win, wwin->frame->titlebar->window, wwin->frame->resizebar->window);
+  
+	if (event->xmotion.state & Button1Mask &&
+			XGrabPointer(dpy, event->xmotion.window, False,
+									ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
+									GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
+		/* wMouseMoveWindow checks for button on ButtonRelease event inside it's loop */
+		event->xbutton.button = Button1;
+		fprintf(stderr, "[WindowMaker] starting window move.\n");
+
+		if (event->xmotion.window == wwin->frame->titlebar->window ||
+				event->xmotion.state & MOD_MASK) {
+			/* move the window */
+			wMouseMoveWindow(wwin, event);
+			fprintf(stderr, "[WindowMaker] window moved.\n");
+		}
+		else if (event->xmotion.window == wwin->frame->resizebar->window) {
+			wMouseResizeWindow(wwin, event);
+		}
+		XUngrabPointer(dpy, CurrentTime);
+	}
+#endif
 
 	if (wPreferences.scrollable_menus) {
 		WMPoint p = wmkpoint(event->xmotion.x_root, event->xmotion.y_root);
