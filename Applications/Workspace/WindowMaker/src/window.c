@@ -1792,7 +1792,9 @@ void wWindowUnfocus(WWindow *wwin)
 {
 	CloseWindowMenu(wwin->screen_ptr);
 
+#ifndef NEXTSPACE
 	if (wwin->flags.is_gnustep == 0)
+#endif
 		wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
 
 	if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
@@ -2231,12 +2233,12 @@ void wWindowUpdateButtonImages(WWindow *wwin)
 
 #ifdef NEXTSPACE
 			if (scr->flags.modifier_pressed) {
-                          if (wwin->flags.maximized) {
-                            fwin->lbutton_image = scr->b_pixmaps[WBUT_RESTORE];
-                          } else {
-                            fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
-                          }
-                        } else
+				if (wwin->flags.maximized) {
+					fwin->lbutton_image = scr->b_pixmaps[WBUT_RESTORE];
+				} else {
+					fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
+				}
+			} else
 #endif
 				fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
 		}
@@ -2839,6 +2841,7 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 	if (event->xbutton.button == Button1)
 		wRaiseFrame(wwin->frame->core);
 
+#ifndef NEXTSPACE
 	if (event->xbutton.window != wwin->frame->resizebar->window) {
 		if (XGrabPointer(dpy, wwin->frame->resizebar->window, True,
 				 ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
@@ -2855,6 +2858,7 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 		wMouseResizeWindow(wwin, event);
 		XUngrabPointer(dpy, CurrentTime);
 	}
+#endif
 }
 
 static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
@@ -3008,6 +3012,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 			wSelectWindow(wwin, !wwin->flags.selected);
 			return;
 		}
+#ifndef NEXTSPACE
 		if (event->xbutton.window != wwin->frame->titlebar->window
 		    && XGrabPointer(dpy, wwin->frame->titlebar->window, False,
 				    ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
@@ -3019,6 +3024,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 		wMouseMoveWindow(wwin, event);
 
 		XUngrabPointer(dpy, CurrentTime);
+#endif
 	} else if (event->xbutton.button == Button3 && event->xbutton.state == 0
 		   && !wwin->flags.internal_window && !WCHECK_STATE(WSTATE_MODAL)) {
 		WObjDescriptor *desc;
