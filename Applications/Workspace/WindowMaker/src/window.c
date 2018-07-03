@@ -1738,7 +1738,11 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
 	wwin->flags.semi_focused = 0;
 
-	if (wwin->flags.is_gnustep == 0)
+	/* if (wwin->flags.is_gnustep == 0) */
+  if (WINDOW_LEVEL(wwin) != WMPopUpLevel &&
+      WINDOW_LEVEL(wwin) != WMMainMenuLevel &&
+      WINDOW_LEVEL(wwin) != WMSubmenuLevel &&
+      WINDOW_LEVEL(wwin) != WMDockLevel)
 		wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
 
 	wwin->flags.focused = 1;
@@ -1792,9 +1796,11 @@ void wWindowUnfocus(WWindow *wwin)
 {
 	CloseWindowMenu(wwin->screen_ptr);
 
-#ifndef NEXTSPACE
-	if (wwin->flags.is_gnustep == 0)
-#endif
+	/* if (wwin->flags.is_gnustep == 0) */
+  if (WINDOW_LEVEL(wwin) != WMPopUpLevel &&
+      WINDOW_LEVEL(wwin) != WMMainMenuLevel &&
+      WINDOW_LEVEL(wwin) != WMSubmenuLevel &&
+      WINDOW_LEVEL(wwin) != WMDockLevel)
 		wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
 
 	if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
