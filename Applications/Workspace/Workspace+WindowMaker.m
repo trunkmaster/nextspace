@@ -172,9 +172,6 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   // Just load saved Dock state without icons drawing.
   WWMDockInit();
 
-  // Icon Yard setup
-  wScreenWithNumber(0)->flags.icon_yard_mapped = 1;
-
   //--- Below this point WindowMaker was initialized
 
   // TODO: go through all screens
