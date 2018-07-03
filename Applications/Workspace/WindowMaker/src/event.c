@@ -939,6 +939,9 @@ static void handleButtonRelease(XEvent * event)
 		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
 			XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
 		}
+		else {
+			XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonReleaseMask, event);
+		}
 	}
 }
 #endif
