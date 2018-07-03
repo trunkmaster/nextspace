@@ -1792,9 +1792,7 @@ void wWindowUnfocus(WWindow *wwin)
 {
 	CloseWindowMenu(wwin->screen_ptr);
 
-#ifndef NEXTSPACE
 	if (wwin->flags.is_gnustep == 0)
-#endif
 		wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
 
 	if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
@@ -3029,6 +3027,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 		   && !wwin->flags.internal_window && !WCHECK_STATE(WSTATE_MODAL)) {
 		WObjDescriptor *desc;
 
+		wRaiseFrame(wwin->frame->core);
 		if (event->xbutton.window != wwin->frame->titlebar->window
 		    && XGrabPointer(dpy, wwin->frame->titlebar->window, False,
 				    ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
@@ -3146,7 +3145,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 #ifdef NEXTSPACE
 		} else if (event->xbutton.state & MOD_MASK) {
 			if (wwin->flags.maximized) {
-				wMaximizeWindow(wwin, 0);                    
+				wUnmaximizeWindow(wwin);
 			}
 			else {
 				wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
