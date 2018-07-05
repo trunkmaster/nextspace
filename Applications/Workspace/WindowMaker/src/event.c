@@ -935,6 +935,8 @@ static void handleButtonRelease(XEvent * event)
 {
 	WScreen *scr = wScreenForRootWindow(event->xbutton.root);
 
+  fprintf(stderr, "[handleButtonRelease] window:%lu\n", event->xbutton.window);
+
 	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
 		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
 			XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
@@ -1219,6 +1221,9 @@ static void handleEnterNotify(XEvent * event)
 		}
 	}
 
+  /* fprintf(stderr, "[EnterNotify] window:%lu subwindow:%lu\n", */
+  /*         event->xcrossing.window, event->xcrossing.subwindow); */
+  
 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
 		if (desc->handle_enternotify)
 			(*desc->handle_enternotify) (desc, event);
@@ -1277,12 +1282,22 @@ static void handleEnterNotify(XEvent * event)
 #ifdef BALLOON_TEXT
 	wBalloonEnteredObject(scr, desc);
 #endif
+  /* if (event->xcrossing.subwindow) { */
+  /*   fprintf(stderr, "[EnterNotify] select input for window:%lu\n", */
+  /*           event->xcrossing.subwindow); */
+  /*   fprintf(stderr, "[EnterNotify] select input return value: %i\n", */
+  /*           XSelectInput(dpy, event->xcrossing.subwindow, ButtonRelease)); */
+  /*   XSync(dpy, False); */
+  /* } */
 }
 
 static void handleLeaveNotify(XEvent * event)
 {
 	WObjDescriptor *desc = NULL;
 
+  /* fprintf(stderr, "[LeaveNotify] window:%lu subwindow:%lu\n", */
+  /*         event->xcrossing.window, event->xcrossing.subwindow); */
+  
 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
 		if (desc->handle_leavenotify)
 			(*desc->handle_leavenotify) (desc, event);

@@ -2926,7 +2926,8 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 	unsigned int new_height, h_scale;
 	unsigned int resize_width_increment = 0;
 	unsigned int resize_height_increment = 0;
-
+  fprintf(stderr, "[Frame MouseDown] window:%lu subwindow:%lu\n",
+          event->xbutton.window, event->xbutton.subwindow);
 	if (wwin->normal_hints) {
 		w_scale = (wPreferences.resize_increment + wwin->normal_hints->width_inc - 1) / wwin->normal_hints->width_inc;
 		h_scale = (wPreferences.resize_increment + wwin->normal_hints->height_inc - 1) / wwin->normal_hints->height_inc;
@@ -2942,11 +2943,11 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 
 	CloseWindowMenu(wwin->screen_ptr);
 
-	if (!(event->xbutton.state & ControlMask) && !WFLAGP(wwin, no_focusable))
-		wSetFocusTo(wwin->screen_ptr, wwin);
+	/* if (!(event->xbutton.state & ControlMask) && !WFLAGP(wwin, no_focusable)) */
+	/* 	wSetFocusTo(wwin->screen_ptr, wwin); */
 
-	if (event->xbutton.button == Button1)
-		wRaiseFrame(wwin->frame->core);
+	/* if (event->xbutton.button == Button1) */
+	/* 	wRaiseFrame(wwin->frame->core); */
 
 	if (event->xbutton.state & ControlMask) {
 		if (event->xbutton.button == Button4) {
@@ -2983,6 +2984,81 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 		}
 		XUngrabPointer(dpy, CurrentTime);
 	}
+
+  /* XSync(dpy, False); */
+  /* XSelectInput(dpy, event->xbutton.subwindow, ButtonReleaseMask); */
+  
+  int    done = 0;
+	XEvent ev;
+  long   mask;
+  /* XAllowEvents(dpy, AsyncPointer, CurrentTime); */
+  /* XSync(dpy, False); */
+
+  /* mask = (ButtonPressMask | ButtonMotionMask | ButtonReleaseMask */
+  /*         | ExposureMask | PointerMotionMask | OwnerGrabButtonMask */
+  /*         | KeymapStateMask); */
+  mask = (ButtonPressMask | ButtonMotionMask | ButtonReleaseMask
+          | PointerMotionMask | PointerMotionHintMask);
+  /* XSelectInput(dpy, event->xbutton.window, mask); */
+  /* XSelectInput(dpy, event->xbutton.subwindow, mask); */
+  /* XSendEvent(dpy, event->xbutton.window, True, ButtonPressMask, event); */
+  /* if (XGrabPointer(dpy, wwin->client_win, False, */
+  /*                  mask, */
+  /*                  GrabModeAsync, GrabModeAsync, None, None, CurrentTime) != GrabSuccess) { */
+  /*   fprintf(stderr, "[Frame MouseDown] XGrabPointer was unsuccessful.\n"); */
+  /*   return; */
+  /* } */
+  /* XAllowEvents(dpy, AsyncPointer, CurrentTime); */
+  /* if (XGrabPointer(dpy, wwin->client_win, False, */
+  /*                  ButtonPressMask | ButtonReleaseMask, */
+  /*                  GrabModeAsync, GrabModeAsync, None, None, CurrentTime) != GrabSuccess) { */
+  /*   fprintf(stderr, "[Frame MouseDown] XGrabPointer was unsuccessful.\n"); */
+  /*   return; */
+  /* } */
+  /* if (XGrabButton(dpy, AnyButton, AnyModifier, wwin->client_win, False, */
+  /*                 ButtonPressMask | ButtonReleaseMask, */
+  /*                 GrabModeAsync, GrabModeAsync, None, None) != GrabSuccess) { */
+  /*   fprintf(stderr, "[Frame MouseDown] XGrabButton was unsuccessful.\n"); */
+  /*   return; */
+  /* } */
+  /* XUngrabPointer(dpy, CurrentTime); */
+  /* XAllowEvents(dpy, SyncPointer, CurrentTime); */
+  /* XSync(dpy, False); */
+  XSendEvent(dpy, event->xbutton.root, True, ButtonPressMask, event);
+  while (!done) {
+    WMMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask, &ev);
+    fprintf(stderr, "[Frame MouseDown] got event type=%i\n", ev.type);
+		switch (ev.type) {
+    case ButtonPress:
+      fprintf(stderr, "[Frame MouseDown] ButtonPress window:%lu\n", ev.xbutton.window);
+      XAllowEvents(dpy, SyncPointer, CurrentTime);
+      /* XSync(dpy, False); */
+      break;
+    case ButtonRelease:
+      fprintf(stderr, "[Frame MouseDown] ButtonRelease window:%lu\n", ev.xbutton.window);
+      wSetFocusTo(wwin->screen_ptr, wwin);
+      wRaiseFrame(wwin->frame->core);
+      done = 1;
+      /* XSendEvent(dpy, wwin->client_win, True, ev.type, &ev); */
+      /* XSync(dpy, 0); */
+      break;
+    default:
+      /* XUngrabServer(dpy); */
+      /* WMHandleEvent(&ev); */
+      /* XSync(dpy, False); */
+      /* XGrabServer(dpy); */
+      /* fprintf(stderr, "[Frame MouseDown] Send event to client:%i\n", ev.type); */
+      /* XSendEvent(dpy, wwin->client_win, True, ev.type, &ev); */
+      /* XSync(dpy, 0); */
+      /* XAllowEvents(dpy, SyncPointer, CurrentTime); */
+      /* XUngrabPointer(dpy, CurrentTime); */
+      break;
+    }
+  }
+  fprintf(stderr, "[Frame MouseDown] tracking mouse stopped\n");
+  XUngrabPointer(dpy, CurrentTime);
+  /* XAllowEvents(dpy, AsyncPointer, CurrentTime); */
+  XSync(dpy, False);
 }
 
 static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
