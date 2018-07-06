@@ -896,15 +896,12 @@ static void handleButtonPress(XEvent * event)
 	if (desc->parent_type == WCLASS_WINDOW) {
 		XSync(dpy, 0);
 
-		if (event->xbutton.state & ( MOD_MASK | ControlMask )) {
+		if (event->xbutton.state & ( MOD_MASK | ControlMask)) {
+			XAllowEvents(dpy, AsyncPointer, CurrentTime);
+		} else if (wPreferences.ignore_focus_click) {
 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
 		} else {
-			/*      if (wPreferences.focus_mode == WKF_CLICK) { */
-			if (wPreferences.ignore_focus_click) {
-				XAllowEvents(dpy, AsyncPointer, CurrentTime);
-			}
 			XAllowEvents(dpy, ReplayPointer, CurrentTime);
-			/*      } */
 		}
 		XSync(dpy, 0);
 	} else if (desc->parent_type == WCLASS_APPICON
@@ -1282,13 +1279,6 @@ static void handleEnterNotify(XEvent * event)
 #ifdef BALLOON_TEXT
 	wBalloonEnteredObject(scr, desc);
 #endif
-  /* if (event->xcrossing.subwindow) { */
-  /*   fprintf(stderr, "[EnterNotify] select input for window:%lu\n", */
-  /*           event->xcrossing.subwindow); */
-  /*   fprintf(stderr, "[EnterNotify] select input return value: %i\n", */
-  /*           XSelectInput(dpy, event->xcrossing.subwindow, ButtonRelease)); */
-  /*   XSync(dpy, False); */
-  /* } */
 }
 
 static void handleLeaveNotify(XEvent * event)
