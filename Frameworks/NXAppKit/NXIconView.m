@@ -999,6 +999,14 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   return selectable;
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  if ([event type] == NSLeftMouseDown) {
+    return YES;
+  }
+  return NO;
+}
+
 - (BOOL)isFlipped
 {
   return YES;

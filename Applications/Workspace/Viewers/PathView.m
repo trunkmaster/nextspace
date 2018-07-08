@@ -408,6 +408,14 @@
   return NO;
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  if ([event type] == NSLeftMouseDown) {
+    return YES;
+  }
+  return NO;
+}
+
 //=============================================================================
 // NXIconView delegate
 //=============================================================================

@@ -646,6 +646,14 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (BOOL)acceptsFirstResponder
 {
 //  return isSelectable;
+  return YES;
+}
+
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  if ([event type] == NSLeftMouseDown) {
+    return YES;
+  }
   return NO;
 }
 
