@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/window.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/window.c	2018-06-26 22:29:23.754123341 +0300
++++ ./WindowMaker/src/window.c	2018-07-09 12:51:29.755465500 +0300
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -17,7 +17,7 @@
  			y -= wwin->frame->top_width + wwin->frame->bottom_width;
  	}
  
-+	/* We're starting managing already existed window at our startup.
++	/* We're starting to manage already existed window at our startup.
 +	 * Adjust window position so window will not be shifted down and right
 +	 * after decorations added.
 +	*/
@@ -29,46 +29,40 @@
  	/*
  	 * wWindowConfigure() will init the client window's size
  	 * (wwin->client.{width,height}) and all other geometry
-@@ -1314,10 +1324,9 @@
- 		}
- 	}
- 	wWindowResetMouseGrabs(wwin);
--
- 	if (!WFLAGP(wwin, no_bind_keys))
- 		wWindowSetKeyGrabs(wwin);
--
+@@ -2075,6 +2085,14 @@
+ 	int synth_notify = False;
+ 	int resize;
+ 
++  /* if window size is guaranteed to fail - fix it to some reasonable
++   * defaults. original report was a problem with VirtualBox VM. */
++	if (req_height > SHRT_MAX)
++		req_height = 480;
 +  
- 	WMPostNotificationName(WMNManaged, wwin, NULL);
- 	wColormapInstallForWindow(scr, scr->cmap_window);
- 
-@@ -1457,7 +1466,7 @@
- 	wSetFocusTo(scr, wwin);
- 	wWindowResetMouseGrabs(wwin);
- 	wWindowSetKeyGrabs(wwin);
--
-+        
- 	return wwin;
- }
- 
-@@ -2212,7 +2221,16 @@
++	if (req_width > SHRT_MAX)
++		req_height = 640;
++           
+ 	resize = (req_width != wwin->client.width || req_height != wwin->client.height);
+ 	/*
+ 	 * if the window is being moved but not resized then
+@@ -2212,7 +2230,16 @@
  			if (fwin->lbutton_image && !fwin->lbutton_image->shared)
  				wPixmapDestroy(fwin->lbutton_image);
  
 -			fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
 +#ifdef NEXTSPACE
 +			if (scr->flags.modifier_pressed) {
-+                          if (wwin->flags.maximized) {
-+                            fwin->lbutton_image = scr->b_pixmaps[WBUT_RESTORE];
-+                          } else {
-+                            fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
-+                          }
-+                        } else
++				if (wwin->flags.maximized) {
++					fwin->lbutton_image = scr->b_pixmaps[WBUT_RESTORE];
++				} else {
++					fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
++				}
++			} else
 +#endif
 +				fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
  		}
  	}
  #ifdef XKB_BUTTON_HINT
-@@ -2266,7 +2284,12 @@
+@@ -2266,7 +2293,12 @@
  			if (fwin->rbutton_image && !fwin->rbutton_image->shared)
  				wPixmapDestroy(fwin->rbutton_image);
  
@@ -82,7 +76,7 @@
  		}
  	}
  
-@@ -2567,6 +2590,12 @@
+@@ -2567,6 +2599,12 @@
  	}
  
  	wRootMenuBindShortcuts(wwin->frame->core->window);
@@ -95,14 +89,46 @@
  }
  
  void wWindowResetMouseGrabs(WWindow * wwin)
-@@ -3100,6 +3129,15 @@
+@@ -2802,6 +2840,7 @@
+ 	if (event->xbutton.button == Button1)
+ 		wRaiseFrame(wwin->frame->core);
+ 
++#ifndef NEXTSPACE
+ 	if (event->xbutton.window != wwin->frame->resizebar->window) {
+ 		if (XGrabPointer(dpy, wwin->frame->resizebar->window, True,
+ 				 ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
+@@ -2818,6 +2857,7 @@
+ 		wMouseResizeWindow(wwin, event);
+ 		XUngrabPointer(dpy, CurrentTime);
+ 	}
++#endif
+ }
+ 
+ static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
+@@ -2971,6 +3011,7 @@
+ 			wSelectWindow(wwin, !wwin->flags.selected);
+ 			return;
+ 		}
++#ifndef NEXTSPACE
+ 		if (event->xbutton.window != wwin->frame->titlebar->window
+ 		    && XGrabPointer(dpy, wwin->frame->titlebar->window, False,
+ 				    ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
+@@ -2982,6 +3023,7 @@
+ 		wMouseMoveWindow(wwin, event);
+ 
+ 		XUngrabPointer(dpy, CurrentTime);
++#endif
+ 	} else if (event->xbutton.button == Button3 && event->xbutton.state == 0
+ 		   && !wwin->flags.internal_window && !WCHECK_STATE(WSTATE_MODAL)) {
+ 		WObjDescriptor *desc;
+@@ -3100,6 +3142,15 @@
  			wapp = wApplicationOf(wwin->main_window);
  			if (wapp && !WFLAGP(wwin, no_appicon))
  				wHideApplication(wapp);
 +#ifdef NEXTSPACE
 +		} else if (event->xbutton.state & MOD_MASK) {
 +			if (wwin->flags.maximized) {
-+				wMaximizeWindow(wwin, 0);                    
++				wUnmaximizeWindow(wwin);
 +			}
 +			else {
 +				wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
