@@ -459,6 +459,21 @@
 {
   return _dragMask;
 }
+
+- (void)draggedImage:(NSImage *)image
+	     endedAt:(NSPoint)screenPoint
+	   operation:(NSDragOperation)operation
+{
+  NSLog(@"Drag operation did end: %lu", operation);
+  if (operation == NSDragOperationNone) {
+    return;
+  }
+    
+  if (NSPointInRect(screenPoint, [_window frame]) &&
+      [_window isKeyWindow] == NO) {
+    [_window makeKeyAndOrderFront:self];
+  }
+}
   
 //=============================================================================
 // Scroller delegate

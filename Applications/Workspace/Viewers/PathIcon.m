@@ -635,6 +635,7 @@ static NSDragOperation savedMask;
       return;
     }
     if ([target respondsToSelector:action]) {
+      [_window makeKeyAndOrderFront:self];
       [target performSelector:action withObject:self];
     }
   }  
