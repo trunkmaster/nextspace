@@ -831,11 +831,11 @@ static void handleButtonPress(XEvent * event)
 
 #ifdef NEXTSPACE
   // reset current focused window button beacuse ButtonPress may change focus
-  WWindow *wwin = scr->focused_window;
+	WWindow *wwin = scr->focused_window;
 	if (wwin && wwin->client_win != scr->no_focus_win &&
-      wwin->frame->left_button &&
+			wwin->frame->left_button &&
 			event->xbutton.window != wwin->frame->left_button->window &&
-      wwin->frame->right_button &&
+			wwin->frame->right_button &&
 			event->xbutton.window != wwin->frame->right_button->window) {
 		scr->flags.modifier_pressed = 0;
 		wWindowUpdateButtonImages(wwin);
