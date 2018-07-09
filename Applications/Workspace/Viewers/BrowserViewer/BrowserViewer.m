@@ -56,6 +56,14 @@
   return NO;
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  if ([event type] == NSLeftMouseDown) {
+    return YES;
+  }
+  return NO;
+}
+
 - (void)selectAll:(id)sender
 {
   //NSDebugLLog(@"Browser", @"BrowserMatrix: selectAll:");
@@ -129,6 +137,13 @@
   [saString release];
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  if ([event type] == NSLeftMouseDown) {
+    return YES;
+  }
+  return NO;
+}
 @end
 
 //=============================================================================

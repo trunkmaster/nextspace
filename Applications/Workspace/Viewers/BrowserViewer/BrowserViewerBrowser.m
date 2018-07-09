@@ -263,4 +263,12 @@ static NSTimer *clickTimer = nil;
   return YES;
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  if ([event type] == NSLeftMouseDown) {
+    return YES;
+  }
+  return NO;
+}
+
 @end
