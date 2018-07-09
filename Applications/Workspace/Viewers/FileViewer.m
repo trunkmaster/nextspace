@@ -1727,8 +1727,7 @@
   NSString	 *ext;
 
   // "Return" key press in *Viewer, File->Open menu item, double click
-  if (![sender isKindOfClass:[PathIcon class]] || 
-      ![[sender superview] isKindOfClass:[ShelfView class]])
+  if (![sender isKindOfClass:[PathIcon class]])
     {
       sender = [[pathView icons] lastObject];
     }
