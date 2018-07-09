@@ -645,8 +645,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 //-----------------------------------------------------------------------------
 - (BOOL)acceptsFirstResponder
 {
-//  return isSelectable;
-  return YES;
+  return NO;
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
