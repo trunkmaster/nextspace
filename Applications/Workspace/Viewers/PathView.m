@@ -181,6 +181,7 @@
         [self setSlotsWide:i+1];
         [self putIcon:icon intoSlot:NXMakeIconSlot(i, 0)];
       }
+      [icon setDoubleClickPassesClick:NO];
       [icon deselect:nil];
       [icon setEditable:NO];
       [icon setIconImage:[self imageForPath:path]];
@@ -208,6 +209,7 @@
         [self setSlotsWide:i+1];
         [self putIcon:icon intoSlot:NXMakeIconSlot(i, 0)];
       }
+      [icon setDoubleClickPassesClick:NO];
       [icon deselect:nil];
       [icon setEditable:NO];
       [icon setIconImage:[self imageForPath:path]];
@@ -357,12 +359,14 @@
 - (void)iconDoubleClicked:sender
 {
   // only allow the last icon to be double-clicked
-  if ([icons lastObject] == sender) {
-    [_owner open:sender];
-  }
-  else {
-    // double-click can be received by not last icon if PathView content
-    // was scrolled between first and second click.
+  NSLog(@"[PathView] iconDoubleClicked: %@ (%@)",
+        [sender className], [[sender paths] lastObject]);
+  
+  [_owner open:sender];
+  
+  // double-click can be received by not last icon if PathView content
+  // was scrolled between first and second click.
+  if ([icons lastObject] != sender) {
     [self selectIcons:[NSSet setWithObject:[icons lastObject]]];
   }
 }
@@ -460,21 +464,6 @@
   return _dragMask;
 }
 
-- (void)draggedImage:(NSImage *)image
-	     endedAt:(NSPoint)screenPoint
-	   operation:(NSDragOperation)operation
-{
-  NSLog(@"Drag operation did end: %lu", operation);
-  if (operation == NSDragOperationNone) {
-    return;
-  }
-    
-  if (NSPointInRect(screenPoint, [_window frame]) &&
-      [_window isKeyWindow] == NO) {
-    [_window makeKeyAndOrderFront:self];
-  }
-}
-  
 //=============================================================================
 // Scroller delegate
 //=============================================================================

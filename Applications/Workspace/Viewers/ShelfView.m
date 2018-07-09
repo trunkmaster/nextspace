@@ -362,11 +362,6 @@
   lastSlotDragExited.y = -1;
   
   draggedMask = NSDragOperationNone;
-
-  if (NSPointInRect(screenPoint, [_window frame]) &&
-      [_window isKeyWindow] == NO) {
-    [_window makeKeyAndOrderFront:self];
-  }
 }
 
 // --- NSDraggingDestination
