@@ -132,13 +132,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	if (scr->flags.ignore_focus_events || compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
 		return;
 
-  /* if (wwin != NULL && */
-  /*     (WINDOW_LEVEL(wwin) == WMPopUpLevel || */
-  /*      WINDOW_LEVEL(wwin) == WMMainMenuLevel || */
-  /*      WINDOW_LEVEL(wwin) == WMSubmenuLevel || */
-  /*      WINDOW_LEVEL(wwin) == WMDockLevel)) */
-  /*   return; */
-  
 	if (!old_scr)
 		old_scr = scr;
 
