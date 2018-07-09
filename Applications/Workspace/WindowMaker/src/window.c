@@ -1162,7 +1162,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 			y -= wwin->frame->top_width + wwin->frame->bottom_width;
 	}
 
-	/* We're starting managing already existed window at our startup.
+	/* We're starting to manage already existed window at our startup.
 	 * Adjust window position so window will not be shifted down and right
 	 * after decorations added.
 	*/
@@ -1324,9 +1324,10 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 		}
 	}
 	wWindowResetMouseGrabs(wwin);
+
 	if (!WFLAGP(wwin, no_bind_keys))
 		wWindowSetKeyGrabs(wwin);
-  
+
 	WMPostNotificationName(WMNManaged, wwin, NULL);
 	wColormapInstallForWindow(scr, scr->cmap_window);
 
@@ -1466,7 +1467,7 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
 	wSetFocusTo(scr, wwin);
 	wWindowResetMouseGrabs(wwin);
 	wWindowSetKeyGrabs(wwin);
-        
+
 	return wwin;
 }
 
@@ -1739,10 +1740,6 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 	wwin->flags.semi_focused = 0;
 
 	if (wwin->flags.is_gnustep == 0)
-  /* if (WINDOW_LEVEL(wwin) != WMPopUpLevel && */
-  /*     WINDOW_LEVEL(wwin) != WMMainMenuLevel && */
-  /*     WINDOW_LEVEL(wwin) != WMSubmenuLevel && */
-  /*     WINDOW_LEVEL(wwin) != WMDockLevel) */
 		wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
 
 	wwin->flags.focused = 1;
@@ -1797,10 +1794,6 @@ void wWindowUnfocus(WWindow *wwin)
 	CloseWindowMenu(wwin->screen_ptr);
 
 	if (wwin->flags.is_gnustep == 0)
-  /* if (WINDOW_LEVEL(wwin) != WMPopUpLevel && */
-  /*     WINDOW_LEVEL(wwin) != WMMainMenuLevel && */
-  /*     WINDOW_LEVEL(wwin) != WMSubmenuLevel && */
-  /*     WINDOW_LEVEL(wwin) != WMDockLevel) */
 		wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
 
 	if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
@@ -2919,32 +2912,6 @@ static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
 	}
 }
 
-#ifdef NEXTSPACE
-static WMHandlerID *mouseDownTimer;
-static void pointerStateHandler(void *data)
-{
-  WWindow *wwin = data;
-  Window root_win, child_win;
-  int root_x, root_y, win_x, win_y;
-  unsigned int mask;
-
-  XQueryPointer(dpy, wwin->client_win, &root_win, &child_win,
-                &root_x, &root_y, &win_x, &win_y, &mask);
-
-  if (!mask) {
-    if (root_x > wwin->client.x && root_x < wwin->client.x+wwin->client.width &&
-        root_y > wwin->client.y && root_y < wwin->client.y+wwin->client.height) {
-      wSetFocusTo(wwin->screen_ptr, wwin);
-      wRaiseFrame(wwin->frame->core);
-    }
-    WMDeleteTimerHandler(mouseDownTimer);
-  }
-  else {
-    WMDeleteTimerHandler(mouseDownTimer);
-    mouseDownTimer = WMAddTimerHandler(100, pointerStateHandler, (void *)wwin);
-  }
-}
-#endif
 static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 {
 	WWindow *wwin = desc->parent;
@@ -2968,14 +2935,12 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 
 	CloseWindowMenu(wwin->screen_ptr);
 
-#ifndef NEXTSPACE
 	if (!(event->xbutton.state & ControlMask) && !WFLAGP(wwin, no_focusable))
 		wSetFocusTo(wwin->screen_ptr, wwin);
 
 	if (event->xbutton.button == Button1)
 		wRaiseFrame(wwin->frame->core);
-#endif
-  
+
 	if (event->xbutton.state & ControlMask) {
 		if (event->xbutton.button == Button4) {
 			new_width = wwin->client.width - resize_width_increment;
@@ -3011,10 +2976,6 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 		}
 		XUngrabPointer(dpy, CurrentTime);
 	}
-
-#ifdef NEXTSPACE
-  mouseDownTimer = WMAddTimerHandler(100, pointerStateHandler, (void *)wwin);
-#endif
 }
 
 static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
@@ -3184,7 +3145,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 #ifdef NEXTSPACE
 		} else if (event->xbutton.state & MOD_MASK) {
 			if (wwin->flags.maximized) {
-				wMaximizeWindow(wwin, 0);                    
+				wUnmaximizeWindow(wwin);
 			}
 			else {
 				wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
