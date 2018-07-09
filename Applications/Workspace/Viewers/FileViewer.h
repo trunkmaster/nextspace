@@ -3,6 +3,7 @@
    The workspace manager's file viewer.
 
    Copyright (C) 2005 Saso Kiselkov
+   Copyright (C) 2015-2018 Sergii Stoian
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

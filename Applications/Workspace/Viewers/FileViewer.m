@@ -58,6 +58,42 @@
 #define SPLIT_DEF_WIDTH WIN_DEF_WIDTH-16
 #define PATH_VIEW_HEIGHT 76.0
 
+@interface FileViewerWindow : NSWindow
+{
+}
+
+@end
+
+@implementation FileViewerWindow
+
+- (void)sendEvent:(NSEvent*)theEvent
+{
+  NSView *v;
+
+  if (!_f.visible && [theEvent type] != NSAppKitDefined) {
+    NSDebugLLog(@"NSEvent", @"Discard (window not visible) %@", theEvent);
+    return;
+ }
+
+  if (!_f.cursor_rects_valid) {
+    [self resetCursorRects];
+  }
+
+  if ([theEvent type] == NSLeftMouseDown) {
+    v = [_wv hitTest:[theEvent locationInWindow]];
+    // NSLog(@"[NSWindow] click on %@", [v className]);
+    if ([v isKindOfClass:[NXIcon class]] ||
+        [v isKindOfClass:[PathView class]]) {
+      [v mouseDown:theEvent];
+      return;
+    }
+  }
+  
+  [super sendEvent:theEvent];
+}
+
+@end
+
 @interface FileViewer (Private)
 
 - (id)dotDirObjectForKey:(NSString *)key;
@@ -315,10 +351,11 @@
 	| NSResizableWindowMask | NSClosableWindowMask;
     }
 
-  window = [[NSWindow alloc] initWithContentRect:contentRect
-		     		       styleMask:styleMask
-			     		 backing:NSBackingStoreRetained
-					   defer:YES];
+  // window = [[NSWindow alloc] initWithContentRect:contentRect
+  window = [[FileViewerWindow alloc] initWithContentRect:contentRect
+                                               styleMask:styleMask
+                                                 backing:NSBackingStoreRetained
+                                                   defer:YES];
   [window setReleasedWhenClosed:NO];
   [window setMinSize:NSMakeSize(353, 320)];
   [window setMaxSize:NSMakeSize(10000, 10000)];
