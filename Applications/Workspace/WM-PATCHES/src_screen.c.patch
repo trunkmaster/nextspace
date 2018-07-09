@@ -1,14 +1,29 @@
 --- ./WindowMaker-0.95.7/src/screen.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/screen.c	2018-06-25 14:11:18.436932499 +0300
-@@ -268,6 +268,11 @@
++++ ./WindowMaker/src/screen.c	2018-07-03 16:16:41.436780000 +0300
+@@ -268,6 +268,16 @@
  	if (pix)
  		pix->shared = 1;
  	scr->b_pixmaps[WBUT_ICONIFY] = pix;
-+        
++#ifdef NEXTSPACE        
 +        pix = wPixmapCreateFromXPMData(scr, PRED_MAXIMIZE_XPM);
 +	if (pix)
 +		pix->shared = 1;
 +	scr->b_pixmaps[WBUT_MAXIMIZE] = pix;
++        pix = wPixmapCreateFromXPMData(scr, PRED_RESTORE_XPM);
++	if (pix)
++		pix->shared = 1;
++	scr->b_pixmaps[WBUT_RESTORE] = pix;
++#endif
  #ifdef XKB_BUTTON_HINT
  	if (wPreferences.new_style == TS_NEXT) {
  		pix = wPixmapCreateFromXPMData(scr, NEXT_XKBGROUP1_XPM);
+@@ -787,6 +797,9 @@
+ 	scr->gview = WCreateGeometryView(scr->wmscreen);
+ 	WMRealizeWidget(scr->gview);
+ 
++#ifdef NEXTSPACE
++	scr->flags.icon_yard_mapped = 1;
++#endif        
+ 	wScreenUpdateUsableArea(scr);
+ 
+ 	return scr;
