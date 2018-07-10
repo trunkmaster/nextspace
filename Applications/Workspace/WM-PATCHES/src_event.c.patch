@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-06-26 18:42:14.919988500 +0300
++++ ./WindowMaker/src/event.c	2018-07-10 15:46:09.732264497 +0300
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -71,16 +71,21 @@
  		wUnmanageWindow(wwin, False, True);
  	}
  
-@@ -803,17 +829,43 @@
+@@ -803,17 +829,48 @@
  
  	scr = wScreenForRootWindow(event->xbutton.root);
  
 +#ifdef NEXTSPACE
 +  // reset current focused window button beacuse ButtonPress may change focus
-+  if (scr->focused_window && scr->focused_window->client_win != scr->no_focus_win) {
-+    scr->flags.modifier_pressed = 0;
-+    wWindowUpdateButtonImages(scr->focused_window);
-+  }
++	WWindow *wwin = scr->focused_window;
++	if (wwin && wwin->client_win != scr->no_focus_win &&
++			wwin->frame->left_button &&
++			event->xbutton.window != wwin->frame->left_button->window &&
++			wwin->frame->right_button &&
++			event->xbutton.window != wwin->frame->right_button->window) {
++		scr->flags.modifier_pressed = 0;
++		wWindowUpdateButtonImages(wwin);
++	}
 +#endif
 +
  #ifdef BALLOON_TEXT
@@ -115,7 +120,26 @@
  		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button8);
  		}else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
-@@ -873,6 +925,19 @@
+@@ -839,15 +896,12 @@
+ 	if (desc->parent_type == WCLASS_WINDOW) {
+ 		XSync(dpy, 0);
+ 
+-		if (event->xbutton.state & ( MOD_MASK | ControlMask )) {
++		if (event->xbutton.state & ( MOD_MASK | ControlMask)) {
++			XAllowEvents(dpy, AsyncPointer, CurrentTime);
++		} else if (wPreferences.ignore_focus_click) {
+ 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
+ 		} else {
+-			/*      if (wPreferences.focus_mode == WKF_CLICK) { */
+-			if (wPreferences.ignore_focus_click) {
+-				XAllowEvents(dpy, AsyncPointer, CurrentTime);
+-			}
+ 			XAllowEvents(dpy, ReplayPointer, CurrentTime);
+-			/*      } */
+ 		}
+ 		XSync(dpy, 0);
+ 	} else if (desc->parent_type == WCLASS_APPICON
+@@ -873,6 +927,25 @@
  	}
  }
  
@@ -124,9 +148,15 @@
 +{
 +	WScreen *scr = wScreenForRootWindow(event->xbutton.root);
 +
-+	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
++  /* fprintf(stderr, "[handleButtonRelease] window:%lu\n", event->xbutton.window); */
++
++	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
++			&& event->xbutton.button == Button3) {
 +		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
 +			XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
++		}
++		else {
++			XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonReleaseMask, event);
 +		}
 +	}
 +}
@@ -135,7 +165,27 @@
  static void handleMapNotify(XEvent * event)
  {
  	WWindow *wwin;
-@@ -1385,10 +1450,33 @@
+@@ -1146,6 +1219,9 @@
+ 		}
+ 	}
+ 
++  /* fprintf(stderr, "[EnterNotify] window:%lu subwindow:%lu\n", */
++  /*         event->xcrossing.window, event->xcrossing.subwindow); */
++  
+ 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
+ 		if (desc->handle_enternotify)
+ 			(*desc->handle_enternotify) (desc, event);
+@@ -1210,6 +1286,9 @@
+ {
+ 	WObjDescriptor *desc = NULL;
+ 
++  /* fprintf(stderr, "[LeaveNotify] window:%lu subwindow:%lu\n", */
++  /*         event->xcrossing.window, event->xcrossing.subwindow); */
++  
+ 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
+ 		if (desc->handle_leavenotify)
+ 			(*desc->handle_leavenotify) (desc, event);
+@@ -1385,10 +1464,33 @@
  #ifdef KEEP_XKB_LOCK_STATUS
  	XkbStateRec staterec;
  #endif				/*KEEP_XKB_LOCK_STATUS */
@@ -170,7 +220,7 @@
  	for (i = 0; i < WKBD_LAST; i++) {
  		if (wKeyBindings[i].keycode == 0)
  			continue;
-@@ -1866,7 +1954,27 @@
+@@ -1866,11 +1968,56 @@
  #endif	/* KEEP_XKB_LOCK_STATUS */
  	}
  }
@@ -199,3 +249,32 @@
  static void handleMotionNotify(XEvent * event)
  {
  	WScreen *scr = wScreenForRootWindow(event->xmotion.root);
+ 
++#ifdef NEXTSPACE
++	WWindow *wwin = wWindowFor(event->xmotion.window);
++
++	if (event->xmotion.state == 0 || wwin == NULL) {
++		return;
++	}
++
++	if (event->xmotion.state & Button1Mask &&
++			XGrabPointer(dpy, event->xmotion.window, False,
++									ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
++									GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
++		/* wMouseMoveWindow checks for button on ButtonRelease event inside it's loop */
++		event->xbutton.button = Button1;
++		if (event->xmotion.window == wwin->frame->titlebar->window ||
++				event->xmotion.state & MOD_MASK) {
++			/* move the window */
++			wMouseMoveWindow(wwin, event);
++		}
++		else if (event->xmotion.window == wwin->frame->resizebar->window) {
++			wMouseResizeWindow(wwin, event);
++		}
++		XUngrabPointer(dpy, CurrentTime);
++	}
++#endif
++
+ 	if (wPreferences.scrollable_menus) {
+ 		WMPoint p = wmkpoint(event->xmotion.x_root, event->xmotion.y_root);
+ 		WMRect rect = wGetRectForHead(scr, wGetHeadForPoint(scr, p));
