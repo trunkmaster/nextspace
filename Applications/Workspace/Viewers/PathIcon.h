@@ -31,14 +31,6 @@
 - (void)setDoubleClickPassesClick:(BOOL)isPass;
 - (BOOL)isDoubleClickPassesClick;
 
-// - (void)dragImage:(NSImage*)anImage
-//                at:(NSPoint)baseLocation
-//            offset:(NSSize)initialOffset
-//             event:(NSEvent*)event
-//        pasteboard:(NSPasteboard*)pboard
-//            source:(id)sourceObject
-//         slideBack:(BOOL)slideFlag;
-
 // NSDraggingDestination
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender;
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender;
