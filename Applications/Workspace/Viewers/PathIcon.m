@@ -541,25 +541,6 @@ static NSDragOperation savedMask;
 
 @end
 
-@implementation PathIcon (Private)
-
-- (NSEvent *)_waitForSecondMouseClick
-{
-  unsigned  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
-			 | NSPeriodicMask | NSOtherMouseUpMask 
-			 | NSRightMouseUpMask);
-  NSEvent   *event = nil;
-
-  event = [[self window]
-    nextEventMatchingMask:eventMask
-		untilDate:[NSDate dateWithTimeIntervalSinceNow:0.30]
-		   inMode:NSEventTrackingRunLoopMode
-		  dequeue:NO];
-  return event;
-}
-
-@end
-
 @implementation PathIcon
 
 //============================================================================
@@ -592,6 +573,8 @@ static NSDragOperation savedMask;
 - (void)mouseDown:(NSEvent *)ev
 {
   NSInteger clickCount;
+  NSDate    *evDate = [NSDate date];
+  NXMouse   *mouse = [[NXMouse new] autorelease];
   
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown) {
     return;
@@ -609,7 +592,7 @@ static NSDragOperation savedMask;
     // NSLog(@"[PathIcon-mouseDown]: DRAGGING");
     NSPoint   startPoint = [ev locationInWindow];
     NSInteger eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
-    NSInteger moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
+    NSInteger moveThreshold = [mouse accelerationThreshold];
     
     while ([(ev = [_window nextEventMatchingMask:eventMask])
              type] != NSLeftMouseUp) {
@@ -631,8 +614,20 @@ static NSDragOperation savedMask;
   }
   else if (clickCount == 1 || clickCount > 2) {
     // NSLog(@"PathIcon: 1 || >2 mouseDown: %@", paths);
-    if (!doubleClickPassesClick && [self _waitForSecondMouseClick] != nil) {
-      return;
+    // if (!doubleClickPassesClick && [self _waitForSecondMouseClick] != nil) {
+    if (!doubleClickPassesClick) {
+      NSEvent  *e;
+      CGFloat  waitTime = [mouse doubleClickTime]/1000.0;
+      NSDate   *waitDate = [evDate dateByAddingTimeInterval:waitTime];
+      unsigned mask = (NSLeftMouseDownMask | NSLeftMouseUpMask |
+                        NSRightMouseDown | NSRightMouseUpMask);
+      e = [_window nextEventMatchingMask:mask
+                               untilDate:waitDate
+                                  inMode:NSEventTrackingRunLoopMode
+                                 dequeue:NO];
+      if (e) {
+        return;
+      }
     }
     if ([target respondsToSelector:action]) {
       [_window makeKeyAndOrderFront:self];
