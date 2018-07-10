@@ -59,13 +59,9 @@
 #define PATH_VIEW_HEIGHT 76.0
 
 @interface FileViewerWindow : NSWindow
-{
-}
-
 @end
 
 @implementation FileViewerWindow
-
 - (void)sendEvent:(NSEvent*)theEvent
 {
   NSView *v;
@@ -81,7 +77,7 @@
 
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
-    // NSLog(@"[NSWindow] click on %@", [v className]);
+    NSLog(@"[NSWindow] click on %@", [v className]);
     if ([v isKindOfClass:[NXIcon class]] ||
         [v isKindOfClass:[PathView class]]) {
       [v mouseDown:theEvent];
@@ -91,18 +87,14 @@
   
   [super sendEvent:theEvent];
 }
-
 @end
 
 @interface FileViewer (Private)
-
 - (id)dotDirObjectForKey:(NSString *)key;
 - (void)useViewer:(id <Viewer>)aViewer;
-
 @end
 
 @implementation FileViewer (Private)
-
 - (id)dotDirObjectForKey:(NSString *)key
 {
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -118,7 +110,6 @@
 
   return nil;
 }
-
 - (void)useViewer:(id <Viewer>)aViewer
 {
   if (aViewer)
@@ -140,7 +131,6 @@
       [viewer autorelease];
     }
 }
-
 @end
 
 @implementation FileViewer

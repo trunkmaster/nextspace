@@ -36,8 +36,6 @@
 // BrowserMatrix links with BrowserViewer in awakeFromNib:
 //=============================================================================
 @interface BrowserMatrix : NSMatrix
-{
-}
 @end
 
 @implementation BrowserMatrix
@@ -144,6 +142,7 @@
   }
   return NO;
 }
+
 @end
 
 //=============================================================================
