@@ -3061,8 +3061,8 @@ static void windowCloseClick(WCoreWindow *sender, void *data, XEvent *event)
 	if (event->xbutton.button < Button1 || event->xbutton.button > Button3)
 		return;
 
-	/* if control-click, kill the client */
-	if (event->xbutton.state & ControlMask) {
+	/* if control-click or modifier-click, kill the client */
+	if (event->xbutton.state & ControlMask || event->xbutton.state & MOD_MASK) {
 		wClientKill(wwin);
 	} else {
 		if (wwin->protocols.DELETE_WINDOW && event->xbutton.state == 0) {
