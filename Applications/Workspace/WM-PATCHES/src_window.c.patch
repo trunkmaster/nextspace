@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/window.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/window.c	2018-07-09 12:51:29.755465500 +0300
++++ ./WindowMaker/src/window.c	2018-07-10 15:46:50.815264497 +0300
 @@ -755,9 +755,10 @@
  
  	wwin->orig_main_window = wwin->main_window;
@@ -29,7 +29,17 @@
  	/*
  	 * wWindowConfigure() will init the client window's size
  	 * (wwin->client.{width,height}) and all other geometry
-@@ -2075,6 +2085,14 @@
+@@ -1574,7 +1584,8 @@
+ 			if (!tmp) {
+ 				tmp = scr->focused_window;
+ 				while (tmp) {	/* look for one in the window list first */
+-					if (!WFLAGP(tmp, no_focusable) && !WFLAGP(tmp, skip_window_list)
++					if (!WFLAGP(tmp, no_focusable)
++					    && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
+ 					    && (tmp->flags.mapped || tmp->flags.shaded))
+ 						break;
+ 					tmp = tmp->prev;
+@@ -2075,6 +2086,14 @@
  	int synth_notify = False;
  	int resize;
  
@@ -44,7 +54,7 @@
  	resize = (req_width != wwin->client.width || req_height != wwin->client.height);
  	/*
  	 * if the window is being moved but not resized then
-@@ -2212,7 +2230,16 @@
+@@ -2212,7 +2231,16 @@
  			if (fwin->lbutton_image && !fwin->lbutton_image->shared)
  				wPixmapDestroy(fwin->lbutton_image);
  
@@ -62,7 +72,7 @@
  		}
  	}
  #ifdef XKB_BUTTON_HINT
-@@ -2266,7 +2293,12 @@
+@@ -2266,7 +2294,12 @@
  			if (fwin->rbutton_image && !fwin->rbutton_image->shared)
  				wPixmapDestroy(fwin->rbutton_image);
  
@@ -76,7 +86,7 @@
  		}
  	}
  
-@@ -2567,6 +2599,12 @@
+@@ -2567,6 +2600,12 @@
  	}
  
  	wRootMenuBindShortcuts(wwin->frame->core->window);
@@ -89,7 +99,7 @@
  }
  
  void wWindowResetMouseGrabs(WWindow * wwin)
-@@ -2802,6 +2840,7 @@
+@@ -2802,6 +2841,7 @@
  	if (event->xbutton.button == Button1)
  		wRaiseFrame(wwin->frame->core);
  
@@ -97,7 +107,7 @@
  	if (event->xbutton.window != wwin->frame->resizebar->window) {
  		if (XGrabPointer(dpy, wwin->frame->resizebar->window, True,
  				 ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-@@ -2818,6 +2857,7 @@
+@@ -2818,6 +2858,7 @@
  		wMouseResizeWindow(wwin, event);
  		XUngrabPointer(dpy, CurrentTime);
  	}
@@ -105,7 +115,7 @@
  }
  
  static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
-@@ -2971,6 +3011,7 @@
+@@ -2971,6 +3012,7 @@
  			wSelectWindow(wwin, !wwin->flags.selected);
  			return;
  		}
@@ -113,7 +123,7 @@
  		if (event->xbutton.window != wwin->frame->titlebar->window
  		    && XGrabPointer(dpy, wwin->frame->titlebar->window, False,
  				    ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-@@ -2982,6 +3023,7 @@
+@@ -2982,6 +3024,7 @@
  		wMouseMoveWindow(wwin, event);
  
  		XUngrabPointer(dpy, CurrentTime);
@@ -121,7 +131,7 @@
  	} else if (event->xbutton.button == Button3 && event->xbutton.state == 0
  		   && !wwin->flags.internal_window && !WCHECK_STATE(WSTATE_MODAL)) {
  		WObjDescriptor *desc;
-@@ -3100,6 +3142,15 @@
+@@ -3100,6 +3143,15 @@
  			wapp = wApplicationOf(wwin->main_window);
  			if (wapp && !WFLAGP(wwin, no_appicon))
  				wHideApplication(wapp);
