@@ -1584,7 +1584,8 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 			if (!tmp) {
 				tmp = scr->focused_window;
 				while (tmp) {	/* look for one in the window list first */
-					if (!WFLAGP(tmp, no_focusable) && !WFLAGP(tmp, skip_window_list)
+					if (!WFLAGP(tmp, no_focusable)
+					    && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
 					    && (tmp->flags.mapped || tmp->flags.shaded))
 						break;
 					tmp = tmp->prev;
