@@ -722,6 +722,8 @@ BOOL browserColumnLoaded;
 
 - (void)doDoubleClick:(id)sender
 {
+  NSLog(@"[BrowserViewer] doDoubleClick: %@", [sender className]);
+  [self doClick:sender];
   [owner open:sender];
 }
 
