@@ -932,9 +932,10 @@ static void handleButtonRelease(XEvent * event)
 {
 	WScreen *scr = wScreenForRootWindow(event->xbutton.root);
 
-  fprintf(stderr, "[handleButtonRelease] window:%lu\n", event->xbutton.window);
+  /* fprintf(stderr, "[handleButtonRelease] window:%lu\n", event->xbutton.window); */
 
-	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
+	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
+			&& event->xbutton.button == Button3) {
 		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
 			XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
 		}
