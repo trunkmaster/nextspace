@@ -33,6 +33,7 @@
 #import <NXAppKit/NXAppKit.h>
 #import <NXFoundation/NXDefaults.h>
 #import <NXFoundation/NXFileManager.h>
+#import <NXSystem/NXMouse.h>
 
 #import <Workspace.h>
 
@@ -78,13 +79,50 @@
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
     NSLog(@"[NSWindow] click on %@", [v className]);
-    if ([v isKindOfClass:[NXIcon class]] ||
-        [v isKindOfClass:[PathView class]]) {
+    if ([v isKindOfClass:[NXIcon class]]) {
       [v mouseDown:theEvent];
       return;
     }
+    else if ([v isKindOfClass:[NSMatrix class]]) {
+      NSPoint   startPoint, endPoint;
+      NXMouse   *mouse = [[NXMouse new] autorelease];
+      NSInteger moveThreshold = [mouse accelerationThreshold];
+      NSDate    *waitDate;
+      CGFloat   waitTime;
+      NSEvent   *e = nil;
+      BOOL      mouseMoved = NO;
+      
+      [v mouseDown:theEvent];
+      
+      if ([self isMainWindow] == NO && [theEvent clickCount] == 1) {
+        waitTime = ([mouse doubleClickTime] / 1000.0) / 2.0;
+        waitDate = [NSDate dateWithTimeIntervalSinceNow:waitTime];
+        e = [self nextEventMatchingMask:(NSLeftMouseDownMask | NSMouseMovedMask)
+                              untilDate:waitDate
+                                 inMode:NSEventTrackingRunLoopMode
+                                dequeue:NO];
+        
+        NSLog(@"Waiting for second click. Received: %@", e);
+
+        if ([e type] == NSMouseMoved) {
+          moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
+          startPoint = [theEvent locationInWindow];
+          endPoint = [e locationInWindow];
+          if (absolute_value(startPoint.x - endPoint.x) > moveThreshold ||
+              absolute_value(startPoint.y - endPoint.y) > moveThreshold) {
+            mouseMoved = YES;
+          }
+        }
+
+        if (e != nil && ([e type] == NSLeftMouseDown) && mouseMoved == NO) {
+          return;
+        }
+        [self makeKeyAndOrderFront:self];
+      }
+      return;
+    }
   }
-  
+
   [super sendEvent:theEvent];
 }
 @end
