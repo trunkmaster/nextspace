@@ -11,29 +11,24 @@
   Patches are named with the following format:
   <WindowMaker tree subdir>_<file name>.patch
   
-  | Filename | Location | Description | Tags |
-  | -------- |--------- | ----------- | ---- |
-  
-
-* WINGs/userdefaults.c
-  @@ -40,7 +40,11 @@			Configuration, Integration
+* [[https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51][WINGs/userdefaults.c]] @@ -40,7 +40,11 @@
+  /*Configuration*/
   Change configuration directory to "~/Library/Preferences/.WindowMaker".
 
-* WINGs/wcolorpanel.c
-  @@ -397,7 +397,11 @@			Configuration
+* [[https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c][WINGs/wcolorpanel.c]] @@ -397,7 +397,11 @@
+  /*Configuration*/
   Save colors of WINGs color panel to "~/Library/WindowMaker/Colors".
 
-* src/GNUstep.h
+* https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/GNUstep.h
   @@ -49,20 +49,20 @@			Intergation
-
   Synchronize NS*WindowLevel with GNUstep's (defined in AppKit/NSWindow.h)
 
-* src/WindowMaker.h
-  @@ -56,7 +56,7 @@			Integration
-  [[https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h#L56-L63][src/WindowMaker.h]]
+* https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h @@ -56,7 +56,7 @@
+  /*Integration*/
   Fix WMSubmenuLevel value.
 
-  @@ -92,14 +92,16 @@			Look and feel
+  https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h @@ -92,14 +92,16 @@
+  /*Look and feel*/
   New maximize and unmaximize images were added for Alternate-Click on left titlebar button.
 
   @@ -113,6 +115,10 @@			Mouse and cursors
