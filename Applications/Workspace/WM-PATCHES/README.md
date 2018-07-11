@@ -11,103 +11,80 @@
   Patches are named with the following format:
   `<WindowMaker tree subdir>_<file name>.patch`
   
-[WINGs/userdefaults.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51) @@ -40,7 +40,11 @@
+### WINGs/userdefaults.c
 
-    Task: _**Configuration**_
+  [@@ -40,7 +40,11 @@](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51) _**Configuration**_
     
-    Description: Change configuration directory to "~/Library/Preferences/.WindowMaker".
+  Change configuration directory to "~/Library/Preferences/.WindowMaker".
 
-[WINGs/wcolorpanel.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c#L397-L408) @@ -397,7 +397,11 @@
+### WINGs/wcolorpanel.c
 
-    Task: _**Configuration**_
+  [@@ -397,7 +397,11 @@](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c#L397-L408) _**Configuration**_
 
-    Description: Save colors of WINGs color panel to "~/Library/WindowMaker/Colors".
+  Save colors of WINGs color panel to "~/Library/WindowMaker/Colors".
 
-[src/GNUstep.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/GNUstep.h) @@ -49,20 +49,20 @@
+### src/GNUstep.h
 
-    _**Intergation**_
-    
-    Synchronize NS\*WindowLevel with GNUstep's (defined in AppKit/NSWindow.h)
+  [@@ -49,20 +49,20 @@](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/GNUstep.h) _**Intergation**_
+  Synchronize NS\*WindowLevel with GNUstep's (defined in AppKit/NSWindow.h)
 
-[src/WindowMaker.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h) @@ -56,7 +56,7 @@
+### src/WindowMaker.h
 
-    _**Intergation**_
-    
-    Fix WMSubmenuLevel value.
+  [@@ -56,7 +56,7 @@](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h) _**Intergation**_
+  Fix WMSubmenuLevel value.
 
-[src/WindowMaker.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h) @@ -92,14 +92,16 @@
+  [@@ -92,14 +92,16 @@](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h) _**Look and feel**_
+  Description: New maximize and unmaximize images were added for Alternate-Click on left titlebar button.
 
-    _**Look and feel**_
-    
-    New maximize and unmaximize images were added for Alternate-Click on left titlebar button.
+  [@@ -113,6 +115,10 @@](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h) _**Mouse and cursors**_
+  New values for oneway mouse cursors (up, down, left, right) were added: WCUR\_UPRESIZE, WCUR\_DOWNRESIZE, WCUR\_LEFTRESIZE, WCUR\_RIGHTRESIZE.
 
-https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h @@ -113,6 +115,10 @@
+### src/actions.c
+  [@@ -1133,7 +1133,6 @@]() _**Dock and IconYard**_
+  Don't mark icon as mapped. It will be done by Workspace code.
 
-    _**Mouse and cursors**_
-    
-    New values for oneway mouse cursors (up, down, left, right) were added:
-    WCUR_UPRESIZE, WCUR_DOWNRESIZE, WCUR_LEFTRESIZE, WCUR_RIGHTRESIZE.
-
-[src/actions.c]() @@ -1133,7 +1133,6 @@ 
-
-    _**Dock and IconYard**_
-    
-    Don't mark icon as mapped. It will be done by Workspace code.
-
-[src/actions.c]()  @@ -1211,9 +1210,15 @@		Dock and IconYard
+  [@@ -1211,9 +1210,15 @@]() _**Dock and IconYard**_
   Show appicon only if Icon Yard is mapped.
 
-* src/appicon.c
-  @@ -54,6 +54,9 @@			Dock and IconYard
-  @@ -242,7 +245,12 @@			Dock and IconYard
+### src/appicon.c
+  [@@ -54,6 +54,9 @@](), [@@ -242,7 +245,12 @@]() _**Dock and IconYard**_
   Show appicon only if Icon Yard is mapped.
 
-  @@ -1048,7 +1056,13 @@		Look and feel
-  Call DoKaboom() through dispatch_async() to prevent effect from blocking
-  Workspace user interaction.
+  [@@ -1048,7 +1056,13 @@]() _**Look and feel**_
+  Call DoKaboom() through dispatch_async() to prevent effect from blocking Workspace user interaction.
 
-* src/application.c
-  @@ -100,6 +103,13 @@			Integration
-  @@ -140,6 +150,13 @@			Integration
-  @@ -166,6 +183,15 @@			Integration
-  Call Workspace functions on new window openning
-  (XWApplicationDidAddWindow), application creation
-  (XWApplicationDidCreate), application closing (XWApplicationDidDestroy).
+### src/application.c
+  [@@ -100,6 +103,13 @@](), [@@ -140,6 +150,13 @@](), [@@ -166,6 +183,15 @@]() _**Integration**_
+  Call Workspace functions on new window openning (XWApplicationDidAddWindow), application creation (XWApplicationDidCreate), application closing (XWApplicationDidDestroy).
 
-* src/def_pixmaps.h
-  @@ -63,26 +62,42 @@			Look and feel
+### src/def_pixmaps.h
+  [@@ -63,26 +62,42 @@]() _**Look and feel**_
   - Kill operation image of close titlebar button was modified.
   - Added images for Maximize and Unmaximize operations.
 
-* src/defaults.c:
-  @@ -553,6 +556,10 @@			Look and feel
+### src/defaults.c:
+  [@@ -553,6 +556,10 @@]() _**Look and feel**_
   - Add new defaults key - MiniwindowBack and hardcoded value (solid, gray).
 
-  @@ -818,6 +825,14 @@			Mouse and cursors
-  - New defaults were added for oneway mouse cursors: UpResizeCursor, 
-    DownResizeCursor, LeftResizeCursors, RightResizeCursors.
+  [@@ -818,6 +825,14 @@]() _**Mouse and cursors**_
+  - New defaults were added for oneway mouse cursors: UpResizeCursor, DownResizeCursor, LeftResizeCursors, RightResizeCursors.
   - Set default names of cursors for oneway cursors.
 
-  @@ -2482,6 +2500,26 @@		Mouse and cursor
-  Process new type mouse cursors - "library". These types of cursors
-  are loaded with libXcursor Xorg extention. Values are treated as
-  cursor file names inside current theme.
+  [@@ -2482,6 +2500,26 @@]() _**Mouse and cursor**_
+  Process new type mouse cursors - "library". These types of cursors are loaded with libXcursor Xorg extention. Values are treated as cursor file names inside current theme.
 
-  @@ -2681,6 +2719,56 @@		Look and feel
-  Implemented setMiniwindowTile() - loads and stores miniwindow
-  tile image in scr->miniwindow_tile (added in src/screen.h).
+  [@@ -2681,6 +2719,56 @@]() _**Look and feel**_
+  Implemented setMiniwindowTile() - loads and stores miniwindow tile image in scr->miniwindow\_tile (added in src/screen.h).
 
-* src/dialog.c:
-  @@ -177,7 +177,11 @@			Configuration
-  Path to history file changed from "/WindowMaker/History" to
-  "/.AppInfo/WindowMaker/History". This path used to store running commands
-  in "Run" panel.
+### src/dialog.c:
+  [@@ -177,7 +177,11 @@]() _**Configuration**_
+  Path to history file changed from "/WindowMaker/History" to "/.AppInfo/WindowMaker/History". This path used to store running commands in "Run" panel.
 
-* src/dock.c
-  @@ -854,7 +858,9 @@			Integration
+### src/dock.c
+  [@@ -854,7 +858,9 @@]() _**Integration**_
   Do not map appicon upon creation.
 
-  @@ -1959,9 +1965,10 @@		Integration
+  [@@ -1959,9 +1965,10 @@]() _**Integration**_
   Do not map icons during restore state. It will be done by Workspace code.
 
   @@ -2237,6 +2244,10 @@		Integration
