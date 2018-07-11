@@ -1,4 +1,4 @@
-* Intro
+# WindowMaker patches
     
   This a set of patches to make WindowMaker's look and feel closer to NeXT.
   Patches was created against latest official release of WindowMaker - 0.95.7.
@@ -11,37 +11,50 @@
   Patches are named with the following format:
   `<WindowMaker tree subdir>_<file name>.patch`
   
-* [WINGs/userdefaults.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51) @@ -40,7 +40,11 @@
+[WINGs/userdefaults.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51) @@ -40,7 +40,11 @@
 
-    _**Configuration**_
+    Task: _**Configuration**_
     
-    Change configuration directory to "~/Library/Preferences/.WindowMaker".
+    Description: Change configuration directory to "~/Library/Preferences/.WindowMaker".
 
-* [WINGs/wcolorpanel.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c#L397-L408) @@ -397,7 +397,11 @@
-  /*Configuration*/
-  Save colors of WINGs color panel to "~/Library/WindowMaker/Colors".
+[WINGs/wcolorpanel.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c#L397-L408) @@ -397,7 +397,11 @@
 
-* [src/GNUstep.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/GNUstep.h)
-  @@ -49,20 +49,20 @@			Intergation
-  Synchronize NS*WindowLevel with GNUstep's (defined in AppKit/NSWindow.h)
+    Task: _**Configuration**_
 
-* https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h @@ -56,7 +56,7 @@
-  /*Integration*/
-  Fix WMSubmenuLevel value.
+    Description: Save colors of WINGs color panel to "~/Library/WindowMaker/Colors".
 
-  https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h @@ -92,14 +92,16 @@
-  /*Look and feel*/
-  New maximize and unmaximize images were added for Alternate-Click on left titlebar button.
+[src/GNUstep.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/GNUstep.h) @@ -49,20 +49,20 @@
 
-  @@ -113,6 +115,10 @@			Mouse and cursors
-  New values for oneway mouse cursors (up, down, left, right) were added:
-  WCUR_UPRESIZE, WCUR_DOWNRESIZE, WCUR_LEFTRESIZE, WCUR_RIGHTRESIZE.
+    _**Intergation**_
+    
+    Synchronize NS\*WindowLevel with GNUstep's (defined in AppKit/NSWindow.h)
 
-* src/actions.c
-  @@ -1133,7 +1133,6 @@			Dock and IconYard
-  Don't mark icon as mapped. It will be done by Workspace code.
+[src/WindowMaker.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h) @@ -56,7 +56,7 @@
 
-  @@ -1211,9 +1210,15 @@		Dock and IconYard
+    _**Intergation**_
+    
+    Fix WMSubmenuLevel value.
+
+[src/WindowMaker.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h) @@ -92,14 +92,16 @@
+
+    _**Look and feel**_
+    
+    New maximize and unmaximize images were added for Alternate-Click on left titlebar button.
+
+https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h @@ -113,6 +115,10 @@
+
+    _**Mouse and cursors**_
+    
+    New values for oneway mouse cursors (up, down, left, right) were added:
+    WCUR_UPRESIZE, WCUR_DOWNRESIZE, WCUR_LEFTRESIZE, WCUR_RIGHTRESIZE.
+
+[src/actions.c]() @@ -1133,7 +1133,6 @@ 
+
+    _**Dock and IconYard**_
+    
+    Don't mark icon as mapped. It will be done by Workspace code.
+
+[src/actions.c]()  @@ -1211,9 +1210,15 @@		Dock and IconYard
   Show appicon only if Icon Yard is mapped.
 
 * src/appicon.c
