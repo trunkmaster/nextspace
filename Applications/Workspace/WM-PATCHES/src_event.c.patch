@@ -1,5 +1,5 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-07-10 15:46:09.732264497 +0300
++++ ./WindowMaker/src/event.c	2018-07-11 13:59:31.732829374 +0300
 @@ -80,6 +80,9 @@
  #include "switchmenu.h"
  #include "wsmap.h"
@@ -139,7 +139,7 @@
  		}
  		XSync(dpy, 0);
  	} else if (desc->parent_type == WCLASS_APPICON
-@@ -873,6 +927,25 @@
+@@ -873,6 +927,23 @@
  	}
  }
  
@@ -147,8 +147,6 @@
 +static void handleButtonRelease(XEvent * event)
 +{
 +	WScreen *scr = wScreenForRootWindow(event->xbutton.root);
-+
-+  /* fprintf(stderr, "[handleButtonRelease] window:%lu\n", event->xbutton.window); */
 +
 +	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
 +			&& event->xbutton.button == Button3) {
@@ -165,41 +163,13 @@
  static void handleMapNotify(XEvent * event)
  {
  	WWindow *wwin;
-@@ -1146,6 +1219,9 @@
- 		}
- 	}
- 
-+  /* fprintf(stderr, "[EnterNotify] window:%lu subwindow:%lu\n", */
-+  /*         event->xcrossing.window, event->xcrossing.subwindow); */
-+  
- 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
- 		if (desc->handle_enternotify)
- 			(*desc->handle_enternotify) (desc, event);
-@@ -1210,6 +1286,9 @@
- {
- 	WObjDescriptor *desc = NULL;
- 
-+  /* fprintf(stderr, "[LeaveNotify] window:%lu subwindow:%lu\n", */
-+  /*         event->xcrossing.window, event->xcrossing.subwindow); */
-+  
- 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
- 		if (desc->handle_leavenotify)
- 			(*desc->handle_leavenotify) (desc, event);
-@@ -1385,10 +1464,33 @@
- #ifdef KEEP_XKB_LOCK_STATUS
- 	XkbStateRec staterec;
- #endif				/*KEEP_XKB_LOCK_STATUS */
--
+@@ -1389,13 +1460,32 @@
  	/* ignore CapsLock */
  	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
  
 +#ifdef NEXTSPACE
 +  fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n",
 +          event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers);
-+  /* fprintf(stderr, "[WindowMaker] no_focus: %lu event: %lu focused: %lu frame: %lu\n", */
-+  /*         scr->no_focus_win, event->xkey.window, wwin->client_win, wwin->frame->core->window); */
-+  /* fprintf(stderr, "[WindowMaker] handleKeyPress: XK_Super_L == %i XSuper_R == %i\n", */
-+  /*         XKeysymToKeycode(dpy, XK_Super_L), XKeysymToKeycode(dpy, XK_Super_R)); */
 +	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
 +       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
 +			modifiers == 0) {
@@ -220,7 +190,16 @@
  	for (i = 0; i < WKBD_LAST; i++) {
  		if (wKeyBindings[i].keycode == 0)
  			continue;
-@@ -1866,11 +1968,56 @@
+ 
+-		if (wKeyBindings[i].keycode == event->xkey.keycode && (	/*wKeyBindings[i].modifier==0
+-									   || */ wKeyBindings[i].modifier ==
+-									      modifiers)) {
++		if (wKeyBindings[i].keycode == event->xkey.keycode &&
++				(wKeyBindings[i].modifier == modifiers)) {
+ 			command = i;
+ 			break;
+ 		}
+@@ -1866,11 +1956,56 @@
  #endif	/* KEEP_XKB_LOCK_STATUS */
  	}
  }
