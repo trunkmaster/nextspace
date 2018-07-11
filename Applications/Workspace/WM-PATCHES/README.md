@@ -13,10 +13,11 @@
   
   | Filename | Location | Description | Tags |
   | -------- |--------- | ----------- | ---- |
+  
 
 * WINGs/userdefaults.c
   @@ -40,7 +40,11 @@			Configuration, Integration
-  Change configuration directotory to "~/Library/Preferences/.WindowMaker".
+  Change configuration directory to "~/Library/Preferences/.WindowMaker".
 
 * WINGs/wcolorpanel.c
   @@ -397,7 +397,11 @@			Configuration
@@ -29,6 +30,7 @@
 
 * src/WindowMaker.h
   @@ -56,7 +56,7 @@			Integration
+  [[https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/WindowMaker.h#L56-L63][src/WindowMaker.h]]
   Fix WMSubmenuLevel value.
 
   @@ -92,14 +92,16 @@			Look and feel
