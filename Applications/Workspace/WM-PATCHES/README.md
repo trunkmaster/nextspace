@@ -11,9 +11,11 @@
   Patches are named with the following format:
   `<WindowMaker tree subdir>_<file name>.patch`
   
-* [WINGs/userdefaults.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51) @@ -40,7 +40,11 @@
-  /*Configuration*/
-  Change configuration directory to "~/Library/Preferences/.WindowMaker".
+  * [WINGs/userdefaults.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51) @@ -40,7 +40,11 @@
+
+    */Configuration/*
+    
+    Change configuration directory to "~/Library/Preferences/.WindowMaker".
 
 * [WINGs/wcolorpanel.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c#L397-L408) @@ -397,7 +397,11 @@
   /*Configuration*/
