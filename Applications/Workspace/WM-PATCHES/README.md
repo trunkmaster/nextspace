@@ -10,8 +10,9 @@
     
   Patches are named with the following format:
   <WindowMaker tree subdir>_<file name>.patch
-
-* Patches
+  
+  | Filename | Location | Description | Tags |
+  | -------- |--------- | ----------- | ---- |
 
 * WINGs/userdefaults.c
   @@ -40,7 +40,11 @@			Configuration, Integration
