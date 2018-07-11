@@ -932,8 +932,6 @@ static void handleButtonRelease(XEvent * event)
 {
 	WScreen *scr = wScreenForRootWindow(event->xbutton.root);
 
-  /* fprintf(stderr, "[handleButtonRelease] window:%lu\n", event->xbutton.window); */
-
 	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
 			&& event->xbutton.button == Button3) {
 		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
@@ -1219,9 +1217,6 @@ static void handleEnterNotify(XEvent * event)
 		}
 	}
 
-  /* fprintf(stderr, "[EnterNotify] window:%lu subwindow:%lu\n", */
-  /*         event->xcrossing.window, event->xcrossing.subwindow); */
-  
 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
 		if (desc->handle_enternotify)
 			(*desc->handle_enternotify) (desc, event);
@@ -1286,9 +1281,6 @@ static void handleLeaveNotify(XEvent * event)
 {
 	WObjDescriptor *desc = NULL;
 
-  /* fprintf(stderr, "[LeaveNotify] window:%lu subwindow:%lu\n", */
-  /*         event->xcrossing.window, event->xcrossing.subwindow); */
-  
 	if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
 		if (desc->handle_leavenotify)
 			(*desc->handle_leavenotify) (desc, event);
@@ -1464,16 +1456,13 @@ static void handleKeyPress(XEvent * event)
 #ifdef KEEP_XKB_LOCK_STATUS
 	XkbStateRec staterec;
 #endif				/*KEEP_XKB_LOCK_STATUS */
+
 	/* ignore CapsLock */
 	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
 #ifdef NEXTSPACE
   fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n",
           event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers);
-  /* fprintf(stderr, "[WindowMaker] no_focus: %lu event: %lu focused: %lu frame: %lu\n", */
-  /*         scr->no_focus_win, event->xkey.window, wwin->client_win, wwin->frame->core->window); */
-  /* fprintf(stderr, "[WindowMaker] handleKeyPress: XK_Super_L == %i XSuper_R == %i\n", */
-  /*         XKeysymToKeycode(dpy, XK_Super_L), XKeysymToKeycode(dpy, XK_Super_R)); */
 	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
 			modifiers == 0) {
@@ -1495,9 +1484,8 @@ static void handleKeyPress(XEvent * event)
 		if (wKeyBindings[i].keycode == 0)
 			continue;
 
-		if (wKeyBindings[i].keycode == event->xkey.keycode && (	/*wKeyBindings[i].modifier==0
-									   || */ wKeyBindings[i].modifier ==
-									      modifiers)) {
+		if (wKeyBindings[i].keycode == event->xkey.keycode &&
+				(wKeyBindings[i].modifier == modifiers)) {
 			command = i;
 			break;
 		}
