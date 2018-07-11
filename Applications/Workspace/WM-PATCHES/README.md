@@ -9,17 +9,17 @@
   All changes are guarded by `#ifdef NEXTSPACE ... #endif`.
     
   Patches are named with the following format:
-  <WindowMaker tree subdir>_<file name>.patch
+  `<WindowMaker tree subdir>_<file name>.patch`
   
-* [[https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51][WINGs/userdefaults.c]] @@ -40,7 +40,11 @@
+* [WINGs/userdefaults.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/userdefaults.c#L40-L51) @@ -40,7 +40,11 @@
   /*Configuration*/
   Change configuration directory to "~/Library/Preferences/.WindowMaker".
 
-* [[https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c][WINGs/wcolorpanel.c]] @@ -397,7 +397,11 @@
+* [WINGs/wcolorpanel.c](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/WINGs/wcolorpanel.c#L397-L408) @@ -397,7 +397,11 @@
   /*Configuration*/
   Save colors of WINGs color panel to "~/Library/WindowMaker/Colors".
 
-* https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/GNUstep.h
+* [src/GNUstep.h](https://github.com/trunkmaster/nextspace/blob/master/Applications/Workspace/WindowMaker/src/GNUstep.h)
   @@ -49,20 +49,20 @@			Intergation
   Synchronize NS*WindowLevel with GNUstep's (defined in AppKit/NSWindow.h)
 
