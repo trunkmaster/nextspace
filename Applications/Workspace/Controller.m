@@ -951,6 +951,16 @@ static NSString *WMComputerShouldGoDownNotification =
         return NO;
       }
     }
+    if ([[menuItem title] isEqualToString:@"Hide"] &&
+        !wScreenWithNumber(0)->dock->mapped) {
+      [menuItem setTitle:@"Show"];
+    }
+  }
+  else if ([menuTitle isEqualToString:@"Icon Yard"]) {
+    if ([[menuItem title] isEqualToString:@"Hide"] &&
+        !wScreenWithNumber(0)->flags.icon_yard_mapped) {
+      [menuItem setTitle:@"Show"];
+    }
   }
   else if ([menuTitle isEqualToString:@"Disk"]) {
     if ([[menuItem title] isEqualToString:@"Initialize..."]) return NO;
