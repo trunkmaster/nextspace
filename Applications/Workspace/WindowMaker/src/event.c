@@ -82,6 +82,10 @@
 
 #ifdef NEXTSPACE
 #include <Workspace+WindowMaker.h>
+extern void WWMIconYardShowIcons(WScreen *screen);
+extern void WWMIconYardHideIcons(WScreen *screen);
+extern void WWMDockShowIcons(WDock *dock);
+extern void WWMDockHideIcons(WDock *dock);
 #endif
 
 #define MOD_MASK wPreferences.modifier_mask
@@ -1471,13 +1475,13 @@ static void handleKeyPress(XEvent * event)
       scr->flags.modifier_pressed = 1;
       wWindowUpdateButtonImages(wwin);
     }
-		return;
 	}
 	else if (event->xkey.window != event->xkey.root &&
            event->xkey.window != scr->no_focus_win) {
 		scr->flags.modifier_pressed = 0;
 		wWindowUpdateButtonImages(wwin);
 	}
+  XSendEvent(dpy, scr->focused_window->client_win, True, KeyPress, event);
 #endif
 
 	for (i = 0; i < WKBD_LAST; i++) {
@@ -1517,6 +1521,27 @@ static void handleKeyPress(XEvent * event)
 
 	switch (command) {
 
+  case WKBD_DOCKHIDESHOW:
+    fprintf(stderr, "[WM] DockHideShowKey was pressed!\n");
+    if (strcmp(scr->focused_window->wm_instance, "Workspace") != 0) {
+      if (scr->dock->mapped) {
+        WWMDockHideIcons(scr->dock);
+      }
+      else {
+        WWMDockShowIcons(scr->dock);
+      }
+    }
+    break;
+  case WKBD_YARDHIDESHOW:
+    if (strcmp(scr->focused_window->wm_instance, "Workspace") != 0) {
+      if (scr->flags.icon_yard_mapped) {
+        WWMIconYardHideIcons(scr);
+      }
+      else {
+        WWMIconYardShowIcons(scr);
+      }
+    }
+    break;
 	case WKBD_ROOTMENU:
 		/*OpenRootMenu(scr, event->xkey.x_root, event->xkey.y_root, True); */
 		if (!CheckFullScreenWindowFocused(scr)) {
@@ -1973,6 +1998,7 @@ static void handleKeyRelease(XEvent * event)
     if (wwin) {
       scr->flags.modifier_pressed = 0;
       wWindowUpdateButtonImages(wwin);
+      XSendEvent(dpy, scr->focused_window->client_win, True, KeyRelease, event);
     }
   }
 }
