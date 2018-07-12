@@ -1,0 +1,10 @@
+--- gnustep-gui-0.24.1.orig/Headers/AppKit/NSEvent.h	2013-02-13 10:40:36.000000000 +0200
++++ gnustep-gui-0.24.1/Headers/AppKit/NSEvent.h	2018-07-13 01:18:24.196150619 +0300
+@@ -475,6 +475,7 @@
+   GSAppKitDraggingFinished,
+   GSAppKitRegionExposed,
+   GSAppKitWindowDeminiaturize,
++  GSAppKitAppHide
+ } GSAppKitSubtype;
+ #endif
+ 
