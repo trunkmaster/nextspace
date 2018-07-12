@@ -78,8 +78,10 @@ enum {
 	/* window, menu */
 	WKBD_CLOSE,
 
-	/* Dock */
+	/* Dock and Icon Yard*/
 	WKBD_DOCKRAISELOWER,
+        WKBD_DOCKHIDESHOW,
+        WKBD_YARDHIDESHOW,
 
 	/* Clip */
 	WKBD_CLIPRAISELOWER,
