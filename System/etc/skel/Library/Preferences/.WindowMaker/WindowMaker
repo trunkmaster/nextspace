@@ -161,6 +161,10 @@
 
   COMMENT = "/* ===== Keyboard Shortcuts =================================== */";
 
+  COMMENT        = "/* --- Dock and Icon Yard --- */";
+  DockHideShowKey = "Mod4+Shift+D";
+  IconYardHideShowKey = "Mod4+Shift+Y";
+
   COMMENT        = "/* --- Window Resizing --- */";
   MoveResizeKey  = None;
   MaximusKey     = "Mod4+KP_5";
