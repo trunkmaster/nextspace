@@ -1576,6 +1576,7 @@ static void handleKeyPress(XEvent * event)
 		if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
 			CloseWindowMenu(scr);
 			if (wwin->protocols.MINIATURIZE_WINDOW) {
+        fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n");
         wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
                             event->xbutton.time);
       }
