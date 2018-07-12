@@ -1465,8 +1465,8 @@ static void handleKeyPress(XEvent * event)
 	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
 #ifdef NEXTSPACE
-  fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n",
-          event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers);
+  fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i window:%lu\n",
+          event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers, wwin->client_win);
 	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
 			modifiers == 0) {
@@ -1481,7 +1481,6 @@ static void handleKeyPress(XEvent * event)
 		scr->flags.modifier_pressed = 0;
 		wWindowUpdateButtonImages(wwin);
 	}
-  XSendEvent(dpy, scr->focused_window->client_win, True, KeyPress, event);
 #endif
 
 	for (i = 0; i < WKBD_LAST; i++) {
@@ -1496,7 +1495,6 @@ static void handleKeyPress(XEvent * event)
 	}
 
 	if (command < 0) {
-
 		if (!wRootMenuPerformShortcut(event)) {
 			static int dontLoop = 0;
 
@@ -1514,6 +1512,15 @@ static void handleKeyPress(XEvent * event)
 			}
 			dontLoop--;
 		}
+
+    // Shortuct which does not overlap with WindowMaker was pressed -
+    // send it to GNUstep application. For example, Alternate-x
+    // pressed over Terminal window which runs Emacs should result in
+    // appearing 'M-x' prompt in Emacs.
+    if (wwin->flags.is_gnustep) {
+      XSendEvent(dpy, wwin->client_win, True, KeyPress, event);
+    }
+    
 		return;
 	}
 #define ISMAPPED(w) ((w) && !(w)->flags.miniaturized && ((w)->flags.mapped || (w)->flags.shaded))
@@ -1522,7 +1529,6 @@ static void handleKeyPress(XEvent * event)
 	switch (command) {
 
   case WKBD_DOCKHIDESHOW:
-    fprintf(stderr, "[WM] DockHideShowKey was pressed!\n");
     if (strcmp(scr->focused_window->wm_instance, "Workspace") != 0) {
       if (scr->dock->mapped) {
         WWMDockHideIcons(scr->dock);
@@ -1567,12 +1573,12 @@ static void handleKeyPress(XEvent * event)
 		wHideAll(scr);
 		break;
 	case WKBD_MINIATURIZE:
-		if (ISMAPPED(wwin) && ISFOCUSED(wwin)
-		    && !WFLAGP(wwin, no_miniaturizable)) {
+		if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
 			CloseWindowMenu(scr);
-
-			if (wwin->protocols.MINIATURIZE_WINDOW)
-				wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window, event->xbutton.time);
+			if (wwin->protocols.MINIATURIZE_WINDOW) {
+        wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
+                            event->xbutton.time);
+      }
 			else {
 				wIconifyWindow(wwin);
 			}
@@ -1998,7 +2004,9 @@ static void handleKeyRelease(XEvent * event)
     if (wwin) {
       scr->flags.modifier_pressed = 0;
       wWindowUpdateButtonImages(wwin);
-      XSendEvent(dpy, scr->focused_window->client_win, True, KeyRelease, event);
+      if (wwin->flags.is_gnustep) {
+        XSendEvent(dpy, scr->focused_window->client_win, True, KeyRelease, event);
+      }
     }
   }
 }
