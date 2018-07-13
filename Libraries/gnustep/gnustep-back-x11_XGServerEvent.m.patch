@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2017-12-21 01:01:52.995385023 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-07-13 01:15:41.416153941 +0300
 @@ -42,6 +42,7 @@
  #include <Foundation/NSUserDefaults.h>
  #include <Foundation/NSRunLoop.h>
@@ -219,3 +219,24 @@
            }
          else if (xEvent.xbutton.button == generic.mMouse
            && generic.mMouse != 0)
+@@ -621,6 +711,20 @@
+                                data1: 0
+                                data2: 0];
+                 }
++              else if ((Atom)xEvent.xclient.data.l[0] == generic.hide_app_atom)
++                {
++		  NSDebugLLog(@"Hide", @"%lu application will be hidden", cWin->number);
++                  eventLocation = NSMakePoint(0,0);
++                  e = [NSEvent otherEventWithType: NSAppKitDefined
++                               location: eventLocation
++                               modifierFlags: 0
++                               timestamp: 0
++                               windowNumber: cWin->number
++                               context: gcontext
++                               subtype: GSAppKitAppHide
++                               data1: 0
++                               data2: 0];
++                }
+               else if ((Atom)xEvent.xclient.data.l[0]
+                 == generic.take_focus_atom)
+                 {

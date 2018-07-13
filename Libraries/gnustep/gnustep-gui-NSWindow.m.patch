@@ -1,5 +1,5 @@
 --- gnustep-gui-0.24.1.orig/Source/NSWindow.m	2014-12-26 09:59:29.000000000 +0200
-+++ gnustep-gui-0.24.1/Source/NSWindow.m	2016-11-19 01:39:56.782151919 +0200
++++ gnustep-gui-0.24.1/Source/NSWindow.m	2018-07-13 01:21:49.555146429 +0300
 @@ -479,7 +479,7 @@
    
    iconSize = GSGetIconSize();
@@ -29,3 +29,25 @@
      }
    else
      {
+@@ -4195,6 +4195,10 @@
+               [self performMiniaturize: NSApp];
+               break;
+ 
++            case GSAppKitAppHide:
++              [NSApp hide: self];
++              break;
++
+             case GSAppKitWindowFocusIn:
+               if (_f.is_miniaturized)
+ 		{
+@@ -4212,8 +4216,8 @@
+               if ([self canBecomeKeyWindow] == YES)
+ 		{
+ 		  NSDebugLLog(@"Focus", @"Making %d key", (int)_windowNum);
+-		  [self makeKeyWindow];
+-		  [self makeMainWindow];
++                  [self makeKeyWindow];
++                  [self makeMainWindow];
+ 		  [NSApp activateIgnoringOtherApps: YES];
+ 		}
+               if (self == [[NSApp mainMenu] window])
