@@ -18,20 +18,16 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
-
 #ifndef WMGNUSTEP_H_
 #define WMGNUSTEP_H_
 
 #include <X11/Xproto.h>
 
+/* #define GNUSTEP_WM_MINIATURIZE_WINDOW "_GNUSTEP_WM_MINIATURIZE_WINDOW" */
+/* #define GNUSTEP_WM_HIDE_APP "_GNUSTEP_WM_HIDE_APP" */
+/* #define GNUSTEP_WM_ATTR_NAME "_GNUSTEP_WM_ATTR" */
+/* #define GNUSTEP_TITLEBAR_STATE "_GNUSTEP_TITLEBAR_STATE" */
 
-#define GNUSTEP_WM_MINIATURIZE_WINDOW "_GNUSTEP_WM_MINIATURIZE_WINDOW"
-#define GNUSTEP_WM_MINIATURIZE_WINDOW "_GNUSTEP_WM_HIDE_APPLICATION"
-
-#define GNUSTEP_WM_ATTR_NAME  "_GNUSTEP_WM_ATTR"
-
-#define	GNUSTEP_TITLEBAR_STATE 	"_GNUSTEP_TITLEBAR_STATE"
 enum {
     WMTitleBarKey = 0,
     WMTitleBarNormal = 1,
@@ -92,8 +88,8 @@ typedef struct {
     CARD32 extra_flags;
 } GNUstepWMAttributes;
 
-#define GSWindowStyleAttr 	(1<<0)
-#define GSWindowLevelAttr 	(1<<1)
+#define GSWindowStyleAttr	(1<<0)
+#define GSWindowLevelAttr	(1<<1)
 #define GSMiniaturizePixmapAttr	(1<<3)
 #define GSClosePixmapAttr	(1<<4)
 #define GSMiniaturizeMaskAttr	(1<<5)
@@ -102,12 +98,12 @@ typedef struct {
 
 /* extra flags */
 #define GSDocumentEditedFlag	(1<<0)
-
+/* #define GSWindowWillResizeNotificationsFlag     (1<<1) */ /* unused */
+/* #define GSWindowWillMoveNotificationsFlag       (1<<2) */ /* unused */
 #define GSNoApplicationIconFlag	(1<<5)
 
-
-#define WMFHideOtherApplications	10
-#define WMFHideApplication		12
+#define WMFHideOtherApplications 10
+#define WMFHideApplication       12
 
 #endif
 
