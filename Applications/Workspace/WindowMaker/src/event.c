@@ -1591,8 +1591,15 @@ static void handleKeyPress(XEvent * event)
 			CloseWindowMenu(scr);
 
 			if (wapp && !WFLAGP(wapp->main_window_desc, no_appicon)) {
-				wHideApplication(wapp);
-			}
+        if (wwin->protocols.HIDE_APP) {
+          fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+          wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
+                              event->xbutton.time);
+        }
+        else {
+          wHideApplication(wapp);
+        }
+      }
 		}
 		break;
 	case WKBD_HIDE_OTHERS:
