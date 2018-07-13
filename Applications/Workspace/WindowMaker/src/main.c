@@ -98,7 +98,9 @@ static char *DisplayName = NULL;
 
 static char **Arguments;
 
+#ifndef NEXTSPACE
 static int ArgCount;
+#endif
 
 static Bool multiHead = True;
 
@@ -147,6 +149,7 @@ static void setWVisualID(int screen, int val)
 	wVisualID[screen] = val;
 }
 
+#ifndef NEXTSPACE
 /*
  * this function splits a given string at the comma into tokens
  * and set the wVisualID variable to each parsed number
@@ -195,6 +198,7 @@ static int initWVisualID(const char *user_str)
 
 	return 0;
 }
+#endif
 
 noreturn void Exit(int status)
 {
@@ -429,6 +433,7 @@ noreturn void wAbort(Bool dumpCore)
 		exit(1);
 }
 
+#ifndef NEXTSPACE
 static void print_help(void)
 {
 	printf(_("Usage: %s [options]\n"), ProgName);
@@ -455,6 +460,7 @@ static void print_help(void)
 	puts(_(" --version		print version and exit"));
 	puts(_(" --help			show this message"));
 }
+#endif
 
 static void check_defaults(void)
 {
@@ -617,7 +623,9 @@ int main(int argc, char **argv)
 
 int real_main(int argc, char **argv)
 {
+#ifndef NEXTSPACE
 	int i;
+#endif
 	char *pos;
 	int d, s;
 
