@@ -87,6 +87,8 @@ void PropGetProtocols(Window window, WProtocols * prots)
 			prots->SAVE_YOURSELF = 1;
 		else if (protocols[i] == w_global.atom.gnustep.wm_miniaturize_window)
 			prots->MINIATURIZE_WINDOW = 1;
+		else if (protocols[i] == w_global.atom.gnustep.wm_hide_app)
+			prots->HIDE_APP = 1;
 	}
 	XFree(protocols);
 }

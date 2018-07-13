@@ -566,6 +566,7 @@ extern struct wmaker_global_variables {
 		struct {
 			Atom wm_attr;
 			Atom wm_miniaturize_window;
+			Atom wm_hide_app;
 			Atom wm_resizebar;
 			Atom titlebar_state;
 		} gnustep;

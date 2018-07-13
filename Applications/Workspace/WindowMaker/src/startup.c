@@ -371,32 +371,33 @@ WScreen *wScreenForWindow(Window window)
 }
 
 static char *atomNames[] = {
-	"WM_STATE",
-	"WM_CHANGE_STATE",
-	"WM_PROTOCOLS",
-	"WM_TAKE_FOCUS",
-	"WM_DELETE_WINDOW",
-	"WM_SAVE_YOURSELF",
-	"WM_CLIENT_LEADER",
-	"WM_COLORMAP_WINDOWS",
-	"WM_COLORMAP_NOTIFY",
+  /* 0  */  "WM_STATE",
+  /* 1  */  "WM_CHANGE_STATE",
+  /* 2  */  "WM_PROTOCOLS",
+  /* 3  */  "WM_TAKE_FOCUS",
+  /* 4  */  "WM_DELETE_WINDOW",
+  /* 5  */  "WM_SAVE_YOURSELF",
+  /* 6  */  "WM_CLIENT_LEADER",
+  /* 7  */  "WM_COLORMAP_WINDOWS",
+  /* 8  */  "WM_COLORMAP_NOTIFY",
 
-	"_WINDOWMAKER_MENU",
-	"_WINDOWMAKER_STATE",
-	"_WINDOWMAKER_WM_PROTOCOLS",
-	"_WINDOWMAKER_WM_FUNCTION",
-	"_WINDOWMAKER_NOTICEBOARD",
-	"_WINDOWMAKER_COMMAND",
-	"_WINDOWMAKER_ICON_SIZE",
-	"_WINDOWMAKER_ICON_TILE",
+  /* 9  */  "_WINDOWMAKER_MENU",
+  /* 10 */  "_WINDOWMAKER_STATE",
+  /* 11 */  "_WINDOWMAKER_WM_PROTOCOLS",
+  /* 12 */  "_WINDOWMAKER_WM_FUNCTION",
+  /* 13 */  "_WINDOWMAKER_NOTICEBOARD",
+  /* 14 */  "_WINDOWMAKER_COMMAND",
+  /* 15 */  "_WINDOWMAKER_ICON_SIZE",
+  /* 16 */  "_WINDOWMAKER_ICON_TILE",
 
-	GNUSTEP_WM_ATTR_NAME,
-	GNUSTEP_WM_MINIATURIZE_WINDOW,
-	GNUSTEP_TITLEBAR_STATE,
+  /* 17 */  "_GNUSTEP_WM_ATTR",
+  /* 18 */  "_GNUSTEP_WM_MINIATURIZE_WINDOW",
+  /* 19 */  "_GNUSTEP_WM_HIDE_APP",
+  /* 20 */  "_GNUSTEP_TITLEBAR_STATE",
 
-	"_GTK_APPLICATION_OBJECT_PATH",
+  /* 21 */  "_GTK_APPLICATION_OBJECT_PATH",
 
-	"WM_IGNORE_FOCUS_EVENTS"
+  /* 22 */  "WM_IGNORE_FOCUS_EVENTS"
 };
 
 /*
@@ -467,11 +468,12 @@ void StartUp(Bool defaultScreenOnly)
 
 	w_global.atom.gnustep.wm_attr = atom[17];
 	w_global.atom.gnustep.wm_miniaturize_window = atom[18];
-	w_global.atom.gnustep.titlebar_state = atom[19];
+	w_global.atom.gnustep.wm_hide_app = atom[19];
+	w_global.atom.gnustep.titlebar_state = atom[20];
 
-	w_global.atom.desktop.gtk_object_path = atom[20];
+	w_global.atom.desktop.gtk_object_path = atom[21];
 
-	w_global.atom.wm.ignore_focus_events = atom[21];
+	w_global.atom.wm.ignore_focus_events = atom[22];
 
 #ifdef USE_DOCK_XDND
 	wXDNDInitializeAtoms();
