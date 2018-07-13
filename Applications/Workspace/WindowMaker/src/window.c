@@ -3133,27 +3133,36 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 	if (event->xbutton.button < Button1 || event->xbutton.button > Button3)
 		return;
 
-	if (wwin->protocols.MINIATURIZE_WINDOW && event->xbutton.state == 0) {
-		wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
-								  w_global.timestamp.last_event);
-	} else {
-		WApplication *wapp;
-		if ((event->xbutton.state & ControlMask) || (event->xbutton.button == Button3)) {
-
-			wapp = wApplicationOf(wwin->main_window);
-			if (wapp && !WFLAGP(wwin, no_appicon))
-				wHideApplication(wapp);
-#ifdef NEXTSPACE
-		} else if (event->xbutton.state & MOD_MASK) {
-			if (wwin->flags.maximized) {
-				wUnmaximizeWindow(wwin);
-			}
-			else {
-				wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
-			}
-#endif
-		} else if (event->xbutton.state == 0) {
+  if (event->xbutton.button == Button1 && event->xbutton.state == 0) {
+    if (wwin->protocols.MINIATURIZE_WINDOW) {
+      fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+      wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
+                          w_global.timestamp.last_event);
+    }
+    else {
 			wIconifyWindow(wwin);
-		}
+    }
 	}
+#ifdef NEXTSPACE
+  else if (event->xbutton.button == Button1 && event->xbutton.state & MOD_MASK) {
+    if (wwin->flags.maximized) {
+      wUnmaximizeWindow(wwin);
+    }
+    else {
+      wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
+    }
+  }
+#endif
+  else if (event->xbutton.button == Button3) {
+    WApplication *wapp = wApplicationOf(wwin->main_window);
+    fprintf(stderr, "[WM] iconify HIDE_APP=%i\n", wwin->protocols.HIDE_APP);
+    if (wwin->protocols.HIDE_APP) {
+      fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+      wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
+                          event->xbutton.time);
+    }
+    else if (wapp && !WFLAGP(wwin, no_appicon)) {
+      wHideApplication(wapp);
+    }
+  }
 }
