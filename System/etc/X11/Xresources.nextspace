@@ -3,3 +3,4 @@ Xft.hintstyle: hintslight
 Xft.hinting:   true
 Xft.antialias: true
 Xft.rgba:      rgb
+Xcursor.theme: NextSpace

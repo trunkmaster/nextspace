@@ -3135,7 +3135,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 
   if (event->xbutton.button == Button1 && event->xbutton.state == 0) {
     if (wwin->protocols.MINIATURIZE_WINDOW) {
-      fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+      fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n");
       wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
                           w_global.timestamp.last_event);
     }
