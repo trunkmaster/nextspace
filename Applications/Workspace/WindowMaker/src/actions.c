@@ -1476,26 +1476,37 @@ void wHideAll(WScreen *scr)
 void wHideOtherApplications(WWindow *awin)
 {
 	WWindow *wwin;
+	WApplication *wapp;
 	WApplication *tapp;
 
 	if (!awin)
 		return;
 	wwin = awin->screen_ptr->focused_window;
+  wapp = wApplicationOf(wwin->main_window);
 
 	while (wwin) {
-		if (wwin != awin
+    tapp = wApplicationOf(wwin->main_window);
+		if (wwin != awin && tapp != wapp
 		    && wwin->frame->workspace == awin->screen_ptr->current_workspace
 		    && !(wwin->flags.miniaturized || wwin->flags.hidden)
 		    && !wwin->flags.internal_window
 		    && wGetWindowOfInspectorForWindow(wwin) != awin && !WFLAGP(wwin, no_hide_others)) {
 
-			if (wwin->main_window == None || WFLAGP(wwin, no_appicon)) {
+      if (tapp != wapp && wwin->protocols.HIDE_APP) {
+        WIcon *icon = tapp->app_icon->icon;
+        fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+        animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
+                      wwin->frame->core->width, wwin->frame->core->height,
+                      tapp->app_icon->x_pos, tapp->app_icon->y_pos,
+                      icon->core->width, icon->core->height);
+        wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
+      }
+			else if (wwin->main_window == None || WFLAGP(wwin, no_appicon)) {
 				if (!WFLAGP(wwin, no_miniaturizable)) {
 					wwin->flags.skip_next_animation = 1;
 					wIconifyWindow(wwin);
 				}
 			} else if (wwin->main_window != None && awin->main_window != wwin->main_window) {
-				tapp = wApplicationOf(wwin->main_window);
 				if (tapp) {
 					tapp->flags.skip_next_animation = 1;
 					wHideApplication(tapp);
