@@ -1466,7 +1466,12 @@ void wHideAll(WScreen *scr)
 		    && !WFLAGP(wwin, no_miniaturizable)
 		   ) {
 			wwin->flags.skip_next_animation = 1;
-			wIconifyWindow(wwin);
+			if (wwin->protocols.MINIATURIZE_WINDOW) {
+        wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window, CurrentTime);
+      }
+      else {
+        wIconifyWindow(wwin);
+      }
 		}
 	}
 
