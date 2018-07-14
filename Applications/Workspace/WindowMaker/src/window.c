@@ -3135,7 +3135,6 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 
   if (event->xbutton.button == Button1 && event->xbutton.state == 0) {
     if (wwin->protocols.MINIATURIZE_WINDOW) {
-      fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n");
       wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
                           w_global.timestamp.last_event);
     }
@@ -3155,9 +3154,12 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 #endif
   else if (event->xbutton.button == Button3) {
     WApplication *wapp = wApplicationOf(wwin->main_window);
-    fprintf(stderr, "[WM] iconify HIDE_APP=%i\n", wwin->protocols.HIDE_APP);
     if (wwin->protocols.HIDE_APP) {
-      fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+      WIcon *icon = wapp->app_icon->icon;
+      animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
+                    wwin->frame->core->width, wwin->frame->core->height,
+                    wapp->app_icon->x_pos, wapp->app_icon->y_pos,
+                    icon->core->width, icon->core->height);
       wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
                           event->xbutton.time);
     }

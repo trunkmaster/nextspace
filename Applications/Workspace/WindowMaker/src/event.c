@@ -1592,7 +1592,12 @@ static void handleKeyPress(XEvent * event)
 
 			if (wapp && !WFLAGP(wapp->main_window_desc, no_appicon)) {
         if (wwin->protocols.HIDE_APP) {
+          WIcon *icon = wapp->app_icon->icon;
           fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+          animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
+                        wwin->frame->core->width, wwin->frame->core->height,
+                        wapp->app_icon->x_pos, wapp->app_icon->y_pos,
+                        icon->core->width, icon->core->height);
           wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
                               event->xbutton.time);
         }
