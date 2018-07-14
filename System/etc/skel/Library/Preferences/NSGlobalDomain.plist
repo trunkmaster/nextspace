@@ -2,9 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">
 <plist version="0.9">
 <dict>
+    <key>GSAlternateKeyString</key>
+    <string></string>
     <key>GSBackend</key>
     <string>art</string>
     <key>GSCommandKeyString</key>
+    <string></string>
+    <key>GSControlKeyString</key>
     <string></string>
     <key>GSFirstAlternateKey</key>
     <string>Super_L</string>
