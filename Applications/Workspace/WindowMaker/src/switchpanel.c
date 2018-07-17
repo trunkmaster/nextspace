@@ -98,8 +98,13 @@ static Bool sameWindowClass(WWindow *wwin, WWindow *curwin)
 {
 	if (!wwin->wm_class || !curwin->wm_class)
 		return False;
-	if (strcmp(wwin->wm_class, curwin->wm_class))
+  if (curwin->flags.is_gnustep &&
+      strcmp(wwin->wm_instance, curwin->wm_instance)) {
+    return False;
+  }
+	else if (strcmp(wwin->wm_class, curwin->wm_class)) {
 		return False;
+  }
 
 	return True;
 }
@@ -365,9 +370,10 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
 	while (wwin) {
 		if ((canReceiveFocus(wwin) != 0) &&
 		    (wwin->flags.mapped || wwin->flags.shaded || include_unmapped)) {
-			if (class_only)
-				if (!sameWindowClass(scr->focused_window, wwin))
-					continue;
+			if (class_only && !sameWindowClass(scr->focused_window, wwin)) {
+				wwin = wwin->prev;
+				continue;
+			}
 			if (!WFLAGP(wwin, skip_switchpanel))
 				WMAddToArray(windows, wwin);
 		}
