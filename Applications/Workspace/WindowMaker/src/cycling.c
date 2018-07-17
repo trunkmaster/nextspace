@@ -131,7 +131,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 				/* for GNUstep apps: main menu focus that is not in window focua list */
 				wSwitchPanelSelectFirst(swpanel, False);
 			}
-			newFocused = wSwitchPanelSelectNext(swpanel, !next, True, False);
+			newFocused = wSwitchPanelSelectNext(swpanel, !next, True, class_only);
 		}
 		else {
 			newFocused = wSwitchPanelSelectFirst(swpanel, False);
