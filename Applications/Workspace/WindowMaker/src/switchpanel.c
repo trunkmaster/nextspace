@@ -109,6 +109,19 @@ static Bool sameWindowClass(WWindow *wwin, WWindow *curwin)
 	return True;
 }
 
+static Bool alreadyAddedToArray(WMArray *windows, WWindow *wwin)
+{
+	int count = WMGetArrayItemCount(windows);
+	WWindow *awin;
+
+	for (int i = 0; i < count; i++) {
+		awin = WMGetFromArray(windows, i);
+		if (sameWindowClass(wwin, awin))
+			return True;
+	}
+	return False;
+}
+
 static void changeImage(WSwitchPanel *panel, int idecks, int selected, Bool dim, Bool force)
 {
 	WMFrame *icon = NULL;
@@ -369,13 +382,19 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
 
 	while (wwin) {
 		if ((canReceiveFocus(wwin) != 0) &&
-		    (wwin->flags.mapped || wwin->flags.shaded || include_unmapped)) {
-			if (class_only && !sameWindowClass(scr->focused_window, wwin)) {
+				(wwin->flags.mapped || wwin->flags.shaded || include_unmapped) &&
+				!WFLAGP(wwin, skip_switchpanel)) {
+			if (class_only) {
+				if (!sameWindowClass(scr->focused_window, wwin)) {
+					wwin = wwin->prev;
+					continue;
+				}
+			}
+			else if (alreadyAddedToArray(windows, wwin)) {
 				wwin = wwin->prev;
 				continue;
 			}
-			if (!WFLAGP(wwin, skip_switchpanel))
-				WMAddToArray(windows, wwin);
+			WMAddToArray(windows, wwin);
 		}
 		wwin = wwin->prev;
 	}
