@@ -19,6 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <stdio.h>
+
 #include "wconfig.h"
 
 #include <stdlib.h>
@@ -124,10 +126,16 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 	oldFocused = wwin;
 
 	if (swpanel) {
-		if (wwin->flags.mapped && !wPreferences.panel_only_open)
+		if (wwin->flags.mapped && !wPreferences.panel_only_open) {
+			if (wwin->client_flags.skip_switchpanel || wwin->client_flags.skip_window_list) {
+				/* for GNUstep apps: main menu focus that is not in window focua list */
+				wSwitchPanelSelectFirst(swpanel, False);
+			}
 			newFocused = wSwitchPanelSelectNext(swpanel, !next, True, False);
-		else
+		}
+		else {
 			newFocused = wSwitchPanelSelectFirst(swpanel, False);
+		}
 
 		oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False);
 	} else {
