@@ -657,7 +657,15 @@ WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimi
 		scrollIcons(panel, panel->current - panel->firstVisible - panel->visibleCount + 1);
 
 	if (panel->win) {
-		drawTitle(panel, panel->current, wwin->frame->title);
+		if (class_only) {
+			drawTitle(panel, panel->current, wwin->frame->title);
+		}
+		else if (wwin->flags.is_gnustep) {
+			drawTitle(panel, panel->current, wwin->wm_instance);
+		}
+		else {
+			drawTitle(panel, panel->current, wwin->wm_class);
+		}
 		if (panel->current != orig)
 			changeImage(panel, orig, 0, dim, False);
 		changeImage(panel, panel->current, 1, False, False);
