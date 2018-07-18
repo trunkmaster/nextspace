@@ -160,19 +160,19 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 			if ((wKeyBindings[WKBD_FOCUSNEXT].keycode == ev.xkey.keycode
 			     && wKeyBindings[WKBD_FOCUSNEXT].modifier == modifiers)
 			    || (wKeyBindings[WKBD_GROUPNEXT].keycode == ev.xkey.keycode
-			    && wKeyBindings[WKBD_GROUPNEXT].modifier == modifiers)
+              && wKeyBindings[WKBD_GROUPNEXT].modifier == modifiers)
 			    || ev.xkey.keycode == rightKey) {
 
-				newFocused = wSwitchPanelSelectNext(swpanel, False, ev.xkey.keycode != rightKey, (!class_only && wKeyBindings[WKBD_GROUPNEXT].keycode == ev.xkey.keycode && wKeyBindings[WKBD_GROUPNEXT].modifier == modifiers));
+				newFocused = wSwitchPanelSelectNext(swpanel, False, ev.xkey.keycode != rightKey, class_only);
 				oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False);
 
 			} else if ((wKeyBindings[WKBD_FOCUSPREV].keycode == ev.xkey.keycode
-				    && wKeyBindings[WKBD_FOCUSPREV].modifier == modifiers)
-			    || (wKeyBindings[WKBD_GROUPPREV].keycode == ev.xkey.keycode
-			    && wKeyBindings[WKBD_GROUPPREV].modifier == modifiers)
-				   || ev.xkey.keycode == leftKey) {
+                  && wKeyBindings[WKBD_FOCUSPREV].modifier == modifiers)
+                 || (wKeyBindings[WKBD_GROUPPREV].keycode == ev.xkey.keycode
+                     && wKeyBindings[WKBD_GROUPPREV].modifier == modifiers)
+                 || ev.xkey.keycode == leftKey) {
 
-				newFocused = wSwitchPanelSelectNext(swpanel, True, ev.xkey.keycode != leftKey, (!class_only && wKeyBindings[WKBD_GROUPPREV].keycode == ev.xkey.keycode && wKeyBindings[WKBD_GROUPPREV].modifier == modifiers));
+				newFocused = wSwitchPanelSelectNext(swpanel, True, ev.xkey.keycode != leftKey, class_only);
 				oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False);
 
 			} else if (ev.xkey.keycode == homeKey || ev.xkey.keycode == endKey) {
