@@ -189,10 +189,10 @@
   MinimizeAllKey = "Mod1+Shift+m";
   
   COMMENT           = "/* --- Focus switch --- */";
-  FocusNextKey      = "Mod4+Tab";
-  FocusPrevKey      = "Mod4+Shift+Tab";
-  GroupNextKey      = None;
-  GroupPrevKey      = None;
+  FocusNextKey      = "Mod1+Tab";
+  FocusPrevKey      = "Mod1+Shift+Tab";
+  GroupNextKey      = "Mod1+grave";
+  GroupPrevKey      = "Mod1+Shift+grave";
   RaiseKey          = None;
   LowerKey          = None;
   RaiseLowerKey     = None;
