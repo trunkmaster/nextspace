@@ -375,6 +375,7 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
 		free(ntitle);
 }
 
+#include <stdio.h>
 static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool class_only)
 {
 	WMArray *windows = WMCreateArray(10);
