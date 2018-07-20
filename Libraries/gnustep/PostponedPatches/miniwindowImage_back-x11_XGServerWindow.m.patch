@@ -1,0 +1,98 @@
+--- gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-07-20 16:40:54.256691499 +0300
++++ gnustep-back-0.24.1.old/Source/x11/XGServerWindow.m	2018-07-20 15:43:26.313581500 +0300
+@@ -126,11 +126,14 @@
+   [image lockFocus];
+   rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
+             NSMakeRect(0, 0, size.width, size.height)];
++  // rep = (NSBitmapImageRep *)[image bestRepresentationForRect:NSMakeRect(0, 0, size.width, size.height)
++  //                                                    context:[[NSApp iconWindow] graphicsContext]
++  //                                                      hints:[[NSApp iconWindow] deviceDescription]];
++  // rep = (NSBitmapImageRep *)[image bestRepresentationForDevice:[[NSApp iconWindow] deviceDescription]];
+   AUTORELEASE(rep);
+   [image unlockFocus];
+ 
+-  return rep;
+-/*
++  /*
+   rep = (NSBitmapImageRep *)[image bestRepresentationForDevice: nil];
+   if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
+     {
+@@ -148,7 +151,9 @@
+                                     bytesPerRow: 0
+                                    bitsPerPixel: 0];
+     }
+-*/
++  */
++
++  return rep;
+ }
+ 
+ 
+@@ -1951,7 +1956,7 @@
+   static BOOL didCreateNetIcon = NO;
+   static long *iconPropertyData = NULL;
+   static int iconSize;
+-  NSImage *image;
++  NSImage *image = nil;
+ 
+   /* Initialize the atom if needed */
+   if (icon_atom == None)
+@@ -1961,17 +1966,51 @@
+     {
+       if (iconPropertyData != NULL)
+         {
+-	  free(iconPropertyData);
+-	}
++          free(iconPropertyData);
++        }
+ 
+       image = [NSApp applicationIconImage];
+       if (image != nil)
+         {
+-	  didCreateNetIcon = YES;
+-	  [self _createNetIcon: image
+-			result: &iconPropertyData
+-			  size: &iconSize];
+-	}
++          didCreateNetIcon = YES;
++          [self _createNetIcon: image
++        		result: &iconPropertyData
++        		  size: &iconSize];
++        }
++    }
++  else
++    {
++      NSWindow *nswin;
++      gswindow_device_t *w;
++      long *iconData = NULL;
++      
++      if (window) {
++        if ((w = [[self class] _windowForXWindow:window])) {
++          if ((nswin = GSWindowWithNumber(w->number))) {
++            image = [nswin miniwindowImage];
++            if (image != nil) {
++              if (iconData != NULL) {
++                free(iconData);
++              }
++              [self _createNetIcon: image
++                            result: &iconData
++                              size: &iconSize];
++            }
++            fprintf(stderr, "[Back] iconPropertyData: %s iconSize: %i\n",
++                    (unsigned char *)iconData, iconSize);
++            if (iconData != 0) {
++                XChangeProperty(dpy, window,
++                                icon_atom, XA_CARDINAL, 
++                                32, PropModeReplace,
++                                (unsigned char *)iconData, iconSize);
++            }
++            if (iconPropertyData != NULL) {
++              free(iconPropertyData);
++              iconPropertyData = iconData;
++            }
++          }
++        }
++      }
+     }
+ 
+   if (iconPropertyData != 0)
