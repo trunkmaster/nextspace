@@ -1,0 +1,16 @@
+--- gnustep-gui-0.24.1/Source/NSWindow.m	2018-07-20 17:44:36.823019500 +0300
++++ gnustep-gui-0.24.1.old/Source/NSWindow.m	2018-07-19 15:40:15.419656001 +0300
+@@ -1444,6 +1444,13 @@
+           [v setImage: [self miniwindowImage]];
+         }
+     }
++
++  if (_windowNum > 0) {
++    id displayServer = GSCurrentServer();
++    if ([displayServer respondsToSelector:@selector(_setNetWMIconFor:)]) {
++      [displayServer _setNetWMIconFor:[displayServer windowDevice:[self windowNumber]]];
++    }
++  }
+ }
+ 
+ - (void) setMiniwindowTitle: (NSString*)title
