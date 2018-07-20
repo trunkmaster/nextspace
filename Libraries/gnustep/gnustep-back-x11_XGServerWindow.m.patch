@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerWindow.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-07-13 01:02:44.006169805 +0300
++++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-07-20 16:40:54.256691499 +0300
 @@ -121,11 +121,6 @@
        return nil;
      }
@@ -48,7 +48,17 @@
    generic.win_decor_atom = XInternAtom(dpy,"_GNUSTEP_WM_ATTR", False);
    generic.titlebar_state_atom
      = XInternAtom(dpy, "_GNUSTEP_TITLEBAR_STATE", False);
-@@ -2936,13 +2934,38 @@
+@@ -2110,8 +2108,7 @@
+ 
+   // For window managers supporting EWMH, but not Window Maker, 
+   // where we use a different solution, set the window icon.
+-  if (((generic.wm & XGWM_EWMH) != 0)
+-    && ((generic.wm & XGWM_WINDOWMAKER) == 0))
++  if ((generic.wm & XGWM_EWMH) != 0)
+     {
+       [self _setNetWMIconFor: window->ident];
+     }
+@@ -2936,13 +2933,38 @@
         */
        if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
  	{
@@ -90,7 +100,7 @@
  	    }
  #endif
  	  return;
-@@ -3397,7 +3420,6 @@
+@@ -3397,7 +3419,6 @@
                skipTaskbar = YES;
              }
            else if (level == NSSubmenuWindowLevel
@@ -98,7 +108,7 @@
                     || level == NSTornOffMenuWindowLevel)
              {
  #ifdef USE_KDE_OVERRIDE
-@@ -3411,6 +3433,11 @@
+@@ -3411,6 +3432,11 @@
  #endif
                skipTaskbar = YES;
              }
@@ -110,7 +120,7 @@
            else if (level == NSDockWindowLevel
                     || level == NSStatusWindowLevel)
              {
-@@ -4301,25 +4328,31 @@
+@@ -4301,25 +4327,31 @@
        cursor = XCreateFontCursor(dpy, XC_crosshair);
        break;
      case GSDisappearingItemCursor:
@@ -148,7 +158,7 @@
        break;
      case GSResizeUpDownCursor:
        cursor = XCreateFontCursor(dpy, XC_sb_v_double_arrow);
-@@ -4398,7 +4431,7 @@
+@@ -4398,7 +4430,7 @@
      // FIXME: Factor this out
      // Convert RGBA unpacked to ARGB packed
      // NB Packed ARGB values are layed out as ARGB on big endian systems
