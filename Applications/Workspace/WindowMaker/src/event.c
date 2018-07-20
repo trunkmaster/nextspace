@@ -1465,8 +1465,13 @@ static void handleKeyPress(XEvent * event)
 	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
 #ifdef NEXTSPACE
-  fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i window:%lu\n",
-          event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers, wwin->client_win);
+  if (wwin && wwin->client_win) {
+    fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i"
+            " modifiers: %i window:%lu\n",
+            event->xkey.keycode, event->xkey.state, MOD_MASK,
+            modifiers, wwin->client_win);
+  }
+  
 	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
 			modifiers == 0) {
@@ -1517,7 +1522,7 @@ static void handleKeyPress(XEvent * event)
     // send it to GNUstep application. For example, Alternate-x
     // pressed over Terminal window which runs Emacs should result in
     // appearing 'M-x' prompt in Emacs.
-    if (wwin->flags.is_gnustep) {
+    if (wwin && wwin->flags.is_gnustep) {
       XSendEvent(dpy, wwin->client_win, True, KeyPress, event);
     }
     
