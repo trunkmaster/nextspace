@@ -2051,7 +2051,7 @@ static void handleMotionNotify(XEvent * event)
 			/* move the window */
 			wMouseMoveWindow(wwin, event);
 		}
-		else if (event->xmotion.window == wwin->frame->resizebar->window) {
+		else if (IS_RESIZABLE(wwin) && event->xmotion.window == wwin->frame->resizebar->window) {
 			wMouseResizeWindow(wwin, event);
 		}
 		XUngrabPointer(dpy, CurrentTime);

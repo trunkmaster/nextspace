@@ -1,16 +1,20 @@
 --- ./WindowMaker-0.95.7/src/event.c	2015-08-11 21:41:14.000000000 +0300
-+++ ./WindowMaker/src/event.c	2018-07-11 13:59:31.732829374 +0300
-@@ -80,6 +80,9 @@
++++ ./WindowMaker/src/event.c	2018-07-24 00:42:48.434242727 +0300
+@@ -80,6 +80,13 @@
  #include "switchmenu.h"
  #include "wsmap.h"
  
 +#ifdef NEXTSPACE
 +#include <Workspace+WindowMaker.h>
++extern void WWMIconYardShowIcons(WScreen *screen);
++extern void WWMIconYardHideIcons(WScreen *screen);
++extern void WWMDockShowIcons(WDock *dock);
++extern void WWMDockHideIcons(WDock *dock);
 +#endif
  
  #define MOD_MASK wPreferences.modifier_mask
  
-@@ -90,6 +93,10 @@
+@@ -90,6 +97,10 @@
  static void handleMapNotify(XEvent *event);
  static void handleUnmapNotify(XEvent *event);
  static void handleButtonPress(XEvent *event);
@@ -21,7 +25,7 @@
  static void handleExpose(XEvent *event);
  static void handleDestroyNotify(XEvent *event);
  static void handleConfigureRequest(XEvent *event);
-@@ -209,6 +216,11 @@
+@@ -209,6 +220,11 @@
  		handleKeyPress(event);
  		break;
  
@@ -33,7 +37,7 @@
  	case MotionNotify:
  		handleMotionNotify(event);
  		break;
-@@ -237,6 +249,11 @@
+@@ -237,6 +253,11 @@
  		handleExpose(event);
  		break;
  
@@ -45,7 +49,7 @@
  	case PropertyNotify:
  		handlePropertyNotify(event);
  		break;
-@@ -580,9 +597,15 @@
+@@ -580,9 +601,15 @@
  		 * XRRUpdateConfiguration when screen configuration change notify
  		 * events are generated */
  		XRRUpdateConfiguration(event);
@@ -61,7 +65,7 @@
  	}
  #endif
  }
-@@ -670,6 +693,9 @@
+@@ -670,6 +697,9 @@
  
  	wwin = wWindowFor(window);
  	if (wwin) {
@@ -71,7 +75,7 @@
  		wUnmanageWindow(wwin, False, True);
  	}
  
-@@ -803,17 +829,48 @@
+@@ -803,17 +833,48 @@
  
  	scr = wScreenForRootWindow(event->xbutton.root);
  
@@ -120,7 +124,7 @@
  		} else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
  			executeButtonAction(scr, event, wPreferences.mouse_button8);
  		}else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
-@@ -839,15 +896,12 @@
+@@ -839,15 +900,12 @@
  	if (desc->parent_type == WCLASS_WINDOW) {
  		XSync(dpy, 0);
  
@@ -139,7 +143,7 @@
  		}
  		XSync(dpy, 0);
  	} else if (desc->parent_type == WCLASS_APPICON
-@@ -873,6 +927,23 @@
+@@ -873,6 +931,23 @@
  	}
  }
  
@@ -163,13 +167,18 @@
  static void handleMapNotify(XEvent * event)
  {
  	WWindow *wwin;
-@@ -1389,13 +1460,32 @@
+@@ -1389,20 +1464,42 @@
  	/* ignore CapsLock */
  	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
  
 +#ifdef NEXTSPACE
-+  fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i modifiers: %i\n",
-+          event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers);
++  if (wwin && wwin->client_win) {
++    fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i"
++            " modifiers: %i window:%lu\n",
++            event->xkey.keycode, event->xkey.state, MOD_MASK,
++            modifiers, wwin->client_win);
++  }
++  
 +	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
 +       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
 +			modifiers == 0) {
@@ -178,7 +187,6 @@
 +      scr->flags.modifier_pressed = 1;
 +      wWindowUpdateButtonImages(wwin);
 +    }
-+		return;
 +	}
 +	else if (event->xkey.window != event->xkey.root &&
 +           event->xkey.window != scr->no_focus_win) {
@@ -199,7 +207,99 @@
  			command = i;
  			break;
  		}
-@@ -1866,11 +1956,56 @@
+ 	}
+ 
+ 	if (command < 0) {
+-
+ 		if (!wRootMenuPerformShortcut(event)) {
+ 			static int dontLoop = 0;
+ 
+@@ -1420,6 +1517,15 @@
+ 			}
+ 			dontLoop--;
+ 		}
++
++    // Shortuct which does not overlap with WindowMaker was pressed -
++    // send it to GNUstep application. For example, Alternate-x
++    // pressed over Terminal window which runs Emacs should result in
++    // appearing 'M-x' prompt in Emacs.
++    if (wwin && wwin->flags.is_gnustep) {
++      XSendEvent(dpy, wwin->client_win, True, KeyPress, event);
++    }
++    
+ 		return;
+ 	}
+ #define ISMAPPED(w) ((w) && !(w)->flags.miniaturized && ((w)->flags.mapped || (w)->flags.shaded))
+@@ -1427,6 +1533,26 @@
+ 
+ 	switch (command) {
+ 
++  case WKBD_DOCKHIDESHOW:
++    if (strcmp(scr->focused_window->wm_instance, "Workspace") != 0) {
++      if (scr->dock->mapped) {
++        WWMDockHideIcons(scr->dock);
++      }
++      else {
++        WWMDockShowIcons(scr->dock);
++      }
++    }
++    break;
++  case WKBD_YARDHIDESHOW:
++    if (strcmp(scr->focused_window->wm_instance, "Workspace") != 0) {
++      if (scr->flags.icon_yard_mapped) {
++        WWMIconYardHideIcons(scr);
++      }
++      else {
++        WWMIconYardShowIcons(scr);
++      }
++    }
++    break;
+ 	case WKBD_ROOTMENU:
+ 		/*OpenRootMenu(scr, event->xkey.x_root, event->xkey.y_root, True); */
+ 		if (!CheckFullScreenWindowFocused(scr)) {
+@@ -1452,12 +1578,13 @@
+ 		wHideAll(scr);
+ 		break;
+ 	case WKBD_MINIATURIZE:
+-		if (ISMAPPED(wwin) && ISFOCUSED(wwin)
+-		    && !WFLAGP(wwin, no_miniaturizable)) {
++		if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
+ 			CloseWindowMenu(scr);
+-
+-			if (wwin->protocols.MINIATURIZE_WINDOW)
+-				wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window, event->xbutton.time);
++			if (wwin->protocols.MINIATURIZE_WINDOW) {
++        fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n");
++        wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
++                            event->xbutton.time);
++      }
+ 			else {
+ 				wIconifyWindow(wwin);
+ 			}
+@@ -1469,8 +1596,20 @@
+ 			CloseWindowMenu(scr);
+ 
+ 			if (wapp && !WFLAGP(wapp->main_window_desc, no_appicon)) {
+-				wHideApplication(wapp);
+-			}
++        if (wwin->protocols.HIDE_APP) {
++          WIcon *icon = wapp->app_icon->icon;
++          fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
++          animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
++                        wwin->frame->core->width, wwin->frame->core->height,
++                        wapp->app_icon->x_pos, wapp->app_icon->y_pos,
++                        icon->core->width, icon->core->height);
++          wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
++                              event->xbutton.time);
++        }
++        else {
++          wHideApplication(wapp);
++        }
++      }
+ 		}
+ 		break;
+ 	case WKBD_HIDE_OTHERS:
+@@ -1866,11 +2005,59 @@
  #endif	/* KEEP_XKB_LOCK_STATUS */
  	}
  }
@@ -221,6 +321,9 @@
 +    if (wwin) {
 +      scr->flags.modifier_pressed = 0;
 +      wWindowUpdateButtonImages(wwin);
++      if (wwin->flags.is_gnustep) {
++        XSendEvent(dpy, scr->focused_window->client_win, True, KeyRelease, event);
++      }
 +    }
 +  }
 +}
@@ -247,7 +350,7 @@
 +			/* move the window */
 +			wMouseMoveWindow(wwin, event);
 +		}
-+		else if (event->xmotion.window == wwin->frame->resizebar->window) {
++		else if (IS_RESIZABLE(wwin) && event->xmotion.window == wwin->frame->resizebar->window) {
 +			wMouseResizeWindow(wwin, event);
 +		}
 +		XUngrabPointer(dpy, CurrentTime);
