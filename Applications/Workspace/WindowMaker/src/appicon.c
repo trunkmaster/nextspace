@@ -612,10 +612,12 @@ static WMenu *createApplicationMenu(WScreen *scr)
 	WMenu *menu;
 
 	menu = wMenuCreate(scr, NULL, False);
+	wMenuAddCallback(menu, _("Launch"), relaunchCallback, NULL);
 	wMenuAddCallback(menu, _("Unhide Here"), unhideHereCallback, NULL);
 	wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
-	wMenuAddCallback(menu, _("Launch"), relaunchCallback, NULL);
+#ifndef NEXTSPACE
 	wMenuAddCallback(menu, _("Set Icon..."), setIconCallback, NULL);
+#endif
 	wMenuAddCallback(menu, _("Kill"), killCallback, NULL);
 
 	return menu;
@@ -634,10 +636,15 @@ static void openApplicationMenu(WApplication * wapp, int x, int y)
 
 	menu = scr->icon_menu;
 
-	if (wapp->flags.hidden)
-		menu->entries[1]->text = _("Unhide");
+	if (wapp && wapp->flags.hidden)
+		menu->entries[1]->text = _("Unhide Here");
 	else
-		menu->entries[1]->text = _("Hide");
+		menu->entries[1]->text = _("Bring Here");
+  
+	if (wapp->flags.hidden)
+		menu->entries[2]->text = _("Unhide");
+	else
+		menu->entries[2]->text = _("Hide");
 
 	menu->flags.realized = 0;
 	wMenuRealize(menu);
@@ -718,7 +725,7 @@ void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
 		return;
 	}
 
-	if (event->xbutton.button == Button3) {
+	if (event->xbutton.button == Button3 && (event->xbutton.state & MOD_MASK)) {
 		WObjDescriptor *desc;
 		WApplication *wapp = wApplicationOf(aicon->icon->owner->main_window);
 

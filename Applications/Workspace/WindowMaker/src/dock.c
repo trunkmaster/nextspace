@@ -1221,11 +1221,12 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
 
 	menu = wMenuCreate(scr, NULL, False);
 	if (type == WM_DOCK) {
+#ifndef NEXTSPACE
 		entry = wMenuAddCallback(menu, _("Dock position"), NULL, NULL);
 		if (scr->dock_pos_menu == NULL)
 			scr->dock_pos_menu = makeDockPositionMenu(scr);
 		wMenuEntrySetCascade(menu, entry, scr->dock_pos_menu);
-
+#endif
 		if (!wPreferences.flags.nodrawer)
 			wMenuAddCallback(menu, _("Add a drawer"), addADrawerCallback, NULL);
 
@@ -1286,9 +1287,9 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
 	entry = wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
 	wfree(entry->text);
 	entry->text = _("Hide"); /* can be: Unhide */
-
+#ifndef NEXTSPACE
 	wMenuAddCallback(menu, _("Settings..."), settingsCallback, NULL);
-
+#endif
 	entry = wMenuAddCallback(menu, _("Kill"), killCallback, NULL);
 	wfree(entry->text);
 	entry->text = _("Kill"); /* can be: Remove drawer */
@@ -3453,7 +3454,11 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 
 	if (dock->type == WM_DOCK) {
 		/* Dock position menu */
+#ifndef NEXTSPACE
 		updateDockPositionMenu(scr->dock_pos_menu, dock);
+#else
+		index -= 1;
+#endif
 		dock->menu->flags.realized = 0;
 		if (!wPreferences.flags.nodrawer) {
 			/* add a drawer */
@@ -3579,11 +3584,13 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 
 	wMenuSetEnabled(dock->menu, index, appIsRunning);
 
+#ifndef NEXTSPACE
 	/* settings */
 	entry = dock->menu->entries[++index];
 	entry->clientdata = aicon;
 	wMenuSetEnabled(dock->menu, index, !aicon->editing && !wPreferences.flags.noupdates);
-
+#endif
+  
 	/* kill or remove drawer */
 	entry = dock->menu->entries[++index];
 	entry->clientdata = aicon;
@@ -4040,7 +4047,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
 	} else if (event->xbutton.button == Button2 && dock->type == WM_CLIP &&
 		   (event->xbutton.state & ShiftMask) && aicon != scr->clip_icon) {
 		wClipMakeIconOmnipresent(aicon, !aicon->omnipresent);
-	} else if (event->xbutton.button == Button3) {
+	} else if (event->xbutton.button == Button3 && (event->xbutton.state & MOD_MASK)) {
 		if (event->xbutton.send_event &&
 		    XGrabPointer(dpy, aicon->icon->core->window, True, ButtonMotionMask
 				 | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
