@@ -3025,7 +3025,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
 		XUngrabPointer(dpy, CurrentTime);
 #endif
-	} else if (event->xbutton.button == Button3 && event->xbutton.state == 0
+	} else if (event->xbutton.button == Button3 && (event->xbutton.state & MOD_MASK)
 		   && !wwin->flags.internal_window && !WCHECK_STATE(WSTATE_MODAL)) {
 		WObjDescriptor *desc;
 
