@@ -875,7 +875,7 @@ static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event)
 			wIconSelect(icon);
 			wSelectWindow(icon->owner, !wwin->flags.selected);
 		}
-	} else if (event->xbutton.button == Button3) {
+	} else if (event->xbutton.button == Button3 && (event->xbutton.state & MOD_MASK)) {
 		WObjDescriptor *desc;
 
 		OpenMiniwindowMenu(wwin, event->xbutton.x_root, event->xbutton.y_root);
