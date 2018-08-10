@@ -297,7 +297,7 @@
 
 /* blink interval when invoking a menu item */
 #define MENU_BLINK_DELAY	60000
-#define MENU_BLINK_COUNT	2
+#define MENU_BLINK_COUNT	0
 #define CURSOR_BLINK_RATE	300
 
 /* how many pixels to move before dragging windows and other objects */
