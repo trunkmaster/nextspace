@@ -1219,7 +1219,7 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
 	if (type == WM_DRAWER && scr->drawer_menu)
 		return scr->drawer_menu;
 
-	menu = wMenuCreate(scr, NULL, False);
+	menu = wMenuCreate(scr, "Dock", False);
 	if (type == WM_DOCK) {
 #ifndef NEXTSPACE
 		entry = wMenuAddCallback(menu, _("Dock position"), NULL, NULL);
@@ -3458,6 +3458,11 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 		updateDockPositionMenu(scr->dock_pos_menu, dock);
 #else
 		index -= 1;
+		if (dock->menu->frame->title) {
+			wfree(dock->menu->frame->title);
+		}
+    dock->menu->frame->title = wstrdup(aicon->wm_class);
+
 #endif
 		dock->menu->flags.realized = 0;
 		if (!wPreferences.flags.nodrawer) {
