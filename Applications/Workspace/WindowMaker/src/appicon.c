@@ -611,7 +611,7 @@ static WMenu *createApplicationMenu(WScreen *scr)
 {
 	WMenu *menu;
 
-	menu = wMenuCreate(scr, NULL, False);
+	menu = wMenuCreate(scr, "WindowMaker", False);
 	wMenuAddCallback(menu, _("Launch"), relaunchCallback, NULL);
 	wMenuAddCallback(menu, _("Unhide Here"), unhideHereCallback, NULL);
 	wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
@@ -632,7 +632,12 @@ static void openApplicationMenu(WApplication * wapp, int x, int y)
 	if (!scr->icon_menu) {
 		scr->icon_menu = createApplicationMenu(scr);
 		wfree(scr->icon_menu->entries[1]->text);
+		wfree(scr->icon_menu->entries[2]->text);
 	}
+	if (scr->icon_menu->frame->title) {
+		wfree(scr->icon_menu->frame->title);
+	}
+	scr->icon_menu->frame->title = wstrdup(wapp->app_icon->wm_class);
 
 	menu = scr->icon_menu;
 
