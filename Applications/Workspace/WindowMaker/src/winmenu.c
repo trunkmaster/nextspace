@@ -62,16 +62,16 @@ static WMenu *makeMaximizeMenu(WScreen *scr);
  */
 enum
 {
-	MC_MAXIMIZE,
 	MC_OTHERMAX,
-	MC_MINIATURIZE,
 	MC_SHADE,
-	MC_HIDE,
 	MC_MOVERESIZE,
 	MC_SELECT,
 	MC_CHANGEWKSPC,
-	MC_PROPERTIES,
 	MC_OPTIONS,
+	MC_MAXIMIZE,
+	MC_MINIATURIZE,
+	MC_HIDE,
+	MC_PROPERTIES,
 	MC_RELAUNCH,
 	MC_CLOSE,
 	MC_KILL
@@ -81,19 +81,12 @@ static const struct {
 	const char *label;
 	WMenu *(*generate_submenu)(WScreen *scr);
 } window_menu_entries[] = {
-	[MC_MAXIMIZE]    = { N_("Maximize"), NULL },
-	[MC_OTHERMAX]    = { N_("Other maximization"), makeMaximizeMenu },
-	[MC_MINIATURIZE] = { N_("Miniaturize"), NULL },
+	[MC_OTHERMAX]    = { N_("Maximize"), makeMaximizeMenu },
 	[MC_SHADE]       = { N_("Shade"), NULL },
-	[MC_HIDE]        = { N_("Hide"), NULL },
 	[MC_MOVERESIZE]  = { N_("Resize/Move"), NULL },
 	[MC_SELECT]      = { N_("Select"), NULL },
 	[MC_CHANGEWKSPC] = { N_("Move To"), makeWorkspaceMenu },
-	[MC_PROPERTIES]  = { N_("Attributes..."), NULL },
-	[MC_OPTIONS]     = { N_("Options"), makeOptionsMenu },
-	[MC_RELAUNCH]    = { N_("Launch"), NULL },
-	[MC_CLOSE]       = { N_("Close"), NULL },
-	[MC_KILL]        = { N_("Kill"), NULL }
+	[MC_OPTIONS]     = { N_("Options"), makeOptionsMenu }
 };
 
 /*
@@ -123,17 +116,18 @@ static const struct {
 	unsigned int shortcut_idx;
 	int maxim_direction;
 } menu_maximize_entries[] = {
-	{ N_("Maximize vertically"), WKBD_VMAXIMIZE, MAX_VERTICAL },
-	{ N_("Maximize horizontally"), WKBD_HMAXIMIZE, MAX_HORIZONTAL },
-	{ N_("Maximize left half"), WKBD_LHMAXIMIZE, MAX_VERTICAL | MAX_LEFTHALF },
-	{ N_("Maximize right half"), WKBD_RHMAXIMIZE, MAX_VERTICAL | MAX_RIGHTHALF },
-	{ N_("Maximize top half"), WKBD_THMAXIMIZE, MAX_HORIZONTAL | MAX_TOPHALF },
-	{ N_("Maximize bottom half"), WKBD_BHMAXIMIZE, MAX_HORIZONTAL | MAX_BOTTOMHALF },
-	{ N_("Maximize left top corner"), WKBD_LTCMAXIMIZE, MAX_LEFTHALF | MAX_TOPHALF },
-	{ N_("Maximize right top corner"), WKBD_RTCMAXIMIZE, MAX_RIGHTHALF | MAX_TOPHALF },
-	{ N_("Maximize left bottom corner"), WKBD_LBCMAXIMIZE, MAX_LEFTHALF | MAX_BOTTOMHALF },
-	{ N_("Maximize right bottom corner"), WKBD_RBCMAXIMIZE, MAX_RIGHTHALF | MAX_BOTTOMHALF },
-	{ N_("Maximus: tiled maximization"), WKBD_MAXIMUS, MAX_MAXIMUS }
+	{ N_("All Directions"), WKBD_MAXIMIZE, MAX_VERTICAL | MAX_HORIZONTAL },
+	{ N_("Vertically"), WKBD_VMAXIMIZE, MAX_VERTICAL },
+	{ N_("Horizontally"), WKBD_HMAXIMIZE, MAX_HORIZONTAL },
+	{ N_("Left Half"), WKBD_LHMAXIMIZE, MAX_VERTICAL | MAX_LEFTHALF },
+	{ N_("Right Half"), WKBD_RHMAXIMIZE, MAX_VERTICAL | MAX_RIGHTHALF },
+	{ N_("Top Half"), WKBD_THMAXIMIZE, MAX_HORIZONTAL | MAX_TOPHALF },
+	{ N_("Bottom Half"), WKBD_BHMAXIMIZE, MAX_HORIZONTAL | MAX_BOTTOMHALF },
+	{ N_("Left Top Corner"), WKBD_LTCMAXIMIZE, MAX_LEFTHALF | MAX_TOPHALF },
+	{ N_("Right Top Corner"), WKBD_RTCMAXIMIZE, MAX_RIGHTHALF | MAX_TOPHALF },
+	{ N_("Left Bottom Corner"), WKBD_LBCMAXIMIZE, MAX_LEFTHALF | MAX_BOTTOMHALF },
+	{ N_("Right Bottom Corner"), WKBD_RBCMAXIMIZE, MAX_RIGHTHALF | MAX_BOTTOMHALF },
+	{ N_("Tiled"), WKBD_MAXIMUS, MAX_MAXIMUS }
 };
 
 static void updateOptionsMenu(WMenu * menu, WWindow * wwin);
@@ -353,6 +347,7 @@ static void makeShortcutCommand(WMenu * menu, WMenuEntry * entry)
 	wSelectWindow(wwin, !wwin->flags.selected);
 	XFlush(dpy);
 }
+
 
 static void updateWorkspaceMenu(WMenu * menu)
 {
@@ -587,9 +582,10 @@ static WMenu *createWindowMenu(WScreen * scr)
 	for (i = 0; i < wlengthof(window_menu_entries); i++) {
 		WMenuEntry *entry;
 
-		entry = wMenuAddCallback(menu, _(window_menu_entries[i].label),
-		                         (window_menu_entries[i].generate_submenu == NULL)?execMenuCommand:NULL,
-		                         NULL);
+    if (window_menu_entries[i].label != NULL)
+      entry = wMenuAddCallback(menu, _(window_menu_entries[i].label),
+                               (window_menu_entries[i].generate_submenu == NULL)?execMenuCommand:NULL,
+                               NULL);
 		if (window_menu_entries[i].generate_submenu != NULL) {
 			WMenu *submenu;
 
@@ -627,42 +623,48 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
 
 	updateMakeShortcutMenu(menu, wwin);
 
-	wMenuSetEnabled(menu, MC_HIDE, wapp != NULL && !WFLAGP(wapp->main_window_desc, no_appicon));
+	if (menu->entries[MC_MINIATURIZE])
+		wMenuSetEnabled(menu, MC_HIDE, wapp != NULL && !WFLAGP(wapp->main_window_desc, no_appicon));
 
-	wMenuSetEnabled(menu, MC_CLOSE, (wwin->protocols.DELETE_WINDOW && !WFLAGP(wwin, no_closable)));
+	if (menu->entries[MC_CLOSE])
+		wMenuSetEnabled(menu, MC_CLOSE, (wwin->protocols.DELETE_WINDOW && !WFLAGP(wwin, no_closable)));
 
-	if (wwin->flags.miniaturized) {
-		static char *text = NULL;
-		if (!text)
-			text = _("Deminiaturize");
+	if (menu->entries[MC_MINIATURIZE]) {
+		if (wwin->flags.miniaturized) {
+			static char *text = NULL;
+			if (!text)
+				text = _("Deminiaturize");
 
-		menu->entries[MC_MINIATURIZE]->text = text;
-	} else {
-		static char *text = NULL;
-		if (!text)
-			text = _("Miniaturize");
+			menu->entries[MC_MINIATURIZE]->text = text;
+		} else {
+			static char *text = NULL;
+			if (!text)
+				text = _("Miniaturize");
 
-		menu->entries[MC_MINIATURIZE]->text = text;
+			menu->entries[MC_MINIATURIZE]->text = text;
+		}
+		wMenuSetEnabled(menu, MC_MINIATURIZE, !WFLAGP(wwin, no_miniaturizable));
+		menu->entries[MC_MINIATURIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MINIATURIZE]);
 	}
 
-	wMenuSetEnabled(menu, MC_MINIATURIZE, !WFLAGP(wwin, no_miniaturizable));
+	if (menu->entries[MC_MAXIMIZE]) {
+		if (wwin->flags.maximized) {
+			static char *text = NULL;
+			if (!text)
+				text = _("Unmaximize");
 
-	if (wwin->flags.maximized) {
-		static char *text = NULL;
-		if (!text)
-			text = _("Unmaximize");
-
-		menu->entries[MC_MAXIMIZE]->text = text;
-		updateUnmaximizeShortcut(menu->entries[MC_MAXIMIZE], wwin->flags.maximized);
-	} else {
-		static char *text = NULL;
-		if (!text)
+			menu->entries[MC_MAXIMIZE]->text = text;
+			updateUnmaximizeShortcut(menu->entries[MC_MAXIMIZE], wwin->flags.maximized);
+		} else {
+			static char *text = NULL;
+			if (!text)
 			text = _("Maximize");
 
-		menu->entries[MC_MAXIMIZE]->text = text;
-		menu->entries[MC_MAXIMIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MAXIMIZE]);
+			menu->entries[MC_MAXIMIZE]->text = text;
+			menu->entries[MC_MAXIMIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MAXIMIZE]);
+		}
+		wMenuSetEnabled(menu, MC_MAXIMIZE, IS_RESIZABLE(wwin));
 	}
-	wMenuSetEnabled(menu, MC_MAXIMIZE, IS_RESIZABLE(wwin));
 
 	wMenuSetEnabled(menu, MC_MOVERESIZE, IS_RESIZABLE(wwin)
 			&& !wwin->flags.miniaturized);
@@ -681,8 +683,7 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
 		menu->entries[MC_SHADE]->text = text;
 	}
 
-	wMenuSetEnabled(menu, MC_SHADE, !WFLAGP(wwin, no_shadeable)
-			&& !wwin->flags.miniaturized);
+	wMenuSetEnabled(menu, MC_SHADE, !WFLAGP(wwin, no_shadeable)	&& !wwin->flags.miniaturized);
 
 	if (wwin->flags.selected) {
 		static char *text = NULL;
@@ -709,13 +710,18 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
 	/* Update shortcut labels except for (Un)Maximize which is
 	 * handled separately.
 	 */
-	menu->entries[MC_MINIATURIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MINIATURIZE]);
-	menu->entries[MC_SHADE]->rtext = GetShortcutKey(wKeyBindings[WKBD_SHADE]);
-	menu->entries[MC_HIDE]->rtext = GetShortcutKey(wKeyBindings[WKBD_HIDE]);
-	menu->entries[MC_MOVERESIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVERESIZE]);
-	menu->entries[MC_SELECT]->rtext = GetShortcutKey(wKeyBindings[WKBD_SELECT]);
-	menu->entries[MC_RELAUNCH]->rtext = GetShortcutKey(wKeyBindings[WKBD_RELAUNCH]);
-	menu->entries[MC_CLOSE]->rtext = GetShortcutKey(wKeyBindings[WKBD_CLOSE]);
+	if (menu->entries[MC_SHADE])
+		menu->entries[MC_SHADE]->rtext = GetShortcutKey(wKeyBindings[WKBD_SHADE]);
+	if (menu->entries[MC_HIDE])
+		menu->entries[MC_HIDE]->rtext = GetShortcutKey(wKeyBindings[WKBD_HIDE]);
+	if (menu->entries[MC_MOVERESIZE])
+		menu->entries[MC_MOVERESIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVERESIZE]);
+	if (menu->entries[MC_SELECT])
+		menu->entries[MC_SELECT]->rtext = GetShortcutKey(wKeyBindings[WKBD_SELECT]);
+	if (menu->entries[MC_RELAUNCH])
+		menu->entries[MC_RELAUNCH]->rtext = GetShortcutKey(wKeyBindings[WKBD_RELAUNCH]);
+	if (menu->entries[MC_CLOSE])
+		menu->entries[MC_CLOSE]->rtext = GetShortcutKey(wKeyBindings[WKBD_CLOSE]);
 
 	/* set the client data of the entries to the window */
 	for (i = 0; i < menu->entry_no; i++) {
@@ -745,10 +751,14 @@ static WMenu *open_window_menu_core(WWindow *wwin)
 		scr->window_menu = createWindowMenu(scr);
 
 		/* hack to save some memory allocation/deallocation */
-		wfree(scr->window_menu->entries[MC_MINIATURIZE]->text);
-		wfree(scr->window_menu->entries[MC_MAXIMIZE]->text);
-		wfree(scr->window_menu->entries[MC_SHADE]->text);
-		wfree(scr->window_menu->entries[MC_SELECT]->text);
+		if (scr->window_menu->entries[MC_MINIATURIZE])
+			wfree(scr->window_menu->entries[MC_MINIATURIZE]->text);
+		if (scr->window_menu->entries[MC_MAXIMIZE])
+			wfree(scr->window_menu->entries[MC_MAXIMIZE]->text);
+		if (scr->window_menu->entries[MC_SHADE])
+			wfree(scr->window_menu->entries[MC_SHADE]->text);
+		if (scr->window_menu->entries[MC_SELECT])
+			wfree(scr->window_menu->entries[MC_SELECT]->text);
 	} else {
 		updateWorkspaceMenu(scr->workspace_submenu);
 	}
