@@ -3461,8 +3461,12 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 		if (dock->menu->frame->title) {
 			wfree(dock->menu->frame->title);
 		}
-    dock->menu->frame->title = wstrdup(aicon->wm_class);
-
+		if (!strcmp(aicon->wm_class, "GNUstep")) {
+			dock->menu->frame->title = wstrdup(aicon->wm_instance);
+		}
+		else {
+			dock->menu->frame->title = wstrdup(aicon->wm_class);
+		}
 #endif
 		dock->menu->flags.realized = 0;
 		if (!wPreferences.flags.nodrawer) {
