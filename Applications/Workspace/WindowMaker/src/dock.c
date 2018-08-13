@@ -4056,7 +4056,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
 	} else if (event->xbutton.button == Button2 && dock->type == WM_CLIP &&
 		   (event->xbutton.state & ShiftMask) && aicon != scr->clip_icon) {
 		wClipMakeIconOmnipresent(aicon, !aicon->omnipresent);
-	} else if (event->xbutton.button == Button3 && (event->xbutton.state & MOD_MASK)) {
+	} else if (event->xbutton.button == Button3) {
 		if (event->xbutton.send_event &&
 		    XGrabPointer(dpy, aicon->icon->core->window, True, ButtonMotionMask
 				 | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
