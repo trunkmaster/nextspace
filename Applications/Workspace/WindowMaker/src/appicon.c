@@ -730,7 +730,7 @@ void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
 		return;
 	}
 
-	if (event->xbutton.button == Button3 && (event->xbutton.state & MOD_MASK)) {
+	if (event->xbutton.button == Button3) {
 		WObjDescriptor *desc;
 		WApplication *wapp = wApplicationOf(aicon->icon->owner->main_window);
 
