@@ -478,6 +478,90 @@ void WWMDockCollapse(WDock *dock)
 
 // -- Should be called from already existing @autoreleasepool ---
 
+enum {
+  KeepOnTop,
+  Normal,
+  AutoRaiseLower
+};
+int WWMDockLevel()
+{
+  int current_level = -1;
+  NSDictionary *dockState = [WWMDockState() objectForKey:@"Dock"];
+  
+  if ([[dockState objectForKey:@"Lowered"] isEqualToString:@"Yes"]) { // Normal or AutoRaiseLower
+    if ([[dockState objectForKey:@"AutoRaiseLower"] isEqualToString:@"Yes"]) { // AutoRaiseLower
+      current_level = AutoRaiseLower;
+    }
+    else { // Normal
+      current_level = Normal;
+    }
+  }
+  else { // KeepOnTop
+    current_level = KeepOnTop;
+  }
+
+  return current_level;
+}
+static void toggleLowered(WDock *dock)
+{
+  WAppIcon *tmp;
+  WDrawerChain *dc;
+  int newlevel, i;
+
+  if (!dock->lowered) {
+    newlevel = WMNormalLevel;
+    dock->lowered = 1;
+  } else {
+    newlevel = WMDockLevel;
+    dock->lowered = 0;
+  }
+
+  for (i = 0; i < dock->max_icons; i++) {
+    tmp = dock->icon_array[i];
+    if (!tmp)
+      continue;
+
+    ChangeStackingLevel(tmp->icon->core, newlevel);
+
+    /* When the dock is no longer "on top", explicitly lower it as well.
+     * It saves some CPU cycles (probably) to do it ourselves here
+     * rather than calling wDockLower at the end of toggleLowered */
+    if (dock->lowered)
+      wLowerFrame(tmp->icon->core);
+  }
+
+  if (dock->type == WM_DOCK) {
+    for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next) {
+      toggleLowered(dc->adrawer);
+    }
+    wScreenUpdateUsableArea(dock->screen_ptr);
+  }
+}
+void WWMSetDockLevel(int level)
+{
+  int   current_level;
+  WDock *dock = wScreenWithNumber(0)->dock;
+  
+  // From?
+  current_level = WWMDockLevel();
+  
+  // To?
+  if (current_level == level)
+    return;
+
+  if (current_level == AutoRaiseLower) {
+    dock->auto_raise_lower = 0;
+  }
+  else {
+    dock->auto_raise_lower = 1;
+  }
+  if ((dock->lowered && level == KeepOnTop) ||
+      (!dock->lowered && level == Normal)) {
+    toggleLowered(dock);
+  }
+  WWMDockStateSave();
+}
+
 // Returns path to user WMState if exist.
 // Returns 'nil' if user WMState doesn't exist and cannot
 // be recovered from Workspace.app/WindowMaker directory.

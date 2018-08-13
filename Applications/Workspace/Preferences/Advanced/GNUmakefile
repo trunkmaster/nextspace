@@ -1,7 +1,7 @@
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-BUNDLE_NAME=Effects
+BUNDLE_NAME=Advanced
 BUNDLE_EXTENSION=.wsprefs
 
 $(BUNDLE_NAME)_OBJC_FILES=$(wildcard *.m)
