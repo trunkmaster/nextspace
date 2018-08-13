@@ -62,6 +62,8 @@ void WWMIconYardShowIcons(WScreen *screen);
 void WWMIconYardHideIcons(WScreen *screen);
 
 // --- Dock
+int WWMDockLevel();
+void WWMSetDockLevel(int level);
 void WWMDockInit(void);
 void WWMDockShowIcons(WDock *dock);
 void WWMDockHideIcons(WDock *dock);
@@ -71,6 +73,7 @@ void WWMDockCollapse(WDock *dock);
 // - Should be called from already existing @autoreleasepool
 NSString     *WWMDockStatePath(void);
 NSDictionary *WWMDockState(void);
+void         WWMDockStateSave(void);
 NSArray      *WWMDockStateApps(void);
 void         WWMDockAutoLaunch(WDock *dock);
 

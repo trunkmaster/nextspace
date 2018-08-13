@@ -1,7 +1,7 @@
 /*
-   The icon sliding effect preferences.
+   Preferences for advanced users of Workspace or WindowMaker.
 
-   Copyright (C) 2005 Saso Kiselkov
+   Copyright (C) 2018 Sergii Stoian
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,17 +21,18 @@
 #import <AppKit/AppKit.h>
 #import <Protocols/PrefsModule.h>
 
-@interface EffectPrefs : NSObject <PrefsModule>
+@interface AdvancedPrefs : NSObject <PrefsModule>
 {
   id bogusWindow;
   id box;
+  NSPopUpButton *dockLevel;
   id slideOnBadFop;
   id slideFromShelf;
   id slideWhenOpening;
 }
 
-- (void) setSlidesWhenChangingPath: (id)sender;
-- (void) setSlidesBackOnBadOperation: (id)sender;
-- (void) setSlidesWhenOpeningFile: (id)sender;
+- (void)setSlidesWhenChangingPath:(id)sender;
+- (void)setSlidesBackOnBadOperation:(id)sender;
+- (void)setSlidesWhenOpeningFile:(id)sender;
 
 @end

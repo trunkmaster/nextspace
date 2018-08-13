@@ -1,0 +1,6 @@
+{
+  type = WSPreferences;
+  mode = "Advanced";
+  class = AdvancedPrefs;
+  priority = 99;
+}
