@@ -25,7 +25,7 @@
 {
   id bogusWindow;
   id box;
-  NSPopUpButton *dockLevel;
+  id dockLevelBtn;
   id slideOnBadFop;
   id slideFromShelf;
   id slideWhenOpening;

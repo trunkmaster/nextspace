@@ -46,9 +46,7 @@
   [slideWhenOpening setState:![df boolForKey:@"DontSlideIconsWhenOpening"]];
   [slideOnBadFop setState:![df boolForKey:@"DontSlideIconBackOnBadFop"]];
 
-  NSLog(@"[Preferences] dock level %@ is %i", [dockLevel className], WWMDockLevel());
-
-  [dockLevel selectItemWithTag:WWMDockLevel()];
+  [dockLevelBtn selectItemWithTag:WWMDockLevel()];
 }
 
 // --- PrefsModule protocol
