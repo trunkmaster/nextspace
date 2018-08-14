@@ -13,7 +13,7 @@
 	    slideOnBadFop,
 	    slideFromShelf,
 	    slideWhenOpening,
-	    dockLevel
+	    dockLevelBtn
 	);
 	Super = NSObject;
     };
