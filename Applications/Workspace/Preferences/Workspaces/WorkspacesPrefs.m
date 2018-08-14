@@ -167,13 +167,20 @@
   // [appList reloadData];
 }
 
-// --- Button
+// --- Actions
 
 - (void)setShowInDock:(id)sender
 {
   [[NXDefaults userDefaults] setBool:[sender state] ? YES : NO
                               forKey:@"ShowWorkspaceInDock"];
   [[NSApp delegate] updateWorkspaceBadge];
+}
+
+- (void)selectWorkspace:(id)sender
+{
+  for (int i=0; i < 10; i++) {
+    if ()
+  }
 }
 
 - (void)revert:sender

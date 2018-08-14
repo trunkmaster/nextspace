@@ -2,18 +2,32 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "selectWorkspace:",
 	    "setShowInDock:"
 	);
 	Super = NSObject;
     };
     WorkspacesPrefs = {
 	Actions = (
-	    "setShowInDock:"
+	    "setShowInDock:",
+	    "selectWorkspace:"
 	);
 	Outlets = (
 	    showInDockBtn,
 	    window,
-	    box
+	    box,
+	    changeNameBtn,
+	    ws1,
+	    ws10,
+	    ws2,
+	    ws3,
+	    ws4,
+	    ws5,
+	    ws6,
+	    ws7,
+	    ws8,
+	    ws9,
+	    nameField
 	);
 	Super = NSObject;
     };
