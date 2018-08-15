@@ -30,13 +30,18 @@
 {
   NSDebugLLog(@"WorkspacesPrefs", @"WorkspacesPrefs: dealloc");
 
-  TEST_RELEASE(box);
-
+  [box release];
+  [wsButtons release];
+  [wmStateWorkspaces release];
+  
   [super dealloc];
 }
 
 - (void)awakeFromNib
 {
+  NSUInteger wsCount;
+  NSButton   *button;
+  
   // get the box and destroy the bogus window
   [box retain];
   [box removeFromSuperview];
@@ -44,7 +49,24 @@
   [showInDockBtn setRefusesFirstResponder:YES];
   [showInDockBtn
     setState:[[NXDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]];
-  
+
+  wsButtons = [[NSMutableArray alloc]
+                initWithObjects:ws1,ws2,ws3,ws4,ws5,ws6,ws7,ws8,ws9,ws10,nil];
+
+  wmStateWorkspaces = [[NSMutableArray alloc]
+                        initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
+  wsCount = [wmStateWorkspaces count];
+  for (int i = 9; i >= 0; i--) {
+    button = [wsButtons objectAtIndex:i];
+    if (i < wsCount) {
+      [button release];
+    }
+    else {
+      [button removeFromSuperview];
+      [wsButtons removeObjectAtIndex:i];
+    }
+  }
+
   DESTROY(window);
 }
 
@@ -178,9 +200,25 @@
 
 - (void)selectWorkspace:(id)sender
 {
-  for (int i=0; i < 10; i++) {
-    if ()
+  // NSLog(@"selectWorkspace: sender == %@ (%@) buttons # %lu", [sender className], sender, [wsButtons count]);
+  for (NSButton *button in wsButtons) {
+    // NSLog(@"selectWorkspace: process %@", [button title]);
+    [button setState:(sender == button) ? NSOnState : NSOffState];
+    if ([sender isEqualTo:button] != NO) {
+      NSLog(@"Clicked WS button: %@", [button title]);
+      [nameField setStringValue:[[wmStateWorkspaces objectAtIndex:[wsButtons indexOfObject:button]] objectForKey:@"Name"]];
+      selectedWorkspace = button;
+    }
   }
+}
+
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+  id object = [aNotification object];
+
+  NSLog(@"Text changed in %@", [object className]);
+  if (object != nameField)
+    return;
 }
 
 - (void)revert:sender
