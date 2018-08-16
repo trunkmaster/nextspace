@@ -29,7 +29,9 @@
 	    ws7,
 	    ws8,
 	    ws9,
-	    nameField
+	    nameField,
+	    wsBox,
+	    wsNumber
 	);
 	Super = NSObject;
     };

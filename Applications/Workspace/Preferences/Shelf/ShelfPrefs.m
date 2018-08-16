@@ -227,6 +227,9 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)revert:sender
 {
+  if ([sender isEqualTo:button] == NO)
+    return;
+  
   [[NXDefaults userDefaults] setFloat:SHELF_LABEL_WIDTH
                                forKey:ShelfIconSlotWidth];
   [self _setupArrows];
