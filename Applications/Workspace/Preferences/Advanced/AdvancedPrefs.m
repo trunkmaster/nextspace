@@ -65,6 +65,11 @@
   return box;
 }
 
+- (void)revert:(id)sender
+{
+  // Do nothing
+}
+
 // --- Actions
 
 - (void)setDockLevel:(id)sender
