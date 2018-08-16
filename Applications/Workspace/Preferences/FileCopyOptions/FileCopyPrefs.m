@@ -91,6 +91,11 @@
   return box;
 }
 
+- (void)revert:(id)sender
+{
+  // Do nothing
+}
+
 // --- Buttons
 
 - (void)setSymlinkAction:(id)sender

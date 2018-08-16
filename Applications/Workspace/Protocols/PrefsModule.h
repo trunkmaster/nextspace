@@ -22,8 +22,10 @@
 
 @protocol PrefsModule
 
-- (NSString *) moduleName;
+- (NSString *)moduleName;
 
-- (NSView *) view;
+- (NSView *)view;
+
+- (void)revert:(id)sender;
 
 @end

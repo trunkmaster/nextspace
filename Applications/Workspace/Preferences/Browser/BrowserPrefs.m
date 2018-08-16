@@ -177,11 +177,14 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)revert:sender
 {
+  if ([sender isEqualTo:button] == NO)
+    return;
+  
   [sender setEnabled:NO];
   [[NXDefaults userDefaults] removeObjectForKey:BrowserViewerColumnWidth];
   [[NSNotificationCenter defaultCenter]
     postNotificationName:BrowserViewerColumnWidthDidChangeNotification
-		  object:self];
+        	  object:self];
 
   [self setupArrows];
 }
