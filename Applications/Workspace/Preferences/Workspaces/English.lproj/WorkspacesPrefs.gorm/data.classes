@@ -2,6 +2,7 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "changeName:",
 	    "selectWorkspace:",
 	    "setShowInDock:"
 	);
@@ -10,7 +11,8 @@
     WorkspacesPrefs = {
 	Actions = (
 	    "setShowInDock:",
-	    "selectWorkspace:"
+	    "selectWorkspace:",
+	    "changeName:"
 	);
 	Outlets = (
 	    showInDockBtn,

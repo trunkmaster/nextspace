@@ -22,6 +22,7 @@
 #import "WorkspacesPrefs.h"
 #import <NXFoundation/NXDefaults.h>
 #import <Workspace+WindowMaker.h>
+#include <workspace.h>
 #import <Controller.h>
 
 @implementation WorkspacesPrefs
@@ -66,6 +67,7 @@
       [wsButtons removeObjectAtIndex:i];
     }
   }
+  [nameField setStringValue:@""];
 
   DESTROY(window);
 }
@@ -200,25 +202,53 @@
 
 - (void)selectWorkspace:(id)sender
 {
+  NSButton *button;
+  NSString *name;
+  
   // NSLog(@"selectWorkspace: sender == %@ (%@) buttons # %lu", [sender className], sender, [wsButtons count]);
-  for (NSButton *button in wsButtons) {
-    // NSLog(@"selectWorkspace: process %@", [button title]);
+  for (int i=0; i < [wmStateWorkspaces count]; i++) {
+    button = [wsButtons objectAtIndex:i];
     [button setState:(sender == button) ? NSOnState : NSOffState];
     if ([sender isEqualTo:button] != NO) {
-      NSLog(@"Clicked WS button: %@", [button title]);
-      [nameField setStringValue:[[wmStateWorkspaces objectAtIndex:[wsButtons indexOfObject:button]] objectForKey:@"Name"]];
+      name = [[wmStateWorkspaces objectAtIndex:i] objectForKey:@"Name"];
+      [nameField setStringValue:name];
       selectedWorkspace = button;
     }
   }
 }
 
+- (void)changeName:(id)sender
+{
+  NSInteger index = [wsButtons indexOfObject:selectedWorkspace];
+  NSString  *name = [nameField stringValue];
+  
+  wWorkspaceRename(wScreenWithNumber(0), [wsButtons indexOfObject:selectedWorkspace],
+                   [name cString]);
+  
+  WWMDockStateSave();
+  [wmStateWorkspaces replaceObjectAtIndex:index withObject:@{@"Name":name}];
+}
+
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  id object = [aNotification object];
+  NSDictionary *wmStateWS;
+  NSString     *wsName;
 
-  NSLog(@"Text changed in %@", [object className]);
-  if (object != nameField)
+  // NSLog(@"Text changed in %@", [object className]);
+  if ([aNotification object] != nameField)
     return;
+
+  wmStateWS = [wmStateWorkspaces
+                objectAtIndex:[wsButtons indexOfObject:selectedWorkspace]];
+  wsName = [nameField stringValue];
+  
+  if ([wsName rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]].location != NSNotFound &&
+      [wsName isEqualTo:[wmStateWS objectForKey:@"Name"]] == NO) {
+    [changeNameBtn setEnabled:YES];
+  }
+  else {
+    [changeNameBtn setEnabled:NO];
+  }
 }
 
 - (void)revert:sender
