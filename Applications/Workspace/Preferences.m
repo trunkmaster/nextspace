@@ -97,6 +97,7 @@ static Preferences * shared = nil;
 
   module = [[sender selectedItem] representedObject];
   [(NSBox *)box setContentView:[module view]];
+  [module revert:self];
 }
 
 @end
