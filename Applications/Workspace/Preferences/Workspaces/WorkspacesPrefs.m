@@ -140,6 +140,7 @@
   
   wWorkspaceRename(wScreenWithNumber(0), [wsReps indexOfObject:selectedWSRep],
                    [name cString]);
+  [changeNameBtn setEnabled:NO];
   
   WWMDockStateSave();
   [wmStateWS replaceObjectAtIndex:index withObject:@{@"Name":name}];
