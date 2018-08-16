@@ -30,15 +30,19 @@
   id box;
 
   id showInDockBtn;
+  id wsBox;
   id ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8, ws9, ws10;
+  id wsNumber;
   id nameField;
   id changeNameBtn;
 
-  NSMutableArray *wsButtons;
-  NSButton       *selectedWorkspace;
-  NSMutableArray *wmStateWorkspaces;
+  NSUInteger     wsCount;
+  NSMutableArray *wsReps;
+  NSButton       *selectedWSRep;
+  NSMutableArray *wmStateWS;
 }
 
+- (void)arrangeWorkspaceReps;
 - (void)revert:sender;
 
 @end

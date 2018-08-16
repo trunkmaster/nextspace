@@ -32,16 +32,15 @@
   NSDebugLLog(@"WorkspacesPrefs", @"WorkspacesPrefs: dealloc");
 
   [box release];
-  [wsButtons release];
-  [wmStateWorkspaces release];
+  [wsReps release];
+  [wmStateWS release];
   
   [super dealloc];
 }
 
 - (void)awakeFromNib
 {
-  NSUInteger wsCount;
-  NSButton   *button;
+  NSButton *rep;
   
   // get the box and destroy the bogus window
   [box retain];
@@ -51,22 +50,25 @@
   [showInDockBtn
     setState:[[NXDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]];
 
-  wsButtons = [[NSMutableArray alloc]
+  wsReps = [[NSMutableArray alloc]
                 initWithObjects:ws1,ws2,ws3,ws4,ws5,ws6,ws7,ws8,ws9,ws10,nil];
 
-  wmStateWorkspaces = [[NSMutableArray alloc]
+  wmStateWS = [[NSMutableArray alloc]
                         initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
-  wsCount = [wmStateWorkspaces count];
+  wsCount = [wmStateWS count];
   for (int i = 9; i >= 0; i--) {
-    button = [wsButtons objectAtIndex:i];
+    rep = [wsReps objectAtIndex:i];
     if (i < wsCount) {
-      [button release];
+      [rep release];
     }
     else {
-      [button removeFromSuperview];
-      [wsButtons removeObjectAtIndex:i];
+      [rep removeFromSuperview];
+      // [wsReps removeObjectAtIndex:i];
     }
   }
+
+  [wsNumber selectItemWithTag:wsCount];
+  
   [nameField setStringValue:@""];
 
   DESTROY(window);
@@ -87,108 +89,22 @@
   return box;
 }
 
-//
-// Table delegate methods
-//
-- (int)numberOfRowsInTableView:(NSTableView *)tv
+// --- Utility
+- (void)arrangeWorkspaceReps
 {
-  return 0;
-}
+  NSRect     repFrame = [[wsReps objectAtIndex:0] frame];
+  NSUInteger repsWidth = (wsCount * repFrame.size.width) + ((wsCount-1) * 6);
+  CGFloat    boxWidth = [wsBox frame].size.width;
+  NSPoint    repPoint = repFrame.origin;
+  NSButton   *rep;
 
-- (id)           tableView:(NSTableView *)tv
- objectValueForTableColumn:(NSTableColumn *)tc
-                       row:(int)row
-{
-  // NSString *appName = WWMWorkspacesAppName(row);
-  
-  // if (tc == [appList tableColumnWithIdentifier:@"autostart"])
-  //   {
-  //     if (WWMIsWorkspacesAppAutolaunch(row) ||
-  //         [appName isEqualToString:@"Workspace.GNUstep"] ||
-  //         [appName isEqualToString:@"Recycler.GNUstep"])
-  //       return [NSImage imageNamed:@"CheckMark"];
-  //     else
-  //       return nil;
-
-  //     if ([appName isEqualToString:@"Workspace.GNUstep"] ||
-  //         [appName isEqualToString:@"Recycler.GNUstep"])
-  //       [[tc dataCellForRow:row] setEnabled:NO];
-  //   }
-  // else
-  //   {
-  //     if ([[appName pathExtension] isEqualToString:@"GNUstep"])
-  //       appName = [appName stringByDeletingPathExtension];
-  //     else
-  //       appName = [appName pathExtension];
-      
-  //     if ([appName isEqualToString:@"Workspace"] ||
-  //         [appName isEqualToString:@"Recycler"])
-  //       {
-  //         [[tc dataCellForRow:row] setEnabled:NO];
-  //       }
-  //     else
-  //       {
-  //         [[tc dataCellForRow:row] setEnabled:YES];
-  //       }
-      
-  //     return appName;
-  //   }
-  return nil;
-}
-
-- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
-{
-  // NSTableView  *tv = [aNotification object];
-  // NSInteger    selRow = [tv selectedRow];
-  // NSString     *appName = WWMWorkspacesAppName(selRow);
-
-  // if ([[appName pathExtension] isEqualToString:@"GNUstep"])
-  //   appName = [appName stringByDeletingPathExtension];
-  // else
-  //   appName = [appName pathExtension];
-  
-  // [nameField setStringValue:appName];
- 
-  // if ([appName isEqualToString:@"Workspace"])
-  //   {
-  //     [autostartBtn setEnabled:NO];
-      
-  //     [iconBtn setImage:[NSApp applicationIconImage]];
-  //     [pathField setStringValue:@""];
-  //     [autostartBtn setState:NSOnState];
-  //     [autostartBtn setState:NSOnState];
-  //   }
-  // else
-  //   {
-  //     [autostartBtn setEnabled:YES];
-      
-  //     [iconBtn setImage:WWMWorkspacesAppImage(selRow)];
-  //     [pathField setStringValue:WWMWorkspacesAppCommand(selRow)];
-  //     [autostartBtn
-  //       setState:WWMIsWorkspacesAppAutolaunch(selRow) ? NSOnState : NSOffState];
-  //   }
-
-  // if ([appPanel isVisible])
-  //   [self appSettingsPanelUpdate];
-}
-
-- (BOOL)tableView:(NSTableView *)tv
-  shouldSelectRow:(NSInteger)row
-{
-  // NSString *value = WWMWorkspacesAppName(row);
-
-  // if (!value || [value isEqualToString:@".NoApplication"])
-  //   return NO;
-
-  return YES;
-}
-
-- (void)appListDoubleClicked:(id)sender
-{
-  // WWMSetWorkspacesAppAutolaunch([appList selectedRow], ![autostartBtn state]);
-  
-  // [autostartBtn setState:![autostartBtn state]];
-  // [appList reloadData];
+  repPoint.x = (boxWidth - repsWidth) / 2;
+  for (int i=0; i < wsCount; i++) {
+    rep = [wsReps objectAtIndex:i];
+    [rep setFrameOrigin:repPoint];
+    repPoint.x += [rep frame].size.width + 6;
+  }
+  [box setNeedsDisplay:YES];
 }
 
 // --- Actions
@@ -204,46 +120,45 @@
 {
   NSButton *button;
   NSString *name;
-  
+
   // NSLog(@"selectWorkspace: sender == %@ (%@) buttons # %lu", [sender className], sender, [wsButtons count]);
-  for (int i=0; i < [wmStateWorkspaces count]; i++) {
-    button = [wsButtons objectAtIndex:i];
+  for (int i=0; i < wsCount; i++) {
+    button = [wsReps objectAtIndex:i];
     [button setState:(sender == button) ? NSOnState : NSOffState];
     if ([sender isEqualTo:button] != NO) {
-      name = [[wmStateWorkspaces objectAtIndex:i] objectForKey:@"Name"];
+      name = [[wmStateWS objectAtIndex:i] objectForKey:@"Name"];
       [nameField setStringValue:name];
-      selectedWorkspace = button;
+      selectedWSRep = button;
     }
   }
 }
 
 - (void)changeName:(id)sender
 {
-  NSInteger index = [wsButtons indexOfObject:selectedWorkspace];
+  NSInteger index = [wsReps indexOfObject:selectedWSRep];
   NSString  *name = [nameField stringValue];
   
-  wWorkspaceRename(wScreenWithNumber(0), [wsButtons indexOfObject:selectedWorkspace],
+  wWorkspaceRename(wScreenWithNumber(0), [wsReps indexOfObject:selectedWSRep],
                    [name cString]);
   
   WWMDockStateSave();
-  [wmStateWorkspaces replaceObjectAtIndex:index withObject:@{@"Name":name}];
+  [wmStateWS replaceObjectAtIndex:index withObject:@{@"Name":name}];
 }
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  NSDictionary *wmStateWS;
+  NSDictionary *wsInfo;
   NSString     *wsName;
 
   // NSLog(@"Text changed in %@", [object className]);
   if ([aNotification object] != nameField)
     return;
 
-  wmStateWS = [wmStateWorkspaces
-                objectAtIndex:[wsButtons indexOfObject:selectedWorkspace]];
+  wsInfo = [wmStateWS objectAtIndex:[wsReps indexOfObject:selectedWSRep]];
   wsName = [nameField stringValue];
   
-  if ([wsName rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]].location != NSNotFound &&
-      [wsName isEqualTo:[wmStateWS objectForKey:@"Name"]] == NO) {
+  if ([wsName rangeOfCharacterFromSet:[NSCharacterSet alphanumericCharacterSet]].location != NSNotFound &&
+      [wsName isEqualTo:[wsInfo objectForKey:@"Name"]] == NO) {
     [changeNameBtn setEnabled:YES];
   }
   else {
@@ -253,14 +168,12 @@
 
 - (void)revert:sender
 {
-  // NSInteger selRow = [appList selectedRow];
+  if (wmStateWS) [wmStateWS release];
   
-  // [appList reloadData];
+  wmStateWS = [[NSMutableArray alloc]
+                initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
 
-  // if (selRow > [appList numberOfRows]-1)
-  //   [appList selectRow:0 byExtendingSelection:NO];
-  // else
-  //   [appList selectRow:selRow byExtendingSelection:NO];
+  [self arrangeWorkspaceReps];  
 }
 
 @end
