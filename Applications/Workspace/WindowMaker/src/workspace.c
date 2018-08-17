@@ -158,7 +158,7 @@ Bool wWorkspaceDelete(WScreen * scr, int workspace)
 	list = wmalloc(sizeof(WWorkspace *) * (scr->workspace_count - 1));
 	j = 0;
 	for (i = 0; i < scr->workspace_count; i++) {
-		if (i != workspace) {
+		if (i != workspace-1) {
 			list[j++] = scr->workspaces[i];
 		} else {
 			if (scr->workspaces[i]->name)
