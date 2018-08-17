@@ -3,9 +3,11 @@
     FirstResponder = {
 	Actions = (
 	    "changeName:",
-	    "setWorkspaceQuantity:",
+	    "setDirectSwitchShortcut:",
 	    "selectWorkspace:",
-	    "setShowInDock:"
+	    "setShowInDock:",
+	    "setSwitchShortcut:",
+	    "setWorkspaceQuantity:"
 	);
 	Super = NSObject;
     };
@@ -14,7 +16,9 @@
 	    "setShowInDock:",
 	    "selectWorkspace:",
 	    "changeName:",
-	    "setWorkspaceQuantity:"
+	    "setWorkspaceQuantity:",
+	    "setDirectSwitchShortcut:",
+	    "setSwitchShortcut:"
 	);
 	Outlets = (
 	    showInDockBtn,
@@ -33,7 +37,9 @@
 	    ws9,
 	    nameField,
 	    wsBox,
-	    wsNumber
+	    wsNumber,
+	    directSwitchShortcut,
+	    switchShortcut
 	);
 	Super = NSObject;
     };
