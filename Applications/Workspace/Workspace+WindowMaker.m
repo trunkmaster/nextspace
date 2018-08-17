@@ -326,6 +326,29 @@ void WWMShutdown(WShutdownMode mode)
   wutil_shutdown();  /* WUtil clean-up */
 }
 
+// --- Defaults
+NSString *WWMDefaultsPath(void)
+{
+  NSString      *userDefPath, *appDefPath;
+  NSFileManager *fm = [NSFileManager defaultManager];
+
+  userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WindowMaker",
+                          GSDefaultsRootForUser(NSUserName())];
+  
+  if (![fm fileExistsAtPath:userDefPath]) {
+    appDefPath = [[NSBundle mainBundle] pathForResource:@"WindowMaker"
+                                                 ofType:nil
+                                            inDirectory:@"WindowMaker"];
+    if (![fm fileExistsAtPath:appDefPath]) {
+      return nil;
+    }
+    
+    [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
+  }
+
+  return userDefPath;
+}
+
 // ----------------------------
 // --- Icon Yard
 // ----------------------------

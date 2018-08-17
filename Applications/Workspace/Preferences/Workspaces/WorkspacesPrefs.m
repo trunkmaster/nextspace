@@ -44,10 +44,7 @@
   [box retain];
   [box removeFromSuperview];
 
-  [showInDockBtn setRefusesFirstResponder:YES];
-  [showInDockBtn
-    setState:[[NXDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]];
-
+  // Names and Numbers
   wsReps = [[NSMutableArray alloc]
                 initWithObjects:ws1,ws2,ws3,ws4,ws5,ws6,ws7,ws8,ws9,ws10,nil];
 
@@ -61,12 +58,45 @@
   }
 
   [wsNumber selectItemWithTag:wsCount];
-  
   [nameField setStringValue:@""];
+
+  // Shortcuts
+  NSDictionary *wmDefaults;
+  NSString     *shortcut;
+  NSArray      *modifiers;
+  wmDefaults = [[NSDictionary alloc] initWithContentsOfFile:WWMDefaultsPath()];
+  shortcut = [wmDefaults objectForKey:@"NextWorkspaceKey"];
+  modifiers = [shortcut componentsSeparatedByString:@"+"];
+  if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod4"]) {
+    [switchShortcut selectItemWithTag:0];
+  }
+  else if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod1"]) {
+    [switchShortcut selectItemWithTag:2];
+  }
+  else {
+    [switchShortcut selectItemWithTag:1];
+  }
+  shortcut = [wmDefaults objectForKey:@"Workspace1Key"];
+  modifiers = [shortcut componentsSeparatedByString:@"+"];
+  if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod4"]) {
+    [directSwitchShortcut selectItemWithTag:0];
+  }
+  else if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod1"]) {
+    [directSwitchShortcut selectItemWithTag:2];
+  }
+  else {
+    [switchShortcut selectItemWithTag:1];
+  }
+  
+  // Show In Dock button
+  [showInDockBtn setRefusesFirstResponder:YES];
+  [showInDockBtn
+    setState:[[NXDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]];
 
   DESTROY(window);
 }
 
+// --- Protocol
 - (NSString *)moduleName
 {
   return _(@"Workspaces");
@@ -79,6 +109,16 @@
     }
 
   return box;
+}
+
+- (void)revert:sender
+{
+  if (wmStateWS) [wmStateWS release];
+  
+  wmStateWS = [[NSMutableArray alloc]
+                initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
+  [self arrangeWorkspaceReps];
+  [[wsReps objectAtIndex:wScreenWithNumber(0)->current_workspace] performClick:self];
 }
 
 // --- Utility
@@ -99,15 +139,7 @@
   [wsBox setNeedsDisplay:YES];
 }
 
-// --- Actions
-
-- (void)setShowInDock:(id)sender
-{
-  [[NXDefaults userDefaults] setBool:[sender state] ? YES : NO
-                              forKey:@"ShowWorkspaceInDock"];
-  [[NSApp delegate] updateWorkspaceBadge];
-}
-
+// --- Names and Numbers
 - (void)selectWorkspace:(id)sender
 {
   NSButton *button;
@@ -190,14 +222,76 @@
   [self arrangeWorkspaceReps];
 }
 
-- (void)revert:sender
+// --- Shortcuts
+- (void)setSwitchShortcut:(id)sender
 {
-  if (wmStateWS) [wmStateWS release];
+  NSString            *wmDefaultsPath = WWMDefaultsPath();
+  NSMutableDictionary *wmDefaults;
+  NSString *prefix;
   
-  wmStateWS = [[NSMutableArray alloc]
-                initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
-  [self arrangeWorkspaceReps];
-  [[wsReps objectAtIndex:wScreenWithNumber(0)->current_workspace] performClick:self];
+  wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
+  if (!wmDefaults) {
+    wmDefaults = [[NSMutableDictionary alloc] init];
+  }
+  
+  switch([[sender selectedItem] tag]) {
+  case 0: // Alt + Control + Arrow Keys
+    prefix = @"Mod4+Control";
+    break;
+  case 1: // Control + Arrow Keys (default)
+    prefix = @"Control";
+    break;
+  case 2: // Cmd + Control + Arrow Keys
+    prefix = @"Mod1+Control";
+    break;
+  }
+  
+  [wmDefaults setObject:[NSString stringWithFormat:@"%@+Right", prefix]
+                 forKey:@"NextWorkspaceKey"];
+  [wmDefaults setObject:[NSString stringWithFormat:@"%@+Left", prefix]
+                 forKey:@"PrevWorkspaceKey"];
+  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+  [wmDefaults release];
+}
+- (void)setDirectSwitchShortcut:(id)sender
+{
+  NSString            *wmDefaultsPath = WWMDefaultsPath();
+  NSMutableDictionary *wmDefaults;
+  NSString *prefix;
+
+  wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
+  if (!wmDefaults) {
+    wmDefaults = [NSMutableDictionary new];
+  }
+  
+  switch([[sender selectedItem] tag]) {
+  case 0: // Alt + Control + Number Keys
+    prefix = @"Mod4+Control";
+    break;
+  case 1: // Control + Number Keys (default)
+    prefix = @"Control";
+    break;
+  case 2: // Cmd + Control + Number Keys
+    prefix = @"Mod1+Control";
+    break;
+  }
+
+  for (int i=1; i <10; i++) {
+    [wmDefaults setObject:[NSString stringWithFormat:@"%@+%i", prefix, i]
+                   forKey:[NSString stringWithFormat:@"Workspace%iKey", i]];
+  }
+  [wmDefaults setObject:[NSString stringWithFormat:@"%@+0", prefix]
+                 forKey:@"Workspace10Key"];
+  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+  [wmDefaults release];
+}
+
+// ---
+- (void)setShowInDock:(id)sender
+{
+  [[NXDefaults userDefaults] setBool:[sender state] ? YES : NO
+                              forKey:@"ShowWorkspaceInDock"];
+  [[NSApp delegate] updateWorkspaceBadge];
 }
 
 @end

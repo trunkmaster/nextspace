@@ -57,6 +57,9 @@ void WWMSetupSignalHandling(void);
 void WWMWipeDesktop(WScreen * scr);
 void WWMShutdown(WShutdownMode mode);
 
+// --- Defaults
+NSString *WWMDefaultsPath(void);
+  
 // --- Icon Yard
 void WWMIconYardShowIcons(WScreen *screen);
 void WWMIconYardHideIcons(WScreen *screen);

@@ -29,12 +29,14 @@
   id window;
   id box;
 
-  id showInDockBtn;
   id wsBox;
   id ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8, ws9, ws10;
   id wsNumber;
   id nameField;
   id changeNameBtn;
+  id switchShortcut;
+  id directSwitchShortcut;
+  id showInDockBtn;
 
   NSUInteger     wsCount;
   NSMutableArray *wsReps;
