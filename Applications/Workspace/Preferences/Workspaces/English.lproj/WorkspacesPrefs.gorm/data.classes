@@ -3,6 +3,7 @@
     FirstResponder = {
 	Actions = (
 	    "changeName:",
+	    "setWorkspaceQuantity:",
 	    "selectWorkspace:",
 	    "setShowInDock:"
 	);
@@ -12,7 +13,8 @@
 	Actions = (
 	    "setShowInDock:",
 	    "selectWorkspace:",
-	    "changeName:"
+	    "changeName:",
+	    "setWorkspaceQuantity:"
 	);
 	Outlets = (
 	    showInDockBtn,

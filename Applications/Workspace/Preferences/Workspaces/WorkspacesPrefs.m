@@ -40,8 +40,6 @@
 
 - (void)awakeFromNib
 {
-  NSButton *rep;
-  
   // get the box and destroy the bogus window
   [box retain];
   [box removeFromSuperview];
@@ -57,13 +55,8 @@
                         initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
   wsCount = [wmStateWS count];
   for (int i = 9; i >= 0; i--) {
-    rep = [wsReps objectAtIndex:i];
-    if (i < wsCount) {
-      [rep release];
-    }
-    else {
-      [rep removeFromSuperview];
-      // [wsReps removeObjectAtIndex:i];
+    if (i >= wsCount) {
+      [[wsReps objectAtIndex:i] removeFromSuperview];
     }
   }
 
@@ -81,8 +74,7 @@
 
 - (NSView *)view
 {
-  if (box == nil)
-    {
+  if (box == nil) {
       [NSBundle loadNibNamed:@"WorkspacesPrefs" owner:self];
     }
 
@@ -93,7 +85,7 @@
 - (void)arrangeWorkspaceReps
 {
   NSRect     repFrame = [[wsReps objectAtIndex:0] frame];
-  NSUInteger repsWidth = (wsCount * repFrame.size.width) + ((wsCount-1) * 6);
+  NSUInteger repsWidth = (wsCount * repFrame.size.width) + ((wsCount-1) * 4);
   CGFloat    boxWidth = [wsBox frame].size.width;
   NSPoint    repPoint = repFrame.origin;
   NSButton   *rep;
@@ -102,9 +94,9 @@
   for (int i=0; i < wsCount; i++) {
     rep = [wsReps objectAtIndex:i];
     [rep setFrameOrigin:repPoint];
-    repPoint.x += [rep frame].size.width + 6;
+    repPoint.x += [rep frame].size.width + 4;
   }
-  [box setNeedsDisplay:YES];
+  [wsBox setNeedsDisplay:YES];
 }
 
 // --- Actions
@@ -167,14 +159,45 @@
   }
 }
 
+- (void)setWorkspaceQuantity:(id)sender
+{
+  NSInteger wsQuantity = [[sender selectedItem] tag];
+  int       diff = wsQuantity - wsCount;
+
+  if (diff < 0) { // remove WS
+    for (int i = wsCount; i > wsQuantity; i--) {
+      wWorkspaceDelete(wScreenWithNumber(0), i);
+      [[wsReps objectAtIndex:i-1] removeFromSuperview];
+    }
+  }
+  else {
+      wWorkspaceMake(wScreenWithNumber(0), diff);
+      for (int i = wsCount; i < wsQuantity; i++) {
+        [wsBox addSubview:[wsReps objectAtIndex:i]];
+      }
+      [wsBox setNeedsDisplay:YES];
+  }
+
+  WWMDockStateSave();
+  [wmStateWS setArray:[WWMDockState() objectForKey:@"Workspaces"]];
+
+  // Select last WS rep button if selected one was removed
+  if ([wsReps indexOfObject:selectedWSRep] >= wsQuantity) {
+    [self selectWorkspace:[wsReps objectAtIndex:wsQuantity-1]];
+  }
+  wsCount = wsQuantity;
+  
+  [self arrangeWorkspaceReps];
+}
+
 - (void)revert:sender
 {
   if (wmStateWS) [wmStateWS release];
   
   wmStateWS = [[NSMutableArray alloc]
                 initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
-
-  [self arrangeWorkspaceReps];  
+  [self arrangeWorkspaceReps];
+  [[wsReps objectAtIndex:wScreenWithNumber(0)->current_workspace] performClick:self];
 }
 
 @end
