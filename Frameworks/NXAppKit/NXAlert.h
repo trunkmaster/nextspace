@@ -51,6 +51,7 @@
      alternateBT:(NSString *)alternateText
          otherBT:(NSString *)otherText;
 - (void)show;
+- (NSInteger)runModal;
 
 @end
 

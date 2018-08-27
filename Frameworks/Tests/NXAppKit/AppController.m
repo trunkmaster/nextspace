@@ -88,14 +88,21 @@
 
 - (void)show3LineAlert:(id)sender
 {
-  NXRunAlertPanel(@"Alert with 3 line message",
-                  @"This is the FIRST line.\n"
-                  "This is the SECOND line.\n"
-                  "This is the THIRD line.\n",
-                  @"Dismiss", nil, nil);
   // NXRunAlertPanel(@"Alert with 3 line message",
-  //                 @"This is the FIRST line This is the SECOND line. This is the THIRD line.",
+  //                 @"This is the FIRST line.\n"
+  //                 "This is the SECOND line.\n"
+  //                 "This is the THIRD line.\n",
   //                 @"Dismiss", nil, nil);
+  NXAlert *alert = [[NXAlert alloc] init];
+  [alert createPanel];
+  [alert setTitle:@"Alert with 3 line message"
+          message:@"This is the FIRST line.\n"
+         "This is the SECOND line.\n"
+         "This is the THIRD line.\n"
+        defaultBT:@"Dismiss"
+      alternateBT:nil
+          otherBT:nil];
+  [alert runModal];
 }
 
 - (void)showSinglelineAlert:(id)sender

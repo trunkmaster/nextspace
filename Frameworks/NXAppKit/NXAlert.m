@@ -47,36 +47,40 @@
                                      styleMask:NSTitledWindowMask
                                        backing:NSBackingStoreRetained
                                          defer:NO];
+  [panel setTitle:@""];
+  [panel setMinSize:NSMakeSize(360, 193)];
+  [panel setMaxSize:NSMakeSize(360, 10000)];
   [panel setReleasedWhenClosed:YES];
-  // [panel setAutoresizingMask:(NSViewMaxXMargin | NSViewMinYMargin
-  //                             | NSViewWidthSizable)];
   
   icon = [[NSImageView alloc] initWithFrame:NSMakeRect(8,106,48,48)];
-  [icon setAutoresizingMask:(NSViewMaxXMargin | NSViewMaxYMargin)];
+  [icon setAutoresizingMask:(NSViewMaxXMargin | NSViewMinYMargin)];
   [icon setImage:[NSApp applicationIconImage]];
   [[panel contentView] addSubview:icon];
   [icon release];
   
   titleField = [[NSTextField alloc] initWithFrame:NSMakeRect(64,119,289,22)];
-  [titleField setAutoresizingMask:(NSViewMaxYMargin | NSViewWidthSizable)];
-  [titleField setStringValue:@"Your attention needed"];
+  [titleField setAutoresizingMask:(NSViewMinYMargin | NSViewWidthSizable)];
+  [titleField setStringValue:@"Alert"];
   [titleField setFont:[NSFont systemFontOfSize:20.0]];
+  [titleField setDrawsBackground:NO];
   [titleField setEditable:NO];
-  [titleField setSelectable:YES];
+  [titleField setSelectable:NO];
   [titleField setBezeled:NO];
   [titleField setBordered:NO];
   [[panel contentView] addSubview:titleField];
   [titleField release];
 
   horizontalLine = [[NSBox alloc] initWithFrame:NSMakeRect(-2,96,364,2)];
+  [horizontalLine setAutoresizingMask:(NSViewMinYMargin | NSViewWidthSizable)];
   [horizontalLine setTitlePosition:NSNoTitle];
   [[panel contentView] addSubview:horizontalLine];
   [horizontalLine release];
   
-  messageField = [[NSTextField alloc] initWithFrame:NSMakeRect(8,56,344,17)];
+  messageField = [[NSTextField alloc] initWithFrame:NSMakeRect(8,43,344,40)];
   [messageField setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
-  [messageField setStringValue:@"Do you really want to do something serious?"];
+  [messageField setStringValue:@"Alert message."];
   [messageField setFont:[NSFont systemFontOfSize:14.0]];
+  [messageField setDrawsBackground:NO];
   [messageField setEditable:NO];
   [messageField setSelectable:YES];
   [messageField setBezeled:NO];
@@ -84,24 +88,24 @@
   [[panel contentView] addSubview:messageField];
   [messageField release];
   
-  defaultButton = [[NSButton alloc] initWithFrame:NSMakeRect(280,8,72,24)];
-  [defaultButton setAutoresizingMask:(NSViewMinXMargin | NSViewMinYMargin)];
-  [defaultButton setTarget:panel];
-  [defaultButton setAction:@selector(performClose:)];
+  defaultButton = [[NSButton alloc] initWithFrame:NSMakeRect(278,8,72,24)];
+  [defaultButton setAutoresizingMask:(NSViewMinXMargin | NSViewMaxYMargin)];
+  [defaultButton setTarget:self];
+  [defaultButton setAction:@selector(buttonPressed:)];
   [[panel contentView] addSubview:defaultButton];
   [defaultButton release];
   
-  alternateButton = [[NSButton alloc] initWithFrame:NSMakeRect(203,8,72,24)];
-  [alternateButton setAutoresizingMask:(NSViewMinXMargin | NSViewMinYMargin)];
-  [alternateButton setTarget:panel];
-  [alternateButton setAction:@selector(performClose:)];
+  alternateButton = [[NSButton alloc] initWithFrame:NSMakeRect(201,8,72,24)];
+  [alternateButton setAutoresizingMask:(NSViewMinXMargin | NSViewMaxYMargin)];
+  [alternateButton setTarget:self];
+  [alternateButton setAction:@selector(buttonPressed:)];
   [[panel contentView] addSubview:alternateButton];
   [alternateButton release];
   
-  otherButton = [[NSButton alloc] initWithFrame:NSMakeRect(126,8,72,24)];
-  [otherButton setAutoresizingMask:(NSViewMinXMargin | NSViewMinYMargin)];
-  [otherButton setTarget:panel];
-  [otherButton setAction:@selector(performClose:)];
+  otherButton = [[NSButton alloc] initWithFrame:NSMakeRect(124,8,72,24)];
+  [otherButton setAutoresizingMask:(NSViewMinXMargin | NSViewMaxYMargin)];
+  [otherButton setTarget:self];
+  [otherButton setAction:@selector(buttonPressed:)];
   [[panel contentView] addSubview:otherButton];
   [otherButton release];
 
@@ -153,16 +157,21 @@
     alternateButton:(NSString *)alternateText
         otherButton:(NSString *)otherText
 {
-  if ([super init] == nil)
-    {
-      return nil;
-    }
+  if ([super init] == nil) {
+    return nil;
+  }
   
-  if (![NSBundle loadNibNamed:@"NXAlertPanel" owner:self])
-    {
-      NSLog(@"Cannot open NXAlertPanel model file!");
+  if (![NSBundle loadNibNamed:@"NXAlertPanel" owner:self]) {
+    NSLog(@"Cannot open NXAlertPanel model file!");
+    // [self performSelectorOnMainThread:@selector(createPanel)
+    //                        withObject:nil
+    //                     waitUntilDone:YES];
+    [self createPanel];
+    if (!panel) {
+      NSLog(@"Cannot create NXAlertPanel!");
       return nil;
     }
+  }
   
   [titleField setStringValue:titleText];
   [icon setImage:[NSApp applicationIconImage]];
@@ -170,25 +179,21 @@
   [defaultButton setTitle:defaultText];
   buttons = [[NSMutableArray alloc] initWithObjects:defaultButton,nil];
 
-  if (alternateText == nil)
-    {
-      [alternateButton removeFromSuperview];
-    }
-  else
-    {
-      [alternateButton setTitle:alternateText];
-      [buttons addObject:alternateButton];
-    }
+  if (alternateText == nil) {
+    [alternateButton removeFromSuperview];
+  }
+  else {
+    [alternateButton setTitle:alternateText];
+    [buttons addObject:alternateButton];
+  }
 
-  if (otherText == nil)
-    {
-      [otherButton removeFromSuperview];
-    }
-  else
-    {
-      [otherButton setTitle:otherText];
-      [buttons addObject:otherButton];
-    }
+  if (otherText == nil) {
+    [otherButton removeFromSuperview];
+  }
+  else {
+    [otherButton setTitle:otherText];
+    [buttons addObject:otherButton];
+  }
 
   [messageField setStringValue:messageText];
 
@@ -201,7 +206,6 @@
 {
   NSDictionary *selectedAttrs;
   NSText       *fieldEditor;
-
   NSRect       panelFrame;
 
   panelFrame = [panel frame];
@@ -429,16 +433,19 @@ NSInteger NXRunAlertPanel(NSString *title,
       return NSAlertDefaultReturn;
     }
   
-  if (defaultButton == nil)
-    {
-      defaultButton = @"OK";
-    }
+  if (defaultButton == nil) {
+    defaultButton = @"OK";
+  }
 
   alrtPanel = [[NXAlert alloc] initWithTitle:title
                                      message:message
                                defaultButton:defaultButton
                              alternateButton:alternateButton
                                  otherButton:otherButton];
+  if (!alrtPanel) {
+    NSLog(@"%@: %@", title, message);
+    return NSAlertDefaultReturn;
+  }
 
   result = [alrtPanel runModal];
   [alrtPanel release];
