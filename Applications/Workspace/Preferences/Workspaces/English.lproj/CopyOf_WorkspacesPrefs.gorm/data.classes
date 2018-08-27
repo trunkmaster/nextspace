@@ -1,45 +1,45 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
-    DockPrefs = {
+    FirstResponder = {
 	Actions = (
-	    "setAppAutostarted:",
-	    "setAppLocked:",
-	    "setIcon:",
-	    "showAppSettingsPanel:",
-	    "setAppIcon:",
-	    "setAppCommand:",
-	    "setAppDndCommand:",
-	    "setAppPasteCommand:"
-	);
-	Outlets = (
-	    appList,
-	    nameField,
-	    pathField,
-	    iconBtn,
-	    autostartBtn,
-	    window,
-	    appLockedBtn,
-	    box,
-	    appCommandField,
-	    appDndCommandField,
-	    appIconView,
-	    appMiddleClickField,
-	    appPanel,
-	    appNameField,
-	    appIconBtn
+	    "changeName:",
+	    "setDirectSwitchShortcut:",
+	    "selectWorkspace:",
+	    "setShowInDock:",
+	    "setSwitchShortcut:",
+	    "setWorkspaceQuantity:"
 	);
 	Super = NSObject;
     };
-    FirstResponder = {
+    WorkspacesPrefs = {
 	Actions = (
-	    "setAppAutostarted:",
-	    "setAppCommand:",
-	    "setAppDndCommand:",
-	    "setAppIcon:",
-	    "setAppLocked:",
-	    "setAppPasteCommand:",
-	    "setIcon:",
-	    "showAppSettingsPanel:"
+	    "setShowInDock:",
+	    "selectWorkspace:",
+	    "changeName:",
+	    "setWorkspaceQuantity:",
+	    "setDirectSwitchShortcut:",
+	    "setSwitchShortcut:"
+	);
+	Outlets = (
+	    showInDockBtn,
+	    window,
+	    box,
+	    changeNameBtn,
+	    ws1,
+	    ws10,
+	    ws2,
+	    ws3,
+	    ws4,
+	    ws5,
+	    ws6,
+	    ws7,
+	    ws8,
+	    ws9,
+	    nameField,
+	    wsBox,
+	    wsNumber,
+	    directSwitchKey,
+	    switchKey
 	);
 	Super = NSObject;
     };

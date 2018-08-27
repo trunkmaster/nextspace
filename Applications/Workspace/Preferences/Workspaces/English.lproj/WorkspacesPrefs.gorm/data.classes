@@ -38,8 +38,8 @@
 	    nameField,
 	    wsBox,
 	    wsNumber,
-	    directSwitchShortcut,
-	    switchShortcut
+	    directSwitchKey,
+	    switchKey
 	);
 	Super = NSObject;
     };

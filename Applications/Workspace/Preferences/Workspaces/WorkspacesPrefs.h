@@ -34,8 +34,8 @@
   id wsNumber;
   id nameField;
   id changeNameBtn;
-  id switchShortcut;
-  id directSwitchShortcut;
+  id switchKey;
+  id directSwitchKey;
   id showInDockBtn;
 
   NSUInteger     wsCount;
