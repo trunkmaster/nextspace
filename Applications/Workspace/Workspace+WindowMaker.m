@@ -1481,4 +1481,28 @@ void XWDockContentDidChange(WDock *dock)
   [[NSNotificationCenter defaultCenter] postNotification:notif];
 }
 
+void XWRunAlertPanel(char *title, char *message,
+                     char *defaultButton, char *alternateButton, char *otherButton)
+{
+  @autoreleasepool {
+    // NXAlert *alert = [NXAlert new];
+    // NSLog(@"createPanel");
+    // [alert createPanel];
+    // NSLog(@"setTitle...");
+    // [alert setTitle:[NSString stringWithCString:title]
+    //         message:[NSString stringWithCString:message]
+    //       defaultBT:[NSString stringWithCString:defaultButton]
+    //     alternateBT:[NSString stringWithCString:alternateButton]
+    //         otherBT:[NSString stringWithCString:otherButton]];
+    // NSLog(@"runModal");
+    // [alert runModal];
+
+    NXRunAlertPanel([NSString stringWithCString:title],
+                    [NSString stringWithCString:message],
+                    [NSString stringWithCString:defaultButton],
+                    [NSString stringWithCString:alternateButton],
+                    [NSString stringWithCString:otherButton]);
+  }
+}
+
 #endif //NEXTSPACE

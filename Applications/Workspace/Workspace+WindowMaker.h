@@ -125,5 +125,9 @@ void XWUpdateScreenInfo(WScreen *scr);
 void XWWorkspaceDidChange(WScreen *scr, int workspace);
 #include <dock.h> // to silence icon.c compile error
 void XWDockContentDidChange(WDock *dock);
+void XWRunAlertPanel(char *title, char *message,
+                     char *defaultButton,
+                     char *alternateButton,
+                     char *otherButton);
 
 #endif //NEXTSPACE

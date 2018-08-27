@@ -3383,7 +3383,16 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
 
 				snprintf(msg, sizeof(msg), _("Could not execute command \"%s\""), cmd);
 
+#ifdef NEXTSPACE
+				dispatch_sync(workspace_q,
+                      ^{
+                        XWRunAlertPanel(_("Error"),
+                                        _("Could not execute command"),
+                                        _("OK"), NULL, NULL);
+                      });
+#else
 				wMessageDialog(dock->screen_ptr, _("Error"), msg, _("OK"), NULL, NULL);
+#endif
 			}
 			break;
 		}
