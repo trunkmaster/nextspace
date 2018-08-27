@@ -59,6 +59,10 @@
 
 #include <WINGs/WUtil.h>
 
+#ifdef NEXTSPACE
+#include <Workspace+WindowMaker.h>
+#endif
+
 #ifndef GLOBAL_DEFAULTS_SUBDIR
 #define GLOBAL_DEFAULTS_SUBDIR "WindowMaker"
 #endif
@@ -292,8 +296,13 @@ static void shellCommandHandler(pid_t pid, unsigned int status, void *client_dat
 		char *buffer;
 
 		buffer = wstrconcat(_("Could not execute command: "), data->command);
-
+#ifdef NEXTSPACE
+		dispatch_sync(workspace_q, ^{
+			XWRunAlertPanel(_("Error"), buffer, _("OK"), NULL, NULL);
+		});
+#else
 		wMessageDialog(data->scr, _("Error"), buffer, _("OK"), NULL, NULL);
+#endif
 		wfree(buffer);
 	} else if (status != 127) {
 		/*
