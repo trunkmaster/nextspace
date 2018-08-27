@@ -60,34 +60,6 @@
   [wsNumber selectItemWithTag:wsCount];
   [nameField setStringValue:@""];
 
-  // Shortcuts
-  NSDictionary *wmDefaults;
-  NSString     *shortcut;
-  NSArray      *modifiers;
-  wmDefaults = [[NSDictionary alloc] initWithContentsOfFile:WWMDefaultsPath()];
-  shortcut = [wmDefaults objectForKey:@"NextWorkspaceKey"];
-  modifiers = [shortcut componentsSeparatedByString:@"+"];
-  if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod4"]) {
-    [switchShortcut selectItemWithTag:0];
-  }
-  else if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod1"]) {
-    [switchShortcut selectItemWithTag:2];
-  }
-  else {
-    [switchShortcut selectItemWithTag:1];
-  }
-  shortcut = [wmDefaults objectForKey:@"Workspace1Key"];
-  modifiers = [shortcut componentsSeparatedByString:@"+"];
-  if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod4"]) {
-    [directSwitchShortcut selectItemWithTag:0];
-  }
-  else if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod1"]) {
-    [directSwitchShortcut selectItemWithTag:2];
-  }
-  else {
-    [switchShortcut selectItemWithTag:1];
-  }
-  
   // Show In Dock button
   [showInDockBtn setRefusesFirstResponder:YES];
   [showInDockBtn
@@ -119,6 +91,43 @@
                 initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
   [self arrangeWorkspaceReps];
   [[wsReps objectAtIndex:wScreenWithNumber(0)->current_workspace] performClick:self];
+
+  NSLog(@"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
+        [switchKey className], [[switchKey selectedItem] tag],
+        [switchKey numberOfItems],
+        [directSwitchKey className], [[directSwitchKey selectedItem] tag],
+        [directSwitchKey numberOfItems]);
+  
+  // Shortcuts
+  NSDictionary *wmDefaults;
+  NSString     *shortcut;
+  NSArray      *modifiers;
+  wmDefaults = [[NSDictionary alloc] initWithContentsOfFile:WWMDefaultsPath()];
+
+  shortcut = [wmDefaults objectForKey:@"NextWorkspaceKey"];
+  modifiers = [shortcut componentsSeparatedByString:@"+"];
+  if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod4"]) {
+    [switchKey selectItemWithTag:0];
+  }
+  else if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod1"]) {
+    [switchKey selectItemAtIndex:2];
+  }
+  else {
+    [switchKey selectItemAtIndex:1];
+  }
+  
+  shortcut = [wmDefaults objectForKey:@"Workspace1Key"];
+  modifiers = [shortcut componentsSeparatedByString:@"+"];
+  if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod4"]) {
+    [directSwitchKey selectItemWithTag:0];
+  }
+  else if ([[modifiers objectAtIndex:0] isEqualToString:@"Mod1"]) {
+    [directSwitchKey selectItemWithTag:2];
+  }
+  else {
+    [directSwitchKey selectItemWithTag:1];
+  }
+  [wmDefaults release];
 }
 
 // --- Utility
@@ -226,15 +235,16 @@
 - (void)setSwitchShortcut:(id)sender
 {
   NSString            *wmDefaultsPath = WWMDefaultsPath();
+  NSInteger           selectedItemTag = [[sender selectedItem] tag];
   NSMutableDictionary *wmDefaults;
   NSString *prefix;
-  
+
   wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
   if (!wmDefaults) {
     wmDefaults = [[NSMutableDictionary alloc] init];
   }
   
-  switch([[sender selectedItem] tag]) {
+  switch(selectedItemTag) {
   case 0: // Alt + Control + Arrow Keys
     prefix = @"Mod4+Control";
     break;
