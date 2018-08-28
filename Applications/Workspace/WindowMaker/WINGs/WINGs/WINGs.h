@@ -303,8 +303,8 @@ enum {
 
 /* alert panel return values */
 enum {
-    WAPRDefault = 0,
-    WAPRAlternate = 1,
+    WAPRDefault = 1,   // NSAlertDefaultReturn = 1
+    WAPRAlternate = 0, // NSAlertAlternateReturn = 0
     WAPROther = -1,
     WAPRError = -2
 };
