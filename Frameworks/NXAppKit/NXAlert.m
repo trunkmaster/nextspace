@@ -42,6 +42,8 @@
 - (void)createPanel
 {
   NSBox *horizontalLine;
+  
+  NSLog(@"NXAlert createPanel thread: %@ (main: %@)", [NSThread currentThread], [NSThread mainThread]);
 
   panel = [[NSPanel alloc] initWithContentRect:NSMakeRect(100,100,360,193)
                                      styleMask:NSTitledWindowMask
@@ -144,11 +146,6 @@
     }
 }
 
-- (void)show
-{
-  [panel makeKeyAndOrderFront:self];
-}
-
 //--- Normal Altert Panel
 
 - (id)initWithTitle:(NSString *)titleText
@@ -163,9 +160,6 @@
   
   if (![NSBundle loadNibNamed:@"NXAlertPanel" owner:self]) {
     NSLog(@"Cannot open NXAlertPanel model file!");
-    // [self performSelectorOnMainThread:@selector(createPanel)
-    //                        withObject:nil
-    //                     waitUntilDone:YES];
     [self createPanel];
     if (!panel) {
       NSLog(@"Cannot create NXAlertPanel!");
@@ -179,7 +173,7 @@
   [defaultButton setTitle:defaultText];
   buttons = [[NSMutableArray alloc] initWithObjects:defaultButton,nil];
 
-  if (alternateText == nil) {
+  if (alternateText == nil || [alternateText isEqualToString:@""]) {
     [alternateButton removeFromSuperview];
   }
   else {
@@ -187,7 +181,7 @@
     [buttons addObject:alternateButton];
   }
 
-  if (otherText == nil) {
+  if (otherText == nil || [otherText isEqualToString:@""]) {
     [otherButton removeFromSuperview];
   }
   else {
@@ -228,6 +222,11 @@
   NSLog(@"NXAlert: -dealloc");
   [buttons release];
   [super dealloc];
+}
+
+- (NSPanel *)panel
+{
+  return panel;
 }
 
 // --- Utility
@@ -382,16 +381,21 @@
 
 // --- Actions
 
-- (NSInteger)runModal
+- (void)show
 {
-  NSInteger result;
   NXScreen *screen = [[NXScreen new] autorelease];
 
   [self sizeToFitScreenSize:[screen sizeInPixels]];
-
   [panel makeFirstResponder:defaultButton];
-
   [panel makeKeyAndOrderFront:self];
+}
+
+- (NSInteger)runModal
+{
+  NSInteger result;
+  
+  [self show];
+  
   result = [NSApp runModalForWindow:panel];
   [panel orderOut:self];
   
@@ -419,7 +423,7 @@ NSInteger NXRunAlertPanel(NSString *title,
 {
   va_list    ap;
   NSString  *message;
-  NXAlert   *alrtPanel;
+  NXAlert   *alert;
   NSInteger result;
 
   va_start(ap, otherButton);
@@ -429,7 +433,7 @@ NSInteger NXRunAlertPanel(NSString *title,
   if (NSApp == nil)
     {
       // No NSApp ... not running in a gui application so just log.
-      NSLog(@"%@", message);
+      NSLog(@"%@: %@", title, message);
       return NSAlertDefaultReturn;
     }
   
@@ -437,18 +441,18 @@ NSInteger NXRunAlertPanel(NSString *title,
     defaultButton = @"OK";
   }
 
-  alrtPanel = [[NXAlert alloc] initWithTitle:title
-                                     message:message
-                               defaultButton:defaultButton
-                             alternateButton:alternateButton
-                                 otherButton:otherButton];
-  if (!alrtPanel) {
+  alert = [[NXAlert alloc] initWithTitle:title
+                                 message:message
+                           defaultButton:defaultButton
+                         alternateButton:alternateButton
+                             otherButton:otherButton];
+  if (!alert) {
     NSLog(@"%@: %@", title, message);
     return NSAlertDefaultReturn;
   }
 
-  result = [alrtPanel runModal];
-  [alrtPanel release];
+  result = [alert runModal];
+  [alert release];
   
   return result;
 }

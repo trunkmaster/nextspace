@@ -42,7 +42,11 @@
   NSUInteger  maxButtonWidth;
 }
 
-- (void)buttonPressed:(id)sender;
+- (id)initWithTitle:(NSString *)titleText
+            message:(NSString *)messageText
+      defaultButton:(NSString *)defaultText
+    alternateButton:(NSString *)alternateText
+        otherButton:(NSString *)otherText;
 
 - (void)createPanel;
 - (void)setTitle:(NSString *)titleText
@@ -50,9 +54,12 @@
        defaultBT:(NSString *)defaultText
      alternateBT:(NSString *)alternateText
          otherBT:(NSString *)otherText;
+
+- (NSPanel *)panel;
 - (void)show;
 - (NSInteger)runModal;
 
+- (void)buttonPressed:(id)sender;
 @end
 
 extern void NXRunExceptionPanel(NSString *title,
