@@ -247,31 +247,45 @@ static void killCallback(WMenu *menu, WMenuEntry *entry)
 			fPtr = NULL;
 	}
 
-	if (wPreferences.dont_confirm_kill
+#ifdef NEXTSPACE
+  dispatch_async(workspace_q, ^{
+      if (wPreferences.dont_confirm_kill
+          || XWRunAlertPanel(_("Kill Application"),
+                             buffer, _("Keep Running"), _("Kill"), NULL) == WAPRAlternate) {
+#else
+    if (wPreferences.dont_confirm_kill
 	    || wMessageDialog(menu->frame->screen_ptr, _("Kill Application"),
 			      buffer, _("Yes"), _("No"), NULL) == WAPRDefault) {
-		if (fPtr != NULL) {
-			WWindow *wwin, *twin;
+#endif
+        if (fPtr != NULL) {
+          WWindow *wwin, *twin;
 
-			wwin = scr->focused_window;
-			while (wwin) {
-				twin = wwin->prev;
-				if (wwin->fake_group == fPtr)
-					wClientKill(wwin);
+          wwin = scr->focused_window;
+          while (wwin) {
+            twin = wwin->prev;
+            if (wwin->fake_group == fPtr)
+              wClientKill(wwin);
 
-				wwin = twin;
-			}
-		} else if (icon->icon && icon->icon->owner) {
-			wClientKill(icon->icon->owner);
-		}
-	}
-
+            wwin = twin;
+          }
+        } else if (icon->icon && icon->icon->owner) {
+          wClientKill(icon->icon->owner);
+        }
+      }
+#ifdef NEXTSPACE
+			wfree(buffer);
+			wtokenfree(argv, argc);
+			icon->editing = 0;
+			WCHANGE_STATE(WSTATE_NORMAL);
+    });
+#else    
 	wfree(buffer);
 	wtokenfree(argv, argc);
 
 	icon->editing = 0;
 
 	WCHANGE_STATE(WSTATE_NORMAL);
+#endif
 }
 
 /* TODO: replace this function with a member of the dock struct */
@@ -774,7 +788,7 @@ static void launchCallback(WMenu *menu, WMenuEntry *entry)
 
 	launchDockedApplication(btn, False);
 }
-
+#ifndef NEXTSPACE
 static void settingsCallback(WMenu *menu, WMenuEntry *entry)
 {
 	WAppIcon *btn = (WAppIcon *) entry->clientdata;
@@ -786,7 +800,7 @@ static void settingsCallback(WMenu *menu, WMenuEntry *entry)
 		return;
 	ShowDockAppSettingsPanel(btn);
 }
-
+#endif
 static void hideCallback(WMenu *menu, WMenuEntry *entry)
 {
 	WApplication *wapp;
@@ -1082,6 +1096,7 @@ static WMenu *makeClipOptionsMenu(WScreen *scr)
 }
 
 
+#ifndef NEXTSPACE
 static void setDockPositionNormalCallback(WMenu *menu, WMenuEntry *entry)
 {
 	WDock *dock = (WDock *) entry->clientdata;
@@ -1108,7 +1123,6 @@ static void setDockPositionNormalCallback(WMenu *menu, WMenuEntry *entry)
 	}
 	entry->flags.indicator_on = 1;
 }
-
 static void setDockPositionAutoRaiseLowerCallback(WMenu *menu, WMenuEntry *entry)
 {
 	WDock *dock = (WDock *) entry->clientdata;
@@ -1206,7 +1220,7 @@ static WMenu *makeDockPositionMenu(WScreen *scr)
 
 	return menu;
 }
-
+#endif // ndef NEXTSPACE
 
 static WMenu *dockMenuCreate(WScreen *scr, int type)
 {
@@ -3384,12 +3398,11 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
 				snprintf(msg, sizeof(msg), _("Could not execute command \"%s\""), cmd);
 
 #ifdef NEXTSPACE
-				dispatch_sync(workspace_q,
-                      ^{
-                        XWRunAlertPanel(_("Error"),
-                                        _("Could not execute command"),
-                                        _("OK"), NULL, NULL);
-                      });
+				char *message = wstrdup(msg);
+				dispatch_async(workspace_q, ^{
+            XWRunAlertPanel(_("Workspace Dock"), message, _("Got It"), NULL, NULL);
+            wfree(message);
+				});
 #else
 				wMessageDialog(dock->screen_ptr, _("Error"), msg, _("OK"), NULL, NULL);
 #endif

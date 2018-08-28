@@ -430,6 +430,12 @@ static NSString *WMComputerShouldGoDownNotification =
              object:systemPower];
       
       recycler = [[Recycler alloc] initWithDock:dock];
+      
+      [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(showWMAlert:)
+               name:WMShowAlertPanel
+             object:nil];
       WWMDockAutoLaunch(dock);
     }
   
@@ -1085,6 +1091,42 @@ static NSString *WMComputerShouldGoDownNotification =
         }
     }
   [screen release];
+}
+
+//============================================================================
+// WindowMaker events
+//============================================================================
+// - (void)showWMAlert:(NSNotification *)aNotif
+- (void)showWMAlert:(NSMutableDictionary *)alertInfo
+{
+  NSInteger result;
+  
+  NSLog(@"WMShowAlertPanel thread: %@ (main: %@) mode: %@", [NSThread currentThread],
+        [NSThread mainThread], [[NSRunLoop currentRunLoop] currentMode]);
+  
+  result = NXRunAlertPanel([alertInfo objectForKey:@"Title"],
+                           [alertInfo objectForKey:@"Message"],
+                           [alertInfo objectForKey:@"DefaultButton"],
+                           [alertInfo objectForKey:@"AlternateButton"],
+                           [alertInfo objectForKey:@"OtherButton"]);
+  [alertInfo setObject:[NSNumber numberWithInt:result] forKey:@"Result"];
+}
+
+- (void)getWMAlert:(NSMutableDictionary *)alertInfo
+{
+  NXAlert *alert;
+  
+  NSLog(@"WMShowAlertPanel thread: %@ (main: %@) mode: %@", [NSThread currentThread],
+        [NSThread mainThread], [[NSRunLoop currentRunLoop] currentMode]);
+
+  alert = [[NXAlert alloc] initWithTitle:[alertInfo objectForKey:@"Title"]
+                                 message:[alertInfo objectForKey:@"Message"]
+                           defaultButton:[alertInfo objectForKey:@"DefaultButton"]
+                         alternateButton:[alertInfo objectForKey:@"AlternateButton"]
+                             otherButton:[alertInfo objectForKey:@"OtherButton"]];
+  [alert show];
+  [alertInfo setObject:alert forKey:@"AlertPanel"];
+  [alert release];
 }
 
 @end

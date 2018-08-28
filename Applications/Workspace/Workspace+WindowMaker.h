@@ -37,6 +37,8 @@ dispatch_queue_t wmaker_q;
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
 
+extern NSString *WMShowAlertPanel;
+
 BOOL xIsWindowServerReady(void);
 BOOL xIsWindowManagerAlreadyRunning(void);
 
@@ -125,7 +127,7 @@ void XWUpdateScreenInfo(WScreen *scr);
 void XWWorkspaceDidChange(WScreen *scr, int workspace);
 #include <dock.h> // to silence icon.c compile error
 void XWDockContentDidChange(WDock *dock);
-void XWRunAlertPanel(char *title, char *message,
+int XWRunAlertPanel(char *title, char *message,
                      char *defaultButton,
                      char *alternateButton,
                      char *otherButton);

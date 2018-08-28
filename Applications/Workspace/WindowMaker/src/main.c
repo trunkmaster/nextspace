@@ -297,9 +297,7 @@ static void shellCommandHandler(pid_t pid, unsigned int status, void *client_dat
 
 		buffer = wstrconcat(_("Could not execute command: "), data->command);
 #ifdef NEXTSPACE
-		dispatch_sync(workspace_q, ^{
-			XWRunAlertPanel(_("Error"), buffer, _("OK"), NULL, NULL);
-		});
+		XWRunAlertPanel(_("Run Error"), buffer, _("Got It"), NULL, NULL);
 #else
 		wMessageDialog(data->scr, _("Error"), buffer, _("OK"), NULL, NULL);
 #endif

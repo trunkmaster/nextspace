@@ -42,6 +42,8 @@ int main(int argc, const char **argv)
       //--- WindowMaker queue -----------------------------------------------
       dispatch_sync(wmaker_q,
                     ^{
+                      NSLog(@"WindowMaker thread: %@ (main: %@)",
+                            [NSThread currentThread], [NSThread mainThread]);
                       WWMInitializeWindowMaker(argc, (char **)argv);
                     });
       fprintf(stderr, "[Workspace] === WindowMaker initialized! ===\n");
@@ -55,6 +57,8 @@ int main(int argc, const char **argv)
                     ^{
                       @autoreleasepool
                         {
+                          NSLog(@"Workspace thread: %@ (main: %@)",
+                                [NSThread currentThread], [NSThread mainThread]);
                           NSApplicationMain(argc, argv);
                           NSLog(@"Workspace applicaton terminated.");
                         }

@@ -23,6 +23,8 @@
 #import "Controller.h"
 #import "Operations/ProcessManager.h"
 
+NSString *WMShowAlertPanel = @"WMShowAlertPanelNotification";
+
 // WindowMaker functions and vars
 extern Display *dpy;
 extern char *GetCommandForWindow(Window win);
@@ -1481,28 +1483,53 @@ void XWDockContentDidChange(WDock *dock)
   [[NSNotificationCenter defaultCenter] postNotification:notif];
 }
 
-void XWRunAlertPanel(char *title, char *message,
+// Return values:
+// WMAPRDefault,  NSAlertDefaultReturn = 1;
+// WAPRAlternate, NSAlertAlternateReturn = 0;
+// WAPROther,     NSAlertOtherReturn = -1;
+// WAPRError,     NSAlertErrorReturn  = -2
+int XWRunAlertPanel(char *title, char *message,
                      char *defaultButton, char *alternateButton, char *otherButton)
 {
-  @autoreleasepool {
-    // NXAlert *alert = [NXAlert new];
-    // NSLog(@"createPanel");
-    // [alert createPanel];
-    // NSLog(@"setTitle...");
-    // [alert setTitle:[NSString stringWithCString:title]
-    //         message:[NSString stringWithCString:message]
-    //       defaultBT:[NSString stringWithCString:defaultButton]
-    //     alternateBT:[NSString stringWithCString:alternateButton]
-    //         otherBT:[NSString stringWithCString:otherButton]];
-    // NSLog(@"runModal");
-    // [alert runModal];
+  NSDictionary        *info;
+  NSMutableDictionary *alertInfo;
+  int result;
 
-    NXRunAlertPanel([NSString stringWithCString:title],
-                    [NSString stringWithCString:message],
-                    [NSString stringWithCString:defaultButton],
-                    [NSString stringWithCString:alternateButton],
-                    [NSString stringWithCString:otherButton]);
-  }
+  info = @{@"Title":[NSString stringWithCString:title],
+           @"Message":[NSString stringWithCString:message],
+           @"DefaultButton":[NSString stringWithCString:defaultButton],
+           @"AlternateButton":[NSString stringWithCString:alternateButton],
+           @"OtherButton":[NSString stringWithCString:otherButton]};
+  alertInfo = [info mutableCopy];
+  [info release];
+  
+  [[NSApp delegate] performSelectorOnMainThread:@selector(showWMAlert:)
+                                     withObject:alertInfo
+                                  waitUntilDone:YES
+                                          modes:@[NSConnectionReplyMode]];
+  // while ([alertInfo objectForKey:@"Result"] == nil) {
+  //   [[NSRunLoop mainRunLoop] runMode:NSConnectionReplyMode beforeDate:nil];
+  // }
+  NSLog(@"XWRunAlertPanel result: %@", [alertInfo objectForKey:@"Result"]);
+  result = [[alertInfo objectForKey:@"Result"] integerValue];
+  
+  // [[NSApp delegate]
+  //   performSelectorOnMainThread:@selector(getWMAlert:)
+  //                    withObject:alertInfo
+  //                 waitUntilDone:YES
+  //                         modes:@[NSDefaultRunLoopMode, NSModalPanelRunLoopMode]];
+  // if ([alertInfo objectForKey:@"AlertPanel"] == nil) {
+  //   NSLog(@"No alert panel was created.");
+  //   [alertInfo release];
+  //   return NSAlertErrorReturn;
+  // }
+  // result = [NSApp runModalForWindow:[[alertInfo objectForKey:@"AlertPanel"] panel]];
+  // [[[alertInfo objectForKey:@"AlertPanel"] panel] orderOut:nil];
+  // result = [[alertInfo objectForKey:@"AlertPanel"] runModal];
+  
+  [alertInfo release];
+  
+  return result;
 }
 
 #endif //NEXTSPACE
