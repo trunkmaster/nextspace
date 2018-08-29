@@ -272,12 +272,30 @@
   
   [self appSettingsPanelUpdate];
   
-  [appPanel makeKeyAndOrderFront:[iconBtn window]];
+  // [appPanel makeKeyAndOrderFront:[iconBtn window]];
+  [appPanel orderFront:[iconBtn window]];
   [appPanel makeFirstResponder:appCommandField];
 }
 
 - (void)setAppIcon:(id)sender
 {
+  NSInteger      selRow = [appList selectedRow];
+  NSInteger      result;
+  NSOpenPanel    *openPanel;
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+
+  openPanel = [NSOpenPanel openPanel];
+  [openPanel setAllowsMultipleSelection:NO];
+  
+  result = [openPanel runModalForDirectory:[defs objectForKey:@"OpenDir"]
+                                      file:nil
+                                     types:[NSImage imageFileTypes]];
+  if (result == NSOKButton) {
+    [defs setObject:[openPanel directory] forKey:@"OpenDir"];
+    WWMSetDockAppImage([[openPanel filenames] lastObject], selRow, YES);
+    [appIconView setImage:WWMDockAppImage(selRow)];
+    [iconBtn setImage:WWMDockAppImage(selRow)];
+  }  
 }
 
 - (void)setAppLocked:(id)sender
@@ -301,6 +319,14 @@
 {
   WWMSetDockAppDndCommand([appList selectedRow],
                           [[sender stringValue] cString]);
+}
+
+// NSWindow delegate method
+- (void)windowWillClose:(NSNotification *)notif
+{
+  if ([notif object] != appPanel)
+    return;
+  [[box window] makeKeyAndOrderFront:self];
 }
 
 @end
