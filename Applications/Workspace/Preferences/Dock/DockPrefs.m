@@ -23,6 +23,21 @@
 #import <NXFoundation/NXDefaults.h>
 #import <Workspace+WindowMaker.h>
 
+@implementation DockPrefsAppicon
+- (void)setCursor:(NSCursor *)c
+{
+  _cursor = c;
+}
+// NSView override
+- (void)resetCursorRects
+{
+  if (!_cursor)
+    _cursor = [NSCursor arrowCursor];
+
+  [[self superview] addCursorRect:[self frame] cursor:_cursor];
+}
+@end
+
 @implementation DockPrefs
 
 - (void)dealloc
@@ -45,6 +60,7 @@
   [autostartBtn setRefusesFirstResponder:YES];
   [iconBtn setRefusesFirstResponder:YES];
   [iconBtn setButtonType:NSMomentaryLightButton];
+  [iconBtn setCursor:[NSCursor pointingHandCursor]];
 
   [appList setHeaderView:nil];
   [appList setDelegate:self];
@@ -266,8 +282,7 @@
 
 - (void)setAppLocked:(id)sender
 {
-  WWMSetDockAppLocked([appList selectedRow],
-                      [sender state]);
+  WWMSetDockAppLocked([appList selectedRow], [sender state]);
 }
 
 - (void)setAppCommand:(id)sender

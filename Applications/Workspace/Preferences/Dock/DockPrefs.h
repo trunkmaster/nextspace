@@ -23,12 +23,19 @@
 
 #import <Protocols/PrefsModule.h>
 
+@interface DockPrefsAppicon : NSButton
+{
+  NSCursor *_cursor;
+}
+- (void)setCursor:(NSCursor *)c;
+@end
+
 @interface DockPrefs : NSObject <PrefsModule>
 {
   // Dock
   id window;
   id box;
-  id iconBtn;
+  DockPrefsAppicon *iconBtn;
   id nameField;
   id appList;
   id pathField;

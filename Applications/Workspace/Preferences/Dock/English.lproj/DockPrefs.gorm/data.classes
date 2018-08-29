@@ -4,7 +4,6 @@
 	Actions = (
 	    "setAppAutostarted:",
 	    "setAppLocked:",
-	    "setIcon:",
 	    "showAppSettingsPanel:",
 	    "setAppIcon:",
 	    "setAppCommand:",
@@ -30,6 +29,13 @@
 	);
 	Super = NSObject;
     };
+    DockPrefsAppicon = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSButton;
+    };
     FirstResponder = {
 	Actions = (
 	    "setAppAutostarted:",
@@ -38,7 +44,6 @@
 	    "setAppIcon:",
 	    "setAppLocked:",
 	    "setAppPasteCommand:",
-	    "setIcon:",
 	    "showAppSettingsPanel:"
 	);
 	Super = NSObject;
