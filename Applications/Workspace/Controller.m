@@ -176,20 +176,21 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (NSString *) _wWindowState:(NSWindow *)window
 {
+  Window  xWindow;
   WWindow *wWin;
-  
-  wWin = wWindowFor([[GSCurrentServer() serverDevice]
-                      windowDevice:[window windowNumber]]);
+
+  xWindow = (Window)[GSCurrentServer() windowDevice:[window windowNumber]];
+  wWin = wWindowFor(xWindow);
   if (!wWin)
     return nil;
     
-  if (wWin->flags->miniaturized) {
+  if (wWin->flags.miniaturized) {
     return @"Miniaturized";
   }
-  else if (wWin->flags->shaded) {
+  else if (wWin->flags.shaded) {
     return @"Shaded";
   }
-  else if (wWin->flags->hidden) {
+  else if (wWin->flags.hidden) {
     return @"Hidden";
   }
   else {
@@ -205,7 +206,7 @@ static NSString *WMComputerShouldGoDownNotification =
   
   // 1. Console
   if (console) {
-    winState = [self wWindowState:[console window]];
+    winState = [self _wWindowState:[console window]];
     if (winState) {
       winInfo = @{@"Type":@"Console", @"State":winState};
       [windows addObject:winInfo];
@@ -213,16 +214,14 @@ static NSString *WMComputerShouldGoDownNotification =
   }
   // 2. Viewers
   for (FileViewer *fv in fileViewers) {
-    if ([fv isRootViewer] == NO) {
-      winState = [self wWindowState:[console window]];
-      if (winState) {
-        winInfo = @{@"Type":@"Viewer",
-                    @"State":winState,
-                    @"RootPath":[fv rootPath],
-                    @"Path":[fv displayedPath],
-                    @"Selection":[fv selection]};
-        [windows addObject:winInfo];
-      }
+    winState = [self _wWindowState:[fv window]];
+    if (winState) {
+      winInfo = @{@"Type":([fv isRootViewer] == NO) ? @"Viewer" : @"RootViewer",
+                  @"State":winState,
+                  @"RootPath":[fv rootPath],
+                  @"Path":[fv displayedPath],
+                  @"Selection":[fv selection]};
+      [windows addObject:winInfo];
     }
   }
 
