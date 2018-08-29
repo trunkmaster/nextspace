@@ -521,7 +521,7 @@ static void unhideHereCallback(WMenu * menu, WMenuEntry * entry)
 
 	wUnhideApplication(wapp, False, True);
 }
-
+#ifndef NEXTSPACE
 static void setIconCallback(WMenu *menu, WMenuEntry *entry)
 {
 	WAppIcon *icon = ((WApplication *) entry->clientdata)->app_icon;
@@ -561,7 +561,7 @@ static void setIconCallback(WMenu *menu, WMenuEntry *entry)
 	icon->editing = 0;
 	wrelease(icon);
 }
-
+#endif
 static void killCallback(WMenu * menu, WMenuEntry * entry)
 {
 	WApplication *wapp = (WApplication *) entry->clientdata;
@@ -585,9 +585,16 @@ static void killCallback(WMenu * menu, WMenuEntry * entry)
 	fPtr = wapp->main_window_desc->fake_group;
 
 	wretain(wapp->main_window_desc);
+#ifdef NEXTSPACE
+  dispatch_async(workspace_q, ^{
+      if (wPreferences.dont_confirm_kill
+          || XWRunAlertPanel(_("Kill Application"),
+                             buffer, _("Keep Running"), _("Kill"), NULL) == WAPRAlternate) {
+#else
 	if (wPreferences.dont_confirm_kill
 	    || wMessageDialog(menu->frame->screen_ptr, _("Kill Application"),
 			      buffer, _("Yes"), _("No"), NULL) == WAPRDefault) {
+#endif
 		if (fPtr != NULL) {
 			WWindow *wwin, *twin;
 
@@ -602,9 +609,16 @@ static void killCallback(WMenu * menu, WMenuEntry * entry)
 			wClientKill(wapp->main_window_desc);
 		}
 	}
+#ifdef NEXTSPACE
 	wrelease(wapp->main_window_desc);
 	wfree(buffer);
 	WCHANGE_STATE(WSTATE_NORMAL);
+	});
+#else
+	wrelease(wapp->main_window_desc);
+	wfree(buffer);
+	WCHANGE_STATE(WSTATE_NORMAL);
+#endif
 }
 
 static WMenu *createApplicationMenu(WScreen *scr)
