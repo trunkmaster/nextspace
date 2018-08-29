@@ -401,19 +401,12 @@ static NSString *WMComputerShouldGoDownNotification =
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
   //NSUpdateDynamicServices();
-  //[[NSWorkspace sharedWorkspace] findApplications];
+  // [[NSWorkspace sharedWorkspace] findApplications];
 
   procManager = [ProcessManager shared];
 
   // ProcessManager created - Workspace is ready to register applications.
   // Show Dock and start applications in it
-  if (useInternalWindowManager)
-    {
-      // WWMDockShowIcons(dock);
-      // wDockDoAutoLaunch(wScreenWithNumber(0)->dock, 0);
-      // WWMDockAutoLaunch(dock);
-    }
-  
   if (useInternalWindowManager)
     {
       WDock *dock = wScreenWithNumber(0)->dock;
@@ -431,11 +424,6 @@ static NSString *WMComputerShouldGoDownNotification =
       
       recycler = [[Recycler alloc] initWithDock:dock];
       
-      [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(showWMAlert:)
-               name:WMShowAlertPanel
-             object:nil];
       WWMDockAutoLaunch(dock);
     }
   
@@ -1096,37 +1084,19 @@ static NSString *WMComputerShouldGoDownNotification =
 //============================================================================
 // WindowMaker events
 //============================================================================
-// - (void)showWMAlert:(NSNotification *)aNotif
 - (void)showWMAlert:(NSMutableDictionary *)alertInfo
 {
   NSInteger result;
   
-  NSLog(@"WMShowAlertPanel thread: %@ (main: %@) mode: %@", [NSThread currentThread],
-        [NSThread mainThread], [[NSRunLoop currentRunLoop] currentMode]);
-  
+  // NSLog(@"WMShowAlertPanel thread: %@ (main: %@) mode: %@", [NSThread currentThread],
+  //       [NSThread mainThread], [[NSRunLoop currentRunLoop] currentMode]);
+
   result = NXRunAlertPanel([alertInfo objectForKey:@"Title"],
                            [alertInfo objectForKey:@"Message"],
                            [alertInfo objectForKey:@"DefaultButton"],
                            [alertInfo objectForKey:@"AlternateButton"],
                            [alertInfo objectForKey:@"OtherButton"]);
   [alertInfo setObject:[NSNumber numberWithInt:result] forKey:@"Result"];
-}
-
-- (void)getWMAlert:(NSMutableDictionary *)alertInfo
-{
-  NXAlert *alert;
-  
-  NSLog(@"WMShowAlertPanel thread: %@ (main: %@) mode: %@", [NSThread currentThread],
-        [NSThread mainThread], [[NSRunLoop currentRunLoop] currentMode]);
-
-  alert = [[NXAlert alloc] initWithTitle:[alertInfo objectForKey:@"Title"]
-                                 message:[alertInfo objectForKey:@"Message"]
-                           defaultButton:[alertInfo objectForKey:@"DefaultButton"]
-                         alternateButton:[alertInfo objectForKey:@"AlternateButton"]
-                             otherButton:[alertInfo objectForKey:@"OtherButton"]];
-  [alert show];
-  [alertInfo setObject:alert forKey:@"AlertPanel"];
-  [alert release];
 }
 
 @end

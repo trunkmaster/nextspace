@@ -460,7 +460,6 @@ static void omnipresentCallback(WMenu *menu, WMenuEntry *entry)
 			wIconSelect(aicon->icon);
 	}
 	WMFreeArray(selectedIcons);
-
 	if (failed > 1) {
 		wMessageDialog(dock->screen_ptr, _("Warning"),
 			       _("Some icons cannot be made omnipresent. "

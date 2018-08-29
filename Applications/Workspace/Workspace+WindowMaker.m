@@ -1505,28 +1505,8 @@ int XWRunAlertPanel(char *title, char *message,
   
   [[NSApp delegate] performSelectorOnMainThread:@selector(showWMAlert:)
                                      withObject:alertInfo
-                                  waitUntilDone:YES
-                                          modes:@[NSConnectionReplyMode]];
-  // while ([alertInfo objectForKey:@"Result"] == nil) {
-  //   [[NSRunLoop mainRunLoop] runMode:NSConnectionReplyMode beforeDate:nil];
-  // }
-  NSLog(@"XWRunAlertPanel result: %@", [alertInfo objectForKey:@"Result"]);
+                                  waitUntilDone:YES];
   result = [[alertInfo objectForKey:@"Result"] integerValue];
-  
-  // [[NSApp delegate]
-  //   performSelectorOnMainThread:@selector(getWMAlert:)
-  //                    withObject:alertInfo
-  //                 waitUntilDone:YES
-  //                         modes:@[NSDefaultRunLoopMode, NSModalPanelRunLoopMode]];
-  // if ([alertInfo objectForKey:@"AlertPanel"] == nil) {
-  //   NSLog(@"No alert panel was created.");
-  //   [alertInfo release];
-  //   return NSAlertErrorReturn;
-  // }
-  // result = [NSApp runModalForWindow:[[alertInfo objectForKey:@"AlertPanel"] panel]];
-  // [[[alertInfo objectForKey:@"AlertPanel"] panel] orderOut:nil];
-  // result = [[alertInfo objectForKey:@"AlertPanel"] runModal];
-  
   [alertInfo release];
   
   return result;
