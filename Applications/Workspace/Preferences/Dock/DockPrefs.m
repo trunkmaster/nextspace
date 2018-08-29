@@ -324,8 +324,8 @@
 // NSWindow delegate method
 - (void)windowWillClose:(NSNotification *)notif
 {
-  if ([notif object] != appPanel)
-    return;
+  // if ([notif object] != appPanel)
+  //   return;
   [[box window] makeKeyAndOrderFront:self];
 }
 
