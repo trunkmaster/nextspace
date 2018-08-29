@@ -174,6 +174,62 @@ static NSString *WMComputerShouldGoDownNotification =
                                        STRINGIFY(GNUSTEP_GUI_VERSION)]];
 }
 
+- (NSString *) _wWindowState:(NSWindow *)window
+{
+  WWindow *wWin;
+  
+  wWin = wWindowFor([[GSCurrentServer() serverDevice]
+                      windowDevice:[window windowNumber]]);
+  if (!wWin)
+    return nil;
+    
+  if (wWin->flags->miniaturized) {
+    return @"Miniaturized";
+  }
+  else if (wWin->flags->shaded) {
+    return @"Shaded";
+  }
+  else if (wWin->flags->hidden) {
+    return @"Hidden";
+  }
+  else {
+    return @"Normal";
+  }
+}
+
+- (void)_saveWindowsState
+{
+  NSMutableArray *windows = [NSMutableArray new];
+  NSDictionary   *winInfo;
+  NSString       *winState;
+  
+  // 1. Console
+  if (console) {
+    winState = [self wWindowState:[console window]];
+    if (winState) {
+      winInfo = @{@"Type":@"Console", @"State":winState};
+      [windows addObject:winInfo];
+    }
+  }
+  // 2. Viewers
+  for (FileViewer *fv in fileViewers) {
+    if ([fv isRootViewer] == NO) {
+      winState = [self wWindowState:[console window]];
+      if (winState) {
+        winInfo = @{@"Type":@"Viewer",
+                    @"State":winState,
+                    @"RootPath":[fv rootPath],
+                    @"Path":[fv displayedPath],
+                    @"Selection":[fv selection]};
+        [windows addObject:winInfo];
+      }
+    }
+  }
+
+  [[NXDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
+
+}
+
 - (void)_closeAllFileViewers
 {
   NSArray      *_fvs = [fileViewers copy];
@@ -223,6 +279,8 @@ static NSString *WMComputerShouldGoDownNotification =
   NXDefaults          *xud = [NXDefaults userDefaults];
   NSMutableArray      *panels = [NSMutableArray new];
   // NSMutableDictionary *viewers = [NSMutableDictionary new];
+
+  [self _saveWindowsState];
   
   // 1. Close panels: Processes, Inspector, Console, Finder.
   //    For Processes and Inspector save opened section (mode).
