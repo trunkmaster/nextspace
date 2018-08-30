@@ -335,7 +335,9 @@ static NSString *WMComputerShouldGoDownNotification =
     }
   }
 
-  [rootViewerWindow makeKeyAndOrderFront:self];
+  if ([rootViewerWindow isMiniaturized] == NO) {
+    [rootViewerWindow makeKeyAndOrderFront:self];
+  }
 }
 
 - (void)_finishTerminateProcess
