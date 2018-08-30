@@ -175,13 +175,13 @@ static NSString *WMComputerShouldGoDownNotification =
                                        STRINGIFY(GNUSTEP_GUI_VERSION)]];
 }
 
+#define X_WINDOW(win) (Window)[GSCurrentServer() windowDevice:[(win) windowNumber]]
+
 - (NSString *)_windowState:(NSWindow *)window
 {
-  Window  xWindow;
   WWindow *wWin;
 
-  xWindow = (Window)[GSCurrentServer() windowDevice:[window windowNumber]];
-  wWin = wWindowFor(xWindow);
+  wWin = wWindowFor(X_WINDOW(window));
   if (!wWin)
     return nil;
     
@@ -213,6 +213,9 @@ static NSString *WMComputerShouldGoDownNotification =
     if (winState) {
       winInfo = @{@"Type":@"Console", @"State":winState};
       [windows addObject:winInfo];
+      if ([winState isEqualToString:@"Shaded"]) {
+        wUnshadeWindow(wWindowFor(X_WINDOW([console window])));
+      }
       [console deactivate];
     }
   }
@@ -246,12 +249,16 @@ static NSString *WMComputerShouldGoDownNotification =
                   @"Selection":([fv selection]) ? [fv selection] : @[]};
       [windows addObject:winInfo];
       if (fv != _rootFileViewer) {
+        if ([winState isEqualToString:@"Shaded"]) {
+          wUnshadeWindow(wWindowFor(X_WINDOW([fv window])));
+        }
         [[fv window] close];
       }
     }
   }
   
   [[NXDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
+  [[NXDefaults userDefaults] synchronize];
   [windows release];
   
   // ...and filnally close root viewer
@@ -264,10 +271,14 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (void)_restoreWindows
 {
-  NXDefaults *df = [NXDefaults userDefaults];
-  NSArray    *savedWindows = [df objectForKey:@"SavedWindows"];
-  NSString   *winType;
-  FileViewer *fv;
+  NXDefaults          *df = [NXDefaults userDefaults];
+  NSArray             *savedWindows = [df objectForKey:@"SavedWindows"];
+  NSMutableArray      *winViews = [NSMutableArray new];
+  NSMutableDictionary *winViewInfo;
+  NSString            *winType;
+  FileViewer          *fv;
+  NSWindow            *window;
+  NSWindow            *rootViewerWindow;
 
   if (!savedWindows || [savedWindows count] == 0) {
     fv = [self newViewerRootedAt:@"/" isRoot:YES];
@@ -277,12 +288,15 @@ static NSString *WMComputerShouldGoDownNotification =
 
   // Restore saved windows
   for (NSDictionary *winInfo in savedWindows) {
+    
     winType = [winInfo objectForKey:@"Type"];
+    
     if ([winType isEqualToString:@"FolderViewer"] ||
         [winType isEqualToString:@"RootViewer"]) {
       
       if ([winType isEqualToString:@"RootViewer"]) {
         fv = [self newViewerRootedAt:@"/" isRoot:YES];
+        rootViewerWindow = [fv window];
       }
       else {
         fv = [self newViewerRootedAt:[winInfo objectForKey:@"RootPath"] isRoot:NO];
@@ -293,19 +307,35 @@ static NSString *WMComputerShouldGoDownNotification =
               selection:[winInfo objectForKey:@"Selection"]
                  sender:self];
       }
+      [[fv window] orderFront:nil];
       
-      [[fv window] makeKeyAndOrderFront:nil];
-      if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
-        [[fv window] miniaturize:self];
-      }
+      winViewInfo = [NSMutableDictionary dictionaryWithDictionary:winInfo];
+      [winViewInfo setObject:[fv window] forKey:@"Window"];
+      [winViews addObject:winViewInfo];
+      [winViewInfo release];
     }
     else if ([winType isEqualToString:@"Console"]) {
       [self showConsole:self];
-      if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
-        [[console window] miniaturize:self];
-      }
+      winViewInfo = [NSMutableDictionary dictionaryWithDictionary:winInfo];
+      [winViewInfo setObject:[console window] forKey:@"Window"];
+      [winViews addObject:winViewInfo];
+      [winViewInfo release];
     }
   }
+
+  // Restore state of windows
+  for (NSDictionary *winInfo in winViews) {
+    window = [winInfo objectForKey:@"Window"];
+    
+    if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
+      [window miniaturize:self];
+    }
+    else if ([[winInfo objectForKey:@"State"] isEqualToString:@"Shaded"]) {
+      wShadeWindow(wWindowFor(X_WINDOW(window)));
+    }
+  }
+
+  [rootViewerWindow makeKeyAndOrderFront:self];
 }
 
 - (void)_finishTerminateProcess
