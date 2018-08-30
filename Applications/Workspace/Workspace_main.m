@@ -40,12 +40,9 @@ int main(int argc, const char **argv)
 
       fprintf(stderr, "[Workspace] === Initializing WindowMaker... ===\n");
       //--- WindowMaker queue -----------------------------------------------
-      dispatch_sync(wmaker_q,
-                    ^{
-                      NSLog(@"WindowMaker thread: %@ (main: %@)",
-                            [NSThread currentThread], [NSThread mainThread]);
-                      WWMInitializeWindowMaker(argc, (char **)argv);
-                    });
+      dispatch_sync(wmaker_q, ^{
+          WWMInitializeWindowMaker(argc, (char **)argv);
+        });
       fprintf(stderr, "[Workspace] === WindowMaker initialized! ===\n");
 
       // Start X11 EventLoop in parallel
@@ -53,26 +50,21 @@ int main(int argc, const char **argv)
       
       fprintf(stderr, "[Workspace] === Starting Workspace application... ===\n");
       //--- Workspace (GNUstep) queue ---------------------------------------
-      dispatch_sync(workspace_q,
-                    ^{
-                      @autoreleasepool
-                        {
-                          NSLog(@"Workspace thread: %@ (main: %@)",
-                                [NSThread currentThread], [NSThread mainThread]);
-                          NSApplicationMain(argc, argv);
-                          NSLog(@"Workspace applicaton terminated.");
-                        }
-                    });
+      dispatch_sync(workspace_q, ^{
+          @autoreleasepool {
+            NSApplicationMain(argc, argv);
+            NSLog(@"Workspace applicaton successfully finished.");
+          }
+        });
       //---------------------------------------------------------------------
     }
   else
 #endif // NEXTSPACE
     {
-      @autoreleasepool
-        {
-          NSLog(@"Starting Workspace as standalone application!");
-          NSApplicationMain(argc, argv);
-        }
+      @autoreleasepool {
+        NSLog(@"Starting Workspace as standalone application!");
+        NSApplicationMain(argc, argv);
+      }
     }
   
   return 0;

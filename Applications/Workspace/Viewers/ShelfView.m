@@ -174,7 +174,7 @@
   [_owner slideToPathFromShelfIcon:sender];
   
   // Convert 'path' variable contents as relative path
-  if ([_owner isFolderViewer]) {
+  if ([_owner isRootViewer] == NO) {
     if ([path isEqualToString:[_owner rootPath]]) {
       path = @"/";
     }
