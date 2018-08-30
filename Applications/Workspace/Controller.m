@@ -201,8 +201,8 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (void)_saveWindowsStateAndClose
 {
-  NSMutableArray *windows = [NSMutableArray new];
-  NSArray        *_fvs = [fileViewers copy];
+  NSMutableArray *windows = [[NSMutableArray alloc] init];
+  NSArray        *_fvs = [NSArray arrayWithArray:fileViewers];
   NSDictionary   *winInfo;
   NSString       *winState, *viewerType;
   FileViewer     *_rootFileViewer;
@@ -250,47 +250,51 @@ static NSString *WMComputerShouldGoDownNotification =
       }
     }
   }
-  [_fvs release];
-
+  
   [[NXDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
   [windows release];
-
+  
   // ...and filnally close root viewer
   [[_rootFileViewer window] close];
   [fileViewers release];
   
   NSLog(@"_closeAllFileViewers shared FS monitor RC: %lu",
-        [fileSystemMonitor retainCount]);
+        [fileSystemMonitor retainCount]);  
 }
 
 - (void)_restoreWindows
 {
-  NXDefaults *xud = [NXDefaults userDefaults];
+  NXDefaults *df = [NXDefaults userDefaults];
+  NSArray    *savedWindows = [df objectForKey:@"SavedWindows"];
   NSString   *winType;
   FileViewer *fv;
 
-  fileViewers = [[NSMutableArray alloc] init];
+  if (!savedWindows || [savedWindows count] == 0) {
+    fv = [self newViewerRootedAt:@"/" isRoot:YES];
+    [[fv window] makeKeyAndOrderFront:nil];
+    return;
+  }
 
   // Restore saved windows
-  for (NSDictionary *winInfo in [xud objectForKey:@"SavedWindows"]) {
+  for (NSDictionary *winInfo in savedWindows) {
     winType = [winInfo objectForKey:@"Type"];
-    if ([winType isEqualToString:@"RootViewer"]) {
-      rootViewer = [[FileViewer alloc] initRootedAtPath:@"/"
-                                               asFolder:NO
-                                                 isRoot:YES];
-      if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
-        [[rootViewer window] miniaturize:self];
+    if ([winType isEqualToString:@"FolderViewer"] ||
+        [winType isEqualToString:@"RootViewer"]) {
+      
+      if ([winType isEqualToString:@"RootViewer"]) {
+        fv = [self newViewerRootedAt:@"/" isRoot:YES];
       }
-      [fileViewers addObject:rootViewer];
-      [rootViewer release];
-    }
-    else if ([winType isEqualToString:@"FolderViewer"]) {
-      fv = [self openNewViewerRootedAt:[winInfo objectForKey:@"RootPath"]];
+      else {
+        fv = [self newViewerRootedAt:[winInfo objectForKey:@"RootPath"] isRoot:NO];
+      }
+      
       if (fv != nil) {
         [fv displayPath:[winInfo objectForKey:@"Path"]
               selection:[winInfo objectForKey:@"Selection"]
                  sender:self];
       }
+      
+      [[fv window] makeKeyAndOrderFront:nil];
       if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
         [[fv window] miniaturize:self];
       }
@@ -365,14 +369,14 @@ static NSString *WMComputerShouldGoDownNotification =
 
 @implementation Controller
 
-- (FileViewer *)openNewViewerRootedAt:(NSString *)path
+- (FileViewer *)newViewerRootedAt:(NSString *)path isRoot:(BOOL)root
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   BOOL          isDir;
   FileViewer   *fv;
   
   if ([fm fileExistsAtPath:path isDirectory:&isDir] && isDir) {
-    fv = [[FileViewer alloc] initRootedAtPath:path asFolder:YES isRoot:NO];
+    fv = [[FileViewer alloc] initRootedAtPath:path isRoot:root];
     [fileViewers addObject:fv];
   }
   else {
@@ -390,14 +394,19 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path
 {
-  for (FileViewer *fv in fileViewers) {
+  FileViewer *fv;
+  
+  for (fv in fileViewers) {
     if ([[fv rootPath] isEqualToString:path]) {
       [[fv window] makeKeyAndOrderFront:self];
       return fv;
     }
   }
-
-  return [self openNewViewerRootedAt:path];
+  
+  fv = [self newViewerRootedAt:path isRoot:NO];
+  [[fv window] makeKeyAndOrderFront:self];
+  
+  return fv;
 }
 
 //============================================================================
@@ -406,11 +415,13 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)filename
 {
-  if ([self openNewViewerRootedAt:filename] == nil)
-    {
-      return NO;
-    }
-  
+  FileViewer *fv = [self newViewerRootedAt:filename isRoot:NO];
+
+  if (fv == nil) {
+    return NO;
+  }
+
+  [[fv window] makeKeyAndOrderFront:self];
   return YES;
 }
 
@@ -466,6 +477,7 @@ static NSString *WMComputerShouldGoDownNotification =
   [self _loadViewMenu:[viewMenuItem submenu]];
 
   // File Viewers and Console
+  fileViewers = [[NSMutableArray alloc] init];
   [self _restoreWindows];
 
   // NXMediaManager
@@ -503,7 +515,6 @@ static NSString *WMComputerShouldGoDownNotification =
         }
     }
 }
-
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
@@ -759,16 +770,14 @@ static NSString *WMComputerShouldGoDownNotification =
 // File
 - (void)newViewer:(id)sender
 {
-  FileViewer *fv = [[FileViewer alloc] initRootedAtPath:@"/"
-			    		       asFolder:NO
-				    		 isRoot:NO];
-  [fileViewers addObject:fv];
-  [fv release];
+  FileViewer *fv = [self newViewerRootedAt:@"/" isRoot:NO];
+  [[fv window] makeKeyAndOrderFront:self];  
 }
 
 - (void)closeViewer:(id)viewer
 {
-  NSLog(@"Controller: closeViewer[%lu]", [viewer retainCount]);
+  NSLog(@"Controller: closeViewer[%lu] (%@)",
+        [viewer retainCount], [viewer rootPath]);
   [fileViewers removeObject:viewer];
 }
 

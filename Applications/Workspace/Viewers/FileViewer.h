@@ -43,7 +43,6 @@
   NSArray  *dirContents;
   NSArray  *selection;
   BOOL     isRootViewer;
-  BOOL     isFolderViewer;
 
   NSFileHandle *dirHandle;
 
@@ -83,12 +82,11 @@
 }
 
 - initRootedAtPath:(NSString *)aRootPath
-	  asFolder:(BOOL)isFolder
 	    isRoot:(BOOL)isRoot;
 
 
 - (BOOL)isRootViewer;
-- (BOOL)isFolderViewer;
+- (BOOL)isRootViewerCopy;
 - (NSWindow *)window;
 - (NSDictionary *)shelfRepresentation;
 - (id<Viewer>)viewer;

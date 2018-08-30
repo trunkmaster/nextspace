@@ -139,7 +139,6 @@
 //=============================================================================
 
 - initRootedAtPath:(NSString *)aRootPath
-	  asFolder:(BOOL)isFolder
 	    isRoot:(BOOL)isRoot
 {
   NXDefaults           *df = [NXDefaults userDefaults];
@@ -150,7 +149,6 @@
   [super init];
 
   isRootViewer = isRoot;
-  isFolderViewer = isFolder;
 
   setEditedStateCount = 0;
 
@@ -182,46 +180,40 @@
   // Load the viewer
   [self useViewer:[[ModuleLoader shared] preferredViewer]];
 
-  if (isRootViewer || !isFolderViewer)
-    {
-      [window setTitle:@"File Viewer"];
-      if (isRootViewer)
-        {
-          [window setFrameAutosaveName:@"RootViewer"];
-          // try the saved path, then the home directory and as last
-          // resort "/"
-          (relativePath = [df objectForKey:@"RootViewerPath"]) != nil ||
-            (relativePath = NSHomeDirectory()) != nil ||
-            (relativePath = @"/");
-        }
-      else // copy of RootViewer
-        {
-          NSRect rootFrame = [[[[NSApp delegate] rootViewer] window] frame];
-          rootFrame.origin.x += 20;
-          rootFrame.origin.y -= 20;
-          [window setFrame:rootFrame display:NO];
-          relativePath = rootPath;
-        }
-    }
-  else if (isFolderViewer)
-    {
+  if (isRootViewer) {
+    [window setTitle:@"File Viewer"];
+    [window setFrameAutosaveName:@"RootViewer"];
+      
+    // try the saved path, then the home directory and as last
+    // resort "/"
+    (relativePath = [df objectForKey:@"RootViewerPath"]) != nil ||
+      (relativePath = NSHomeDirectory()) != nil ||
+      (relativePath = @"/");
+  }
+  else if ([self isRootViewerCopy]) {
+    // copy of RootViewer
+    NSRect rootFrame = [[[[NSApp delegate] rootViewer] window] frame];
+    // rootFrame.origin.x += 20;
+    // rootFrame.origin.y -= 20;
+    [window setFrame:rootFrame display:NO];
+    [window center];
+    relativePath = rootPath;
+  }
+  else {
       NSString *viewerWindow = [self dotDirObjectForKey:@"ViewerWindow"];
 
       [window setTitle:
         [NSString stringWithFormat:_(@"File Viewer  \u2014  %@"), rootPath]];
-      if (viewerWindow)
-	{
-	  [window setFrame:NSRectFromString(viewerWindow) display:NO];
-	}
-      else
-	{
-	  [window center];
-	}
-      if ((relativePath = [self dotDirObjectForKey:@"ViewerPath"]) == nil)
-        {
-          relativePath = @"/";
-        }
-    }
+      if (viewerWindow) {
+        [window setFrame:NSRectFromString(viewerWindow) display:NO];
+      }
+      else {
+        [window center];
+      }
+      if ((relativePath = [self dotDirObjectForKey:@"ViewerPath"]) == nil) {
+        relativePath = @"/";
+      }
+  }
 
   // Resize window to just loaded viewer columns and
   // defined window frame (setFrameAutosaveName, setFrame)
@@ -243,7 +235,7 @@
   // Media manager and mount, unmount, eject events
   // Full Shelf is not supported in folder viewer
   mediaManager = [[NSApp delegate] mediaManager];
-  if (isRootViewer || !isFolderViewer)
+  if (isRootViewer)
     {
       // For updating views (Shelf, PathView, Viewer)
       [nc addObserver:self
@@ -268,16 +260,14 @@
   NSLog(@"[FileViewer -init] %@", relativePath);
 
   // finally display the path
-  if (!isRootViewer && !isFolderViewer)
-    {
-      [self displayPath:[[[NSApp delegate] rootViewer] displayedPath]
-              selection:nil
-                 sender:self];
-    }
-  else
-    {
-      [self displayPath:relativePath selection:nil sender:self];
-    }
+  if ([self isRootViewerCopy] != NO) {
+    [self displayPath:[[[NSApp delegate] rootViewer] displayedPath]
+            selection:nil
+               sender:self];
+  }
+  else {
+    [self displayPath:relativePath selection:nil sender:self];
+  }
 
   // Configure Shelf later after viewer loaded path to make 
   // setNextKeyView working correctly
@@ -286,7 +276,7 @@
   // Make initial placement of disk and operation info labels
   [self updateInfoLabels:nil];
 
-  [window makeKeyAndOrderFront:nil];
+  // [window makeKeyAndOrderFront:nil];
 
   // NXFileSystem notifications
   [nc addObserver:self
@@ -442,20 +432,17 @@
     NSSize     windowMinSize = [window minSize];
     CGFloat    shelfHeight = 0.0;
     
-    if (isFolderViewer)
-      {
-        shelfHeight = [[self dotDirObjectForKey:@"ShelfSize"] floatValue];
-      }
-    else
-      {
-        shelfHeight = [df floatForKey:@"RootViewerShelfSize"];
-      }
+    if (isRootViewer) {
+      shelfHeight = [df floatForKey:@"RootViewerShelfSize"];
+    }
+    else {
+      shelfHeight = [[self dotDirObjectForKey:@"ShelfSize"] floatValue];
+    }
     
-    if (shelfHeight > 0.0)
-      {
-        shelfFrame.size.height = shelfHeight;
-        [shelf setFrame:shelfFrame];
-      }
+    if (shelfHeight > 0.0) {
+      shelfFrame.size.height = shelfHeight;
+      [shelf setFrame:shelfFrame];
+    }
 
     windowMinSize.height =
       shelfFrame.size.height + pathFrame.size.height + 200;
@@ -483,7 +470,7 @@
 	    forKey:@"RootViewerShelfSize"];
       [df synchronize];
     }
-  else if (isFolderViewer && [fm isWritableFileAtPath:rootPath])
+  else if (![self isRootViewerCopy] && [fm isWritableFileAtPath:rootPath])
     {
       NSMutableDictionary *fvdf = [NSMutableDictionary new];
 
@@ -524,9 +511,13 @@
   return isRootViewer;
 }
 
-- (BOOL)isFolderViewer
+- (BOOL)isRootViewerCopy
 {
-  return isFolderViewer;
+  if (isRootViewer == NO &&
+      [[[[NSApp delegate] rootViewer] rootPath] isEqualToString:rootPath]) {
+    return YES;
+  }
+  return NO;
 }
 
 - (NSWindow *)window
@@ -801,17 +792,15 @@
 
   [self setWindowEdited:YES];
 
-  if ([relativePath isEqualToString:@""])
-    {
-      relativePath = @"/";
-    }
+  if ([relativePath isEqualToString:@""]) {
+    relativePath = @"/";
+  }
 
   // check parameters
   [self validatePath:&relativePath selection:&filenames];
-  if (relativePath == nil)
-    { // Bad news: rootPath disappeared
-      return;
-    }
+  if (relativePath == nil) { // Bad news: rootPath disappeared
+    return;
+  }
   
   // check the shelf contents as well
   [shelf checkIfContentsExist];
@@ -865,41 +854,30 @@
   // TODO:
   // Even if path is not changed attributes of selected directory may be
   // changed. For example, from non-readable to readable.
-  if (![oldDisplayedPath isEqualToString:displayedPath])
-    {
-      NSString *pathToMonitor=nil, *pathToUnmonitor=nil;
-      if (isFolderViewer)
-        {
-          if (oldDisplayedPath && ![oldDisplayedPath isEqualToString:@""])
-            {
-              pathToUnmonitor =
-                [rootPath stringByAppendingPathComponent:oldDisplayedPath];
-            }
-          pathToMonitor = [rootPath stringByAppendingPathComponent:displayedPath];
-        }
-      else
-        {
-          if (oldDisplayedPath && ![oldDisplayedPath isEqualToString:@""])
-            {
-              pathToUnmonitor = oldDisplayedPath;
-            }
-          pathToMonitor = displayedPath;
-        }
-
-      // if (pathToUnmonitor != nil &&
-      //     [[NSFileManager defaultManager] isReadableFileAtPath:pathToUnmonitor])
-      if (pathToUnmonitor != nil)
-        {
-          [fileSystemMonitor removePath:pathToUnmonitor];
-        }
-  
-      // if (pathToMonitor != nil &&
-      //     [[NSFileManager defaultManager] isReadableFileAtPath:pathToMonitor])
-      if (pathToMonitor != nil)
-        {
-          [fileSystemMonitor addPath:pathToMonitor];
-        }
+  if (![oldDisplayedPath isEqualToString:displayedPath]) {
+    NSString *pathToMonitor=nil, *pathToUnmonitor=nil;
+    
+    if (isRootViewer == NO) {
+      if (oldDisplayedPath && ![oldDisplayedPath isEqualToString:@""]) {
+        pathToUnmonitor = [rootPath stringByAppendingPathComponent:oldDisplayedPath];
+      }
+      pathToMonitor = [rootPath stringByAppendingPathComponent:displayedPath];
     }
+    else {
+      if (oldDisplayedPath && ![oldDisplayedPath isEqualToString:@""]) {
+        pathToUnmonitor = oldDisplayedPath;
+      }
+      pathToMonitor = displayedPath;
+    }
+
+    if (pathToUnmonitor != nil) {
+      [fileSystemMonitor removePath:pathToUnmonitor];
+    }
+  
+    if (pathToMonitor != nil) {
+      [fileSystemMonitor addPath:pathToMonitor];
+    }
+  }
   
   [self setWindowEdited:NO];
 }
@@ -1141,15 +1119,12 @@
       paths = [NSArray arrayWithObject:NSHomeDirectory()];
     }
   }
-  else if (isFolderViewer) {
+  else {
     shelfRep = [self dotDirObjectForKey:@"ShelfContents"];
     if (!shelfRep || [shelfRep count] == 0) {
       shelfRep = nil;
       paths = [NSArray arrayWithObject:rootPath];
     }
-  }
-  else { // Copy of RootViewer... get current shelf rep of RootViewer
-    shelfRep = [[[NSApp delegate] rootViewer] shelfRepresentation];
   }
 
   if (shelfRep) {
@@ -1288,22 +1263,19 @@
 {
   Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
   
-  if (inspector != nil)
-    {
-      [inspector revert:self];
-    }
+  if (inspector != nil) {
+    [inspector revert:self];
+  }
 }
 
 - (void)windowWillClose:(NSNotification *)notif
 {
-  NSLog(@"[FileViewer][%@] windowWillClose [%@]",
-        displayedPath, [[notif object] className]);
+  NSLog(@"[FileViewer][%@] windowWillClose [%@]", displayedPath, [[notif object] className]);
 
-  if (!isRootViewer)
-    {
-      [fileSystemMonitor 
+  if (!isRootViewer) {
+    [fileSystemMonitor 
 	removePath:[rootPath stringByAppendingPathComponent:displayedPath]];
-    }
+  }
   
   // unset viewer to decrease retain count on FileViewer
   [self useViewer:nil]; 
