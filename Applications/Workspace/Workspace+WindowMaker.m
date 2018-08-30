@@ -1192,32 +1192,6 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
   wAppIconDestroy(appIcon);
 }
 
-// ----------------------------
-// --- Windows
-// ----------------------------
-// NSString *WWMWindowState(NSWindow *window)
-// {
-//   WWindow *wWin;
-  
-//   wWin = wWindowFor([[GSCurrentServer() serverDevice]
-//                       windowDevice:[window windowNumber]]);
-//   if (!wWin)
-//     return nil;
-    
-//   if (wWin->flags->miniaturized) {
-//     return @"Miniaturized";
-//   }
-//   else if (wWin->flags->shaded) {
-//     return @"Shaded";
-//   }
-//   else if (wWin->flags->hidden) {
-//     return @"Hidden";
-//   }
-//   else {
-//     return @"Normal";
-//   }
-// }
-
 //--- End of functions which require existing @autorelease pool ---
 
 //-----------------------------------------------------------------------------

@@ -107,11 +107,6 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
 
 NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret);
 
-// ----------------------------
-// --- Windows
-// ----------------------------
-// NSString *WWMWindowState(NSWindow *window);
-
 #endif //__Foundation_h_GNUSTEP_BASE_INCLUDE
 
 //-----------------------------------------------------------------------------

@@ -80,7 +80,8 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (NSString *)_windowServerVersion;
 - (void)fillInfoPanelWithSystemInfo;
-- (void)_closeAllFileViewers;
+- (NSString *)_windowState:(NSWindow *)window;
+- (void)_saveWindowsStateAndClose;
 
 @end
 
@@ -124,7 +125,7 @@ static NSString *WMComputerShouldGoDownNotification =
   inspector = [[[inspectorsBundle principalClass] alloc] init];
 }
 
-// TODO: Move to SystemConfig framework and enhance
+// TODO: Move to NXSystem framework and enhance
 - (NSString *)_windowServerVersion
 {
   Display *xDisplay = [GSCurrentServer() serverDevice]; 
@@ -174,7 +175,7 @@ static NSString *WMComputerShouldGoDownNotification =
                                        STRINGIFY(GNUSTEP_GUI_VERSION)]];
 }
 
-- (NSString *) _wWindowState:(NSWindow *)window
+- (NSString *)_windowState:(NSWindow *)window
 {
   Window  xWindow;
   WWindow *wWin;
@@ -198,148 +199,115 @@ static NSString *WMComputerShouldGoDownNotification =
   }
 }
 
-- (void)_saveWindowsState
+- (void)_saveWindowsStateAndClose
 {
   NSMutableArray *windows = [NSMutableArray new];
+  NSArray        *_fvs = [fileViewers copy];
   NSDictionary   *winInfo;
-  NSString       *winState;
-  
+  NSString       *winState, *viewerType;
+  FileViewer     *_rootFileViewer;
+
   // 1. Console
   if (console) {
-    winState = [self _wWindowState:[console window]];
+    winState = [self _windowState:[console window]];
     if (winState) {
       winInfo = @{@"Type":@"Console", @"State":winState};
       [windows addObject:winInfo];
+      [console deactivate];
     }
   }
-  // 2. Viewers
-  for (FileViewer *fv in fileViewers) {
-    winState = [self _wWindowState:[fv window]];
+  
+  // 2. Panels: Processes, Inspector, Finder.
+  if (inspector && [[inspector window] isVisible]) {
+      [inspector deactivateInspector:self];
+    }
+  if (procPanel && [[procPanel window] isVisible]) {
+      [[procPanel window] close];
+  }
+  
+  // 3. Viewers
+  // To remove NXFileSystem's event monitor path correctly
+  // first close all folder viewers (while catching root viewer)...
+  for (FileViewer *fv in _fvs) {
+    winState = [self _windowState:[fv window]];
     if (winState) {
-      winInfo = @{@"Type":([fv isRootViewer] == NO) ? @"Viewer" : @"RootViewer",
+      if ([fv isRootViewer] != NO) {
+        viewerType = @"RootViewer";
+        _rootFileViewer = fv;
+      }
+      else {
+        viewerType = @"FolderViewer";
+      }
+        
+      winInfo = @{@"Type":viewerType,
                   @"State":winState,
                   @"RootPath":[fv rootPath],
                   @"Path":[fv displayedPath],
-                  @"Selection":[fv selection]};
+                  @"Selection":([fv selection]) ? [fv selection] : @[]};
       [windows addObject:winInfo];
+      if (fv != _rootFileViewer) {
+        [[fv window] close];
+      }
     }
   }
+  [_fvs release];
 
   [[NXDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
+  [windows release];
 
-}
-
-- (void)_closeAllFileViewers
-{
-  NSArray      *_fvs = [fileViewers copy];
-  NSEnumerator *_e = [_fvs objectEnumerator];
-  FileViewer   *_fileViewer;
-  FileViewer   *_rootFileViewer;
-  
-  NSMutableArray *viewers = [NSMutableArray new];
-  NSDictionary   *vInfo;
-
-  // To remove NXFileSystem's event monitor path correctly
-  // first close all folder viewers (while catching root viewer)...
-  while ((_fileViewer = [_e nextObject]))
-    {
-      if ([_fileViewer isRootViewer])
-	{
-	  _rootFileViewer = _fileViewer;
-	}
-      else
-	{
-          if ([_fileViewer isFolderViewer])
-            {
-              vInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                      [_fileViewer rootPath], @"RootPath",
-                                    [_fileViewer displayedPath], @"Path",
-                                    [_fileViewer selection], @"Selection",
-                                    nil];
-              [viewers addObject:vInfo];
-            }
-	  [[_fileViewer window] close];
-	}
-    }
-  [[NXDefaults userDefaults] setObject:viewers forKey:@"SavedViewers"];
-
-  // ...and filnally close left root viewer
+  // ...and filnally close root viewer
   [[_rootFileViewer window] close];
-
+  [fileViewers release];
+  
   NSLog(@"_closeAllFileViewers shared FS monitor RC: %lu",
         [fileSystemMonitor retainCount]);
-
-  [_fvs release];
-  [fileViewers release];
-}
-
-- (void)_closeWindows
-{
-  NXDefaults          *xud = [NXDefaults userDefaults];
-  NSMutableArray      *panels = [NSMutableArray new];
-  // NSMutableDictionary *viewers = [NSMutableDictionary new];
-
-  [self _saveWindowsState];
-  
-  // 1. Close panels: Processes, Inspector, Console, Finder.
-  //    For Processes and Inspector save opened section (mode).
-  if (console && [[console window] isVisible])
-    {
-      [[NXDefaults userDefaults] setBool:YES forKey:@"OpenConsoleAtStart"];
-      [console deactivate];
-    }
-  else
-    {
-      [[NXDefaults userDefaults] setBool:NO forKey:@"OpenConsoleAtStart"];
-    }
-  if (inspector && [[inspector window] isVisible])
-    {
-      [inspector deactivateInspector:self];
-    }
-  if (procPanel && [[procPanel window] isVisible])
-    {
-      [[procPanel window] close];
-    }
-  
-  // 2. Close FileViewers and save their 'rootPath'.
-  [self _closeAllFileViewers];
 }
 
 - (void)_restoreWindows
 {
   NXDefaults *xud = [NXDefaults userDefaults];
-  NSArray    *viewers;
+  NSString   *winType;
   FileViewer *fv;
-  NSArray    *panels;
 
-  // Open root viewer
   fileViewers = [[NSMutableArray alloc] init];
-  rootViewer = [[FileViewer alloc] initRootedAtPath:@"/" 
-					   asFolder:NO
-					     isRoot:YES];
-  [fileViewers addObject:rootViewer];
-  [rootViewer release];
 
-  // Restore folder viewers
-  viewers = [xud objectForKey:@"SavedViewers"];
-  for (NSDictionary *vInfo in viewers)
-    {
-      fv = [self openNewViewerRootedAt:[vInfo objectForKey:@"RootPath"]];
-      [fv displayPath:[vInfo objectForKey:@"Path"]
-            selection:[vInfo objectForKey:@"Selection"]
-               sender:self];
+  // Restore saved windows
+  for (NSDictionary *winInfo in [xud objectForKey:@"SavedWindows"]) {
+    winType = [winInfo objectForKey:@"Type"];
+    if ([winType isEqualToString:@"RootViewer"]) {
+      rootViewer = [[FileViewer alloc] initRootedAtPath:@"/"
+                                               asFolder:NO
+                                                 isRoot:YES];
+      if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
+        [[rootViewer window] miniaturize:self];
+      }
+      [fileViewers addObject:rootViewer];
+      [rootViewer release];
     }
-
-  if ([xud boolForKey:@"OpenConsoleAtStart"])
-    {
+    else if ([winType isEqualToString:@"FolderViewer"]) {
+      fv = [self openNewViewerRootedAt:[winInfo objectForKey:@"RootPath"]];
+      if (fv != nil) {
+        [fv displayPath:[winInfo objectForKey:@"Path"]
+              selection:[winInfo objectForKey:@"Selection"]
+                 sender:self];
+      }
+      if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
+        [[fv window] miniaturize:self];
+      }
+    }
+    else if ([winType isEqualToString:@"Console"]) {
       [self showConsole:self];
+      if ([[winInfo objectForKey:@"State"] isEqualToString:@"Miniaturized"]) {
+        [[console window] miniaturize:self];
+      }
     }
+  }
 }
 
 - (void)_finishTerminateProcess
 {
   // Close and save file viewers, close panels.
-  [self _closeWindows];
+  [self _saveWindowsStateAndClose];
 
   // Close XWindow applications - wipeDesktop?
   
@@ -403,40 +371,31 @@ static NSString *WMComputerShouldGoDownNotification =
   BOOL          isDir;
   FileViewer   *fv;
   
-  if ([fm fileExistsAtPath:path isDirectory:&isDir] && isDir)
-    {
-      fv = [[FileViewer alloc] initRootedAtPath:path asFolder:YES isRoot:NO];
-      [fileViewers addObject:fv];
-    }
-  else
-    {
-      NSRunAlertPanel(_(@"Open as Folder"),
-  		      _(@"%@ is not a folder."),
-		      nil, nil, nil, path);
-      return nil;
-    }
+  if ([fm fileExistsAtPath:path isDirectory:&isDir] && isDir) {
+    fv = [[FileViewer alloc] initRootedAtPath:path asFolder:YES isRoot:NO];
+    [fileViewers addObject:fv];
+  }
+  else {
+    NSRunAlertPanel(_(@"Open as Folder"), _(@"%@ is not a folder."),
+                    nil, nil, nil, path);
+    return nil;
+  }
   
-  if (inspector != nil)
-    {
-      [inspector revert:fv];
-    }
+  if (inspector != nil) {
+    [inspector revert:fv];
+  }
   
   return [fv autorelease];
 }
 
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path
 {
-  NSEnumerator *e = [fileViewers objectEnumerator];
-  FileViewer   *fv;
-
-  while ((fv = [e nextObject]) != nil)
-    {
-      if ([[fv rootPath] isEqualToString:path])
-        {
-          [[fv window] makeKeyAndOrderFront:self];
-          return fv;
-        }
+  for (FileViewer *fv in fileViewers) {
+    if ([[fv rootPath] isEqualToString:path]) {
+      [[fv window] makeKeyAndOrderFront:self];
+      return fv;
     }
+  }
 
   return [self openNewViewerRootedAt:path];
 }
@@ -546,11 +505,7 @@ static NSString *WMComputerShouldGoDownNotification =
 }
 
 
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
-#else
-- (BOOL)applicationShouldTerminate:(id)sender
-#endif
 {
   // Log Out -
   // close all running applications, close all windows and panels, unmount all
