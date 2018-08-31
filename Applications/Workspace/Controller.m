@@ -80,8 +80,8 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (NSString *)_windowServerVersion;
 - (void)fillInfoPanelWithSystemInfo;
-// - (NSString *)_windowState:(NSWindow *)window;
 - (void)_saveWindowsStateAndClose;
+- (void)_startSavedApplications;
 
 @end
 
@@ -176,27 +176,6 @@ static NSString *WMComputerShouldGoDownNotification =
 }
 
 #define X_WINDOW(win) (Window)[GSCurrentServer() windowDevice:[(win) windowNumber]]
-// - (NSString *)_windowState:(NSWindow *)window
-// {
-//   WWindow *wWin;
-
-//   wWin = wWindowFor(X_WINDOW(window));
-//   if (!wWin)
-//     return nil;
-    
-//   if (wWin->flags.miniaturized) {
-//     return @"Miniaturized";
-//   }
-//   else if (wWin->flags.shaded) {
-//     return @"Shaded";
-//   }
-//   else if (wWin->flags.hidden) {
-//     return @"Hidden";
-//   }
-//   else {
-//     return @"Normal";
-//   }
-// }
 
 - (void)_saveWindowsStateAndClose
 {
@@ -345,6 +324,7 @@ static NSString *WMComputerShouldGoDownNotification =
                                 forKey:@"SavedApplications"];
   [[NXDefaults userDefaults] synchronize];  
 }
+
 - (void)_startSavedApplications
 {
   NSArray *savedApps;

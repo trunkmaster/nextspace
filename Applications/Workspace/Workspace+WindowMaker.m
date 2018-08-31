@@ -1293,8 +1293,6 @@ pid_t WWMExecuteCommand(NSString *command)
     char **args;
     int i;
 
-    // SetupEnvironment(scr);
-
     args = malloc(sizeof(char *) * (argc + 1));
     if (!args)
       exit(111);
