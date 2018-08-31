@@ -253,15 +253,14 @@ static NSMutableArray *fileList = nil;
   [filesView setDelegate:self];
   [filesView setTarget:self];
   [filesView setDragAction:@selector(filesView:iconDragged:withEvent:)];
-  [filesView setAutoAdjustsToFitIcons:NO];
+  [filesView setAutoAdjustsToFitIcons:YES];
   // [filesView setDoubleAction:@selector(open:)];
   // [filesView setSendsDoubleActionOnReturn:YES];
   iconSize = [NXIconView defaultSlotSize];
-  if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"])
-    {
-      iconSize.width = [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
-      [filesView setSlotSize:iconSize];
-   }
+  if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
+    iconSize.width = [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+    [filesView setSlotSize:iconSize];
+  }
   
   [filesView registerForDraggedTypes:@[NSFilenamesPboardType]];
 
