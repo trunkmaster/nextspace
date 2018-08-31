@@ -86,8 +86,30 @@ static NSTimeInterval tInterval = 0;
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
   // NSLog(@"Recycler: dragging entered!");
-  tInterval = [NSDate timeIntervalSinceReferenceDate];
-  return (NSDragOperationMove | NSDragOperationDelete);
+  
+  NSArray *sourcePaths;
+  BOOL    draggedFromRecycler = NO;
+
+  sourcePaths = [[sender draggingPasteboard]
+                  propertyListForType:NSFilenamesPboardType];
+  
+  for (NSString *path in sourcePaths) {
+    if ([path rangeOfString:recycler.path].location != NSNotFound) {
+      NSLog(@"%@ is in %@", path, recycler.path);
+      draggedFromRecycler = YES;
+      break;
+    }
+  }
+ 
+  if (draggedFromRecycler != NO) {
+    draggingMask = NSDragOperationNone;
+  }
+  else {
+    draggingMask = (NSDragOperationMove | NSDragOperationDelete);
+    tInterval = [NSDate timeIntervalSinceReferenceDate];
+  }
+
+  return draggingMask;
 }
 
 - (void)draggingExited:(id<NSDraggingInfo>)sender
@@ -98,9 +120,11 @@ static NSTimeInterval tInterval = 0;
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
 {
-  [self animate];
+  if (draggingMask != NSDragOperationNone) {
+    [self animate];
+  }
   
-  return (NSDragOperationMove | NSDragOperationDelete);
+  return draggingMask;
 }
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender

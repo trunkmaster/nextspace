@@ -6,7 +6,8 @@
 
 @interface RecyclerIconView : NSView
 {
-  NSTimer *timer;
+  NSTimer      *timer;
+  unsigned int draggingMask;
 }
 - (void)setImage:(NSImage *)anImage;
 @end
