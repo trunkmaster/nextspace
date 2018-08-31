@@ -44,6 +44,7 @@
   NSTextField		*panelItems;
   NSScrollView		*panelView;
   NXIconView		*filesView;
+  NSButton              *restoreBtn;
 
   // Items loader
   NSOperationQueue	*operationQ;
@@ -66,6 +67,6 @@
 - (void)updateIconImage;
 - (void)updatePanel;
 
-- (void)purge;
+- (void)empty;
 
 @end
