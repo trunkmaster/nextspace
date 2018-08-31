@@ -80,7 +80,7 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (NSString *)_windowServerVersion;
 - (void)fillInfoPanelWithSystemInfo;
-- (NSString *)_windowState:(NSWindow *)window;
+// - (NSString *)_windowState:(NSWindow *)window;
 - (void)_saveWindowsStateAndClose;
 
 @end
@@ -176,28 +176,27 @@ static NSString *WMComputerShouldGoDownNotification =
 }
 
 #define X_WINDOW(win) (Window)[GSCurrentServer() windowDevice:[(win) windowNumber]]
+// - (NSString *)_windowState:(NSWindow *)window
+// {
+//   WWindow *wWin;
 
-- (NSString *)_windowState:(NSWindow *)window
-{
-  WWindow *wWin;
-
-  wWin = wWindowFor(X_WINDOW(window));
-  if (!wWin)
-    return nil;
+//   wWin = wWindowFor(X_WINDOW(window));
+//   if (!wWin)
+//     return nil;
     
-  if (wWin->flags.miniaturized) {
-    return @"Miniaturized";
-  }
-  else if (wWin->flags.shaded) {
-    return @"Shaded";
-  }
-  else if (wWin->flags.hidden) {
-    return @"Hidden";
-  }
-  else {
-    return @"Normal";
-  }
-}
+//   if (wWin->flags.miniaturized) {
+//     return @"Miniaturized";
+//   }
+//   else if (wWin->flags.shaded) {
+//     return @"Shaded";
+//   }
+//   else if (wWin->flags.hidden) {
+//     return @"Hidden";
+//   }
+//   else {
+//     return @"Normal";
+//   }
+// }
 
 - (void)_saveWindowsStateAndClose
 {
@@ -209,7 +208,7 @@ static NSString *WMComputerShouldGoDownNotification =
 
   // 1. Console
   if (console) {
-    winState = [self _windowState:[console window]];
+    winState = WWMWindowState([console window]);
     if (winState) {
       winInfo = @{@"Type":@"Console", @"State":winState};
       [windows addObject:winInfo];
@@ -232,7 +231,7 @@ static NSString *WMComputerShouldGoDownNotification =
   // To remove NXFileSystem's event monitor path correctly
   // first close all folder viewers (while catching root viewer)...
   for (FileViewer *fv in _fvs) {
-    winState = [self _windowState:[fv window]];
+    winState = WWMWindowState([fv window]);
     if (winState) {
       if ([fv isRootViewer] != NO) {
         viewerType = @"RootViewer";
@@ -340,6 +339,24 @@ static NSString *WMComputerShouldGoDownNotification =
   }
 }
 
+- (void)_saveRunningApplications
+{
+  [[NXDefaults userDefaults] setObject:WWMNotDockedAppList()
+                                forKey:@"SavedApplications"];
+  [[NXDefaults userDefaults] synchronize];  
+}
+- (void)_startSavedApplications
+{
+  NSArray *savedApps;
+  savedApps = [[NXDefaults userDefaults] objectForKey:@"SavedApplications"];
+
+  for (NSDictionary *appInfo in savedApps) {
+    if (WWMIsAppRunning([appInfo objectForKey:@"Name"]) == NO) {
+      WWMExecuteCommand([appInfo objectForKey:@"Command"]);
+    }
+  }
+}
+
 - (void)_finishTerminateProcess
 {
   // Close and save file viewers, close panels.
@@ -347,17 +364,15 @@ static NSString *WMComputerShouldGoDownNotification =
 
   // Close XWindow applications - wipeDesktop?
   
-  if (useInternalWindowManager)
-    {
-      // Hide Dock
-      WWMDockHideIcons(wScreenWithNumber(0)->dock);
-      if (recycler)
-        {
-          [[recycler appIcon] close];
-          [recycler release];
-        }
-      [workspaceBadge release];
+  if (useInternalWindowManager) {
+    // Hide Dock
+    WWMDockHideIcons(wScreenWithNumber(0)->dock);
+    if (recycler) {
+      [[recycler appIcon] close];
+      [recycler release];
     }
+    [workspaceBadge release];
+  }
   
   // NSLog(@"Application should terminate fileSystemMonitor RC: %lu",
   //       [fileSystemMonitor retainCount]);
@@ -373,11 +388,10 @@ static NSString *WMComputerShouldGoDownNotification =
   [mediaOperations release];
 
   // NXSystem objects declared in Workspace+WindowMaker.h
-  if (useInternalWindowManager)
-    {
-      [systemPower stopEventsMonitor];
-      [systemPower release];
-    }
+  if (useInternalWindowManager) {
+    [systemPower stopEventsMonitor];
+    [systemPower release];
+  }
         
   // Workspace Tools
   TEST_RELEASE(inspector);
@@ -386,15 +400,14 @@ static NSString *WMComputerShouldGoDownNotification =
   TEST_RELEASE(procManager);
   
   // Quit WindowManager, close all X11 applications.
-  if (useInternalWindowManager)
-    {
-      WWMShutdown(WSKillMode);
-      // // Trigger WindowMaker state variable
-      // SIG_WCHANGE_STATE(WSTATE_NEED_EXIT);
-      // // Generate some event to wake up WindowMaker GCD thread (wmaker_q)
-      // XWarpPointer(dpy, None, None, 0, 0, 0, 0, 100, 100);
-      // fprintf(stderr, "XWarpPointer called.\n");
-    }
+  if (useInternalWindowManager) {
+    WWMShutdown(WSKillMode);
+    // // Trigger WindowMaker state variable
+    // SIG_WCHANGE_STATE(WSTATE_NEED_EXIT);
+    // // Generate some event to wake up WindowMaker GCD thread (wmaker_q)
+    // XWarpPointer(dpy, None, None, 0, 0, 0, 0, 100, 100);
+    // fprintf(stderr, "XWarpPointer called.\n");
+  }
 }
 
 @end
@@ -546,6 +559,8 @@ static NSString *WMComputerShouldGoDownNotification =
           [[recycler appIcon] orderFrontRegardless];
         }
     }
+
+  [self _startSavedApplications];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -563,21 +578,22 @@ static NSString *WMComputerShouldGoDownNotification =
     {
     case NSAlertDefaultReturn: // Log Out
       isQuitting = YES;
-      if ([procManager terminateAllBGOperations] == NO)
-        {
-          isQuitting = NO;
-          return NO;
-        }
+      if ([procManager terminateAllBGOperations] == NO) {
+        isQuitting = NO;
+        return NO;
+      }
 
-      if ([procManager terminateAllApps] == NO)
-        {
-          [NSApp activateIgnoringOtherApps:YES];
-          NSRunAlertPanel(_(@"Power Off"),
-                          _(@"Some application terminate power off process."),
-                          _(@"Dismiss"), nil, nil);
-          isQuitting = NO;
-          return NO;
-        }
+      // Save running applications
+      [self _saveRunningApplications];
+  
+      if ([procManager terminateAllApps] == NO) {
+        [NSApp activateIgnoringOtherApps:YES];
+        NSRunAlertPanel(_(@"Power Off"),
+                        _(@"Some application terminate power off process."),
+                        _(@"Dismiss"), nil, nil);
+        isQuitting = NO;
+        return NO;
+      }
 
       // Close Workspace windows, hide Dock, quit WindowMaker
       [self _finishTerminateProcess];

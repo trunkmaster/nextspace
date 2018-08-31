@@ -107,6 +107,12 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
 
 NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret);
 
+// --- Windows and applications
+NSString *WWMWindowState(NSWindow *nsWindow);
+NSArray *WWMNotDockedAppList(void);
+BOOL WWMIsAppRunning(NSString *appName);
+pid_t WWMExecuteCommand(NSString *command);
+
 #endif //__Foundation_h_GNUSTEP_BASE_INCLUDE
 
 //-----------------------------------------------------------------------------
