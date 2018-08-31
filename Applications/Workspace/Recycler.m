@@ -279,6 +279,11 @@ static NSMutableArray *fileList = nil;
        selector:@selector(iconWidthDidChange:)
            name:@"IconSlotWidthDidChangeNotification"
          object:nil];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(selectionDidChange:)
+           name:NXIconViewDidChangeSelectionNotification
+         object:nil];
 }
 
 - (NSImage *)iconImage
@@ -367,13 +372,12 @@ static NSMutableArray *fileList = nil;
 {
   // NSLog(@"Recycler: mouse down!");
 
-  if ([theEvent clickCount] >= 2)
-    {
-      [self showPanel];
-    }
+  if ([theEvent clickCount] >= 2) {
+    [self showPanel];
+  }
 }
 
-- (void)purge
+- (void)empty
 {
   NSFileManager 	*fm = [NSFileManager defaultManager];
   NSMutableArray	*items = [[fm directoryContentsAtPath:_path] mutableCopy];
@@ -384,14 +388,12 @@ static NSMutableArray *fileList = nil;
     db = [[NSMutableDictionary alloc] initWithContentsOfFile:recyclerDBPath];
 
   // Remove .recycler.db from itmes list
-  for (NSString *itemPath in items)
-    {
-      if ([itemPath isEqualToString:[recyclerDBPath lastPathComponent]])
-        {
-          [items removeObjectAtIndex:[items indexOfObject:itemPath]];
-          break;
-        }
+  for (NSString *itemPath in items) {
+    if ([itemPath isEqualToString:[recyclerDBPath lastPathComponent]]) {
+      [items removeObjectAtIndex:[items indexOfObject:itemPath]];
+      break;
     }
+  }
   
   if (![[ProcessManager shared] startOperationWithType:DeleteOperation
                                                 source:_path
@@ -418,6 +420,62 @@ static NSMutableArray *fileList = nil;
   [items release];
   
   [self updateIconImage];
+}
+
+- (void)restore:(id)sender
+{
+  NSSet                 *selectedItems = [filesView selectedIcons];
+  NSFileManager 	*fm = [NSFileManager defaultManager];
+  NSMutableDictionary	*db = nil;
+  NSMutableDictionary   *restoreDict;
+  NSMutableArray        *restoreSet;
+  NSArray               *items;
+
+  // Database
+  if ([fm fileExistsAtPath:recyclerDBPath]) {
+    db = [[NSMutableDictionary alloc] initWithContentsOfFile:recyclerDBPath];
+  }
+
+  restoreDict = [[[NSMutableDictionary alloc] init] autorelease];
+  
+  if (db) {
+    NSString *destPath;
+    for (NXIcon *item in selectedItems) {
+      destPath = [db objectForKey:[item labelString]];
+      
+      restoreSet = [restoreDict objectForKey:destPath];
+      if (restoreSet == nil) {
+        restoreSet = [[NSMutableArray alloc] init];
+        [restoreSet autorelease];
+      }
+      [restoreSet addObject:[item labelString]];
+      [restoreDict setObject:restoreSet forKey:destPath];
+    }
+  }
+
+  for (NSString *key in [restoreDict allKeys]) {
+    items = [restoreDict objectForKey:key];
+    NSLog(@"%@ will be restored into `%@`", items, key);
+    if ([[ProcessManager shared] startOperationWithType:MoveOperation
+                                                 source:_path
+                                                 target:key
+                                                  files:items]) {
+      [db removeObjectsForKeys:items];
+      [db writeToFile:recyclerDBPath atomically:YES];
+    }
+    else {
+      break;
+    }
+  }
+  
+  if (itemsLoader) {
+    [itemsLoader cancel];
+  }
+
+  [self updateIconImage];
+
+  [db release];
+  [restoreDict release];
 }
 
 // -- NSOperation
@@ -534,6 +592,12 @@ static NSMutableArray *fileList = nil;
     [self updateIconImage];
     [self updatePanel];
   }
+}
+
+- (void)selectionDidChange:(NSNotification *)notif
+{
+  NSSet *icons = [[notif userInfo] objectForKey:@"Selection"];
+  [restoreBtn setEnabled:([icons count] > 0) ? YES : NO];
 }
 
 @end

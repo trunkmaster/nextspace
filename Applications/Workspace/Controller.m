@@ -811,7 +811,7 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (void)emptyRecycler:(id)sender
 {
-  [recycler purge];
+  [recycler empty];
 }
 
 // Disk
