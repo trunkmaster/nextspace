@@ -1009,11 +1009,9 @@ void WWMSetDockAppDndCommand(int position, const char *command)
       WWMDockStateSave();
     }
 }
-
 // ----------------------------
 // --- Launching appicons
 // ----------------------------
-
 // It is array of pointers to WAppIcon.
 // These pointers also placed into WScreen->app_icon_list.
 // Launching icons number is much smaller, but I use DOCK_MAX_ICONS
@@ -1190,6 +1188,127 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
 {
   _RemoveLaunchingIcon(appIcon);
   wAppIconDestroy(appIcon);
+}
+
+// ----------------------------
+// --- Windows and applications
+// ----------------------------
+#import <GNUstepGUI/GSDisplayServer.h>
+#define X_WINDOW(win) (Window)[GSCurrentServer() windowDevice:[(win) windowNumber]]
+NSString *WWMWindowState(NSWindow *nsWindow)
+{
+  WWindow *wWin = wWindowFor(X_WINDOW(nsWindow));
+  
+  if (!wWin)
+    return nil;
+    
+  if (wWin->flags.miniaturized) {
+    return @"Miniaturized";
+  }
+  else if (wWin->flags.shaded) {
+    return @"Shaded";
+  }
+  else if (wWin->flags.hidden) {
+    return @"Hidden";
+  }
+  else {
+    return @"Normal";
+  }
+}
+
+NSArray *WWMNotDockedAppList(void)
+{
+  NSMutableArray *appList = [[NSMutableArray alloc] init];
+  NSString       *appName;
+  NSString       *appCommand;
+  WAppIcon       *appIcon;
+  char           *command = NULL;
+
+  appIcon = wScreenWithNumber(0)->app_icon_list;
+  while (appIcon->next) {
+    if (!appIcon->docked) {
+      if (appIcon->command && appIcon->command != NULL) {
+        command = wstrdup(appIcon->command);
+      }
+      if (command == NULL && appIcon->icon->owner != NULL) {
+        command = GetCommandForWindow(appIcon->icon->owner->client_win);
+      }
+      if (command != NULL) {
+        appName = [[NSString alloc] initWithFormat:@"%s.%s",
+                                    appIcon->wm_instance, appIcon->wm_class];
+        appCommand = [[NSString alloc] initWithCString:command];
+        [appList addObject:@{@"Name":appName, @"Command":appCommand}];
+        [appName release];
+        [appCommand release];
+        wfree(command);
+        command = NULL;
+      }
+      else {
+        NSLog(@"Application `%s.%s` was not saved. No application command found.",
+              appIcon->wm_instance, appIcon->wm_class);
+      }
+    }
+    appIcon = appIcon->next;
+  }
+  
+  return [appList autorelease];
+}
+
+BOOL WWMIsAppRunning(NSString *appName)
+{
+  NSArray  *nameComps = [appName componentsSeparatedByString:@"."];
+  char     *app_instance = (char *)[[nameComps objectAtIndex:0] cString];
+  char     *app_class = (char *)[[nameComps objectAtIndex:1] cString];
+  BOOL     isAppFound = NO;
+  WAppIcon *appIcon;
+
+  appIcon = wScreenWithNumber(0)->app_icon_list;
+  while (appIcon->next) {
+    if (!strcmp(app_instance, appIcon->wm_instance) &&
+        !strcmp(app_class, appIcon->wm_class)) {
+      isAppFound = YES;
+      break;
+    }
+    appIcon = appIcon->next;
+  }
+
+  return isAppFound;
+}
+
+pid_t WWMExecuteCommand(NSString *command)
+{
+  WScreen *scr = wScreenWithNumber(0);
+  pid_t   pid;
+  char    **argv;
+  int     argc;
+
+  wtokensplit((char *)[command cString], &argv, &argc);
+
+  if (!argc) {
+    return 0;
+  }
+
+  pid = fork();
+  if (pid == 0) {
+    char **args;
+    int i;
+
+    // SetupEnvironment(scr);
+
+    args = malloc(sizeof(char *) * (argc + 1));
+    if (!args)
+      exit(111);
+    for (i = 0; i < argc; i++) {
+      args[i] = argv[i];
+    }
+    args[argc] = NULL;
+    execvp(argv[0], args);
+    exit(111);
+  }
+  while (argc > 0)
+    wfree(argv[--argc]);
+  wfree(argv);
+  return pid;  
 }
 
 //--- End of functions which require existing @autorelease pool ---
