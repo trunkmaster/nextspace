@@ -60,8 +60,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   return NXMakeIconSlot(x, (i - x) / slotsWide);
 }
 
-// NSString * NXIconViewDidChangeSelectionNotification =
-//              @"NXIconViewDidChangeSelectionNotification";
+NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelectionNotification";
 
 /// Private NXIconView methods.
 @interface NXIconView (Private)
@@ -1417,11 +1416,10 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       [delegate iconView:self didChangeSelectionTo:sel];
     }
 
-  // [[NSNotificationCenter defaultCenter]
-  //   postNotificationName:NXIconViewDidChangeSelectionNotification
-  //       	  object:self
-  //       	userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-  //                                        sel, @"Selection", nil]];
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:NXIconViewDidChangeSelectionNotification
+        	  object:self
+        	userInfo:@{@"Selection":sel}];
 }
 
 @end
