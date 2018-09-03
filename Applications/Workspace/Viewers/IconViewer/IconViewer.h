@@ -1,5 +1,5 @@
 /*
-   The icons viewer.
+   The Icon viewer.
 
    Copyright (C) 2005 Saso Kiselkov
 
@@ -21,57 +21,52 @@
 #import <AppKit/AppKit.h>
 
 #import <Protocols/FileViewer.h>
-#import <Protocols/FileSystemInterface.h>
 #import <Protocols/Viewer.h>
 
-@class XSIconView, XSIcon, XSIconLabel;
+@class NXIconView, NXIcon, NXIconLabel;
 
-@interface IconsViewer : NSObject <Viewer>
+@interface IconViewer : NSObject <Viewer>
 {
-  XSIconView   *iconView;
+  NXIconView   *iconView;
   NSScrollView *view;
 
   NSString     *currentPath;
   NSArray      *selection;
 
-  id <FileSystemInterface> iface;
   id <FileViewer> owner;
 
   unsigned int draggingSourceMask;
 }
 
-- init;
-
-- (void)dealloc;
-
 - (void)open:(id)sender;
 
+// --- Drag and Drop
 - (void)iconDragged:(id)sender event:(NSEvent *)ev;
-
 - (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 					       icon:(XSIcon *)sender;
 
  // icon dragging destination
 - (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
-			   icon:(XSIcon *)ic;
+			   icon:(NXIcon *)ic;
 - (void)draggingExited:(id <NSDraggingInfo>)sender
-		  icon:(XSIcon *)icon;
+		  icon:(NXIcon *)icon;
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
-			   icon:(XSIcon *)anIcon;
+			   icon:(NXIcon *)anIcon;
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-			icon:(XSIcon *)anIcon;
+			icon:(NXIcon *)anIcon;
 
  // icon view dragging destination
 - (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
-		       iconView:(XSIconView *)iv;
+		       iconView:(NXIconView *)iv;
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
-                       iconView:(XSIconView *)iconView;
+                       iconView:(NXIconView *)iconView;
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-		    iconView:(XSIconView *)iconView;
+		    iconView:(NXIconView *)iconView;
 
 - (void)iconSlotWidthChanged:(NSNotification *)notif;
 
-- (void)   iconLabel:(XSIconLabel *)iconLabel
+// --- Notification
+- (void)   iconLabel:(NXIconLabel *)iconLabel
  didChangeStringFrom:(NSString *)oldName
                   to:(NSString *)newName;
 

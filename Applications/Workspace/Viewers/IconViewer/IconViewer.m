@@ -19,91 +19,81 @@
 */
 
 #include <AppKit/AppKit.h>
-#include "IconsViewer.h"
+#include "IconViewer.h"
 
-#import <XSAppKit/XSAppKit.h>
-#import <XSFoundation/XSPreferences.h>
+#import <NXAppKit/NXAppKit.h>
+#import <NXFoundation/NXDefaults.h>
 
-@implementation IconsViewer
+@implementation IconViewer
 
-+ (NSString *) viewerType
++ (NSString *)viewerType
 {
-        return _(@"Icons");
+  return _(@"Icon");
 }
 
-+ (NSString *) viewerShortcut
++ (NSString *)viewerShortcut
 {
-        return _(@"I");
+  return _(@"I");
 }
 
 - (void) dealloc
 {
-        [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
 
-        TEST_RELEASE(currentPath);
-        TEST_RELEASE(selection);
-        TEST_RELEASE(iface);
+  TEST_RELEASE(currentPath);
+  TEST_RELEASE(selection);
+  TEST_RELEASE(iface);
 
-        TEST_RELEASE(view);
+  TEST_RELEASE(view);
 
-        [super dealloc];
+  [super dealloc];
 }
 
 - init
 {
-        NSUserDefaults * df = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
 
-        [super init];
+  [super init];
 
-        iconView = [[[XSIconView alloc] initSlotsWide: 3] autorelease];
-        [self iconSlotWidthChanged: nil];
+  iconView = [[[NXIconView alloc] initSlotsWide: 3] autorelease];
+  [self iconSlotWidthChanged:nil];
 
-        [iconView setTarget: self];
-        [iconView setDoubleAction: @selector(open:)];
-        [iconView setDragAction: @selector(iconDragged:event:)];
-        [iconView setSendsDoubleActionOnReturn: YES];
+  [iconView setTarget: self];
+  [iconView setDoubleAction: @selector(open:)];
+  [iconView setDragAction: @selector(iconDragged:event:)];
+  [iconView setSendsDoubleActionOnReturn: YES];
 
-        [iconView setDelegate: self];
-        [iconView registerForDraggedTypes: [NSArray arrayWithObject:
-          NSFilenamesPboardType]];
+  [iconView setDelegate: self];
+  [iconView registerForDraggedTypes: [NSArray arrayWithObject:
+                                                NSFilenamesPboardType]];
 
-        view = [[NSScrollView alloc] initWithFrame: NSMakeRect(0, 0, 300, 300)];
-        [view setDocumentView: iconView];
-        [iconView setFrame: NSMakeRect(0, 0,
-                                       [[view contentView] frame].size.width,
-                                       0)];
-        [iconView setAutoresizingMask: NSViewWidthSizable];
-        [view setBorderType: NSBezelBorder];
-        [view setHasVerticalScroller: YES];
+  view = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300)];
+  [view setDocumentView:iconView];
+  [iconView setFrame:NSMakeRect(0, 0, [[view contentView] frame].size.width, 0)];
+  [iconView setAutoresizingMask:NSViewWidthSizable];
+  [view setBorderType:NSBezelBorder];
+  [view setHasVerticalScroller:YES];
 
-        [[NSNotificationCenter defaultCenter]
-          addObserver: self
-             selector: @selector(iconSlotWidthChanged:)
-                 name: @"IconSlotWidthDidChangeNotification"
-               object: nil];
+  [[NSNotificationCenter defaultCenter]
+          addObserver:self
+             selector:@selector(iconSlotWidthChanged:)
+                 name:@"IconSlotWidthDidChangeNotification"
+               object:nil];
 
-        return self;
+  return self;
 }
 
 - (void) setOwner: (id <FileViewer>) _owner
 {
-        owner = _owner;
+  owner = _owner;
 }
 
-- (void) setFileSystemInterface: (id <FileSystemInterface,NSObject>) fsInterface
-{
-  if (iface)
-    [(NSObject *)iface release];
-
-  iface = [fsInterface retain];
-}
-
-- (void) reloadPathWithSelection:(NSString *)newSelection
+- (void)reloadPathWithSelection:(NSString *)newSelection
 {
   NSRect r = [iconView visibleRect];
 
-  [self displayPath: currentPath selection: selection];
-  [iconView scrollRectToVisible: r];
+  [self displayPath:currentPath selection:selection];
+  [iconView scrollRectToVisible:r];
 }
 
 - (void) reloadPath:(NSString *)path
@@ -111,12 +101,12 @@
 {
   NSRect r = [iconView visibleRect];
 
-  [self displayPath: currentPath selection: selection];
-  [iconView scrollRectToVisible: r];
+  [self displayPath:currentPath selection:selection];
+  [iconView scrollRectToVisible:r];
 }
 
-- (void) displayPath: (NSString *) dirPath
-           selection: (NSArray *) filenames
+- (void)displayPath:(NSString *) dirPath
+          selection:(NSArray *) filenames
 {
   NSEnumerator * e;
   NSString * filename;
@@ -133,9 +123,9 @@
   while ((filename = [e nextObject]) != nil)
     {
       NSString * path = [dirPath stringByAppendingPathComponent:filename];
-      XSIcon * anIcon;
+      NXIcon * anIcon;
 
-      anIcon = [[XSIcon new] autorelease];
+      anIcon = [[NXIcon new] autorelease];
       [anIcon setLabelString:filename];
       [anIcon setIconImage:[iface iconForFile:path]];
       [anIcon setDelegate:self];
@@ -161,32 +151,32 @@
     [iconView scrollPoint: NSZeroPoint];
 }
 
-- (NSView *) view
+- (NSView *)view
 {
-        return view;
+  return view;
 }
 
 - (NSView *)keyView
 {
-    return view;
+  return view;
 }
 
-- (void) setVerticalSize: (float) aSize
+- (void)setVerticalSize:(float)aSize
 {
 }
 
-- (void) setNumberOfVerticals: (unsigned) num
+- (void)setNumberOfVerticals:(unsigned)num
 {
 }
 
-- (void) scrollToRange: (NSRange) range
+- (void)scrollToRange:(NSRange)range
 {
 }
 
-// Actually it's read by XSIconView object
+// Actually it's read by NXIconView object
 - (CGFloat)columnWidth
 {
-  return [[XSDefaults userDefaults] floatForKey:@"IconSlotWidth"];
+  return [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"];
 }
 
 - (void)setColumnWidth:(CGFloat)width
@@ -218,12 +208,12 @@
   // TODO: add implementation
 }
 
-- (void)    iconView: (XSIconView*) anIconView
+- (void)    iconView: (NXIconView*) anIconView
 didChangeSelectionTo: (NSSet *) selectedIcons
 {
   NSMutableArray * sel = [NSMutableArray array];
   NSEnumerator * e = [selectedIcons objectEnumerator];
-  XSIcon * icon;
+  NXIcon * icon;
   BOOL showsExpanded = ([selectedIcons count] == 1);
 
   while ((icon = [e nextObject]) != nil) {
@@ -259,6 +249,10 @@ didChangeSelectionTo: (NSSet *) selectedIcons
   [owner open: view];
 }
 
+
+
+
+
 - (void) iconDragged: sender event: (NSEvent *) ev
 {
         NSString * path = [currentPath stringByAppendingPathComponent:
@@ -285,13 +279,13 @@ didChangeSelectionTo: (NSSet *) selectedIcons
 }
 
 - (unsigned int) draggingSourceOperationMaskForLocal: (BOOL) isLocal
-                                                icon: (XSIcon *) sender
+                                                icon: (NXIcon *) sender
 {
         return draggingSourceMask;
 }
 
 - (unsigned int) draggingEntered: (id <NSDraggingInfo>) sender
-                            icon: (XSIcon *) icon
+                            icon: (NXIcon *) icon
 {
         NSString * destPath;
         NSArray * paths;
@@ -319,21 +313,21 @@ didChangeSelectionTo: (NSSet *) selectedIcons
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>) sender
-                   icon: (XSIcon *) icon
+                   icon: (NXIcon *) icon
 {
         [icon setIconImage: [iface iconForFile: [currentPath
           stringByAppendingPathComponent: [icon labelString]]]];
 }
 
 - (BOOL) prepareForDragOperation: (id <NSDraggingInfo>) sender
-                            icon: (XSIcon *) icon
+                            icon: (NXIcon *) icon
 {
         [self draggingExited: sender icon: icon];
         return YES;
 }
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>) sender
-                         icon: (XSIcon *) anIcon
+                         icon: (NXIcon *) anIcon
 {
         NSMutableArray * filenames = [NSMutableArray array];
         NSArray * filePaths = [[sender draggingPasteboard]
@@ -371,7 +365,7 @@ didChangeSelectionTo: (NSSet *) selectedIcons
 }
 
 - (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
-                       iconView: (XSIconView *) iv
+                       iconView: (NXIconView *) iv
 {
         NSString * destPath;
         NSArray * paths;
@@ -395,13 +389,13 @@ didChangeSelectionTo: (NSSet *) selectedIcons
 }
 
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
-                       iconView: (XSIconView *) iconView
+                       iconView: (NXIconView *) iconView
 {
         return YES;
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-                    iconView: (XSIconView *) iconView
+                    iconView: (NXIconView *) iconView
 {
         NSMutableArray * filenames = [NSMutableArray array];
         NSArray * filePaths = [[sender draggingPasteboard]
@@ -449,7 +443,7 @@ didChangeSelectionTo: (NSSet *) selectedIcons
   [iconView setSlotSize: slotSize];
 }
 
-- (void)   iconLabel: (XSIconLabel *) iconLabel
+- (void)   iconLabel: (NXIconLabel *) iconLabel
  didChangeStringFrom: (NSString *) oldName
                   to: (NSString *) newName
 {
