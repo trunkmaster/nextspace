@@ -21,13 +21,12 @@ static NSMutableArray *fileList = nil;
                   path:(NSString *)dirPath
              selection:(NSArray *)filenames
 {
-  if (self != nil)
-    {
-      iconView = view;
-      statusField = status;
-      directoryPath = dirPath;
-      selectedFiles = filenames;
-    }
+  if (self != nil) {
+    iconView = view;
+    statusField = status;
+    directoryPath = dirPath;
+    selectedFiles = filenames;
+  }
 
   return self;
 }
@@ -107,13 +106,14 @@ static NSMutableArray *fileList = nil;
     [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
     [anIcon setPaths:[NSArray arrayWithObject:path]];
 
+    [iconView performSelectorOnMainThread:@selector(addIcon:)
+                               withObject:anIcon
+                            waitUntilDone:YES];
+    
     if ([selectedFiles containsObject:filename]) {
       [selected addObject:anIcon];
     }
 
-    [iconView performSelectorOnMainThread:@selector(addIcon:)
-                               withObject:anIcon
-                            waitUntilDone:YES];
     x++;
     if (x >= slotsWide) {
       [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
@@ -245,6 +245,10 @@ static NSMutableArray *fileList = nil;
   NSSize iconSize;
   
   [panel setFrameAutosaveName:@"Recycler"];
+
+  [panelIcon setRefusesFirstResponder:YES];
+  [[panelView verticalScroller] setRefusesFirstResponder:YES];
+  [restoreBtn setRefusesFirstResponder:YES];
   
   [panelView setHasHorizontalScroller:NO];
   [panelView setHasVerticalScroller:YES];
@@ -364,7 +368,8 @@ static NSMutableArray *fileList = nil;
 
   [self updateIconImage];
   [self updatePanel];
-  
+
+  [panel makeFirstResponder:filesView];
   [panel makeKeyAndOrderFront:self];
 }
 
@@ -430,32 +435,53 @@ static NSMutableArray *fileList = nil;
   NSMutableDictionary   *restoreDict;
   NSMutableArray        *restoreSet;
   NSArray               *items;
+  NSMutableSet          *missedItems = [NSMutableSet new];
 
   // Database
   if ([fm fileExistsAtPath:recyclerDBPath]) {
     db = [[NSMutableDictionary alloc] initWithContentsOfFile:recyclerDBPath];
   }
 
-  restoreDict = [[[NSMutableDictionary alloc] init] autorelease];
-  
+  restoreDict = [[NSMutableDictionary alloc] init];
+  missedItems = [[NSMutableSet alloc] init];
+
   if (db) {
     NSString *destPath;
+    NSString *itemName;
+    
     for (NXIcon *item in selectedItems) {
-      destPath = [db objectForKey:[item labelString]];
+      if (!item || [item isKindOfClass:[NSNull class]])
+        continue;
+
+      itemName = [item labelString];
       
-      restoreSet = [restoreDict objectForKey:destPath];
-      if (restoreSet == nil) {
-        restoreSet = [[NSMutableArray alloc] init];
-        [restoreSet autorelease];
+      if ((destPath = [db objectForKey:itemName]) == nil) {
+        // NSLog(@"Recycler: %@ has no record in Recycler DB.", itemName);
+        [missedItems addObject:item];
+        continue;
       }
-      [restoreSet addObject:[item labelString]];
+      
+      if ((restoreSet = [restoreDict objectForKey:destPath]) == nil) {
+        restoreSet = [NSMutableArray arrayWithObject:itemName];
+      }
+      else {
+        [restoreSet addObject:itemName];
+      }
+      
       [restoreDict setObject:restoreSet forKey:destPath];
     }
   }
 
+  if ([missedItems count] > 0) {
+    NXRunAlertPanel(@"Restore from Recycler",
+                    @"The are items with unknown original location.\n"
+                    @"These items will be left selected in Recyler panel.",
+                    @"OK", nil, nil);
+  }
+
   for (NSString *key in [restoreDict allKeys]) {
     items = [restoreDict objectForKey:key];
-    NSLog(@"%@ will be restored into `%@`", items, key);
+    // NSLog(@"%@ will be restored into `%@`", items, key);
     if ([[ProcessManager shared] startOperationWithType:MoveOperation
                                                  source:_path
                                                  target:key
@@ -468,14 +494,9 @@ static NSMutableArray *fileList = nil;
     }
   }
   
-  if (itemsLoader) {
-    [itemsLoader cancel];
-  }
-
-  [self updateIconImage];
-
   [db release];
   [restoreDict release];
+  [missedItems release];
 }
 
 // -- NSOperation
@@ -496,6 +517,8 @@ static NSMutableArray *fileList = nil;
   }
 
   [filesView adjustToFitIcons];
+  [restoreBtn setEnabled:([[filesView selectedIcons] count] > 0) ? YES : NO];
+  [panel makeFirstResponder:filesView];
 }
 
 // IconView actions
@@ -588,6 +611,8 @@ static NSMutableArray *fileList = nil;
   NSDictionary *changes = [notif userInfo];
   NSString     *changedPath = [changes objectForKey:@"ChangedPath"];
 
+  NSLog(@"Recycler: %@ path changed.", changedPath);
+
   if ([changedPath isEqualToString:_path]) {
     [self updateIconImage];
     [self updatePanel];
@@ -596,7 +621,12 @@ static NSMutableArray *fileList = nil;
 
 - (void)selectionDidChange:(NSNotification *)notif
 {
-  NSSet *icons = [[notif userInfo] objectForKey:@"Selection"];
+  NSSet *icons;
+
+  if ([notif object] != filesView)
+    return;
+  
+  icons = [[notif userInfo] objectForKey:@"Selection"];
   [restoreBtn setEnabled:([icons count] > 0) ? YES : NO];
 }
 
