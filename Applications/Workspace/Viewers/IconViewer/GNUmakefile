@@ -1,7 +1,7 @@
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-BUNDLE_NAME=IconsViewer
+BUNDLE_NAME=Icon
 BUNDLE_EXTENSION=.viewer
 
 $(BUNDLE_NAME)_OBJC_FILES=$(wildcard *.m)
