@@ -9,10 +9,9 @@ static Launcher *shared = nil;
 
 + shared
 {
-  if (shared == nil)
-    {
-      shared = [self new];
-    }
+  if (shared == nil) {
+    shared = [self new];
+  }
 
   return shared;
 }
@@ -43,10 +42,9 @@ static Launcher *shared = nil;
 
 - (void)activate
 {
-  if (window == nil)
-    {
-      [NSBundle loadNibNamed:@"Launcher" owner:self];
-    }
+  if (window == nil) {
+    [NSBundle loadNibNamed:@"Launcher" owner:self];
+  }
 
   [commandName selectText:nil];
   [window makeKeyAndOrderFront:nil];
@@ -74,17 +72,15 @@ static Launcher *shared = nil;
 /*  [commandTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
   [commandTask setStandardError:[NSFileHandle fileHandleWithNullDevice]];
   [commandTask setStandardInput:[NSFileHandle fileHandleWithNullDevice]];*/
-  NS_DURING
-    {
-      [commandTask launch];
-    }
-  NS_HANDLER
-    {
-      NSRunAlertPanel(@"Run Command",
-		      @"Run command failed with exception: \'%@\'", 
-		      @"Close", nil, nil,
-		      [localException reason]);
-    }
+  NS_DURING {
+    [commandTask launch];
+  }
+  NS_HANDLER {
+    NXRunAlertPanel(@"Run Command",
+                    @"Run command failed with exception: \'%@\'", 
+                    @"Close", nil, nil,
+                    [localException reason]);
+  }
   NS_ENDHANDLER
 
 //  [commandArgs release];
