@@ -465,6 +465,20 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     return SlotFromIndex(slotsWide, i);
 }
 
+- (NXIcon *)iconWithLabelString:(NSString *)label
+{
+  NXIcon *iconFound;
+  
+  for (NXIcon *icon in icons) {
+    if (icon && [[icon labelString] isEqualToString:label]) {
+      iconFound = icon;
+      break;
+    }
+  }
+
+  return iconFound;
+}
+
 //------------------------------------------------------------------------------
 // Sizes and autosizing
 //------------------------------------------------------------------------------
@@ -772,25 +786,23 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 - (void)mouseDown:(NSEvent *)ev
 {
   NSPoint      p;
-  NSEnumerator *e;
-  NXIcon       *icon;
   NSMutableSet *sel;
+  NSRect       intersect;
   unsigned     modifierFlags;
 
-  NSLog(@"NXIV:mouseDown");
+  // NSLog(@"NXIV:mouseDown: %@", icons);
 
   if ([ev clickCount] >= 2)
     return;
 
   // in case we don't allow multiple selections and we've been
   // clicked, just deselect all icons and return
-  if (allowsMultipleSelection == NO)
-    {
-      [self updateSelectionWithIcons:nil modifierFlags:0];
-      return;
-    }
+  if (allowsMultipleSelection == NO) {
+    [self updateSelectionWithIcons:nil modifierFlags:0];
+    return;
+  }
 
-  //        haveEnclosingScrollView = ([self enclosingScrollView] != nil);
+  // haveEnclosingScrollView = ([self enclosingScrollView] != nil);
 
   p = [self convertPoint:[ev locationInWindow] fromView:nil];
   modifierFlags = [ev modifierFlags];
@@ -801,84 +813,78 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
   selectionRect.size.height = 0;
   drawSelectionRect = YES;
 
-  while ([(ev = [[self window] nextEventMatchingMask:NSAnyEventMask]) type] 
-	 != NSLeftMouseUp)
-    {
-      if ([ev type] == NSLeftMouseDragged)
-	{
-	  NSRect oldRect = selectionRect;
-	  NSRect redraw1, redraw2;
+  while ([(ev = [[self window] nextEventMatchingMask:NSAnyEventMask]) type]
+	 != NSLeftMouseUp) {
+    if ([ev type] == NSLeftMouseDragged) {
+      NSRect oldRect = selectionRect;
+      NSRect redraw1, redraw2;
 
-	  p = [self convertPoint:[ev locationInWindow]
-			fromView:nil];
+      p = [self convertPoint:[ev locationInWindow]
+                    fromView:nil];
 
-	  [self autoscroll:ev];
+      [self autoscroll:ev];
 
-	  selectionRect.size.width = p.x - selectionRect.origin.x;
-	  selectionRect.size.height = p.y - selectionRect.origin.y;
+      selectionRect.size.width = p.x - selectionRect.origin.x;
+      selectionRect.size.height = p.y - selectionRect.origin.y;
 
-	  redraw1 = PositiveRect(oldRect);
-	  redraw2 = PositiveRect(selectionRect);
+      redraw1 = PositiveRect(oldRect);
+      redraw2 = PositiveRect(selectionRect);
 
-	  // only redraw the lines in order to avoid "flashing"
-	  // effects on the icons
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw1.origin.x, redraw1.origin.y,
-                             redraw1.size.width, 1)];
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw1.origin.x, redraw1.origin.y,
-                             1, redraw1.size.height)];
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw1.origin.x + redraw1.size.width - 1,
-                             redraw1.origin.y, 1, redraw1.size.height)];
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw1.origin.x,
-                             redraw1.origin.y + redraw1.size.height-1,
-                             redraw1.size.width, 1)];
+      // only redraw the lines in order to avoid "flashing"
+      // effects on the icons
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw1.origin.x, redraw1.origin.y,
+                         redraw1.size.width, 1)];
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw1.origin.x, redraw1.origin.y,
+                         1, redraw1.size.height)];
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw1.origin.x + redraw1.size.width - 1,
+                         redraw1.origin.y, 1, redraw1.size.height)];
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw1.origin.x,
+                         redraw1.origin.y + redraw1.size.height-1,
+                         redraw1.size.width, 1)];
 
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw2.origin.x, redraw2.origin.y,
-                             redraw2.size.width, 1)];
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw2.origin.x, redraw2.origin.y,
-                             1, redraw2.size.height)];
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw2.origin.x + redraw2.size.width - 1,
-                             redraw2.origin.y, 1, redraw2.size.height)];
-	  [self setNeedsDisplayInRect:
-                  NSMakeRect(redraw2.origin.x,
-                             redraw2.origin.y + redraw2.size.height-1,
-                             redraw2.size.width, 1)];
-	}
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw2.origin.x, redraw2.origin.y,
+                         redraw2.size.width, 1)];
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw2.origin.x, redraw2.origin.y,
+                         1, redraw2.size.height)];
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw2.origin.x + redraw2.size.width - 1,
+                         redraw2.origin.y, 1, redraw2.size.height)];
+      [self setNeedsDisplayInRect:
+              NSMakeRect(redraw2.origin.x,
+                         redraw2.origin.y + redraw2.size.height-1,
+                         redraw2.size.width, 1)];
     }
+  }
 
   drawSelectionRect = NO;
   [self setNeedsDisplay:YES];
 
-  if (selectionRect.size.width < 0)
-    {
-      selectionRect.size.width = -selectionRect.size.width;
-      selectionRect.origin.x -= selectionRect.size.width;
-    }
-  if (selectionRect.size.height < 0)
-    {
-      selectionRect.size.height = -selectionRect.size.height;
-      selectionRect.origin.y -= selectionRect.size.height;
-    }
+  if (selectionRect.size.width < 0) {
+    selectionRect.size.width = 0;
+    selectionRect.origin.x -= selectionRect.size.width;
+  }
+  if (selectionRect.size.height < 0) {
+    selectionRect.size.height = 0;
+    selectionRect.origin.y -= selectionRect.size.height;
+  }
 
   sel = [[NSMutableSet new] autorelease];
-  e = [icons objectEnumerator];
-  while ((icon = [e nextObject]) != nil)
-    {
-      NSRect intersect = NSIntersectionRect(selectionRect, [icon frame]);
-
-      if (intersect.size.width == 0)
-	{
-	  continue;
-	}
-
-      [sel addObject:icon];
-    }
+  for (NXIcon *icon in icons) {
+    if (!icon || [icon isKindOfClass:[NSNull class]])
+      continue;
+    
+    intersect = NSIntersectionRect(selectionRect, [icon frame]);
+    if (intersect.size.width == 0)
+      continue;
+    
+    [sel addObject:icon];
+  }
 
   [self updateSelectionWithIcons:sel modifierFlags:modifierFlags];
 }
@@ -1138,8 +1144,8 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 //-----------------------------------------------------------------------------
 
 // --- NSDraggingDestination
-/*
 // - Before the Image is Released
+/*
 - (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
 {
   if (delegate != nil 
@@ -1354,26 +1360,37 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
   }
 
   if ([delegate respondsToSelector:
-		@selector(iconView:shouldSelectIcons:selectionMode:)]) {
+        	@selector(iconView:shouldSelectIcons:selectionMode:)]) {
     someIcons = [delegate iconView:self
                           shouldSelectIcons:someIcons
                      selectionMode:mode];
   }
 
-  if (mode == NXIconSelectionSubtractiveMode)
-    {
-      [someIcons makeObjectsPerform:@selector(deselect:)];
-      [selectedIcons minusSet:someIcons];
+  if (mode == NXIconSelectionSubtractiveMode) {
+    for (NXIcon *icon in someIcons) {
+      if (icon && ![icon isKindOfClass:[NSNull class]])
+        [icon deselect:self];
     }
+    [selectedIcons minusSet:someIcons];
+  }
   else if (allowsMultipleSelection) {
     if (mode == NXIconSelectionAdditiveMode) {
-      [someIcons makeObjectsPerform:@selector(select:)];
+      for (NXIcon *icon in someIcons) {
+        if (icon && ![icon isKindOfClass:[NSNull class]])
+          [icon select:self];
+      }
       [selectedIcons unionSet:someIcons];
     }
     else {
-      [selectedIcons makeObjectsPerform:@selector(deselect:)];
+      for (NXIcon *icon in selectedIcons) {
+        if (icon && ![icon isKindOfClass:[NSNull class]])
+          [icon deselect:self];
+      }
       [selectedIcons setSet:someIcons];
-      [selectedIcons makeObjectsPerform:@selector(select:)];
+      for (NXIcon *icon in selectedIcons) {
+        if (icon && ![icon isKindOfClass:[NSNull class]])
+          [icon select:self];
+      }
     }
   }
   else {
@@ -1395,19 +1412,17 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     }
   }
 
-  if ([selectedIcons count] != 0) {
-      NSEnumerator *e;
-      NXIcon       *ic;
-      NSRect       r;
+  if ([selectedIcons count] > 0) {
+    // NSRect r = [[selectedIcons anyObject] frame];
+    NSRect r = NSMakeRect(0,0,0,0);
 
-      r = [[selectedIcons anyObject] frame];
-      e = [selectedIcons objectEnumerator];
-      while ((ic = [e nextObject]) != nil) {
-  	  r = NSUnionRect(r, NSUnionRect([ic frame], [[ic label] frame]));
-	}
-
-      [self scrollRectToVisible:r];
+    for (NXIcon *icon in selectedIcons) {
+      if (icon && ![icon isKindOfClass:[NSNull class]]) {
+        r = NSUnionRect(r, NSUnionRect([icon frame], [[icon label] frame]));
+      }
     }
+    [self scrollRectToVisible:r];
+  }
 
   sel = [[selectedIcons copy] autorelease];
 

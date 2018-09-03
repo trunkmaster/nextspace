@@ -160,6 +160,8 @@ typedef struct {
     `x' and `y' coordinates set to NSNotFound. */
 - (NXIconSlot)slotForIcon:(NXIcon *)anIcon;
 
+- (NXIcon *)iconWithLabelString:(NSString *)label;
+
 /** Sets a new slot size in the receiver and repositions all
     icons accordingly. */
 - (void)setSlotSize:(NSSize)newSlotSize;
