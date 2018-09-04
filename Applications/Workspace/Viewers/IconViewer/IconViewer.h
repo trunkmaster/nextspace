@@ -25,49 +25,42 @@
 
 @class NXIconView, NXIcon, NXIconLabel;
 
+@interface ViewerItemsLoader : NSOperation
+{
+  NXIconView     *iconView;
+  NSString       *directoryPath;
+  NSMutableArray *directoryContents;
+  NSArray        *selectedFiles;
+}
+
+- (id)initWithIconView:(NXIconView *)view
+                  path:(NSString *)dirPath
+              contents:(NSArray *)dirContents
+             selection:(NSArray *)filenames;
+
+@end
+
 @interface IconViewer : NSObject <Viewer>
 {
-  NXIconView   *iconView;
-  NSScrollView *view;
+  id <FileViewer> _owner;
 
+  NSScrollView *view;
+  NXIconView   *iconView;
+
+  NSString     *rootPath;
   NSString     *currentPath;
   NSArray      *selection;
 
-  id <FileViewer> owner;
-
-  unsigned int draggingSourceMask;
+  // Items loader
+  NSOperationQueue	*operationQ;
+  ViewerItemsLoader	*itemsLoader;
+  
+  // Dragging
+  id			draggedSource;
+  PathIcon		*draggedIcon;
+  NSDragOperation	draggingSourceMask;
 }
 
 - (void)open:(id)sender;
-
-// --- Drag and Drop
-- (void)iconDragged:(id)sender event:(NSEvent *)ev;
-- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
-					       icon:(XSIcon *)sender;
-
- // icon dragging destination
-- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
-			   icon:(NXIcon *)ic;
-- (void)draggingExited:(id <NSDraggingInfo>)sender
-		  icon:(NXIcon *)icon;
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
-			   icon:(NXIcon *)anIcon;
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-			icon:(NXIcon *)anIcon;
-
- // icon view dragging destination
-- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
-		       iconView:(NXIconView *)iv;
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
-                       iconView:(NXIconView *)iconView;
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-		    iconView:(NXIconView *)iconView;
-
-- (void)iconSlotWidthChanged:(NSNotification *)notif;
-
-// --- Notification
-- (void)   iconLabel:(NXIconLabel *)iconLabel
- didChangeStringFrom:(NSString *)oldName
-                  to:(NSString *)newName;
 
 @end

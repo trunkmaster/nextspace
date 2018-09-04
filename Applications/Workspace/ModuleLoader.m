@@ -27,11 +27,8 @@
 #import "Protocols/PrefsModule.h"
 
 @interface ModuleLoader (Private)
-
 - (void)loadViewers;
-
 - (void)loadPreferences;
-
 @end
 
 @implementation ModuleLoader (Private)
@@ -78,9 +75,10 @@ static ModuleLoader * shared = nil;
 
 + shared
 {
-        if (shared == nil)
-                shared = [self new];
-        return shared;
+  if (shared == nil) {
+    shared = [self new];
+  }
+  return shared;
 }
 
 - (void) dealloc
@@ -95,24 +93,22 @@ static ModuleLoader * shared = nil;
 
 - (id <Viewer>)viewerForType:(NSString *)viewerType
 {
-  NSEnumerator * e;
-  NSBundle * bndl;
+  Class      viewerClass;
+  id<Viewer> viewer;
 
-  if (viewerBundles == nil)
-    {
-      [self loadViewers];
+  if (viewerBundles == nil) {
+    [self loadViewers];
+  }
+
+  for (NSBundle *bundle in viewerBundles) {
+    viewerClass = [bundle principalClass];
+    if ([[viewerClass viewerType] isEqualToString:viewerType]) {
+      viewer = [[viewerClass alloc] init];
+      break;
     }
+  }
 
-  e = [viewerBundles objectEnumerator];
-  while ((bndl = [e nextObject]) != nil)
-    {
-      Class cls = [bndl principalClass];
-
-      if ([[cls viewerType] isEqualToString:viewerType])
-        return [[cls new] autorelease];
-    }
-
-  return nil;
+  return [viewer autorelease];
 }
 
 - (id <Viewer>)preferredViewer
@@ -156,8 +152,9 @@ static ModuleLoader * shared = nil;
   NSEnumerator * e;
   NSBundle * bndl;
 
-  if (viewerBundles == nil)
+  if (viewerBundles == nil) {
     [self loadViewers];
+  }
 
   dict = [NSMutableDictionary dictionary];
   e = [viewerBundles objectEnumerator];
@@ -174,10 +171,9 @@ static ModuleLoader * shared = nil;
 
 - (NSDictionary *)preferencesModules
 {
-  if (preferences == nil)
-    {
-      [self loadPreferences];
-    }
+  if (preferences == nil) {
+    [self loadPreferences];
+  }
 
   return preferences;
 }

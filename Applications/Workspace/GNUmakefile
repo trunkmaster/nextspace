@@ -31,12 +31,11 @@ $(APP_NAME)_MAIN_MODEL_FILE = WorkspaceManager
 
 SUBPROJECTS = \
 	Viewers/BrowserViewer \
+	Viewers/IconViewer \
 	Inspectors \
 	$(wildcard Preferences/*) \
 	Tools/FileMover \
 	Tools/Sizer
-#	WindowMaker/Tools
-#	Viewers/IconsViewer \
 
 $(APP_NAME)_OBJC_FILES = \
 	$(wildcard *.m) \

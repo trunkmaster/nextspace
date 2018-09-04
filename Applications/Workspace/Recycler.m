@@ -80,8 +80,6 @@ static NSMutableArray *fileList = nil;
   NSUInteger		slotsWide, x;
   NSInteger             dbFileIndex;
 
-  NSLog(@"Operation: Begin path loading...");
-  
   items = [[xfm directoryContentsAtPath:directoryPath
                                forPath:nil
                               sortedBy:[xfm sortFilesBy]
@@ -129,11 +127,6 @@ static NSMutableArray *fileList = nil;
   else {
     [iconView scrollPoint:NSZeroPoint];
   }
-
-  NSLog(@"Operation: End path loading...");
-  // [statusField performSelectorOnMainThread:@selector(setStringValue:)
-  //                               withObject:@""
-  //                            waitUntilDone:YES];
 }
 
 - (BOOL)isReady
