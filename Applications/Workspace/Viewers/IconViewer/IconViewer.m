@@ -1,7 +1,7 @@
 /*
-   The icons viewer.
+   Icon Viewer for Workspace Manager (menu item: View > Icon).
 
-   Copyright (C) 2005 Saso Kiselkov
+   Copyright (C) 2018 Sergii Stoian
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,14 +18,188 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <AppKit/AppKit.h>
+#import <NXAppKit/NXAppKit.h>
+
+#import <NXFoundation/NXDefaults.h>
+#import <NXFoundation/NXFileManager.h>
+
+#import <Viewers/PathIcon.h>
 #include "IconViewer.h"
 
-#import <NXAppKit/NXAppKit.h>
-#import <NXFoundation/NXDefaults.h>
+@implementation ViewerItemsLoader
+
+static NSMutableArray *fileList = nil;
+
+- (id)initWithIconView:(NXIconView *)view
+                  path:(NSString *)dirPath
+              contents:(NSArray *)dirContents
+             selection:(NSArray *)filenames
+{
+  if (self != nil) {
+    iconView = view;
+    directoryPath = dirPath;
+    directoryContents = [dirContents mutableCopy];
+    selectedFiles = filenames;
+  }
+
+  return self;
+}
+
+- (void)_optimizeItems:(NSMutableArray *)items
+              fileView:(NXIconView *)view
+{
+  NXIcon         *icon;
+  NSMutableArray *itemsCopy = [items mutableCopy];
+  NSArray        *iconsCopy = [[view icons] copy];
+
+  // Remove non-existing items
+  for (NXIcon *icon in iconsCopy) {
+    if ([items indexOfObject:[[icon label] text]] == NSNotFound) {
+      [view removeIcon:icon];
+    }
+  }
+
+  // Leave in `items` array items to add.
+  for (NSString *filename in itemsCopy) {
+    icon = [view iconWithLabelString:filename];
+    if (icon) {
+      [items removeObject:filename];
+    }
+  }
+  [itemsCopy release];
+  [iconsCopy release];
+}
+
+- (void)main
+{
+  // NSMutableSet *selected = [[NSMutableSet alloc] init];
+  NSString     *path;
+  PathIcon     *anIcon;
+  NSUInteger   slotsWide, x;
+
+  NSLog(@"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
+
+  NSLog(@"IconView: directoryContents %@", directoryContents);
+  x = 0;
+  slotsWide = [iconView slotsWide];
+  [self _optimizeItems:directoryContents fileView:iconView];
+  
+  for (NSString *filename in directoryContents) {
+    path = [directoryPath stringByAppendingPathComponent:filename];
+
+    anIcon = [[PathIcon alloc] init];
+    [anIcon setLabelString:filename];
+    [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
+    [anIcon setPaths:[NSArray arrayWithObject:path]];
+
+    [iconView performSelectorOnMainThread:@selector(addIcon:)
+                               withObject:anIcon
+                            waitUntilDone:YES];
+    
+    // if (selectedFiles != nil && [selectedFiles containsObject:filename]) {
+    //   [selected addObject:anIcon];
+    // }
+    [anIcon release];
+
+    // x++;
+    // if (x >= slotsWide) {
+    //   [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
+    //                              withObject:nil
+    //                           waitUntilDone:YES];
+    //   x = 0;
+    // }
+  }
+
+  // if ([selectedFiles count] > 0) {
+  //   [iconView performSelectorOnMainThread:@selector(selectIcons:)
+  //                              withObject:selected
+  //                           waitUntilDone:YES];
+  // }
+  // else {
+  //   [iconView performSelectorOnMainThread:@selector(selectIcons:)
+  //                              withObject:nil
+  //                           waitUntilDone:YES];
+  //   [iconView scrollPoint:NSZeroPoint];
+  // }
+
+  NSLog(@"IconView: End path loading...");
+  [directoryContents release];
+  // [selected release];
+}
+
+- (BOOL)isReady
+{
+  return YES;
+}
+
+@end
 
 @implementation IconViewer
 
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  TEST_RELEASE(currentPath);
+  TEST_RELEASE(selection);
+
+  TEST_RELEASE(view);
+
+  [super dealloc];
+}
+
+- init
+{
+  NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+  NSSize         iconSize;
+
+  [super init];
+
+  // NXIconView
+  iconView = [[[NXIconView alloc] initSlotsWide:3] autorelease];
+  [iconView setDelegate:self];
+  [iconView setTarget:self];
+  [iconView setDragAction: @selector(iconDragged:withEvent:)];
+  [iconView setDoubleAction: @selector(open:)];
+  [iconView setSendsDoubleActionOnReturn:YES];
+  [iconView setAutoAdjustsToFitIcons:YES];
+  iconSize = [NXIconView defaultSlotSize];
+  if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
+    iconSize.width = [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+    [iconView setSlotSize:iconSize];
+  }
+  [iconView registerForDraggedTypes:@[NSFilenamesPboardType]];
+
+  // NSScrollView
+  view = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300)];
+  [view setBorderType:NSBezelBorder];
+  [view setHasVerticalScroller:YES];
+  [view setHasHorizontalScroller:NO];
+
+  [view setDocumentView:iconView];
+  [iconView setFrame:NSMakeRect(0, 0, [[view contentView] frame].size.width, 0)];
+  [iconView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+  
+  // NSOperation
+  operationQ = [[NSOperationQueue alloc] init];
+  itemsLoader = nil;
+  
+  [[NSNotificationCenter defaultCenter]
+          addObserver:self
+             selector:@selector(iconWidthDidChange:)
+                 name:@"IconSlotWidthDidChangeNotification"
+               object:nil];
+
+  currentPath = nil;
+  selection = nil;
+  rootPath = @"/";
+  
+  return self;
+}
+
+//=============================================================================
+// <Viewer> protocol methods
+//=============================================================================
 + (NSString *)viewerType
 {
   return _(@"Icon");
@@ -36,121 +210,6 @@
   return _(@"I");
 }
 
-- (void) dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver: self];
-
-  TEST_RELEASE(currentPath);
-  TEST_RELEASE(selection);
-  TEST_RELEASE(iface);
-
-  TEST_RELEASE(view);
-
-  [super dealloc];
-}
-
-- init
-{
-  NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
-
-  [super init];
-
-  iconView = [[[NXIconView alloc] initSlotsWide: 3] autorelease];
-  [self iconSlotWidthChanged:nil];
-
-  [iconView setTarget: self];
-  [iconView setDoubleAction: @selector(open:)];
-  [iconView setDragAction: @selector(iconDragged:event:)];
-  [iconView setSendsDoubleActionOnReturn: YES];
-
-  [iconView setDelegate: self];
-  [iconView registerForDraggedTypes: [NSArray arrayWithObject:
-                                                NSFilenamesPboardType]];
-
-  view = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300)];
-  [view setDocumentView:iconView];
-  [iconView setFrame:NSMakeRect(0, 0, [[view contentView] frame].size.width, 0)];
-  [iconView setAutoresizingMask:NSViewWidthSizable];
-  [view setBorderType:NSBezelBorder];
-  [view setHasVerticalScroller:YES];
-
-  [[NSNotificationCenter defaultCenter]
-          addObserver:self
-             selector:@selector(iconSlotWidthChanged:)
-                 name:@"IconSlotWidthDidChangeNotification"
-               object:nil];
-
-  return self;
-}
-
-- (void) setOwner: (id <FileViewer>) _owner
-{
-  owner = _owner;
-}
-
-- (void)reloadPathWithSelection:(NSString *)newSelection
-{
-  NSRect r = [iconView visibleRect];
-
-  [self displayPath:currentPath selection:selection];
-  [iconView scrollRectToVisible:r];
-}
-
-- (void) reloadPath:(NSString *)path
-      withSelection:(NSString *)newSelection
-{
-  NSRect r = [iconView visibleRect];
-
-  [self displayPath:currentPath selection:selection];
-  [iconView scrollRectToVisible:r];
-}
-
-- (void)displayPath:(NSString *) dirPath
-          selection:(NSArray *) filenames
-{
-  NSEnumerator * e;
-  NSString * filename;
-  NSMutableArray * icons;
-  NSMutableSet * selected = [[NSMutableSet new] autorelease];
-  NSFileManager *fm = [NSFileManager defaultManager];
-
-  ASSIGN(currentPath, dirPath);
-  ASSIGN(selection, filenames);
-
-  icons = [NSMutableArray array];
-
-  e = [[iface directoryContentsAtPath: dirPath]  objectEnumerator];
-  while ((filename = [e nextObject]) != nil)
-    {
-      NSString * path = [dirPath stringByAppendingPathComponent:filename];
-      NXIcon * anIcon;
-
-      anIcon = [[NXIcon new] autorelease];
-      [anIcon setLabelString:filename];
-      [anIcon setIconImage:[iface iconForFile:path]];
-      [anIcon setDelegate:self];
-      [anIcon registerForDraggedTypes:[NSArray arrayWithObject:
-	NSFilenamesPboardType]];
-      [[anIcon label] setIconLabelDelegate:self];
-
-      [icons addObject:anIcon];
-      if (![fm isReadableFileAtPath: path])
-	{
-	  [anIcon setDimmed: YES];
-  	}
-      if ([selection containsObject:filename])
-	{
-  	  [selected addObject: anIcon];
-	}
-    }
-
-  [iconView fillWithIcons:icons];
-  if ([selected count] != 0)
-    [iconView selectIcons: selected];
-  else
-    [iconView scrollPoint: NSZeroPoint];
-}
-
 - (NSView *)view
 {
   return view;
@@ -158,19 +217,21 @@
 
 - (NSView *)keyView
 {
-  return view;
+  return iconView;
 }
 
-- (void)setVerticalSize:(float)aSize
+- (void)setOwner:(id <FileViewer,NSObject>)owner
 {
+  _owner = owner;
 }
 
-- (void)setNumberOfVerticals:(unsigned)num
+- (void)setRootPath:(NSString *)path
 {
+  ASSIGN(rootPath, path);
 }
-
-- (void)scrollToRange:(NSRange)range
+- (NSString *)fullPath
 {
+  return [rootPath stringByAppendingPathComponent:currentPath];
 }
 
 // Actually it's read by NXIconView object
@@ -178,287 +239,263 @@
 {
   return [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"];
 }
-
 - (void)setColumnWidth:(CGFloat)width
 {
   // Implement
 }
-
 - (NSUInteger)columnCount
 {
   return 3;
 }
-
 - (void)setColumnCount:(NSUInteger)num
 {
+  // 
 }
-
 - (NSInteger)numberOfEmptyColumns
 {
   return 0;
 }
-
 - (void)setNumberOfEmptyColumns:(NSInteger)num
 {
   // Do nothing: Viewer protocol method
 }
 
+// --- Actions
+- (void)displayPath:(NSString *)dirPath
+          selection:(NSArray *)filenames
+{
+  NSArray *dirContents;
+  
+  ASSIGN(currentPath, dirPath);
+  ASSIGN(selection, filenames);
+
+  if (itemsLoader != nil) {
+    [itemsLoader cancel];
+    [itemsLoader release];
+  }
+
+  dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
+  itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
+                                                       path:dirPath
+                                                   contents:dirContents
+                                                  selection:filenames];
+  [itemsLoader addObserver:self
+                forKeyPath:@"isFinished"
+                   options:0
+                   context:NULL];
+  [operationQ addOperation:itemsLoader];
+}
+- (void)reloadPathWithSelection:(NSString *)relativePath
+{
+  NSRect r = [iconView visibleRect];
+
+  [self displayPath:relativePath selection:selection];
+  [iconView scrollRectToVisible:r];
+}
 - (void)reloadPath:(NSString *)reloadPath
 {
-  // TODO: add implementation
+  NSRect r = [iconView visibleRect];
+  
+  [self displayPath:reloadPath selection:selection];
+  [iconView scrollRectToVisible:r];
 }
 
-- (void)    iconView: (NXIconView*) anIconView
-didChangeSelectionTo: (NSSet *) selectedIcons
+- (void)scrollToRange:(NSRange)range
 {
-  NSMutableArray * sel = [NSMutableArray array];
-  NSEnumerator * e = [selectedIcons objectEnumerator];
-  NXIcon * icon;
-  BOOL showsExpanded = ([selectedIcons count] == 1);
-
-  while ((icon = [e nextObject]) != nil) {
-      [icon setShowsExpandedLabelWhenSelected: showsExpanded];
-      [sel addObject: [icon labelString]];
-  }
-
-  ASSIGN(selection, [[sel copy] autorelease]);
-
-//  [owner displayPath: currentPath selection: selection sender:self];
+  // Do nothing
 }
-
-- (void) open: sender
+- (BOOL)becomeFirstResponder
 {
-  NSSet * sel = [iconView selectedIcons];
-
-  if ([sel count] == 1) {
-      NSString * path = [currentPath stringByAppendingPathComponent:
-					   [selection objectAtIndex: 0]];
-      NSString * fileType = [iface fileTypeAtPath: path];
-
-      if ([fileType isEqualToString: NSDirectoryFileType] ||
-	  [fileType isEqualToString: NSFilesystemFileType]) {
-	  ASSIGN(currentPath, path);
-	  ASSIGN(selection, nil);
-	  [owner displayPath: currentPath selection: selection sender:self];
-	  [self displayPath: currentPath selection: selection];
-
-	  return;
-      }
-  }
-
-  [owner open: view];
+  return YES;
 }
 
-
-
-
-
-- (void) iconDragged: sender event: (NSEvent *) ev
-{
-        NSString * path = [currentPath stringByAppendingPathComponent:
-          [sender labelString]];
-        NSString * fullPath = [[iface rootPath]
-          stringByAppendingPathComponent: path];
-        NSArray * filenames = [NSArray arrayWithObject: fullPath];
-        NSPasteboard * pb = [NSPasteboard pasteboardWithName: NSDragPboard];
-
-        draggingSourceMask = [iface draggingSourceOperationMaskForPaths: filenames];
-
-        [pb declareTypes: [NSArray arrayWithObject: NSFilenamesPboardType]
-                   owner: nil];
-        [pb setPropertyList: filenames
-                    forType: NSFilenamesPboardType];
-
-        [iconView dragImage: [sender iconImage]
-                         at: [ev locationInWindow]
-                     offset: NSZeroSize
-                      event: ev
-                 pasteboard: pb
-                     source: sender
-                  slideBack: YES];
-}
-
-- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL) isLocal
-                                                icon: (NXIcon *) sender
-{
-        return draggingSourceMask;
-}
-
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>) sender
-                            icon: (NXIcon *) icon
-{
-        NSString * destPath;
-        NSArray * paths;
-        unsigned int draggingDestMask;
-
-        paths = [[sender draggingPasteboard]
-          propertyListForType: NSFilenamesPboardType];
-        destPath = [[[iface rootPath] stringByAppendingPathComponent:
-          currentPath] stringByAppendingPathComponent: [icon labelString]];
-
-        if (![paths isKindOfClass: [NSArray class]] ||
-            [paths count] == 0) {
-                draggingDestMask = NSDragOperationNone;
-        } else {
-                draggingDestMask = [iface
-                  draggingDestinationMaskForPaths: paths
-                                         intoPath: destPath];
-        }
-        if (draggingDestMask != NSDragOperationNone)
-                [icon setIconImage: [iface openDirIconForDirectory:
-                  [currentPath stringByAppendingPathComponent: [icon
-                  labelString]]]];
-
-        return draggingDestMask;
-}
-
-- (void) draggingExited: (id <NSDraggingInfo>) sender
-                   icon: (NXIcon *) icon
-{
-        [icon setIconImage: [iface iconForFile: [currentPath
-          stringByAppendingPathComponent: [icon labelString]]]];
-}
-
-- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>) sender
-                            icon: (NXIcon *) icon
-{
-        [self draggingExited: sender icon: icon];
-        return YES;
-}
-
-- (BOOL) performDragOperation: (id <NSDraggingInfo>) sender
-                         icon: (NXIcon *) anIcon
-{
-        NSMutableArray * filenames = [NSMutableArray array];
-        NSArray * filePaths = [[sender draggingPasteboard]
-          propertyListForType: NSFilenamesPboardType];
-        NSEnumerator * e = [filePaths objectEnumerator];
-        NSString * sourceDir, * path;
-        unsigned int mask;
-        unsigned int opType = NSDragOperationNone;
-
-        sourceDir = [[filePaths objectAtIndex: 0]
-          stringByDeletingLastPathComponent];
-
-        while ((path = [e nextObject]) != nil)
-                [filenames addObject: [path lastPathComponent]];
-
-        mask = [sender draggingSourceOperationMask];
-
-        if (mask & NSDragOperationMove)
-                opType = NSDragOperationMove;
-        else if (mask & NSDragOperationCopy)
-                opType = NSDragOperationCopy;
-        else if (mask & NSDragOperationLink)
-                opType = NSDragOperationLink;
-        else
-                return NO;
-
-        [iface startFileOperationFrom: sourceDir
-                                   to: [[iface rootPath]
-          stringByAppendingPathComponent: [currentPath
-          stringByAppendingPathComponent: [anIcon labelString]]]
-                            withFiles: filenames
-                        operationType: opType];
-
-        return YES;
-}
-
-- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender
-                       iconView: (NXIconView *) iv
-{
-        NSString * destPath;
-        NSArray * paths;
-        unsigned int draggingDestMask;
-
-        paths = [[sender draggingPasteboard]
-          propertyListForType: NSFilenamesPboardType];
-        destPath = [[iface rootPath] stringByAppendingPathComponent:
-          currentPath];
-
-        if (![paths isKindOfClass: [NSArray class]] ||
-            [paths count] == 0) {
-                draggingDestMask = NSDragOperationNone;
-        } else {
-                draggingDestMask = [iface
-                  draggingDestinationMaskForPaths: paths
-                                         intoPath: destPath];
-        }
-
-        return draggingDestMask;
-}
-
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
-                       iconView: (NXIconView *) iconView
-{
-        return YES;
-}
-
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-                    iconView: (NXIconView *) iconView
-{
-        NSMutableArray * filenames = [NSMutableArray array];
-        NSArray * filePaths = [[sender draggingPasteboard]
-          propertyListForType: NSFilenamesPboardType];
-        NSEnumerator * e = [filePaths objectEnumerator];
-        NSString * sourceDir, * path;
-        unsigned int mask;
-        unsigned int opType = NSDragOperationNone;
-
-        sourceDir = [[filePaths objectAtIndex: 0]
-          stringByDeletingLastPathComponent];
-
-        while ((path = [e nextObject]) != nil)
-                [filenames addObject: [path lastPathComponent]];
-
-        mask = [sender draggingSourceOperationMask];
-
-        if (mask & NSDragOperationMove)
-                opType = NSDragOperationMove;
-        else if (mask & NSDragOperationCopy)
-                opType = NSDragOperationCopy;
-        else if (mask & NSDragOperationLink)
-                opType = NSDragOperationLink;
-        else
-                return NO;
-
-        [iface startFileOperationFrom: sourceDir
-                                   to: [[iface rootPath]
-          stringByAppendingPathComponent: currentPath]
-                            withFiles: filenames
-                        operationType: opType];
-
-        return YES;
-}
-
-- (void) iconSlotWidthChanged: (NSNotification *) notif
-{
-  NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
-  NSSize slotSize = [iconView slotSize];
-
-  if ([df objectForKey: @"IconSlotWidth"])
-    slotSize.width = [df floatForKey: @"IconSlotWidth"];
-  else
-    slotSize.width = 150;
-  [iconView setSlotSize: slotSize];
-}
-
-- (void)   iconLabel: (NXIconLabel *) iconLabel
- didChangeStringFrom: (NSString *) oldName
-                  to: (NSString *) newName
-{
-        if (![owner viewerRenamedCurrentFileTo: newName]) {
-                [[iconLabel icon] setLabelString: oldName];
-        } else {
-                ASSIGN(selection, [NSArray arrayWithObject: newName]);
-
-                [[iconLabel icon] setIconImage: [iface
-                  iconForFile: [currentPath
-                  stringByAppendingPathComponent: newName]]];
-        }
-}
+// --- Events
 - (void)currentSelectionRenamedTo:(NSString *)newName
 {
+  PathIcon *icon;
+  NSString *path;
+  
+  icon = [[iconView selectedIcons] anyObject];
+  [icon setLabelString:newName];
+  path = [rootPath stringByAppendingPathComponent:newName];
+  [icon setIconImage:[[NSApp delegate] iconForFile:path]];
+}
+
+// -- Notifications
+- (void)iconWidthDidChange:(NSNotification *)notification
+{
+  NXDefaults *df = [NXDefaults userDefaults];
+  NSSize     slotSize = [iconView slotSize];
+
+  slotSize.width = [df floatForKey:@"IconSlotWidth"];
+  [iconView setSlotSize:slotSize];
+}
+
+// -- NSOperation
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  NSLog(@"IconView: Observer of '%@' was called.", keyPath);
+  for (NXIcon *icon in [iconView icons]) {
+    [icon setEditable:NO];
+    [icon setDelegate:self];
+    [icon setTarget:self];
+    [icon setAction:@selector(doClick:)];
+    [icon setDragAction:@selector(iconDragged:withEvent:)];
+    [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+  }
+
+  if ([selection count] > 0) {
+    NSMutableSet *selected = [NSMutableSet new];
+    for (NSString *label in selection) {
+      [selected addObject:[iconView iconWithLabelString:label]];
+    }
+    [iconView selectIcons:selected];
+    [selected release];
+  }
+  else {
+    [iconView selectIcons:nil];
+    [iconView scrollPoint:NSZeroPoint];
+  }
+
+  [iconView adjustToFitIcons];
+  [[view window] makeFirstResponder:iconView];
+}
+
+//=============================================================================
+// Local
+//=============================================================================
+- (void)     iconView:(NXIconView*)anIconView
+ didChangeSelectionTo:(NSSet *)selectedIcons
+{
+  NSMutableArray *selected = [NSMutableArray array];
+  BOOL           showsExpanded = ([selectedIcons count] == 1) ? YES : NO;
+
+  // if ([selectedIcons count] == 0) {
+  //   for (NSString *label in selection) {
+  //     [selected addObject:[iconView iconWithLabelString:label]];
+  //   }
+  //   [iconView selectIcons:[NSSet setWithArray:selected]];
+  //   return;
+  // }
+
+  for (NXIcon *icon in selectedIcons) {
+    [icon setShowsExpandedLabelWhenSelected:showsExpanded];
+    [selected addObject:[icon labelString]];
+  }
+
+  ASSIGN(selection, [[selected copy] autorelease]);
+
+  // [_owner displayPath:currentPath selection:selection sender:self];
+}
+
+// TODO
+- (void)open:sender
+{
+  NSSet    *selected = [iconView selectedIcons];
+  NSString *path;
+  NSString *appName, *fileType;
+
+  if ([selected count] == 0) {
+    [_owner displayPath:currentPath selection:nil sender:self];
+  }
+  else if ([selected count] == 1) {
+    path = [currentPath stringByAppendingPathComponent:[selection objectAtIndex:0]];
+    // [(NSWorkspace *)[NSApp delegate] getInfoForFile:path
+    //                                     application:&appName
+    //                                            type:&fileType];
+
+    // if ([fileType isEqualToString:NSDirectoryFileType] ||
+    //     [fileType isEqualToString:NSFilesystemFileType]) {
+      [_owner displayPath:currentPath
+                selection:@[[[selected anyObject] labelString]]
+                   sender:self];
+    // }
+  }
+
+  // ASSIGN(currentPath, path);
+  // ASSIGN(selection, nil);
+  // [_owner open:view];
+}
+
+//=============================================================================
+// Drag and Drop
+//=============================================================================
+// IconView actions
+- (void)iconDragged:(PathIcon *)theIcon
+          withEvent:(NSEvent *)theEvent
+{
+  NSRect       iconFrame = [theIcon frame];
+  NSPoint      iconLocation = iconFrame.origin;
+  NSPasteboard *pasteBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
+  NSDictionary *iconInfo;
+  
+  iconLocation.x += 8;
+  iconLocation.y += iconFrame.size.width - 16;
+
+  draggedSource = self;
+  draggedIcon = theIcon;
+  draggingSourceMask = NSDragOperationMove;
+
+  [draggedIcon setSelected:NO];
+  [draggedIcon setDimmed:YES];
+  
+  // Pasteboard info for 'draggedIcon'
+  [pasteBoard declareTypes:@[NSFilenamesPboardType] owner:nil];
+  [pasteBoard setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
+  // if ((iconInfo = [draggedIcon info]) != nil) {
+  //   [pasteBoard setPropertyList:iconInfo forType:NSGeneralPboardType];
+  // }
+
+  [iconView dragImage:[draggedIcon iconImage]
+                   at:iconLocation
+               offset:NSZeroSize
+                event:theEvent
+           pasteboard:pasteBoard
+               source:draggedSource
+            slideBack:YES];
+}
+
+// NSDraggingSource
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+  NSLog(@"[IconView] draggingSourceOperationMaskForLocal:");
+  return NSDragOperationMove;
+}
+- (BOOL)ignoreModifierKeysWhileDragging
+{
+  return YES;
+}
+- (void)draggedImage:(NSImage*)image
+             endedAt:(NSPoint)screenPoint
+           deposited:(BOOL)didDeposit
+{
+  NSLog(@"draggedImage:endedAt:operation:");
+  if (didDeposit == NO) {
+    [draggedIcon setSelected:YES];
+    [draggedIcon setDimmed:NO];
+  }
+}
+
+// NXIcon delegate methods (NSDraggingDestination)
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+                              icon:(NXIcon *)icon
+{
+  // NSLog(@"[Recycler] draggingEntered:icon:");
+  return draggingSourceMask;
+}
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+                              icon:(NXIcon *)icon
+{
+  // NSLog(@"[Recycler] draggingUpdated:icon:");
+  return draggingSourceMask;
+}
+- (void)draggingExited:(id <NSDraggingInfo>)sender
+                  icon:(NXIcon *)icon
+{
+  // NSLog(@"[Recycler] draggingOperationExited:icon:");
 }
 
 @end

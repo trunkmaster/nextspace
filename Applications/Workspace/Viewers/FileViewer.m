@@ -111,24 +111,20 @@
 }
 - (void)useViewer:(id <Viewer>)aViewer
 {
-  if (aViewer)
-    {
-      ASSIGN(viewer, aViewer);
+  if (aViewer) {
+    ASSIGN(viewer, aViewer);
 
-      [viewer setOwner:self];
-      [viewer setRootPath:rootPath];
-//      [viewer setVerticalSize:windowVerticalSize];
-//      [viewer setColumnWidth:windowVerticalSize];
-
-      [(NSBox *)box setContentView:[viewer view]];
-    }
-  else
-    {
-      // Use this for case when aViewer set to 'nil'
-      // to decrease retain count on FileViwer.
-      // Example [self windowWillClose:]
-      [viewer autorelease];
-    }
+    [viewer setOwner:self];
+    [viewer setRootPath:rootPath];
+    [(NSBox *)box setContentView:[viewer view]];
+    [viewer displayPath:displayedPath selection:selection];
+  }
+  else {
+    // Use this for case when aViewer set to 'nil'
+    // to decrease retain count on FileViwer.
+    // Example: [self windowWillClose:]
+    [viewer autorelease];
+  }
 }
 @end
 
@@ -1266,6 +1262,7 @@
   if (inspector != nil) {
     [inspector revert:self];
   }
+  [window makeFirstResponder:[viewer keyView]];
 }
 
 - (void)windowWillClose:(NSNotification *)notif
@@ -1663,13 +1660,12 @@
 
   aViewer = [[ModuleLoader shared] viewerForType:viewerType];
 
-  if (aViewer != nil)
-    {
+  if (aViewer != nil) {
       [self useViewer:aViewer];
       
       // remeber this one as the preferred viewer
-      [[NXDefaults userDefaults] setObject:viewerType 
-				    forKey:@"PreferredViewer"];
+      // [[NXDefaults userDefaults] setObject:viewerType 
+      //   			    forKey:@"PreferredViewer"];
     }
   else
     {

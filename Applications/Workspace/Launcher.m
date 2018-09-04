@@ -1,7 +1,8 @@
 /* All Rights reserved */
 
-#include <AppKit/AppKit.h>
-#include "Launcher.h"
+#import <AppKit/AppKit.h>
+#import <NXAppKit/NXAlert.h>
+#import "Launcher.h"
 
 @implementation Launcher
 
