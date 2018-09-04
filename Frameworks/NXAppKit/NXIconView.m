@@ -467,10 +467,11 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 
 - (NXIcon *)iconWithLabelString:(NSString *)label
 {
-  NXIcon *iconFound;
+  NXIcon *iconFound = nil;
   
   for (NXIcon *icon in icons) {
-    if (icon && [[icon labelString] isEqualToString:label]) {
+    if (icon && ![icon isKindOfClass:[NSNull class]]
+        && [[icon labelString] isEqualToString:label]) {
       iconFound = icon;
       break;
     }
@@ -1359,8 +1360,10 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     mode = NXIconSelectionExclusiveMode;
   }
 
-  if ([delegate respondsToSelector:
-        	@selector(iconView:shouldSelectIcons:selectionMode:)]) {
+  NSLog(@"NXIconView delegete: %@", delegate);
+  if (delegate &&
+      delegate != [delegate class] &&
+      [delegate respondsToSelector:@selector(iconView:shouldSelectIcons:selectionMode:)]) {
     someIcons = [delegate iconView:self
                           shouldSelectIcons:someIcons
                      selectionMode:mode];
@@ -1394,13 +1397,15 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     }
   }
   else {
-    NXIcon *icon;
-
-    [selectedIcons makeObjectsPerform:@selector(deselect:)];
+    // [selectedIcons makeObjectsPerform:@selector(deselect:)];
+    for (NXIcon *icon in selectedIcons) {
+      if (icon && ![icon isKindOfClass:[NSNull class]])
+        [icon deselect:self];
+    }
     [selectedIcons removeAllObjects];
 
     if ([someIcons count] == 1) {
-      icon = [someIcons anyObject];
+      NXIcon *icon = [someIcons anyObject];
       [selectedIcons addObject:icon];
       [icon select:nil];
     }
