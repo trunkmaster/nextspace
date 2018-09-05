@@ -24,6 +24,7 @@
 #import <NXFoundation/NXFileManager.h>
 
 #import <Viewers/PathIcon.h>
+#import <Viewers/PathView.h>
 #include "IconViewer.h"
 
 @implementation ViewerItemsLoader
@@ -72,14 +73,12 @@ static NSMutableArray *fileList = nil;
 
 - (void)main
 {
-  // NSMutableSet *selected = [[NSMutableSet alloc] init];
-  NSString     *path;
-  PathIcon     *anIcon;
-  NSUInteger   slotsWide, x;
+  NSString   *path;
+  PathIcon   *anIcon;
+  NSUInteger slotsWide, x;
 
   NSLog(@"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
 
-  NSLog(@"IconView: directoryContents %@", directoryContents);
   x = 0;
   slotsWide = [iconView slotsWide];
   [self _optimizeItems:directoryContents fileView:iconView];
@@ -95,10 +94,6 @@ static NSMutableArray *fileList = nil;
     [iconView performSelectorOnMainThread:@selector(addIcon:)
                                withObject:anIcon
                             waitUntilDone:YES];
-    
-    // if (selectedFiles != nil && [selectedFiles containsObject:filename]) {
-    //   [selected addObject:anIcon];
-    // }
     [anIcon release];
 
     // x++;
@@ -110,21 +105,8 @@ static NSMutableArray *fileList = nil;
     // }
   }
 
-  // if ([selectedFiles count] > 0) {
-  //   [iconView performSelectorOnMainThread:@selector(selectIcons:)
-  //                              withObject:selected
-  //                           waitUntilDone:YES];
-  // }
-  // else {
-  //   [iconView performSelectorOnMainThread:@selector(selectIcons:)
-  //                              withObject:nil
-  //                           waitUntilDone:YES];
-  //   [iconView scrollPoint:NSZeroPoint];
-  // }
-
   NSLog(@"IconView: End path loading...");
   [directoryContents release];
-  // [selected release];
 }
 
 - (BOOL)isReady
@@ -190,6 +172,12 @@ static NSMutableArray *fileList = nil;
                  name:@"IconSlotWidthDidChangeNotification"
                object:nil];
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(selectionDidChange:)
+           name:NXIconViewDidChangeSelectionNotification
+         object:iconView];
+  
   currentPath = nil;
   selection = nil;
   rootPath = @"/";
@@ -349,46 +337,55 @@ static NSMutableArray *fileList = nil;
 
   if ([selection count] > 0) {
     NSMutableSet *selected = [NSMutableSet new];
+    NXIcon       *icon;
     for (NSString *label in selection) {
-      [selected addObject:[iconView iconWithLabelString:label]];
+      icon = [iconView iconWithLabelString:label];
+      if (icon) {
+        [selected addObject:icon];
+      }
     }
-    [iconView selectIcons:selected];
+    [iconView performSelectorOnMainThread:@selector(selectIcons:)
+                               withObject:selected
+                            waitUntilDone:YES];
     [selected release];
   }
   else {
-    [iconView selectIcons:nil];
+    [iconView performSelectorOnMainThread:@selector(selectIcons:)
+                               withObject:nil
+                            waitUntilDone:YES];
     [iconView scrollPoint:NSZeroPoint];
   }
 
-  [iconView adjustToFitIcons];
+  [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
+                             withObject:nil
+                          waitUntilDone:YES];
   [[view window] makeFirstResponder:iconView];
 }
 
 //=============================================================================
 // Local
 //=============================================================================
-- (void)     iconView:(NXIconView*)anIconView
- didChangeSelectionTo:(NSSet *)selectedIcons
+// - (void)     iconView:(NXIconView*)anIconView
+//  didChangeSelectionTo:(NSSet *)selectedIcons
+- (void)selectionDidChange:(NSNotification *)notif
 {
+  NSSet          *icons = [[notif userInfo] objectForKey:@"Selection"];
   NSMutableArray *selected = [NSMutableArray array];
-  BOOL           showsExpanded = ([selectedIcons count] == 1) ? YES : NO;
+  BOOL           showsExpanded = ([icons count] == 1) ? YES : NO;
 
-  // if ([selectedIcons count] == 0) {
-  //   for (NSString *label in selection) {
-  //     [selected addObject:[iconView iconWithLabelString:label]];
-  //   }
-  //   [iconView selectIcons:[NSSet setWithArray:selected]];
-  //   return;
-  // }
+  if ([notif object] != iconView)
+    return;
 
-  for (NXIcon *icon in selectedIcons) {
+  NSLog(@"IconViewer: selection did change.");
+
+  for (NXIcon *icon in icons) {
     [icon setShowsExpandedLabelWhenSelected:showsExpanded];
     [selected addObject:[icon labelString]];
   }
 
   ASSIGN(selection, [[selected copy] autorelease]);
 
-  // [_owner displayPath:currentPath selection:selection sender:self];
+  [_owner displayPath:currentPath selection:selection sender:self];
 }
 
 // TODO
@@ -445,9 +442,6 @@ static NSMutableArray *fileList = nil;
   // Pasteboard info for 'draggedIcon'
   [pasteBoard declareTypes:@[NSFilenamesPboardType] owner:nil];
   [pasteBoard setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
-  // if ((iconInfo = [draggedIcon info]) != nil) {
-  //   [pasteBoard setPropertyList:iconInfo forType:NSGeneralPboardType];
-  // }
 
   [iconView dragImage:[draggedIcon iconImage]
                    at:iconLocation
