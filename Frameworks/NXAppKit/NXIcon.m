@@ -287,37 +287,31 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 {
   if (isSelected == sel &&
       showsExpandedLabelWhenSelected == YES &&
-      [longLabel superview] != nil)
-    {
-      return;
-    }
+      [longLabel superview] != nil) {
+    return;
+  }
 
   isSelected = sel;
 
   if (isSelected == YES &&
       showsExpandedLabelWhenSelected &&
-      [longLabel superview] == nil)
-    {
-      [shortLabel removeFromSuperview];
-      [[self superview] addSubview:longLabel];
-      [longLabel adjustFrame];
+      [longLabel superview] == nil) {
+    [shortLabel removeFromSuperview];
+    [[self superview] addSubview:longLabel];
+    [longLabel adjustFrame];
+  }
+  else if ([shortLabel superview] == nil) {
+    [longLabel removeFromSuperview];
+    [[self superview] addSubview:shortLabel];
+    
+    if (![[longLabel string] isEqualToString:labelString]) {
+      ASSIGN(labelString, [[[longLabel string] copy] autorelease]);
+      [self rebuildCollapsedLabelString];
+    } 
+    else {
+      [shortLabel adjustFrame];
     }
-  else if ([shortLabel superview] == nil)
-    {
-      [longLabel removeFromSuperview];
-      [[self superview] addSubview:shortLabel];
-
-      if (![[longLabel string] isEqualToString:labelString])
-	{
-	  ASSIGN(labelString, [[[longLabel string] copy] autorelease]);
-
-	  [self rebuildCollapsedLabelString];
-	} 
-      else
-	{
-	  [shortLabel adjustFrame];
-	}
-    }
+  }
 
   [self setNeedsDisplay:YES];
 }
