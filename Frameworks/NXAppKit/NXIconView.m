@@ -1360,10 +1360,9 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     mode = NXIconSelectionExclusiveMode;
   }
 
-  NSLog(@"NXIconView delegete: %@", delegate);
   if (delegate &&
-      delegate != [delegate class] &&
-      [delegate respondsToSelector:@selector(iconView:shouldSelectIcons:selectionMode:)]) {
+      [delegate
+        respondsToSelector:@selector(iconView:shouldSelectIcons:selectionMode:)]) {
     someIcons = [delegate iconView:self
                           shouldSelectIcons:someIcons
                      selectionMode:mode];
@@ -1386,28 +1385,34 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     }
     else {
       for (NXIcon *icon in selectedIcons) {
-        if (icon && ![icon isKindOfClass:[NSNull class]])
+        if (icon && [icon isKindOfClass:[NXIcon class]]) {
           [icon deselect:self];
+        }
       }
-      [selectedIcons setSet:someIcons];
-      for (NXIcon *icon in selectedIcons) {
-        if (icon && ![icon isKindOfClass:[NSNull class]])
+      [selectedIcons removeAllObjects];
+      
+      for (NXIcon *icon in someIcons) {
+        if (icon && [icon isKindOfClass:[NXIcon class]]) {
           [icon select:self];
+          [selectedIcons addObject:icon];
+        }
       }
     }
   }
   else {
-    // [selectedIcons makeObjectsPerform:@selector(deselect:)];
     for (NXIcon *icon in selectedIcons) {
-      if (icon && ![icon isKindOfClass:[NSNull class]])
-        [icon deselect:self];
+      if (icon && [icon isKindOfClass:[NXIcon class]]) {
+        [icon deselect:nil];
+      }
     }
     [selectedIcons removeAllObjects];
 
     if ([someIcons count] == 1) {
       NXIcon *icon = [someIcons anyObject];
-      [selectedIcons addObject:icon];
-      [icon select:nil];
+      if (icon && [icon isKindOfClass:[NXIcon class]]) {
+        [icon select:nil];
+        [selectedIcons addObject:icon];
+      }
     }
     else if ([someIcons count] > 1) {
       [NSException raise:NSInvalidArgumentException
@@ -1422,24 +1427,21 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     NSRect r = NSMakeRect(0,0,0,0);
 
     for (NXIcon *icon in selectedIcons) {
-      if (icon && ![icon isKindOfClass:[NSNull class]]) {
+      if (icon && [icon isKindOfClass:[NXIcon class]]) {
         r = NSUnionRect(r, NSUnionRect([icon frame], [[icon label] frame]));
       }
     }
     [self scrollRectToVisible:r];
   }
 
-  sel = [[selectedIcons copy] autorelease];
-
-  if ([delegate respondsToSelector:
-		@selector(iconView:didChangeSelectionTo:)]) {
-      [delegate iconView:self didChangeSelectionTo:sel];
-    }
+  if ([delegate respondsToSelector:@selector(iconView:didChangeSelectionTo:)]) {
+    [delegate iconView:self didChangeSelectionTo:selectedIcons];
+  }
 
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NXIconViewDidChangeSelectionNotification
         	  object:self
-        	userInfo:@{@"Selection":sel}];
+        	userInfo:@{@"Selection":selectedIcons}];
 }
 
 @end
