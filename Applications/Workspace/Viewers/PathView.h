@@ -24,7 +24,6 @@
 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;
 
-- (void)displayDirectory:(NSString *)aPath andFiles:(NSArray *)aFiles;
 - (void)setPath:(NSString *)relativePath selection:(NSArray *)filenames;
 - (NSString *)path;
 - (NSArray *)files;
