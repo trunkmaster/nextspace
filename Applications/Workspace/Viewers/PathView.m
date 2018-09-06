@@ -13,6 +13,8 @@
 #import "PathView.h"
 #import "PathViewScroller.h"
 
+#define BROWSER_DEF_COLUMN_WIDTH 180
+
 @implementation PathView
 
 - (void)dealloc
@@ -35,6 +37,9 @@
 
   size.height = PATH_VIEW_HEIGHT;
   size.width = [[NXDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
+  if (size.width <= 0) {
+    size.width = BROWSER_DEF_COLUMN_WIDTH;
+  }
   [self setSlotSize:size];
   
   _owner = fileViewer;
