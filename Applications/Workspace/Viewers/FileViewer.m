@@ -135,12 +135,13 @@
 //=============================================================================
 
 - initRootedAtPath:(NSString *)aRootPath
+            viewer:(NSString *)viewerType
 	    isRoot:(BOOL)isRoot
 {
   NXDefaults           *df = [NXDefaults userDefaults];
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSString             *relativePath = nil;
-  NSSize               iconSize;
+  NSSize               aSize;
 
   [super init];
 
@@ -153,28 +154,23 @@
 
   // Initalize NXIconView frame. 
   // NXIconView is a parent class for ShelfView and PathView
-  iconSize = NSMakeSize(66, 52); // Size of hilite.tiff 66x52
-  [NXIcon setDefaultIconSize:iconSize];
+  aSize = NSMakeSize(66, 52); // Size of hilite.tiff 66x52
+  [NXIcon setDefaultIconSize:aSize];
   // Set NXIconView slot size
-  if ([df objectForKey:@"IconLabelWidth"])
-    {
-      [NXIconView setDefaultSlotSize:
-                    NSMakeSize([df floatForKey:@"IconLabelWidth"],
-                               PATH_VIEW_HEIGHT)];
-    }
-  else
-    {
-      [NXIconView setDefaultSlotSize:NSMakeSize(168, PATH_VIEW_HEIGHT)];
-    }
+  if ([df objectForKey:@"IconLabelWidth"]) {
+    aSize = NSMakeSize([df floatForKey:@"IconLabelWidth"], PATH_VIEW_HEIGHT);
+  }
+  else {
+    aSize = NSMakeSize(168, PATH_VIEW_HEIGHT);
+  }
+  [NXIconView setDefaultSlotSize:aSize];
   
   // [NSBundle loadNibNamed:@"FileViewer" owner:self];
-  // Just to avoid .gorm loading ineterference manually construct 
-  // File Viewer window.
+  // To avoid .gorm loading ineterference manually construct File Viewer window.
   [self awakeFromNib];
-  // [self configurePathView];
 
   // Load the viewer
-  [self useViewer:[[ModuleLoader shared] preferredViewer]];
+  [self useViewer:[[ModuleLoader shared] viewerForType:viewerType]];
 
   if (isRootViewer) {
     [window setTitle:@"File Viewer"];
@@ -188,10 +184,10 @@
   }
   else if ([self isRootViewerCopy]) {
     // copy of RootViewer
-    NSRect rootFrame = [[[[NSApp delegate] rootViewer] window] frame];
+    // NSRect rootFrame = [[[[NSApp delegate] rootViewer] window] frame];
     // rootFrame.origin.x += 20;
     // rootFrame.origin.y -= 20;
-    [window setFrame:rootFrame display:NO];
+    // [window setFrame:rootFrame display:NO];
     [window center];
     relativePath = rootPath;
   }
@@ -261,9 +257,9 @@
             selection:nil
                sender:self];
   }
-  else {
-    [self displayPath:relativePath selection:nil sender:self];
-  }
+  // else {
+  //   [self displayPath:relativePath selection:nil sender:self];
+  // }
 
   // Configure Shelf later after viewer loaded path to make 
   // setNextKeyView working correctly
@@ -271,8 +267,6 @@
 
   // Make initial placement of disk and operation info labels
   [self updateInfoLabels:nil];
-
-  // [window makeKeyAndOrderFront:nil];
 
   // NXFileSystem notifications
   [nc addObserver:self
@@ -401,7 +395,7 @@
   [pathView release];
   [containerBox addSubview:scrollView];
   [scrollView release];
-  // [self configurePathView];
+  
   PathViewScroller *scroller = [[PathViewScroller new] autorelease];
   [scroller setDelegate:pathView];
   [scrollView setHorizontalScroller:scroller];
@@ -821,9 +815,6 @@
   if (pathView)
     {
       [pathView setPath:displayedPath selection:selection];
-      // Update cahed column attributes here.
-      viewerColumnWidth = [viewer columnWidth];
-      viewerColumnCount = [viewer columnCount];
       [pathView syncEmptyColumns];
     }
 
@@ -895,14 +886,15 @@
   NSSize       s, windowMinSize;
   NSScroller   *scroller;
   CGFloat      sValue;
+  CGFloat      columnWidth;
+  NSUInteger   columnCount;
 
   // Prevent recursive calling
   // Recursive calls may be caused by changing column width via preferences
-  if (!lock || [lock tryLock] == NO)
-    {
-      NSLog(@"LOCK FAILED! Going out...");
-      return;
-    }
+  if (!lock || [lock tryLock] == NO) {
+    NSLog(@"LOCK FAILED! Going out...");
+    return;
+  }
 
   NSLog(@"[FileViewer] >>> updateWindowWidth");
 
@@ -913,22 +905,19 @@
   // on resizing. In the event of changed column width window frame is set in
   // code above ([window setFrame:display]) but we dont want to recalculate
   // column width and column count.
-  // THINK: Do we need to store ivars for Viewer parameters?
-  viewerColumnWidth = [viewer columnWidth];
-  viewerColumnCount =
-    roundf((frame.size.width - WINDOW_INNER_OFFSET) / viewerColumnWidth);
-  [viewer setColumnCount:viewerColumnCount];
-  [viewer setColumnWidth:viewerColumnWidth];
+  columnWidth = [pathView slotSize].width;
+  columnCount = roundf((frame.size.width - WINDOW_INNER_OFFSET) / columnWidth);
+  [viewer setColumnCount:columnCount];
+  [viewer setColumnWidth:columnWidth];
   NSLog(@"[FileViewer updateWindowWidth]: column count: %lu (width = %.0f)",
-        viewerColumnCount, viewerColumnWidth);
+        columnCount, columnWidth);
 
-  windowMinSize = NSMakeSize((2 * viewerColumnWidth) + WINDOW_INNER_OFFSET,
-                             WIN_MIN_HEIGHT);
+  windowMinSize = NSMakeSize((2 * columnWidth) + WINDOW_INNER_OFFSET, WIN_MIN_HEIGHT);
 
   if (sender == window)
     {
       [window setMinSize:windowMinSize];
-      [window setResizeIncrements:NSMakeSize(viewerColumnWidth, 1)];
+      [window setResizeIncrements:NSMakeSize(columnWidth, 1)];
       return;
     }
 
@@ -938,28 +927,20 @@
 
   // --- Resize window
   NSLog(@"[FileViewer] window width: %f", frame.size.width);
-  frame.size.width = (viewerColumnCount * viewerColumnWidth) + WINDOW_INNER_OFFSET;
+  frame.size.width = (columnCount * columnWidth) + WINDOW_INNER_OFFSET;
   [window setMinSize:windowMinSize];
-  [window setResizeIncrements:NSMakeSize(viewerColumnWidth, 1)];
+  [window setResizeIncrements:NSMakeSize(columnWidth, 1)];
   [window setFrame:frame display:NO];
 
   // --- PathView scroller
   sv = [pathView enclosingScrollView];
-  if ([sv lineScroll] != viewerColumnWidth)
+  if ([sv lineScroll] != columnWidth)
     {
-      [sv setLineScroll:viewerColumnWidth];
+      [sv setLineScroll:columnWidth];
     }
   // Set scroller value after window resizing (GNUstep bug?)
   [scroller setFloatValue:sValue];
   [pathView constrainScroller:scroller];
-
-  // PathView icon slot size
-  s = [pathView slotSize];
-  if (s.width != viewerColumnWidth)
-    {
-      s.width = viewerColumnWidth;
-      [pathView setSlotSize:s];
-    }
 
   NSLog(@"[FileViewer] <<< updateWindowWidth");
 
@@ -1069,17 +1050,19 @@
   unsigned    numPathComponents;
   NSImage     *image = [shelfIcon iconImage];
   NSSize      imageSize = [image size];
+  NSUInteger  columnCount;
 
   path = [[shelfIcon paths] objectAtIndex:0];
   numPathComponents = [[path pathComponents] count];
-  if (numPathComponents >= viewerColumnCount) {
-    offset = viewerColumnCount;
+  columnCount = [pathView visibleColumnCount];
+  if (numPathComponents >= columnCount) {
+    offset = columnCount;
   }
   else {
     offset = numPathComponents;
   }
 
-  endPoint = NSMakePoint((svSize.width / viewerColumnCount) *
+  endPoint = NSMakePoint((svSize.width / columnCount) *
                          (offset - 0.5) - imageSize.width / 2,
                          svSize.height * 0.55);
   endPoint = [view convertPoint:endPoint toView:nil];
@@ -1285,10 +1268,6 @@
   // NSLog(@"[FileViewer windowDidResize:] viewer column count: %lu", 
   //       [(NSBrowser *)[viewer view] numberOfVisibleColumns]);
 
-  // Update cahed column attributes here.
-  viewerColumnWidth = [viewer columnWidth];
-  viewerColumnCount = [viewer columnCount];
-  
   // Update column attributes here.
   // Call to updateWindowWidth: leads to segfault because of active
   // resizing operation.
@@ -1515,10 +1494,9 @@
   BOOL          hidden = [xfm isShowHiddenFiles];
   NXSortType    sort = [xfm sortFilesBy];
 
-  if ((showHiddenFiles != hidden) || (sortFilesBy != sort))
-    {
-      [viewer displayPath:[self displayedPath] selection:selection];
-    }
+  if ((showHiddenFiles != hidden) || (sortFilesBy != sort)) {
+    [viewer displayPath:[self displayedPath] selection:selection];
+  }
     
   NSLog(@"[Workspace]: NXGlobalDomain was changed.");
 }
@@ -1662,17 +1640,12 @@
 
   if (aViewer != nil) {
       [self useViewer:aViewer];
-      
-      // remeber this one as the preferred viewer
-      // [[NXDefaults userDefaults] setObject:viewerType 
-      //   			    forKey:@"PreferredViewer"];
     }
-  else
-    {
-      [NSException raise:NSInternalInconsistencyException
-  		  format:_(@"Failed to initialize viewer of type %@"),
-                   viewerType];
-    }
+  else {
+    [NSException raise:NSInternalInconsistencyException
+                format:_(@"Failed to initialize viewer of type %@"),
+                 viewerType];
+  }
 }
 
 // File

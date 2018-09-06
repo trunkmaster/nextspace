@@ -79,7 +79,9 @@
   Recycler		*recycler;
 }
 
-- (FileViewer *)newViewerRootedAt:(NSString *)path isRoot:(BOOL)root;
+- (FileViewer *)newViewerRootedAt:(NSString *)path
+                           viewer:(NSString *)viewerType
+                           isRoot:(BOOL)root;
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif;

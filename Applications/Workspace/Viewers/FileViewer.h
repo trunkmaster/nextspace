@@ -67,8 +67,6 @@
 //  PathViewScroller *scroller;
   id <Viewer> viewer;
   NSLock      *lock;
-  CGFloat     viewerColumnWidth;
-  NSUInteger  viewerColumnCount;
 
   NSTimer *checkTimer;
 
@@ -82,6 +80,7 @@
 }
 
 - initRootedAtPath:(NSString *)aRootPath
+            viewer:(NSString *)viewerType
 	    isRoot:(BOOL)isRoot;
 
 
