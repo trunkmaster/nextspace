@@ -420,6 +420,7 @@ static NSString *WMComputerShouldGoDownNotification =
                                        viewer:viewerType
                                        isRoot:root];
     [fileViewers addObject:fv];
+    [fv release];
   }
   else {
     NXRunAlertPanel(_(@"Open as Folder"), _(@"%@ is not a folder."),
@@ -431,7 +432,7 @@ static NSString *WMComputerShouldGoDownNotification =
     [inspector revert:fv];
   }
   
-  return [fv autorelease];
+  return fv;
 }
 
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path
@@ -449,6 +450,7 @@ static NSString *WMComputerShouldGoDownNotification =
   fv = [self newViewerRootedAt:path
                         viewer:[df objectForKey:@"PreferredViewer"]
                         isRoot:NO];
+  [fv displayPath:path selection:nil sender:self];
   [[fv window] makeKeyAndOrderFront:self];
   
   return fv;
@@ -836,7 +838,9 @@ static NSString *WMComputerShouldGoDownNotification =
 {
   NSLog(@"Controller: closeViewer[%lu] (%@)",
         [viewer retainCount], [viewer rootPath]);
-  [fileViewers removeObject:viewer];
+  if ([fileViewers count] > 0) {
+    [fileViewers removeObject:viewer];
+  }
 }
 
 - (void)emptyRecycler:(id)sender

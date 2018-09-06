@@ -38,7 +38,7 @@ static NSMutableArray *fileList = nil;
 {
   if (self != nil) {
     iconView = view;
-    directoryPath = dirPath;
+    directoryPath = [dirPath copy];
     directoryContents = [dirContents mutableCopy];
     selectedFiles = filenames;
   }
@@ -86,6 +86,8 @@ static NSMutableArray *fileList = nil;
   for (NSString *filename in directoryContents) {
     path = [directoryPath stringByAppendingPathComponent:filename];
 
+    // NSLog(@"IconViewer: add icon for: %@", path);
+
     anIcon = [[PathIcon alloc] init];
     [anIcon setLabelString:filename];
     [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
@@ -107,6 +109,7 @@ static NSMutableArray *fileList = nil;
 
   NSLog(@"IconView: End path loading...");
   [directoryContents release];
+  [directoryPath release];
 }
 
 - (BOOL)isReady
@@ -120,6 +123,7 @@ static NSMutableArray *fileList = nil;
 
 - (void)dealloc
 {
+  NSLog(@"[IconViewer] -dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   TEST_RELEASE(currentPath);
@@ -222,7 +226,6 @@ static NSMutableArray *fileList = nil;
   return [rootPath stringByAppendingPathComponent:currentPath];
 }
 
-// Actually it's read by NXIconView object
 - (CGFloat)columnWidth
 {
   return [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"];
@@ -252,7 +255,8 @@ static NSMutableArray *fileList = nil;
 - (void)displayPath:(NSString *)dirPath
           selection:(NSArray *)filenames
 {
-  NSArray *dirContents;
+  NSArray  *dirContents;
+  NSString *path;
 
   if (!dirPath || [dirPath isEqualToString:@""])
     return;
@@ -265,9 +269,12 @@ static NSMutableArray *fileList = nil;
     [itemsLoader release];
   }
 
+  path = [[_owner rootPath] stringByAppendingPathComponent:dirPath];
+  NSLog(@"IconViewer: display path: %@", dirPath);
+  
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
   itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
-                                                       path:dirPath
+                                                       path:path
                                                    contents:dirContents
                                                   selection:filenames];
   [itemsLoader addObserver:self

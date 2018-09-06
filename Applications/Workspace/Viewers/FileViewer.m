@@ -56,7 +56,6 @@
 #define WIN_MIN_HEIGHT 380
 #define WIN_DEF_WIDTH 560
 #define SPLIT_DEF_WIDTH WIN_DEF_WIDTH-16
-#define PATH_VIEW_HEIGHT 76.0
 
 @interface FileViewerWindow : NSWindow
 @end
@@ -123,6 +122,7 @@
     // Use this for case when aViewer set to 'nil'
     // to decrease retain count on FileViwer.
     // Example: [self windowWillClose:]
+    [[viewer view] removeFromSuperview];
     [viewer autorelease];
   }
 }
@@ -257,9 +257,6 @@
             selection:nil
                sender:self];
   }
-  // else {
-  //   [self displayPath:relativePath selection:nil sender:self];
-  // }
 
   // Configure Shelf later after viewer loaded path to make 
   // setNextKeyView working correctly
@@ -442,40 +439,11 @@
 
 - (void)dealloc
 {
-  NXDefaults    *df = [NXDefaults userDefaults];
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *file = [selection objectAtIndex:0];
-
   NSLog(@"FileViewer %@: dealloc", rootPath);
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-  if (isRootViewer)
-    {
-      [df setObject:[displayedPath stringByAppendingPathComponent:file]
-	     forKey:@"RootViewerPath"];
-      [df setObject:[shelf storableRepresentation]
-	     forKey:@"RootShelfContents"];
-      [df setFloat:[shelf frame].size.height 
-	    forKey:@"RootViewerShelfSize"];
-      [df synchronize];
-    }
-  else if (![self isRootViewerCopy] && [fm isWritableFileAtPath:rootPath])
-    {
-      NSMutableDictionary *fvdf = [NSMutableDictionary new];
-
-      [fvdf setObject:[displayedPath stringByAppendingPathComponent:file]
-               forKey:@"ViewerPath"];
-      [fvdf setObject:NSStringFromRect([window frame])
-	       forKey:@"ViewerWindow"];
-      [fvdf setObject:[shelf storableRepresentation] 
-	       forKey:@"ShelfContents"];
-      [fvdf setObject:[NSNumber numberWithInt:[shelf frame].size.height]
-	       forKey:@"ShelfSize"];
-      [fvdf writeToFile:[rootPath stringByAppendingPathComponent:@".dir"] 
-	     atomically:YES];
-    }
-
+  // [viewer release];
   TEST_RELEASE(window);
   TEST_RELEASE(rootPath);
   TEST_RELEASE(displayedPath);
@@ -1250,15 +1218,46 @@
 
 - (void)windowWillClose:(NSNotification *)notif
 {
-  NSLog(@"[FileViewer][%@] windowWillClose [%@]", displayedPath, [[notif object] className]);
+  NXDefaults    *df = [NXDefaults userDefaults];
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString      *file = [selection objectAtIndex:0];
+
+  NSLog(@"[FileViewer][%@] windowWillClose [%@]",
+        displayedPath, [[notif object] className]);
 
   if (!isRootViewer) {
     [fileSystemMonitor 
 	removePath:[rootPath stringByAppendingPathComponent:displayedPath]];
   }
+
+  if (isRootViewer) {
+    [df setObject:[displayedPath stringByAppendingPathComponent:file]
+           forKey:@"RootViewerPath"];
+    [df setObject:[shelf storableRepresentation]
+           forKey:@"RootShelfContents"];
+    [df setFloat:[shelf frame].size.height 
+          forKey:@"RootViewerShelfSize"];
+    [df synchronize];
+  }
+  else if (![self isRootViewerCopy] && [fm isWritableFileAtPath:rootPath]) {
+    NSMutableDictionary *fvdf = [NSMutableDictionary new];
+
+    [fvdf setObject:[[viewer class] viewerType]
+             forKey:@"ViewerType"];
+    [fvdf setObject:[displayedPath stringByAppendingPathComponent:file]
+             forKey:@"ViewerPath"];
+    [fvdf setObject:NSStringFromRect([window frame])
+             forKey:@"ViewerWindow"];
+    [fvdf setObject:[shelf storableRepresentation] 
+             forKey:@"ShelfContents"];
+    [fvdf setObject:[NSNumber numberWithInt:[shelf frame].size.height]
+             forKey:@"ShelfSize"];
+    [fvdf writeToFile:[rootPath stringByAppendingPathComponent:@".dir"] 
+           atomically:YES];
+  }
   
   // unset viewer to decrease retain count on FileViewer
-  [self useViewer:nil]; 
+  [self useViewer:nil];
 
   [[NSApp delegate] closeViewer:self];
 }
@@ -1657,37 +1656,32 @@
   NSString	 *ext;
 
   // "Return" key press in *Viewer, File->Open menu item, double click
-  if (![sender isKindOfClass:[PathIcon class]])
-    {
-      sender = [[pathView icons] lastObject];
-    }
+  if (![sender isKindOfClass:[PathIcon class]]) {
+    sender = [[pathView icons] lastObject];
+  }
 
   // For multiple files:
   // For each type call openFile:fromImage:at:inView with 'image' for first
   // file in list (flying icon) and 'nil' for the rest (no flying icon).
   extensions = [[NSMutableArray new] autorelease];
-  for (filePath in [sender paths])
-    {
-      ext = [filePath pathExtension];
-      if ([ext isEqualToString:@"app"] == YES ||
-          [extensions containsObject:ext] == NO)
-        {
-          [extensions addObject:[filePath pathExtension]];
-          image = [[NSApp delegate] iconForFile:filePath];
-        }
-      else
-        {
-          image = nil;
-        }
-      
-      if ([[NSApp delegate] openFile:filePath
-                           fromImage:image
-                                  at:NSMakePoint((64-image.size.width)/2, 0)
-                              inView:sender] == NO)
-        {
-          break;
-        }
+  for (filePath in [sender paths]) {
+    ext = [filePath pathExtension];
+    if ([ext isEqualToString:@"app"] == YES ||
+        [extensions containsObject:ext] == NO) {
+      [extensions addObject:[filePath pathExtension]];
+      image = [[NSApp delegate] iconForFile:filePath];
     }
+    else {
+      image = nil;
+    }
+      
+    if ([[NSApp delegate] openFile:filePath
+                         fromImage:image
+                                at:NSMakePoint((64-image.size.width)/2, 0)
+                            inView:sender] == NO) {
+      break;
+    }
+  }
 }
 
 - (void)openAsFolder:(id)sender
@@ -1696,11 +1690,10 @@
   NSString   *wrapperName;
   FileViewer *fv = nil;
 
-  if (selection != nil)
-    { // It's a wrapper - add filename to path
-      wrapperName = [selection objectAtIndex:0];
-      filePath = [filePath stringByAppendingPathComponent:wrapperName];
-    } 
+  if (selection != nil) { // It's a wrapper - add filename to path
+    wrapperName = [selection objectAtIndex:0];
+    filePath = [filePath stringByAppendingPathComponent:wrapperName];
+  }
 
   [[NSApp delegate] openNewViewerIfNotExistRootedAt:filePath];
 }
