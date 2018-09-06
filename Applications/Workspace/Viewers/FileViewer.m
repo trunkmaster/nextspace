@@ -49,7 +49,6 @@
 #import <Operations/FileMover.h>
 #import <Operations/Sizer.h>
 
-// #import <Preferences/Shelf/ShelfPrefs.h>
 #import <Preferences/Browser/BrowserPrefs.h>
 
 #define NOTIFICATION_CENTER [NSNotificationCenter defaultCenter]
@@ -1220,8 +1219,12 @@
 {
   NXDefaults    *df = [NXDefaults userDefaults];
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *file = [selection objectAtIndex:0];
+  NSString      *file = nil;
 
+  if ([selection count] > 0) {
+    file = [selection objectAtIndex:0];
+  }
+  
   NSLog(@"[FileViewer][%@] windowWillClose [%@]",
         displayedPath, [[notif object] className]);
 

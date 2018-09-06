@@ -238,6 +238,7 @@
 
 - (void)dealloc
 {
+  NSLog(@"[BrowserViewer] dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
     
   TEST_RELEASE(currentPath);

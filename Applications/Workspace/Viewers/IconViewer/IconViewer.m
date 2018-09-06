@@ -126,6 +126,13 @@ static NSMutableArray *fileList = nil;
   NSLog(@"[IconViewer] -dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
+  if (itemsLoader != nil) {
+    [itemsLoader cancel];
+    [itemsLoader release];
+  }
+  
+  TEST_RELEASE(_owner);
+  TEST_RELEASE(rootPath);
   TEST_RELEASE(currentPath);
   TEST_RELEASE(selection);
 
@@ -214,7 +221,7 @@ static NSMutableArray *fileList = nil;
 
 - (void)setOwner:(id <FileViewer,NSObject>)owner
 {
-  _owner = owner;
+  ASSIGN(_owner, owner);
 }
 
 - (void)setRootPath:(NSString *)path
@@ -269,7 +276,7 @@ static NSMutableArray *fileList = nil;
     [itemsLoader release];
   }
 
-  path = [[_owner rootPath] stringByAppendingPathComponent:dirPath];
+  path = [rootPath stringByAppendingPathComponent:dirPath];
   NSLog(@"IconViewer: display path: %@", dirPath);
   
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
