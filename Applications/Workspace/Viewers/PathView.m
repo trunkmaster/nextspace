@@ -13,8 +13,6 @@
 #import "PathView.h"
 #import "PathViewScroller.h"
 
-#define PATH_VIEW_HEIGHT 76.0
-
 @implementation PathView
 
 - (void)dealloc

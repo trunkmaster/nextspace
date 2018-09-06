@@ -5,6 +5,8 @@
 @class PathIcon;
 @class FileViewer;
 
+#define PATH_VIEW_HEIGHT 76.0
+
 @interface PathView : NXIconView
 {
   FileViewer *_owner;
