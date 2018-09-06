@@ -256,13 +256,7 @@ static NSString *WMComputerShouldGoDownNotification =
   NSString            *winType;
   FileViewer          *fv;
   NSWindow            *window;
-  NSWindow            *rootViewerWindow;
-
-  if (!savedWindows || [savedWindows count] == 0) {
-    fv = [self newViewerRootedAt:@"/" isRoot:YES];
-    [[fv window] makeKeyAndOrderFront:nil];
-    return;
-  }
+  NSWindow            *rootViewerWindow = nil;
 
   // Restore saved windows
   for (NSDictionary *winInfo in savedWindows) {
@@ -299,6 +293,13 @@ static NSString *WMComputerShouldGoDownNotification =
       [winViews addObject:winViewInfo];
       [winViewInfo release];
     }
+  }
+
+  if (rootViewerWindow == nil) {
+    fv = [self newViewerRootedAt:@"/" isRoot:YES];
+    [fv displayPath:NSHomeDirectory() selection:nil sender:self];
+    rootViewerWindow = [fv window];
+    [[fv window] orderFront:nil];
   }
 
   // Restore state of windows
@@ -405,7 +406,7 @@ static NSString *WMComputerShouldGoDownNotification =
     [fileViewers addObject:fv];
   }
   else {
-    NSRunAlertPanel(_(@"Open as Folder"), _(@"%@ is not a folder."),
+    NXRunAlertPanel(_(@"Open as Folder"), _(@"%@ is not a folder."),
                     nil, nil, nil, path);
     return nil;
   }
