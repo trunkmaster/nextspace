@@ -253,6 +253,9 @@ static NSMutableArray *fileList = nil;
           selection:(NSArray *)filenames
 {
   NSArray *dirContents;
+
+  if (!dirPath || [dirPath isEqualToString:@""])
+    return;
   
   ASSIGN(currentPath, dirPath);
   ASSIGN(selection, filenames);

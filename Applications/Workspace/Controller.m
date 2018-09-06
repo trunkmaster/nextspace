@@ -182,7 +182,7 @@ static NSString *WMComputerShouldGoDownNotification =
   NSMutableArray *windows = [[NSMutableArray alloc] init];
   NSArray        *_fvs = [NSArray arrayWithArray:fileViewers];
   NSDictionary   *winInfo;
-  NSString       *winState, *viewerType;
+  NSString       *winState, *type;
   FileViewer     *_rootFileViewer;
 
   // 1. Console
@@ -213,14 +213,15 @@ static NSString *WMComputerShouldGoDownNotification =
     winState = WWMWindowState([fv window]);
     if (winState) {
       if ([fv isRootViewer] != NO) {
-        viewerType = @"RootViewer";
+        type = @"RootViewer";
         _rootFileViewer = fv;
       }
       else {
-        viewerType = @"FolderViewer";
+        type = @"FolderViewer";
       }
         
-      winInfo = @{@"Type":viewerType,
+      winInfo = @{@"Type":type,
+                  @"ViewerType":[[[fv viewer] class] viewerType],
                   @"State":winState,
                   @"RootPath":[fv rootPath],
                   @"Path":[fv displayedPath],
@@ -267,11 +268,15 @@ static NSString *WMComputerShouldGoDownNotification =
         [winType isEqualToString:@"RootViewer"]) {
       
       if ([winType isEqualToString:@"RootViewer"]) {
-        fv = [self newViewerRootedAt:@"/" isRoot:YES];
+        fv = [self newViewerRootedAt:@"/"
+                              viewer:[winInfo objectForKey:@"ViewerType"]
+                              isRoot:YES];
         rootViewerWindow = [fv window];
       }
       else {
-        fv = [self newViewerRootedAt:[winInfo objectForKey:@"RootPath"] isRoot:NO];
+        fv = [self newViewerRootedAt:[winInfo objectForKey:@"RootPath"]
+                              viewer:[winInfo objectForKey:@"ViewerType"]
+                              isRoot:NO];
       }
       
       if (fv != nil) {
@@ -296,7 +301,14 @@ static NSString *WMComputerShouldGoDownNotification =
   }
 
   if (rootViewerWindow == nil) {
-    fv = [self newViewerRootedAt:@"/" isRoot:YES];
+    NXDefaults *df = [NXDefaults userDefaults];
+
+    NSLog(@"No saved root FileViewer window. Open default with viewer type: %@",
+          [df objectForKey:@"PreferredViewer"]);
+    
+    fv = [self newViewerRootedAt:@"/"
+                          viewer:[df objectForKey:@"PreferredViewer"]
+                          isRoot:YES];
     [fv displayPath:NSHomeDirectory() selection:nil sender:self];
     rootViewerWindow = [fv window];
     [[fv window] orderFront:nil];
@@ -395,14 +407,18 @@ static NSString *WMComputerShouldGoDownNotification =
 
 @implementation Controller
 
-- (FileViewer *)newViewerRootedAt:(NSString *)path isRoot:(BOOL)root
+- (FileViewer *)newViewerRootedAt:(NSString *)path
+                           viewer:(NSString *)viewerType
+                           isRoot:(BOOL)root
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   BOOL          isDir;
   FileViewer   *fv;
   
   if ([fm fileExistsAtPath:path isDirectory:&isDir] && isDir) {
-    fv = [[FileViewer alloc] initRootedAtPath:path isRoot:root];
+    fv = [[FileViewer alloc] initRootedAtPath:path
+                                       viewer:viewerType
+                                       isRoot:root];
     [fileViewers addObject:fv];
   }
   else {
@@ -421,6 +437,7 @@ static NSString *WMComputerShouldGoDownNotification =
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path
 {
   FileViewer *fv;
+  NXDefaults *df = [NXDefaults userDefaults];
   
   for (fv in fileViewers) {
     if ([[fv rootPath] isEqualToString:path]) {
@@ -429,7 +446,9 @@ static NSString *WMComputerShouldGoDownNotification =
     }
   }
   
-  fv = [self newViewerRootedAt:path isRoot:NO];
+  fv = [self newViewerRootedAt:path
+                        viewer:[df objectForKey:@"PreferredViewer"]
+                        isRoot:NO];
   [[fv window] makeKeyAndOrderFront:self];
   
   return fv;
@@ -441,7 +460,12 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)filename
 {
-  FileViewer *fv = [self newViewerRootedAt:filename isRoot:NO];
+  FileViewer *fv;
+  NXDefaults *df = [NXDefaults userDefaults];
+  
+  fv = [self newViewerRootedAt:filename
+                        viewer:[df objectForKey:@"PreferredViewer"]
+                        isRoot:NO];
 
   if (fv == nil) {
     return NO;
@@ -799,8 +823,13 @@ static NSString *WMComputerShouldGoDownNotification =
 // File
 - (void)newViewer:(id)sender
 {
-  FileViewer *fv = [self newViewerRootedAt:@"/" isRoot:NO];
-  [[fv window] makeKeyAndOrderFront:self];  
+  FileViewer *fv;
+  NXDefaults *df = [NXDefaults userDefaults];
+  
+  fv = [self newViewerRootedAt:@"/"
+                        viewer:[df objectForKey:@"PreferredViewer"]
+                        isRoot:NO];
+  [[fv window] makeKeyAndOrderFront:self];
 }
 
 - (void)closeViewer:(id)viewer

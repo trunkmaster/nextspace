@@ -28,6 +28,7 @@
 - (NSString *)path;
 - (NSArray *)files;
 
+- (NSUInteger)visibleColumnCount;
 - (void)setNumberOfEmptyColumns:(NSInteger)num;
 - (NSInteger)numberOfEmptyColumns;
 - (void)syncEmptyColumns;
