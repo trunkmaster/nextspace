@@ -4,6 +4,7 @@
 
 #import <AppKit/AppKit.h>
 
+#import <NXFoundation/NXDefaults.h>
 #import <NXAppKit/NXIcon.h>
 #import <NXAppKit/NXIconLabel.h>
 
@@ -11,6 +12,8 @@
 #import "PathIcon.h"
 #import "PathView.h"
 #import "PathViewScroller.h"
+
+#define PATH_VIEW_HEIGHT 76.0
 
 @implementation PathView
 
@@ -24,14 +27,18 @@
   [super dealloc];
 }
 
-// - initWithFrame:(NSRect)r 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer
 {
   PathViewScroller *scroller;
   NSScrollView     *sv;
+  NSSize          size;
 
   self = [super initWithFrame:r];
 
+  size.height = PATH_VIEW_HEIGHT;
+  size.width = [[NXDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
+  [self setSlotSize:size];
+  
   _owner = fileViewer;
 
   // Options
@@ -270,6 +277,11 @@
 - (NSArray *)files
 {
   return _files;
+}
+
+- (NSUInteger)visibleColumnCount
+{
+  return [[self superview] bounds].size.width / slotSize.width;
 }
 
 // Called by dispatcher (FileViewer-displayPath:...) according to 
