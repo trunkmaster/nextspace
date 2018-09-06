@@ -33,13 +33,10 @@ static inline NSRect IncrementedRect(NSRect r)
 }
 
 @interface BrowserPrefs (Private)
-
 - (void)setupArrows;
-
 @end
 
 @implementation BrowserPrefs (Private)
-
 - (void)setupArrows
 {
   NSRect     aFrame;
@@ -48,15 +45,13 @@ static inline NSRect IncrementedRect(NSRect r)
   float      width;
   NXDefaults *df = [NXDefaults userDefaults];
 
-  if ([df objectForKey:BrowserViewerColumnWidth])
-    {
-      [button setEnabled:YES];
-      width = [df floatForKey:BrowserViewerColumnWidth];
-    }
-  else
-    {
-      width = 180;
-    }
+  if ([df floatForKey:BrowserViewerColumnWidth] != BROWSER_DEF_COLUMN_WIDTH) {
+    [button setEnabled:YES];
+    width = [df floatForKey:BrowserViewerColumnWidth];
+  }
+  else {
+    width = BROWSER_DEF_COLUMN_WIDTH;
+  }
 
   bFrame.size.width = width;
   [browser setFrame:bFrame];
@@ -67,7 +62,6 @@ static inline NSRect IncrementedRect(NSRect r)
 
   [box2 setNeedsDisplay:YES];
 }
-
 @end
 
 @implementation BrowserPrefs
@@ -113,10 +107,9 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (NSView *)view
 {
-  if (box == nil)
-    {
-      [NSBundle loadNibNamed:@"BrowserPrefs" owner:self];
-    }
+  if (box == nil) {
+    [NSBundle loadNibNamed:@"BrowserPrefs" owner:self];
+  }
 
   return box;
 }
@@ -147,14 +140,12 @@ static inline NSRect IncrementedRect(NSRect r)
   aFrame.origin.x = aFrame.origin.x + delta;
   [superview setNeedsDisplay:YES];
 
-  if (newWidth == BROWSER_COLUMN_WIDTH)
-    {
-      [button setEnabled:NO];
-    }
-  else
-    {
-      [button setEnabled:YES];
-    }
+  if (newWidth == BROWSER_DEF_COLUMN_WIDTH) {
+    [button setEnabled:NO];
+  }
+  else {
+    [button setEnabled:YES];
+  }
 
   return YES;
 }
@@ -181,7 +172,8 @@ static inline NSRect IncrementedRect(NSRect r)
     return;
   
   [sender setEnabled:NO];
-  [[NXDefaults userDefaults] removeObjectForKey:BrowserViewerColumnWidth];
+  [[NXDefaults userDefaults] setFloat:BROWSER_DEF_COLUMN_WIDTH
+                               forKey:BrowserViewerColumnWidth];
   [[NSNotificationCenter defaultCenter]
     postNotificationName:BrowserViewerColumnWidthDidChangeNotification
         	  object:self];
