@@ -554,8 +554,6 @@ static NSDragOperation savedMask;
   // registerForDraggedTypes: must call view that holds icon (Shelf, Path).
   // Calling it here make shelf icons continuosly added and removed
   // while dragged.
-//  [self registerForDraggedTypes:
-//       [NSArray arrayWithObject:NSFilenamesPboardType]];
 
   doubleClickPassesClick = YES;
   return self;
