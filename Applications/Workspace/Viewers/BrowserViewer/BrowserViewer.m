@@ -226,7 +226,7 @@
   currentPath = nil;
 
   //  columnWidth = 0;
-  [self setColumnWidth:180];
+  [self setColumnWidth:BROWSER_DEF_COLUMN_WIDTH];
 
   [view setMaxVisibleColumns:99];
   [view setTarget:self];
@@ -296,13 +296,10 @@
 {
   NXDefaults *df = [NXDefaults userDefaults];
 
-  if ((columnWidth = [df floatForKey:BrowserViewerColumnWidth])
-      <= BROWSER_MIN_COLUMN_WIDTH)
-    {
-      columnWidth = BROWSER_COLUMN_WIDTH;
-    }
-
-//  NSDebugLLog(@"Browser", @"[BrowserViewer] column width: %f", columnWidth);
+  columnWidth = [df floatForKey:BrowserViewerColumnWidth];
+  if (columnWidth <= BROWSER_MIN_COLUMN_WIDTH) {
+    columnWidth = BROWSER_DEF_COLUMN_WIDTH;
+  }
 
   return columnWidth;
 }

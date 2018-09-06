@@ -23,14 +23,12 @@
 
 #import <Protocols/PrefsModule.h>
 
-#define BROWSER_COLUMN_WIDTH     180
+#define BROWSER_DEF_COLUMN_WIDTH 180
 #define BROWSER_MIN_COLUMN_WIDTH 110
 #define BROWSER_MAX_COLUMN_WIDTH 226
 
-NSString *BrowserViewerColumnWidth =
-  @"BrowserViewerColumnWidth";
-NSString *BrowserViewerColumnWidthDidChangeNotification =
-  @"BrowserViewerColumnWidthDidChangeNotification";
+NSString *BrowserViewerColumnWidth = @"BrowserViewerColumnWidth";
+NSString *BrowserViewerColumnWidthDidChangeNotification = @"BrowserViewerColumnWidthDidChangeNotification";
 
 @interface BrowserPrefs : NSObject <PrefsModule>
 {
