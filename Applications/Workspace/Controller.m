@@ -200,25 +200,20 @@ static NSString *WMComputerShouldGoDownNotification =
   
   // 2. Panels: Processes, Inspector, Finder.
   if (inspector && [[inspector window] isVisible]) {
-      [inspector deactivateInspector:self];
-    }
+    [inspector deactivateInspector:self];
+  }
   if (procPanel && [[procPanel window] isVisible]) {
-      [[procPanel window] close];
+    [[procPanel window] close];
   }
   
   // 3. Viewers
-  // To remove NXFileSystem's event monitor path correctly
-  // first close all folder viewers (while catching root viewer)...
   for (FileViewer *fv in _fvs) {
     winState = WWMWindowState([fv window]);
     if (winState) {
-      if ([fv isRootViewer] != NO) {
+      if ([fv isRootViewer] != NO)
         type = @"RootViewer";
-        _rootFileViewer = fv;
-      }
-      else {
+      else
         type = @"FolderViewer";
-      }
         
       winInfo = @{@"Type":type,
                   @"ViewerType":[[[fv viewer] class] viewerType],
@@ -227,25 +222,22 @@ static NSString *WMComputerShouldGoDownNotification =
                   @"Path":[fv displayedPath],
                   @"Selection":([fv selection]) ? [fv selection] : @[]};
       [windows addObject:winInfo];
-      if (fv != _rootFileViewer) {
-        if ([winState isEqualToString:@"Shaded"]) {
-          wUnshadeWindow(wWindowFor(X_WINDOW([fv window])));
-        }
-        [[fv window] close];
+      
+      if ([winState isEqualToString:@"Shaded"]) {
+        wUnshadeWindow(wWindowFor(X_WINDOW([fv window])));
       }
+      [[fv window] close];
     }
   }
   
   [[NXDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
   [[NXDefaults userDefaults] synchronize];
-  [windows release];
   
-  // ...and filnally close root viewer
-  [[_rootFileViewer window] close];
+  [windows release];
   [fileViewers release];
   
   NSLog(@"_closeAllFileViewers shared FS monitor RC: %lu",
-        [fileSystemMonitor retainCount]);  
+        [fileSystemMonitor retainCount]);
 }
 
 - (void)_restoreWindows
@@ -353,6 +345,7 @@ static NSString *WMComputerShouldGoDownNotification =
 - (void)_finishTerminateProcess
 {
   // Close and save file viewers, close panels.
+  [fileSystemMonitor terminate];
   [self _saveWindowsStateAndClose];
 
   // Close XWindow applications - wipeDesktop?

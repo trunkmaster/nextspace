@@ -773,17 +773,15 @@
   ASSIGN(selection, filenames);
 
   // Viewer
-  if (viewer && sender != viewer)
-    {
-      [viewer displayPath:displayedPath selection:selection];
-    }
+  if (viewer && sender != viewer) {
+    [viewer displayPath:displayedPath selection:selection];
+  }
 
   // Path View
-  if (pathView)
-    {
-      [pathView setPath:displayedPath selection:selection];
-      [pathView syncEmptyColumns];
-    }
+  if (pathView) {
+    [pathView setPath:displayedPath selection:selection];
+    [pathView syncEmptyColumns];
+  }
 
   [viewer becomeFirstResponder];
 
@@ -795,14 +793,12 @@
   [self updateDiskInfo];
 
   // Update Inspector
-  if ([window isMainWindow] == YES)
-    {
-      Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
-      if (inspector != nil)
-        {
-          [inspector revert:self];
-        }
+  if ([window isMainWindow] == YES) {
+    Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
+    if (inspector != nil) {
+        [inspector revert:self];
     }
+  }
 
   // FileSystemMonitor
   // TODO:
@@ -1215,7 +1211,7 @@
   }
   
   NSLog(@"[FileViewer][%@] windowWillClose [%@]",
-        displayedPath, [[notif object] className]);
+        rootPath, [[notif object] className]);
 
   if (!isRootViewer) {
     [fileSystemMonitor 
@@ -1354,17 +1350,16 @@
   NSString *changedFullPath, *newFullPath, *selectedFullPath = nil;
 
   // Check if root folder still exists.
-  if (![[NSFileManager defaultManager] fileExistsAtPath:rootPath])
-    {
-      [window close];
-      return;
-    }
+  if (![[NSFileManager defaultManager] fileExistsAtPath:rootPath]) {
+    [window close];
+    return;
+  }
   
   NSString *commonPath = NXIntersectionPath(selectedPath, changedPath);
-  if (([commonPath length] < 1) || ([commonPath length] < [rootPath length]))
-    { // No intersection or changed path is out of our focus.
-      return;
-    }
+  if (([commonPath length] < 1) || ([commonPath length] < [rootPath length])) {
+    // No intersection or changed path is out of our focus.
+    return;
+  }
 
   operations = [changes objectForKey:@"Operations"];
 
@@ -1442,9 +1437,9 @@
   }
   else if (([operations indexOfObject:@"Write"] != NSNotFound)) {
     // Write - monitored object was changed (Create, Delete)
-    // NSLog(@"[FileViewer] NXFileSystem: 'Write' "
-    //       @"operation occured for %@ (%@) selection %@",
-    //       changedPath, selectedPath, selection);
+    NSLog(@"[FileViewer] NXFileSystem: 'Write' "
+          @"operation occured for %@ (%@) selection %@",
+          changedPath, selectedPath, selection);
 
     // Check selection before path will be reloaded
     ASSIGN(selection, 
@@ -1456,6 +1451,9 @@
     [self displayPath:displayedPath selection:selection sender:self];
   }
   else if (([operations indexOfObject:@"Attributes"] != NSNotFound)) {
+    NSLog(@"[FileViewer] NXFileSystem: 'Attributes' "
+          @"operation occured for %@ (%@) selection %@",
+          changedPath, selectedPath, selection);
     [self displayPath:displayedPath selection:selection sender:self];
   }
 }
