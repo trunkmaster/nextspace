@@ -29,18 +29,18 @@
 
 @implementation ViewerItemsLoader
 
-static NSMutableArray *fileList = nil;
-
 - (id)initWithIconView:(NXIconView *)view
                   path:(NSString *)dirPath
               contents:(NSArray *)dirContents
              selection:(NSArray *)filenames
 {
+  [super init];
+  
   if (self != nil) {
     iconView = view;
-    directoryPath = [dirPath copy];
+    directoryPath = [[NSString alloc] initWithString:dirPath];
     directoryContents = [dirContents mutableCopy];
-    selectedFiles = filenames;
+    selectedFiles = [[NSArray alloc] initWithArray:filenames];
   }
 
   return self;
@@ -115,8 +115,9 @@ static NSMutableArray *fileList = nil;
   }
 
   NSLog(@"IconView: End path loading...");
-  [directoryContents release];
   [directoryPath release];
+  [directoryContents release];
+  [selectedFiles release];
 }
 
 - (BOOL)isReady
@@ -130,7 +131,7 @@ static NSMutableArray *fileList = nil;
 
 - (void)dealloc
 {
-  NSLog(@"[IconViewer] -dealloc");
+  NSLog(@"[IconViewer](%@) -dealloc", rootPath);
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   if (itemsLoader != nil) {
@@ -295,7 +296,7 @@ static NSMutableArray *fileList = nil;
   [itemsLoader addObserver:self
                 forKeyPath:@"isFinished"
                    options:0
-                   context:NULL];
+                   context:self];
   [operationQ addOperation:itemsLoader];
 }
 - (void)reloadPathWithSelection:(NSString *)relativePath
@@ -355,7 +356,7 @@ static NSMutableArray *fileList = nil;
 {
   NXIconLabel *iconLabel;
   
-  NSLog(@"IconView: Observer of '%@' was called.", keyPath);
+  NSLog(@"IconView: Observer `%@` of '%@' was called.", [self className], keyPath);
   for (NXIcon *icon in [iconView icons]) {
     [icon setEditable:YES];
     [icon setDelegate:self];
