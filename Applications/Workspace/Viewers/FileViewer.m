@@ -922,10 +922,8 @@
   NSString      *oldFullPath = nil;
   NSString      *newFullPath = nil;
   NSString      *oldFileName = nil;
-  NSString      *newPath = nil;
 
-  if (selection && [selection count] != 1)
-    {
+  if (selection && [selection count] != 1) {
       [NSException raise:NSInternalInconsistencyException
 		  format:@"Attempt to change the " \
 		  @"filename while multiple files are selected"];
@@ -933,71 +931,63 @@
 
 //  NSLog(@"Rename selection: %@", selection);
 
-  if ([selection count]) // It's a file
-    {
-      NSString *prefix;
+  if ([selection count]) {
+    // It's a file
+    NSString *prefix;
 
-      prefix = [self absolutePath];
-      oldFileName = [selection objectAtIndex:0];
-      oldFullPath = [prefix stringByAppendingPathComponent:oldFileName];
-      newFullPath = [prefix stringByAppendingPathComponent:newName];
-      newPath = [newFullPath stringByDeletingLastPathComponent];
+    prefix = [self absolutePath];
+    oldFileName = [selection objectAtIndex:0];
+    oldFullPath = [prefix stringByAppendingPathComponent:oldFileName];
+    newFullPath = [prefix stringByAppendingPathComponent:newName];
+  }
+  else {
+    // It's a directory
+    oldFullPath = [self absolutePath];
+    newFullPath = [[oldFullPath stringByDeletingLastPathComponent]
+                    stringByAppendingPathComponent:newName];
+  }
+
+  if ([fm fileExistsAtPath:newFullPath isDirectory:&isDir]) {
+    NSString *alreadyExists;
+    
+    if (isDir) {
+      alreadyExists = [NSString stringWithFormat:
+                                  @"Directory '%@' already exists.\n" 
+                                @"Do you want to replace existing directory?",
+                                newName];
     }
-  else // It's a directory
-    {
-      oldFullPath = [self absolutePath];
-      newFullPath = [[oldFullPath stringByDeletingLastPathComponent]
-	stringByAppendingPathComponent:newName];
-      newPath = newFullPath;
+    else
+      {
+        alreadyExists = [NSString stringWithFormat: 
+                                    @"File '%@' already exists.\n" 
+                                  @"Do you want to replace existing file?", newName];
+      }
+
+    switch (NSRunAlertPanel(_(@"Rename"), alreadyExists,
+                            _(@"Cancel"), _(@"Replace"), nil)) {
+    case NSAlertDefaultReturn: // Cancel
+      return NO;
+      break;
+    case NSAlertAlternateReturn: // Replace
+      break;
     }
+  }
 
-  if ([fm fileExistsAtPath:newFullPath isDirectory:&isDir])
-    {
-      NSString *alreadyExists;
-
-      if (isDir)
-	{
-	  alreadyExists = [NSString stringWithFormat: 
-	    @"Directory '%@' already exists.\n" 
-	    @"Do you want to replace existing directory?", newName];
-	}
-      else
-	{
-	  alreadyExists = [NSString stringWithFormat: 
-	    @"File '%@' already exists.\n" 
-	    @"Do you want to replace existing file?", newName];
-	}
-
-      switch (NSRunAlertPanel(_(@"Rename"), alreadyExists,
-			      _(@"Cancel"), _(@"Replace"), nil))
-	{
-	case NSAlertDefaultReturn: // Cancel
-	  return NO;
-	  break;
-	case NSAlertAlternateReturn: // Replace
-	  break;
-	}
-    }
-
-//  NSLog(@"Rename from %@ to %@", oldFullPath, newFullPath);
-
-  if (rename([oldFullPath cString], [newFullPath cString]) == -1)
-    {
-      NSRunAlertPanel(_(@"Rename"),
-		      [NSString stringWithFormat:_(@"Couldn't rename %s"),
-		      strerror(errno)],
-		      nil, nil, nil);
+  if (rename([oldFullPath cString], [newFullPath cString]) == -1) {
+    NSString *alertFormat = _(@"Couldn't rename `%@` to `%@`. Error: %s");
+    NXRunAlertPanel(_(@"Rename"),
+                    [NSString stringWithFormat:alertFormat,
+                              oldFullPath, newFullPath,
+                              strerror(errno)],
+                    nil, nil, nil);
       
       return NO;
     }
 
-  if (updateViewer)
-    {
-      [viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
-      [self displayPath:[self pathFromAbsolutePath:newFullPath]
-              selection:nil
-                 sender:self];
-    }
+  // Leave this for a specific cases when viewer's missed the change.
+  if (updateViewer) {
+    [viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
+  }
 
   return YES;
 }
@@ -1183,13 +1173,12 @@
   PathIcon *icon;
   NSString *path;
 
-  NSLog(@"Icon label did change to %@", newLabelString);
+  NSLog(@"Icon label did change from %@ to %@", oldLabelString, newLabelString);
 
-  if (![self renameCurrentFileTo:newLabelString updateViewer:YES])
-    {
-      [[anIconLabel icon] setLabelString:oldLabelString];
-      return;
-    }
+  if (![self renameCurrentFileTo:newLabelString updateViewer:NO]) {
+    [[anIconLabel icon] setLabelString:oldLabelString];
+    return;
+  }
 
   // Set attributes of icon
   icon = (PathIcon *)[anIconLabel icon];
@@ -1199,7 +1188,7 @@
   path = [path stringByAppendingPathComponent:newLabelString];
   // NSLog(@"Icon new path: %@", path);
   [icon setPaths:[NSArray arrayWithObject:path]];
-  // NSLog(@"Icon now have paths: %@", [icon paths]);
+  NSLog(@"FileViewer(%@): Icon now have paths: %@", rootPath, [icon paths]);
 }
 
 //=============================================================================
@@ -1392,90 +1381,83 @@
   changedFullPath = [changedPath stringByAppendingPathComponent:changedFile];
   
   // Now decide what and how should be updated
-  if ([operations indexOfObject:@"Rename"] != NSNotFound)
-    { // ChangedPath, ChangedFile, ChangedFileTo must be filled
+  if ([operations indexOfObject:@"Rename"] != NSNotFound) {
+    // ChangedPath, ChangedFile, ChangedFileTo must be filled
       
-      newFullPath = [changedPath stringByAppendingPathComponent:changedFileTo];
+    newFullPath = [changedPath stringByAppendingPathComponent:changedFileTo];
       
-      if ([selection count])
-        {
-          selectedFile = [selection lastObject];
-          selectedFullPath = [selectedPath
-                               stringByAppendingPathComponent:selectedFile];
-        }
-      else
-        {
-          selectedFullPath = [NSString stringWithString:selectedPath];
-        }
+    if ([selection count]) {
+      selectedFile = [selection lastObject];
+      selectedFullPath = [selectedPath stringByAppendingPathComponent:selectedFile];
+    }
+    else {
+      selectedFullPath = [NSString stringWithString:selectedPath];
+    }
         
-      // changedFullPath  == "changedPath/changedFile"
-      // newFullPath      == "changedPath/changedFileTo"
-      // selectedFullPath == "selectedPath/selectedFile"
+    // changedFullPath  == "changedPath/changedFile"
+    // newFullPath      == "changedPath/changedFileTo"
+    // selectedFullPath == "selectedPath/selectedFile"
 
-      // NSLog(@"[FileViewer] NXFileSystem: 'Rename' "
-      //       @"operation occured for %@(%@). New name %@",
-      //       changedFullPath, selectedFullPath, newFullPath);
+    // NSLog(@"[FileViewer] NXFileSystem: 'Rename' "
+    //       @"operation occured for %@(%@). New name %@",
+    //       changedFullPath, selectedFullPath, newFullPath);
       
-      commonPath = NXIntersectionPath(selectedFullPath, changedFullPath);
+    commonPath = NXIntersectionPath(selectedFullPath, changedFullPath);
       
-      if ([changedFullPath isEqualToString:selectedFullPath])
-        {
-          // Last selected name changed
-          NSLog(@"Last selected name changed");
-          [viewer
-            currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
-          [self displayPath:[self pathFromAbsolutePath:changedPath]
-                  selection:[NSArray arrayWithObject:changedFileTo]
-                     sender:self];
-        }
-      else if ([changedPath isEqualToString:selectedPath])
-        {
-          // Selected dir contents changed
-          NSLog(@"Selected dir contents changed");
-          // Reload column in browser for changed directory contents
-          ASSIGN(selection, [self checkSelection:selection
-                                          atPath:displayedPath]);
-          [viewer reloadPath:displayedPath];
-        }
-      else if ([commonPath isEqualToString:changedFullPath])
-        {
-          selectedPath = [selectedPath
+    if ([changedFullPath isEqualToString:selectedFullPath]) {
+      // Last selected name changed
+      NSLog(@"Last selected name changed from %@ to %@",
+            selectedFullPath, newFullPath);
+      // Optimization: do not use [self displayPath:selection:sender:] - just
+      // set values for particular parts of FileViewer
+      [pathView setPath:[self pathFromAbsolutePath:newFullPath] selection:nil];
+      [viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
+      [self setPathFromAbsolutePath:newFullPath];
+    }
+    else if ([changedPath isEqualToString:selectedPath]) {
+      // Selected dir contents changed
+      NSLog(@"Selected dir contents changed");
+      // Reload column in browser for changed directory contents
+      ASSIGN(selection, [self checkSelection:selection
+                                      atPath:displayedPath]);
+      [viewer reloadPath:displayedPath];
+    }
+    else if ([commonPath isEqualToString:changedFullPath]) {
+      selectedPath = [selectedPath
                            stringByReplacingOccurrencesOfString:commonPath
                                                      withString:newFullPath];
-          // Changed directory name, part of selectedPath 
-          NSLog(@"Changed directory name, part of selectedPath");
-          // [viewer reloadPath:[self pathFromAbsolutePath:selectedPath]];
-          [self displayPath:[self pathFromAbsolutePath:selectedPath]
-                  selection:selection
-                     sender:self];
-        }
-      else
-        {
-          NSLog(@"One of not selected (but displayed) row name changed");
-          // One of not selected (but displayed) row name changed
-          // Reload column in browser for changed directory contents
-          [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
-        }
+      // Changed directory name, part of selectedPath 
+      NSLog(@"Changed directory name, part of selectedPath");
+      // [viewer reloadPath:[self pathFromAbsolutePath:selectedPath]];
+      [self displayPath:[self pathFromAbsolutePath:selectedPath]
+              selection:selection
+                 sender:self];
     }
-  else if (([operations indexOfObject:@"Write"] != NSNotFound))
-    {   // Write - monitored object was changed (Create, Delete)
-      // NSLog(@"[FileViewer] NXFileSystem: 'Write' "
-      //       @"operation occured for %@ (%@) selection %@",
-      //       changedPath, selectedPath, selection);
-
-      // Check selection before path will be reloaded
-      ASSIGN(selection, 
-             [self checkSelection:selection atPath:displayedPath]);
+    else {
+      NSLog(@"One of not selected (but displayed) row name changed");
+      // One of not selected (but displayed) row name changed
       // Reload column in browser for changed directory contents
       [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
+    }
+  }
+  else if (([operations indexOfObject:@"Write"] != NSNotFound)) {
+    // Write - monitored object was changed (Create, Delete)
+    // NSLog(@"[FileViewer] NXFileSystem: 'Write' "
+    //       @"operation occured for %@ (%@) selection %@",
+    //       changedPath, selectedPath, selection);
 
-      // Check existance of path components and update ivars, other views
-      [self displayPath:displayedPath selection:selection sender:self];
-    }
-  else if (([operations indexOfObject:@"Attributes"] != NSNotFound))
-    {
-      [self displayPath:displayedPath selection:selection sender:self];
-    }
+    // Check selection before path will be reloaded
+    ASSIGN(selection, 
+           [self checkSelection:selection atPath:displayedPath]);
+    // Reload column in browser for changed directory contents
+    [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
+
+    // Check existance of path components and update ivars, other views
+    [self displayPath:displayedPath selection:selection sender:self];
+  }
+  else if (([operations indexOfObject:@"Attributes"] != NSNotFound)) {
+    [self displayPath:displayedPath selection:selection sender:self];
+  }
 }
 
 - (void)directorySortMethodChanged:(NSNotification *)aNotif
