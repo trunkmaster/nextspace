@@ -73,15 +73,16 @@ static NSMutableArray *fileList = nil;
 
 - (void)main
 {
-  NSString   *path;
-  PathIcon   *anIcon;
-  NSUInteger slotsWide, x;
+  NSString     *path;
+  PathIcon     *anIcon;
+  NSUInteger   slotsWide, x;
+  NSMutableSet *selected = [NSMutableSet new];
 
   NSLog(@"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
 
   x = 0;
   slotsWide = [iconView slotsWide];
-  [self _optimizeItems:directoryContents fileView:iconView];
+  // [self _optimizeItems:directoryContents fileView:iconView];
   
   for (NSString *filename in directoryContents) {
     path = [directoryPath stringByAppendingPathComponent:filename];
@@ -96,6 +97,12 @@ static NSMutableArray *fileList = nil;
     [iconView performSelectorOnMainThread:@selector(addIcon:)
                                withObject:anIcon
                             waitUntilDone:YES];
+    if ([selectedFiles containsObject:filename]) {
+      [selected addObject:anIcon];
+      [iconView performSelectorOnMainThread:@selector(selectIcons:)
+                                 withObject:selected
+                              waitUntilDone:YES];
+    }
     [anIcon release];
 
     // x++;
@@ -277,8 +284,9 @@ static NSMutableArray *fileList = nil;
   }
 
   path = [rootPath stringByAppendingPathComponent:dirPath];
-  NSLog(@"IconViewer: display path: %@", dirPath);
-  
+  NSLog(@"IconViewer(%@): display path: %@", rootPath, dirPath);
+
+  [iconView removeAllIcons];
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
   itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
                                                        path:path
@@ -299,8 +307,12 @@ static NSMutableArray *fileList = nil;
 }
 - (void)reloadPath:(NSString *)reloadPath
 {
-  NSRect r = [iconView visibleRect];
+  NSRect r;
+
+  if ([reloadPath isEqualToString:currentPath] == NO)
+    return;
   
+  r = [iconView visibleRect];
   [self displayPath:reloadPath selection:selection];
   [iconView scrollRectToVisible:r];
 }
@@ -317,11 +329,10 @@ static NSMutableArray *fileList = nil;
 // --- Events
 - (void)currentSelectionRenamedTo:(NSString *)newName
 {
-  PathIcon *icon;
+  PathIcon *icon = [[iconView selectedIcons] anyObject];
   NSString *path;
-  
-  icon = [[iconView selectedIcons] anyObject];
-  [icon setLabelString:newName];
+
+  [icon setLabelString:[newName lastPathComponent]];
   path = [rootPath stringByAppendingPathComponent:newName];
   [icon setIconImage:[[NSApp delegate] iconForFile:path]];
 }
@@ -342,37 +353,22 @@ static NSMutableArray *fileList = nil;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
+  NXIconLabel *iconLabel;
+  
   NSLog(@"IconView: Observer of '%@' was called.", keyPath);
   for (NXIcon *icon in [iconView icons]) {
-    [icon setEditable:NO];
+    [icon setEditable:YES];
     [icon setDelegate:self];
     [icon setTarget:self];
-    [icon setAction:@selector(doClick:)];
+    [icon setDoubleAction:@selector(open:)];
     [icon setDragAction:@selector(iconDragged:withEvent:)];
     [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+    iconLabel = [icon label];
+    [iconLabel setNextKeyView:iconView];
+    [iconLabel setIconLabelDelegate:_owner];
   }
 
-  if ([selection count] > 0) {
-    NSMutableSet *selected = [NSMutableSet new];
-    NXIcon       *icon;
-    for (NSString *label in selection) {
-      icon = [iconView iconWithLabelString:label];
-      if (icon) {
-        [selected addObject:icon];
-      }
-    }
-    [iconView performSelectorOnMainThread:@selector(selectIcons:)
-                               withObject:selected
-                            waitUntilDone:YES];
-    [selected release];
-  }
-  else {
-    [iconView performSelectorOnMainThread:@selector(selectIcons:)
-                               withObject:nil
-                            waitUntilDone:YES];
-    [iconView scrollPoint:NSZeroPoint];
-  }
-
+  [iconView scrollPoint:NSZeroPoint];
   [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
                              withObject:nil
                           waitUntilDone:YES];
@@ -393,7 +389,7 @@ static NSMutableArray *fileList = nil;
   if ([notif object] != iconView)
     return;
 
-  NSLog(@"IconViewer: selection did change.");
+  NSLog(@"IconViewer(%@): selection did change.", rootPath);
 
   for (NXIcon *icon in icons) {
     [icon setShowsExpandedLabelWhenSelected:showsExpanded];
@@ -409,29 +405,27 @@ static NSMutableArray *fileList = nil;
 - (void)open:sender
 {
   NSSet    *selected = [iconView selectedIcons];
-  NSString *path;
+  NSString *path, *fullPath;
   NSString *appName, *fileType;
+
+  NSLog(@"[IconViewer] open path:%@ selection:%@", currentPath, selection);
 
   if ([selected count] == 0) {
     [_owner displayPath:currentPath selection:nil sender:self];
   }
   else if ([selected count] == 1) {
     path = [currentPath stringByAppendingPathComponent:[selection objectAtIndex:0]];
-    // [(NSWorkspace *)[NSApp delegate] getInfoForFile:path
-    //                                     application:&appName
-    //                                            type:&fileType];
+    fullPath = [rootPath stringByAppendingPathComponent:path];
+    [(NSWorkspace *)[NSApp delegate] getInfoForFile:fullPath
+                                        application:&appName
+                                               type:&fileType];
 
-    // if ([fileType isEqualToString:NSDirectoryFileType] ||
-    //     [fileType isEqualToString:NSFilesystemFileType]) {
-      [_owner displayPath:currentPath
-                selection:@[[[selected anyObject] labelString]]
-                   sender:self];
-    // }
+    if ([fileType isEqualToString:NSDirectoryFileType] ||
+        [fileType isEqualToString:NSFilesystemFileType]) {
+      [self displayPath:path selection:nil];
+      [_owner displayPath:path selection:nil sender:self];
+    }
   }
-
-  // ASSIGN(currentPath, path);
-  // ASSIGN(selection, nil);
-  // [_owner open:view];
 }
 
 //=============================================================================
