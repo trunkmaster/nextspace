@@ -19,3 +19,4 @@
 #import <NXAppKit/NXClockView.h>
 #import <NXAppKit/NXUtilities.h>
 #import <NXAppKit/NXNumericField.h>
+#import <NXAppKit/NXAlert.h>
