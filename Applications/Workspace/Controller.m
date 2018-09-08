@@ -61,17 +61,12 @@ static NSString *WorkspaceVersion = @"0.8";
 
 // Inspectors
 #import "Workspace.h"
-NSString *WMFolderSortMethodDidChangeNotification =
-  @"WMFolderSortMethodDidChangeNotification";
-NSString *WMFilePermissionsDidChangeNotification =
-  @"WMFilePermissionsDidChangeNotification";
-NSString *WMFileOwnerDidChangeNotification =
-  @"WMFileOwnerDidChangeNotification";
+NSString *WMFolderSortMethodDidChangeNotification = @"WMFolderSortMethodDidChangeNotification";
+NSString *WMFilePermissionsDidChangeNotification = @"WMFilePermissionsDidChangeNotification";
+NSString *WMFileOwnerDidChangeNotification = @"WMFileOwnerDidChangeNotification";
 
-static NSString *WMSessionShouldFinishNotification =
-  @"WMSessionShouldFinishNotification";
-static NSString *WMComputerShouldGoDownNotification =
-  @"WMComputerShouldGoDownNotification";
+static NSString *WMSessionShouldFinishNotification = @"WMSessionShouldFinishNotification";
+static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNotification";
 
 @interface Controller (Private)
 
@@ -89,23 +84,14 @@ static NSString *WMComputerShouldGoDownNotification =
 
 - (void)_loadViewMenu:(id)viewMenu
 {
-  NSDictionary *viewerTypes;
-  NSEnumerator *e;
-  NSString     *viewerType;
-  NSArray      *viewerTypeNames;
+  NSDictionary *viewerTypes = [[ModuleLoader shared] menuViewerInfo];
 
-  viewerTypes = [[ModuleLoader shared] menuViewerInfo];
-  /*  viewerTypeNames = [[viewerTypes allKeys] sortedArrayUsingSelector:
-						      @selector(compare:)];*/
-  viewerTypeNames = [viewerTypes allKeys];
-  e = [viewerTypeNames objectEnumerator];
-  while ((viewerType = [e nextObject]) != nil)
-    {
-      [viewMenu insertItemWithTitle:viewerType
-			     action:@selector(setViewerType:)
-		      keyEquivalent:[viewerTypes objectForKey:viewerType]
-			    atIndex:0];
-    }
+  for (NSString *viewerType in [viewerTypes allKeys]) {
+    [viewMenu insertItemWithTitle:viewerType
+                           action:@selector(setViewerType:)
+                    keyEquivalent:[viewerTypes objectForKey:viewerType]
+                          atIndex:0];
+  }
 }
 
 - (void)_loadInpectors
@@ -544,21 +530,19 @@ static NSString *WMComputerShouldGoDownNotification =
          selector:@selector(mediaOperationDidEnd:)
              name:NXMediaOperationDidEnd
            object:mediaAdaptor];
-  
+ 
   [mediaAdaptor checkForRemovableMedia];
 
-  if (useInternalWindowManager)
-    {
-      WAppIcon *btn = [recycler dockIcon];
-      WDock    *dock = wScreenWithNumber(0)->dock;
+  if (useInternalWindowManager) {
+    WAppIcon *btn = [recycler dockIcon];
+    WDock    *dock = wScreenWithNumber(0)->dock;
 
-      if (btn)
-        {
-          btn->icon->owner = dock->icon_array[0]->icon->owner;
-          btn->main_window = dock->icon_array[0]->main_window;
-          [[recycler appIcon] orderFrontRegardless];
-        }
+    if (btn) {
+      btn->icon->owner = dock->icon_array[0]->icon->owner;
+      btn->main_window = dock->icon_array[0]->main_window;
+      [[recycler appIcon] orderFrontRegardless];
     }
+  }
 
   [self _startSavedApplications];
 }
@@ -853,6 +837,11 @@ static NSString *WMComputerShouldGoDownNotification =
 }
 
 // View
+- (void)setViewerType:(id)sender
+{
+  [[self fileViewerForWindow:[NSApp keyWindow]] setViewerType:sender];
+}
+
 - (void)updateViewers:(id)sender
 {
   id           viewer;
@@ -1033,8 +1022,15 @@ static NSString *WMComputerShouldGoDownNotification =
     }
   }
   else if ([menuTitle isEqualToString:@"Disk"]) {
-    if ([[menuItem title] isEqualToString:@"Initialize..."]) return NO;
-    if ([[menuItem title] isEqualToString:@"Check For Disks"] && !mediaAdaptor) return NO;
+    if ([[menuItem title] isEqualToString:@"Initialize..."])
+      return NO;
+    if ([[menuItem title] isEqualToString:@"Check For Disks"] && !mediaAdaptor)
+      return NO;
+  }
+  else if ([menuTitle isEqualToString:@"View"]) {
+    if ([[menuItem title] isEqualToString:[[[fileViewer viewer] class] viewerType]]) {
+      return NO;
+    }
   }
   else if ([menuTitle isEqualToString:@"Inspector"]) {
       if (!fileViewer) {
