@@ -1618,6 +1618,9 @@
   NSString    *viewerType = [sender title];
   id <Viewer> aViewer;
 
+  if ([[[viewer class] viewerType] isEqualToString:viewerType])
+    return;
+
   aViewer = [[ModuleLoader shared] viewerForType:viewerType];
 
   if (aViewer != nil) {
