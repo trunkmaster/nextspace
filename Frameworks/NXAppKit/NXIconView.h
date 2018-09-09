@@ -275,9 +275,6 @@ typedef struct {
 /** Returns the icon double-click message. See -[NXIconView setDoubleAction:]. */
 - (SEL)doubleAction;
 
-/** Action to send a double action. */
-- (void)sendDoubleAction:sender;
-
 /** Sets the message to send to the target when a drag action in an
     icon occurs. Also the "sender" and "event" arguments passed are
     those of the sending icon. */
