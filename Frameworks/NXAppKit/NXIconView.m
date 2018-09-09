@@ -892,102 +892,92 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 
 - (void)keyDown:(NSEvent *)ev
 {
-  unichar c = [[ev characters] characterAtIndex:0];
+  unichar    c = [[ev characters] characterAtIndex:0];
+  NSUInteger flags = [ev modifierFlags];
 
-  if (c >= NSUpArrowFunctionKey && c <= NSRightArrowFunctionKey &&
-      allowsArrowsSelection)
-    {
-      NXIconSlot nextIcon = selectedIconSlot;
-      NXIcon * icon;
-      unsigned flags = [ev modifierFlags];
+  NSLog(@"[NXIconView] keyDown: %c modifiers: %lu", c, flags);
 
-      nextIcon = selectedIconSlot;
+  // Arrows and Shift + Arrows selection
+  if (allowsArrowsSelection &&
+      c >= NSUpArrowFunctionKey && c <= NSRightArrowFunctionKey) {
+    NXIcon     *icon;
+    NXIconSlot nextIcon = selectedIconSlot;
 
-      if (selectedIconSlot.x == -1)
-	{
-	  NSEnumerator * e = [icons objectEnumerator];
-	  while ((icon = [e nextObject]) != nil)
-	    {
-	      if (![icon isKindOfClass:[NSNull class]])
-		{
-		  selectedIconSlot = [self slotForIcon:icon];
-		  [self updateSelectionWithIcon:icon
-				  modifierFlags:0];
-		  return;
-		}
-	    }
-	}
+    nextIcon = selectedIconSlot;
 
-      switch (c)
-	{
-	case NSUpArrowFunctionKey:
-	  for (nextIcon.y--; nextIcon.y >= 0; nextIcon.y--)
-	    {
-	      icon = [self iconInSlot:nextIcon];
-	      if (icon != nil)
-		{
-		  [self updateSelectionWithIcon:icon
-				  modifierFlags:flags];
-		  selectedIconSlot = nextIcon;
-		  break;
-		}
-	    }
-	  break;
-	case NSDownArrowFunctionKey:
-	  for (nextIcon.y++;(unsigned) nextIcon.y < slotsTall; nextIcon.y++)
-	    {
-	      icon = [self iconInSlot:nextIcon];
-	      if (icon != nil)
-		{
-		  [self updateSelectionWithIcon:icon
-				  modifierFlags:flags];
-		  selectedIconSlot = nextIcon;
-		  break;
-		}
-	    }
-	  break;
-	case NSLeftArrowFunctionKey:
-	  for (nextIcon.x--; nextIcon.x >= 0; nextIcon.x--)
-	    {
-	      icon = [self iconInSlot:nextIcon];
-	      if (icon != nil)
-		{
-		  [self updateSelectionWithIcon:icon
-				  modifierFlags:flags];
-		  selectedIconSlot = nextIcon;
-		  break;
-		}
-	    }
-	  break;
-	case NSRightArrowFunctionKey:
-	  for (nextIcon.x++;(unsigned) nextIcon.x < slotsWide;nextIcon.x++)
-	    {
-	      icon = [self iconInSlot:nextIcon];
-	      if (icon != nil)
-		{
-		  [self updateSelectionWithIcon:icon
-				  modifierFlags:flags];
-		  selectedIconSlot = nextIcon;
-		  break;
-		}
-	    }
-	  break;
-	}
+    if (selectedIconSlot.x == -1) {
+      for (icon in icons) {
+        if (![icon isKindOfClass:[NSNull class]]) {
+          selectedIconSlot = [self slotForIcon:icon];
+          [self updateSelectionWithIcon:icon modifierFlags:0];
+          return;
+        }
+      }
     }
-  else if (c < 0xF700 && allowsAlphanumericSelection)
-    {
-      if (c == '\r')
-	{
-	  if (sendsDoubleActionOnReturn)
-	    {
-	      [self sendDoubleAction:self];
-	    }
-	}
-      else
-	{
-	  // TODO - implement alphanumeric selection
-	}
+
+    switch (c) {
+    case NSUpArrowFunctionKey:
+      for (nextIcon.y--; nextIcon.y >= 0; nextIcon.y--) {
+        icon = [self iconInSlot:nextIcon];
+        if (icon != nil) {
+          [self updateSelectionWithIcon:icon modifierFlags:flags];
+          selectedIconSlot = nextIcon;
+          break;
+        }
+      }
+      break;
+    case NSDownArrowFunctionKey:
+      for (nextIcon.y++;(unsigned) nextIcon.y < slotsTall; nextIcon.y++) {
+        icon = [self iconInSlot:nextIcon];
+        if (icon != nil) {
+          [self updateSelectionWithIcon:icon modifierFlags:flags];
+          selectedIconSlot = nextIcon;
+          break;
+        }
+      }
+      break;
+    case NSLeftArrowFunctionKey:
+      for (nextIcon.x--; nextIcon.x >= 0; nextIcon.x--) {
+        icon = [self iconInSlot:nextIcon];
+        if (icon != nil) {
+          [self updateSelectionWithIcon:icon modifierFlags:flags];
+          selectedIconSlot = nextIcon;
+          break;
+        }
+      }
+      break;
+    case NSRightArrowFunctionKey:
+      for (nextIcon.x++;(unsigned) nextIcon.x < slotsWide;nextIcon.x++) {
+        icon = [self iconInSlot:nextIcon];
+        if (icon != nil) {
+          [self updateSelectionWithIcon:icon modifierFlags:flags];
+          selectedIconSlot = nextIcon;
+          break;
+        }
+      }
+      break;
     }
+  }
+  else if (c < 0xF700 && allowsAlphanumericSelection) {
+    if (sendsDoubleActionOnReturn &&
+        (c == NSCarriageReturnCharacter ||
+         c == NSNewlineCharacter ||
+         c == NSEnterCharacter)) {
+      for (NXIcon *icon in [self selectedIcons]) {
+        [self iconDoubleClicked:icon];
+      }
+    }
+    else {
+      if (delegate && [delegate respondsToSelector:@selector(keyDown:)]) {
+        [delegate keyDown:ev];
+      }
+    }
+  }
+  else {
+    if (delegate && [delegate respondsToSelector:@selector(keyDown:)]) {
+      [delegate keyDown:ev];
+    }    
+  }
 }
 
 - (void)drawRect:(NSRect)r
@@ -1070,35 +1060,30 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 
 - (void)iconClicked:sender
 {
-  if (selectable)
-    {
-      selectedIconSlot = [self slotForIcon:sender];
-      [self updateSelectionWithIcon:sender
-		      modifierFlags:[sender modifierFlags]];
+  if (selectable) {
+    selectedIconSlot = [self slotForIcon:sender];
+    [self updateSelectionWithIcon:sender modifierFlags:[sender modifierFlags]];
+  }
+  
+  if (action != NULL && target != nil) {
+    if ([target respondsToSelector:action]) {
+      [target performSelector:action withObject:self];
     }
-
-  if (action != NULL && target != nil)
-    {
-      if ([target respondsToSelector:action])
-	     [target performSelector:action
-			  withObject:self];
-    }
+  }
 }
 
 - (void)iconDoubleClicked:sender
 {
-  if (selectable)
-    {
-      selectedIconSlot = [self slotForIcon:sender];
-      [self updateSelectionWithIcon:sender
-		      modifierFlags:[sender modifierFlags]];
+  if (selectable) {
+    selectedIconSlot = [self slotForIcon:sender];
+    [self updateSelectionWithIcon:sender modifierFlags:[sender modifierFlags]];
+  }
+  
+  if (doubleAction != NULL && target != nil) {
+    if ([target respondsToSelector:doubleAction]) {
+      [target performSelector:doubleAction withObject:self];
     }
-  if (doubleAction != NULL && target != nil)
-    {
-      if ([target respondsToSelector:doubleAction])
-	     [target performSelector:doubleAction
-			  withObject:self];
-    }
+  }
 }
 
 - (void)iconDragged:sender event:(NSEvent *)ev
@@ -1110,11 +1095,6 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 			  withObject:sender
 			  withObject:ev];
     }
-}
-
-- (void)sendDoubleAction:sender
-{
-  [self iconDoubleClicked:self];
 }
 
 - (void)selectIcons:(NSSet *)someIcons
@@ -1350,10 +1330,10 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     someIcons = [[NSSet new] autorelease];
   }
 
-  if (flags == NSShiftKeyMask) {
+  if (flags & NSShiftKeyMask) {
     mode = NXIconSelectionAdditiveMode;
   }
-  else if (flags == NSControlKeyMask) {
+  else if (flags & NSControlKeyMask) {
     mode = NXIconSelectionSubtractiveMode;
   }
   else {
