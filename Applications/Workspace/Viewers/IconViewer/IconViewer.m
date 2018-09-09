@@ -127,6 +127,162 @@
 
 @end
 
+@interface WMIconView : NXIconView
+{
+  IconViewer *iconViewer;
+}
+@end
+@implementation WMIconView
+- (id)initSlotsWide:(NSInteger)slots owner:(IconViewer *)viewer
+{
+  [super initSlotsWide:slots];
+  iconViewer = viewer;
+  return self;
+}
+- (void)keyDown:(NSEvent *)ev
+{
+  NSString   *characters = [ev characters];
+  NSUInteger charsLength = [characters length];
+  unichar    ch = 0;
+  NSUInteger modifierFlags = [ev modifierFlags];
+
+  if (charsLength > 0) {
+      ch = [characters characterAtIndex:0];
+    }
+  
+  // NSLog(@"[IconViewer] %c", ch);
+
+  if (ch == NSCarriageReturnCharacter ||
+      ch == NSNewlineCharacter ||
+      ch == NSEnterCharacter) {
+    [iconViewer open:nil];
+    return;
+  }
+  else if ((ch == NSUpArrowFunctionKey) && (modifierFlags & NSCommandKeyMask)) {
+    NSLog(@"Command + Up Arrow");
+    // [iconViewer ]
+    return;
+  }
+  else if ((ch == NSDownArrowFunctionKey) && modifierFlags & NSCommandKeyMask) {
+    NSLog(@"Command + Down Arrow");
+    [iconViewer open:nil];
+    return;
+  }
+
+  /*
+  if (allowsAlphanumericSelection && (ch < 0xF700) && (charsLength > 0))
+    {
+      NSMatrix *matrix;
+      NSString *sv;
+      NSInteger i, n, s;
+      NSInteger match;
+      NSInteger selectedColumn;
+      SEL lcarcSel = @selector(loadedCellAtRow:column:);
+      IMP lcarc = [self methodForSelector:lcarcSel];
+
+      // NSLog(@"selectedColumn: %i", selectedColumn);
+      
+      matrix = [self matrixInColumn:selectedColumn];
+      n = [matrix numberOfRows];
+      s = [matrix selectedRow];
+          
+      if (clickTimer && [clickTimer isValid]) {
+        [clickTimer invalidate];
+      }
+      clickTimer =
+        [NSTimer
+              scheduledTimerWithTimeInterval:0.8
+                                      target:self
+                                    selector:@selector(_performClick:)
+                                    userInfo:matrix
+                                     repeats:NO];
+      if (!_charBuffer)
+        {
+          _charBuffer = [characters substringToIndex:1];
+          RETAIN(_charBuffer);
+        }
+      else
+        {
+          if (([ev timestamp] - _lastKeyPressed < 2.0)
+              && (_alphaNumericalLastColumn == selectedColumn)
+              && s >= 0)
+            {
+              NSString *transition;
+              transition = [_charBuffer 
+                                 stringByAppendingString:
+                               [characters substringToIndex:1]];
+              RELEASE(_charBuffer);
+              _charBuffer = transition;
+              RETAIN(_charBuffer);
+            }
+          else
+            {
+              RELEASE(_charBuffer);
+              _charBuffer = [characters substringToIndex:1];
+              RETAIN(_charBuffer);
+            }
+        }
+
+      // NSLog(@"_charBuffer: %@ _lastKeyPressed:%f(%f) selected:%i",
+      //       _charBuffer, _lastKeyPressed, [ev timestamp], s);
+
+      _alphaNumericalLastColumn = selectedColumn;
+      _lastKeyPressed = [ev timestamp];
+
+      //[[self loadedCellAtRow:column:] stringValue]
+      sv = [((*lcarc)(self, lcarcSel, s, selectedColumn)) stringValue];
+
+      // selected cell aleady contains typed string - _charBuffer
+      if (([sv length] > 0) && ([sv hasPrefix:_charBuffer]))
+        {
+          return;
+        }
+
+      // search row from selected to the bottom
+      match = -1;
+      for (i = s + 1; i < n; i++)
+        {
+          sv = [((*lcarc)(self, lcarcSel, i, selectedColumn)) stringValue];
+          if (([sv length] > 0) && ([sv hasPrefix: _charBuffer]))
+            {
+              match = i;
+              break;
+            }
+        }
+      // previous search found nothing, start from top
+      if (i == n)
+        {
+          for (i = 0; i < s; i++)
+            {
+              sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+                     stringValue];
+              if (([sv length] > 0)
+                  && ([sv hasPrefix: _charBuffer]))
+                {
+                  match = i;
+                  break;
+                }
+            }
+        }
+      if (match != -1)
+        {
+          [matrix deselectAllCells];
+          [matrix selectCellAtRow:match column:0];
+          [matrix scrollCellToVisibleAtRow:match column:0];
+          // click performed with timer
+          // [matrix performClick:self];
+          return;
+        }
+        
+      _lastKeyPressed = 0.;
+      return;
+    }
+  */
+  
+  [super keyDown:ev];
+}
+@end
+
 @implementation IconViewer
 
 - (void)dealloc
@@ -157,12 +313,14 @@
   [super init];
 
   // NXIconView
-  iconView = [[[NXIconView alloc] initSlotsWide:3] autorelease];
+  iconView = [[NXIconView alloc] initSlotsWide:3];
+  // iconView = [[WMIconView alloc] initSlotsWide:3 owner:self];
   [iconView setDelegate:self];
   [iconView setTarget:self];
-  [iconView setDragAction: @selector(iconDragged:withEvent:)];
-  [iconView setDoubleAction: @selector(open:)];
+  [iconView setDragAction:@selector(iconDragged:withEvent:)];
+  [iconView setAllowsAlphanumericSelection:YES];
   [iconView setSendsDoubleActionOnReturn:YES];
+  [iconView setDoubleAction:@selector(open:)];
   [iconView setAutoAdjustsToFitIcons:YES];
   iconSize = [NXIconView defaultSlotSize];
   if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
@@ -200,6 +358,8 @@
   currentPath = nil;
   selection = nil;
   rootPath = @"/";
+  
+  [iconView release];
   
   return self;
 }
@@ -426,7 +586,148 @@
       [self displayPath:path selection:nil];
       [_owner displayPath:path selection:nil sender:self];
     }
+    else {
+      [_owner open:sender];
+    }
   }
+}
+
+//=============================================================================
+// NXIconView delegate
+//=============================================================================
+- (void)keyDown:(NSEvent *)ev
+{
+  NSString   *characters = [ev characters];
+  NSUInteger charsLength = [characters length];
+  unichar    ch = 0;
+  NSUInteger modifierFlags = [ev modifierFlags];
+
+  if (charsLength > 0) {
+    ch = [characters characterAtIndex:0];
+  }
+  
+  NSLog(@"[IconViewer] keyDown: %c", ch);
+
+  if ((ch == NSUpArrowFunctionKey) && (modifierFlags & NSCommandKeyMask)) {
+    NSLog(@"Command + Up Arrow");
+    // [iconViewer ]
+    return;
+  }
+  else if ((ch == NSDownArrowFunctionKey) && modifierFlags & NSCommandKeyMask) {
+    NSLog(@"Command + Down Arrow");
+    [self open:nil];
+    return;
+  }
+
+  /*
+  if (allowsAlphanumericSelection && (ch < 0xF700) && (charsLength > 0))
+    {
+      NSMatrix *matrix;
+      NSString *sv;
+      NSInteger i, n, s;
+      NSInteger match;
+      NSInteger selectedColumn;
+      SEL lcarcSel = @selector(loadedCellAtRow:column:);
+      IMP lcarc = [self methodForSelector:lcarcSel];
+
+      // NSLog(@"selectedColumn: %i", selectedColumn);
+      
+      matrix = [self matrixInColumn:selectedColumn];
+      n = [matrix numberOfRows];
+      s = [matrix selectedRow];
+          
+      if (clickTimer && [clickTimer isValid]) {
+        [clickTimer invalidate];
+      }
+      clickTimer =
+        [NSTimer
+              scheduledTimerWithTimeInterval:0.8
+                                      target:self
+                                    selector:@selector(_performClick:)
+                                    userInfo:matrix
+                                     repeats:NO];
+      if (!_charBuffer)
+        {
+          _charBuffer = [characters substringToIndex:1];
+          RETAIN(_charBuffer);
+        }
+      else
+        {
+          if (([ev timestamp] - _lastKeyPressed < 2.0)
+              && (_alphaNumericalLastColumn == selectedColumn)
+              && s >= 0)
+            {
+              NSString *transition;
+              transition = [_charBuffer 
+                                 stringByAppendingString:
+                               [characters substringToIndex:1]];
+              RELEASE(_charBuffer);
+              _charBuffer = transition;
+              RETAIN(_charBuffer);
+            }
+          else
+            {
+              RELEASE(_charBuffer);
+              _charBuffer = [characters substringToIndex:1];
+              RETAIN(_charBuffer);
+            }
+        }
+
+      // NSLog(@"_charBuffer: %@ _lastKeyPressed:%f(%f) selected:%i",
+      //       _charBuffer, _lastKeyPressed, [ev timestamp], s);
+
+      _alphaNumericalLastColumn = selectedColumn;
+      _lastKeyPressed = [ev timestamp];
+
+      //[[self loadedCellAtRow:column:] stringValue]
+      sv = [((*lcarc)(self, lcarcSel, s, selectedColumn)) stringValue];
+
+      // selected cell aleady contains typed string - _charBuffer
+      if (([sv length] > 0) && ([sv hasPrefix:_charBuffer]))
+        {
+          return;
+        }
+
+      // search row from selected to the bottom
+      match = -1;
+      for (i = s + 1; i < n; i++)
+        {
+          sv = [((*lcarc)(self, lcarcSel, i, selectedColumn)) stringValue];
+          if (([sv length] > 0) && ([sv hasPrefix: _charBuffer]))
+            {
+              match = i;
+              break;
+            }
+        }
+      // previous search found nothing, start from top
+      if (i == n)
+        {
+          for (i = 0; i < s; i++)
+            {
+              sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+                     stringValue];
+              if (([sv length] > 0)
+                  && ([sv hasPrefix: _charBuffer]))
+                {
+                  match = i;
+                  break;
+                }
+            }
+        }
+      if (match != -1)
+        {
+          [matrix deselectAllCells];
+          [matrix selectCellAtRow:match column:0];
+          [matrix scrollCellToVisibleAtRow:match column:0];
+          // click performed with timer
+          // [matrix performClick:self];
+          return;
+        }
+        
+      _lastKeyPressed = 0.;
+      return;
+    }
+  */
 }
 
 //=============================================================================
