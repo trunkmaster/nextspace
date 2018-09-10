@@ -899,15 +899,13 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
                                    !(flags & NSAlternateKeyMask) &&
                                    !(flags & NSCommandKeyMask));
 
-  NSLog(@"[NXIconView] keyDown: %c modifiers: %lu", c, flags);
+  NSLog(@"[NXIconView] keyDown: %c (%x) modifiers: %lu", c, c,flags);
 
   // Arrows and Shift + Arrows selection
   if (allowsArrowsSelection && (noModifiersPressed || (flags & NSShiftKeyMask)) &&
       c >= NSUpArrowFunctionKey && c <= NSRightArrowFunctionKey) {
     NXIcon     *icon;
     NXIconSlot nextIcon = selectedIconSlot;
-
-    nextIcon = selectedIconSlot;
 
     if (selectedIconSlot.x == -1) {
       for (icon in icons) {
@@ -961,6 +959,14 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
       }
       break;
     }
+  }
+  else if (c == NSHomeFunctionKey) {
+    [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(0,0)]
+                    modifierFlags:0];
+  }
+  else if (c == NSEndFunctionKey) {
+    [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(slotsWide-1, slotsTall-1)]
+                    modifierFlags:0];
   }
   else if (c < 0xF700 && allowsAlphanumericSelection) {
     if (sendsDoubleActionOnReturn &&
