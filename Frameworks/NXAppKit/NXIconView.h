@@ -18,7 +18,6 @@
 #import <AppKit/NSDragging.h>
 
 @class NSMutableArray, NXIcon;
-
 @protocol NSDraggingInfo;
 
 /** @struct NXIconSlot
@@ -29,6 +28,33 @@
 typedef struct {
     int x, y;
 } NXIconSlot;
+
+/** @enum NXIconSelectionMode
+    @brief The mode by which the icon view should select icons.
+*/
+typedef enum {
+  /** Normal clicking of icons - exclusive selection of only
+      these icons. */
+  NXIconSelectionExclusiveMode,
+  /** Shift-clicking - addition of the clicked icons to the
+      current selection. */
+  NXIconSelectionAdditiveMode,
+  /** Control-clicking - removal of the clicked icons from the
+      current selection. */
+  NXIconSelectionSubtractiveMode
+} NXIconSelectionMode;
+
+/** A shorthand function to construct an icon slot from provided
+    X and Y coordinates. */
+static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
+{
+  NXIconSlot slot;
+
+  slot.x = x;
+  slot.y = y;
+
+  return slot;
+}
 
 @interface NXIconView : NSView
 {
@@ -311,21 +337,6 @@ typedef struct {
 
 @end
 
-/** @enum NXIconSelectionMode
-    @brief The mode by which the icon view should select icons.
-*/
-typedef enum {
-  /** Normal clicking of icons - exclusive selection of only
-      these icons. */
-  NXIconSelectionExclusiveMode,
-  /** Shift-clicking - addition of the clicked icons to the
-      current selection. */
-  NXIconSelectionAdditiveMode,
-  /** Control-clicking - removal of the clicked icons from the
-      current selection. */
-  NXIconSelectionSubtractiveMode
-} NXIconSelectionMode;
-
 /** @brief NXIconView delegate methods. */
 @protocol NXIconViewDelegate
 
@@ -379,21 +390,3 @@ typedef enum {
                                               iconView:(NXIconView *)anIconView;
 
 @end
-
-/** Notification posted to the default notification center when
-    a selection change inside an icon view occurs. The argument
-    dictionary contains a key @"Selection" bound to an NSSet,
-    which contains the selected icons. */
-extern NSString * NXIconViewDidChangeSelectionNotification;
-
-/** A shorthand function to construct an icon slot from provided
-    X and Y coordinates. */
-static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
-{
-  NXIconSlot slot;
-
-  slot.x = x;
-  slot.y = y;
-
-  return slot;
-}
