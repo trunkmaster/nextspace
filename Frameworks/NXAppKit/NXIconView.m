@@ -1323,7 +1323,7 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 		   modifierFlags:(unsigned)flags
 {
   NXIconSelectionMode mode;
-  NSSet               *sel;
+  SEL                 shouldSelectIconsSEL;
 
   // if passed a nil argument, assume as if it were an empty set
   if (someIcons == nil) {
@@ -1340,9 +1340,8 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
     mode = NXIconSelectionExclusiveMode;
   }
 
-  if (delegate &&
-      [delegate
-        respondsToSelector:@selector(iconView:shouldSelectIcons:selectionMode:)]) {
+  shouldSelectIconsSEL = @selector(iconView:shouldSelectIcons:selectionMode:);
+  if (delegate && [delegate respondsToSelector:shouldSelectIconsSEL]) {
     someIcons = [delegate iconView:self
                           shouldSelectIcons:someIcons
                      selectionMode:mode];
@@ -1403,25 +1402,27 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
   }
 
   if ([selectedIcons count] > 0) {
-    // NSRect r = [[selectedIcons anyObject] frame];
-    NSRect r = NSMakeRect(0,0,0,0);
+    NSRect     r = NSMakeRect(0,0,0,0);
+    NXIconSlot lastSlot = NXMakeIconSlot(INT_MAX,INT_MAX), newSlot;
 
     for (NXIcon *icon in selectedIcons) {
       if (icon && [icon isKindOfClass:[NXIcon class]]) {
+        newSlot = [self slotForIcon:icon];
+        if (newSlot.y < lastSlot.y || newSlot.x < lastSlot.y) {
+          selectedIconSlot = newSlot;
+        }
         r = NSUnionRect(r, NSUnionRect([icon frame], [[icon label] frame]));
       }
     }
     [self scrollRectToVisible:r];
   }
+  else {
+    selectedIconSlot = NXMakeIconSlot(0,0);
+  }
 
   if ([delegate respondsToSelector:@selector(iconView:didChangeSelectionTo:)]) {
     [delegate iconView:self didChangeSelectionTo:selectedIcons];
   }
-
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:NXIconViewDidChangeSelectionNotification
-        	  object:self
-        	userInfo:@{@"Selection":selectedIcons}];
 }
 
 @end
