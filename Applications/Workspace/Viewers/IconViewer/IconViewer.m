@@ -601,12 +601,11 @@
   NSLog(@"[IconViewer] keyDown: %c", ch);
 
   if ((ch == NSUpArrowFunctionKey) && (modifierFlags & NSCommandKeyMask)) {
-    NSLog(@"Command + Up Arrow");
-    // [iconViewer ]
+    [self displayPath:[currentPath stringByDeletingLastPathComponent]
+            selection:@[[currentPath lastPathComponent]]];
     return;
   }
   else if ((ch == NSDownArrowFunctionKey) && modifierFlags & NSCommandKeyMask) {
-    NSLog(@"Command + Down Arrow");
     [self open:nil];
     return;
   }
