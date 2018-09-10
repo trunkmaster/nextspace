@@ -73,16 +73,16 @@ static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
     having to search the view. */
   NXIconSlot lastIcon;
 
-  /// The number of slots the view is wide.
+  // The number of slots the view is wide.
   unsigned int slotsWide;
-  /// The number of slots the view is tall.
+  // The number of slots the view is tall.
   unsigned int slotsTall;
 
   /** The space that we leave empty to the sides of icon's
     collapsed labels (so that the collapsed labels won't touch). */
   float maximumCollapsedLabelWidthSpace;
 
-  /// Marks the current slot size.
+  // Marks the current slot size.
   NSSize slotSize;
 
   BOOL autoAdjustsToFitIcons;

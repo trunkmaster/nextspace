@@ -894,11 +894,15 @@ NSString * NXIconViewDidChangeSelectionNotification = @"NXIconViewDidChangeSelec
 {
   unichar    c = [[ev characters] characterAtIndex:0];
   NSUInteger flags = [ev modifierFlags];
+  BOOL       noModifiersPressed = (!(flags & NSShiftKeyMask) &&
+                                   !(flags & NSControlKeyMask) &&
+                                   !(flags & NSAlternateKeyMask) &&
+                                   !(flags & NSCommandKeyMask));
 
   NSLog(@"[NXIconView] keyDown: %c modifiers: %lu", c, flags);
 
   // Arrows and Shift + Arrows selection
-  if (allowsArrowsSelection &&
+  if (allowsArrowsSelection && (noModifiersPressed || (flags & NSShiftKeyMask)) &&
       c >= NSUpArrowFunctionKey && c <= NSRightArrowFunctionKey) {
     NXIcon     *icon;
     NXIconSlot nextIcon = selectedIconSlot;
