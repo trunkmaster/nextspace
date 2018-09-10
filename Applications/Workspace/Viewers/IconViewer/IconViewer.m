@@ -348,12 +348,6 @@
              selector:@selector(iconWidthDidChange:)
                  name:@"IconSlotWidthDidChangeNotification"
                object:nil];
-
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(selectionDidChange:)
-           name:NXIconViewDidChangeSelectionNotification
-         object:iconView];
   
   currentPath = nil;
   selection = nil;
@@ -539,29 +533,6 @@
 //=============================================================================
 // Local
 //=============================================================================
-// - (void)     iconView:(NXIconView*)anIconView
-//  didChangeSelectionTo:(NSSet *)selectedIcons
-- (void)selectionDidChange:(NSNotification *)notif
-{
-  NSSet          *icons = [[notif userInfo] objectForKey:@"Selection"];
-  NSMutableArray *selected = [NSMutableArray array];
-  BOOL           showsExpanded = ([icons count] == 1) ? YES : NO;
-
-  if ([notif object] != iconView)
-    return;
-
-  NSLog(@"IconViewer(%@): selection did change.", rootPath);
-
-  for (NXIcon *icon in icons) {
-    [icon setShowsExpandedLabelWhenSelected:showsExpanded];
-    [selected addObject:[icon labelString]];
-  }
-
-  ASSIGN(selection, [[selected copy] autorelease]);
-
-  [_owner displayPath:currentPath selection:selection sender:self];
-}
-
 // TODO
 - (void)open:sender
 {
@@ -595,6 +566,27 @@
 //=============================================================================
 // NXIconView delegate
 //=============================================================================
+- (void)     iconView:(NXIconView*)anIconView
+ didChangeSelectionTo:(NSSet *)selectedIcons
+{
+  NSMutableArray *selected = [NSMutableArray array];
+  BOOL           showsExpanded = ([selectedIcons count] == 1) ? YES : NO;
+
+  if (anIconView != iconView)
+    return;
+
+  NSLog(@"IconViewer(%@): selection did change.", rootPath);
+
+  for (NXIcon *icon in selectedIcons) {
+    [icon setShowsExpandedLabelWhenSelected:showsExpanded];
+    [selected addObject:[icon labelString]];
+  }
+
+  ASSIGN(selection, [[selected copy] autorelease]);
+
+  [_owner displayPath:currentPath selection:selection sender:self];
+}
+
 - (void)keyDown:(NSEvent *)ev
 {
   NSString   *characters = [ev characters];
