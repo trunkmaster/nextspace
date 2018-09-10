@@ -276,11 +276,6 @@ static NSMutableArray *fileList = nil;
        selector:@selector(iconWidthDidChange:)
            name:@"IconSlotWidthDidChangeNotification"
          object:nil];
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(selectionDidChange:)
-           name:NXIconViewDidChangeSelectionNotification
-         object:nil];
 }
 
 - (NSImage *)iconImage
@@ -612,15 +607,10 @@ static NSMutableArray *fileList = nil;
   }
 }
 
-- (void)selectionDidChange:(NSNotification *)notif
+- (void)     iconView:(NXIconView*)anIconView
+ didChangeSelectionTo:(NSSet *)selectedIcons
 {
-  NSSet *icons;
-
-  if ([notif object] != filesView)
-    return;
-  
-  icons = [[notif userInfo] objectForKey:@"Selection"];
-  [restoreBtn setEnabled:([icons count] > 0) ? YES : NO];
+  [restoreBtn setEnabled:([selectedIcons count] > 0) ? YES : NO];
 }
 
 @end
