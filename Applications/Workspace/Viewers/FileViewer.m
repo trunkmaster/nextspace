@@ -98,12 +98,10 @@
   NSString      *dotDir = [NSString stringWithFormat:@"%@/.dir", rootPath];
   NSDictionary  *dotDirDict;
 
-  if ([fm fileExistsAtPath:dotDir])
-    {
-      dotDirDict = [NSDictionary dictionaryWithContentsOfFile:dotDir];
-      
-      return [dotDirDict objectForKey:key];
-    }
+  if ([fm fileExistsAtPath:dotDir]) {
+    dotDirDict = [NSDictionary dictionaryWithContentsOfFile:dotDir];
+    return [dotDirDict objectForKey:key];
+  }
 
   return nil;
 }
@@ -168,9 +166,6 @@
   // To avoid .gorm loading ineterference manually construct File Viewer window.
   [self awakeFromNib];
 
-  // Load the viewer
-  [self useViewer:[[ModuleLoader shared] viewerForType:viewerType]];
-
   if (isRootViewer) {
     [window setTitle:@"File Viewer"];
     [window setFrameAutosaveName:@"RootViewer"];
@@ -191,20 +186,28 @@
     relativePath = rootPath;
   }
   else {
-      NSString *viewerWindow = [self dotDirObjectForKey:@"ViewerWindow"];
+    NSString *viewerWindow = [self dotDirObjectForKey:@"ViewerWindow"];
+    NSString *vType;
 
-      [window setTitle:
-        [NSString stringWithFormat:_(@"File Viewer  \u2014  %@"), rootPath]];
-      if (viewerWindow) {
-        [window setFrame:NSRectFromString(viewerWindow) display:NO];
-      }
-      else {
-        [window center];
-      }
-      if ((relativePath = [self dotDirObjectForKey:@"ViewerPath"]) == nil) {
-        relativePath = @"/";
-      }
+    [window setTitle:
+              [NSString stringWithFormat:_(@"File Viewer  \u2014  %@"), rootPath]];
+    if (viewerWindow) {
+      [window setFrame:NSRectFromString(viewerWindow) display:NO];
+    }
+    else {
+      [window center];
+    }
+    if ((relativePath = [self dotDirObjectForKey:@"ViewerPath"]) == nil) {
+      relativePath = @"/";
+    }
+    vType = [self dotDirObjectForKey:@"ViewerType"];
+    if (vType && ![vType isEqualToString:@""]) {
+      viewerType = vType;
+    }
   }
+
+  // Load the viewer
+  [self useViewer:[[ModuleLoader shared] viewerForType:viewerType]];
 
   // Resize window to just loaded viewer columns and
   // defined window frame (setFrameAutosaveName, setFrame)
