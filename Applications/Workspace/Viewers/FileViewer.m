@@ -206,6 +206,9 @@
     }
   }
 
+  if (!viewerType || [viewerType isEqualToString:@""]) {
+    viewerType = @"Browser";
+  }
   // Load the viewer
   [self useViewer:[[ModuleLoader shared] viewerForType:viewerType]];
 
