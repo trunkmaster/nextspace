@@ -136,14 +136,15 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   slotsWide = roundf(r.size.width / slotSize.width);
   if (slotsWide == 0)
     slotsWide = 1;
-  slotsTall = 1;
+  if (slotsTall == 0)
+    slotsTall = 1;
   
-  lastIcon = NXMakeIconSlot(-1, 0);
+  lastIcon = NXMakeIconSlot(-1, -1);
 
   selectedIconSlot.x = -1;
+  selectedIconSlot.y = -1;
 
-  maximumCollapsedLabelWidthSpace =
-    defaultMaximumCollapsedLabelWidthSpace;
+  maximumCollapsedLabelWidthSpace = defaultMaximumCollapsedLabelWidthSpace;
 
   return self;
 }
@@ -898,27 +899,39 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
                                    !(flags & NSControlKeyMask) &&
                                    !(flags & NSAlternateKeyMask) &&
                                    !(flags & NSCommandKeyMask));
+  NXIcon     *icon = nil;
+  NXIconSlot nextIcon = selectedIconSlot;
 
-  NSLog(@"[NXIconView] keyDown: %c (%x) modifiers: %lu", c, c,flags);
+  NSLog(@"[NXIconView] keyDown: %c (%x) modifiers: %lu slot: %i.%i",
+        c, c,flags, selectedIconSlot.x, selectedIconSlot.y);
 
   // Arrows and Shift + Arrows selection
   if (allowsArrowsSelection && (noModifiersPressed || (flags & NSShiftKeyMask)) &&
       c >= NSUpArrowFunctionKey && c <= NSRightArrowFunctionKey) {
-    NXIcon     *icon;
-    NXIconSlot nextIcon = selectedIconSlot;
 
-    if (selectedIconSlot.x == -1) {
-      for (icon in icons) {
-        if (![icon isKindOfClass:[NSNull class]]) {
-          selectedIconSlot = [self slotForIcon:icon];
-          [self updateSelectionWithIcon:icon modifierFlags:0];
-          return;
+    // No selection was set before - select first available icon from left to
+    // right, from top to bottom
+    if (nextIcon.x == -1 && nextIcon.y == -1) {
+      while (!icon || [icon isKindOfClass:[NSNull class]]) {
+        nextIcon.x++;
+        if (nextIcon.x == slotsWide) {
+          nextIcon.x = 0;
+          nextIcon.y++;
+          if (nextIcon.y > slotsTall) {
+            break;
+          }
         }
+        icon = [self iconInSlot:nextIcon];
       }
+      if (icon && ![icon isKindOfClass:[NSNull class]]) {
+        [self updateSelectionWithIcon:icon modifierFlags:0];
+      }
+      return;
     }
 
     switch (c) {
     case NSUpArrowFunctionKey:
+      if (nextIcon.x == -1) nextIcon.x = 0;
       for (nextIcon.y--; nextIcon.y >= 0; nextIcon.y--) {
         icon = [self iconInSlot:nextIcon];
         if (icon != nil) {
@@ -929,6 +942,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
       break;
     case NSDownArrowFunctionKey:
+      if (nextIcon.x == -1) nextIcon.x = 0;
       for (nextIcon.y++;(unsigned) nextIcon.y < slotsTall; nextIcon.y++) {
         icon = [self iconInSlot:nextIcon];
         if (icon != nil) {
@@ -939,6 +953,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
       break;
     case NSLeftArrowFunctionKey:
+      if (nextIcon.y == -1) nextIcon.y = 0;
       for (nextIcon.x--; nextIcon.x >= 0; nextIcon.x--) {
         icon = [self iconInSlot:nextIcon];
         if (icon != nil) {
@@ -949,7 +964,8 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
       break;
     case NSRightArrowFunctionKey:
-      for (nextIcon.x++;(unsigned) nextIcon.x < slotsWide;nextIcon.x++) {
+      if (nextIcon.y == -1) nextIcon.y = 0;
+      for (nextIcon.x++; (unsigned)nextIcon.x < slotsWide; nextIcon.x++) {
         icon = [self iconInSlot:nextIcon];
         if (icon != nil) {
           [self updateSelectionWithIcon:icon modifierFlags:flags];
@@ -961,18 +977,48 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     }
   }
   else if (c == NSHomeFunctionKey) {
-    [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(0,0)]
-                    modifierFlags:0];
+    if (nextIcon.x == -1) nextIcon.x = 0;
+    if (nextIcon.y == -1) nextIcon.y = 0;
+    if (flags & NSShiftKeyMask) {
+      while (nextIcon.x-- != 0) {
+        [self updateSelectionWithIcon:[self iconInSlot:nextIcon]
+                        modifierFlags:flags];
+      }
+    }
+    else {
+      [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(0,0)]
+                      modifierFlags:0];
+    }
   }
   else if (c == NSEndFunctionKey) {
-    [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(slotsWide-1, slotsTall-1)]
-                    modifierFlags:0];
+    // if (nextIcon.x == -1) nextIcon.x = 0;
+    if (flags & NSShiftKeyMask) {
+      if (nextIcon.y == -1) {
+        nextIcon.x = nextIcon.y = 0;
+        [self updateSelectionWithIcon:[self iconInSlot:nextIcon]
+                        modifierFlags:flags];
+      }
+      while (nextIcon.x++ < slotsWide ) {
+        [self updateSelectionWithIcon:[self iconInSlot:nextIcon]
+                        modifierFlags:flags];
+      }
+    }
+    else {
+      [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(slotsWide-1, slotsTall-1)]
+                      modifierFlags:0];
+    }
   }
   else if (c == NSPageUpFunctionKey) {
-    // TODO: implement page scroll
+    NSScrollView *sv = [self enclosingScrollView];
+    if (sv) {
+      [sv scrollPageUp:self];
+    }
   }
   else if (c == NSPageDownFunctionKey) {
-    // TODO: implement page scroll
+    NSScrollView *sv = [self enclosingScrollView];
+    if (sv) {
+      [sv scrollPageDown:self];
+    }
   }
   else if (c < 0xF700 && allowsAlphanumericSelection) {
     if (sendsDoubleActionOnReturn &&
@@ -1343,6 +1389,8 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   // if passed a nil argument, assume as if it were an empty set
   if (someIcons == nil) {
     someIcons = [[NSSet new] autorelease];
+    selectedIconSlot.x = -1;
+    selectedIconSlot.y = -1;
   }
 
   if (flags & NSShiftKeyMask) {
@@ -1432,7 +1480,8 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     [self scrollRectToVisible:r];
   }
   else {
-    selectedIconSlot = NXMakeIconSlot(0,0);
+    selectedIconSlot.x = -1;
+    selectedIconSlot.y = -1;
   }
 
   if ([delegate respondsToSelector:@selector(iconView:didChangeSelectionTo:)]) {
