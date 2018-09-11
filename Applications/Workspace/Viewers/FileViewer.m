@@ -1408,6 +1408,13 @@
       [pathView setPath:[self pathFromAbsolutePath:newFullPath] selection:nil];
       [viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
       [self setPathFromAbsolutePath:newFullPath];
+      // Update Inspector
+      if ([window isMainWindow] == YES) {
+        Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
+        if (inspector != nil) {
+          [inspector revert:self];
+        }
+      }
     }
     else if ([changedPath isEqualToString:selectedPath]) {
       // Selected dir contents changed
