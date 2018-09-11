@@ -75,13 +75,15 @@
 {
   NSString     *path;
   PathIcon     *anIcon;
-  NSUInteger   slotsWide, x;
-  NSMutableSet *selected = [NSMutableSet new];
+  NSUInteger   x, y, slotsWide, slotsTallVisible;
+  NSMutableSet   *selectedIcons = [NSMutableSet new];
+  NSMutableArray *iconsToAdd = [NSMutableArray new];
 
   NSLog(@"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
 
-  x = 0;
+  x = y = 0;
   slotsWide = [iconView slotsWide];
+  slotsTallVisible = [iconView slotsTallVisible];
   // [self _optimizeItems:directoryContents fileView:iconView];
   
   for (NSString *filename in directoryContents) {
@@ -94,26 +96,39 @@
     [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
     [anIcon setPaths:[NSArray arrayWithObject:path]];
 
-    [iconView performSelectorOnMainThread:@selector(addIcon:)
-                               withObject:anIcon
-                            waitUntilDone:YES];
+    [iconsToAdd addObject:anIcon];
     if ([selectedFiles containsObject:filename]) {
-      [selected addObject:anIcon];
-      [iconView performSelectorOnMainThread:@selector(selectIcons:)
-                                 withObject:selected
-                              waitUntilDone:YES];
+      [selectedIcons addObject:anIcon];
     }
     [anIcon release];
 
-    // x++;
-    // if (x >= slotsWide) {
-    //   [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
-    //                              withObject:nil
-    //                           waitUntilDone:YES];
-    //   x = 0;
-    // }
+    x++;
+    if (x == slotsWide) {
+      y++;
+      x = 0;
+    }
+    // Add icons on per page basis
+    if (y == slotsTallVisible) {
+      [iconView performSelectorOnMainThread:@selector(addIcons:)
+                                 withObject:iconsToAdd
+                              waitUntilDone:YES];
+      [iconsToAdd removeAllObjects];
+      x = y = 0;
+    }
   }
 
+  if ([iconsToAdd count] > 0) {
+    [iconView performSelectorOnMainThread:@selector(addIcons:)
+                               withObject:iconsToAdd
+                            waitUntilDone:YES];
+    [iconsToAdd removeAllObjects];
+  }
+  [iconsToAdd release];
+
+  [iconView performSelectorOnMainThread:@selector(selectIcons:)
+                             withObject:selectedIcons
+                          waitUntilDone:YES];
+  
   NSLog(@"IconView: End path loading...");
   [directoryPath release];
   [directoryContents release];
