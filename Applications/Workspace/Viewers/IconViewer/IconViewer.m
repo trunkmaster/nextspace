@@ -73,9 +73,9 @@
 
 - (void)main
 {
-  NSString     *path;
-  PathIcon     *anIcon;
-  NSUInteger   x, y, slotsWide, slotsTallVisible;
+  NSString       *path;
+  PathIcon       *anIcon;
+  NSUInteger     x, y, slotsWide, slotsTallVisible;
   NSMutableSet   *selectedIcons = [NSMutableSet new];
   NSMutableArray *iconsToAdd = [NSMutableArray new];
 
@@ -88,8 +88,6 @@
   
   for (NSString *filename in directoryContents) {
     path = [directoryPath stringByAppendingPathComponent:filename];
-
-    // NSLog(@"IconViewer: add icon for: %@", path);
 
     anIcon = [[PathIcon alloc] init];
     [anIcon setLabelString:filename];
@@ -123,13 +121,14 @@
                             waitUntilDone:YES];
     [iconsToAdd removeAllObjects];
   }
-  [iconsToAdd release];
-
   [iconView performSelectorOnMainThread:@selector(selectIcons:)
                              withObject:selectedIcons
                           waitUntilDone:YES];
   
   NSLog(@"IconView: End path loading...");
+  [selectedIcons release];
+  [iconsToAdd release];
+  
   [directoryPath release];
   [directoryContents release];
   [selectedFiles release];
