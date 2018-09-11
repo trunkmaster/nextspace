@@ -142,6 +142,8 @@ static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
 /** Returns an array of contained icons. */
 - (NSArray *)icons;
 
+- (void)addIcons:(NSArray *)someIcons;
+
 /** Puts the icon at the first free slot, enlarging the receiver
     vertically if there is no free spot. */
 - (void)addIcon:(NXIcon *)anIcon;
@@ -246,6 +248,7 @@ static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
 - (void)setSlotsTallFixed:(BOOL)isFixed;
 /** Returns the number of rows the receiver is tall. */
 - (unsigned int)slotsTall;
+- (unsigned int)slotsTallVisible;
 
 /** Sets whether the receiver allows the user to select icons in it. */
 - (void)setSelectable:(BOOL)flag;

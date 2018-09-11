@@ -228,16 +228,14 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   [self setFrame:frame];
   [view addSubview:self];
 
-  if (isSelected && showsExpandedLabelWhenSelected)
-    {
-      [view addSubview:longLabel];
-      [longLabel adjustFrame];
-    }
-  else
-    {
-      [view addSubview:shortLabel];
-      [shortLabel adjustFrame];
-    }
+  if (isSelected && showsExpandedLabelWhenSelected) {
+    [view addSubview:longLabel];
+    [longLabel adjustFrame];
+  }
+  else {
+    [view addSubview:shortLabel];
+    [shortLabel adjustFrame];
+  }
 }
 
 - (void)removeFromSuperview
