@@ -139,7 +139,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   if (slotsTall == 0)
     slotsTall = 1;
   
-  lastIcon = NXMakeIconSlot(-1, -1);
+  lastIcon = NXMakeIconSlot(-1, 0);
 
   selectedIconSlot.x = -1;
   selectedIconSlot.y = -1;
@@ -1004,8 +1004,17 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
     }
     else {
-      [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(slotsWide-1, slotsTall-1)]
-                      modifierFlags:0];
+      nextIcon.x = slotsWide - 1;
+      nextIcon.y = slotsTall - 1;
+      for (; nextIcon.x >= 0; nextIcon.x--) {
+        icon = [self iconInSlot:nextIcon];
+        if (icon != nil) {
+          selectedIconSlot = nextIcon;
+          break;
+        }
+      }
+
+      [self updateSelectionWithIcon:icon modifierFlags:0];
     }
   }
   else if (c == NSPageUpFunctionKey) {
