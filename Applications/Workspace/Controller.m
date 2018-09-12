@@ -221,7 +221,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   [windows release];
   [fileViewers release];
-  
+
   NSLog(@"_closeAllFileViewers shared FS monitor RC: %lu",
         [fileSystemMonitor retainCount]);
 }
@@ -330,8 +330,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_finishTerminateProcess
 {
-  // Close and save file viewers, close panels.
+  // NSLog(@"Application should terminate fileSystemMonitor RC: %lu",
+  //       [fileSystemMonitor retainCount]);
+  // Filesystem monitor
+  [fileSystemMonitor pause];
   [fileSystemMonitor terminate];
+  if ([fileSystemMonitor retainCount] > 1) [fileSystemMonitor release];
+
+  // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
 
   // Close XWindow applications - wipeDesktop?
@@ -346,13 +352,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [workspaceBadge release];
   }
   
-  // NSLog(@"Application should terminate fileSystemMonitor RC: %lu",
-  //       [fileSystemMonitor retainCount]);
-  // Filesystem monitor
-  [fileSystemMonitor pause];
-  [fileSystemMonitor terminate];
-  if ([fileSystemMonitor retainCount] > 1) [fileSystemMonitor release];
-
   // Media and media manager
   // NSLog(@"NXMediaManager RC:%lu", [mediaManager retainCount]);
   [mediaAdaptor ejectAllRemovables];
@@ -630,18 +629,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (FileViewer *)fileViewerForWindow:(NSWindow *)window
 {
-  NSEnumerator *e = [fileViewers objectEnumerator];
-  FileViewer   *viewer = nil;
+  FileViewer *viewer;
+  
+  if (!fileViewers || ![fileViewers isKindOfClass:[NSArray class]])
+    return nil;
 
-  // NSLog(@"Controller fileViewerForWindow");
-
-  while ((viewer = [e nextObject]))
-    {
-      if ([viewer window] == window)
-        {
-          break;
-        }
+  for (viewer in fileViewers) {
+    if ([viewer window] == window) {
+      break;
     }
+  }
   
   return viewer;
 }
@@ -991,14 +988,19 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSString   *menuTitle = [[menuItem menu] title];
   FileViewer *fileViewer = [self fileViewerForWindow:[NSApp keyWindow]];
-  NSString   *selectedPath = [fileViewer absolutePath];
+  NSString   *selectedPath;
 
+  if (isQuitting != NO)
+    return NO;
+  
+  if (fileViewer) {
+    selectedPath = [fileViewer absolutePath];
+  }
   // NSLog(@"Validate menu: %@ item: %@", menuTitle, [menuItem title]);
 
   if ([menuTitle isEqualToString:@"File"]) {
-      // Not implemented yet
     if ([[menuItem title] isEqualToString:@"Empty Recycler"]) {
-      if ([recycler itemsCount] == 0) {
+      if (!recycler || [recycler itemsCount] == 0) {
         return NO;
       }
     }
