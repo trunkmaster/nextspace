@@ -278,7 +278,9 @@
   // Do nothing: Viewer protocol method
 }
 
-// --- Actions
+//=============================================================================
+// Actions
+//=============================================================================
 - (void)displayPath:(NSString *)dirPath
           selection:(NSArray *)filenames
 {
@@ -328,6 +330,34 @@
   r = [iconView visibleRect];
   [self displayPath:reloadPath selection:selection];
   [iconView scrollRectToVisible:r];
+}
+- (void)open:sender
+{
+  NSSet    *selected = [iconView selectedIcons];
+  NSString *path, *fullPath;
+  NSString *appName, *fileType;
+
+  NSLog(@"[IconViewer] open path:%@ selection:%@", currentPath, selection);
+
+  if ([selected count] == 0) {
+    [_owner displayPath:currentPath selection:nil sender:self];
+  }
+  else if ([selected count] == 1) {
+    path = [currentPath stringByAppendingPathComponent:[selection objectAtIndex:0]];
+    fullPath = [rootPath stringByAppendingPathComponent:path];
+    [(NSWorkspace *)[NSApp delegate] getInfoForFile:fullPath
+                                        application:&appName
+                                               type:&fileType];
+
+    if ([fileType isEqualToString:NSDirectoryFileType] ||
+        [fileType isEqualToString:NSFilesystemFileType]) {
+      [self displayPath:path selection:nil];
+      [_owner displayPath:path selection:nil sender:self];
+    }
+    else {
+      [_owner open:sender];
+    }
+  }
 }
 
 - (void)scrollToRange:(NSRange)range
@@ -391,36 +421,6 @@
 //=============================================================================
 // Local
 //=============================================================================
-// TODO
-- (void)open:sender
-{
-  NSSet    *selected = [iconView selectedIcons];
-  NSString *path, *fullPath;
-  NSString *appName, *fileType;
-
-  NSLog(@"[IconViewer] open path:%@ selection:%@", currentPath, selection);
-
-  if ([selected count] == 0) {
-    [_owner displayPath:currentPath selection:nil sender:self];
-  }
-  else if ([selected count] == 1) {
-    path = [currentPath stringByAppendingPathComponent:[selection objectAtIndex:0]];
-    fullPath = [rootPath stringByAppendingPathComponent:path];
-    [(NSWorkspace *)[NSApp delegate] getInfoForFile:fullPath
-                                        application:&appName
-                                               type:&fileType];
-
-    if ([fileType isEqualToString:NSDirectoryFileType] ||
-        [fileType isEqualToString:NSFilesystemFileType]) {
-      [self displayPath:path selection:nil];
-      [_owner displayPath:path selection:nil sender:self];
-    }
-    else {
-      [_owner open:sender];
-    }
-  }
-}
-
 //=============================================================================
 // NXIconView delegate
 //=============================================================================
@@ -625,10 +625,8 @@
              endedAt:(NSPoint)screenPoint
            deposited:(BOOL)didDeposit
 {
-  if (didDeposit == NO) {
-    [_dragIcon setSelected:YES];
-    [_dragIcon setDimmed:NO];
-  }
+  [_dragIcon setSelected:YES];
+  [_dragIcon setDimmed:NO];
 }
 
 @end
