@@ -23,8 +23,8 @@
 #import <NXFoundation/NXDefaults.h>
 
 #import "ModuleLoader.h"
-#import "Protocols/Viewer.h"
-#import "Protocols/PrefsModule.h"
+#import "Viewers/Viewer.h"
+#import "Preferences/PrefsModule.h"
 
 @interface ModuleLoader (Private)
 - (void)loadViewers;
