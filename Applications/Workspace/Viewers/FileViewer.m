@@ -1451,8 +1451,8 @@
   else if (([operations indexOfObject:@"Write"] != NSNotFound)) {
     // Write - monitored object was changed (Create, Delete)
     NSLog(@"[FileViewer] NXFileSystem: 'Write' "
-          @"operation occured for %@ (%@) selection %@",
-          changedPath, selectedPath, selection);
+          @"operation occured for %@/(%@) selected path %@ selection %@",
+          changedPath, changedFile, selectedPath, selection);
 
     // Check selection before path will be reloaded
     ASSIGN(selection, 
@@ -1461,7 +1461,7 @@
     [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
 
     // Check existance of path components and update ivars, other views
-    [self displayPath:displayedPath selection:selection sender:self];
+    [self displayPath:displayedPath selection:selection sender:viewer];
   }
   else if (([operations indexOfObject:@"Attributes"] != NSNotFound)) {
     NSLog(@"[FileViewer] NXFileSystem: 'Attributes' "
