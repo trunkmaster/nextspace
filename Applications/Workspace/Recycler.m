@@ -597,8 +597,6 @@ static NSMutableArray *fileList = nil;
   NSDictionary *changes = [notif userInfo];
   NSString     *changedPath = [changes objectForKey:@"ChangedPath"];
 
-  NSLog(@"Recycler: %@ path changed.", changedPath);
-
   if ([changedPath isEqualToString:_path]) {
     [self updateIconImage];
     [self updatePanel];
