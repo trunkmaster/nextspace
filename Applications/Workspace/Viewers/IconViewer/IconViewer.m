@@ -23,6 +23,7 @@
 #import <NXFoundation/NXDefaults.h>
 #import <NXFoundation/NXFileManager.h>
 
+#import <Viewers/FileViewer.h>
 #import <Viewers/PathIcon.h>
 #import <Viewers/PathView.h>
 #include "IconViewer.h"
@@ -581,76 +582,53 @@
 //=============================================================================
 // Drag and Drop
 //=============================================================================
-// IconView actions
-- (void)iconDragged:(PathIcon *)theIcon
-          withEvent:(NSEvent *)theEvent
+// NXIconView delegate
+- (void)iconDragged:(PathIcon *)sender withEvent:(NSEvent *)ev
 {
-  NSRect       iconFrame = [theIcon frame];
-  NSPoint      iconLocation = iconFrame.origin;
-  NSPasteboard *pasteBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
-  NSDictionary *iconInfo;
-  
-  iconLocation.x += 8;
-  iconLocation.y += iconFrame.size.width - 16;
+  NSArray      *paths;
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
+  NSRect       iconFrame = [sender frame];
+  NSPoint      iconLocation;
+  PathIcon     *icon = [[iconView icons] lastObject];
 
-  draggedSource = self;
-  draggedIcon = theIcon;
-  draggingSourceMask = NSDragOperationMove;
+  _dragSource = self;
+  _dragIcon = sender;
 
-  [draggedIcon setSelected:NO];
-  [draggedIcon setDimmed:YES];
-  
-  // Pasteboard info for 'draggedIcon'
-  [pasteBoard declareTypes:@[NSFilenamesPboardType] owner:nil];
-  [pasteBoard setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
+  iconLocation.x = iconFrame.origin.x + 8;
+  iconLocation.y = iconFrame.origin.y + (iconFrame.size.width - 16);
 
-  [iconView dragImage:[draggedIcon iconImage]
+  [_dragIcon setSelected:NO];
+  [_dragIcon setDimmed:YES];
+
+  paths = [_dragIcon paths];
+  _dragMask = [(FileViewer *)_owner draggingSourceOperationMaskForPaths:paths];
+
+  [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
+  [pb setPropertyList:paths forType:NSFilenamesPboardType];
+
+  [iconView dragImage:[_dragIcon iconImage]
                    at:iconLocation
                offset:NSZeroSize
-                event:theEvent
-           pasteboard:pasteBoard
-               source:draggedSource
+                event:ev
+           pasteboard:pb
+               source:_dragSource
             slideBack:YES];
 }
 
 // NSDraggingSource
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
-  NSLog(@"[IconView] draggingSourceOperationMaskForLocal:");
-  return NSDragOperationMove;
+  return _dragMask;
 }
-- (BOOL)ignoreModifierKeysWhileDragging
-{
-  return YES;
-}
+
 - (void)draggedImage:(NSImage*)image
              endedAt:(NSPoint)screenPoint
            deposited:(BOOL)didDeposit
 {
-  NSLog(@"draggedImage:endedAt:operation:");
   if (didDeposit == NO) {
-    [draggedIcon setSelected:YES];
-    [draggedIcon setDimmed:NO];
+    [_dragIcon setSelected:YES];
+    [_dragIcon setDimmed:NO];
   }
-}
-
-// NXIcon delegate methods (NSDraggingDestination)
-- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
-                              icon:(NXIcon *)icon
-{
-  // NSLog(@"[Recycler] draggingEntered:icon:");
-  return draggingSourceMask;
-}
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-                              icon:(NXIcon *)icon
-{
-  // NSLog(@"[Recycler] draggingUpdated:icon:");
-  return draggingSourceMask;
-}
-- (void)draggingExited:(id <NSDraggingInfo>)sender
-                  icon:(NXIcon *)icon
-{
-  // NSLog(@"[Recycler] draggingOperationExited:icon:");
 }
 
 @end

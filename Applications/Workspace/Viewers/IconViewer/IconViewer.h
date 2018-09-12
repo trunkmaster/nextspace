@@ -56,9 +56,9 @@
   ViewerItemsLoader	*itemsLoader;
   
   // Dragging
-  id			draggedSource;
-  PathIcon		*draggedIcon;
-  NSDragOperation	draggingSourceMask;
+  id         _dragSource;
+  PathIcon   *_dragIcon;
+  unsigned   _dragMask;
 }
 
 - (void)open:(id)sender;
