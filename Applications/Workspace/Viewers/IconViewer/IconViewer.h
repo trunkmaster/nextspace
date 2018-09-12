@@ -20,8 +20,8 @@
 
 #import <AppKit/AppKit.h>
 
-#import <Protocols/FileViewer.h>
-#import <Protocols/Viewer.h>
+#import <Viewers/FileViewer.h>
+#import <Viewers/Viewer.h>
 
 @class NXIconView, NXIcon, NXIconLabel;
 

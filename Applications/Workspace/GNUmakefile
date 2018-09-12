@@ -33,9 +33,15 @@ SUBPROJECTS = \
 	Viewers/BrowserViewer \
 	Viewers/IconViewer \
 	Inspectors \
-	$(wildcard Preferences/*) \
 	Tools/FileMover \
-	Tools/Sizer
+	Tools/Sizer \
+	Preferences/Advanced \
+	Preferences/Browser \
+	Preferences/Dock \
+	Preferences/FileCopyOptions \
+	Preferences/IconView \
+	Preferences/Shelf \
+	Preferences/Workspaces
 
 $(APP_NAME)_OBJC_FILES = \
 	$(wildcard *.m) \

@@ -22,8 +22,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import "Protocols/FileViewer.h"
-#import "Protocols/Viewer.h"
+#import "Viewers/Viewer.h"
 
 #import <NXSystem/NXFileSystem.h>
 #import <NXSystem/NXFileSystemMonitor.h>
@@ -35,6 +34,17 @@
 #import "PathViewScroller.h"
 
 @class NXIconView, NXIcon, NXIconLabel;
+
+@protocol FileViewer
+- (NSArray *)directoryContentsAtPath:(NSString *)relPath
+                             forPath:(NSString *)targetPath;
+- (void)displayPath:(NSString *)aPath
+       	  selection:(NSArray *)filenames
+  	     sender:(id)sender;
+- (void)scrollDisplayToRange:(NSRange)visibleRange;
+- (void)open:sender;
+- (BOOL)viewerRenamedCurrentFileTo:(NSString *)newName;
+@end
 
 @interface FileViewer : NSObject <FileViewer>
 {

@@ -21,7 +21,7 @@
 #import <AppKit/AppKit.h>
 #import <NXAppKit/NXAppKit.h>
 
-#import <Protocols/PrefsModule.h>
+#import <Preferences/PrefsModule.h>
 
 #define SHELF_LABEL_WIDTH     100
 #define SHELF_MIN_LABEL_WIDTH 40

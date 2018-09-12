@@ -21,7 +21,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import "Protocols/PrefsModule.h"
+#import "Preferences/PrefsModule.h"
 
 @interface Preferences : NSObject
 {
