@@ -1219,7 +1219,7 @@
   NSLog(@"[FileViewer][%@] windowWillClose [%@]",
         rootPath, [[notif object] className]);
 
-  if (!isRootViewer) {
+  if (!isRootViewer && fileSystemMonitor) {
     [fileSystemMonitor 
 	removePath:[rootPath stringByAppendingPathComponent:displayedPath]];
   }
@@ -1455,9 +1455,8 @@
           changedPath, changedFile, selectedPath, selection);
 
     // Check selection before path will be reloaded
-    ASSIGN(selection, 
-           [self checkSelection:selection atPath:displayedPath]);
-    // Reload column in browser for changed directory contents
+    ASSIGN(selection, [self checkSelection:selection atPath:displayedPath]);
+    // Reload changed directory contents without changing path
     [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
 
     // Check existance of path components and update ivars, other views
