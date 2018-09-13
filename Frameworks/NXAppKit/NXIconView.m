@@ -382,7 +382,11 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
 - (void)removeAllIcons
 {
-  [icons makeObjectsPerform:@selector(removeFromSuperview)];
+  for (NXIcon *icon in icons) {
+    if (icon && ![icon isKindOfClass:[NSNull class]]) {
+      [icon removeFromSuperview];
+    }
+  }
   [icons removeAllObjects];
   [selectedIcons removeAllObjects];
 
@@ -393,10 +397,9 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   selectedIconSlot.x = -1;
   selectedIconSlot.y = -1;
 
-  if (autoAdjustsToFitIcons)
-    {
-      [self adjustToFitIcons];
-    }
+  if (autoAdjustsToFitIcons) {
+    [self adjustToFitIcons];
+  }
 }
 
 - (void)setFillsWithHoleWhenRemovingIcon:(BOOL)flag
