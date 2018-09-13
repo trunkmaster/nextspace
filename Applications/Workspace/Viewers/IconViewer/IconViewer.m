@@ -132,6 +132,17 @@
                             waitUntilDone:YES];
     [iconsToAdd removeAllObjects];
   }
+  
+  if ((isUpdate != NO) &&
+      selectedFiles &&
+      ([selectedFiles count] != [selectedIcons count])) {
+    NXIcon *icon;
+    for (NSString *filename in selectedFiles) {
+      if ((icon = [iconView iconWithLabelString:filename])) {
+        [selectedIcons addObject:icon];
+      }
+    }
+  }
   [iconView performSelectorOnMainThread:@selector(selectIcons:)
                              withObject:selectedIcons
                           waitUntilDone:YES];
@@ -444,9 +455,9 @@
 //=============================================================================
 // Local
 //=============================================================================
-//=============================================================================
-// NXIconView delegate
-//=============================================================================
+//
+// --- NXIconView delegate
+//
 - (void)     iconView:(NXIconView*)anIconView
  didChangeSelectionTo:(NSSet *)selectedIcons
 {
