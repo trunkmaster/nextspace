@@ -330,15 +330,15 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_finishTerminateProcess
 {
-  // NSLog(@"Application should terminate fileSystemMonitor RC: %lu",
-  //       [fileSystemMonitor retainCount]);
   // Filesystem monitor
   [fileSystemMonitor pause];
   [fileSystemMonitor terminate];
-  if ([fileSystemMonitor retainCount] > 1) [fileSystemMonitor release];
-
   // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
+  NSLog(@"_finishTerminateProcess fileSystemMonitor RC: %lu", [fileSystemMonitor retainCount]);
+  if ([fileSystemMonitor retainCount] > 1) {
+    [fileSystemMonitor release];
+  }
 
   // Close XWindow applications - wipeDesktop?
   
@@ -810,8 +810,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)closeViewer:(id)viewer
 {
-  NSLog(@"Controller: closeViewer[%lu] (%@)",
-        [viewer retainCount], [viewer rootPath]);
+  NSLog(@"Controller: closeViewer[%lu] (%@)", [viewer retainCount], [viewer rootPath]);
   if ([fileViewers count] > 0) {
     [fileViewers removeObject:viewer];
   }
@@ -987,12 +986,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
   NSString   *menuTitle = [[menuItem menu] title];
-  FileViewer *fileViewer = [self fileViewerForWindow:[NSApp keyWindow]];
+  FileViewer *fileViewer;
   NSString   *selectedPath;
 
   if (isQuitting != NO)
     return NO;
   
+  fileViewer = [self fileViewerForWindow:[NSApp keyWindow]];
   if (fileViewer) {
     selectedPath = [fileViewer absolutePath];
   }
