@@ -34,6 +34,7 @@
                   path:(NSString *)dirPath
               contents:(NSArray *)dirContents
              selection:(NSArray *)filenames
+                update:(BOOL)toUpdate
 {
   [super init];
   
@@ -42,18 +43,21 @@
     directoryPath = [[NSString alloc] initWithString:dirPath];
     directoryContents = [dirContents mutableCopy];
     selectedFiles = [[NSArray alloc] initWithArray:filenames];
+    isUpdate = toUpdate;
   }
 
   return self;
 }
 
-- (void)_optimizeItems:(NSMutableArray *)items
-              fileView:(NXIconView *)view
+- (void)_updateItems:(NSMutableArray *)items
+            fileView:(NXIconView *)view
 {
   NXIcon         *icon;
   NSMutableArray *itemsCopy = [items mutableCopy];
   NSArray        *iconsCopy = [[view icons] copy];
 
+  // NSLog(@"_updateItems: %@", items);
+  
   // Remove non-existing items
   for (NXIcon *icon in iconsCopy) {
     if ([items indexOfObject:[[icon label] text]] == NSNotFound) {
@@ -85,7 +89,13 @@
   x = y = 0;
   slotsWide = [iconView slotsWide];
   slotsTallVisible = [iconView slotsTallVisible];
-  // [self _optimizeItems:directoryContents fileView:iconView];
+
+  if (isUpdate != NO) {
+    [self _updateItems:directoryContents fileView:iconView];
+  }
+  
+  selectedIcons = [NSMutableSet new];
+  iconsToAdd = [NSMutableArray new];
   
   for (NSString *filename in directoryContents) {
     path = [directoryPath stringByAppendingPathComponent:filename];
@@ -289,8 +299,14 @@
 
   if (!dirPath || [dirPath isEqualToString:@""])
     return;
+
+  if ([currentPath isEqualToString:dirPath]) {
+    updateOnDisplay = YES;
+  }
   
-  ASSIGN(currentPath, dirPath);
+  if (updateOnDisplay == NO) {
+    ASSIGN(currentPath, dirPath);
+  }
   ASSIGN(selection, filenames);
 
   if (itemsLoader != nil) {
@@ -299,14 +315,17 @@
   }
 
   path = [rootPath stringByAppendingPathComponent:dirPath];
-  NSLog(@"IconViewer(%@): display path: %@", rootPath, dirPath);
+  NSLog(@"IconViewer(%@): display path: %@ updateOnDisplay:%i", rootPath, dirPath, updateOnDisplay);
 
-  [iconView removeAllIcons];
+  if (updateOnDisplay == NO) {
+    [iconView removeAllIcons];
+  }
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
   itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
                                                        path:path
                                                    contents:dirContents
-                                                  selection:filenames];
+                                                  selection:filenames
+                                                     update:updateOnDisplay];
   [itemsLoader addObserver:self
                 forKeyPath:@"isFinished"
                    options:0
@@ -327,9 +346,12 @@
   if ([reloadPath isEqualToString:currentPath] == NO)
     return;
   
-  r = [iconView visibleRect];
+  // r = [[iconView enclosingScrollView] documentVisibleRect];
+  // NSLog(@"[IconViewer] reloadPath visible rect: %@", NSStringFromRect(r));
+  updateOnDisplay = YES;
   [self displayPath:reloadPath selection:selection];
-  [iconView scrollRectToVisible:r];
+  // updateOnDisplay = NO;
+  // [iconView scrollRectToVisible:r];
 }
 - (void)open:sender
 {
@@ -411,11 +433,12 @@
     [iconLabel setIconLabelDelegate:_owner];
   }
 
-  [iconView scrollPoint:NSZeroPoint];
+  // [iconView scrollPoint:NSZeroPoint];
   [iconView performSelectorOnMainThread:@selector(adjustToFitIcons)
                              withObject:nil
                           waitUntilDone:YES];
   [[view window] makeFirstResponder:iconView];
+  updateOnDisplay = NO;
 }
 
 //=============================================================================

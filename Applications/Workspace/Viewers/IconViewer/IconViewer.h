@@ -31,12 +31,14 @@
   NSString       *directoryPath;
   NSMutableArray *directoryContents;
   NSArray        *selectedFiles;
+  BOOL           isUpdate;
 }
 
 - (id)initWithIconView:(NXIconView *)view
                   path:(NSString *)dirPath
               contents:(NSArray *)dirContents
-             selection:(NSArray *)filenames;
+             selection:(NSArray *)filenames
+                update:(BOOL)toUpdate;
 
 @end
 
@@ -50,6 +52,7 @@
   NSString     *rootPath;
   NSString     *currentPath;
   NSArray      *selection;
+  BOOL         updateOnDisplay;
 
   // Items loader
   NSOperationQueue	*operationQ;
