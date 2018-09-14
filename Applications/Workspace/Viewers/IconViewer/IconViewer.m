@@ -26,15 +26,19 @@
 #import <Viewers/FileViewer.h>
 #import <Viewers/PathIcon.h>
 #import <Viewers/PathView.h>
-#include "IconViewer.h"
+#import "IconViewer.h"
 
+//=============================================================================
+// ViewerItemLoader implementation
+//=============================================================================
 @implementation ViewerItemsLoader
 
-- (id)initWithIconView:(NXIconView *)view
+- (id)initWithIconView:(WMIconView *)view
                   path:(NSString *)dirPath
               contents:(NSArray *)dirContents
              selection:(NSArray *)filenames
                 update:(BOOL)toUpdate
+               animate:(BOOL)isDrawAnimation
 {
   [super init];
   
@@ -44,13 +48,14 @@
     directoryContents = [dirContents mutableCopy];
     selectedFiles = [[NSArray alloc] initWithArray:filenames];
     isUpdate = toUpdate;
+    isAnimate = isDrawAnimation;
   }
 
   return self;
 }
 
 - (void)_updateItems:(NSMutableArray *)items
-            fileView:(NXIconView *)view
+            fileView:(WMIconView *)view
 {
   NXIcon         *icon;
   NSMutableArray *itemsCopy = [items mutableCopy];
@@ -83,6 +88,12 @@
   NSUInteger     x, y, slotsWide, slotsTallVisible;
   NSMutableSet   *selectedIcons = [NSMutableSet new];
   NSMutableArray *iconsToAdd = [NSMutableArray new];
+
+  if (isAnimate != NO) {
+    [iconView performSelectorOnMainThread:@selector(drawOpenAnimation)
+                               withObject:nil
+                            waitUntilDone:NO];
+  }
 
   NSLog(@"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
 
@@ -117,7 +128,7 @@
       x = 0;
     }
     // Add icons on per page basis
-    if (y == slotsTallVisible) {
+    if (y == slotsTallVisible && [iconView isAnimating] == NO) {
       [iconView performSelectorOnMainThread:@selector(addIcons:)
                                  withObject:iconsToAdd
                               waitUntilDone:YES];
@@ -163,6 +174,61 @@
 
 @end
 
+//=============================================================================
+// WMIconView implementation
+//=============================================================================
+static NSRect boxRect;
+static NSRect viewFrame;
+@implementation WMIconView
+- (void)drawRect:(NSRect)r
+{
+  if (isDrawOpenAnimation) {
+    NSFrameRect(boxRect);
+  }
+  else {
+    [super drawRect:r];
+  }
+}
+- (void)drawOpenAnimation
+{
+  NSUInteger step = 15;
+
+  isDrawOpenAnimation = YES;
+  
+  viewFrame = [self frame];
+  boxRect = [[selectedIcons anyObject] frame];
+
+  while (boxRect.size.width < viewFrame.size.width ||
+         boxRect.size.height < viewFrame.size.height) {
+      
+    [self display];
+    
+    boxRect.origin.x -= step;
+    if (boxRect.origin.x < 0 ) boxRect.origin.x = 0;
+    boxRect.origin.y -= step;
+    if (boxRect.origin.y < 0 ) boxRect.origin.y = 0;
+      
+    boxRect.size.width += step * ((boxRect.origin.x == 0) ? 1 : 2);
+    if (boxRect.size.width > viewFrame.size.width)
+      boxRect.size.width = viewFrame.size.width;
+    boxRect.size.height += step * ((boxRect.origin.y == 0) ? 1 : 2);
+    if (boxRect.size.height > viewFrame.size.height)
+      boxRect.size.height = viewFrame.size.height;      
+  }
+
+  isDrawOpenAnimation = NO;
+  // [self setNeedsDisplay:YES];
+}
+
+- (BOOL)isAnimating
+{
+  return isDrawOpenAnimation;
+}
+@end
+
+//=============================================================================
+// IconViewer implementation
+//=============================================================================
 @implementation IconViewer
 
 - (void)dealloc
@@ -192,8 +258,8 @@
 
   [super init];
 
-  // NXIconView
-  iconView = [[NXIconView alloc] initSlotsWide:3];
+  // IconView
+  iconView = [[WMIconView alloc] initSlotsWide:3];
   [iconView setDelegate:self];
   [iconView setTarget:self];
   [iconView setDragAction:@selector(iconDragged:withEvent:)];
@@ -208,7 +274,7 @@
   }
   [iconView registerForDraggedTypes:@[NSFilenamesPboardType]];
 
-  // NSScrollView
+  // ScrollView
   view = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300)];
   [view setBorderType:NSBezelBorder];
   [view setHasVerticalScroller:YES];
@@ -218,9 +284,10 @@
   [iconView setFrame:NSMakeRect(0, 0, [[view contentView] frame].size.width, 0)];
   [iconView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
   
-  // NSOperation
+  // Operation
   operationQ = [[NSOperationQueue alloc] init];
   itemsLoader = nil;
+  doAnimation = NO;
   
   [[NSNotificationCenter defaultCenter]
           addObserver:self
@@ -310,7 +377,7 @@
 
   if (!dirPath || [dirPath isEqualToString:@""])
     return;
-
+  
   if ([currentPath isEqualToString:dirPath]) {
     updateOnDisplay = YES;
   }
@@ -336,7 +403,8 @@
                                                        path:path
                                                    contents:dirContents
                                                   selection:filenames
-                                                     update:updateOnDisplay];
+                                                     update:updateOnDisplay
+                                                    animate:doAnimation];
   [itemsLoader addObserver:self
                 forKeyPath:@"isFinished"
                    options:0
@@ -384,6 +452,7 @@
 
     if ([fileType isEqualToString:NSDirectoryFileType] ||
         [fileType isEqualToString:NSFilesystemFileType]) {
+      doAnimation = YES;
       [self displayPath:path selection:nil];
       [_owner displayPath:path selection:nil sender:self];
     }
@@ -450,6 +519,7 @@
                           waitUntilDone:YES];
   [[view window] makeFirstResponder:iconView];
   updateOnDisplay = NO;
+  doAnimation = NO;
 }
 
 //=============================================================================
