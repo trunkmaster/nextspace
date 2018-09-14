@@ -1056,8 +1056,6 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
 - (void)drawRect:(NSRect)r
 {
-  // even though I'd like to make this NSDottedFrameRect
-  // I can't, cause NSDottedFrameRect is *_SLOW_*
   if (drawSelectionRect) {
     NSFrameRect(PositiveRect(selectionRect));
   }

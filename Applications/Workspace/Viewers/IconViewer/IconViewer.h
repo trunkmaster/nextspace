@@ -25,20 +25,30 @@
 
 @class NXIconView, NXIcon, NXIconLabel;
 
+@interface WMIconView : NXIconView
+{
+  BOOL isDrawOpenAnimation;
+}
+- (void)drawOpenAnimation;
+- (BOOL)isAnimating;
+@end
+
 @interface ViewerItemsLoader : NSOperation
 {
-  NXIconView     *iconView;
+  WMIconView     *iconView;
   NSString       *directoryPath;
   NSMutableArray *directoryContents;
   NSArray        *selectedFiles;
   BOOL           isUpdate;
+  BOOL           isAnimate;
 }
 
 - (id)initWithIconView:(NXIconView *)view
                   path:(NSString *)dirPath
               contents:(NSArray *)dirContents
              selection:(NSArray *)filenames
-                update:(BOOL)toUpdate;
+                update:(BOOL)toUpdate
+               animate:(BOOL)isDrawAnimation;
 
 @end
 
@@ -47,12 +57,13 @@
   id <FileViewer> _owner;
 
   NSScrollView *view;
-  NXIconView   *iconView;
+  WMIconView   *iconView;
 
   NSString     *rootPath;
   NSString     *currentPath;
   NSArray      *selection;
   BOOL         updateOnDisplay;
+  BOOL         doAnimation;
 
   // Items loader
   NSOperationQueue	*operationQ;
