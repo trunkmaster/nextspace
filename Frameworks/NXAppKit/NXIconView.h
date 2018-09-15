@@ -112,6 +112,10 @@ static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
   /** The selected slot. When moving with arrow keys, the move is
     relative to this slot. */
   NXIconSlot selectedIconSlot;
+  /** Selected slot with minimum x and y - top left*/
+  NXIconSlot minSelectedIconSlot;
+  /** Selected slot with maximum x and y - bottom right*/
+  NXIconSlot maxSelectedIconSlot;
 
   NSString * lastAlphaString;
   NSDate * lastHitDate;
