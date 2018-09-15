@@ -196,7 +196,7 @@ static NSRect viewFrame;
   isDrawOpenAnimation = YES;
   
   viewFrame = [self frame];
-  boxRect = [[selectedIcons anyObject] frame];
+  // boxRect = [[selectedIcons anyObject] frame];
 
   while (boxRect.size.width < viewFrame.size.width ||
          boxRect.size.height < viewFrame.size.height) {
@@ -397,6 +397,7 @@ static NSRect viewFrame;
 
   if (updateOnDisplay == NO) {
     [iconView removeAllIcons];
+    [iconView display];
   }
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
   itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
@@ -453,6 +454,7 @@ static NSRect viewFrame;
     if ([fileType isEqualToString:NSDirectoryFileType] ||
         [fileType isEqualToString:NSFilesystemFileType]) {
       doAnimation = YES;
+      boxRect = [[[iconView selectedIcons] anyObject] frame];
       [self displayPath:path selection:nil];
       [_owner displayPath:path selection:nil sender:self];
     }
