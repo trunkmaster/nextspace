@@ -935,6 +935,20 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     switch (c) {
     case NSUpArrowFunctionKey:
       if (nextIcon.x == -1) nextIcon.x = 0;
+      if (flags & NSShiftKeyMask) {
+        if (minSelectedIconSlot.y > 0) {
+          int max_x = maxSelectedIconSlot.x;
+          nextIcon.x = minSelectedIconSlot.x;
+          nextIcon.y = minSelectedIconSlot.y - 1;
+          while (nextIcon.x <= max_x) {
+            selectedIconSlot = nextIcon;
+            icon = [self iconInSlot:nextIcon];
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            nextIcon.x++;
+          }
+        }
+        break;
+      }
       for (nextIcon.y--; nextIcon.y >= 0; nextIcon.y--) {
         icon = [self iconInSlot:nextIcon];
         if (icon != nil) {
@@ -945,6 +959,20 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
       break;
     case NSDownArrowFunctionKey:
+      if (flags & NSShiftKeyMask) {
+        if (maxSelectedIconSlot.y < slotsTall-1) {
+          int max_x = maxSelectedIconSlot.x;
+          nextIcon.x = minSelectedIconSlot.x;
+          nextIcon.y = maxSelectedIconSlot.y + 1;
+          while (nextIcon.x <= max_x) {
+            selectedIconSlot = nextIcon;
+            icon = [self iconInSlot:nextIcon];
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            nextIcon.x++;
+          }
+        }
+        break;
+      }
       if (nextIcon.x == -1) nextIcon.x = 0;
       for (nextIcon.y++;(unsigned) nextIcon.y < slotsTall; nextIcon.y++) {
         icon = [self iconInSlot:nextIcon];
@@ -956,6 +984,20 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
       break;
     case NSLeftArrowFunctionKey:
+      if (flags & NSShiftKeyMask) {
+        if (minSelectedIconSlot.x > 0) {
+          int max_y = maxSelectedIconSlot.y;
+          nextIcon.x = minSelectedIconSlot.x - 1;
+          nextIcon.y = minSelectedIconSlot.y;
+          while (nextIcon.y <= max_y) {
+            selectedIconSlot = nextIcon;
+            icon = [self iconInSlot:nextIcon];
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            nextIcon.y++;
+          }
+        }
+        break;
+      }
       if (nextIcon.y == -1) nextIcon.y = 0;
       for (nextIcon.x--; nextIcon.x >= 0; nextIcon.x--) {
         icon = [self iconInSlot:nextIcon];
@@ -967,6 +1009,20 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
       break;
     case NSRightArrowFunctionKey:
+      if (flags & NSShiftKeyMask) {
+        if (maxSelectedIconSlot.x < slotsWide-1) {
+          int max_y = maxSelectedIconSlot.y;
+          nextIcon.x = maxSelectedIconSlot.x + 1;
+          nextIcon.y = minSelectedIconSlot.y;
+          while (nextIcon.y <= max_y) {
+            selectedIconSlot = nextIcon;
+            icon = [self iconInSlot:nextIcon];
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            nextIcon.y++;
+          }
+        }
+        break;
+      }
       if (nextIcon.y == -1) nextIcon.y = 0;
       for (nextIcon.x++; (unsigned)nextIcon.x < slotsWide; nextIcon.x++) {
         icon = [self iconInSlot:nextIcon];
@@ -980,8 +1036,6 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     }
   }
   else if (c == NSHomeFunctionKey) {
-    if (nextIcon.x == -1) nextIcon.x = 0;
-    if (nextIcon.y == -1) nextIcon.y = 0;
     if (flags & NSShiftKeyMask) {
       while (nextIcon.x-- != 0) {
         [self updateSelectionWithIcon:[self iconInSlot:nextIcon]
@@ -994,7 +1048,6 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     }
   }
   else if (c == NSEndFunctionKey) {
-    // if (nextIcon.x == -1) nextIcon.x = 0;
     if (flags & NSShiftKeyMask) {
       if (nextIcon.y == -1) {
         nextIcon.x = nextIcon.y = 0;
@@ -1478,14 +1531,31 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     NSRect     r = NSMakeRect(0,0,0,0);
     NXIconSlot lastSlot = NXMakeIconSlot(INT_MAX,INT_MAX), newSlot;
 
+    minSelectedIconSlot = NXMakeIconSlot(INT_MAX,INT_MAX);
+    maxSelectedIconSlot = NXMakeIconSlot(0,0);
     for (NXIcon *icon in selectedIcons) {
       if (icon && [icon isKindOfClass:[NXIcon class]]) {
         newSlot = [self slotForIcon:icon];
-        if (newSlot.y < lastSlot.y || newSlot.x < lastSlot.y) {
+        if (newSlot.y < lastSlot.y || newSlot.x < lastSlot.x) {
           selectedIconSlot = newSlot;
+        }
+        if (newSlot.y < minSelectedIconSlot.y || newSlot.x < minSelectedIconSlot.x) {
+          minSelectedIconSlot = newSlot;
+        }
+        if (newSlot.y > maxSelectedIconSlot.y || newSlot.x > maxSelectedIconSlot.x) {
+          maxSelectedIconSlot = newSlot;
         }
         r = NSUnionRect(r, NSUnionRect([icon frame], [[icon label] frame]));
       }
+    }
+    // NSLog(@"[NXIconView] top left slot: (%i, %i) bottom right: (%i, %i)",
+    //       minSelectedIconSlot.x, minSelectedIconSlot.y,
+    //       maxSelectedIconSlot.x, maxSelectedIconSlot.y);
+    if (r.origin.y < slotSize.height) {
+      r.origin.y = 0;
+    }
+    else if (_frame.size.height - (r.origin.y + r.size.height) < slotSize.height) {
+      r.origin.y = _frame.size.height - r.size.height;
     }
     [self scrollRectToVisible:r];
   }
