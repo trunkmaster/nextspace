@@ -12,7 +12,9 @@
 	);
 	Outlets = (
 	    commandName,
-	    window
+	    window,
+	    runInTerminal,
+	    historyAndCompletion
 	);
 	Super = NSObject;
     };
