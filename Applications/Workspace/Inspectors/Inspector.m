@@ -270,8 +270,11 @@
 
   d = [@"{path=BUILTIN; type=InspectorCommand; mode=contents;"
         "class=RTFInspector; selp=selectionOneOnly;"
-        "extensions=(rtf);"
-        "priority=-1;}" propertyList];
+        "extensions=(rtf); priority=-1;}" propertyList];
+  
+  // d = [@"{path=BUILTIN; type=InspectorCommand; mode=contents;"
+  //       "class=GORMInspector; selp=selectionOneOnly;"
+  //       "extensions=(gorm); priority=-1;}" propertyList];
   registry = [NSMutableDictionary dictionaryWithDictionary:d];
   [inspectorsRegistry addObject:registry];
 
