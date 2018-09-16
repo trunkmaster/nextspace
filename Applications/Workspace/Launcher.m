@@ -48,6 +48,7 @@ static Launcher *shared = nil;
   }
 
   [commandName selectText:nil];
+  [window center];
   [window makeKeyAndOrderFront:nil];
 }
 
@@ -83,10 +84,6 @@ static Launcher *shared = nil;
                     [localException reason]);
   }
   NS_ENDHANDLER
-
-//  [commandArgs release];
-//  [commandPath release];
-//  [commandTask release];
 
   DESTROY(savedString);
   ASSIGN(savedString, [commandName stringValue]);
