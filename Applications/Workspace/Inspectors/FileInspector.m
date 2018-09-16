@@ -218,7 +218,8 @@ static id contentsInspector = nil;
 
 - revert:sender
 {
-  NSString      *fp;
+  NSString      *file;
+  NSString      *filePath;
   NSFileManager *fm = [NSFileManager defaultManager];
   NXFileManager *xfm = [NXFileManager sharedManager];
   NSDictionary  *fattrs;
@@ -234,31 +235,28 @@ static id contentsInspector = nil;
 
   [fileInfoText setText:@"Loading..."];
 
-  if ([selectedFiles count] > 1)
-    {
-      [self _showFileSelection:selectedFiles];
+  if ([selectedFiles count] > 1) {
+    [self _showFileSelection:selectedFiles];
+  }
+  else {
+    file = [selectedFiles objectAtIndex:0];
+    filePath = [selectedPath stringByAppendingPathComponent:file];
+    mimeType = [xfm mimeTypeForFile:filePath];
+    if ([[[mimeType pathComponents] objectAtIndex:0] isEqualToString:@"text"]) {
+      [self _showTextFields:YES];
+      // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+      [self _showFileContentsAtPath:filePath];
+      // });
     }
-  else
-    {
-
-      fp = [selectedPath
-             stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
-      mimeType = [xfm mimeTypeForFile:fp];
-      if ([[[mimeType pathComponents] objectAtIndex:0] isEqualToString:@"text"])
-        {
-          [self _showTextFields:YES];
-          // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-          [self _showFileContentsAtPath:fp];
-                         // });
-        }
-      else
-        {
-          // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-          [fileInfoText setText:[xfm descriptionForFile:fp]];
-          //                });
-        }
+    else if ([[file pathExtension] isEqualToString:@"gorm"]) {
+      [fileInfoText setText:@"GNUstep Object Relationship Modeller file"];
     }
-  
+    else {
+      // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+      [fileInfoText setText:[xfm descriptionForFile:filePath]];
+      //                });
+    }
+  }  
 
   return self;
 }
