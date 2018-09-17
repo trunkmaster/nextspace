@@ -17,7 +17,7 @@ Simple login panel where you enter your user name and password.
 * Other: inspectors, finder, console messages and preferences for mentioned the parts of Workspace.
 
 ### Preferences
-Settings for locale, fonts, displays (size, arrangment), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Prefrences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
+Settings for locale, fonts, displays (size, arrangement), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Preferences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
 
 ![Localization](Documentation/Preferences-Localization.png) ![Display](Documentation/Preferences-Display.png)
 
@@ -37,11 +37,11 @@ Simple text editor that supports RTF and RTFD. It is simple application from NeX
 Image viewer. Nothing interesting yet. Maybe replaced by some other image and document (PDF, PostScript, etc.) viewing application in future.
 
 Everything else is optional and will be developed upon completion of core applications listed above. Among them:
-* TimeMon: system load monitoring. Version from GNustep Application Project.
+* TimeMon: system load monitoring. Version from GNUstep Application Project.
 * Weather: Shows weather conditions from Yahoo! weather site. Proof of concept (no preferences, no forecast, shows weather for Kyiv, Ukraine).
 
 ## Frameworks
-* NXAppKit: GUI classess that can be usefull in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
+* NXAppKit: GUI classes that can be useful in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
 * NXSystem: system-specific classes go here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
 * NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
 >'NX' prefix is a tribute to the NeXTstep classes back in early 90th but has no connection to original NeXT's API.
@@ -54,7 +54,7 @@ Everything else is optional and will be developed upon completion of core applic
 * [OpenStep](https://en.wikipedia.org/wiki/OpenStep) implementation: [GNUstep](http://www.gnustep.org). This is where I started from back in 2001. Additional functionality and fixes will go upstream when it will be ready.
 * [WindowMaker](https://windowmaker.org/): great window manager. It is still alive and in active development. All changes I'm packaging as a set of patches (to the original 0.95.7 version) which can be pushed to upstream project later.
 
-## Status of implementaion
+## Status of implementation
 * [Login](https://github.com/trunkmaster/nextspace/projects/6)
 * [Workspace](https://github.com/trunkmaster/nextspace/projects/4)
 * [Preferences](https://github.com/trunkmaster/nextspace/projects/2)
