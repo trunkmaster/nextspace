@@ -4,15 +4,18 @@
 
 @interface Launcher : NSObject
 {
-  id       window;
-  id       commandName;
-  id       runInTerminal;
-  id       historyAndCompletion;
+  id window;
+  id commandName;
+  id runInTerminal;
+  id historyAndCompletion;
+
+  NSString       *wmHistoryPath;
+  NSMutableArray *wmHistory;
+  NSInteger      wmHistoryIndex;
 
   NSString *commandMode;
   BOOL     historyMode;
   BOOL     filesystemMode;
-  NSString *savedString;
 }
 
 + shared;

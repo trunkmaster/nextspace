@@ -37,6 +37,9 @@ static Launcher *shared = nil;
 {
   NSDebugLLog(@"Launcher", @"Launcher: dealloc");
 
+  [wmHistory dealloc];
+  [wmHistoryPath dealloc];
+  
   [super dealloc];
 }
 
@@ -44,17 +47,20 @@ static Launcher *shared = nil;
 {
   [super init];
 
-  ASSIGN(savedString, @"");
   historyMode = YES;
   filesystemMode = NO;
+  
+  wmHistoryPath = [[NSString alloc] initWithFormat:@"%@/Library/WindowMaker/History",
+                                     NSHomeDirectory()];
+  wmHistory = [[NSMutableArray alloc] initWithContentsOfFile:wmHistoryPath];
+  wmHistoryIndex = -1;
 
   return self;
 }
 
 - (void)awakeFromNib
 {
-  [commandName setStringValue:savedString];
-  DESTROY(savedString);
+  [commandName setStringValue:@""];
 
   [historyAndCompletion loadColumnZero];
   [historyAndCompletion setTakesTitleFromPreviousColumn:NO];
@@ -110,24 +116,10 @@ static Launcher *shared = nil;
   }
   NS_ENDHANDLER
 
-  DESTROY(savedString);
-  ASSIGN(savedString, [commandName stringValue]);
   [window close];
 }
 
 // --- Utility
-- (NSArray *)loadHistory
-{
-  NSArray       *wmHistory;
-  NSString      *wmHistoryPath;
-  
-  [historyAndCompletion setTitle:@"History" ofColumn:0];
-  wmHistoryPath = [NSString stringWithFormat:@"%@/Library/WindowMaker/History",
-                            NSHomeDirectory()];
-  wmHistory = [NSArray arrayWithContentsOfFile:wmHistoryPath];
-
-  return wmHistory;
-}
 
 - (NSArray *)makeCompletionFor:(NSString *)command
 {
@@ -158,10 +150,27 @@ static Launcher *shared = nil;
 
   switch(c) {
   case NSUpArrowFunctionKey:
-    NSLog(@"WMCommandField key: Up");
+    // NSLog(@"WMCommandField key: Up");
+    wmHistoryIndex++;
+    if (wmHistoryIndex >= [wmHistory count]) {
+      wmHistoryIndex--;
+    }
+    [commandName setStringValue:[wmHistory objectAtIndex:wmHistoryIndex]];
+    [historyAndCompletion selectRow:wmHistoryIndex inColumn:0];
     break;
   case NSDownArrowFunctionKey:
-    NSLog(@"WMCommandField key: Down");
+    // NSLog(@"WMCommandField key: Down");
+    if (wmHistoryIndex >= 0) {
+      wmHistoryIndex--;
+      [commandName setStringValue:[wmHistory objectAtIndex:wmHistoryIndex]];
+      [historyAndCompletion selectRow:wmHistoryIndex inColumn:0];
+    }
+    else {
+      wmHistoryIndex++;
+      [commandName setStringValue:@""];
+      [historyAndCompletion reloadColumn:0];
+      [historyAndCompletion setTitle:@"History" ofColumn:0];
+    }
     break;
   case NSHomeFunctionKey:
     NSLog(@"WMCommandField key: Home");
@@ -188,7 +197,7 @@ static Launcher *shared = nil;
     return;
 
   if (historyMode != NO) {
-    for (NSString *command in [self loadHistory]) {
+    for (NSString *command in wmHistory) {
       [matrix addRow];
       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
       [cell setLeaf:YES];
