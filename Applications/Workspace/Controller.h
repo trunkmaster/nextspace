@@ -36,6 +36,7 @@
 @class NXScreen;
 @class NXPower;
 @class Recycler;
+@class Launcher;
 
 @interface Controller : NSObject
 {
@@ -64,6 +65,7 @@
   ProcessManager      *procManager;
   Processes           *procPanel;
   NSMutableDictionary *mediaOperations;
+  Launcher            *launcher;
  
   BOOL dontOpenRootViewer;
   BOOL isQuitting;

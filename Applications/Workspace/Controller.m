@@ -340,6 +340,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [fileSystemMonitor release];
   }
 
+  // Launcher
+  if (launcher) {
+    [launcher deactivate];
+    [launcher release];
+  }
+
   // Close XWindow applications - wipeDesktop?
   
   if (useInternalWindowManager) {
@@ -912,17 +918,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)showConsole:(id)sender
 {
-  if (console == nil)
-    {
-      console = [[Console alloc] init];
-    }
+  if (console == nil) {
+    console = [[Console alloc] init];
+  }
   [console activate];
 }
 
 - (void)showLauncher:sender
 {
-  NSLog(@"Init and show \"Run Command\" panel");
-  [[Launcher shared] activate];
+  if (launcher == nil) {
+    launcher = [[Launcher alloc] init];
+  }
+  [launcher activate];
 }
 
 // Dock

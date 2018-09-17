@@ -18,8 +18,7 @@
   BOOL     filesystemMode;
 }
 
-+ shared;
-
-- (void)runCommand:(id)sender;
+- (void)activate;
+- (void)deactivate;
 
 @end

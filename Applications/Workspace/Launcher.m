@@ -22,23 +22,13 @@
 
 @implementation Launcher
 
-static Launcher *shared = nil;
-
-+ shared
-{
-  if (shared == nil) {
-    shared = [self new];
-  }
-
-  return shared;
-}
-
 - (void)dealloc
 {
-  NSDebugLLog(@"Launcher", @"Launcher: dealloc");
+  NSLog(@"Launcher: dealloc");
 
-  [wmHistory dealloc];
-  [wmHistoryPath dealloc];
+  [wmHistory release];
+  [wmHistoryPath release];
+  [window release];
   
   [super dealloc];
 }
@@ -81,6 +71,11 @@ static Launcher *shared = nil;
   [commandName selectText:nil];
   [window center];
   [window makeKeyAndOrderFront:nil];
+}
+
+- (void)deactivate
+{
+  [window close];
 }
 
 - (void)runCommand:(id)sender
