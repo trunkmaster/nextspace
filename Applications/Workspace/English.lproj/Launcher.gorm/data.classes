@@ -18,4 +18,11 @@
 	);
 	Super = NSObject;
     };
+    WMCommandField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
 }

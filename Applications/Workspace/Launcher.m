@@ -4,6 +4,22 @@
 #import <NXAppKit/NXAlert.h>
 #import "Launcher.h"
 
+@interface WMCommandField : NSTextField
+- (void)commandFieldKeyUp:(NSEvent *)theEvent;
+@end
+@implementation WMCommandField
+- (void)keyUp:(NSEvent *)theEvent
+{
+  if (_delegate && [_delegate respondsToSelector:@selector(commandFieldKeyUp:)]) {
+    [_delegate commandFieldKeyUp:theEvent];
+  }
+}
+- (void)commandFieldKeyUp:(NSEvent *)theEvent
+{
+  // Should be implemented by delegate
+}
+@end
+
 @implementation Launcher
 
 static Launcher *shared = nil;
@@ -29,6 +45,8 @@ static Launcher *shared = nil;
   [super init];
 
   ASSIGN(savedString, @"");
+  historyMode = YES;
+  filesystemMode = NO;
 
   return self;
 }
@@ -38,7 +56,11 @@ static Launcher *shared = nil;
   [commandName setStringValue:savedString];
   DESTROY(savedString);
 
-  [window setFrameAutosaveName:@"Launcher"];
+  [historyAndCompletion loadColumnZero];
+  [historyAndCompletion setTakesTitleFromPreviousColumn:NO];
+  [historyAndCompletion setTitle:@"History" ofColumn:0];
+  [historyAndCompletion scrollColumnToVisible:0];
+  [historyAndCompletion setRefusesFirstResponder:YES];
 }
 
 - (void)activate
@@ -46,7 +68,10 @@ static Launcher *shared = nil;
   if (window == nil) {
     [NSBundle loadNibNamed:@"Launcher" owner:self];
   }
-
+  else {
+    [historyAndCompletion reloadColumn:0];
+  }
+  
   [commandName selectText:nil];
   [window center];
   [window makeKeyAndOrderFront:nil];
@@ -88,6 +113,89 @@ static Launcher *shared = nil;
   DESTROY(savedString);
   ASSIGN(savedString, [commandName stringValue]);
   [window close];
+}
+
+// --- Utility
+- (NSArray *)loadHistory
+{
+  NSArray       *wmHistory;
+  NSString      *wmHistoryPath;
+  
+  [historyAndCompletion setTitle:@"History" ofColumn:0];
+  wmHistoryPath = [NSString stringWithFormat:@"%@/Library/WindowMaker/History",
+                            NSHomeDirectory()];
+  wmHistory = [NSArray arrayWithContentsOfFile:wmHistoryPath];
+
+  return wmHistory;
+}
+
+- (NSArray *)makeCompletionFor:(NSString *)command
+{
+  return nil;
+}
+
+// --- Command text field delegate
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+  NSLog(@"Launcher: text changed.");
+  NSTextField *commandField = [aNotification object];
+  NSString    *commandText;
+  NSArray     *variants;
+
+  if (commandField != commandName ||
+      [commandField isKindOfClass:[NSTextField class]]) {
+    return;
+  }
+  commandText = [commandField stringValue];
+  if (!filesystemMode && [commandText characterAtIndex:0] == '/') {
+    filesystemMode = YES;
+  }
+  variants = [self makeCompletionFor:commandText];
+}
+- (void)commandFieldKeyUp:(NSEvent *)theEvent
+{
+  unichar c = [[theEvent characters] characterAtIndex:0];
+
+  switch(c) {
+  case NSUpArrowFunctionKey:
+    NSLog(@"WMCommandField key: Up");
+    break;
+  case NSDownArrowFunctionKey:
+    NSLog(@"WMCommandField key: Down");
+    break;
+  case NSHomeFunctionKey:
+    NSLog(@"WMCommandField key: Home");
+    break;
+  case NSEndFunctionKey:
+    NSLog(@"WMCommandField key: End");
+    break;
+  case NSTabCharacter:
+    NSLog(@"WMCommandField key: Tab");
+    break;
+  default:
+    break;
+  }
+}
+// --- Command and History browser delegate
+
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+	    inMatrix:(NSMatrix *)matrix
+{
+  NSBrowserCell *cell;
+  
+  if (sender != historyAndCompletion)
+    return;
+
+  if (historyMode != NO) {
+    for (NSString *command in [self loadHistory]) {
+      [matrix addRow];
+      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
+      [cell setLeaf:YES];
+      [cell setTitle:command];
+      [cell setRefusesFirstResponder:YES];
+    }
+  }
 }
 
 @end

@@ -6,6 +6,12 @@
 {
   id       window;
   id       commandName;
+  id       runInTerminal;
+  id       historyAndCompletion;
+
+  NSString *commandMode;
+  BOOL     historyMode;
+  BOOL     filesystemMode;
   NSString *savedString;
 }
 
