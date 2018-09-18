@@ -9,13 +9,15 @@
   id runInTerminal;
   id historyAndCompletion;
 
+  NSArray        *completionSource;
+  
   NSString       *wmHistoryPath;
   NSMutableArray *wmHistory;
   NSInteger      wmHistoryIndex;
 
-  NSString *commandMode;
-  BOOL     historyMode;
-  BOOL     filesystemMode;
+  BOOL    historyMode;
+  BOOL    filesystemMode;
+  NSArray *commandVariants;
 }
 
 - (void)activate;

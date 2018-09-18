@@ -18,6 +18,17 @@
 {
   // Should be implemented by delegate
 }
+// - (BOOL)textShouldEndEditing:(NSText *)textObject
+// {
+//   return NO;
+// }
+// - (void)selectText:(id)sender
+// {
+//   // Do nothing to prevent selection flickering
+//   NSText *text = [_window fieldEditor:YES forObject:self];
+//   [_cell setUpFieldEditorAttributes:text];
+//   // [super selectText:self];
+// }
 @end
 
 @implementation Launcher
@@ -66,6 +77,7 @@
   }
   else {
     [historyAndCompletion reloadColumn:0];
+    // [historyAndCompletion setTitle:@"History" ofColumn:0];
   }
   
   [commandName selectText:nil];
@@ -97,47 +109,93 @@
 //  [commandTask setStandardOutput:[NSFileHandle fileHandleWithStandardOutput]];
 //  [commandTask setStandardError:[NSFileHandle fileHandleWithStandardError]];
 //  [commandTask setStandardInput:[NSFileHandle fileHandleWithNullDevice]];
-/*  [commandTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
-  [commandTask setStandardError:[NSFileHandle fileHandleWithNullDevice]];
-  [commandTask setStandardInput:[NSFileHandle fileHandleWithNullDevice]];*/
-  NS_DURING {
+  
+  @try {
     [commandTask launch];
+    [wmHistory insertObject:[commandName stringValue] atIndex:0];
+    [wmHistory writeToFile:wmHistoryPath atomically:YES];
   }
-  NS_HANDLER {
+  @catch (NSException *exception) {
     NXRunAlertPanel(@"Run Command",
                     @"Run command failed with exception: \'%@\'", 
-                    @"Close", nil, nil,
-                    [localException reason]);
+                    @"Close", nil, nil, [exception reason]);
   }
-  NS_ENDHANDLER
-
-  [window close];
+  @finally {
+    [window close];
+  }
 }
 
 // --- Utility
 
-- (NSArray *)makeCompletionFor:(NSString *)command
+- (NSArray *)completionFor:(NSString *)command
 {
-  return nil;
+  NSMutableArray *variants = [[NSMutableArray alloc] init];
+  unichar c0 = [command characterAtIndex:0];
+
+  if (!command || [command length] == 0 || [command isEqualToString:@""]) {
+    completionSource = wmHistory;
+    return variants;
+  }
+  
+  if (!filesystemMode && command &&
+      (c0 == '/' || c0 == '.' || c0 == '~')) {
+    filesystemMode = YES;
+  }
+  else {
+    filesystemMode = NO;
+  }
+
+  for (NSString *hCommand in completionSource) {
+    if ([hCommand rangeOfString:command].location == 0) {
+      [variants addObject:hCommand];
+    }
+  }
+  
+  return [variants autorelease];
+}
+
+- (void)makeTabCompletion
+{
+  NSString   *command = [commandName stringValue];
+  NSString   *variant;
+  NSText     *fieldEditor = [window fieldEditor:NO forObject:commandName];
+  NSUInteger selLocation, selLength;
+  
+  commandVariants = [self completionFor:command];
+  [historyAndCompletion reloadColumn:0];
+  
+  if ([commandVariants count] > 0) {
+    [historyAndCompletion selectRow:0 inColumn:0]; // TODO
+    [historyAndCompletion setTitle:@"Completion" ofColumn:0];
+    wmHistoryIndex = 0;
+    completionSource = commandVariants;
+    variant = [commandVariants objectAtIndex:0]; // TODO
+
+    [commandName setStringValue:variant];
+    selLocation = [command length];
+    selLength = [variant length] - [command length];
+    [fieldEditor setSelectedRange:NSMakeRange(selLocation, selLength)];
+  }
+  else {
+    [historyAndCompletion setTitle:@"History" ofColumn:0];
+    completionSource = wmHistory;
+    [historyAndCompletion selectRow:0 inColumn:0];
+    wmHistoryIndex = 0;
+  }
 }
 
 // --- Command text field delegate
+
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  NSLog(@"Launcher: text changed.");
   NSTextField *commandField = [aNotification object];
-  NSString    *commandText;
-  NSArray     *variants;
 
   if (commandField != commandName ||
-      [commandField isKindOfClass:[NSTextField class]]) {
+      ![commandField isKindOfClass:[NSTextField class]]) {
     return;
   }
-  commandText = [commandField stringValue];
-  if (!filesystemMode && [commandText characterAtIndex:0] == '/') {
-    filesystemMode = YES;
-  }
-  variants = [self makeCompletionFor:commandText];
+  
+  [self makeTabCompletion];
 }
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
 {
@@ -150,7 +208,7 @@
     if (wmHistoryIndex >= [wmHistory count]) {
       wmHistoryIndex--;
     }
-    [commandName setStringValue:[wmHistory objectAtIndex:wmHistoryIndex]];
+    [commandName setStringValue:[completionSource objectAtIndex:wmHistoryIndex]];
     [historyAndCompletion selectRow:wmHistoryIndex inColumn:0];
     break;
   case NSDownArrowFunctionKey:
@@ -158,23 +216,16 @@
     if (wmHistoryIndex > -1)
       wmHistoryIndex--;
     if (wmHistoryIndex >= 0) {
-      [commandName setStringValue:[wmHistory objectAtIndex:wmHistoryIndex]];
+      [commandName setStringValue:[completionSource objectAtIndex:wmHistoryIndex]];
       [historyAndCompletion selectRow:wmHistoryIndex inColumn:0];
     }
     else {
       [commandName setStringValue:@""];
       [historyAndCompletion reloadColumn:0];
-      [historyAndCompletion setTitle:@"History" ofColumn:0];
     }
     break;
-  case NSHomeFunctionKey:
-    NSLog(@"WMCommandField key: Home");
-    break;
-  case NSEndFunctionKey:
-    NSLog(@"WMCommandField key: End");
-    break;
   case NSTabCharacter:
-    NSLog(@"WMCommandField key: Tab");
+    [self makeTabCompletion];
     break;
   default:
     break;
@@ -190,15 +241,34 @@
   if (sender != historyAndCompletion)
     return;
 
-  if (historyMode != NO) {
-    for (NSString *command in wmHistory) {
-      [matrix addRow];
-      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
-      [cell setLeaf:YES];
-      [cell setTitle:command];
-      [cell setRefusesFirstResponder:YES];
-    }
+  for (NSString *variant in completionSource) {
+    [matrix addRow];
+    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+    [cell setLeaf:YES];
+    [cell setTitle:variant];
+    [cell setRefusesFirstResponder:YES];
   }
+
+  // if ([commandVariants count] > 0) {
+  //   hacSource = commandVariants;
+  //   for (NSString *variant in commandVariants) {
+  //     [matrix addRow];
+  //     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+  //     [cell setLeaf:YES];
+  //     [cell setTitle:variant];
+  //     [cell setRefusesFirstResponder:YES];
+  //   }
+  // }
+  // else if (historyMode != NO) {
+  //   hacSource = wmHistory;
+  //   for (NSString *command in wmHistory) {
+  //     [matrix addRow];
+  //     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+  //     [cell setLeaf:YES];
+  //     [cell setTitle:command];
+  //     [cell setRefusesFirstResponder:YES];
+  //   }
+  // }
 }
 
 @end
