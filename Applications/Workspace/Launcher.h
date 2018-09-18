@@ -5,19 +5,17 @@
 @interface Launcher : NSObject
 {
   id window;
-  id commandName;
+  id commandField;
   id runInTerminal;
-  id historyAndCompletion;
+  id completionList;
 
-  NSArray        *completionSource;
+  NSArray   *completionSource;
+  NSArray   *commandVariants;
+  NSInteger completionIndex;
   
   NSString       *wmHistoryPath;
   NSMutableArray *wmHistory;
-  NSInteger      wmHistoryIndex;
 
-  BOOL    historyMode;
-  BOOL    filesystemMode;
-  NSArray *commandVariants;
 }
 
 - (void)activate;

@@ -11,10 +11,10 @@
 	    "runCommand:"
 	);
 	Outlets = (
-	    commandName,
+	    commandField,
 	    window,
 	    runInTerminal,
-	    historyAndCompletion
+	    completionList
 	);
 	Super = NSObject;
     };
