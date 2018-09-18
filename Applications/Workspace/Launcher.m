@@ -155,13 +155,13 @@
     break;
   case NSDownArrowFunctionKey:
     // NSLog(@"WMCommandField key: Down");
-    if (wmHistoryIndex >= 0) {
+    if (wmHistoryIndex > -1)
       wmHistoryIndex--;
+    if (wmHistoryIndex >= 0) {
       [commandName setStringValue:[wmHistory objectAtIndex:wmHistoryIndex]];
       [historyAndCompletion selectRow:wmHistoryIndex inColumn:0];
     }
     else {
-      wmHistoryIndex++;
       [commandName setStringValue:@""];
       [historyAndCompletion reloadColumn:0];
       [historyAndCompletion setTitle:@"History" ofColumn:0];
@@ -181,7 +181,6 @@
   }
 }
 // --- Command and History browser delegate
-
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
 	    inMatrix:(NSMatrix *)matrix
