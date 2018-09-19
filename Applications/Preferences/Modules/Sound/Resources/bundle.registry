@@ -1,0 +1,6 @@
+﻿{
+  type = Preferences;
+  mode = Sound;
+  class = Sound;
+  priority = 10;
+}
