@@ -1,0 +1,42 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setBeep:",
+	    "setMicBalance:",
+	    "setMicLevel:",
+	    "setMuteButton:",
+	    "setBeepRadio:",
+	    "setVoiceAlertsButton:",
+	    "setVolumeBalance:",
+	    "setVolumeLevel:"
+	);
+	Super = NSObject;
+    };
+    Sound = {
+	Actions = (
+	    "setBeep:",
+	    "setMicBalance:",
+	    "setMicLevel:",
+	    "setMuteButton:",
+	    "setBeepRadio:",
+	    "setVoiceAlertsButton:",
+	    "setVolumeBalance:",
+	    "setVolumeLevel:"
+	);
+	Outlets = (
+	    view,
+	    window,
+	    beepBrowser,
+	    beepAudioRadio,
+	    micBalance,
+	    micLevel,
+	    muteButton,
+	    beepVisualRadio,
+	    voiceAlertsButton,
+	    volumeBalance,
+	    volumeLevel
+	);
+	Super = NSObject;
+    };
+}
