@@ -14,7 +14,8 @@
 	    commandField,
 	    window,
 	    runInTerminal,
-	    completionList
+	    completionList,
+	    runButton
 	);
 	Super = NSObject;
     };

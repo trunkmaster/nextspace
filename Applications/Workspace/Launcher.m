@@ -37,9 +37,9 @@
 {
   NSLog(@"Launcher: dealloc");
 
-  [wmHistory release];
-  [wmHistoryPath release];
   [window release];
+  [savedCommand release];
+  [historyList release];
   
   [super dealloc];
 }
@@ -48,11 +48,11 @@
 {
   [super init];
   
-  wmHistoryPath = [[NSString alloc] initWithFormat:@"%@/Library/WindowMaker/History",
-                                     NSHomeDirectory()];
-  wmHistory = [[NSMutableArray alloc] initWithContentsOfFile:wmHistoryPath];
-  ASSIGN(completionSource, wmHistory);
+  [self initHistory];
+  ASSIGN(completionSource, historyList);
   completionIndex = -1;
+
+  savedCommand = [[NSMutableString alloc] init];
 
   return self;
 }
@@ -90,12 +90,18 @@
 
 - (void)runCommand:(id)sender
 {
+  NSString       *commandLine = [commandField stringValue];
   NSString       *commandPath = nil;
   NSMutableArray *commandArgs = nil;
   NSTask         *commandTask = nil;
 
+  if (!commandLine || [commandLine length] == 0 ||
+      [commandLine isEqualToString:@""]) {
+    return;
+  }
+
   commandArgs = [NSMutableArray 
-    arrayWithArray:[[commandField stringValue] componentsSeparatedByString:@" "]];
+                  arrayWithArray:[commandLine componentsSeparatedByString:@" "]];
   commandPath = [commandArgs objectAtIndex:0];
   [commandArgs removeObjectAtIndex:0];
 
@@ -110,8 +116,8 @@
   
   @try {
     [commandTask launch];
-    [wmHistory insertObject:[commandField stringValue] atIndex:0];
-    [wmHistory writeToFile:wmHistoryPath atomically:YES];
+    [historyList insertObject:[commandField stringValue] atIndex:0];
+    [self saveHistory];
   }
   @catch (NSException *exception) {
     NXRunAlertPanel(@"Run Command",
@@ -121,6 +127,71 @@
   @finally {
     [window close];
   }
+}
+
+// --- History file manipulations
+
+#define LIB_DIR    @"Library/Workspace"
+#define WM_LIB_DIR @"Library/WindowMaker"
+
+- (void)initHistory
+{
+  NSString 	*libPath;
+  NSString	*histPath;  
+  NSString	*wmHistPath;
+  NSFileManager	*fm = [NSFileManager defaultManager];
+  BOOL		isDir;
+
+  libPath = [NSHomeDirectory() stringByAppendingPathComponent:LIB_DIR];
+  histPath = [libPath stringByAppendingPathComponent:@"LauncherHistory"];
+  wmHistPath = [NSHomeDirectory()
+                   stringByAppendingFormat:@"/%@/History", WM_LIB_DIR];
+
+  // Create ~/Library/Workspace directory if not exsist
+  if ([fm fileExistsAtPath:libPath isDirectory:&isDir] == NO) {
+    if ([fm createDirectoryAtPath:libPath attributes:nil] == NO) {
+      NSLog(@"Failed to create library directory %@!", libPath);
+    }
+  }
+  else if ([fm fileExistsAtPath:histPath isDirectory:&isDir] != NO &&
+           isDir == NO) {
+    historyList = [[NSMutableArray alloc] initWithContentsOfFile:histPath];
+  }
+
+  // Load WindowMaker history
+  if (historyList == nil) {
+    historyList = [[NSMutableArray alloc] initWithContentsOfFile:wmHistPath];
+    if (historyList == nil) {
+      NSLog(@"Failed to load history file %@", wmHistPath);
+      historyList = [[NSMutableArray alloc] init];
+    }
+  }
+
+  [self saveHistory];
+}
+
+- (void)saveHistory
+{
+  NSString *historyPath;
+  NSString *latestCommand;
+  NSString *element;
+  NSUInteger elementsCount = [historyList count];
+  
+  // Remove duplicates
+  if (elementsCount > 1) {
+    latestCommand = [historyList objectAtIndex:0];
+    for (int i = 1; i < elementsCount; i++) {
+      element = [historyList objectAtIndex:i];
+      if ([element isEqualToString:latestCommand]) {
+        [historyList removeObjectAtIndex:i];
+        elementsCount--;
+      }
+    }
+  }
+  
+  historyPath = [NSHomeDirectory()
+                    stringByAppendingFormat:@"/%@/LauncherHistory", LIB_DIR];
+  [historyList writeToFile:historyPath atomically:YES];
 }
 
 // --- Utility
@@ -134,7 +205,7 @@
     return variants;
   }
 
-  NSLog(@"completionFor:%@", command);
+  // NSLog(@"completionFor:%@", command);
 
   // c_t = [command cString];
   // if ((c_t[0] == '/' ||
@@ -162,8 +233,6 @@
   if (commandVariants) [commandVariants release];
   commandVariants = [self completionFor:command];
 
-  NSLog(@"makeTabCompletion variants: %@", commandVariants);
-  
   if ([commandVariants count] > 0) {
     ASSIGN(completionSource, commandVariants);
     [completionList reloadColumn:0];
@@ -178,7 +247,7 @@
     [fieldEditor setSelectedRange:NSMakeRange(selLocation, selLength)];
   }
   else {
-    ASSIGN(completionSource, wmHistory);
+    ASSIGN(completionSource, historyList);
     [completionList reloadColumn:0];
     [completionList setTitle:@"History" ofColumn:0];
     completionIndex = -1;
@@ -190,14 +259,27 @@
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
   NSTextField *field = [aNotification object];
-
-  NSLog(@"Text DID change");
+  NSString    *text;
 
   if (field != commandField ||![field isKindOfClass:[NSTextField class]]) {
     return;
   }
 
-  [self makeCompletion];
+  // Do not make completion if text in field was shrinked
+  text = [field stringValue];
+  if ([text length] > [savedCommand length]) {
+    [self makeCompletion];
+  }
+  [savedCommand setString:text];
+
+  if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ') {
+    [runInTerminal setEnabled:NO];
+    [runButton setEnabled:NO];
+  }
+  else {
+    [runInTerminal setEnabled:YES];
+    [runButton setEnabled:YES];
+  }
 }
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
 {
@@ -234,6 +316,22 @@
       NSRange selectedRange = [text selectedRange];
       if (selectedRange.length > 0) {
         [text replaceRange:selectedRange withString:@""];
+      }
+
+      if ([[commandField stringValue] length] > 0) {
+        ASSIGN(completionSource, historyList);
+        if (commandVariants) [commandVariants release];
+        commandVariants = [self completionFor:[commandField stringValue]];
+        ASSIGN(completionSource, commandVariants);
+        [completionList reloadColumn:0];
+        [completionList setTitle:@"Completion" ofColumn:0];
+        completionIndex = -1;
+      }
+      else {
+        ASSIGN(completionSource, historyList);
+        [completionList reloadColumn:0];
+        [completionList setTitle:@"History" ofColumn:0];
+        completionIndex = -1;
       }
     }
   default:

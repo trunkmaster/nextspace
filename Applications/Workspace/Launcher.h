@@ -8,17 +8,20 @@
   id commandField;
   id runInTerminal;
   id completionList;
+  id runButton;
 
+  NSMutableString *savedCommand;
+  NSMutableArray  *historyList;
+  
   NSArray   *completionSource;
   NSArray   *commandVariants;
-  NSInteger completionIndex;
-  
-  NSString       *wmHistoryPath;
-  NSMutableArray *wmHistory;
-
+  NSInteger completionIndex;  
 }
 
 - (void)activate;
 - (void)deactivate;
+
+- (void)initHistory;
+- (void)saveHistory;
 
 @end
