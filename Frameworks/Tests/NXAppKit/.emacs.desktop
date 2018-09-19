@@ -2,12 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Wed Jun  6 18:00:08 2018
+;; Created Mon Aug 27 18:32:12 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
 ;; Global section:
-(setq default-directory "~/Developer/nextspace/Frameworks/Tests/NXAppKit/")
+(setq default-directory "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
@@ -17,6 +17,17 @@
 (setq file-name-history '("~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconView.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/CursorsTest.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Documentation/OpenStep Confusion.md" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m"
+  "AppController.m"
+  'objc-mode
+  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  5763
+  '(5544 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m"
   "IconViewTest.m"
@@ -35,17 +46,6 @@
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
   577
   '(182 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m"
-  "AppController.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  5647
-  '(5759 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))

@@ -1,13 +1,13 @@
 {\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f0\fswiss Helvetica;\f2\fnil Terminus;\f1\froman Times;}
-\paperw13040\paperh11240\hyphauto1\hyphfactor0\f0\fs24\pard\ql Source: http://wiki.gnustep.org/index.php/Nfont_packages\par
+{\colortbl;\red0\green0\blue0;}
+\paperw12860\paperh11240\hyphauto1\hyphfactor0\f0\fs22\pard\ql Source: http://wiki.gnustep.org/index.php/Nfont_packages\fs24 \par
 \fs36 \par
-\pard\ql\f1\fs88\i\pard\tx2020\tx2400\ql Nfonts packages\f0\fs24\i0 \par
+\pard\ql\f1\fs88\i\pard\tx2020\tx2400\ql Font bundles\f0\fs24\i0\cf1 \par
 \par
-\f1\fs28 The Arts backend manages fonts using so-called nfonts.\par
-\pard\ql\pard\tx0\tx1940\ql Nfonts are hand-crafted directories with a plist file and the font files, where the backend can find additional information to the fonts.\par
-\pard\ql\pard\tx2020\tx2400\ql System-wide available Nfont directories are usually installed to $GNUSTEP_SYSTEM_ROOT/Library/Fonts/.\par
-\par
-Creating a nfont is mainly a trivial task, so there are tools to help you creating them. One of them is alexm\rquote s mknfonts package.\f0\fs24 \par
+\f1\fs28 The Art backend manages fonts using bundle with \b .nfont\b0  extension.\par
+\pard\ql\pard\tx0\tx1940\ql These \i font bundles\i0  are hand-crafted directories with a \b FontInfo.plist\b0  file and the font files, where the backend can find additional information to the fonts. System-wide available font bundles are installed to /Library/Fonts.\par
+\pard\ql\pard\tx2020\tx2400\ql \par
+Creating a font bundle is mainly a trivial task, so there are tools to help you creating them. One of them is alexm\rquote s \f2\fs24 mknfonts\f1\fs28  package.\f0\fs24 \par
 \pard\ql\pard\ql \par
 \fs52\b Example\fs24\b0 \par
 \par
@@ -128,5 +128,6 @@ Arial.nfont/arialblk.ttf\par
 \par
 \fs48\b Rendering Hint example\fs24\b0 \par
 \par
-\f1\fs28 Let\rquote s say we have a \i RenderHints_hack\i0  value of \f2\fs24 0x010203\f1\fs28 . This would then mean "use antialiasing, on antialiased displays use instructions in the font and on unantialiased displays force automatic hinting".\f0\fs24 \par
+\f1\fs28 Let\rquote s say we have a \i RenderHints_hack\i0  value of \f2\fs24 0x010203\f1\fs28 . \par
+This would then mean "use antialiasing, on antialiased displays use instructions in the font and on unantialiased displays force automatic hinting".\f0\fs24 \par
 }
