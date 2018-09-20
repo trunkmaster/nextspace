@@ -40,12 +40,15 @@
   [window release];
   [savedCommand release];
   [historyList release];
+  [searchPaths release];
   
   [super dealloc];
 }
 
 - init
 {
+  NSString *envPath;
+  
   [super init];
   
   [self initHistory];
@@ -53,7 +56,10 @@
   completionIndex = -1;
 
   savedCommand = [[NSMutableString alloc] init];
-
+  
+  envPath = [[[NSProcessInfo processInfo] environment] objectForKey:@"PATH"];
+  searchPaths = [[NSArray alloc]
+                  initWithArray:[envPath componentsSeparatedByString:@":"]];
   return self;
 }
 
@@ -110,9 +116,6 @@
   commandTask = [NSTask new];
   [commandTask setArguments:commandArgs];
   [commandTask setLaunchPath:commandPath];
-//  [commandTask setStandardOutput:[NSFileHandle fileHandleWithStandardOutput]];
-//  [commandTask setStandardError:[NSFileHandle fileHandleWithStandardError]];
-//  [commandTask setStandardInput:[NSFileHandle fileHandleWithNullDevice]];
   
   @try {
     [commandTask launch];
@@ -199,7 +202,12 @@
 - (NSArray *)completionFor:(NSString *)command
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
+  NSFileManager  *fm = [NSFileManager defaultManager];
+  NSArray        *dirContents;
   const char     *c_t;
+  BOOL           includeDirs = NO;
+  NSString       *absPath;
+  BOOL           isDir;
 
   if (!command || [command length] == 0 || [command isEqualToString:@""]) {
     return variants;
@@ -207,16 +215,58 @@
 
   // NSLog(@"completionFor:%@", command);
 
-  // c_t = [command cString];
-  // if ((c_t[0] == '/' ||
-  //      ([command length] > 1 &&
-  //       c_t[1] == '/' && (c_t[0] == '.' || c_t[0] == '~')))) {
-  //   NSLog(@"Do filesystem scan for completion.");
-  // }
-  
-  for (NSString *compElement in completionSource) {
+  // Go through the history first
+  for (NSString *compElement in historyList) {
     if ([compElement rangeOfString:command].location == 0) {
       [variants addObject:compElement];
+    }
+  }
+
+  c_t = [command cString];
+  if (c_t[0] == '/') {
+    includeDirs = YES;
+  }
+  if ([command length] > 1) {
+    if (c_t[0] == '.' && c_t[1] == '/') {
+      command = [command stringByReplacingCharactersInRange:NSMakeRange(0,2)
+                                                 withString:NSHomeDirectory()];
+      includeDirs = YES;
+    }
+    if (c_t[0] == '~') {
+      command = [command stringByReplacingCharactersInRange:NSMakeRange(0,1)
+                                                 withString:NSHomeDirectory()];
+      includeDirs = YES;
+    }
+  }
+
+  if (includeDirs) {
+    NSString *commandBase = [NSString stringWithString:command];
+    // Do filesystem scan
+    while ([fm fileExistsAtPath:commandBase isDirectory:&isDir] == NO) {
+      commandBase = [commandBase stringByDeletingLastPathComponent];
+    }
+    dirContents = [fm directoryContentsAtPath:commandBase];
+    for (NSString *file in dirContents) {
+      absPath = [commandBase stringByAppendingPathComponent:file];
+      if ([absPath rangeOfString:command].location == 0) {
+        if ([fm isExecutableFileAtPath:absPath]) {
+          [variants addObject:absPath];
+        }
+      }
+    }
+  }
+  else {
+    // Gor through the $PATH directories
+    for (NSString *dir in searchPaths) {
+      dirContents = [fm directoryContentsAtPath:dir];
+      for (NSString *file in dirContents) {
+        if ([file rangeOfString:command].location == 0) {
+          absPath = [dir stringByAppendingPathComponent:file];
+          if ([fm isExecutableFileAtPath:absPath]) {
+            [variants addObject:file];
+          }
+        }
+      }
     }
   }
   
@@ -254,12 +304,29 @@
   }
 }
 
+- (void)updateButtonsState
+{
+  NSFileManager  *fm = [NSFileManager defaultManager];
+  BOOL           isDir;
+  NSString       *text = [commandField stringValue];
+  BOOL           isEnabled = YES;
+  
+  if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ')
+    isEnabled = NO;
+  else if ([text characterAtIndex:0] == '/' &&
+           (![fm fileExistsAtPath:text isDirectory:&isDir] || isDir)) {
+    isEnabled = NO;
+  }
+  [runInTerminal setEnabled:isEnabled];
+  [runButton setEnabled:isEnabled];
+}
+
 // --- Command text field delegate
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  NSTextField *field = [aNotification object];
-  NSString    *text;
+  NSTextField    *field = [aNotification object];
+  NSString       *text;
 
   if (field != commandField ||![field isKindOfClass:[NSTextField class]]) {
     return;
@@ -270,16 +337,9 @@
   if ([text length] > [savedCommand length]) {
     [self makeCompletion];
   }
-  [savedCommand setString:text];
 
-  if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ') {
-    [runInTerminal setEnabled:NO];
-    [runButton setEnabled:NO];
-  }
-  else {
-    [runInTerminal setEnabled:YES];
-    [runButton setEnabled:YES];
-  }
+  [savedCommand setString:text];
+  [self updateButtonsState];
 }
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
 {
@@ -294,6 +354,7 @@
     }
     [commandField setStringValue:[completionSource objectAtIndex:completionIndex]];
     [completionList selectRow:completionIndex inColumn:0];
+    [self updateButtonsState];
     break;
   case NSDownArrowFunctionKey:
     // NSLog(@"WMCommandField key: Down");
@@ -307,6 +368,7 @@
       [commandField setStringValue:@""];
       [completionList reloadColumn:0];
     }
+    [self updateButtonsState];
     break;
   case NSDeleteFunctionKey:
   case NSDeleteCharacter:
@@ -333,7 +395,12 @@
         [completionList setTitle:@"History" ofColumn:0];
         completionIndex = -1;
       }
+      [self updateButtonsState];
     }
+  case NSTabCharacter:
+    [[window fieldEditor:NO forObject:commandField]
+        setSelectedRange:NSMakeRange([[commandField stringValue] length], 0)];
+    break;
   default:
     break;
   }

@@ -10,6 +10,7 @@
   id completionList;
   id runButton;
 
+  NSArray         *searchPaths;
   NSMutableString *savedCommand;
   NSMutableArray  *historyList;
   
@@ -23,5 +24,6 @@
 
 - (void)initHistory;
 - (void)saveHistory;
+- (void)updateButtonsState;
 
 @end
