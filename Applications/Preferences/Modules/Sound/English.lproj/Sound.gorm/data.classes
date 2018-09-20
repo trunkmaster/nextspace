@@ -32,10 +32,10 @@
 	    micBalance,
 	    micLevel,
 	    muteButton,
-	    beepVisualRadio,
 	    voiceAlertsButton,
 	    volumeBalance,
-	    volumeLevel
+	    volumeLevel,
+	    muteMicButton
 	);
 	Super = NSObject;
     };
