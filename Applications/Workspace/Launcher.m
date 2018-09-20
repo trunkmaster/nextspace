@@ -106,6 +106,15 @@
     return;
   }
 
+  if (isRunInTerminal) {
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    
+    [pb declareTypes:@[NSStringPboardType] owner:nil];
+    [pb setString:commandLine forType:NSStringPboardType];
+    
+    NSPerformService(@"Terminal/Run Command", pb);
+  }
+
   commandArgs = [NSMutableArray 
                   arrayWithArray:[commandLine componentsSeparatedByString:@" "]];
   commandPath = [commandArgs objectAtIndex:0];
@@ -130,6 +139,14 @@
   @finally {
     [window close];
   }
+}
+
+- (void)runInTerminal:(id)sender
+{
+  if (sender != runInTerminal)
+    return;
+  
+  isRunInTerminal = [sender state];
 }
 
 // --- History file manipulations

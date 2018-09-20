@@ -16,7 +16,9 @@
   
   NSArray   *completionSource;
   NSArray   *commandVariants;
-  NSInteger completionIndex;  
+  NSInteger completionIndex;
+
+  BOOL isRunInTerminal;
 }
 
 - (void)activate;
