@@ -73,9 +73,11 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
    also invokes adjustToFitIcons. */
 - (void)checkWrapDown;
 
-/* Invokes updateSelectionWithIcons:modifierFlags:with a single icon. */
+/* Invokes updateSelectionWithIcons:modifierFlags:with a single icon. 
+   Returns selection rectangle.
+ */
 - (void)updateSelectionWithIcon:(NXIcon *)anIcon
-       		  modifierFlags:(unsigned)flags;
+                  modifierFlags:(unsigned)flags;
 
 /* Changes the selection of icons.
 
@@ -85,7 +87,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
    @param flags Keyboard modifier flags which change the operation
    type. See NXIconSelectionMode. */
 - (void)updateSelectionWithIcons:(NSSet *)someIcons
-       		   modifierFlags:(unsigned)flags;
+                   modifierFlags:(unsigned)flags;
 
 @end
 
@@ -904,6 +906,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
                                    !(flags & NSCommandKeyMask));
   NXIcon     *icon = nil;
   NXIconSlot nextIcon = selectedIconSlot;
+  NSRect     selRect = NSMakeRect(0,0,0,0);
 
   NSLog(@"[NXIconView] keyDown: %c (%x) modifiers: %lu slot: %i.%i",
         c, c,flags, selectedIconSlot.x, selectedIconSlot.y);
@@ -947,14 +950,15 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
             nextIcon.x++;
           }
         }
-        break;
       }
-      for (nextIcon.y--; nextIcon.y >= 0; nextIcon.y--) {
-        icon = [self iconInSlot:nextIcon];
-        if (icon != nil) {
-          [self updateSelectionWithIcon:icon modifierFlags:flags];
-          selectedIconSlot = nextIcon;
-          break;
+      else {
+        for (nextIcon.y--; nextIcon.y >= 0; nextIcon.y--) {
+          icon = [self iconInSlot:nextIcon];
+          if (icon != nil) {
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            selectedIconSlot = nextIcon;
+            break;
+          }
         }
       }
       break;
@@ -971,15 +975,16 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
             nextIcon.x++;
           }
         }
-        break;
       }
-      if (nextIcon.x == -1) nextIcon.x = 0;
-      for (nextIcon.y++;(unsigned) nextIcon.y < slotsTall; nextIcon.y++) {
-        icon = [self iconInSlot:nextIcon];
-        if (icon != nil) {
-          [self updateSelectionWithIcon:icon modifierFlags:flags];
-          selectedIconSlot = nextIcon;
-          break;
+      else {
+        if (nextIcon.x == -1) nextIcon.x = 0;
+        for (nextIcon.y++;(unsigned) nextIcon.y <= slotsTall; nextIcon.y++) {
+          icon = [self iconInSlot:nextIcon];
+          if (icon != nil) {
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            selectedIconSlot = nextIcon;
+            break;
+          }
         }
       }
       break;
@@ -996,15 +1001,16 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
             nextIcon.y++;
           }
         }
-        break;
       }
-      if (nextIcon.y == -1) nextIcon.y = 0;
-      for (nextIcon.x--; nextIcon.x >= 0; nextIcon.x--) {
-        icon = [self iconInSlot:nextIcon];
-        if (icon != nil) {
-          [self updateSelectionWithIcon:icon modifierFlags:flags];
-          selectedIconSlot = nextIcon;
-          break;
+      else {
+        if (nextIcon.y == -1) nextIcon.y = 0;
+        for (nextIcon.x--; nextIcon.x >= 0; nextIcon.x--) {
+          icon = [self iconInSlot:nextIcon];
+          if (icon != nil) {
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            selectedIconSlot = nextIcon;
+            break;
+          }
         }
       }
       break;
@@ -1021,15 +1027,16 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
             nextIcon.y++;
           }
         }
-        break;
       }
-      if (nextIcon.y == -1) nextIcon.y = 0;
-      for (nextIcon.x++; (unsigned)nextIcon.x < slotsWide; nextIcon.x++) {
-        icon = [self iconInSlot:nextIcon];
-        if (icon != nil) {
-          [self updateSelectionWithIcon:icon modifierFlags:flags];
-          selectedIconSlot = nextIcon;
-          break;
+      else {
+        if (nextIcon.y == -1) nextIcon.y = 0;
+        for (nextIcon.x++; (unsigned)nextIcon.x < slotsWide; nextIcon.x++) {
+          icon = [self iconInSlot:nextIcon];
+          if (icon != nil) {
+            [self updateSelectionWithIcon:icon modifierFlags:flags];
+            selectedIconSlot = nextIcon;
+            break;
+          }
         }
       }
       break;
@@ -1437,17 +1444,18 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 }
 
 - (void)updateSelectionWithIcon:(NXIcon *)anIcon
-       		  modifierFlags:(unsigned)flags
+                  modifierFlags:(unsigned)flags
 {
-  [self updateSelectionWithIcons:[NSSet setWithObject:anIcon]
-		   modifierFlags:flags];
+  return [self updateSelectionWithIcons:[NSSet setWithObject:anIcon]
+                          modifierFlags:flags];
 }
 
 - (void)updateSelectionWithIcons:(NSSet *)someIcons
-		   modifierFlags:(unsigned)flags
+                   modifierFlags:(unsigned)flags
 {
   NXIconSelectionMode mode;
   SEL                 shouldSelectIconsSEL;
+  NSRect              r = NSMakeRect(0,0,0,0);
 
   // if passed a nil argument, assume as if it were an empty set
   if (someIcons == nil) {
@@ -1528,8 +1536,9 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   }
 
   if ([selectedIcons count] > 0) {
-    NSRect     r = NSMakeRect(0,0,0,0);
     NXIconSlot lastSlot = NXMakeIconSlot(INT_MAX,INT_MAX), newSlot;
+    NXIconSlot minOldSlot = NXMakeIconSlot(minSelectedIconSlot.x, minSelectedIconSlot.y);
+    NXIconSlot maxOldSlot = NXMakeIconSlot(maxSelectedIconSlot.x, maxSelectedIconSlot.y);
 
     minSelectedIconSlot = NXMakeIconSlot(INT_MAX,INT_MAX);
     maxSelectedIconSlot = NXMakeIconSlot(0,0);
@@ -1548,15 +1557,30 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
         r = NSUnionRect(r, NSUnionRect([icon frame], [[icon label] frame]));
       }
     }
-    // NSLog(@"[NXIconView] top left slot: (%i, %i) bottom right: (%i, %i)",
-    //       minSelectedIconSlot.x, minSelectedIconSlot.y,
-    //       maxSelectedIconSlot.x, maxSelectedIconSlot.y);
-    if (r.origin.y < slotSize.height) {
-      r.origin.y = 0;
+    NSLog(@"[NXIconView] top left slot: (%i, %i) bottom right: (%i, %i)",
+          minSelectedIconSlot.x, minSelectedIconSlot.y,
+          maxSelectedIconSlot.x, maxSelectedIconSlot.y);
+    NSRect f = [[self enclosingScrollView] documentVisibleRect];
+      
+    if (minOldSlot.y > minSelectedIconSlot.y) { // going up
+      if (r.size.height > f.size.height) {
+        r.origin.y -= r.size.height - f.size.height;
+        // r.size.height = f.size.height;
+      }
+      if (r.origin.y < slotSize.height) {
+        r.origin.y = 0;
+      }
     }
-    else if (_frame.size.height - (r.origin.y + r.size.height) < slotSize.height) {
-      r.origin.y = _frame.size.height - r.size.height;
+    else if (maxOldSlot.y < maxSelectedIconSlot.y) { // going down
+      if (_frame.size.height - (r.origin.y + r.size.height) < slotSize.height) {
+        r.origin.y = _frame.size.height - f.size.height;
+      }
+      else if (r.size.height > f.size.height) {
+        r.origin.y += r.size.height - f.size.height;
+        // r.size.height -= f.size.height;
+      }
     }
+    
     [self scrollRectToVisible:r];
   }
   else {
