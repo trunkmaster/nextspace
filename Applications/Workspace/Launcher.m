@@ -111,7 +111,7 @@
     if (proxy != nil) {
       if ([proxy respondsToSelector:@selector(runProgram:)]) {
         @try {
-          [proxy runProgram:commandLine];
+          [proxy performSelector:@selector(runProgram) withObject:commandLine];
           [historyList insertObject:[commandField stringValue] atIndex:0];
           [self saveHistory];
         }
