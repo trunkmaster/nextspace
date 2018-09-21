@@ -109,18 +109,20 @@
   if (isRunInTerminal) {
     id proxy = GSContactApplication(@"Terminal", nil, nil);
     if (proxy != nil) {
-      @try {
-        [proxy runProgram:commandLine];
-        [historyList insertObject:[commandField stringValue] atIndex:0];
-        [self saveHistory];
-      }
-      @catch (NSException *exception) {
-        NXRunAlertPanel(@"Run Command",
-                        @"Run command failed with exception: \'%@\'", 
-                        @"Close", nil, nil, [exception reason]);
-      }
-      @finally {
-        [window close];
+      if ([proxy respondsToSelector:@selector(runProgram:)]) {
+        @try {
+          [proxy runProgram:commandLine];
+          [historyList insertObject:[commandField stringValue] atIndex:0];
+          [self saveHistory];
+        }
+        @catch (NSException *exception) {
+          NXRunAlertPanel(@"Run Command",
+                          @"Run command failed with exception: \'%@\'", 
+                          @"Close", nil, nil, [exception reason]);
+        }
+        @finally {
+          [window close];
+        }
       }
     }
     return;
