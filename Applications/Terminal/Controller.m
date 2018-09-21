@@ -959,6 +959,37 @@
   [fileDict release];
 }
 
+- (void)runProgram:(NSString *)commandLine
+{
+  NSMutableArray *args;
+  NSString       *prog;
+  TerminalWindowController *twc;
+  Defaults     *prefs;
+  
+  args = [NSMutableArray
+           arrayWithArray:[commandLine componentsSeparatedByString:@" "]];
+  prog = [args objectAtIndex:0];
+  [args removeObjectAtIndex:0];
+  
+  twc = [self idleTerminalWindow];
+  if (twc != nil) {
+    [[twc terminalView] runProgram:prog withArguments:args initialInput:nil];
+  }
+  else {
+    twc = [self newWindowWithProgram:prog arguments:args input:nil];
+  }
+
+  // Set close behaviour
+  prefs = [[Defaults alloc] initEmpty];
+  [prefs setWindowCloseBehavior:WindowCloseNever];
+  [[NSNotificationCenter defaultCenter]
+       postNotificationName:TerminalPreferencesDidChangeNotification
+                     object:[twc window]
+                   userInfo:@{@"Preferences":prefs}];
+  
+  [[twc window] makeKeyAndOrderFront:self];
+}
+
 //-----------------------------------------------------------------------------
 // Preferences and sessions
 //---
