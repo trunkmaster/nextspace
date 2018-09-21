@@ -184,12 +184,6 @@ static NSDictionary *servicesDictionary = nil;
 {
   NSDictionary *d;
 
-  if ([name isEqualToString:@"Run Command"]) {
-    return @{@"AcceptTypes":@"1", @"Commandline":@"%s",
-        @"ExecInShell":@"1", @"ExecType":@"1", @"Input":@"2",
-        @"Key":@"", @"ReturnData":@"0", @"WindowType":@"0"};
-  }
-  
   d = [[TerminalServices terminalServicesDictionary] objectForKey:name];
   
   if (!d || ![d isKindOfClass:[NSDictionary class]])
