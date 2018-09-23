@@ -54,7 +54,7 @@
 
 @interface IconViewer : NSObject <Viewer>
 {
-  id <FileViewer> _owner;
+  FileViewer   *_owner;
 
   NSScrollView *view;
   WMIconView   *iconView;

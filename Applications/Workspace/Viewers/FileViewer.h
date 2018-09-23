@@ -35,18 +35,7 @@
 
 @class NXIconView, NXIcon, NXIconLabel;
 
-@protocol FileViewer
-- (NSArray *)directoryContentsAtPath:(NSString *)relPath
-                             forPath:(NSString *)targetPath;
-- (void)displayPath:(NSString *)aPath
-       	  selection:(NSArray *)filenames
-  	     sender:(id)sender;
-- (void)scrollDisplayToRange:(NSRange)visibleRange;
-- (void)open:sender;
-- (BOOL)viewerRenamedCurrentFileTo:(NSString *)newName;
-@end
-
-@interface FileViewer : NSObject <FileViewer>
+@interface FileViewer : NSObject
 {
   NSString *rootPath;
   NSString *displayedPath;
@@ -112,6 +101,8 @@
 - (NSString *)absolutePathFromPath:(NSString *)relPath;
 - (NSString *)pathFromAbsolutePath:(NSString *)absolutePath;
 - (NSArray *)absolutePathsForPaths:(NSArray *)relPaths;
+- (NSArray *)directoryContentsAtPath:(NSString *)relPath
+                             forPath:(NSString *)targetPath;
 
 //=============================================================================
 // Actions

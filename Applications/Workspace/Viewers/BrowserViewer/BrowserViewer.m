@@ -278,7 +278,7 @@
   return [view matrixInColumn:[view selectedColumn]];
 }
 
-- (void)setOwner:(id <FileViewer,NSObject>)theOwner
+- (void)setOwner:(FileViewer *)theOwner
 {
   ASSIGN(owner, theOwner);
 }
@@ -417,6 +417,8 @@
       return;
     }
 
+  [owner setWindowEdited:YES];
+  
   // remove a trailing "/" character
   if (length > 1 && [dirPath characterAtIndex:length-1] == '/')
     {
@@ -453,6 +455,8 @@
     }
 
   [self ensureBrowserHasEmptyColumn];
+  
+  [owner setWindowEdited:NO];
 }
 
 - (void)scrollToRange:(NSRange)range
