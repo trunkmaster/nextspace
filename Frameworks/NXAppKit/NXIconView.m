@@ -1455,7 +1455,6 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 {
   NXIconSelectionMode mode;
   SEL                 shouldSelectIconsSEL;
-  NSRect              r = NSMakeRect(0,0,0,0);
 
   // if passed a nil argument, assume as if it were an empty set
   if (someIcons == nil) {
@@ -1536,6 +1535,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   }
 
   if ([selectedIcons count] > 0) {
+    NSRect     r = NSMakeRect(0,0,0,0);
     NXIconSlot lastSlot = NXMakeIconSlot(INT_MAX,INT_MAX), newSlot;
     NXIconSlot minOldSlot = NXMakeIconSlot(minSelectedIconSlot.x, minSelectedIconSlot.y);
     NXIconSlot maxOldSlot = NXMakeIconSlot(maxSelectedIconSlot.x, maxSelectedIconSlot.y);
@@ -1548,37 +1548,51 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
         if (newSlot.y < lastSlot.y || newSlot.x < lastSlot.x) {
           selectedIconSlot = newSlot;
         }
-        if (newSlot.y < minSelectedIconSlot.y || newSlot.x < minSelectedIconSlot.x) {
+        if (newSlot.y < minSelectedIconSlot.y) {
           minSelectedIconSlot = newSlot;
         }
-        if (newSlot.y > maxSelectedIconSlot.y || newSlot.x > maxSelectedIconSlot.x) {
+        if (newSlot.y > maxSelectedIconSlot.y) {
           maxSelectedIconSlot = newSlot;
+        }
+        else if (newSlot.y == maxSelectedIconSlot.y && newSlot.x > maxSelectedIconSlot.x) {
+          maxSelectedIconSlot = newSlot;
+        }
+        else if (newSlot.y == minSelectedIconSlot.y && newSlot.x < minSelectedIconSlot.x) {
+          minSelectedIconSlot = newSlot;
         }
         r = NSUnionRect(r, NSUnionRect([icon frame], [[icon label] frame]));
       }
     }
-    NSLog(@"[NXIconView] top left slot: (%i, %i) bottom right: (%i, %i)",
-          minSelectedIconSlot.x, minSelectedIconSlot.y,
-          maxSelectedIconSlot.x, maxSelectedIconSlot.y);
+    // NSLog(@"[NXIconView] top left slot: (%i, %i) bottom right: (%i, %i)",
+    //       minSelectedIconSlot.x, minSelectedIconSlot.y,
+    //       maxSelectedIconSlot.x, maxSelectedIconSlot.y);
     NSRect f = [[self enclosingScrollView] documentVisibleRect];
       
-    if (minOldSlot.y > minSelectedIconSlot.y) { // going up
+    if (minOldSlot.y >= minSelectedIconSlot.y) { // Shift+UpArrow or UpArrow
+      // NSLog(@"===>>> Up");
       if (r.size.height > f.size.height) {
-        r.origin.y -= r.size.height - f.size.height;
-        // r.size.height = f.size.height;
+        r.origin.y = [[self iconInSlot:minSelectedIconSlot] frame].origin.y;
+        r.size.height = f.size.height;
       }
-      if (r.origin.y < slotSize.height) {
+      if (r.origin.y < slotSize.height) { // first row
         r.origin.y = 0;
       }
     }
-    else if (maxOldSlot.y < maxSelectedIconSlot.y) { // going down
-      if (_frame.size.height - (r.origin.y + r.size.height) < slotSize.height) {
-        r.origin.y = _frame.size.height - f.size.height;
+    else if (maxOldSlot.y < maxSelectedIconSlot.y) { // Shift+Down or DownArrow
+      // NSLog(@"===>>> Down");
+      if (maxSelectedIconSlot.y == slotsTall-1) {
+        NXIcon *icon = [self iconInSlot:maxSelectedIconSlot];
+        r.origin.y = [icon frame].origin.y;
+        r.size.height = slotSize.height + 5;
       }
-      else if (r.size.height > f.size.height) {
-        r.origin.y += r.size.height - f.size.height;
-        // r.size.height -= f.size.height;
+      if (r.size.height > f.size.height) {
+        r.origin.y += (r.size.height - f.size.height);
       }
+    }
+    else { // single icon click, End - last row
+      // NSLog(@"===>>> Single Icon");
+      r.origin.y = [[self iconInSlot:maxSelectedIconSlot] frame].origin.y;
+      r.size.height = slotSize.height;
     }
     
     [self scrollRectToVisible:r];
@@ -1586,6 +1600,8 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   else {
     selectedIconSlot.x = -1;
     selectedIconSlot.y = -1;
+    minSelectedIconSlot = NXMakeIconSlot(0,0);
+    maxSelectedIconSlot = NXMakeIconSlot(0,slotsTall-1);
   }
 
   if ([delegate respondsToSelector:@selector(iconView:didChangeSelectionTo:)]) {
