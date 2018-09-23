@@ -20,8 +20,7 @@
 
 @class NSView, NSString, NSArray;
 
-@protocol FileViewer;
-@protocol FileSystemInterface;
+@class FileViewer;
 
 #import <Foundation/NSObject.h>
 
@@ -34,7 +33,7 @@
 - (NSView *)view;
 - (NSView *)keyView;
 
-- (void)setOwner:(id <FileViewer>)owner;
+- (void)setOwner:(FileViewer *)owner;
 - (void)setRootPath:(NSString *)rootPath;
 - (NSString *)fullPath;
 

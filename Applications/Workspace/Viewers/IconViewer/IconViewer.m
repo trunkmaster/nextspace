@@ -327,7 +327,7 @@ static NSRect viewFrame;
   return iconView;
 }
 
-- (void)setOwner:(id <FileViewer,NSObject>)owner
+- (void)setOwner:(FileViewer *)owner
 {
   ASSIGN(_owner, owner);
 }
@@ -411,6 +411,7 @@ static NSRect viewFrame;
                    options:0
                    context:self];
   [operationQ addOperation:itemsLoader];
+  [_owner setWindowEdited:YES];
 }
 - (void)reloadPathWithSelection:(NSString *)relativePath
 {
@@ -520,6 +521,7 @@ static NSRect viewFrame;
                              withObject:nil
                           waitUntilDone:YES];
   [[view window] makeFirstResponder:iconView];
+  [_owner setWindowEdited:NO];
   updateOnDisplay = NO;
   doAnimation = NO;
 }
@@ -707,7 +709,7 @@ static NSRect viewFrame;
   [_dragIcon setDimmed:YES];
 
   paths = [_dragIcon paths];
-  _dragMask = [(FileViewer *)_owner draggingSourceOperationMaskForPaths:paths];
+  _dragMask = [_owner draggingSourceOperationMaskForPaths:paths];
 
   [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
   [pb setPropertyList:paths forType:NSFilenamesPboardType];
