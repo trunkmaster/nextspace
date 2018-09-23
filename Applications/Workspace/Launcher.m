@@ -72,6 +72,8 @@
   [completionList setTitle:@"History" ofColumn:0];
   [completionList scrollColumnToVisible:0];
   [completionList setRefusesFirstResponder:YES];
+  [completionList setTarget:self];
+  [completionList setAction:@selector(listItemClicked:)];
 }
 
 - (void)activate
@@ -453,6 +455,20 @@
     [cell setTitle:variant];
     [cell setRefusesFirstResponder:YES];
   }
+}
+
+- (void)listItemClicked:(id)sender
+{
+  NSInteger selRow;
+
+  if (sender != completionList)
+    return;
+  
+  completionIndex = [sender selectedRowInColumn:0];
+  [commandField setStringValue:[completionSource objectAtIndex:completionIndex]];
+  [self updateButtonsState];
+  
+  [window makeFirstResponder:commandField];
 }
 
 @end
