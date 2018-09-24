@@ -18,17 +18,6 @@
 {
   // Should be implemented by delegate
 }
-// - (BOOL)textShouldEndEditing:(NSText *)textObject
-// {
-//   return NO;
-// }
-// - (void)selectText:(id)sender
-// {
-//   // Do nothing to prevent selection flickering
-//   NSText *text = [_window fieldEditor:YES forObject:self];
-//   [_cell setUpFieldEditorAttributes:text];
-//   // [super selectText:self];
-// }
 @end
 
 @implementation Launcher
