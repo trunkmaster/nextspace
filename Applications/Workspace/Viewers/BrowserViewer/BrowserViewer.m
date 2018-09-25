@@ -76,6 +76,22 @@
     }
 }
 
+- (void)keyUp:(NSEvent *)event
+{
+  NSLog(@"[BrowserMatrix] keyUp");
+}
+- (void)keyDown:(NSEvent *)event
+{
+  NSLog(@"[BrowserMatrix] keyDown");
+  // event = [[self window] nextEventMatchingMask:(NSKeyDownMask|NSKeyUpMask)];
+  while ([event type] != NSKeyUp) {
+    NSLog(@"keyDown");
+    event = [[self window] nextEventMatchingMask:NSAnyEventMask];
+  }
+  NSLog(@"[BrowserMatrix] keyDown - END (%lu - %i | %i)",
+        [event type], NSKeyUp, NSKeyDown);
+}
+
 /*- (void)copy:(id)senderPath
 {
   // Shortcut-based Copy/Move file operaion

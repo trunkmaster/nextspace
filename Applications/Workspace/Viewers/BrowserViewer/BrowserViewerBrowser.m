@@ -53,31 +53,55 @@ static NSTimer *clickTimer = nil;
   clickTimer = nil;
 }
 
+// - (void)keyUp:(NSEvent *)ev
+// {
+//   NSString   *characters = [ev characters];
+//   NSUInteger charsLength = [characters length];
+//   unichar    ch = 0;
+
+//   if (charsLength > 0) {
+//     ch = [characters characterAtIndex:0];
+//   }
+//   if (ch == NSUpArrowFunctionKey) {
+//     NSLog(@"keyUp: UpArrow");
+//     return;
+//   }
+//   else if (ch == NSDownArrowFunctionKey) {
+//     NSLog(@"keyUp: DownArrow");
+//     return;
+//   }
+// }
+
 - (void)keyDown:(NSEvent *)ev
 {
   NSString   *characters = [ev characters];
   NSUInteger charsLength = [characters length];
   unichar    ch = 0;
 
-  if (charsLength > 0)
-    {
-      ch = [characters characterAtIndex:0];
-    }
+  if (charsLength > 0) {
+    ch = [characters characterAtIndex:0];
+  }
   
   NSLog(@"%c", ch);
 
   if (ch == NSCarriageReturnCharacter ||
       ch == NSNewlineCharacter ||
-      ch == NSEnterCharacter)
-    {
-      [self doDoubleClick:nil];
-      return;
-    }
+      ch == NSEnterCharacter) {
+    [self doDoubleClick:nil];
+    return;
+  }
   else if (ch == NSRightArrowFunctionKey && 
-	   [[self matrixInColumn:[self lastColumn]] numberOfRows] == 0)
-    {
-      return;
-    }
+	   [[self matrixInColumn:[self lastColumn]] numberOfRows] == 0) {
+    return;
+  }
+  else if (ch == NSUpArrowFunctionKey) {
+    NSLog(@"keyDown: UpArrow");
+    return;
+  }
+  else if (ch == NSDownArrowFunctionKey) {
+    NSLog(@"keyDown: DownArrow");
+    return;
+  }
 //     else if (character == NSLeftArrowFunctionKey)
 //     {
 //       NSInteger lastC = [self lastColumn];
@@ -102,14 +126,6 @@ static NSTimer *clickTimer = nil;
 // //	      [self _emptyColumn:i];
 // //	    }
 // 	}
-//       return;
-//     }
-//     else if (ch == NSUpArrowFunctionKey)
-//     {
-//       return;
-//     }
-//   else if (ch == NSDownArrowFunctionKey)
-//     {
 //       return;
 //     }
 
