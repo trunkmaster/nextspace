@@ -40,7 +40,14 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 * Launcher - panel to run commands with autocompletion and history.
 * Recycler - drag and drop support, ability to restore recycled objects to original location with single button click.
 * Other: inspectors for various types of contents, finder, console messages and preferences for various parts of Workspace.
-> Note: Workspace is not "WindowMaker with some patches". It's written from scratch. WindowMaker is a part of Workspace to provide window management functions. It's loosely coupled with Workspace to provide seamless intergation. Configurable parameters of integrated WindowMaker spread across Workspace's Preferences and Preferences application.
+> Note: Workspace is not:
+> * "WindowMaker with some patches";
+> * WindowMaker with some good configuration defaults only
+> * Another WindowMaker implementation.
+
+> It's written from scratch. Some WindowMaker code is a part of Workspace (as well as configuration defaults) to provide window management functions. It's loosely coupled with Workspace to provide seamless intergation. Configurable parameters of integrated WindowMaker spread across Workspace's Preferences and Preferences application.
+
+> Workspace theoretically can be used without WindowMaker. But current development focused on **single** application to deliver best user experience as a result.
 
 ![Workspace](Documentation/Workspace.png)
 
