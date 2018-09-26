@@ -25,7 +25,8 @@ Unlike other 'real' and 'serious' projects I've not defined target audience for 
 * Implement MacOS X like desktop paradigm. There is another good place for this -- [Étoilé](http://etoileos.com).
 
 # Applications
-Below is a brief description of core applications.
+Below is a brief description of core applications. More information about applications functionality will be added on ![GitHub Pages site](https://trunkmaster.github.io/nextspace/). Stay tuned!
+
 ## Login
 Simple login panel where you enter your user name and password.
 
@@ -48,7 +49,8 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 ## Preferences
 Settings for locale, fonts, displays (size, brightness (gamms), contrast, desktop background, displays arrangement), keyboard (repeat, layouts, numpad behaviour, modifiers), mouse (delay, treshold, scrollwheel settings, mouse buttons configutation), sound, network, power management.
 
-![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) ![Mouse](Documentation/Preferences-Mouse.png)
+![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) 
+![Mouse](Documentation/Preferences-Mouse.png) ![Keypard](Documentation/Preferences-Keyboard.png)
 
 ## Terminal
 Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancements to the original application are numerous. Some of them:
@@ -59,13 +61,16 @@ Terminal with Linux console emulation. I've started with version created by Alex
 
 ![Terminals](Documentation/Terminals.png)
 
-# Frameworks
+# For developers
+Some information for those of us who eager to know "How it's done?". For more information on tasks, goals, solutions, technology details, build instructions - look at my notes at ![Wiki](https://github.com/trunkmaster/nextspace/wiki)
+
+## Frameworks
 * NXAppKit: GUI classes that can be useful in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
 * NXSystem: system-specific classes go here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
 * NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
 >'NX' prefix is a tribute to the NeXTstep classes back in early 90th but has no connection to original NeXT's API.
 
-# Core technologies it is based on
+## Core technologies it is based on
 * [CentOS Linux 7](https://www.centos.org) and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
 * Compiler: [Clang](http://www.llvm.org/) 3.8.1
 * Objective-C runtime: [libobjc2](https://github.com/gnustep/libobjc2) by David Chisnall.
