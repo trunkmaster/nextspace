@@ -5,7 +5,6 @@ NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org
 
 ![NEXTSPACE example](Documentation/NEXTSPACE_Screenshot.png)
 
-## What is it?
 I want to create fast, elegant, reliable and easy to use desktop environment with maximum attention to user experience and visual pleasure. In the future I would like to see it as a platform where applications will be running with a taste of NeXT's OS. Core applications: Login, Workspace and Preferences - are base for future applications development and example of style and application integration.
 
 NEXTSPACE is not just applications loosely integrated to each other. Also it's a core OS, frameworks, mouse cursors, fonts, colors, animations and everything I think will help user to be effective and happy.
@@ -28,9 +27,7 @@ Unlike other 'real' and 'serious' projects I've not defined target audience for 
 Below is a brief description of core applications. More information about applications functionality will be added on ![GitHub Pages site](https://trunkmaster.github.io/nextspace/). Stay tuned!
 
 ## Login
-Simple login panel where you enter your user name and password.
-
-![Login screenshot](Documentation/Login.png)
+Simple login panel where you enter your user name and password. No screenshot - it's exact copy of NeXTSTEP `loginwindow` in terms of look and feel.
 
 ## Workspace
 Fast and elegant Workspace Manager - uses multithreading to provide maximum smoothness for:
@@ -43,11 +40,12 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 * Launcher - panel to run commands with autocompletion and history.
 * Recycler - drag and drop support, ability to restore recycled objects to original location with single button click.
 * Other: inspectors for various types of contents, finder, console messages and preferences for various parts of Workspace.
+> Note: Workspace is not "WindowMaker with some patches". It's written from scratch. WindowMaker is a part of Workspace to provide window management functions. It's loosely coupled with Workspace to provide seamless intergation. Configurable parameters of integrated WindowMaker spread across Workspace's Preferences and Preferences application.
 
 ![Workspace](Documentation/Workspace.png)
 
 ## Preferences
-Settings for locale, fonts, displays (size, brightness (gamms), contrast, desktop background, displays arrangement), keyboard (repeat, layouts, numpad behaviour, modifiers), mouse (delay, treshold, scrollwheel settings, mouse buttons configutation), sound, network, power management.
+Settings for locale, fonts, displays (size, brightness, contrast (gamma correction), desktop background, displays arrangement), keyboard (repeat, layouts, numpad behaviour, modifiers), mouse (delay, treshold, scrollwheel settings, mouse buttons configutation), sound, network, power management.
 
 ![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) 
 ![Mouse](Documentation/Preferences-Mouse.png) ![Keypard](Documentation/Preferences-Keyboard.png)
@@ -62,7 +60,7 @@ Terminal with Linux console emulation. I've started with version created by Alex
 ![Terminals](Documentation/Terminals.png)
 
 # For developers
-Some information for those of us who eager to know "How it's done?". For more information on tasks, goals, solutions, technology details, build instructions - look at my notes at ![Wiki](https://github.com/trunkmaster/nextspace/wiki)
+For those who eager to know "How it's done?" look for information on development tasks, goals, solutions, implementation details, build instructions at ![Wiki](https://github.com/trunkmaster/nextspace/wiki)
 
 ## Frameworks
 * NXAppKit: GUI classes that can be useful in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
@@ -76,7 +74,7 @@ Some information for those of us who eager to know "How it's done?". For more in
 * Objective-C runtime: [libobjc2](https://github.com/gnustep/libobjc2) by David Chisnall.
 * Multithreading: [libdispatch](https://github.com/apple/swift-corelibs-libdispatch) by Apple.
 * [OpenStep](https://en.wikipedia.org/wiki/OpenStep) implementation: [GNUstep](http://www.gnustep.org). This is where I started from back in 2001. Additional functionality and fixes will go upstream when it will be ready.
-* [WindowMaker](https://windowmaker.org/): great window manager. It is still alive and in active development. All changes I'm packaging as a set of patches (to the original 0.95.7 version) which can be pushed to upstream project later.
+* [WindowMaker](https://windowmaker.org/): Part of Workspace application with numerous fixes, enhancements.
 
 # Status of implementation
 * [Login](https://github.com/trunkmaster/nextspace/projects/6)
