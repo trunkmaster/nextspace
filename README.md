@@ -7,8 +7,10 @@ NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org
 
 ## What NEXTSPACE is?
 ## Applications
-### Login
+### Login ![Login icon](Documentation/Login-icon.png)
 Simple login panel where you enter your user name and password.
+![Login screenshot](Documentation/Login.png)
+
 ### Workspace
 * File Viewer - file system navigation, create, copy, move, link files/directories.
 * Window manager - app icons for X11 application, move, resize windows, workspaces, dock, starts applications after logon.
