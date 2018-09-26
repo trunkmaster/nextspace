@@ -34,8 +34,8 @@ Simple login panel where you enter your user name and password.
 ## Workspace
 Fast and elegant Workspace Manager - uses multithreading to provide maximum smoothness for:
 * File system navigation, file management (create, copy, move, link files/directories).
-* Seamless applications, processes and window management (start, close, resize, move, maximize, miniaturize).
-* MacOS-style window resizing: cursor stops moving when maximum/minimum size of the window was reached, mouse cursor changes it image to give a hint for available directions.
+* Seamless application, process and window management (start, autostart, close, resize, move, maximize, miniaturize, hide).
+* MacOS-style window resizing: cursor stops moving when maximum/minimum size of the window was reached, mouse cursor changes it's image to give a hint for available directions.
 * Virtual desktops, Dock, applications and window icons.
 * Media management - automatically mounts removable media, provide menu items to eject/mount/unmount removables.
 * Background processes - all file and media management operations has status representation with control (stop, pause, cancel).
@@ -46,9 +46,9 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 ![Workspace](Documentation/Workspace.png)
 
 ## Preferences
-Settings for locale, fonts, displays (size, arrangement), keyboard, mouse, sound, network, power management.
+Settings for locale, fonts, displays (size, brightness (gamms), contrast, desktop background, displays arrangement), keyboard (repeat, layouts, numpad behaviour, modifiers), mouse (delay, treshold, scrollwheel settings, mouse buttons configutation), sound, network, power management.
 
-![Localization](Documentation/Preferences-Localization.png) ![Display](Documentation/Preferences-Display.png)
+![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) ![Mouse](Documentation/Preferences-Mouse.png)
 
 ## Terminal
 Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancements to the original application are numerous. Some of them:
@@ -78,4 +78,3 @@ Terminal with Linux console emulation. I've started with version created by Alex
 * [Workspace](https://github.com/trunkmaster/nextspace/projects/4)
 * [Preferences](https://github.com/trunkmaster/nextspace/projects/2)
 * [Terminal](https://github.com/trunkmaster/nextspace/projects/3)
-
