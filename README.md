@@ -24,13 +24,13 @@ Unlike other 'real' and 'serious' projects I've not defined target audience for 
 * GNOME, KDE, MacOS rival in terms of visual effects, modern design principles, look and feel.
 * Implement MacOS X like desktop paradigm. There is another good place for this -- [Étoilé](http://etoileos.com).
 
-## Applications
+# Applications
 Below is a brief description of core applications.
-### Login
+## Login
 Simple login panel where you enter your user name and password.
 ![Login screenshot](Documentation/Login.png)
 
-### Workspace
+## Workspace
 Fast and elegant Workspace Manager - uses multithreading to provide maximum smoothness for:
 * File system navigation, file management (create, copy, move, link files/directories).
 * Seamless applications, processes and window management (start, close, resize, move, maximize, miniaturize).
@@ -42,12 +42,12 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 * Recycler - drag and drop support, ability to restore recycled objects to original location with single button click.
 * Other: inspectors for various types of contents, finder, console messages and preferences for various parts of Workspace.
 
-### Preferences
+## Preferences
 Settings for locale, fonts, displays (size, arrangement), keyboard, mouse, sound, network, power management.
 
 ![Localization](Documentation/Preferences-Localization.png) ![Display](Documentation/Preferences-Display.png)
 
-### Terminal
+## Terminal
 Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancements to the original application are numerous. Some of them:
 * Preferences and Services panels are rewritten from scratch.
 * Numerous fixes and enhancements in: color management (background, foreground can be any and can be configured in preferences, bold, blink, inverse, cursor colours), cursor placement fixes on scrolling and window resizing, 'Clear Buffer' and 'Set Title' menu items.
@@ -56,13 +56,13 @@ Terminal with Linux console emulation. I've started with version created by Alex
 
 ![Terminals](Documentation/Terminals.png)
 
-## Frameworks
+# Frameworks
 * NXAppKit: GUI classes that can be useful in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
 * NXSystem: system-specific classes go here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
 * NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
 >'NX' prefix is a tribute to the NeXTstep classes back in early 90th but has no connection to original NeXT's API.
 
-## Core technologies it is based on
+# Core technologies it is based on
 * [CentOS Linux 7](https://www.centos.org) and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
 * Compiler: [Clang](http://www.llvm.org/) 3.8.1
 * Objective-C runtime: [libobjc2](https://github.com/gnustep/libobjc2) by David Chisnall.
@@ -70,7 +70,7 @@ Terminal with Linux console emulation. I've started with version created by Alex
 * [OpenStep](https://en.wikipedia.org/wiki/OpenStep) implementation: [GNUstep](http://www.gnustep.org). This is where I started from back in 2001. Additional functionality and fixes will go upstream when it will be ready.
 * [WindowMaker](https://windowmaker.org/): great window manager. It is still alive and in active development. All changes I'm packaging as a set of patches (to the original 0.95.7 version) which can be pushed to upstream project later.
 
-## Status of implementation
+# Status of implementation
 * [Login](https://github.com/trunkmaster/nextspace/projects/6)
 * [Workspace](https://github.com/trunkmaster/nextspace/projects/4)
 * [Preferences](https://github.com/trunkmaster/nextspace/projects/2)
