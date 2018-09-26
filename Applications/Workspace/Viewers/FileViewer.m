@@ -1234,20 +1234,26 @@
     [df synchronize];
   }
   else if (![self isRootViewerCopy] && [fm isWritableFileAtPath:rootPath]) {
-    NSMutableDictionary *fvdf = [NSMutableDictionary new];
-
-    [fvdf setObject:[[viewer class] viewerType]
-             forKey:@"ViewerType"];
-    [fvdf setObject:[displayedPath stringByAppendingPathComponent:file]
-             forKey:@"ViewerPath"];
-    [fvdf setObject:NSStringFromRect([window frame])
-             forKey:@"ViewerWindow"];
-    [fvdf setObject:[shelf storableRepresentation] 
-             forKey:@"ShelfContents"];
-    [fvdf setObject:[NSNumber numberWithInt:[shelf frame].size.height]
-             forKey:@"ShelfSize"];
-    [fvdf writeToFile:[rootPath stringByAppendingPathComponent:@".dir"] 
-           atomically:YES];
+    NSString            *appName, *fileType;
+    NSMutableDictionary *fvdf;
+    [[NSApp delegate] getInfoForFile:rootPath
+                         application:&appName
+                                type:&fileType];
+    if (fileType != NSPlainFileType && fileType != NSApplicationFileType) {
+      fvdf = [NSMutableDictionary new];
+      [fvdf setObject:[[viewer class] viewerType]
+               forKey:@"ViewerType"];
+      [fvdf setObject:[displayedPath stringByAppendingPathComponent:file]
+               forKey:@"ViewerPath"];
+      [fvdf setObject:NSStringFromRect([window frame])
+               forKey:@"ViewerWindow"];
+      [fvdf setObject:[shelf storableRepresentation] 
+               forKey:@"ShelfContents"];
+      [fvdf setObject:[NSNumber numberWithInt:[shelf frame].size.height]
+               forKey:@"ShelfSize"];
+      [fvdf writeToFile:[rootPath stringByAppendingPathComponent:@".dir"] 
+             atomically:YES];
+    }
   }
   
   // unset viewer to decrease retain count on FileViewer
