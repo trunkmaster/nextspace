@@ -28,6 +28,7 @@ Unlike other 'real' and 'serious' projects I've not defined target audience for 
 Below is a brief description of core applications.
 ## Login
 Simple login panel where you enter your user name and password.
+
 ![Login screenshot](Documentation/Login.png)
 
 ## Workspace
@@ -41,6 +42,8 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 * Launcher - panel to run commands with autocompletion and history.
 * Recycler - drag and drop support, ability to restore recycled objects to original location with single button click.
 * Other: inspectors for various types of contents, finder, console messages and preferences for various parts of Workspace.
+
+![Workspace](Documentation/Workspace.png)
 
 ## Preferences
 Settings for locale, fonts, displays (size, arrangement), keyboard, mouse, sound, network, power management.
