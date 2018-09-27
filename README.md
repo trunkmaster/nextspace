@@ -47,7 +47,7 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 > * WindowMaker with some good configuration defaults only
 > * Another WindowMaker implementation.
 
-> It's written from scratch. Some WindowMaker code is a part of Workspace (as well as configuration defaults) to provide window management functions. It's loosely coupled with Workspace to provide seamless intergation. Configurable parameters of integrated WindowMaker spread across Workspace's Preferences and Preferences application.
+> It's written from scratch. Some WindowMaker code is a part of Workspace (as well as configuration defaults) to provide window management functions. It's tightly coupled with Workspace to provide seamless intergation. Configurable parameters of integrated WindowMaker are spread across Workspace's Preferences and Preferences application.
 
 > Workspace theoretically can be used without WindowMaker. But current development focused on **single** application to deliver best user experience as a result.
 
