@@ -12,14 +12,12 @@ NEXTSPACE is not just applications loosely integrated to each other. Also it's a
 ## Why am I doing this?
 1. I like look, feel and design principles of NeXTSTEP.
 2. I think [GNUstep](http://www.gnustep.org) needs reference implementation of user oriented desktop environment.
-3. As main developer of [ProjectCenter](http://www.gnustep.org/experience/ProjectCenter.html) (IDE for GNUstep) I need desktop environment where ProjectCenter can be developed, tested and integrated with.
-4. I beleive it will become interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
+3. I beleive it will become interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
 
-Unlike other 'real' and 'serious' projects I've not defined target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray blurry lines, flat controls, acid colours, transparency). I like this accurate, clear, grayish, boring UI that just helps, not hinder, to get my job done...
+Unlike other 'real' and 'serious' projects I've not defined target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray blurry lines, flat controls, acid colors, transparency). I like this accurate, clear, grayish, "boring" UI that just helps, not hinder, to get my job done...
 
 ## I will not plan to do
 * Porting to other Linux distributions and operating systems for now. I want fast, accurate and stable version for CentOS 7 at last. However, NEXTSPACE was designed to be portable and this point maybe changed in future.
-* WindowMaker only fork (Workspace includes WindowMaker though).
 * GNOME, KDE, MacOS rival in terms of visual effects, modern design principles, look and feel.
 * Implement MacOS X like desktop paradigm. There is another good place for this -- [Étoilé](http://etoileos.com).
 
