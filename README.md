@@ -43,7 +43,7 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 * Recycler - drag and drop support, ability to restore recycled objects to original location with single button click.
 * Other: inspectors for various types of contents, finder, console messages and preferences for various parts of Workspace.
 > Note: Workspace is not:
-> * "WindowMaker with some patches";
+> * WindowMaker with some patches
 > * WindowMaker with some good configuration defaults only
 > * Another WindowMaker implementation.
 
