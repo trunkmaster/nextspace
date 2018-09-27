@@ -27,9 +27,11 @@ Unlike other 'real' and 'serious' projects I've not defined target audience for 
 Below is a brief description of core applications. More information about applications functionality will be added on ![GitHub Pages site](https://trunkmaster.github.io/nextspace/). Stay tuned!
 
 ## Login
+[Status of implementation](https://github.com/trunkmaster/nextspace/projects/6)
 Simple login panel where you enter your user name and password. No screenshot - it's exact copy of NeXTSTEP `loginwindow` in terms of look and feel.
 
 ## Workspace
+[Status of implementation](https://github.com/trunkmaster/nextspace/projects/4)
 Fast and elegant Workspace Manager - uses multithreading to provide maximum smoothness for:
 * File system navigation, file management (create, copy, move, link files/directories).
 * Seamless application, process and window management (start, autostart, close, resize, move, maximize, miniaturize, hide).
@@ -52,12 +54,14 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 ![Workspace](Documentation/Workspace.png)
 
 ## Preferences
+[Status of implementation](https://github.com/trunkmaster/nextspace/projects/2)
 Settings for locale, fonts, displays (size, brightness, contrast (gamma correction), desktop background, displays arrangement), keyboard (repeat, layouts, numpad behaviour, modifiers), mouse (delay, treshold, scrollwheel settings, mouse buttons configutation), sound, network, power management.
 
 ![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) 
 ![Mouse](Documentation/Preferences-Mouse.png) ![Keypard](Documentation/Preferences-Keyboard.png)
 
 ## Terminal
+[Status of implementation](https://github.com/trunkmaster/nextspace/projects/3)
 Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancements to the original application are numerous. Some of them:
 * Preferences and Services panels are rewritten from scratch.
 * Numerous fixes and enhancements in: color management (background, foreground can be any and can be configured in preferences, bold, blink, inverse, cursor colours), cursor placement fixes on scrolling and window resizing, 'Clear Buffer' and 'Set Title' menu items.
@@ -68,23 +72,3 @@ Terminal with Linux console emulation. I've started with version created by Alex
 
 # For developers
 For those who eager to know "How it's done?" look for information on development tasks, goals, solutions, implementation details, build instructions at ![Wiki](https://github.com/trunkmaster/nextspace/wiki)
-
-## Frameworks
-* NXAppKit: GUI classes that can be useful in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
-* NXSystem: system-specific classes go here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
-* NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
->'NX' prefix is a tribute to the NeXTstep classes back in early 90th but has no connection to original NeXT's API.
-
-## Core technologies it is based on
-* [CentOS Linux 7](https://www.centos.org) and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
-* Compiler: [Clang](http://www.llvm.org/) 3.8.1
-* Objective-C runtime: [libobjc2](https://github.com/gnustep/libobjc2) by David Chisnall.
-* Multithreading: [libdispatch](https://github.com/apple/swift-corelibs-libdispatch) by Apple.
-* [OpenStep](https://en.wikipedia.org/wiki/OpenStep) implementation: [GNUstep](http://www.gnustep.org). This is where I started from back in 2001. Additional functionality and fixes will go upstream when it will be ready.
-* [WindowMaker](https://windowmaker.org/): Part of Workspace application with numerous fixes, enhancements.
-
-# Status of implementation
-* [Login](https://github.com/trunkmaster/nextspace/projects/6)
-* [Workspace](https://github.com/trunkmaster/nextspace/projects/4)
-* [Preferences](https://github.com/trunkmaster/nextspace/projects/2)
-* [Terminal](https://github.com/trunkmaster/nextspace/projects/3)
