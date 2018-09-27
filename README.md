@@ -5,7 +5,7 @@ NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org
 
 ![NEXTSPACE example](Documentation/NEXTSPACE_Screenshot.png)
 
-I want to create fast, elegant, reliable and easy to use desktop environment with maximum attention to user experience and visual pleasure. In the future I would like to see it as a platform where applications will be running with a taste of NeXT's OS. Core applications: Login, Workspace and Preferences - are base for future applications development and example of style and application integration.
+I want to create fast, elegant, reliable and easy to use desktop environment with maximum attention to user experience (usability) and visual maturity. In the future I would like to see it as a platform where applications will be running with a taste of NeXT's OS. Core applications: Login, Workspace and Preferences - are the base for future applications development and example of style and application integration methods.
 
 NEXTSPACE is not just applications loosely integrated to each other. Also it's a core OS, frameworks, mouse cursors, fonts, colors, animations and everything I think will help user to be effective and happy.
 
