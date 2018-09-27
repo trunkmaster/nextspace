@@ -28,10 +28,12 @@ Below is a brief description of core applications. More information about applic
 
 ## Login
 [Status of implementation](https://github.com/trunkmaster/nextspace/projects/6)
+
 Simple login panel where you enter your user name and password. No screenshot - it's exact copy of NeXTSTEP `loginwindow` in terms of look and feel.
 
 ## Workspace
 [Status of implementation](https://github.com/trunkmaster/nextspace/projects/4)
+
 Fast and elegant Workspace Manager - uses multithreading to provide maximum smoothness for:
 * File system navigation, file management (create, copy, move, link files/directories).
 * Seamless application, process and window management (start, autostart, close, resize, move, maximize, miniaturize, hide).
@@ -55,6 +57,7 @@ Fast and elegant Workspace Manager - uses multithreading to provide maximum smoo
 
 ## Preferences
 [Status of implementation](https://github.com/trunkmaster/nextspace/projects/2)
+
 Settings for locale, fonts, displays (size, brightness, contrast (gamma correction), desktop background, displays arrangement), keyboard (repeat, layouts, numpad behaviour, modifiers), mouse (delay, treshold, scrollwheel settings, mouse buttons configutation), sound, network, power management.
 
 ![Display](Documentation/Preferences-Display.png) ![Screen](Documentation/Preferences-Screen.png) 
@@ -62,6 +65,7 @@ Settings for locale, fonts, displays (size, brightness, contrast (gamma correcti
 
 ## Terminal
 [Status of implementation](https://github.com/trunkmaster/nextspace/projects/3)
+
 Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancements to the original application are numerous. Some of them:
 * Preferences and Services panels are rewritten from scratch.
 * Numerous fixes and enhancements in: color management (background, foreground can be any and can be configured in preferences, bold, blink, inverse, cursor colours), cursor placement fixes on scrolling and window resizing, 'Clear Buffer' and 'Set Title' menu items.
