@@ -29,7 +29,7 @@
   id bogusWindow;
   id view;
 
-  FileViewer    *owner;
+  FileViewer    *fileViewer;
 
   NSFileManager *fileManager;
   NSString      *rootPath;
