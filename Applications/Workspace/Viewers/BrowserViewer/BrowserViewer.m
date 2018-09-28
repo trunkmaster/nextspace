@@ -46,10 +46,9 @@
 {
   NSBrowser *view = (NSBrowser *)[_delegate view];
   
-  if (self == [view matrixInColumn:[view selectedColumn]])
-    {
-      return YES;
-    }
+  if (self == [view matrixInColumn:[view selectedColumn]]) {
+    return YES;
+  }
 
   return NO;
 }
@@ -66,30 +65,55 @@
 {
   //NSDebugLLog(@"Browser", @"BrowserMatrix: selectAll:");
   if (![sender isKindOfClass:[NSBrowser class]] &&
-      [_delegate respondsToSelector:@selector(selectAll:)])
-    {
+      [_delegate respondsToSelector:@selector(selectAll:)]) {
       [_delegate selectAll:sender];
     }
-  else
-    {
-      [super selectAll:sender];
-    }
+  else {
+    [super selectAll:sender];
+  }
 }
 
-- (void)keyUp:(NSEvent *)event
-{
-  NSLog(@"[BrowserMatrix] keyUp");
-}
+// - (void)keyUp:(NSEvent *)event
+// {
+//   NSLog(@"[BrowserMatrix] keyUp");
+// }
+
 - (void)keyDown:(NSEvent *)event
 {
-  NSLog(@"[BrowserMatrix] keyDown");
-  // event = [[self window] nextEventMatchingMask:(NSKeyDownMask|NSKeyUpMask)];
-  while ([event type] != NSKeyUp) {
-    NSLog(@"keyDown");
-    event = [[self window] nextEventMatchingMask:NSAnyEventMask];
+  NSInteger selectedRow;
+  NSInteger selectedRowNew;
+  unichar   c = [[event characters] characterAtIndex:0];
+
+  if (([event modifierFlags] & NSShiftKeyMask) ||
+      (c != NSDownArrowFunctionKey && c != NSUpArrowFunctionKey)) {
+    [super keyDown:event];
+    return;
   }
-  NSLog(@"[BrowserMatrix] keyDown - END (%lu - %i | %i)",
-        [event type], NSKeyUp, NSKeyDown);
+  
+  while ([event type] != NSKeyUp) {
+    event = [[self window] nextEventMatchingMask:NSAnyEventMask];
+    selectedRow = [self selectedRow];
+    selectedRowNew = [self selectedRow];
+
+    if (c == NSDownArrowFunctionKey) {
+      if (selectedRow < [self numberOfRows]-1)
+        selectedRowNew++;
+    }
+    else if (c == NSUpArrowFunctionKey) {
+      if (selectedRow > 0)
+        selectedRowNew--;
+    }
+
+    if (selectedRow == selectedRowNew)
+      continue;
+
+    [self deselectAllCells];
+    [self selectCellAtRow:selectedRowNew column:0];
+  }
+
+  NSBrowser *browser = (NSBrowser *)[(BrowserViewer *)_delegate view];
+  [browser selectRow:selectedRowNew inColumn:[browser selectedColumn]];
+  [(BrowserViewer *)_delegate doClick:self];
 }
 
 /*- (void)copy:(id)senderPath
@@ -177,10 +201,9 @@
 {
  // NSDebugLLog(@"Browser", @"[BrowserViewer] lastVC: %i selectedC: %i", 
  //        [view lastVisibleColumn], [view selectedColumn]);
-  if ([view lastVisibleColumn] == [view selectedColumn])
-    {
-      [view addColumn];
-    }
+  if ([view lastVisibleColumn] == [view selectedColumn]) {
+    [view addColumn];
+  }
 }
 
 // FIXME: is not used
@@ -193,10 +216,9 @@
 - (void)ensureBrowserScrolledMaxRight
 {
 //  [view scrollColumnsLeftBy:[view lastVisibleColumn]-[view selectedColumn]-1];
-  if ([view lastColumn] - [view firstVisibleColumn] == 1)
-    {
-      [view scrollColumnsRightBy:2];
-    }
+  if ([view lastColumn] - [view firstVisibleColumn] == 1) {
+    [view scrollColumnsRightBy:2];
+  }
 }
 
 // FIXME: is not used
@@ -218,11 +240,32 @@
 // Create and destroy
 //=============================================================================
 
+- (void)dealloc
+{
+  NSLog(@"[BrowserViewer] dealloc");
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+  TEST_RELEASE(currentPath);
+  TEST_RELEASE(selection);
+
+  TEST_RELEASE(fileViewer);
+  TEST_RELEASE(rootPath);
+  TEST_RELEASE(fileManager);
+
+  TEST_RELEASE(view);
+
+  [super dealloc];
+}
+
 - init
 {
   [super init];
 
-  [NSBundle loadNibNamed:@"BrowserViewer" owner:self];
+  if (![NSBundle loadNibNamed:@"BrowserViewer" owner:self]) {
+    NSLog(@"Error: failed to load BrowserViewer interface file!");
+    [self autorelease];
+    return nil;
+  }
   
   ASSIGN(fileManager, [NSFileManager defaultManager]);
 
@@ -241,7 +284,6 @@
   columnCount = 0;
   currentPath = nil;
 
-  //  columnWidth = 0;
   [self setColumnWidth:BROWSER_DEF_COLUMN_WIDTH];
 
   [view setMaxVisibleColumns:99];
@@ -250,23 +292,6 @@
   [view setDoubleAction:@selector(doDoubleClick:)];
   [view setMatrixClass:[BrowserMatrix class]];
   [view setCellClass:[BrowserCell class]];
-}
-
-- (void)dealloc
-{
-  NSLog(@"[BrowserViewer] dealloc");
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-  TEST_RELEASE(currentPath);
-  TEST_RELEASE(selection);
-
-  TEST_RELEASE(owner);
-  TEST_RELEASE(rootPath);
-  TEST_RELEASE(fileManager);
-
-  TEST_RELEASE(view);
-
-  [super dealloc];
 }
 
 //=============================================================================
@@ -294,9 +319,9 @@
   return [view matrixInColumn:[view selectedColumn]];
 }
 
-- (void)setOwner:(FileViewer *)theOwner
+- (void)setOwner:(FileViewer *)theFileViewer
 {
-  ASSIGN(owner, theOwner);
+  ASSIGN(fileViewer, theFileViewer);
 }
 
 - (void)setRootPath:(NSString *)fullPath
@@ -329,9 +354,6 @@
 
 - (NSUInteger)columnCount
 {
-  /*  if (columnCount == 0)
-    columnCount = 3;*/
-
   columnCount = [view numberOfVisibleColumns];
 
   return columnCount;
@@ -339,7 +361,6 @@
 
 - (void)setColumnCount:(NSUInteger)num
 {
-  //  columnCount = num;
   [view setMinColumnWidth:([view frame].size.width / num) * 0.75];
   columnCount = [view numberOfVisibleColumns];
 }
@@ -355,26 +376,22 @@
   int           i;
 
 //  NSDebugLLog(@"Browser", @"Matrix at column %i has %i rows", lastVC, [mtrx numberOfRows]);
-  for (i=lastVC; i >= firstVC; i--)
-    {
-      mtrx = [view matrixInColumn:i];
-      if ([mtrx numberOfRows] > 0)
-	{
-	  // Check if directory selected
-	  selectedCell = [mtrx selectedCell];
-	  if (selectedCell && empty > 0 && ![selectedCell isLeaf])
-	    {
-	      empty--;
-	    }
-	  break;
-	}
-      if (i == 0)
-	{
-	  empty--;
-	  break;
-	}
-      empty++;
+  for (i = lastVC; i >= firstVC; i--) {
+    mtrx = [view matrixInColumn:i];
+    if ([mtrx numberOfRows] > 0) {
+      // Check if directory selected
+      selectedCell = [mtrx selectedCell];
+      if (selectedCell && empty > 0 && ![selectedCell isLeaf]) {
+        empty--;
+      }
+      break;
     }
+    if (i == 0) {
+      empty--;
+      break;
+    }
+    empty++;
+  }
 
   // NSDebugLLog(@"Browser", @"[BrowserViewer] numberOfEmptyColumns: %i, LVC:%i FVC:%i # of VC:%i", 
   //       empty, lastVC, firstVC, [view numberOfVisibleColumns]);
@@ -385,10 +402,9 @@
 - (void)setNumberOfEmptyColumns:(NSInteger)num
 {
   // NSDebugLLog(@"Browser", @"[BrowserViewer] setNumberOfEmptyColumns: %i", num);
-  if ([self numberOfEmptyColumns] < num)
-    {
-      [view addColumn];
-    }
+  if ([self numberOfEmptyColumns] < num) {
+    [view addColumn];
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -408,18 +424,15 @@
 
   mtrx = [view matrixInColumn:column];
   rowsCount = [mtrx numberOfRows];
-  for (i=0; i<rowsCount; i++)
-    {
-      cell = [mtrx cellAtRow:i column:0];
-      if ([filenames containsObject:[cell stringValue]])
-        {
-          [mtrx selectCellAtRow:i column:0];
-          if (--selectionCount == 0)
-            {
-              break;
-            }
-        }
+  for (i = 0; i < rowsCount; i++) {
+    cell = [mtrx cellAtRow:i column:0];
+    if ([filenames containsObject:[cell stringValue]]) {
+      [mtrx selectCellAtRow:i column:0];
+      if (--selectionCount == 0) {
+        break;
+      }
     }
+  }
 }
 
 - (void)displayPath:(NSString *)dirPath
@@ -428,51 +441,46 @@
   int     length = [dirPath length];
   NSArray *pathComponents;
 
-  if (dirPath == nil || [dirPath isEqualToString:@""])
-    {
-      return;
-    }
+  if (dirPath == nil || [dirPath isEqualToString:@""]) {
+    return;
+  }
 
-  [owner setWindowEdited:YES];
+  [fileViewer setWindowEdited:YES];
   
   // remove a trailing "/" character
-  if (length > 1 && [dirPath characterAtIndex:length-1] == '/')
-    {
-      dirPath = [dirPath substringToIndex:length-1];
-    }
+  if (length > 1 && [dirPath characterAtIndex:length-1] == '/') {
+    dirPath = [dirPath substringToIndex:length-1];
+  }
 
   // Initial
-  if (currentPath == nil || [view lastColumn] < 0)
-    {
-      [view loadColumnZero];
-    }
+  if (currentPath == nil || [view lastColumn] < 0) {
+    [view loadColumnZero];
+  }
 
   // Make assignment here because NSBrowser delegate methods rely on
   // these ivars to proceed hidden directories correctly.
   ASSIGN(currentPath, dirPath);
   ASSIGN(selection, filenames);
   
-  if (dirPath && (filenames == nil || [filenames count] == 0))
-    { // dir selected
-      NSDebugLLog(@"Browser", @"<NSBrowser> set path to dir: %@", dirPath);
-      [view reloadColumn:0];
-      [view setPath:dirPath];
-    }
-  else if ([filenames count] == 1)
-    {
-      [view setPath:[dirPath stringByAppendingPathComponent:[filenames lastObject]]];
-    }
-  else if ([filenames count] > 1)
-    {
-      // Set path to last dir
-      [view setPath:dirPath];
-      // Set selection
-      [self _setSelection:selection inColumn:[view selectedColumn]+1];
-    }
+  if (dirPath && (filenames == nil || [filenames count] == 0)) {
+    // dir selected
+    NSDebugLLog(@"Browser", @"<NSBrowser> set path to dir: %@", dirPath);
+    [view reloadColumn:0];
+    [view setPath:dirPath];
+  }
+  else if ([filenames count] == 1) {
+    [view setPath:[dirPath stringByAppendingPathComponent:[filenames lastObject]]];
+  }
+  else if ([filenames count] > 1) {
+    // Set path to last dir
+    [view setPath:dirPath];
+    // Set selection
+    [self _setSelection:selection inColumn:[view selectedColumn]+1];
+  }
 
   [self ensureBrowserHasEmptyColumn];
   
-  [owner setWindowEdited:NO];
+  [fileViewer setWindowEdited:NO];
 }
 
 - (void)scrollToRange:(NSRange)range
@@ -494,10 +502,9 @@
   id        cell;
   int       i;
 
-  if (col == -1)
-    {
-      col = 0;
-    }
+  if (col == -1) {
+    col = 0;
+  }
   mtrx = [view matrixInColumn:col];
 
   // Save browser path
@@ -543,15 +550,13 @@
 
   NSDebugLLog(@"Browser", @"[Browser:%@] reloadPath:%@", [view path], reloadPath);
 
-  for (i=[view lastColumn]; i>=0; i--)
-    {
-      path = [view pathToColumn:i];
-      if ([path isEqualToString:reloadPath])
-	{
-	  [self reloadColumn:i];
-	  break;
-	}
+  for (i=[view lastColumn]; i>=0; i--) {
+    path = [view pathToColumn:i];
+    if ([path isEqualToString:reloadPath]) {
+      [self reloadColumn:i];
+      break;
     }
+  }
   [[view window] makeFirstResponder:view];
 }
 
@@ -576,93 +581,84 @@
 //=============================================================================
 // NSBrowser delegate methods
 //=============================================================================
-BOOL browserColumnLoaded;
 - (void)     browser:(NSBrowser *)sender 
  createRowsForColumn:(NSInteger)column
 	    inMatrix:(NSMatrix *)matrix
 {
-  NXFileManager *xfm = [NXFileManager sharedManager];
-  NSString      *path = [view pathToColumn:column];
-
-  browserColumnLoaded = NO;
+  NSString *path = [view pathToColumn:column];
+  NSString *fullPath;
+  NSArray  *dirContents;
 
   NSDebugLLog(@"Browser", @"<NSBrowser> load coumn:%@ for path:%@ %li/%li",
         path, [view path], [view selectedColumn], column);
 
-  if ([[view selectedCell] isLeaf] ||   // Is not directory
-      [[view selectedCells] count] > 1) // Multiple directories selected
-    {
-      if (![[view path] isEqualToString:@"/"])
-        {
-          return;
-        }
+  if ([[view selectedCell] isLeaf] ||     // Is not directory
+      [[view selectedCells] count] > 1) { // Multiple directories selected
+    if (![[view path] isEqualToString:@"/"]) {
+      return;
     }
+  }
 
-  [matrix setDelegate:self];
+  [fileViewer setWindowEdited:YES];
   
-  {
-    NSString     *fullPath;
-    NSArray      *dirContents;
-    NSEnumerator *e;
-    NSString     *filename;
-    NSDate       *last = nil, *now;
+  [matrix setDelegate:self];
 
-    now = [NSDate date];
-    ASSIGN(last, now);
+  // Get sorted directory contents
+  fullPath = [rootPath stringByAppendingPathComponent:currentPath];
+  dirContents = [fileViewer directoryContentsAtPath:path forPath:fullPath];
+  fullPath = [self fullPath];
+
+  int i = 0;
+  if ([matrix numberOfRows] < [dirContents count]) {
+    i = [matrix numberOfRows];
+  }
+  for (; i < [dirContents count]; i++) {
+    [matrix addRow];
+  }
+  
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+      NSString *fPath = [NSString stringWithString:fullPath];
+      NSArray  *dc = [dirContents copy];
     
-    // Get sorted directory contents
-    fullPath = [rootPath stringByAppendingPathComponent:currentPath];
-    dirContents = [owner directoryContentsAtPath:path
-                                         forPath:fullPath];
-    fullPath = [self fullPath];
-    e = [dirContents objectEnumerator];
-    // Fill column
-    while ((filename = [e nextObject]) != nil)
-      {
+      // Fill column
+      // for (NSString *filename in dc) {
+      for (int i = 0; i < [dc count]; i++) {
+        NSString    *fileName;
         NSString    *filePath;
         NSString    *wmFileType = nil;
         NSString    *fmFileType = nil;
         NSString    *appName = nil;
         BrowserCell *bc;
 
-        [matrix addRow];
-        bc = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
+        // [matrix addRow];
+        bc = [matrix cellAtRow:i column:0];
 
-        filePath = [fullPath stringByAppendingPathComponent:filename];
+        fileName = [dc objectAtIndex:i];
+        filePath = [fPath stringByAppendingPathComponent:fileName];
         [(NSWorkspace *)[NSApp delegate] getInfoForFile:filePath
                                             application:&appName
                                                    type:&wmFileType];
 
-        if ([wmFileType isEqualToString:NSDirectoryFileType] ||
-            [wmFileType isEqualToString:NSFilesystemFileType])
-          {
-            [bc setLeaf:NO];
-          }
-        else
-          {
-            [bc setLeaf:YES];
-          }
+        if (![wmFileType isEqualToString:NSDirectoryFileType] &&
+            ![wmFileType isEqualToString:NSFilesystemFileType]) {
+          [bc setLeaf:YES];
+        }
 
         // Modify display attributes and set title of cell
         fmFileType = [[fileManager fileAttributesAtPath:filePath
                                            traverseLink:NO] fileType];
-        if ([fmFileType isEqualToString:NSFileTypeSymbolicLink])
-          {
-            [bc setFont:[NSFont fontWithName:@"Helvetica-Oblique" size:12.0]];
-          }
+        if ([fmFileType isEqualToString:NSFileTypeSymbolicLink]) {
+          [bc setFont:[NSFont fontWithName:@"Helvetica-Oblique" size:12.0]];
+        }
       
-        [bc setTitle:filename];
-          
-        now = [NSDate date];
-        if ([now timeIntervalSinceDate:last] < 0.1)
-          {
-            continue;
-          }
-          
-        [sender displayColumn:column];
-        ASSIGN(last, now);
+        [bc setTitle:fileName];
+        [bc setLoaded:YES];
+        // [sender displayColumn:column];
       }
-  }
+      [dc release];
+      [fileViewer setWindowEdited:NO];
+      [sender displayColumn:column];
+    });
 }
 
 // FIXME: do nothing
@@ -683,54 +679,48 @@ BOOL browserColumnLoaded;
               dirPath, [view lastVisibleColumn], [view selectedColumn]);
 
   // remove a trailing "/" character
-  if (length > 1 && [dirPath characterAtIndex:length-1] == '/')
-    {
-      dirPath = [dirPath substringToIndex:length-1];
-    }
+  if (length > 1 && [dirPath characterAtIndex:length-1] == '/') {
+    dirPath = [dirPath substringToIndex:length-1];
+  }
 
-  if ([selectedCells count] == 0) // dir selected
-    {
-      [owner displayPath:dirPath selection:nil sender:self]; // FileViewer
-    }
-  else if ([selectedCells count] == 1) // 1 file selected
-    {
-      NSString *fileType, *appName;
+  if ([selectedCells count] == 0) { /* dir selected */
+    [fileViewer displayPath:dirPath selection:nil sender:self];
+  }
+  else if ([selectedCells count] == 1) { /* 1 file selected */
+    NSString *fileType, *appName;
       
-      [(NSWorkspace *)[NSApp delegate] getInfoForFile:[self fullPath]
-                                          application:&appName
-                                                 type:&fileType];
-      
-      if (fileType != nil
-          && ([fileType isEqualToString:NSDirectoryFileType]
-              || [fileType isEqualToString:NSFilesystemFileType]))
-	{
-          [owner displayPath:dirPath selection:nil sender:self]; // FileViewer
-	}
-      else
-	{
-	  filenames = [NSArray arrayWithObject:[dirPath lastPathComponent]];
-          dirPath = [dirPath stringByDeletingLastPathComponent];
-	  // FileViewer
-          [owner displayPath:dirPath selection:filenames sender:self];
-	}
+    [(NSWorkspace *)[NSApp delegate] getInfoForFile:[self fullPath]
+                                        application:&appName
+                                               type:&fileType];
+    
+    if (fileType != nil
+        && ([fileType isEqualToString:NSDirectoryFileType]
+            || [fileType isEqualToString:NSFilesystemFileType])) {
+      [fileViewer displayPath:dirPath selection:nil sender:self];
     }
-  else // multiple files (dirs?) selected
-    {
-      NSMutableArray *array = [NSMutableArray array];
-      NSEnumerator   *e = [selectedCells objectEnumerator];
-      NSBrowserCell  *bc;
-
-      while ((bc = [e nextObject]) != nil)
-	{
-	  [array addObject:[bc title]];
-	}
-
-      filenames = array;
+    else {
+      filenames = [NSArray arrayWithObject:[dirPath lastPathComponent]];
       dirPath = [dirPath stringByDeletingLastPathComponent];
-
       // FileViewer
-      [owner displayPath:dirPath selection:filenames sender:self];
+      [fileViewer displayPath:dirPath selection:filenames sender:self];
     }
+  }
+  else { /* multiple files (dirs?) selected */
+    NSMutableArray *array = [NSMutableArray array];
+    NSEnumerator   *e = [selectedCells objectEnumerator];
+    NSBrowserCell  *bc;
+
+    while ((bc = [e nextObject]) != nil)
+      {
+        [array addObject:[bc title]];
+      }
+
+    filenames = array;
+    dirPath = [dirPath stringByDeletingLastPathComponent];
+
+    // FileViewer
+    [fileViewer displayPath:dirPath selection:filenames sender:self];
+  }
   
   ASSIGN(currentPath, dirPath);
   ASSIGN(selection, filenames);
@@ -740,9 +730,10 @@ BOOL browserColumnLoaded;
 
 - (void)doDoubleClick:(id)sender
 {
-  NSLog(@"[BrowserViewer] doDoubleClick: %@", [sender className]);
+  NSDebugLLog(@"Browser",
+              @"[BrowserViewer] doDoubleClick: %@", [sender className]);
   [self doClick:sender];
-  [owner open:sender];
+  [fileViewer open:sender];
 }
 
 //=============================================================================
@@ -752,14 +743,12 @@ BOOL browserColumnLoaded;
 - (void)selectAll:(id)sender
 {
   //NSDebugLLog(@"Browser", @"Browser: selectAll:");
-  if ([(NSBrowserCell *)[view selectedCell] isLeaf])
-    {
-      [[view matrixInColumn:[view selectedColumn]] selectAll:view];
-    }
-  else
-    {
-      [[view matrixInColumn:[view selectedColumn]+1] selectAll:view];
-    }
+  if ([(NSBrowserCell *)[view selectedCell] isLeaf]) {
+    [[view matrixInColumn:[view selectedColumn]] selectAll:view];
+  }
+  else {
+    [[view matrixInColumn:[view selectedColumn]+1] selectAll:view];
+  }
   [self doClick:self];
 }
 
