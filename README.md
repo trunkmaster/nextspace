@@ -1,18 +1,18 @@
 # NEXTSPACE
 
-NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS. It is developed according to ["OpenStep User Interface Guidelines"](http://www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf).
+NEXTSPACE is a desktop environment that brings [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS. It is developed according to ["OpenStep User Interface Guidelines"](http://www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf).
 > If you've noticed or ever bothered with naming convention all of these "NeXTSTEP, NextStep", here is [explanation](Documentation/OpenStep%20Confusion.md).
 
 ![NEXTSPACE example](Documentation/NEXTSPACE_Screenshot.png)
 
-I want to create fast, elegant, reliable and easy to use desktop environment with maximum attention to user experience (usability) and visual maturity. In the future I would like to see it as a platform where applications will be running with a taste of NeXT's OS. Core applications: Login, Workspace and Preferences - are the base for future applications development and example of style and application integration methods.
+I want to create a fast, elegant, reliable, and easy to use desktop environment with maximum attention to user experience (usability) and visual maturity. In the future I would like to see it as a platform where applications will be running with a taste of NeXT's OS. Core applications: Login, Workspace, and Preferences - are the base for future applications development and example of style and application integration methods.
 
-NEXTSPACE is not just applications loosely integrated to each other. Also it's a core OS, frameworks, mouse cursors, fonts, colors, animations and everything I think will help user to be effective and happy.
+NEXTSPACE is not just applications loosely integrated to each other. Also it's a core OS, frameworks, mouse cursors, fonts, colors, animations, and everything I think will help user to be effective and happy.
 
 ## Why am I doing this?
-1. I like look, feel and design principles of NeXTSTEP.
-2. I think [GNUstep](http://www.gnustep.org) needs reference implementation of user oriented desktop environment.
-3. I beleive it will become interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
+1. I like look, feel, and design principles of NeXTSTEP.
+2. I think [GNUstep](http://www.gnustep.org) needs a reference implementation of user oriented desktop environment.
+3. I believe it will become an interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
 
 Unlike other 'real' and 'serious' projects I've not defined target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray blurry lines, flat controls, acid colors, transparency). I like this accurate, clear, grayish, "boring" UI that just helps, not hinder, to get my job done...
 
@@ -27,7 +27,7 @@ Below is a brief description of core applications. More information about applic
 ## Login
 [Status of implementation](https://github.com/trunkmaster/nextspace/projects/6)
 
-Simple login panel where you enter your user name and password. No screenshot - it's exact copy of NeXTSTEP `loginwindow` in terms of look and feel.
+Simple login panel where you enter your user name and password. No screenshot - it's an exact copy of NeXTSTEP `loginwindow` in terms of look and feel.
 
 ## Workspace
 [Status of implementation](https://github.com/trunkmaster/nextspace/projects/4)
@@ -64,7 +64,7 @@ Settings for locale, fonts, displays (size, brightness, contrast (gamma correcti
 ## Terminal
 [Status of implementation](https://github.com/trunkmaster/nextspace/projects/3)
 
-Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancements to the original application are numerous. Some of them:
+Terminal with Linux console emulation. I've started with the version created by Alexander Malmberg and made numerous fixes and enhancements. Original application can be found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancements to the original application are numerous. Some of them:
 * Preferences and Services panels are rewritten from scratch.
 * Numerous fixes and enhancements in: color management (background, foreground can be any and can be configured in preferences, bold, blink, inverse, cursor colours), cursor placement fixes on scrolling and window resizing, 'Clear Buffer' and 'Set Title' menu items.
 * Search through the text displayed in Terminal window (Find panel).
@@ -73,4 +73,4 @@ Terminal with Linux console emulation. I've started with version created by Alex
 ![Terminals](Documentation/Terminals.png)
 
 # For developers
-For those who eager to know "How it's done?" look for information on development tasks, goals, solutions, implementation details, build instructions at ![Wiki](https://github.com/trunkmaster/nextspace/wiki)
+For those who are eager to know "How it's done?" look for information on development tasks, goals, solutions, implementation details, build instructions at ![Wiki](https://github.com/trunkmaster/nextspace/wiki)
