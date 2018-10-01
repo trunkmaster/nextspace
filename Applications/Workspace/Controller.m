@@ -43,6 +43,7 @@
 #import "Viewers/FileViewer.h"
 #import "Preferences.h"
 #import "Launcher.h"
+#import "Finder.h"
 #import "Recycler.h"
 
 #import "ModuleLoader.h"
@@ -895,7 +896,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Tools
 - (void)showFinder:(id)sender
 {
-//  [[Finder shared] activate];
+  if (finder == nil) {
+    finder = [[Finder alloc] init];
+  }
+  [finder activate];
 }
 
 - (void)showProcesses:(id)sender

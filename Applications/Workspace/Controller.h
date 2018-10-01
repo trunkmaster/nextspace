@@ -37,6 +37,7 @@
 @class NXPower;
 @class Recycler;
 @class Launcher;
+@class Finder;
 
 @interface Controller : NSObject
 {
@@ -66,6 +67,7 @@
   Processes           *procPanel;
   NSMutableDictionary *mediaOperations;
   Launcher            *launcher;
+  Finder              *finder;
  
   BOOL dontOpenRootViewer;
   BOOL isQuitting;

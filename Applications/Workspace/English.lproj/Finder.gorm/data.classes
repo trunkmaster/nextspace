@@ -1,0 +1,40 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Finder = {
+	Actions = (
+	    "runCommand:",
+	    "runInTerminal:"
+	);
+	Outlets = (
+	    findField,
+	    window,
+	    runInTerminal,
+	    completionList,
+	    findButton,
+	    findScopeButton,
+	    shelf
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "runInTerminal:",
+	    "runCommand:"
+	);
+	Super = NSObject;
+    };
+    NXIconView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    WMFindField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
+}
