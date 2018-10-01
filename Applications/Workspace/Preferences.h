@@ -39,3 +39,9 @@
 - (void) switchModule: (id)sender;
 
 @end
+
+extern NSString *ShelfIconSlotWidth;
+extern NSString *ShelfIsResizable;
+extern NSString *ShelfIconSlotWidthDidChangeNotification;
+extern NSString *ShelfResizableStateDidChangeNotification;
+

@@ -25,6 +25,11 @@
 
 #import "Preferences.h"
 
+NSString *ShelfIconSlotWidth = @"ShelfIconSlotWidth";
+NSString *ShelfIsResizable = @"ShelfIsResizable";
+NSString *ShelfIconSlotWidthDidChangeNotification = @"ShelfIconSlotWidthDidChangeNotification";
+NSString *ShelfResizableStateDidChangeNotification = @"ShelfResizableStateDidChangeNotification";
+
 @implementation Preferences
 
 static Preferences * shared = nil;

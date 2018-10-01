@@ -1,7 +1,7 @@
 //
 // Workspace Manager Shelf view
 //   Holds icons for dirs and applications.
-//   Holds icons of multiple selections temporarely
+//   Holds icons of multiple selections temporarily
 //
 
 #import <math.h>
