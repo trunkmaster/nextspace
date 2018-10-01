@@ -6,6 +6,7 @@
 #import <NXAppKit/NXIconView.h>
 
 #import <Viewers/PathIcon.h>
+#import <Preferences/Shelf/ShelfPrefs.h>
 
 #import "Finder.h"
 
@@ -61,7 +62,8 @@
 {
   // Shelf
   [shelf setAutoAdjustsToFitIcons:NO];
-  [shelf setAllowsMultipleSelection:NO];
+  [shelf setAllowsMultipleSelection:YES];
+  // [shelf setAllowsEmptySelection:NO];
   [shelf setAllowsAlphanumericSelection:NO];
   [shelf registerForDraggedTypes:@[NSFilenamesPboardType]];
   [shelf setTarget:self];
@@ -69,11 +71,11 @@
   [shelf setAction:@selector(iconClicked:)];
   // [shelf setDoubleAction:@selector(iconDoubleClicked:)];
   // [shelf setDragAction:@selector(iconDragged:event:)];
-  // [[NSNotificationCenter defaultCenter]
-  //   addObserver:self
-  //      selector:@selector(iconSlotWidthChanged:)
-  //          name:ShelfIconSlotWidthDidChangeNotification
-  //        object:nil];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(iconSlotWidthChanged:)
+           name:ShelfIconSlotWidthDidChangeNotification
+         object:nil];
   [self initShelf];
   
   [findField setStringValue:@""];
@@ -90,6 +92,16 @@
 - (void)activate
 {
   if (window == nil) {
+    NXDefaults *df = [NXDefaults userDefaults];
+    NSSize     slotSize;
+    
+    if ([df objectForKey:ShelfIconSlotWidth]) {
+      slotSize = NSMakeSize([df floatForKey:ShelfIconSlotWidth], 76);
+    }
+    else {
+      slotSize = NSMakeSize(76, 76);
+    }
+    [NXIconView setDefaultSlotSize:slotSize];
     [NSBundle loadNibNamed:@"Finder" owner:self];
   }
   else {
@@ -505,7 +517,7 @@
     icon = [self createIconForPaths:@[@"/"]];
     if (icon) {
       [icon setDelegate:self];
-      [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,1)];
+      [shelf putIcon:icon intoSlot:NXMakeIconSlot(1,0)];
       [icon setEditable:NO];
     }
     return;
@@ -604,19 +616,19 @@
 
 // --- Notifications
 
-// - (void)iconSlotWidthChanged:(NSNotification *)notif
-// {
-//   NXDefaults *df = [NXDefaults userDefaults];
-//   NSSize     size = [shelf slotSize];
-//   CGFloat    width = 0.0;
+- (void)iconSlotWidthChanged:(NSNotification *)notif
+{
+  NXDefaults *df = [NXDefaults userDefaults];
+  NSSize     size = [shelf slotSize];
+  CGFloat    width = 0.0;
 
-//   if ((width = [df floatForKey:ShelfIconSlotWidth]) > 0.0) {
-//     size.width = width;
-//   }
-//   else {
-//     size.width = SHELF_LABEL_WIDTH;
-//   }
-//   [shelf setSlotSize:size];
-// }
+  if ((width = [df floatForKey:ShelfIconSlotWidth]) > 0.0) {
+    size.width = width;
+  }
+  else {
+    size.width = SHELF_LABEL_WIDTH;
+  }
+  [shelf setSlotSize:size];
+}
 
 @end

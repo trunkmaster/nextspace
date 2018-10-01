@@ -1,6 +1,7 @@
 /*
    Shelf preferences.
 
+   Copyright (C) 2018 Sergii Stoian
    Copyright (C) 2005 Saso Kiselkov
 
    This library is free software; you can redistribute it and/or
@@ -21,19 +22,12 @@
 #import <AppKit/AppKit.h>
 #import <NXAppKit/NXAppKit.h>
 
+#import <Preferences.h>
 #import <Preferences/PrefsModule.h>
 
 #define SHELF_LABEL_WIDTH     100
 #define SHELF_MIN_LABEL_WIDTH 40
 #define SHELF_MAX_LABEL_WIDTH 100
-
-NSString *ShelfIconSlotWidth = @"ShelfIconSlotWidth";
-NSString *ShelfIsResizable = @"ShelfIsResizable";
-NSString *ShelfIconSlotWidthDidChangeNotification =
-  @"ShelfIconSlotWidthDidChangeNotification";
-NSString *ShelfResizableStateDidChangeNotification =
-  @"ShelfResizableStateDidChangeNotification";
-
 
 @interface ShelfPrefs : NSObject <PrefsModule>
 {
