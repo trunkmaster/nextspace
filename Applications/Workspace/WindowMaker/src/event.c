@@ -1534,7 +1534,7 @@ static void handleKeyPress(XEvent * event)
 	switch (command) {
 
   case WKBD_DOCKHIDESHOW:
-    if (strcmp(scr->focused_window->wm_instance, "Workspace") != 0) {
+    if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->dock->mapped) {
         WWMDockHideIcons(scr->dock);
       }
@@ -1542,15 +1542,21 @@ static void handleKeyPress(XEvent * event)
         WWMDockShowIcons(scr->dock);
       }
     }
+    else {
+      XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
+    }
     break;
   case WKBD_YARDHIDESHOW:
-    if (strcmp(scr->focused_window->wm_instance, "Workspace") != 0) {
+    if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->flags.icon_yard_mapped) {
         WWMIconYardHideIcons(scr);
       }
       else {
         WWMIconYardShowIcons(scr);
       }
+    }
+    else {
+      XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
     }
     break;
 	case WKBD_ROOTMENU:
