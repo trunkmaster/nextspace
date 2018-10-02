@@ -2,32 +2,32 @@
 
 #include <AppKit/AppKit.h>
 
+@class FileViewer;
+
 @interface Finder : NSObject
 {
+  FileViewer *fileViewer;
+  
   id window;
   id shelf;
   id findButton;
   id findField;
   id findScopeButton;
   id runInTerminal;
-  id completionList;
+  id resultList;
 
-  NSArray         *searchPaths;
-  NSMutableString *savedCommand;
-  NSMutableArray  *historyList;
-  
   NSArray   *completionSource;
-  NSArray   *commandVariants;
-  NSInteger completionIndex;
+  NSArray   *variantList;
+  NSInteger resultIndex;
 
   BOOL isRunInTerminal;
 }
 
-- (void)activate;
+- initWithFileViewer:(FileViewer *)fv;
+  
+- (void)activateWithString:(NSString *)searchString;
 - (void)deactivate;
 
-- (void)initHistory;
-- (void)saveHistory;
 - (void)updateButtonsState;
 
 @end

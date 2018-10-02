@@ -100,6 +100,7 @@
 - (id<MediaManager>)mediaManager;
 - (Processes *)processesPanel;
 - (Recycler *)recycler;
+- (Finder *)finder;
 
 //============================================================================
 // Appicon badges

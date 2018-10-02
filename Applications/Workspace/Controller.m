@@ -251,6 +251,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                               viewer:[winInfo objectForKey:@"ViewerType"]
                               isRoot:YES];
         rootViewerWindow = [fv window];
+        rootViewer = fv;
       }
       else {
         fv = [self newViewerRootedAt:[winInfo objectForKey:@"RootPath"]
@@ -701,6 +702,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   return recycler;
 }
 
+- (Finder *)finder
+{
+  if (finder == nil) {
+    finder = [[Finder alloc] initWithFileViewer:rootViewer];
+  }
+  return finder;
+}
+
 //============================================================================
 // Appicon badges
 //============================================================================
@@ -896,10 +905,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Tools
 - (void)showFinder:(id)sender
 {
-  if (finder == nil) {
-    finder = [[Finder alloc] init];
-  }
-  [finder activate];
+  [[self finder] activateWithString:@""];
 }
 
 - (void)showProcesses:(id)sender
