@@ -41,6 +41,7 @@
 {
   NSLog(@"Finder: dealloc");
 
+  [resultIcon release];
   [window release];
   
   [super dealloc];
@@ -89,6 +90,9 @@
   [resultList setRefusesFirstResponder:YES];
   [resultList setTarget:self];
   [resultList setAction:@selector(listItemClicked:)];
+
+  [resultIcon retain];
+  [resultIcon removeFromSuperview];
 }
 
 - (void)activateWithString:(NSString *)searchString
@@ -106,9 +110,7 @@
     [NXIconView setDefaultSlotSize:slotSize];
     [NSBundle loadNibNamed:@"Finder" owner:self];
   }
-  else {
-    [resultList reloadColumn:0];
-  }
+  [resultList reloadColumn:0];
 
   if ([searchString length] > 0) {
     [findField setStringValue:searchString];
@@ -130,6 +132,12 @@
   [window close];
 }
 
+- (void)windowWillClose:(NSNotification *)notif
+{
+  [variantList release];
+  variantList = nil;
+}
+
 // --- Utility
 
 - (NSArray *)completionFor:(NSString *)path
@@ -145,8 +153,6 @@
   if (!path || [path length] == 0 || [path isEqualToString:@""]) {
     return variants;
   }
-
-  // NSLog(@"completionFor:%@", command);
 
   c_t = [path cString];
   if (c_t[0] == '/') {
@@ -170,7 +176,7 @@
     while ([fm fileExistsAtPath:pathBase isDirectory:&isDir] == NO) {
       pathBase = [pathBase stringByDeletingLastPathComponent];
     }
-    dirContents = [fm directoryContentsAtPath:pathBase];
+    dirContents = [fileViewer directoryContentsAtPath:pathBase forPath:nil];
     for (NSString *file in dirContents) {
       absPath = [pathBase stringByAppendingPathComponent:file];
       if ([absPath rangeOfString:path].location == 0) {
@@ -196,6 +202,10 @@
     [variantList release];
   }
   variantList = [self completionFor:enteredText];
+  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
+                                         [variantList count]]];
+  // [resultIcon setImage:nil];
+  // [resultIcon setPaths:nil];
 
   if ([variantList count] > 0) {
     NSFileManager  *fm = [NSFileManager defaultManager];
@@ -211,27 +221,24 @@
           path = [path stringByAppendingString:@"/"];
         }
       }
-      else {
-        path = [path stringByDeletingLastPathComponent];
-      }
     }
 
-    // Set field value to first variant
-    [resultList selectRow:0 inColumn:0];
-    variant = [variantList objectAtIndex:0];
-    resultIndex = 0;
-
-    path = [path stringByAppendingPathComponent:variant];
     [findField setStringValue:path];
     [findField deselectText];
-  
+    
+    // Set field value to first variant
     if ([variantList count] == 1) {
+      // [resultList selectRow:0 inColumn:0];
+      // resultIndex = 0;
+      variant = [variantList objectAtIndex:0];
+      path = [path stringByDeletingLastPathComponent];
+      [findField setStringValue:[path stringByAppendingPathComponent:variant]];
       [findField deselectText];
     }
-    else {
-      [fieldEditor
-        setSelectedRange:NSMakeRange([path length] - [variant length], [variant length])];
-    }
+    // else {
+    //   [fieldEditor
+    //     setSelectedRange:NSMakeRange([path length] - [variant length], [variant length])];
+    // }
   }
   else {
     [resultList reloadColumn:0];
@@ -266,48 +273,31 @@
     return;
   }
 
+  [resultsFound setStringValue:@""];
+  [resultIcon setPaths:nil];
+  [resultIcon removeFromSuperview];
+
   // Do not make completion if text in field was shrinked
   // text = [field stringValue];
   // if ([text length] > [savedCommand length]) {
     // [self makeCompletion];
   // }
 
-  [self updateButtonsState];
+  // [self updateButtonsState];
 }
 - (void)findFieldKeyUp:(NSEvent *)theEvent
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
 
   switch(c) {
-  // case NSDeleteFunctionKey:
-  // case NSDeleteCharacter:
-  //   {
-  //     NSText  *text = [window fieldEditor:NO forObject:findField];
-  //     NSRange selectedRange = [text selectedRange];
-      
-  //     if (selectedRange.length > 0) {
-  //       [text replaceRange:selectedRange withString:@""];
-  //     }
-
-  //     if ([[findField stringValue] length] > 0) {
-  //       if (variantList)
-  //         [variantList release];
-  //       variantList = [self completionFor:[findField stringValue]];
-  //       [resultList reloadColumn:0];
-  //       resultIndex = -1;
-  //     }
-  //     [self updateButtonsState];
-  //   }
-  //   break;
   case NSTabCharacter:
-    [window makeFirstResponder:resultList];
+    [window makeFirstResponder:findField];
     break;
   case 27: // Escape
     [self makeCompletion];
     break;
   case NSCarriageReturnCharacter:
   case NSEnterCharacter:
-    [self makeCompletion];
     [fileViewer displayPath:[findField stringValue] selection:nil sender:self];
     [self deactivate];
   default:
@@ -336,15 +326,22 @@
 - (void)listItemClicked:(id)sender
 {
   NSInteger selRow;
+  NSString  *item, *path;
 
   if (sender != resultList)
     return;
-  
-  resultIndex = [sender selectedRowInColumn:0];
-  [findField setStringValue:[completionSource objectAtIndex:resultIndex]];
-  [self updateButtonsState];
+
+  resultIndex = [resultList selectedRowInColumn:0];
+  item = [variantList objectAtIndex:resultIndex];
+  path = [[findField stringValue] stringByAppendingPathComponent:item];
+  [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
+  [resultIcon setPaths:@[path]];
+  [resultIcon setSelected:YES];
+  [resultIcon setEditable:NO];
+  [[window contentView] addSubview:resultIcon];
   
   [window makeFirstResponder:findField];
+  [findField deselectText];
 }
 
 @end
@@ -353,9 +350,10 @@
 
 - (void)initShelf
 {
-  NSDictionary *aDict = [[NXDefaults userDefaults] objectForKey:@"FinderShelfContents"];
+  NSDictionary *aDict;
   PathIcon     *icon;
 
+  aDict = [[NXDefaults userDefaults] objectForKey:@"FinderShelfContents"];
   if (!aDict || [aDict isKindOfClass:[NSDictionary class]]) {
     // Home
     icon = [self createIconForPaths:@[NSHomeDirectory()]];
@@ -364,14 +362,7 @@
       [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
       [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
       [icon setEditable:NO];
-    }
-
-    // /
-    icon = [self createIconForPaths:@[@"/"]];
-    if (icon) {
-      [icon setDelegate:self];
-      [shelf putIcon:icon intoSlot:NXMakeIconSlot(1,0)];
-      [icon setEditable:NO];
+      [icon setSelected:YES];
     }
     return;
   }

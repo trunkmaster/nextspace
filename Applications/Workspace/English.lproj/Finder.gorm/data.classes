@@ -11,8 +11,8 @@
 	    findButton,
 	    findScopeButton,
 	    shelf,
-	    icon,
-	    resulsFound
+	    resultIcon,
+	    resultsFound
 	);
 	Super = NSObject;
     };
@@ -22,12 +22,26 @@
 	);
 	Super = NSObject;
     };
+    NXIcon = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
     NXIconView = {
 	Actions = (
 	);
 	Outlets = (
 	);
 	Super = NSView;
+    };
+    PathIcon = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NXIcon;
     };
     WMFindField = {
 	Actions = (
