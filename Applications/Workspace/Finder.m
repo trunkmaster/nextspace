@@ -158,17 +158,11 @@
     isAbsolute = YES;
   }
   else if (([path length] > 1) && (c_t[0] == '.' && c_t[1] == '/')) {
-    path = [path stringByReplacingCharactersInRange:NSMakeRange(0,1)
+    path = [path stringByReplacingCharactersInRange:NSMakeRange(0,2)
                                          withString:NSHomeDirectory()];
     isAbsolute = YES;
   }
 
-  if ([path characterAtIndex:[path length]-1] != '/') {
-    path = [path stringByAppendingString:@"/"];
-  }
-  [findField setStringValue:path];
-  [findField deselectText];
-  
   if (isAbsolute) {
     NSString *pathBase = [NSString stringWithString:path];
     
@@ -185,6 +179,9 @@
     }
   }
   
+  [findField setStringValue:path];
+  [findField deselectText];  
+
   return variants;
 }
 
@@ -201,16 +198,39 @@
   variantList = [self completionFor:enteredText];
 
   if ([variantList count] > 0) {
+    NSFileManager  *fm = [NSFileManager defaultManager];
+    BOOL           isDir;
+    NSString       *path = [findField stringValue];
+    
     [resultList reloadColumn:0];
-    if ([variantList count] == 1) {
-      [resultList selectRow:0 inColumn:0];
-      variant = [variantList objectAtIndex:0];
-      resultIndex = 0;
 
-      [findField setStringValue:variant];
-      selLocation = [enteredText length];
-      selLength = [variant length] - selLocation;
-      [fieldEditor setSelectedRange:NSMakeRange(selLocation, selLength)];
+    // Append '/' to dir name or shrink enetered path to exxisting dir
+    if ([path characterAtIndex:[path length]-1] != '/') {
+      if ([fm fileExistsAtPath:path isDirectory:&isDir]) {
+        if (isDir != NO) {
+          path = [path stringByAppendingString:@"/"];
+        }
+      }
+      else {
+        path = [path stringByDeletingLastPathComponent];
+      }
+    }
+
+    // Set field value to first variant
+    [resultList selectRow:0 inColumn:0];
+    variant = [variantList objectAtIndex:0];
+    resultIndex = 0;
+
+    path = [path stringByAppendingPathComponent:variant];
+    [findField setStringValue:path];
+    [findField deselectText];
+  
+    if ([variantList count] == 1) {
+      [findField deselectText];
+    }
+    else {
+      [fieldEditor
+        setSelectedRange:NSMakeRange([path length] - [variant length], [variant length])];
     }
   }
   else {
@@ -259,26 +279,26 @@
   unichar c = [[theEvent characters] characterAtIndex:0];
 
   switch(c) {
-  case NSDeleteFunctionKey:
-  case NSDeleteCharacter:
-    {
-      NSText  *text = [window fieldEditor:NO forObject:findField];
-      NSRange selectedRange = [text selectedRange];
+  // case NSDeleteFunctionKey:
+  // case NSDeleteCharacter:
+  //   {
+  //     NSText  *text = [window fieldEditor:NO forObject:findField];
+  //     NSRange selectedRange = [text selectedRange];
       
-      if (selectedRange.length > 0) {
-        [text replaceRange:selectedRange withString:@""];
-      }
+  //     if (selectedRange.length > 0) {
+  //       [text replaceRange:selectedRange withString:@""];
+  //     }
 
-      if ([[findField stringValue] length] > 0) {
-        if (variantList)
-          [variantList release];
-        variantList = [self completionFor:[findField stringValue]];
-        [resultList reloadColumn:0];
-        resultIndex = -1;
-      }
-      [self updateButtonsState];
-    }
-    break;
+  //     if ([[findField stringValue] length] > 0) {
+  //       if (variantList)
+  //         [variantList release];
+  //       variantList = [self completionFor:[findField stringValue]];
+  //       [resultList reloadColumn:0];
+  //       resultIndex = -1;
+  //     }
+  //     [self updateButtonsState];
+  //   }
+  //   break;
   case NSTabCharacter:
     [window makeFirstResponder:resultList];
     break;
