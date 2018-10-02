@@ -2,24 +2,23 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     Finder = {
 	Actions = (
-	    "runCommand:",
-	    "runInTerminal:"
+	    "performFind:"
 	);
 	Outlets = (
 	    findField,
 	    window,
-	    runInTerminal,
-	    completionList,
+	    resultList,
 	    findButton,
 	    findScopeButton,
-	    shelf
+	    shelf,
+	    icon,
+	    resulsFound
 	);
 	Super = NSObject;
     };
     FirstResponder = {
 	Actions = (
-	    "runInTerminal:",
-	    "runCommand:"
+	    "performFind:"
 	);
 	Super = NSObject;
     };

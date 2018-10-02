@@ -50,6 +50,7 @@
 #import <Operations/Sizer.h>
 
 #import <Preferences/Browser/BrowserPrefs.h>
+#import <Finder.h>
 
 #define NOTIFICATION_CENTER [NSNotificationCenter defaultCenter]
 #define WIN_MIN_HEIGHT 380
@@ -57,6 +58,8 @@
 #define SPLIT_DEF_WIDTH WIN_DEF_WIDTH-16
 
 @interface FileViewerWindow : NSWindow
+// Delegate method
+- (void)handleWindowKeyUp:(NSEvent *)theEvent;
 @end
 
 @implementation FileViewerWindow
@@ -81,8 +84,15 @@
       return;
     }
   }
+  else if ([theEvent type] == NSKeyUp) {
+    [_delegate handleWindowKeyUp:theEvent];
+  }  
 
   [super sendEvent:theEvent];
+}
+// Delegate method
+- (void)handleWindowKeyUp:(NSEvent *)theEvent
+{
 }
 @end
 
@@ -1285,6 +1295,25 @@
     {
       [window setDocumentEdited:NO];
     }
+}
+
+- (void)handleWindowKeyUp:(NSEvent *)theEvent
+{
+  unichar  c = [[theEvent characters] characterAtIndex:0];
+  NSString *string;
+
+  NSLog(@"[FileViewer] window received key up: %X", c);
+
+  switch (c) {
+  case '/':
+  case '~':
+    string = [NSString stringWithCharacters:&c length:1];
+    [[[NSApp delegate] finder] activateWithString:string];
+    break;
+  case 27:
+    [[[NSApp delegate] finder] activateWithString:displayedPath];
+    break;
+  }
 }
 
 //=============================================================================
