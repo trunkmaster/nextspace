@@ -13,10 +13,10 @@
   id findButton;
   id findField;
   id findScopeButton;
-  id runInTerminal;
   id resultList;
+  id resultsFound;
+  id resultIcon;
 
-  NSArray   *completionSource;
   NSArray   *variantList;
   NSInteger resultIndex;
 

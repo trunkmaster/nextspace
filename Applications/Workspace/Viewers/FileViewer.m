@@ -58,7 +58,6 @@
 #define SPLIT_DEF_WIDTH WIN_DEF_WIDTH-16
 
 @interface FileViewerWindow : NSWindow
-// Delegate method
 - (void)handleWindowKeyUp:(NSEvent *)theEvent;
 @end
 
@@ -90,9 +89,9 @@
 
   [super sendEvent:theEvent];
 }
-// Delegate method
 - (void)handleWindowKeyUp:(NSEvent *)theEvent
 {
+  // Should be implemented by delegate
 }
 @end
 
@@ -1302,7 +1301,7 @@
   unichar  c = [[theEvent characters] characterAtIndex:0];
   NSString *string;
 
-  NSLog(@"[FileViewer] window received key up: %X", c);
+  // NSLog(@"[FileViewer] window received key up: %X", c);
 
   switch (c) {
   case '/':
@@ -1311,7 +1310,7 @@
     [[[NSApp delegate] finder] activateWithString:string];
     break;
   case 27:
-    [[[NSApp delegate] finder] activateWithString:displayedPath];
+    [[[NSApp delegate] finder]  activateWithString:[self absolutePath]];
     break;
   }
 }
