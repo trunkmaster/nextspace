@@ -64,7 +64,7 @@
   // Shelf
   [shelf setAutoAdjustsToFitIcons:NO];
   [shelf setAllowsMultipleSelection:YES];
-  // [shelf setAllowsEmptySelection:NO];
+  // [shelf setAllowsEmptySelection:NO]; // TODO: implement in NXIconView
   [shelf setAllowsAlphanumericSelection:NO];
   [shelf registerForDraggedTypes:@[NSFilenamesPboardType]];
   [shelf setTarget:self];
@@ -93,12 +93,12 @@
   // Icon at the right of text field
   [iconPlace setBorderType:NSNoBorder];
   resultIcon = [[PathIcon alloc] init];
-  [resultIcon setIconSize:NSMakeSize(66, 56)];
+  [resultIcon setIconSize:NSMakeSize(66, 52)];
   [resultIcon setEditable:NO];
   [resultIcon setSelected:YES];
+  [resultIcon setPaths:@[@"me"]];
   [resultIcon setMaximumCollapsedLabelWidth:50];
   [resultIcon setShowsExpandedLabelWhenSelected:NO];
-  [resultIcon removeFromSuperview];
 }
 
 - (void)activateWithString:(NSString *)searchString
@@ -113,7 +113,7 @@
     else {
       slotSize = NSMakeSize(76, 76);
     }
-    [NXIcon setDefaultIconSize:NSMakeSize(66, 52)];
+    [NXIcon setDefaultIconSize:NSMakeSize(66, 56)];
     [NXIconView setDefaultSlotSize:slotSize];
     [NSBundle loadNibNamed:@"Finder" owner:self];
   }
@@ -143,6 +143,11 @@
 {
   [variantList release];
   variantList = nil;
+}
+
+- (NSWindow *)window
+{
+  return window;
 }
 
 // --- Utility
@@ -211,8 +216,6 @@
   variantList = [self completionFor:enteredText];
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
                                          [variantList count]]];
-  // [resultIcon setImage:nil];
-  // [resultIcon setPaths:nil];
 
   if ([variantList count] > 0) {
     NSFileManager  *fm = [NSFileManager defaultManager];
@@ -286,8 +289,13 @@
   [self restoreSelection];
   
   text = [field stringValue];
-  if ([text characterAtIndex:[text length]-1] == '/') {
+  if ([text length] > 0 && [text characterAtIndex:[text length]-1] == '/') {
     [self makeCompletion];
+  }
+  else {
+    [variantList release];
+    variantList = nil;
+    [resultList reloadColumn:0];
   }
 
   [self updateButtonsState];
@@ -454,7 +462,7 @@
 
 - (void)restoreSelection
 {
-  if ([savedSelection count] <= 0)
+  if (!savedSelection || [savedSelection count] <= 0)
     return;
 
   for (PathIcon *icon in savedSelection) {
