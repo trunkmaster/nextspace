@@ -93,7 +93,7 @@
   // Icon at the right of text field
   [iconPlace setBorderType:NSNoBorder];
   resultIcon = [[PathIcon alloc] init];
-  [resultIcon setIconSize:NSMakeSize(66, 52)];
+  [resultIcon setIconSize:NSMakeSize(66, 56)];
   [resultIcon setEditable:NO];
   [resultIcon setSelected:YES];
   [resultIcon setMaximumCollapsedLabelWidth:50];
@@ -283,7 +283,7 @@
 
   [resultsFound setStringValue:@""];
   [resultIcon removeFromSuperview];
-  [shelf restoreSelection];
+  [self restoreSelection];
   
   text = [field stringValue];
   if ([text characterAtIndex:[text length]-1] == '/') {
@@ -352,12 +352,11 @@
   [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
   [resultIcon setPaths:@[path]];
   if (![resultIcon superview]) {
-    [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,46)];
+    [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,48)];
     [self resignSelection];
   }
   
   [window makeFirstResponder:findField];
-  [findField deselectText];
 }
 
 @end
@@ -376,9 +375,9 @@
     if (icon) {
       [icon setDelegate:self];
       [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
-      [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
       [icon setEditable:NO];
-      [icon setSelected:YES];
+      [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
+      [shelf selectIcons:[NSSet setWithObject:icon]];
     }
     return;
   }
