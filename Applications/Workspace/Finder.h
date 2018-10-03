@@ -16,6 +16,7 @@
   id resultList;
   id resultsFound;
   id resultIcon;
+  id iconPlace;
 
   NSArray   *variantList;
   NSInteger resultIndex;

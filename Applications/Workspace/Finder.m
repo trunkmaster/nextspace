@@ -85,13 +85,19 @@
   // Browser list
   [resultList loadColumnZero];
   [resultList setTakesTitleFromPreviousColumn:NO];
-  [resultList setTitle:@"History" ofColumn:0];
   [resultList scrollColumnToVisible:0];
   [resultList setRefusesFirstResponder:YES];
   [resultList setTarget:self];
   [resultList setAction:@selector(listItemClicked:)];
 
-  [resultIcon retain];
+  // Icon at the right of text field
+  [iconPlace setBorderType:NSNoBorder];
+  resultIcon = [[PathIcon alloc] init];
+  [resultIcon setIconSize:NSMakeSize(66, 52)];
+  [resultIcon setEditable:NO];
+  [resultIcon setSelected:YES];
+  [resultIcon setMaximumCollapsedLabelWidth:50];
+  [resultIcon setShowsExpandedLabelWhenSelected:NO];
   [resultIcon removeFromSuperview];
 }
 
@@ -107,6 +113,7 @@
     else {
       slotSize = NSMakeSize(76, 76);
     }
+    [NXIcon setDefaultIconSize:NSMakeSize(66, 52)];
     [NXIconView setDefaultSlotSize:slotSize];
     [NSBundle loadNibNamed:@"Finder" owner:self];
   }
@@ -260,30 +267,29 @@
     isEnabled = NO;
   }
   [findButton setEnabled:isEnabled];
+  [findScopeButton setEnabled:isEnabled];
 }
 
 // --- Command text field delegate
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  NSTextField    *field = [aNotification object];
-  NSString       *text;
+  NSTextField *field = [aNotification object];
+  NSString    *text;
 
   if (field != findField ||![field isKindOfClass:[NSTextField class]]) {
     return;
   }
 
   [resultsFound setStringValue:@""];
-  [resultIcon setPaths:nil];
   [resultIcon removeFromSuperview];
+  
+  text = [field stringValue];
+  if ([text characterAtIndex:[text length]-1] == '/') {
+    [self makeCompletion];
+  }
 
-  // Do not make completion if text in field was shrinked
-  // text = [field stringValue];
-  // if ([text length] > [savedCommand length]) {
-    // [self makeCompletion];
-  // }
-
-  // [self updateButtonsState];
+  [self updateButtonsState];
 }
 - (void)findFieldKeyUp:(NSEvent *)theEvent
 {
@@ -292,6 +298,7 @@
   switch(c) {
   case NSTabCharacter:
     [window makeFirstResponder:findField];
+    [self deactivate];
     break;
   case 27: // Escape
     [self makeCompletion];
@@ -327,18 +334,28 @@
 {
   NSInteger selRow;
   NSString  *item, *path;
+  NXIcon    *sIcon;
 
   if (sender != resultList)
     return;
 
   resultIndex = [resultList selectedRowInColumn:0];
   item = [variantList objectAtIndex:resultIndex];
-  path = [[findField stringValue] stringByAppendingPathComponent:item];
+
+  path = [findField stringValue];
+  if ([path characterAtIndex:[path length]-1] != '/') {
+    path = [path stringByDeletingLastPathComponent];
+  }
+  path = [path stringByAppendingPathComponent:item];
+  
   [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
   [resultIcon setPaths:@[path]];
-  [resultIcon setSelected:YES];
-  [resultIcon setEditable:NO];
-  [[window contentView] addSubview:resultIcon];
+  if (![resultIcon superview]) {
+    [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,46)];
+    sIcon = [shelf iconInSlot:NXMakeIconSlot(0,0)];
+    [sIcon setSelected:NO];
+    [[sIcon label] setTextColor:[NSColor whiteColor]];
+  }
   
   [window makeFirstResponder:findField];
   [findField deselectText];
