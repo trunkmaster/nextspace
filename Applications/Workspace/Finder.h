@@ -31,6 +31,7 @@
   
 - (void)activateWithString:(NSString *)searchString;
 - (void)deactivate;
+- (NSWindow *)window;
 
 - (void)updateButtonsState;
 

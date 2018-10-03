@@ -172,7 +172,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   NSString       *winState, *type;
   FileViewer     *_rootFileViewer;
 
-  // 1. Console
+  // Console
   if (console) {
     winState = WWMWindowState([console window]);
     if (winState) {
@@ -183,17 +183,31 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       }
       [console deactivate];
     }
+    [console release];
   }
-  
-  // 2. Panels: Processes, Inspector, Finder.
+  // Inspector
   if (inspector && [[inspector window] isVisible]) {
     [inspector deactivateInspector:self];
   }
+  // Processes
   if (procPanel && [[procPanel window] isVisible]) {
     [[procPanel window] close];
   }
+  // Finder
+  if (finder) {
+    winState = WWMWindowState([finder window]);
+    if (winState) {
+      winInfo = @{@"Type":@"Finder", @"State":winState};
+      [windows addObject:winInfo];
+      if ([winState isEqualToString:@"Shaded"]) {
+        wUnshadeWindow(wWindowFor(X_WINDOW([finder window])));
+      }
+      [finder deactivate];
+    }
+    [finder release];
+  }
   
-  // 3. Viewers
+  // Viewers
   for (FileViewer *fv in _fvs) {
     winState = WWMWindowState([fv window]);
     if (winState) {
@@ -237,6 +251,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   FileViewer          *fv;
   NSWindow            *window;
   NSWindow            *rootViewerWindow = nil;
+  BOOL                showFinder = NO;
 
   // Restore saved windows
   for (NSDictionary *winInfo in savedWindows) {
@@ -278,6 +293,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [winViews addObject:winViewInfo];
       [winViewInfo release];
     }
+    else if ([winType isEqualToString:@"Finder"]) {
+      winViewInfo = [NSMutableDictionary dictionaryWithDictionary:winInfo];
+      [winViewInfo setObject:[console window] forKey:@"Window"];
+      [winViews addObject:winViewInfo];
+      [winViewInfo release];
+
+      showFinder = YES;
+    }
   }
 
   if (rootViewerWindow == nil) {
@@ -308,6 +331,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   if ([rootViewerWindow isMiniaturized] == NO) {
     [rootViewerWindow makeKeyAndOrderFront:self];
+  }
+
+  if (showFinder != NO) {
+    [self showFinder:self];
   }
 }
 
