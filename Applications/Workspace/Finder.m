@@ -283,6 +283,7 @@
 
   [resultsFound setStringValue:@""];
   [resultIcon removeFromSuperview];
+  [shelf restoreSelection];
   
   text = [field stringValue];
   if ([text characterAtIndex:[text length]-1] == '/') {
@@ -352,9 +353,7 @@
   [resultIcon setPaths:@[path]];
   if (![resultIcon superview]) {
     [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,46)];
-    sIcon = [shelf iconInSlot:NXMakeIconSlot(0,0)];
-    [sIcon setSelected:NO];
-    [[sIcon label] setTextColor:[NSColor whiteColor]];
+    [self resignSelection];
   }
   
   [window makeFirstResponder:findField];
@@ -439,6 +438,31 @@
   }
 
   return [dict autorelease];
+}
+
+- (void)resignSelection
+{
+  NSSet *selectedIcons = [shelf selectedIcons];
+  
+  ASSIGN(savedSelection, [NSSet setWithSet:selectedIcons]);
+
+  for (PathIcon *icon in selectedIcons) {
+    [icon setSelected:NO];
+    [[icon label] setTextColor:[NSColor whiteColor]];
+    [[icon shortLabel] setTextColor:[NSColor whiteColor]];
+  }
+}
+
+- (void)restoreSelection
+{
+  if ([savedSelection count] <= 0)
+    return;
+
+  for (PathIcon *icon in savedSelection) {
+    [icon setSelected:YES];
+    [[icon label] setTextColor:[NSColor blackColor]];
+    [[icon shortLabel] setTextColor:[NSColor blackColor]];
+  }
 }
 
 - (void)iconClicked:(id)sender

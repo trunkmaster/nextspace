@@ -22,6 +22,9 @@
   NSInteger resultIndex;
 
   BOOL isRunInTerminal;
+
+  // Shelf
+  NSSet *savedSelection;
 }
 
 - initWithFileViewer:(FileViewer *)fv;
@@ -36,6 +39,8 @@
 @interface Finder (Shelf)
 - (void)initShelf;
 - (NSDictionary *)shelfRepresentation;
+- (void)resignSelection;
+- (void)restoreSelection;
 - (PathIcon *)createIconForPaths:(NSArray *)paths;
 
 @end
