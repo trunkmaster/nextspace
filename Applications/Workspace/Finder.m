@@ -64,12 +64,12 @@
   // Shelf
   [shelf setAutoAdjustsToFitIcons:NO];
   [shelf setAllowsMultipleSelection:YES];
-  // [shelf setAllowsEmptySelection:NO]; // TODO: implement in NXIconView
+  [shelf setAllowsEmptySelection:NO];
   [shelf setAllowsAlphanumericSelection:NO];
   [shelf registerForDraggedTypes:@[NSFilenamesPboardType]];
   [shelf setTarget:self];
   [shelf setDelegate:self];
-  [shelf setAction:@selector(iconClicked:)];
+  // [shelf setAction:@selector(iconClicked:)];
   // [shelf setDoubleAction:@selector(iconDoubleClicked:)];
   // [shelf setDragAction:@selector(iconDragged:event:)];
   [[NSNotificationCenter defaultCenter]
@@ -470,11 +470,6 @@
     [[icon label] setTextColor:[NSColor blackColor]];
     [[icon shortLabel] setTextColor:[NSColor blackColor]];
   }
-}
-
-- (void)iconClicked:(id)sender
-{
-  // Set icon path as root path for search
 }
 
 - (PathIcon *)createIconForPaths:(NSArray *)paths
