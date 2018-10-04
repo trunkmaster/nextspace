@@ -210,6 +210,20 @@
   NSText     *fieldEditor = [window fieldEditor:NO forObject:findField];
   NSUInteger selLocation, selLength;
 
+  if ([enteredText length] == 0) {
+    PathIcon *homeIcon = [shelf iconInSlot:NXMakeIconSlot(0,0)];
+    NSSet    *selectedIcons = [shelf selectedIcons];
+    if ([selectedIcons count] == 1) {
+      PathIcon *icon = [selectedIcons anyObject];
+      if (icon != homeIcon) {
+        enteredText = [[icon paths] objectAtIndex:0];
+      }
+      else {
+        enteredText = [[homeIcon paths] objectAtIndex:0];
+      }
+    }
+  }
+
   if (variantList) {
     [variantList release];
   }
