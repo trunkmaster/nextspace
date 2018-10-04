@@ -92,6 +92,7 @@ static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
 
   BOOL selectable;
   BOOL allowsMultipleSelection;
+  BOOL allowsEmptySelection;
 
   id target;
   id delegate;
@@ -117,8 +118,8 @@ static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
   /** Selected slot with maximum x and y - bottom right*/
   NXIconSlot maxSelectedIconSlot;
 
-  NSString * lastAlphaString;
-  NSDate * lastHitDate;
+  NSString *lastAlphaString;
+  NSDate   *lastHitDate;
 
   /// This contains the saved result of draggingEntered...
   unsigned int dragEnteredResult;
@@ -263,64 +264,55 @@ static inline NXIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
     a selection rectangle around them or shift-clicking.
     For various icon selection modes see "NXIconSelectionMode".*/
 - (void)setAllowsMultipleSelection:(BOOL)flag;
-/** Returns YES if the receiver allows multiple selection, and NO otherwise.*/
 - (BOOL)allowsMultipleSelection;
+
+- (void)setAllowsEmptySelection:(BOOL)flag;
+- (BOOL)allowsEmptySelection;
 
 /** Sets whether the user can selection icons using the arrow keys. */
 - (void)setAllowsArrowsSelection:(BOOL)flag;
-/** Returns YES if the user can selection icons using arrow keys, and
-    NO otherwise. */
 - (BOOL)allowsArrowsSelection;
 
 /** Sets whether the user can select an icon by simply typing the
     label of the icon. The selection will be updated continuosly as
     the user types. */
 - (void)setAllowsAlphanumericSelection:(BOOL)flag;
-/** Returns YES if the user can select an icon by typing it's label, and
-    NO otherwise. */
 - (BOOL)allowsAlphanumericSelection;
 
 /** Sets whether the receiver should send a double action to its target
     when the user hits the return key in it. */
 - (void)setSendsDoubleActionOnReturn:(BOOL)flag;
-/** Returns YES if the receiver should send double actions on return key
-    presses, and NO otherwise. See -[NXIconView
-    setSendsDoubleActionOnReturn:]. */
 - (BOOL)sendsDoubleActionOnReturn;
 
 /** Sets the action target. */
 - (void)setTarget:aTarget;
-/** Returns the action target. */
-- target;
+- (id)target;
 
 /** Sets the delegate object. */
 - (void)setDelegate:aDelegate;
 /** Returns the delegate object. */
-- delegate;
+- (id)delegate;
 
 /** Sets the message to send to the target when an icon is clicked. */
 - (void)setAction:(SEL)anAction;
-/** Returns the icon click message. See -[NXIconView setAction:]. */
 - (SEL)action;
 
 /** Sets the message to send to the target when an icon is double-clicked.*/
 - (void)setDoubleAction:(SEL)anAction;
-/** Returns the icon double-click message. See -[NXIconView setDoubleAction:]. */
 - (SEL)doubleAction;
 
 /** Sets the message to send to the target when a drag action in an
     icon occurs. Also the "sender" and "event" arguments passed are
     those of the sending icon. */
 - (void)setDragAction:(SEL)anAction;
-/** Returns the current drag-action for icon dragging. */
 - (SEL)dragAction;
 
 /** Makes the receiver select the passed icons in exclusive mode. */
 - (void)selectIcons:(NSSet *)someIcons;
+- (void)selectIcons:(NSSet *)someIcons withModifiers:(unsigned)flags;
 
 /** Returns the currently selected icons. */
 - (NSSet *)selectedIcons;
-- (void)selectIcons:(NSSet *)someIcons withModifiers:(unsigned)flags;
 
 /** Causes the receiver to select all icons it contains. */
 - (void)selectAll:sender;
