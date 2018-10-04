@@ -132,6 +132,7 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
   selectable = YES;
   allowsMultipleSelection = YES;
+  allowsEmptySelection = YES;
   allowsArrowsSelection = YES;
   allowsAlphanumericSelection = YES;
 
@@ -757,6 +758,16 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   return allowsMultipleSelection;
 }
 
+- (void)setAllowsEmptySelection:(BOOL)flag
+{
+  allowsEmptySelection = flag;
+}
+
+- (BOOL)allowsEmptySelection
+{
+  return allowsEmptySelection;
+}
+
 - (void)setAllowsArrowsSelection:(BOOL)flag
 {
   allowsArrowsSelection = flag;
@@ -802,14 +813,10 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   if ([ev clickCount] >= 2)
     return;
 
-  // in case we don't allow multiple selections and we've been
-  // clicked, just deselect all icons and return
+  // In this case only direct icon click allowed
   if (allowsMultipleSelection == NO) {
-    [self updateSelectionWithIcons:nil modifierFlags:0];
     return;
   }
-
-  // haveEnclosingScrollView = ([self enclosingScrollView] != nil);
 
   p = [self convertPoint:[ev locationInWindow] fromView:nil];
   modifierFlags = [ev modifierFlags];
@@ -893,7 +900,9 @@ static inline NXIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
     [sel addObject:icon];
   }
 
-  [self updateSelectionWithIcons:sel modifierFlags:modifierFlags];
+  if ([sel count] > 0 || allowsEmptySelection == YES) {
+    [self updateSelectionWithIcons:sel modifierFlags:modifierFlags];
+  }
 }
 
 - (void)keyDown:(NSEvent *)ev
