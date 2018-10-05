@@ -616,7 +616,7 @@
     [matrix addRow];
   }
   
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+  dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
       NSString *fPath = [NSString stringWithString:fullPath];
       NSArray  *dc = [dirContents copy];
     
