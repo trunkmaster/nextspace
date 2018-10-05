@@ -16,6 +16,8 @@
     - dragging icon out removes icon from the Shelf;
     - no persistant visible selection of icons;
     - doesn't accept FirstResponder state.
+
+    @author 2018 Sergii Stoian
 */
 
 #import <NXAppKit/NXIconView.h>

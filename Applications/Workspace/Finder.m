@@ -243,26 +243,33 @@
   NSText     *fieldEditor = [window fieldEditor:NO forObject:findField];
   NSUInteger selLocation, selLength;
 
-  if ([enteredText length] == 0) {
-    PathIcon *homeIcon = [shelf iconInSlot:NXMakeIconSlot(0,0)];
-    NSSet    *selectedIcons = [shelf selectedIcons];
-    PathIcon *icon = [selectedIcons anyObject];
-    
-    if ([selectedIcons count] == 1 && (icon != homeIcon)) {
-      enteredText = [[icon paths] objectAtIndex:0];
-    }
-    else {
-      enteredText = [[homeIcon paths] objectAtIndex:0];
-    }
-  }
-
   if (variantList) {
     [variantList release];
   }
-  variantList = [self completionFor:enteredText];
+  
+  if ([enteredText length] == 0) {
+    NSSet  *selectedIcons = [shelf selectedIcons];
+    
+    if ([selectedIcons count] > 1) {
+      NSMutableArray *variants = [[NSMutableArray alloc] init];
+      for (PathIcon *icon in selectedIcons) {
+        [variants addObjectsFromArray:[icon paths]];
+      }
+      variantList = [[NSArray alloc] initWithArray:variants];
+      [variants release];
+    }
+    else {
+      enteredText = [[[selectedIcons anyObject] paths] objectAtIndex:0];
+      variantList = [self completionFor:enteredText];
+    }
+  }
+  else {
+    variantList = [self completionFor:enteredText];
+  }
+
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
                                          [variantList count]]];
-
+  
   if ([variantList count] > 0) {
     NSFileManager  *fm = [NSFileManager defaultManager];
     BOOL           isDir;
@@ -270,8 +277,8 @@
     
     [resultList reloadColumn:0];
 
-    // Append '/' to dir name or shrink enetered path to exxisting dir
-    if ([path characterAtIndex:[path length]-1] != '/') {
+    // Append '/' to dir name or shrink enetered path to existing dir
+    if ([path length] > 0 && [path characterAtIndex:[path length]-1] != '/') {
       if ([fm fileExistsAtPath:path isDirectory:&isDir]) {
         if (isDir != NO) {
           path = [path stringByAppendingString:@"/"];
@@ -284,17 +291,11 @@
     
     // Set field value to first variant
     if ([variantList count] == 1) {
-      // [resultList selectRow:0 inColumn:0];
-      // resultIndex = 0;
       variant = [variantList objectAtIndex:0];
       path = [path stringByDeletingLastPathComponent];
       [findField setStringValue:[path stringByAppendingPathComponent:variant]];
       [findField deselectText];
     }
-    // else {
-    //   [fieldEditor
-    //     setSelectedRange:NSMakeRange([path length] - [variant length], [variant length])];
-    // }
   }
   else {
     [resultList reloadColumn:0];
@@ -352,11 +353,29 @@
 
   switch(c) {
   case NSTabCharacter:
-    [window makeFirstResponder:findField];
-    [self deactivate];
+    if (resultIndex > 0 && resultIndex >= [variantList count]-1) {
+      [resultList reloadColumn:0];
+      resultIndex = -1;
+      [resultIcon removeFromSuperview];
+      [self restoreSelection];
+      [window makeFirstResponder:findField];
+      [findField deselectText];
+    }
+    else {
+      resultIndex++;
+      [resultList selectRow:resultIndex inColumn:0];
+      [self listItemClicked:resultList];
+    }
     break;
   case 27: // Escape
     [self makeCompletion];
+    if ([resultIcon superview]) {
+      resultIndex = -1;
+      [resultIcon removeFromSuperview];
+      [self restoreSelection];
+      [window makeFirstResponder:findField];
+      [findField deselectText];
+    }
     break;
   case NSCarriageReturnCharacter:
   case NSEnterCharacter:
@@ -398,7 +417,7 @@
   item = [variantList objectAtIndex:resultIndex];
 
   path = [findField stringValue];
-  if ([path characterAtIndex:[path length]-1] != '/') {
+  if ([path length] > 1 && [path characterAtIndex:[path length]-1] != '/') {
     path = [path stringByDeletingLastPathComponent];
   }
   path = [path stringByAppendingPathComponent:item];
@@ -407,7 +426,9 @@
   [resultIcon setPaths:@[path]];
   if (![resultIcon superview]) {
     [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,48)];
-    [self resignSelection];
+    if ([[shelf selectedIcons] count] > 0) {
+      [self resignSelection];
+    }
   }
   
   [window makeFirstResponder:findField];
@@ -477,6 +498,7 @@
     [[icon label] setTextColor:[NSColor blackColor]];
     [[icon shortLabel] setTextColor:[NSColor blackColor]];
   }
+  [savedSelection release];
 }
 
 @end
