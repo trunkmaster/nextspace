@@ -116,6 +116,9 @@
     [self reconstructShelfSelection:shelfSelection];
   }
 
+  [resultsFound setStringValue:@""];
+  [statusField setStringValue:@""];
+
   // Text field
   [findField setStringValue:@""];
 
@@ -333,7 +336,8 @@
 
   [resultsFound setStringValue:@""];
   [resultIcon removeFromSuperview];
-  [self restoreSelection];
+  [self restoreShelfSelection];
+  resultIndex = -1;
   
   text = [field stringValue];
   if ([text length] > 0 && [text characterAtIndex:[text length]-1] == '/') {
@@ -357,7 +361,7 @@
       [resultList reloadColumn:0];
       resultIndex = -1;
       [resultIcon removeFromSuperview];
-      [self restoreSelection];
+      [self restoreShelfSelection];
       [window makeFirstResponder:findField];
       [findField deselectText];
     }
@@ -372,15 +376,30 @@
     if ([resultIcon superview]) {
       resultIndex = -1;
       [resultIcon removeFromSuperview];
-      [self restoreSelection];
+      [self restoreShelfSelection];
       [window makeFirstResponder:findField];
       [findField deselectText];
     }
     break;
   case NSCarriageReturnCharacter:
   case NSEnterCharacter:
-    [fileViewer displayPath:[findField stringValue] selection:nil sender:self];
-    [self deactivate];
+    {
+      NSString *enteredText = [findField stringValue];
+      if ([enteredText characterAtIndex:0] == '/') {
+        [fileViewer displayPath:enteredText selection:nil sender:self];
+        [self deactivate]; 
+      }
+      else {
+        // FIXME: The code below is a placeholder.
+        [findButton performClick:self];
+        if ([findButton imagePosition] == NSImageOnly) {
+          [findButton setImagePosition:NSImageAbove];
+        }
+        else {
+          [findButton setImagePosition:NSImageOnly];
+        }
+      }        
+   }
   default:
     break;
   }
@@ -427,7 +446,7 @@
   if (![resultIcon superview]) {
     [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,48)];
     if ([[shelf selectedIcons] count] > 0) {
-      [self resignSelection];
+      [self resignShelfSelection];
     }
   }
   
@@ -443,15 +462,13 @@
   NSMutableArray *selectedSlots = [[NSMutableArray alloc] init];
   NXIconSlot     slot;
   
-  for (PathIcon *icon in [shelf icons]) {
+  for (PathIcon *icon in [shelf selectedIcons]) {
     if ([icon isKindOfClass:[NSNull class]]) {
       continue;
     }
-    if ([icon isSelected] != NO) {
-      slot = [shelf slotForIcon:icon];
-      [selectedSlots addObject:@[[NSNumber numberWithInt:slot.x],
-                                 [NSNumber numberWithInt:slot.y]]];
-    }
+    slot = [shelf slotForIcon:icon];
+    [selectedSlots addObject:@[[NSNumber numberWithInt:slot.x],
+                               [NSNumber numberWithInt:slot.y]]];
   }
 
   return [selectedSlots autorelease];
@@ -475,7 +492,9 @@
   [selection release];
 }
 
-- (void)resignSelection
+// This method manipulates icon selected state directly.
+// NXIconView -selectedIcons method returns selected set of icons.
+- (void)resignShelfSelection
 {
   NSSet *selectedIcons = [shelf selectedIcons];
   
@@ -488,7 +507,7 @@
   }
 }
 
-- (void)restoreSelection
+- (void)restoreShelfSelection
 {
   if (!savedSelection || [savedSelection count] <= 0)
     return;
@@ -498,7 +517,6 @@
     [[icon label] setTextColor:[NSColor blackColor]];
     [[icon shortLabel] setTextColor:[NSColor blackColor]];
   }
-  [savedSelection release];
 }
 
 @end

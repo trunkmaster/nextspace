@@ -12,7 +12,8 @@
 	    findScopeButton,
 	    shelf,
 	    resultsFound,
-	    iconPlace
+	    iconPlace,
+	    statusField
 	);
 	Super = NSObject;
     };
