@@ -1,6 +1,8 @@
 /* All Rights reserved */
 
-#include <AppKit/AppKit.h>
+#import <AppKit/AppKit.h>
+
+#import "WMShelf.h"
 
 @class FileViewer;
 
@@ -8,15 +10,15 @@
 {
   FileViewer *fileViewer;
   
-  id window;
-  id shelf;
-  id findButton;
-  id findField;
-  id findScopeButton;
-  id resultList;
-  id resultsFound;
-  id resultIcon;
-  id iconPlace;
+  WMShelf	*shelf;
+  id		window;
+  id		findButton;
+  id		findField;
+  id		findScopeButton;
+  id		resultList;
+  id		resultsFound;
+  id		resultIcon;
+  id		iconPlace;
 
   NSArray   *variantList;
   NSInteger resultIndex;
@@ -27,7 +29,8 @@
   NSSet *savedSelection;
 }
 
-- initWithFileViewer:(FileViewer *)fv;
+- (id)initWithFileViewer:(FileViewer *)fv;
+- (void)setFileViewer:(FileViewer *)fv;
   
 - (void)activateWithString:(NSString *)searchString;
 - (void)deactivate;
@@ -38,10 +41,8 @@
 @end
 
 @interface Finder (Shelf)
-- (void)initShelf;
-- (NSDictionary *)shelfRepresentation;
+- (NSArray *)storableShelfSelection;
+- (void)reconstructShelfSelection:(NSArray *)selectedSlots;
 - (void)resignSelection;
 - (void)restoreSelection;
-- (PathIcon *)createIconForPaths:(NSArray *)paths;
-
 @end

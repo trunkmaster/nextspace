@@ -47,11 +47,24 @@
   [super dealloc];
 }
 
-- initWithFileViewer:(FileViewer *)fv
+- (id)initWithFileViewer:(FileViewer *)fv
 {
-  NSString *envPath;
-  
-  [super init];
+  NXDefaults *df = [NXDefaults userDefaults];
+  NSSize     slotSize;
+    
+  if ((self = [super init]) == nil) {
+    return nil;
+  }
+
+  if ([df objectForKey:ShelfIconSlotWidth]) {
+    slotSize = NSMakeSize([df floatForKey:ShelfIconSlotWidth], 76);
+  }
+  else {
+    slotSize = NSMakeSize(76, 76);
+  }
+  [NXIcon setDefaultIconSize:NSMakeSize(66, 56)];
+  [NXIconView setDefaultSlotSize:slotSize];
+  [NSBundle loadNibNamed:@"Finder" owner:self];
 
   fileViewer = fv;
   resultIndex = -1;
@@ -59,25 +72,49 @@
   return self;
 }
 
+- (void)setFileViewer:(FileViewer *)fv
+{
+  fileViewer = fv;
+}
+
 - (void)awakeFromNib
 {
   // Shelf
-  [shelf setAutoAdjustsToFitIcons:NO];
   [shelf setAllowsMultipleSelection:YES];
   [shelf setAllowsEmptySelection:NO];
-  [shelf setAllowsAlphanumericSelection:NO];
-  [shelf registerForDraggedTypes:@[NSFilenamesPboardType]];
-  [shelf setTarget:self];
   [shelf setDelegate:self];
+  // [shelf setTarget:self];
   // [shelf setAction:@selector(iconClicked:)];
   // [shelf setDoubleAction:@selector(iconDoubleClicked:)];
   // [shelf setDragAction:@selector(iconDragged:event:)];
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(iconSlotWidthChanged:)
-           name:ShelfIconSlotWidthDidChangeNotification
-         object:nil];
-  [self initShelf];
+  {
+    NSDictionary *aDict;
+    NSArray      *shelfSelection;
+    PathIcon     *icon;
+
+    aDict = [[NXDefaults userDefaults] objectForKey:@"FinderShelfContents"];
+    if (!aDict || ![aDict isKindOfClass:[NSDictionary class]]) {
+      // Home
+      icon = [shelf createIconForPaths:@[NSHomeDirectory()]];
+      if (icon) {
+        [icon setDelegate:self];
+        [icon setEditable:NO];
+        [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+        [[icon label] setNextKeyView:findField];
+        [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
+        [shelf selectIcons:[NSSet setWithObject:icon]];
+      }
+    }
+    else {
+      [shelf reconstructFromRepresentation:aDict];
+      for (NXIcon *icon in [shelf icons]) {
+        [[icon label] setNextKeyView:findField];
+      }
+    }
+
+    shelfSelection = [[NXDefaults userDefaults] objectForKey:@"FinderShelfSelection"];
+    [self reconstructShelfSelection:shelfSelection];
+  }
 
   // Text field
   [findField setStringValue:@""];
@@ -103,20 +140,6 @@
 
 - (void)activateWithString:(NSString *)searchString
 {
-  if (window == nil) {
-    NXDefaults *df = [NXDefaults userDefaults];
-    NSSize     slotSize;
-    
-    if ([df objectForKey:ShelfIconSlotWidth]) {
-      slotSize = NSMakeSize([df floatForKey:ShelfIconSlotWidth], 76);
-    }
-    else {
-      slotSize = NSMakeSize(76, 76);
-    }
-    [NXIcon setDefaultIconSize:NSMakeSize(66, 56)];
-    [NXIconView setDefaultSlotSize:slotSize];
-    [NSBundle loadNibNamed:@"Finder" owner:self];
-  }
   [resultList reloadColumn:0];
 
   if ([searchString length] > 0) {
@@ -125,13 +148,17 @@
   else {
     [findField setStringValue:@""];
   }
+  
   [window makeFirstResponder:findField];
+  
   if (![searchString isEqualToString:@""]) {
     [[window fieldEditor:NO forObject:findField]
       setSelectedRange:NSMakeRange([searchString length], 0)];
   }
-  [window center];
-  [window makeKeyAndOrderFront:nil];
+  if ([window isVisible] == NO) {
+    [window center];
+    [window makeKeyAndOrderFront:nil];
+  }
 }
 
 - (void)deactivate
@@ -141,6 +168,12 @@
 
 - (void)windowWillClose:(NSNotification *)notif
 {
+  NXDefaults *df = [NXDefaults userDefaults];
+
+  [df setObject:[shelf storableRepresentation] forKey:@"FinderShelfContents"];
+  [df setObject:[self storableShelfSelection] forKey:@"FinderShelfSelection"];
+  [df synchronize];
+  
   [variantList release];
   variantList = nil;
 }
@@ -385,80 +418,41 @@
 
 @implementation Finder (Shelf)
 
-- (void)initShelf
+- (NSArray *)storableShelfSelection
 {
-  NSDictionary *aDict;
-  PathIcon     *icon;
-
-  aDict = [[NXDefaults userDefaults] objectForKey:@"FinderShelfContents"];
-  if (!aDict || [aDict isKindOfClass:[NSDictionary class]]) {
-    // Home
-    icon = [self createIconForPaths:@[NSHomeDirectory()]];
-    if (icon) {
-      [icon setDelegate:self];
-      [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
-      [icon setEditable:NO];
-      [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
-      [shelf selectIcons:[NSSet setWithObject:icon]];
-    }
-    return;
-  }
+  NSMutableArray *selectedSlots = [[NSMutableArray alloc] init];
+  NXIconSlot     slot;
   
-  for (NSArray *key in [aDict allKeys]) {
-    NSArray    *paths;
-    NXIconSlot slot;
-
-    if (![key isKindOfClass:[NSArray class]] || [key count] != 2) {
+  for (PathIcon *icon in [shelf icons]) {
+    if ([icon isKindOfClass:[NSNull class]]) {
       continue;
     }
-    if (![[key objectAtIndex:0] respondsToSelector:@selector(intValue)] ||
-        ![[key objectAtIndex:1] respondsToSelector:@selector(intValue)]) {
-      continue;
-    }
-
-    slot = NXMakeIconSlot([[key objectAtIndex:0] intValue],
-                          [[key objectAtIndex:1] intValue]);
-      
-    paths = [aDict objectForKey:key];
-    if (![paths isKindOfClass:[NSArray class]]) {
-      continue;
-    }
-
-    icon = [self createIconForPaths:paths];
-    if (icon) {
-      [icon setDelegate:self];
-      [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
-      [shelf putIcon:icon intoSlot:slot];
+    if ([icon isSelected] != NO) {
+      slot = [shelf slotForIcon:icon];
+      [selectedSlots addObject:@[[NSNumber numberWithInt:slot.x],
+                                 [NSNumber numberWithInt:slot.y]]];
     }
   }
+
+  return [selectedSlots autorelease];
 }
 
-- (NSDictionary *)shelfRepresentation
+- (void)reconstructShelfSelection:(NSArray *)selectedSlots
 {
-  NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-  Class               nullClass = [NSNull class];
+  NXIconSlot   slot;
+  NSMutableSet *selection = [[NSMutableSet alloc] init];
 
-  for (PathIcon *icon in [shelf icons]) {
-    NXIconSlot slot;
-
-    if ([icon isKindOfClass:nullClass] || [[icon paths] count] > 1) {
-      continue;
-    }
-
-    slot = [shelf slotForIcon:icon];
-
-    if (slot.x == -1) {
-      [NSException raise:NSInternalInconsistencyException
-                  format:@"ShelfView: in `-storableRepresentation':"
-                   @" Unable to deteremine the slot for an icon that"
-                   @" _must_ be present"];
-    }
-
-    [dict setObject:[icon paths] forKey:@[[NSNumber numberWithInt:slot.x],
-                                          [NSNumber numberWithInt:slot.y]]];
+  for (NSArray *slotRep in selectedSlots) {
+    slot = NXMakeIconSlot([[slotRep objectAtIndex:0] intValue],
+                          [[slotRep objectAtIndex:1] intValue]);
+    [selection addObject:[shelf iconInSlot:slot]];
   }
 
-  return [dict autorelease];
+  if (!selectedSlots || [selectedSlots count] == 0) {
+    [selection addObject:[shelf iconInSlot:NXMakeIconSlot(0,0)]];
+  }
+  [shelf selectIcons:selection];
+  [selection release];
 }
 
 - (void)resignSelection
@@ -484,52 +478,6 @@
     [[icon label] setTextColor:[NSColor blackColor]];
     [[icon shortLabel] setTextColor:[NSColor blackColor]];
   }
-}
-
-- (PathIcon *)createIconForPaths:(NSArray *)paths
-{
-  PathIcon *icon;
-  NSString *path;
-  // NSString *relativePath;
-  // NSString *rootPath = [_owner rootPath];
-
-  if ((path = [paths objectAtIndex:0]) == nil) {
-    return nil;
-  }
-
-  // make sure its a subpath of our current root path
-  // if ([path rangeOfString:rootPath].location != 0) {
-  //   return nil;
-  // }
-  // relativePath = [path substringFromIndex:[rootPath length]];
-
-  icon = [[PathIcon new] autorelease];
-  if ([paths count] == 1) {
-    [icon setIconImage:[[NSApp delegate] iconForFile:path]];
-  }
-  [icon setPaths:paths];
-  [icon setDoubleClickPassesClick:YES];
-  [icon setEditable:NO];
-  [[icon label] setNextKeyView:findField];
-
-  return icon;
-}
-
-// --- Notifications
-
-- (void)iconSlotWidthChanged:(NSNotification *)notif
-{
-  NXDefaults *df = [NXDefaults userDefaults];
-  NSSize     size = [shelf slotSize];
-  CGFloat    width = 0.0;
-
-  if ((width = [df floatForKey:ShelfIconSlotWidth]) > 0.0) {
-    size.width = width;
-  }
-  else {
-    size.width = SHELF_LABEL_WIDTH;
-  }
-  [shelf setSlotSize:size];
 }
 
 @end

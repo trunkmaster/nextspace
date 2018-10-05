@@ -50,4 +50,11 @@
 	);
 	Super = NSTextField;
     };
+    WMShelf = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NXIconView;
+    };
 }
