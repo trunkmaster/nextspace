@@ -15,6 +15,7 @@
   id		findButton;
   id		findField;
   id		findScopeButton;
+  id		statusField;
   id		resultList;
   id		resultsFound;
   id		resultIcon;
@@ -43,6 +44,6 @@
 @interface Finder (Shelf)
 - (NSArray *)storableShelfSelection;
 - (void)reconstructShelfSelection:(NSArray *)selectedSlots;
-- (void)resignSelection;
-- (void)restoreSelection;
+- (void)resignShelfSelection;
+- (void)restoreShelfSelection;
 @end
