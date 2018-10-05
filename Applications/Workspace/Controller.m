@@ -294,11 +294,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [winViewInfo release];
     }
     else if ([winType isEqualToString:@"Finder"]) {
+      [self finder];
       winViewInfo = [NSMutableDictionary dictionaryWithDictionary:winInfo];
-      [winViewInfo setObject:[console window] forKey:@"Window"];
+      [winViewInfo setObject:[finder window] forKey:@"Window"];
       [winViews addObject:winViewInfo];
       [winViewInfo release];
-
       showFinder = YES;
     }
   }
@@ -330,11 +330,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 
   if ([rootViewerWindow isMiniaturized] == NO) {
-    [rootViewerWindow makeKeyAndOrderFront:self];
-  }
-
-  if (showFinder != NO) {
-    [self showFinder:self];
+    if (showFinder != NO && [[finder window] isMiniaturized] == NO) {
+      [finder setFileViewer:rootViewer];
+      [finder activateWithString:@""];
+    }
+    else {
+      [rootViewerWindow makeKeyAndOrderFront:self];
+    }
   }
 }
 
