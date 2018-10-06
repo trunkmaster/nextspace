@@ -186,7 +186,7 @@
   return window;
 }
 
-// --- Utility
+// --- Actions
 
 - (NSArray *)completionFor:(NSString *)path
 {
@@ -321,6 +321,59 @@
   }
   [findButton setEnabled:isEnabled];
   [findScopeButton setEnabled:isEnabled];
+}
+
+- (void)performFind:(id)sender
+{
+  NSError             *error = NULL;
+  NSRegularExpression *regex;
+  NSMutableArray      *searchPaths = [NSMutableArray array];
+  NSMutableArray      *variants = [NSMutableArray array];
+  NSArray             *dirContents;
+  NSUInteger          numberOfMatches;
+
+  [statusField setStringValue:@"Searching..."];
+
+  for (PathIcon *icon in [shelf selectedIcons]) {
+    [searchPaths addObjectsFromArray:[icon paths]];
+  }
+  
+  regex = [NSRegularExpression
+            regularExpressionWithPattern:[findField stringValue]
+                                 options:NSRegularExpressionCaseInsensitive
+                                   error:&error];
+
+  NSMatrix *matrix = [resultList matrixInColumn:0];
+  NSBrowserCell *cell;
+  
+  variantList = variants;
+  for (NSString *path in searchPaths) {
+    dirContents = [fileViewer directoryContentsAtPath:path forPath:nil];
+    for (NSString *item in dirContents) {
+      numberOfMatches = [regex
+                            numberOfMatchesInString:item
+                                            options:0
+                                              range:NSMakeRange(0, [item length])];
+      if (numberOfMatches > 0) {
+        NSLog(@"Match: %@/%@", path, item);
+        [variants addObject:[NSString stringWithFormat:@"%@/%@", path, item]];
+        [resultList reloadColumn:0];
+        // [matrix addRow];
+        // cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
+        // [cell setLeaf:YES];
+        // [cell setTitle:[NSString stringWithFormat:@"%@/%@", path, item]];
+        // [cell setRefusesFirstResponder:YES];
+        // [resultList setNeedsDisplay:YES];
+      }
+    }
+  }
+
+  variantList = [variants copy];
+  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
+                                         [variantList count]]];
+  
+  [findButton setNextState];
+  [statusField setStringValue:@""];
 }
 
 // --- Command text field delegate
