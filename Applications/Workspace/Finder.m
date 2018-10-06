@@ -357,7 +357,7 @@
 
   switch(c) {
   case NSTabCharacter:
-    if (resultIndex > 0 && resultIndex >= [variantList count]-1) {
+    if (resultIndex >= 0 && resultIndex >= [variantList count]-1) {
       [resultList reloadColumn:0];
       resultIndex = -1;
       [resultIcon removeFromSuperview];
@@ -365,7 +365,7 @@
       [window makeFirstResponder:findField];
       [findField deselectText];
     }
-    else {
+    else if ([variantList count] > 0){
       resultIndex++;
       [resultList selectRow:resultIndex inColumn:0];
       [self listItemClicked:resultList];
@@ -404,7 +404,9 @@
     break;
   }
 }
-// --- Command and History browser delegate
+
+// --- Results browser delegate
+
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
 	    inMatrix:(NSMatrix *)matrix
