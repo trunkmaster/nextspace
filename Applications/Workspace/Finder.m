@@ -41,6 +41,7 @@
 {
   NSLog(@"Finder: dealloc");
 
+  [variantList release];
   [resultIcon release];
   [window release];
   
@@ -68,6 +69,7 @@
 
   fileViewer = fv;
   resultIndex = -1;
+  variantList = [[NSMutableArray alloc] init]; 
 
   return self;
 }
@@ -177,8 +179,7 @@
   [df setObject:[self storableShelfSelection] forKey:@"FinderShelfSelection"];
   [df synchronize];
   
-  [variantList release];
-  variantList = nil;
+  [variantList removeAllObjects];
 }
 
 - (NSWindow *)window
@@ -246,28 +247,23 @@
   NSText     *fieldEditor = [window fieldEditor:NO forObject:findField];
   NSUInteger selLocation, selLength;
 
-  if (variantList) {
-    [variantList release];
-  }
+  [variantList removeAllObjects];
   
   if ([enteredText length] == 0) {
     NSSet  *selectedIcons = [shelf selectedIcons];
     
     if ([selectedIcons count] > 1) {
-      NSMutableArray *variants = [[NSMutableArray alloc] init];
       for (PathIcon *icon in selectedIcons) {
-        [variants addObjectsFromArray:[icon paths]];
+        [variantList addObjectsFromArray:[icon paths]];
       }
-      variantList = [[NSArray alloc] initWithArray:variants];
-      [variants release];
     }
     else {
       enteredText = [[[selectedIcons anyObject] paths] objectAtIndex:0];
-      variantList = [self completionFor:enteredText];
+      [variantList addObjectsFromArray:[self completionFor:enteredText]];
     }
   }
   else {
-    variantList = [self completionFor:enteredText];
+    [variantList addObjectsFromArray:[self completionFor:enteredText]];
   }
 
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
@@ -323,16 +319,50 @@
   [findScopeButton setEnabled:isEnabled];
 }
 
+- (void)findInDirectory:(NSString *)dirPath
+             expression:(NSRegularExpression *)regexp
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL          isDir;
+  NSArray       *dirContents;
+  NSUInteger    numberOfMatches;
+  NSString      *itemPath;
+
+  NSLog(@"Processing: %@...", dirPath);
+  
+  dirContents = [fileViewer directoryContentsAtPath:dirPath forPath:nil];
+  for (NSString *item in dirContents) {
+    itemPath = [NSString stringWithFormat:@"%@/%@", dirPath, item];
+    [fm fileExistsAtPath:itemPath isDirectory:&isDir];
+    if (isDir) {
+      [self findInDirectory:itemPath expression:regexp];
+    }
+    else {
+      numberOfMatches = [regexp numberOfMatchesInString:item
+                                                options:0
+                                                  range:NSMakeRange(0, [item length])];
+      if (numberOfMatches > 0) {
+        NSLog(@"Match: %@/%@", dirPath, item);
+        [variantList addObject:[NSString stringWithFormat:@"%@/%@", dirPath, item]];
+        // [resultList reloadColumn:0];
+      }
+    }
+  }
+}
+
 - (void)performFind:(id)sender
 {
   NSError             *error = NULL;
   NSRegularExpression *regex;
   NSMutableArray      *searchPaths = [NSMutableArray array];
-  NSMutableArray      *variants = [NSMutableArray array];
   NSArray             *dirContents;
+  NSFileManager       *fm = [NSFileManager defaultManager];
+  BOOL                isDir;
   NSUInteger          numberOfMatches;
 
   [statusField setStringValue:@"Searching..."];
+  
+  [variantList removeAllObjects];
 
   for (PathIcon *icon in [shelf selectedIcons]) {
     [searchPaths addObjectsFromArray:[icon paths]];
@@ -343,35 +373,18 @@
                                  options:NSRegularExpressionCaseInsensitive
                                    error:&error];
 
-  NSMatrix *matrix = [resultList matrixInColumn:0];
-  NSBrowserCell *cell;
-  
-  variantList = variants;
+  // NSMatrix *matrix = [resultList matrixInColumn:0];
+  // NSBrowserCell *cell;
+
   for (NSString *path in searchPaths) {
-    dirContents = [fileViewer directoryContentsAtPath:path forPath:nil];
-    for (NSString *item in dirContents) {
-      numberOfMatches = [regex
-                            numberOfMatchesInString:item
-                                            options:0
-                                              range:NSMakeRange(0, [item length])];
-      if (numberOfMatches > 0) {
-        NSLog(@"Match: %@/%@", path, item);
-        [variants addObject:[NSString stringWithFormat:@"%@/%@", path, item]];
-        [resultList reloadColumn:0];
-        // [matrix addRow];
-        // cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
-        // [cell setLeaf:YES];
-        // [cell setTitle:[NSString stringWithFormat:@"%@/%@", path, item]];
-        // [cell setRefusesFirstResponder:YES];
-        // [resultList setNeedsDisplay:YES];
-      }
-    }
+    [self findInDirectory:path expression:regex];
+    [resultList reloadColumn:0];
   }
 
-  variantList = [variants copy];
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
                                          [variantList count]]];
   
+  [findButton setImagePosition:NSImageAbove];
   [findButton setNextState];
   [statusField setStringValue:@""];
 }
@@ -397,8 +410,7 @@
     [self makeCompletion];
   }
   else {
-    [variantList release];
-    variantList = nil;
+    [variantList removeAllObjects];
     [resultList reloadColumn:0];
   }
 
@@ -444,13 +456,13 @@
       }
       else {
         // FIXME: The code below is a placeholder.
-        [findButton performClick:self];
         if ([findButton imagePosition] == NSImageOnly) {
           [findButton setImagePosition:NSImageAbove];
         }
         else {
           [findButton setImagePosition:NSImageOnly];
         }
+        [findButton performClick:self];
       }        
    }
   default:
