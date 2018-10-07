@@ -21,8 +21,8 @@
   id		resultIcon;
   id		iconPlace;
 
-  NSArray   *variantList;
-  NSInteger resultIndex;
+  NSMutableArray *variantList;
+  NSInteger      resultIndex;
 
   BOOL isRunInTerminal;
 
