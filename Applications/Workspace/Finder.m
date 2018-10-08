@@ -4,6 +4,7 @@
 #import <NXFoundation/NXDefaults.h>
 #import <NXAppKit/NXAlert.h>
 #import <NXAppKit/NXIconView.h>
+#import <NXFoundation/NXFileManager.h>
 
 #import <Viewers/FileViewer.h>
 #import <Viewers/PathIcon.h>
@@ -34,6 +35,152 @@
   [fieldEditor setSelectedRange:NSMakeRange([fieldString length], 0)];
 }
 @end
+
+//=============================================================================
+// NSOperation to perform search asynchronously
+//=============================================================================
+@interface FindWorker : NSOperation
+{
+  Finder *finder;
+  NSArray *searchPaths;
+  NSRegularExpression *expression;
+}
+- (id)initWithFinder:(Finder *)onwer
+               paths:(NSArray *)paths
+          expression:(NSRegularExpression *)regexp;
+@end
+@implementation FindWorker
+
+- (void)dealloc
+{
+  NSLog(@"[FindWorker] -dealloc");
+  [searchPaths release];
+  [expression release];
+  [super dealloc];
+}
+
+- (id)initWithFinder:(Finder *)owner
+               paths:(NSArray *)paths
+          expression:(NSRegularExpression *)regexp
+{
+  [super init];
+  
+  if (self != nil) {
+    finder = owner;
+    searchPaths = [[NSArray alloc] initWithArray:paths];
+    expression = regexp;
+    [expression retain];
+  }
+
+  return self;
+}
+
+- (NSArray *)directoryContentsAtPath:(NSString *)path
+{
+  NXFileManager *xfm = [NXFileManager sharedManager];
+
+  return [xfm directoryContentsAtPath:path
+                              forPath:nil
+                           showHidden:[xfm isShowHiddenFiles]];
+}
+
+- (void)findInDirectory:(NSString *)dirPath
+             expression:(NSRegularExpression *)regexp
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL          isDir;
+  NSArray       *dirContents;
+  NSUInteger    numberOfMatches;
+  NSString      *itemPath;
+  NSDictionary  *attrs;
+
+  // NSLog(@"Processing: %@...", dirPath);
+  
+  dirContents = [self directoryContentsAtPath:dirPath];
+  for (NSString *item in dirContents) {
+    if ([self isCancelled]) {
+      break;
+    }
+    itemPath = [NSString stringWithFormat:@"%@/%@", dirPath, item];
+    [fm fileExistsAtPath:itemPath isDirectory:&isDir];
+    attrs = [fm fileAttributesAtPath:itemPath traverseLink:NO];
+    if ([[attrs fileType] isEqualToString:NSFileTypeDirectory] &&
+        ![[attrs fileType] isEqualToString:NSFileTypeSymbolicLink]) {
+      [self findInDirectory:itemPath expression:regexp];
+    }
+    else {
+      numberOfMatches = [regexp numberOfMatchesInString:item
+                                                options:0
+                                                  range:NSMakeRange(0, [item length])];
+      if (numberOfMatches > 0) {
+        // NSLog(@"Match: %@/%@", dirPath, item);
+        [finder
+          performSelectorOnMainThread:@selector(addResult:)
+                           withObject:[NSString stringWithFormat:@"%@/%@", dirPath, item]
+                        waitUntilDone:NO];
+      }
+    }
+  }
+}
+
+- (void)main
+{
+  for (NSString *path in searchPaths) {
+    [self findInDirectory:path expression:expression];
+  }  
+}
+
+- (BOOL)isReady
+{
+  return YES;
+}
+
+@end
+
+@implementation Finder (Worker)
+
+- (void)runWorkerWithPaths:(NSArray *)searchPaths
+                expression:(NSRegularExpression *)regexp
+{
+  NSOperation *worker;
+  
+  if (operationQ == nil) {
+    operationQ = [[NSOperationQueue alloc] init];
+  }
+
+  worker = [[FindWorker alloc] initWithFinder:self
+                                        paths:searchPaths
+                                   expression:regexp];
+  [worker addObserver:self
+           forKeyPath:@"isFinished"
+              options:0
+              context:self];
+  [operationQ addOperation:worker];
+  [worker release];
+}
+
+- (void)destroyWorker
+{
+  [statusField setStringValue:@"Stopping..."];
+  [operationQ cancelAllOperations];
+  [findButton setImagePosition:NSImageAbove];
+  [findButton setState:NSOnState];
+  [statusField setStringValue:@""];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  NSLog(@"Finder operation was finished.");
+  [self performSelectorOnMainThread:@selector(finishFind)
+                         withObject:nil
+                      waitUntilDone:YES];
+}
+
+@end
+
 
 @implementation Finder
 
@@ -319,71 +466,60 @@
   [findScopeButton setEnabled:isEnabled];
 }
 
-- (void)findInDirectory:(NSString *)dirPath
-             expression:(NSRegularExpression *)regexp
-{
-  NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL          isDir;
-  NSArray       *dirContents;
-  NSUInteger    numberOfMatches;
-  NSString      *itemPath;
-
-  NSLog(@"Processing: %@...", dirPath);
-  
-  dirContents = [fileViewer directoryContentsAtPath:dirPath forPath:nil];
-  for (NSString *item in dirContents) {
-    itemPath = [NSString stringWithFormat:@"%@/%@", dirPath, item];
-    [fm fileExistsAtPath:itemPath isDirectory:&isDir];
-    if (isDir) {
-      [self findInDirectory:itemPath expression:regexp];
-    }
-    else {
-      numberOfMatches = [regexp numberOfMatchesInString:item
-                                                options:0
-                                                  range:NSMakeRange(0, [item length])];
-      if (numberOfMatches > 0) {
-        NSLog(@"Match: %@/%@", dirPath, item);
-        [variantList addObject:[NSString stringWithFormat:@"%@/%@", dirPath, item]];
-        // [resultList reloadColumn:0];
-      }
-    }
-  }
-}
-
 - (void)performFind:(id)sender
 {
   NSError             *error = NULL;
   NSRegularExpression *regex;
-  NSMutableArray      *searchPaths = [NSMutableArray array];
-  NSArray             *dirContents;
-  NSFileManager       *fm = [NSFileManager defaultManager];
-  BOOL                isDir;
-  NSUInteger          numberOfMatches;
+  NSMutableArray      *searchPaths;
 
-  [statusField setStringValue:@"Searching..."];
-  
-  [variantList removeAllObjects];
-
-  for (PathIcon *icon in [shelf selectedIcons]) {
-    [searchPaths addObjectsFromArray:[icon paths]];
+  if ([operationQ operationCount] > 0) {
+    [self destroyWorker];
   }
+  else {
+    [findButton setImagePosition:NSImageOnly];
+    [statusField setStringValue:@"Searching..."];
   
-  regex = [NSRegularExpression
-            regularExpressionWithPattern:[findField stringValue]
-                                 options:NSRegularExpressionCaseInsensitive
-                                   error:&error];
+    [variantList removeAllObjects];
+    searchPaths = [NSMutableArray array];
 
-  // NSMatrix *matrix = [resultList matrixInColumn:0];
-  // NSBrowserCell *cell;
+    for (PathIcon *icon in [shelf selectedIcons]) {
+      [searchPaths addObjectsFromArray:[icon paths]];
+    }
+  
+    regex = [NSRegularExpression
+              regularExpressionWithPattern:[findField stringValue]
+                                   options:NSRegularExpressionCaseInsensitive
+                                     error:&error];
 
-  for (NSString *path in searchPaths) {
-    [self findInDirectory:path expression:regex];
-    [resultList reloadColumn:0];
+    [self runWorkerWithPaths:searchPaths expression:regex];
   }
+}
 
+- (void)addResult:(NSString *)resultString
+{
+  [variantList addObject:resultString];
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
                                          [variantList count]]];
-  
+  if ([variantList count] == 1) {
+    [resultList reloadColumn:0];
+  }
+  else {
+    NSBrowserCell *cell;
+    NSMatrix      *matrix = [resultList matrixInColumn:0];
+    
+    [matrix addRow];
+    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
+    [cell setLeaf:YES];
+    [cell setRefusesFirstResponder:YES];
+    [cell setTitle:resultString];
+    [cell setLoaded:YES];
+    [resultList displayColumn:0];
+  }
+}
+
+- (void)finishFind
+{
+  [resultList reloadColumn:0];
   [findButton setImagePosition:NSImageAbove];
   [findButton setNextState];
   [statusField setStringValue:@""];
@@ -416,6 +552,7 @@
 
   [self updateButtonsState];
 }
+
 - (void)findFieldKeyUp:(NSEvent *)theEvent
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
@@ -455,13 +592,6 @@
         [self deactivate]; 
       }
       else {
-        // FIXME: The code below is a placeholder.
-        if ([findButton imagePosition] == NSImageOnly) {
-          [findButton setImagePosition:NSImageAbove];
-        }
-        else {
-          [findButton setImagePosition:NSImageOnly];
-        }
         [findButton performClick:self];
       }        
    }
