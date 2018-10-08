@@ -21,10 +21,9 @@
   id		resultIcon;
   id		iconPlace;
 
-  NSMutableArray *variantList;
-  NSInteger      resultIndex;
-
-  BOOL isRunInTerminal;
+  NSOperationQueue *operationQ;
+  NSMutableArray   *variantList;
+  NSInteger        resultIndex;
 
   // Shelf
   NSSet *savedSelection;
@@ -39,6 +38,15 @@
 
 - (void)updateButtonsState;
 
+- (void)addResult:(NSString *)resultString;
+- (void)finishFind;
+
+@end
+
+@interface Finder (Worker)
+- (void)runWorkerWithPaths:(NSArray *)searchPaths
+                expression:(NSRegularExpression *)regexp;
+- (void)destroyWorker;
 @end
 
 @interface Finder (Shelf)
