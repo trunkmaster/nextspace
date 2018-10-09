@@ -12,6 +12,9 @@
 
 #import "Finder.h"
 
+//=============================================================================
+// Custom text field
+//=============================================================================
 @interface WMFindField : NSTextField
 - (void)findFieldKeyUp:(NSEvent *)theEvent;
 - (void)deselectText;
@@ -33,6 +36,26 @@
   NSText     *fieldEditor = [_window fieldEditor:NO forObject:self];
   
   [fieldEditor setSelectedRange:NSMakeRange([fieldString length], 0)];
+}
+@end
+
+//=============================================================================
+// Custom NSBrowser elements
+//=============================================================================
+@interface FinderCell : NSBrowserCell
+@end
+@implementation FinderCell
+- (BOOL)acceptsFirstResponder
+{
+  return NO;
+}
+@end
+@interface FinderMatrix : NSMatrix
+@end
+@implementation FinderMatrix
+- (BOOL)acceptsFirstResponder
+{
+  return NO;
 }
 @end
 
@@ -159,15 +182,6 @@
   [worker release];
 }
 
-- (void)destroyWorker
-{
-  [statusField setStringValue:@"Stopping..."];
-  [operationQ cancelAllOperations];
-  [findButton setImagePosition:NSImageAbove];
-  [findButton setState:NSOnState];
-  [statusField setStringValue:@""];
-}
-
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
@@ -181,7 +195,9 @@
 
 @end
 
-
+//=============================================================================
+// Finder class
+//=============================================================================
 @implementation Finder
 
 - (void)dealloc
@@ -190,6 +206,7 @@
 
   [variantList release];
   [resultIcon release];
+  [findButtonImage release];
   [window release];
   
   [super dealloc];
@@ -232,50 +249,26 @@
   [shelf setAllowsMultipleSelection:YES];
   [shelf setAllowsEmptySelection:NO];
   [shelf setDelegate:self];
-  // [shelf setTarget:self];
-  // [shelf setAction:@selector(iconClicked:)];
-  // [shelf setDoubleAction:@selector(iconDoubleClicked:)];
-  // [shelf setDragAction:@selector(iconDragged:event:)];
-  {
-    NSDictionary *aDict;
-    NSArray      *shelfSelection;
-    PathIcon     *icon;
-
-    aDict = [[NXDefaults userDefaults] objectForKey:@"FinderShelfContents"];
-    if (!aDict || ![aDict isKindOfClass:[NSDictionary class]]) {
-      // Home
-      icon = [shelf createIconForPaths:@[NSHomeDirectory()]];
-      if (icon) {
-        [icon setDelegate:self];
-        [icon setEditable:NO];
-        [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
-        [[icon label] setNextKeyView:findField];
-        [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
-        [shelf selectIcons:[NSSet setWithObject:icon]];
-      }
-    }
-    else {
-      [shelf reconstructFromRepresentation:aDict];
-      for (NXIcon *icon in [shelf icons]) {
-        [[icon label] setNextKeyView:findField];
-      }
-    }
-
-    shelfSelection = [[NXDefaults userDefaults] objectForKey:@"FinderShelfSelection"];
-    [self reconstructShelfSelection:shelfSelection];
-  }
+  [self restoreShelf];
 
   [resultsFound setStringValue:@""];
   [statusField setStringValue:@""];
 
+  [findButton setButtonType:NSMomentaryPushInButton];
+  findButtonImage = [findButton image];
+  [findButtonImage retain];
+
   // Text field
   [findField setStringValue:@""];
+  [findField setNextKeyView:findField];
 
   // Browser list
+  [resultList setCellClass:[FinderCell class]];
+  [resultList setMatrixClass:[FinderMatrix class]];
   [resultList loadColumnZero];
   [resultList setTakesTitleFromPreviousColumn:NO];
   [resultList scrollColumnToVisible:0];
-  [resultList setRefusesFirstResponder:YES];
+  [resultList setAllowsMultipleSelection:NO];
   [resultList setTarget:self];
   [resultList setAction:@selector(listItemClicked:)];
 
@@ -334,7 +327,7 @@
   return window;
 }
 
-// --- Actions
+// --- TextField Actions
 
 - (NSArray *)completionFor:(NSString *)path
 {
@@ -449,35 +442,30 @@
   }
 }
 
-- (void)updateButtonsState
-{
-  NSFileManager  *fm = [NSFileManager defaultManager];
-  BOOL           isDir;
-  NSString       *text = [findField stringValue];
-  BOOL           isEnabled = YES;
-  
-  if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ')
-    isEnabled = NO;
-  else if ([text characterAtIndex:0] == '/' &&
-           (![fm fileExistsAtPath:text isDirectory:&isDir] || isDir)) {
-    isEnabled = NO;
-  }
-  [findButton setEnabled:isEnabled];
-  [findScopeButton setEnabled:isEnabled];
-}
+// --- Find button actions
 
 - (void)performFind:(id)sender
 {
   NSError             *error = NULL;
   NSRegularExpression *regex;
   NSMutableArray      *searchPaths;
+  NSString            *enteredText;
 
   if ([operationQ operationCount] > 0) {
-    [self destroyWorker];
+    [operationQ cancelAllOperations];
+    [self finishFind];
   }
   else {
     [findButton setImagePosition:NSImageOnly];
+    [findButton setImage:[findButton alternateImage]];
     [statusField setStringValue:@"Searching..."];
+
+    enteredText = [findField stringValue];
+    if ([enteredText isEqualToString:@""] ||
+        [enteredText characterAtIndex:0] == ' ') {
+      [self finishFind];
+      return;
+    }
   
     [variantList removeAllObjects];
     searchPaths = [NSMutableArray array];
@@ -487,7 +475,7 @@
     }
   
     regex = [NSRegularExpression
-              regularExpressionWithPattern:[findField stringValue]
+              regularExpressionWithPattern:enteredText
                                    options:NSRegularExpressionCaseInsensitive
                                      error:&error];
 
@@ -521,11 +509,12 @@
 {
   [resultList reloadColumn:0];
   [findButton setImagePosition:NSImageAbove];
-  [findButton setNextState];
-  [statusField setStringValue:@""];
+  [findButton setImage:findButtonImage];
+  [findButton setState:NSOnState];
+  [statusField setStringValue:@""];  
 }
 
-// --- Command text field delegate
+// --- Search text field delegate
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
@@ -536,10 +525,13 @@
     return;
   }
 
-  [resultsFound setStringValue:@""];
-  [resultIcon removeFromSuperview];
-  [self restoreShelfSelection];
-  resultIndex = -1;
+  if ([operationQ operationCount] == 0) {
+    [resultList reloadColumn:0];
+    resultIndex = -1;
+    [resultsFound setStringValue:@""];
+    [resultIcon removeFromSuperview];
+    [self restoreShelfSelection];
+  }
   
   text = [field stringValue];
   if ([text length] > 0 && [text characterAtIndex:[text length]-1] == '/') {
@@ -549,13 +541,13 @@
     [variantList removeAllObjects];
     [resultList reloadColumn:0];
   }
-
-  [self updateButtonsState];
 }
 
 - (void)findFieldKeyUp:(NSEvent *)theEvent
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
+
+  NSLog(@"[Finder] keyUp: %i", c);
 
   switch(c) {
   case NSTabCharacter:
@@ -571,6 +563,21 @@
       resultIndex++;
       [resultList selectRow:resultIndex inColumn:0];
       [self listItemClicked:resultList];
+    }
+    break;
+  case NSBackTabCharacter:
+    if (resultIndex > 0) {
+      resultIndex--;
+      [resultList selectRow:resultIndex inColumn:0];
+      [self listItemClicked:resultList];
+    }
+    else {
+      [resultList reloadColumn:0];
+      resultIndex = -1;
+      [resultIcon removeFromSuperview];
+      [self restoreShelfSelection];
+      [window makeFirstResponder:findField];
+      [findField deselectText];
     }
     break;
   case 27: // Escape
@@ -629,6 +636,10 @@
   if (sender != resultList)
     return;
 
+  if (resultIndex == [resultList selectedRowInColumn:0]) {
+    [resultList selectRow:resultIndex inColumn:0];
+  }
+
   resultIndex = [resultList selectedRowInColumn:0];
   item = [variantList objectAtIndex:resultIndex];
 
@@ -646,13 +657,41 @@
       [self resignShelfSelection];
     }
   }
-  
-  [window makeFirstResponder:findField];
 }
 
 @end
 
 @implementation Finder (Shelf)
+
+- (void)restoreShelf
+{
+  NSDictionary *aDict;
+  NSArray      *shelfSelection;
+  PathIcon     *icon;
+
+  aDict = [[NXDefaults userDefaults] objectForKey:@"FinderShelfContents"];
+  if (!aDict || ![aDict isKindOfClass:[NSDictionary class]]) {
+    // Home
+    icon = [shelf createIconForPaths:@[NSHomeDirectory()]];
+    if (icon) {
+      [icon setDelegate:self];
+      [icon setEditable:NO];
+      [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+      [[icon label] setNextKeyView:findField];
+      [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
+      [shelf selectIcons:[NSSet setWithObject:icon]];
+    }
+  }
+  else {
+    [shelf reconstructFromRepresentation:aDict];
+    for (NXIcon *icon in [shelf icons]) {
+      [[icon label] setNextKeyView:findField];
+    }
+  }
+
+  shelfSelection = [[NXDefaults userDefaults] objectForKey:@"FinderShelfSelection"];
+  [self reconstructShelfSelection:shelfSelection];
+}
 
 - (NSArray *)storableShelfSelection
 {
