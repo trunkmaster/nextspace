@@ -32,8 +32,8 @@
 }
 - (void)deselectText
 {
-  NSString   *fieldString = [self stringValue];
-  NSText     *fieldEditor = [_window fieldEditor:NO forObject:self];
+  NSString *fieldString = [self stringValue];
+  NSText   *fieldEditor = [_window fieldEditor:NO forObject:self];
   
   [fieldEditor setSelectedRange:NSMakeRange([fieldString length], 0)];
 }
@@ -67,10 +67,12 @@
   Finder *finder;
   NSArray *searchPaths;
   NSRegularExpression *expression;
+  BOOL isContentSearch;
 }
 - (id)initWithFinder:(Finder *)onwer
                paths:(NSArray *)paths
-          expression:(NSRegularExpression *)regexp;
+          expression:(NSRegularExpression *)regexp
+      searchContents:(BOOL)isContent;
 @end
 @implementation FindWorker
 
@@ -85,6 +87,7 @@
 - (id)initWithFinder:(Finder *)owner
                paths:(NSArray *)paths
           expression:(NSRegularExpression *)regexp
+      searchContents:(BOOL)isContent
 {
   [super init];
   
@@ -93,12 +96,13 @@
     searchPaths = [[NSArray alloc] initWithArray:paths];
     expression = regexp;
     [expression retain];
+    isContentSearch = isContent;
   }
 
   return self;
 }
 
-- (NSArray *)directoryContentsAtPath:(NSString *)path
+- (NSArray *)_directoryContentsAtPath:(NSString *)path
 {
   NXFileManager *xfm = [NXFileManager sharedManager];
 
@@ -107,19 +111,32 @@
                            showHidden:[xfm isShowHiddenFiles]];
 }
 
+- (BOOL)_isTextMatched:(NSString *)text
+{
+  NSUInteger matches;
+  
+  matches = [expression numberOfMatchesInString:text
+                                        options:0
+                                          range:NSMakeRange(0, [text length])];
+  if (matches > 0) {
+    return YES;
+  }
+
+  return NO;
+}
+
 - (void)findInDirectory:(NSString *)dirPath
              expression:(NSRegularExpression *)regexp
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   BOOL          isDir;
   NSArray       *dirContents;
-  NSUInteger    numberOfMatches;
   NSString      *itemPath;
   NSDictionary  *attrs;
 
   // NSLog(@"Processing: %@...", dirPath);
-  
-  dirContents = [self directoryContentsAtPath:dirPath];
+
+  dirContents = [self _directoryContentsAtPath:dirPath];
   for (NSString *item in dirContents) {
     if ([self isCancelled]) {
       break;
@@ -131,23 +148,19 @@
         ![[attrs fileType] isEqualToString:NSFileTypeSymbolicLink]) {
       [self findInDirectory:itemPath expression:regexp];
     }
-    else {
-      numberOfMatches = [regexp numberOfMatchesInString:item
-                                                options:0
-                                                  range:NSMakeRange(0, [item length])];
-      if (numberOfMatches > 0) {
-        // NSLog(@"Match: %@/%@", dirPath, item);
-        [finder
+    if ([self _isTextMatched:item]) {
+      [finder
           performSelectorOnMainThread:@selector(addResult:)
                            withObject:[NSString stringWithFormat:@"%@/%@", dirPath, item]
                         waitUntilDone:NO];
-      }
     }
   }
 }
 
 - (void)main
 {
+  NSLog(@"[Finder] will search contents: %@", isContentSearch ? @"Yes" : @"No");
+  
   for (NSString *path in searchPaths) {
     [self findInDirectory:path expression:expression];
   }  
@@ -173,7 +186,8 @@
 
   worker = [[FindWorker alloc] initWithFinder:self
                                         paths:searchPaths
-                                   expression:regexp];
+                                   expression:regexp
+                               searchContents:[[findScopeButton selectedItem] tag]];
   [worker addObserver:self
            forKeyPath:@"isFinished"
               options:0
@@ -251,9 +265,11 @@
   [shelf setDelegate:self];
   [self restoreShelf];
 
+  // Status fields
   [resultsFound setStringValue:@""];
   [statusField setStringValue:@""];
 
+  // Find button
   [findButton setButtonType:NSMomentaryPushInButton];
   findButtonImage = [findButton image];
   [findButtonImage retain];
@@ -452,6 +468,7 @@
   NSString            *enteredText;
 
   if ([operationQ operationCount] > 0) {
+    NSLog(@"[Finder] stopping search operation.");
     [operationQ cancelAllOperations];
     [self finishFind];
   }
@@ -546,8 +563,6 @@
 - (void)findFieldKeyUp:(NSEvent *)theEvent
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
-
-  NSLog(@"[Finder] keyUp: %i", c);
 
   switch(c) {
   case NSTabCharacter:
