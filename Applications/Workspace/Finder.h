@@ -12,6 +12,7 @@
   
   WMShelf	*shelf;
   id		window;
+  NSImage       *findButtonImage;
   id		findButton;
   id		findField;
   id		findScopeButton;
@@ -36,8 +37,6 @@
 - (void)deactivate;
 - (NSWindow *)window;
 
-- (void)updateButtonsState;
-
 - (void)addResult:(NSString *)resultString;
 - (void)finishFind;
 
@@ -46,10 +45,10 @@
 @interface Finder (Worker)
 - (void)runWorkerWithPaths:(NSArray *)searchPaths
                 expression:(NSRegularExpression *)regexp;
-- (void)destroyWorker;
 @end
 
 @interface Finder (Shelf)
+- (void)restoreShelf;
 - (NSArray *)storableShelfSelection;
 - (void)reconstructShelfSelection:(NSArray *)selectedSlots;
 - (void)resignShelfSelection;
