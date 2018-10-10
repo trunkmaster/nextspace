@@ -111,7 +111,7 @@
                            showHidden:[xfm isShowHiddenFiles]];
 }
 
-- (BOOL)_isTextMatched:(NSString *)text
+- (BOOL)isTextMatched:(NSString *)text
 {
   NSUInteger matches;
   
@@ -125,8 +125,40 @@
   return NO;
 }
 
+- (BOOL)isFileMatched:(NSString *)filePath
+{
+  BOOL         isMatched = NO;
+  NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:filePath];
+  NSData       *dataChunk;
+  NSString     *text;
+  // NSUInteger   patternLength = [[expression pattern] length];
+  NSUInteger   offset;
+
+  // NSLog(@"Search for contents in file:%@", filePath);
+
+  dataChunk = [handle readDataOfLength:1024*1024];
+  while ([dataChunk length] > 0) {
+    text = [[NSString alloc] initWithData:dataChunk
+                                 encoding:NSUTF8StringEncoding];
+    [text autorelease];
+    if ([self isTextMatched:text]) {
+      isMatched = YES;
+      break;
+    }
+    // Step down on the pattern length to omit cases when search string
+    // is located across the chunks of data read.
+    // offset = [handle offsetInFile];
+    // if (offset )
+    // [handle seekToFileOffset:offset-patternLength];
+    
+    dataChunk = [handle readDataOfLength:1024*1024];
+  }
+
+  [handle closeFile];
+  return isMatched;
+}
+
 - (void)findInDirectory:(NSString *)dirPath
-             expression:(NSRegularExpression *)regexp
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   BOOL          isDir;
@@ -134,7 +166,7 @@
   NSString      *itemPath;
   NSDictionary  *attrs;
 
-  // NSLog(@"Processing: %@...", dirPath);
+  NSLog(@"Processing directory %@...", dirPath);
 
   dirContents = [self _directoryContentsAtPath:dirPath];
   for (NSString *item in dirContents) {
@@ -144,15 +176,23 @@
     itemPath = [NSString stringWithFormat:@"%@/%@", dirPath, item];
     [fm fileExistsAtPath:itemPath isDirectory:&isDir];
     attrs = [fm fileAttributesAtPath:itemPath traverseLink:NO];
-    if ([[attrs fileType] isEqualToString:NSFileTypeDirectory] &&
-        ![[attrs fileType] isEqualToString:NSFileTypeSymbolicLink]) {
-      [self findInDirectory:itemPath expression:regexp];
-    }
-    if ([self _isTextMatched:item]) {
-      [finder
-          performSelectorOnMainThread:@selector(addResult:)
-                           withObject:[NSString stringWithFormat:@"%@/%@", dirPath, item]
-                        waitUntilDone:NO];
+
+    if ([[attrs fileType] isEqualToString:NSFileTypeSymbolicLink] == NO) {
+      if ([[attrs fileType] isEqualToString:NSFileTypeDirectory] != NO) {
+        [self findInDirectory:itemPath];
+      }
+      else if (isContentSearch != NO) {
+        if ([self isFileMatched:itemPath]) {
+          [finder performSelectorOnMainThread:@selector(addResult:)
+                                   withObject:itemPath
+                                waitUntilDone:NO];
+        }
+      }
+      if (isContentSearch == NO && [self isTextMatched:item]) {
+        [finder performSelectorOnMainThread:@selector(addResult:)
+                                 withObject:itemPath
+                              waitUntilDone:NO];
+      }
     }
   }
 }
@@ -162,7 +202,7 @@
   NSLog(@"[Finder] will search contents: %@", isContentSearch ? @"Yes" : @"No");
   
   for (NSString *path in searchPaths) {
-    [self findInDirectory:path expression:expression];
+    [self findInDirectory:path];
   }  
 }
 
@@ -259,6 +299,7 @@
 
 - (void)awakeFromNib
 {
+  [window setFrameAutosaveName:@"Finder"];
   // Shelf
   [shelf setAllowsMultipleSelection:YES];
   [shelf setAllowsEmptySelection:NO];
@@ -485,6 +526,7 @@
     }
   
     [variantList removeAllObjects];
+    [resultList reloadColumn:0];
     searchPaths = [NSMutableArray array];
 
     for (PathIcon *icon in [shelf selectedIcons]) {
