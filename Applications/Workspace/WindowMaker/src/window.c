@@ -2978,7 +2978,7 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 		XUngrabPointer(dpy, CurrentTime);
 	}
 }
-
+#include "xmodifier.h"
 static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 {
 	WWindow *wwin = (WWindow *) data;
@@ -2995,14 +2995,20 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
 	CloseWindowMenu(wwin->screen_ptr);
 
-	if (wPreferences.focus_mode == WKF_CLICK && !(event->xbutton.state & ControlMask)
-	    && !WFLAGP(wwin, no_focusable))
+  /* fprintf(stderr, "xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
+  /*         event->xbutton.state, wXModifierFromKey("MOD1"), */
+  /*         wXModifierFromKey("MOD4")); */
+
+	if (wPreferences.focus_mode == WKF_CLICK &&
+      !(event->xbutton.state & Mod4Mask) && // Alternate
+      !(event->xbutton.state & Mod1Mask) && // Command
+	    !WFLAGP(wwin, no_focusable))
 		wSetFocusTo(wwin->screen_ptr, wwin);
 
 	if (event->xbutton.button == Button1 || event->xbutton.button == Button2) {
 
 		if (event->xbutton.button == Button1) {
-			if (event->xbutton.state & MOD_MASK)
+			if (event->xbutton.state & Mod1Mask) // Command
 				wLowerFrame(wwin->frame->core);
 			else
 				wRaiseFrame(wwin->frame->core);
