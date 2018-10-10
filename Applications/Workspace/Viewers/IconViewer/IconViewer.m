@@ -61,12 +61,14 @@
   NSMutableArray *itemsCopy = [items mutableCopy];
   NSArray        *iconsCopy = [[view icons] copy];
 
-  // NSLog(@"_updateItems: %@", items);
+  // NSLog(@"_updateItems: %lu", [items count]);
   
   // Remove non-existing items
   for (NXIcon *icon in iconsCopy) {
     if ([items indexOfObject:[[icon label] text]] == NSNotFound) {
-      [view removeIcon:icon];
+      [view performSelectorOnMainThread:@selector(removeIcon:)
+                             withObject:icon
+                          waitUntilDone:YES];
     }
   }
 
@@ -219,7 +221,6 @@ static NSRect viewFrame;
   isDrawOpenAnimation = NO;
   // [self setNeedsDisplay:YES];
 }
-
 - (BOOL)isAnimating
 {
   return isDrawOpenAnimation;
