@@ -390,7 +390,8 @@ extern struct WPreferences {
 	int icon_size;                     /* size of the icon */
 	signed char menu_style;            /* menu decoration style */
 	signed char workspace_name_display_position;
-	unsigned int modifier_mask;        /* mask to use as kbd modifier */
+	unsigned int modifier_mask;        /* mask to use as kbd modifier - Alternate */
+	unsigned int alt_modifier_mask;    /* mask to use as kbd modifier - Command */
 	char *modifier_labels[7];          /* Names of the modifiers */
 
 	unsigned int supports_tiff;        /* Use tiff files */
