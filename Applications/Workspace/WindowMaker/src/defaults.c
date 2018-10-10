@@ -107,6 +107,7 @@ static WDECallbackConvert getFont;
 static WDECallbackConvert getColor;
 static WDECallbackConvert getKeybind;
 static WDECallbackConvert getModMask;
+static WDECallbackConvert getAltModMask;
 static WDECallbackConvert getPropList;
 
 /* value setting functions */
@@ -350,8 +351,10 @@ WDefaultEntry staticOptionList[] = {
 	    &wPreferences.no_dithering, getBool, NULL, NULL, NULL},
 	{"IconSize", "64", NULL,
 	    &wPreferences.icon_size, getInt, NULL, NULL, NULL},
-	{"ModifierKey", "Mod1", NULL,
+	{"ModifierKey", "Mod4", NULL,
 	    &wPreferences.modifier_mask, getModMask, NULL, NULL, NULL},
+	{"AlternateModifierKey", "Mod1", NULL,
+	    &wPreferences.alt_modifier_mask, getAltModMask, NULL, NULL, NULL},
 	{"FocusMode", "manual", seFocusModes,				/* have a problem when switching from */
 	    &wPreferences.focus_mode, getEnum, NULL, NULL, NULL},	/* manual to sloppy without restart */
 	{"NewStyle", "new", seTitlebarModes,
@@ -2271,6 +2274,35 @@ static int getModMask(WScreen * scr, WDefaultEntry * entry, WMPropList * value, 
 	(void) scr;
 
 	GET_STRING_OR_DEFAULT("Modifier Key", str);
+
+	if (!str)
+		return False;
+
+	mask = wXModifierFromKey(str);
+	if (mask < 0) {
+		wwarning(_("%s: modifier key %s is not valid"), entry->key, str);
+		mask = 0;
+		return False;
+	}
+
+	if (addr)
+		*(int *)addr = mask;
+
+	if (ret)
+		*ret = &mask;
+
+	return True;
+}
+
+static int getAltModMask(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+{
+	static int mask;
+	const char *str;
+
+	/* Parameter not used, but tell the compiler that it is ok */
+	(void) scr;
+
+	GET_STRING_OR_DEFAULT("Alternate Modifier Key", str);
 
 	if (!str)
 		return False;

@@ -71,6 +71,7 @@
 #include "wmspec.h"
 
 #define MOD_MASK wPreferences.modifier_mask
+#define ALT_MOD_MASK wPreferences.alt_modifier_mask
 
 
 /***** Local Stuff *****/
@@ -2978,7 +2979,7 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 		XUngrabPointer(dpy, CurrentTime);
 	}
 }
-#include "xmodifier.h"
+
 static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 {
 	WWindow *wwin = (WWindow *) data;
@@ -3000,15 +3001,15 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   /*         wXModifierFromKey("MOD4")); */
 
 	if (wPreferences.focus_mode == WKF_CLICK &&
-      !(event->xbutton.state & Mod4Mask) && // Alternate
-      !(event->xbutton.state & Mod1Mask) && // Command
+      !(event->xbutton.state & MOD_MASK) && // Mod4, Alternate
+      !(event->xbutton.state & ALT_MOD_MASK) && // Mod1, Command
 	    !WFLAGP(wwin, no_focusable))
 		wSetFocusTo(wwin->screen_ptr, wwin);
 
 	if (event->xbutton.button == Button1 || event->xbutton.button == Button2) {
 
 		if (event->xbutton.button == Button1) {
-			if (event->xbutton.state & Mod1Mask) // Command
+			if (event->xbutton.state & ALT_MOD_MASK) // Command
 				wLowerFrame(wwin->frame->core);
 			else
 				wRaiseFrame(wwin->frame->core);
