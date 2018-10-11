@@ -67,8 +67,6 @@ void WWMIconYardShowIcons(WScreen *screen);
 void WWMIconYardHideIcons(WScreen *screen);
 
 // --- Dock
-int WWMDockLevel();
-void WWMSetDockLevel(int level);
 void WWMDockInit(void);
 void WWMDockShowIcons(WDock *dock);
 void WWMDockHideIcons(WDock *dock);
@@ -119,6 +117,8 @@ pid_t WWMExecuteCommand(NSString *command);
 // Visible in WindowMaker and Workspace
 // Workspace callbacks for WindowMaker.
 //-----------------------------------------------------------------------------
+int WWMDockLevel();
+void WWMSetDockLevel(int level);
 
 char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
