@@ -832,7 +832,7 @@ static void handleButtonPress(XEvent * event)
 	WScreen *scr;
 
 	scr = wScreenForRootWindow(event->xbutton.root);
-
+  
 #ifdef NEXTSPACE
   // reset current focused window button beacuse ButtonPress may change focus
 	WWindow *wwin = scr->focused_window;
@@ -899,7 +899,6 @@ static void handleButtonPress(XEvent * event)
 
 	if (desc->parent_type == WCLASS_WINDOW) {
 		XSync(dpy, 0);
-
 		if (event->xbutton.state & ( MOD_MASK | ControlMask)) {
 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
 		} else if (wPreferences.ignore_focus_click) {
@@ -909,12 +908,21 @@ static void handleButtonPress(XEvent * event)
 		}
 		XSync(dpy, 0);
 	} else if (desc->parent_type == WCLASS_APPICON
-		   || desc->parent_type == WCLASS_MINIWINDOW || desc->parent_type == WCLASS_DOCK_ICON) {
+             || desc->parent_type == WCLASS_MINIWINDOW
+             || desc->parent_type == WCLASS_DOCK_ICON) {
 		if (event->xbutton.state & MOD_MASK) {
 			XSync(dpy, 0);
 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
 			XSync(dpy, 0);
 		}
+    else if ((desc->parent_type == WCLASS_DOCK_ICON) &&
+             (event->xbutton.state & wPreferences.alt_modifier_mask)) {
+      if (wAppIconFor(event->xbutton.window)->icon->icon_win ==
+          scr->dock->icon_array[0]->icon->icon_win) {
+        fprintf(stderr, "Workspace app icon Command-clicked!\n");
+        /* WWMSetDockLevel(!scr->dock->lowered); */
+      }
+    }
 	}
 
 	if (desc->handle_mousedown != NULL) {
