@@ -504,9 +504,9 @@ void WWMDockCollapse(WDock *dock)
 // -- Should be called from already existing @autoreleasepool ---
 
 enum {
-  KeepOnTop,
-  Normal,
-  AutoRaiseLower
+  KeepOnTop = WMDockLevel,
+  Normal = WMNormalLevel,
+  AutoRaiseLower = WMDesktopLevel
 };
 int WWMDockLevel()
 {
@@ -574,16 +574,22 @@ void WWMSetDockLevel(int level)
   if (current_level == level)
     return;
 
-  if (current_level == AutoRaiseLower) {
+  switch (level) {
+  case KeepOnTop:
+    dock->lowered = 1;
     dock->auto_raise_lower = 0;
-  }
-  else {
+    break;
+  case Normal:
+    dock->lowered = 0;
+    dock->auto_raise_lower = 0;
+    break;
+  case AutoRaiseLower:
+    dock->lowered = 0;
     dock->auto_raise_lower = 1;
+    break;
   }
-  if ((dock->lowered && level == KeepOnTop) ||
-      (!dock->lowered && level == Normal)) {
-    toggleLowered(dock);
-  }
+  toggleLowered(dock);
+
   WWMDockStateSave();
 }
 

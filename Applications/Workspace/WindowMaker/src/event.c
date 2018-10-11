@@ -901,16 +901,19 @@ static void handleButtonPress(XEvent * event)
 		XSync(dpy, 0);
 		if (event->xbutton.state & ( MOD_MASK | ControlMask)) {
 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
-		} else if (wPreferences.ignore_focus_click) {
+		}
+    else if (wPreferences.ignore_focus_click) {
 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
-		} else {
+		}
+    else {
 			XAllowEvents(dpy, ReplayPointer, CurrentTime);
 		}
 		XSync(dpy, 0);
-	} else if (desc->parent_type == WCLASS_APPICON
+	}
+  else if (desc->parent_type == WCLASS_APPICON
              || desc->parent_type == WCLASS_MINIWINDOW
              || desc->parent_type == WCLASS_DOCK_ICON) {
-		if (event->xbutton.state & MOD_MASK) {
+		if (event->xbutton.state & wPreferences.modifier_mask) {
 			XSync(dpy, 0);
 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
 			XSync(dpy, 0);
@@ -919,8 +922,9 @@ static void handleButtonPress(XEvent * event)
              (event->xbutton.state & wPreferences.alt_modifier_mask)) {
       if (wAppIconFor(event->xbutton.window)->icon->icon_win ==
           scr->dock->icon_array[0]->icon->icon_win) {
-        fprintf(stderr, "Workspace app icon Command-clicked!\n");
-        /* WWMSetDockLevel(!scr->dock->lowered); */
+        int dock_level = WWMDockLevel();
+        WWMSetDockLevel(dock_level == WMDockLevel ? WMNormalLevel : WMDockLevel);
+        return;
       }
     }
 	}
