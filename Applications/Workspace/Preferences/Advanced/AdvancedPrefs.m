@@ -32,8 +32,6 @@
 
 - (void)awakeFromNib
 {
-  NXDefaults *df = [NXDefaults userDefaults];
-
   [box retain];
   [box removeFromSuperview];
   DESTROY(bogusWindow);
@@ -41,12 +39,6 @@
   [slideOnBadFop setRefusesFirstResponder:YES];
   [slideFromShelf setRefusesFirstResponder:YES];
   [slideWhenOpening setRefusesFirstResponder:YES];
-
-  [slideFromShelf setState:![df boolForKey:@"DontSlideIconsFromShelf"]];
-  [slideWhenOpening setState:![df boolForKey:@"DontSlideIconsWhenOpening"]];
-  [slideOnBadFop setState:![df boolForKey:@"DontSlideIconBackOnBadFop"]];
-
-  [dockLevelBtn selectItemWithTag:WWMDockLevel()];
 }
 
 // --- PrefsModule protocol
@@ -67,7 +59,13 @@
 
 - (void)revert:(id)sender
 {
-  // Do nothing
+  NXDefaults *df = [NXDefaults userDefaults];
+
+  [slideFromShelf setState:![df boolForKey:@"DontSlideIconsFromShelf"]];
+  [slideWhenOpening setState:![df boolForKey:@"DontSlideIconsWhenOpening"]];
+  [slideOnBadFop setState:![df boolForKey:@"DontSlideIconBackOnBadFop"]];
+
+  [dockLevelBtn selectItemWithTag:WWMDockLevel()];
 }
 
 // --- Actions
