@@ -53,25 +53,6 @@ static NSTimer *clickTimer = nil;
   clickTimer = nil;
 }
 
-// - (void)keyUp:(NSEvent *)ev
-// {
-//   NSString   *characters = [ev characters];
-//   NSUInteger charsLength = [characters length];
-//   unichar    ch = 0;
-
-//   if (charsLength > 0) {
-//     ch = [characters characterAtIndex:0];
-//   }
-//   if (ch == NSUpArrowFunctionKey) {
-//     NSLog(@"keyUp: UpArrow");
-//     return;
-//   }
-//   else if (ch == NSDownArrowFunctionKey) {
-//     NSLog(@"keyUp: DownArrow");
-//     return;
-//   }
-// }
-
 - (void)keyDown:(NSEvent *)ev
 {
   NSString   *characters = [ev characters];
