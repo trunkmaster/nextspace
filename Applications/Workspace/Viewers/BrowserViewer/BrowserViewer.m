@@ -73,11 +73,6 @@
   }
 }
 
-// - (void)keyUp:(NSEvent *)event
-// {
-//   NSLog(@"[BrowserMatrix] keyUp");
-// }
-
 - (void)keyDown:(NSEvent *)event
 {
   NSInteger selectedRow;
@@ -109,6 +104,7 @@
 
     [self deselectAllCells];
     [self selectCellAtRow:selectedRowNew column:0];
+    [self displayIfNeeded];
   }
 
   NSBrowser *browser = (NSBrowser *)[(BrowserViewer *)_delegate view];
