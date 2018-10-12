@@ -70,6 +70,7 @@
 #define CLIP_FORWARD      2
 
 #define MOD_MASK wPreferences.modifier_mask
+#define ALT_MOD_MASK wPreferences.alt_modifier_mask
 #define ICON_SIZE wPreferences.icon_size
 
 /***** Local variables ****/
@@ -3678,7 +3679,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
 		wUnhideApplication(wapp, event->xbutton.button == Button2, unhideHere);
 
-		if (event->xbutton.state & MOD_MASK)
+		if (event->xbutton.state & ALT_MOD_MASK)
 			wHideOtherApplications(btn->icon->owner);
 	} else {
 		if (event->xbutton.button == Button1) {
@@ -4031,9 +4032,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
 	}
 
 	if (event->xbutton.button == Button1) {
-		if (event->xbutton.state & MOD_MASK)
-			wDockLower(dock);
-		else
+		if (!(event->xbutton.state & MOD_MASK))
 			wDockRaise(dock);
 
 		if ((event->xbutton.state & ShiftMask) && aicon != scr->clip_icon && dock->type != WM_DOCK) {
