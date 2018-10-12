@@ -63,7 +63,7 @@
  * using the classname/instancename
  */
 
-#define MOD_MASK       wPreferences.modifier_mask
+#define ALT_MOD_MASK   wPreferences.alt_modifier_mask
 #define ICON_SIZE      wPreferences.icon_size
 
 static void iconDblClick(WObjDescriptor * desc, XEvent * event);
@@ -715,7 +715,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
 	wUnhideApplication(wapp, event->xbutton.button == Button2, unhideHere);
 
-	if (event->xbutton.state & MOD_MASK)
+	if (event->xbutton.state & ALT_MOD_MASK)
 		wHideOtherApplications(aicon->icon->owner);
 }
 
@@ -807,14 +807,18 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
 	if (wPreferences.flags.noupdates && originalDock != NULL)
 		return False;
 
-	if (!(event->xbutton.state & MOD_MASK))
-		wRaiseFrame(icon->core);
-	else {
+  // If icon is docked, Dock raises in iconMouseDown()(dock.c)
+  if (!aicon->docked) {
+    wRaiseFrame(icon->core);
+  }
+	/* if (!(event->xbutton.state & ALT_MOD_MASK)) */
+	/* wRaiseFrame(icon->core); */
+	/* else { */
 		/* If Mod is pressed for an docked appicon, assume it is to undock it,
 		 * so don't lower it */
-		if (originalDock == NULL)
-			wLowerFrame(icon->core);
-	}
+	/* 	if (originalDock == NULL) */
+	/* 		wLowerFrame(icon->core); */
+	/* } */
 
 	if (XGrabPointer(dpy, icon->core->window, True, ButtonMotionMask
 			 | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
@@ -920,7 +924,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
 			wAppIconMove(aicon, x, y);
 
 			WDock *theNewDock = NULL;
-			if (!(ev.xmotion.state & MOD_MASK) || aicon->launching || aicon->lock || originalDock == NULL) {
+			if (!(ev.xmotion.state & ALT_MOD_MASK) || aicon->launching || aicon->lock || originalDock == NULL) {
 				for (i = 0; dockable && i < scr->drawer_count + 2; i++) {
 					WDock *theDock = allDocks[i];
 					if (theDock == NULL)
