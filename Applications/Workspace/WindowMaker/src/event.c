@@ -914,19 +914,24 @@ static void handleButtonPress(XEvent * event)
              || desc->parent_type == WCLASS_MINIWINDOW
              || desc->parent_type == WCLASS_DOCK_ICON) {
 		if (event->xbutton.state & wPreferences.modifier_mask) {
-			XSync(dpy, 0);
-			XAllowEvents(dpy, AsyncPointer, CurrentTime);
-			XSync(dpy, 0);
-		}
-    else if ((desc->parent_type == WCLASS_DOCK_ICON) &&
-             (event->xbutton.state & wPreferences.alt_modifier_mask)) {
-      if (wAppIconFor(event->xbutton.window)->icon->icon_win ==
-          scr->dock->icon_array[0]->icon->icon_win) {
-        int dock_level = WWMDockLevel();
-        WWMSetDockLevel(dock_level == WMDockLevel ? WMNormalLevel : WMDockLevel);
+      WAppIcon *appicon = wAppIconFor(event->xbutton.window);
+      WAppIcon *appicon0 = scr->dock->icon_array[0];
+      if ((desc->parent_type == WCLASS_DOCK_ICON) &&
+          (appicon->icon->icon_win == appicon0->icon->icon_win)) {
+        if (WWMDockLevel() == WMDockLevel)
+          WWMSetDockLevel(WMNormalLevel);
+        else {
+          WWMSetDockLevel(WMDockLevel);
+        }
+        XUngrabPointer(dpy, CurrentTime);
         return;
       }
-    }
+      else {
+        XSync(dpy, 0);
+        XAllowEvents(dpy, AsyncPointer, CurrentTime);
+        XSync(dpy, 0);
+      }
+		}
 	}
 
 	if (desc->handle_mousedown != NULL) {
