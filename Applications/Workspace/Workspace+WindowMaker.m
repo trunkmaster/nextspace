@@ -431,7 +431,7 @@ void WWMDockInit(void)
   btn->wm_class = "GNUstep";
   btn->wm_instance = "Workspace";
   btn->command = "Workspace Manager";
-  btn->auto_launch = 0; // disable autolaunch by WindowMaker's functions
+  // btn->auto_launch = 1; // disable autolaunch by WindowMaker's functions
   btn->launching = 1;   // tell Dock to wait for Workspace
   btn->running = 0;     // ...and we're not running yet
   btn->lock = 1;
@@ -678,7 +678,8 @@ void WWMDockAutoLaunch(WDock *dock)
       btn = dock->icon_array[i];
 
       if (!btn || !btn->auto_launch ||
-          !btn->command || btn->running || btn->launching)
+          !btn->command || btn->running || btn->launching ||
+          !strcmp(btn->wm_instance, "Workspace"))
         continue;
 
       state = wmalloc(sizeof(WSavedState));

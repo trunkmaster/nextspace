@@ -545,7 +545,17 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // File Viewers and Console
   fileViewers = [[NSMutableArray alloc] init];
-  [self _restoreWindows];
+  if (WWMIsDockAppAutolaunch(0) != NO) {
+    [self _restoreWindows];
+    [NSApp activateIgnoringOtherApps:YES];
+    [[NSApp mainMenu] display];
+  }
+  else {
+    [nc addObserver:self
+           selector:@selector(activateApplication:)
+               name:NSApplicationWillBecomeActiveNotification
+             object:NSApp];
+  }
 
   // NXMediaManager
   // For future use
@@ -581,6 +591,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 
   [self _startSavedApplications];
+}
+
+- (void)activateApplication:(NSNotification *)aNotification
+{
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:NSApplicationWillBecomeActiveNotification
+              object:NSApp];
+  [self _restoreWindows];
+  [[NSApp mainMenu] display];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
