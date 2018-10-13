@@ -114,16 +114,10 @@
   
   if (tc == [appList tableColumnWithIdentifier:@"autostart"])
     {
-      if (WWMIsDockAppAutolaunch(row) ||
-          [appName isEqualToString:@"Workspace.GNUstep"] ||
-          [appName isEqualToString:@"Recycler.GNUstep"])
+      if (WWMIsDockAppAutolaunch(row))
         return [NSImage imageNamed:@"CheckMark"];
       else
         return nil;
-
-      if ([appName isEqualToString:@"Workspace.GNUstep"] ||
-          [appName isEqualToString:@"Recycler.GNUstep"])
-        [[tc dataCellForRow:row] setEnabled:NO];
     }
   else
     {
@@ -158,28 +152,22 @@
     appName = [appName pathExtension];
   
   [nameField setStringValue:appName];
+  [autostartBtn setEnabled:YES];
  
-  if ([appName isEqualToString:@"Workspace"])
-    {
-      [autostartBtn setEnabled:NO];
-      
-      [iconBtn setImage:[NSApp applicationIconImage]];
-      [pathField setStringValue:@""];
-      [autostartBtn setState:NSOnState];
-      [autostartBtn setState:NSOnState];
-    }
-  else
-    {
-      [autostartBtn setEnabled:YES];
-      
-      [iconBtn setImage:WWMDockAppImage(selRow)];
-      [pathField setStringValue:WWMDockAppCommand(selRow)];
-      [autostartBtn
-        setState:WWMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
-    }
-
-  if ([appPanel isVisible])
+  if ([appName isEqualToString:@"Workspace"]) {
+    [iconBtn setImage:[NSApp applicationIconImage]];
+    [pathField setStringValue:@""];
+  }
+  else {
+    [iconBtn setImage:WWMDockAppImage(selRow)];
+    [pathField setStringValue:WWMDockAppCommand(selRow)];
+  }
+  [autostartBtn
+      setState:WWMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
+  
+  if ([appPanel isVisible]) {
     [self appSettingsPanelUpdate];
+  }
 }
 
 - (BOOL)tableView:(NSTableView *)tv
@@ -187,7 +175,8 @@
 {
   NSString *value = WWMDockAppName(row);
 
-  if (!value || [value isEqualToString:@".NoApplication"])
+  if (!value || [value isEqualToString:@".NoApplication"] ||
+      [value isEqualToString:@"Recycler.GNUstep"])
     return NO;
 
   return YES;
