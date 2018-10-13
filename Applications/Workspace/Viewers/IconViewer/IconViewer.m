@@ -193,33 +193,44 @@ static NSRect viewFrame;
 }
 - (void)drawOpenAnimation
 {
-  NSUInteger step = 15;
+  NSUInteger step = 5;
+  NSUInteger power = 1;
 
   isDrawOpenAnimation = YES;
-  
+
   viewFrame = [self frame];
-  // boxRect = [[selectedIcons anyObject] frame];
+  // viewFrame = [[[self enclosingScrollView] contentView] frame];
 
   while (boxRect.size.width < viewFrame.size.width ||
          boxRect.size.height < viewFrame.size.height) {
       
-    [self display];
-    
-    boxRect.origin.x -= step;
+    boxRect.origin.x -= step * power;
     if (boxRect.origin.x < 0 ) boxRect.origin.x = 0;
-    boxRect.origin.y -= step;
+    boxRect.origin.y -= step * power;
     if (boxRect.origin.y < 0 ) boxRect.origin.y = 0;
-      
-    boxRect.size.width += step * ((boxRect.origin.x == 0) ? 1 : 2);
+
+    boxRect.size.width += (step * power) * 2;
     if (boxRect.size.width > viewFrame.size.width)
       boxRect.size.width = viewFrame.size.width;
-    boxRect.size.height += step * ((boxRect.origin.y == 0) ? 1 : 2);
+    boxRect.size.height += (step * power) * 2;
     if (boxRect.size.height > viewFrame.size.height)
-      boxRect.size.height = viewFrame.size.height;      
+      boxRect.size.height = viewFrame.size.height;
+    power++;
+
+    [self displayRect:NSMakeRect(boxRect.origin.x, boxRect.origin.y,
+                                 boxRect.size.width, 1)];
+    [self displayRect:NSMakeRect(boxRect.origin.x, boxRect.origin.y,
+                                 1, boxRect.size.height)];
+    [self displayRect:NSMakeRect(boxRect.origin.x + boxRect.size.width - 1,
+                                 boxRect.origin.y,
+                                 1, boxRect.size.height)];
+    [self displayRect:NSMakeRect(boxRect.origin.x,
+                                 boxRect.origin.y + boxRect.size.height - 1,
+                                 boxRect.size.width, 1)];
   }
 
   isDrawOpenAnimation = NO;
-  // [self setNeedsDisplay:YES];
+  [self setNeedsDisplay:YES];
 }
 - (BOOL)isAnimating
 {
@@ -394,11 +405,12 @@ static NSRect viewFrame;
   }
 
   path = [rootPath stringByAppendingPathComponent:dirPath];
-  NSLog(@"IconViewer(%@): display path: %@ updateOnDisplay:%i", rootPath, dirPath, updateOnDisplay);
+  NSLog(@"IconViewer(%@): display path: %@ updateOnDisplay:%i",
+        rootPath, dirPath, updateOnDisplay);
 
   if (updateOnDisplay == NO) {
     [iconView removeAllIcons];
-    [iconView display];
+    // [iconView display];
   }
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
   itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
@@ -441,7 +453,7 @@ static NSRect viewFrame;
   NSString *path, *fullPath;
   NSString *appName, *fileType;
 
-  NSLog(@"[IconViewer] open path:%@ selection:%@", currentPath, selection);
+  // NSLog(@"[IconViewer] open path:%@ selection:%@", currentPath, selection);
 
   if ([selected count] == 0) {
     [_owner displayPath:currentPath selection:nil sender:self];
