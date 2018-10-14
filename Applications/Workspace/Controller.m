@@ -520,7 +520,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       
       WWMDockAutoLaunch(dock);
     }
-  
+
   return;
 }
 
@@ -543,11 +543,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Fill menu 'View' with file viewers
   [self _loadViewMenu:[viewMenuItem submenu]];
 
+  // Now we are ready to show windows and menu
+  [df setObject:@"NO" forKey:@"NXAutoLaunch"];
   // File Viewers and Console
   fileViewers = [[NSMutableArray alloc] init];
   if (WWMIsDockAppAutolaunch(0) != NO) {
     [self _restoreWindows];
-    [NSApp activateIgnoringOtherApps:YES];
     [[NSApp mainMenu] display];
   }
   else {

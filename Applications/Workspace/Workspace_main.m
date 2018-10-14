@@ -54,7 +54,6 @@ int main(int argc, const char **argv)
           @autoreleasepool {
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:@"YES" forKey:@"NXAutoLaunch"];
-            [defaults addSuiteNamed:NSArgumentDomain];
             NSApplicationMain(argc, argv);
             NSLog(@"Workspace applicaton successfully finished.");
           }
