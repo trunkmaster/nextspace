@@ -5,7 +5,7 @@
         Position = "0,0";
         Command = "NEXTSPACE internal: don't edit it!";
         Name = Workspace.GNUstep;
-        AutoLaunch = No;
+        AutoLaunch = Yes;
         Forced = No;
         Lock = Yes;
         BuggyApplication = No;
