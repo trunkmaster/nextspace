@@ -527,7 +527,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  NXDefaults           *df = [NXDefaults userDefaults];
+  NSUserDefaults       *df = [NSUserDefaults standardUserDefaults];
 
   // Initialize private NSWorkspace implementation
   [self initNSWorkspace];
