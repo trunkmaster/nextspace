@@ -222,10 +222,10 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
 
       if ([identifier isEqualToString:@"OperationName"])
 	{
-          return shortenString([bgop titleString],
-                               [aTableColumn width]-4,
-                               [[aTableColumn dataCell] font], 
-                               NXPathElement, NXDotsAtLeft);
+          return NXShortenString([bgop titleString],
+                                 [aTableColumn width]-4,
+                                 [[aTableColumn dataCell] font], 
+                                 NXPathElement, NXDotsAtLeft);
 	}
       else if ([identifier isEqualToString:@"OperationState"])
 	{

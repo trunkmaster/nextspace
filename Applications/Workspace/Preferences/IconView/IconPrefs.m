@@ -190,9 +190,9 @@ static inline NSRect IncrementedRect(NSRect r)
   textFrame.size.width = newWidth;
   [iconLabel setFrame:textFrame];
 
-  [iconLabel setStringValue:shortenString(@"Workspace.app",
-                                          newWidth-4, [iconLabel font],
-                                          NXSymbolElement, NXDotsAtRight)];
+  [iconLabel setStringValue:NXShortenString(@"Workspace.app",
+                                            newWidth-4, [iconLabel font],
+                                            NXSymbolElement, NXDotsAtRight)];
   if (newWidth == DEFAULT_LABEL_WIDTH)
     [button setEnabled:NO];
   else

@@ -135,10 +135,10 @@
   if (![message isEqualToString:@""])
     {
       [currentField
-            setStringValue:shortenString(message,
-                                         [currentField bounds].size.width-3,
-                                         [currentField font],
-                                         NXSymbolElement, NXDotsAtRight)];
+            setStringValue:NXShortenString(message,
+                                           [currentField bounds].size.width-3,
+                                           [currentField font],
+                                           NXSymbolElement, NXDotsAtRight)];
     }
   // From:, In: field
   if ([currSourceDir isEqualToString:@""])
@@ -149,10 +149,10 @@
     {
       [fromLabel setTextColor:[NSColor controlTextColor]];
     }
-  [fromField setStringValue:shortenString(currSourceDir,
-                                          [fromField bounds].size.width-3,
-                                          [fromField font], 
-                                          NXPathElement, NXDotsAtLeft)];
+  [fromField setStringValue:NXShortenString(currSourceDir,
+                                            [fromField bounds].size.width-3,
+                                            [fromField font], 
+                                            NXPathElement, NXDotsAtLeft)];
   // To: field
   if ([currTargetDir isEqualToString:@""])
     {
@@ -162,10 +162,10 @@
     {
       [toLabel setTextColor:[NSColor controlTextColor]];
     }
-  [toField setStringValue:shortenString(currTargetDir,
-                                        [toField bounds].size.width-3,
-                                        [toField font], 
-                                        NXPathElement, NXDotsAtLeft)];
+  [toField setStringValue:NXShortenString(currTargetDir,
+                                          [toField bounds].size.width-3,
+                                          [toField font], 
+                                          NXPathElement, NXDotsAtLeft)];
 
   if (progress > 0.0)
     {

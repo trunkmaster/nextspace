@@ -17,14 +17,8 @@ typedef enum {
   NXWordElement = 2
 } NXElementType;
 
-NSString *shortenString(NSString *fullString,
-                        CGFloat viewWidth, 
-                        NSFont *font,
-                        NXElementType elementType, 
-                        NXDotsPosition dotsPosition);
-
-// NSInteger NXRunAlertPanel(NSString *title,
-//                           NSString *msg,
-//                           NSString *defaultButton,
-//                           NSString *alternateButton,
-//                           NSString *otherButton, ...);
+NSString *NXShortenString(NSString *fullString,
+                          CGFloat viewWidth, 
+                          NSFont *font,
+                          NXElementType elementType, 
+                          NXDotsPosition dotsPosition);
