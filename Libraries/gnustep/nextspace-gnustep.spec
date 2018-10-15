@@ -48,7 +48,6 @@ Conflicts:	gnustep-filesystem
 Conflicts:	gnustep-gui
 Conflicts:	gnustep-back
 
-BuildRequires:	gnustep-make
 BuildRequires:	clang >= 3.8.0
 
 # gnustep-base
