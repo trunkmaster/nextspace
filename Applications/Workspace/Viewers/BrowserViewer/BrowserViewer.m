@@ -151,8 +151,8 @@
     return;
 
   attrs = [aString attributesAtIndex:0 effectiveRange:NULL];
-  sString = shortenString([aString string], aRect.size.width, [self font],
-                          NXSymbolElement, NXDotsAtRight);
+  sString = NXShortenString([aString string], aRect.size.width, [self font],
+                            NXSymbolElement, NXDotsAtRight);
   saString = [[NSAttributedString alloc] initWithString:sString
                                              attributes:attrs];
   

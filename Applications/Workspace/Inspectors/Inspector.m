@@ -87,9 +87,9 @@
       
       if ([font widthOfString:fileName] > width)
         {
-          [fileNameField setStringValue:shortenString(fileName, width,
-                                                      font, NXSymbolElement,
-                                                      NXDotsAtRight)];
+          [fileNameField setStringValue:NXShortenString(fileName, width,
+                                                        font, NXSymbolElement,
+                                                        NXDotsAtRight)];
         }
       else
         {
@@ -105,9 +105,9 @@
     }
   
   [dirNameField
-    setStringValue:shortenString(filePath, [dirNameField frame].size.width,
-                                 [dirNameField font],
-                                 NXPathElement, NXDotsAtLeft)];
+    setStringValue:NXShortenString(filePath, [dirNameField frame].size.width,
+                                   [dirNameField font],
+                                   NXPathElement, NXDotsAtLeft)];
 }
 
 - (void)_setInspector:(WMInspector *)inspector

@@ -1,15 +1,15 @@
-/** @class NXUtilities
-    @brief The various utility functions wich can't be assigned to some class.
+/** @brief The various utility functions wich can't be assigned to some class.
     
     @author Sergii Stoian
 */
 
 #import "NXUtilities.h"
-#import <NXSystem/NXScreen.h>
 
-NSString *
-shortenString(NSString *fullString, CGFloat viewWidth, NSFont *font,
-              NXElementType elementType, NXDotsPosition dotsPosition)
+NSString *NXShortenString(NSString *fullString,
+                          CGFloat viewWidth,
+                          NSFont *font,
+                          NXElementType elementType,
+                          NXDotsPosition dotsPosition)
 {
   NSMutableString *shortString = [NSMutableString stringWithString:fullString];
   NSMutableArray  *pathComponents;
@@ -98,38 +98,3 @@ shortenString(NSString *fullString, CGFloat viewWidth, NSFont *font,
 
   return fullString;
 }
-
-// NSInteger NXRunAlertPanel(NSString *title,
-//                           NSString *msg,
-//                           NSString *defaultButton,
-//                           NSString *alternateButton,
-//                           NSString *otherButton, ...)
-// {
-//   id        panel;
-//   NSInteger result;
-//   va_list       ap;
-
-//   va_start(ap, otherButton);
-//   panel = NSGetAlertPanel(title, msg, 
-//                           defaultButton,
-//                           alternateButton,
-//                           otherButton, ap);
-//   va_end(ap);
-
-//   {
-//     NSSize  screenSize = [[NXScreen sharedScreen] sizeInPixels];
-//     NSPoint panelOrigin;
-
-//     [panel center];
-//     panelOrigin = [panel frame].origin;
-//     panelOrigin.y =
-//       (screenSize.height - screenSize.height/4) - [panel frame].size.height;
-//     [panel setFrameOrigin:panelOrigin];
-//   }
-  
-//   result = [NSApp runModalForWindow:panel];
-//   [panel orderOut:panel];
-//   NSReleaseAlertPanel(panel);
-  
-//   return result;
-// }
