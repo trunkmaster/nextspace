@@ -118,6 +118,7 @@ GNUstep libraries - implementation of OpenStep (AppKit, Foundation).
 %package devel
 Summary:	OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 Requires:	%{name}%{?_isa} = %{version}-%{release}
+Provides:	gnustep-make
 Provides:	gnustep-base-devel
 Provides:	gnustep-gui-devel
 Provides:	gnustep-back-devel
