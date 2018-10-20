@@ -53,6 +53,19 @@ NSString *NXShortenString(NSString *fullString,
       }
       break;
     case NXDotsAtCenter:
+      if (elementType == NXSymbolElement) {
+        [shortString 
+                deleteCharactersInRange:NSMakeRange([shortString length]/2, 1)];
+      }
+      else if (elementType == NXPathElement) {
+        shortString = [NSMutableString 
+                              stringWithString:
+                          [shortString stringByDeletingLastPathComponent]];
+      }
+      else { // NXWordElement
+        // TODO
+      }
+      break;
     default:
       // TODO
       break;
