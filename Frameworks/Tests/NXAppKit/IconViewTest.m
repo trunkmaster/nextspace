@@ -201,9 +201,9 @@
 - (void)main
 {
   NSString 		*filename;
-  NSMutableArray	*icons = [NSMutableArray array];
+  // NSMutableArray	*icons = [NSMutableArray array];
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
-  NSFileManager		*fm = [NSFileManager defaultManager];
+  // NSFileManager		*fm = [NSFileManager defaultManager];
   NXFileManager		*xfm = [NXFileManager sharedManager];
   NSArray		*items;
   NSString		*path;
