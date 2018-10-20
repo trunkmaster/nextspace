@@ -130,4 +130,12 @@
   [iconViewTest show];
 }
 
+- (void)showTextTest:(id)sender
+{
+  if (textTest == nil) {
+    textTest = [[TextTest alloc] init];
+  }
+  [textTest show];
+}
+
 @end
