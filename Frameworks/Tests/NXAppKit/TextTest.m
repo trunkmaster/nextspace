@@ -68,12 +68,14 @@ static inline NSRect IncrementedRect(NSRect r)
 - (void)awakeFromNib
 {
   [shrinkedText setStringValue:@"Drag arrows to see shrinked text"];
+  [textToShrink setStringValue:@"Drag arrows to see shrinked text"];
   [self setupArrows];
 }
 
 - (void)show
 {
   [window makeKeyAndOrderFront:self];
+  [window makeFirstResponder:textToShrink];
 }
 
 // --- NXSizer delegate
@@ -141,6 +143,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)arrowViewStoppedMoving:(NXSizer *)sender
 {
+  [window makeFirstResponder:textToShrink];
 }
 
 @end
