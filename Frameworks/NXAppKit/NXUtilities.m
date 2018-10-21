@@ -14,11 +14,17 @@ NSString *NXShortenString(NSString *fullString,
   NSMutableString *shortString = [NSMutableString stringWithString:fullString];
   NSMutableArray  *pathComponents;
   NSUInteger      position;
+  NSCharacterSet  *charset;
+  NSRange         range, del_range;
 
   viewWidth -= [font widthOfString:@"..."];
 
   if (([font widthOfString:shortString]) <= viewWidth) {
     return fullString;
+  }
+
+  if (elementType == NXWordElement) {
+    charset = [NSCharacterSet whitespaceAndNewlineCharacterSet];
   }
 
   while ([font widthOfString:shortString] > viewWidth) {
@@ -35,8 +41,12 @@ NSString *NXShortenString(NSString *fullString,
                         mutableCopy];
         [pathComponents release];
       }
-      else { // NXWordElement
-        // TODO
+      else if (elementType == NXWordElement) {
+        range = [shortString rangeOfCharacterFromSet:charset];
+        if (range.location != NSNotFound) {
+          [shortString
+            deleteCharactersInRange:NSMakeRange(0, range.location+range.length)];
+        }
       }
       break;
     case NXDotsAtRight:
@@ -50,8 +60,14 @@ NSString *NXShortenString(NSString *fullString,
                               stringWithString:
                           [shortString stringByDeletingLastPathComponent]];
       }
-      else { // NXWordElement
-        // TODO
+      else if (elementType == NXWordElement) {
+        range = [shortString rangeOfCharacterFromSet:charset
+                                             options:NSBackwardsSearch];
+        del_range.location = range.location;
+        del_range.length = [shortString length] - range.location;
+        if (range.location != NSNotFound) {
+          [shortString deleteCharactersInRange:del_range];
+        }
       }
       break;
     case NXDotsAtCenter:
@@ -64,12 +80,11 @@ NSString *NXShortenString(NSString *fullString,
                               stringWithString:
                           [shortString stringByDeletingLastPathComponent]];
       }
-      else { // NXWordElement
+      else if (elementType == NXWordElement) {
         // TODO
       }
       break;
     default:
-      // TODO
       break;
     }
   }
