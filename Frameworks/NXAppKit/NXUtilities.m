@@ -13,19 +13,20 @@ NSString *NXShortenString(NSString *fullString,
 {
   NSMutableString *shortString = [NSMutableString stringWithString:fullString];
   NSMutableArray  *pathComponents;
+  NSUInteger      position;
 
   viewWidth -= [font widthOfString:@"..."];
 
-  if (([font widthOfString:shortString]) <= viewWidth)
-    {
-      return fullString;
-    }
+  if (([font widthOfString:shortString]) <= viewWidth) {
+    return fullString;
+  }
 
   while ([font widthOfString:shortString] > viewWidth) {
     switch (dotsPosition) {
     case NXDotsAtLeft:
       if (elementType == NXSymbolElement) {
-        [shortString deleteCharactersInRange:NSMakeRange(0, 1)];
+        position = 0;
+        [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
       }
       else if (elementType == NXPathElement) {
         pathComponents = [[shortString pathComponents] mutableCopy];
@@ -40,8 +41,9 @@ NSString *NXShortenString(NSString *fullString,
       break;
     case NXDotsAtRight:
       if (elementType == NXSymbolElement) {
-        [shortString 
-                deleteCharactersInRange:NSMakeRange([shortString length]-1, 1)];
+        position = [shortString length]-1;
+        [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
+        position--;
       }
       else if (elementType == NXPathElement) {
         shortString = [NSMutableString 
@@ -54,8 +56,8 @@ NSString *NXShortenString(NSString *fullString,
       break;
     case NXDotsAtCenter:
       if (elementType == NXSymbolElement) {
-        [shortString 
-                deleteCharactersInRange:NSMakeRange([shortString length]/2, 1)];
+        position = round([shortString length]/2);
+        [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
       }
       else if (elementType == NXPathElement) {
         shortString = [NSMutableString 
@@ -91,8 +93,15 @@ NSString *NXShortenString(NSString *fullString,
       return [NSString stringWithFormat:@"%@/...", shortString];
     }
   }
-  else { // NXDotsAtCenter
-    // TODO
+  else { // TODO: NXDotsAtCenter
+    NSString *shrinked;
+    NSRange  rightPartRange;
+
+    rightPartRange = NSMakeRange(position, [shortString length]-position);
+    shrinked = [NSString stringWithFormat:@"%@...%@",
+                         [shortString substringToIndex:position],
+                         [shortString substringWithRange:rightPartRange]];
+    return shrinked;
   }
 
   return fullString;
