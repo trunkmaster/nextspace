@@ -26,6 +26,7 @@
 #import "ClockViewTest.h"
 #import "CursorsTest.h"
 #import "IconViewTest.h"
+#import "TextTest.h"
 
 @interface AppController : NSObject
 {
@@ -33,6 +34,7 @@
   ClockViewTest    *clockViewTest;
   CursorsTest      *cursorsTest;
   IconViewTest     *iconViewTest;
+  TextTest         *textTest;
 }
 
 @end
