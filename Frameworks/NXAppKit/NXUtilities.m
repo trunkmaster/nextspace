@@ -37,8 +37,7 @@ NSString *NXShortenString(NSString *fullString,
       else if (elementType == NXPathElement) {
         pathComponents = [[shortString pathComponents] mutableCopy];
         [pathComponents removeObjectAtIndex:0];
-        shortString = [[NSString pathWithComponents:pathComponents] 
-                        mutableCopy];
+        [shortString setString:[NSString pathWithComponents:pathComponents]];
         [pathComponents release];
       }
       else if (elementType == NXWordElement) {
@@ -56,9 +55,7 @@ NSString *NXShortenString(NSString *fullString,
         position--;
       }
       else if (elementType == NXPathElement) {
-        shortString = [NSMutableString 
-                              stringWithString:
-                          [shortString stringByDeletingLastPathComponent]];
+        [shortString setString:[shortString stringByDeletingLastPathComponent]];
       }
       else if (elementType == NXWordElement) {
         range = [shortString rangeOfCharacterFromSet:charset
@@ -71,14 +68,27 @@ NSString *NXShortenString(NSString *fullString,
       }
       break;
     case NXDotsAtCenter:
+      position = round([shortString length]/2);
       if (elementType == NXSymbolElement) {
-        position = round([shortString length]/2);
         [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
       }
       else if (elementType == NXPathElement) {
-        shortString = [NSMutableString 
-                              stringWithString:
-                          [shortString stringByDeletingLastPathComponent]];
+        pathComponents = [[shortString pathComponents] mutableCopy];
+        range = NSMakeRange(position, 1);
+        for (NSString *component in pathComponents) {
+          del_range = [shortString rangeOfString:component];
+          if (NSIntersectionRange(del_range, range).length > 0) {
+            position = del_range.location;
+            [pathComponents removeObject:component];
+            if ([[pathComponents objectAtIndex:0] isEqualToString:@"/"]) {
+              [pathComponents replaceObjectAtIndex:0 withObject:@""];
+            }
+            [shortString
+              setString:[pathComponents componentsJoinedByString:@"/"]];
+            break;
+          }
+        }
+        [pathComponents release];
       }
       else if (elementType == NXWordElement) {
         // TODO
@@ -108,7 +118,7 @@ NSString *NXShortenString(NSString *fullString,
       return [NSString stringWithFormat:@"%@/...", shortString];
     }
   }
-  else { // TODO: NXDotsAtCenter
+  else if (dotsPosition == NXDotsAtCenter) {
     NSString *shrinked;
     NSRange  rightPartRange;
 
