@@ -8,7 +8,8 @@
 	    "showMultilineAlert:",
 	    "showCursorsTest:",
 	    "show3LineAlert:",
-	    "showIconViewTest:"
+	    "showIconViewTest:",
+	    "showTextTest:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -19,10 +20,11 @@
     };
     FirstResponder = {
 	Actions = (
-	    "showIconViewTest:",
+	    "showTextTest:",
 	    "show3LineAlert:",
 	    "showClockViewDemo:",
 	    "showCursorsTest:",
+	    "showIconViewTest:",
 	    "showMultilineAlert:",
 	    "showSinglelineAlert:",
 	    "showTextFieldsDemo:"
