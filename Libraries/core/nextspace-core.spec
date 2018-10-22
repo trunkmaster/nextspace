@@ -15,6 +15,8 @@ BuildRequires:  libobjc2-devel
 Requires:	libdispatch >= 1.3
 Requires:	libobjc2 >= 1.8.2
 Requires:	zsh
+Requires:	plymouth-plugin-script
+Requires:	plymouth-plugin-label
 
 %description
 Includes several components:
