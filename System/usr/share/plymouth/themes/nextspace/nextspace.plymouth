@@ -1,0 +1,10 @@
+[Plymouth Theme]
+Name=NEXTSPACE
+Description=Centos theme based on OpenStep booting
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/nextspace
+ScriptFile=/usr/share/plymouth/themes/nextspace/nextspace.script
+
+

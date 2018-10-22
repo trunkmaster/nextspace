@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Fri Sep 21 18:10:18 2018
+;; Created Fri Oct  5 02:25:37 2018
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -11,7 +11,7 @@
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring '("updateSele" "keyDown" "keyDow" "lastIcon" "NXIconViewDid" "en" "enclosingScrollV" "slotsTa" "Scroll" "fillWith" "relayout" "putInd" "drawRect" "putInto" "addIcon" "drawSelectionRect"))
+(setq search-ring '("iconDragged" "updateSele" "keyDown" "keyDow" "lastIcon" "NXIconViewDid" "en" "enclosingScrollV" "slotsTa" "Scroll" "fillWith" "relayout" "putInd" "drawRect" "putInto" "addIcon"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
 (setq file-name-history '("~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit/GNUmakefile.postamble" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Viewers/PathView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/RecyclerIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.m" "~/Developer/nextspace/Applications/Workspace/Viewers/PathIcon.h" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Viewers/ShelfView.m" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/Operations/ProcessManager.m" "~/Developer/nextspace/Applications/Workspace/Preferences/Workspaces/*.[hm]" "~/Developer/nextspace/Applications/Workspace" "~/Developer/nextspace/Applications/Workspace/ModuleLoader.m" "~/Developer/nextspace/Applications/Workspace/Preferences.m" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/workspace.c" "~/Developer/nextspace/Applications/Workspace/Recycler.*" "~/Developer/nextspace/Applications/Workspace/WorkspaceInfo.plist" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/screen.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.h" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/defaults.c" "~/Developer/nextspace/Applications/Workspace/WindowMaker/src/dock.c"))
@@ -22,8 +22,8 @@
   "NXIconView.m"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  39610
-  '(39578 nil)
+  2782
+  '(20384 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
@@ -33,8 +33,8 @@
   "NXIconView.h"
   'objc-mode
   '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  4091
-  '(8640 nil)
+  11661
+  '(10788 nil)
   nil
   nil
   '((buffer-file-coding-system . undecided-unix)))
