@@ -104,7 +104,6 @@ NSString *NXShortenString(NSString *fullString,
       break;
     }
   }
-  NSLog(@"Final string: %@ Dots position: %lu", shortString, position);
 
   // String was shortened - insert dots
   if (dotsPosition == NXDotsAtLeft) {
