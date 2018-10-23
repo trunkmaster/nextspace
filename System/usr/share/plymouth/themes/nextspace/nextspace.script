@@ -45,7 +45,7 @@ if (Plymouth.GetMode () == "boot") {
   spinning_disk.sprite.SetOpacity (1);
 
   /* message */
-  text_image = Image.Text("System is coming up...", 0, 0, 0, "");
+  text_image = Image.Text("System is coming up...", 0, 0, 0, 1, "TimesNewRoman Italic 14", "center");
   
   message_sprite = Sprite(text_image);
   message_sprite.SetX( panel.sprite.GetX() + panel.image.GetWidth()/2 - text_image.GetWidth()/2 );
@@ -218,7 +218,7 @@ Plymouth.SetDisplayPasswordFunction(display_password_callback);
 /* --- Message --------------------------------------------------------------- */
 
 fun message_callback (text) {
-  text_image = Image.Text(text, 0, 0, 0, "Times New Roman");
+  text_image = Image.Text(text, 0, 0, 0, 1, "TimesNewRoman Italic 14", "center");
   
   message_sprite = Sprite(text_image);
   message_sprite.SetX( panel.sprite.GetX() + panel.image.GetWidth()/2 - text_image.GetWidth()/2 );
