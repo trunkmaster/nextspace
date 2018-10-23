@@ -74,20 +74,26 @@ NSString *NXShortenString(NSString *fullString,
       }
       else if (elementType == NXPathElement) {
         pathComponents = [[shortString pathComponents] mutableCopy];
-        range = NSMakeRange(position, 1);
-        for (NSString *component in pathComponents) {
-          del_range = [shortString rangeOfString:component];
-          if (NSIntersectionRange(del_range, range).length > 0) {
-            position = del_range.location;
-            [pathComponents removeObject:component];
-            if ([[pathComponents objectAtIndex:0] isEqualToString:@"/"]) {
-              [pathComponents replaceObjectAtIndex:0 withObject:@""];
+        if ([pathComponents count] > 3) {
+          range = NSMakeRange(position, 1);
+          for (NSString *component in pathComponents) {
+            del_range = [shortString rangeOfString:component];
+            if (NSIntersectionRange(del_range, range).length > 0) {
+              position = del_range.location - 1;
+              [pathComponents removeObject:component];
+              [shortString
+                setString:[pathComponents componentsJoinedByString:@"/"]];
+              if ([[pathComponents objectAtIndex:0] isEqualToString:@"/"]) {
+                [shortString deleteCharactersInRange:NSMakeRange(0, 1)];
+              }
+              break;
             }
-            [shortString
-              setString:[pathComponents componentsJoinedByString:@"/"]];
-            break;
           }
         }
+        else {
+          [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
+        }
+        
         [pathComponents release];
       }
       else if (elementType == NXWordElement) {
@@ -98,6 +104,7 @@ NSString *NXShortenString(NSString *fullString,
       break;
     }
   }
+  NSLog(@"Final string: %@ Dots position: %lu", shortString, position);
 
   // String was shortened - insert dots
   if (dotsPosition == NXDotsAtLeft) {
