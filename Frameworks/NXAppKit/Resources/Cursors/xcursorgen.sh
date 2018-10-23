@@ -16,6 +16,9 @@ do
     echo $i | xcursorgen - $CURSORS_DIR/$CURSOR_FILE
 done
 
+echo "Generating animated cursors"
+xcursorgen xanimcursor.conf $CURSORS_DIR/watch
+
 echo "Creating links..."
 cd $CURSORS_DIR
 ln -s dnd-link alias
