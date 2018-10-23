@@ -22,6 +22,7 @@
 
 #import "NXIcon.h"
 #import "NXIconLabel.h"
+#import "NXUtilities.h"
 
 @interface NXIcon (Private)
 
@@ -652,27 +653,13 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 
 @implementation NXIcon (Private)
 
-- (void) rebuildCollapsedLabelString
+- (void)rebuildCollapsedLabelString
 {
-  NSString *str = labelString;
-  NSFont   *font = [shortLabel font];
-
-  // do we need to make the string shorter?
-  if ([font widthOfString: str] > maximumCollapsedLabelWidth)
-    {
-      NSMutableString *newStr = [labelString mutableCopy];
-      float           ellipsisWidth = [font widthOfString: _(@"...")];
-
-      while ([font widthOfString: newStr] >
-	     (maximumCollapsedLabelWidth - ellipsisWidth))
-	{
-  	  [newStr deleteCharactersInRange:NSMakeRange([newStr length] - 1, 1)];
-	}
-
-      [newStr appendString: _(@"...")];
-      str = newStr;
-  }
-
+  NSString *str = NXShortenString(labelString,
+                                  maximumCollapsedLabelWidth,
+                                  [shortLabel font],
+                                  NXSymbolElement,
+                                  NXDotsAtRight);
   [shortLabel setString:str];
   [shortLabel adjustFrame];
 }
