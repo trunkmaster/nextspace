@@ -152,7 +152,7 @@
   [fromField setStringValue:NXShortenString(currSourceDir,
                                             [fromField bounds].size.width-3,
                                             [fromField font], 
-                                            NXPathElement, NXDotsAtLeft)];
+                                            NXPathElement, NXDotsAtCenter)];
   // To: field
   if ([currTargetDir isEqualToString:@""])
     {
@@ -165,7 +165,7 @@
   [toField setStringValue:NXShortenString(currTargetDir,
                                           [toField bounds].size.width-3,
                                           [toField font], 
-                                          NXPathElement, NXDotsAtLeft)];
+                                          NXPathElement, NXDotsAtCenter)];
 
   if (progress > 0.0)
     {
