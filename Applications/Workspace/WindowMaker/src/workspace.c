@@ -52,6 +52,7 @@
 #include "wsmap.h"
 #ifdef NEXTSPACE
 #include <Workspace+WindowMaker.h>
+#include "properties.h"
 #endif // NEXTSPACE        
 
 #define MC_NEW          0
@@ -491,76 +492,117 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
 	wClipUpdateForWorkspaceChange(scr, workspace);
 
+  /* save focused window to the workspace before switch */
+  if (scr->focused_window) {
+    scr->workspaces[scr->current_workspace]->focused_window = scr->focused_window->client_win;
+    fprintf(stderr, "[WM] save focused window %lu to workspace %i BEFORE switch\n",
+            scr->focused_window->client_win, scr->current_workspace);
+  }
+
 	scr->last_workspace = scr->current_workspace;
 	scr->current_workspace = workspace;
 
 	wWorkspaceMenuUpdate(scr, scr->workspace_menu);
-
 	wWorkspaceMenuUpdate(scr, scr->clip_ws_menu);
 
 	tmp = scr->focused_window;
 	if (tmp != NULL) {
 		WWindow **toUnmap;
 		int toUnmapSize, toUnmapCount;
-
-		if ((IS_OMNIPRESENT(tmp) && (tmp->flags.mapped || tmp->flags.shaded) &&
-		     !WFLAGP(tmp, no_focusable)) || tmp->flags.changing_workspace) {
-			foc = tmp;
-		}
+		WWindow **toMap;
+		int toMapSize, toMapCount;
+    Window wsmenu_window;
 
 		toUnmapSize = 16;
 		toUnmapCount = 0;
 		toUnmap = wmalloc(toUnmapSize * sizeof(WWindow *));
 
+		toMapSize = 16;
+		toMapCount = 0;
+		toMap = wmalloc(toMapSize * sizeof(WWindow *));
+    
+    fprintf(stderr, "[WM] current focused window: %lu, %s.%s (%i x %i)\n",
+            tmp->client_win, tmp->wm_instance, tmp->wm_class,
+            tmp->old_geometry.width, tmp->old_geometry.height);
+    
+		/* if ((IS_OMNIPRESENT(tmp) && (tmp->flags.mapped || tmp->flags.shaded) && */
+		/*      !WFLAGP(tmp, no_focusable)) || tmp->flags.changing_workspace) { */
+		/* 	foc = tmp; */
+    /*   fprintf(stderr, "[WM] OMINPRESENT scr->focused_window: %lu, %s.%s (%i x %i)\n", */
+    /*           tmp->client_win, tmp->wm_instance, tmp->wm_class, */
+    /*           tmp->old_geometry.width, tmp->old_geometry.height); */
+		/* } */
+
 		/* foc2 = tmp; will fix annoyance with gnome panel
 		 * but will create annoyance for every other application
 		 */
 		while (tmp) {
-			if (tmp->frame->workspace != workspace && !tmp->flags.selected) {
+			if (tmp->frame->workspace != workspace && !tmp->flags.selected) /* Unmap */ {
+        /* manage unmap list */
+        if (toUnmapCount == toUnmapSize) {
+          toUnmapSize *= 2;
+          toUnmap = wrealloc(toUnmap, toUnmapSize * sizeof(WWindow *));
+        }
+        
 				/* unmap windows not on this workspace */
-				if ((tmp->flags.mapped || tmp->flags.shaded) &&
-				    !IS_OMNIPRESENT(tmp) && !tmp->flags.changing_workspace) {
-					if (toUnmapCount == toUnmapSize)
-					{
-						toUnmapSize *= 2;
-						toUnmap = wrealloc(toUnmap, toUnmapSize * sizeof(WWindow *));
-					}
-					toUnmap[toUnmapCount++] = tmp;
-				}
-				/* also unmap miniwindows not on this workspace */
+        if (!IS_OMNIPRESENT(tmp)) {
+          if ((tmp->flags.mapped || tmp->flags.shaded) && !tmp->flags.changing_workspace) {
+            toUnmap[toUnmapCount++] = tmp;
+          }
+        }
+        else {
+          if (!strcmp(tmp->wm_instance, "Workspace") && !strcmp(tmp->wm_class, "GNUstep")) {
+            /* remember Workspace menu WWindow for later usage */
+            fprintf(stderr, "[WM] Workspace menu window found: %lu, %s.%s (%i x %i)\n",
+                    tmp->client_win, tmp->wm_instance, tmp->wm_class,
+                    tmp->old_geometry.width, tmp->old_geometry.height);
+            wsmenu_window = tmp->client_win;
+          }
+          else {
+            /* update current workspace of omnipresent windows */
+            WApplication *wapp = wApplicationOf(tmp->main_window);
+            tmp->frame->workspace = workspace;
+            if (wapp) {
+              wapp->last_workspace = workspace;
+            }
+            /* if (!foc2 && (tmp->flags.mapped || tmp->flags.shaded)) { */
+            /*   foc2 = tmp; */
+            /* } */
+          }
+        }
+				/* unmap miniwindows not on this workspace */
 				if (!wPreferences.sticky_icons && tmp->flags.miniaturized &&
 				    tmp->icon && !IS_OMNIPRESENT(tmp)) {
 					XUnmapWindow(dpy, tmp->icon->core->window);
 					tmp->icon->mapped = 0;
 				}
-				/* update current workspace of omnipresent windows */
-				if (IS_OMNIPRESENT(tmp)) {
-					WApplication *wapp = wApplicationOf(tmp->main_window);
-
-					tmp->frame->workspace = workspace;
-
-					if (wapp) {
-						wapp->last_workspace = workspace;
-					}
-					if (!foc2 && (tmp->flags.mapped || tmp->flags.shaded)) {
-						foc2 = tmp;
-					}
-				}
-			} else {
+			}
+      else /* Map */ {
+        /* manage map list */
+        if (toMapCount == toMapSize) {
+          toMapSize *= 2;
+          toMap = wrealloc(toMap, toMapSize * sizeof(WWindow *));
+        }
+        
 				/* change selected windows' workspace */
 				if (tmp->flags.selected) {
 					wWindowChangeWorkspace(tmp, workspace);
 					if (!tmp->flags.miniaturized && !foc) {
 						foc = tmp;
 					}
-				} else {
+				}
+        else {
 					if (!tmp->flags.hidden) {
 						if (!(tmp->flags.mapped || tmp->flags.miniaturized)) {
 							/* remap windows that are on this workspace */
-							wWindowMap(tmp);
-							if (!foc && !WFLAGP(tmp, no_focusable)) {
-								foc = tmp;
-							}
+							/* wWindowMap(tmp); */
+              toMap[toMapCount++] = tmp;
+							/* if (!foc && !WFLAGP(tmp, no_focusable)) { */
+							/* 	foc = tmp; */
+              /*   fprintf(stderr, "[WM] NEW focused window foc=: %lu, %s.%s (%i x %i)\n", */
+              /*           tmp->client_win, tmp->wm_instance, tmp->wm_class, */
+              /*           tmp->old_geometry.width, tmp->old_geometry.height); */
+							/* } */
 						}
 						/* Also map miniwindow if not omnipresent */
 						if (!wPreferences.sticky_icons &&
@@ -574,11 +616,30 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 			tmp = tmp->prev;
 		}
 
-		while (toUnmapCount > 0)
-		{
+    // `foc` can hold:
+    //       - focused omnipresent (515)
+    //       - selected (563)
+    //       - random window on new workspace (574)
+    // `foc2` can hold:
+    //       - random omnipresent (555)
+		/* if (!foc && foc2) { */
+    /*   fprintf(stderr, */
+    /*           "No omnipresent, selected windows and windows on new workspace.\n"); */
+		/* 	foc = foc2; */
+    /* } */
+
+    fprintf(stderr, "[WM] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
+
+		while (toUnmapCount > 0) {
 			wWindowUnmap(toUnmap[--toUnmapCount]);
 		}
-		wfree(toUnmap);
+    
+    if (toMapCount > 0) {
+      int tmc = toMapCount;
+      while (tmc > 0) {
+        wWindowMap(toMap[--tmc]);
+      }
+    }
 
 		/* Gobble up events unleashed by our mapping & unmapping.
 		 * These may trigger various grab-initiated focus &
@@ -589,9 +650,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		scr->flags.ignore_focus_events = 1;
 		ProcessPendingEvents();
 		scr->flags.ignore_focus_events = 0;
-
-		if (!foc)
-			foc = foc2;
 
 		/*
 		 * Check that the window we want to focus still exists, because the application owning it
@@ -613,12 +671,65 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 				foc = NULL;
 		}
 
-		if (scr->focused_window->flags.mapped && !foc) {
-			foc = scr->focused_window;
-		}
+    /* if (!foc && scr->workspaces[workspace]->focused_window) { */
+    /*   fprintf(stderr, "[WM] SAVED focused window: %lu\n", */
+    /*           scr->workspaces[workspace]->focused_window); */
+    /*   foc = wWindowFor(scr->workspaces[workspace]->focused_window); */
+    /* } */
+    
+    /* if (foc) { */
+    /*   fprintf(stderr, "[WM] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n", */
+    /*           foc->client_win, foc->wm_instance, foc->wm_class, */
+    /*           foc->old_geometry.width, foc->old_geometry.height); */
+    /* } */
+    
 		if (wPreferences.focus_mode == WKF_CLICK) {
-			wSetFocusTo(scr, foc);
-		} else {
+      // No window to focus found. Can be in the following cases:
+      // 1. No window to map on new workspace.
+      // 2. Last focused window was GNUstep app menu (windowless app).
+      // The logic of follownig code:
+      // - check if there's saved focused X Window and use it;
+      // - otherwise show Workspace menu.
+      if (!foc) {
+        Window x_window;
+        if (scr->workspaces[workspace]->focused_window) {
+          x_window = scr->workspaces[workspace]->focused_window;
+          fprintf(stderr, "[WM] NEW focused window WILL be the SAVED: %lu\n", x_window);
+        }
+        else {
+          x_window = wsmenu_window;
+          fprintf(stderr, "[WM] NEW focused window WILL be the Workspace MENU: %lu\n",
+                  x_window);
+        }
+        
+        foc = wWindowFor(x_window);
+        
+        if (!foc) {
+          fprintf(stderr, "[WM] X window is not managed by WM. XMapWindow will be used.\n");
+          XSelectInput(dpy, x_window, CLIENT_EVENTS & ~StructureNotifyMask);
+          XMapWindow(dpy, x_window);
+          /* scr->flags.ignore_focus_events = 1; */
+          ProcessPendingEvents();
+          /* scr->flags.ignore_focus_events = 0; */
+          XSelectInput(dpy, x_window, CLIENT_EVENTS);
+            
+          foc = wManageWindow(scr, x_window);
+          if (!foc) {
+            fprintf(stderr, "[WM] Workspace MENU is not managed by WM after XMapWindow.\n");
+            XSetInputFocus(dpy, x_window, RevertToParent, CurrentTime);
+          }
+        }
+        else {
+          fprintf(stderr, "[WM] NEW focused window was SAVED: %lu, %s.%s (%i x %i)\n",
+                  foc->client_win, foc->wm_instance, foc->wm_class,
+                  foc->old_geometry.width, foc->old_geometry.height);
+        }
+      }
+      if (foc) {
+        wSetFocusTo(scr, foc);
+      }
+		}
+    else {
 			unsigned int mask;
 			int foo;
 			Window bar, win;
@@ -640,6 +751,9 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 				wSetFocusTo(scr, tmp);
 			}
 		}
+
+    wfree(toUnmap);
+    wfree(toMap);
 	}
 
 	/* We need to always arrange icons when changing workspace, even if
@@ -654,7 +768,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		wAppIconPaint(scr->dock->icon_array[0]);
 
 	if (!wPreferences.flags.noclip && (scr->workspaces[workspace]->clip->auto_collapse ||
-						scr->workspaces[workspace]->clip->auto_raise_lower)) {
+                                     scr->workspaces[workspace]->clip->auto_raise_lower)) {
 		/* to handle enter notify. This will also */
 		XUnmapWindow(dpy, scr->clip_icon->icon->core->window);
 		XMapWindow(dpy, scr->clip_icon->icon->core->window);
@@ -662,6 +776,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 	else if (scr->clip_icon != NULL) {
 		wClipIconPaint(scr->clip_icon);
 	}
+  
 	wScreenUpdateUsableArea(scr);
 	wNETWMUpdateDesktop(scr);
 	showWorkspaceName(scr, workspace);
