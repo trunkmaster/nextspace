@@ -27,7 +27,8 @@
 typedef struct WWorkspace {
     char *name;
     struct WDock *clip;
-    RImage *map;
+  RImage *map;
+  Window focused_window;
 } WWorkspace;
 
 void wWorkspaceMake(WScreen *scr, int count);
