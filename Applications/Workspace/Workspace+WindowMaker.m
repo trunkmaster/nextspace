@@ -1588,26 +1588,54 @@ void XWUpdateScreenInfo(WScreen *scr)
 }
 
 // TODO: Use for changing focus to Workspace when no window left to set focus to
-void XWWorkspaceDidChange(WScreen *scr, int workspace)
+void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
 {
-  Window focused_window;
-  int revert;
-
-  XGetInputFocus(dpy, &focused_window, &revert);
+  BOOL activateWorkspace = NO;
   
-  if (focused_window == scr->no_focus_win) {
-    NSLog(@"WorkspaceDidChange: focused no_focus_win.");
+  if (focused_window == NULL) {
+    NSLog(@"WorkspaceDidChange: focused window is `scr->no_focus_win`.");
+    activateWorkspace = YES;
+  }
+  if (focused_window &&
+      !strcmp(focused_window->wm_class, "GNUstep") &&
+      !strcmp(focused_window->wm_instance, "Workspace")) {
+    NSLog(@"WorkspaceDidChange: focused window belongs to Workspace.");
+    activateWorkspace = YES;
+  }
+  
+  if (activateWorkspace != NO) {
+    NSLog(@"Activating Workspace!");
     [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
                                                 withObject:nil
                                              waitUntilDone:YES];    
-  }
-  else {
-    [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
+    [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyWindow)
                                          withObject:nil
                                       waitUntilDone:YES];
   }
+  else if (!strcmp(focused_window->wm_class, "GNUstep")) {
+    id       app;
+    NSString *appName = [NSString stringWithCString:focused_window->wm_instance];
+    app = [NSConnection rootProxyForConnectionWithRegisteredName:appName
+                                                                 host:nil];
+    if (app == nil) {
+        NSLog(@"Couldn't contact application %@.", appName);
+    }
+    else {
+      if (strcmp(focused_window->wm_instance, "Workspace")) {
+        NSLog(@"Deactivating Workspace...");
+        [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(orderOut:)
+                                                    withObject:NSApp
+                                                 waitUntilDone:YES];
+      }
+      NSLog(@"Activating application `%@`", appName);
+      [[[app mainMenu] window] makeKeyAndOrderFront:nil];
+      [[app mainWindow] makeKeyWindow];
+    }
+  }
   
-  [[NSApp delegate] updateWorkspaceBadge];  
+  [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
+                                     withObject:nil
+                                  waitUntilDone:YES];
 }
 
 void XWDockContentDidChange(WDock *dock)
