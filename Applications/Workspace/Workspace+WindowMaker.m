@@ -1590,9 +1590,24 @@ void XWUpdateScreenInfo(WScreen *scr)
 // TODO: Use for changing focus to Workspace when no window left to set focus to
 void XWWorkspaceDidChange(WScreen *scr, int workspace)
 {
-  [[NSApp delegate] updateWorkspaceBadge];
-  // [NSApp activateIgnoringOtherApps:YES];
-  // [[[NSApp mainMenu] window] makeKeyAndOrderFront:nil];
+  Window focused_window;
+  int revert;
+
+  XGetInputFocus(dpy, &focused_window, &revert);
+  
+  if (focused_window == scr->no_focus_win) {
+    NSLog(@"WorkspaceDidChange: focused no_focus_win.");
+    [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
+                                                withObject:nil
+                                             waitUntilDone:YES];    
+  }
+  else {
+    [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
+                                         withObject:nil
+                                      waitUntilDone:YES];
+  }
+  
+  [[NSApp delegate] updateWorkspaceBadge];  
 }
 
 void XWDockContentDidChange(WDock *dock)
