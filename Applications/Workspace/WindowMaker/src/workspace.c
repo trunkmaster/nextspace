@@ -491,9 +491,21 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
   /* save focused window to the workspace before switch */
   if (scr->focused_window) {
-    scr->workspaces[scr->current_workspace]->focused_window = scr->focused_window->client_win;
+    WWindow *saved_wwin;
+    /* scr->workspaces[scr->current_workspace]->focused_window = scr->focused_window->client_win; */
     fprintf(stderr, "[WM] save focused window %lu to workspace %i BEFORE switch\n",
             scr->focused_window->client_win, scr->current_workspace);
+    
+    if (scr->workspaces[scr->current_workspace]->focused_window) {
+      wrelease(scr->workspaces[scr->current_workspace]->focused_window);
+    }
+    
+    saved_wwin = wWindowCreate();
+    saved_wwin->wm_class = wstrdup(scr->focused_window->wm_class);
+    saved_wwin->wm_instance = wstrdup(scr->focused_window->wm_instance);
+    saved_wwin->client_win = scr->focused_window->client_win;
+      
+    scr->workspaces[scr->current_workspace]->focused_window = saved_wwin;
   }
 
 	scr->last_workspace = scr->current_workspace;
@@ -629,8 +641,9 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
     if (!foc && scr->workspaces[workspace]->focused_window) {
       fprintf(stderr, "[WM] SAVED focused window: %lu\n",
-              scr->workspaces[workspace]->focused_window);
-      foc = wWindowFor(scr->workspaces[workspace]->focused_window);
+              scr->workspaces[workspace]->focused_window->client_win);
+      /* foc = wWindowFor(scr->workspaces[workspace]->focused_window); */
+      foc = scr->workspaces[workspace]->focused_window;
     }
     
 		/*
@@ -660,8 +673,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     }
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
-      /* wSetFocusTo(scr, foc); */
-      /* wSetFocusTo(scr, foc); */
+      wSetFocusTo(scr, foc);
 		}
     else {
 			unsigned int mask;
@@ -715,7 +727,10 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 	WMPostNotificationName(WMNWorkspaceChanged, scr, (void *)(uintptr_t) workspace);
 
 #ifdef NEXTSPACE
-	dispatch_async(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace); });
+  if (foc == NULL && scr->workspaces[workspace]->focused_window != NULL) {
+    foc = scr->workspaces[workspace]->focused_window;
+  }
+	dispatch_async(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
 #endif // NEXTSPACE
 
 	/*   XSync(dpy, False); */
