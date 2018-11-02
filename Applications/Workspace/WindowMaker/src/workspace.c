@@ -474,7 +474,7 @@ void wWorkspaceRelativeChange(WScreen * scr, int amount)
 
 void wWorkspaceForceChange(WScreen * scr, int workspace)
 {
-	WWindow *tmp, *foc = NULL, *foc2 = NULL;
+	WWindow *tmp, *foc = NULL;
 
 	if (workspace >= MAX_WORKSPACES || workspace < 0)
 		return;
@@ -522,14 +522,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
             tmp->client_win, tmp->wm_instance, tmp->wm_class,
             tmp->old_geometry.width, tmp->old_geometry.height);
     
-		/* if ((IS_OMNIPRESENT(tmp) && (tmp->flags.mapped || tmp->flags.shaded) && */
-		/*      !WFLAGP(tmp, no_focusable)) || tmp->flags.changing_workspace) { */
-		/* 	foc = tmp; */
-    /*   fprintf(stderr, "[WM] OMINPRESENT scr->focused_window: %lu, %s.%s (%i x %i)\n", */
-    /*           tmp->client_win, tmp->wm_instance, tmp->wm_class, */
-    /*           tmp->old_geometry.width, tmp->old_geometry.height); */
-		/* } */
-
 		/* foc2 = tmp; will fix annoyance with gnome panel
 		 * but will create annoyance for every other application
 		 */
@@ -549,7 +541,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
         }
         else { // OMNIPRESENT
           if (!strcmp(tmp->wm_instance, "Workspace") && !strcmp(tmp->wm_class, "GNUstep")) {
-            /* remember Workspace menu WWindow for later usage */
+            /* remember Workspace menu Window for later usage */
             fprintf(stderr, "[WM] Workspace menu window found: %lu, %s.%s (%i x %i)\n",
                     tmp->client_win, tmp->wm_instance, tmp->wm_class,
                     tmp->old_geometry.width, tmp->old_geometry.height);
@@ -562,9 +554,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
             if (wapp) {
               wapp->last_workspace = workspace;
             }
-            /* if (!foc2 && (tmp->flags.mapped || tmp->flags.shaded)) { */
-            /*   foc2 = tmp; */
-            /* } */
           }
         }
 				/* unmap miniwindows not on this workspace */
@@ -610,30 +599,23 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 			tmp = tmp->prev;
 		}
 
-    // `foc` can hold:
-    //       - focused omnipresent (515)
-    //       - selected (563)
-    //       - random window on new workspace (574)
-    // `foc2` can hold:
-    //       - random omnipresent (555)
-		/* if (!foc && foc2) { */
-    /*   fprintf(stderr, */
-    /*           "No omnipresent, selected windows and windows on new workspace.\n"); */
-		/* 	foc = foc2; */
-    /* } */
-
+    /* At this point `foc` can hold:
+       	- random selected window
+    		- random window on new workspace
+    */
     fprintf(stderr, "[WM] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
 
 		while (toUnmapCount > 0) {
 			wWindowUnmap(toUnmap[--toUnmapCount]);
 		}
-    
     if (toMapCount > 0) {
       int tmc = toMapCount;
       while (tmc > 0) {
         wWindowMap(toMap[--tmc]);
       }
     }
+    wfree(toUnmap);
+    wfree(toMap);
 
 		/* Gobble up events unleashed by our mapping & unmapping.
 		 * These may trigger various grab-initiated focus &
@@ -678,7 +660,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     }
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
-      wSetFocusTo(scr, foc);
+      /* wSetFocusTo(scr, foc); */
+      /* wSetFocusTo(scr, foc); */
 		}
     else {
 			unsigned int mask;
@@ -702,9 +685,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 				wSetFocusTo(scr, tmp);
 			}
 		}
-
-    wfree(toUnmap);
-    wfree(toMap);
 	}
 
 	/* We need to always arrange icons when changing workspace, even if
