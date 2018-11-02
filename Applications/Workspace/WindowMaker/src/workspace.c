@@ -440,9 +440,6 @@ void wWorkspaceChange(WScreen *scr, int workspace)
 
 	if (workspace != scr->current_workspace)
 		wWorkspaceForceChange(scr, workspace);
-#ifdef NEXTSPACE
-	XWWorkspaceDidChange(scr, workspace);
-#endif // NEXTSPACE        
 }
 
 void wWorkspaceRelativeChange(WScreen * scr, int amount)
@@ -550,7 +547,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
             toUnmap[toUnmapCount++] = tmp;
           }
         }
-        else {
+        else { // OMNIPRESENT
           if (!strcmp(tmp->wm_instance, "Workspace") && !strcmp(tmp->wm_class, "GNUstep")) {
             /* remember Workspace menu WWindow for later usage */
             fprintf(stderr, "[WM] Workspace menu window found: %lu, %s.%s (%i x %i)\n",
@@ -597,12 +594,9 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 							/* remap windows that are on this workspace */
 							/* wWindowMap(tmp); */
               toMap[toMapCount++] = tmp;
-							/* if (!foc && !WFLAGP(tmp, no_focusable)) { */
-							/* 	foc = tmp; */
-              /*   fprintf(stderr, "[WM] NEW focused window foc=: %lu, %s.%s (%i x %i)\n", */
-              /*           tmp->client_win, tmp->wm_instance, tmp->wm_class, */
-              /*           tmp->old_geometry.width, tmp->old_geometry.height); */
-							/* } */
+							if (!foc && !WFLAGP(tmp, no_focusable)) {
+								foc = tmp;
+							}
 						}
 						/* Also map miniwindow if not omnipresent */
 						if (!wPreferences.sticky_icons &&
@@ -651,6 +645,12 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		ProcessPendingEvents();
 		scr->flags.ignore_focus_events = 0;
 
+    if (!foc && scr->workspaces[workspace]->focused_window) {
+      fprintf(stderr, "[WM] SAVED focused window: %lu\n",
+              scr->workspaces[workspace]->focused_window);
+      foc = wWindowFor(scr->workspaces[workspace]->focused_window);
+    }
+    
 		/*
 		 * Check that the window we want to focus still exists, because the application owning it
 		 * could decide to unmap/destroy it in response to unmap any of its other window following
@@ -671,63 +671,14 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 				foc = NULL;
 		}
 
-    /* if (!foc && scr->workspaces[workspace]->focused_window) { */
-    /*   fprintf(stderr, "[WM] SAVED focused window: %lu\n", */
-    /*           scr->workspaces[workspace]->focused_window); */
-    /*   foc = wWindowFor(scr->workspaces[workspace]->focused_window); */
-    /* } */
-    
-    /* if (foc) { */
-    /*   fprintf(stderr, "[WM] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n", */
-    /*           foc->client_win, foc->wm_instance, foc->wm_class, */
-    /*           foc->old_geometry.width, foc->old_geometry.height); */
-    /* } */
+    if (foc) {
+      fprintf(stderr, "[WM] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
+              foc->client_win, foc->wm_instance, foc->wm_class,
+              foc->old_geometry.width, foc->old_geometry.height);
+    }
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
-      // No window to focus found. Can be in the following cases:
-      // 1. No window to map on new workspace.
-      // 2. Last focused window was GNUstep app menu (windowless app).
-      // The logic of follownig code:
-      // - check if there's saved focused X Window and use it;
-      // - otherwise show Workspace menu.
-      if (!foc) {
-        Window x_window;
-        if (scr->workspaces[workspace]->focused_window) {
-          x_window = scr->workspaces[workspace]->focused_window;
-          fprintf(stderr, "[WM] NEW focused window WILL be the SAVED: %lu\n", x_window);
-        }
-        else {
-          x_window = wsmenu_window;
-          fprintf(stderr, "[WM] NEW focused window WILL be the Workspace MENU: %lu\n",
-                  x_window);
-        }
-        
-        foc = wWindowFor(x_window);
-        
-        if (!foc) {
-          fprintf(stderr, "[WM] X window is not managed by WM. XMapWindow will be used.\n");
-          XSelectInput(dpy, x_window, CLIENT_EVENTS & ~StructureNotifyMask);
-          XMapWindow(dpy, x_window);
-          /* scr->flags.ignore_focus_events = 1; */
-          ProcessPendingEvents();
-          /* scr->flags.ignore_focus_events = 0; */
-          XSelectInput(dpy, x_window, CLIENT_EVENTS);
-            
-          foc = wManageWindow(scr, x_window);
-          if (!foc) {
-            fprintf(stderr, "[WM] Workspace MENU is not managed by WM after XMapWindow.\n");
-            XSetInputFocus(dpy, x_window, RevertToParent, CurrentTime);
-          }
-        }
-        else {
-          fprintf(stderr, "[WM] NEW focused window was SAVED: %lu, %s.%s (%i x %i)\n",
-                  foc->client_win, foc->wm_instance, foc->wm_class,
-                  foc->old_geometry.width, foc->old_geometry.height);
-        }
-      }
-      if (foc) {
-        wSetFocusTo(scr, foc);
-      }
+      wSetFocusTo(scr, foc);
 		}
     else {
 			unsigned int mask;
@@ -782,6 +733,10 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 	showWorkspaceName(scr, workspace);
 
 	WMPostNotificationName(WMNWorkspaceChanged, scr, (void *)(uintptr_t) workspace);
+
+#ifdef NEXTSPACE
+	dispatch_async(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace); });
+#endif // NEXTSPACE
 
 	/*   XSync(dpy, False); */
 }
