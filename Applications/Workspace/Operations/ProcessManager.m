@@ -392,6 +392,7 @@ static BOOL      _workspaceQuitting = NO;
 	    {
 	      // application terminated -- remove app from launched apps list
 	      [applications removeObject:_appDict];
+              [[_app connectionForProxy] invalidate];
 	      continue; // go to 'while' statement
 	    }
 	  NS_ENDHANDLER;
