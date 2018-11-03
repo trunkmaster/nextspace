@@ -1630,12 +1630,15 @@ void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
       NSLog(@"Activating application `%@`", appName);
       [[[app mainMenu] window] makeKeyAndOrderFront:nil];
       [[app mainWindow] makeKeyWindow];
+      [[app connectionForProxy] invalidate];
     }
   }
   
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
                                      withObject:nil
                                   waitUntilDone:YES];
+  NSLog(@"Switch to workspace %i completed.", workspace);
+
 }
 
 void XWDockContentDidChange(WDock *dock)
