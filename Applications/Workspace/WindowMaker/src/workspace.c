@@ -52,7 +52,7 @@
 #include "wsmap.h"
 #ifdef NEXTSPACE
 #include <Workspace+WindowMaker.h>
-#include "properties.h"
+#include "stacking.h"
 #endif // NEXTSPACE        
 
 #define MC_NEW          0
@@ -95,6 +95,7 @@ int wWorkspaceNew(WScreen *scr)
 		wspace = wmalloc(sizeof(WWorkspace));
 		wspace->name = NULL;
 		wspace->clip = NULL;
+    wspace->focused_window = NULL;
 
 		if (!wspace->name) {
 			static const char *new_name = NULL;
@@ -476,7 +477,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 {
 	WWindow *tmp, *foc = NULL;
 
-	if (workspace >= MAX_WORKSPACES || workspace < 0)
+	if (workspace >= MAX_WORKSPACES || workspace < 0 || workspace == scr->current_workspace)
 		return;
 
 	if (wPreferences.enable_workspace_pager && !w_global.process_workspacemap_event)
@@ -492,7 +493,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
   /* save focused window to the workspace before switch */
   if (scr->focused_window) {
     WWindow *saved_wwin;
-    /* scr->workspaces[scr->current_workspace]->focused_window = scr->focused_window->client_win; */
     fprintf(stderr, "[WM] save focused window %lu to workspace %i BEFORE switch\n",
             scr->focused_window->client_win, scr->current_workspace);
     
@@ -520,7 +520,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		int toUnmapSize, toUnmapCount;
 		WWindow **toMap;
 		int toMapSize, toMapCount;
-    Window wsmenu_window;
 
 		toUnmapSize = 16;
 		toUnmapCount = 0;
@@ -552,20 +551,11 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
           }
         }
         else { // OMNIPRESENT
-          if (!strcmp(tmp->wm_instance, "Workspace") && !strcmp(tmp->wm_class, "GNUstep")) {
-            /* remember Workspace menu Window for later usage */
-            fprintf(stderr, "[WM] Workspace menu window found: %lu, %s.%s (%i x %i)\n",
-                    tmp->client_win, tmp->wm_instance, tmp->wm_class,
-                    tmp->old_geometry.width, tmp->old_geometry.height);
-            wsmenu_window = tmp->client_win;
-          }
-          else {
-            /* update current workspace of omnipresent windows */
-            WApplication *wapp = wApplicationOf(tmp->main_window);
-            tmp->frame->workspace = workspace;
-            if (wapp) {
-              wapp->last_workspace = workspace;
-            }
+          /* update current workspace of omnipresent windows */
+          WApplication *wapp = wApplicationOf(tmp->main_window);
+          tmp->frame->workspace = workspace;
+          if (wapp) {
+            wapp->last_workspace = workspace;
           }
         }
 				/* unmap miniwindows not on this workspace */
@@ -593,7 +583,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 					if (!tmp->flags.hidden) {
 						if (!(tmp->flags.mapped || tmp->flags.miniaturized)) {
 							/* remap windows that are on this workspace */
-							/* wWindowMap(tmp); */
               toMap[toMapCount++] = tmp;
 							if (!foc && !WFLAGP(tmp, no_focusable)) {
 								foc = tmp;
@@ -620,11 +609,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		while (toUnmapCount > 0) {
 			wWindowUnmap(toUnmap[--toUnmapCount]);
 		}
-    if (toMapCount > 0) {
-      int tmc = toMapCount;
-      while (tmc > 0) {
-        wWindowMap(toMap[--tmc]);
-      }
+    while (toMapCount > 0) {
+      wWindowMap(toMap[--toMapCount]);
     }
     wfree(toUnmap);
     wfree(toMap);
@@ -640,10 +626,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		scr->flags.ignore_focus_events = 0;
 
     if (!foc && scr->workspaces[workspace]->focused_window) {
-      fprintf(stderr, "[WM] SAVED focused window: %lu\n",
-              scr->workspaces[workspace]->focused_window->client_win);
-      /* foc = wWindowFor(scr->workspaces[workspace]->focused_window); */
       foc = scr->workspaces[workspace]->focused_window;
+      fprintf(stderr, "[WM] SAVED focused window: %lu\n", foc->client_win);
     }
     
 		/*
@@ -674,6 +658,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
       wSetFocusTo(scr, foc);
+      if (foc)
+        wRaiseFrame(foc->frame->core);
 		}
     else {
 			unsigned int mask;
