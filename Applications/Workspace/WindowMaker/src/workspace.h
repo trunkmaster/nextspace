@@ -25,8 +25,8 @@
 
 
 typedef struct WWorkspace {
-    char *name;
-    struct WDock *clip;
+  char *name;
+  struct WDock *clip;
   RImage *map;
   WWindow *focused_window;
 } WWorkspace;
