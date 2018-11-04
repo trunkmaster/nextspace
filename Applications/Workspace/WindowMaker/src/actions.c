@@ -147,6 +147,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
 	if (wwin == NULL) {
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
 		if (old_focused)
 			wWindowUnfocus(old_focused);
 
@@ -157,7 +158,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		}
 
 		WMPostNotificationName(WMNChangedFocus, NULL, (void *)True);
-    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
 		return;
 	}
 

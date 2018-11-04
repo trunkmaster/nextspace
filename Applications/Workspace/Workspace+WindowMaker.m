@@ -1600,7 +1600,6 @@ void XWActivateWorkspaceApp(void)
   }
 }
 
-// TODO: Use for changing focus to Workspace when no window left to set focus to
 void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
 {
   BOOL activateWorkspace = NO;
