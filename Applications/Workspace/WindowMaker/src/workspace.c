@@ -504,7 +504,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     saved_wwin->wm_class = wstrdup(scr->focused_window->wm_class);
     saved_wwin->wm_instance = wstrdup(scr->focused_window->wm_instance);
     saved_wwin->client_win = scr->focused_window->client_win;
-      
+    
     scr->workspaces[scr->current_workspace]->focused_window = saved_wwin;
   }
 
@@ -607,9 +607,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     while (toMapCount > 0) {
       wWindowMap(toMap[--toMapCount]);
     }
-    wfree(toUnmap);
-    wfree(toMap);
-
+    
 		/* Gobble up events unleashed by our mapping & unmapping.
 		 * These may trigger various grab-initiated focus &
 		 * crossing events. However, we don't care about them,
@@ -623,7 +621,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     /* At this point `foc` can hold random selected window */
     if (!foc && scr->workspaces[workspace]->focused_window) {
       foc = scr->workspaces[workspace]->focused_window;
-      fprintf(stderr, "[WM] SAVED focused window: %lu\n", foc->client_win);
+      fprintf(stderr, "[WM] SAVED focused window: %lu, %s.%s\n",
+              foc->client_win, foc->wm_instance, foc->wm_class);
     }
     
 		/*
@@ -637,8 +636,12 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
 			found = False;
 			for (parse = scr->focused_window; parse != NULL; parse = parse->prev) {
-				if (parse == foc) {
+        fprintf(stderr, "[WM] CHECK window: %lu, %s.%s (%i x %i)\n",
+                parse->client_win, parse->wm_instance, parse->wm_class,
+                parse->old_geometry.width, parse->old_geometry.height);
+				if (parse->client_win == foc->client_win) {
 					found = True;
+          foc = parse;
 					break;
 				}
 			}
@@ -657,6 +660,10 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
         wSetFocusTo(scr, foc);
         wRaiseFrame(foc->frame->core);
       }
+      if (!foc && scr->workspaces[workspace]->focused_window) {
+        foc = scr->workspaces[workspace]->focused_window;
+      }
+      dispatch_async(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
 		}
     else {
 			unsigned int mask;
@@ -680,6 +687,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 				wSetFocusTo(scr, tmp);
 			}
 		}
+    wfree(toUnmap);
+    wfree(toMap);
 	}
 
 	/* We need to always arrange icons when changing workspace, even if
@@ -709,14 +718,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
 	WMPostNotificationName(WMNWorkspaceChanged, scr, (void *)(uintptr_t) workspace);
 
-#ifdef NEXTSPACE
-  if (foc == NULL && scr->workspaces[workspace]->focused_window != NULL) {
-    foc = scr->workspaces[workspace]->focused_window;
-  }
-	dispatch_async(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
-#endif // NEXTSPACE
-
-	/*   XSync(dpy, False); */
+  /* XSync(dpy, False); */
 }
 
 static void switchWSCommand(WMenu * menu, WMenuEntry * entry)
