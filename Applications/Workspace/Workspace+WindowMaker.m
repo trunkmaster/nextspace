@@ -1589,13 +1589,15 @@ void XWUpdateScreenInfo(WScreen *scr)
 
 void XWActivateWorkspaceApp(void)
 {
-  NSLog(@"Activating Workspace!");
-  [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
-                                              withObject:nil
-                                           waitUntilDone:YES];    
-  [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyWindow)
-                                       withObject:nil
-                                    waitUntilDone:YES];
+  if ([NSApp isHidden] == NO) {
+    NSLog(@"Activating Workspace!");
+    [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
+                                                withObject:nil
+                                             waitUntilDone:YES];    
+    [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyWindow)
+                                         withObject:nil
+                                      waitUntilDone:YES];
+  }
 }
 
 // TODO: Use for changing focus to Workspace when no window left to set focus to
