@@ -1587,6 +1587,17 @@ void XWUpdateScreenInfo(WScreen *scr)
                    object:nil];
 }
 
+void XWActivateWorkspaceApp(void)
+{
+  NSLog(@"Activating Workspace!");
+  [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
+                                              withObject:nil
+                                           waitUntilDone:YES];    
+  [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyWindow)
+                                       withObject:nil
+                                    waitUntilDone:YES];
+}
+
 // TODO: Use for changing focus to Workspace when no window left to set focus to
 void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
 {
@@ -1604,13 +1615,7 @@ void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
   }
   
   if (activateWorkspace != NO) {
-    NSLog(@"Activating Workspace!");
-    [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
-                                                withObject:nil
-                                             waitUntilDone:YES];    
-    [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyWindow)
-                                         withObject:nil
-                                      waitUntilDone:YES];
+    XWActivateWorkspaceApp();
   }
   else if (!strcmp(focused_window->wm_class, "GNUstep")) {
     id       app;
