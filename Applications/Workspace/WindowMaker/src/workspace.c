@@ -584,9 +584,9 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 						if (!(tmp->flags.mapped || tmp->flags.miniaturized)) {
 							/* remap windows that are on this workspace */
               toMap[toMapCount++] = tmp;
-							if (!foc && !WFLAGP(tmp, no_focusable)) {
-								foc = tmp;
-							}
+							/* if (!foc && !WFLAGP(tmp, no_focusable)) { */
+							/* 	foc = tmp; */
+							/* } */
 						}
 						/* Also map miniwindow if not omnipresent */
 						if (!wPreferences.sticky_icons &&
@@ -600,12 +600,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 			tmp = tmp->prev;
 		}
 
-    /* At this point `foc` can hold:
-       	- random selected window
-    		- random window on new workspace
-    */
     fprintf(stderr, "[WM] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
-
 		while (toUnmapCount > 0) {
 			wWindowUnmap(toUnmap[--toUnmapCount]);
 		}
@@ -625,6 +620,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		ProcessPendingEvents();
 		scr->flags.ignore_focus_events = 0;
 
+    /* At this point `foc` can hold random selected window */
     if (!foc && scr->workspaces[workspace]->focused_window) {
       foc = scr->workspaces[workspace]->focused_window;
       fprintf(stderr, "[WM] SAVED focused window: %lu\n", foc->client_win);
@@ -657,9 +653,10 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     }
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
-      wSetFocusTo(scr, foc);
-      if (foc)
+      if (foc) {
+        wSetFocusTo(scr, foc);
         wRaiseFrame(foc->frame->core);
+      }
 		}
     else {
 			unsigned int mask;
