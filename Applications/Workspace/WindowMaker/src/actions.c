@@ -50,6 +50,9 @@
 #include "placement.h"
 #include "misc.h"
 #include "event.h"
+#ifdef NEXTSPACE
+#include <Workspace+WindowMaker.h>
+#endif // NEXTSPACE        
 
 
 #ifndef HAVE_FLOAT_MATHFUNC
@@ -143,7 +146,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		oapp = wApplicationOf(old_focused->main_window);
 
 	if (wwin == NULL) {
-		XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+    XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
 		if (old_focused)
 			wWindowUnfocus(old_focused);
 
@@ -154,6 +157,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		}
 
 		WMPostNotificationName(WMNChangedFocus, NULL, (void *)True);
+    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
 		return;
 	}
 
@@ -176,6 +180,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		switch (wwin->focus_mode) {
 		case WFM_NO_INPUT:
 			XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+      dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
 			break;
 		case WFM_PASSIVE:
 		case WFM_LOCALLY_ACTIVE:
@@ -192,6 +197,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		XSync(dpy, False);
 	} else {
 		XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
 	}
 
 	if (WFLAGP(wwin, no_focusable))
