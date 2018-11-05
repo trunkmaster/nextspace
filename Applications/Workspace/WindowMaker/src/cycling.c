@@ -27,6 +27,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
+#include <string.h>
 
 #include "WindowMaker.h"
 #include "GNUstep.h"
@@ -63,6 +64,10 @@ static WWindow *change_focus_and_raise(WWindow *newFocused, WWindow *oldFocused,
 {
 	if (!newFocused)
 		return oldFocused;
+
+  /* FIXME: this is a temporary code. */
+  if (!strcmp(newFocused->wm_class, "GNUstep"))
+    return oldFocused;
 
 	wWindowFocus(newFocused, oldFocused);
 	oldFocused = newFocused;

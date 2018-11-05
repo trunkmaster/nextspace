@@ -74,6 +74,9 @@ struct SwitchPanel {
 
 static int canReceiveFocus(WWindow *wwin)
 {
+  if (!strcmp(wwin->wm_class, "GNUstep"))
+    return 1;
+  
 	if (wwin->frame->workspace != wwin->screen_ptr->current_workspace)
 		return 0;
 
@@ -399,6 +402,37 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
 		}
 		wwin = wwin->prev;
 	}
+
+  WAppIcon *aicon = scr->app_icon_list;
+  while (aicon) {
+    if (aicon->running) {
+      wwin = aicon->icon->owner;
+      fprintf(stderr, "[WM] check appicon for %s.%s\n", wwin->wm_instance, wwin->wm_class);
+      
+      if (!strcmp(aicon->wm_instance, "Recycler") ||
+          !strcmp(aicon->wm_instance, "Workspace") ||
+          strcmp(aicon->wm_class, "GNUstep")) {
+				aicon = aicon->next;
+        continue;
+      }
+			if (class_only) {
+				/* if (!sameWindowClass(scr->focused_window, wwin)) { */
+				/* 	wwin = wwin->prev; */
+				/* } */
+				aicon = aicon->next;
+        continue;
+			}
+			/* else if (alreadyAddedToArray(windows, wwin)) { */
+			/* 	aicon = aicon->next; */
+			/* 	continue; */
+			/* } */
+      fprintf(stderr, "[WM] Adding app %s.%s\n", wwin->wm_instance, wwin->wm_class);
+			WMAddToArray(windows, wwin);
+    }
+    aicon = aicon->next;
+  }
+  fprintf(stderr, "Switch panel window list prepared.\n");
+  
 	return windows;
 }
 
