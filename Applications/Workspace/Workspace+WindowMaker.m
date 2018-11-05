@@ -1587,6 +1587,35 @@ void XWUpdateScreenInfo(WScreen *scr)
                    object:nil];
 }
 
+void XWActivateApplication(char *app_name)
+{
+  id           app;
+  NSString     *appName;
+  NSConnection *appConnection;
+
+  if (!strcmp(app_name, "Workspace")) {
+    XWActivateWorkspaceApp();
+    return;
+  }
+
+  appName = [NSString stringWithCString:app_name];
+  app = [NSConnection rootProxyForConnectionWithRegisteredName:appName
+                                                          host:nil];
+  if (app == nil) {
+    NSLog(@"XWActivateApplication: Couldn't contact application %@.", appName);
+  }
+  else {
+    NSLog(@"Activating application `%@`", appName);
+    [[[app mainMenu] window] makeKeyAndOrderFront:nil];
+    [[app mainWindow] makeKeyWindow];
+    appConnection = [app connectionForProxy];
+    [[appConnection receivePort] invalidate];
+    [[appConnection sendPort] invalidate];
+    [appConnection invalidate];
+    [app release];
+  }
+}
+
 void XWActivateWorkspaceApp(void)
 {
   if ([NSApp isHidden] == NO) {
