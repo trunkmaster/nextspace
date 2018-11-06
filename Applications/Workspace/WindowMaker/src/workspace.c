@@ -656,7 +656,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     }
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
-      if (foc && !foc->flags.is_gnustep) {
+      if (foc && (!foc->flags.is_gnustep || strcmp(foc->wm_class, "GNUstep"))) {
         wSetFocusTo(scr, foc);
         wRaiseFrame(foc->frame->core);
       }
