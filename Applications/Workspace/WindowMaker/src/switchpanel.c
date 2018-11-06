@@ -407,10 +407,12 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
   /* Applications icons (docked included) */
   if (class_only == False) {
     WAppIcon *aicon = scr->app_icon_list;
+    WWindow  *iconwin;
     while (aicon) {
-      fprintf(stderr, "[WM] check appicon for %s.%s\n", aicon->wm_instance, aicon->wm_class);
+      /* fprintf(stderr, "[WM] check appicon for %s.%s\n", aicon->wm_instance, aicon->wm_class); */
       if ((aicon->docked && aicon->running) || aicon->icon->owner) {
         wwin = aicon->icon->owner;
+        
         /* Skip Workspace icons: appicon and Recycler */
         if (!strcmp(wwin->wm_instance, "Workspace") || strcmp(aicon->wm_class, "GNUstep")) {
           aicon = aicon->next;
@@ -420,13 +422,13 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
           aicon = aicon->next;
           continue;
         }
-        fprintf(stderr, "[WM] Adding app %s.%s\n", wwin->wm_instance, wwin->wm_class);
+        /* fprintf(stderr, "[WM] Adding app %s.%s\n", wwin->wm_instance, wwin->wm_class); */
         WMAddToArray(windows, wwin);
       }
       aicon = aicon->next;
     }
   }
-  fprintf(stderr, "Switch panel window list prepared.\n");
+  /* fprintf(stderr, "Switch panel window list prepared.\n"); */
   
 	return windows;
 }
