@@ -146,8 +146,8 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		oapp = wApplicationOf(old_focused->main_window);
 
 	if (wwin == NULL) {
-    XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
+    /* XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime); */
+    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(scr); });
 		if (old_focused)
 			wWindowUnfocus(old_focused);
 
@@ -179,8 +179,8 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		/* set input focus */
 		switch (wwin->focus_mode) {
 		case WFM_NO_INPUT:
-			XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-      dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
+			/* XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime); */
+      dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(scr); });
 			break;
 		case WFM_PASSIVE:
 		case WFM_LOCALLY_ACTIVE:
@@ -196,8 +196,8 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
 		XSync(dpy, False);
 	} else {
-		XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(); });
+		/* XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime); */
+    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(scr); });
 	}
 
 	if (WFLAGP(wwin, no_focusable))
