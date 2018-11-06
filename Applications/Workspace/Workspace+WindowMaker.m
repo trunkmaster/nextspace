@@ -1587,14 +1587,14 @@ void XWUpdateScreenInfo(WScreen *scr)
                    object:nil];
 }
 
-void XWActivateApplication(char *app_name)
+void XWActivateApplication(WScreen *scr, char *app_name)
 {
   id           app;
   NSString     *appName;
   NSConnection *appConnection;
 
   if (!strcmp(app_name, "Workspace")) {
-    XWActivateWorkspaceApp();
+    XWActivateWorkspaceApp(scr);
     return;
   }
 
@@ -1605,9 +1605,20 @@ void XWActivateApplication(char *app_name)
     NSLog(@"XWActivateApplication: Couldn't contact application %@.", appName);
   }
   else {
+    if (strcmp(app_name, "Workspace")) {
+      NSLog(@"Deactivating Workspace...");
+      [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyWindow)
+                                                  withObject:nil
+                                               waitUntilDone:YES];
+      [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(orderOut:)
+                                                  withObject:NSApp
+                                               waitUntilDone:YES];
+    }
     NSLog(@"Activating application `%@`", appName);
+    // [app activateIgnoringOtherApps:YES];
     [[[app mainMenu] window] makeKeyAndOrderFront:nil];
     [[app mainWindow] makeKeyWindow];
+    
     appConnection = [app connectionForProxy];
     [[appConnection receivePort] invalidate];
     [[appConnection sendPort] invalidate];
@@ -1616,16 +1627,28 @@ void XWActivateApplication(char *app_name)
   }
 }
 
-void XWActivateWorkspaceApp(void)
+void XWActivateWorkspaceApp(WScreen *scr)
 {
   if ([NSApp isHidden] == NO) {
+    NSWindow *keyWindow;
     NSLog(@"Activating Workspace!");
     [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
                                                 withObject:nil
-                                             waitUntilDone:YES];    
-    [[NSApp mainWindow] performSelectorOnMainThread:@selector(makeKeyWindow)
-                                         withObject:nil
-                                      waitUntilDone:YES];
+                                             waitUntilDone:YES];
+    if ([[NSApp mainWindow] isVisible]) {
+      keyWindow = [NSApp mainWindow];
+      NSLog(@"    Key Window is main window: %@.", [[NSApp mainWindow] title]);
+    }
+    else {
+      keyWindow = [[NSApp mainMenu] window];
+      NSLog(@"    Key Window is main menu.");
+    }
+    [keyWindow performSelectorOnMainThread:@selector(makeKeyWindow)
+                                withObject:nil
+                             waitUntilDone:YES];
+  }
+  else {
+    XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
   }
 }
 
@@ -1645,28 +1668,10 @@ void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
   }
   
   if (activateWorkspace != NO) {
-    XWActivateWorkspaceApp();
+    XWActivateWorkspaceApp(scr);
   }
   else if (!strcmp(focused_window->wm_class, "GNUstep")) {
-    id       app;
-    NSString *appName = [NSString stringWithCString:focused_window->wm_instance];
-    app = [NSConnection rootProxyForConnectionWithRegisteredName:appName
-                                                                 host:nil];
-    if (app == nil) {
-        NSLog(@"Couldn't contact application %@.", appName);
-    }
-    else {
-      if (strcmp(focused_window->wm_instance, "Workspace")) {
-        NSLog(@"Deactivating Workspace...");
-        [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(orderOut:)
-                                                    withObject:NSApp
-                                                 waitUntilDone:YES];
-      }
-      NSLog(@"Activating application `%@`", appName);
-      [[[app mainMenu] window] makeKeyAndOrderFront:nil];
-      [[app mainWindow] makeKeyWindow];
-      [[app connectionForProxy] invalidate];
-    }
+    XWActivateApplication(scr, focused_window->wm_instance);
   }
   
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
