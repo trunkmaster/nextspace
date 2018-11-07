@@ -63,7 +63,8 @@ static void raiseWindow(WSwitchPanel * swpanel, WWindow * wwin)
 static WWindow *change_focus_and_raise(WWindow *newFocused, WWindow *oldFocused,
 				       WSwitchPanel *swpanel, WScreen *scr, Bool esc_cancel)
 {
-  /* return oldFocused; */
+  /* if (!strcmp(newFocused->wm_class, "GNUstep")) */
+  return oldFocused;
   
 	if (!newFocused)
 		return oldFocused;
@@ -74,7 +75,7 @@ static WWindow *change_focus_and_raise(WWindow *newFocused, WWindow *oldFocused,
 	if (wPreferences.circ_raise) {
 		CommitStacking(scr);
 
-		if (strcmp(newFocused->wm_class, "GNUstep") && !esc_cancel)
+		if (!esc_cancel)
 			raiseWindow(swpanel, newFocused);
   }
   
@@ -255,15 +256,15 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 		wSwitchPanelDestroy(swpanel);
 
 	if (newFocused && !esc_cancel) {
-    if (!strcmp(newFocused->wm_class, "GNUstep")) {
+    if (!strcmp(newFocused->wm_class, "GNUstep") && !newFocused->frame) {
       dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
-      // TODO: change windows stacking order when activating GNUstep application.
     }
-    else {
+    if (newFocused->frame) {
       wRaiseFrame(newFocused->frame->core);
       CommitStacking(scr);
       if (!newFocused->flags.mapped)
         wMakeWindowVisible(newFocused);
+      
       wSetFocusTo(scr, newFocused);
     }
 	}
