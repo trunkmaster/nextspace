@@ -678,6 +678,24 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   return NO;
 }
 
+- (void)activate
+{
+  NSWindow *keyWindow;
+  
+  NSLog(@"Activating Workspace from Controller!");
+  [[[NSApp mainMenu] window] makeKeyAndOrderFront:self];
+  
+  if ([[NSApp mainWindow] isVisible] == NO) {
+    keyWindow = [[NSApp mainMenu] window];
+    NSLog(@"    Key Window is main menu.");
+  }
+  else {
+    keyWindow = [NSApp mainWindow];
+    NSLog(@"    Key Window is main window: %@.", [[NSApp mainWindow] title]);
+  }
+  [keyWindow makeKeyWindow];
+}
+
 //============================================================================
 // Access to Workspace data via NSApp
 //============================================================================

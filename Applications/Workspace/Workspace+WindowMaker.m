@@ -1605,17 +1605,17 @@ void XWActivateApplication(WScreen *scr, char *app_name)
     NSLog(@"XWActivateApplication: Couldn't contact application %@.", appName);
   }
   else {
-    if (strcmp(app_name, "Workspace")) {
-      NSLog(@"Deactivating Workspace...");
-      [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyWindow)
-                                                  withObject:nil
-                                               waitUntilDone:YES];
-      [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(orderOut:)
-                                                  withObject:NSApp
-                                               waitUntilDone:YES];
-    }
+    // if (strcmp(app_name, "Workspace")) {
+    //   NSLog(@"Deactivating Workspace...");
+    //   [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyWindow)
+    //                                               withObject:nil
+    //                                            waitUntilDone:YES];
+    //   [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(orderOut:)
+    //                                               withObject:NSApp
+    //                                            waitUntilDone:YES];
+    // }
     NSLog(@"Activating application `%@`", appName);
-    // [app activateIgnoringOtherApps:YES];
+    [app activateIgnoringOtherApps:YES];
     [[[app mainMenu] window] makeKeyAndOrderFront:nil];
     [[app mainWindow] makeKeyWindow];
     
@@ -1630,22 +1630,9 @@ void XWActivateApplication(WScreen *scr, char *app_name)
 void XWActivateWorkspaceApp(WScreen *scr)
 {
   if ([NSApp isHidden] == NO) {
-    NSWindow *keyWindow;
-    NSLog(@"Activating Workspace!");
-    [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyAndOrderFront:)
-                                                withObject:nil
-                                             waitUntilDone:YES];
-    if ([[NSApp mainWindow] isVisible]) {
-      keyWindow = [NSApp mainWindow];
-      NSLog(@"    Key Window is main window: %@.", [[NSApp mainWindow] title]);
-    }
-    else {
-      keyWindow = [[NSApp mainMenu] window];
-      NSLog(@"    Key Window is main menu.");
-    }
-    [keyWindow performSelectorOnMainThread:@selector(makeKeyWindow)
-                                withObject:nil
-                             waitUntilDone:YES];
+    [[NSApp delegate] performSelectorOnMainThread:@selector(activate)
+                                       withObject:nil
+                                    waitUntilDone:YES];
   }
   else {
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
