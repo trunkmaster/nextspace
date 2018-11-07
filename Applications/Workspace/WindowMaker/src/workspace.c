@@ -636,9 +636,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
 			found = False;
 			for (parse = scr->focused_window; parse != NULL; parse = parse->prev) {
-        fprintf(stderr, "[WM] CHECK window: %lu, %s.%s (%i x %i)\n",
-                parse->client_win, parse->wm_instance, parse->wm_class,
-                parse->old_geometry.width, parse->old_geometry.height);
 				if (parse->client_win == foc->client_win) {
 					found = True;
           foc = parse;
@@ -658,12 +655,12 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		if (wPreferences.focus_mode == WKF_CLICK) {
       if (foc && (!foc->flags.is_gnustep || strcmp(foc->wm_class, "GNUstep"))) {
         wSetFocusTo(scr, foc);
-        wRaiseFrame(foc->frame->core);
+        /* wRaiseFrame(foc->frame->core); */
       }
       if (!foc && scr->workspaces[workspace]->focused_window) {
         foc = scr->workspaces[workspace]->focused_window;
       }
-      dispatch_async(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
+      dispatch_sync(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
 		}
     else {
 			unsigned int mask;
