@@ -256,7 +256,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 		wSwitchPanelDestroy(swpanel);
 
 	if (newFocused && !esc_cancel) {
-    if (!strcmp(newFocused->wm_class, "GNUstep") && !newFocused->frame) {
+    if (!strcmp(newFocused->wm_class, "GNUstep")) {
       dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
     }
     if (newFocused->frame) {
