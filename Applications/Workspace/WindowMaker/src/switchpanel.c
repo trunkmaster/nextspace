@@ -407,7 +407,6 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
   /* Applications icons (docked included) */
   if (class_only == False) {
     WAppIcon *aicon = scr->app_icon_list;
-    WWindow  *iconwin;
     while (aicon) {
       /* fprintf(stderr, "[WM] check appicon for %s.%s\n", aicon->wm_instance, aicon->wm_class); */
       if ((aicon->docked && aicon->running) || aicon->icon->owner) {
