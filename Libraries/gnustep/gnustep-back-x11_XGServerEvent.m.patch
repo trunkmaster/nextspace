@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-07-13 01:15:41.416153941 +0300
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-11-07 02:09:24.345560669 +0200
 @@ -42,6 +42,7 @@
  #include <Foundation/NSUserDefaults.h>
  #include <Foundation/NSRunLoop.h>
@@ -240,3 +240,11 @@
                else if ((Atom)xEvent.xclient.data.l[0]
                  == generic.take_focus_atom)
                  {
+@@ -1812,6 +1916,7 @@
+     {
+       NSDebugLLog(@"Focus", @"Ignoring window focus request");
+       cWin->ignore_take_focus = NO;
++      [GSServerForWindow(key_win) setinputfocus: cWin->number];
+     }
+   else if (cWin->number == key_num)
+     {
