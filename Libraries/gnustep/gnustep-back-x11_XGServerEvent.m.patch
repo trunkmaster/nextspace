@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-11-07 02:09:24.345560669 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-11-09 23:28:41.266917204 +0200
 @@ -42,6 +42,7 @@
  #include <Foundation/NSUserDefaults.h>
  #include <Foundation/NSRunLoop.h>
@@ -240,11 +240,122 @@
                else if ((Atom)xEvent.xclient.data.l[0]
                  == generic.take_focus_atom)
                  {
-@@ -1812,6 +1916,7 @@
-     {
-       NSDebugLLog(@"Focus", @"Ignoring window focus request");
-       cWin->ignore_take_focus = NO;
-+      [GSServerForWindow(key_win) setinputfocus: cWin->number];
+@@ -1782,20 +1886,12 @@
+   NSDebugLLog(@"Focus", @"take focus:%lu (current=%lu key=%d)",
+               cWin->number, generic.currentFocusWindow, key_num);
+ 
+-  /* Sometimes window managers lose the setinputfocus on the key window
+-   * e.g. when ordering out a window with focus then ordering in the key window.   
+-   * it might search for a window until one accepts its take focus request.
+-   */
+-  if (key_num == cWin->number)
+-    cWin->ignore_take_focus = NO;
+-  
+   /* Invalidate the previous request. It's possible the app lost focus
+      before this request was fufilled and we are being focused again,
+      or ??? */
+-  {
+-    generic.focusRequestNumber = 0;
+-    generic.desiredFocusWindow = 0;
+-  }
++  generic.focusRequestNumber = 0;
++  generic.desiredFocusWindow = 0;
++  
+   /* We'd like to send this event directly to the front-end to handle,
+      but the front-end polls events so slowly compared the speed at
+      which X events could potentially come that we could easily get
+@@ -1808,29 +1904,60 @@
+          window to take focus after each one gets hidden. */
+       NSDebugLLog(@"Focus", @"WM take focus while hiding");
      }
-   else if (cWin->number == key_num)
+-  else if (cWin->ignore_take_focus == YES)
++  else if (cWin->number == key_num)
      {
+-      NSDebugLLog(@"Focus", @"Ignoring window focus request");
++      NSDebugLLog(@"Focus", @"Reasserting key window");
+       cWin->ignore_take_focus = NO;
++      // NSLog(@"[TakeFocus] %lu(%i): is already a key. Do nothing.",
++      //       [XGServer _windowWithTag:key_num]->ident, key_num);
++      
++      /* [GSServerForWindow(key_win) setinputfocus: key_num]; */
+     }
+-  else if (cWin->number == key_num)
++  else if (cWin->ignore_take_focus == YES)
+     {
+-      NSDebugLLog(@"Focus", @"Reasserting key window");
+-      [GSServerForWindow(key_win) setinputfocus: key_num];
++      // int menu_num = [[[NSApp mainMenu] window] windowNumber];
++      // gswindow_device_t *menuWin = [XGServer _windowWithTag:menu_num];
++      gswindow_device_t *keyWin = [XGServer _windowWithTag:key_num];
++      
++      NSDebugLLog(@"Focus", @"Ignoring window focus request");
++      // NSLog(@"[TakeFocus] %lu(%li): ignore_take_focus == YES", cWin->ident, cWin->number);
++      
++      if (generic.currentFocusWindow == 0) {
++        // NSLog(@"[TakeFocus] %lu(%li): no currently focused window...", cWin->ident, cWin->number);
++        if (cWin->number != key_num)
++          {
++            // NSLog(@"[TakeFocus] %lu(%li): ...setting to self", cWin->ident, cWin->number);
++            [GSServerForWindow(key_win) setinputfocus: cWin->number];
++          }
++        if (key_num && keyWin->map_state)
++          {
++            // NSLog(@"[TakeFocus] ...and I have a visible key: %lu(%i) map_state: %i",
++            //       keyWin->ident, key_num, keyWin->map_state);
++            [GSServerForWindow(key_win) setinputfocus: key_num];
++          }
++      }
++      else {
++        // NSLog(@"[TakeFocus] Ignoring request. cWin: %lu(%li) Key window: %lu(%d) Menu:%lu(%d)",
++        //       cWin->ident, cWin->number, keyWin->ident, key_num, menuWin->ident, menu_num);
++      }
++      
++      cWin->ignore_take_focus = NO;
++      
++      /* [GSServerForWindow(key_win) setinputfocus: cWin->number]; */
+     }
+-  else if (key_num 
+-           && cWin->number == [[[NSApp mainMenu] window] windowNumber])
++  else if (key_num && cWin->number == [[[NSApp mainMenu] window] windowNumber])
+     {
+       /* This might occur when the window manager just wants someone
+          to become key, so it tells the main menu (typically the first
+          menu in the list), but since we already have a window that
+          was key before, use that instead */
+       NSDebugLLog(@"Focus", @"Key window is already %d", key_num);
++      // NSLog(@"[TakeFocus] Request to main menu. Key window is already set to: %lu(%d)",
++      //       [XGServer _windowWithTag:key_num]->ident, key_num);
+       [GSServerForWindow(key_win) setinputfocus: key_num];
+     }
+   else
+     {
+-      NSPoint eventLocation;
+       /*
+        * Here the app asked for this (if key_win==nil) or there was a
+        * click on the title bar or some other reason (window mapped,
+@@ -1838,16 +1965,15 @@
+        * last reason but we just have to deal with that since we can
+        * never be sure if it's necessary.
+        */
+-      eventLocation = NSMakePoint(0,0);
+-      e = [NSEvent otherEventWithType:NSAppKitDefined
+-                   location: eventLocation
+-                   modifierFlags: 0
+-                   timestamp: 0
+-                   windowNumber: cWin->number
+-                   context: gcontext
+-                   subtype: GSAppKitWindowFocusIn
+-                   data1: 0
+-                   data2: 0];
++      e = [NSEvent otherEventWithType: NSAppKitDefined
++                             location: NSMakePoint(0,0)
++                        modifierFlags: 0
++                            timestamp: 0
++                         windowNumber: cWin->number
++                              context: gcontext
++                              subtype: GSAppKitWindowFocusIn
++                                data1: 0
++                                data2: 0];
+     }
+   return e;
+ }
