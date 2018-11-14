@@ -1594,7 +1594,6 @@ void XWActivateApplication(WScreen *scr, char *app_name)
   NSConnection *appConnection;
 
   if (!strcmp(app_name, "Workspace")) {
-    XWActivateWorkspaceApp(scr);
     return;
   }
 
@@ -1603,6 +1602,7 @@ void XWActivateApplication(WScreen *scr, char *app_name)
                                                           host:nil];
   if (app == nil) {
     NSLog(@"XWActivateApplication: Couldn't contact application %@.", appName);
+    XWActivateWorkspaceApp(scr);
   }
   else {
     // if (strcmp(app_name, "Workspace")) {
@@ -1614,10 +1614,14 @@ void XWActivateApplication(WScreen *scr, char *app_name)
     //                                               withObject:NSApp
     //                                            waitUntilDone:YES];
     // }
+    if ([NSApp isActive] != NO) {
+      NSLog(@"Workspace is active - deactivating...");
+      [NSApp performSelectorOnMainThread:@selector(deactivate)
+                              withObject:nil
+                           waitUntilDone:YES];
+    }
     NSLog(@"Activating application `%@`", appName);
     [app activateIgnoringOtherApps:YES];
-    [[[app mainMenu] window] makeKeyAndOrderFront:nil];
-    [[app mainWindow] makeKeyWindow];
     
     appConnection = [app connectionForProxy];
     [[appConnection receivePort] invalidate];
@@ -1656,9 +1660,6 @@ void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
   
   if (activateWorkspace != NO) {
     XWActivateWorkspaceApp(scr);
-  }
-  else if (!strcmp(focused_window->wm_class, "GNUstep")) {
-    XWActivateApplication(scr, focused_window->wm_instance);
   }
   
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
