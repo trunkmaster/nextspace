@@ -653,12 +653,26 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     }
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
-      if (foc && (!foc->flags.is_gnustep || strcmp(foc->wm_class, "GNUstep"))) {
+      if (foc) {
+        /* Existing and mapped window found. */
+        fprintf(stderr, "[WM] focusing existing window %lu...\n", foc->client_win);
         wSetFocusTo(scr, foc);
         wRaiseFrame(foc->frame->core);
       }
-      if (!foc && scr->workspaces[workspace]->focused_window) {
-        foc = scr->workspaces[workspace]->focused_window;
+      else {
+        /* No window to focus. If window ID was saved for this workspace - use it.
+           Otherwise - set focus to NULL (scr->no_focus_win). */
+        if (scr->workspaces[workspace]->focused_window) {
+          foc = scr->workspaces[workspace]->focused_window;
+          fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win);
+        }
+        else {
+          fprintf(stderr, "[WM] focusing ROOT...\n");
+          wSetFocusTo(scr, NULL);
+        }
+      }
+      if (foc && (foc->flags.is_gnustep || !strcmp(foc->wm_class, "GNUstep"))) {
+        XWActivateApplication(scr, foc->wm_instance);
       }
       dispatch_sync(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
 		}
