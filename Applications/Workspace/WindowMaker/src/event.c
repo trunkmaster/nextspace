@@ -955,7 +955,7 @@ static void handleButtonRelease(XEvent * event)
 
 	if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
 			&& event->xbutton.button == Button3) {
-		if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
+		if (scr->focused_window && !strcmp(scr->focused_window->wm_class, "GNUstep")) {
 			XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
 		}
 		else {
