@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-11-14 18:33:16.725909499 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-11-15 18:18:45.529305500 +0200
 @@ -42,6 +42,7 @@
  #include <Foundation/NSUserDefaults.h>
  #include <Foundation/NSRunLoop.h>
@@ -262,15 +262,7 @@
          if (xEvent.xfocus.serial == generic.focusRequestNumber)
            {
              /*
-@@ -1119,6 +1227,7 @@
-             generic.desiredFocusWindow = 0;
-             generic.focusRequestNumber = 0;
-           }
-+        [GSServerForWindow([NSApp keyWindow]) setinputfocus: cWin->number];
-         break;
-         
-             // keyboard focus left a window
-@@ -1135,8 +1244,8 @@
+@@ -1135,8 +1243,8 @@
             * If it has gone to a window - we see if it is one of ours.
             */
            XGetInputFocus(xEvent.xfocus.display, &fw, &rev);
@@ -281,7 +273,7 @@
            if (fw != None && fw != PointerRoot)
              {
                generic.cachedWindow = [XGServer _windowForXWindow: fw];
-@@ -1774,28 +1883,28 @@
+@@ -1774,28 +1882,28 @@
  - (NSEvent *)_handleTakeFocusAtom: (XEvent)xEvent 
                         forContext: (NSGraphicsContext *)gcontext
  {
@@ -324,7 +316,7 @@
    /* We'd like to send this event directly to the front-end to handle,
       but the front-end polls events so slowly compared the speed at
       which X events could potentially come that we could easily get
-@@ -1808,29 +1917,55 @@
+@@ -1808,29 +1916,74 @@
           window to take focus after each one gets hidden. */
        NSDebugLLog(@"Focus", @"WM take focus while hiding");
      }
@@ -382,6 +374,25 @@
 +              cWin->ident, cWin->number);
 +        [GSServerForWindow(key_win) setinputfocus: cWin->number];
 +      }
++      else {
++        /* If key window is visible and didn't received TakeFocus message yet
++           set input focus to it. Otherwise, if application will be deactivated 
++           and key window receive TakeFocus, nothing happens because:
++           - NSApplication resigns key window on deactivation;
++           - key window has `ignore_take_focus == YES`;
++           So click on key window of inactive application will be ignored 
++           because of ignore_take_focus == YES.
++           Test to observe incorrect behaviour without code below in NEXTSPACE:
++           - workspace 1, Workspace app active;
++           - switch to workspace 2 - Workspace app menu only visible;
++           - switch back to workspace 1 - Workspace app active;
++           - launch menu-only app - TextEdit;
++           - click on titlebar of unfocused "File Viewer".
++         */
++        NSLog(@"[TakeFocus] ...%lu(%li):  setinputfocus to key: %lu(%d)",
++              cWin->ident, cWin->number, keyWin->ident, key_num);
++        [GSServerForWindow(key_win) setinputfocus: key_num];
++      }
      }
    else
      {
@@ -389,7 +400,7 @@
        /*
         * Here the app asked for this (if key_win==nil) or there was a
         * click on the title bar or some other reason (window mapped,
-@@ -1838,17 +1973,24 @@
+@@ -1838,17 +1991,24 @@
         * last reason but we just have to deal with that since we can
         * never be sure if it's necessary.
         */
