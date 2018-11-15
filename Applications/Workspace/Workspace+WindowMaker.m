@@ -1594,6 +1594,7 @@ void XWActivateApplication(WScreen *scr, char *app_name)
   NSConnection *appConnection;
 
   if (!strcmp(app_name, "Workspace")) {
+    XWActivateWorkspaceApp(scr);
     return;
   }
 
@@ -1605,15 +1606,6 @@ void XWActivateApplication(WScreen *scr, char *app_name)
     XWActivateWorkspaceApp(scr);
   }
   else {
-    // if (strcmp(app_name, "Workspace")) {
-    //   NSLog(@"Deactivating Workspace...");
-    //   [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(makeKeyWindow)
-    //                                               withObject:nil
-    //                                            waitUntilDone:YES];
-    //   [[[NSApp mainMenu] window] performSelectorOnMainThread:@selector(orderOut:)
-    //                                               withObject:NSApp
-    //                                            waitUntilDone:YES];
-    // }
     if ([NSApp isActive] != NO) {
       NSLog(@"Workspace is active - deactivating...");
       [NSApp performSelectorOnMainThread:@selector(deactivate)
@@ -1645,23 +1637,6 @@ void XWActivateWorkspaceApp(WScreen *scr)
 
 void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
 {
-  BOOL activateWorkspace = NO;
-  
-  if (focused_window == NULL) {
-    NSLog(@"WorkspaceDidChange: focused window is `scr->no_focus_win`.");
-    activateWorkspace = YES;
-  }
-  if (focused_window &&
-      !strcmp(focused_window->wm_class, "GNUstep") &&
-      !strcmp(focused_window->wm_instance, "Workspace")) {
-    NSLog(@"WorkspaceDidChange: focused window belongs to Workspace.");
-    activateWorkspace = YES;
-  }
-  
-  if (activateWorkspace != NO) {
-    XWActivateWorkspaceApp(scr);
-  }
-  
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
                                      withObject:nil
                                   waitUntilDone:YES];
