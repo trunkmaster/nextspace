@@ -659,17 +659,11 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
         wSetFocusTo(scr, foc);
         wRaiseFrame(foc->frame->core);
       }
-      else {
+      else if (scr->workspaces[workspace]->focused_window) {
         /* No window to focus. If window ID was saved for this workspace - use it.
            Otherwise - set focus to NULL (scr->no_focus_win). */
-        if (scr->workspaces[workspace]->focused_window) {
-          foc = scr->workspaces[workspace]->focused_window;
-          fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win);
-        }
-        else {
-          fprintf(stderr, "[WM] focusing ROOT...\n");
-          wSetFocusTo(scr, NULL);
-        }
+        foc = scr->workspaces[workspace]->focused_window;
+        fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win);
       }
       if (foc && (foc->flags.is_gnustep || !strcmp(foc->wm_class, "GNUstep"))) {
         XWActivateApplication(scr, foc->wm_instance);
