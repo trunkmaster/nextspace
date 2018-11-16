@@ -665,9 +665,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
         foc = scr->workspaces[workspace]->focused_window;
         fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win);
       }
-      if (foc && (foc->flags.is_gnustep || !strcmp(foc->wm_class, "GNUstep"))) {
-        XWActivateApplication(scr, foc->wm_instance);
-      }
+      
       dispatch_sync(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
 		}
     else {
