@@ -122,6 +122,7 @@ static inline void shade_animate(WWindow *wwin, Bool what)
  *
  *----------------------------------------------------------------------
  */
+#include <string.h>
 void wSetFocusTo(WScreen *scr, WWindow *wwin)
 {
 	static WScreen *old_scr = NULL;
@@ -134,6 +135,20 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
 	if (scr->flags.ignore_focus_events || compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
 		return;
+
+  /* Do not focus GNUstep main menu if focused window belongs to 
+     the same application. */
+  if (wwin && focused && wwin != focused &&
+      !strcmp(wwin->wm_class, "GNUstep") &&
+      !strcmp(wwin->wm_class, focused->wm_class) &&
+      !strcmp(wwin->wm_instance, focused->wm_instance) &&
+      wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel &&
+      focused->flags.mapped) {
+    fprintf(stderr, "[WM] wSetFocusTo: do not set focus to active `%s` app menu."
+            " Key %lu mapped = %i\n",
+            focused->wm_instance, focused->client_win, focused->flags.mapped);
+    return;
+  }
 
 	if (!old_scr)
 		old_scr = scr;
