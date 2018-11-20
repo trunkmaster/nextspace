@@ -38,6 +38,7 @@
 @class Recycler;
 @class Launcher;
 @class Finder;
+@class Preferences;
 
 @interface Controller : NSObject
 {
@@ -68,6 +69,7 @@
   NSMutableDictionary *mediaOperations;
   Launcher            *launcher;
   Finder              *finder;
+  Preferences         *preferences;
  
   BOOL dontOpenRootViewer;
   BOOL isQuitting;
