@@ -480,6 +480,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 	if (workspace >= MAX_WORKSPACES || workspace < 0 || workspace == scr->current_workspace)
 		return;
 
+  /* The code below produces FocusOut/FocusIn events for GNUstep application. 
+     Why? To omit them set "EnableWorkspacepager = NO" in WM preferences. Sergii Stoian */
 	if (wPreferences.enable_workspace_pager && !w_global.process_workspacemap_event)
 		wWorkspaceMapUpdate(scr);
 
@@ -654,14 +656,13 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     
 		if (wPreferences.focus_mode == WKF_CLICK) {
       if (foc) {
-        /* Existing and mapped window found. */
+        /* Mapped window found earlier. */
         fprintf(stderr, "[WM] focusing existing window %lu...\n", foc->client_win);
         wSetFocusTo(scr, foc);
         wRaiseFrame(foc->frame->core);
       }
       else if (scr->workspaces[workspace]->focused_window) {
-        /* No window to focus. If window ID was saved for this workspace - use it.
-           Otherwise - set focus to NULL (scr->no_focus_win). */
+        /* No mapped window to focus. If window was saved for this workspace - use it. */
         foc = scr->workspaces[workspace]->focused_window;
         fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win);
       }
