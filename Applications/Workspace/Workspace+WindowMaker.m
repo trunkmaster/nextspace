@@ -1606,14 +1606,14 @@ void XWActivateApplication(WScreen *scr, char *app_name)
     XWActivateWorkspaceApp(scr);
   }
   else {
-    NSLog(@"Activating application `%@`", appName);
-    [app activateIgnoringOtherApps:YES];
-    
-    appConnection = [app connectionForProxy];
-    [[appConnection receivePort] invalidate];
-    [[appConnection sendPort] invalidate];
-    [appConnection invalidate];
-    [app release];
+    // NSLog(@"Activating application `%@`", appName);
+    // [app activateIgnoringOtherApps:YES];
+
+    // appConnection = [app connectionForProxy];
+    // [[appConnection receivePort] invalidate];
+    // [[appConnection sendPort] invalidate];
+    // [appConnection invalidate];
+    // [app release];
     
     // if ([NSApp isActive] != NO) {
     //   NSLog(@"Workspace is active - deactivating...");
