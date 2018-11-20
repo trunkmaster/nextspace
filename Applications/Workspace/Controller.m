@@ -193,6 +193,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   if (procPanel && [[procPanel window] isVisible]) {
     [[procPanel window] close];
   }
+  // Preferences
+  if (preferences)
+    [preferences release];
+  
   // Finder
   if (finder) {
     winState = WWMWindowState([finder window]);
@@ -680,6 +684,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)activate
 {
+  if (isQuitting != NO)
+    return;
+  
   NSLog(@"Activating Workspace from Controller!");
   [NSApp activateIgnoringOtherApps:YES];
 }
@@ -866,7 +873,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)showPrefsPanel:(id)sender
 {
-  [[Preferences shared] activate];
+  if (!preferences) {
+    preferences = [Preferences shared];
+  }
+  [preferences activate];
 }
 
 // File
