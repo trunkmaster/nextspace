@@ -1606,14 +1606,14 @@ void XWActivateApplication(WScreen *scr, char *app_name)
     XWActivateWorkspaceApp(scr);
   }
   else {
-    // NSLog(@"Activating application `%@`", appName);
-    // [app activateIgnoringOtherApps:YES];
+    NSLog(@"Activating application `%@`", appName);
+    [app activateIgnoringOtherApps:YES];
 
-    // appConnection = [app connectionForProxy];
-    // [[appConnection receivePort] invalidate];
-    // [[appConnection sendPort] invalidate];
-    // [appConnection invalidate];
-    // [app release];
+    appConnection = [app connectionForProxy];
+    [[appConnection receivePort] invalidate];
+    [[appConnection sendPort] invalidate];
+    [appConnection invalidate];
+    [app release];
     
     // if ([NSApp isActive] != NO) {
     //   NSLog(@"Workspace is active - deactivating...");
@@ -1641,15 +1641,11 @@ void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
   if (!focused_window || !strcmp(focused_window->wm_instance, "Workspace")) {
     XWActivateWorkspaceApp(scr);
   }
-  else if (!strcmp(focused_window->wm_class, "GNUstep")) {
-    XWActivateApplication(scr, focused_window->wm_instance);
-  }
   
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
                                      withObject:nil
                                   waitUntilDone:YES];
   NSLog(@"Switch to workspace %i completed.", workspace);
-
 }
 
 void XWDockContentDidChange(WDock *dock)
