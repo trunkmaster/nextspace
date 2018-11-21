@@ -1615,12 +1615,12 @@ void XWActivateApplication(WScreen *scr, char *app_name)
     [appConnection invalidate];
     [app release];
     
-    // if ([NSApp isActive] != NO) {
-    //   NSLog(@"Workspace is active - deactivating...");
-    //   [NSApp performSelectorOnMainThread:@selector(deactivate)
-    //                           withObject:nil
-    //                        waitUntilDone:YES];
-    // }
+    if ([NSApp isActive] != NO) {
+      NSLog(@"Workspace is active - deactivating...");
+      [NSApp performSelectorOnMainThread:@selector(deactivate)
+                              withObject:nil
+                           waitUntilDone:YES];
+    }
   }
 }
 
