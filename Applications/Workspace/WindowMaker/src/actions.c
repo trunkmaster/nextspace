@@ -133,11 +133,22 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	WApplication *oapp = NULL, *napp = NULL;
 	int wasfocused;
 
-	if (scr->flags.ignore_focus_events || compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
+  fprintf(stderr, "[WM] wSetFocusTo: %lu focused: %lu\n",
+          (wwin && wwin->client_win) ? wwin->client_win : 0,
+          (focused && focused->client_win) ? focused->client_win : 0);
+
+	if (scr->flags.ignore_focus_events ||
+      compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
 		return;
 
   /* Do not focus GNUstep main menu if focused window belongs to 
-     the same application. */
+     the same application. 
+     TODO: problem with this scenario:
+     - workspace #1 with activate TextEdit with window;
+     - switch to workspace #2 without apps (Workspace menu only visible);
+     - switch back to workspace #1 - focus to TextEdit window; 
+     - closing TextEdit window switches focus to Workspace - incorrect -
+       TextEdit should stay active. */
   if (wwin && focused && wwin != focused &&
       !strcmp(wwin->wm_class, "GNUstep") &&
       !strcmp(wwin->wm_class, focused->wm_class) &&
@@ -186,7 +197,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	if (napp)
 		napp->last_workspace = wwin->frame->workspace;
 
-	if (wwin->flags.mapped && !WFLAGP(wwin, no_focusable)) {
+	/* if (wwin->flags.mapped && !WFLAGP(wwin, no_focusable)) { */
+  /* If it's GNUstep application focus may be set to yet unmapped main menu */
+	if ((wwin->flags.is_gnustep || wwin->flags.mapped) &&
+      !WFLAGP(wwin, no_focusable)) {
 		/* install colormap if colormap mode is lock mode */
 		if (wPreferences.colormap_mode == WCM_CLICK)
 			wColormapInstallForWindow(scr, wwin);
