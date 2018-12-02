@@ -620,8 +620,11 @@ static void handleMapRequest(XEvent * ev)
 	WScreen *scr = NULL;
 	Window window = ev->xmaprequest.window;
 
+	scr = wScreenForRootWindow(ev->xmaprequest.parent);
+
 	wwin = wWindowFor(window);
 	if (wwin != NULL) {
+    fprintf(stderr, "[WM] MapRequest %lu\n", wwin->client_win);
 		if (wwin->flags.shaded) {
 			wUnshadeWindow(wwin);
 		}
@@ -636,10 +639,16 @@ static void handleMapRequest(XEvent * ev)
 			}
 			wUnhideApplication(wapp, False, False);
 		}
+
+    /* GNUstep app main menu window is managed but unmapped */
+    if (WINDOW_LEVEL(wwin) == WMMainMenuLevel &&
+        wwin->flags.is_gnustep && wwin->flags.mapped == 0) {
+      wWindowMap(wwin);
+      wSetFocusTo(scr, wwin);
+    }
+    
 		return;
 	}
-
-	scr = wScreenForRootWindow(ev->xmaprequest.parent);
 
 	wwin = wManageWindow(scr, window);
 
@@ -697,6 +706,7 @@ static void handleDestroyNotify(XEvent * event)
 
 	wwin = wWindowFor(window);
 	if (wwin) {
+    fprintf(stderr, "[WM, event.c] DestroyNotify will unmanage window:%lu\n", window);
 #ifdef NEXTSPACE
 		dispatch_sync(workspace_q, ^{ XWApplicationDidCloseWindow(wwin); });
 #endif
@@ -971,6 +981,7 @@ static void handleMapNotify(XEvent * event)
 
 	wwin = wWindowFor(event->xmap.event);
 	if (wwin && wwin->client_win == event->xmap.event) {
+    fprintf(stderr, "[WM] MapNotify %lu\n", wwin->client_win);
 		if (wwin->flags.miniaturized) {
 			wDeiconifyWindow(wwin);
 		} else {
@@ -1024,9 +1035,14 @@ static void handleUnmapNotify(XEvent * event)
 		if (!reparented)
 			wClientSetState(wwin, WithdrawnState, None);
 
-		/* if the window was reparented, do not reparent it back to the
-		 * root window */
-		wUnmanageWindow(wwin, !reparented, False);
+    if (WINDOW_LEVEL(wwin) != WMMainMenuLevel) {
+      fprintf(stderr, "[WM, event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n",
+              event->xunmap.window, wwin->flags.is_gnustep);
+      wApplicationRemoveWindow(wApplicationOf(wwin->main_window), wwin);
+      /* if the window was reparented, do not reparent it back to the
+       * root window */
+      wUnmanageWindow(wwin, !reparented, False);
+    }
 	}
 	XUngrabServer(dpy);
 }
@@ -2038,8 +2054,8 @@ static void handleKeyRelease(XEvent * event)
       event->xkey.window == scr->no_focus_win) {
     return;
   }
-  /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
-  /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
+  fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n",
+          event->xkey.keycode, event->xkey.state, MOD_MASK);
 	if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
     if (wwin) {
