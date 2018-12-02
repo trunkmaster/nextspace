@@ -39,6 +39,8 @@
 
 #ifdef NEXTSPACE
 #include <Workspace+WindowMaker.h>
+#include <stdio.h>
+#include "framewin.h"
 #endif
 
 /******** Local variables ********/
@@ -77,6 +79,130 @@ WApplication *wApplicationOf(Window window)
 	return wapp;
 }
 
+void wApplicationPrintWindowList(WApplication *wapp)
+{
+  WMArray *window_list = wapp->windows;
+  int window_count = WMGetArrayItemCount(window_list);
+  WWindow *wwin;
+  char *window_type = NULL;
+
+  fprintf(stderr, "[WM] window list of application: %s\n", wapp->app_icon->wm_instance);
+  for (int i = 0; i < window_count; i++) {
+    wwin = WMGetFromArray(window_list, i);
+    if (wwin) {
+      switch (WINDOW_LEVEL(wwin)) {
+      case WMNormalLevel:
+        window_type = "Normal";
+        break;
+      case WMFloatingLevel:
+        window_type = "Floating";
+        break;
+      case WMDockLevel:
+        window_type = "Dock";
+        break;
+      case WMSubmenuLevel:
+        window_type = "Submenu";
+        break;
+      case WMMainMenuLevel:
+        window_type = "Main Menu";
+        break;
+      case WMStatusLevel:
+        window_type = "Status";
+        break;
+      case WMModalLevel:
+        window_type = "Modal";
+        break;
+      case WMPopUpLevel:
+        window_type = "PopUp";
+        break;
+      default:
+        window_type = "Unknown";
+      }
+      fprintf(stderr, "\tID: %lu Type: %s\n", wwin->client_win, window_type);
+    }
+  }
+}
+
+BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
+{
+  return True;
+}
+
+/* 
+   New functionality: GNUstep applications special handling.
+
+   On application start wApplicationCreate() is called:
+   - creates wapp->windows array
+   - adds `wwin` to this array
+   - saved `wwin` to `wapp->menu_win` if it's main menu (normally it is)
+
+   When new window opens (MapRequest, MapNotify) wApplicationAdd() is called:
+   - adds `wwin` into `wapp->windows` array
+   - wapp->refcount++
+
+   When window is closed (UnmapNotify) and window is not main menu
+   wApplicationRemoveWindow() is called:
+   - removes `wwin` from `wapp->windows` array
+   - wapp->refcount--
+
+   When application quits (DestroyNotify):
+   - several calls to wApplicationRemoveWindow() is performed
+   - wApplicationDestroy() is called:
+     - wUnmanageWindow for wapp->menu_win is called
+     - wapp->windows array destroyed
+     - wapp->refcount--
+     - `wapp` is freed
+*/
+
+void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
+{
+  int window_level = WINDOW_LEVEL(wwin);
+  
+  fprintf(stderr, "[WM wApplication] ADD window: %lu level:%i name: %s refcount=%i\n",
+          wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
+  
+  if (wapp->app_icon && wapp->app_icon->docked &&
+      wapp->app_icon->relaunching && wapp->main_window_desc->fake_group) {
+    wDockFinishLaunch(wapp->app_icon);
+  }
+
+  /* Do not add short-living objects to window list: tooltips, submenus, popups, etc. */
+  if (window_level != WMNormalLevel && window_level != WMFloatingLevel) {
+    return;
+  }
+
+  if (window_level == WMMainMenuLevel) {
+    wapp->menu_win = wwin;
+  }
+  
+  WMAddToArray(wapp->windows, wwin);
+  wapp->refcount++;
+  
+  /* wApplicationPrintWindowList(wapp); */
+  
+#ifdef NEXTSPACE
+  dispatch_sync(workspace_q, ^{ XWApplicationDidAddWindow(wapp, wwin); });
+#endif                
+}
+
+void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
+{
+  int window_count = WMGetArrayItemCount(wapp->windows);
+  WWindow *awin;
+
+  fprintf(stderr, "[WM wApplication] REMOVE window: %lu name: %s refcount=%i\n",
+          wwin->client_win, wwin->wm_instance, wapp->refcount);
+  
+  for (int i = 0; i < window_count; i++) {
+    awin = WMGetFromArray(wapp->windows, i);
+    if (awin == wwin) {
+      WMDeleteFromArray(wapp->windows, i);
+      wapp->refcount--;
+      break;
+    }
+  }
+}
+
 WApplication *wApplicationCreate(WWindow * wwin)
 {
 	WScreen *scr = wwin->screen_ptr;
@@ -98,22 +224,17 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
 	wapp = wApplicationOf(main_window);
 	if (wapp) {
-		wapp->refcount++;
-		if (wapp->app_icon && wapp->app_icon->docked &&
-		    wapp->app_icon->relaunching && wapp->main_window_desc->fake_group)
-			wDockFinishLaunch(wapp->app_icon);
-
-#ifdef NEXTSPACE
-		dispatch_sync(workspace_q,
-                              ^{
-                                XWApplicationDidAddWindow(wapp, wwin);
-                              });
-#endif
-                
+		wApplicationAddWindow(wapp, wwin);
 		return wapp;
 	}
 
+  fprintf(stderr, "[WM wApplication] CREATE for window: %lu level:%i name: %s\n",
+          wwin->client_win, WINDOW_LEVEL(wwin), wwin->wm_instance);
+
 	wapp = wmalloc(sizeof(WApplication));
+
+  wapp->windows = WMCreateArray(1);
+  WMAddToArray(wapp->windows, wwin);
 
 	wapp->refcount = 1;
 	wapp->last_focused = NULL;
@@ -151,10 +272,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 	create_appicon_for_application(wapp, wwin);
 
 #ifdef NEXTSPACE
-        dispatch_sync(workspace_q,
-                      ^{
-                        XWApplicationDidCreate(wapp, wwin);
-                      });
+	dispatch_sync(workspace_q, ^{ XWApplicationDidCreate(wapp, wwin); });
 #endif
         
 	return wapp;
@@ -168,6 +286,17 @@ void wApplicationDestroy(WApplication *wapp)
 	if (!wapp)
 		return;
 
+  fprintf(stderr, "[WM application.c] DESTROY main window:%lu name:%s windows #:%i refcount:%i\n",
+          wapp->main_window, wapp->app_icon->wm_instance,
+          WMGetArrayItemCount(wapp->windows), wapp->refcount);
+
+  /* GNUstep app main menu special handling */
+  if (wapp->menu_win) {
+    wUnmanageWindow(wapp->menu_win, False, True);
+  }
+  WMEmptyArray(wapp->windows);
+  WMFreeArray(wapp->windows);
+  
 	wapp->refcount--;
 	if (wapp->refcount > 0)
 		return;
@@ -184,12 +313,9 @@ void wApplicationDestroy(WApplication *wapp)
 	}
 
 #ifdef NEXTSPACE
-        // Must be synchronous. Otherwise XWApplicationDidDestroy crashed
-        // during access to wapp structure.
-        dispatch_sync(workspace_q,
-                      ^{
-                        XWApplicationDidDestroy(wapp);
-                      });
+	// Must be synchronous. Otherwise XWApplicationDidDestroy crashed
+	// during access to wapp structure.
+	dispatch_sync(workspace_q, ^{ XWApplicationDidDestroy(wapp); });
 #endif
         
 	scr = wapp->main_window_desc->screen_ptr;
@@ -220,6 +346,7 @@ void wApplicationDestroy(WApplication *wapp)
 		XSaveContext(dpy, wwin->client_win, w_global.context.client_win, (XPointer) & wwin->client_descriptor);
 	}
 	wfree(wapp);
+  fprintf(stderr, "[WM application.c] DESTROY END.\n");
 }
 
 void wApplicationActivate(WApplication *wapp)

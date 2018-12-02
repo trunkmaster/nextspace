@@ -24,25 +24,36 @@
 
 /* for tracking single application instances */
 typedef struct WApplication {
-    struct WApplication *next;
-    struct WApplication *prev;
+  struct WApplication *next;
+  struct WApplication *prev;
 
-    Window main_window;		       /* ID of the group leader */
-    struct WWindow *main_window_desc;  /* main (leader) window descriptor */
-    WMenu *menu;		       /* application menu */
-    struct WAppIcon *app_icon;
-    int refcount;
-    struct WWindow *last_focused;      /* focused window before hide */
-    int last_workspace;		       /* last workspace used to work on the
-                                        * app */
-    WMHandlerID *urgent_bounce_timer;
-    struct {
-        unsigned int skip_next_animation:1;
-        unsigned int hidden:1;
-        unsigned int emulated:1;
-        unsigned int bouncing:1;
-    } flags;
+  int refcount;
+  
+  Window main_window;			/* ID of the group leader */
+  struct WWindow *main_window_desc;	/* main (leader) window descriptor */
+  struct WAppIcon *app_icon;
+  struct WWindow *last_focused;		/* focused window before hide */
+  int last_workspace;		 	/* last workspace used to work on the app */
+  
+  WMHandlerID *urgent_bounce_timer;
+  struct {
+    unsigned int skip_next_animation:1;
+    unsigned int hidden:1;
+    unsigned int emulated:1;
+    unsigned int bouncing:1;
+  } flags;
+  
+  /* GNUstep application */
+  struct WWindow *menu_win;
+  WMArray *windows;
+
+  /* WINGs application */
+  WMenu *menu;				/* application menu */
+  
 } WApplication;
+
+void wApplicationAddWindow(WApplication *wapp, struct WWindow *wwin);
+void wApplicationRemoveWindow(WApplication *wapp, struct WWindow *wwin);
 
 
 WApplication *wApplicationCreate(struct WWindow *wwin);
