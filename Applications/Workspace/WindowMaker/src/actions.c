@@ -193,10 +193,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	wasfocused = wwin->flags.focused;
 	napp = wApplicationOf(wwin->main_window);
 
-	/* remember last workspace where the app has been */
-	if (napp)
-		napp->last_workspace = wwin->frame->workspace;
-
 	/* if (wwin->flags.mapped && !WFLAGP(wwin, no_focusable)) { */
   /* If it's GNUstep application focus may be set to yet unmapped main menu */
 	if ((wwin->flags.is_gnustep || wwin->flags.mapped) &&
@@ -245,6 +241,13 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		focused->next = wwin;
 		wwin->next = NULL;
 		scr->focused_window = wwin;
+
+    /* remember last workspace and focused window of application */
+    if (napp) {
+      napp->last_focused = wwin;
+      napp->last_workspace = scr->current_workspace;
+      /* napp->last_workspace = wwin->frame->workspace; */
+    }
 
 		if (oapp && oapp != napp) {
 			wAppMenuUnmap(oapp->menu);
