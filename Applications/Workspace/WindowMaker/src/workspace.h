@@ -36,6 +36,7 @@ int wWorkspaceNew(WScreen *scr);
 int wGetWorkspaceNumber(WScreen *scr, const char *value);
 Bool wWorkspaceDelete(WScreen *scr, int workspace);
 void wWorkspaceChange(WScreen *scr, int workspace);
+void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin);
 void wWorkspaceForceChange(WScreen *scr, int workspace);
 WMenu *wWorkspaceMenuMake(WScreen *scr, Bool titled);
 void wWorkspaceMenuUpdate(WScreen *scr, WMenu *menu);

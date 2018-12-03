@@ -710,8 +710,12 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
 	unhideHere = (event->xbutton.state & ShiftMask);
 	/* go to the last workspace that the user worked on the app */
-	if (!unhideHere && wapp->last_workspace != scr->current_workspace)
+	if (!unhideHere && wapp->last_workspace != scr->current_workspace) {
+    if (wapp->last_focused) {
+      wWorkspaceSaveFocusedWindow(scr, wapp->last_workspace, wapp->last_focused);
+    }
 		wWorkspaceChange(scr, wapp->last_workspace);
+  }
 
 	wUnhideApplication(wapp, event->xbutton.button == Button2, unhideHere);
 
@@ -719,17 +723,21 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 		wHideOtherApplications(aicon->icon->owner);
 }
 
+#include <stdio.h>
 void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
 {
 	WAppIcon *aicon = desc->parent;
 	WScreen *scr = aicon->icon->core->screen_ptr;
 	Bool hasMoved;
 
+  fprintf(stderr, "[WM] Appicon Mouse Down\n");
+    
 	if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
 		return;
 
 	if (IsDoubleClick(scr, event)) {
 		/* Middle or right mouse actions were handled on first click */
+    fprintf(stderr, "[WM] Appicon Double-click\n");
 		if (event->xbutton.button == Button1)
 			iconDblClick(desc, event);
 		return;
