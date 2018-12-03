@@ -3671,11 +3671,19 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
 		assert(wapp != NULL);
 
+    fprintf(stderr, "[WM] Dock icon Double-click for workspace %i leader: %lu\n",
+            wapp->last_workspace, wapp->main_window);
+    
 		unhideHere = (event->xbutton.state & ShiftMask);
 
 		/* go to the last workspace that the user worked on the app */
-		if (wapp->last_workspace != dock->screen_ptr->current_workspace && !unhideHere)
+		if (wapp->last_workspace != dock->screen_ptr->current_workspace && !unhideHere) {
+      if (wapp->last_focused) {
+        wWorkspaceSaveFocusedWindow(dock->screen_ptr, wapp->last_workspace,
+                                    wapp->last_focused);
+      }
 			wWorkspaceChange(dock->screen_ptr, wapp->last_workspace);
+    }
 
 		wUnhideApplication(wapp, event->xbutton.button == Button2, unhideHere);
 
@@ -4014,6 +4022,8 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
 	WDock *dock = aicon->dock;
 	WScreen *scr = aicon->icon->core->screen_ptr;
 
+  fprintf(stderr, "[WM] Dock iconMouseDown\n");
+  
 	if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
 		return;
 
@@ -4024,7 +4034,8 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
 
 	if (IsDoubleClick(scr, event)) {
 		/* double-click was not in the main clip icon */
-		if (dock->type != WM_CLIP || aicon->xindex != 0 || aicon->yindex != 0
+		/* if (dock->type != WM_CLIP || aicon->xindex != 0 || aicon->yindex != 0 */
+		if (dock->type != WM_CLIP 
 		    || getClipButton(event->xbutton.x, event->xbutton.y) == CLIP_IDLE) {
 			iconDblClick(desc, event);
 			return;

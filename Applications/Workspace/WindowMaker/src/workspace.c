@@ -473,6 +473,25 @@ void wWorkspaceRelativeChange(WScreen * scr, int amount)
 	}
 }
 
+void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
+{
+  WWindow *saved_wwin;
+    
+  fprintf(stderr, "[WM] save focused window %lu to workspace %i\n",
+          wwin->client_win, workspace);
+  
+  if (scr->workspaces[workspace]->focused_window) {
+    wrelease(scr->workspaces[workspace]->focused_window);
+  }
+    
+  saved_wwin = wWindowCreate();
+  saved_wwin->wm_class = wstrdup(wwin->wm_class);
+  saved_wwin->wm_instance = wstrdup(wwin->wm_instance);
+  saved_wwin->client_win = wwin->client_win;
+    
+  scr->workspaces[workspace]->focused_window = saved_wwin;
+}
+
 void wWorkspaceForceChange(WScreen * scr, int workspace)
 {
 	WWindow *tmp, *foc = NULL;
@@ -494,20 +513,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
   /* save focused window to the workspace before switch */
   if (scr->focused_window) {
-    WWindow *saved_wwin;
-    fprintf(stderr, "[WM] save focused window %lu to workspace %i BEFORE switch\n",
-            scr->focused_window->client_win, scr->current_workspace);
-    
-    if (scr->workspaces[scr->current_workspace]->focused_window) {
-      wrelease(scr->workspaces[scr->current_workspace]->focused_window);
-    }
-    
-    saved_wwin = wWindowCreate();
-    saved_wwin->wm_class = wstrdup(scr->focused_window->wm_class);
-    saved_wwin->wm_instance = wstrdup(scr->focused_window->wm_instance);
-    saved_wwin->client_win = scr->focused_window->client_win;
-    
-    scr->workspaces[scr->current_workspace]->focused_window = saved_wwin;
+    wWorkspaceSaveFocusedWindow(scr, scr->current_workspace, scr->focused_window);
   }
 
 	scr->last_workspace = scr->current_workspace;
@@ -556,7 +562,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
           /* update current workspace of omnipresent windows */
           WApplication *wapp = wApplicationOf(tmp->main_window);
           tmp->frame->workspace = workspace;
-          if (wapp) {
+          if (wapp && WINDOW_LEVEL(tmp) != WMMainMenuWindowLevel) {
             wapp->last_workspace = workspace;
           }
         }
