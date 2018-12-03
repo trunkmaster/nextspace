@@ -37,6 +37,7 @@ typedef struct WApplication {
   
   WMHandlerID *urgent_bounce_timer;
   struct {
+    unsigned int is_gnustep:1;
     unsigned int skip_next_animation:1;
     unsigned int hidden:1;
     unsigned int emulated:1;

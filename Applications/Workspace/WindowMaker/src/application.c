@@ -166,15 +166,15 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
     wDockFinishLaunch(wapp->app_icon);
   }
 
+  if (window_level == WMMainMenuLevel) {
+    wapp->menu_win = wwin;
+  }
+  
   /* Do not add short-living objects to window list: tooltips, submenus, popups, etc. */
   if (window_level != WMNormalLevel && window_level != WMFloatingLevel) {
     return;
   }
 
-  if (window_level == WMMainMenuLevel) {
-    wapp->menu_win = wwin;
-  }
-  
   WMAddToArray(wapp->windows, wwin);
   wapp->refcount++;
   
@@ -234,13 +234,14 @@ WApplication *wApplicationCreate(WWindow * wwin)
 	wapp = wmalloc(sizeof(WApplication));
 
   wapp->windows = WMCreateArray(1);
-  WMAddToArray(wapp->windows, wwin);
+  wApplicationAddWindow(wapp, wwin);
 
+  wapp->flags.is_gnustep = wwin->flags.is_gnustep;
 	wapp->refcount = 1;
 	wapp->last_focused = NULL;
 	wapp->urgent_bounce_timer = NULL;
 
-	wapp->last_workspace = 0;
+	wapp->last_workspace = wwin->screen_ptr->current_workspace;
 
 	wapp->main_window = main_window;
 	wapp->main_window_desc = makeMainWindow(scr, main_window);
@@ -274,6 +275,25 @@ WApplication *wApplicationCreate(WWindow * wwin)
 #ifdef NEXTSPACE
 	dispatch_sync(workspace_q, ^{ XWApplicationDidCreate(wapp, wwin); });
 #endif
+
+  if (!scr->wapp_list) {
+    scr->wapp_list = wapp;
+    wapp->prev = NULL;
+    wapp->next = NULL;
+  }
+  else {
+    WApplication *wa = scr->wapp_list;
+    while (wa->next)
+      wa = wa->next;
+    wa->next = wapp;
+    wapp->prev = wa;
+    wapp->next = NULL;
+  }
+
+  fprintf(stderr, "[WM] WApplication `%s` was created! Prev `%s` Next `%s`\n",
+          wwin->wm_instance,
+          wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
+          wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
         
 	return wapp;
 }
@@ -290,10 +310,6 @@ void wApplicationDestroy(WApplication *wapp)
           wapp->main_window, wapp->app_icon->wm_instance,
           WMGetArrayItemCount(wapp->windows), wapp->refcount);
 
-  /* GNUstep app main menu special handling */
-  if (wapp->menu_win) {
-    wUnmanageWindow(wapp->menu_win, False, True);
-  }
   WMEmptyArray(wapp->windows);
   WMFreeArray(wapp->windows);
   
