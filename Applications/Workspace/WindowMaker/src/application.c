@@ -370,8 +370,9 @@ void wApplicationActivate(WApplication *wapp)
 {
   WScreen *scr = wapp->main_window_desc->screen_ptr;
 
-  fprintf(stderr, "[WM] wApplicationActivate %s current WS:%i app WS:%i\n",
-          wapp->main_window_desc->wm_instance, scr->current_workspace,
+  fprintf(stderr, "[WM] wApplicationActivate %s current WS:%i last WS:%i app WS:%i\n",
+          wapp->main_window_desc->wm_instance,
+          scr->current_workspace, scr->last_workspace,
           wapp->last_workspace);
   
 	if (wapp->app_icon && wPreferences.highlight_active_app) {
@@ -379,7 +380,8 @@ void wApplicationActivate(WApplication *wapp)
 		wAppIconPaint(wapp->app_icon);
 	}
   
-  if (wapp->last_workspace != scr->current_workspace) {
+  if (wapp->last_workspace != scr->current_workspace &&
+      scr->last_workspace == scr->current_workspace) {
     if (wapp->last_focused) {
       wWorkspaceSaveFocusedWindow(scr, wapp->last_workspace, wapp->last_focused);
     }
@@ -419,7 +421,7 @@ void wApplicationMakeFirst(WApplication *wapp)
   wapp->next = first_wapp;
   
   scr->wapp_list = wapp;
-  fprintf(stderr, "[WM, wApplicationMakeFirst] %s. Application list:",
+  fprintf(stderr, "[WM] wApplicationMakeFirst: %s. Application list:",
           wapp->main_window_desc->wm_instance);
 
   app = scr->wapp_list;
