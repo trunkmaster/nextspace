@@ -1,5 +1,6 @@
 Xft.dpi:       96
 Xft.hintstyle: hintslight
+Xft.lcdfilter: lcddefault
 Xft.hinting:   true
 Xft.antialias: true
 Xft.rgba:      rgb
