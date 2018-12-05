@@ -638,13 +638,15 @@ static void handleMapRequest(XEvent * ev)
 				wWorkspaceChange(wwin->screen_ptr, wapp->last_workspace);
 			}
 			wUnhideApplication(wapp, False, False);
-		}
-
-    /* GNUstep app main menu window is managed but unmapped */
-    if (WINDOW_LEVEL(wwin) == WMMainMenuLevel &&
-        wwin->flags.is_gnustep && wwin->flags.mapped == 0) {
+		} else if (WINDOW_LEVEL(wwin) == WMMainMenuLevel &&
+               wwin->flags.is_gnustep && wwin->flags.mapped == 0) {
+      /* GNUstep app main menu window is managed but unmapped */
+      WApplication *wapp = wApplicationOf(wwin->main_window);
+      int last_focused_mapped = wapp->last_focused->flags.mapped;
+      
       wWindowMap(wwin);
-      wSetFocusTo(scr, wwin);
+      if (last_focused_mapped == 0)
+        wSetFocusTo(scr, wwin);
     }
     
 		return;
