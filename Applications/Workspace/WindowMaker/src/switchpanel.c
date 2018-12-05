@@ -384,35 +384,58 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
 	WMArray *windows = WMCreateArray(10);
 	WWindow *wwin = scr->focused_window;
 
+  /* WApplications */
+  if (class_only == False) {
+    fprintf(stderr, "[WM] window list array creation BEGIN\n");
+    WApplication *wapp = scr->wapp_list;
+    while (wapp) {
+      if (wapp->flags.is_gnustep) {
+        fprintf(stderr, "[WM] GNUstep app  %s", wapp->main_window_desc->wm_instance);
+        if (wapp->menu_win) {
+          WMAddToArray(windows, wapp->menu_win);
+          fprintf(stderr, "(menu)");
+        }
+        else if (wapp->app_icon->icon->owner)
+          WMAddToArray(windows, wapp->app_icon->icon->owner);
+        fprintf(stderr, "\n");
+      } else if (wapp->last_focused) {
+        fprintf(stderr, "[WM] X11 app  %s\n", wapp->main_window_desc->wm_instance);
+        WMAddToArray(windows, wapp->last_focused);
+      }
+      wapp = wapp->next;
+    }
+    fprintf(stderr, "[WM] window list array creation END\n");
+  }
+
   /* Mapped windows */
-	while (wwin) {
-		if ((canReceiveFocus(wwin) != 0) &&
-				(wwin->flags.mapped || wwin->flags.shaded || include_unmapped) &&
-				!WFLAGP(wwin, skip_switchpanel)) {
-			if (class_only) {
-				if (!sameWindowClass(scr->focused_window, wwin)) {
-					wwin = wwin->prev;
-					continue;
-				}
-			}
-			else if (alreadyAddedToArray(windows, wwin)) {
-				wwin = wwin->prev;
-				continue;
-			}
-			WMAddToArray(windows, wwin);
-		}
-		wwin = wwin->prev;
-	}
+  while (wwin) {
+    if ((canReceiveFocus(wwin) != 0) &&
+        (wwin->flags.mapped || wwin->flags.shaded || include_unmapped) &&
+        !WFLAGP(wwin, skip_switchpanel)) {
+      if (class_only) {
+        if (!sameWindowClass(scr->focused_window, wwin)) {
+          wwin = wwin->prev;
+          continue;
+        }
+      }
+      else if (alreadyAddedToArray(windows, wwin)) {
+        wwin = wwin->prev;
+        continue;
+      }
+      WMAddToArray(windows, wwin);
+    }
+    wwin = wwin->prev;
+  }
 
   /* Applications icons (docked included) */
-  if (class_only == False) {
+  /*  if (class_only == False) {
     WAppIcon *aicon = scr->app_icon_list;
     while (aicon) {
-      /* fprintf(stderr, "[WM] check appicon for %s.%s\n", aicon->wm_instance, aicon->wm_class); */
+      // fprintf(stderr, "[WM] check appicon for %s.%s\n", aicon->wm_instance, aicon->wm_class);
       if ((aicon->docked && aicon->running) || aicon->icon->owner) {
         wwin = aicon->icon->owner;
         
-        /* Skip Workspace icons: appicon and Recycler */
+        // Skip Workspace icons: appicon and Recycler
         if (!strcmp(wwin->wm_instance, "Workspace") || strcmp(aicon->wm_class, "GNUstep")) {
           aicon = aicon->next;
           continue;
@@ -421,12 +444,12 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
           aicon = aicon->next;
           continue;
         }
-        /* fprintf(stderr, "[WM] Adding app %s.%s\n", wwin->wm_instance, wwin->wm_class); */
+        // fprintf(stderr, "[WM] Adding app %s.%s\n", wwin->wm_instance, wwin->wm_class);
         WMAddToArray(windows, wwin);
       }
       aicon = aicon->next;
     }
-  }
+    }*/
   /* fprintf(stderr, "Switch panel window list prepared.\n"); */
   
 	return windows;
