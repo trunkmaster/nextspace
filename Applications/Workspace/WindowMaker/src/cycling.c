@@ -84,7 +84,6 @@ static WWindow *change_focus_and_raise(WWindow *newFocused, WWindow *oldFocused,
 
 void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 {
-
 	WShortKey binding;
 	WSwitchPanel    *swpanel       = NULL;
 	WScreen         *scr           = wScreenForRootWindow(event->xkey.root);
@@ -132,10 +131,10 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 
 	if (swpanel) {
 		if (wwin->flags.mapped && !wPreferences.panel_only_open) {
-			if (wwin->client_flags.skip_switchpanel || wwin->client_flags.skip_window_list) {
-				/* for GNUstep apps: main menu focus that is not in window focua list */
-				wSwitchPanelSelectFirst(swpanel, False);
-			}
+      /* for GNUstep apps: main menu focus that is not in window focus list */
+      if (wwin->flags.is_gnustep) {
+        wSwitchPanelSelectFirst(swpanel, False);
+      }
 			newFocused = wSwitchPanelSelectNext(swpanel, !next, True, class_only);
 		}
 		else {
@@ -256,6 +255,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 		wSwitchPanelDestroy(swpanel);
 
 	if (newFocused && !esc_cancel) {
+    WApplication *wapp;
     if (!strcmp(newFocused->wm_class, "GNUstep")) {
       dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
     }
@@ -266,6 +266,11 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
         wMakeWindowVisible(newFocused);
       
       wSetFocusTo(scr, newFocused);
+    }
+    
+    wapp = wApplicationOf(newFocused->main_window);
+    if (wapp && !class_only) {
+      wApplicationActivate(wapp);
     }
 	}
 
