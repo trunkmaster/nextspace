@@ -132,6 +132,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	Time timestamp = w_global.timestamp.last_event;
 	WApplication *oapp = NULL, *napp = NULL;
 	int wasfocused;
+  BOOL focus_succeeded = False;
 
   fprintf(stderr, "[WM] wSetFocusTo: %lu focused: %lu\n",
           (wwin && wwin->client_win) ? wwin->client_win : 0,
@@ -210,14 +211,17 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		case WFM_PASSIVE:
 		case WFM_LOCALLY_ACTIVE:
 			XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
+      focus_succeeded = True;
 			break;
 		case WFM_GLOBALLY_ACTIVE:
 			break;
 		}
 
 		XFlush(dpy);
-		if (wwin->protocols.TAKE_FOCUS)
+		if (wwin->protocols.TAKE_FOCUS) {
 			wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+      focus_succeeded = True;
+    }
 
 		XSync(dpy, False);
 	} else {
@@ -242,19 +246,21 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		wwin->next = NULL;
 		scr->focused_window = wwin;
 
-    /* remember last workspace and focused window of application */
-    if (napp) {
-      napp->last_focused = wwin;
-      napp->last_workspace = scr->current_workspace;
-      /* napp->last_workspace = wwin->frame->workspace; */
-    }
-
 		if (oapp && oapp != napp) {
 			wAppMenuUnmap(oapp->menu);
 			if (wPreferences.highlight_active_app)
 				wApplicationDeactivate(oapp);
 		}
 	}
+
+	if (napp && focus_succeeded == True) {
+    if (wwin != NULL) {
+      wApplicationActivate(napp);
+    }
+    /* remember last workspace and focused window of application */
+    napp->last_focused = wwin;
+    napp->last_workspace = scr->current_workspace;
+  }
 
 	wWindowFocus(wwin, focused);
 
@@ -266,8 +272,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		if (wwin->flags.mapped)
 			wAppMenuMap(napp->menu, wwin);
 	}
-	if (napp && wPreferences.highlight_active_app)
-		wApplicationActivate(napp);
 
 	XFlush(dpy);
 	old_scr = scr;
