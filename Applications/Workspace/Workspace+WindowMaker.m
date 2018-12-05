@@ -1638,10 +1638,6 @@ void XWActivateWorkspaceApp(WScreen *scr)
 
 void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
 {
-  if (!focused_window || !strcmp(focused_window->wm_instance, "Workspace")) {
-    XWActivateWorkspaceApp(scr);
-  }
-  
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
                                      withObject:nil
                                   waitUntilDone:YES];
