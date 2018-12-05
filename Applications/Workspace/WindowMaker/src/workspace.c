@@ -477,8 +477,10 @@ void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
 {
   WWindow *saved_wwin;
     
-  fprintf(stderr, "[WM] save focused window %lu to workspace %i\n",
-          wwin->client_win, workspace);
+  fprintf(stderr, "[WM] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
+          wwin->client_win, wwin->wm_instance, wwin->wm_class,
+          wwin->old_geometry.width, wwin->old_geometry.height,
+          workspace);
   
   if (scr->workspaces[workspace]->focused_window) {
     wrelease(scr->workspaces[workspace]->focused_window);
@@ -519,8 +521,10 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 	scr->last_workspace = scr->current_workspace;
 	scr->current_workspace = workspace;
 
-	wWorkspaceMenuUpdate(scr, scr->workspace_menu);
-	wWorkspaceMenuUpdate(scr, scr->clip_ws_menu);
+  /* This 2 lines below produce FocusOut event. In GNUstep applications it looks 
+     like focus switch from focused window to self. */
+	/* wWorkspaceMenuUpdate(scr, scr->workspace_menu); */
+	/* wWorkspaceMenuUpdate(scr, scr->clip_ws_menu); */
 
 	tmp = scr->focused_window;
 	if (tmp != NULL) {
@@ -537,13 +541,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		toMapCount = 0;
 		toMap = wmalloc(toMapSize * sizeof(WWindow *));
     
-    fprintf(stderr, "[WM] current focused window: %lu, %s.%s (%i x %i)\n",
-            tmp->client_win, tmp->wm_instance, tmp->wm_class,
-            tmp->old_geometry.width, tmp->old_geometry.height);
-    
-		/* foc2 = tmp; will fix annoyance with gnome panel
-		 * but will create annoyance for every other application
-		 */
 		while (tmp) {
 			if (tmp->frame->workspace != workspace && !tmp->flags.selected) /* Unmap */ {
         /* manage unmap list */
@@ -592,9 +589,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 						if (!(tmp->flags.mapped || tmp->flags.miniaturized)) {
 							/* remap windows that are on this workspace */
               toMap[toMapCount++] = tmp;
-							/* if (!foc && !WFLAGP(tmp, no_focusable)) { */
-							/* 	foc = tmp; */
-							/* } */
 						}
 						/* Also map miniwindow if not omnipresent */
 						if (!wPreferences.sticky_icons &&
@@ -626,7 +620,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		ProcessPendingEvents();
 		scr->flags.ignore_focus_events = 0;
 
-    /* At this point `foc` can hold random selected window */
+    /* At this point `foc` can hold random selected window or `NULL` */
     if (!foc && scr->workspaces[workspace]->focused_window) {
       foc = scr->workspaces[workspace]->focused_window;
       fprintf(stderr, "[WM] SAVED focused window: %lu, %s.%s\n",
@@ -663,15 +657,15 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 		if (wPreferences.focus_mode == WKF_CLICK) {
       if (foc) {
         /* Mapped window found earlier. */
-        fprintf(stderr, "[WM] focusing existing window %lu...\n", foc->client_win);
-        wSetFocusTo(scr, foc);
+        fprintf(stderr, "[WM] focusing managed window %lu...\n", foc->client_win);
         wRaiseFrame(foc->frame->core);
       }
-      else if (scr->workspaces[workspace]->focused_window) {
-        /* No mapped window to focus. If window was saved for this workspace - use it. */
-        foc = scr->workspaces[workspace]->focused_window;
-        fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win);
-      }
+      wSetFocusTo(scr, foc);
+      /* else if (scr->workspaces[workspace]->focused_window) { */
+      /*   /\* No mapped window to focus. If window was saved for this workspace - use it. *\/ */
+      /*   foc = scr->workspaces[workspace]->focused_window; */
+      /*   fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win); */
+      /* } */
       
       dispatch_sync(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
 		}
@@ -725,6 +719,9 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 	wScreenUpdateUsableArea(scr);
 	wNETWMUpdateDesktop(scr);
 	showWorkspaceName(scr, workspace);
+
+  /* Workspace switch completed */
+  scr->last_workspace = workspace;
 
 	WMPostNotificationName(WMNWorkspaceChanged, scr, (void *)(uintptr_t) workspace);
 
