@@ -288,6 +288,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
     wa->next = wapp;
     wapp->prev = wa;
     wapp->next = NULL;
+    wApplicationMakeFirst(wapp);
   }
 
   fprintf(stderr, "[WM] WApplication `%s` was created! Prev `%s` Next `%s`\n",
@@ -367,10 +368,24 @@ void wApplicationDestroy(WApplication *wapp)
 
 void wApplicationActivate(WApplication *wapp)
 {
-	if (wapp->app_icon) {
+  WScreen *scr = wapp->main_window_desc->screen_ptr;
+
+  fprintf(stderr, "[WM] wApplicationActivate %s current WS:%i app WS:%i\n",
+          wapp->main_window_desc->wm_instance, scr->current_workspace,
+          wapp->last_workspace);
+  
+	if (wapp->app_icon && wPreferences.highlight_active_app) {
 		wIconSetHighlited(wapp->app_icon->icon, True);
 		wAppIconPaint(wapp->app_icon);
 	}
+  
+  if (wapp->last_workspace != scr->current_workspace) {
+    if (wapp->last_focused) {
+      wWorkspaceSaveFocusedWindow(scr, wapp->last_workspace, wapp->last_focused);
+    }
+    wWorkspaceChange(scr, wapp->last_workspace);
+  }
+  wApplicationMakeFirst(wapp);
 }
 
 void wApplicationDeactivate(WApplication *wapp)
@@ -379,4 +394,38 @@ void wApplicationDeactivate(WApplication *wapp)
 		wIconSetHighlited(wapp->app_icon->icon, False);
 		wAppIconPaint(wapp->app_icon);
 	}
+}
+
+void wApplicationMakeFirst(WApplication *wapp)
+{
+  WScreen *scr = wapp->main_window_desc->screen_ptr;
+  WApplication *first_wapp, *app;
+  
+  if (!scr->wapp_list || !scr->wapp_list->next || wapp == scr->wapp_list)
+    return;
+
+  /* Change application list order */
+  // connect prev <-> next
+  if (wapp->prev)
+    wapp->prev->next = wapp->next;
+  if (wapp->next)
+    wapp->next->prev = wapp->prev;
+  
+  // place `wapp` to the first place in wapp_list
+  first_wapp = scr->wapp_list;
+  first_wapp->prev = wapp;
+  
+  wapp->prev = NULL;
+  wapp->next = first_wapp;
+  
+  scr->wapp_list = wapp;
+  fprintf(stderr, "[WM, wApplicationMakeFirst] %s. Application list:",
+          wapp->main_window_desc->wm_instance);
+
+  app = scr->wapp_list;
+  while (app) {
+    fprintf(stderr, ", %s", app->main_window_desc->wm_instance);
+    app = app->next;
+  }
+  fprintf(stderr, "\n");
 }
