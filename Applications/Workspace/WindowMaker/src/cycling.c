@@ -255,23 +255,21 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 		wSwitchPanelDestroy(swpanel);
 
 	if (newFocused && !esc_cancel) {
-    WApplication *wapp;
+    WApplication *wapp = wApplicationOf(newFocused->main_window);
+    if (wapp && !class_only) {
+      wApplicationActivate(wapp);
+    }
     if (!strcmp(newFocused->wm_class, "GNUstep")) {
-      dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
+      wSetFocusTo(scr, newFocused);
+      /* dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);}); */
     }
     if (newFocused->frame) {
       wRaiseFrame(newFocused->frame->core);
       CommitStacking(scr);
       if (!newFocused->flags.mapped)
         wMakeWindowVisible(newFocused);
-      
       wSetFocusTo(scr, newFocused);
-    }
-    
-    wapp = wApplicationOf(newFocused->main_window);
-    if (wapp && !class_only) {
-      wApplicationActivate(wapp);
-    }
+    }    
 	}
 
 	scr->flags.doing_alt_tab = 0;
