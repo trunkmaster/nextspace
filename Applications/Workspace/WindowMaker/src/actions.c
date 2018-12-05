@@ -253,10 +253,8 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		}
 	}
 
-	if (napp && focus_succeeded == True) {
-    if (wwin != NULL) {
-      wApplicationActivate(napp);
-    }
+	if (napp && focus_succeeded == True && wwin != NULL) {
+    wApplicationMakeFirst(napp);
     /* remember last workspace and focused window of application */
     napp->last_focused = wwin;
     napp->last_workspace = scr->current_workspace;
