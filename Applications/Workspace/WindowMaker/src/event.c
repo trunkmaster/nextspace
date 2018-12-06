@@ -1455,10 +1455,12 @@ static void handleFocusIn(XEvent * event)
 
 	wwin = wWindowFor(event->xfocus.window);
 	if (wwin && !wwin->flags.focused) {
-		if (wwin->flags.mapped)
+		if (wwin->flags.mapped) {
 			wSetFocusTo(wwin->screen_ptr, wwin);
-		else
+			wRaiseFrame(wwin->frame->core);
+		} else {
 			wSetFocusTo(wwin->screen_ptr, NULL);
+    }
 	} else if (!wwin) {
 		WScreen *scr = wScreenForWindow(event->xfocus.window);
 		if (scr)
