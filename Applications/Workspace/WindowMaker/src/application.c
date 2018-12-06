@@ -421,12 +421,13 @@ void wApplicationMakeFirst(WApplication *wapp)
   wapp->next = first_wapp;
   
   scr->wapp_list = wapp;
-  fprintf(stderr, "[WM] wApplicationMakeFirst: %s. Application list:",
+  fprintf(stderr, "[WM] wApplicationMakeFirst: %s. Application list: ",
           wapp->main_window_desc->wm_instance);
 
   app = scr->wapp_list;
   while (app) {
-    fprintf(stderr, ", %s", app->main_window_desc->wm_instance);
+    fprintf(stderr, "%s%s", app->main_window_desc->wm_instance,
+            app->next ? ", " : "");
     app = app->next;
   }
   fprintf(stderr, "\n");
