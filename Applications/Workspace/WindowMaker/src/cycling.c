@@ -259,18 +259,16 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
     if (wapp && !class_only) {
       wApplicationActivate(wapp);
     }
-    if (!strcmp(newFocused->wm_class, "GNUstep")) {
-      wSetFocusTo(scr, newFocused);
-      /* dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);}); */
-    }
     if (newFocused->frame) {
       wRaiseFrame(newFocused->frame->core);
       CommitStacking(scr);
       if (!newFocused->flags.mapped)
         wMakeWindowVisible(newFocused);
+    }
+    else {
       wSetFocusTo(scr, newFocused);
-    }    
-	}
+    }
+ 	}
 
 	scr->flags.doing_alt_tab = 0;
 
