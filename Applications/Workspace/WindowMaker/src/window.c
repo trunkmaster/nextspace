@@ -613,6 +613,8 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 	Bool withdraw = False;
 	Bool raise = False;
 
+  fprintf(stderr, "[WM] will manage window:%lu\n", window);
+
 	/* mutex. */
 	XGrabServer(dpy);
 	XSync(dpy, False);
@@ -771,10 +773,10 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 		wwin->client_flags.shared_appicon = 0;
 
 	if (wwin->main_window) {
-            WApplication *app = wApplicationOf(wwin->main_window);
-            if (app && app->app_icon)
-		wwin->client_flags.shared_appicon = 0;
-        }
+		WApplication *app = wApplicationOf(wwin->main_window);
+		if (app && app->app_icon)
+			wwin->client_flags.shared_appicon = 0;
+	}
 
 	if (!withdraw && wwin->main_window && WFLAGP(wwin, shared_appicon)) {
 		char *buffer, *instance, *class;
@@ -1344,8 +1346,8 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 	if (withdraw) {
 		wwin->flags.mapped = 0;
 		wClientSetState(wwin, WithdrawnState, None);
-		wUnmanageWindow(wwin, True, False);
-		wwin = NULL;
+    wUnmanageWindow(wwin, True, False);
+    wwin = NULL;
 	}
 
 	return wwin;
@@ -1493,6 +1495,8 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 	int wasFocused;
 	WScreen *scr = wwin->screen_ptr;
 
+  fprintf(stderr, "[WM] will unmanage window:%lu\n", wwin->client_win);
+  
 	/* First close attribute editor window if open */
 	if (wwin->flags.inspector_open)
 		wCloseInspectorForWindow(wwin);
@@ -1741,7 +1745,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
 	wwin->flags.semi_focused = 0;
 
-	if (wwin->flags.is_gnustep == 0 || !wwin->wm_class || strcmp(wwin->wm_class, "GNUstep"))
+	if (wwin->flags.is_gnustep == 0)
 		wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
 
 	wwin->flags.focused = 1;
@@ -1795,7 +1799,7 @@ void wWindowUnfocus(WWindow *wwin)
 {
 	CloseWindowMenu(wwin->screen_ptr);
 
-	if (wwin->flags.is_gnustep == 0 || !wwin->wm_class || strcmp(wwin->wm_class, "GNUstep"))
+	if (wwin->flags.is_gnustep == 0)
 		wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
 
 	if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
@@ -3001,9 +3005,9 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   /*         wXModifierFromKey("MOD4")); */
 
 	if (wPreferences.focus_mode == WKF_CLICK &&
-      !(event->xbutton.state & MOD_MASK) && // Mod4, Alternate
-      !(event->xbutton.state & ALT_MOD_MASK) && // Mod1, Command
-	    !WFLAGP(wwin, no_focusable))
+      !(event->xbutton.state & MOD_MASK) && // not Mod4, Alternate
+      !(event->xbutton.state & ALT_MOD_MASK) && // not Mod1, Command
+	    !WFLAGP(wwin, no_focusable)) // focusable
 		wSetFocusTo(wwin->screen_ptr, wwin);
 
 	if (event->xbutton.button == Button1 || event->xbutton.button == Button2) {
