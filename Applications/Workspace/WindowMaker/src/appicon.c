@@ -711,10 +711,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 	unhideHere = (event->xbutton.state & ShiftMask);
 	/* go to the last workspace that the user worked on the app */
 	if (!unhideHere && wapp->last_workspace != scr->current_workspace) {
-    if (wapp->last_focused) {
-      wWorkspaceSaveFocusedWindow(scr, wapp->last_workspace, wapp->last_focused);
-    }
-		wWorkspaceChange(scr, wapp->last_workspace);
+    wApplicationActivate(wapp);
   }
 
 	wUnhideApplication(wapp, event->xbutton.button == Button2, unhideHere);
