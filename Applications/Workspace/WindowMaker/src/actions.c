@@ -130,9 +130,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	WWindow *old_focused;
 	WWindow *focused = scr->focused_window;
 	Time timestamp = w_global.timestamp.last_event;
-	WApplication *oapp = NULL, *napp = NULL;
+	WApplication *oapp = NULL, *napp = NULL, *wsapp = NULL;
 	int wasfocused;
   BOOL focus_succeeded = False;
+  Window ws_menu_win = 0;
 
   fprintf(stderr, "[WM] wSetFocusTo: %lu focused: %lu\n",
           (wwin && wwin->client_win) ? wwin->client_win : 0,
@@ -172,9 +173,18 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	if (old_focused)
 		oapp = wApplicationOf(old_focused->main_window);
 
+  // TDDO: hold Workspace main menu in WScreen
+  wsapp = wApplicationWithName(scr, "Workspace");
+  if (wsapp && wsapp->menu_win) {
+    ws_menu_win = wsapp->menu_win->client_win;
+    fprintf(stderr, "[WM] Workspace menu window:%lu\n", ws_menu_win);
+  }
+  
 	if (wwin == NULL) {
-    XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(scr); });
+		if (ws_menu_win)
+      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
+    else
+      XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
 		if (old_focused)
 			wWindowUnfocus(old_focused);
 
@@ -205,8 +215,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		/* set input focus */
 		switch (wwin->focus_mode) {
 		case WFM_NO_INPUT:
-			XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-      dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(scr); });
+      if (ws_menu_win)
+        wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
+      else
+        XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
 			break;
 		case WFM_PASSIVE:
 		case WFM_LOCALLY_ACTIVE:
@@ -225,8 +237,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
 		XSync(dpy, False);
 	} else {
-		XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-    dispatch_async(workspace_q, ^{ XWActivateWorkspaceApp(scr); });
+    if (ws_menu_win)
+      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
+    else
+      XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
 	}
 
 	if (WFLAGP(wwin, no_focusable))

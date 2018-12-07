@@ -57,6 +57,7 @@ void wApplicationAddWindow(WApplication *wapp, struct WWindow *wwin);
 void wApplicationRemoveWindow(WApplication *wapp, struct WWindow *wwin);
 
 WApplication *wApplicationCreate(struct WWindow *wwin);
+WApplication *wApplicationWithName(WScreen *scr, char *app_name);
 WApplication *wApplicationOf(Window window);
 void wApplicationDestroy(WApplication *wapp);
 

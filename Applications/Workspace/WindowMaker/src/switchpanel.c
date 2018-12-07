@@ -381,7 +381,7 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
 #include <stdio.h>
 static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool class_only)
 {
-	WMArray *windows = WMCreateArray(10);
+	WMArray *windows = WMCreateArray(1);
 	WWindow *wwin = scr->focused_window;
 
   /* WApplications */
@@ -390,7 +390,7 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
     WApplication *wapp = scr->wapp_list;
     while (wapp) {
       if (wapp->flags.is_gnustep) {
-        fprintf(stderr, "[WM] GNUstep app  %s", wapp->main_window_desc->wm_instance);
+        fprintf(stderr, "[WM] GNUstep app - %s", wapp->main_window_desc->wm_instance);
         if (wapp->menu_win) {
           WMAddToArray(windows, wapp->menu_win);
           fprintf(stderr, "(menu)");
@@ -399,7 +399,7 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
           WMAddToArray(windows, wapp->app_icon->icon->owner);
         fprintf(stderr, "\tWindow count:%i\n", WMGetArrayItemCount(wapp->windows));
       } else if (wapp->last_focused) {
-        fprintf(stderr, "[WM] X11 app  %s\n", wapp->main_window_desc->wm_instance);
+        fprintf(stderr, "[WM] X11 app - %s\n", wapp->main_window_desc->wm_instance);
         WMAddToArray(windows, wapp->last_focused);
       }
       wapp = wapp->next;
@@ -427,31 +427,6 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
     wwin = wwin->prev;
   }
 
-  /* Applications icons (docked included) */
-  /*  if (class_only == False) {
-    WAppIcon *aicon = scr->app_icon_list;
-    while (aicon) {
-      // fprintf(stderr, "[WM] check appicon for %s.%s\n", aicon->wm_instance, aicon->wm_class);
-      if ((aicon->docked && aicon->running) || aicon->icon->owner) {
-        wwin = aicon->icon->owner;
-        
-        // Skip Workspace icons: appicon and Recycler
-        if (!strcmp(wwin->wm_instance, "Workspace") || strcmp(aicon->wm_class, "GNUstep")) {
-          aicon = aicon->next;
-          continue;
-        }
-        else if (alreadyAddedToArray(windows, wwin)) {
-          aicon = aicon->next;
-          continue;
-        }
-        // fprintf(stderr, "[WM] Adding app %s.%s\n", wwin->wm_instance, wwin->wm_class);
-        WMAddToArray(windows, wwin);
-      }
-      aicon = aicon->next;
-    }
-    }*/
-  /* fprintf(stderr, "Switch panel window list prepared.\n"); */
-  
 	return windows;
 }
 
