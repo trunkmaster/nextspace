@@ -642,7 +642,10 @@ static void handleMapRequest(XEvent * ev)
                wwin->flags.is_gnustep && wwin->flags.mapped == 0) {
       /* GNUstep app main menu window is managed but unmapped */
       WApplication *wapp = wApplicationOf(wwin->main_window);
-      int last_focused_mapped = wapp->last_focused->flags.mapped;
+      int last_focused_mapped = 0;
+
+      if (wapp->last_focused)
+        last_focused_mapped = wapp->last_focused->flags.mapped;
       
       wWindowMap(wwin);
       if (last_focused_mapped == 0)
