@@ -1,6 +1,30 @@
 --- gnustep-gui-0.24.1.orig/Source/NSApplication.m	2015-03-27 23:33:24.000000000 +0200
-+++ gnustep-gui-0.24.1/Source/NSApplication.m	2016-11-13 04:13:22.654949748 +0200
-@@ -1334,6 +1335,13 @@
++++ gnustep-gui-0.24.1/Source/NSApplication.m	2018-12-08 01:50:15.358727951 +0200
+@@ -433,6 +433,11 @@
+   return NO;
+ }
+ 
++- (BOOL) becomesKeyOnlyIfNeeded
++{
++  return YES;
++}
++
+ - (BOOL) worksWhenModal
+ {
+   return YES;
+@@ -541,6 +546,11 @@
+   return YES;
+ }
+ 
++- (BOOL) needsPanelToBecomeKey
++{
++  return NO;
++}
++
+ - (void) concludeDragOperation: (id<NSDraggingInfo>)sender
+ {
+ }
+@@ -1334,6 +1344,13 @@
            postNotificationName: NSApplicationDidBecomeActiveNotification
  		      object: [NSWorkspace sharedWorkspace]
            userInfo: info];
