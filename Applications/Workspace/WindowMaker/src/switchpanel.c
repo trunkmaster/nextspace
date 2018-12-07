@@ -397,7 +397,7 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
         }
         else if (wapp->app_icon->icon->owner)
           WMAddToArray(windows, wapp->app_icon->icon->owner);
-        fprintf(stderr, "\n");
+        fprintf(stderr, "\tWindow count:%i\n", WMGetArrayItemCount(wapp->windows));
       } else if (wapp->last_focused) {
         fprintf(stderr, "[WM] X11 app  %s\n", wapp->main_window_desc->wm_instance);
         WMAddToArray(windows, wapp->last_focused);
