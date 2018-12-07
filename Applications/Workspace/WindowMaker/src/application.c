@@ -3,6 +3,7 @@
  *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 1998-2003 Dan Pascu
+ *  Copyright (c) 2015-2018 Sergii Stoian
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +29,7 @@
 #include "window.h"
 #ifdef USER_MENU
 #include "usermenu.h"
-#endif				/* USER_MENU */
+#endif /* USER_MENU */
 #include "appicon.h"
 #include "application.h"
 #include "appmenu.h"
@@ -62,7 +63,7 @@ static WWindow *makeMainWindow(WScreen * scr, Window window)
 	PropGetWMClass(window, &wwin->wm_class, &wwin->wm_instance);
 
 	wDefaultFillAttributes(wwin->wm_instance, wwin->wm_class, &wwin->user_flags,
-			       &wwin->defined_user_flags, True);
+                         &wwin->defined_user_flags, True);
 
 	XSelectInput(dpy, window, attr.your_event_mask | PropertyChangeMask | StructureNotifyMask);
 	return wwin;
@@ -79,80 +80,19 @@ WApplication *wApplicationOf(Window window)
 	return wapp;
 }
 
-void wApplicationPrintWindowList(WApplication *wapp)
-{
-  WMArray *window_list = wapp->windows;
-  int window_count = WMGetArrayItemCount(window_list);
-  WWindow *wwin;
-  char *window_type = NULL;
-
-  fprintf(stderr, "[WM] window list of application: %s\n", wapp->app_icon->wm_instance);
-  for (int i = 0; i < window_count; i++) {
-    wwin = WMGetFromArray(window_list, i);
-    if (wwin) {
-      switch (WINDOW_LEVEL(wwin)) {
-      case WMNormalLevel:
-        window_type = "Normal";
-        break;
-      case WMFloatingLevel:
-        window_type = "Floating";
-        break;
-      case WMDockLevel:
-        window_type = "Dock";
-        break;
-      case WMSubmenuLevel:
-        window_type = "Submenu";
-        break;
-      case WMMainMenuLevel:
-        window_type = "Main Menu";
-        break;
-      case WMStatusLevel:
-        window_type = "Status";
-        break;
-      case WMModalLevel:
-        window_type = "Modal";
-        break;
-      case WMPopUpLevel:
-        window_type = "PopUp";
-        break;
-      default:
-        window_type = "Unknown";
-      }
-      fprintf(stderr, "\tID: %lu Type: %s\n", wwin->client_win, window_type);
-    }
-  }
-}
-
 BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
 {
-  return True;
+  WMArray *windows = wapp->windows;
+  WWindow *w;
+
+  for (unsigned i = 0; i < WMGetArrayItemCount(windows); i++) {
+    w = WMGetFromArray(windows, i);
+    if (w == wwin)
+      return True;
+  }
+  
+  return False;
 }
-
-/* 
-   New functionality: GNUstep applications special handling.
-
-   On application start wApplicationCreate() is called:
-   - creates wapp->windows array
-   - adds `wwin` to this array
-   - saved `wwin` to `wapp->menu_win` if it's main menu (normally it is)
-
-   When new window opens (MapRequest, MapNotify) wApplicationAdd() is called:
-   - adds `wwin` into `wapp->windows` array
-   - wapp->refcount++
-
-   When window is closed (UnmapNotify) and window is not main menu
-   wApplicationRemoveWindow() is called:
-   - removes `wwin` from `wapp->windows` array
-   - wapp->refcount--
-
-   When application quits (DestroyNotify):
-   - several calls to wApplicationRemoveWindow() is performed
-   - wApplicationDestroy() is called:
-     - wUnmanageWindow for wapp->menu_win is called
-     - wapp->windows array destroyed
-     - wapp->refcount--
-     - `wapp` is freed
-*/
 
 void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
 {
@@ -166,19 +106,18 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
     wDockFinishLaunch(wapp->app_icon);
   }
 
-  if (window_level == WMMainMenuLevel) {
+  if (_isWindowAlreadyRegistered(wapp, wwin))
+    return;
+
+  if (window_level == WMMainMenuLevel)
     wapp->menu_win = wwin;
-  }
   
   /* Do not add short-living objects to window list: tooltips, submenus, popups, etc. */
-  if (window_level != WMNormalLevel && window_level != WMFloatingLevel) {
+  if (window_level != WMNormalLevel && window_level != WMFloatingLevel)
     return;
-  }
 
   WMAddToArray(wapp->windows, wwin);
   wapp->refcount++;
-  
-  /* wApplicationPrintWindowList(wapp); */
   
 #ifdef NEXTSPACE
   dispatch_sync(workspace_q, ^{ XWApplicationDidAddWindow(wapp, wwin); });
@@ -234,13 +173,15 @@ WApplication *wApplicationCreate(WWindow * wwin)
 	wapp = wmalloc(sizeof(WApplication));
 
   wapp->windows = WMCreateArray(1);
-  wApplicationAddWindow(wapp, wwin);
 
-  wapp->flags.is_gnustep = wwin->flags.is_gnustep;
 	wapp->refcount = 1;
 	wapp->last_focused = NULL;
 	wapp->urgent_bounce_timer = NULL;
+  wapp->menu_win = NULL;
+  wapp->flags.is_gnustep = wwin->flags.is_gnustep;
 
+  wApplicationAddWindow(wapp, wwin);
+  
 	wapp->last_workspace = wwin->screen_ptr->current_workspace;
 
 	wapp->main_window = main_window;
@@ -272,10 +213,6 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
 	create_appicon_for_application(wapp, wwin);
 
-#ifdef NEXTSPACE
-	dispatch_sync(workspace_q, ^{ XWApplicationDidCreate(wapp, wwin); });
-#endif
-
   if (!scr->wapp_list) {
     scr->wapp_list = wapp;
     wapp->prev = NULL;
@@ -296,7 +233,24 @@ WApplication *wApplicationCreate(WWindow * wwin)
           wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
           wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
         
+#ifdef NEXTSPACE
+	dispatch_sync(workspace_q, ^{ XWApplicationDidCreate(wapp, wwin); });
+#endif
+
 	return wapp;
+}
+
+WApplication *wApplicationWithName(WScreen *scr, char *app_name)
+{
+  WApplication *app = scr->wapp_list;
+  
+  while (app) {
+    if (!strcmp(app->main_window_desc->wm_instance, app_name))
+      return app;
+    app = app->next;
+  }
+
+  return NULL;
 }
 
 void wApplicationDestroy(WApplication *wapp)
