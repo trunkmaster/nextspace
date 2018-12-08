@@ -259,16 +259,16 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
     if (wapp && !class_only) {
       wApplicationActivate(wapp);
     }
-    if (newFocused->frame) {
+    if (wapp && wapp->flags.is_gnustep) {
+      dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
+    }
+    else if (newFocused->frame) {
       wRaiseFrame(newFocused->frame->core);
       CommitStacking(scr);
       if (!newFocused->flags.mapped)
         wMakeWindowVisible(newFocused);
       else
         wSetFocusTo(scr, newFocused);
-    }
-    else if (wapp && wapp->flags.is_gnustep) {
-      dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
     }
     else {
       wSetFocusTo(scr, newFocused);
