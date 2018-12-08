@@ -264,6 +264,8 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
       CommitStacking(scr);
       if (!newFocused->flags.mapped)
         wMakeWindowVisible(newFocused);
+      else
+        wSetFocusTo(scr, newFocused);
     }
     else if (wapp && wapp->flags.is_gnustep) {
       dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
