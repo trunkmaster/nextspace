@@ -4029,10 +4029,9 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
 		wMenuUnmap(dock->menu);
 
 	if (IsDoubleClick(scr, event)) {
-		/* double-click was not in the main clip icon */
-		/* if (dock->type != WM_CLIP || aicon->xindex != 0 || aicon->yindex != 0 */
-		if (dock->type != WM_CLIP 
-		    || getClipButton(event->xbutton.x, event->xbutton.y) == CLIP_IDLE) {
+		/* double-click was not on the main Dock or Clip icon */
+    /*    || getClipButton(event->xbutton.x, event->xbutton.y) == CLIP_IDLE) { */
+		if (dock->type == WM_DOCK && aicon->yindex != 0) {
 			iconDblClick(desc, event);
 			return;
 		}
