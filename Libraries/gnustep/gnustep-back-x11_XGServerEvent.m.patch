@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerEvent.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-12-06 18:44:06.278701940 +0200
++++ gnustep-back-0.24.1/Source/x11/XGServerEvent.m	2018-12-08 01:56:22.864727136 +0200
 @@ -42,6 +42,7 @@
  #include <Foundation/NSUserDefaults.h>
  #include <Foundation/NSRunLoop.h>
@@ -184,7 +184,26 @@
          eventFlags = process_modifier_flags(xEvent.xbutton.state);
          // if pointer is grabbed use grab window
          xWin = (grabWindow == 0) ? xEvent.xbutton.window : grabWindow;
-@@ -511,14 +585,30 @@
+@@ -476,7 +550,7 @@
+                  */
+             if ((cWin->win_attrs.window_style
+               & (NSMiniWindowMask | NSIconWindowMask)) != 0
+-              && eventType == NSLeftMouseDown && clickCount == 1)
++                && eventType == NSLeftMouseDown /*&& clickCount == 1*/)
+               {
+                 if (cWin->parent == None)
+                   break;
+@@ -485,7 +559,8 @@
+                 XSendEvent(dpy, cWin->parent, True,
+                            ButtonPressMask, &xEvent);
+                 XFlush(dpy);
+-                break;
++                if (clickCount != 2)
++                  break;
+               }
+           }
+ 
+@@ -511,14 +586,30 @@
          [self setLastTime: xEvent.xbutton.time];
          if (xEvent.xbutton.button == generic.lMouse)
            {
@@ -219,7 +238,7 @@
            }
          else if (xEvent.xbutton.button == generic.mMouse
            && generic.mMouse != 0)
-@@ -621,6 +711,20 @@
+@@ -621,6 +712,20 @@
                                 data1: 0
                                 data2: 0];
                  }
@@ -240,7 +259,7 @@
                else if ((Atom)xEvent.xclient.data.l[0]
                  == generic.take_focus_atom)
                  {
-@@ -1099,6 +1203,7 @@
+@@ -1099,6 +1204,7 @@
        case FocusIn:
          NSDebugLLog(@"NSEvent", @"%lu FocusIn\n",
                      xEvent.xfocus.window);
@@ -248,7 +267,7 @@
          if (cWin == 0 || xEvent.xfocus.window != cWin->ident)
            {
              generic.cachedWindow
-@@ -1106,10 +1211,13 @@
+@@ -1106,10 +1212,13 @@
            }
          if (cWin == 0)
            break;
@@ -262,7 +281,7 @@
          if (xEvent.xfocus.serial == generic.focusRequestNumber)
            {
              /*
-@@ -1133,10 +1241,11 @@
+@@ -1133,10 +1242,11 @@
             * it's not one of ours.
             * If it has gone to our root window - use the icon window.
             * If it has gone to a window - we see if it is one of ours.
@@ -276,7 +295,7 @@
            if (fw != None && fw != PointerRoot)
              {
                generic.cachedWindow = [XGServer _windowForXWindow: fw];
-@@ -1144,7 +1253,7 @@
+@@ -1144,7 +1254,7 @@
                  {
                    generic.cachedWindow = [XGServer _windowForXParent: fw];
                  }
@@ -285,7 +304,7 @@
                  {
                    nswin = nil;
                  }
-@@ -1159,6 +1268,8 @@
+@@ -1159,6 +1269,8 @@
              }
            NSDebugLLog(@"Focus", @"Focus went to %lu (xwin %lu)\n", 
                        (nswin != nil) ? cWin->number : 0, fw);
@@ -294,7 +313,7 @@
  
            // Focus went to a window not in this application.
            if (nswin == nil)
-@@ -1291,6 +1402,7 @@
+@@ -1291,6 +1403,7 @@
        case MapNotify:
          NSDebugLLog(@"NSEvent", @"%lu MapNotify\n",
                      xEvent.xmap.window);
@@ -302,7 +321,7 @@
          if (cWin == 0 || xEvent.xmap.window != cWin->ident)
            {
              generic.cachedWindow
-@@ -1304,7 +1416,7 @@
+@@ -1304,7 +1417,7 @@
               * focus, re-do the request.
               */
              if (generic.desiredFocusWindow == cWin->number
@@ -311,7 +330,7 @@
                {
                  NSDebugLLog(@"Focus", @"Refocusing %lu on map notify", 
                              cWin->number);
-@@ -1322,6 +1434,7 @@
+@@ -1322,6 +1435,7 @@
        case UnmapNotify:
          NSDebugLLog(@"NSEvent", @"%lu UnmapNotify\n",
                      xEvent.xunmap.window);
@@ -319,7 +338,7 @@
          if (cWin == 0 || xEvent.xunmap.window != cWin->ident)
            {
              generic.cachedWindow
-@@ -1776,26 +1889,40 @@
+@@ -1776,26 +1890,40 @@
  {
    int key_num;
    NSWindow *key_win;
@@ -372,7 +391,7 @@
    /* We'd like to send this event directly to the front-end to handle,
       but the front-end polls events so slowly compared the speed at
       which X events could potentially come that we could easily get
-@@ -1807,30 +1934,77 @@
+@@ -1807,30 +1935,77 @@
           windows get hidden at once, and the WM is searching for a
           window to take focus after each one gets hidden. */
        NSDebugLLog(@"Focus", @"WM take focus while hiding");
@@ -459,7 +478,7 @@
        /*
         * Here the app asked for this (if key_win==nil) or there was a
         * click on the title bar or some other reason (window mapped,
-@@ -1838,17 +2012,18 @@
+@@ -1838,17 +2013,18 @@
         * last reason but we just have to deal with that since we can
         * never be sure if it's necessary.
         */
