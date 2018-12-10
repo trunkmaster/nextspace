@@ -61,6 +61,8 @@ static WWindow *makeMainWindow(WScreen * scr, Window window)
 	wwin->wm_hints = XGetWMHints(dpy, window);
 
 	PropGetWMClass(window, &wwin->wm_class, &wwin->wm_instance);
+	if (wwin->wm_class != NULL && strcmp(wwin->wm_class, "GNUstep") == 0)
+		wwin->flags.is_gnustep = 1;
 
 	wDefaultFillAttributes(wwin->wm_instance, wwin->wm_class, &wwin->user_flags,
                          &wwin->defined_user_flags, True);
@@ -175,7 +177,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
   wapp->windows = WMCreateArray(1);
 
 	wapp->refcount = 1;
-	wapp->last_focused = NULL;
+	wapp->last_focused = wwin;
 	wapp->urgent_bounce_timer = NULL;
   wapp->menu_win = NULL;
   wapp->flags.is_gnustep = wwin->flags.is_gnustep;
