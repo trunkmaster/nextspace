@@ -389,19 +389,27 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
     fprintf(stderr, "[WM] window list array creation BEGIN\n");
     WApplication *wapp = scr->wapp_list;
     while (wapp) {
+      WWindow *w = NULL;
+      fprintf(stderr, "[WM] Inspect application: ");
       if (wapp->flags.is_gnustep) {
-        fprintf(stderr, "[WM] GNUstep app - %s", wapp->main_window_desc->wm_instance);
         if (wapp->menu_win) {
-          WMAddToArray(windows, wapp->menu_win);
-          fprintf(stderr, "(menu)");
+          w = wapp->menu_win;
+          fprintf(stderr, "\t%s (menu: %lu)",  w->wm_instance, w->client_win);
         }
-        else if (wapp->app_icon->icon->owner)
-          WMAddToArray(windows, wapp->app_icon->icon->owner);
-        fprintf(stderr, "\tWindow count:%i\n", WMGetArrayItemCount(wapp->windows));
-      } else if (wapp->last_focused) {
-        fprintf(stderr, "[WM] X11 app - %s\n", wapp->main_window_desc->wm_instance);
-        WMAddToArray(windows, wapp->last_focused);
+        else {
+          w = wapp->main_window_desc;
+          fprintf(stderr, "\t%s (main window: %lu)", w->wm_instance, w->client_win);
+        }
       }
+      else if (WMGetArrayItemCount(wapp->windows) > 0) {
+        w = WMGetFromArray(wapp->windows, 0);
+        fprintf(stderr, "\t%s (window: %lu)", w->wm_instance, w->client_win);
+      }
+
+      if (w)
+        WMAddToArray(windows, w);
+      
+      fprintf(stderr, "\tWindow count:%i\n", WMGetArrayItemCount(wapp->windows));
       wapp = wapp->next;
     }
     fprintf(stderr, "[WM] window list array creation END\n");
