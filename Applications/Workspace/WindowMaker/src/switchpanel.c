@@ -402,7 +402,10 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
         }
       }
       else if (WMGetArrayItemCount(wapp->windows) > 0) {
-        w = WMGetFromArray(wapp->windows, 0);
+        if (wapp->last_focused)
+          w = wapp->last_focused;
+        else
+          w = WMGetFromArray(wapp->windows, 0);
         fprintf(stderr, "\t%s (window: %lu)", w->wm_instance, w->client_win);
       }
 
