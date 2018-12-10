@@ -406,25 +406,26 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
     }
     fprintf(stderr, "[WM] window list array creation END\n");
   }
-
-  /* Mapped windows */
-  while (wwin) {
-    if ((canReceiveFocus(wwin) != 0) &&
-        (wwin->flags.mapped || wwin->flags.shaded || include_unmapped) &&
-        !WFLAGP(wwin, skip_switchpanel)) {
-      if (class_only) {
-        if (!sameWindowClass(scr->focused_window, wwin)) {
+  else {
+    /* Mapped windows */
+    while (wwin) {
+      if ((canReceiveFocus(wwin) != 0) &&
+          (wwin->flags.mapped || wwin->flags.shaded || include_unmapped) &&
+          !WFLAGP(wwin, skip_switchpanel)) {
+        if (class_only) {
+          if (!sameWindowClass(scr->focused_window, wwin)) {
+            wwin = wwin->prev;
+            continue;
+          }
+        }
+        else if (alreadyAddedToArray(windows, wwin)) {
           wwin = wwin->prev;
           continue;
         }
+        WMAddToArray(windows, wwin);
       }
-      else if (alreadyAddedToArray(windows, wwin)) {
-        wwin = wwin->prev;
-        continue;
-      }
-      WMAddToArray(windows, wwin);
+      wwin = wwin->prev;
     }
-    wwin = wwin->prev;
   }
 
 	return windows;
