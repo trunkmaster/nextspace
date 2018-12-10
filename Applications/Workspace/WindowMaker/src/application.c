@@ -137,6 +137,8 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   for (int i = 0; i < window_count; i++) {
     awin = WMGetFromArray(wapp->windows, i);
     if (awin == wwin) {
+      if (wwin == wapp->last_focused)
+        wapp->last_focused = NULL;
       WMDeleteFromArray(wapp->windows, i);
       wapp->refcount--;
       break;
