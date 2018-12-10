@@ -1343,7 +1343,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
 	/* If the window must be withdrawed, then do it now.
 	 * Must do some optimization, 'though */
-	if (withdraw) {
+	if (withdraw && wwin->frame->core->stacking->window_level != WMMainMenuLevel) {
 		wwin->flags.mapped = 0;
 		wClientSetState(wwin, WithdrawnState, None);
     wUnmanageWindow(wwin, True, False);
@@ -1646,6 +1646,9 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 		if (wPreferences.highlight_active_app)
 			wApplicationDeactivate(oapp);
 	}
+  if (oapp) {
+    wApplicationRemoveWindow(oapp, wwin);
+  }
 
 	wNETCleanupFrameExtents(wwin);
 
