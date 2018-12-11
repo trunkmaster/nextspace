@@ -648,7 +648,7 @@ static void handleMapRequest(XEvent * ev)
         last_focused_mapped = wapp->last_focused->flags.mapped;
       
       wWindowMap(wwin);
-      if (last_focused_mapped == 0)
+      if (last_focused_mapped == 0 || wwin == wapp->menu_win)
         wSetFocusTo(scr, wwin);
     }
     
