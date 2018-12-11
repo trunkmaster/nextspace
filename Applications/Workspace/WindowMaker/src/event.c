@@ -1048,6 +1048,12 @@ static void handleUnmapNotify(XEvent * event)
        * root window */
       wUnmanageWindow(wwin, !reparented, False);
     }
+    else {
+      WApplication *wapp = wApplicationOf(wwin->main_window);
+      if (wapp && wapp->flags.hidden) {
+        wSetFocusTo(wwin->screen_ptr, NULL);
+      }
+    }
 	}
 	XUngrabServer(dpy);
 }
@@ -1649,6 +1655,8 @@ static void handleKeyPress(XEvent * event)
                         wwin->frame->core->width, wwin->frame->core->height,
                         wapp->app_icon->x_pos, wapp->app_icon->y_pos,
                         icon->core->width, icon->core->height);
+          wapp->flags.hidden = 1;
+          wapp->flags.skip_next_animation = 0;
           wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
                               event->xbutton.time);
         }
