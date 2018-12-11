@@ -257,7 +257,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
       wApplicationActivate(wapp);
     }
     if (wapp && wapp->flags.is_gnustep && !class_only) {
-      dispatch_sync(workspace_q, ^{XWActivateApplication(scr, newFocused->wm_instance);});
+      wSetFocusTo(scr, wapp->menu_win);
     }
     else if (newFocused->frame) {
       wRaiseFrame(newFocused->frame->core);
