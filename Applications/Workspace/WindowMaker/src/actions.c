@@ -181,10 +181,11 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   }
   
 	if (wwin == NULL) {
-		if (ws_menu_win)
+    if (ws_menu_win)
       wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
     else
       XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+    
 		if (old_focused)
 			wWindowUnfocus(old_focused);
 
@@ -193,7 +194,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 			if (wPreferences.highlight_active_app)
 				wApplicationDeactivate(oapp);
 		}
-
+    
 		WMPostNotificationName(WMNChangedFocus, NULL, (void *)True);
 		return;
 	}
@@ -201,13 +202,21 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	if (old_scr != scr && old_focused)
 		wWindowUnfocus(old_focused);
 
+  /* set focus to Workspace or no_focus_win */
+	if (WFLAGP(wwin, no_focusable)) {
+    if (ws_menu_win)
+      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
+    else
+      XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+
+		return;
+	}
+
 	wasfocused = wwin->flags.focused;
 	napp = wApplicationOf(wwin->main_window);
 
-	/* if (wwin->flags.mapped && !WFLAGP(wwin, no_focusable)) { */
   /* If it's GNUstep application focus may be set to yet unmapped main menu */
-	if ((wwin->flags.is_gnustep || wwin->flags.mapped) &&
-      !WFLAGP(wwin, no_focusable)) {
+	if (wwin->flags.is_gnustep || wwin->flags.mapped) {
 		/* install colormap if colormap mode is lock mode */
 		if (wPreferences.colormap_mode == WCM_CLICK)
 			wColormapInstallForWindow(scr, wwin);
@@ -215,7 +224,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		/* set input focus */
 		switch (wwin->focus_mode) {
 		case WFM_NO_INPUT:
-      if (ws_menu_win)
+      if (wwin->protocols.TAKE_FOCUS && ws_menu_win)
         wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
       else
         XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
@@ -236,19 +245,14 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     }
 
 		XSync(dpy, False);
-	} else {
-    if (ws_menu_win)
-      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
-    else
-      XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
 	}
+  else if (wwin->flags.shaded) {
+    /* XSetInputFocus(dpy, wwin->frame->core->window, RevertToParent, CurrentTime); */
+    XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
+  }
 
-	if (WFLAGP(wwin, no_focusable))
-		return;
-
-	/* if this is not the focused window focus it */
+	/* if this is not the focused window - change the focus window list order */
 	if (focused != wwin) {
-		/* change the focus window list order */
 		if (wwin->prev)
 			wwin->prev->next = wwin->next;
 
@@ -295,7 +299,7 @@ void wShadeWindow(WWindow *wwin)
 	if (wwin->flags.shaded)
 		return;
 
-	XLowerWindow(dpy, wwin->client_win);
+	/* XLowerWindow(dpy, wwin->client_win); */
 	shade_animate(wwin, SHADE);
 
 	wwin->flags.skip_next_animation = 0;
@@ -312,9 +316,7 @@ void wShadeWindow(WWindow *wwin)
 	wwin->client.y = wwin->frame_y - wwin->client.height + wwin->frame->top_width;
 	wWindowSynthConfigureNotify(wwin);
 
-	/*
-	   wClientSetState(wwin, IconicState, None);
-	 */
+  wClientSetState(wwin, IconicState, None);
 
 	WMPostNotificationName(WMNChangedState, wwin, "shade");
 
@@ -328,7 +330,6 @@ void wShadeWindow(WWindow *wwin)
 
 void wUnshadeWindow(WWindow *wwin)
 {
-
 	if (!wwin->flags.shaded)
 		return;
 
@@ -340,11 +341,13 @@ void wUnshadeWindow(WWindow *wwin)
 
 	wwin->flags.skip_next_animation = 0;
 	wFrameWindowResize(wwin->frame, wwin->frame->core->width,
-			   wwin->frame->top_width + wwin->client.height + wwin->frame->bottom_width);
+                     wwin->frame->top_width + wwin->client.height + wwin->frame->bottom_width);
 
 	wwin->client.y = wwin->frame_y + wwin->frame->top_width;
 	wWindowSynthConfigureNotify(wwin);
 
+  wClientSetState(wwin, NormalState, None);
+  
 	/* if the window is focused, set the focus again as it was disabled during
 	 * shading */
 	if (wwin->flags.focused)
