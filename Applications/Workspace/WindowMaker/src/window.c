@@ -2909,14 +2909,18 @@ static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
 					wUnmaximizeWindow(wwin);
 			}
 		}
-	} else if (event->xbutton.button == Button3) {
+	}
+  else if (event->xbutton.button == Button3) {
 		if (event->xbutton.state & MOD_MASK)
 			wHideOtherApplications(wwin);
-	} else if (event->xbutton.button == Button2) {
+	}
+  else if (event->xbutton.button == Button2) {
 		wSelectWindow(wwin, !wwin->flags.selected);
-	} else if (event->xbutton.button == W_getconf_mouseWheelUp()) {
+	}
+  else if (event->xbutton.button == W_getconf_mouseWheelUp()) {
 		wShadeWindow(wwin);
-	} else if (event->xbutton.button == W_getconf_mouseWheelDown()) {
+	}
+  else if (event->xbutton.button == W_getconf_mouseWheelDown()) {
 		wUnshadeWindow(wwin);
 	}
 }
@@ -2993,6 +2997,12 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
 	/* Parameter not used, but tell the compiler that it is ok */
 	(void) sender;
+
+  /* Mouse scroll up and down - do nothing.
+     Unfocused window can shaded without focus switch */
+	if (!event->xbutton.state &&
+      (event->xbutton.button == Button4 || event->xbutton.button == Button5))
+    return;
 
 #ifndef NUMLOCK_HACK
 	if ((event->xbutton.state & ValidModMask) != (event->xbutton.state & ~LockMask))
