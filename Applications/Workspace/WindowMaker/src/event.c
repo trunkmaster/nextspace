@@ -625,7 +625,7 @@ static void handleMapRequest(XEvent * ev)
 	wwin = wWindowFor(window);
 	if (wwin != NULL) {
     fprintf(stderr, "[WM] MapRequest %lu\n", wwin->client_win);
-		if (wwin->flags.shaded) {
+		if (!wwin->flags.is_gnustep && wwin->flags.shaded) {
 			wUnshadeWindow(wwin);
 		}
 		/* deiconify window */
@@ -1006,6 +1006,9 @@ static void handleUnmapNotify(XEvent * event)
 
 	/* only process windows with StructureNotify selected
 	 * (ignore SubstructureNotify) */
+  
+  fprintf(stderr, "[WM] handleUnmapNotify for window %lu.\n", event->xunmap.window);
+  
 	wwin = wWindowFor(event->xunmap.window);
 	if (!wwin)
 		return;

@@ -1748,7 +1748,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
 	wwin->flags.semi_focused = 0;
 
-	if (wwin->flags.is_gnustep == 0)
+	if (wwin->flags.is_gnustep == 0 || wwin->flags.shaded)
 		wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
 
 	wwin->flags.focused = 1;
