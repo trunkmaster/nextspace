@@ -544,8 +544,13 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
 
 			PropGetProtocols(wwin->client_win, &wwin->protocols);
 
-			wwin->client_flags.kill_close = !wwin->protocols.DELETE_WINDOW;
+      // WM_TAKE_FOCUS
+      if (wwin->protocols.TAKE_FOCUS)
+        wwin->client_flags.no_focusable = 0;
+      wwin->focus_mode = GetFocusMode(wwin);
 
+      // WM_DELETE_WINDOW
+			wwin->client_flags.kill_close = !wwin->protocols.DELETE_WINDOW;
 			if (wwin->frame)
 				wWindowUpdateButtonImages(wwin);
 
