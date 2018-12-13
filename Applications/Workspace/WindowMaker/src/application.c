@@ -99,6 +99,9 @@ BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
 void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
 {
   int window_level = WINDOW_LEVEL(wwin);
+
+  if (!wapp)
+    return;
   
   fprintf(stderr, "[WM wApplication] ADD window: %lu level:%i name: %s refcount=%i\n",
           wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
@@ -128,8 +131,13 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
 
 void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
 {
-  int window_count = WMGetArrayItemCount(wapp->windows);
+  int window_count;
   WWindow *awin;
+
+  if (!wapp)
+    return;
+  
+  window_count = WMGetArrayItemCount(wapp->windows);
 
   fprintf(stderr, "[WM wApplication] REMOVE window: %lu name: %s refcount=%i\n",
           wwin->client_win, wwin->wm_instance, wapp->refcount);
