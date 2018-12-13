@@ -76,7 +76,6 @@
 
 /***** Local Stuff *****/
 static WWindowState *windowState = NULL;
-static FocusMode getFocusMode(WWindow *wwin);
 static int getSavedState(Window window, WSavedState **state);
 static void setupGNUstepHints(WWindow *wwin, GNUstepWMAttributes *gs_hints);
 
@@ -736,7 +735,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 	}
 
 	/* guess the focus mode */
-	wwin->focus_mode = getFocusMode(wwin);
+	wwin->focus_mode = GetFocusMode(wwin);
 
 	/* get geometry stuff */
 	wClientGetNormalHints(wwin, &wattribs, True, &x, &y, &width, &height);
@@ -2559,7 +2558,7 @@ void wWindowSetShape(WWindow * wwin)
 
 /* ====================================================================== */
 
-static FocusMode getFocusMode(WWindow * wwin)
+FocusMode GetFocusMode(WWindow * wwin)
 {
 	FocusMode mode;
 

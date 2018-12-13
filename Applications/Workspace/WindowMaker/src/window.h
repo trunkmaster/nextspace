@@ -50,6 +50,7 @@ typedef enum {
     WFM_PASSIVE, WFM_NO_INPUT, WFM_LOCALLY_ACTIVE, WFM_GLOBALLY_ACTIVE
 } FocusMode;
 
+FocusMode GetFocusMode(struct WWindow *wwin);
 
 /*
  * window attribute flags.
