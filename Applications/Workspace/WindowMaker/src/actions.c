@@ -203,14 +203,23 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		wWindowUnfocus(old_focused);
 
   /* set focus to Workspace or no_focus_win */
-	if (WFLAGP(wwin, no_focusable)) {
-    if (ws_menu_win)
+  /*	if (WFLAGP(wwin, no_focusable)) {
+    fprintf(stderr, "[WM] window %lu (transient for:%lu) is not focusable: ",
+            wwin->client_win, wwin->transient_for);
+    if (wwin->protocols.TAKE_FOCUS) {
+      fprintf(stderr, "but supports TAKE_FOCUS.\n");
+      wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+    }
+    else if (ws_menu_win) {
+      fprintf(stderr, "::: setting focus to Workspace.\n");
       wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
-    else
+    }
+    else {
+      fprintf(stderr, "::: setting focus to `no_focus_win`.\n");
       XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-
-		return;
-	}
+    }
+    return;
+    }*/
 
 	wasfocused = wwin->flags.focused;
 	napp = wApplicationOf(wwin->main_window);
@@ -223,33 +232,38 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
 		/* set input focus */
 		switch (wwin->focus_mode) {
-		case WFM_NO_INPUT:
-      if (wwin->protocols.TAKE_FOCUS && ws_menu_win)
-        wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
-      else
-        XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+		case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
+      fprintf(stderr, "[WM] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win);
+      return;
+      /* if (ws_menu_win) */
+      /*   wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp); */
+      /* else */
+      /*   XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime); */
 			break;
-		case WFM_PASSIVE:
-		case WFM_LOCALLY_ACTIVE:
+		case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
+      fprintf(stderr, "[WM] %lu focus mode == PASSIVE.\n", wwin->client_win);
+		case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
+      fprintf(stderr, "[WM] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win);
 			XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       focus_succeeded = True;
 			break;
-		case WFM_GLOBALLY_ACTIVE:
+		case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
+      fprintf(stderr, "[WM] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win);
+			wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+			/* XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime); */
+      focus_succeeded = True;
 			break;
 		}
 
 		XFlush(dpy);
-		if (wwin->protocols.TAKE_FOCUS) {
-			wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
-      focus_succeeded = True;
-    }
+		/* if (wwin->protocols.TAKE_FOCUS) { */
+    /*   fprintf(stderr, "[WM] send TAKE_FOCUS message to %lu.\n", wwin->client_win); */
+		/* 	wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp); */
+    /*   focus_succeeded = True; */
+    /* } */
 
 		XSync(dpy, False);
 	}
-  else if (wwin->flags.shaded) {
-    /* XSetInputFocus(dpy, wwin->frame->core->window, RevertToParent, CurrentTime); */
-    XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
-  }
 
 	/* if this is not the focused window - change the focus window list order */
 	if (focused != wwin) {
