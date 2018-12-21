@@ -1046,16 +1046,32 @@ static void handleUnmapNotify(XEvent * event)
     if (WINDOW_LEVEL(wwin) != WMMainMenuLevel) {
       fprintf(stderr, "[WM, event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n",
               event->xunmap.window, wwin->flags.is_gnustep);
-      wApplicationRemoveWindow(wApplicationOf(wwin->main_window), wwin);
       /* if the window was reparented, do not reparent it back to the
        * root window */
       wUnmanageWindow(wwin, !reparented, False);
     }
     else {
+      /* FIXME: temporary fix to switch focus to previously active app after 
+         GNUstep app "Hide" menu item click */
       WApplication *wapp = wApplicationOf(wwin->main_window);
-      if (wapp && wapp->flags.hidden) {
-        wSetFocusTo(wwin->screen_ptr, NULL);
+      WScreen *scr = wwin->screen_ptr;
+      WWindow *wlist = scr->focused_window;
+
+      if (wapp && !wapp->flags.hidden) {
+        while (wlist) {
+          if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
+              && (wlist->flags.mapped || wlist->flags.shaded))
+            break;
+          wlist = wlist->prev;
+        }
+        if (wlist != scr->focused_window) {
+          wSetFocusTo(scr, wlist);
+        }
       }
+
+      /* if (wapp && wapp->flags.hidden) { */
+      /*   wSetFocusTo(wwin->screen_ptr, NULL); */
+      /* } */
     }
 	}
 	XUngrabServer(dpy);
