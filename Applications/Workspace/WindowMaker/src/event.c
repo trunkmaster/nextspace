@@ -1653,8 +1653,13 @@ static void handleKeyPress(XEvent * event)
 			CloseWindowMenu(scr);
 			if (wwin->protocols.MINIATURIZE_WINDOW) {
         fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n");
-        wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
-                            event->xbutton.time);
+        if (wwin->flags.is_gnustep) {
+          XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
+        }
+        else {
+          wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
+                              event->xbutton.time);
+        }
       }
 			else {
 				wIconifyWindow(wwin);
