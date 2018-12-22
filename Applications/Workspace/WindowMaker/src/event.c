@@ -1053,21 +1053,21 @@ static void handleUnmapNotify(XEvent * event)
     else {
       /* FIXME: temporary fix to switch focus to previously active app after 
          GNUstep app "Hide" menu item click */
-      WApplication *wapp = wApplicationOf(wwin->main_window);
-      WScreen *scr = wwin->screen_ptr;
-      WWindow *wlist = scr->focused_window;
+      /* WApplication *wapp = wApplicationOf(wwin->main_window); */
+      /* WScreen *scr = wwin->screen_ptr; */
+      /* WWindow *wlist = scr->focused_window; */
 
-      if (wapp && !wapp->flags.hidden) {
-        while (wlist) {
-          if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
-              && (wlist->flags.mapped || wlist->flags.shaded))
-            break;
-          wlist = wlist->prev;
-        }
-        if (wlist != scr->focused_window) {
-          wSetFocusTo(scr, wlist);
-        }
-      }
+      /* if (wapp && !wapp->flags.hidden) { */
+      /*   while (wlist) { */
+      /*     if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden */
+      /*         && (wlist->flags.mapped || wlist->flags.shaded)) */
+      /*       break; */
+      /*     wlist = wlist->prev; */
+      /*   } */
+      /*   if (wlist != scr->focused_window) { */
+      /*     wSetFocusTo(scr, wlist); */
+      /*   } */
+      /* } */
 
       /* if (wapp && wapp->flags.hidden) { */
       /*   wSetFocusTo(wwin->screen_ptr, NULL); */
@@ -1672,17 +1672,8 @@ static void handleKeyPress(XEvent * event)
 			CloseWindowMenu(scr);
 
 			if (wapp && !WFLAGP(wapp->main_window_desc, no_appicon)) {
-        if (wwin->protocols.HIDE_APP) {
-          WIcon *icon = wapp->app_icon->icon;
-          fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
-          animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
-                        wwin->frame->core->width, wwin->frame->core->height,
-                        wapp->app_icon->x_pos, wapp->app_icon->y_pos,
-                        icon->core->width, icon->core->height);
-          wapp->flags.hidden = 1;
-          wapp->flags.skip_next_animation = 0;
-          wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
-                              event->xbutton.time);
+        if (wwin->flags.is_gnustep) {
+          XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }
         else {
           wHideApplication(wapp);

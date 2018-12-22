@@ -1,0 +1,10 @@
+--- gnustep-gui-0.24.1.orig/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2014-01-06 01:03:35.000000000 +0200
++++ gnustep-gui-0.24.1/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2018-12-22 19:06:13.967061108 +0200
+@@ -137,6 +137,7 @@
+ - (void) titlewindow: (NSString *)window_title : (int)win;
+ - (void) miniwindow: (int)win;
+ - (BOOL) appOwnsMiniwindow;
++- (BOOL) hidewindow: (int)win;
+ - (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt;
+ // Deprecated
+ - (void) windowdevice: (int) winNum;

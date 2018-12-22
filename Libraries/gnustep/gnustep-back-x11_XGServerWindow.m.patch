@@ -1,5 +1,5 @@
 --- gnustep-back-0.24.1.orig/Source/x11/XGServerWindow.m	2015-03-22 17:15:20.000000000 +0200
-+++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-07-27 01:26:41.705854413 +0300
++++ gnustep-back-0.24.1/Source/x11/XGServerWindow.m	2018-12-22 19:22:48.196061108 +0200
 @@ -121,11 +121,6 @@
        return nil;
      }
@@ -67,7 +67,54 @@
      {
        [self _setNetWMIconFor: window->ident];
      }
-@@ -2936,13 +2935,38 @@
+@@ -2665,6 +2664,7 @@
+   return generic.flags.appOwnsMiniwindow;
+ }
+ 
++// Miniaturize
+ - (void) miniwindow: (int) win
+ {
+   gswindow_device_t	*window;
+@@ -2723,6 +2723,29 @@
+     XIconifyWindow(dpy, window->ident, window->screen);
+ }
+ 
++// Hide
++// Actually this is "hide application" action. However key press may be received
++// by particular window.
++- (BOOL) hidewindow: (int)win
++{
++  gswindow_device_t *window;
++
++  if ((generic.wm & XGWM_WINDOWMAKER) == 0)
++    return NO;
++
++  window = [XGServer _windowWithTag: win];
++  [self _sendRoot: window->root
++             type: XInternAtom(dpy, "_WINDOWMAKER_WM_FUNCTION", False)
++           window: window->ident
++            data0: WMFHideApplication
++            data1: CurrentTime
++            data2: 0
++            data3: 0];
++  XSync(dpy, False);
++
++  return YES;
++}
++
+ /**
+    Make sure we have the most up-to-date window information and then
+    make sure the context has our new information
+@@ -2751,7 +2774,7 @@
+     && (window->buffer_width != width || window->buffer_height != height)
+     && (window->gdriverProtocol & GDriverHandlesBacking) == 0)
+     {
+-      [isa waitAllContexts];
++      [object_getClass(self) waitAllContexts];
+       XFreePixmap(dpy, window->buffer);
+       window->buffer = 0;
+       if (window->alpha_buffer)
+@@ -2936,13 +2959,38 @@
         */
        if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
  	{
@@ -109,7 +156,7 @@
  	    }
  #endif
  	  return;
-@@ -3397,7 +3421,6 @@
+@@ -3397,7 +3445,6 @@
                skipTaskbar = YES;
              }
            else if (level == NSSubmenuWindowLevel
@@ -117,7 +164,7 @@
                     || level == NSTornOffMenuWindowLevel)
              {
  #ifdef USE_KDE_OVERRIDE
-@@ -3411,6 +3434,11 @@
+@@ -3411,6 +3458,11 @@
  #endif
                skipTaskbar = YES;
              }
@@ -129,7 +176,25 @@
            else if (level == NSDockWindowLevel
                     || level == NSStatusWindowLevel)
              {
-@@ -4301,25 +4329,31 @@
+@@ -3648,7 +3700,7 @@
+       values.foreground = window->xwn_attrs.background_pixel;
+       valuemask = (GCFunction | GCPlaneMask | GCClipMask | GCForeground);
+       XChangeGC(dpy, window->gc, valuemask, &values);
+-      [isa waitAllContexts];
++      [object_getClass(self) waitAllContexts];
+       if ((window->gdriverProtocol & GDriverHandlesExpose))
+ 	{
+ 	  /* Temporary protocol until we standardize the backing buffer */
+@@ -3723,7 +3775,7 @@
+ 
+   if (width > 0 || height > 0)
+     {
+-      [isa waitAllContexts];
++      [object_getClass(self) waitAllContexts];
+       if ((window->gdriverProtocol & GDriverHandlesBacking))
+ 	{
+ 	  NSDebugLLog (@"XGFlush", 
+@@ -4301,25 +4353,31 @@
        cursor = XCreateFontCursor(dpy, XC_crosshair);
        break;
      case GSDisappearingItemCursor:
@@ -167,7 +232,7 @@
        break;
      case GSResizeUpDownCursor:
        cursor = XCreateFontCursor(dpy, XC_sb_v_double_arrow);
-@@ -4398,7 +4432,7 @@
+@@ -4398,7 +4456,7 @@
      // FIXME: Factor this out
      // Convert RGBA unpacked to ARGB packed
      // NB Packed ARGB values are layed out as ARGB on big endian systems
