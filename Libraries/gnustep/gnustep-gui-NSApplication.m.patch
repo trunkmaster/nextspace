@@ -1,5 +1,5 @@
 --- gnustep-gui-0.24.1.orig/Source/NSApplication.m	2015-03-27 23:33:24.000000000 +0200
-+++ gnustep-gui-0.24.1/Source/NSApplication.m	2018-12-22 19:25:36.952061108 +0200
++++ gnustep-gui-0.24.1/Source/NSApplication.m	2018-12-23 03:10:22.693466210 +0200
 @@ -433,6 +433,11 @@
    return NO;
  }
@@ -38,50 +38,32 @@
      }
  }
  
-@@ -2431,71 +2448,74 @@
- 	{
- 	  NSArray		*windows_list;
- 	  NSDictionary  	*info;
--	  NSWindow		*win;
-+	  NSWindow		*win = [[self mainMenu] window];
- 	  NSEnumerator  	*iter;
- 
- 	  [nc postNotificationName: NSApplicationWillHideNotification
- 	                    object: self];
- 
--	  if ([self keyWindow] != nil)
--	    {
--	      _hidden_key = [self keyWindow];
--	      [_hidden_key resignKeyWindow];
--	    }
+@@ -2441,7 +2458,12 @@
+ 	    {
+ 	      _hidden_key = [self keyWindow];
+ 	      [_hidden_key resignKeyWindow];
++              win = [self keyWindow];
+ 	    }
++          else
++            {
++              win = [[self mainMenu] window];
++            }
+ 	  
+ 	  // The main window is saved for when the app is activated again.
+ 	  // This is necessary for menu in window.
+@@ -2450,31 +2472,34 @@
+ 	      _hidden_main = [self mainWindow];
+ 	      [_hidden_main resignMainWindow];
+ 	    }
++          
 +          if ([GSServerForWindow(win) hidewindow: [win windowNumber]] == NO)
 +            {
-+              if ([self keyWindow] != nil)
-+                {
-+                  _hidden_key = [self keyWindow];
-+                  [_hidden_key resignKeyWindow];
-+                }
- 	  
--	  // The main window is saved for when the app is activated again.
--	  // This is necessary for menu in window.
--	  if ([self mainWindow] != nil)
--	    {
--	      _hidden_main = [self mainWindow];
--	      [_hidden_main resignMainWindow];
--	    }
-+              // The main window is saved for when the app is activated again.
-+              // This is necessary for menu in window.
-+              if ([self mainWindow] != nil)
-+                {
-+                  _hidden_main = [self mainWindow];
-+                  [_hidden_main resignMainWindow];
-+                }
- 	  
--	  windows_list = GSOrderedWindows();
--	  iter = [windows_list reverseObjectEnumerator];
 +              windows_list = GSOrderedWindows();
 +              iter = [windows_list reverseObjectEnumerator];
  	  
+-	  windows_list = GSOrderedWindows();
+-	  iter = [windows_list reverseObjectEnumerator];
+-	  
 -	  while ((win = [iter nextObject]))
 -	    {
 -	      if ([win isVisible] == NO && ![win isMiniaturized])
@@ -103,7 +85,6 @@
 -	      [_hidden addObject: win];
 -	      [win orderOut: self];
 -	    }
--	  _app_is_hidden = YES;
 +              while ((win = [iter nextObject]))
 +                {
 +                  if ([win isVisible] == NO && ![win isMiniaturized])
@@ -126,42 +107,6 @@
 +                  [win orderOut: self];
 +                }
 +            }
-+          _app_is_hidden = YES;
+ 	  _app_is_hidden = YES;
  	  
--	  if (YES == [[NSUserDefaults standardUserDefaults]
--		       boolForKey: @"GSSuppressAppIcon"])
--	    {
-+          if (YES == [[NSUserDefaults standardUserDefaults]
-+                           boolForKey: @"GSSuppressAppIcon"])
-+            {
- #if	MINI_ICON
--	      NSRect	f = [[[self mainMenu] window] frame];
--	      NSPoint	p = f.origin;
-+              NSRect	f = [[[self mainMenu] window] frame];
-+              NSPoint	p = f.origin;
- 	      
--	      p.y += f.size.height;
--	      [_app_icon_window setFrameTopLeftPoint: p];
--	      [_app_icon_window orderFrontRegardless];
--	      [_app_icon_window miniaturize: self];
-+              p.y += f.size.height;
-+              [_app_icon_window setFrameTopLeftPoint: p];
-+              [_app_icon_window orderFrontRegardless];
-+              [_app_icon_window miniaturize: self];
- #else
--	      [_app_icon_window orderFrontRegardless];
-+              [_app_icon_window orderFrontRegardless];
- #endif
--	    }
--	  else
--	    {
--	      [[_app_icon_window contentView] setNeedsDisplay: YES];
--	    }
-+            }
-+          else
-+            {
-+              [[_app_icon_window contentView] setNeedsDisplay: YES];
-+            }
- 	  
- 	  /*
- 	   * On hiding we also deactivate the application which will make the menus
+ 	  if (YES == [[NSUserDefaults standardUserDefaults]
