@@ -406,10 +406,10 @@ static unsigned long *findBestIcon(unsigned long *data, unsigned long items)
 	unsigned long i, distance;
 	unsigned long *icon;
 
-	/* better use only 75% of icon_size. For 64x64 this means 48x48
+	/* Use only 75% of icon_size. For 64x64 this means 48x48.
 	 * This leaves room around the icon for the miniwindow title and
 	 * results in better overall aesthetics -Dan */
-	wanted = wPreferences.icon_size * wPreferences.icon_size;
+	wanted = (wPreferences.icon_size*0.75) * (wPreferences.icon_size*0.75);
 
 	for (icon = NULL, distance = wanted, i = 0L; i < items - 1;) {
 		size = data[i] * data[i + 1];
