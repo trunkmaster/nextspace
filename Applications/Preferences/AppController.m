@@ -1,13 +1,7 @@
 /* 
-   Project: Preferences
+   Preferences.app application Controller
 
-   Copyright (C) 2006 Free Software Foundation
-
-   Author: Serg Stoyan
-
-   Created: 2006-06-05 01:22:56 +0300 by stoyan
-   
-   Application Controller
+   Copyright (C) 2014-2018 Sergii Stoian
 
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -28,9 +22,9 @@
 #import <NXSystem/NXKeyboard.h>
 #import <NXSystem/NXMouse.h>
 #import <NXSystem/NXScreen.h>
+#import <NXAppKit/NXClockView.h>
 
 #import "AppController.h"
-#import "ClockView.h"
 
 static NSUserDefaults *defaults = nil;
 
@@ -53,17 +47,27 @@ static NSUserDefaults *defaults = nil;
   return self;
 }
 
-// - (void)dealloc
-// {
-//   [super dealloc];
-// }
-
 - (void)awakeFromNib
 {
+  NSDictionary *cvDisplayRects;
+  
   if (clockView)
     return;
+
+  cvDisplayRects = @{@"DayOfWeek":NSStringFromRect(NSMakeRect(14, 33, 33, 6)),
+                     @"Day":NSStringFromRect(NSMakeRect(14, 15, 33, 17)),
+                     @"Month":NSStringFromRect(NSMakeRect(14,  9, 31, 6)),
+                     @"Time":NSStringFromRect(NSMakeRect( 5, 46, 53, 11))};
   
-  clockView = [ClockView new];
+  clockView = [[NXClockView alloc]
+                initWithFrame:NSMakeRect(0, 0, 64, 64)
+                         tile:[NSImage imageNamed:@"ClockViewTile"]
+                 displayRects:cvDisplayRects];
+  [clockView setYearVisible:NO];
+  [clockView setCalendarDate:[NSCalendarDate calendarDate]];
+  [clockView setAlive:YES];
+  [clockView setTarget:self];
+  [clockView setDoubleAction:@selector(showPreferencesWindow)];
   [[NSApp iconWindow] setContentView:clockView];
 }
 

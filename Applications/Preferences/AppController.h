@@ -1,13 +1,7 @@
 /* 
-   Project: Time
+   Preferences.app application Controller
 
-   Copyright (C) 2006 Free Software Foundation
-
-   Author: Serg Stoyan
-
-   Created: 2006-06-05 01:22:56 +0300 by stoyan
-   
-   Application Controller
+   Copyright (C) 2014-2018 Sergii Stoian
 
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -27,12 +21,11 @@
 #import <AppKit/AppKit.h>
 #import "PrefsController.h"
 
-@class ClockView;
+@class NXClockView;
 
 @interface AppController : NSObject
 {
-  ClockView		*clockView;
-
+  NXClockView		*clockView;
   PrefsController	*prefsController;
 }
 
