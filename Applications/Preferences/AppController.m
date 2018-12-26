@@ -75,8 +75,8 @@ static NSUserDefaults *defaults = nil;
 {
   // Here will be applied various preferences to desktop/system:
   // keyboard, mouse, sound, power management.
-  // Display preferences applied in Workspace Manager because displayes must
-  // be configured before window management starts.
+  // Display preferences are applied in Workspace Manager because displays must
+  // be configured before start of window management task.
   
   // Apply preferences only if we're autolaunched.
   // NSApplication removed arguments (-NXAutoLaunch YES) to omit flickering.
