@@ -58,7 +58,7 @@
   time_nums[9] = NSMakeRect(142, 56, 8, 11); // 9
 
   colonRect = NSMakeRect(159, 56, 3,  11);   // :
-  noColonRect = NSMakeRect(162, 56, 1, 11);
+  noColonRect = NSMakeRect(102, 0, 3, 11);
   
   amRect = NSMakeRect(162, 56, 13, 6);       // am
   pmRect = NSMakeRect(175, 56, 12, 6);       // pm
@@ -100,63 +100,27 @@
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
   NSString *langPath, *bitsPath;
 
-  if (languageName == nil)
-    {
-      languageName = [[[NSUserDefaults standardUserDefaults]
+  if (languageName == nil){
+    languageName = [[[NSUserDefaults standardUserDefaults]
                         objectForKey:@"NSLanguages"]
                        objectAtIndex:0];
-    }
+  }
 
   langPath = [bundle pathForResource:languageName ofType:@"lproj"];
-  if ([[NSFileManager defaultManager] fileExistsAtPath:langPath] == YES)
-    {
-      bitsPath = [langPath stringByAppendingPathComponent:@"clockbits.tiff"];
-    }
-  else
-    {
-      bitsPath = [bundle pathForResource:@"clockbits"
-                                  ofType:@"tiff"
-                             inDirectory:@"English.lproj"];
-    }
+  if ([[NSFileManager defaultManager] fileExistsAtPath:langPath] == YES) {
+    bitsPath = [langPath stringByAppendingPathComponent:@"clockbits.tiff"];
+  }
+  else {
+    bitsPath = [bundle pathForResource:@"clockbits"
+                                ofType:@"tiff"
+                           inDirectory:@"English.lproj"];
+  }
 
   // Release already loaded clockbits
-  if (clockBits != nil)
-    {
-      [clockBits release];
-    }
+  if (clockBits != nil) {
+    [clockBits release];
+  }
   clockBits = [[NSImage alloc] initByReferencingFile:bitsPath];
-
-  // Create images for colon for performance purposes at [self drawRect] method:
-  // [clockBits compositeToPoint:fromRect:operation:] consumes too much CPU.
-  // [colon*Image compositeToPoint:operation:] more efficient.
-  if (clockBits != nil)
-    {
-      NSBitmapImageRep *rep;
-  
-      colonOnImage = [[NSImage alloc] initWithSize:colonRect.size];
-      [colonOnImage lockFocus];
-      [clockBits drawAtPoint:NSMakePoint(0, 0)
-                    fromRect:colonRect
-                   operation:NSCompositeSourceOver
-                    fraction:1.0];
-      rep = [[NSBitmapImageRep alloc]
-              initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
-      [colonOnImage addRepresentation:rep];
-      [rep release];
-      [colonOnImage unlockFocus];
-  
-      colonOffImage = [[NSImage alloc] initWithSize:noColonRect.size];
-      [colonOffImage lockFocus];
-      [clockBits drawAtPoint:NSMakePoint(0, 0)
-                    fromRect:noColonRect
-                   operation:NSCompositeSourceOver
-                    fraction:1.0];
-      rep = [[NSBitmapImageRep alloc]
-              initWithFocusedViewRect:NSMakeRect(0, 0, 3, 11)];
-      [colonOffImage addRepresentation:rep];
-      [rep release];
-      [colonOffImage unlockFocus];
-    }
   dateChanged = YES;
 }
 
@@ -166,17 +130,13 @@
               notificationCenterForType:NSLocalNotificationCenterType]
     removeObserver:self];
 
-  if (updateTimer != nil)
-    {
-      if ([updateTimer isValid] == YES)
-        {
-          [updateTimer invalidate];
-        }
-      [updateTimer release];
+  if (updateTimer != nil) {
+    if ([updateTimer isValid] == YES) {
+      [updateTimer invalidate];
     }
+    [updateTimer release];
+  }
   [date release];
-  [colonOnImage release];
-  [colonOffImage release];
 
   [super dealloc];
 }
@@ -208,16 +168,16 @@
 - (void)_drawColon
 {
   if (isColonVisible) {
-    [colonOnImage compositeToPoint:colonDisplayRect.origin
-                         operation:NSCompositeSourceAtop];
+    [clockBits drawAtPoint:colonDisplayRect.origin
+                  fromRect:colonRect
+                 operation:NSCompositeSourceAtop
+                  fraction:1.0];
   }
   else {
-    NSPoint offPoint = colonDisplayRect.origin;
-    for (int i = 1; i < 4; i++) {
-      [colonOffImage compositeToPoint:offPoint
-                            operation:NSCompositeSourceAtop];
-      offPoint.x++;
-    }
+    [clockBits drawAtPoint:colonDisplayRect.origin
+                  fromRect:noColonRect
+                 operation:NSCompositeSourceAtop
+                  fraction:1.0];
   }
 }
 

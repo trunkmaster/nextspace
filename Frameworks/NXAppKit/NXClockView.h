@@ -39,8 +39,6 @@
   BOOL isMorning;
 
   NSImage *clockBits;
-  NSImage *colonOnImage;
-  NSImage *colonOffImage;
   NSRect  tileRect;
 
   // Day of week, month, day
