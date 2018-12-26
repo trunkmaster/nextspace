@@ -49,54 +49,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	PrefsWindow.gorm \
 	Preferences.tiff \
 	Preferences.png \
-	Date-0.tiff \
-	Date-1.tiff \
-	Date-1.tiff \
-	Date-2.tiff \
-	Date-3.tiff \
-	Date-4.tiff \
-	Date-5.tiff \
-	Date-6.tiff \
-	Date-7.tiff \
-	Date-8.tiff \
-	Date-9.tiff \
-	Day-0.tiff \
-	Day-1.tiff \
-	Day-2.tiff \
-	Day-3.tiff \
-	Day-4.tiff \
-	Day-5.tiff \
-	Day-6.tiff \
-	Mask.tiff \
-	Month-01.tiff \
-	Month-02.tiff \
-	Month-03.tiff \
-	Month-04.tiff \
-	Month-05.tiff \
-	Month-06.tiff \
-	Month-07.tiff \
-	Month-08.tiff \
-	Month-09.tiff \
-	Month-10.tiff \
-	Month-11.tiff \
-	Month-12.tiff \
-	Time-0.tiff \
-	Time-1.tiff \
-	Time-2.tiff \
-	Time-3.tiff \
-	Time-4.tiff \
-	Time-5.tiff \
-	Time-6.tiff \
-	Time-7.tiff \
-	Time-8.tiff \
-	Time-9.tiff \
-	Time-A.tiff \
-	Time-Colon.tiff \
-	Time-P.tiff \
-	TimeField.tiff \
-	WorldMap.tiff \
-	Time-NoColon.tiff
-
+	ClockViewTile.tiff \
+	WorldMap.tiff 
 
 #
 # Header files
@@ -109,7 +63,6 @@ $(APP_NAME)_HEADER_FILES_INSTALL_DIR = $(GNUSTEP_SYSTEM_HEADERS)/apps
 #
 $(APP_NAME)_OBJC_FILES = \
 AppController.m \
-ClockView.m \
 PrefsController.m
 
 #
