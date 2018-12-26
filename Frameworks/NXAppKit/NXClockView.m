@@ -32,11 +32,11 @@
   tileRect = NSMakeRect(191, 9, 64, 71);
 
   // Day of week
-  dowDisplayRect = NSMakeRect(14, 41, 33, 6);    // display rect inside 'tileRect'
+  dowDisplayRect = NSMakeRect(14, 41, 33, 6);    // inside 'tileRect'
   mondayRect     = NSMakeRect( 0, 71, 19, 6);    // 'MON' + one white line below
 
   // Day
-  dayDisplayRect = NSMakeRect(14, 22, 33, 17);   // display rect rect inside 'tileRect'
+  dayDisplayRect = NSMakeRect(14, 22, 33, 17);   // inside 'tileRect'
   firstDayRect   = NSMakeRect(64, 14, 12, 17);   // '1'
 
   // Month
@@ -58,10 +58,10 @@
   time_nums[9] = NSMakeRect(142, 56, 8, 11); // 9
 
   colonRect = NSMakeRect(159, 56, 3,  11);   // :
-  noColonRect = NSMakeRect(tileRect.origin.x+timeDisplayRect.origin.x,
-                           tileRect.origin.y+timeDisplayRect.origin.y, 3, 11);
-  amRect    = NSMakeRect(162, 56, 13, 6);    // am
-  pmRect    = NSMakeRect(175, 56, 12, 6);    // pm
+  noColonRect = NSMakeRect(162, 56, 1, 11);
+  
+  amRect = NSMakeRect(162, 56, 13, 6);       // am
+  pmRect = NSMakeRect(175, 56, 12, 6);       // pm
 
   yearDisplayRect = NSMakeRect(14, 2, 38, 6);
   year_nums[0] = NSMakeRect(12,  8, 6, 6);
@@ -78,7 +78,7 @@
   // Load clockbits for default language
   [self loadClockbitsForLanguage:@"English"];
 
-  // The next 2 method calls sets 'colonDisplayRect' ivar but will not
+  // The next 2 method calls sets 'colonDisplayRect' ivar but it will not
   // cause drawing because 'is24HourFormat' was not changed
   is24HourFormat = [[NXDefaults globalUserDefaults]
                          boolForKey:@"NXClockView24HourFormat"];
@@ -145,7 +145,7 @@
       [rep release];
       [colonOnImage unlockFocus];
   
-      colonOffImage = [[NSImage alloc] initWithSize:colonRect.size];
+      colonOffImage = [[NSImage alloc] initWithSize:noColonRect.size];
       [colonOffImage lockFocus];
       [clockBits drawAtPoint:NSMakePoint(0, 0)
                     fromRect:noColonRect
@@ -205,6 +205,22 @@
   [self setCalendarDate:[NSCalendarDate calendarDate]];
 }
 
+- (void)_drawColon
+{
+  if (isColonVisible) {
+    [colonOnImage compositeToPoint:colonDisplayRect.origin
+                         operation:NSCompositeSourceAtop];
+  }
+  else {
+    NSPoint offPoint = colonDisplayRect.origin;
+    for (int i = 1; i < 4; i++) {
+      [colonOffImage compositeToPoint:offPoint
+                            operation:NSCompositeSourceAtop];
+      offPoint.x++;
+    }
+  }
+}
+
 - (void)drawRect:(NSRect)r
 {
   CGFloat   hoffset;
@@ -218,20 +234,7 @@
   // do not update the rest of view.
   if (NSEqualRects(r, colonDisplayRect) == YES)
     {
-      if (isAlive)
-        {
-          if (isColonVisible)
-            {
-              [colonOnImage compositeToPoint:colonDisplayRect.origin
-                                   operation:NSCompositeSourceAtop];
-            }
-          else
-            {
-              [colonOffImage compositeToPoint:colonDisplayRect.origin
-                                    operation:NSCompositeSourceAtop];
-            }
-        }
-
+      [self _drawColon];
       return;
     }
   
@@ -343,8 +346,7 @@
         }
 
       // Time Colon
-      [colonOnImage compositeToPoint:colonDisplayRect.origin
-                           operation:NSCompositeSourceAtop];
+      [self _drawColon];
 
       // Minutes
       hoffset = rectCenter + colonRect.size.width;
