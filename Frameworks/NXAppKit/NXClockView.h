@@ -18,6 +18,10 @@
 
 @interface NXClockView : NSView
 {
+  // Double-click target/action
+  id		actionTarget;
+  SEL		doubleAction;
+  
   // The currently displayed date.
   NSCalendarDate *date;
   NSInteger      dayOfWeek, lastDOW;
@@ -65,29 +69,44 @@
   NSRect year_nums[10];
 }
 
-// Loads 'clockbits.tiff' located in framework resources
+//-----------------------------------------------------------------------------
+#pragma mark - Init and dealloc
+//-----------------------------------------------------------------------------
+/** Loads 'clockbits.tiff' located in framework resources. */
 - initWithFrame:(NSRect)aFrame;
 
-// Uses framework 'clockbits.tiff' for everything except tile image.
-// `displayRects` is a dictionary with rects to place elements inside specified
-// custom tile image.
+/** Uses framework 'clockbits.tiff' for everything except tile image.
+    `displayRects` is a dictionary with rects to place elements inside specified
+    custom tile image. */
 - initWithFrame:(NSRect)aFrame
            tile:(NSImage *)image
    displayRects:(NSDictionary *)rects;
 
-// If `languageName` is `nil` loads clockbits for system default language (
-// first language specified in `NSLanguages` array in NSGlobalDomain).
+/** If `languageName` is `nil` loads clockbits for system default language (
+    first language specified in `NSLanguages` array in NSGlobalDomain). */
 - (void)loadClockbitsForLanguage:(NSString *)languageName;
 
+//-----------------------------------------------------------------------------
+#pragma mark - Double click
+//-----------------------------------------------------------------------------
+- (void)setTarget:(id)target;
+- (void)setDoubleAction:(SEL)sel;
+  
+//-----------------------------------------------------------------------------
+#pragma mark - Drawing
+//-----------------------------------------------------------------------------
 - (void)sizeToFit;
 
+//-----------------------------------------------------------------------------
+#pragma mark - Properties
+//-----------------------------------------------------------------------------
 /** Sets whether the receiver displays the year information in a small
     text field at it's bottom. */
 - (void)setYearVisible:(BOOL)flag;
 - (BOOL)isYearVisible;
 
- /** Sets whether the receiver is to display 12-hour AM/PM format or full
-     24-hour format. */
+/** Sets whether the receiver is to display 12-hour AM/PM format or full
+    24-hour format. */
 - (void)set24HourFormat:(BOOL)flag;
 - (BOOL)is24HourFormat;
 
@@ -96,15 +115,17 @@
 - (void)setAlive:(BOOL)live;
 - (BOOL)isAlive;
 
-/// Sets the calendar date the receiver is to display.
+/** Sets the calendar date the receiver is to display. */
 - (void)setCalendarDate:(NSCalendarDate *)aDate;
 - (NSCalendarDate *)calendarDate;
 
-/** Sets whether the receiver is tracking the defaults database for
-    defaults changes about the receiver's appearance. */
+- (void)setLanguage:(NSString *)languageName;
+
+//-----------------------------------------------------------------------------
+#pragma mark - Defaults
+//-----------------------------------------------------------------------------
+/** Tracks changes of NXClockView24HourFormat - 12/24 hour clock format. */
 - (void)setTracksDefaultsDatabase:(BOOL)flag;
 - (BOOL)tracksDefaultsDatabase;
-
-- (void)setLanguage:(NSString *)languageName;
 
 @end
