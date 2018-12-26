@@ -1,4 +1,4 @@
-/** @brief The various utility functions wich can't be assigned to some class.
+/** @brief The various utility functions which can't be assigned to some class.
     
     @author Sergii Stoian
 */
