@@ -126,6 +126,8 @@
       yearDisplayRect = NSRectFromString(rectString);
   }
 
+  [self set24HourFormat:is24HourFormat];
+
   return self;
 }
 
@@ -180,6 +182,31 @@
     [tileImage release];
 
   [super dealloc];
+}
+
+//-----------------------------------------------------------------------------
+#pragma mark - Double click
+//-----------------------------------------------------------------------------
+- (void)setTarget:(id)target
+{
+  actionTarget = target;
+}
+
+- (void)setDoubleAction:(SEL)sel
+{
+  doubleAction = sel;
+}
+
+- (BOOL)acceptsFirstMouse:(NSEvent *)anEvent
+{
+  return YES;
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  if ([event clickCount] >= 2) {
+    [actionTarget performSelector:doubleAction];
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -566,11 +593,16 @@
   return date;
 }
 
+- (void)setLanguage:(NSString *)languageName
+{
+  [self loadClockbitsForLanguage:languageName];
+  [self setNeedsDisplay:YES];
+}
+
 //-----------------------------------------------------------------------------
 #pragma mark - Defaults
 //-----------------------------------------------------------------------------
 
-// Track changes of NXClockView24HourFormat - 12/24 hour clock format
 - (void)setTracksDefaultsDatabase:(BOOL)flag
 {
   if (flag != isTrackDefaults) {
@@ -603,12 +635,6 @@
     [self set24HourFormat:[[NXDefaults globalUserDefaults]
                               boolForKey:@"NXClockView24HourFormat"]];
   }
-}
-
-- (void)setLanguage:(NSString *)languageName
-{
-  [self loadClockbitsForLanguage:languageName];
-  [self setNeedsDisplay:YES];
 }
 
 @end
