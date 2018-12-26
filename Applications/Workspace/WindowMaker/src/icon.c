@@ -345,7 +345,7 @@ void wIconChangeTitle(WIcon *icon, WWindow *wwin)
 	/* Set the new one, using two methods to identify
 	the icon name or switch back to window name */
 	icon->icon_name = wNETWMGetIconName(wwin->client_win);
-	if (!icon->icon_name)
+	if (!icon->icon_name || !strlen(icon->icon_name))
 		if (!wGetIconName(dpy, wwin->client_win, &icon->icon_name))
 			icon->icon_name = wNETWMGetWindowName(wwin->client_win);
 }
