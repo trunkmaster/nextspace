@@ -38,22 +38,21 @@
   BOOL		drawsTile;
   NSImage	*tileImage;
 
-  NSTimer		*timer;
+  NSTimer	*timer;
 
+  NSImage	*colon;
+  NSImage	*no_colon;
+  NSImage	*mask;
+  NSImage	*min1, *min2;
+  NSImage	*hour1, *hour2, *ampm;
+  NSImage	*dom1, *dom2, *dow;
+  NSImage	*month;
 
-  NSImage		*colon;
-  NSImage		*no_colon;
-  NSImage		*mask;
-  NSImage		*min1, *min2;
-  NSImage		*hour1, *hour2, *ampm;
-  NSImage		*dom1, *dom2, *dow;
-  NSImage		*month;
-
-  int			_sec, lastsec;
-  int			_min, lastmin;
-  int			_hour, lasthour;
-  int			_dow, _dom, lastdom;
-  int			_month, lastmonth;
+  int		_sec, lastsec;
+  int		_min, lastmin;
+  int		_hour, lasthour;
+  int		_dow, _dom, lastdom;
+  int		_month, lastmonth;
 
   BOOL		use24Hours, last24;
   BOOL		isAnalog;
