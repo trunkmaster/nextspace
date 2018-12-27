@@ -60,7 +60,7 @@
   time_nums[9] = NSMakeRect(142, 56, 8, 11); // 9
 
   colonRect = NSMakeRect(159, 56, 3,  11);   // :
-  noColonRect = NSMakeRect(102, 0, 3, 11);
+  noColonRect = NSMakeRect(83, 0, 3, 11);
   
   amRect = NSMakeRect(162, 56, 13, 6);       // am
   pmRect = NSMakeRect(175, 56, 12, 6);       // pm
