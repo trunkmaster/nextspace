@@ -168,8 +168,11 @@
 
 - (void)dealloc
 {
-  [DISTRIBUTED_NC removeObserver:self];
-
+  if (isTrackDefaults) {
+    [DISTRIBUTED_NC removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+  }
+  
   if (updateTimer != nil) {
     if ([updateTimer isValid] == YES) {
       [updateTimer invalidate];
@@ -613,6 +616,14 @@
                          selector:@selector(defaultsChanged:)
                              name:NXUserDefaultsDidChangeNotification
                            object:nil];
+      
+      // ~/Library/Preferences/NSGlobalDomain.
+      // NSLanguages
+      [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(defaultsChanged:)
+               name:NSUserDefaultsDidChangeNotification
+             object:nil];
     }
     else {
       [DISTRIBUTED_NC removeObserver:self];
@@ -628,12 +639,17 @@
 
 - (void)defaultsChanged:(NSNotification *)notif
 {
-  // NSLog(@"NXClockView: defaults was changed! %@", [notif object]);
+  id notifObject = [notif object];
+  
+  NSLog(@"NXClockView: defaults was changed! %@", [[notif object] className]);
 
-  if ([[notif object] isKindOfClass:[NSString class]]) {
+  if ([notifObject isKindOfClass:[NSString class]]) {
     // NextSpace's NXGlobalDomain was changed
     [self set24HourFormat:[[NXDefaults globalUserDefaults]
-                              boolForKey:@"NXClockView24HourFormat"]];
+                            boolForKey:@"NXClockView24HourFormat"]];
+  }
+  else if ([notifObject isKindOfClass:[NSUserDefaults class]]) {
+    [self setLanguage:nil];
   }
 }
 
