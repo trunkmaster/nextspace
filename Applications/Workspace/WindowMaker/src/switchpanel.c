@@ -728,7 +728,10 @@ WWindow *wSwitchPanelSelectFirst(WSwitchPanel *panel, int back)
 	}
 
 	wwin = WMGetFromArray(panel->windows, panel->current);
-	title = wwin->frame->title;
+  if (wwin->frame && wwin->frame->title)
+    title = wwin->frame->title;
+  else
+    title = wwin->wm_instance;
 
 	if (panel->win) {
 		for (WMArrayFirst(panel->windows, &(i)); (i) != WANotFound; WMArrayNext(panel->windows, &(i)))

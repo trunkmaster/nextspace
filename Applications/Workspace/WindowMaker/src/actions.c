@@ -145,23 +145,23 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   /* Do not focus GNUstep main menu if focused window belongs to 
      the same application. 
-     TODO: problem with this scenario:
-     - workspace #1 with activate TextEdit with window;
+     Problem revealed with this scenario:
+     - workspace #1 with active TextEdit with window;
      - switch to workspace #2 without apps (Workspace menu only visible);
-     - switch back to workspace #1 - focus to TextEdit window; 
+     - switch back to workspace #1 - TextEdit window should be focused; 
      - closing TextEdit window switches focus to Workspace - incorrect -
        TextEdit should stay active. */
-  if (wwin && focused && wwin != focused &&
-      !strcmp(wwin->wm_class, "GNUstep") &&
-      !strcmp(wwin->wm_class, focused->wm_class) &&
-      !strcmp(wwin->wm_instance, focused->wm_instance) &&
-      wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel &&
-      focused->flags.mapped) {
-    fprintf(stderr, "[WM] wSetFocusTo: do not set focus to active `%s` app menu."
-            " Key %lu mapped = %i\n",
-            focused->wm_instance, focused->client_win, focused->flags.mapped);
-    return;
-  }
+  /* if (wwin && focused && wwin != focused && */
+  /*     !strcmp(wwin->wm_class, "GNUstep") && */
+  /*     !strcmp(wwin->wm_class, focused->wm_class) && */
+  /*     !strcmp(wwin->wm_instance, focused->wm_instance) && */
+  /*     wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel && */
+  /*     focused->flags.mapped) { */
+  /*   fprintf(stderr, "[WM] wSetFocusTo: do not set focus to active `%s` app menu." */
+  /*           " Key %lu mapped = %i\n", */
+  /*           focused->wm_instance, focused->client_win, focused->flags.mapped); */
+  /*   return; */
+  /* } */
 
 	if (!old_scr)
 		old_scr = scr;
@@ -202,25 +202,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 	if (old_scr != scr && old_focused)
 		wWindowUnfocus(old_focused);
 
-  /* set focus to Workspace or no_focus_win */
-  /*	if (WFLAGP(wwin, no_focusable)) {
-    fprintf(stderr, "[WM] window %lu (transient for:%lu) is not focusable: ",
-            wwin->client_win, wwin->transient_for);
-    if (wwin->protocols.TAKE_FOCUS) {
-      fprintf(stderr, "but supports TAKE_FOCUS.\n");
-      wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
-    }
-    else if (ws_menu_win) {
-      fprintf(stderr, "::: setting focus to Workspace.\n");
-      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
-    }
-    else {
-      fprintf(stderr, "::: setting focus to `no_focus_win`.\n");
-      XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-    }
-    return;
-    }*/
-
 	wasfocused = wwin->flags.focused;
 	napp = wApplicationOf(wwin->main_window);
 
@@ -235,33 +216,23 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
       fprintf(stderr, "[WM] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win);
       return;
-      /* if (ws_menu_win) */
-      /*   wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp); */
-      /* else */
-      /*   XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime); */
-			break;
 		case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
       fprintf(stderr, "[WM] %lu focus mode == PASSIVE.\n", wwin->client_win);
+			XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
+      break;
 		case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
       fprintf(stderr, "[WM] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win);
-			XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
+			wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
 			break;
 		case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
       fprintf(stderr, "[WM] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win);
 			wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
-			/* XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime); */
       focus_succeeded = True;
 			break;
 		}
 
 		XFlush(dpy);
-		/* if (wwin->protocols.TAKE_FOCUS) { */
-    /*   fprintf(stderr, "[WM] send TAKE_FOCUS message to %lu.\n", wwin->client_win); */
-		/* 	wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp); */
-    /*   focus_succeeded = True; */
-    /* } */
-
 		XSync(dpy, False);
 	}
 
@@ -283,14 +254,14 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 			if (wPreferences.highlight_active_app)
 				wApplicationDeactivate(oapp);
 		}
+    
+    if (napp && focus_succeeded == True && wwin != NULL) {
+      wApplicationMakeFirst(napp);
+      /* remember last workspace and focused window of application */
+      napp->last_focused = wwin;
+      napp->last_workspace = scr->current_workspace;
+    }
 	}
-
-	if (napp && focus_succeeded == True && wwin != NULL) {
-    wApplicationMakeFirst(napp);
-    /* remember last workspace and focused window of application */
-    napp->last_focused = wwin;
-    napp->last_workspace = scr->current_workspace;
-  }
 
 	wWindowFocus(wwin, focused);
 
@@ -1776,7 +1747,8 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
 				if (bringToCurrentWS && wlist->frame->workspace != scr->current_workspace)
 					wWindowChangeWorkspace(wlist, scr->current_workspace);
 
-				wRaiseFrame(wlist->frame->core);
+        if (wlist->frame)
+          wRaiseFrame(wlist->frame->core);
 			}
 		}
 		wlist = next;
