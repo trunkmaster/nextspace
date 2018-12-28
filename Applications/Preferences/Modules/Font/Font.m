@@ -110,23 +110,6 @@ static NSMutableDictionary *defaultValues(void)
   return dict;
 }
 
-static NSDictionary *fontCategories(void)
-{
-  static NSDictionary *dict = nil;
-
-  if (!dict)
-    {
-      dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                   @"NSUserFont", @"Application Font",
-                                   @"NSUserFixedPitchFont", @"Fixed Pitch Font",
-                                   @"NSFont", @"System Font",
-                                   @"NSBoldFont", @"Bold System Font",
-                                   @"NSToolTipsFont", @"Tool Tips Font",
-                                   nil];
-    }
-  return dict;
-}
-
 static BOOL getBoolDefault(NSMutableDictionary *dict, NSString *name)
 {
   NSString *str = [domain objectForKey:name];
@@ -144,7 +127,6 @@ static void setBoolDefault(BOOL aBool, NSString *name)
 {
   [domain setObject:(aBool ? @"YES" : @"NO") forKey:name];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
-  [defaults synchronize];
 }
 
 static NSString *getStringDefault(NSMutableDictionary *dict, NSString *name)
@@ -162,7 +144,6 @@ static void setStringDefault(NSString *string, NSString *name)
 {
   [domain setObject:string forKey:name];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
-  [defaults synchronize];
 }
 
 static float getFloatDefault(NSMutableDictionary *dict, NSString *name)
@@ -180,7 +161,6 @@ static void setFloatDefault(CGFloat aFloat, NSString *name)
 {
   [domain setObject:[NSString stringWithFormat:@"%g", aFloat] forKey:name];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
-  [defaults synchronize];
 }
 
 static int getIntDefault(NSMutableDictionary *dict, NSString *name)
@@ -199,7 +179,6 @@ static void setIntDefault(int anInt, NSString *name)
   [domain setObject:[NSString stringWithFormat:@"%d", anInt]
              forKey:name];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
-  [defaults synchronize];
 }
 
 NSString *WWMDefaultsPath(void)
@@ -248,8 +227,8 @@ NSString *WWMDefaultsPath(void)
   NSFont	*font, *boldFont;
   // int		subpixel;
 
-  fontKey = [fontCategories()
-                objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
+  fontKey = [fontCategories
+              objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
   if (!fontKey) { // no selected item, bail out
     [fontNameTextField setStringValue:@"Unable to determine font type."];
     [fontExampleTextView setFont:[NSFont systemFontOfSize:12.0]];
@@ -298,7 +277,7 @@ NSString *WWMDefaultsPath(void)
   NSFont        *font;
   NSFontManager *fontManager;
 
-  fontKey = [fontCategories() 
+  fontKey = [fontCategories
                 objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
   fontSizeKey = [NSString stringWithFormat:@"%@Size", fontKey];
   
@@ -317,6 +296,18 @@ NSString *WWMDefaultsPath(void)
 
 @implementation Font
 
+- (void)dealloc
+{
+  NSLog(@"FontPrefs -dealloc");
+  
+  [image release];
+  [normalExampleString release];
+  [boldExampleString release];
+  [fontCategories dealloc];
+  
+  [super dealloc];
+}
+
 - (id)init
 {
   NSString *imagePath;
@@ -329,6 +320,13 @@ NSString *WWMDefaultsPath(void)
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"FontPreferences" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+
+  fontCategories = @{@"Application Font":@"NSUserFont",
+                     @"Fixed Pitch Font":@"NSUserFixedPitchFont",
+                     @"System Font":@"NSFont",
+                     @"Bold System Font":@"NSBoldFont",
+                     @"Tool Tips Font":@"NSToolTipsFont"};
+  [fontCategories retain];
  
   return self;
 }
@@ -358,15 +356,6 @@ NSString *WWMDefaultsPath(void)
   //     readRTFDFromFile:[bundle pathForResource:@"ExampleText" ofType:@"rtf"]];
 
   [self updateUI];
-}
-
-- (void)dealloc
-{
-  NSLog(@"FontPrefs -dealloc");
-  [image release];
-  [normalExampleString release];
-  [boldExampleString release];
-  [super dealloc];
 }
 
 - (NSView *)view
@@ -448,8 +437,8 @@ NSString *WWMDefaultsPath(void)
   font = [fontManager convertFont:[fontExampleTextView font]];
   fontName = [font fontName];
   fontSize = [font pointSize];
-  fontKey = [fontCategories()
-                objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
+  fontKey = [fontCategories
+              objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
 
   if ([fontKey isEqualToString:@"NSUserFont"]) { // Application
     // NSUserFont, NSUserFontSize=12
@@ -508,6 +497,7 @@ NSString *WWMDefaultsPath(void)
     setFloatDefault(fontSize, @"NSToolTipsFontSize");
   }
 
+  [defaults synchronize];
   [self updateUI];
 }
 
