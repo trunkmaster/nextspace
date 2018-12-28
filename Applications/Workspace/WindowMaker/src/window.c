@@ -2348,6 +2348,7 @@ void wWindowConfigureBorders(WWindow *wwin)
 
 		oldh = wwin->frame->top_width;
 		wFrameWindowUpdateBorders(wwin->frame, flags);
+    wFrameWindowPaint(wwin->frame);
 		if (oldh != wwin->frame->top_width) {
 			newy = wwin->frame_y + oldh - wwin->frame->top_width;
 
