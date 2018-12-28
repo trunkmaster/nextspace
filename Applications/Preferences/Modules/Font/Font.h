@@ -50,6 +50,8 @@
   IBOutlet NSWindow      *window;
   IBOutlet id            view;
 
+  NSDictionary		 *fontCategories;
+
   NSImage		 *image;
   NSString		 *exampleString;
   NSString		 *normalExampleString;
