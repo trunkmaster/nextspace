@@ -318,17 +318,13 @@
   NXDefaults   *df = [NXDefaults userDefaults];
 
   // Create window
-  if (isRootViewer)
-    {
-      styleMask = 
-	NSTitledWindowMask | NSMiniaturizableWindowMask 
-	| NSResizableWindowMask;
-    }
-  else
-    {
-      styleMask = 
-	NSTitledWindowMask | NSMiniaturizableWindowMask 
-	| NSResizableWindowMask | NSClosableWindowMask;
+  if (isRootViewer) {
+    styleMask = (NSTitledWindowMask | NSMiniaturizableWindowMask
+                 | NSResizableWindowMask);
+  }
+  else {
+    styleMask = (NSTitledWindowMask | NSMiniaturizableWindowMask
+                 | NSResizableWindowMask | NSClosableWindowMask);
     }
 
   // window = [[NSWindow alloc] initWithContentRect:contentRect
