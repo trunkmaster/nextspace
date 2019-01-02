@@ -12,7 +12,7 @@
 
 @interface AppController : NSObject
 {
-  PulseAudio    *audioServer;
+  id            audioServer;
   
   NSPopUpButton *sectionType;
   

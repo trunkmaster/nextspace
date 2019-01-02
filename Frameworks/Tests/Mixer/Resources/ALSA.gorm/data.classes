@@ -1,0 +1,39 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    ALSA = {
+	Actions = (
+	    "setVolume:"
+	);
+	Outlets = (
+	    volL,
+	    volR,
+	    volLock,
+	    volMute,
+	    bassL,
+	    bassR,
+	    bassLock,
+	    bassMute,
+	    trebleL,
+	    trebleR,
+	    trebleLock,
+	    trebleMute,
+	    pcmL,
+	    pcmR,
+	    pcmLock,
+	    pcmMute,
+	    lineL,
+	    lineR,
+	    lineLock,
+	    lineMute,
+	    window
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "setVolume:"
+	);
+	Super = NSObject;
+    };
+}

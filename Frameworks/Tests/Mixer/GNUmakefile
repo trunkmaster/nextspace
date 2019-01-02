@@ -33,8 +33,7 @@ GNUSTEP_INSTALLATION_DOMAIN = LOCAL
 # Resource files
 #
 Mixer_RESOURCE_FILES = \
-Resources/Mixer.gorm \
-
+Resources/Mixer.gorm
 
 #
 # Header files
@@ -47,8 +46,15 @@ PulseAudio.h
 # Objective-C Class files
 #
 Mixer_OBJC_FILES = \
-AppController.m \
-PulseAudio.m
+AppController.m
+
+
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+  Mixer_OBJC_FILES += PulseAudio.m ALSA.m
+  Mixer_RESOURCE_FILES += Resources/ALSA.gorm
+else
+  Mixer_OBJC_FILES += Generic.m
+endif
 
 #
 # Other sources

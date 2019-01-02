@@ -2,9 +2,7 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     AppController = {
 	Actions = (
-	    "showPrefPanel:",
-	    "openPulseAudioPanel:",
-	    "openALSAPanel:"
+	    "showPrefPanel:"
 	);
 	Outlets = (
 	);
@@ -12,8 +10,6 @@
     };
     FirstResponder = {
 	Actions = (
-	    "openPulseAudioPanel:",
-	    "openALSAPanel:",
 	    "orderFrontFontPanel:",
 	    "showPrefPanel:"
 	);
