@@ -222,7 +222,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       break;
 		case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
       fprintf(stderr, "[WM] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win);
-			wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+			XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       focus_succeeded = True;
 			break;
 		case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
