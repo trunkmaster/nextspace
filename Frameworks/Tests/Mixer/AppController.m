@@ -5,6 +5,7 @@
    Application Controller
 */
 
+#import "ALSA.h"
 #import "PulseAudio.h"
 #import "AppController.h"
 
@@ -19,7 +20,6 @@
 
 - (void)awakeFromNib
 {
-  audioServer = [[PulseAudio alloc] init];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
@@ -33,6 +33,26 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
+}
+
+// --- Menu actions
+
+- (void)openALSAPanel:(id)sender
+{
+  if (audioServer) {
+    [audioServer release];
+  }
+  audioServer = [[ALSA alloc] init];
+  if ([audioServer responds])
+  [audioServer showPanel];
+}
+
+- (void)openPulseAudioPanel:(id)sender
+{
+  if (audioServer) {
+    [audioServer release];
+  }
+  audioServer = [[PulseAudio alloc] init];
 }
 
 @end

@@ -215,4 +215,5 @@ void pa_sourcelist_cb(pa_context *c, const pa_source_info *l,
     pa_mainloop_iterate(pa_loop, 1, NULL);
   }
 }
+
 @end
