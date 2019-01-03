@@ -3,6 +3,7 @@
     ApplicationDescription = "Sound Mixer for NEXTSPACE";
     ApplicationName = Mixer;
     ApplicationRelease = "0.1";
+    ApplicationIcon = Sound.tiff;
     Authors = (
 	"Sergii Stoian <stoyan255@gmail.com>"
     );
@@ -11,6 +12,7 @@
     FullVersionID = "0.1";
     NSExecutable = Mixer;
     NSMainNibFile = "Mixer.gorm";
+    NSIcon = Sound.tiff;
     NSPrincipalClass = NSApplication;
     NSRole = Application;
 }

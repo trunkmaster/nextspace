@@ -3,20 +3,11 @@
 #import <alsa/asoundlib.h>
 
 #import "ALSA.h"
+#import "ALSAElement.h"
 
-static snd_mixer_t      *handle;
-static snd_mixer_elem_t *volumeElem;
-static snd_mixer_elem_t *bassElem;
-static snd_mixer_elem_t *trebleElem;
-static snd_mixer_elem_t *pcmElem;
-static snd_mixer_elem_t *lineElem;
+static snd_mixer_t      *mixer;
+static char		*mixer_name;
 static BOOL             mixerOpened = NO;
-
-/* The "default" device seems to be managed by pulseaudio these days
-   (at least on most desktops), so stick to the real one.  This
-   doesn't cope well with multiple cards, but we have a hardcoded GUI
-   anyway so that is the last problem.  */
-#define DEVICE_NAME "default"
 
 /* Convenience macro to die in informational manner.  */
 #define DIE(msg) {                                                     \
@@ -26,417 +17,165 @@ static BOOL             mixerOpened = NO;
     exit(EXIT_FAILURE);                                                \
   }
 
+@interface ALSAElementsView : NSView
+{
+  NSView *lastAddedElement;
+}
+- (void)addElement:(ALSAElement *)element;
+@end
+@implementation ALSAElementsView
+- (BOOL)isFlipped
+{
+  return YES;
+}
+- (void)addElement:(ALSAElement *)element
+{
+  [[element view] setFrameOrigin:NSMakePoint()];
+  [super addSubview:[element view]
+         positioned:NSWindowAbove
+         relativeTo:lastAddedElement];
+  lastAddedElement = [element view];
+}
+@end
+
 @implementation ALSA
 
 - (void)dealloc
 {
-  snd_mixer_detach(handle, DEVICE_NAME);
-  snd_mixer_close(handle);
+  snd_mixer_detach(mixer, mixer_name);
+  snd_mixer_close(mixer);
   
   [super dealloc];
 }
 
-/* read volume settings, and set buttons */
-- (void)awakeFromNib
+struct card {
+  struct card	*next;
+  int		index;
+  char		*indexstr;
+  char		*name;
+  char		*device_name;
+};
+static struct card first_card;
+
+- (struct card *)_enumerateCards
 {
-  snd_mixer_elem_t     *elem;
-  snd_mixer_selem_id_t *sid;
-  long                 lvol, lvol_r, min, max;
+  snd_ctl_card_info_t	*info;
+  struct card 		*card, *prev_card;
+  int 			count, number, err;
+  char 			buf[16];
+  snd_ctl_t		*ctl;
+  
+  first_card.indexstr = "-";
+  first_card.name = "Default";
+  first_card.device_name = "default";
+  count = 1;
 
-  if (!mixerOpened)
-    [self openMixer];
-
-  snd_mixer_selem_id_alloca(&sid);
-
-  for (elem = snd_mixer_first_elem(handle); elem; elem = snd_mixer_elem_next(elem)) {
-    if (snd_mixer_selem_is_active(elem) && snd_mixer_selem_has_playback_volume(elem)) {
-      /* Because our controls are hardcoded in the .gorm file we
-         can't construct the UI on the fly based on the
-         available elements, as it should be done normally.  So
-         resort to dumb parsing in the hope that the names of
-         the elements match ours.  This is far from ideal; the
-         master element may be called "Front", for example.  */
-      snd_mixer_selem_get_id(elem, sid);
-      if (!strcmp(snd_mixer_selem_id_get_name(sid), "Master")) {
-        snd_mixer_selem_get_playback_volume (elem, SND_MIXER_SCHN_FRONT_LEFT, &lvol);
-        snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-        [volL setMinValue:min];
-        [volL setMaxValue:max];
-        [volL setIntValue:lvol];
-        [volR setMinValue:min];
-        [volR setMaxValue:max];
-        if (snd_mixer_selem_is_playback_mono(elem)) {
-          [volR setIntValue:lvol];
-        }
-        else {
-          snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_RIGHT, &lvol_r);
-          [volR setIntValue:lvol_r];
-        }
-
-        volumeElem = elem;
-      }
-
-      /* It seems that most cards do not have bass/treble
-         controls.  Oh well.  */
-      if (!strcmp(snd_mixer_selem_id_get_name(sid), "Bass")) {
-        snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &lvol);
-        snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-        [bassL setMinValue:min];
-        [bassL setMaxValue:max];
-        [bassL setIntValue:lvol];
-        [bassR setMinValue:min];
-        [bassR setMaxValue:max];
-
-        if (snd_mixer_selem_is_playback_mono(elem)) {
-          [bassR setIntValue:lvol];
-        }
-        else {
-          snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_RIGHT, &lvol_r);
-          [bassR setIntValue:lvol_r];
-        }
-
-        bassElem = elem;
-      }
-
-      if (!strcmp(snd_mixer_selem_id_get_name(sid), "Treble")) {
-        snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &lvol);
-        snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-        [trebleL setMinValue:min];
-        [trebleL setMaxValue:max];
-        [trebleL setIntValue:lvol];
-        [trebleR setMinValue:min];
-        [trebleR setMaxValue:max];
-
-        if (snd_mixer_selem_is_playback_mono(elem)) {
-          [trebleR setIntValue:lvol];
-        }
-        else {
-          snd_mixer_selem_get_playback_volume (elem, SND_MIXER_SCHN_FRONT_RIGHT, &lvol_r);
-          [trebleR setIntValue:lvol_r];
-        }
-
-        trebleElem = elem;
-      }
-
-      if (!strcmp(snd_mixer_selem_id_get_name(sid), "PCM")) {
-        snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &lvol);
-        snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-        [pcmL setMinValue:min];
-        [pcmL setMaxValue:max];
-        [pcmL setIntValue:lvol];
-        [pcmR setMinValue:min];
-        [pcmR setMaxValue:max];
-        if (snd_mixer_selem_is_playback_mono(elem)) {
-          [pcmR setIntValue:lvol];
-        }
-        else {
-          snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_RIGHT, &lvol_r);
-          [pcmR setIntValue:lvol_r];
-        }
-
-        pcmElem = elem;
-      }
-
-      if (!strcmp (snd_mixer_selem_id_get_name(sid), "Line")) {
-        snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &lvol);
-        snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-        [lineL setMinValue:min];
-        [lineL setMaxValue:max];
-        [lineL setIntValue:lvol];
-        [lineR setMinValue:min];
-        [lineR setMaxValue:max];
-
-        if (snd_mixer_selem_is_playback_mono(elem)) {
-          [lineR setIntValue:lvol];
-        }
-        else {
-          snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_RIGHT, &lvol_r);
-          [lineR setIntValue:lvol_r];
-        }
-
-        lineElem = elem;
-      }
-    }
+  snd_ctl_card_info_alloca(&info);
+  prev_card = &first_card;
+  number = -1;
+  
+  for (;;) {
+    err = snd_card_next(&number);
+    
+    if (err < 0)
+      fprintf(stderr, "ALSA: cannot enumerate sound cards: %i\n", err);
+    if (number < 0)
+      break;
+    
+    sprintf(buf, "hw:%d", number);
+    err = snd_ctl_open(&ctl, buf, 0);
+    if (err < 0)
+      continue;
+    
+    err = snd_ctl_card_info(ctl, info);
+    snd_ctl_close(ctl);
+    if (err < 0)
+      continue;
+    
+    card = calloc(1, sizeof *card);
+    card->index = number;
+    sprintf(buf, "%d", number);
+    card->indexstr = strdup(buf);
+    
+    card->name = strdup(snd_ctl_card_info_get_name(info));
+    sprintf(buf, "hw:%d", number);
+    
+    card->device_name = strdup(buf);
+    
+    prev_card->next = card;
+    prev_card = card;
+    ++count;
   }
 
-  /* Disable controls that are beyond our control.  */
-  if (!volumeElem) { /* <= Could happen in practice...  */
-    [volL setEnabled:NO];
-    [volR setEnabled:NO];
-    [volMute setEnabled:NO];
-    [volLock setEnabled:NO];
-  }
-  if (!bassElem) {
-    [bassL setEnabled:NO];
-    [bassR setEnabled:NO];
-    [bassMute setEnabled:NO];
-    [bassLock setEnabled:NO];
-  }
-  if (!trebleElem) {
-    [trebleL setEnabled:NO];
-    [trebleR setEnabled:NO];
-    [trebleMute setEnabled:NO];
-    [trebleLock setEnabled:NO];
-  }
-  if (!pcmElem) {
-    [pcmL setEnabled:NO];
-    [pcmR setEnabled:NO];
-    [pcmMute setEnabled:NO];
-    [pcmLock setEnabled:NO];
-  }
-  if (!lineElem) {
-    [lineL setEnabled:NO];
-    [lineR setEnabled:NO];
-    [lineMute setEnabled:NO];
-    [lineLock setEnabled:NO];
-  }
+  return &first_card;
 }
 
-- (void)showPanel
+- (void)_openMixer
 {
-  if (window == nil) {
-    [NSBundle loadNibNamed:@"ALSA" owner:self];
-  }
-  [window makeKeyAndOrderFront:self];
-}
-
-- (void)refresh
-{
-  int poll_count, fill_count;
-  long lvol, lvol_r;
-  struct pollfd *polls;
-  unsigned short revents;
-
-  poll_count = snd_mixer_poll_descriptors_count (handle);
-  if (poll_count <= 0)
-    DIE (@"Cannot obtain mixer poll descriptors.");
-
-  polls = alloca ((poll_count + 1) * sizeof (struct pollfd));
-  fill_count = snd_mixer_poll_descriptors (handle, polls, poll_count);
-  NSAssert (poll_count = fill_count, @"poll counts differ");
-
-  poll (polls, fill_count + 1, 5);
-
-  /* Ensure that changes made via other programs (alsamixer, etc.) get
-     reflected as well.  */
-  snd_mixer_poll_descriptors_revents (handle, polls, poll_count, &revents);
-  if (revents & POLLIN)
-    snd_mixer_handle_events (handle);
-
-  if (volumeElem)
-    {
-      snd_mixer_selem_get_playback_volume (volumeElem,
-					   SND_MIXER_SCHN_FRONT_LEFT,
-					   &lvol);
-      [volL setIntValue: lvol];
-      if (snd_mixer_selem_is_playback_mono (volumeElem))
-	[volR setIntValue: lvol];
-      else
-	{
-	  snd_mixer_selem_get_playback_volume (volumeElem,
-					       SND_MIXER_SCHN_FRONT_RIGHT,
-					       &lvol_r);
-	  [volR setIntValue: lvol_r];
-	}
-    }
-
-  if (bassElem)
-    {
-      snd_mixer_selem_get_playback_volume (bassElem,
-					   SND_MIXER_SCHN_FRONT_LEFT,
-					   &lvol);
-      [bassL setIntValue: lvol];
-      if (snd_mixer_selem_is_playback_mono (bassElem))
-	[bassR setIntValue: lvol];
-      else
-	{
-	  snd_mixer_selem_get_playback_volume (bassElem,
-					       SND_MIXER_SCHN_FRONT_RIGHT,
-					       &lvol_r);
-	  [bassR setIntValue: lvol_r];
-	}
-    }
-
-  if (trebleElem)
-    {
-      snd_mixer_selem_get_playback_volume (trebleElem,
-					   SND_MIXER_SCHN_FRONT_LEFT,
-					   &lvol);
-      [trebleL setIntValue: lvol];
-      if (snd_mixer_selem_is_playback_mono (trebleElem))
-	[trebleR setIntValue: lvol];
-      else
-	{
-	  snd_mixer_selem_get_playback_volume (trebleElem,
-					       SND_MIXER_SCHN_FRONT_RIGHT,
-					       &lvol_r);
-	  [trebleR setIntValue: lvol_r];
-	}
-    }
-
-  if (pcmElem)
-    {
-      snd_mixer_selem_get_playback_volume (pcmElem,
-					   SND_MIXER_SCHN_FRONT_LEFT,
-					   &lvol);
-      [pcmL setIntValue: lvol];
-      if (snd_mixer_selem_is_playback_mono (pcmElem))
-	[pcmR setIntValue: lvol];
-      else
-	{
-	  snd_mixer_selem_get_playback_volume (pcmElem,
-					       SND_MIXER_SCHN_FRONT_RIGHT,
-					       &lvol_r);
-	  [pcmR setIntValue: lvol_r];
-	}
-    }
-
-  if (lineElem)
-    {
-      snd_mixer_selem_get_playback_volume (lineElem,
-					   SND_MIXER_SCHN_FRONT_LEFT,
-					   &lvol);
-      [lineL setIntValue: lvol];
-      if (snd_mixer_selem_is_playback_mono (lineElem))
-	[lineR setIntValue: lvol];
-      else
-	{
-	  snd_mixer_selem_get_playback_volume (lineElem,
-					       SND_MIXER_SCHN_FRONT_RIGHT,
-					       &lvol_r);
-	  [lineR setIntValue: lvol_r];
-	}
-    }
-}
-
-- (void)openMixer
-{
-  if (snd_mixer_open(&handle, 0) < 0)
+  if (snd_mixer_open(&mixer, 0) < 0)
     DIE(@"Cannot open mixer.");
-  if (snd_mixer_attach(handle, DEVICE_NAME) < 0)
+  if (snd_mixer_attach(mixer, mixer_name) < 0)
     DIE(@"Cannot attach mixer.");
-  if (snd_mixer_selem_register(handle, NULL, NULL) < 0)
+  if (snd_mixer_selem_register(mixer, NULL, NULL) < 0)
     DIE (@"Cannot register the mixer elements.");
-  if (snd_mixer_load(handle) < 0)
+  if (snd_mixer_load(mixer) < 0)
     DIE (@"Cannot load mixer.");
 
-  [NSTimer scheduledTimerWithTimeInterval:0.5
-                                   target:self
-                                 selector:@selector(refresh)
-                                 userInfo:nil
-                                  repeats:YES];
-  [NSApp setDelegate:self];
+  // [NSTimer scheduledTimerWithTimeInterval:0.5
+  //                                  target:self
+  //                                selector:@selector(refresh)
+  //                                userInfo:nil
+  //                                 repeats:YES];
+  // [NSApp setDelegate:self];
   mixerOpened = YES;
 }
 
-/* set volume according to the buttons */
-- (void)setVolume:(id)sender
+- (void)_closeMixer
 {
-  long vol;
+  snd_mixer_detach(mixer, mixer_name);
+  snd_mixer_close(mixer);
+}
 
-  if (volumeElem) {
-    if (![volMute state]) {
-      vol = [volL intValue];
-      snd_mixer_selem_set_playback_volume(volumeElem, SND_MIXER_SCHN_FRONT_LEFT, vol);
-      if ([volLock state]) {
-        [volR setIntValue:vol];
-        if (!snd_mixer_selem_is_playback_mono(volumeElem))
-          snd_mixer_selem_set_playback_volume(volumeElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-      else if (!snd_mixer_selem_is_playback_mono(volumeElem)) {
-        vol = [volR intValue];
-        snd_mixer_selem_set_playback_volume(volumeElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-    }
-    else {
-      snd_mixer_selem_set_playback_volume(volumeElem, SND_MIXER_SCHN_FRONT_LEFT, 0);
-      if (!snd_mixer_selem_is_playback_mono(volumeElem))
-        snd_mixer_selem_set_playback_volume(volumeElem, SND_MIXER_SCHN_FRONT_RIGHT, 0);
-    }
+- (void)awakeFromNib
+{
+  struct card *card = [self _enumerateCards];
+
+  [cardsList setRefusesFirstResponder:YES];
+  [viewMode setRefusesFirstResponder:YES];
+  
+  [cardsList removeAllItems];
+  while (card) {
+    [cardsList addItemWithTitle:[NSString stringWithCString:card->name]];
+    [[cardsList itemWithTitle:[NSString stringWithCString:card->name]]
+      setTag:card->index];
+    card = card->next;
   }
 
-  if (bassElem) {
-    if (![bassMute state]) {
-      vol = [bassL intValue];
-      snd_mixer_selem_set_playback_volume(bassElem, SND_MIXER_SCHN_FRONT_LEFT, vol);
-      if ([bassLock state]) {
-        [bassR setIntValue: vol];
-        if (!snd_mixer_selem_is_playback_mono(bassElem))
-          snd_mixer_selem_set_playback_volume(bassElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-      else if (!snd_mixer_selem_is_playback_mono (bassElem)) {
-        vol = [bassR intValue];
-        snd_mixer_selem_set_playback_volume(bassElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-    }
-    else {
-      snd_mixer_selem_set_playback_volume (bassElem, SND_MIXER_SCHN_FRONT_LEFT, 0);
-      if (!snd_mixer_selem_is_playback_mono (bassElem))
-        snd_mixer_selem_set_playback_volume (bassElem, SND_MIXER_SCHN_FRONT_RIGHT, 0);
-    }
-  }
+  elementsScroll = [[NSScrollView alloc] initWithFrame:NSMakeRect(-2,-2,402,536)];
+  [elementsScroll setHasVerticalScroller:YES];
+  [elementsScroll setHasHorizontalScroller:NO];
+  [elementsScroll setBorderType:NSBezelBorder];
+  [elementsScroll setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+  [[alsaWindow contentView] addSubview:elementsScroll];
 
-  if (trebleElem) {
-    if (![trebleMute state]) {
-      vol = [trebleL intValue];
-      snd_mixer_selem_set_playback_volume(trebleElem, SND_MIXER_SCHN_FRONT_LEFT, vol);
-      if ([trebleLock state]) {
-        [trebleR setIntValue: vol];
-        if (!snd_mixer_selem_is_playback_mono(trebleElem))
-          snd_mixer_selem_set_playback_volume(trebleElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-      else if (!snd_mixer_selem_is_playback_mono (trebleElem))
-        vol = [trebleR intValue];
-      snd_mixer_selem_set_playback_volume(trebleElem, SND_MIXER_SCHN_FRONT_RIGHT,vol);
-    }
-    else {
-      snd_mixer_selem_set_playback_volume(trebleElem, SND_MIXER_SCHN_FRONT_LEFT, 0);
-      if (!snd_mixer_selem_is_playback_mono (trebleElem))
-        snd_mixer_selem_set_playback_volume (trebleElem, SND_MIXER_SCHN_FRONT_RIGHT, 0);
-    }
-  }
+  elementsView = [[ALSAElementsView alloc] initWithFrame:[elementsScroll documentVisibleRect]];
+  [elementsScroll setDocumentView:elementsView];
 
-  if (pcmElem) {
-    if (![pcmMute state]) {
-      vol = [pcmL intValue];
-      snd_mixer_selem_set_playback_volume(pcmElem, SND_MIXER_SCHN_FRONT_LEFT, vol);
-      if ([pcmLock state]) {
-        [pcmR setIntValue:vol];
-        if (!snd_mixer_selem_is_playback_mono (pcmElem))
-          snd_mixer_selem_set_playback_volume (pcmElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-      else if (!snd_mixer_selem_is_playback_mono (pcmElem)) {
-        vol = [pcmR intValue];
-        snd_mixer_selem_set_playback_volume (pcmElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-    }
-    else {
-      snd_mixer_selem_set_playback_volume (pcmElem, SND_MIXER_SCHN_FRONT_LEFT, 0);
-      if (!snd_mixer_selem_is_playback_mono (pcmElem))
-        snd_mixer_selem_set_playback_volume (pcmElem, SND_MIXER_SCHN_FRONT_RIGHT, 0);
-    }
-  }
+  [elementsView addElement:[[ALSAElement alloc] init]];
+  [elementsView addElement:[[ALSAElement alloc] init]];
 
-  if (lineElem) {
-    if (![lineMute state]) {
-      vol = [lineL intValue];
-      snd_mixer_selem_set_playback_volume(lineElem, SND_MIXER_SCHN_FRONT_LEFT, vol);
-      if ([lineLock state]) {
-        [lineR setIntValue: vol];
-        if (!snd_mixer_selem_is_playback_mono(lineElem))
-          snd_mixer_selem_set_playback_volume (lineElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-      else if (!snd_mixer_selem_is_playback_mono (lineElem)) {
-        vol = [lineR intValue];
-        snd_mixer_selem_set_playback_volume (lineElem, SND_MIXER_SCHN_FRONT_RIGHT, vol);
-      }
-    }
-    else {
-      snd_mixer_selem_set_playback_volume (lineElem, SND_MIXER_SCHN_FRONT_LEFT, 0);
-      if (!snd_mixer_selem_is_playback_mono (lineElem))
-        snd_mixer_selem_set_playback_volume (lineElem, SND_MIXER_SCHN_FRONT_RIGHT, 0);
-    }
+  // snd_mixer_elem_t *elem;
+  // for (elem = snd_mixer_first_elem(handle); elem; elem = snd_mixer_elem_next(elem)) {
+  //   controls_count += get_controls_count_for_elem(elem);
+  // }
+} 
+
+- (void)showPanel
+{
+  if (alsaWindow == nil) {
+    [NSBundle loadNibNamed:@"ALSA" owner:self];
   }
+  [alsaWindow makeKeyAndOrderFront:self];
 }
 
 @end

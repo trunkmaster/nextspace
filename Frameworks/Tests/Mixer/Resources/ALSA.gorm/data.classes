@@ -25,7 +25,11 @@
 	    lineR,
 	    lineLock,
 	    lineMute,
-	    window
+	    window,
+	    cardsList,
+	    elementsView,
+	    alsaWindow,
+	    viewMode
 	);
 	Super = NSObject;
     };
