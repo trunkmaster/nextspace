@@ -25,22 +25,19 @@ include $(GNUSTEP_MAKEFILES)/common.make
 VERSION = 0.1
 PACKAGE_NAME = Mixer
 APP_NAME = Mixer
-Mixer_APPLICATION_ICON = 
+Mixer_APPLICATION_ICON = Sound.tiff
 GNUSTEP_INSTALLATION_DOMAIN = LOCAL
 
 
 #
 # Resource files
 #
-Mixer_RESOURCE_FILES = \
-Resources/Mixer.gorm
+Mixer_RESOURCE_FILES = Resources/Mixer.gorm Resources/Sound.tiff
 
 #
 # Header files
 #
-Mixer_HEADER_FILES = \
-AppController.h \
-PulseAudio.h
+#Mixer_HEADER_FILES =
 
 #
 # Objective-C Class files
@@ -50,8 +47,8 @@ AppController.m
 
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  Mixer_OBJC_FILES += PulseAudio.m ALSA.m
-  Mixer_RESOURCE_FILES += Resources/ALSA.gorm
+  Mixer_OBJC_FILES += PulseAudio.m ALSA.m ALSAElement.m
+  Mixer_RESOURCE_FILES += Resources/ALSA.gorm Resources/ALSAElement.gorm
 else
   Mixer_OBJC_FILES += Generic.m
 endif

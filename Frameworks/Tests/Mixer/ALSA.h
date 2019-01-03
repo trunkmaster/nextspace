@@ -3,6 +3,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@class ALSAElementsView;
+
 @interface ALSA : NSObject
 {
   NSTimer *timer;
@@ -33,11 +35,15 @@
   id lineR;
   id lineLock;
   id lineMute;
+
+  NSWindow	*alsaWindow;
+  NSPopUpButton	*cardsList;
+  NSPopUpButton	*viewMode;
+  
+  NSScrollView		*elementsScroll;
+  ALSAElementsView	*elementsView;
 }
 
 - (void)showPanel;
-- (void)refresh;
-- (void)openMixer;
-- (void)setVolume:(id)sender;
 
 @end
