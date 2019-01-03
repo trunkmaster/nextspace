@@ -38,7 +38,6 @@
 - (void)showPanel;
 - (void)refresh;
 - (void)openMixer;
-- (void)controlNotAvailable:(id)sender;
 - (void)setVolume:(id)sender;
 
 @end

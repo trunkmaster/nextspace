@@ -43,8 +43,9 @@
     [audioServer release];
   }
   audioServer = [[ALSA alloc] init];
-  if ([audioServer responds])
-  [audioServer showPanel];
+  if ([audioServer respondsToSelector:@selector(showPanel)]) {
+    [audioServer showPanel];
+  }
 }
 
 - (void)openPulseAudioPanel:(id)sender
