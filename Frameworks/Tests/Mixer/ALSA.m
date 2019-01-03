@@ -16,7 +16,7 @@ static BOOL             mixerOpened = NO;
    (at least on most desktops), so stick to the real one.  This
    doesn't cope well with multiple cards, but we have a hardcoded GUI
    anyway so that is the last problem.  */
-#define DEVICE_NAME "hw:0"
+#define DEVICE_NAME "default"
 
 /* Convenience macro to die in informational manner.  */
 #define DIE(msg) {                                                     \
@@ -161,31 +161,31 @@ static BOOL             mixerOpened = NO;
 
   /* Disable controls that are beyond our control.  */
   if (!volumeElem) { /* <= Could happen in practice...  */
-    [volL setAction:@selector(controlNotAvailable:)];
+    [volL setEnabled:NO];
     [volR setEnabled:NO];
     [volMute setEnabled:NO];
     [volLock setEnabled:NO];
   }
   if (!bassElem) {
-    [bassL setAction:@selector(controlNotAvailable:)];
+    [bassL setEnabled:NO];
     [bassR setEnabled:NO];
     [bassMute setEnabled:NO];
     [bassLock setEnabled:NO];
   }
   if (!trebleElem) {
-    [trebleL setAction:@selector(controlNotAvailable:)];
+    [trebleL setEnabled:NO];
     [trebleR setEnabled:NO];
     [trebleMute setEnabled:NO];
     [trebleLock setEnabled:NO];
   }
   if (!pcmElem) {
-    [pcmL setAction:@selector(controlNotAvailable:)];
+    [pcmL setEnabled:NO];
     [pcmR setEnabled:NO];
     [pcmMute setEnabled:NO];
     [pcmLock setEnabled:NO];
   }
   if (!lineElem) {
-    [lineL setAction:@selector(controlNotAvailable:)];
+    [lineL setEnabled:NO];
     [lineR setEnabled:NO];
     [lineMute setEnabled:NO];
     [lineLock setEnabled:NO];
@@ -327,16 +327,6 @@ static BOOL             mixerOpened = NO;
                                   repeats:YES];
   [NSApp setDelegate:self];
   mixerOpened = YES;
-}
-
-- (void)controlNotAvailable:(id)sender
-{
-  NSRunInformationalAlertPanel(@"Control missing",
-                               @"It looks like the sound card does not "
-                               @"have this type of control.",
-                               @"OK", nil, nil);
-  [sender setIntValue:0];
-  [sender setEnabled:NO];
 }
 
 /* set volume according to the buttons */
