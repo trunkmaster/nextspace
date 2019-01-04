@@ -1,0 +1,16 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    ALSAElement = {
+	Actions = (
+	);
+	Outlets = (
+	    box,
+	    volumeField,
+	    volumeSlider,
+	    balanceSlider,
+	    muteButton,
+	    window
+	);
+	Super = NSObject;
+    };
+}

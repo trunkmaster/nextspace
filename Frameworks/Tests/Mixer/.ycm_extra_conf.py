@@ -42,22 +42,24 @@ SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
 flags = [
-#'-MMD', '-MP', '-DGNUSTEP', '-DGNUSTEP_BASE_LIBRARY=1', '-DGNU_GUI_LIBRARY=1',
-#'-DGNU_RUNTIME=1', '-DGNUSTEP_BASE_LIBRARY=1', '-fno-strict-aliasing', '-fexceptions',
-#'-fobjc-exceptions', '-D_NATIVE_OBJC_EXCEPTIONS', '-fobjc-nonfragile-abi',
-#'-D_NONFRAGILE_ABI', '-pthread', '-fPIC', '-DDEBUG', '-fno-omit-frame-pointer',
-#'-Wall', '-DGSWARN', '-DGSDIAGNOSE', '-Wno-import', '-g', '-fblocks',
-#'-fobjc-runtime=gnustep-1.8', '-fgnu-runtime', '-fconstant-string-class=NSConstantString',
-'-I/Users/me/Library/Headers', '-I/Developer/Headers', '-I/usr/NextSpace/include',
-#'-x objc',
-#'-Objc'
+'-MMD', '-MP', '-DGNUSTEP', '-DGNUSTEP_BASE_LIBRARY=1', '-DGNU_GUI_LIBRARY=1',
+'-DGNU_RUNTIME=1', '-DGNUSTEP_BASE_LIBRARY=1', '-fno-strict-aliasing', '-fexceptions',
+'-fobjc-exceptions', '-D_NATIVE_OBJC_EXCEPTIONS', '-fobjc-nonfragile-abi',
+'-D_NONFRAGILE_ABI', '-pthread', '-fPIC', '-DDEBUG', '-fno-omit-frame-pointer',
+'-Wall', '-DGSWARN', '-DGSDIAGNOSE', '-Wno-import', '-g', '-fblocks',
+'-fobjc-runtime=gnustep-1.8', '-fgnu-runtime', '-fconstant-string-class=NSConstantString',
+'-x', 'objective-c',
+'-ObjC',
+'-I/Developer/Headers', '-I/usr/NextSpace/include', 
+'-resource-dir=/usr/lib64/clang/3.8.1/include',
+'-resource-dir=/Developer/Headers',
 ]
 
 # Clang automatically sets the '-std=' flag to 'c++14' for MSVC 2015 or later,
 # which is required for compiling the standard library, and to 'c++11' for older
 # versions.
-#if platform.system() != 'Windows':
-#  flags.append( '-std=c++11' )
+if platform.system() != 'Windows':
+  flags.append( '-std=c++11' )
 
 
 # Set this to the absolute path to the folder (NOT the file!) containing the
@@ -70,6 +72,7 @@ flags = [
 #
 # Most projects will NOT need to set this to anything; you can just change the
 # 'flags' list of compilation flags. Notice that YCM itself uses that approach.
+#compilation_database_folder = '/Users/me/Developer/nextspace/Framework/Tests/Mixer'
 compilation_database_folder = ''
 
 if p.exists( compilation_database_folder ):
@@ -118,7 +121,7 @@ def Settings( **kwargs ):
     if not database:
       return {
         'flags': flags,
-#        'include_paths_relative_to_dir': DIR_OF_THIS_SCRIPT,
+        'include_paths_relative_to_dir': DIR_OF_THIS_SCRIPT,
         'override_filename': filename
       }
 
