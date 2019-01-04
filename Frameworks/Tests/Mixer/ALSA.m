@@ -3,6 +3,7 @@
 #import <alsa/asoundlib.h>
 
 #import "ALSA.h"
+#import "ALSACard.h"
 #import "ALSAElement.h"
 
 static BOOL mixerOpened = NO;
@@ -21,6 +22,7 @@ static BOOL mixerOpened = NO;
 }
 - (void)addElement:(ALSAElement *)element;
 @end
+
 @implementation ALSAElementsView
 - (BOOL)isFlipped
 {
@@ -31,12 +33,23 @@ static BOOL mixerOpened = NO;
   NSRect laeFrame = [lastAddedElement frame];
   NSRect eFrame = [[element view] frame];
 
-  eFrame.origin.y = laeFrame.origin.y + laeFrame.size.height;
-  [[element view] setFrameOrigin:eFrame.origin];
-  [super addSubview:[element view]
-         positioned:NSWindowAbove
-         relativeTo:lastAddedElement];
+  if (lastAddedElement == nil) {
+    laeFrame = NSMakeRect(0, -eFrame.size.height, eFrame.size.width, eFrame.size.height);
+  }
+
+  eFrame.origin.y = laeFrame.origin.y + laeFrame.size.height + 8;
+  eFrame.origin.x = 10;
+  eFrame.size.width = _frame.size.width - 20;
+  [[element view] setFrame:eFrame];
+  
+  [super addSubview:[element view]];
   lastAddedElement = [element view];
+
+  NSRect frame = [self frame];
+  if (NSMaxY(eFrame) > frame.size.height) {
+    frame.size.height = eFrame.origin.y + eFrame.size.height + 8;
+    [self setFrame:frame];
+  }
 }
 @end
 
@@ -63,12 +76,6 @@ struct card {
   if (snd_mixer_load(mixer) < 0)
     DIE (@"Cannot load mixer.");
 
-  // [NSTimer scheduledTimerWithTimeInterval:0.5
-  //                                  target:self
-  //                                selector:@selector(refresh)
-  //                                userInfo:nil
-  //                                 repeats:YES];
-  // [NSApp setDelegate:self];
   mixerOpened = YES;
 
   return mixer;
@@ -79,23 +86,6 @@ struct card {
   snd_mixer_detach(mixer, mixer_name);
   snd_mixer_close(mixer);
 }
-
-struct element {
-  struct element   *next;
-  snd_mixer_elem_t *elem;
-  int              index;
-  char             *name;
-  int              playback_volume;
-  int              playback_volume_min;
-  int              playback_volume_max;
-  int              capture_volume;
-  struct {
-    int is_active:1;
-    int is_mono:1;
-    int is_playback:1;
-    int has_common_volume:1;
-  } flags;
-};
 
 - (struct card *)_enumerateCards
 {
@@ -179,24 +169,15 @@ struct element {
 {
   snd_mixer_t          *mixer;
   snd_mixer_elem_t     *elem;
-  snd_mixer_selem_id_t *selem_id;
   
   while (card) {
     fprintf(stderr, "Mixer elements for `%s`:\n", card->device_name);
     mixer = [self _openMixerWithName:card->device_name];
   
-    snd_mixer_selem_id_alloca(&selem_id);
-  
     for (elem = snd_mixer_first_elem(mixer); elem; elem = snd_mixer_elem_next(elem)) {
-      // controls_count += get_controls_count_for_elem(elem);
-      snd_mixer_selem_get_id(elem, selem_id);
-      fprintf(stderr, "\t%s (active:%i, capture:%i, common_switch:%i playback_switch:%i)\n",
-              snd_mixer_selem_id_get_name(selem_id),
-              snd_mixer_selem_is_active(elem),
-              snd_mixer_selem_has_capture_volume(elem),
-              snd_mixer_selem_has_common_switch(elem),
-              snd_mixer_selem_has_playback_switch(elem));
+      [elementsList addObject:[[ALSAElement alloc] initWithElement:elem mixer:mixer]];
     }
+    
     [self _closeMixer:mixer withName:card->device_name];
     card = card->next;
   }
@@ -204,45 +185,81 @@ struct element {
 
 - (void)awakeFromNib
 {
-  struct card *first_card;
-  struct card *card = [self _enumerateCards];
-
-  first_card = card;
+  // struct card *first_card;
+  // struct card *card;
+  ALSACard    *alsaCard;
 
   [cardsList setRefusesFirstResponder:YES];
   [viewMode setRefusesFirstResponder:YES];
   
   [cardsList removeAllItems];
-  while (card) {
-    [cardsList addItemWithTitle:[NSString stringWithCString:card->name]];
-    [[cardsList itemWithTitle:[NSString stringWithCString:card->name]]
-      setTag:card->index];
-    card = card->next;
+
+  for (int number = 0, err = 0; err >= 0 && number >= 0; err = snd_card_next(&number)) {
+    alsaCard = [[ALSACard alloc] initWithNumber:number];
+    if (alsaCard) {
+      [cardsList addItemWithTitle:[alsaCard name]];
+      [[cardsList itemWithTitle:[alsaCard name]] setRepresentedObject:alsaCard];
+      [alsaCard release];
+    }
   }
+    
+  // card = [self _enumerateCards];
+  // first_card = card;
+  // while (card) {
+  //   [cardsList addItemWithTitle:[NSString stringWithCString:card->name]];
+  //   [[cardsList itemWithTitle:[NSString stringWithCString:card->name]] setTag:card->index];
+  //   card = card->next;
+  // }
 
   elementsScroll = [[NSScrollView alloc] initWithFrame:NSMakeRect(-2,-2,402,536)];
   [elementsScroll setHasVerticalScroller:YES];
   [elementsScroll setHasHorizontalScroller:NO];
   [elementsScroll setBorderType:NSBezelBorder];
   [elementsScroll setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
-  [[alsaWindow contentView] addSubview:elementsScroll];
+  [[window contentView] addSubview:elementsScroll];
 
   elementsView = [[ALSAElementsView alloc]
                    initWithFrame:[elementsScroll documentVisibleRect]];
   [elementsScroll setDocumentView:elementsView];
 
-  // [elementsView addElement:[[ALSAElement alloc] init]];
-  // [elementsView addElement:[[ALSAElement alloc] init]];
-
-  [self _enumerateElementsForCard:first_card];
+  // elementsList = [[NSMutableArray alloc] init];
+  // [self _enumerateElementsForCard:first_card];
+  [cardsList selectItemAtIndex:0];
+  [self selectCard:cardsList];
 } 
 
 - (void)showPanel
 {
-  if (alsaWindow == nil) {
+  if (window == nil) {
     [NSBundle loadNibNamed:@"ALSA" owner:self];
   }
-  [alsaWindow makeKeyAndOrderFront:self];
+  [window makeKeyAndOrderFront:self];
 }
+
+// --- Actions ---
+
+- (void)showElementsForMode:(NSString *)mode
+{
+}
+
+- (void)selectCard:(id)sender
+{
+  id <NSMenuItem> item = [sender selectedItem];
+  ALSACard *alsaCard = [item representedObject];
+  
+  NSLog(@"Selected card `%@` with chip `%@`", [alsaCard name], [alsaCard chipName]);
+
+  [[elementsView subviews] makeObjectsPerform:@selector(removeFromSuperview)];
+
+  for (ALSAElement *elem in [alsaCard controls]) {
+    [elementsView addElement:elem];
+  }  
+}
+
+- (void)selectViewMode:(id)sender
+{
+  [self showElementsForMode:[sender titleOfSelectedItem]];
+}
+
 
 @end

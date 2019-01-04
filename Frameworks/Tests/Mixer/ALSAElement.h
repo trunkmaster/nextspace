@@ -18,6 +18,8 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import <alsa/asoundlib.h>
+
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 
@@ -29,9 +31,37 @@
   NSSlider	*volumeSlider;
   NSSlider	*balanceSlider;
   NSButton	*muteButton;
+
+  // ALSA
+  snd_mixer_t		*mixer;
+  snd_mixer_elem_t	*element;
+  snd_mixer_selem_id_t	*elem_id;
+  char			*elem_name;
+  int			playback_volume;
+  int			playback_volume_min;
+  int			playback_volume_max;
+  int			capture_volume;
+  struct {
+    int is_active;
+    int has_common_volume;
+    int has_common_switch;
+    //Playback
+    int is_playback_mono;
+    int has_playback_switch;
+    int has_playback_switch_joined;
+    int has_playback_volume;
+    int has_playback_volume_joined;
+    // Capture
+    int is_capture_mono;
+    int has_capture_volume;
+    int has_capture_volume_joined;
+    int has_capture_switch;
+    int has_capture_switch_joined;
+    int has_capture_switch_exclusive;
+  } flags;
 }
 
+- initWithElement:(snd_mixer_elem_t *)elem mixer:(snd_mixer_t *)mix;
 - (NSBox *)view;
 
 @end
-

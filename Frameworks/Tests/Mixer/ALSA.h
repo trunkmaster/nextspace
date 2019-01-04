@@ -7,41 +7,14 @@
 
 @interface ALSA : NSObject
 {
-  NSTimer *timer;
-
-  NSWindow *window;
-
-  id volL;
-  id volR;
-  id volLock;
-  id volMute;
+  NSWindow          *window;
+  NSPopUpButton	    *cardsList;
+  NSPopUpButton	    *viewMode;
   
-  id bassL;
-  id bassR;
-  id bassLock;
-  id bassMute;
-  
-  id trebleL;
-  id trebleR;
-  id trebleLock;
-  id trebleMute;
-  
-  id pcmL;
-  id pcmR;
-  id pcmLock;
-  id pcmMute;
+  NSScrollView     *elementsScroll;
+  ALSAElementsView *elementsView;
 
-  id lineL;
-  id lineR;
-  id lineLock;
-  id lineMute;
-
-  NSWindow	*alsaWindow;
-  NSPopUpButton	*cardsList;
-  NSPopUpButton	*viewMode;
-  
-  NSScrollView		*elementsScroll;
-  ALSAElementsView	*elementsView;
+  NSMutableArray   *elementsList; // FIXME: remove this and _enumerate* methods
 }
 
 - (void)showPanel;

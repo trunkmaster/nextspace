@@ -47,7 +47,7 @@ AppController.m
 
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  Mixer_OBJC_FILES += PulseAudio.m ALSA.m ALSAElement.m
+  Mixer_OBJC_FILES += PulseAudio.m ALSA.m ALSACard.m ALSAElement.m
   Mixer_RESOURCE_FILES += Resources/ALSA.gorm Resources/ALSAElement.gorm
 else
   Mixer_OBJC_FILES += Generic.m
