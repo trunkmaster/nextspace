@@ -3,7 +3,7 @@
     ALSA = {
 	Actions = (
 	    "selectCard:",
-	    "setViewMode:"
+	    "selectViewMode:"
 	);
 	Outlets = (
 	    window,
@@ -17,7 +17,7 @@
 	Actions = (
 	    "selectCard:",
 	    "orderFrontFontPanel:",
-	    "setViewMode:"
+	    "selectViewMode:"
 	);
 	Super = NSObject;
     };

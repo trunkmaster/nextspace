@@ -19,6 +19,7 @@
 */
 
 #import "ALSAElement.h"
+#import <X11/Xlib.h>
 
 @implementation ALSAElement
 
@@ -77,6 +78,9 @@
   [window release];
 
   [box setTitle:[NSString stringWithCString:elem_name]];
+  [muteButton setRefusesFirstResponder:YES];
+
+  [self refresh];
 }
 
 - (NSBox *)view
@@ -84,9 +88,143 @@
   return box;
 }
 
-- (void)setTitle:(NSString *)title
+- (BOOL)isPlayback
 {
-  [box setTitle:title];
+  return !flags.has_capture_volume;
+}
+
+- (void)handleEvents
+{
+  int            poll_count, fill_count;
+  struct pollfd  *polls;
+  unsigned short revents;
+
+  poll_count = snd_mixer_poll_descriptors_count(mixer);
+  if (poll_count <= 0)
+    NSLog(@"Cannot obtain mixer poll descriptors.");
+
+  polls = alloca((poll_count + 1) * sizeof (struct pollfd));
+  fill_count = snd_mixer_poll_descriptors(mixer, polls, poll_count);
+  NSAssert(poll_count = fill_count, @"poll counts differ");
+
+  poll(polls, fill_count + 1, 5);
+
+  /* Ensure that changes made via other programs (alsamixer, etc.) get
+     reflected as well.  */
+  snd_mixer_poll_descriptors_revents(mixer, polls, poll_count, &revents);
+  if (revents & POLLIN)
+    snd_mixer_handle_events(mixer);  
+}
+
+- (void)refresh
+{
+  [self handleEvents];
+  
+  snd_mixer_selem_get_playback_volume_range(element,
+                                            &playback_volume_min,
+                                            &playback_volume_max);
+  [volumeSlider setMinValue:(double)playback_volume_min];
+  [volumeSlider setMaxValue:(double)playback_volume_max];
+
+  if (flags.has_playback_switch) {
+    int play;
+    snd_mixer_selem_get_playback_switch(element, SND_MIXER_SCHN_FRONT_LEFT, &play);
+    [muteButton setState:!play];
+  }
+  
+  // if ([muteButton state] == NSOffState) {
+    if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_LEFT)) {
+      snd_mixer_selem_get_playback_volume(element, SND_MIXER_SCHN_FRONT_LEFT,
+                                          &playback_volume_left);
+      [volumeSlider setIntValue:playback_volume_left];
+      [volumeLeft setIntValue:playback_volume_left];
+      [volumeRight setIntValue:playback_volume_left];
+    }
+    if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_RIGHT)) {
+      snd_mixer_selem_get_playback_volume(element, SND_MIXER_SCHN_FRONT_RIGHT,
+                                          &playback_volume_right);
+      [volumeRight setIntValue:playback_volume_right];
+    }
+    
+    if (flags.is_playback_mono == 1) {
+      [balanceSlider retain];
+      [balanceSlider removeFromSuperview];
+      [balanceSlider setIntValue:1];
+      [balanceSlider setEnabled:NO];
+      [volumeLeft setStringValue:@""];
+      [volumeRight setStringValue:@""];
+    }
+    else {
+      [balanceSlider setIntValue:1];
+      if (playback_volume_right != playback_volume_left) {
+        CGFloat vol_r = (CGFloat)playback_volume_right;
+        CGFloat vol_l = (CGFloat)playback_volume_left;
+        CGFloat vol_max = (playback_volume_right > playback_volume_left) ? vol_r : vol_l;
+        
+        [balanceSlider setFloatValue:(1.0 - ((vol_r - vol_l) / vol_max))];
+      }
+    }
+    
+    [volumeField setIntValue:(playback_volume_left > playback_volume_right ?
+                              playback_volume_left : playback_volume_right)];
+  // }
+
+  NSLog(@"Control `%s` min=%li (%.0f), max=%li(%.0f)", elem_name,
+        playback_volume_min, [volumeSlider minValue],
+        playback_volume_max, [volumeSlider maxValue]);
+}
+
+- (void)setVolume:(id)sender
+{
+  int     volume = [sender intValue];
+  CGFloat balance = [balanceSlider floatValue];
+  
+  [volumeField setIntValue:volume];
+
+  if (balance < 1) {
+    // playback_volume_right = volume - (volume_max - balance_volume);
+    playback_volume_right = volume * balance;
+    playback_volume_left = volume;
+  }
+  else if (balance > 1) {
+    // playback_volume_left = volume - (balance_volume - volume_max);
+    playback_volume_left = volume * (2 - balance);
+    playback_volume_right = volume;
+  }
+  else {
+    playback_volume_left = playback_volume_right = volume;
+  }
+
+  if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_LEFT)) {
+    snd_mixer_selem_set_playback_volume(element, SND_MIXER_SCHN_FRONT_LEFT,
+                                        playback_volume_left);
+    [volumeLeft setIntValue:playback_volume_left];
+    [volumeRight setIntValue:playback_volume_right];
+  }
+  if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_RIGHT)) {
+    snd_mixer_selem_set_playback_volume(element, SND_MIXER_SCHN_FRONT_RIGHT,
+                                        playback_volume_right);
+  }
+  else {
+    [volumeLeft setStringValue:@""];
+    [volumeRight setStringValue:@""];
+  }
+    
+  [volumeField setIntValue:volume];
+  fprintf(stderr, "`%s` left:%li right:%li balance:%.1f\n",
+          elem_name, playback_volume_left, playback_volume_right, balance);
+}
+
+- (void)setBalance:(id)sender
+{
+  [self setVolume:volumeSlider];
+}
+
+- (void)setMute:(id)sender
+{
+  if (flags.has_playback_switch) {
+    snd_mixer_selem_set_playback_switch_all(element, ![sender state]);
+  }
 }
 
 - (void)setVolumeTarget:(id)target action:(SEL)action
@@ -98,18 +236,6 @@
 {
   [balanceSlider setTarget:target];
   [balanceSlider setAction:action];
-}
-
-- (void)setVolumeSliderValue:(NSInteger)vol
-{
-}
-
-- (void)setBalanceSliderValue:(NSInteger)vol
-{
-}
-
-- (void)mute
-{
 }
 
 @end

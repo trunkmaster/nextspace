@@ -1,11 +1,7 @@
 /*
-   Project: TEMP
+   Project: Mixer
 
-   Copyright (C) 2019 Free Software Foundation
-
-   Author: Developer
-
-   Created: 2019-01-04 16:35:06 +0200 by me
+   Copyright (C) 2019 Sergii Stoian
 
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -44,9 +40,9 @@
 
 - initWithNumber:(int)number
 {
-  snd_ctl_card_info_t	*info;
-  char                  buf[16];
-  snd_ctl_t             *ctl;
+  snd_ctl_card_info_t *info;
+  char                buf[16];
+  snd_ctl_t           *ctl;
 
   [super init];
 
@@ -64,8 +60,6 @@
     return nil;
   }
     
-  card_index = number;
-  
   cardName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_name(info)];
   deviceName = [[NSString alloc] initWithFormat:@"hw:%d", number];
 
