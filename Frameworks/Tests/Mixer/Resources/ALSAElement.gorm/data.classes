@@ -2,6 +2,9 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     ALSAElement = {
 	Actions = (
+	    "setMute:",
+	    "setBalance:",
+	    "setVolume:"
 	);
 	Outlets = (
 	    box,
@@ -9,7 +12,17 @@
 	    volumeSlider,
 	    balanceSlider,
 	    muteButton,
-	    window
+	    window,
+	    volumeRight,
+	    volumeLeft
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setMute:",
+	    "setBalance:",
+	    "setVolume:"
 	);
 	Super = NSObject;
     };

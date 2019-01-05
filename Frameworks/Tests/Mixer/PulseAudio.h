@@ -1,11 +1,7 @@
 /*
    Project: Mixer
 
-   Copyright (C) 2019 Free Software Foundation
-
-   Author: me
-
-   Created: 2019-01-02 02:25:00 +0200 by me
+   Copyright (C) 2019 Sergii Stoian
 
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public

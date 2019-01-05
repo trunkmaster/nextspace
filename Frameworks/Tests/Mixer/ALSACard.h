@@ -1,11 +1,7 @@
 /*
-   Project: TEMP
+   Project: Mixer
 
-   Copyright (C) 2019 Free Software Foundation
-
-   Author: Developer
-
-   Created: 2019-01-04 16:35:06 +0200 by me
+   Copyright (C) 2019 Sergii Stoian
 
    This application is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -27,7 +23,6 @@
 
 @interface ALSACard : NSObject
 {
-  int            card_index;
   NSString       *cardName;
   NSString       *chipName;
   NSString       *deviceName;
@@ -38,7 +33,6 @@
 }
 
 - initWithNumber:(int)number;
-- (void)fetchDefaultInfo;
 
 - (NSString *)name;
 - (NSString *)chipName;

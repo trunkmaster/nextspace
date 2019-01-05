@@ -28,6 +28,8 @@
   NSWindow	*window;
   NSBox 	*box;
   NSTextField	*volumeField;
+  NSTextField	*volumeLeft;
+  NSTextField	*volumeRight;
   NSSlider	*volumeSlider;
   NSSlider	*balanceSlider;
   NSButton	*muteButton;
@@ -37,10 +39,12 @@
   snd_mixer_elem_t	*element;
   snd_mixer_selem_id_t	*elem_id;
   char			*elem_name;
-  int			playback_volume;
-  int			playback_volume_min;
-  int			playback_volume_max;
-  int			capture_volume;
+  long			playback_volume_min;
+  long			playback_volume_max;
+  long			playback_volume;
+  long			playback_volume_left;
+  long			playback_volume_right;
+  long			capture_volume;
   struct {
     int is_active;
     int has_common_volume;
@@ -63,5 +67,7 @@
 
 - initWithElement:(snd_mixer_elem_t *)elem mixer:(snd_mixer_t *)mix;
 - (NSBox *)view;
+- (BOOL)isPlayback;
+- (void)refresh;
 
 @end
