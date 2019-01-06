@@ -46,7 +46,7 @@
     laeFrame = NSMakeRect(0, -eFrame.size.height, eFrame.size.width, eFrame.size.height);
   }
 
-  eFrame.origin.y = laeFrame.origin.y + laeFrame.size.height + 4;
+  eFrame.origin.y = laeFrame.origin.y + laeFrame.size.height;
   eFrame.origin.x = 8;
   eFrame.size.width = _frame.size.width - 16;
   [[element view] setFrame:eFrame];
@@ -55,10 +55,14 @@
   lastAddedElement = [element view];
 
   NSRect frame = [self frame];
-  if (NSMaxY(eFrame) > frame.size.height) {
-    frame.size.height = eFrame.origin.y + eFrame.size.height + 8;
+  // if (NSMaxY(eFrame) > frame.size.height) {
+    frame.size.height = eFrame.origin.y + eFrame.size.height;
     [self setFrame:frame];
-  }
+  // }
+
+  frame = [[self window] frame];
+  frame.size.height = 108 + eFrame.origin.y + eFrame.size.height;
+  [[self window] setMaxSize:frame.size];
 }
 - (void)removeAllElements
 {
@@ -75,21 +79,26 @@
 
 - (void)awakeFromNib
 {
-  // struct card *first_card;
-  // struct card *card;
-  ALSACard    *alsaCard;
+  ALSACard *alsaCard;
+  NSString *cardName;
 
   [cardsList setRefusesFirstResponder:YES];
   [viewMode setRefusesFirstResponder:YES];
   
   [cardsList removeAllItems];
 
-  for (int number = 0, err = 0; err >= 0 && number >= 0; err = snd_card_next(&number)) {
+  // number == -1 creates ALSACard with `default` ALSA sound device
+  for (int number = -1, err = 0;;) {
     alsaCard = [[ALSACard alloc] initWithNumber:number];
     if (alsaCard) {
-      [cardsList addItemWithTitle:[alsaCard name]];
-      [[cardsList itemWithTitle:[alsaCard name]] setRepresentedObject:alsaCard];
+      cardName = [alsaCard name];
+      [cardsList addItemWithTitle:cardName];
+      [[cardsList itemWithTitle:cardName] setRepresentedObject:alsaCard];
       [alsaCard release];
+
+      err = snd_card_next(&number);
+      if (err < 0 || number < 0)
+        break;
     }
   }
     
@@ -131,7 +140,18 @@
       [elementsView addElement:elem];
       [elem refresh];
     }
-  }  
+  }
+  NSRect frame = [window frame];
+  if (frame.size.height > [window maxSize].height) {
+    frame.origin.y += frame.size.height - [window maxSize].height;
+    frame.size = [window maxSize];
+    [window setFrame:frame display:YES];
+  }
+  else {
+    frame.origin.y -= [window maxSize].height - frame.size.height;
+    frame.size = [window maxSize];
+    [window setFrame:frame display:YES];
+  }
 }
 
 - (void)selectCard:(id)sender
