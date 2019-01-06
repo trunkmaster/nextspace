@@ -26,7 +26,7 @@
 - (void)dealloc
 {
   if (alsa_mixer != NULL)
-    [self deleteMixer];
+    [self deleteMixer:alsa_mixer];
 
   [cardName release];
   [chipName release];
@@ -50,71 +50,86 @@
 
   snd_ctl_card_info_alloca(&info);
   
-  sprintf(buf, "hw:%d", number);
-  if (snd_ctl_open(&ctl, buf, 0) < 0) {
-    return nil;
+  if (number < 0) {
+    snd_mixer_t *mixer;
+    snd_hctl_t  *hctl;
+
+    deviceName = [[NSString alloc] initWithString:@"default"];
+    mixer = [self createMixer];
+
+    if (snd_mixer_get_hctl(mixer, [deviceName cString], &hctl) >= 0) {
+      ctl = snd_hctl_ctl(hctl);
+      if (snd_ctl_card_info(ctl, info) >= 0) {
+        cardName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_name(info)];
+        chipName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_mixername(info)];
+      }
+    }
+  
+    [self deleteMixer:mixer];
   }
+  else {
+    sprintf(buf, "hw:%d", number);
+    if (snd_ctl_open(&ctl, buf, 0) < 0) {
+      return nil;
+    }
     
-  if (snd_ctl_card_info(ctl, info) < 0) {
+    if (snd_ctl_card_info(ctl, info) < 0) {
+      snd_ctl_close(ctl);
+      return nil;
+    }
+    
+    cardName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_name(info)];
+    deviceName = [[NSString alloc] initWithFormat:@"hw:%d", number];
+
+    alsa_mixer = [self createMixer];
+    chipName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_mixername(info)];
+
     snd_ctl_close(ctl);
-    return nil;
   }
-    
-  cardName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_name(info)];
-  deviceName = [[NSString alloc] initWithFormat:@"hw:%d", number];
-
-  alsa_mixer = [self createMixer];
-  chipName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_mixername(info)];
-
-  snd_ctl_close(ctl);
   
   alsa_mixer = [self createMixer];
   if (alsa_mixer) {
     snd_mixer_elem_t *elem;
  
-    fprintf(stderr, "Mixer elements for card `%s`:\n", [deviceName cString]);
+    // fprintf(stderr, "Mixer elements for card `%s`:\n", [deviceName cString]);
     controls = [[NSMutableArray alloc] init];
     for (elem = snd_mixer_first_elem(alsa_mixer); elem; elem = snd_mixer_elem_next(elem)) {
       [controls addObject:[[ALSAElement alloc] initWithElement:elem mixer:alsa_mixer]];
     }
   }
 
+  timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                           target:self
+                                         selector:@selector(handleEvents)
+                                         userInfo:nil
+                                          repeats:YES];
+
   return self;
 }
 
-// FIXME: Unused
-- (void)fetchDefaultInfo
+- (void)handleEvents
 {
-  snd_ctl_card_info_t	*info;
-  snd_mixer_t           *mixer;
-  snd_ctl_t             *ctl;
-  snd_hctl_t            *hctl;
-  int                   err = 0;
+  int            poll_count, fill_count;
+  struct pollfd  *polls;
+  unsigned short revents;
 
-  snd_ctl_card_info_alloca(&info);
-  
-  if (snd_ctl_open(&ctl, "default", 0) < 0)
-    return;
-  if (snd_ctl_card_info(ctl, info) < 0) {
-    snd_ctl_close(ctl);
-    return;
-  }
-    
-  mixer = [self createMixer];
-  deviceName = [[NSString alloc] initWithString:@"default"];
+  poll_count = snd_mixer_poll_descriptors_count(alsa_mixer);
+  if (poll_count <= 0)
+    NSLog(@"Cannot obtain mixer poll descriptors.");
 
-  if (snd_mixer_get_hctl(mixer, [deviceName cString], &hctl) < 0)
-    err = -1;
-    
-  if (err >= 0) {
-    ctl = snd_hctl_ctl(hctl);
-    err = snd_ctl_card_info(ctl, info);
-    if (err >= 0) {
-      cardName = [[NSString alloc]initWithCString:snd_ctl_card_info_get_mixername(info)];
-      chipName = [[NSString alloc] initWithCString:snd_ctl_card_info_get_mixername(info)];
-    }
+  polls = alloca((poll_count + 1) * sizeof (struct pollfd));
+  fill_count = snd_mixer_poll_descriptors(alsa_mixer, polls, poll_count);
+  NSAssert(poll_count = fill_count, @"poll counts differ");
+
+  poll(polls, fill_count + 1, 5);
+
+  /* Ensure that changes made via other programs (alsamixer, etc.) get
+     reflected as well.  */
+  snd_mixer_poll_descriptors_revents(alsa_mixer, polls, poll_count, &revents);
+  if (revents & POLLIN) {
+    snd_mixer_handle_events(alsa_mixer);
+    [controls makeObjectsPerform:@selector(refresh)];
   }
- [self deleteMixer];
 }
 
 - (NSString *)name
@@ -156,11 +171,11 @@
   return mixer;
 }
 
-- (void)deleteMixer
+- (void)deleteMixer:(snd_mixer_t *)mixer
 {
-  snd_mixer_detach(alsa_mixer, [cardName cString]);
-  snd_mixer_close(alsa_mixer);
-  alsa_mixer = NULL;
+  snd_mixer_detach(mixer, [cardName cString]);
+  snd_mixer_close(mixer);
+  mixer = NULL;
 }
 
 @end
