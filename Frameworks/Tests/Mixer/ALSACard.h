@@ -30,6 +30,8 @@
   snd_mixer_t    *alsa_mixer;
 
   NSMutableArray *controls;
+
+  NSTimer        *timer;
 }
 
 - initWithNumber:(int)number;
@@ -39,7 +41,7 @@
 - (NSArray *)controls;
 
 - (snd_mixer_t *)createMixer;
-- (void)deleteMixer;
+- (void)deleteMixer:(snd_mixer_t *)mixer;
   
 @end
 

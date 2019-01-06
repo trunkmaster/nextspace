@@ -52,20 +52,17 @@
   flags.has_capture_switch_joined = snd_mixer_selem_has_capture_switch_joined(element);
   flags.has_capture_switch_exclusive = snd_mixer_selem_has_capture_switch_exclusive(element);
 
-  fprintf(stderr, "\t %s (", elem_name);
-  fprintf(stderr, " is_active: %i", flags.is_active);
-  fprintf(stderr, " has_common_volume: %i", flags.has_common_volume);
-  fprintf(stderr, " has_common_switch: %i", flags.has_common_switch);
-  fprintf(stderr, " is_playback_mono: %i", flags.is_playback_mono);
-  fprintf(stderr, " has_playback_switch: %i", flags.has_playback_switch);
-  fprintf(stderr, " has_playback_switch_joined: %i", flags.has_playback_switch_joined);
-  fprintf(stderr, " has_playback_volume: %i", flags.has_playback_volume);
-  fprintf(stderr, " has_playback_volume_joined: %i", flags.has_playback_volume_joined);
-  fprintf(stderr, ")\n");
+  // fprintf(stderr, "\t %s (", elem_name);
+  // fprintf(stderr, " is_active: %i", flags.is_active);
+  // fprintf(stderr, " has_common_volume: %i", flags.has_common_volume);
+  // fprintf(stderr, " has_common_switch: %i", flags.has_common_switch);
+  // fprintf(stderr, " is_playback_mono: %i", flags.is_playback_mono);
+  // fprintf(stderr, " has_playback_switch: %i", flags.has_playback_switch);
+  // fprintf(stderr, " has_playback_switch_joined: %i", flags.has_playback_switch_joined);
+  // fprintf(stderr, " has_playback_volume: %i", flags.has_playback_volume);
+  // fprintf(stderr, " has_playback_volume_joined: %i", flags.has_playback_volume_joined);
+  // fprintf(stderr, ")\n");
   
-  // int snd_mixer_selem_has_playback_channel(snd_mixer_elem_t *obj, snd_mixer_selem_channel_id_t channel);
-  // int snd_mixer_selem_has_capture_channel(snd_mixer_elem_t *obj, snd_mixer_selem_channel_id_t channel);
-
   [NSBundle loadNibNamed:@"ALSAElement" owner:self];
 
   return self;
@@ -93,33 +90,8 @@
   return !flags.has_capture_volume;
 }
 
-- (void)handleEvents
-{
-  int            poll_count, fill_count;
-  struct pollfd  *polls;
-  unsigned short revents;
-
-  poll_count = snd_mixer_poll_descriptors_count(mixer);
-  if (poll_count <= 0)
-    NSLog(@"Cannot obtain mixer poll descriptors.");
-
-  polls = alloca((poll_count + 1) * sizeof (struct pollfd));
-  fill_count = snd_mixer_poll_descriptors(mixer, polls, poll_count);
-  NSAssert(poll_count = fill_count, @"poll counts differ");
-
-  poll(polls, fill_count + 1, 5);
-
-  /* Ensure that changes made via other programs (alsamixer, etc.) get
-     reflected as well.  */
-  snd_mixer_poll_descriptors_revents(mixer, polls, poll_count, &revents);
-  if (revents & POLLIN)
-    snd_mixer_handle_events(mixer);  
-}
-
 - (void)refresh
 {
-  [self handleEvents];
-  
   snd_mixer_selem_get_playback_volume_range(element,
                                             &playback_volume_min,
                                             &playback_volume_max);
@@ -132,42 +104,40 @@
     [muteButton setState:!play];
   }
   
-  // if ([muteButton state] == NSOffState) {
-    if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_LEFT)) {
-      snd_mixer_selem_get_playback_volume(element, SND_MIXER_SCHN_FRONT_LEFT,
-                                          &playback_volume_left);
-      [volumeSlider setIntValue:playback_volume_left];
-      [volumeLeft setIntValue:playback_volume_left];
-      [volumeRight setIntValue:playback_volume_left];
-    }
-    if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_RIGHT)) {
-      snd_mixer_selem_get_playback_volume(element, SND_MIXER_SCHN_FRONT_RIGHT,
-                                          &playback_volume_right);
-      [volumeRight setIntValue:playback_volume_right];
-    }
+  if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_LEFT)) {
+    snd_mixer_selem_get_playback_volume(element, SND_MIXER_SCHN_FRONT_LEFT,
+                                        &playback_volume_left);
+    [volumeSlider setIntValue:playback_volume_left];
+    [volumeLeft setIntValue:playback_volume_left];
+    [volumeRight setIntValue:playback_volume_left];
+  }
+  if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_RIGHT)) {
+    snd_mixer_selem_get_playback_volume(element, SND_MIXER_SCHN_FRONT_RIGHT,
+                                        &playback_volume_right);
+    [volumeRight setIntValue:playback_volume_right];
+  }
     
-    if (flags.is_playback_mono == 1) {
-      [balanceSlider retain];
-      [balanceSlider removeFromSuperview];
-      [balanceSlider setIntValue:1];
-      [balanceSlider setEnabled:NO];
-      [volumeLeft setStringValue:@""];
-      [volumeRight setStringValue:@""];
-    }
-    else {
-      [balanceSlider setIntValue:1];
-      if (playback_volume_right != playback_volume_left) {
-        CGFloat vol_r = (CGFloat)playback_volume_right;
-        CGFloat vol_l = (CGFloat)playback_volume_left;
-        CGFloat vol_max = (playback_volume_right > playback_volume_left) ? vol_r : vol_l;
+  if (flags.is_playback_mono == 1) {
+    [balanceSlider retain];
+    [balanceSlider removeFromSuperview];
+    [balanceSlider setIntValue:1];
+    [balanceSlider setEnabled:NO];
+    [volumeLeft setStringValue:@""];
+    [volumeRight setStringValue:@""];
+  }
+  else {
+    [balanceSlider setIntValue:1];
+    if (playback_volume_right != playback_volume_left) {
+      CGFloat vol_r = (CGFloat)playback_volume_right;
+      CGFloat vol_l = (CGFloat)playback_volume_left;
+      CGFloat vol_max = (playback_volume_right > playback_volume_left) ? vol_r : vol_l;
         
-        [balanceSlider setFloatValue:(1.0 - ((vol_r - vol_l) / vol_max))];
-      }
+      [balanceSlider setFloatValue:(1.0 - ((vol_r - vol_l) / vol_max))];
     }
+  }
     
-    [volumeField setIntValue:(playback_volume_left > playback_volume_right ?
-                              playback_volume_left : playback_volume_right)];
-  // }
+  [volumeField setIntValue:(playback_volume_left > playback_volume_right ?
+                            playback_volume_left : playback_volume_right)];
 
   NSLog(@"Control `%s` min=%li (%.0f), max=%li(%.0f)", elem_name,
         playback_volume_min, [volumeSlider minValue],
@@ -225,17 +195,6 @@
   if (flags.has_playback_switch) {
     snd_mixer_selem_set_playback_switch_all(element, ![sender state]);
   }
-}
-
-- (void)setVolumeTarget:(id)target action:(SEL)action
-{
-  [volumeSlider setTarget:target];
-  [volumeSlider setAction:action];
-}
-- (void)setBalanceTarget:(id)target action:(SEL)action
-{
-  [balanceSlider setTarget:target];
-  [balanceSlider setAction:action];
 }
 
 @end
