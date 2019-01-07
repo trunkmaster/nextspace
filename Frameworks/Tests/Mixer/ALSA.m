@@ -137,12 +137,14 @@
   for (ALSAElement *elem in [card controls]) {
     if ([mode isEqualToString:@"Playback"] && [elem isPlayback] != NO) {
       [elementsView addElement:elem];
-      [elem refresh];
     }
-    else if ([mode isEqualToString:@"Capture"] && [elem isPlayback] == NO) {
+    else if ([mode isEqualToString:@"Capture"] && [elem isCapture] != NO) {
       [elementsView addElement:elem];
-      [elem refresh];
     }
+    else if ([mode isEqualToString:@"Options"] && [elem isOption] != NO) {
+      [elementsView addElement:elem];
+    }
+    [elem refresh];
   }
   NSRect frame = [window frame];
   if (frame.size.height > [window maxSize].height) {
