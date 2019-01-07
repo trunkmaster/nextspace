@@ -94,16 +94,16 @@
     // fprintf(stderr, "Mixer elements for card `%s`:\n", [deviceName cString]);
     controls = [[NSMutableArray alloc] init];
     for (elem = snd_mixer_first_elem(alsa_mixer); elem; elem = snd_mixer_elem_next(elem)) {
-      [controls addObject:[[ALSAElement alloc] initWithElement:elem mixer:alsa_mixer]];
+      [controls addObject:[[ALSAElement alloc] initWithCard:self element:elem]];
     }
   }
 
+  shouldHandleEvents = NO;
   timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                            target:self
                                          selector:@selector(handleEvents)
                                          userInfo:nil
                                           repeats:YES];
-
   return self;
 }
 
@@ -112,6 +112,10 @@
   int            poll_count, fill_count;
   struct pollfd  *polls;
   unsigned short revents;
+
+  if (shouldHandleEvents == NO) {
+    return;
+  }
 
   poll_count = snd_mixer_poll_descriptors_count(alsa_mixer);
   if (poll_count <= 0)
@@ -132,6 +136,11 @@
   }
 }
 
+- (void)setShouldHandleEvents:(BOOL)yn
+{
+  shouldHandleEvents = yn;
+}
+
 - (NSString *)name
 {
   return cardName;
@@ -145,6 +154,11 @@
 - (NSArray *)controls
 {
   return controls;
+}
+
+- (snd_mixer_t *)mixer
+{
+  return alsa_mixer;
 }
 
 - (snd_mixer_t *)createMixer
