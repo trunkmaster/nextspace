@@ -114,6 +114,7 @@
   [elementsScroll setDocumentView:elementsView];
 
   [cardsList selectItemAtIndex:0];
+  currentCard = [[cardsList itemAtIndex:0] representedObject];
   [self selectCard:cardsList];
 } 
 
@@ -130,6 +131,8 @@
 - (void)showElementsForCard:(ALSACard *)card mode:(NSString *)mode
 {
   [elementsView removeAllElements];
+
+  [currentCard setShouldHandleEvents:NO];
 
   for (ALSAElement *elem in [card controls]) {
     if ([mode isEqualToString:@"Playback"] && [elem isPlayback] != NO) {
@@ -152,6 +155,9 @@
     frame.size = [window maxSize];
     [window setFrame:frame display:YES];
   }
+  
+  currentCard = card;
+  [currentCard setShouldHandleEvents:YES];
 }
 
 - (void)selectCard:(id)sender

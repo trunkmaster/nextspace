@@ -32,16 +32,19 @@
   NSMutableArray *controls;
 
   NSTimer        *timer;
+  BOOL           shouldHandleEvents;
 }
 
 - initWithNumber:(int)number;
-
+- (void)setShouldHandleEvents:(BOOL)yn;
+  
 - (NSString *)name;
 - (NSString *)chipName;
 - (NSArray *)controls;
 
+- (snd_mixer_t *)mixer;
 - (snd_mixer_t *)createMixer;
 - (void)deleteMixer:(snd_mixer_t *)mixer;
-  
+
 @end
 

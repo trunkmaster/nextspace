@@ -23,6 +23,8 @@
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 
+@class ALSACard;
+
 @interface ALSAElement : NSObject
 {
   NSWindow	*window;
@@ -34,6 +36,8 @@
   NSSlider	*balanceSlider;
   NSButton	*muteButton;
 
+  ALSACard      *alsaCard;
+
   // ALSA
   snd_mixer_t		*mixer;
   snd_mixer_elem_t	*element;
@@ -44,7 +48,10 @@
   long			playback_volume;
   long			playback_volume_left;
   long			playback_volume_right;
+  
   long			capture_volume;
+  long			capture_volume_min;
+  long			capture_volume_max;
   struct {
     int is_active;
     int has_common_volume;
@@ -65,7 +72,7 @@
   } flags;
 }
 
-- initWithElement:(snd_mixer_elem_t *)elem mixer:(snd_mixer_t *)mix;
+- initWithCard:(ALSACard *)card element:(snd_mixer_elem_t *)elem;
 - (NSBox *)view;
 - (BOOL)isPlayback;
 - (void)refresh;

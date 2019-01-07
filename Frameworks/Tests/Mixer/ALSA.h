@@ -21,6 +21,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@class ALSACard;
 @class ALSAElementsView;
 
 @interface ALSA : NSObject
@@ -31,6 +32,7 @@
   
   NSScrollView     *elementsScroll;
   ALSAElementsView *elementsView;
+  ALSACard         *currentCard;
 }
 
 - (void)showPanel;
