@@ -43,25 +43,20 @@
   snd_mixer_elem_t	*element;
   snd_mixer_selem_id_t	*elem_id;
   char			*elem_name;
-  long			playback_volume_min;
-  long			playback_volume_max;
-  long			playback_volume;
-  long			playback_volume_left;
-  long			playback_volume_right;
-  
-  long			capture_volume;
-  long			capture_volume_min;
-  long			capture_volume_max;
+  long			volume_min;
+  long			volume_max;
+  long			volume_left;
+  long			volume_right;
   struct {
     int is_active;
     int has_common_volume;
     int has_common_switch;
     //Playback
     int is_playback_mono;
-    int has_playback_switch;
-    int has_playback_switch_joined;
     int has_playback_volume;
     int has_playback_volume_joined;
+    int has_playback_switch;
+    int has_playback_switch_joined;
     // Capture
     int is_capture_mono;
     int has_capture_volume;
@@ -75,6 +70,8 @@
 - initWithCard:(ALSACard *)card element:(snd_mixer_elem_t *)elem;
 - (NSBox *)view;
 - (BOOL)isPlayback;
+- (BOOL)isCapture;
+- (BOOL)isOption;
 - (void)refresh;
 
 @end
