@@ -9,7 +9,10 @@
 	    window,
 	    cardsList,
 	    elementsView,
-	    viewMode
+	    viewMode,
+	    noControlsField,
+	    noControlsBox,
+	    noControlsWindow
 	);
 	Super = NSObject;
     };

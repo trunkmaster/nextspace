@@ -4,24 +4,37 @@
 	Actions = (
 	    "setMute:",
 	    "setBalance:",
-	    "setVolume:"
+	    "setVolume:",
+	    "setOption:"
 	);
 	Outlets = (
-	    box,
-	    volumeField,
-	    volumeSlider,
-	    balanceSlider,
-	    muteButton,
-	    window,
-	    volumeRight,
-	    volumeLeft
+	    playbackBox,
+	    pVolumeField,
+	    pVolumeSlider,
+	    pBalanceSlider,
+	    pMuteButton,
+	    playbackWindow,
+	    pVolumeRight,
+	    pVolumeLeft,
+	    cBalanceSlider,
+	    cMuteButton,
+	    cVolumeField,
+	    cVolumeLeft,
+	    cVolumeRight,
+	    cVolumeSlider,
+	    captureBox,
+	    captureWindow,
+	    optionBox,
+	    optionValues,
+	    optionWindow
 	);
 	Super = NSObject;
     };
     FirstResponder = {
 	Actions = (
-	    "setMute:",
+	    "setOption:",
 	    "setBalance:",
+	    "setMute:",
 	    "setVolume:"
 	);
 	Super = NSObject;

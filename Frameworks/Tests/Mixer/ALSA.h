@@ -24,15 +24,26 @@
 @class ALSACard;
 @class ALSAElementsView;
 
+typedef enum {
+  MixerControlsPlayback = 0,
+  MixerControlsCapture,
+  MixerControlsOption
+} ALSAViewMode;
+
 @interface ALSA : NSObject
 {
   NSWindow          *window;
   NSPopUpButton	    *cardsList;
   NSPopUpButton	    *viewMode;
-  
   NSScrollView     *elementsScroll;
   ALSAElementsView *elementsView;
+
   ALSACard         *currentCard;
+  
+  // No Controls
+  id noControlsWindow;
+  id noControlsBox;
+  id noControlsField;  
 }
 
 - (void)showPanel;
