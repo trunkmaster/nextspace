@@ -28,7 +28,7 @@
 {
   NSView *lastAddedElement;
 }
-- (void)addElement:(ALSAElement *)element;
+- (void)addElement:(NSView *)view;
 - (void)removeAllElements;
 @end
 
@@ -37,10 +37,10 @@
 {
   return YES;
 }
-- (void)addElement:(ALSAElement *)element
+- (void)addElement:(NSView *)view
 {
   NSRect laeFrame = [lastAddedElement frame];
-  NSRect eFrame = [[element view] frame];
+  NSRect eFrame = [view frame];
 
   if (lastAddedElement == nil) {
     laeFrame = NSMakeRect(0, -eFrame.size.height, eFrame.size.width, eFrame.size.height);
@@ -49,10 +49,10 @@
   eFrame.origin.y = laeFrame.origin.y + laeFrame.size.height;
   eFrame.origin.x = 8;
   eFrame.size.width = _frame.size.width - 16;
-  [[element view] setFrame:eFrame];
+  [view setFrame:eFrame];
   
-  [super addSubview:[element view]];
-  lastAddedElement = [element view];
+  [super addSubview:view];
+  lastAddedElement = view;
 
   NSRect frame = [self frame];
   // if (NSMaxY(eFrame) > frame.size.height) {
@@ -81,6 +81,11 @@
 {
   ALSACard *alsaCard;
   NSString *cardName;
+
+  // Prepare `No Controls` view
+  [noControlsBox retain];
+  [noControlsBox removeFromSuperview];
+  [noControlsWindow release];
 
   [cardsList setRefusesFirstResponder:YES];
   [viewMode setRefusesFirstResponder:YES];
@@ -128,24 +133,54 @@
 
 // --- Actions ---
 
-- (void)showElementsForCard:(ALSACard *)card mode:(NSString *)mode
+- (void)showElementsForCard:(ALSACard *)card mode:(ALSAViewMode)mode
 {
+  int elementsCount = 0;
+  
   [elementsView removeAllElements];
 
   [currentCard setShouldHandleEvents:NO];
 
   for (ALSAElement *elem in [card controls]) {
-    if ([mode isEqualToString:@"Playback"] && [elem isPlayback] != NO) {
-      [elementsView addElement:elem];
+    elementsCount++;
+    if (mode == MixerControlsPlayback && [elem isPlayback] != NO) {
+      [elementsView addElement:[elem view]];
+      [elem refresh];
     }
-    else if ([mode isEqualToString:@"Capture"] && [elem isCapture] != NO) {
-      [elementsView addElement:elem];
+    else if (mode == MixerControlsCapture && [elem isCapture] != NO) {
+      [elementsView addElement:[elem view]];
+      [elem refresh];
     }
-    else if ([mode isEqualToString:@"Options"] && [elem isOption] != NO) {
-      [elementsView addElement:elem];
+    else if (mode == MixerControlsOption && [elem isOption] != NO) {
+      [elementsView addElement:[elem view]];
+      [elem refresh];
     }
-    [elem refresh];
+    else {
+      elementsCount--;
+    }
   }
+
+  if (elementsCount == 0) {
+    NSString *message = @"No Controls";
+    
+    if (mode == MixerControlsPlayback) {
+      message = [NSString stringWithFormat:@"No Playback controls for `%@`",
+                          [card name]];
+    }
+    else if (mode == MixerControlsCapture) {
+      message = [NSString stringWithFormat:@"No Capture controls for `%@`",
+                          [card name]];
+    }
+    else if (mode == MixerControlsOption) {
+      message = [NSString stringWithFormat:@"No Options for `%@`",
+                          [card name]];
+    }
+    
+    [noControlsField setStringValue:message];
+    [elementsView addElement:noControlsBox];
+  }
+
+  
   NSRect frame = [window frame];
   if (frame.size.height > [window maxSize].height) {
     frame.origin.y += frame.size.height - [window maxSize].height;
@@ -165,13 +200,13 @@
 - (void)selectCard:(id)sender
 {
   [self showElementsForCard:[[cardsList selectedItem] representedObject]
-                       mode:[viewMode titleOfSelectedItem]];
+                       mode:[[viewMode selectedItem] tag]];
 }
 
 - (void)selectViewMode:(id)sender
 {
   [self showElementsForCard:[[cardsList selectedItem] representedObject]
-                       mode:[viewMode titleOfSelectedItem]];
+                       mode:[[viewMode selectedItem] tag]];
 }
 
 

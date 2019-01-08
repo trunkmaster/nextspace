@@ -27,6 +27,31 @@
 
 @interface ALSAElement : NSObject
 {
+  // Playback
+  id playbackWindow;
+  id pMuteButton;
+  id playbackBox;
+  id pVolumeField;
+  id pVolumeSlider;
+  id pBalanceSlider;
+  id pVolumeRight;
+  id pVolumeLeft;
+
+  // Capture
+  id captureWindow;
+  id captureBox;
+  id cMuteButton;
+  id cVolumeField;
+  id cVolumeSlider;
+  id cVolumeLeft;
+  id cVolumeRight;
+  id cBalanceSlider;
+
+  // Option
+  id optionBox;
+  id optionValues;
+  id optionWindow;
+  
   NSWindow	*window;
   NSBox 	*box;
   NSTextField	*volumeField;
@@ -64,6 +89,8 @@
     int has_capture_switch;
     int has_capture_switch_joined;
     int has_capture_switch_exclusive;
+    // Option
+    int is_enumerated;
   } flags;
 }
 

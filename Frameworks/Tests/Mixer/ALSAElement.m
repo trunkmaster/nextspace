@@ -18,6 +18,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+// #import "ALSA.h"
 #import "ALSACard.h"
 #import "ALSAElement.h"
 #import <X11/Xlib.h>
@@ -54,17 +55,19 @@
   flags.has_capture_switch = snd_mixer_selem_has_capture_switch(element);
   flags.has_capture_switch_joined = snd_mixer_selem_has_capture_switch_joined(element);
   flags.has_capture_switch_exclusive = snd_mixer_selem_has_capture_switch_exclusive(element);
+  // Option
+  flags.is_enumerated = snd_mixer_selem_is_enumerated(element);
 
-  fprintf(stderr, "\t %s (", elem_name);
-  fprintf(stderr, " is_active: %i", flags.is_active);
-  fprintf(stderr, " has_common_volume: %i", flags.has_common_volume);
-  fprintf(stderr, " has_common_switch: %i", flags.has_common_switch);
-  fprintf(stderr, " is_playback_mono: %i", flags.is_playback_mono);
-  fprintf(stderr, " has_playback_switch: %i", flags.has_playback_switch);
-  fprintf(stderr, " has_playback_switch_joined: %i", flags.has_playback_switch_joined);
-  fprintf(stderr, " has_playback_volume: %i", flags.has_playback_volume);
-  fprintf(stderr, " has_playback_volume_joined: %i", flags.has_playback_volume_joined);
-  fprintf(stderr, ")\n");
+  // fprintf(stderr, "\t %s (", elem_name);
+  // fprintf(stderr, " is_active: %i", flags.is_active);
+  // fprintf(stderr, " has_common_volume: %i", flags.has_common_volume);
+  // fprintf(stderr, " has_common_switch: %i", flags.has_common_switch);
+  // fprintf(stderr, " is_playback_mono: %i", flags.is_playback_mono);
+  // fprintf(stderr, " has_playback_switch: %i", flags.has_playback_switch);
+  // fprintf(stderr, " has_playback_switch_joined: %i", flags.has_playback_switch_joined);
+  // fprintf(stderr, " has_playback_volume: %i", flags.has_playback_volume);
+  // fprintf(stderr, " has_playback_volume_joined: %i", flags.has_playback_volume_joined);
+  // fprintf(stderr, ")\n");
   
   [NSBundle loadNibNamed:@"ALSAElement" owner:self];
 
@@ -73,6 +76,42 @@
 
 - (void)awakeFromNib
 {
+  if ([self isPlayback]) {
+    window = playbackWindow;
+    box = playbackBox;
+    muteButton = pMuteButton;
+    volumeField = pVolumeField;
+    volumeSlider = pVolumeSlider;
+    volumeLeft = pVolumeLeft;
+    volumeRight = pVolumeRight;
+    balanceSlider = pBalanceSlider;
+    
+    [captureWindow release];
+    [optionWindow release];
+  }
+  else if ([self isCapture]) {
+    window = captureWindow;
+    box = captureBox;
+    muteButton = cMuteButton;
+    volumeField = cVolumeField;
+    volumeSlider = cVolumeSlider;
+    volumeLeft = cVolumeLeft;
+    volumeRight = cVolumeRight;
+    balanceSlider = cBalanceSlider;
+    
+    [playbackWindow release];
+    [optionWindow release];
+  }
+  else if ([self isOption]) {
+    box = optionBox;
+    [optionBox retain];
+    [optionBox removeFromSuperview];
+    [optionWindow release];
+    
+    [playbackWindow release];
+    [captureWindow release];    
+  }
+
   [box retain];
   [box removeFromSuperview];
   [window release];
@@ -80,30 +119,46 @@
   [box setTitle:[NSString stringWithCString:elem_name]];
   [muteButton setRefusesFirstResponder:YES];
 
-  if (flags.has_playback_volume) {
-    // Set min/max values for volume slider
-    snd_mixer_selem_get_playback_volume_range(element, &volume_min, &volume_max);
-  }
-  else if (flags.has_capture_volume) {
-    snd_mixer_selem_get_capture_volume_range(element, &volume_min, &volume_max);
-  }
+  if ([self isOption] == NO) {
+    if ([self isPlayback]) {
+      // Set min/max values for volume slider
+      snd_mixer_selem_get_playback_volume_range(element, &volume_min, &volume_max);
+    }
+    else if ([self isCapture]) {
+      snd_mixer_selem_get_capture_volume_range(element, &volume_min, &volume_max);
+    }
   
-  [volumeSlider setMinValue:(double)volume_min];
-  [volumeSlider setMaxValue:(double)volume_max];
+    if ((!flags.has_playback_volume && !flags.has_capture_volume) || volume_max == 0) {
+      [volumeSlider removeFromSuperview];
+    }
+    else {
+      [volumeSlider setMinValue:(double)volume_min];
+      [volumeSlider setMaxValue:(double)volume_max];
+    }
+  
+    // Remove balance slider if element is mono
+    if ((flags.is_playback_mono == 1 && flags.has_playback_volume) ||
+        (flags.is_capture_mono == 1 && flags.has_capture_volume) ||
+        volume_max == 0) {
+      [balanceSlider removeFromSuperview];
+      [volumeLeft setStringValue:@""];
+      [volumeRight setStringValue:@""];
+    }
+  }
+  else {
+    char buf[64];
+    unsigned i;
+    int count = snd_mixer_selem_get_enum_items(element);
+    NSString *title;
 
-  if ((!flags.has_playback_volume && !flags.has_capture_volume) || volume_max == 0) {
-    // [volumeSlider retain];
-    [volumeSlider removeFromSuperview];
-  }
-  
-  // Remove balance slider if element is mono
-  if ((flags.is_playback_mono == 1 && flags.has_playback_volume) ||
-      (flags.is_capture_mono == 1 && flags.has_capture_volume) ||
-      volume_max == 0) {
-    // [balanceSlider retain];
-    [balanceSlider removeFromSuperview];
-    [volumeLeft setStringValue:@""];
-    [volumeRight setStringValue:@""];
+    [optionValues removeAllItems];
+    
+    for (i = 0; i < count; i++) {
+      snd_mixer_selem_get_enum_item_name(element, i, sizeof(buf), buf);
+      title = [NSString stringWithCString:buf];
+      [optionValues addItemWithTitle:title];
+      [[optionValues itemWithTitle:title] setTag:i];
+    }    
   }
 
   [self refresh];
@@ -116,36 +171,24 @@
 
 - (BOOL)isPlayback
 {
-  return flags.has_playback_volume && !flags.has_capture_volume;
+  return (flags.has_playback_volume &&
+          !flags.has_capture_volume && !flags.is_enumerated);
 }
 
 - (BOOL)isCapture
 {
-  return flags.has_capture_volume;
+  return (flags.has_capture_volume && !flags.is_enumerated);
 }
 
 - (BOOL)isOption
 {
-  if (snd_mixer_selem_is_enumerated(element)) {
-    char buf[64];
-    unsigned idx;
-    
-    snd_mixer_selem_get_enum_item(element, SND_MIXER_SCHN_FRONT_LEFT, &idx);
-    snd_mixer_selem_get_enum_item_name(element, idx, sizeof(buf) - 1, buf);
-    fprintf(stderr, "Element `%s` is enumerated, playback=%i, capture=%i Value: %s\n",
-            elem_name,
-            snd_mixer_selem_is_enum_playback(element),
-            snd_mixer_selem_is_enum_capture(element),
-            buf);
-  }
-  return (!flags.has_playback_volume &&
-          !flags.has_capture_volume &&
-          snd_mixer_selem_is_enumerated(element));
+  return (flags.is_enumerated &&
+          !flags.has_playback_volume && !flags.has_capture_volume);
 }
 
 - (void)refresh
 {
-  if (flags.has_playback_volume) {
+  if ([self isPlayback]) {
     // Mute button
     if (flags.has_playback_switch) {
       int play;
@@ -180,7 +223,7 @@
       [balanceSlider setFloatValue:(1.0 - ((vol_l - vol_r) / vol_max))];
     }
   }
-  else if (flags.has_capture_volume) {
+  else if ([self isCapture]) {
     // Mute button
     if (flags.has_capture_switch) {
       int play;
@@ -214,6 +257,11 @@
         
       [balanceSlider setFloatValue:(1.0 - ((vol_l - vol_r) / vol_max))];
     }
+  }
+  else if ([self isOption]) {
+    unsigned idx;
+    snd_mixer_selem_get_enum_item(element, SND_MIXER_SCHN_FRONT_LEFT, &idx);
+    [optionValues selectItemWithTag:idx];
   }
   
   // NSLog(@"Control `%s` min=%li(%.0f), max=%li(%.0f), is_active=%i", elem_name,
@@ -312,6 +360,11 @@
   if (flags.has_capture_switch) {
     snd_mixer_selem_set_capture_switch_all(element, ![sender state]);
   }
+}
+
+// TODO
+- (void)setOption:(id)sender
+{
 }
 
 @end
