@@ -67,7 +67,7 @@
     [audioServer release];
   }
   audioServer = [[PulseAudio alloc] init];
-  [audioServer iterate];
+  // [audioServer iterate];
 }
 
 @end

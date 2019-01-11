@@ -21,6 +21,8 @@
 #import <stdio.h>
 #import <string.h>
 
+#import <dispatch/dispatch.h>
+
 #import "PulseAudio.h"
 
 void pa_state_cb(pa_context *c, void *userdata);
@@ -39,9 +41,10 @@ void pa_state_cb(pa_context *c, void *userdata)
   pa_context_state_t state;
   int                *pa_ready = userdata;
 
-  fprintf(stderr, "State callback.\n");
-  
   state = pa_context_get_state(c);
+  
+  fprintf(stderr, "State callback: %i\n", state);
+  
   switch (state) {
     // There are just here for reference
   case PA_CONTEXT_UNCONNECTED:
@@ -121,9 +124,18 @@ void pa_sourcelist_cb(pa_context *c, const pa_source_info *l,
 
 - init
 {
-  // int pa_loop_retval;
   [super init];
   
+  if (window == nil) {
+    [NSBundle loadNibNamed:@"PulseAudio" owner:self];
+  }
+  [window makeKeyAndOrderFront:self];
+  
+  return self;
+}
+
+- (void)_initPAConnection
+{
   state = 0;
   pa_ready = 0;
   
@@ -146,27 +158,18 @@ void pa_sourcelist_cb(pa_context *c, const pa_source_info *l,
   // modify the variable to 1 so we know when we have a connection and it's
   // ready.
   // If there's an error, the callback will set pa_ready to 2
-  pa_context_set_state_callback(pa_ctx, pa_state_cb, &pa_ready);
-
-  return self;
+  pa_context_set_state_callback(pa_ctx, pa_state_cb, &pa_ready);  
 }
-
-- (int)iterate
+- (int)_iterate
 {
-  // Now we'll enter into an infinite loop until we get the data we receive
-  // or if there's an error
   for (;;) {
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                             beforeDate:[NSDate dateWithTimeIntervalSinceNow:.1]];
-    // [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-    // We can't do anything until PA is ready, so just iterate the mainloop
-    // and continue
     if (pa_ready == 0) {
       pa_mainloop_iterate(pa_loop, 1, NULL);
       continue;
     }
     // We couldn't get a connection to the server, so exit out
     if (pa_ready == 2) {
+      NSLog(@"[PulseAudio] couldn't get a connection to the server. Exit PA runloop.");
       pa_context_disconnect(pa_ctx);
       pa_context_unref(pa_ctx);
       pa_mainloop_free(pa_loop);
@@ -177,54 +180,64 @@ void pa_sourcelist_cb(pa_context *c, const pa_source_info *l,
     switch (state) {
       // State 0: we haven't done anything yet
     case 0:
-      // This sends an operation to the server.  pa_sinklist_info is
-      // our callback function and a pointer to our devicelist will
-      // be passed to the callback The operation ID is stored in the
-      // pa_op variable
-      pa_op = pa_context_get_sink_info_list(pa_ctx,
-                                            pa_sinklist_cb,
-                                            output);
-
-      // Update state for next iteration through the loop
+      pa_op = pa_context_get_sink_info_list(pa_ctx, pa_sinklist_cb, output);
       state++;
       break;
     case 1:
-      // Now we wait for our operation to complete.  When it's
-      // complete our pa_output_devicelist is filled out, and we move
-      // along to the next state
       if (pa_operation_get_state(pa_op) == PA_OPERATION_DONE) {
         pa_operation_unref(pa_op);
-
-        // Now we perform another operation to get the source
-        // (input device) list just like before. This time we pass
-        // a pointer to our input structure
-        pa_op = pa_context_get_source_info_list(pa_ctx,
-                                                pa_sourcelist_cb,
-                                                input);
-        // Update the state so we know what to do next
+        pa_op = pa_context_get_source_info_list(pa_ctx, pa_sourcelist_cb, input);
         state++;
       }
       break;
     case 2:
-      if (pa_operation_get_state(pa_op) == PA_OPERATION_DONE) {
-        // Now we're done, clean up and disconnect and return
-        pa_operation_unref(pa_op);
-        pa_context_disconnect(pa_ctx);
-        pa_context_unref(pa_ctx);
-        pa_mainloop_free(pa_loop);
-        return 0;
-      }
+      return 0;
       break;
     default:
       // We should never see this state
       fprintf(stderr, "in state %d\n", state);
-      return -1;
+      // return -1;
     }
-    // Iterate the main loop and go again. The second argument is whether
-    // or not the iteration should block until something is ready to be
-    // done. Set it to zero for non-blocking.
     pa_mainloop_iterate(pa_loop, 1, NULL);
   }
+}
+
+- (void)awakeFromNib
+{
+  [streamsBrowser loadColumnZero];
+  [devicesBrowser loadColumnZero];
+  [streamsBrowser setTitle:@"Streams" ofColumn:0];
+  [devicesBrowser setTitle:@"Devices" ofColumn:0];
+  
+  [self _initPAConnection];
+  dispatch_queue_t pa_q = dispatch_queue_create("ns.mixer.pulseaudio", NULL);
+  dispatch_async(pa_q, ^{[self _iterate];});
+}
+
+// --- Window delegate
+- (BOOL)windowShouldClose:(id)sender
+{
+  int retval = 0;
+  if (sender != window)
+    return NO;
+  
+  NSLog(@"[PulseAudio] windowShouldClose. Waiting for operation to be done.");
+  
+  while (pa_operation_get_state(pa_op) != PA_OPERATION_DONE) {
+    pa_mainloop_iterate(pa_loop, 1, NULL);
+  }
+
+  NSLog(@"[PulseAudio] windowShouldClose. Closing connection to server.");
+  // Now we're done, clean up and disconnect and return
+  state = 2;
+  pa_mainloop_quit(pa_loop, retval);
+  pa_operation_unref(pa_op);
+  pa_context_disconnect(pa_ctx);
+  pa_context_unref(pa_ctx);
+  pa_mainloop_free(pa_loop);
+  NSLog(@"[PulseAudio] windowShouldClose. Connection to server closed.");
+
+  return YES;
 }
 
 @end
