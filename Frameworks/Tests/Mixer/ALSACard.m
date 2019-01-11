@@ -99,7 +99,7 @@
   }
 
   shouldHandleEvents = NO;
-  timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+  timer = [NSTimer scheduledTimerWithTimeInterval:.5
                                            target:self
                                          selector:@selector(handleEvents)
                                          userInfo:nil
