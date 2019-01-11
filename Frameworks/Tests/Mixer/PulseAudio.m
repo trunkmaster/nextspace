@@ -39,6 +39,8 @@ void pa_state_cb(pa_context *c, void *userdata)
   pa_context_state_t state;
   int                *pa_ready = userdata;
 
+  fprintf(stderr, "State callback.\n");
+  
   state = pa_context_get_state(c);
   switch (state) {
     // There are just here for reference
@@ -72,6 +74,7 @@ void pa_sinklist_cb(pa_context *c, const pa_sink_info *l,
     return;
   }
 
+  fprintf(stderr, "Sink List callback.\n");
   // We know we've allocated 16 slots to hold devices.  Loop through our
   // structure and find the first one that's "uninitialized."  Copy the
   // contents into it and we're done.  If we receive more than 16 devices,
@@ -79,6 +82,7 @@ void pa_sinklist_cb(pa_context *c, const pa_sink_info *l,
   // space for the device list, but this is a simple example.
   for (ctr = 0; ctr < 16; ctr++) {
     if (! pa_devicelist[ctr].initialized) {
+      fprintf(stderr, "\t%s (%s)\n", l->name, l->description);
       strncpy(pa_devicelist[ctr].name, l->name, 511);
       strncpy(pa_devicelist[ctr].description, l->description, 255);
       pa_devicelist[ctr].index = l->index;
@@ -86,6 +90,7 @@ void pa_sinklist_cb(pa_context *c, const pa_sink_info *l,
       break;
     }
   }
+  fprintf(stderr, "Sink List callback: done.\n");
 }
 
 // See above.  This callback is pretty much identical to the previous
@@ -99,8 +104,10 @@ void pa_sourcelist_cb(pa_context *c, const pa_source_info *l,
     return;
   }
 
+  fprintf(stderr, "Source List callback:\n");
   for (ctr = 0; ctr < 16; ctr++) {
-    if (! pa_devicelist[ctr].initialized) {
+    if (!pa_devicelist[ctr].initialized) {
+      fprintf(stderr, "\t%s (%s)\n", l->name, l->description);
       strncpy(pa_devicelist[ctr].name, l->name, 511);
       strncpy(pa_devicelist[ctr].description, l->description, 255);
       pa_devicelist[ctr].index = l->index;
@@ -108,23 +115,28 @@ void pa_sourcelist_cb(pa_context *c, const pa_source_info *l,
       break;
     }
   }
+  fprintf(stderr, "Source List callback: done.\n");
+
 }
 
 - init
 {
+  // int pa_loop_retval;
   [super init];
   
   state = 0;
   pa_ready = 0;
   
   // Initialize our device lists
+  input = malloc(sizeof(pa_devicelist_t) * 16);
+  output = malloc(sizeof(pa_devicelist_t) * 16);
   memset(input, 0, sizeof(pa_devicelist_t) * 16);
   memset(output, 0, sizeof(pa_devicelist_t) * 16);
 
   // Create a mainloop API and connection to the default server
   pa_loop = pa_mainloop_new();
   pa_api = pa_mainloop_get_api(pa_loop);
-  pa_ctx = pa_context_new(pa_api, "NS Mixer");
+  pa_ctx = pa_context_new(pa_api, "SoundMixer");
 
   // This function connects to the pulse server
   pa_context_connect(pa_ctx, NULL, 0, NULL);
@@ -144,6 +156,9 @@ void pa_sourcelist_cb(pa_context *c, const pa_source_info *l,
   // Now we'll enter into an infinite loop until we get the data we receive
   // or if there's an error
   for (;;) {
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                             beforeDate:[NSDate dateWithTimeIntervalSinceNow:.1]];
+    // [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
     // We can't do anything until PA is ready, so just iterate the mainloop
     // and continue
     if (pa_ready == 0) {
