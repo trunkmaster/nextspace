@@ -41,6 +41,7 @@
 {
   NSRect laeFrame = [lastAddedElement frame];
   NSRect eFrame = [view frame];
+  NSSize winMinSize = [[self window] minSize];
 
   if (lastAddedElement == nil) {
     laeFrame = NSMakeRect(0, -eFrame.size.height, eFrame.size.width, eFrame.size.height);
@@ -55,14 +56,14 @@
   lastAddedElement = view;
 
   NSRect frame = [self frame];
-  // if (NSMaxY(eFrame) > frame.size.height) {
-    frame.size.height = eFrame.origin.y + eFrame.size.height;
-    [self setFrame:frame];
-  // }
+  frame.size.height = eFrame.origin.y + eFrame.size.height;
+  [self setFrame:frame];
 
   frame = [[self window] frame];
   frame.size.height = 108 + eFrame.origin.y + eFrame.size.height;
-  [[self window] setMaxSize:frame.size];
+  if (frame.size.height > winMinSize.height) {
+    [[self window] setMaxSize:frame.size];
+  }
 }
 - (void)removeAllElements
 {
