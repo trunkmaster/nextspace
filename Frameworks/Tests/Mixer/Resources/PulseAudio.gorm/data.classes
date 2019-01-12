@@ -1,20 +1,17 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
-    FirstResponder = {
-	Actions = (
-	    "orderFrontFontPanel:",
-	    "showPrefPanel:"
-	);
-	Super = NSObject;
-    };
-    PulseAudio = {
+    AppController = {
 	Actions = (
 	    "showPrefPanel:"
 	);
 	Outlets = (
-	    devicesBrowser,
-	    streamsBrowser,
-	    window
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "showPrefPanel:"
 	);
 	Super = NSObject;
     };
