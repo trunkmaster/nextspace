@@ -15,4 +15,14 @@
 	);
 	Super = NSObject;
     };
+    PulseAudio = {
+	Actions = (
+	);
+	Outlets = (
+	    devicesBrowser,
+	    streamsBrowser,
+	    window
+	);
+	Super = NSObject;
+    };
 }
