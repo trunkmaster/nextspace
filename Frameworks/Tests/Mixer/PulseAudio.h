@@ -18,7 +18,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 #import <pulse/pulseaudio.h>
 
@@ -31,19 +31,19 @@ typedef struct pa_devicelist {
 
 @interface PulseAudio : NSObject
 {
+  id window;
+  id streamsBrowser;
+  id devicesBrowser;
+  
   // Define our pulse audio loop and connection variables
   pa_mainloop     *pa_loop;
   pa_mainloop_api *pa_api;
   pa_operation    *pa_op;
-  pa_context      *pa_ctx;
   // We'll need these state variables to keep track of our requests
   int             state;
-  int             pa_ready;
 
-  pa_devicelist_t *input;
-  pa_devicelist_t *output;
+  // pa_devicelist_t *input;
+  // pa_devicelist_t *output;
 }
-
-- (int)iterate;
 
 @end
