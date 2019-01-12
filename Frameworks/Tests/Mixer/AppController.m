@@ -26,7 +26,8 @@
 
 - (void)dealloc
 {
-  [audioServer release];
+  [alsaPanel release];
+  [paPanel release];
   
   [super dealloc];
 }
@@ -52,22 +53,21 @@
 
 - (void)openALSAPanel:(id)sender
 {
-  if (audioServer) {
-    [audioServer release];
+  if (alsaPanel) {
+    [alsaPanel release];
   }
-  audioServer = [[ALSA alloc] init];
-  if ([audioServer respondsToSelector:@selector(showPanel)]) {
-    [audioServer showPanel];
+  alsaPanel = [[ALSA alloc] init];
+  if ([alsaPanel respondsToSelector:@selector(showPanel)]) {
+    [alsaPanel showPanel];
   }
 }
 
 - (void)openPulseAudioPanel:(id)sender
 {
-  if (audioServer) {
-    [audioServer release];
+  if (paPanel) {
+    [paPanel release];
   }
-  audioServer = [[PulseAudio alloc] init];
-  [audioServer iterate];
+  paPanel = [[PulseAudio alloc] init];
 }
 
 @end

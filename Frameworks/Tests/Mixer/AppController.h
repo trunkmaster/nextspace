@@ -22,7 +22,8 @@
 
 @interface AppController : NSObject
 {
-  id            audioServer;
+  id            alsaPanel;
+  id		paPanel;
   
   NSPopUpButton *sectionType;
   
