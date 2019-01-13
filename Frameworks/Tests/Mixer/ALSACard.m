@@ -18,6 +18,8 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import <dispatch/dispatch.h>
+
 #import "ALSAElement.h"
 #import "ALSACard.h"
 
@@ -99,40 +101,51 @@
   }
 
   shouldHandleEvents = NO;
-  timer = [NSTimer scheduledTimerWithTimeInterval:.5
-                                           target:self
-                                         selector:@selector(handleEvents)
-                                         userInfo:nil
-                                          repeats:YES];
+  
+  dispatch_queue_t alsa_q = dispatch_queue_create("org.nextspace.alsamixer", NULL);
+  dispatch_async(alsa_q, ^{ for (;;) [self handleEvents]; });
+
+  // timer = [NSTimer scheduledTimerWithTimeInterval:.5
+  //                                          target:self
+  //                                        selector:@selector(handleEvents)
+  //                                        userInfo:nil
+  //                                         repeats:YES];
   return self;
 }
 
 - (void)handleEvents
 {
   int            poll_count, fill_count;
-  struct pollfd  *polls;
+  struct pollfd  *pollfds;
   unsigned short revents;
+  int            n;
 
   if (shouldHandleEvents == NO) {
+    sleep(1);
     return;
   }
 
   poll_count = snd_mixer_poll_descriptors_count(alsa_mixer);
-  if (poll_count <= 0)
+  if (poll_count <= 0) {
     NSLog(@"Cannot obtain mixer poll descriptors.");
+  }
 
-  polls = alloca((poll_count + 1) * sizeof (struct pollfd));
-  fill_count = snd_mixer_poll_descriptors(alsa_mixer, polls, poll_count);
+  // pollfds = alloca((poll_count + 1) * sizeof(struct pollfd));
+  pollfds = alloca(poll_count * sizeof(struct pollfd));
+  fill_count = snd_mixer_poll_descriptors(alsa_mixer, pollfds, poll_count);
   NSAssert(poll_count = fill_count, @"poll counts differ");
 
-  poll(polls, fill_count + 1, 5);
+  // n = poll(pollfds, fill_count + 1, -1);
+  n = poll(pollfds, poll_count, -1);
 
-  /* Ensure that changes made via other programs (alsamixer, etc.) get
-     reflected as well.  */
-  snd_mixer_poll_descriptors_revents(alsa_mixer, polls, poll_count, &revents);
-  if (revents & POLLIN) {
-    snd_mixer_handle_events(alsa_mixer);
-    [controls makeObjectsPerform:@selector(refresh)];
+  if (n > 0) {
+    /* Ensure that changes made via other programs (alsamixer, etc.) get
+       reflected as well.  */
+    snd_mixer_poll_descriptors_revents(alsa_mixer, pollfds, poll_count, &revents);
+    if (revents & POLLIN) {
+      snd_mixer_handle_events(alsa_mixer);
+      [controls makeObjectsPerform:@selector(refresh)];
+    }
   }
 }
 
