@@ -140,7 +140,8 @@
   
   [elementsView removeAllElements];
 
-  [currentCard setShouldHandleEvents:NO];
+  // [currentCard setShouldHandleEvents:NO];
+  [currentCard enterEventLoop];
 
   for (ALSAElement *elem in [card controls]) {
     elementsCount++;
@@ -195,11 +196,14 @@
   }
   
   currentCard = card;
-  [currentCard setShouldHandleEvents:YES];
+  // [currentCard setShouldHandleEvents:YES];
+  [currentCard enterEventLoop];
 }
 
 - (void)selectCard:(id)sender
 {
+  [currentCard pauseEventLoop];
+  
   [self showElementsForCard:[[cardsList selectedItem] representedObject]
                        mode:[[viewMode selectedItem] tag]];
 }
@@ -210,5 +214,23 @@
                        mode:[[viewMode selectedItem] tag]];
 }
 
+// --- Window delegate
+- (BOOL)windowShouldClose:(id)sender
+{
+  ALSACard *card;
+
+  if (sender != window) {
+    return NO;
+  }
+
+  for (NSMenuItem *item in [cardsList itemArray]) {
+    card = [item representedObject];
+    [card quitEventLoop];
+  }
+  [elementsView removeAllElements];
+  [cardsList removeAllItems];
+
+  return YES;
+}
 
 @end
