@@ -32,11 +32,18 @@
   NSMutableArray *controls;
 
   NSTimer        *timer;
-  BOOL           shouldHandleEvents;
+  __block BOOL   shouldHandleEvents;
+  __block BOOL   isEventLoopActive;
+  BOOL           isEventLoopCreated;
 }
 
 - initWithNumber:(int)number;
-- (void)setShouldHandleEvents:(BOOL)yn;
+- (void)enterEventLoop;
+- (void)pauseEventLoop;
+- (void)resumeEventLoop;
+- (void)quitEventLoop;
+
+// - (void)setShouldHandleEvents:(BOOL)yn;
   
 - (NSString *)name;
 - (NSString *)chipName;

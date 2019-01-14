@@ -23,20 +23,30 @@
 #import "ALSAElement.h"
 #import "ALSACard.h"
 
+  
+static dispatch_queue_t event_loop_q;
+static dispatch_block_t event_loop_block;
+
 @implementation ALSACard
 
 - (void)dealloc
 {
-  if (alsa_mixer != NULL)
+  if (isEventLoopActive != NO) {
+    [self quitEventLoop];
+  }
+  
+  if (alsa_mixer != NULL) {
     [self deleteMixer:alsa_mixer];
+  }
 
   [cardName release];
   [chipName release];
   [deviceName release];
+  
   if (controls) {
     [controls release];
   }
-  
+
   [super dealloc];
 }
 
@@ -101,10 +111,6 @@
   }
 
   shouldHandleEvents = NO;
-  
-  dispatch_queue_t alsa_q = dispatch_queue_create("org.nextspace.alsamixer", NULL);
-  dispatch_async(alsa_q, ^{ for (;;) [self handleEvents]; });
-
   // timer = [NSTimer scheduledTimerWithTimeInterval:.5
   //                                          target:self
   //                                        selector:@selector(handleEvents)
@@ -147,6 +153,68 @@
       [controls makeObjectsPerform:@selector(refresh)];
     }
   }
+}
+
+- (void)enterEventLoop
+{
+  if (isEventLoopCreated != NO) {
+    NSLog(@"[ALSACard entereventloop] event loop already created. Resuming...");
+    [self resumeEventLoop];
+    return;
+  }
+
+  event_loop_q = dispatch_queue_create("org.nextspace.alsamixer", NULL);
+  isEventLoopActive = YES;
+  shouldHandleEvents = YES;
+
+  event_loop_block = dispatch_block_create(0, ^{
+      while (isEventLoopActive != NO) {
+        [self handleEvents];
+      }
+      fprintf(stderr, "ALSACard event loop quit.\n");
+    });
+  dispatch_async(event_loop_q, event_loop_block);
+  isEventLoopCreated = YES;
+
+  // dispatch_async(event_loop_q, ^{
+  //     while (isEventLoopActive != NO) {
+  //       [self handleEvents];
+  //     }
+  //     fprintf(stderr, "ALSACard event loop quit.\n");
+  //   });
+}
+
+- (void)pauseEventLoop
+{
+  if (isEventLoopCreated == NO) {
+    NSLog(@"[ALSACard pauseEventLoop] event loop was not created! Call -enterEventLoop first.");
+    return;
+  }
+  shouldHandleEvents = NO;
+}
+
+- (void)resumeEventLoop
+{
+  if (isEventLoopCreated == NO) {
+    NSLog(@"[ALSACard resumeEventLoop] event loop was not created! Call -enterEventLoop first.");
+    return;
+  }
+  shouldHandleEvents = YES;
+}
+
+- (void)quitEventLoop
+{
+  if (isEventLoopCreated == NO) {
+    NSLog(@"[ALSACard quitEventLoop] event loop was not created! Call -enterEventLoop first.");
+    return;
+  }
+  shouldHandleEvents = NO; // stops processing events
+  isEventLoopActive = NO;  // finishes running of dispatched block
+
+  // dispatch_block_cancel(event_loop_block);
+  dispatch_wait(event_loop_block, dispatch_time(DISPATCH_TIME_NOW, 1000000000));
+  dispatch_release(event_loop_q);
+  isEventLoopCreated = NO;
 }
 
 - (void)setShouldHandleEvents:(BOOL)yn
