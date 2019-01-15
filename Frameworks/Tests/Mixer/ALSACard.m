@@ -25,7 +25,6 @@
 
   
 static dispatch_queue_t event_loop_q;
-static dispatch_block_t event_loop_block;
 
 @implementation ALSACard
 
@@ -110,12 +109,10 @@ static dispatch_block_t event_loop_block;
     }
   }
 
+  isEventLoopActive = NO;
   shouldHandleEvents = NO;
-  // timer = [NSTimer scheduledTimerWithTimeInterval:.5
-  //                                          target:self
-  //                                        selector:@selector(handleEvents)
-  //                                        userInfo:nil
-  //                                         repeats:YES];
+  isEventLoopDispatched = NO;
+  
   return self;
 }
 
@@ -144,6 +141,9 @@ static dispatch_block_t event_loop_block;
   // n = poll(pollfds, fill_count + 1, -1);
   n = poll(pollfds, poll_count, -1);
 
+  if (shouldHandleEvents == NO) {
+    return;
+  }
   if (n > 0) {
     /* Ensure that changes made via other programs (alsamixer, etc.) get
        reflected as well.  */
@@ -157,37 +157,35 @@ static dispatch_block_t event_loop_block;
 
 - (void)enterEventLoop
 {
-  if (isEventLoopCreated != NO) {
-    NSLog(@"[ALSACard entereventloop] event loop already created. Resuming...");
-    [self resumeEventLoop];
-    return;
+  NSLog(@"[ALSACard] `%@` eneterEventLoop.", cardName);
+
+  if (event_loop_q == NULL) {
+    event_loop_q = dispatch_queue_create("org.nextspace.alsamixer", NULL);
+  }
+  else {
+    NSLog(@"[ALSACard enterEventloop] `%@` event loop already created.", cardName);
   }
 
-  event_loop_q = dispatch_queue_create("org.nextspace.alsamixer", NULL);
-  isEventLoopActive = YES;
-  shouldHandleEvents = YES;
-
-  event_loop_block = dispatch_block_create(0, ^{
-      while (isEventLoopActive != NO) {
-        [self handleEvents];
-      }
-      fprintf(stderr, "ALSACard event loop quit.\n");
-    });
-  dispatch_async(event_loop_q, event_loop_block);
-  isEventLoopCreated = YES;
-
-  // dispatch_async(event_loop_q, ^{
-  //     while (isEventLoopActive != NO) {
-  //       [self handleEvents];
-  //     }
-  //     fprintf(stderr, "ALSACard event loop quit.\n");
-  //   });
+  if (isEventLoopDispatched == NO) {
+    isEventLoopActive = YES;
+    dispatch_async(event_loop_q, ^{
+        while (isEventLoopActive != NO) {
+          [self handleEvents];
+        }
+        fprintf(stderr, "ALSACard `%s` event loop quit.\n", [cardName cString]);
+      });
+    isEventLoopDispatched = YES;
+  }
+  else {
+    NSLog(@"[ALSACard enterEventloop] `%@` block already dispatched.", cardName);
+  }
 }
 
 - (void)pauseEventLoop
 {
-  if (isEventLoopCreated == NO) {
-    NSLog(@"[ALSACard pauseEventLoop] event loop was not created! Call -enterEventLoop first.");
+  if (isEventLoopDispatched == NO) {
+    NSLog(@"[ALSACard pauseEventLoop] event loop was not dispatched to queue!"
+          " Call -enterEventLoop first.");
     return;
   }
   shouldHandleEvents = NO;
@@ -195,8 +193,9 @@ static dispatch_block_t event_loop_block;
 
 - (void)resumeEventLoop
 {
-  if (isEventLoopCreated == NO) {
-    NSLog(@"[ALSACard resumeEventLoop] event loop was not created! Call -enterEventLoop first.");
+  if (isEventLoopDispatched == NO) {
+    NSLog(@"[ALSACard resumeEventLoop] event loop was not dispatched to queue! "
+          "Call -enterEventLoop first.");
     return;
   }
   shouldHandleEvents = YES;
@@ -204,17 +203,14 @@ static dispatch_block_t event_loop_block;
 
 - (void)quitEventLoop
 {
-  if (isEventLoopCreated == NO) {
-    NSLog(@"[ALSACard quitEventLoop] event loop was not created! Call -enterEventLoop first.");
-    return;
-  }
-  shouldHandleEvents = NO; // stops processing events
   isEventLoopActive = NO;  // finishes running of dispatched block
-
-  // dispatch_block_cancel(event_loop_block);
-  dispatch_wait(event_loop_block, dispatch_time(DISPATCH_TIME_NOW, 1000000000));
-  dispatch_release(event_loop_q);
-  isEventLoopCreated = NO;
+  shouldHandleEvents = NO; // stops processing events
+  isEventLoopDispatched = NO;
+  
+  if (event_loop_q != NULL) {
+    dispatch_release(event_loop_q);
+    event_loop_q = NULL;
+  }
 }
 
 - (void)setShouldHandleEvents:(BOOL)yn
