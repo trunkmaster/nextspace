@@ -274,8 +274,7 @@
   int     volume;
   CGFloat balance;
 
-  // [alsaCard setShouldHandleEvents:NO];
-  [alsaCard quitEventLoop];
+  [alsaCard pauseEventLoop];
 
   volume = [volumeSlider intValue];
   volume_left = volume;
@@ -341,8 +340,7 @@
   // fprintf(stderr, "`%s` left:%li right:%li balance:%.1f\n",
   //         elem_name, volume_left, volume_right, balance);
   
-  // [alsaCard setShouldHandleEvents:YES];
-  [alsaCard enterEventLoop];
+  [alsaCard resumeEventLoop];
 }
 
 - (void)setBalance:(id)sender

@@ -121,7 +121,8 @@
 
   [cardsList selectItemAtIndex:0];
   currentCard = [[cardsList itemAtIndex:0] representedObject];
-  [self selectCard:cardsList];
+
+  [self showElementsForCard:currentCard mode:[[viewMode selectedItem] tag]];
 } 
 
 - (void)showPanel
@@ -137,11 +138,11 @@
 - (void)showElementsForCard:(ALSACard *)card mode:(ALSAViewMode)mode
 {
   int elementsCount = 0;
-  
-  [elementsView removeAllElements];
 
-  // [currentCard setShouldHandleEvents:NO];
-  [currentCard enterEventLoop];
+  [card enterEventLoop];
+  [card pauseEventLoop];
+
+  [elementsView removeAllElements];
 
   for (ALSAElement *elem in [card controls]) {
     elementsCount++;
@@ -181,7 +182,6 @@
     [noControlsField setStringValue:message];
     [elementsView addElement:noControlsBox];
   }
-
   
   NSRect frame = [window frame];
   if (frame.size.height > [window maxSize].height) {
@@ -195,9 +195,8 @@
     [window setFrame:frame display:YES];
   }
   
+  [card resumeEventLoop];
   currentCard = card;
-  // [currentCard setShouldHandleEvents:YES];
-  [currentCard enterEventLoop];
 }
 
 - (void)selectCard:(id)sender

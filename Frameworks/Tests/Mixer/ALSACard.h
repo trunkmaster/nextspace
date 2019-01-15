@@ -32,9 +32,10 @@
   NSMutableArray *controls;
 
   NSTimer        *timer;
+  
   __block BOOL   shouldHandleEvents;
   __block BOOL   isEventLoopActive;
-  BOOL           isEventLoopCreated;
+  BOOL           isEventLoopDispatched;
 }
 
 - initWithNumber:(int)number;
