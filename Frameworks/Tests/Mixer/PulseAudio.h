@@ -34,6 +34,11 @@ typedef struct pa_devicelist {
   id window;
   id streamsBrowser;
   id devicesBrowser;
+
+  __block NSMutableArray *clientList;
+  __block NSMutableArray *sinkList;
+  __block NSMutableArray *sourceList;
+  __block NSMutableArray *streamList; // sink-input or source-output
   
   // Define our pulse audio loop and connection variables
   pa_mainloop     *pa_loop;
@@ -45,5 +50,8 @@ typedef struct pa_devicelist {
   // pa_devicelist_t *input;
   // pa_devicelist_t *output;
 }
+
+- (void)addStream:(NSString *)stream;
+- (void)addSink:(NSString *)sink;
 
 @end
