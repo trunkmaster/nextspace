@@ -292,6 +292,8 @@
         volume_left = volume * (2 - balance);
         volume_right = volume;
       }
+      [volumeLeft setIntValue:volume_left];
+      [volumeRight setIntValue:volume_right];
     }
 
     if (snd_mixer_selem_has_playback_channel(element, SND_MIXER_SCHN_FRONT_LEFT)) {
@@ -315,6 +317,8 @@
         volume_left = volume * (2 - balance);
         volume_right = volume;
       }
+      [volumeLeft setIntValue:volume_left];
+      [volumeRight setIntValue:volume_right];
     }
 
     if (snd_mixer_selem_has_capture_channel(element, SND_MIXER_SCHN_FRONT_LEFT)) {
@@ -327,11 +331,6 @@
     }
   }
   
-  if (flags.is_playback_mono == 0 && flags.is_capture_mono == 0) {
-    [volumeLeft setIntValue:volume_left];
-    [volumeRight setIntValue:volume_right];
-  }
-
   if (sender == volumeSlider) {
     [volumeField setIntValue:(volume_left >= volume_right ?
                               volume_left : volume_right)];
