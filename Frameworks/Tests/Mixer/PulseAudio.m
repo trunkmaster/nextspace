@@ -59,6 +59,8 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
     dec_outstanding();
     return;
   }
+
+  fprintf(stderr, "[Mixer] Card: %s\n", info->name);
 }
 
 // --- Sink ---
@@ -77,7 +79,8 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
     return;
   }
 
-  fprintf(stderr, "[Mixer] Sink: %s (%s)\n", info->name, info->description);
+  fprintf(stderr, "[Mixer] Sink: %s (%s) (index:%i)\n",
+          info->name, info->description, info->index);
 }
 void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
                    int eol, void *userdata)
@@ -95,7 +98,9 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
     return;
   }
 
-  fprintf(stderr, "[Mixer] Sink Input: %s\n", info->name);
+  fprintf(stderr, "[Mixer] Sink Input: %s "
+          "(has_volume:%i client index:%i sink index:%i)\n",
+          info->name, info->has_volume, info->client, info->sink);
 }
 
 // --- Source ---
@@ -154,7 +159,7 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
     return;
   }
   
-  fprintf(stderr, "[Mixer] Client: %s\n", info->name);
+  fprintf(stderr, "[Mixer] Client: %s (index:%i)\n", info->name, info->index);
 }
 
 void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
@@ -184,6 +189,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
     return;
   }
 
+  fprintf(stderr, "[Mixer] Stream restore: %s\n", info->name);
   // w->updateRole(*i);
 }
 
@@ -596,7 +602,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
   
   [self _initPAConnection];
   
-  dispatch_queue_t pa_q = dispatch_queue_create("org.nextspace.mixer", NULL);
+  dispatch_queue_t pa_q = dispatch_queue_create("org.nextspace.pamixer", NULL);
   dispatch_async(pa_q, ^{ for (;;) { pa_mainloop_iterate(pa_loop, 1, NULL); } });
 }
 
@@ -604,23 +610,24 @@ void context_state_cb(pa_context *ctx, void *userdata)
 - (BOOL)windowShouldClose:(id)sender
 {
   int retval = 0;
+  
   if (sender != window)
     return NO;
   
-  NSLog(@"[PulseAudio] windowShouldClose. Waiting for operation to be done.");
+  // NSLog(@"[PulseAudio] windowShouldClose. Waiting for operation to be done.");
   
-  while (pa_operation_get_state(pa_op) != PA_OPERATION_DONE) {
-    pa_mainloop_iterate(pa_loop, 1, NULL);
-  }
+  // while (pa_op && (pa_operation_get_state(pa_op) != PA_OPERATION_DONE)) {
+  //   pa_mainloop_iterate(pa_loop, 1, NULL);
+  // }
 
   NSLog(@"[PulseAudio] windowShouldClose. Closing connection to server.");
   // Now we're done, clean up and disconnect and return
   state = 2;
   pa_mainloop_quit(pa_loop, retval);
-  pa_operation_unref(pa_op);
-  pa_context_disconnect(pa_ctx);
-  pa_context_unref(pa_ctx);
-  pa_mainloop_free(pa_loop);
+  // pa_operation_unref(pa_op);
+  // pa_context_disconnect(pa_ctx);
+  // pa_context_unref(pa_ctx);
+  // pa_mainloop_free(pa_loop);
   NSLog(@"[PulseAudio] windowShouldClose. Connection to server closed.");
 
   return YES;
