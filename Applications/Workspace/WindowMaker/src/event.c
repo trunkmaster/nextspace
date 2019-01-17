@@ -624,7 +624,7 @@ static void handleMapRequest(XEvent * ev)
 
 	wwin = wWindowFor(window);
 	if (wwin != NULL) {
-    fprintf(stderr, "[WM] MapRequest %lu\n", wwin->client_win);
+    /* fprintf(stderr, "[WM] MapRequest %lu\n", wwin->client_win); */
 		if (!wwin->flags.is_gnustep && wwin->flags.shaded) {
 			wUnshadeWindow(wwin);
 		}
@@ -711,7 +711,7 @@ static void handleDestroyNotify(XEvent * event)
 
 	wwin = wWindowFor(window);
 	if (wwin) {
-    fprintf(stderr, "[WM, event.c] DestroyNotify will unmanage window:%lu\n", window);
+    /* fprintf(stderr, "[WM, event.c] DestroyNotify will unmanage window:%lu\n", window); */
 #ifdef NEXTSPACE
 		dispatch_sync(workspace_q, ^{ XWApplicationDidCloseWindow(wwin); });
 #endif
@@ -986,7 +986,7 @@ static void handleMapNotify(XEvent * event)
 
 	wwin = wWindowFor(event->xmap.event);
 	if (wwin && wwin->client_win == event->xmap.event) {
-    fprintf(stderr, "[WM] MapNotify %lu\n", wwin->client_win);
+    /* fprintf(stderr, "[WM] MapNotify %lu\n", wwin->client_win); */
 		if (wwin->flags.miniaturized) {
 			wDeiconifyWindow(wwin);
 		} else {
@@ -1007,7 +1007,7 @@ static void handleUnmapNotify(XEvent * event)
 	/* only process windows with StructureNotify selected
 	 * (ignore SubstructureNotify) */
   
-  fprintf(stderr, "[WM] handleUnmapNotify for window %lu.\n", event->xunmap.window);
+  /* fprintf(stderr, "[WM] handleUnmapNotify for window %lu.\n", event->xunmap.window); */
   
 	wwin = wWindowFor(event->xunmap.window);
 	if (!wwin)
@@ -1044,8 +1044,8 @@ static void handleUnmapNotify(XEvent * event)
 			wClientSetState(wwin, WithdrawnState, None);
 
     if (WINDOW_LEVEL(wwin) != WMMainMenuLevel) {
-      fprintf(stderr, "[WM, event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n",
-              event->xunmap.window, wwin->flags.is_gnustep);
+      /* fprintf(stderr, "[WM, event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n", */
+      /*         event->xunmap.window, wwin->flags.is_gnustep); */
       /* if the window was reparented, do not reparent it back to the
        * root window */
       wUnmanageWindow(wwin, !reparented, False);
@@ -1530,12 +1530,12 @@ static void handleKeyPress(XEvent * event)
 	modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
 #ifdef NEXTSPACE
-  if (wwin && wwin->client_win) {
-    fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i"
-            " modifiers: %i window:%lu\n",
-            event->xkey.keycode, event->xkey.state, MOD_MASK,
-            modifiers, wwin->client_win);
-  }
+  /* if (wwin && wwin->client_win) { */
+  /*   fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i" */
+  /*           " modifiers: %i window:%lu\n", */
+  /*           event->xkey.keycode, event->xkey.state, MOD_MASK, */
+  /*           modifiers, wwin->client_win); */
+  /* } */
   
 	if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
@@ -1652,7 +1652,7 @@ static void handleKeyPress(XEvent * event)
 		if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
 			CloseWindowMenu(scr);
 			if (wwin->protocols.MINIATURIZE_WINDOW) {
-        fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n");
+        /* fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n"); */
         if (wwin->flags.is_gnustep) {
           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }
@@ -2084,8 +2084,8 @@ static void handleKeyRelease(XEvent * event)
       event->xkey.window == scr->no_focus_win) {
     return;
   }
-  fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n",
-          event->xkey.keycode, event->xkey.state, MOD_MASK);
+  /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
+  /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
 	if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
     if (wwin) {

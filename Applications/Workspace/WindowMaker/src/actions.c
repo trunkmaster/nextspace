@@ -135,9 +135,9 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   BOOL focus_succeeded = False;
   Window ws_menu_win = 0;
 
-  fprintf(stderr, "[WM] wSetFocusTo: %lu focused: %lu\n",
-          (wwin && wwin->client_win) ? wwin->client_win : 0,
-          (focused && focused->client_win) ? focused->client_win : 0);
+  /* fprintf(stderr, "[WM] wSetFocusTo: %lu focused: %lu\n", */
+  /*         (wwin && wwin->client_win) ? wwin->client_win : 0, */
+  /*         (focused && focused->client_win) ? focused->client_win : 0); */
 
 	if (scr->flags.ignore_focus_events ||
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
@@ -177,7 +177,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   wsapp = wApplicationWithName(scr, "Workspace");
   if (wsapp && wsapp->menu_win) {
     ws_menu_win = wsapp->menu_win->client_win;
-    fprintf(stderr, "[WM] Workspace menu window:%lu\n", ws_menu_win);
+    /* fprintf(stderr, "[WM] Workspace menu window:%lu\n", ws_menu_win); */
   }
   
 	if (wwin == NULL) {
@@ -214,19 +214,19 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 		/* set input focus */
 		switch (wwin->focus_mode) {
 		case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
-      fprintf(stderr, "[WM] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win);
+      /* fprintf(stderr, "[WM] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win); */
       return;
 		case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
-      fprintf(stderr, "[WM] %lu focus mode == PASSIVE.\n", wwin->client_win);
+      /* fprintf(stderr, "[WM] %lu focus mode == PASSIVE.\n", wwin->client_win); */
 			XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       break;
 		case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
-      fprintf(stderr, "[WM] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win);
+      /* fprintf(stderr, "[WM] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win); */
 			XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       focus_succeeded = True;
 			break;
 		case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
-      fprintf(stderr, "[WM] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win);
+      /* fprintf(stderr, "[WM] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win); */
 			wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
 			break;
@@ -1541,7 +1541,7 @@ void wHideOtherApplications(WWindow *awin)
 
       if (tapp != wapp && wwin->protocols.HIDE_APP) {
         WIcon *icon = tapp->app_icon->icon;
-        fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n");
+        /* fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n"); */
         animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
                       wwin->frame->core->width, wwin->frame->core->height,
                       tapp->app_icon->x_pos, tapp->app_icon->y_pos,
