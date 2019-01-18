@@ -33,6 +33,8 @@ static int        reconnect_timeout = 1;
 static int        pa_ready = 0;
 static pa_context *pa_ctx;
 
+static PulseAudio *pulseAudio;
+
 @implementation PulseAudio (Callbacks)
 
 void dec_outstanding(void)
@@ -79,12 +81,16 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
     return;
   }
 
-  fprintf(stderr, "[Mixer] Sink: %s (%s) (index:%i)\n",
-          info->name, info->description, info->index);
+  fprintf(stderr, "[Mixer] Sink: %s (%s)\n", info->name, info->description);
+  [pulseAudio performSelectorOnMainThread:@selector(addSink:)
+                               withObject:[NSString stringWithCString:info->description]
+                            waitUntilDone:YES];
 }
 void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
                    int eol, void *userdata)
 {
+  NSValue *value;
+  
   if (eol < 0) {
     if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
       return;
@@ -99,8 +105,15 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
   }
 
   fprintf(stderr, "[Mixer] Sink Input: %s "
-          "(has_volume:%i client index:%i sink index:%i)\n",
-          info->name, info->has_volume, info->client, info->sink);
+          "(has_volume:%i client index:%i sink index:%i mute:%i corked:%i)\n",
+          info->name, info->has_volume, info->client, info->sink,
+          info->mute, info->corked);
+  
+  value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
+  
+  [pulseAudio performSelectorOnMainThread:@selector(updateSinkInput:)
+                               withObject:value
+                            waitUntilDone:YES];
 }
 
 // --- Source ---
@@ -146,6 +159,8 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
 void client_cb(pa_context *ctx, const pa_client_info *info,
                int eol, void *userdata)
 {
+  NSValue *value;
+  
   if (eol < 0) {
     if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
       return;
@@ -160,6 +175,12 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   }
   
   fprintf(stderr, "[Mixer] Client: %s (index:%i)\n", info->name, info->index);
+  
+  value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
+  
+  [pulseAudio performSelectorOnMainThread:@selector(addClient:)
+                               withObject:value
+                            waitUntilDone:YES];
 }
 
 void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
@@ -176,11 +197,11 @@ void ext_stream_restore_read_cb(pa_context *ctx,
                                 const pa_ext_stream_restore_info *info,
                                 int eol, void *userdata)
 {
+  NSValue *value;
+
   if (eol < 0) {
-    // dec_outstanding(w);
     fprintf(stderr, "[Mixer] Failed to initialize stream_restore extension: %s\n",
             pa_strerror(pa_context_errno(ctx)));
-    // w->deleteEventRoleWidget();
     return;
   }
 
@@ -189,8 +210,14 @@ void ext_stream_restore_read_cb(pa_context *ctx,
     return;
   }
 
-  fprintf(stderr, "[Mixer] Stream restore: %s\n", info->name);
-  // w->updateRole(*i);
+  fprintf(stderr, "[Mixer] Stream: %s\n", info->name);
+
+  value = [NSValue value:info
+            withObjCType:@encode(const pa_ext_stream_restore_info)];
+  
+  [pulseAudio performSelectorOnMainThread:@selector(addStream:)
+                               withObject:value
+                            waitUntilDone:YES];
 }
 
 void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata)
@@ -341,6 +368,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_CLIENT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+      [pulseAudio removeClientWithIndex:index];
       // w->removeClient(index);
     }
     else {
@@ -553,7 +581,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
 
 - init
 {
-  [super init];
+  pulseAudio = self = [super init];
   
   if (window == nil) {
     [NSBundle loadNibNamed:@"PulseAudio" owner:self];
@@ -598,12 +626,229 @@ void context_state_cb(pa_context *ctx, void *userdata)
   [streamsBrowser loadColumnZero];
   [devicesBrowser loadColumnZero];
   [streamsBrowser setTitle:@"Streams" ofColumn:0];
-  [devicesBrowser setTitle:@"Devices" ofColumn:0];
+  [devicesBrowser setTitle:@"Devices (Sinks)" ofColumn:0];
+
+  clientList = [[NSMutableArray alloc] init];
+  sinkList = [[NSMutableArray alloc] init];
+  sinkInputList = [[NSMutableArray alloc] init];
+  sourceList = [[NSMutableArray alloc] init];
+  streamList = [[NSMutableArray alloc] init];
   
   [self _initPAConnection];
   
   dispatch_queue_t pa_q = dispatch_queue_create("org.nextspace.pamixer", NULL);
-  dispatch_async(pa_q, ^{ for (;;) { pa_mainloop_iterate(pa_loop, 1, NULL); } });
+  dispatch_async(pa_q, ^{ for (;;) {
+        pa_mainloop_iterate(pa_loop, 1, NULL);
+      }
+    });
+}
+
+// --- These methods are called by PA callbacks ---
+
+// client_sb(...)
+- (void)addClient:(NSValue *)value
+{
+  const pa_client_info *info;
+  BOOL           shouldAdd = YES;
+  NSDictionary   *client;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_client_info));
+  [value getValue:(void *)info];
+
+  client = @{@"Name":[NSString stringWithCString:info->name],
+             @"Index":[NSNumber numberWithUnsignedInt:info->index],
+             @"Driver":[NSString stringWithCString:info->driver],
+             @"Owner":[NSNumber numberWithInt:info->owner_module]};
+  
+  free((void *)info);
+
+  // fprintf(stderr, "[Mixer] addStream: %s\n", info->name);
+
+  // If `streamList` already contains stream with the same name - replace it
+  for (NSDictionary *c in clientList) {
+    if ([c[@"Name"] isEqualToString:client[@"Name"]]) {
+      [clientList replaceObjectAtIndex:[clientList indexOfObject:c]
+                            withObject:client];
+      shouldAdd = NO;
+      break;
+    }
+  }
+
+  if (shouldAdd != NO) {
+    [clientList addObject:client];
+    [streamsBrowser reloadColumn:0];  
+    [streamsBrowser setTitle:@"Streams" ofColumn:0];
+  }  
+}
+
+- (void)removeClientWithIndex:(NSUInteger)index
+{
+  NSDictionary *client;
+  
+  for (NSDictionary *c in clientList) {
+    if ([c[@"Index"] unsignedIntegerValue] == index) {
+      client = c;
+      break;
+    }
+  }
+
+  if (client != nil) {
+    [clientList removeObject:client];
+    [streamsBrowser reloadColumn:0];
+    [streamsBrowser setTitle:@"Streams" ofColumn:0];
+  }
+}
+
+// ext_stream_restore_read_cb(...)
+- (void)addStream:(NSValue *)value
+{
+  const pa_ext_stream_restore_info *info;
+  BOOL           shouldAdd = YES;
+  NSMutableArray *volumes = [NSMutableArray new];
+  NSNumber       *v;
+  NSDictionary   *stream;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_ext_stream_restore_info));
+  [value getValue:(void *)info];
+
+  for (int i = 0; i < info->volume.channels; i++) {
+    v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
+    [volumes addObject:v];
+  }
+
+  stream = @{@"Name":[NSString stringWithCString:info->name],
+             @"Device":[NSString stringWithCString:info->device],
+             @"Mute":[NSNumber numberWithInt:info->mute],
+             @"Volumes":volumes};
+  
+  free((void *)info);
+
+  // fprintf(stderr, "[Mixer] addStream: %s\n", info->name);
+
+  // If `streamList` already contains stream with the same name - replace it
+  for (NSDictionary *s in streamList) {
+    if ([s[@"Name"] isEqualToString:stream[@"Name"]]) {
+      [streamList replaceObjectAtIndex:[streamList indexOfObject:s]
+                            withObject:stream];
+      shouldAdd = NO;
+      break;
+    }
+  }
+
+  if (shouldAdd != NO) {
+    [streamList addObject:stream];
+    [streamsBrowser reloadColumn:0];  
+    [streamsBrowser setTitle:@"Streams" ofColumn:0];
+  }  
+}
+
+// sink_cb(...)
+- (void)addSink:(NSString *)sink
+{
+  for (NSString *s in sinkList) {
+    if ([s isEqualToString:sink]) {
+      return;
+    }
+  }    
+  [sinkList addObject:sink];
+  [devicesBrowser reloadColumn:0];
+  [devicesBrowser setTitle:@"Devices (Sinks)" ofColumn:0];
+}
+
+- (void)updateSinkInput:(NSValue *)value
+{
+  const pa_sink_input_info *info;
+  BOOL           shouldAdd = YES;
+  NSDictionary   *sinkInput;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_sink_input_info));
+  [value getValue:(void *)info];
+
+  sinkInput = @{@"Name":[NSString stringWithCString:info->name],
+                @"Index":[NSNumber numberWithUnsignedInt:info->index],
+                @"Client":[NSNumber numberWithUnsignedInt:info->client],
+                @"Sink":[NSNumber numberWithUnsignedInt:info->sink],
+                @"Mute":[NSNumber numberWithBool:info->mute],
+                @"Corked":[NSNumber numberWithBool:info->corked]};
+  
+  free((void *)info);
+
+  // fprintf(stderr, "[Mixer] addStream: %s\n", info->name);
+
+  for (NSDictionary *si in sinkInputList) {
+    if ([si[@"Name"] isEqualToString:sinkInput[@"Name"]]) {
+      // [sinkInputList replaceObjectAtIndex:[sinkInputList indexOfObject:si]
+      //                          withObject:sinkInput];
+      shouldAdd = NO;
+      break;
+    }
+  }
+
+  if (shouldAdd != NO) {
+    [sinkInputList addObject:sinkInput];
+  }
+}
+
+// --- Browser delegate ---
+- (NSString *)nameForStream:(NSDictionary *)stream
+{
+  NSString *name = nil;
+  NSArray  *streamComps;
+
+  if ([stream[@"Name"] isEqualToString:@"sink-input-by-media-role:event"]) {
+    return @"System Sounds";
+  }
+  else {
+    streamComps = [stream[@"Name"] componentsSeparatedByString:@":"];
+    for (NSDictionary *s in clientList) {
+      if ([s[@"Name"] isEqualToString:[streamComps objectAtIndex:1]]) {
+        name = s[@"Name"];
+        break;
+      }
+    }
+  }
+  
+  return name;
+}
+
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+            inMatrix:(NSMatrix *)matrix
+{
+  NSBrowserCell *cell;
+  NSArray       *list = nil;
+  NSString      *title;
+  
+  if (sender == streamsBrowser) {
+    list = streamList;
+  }
+  else if (sender == devicesBrowser) {
+    list = sinkList;
+  }
+
+  if (sender == streamsBrowser) {
+    for (NSDictionary *d in list) {
+      if ((title = [self nameForStream:d]) != nil) {
+        [matrix addRow];
+        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+        [cell setLeaf:YES];
+        [cell setRefusesFirstResponder:YES];
+        [cell setTitle:title];
+      }
+    }
+  }
+  else if (sender == devicesBrowser) {
+    for (NSString *s in sinkList) {
+      [matrix addRow];
+      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+      [cell setTitle:s];
+      [cell setLeaf:YES];
+      [cell setRefusesFirstResponder:YES];
+    }
+  }
 }
 
 // --- Window delegate
@@ -616,7 +861,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
   
   // NSLog(@"[PulseAudio] windowShouldClose. Waiting for operation to be done.");
   
-  // while (pa_op && (pa_operation_get_state(pa_op) != PA_OPERATION_DONE)) {
+  // while (pa_operation_get_state(pa_op) != PA_OPERATION_DONE) {
   //   pa_mainloop_iterate(pa_loop, 1, NULL);
   // }
 
