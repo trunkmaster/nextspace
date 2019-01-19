@@ -1,9 +1,9 @@
 # NEXTSPACE
 
 NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS. It is developed according to ["OpenStep User Interface Guidelines"](http://www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf).
-> If you've noticed or ever bothered with naming convention all of these "NeXTSTEP, NextStep", here is [explanation](Documentation/OpenStep%20Confusion.md).
+> If you've noticed or ever bothered with naming convention all of these "NeXTSTEP, NextStep", here is [explanation](/Documentation/OpenStep%20Confusion.md).
 
-![NEXTSPACE example](Documentation/NEXTSPACE_Screenshot.png)
+![NEXTSPACE example](/Documentation/NEXTSPACE_Screenshot.png)
 
 ## What NEXTSPACE is?
 ## Applications
@@ -19,7 +19,7 @@ Simple login panel where you enter your user name and password.
 ### Preferences
 Settings for locale, fonts, displays (size, arrangement), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Preferences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
 
-![Localization](Documentation/Preferences-Localization.png) ![Display](Documentation/Preferences-Display.png)
+![Localization](/Documentation/Preferences-Localization.png) ![Display](/Documentation/Preferences-Display.png)
 
 ### Terminal
 Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancement to original application are:
@@ -28,7 +28,7 @@ Terminal with Linux console emulation. I've started with version created by Alex
 * Now you can search through the text displayed in Terminal window (Find panel).
 * Session management: you can save window with all settings that are set in preferences panel (including shell/command) to a file and then open it. Configuration with multiple windows is supported.
 
-![Terminals](Documentation/Terminals.png)
+![Terminals](/Documentation/Terminals.png)
 
 ### TextEdit
 Simple text editor that supports RTF and RTFD. It is simple application from NeXT Developer demos.
