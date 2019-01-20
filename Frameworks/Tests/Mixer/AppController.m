@@ -42,6 +42,12 @@
 
 - (BOOL)applicationShouldTerminate:(id)sender
 {
+  if (alsaPanel) {
+    [alsaPanel release];
+  }
+  if (paPanel) {
+    [paPanel release];
+  }
   return YES;
 }
 
@@ -56,6 +62,7 @@
   if (alsaPanel) {
     [alsaPanel release];
   }
+  
   alsaPanel = [[ALSA alloc] init];
   if ([alsaPanel respondsToSelector:@selector(showPanel)]) {
     [alsaPanel showPanel];

@@ -22,38 +22,52 @@
 
 #import <pulse/pulseaudio.h>
 
-typedef struct pa_devicelist {
-  uint8_t  initialized;
-  char     name[512];
-  uint32_t index;
-  char     description[256];
-} pa_devicelist_t;
-
 @interface PulseAudio : NSObject
 {
   id window;
+  id serverInfo;
+  id cardInfo;
+  
   id streamsBrowser;
+  id sreamMute;
+  
   id devicesBrowser;
+  id deviceMute;
 
   NSMutableArray *clientList;
+  NSMutableArray *streamList; // sink-input* or source-output*
   NSMutableArray *sinkList;
   NSMutableArray *sinkInputList;
   NSMutableArray *sourceList;
-  NSMutableArray *streamList; // sink-input* or source-output*
+  NSMutableArray *sourceOutputList;
   
   // Define our pulse audio loop and connection variables
   pa_mainloop     *pa_loop;
   pa_mainloop_api *pa_api;
-  pa_operation    *pa_op;
-  // We'll need these state variables to keep track of our requests
-  int             state;
-
-  // pa_devicelist_t *input;
-  // pa_devicelist_t *output;
 }
 
-- (void)addStream:(NSValue *)value;
-- (void)addSink:(NSString *)sink;
-- (void)removeClientWithIndex:(NSUInteger)index;
+// TODO
+- (void)updateServer:(NSValue *)value;
+- (void)updateCard:(NSValue *)value;
+- (void)removeCardWithIndex:(NSNumber *)index;
+
+
+- (void)updateClient:(NSValue *)value;
+- (void)removeClientWithIndex:(NSNumber *)index;
+
+- (void)updateStream:(NSValue *)value;
+
+- (void)updateSink:(NSString *)sink;
+- (void)removeSinkWithIndex:(NSNumber *)index;
+
+- (void)updateSinkInput:(NSString *)sink;
+- (void)removeSinkInputWithIndex:(NSNumber *)index;
+
+// TODO
+- (void)updateSource:(NSValue *)value;
+- (void)removeSourceWithIndex:(NSNumber *)index;
+
+- (void)updateSourceOutput:(NSValue *)value;
+- (void)removeSourceOutputWithIndex:(NSNumber *)index;
 
 @end

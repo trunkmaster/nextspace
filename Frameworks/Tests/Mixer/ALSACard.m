@@ -24,15 +24,20 @@
 #import "ALSACard.h"
 
   
-static dispatch_queue_t event_loop_q;
+// static dispatch_queue_t event_loop_q;
+static int q_number = 0;
 
 @implementation ALSACard
 
 - (void)dealloc
 {
-  if (isEventLoopActive != NO) {
-    [self quitEventLoop];
-  }
+  NSLog(@"[ALSACard] %@ dealloc", cardName);
+
+  while (!isEventLoopDidQuit) {;}
+  
+  // if (isEventLoopActive != NO) {
+  //   [self quitEventLoop];
+  // }
   
   if (alsa_mixer != NULL) {
     [self deleteMixer:alsa_mixer];
@@ -112,19 +117,20 @@ static dispatch_queue_t event_loop_q;
   isEventLoopActive = NO;
   shouldHandleEvents = NO;
   isEventLoopDispatched = NO;
+  isEventLoopDidQuit = NO;
   
   return self;
 }
 
-- (void)handleEvents
+- (void)handleEvents:(BOOL)oneTime
 {
   int            poll_count, fill_count;
   struct pollfd  *pollfds;
   unsigned short revents;
   int            n;
 
-  if (shouldHandleEvents == NO) {
-    sleep(1);
+  if (oneTime == NO && shouldHandleEvents == NO) {
+    usleep(50000);
     return;
   }
 
@@ -139,9 +145,9 @@ static dispatch_queue_t event_loop_q;
   NSAssert(poll_count = fill_count, @"poll counts differ");
 
   // n = poll(pollfds, fill_count + 1, -1);
-  n = poll(pollfds, poll_count, -1);
+  n = poll(pollfds, poll_count, oneTime ? 0 : -1);
 
-  if (shouldHandleEvents == NO) {
+  if (oneTime == NO && shouldHandleEvents == NO) {
     return;
   }
   if (n > 0) {
@@ -153,14 +159,19 @@ static dispatch_queue_t event_loop_q;
       [controls makeObjectsPerform:@selector(refresh)];
     }
   }
+  else {
+    usleep(50000);
+  }
 }
 
 - (void)enterEventLoop
 {
+  NSString *qName;
   NSLog(@"[ALSACard] `%@` eneterEventLoop.", cardName);
 
   if (event_loop_q == NULL) {
-    event_loop_q = dispatch_queue_create("org.nextspace.alsamixer", NULL);
+    qName = [NSString stringWithFormat:@"org.nextspace.alsamixer%i",q_number++];
+    event_loop_q = dispatch_queue_create([qName cString], NULL);
   }
   else {
     NSLog(@"[ALSACard enterEventloop] `%@` event loop already created.", cardName);
@@ -170,8 +181,9 @@ static dispatch_queue_t event_loop_q;
     isEventLoopActive = YES;
     dispatch_async(event_loop_q, ^{
         while (isEventLoopActive != NO) {
-          [self handleEvents];
+          [self handleEvents:YES];
         }
+        isEventLoopDidQuit = YES;
         fprintf(stderr, "ALSACard `%s` event loop quit.\n", [cardName cString]);
       });
     isEventLoopDispatched = YES;
@@ -204,8 +216,8 @@ static dispatch_queue_t event_loop_q;
 - (void)quitEventLoop
 {
   isEventLoopActive = NO;  // finishes running of dispatched block
-  shouldHandleEvents = NO; // stops processing events
-  isEventLoopDispatched = NO;
+  // shouldHandleEvents = NO; // stops processing events
+  // isEventLoopDispatched = NO;
   
   if (event_loop_q != NULL) {
     dispatch_release(event_loop_q);

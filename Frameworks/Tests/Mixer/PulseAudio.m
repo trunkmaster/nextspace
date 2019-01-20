@@ -27,11 +27,13 @@
 
 #import "PulseAudio.h"
 
-static int        n_outstanding = 0;
-static bool       retry = false;
-static int        reconnect_timeout = 1;
-static int        pa_ready = 0;
-static pa_context *pa_ctx;
+static int          n_outstanding = 0;
+// static bool         retry = false;
+static int          reconnect_timeout = 1;
+static pa_context   *pa_ctx;
+static pa_operation *pa_op;
+
+static dispatch_queue_t pa_q;
 
 static PulseAudio *pulseAudio;
 
@@ -42,9 +44,10 @@ void dec_outstanding(void)
   if (n_outstanding <= 0)
     return;
 
-  if (--n_outstanding <= 0) {
-    pa_ready = 1;
-  }
+  n_outstanding--;
+  // if (--n_outstanding <= 0) {
+  //   pa_ready = 1;
+  // }
 }
 // --- Card ---
 void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
@@ -82,7 +85,7 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
   }
 
   fprintf(stderr, "[Mixer] Sink: %s (%s)\n", info->name, info->description);
-  [pulseAudio performSelectorOnMainThread:@selector(addSink:)
+  [pulseAudio performSelectorOnMainThread:@selector(updateSink:)
                                withObject:[NSString stringWithCString:info->description]
                             waitUntilDone:YES];
 }
@@ -120,6 +123,8 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
 void source_cb(pa_context *ctx, const pa_source_info *info,
                int eol, void *userdata)
 {
+  NSValue *value;
+  
   if (eol < 0) {
     if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
       return;
@@ -134,11 +139,19 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
   }
 
   fprintf(stderr, "[Mixer] Source: %s (%s)\n", info->name, info->description);
+  
+  value = [NSValue value:info withObjCType:@encode(const pa_source_info)];
+  
+  [pulseAudio performSelectorOnMainThread:@selector(updateSource:)
+                               withObject:value
+                            waitUntilDone:YES];
 }
 
 void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
                       int eol, void *userdata)
 {
+  NSValue *value;
+  
   if (eol < 0) {
     if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
       return;
@@ -153,6 +166,11 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   }
   
   fprintf(stderr, "[Mixer] Source Output: %s\n", info->name);
+  
+  value = [NSValue value:info withObjCType:@encode(const pa_source_output_info)];
+  [pulseAudio performSelectorOnMainThread:@selector(updateSourceOutput:)
+                               withObject:value
+                            waitUntilDone:YES];
 }
 
 // --- Client/server ---
@@ -177,8 +195,7 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   fprintf(stderr, "[Mixer] Client: %s (index:%i)\n", info->name, info->index);
   
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  
-  [pulseAudio performSelectorOnMainThread:@selector(addClient:)
+  [pulseAudio performSelectorOnMainThread:@selector(updateClient:)
                                withObject:value
                             waitUntilDone:YES];
 }
@@ -215,7 +232,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
   
-  [pulseAudio performSelectorOnMainThread:@selector(addStream:)
+  [pulseAudio performSelectorOnMainThread:@selector(updateStream:)
                                withObject:value
                             waitUntilDone:YES];
 }
@@ -308,96 +325,113 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                           uint32_t index, void *userdata)
 {
   pa_subscription_event_type_t event_type_masked;
-  pa_operation *o;
+  // pa_operation *o;
 
   event_type_masked = (event_type & PA_SUBSCRIPTION_EVENT_TYPE_MASK);
     
   switch (event_type & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
   case PA_SUBSCRIPTION_EVENT_SINK:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+      [pulseAudio performSelectorOnMainThread:@selector(removeSinkWithIndex:)
+                                   withObject:[NSNumber numberWithUnsignedInt:index]
+                                waitUntilDone:YES];
       // w->removeSink(index);
     }
     else {
-      if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
+      if (!(pa_op = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_info_by_index() failed\n");
         return;
       }
-      pa_operation_unref(o);
+      pa_operation_unref(pa_op);
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SOURCE:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
       // w->removeSource(index);
+      [pulseAudio performSelectorOnMainThread:@selector(removeSourceWithIndex:)
+                                   withObject:[NSNumber numberWithUnsignedInt:index]
+                                waitUntilDone:YES];
     }
     else {
-      if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
+      if (!(pa_op = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_source_info_by_index() failed\n");
         return;
       }
-      pa_operation_unref(o);
+      pa_operation_unref(pa_op);
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+      [pulseAudio performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
+                                   withObject:[NSNumber numberWithUnsignedInt:index]
+                                waitUntilDone:YES];
       // w->removeSinkInput(index);
     }
     else {
-      if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
+      if (!(pa_op = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
         return;
       }
-      pa_operation_unref(o);
+      pa_operation_unref(pa_op);
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+      [pulseAudio performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
+                                   withObject:[NSNumber numberWithUnsignedInt:index]
+                                waitUntilDone:YES];
       // w->removeSourceOutput(index);
     }
     else {
-      o = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
-      if (!o) {
+      pa_op = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
+      if (!pa_op) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
         return;
       }
-      pa_operation_unref(o);
+      pa_operation_unref(pa_op);
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_CLIENT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [pulseAudio removeClientWithIndex:index];
+      [pulseAudio performSelectorOnMainThread:@selector(removeClientWithIndex:)
+                                   withObject:[NSNumber numberWithUnsignedInt:index]
+                                waitUntilDone:YES];
       // w->removeClient(index);
     }
     else {
-      if (!(o = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
+      if (!(pa_op = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_client_info() failed\n");
         return;
       }
-      pa_operation_unref(o);
+      pa_operation_unref(pa_op);
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SERVER:
-    if (!(o = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
+    if (!(pa_op = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
       fprintf(stderr, "[Mixer] ERROR: pa_context_get_server_info() failed\n");
       return;
     }
-    pa_operation_unref(o);
+    pa_operation_unref(pa_op);
     break;
 
   case PA_SUBSCRIPTION_EVENT_CARD:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+      [pulseAudio performSelectorOnMainThread:@selector(removeCardWithIndex:)
+                                   withObject:[NSNumber numberWithUnsignedInt:index]
+                                waitUntilDone:YES];
       // w->removeCard(index);
     }
     else {
-      if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
+      if (!(pa_op = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_card_info_by_index() failed\n");
         return;
       }
-      pa_operation_unref(o);
+      pa_operation_unref(pa_op);
     }
     break;
   }
@@ -406,7 +440,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 void context_state_cb(pa_context *ctx, void *userdata)
 {
   pa_context_state_t state = pa_context_get_state(ctx);
-  int                *pa_ready = userdata;
+  // int                *pa_ready = userdata;
   
   fprintf(stderr, "State callback: %i\n", state);
   
@@ -547,7 +581,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
         fprintf(stderr, "[Mixer] Failed to initialize device manager extension: %s",
                 pa_strerror(pa_context_errno(ctx)));
       }
-      *pa_ready = 1;
+      // *pa_ready = 1;
       break;
     }
 
@@ -563,14 +597,14 @@ void context_state_cb(pa_context *ctx, void *userdata)
         // g_timeout_add_seconds(reconnect_timeout, connect_to_pulse, w);
       }
       return;
-      *pa_ready = 2;
+      // *pa_ready = 2;
       break;
     }
 
   case PA_CONTEXT_TERMINATED:
   default:
     fprintf(stderr, "PulseAudio connection terminated!\n");
-    *pa_ready = 2;
+    // *pa_ready = 2;
     return;
   }
 }
@@ -593,8 +627,8 @@ void context_state_cb(pa_context *ctx, void *userdata)
 
 - (void)_initPAConnection
 {
-  state = 0;
-  pa_ready = 0;
+  // state = 0;
+  // pa_ready = 0;
   
   // Initialize our device lists
   // input = malloc(sizeof(pa_devicelist_t) * 16);
@@ -617,7 +651,8 @@ void context_state_cb(pa_context *ctx, void *userdata)
 
   pa_proplist_free(proplist);
   
-  pa_context_set_state_callback(pa_ctx, context_state_cb, &pa_ready);  
+  // pa_context_set_state_callback(pa_ctx, context_state_cb, &pa_ready);
+  pa_context_set_state_callback(pa_ctx, context_state_cb, NULL);
   pa_context_connect(pa_ctx, NULL, 0, NULL);
 }
 
@@ -636,20 +671,21 @@ void context_state_cb(pa_context *ctx, void *userdata)
   
   [self _initPAConnection];
   
-  dispatch_queue_t pa_q = dispatch_queue_create("org.nextspace.pamixer", NULL);
+  pa_q = dispatch_queue_create("org.nextspace.pamixer", NULL);
   dispatch_async(pa_q, ^{ for (;;) {
         pa_mainloop_iterate(pa_loop, 1, NULL);
       }
+      fprintf(stderr, "[Mixer] mainloop exited!\n");
     });
 }
 
 // --- These methods are called by PA callbacks ---
 
 // client_sb(...)
-- (void)addClient:(NSValue *)value
+- (void)updateClient:(NSValue *)value
 {
   const pa_client_info *info;
-  BOOL           shouldAdd = YES;
+  NSInteger      replaceIndex = -1;
   NSDictionary   *client;
 
   // Convert PA structure into NSDictionary
@@ -663,31 +699,29 @@ void context_state_cb(pa_context *ctx, void *userdata)
   
   free((void *)info);
 
-  // fprintf(stderr, "[Mixer] addStream: %s\n", info->name);
-
   // If `streamList` already contains stream with the same name - replace it
   for (NSDictionary *c in clientList) {
     if ([c[@"Name"] isEqualToString:client[@"Name"]]) {
-      [clientList replaceObjectAtIndex:[clientList indexOfObject:c]
-                            withObject:client];
-      shouldAdd = NO;
+      replaceIndex = [clientList indexOfObject:c];
       break;
     }
   }
 
-  if (shouldAdd != NO) {
+  if (replaceIndex >= 0) {
+    [clientList replaceObjectAtIndex:replaceIndex withObject:client];
+  }
+  else {
     [clientList addObject:client];
     [streamsBrowser reloadColumn:0];  
     [streamsBrowser setTitle:@"Streams" ofColumn:0];
   }  
 }
-
-- (void)removeClientWithIndex:(NSUInteger)index
+- (void)removeClientWithIndex:(NSNumber *)index
 {
   NSDictionary *client;
   
   for (NSDictionary *c in clientList) {
-    if ([c[@"Index"] unsignedIntegerValue] == index) {
+    if ([c[@"Index"] isEqualToValue:index] != NO) {
       client = c;
       break;
     }
@@ -701,10 +735,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
 }
 
 // ext_stream_restore_read_cb(...)
-- (void)addStream:(NSValue *)value
+- (void)updateStream:(NSValue *)value
 {
   const pa_ext_stream_restore_info *info;
-  BOOL           shouldAdd = YES;
+  NSInteger      replaceIndex = -1;
   NSMutableArray *volumes = [NSMutableArray new];
   NSNumber       *v;
   NSDictionary   *stream;
@@ -730,14 +764,15 @@ void context_state_cb(pa_context *ctx, void *userdata)
   // If `streamList` already contains stream with the same name - replace it
   for (NSDictionary *s in streamList) {
     if ([s[@"Name"] isEqualToString:stream[@"Name"]]) {
-      [streamList replaceObjectAtIndex:[streamList indexOfObject:s]
-                            withObject:stream];
-      shouldAdd = NO;
+      replaceIndex = [streamList indexOfObject:s];
       break;
     }
   }
 
-  if (shouldAdd != NO) {
+  if (replaceIndex >= 0) {
+    [streamList replaceObjectAtIndex:replaceIndex withObject:stream];
+  }
+  else {
     [streamList addObject:stream];
     [streamsBrowser reloadColumn:0];  
     [streamsBrowser setTitle:@"Streams" ofColumn:0];
@@ -745,7 +780,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
 }
 
 // sink_cb(...)
-- (void)addSink:(NSString *)sink
+- (void)updateSink:(NSString *)sink
 {
   for (NSString *s in sinkList) {
     if ([s isEqualToString:sink]) {
@@ -756,11 +791,15 @@ void context_state_cb(pa_context *ctx, void *userdata)
   [devicesBrowser reloadColumn:0];
   [devicesBrowser setTitle:@"Devices (Sinks)" ofColumn:0];
 }
+// TODO
+- (void)removeSinkWithIndex:(NSNumber *)index
+{
+}
 
 - (void)updateSinkInput:(NSValue *)value
 {
   const pa_sink_input_info *info;
-  BOOL           shouldAdd = YES;
+  NSInteger      replaceIndex = -1;
   NSDictionary   *sinkInput;
 
   // Convert PA structure into NSDictionary
@@ -780,16 +819,44 @@ void context_state_cb(pa_context *ctx, void *userdata)
 
   for (NSDictionary *si in sinkInputList) {
     if ([si[@"Name"] isEqualToString:sinkInput[@"Name"]]) {
-      // [sinkInputList replaceObjectAtIndex:[sinkInputList indexOfObject:si]
-      //                          withObject:sinkInput];
-      shouldAdd = NO;
+      replaceIndex = [sinkInputList indexOfObject:si];
       break;
     }
   }
 
-  if (shouldAdd != NO) {
+  if (replaceIndex >= 0) {
+    [sinkInputList replaceObjectAtIndex:replaceIndex withObject:sinkInput];
+  }
+  else {
     [sinkInputList addObject:sinkInput];
   }
+}
+// TODO
+- (void)removeSinkInputWithIndex:(NSNumber *)index
+{
+}
+
+- (void)updateSource:(NSValue *)value
+{
+}
+- (void)removeSourceWithIndex:(NSNumber *)index
+{
+}
+- (void)updateSourceOutput:(NSValue *)value
+{
+}
+- (void)removeSourceOutputWithIndex:(NSNumber *)index
+{
+}
+
+- (void)updateServer:(NSValue *)value
+{
+}
+- (void)updateCard:(NSValue *)value
+{
+}
+- (void)removeCardWithIndex:(NSNumber *)index
+{
 }
 
 // --- Browser delegate ---
@@ -854,22 +921,24 @@ void context_state_cb(pa_context *ctx, void *userdata)
 // --- Window delegate
 - (BOOL)windowShouldClose:(id)sender
 {
-  int retval = 0;
+  __block int retval = 0;
   
   if (sender != window)
     return NO;
   
   // NSLog(@"[PulseAudio] windowShouldClose. Waiting for operation to be done.");
   
-  // while (pa_operation_get_state(pa_op) != PA_OPERATION_DONE) {
-  //   pa_mainloop_iterate(pa_loop, 1, NULL);
-  // }
+  while (pa_op && pa_operation_get_state(pa_op) != PA_OPERATION_DONE) {
+    sleep(1);
+    // pa_mainloop_iterate(pa_loop, 1, NULL);
+  }
 
+  if (pa_op)
+    pa_operation_unref(pa_op);
+  
   NSLog(@"[PulseAudio] windowShouldClose. Closing connection to server.");
-  // Now we're done, clean up and disconnect and return
-  state = 2;
+  // dispatch_sync(pa_q, ^{ pa_mainloop_quit(pa_loop, retval); });
   pa_mainloop_quit(pa_loop, retval);
-  // pa_operation_unref(pa_op);
   // pa_context_disconnect(pa_ctx);
   // pa_context_unref(pa_ctx);
   // pa_mainloop_free(pa_loop);

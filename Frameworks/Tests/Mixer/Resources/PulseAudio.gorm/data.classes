@@ -21,7 +21,11 @@
 	Outlets = (
 	    devicesBrowser,
 	    streamsBrowser,
-	    window
+	    window,
+	    cardInfo,
+	    deviceMute,
+	    serverInfo,
+	    streamMute
 	);
 	Super = NSObject;
     };

@@ -21,6 +21,8 @@
 #import <alsa/asoundlib.h>
 #import <Foundation/Foundation.h>
 
+#import <dispatch/dispatch.h>
+
 @interface ALSACard : NSObject
 {
   NSString       *cardName;
@@ -33,12 +35,16 @@
 
   NSTimer        *timer;
   
+  dispatch_queue_t event_loop_q;
   __block BOOL   shouldHandleEvents;
   __block BOOL   isEventLoopActive;
+  __block BOOL   isEventLoopDidQuit;
   BOOL           isEventLoopDispatched;
 }
 
 - initWithNumber:(int)number;
+- (void)handleEvents:(BOOL)oneTime;
+- (void)setShouldHandleEvents:(BOOL)yn;
 - (void)enterEventLoop;
 - (void)pauseEventLoop;
 - (void)resumeEventLoop;

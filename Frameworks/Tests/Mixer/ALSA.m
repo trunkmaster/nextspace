@@ -78,6 +78,15 @@
 
 @implementation ALSA
 
+- (void)dealloc
+{
+  if (window) {
+    [window close];
+  }
+
+  [super dealloc];
+}
+
 - (void)awakeFromNib
 {
   ALSACard *alsaCard;
@@ -100,6 +109,7 @@
       cardName = [alsaCard name];
       [cardsList addItemWithTitle:cardName];
       [[cardsList itemWithTitle:cardName] setRepresentedObject:alsaCard];
+      [alsaCard enterEventLoop];
       [alsaCard release];
 
       err = snd_card_next(&number);
@@ -123,7 +133,7 @@
   currentCard = [[cardsList itemAtIndex:0] representedObject];
 
   [self showElementsForCard:currentCard mode:[[viewMode selectedItem] tag]];
-} 
+}
 
 - (void)showPanel
 {
@@ -139,29 +149,26 @@
 {
   int elementsCount = 0;
 
-  [card enterEventLoop];
-  [card pauseEventLoop];
-
+  [currentCard pauseEventLoop];
+  
   [elementsView removeAllElements];
 
   for (ALSAElement *elem in [card controls]) {
     elementsCount++;
     if (mode == MixerControlsPlayback && [elem isPlayback] != NO) {
       [elementsView addElement:[elem view]];
-      [elem refresh];
     }
     else if (mode == MixerControlsCapture && [elem isCapture] != NO) {
       [elementsView addElement:[elem view]];
-      [elem refresh];
     }
     else if (mode == MixerControlsOption && [elem isOption] != NO) {
       [elementsView addElement:[elem view]];
-      [elem refresh];
     }
     else {
       elementsCount--;
     }
   }
+  [card handleEvents:YES];
 
   if (elementsCount == 0) {
     NSString *message = @"No Controls";
@@ -201,7 +208,7 @@
 
 - (void)selectCard:(id)sender
 {
-  [currentCard pauseEventLoop];
+  // [currentCard pauseEventLoop];
   
   [self showElementsForCard:[[cardsList selectedItem] representedObject]
                        mode:[[viewMode selectedItem] tag]];
