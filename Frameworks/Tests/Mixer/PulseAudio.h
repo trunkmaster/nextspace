@@ -70,4 +70,6 @@
 - (void)updateSourceOutput:(NSValue *)value;
 - (void)removeSourceOutputWithIndex:(NSNumber *)index;
 
+- (void)reloadBrowser:(NSBrowser *)browser;
+
 @end
