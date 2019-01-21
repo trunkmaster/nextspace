@@ -979,4 +979,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
   return YES;
 }
 
+// --- Actions
+- (void)browserClick:(id)sender
+{
+  NSLog(@"Browser received click: %@", [sender className]);
+}
+
 @end
