@@ -982,7 +982,9 @@ void context_state_cb(pa_context *ctx, void *userdata)
 // --- Actions
 - (void)browserClick:(id)sender
 {
-  NSLog(@"Browser received click: %@", [sender className]);
+  id cell;
+  NSLog(@"Browser received click: %@, cell - %@",
+        [sender className], [[sender selectedCellInColumn:0] title]);
 }
 
 @end
