@@ -1,14 +1,13 @@
 #import <Foundation/Foundation.h>
 
-@interface PAStream : NSObject
+@interface PAClient : NSObject
 {
-  const pa_ext_stream_restore_info *info;
+  const pa_client__info *info;
 }
 
-- (id)initWithValue:(NSValue *)value;
+- (id)updateWithValue:(NSValue *)value;
 
 - (NString *)name;
-- (NString *)visibleNameForClients:(NSArray *)clientList;
 
 - (NSArray *)volumes;
 - (void)setVolume:(NSArray *)volumes;
@@ -17,6 +16,6 @@
 - (void)setBalance:(CGFloat)bal;
 
 - (BOOL)isMute;
-- (void)setIsMute:(BOOL);
+- (void)setIsMute:(BOOL)isMute;
 
 @end

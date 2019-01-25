@@ -12,16 +12,35 @@
 - (void)updateWithValue:(NSValue *)val
 {
   // Convert PA structure into NSDictionary
+  if (info != NULL){
+    free((void *)info);
+  }
   info = malloc(sizeof(const pa_ext_stream_restore_info));
   [val getValue:(void *)info];
 }
 
 - (NString *)name
 {
-  if (!strcmp(info->name, "sink-input-by-media-role:event"])
+  return [NSString stringWithCString:info->name];
+}
+
+- (NString *)visibleNameForClients:(NSArray *)clientList
+{
+  NSString *name = [NSString stringWithCString:info->name];
+  
+  if ([name isEqualToString;@"sink-input-by-media-role:event"]) {
     return @"System Sounds";
-  else
-    return [NSString stringWithCString:info->name];
+  }
+  else {
+    name = [[name componentsSeparatedByString:@":"] objectAtIndex:1];
+    for (PAClient *cl in clientList) {
+      if ([[cl name] isEqualToString:name]) {
+        return name;
+      }
+    }
+  }
+
+  return nil;
 }
 
 - (NSArray *)volumes

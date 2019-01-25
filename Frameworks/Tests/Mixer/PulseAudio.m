@@ -25,6 +25,9 @@
 #import <pulse/ext-stream-restore.h>
 #import <pulse/ext-device-manager.h>
 
+#import "PAClient.h"
+#import "PASinkInput.h"
+#import "PASink.h"
 #import "PulseAudio.h"
 
 static int          n_outstanding = 0;
@@ -687,43 +690,35 @@ void context_state_cb(pa_context *ctx, void *userdata)
 // client_sb(...)
 - (void)updateClient:(NSValue *)value
 {
-  const pa_client_info *info;
-  NSInteger      replaceIndex = -1;
-  NSDictionary   *client;
+  BOOL clientUpdated = NO;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_client_info));
   [value getValue:(void *)info];
 
-  client = @{@"Name":[NSString stringWithCString:info->name],
-             @"Index":[NSNumber numberWithUnsignedInt:info->index],
-             @"Driver":[NSString stringWithCString:info->driver],
-             @"Owner":[NSNumber numberWithInt:info->owner_module]};
-  
-  free((void *)info);
-
-  for (NSDictionary *c in clientList) {
-    if ([c[@"Index"] isEqualToValue:client[@"Index"]]) {
+  for (PAClient *c in clientList) {
+    if ([c index] == info->index) {
       replaceIndex = [clientList indexOfObject:c];
+      [c updateWithValue:value];
+      clientUpdated = YES;
       break;
     }
   }
 
-  if (replaceIndex >= 0) {
-    [clientList replaceObjectAtIndex:replaceIndex withObject:client];
+  if (clientUpdated == NO) {
+    [clientList addObject:[[PAClient new] updateWithValue:value]];
   }
-  else {
-    [clientList addObject:client];
-  }
-  
+
+  free((void *)info);
+
   [self reloadBrowser:streamsBrowser];
 }
 - (void)removeClientWithIndex:(NSNumber *)index
 {
-  NSDictionary *client;
+  PAClient *client;
 
-  for (NSDictionary *c in clientList) {
-    if ([c[@"Index"] isEqualToValue:index] != NO) {
+  for (PAClient *c in clientList) {
+    if ([c index] == index) {
       client = c;
       break;
     }
@@ -739,40 +734,24 @@ void context_state_cb(pa_context *ctx, void *userdata)
 - (void)updateStream:(NSValue *)value
 {
   const pa_ext_stream_restore_info *info;
-  NSInteger      replaceIndex = -1;
-  NSMutableArray *volumes = [NSMutableArray new];
-  NSNumber       *v;
-  NSDictionary   *stream;
+  BOOL streamUpdated = NO;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_ext_stream_restore_info));
   [value getValue:(void *)info];
 
-  for (int i = 0; i < info->volume.channels; i++) {
-    v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-    [volumes addObject:v];
-  }
-
-  stream = @{@"Name":[NSString stringWithCString:info->name],
-             @"Device":[NSString stringWithCString:info->device],
-             @"Mute":[NSNumber numberWithInt:info->mute],
-             @"Volumes":volumes};
-  
-  free((void *)info);
-
-  // If `streamList` already contains stream with the same name - replace it
-  for (NSDictionary *s in streamList) {
-    if ([s[@"Name"] isEqualToString:stream[@"Name"]]) {
-      replaceIndex = [streamList indexOfObject:s];
+  for (PAStream *s in clientList) {
+    if ([[c name] isEqualToString:[NSString stringWithCString:info->name]]) {
+      [s updateWithValue:value];
+      streamUpdated = YES;
       break;
     }
   }
 
-  if (replaceIndex >= 0) {
-    [streamList replaceObjectAtIndex:replaceIndex withObject:stream];
-  }
-  else {
-    [streamList addObject:stream];
+  free((void *)info);
+
+  if (clientUpdated == NO) {
+    [streamList addObject:[[PAStream new] updateWithValue:value]];
   }
 
   [self reloadBrowser:streamsBrowser];
@@ -797,34 +776,24 @@ void context_state_cb(pa_context *ctx, void *userdata)
 - (void)updateSinkInput:(NSValue *)value
 {
   const pa_sink_input_info *info;
-  NSInteger                replaceIndex = -1;
-  NSDictionary             *sinkInput;
+  BOOL  isUpdated = NO;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_sink_input_info));
   [value getValue:(void *)info];
 
-  sinkInput = @{@"Name":[NSString stringWithCString:info->name],
-                @"Index":[NSNumber numberWithUnsignedInt:info->index],
-                @"Client":[NSNumber numberWithUnsignedInt:info->client],
-                @"Sink":[NSNumber numberWithUnsignedInt:info->sink],
-                @"Mute":[NSNumber numberWithBool:info->mute],
-                @"Corked":[NSNumber numberWithBool:info->corked]};
-  
-  free((void *)info);
-
-  for (NSDictionary *si in sinkInputList) {
-    if ([si[@"Index"] isEqualToValue:sinkInput[@"Index"]]) {
-      replaceIndex = [sinkInputList indexOfObject:si];
+  for (PASinkInput *si in sinkInputList) {
+    if ([si index] == info->index) {
+      [si updateWithValue:value];
+      isUpdated = YES;
       break;
     }
   }
 
-  if (replaceIndex >= 0) {
-    [sinkInputList replaceObjectAtIndex:replaceIndex withObject:sinkInput];
-  }
-  else {
-    [sinkInputList addObject:sinkInput];
+  free((void *)info);
+
+  if (isUpdated == NO) {
+    [sinkInputList addObject:[[PASinkInput new] updateWithValue:value]];
   }
 }
 // TODO
@@ -893,19 +862,17 @@ void context_state_cb(pa_context *ctx, void *userdata)
 }
 
 // --- Browser delegate ---
-- (NSString *)nameForStream:(NSDictionary *)stream
+- (NSString *)nameForStream:(PAStream *)stream
 {
   NSString *name = nil;
-  NSArray  *streamComps;
 
   if ([stream[@"Name"] isEqualToString:@"sink-input-by-media-role:event"]) {
     return @"System Sounds";
   }
   else {
-    streamComps = [stream[@"Name"] componentsSeparatedByString:@":"];
-    for (NSDictionary *s in clientList) {
-      if ([s[@"Name"] isEqualToString:[streamComps objectAtIndex:1]]) {
-        name = s[@"Name"];
+    for (PAClient *c in clientList) {
+      if ([[c name] isEqualToString:[stream visibleName]]) {
+        name = [c name];
         break;
       }
     }
@@ -923,21 +890,29 @@ void context_state_cb(pa_context *ctx, void *userdata)
   NSString      *title;
   
   if (sender == streamsBrowser) {
-    list = streamList;
+    list = sinkInputList;
   }
   else if (sender == devicesBrowser) {
     list = sinkList;
   }
 
   if (sender == streamsBrowser) {
-    for (NSDictionary *d in list) {
-      if ((title = [self nameForStream:d]) != nil) {
+    // Streams first
+    for (PAStream *st in streamList) {
+      if ((title = [st visibleNameForClients:clientList]) != nil) {
         [matrix addRow];
         cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
         [cell setLeaf:YES];
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:title];
       }
+    }
+    for (PASinkInput *si in sinkInputList) {
+      [matrix addRow];
+      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+      [cell setLeaf:YES];
+      [cell setRefusesFirstResponder:YES];
+      [cell setTitle:[si nameForClients:clientList sinks:sinkList]];
     }
   }
   else if (sender == devicesBrowser) {
