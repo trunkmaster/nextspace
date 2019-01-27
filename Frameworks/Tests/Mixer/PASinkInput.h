@@ -5,9 +5,17 @@
   const pa_sink_input_info *info;
 }
 
+// @property (readonly) NSString *name;
+// @property (readonly) NSUInteger index;
+// @property (readonly) NSUInteger clientIndex;
+// @property (readonly) NSUInteger sinkIndex;
+
+// @property BOOL isMute;
+// @property BOOL isCorked;
+
 - (id)updateWithValue:(NSValue *)val;
 
-- (NString *)name;
+- (NSString *)name;
 
 - (NSUInteger)index;
 - (NSUInteger)clientIndex;
@@ -16,7 +24,7 @@
 - (BOOL)isMute;
 - (void)setMute:(BOOL)isMute;
 
-- (BOOL)isCorked
+- (BOOL)isCorked;
 - (void)setCorked:(BOOL)isCorked;
 
 @end

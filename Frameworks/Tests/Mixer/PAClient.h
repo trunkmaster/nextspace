@@ -1,21 +1,15 @@
 #import <Foundation/Foundation.h>
 
+#import "PulseAudio.h"
+
 @interface PAClient : NSObject
 {
-  const pa_client__info *info;
+  const pa_client_info *info;
 }
 
 - (id)updateWithValue:(NSValue *)value;
 
-- (NString *)name;
-
-- (NSArray *)volumes;
-- (void)setVolume:(NSArray *)volumes;
-
-- (CGFloat)balance;
-- (void)setBalance:(CGFloat)bal;
-
-- (BOOL)isMute;
-- (void)setIsMute:(BOOL)isMute;
+- (NSString *)name;
+- (NSUInteger)index;
 
 @end

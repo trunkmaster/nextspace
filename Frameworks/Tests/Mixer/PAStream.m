@@ -1,41 +1,61 @@
 #import "PulseAudio.h"
+#import "PAClient.h"
 #import "PAStream.h"
 
 @implementation PAStream
 
 - (void)dealloc
 {
-  free((void *)info);
+  [_volumes release];
   [super dealloc];
 }
 
-- (void)updateWithValue:(NSValue *)val
+- init
 {
-  // Convert PA structure into NSDictionary
-  if (info != NULL){
-    free((void *)info);
-  }
-  info = malloc(sizeof(const pa_ext_stream_restore_info));
-  [val getValue:(void *)info];
+  [super init];
+  _volumes = [[NSMutableArray alloc] init];
+  return self;
 }
 
-- (NString *)name
+- (id)updateWithValue:(NSValue *)value
 {
-  return [NSString stringWithCString:info->name];
-}
-
-- (NString *)visibleNameForClients:(NSArray *)clientList
-{
-  NSString *name = [NSString stringWithCString:info->name];
+  const pa_ext_stream_restore_info *info;
+  NSNumber *v;
   
-  if ([name isEqualToString;@"sink-input-by-media-role:event"]) {
+  info = malloc(sizeof(const pa_ext_stream_restore_info));
+  [value getValue:(void *)info];
+
+  if (_name) [_name release];
+  _name = [[NSString alloc] initWithCString:info->name];
+  [_volumes removeAllObjects];
+  for (int i = 0; i < info->volume.channels; i++) {
+    v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
+    [_volumes addObject:v];
+  }
+  _mute = info->mute ? YES : NO;
+
+  free((void *)info);
+
+  return self;
+}
+
+- (NSString *)visibleNameForClients:(NSArray *)clientList
+{
+  // NSString *name = [NSString stringWithCString:info->name];
+  NSString *name;
+  NSArray  *comps;
+  
+  if ([_name isEqualToString:@"sink-input-by-media-role:event"]) {
     return @"System Sounds";
   }
   else {
-    name = [[name componentsSeparatedByString:@":"] objectAtIndex:1];
-    for (PAClient *cl in clientList) {
-      if ([[cl name] isEqualToString:name]) {
-        return name;
+    comps = [_name componentsSeparatedByString:@":"];
+    if ([comps count] > 1) {
+      name = [comps objectAtIndex:1];
+      for (PAClient *cl in clientList) {
+        if ([[cl name] isEqualToString:name]) {
+          return name;
+        }
       }
     }
   }
@@ -43,34 +63,29 @@
   return nil;
 }
 
-- (NSArray *)volumes
-{
-  NSMutableArray *volumes = [NSMutableArray new];
+// - (NSArray *)volumes
+// {
+  // NSMutableArray *volumes = [NSMutableArray new];
+  // NSNumber *v;
   
-  for (int i = 0; i < info->volume.channels; i++) {
-    v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-    [volumes addObject:v];
-  }
+  // for (int i = 0; i < info->volume.channels; i++) {
+  //   v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
+  //   [volumes addObject:v];
+  // }
 
-  return volumes;
-}
+//   return volumes;
+// }
 // TODO
-- (void)setVolume:(NSArray *)volumes
-{
-}
+// - (void)setVolumes:(NSArray *)volumes
+// {
+// }
 
-- (CGFloat)balance
-{
-}
-- (void)setBalance:(CGFloat)bal
-{
-}
-
-- (BOOL)isMute
-{
-}
-- (void)setIsMute:(BOOL)
-{
-}
+// - (BOOL)isMute
+// {
+//   return NO;
+// }
+// - (void)setMute:(BOOL)isMute
+// {
+// }
 
 @end

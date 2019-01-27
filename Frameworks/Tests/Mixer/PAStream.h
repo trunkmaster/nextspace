@@ -1,22 +1,26 @@
 #import <Foundation/Foundation.h>
 
+#include <pulse/pulseaudio.h>
+#include <pulse/ext-stream-restore.h>
+
 @interface PAStream : NSObject
 {
-  const pa_ext_stream_restore_info *info;
+  // const pa_ext_stream_restore_info *info;
 }
 
-- (id)initWithValue:(NSValue *)value;
+@property (readonly) NSString *name;
+@property (assign) NSMutableArray *volumes;
+@property (assign, getter=isMute) BOOL mute;
 
-- (NString *)name;
-- (NString *)visibleNameForClients:(NSArray *)clientList;
+- (id)updateWithValue:(NSValue *)value;
 
-- (NSArray *)volumes;
-- (void)setVolume:(NSArray *)volumes;
+// - (NSString *)name;
+- (NSString *)visibleNameForClients:(NSArray *)clientList;
 
-- (CGFloat)balance;
-- (void)setBalance:(CGFloat)bal;
+// - (NSArray *)volumes;
+// - (void)setVolume:(NSArray *)volumes;
 
-- (BOOL)isMute;
-- (void)setIsMute:(BOOL);
+// - (BOOL)isMute;
+// - (void)setMute:(BOOL)isMute;
 
 @end

@@ -16,7 +16,7 @@
   return self;
 }
 
-- (void)updateWithValue:(NSValue *)val
+- (id)updateWithValue:(NSValue *)val
 {
   // Convert PA structure into NSDictionary
   if (info != NULL) {
@@ -24,9 +24,11 @@
   }
   info = malloc(sizeof(const pa_sink_info));
   [val getValue:(void *)info];
+
+  return self;
 }
 
-- (NString *)name
+- (NSString *)name
 {
   return [NSString stringWithCString:info->name];
 }
