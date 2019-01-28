@@ -4,12 +4,11 @@
 
 @interface PAClient : NSObject
 {
-  const pa_client_info *info;
 }
 
-- (id)updateWithValue:(NSValue *)value;
+@property (readonly) NSString  *name;
+@property (readonly) NSUInteger index;
 
-- (NSString *)name;
-- (NSUInteger)index;
+- (id)updateWithValue:(NSValue *)value;
 
 @end

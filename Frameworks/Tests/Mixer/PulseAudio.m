@@ -240,7 +240,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
     return;
   }
 
-  fprintf(stderr, "[Mixer] Stream: %s\n", info->name);
+  // fprintf(stderr, "[Mixer] Stream: %s\n", info->name);
 
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
@@ -739,13 +739,15 @@ void context_state_cb(pa_context *ctx, void *userdata)
 {
   const pa_ext_stream_restore_info *info;
   BOOL isUpdated = NO;
+  NSString *streamName;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_ext_stream_restore_info));
   [value getValue:(void *)info];
 
-  for (PAStream *s in clientList) {
-    if ([[s name] isEqualToString:[NSString stringWithCString:info->name]]) {
+  streamName = [NSString stringWithCString:info->name];
+  for (PAStream *s in streamList) {
+    if ([[s name] isEqualToString:streamName]) {
       [s updateWithValue:value];
       isUpdated = YES;
       break;
@@ -789,7 +791,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
   [value getValue:(void *)info];
 
   for (PASinkInput *si in sinkInputList) {
-    if ([si index] == info->index) {
+    if (si.index == info->index) {
       NSLog(@"Update Sink Input: %s", info->name);
       [si updateWithValue:value];
       isUpdated = YES;
@@ -808,9 +810,22 @@ void context_state_cb(pa_context *ctx, void *userdata)
   free((void *)info);
   [self reloadBrowser:streamsBrowser];
 }
-// TODO
 - (void)removeSinkInputWithIndex:(NSNumber *)index
 {
+  PASinkInput *sinkInput;
+  NSUInteger  idx = [index unsignedIntegerValue];
+
+  for (PASinkInput *si in sinkInputList) {
+    if (si.index == idx) {
+      sinkInput = si;
+      break;
+    }
+  }
+
+  if (sinkInput != nil) {
+    [sinkInputList removeObject:sinkInput];
+    [self reloadBrowser:streamsBrowser];
+  }
 }
 
 - (void)updateSource:(NSValue *)value
@@ -906,7 +921,8 @@ void context_state_cb(pa_context *ctx, void *userdata)
       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
       [cell setLeaf:YES];
       [cell setRefusesFirstResponder:YES];
-      [cell setTitle:[si name]];
+      // [cell setTitle:si.name];
+      [cell setTitle:[si nameForClients:clientList sinks:sinkList]];
     }
   }
   else if (sender == devicesBrowser) {

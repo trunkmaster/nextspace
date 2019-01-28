@@ -5,82 +5,62 @@
 
 @implementation PASinkInput
 
+@synthesize mute = _mute;
+
 - (void)dealloc
 {
-  free((void *)info);
+  if (_name)
+    [_name release];
   [super dealloc];
-}
-
-- init
-{
-  [super init];
-  info = malloc(sizeof(const pa_sink_input_info));
-  return self;
 }
 
 - (id)updateWithValue:(NSValue *)val
 {
-  void *info_from_value = NULL;
+   pa_sink_input_info *info = NULL;
   
-  // Convert PA structure into NSDictionary
-  if (info != NULL) {
-    free((void *)info);
-    info = malloc(sizeof(const pa_sink_input_info));
-  }
+  info = malloc(sizeof(const pa_sink_input_info));
+  [val getValue:info];
+
+  if (_name)
+    [_name release];
+  _name = [[NSString alloc] initWithCString:info->name];
+
+  _index = info->index;
+  _clientIndex = info->client;
+  _sinkIndex = info->sink;
+  _mute = info->mute;
+  _corked = info->corked;
   
-  info_from_value = malloc(sizeof(const pa_sink_input_info));
-  [val getValue:info_from_value];
-  
-  memcpy((void *)info, info_from_value, sizeof(const pa_sink_input_info));
-  free(info_from_value);
+  free((void *)info);
 
   return self;
-}
-
-- (NSString *)name
-{
-  return [NSString stringWithCString:info->name];
 }
 
 // TODO
 - (NSString *)nameForClients:(NSArray *)clientList
                        sinks:(NSArray *)sinkList
 {
-  NSUInteger index = [self index];
-
   // Get client name by index
+  for (PAClient *c in clientList) {
+    if (c.index == _clientIndex) {
+      return c.name;
+    }
+  }
   // Get sink name by index
   //
 
   return nil;
 }
 
-- (NSUInteger)index
-{
-  return info->index;
-}
-- (NSUInteger)clientIndex
-{
-  return info->client;
-}
-- (NSUInteger)sinkIndex
-{
-  return info->sink;
-}
-
-- (BOOL)isMute
-{
-  return info->mute;
-}
 - (void)setMute:(BOOL)isMute
 {
-}
-- (BOOL)isCorked
-{
-  return info->corked;
-}
-- (void)setCorked:(BOOL)isCorked
-{
+  _mute = isMute;
+  // TODO: call PA function
+  // pa_operation* pa_context_set_sink_input_mute(pa_context *c,
+  //                                              uint32_t idx,
+  //                                              int mute,
+  //                                              pa_context_success_cb_t cb,
+  //                                              void *userdata);
 }
 
 @end

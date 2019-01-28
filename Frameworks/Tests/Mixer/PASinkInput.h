@@ -2,29 +2,30 @@
 
 @interface PASinkInput : NSObject
 {
-  const pa_sink_input_info *info;
 }
 
-// @property (readonly) NSString *name;
-// @property (readonly) NSUInteger index;
-// @property (readonly) NSUInteger clientIndex;
-// @property (readonly) NSUInteger sinkIndex;
+@property (readonly) NSString *name;
+@property (readonly) NSUInteger index;
+@property (readonly) NSUInteger clientIndex;
+@property (readonly) NSUInteger sinkIndex;
 
-// @property BOOL isMute;
-// @property BOOL isCorked;
+@property (nonatomic,setter=setMute:) BOOL mute;
+@property (readonly) BOOL corked;
 
 - (id)updateWithValue:(NSValue *)val;
+- (NSString *)nameForClients:(NSArray *)clientList
+                       sinks:(NSArray *)sinkList;
 
-- (NSString *)name;
+// - (NSString *)name;
 
-- (NSUInteger)index;
-- (NSUInteger)clientIndex;
-- (NSUInteger)sinkIndex;
+// - (NSUInteger)index;
+// - (NSUInteger)clientIndex;
+// - (NSUInteger)sinkIndex;
 
-- (BOOL)isMute;
-- (void)setMute:(BOOL)isMute;
+// - (BOOL)isMute;
+// - (void)setMute:(BOOL)isMute;
 
-- (BOOL)isCorked;
-- (void)setCorked:(BOOL)isCorked;
+// - (BOOL)isCorked;
+// - (void)setCorked:(BOOL)isCorked;
 
 @end
