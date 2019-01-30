@@ -13,6 +13,7 @@
 
 - (id)updateWithValue:(NSValue *)value;
 
+- (NSString *)clientName;
 - (NSString *)visibleNameForClients:(NSArray *)clientList;
 
 @end

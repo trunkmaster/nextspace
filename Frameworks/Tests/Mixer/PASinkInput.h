@@ -12,20 +12,13 @@
 @property (nonatomic,setter=setMute:) BOOL mute;
 @property (readonly) BOOL corked;
 
+@property (readonly) BOOL hasVolume;
+@property (readonly) BOOL isVolumeWritable;
+// @property (nonatomic) NSMutableArray *volume;
+
+
 - (id)updateWithValue:(NSValue *)val;
 - (NSString *)nameForClients:(NSArray *)clientList
-                       sinks:(NSArray *)sinkList;
-
-// - (NSString *)name;
-
-// - (NSUInteger)index;
-// - (NSUInteger)clientIndex;
-// - (NSUInteger)sinkIndex;
-
-// - (BOOL)isMute;
-// - (void)setMute:(BOOL)isMute;
-
-// - (BOOL)isCorked;
-// - (void)setCorked:(BOOL)isCorked;
+                     streams:(NSArray *)streamList;
 
 @end

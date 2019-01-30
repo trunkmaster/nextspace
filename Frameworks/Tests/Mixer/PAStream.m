@@ -39,6 +39,17 @@
   return self;
 }
 
+- (NSString *)clientName
+{
+  NSArray *comps = [_name componentsSeparatedByString:@":"];
+
+  if ([comps count] > 1) {
+    return [comps objectAtIndex:1];
+  }
+
+  return nil;
+}
+
 - (NSString *)visibleNameForClients:(NSArray *)clientList
 {
   // NSString *name = [NSString stringWithCString:info->name];
@@ -49,9 +60,7 @@
     return @"System Sounds";
   }
   else {
-    comps = [_name componentsSeparatedByString:@":"];
-    if ([comps count] > 1) {
-      name = [comps objectAtIndex:1];
+    if ((name = [self clientName]) != nil) {
       for (PAClient *cl in clientList) {
         if ([[cl name] isEqualToString:name]) {
           return name;

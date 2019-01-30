@@ -1,6 +1,16 @@
 #import "PulseAudio.h"
 #import "PAClient.h"
 
+/*
+typedef struct pa_client_info {
+  uint32_t    index;        // Index of this client
+  const char  *name;        // Name of this client
+  uint32_t    owner_module; // Index of the owning module, or PA_INVALID_INDEX.
+  const char  *driver;      // Driver name
+  pa_proplist *proplist;    // Property list
+} pa_client_info;
+*/
+
 @implementation PAClient
 
 - (void)dealloc

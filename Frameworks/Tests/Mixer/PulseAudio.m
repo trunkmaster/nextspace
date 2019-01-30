@@ -896,7 +896,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
 {
   NSBrowserCell *cell;
   NSArray       *list = nil;
-  NSString      *title;
+  // NSString      *title;
   
   if (sender == streamsBrowser) {
     list = sinkInputList;
@@ -907,22 +907,23 @@ void context_state_cb(pa_context *ctx, void *userdata)
 
   if (sender == streamsBrowser) {
     // Streams first
-    for (PAStream *st in streamList) {
-      if ((title = [st visibleNameForClients:clientList]) != nil) {
-        [matrix addRow];
-        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-        [cell setLeaf:YES];
-        [cell setRefusesFirstResponder:YES];
-        [cell setTitle:title];
-      }
-    }
+    // for (PAStream *st in streamList) {
+    //   if ((title = [st visibleNameForClients:clientList]) != nil) {
+    //     [matrix addRow];
+    //     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+    //     [cell setLeaf:YES];
+    //     [cell setRefusesFirstResponder:YES];
+    //     [cell setTitle:title];
+    //   }
+    // }
     for (PASinkInput *si in sinkInputList) {
       [matrix addRow];
       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
       [cell setLeaf:YES];
       [cell setRefusesFirstResponder:YES];
       // [cell setTitle:si.name];
-      [cell setTitle:[si nameForClients:clientList sinks:sinkList]];
+      // [cell setTitle:[si nameForClients:clientList sinks:sinkList]];
+      [cell setTitle:[si nameForClients:clientList streams:streamList]];
     }
   }
   else if (sender == devicesBrowser) {
