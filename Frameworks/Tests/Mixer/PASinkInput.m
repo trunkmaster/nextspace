@@ -59,22 +59,21 @@ typedef struct pa_sink_input_info {
 {
   if (_name)
     [_name release];
-  // if (_volume)
-  //   [_volume release];
+  [volumes release];
   [super dealloc];
 }
 
 - init
 {
   [super init];
-  // _volume = [[NSMutableArray alloc] init];
+  volumes = [[NSMutableArray alloc] init];
   return self;
 }
 
 - (id)updateWithValue:(NSValue *)val
 {
   pa_sink_input_info *info = NULL;
-  // NSNumber *v;
+  NSNumber *v;
   
   info = malloc(sizeof(const pa_sink_input_info));
   [val getValue:info];
@@ -89,11 +88,13 @@ typedef struct pa_sink_input_info {
   _mute = info->mute;
   _corked = info->corked;
 
-  // [_volume removeAllObjects];
-  // for (int i = 0; i < info->volume.channels; i++) {
-  //   v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-  //   [_volume addObject:v];
-  // }
+  if (info->has_volume) {
+    [volumes removeAllObjects];
+    for (int i = 0; i < info->volume.channels; i++) {
+      v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
+      [volumes addObject:v];
+    }
+  }
   
   free((void *)info);
 
@@ -129,6 +130,11 @@ typedef struct pa_sink_input_info {
 
   return [NSString stringWithFormat:@"%@ : %@",
                    clientName, _name];
+}
+
+- (NSArray *)volumes
+{
+  return volumes;
 }
 
 - (void)setMute:(BOOL)isMute

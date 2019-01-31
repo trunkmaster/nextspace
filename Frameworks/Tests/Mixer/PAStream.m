@@ -2,18 +2,28 @@
 #import "PAClient.h"
 #import "PAStream.h"
 
+/*
+typedef struct pa_ext_stream_restore_info {
+  const char     *name;
+  int            mute;
+  pa_channel_map channel_map;
+  pa_cvolume     volume;
+  const char     *device;
+} pa_ext_stream_restore_info;
+*/
+
 @implementation PAStream
 
 - (void)dealloc
 {
-  [_volumes release];
+  [volumes release];
   [super dealloc];
 }
 
 - init
 {
   [super init];
-  _volumes = [[NSMutableArray alloc] init];
+  volumes = [[NSMutableArray alloc] init];
   return self;
 }
 
@@ -27,10 +37,11 @@
 
   if (_name) [_name release];
   _name = [[NSString alloc] initWithCString:info->name];
-  [_volumes removeAllObjects];
+  
+  [volumes removeAllObjects];
   for (int i = 0; i < info->volume.channels; i++) {
     v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-    [_volumes addObject:v];
+    [volumes addObject:v];
   }
   _mute = info->mute ? YES : NO;
 
@@ -44,57 +55,30 @@
   NSArray *comps = [_name componentsSeparatedByString:@":"];
 
   if ([comps count] > 1) {
-    return [comps objectAtIndex:1];
+    return comps[1];
   }
 
   return nil;
 }
 
-- (NSString *)visibleNameForClients:(NSArray *)clientList
+- (NSString *)typeName
 {
-  // NSString *name = [NSString stringWithCString:info->name];
-  NSString *name;
-  NSArray  *comps;
-  
-  if ([_name isEqualToString:@"sink-input-by-media-role:event"]) {
-    return @"System Sounds";
-  }
-  else {
-    if ((name = [self clientName]) != nil) {
-      for (PAClient *cl in clientList) {
-        if ([[cl name] isEqualToString:name]) {
-          return name;
-        }
-      }
-    }
+  NSArray *comps = [_name componentsSeparatedByString:@":"];
+
+  if ([comps count] > 1) {
+    return comps[0];
   }
 
   return nil;
 }
 
-// - (NSArray *)volumes
-// {
-  // NSMutableArray *volumes = [NSMutableArray new];
-  // NSNumber *v;
-  
-  // for (int i = 0; i < info->volume.channels; i++) {
-  //   v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-  //   [volumes addObject:v];
-  // }
-
-//   return volumes;
-// }
-// TODO
-// - (void)setVolumes:(NSArray *)volumes
-// {
-// }
-
-// - (BOOL)isMute
-// {
-//   return NO;
-// }
-// - (void)setMute:(BOOL)isMute
-// {
-// }
+- (NSArray *)volumes
+{
+  return volumes;
+}
+//TODO
+- (void)setVolumes:(NSArray *)volumes
+{
+}
 
 @end

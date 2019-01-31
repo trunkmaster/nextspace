@@ -27,7 +27,8 @@
 	    cardInfo,
 	    deviceMute,
 	    serverInfo,
-	    streamMute
+	    streamMute,
+	    streamVolume
 	);
 	Super = NSObject;
     };

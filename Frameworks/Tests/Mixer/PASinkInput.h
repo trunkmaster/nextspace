@@ -2,6 +2,7 @@
 
 @interface PASinkInput : NSObject
 {
+  NSMutableArray *volumes;
 }
 
 @property (readonly) NSString *name;

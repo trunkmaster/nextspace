@@ -240,7 +240,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
     return;
   }
 
-  // fprintf(stderr, "[Mixer] Stream: %s\n", info->name);
+  // fprintf(stderr, "[Mixer] Stream: %s for device %s\n", info->name);
 
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
@@ -896,7 +896,6 @@ void context_state_cb(pa_context *ctx, void *userdata)
 {
   NSBrowserCell *cell;
   NSArray       *list = nil;
-  // NSString      *title;
   
   if (sender == streamsBrowser) {
     list = sinkInputList;
@@ -906,24 +905,24 @@ void context_state_cb(pa_context *ctx, void *userdata)
   }
 
   if (sender == streamsBrowser) {
-    // Streams first
-    // for (PAStream *st in streamList) {
-    //   if ((title = [st visibleNameForClients:clientList]) != nil) {
-    //     [matrix addRow];
-    //     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-    //     [cell setLeaf:YES];
-    //     [cell setRefusesFirstResponder:YES];
-    //     [cell setTitle:title];
-    //   }
-    // }
+    // Get streams of "sink-input-by-media-role" type first
+    for (PAStream *st in streamList) {
+      if ([[st typeName] isEqualToString:@"sink-input-by-media-role"]) {
+        [matrix addRow];
+        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+        [cell setLeaf:YES];
+        [cell setRefusesFirstResponder:YES];
+        [cell setTitle:[NSString stringWithFormat:@"%@ Sounds", [st clientName]]];
+        [cell setRepresentedObject:st];
+      }
+    }
     for (PASinkInput *si in sinkInputList) {
       [matrix addRow];
       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
       [cell setLeaf:YES];
       [cell setRefusesFirstResponder:YES];
-      // [cell setTitle:si.name];
-      // [cell setTitle:[si nameForClients:clientList sinks:sinkList]];
       [cell setTitle:[si nameForClients:clientList streams:streamList]];
+      [cell setRepresentedObject:si];
     }
   }
   else if (sender == devicesBrowser) {
@@ -933,6 +932,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
       [cell setTitle:s];
       [cell setLeaf:YES];
       [cell setRefusesFirstResponder:YES];
+      [cell setRepresentedObject:s];
     }
   }
 }
@@ -970,6 +970,15 @@ void context_state_cb(pa_context *ctx, void *userdata)
 {
   NSLog(@"Browser received click: %@, cell - %@",
         [sender className], [[sender selectedCellInColumn:0] title]);
+  if (sender == streamsBrowser) {
+    id object = [[sender selectedCellInColumn:0] representedObject];
+    if ([object respondsToSelector:@selector(volumes)]) {
+      NSArray *volume = [object volumes];
+      if (volume != nil && [volume count] > 0) {
+        [streamVolume setFloatValue:[volume[0] floatValue]];
+      }
+    }
+  }
 }
 
 @end

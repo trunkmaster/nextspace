@@ -30,6 +30,7 @@
   
   id streamsBrowser;
   id sreamMute;
+  id streamVolume;
   
   id devicesBrowser;
   id deviceMute;
