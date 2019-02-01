@@ -1,4 +1,9 @@
 /* -*- mode: c -*- */
+/*
+  Shared properties:
+  name, index
+  
+*/
 
 // Card (Card-Profile, Card-Port)
 typedef struct pa_card_profile_info2 {
@@ -47,7 +52,7 @@ typedef struct pa_card_info {
   const char            *driver;          /* Driver name */
 } pa_card_info;
 
-// Sink - Output
+// Sink
 typedef struct pa_sink_port_info {
   const char *name;         /* Name of this port */
   const char *description;  /* Description of this port */
@@ -97,10 +102,12 @@ typedef struct pa_channel_map {
   uint8_t               channels;             /* Number of channels */
   pa_channel_position_t map[PA_CHANNELS_MAX]; /* Channel labels */
 } pa_channel_map;
+
 typedef struct pa_cvolume {
   uint8_t     channels;                /* Number of channels */
   pa_volume_t values[PA_CHANNELS_MAX]; /* Per-channel volume */
 } pa_cvolume;
+
 typedef struct pa_sample_spec {
   pa_sample_format_t format;   /* The sample format */
   uint32_t           rate;     /* The sample rate. (e.g. 44100) */
@@ -131,3 +138,24 @@ typedef struct pa_sink_input_info {
   pa_usec_t      sink_usec;        /* Latency of the sink device, see pa_timing_info for details. */
   pa_proplist    *proplist;        /* Property list */
 } pa_sink_input_info;
+
+// Client
+typedef struct pa_client_info {
+  uint32_t    index;        /* Index of this client */
+  const char  *name;        /* Name of this client */
+  
+  uint32_t    owner_module; /* Index of the owning module, or PA_INVALID_INDEX. */
+  const char  *driver;      /* Driver name */
+  pa_proplist *proplist;    /* Property list */
+} pa_client_info;
+
+// Stream
+typedef struct pa_ext_stream_restore_info {
+  const char     *name;       /* Identifier string of the stream. 
+                                 A string like "sink-input-by-role:" or similar followed 
+                                 by some arbitrary property value. */
+  pa_channel_map channel_map; /* The channel map for the volume field */
+  pa_cvolume     volume;      /* The volume of the stream when it was seen last */
+  const char     *device;     /* The sink/source of the stream when it was last seen */
+  int            mute;        /* The boolean mute state of the stream when it was last seen */
+} pa_ext_stream_restore_info;
