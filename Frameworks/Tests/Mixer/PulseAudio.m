@@ -870,6 +870,27 @@ void context_state_cb(pa_context *ctx, void *userdata)
                    pa_proplist_gets(info->proplist, PA_PROP_DEVICE_VENDOR_NAME),
                    pa_proplist_gets(info->proplist, PA_PROP_DEVICE_PRODUCT_NAME)];
   [cardInfo setStringValue:card];
+
+  fprintf(stderr, "Card: %s (%i ports, %i profiles)\n",
+          info->name, info->n_ports, info->n_profiles);
+  fprintf(stderr, "\tDriver: %s\n", info->driver);
+  
+  fprintf(stderr, "\tProfiles:\n");
+  for (int i = 0; i < info->n_profiles; i++) {
+    fprintf(stderr, "\t\t[%i] %s (%s)\n",
+            info->profiles2[i]->priority,
+            info->profiles2[i]->name, info->profiles2[i]->description);
+  }
+  fprintf(stderr, "\tActive profile: [%i] %s\n",
+          info->active_profile->priority, info->active_profile->name);
+
+  fprintf(stderr, "\tPorts:\n");
+  for (int i = 0; i < info->n_ports; i++) {
+    fprintf(stderr, "\t\t[%i] %s (%s)\n",
+            info->ports[i]->priority,
+            info->ports[i]->name, info->ports[i]->description);
+  }
+
   
   free((void *)info);
 }

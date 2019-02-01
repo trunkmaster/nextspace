@@ -10,6 +10,7 @@ typedef struct pa_sink_input_info {
   uint32_t index;
   // Name of the sink input
   const char *name;
+
   // Index of the client this sink input belongs to, or PA_INVALID_INDEX
   uint32_t client;
   // Index of the connected sink
