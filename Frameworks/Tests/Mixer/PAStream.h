@@ -9,6 +9,7 @@
 }
 
 @property (readonly) NSString *name;
+@property (readonly) NSString *deviceName;
 // @property (assign) NSMutableArray *volumes;
 @property (assign,getter=isMute) BOOL mute;
 

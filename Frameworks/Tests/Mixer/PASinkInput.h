@@ -5,7 +5,7 @@
   NSMutableArray *volumes;
 }
 
-@property (readonly) NSString *name;
+@property (readonly) NSString   *name;
 @property (readonly) NSUInteger index;
 @property (readonly) NSUInteger clientIndex;
 @property (readonly) NSUInteger sinkIndex;

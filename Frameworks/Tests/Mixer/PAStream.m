@@ -35,8 +35,12 @@ typedef struct pa_ext_stream_restore_info {
   info = malloc(sizeof(const pa_ext_stream_restore_info));
   [value getValue:(void *)info];
 
-  if (_name) [_name release];
+  if (_name)
+    [_name release];
   _name = [[NSString alloc] initWithCString:info->name];
+  if (_deviceName)
+    [_deviceName release];
+  _deviceName = [[NSString alloc] initWithCString:info->device];
   
   [volumes removeAllObjects];
   for (int i = 0; i < info->volume.channels; i++) {

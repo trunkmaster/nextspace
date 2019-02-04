@@ -35,8 +35,11 @@
   id devicesBrowser;
   id deviceMute;
 
+  NSString       *defaultSinkName;
+  NSString       *defaultSourceName;
   NSMutableArray *clientList;
   NSMutableArray *streamList; // sink-input* or source-output*
+  NSMutableArray *cardList;
   NSMutableArray *sinkList;
   NSMutableArray *sinkInputList;
   NSMutableArray *sourceList;
@@ -45,6 +48,27 @@
   // Define our pulse audio loop and connection variables
   pa_mainloop     *pa_loop;
   pa_mainloop_api *pa_api;
+
+  // Objects Map
+  id omWindow;
+  id streamsPUB;
+  id clientsPUB;
+  id sinkInputsPUB;
+  id sinkPUB;
+  id cardPUB;
+  id portsPUB;
+  id profilesPUB;
+
+  // Advanced Sound Preferences
+  id modeButton;
+  id appBrowser;
+  id appMute;
+  id appVolume;
+  id outputMute;
+  id outputDevice;
+  id outputDeviceProfile;
+  id outputVolume;
+  id outputBalance;
 }
 
 // TODO
@@ -72,5 +96,7 @@
 - (void)removeSourceOutputWithIndex:(NSNumber *)index;
 
 - (void)reloadBrowser:(NSBrowser *)browser;
+- (void)updateOutputDeviceList;
+- (void)updateOutputProfileList:(NSPopUpButton *)button;
 
 @end

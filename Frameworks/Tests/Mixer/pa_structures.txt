@@ -67,17 +67,21 @@ typedef struct pa_sink_info {
   pa_proplist       *proplist;            /* Property list*/
   
   uint32_t          card;                 /* Card index, or PA_INVALID_INDEX. */
-  uint32_t          monitor_source;       /* Index of the monitor source connected to this sink. */
-  const char        *monitor_source_name; /* The name of the monitor source. */
-  const char        *driver;              /* Driver name */
+  
+  pa_sink_port_info *active_port;         /* Pointer to active port in the array, or NULL. */
+  uint32_t          n_ports;              /* Number of entries in port array */
+  pa_sink_port_info **ports;              /* Array of available ports, or NULL. 
+                                             Array is terminated by an entry set to NULL. 
+                                             The number of entries is stored in n_ports. */
   
   pa_sample_spec    sample_spec;          /* Sample spec of this sink */
-  
   pa_channel_map    channel_map;          /* Channel map */
   pa_cvolume        volume;               /* Volume of the sink */
-  pa_volume_t       base_volume;          /* Some kind of "base" volume that refers to unamplified/unattenuated 
+  pa_volume_t       base_volume;          /* Some kind of "base" volume that refers 
+                                             to unamplified/unattenuated 
                                              volume in the context of the output device. */
-  uint32_t          n_volume_steps;       /* Number of volume steps for sinks which do not support arbitrary volumes.*/
+  uint32_t          n_volume_steps;       /* Number of volume steps for sinks which 
+                                             do not support arbitrary volumes.*/
   
   int               mute;                 /* Mute switch of the sink */
   pa_usec_t         latency;              /* Length of queued audio in the output buffer. */
@@ -86,14 +90,13 @@ typedef struct pa_sink_info {
   pa_sink_flags_t   flags;                /* Flags */
   pa_sink_state_t   state;                /* State */
   
-  pa_sink_port_info *active_port;         /* Pointer to active port in the array, or NULL. */
-  uint32_t          n_ports;              /* Number of entries in port array */
-  pa_sink_port_info **ports;              /* Array of available ports, or NULL. 
-                                             Array is terminated by an entry set to NULL. 
-                                             The number of entries is stored in n_ports. */
   
   uint8_t           n_formats;            /* Number of formats supported by the sink. */
   pa_format_info    **formats;            /* Array of formats supported by the sink. */
+  
+  uint32_t          monitor_source;       /* Index of the monitor source connected to this sink. */
+  const char        *monitor_source_name; /* The name of the monitor source. */
+  const char        *driver;              /* Driver name */
   uint32_t          owner_module;         /* Index of the owning module of this sink, or PA_INVALID_INDEX. */
 } pa_sink_info;
 
