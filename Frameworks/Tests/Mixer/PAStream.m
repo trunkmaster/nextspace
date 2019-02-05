@@ -16,20 +16,14 @@ typedef struct pa_ext_stream_restore_info {
 
 - (void)dealloc
 {
-  [volumes release];
+  [_volumes release];
   [super dealloc];
-}
-
-- init
-{
-  [super init];
-  volumes = [[NSMutableArray alloc] init];
-  return self;
 }
 
 - (id)updateWithValue:(NSValue *)value
 {
   const pa_ext_stream_restore_info *info;
+  NSMutableArray *vol;
   NSNumber *v;
   
   info = malloc(sizeof(const pa_ext_stream_restore_info));
@@ -42,11 +36,17 @@ typedef struct pa_ext_stream_restore_info {
     [_deviceName release];
   _deviceName = [[NSString alloc] initWithCString:info->device];
   
-  [volumes removeAllObjects];
+  if (_volumes)
+    [_volumes release];
+  vol = [NSMutableArray new];
   for (int i = 0; i < info->volume.channels; i++) {
     v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-    [volumes addObject:v];
+    [vol addObject:v];
   }
+  if ([vol count] > 0) {
+    _volumes = [[NSArray alloc] initWithArray:vol];
+  }
+  [vol release];
   _mute = info->mute ? YES : NO;
 
   free((void *)info);
@@ -76,10 +76,6 @@ typedef struct pa_ext_stream_restore_info {
   return nil;
 }
 
-- (NSArray *)volumes
-{
-  return volumes;
-}
 //TODO
 - (void)setVolumes:(NSArray *)volumes
 {

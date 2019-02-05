@@ -54,26 +54,19 @@ typedef struct pa_sink_input_info {
 
 @implementation PASinkInput
 
-@synthesize mute = _mute;
-
 - (void)dealloc
 {
   if (_name)
     [_name release];
-  [volumes release];
+  if (_volumes)
+    [_volumes release];
   [super dealloc];
-}
-
-- init
-{
-  [super init];
-  volumes = [[NSMutableArray alloc] init];
-  return self;
 }
 
 - (id)updateWithValue:(NSValue *)val
 {
   pa_sink_input_info *info = NULL;
+  NSMutableArray *vol;
   NSNumber *v;
   
   info = malloc(sizeof(const pa_sink_input_info));
@@ -90,11 +83,17 @@ typedef struct pa_sink_input_info {
   _corked = info->corked;
 
   if (info->has_volume) {
-    [volumes removeAllObjects];
+    if (_volumes)
+      [_volumes release];
+    vol = [NSMutableArray new];
     for (int i = 0; i < info->volume.channels; i++) {
       v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-      [volumes addObject:v];
+      [vol addObject:v];
     }
+    if ([vol count] > 0) {
+      _volumes = [[NSArray alloc] initWithArray:vol];
+    }
+    [vol release];
   }
   
   free((void *)info);
@@ -133,20 +132,19 @@ typedef struct pa_sink_input_info {
                    clientName, _name];
 }
 
-- (NSArray *)volumes
+- (void)setVolumes:(NSArray *)vol
 {
-  return volumes;
 }
 
 - (void)setMute:(BOOL)isMute
 {
-  _mute = isMute;
   // TODO: call PA function
   // pa_operation* pa_context_set_sink_input_mute(pa_context *c,
   //                                              uint32_t idx,
   //                                              int mute,
   //                                              pa_context_success_cb_t cb,
   //                                              void *userdata);
+  pa_context_set_sink_input_mute(_context, _index, isMute, NULL, NULL);
 }
 
 @end

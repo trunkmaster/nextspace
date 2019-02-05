@@ -5,20 +5,20 @@
 
 @interface PAStream : NSObject
 {
-  NSMutableArray *volumes;
+  // NSMutableArray *volumes;
 }
 
 @property (readonly) NSString *name;
 @property (readonly) NSString *deviceName;
-// @property (assign) NSMutableArray *volumes;
-@property (assign,getter=isMute) BOOL mute;
+@property (readonly) NSArray *volumes;
+@property (readonly) BOOL mute;
 
 - (id)updateWithValue:(NSValue *)value;
 
 - (NSString *)clientName;
 - (NSString *)typeName;
 
-- (NSArray *)volumes;
-- (void)setVolumes:(NSArray *)volumes;
+// - (NSArray *)volumes;
+// - (void)setVolumes:(NSArray *)volumes;
 
 @end

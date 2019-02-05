@@ -71,6 +71,8 @@
   id outputBalance;
 }
 
+- (NSWindow *)window;
+
 // TODO
 - (void)updateServer:(NSValue *)value;
 - (void)updateCard:(NSValue *)value;

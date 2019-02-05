@@ -11,16 +11,18 @@
     FirstResponder = {
 	Actions = (
 	    "browserClick:",
-	    "updateOutputProfileList:",
+	    "appMuteClick:",
 	    "orderFrontFontPanel:",
-	    "showPrefPanel:"
+	    "showPrefPanel:",
+	    "updateOutputProfileList:"
 	);
 	Super = NSObject;
     };
     PulseAudio = {
 	Actions = (
 	    "browserClick:",
-	    "updateOutputProfileList:"
+	    "updateOutputProfileList:",
+	    "appMuteClick:"
 	);
 	Outlets = (
 	    devicesBrowser,

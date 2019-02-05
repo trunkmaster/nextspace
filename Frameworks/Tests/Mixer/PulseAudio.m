@@ -668,12 +668,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
 }
 
 - (void)awakeFromNib
-{ 
-  // [streamsBrowser loadColumnZero];
-  // [devicesBrowser loadColumnZero];
-  // [streamsBrowser setTitle:@"Streams" ofColumn:0];
-  // [devicesBrowser setTitle:@"Devices (Sinks)" ofColumn:0];
-
+{
   clientList = [[NSMutableArray alloc] init];
   cardList = [[NSMutableArray alloc] init];
   sinkList = [[NSMutableArray alloc] init];
@@ -688,6 +683,11 @@ void context_state_cb(pa_context *ctx, void *userdata)
       while (pa_mainloop_iterate(pa_loop, 1, NULL) >= 0) { ; }
       fprintf(stderr, "[Mixer] mainloop exited!\n");
     });
+}
+
+- (NSWindow *)window
+{
+  return window;
 }
 
 // --- These methods are called by PA callbacks ---
@@ -716,10 +716,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
     [client updateWithValue:value];
     [clientList addObject:client];
     [client release];
+    [self reloadBrowser:streamsBrowser];
   }
   
   free((void *)info);
-  [self reloadBrowser:streamsBrowser];
 }
 - (void)removeClientWithIndex:(NSNumber *)index
 {
@@ -748,7 +748,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_ext_stream_restore_info));
   [value getValue:(void *)info];
-
+  
   streamName = [NSString stringWithCString:info->name];
   for (PAStream *s in streamList) {
     if ([[s name] isEqualToString:streamName]) {
@@ -763,10 +763,11 @@ void context_state_cb(pa_context *ctx, void *userdata)
     [s updateWithValue:value];
     [streamList addObject:s];
     [s release];
+    [self reloadBrowser:streamsBrowser];
   }
+  [self browserClick:appBrowser];
   
   free((void *)info);
-  [self reloadBrowser:streamsBrowser];
 }
 
 // sink_cb(...)
@@ -797,9 +798,9 @@ void context_state_cb(pa_context *ctx, void *userdata)
     [sink release];
   }
   
-  free((void *)info);
-  
   [self updateOutputDeviceList];
+  
+  free((void *)info);  
 }
 // TODO
 - (void)removeSinkWithIndex:(NSNumber *)index
@@ -842,12 +843,15 @@ void context_state_cb(pa_context *ctx, void *userdata)
     PASinkInput *si = [[PASinkInput alloc] init];
     NSLog(@"Add Sink Input: %s", info->name);
     [si updateWithValue:value];
+    si.context = pa_ctx;
     [sinkInputList addObject:si];
+    [self reloadBrowser:streamsBrowser];
     [si release];
   }
   
+  [self browserClick:appBrowser];
+  
   free((void *)info);
-  [self reloadBrowser:streamsBrowser];
 }
 - (void)removeSinkInputWithIndex:(NSNumber *)index
 {
@@ -959,6 +963,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
     
   [appBrowser reloadColumn:0];
+  [appBrowser setTitle:@"Streams" ofColumn:0];
 
   if (selected == nil) {
     [appBrowser selectRow:0 inColumn:0];
@@ -1067,11 +1072,15 @@ void context_state_cb(pa_context *ctx, void *userdata)
 // --- Actions
 - (void)browserClick:(id)sender
 {
-  NSLog(@"Browser received click: %@, cell - %@, repObject - %@",
-        [sender className], [[sender selectedCellInColumn:0] title],
-        [[[sender selectedCellInColumn:0] representedObject] className]);
-  
   id object = [[sender selectedCellInColumn:0] representedObject];
+
+  if (object == nil) {
+    return;
+  }
+  
+  // NSLog(@"Browser received click: %@, cell - %@, repObject - %@",
+  //       [sender className], [[sender selectedCellInColumn:0] title],
+  //       [[[sender selectedCellInColumn:0] representedObject] className]);
   
   if ([object respondsToSelector:@selector(volumes)]) {
     NSArray *volume = [object volumes];
@@ -1079,6 +1088,11 @@ void context_state_cb(pa_context *ctx, void *userdata)
       [appVolume setFloatValue:[volume[0] floatValue]];
     }
   }
+}
+
+- (void)appMuteClick:(id)sender
+{
+  [[[appBrowser selectedCellInColumn:0] representedObject] setMute:[sender state]];
 }
 
 @end

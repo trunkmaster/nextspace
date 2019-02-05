@@ -46,6 +46,7 @@
     [alsaPanel release];
   }
   if (paPanel) {
+    [[paPanel window] close];
     [paPanel release];
   }
   return YES;

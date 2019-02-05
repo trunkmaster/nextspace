@@ -1,9 +1,4 @@
-/* -*- mode: c -*- */
-/*
-  Shared properties:
-  name, index
-  
-*/
+/* -*- mode: objc -*- */
 
 // Card (Card-Profile, Card-Port)
 typedef struct pa_card_profile_info2 {
@@ -142,6 +137,48 @@ typedef struct pa_sink_input_info {
   pa_proplist    *proplist;        /* Property list */
 } pa_sink_input_info;
 
+// Source
+typedef struct pa_source_info {
+  const char          *name;                 /* Name of the source */
+  uint32_t            index;                 /* Index of the source */
+  const char          *description;          /* Description of this source */
+  pa_proplist         *proplist;             /* Property list */
+  
+  uint32_t            card;                  /* Card index, or PA_INVALID_INDEX. */
+
+  pa_source_port_info *active_port;          /* Pointer to active port in the array, or NULL. */
+  uint32_t            n_ports;               /* Number of entries in port array. */
+  pa_source_port_info **ports;               /* Array of available ports, or NULL. 
+                                                Array is terminated by an entry set to NULL. */
+    
+  pa_sample_spec      sample_spec;           /* Sample spec of this source */
+  pa_channel_map      channel_map;           /* Channel map */
+  pa_cvolume          volume;                /* Volume of the source */
+  pa_volume_t         base_volume;           /* Some kind of "base" volume that refers 
+                                                to unamplified/unattenuated volume in the context 
+                                                of input device. */
+  uint32_t            n_volume_steps;        /* Number of volume steps for sources which 
+                                                do not support arbitrary volumes. */
+  int                 mute;                  /* Mute switch of the sink */
+  
+  pa_usec_t           latency;               /* Length of filled record buffer of this source. */
+  pa_usec_t           configured_latency;    /* The latency this device has been configured to. */
+  
+  pa_source_flags_t   flags;                 /* Flags */
+  pa_source_state_t   state;                 /* State */
+  
+  uint8_t             n_formats;             /* Number of formats supported by the source. */
+  pa_format_info      **formats;             /* Array of formats supported by the source. */
+  
+  uint32_t            owner_module;          /* Owning module index, or PA_INVALID_INDEX. */
+  uint32_t            monitor_of_sink;       /* If this is a monitor source, the index of the 
+                                                owning sink, otherwise PA_INVALID_INDEX */
+  const char          *monitor_of_sink_name; /* Name of the owning sink, or NULL. */
+  const char          *driver;               /* Driver name */
+} pa_source_info;
+
+// Source Output
+
 // Client
 typedef struct pa_client_info {
   uint32_t    index;        /* Index of this client */
@@ -162,3 +199,39 @@ typedef struct pa_ext_stream_restore_info {
   const char     *device;     /* The sink/source of the stream when it was last seen */
   int            mute;        /* The boolean mute state of the stream when it was last seen */
 } pa_ext_stream_restore_info;
+
+/*
+  Shared properties:
+  name, index  
+*/
+
+@interface NXSoundDevice : NSObject
+{
+  NSString   *name;
+  NSUInteger index;
+  NSUInteger cardIndex;
+  
+  NSArray    *ports;
+  NSString   *activePort;
+  NSArray    *profiles;
+  NSString   *activeProfile;
+  
+}
+@end
+
+@interface NXSoundOut : NXSoundDevice
+{
+}
+@end
+
+@interface NXSoundIn : NXSoundDevice
+{
+}
+@end
+
+@interface NXSoundStream : NSObject
+{
+}
+@end
+
+
