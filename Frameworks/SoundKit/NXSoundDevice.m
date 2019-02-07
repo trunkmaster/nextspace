@@ -76,7 +76,7 @@ static dispatch_queue_t _pa_q;
   pa_proplist_free(proplist);
   
   // pa_context_set_state_callback(pa_ctx, context_state_cb, &pa_ready);
-  pa_context_set_state_callback(_pa_ctx, context_state_cb, NULL);
+  pa_context_set_state_callback(_pa_ctx, context_state_cb, self);
   pa_context_connect(_pa_ctx, host, 0, NULL);
 
   _pa_q = dispatch_queue_create("org.nextspace.soundkit", NULL);

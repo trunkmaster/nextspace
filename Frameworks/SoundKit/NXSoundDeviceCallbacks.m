@@ -23,7 +23,7 @@
 
 static int n_outstanding = 0;
 
-@implementation NXSoundDevice (Callbacks)
+// @implementation NXSoundDevice (Callbacks)
 
 void dec_outstanding(void)
 {
@@ -50,17 +50,18 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
   }
   else {
     NSValue *value;
+    
     fprintf(stderr, "[Mixer] Card: %s\n", info->name);
     value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
-    [pulseAudio performSelectorOnMainThread:@selector(updateCard:)
-                                 withObject:value
-                              waitUntilDone:YES];
+    [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateCard:)
+                                                withObject:value
+                                             waitUntilDone:YES];
   }
 }
 void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
 {
   NSValue *value;
-  
+     
   if (!info) {
     fprintf(stderr, "[Mixer] Server info callback failure\n");
     return;
@@ -68,9 +69,9 @@ void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
   dec_outstanding();
   
   value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
-  [pulseAudio performSelectorOnMainThread:@selector(updateServer:)
-                               withObject:value
-                            waitUntilDone:YES];
+  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateServer:)
+                                              withObject:value
+                                           waitUntilDone:YES];
 }
 
 // --- NXSoundOut: Sink (Card, Server) ---
@@ -95,12 +96,12 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
   fprintf(stderr, "[Mixer] Sink: %s (%s)\n", info->name, info->description);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  [pulseAudio performSelectorOnMainThread:@selector(updateSink:)
-                               withObject:value
-                            waitUntilDone:YES];
+  [(NXSoundDevice *)userdata  performSelectorOnMainThread:@selector(updateSink:)
+                                               withObject:value
+                                            waitUntilDone:YES];
 }
 
-// --- NXSoundOut: Source (Card, Server) ---
+// --- NXSoundIn: Source (Card, Server) ---
 // --- Source ---
 void source_cb(pa_context *ctx, const pa_source_info *info,
                int eol, void *userdata)
@@ -122,11 +123,10 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
-  [pulseAudio performSelectorOnMainThread:@selector(updateSource:)
-                               withObject:value
-                            waitUntilDone:YES];
+  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSource:)
+                                              withObject:value
+                                           waitUntilDone:YES];
 }
-
 
 // --- NXSoundStream: SinkInput | SourceOutput, Client, Stream ---
 // --- SinkInput
@@ -154,9 +154,9 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
           info->mute, info->corked);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  [pulseAudio performSelectorOnMainThread:@selector(updateSinkInput:)
-                               withObject:value
-                            waitUntilDone:YES];
+  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
+                                              withObject:value
+                                           waitUntilDone:YES];
 }
 // --- SourceOutput
 void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
@@ -179,9 +179,9 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
-  [pulseAudio performSelectorOnMainThread:@selector(updateSourceOutput:)
-                               withObject:value
-                            waitUntilDone:YES];
+  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
+                                              withObject:value
+                                           waitUntilDone:YES];
 }
 // --- Client
 void client_cb(pa_context *ctx, const pa_client_info *info,
@@ -205,11 +205,10 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   fprintf(stderr, "[Mixer] Client: %s (index:%i)\n", info->name, info->index);
   
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  [pulseAudio performSelectorOnMainThread:@selector(updateClient:)
-                               withObject:value
-                            waitUntilDone:YES];
+  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateClient:)
+                                              withObject:value
+                                           waitUntilDone:YES];
 }
-
 // --- Stream ---
 void ext_stream_restore_read_cb(pa_context *ctx,
                                 const pa_ext_stream_restore_info *info,
@@ -233,9 +232,9 @@ void ext_stream_restore_read_cb(pa_context *ctx,
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
   
-  [pulseAudio performSelectorOnMainThread:@selector(updateStream:)
-                               withObject:value
-                            waitUntilDone:YES];
+  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateStream:)
+                                              withObject:value
+                                           waitUntilDone:YES];
 }
 void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata)
 {
@@ -253,6 +252,7 @@ void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata)
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata)
 {
+  NXSoundDevice                *soundDevice = userdata;
   pa_subscription_event_type_t event_type_masked;
   pa_operation *o;
 
@@ -261,7 +261,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   switch (event_type & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
   case PA_SUBSCRIPTION_EVENT_SINK:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [pulseAudio performSelectorOnMainThread:@selector(removeSinkWithIndex:)
+      [soundDevice performSelectorOnMainThread:@selector(removeSinkWithIndex:)
                                    withObject:[NSNumber numberWithUnsignedInt:index]
                                 waitUntilDone:YES];
     }
@@ -276,7 +276,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_SOURCE:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [pulseAudio performSelectorOnMainThread:@selector(removeSourceWithIndex:)
+      [soundDevice performSelectorOnMainThread:@selector(removeSourceWithIndex:)
                                    withObject:[NSNumber numberWithUnsignedInt:index]
                                 waitUntilDone:YES];
     }
@@ -291,7 +291,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [pulseAudio performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
+      [soundDevice performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
                                    withObject:[NSNumber numberWithUnsignedInt:index]
                                 waitUntilDone:YES];
     }
@@ -306,7 +306,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [pulseAudio performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
+      [soundDevice performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
                                    withObject:[NSNumber numberWithUnsignedInt:index]
                                 waitUntilDone:YES];
     }
@@ -322,7 +322,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_CLIENT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [pulseAudio performSelectorOnMainThread:@selector(removeClientWithIndex:)
+      [soundDevice performSelectorOnMainThread:@selector(removeClientWithIndex:)
                                    withObject:[NSNumber numberWithUnsignedInt:index]
                                 waitUntilDone:YES];
     }
@@ -345,7 +345,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_CARD:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [pulseAudio performSelectorOnMainThread:@selector(removeCardWithIndex:)
+      [soundDevice performSelectorOnMainThread:@selector(removeCardWithIndex:)
                                    withObject:[NSNumber numberWithUnsignedInt:index]
                                 waitUntilDone:YES];
     }
@@ -363,7 +363,6 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 void context_state_cb(pa_context *ctx, void *userdata)
 {
   pa_context_state_t state = pa_context_get_state(ctx);
-  // int                *pa_ready = userdata;
   
   fprintf(stderr, "State callback: %i\n", state);
   
@@ -387,9 +386,9 @@ void context_state_cb(pa_context *ctx, void *userdata)
 
       fprintf(stderr, "PulseAudio context is ready.\n");
       
-      reconnect_timeout = 1;
+      // reconnect_timeout = 1;
 
-      pa_context_set_subscribe_callback(ctx, context_subscribe_cb, NULL);
+      pa_context_set_subscribe_callback(ctx, context_subscribe_cb, userdata);
 
       if (!(o = pa_context_subscribe(ctx, (pa_subscription_mask_t)
                                      (PA_SUBSCRIPTION_MASK_SINK|
@@ -398,7 +397,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
                                       PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT|
                                       PA_SUBSCRIPTION_MASK_CLIENT|
                                       PA_SUBSCRIPTION_MASK_SERVER|
-                                      PA_SUBSCRIPTION_MASK_CARD), NULL, NULL))) {
+                                      PA_SUBSCRIPTION_MASK_CARD), NULL, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_subscribe() failed\n");
         return;
       }
@@ -407,49 +406,49 @@ void context_state_cb(pa_context *ctx, void *userdata)
       /* Keep track of the outstanding callbacks for UI tweaks */
       n_outstanding = 0;
 
-      if (!(o = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
+      if (!(o = pa_context_get_server_info(ctx, server_info_cb, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_get_server_info() failed\n");
         return;
       }
       pa_operation_unref(o);
       n_outstanding++;
 
-      if (!(o = pa_context_get_client_info_list(ctx, client_cb, NULL))) {
+      if (!(o = pa_context_get_client_info_list(ctx, client_cb, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_client_info_list() failed\n");
         return;
       }
       pa_operation_unref(o);
       n_outstanding++;
 
-      if (!(o = pa_context_get_card_info_list(ctx, card_cb, NULL))) {
+      if (!(o = pa_context_get_card_info_list(ctx, card_cb, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_get_card_info_list() failed");
         return;
       }
       pa_operation_unref(o);
       n_outstanding++;
 
-      if (!(o = pa_context_get_sink_info_list(ctx, sink_cb, NULL))) {
+      if (!(o = pa_context_get_sink_info_list(ctx, sink_cb, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_get_sink_info_list() failed\n");
         return;
       }
       pa_operation_unref(o);
       n_outstanding++;
 
-      if (!(o = pa_context_get_source_info_list(ctx, source_cb, NULL))) {
+      if (!(o = pa_context_get_source_info_list(ctx, source_cb, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_get_source_info_list() failed\n");
         return;
       }
       pa_operation_unref(o);
       n_outstanding++;
 
-      if (!(o = pa_context_get_sink_input_info_list(ctx, sink_input_cb, NULL))) {
+      if (!(o = pa_context_get_sink_input_info_list(ctx, sink_input_cb, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_get_sink_input_info_list() failed\n");
         return;
       }
       pa_operation_unref(o);
       n_outstanding++;
 
-      if (!(o = pa_context_get_source_output_info_list(ctx, source_output_cb, NULL))) {
+      if (!(o = pa_context_get_source_output_info_list(ctx, source_output_cb, userdata))) {
         fprintf(stderr, "[Mixer] pa_context_get_source_output_info_list() failed\n");
         return;
       }
@@ -457,13 +456,13 @@ void context_state_cb(pa_context *ctx, void *userdata)
       n_outstanding++;
 
       /* These calls are not always supported */
-      if ((o = pa_ext_stream_restore_read(ctx, ext_stream_restore_read_cb, NULL))) {
+      if ((o = pa_ext_stream_restore_read(ctx, ext_stream_restore_read_cb, userdata))) {
         pa_operation_unref(o);
         n_outstanding++;
 
-        pa_ext_stream_restore_set_subscribe_cb(ctx, ext_stream_restore_subscribe_cb, NULL);
+        pa_ext_stream_restore_set_subscribe_cb(ctx, ext_stream_restore_subscribe_cb, userdata);
 
-        if ((o = pa_ext_stream_restore_subscribe(ctx, 1, NULL, NULL)))
+        if ((o = pa_ext_stream_restore_subscribe(ctx, 1, NULL, userdata)))
           pa_operation_unref(o);
 
       }
@@ -482,10 +481,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
       pa_context_unref(ctx);
       ctx = NULL;
 
-      if (reconnect_timeout > 0) {
-        fprintf(stderr, "[Mixer] DEBUG: Connection failed, attempting reconnect\n");
-        // g_timeout_add_seconds(reconnect_timeout, connect_to_pulse, w);
-      }
+      // if (reconnect_timeout > 0) {
+      //   fprintf(stderr, "[Mixer] DEBUG: Connection failed, attempting reconnect\n");
+      //   // g_timeout_add_seconds(reconnect_timeout, connect_to_pulse, w);
+      // }
     }
     break;
 
@@ -496,4 +495,4 @@ void context_state_cb(pa_context *ctx, void *userdata)
   }
 }
 
-@end
+// @end

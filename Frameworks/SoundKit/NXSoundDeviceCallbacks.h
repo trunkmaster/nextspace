@@ -23,7 +23,7 @@
 #import <pulse/ext-stream-restore.h>
 #import <pulse/ext-device-manager.h>
 
-@interface NXSoundDevice (Callbacks)
+// @interface NXSoundDevice (Callbacks)
 
 void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata);
 // --- Sink ---
@@ -60,4 +60,4 @@ void ext_device_manager_subscribe_cb(pa_context *ctx, void *userdata);
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata);
 void context_state_cb(pa_context *ctx, void *userdata);
-@end
+// @end

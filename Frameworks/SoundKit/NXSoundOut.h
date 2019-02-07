@@ -21,7 +21,7 @@
 
 #import "NXSoundDevice.h"
 
-@interface NXSoundOut : NXSSoundDevice
+@interface NXSoundOut : NXSoundDevice
 {
 }
 @end
