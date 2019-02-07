@@ -205,33 +205,3 @@ typedef struct pa_ext_stream_restore_info {
   name, index  
 */
 
-@interface NXSoundDevice : NSObject
-{
-  NSString   *name;
-  NSUInteger index;
-  NSUInteger cardIndex;
-  
-  NSArray    *ports;
-  NSString   *activePort;
-  NSArray    *profiles;
-  NSString   *activeProfile;
-  
-}
-@end
-
-@interface NXSoundOut : NXSoundDevice
-{
-}
-@end
-
-@interface NXSoundIn : NXSoundDevice
-{
-}
-@end
-
-@interface NXSoundStream : NSObject
-{
-}
-@end
-
-

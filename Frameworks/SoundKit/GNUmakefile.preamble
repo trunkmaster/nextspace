@@ -1,0 +1,40 @@
+# -*- mode: makefile-gmake -*-
+#
+# GNUmakefile.preamble
+#
+
+### Additional flags to pass to the preprocessor
+ADDITIONAL_CPPFLAGS +=
+
+### Additional flags to pass to Objective C compiler
+ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-import -Wno-unused \
+	-Wno-unused-parameter -pipe
+
+### Additional flags to pass to C compiler
+ADDITIONAL_CFLAGS +=
+
+### Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS +=
+
+# ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+#   ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags hal`
+# endif
+
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags libpulse`
+endif
+
+### Additional flags to pass to the linker
+# ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+#   ADDITIONAL_LDFLAGS += `pkg-config --libs hal`
+# endif
+
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+  ADDITIONAL_LDFLAGS += `pkg-config --libs libpulse`
+  ADDITIONAL_LDFLAGS += -ldispatch
+endif
+
+### Additional library directories the linker should search
+ADDITIONAL_LIB_DIRS += 
+ADDITIONAL_GUI_LIBS += 
+

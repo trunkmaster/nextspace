@@ -2,11 +2,12 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Thu Jun 21 18:32:51 2018
+;; Created Mon Jan 28 22:43:20 2019
 ;; Desktop file format version 206
-;; Emacs version 24.3.1
+;; Emacs version 24.4.91.1
 
 ;; Global section:
+(setq desktop-saved-frameset [frameset 1 (23631 26984 358489 954000) (desktop . "206") "me@localhost.localdomain" nil nil ((((font-backend xft x) (font . "-pyrs-Roboto Mono-normal-normal-normal-*-13-*-*-*-*-0-iso10646-1") (font-parameter) (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars . right) (foreground-color . "gray80") (background-color . "#212121") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (scroll-bar-foreground) (scroll-bar-background . "#c600b2d2a87e") (menu-bar-lines . 1) (tool-bar-lines . 0) (title) (wait-for-wm . t) (fullscreen) (tool-bar-position . top) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 13) (alpha) (horizontal-scroll-bars . t) (display-type . color) (background-mode . dark) (cursor-color . "Magenta") (sticky) (environment) (frameset--id . "4EB4-16A9-07D8-FBB6") (frameset--mini t . t) (modeline . t) (minibuffer . t) (unsplittable) (icon-name) (visibility . t) (display . ":0") (explicit-name) (height . 47) (width . 117) (left . 434) (top . 150)) ((min-height . 4) (min-width . 10) (min-height-ignore . 2) (min-width-ignore . 6) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 68) (min-pixel-width . 80) (min-pixel-height-ignore . 34) (min-pixel-width-ignore . 48) (min-pixel-height-safe . 17) (min-pixel-width-safe . 16)) leaf (pixel-width . 965) (pixel-height . 782) (total-width . 120) (total-height . 46) (normal-height . 1.0) (normal-width . 1.0) (buffer "YahooForecast.m" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars 13 2 t nil) (vscroll . 0) (dedicated) (point . 1108) (start . 578))))])
 (setq default-directory "/Users/me/Developer/nextspace/Applications/Weather/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
@@ -14,14 +15,25 @@
 (setq search-ring '("NXRun" "NXAler" "NSLog" "retrieved"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Weather/" "~/Developer/nextspace/Applications/Weather/YQL.[hm]" "~/Developer/nextspace/Applications/Weather/WeatherInfo.plist" "~/Developer/nextspace/Applications/Weather/YahooForecast.m" "~/Developer/nextspace/Applications/Weather/YahooForecast.h" "~/Developer/nextspace/Applications/Weather/wmforecast.c" "~/Developer/nextspace/Applications/Weather/GNUmakefile*" "~/Developer/nextspace/Applications/Weather/WeatherView.m" "~/Developer/nextspace/Applications/Weather/WeatherView.h" "~/Developer/nextspace/Applications/Weather/*.[hm]" "~/Developer/nextspace/Applications/Weather/" "~/Developer/WindowMaker/wmforecast/wmforecast.c" "~/Developer/WindowMaker/wmforecast/" "~/Developer/nextspace/Libraries/gnustep/gnustep-back-0.24.1/Source/x11/XGServerWindow.m" "~/Developer/nextspace/Libraries/gnustep/gnustep-back-0.24.1/Source/" "~/Developer/nextspace/Libraries/gnustep/gnustep-back-0.24.1/" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/main.c" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace/WM/src/actions.c" "~/Developer/nextspace/Applications/Workspace/WM/src/moveres.c" "~/Developer/nextspace/Applications/Workspace/WM/src/application.c" "~/Developer/nextspace/Applications/Workspace/WM/src/application.h" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/window.h" "~/Developer/nextspace/Applications/Workspace/"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/Tests/Mixer/" "~/Developer/nextspace/Applications/Weather/" "~/Developer/nextspace/Applications/Weather/YQL.[hm]" "~/Developer/nextspace/Applications/Weather/WeatherInfo.plist" "~/Developer/nextspace/Applications/Weather/YahooForecast.m" "~/Developer/nextspace/Applications/Weather/YahooForecast.h" "~/Developer/nextspace/Applications/Weather/wmforecast.c" "~/Developer/nextspace/Applications/Weather/GNUmakefile*" "~/Developer/nextspace/Applications/Weather/WeatherView.m" "~/Developer/nextspace/Applications/Weather/WeatherView.h" "~/Developer/nextspace/Applications/Weather/*.[hm]" "~/Developer/nextspace/Applications/Weather/" "~/Developer/WindowMaker/wmforecast/wmforecast.c" "~/Developer/WindowMaker/wmforecast/" "~/Developer/nextspace/Libraries/gnustep/gnustep-back-0.24.1/Source/x11/XGServerWindow.m" "~/Developer/nextspace/Libraries/gnustep/gnustep-back-0.24.1/Source/" "~/Developer/nextspace/Libraries/gnustep/gnustep-back-0.24.1/" "~/Developer/nextspace/Applications/Workspace/Workspace+WindowMaker.m" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/Controller.m" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/main.c" "~/Developer/nextspace/Applications/Workspace/WM/src/event.c" "~/Developer/nextspace/Applications/Workspace/WM/src/actions.c" "~/Developer/nextspace/Applications/Workspace/WM/src/moveres.c" "~/Developer/nextspace/Applications/Workspace/WM/src/application.c" "~/Developer/nextspace/Applications/Workspace/WM/src/application.h" "~/Developer/nextspace/Applications/Workspace/" "~/Developer/nextspace/Applications/Workspace/WM/src/window.h" "~/Developer/nextspace/Applications/Workspace/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Applications/Weather/YahooForecast.m"
+  "YahooForecast.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1108
+  '(1176 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Weather/WeatherView.m"
   "WeatherView.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   3023
   '(4456 nil)
   nil
@@ -32,7 +44,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/AppController.m"
   "AppController.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   2469
   '(1936 nil)
   nil
@@ -40,21 +52,10 @@
   '((buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Applications/Weather/YahooForecast.m"
-  "YahooForecast.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  7497
-  '(5417 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Weather/Weather_main.m"
   "Weather_main.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   898
   '(829 nil)
   nil
@@ -65,7 +66,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/GNUmakefile.preamble"
   "GNUmakefile.preamble"
   'makefile-gmake-mode
-  '(yas-minor-mode)
+  nil
   503
   '(477 nil)
   nil
@@ -76,7 +77,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/GNUmakefile.postamble"
   "GNUmakefile.postamble"
   'fundamental-mode
-  '(yas-minor-mode)
+  nil
   597
   '(26 nil)
   nil
@@ -87,7 +88,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/GNUmakefile"
   "GNUmakefile"
   'makefile-gmake-mode
-  '(yas-minor-mode)
+  nil
   693
   '(729 nil)
   nil
@@ -98,7 +99,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/YahooForecast.h"
   "YahooForecast.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   73
   '(73 nil)
   nil
@@ -109,7 +110,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/WeatherView.h"
   "WeatherView.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   1163
   '(1163 nil)
   nil
@@ -120,7 +121,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/WeatherInfo.plist"
   "WeatherInfo.plist"
   'fundamental-mode
-  '(yas-minor-mode)
+  nil
   95
   '(3 nil)
   nil
@@ -131,7 +132,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/AppController.h"
   "AppController.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   949
   '(890 nil)
   nil
@@ -142,7 +143,7 @@
   "/Users/me/Developer/nextspace/Applications/Weather/wmforecast.c"
   "wmforecast.c"
   'c-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   13198
   '(769 nil)
   nil

@@ -48,6 +48,8 @@
   // Define our pulse audio loop and connection variables
   pa_mainloop     *pa_loop;
   pa_mainloop_api *pa_api;
+  pa_context      *pa_ctx;
+  pa_operation    *pa_op;
 
   // Objects Map
   id omWindow;

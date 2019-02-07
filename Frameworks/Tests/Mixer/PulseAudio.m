@@ -35,8 +35,8 @@
 static int          n_outstanding = 0;
 // static bool         retry = false;
 static int          reconnect_timeout = 1;
-static pa_context   *pa_ctx;
-static pa_operation *pa_op;
+// static pa_context   *pa_ctx;
+// static pa_operation *pa_op;
 
 static dispatch_queue_t pa_q;
 
@@ -342,7 +342,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                           uint32_t index, void *userdata)
 {
   pa_subscription_event_type_t event_type_masked;
-  // pa_operation *o;
+  pa_operation *o;
 
   event_type_masked = (event_type & PA_SUBSCRIPTION_EVENT_TYPE_MASK);
     
@@ -354,11 +354,11 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                 waitUntilDone:YES];
     }
     else {
-      if (!(pa_op = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
+      if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_info_by_index() failed\n");
         return;
       }
-      pa_operation_unref(pa_op);
+      pa_operation_unref(o);
     }
     break;
 
@@ -369,11 +369,11 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                 waitUntilDone:YES];
     }
     else {
-      if (!(pa_op = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
+      if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_source_info_by_index() failed\n");
         return;
       }
-      pa_operation_unref(pa_op);
+      pa_operation_unref(o);
     }
     break;
 
@@ -384,11 +384,11 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                 waitUntilDone:YES];
     }
     else {
-      if (!(pa_op = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
+      if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
         return;
       }
-      pa_operation_unref(pa_op);
+      pa_operation_unref(o);
     }
     break;
 
@@ -399,12 +399,12 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                 waitUntilDone:YES];
     }
     else {
-      pa_op = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
-      if (!pa_op) {
+      o = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
+      if (!o) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
         return;
       }
-      pa_operation_unref(pa_op);
+      pa_operation_unref(o);
     }
     break;
 
@@ -415,20 +415,20 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                 waitUntilDone:YES];
     }
     else {
-      if (!(pa_op = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
+      if (!(o = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_client_info() failed\n");
         return;
       }
-      pa_operation_unref(pa_op);
+      pa_operation_unref(o);
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SERVER:
-    if (!(pa_op = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
+    if (!(o = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
       fprintf(stderr, "[Mixer] ERROR: pa_context_get_server_info() failed\n");
       return;
     }
-    pa_operation_unref(pa_op);
+    pa_operation_unref(o);
     break;
 
   case PA_SUBSCRIPTION_EVENT_CARD:
@@ -438,11 +438,11 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                 waitUntilDone:YES];
     }
     else {
-      if (!(pa_op = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
+      if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
         fprintf(stderr, "[Mixer] ERROR: pa_context_get_card_info_by_index() failed\n");
         return;
       }
-      pa_operation_unref(pa_op);
+      pa_operation_unref(o);
     }
     break;
   }
@@ -600,8 +600,8 @@ void context_state_cb(pa_context *ctx, void *userdata)
     {
       fprintf(stderr, "PulseAudio connection failed!\n");
       
-      pa_context_unref(pa_ctx);
-      pa_ctx = NULL;
+      pa_context_unref(ctx);
+      ctx = NULL;
 
       if (reconnect_timeout > 0) {
         fprintf(stderr, "[Mixer] DEBUG: Connection failed, attempting reconnect\n");
