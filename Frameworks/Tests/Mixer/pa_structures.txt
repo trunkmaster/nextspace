@@ -201,7 +201,74 @@ typedef struct pa_ext_stream_restore_info {
 } pa_ext_stream_restore_info;
 
 /*
-  Shared properties:
-  name, index  
+  Use cases
 */
 
+/* Mixer */
+{ // Initial steps:
+  // 1. Get SinkInput, SourceOutput, SavedStreams lists.
+  // 2. Display list of: "System Sounds", sink inputs with clients for "Playback" mode.
+  // 3. Show Sink with properties (profiles, ports, mute, volume) of selected
+  //    SinkInput or SavedStream.
+  // Events:
+  // - Update list if sink inputs list was changed.
+  // - Update properties for selected SinkInput and displayed Sink (volume, mute, profile, port).
+  // Actions:
+  // - Change volume, mute of sink inputs or source outputs.
+  // - Change volume, balance, mute of sink.
+  // - Change active profile of card and port of sink.
+}
+// Mixer with SoundKit
+{
+  id      server = [NXSoundServer initOnHost:nil withName:@"My Mixer"];
+  NSArray *soundStreams = [server streams]; // access to: sink input or source output, stream, client
+  NSArray *soundOuts = [server outs];       // access to: sink, server (card, server)
+  NSArray *soundIns = [server ins];         // access to: source, server (card, server)
+}
+
+/* Simple application */
+{ // Steps:
+  // 1. Create new stream to play with default output, port and profile.
+  // 2. Send bytes of sound to created stream.
+  // 3. Pause, mute, change volume and balance.
+}
+/* Advanced application */
+{ // Actions:
+  // - Create new stream to play with default output, port and profile.
+  // - Change stream profile and port of output.
+  // - Send bytes of sound to created stream.
+  // - Pause, mute, change volume and balance.
+}
+
+/* Player with SoundKit */
+{
+  NXSoundOut        *soundOut;
+  NXSoundStream     *soundStream;
+  NXSoundParameters *soundParams;
+  
+  soundOut = [[NXSoundOut alloc] initOnHost:nil withName:@"Player"];
+  soundParams = [NXSoundParameters new];
+  soundStream = [[NXSoundStream alloc] initOnDevice:soundOut
+                                     withParameters:soundParams];
+
+  [soundStream sendBytes:filePath];
+  [soundStream volume];
+  [soundStream setVolume:(CGFlloat *)left :(CGFloat *):right];
+  [soundStream mute:(BOOL)isMute];
+  [soundStream isMute];
+  
+  [soundStream play];
+  [soundStream pause];
+  [soundStream resume];
+  [soundStream stop];
+
+  /* Advanced: manipulations with Card and Sink - changes are applied for all apps/clients */
+  [soundOut profiles];
+  [soundOut activeProfile];
+  [soundOut setActiveProfile:(NSString *)profileName]; // Changes sound profile for all apps
+  [soundOut ports];
+  [soundOut activePort];
+  [soundOut setActivePort:(NSString *)portName]; // Changes sound profile for all apps
+  [soundOut volume];
+  [soundOut setVolume];
+}

@@ -1,3 +1,4 @@
+/* -*- mode: objc -*- */
 /*
   Project: SoundKit framework.
 
@@ -17,36 +18,28 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
-                                      
-#import "NXSoundServer.h"
-#import "NXSoundDevice.h"
-#import "NXSoundDeviceCallbacks.h"
 
-@implementation NXSoundDevice
+#import <pulse/pulseaudio.h>
+#import <Foundation/Foundation.h>
 
-- (void)dealloc
+@interface NXSoundServer : NSObject
 {
-  [soundServer release];
-  [super dealloc];
-}
+  NSString 		*_host;
+  // Define our pulse audio loop and connection variables
+  pa_mainloop		*_pa_loop;
+  pa_mainloop_api	*_pa_api;
+  pa_context		*_pa_ctx;
+  pa_operation		*_pa_op;
 
-- (id)init
-{
-  return [self initOnHost:nil withName:@"SoundKit"];
+  NSMutableArray        *outputList; // array of NXSoundOut objects
+  NSMutableArray        *inputList;  // array of NXSoundIn objects
+  NSMutableArray        *streamList; // array of NXSoundStream objects
 }
++ defaultServer;
 
+- (id)init;
 - (id)initOnHost:(NSString *)hostName
-        withName:(NSString *)appName
-{
-  [super init];
-  soundServer = [[NXSoundServer alloc] initOnHost:hostName withName:appName];
-  [soundServer retain];
-  return self;
-}
-
-- (NSString *)host
-{
-  return [soundServer host];
-}
+        withName:(NSString *)appName;
+- (NSString *)host;
 
 @end

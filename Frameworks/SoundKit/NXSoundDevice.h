@@ -24,13 +24,6 @@
 
 @interface NXSoundDevice : NSObject // <NXSoundParameters>
 {
-  NSString 		*_host;
-  // Define our pulse audio loop and connection variables
-  pa_mainloop		*_pa_loop;
-  pa_mainloop_api	*_pa_api;
-  pa_context		*_pa_ctx; // _devicePort
-  pa_operation		*_pa_op;
-
   // port_t		_devicePort;
   // port_t		_streamOwnerPort;
   // unsigned int		_bufferSize;
