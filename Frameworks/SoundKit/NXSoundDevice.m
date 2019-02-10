@@ -26,7 +26,7 @@
 
 - (void)dealloc
 {
-  [soundServer release];
+  [_server release];
   [super dealloc];
 }
 
@@ -39,14 +39,62 @@
         withName:(NSString *)appName
 {
   [super init];
-  soundServer = [[NXSoundServer alloc] initOnHost:hostName withName:appName];
-  [soundServer retain];
+  _server = [[NXSoundServer alloc] initOnHost:hostName withName:appName];
   return self;
 }
 
+/*--- Accesorries ---*/
 - (NSString *)host
 {
-  return [soundServer host];
+  return [(NXSoundServer *)_server host];
 }
+
+/*--- Sink ---*/
+- (NSString *)name
+{
+  return _name;
+}
+- (NSString *)description
+{
+  return _description;
+}
+
+- (id)volume
+{
+  return nil;
+}
+- (NSUInteger)volumeSteps
+{
+  return 0;
+}
+- (void)setVolume:(id)volumes
+{} // subclass responsibility
+- (NSArray *)availablePorts
+{
+  return nil;
+}
+- (NSDictionary *)activePort
+{
+  return nil;
+}
+- (void)setActivePort:(NSString *)name
+{} // subclass responsibility
+
+/*--- Card ---*/
+- (NSArray *)availableProfiles
+{
+  return nil;
+}
+- (NSDictionary *)activeProfile
+{
+  return nil;
+}
+- (void)setActiveProfile:(NSString *)name
+{} // subclass responsibility
+
+// - samples
+// {}
+// - latency
+// {}
 
 @end

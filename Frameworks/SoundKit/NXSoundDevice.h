@@ -24,6 +24,10 @@
 
 @interface NXSoundDevice : NSObject // <NXSoundParameters>
 {
+  id       _server;
+  NSString *_name;
+  NSString *_description;
+  
   // port_t		_devicePort;
   // port_t		_streamOwnerPort;
   // unsigned int		_bufferSize;

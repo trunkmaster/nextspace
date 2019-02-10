@@ -18,62 +18,14 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "NXSoundDevice.h"
-#import "NXSoundDeviceCallbacks.h"
+#import "NXSoundServer.h"
+#import "NXSoundServerCallbacks.h"
 
-static int n_outstanding = 0;
+static int  n_outstanding = 0;
 
-// @implementation NXSoundDevice (Callbacks)
+@implementation NXSoundServer (Callbacks)
 
-void dec_outstanding(void)
-{
-  if (n_outstanding <= 0)
-    return;
-
-  n_outstanding--;
-}
-
-// --- NXSoundDevice ---
-// --- Card and Server ---
-void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
-{
-  if (eol < 0) {
-    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
-      return;
-    }
-    fprintf(stderr, "[Mixer] ERROR: Card callback failure\n");
-    return;
-  }
-  else if (eol > 0) {
-    dec_outstanding();
-    return;
-  }
-  else {
-    NSValue *value;
-    
-    fprintf(stderr, "[Mixer] Card: %s\n", info->name);
-    value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
-    [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateCard:)
-                                                withObject:value
-                                             waitUntilDone:YES];
-  }
-}
-void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
-{
-  NSValue *value;
-     
-  if (!info) {
-    fprintf(stderr, "[Mixer] Server info callback failure\n");
-    return;
-  }
-  dec_outstanding();
-  
-  value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateServer:)
-                                              withObject:value
-                                           waitUntilDone:YES];
-}
-
+// --- NXSoundServer ---
 // --- NXSoundOut: Sink (Card, Server) ---
 // --- Sink ---
 void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
@@ -89,19 +41,19 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
   }
 
   if (eol > 0) {
-    dec_outstanding();
+    inventory_decrement_requests(ctx, userdata);
     return;
   }
 
   fprintf(stderr, "[Mixer] Sink: %s (%s)\n", info->name, info->description);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  [(NXSoundDevice *)userdata  performSelectorOnMainThread:@selector(updateSink:)
+  [(NXSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
                                                withObject:value
                                             waitUntilDone:YES];
 }
 
-// --- NXSoundIn: Source (Card, Server) ---
+// --- NXSoundIn: Source --> (Card, Server) ---
 // --- Source ---
 void source_cb(pa_context *ctx, const pa_source_info *info,
                int eol, void *userdata)
@@ -115,7 +67,7 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
   }
 
   if (eol > 0) {
-    dec_outstanding();
+    inventory_decrement_requests(ctx, userdata);
     return;
   }
 
@@ -123,7 +75,7 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSource:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -144,7 +96,7 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
   }
 
   if (eol > 0) {
-    dec_outstanding();
+    inventory_decrement_requests(ctx, userdata);
     return;
   }
 
@@ -154,7 +106,7 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
           info->mute, info->corked);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -171,7 +123,7 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   }
   
   if (eol > 0) {
-    dec_outstanding();
+    inventory_decrement_requests(ctx, userdata);
     return;
   }
   
@@ -179,7 +131,7 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -198,18 +150,19 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   }
 
   if (eol > 0) {
-    dec_outstanding();
+    inventory_decrement_requests(ctx, userdata);
     return;
   }
   
   fprintf(stderr, "[Mixer] Client: %s (index:%i)\n", info->name, info->index);
   
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateClient:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
-// --- Stream ---
+
+// --- Saved Stream ---
 void ext_stream_restore_read_cb(pa_context *ctx,
                                 const pa_ext_stream_restore_info *info,
                                 int eol, void *userdata)
@@ -223,7 +176,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
   }
 
   if (eol > 0) {
-    dec_outstanding();
+    inventory_decrement_requests(ctx, userdata);
     return;
   }
 
@@ -232,27 +185,56 @@ void ext_stream_restore_read_cb(pa_context *ctx,
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
   
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateStream:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
-void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata)
-{
-  pa_operation *o;
 
-  if (!(o = pa_ext_stream_restore_read(ctx, ext_stream_restore_read_cb, NULL))) {
-    fprintf(stderr, "[Mixer] pa_ext_stream_restore_read() failed\n");
+// --- Card and Server ---
+void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
+{
+  if (eol < 0) {
+    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
+      return;
+    }
+    fprintf(stderr, "[Mixer] ERROR: Card callback failure\n");
     return;
   }
-
-  pa_operation_unref(o);
+  else if (eol > 0) {
+    inventory_decrement_requests(ctx, userdata);
+    return;
+  }
+  else {
+    NSValue *value;
+    
+    fprintf(stderr, "[Mixer] Card: %s\n", info->name);
+    value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
+    [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateCard:)
+                                                withObject:value
+                                             waitUntilDone:YES];
+  }
+}
+void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
+{
+  NSValue *value;
+     
+  if (!info) {
+    fprintf(stderr, "[Mixer] Server info callback failure\n");
+    return;
+  }
+  inventory_decrement_requests(ctx, userdata);
+  
+  value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateServer:)
+                                              withObject:value
+                                           waitUntilDone:YES];
 }
 
 // --- Context events subscription ---
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata)
 {
-  NXSoundDevice                *soundDevice = userdata;
+  NXSoundServer                *_server = userdata;
   pa_subscription_event_type_t event_type_masked;
   pa_operation *o;
 
@@ -260,229 +242,159 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
     
   switch (event_type & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
   case PA_SUBSCRIPTION_EVENT_SINK:
-    if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSinkWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
-    }
-    else {
-      if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
-        fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_info_by_index() failed\n");
-        return;
+    {
+      if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+        [_server performSelectorOnMainThread:@selector(removeSinkWithIndex:)
+                                  withObject:[NSNumber numberWithUnsignedInt:index]
+                               waitUntilDone:YES];
       }
-      pa_operation_unref(o);
+      else {
+        if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
+          fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_info_by_index() failed\n");
+          return;
+        }
+        pa_operation_unref(o);
+      }
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SOURCE:
-    if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSourceWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
-    }
-    else {
-      if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
-        fprintf(stderr, "[Mixer] ERROR: pa_context_get_source_info_by_index() failed\n");
-        return;
+    {
+      if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+        [_server performSelectorOnMainThread:@selector(removeSourceWithIndex:)
+                                  withObject:[NSNumber numberWithUnsignedInt:index]
+                               waitUntilDone:YES];
       }
-      pa_operation_unref(o);
+      else {
+        if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
+          fprintf(stderr, "[Mixer] ERROR: pa_context_get_source_info_by_index() failed\n");
+          return;
+        }
+        pa_operation_unref(o);
+      }
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
-    if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
-    }
-    else {
-      if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
-        fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
-        return;
+    {
+      if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+        [_server performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
+                                  withObject:[NSNumber numberWithUnsignedInt:index]
+                               waitUntilDone:YES];
       }
-      pa_operation_unref(o);
+      else {
+        if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
+          fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
+          return;
+        }
+        pa_operation_unref(o);
+      }
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
-    if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
-    }
-    else {
-      o = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
-      if (!o) {
-        fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
-        return;
+    {
+      if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+        [_server performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
+                                  withObject:[NSNumber numberWithUnsignedInt:index]
+                               waitUntilDone:YES];
       }
-      pa_operation_unref(o);
+      else {
+        o = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
+        if (!o) {
+          fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
+          return;
+        }
+        pa_operation_unref(o);
+      }
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_CLIENT:
-    if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeClientWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
-    }
-    else {
-      if (!(o = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
-        fprintf(stderr, "[Mixer] ERROR: pa_context_get_client_info() failed\n");
-        return;
+    {
+      if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+        [_server performSelectorOnMainThread:@selector(removeClientWithIndex:)
+                                  withObject:[NSNumber numberWithUnsignedInt:index]
+                               waitUntilDone:YES];
       }
-      pa_operation_unref(o);
+      else {
+        if (!(o = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
+          fprintf(stderr, "[Mixer] ERROR: pa_context_get_client_info() failed\n");
+          return;
+        }
+        pa_operation_unref(o);
+      }
     }
     break;
 
   case PA_SUBSCRIPTION_EVENT_SERVER:
-    if (!(o = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
-      fprintf(stderr, "[Mixer] ERROR: pa_context_get_server_info() failed\n");
-      return;
-    }
-    pa_operation_unref(o);
-    break;
-
-  case PA_SUBSCRIPTION_EVENT_CARD:
-    if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeCardWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
-    }
-    else {
-      if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
-        fprintf(stderr, "[Mixer] ERROR: pa_context_get_card_info_by_index() failed\n");
+    {
+      if (!(o = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
+        fprintf(stderr, "[Mixer] ERROR: pa_context_get_server_info() failed\n");
         return;
       }
       pa_operation_unref(o);
+    }
+    break;
+
+  case PA_SUBSCRIPTION_EVENT_CARD:
+    {
+      if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
+        [_server performSelectorOnMainThread:@selector(removeCardWithIndex:)
+                                  withObject:[NSNumber numberWithUnsignedInt:index]
+                               waitUntilDone:YES];
+      }
+      else {
+        if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
+          fprintf(stderr, "[Mixer] ERROR: pa_context_get_card_info_by_index() failed\n");
+          return;
+        }
+        pa_operation_unref(o);
+      }
     }
     break;
   }
 }
-
 void context_state_cb(pa_context *ctx, void *userdata)
 {
   pa_context_state_t state = pa_context_get_state(ctx);
   
-  fprintf(stderr, "State callback: %i\n", state);
+  // fprintf(stderr, "State callback: %i\n", state);
   
   switch (state) {
   case PA_CONTEXT_UNCONNECTED:
-    fprintf(stderr, "PulseAudio context state is UNCONNECTED.\n");
+    fprintf(stderr, "[SoundKit] PulseAudio connection state == UNCONNECTED.\n");
+    // TODO: send notification
     break;
   case PA_CONTEXT_CONNECTING:
-    fprintf(stderr, "PulseAudio context state is CONNECTING.\n");
+    fprintf(stderr, "[SoundKit] PulseAudio connection state == CONNECTING.\n");
+    // TODO: send notification
     break;
   case PA_CONTEXT_AUTHORIZING:
-    fprintf(stderr, "PulseAudio context state is AUTHORIZING.\n");
+    fprintf(stderr, "[SoundKit] PulseAudio connection state == AUTHORIZING.\n");
+    // TODO: send notification
     break;
   case PA_CONTEXT_SETTING_NAME:
-    fprintf(stderr, "PulseAudio context state is SETTING_NAME.\n");
+    fprintf(stderr, "[SoundKit] PulseAudio connection state == SETTING_NAME.\n");
+    // TODO: send notification
     break;
 
   case PA_CONTEXT_READY:
     {
-      pa_operation *o;
-
-      fprintf(stderr, "PulseAudio context is ready.\n");
-      
-      // reconnect_timeout = 1;
-
-      pa_context_set_subscribe_callback(ctx, context_subscribe_cb, userdata);
-
-      if (!(o = pa_context_subscribe(ctx, (pa_subscription_mask_t)
-                                     (PA_SUBSCRIPTION_MASK_SINK|
-                                      PA_SUBSCRIPTION_MASK_SOURCE|
-                                      PA_SUBSCRIPTION_MASK_SINK_INPUT|
-                                      PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT|
-                                      PA_SUBSCRIPTION_MASK_CLIENT|
-                                      PA_SUBSCRIPTION_MASK_SERVER|
-                                      PA_SUBSCRIPTION_MASK_CARD), NULL, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_subscribe() failed\n");
-        return;
-      }
-      pa_operation_unref(o);
-
-      /* Keep track of the outstanding callbacks for UI tweaks */
-      n_outstanding = 0;
-
-      if (!(o = pa_context_get_server_info(ctx, server_info_cb, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_get_server_info() failed\n");
-        return;
-      }
-      pa_operation_unref(o);
-      n_outstanding++;
-
-      if (!(o = pa_context_get_client_info_list(ctx, client_cb, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_client_info_list() failed\n");
-        return;
-      }
-      pa_operation_unref(o);
-      n_outstanding++;
-
-      if (!(o = pa_context_get_card_info_list(ctx, card_cb, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_get_card_info_list() failed");
-        return;
-      }
-      pa_operation_unref(o);
-      n_outstanding++;
-
-      if (!(o = pa_context_get_sink_info_list(ctx, sink_cb, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_get_sink_info_list() failed\n");
-        return;
-      }
-      pa_operation_unref(o);
-      n_outstanding++;
-
-      if (!(o = pa_context_get_source_info_list(ctx, source_cb, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_get_source_info_list() failed\n");
-        return;
-      }
-      pa_operation_unref(o);
-      n_outstanding++;
-
-      if (!(o = pa_context_get_sink_input_info_list(ctx, sink_input_cb, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_get_sink_input_info_list() failed\n");
-        return;
-      }
-      pa_operation_unref(o);
-      n_outstanding++;
-
-      if (!(o = pa_context_get_source_output_info_list(ctx, source_output_cb, userdata))) {
-        fprintf(stderr, "[Mixer] pa_context_get_source_output_info_list() failed\n");
-        return;
-      }
-      pa_operation_unref(o);
-      n_outstanding++;
-
-      /* These calls are not always supported */
-      if ((o = pa_ext_stream_restore_read(ctx, ext_stream_restore_read_cb, userdata))) {
-        pa_operation_unref(o);
-        n_outstanding++;
-
-        pa_ext_stream_restore_set_subscribe_cb(ctx, ext_stream_restore_subscribe_cb, userdata);
-
-        if ((o = pa_ext_stream_restore_subscribe(ctx, 1, NULL, userdata)))
-          pa_operation_unref(o);
-
-      }
-      else {
-        fprintf(stderr, "[Mixer] Failed to initialize stream_restore extension: %s",
-                pa_strerror(pa_context_errno(ctx)));
-      }
-
-      break;
+      fprintf(stderr, "[SoundKit] PulseAudio connection state == READY.\n");
+      inventory_start(ctx, userdata);
     }
+    break;
 
   case PA_CONTEXT_FAILED:
     {
-      fprintf(stderr, "PulseAudio connection failed!\n");
+      fprintf(stderr, "[SoundKit] PulseAudio connection state == FAILED!\n");
       
       pa_context_unref(ctx);
       ctx = NULL;
 
       // if (reconnect_timeout > 0) {
-      //   fprintf(stderr, "[Mixer] DEBUG: Connection failed, attempting reconnect\n");
+      //   fprintf(stderr, "[SoundKit] DEBUG: Connection failed, attempting reconnect\n");
       //   // g_timeout_add_seconds(reconnect_timeout, connect_to_pulse, w);
       // }
     }
@@ -490,9 +402,129 @@ void context_state_cb(pa_context *ctx, void *userdata)
 
   case PA_CONTEXT_TERMINATED:
   default:
-    fprintf(stderr, "PulseAudio connection terminated!\n");
+    fprintf(stderr, "[SoundKit] PulseAudio connection state == TERMINATED.\n");
     return;
   }
 }
 
-// @end
+// --- Initial inventory of PulseAudio objects ---
+
+/* Calls number of PA functions to gather information about various PA objects.
+   Every called function is asynchronous and return info via callbacks. 
+   `n_outstanding` counter is used to track processed requests. */
+void inventory_start(pa_context *ctx, void *userdata)
+{
+  pa_operation *o;
+
+  fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
+      
+  /* Keep track of the outstanding requests */
+  n_outstanding = 0;
+
+  if (!(o = pa_context_get_server_info(ctx, server_info_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] pa_context_get_server_info() failed\n");
+    return;
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+
+  if (!(o = pa_context_get_card_info_list(ctx, card_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] pa_context_get_card_info_list() failed");
+    return;
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+
+  if (!(o = pa_context_get_sink_info_list(ctx, sink_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] pa_context_get_sink_info_list() failed\n");
+    return;
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+
+  // At this point we can create NXSoundOut objects
+
+  if (!(o = pa_context_get_source_info_list(ctx, source_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] pa_context_get_source_info_list() failed\n");
+    return;
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+  
+  // At this point we can create NXSoundIn objects
+  
+  if (!(o = pa_context_get_client_info_list(ctx, client_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] pa_context_client_info_list() failed\n");
+    return;
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+
+  if (!(o = pa_context_get_sink_input_info_list(ctx, sink_input_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] pa_context_get_sink_input_info_list() failed\n");
+    return;
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+
+  if (!(o = pa_context_get_source_output_info_list(ctx, source_output_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] pa_context_get_source_output_info_list() failed\n");
+    return;
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+
+  // At this point we can create NXSoundStream objects
+
+  /* This call is not always supported. 
+     This intial call has no complementary subscribe for events call.
+     We need it only to get `sink-input-by-media-role:event` stream - special stream
+     for short-living clients. Thus, there's no accompanying client and sink input 
+     most of the time. However, user should be able to adjust volume level for such 
+     short-living sound events. */
+  if (!(o = pa_ext_stream_restore_read(ctx, ext_stream_restore_read_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] Failed to initialize stream_restore extension: %s\n",
+            pa_strerror(pa_context_errno(ctx)));
+  }
+  pa_operation_unref(o);
+  n_outstanding++;
+}
+/* Decrements `n_outstanding`. If it equals to 0 - start tracking PA events (call)
+   inventory_end. */
+void inventory_decrement_requests(pa_context *ctx, void *userdata)
+{
+  if (n_outstanding <= 0)
+    return;
+
+  if (n_outstanding > 0) {
+    n_outstanding--;
+  }
+  else {
+    fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: END\n");
+    inventory_end(ctx, userdata);
+  }
+}
+void inventory_end(pa_context *ctx, void *userdata)
+{
+  pa_operation *o;
+  
+  fprintf(stderr, "[SoundKit] --- Staring tracking of PulseAudio events!\n");
+  
+  pa_context_set_subscribe_callback(ctx, context_subscribe_cb, userdata);
+  if (!(o = pa_context_subscribe(ctx, (pa_subscription_mask_t)
+                                 (PA_SUBSCRIPTION_MASK_SINK|
+                                  PA_SUBSCRIPTION_MASK_SOURCE|
+                                  PA_SUBSCRIPTION_MASK_SINK_INPUT|
+                                  PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT|
+                                  PA_SUBSCRIPTION_MASK_CLIENT|
+                                  PA_SUBSCRIPTION_MASK_SERVER|
+                                  PA_SUBSCRIPTION_MASK_CARD), NULL, userdata))) {
+    fprintf(stderr, "[SoundKit] ERROR: failed to start tracking event!\n");
+    return;
+  }
+  pa_operation_unref(o);
+  // TODO: send notification
+}
+
+
+@end

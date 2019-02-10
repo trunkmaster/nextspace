@@ -31,11 +31,24 @@
   pa_context		*_pa_ctx;
   pa_operation		*_pa_op;
 
+  // SoundKit objects
   NSMutableArray        *outputList; // array of NXSoundOut objects
   NSMutableArray        *inputList;  // array of NXSoundIn objects
   NSMutableArray        *streamList; // array of NXSoundStream objects
+
+  // PulseAudio objects
+  NSString              *defaultSinkName;
+  NSString              *defaultSourceName;
+  // NXSoundOut
+  NSMutableArray        *cardList;
+  NSMutableArray        *sinkList;
+  NSMutableArray        *sourceList;
+  NSMutableArray        *clientList;
+  NSMutableArray        *sinkInputList;
+  NSMutableArray        *sourceOutputList;
+  NSMutableArray        *savedStreamList; // sink-input* or source-output*
 }
-+ defaultServer;
++ (id)defaultServer;
 
 - (id)init;
 - (id)initOnHost:(NSString *)hostName

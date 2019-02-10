@@ -20,8 +20,14 @@ $(FRAMEWORK_NAME)_DEPLOY_WITH_CURRENT_VERSION = yes
 # Linux
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
   $(FRAMEWORK_NAME)_OBJC_FILES += \
+	PACard.m \
+	PASink.m \
+	PASinkInput.m \
+	PAClient.m \
+	PAStream.m \
+	\
+	NXSoundServer.m \
 	NXSoundDevice.m \
-	NXSoundDeviceCallbacks.m \
 	NXSoundOut.m \
 	NXSoundIn.m
 endif

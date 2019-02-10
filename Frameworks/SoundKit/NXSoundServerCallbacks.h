@@ -23,41 +23,41 @@
 #import <pulse/ext-stream-restore.h>
 #import <pulse/ext-device-manager.h>
 
-// @interface NXSoundDevice (Callbacks)
+@interface NXSoundServer (Callbacks)
 
-void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata);
 // --- Sink ---
 void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata);
-void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
-                   int eol, void *userdata);
+
 // --- Source ---
 void source_cb(pa_context *ctx, const pa_source_info *info,
                int eol, void *userdata);
+
+// --- Client ---
+void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
+                   int eol, void *userdata);
 void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
                       int eol, void *userdata);
-// --- Client/server ---
-void client_cb(pa_context *ctx, const pa_client_info *info,
-               int eol, void *userdata);
-void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata);
-// --- Stream ---
+void client_cb(pa_context *ctx, const pa_client_info *info, int eol, void *userdata);
+
+// --- Saved Streams ---
 void ext_stream_restore_read_cb(pa_context *ctx,
                                 const pa_ext_stream_restore_info *info,
                                 int eol, void *userdata);
-void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata);
-// --- Device ---
-#if HAVE_EXT_DEVICE_RESTORE_API
-void ext_device_restore_read_cb(pa_context *ctx,
-                                const pa_ext_device_restore_info *info,
-                                int eol, void *userdata);
-void ext_device_restore_subscribe_cb(pa_context *ctx, pa_device_type_t type,
-                                     uint32_t idx, void *userdata);
-#endif
-void ext_device_manager_read_cb(pa_context *ctx,
-                                const pa_ext_device_manager_info *info,
-                                int eol, void *userdata);
-void ext_device_manager_subscribe_cb(pa_context *ctx, void *userdata);
+
+// --- Sserver ---
+void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata);
+void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata);
+
 // --- Context events subscription ---
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata);
+
+// --- Initial objects inventory ---
+void inventory_start(pa_context *ctx, void *userdata);
+void inventory_decrement_requests(pa_context *ctx, void *userdata);
+void inventory_end(pa_context *ctx, void *userdata);
+
+// --- Context state tracking ---
 void context_state_cb(pa_context *ctx, void *userdata);
-// @end
+
+@end

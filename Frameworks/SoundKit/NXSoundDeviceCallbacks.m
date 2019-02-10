@@ -18,7 +18,8 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "NXSoundDevice.h"
+#import "NXSoundServer.h"
+// #import "NXSoundDevice.h"
 #import "NXSoundDeviceCallbacks.h"
 
 static int n_outstanding = 0;
@@ -53,7 +54,7 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
     
     fprintf(stderr, "[Mixer] Card: %s\n", info->name);
     value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
-    [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateCard:)
+    [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateCard:)
                                                 withObject:value
                                              waitUntilDone:YES];
   }
@@ -69,7 +70,7 @@ void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
   dec_outstanding();
   
   value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateServer:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateServer:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -96,7 +97,7 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
   fprintf(stderr, "[Mixer] Sink: %s (%s)\n", info->name, info->description);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  [(NXSoundDevice *)userdata  performSelectorOnMainThread:@selector(updateSink:)
+  [(NXSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
                                                withObject:value
                                             waitUntilDone:YES];
 }
@@ -123,7 +124,7 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSource:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -154,7 +155,7 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
           info->mute, info->corked);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -179,7 +180,7 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -205,7 +206,7 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   fprintf(stderr, "[Mixer] Client: %s (index:%i)\n", info->name, info->index);
   
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateClient:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -232,7 +233,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
   
-  [(NXSoundDevice *)userdata performSelectorOnMainThread:@selector(updateStream:)
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -252,7 +253,7 @@ void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata)
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata)
 {
-  NXSoundDevice                *soundDevice = userdata;
+  NXSoundServer                *_server = userdata;
   pa_subscription_event_type_t event_type_masked;
   pa_operation *o;
 
@@ -261,9 +262,9 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   switch (event_type & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
   case PA_SUBSCRIPTION_EVENT_SINK:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSinkWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
+      [_server performSelectorOnMainThread:@selector(removeSinkWithIndex:)
+                                withObject:[NSNumber numberWithUnsignedInt:index]
+                             waitUntilDone:YES];
     }
     else {
       if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
@@ -276,9 +277,9 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_SOURCE:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSourceWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
+      [_server performSelectorOnMainThread:@selector(removeSourceWithIndex:)
+                                withObject:[NSNumber numberWithUnsignedInt:index]
+                             waitUntilDone:YES];
     }
     else {
       if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
@@ -291,9 +292,9 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
+      [_server performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
+                                withObject:[NSNumber numberWithUnsignedInt:index]
+                             waitUntilDone:YES];
     }
     else {
       if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
@@ -306,9 +307,9 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
+      [_server performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
+                                withObject:[NSNumber numberWithUnsignedInt:index]
+                             waitUntilDone:YES];
     }
     else {
       o = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
@@ -322,9 +323,9 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_CLIENT:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeClientWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
+      [_server performSelectorOnMainThread:@selector(removeClientWithIndex:)
+                                withObject:[NSNumber numberWithUnsignedInt:index]
+                             waitUntilDone:YES];
     }
     else {
       if (!(o = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
@@ -345,9 +346,9 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_CARD:
     if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-      [soundDevice performSelectorOnMainThread:@selector(removeCardWithIndex:)
-                                   withObject:[NSNumber numberWithUnsignedInt:index]
-                                waitUntilDone:YES];
+      [_server performSelectorOnMainThread:@selector(removeCardWithIndex:)
+                                withObject:[NSNumber numberWithUnsignedInt:index]
+                             waitUntilDone:YES];
     }
     else {
       if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {

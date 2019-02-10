@@ -20,6 +20,13 @@
                                       
 #import <dispatch/dispatch.h>
 
+#import "PACard.h"
+#import "PASink.h"
+#import "PASinkInput.h"
+#import "PAClient.h"
+#import "PAStream.h"
+
+#import "NXSoundOut.h"
 #import "NXSoundServer.h"
 #import "NXSoundServerCallbacks.h"
 
@@ -28,7 +35,7 @@ static NXSoundServer    *_server;
 
 @implementation NXSoundServer
 
-+ (NXSoundServer *)defaultServer
++ (id)defaultServer
 {
   if (_server == nil) {
     _server = [[NXSoundServer alloc] init];
@@ -101,6 +108,290 @@ static NXSoundServer    *_server;
 - (NSString *)host
 {
   return _host;
+}
+
+- (NXSoundOut *)defaultOutput
+{
+  return nil;
+}
+
+@end
+
+// --- These methods are called by PA callbacks ---
+
+@implementation NXSoundServer (PulseAudioEvents)
+
+// client_sb(...)
+- (void)updateClient:(NSValue *)value
+{
+  const pa_client_info *info;
+  BOOL                 isUpdated = NO;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_client_info));
+  [value getValue:(void *)info];
+
+  for (PAClient *c in clientList) {
+    if ([c index] == info->index) {
+      [c updateWithValue:value];
+      isUpdated = YES;
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    PAClient *client = [[PAClient alloc] init];
+    NSLog(@"Add Client: %s", info->name);
+    [client updateWithValue:value];
+    [clientList addObject:client];
+    [client release];
+    // [self reloadBrowser:streamsBrowser];
+  }
+  
+  free((void *)info);
+}
+// context_subscribe_cb(...)
+- (void)removeClientWithIndex:(NSNumber *)index
+{
+  PAClient *client;
+
+  for (PAClient *c in clientList) {
+    if ([c index] == [index unsignedIntegerValue]) {
+      client = c;
+      break;
+    }
+  }
+
+  if (client != nil) {
+    [clientList removeObject:client];
+    // [self reloadBrowser:streamsBrowser];
+  }
+}
+
+// ext_stream_restore_read_cb(...)
+- (void)updateStream:(NSValue *)value
+{
+  const pa_ext_stream_restore_info *info;
+  BOOL                             isUpdated = NO;
+  NSString                         *streamName;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_ext_stream_restore_info));
+  [value getValue:(void *)info];
+  
+  streamName = [NSString stringWithCString:info->name];
+  for (PAStream *s in streamList) {
+    if ([[s name] isEqualToString:streamName]) {
+      [s updateWithValue:value];
+      isUpdated = YES;
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    PAStream *s = [[PAStream alloc] init];
+    [s updateWithValue:value];
+    [streamList addObject:s];
+    [s release];
+    // [self reloadBrowser:streamsBrowser];
+  }
+  // [self browserClick:appBrowser];
+  
+  free((void *)info);
+}
+
+// sink_cb(...)
+- (void)updateSink:(NSValue *)value
+{
+  const pa_sink_info *info;
+  PASink *sink;
+  BOOL   isUpdated = NO;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_sink_info));
+  [value getValue:(void *)info];
+
+  for (sink in sinkList) {
+    if (sink.index == info->index) {
+      NSLog(@"Update Sink: %s", info->name);
+      [sink updateWithValue:value];
+      isUpdated = YES;
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    sink = [[PASink alloc] init];
+    NSLog(@"Add Sink: %s", info->name);
+    [sink updateWithValue:value];
+    [sinkList addObject:sink];
+    [sink release];
+  }
+  
+  // [self updateOutputDeviceList];
+  
+  free((void *)info);  
+}
+// context_subscribe_cb(...)
+- (void)removeSinkWithIndex:(NSNumber *)index
+{
+  PASink     *sink;
+  NSUInteger idx = [index unsignedIntegerValue];
+
+  for (PASink *s in sinkList) {
+    if (s.index == idx) {
+      sink = s;
+      break;
+    }
+  }
+
+  if (sink != nil) {
+    [sinkList removeObject:sink];
+    // [self updateOutputDeviceList];
+  }  
+}
+
+- (void)updateSinkInput:(NSValue *)value
+{
+  const pa_sink_input_info *info;
+  BOOL  isUpdated = NO;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_sink_input_info));
+  [value getValue:(void *)info];
+
+  for (PASinkInput *si in sinkInputList) {
+    if (si.index == info->index) {
+      NSLog(@"Update Sink Input: %s", info->name);
+      [si updateWithValue:value];
+      isUpdated = YES;
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    PASinkInput *si = [[PASinkInput alloc] init];
+    NSLog(@"Add Sink Input: %s", info->name);
+    [si updateWithValue:value];
+    si.context = _pa_ctx;
+    [sinkInputList addObject:si];
+    // [self reloadBrowser:streamsBrowser];
+    [si release];
+  }
+  
+  // [self browserClick:appBrowser];
+  
+  free((void *)info);
+}
+// context_subscribe_cb(...)
+- (void)removeSinkInputWithIndex:(NSNumber *)index
+{
+  PASinkInput *sinkInput;
+  NSUInteger  idx = [index unsignedIntegerValue];
+
+  for (PASinkInput *si in sinkInputList) {
+    if (si.index == idx) {
+      sinkInput = si;
+      break;
+    }
+  }
+
+  if (sinkInput != nil) {
+    [sinkInputList removeObject:sinkInput];
+    // [self reloadBrowser:streamsBrowser];
+  }
+}
+
+- (void)updateSource:(NSValue *)value
+{
+}
+// context_subscribe_cb(...)
+- (void)removeSourceWithIndex:(NSNumber *)index
+{
+}
+- (void)updateSourceOutput:(NSValue *)value
+{
+}
+// context_subscribe_cb(...)
+- (void)removeSourceOutputWithIndex:(NSNumber *)index
+{
+}
+
+- (void)updateServer:(NSValue *)value
+{
+  const pa_server_info *info;
+
+  info = malloc(sizeof(const pa_server_info));
+  [value getValue:(void *)info];
+
+  // TODO: get NXSoundOut for default_sink_name
+  defaultSinkName = [[NSString alloc] initWithCString:info->default_sink_name];
+  // TODO: get NXSoundIn for default_source_name
+  defaultSourceName = [[NSString alloc] initWithCString:info->default_source_name];
+  
+  free((void *)info);
+}
+- (void)updateCard:(NSValue *)value
+{
+  const pa_card_info *info;
+  BOOL               isUpdated = NO;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_card_info));
+  [value getValue:(void *)info];
+
+  fprintf(stderr, "Card: %s (%i ports, %i profiles)\n",
+          info->name, info->n_ports, info->n_profiles);
+  fprintf(stderr, "\tDriver: %s\n", info->driver);
+  
+  fprintf(stderr, "\tProfiles:\n");
+  for (unsigned i = 0; i < info->n_profiles; i++) {
+    fprintf(stderr, "\t\t[%i] %s (%s)\n",
+            info->profiles2[i]->priority,
+            info->profiles2[i]->name, info->profiles2[i]->description);
+  }
+  fprintf(stderr, "\tActive profile: [%i] %s\n",
+          info->active_profile->priority, info->active_profile->name);
+
+  fprintf(stderr, "\tPorts:\n");
+  for (unsigned i = 0; i < info->n_ports; i++) {
+    fprintf(stderr, "\t\t[%i] %s (%s)\n",
+            info->ports[i]->priority,
+            info->ports[i]->name, info->ports[i]->description);
+  }
+
+  for (PACard *card in cardList) {
+    if (card.index == info->index) {
+      NSLog(@"Update Card: %s", info->name);
+      [card updateWithValue:value];
+      isUpdated = YES;
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    PACard *card = [[PACard alloc] init];
+    NSLog(@"Add Card: %s", info->name);
+    [card updateWithValue:value];
+    [cardList addObject:card];
+    [card release];
+  }
+  
+  free((void *)info);
+  
+  // [self updateOutputDeviceList];
+}
+// context_subscribe_cb(...)
+- (void)removeCardWithIndex:(NSNumber *)index
+{
+  for (PACard *card in cardList) {
+    if (card.index == [index unsignedIntegerValue]) {
+      NSLog(@"Remove Card: %@", card.name);
+      [cardList removeObject:card];
+      // [self updateOutputDeviceList];
+      break;
+    }
+  }
 }
 
 @end
