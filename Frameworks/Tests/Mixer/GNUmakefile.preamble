@@ -19,7 +19,7 @@ ADDITIONAL_INCLUDE_DIRS += -I/usr/NextSpace/include
 
 # Additional library directories the linker should search
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  ADDITIONAL_LDFLAGS += -lpulse -lasound
+  ADDITIONAL_LDFLAGS += -lpulse -lasound -lSoundKit
 endif
 
 # Additional GUI libraries to link

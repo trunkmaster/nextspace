@@ -24,6 +24,7 @@
 {
   id            alsaPanel;
   id		paPanel;
+  id            soundClient;
   
   NSPopUpButton *sectionType;
   

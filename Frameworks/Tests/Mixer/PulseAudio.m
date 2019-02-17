@@ -549,10 +549,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
         pa_operation_unref(o);
         n_outstanding++;
 
-        pa_ext_stream_restore_set_subscribe_cb(ctx, ext_stream_restore_subscribe_cb, NULL);
+        // pa_ext_stream_restore_set_subscribe_cb(ctx, ext_stream_restore_subscribe_cb, NULL);
 
-        if ((o = pa_ext_stream_restore_subscribe(ctx, 1, NULL, NULL)))
-          pa_operation_unref(o);
+        // if ((o = pa_ext_stream_restore_subscribe(ctx, 1, NULL, NULL)))
+        //   pa_operation_unref(o);
 
       }
       else {
