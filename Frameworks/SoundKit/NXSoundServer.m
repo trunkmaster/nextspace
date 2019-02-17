@@ -33,6 +33,10 @@
 static dispatch_queue_t _pa_q;
 static NXSoundServer    *_server;
 
+NSString *SKDeviceDidAddNotification = @"SKDeviceDidAdd";
+NSString *SKDeviceDidChangeNotification = @"SKDeviceDidChange";
+NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
+
 @implementation NXSoundServer
 
 + (id)defaultServer
@@ -92,7 +96,6 @@ static NXSoundServer    *_server;
   
   pa_proplist_free(proplist);
   
-  // pa_context_set_state_callback(pa_ctx, context_state_cb, &pa_ready);
   pa_context_set_state_callback(_pa_ctx, context_state_cb, self);
   pa_context_connect(_pa_ctx, host, 0, NULL);
 
@@ -110,6 +113,11 @@ static NXSoundServer    *_server;
   return _host;
 }
 
+- (SKConnectionState)state
+{
+  return connectionState;
+}
+
 - (NXSoundOut *)defaultOutput
 {
   return nil;
@@ -120,6 +128,15 @@ static NXSoundServer    *_server;
 // --- These methods are called by PA callbacks ---
 
 @implementation NXSoundServer (PulseAudioEvents)
+
+- (void)updateConnectionState:(NSNumber *)state
+{
+  fprintf(stderr, "[SoundKit] update connection state\n");
+  connectionState = [state intValue];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:SKServerStateDidChangeNotification
+                    object:self];
+}
 
 // client_sb(...)
 - (void)updateClient:(NSValue *)value

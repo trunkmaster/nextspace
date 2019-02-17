@@ -27,12 +27,14 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	PAStream.m \
 	\
 	NXSoundServer.m \
+	NXSoundServerCallbacks.m \
 	NXSoundDevice.m \
 	NXSoundOut.m \
 	NXSoundIn.m
 endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
+	NXSoundServer.h \
 	NXSoundDevice.h \
 	NXSoundOut.h \
 	NXSoundIn.h

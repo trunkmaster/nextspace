@@ -21,7 +21,9 @@
 #import "NXSoundServer.h"
 #import "NXSoundServerCallbacks.h"
 
-static int  n_outstanding = 0;
+static int n_outstanding = 0;
+
+NSString *SKServerStateDidChangeNotification = @"SKServerStateDidChange";
 
 @implementation NXSoundServer (Callbacks)
 
@@ -363,51 +365,48 @@ void context_state_cb(pa_context *ctx, void *userdata)
   
   switch (state) {
   case PA_CONTEXT_UNCONNECTED:
-    fprintf(stderr, "[SoundKit] PulseAudio connection state == UNCONNECTED.\n");
-    // TODO: send notification
+    // fprintf(stderr, "[SoundKit] PulseAudio connection state == UNCONNECTED.\n");
     break;
   case PA_CONTEXT_CONNECTING:
-    fprintf(stderr, "[SoundKit] PulseAudio connection state == CONNECTING.\n");
-    // TODO: send notification
+    // fprintf(stderr, "[SoundKit] PulseAudio connection state == CONNECTING.\n");
     break;
   case PA_CONTEXT_AUTHORIZING:
-    fprintf(stderr, "[SoundKit] PulseAudio connection state == AUTHORIZING.\n");
-    // TODO: send notification
+    // fprintf(stderr, "[SoundKit] PulseAudio connection state == AUTHORIZING.\n");
     break;
   case PA_CONTEXT_SETTING_NAME:
-    fprintf(stderr, "[SoundKit] PulseAudio connection state == SETTING_NAME.\n");
-    // TODO: send notification
+    // fprintf(stderr, "[SoundKit] PulseAudio connection state == SETTING_NAME.\n");
     break;
-
   case PA_CONTEXT_READY:
-    {
-      fprintf(stderr, "[SoundKit] PulseAudio connection state == READY.\n");
-      inventory_start(ctx, userdata);
-    }
-    break;
-
+    // fprintf(stderr, "[SoundKit] PulseAudio connection state == READY.\n");
+    inventory_start(ctx, userdata);
+    // Ready state will be announced in inventory_end()
+    return;
   case PA_CONTEXT_FAILED:
     {
-      fprintf(stderr, "[SoundKit] PulseAudio connection state == FAILED!\n");
-      
+      // fprintf(stderr, "[SoundKit] PulseAudio connection state == FAILED!\n");
       pa_context_unref(ctx);
       ctx = NULL;
-
       // if (reconnect_timeout > 0) {
       //   fprintf(stderr, "[SoundKit] DEBUG: Connection failed, attempting reconnect\n");
       //   // g_timeout_add_seconds(reconnect_timeout, connect_to_pulse, w);
       // }
     }
     break;
-
   case PA_CONTEXT_TERMINATED:
+    // fprintf(stderr, "[SoundKit] PulseAudio connection state == TERMINATED.\n");
+    break;
   default:
-    fprintf(stderr, "[SoundKit] PulseAudio connection state == TERMINATED.\n");
+    // fprintf(stderr, "[SoundKit] PulseAudio connection state == UNKNOWN.\n");
     return;
   }
+
+  // fprintf(stderr, "[SoundKit] send notification.\n");
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
+                                              withObject:[NSNumber numberWithInt:state]
+                                           waitUntilDone:YES];
 }
 
-// --- Initial inventory of PulseAudio objects ---
+ // --- Initial inventory of PulseAudio objects ---
 
 /* Calls number of PA functions to gather information about various PA objects.
    Every called function is asynchronous and return info via callbacks. 
@@ -493,20 +492,21 @@ void inventory_start(pa_context *ctx, void *userdata)
    inventory_end. */
 void inventory_decrement_requests(pa_context *ctx, void *userdata)
 {
+  fprintf(stderr, "[SoundKit] invetory_decrement_requests: %i\n", n_outstanding);
   if (n_outstanding <= 0)
     return;
 
   if (n_outstanding > 0) {
-    n_outstanding--;
-  }
-  else {
-    fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: END\n");
-    inventory_end(ctx, userdata);
+    if (--n_outstanding == 0) {
+      fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: END\n");
+      inventory_end(ctx, userdata);
+    }
   }
 }
 void inventory_end(pa_context *ctx, void *userdata)
 {
   pa_operation *o;
+  NSNumber     *readyState;
   
   fprintf(stderr, "[SoundKit] --- Staring tracking of PulseAudio events!\n");
   
@@ -523,8 +523,11 @@ void inventory_end(pa_context *ctx, void *userdata)
     return;
   }
   pa_operation_unref(o);
-  // TODO: send notification
-}
 
+  readyState = [NSNumber numberWithInt:SKServerReadyState];
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
+                                              withObject:readyState
+                                           waitUntilDone:YES];
+}
 
 @end

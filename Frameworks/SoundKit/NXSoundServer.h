@@ -22,10 +22,26 @@
 #import <pulse/pulseaudio.h>
 #import <Foundation/Foundation.h>
 
+typedef enum NSInteger {
+  SKServerNoConnnectionState,	// PA_CONTEXT_UNCONNECTED
+  SKServerConnectingState,	// PA_CONTEXT_CONNECTING
+  SKServerAuthorizingState,	// PA_CONTEXT_AUTHORIZING
+  SKServerSettingNameState,	// PA_CONTEXT_SETTING_NAME
+  SKServerReadyState,		// PA_CONTEXT_READY
+  SKServerFailedState,		// PA_CONTEXT_FAILED
+  SKServerTerminatedState	// PA_CONTEXT_TERMINATED
+} SKConnectionState;
+
+extern NSString *SKServerStateDidChangeNotification;
+extern NSString *SKDeviceDidAddNotification;
+extern NSString *SKDeviceDidChangeNotification;
+extern NSString *SKDeviceDidRemoveNotification;
+
 @interface NXSoundServer : NSObject
 {
   NSString 		*_host;
-  // Define our pulse audio loop and connection variables
+  SKConnectionState     connectionState;
+// Define our pulse audio loop and connection variables
   pa_mainloop		*_pa_loop;
   pa_mainloop_api	*_pa_api;
   pa_context		*_pa_ctx;
@@ -54,5 +70,6 @@
 - (id)initOnHost:(NSString *)hostName
         withName:(NSString *)appName;
 - (NSString *)host;
+- (SKConnectionState)state;
 
 @end
