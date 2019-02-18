@@ -29,7 +29,8 @@ typedef enum NSInteger {
   SKServerSettingNameState,	// PA_CONTEXT_SETTING_NAME
   SKServerReadyState,		// PA_CONTEXT_READY
   SKServerFailedState,		// PA_CONTEXT_FAILED
-  SKServerTerminatedState	// PA_CONTEXT_TERMINATED
+  SKServerTerminatedState,	// PA_CONTEXT_TERMINATED
+  SKServerInventoryState
 } SKConnectionState;
 
 extern NSString *SKServerStateDidChangeNotification;
@@ -41,7 +42,7 @@ extern NSString *SKDeviceDidRemoveNotification;
 {
   NSString 		*_host;
   SKConnectionState     connectionState;
-// Define our pulse audio loop and connection variables
+  // Define our pulse audio loop and connection variables
   pa_mainloop		*_pa_loop;
   pa_mainloop_api	*_pa_api;
   pa_context		*_pa_ctx;

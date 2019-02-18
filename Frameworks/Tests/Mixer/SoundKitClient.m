@@ -14,11 +14,16 @@
 {
   self = [super init];
 
+  // server = [[NXSoundServer alloc] init];
   server = [NXSoundServer defaultServer];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(connectionStateChanged:)
-                                               name:SKServerStateDidChangeNotification
-                                             object:server];
+  [server retain];
+  
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(connectionStateChanged:)
+           name:SKServerStateDidChangeNotification
+         object:server];
+  
   return self;
 }
 
@@ -29,10 +34,7 @@
   isRunning = YES;
   while (isRunning) {
     NSLog(@"RunLoop is running");
-    // [runLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-    // [runLoop run];
     [runLoop runUntilDate:[NSDate distantFuture]];
-    // sleep(2);
   }
 }
 
@@ -52,6 +54,9 @@
       break;
     case SKServerSettingNameState:
       NSLog(@"Server state is Setting Name.");
+      break;
+    case SKServerInventoryState:
+      NSLog(@"Server state is Inventory.");
       break;
     case SKServerReadyState:
       NSLog(@"Server state is Ready.");

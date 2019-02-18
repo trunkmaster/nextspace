@@ -414,9 +414,13 @@ void context_state_cb(pa_context *ctx, void *userdata)
 void inventory_start(pa_context *ctx, void *userdata)
 {
   pa_operation *o;
+  NXSoundServer *server = (NXSoundServer *)userdata;
 
   fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
       
+  [server performSelectorOnMainThread:@selector(updateConnectionState:)
+                           withObject:[NSNumber numberWithInt:SKServerInventoryState]
+                        waitUntilDone:YES];
   /* Keep track of the outstanding requests */
   n_outstanding = 0;
 
@@ -505,8 +509,8 @@ void inventory_decrement_requests(pa_context *ctx, void *userdata)
 }
 void inventory_end(pa_context *ctx, void *userdata)
 {
-  pa_operation *o;
-  NSNumber     *readyState;
+  pa_operation  *o;
+  NXSoundServer *server = (NXSoundServer *)userdata;
   
   fprintf(stderr, "[SoundKit] --- Staring tracking of PulseAudio events!\n");
   
@@ -524,10 +528,9 @@ void inventory_end(pa_context *ctx, void *userdata)
   }
   pa_operation_unref(o);
 
-  readyState = [NSNumber numberWithInt:SKServerReadyState];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
-                                              withObject:readyState
-                                           waitUntilDone:YES];
+  [server performSelectorOnMainThread:@selector(updateConnectionState:)
+                           withObject:[NSNumber numberWithInt:SKServerReadyState]
+                        waitUntilDone:YES];
 }
 
 @end

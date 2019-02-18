@@ -51,13 +51,13 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 - (void)dealloc
 {
   int retval = 0;
-  
-  NSLog(@"[SoundKit] Closing connection to server.");
+
+  fprintf(stderr, "[SoundKit] closing connection to server...\n");
   pa_mainloop_quit(_pa_loop, retval);
   pa_context_disconnect(_pa_ctx);
   pa_context_unref(_pa_ctx);
   pa_mainloop_free(_pa_loop);
-  NSLog(@"[SoundKit] Connection to server closed.");
+  fprintf(stderr, "[SoundKit] connection to server closed.\n");
   
   if (_host) {
     [_host release];
@@ -131,7 +131,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
 - (void)updateConnectionState:(NSNumber *)state
 {
-  fprintf(stderr, "[SoundKit] update connection state\n");
+  fprintf(stderr, "[SoundKit] connection state was updated.\n");
   connectionState = [state intValue];
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SKServerStateDidChangeNotification

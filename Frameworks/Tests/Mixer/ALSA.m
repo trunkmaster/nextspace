@@ -153,6 +153,8 @@
   
   [elementsView removeAllElements];
 
+  [card handleEvents:YES];
+  
   for (ALSAElement *elem in [card controls]) {
     elementsCount++;
     if (mode == MixerControlsPlayback && [elem isPlayback] != NO) {
@@ -168,7 +170,6 @@
       elementsCount--;
     }
   }
-  [card handleEvents:YES];
 
   if (elementsCount == 0) {
     NSString *message = @"No Controls";

@@ -45,7 +45,7 @@
   // Ports
   if (info->n_ports > 0) {
     ports = [NSMutableArray new];
-    for (int i = 0; i < info->n_ports; i++) {
+    for (unsigned i = 0; i < info->n_ports; i++) {
       [ports addObject:[NSString stringWithCString:info->ports[i]->description]];
     }
     if (_portsDesc) {

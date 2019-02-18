@@ -50,6 +50,9 @@
     [[paPanel window] close];
     [paPanel release];
   }
+  if (soundClient) {
+    [soundClient release];
+  }
   return YES;
 }
 
@@ -85,7 +88,6 @@
     [soundClient release];
   }
   soundClient = [[SoundKitClient alloc] init];
-  [soundClient runLoopRun];
 }
 
 @end
