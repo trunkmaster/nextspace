@@ -17,10 +17,8 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
-                                      
-#import "NXSoundServer.h"
+
 #import "NXSoundDevice.h"
-#import "NXSoundDeviceCallbacks.h"
 
 @implementation NXSoundDevice
 
@@ -32,31 +30,49 @@
 
 - (id)init
 {
-  return [self initOnHost:nil withName:@"SoundKit"];
+  return [self initOnHost:nil];
 }
 
 - (id)initOnHost:(NSString *)hostName
-        withName:(NSString *)appName
 {
   [super init];
-  _server = [[NXSoundServer alloc] initOnHost:hostName withName:appName];
+  _server = [NXSoundServer defaultServer];
+  [_server retain];
+  // Wait for server to become ready
+  while (_server.state != SKServerReadyState) {
+    [[NSRunLoop currentRunLoop]
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    fprintf(stderr, "[SoundKit] SoundDevice: waiting for server to be ready...\n");
+  }
   return self;
 }
 
 /*--- Accesorries ---*/
 - (NSString *)host
 {
-  return [(NXSoundServer *)_server host];
+  return _server.hostName;
 }
 
-/*--- Sink ---*/
-- (NSString *)name
+/*--- Card proxy ---*/
+- (NSArray *)availableProfiles
 {
-  return _name;
+  if (_card == nil) {
+    NSLog(@"SoundDevice: avaliablePorts was called without Sink was being set.");
+    return nil;
+  }
+  return _card.outProfiles;
 }
-- (NSString *)description
+- (NSString *)activeProfile:(NSString *)profileName
 {
-  return _description;
+  return _card.activeProfile;
+}
+- (void)setActiveProfile:(NSString *)profile
+{
+  pa_context_set_card_profile_by_name(_server.pa_ctx,
+                                      [_card.name cString],
+                                      [profile cString],
+                                      NULL, // pa_context_success_cb_t cb,
+                                      self);
 }
 
 - (id)volume
@@ -69,29 +85,6 @@
 }
 - (void)setVolume:(id)volumes
 {} // subclass responsibility
-- (NSArray *)availablePorts
-{
-  return nil;
-}
-- (NSDictionary *)activePort
-{
-  return nil;
-}
-- (void)setActivePort:(NSString *)name
-{} // subclass responsibility
-
-/*--- Card ---*/
-- (NSArray *)availableProfiles
-{
-  return nil;
-}
-- (NSDictionary *)activeProfile
-{
-  return nil;
-}
-- (void)setActiveProfile:(NSString *)name
-{} // subclass responsibility
-
 // - samples
 // {}
 // - latency

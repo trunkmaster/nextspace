@@ -21,8 +21,33 @@
 
 #import "NXSoundOut.h"
 
-@implementation NXSoundOut (Callbacks)
-@end
-
 @implementation NXSoundOut
+
+- (void)dealloc
+{
+  [super dealloc];
+}
+
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"%@ on %@", _sinkInput.name, _sink.name];
+}
+
+/*--- Sink proxy ---*/
+- (NSArray *)availablePorts
+{
+  if (_sink == nil) {
+    NSLog(@"SoundDevice: avaliablePorts was called without Sink was being set.");
+    return nil;
+  }
+  return _sink.portsDesc;
+}
+- (NSString *)activePort
+{
+  return _sink.activePortDesc;
+}
+- (void)setActivePort:(NSString *)portName
+{
+}
+
 @end

@@ -42,7 +42,7 @@
 {
   // NSLog(@"Connection state changed.");
   if ([notif object] == server) {
-    switch ([server state]) {
+    switch (server.state) {
     case SKServerNoConnnectionState:
       NSLog(@"Server state is Unconnected.");
       break;

@@ -25,9 +25,12 @@
 
 @interface NXSoundServer (Callbacks)
 
+// --- Server ---
+void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata);
+void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata);
+
 // --- Sink ---
 void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata);
-
 // --- Source ---
 void source_cb(pa_context *ctx, const pa_source_info *info,
                int eol, void *userdata);
@@ -44,20 +47,15 @@ void ext_stream_restore_read_cb(pa_context *ctx,
                                 const pa_ext_stream_restore_info *info,
                                 int eol, void *userdata);
 
-// --- Sserver ---
-void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata);
-void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata);
-
-// --- Context events subscription ---
+// --- Context events ---
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata);
+void context_state_cb(pa_context *ctx, void *userdata);
 
 // --- Initial objects inventory ---
 void inventory_start(pa_context *ctx, void *userdata);
 void inventory_decrement_requests(pa_context *ctx, void *userdata);
 void inventory_end(pa_context *ctx, void *userdata);
 
-// --- Context state tracking ---
-void context_state_cb(pa_context *ctx, void *userdata);
 
 @end

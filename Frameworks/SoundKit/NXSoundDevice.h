@@ -19,14 +19,16 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <pulse/pulseaudio.h>
 #import <Foundation/Foundation.h>
+#import "NXSoundServer.h"
+#import "PACard.h"
+#import "PASink.h"
 
 @interface NXSoundDevice : NSObject // <NXSoundParameters>
 {
-  id       _server;
-  NSString *_name;
-  NSString *_description;
+  NXSoundServer *_server;
+  // NSString      *_name;
+  // NSString      *_description;
   
   // port_t		_devicePort;
   // port_t		_streamOwnerPort;
@@ -38,6 +40,8 @@
   // NXSoundDeviceError	_lastError;
   // int			_reserved;
 }
+@property (assign) PACard *card;
+
 // + (NSString *)textForError:(NXSoundDeviceError)errorCode;
 // + (unsigned int)timeout;
 // + setTimeout:(unsigned int)milliseconds;
@@ -64,8 +68,7 @@
 // - (NSString *)name;
 
 - (id)init;
-- (id)initOnHost:(NSString *)hostName
-        withName:(NSString *)appName;
+- (id)initOnHost:(NSString *)hostName;
 - (NSString *)host;
 
 // - (port_t)devicePort;

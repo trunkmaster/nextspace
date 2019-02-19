@@ -22,6 +22,12 @@
 #import <pulse/pulseaudio.h>
 #import <Foundation/Foundation.h>
 
+@class NXSoundOut;
+@class NXSoundIn;
+
+@class PACard;
+@class PASink;
+
 typedef enum NSInteger {
   SKServerNoConnnectionState,	// PA_CONTEXT_UNCONNECTED
   SKServerConnectingState,	// PA_CONTEXT_CONNECTING
@@ -40,12 +46,10 @@ extern NSString *SKDeviceDidRemoveNotification;
 
 @interface NXSoundServer : NSObject
 {
-  NSString 		*_host;
-  SKConnectionState     connectionState;
   // Define our pulse audio loop and connection variables
   pa_mainloop		*_pa_loop;
   pa_mainloop_api	*_pa_api;
-  pa_context		*_pa_ctx;
+  // pa_context		*_pa_ctx;
   pa_operation		*_pa_op;
 
   // SoundKit objects
@@ -53,24 +57,36 @@ extern NSString *SKDeviceDidRemoveNotification;
   NSMutableArray        *inputList;  // array of NXSoundIn objects
   NSMutableArray        *streamList; // array of NXSoundStream objects
 
-  // PulseAudio objects
-  NSString              *defaultSinkName;
-  NSString              *defaultSourceName;
   // NXSoundOut
   NSMutableArray        *cardList;
   NSMutableArray        *sinkList;
   NSMutableArray        *sourceList;
+  // 
   NSMutableArray        *clientList;
   NSMutableArray        *sinkInputList;
   NSMutableArray        *sourceOutputList;
   NSMutableArray        *savedStreamList; // sink-input* or source-output*
 }
+
+@property (readonly) pa_context *pa_ctx;
+@property (readonly) SKConnectionState state;
+@property (readonly) NSString *userName;  // User name of the daemon process
+@property (readonly) NSString *hostName;  // Host name the daemon is running on
+@property (readonly) NSString *name;      // Server package name (usually "pulseaudio")
+@property (readonly) NSString *version;   // Version string of the daemon
+@property (readonly) NSString *defaultSinkName;
+@property (readonly) NSString *defaultSourceName;
+
 + (id)defaultServer;
 
-- (id)init;
-- (id)initOnHost:(NSString *)hostName
-        withName:(NSString *)appName;
-- (NSString *)host;
-- (SKConnectionState)state;
+- (id)initOnHost:(NSString *)hostName;
+
+@end
+
+@interface NXSoundServer (PulseAudio)
+
+- (PACard *)cardForSink:(PASink *)sink;
+- (PASink *)sinkWithName:(NSString *)name;
+// - (PASink *)sinkForSinkInput:(PASinkInput *)sinkInput;
 
 @end
