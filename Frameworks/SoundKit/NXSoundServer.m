@@ -89,6 +89,10 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   sourceOutputList = [NSMutableArray new];
   savedStreamList = [NSMutableArray new];
   
+  outputList = [NSMutableArray new];
+  inputList = [NSMutableArray new];
+  streamList = [NSMutableArray new];
+  
   _pa_loop = pa_mainloop_new();
   _pa_api = pa_mainloop_get_api(_pa_loop);
 
@@ -264,10 +268,13 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     soundOut.sink = sink;
     [outputList addObject:soundOut];
     NSLog(@"New SoundOut: %@", [soundOut description]);
-    NSLog(@"\t      Server : %@ %@ on %@@%@", _name, _version, _userName, _hostName);
-    NSLog(@"\t Active Port : %@", soundOut.sink.activePortDesc);
-    NSLog(@"\tCard Profile : %@", soundOut.card.activeProfile);
-    
+    NSLog(@"\t             Sink: %@", soundOut.sink.name);
+    NSLog(@"\t Sink Description: %@", soundOut.sink.description);
+    NSLog(@"\t      Active Port: %@", soundOut.sink.activePortDesc);
+    NSLog(@"\t     Card Profile: %@", soundOut.card.activeProfile);
+    NSLog(@"\t           Server: %@ %@ on %@@%@", _name, _version, _userName, _hostName);
+    NSLog(@"\t     Retain Count: %lu", [soundOut retainCount]);
+       
     [soundOut release];
   }
   

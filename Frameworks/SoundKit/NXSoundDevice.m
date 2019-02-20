@@ -24,7 +24,7 @@
 
 - (void)dealloc
 {
-  // [_server release];
+  [_server release];
   [super dealloc];
 }
 
@@ -35,17 +35,11 @@
 
 - (id)initOnHost:(NSString *)hostName
 {
-  self = [super init];
+  if ((self = [super init]) == nil)
+    return nil;
   
-  _server = [NXSoundServer defaultServer];
-  // [_server retain];
+  _server = [[NXSoundServer defaultServer] retain];
   
-  // Wait for server to become ready
-  // while (_server.state != SKServerReadyState) {
-  //   [[NSRunLoop currentRunLoop]
-  //     runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-  //   fprintf(stderr, "[SoundKit] SoundDevice: waiting for server to be ready...\n");
-  // }
   return self;
 }
 
