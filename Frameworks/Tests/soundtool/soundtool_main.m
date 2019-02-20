@@ -1,0 +1,149 @@
+//
+//
+//
+
+#include <stdio.h>
+#include <unistd.h>
+
+#import <Foundation/Foundation.h>
+#import <SoundKit/NXSoundServer.h>
+#import <SoundKit/NXSoundOut.h>
+
+@interface SoundKitClient : NSObject
+{
+  NXSoundServer *server;
+  BOOL          isRunning;
+}
+@end
+
+@implementation SoundKitClient
+
+- (void)dealloc
+{
+  NSLog(@"SoundKitClient: dealloc");
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [server release];
+  [super dealloc];
+}
+
+- init
+{
+  self = [super init];
+
+  server = [NXSoundServer defaultServer];
+  
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(connectionStateChanged:)
+           name:SKServerStateDidChangeNotification
+         object:server];
+  
+  return self;
+}
+
+- (void)runLoopRun
+{
+  NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+  
+  isRunning = YES;
+  while (isRunning) {
+    // NSLog(@"RunLoop is running");
+    [runLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  }
+}
+
+- (void)runLoopStop
+{
+  isRunning = NO;
+}
+
+- (void)describeSoundSystem
+{
+  // Server
+  fprintf(stderr, "=== Sound Server ===\n");
+  fprintf(stderr, "\t     Name: %s\n", [server.name cString]);
+  fprintf(stderr, "\t  Version: %s\n", [server.version cString]);
+  fprintf(stderr, "\t Username: %s\n", [server.userName cString]);
+  fprintf(stderr, "\t Hostname: %s\n", [server.hostName cString]);
+  
+  // Sound Out
+  fprintf(stderr, "=== SoundOut ===\n");
+  for (NXSoundOut *sout in server.outputList) {
+    [sout printDescription];
+  }
+
+}
+
+- (void)connectionStateChanged:(NSNotification *)notif
+{
+  // NSLog(@"Connection state changed.");
+  if ([notif object] == server) {
+    switch (server.state) {
+    case SKServerNoConnnectionState:
+      NSLog(@"Server state is Unconnected.");
+      break;
+    case SKServerConnectingState:
+      NSLog(@"Server state is Connecting.");
+      break;
+    case SKServerAuthorizingState:
+      NSLog(@"Server state is Authorizing.");
+      break;
+    case SKServerSettingNameState:
+      NSLog(@"Server state is Setting Name.");
+      break;
+    case SKServerInventoryState:
+      NSLog(@"Server state is Inventory.");
+      break;
+    case SKServerReadyState:
+      NSLog(@"Server state is Ready.");
+      [self describeSoundSystem];
+      break;
+    case SKServerFailedState:
+      NSLog(@"Server state is Failed.");
+      isRunning = NO;
+      break;
+    case SKServerTerminatedState:
+      NSLog(@"Server state is Terminated.");
+      isRunning = NO;
+      break;
+    default:
+      isRunning = NO;
+      NSLog(@"Server state is Unknown.");
+    }
+  }
+}
+
+@end
+
+static SoundKitClient *client;
+
+static void handle_signal(int sig)
+{
+  // fprintf(stderr, "got signal %i\n", sig);
+  [client runLoopStop];
+}
+
+int main(int argc, char *argv[])
+{
+  NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  NSConnection      *conn;
+
+  client = [SoundKitClient new];
+  conn = [NSConnection defaultConnection];
+  [conn registerName:@"soundtool"];
+
+  signal(SIGHUP, handle_signal);
+  signal(SIGINT, handle_signal);
+  signal(SIGQUIT, handle_signal);
+  signal(SIGTERM, handle_signal);
+  
+  [client runLoopRun];
+
+  fprintf(stderr, "Runloop exited.\n");
+
+  [conn invalidate];
+  [client release];
+  [pool release];
+
+  return 0;
+}
