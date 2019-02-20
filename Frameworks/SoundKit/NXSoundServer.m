@@ -164,6 +164,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 {
   const pa_card_info *info;
   BOOL               isUpdated = NO;
+  PACard             *card;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_card_info));
@@ -189,7 +190,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
             info->ports[i]->name, info->ports[i]->description);
   }
 
-  for (PACard *card in cardList) {
+  for (card in cardList) {
     if (card.index == info->index) {
       NSLog(@"Update Card: %s", info->name);
       [card updateWithValue:value];
@@ -199,7 +200,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
 
   if (isUpdated == NO) {
-    PACard *card = [[PACard alloc] init];
+    NXSoundDevice *soundDevice;
+    card = [[PACard alloc] init];
     NSLog(@"Add Card: %s", info->name);
     [card updateWithValue:value];
     [cardList addObject:card];
@@ -208,32 +210,29 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   
   free((void *)info);
 }
-- (void)removeCardWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (PACard *)cardWithIndex:(NSUInteger)index
 {
   for (PACard *card in cardList) {
-    if (card.index == [index unsignedIntegerValue]) {
-      NSLog(@"Remove Card: %@", card.name);
-      [cardList removeObject:card];
-      break;
-    }
-  }
-}
-- (PACard *)cardForSink:(PASink *)sink
-{
-  for (PACard *card in cardList) {
-    if (card.index == sink.index) {
+    if (card.index == index) {
       return card;
     }
   }
   return nil;
+}
+- (void)removeCardWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+{
+  PACard *card = [self cardWithIndex:[index unsignedIntegerValue]];
+
+  if (card != nil) {
+    [cardList removeObject:card];
+  }
 }
 
 // Sink
 - (void)updateSink:(NSValue *)value // sink_cb(...)
 {
   const pa_sink_info *info;
-  PASink     *sink;
-  BOOL       isUpdated = NO;
+  BOOL               isUpdated = NO;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_sink_info));
@@ -249,12 +248,27 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
 
   if (isUpdated == NO) {
+    PASink     *sink;
+    NXSoundOut *soundOut;
+  
     // Create Sink
     sink = [[PASink alloc] init];
     NSLog(@"Add Sink: %s", info->name);
     [sink updateWithValue:value];
     [sinkList addObject:sink];
     [sink release];
+
+    // Create NXSoundOut
+    soundOut = [[NXSoundOut alloc] init];
+    soundOut.card = [self cardWithIndex:sink.cardIndex];
+    soundOut.sink = sink;
+    [outputList addObject:soundOut];
+    NSLog(@"New SoundOut: %@", [soundOut description]);
+    NSLog(@"\t      Server : %@ %@ on %@@%@", _name, _version, _userName, _hostName);
+    NSLog(@"\t Active Port : %@", soundOut.sink.activePortDesc);
+    NSLog(@"\tCard Profile : %@", soundOut.card.activeProfile);
+    
+    [soundOut release];
   }
   
   free((void *)info);  
@@ -394,16 +408,6 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     [sinkInput updateWithValue:value];
     sinkInput.context = _pa_ctx;
     [sinkInputList addObject:sinkInput];
-    
-    if (sinkInput.clientIndex) {// Create NXSoundOut
-      NXSoundOut *soundOut = [[NXSoundOut alloc] initOnHost:nil];
-      soundOut.sink = [self sinkWithIndex:sinkInput.sinkIndex];
-      soundOut.sinkInput = sinkInput;
-      [outputList addObject:soundOut];
-      [soundOut release];
-      NSLog(@"New SoundOut: %@", [soundOut description]);
-    }
-    
     [sinkInput release];
   }
   

@@ -24,7 +24,7 @@
 
 - (void)dealloc
 {
-  [_server release];
+  // [_server release];
   [super dealloc];
 }
 
@@ -35,25 +35,32 @@
 
 - (id)initOnHost:(NSString *)hostName
 {
-  [super init];
+  self = [super init];
+  
   _server = [NXSoundServer defaultServer];
-  [_server retain];
+  // [_server retain];
+  
   // Wait for server to become ready
-  while (_server.state != SKServerReadyState) {
-    [[NSRunLoop currentRunLoop]
-      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-    fprintf(stderr, "[SoundKit] SoundDevice: waiting for server to be ready...\n");
-  }
+  // while (_server.state != SKServerReadyState) {
+  //   [[NSRunLoop currentRunLoop]
+  //     runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  //   fprintf(stderr, "[SoundKit] SoundDevice: waiting for server to be ready...\n");
+  // }
   return self;
 }
 
-/*--- Accesorries ---*/
+// --- Accesorries --- //
 - (NSString *)host
 {
   return _server.hostName;
 }
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"Card `%@` on server `%@`",
+                   _card.name, _server.hostName];
+}
 
-/*--- Card proxy ---*/
+// --- Card proxy --- //
 - (NSArray *)availableProfiles
 {
   if (_card == nil) {

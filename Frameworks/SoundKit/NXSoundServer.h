@@ -85,7 +85,6 @@ extern NSString *SKDeviceDidRemoveNotification;
 
 @interface NXSoundServer (PulseAudio)
 
-- (PACard *)cardForSink:(PASink *)sink;
 - (PASink *)sinkWithName:(NSString *)name;
 // - (PASink *)sinkForSinkInput:(PASinkInput *)sinkInput;
 

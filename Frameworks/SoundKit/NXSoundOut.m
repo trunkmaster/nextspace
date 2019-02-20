@@ -30,7 +30,8 @@
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"%@ on %@", _sinkInput.name, _sink.name];
+  return [NSString stringWithFormat:@"`%@` on %@. Active port: %@",
+                   _sink.description, super.card.name, _sink.activePortDesc];
 }
 
 /*--- Sink proxy ---*/

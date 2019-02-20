@@ -26,71 +26,14 @@
 
 @interface NXSoundDevice : NSObject // <NXSoundParameters>
 {
-  NXSoundServer *_server;
-  // NSString      *_name;
-  // NSString      *_description;
-  
-  // port_t		_devicePort;
-  // port_t		_streamOwnerPort;
-  // unsigned int		_bufferSize;
-  // unsigned int		_bufferCount;
-  // unsigned int		_isDetectingPeaks;
-  // unsigned int		_peakHistory;
-  // kern_return_t		_kernelError;
-  // NXSoundDeviceError	_lastError;
-  // int			_reserved;
+  // NXSoundServer *_server;
 }
-@property (assign) PACard *card;
-
-// + (NSString *)textForError:(NXSoundDeviceError)errorCode;
-// + (unsigned int)timeout;
-// + setTimeout:(unsigned int)milliseconds;
-// + (port_t)replyPort;
-// + (BOOL)isUsingSeparateThread;
-// + setUseSeparateThread:(BOOL)flag;
-// + (cthread_t)replyThread;
-// + (int)threadThreshold;
-// + setThreadThreshold:(int)threshold;
-
-// New in 3.1.
-// - (id <NXSoundParameters>)parameters;
-// - (NXSoundDeviceError)setParameters:(id <NXSoundParameters>)params;
-// - (BOOL)acceptsContinuousStreamSamplingRates;
-// - (NXSoundDeviceError)getStreamSamplingRatesLow:(float *)lowRate
-//                                            high:(float *)highRate;
-// - (NXSoundDeviceError)getStreamSamplingRates:(const float **)rates
-//                                        count:(unsigned int *)numRates;
-// - (NXSoundDeviceError)getStreamDataEncodings:
-//   (const NXSoundParameterTag **)encodings
-//                                        count:(unsigned int *)numEncodings;
-// - (unsigned int)streamChannelCountLimit;
-// - (unsigned int)clipCount;
-// - (NSString *)name;
+@property (assign)   PACard        *card;
+@property (readonly) NXSoundServer *server;
 
 - (id)init;
 - (id)initOnHost:(NSString *)hostName;
 - (NSString *)host;
-
-// - (port_t)devicePort;
-// - (port_t)streamOwnerPort;
-// - (BOOL)isReserved;
-// - (NXSoundDeviceError)setReserved:(BOOL)flag;
-// - (void)pauseStreams:sender;
-// - (void)resumeStreams:sender;
-// - (void)abortStreams:sender;
-// - (NXSoundDeviceError)getPeakLeft:(float *)leftAmp
-//                             right:(float *)rightAmp;
-// - (NXSoundDeviceError)lastError;
-// - (void)dealloc;
-
-// // Obsolete - use generic parameter api.
-// - (unsigned int)bufferSize;
-// - (NXSoundDeviceError)setBufferSize:(unsigned int)bytes;
-// - (unsigned int)bufferCount;
-// - (NXSoundDeviceError)setBufferCount:(unsigned int)count;
-// - (unsigned int)peakHistory;
-// - (NXSoundDeviceError)setPeakHistory:(unsigned int)bufferCount;
-// - (BOOL)isDetectingPeaks;
-// - (NXSoundDeviceError)setDetectPeaks:(BOOL)flag;
+- (NSString *)description;
 
 @end
