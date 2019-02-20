@@ -27,179 +27,14 @@ NSString *SKServerStateDidChangeNotification = @"SKServerStateDidChange";
 
 @implementation NXSoundServer (Callbacks)
 
-// --- NXSoundServer ---
-// --- NXSoundOut: Sink (Card, Server) ---
-// --- Sink ---
-void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
-{
-  NSValue *value;
-  
-  if (eol < 0) {
-    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
-      return;
-    }
-    fprintf(stderr, "[Mixer] ERROR: Sink callback failure\n");
-    return;
-  }
-
-  if (eol > 0) {
-    inventory_decrement_requests(ctx, userdata);
-    return;
-  }
-
-  fprintf(stderr, "[Mixer] Sink: %s (%s)\n", info->name, info->description);
-  
-  value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  [(NXSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
-                                               withObject:value
-                                            waitUntilDone:YES];
-}
-
-// --- NXSoundIn: Source --> (Card, Server) ---
-// --- Source ---
-void source_cb(pa_context *ctx, const pa_source_info *info,
-               int eol, void *userdata)
-{
-  if (eol < 0) {
-    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
-      return;
-    }
-    fprintf(stderr, "[Mixer] ERROR: Source callback failure\n");
-    return;
-  }
-
-  if (eol > 0) {
-    inventory_decrement_requests(ctx, userdata);
-    return;
-  }
-
-  fprintf(stderr, "[Mixer] Source: %s (%s)\n", info->name, info->description);
-  
-  NSValue *value = [NSValue value:info
-                     withObjCType:@encode(const pa_source_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
-                                              withObject:value
-                                           waitUntilDone:YES];
-}
-
-// --- NXSoundStream: SinkInput | SourceOutput, Client, Stream ---
-// --- SinkInput
-void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
-                   int eol, void *userdata)
-{
-  NSValue *value;
-  
-  if (eol < 0) {
-    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
-      return;
-    }
-    fprintf(stderr, "[Mixer] ERROR: Sink input callback failure\n");
-    return;
-  }
-
-  if (eol > 0) {
-    inventory_decrement_requests(ctx, userdata);
-    return;
-  }
-
-  fprintf(stderr, "[Mixer] Sink Input: %s "
-          "(has_volume:%i client index:%i sink index:%i mute:%i corked:%i)\n",
-          info->name, info->has_volume, info->client, info->sink,
-          info->mute, info->corked);
-  
-  value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
-                                              withObject:value
-                                           waitUntilDone:YES];
-}
-// --- SourceOutput
-void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
-                      int eol, void *userdata)
-{
-  if (eol < 0) {
-    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
-      return;
-    }
-    fprintf(stderr, "[Mixer] ERROR: Source output callback failure\n");
-    return;
-  }
-  
-  if (eol > 0) {
-    inventory_decrement_requests(ctx, userdata);
-    return;
-  }
-  
-  fprintf(stderr, "[Mixer] Source Output: %s\n", info->name);
-  
-  NSValue *value = [NSValue value:info
-                     withObjCType:@encode(const pa_source_output_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
-                                              withObject:value
-                                           waitUntilDone:YES];
-}
-// --- Client
-void client_cb(pa_context *ctx, const pa_client_info *info,
-               int eol, void *userdata)
-{
-  NSValue *value;
-  
-  if (eol < 0) {
-    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
-      return;
-    }
-    fprintf(stderr, "[Mixer] ERROR: Client callback failure\n");
-    return;
-  }
-
-  if (eol > 0) {
-    inventory_decrement_requests(ctx, userdata);
-    return;
-  }
-  
-  fprintf(stderr, "[Mixer] Client: %s (index:%i)\n", info->name, info->index);
-  
-  value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
-                                              withObject:value
-                                           waitUntilDone:YES];
-}
-
-// --- Saved Stream ---
-void ext_stream_restore_read_cb(pa_context *ctx,
-                                const pa_ext_stream_restore_info *info,
-                                int eol, void *userdata)
-{
-  NSValue *value;
-
-  if (eol < 0) {
-    fprintf(stderr, "[Mixer] Failed to initialize stream_restore extension: %s\n",
-            pa_strerror(pa_context_errno(ctx)));
-    return;
-  }
-
-  if (eol > 0) {
-    inventory_decrement_requests(ctx, userdata);
-    return;
-  }
-
-  // fprintf(stderr, "[Mixer] Stream: %s for device %s\n", info->name);
-
-  value = [NSValue value:info
-            withObjCType:@encode(const pa_ext_stream_restore_info)];
-  
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
-                                              withObject:value
-                                           waitUntilDone:YES];
-}
-
-// --- Card and Server ---
+// --- NXSoundServer: Server and Card---
 void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
 {
   if (eol < 0) {
     if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
       return;
     }
-    fprintf(stderr, "[Mixer] ERROR: Card callback failure\n");
+    fprintf(stderr, "[SoundKit] ERROR: Card callback failure\n");
     return;
   }
   else if (eol > 0) {
@@ -209,7 +44,7 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
   else {
     NSValue *value;
     
-    fprintf(stderr, "[Mixer] Card: %s\n", info->name);
+    fprintf(stderr, "[SoundKit] Card: %s\n", info->name);
     value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
     [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateCard:)
                                                 withObject:value
@@ -221,13 +56,170 @@ void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
   NSValue *value;
      
   if (!info) {
-    fprintf(stderr, "[Mixer] Server info callback failure\n");
+    fprintf(stderr, "[SoundKit] Server info callback failure\n");
     return;
   }
   inventory_decrement_requests(ctx, userdata);
   
   value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
   [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateServer:)
+                                              withObject:value
+                                           waitUntilDone:YES];
+}
+
+// --- NXSoundOut: Sink --> [Card, Server] ---
+void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
+{
+  NSValue *value;
+  
+  if (eol < 0) {
+    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
+      return;
+    }
+    fprintf(stderr, "[SoundKit] ERROR: Sink callback failure\n");
+    return;
+  }
+
+  if (eol > 0) {
+    inventory_decrement_requests(ctx, userdata);
+    return;
+  }
+
+  fprintf(stderr, "[SoundKit] Sink: %s (%s)\n", info->name, info->description);
+  value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
+  [(NXSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
+                                               withObject:value
+                                            waitUntilDone:YES];
+}
+
+// --- NXSoundIn: Source --> [Card, Server] ---
+void source_cb(pa_context *ctx, const pa_source_info *info,
+               int eol, void *userdata)
+{
+  if (eol < 0) {
+    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
+      return;
+    }
+    fprintf(stderr, "[SoundKit] ERROR: Source callback failure\n");
+    return;
+  }
+
+  if (eol > 0) {
+    inventory_decrement_requests(ctx, userdata);
+    return;
+  }
+
+  fprintf(stderr, "[SoundKit] Source: %s (%s)\n", info->name, info->description);
+  NSValue *value = [NSValue value:info
+                     withObjCType:@encode(const pa_source_info)];
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
+                                              withObject:value
+                                           waitUntilDone:YES];
+}
+
+// --- NXSoundStream: SinkInput | SourceOutput, Client, Saved Stream(?) ---
+// SinkInput
+void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
+                   int eol, void *userdata)
+{
+  NSValue *value;
+  
+  if (eol < 0) {
+    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
+      return;
+    }
+    fprintf(stderr, "[SoundKit] ERROR: Sink input callback failure\n");
+    return;
+  }
+
+  if (eol > 0) {
+    inventory_decrement_requests(ctx, userdata);
+    return;
+  }
+
+  fprintf(stderr, "[SoundKit] Sink Input: %s "
+          "(has_volume:%i client index:%i sink index:%i mute:%i corked:%i)\n",
+          info->name, info->has_volume, info->client, info->sink,
+          info->mute, info->corked);
+  
+  value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
+                                              withObject:value
+                                           waitUntilDone:YES];
+}
+// SourceOutput
+void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
+                      int eol, void *userdata)
+{
+  if (eol < 0) {
+    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
+      return;
+    }
+    fprintf(stderr, "[SoundKit] ERROR: Source output callback failure\n");
+    return;
+  }
+  
+  if (eol > 0) {
+    inventory_decrement_requests(ctx, userdata);
+    return;
+  }
+  
+  fprintf(stderr, "[SoundKit] Source Output: %s\n", info->name);
+  NSValue *value = [NSValue value:info
+                     withObjCType:@encode(const pa_source_output_info)];
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
+                                              withObject:value
+                                           waitUntilDone:YES];
+}
+// Client
+void client_cb(pa_context *ctx, const pa_client_info *info,
+               int eol, void *userdata)
+{
+  NSValue *value;
+  
+  if (eol < 0) {
+    if (pa_context_errno(ctx) == PA_ERR_NOENTITY) {
+      return;
+    }
+    fprintf(stderr, "[SoundKit] ERROR: Client callback failure\n");
+    return;
+  }
+
+  if (eol > 0) {
+    inventory_decrement_requests(ctx, userdata);
+    return;
+  }
+  
+  fprintf(stderr, "[SoundKit] Client: %s (index:%i)\n", info->name, info->index);
+  value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
+                                              withObject:value
+                                           waitUntilDone:YES];
+}
+// Saved Stream
+void ext_stream_restore_read_cb(pa_context *ctx,
+                                const pa_ext_stream_restore_info *info,
+                                int eol, void *userdata)
+{
+  NSValue *value;
+
+  if (eol < 0) {
+    fprintf(stderr, "[SoundKit] Failed to initialize stream_restore extension: %s\n",
+            pa_strerror(pa_context_errno(ctx)));
+    return;
+  }
+
+  if (eol > 0) {
+    inventory_decrement_requests(ctx, userdata);
+    return;
+  }
+
+  // fprintf(stderr, "[SoundKit] Stream: %s for device %s\n", info->name);
+
+  value = [NSValue value:info
+            withObjCType:@encode(const pa_ext_stream_restore_info)];
+  
+  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -252,7 +244,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
       }
       else {
         if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
-          fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_info_by_index() failed\n");
+          fprintf(stderr, "[SoundKit] ERROR: pa_context_get_sink_info_by_index() failed\n");
           return;
         }
         pa_operation_unref(o);
@@ -269,7 +261,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
       }
       else {
         if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
-          fprintf(stderr, "[Mixer] ERROR: pa_context_get_source_info_by_index() failed\n");
+          fprintf(stderr, "[SoundKit] ERROR: pa_context_get_source_info_by_index() failed\n");
           return;
         }
         pa_operation_unref(o);
@@ -286,7 +278,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
       }
       else {
         if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
-          fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
+          fprintf(stderr, "[SoundKit] ERROR: pa_context_get_sink_input_info() failed\n");
           return;
         }
         pa_operation_unref(o);
@@ -304,7 +296,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
       else {
         o = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
         if (!o) {
-          fprintf(stderr, "[Mixer] ERROR: pa_context_get_sink_input_info() failed\n");
+          fprintf(stderr, "[SoundKit] ERROR: pa_context_get_sink_input_info() failed\n");
           return;
         }
         pa_operation_unref(o);
@@ -321,7 +313,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
       }
       else {
         if (!(o = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
-          fprintf(stderr, "[Mixer] ERROR: pa_context_get_client_info() failed\n");
+          fprintf(stderr, "[SoundKit] ERROR: pa_context_get_client_info() failed\n");
           return;
         }
         pa_operation_unref(o);
@@ -332,7 +324,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SERVER:
     {
       if (!(o = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
-        fprintf(stderr, "[Mixer] ERROR: pa_context_get_server_info() failed\n");
+        fprintf(stderr, "[SoundKit] ERROR: pa_context_get_server_info() failed\n");
         return;
       }
       pa_operation_unref(o);
@@ -348,7 +340,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
       }
       else {
         if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
-          fprintf(stderr, "[Mixer] ERROR: pa_context_get_card_info_by_index() failed\n");
+          fprintf(stderr, "[SoundKit] ERROR: pa_context_get_card_info_by_index() failed\n");
           return;
         }
         pa_operation_unref(o);
@@ -406,7 +398,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
                                            waitUntilDone:YES];
 }
 
- // --- Initial inventory of PulseAudio objects ---
+// --- Initial inventory of PulseAudio objects ---
 
 /* Calls number of PA functions to gather information about various PA objects.
    Every called function is asynchronous and return info via callbacks. 
@@ -496,7 +488,7 @@ void inventory_start(pa_context *ctx, void *userdata)
    inventory_end. */
 void inventory_decrement_requests(pa_context *ctx, void *userdata)
 {
-  fprintf(stderr, "[SoundKit] invetory_decrement_requests: %i\n", n_outstanding);
+  // fprintf(stderr, "[SoundKit] invetory_decrement_requests: %i\n", n_outstanding);
   if (n_outstanding <= 0)
     return;
 
@@ -512,7 +504,7 @@ void inventory_end(pa_context *ctx, void *userdata)
   pa_operation  *o;
   NXSoundServer *server = (NXSoundServer *)userdata;
   
-  fprintf(stderr, "[SoundKit] --- Staring tracking of PulseAudio events!\n");
+  fprintf(stderr, "[SoundKit] --- Start tracking of PulseAudio events...\n");
   
   pa_context_set_subscribe_callback(ctx, context_subscribe_cb, userdata);
   if (!(o = pa_context_subscribe(ctx, (pa_subscription_mask_t)

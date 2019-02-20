@@ -19,12 +19,14 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "PASink.h"
-#import "PASinkInput.h"
 #import "NXSoundDevice.h"
+
+@class PASink;
 
 @interface NXSoundOut : NXSoundDevice
 {
 }
 @property (assign) PASink *sink;
+// For debuging purposes
+- (void)printDescription;
 @end

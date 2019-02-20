@@ -49,33 +49,34 @@ extern NSString *SKDeviceDidRemoveNotification;
   // Define our pulse audio loop and connection variables
   pa_mainloop		*_pa_loop;
   pa_mainloop_api	*_pa_api;
-  // pa_context		*_pa_ctx;
   pa_operation		*_pa_op;
 
-  // SoundKit objects
-  NSMutableArray        *outputList; // array of NXSoundOut objects
-  NSMutableArray        *inputList;  // array of NXSoundIn objects
-  NSMutableArray        *streamList; // array of NXSoundStream objects
-
-  // NXSoundOut
+  // NXSoundDevice
   NSMutableArray        *cardList;
+  // NXSoundOut
   NSMutableArray        *sinkList;
   NSMutableArray        *sourceList;
-  // 
+  // NXSoundStream
   NSMutableArray        *clientList;
   NSMutableArray        *sinkInputList;
   NSMutableArray        *sourceOutputList;
   NSMutableArray        *savedStreamList; // sink-input* or source-output*
 }
 
-@property (readonly) pa_context *pa_ctx;
+@property (readonly) pa_context        *pa_ctx;
 @property (readonly) SKConnectionState state;
+
 @property (readonly) NSString *userName;  // User name of the daemon process
 @property (readonly) NSString *hostName;  // Host name the daemon is running on
 @property (readonly) NSString *name;      // Server package name (usually "pulseaudio")
 @property (readonly) NSString *version;   // Version string of the daemon
 @property (readonly) NSString *defaultSinkName;
 @property (readonly) NSString *defaultSourceName;
+// SoundKit objects
+@property (readonly) NSMutableArray *outputList; // array of NXSoundOut objects
+@property (readonly) NSMutableArray *inputList;  // array of NXSoundIn objects
+@property (readonly) NSMutableArray *streamList; // array of NXSoundStream objects
+
 
 + (id)defaultServer;
 
@@ -85,7 +86,7 @@ extern NSString *SKDeviceDidRemoveNotification;
 
 @interface NXSoundServer (PulseAudio)
 
-- (PASink *)sinkWithName:(NSString *)name;
+// - (PASink *)sinkWithName:(NSString *)name;
 // - (PASink *)sinkForSinkInput:(PASinkInput *)sinkInput;
 
 @end

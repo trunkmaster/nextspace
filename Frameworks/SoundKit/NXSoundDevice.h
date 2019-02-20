@@ -21,8 +21,8 @@
 
 #import <Foundation/Foundation.h>
 #import "NXSoundServer.h"
-#import "PACard.h"
-#import "PASink.h"
+
+@class PACard;
 
 @interface NXSoundDevice : NSObject // <NXSoundParameters>
 {
@@ -35,5 +35,8 @@
 - (id)initOnHost:(NSString *)hostName;
 - (NSString *)host;
 - (NSString *)description;
+- (void)printDescription;
+
+- (NSArray *)availableProfiles;
 
 @end

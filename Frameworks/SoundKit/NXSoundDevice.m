@@ -18,6 +18,8 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import "PACard.h"
+#import "PASink.h"
 #import "NXSoundDevice.h"
 
 @implementation NXSoundDevice
@@ -50,8 +52,37 @@
 }
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"Card `%@` on server `%@`",
-                   _card.name, _server.hostName];
+  return [NSString stringWithFormat:@"PulseAudio Card `%@`", _card.name];
+}
+- (void)printDescription
+{
+  // Print header only if it's not subclass `super` call
+  if ([self class] == [NXSoundDevice class] ) {
+    fprintf(stderr, "+++ NXSoundDevice: %s +++\n", [[self description] cString]);
+  }
+  fprintf(stderr, "\t           Index : %lu\n", _card.index);
+  fprintf(stderr, "\t            Name : %s\n", [_card.name cString]);
+  fprintf(stderr, "\t    Retain Count : %lu\n", [self retainCount]);
+
+  fprintf(stderr, "\t Output Profiles : \n");
+  for (NSString *prof in _card.outProfiles) {
+    NSString *profString;
+    if ([prof isEqualToString:_card.activeProfile])
+      profString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", prof, "\e[0m"];
+    else
+      profString = [NSString stringWithFormat:@"%s%@%s", "- ", prof, ""];
+    fprintf(stderr, "\t                 %s\n", [profString cString]);
+  }
+  
+  fprintf(stderr, "\t  Input Profiles : \n");
+  for (NSString *prof in _card.inProfiles) {
+    NSString *profString;
+    if ([prof isEqualToString:_card.activeProfile])
+      profString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", prof, "\e[0m"];
+    else
+      profString = [NSString stringWithFormat:@"%s%@%s", "- ", prof, ""];
+    fprintf(stderr, "\t                 %s\n", [profString cString]);
+  }
 }
 
 // --- Card proxy --- //

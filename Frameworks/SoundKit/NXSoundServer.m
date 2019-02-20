@@ -89,9 +89,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   sourceOutputList = [NSMutableArray new];
   savedStreamList = [NSMutableArray new];
   
-  outputList = [NSMutableArray new];
-  inputList = [NSMutableArray new];
-  streamList = [NSMutableArray new];
+  _outputList = [NSMutableArray new];
+  _inputList = [NSMutableArray new];
+  _streamList = [NSMutableArray new];
   
   _pa_loop = pa_mainloop_new();
   _pa_api = pa_mainloop_get_api(_pa_loop);
@@ -137,15 +137,15 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
 @implementation NXSoundServer (PulseAudio)
 
+// Server
 - (void)updateConnectionState:(NSNumber *)state
 {
-  fprintf(stderr, "[SoundKit] connection state was updated.\n");
+  // fprintf(stderr, "[SoundKit] connection state was updated.\n");
   _state = [state intValue];
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SKServerStateDidChangeNotification
                     object:self];
 }
-
 - (void)updateServer:(NSValue *)value // server_info_cb(...)
 {
   const pa_server_info *info;
@@ -174,29 +174,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   info = malloc(sizeof(const pa_card_info));
   [value getValue:(void *)info];
 
-  fprintf(stderr, "Card: %s (%i ports, %i profiles)\n",
-          info->name, info->n_ports, info->n_profiles);
-  fprintf(stderr, "\tDriver: %s\n", info->driver);
-  
-  fprintf(stderr, "\tProfiles:\n");
-  for (unsigned i = 0; i < info->n_profiles; i++) {
-    fprintf(stderr, "\t\t[%i] %s (%s)\n",
-            info->profiles2[i]->priority,
-            info->profiles2[i]->name, info->profiles2[i]->description);
-  }
-  fprintf(stderr, "\tActive profile: [%i] %s\n",
-          info->active_profile->priority, info->active_profile->name);
-
-  fprintf(stderr, "\tPorts:\n");
-  for (unsigned i = 0; i < info->n_ports; i++) {
-    fprintf(stderr, "\t\t[%i] %s (%s)\n",
-            info->ports[i]->priority,
-            info->ports[i]->name, info->ports[i]->description);
-  }
-
   for (card in cardList) {
     if (card.index == info->index) {
-      NSLog(@"Update Card: %s", info->name);
+      fprintf(stderr, "[SoundKit] Update Card: %s.\n", info->name);
       [card updateWithValue:value];
       isUpdated = YES;
       break;
@@ -206,7 +186,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   if (isUpdated == NO) {
     NXSoundDevice *soundDevice;
     card = [[PACard alloc] init];
-    NSLog(@"Add Card: %s", info->name);
+    fprintf(stderr, "[SoundKit] Add Card: %s.\n", info->name);
     [card updateWithValue:value];
     [cardList addObject:card];
     [card release];
@@ -244,7 +224,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (PASink *sink in sinkList) {
     if (sink.index == info->index) {
-      NSLog(@"Update Sink: %s", info->name);
+      fprintf(stderr, "[SoundKit] Update Sink: %s.\n", info->name);
       [sink updateWithValue:value];
       isUpdated = YES;
       break;
@@ -257,7 +237,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   
     // Create Sink
     sink = [[PASink alloc] init];
-    NSLog(@"Add Sink: %s", info->name);
+    fprintf(stderr, "[SoundKit] Add Sink: %s.\n", info->name);
     [sink updateWithValue:value];
     [sinkList addObject:sink];
     [sink release];
@@ -266,44 +246,11 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     soundOut = [[NXSoundOut alloc] init];
     soundOut.card = [self cardWithIndex:sink.cardIndex];
     soundOut.sink = sink;
-    [outputList addObject:soundOut];
-    NSLog(@"New SoundOut: %@", [soundOut description]);
-    NSLog(@"\t             Sink: %@", soundOut.sink.name);
-    NSLog(@"\t Sink Description: %@", soundOut.sink.description);
-    NSLog(@"\t      Active Port: %@", soundOut.sink.activePortDesc);
-    NSLog(@"\t     Card Profile: %@", soundOut.card.activeProfile);
-    NSLog(@"\t           Server: %@ %@ on %@@%@", _name, _version, _userName, _hostName);
-    NSLog(@"\t     Retain Count: %lu", [soundOut retainCount]);
-       
+    [_outputList addObject:soundOut];
     [soundOut release];
   }
   
   free((void *)info);  
-}
-- (void)removeSinkWithIndex:(NSNumber *)index // context_subscribe_cb(...)
-{
-  PASink     *sink;
-  NSUInteger idx = [index unsignedIntegerValue];
-
-  for (PASink *s in sinkList) {
-    if (s.index == idx) {
-      sink = s;
-      break;
-    }
-  }
-
-  if (sink != nil) {
-    [sinkList removeObject:sink];
-  }  
-}
-- (PASink *)sinkWithName:(NSString *)name
-{
-  for (PASink *sink in sinkList) {
-    if ([name isEqualToString:sink.name] != NO) {
-      return sink;
-    }
-  }
-  return nil;
 }
 - (PASink *)sinkWithIndex:(NSUInteger)index
 {
@@ -314,9 +261,81 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
   return nil;
 }
+- (void)removeSinkWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+{
+  PASink *sink = [self sinkWithIndex:[index unsignedIntegerValue]];
 
-// client_sb(...)
-- (void)updateClient:(NSValue *)value
+  if (sink != nil) {
+    [sinkList removeObject:sink];
+  }  
+}
+
+// TODO: Source
+- (void)updateSource:(NSValue *)value // source_cb(...)
+{
+}
+- (void)removeSourceWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+{
+}
+
+// Sink Input
+- (void)updateSinkInput:(NSValue *)value // sink_input_cb(...)
+{
+  const pa_sink_input_info *info;
+  BOOL  isUpdated = NO;
+  PASinkInput *sinkInput;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_sink_input_info));
+  [value getValue:(void *)info];
+
+  for (sinkInput in sinkInputList) {
+    if (sinkInput.index == info->index) {
+      fprintf(stderr, "[SoundKit] Update Sink Input: %s.\n", info->name);
+      [sinkInput updateWithValue:value];
+      isUpdated = YES;
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    sinkInput = [[PASinkInput alloc] init];
+    fprintf(stderr, "[SoundKit] Add Sink Input: %s.\n", info->name);
+    [sinkInput updateWithValue:value];
+    sinkInput.context = _pa_ctx;
+    [sinkInputList addObject:sinkInput];
+    [sinkInput release];
+  }
+  
+  free((void *)info);
+}
+- (PASinkInput *)sinkInputWithIndex:(NSUInteger)index
+{
+  for (PASinkInput *sinkInput in sinkInputList) {
+    if (sinkInput.index == index) {
+      return sinkInput;
+    }
+  }
+  return nil;
+}
+- (void)removeSinkInputWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+{
+  PASinkInput *sinkInput = [self sinkInputWithIndex:[index unsignedIntegerValue]];
+  if (sinkInput != nil) {
+    [sinkInputList removeObject:sinkInput];
+  }
+}
+
+// TODO: Source Output
+- (void)updateSourceOutput:(NSValue *)value // source_outout_cb(...)
+{
+}
+- (void)removeSourceOutputWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+{
+}
+
+// Client
+- (void)updateClient:(NSValue *)value // client_sb(...)
 {
   const pa_client_info *info;
   BOOL                 isUpdated = NO;
@@ -327,6 +346,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (PAClient *c in clientList) {
     if ([c index] == info->index) {
+      fprintf(stderr, "[SoundKit] Update Cleint: %s.\n", info->name);
       [c updateWithValue:value];
       isUpdated = YES;
       break;
@@ -335,7 +355,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   if (isUpdated == NO) {
     PAClient *client = [[PAClient alloc] init];
-    NSLog(@"Add Client: %s", info->name);
+    fprintf(stderr, "[SoundKit] Add Client: %s.\n", info->name);
     [client updateWithValue:value];
     [clientList addObject:client];
     [client release];
@@ -343,8 +363,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   
   free((void *)info);
 }
-// context_subscribe_cb(...)
-- (void)removeClientWithIndex:(NSNumber *)index
+- (void)removeClientWithIndex:(NSNumber *)index // context_subscribe_cb(...)
 {
   PAClient *client;
 
@@ -360,8 +379,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
 }
 
-// ext_stream_restore_read_cb(...)
-- (void)updateStream:(NSValue *)value
+// Restored Stream
+- (void)updateStream:(NSValue *)value // ext_stream_restore_read_cb(...)
 {
   const pa_ext_stream_restore_info *info;
   BOOL                             isUpdated = NO;
@@ -372,7 +391,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   [value getValue:(void *)info];
   
   streamName = [NSString stringWithCString:info->name];
-  for (PAStream *s in streamList) {
+  for (PAStream *s in _streamList) {
     if ([[s name] isEqualToString:streamName]) {
       [s updateWithValue:value];
       isUpdated = YES;
@@ -383,74 +402,11 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   if (isUpdated == NO) {
     PAStream *s = [[PAStream alloc] init];
     [s updateWithValue:value];
-    [streamList addObject:s];
+    [_streamList addObject:s];
     [s release];
   }
   
   free((void *)info);
-}
-
-- (void)updateSinkInput:(NSValue *)value
-{
-  const pa_sink_input_info *info;
-  BOOL  isUpdated = NO;
-  PASinkInput *sinkInput;
-
-  // Convert PA structure into NSDictionary
-  info = malloc(sizeof(const pa_sink_input_info));
-  [value getValue:(void *)info];
-
-  for (sinkInput in sinkInputList) {
-    if (sinkInput.index == info->index) {
-      NSLog(@"Update Sink Input: %s", info->name);
-      [sinkInput updateWithValue:value];
-      isUpdated = YES;
-      break;
-    }
-  }
-
-  if (isUpdated == NO) {
-    sinkInput = [[PASinkInput alloc] init];
-    NSLog(@"Add Sink Input: %s", info->name);
-    [sinkInput updateWithValue:value];
-    sinkInput.context = _pa_ctx;
-    [sinkInputList addObject:sinkInput];
-    [sinkInput release];
-  }
-  
-  free((void *)info);
-}
-// context_subscribe_cb(...)
-- (void)removeSinkInputWithIndex:(NSNumber *)index
-{
-  PASinkInput *sinkInput;
-  NSUInteger  idx = [index unsignedIntegerValue];
-
-  for (PASinkInput *si in sinkInputList) {
-    if (si.index == idx) {
-      sinkInput = si;
-      break;
-    }
-  }
-
-  if (sinkInput != nil) {
-    [sinkInputList removeObject:sinkInput];
-  }
-}
-
-- (void)updateSource:(NSValue *)value
-{
-}
-// context_subscribe_cb(...)
-- (void)removeSourceWithIndex:(NSNumber *)index
-{
-}
-- (void)updateSourceOutput:(NSValue *)value
-{
-}
-// context_subscribe_cb(...)
-- (void)removeSourceOutputWithIndex:(NSNumber *)index
-{
 }
 
 @end

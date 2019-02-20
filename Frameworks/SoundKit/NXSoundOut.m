@@ -1,6 +1,15 @@
 /* -*- mode: objc -*- */
 /*
-  Project: SoundKit framework.
+      Project: SoundKit framework.
+
+  Description: NXSoundOut is the one of the final link in chain:
+               NXSoundServer <- NXSoundDevice |-> NXSoundOut
+               NXSoundOut has acces to own device (Sink) and inherited from 
+               NXSoundDevice (Server and Card). NXSoundOut is enough if your
+               application will read info about sound output as well as change 
+               sound device properties (volume, balance, mute, profile, port).
+               To play sound you also need NXSoundStream connected to NXSounOut.
+               (see NXSoundStream description).
 
   Copyright (C) 2019 Sergii Stoian
 
@@ -19,6 +28,8 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import "PACard.h"
+#import "PASink.h"
 #import "NXSoundOut.h"
 
 @implementation NXSoundOut
@@ -30,22 +41,46 @@
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"`%@` on %@. Active port: %@",
-                   _sink.description, super.card.name, _sink.activePortDesc];
+  return [NSString stringWithFormat:@"PulseAudio Sink `%@`", _sink.description];
+}
+
+// For debuging purposes
+- (void)printDescription
+{
+  fprintf(stderr, "+++ NXSoundDevice: %s +++\n", [[super description] cString]);
+  [super printDescription];
+  
+  fprintf(stderr, "+++ NXSoundOut: %s +++\n", [[self description] cString]);
+  fprintf(stderr, "\t               Sink : %s\n",  [_sink.name cString]);
+  fprintf(stderr, "\t   Sink Description : %s\n",  [_sink.description cString]);
+  fprintf(stderr, "\t        Active Port : %s\n",  [_sink.activePort cString]);
+  fprintf(stderr, "\t         Card Index : %lu\n", _sink.cardIndex);
+  fprintf(stderr, "\t       Card Profile : %s\n",  [super.card.activeProfile cString]);
+  fprintf(stderr, "\t       Retain Count : %lu\n", [self retainCount]);
+
+  fprintf(stderr, "\t    Available Ports : \n");
+  for (NSString *port in [self availablePorts]) {
+    NSString *portString;
+    if ([port isEqualToString:_sink.activePort])
+      portString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", port, "\e[0m"];
+    else
+      portString = [NSString stringWithFormat:@"%s%@%s", "- ", port, ""];
+    fprintf(stderr, "\t                    %s\n", [portString cString]);
+  }
 }
 
 /*--- Sink proxy ---*/
 - (NSArray *)availablePorts
 {
   if (_sink == nil) {
-    NSLog(@"SoundDevice: avaliablePorts was called without Sink was being set.");
+    NSLog(@"SKSoundOut: avaliablePorts was called without Sink was being set.");
     return nil;
   }
-  return _sink.portsDesc;
+  return _sink.ports;
 }
 - (NSString *)activePort
 {
-  return _sink.activePortDesc;
+  return _sink.activePort;
 }
 - (void)setActivePort:(NSString *)portName
 {
