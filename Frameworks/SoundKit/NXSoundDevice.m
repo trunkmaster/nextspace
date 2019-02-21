@@ -26,21 +26,22 @@
 
 - (void)dealloc
 {
-  [_server release];
+  NSLog(@"[NXSoundDevice] dealloc");
+  [_card release];
   [super dealloc];
 }
 
 - (id)init
 {
-  return [self initOnHost:nil];
+  return [self initWithServer:[NXSoundServer sharedServer]];
 }
 
-- (id)initOnHost:(NSString *)hostName
+- (id)initWithServer:(NXSoundServer *)server
 {
   if ((self = [super init]) == nil)
     return nil;
   
-  _server = [[NXSoundServer defaultServer] retain];
+  _server = server;
   
   return self;
 }

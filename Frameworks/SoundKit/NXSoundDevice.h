@@ -28,11 +28,11 @@
 {
   // NXSoundServer *_server;
 }
-@property (assign)   PACard        *card;
+@property (retain)   PACard        *card;
 @property (readonly) NXSoundServer *server;
 
 - (id)init;
-- (id)initOnHost:(NSString *)hostName;
+- (id)initWithServer:(NXSoundServer *)server;
 - (NSString *)host;
 - (NSString *)description;
 - (void)printDescription;

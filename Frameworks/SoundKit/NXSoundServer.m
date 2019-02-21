@@ -39,13 +39,16 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
 @implementation NXSoundServer
 
-+ (id)defaultServer
++ (void)initialize
 {
-  if (_server == nil) {
-    _server = [[NXSoundServer alloc] init];
+  if ([NXSoundServer class] == self) {
+    _server = [NXSoundServer new];
   }
+}
 
-  return [_server autorelease];
++ (id)sharedServer
+{
+  return _server;
 }
 
 - (void)dealloc
@@ -58,6 +61,13 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   pa_context_unref(_pa_ctx);
   pa_mainloop_free(_pa_loop);
   fprintf(stderr, "[SoundKit] connection to server closed.\n");
+
+  [_userName release];
+  [_hostName release];
+  [_name release];
+  [_version release];
+  [_defaultSinkName release];
+  [_defaultSourceName release];
   
   [super dealloc];
 }
@@ -89,9 +99,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   sourceOutputList = [NSMutableArray new];
   savedStreamList = [NSMutableArray new];
   
-  _outputList = [NSMutableArray new];
-  _inputList = [NSMutableArray new];
-  _streamList = [NSMutableArray new];
+  // _outputList = [NSMutableArray new];
+  // _inputList = [NSMutableArray new];
+  // _streamList = [NSMutableArray new];
   
   _pa_loop = pa_mainloop_new();
   _pa_api = pa_mainloop_get_api(_pa_loop);
@@ -118,16 +128,39 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   return self;
 }
 
+- (NXSoundOut *)outputWithSink:(PASink *)sink
+{
+  NXSoundOut *output;
+
+  // Create NXSoundOut
+  output = [[NXSoundOut alloc] init];
+  output.card = [self cardWithIndex:sink.cardIndex];
+  output.sink = sink;
+
+  return [output autorelease];
+}
 - (NXSoundOut *)defaultOutput
 {
-  fprintf(stderr, "[SoundKit] default output: %s\n",
-          [_defaultSinkName cString]);
-  return nil;
+  return [self outputWithSink:[self sinkWithName:_defaultSinkName]];
 }
+- (NSArray *)outputList
+{
+  NSMutableArray *list = [NSMutableArray new];
+
+  for (PASink *sink in sinkList) {
+    [list addObject:[self outputWithSink:sink]];
+  }
+  return [list autorelease];
+}
+
 - (NXSoundIn *)defaultInput
 {
-  fprintf(stderr, "[SoundKit] default intput: %s\n",
-          [_defaultSourceName cString]);
+  fprintf(stderr, "[SoundKit] default intput: %s\n", [_defaultSourceName cString]);
+  return nil;
+}
+- (NSArray *)inputList
+{
+  fprintf(stderr, "[SoundKit] inputList is not implemented yet.\n");
   return nil;
 }
 
@@ -176,7 +209,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (card in cardList) {
     if (card.index == info->index) {
-      fprintf(stderr, "[SoundKit] Update Card: %s.\n", info->name);
+      fprintf(stderr, "[SoundKit] Card Update: %s.\n", info->name);
       [card updateWithValue:value];
       isUpdated = YES;
       break;
@@ -186,7 +219,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   if (isUpdated == NO) {
     NXSoundDevice *soundDevice;
     card = [[PACard alloc] init];
-    fprintf(stderr, "[SoundKit] Add Card: %s.\n", info->name);
+    fprintf(stderr, "[SoundKit] Card Add: %s.\n", info->name);
     [card updateWithValue:value];
     [cardList addObject:card];
     [card release];
@@ -241,13 +274,6 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     [sink updateWithValue:value];
     [sinkList addObject:sink];
     [sink release];
-
-    // Create NXSoundOut
-    soundOut = [[NXSoundOut alloc] init];
-    soundOut.card = [self cardWithIndex:sink.cardIndex];
-    soundOut.sink = sink;
-    [_outputList addObject:soundOut];
-    [soundOut release];
   }
   
   free((void *)info);  
@@ -256,6 +282,15 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 {
   for (PASink *sink in sinkList) {
     if (sink.index == index) {
+      return sink;
+    }
+  }
+  return nil;
+}
+- (PASink *)sinkWithName:(NSString *)name
+{
+  for (PASink *sink in sinkList) {
+    if ([name isEqualToString:sink.name]) {
       return sink;
     }
   }
@@ -391,7 +426,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   [value getValue:(void *)info];
   
   streamName = [NSString stringWithCString:info->name];
-  for (PAStream *s in _streamList) {
+  for (PAStream *s in savedStreamList) {
     if ([[s name] isEqualToString:streamName]) {
       [s updateWithValue:value];
       isUpdated = YES;
@@ -402,7 +437,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   if (isUpdated == NO) {
     PAStream *s = [[PAStream alloc] init];
     [s updateWithValue:value];
-    [_streamList addObject:s];
+    [savedStreamList addObject:s];
     [s release];
   }
   

@@ -26,7 +26,8 @@
 @interface NXSoundOut : NXSoundDevice
 {
 }
-@property (assign) PASink *sink;
+@property (retain) PASink *sink;
+
 // For debuging purposes
 - (void)printDescription;
 @end

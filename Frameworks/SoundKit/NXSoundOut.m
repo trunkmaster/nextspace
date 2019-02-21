@@ -36,6 +36,8 @@
 
 - (void)dealloc
 {
+  NSLog(@"[NXSoundOut] dealloc");
+  [_sink release];
   [super dealloc];
 }
 
@@ -51,7 +53,8 @@
   [super printDescription];
   
   fprintf(stderr, "+++ NXSoundOut: %s +++\n", [[self description] cString]);
-  fprintf(stderr, "\t               Sink : %s\n",  [_sink.name cString]);
+  fprintf(stderr, "\t               Sink : %s (%lu)\n",  [_sink.name cString],
+          [_sink retainCount]);
   fprintf(stderr, "\t   Sink Description : %s\n",  [_sink.description cString]);
   fprintf(stderr, "\t        Active Port : %s\n",  [_sink.activePort cString]);
   fprintf(stderr, "\t         Card Index : %lu\n", _sink.cardIndex);

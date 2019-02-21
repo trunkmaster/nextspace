@@ -73,20 +73,24 @@ extern NSString *SKDeviceDidRemoveNotification;
 @property (readonly) NSString *defaultSinkName;
 @property (readonly) NSString *defaultSourceName;
 // SoundKit objects
-@property (readonly) NSMutableArray *outputList; // array of NXSoundOut objects
-@property (readonly) NSMutableArray *inputList;  // array of NXSoundIn objects
-@property (readonly) NSMutableArray *streamList; // array of NXSoundStream objects
+// @property (readonly) NSMutableArray *outputList; // array of NXSoundOut objects
+// @property (readonly) NSMutableArray *inputList;  // array of NXSoundIn objects
+// @property (readonly) NSMutableArray *streamList; // array of NXSoundStream objects
 
 
-+ (id)defaultServer;
++ (id)sharedServer;
 
 - (id)initOnHost:(NSString *)hostName;
+
+- (NXSoundOut *)defaultOutput;
+- (NSArray *)outputList;
 
 @end
 
 @interface NXSoundServer (PulseAudio)
 
-// - (PASink *)sinkWithName:(NSString *)name;
+- (PACard *)cardWithIndex:(NSUInteger)index;
+- (PASink *)sinkWithName:(NSString *)name;
 // - (PASink *)sinkForSinkInput:(PASinkInput *)sinkInput;
 
 @end

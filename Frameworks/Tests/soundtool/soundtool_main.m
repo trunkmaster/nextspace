@@ -22,6 +22,7 @@
 {
   NSLog(@"SoundKitClient: dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  fprintf(stderr, "\tRetain Count: %lu\n", [server retainCount]);
   [server release];
   [super dealloc];
 }
@@ -30,8 +31,9 @@
 {
   self = [super init];
 
-  server = [NXSoundServer defaultServer];
-  
+  // 1. Connect to PulseAudio on locahost
+  server = [NXSoundServer sharedServer];
+  // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(connectionStateChanged:)
@@ -61,55 +63,41 @@
 {
   // Server
   fprintf(stderr, "=== Sound Server ===\n");
-  fprintf(stderr, "\t     Name: %s\n", [server.name cString]);
-  fprintf(stderr, "\t  Version: %s\n", [server.version cString]);
-  fprintf(stderr, "\t Username: %s\n", [server.userName cString]);
-  fprintf(stderr, "\t Hostname: %s\n", [server.hostName cString]);
+  fprintf(stderr, "\t        Name: %s\n", [server.name cString]);
+  fprintf(stderr, "\t     Version: %s\n", [server.version cString]);
+  fprintf(stderr, "\t    Username: %s\n", [server.userName cString]);
+  fprintf(stderr, "\t    Hostname: %s\n", [server.hostName cString]);
+  fprintf(stderr, "\tRetain Count: %lu\n", [server retainCount]);
   
-  // Sound Out
-  fprintf(stderr, "=== SoundOut ===\n");
-  for (NXSoundOut *sout in server.outputList) {
+  // // Sound Out
+  // fprintf(stderr, "=== SoundOut ===\n");
+  // for (NXSoundOut *sout in server.outputList) {
+  //   [sout printDescription];
+  // }
+}
+
+- (NXSoundOut *)defaultSoundOut
+{
+  NXSoundOut *sOut;
+  // NXSoundStream *sStream;
+  // sStream = [[NXSoundStream alloc] initWithDevice:sOut];
+
+  for (NXSoundOut *sout in [server outputList]) {
     [sout printDescription];
   }
 
+  sOut = [server defaultOutput];
+  fprintf(stderr, "========= Default SoundOut =========\n");
+  [sOut printDescription];
+
+  return sOut;
 }
 
 - (void)connectionStateChanged:(NSNotification *)notif
 {
-  // NSLog(@"Connection state changed.");
-  if ([notif object] == server) {
-    switch (server.state) {
-    case SKServerNoConnnectionState:
-      NSLog(@"Server state is Unconnected.");
-      break;
-    case SKServerConnectingState:
-      NSLog(@"Server state is Connecting.");
-      break;
-    case SKServerAuthorizingState:
-      NSLog(@"Server state is Authorizing.");
-      break;
-    case SKServerSettingNameState:
-      NSLog(@"Server state is Setting Name.");
-      break;
-    case SKServerInventoryState:
-      NSLog(@"Server state is Inventory.");
-      break;
-    case SKServerReadyState:
-      NSLog(@"Server state is Ready.");
-      [self describeSoundSystem];
-      break;
-    case SKServerFailedState:
-      NSLog(@"Server state is Failed.");
-      isRunning = NO;
-      break;
-    case SKServerTerminatedState:
-      NSLog(@"Server state is Terminated.");
-      isRunning = NO;
-      break;
-    default:
-      isRunning = NO;
-      NSLog(@"Server state is Unknown.");
-    }
+  if (server.state == SKServerReadyState) {
+    [self describeSoundSystem];
+    [self defaultSoundOut];
   }
 }
 
