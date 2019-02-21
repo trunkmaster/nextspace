@@ -1,0 +1,48 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "addPlaylist:",
+	    "eject:",
+	    "next:",
+	    "pause:",
+	    "play:",
+	    "prev:",
+	    "repeat:",
+	    "shuffle:",
+	    "toggleSongInspector:"
+	);
+	Super = NSObject;
+    };
+    Player = {
+	Actions = (
+	    "eject:",
+	    "next:",
+	    "pause:",
+	    "play:",
+	    "prev:",
+	    "repeat:",
+	    "shuffle:",
+	    "stop:"
+	);
+	Outlets = (
+	    albumTitle,
+	    artistName,
+	    songTitle,
+	    time,
+	    track,
+	    progressBox,
+	    progressSlider,
+	    playBtn,
+	    pauseBtn,
+	    stopBtn,
+	    nextBtn,
+	    prevBtn,
+	    repeatBtn,
+	    shuffleBtn,
+	    ejectBtn,
+	    window
+	);
+	Super = NSObject;
+    };
+}

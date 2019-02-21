@@ -1,0 +1,24 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AppController = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "addPlaylist:",
+	    "eject:",
+	    "next:",
+	    "pause:",
+	    "play:",
+	    "prev:",
+	    "repeat:",
+	    "shuffle:",
+	    "toggleSongInspector:"
+	);
+	Super = NSObject;
+    };
+}
