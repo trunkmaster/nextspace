@@ -6,6 +6,7 @@
 @interface Player : NSObject
 {
   id window;
+  id infoView;
   
   id albumTitle;
   id artistName;

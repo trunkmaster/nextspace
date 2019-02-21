@@ -41,7 +41,8 @@
 	    repeatBtn,
 	    shuffleBtn,
 	    ejectBtn,
-	    window
+	    window,
+	    infoView
 	);
 	Super = NSObject;
     };
