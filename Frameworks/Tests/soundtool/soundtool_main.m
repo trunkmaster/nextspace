@@ -36,7 +36,7 @@
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
-       selector:@selector(connectionStateChanged:)
+       selector:@selector(serverStateChanged:)
            name:SKServerStateDidChangeNotification
          object:server];
   
@@ -93,7 +93,7 @@
   return sOut;
 }
 
-- (void)connectionStateChanged:(NSNotification *)notif
+- (void)serverStateChanged:(NSNotification *)notif
 {
   if (server.state == SKServerReadyState) {
     [self describeSoundSystem];
