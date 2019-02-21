@@ -26,18 +26,18 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	PAClient.m \
 	PAStream.m \
 	\
-	NXSoundServer.m \
-	NXSoundServerCallbacks.m \
-	NXSoundDevice.m \
-	NXSoundOut.m \
-	NXSoundIn.m
+	SKSoundServer.m \
+	SKSoundServerCallbacks.m \
+	SKSoundDevice.m \
+	SKSoundOut.m \
+	SKSoundIn.m
 endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
-	NXSoundServer.h \
-	NXSoundDevice.h \
-	NXSoundOut.h \
-	NXSoundIn.h
+	SKSoundServer.h \
+	SKSoundDevice.h \
+	SKSoundOut.h \
+	SKSoundIn.h
 
 $(FRAMEWORK_NAME)_RESOURCE_FILES = 
 

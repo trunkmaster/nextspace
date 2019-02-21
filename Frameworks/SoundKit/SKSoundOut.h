@@ -19,11 +19,11 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "NXSoundDevice.h"
+#import "SKSoundDevice.h"
 
 @class PASink;
 
-@interface NXSoundOut : NXSoundDevice
+@interface SKSoundOut : SKSoundDevice
 {
 }
 @property (retain) PASink *sink;

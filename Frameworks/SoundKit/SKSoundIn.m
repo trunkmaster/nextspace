@@ -19,9 +19,7 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "NXSoundDevice.h"
+#import "SKSoundIn.h"
 
-@interface NXSoundIn : NXSoundDevice
-{
-}
+@implementation SKSoundIn
 @end

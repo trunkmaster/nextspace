@@ -19,24 +19,9 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <Foundation/Foundation.h>
-#import "NXSoundServer.h"
+#import "SKSoundDevice.h"
 
-@class PACard;
-
-@interface NXSoundDevice : NSObject // <NXSoundParameters>
+@interface SKSoundIn : SKSoundDevice
 {
-  // NXSoundServer *_server;
 }
-@property (retain)   PACard        *card;
-@property (readonly) NXSoundServer *server;
-
-- (id)init;
-- (id)initWithServer:(NXSoundServer *)server;
-- (NSString *)host;
-- (NSString *)description;
-- (void)printDescription;
-
-- (NSArray *)availableProfiles;
-
 @end

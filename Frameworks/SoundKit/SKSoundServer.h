@@ -22,8 +22,8 @@
 #import <pulse/pulseaudio.h>
 #import <Foundation/Foundation.h>
 
-@class NXSoundOut;
-@class NXSoundIn;
+@class SKSoundOut;
+@class SKSoundIn;
 
 @class PACard;
 @class PASink;
@@ -44,19 +44,19 @@ extern NSString *SKDeviceDidAddNotification;
 extern NSString *SKDeviceDidChangeNotification;
 extern NSString *SKDeviceDidRemoveNotification;
 
-@interface NXSoundServer : NSObject
+@interface SKSoundServer : NSObject
 {
   // Define our pulse audio loop and connection variables
   pa_mainloop		*_pa_loop;
   pa_mainloop_api	*_pa_api;
   pa_operation		*_pa_op;
 
-  // NXSoundDevice
+  // SKSoundDevice
   NSMutableArray        *cardList;
-  // NXSoundOut
+  // SKSoundOut
   NSMutableArray        *sinkList;
   NSMutableArray        *sourceList;
-  // NXSoundStream
+  // SKSoundStream
   NSMutableArray        *clientList;
   NSMutableArray        *sinkInputList;
   NSMutableArray        *sourceOutputList;
@@ -73,21 +73,21 @@ extern NSString *SKDeviceDidRemoveNotification;
 @property (readonly) NSString *defaultSinkName;
 @property (readonly) NSString *defaultSourceName;
 // SoundKit objects
-// @property (readonly) NSMutableArray *outputList; // array of NXSoundOut objects
-// @property (readonly) NSMutableArray *inputList;  // array of NXSoundIn objects
-// @property (readonly) NSMutableArray *streamList; // array of NXSoundStream objects
+// @property (readonly) NSMutableArray *outputList; // array of SKSoundOut objects
+// @property (readonly) NSMutableArray *inputList;  // array of SKSoundIn objects
+// @property (readonly) NSMutableArray *streamList; // array of SKSoundStream objects
 
 
 + (id)sharedServer;
 
 - (id)initOnHost:(NSString *)hostName;
 
-- (NXSoundOut *)defaultOutput;
+- (SKSoundOut *)defaultOutput;
 - (NSArray *)outputList;
 
 @end
 
-@interface NXSoundServer (PulseAudio)
+@interface SKSoundServer (PulseAudio)
 
 - (PACard *)cardWithIndex:(NSUInteger)index;
 - (PASink *)sinkWithName:(NSString *)name;

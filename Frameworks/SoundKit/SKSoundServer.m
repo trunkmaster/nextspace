@@ -26,23 +26,23 @@
 #import "PAClient.h"
 #import "PAStream.h"
 
-#import "NXSoundOut.h"
-#import "NXSoundServer.h"
-#import "NXSoundServerCallbacks.h"
+#import "SKSoundOut.h"
+#import "SKSoundServer.h"
+#import "SKSoundServerCallbacks.h"
 
 static dispatch_queue_t _pa_q;
-static NXSoundServer    *_server;
+static SKSoundServer    *_server;
 
 NSString *SKDeviceDidAddNotification = @"SKDeviceDidAdd";
 NSString *SKDeviceDidChangeNotification = @"SKDeviceDidChange";
 NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
-@implementation NXSoundServer
+@implementation SKSoundServer
 
 + (void)initialize
 {
-  if ([NXSoundServer class] == self) {
-    _server = [NXSoundServer new];
+  if ([SKSoundServer class] == self) {
+    _server = [SKSoundServer new];
   }
 }
 
@@ -128,18 +128,18 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   return self;
 }
 
-- (NXSoundOut *)outputWithSink:(PASink *)sink
+- (SKSoundOut *)outputWithSink:(PASink *)sink
 {
-  NXSoundOut *output;
+  SKSoundOut *output;
 
-  // Create NXSoundOut
-  output = [[NXSoundOut alloc] init];
+  // Create SKSoundOut
+  output = [[SKSoundOut alloc] init];
   output.card = [self cardWithIndex:sink.cardIndex];
   output.sink = sink;
 
   return [output autorelease];
 }
-- (NXSoundOut *)defaultOutput
+- (SKSoundOut *)defaultOutput
 {
   return [self outputWithSink:[self sinkWithName:_defaultSinkName]];
 }
@@ -153,7 +153,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   return [list autorelease];
 }
 
-- (NXSoundIn *)defaultInput
+- (SKSoundIn *)defaultInput
 {
   fprintf(stderr, "[SoundKit] default intput: %s\n", [_defaultSourceName cString]);
   return nil;
@@ -168,7 +168,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
 // --- These methods are called by PA callbacks ---
 
-@implementation NXSoundServer (PulseAudio)
+@implementation SKSoundServer (PulseAudio)
 
 // Server
 - (void)updateConnectionState:(NSNumber *)state
@@ -217,7 +217,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
 
   if (isUpdated == NO) {
-    NXSoundDevice *soundDevice;
+    SKSoundDevice *soundDevice;
     card = [[PACard alloc] init];
     fprintf(stderr, "[SoundKit] Card Add: %s.\n", info->name);
     [card updateWithValue:value];
@@ -266,7 +266,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   if (isUpdated == NO) {
     PASink     *sink;
-    NXSoundOut *soundOut;
+    SKSoundOut *soundOut;
   
     // Create Sink
     sink = [[PASink alloc] init];

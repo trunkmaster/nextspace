@@ -6,12 +6,12 @@
 #include <unistd.h>
 
 #import <Foundation/Foundation.h>
-#import <SoundKit/NXSoundServer.h>
-#import <SoundKit/NXSoundOut.h>
+#import <SoundKit/SKSoundServer.h>
+#import <SoundKit/SKSoundOut.h>
 
 @interface SoundKitClient : NSObject
 {
-  NXSoundServer *server;
+  SKSoundServer *server;
   BOOL          isRunning;
 }
 @end
@@ -32,7 +32,7 @@
   self = [super init];
 
   // 1. Connect to PulseAudio on locahost
-  server = [NXSoundServer sharedServer];
+  server = [SKSoundServer sharedServer];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -71,18 +71,18 @@
   
   // // Sound Out
   // fprintf(stderr, "=== SoundOut ===\n");
-  // for (NXSoundOut *sout in server.outputList) {
+  // for (SKSoundOut *sout in server.outputList) {
   //   [sout printDescription];
   // }
 }
 
-- (NXSoundOut *)defaultSoundOut
+- (SKSoundOut *)defaultSoundOut
 {
-  NXSoundOut *sOut;
-  // NXSoundStream *sStream;
-  // sStream = [[NXSoundStream alloc] initWithDevice:sOut];
+  SKSoundOut *sOut;
+  // SKSoundStream *sStream;
+  // sStream = [[SKSoundStream alloc] initWithDevice:sOut];
 
-  for (NXSoundOut *sout in [server outputList]) {
+  for (SKSoundOut *sout in [server outputList]) {
     [sout printDescription];
   }
 

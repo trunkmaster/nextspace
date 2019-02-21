@@ -2,14 +2,14 @@
 /*
       Project: SoundKit framework.
 
-  Description: NXSoundOut is the one of the final link in chain:
-               NXSoundServer <- NXSoundDevice |-> NXSoundOut
-               NXSoundOut has acces to own device (Sink) and inherited from 
-               NXSoundDevice (Server and Card). NXSoundOut is enough if your
+  Description: SKSoundOut is the one of the final link in chain:
+               SKSoundServer <- SKSoundDevice |-> SKSoundOut
+               SKSoundOut has acces to own device (Sink) and inherited from 
+               SKSoundDevice (Server and Card). SKSoundOut is enough if your
                application will read info about sound output as well as change 
                sound device properties (volume, balance, mute, profile, port).
-               To play sound you also need NXSoundStream connected to NXSounOut.
-               (see NXSoundStream description).
+               To play sound you also need SKSoundStream connected to SKSounOut.
+               (see SKSoundStream description).
 
   Copyright (C) 2019 Sergii Stoian
 
@@ -30,13 +30,13 @@
 
 #import "PACard.h"
 #import "PASink.h"
-#import "NXSoundOut.h"
+#import "SKSoundOut.h"
 
-@implementation NXSoundOut
+@implementation SKSoundOut
 
 - (void)dealloc
 {
-  NSLog(@"[NXSoundOut] dealloc");
+  NSLog(@"[SKSoundOut] dealloc");
   [_sink release];
   [super dealloc];
 }
@@ -49,10 +49,10 @@
 // For debuging purposes
 - (void)printDescription
 {
-  fprintf(stderr, "+++ NXSoundDevice: %s +++\n", [[super description] cString]);
+  fprintf(stderr, "+++ SKSoundDevice: %s +++\n", [[super description] cString]);
   [super printDescription];
   
-  fprintf(stderr, "+++ NXSoundOut: %s +++\n", [[self description] cString]);
+  fprintf(stderr, "+++ SKSoundOut: %s +++\n", [[self description] cString]);
   fprintf(stderr, "\t               Sink : %s (%lu)\n",  [_sink.name cString],
           [_sink retainCount]);
   fprintf(stderr, "\t   Sink Description : %s\n",  [_sink.description cString]);

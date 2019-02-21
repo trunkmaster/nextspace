@@ -18,16 +18,16 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "NXSoundServer.h"
-#import "NXSoundServerCallbacks.h"
+#import "SKSoundServer.h"
+#import "SKSoundServerCallbacks.h"
 
 static int n_outstanding = 0;
 
 NSString *SKServerStateDidChangeNotification = @"SKServerStateDidChange";
 
-@implementation NXSoundServer (Callbacks)
+@implementation SKSoundServer (Callbacks)
 
-// --- NXSoundServer: Server and Card---
+// --- SKSoundServer: Server and Card---
 void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
 {
   if (eol < 0) {
@@ -46,7 +46,7 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
     
     fprintf(stderr, "[SoundKit] Card: %s\n", info->name);
     value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
-    [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateCard:)
+    [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateCard:)
                                                 withObject:value
                                              waitUntilDone:YES];
   }
@@ -62,12 +62,12 @@ void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
   inventory_decrement_requests(ctx, userdata);
   
   value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateServer:)
+  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateServer:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
 
-// --- NXSoundOut: Sink --> [Card, Server] ---
+// --- SKSoundOut: Sink --> [Card, Server] ---
 void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
 {
   NSValue *value;
@@ -87,12 +87,12 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
 
   fprintf(stderr, "[SoundKit] Sink: %s (%s)\n", info->name, info->description);
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  [(NXSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
+  [(SKSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
                                                withObject:value
                                             waitUntilDone:YES];
 }
 
-// --- NXSoundIn: Source --> [Card, Server] ---
+// --- SKSoundIn: Source --> [Card, Server] ---
 void source_cb(pa_context *ctx, const pa_source_info *info,
                int eol, void *userdata)
 {
@@ -112,12 +112,12 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
   fprintf(stderr, "[SoundKit] Source: %s (%s)\n", info->name, info->description);
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
+  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
 
-// --- NXSoundStream: SinkInput | SourceOutput, Client, Saved Stream(?) ---
+// --- SKSoundStream: SinkInput | SourceOutput, Client, Saved Stream(?) ---
 // SinkInput
 void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
                    int eol, void *userdata)
@@ -143,7 +143,7 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
           info->mute, info->corked);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
+  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -167,7 +167,7 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   fprintf(stderr, "[SoundKit] Source Output: %s\n", info->name);
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
+  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -192,7 +192,7 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   
   fprintf(stderr, "[SoundKit] Client: %s (index:%i)\n", info->name, info->index);
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
+  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -219,7 +219,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
   
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
+  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
                                               withObject:value
                                            waitUntilDone:YES];
 }
@@ -228,7 +228,7 @@ void ext_stream_restore_read_cb(pa_context *ctx,
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata)
 {
-  NXSoundServer                *_server = userdata;
+  SKSoundServer                *_server = userdata;
   pa_subscription_event_type_t event_type_masked;
   pa_operation *o;
 
@@ -393,7 +393,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
   }
 
   // fprintf(stderr, "[SoundKit] send notification.\n");
-  [(NXSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
+  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
                                               withObject:[NSNumber numberWithInt:state]
                                            waitUntilDone:YES];
 }
@@ -406,7 +406,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
 void inventory_start(pa_context *ctx, void *userdata)
 {
   pa_operation *o;
-  NXSoundServer *server = (NXSoundServer *)userdata;
+  SKSoundServer *server = (SKSoundServer *)userdata;
 
   fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
       
@@ -437,7 +437,7 @@ void inventory_start(pa_context *ctx, void *userdata)
   pa_operation_unref(o);
   n_outstanding++;
 
-  // At this point we can create NXSoundOut objects
+  // At this point we can create SKSoundOut objects
 
   if (!(o = pa_context_get_source_info_list(ctx, source_cb, userdata))) {
     fprintf(stderr, "[SoundKit] pa_context_get_source_info_list() failed\n");
@@ -446,7 +446,7 @@ void inventory_start(pa_context *ctx, void *userdata)
   pa_operation_unref(o);
   n_outstanding++;
   
-  // At this point we can create NXSoundIn objects
+  // At this point we can create SKSoundIn objects
   
   if (!(o = pa_context_get_client_info_list(ctx, client_cb, userdata))) {
     fprintf(stderr, "[SoundKit] pa_context_client_info_list() failed\n");
@@ -469,7 +469,7 @@ void inventory_start(pa_context *ctx, void *userdata)
   pa_operation_unref(o);
   n_outstanding++;
 
-  // At this point we can create NXSoundStream objects
+  // At this point we can create SKSoundStream objects
 
   /* This call is not always supported. 
      This intial call has no complementary subscribe for events call.
@@ -502,7 +502,7 @@ void inventory_decrement_requests(pa_context *ctx, void *userdata)
 void inventory_end(pa_context *ctx, void *userdata)
 {
   pa_operation  *o;
-  NXSoundServer *server = (NXSoundServer *)userdata;
+  SKSoundServer *server = (SKSoundServer *)userdata;
   
   fprintf(stderr, "[SoundKit] --- Start tracking of PulseAudio events...\n");
   

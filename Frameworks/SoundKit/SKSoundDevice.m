@@ -20,23 +20,23 @@
 
 #import "PACard.h"
 #import "PASink.h"
-#import "NXSoundDevice.h"
+#import "SKSoundDevice.h"
 
-@implementation NXSoundDevice
+@implementation SKSoundDevice
 
 - (void)dealloc
 {
-  NSLog(@"[NXSoundDevice] dealloc");
+  NSLog(@"[SKSoundDevice] dealloc");
   [_card release];
   [super dealloc];
 }
 
 - (id)init
 {
-  return [self initWithServer:[NXSoundServer sharedServer]];
+  return [self initWithServer:[SKSoundServer sharedServer]];
 }
 
-- (id)initWithServer:(NXSoundServer *)server
+- (id)initWithServer:(SKSoundServer *)server
 {
   if ((self = [super init]) == nil)
     return nil;
@@ -58,8 +58,8 @@
 - (void)printDescription
 {
   // Print header only if it's not subclass `super` call
-  if ([self class] == [NXSoundDevice class] ) {
-    fprintf(stderr, "+++ NXSoundDevice: %s +++\n", [[self description] cString]);
+  if ([self class] == [SKSoundDevice class] ) {
+    fprintf(stderr, "+++ SKSoundDevice: %s +++\n", [[self description] cString]);
   }
   fprintf(stderr, "\t           Index : %lu\n", _card.index);
   fprintf(stderr, "\t            Name : %s\n", [_card.name cString]);
