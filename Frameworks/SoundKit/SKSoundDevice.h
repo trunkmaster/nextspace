@@ -38,5 +38,6 @@
 - (void)printDescription;
 
 - (NSArray *)availableProfiles;
+- (NSString *)activeProfile;
 
 @end

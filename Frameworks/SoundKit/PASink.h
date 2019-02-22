@@ -12,6 +12,7 @@
 @property (readonly) NSArray    *ports;
 @property (readonly) NSString   *activePort;
 @property (readonly) NSArray    *volume;
+@property (readonly) NSUInteger baseVolume;
 
 - (id)updateWithValue:(NSValue *)value;
 

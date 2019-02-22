@@ -93,6 +93,8 @@
   // Volume
   [self updateVolume:info];
 
+  _baseVolume = (NSUInteger)info->base_volume;
+
   free ((void *)info);
 
   return self;

@@ -95,7 +95,7 @@
   }
   return _card.outProfiles;
 }
-- (NSString *)activeProfile:(NSString *)profileName
+- (NSString *)activeProfile
 {
   return _card.activeProfile;
 }
@@ -107,20 +107,5 @@
                                       NULL, // pa_context_success_cb_t cb,
                                       self);
 }
-
-- (id)volume
-{
-  return nil;
-}
-- (NSUInteger)volumeSteps
-{
-  return 0;
-}
-- (void)setVolume:(id)volumes
-{} // subclass responsibility
-// - samples
-// {}
-// - latency
-// {}
 
 @end

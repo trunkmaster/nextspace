@@ -89,4 +89,21 @@
 {
 }
 
+- (NSArray *)volume
+{
+  return _sink.volume;
+}
+- (NSUInteger)volumeSteps
+{
+  return 1;
+}
+// TODO
+- (void)setVolume:(NSArray *)volumes
+{
+}
+// - samples
+// {}
+// - latency
+// {}
+
 @end

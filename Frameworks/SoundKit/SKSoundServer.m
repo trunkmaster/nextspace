@@ -45,7 +45,6 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     _server = [SKSoundServer new];
   }
 }
-
 + (id)sharedServer
 {
   return _server;
@@ -53,7 +52,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
 - (void)dealloc
 {
-  NSLog(@"[SoundServer] dealloc");
+  fprintf(stderr, "[SoundKit] SoundServer -dealloc\n");
   
   [cardList release];
   [sinkList release];
@@ -72,12 +71,10 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   
   [super dealloc];
 }
-
 - (id)init
 {
   return [self initOnHost:nil];
 }
-
 - (id)initOnHost:(NSString *)hostName
 {
   pa_proplist *proplist;

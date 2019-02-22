@@ -34,6 +34,7 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
+	SoundKit.h \
 	SKSoundServer.h \
 	SKSoundDevice.h \
 	SKSoundOut.h \

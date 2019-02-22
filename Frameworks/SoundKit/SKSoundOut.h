@@ -30,4 +30,13 @@
 
 // For debuging purposes
 - (void)printDescription;
+
+- (NSArray *)availablePorts;
+- (NSString *)activePort;
+// TODO
+- (void)setActivePort:(NSString *)portName;
+
+- (NSArray *)volume;
+- (NSUInteger)volumeSteps;
+
 @end
