@@ -47,6 +47,23 @@ typedef struct pa_card_info {
   const char            *driver;          /* Driver name */
 } pa_card_info;
 
+// Types
+typedef struct pa_channel_map {
+  uint8_t               channels;             /* Number of channels */
+  pa_channel_position_t map[PA_CHANNELS_MAX]; /* Channel labels */
+} pa_channel_map;
+
+typedef struct pa_cvolume {
+  uint8_t     channels;                /* Number of channels */
+  pa_volume_t values[PA_CHANNELS_MAX]; /* Per-channel volume */
+} pa_cvolume;
+
+typedef struct pa_sample_spec {
+  pa_sample_format_t format;   /* The sample format */
+  uint32_t           rate;     /* The sample rate. (e.g. 44100) */
+  uint8_t            channels; /* Audio channels. (1 for mono, 2 for stereo, ...) */
+} pa_sample_spec;
+
 // Sink
 typedef struct pa_sink_port_info {
   const char *name;         /* Name of this port */
@@ -95,22 +112,6 @@ typedef struct pa_sink_info {
 } pa_sink_info;
 
 // Sink Input
-typedef struct pa_channel_map {
-  uint8_t               channels;             /* Number of channels */
-  pa_channel_position_t map[PA_CHANNELS_MAX]; /* Channel labels */
-} pa_channel_map;
-
-typedef struct pa_cvolume {
-  uint8_t     channels;                /* Number of channels */
-  pa_volume_t values[PA_CHANNELS_MAX]; /* Per-channel volume */
-} pa_cvolume;
-
-typedef struct pa_sample_spec {
-  pa_sample_format_t format;   /* The sample format */
-  uint32_t           rate;     /* The sample rate. (e.g. 44100) */
-  uint8_t            channels; /* Audio channels. (1 for mono, 2 for stereo, ...) */
-} pa_sample_spec;
-
 typedef struct pa_sink_input_info {
   uint32_t       index;            /* Index of the sink input */
   const char     *name;            /* Name of the sink input */

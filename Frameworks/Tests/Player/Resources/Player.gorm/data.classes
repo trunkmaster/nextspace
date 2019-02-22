@@ -11,6 +11,7 @@
 	Actions = (
 	    "addPlaylist:",
 	    "eject:",
+	    "showMixer:",
 	    "next:",
 	    "pause:",
 	    "play:",
@@ -20,5 +21,11 @@
 	    "toggleSongInspector:"
 	);
 	Super = NSObject;
+    };
+    NSApplication = {
+	Actions = (
+	    "showMixer:"
+	);
+	Super = NSResponder;
     };
 }

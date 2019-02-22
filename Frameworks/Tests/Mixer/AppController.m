@@ -20,7 +20,6 @@
 
 #import "ALSA.h"
 #import "PulseAudio.h"
-#import "SoundKitClient.h"
 #import "AppController.h"
 
 @implementation AppController
@@ -50,9 +49,9 @@
     [[paPanel window] close];
     [paPanel release];
   }
-  if (soundClient) {
-    [soundClient release];
-  }
+//  if (soundClient) {
+//    [soundClient release];
+//  }
   return YES;
 }
 
@@ -76,18 +75,10 @@
 
 - (void)openPulseAudioPanel:(id)sender
 {
-  // if (paPanel) {
-  //   [paPanel release];
-  // }
-  // paPanel = [[PulseAudio alloc] init];
-}
-
-- (void)testSoundKit:(id)sender
-{
-  if (soundClient) {
-    [soundClient release];
+  if (paPanel) {
+    [paPanel release];
   }
-  soundClient = [[SoundKitClient alloc] init];
+  paPanel = [[PulseAudio alloc] init];
 }
 
 @end

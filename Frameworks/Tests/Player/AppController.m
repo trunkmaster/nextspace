@@ -9,6 +9,7 @@
 */
 
 #import "Player.h"
+#import "Mixer.h"
 #import "AppController.h"
 
 @implementation AppController
@@ -48,6 +49,11 @@
            openFile:(NSString *)fileName
 {
   return NO;
+}
+
+- (void)showMixer:(id)sender
+{
+  [Mixer new];
 }
 
 - (void)showPrefPanel:(id)sender

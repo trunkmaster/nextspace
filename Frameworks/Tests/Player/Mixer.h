@@ -1,5 +1,5 @@
 /*
-   Project: Mixer
+   Project: Player
 
    Copyright (C) 2019 Sergii Stoian
 
@@ -17,25 +17,38 @@
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
- 
+
 #import <AppKit/AppKit.h>
 
-@interface AppController : NSObject
+@interface Mixer : NSObject
 {
-  id            alsaPanel;
-  id		paPanel;
+  id window;
+  id serverInfo;
+  id cardInfo;
   
-  NSPopUpButton *sectionType;
+  id streamsBrowser;
+  id sreamMute;
+  id streamVolume;
   
-  NSBrowser     *playbackStreamList;
-  NSButton      *playbackMute;
-  id            playbackStreamVolume;
-  id            playbackStreamBalance;
-  
-  NSBrowser     *playbackDeviceList;
-  NSButton      *playbackDeviceMute;
-  id            playbackDeviceVolume;
-  id            playbackDeviceBalance;
+  id devicesBrowser;
+  id deviceMute;
+
+  // Advanced Sound Preferences
+  id modeButton;
+  id appBrowser;
+  id appMute;
+  id appVolume;
+  id outputMute;
+  id outputDevice;
+  id outputDeviceProfile;
+  id outputVolume;
+  id outputBalance;
 }
+
+- (NSWindow *)window;
+
+- (void)reloadBrowser:(NSBrowser *)browser;
+- (void)updateOutputDeviceList;
+- (void)updateOutputProfileList:(NSPopUpButton *)button;
 
 @end

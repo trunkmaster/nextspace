@@ -5,6 +5,13 @@
 
 @implementation Player
 
+- (void)dealloc
+{
+  [infoOff release];
+  [infoOn release];
+  [super dealloc];
+}
+
 - init
 {
   self = [super init];
@@ -18,11 +25,25 @@
 
 - (void)awakeFromNib
 {
+  NSString *path;
+  
   [window makeKeyAndOrderFront:self];
   [artistName setStringValue:@""];
   [albumTitle setStringValue:@""];
   [songTitle setStringValue:@"No Sound Loaded"];
   [window setTitle:@"\u2014"];
+
+  [pauseBtn setState:NSOffState];
+  [stopBtn setState:NSOffState];
+  
+  path = [NSBundle pathForResource:@"PlayerInfo-1"
+                            ofType:@"tiff"
+                       inDirectory:@"Resources/PlayerWindow.gorm"];
+  infoOff = [[NSImage alloc] initByReferencingFile:path];
+  path = [NSBundle pathForResource:@"PlayerInfo-2"
+                            ofType:@"tiff"
+                       inDirectory:@"Resources/PlayerWindow.gorm"];
+  infoOn = [[NSImage alloc] initByReferencingFile:path];
 
   // 1. Connect to PulseAudio on locahost
   server = [SKSoundServer sharedServer];
@@ -62,18 +83,10 @@
 
 - (void)play:(id)sender
 {
-  NSString *path;
-  NSImage  *image;
-  
   [pauseBtn setState:NSOffState];
   [stopBtn setState:NSOffState];
   
-  path = [NSBundle pathForResource:@"PlayerInfo-2"
-                            ofType:@"tiff"
-                       inDirectory:@"Resources/PlayerWindow.gorm"];
-  image = [[NSImage alloc] initByReferencingFile:path];
-  [infoView setImage:image];
-  [image release];
+  [infoView setImage:infoOn];
 }
 - (void)pause:(id)sender
 {
@@ -87,19 +100,10 @@
 }
 - (void)stop:(id)sender
 {
-  NSString *path;
-  NSImage  *image;
-  
   [playBtn setState:NSOffState];
   [pauseBtn setState:NSOffState];
   
-  path = [NSBundle pathForResource:@"PlayerInfo-1"
-                            ofType:@"tiff"
-                       inDirectory:@"Resources/PlayerWindow.gorm"];
-  image = [[NSImage alloc] initByReferencingFile:path];
-  [infoView setImage:image];
-  
-  [image release];
+  [infoView setImage:infoOff];
   [sender setState:NSOffState];
 }
 
@@ -128,6 +132,14 @@
     NSLog(@"Server retain count: %lu", [server retainCount]);
     [server disconnect];
   }
+}
+
+
+- (BOOL)windowShouldClose:(id)sender
+{
+  [self eject:self];
+  [NSApp terminate:self];
+  return YES;
 }
 
 @end

@@ -1,0 +1,48 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AppController = {
+	Actions = (
+	    "showPrefPanel:"
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "browserClick:",
+	    "appMuteClick:",
+	    "orderFrontFontPanel:",
+	    "showPrefPanel:",
+	    "updateOutputProfileList:"
+	);
+	Super = NSObject;
+    };
+    Mixer = {
+	Actions = (
+	    "browserClick:",
+	    "updateOutputProfileList:",
+	    "appMuteClick:"
+	);
+	Outlets = (
+	    devicesBrowser,
+	    streamsBrowser,
+	    window,
+	    cardInfo,
+	    deviceMute,
+	    serverInfo,
+	    streamMute,
+	    streamVolume,
+	    appBrowser,
+	    appMute,
+	    appVolume,
+	    modeButton,
+	    outputBalance,
+	    outputDevice,
+	    outputDeviceProfile,
+	    outputMute,
+	    outputVolume
+	);
+	Super = NSObject;
+    };
+}

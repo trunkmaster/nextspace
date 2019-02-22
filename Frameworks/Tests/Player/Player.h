@@ -7,6 +7,8 @@
 {
   id window;
   id infoView;
+  NSImage *infoOff;
+  NSImage *infoOn;
   
   id albumTitle;
   id artistName;
