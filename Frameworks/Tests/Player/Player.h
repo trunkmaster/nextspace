@@ -30,6 +30,8 @@
 
   SKSoundServer *server;
 }
+- (void)setButtonsEnabled:(BOOL)yn;
+  
 - (void)eject:(id)sender;
 - (void)next:(id)sender;
 - (void)pause:(id)sender;

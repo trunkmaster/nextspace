@@ -53,15 +53,16 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
 - (void)dealloc
 {
-  int retval = 0;
-
-  fprintf(stderr, "[SoundKit] closing connection to server...\n");
-  pa_mainloop_quit(_pa_loop, retval);
-  pa_context_disconnect(_pa_ctx);
-  pa_context_unref(_pa_ctx);
-  pa_mainloop_free(_pa_loop);
-  fprintf(stderr, "[SoundKit] connection to server closed.\n");
-
+  NSLog(@"[SoundServer] dealloc");
+  
+  [cardList release];
+  [sinkList release];
+  [sourceList release];
+  [clientList release];
+  [sinkInputList release];
+  [sourceOutputList release];
+  [savedStreamList release];
+  
   [_userName release];
   [_hostName release];
   [_name release];
@@ -99,10 +100,6 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   sourceOutputList = [NSMutableArray new];
   savedStreamList = [NSMutableArray new];
   
-  // _outputList = [NSMutableArray new];
-  // _inputList = [NSMutableArray new];
-  // _streamList = [NSMutableArray new];
-  
   _pa_loop = pa_mainloop_new();
   _pa_api = pa_mainloop_get_api(_pa_loop);
 
@@ -126,6 +123,17 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     });
   
   return self;
+}
+- (void)disconnect
+{
+  int retval = 0;
+  
+  fprintf(stderr, "[SoundKit] closing connection to server...\n");
+  pa_mainloop_quit(_pa_loop, retval);
+  pa_context_disconnect(_pa_ctx);
+  pa_context_unref(_pa_ctx);
+  pa_mainloop_free(_pa_loop);
+  fprintf(stderr, "[SoundKit] connection to server closed.\n");
 }
 
 - (SKSoundOut *)outputWithSink:(PASink *)sink

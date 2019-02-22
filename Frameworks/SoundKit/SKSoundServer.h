@@ -72,15 +72,12 @@ extern NSString *SKDeviceDidRemoveNotification;
 @property (readonly) NSString *version;   // Version string of the daemon
 @property (readonly) NSString *defaultSinkName;
 @property (readonly) NSString *defaultSourceName;
-// SoundKit objects
-// @property (readonly) NSMutableArray *outputList; // array of SKSoundOut objects
-// @property (readonly) NSMutableArray *inputList;  // array of SKSoundIn objects
-// @property (readonly) NSMutableArray *streamList; // array of SKSoundStream objects
 
 
 + (id)sharedServer;
 
 - (id)initOnHost:(NSString *)hostName;
+- (void)disconnect;
 
 - (SKSoundOut *)defaultOutput;
 - (NSArray *)outputList;
