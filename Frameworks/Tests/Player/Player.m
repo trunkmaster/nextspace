@@ -57,11 +57,11 @@
 
 - (void)serverStateChanged:(NSNotification *)notif
 {
-  if (server.state == SKServerReadyState) {
+  if (server.status == SKServerReadyState) {
     [self play:playBtn];
   }
-  else if (server.state == SKServerFailedState ||
-           server.state == SKServerTerminatedState) {
+  else if (server.status == SKServerFailedState ||
+           server.status == SKServerTerminatedState) {
     [self stop:stopBtn];
     [self setButtonsEnabled:NO];
     [[NSNotificationCenter defaultCenter] removeObserver:self];

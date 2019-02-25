@@ -59,6 +59,15 @@
   fprintf(stderr, "\t        Active Port : %s\n",  [_sink.activePort cString]);
   fprintf(stderr, "\t         Card Index : %lu\n", _sink.cardIndex);
   fprintf(stderr, "\t       Card Profile : %s\n",  [super.card.activeProfile cString]);
+  fprintf(stderr, "\t      Channel Count : %lu\n", _sink.channelCount);
+  
+  fprintf(stderr, "\t             Volume : %lu\n", _sink.volume);
+  for (NSUInteger i = 0; i < _sink.channelCount; i++) {
+    fprintf(stderr, "\t           Volume %lu : %lu\n", i,
+            [_sink.channelVolumes[i] unsignedIntegerValue]);
+  }
+  
+  fprintf(stderr, "\t              Muted : %s\n", _sink.mute ? "Yes" : "No");
   fprintf(stderr, "\t       Retain Count : %lu\n", [self retainCount]);
 
   fprintf(stderr, "\t    Available Ports : \n");
@@ -89,18 +98,28 @@
 {
 }
 
-- (NSArray *)volume
-{
-  return _sink.volume;
-}
 - (NSUInteger)volumeSteps
 {
-  return 1;
+  return _sink.volumeSteps;
 }
-// TODO
-- (void)setVolume:(NSArray *)volumes
+- (NSUInteger)volume
 {
+  return [_sink volume];
 }
+- (void)setVolume:(NSUInteger)volume
+{
+  [_sink setVolume:volume];
+}
+
+- (void)setMuted:(BOOL)isMute
+{
+  [_sink setMute:isMute];
+}
+- (BOOL)isMuted
+{
+  return (BOOL)_sink.mute;
+}
+
 // - samples
 // {}
 // - latency

@@ -18,9 +18,6 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <stdio.h>
-#import <string.h>
-
 #import <SoundKit/SoundKit.h>
 
 #import "Mixer.h"
@@ -78,14 +75,16 @@
   }
   
   [outputDevice selectItemWithTitle:[defOut activePort]];
-  [outputVolume setFloatValue:[[defOut volume][0] floatValue]];
+  [outputVolume setIntegerValue:[defOut volume]];
+  [outputMute setState:[defOut isMuted]];
   [self updateOutputProfileList:outputDevice];
 }
 // "Device" popup button action. Fills "Profile" popup button.
 - (void)updateOutputProfileList:(id)sender
 {
-  SKSoundOut *defOut = [[SKSoundServer sharedServer] defaultOutput];
+  SKSoundOut *defOut;
   
+  defOut = [[outputDevice selectedItem] representedObject];
   [outputDeviceProfile removeAllItems];
   [outputDeviceProfile addItemsWithTitles:[defOut availableProfiles]];
   [outputDeviceProfile selectItemWithTitle:[defOut activeProfile]];
@@ -155,6 +154,22 @@
 - (void)appMuteClick:(id)sender
 {
   // [[[appBrowser selectedCellInColumn:0] representedObject] setMute:[sender state]];
+}
+
+// Output
+- (void)outputMute:(id)sender
+{
+  [[[outputDevice selectedItem] representedObject] setMuted:[sender state]];
+}
+- (void)outputSetVolume:(id)sender
+{
+  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  NSLog(@"Ouput: set volume: %@", [sender className]);
+  [output setVolume:[outputVolume unsignedIntegerValue]];
+}
+- (void)outputSetBalance:(id)sender
+{
+  NSLog(@"Ouput: set balance: %@", [sender className]);
 }
 
 @end

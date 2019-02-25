@@ -179,7 +179,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 - (void)updateConnectionState:(NSNumber *)state
 {
   // fprintf(stderr, "[SoundKit] connection state was updated.\n");
-  _state = [state intValue];
+  _status = [state intValue];
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SKServerStateDidChangeNotification
                     object:self];
@@ -254,13 +254,14 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 - (void)updateSink:(NSValue *)value // sink_cb(...)
 {
   const pa_sink_info *info;
+  PASink             *sink;
   BOOL               isUpdated = NO;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_sink_info));
   [value getValue:(void *)info];
 
-  for (PASink *sink in sinkList) {
+  for (sink in sinkList) {
     if (sink.index == info->index) {
       fprintf(stderr, "[SoundKit] Update Sink: %s.\n", info->name);
       [sink updateWithValue:value];
@@ -270,13 +271,11 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
 
   if (isUpdated == NO) {
-    PASink     *sink;
-    SKSoundOut *soundOut;
-  
     // Create Sink
     sink = [[PASink alloc] init];
     fprintf(stderr, "[SoundKit] Add Sink: %s.\n", info->name);
     [sink updateWithValue:value];
+    sink.context = _pa_ctx;
     [sinkList addObject:sink];
     [sink release];
   }

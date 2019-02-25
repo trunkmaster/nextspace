@@ -10,9 +10,12 @@
     };
     FirstResponder = {
 	Actions = (
-	    "browserClick:",
 	    "appMuteClick:",
+	    "browserClick:",
+	    "outputSetBalance:",
 	    "orderFrontFontPanel:",
+	    "outputMute:",
+	    "outputSetVolume:",
 	    "showPrefPanel:",
 	    "updateOutputProfileList:"
 	);
@@ -22,7 +25,10 @@
 	Actions = (
 	    "browserClick:",
 	    "updateOutputProfileList:",
-	    "appMuteClick:"
+	    "appMuteClick:",
+	    "outputSetBalance:",
+	    "outputMute:",
+	    "outputSetVolume:"
 	);
 	Outlets = (
 	    devicesBrowser,

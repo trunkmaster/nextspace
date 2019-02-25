@@ -1,4 +1,3 @@
-#import <pulse/pulseaudio.h>
 #import "PASink.h"
 
 @implementation PASink
@@ -49,6 +48,17 @@
 {
   NSMutableArray *vol;
   NSNumber       *v;
+
+  {
+    pa_cvolume *pa_volume = malloc(sizeof(pa_cvolume));
+    char       *volume_desc = malloc(sizeof(char *) * PA_CVOLUME_SNPRINT_MAX+1);
+
+    pa_cvolume_init(pa_volume);
+    pa_cvolume_set(pa_volume, info->volume.channels, info->volume.values[0]);
+    pa_cvolume_snprint(volume_desc, PA_CVOLUME_SNPRINT_MAX, &info->volume);
+    fprintf(stderr, "[PASink-setVolume] %s\n", volume_desc);
+    free(volume_desc);
+  }
   
   vol = [NSMutableArray new];
   [vol removeAllObjects];
@@ -56,11 +66,15 @@
     v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
     [vol addObject:v];
   }
-  if (_volume) {
-    [_volume release];
+  if (_channelVolumes) {
+    [_channelVolumes release];
   }
-  _volume = [[NSArray alloc] initWithArray:vol];
+  _channelVolumes = [[NSArray alloc] initWithArray:vol];
   [vol release];
+
+  //
+  _channelCount = info->volume.channels;
+  _volumeSteps = info->n_volume_steps;
 }
 
 - (id)updateWithValue:(NSValue *)val
@@ -98,6 +112,35 @@
   free ((void *)info);
 
   return self;
+}
+
+- (void)setMute:(BOOL)isMute
+{
+  pa_context_set_sink_mute_by_index(_context, _index, (int)isMute, NULL, self);
+}
+
+- (NSUInteger)volume
+{
+  NSUInteger v, i;
+
+  for (i = 0, v = 0; i < _channelCount; i++) {
+    if ([_channelVolumes[i] unsignedIntegerValue] > v)
+      v = [_channelVolumes[i] unsignedIntegerValue];
+  }
+  
+  return v;
+}
+
+- (void)setVolume:(NSUInteger)v
+{
+  pa_cvolume *pa_volume = NULL;
+  char       *volume_desc = malloc(sizeof(char *) * PA_CVOLUME_SNPRINT_MAX);
+
+  pa_cvolume_init(pa_volume);
+  pa_cvolume_snprint(volume_desc, PA_CVOLUME_SNPRINT_MAX, pa_volume);
+  fprintf(stderr, "[PASink-setVolume] %s", volume_desc);
+  
+  // pa_context_set_sink_volume_by_index(_context, _index, pa_cvolume, NULL, self);
 }
 
 @end

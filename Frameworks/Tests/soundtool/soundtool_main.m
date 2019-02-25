@@ -95,7 +95,7 @@
 
 - (void)serverStateChanged:(NSNotification *)notif
 {
-  if (server.state == SKServerReadyState) {
+  if (server.status == SKServerReadyState) {
     [self describeSoundSystem];
     [self defaultSoundOut];
   }

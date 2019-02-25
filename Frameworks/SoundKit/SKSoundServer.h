@@ -64,7 +64,7 @@ extern NSString *SKDeviceDidRemoveNotification;
 }
 
 @property (readonly) pa_context        *pa_ctx;
-@property (readonly) SKConnectionState state;
+@property (readonly) SKConnectionState status;
 
 @property (readonly) NSString *userName;  // User name of the daemon process
 @property (readonly) NSString *hostName;  // Host name the daemon is running on

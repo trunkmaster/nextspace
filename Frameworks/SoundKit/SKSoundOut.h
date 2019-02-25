@@ -36,7 +36,11 @@
 // TODO
 - (void)setActivePort:(NSString *)portName;
 
-- (NSArray *)volume;
 - (NSUInteger)volumeSteps;
+- (NSUInteger)volume;
+- (void)setVolume:(NSUInteger)volume;
+
+- (BOOL)isMuted;
+- (void)setMuted:(BOOL)isMute;
 
 @end
