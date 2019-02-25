@@ -47,6 +47,7 @@
 }
 
 
+// --- Streams actions
 - (void)reloadBrowser:(NSBrowser *)browser
 {
   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
@@ -59,38 +60,6 @@
   }
 }
  
-// Sink-Port list
-- (void)updateOutputDeviceList
-{
-  NSString      *title;
-  SKSoundServer *server = [SKSoundServer sharedServer];
-  SKSoundOut    *defOut = [server defaultOutput];
-  
-  [outputDevice removeAllItems];
-  
-  for (NSString *port in [defOut availablePorts]) {
-    title = [NSString stringWithFormat:@"%@", port];
-    [outputDevice addItemWithTitle:title];
-    [[outputDevice itemWithTitle:title] setRepresentedObject:defOut];
-  }
-  
-  [outputDevice selectItemWithTitle:[defOut activePort]];
-  [outputVolume setIntegerValue:[defOut volume]];
-  [outputMute setState:[defOut isMuted]];
-  [self updateOutputProfileList:outputDevice];
-}
-// "Device" popup button action. Fills "Profile" popup button.
-- (void)updateOutputProfileList:(id)sender
-{
-  SKSoundOut *defOut;
-  
-  defOut = [[outputDevice selectedItem] representedObject];
-  [outputDeviceProfile removeAllItems];
-  [outputDeviceProfile addItemsWithTitles:[defOut availableProfiles]];
-  [outputDeviceProfile selectItemWithTitle:[defOut activeProfile]];
-}
-
-// --- Browser delegate ---
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
@@ -124,13 +93,6 @@
   // }
 }
 
-// --- Window delegate
-- (BOOL)windowShouldClose:(id)sender
-{
-  return YES;
-}
-
-// --- Actions
 - (void)browserClick:(id)sender
 {
   id object = [[sender selectedCellInColumn:0] representedObject];
@@ -156,20 +118,65 @@
   // [[[appBrowser selectedCellInColumn:0] representedObject] setMute:[sender state]];
 }
 
-// Output
+// --- Output actions
+// Fills "Device" popup with port names
+- (void)updateOutputDeviceList
+{
+  NSString      *title;
+  SKSoundServer *server = [SKSoundServer sharedServer];
+  SKSoundOut    *defOut = [server defaultOutput];
+  
+  [outputDevice removeAllItems];
+  
+  for (NSString *port in [defOut availablePorts]) {
+    title = [NSString stringWithFormat:@"%@", port];
+    [outputDevice addItemWithTitle:title];
+    [[outputDevice itemWithTitle:title] setRepresentedObject:defOut];
+  }
+  
+  [outputDevice selectItemWithTitle:[defOut activePort]];
+  [outputVolume setIntegerValue:[defOut volume]];
+  [outputMute setState:[defOut isMuted]];
+  
+  [self updateOutputProfileList:outputDevice];
+}
+
+// "Device" popup button action. Fills "Profile" popup button.
+- (void)updateOutputProfileList:(id)sender
+{
+  SKSoundOut *defOut = [[outputDevice selectedItem] representedObject];
+  
+  [outputDeviceProfile removeAllItems];
+  [outputDeviceProfile addItemsWithTitles:[defOut availableProfiles]];
+  [outputDeviceProfile selectItemWithTitle:[defOut activeProfile]];
+}
+
 - (void)outputMute:(id)sender
 {
   [[[outputDevice selectedItem] representedObject] setMuted:[sender state]];
 }
+
 - (void)outputSetVolume:(id)sender
 {
   SKSoundOut *output = [[outputDevice selectedItem] representedObject];
-  NSLog(@"Ouput: set volume: %@", [sender className]);
-  [output setVolume:[outputVolume unsignedIntegerValue]];
+
+  // NSLog(@"Ouput: set volume to %li (old: %lu)",
+  //       [outputVolume integerValue], [output volume]);
+  
+  [output setVolume:[outputVolume integerValue]];
+  
+  // NSLog(@"Ouput: volume was set to %lu", [output volume]);
 }
+
 - (void)outputSetBalance:(id)sender
 {
   NSLog(@"Ouput: set balance: %@", [sender className]);
+}
+
+// --- Window delegate
+- (BOOL)windowShouldClose:(id)sender
+{
+  return YES;
 }
 
 @end

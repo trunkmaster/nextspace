@@ -46,7 +46,7 @@
   return [NSString stringWithFormat:@"PulseAudio Sink `%@`", _sink.description];
 }
 
-// For debuging purposes
+// For debugging
 - (void)printDescription
 {
   fprintf(stderr, "+++ SKSoundDevice: %s +++\n", [[super description] cString]);

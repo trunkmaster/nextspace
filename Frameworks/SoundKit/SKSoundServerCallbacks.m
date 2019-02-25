@@ -243,7 +243,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                waitUntilDone:YES];
       }
       else {
-        if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, NULL))) {
+        if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, userdata))) {
           fprintf(stderr, "[SoundKit] ERROR: pa_context_get_sink_info_by_index() failed\n");
           return;
         }
@@ -260,7 +260,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                waitUntilDone:YES];
       }
       else {
-        if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, NULL))) {
+        if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, userdata))) {
           fprintf(stderr, "[SoundKit] ERROR: pa_context_get_source_info_by_index() failed\n");
           return;
         }
@@ -277,7 +277,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                waitUntilDone:YES];
       }
       else {
-        if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, NULL))) {
+        if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, userdata))) {
           fprintf(stderr, "[SoundKit] ERROR: pa_context_get_sink_input_info() failed\n");
           return;
         }
@@ -294,7 +294,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                waitUntilDone:YES];
       }
       else {
-        o = pa_context_get_source_output_info(ctx, index, source_output_cb, NULL);
+        o = pa_context_get_source_output_info(ctx, index, source_output_cb, userdata);
         if (!o) {
           fprintf(stderr, "[SoundKit] ERROR: pa_context_get_sink_input_info() failed\n");
           return;
@@ -312,7 +312,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                waitUntilDone:YES];
       }
       else {
-        if (!(o = pa_context_get_client_info(ctx, index, client_cb, NULL))) {
+        if (!(o = pa_context_get_client_info(ctx, index, client_cb, userdata))) {
           fprintf(stderr, "[SoundKit] ERROR: pa_context_get_client_info() failed\n");
           return;
         }
@@ -323,7 +323,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
 
   case PA_SUBSCRIPTION_EVENT_SERVER:
     {
-      if (!(o = pa_context_get_server_info(ctx, server_info_cb, NULL))) {
+      if (!(o = pa_context_get_server_info(ctx, server_info_cb, userdata))) {
         fprintf(stderr, "[SoundKit] ERROR: pa_context_get_server_info() failed\n");
         return;
       }
@@ -339,7 +339,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
                                waitUntilDone:YES];
       }
       else {
-        if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, NULL))) {
+        if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, userdata))) {
           fprintf(stderr, "[SoundKit] ERROR: pa_context_get_card_info_by_index() failed\n");
           return;
         }

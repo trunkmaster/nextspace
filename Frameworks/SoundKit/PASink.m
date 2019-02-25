@@ -17,6 +17,7 @@
   [super dealloc];
 }
 
+// --- Initialize and update
 - (void)updatePorts:(const pa_sink_info *)info
 {
   NSMutableArray *ports;
@@ -49,17 +50,6 @@
   NSMutableArray *vol;
   NSNumber       *v;
 
-  {
-    pa_cvolume *pa_volume = malloc(sizeof(pa_cvolume));
-    char       *volume_desc = malloc(sizeof(char *) * PA_CVOLUME_SNPRINT_MAX+1);
-
-    pa_cvolume_init(pa_volume);
-    pa_cvolume_set(pa_volume, info->volume.channels, info->volume.values[0]);
-    pa_cvolume_snprint(volume_desc, PA_CVOLUME_SNPRINT_MAX, &info->volume);
-    fprintf(stderr, "[PASink-setVolume] %s\n", volume_desc);
-    free(volume_desc);
-  }
-  
   vol = [NSMutableArray new];
   [vol removeAllObjects];
   for (int i = 0; i < info->volume.channels; i++) {
@@ -114,6 +104,7 @@
   return self;
 }
 
+// --- Actions
 - (void)setMute:(BOOL)isMute
 {
   pa_context_set_sink_mute_by_index(_context, _index, (int)isMute, NULL, self);
@@ -133,14 +124,13 @@
 
 - (void)setVolume:(NSUInteger)v
 {
-  pa_cvolume *pa_volume = NULL;
-  char       *volume_desc = malloc(sizeof(char *) * PA_CVOLUME_SNPRINT_MAX);
+  pa_cvolume *new_volume;
 
-  pa_cvolume_init(pa_volume);
-  pa_cvolume_snprint(volume_desc, PA_CVOLUME_SNPRINT_MAX, pa_volume);
-  fprintf(stderr, "[PASink-setVolume] %s", volume_desc);
-  
-  // pa_context_set_sink_volume_by_index(_context, _index, pa_cvolume, NULL, self);
+  new_volume = malloc(sizeof(pa_cvolume));
+  pa_cvolume_init(new_volume);
+  pa_cvolume_set(new_volume, _channelCount, v);
+  pa_context_set_sink_volume_by_index(_context, _index, new_volume, NULL, self);
+  free(new_volume);
 }
 
 @end

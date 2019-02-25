@@ -261,6 +261,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   info = malloc(sizeof(const pa_sink_info));
   [value getValue:(void *)info];
 
+  fprintf(stderr, "[SoundKit] updating sink...");
+
   for (sink in sinkList) {
     if (sink.index == info->index) {
       fprintf(stderr, "[SoundKit] Update Sink: %s.\n", info->name);
