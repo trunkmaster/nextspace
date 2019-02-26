@@ -33,13 +33,14 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   if (window == nil) {
     [NSBundle loadNibNamed:@"Mixer" owner:self];
   }
-  [window makeKeyAndOrderFront:self];
   
   return self;
 }
 
 - (void)awakeFromNib
 {
+  [window setFrameAutosaveName:@"Mixer"];
+  [window makeKeyAndOrderFront:self];
   [self updateOutputDeviceList];
 }
 

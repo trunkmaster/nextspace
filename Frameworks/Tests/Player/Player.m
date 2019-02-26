@@ -25,24 +25,27 @@
 
 - (void)awakeFromNib
 {
-  NSString *path;
-  
+  NSString *path, *imagePath;
+
+  [window setFrameAutosaveName:@"Player"];
   [window makeKeyAndOrderFront:self];
-  [artistName setStringValue:@""];
-  [albumTitle setStringValue:@""];
-  [songTitle setStringValue:@"No Sound Loaded"];
-  [window setTitle:@"\u2014"];
+  
+  [artistName setStringValue:@"Artist name"];
+  [albumTitle setStringValue:@"Album title"];
+  [songTitle setStringValue:@"Song title"];
+  [window setTitle:@"Player \u2014 No loaded sound"];
 
   [pauseBtn setState:NSOffState];
   [stopBtn setState:NSOffState];
   
-  path = [NSBundle pathForResource:@"PlayerInfo-1"
-                            ofType:@"tiff"
-                       inDirectory:@"Resources/PlayerWindow.gorm"];
+  imagePath = @"Resources/PlayerWindow.gorm/PlayerInfo-1.tiff";
+  path = [NSString stringWithFormat:@"%@/%@",
+                        [[NSBundle mainBundle] bundlePath], imagePath];
   infoOff = [[NSImage alloc] initByReferencingFile:path];
-  path = [NSBundle pathForResource:@"PlayerInfo-2"
-                            ofType:@"tiff"
-                       inDirectory:@"Resources/PlayerWindow.gorm"];
+  
+  imagePath = @"Resources/PlayerWindow.gorm/PlayerInfo-2.tiff";
+  path = [NSString stringWithFormat:@"%@/%@",
+                        [[NSBundle mainBundle] bundlePath], imagePath];
   infoOn = [[NSImage alloc] initByReferencingFile:path];
 
   // 1. Connect to PulseAudio on locahost
