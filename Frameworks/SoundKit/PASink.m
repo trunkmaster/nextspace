@@ -49,17 +49,26 @@
 {
   NSMutableArray *vol;
   NSNumber       *v;
+  BOOL           isVolumeChanged = NO;
+
+  if (_channelVolumes == nil) {
+    isVolumeChanged = YES;
+  }
 
   vol = [NSMutableArray new];
-  [vol removeAllObjects];
   for (int i = 0; i < info->volume.channels; i++) {
     v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
     [vol addObject:v];
+    if (isVolumeChanged == NO && [_channelVolumes[i] isEqualToNumber:v] == NO) {
+      isVolumeChanged = YES;
+    }
   }
-  if (_channelVolumes) {
-    [_channelVolumes release];
+  if (isVolumeChanged != NO) {
+    if (_channelVolumes) {
+      [_channelVolumes release];
+    }
+    self.channelVolumes = [[NSArray alloc] initWithArray:vol]; // KVO compliance
   }
-  _channelVolumes = [[NSArray alloc] initWithArray:vol];
   [vol release];
 
   //
@@ -97,7 +106,13 @@
   // Volume
   [self updateVolume:info];
 
-  _baseVolume = (NSUInteger)info->base_volume;
+  if (_baseVolume != (NSUInteger)info->base_volume) {
+    self.baseVolume = (NSUInteger)info->base_volume;
+  }
+  
+  if (_mute != (BOOL)info->mute) {
+    self.mute = (BOOL)info->mute; // KVO compliance
+  }
 
   free ((void *)info);
 
@@ -105,10 +120,10 @@
 }
 
 // --- Actions
-- (void)setMute:(BOOL)isMute
-{
-  pa_context_set_sink_mute_by_index(_context, _index, (int)isMute, NULL, self);
-}
+// - (void)setMute:(BOOL)isMute
+// {
+//   pa_context_set_sink_mute_by_index(_context, _index, (int)isMute, NULL, self);
+// }
 
 - (NSUInteger)volume
 {

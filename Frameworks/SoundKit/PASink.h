@@ -15,12 +15,12 @@
 @property (readonly) NSArray    *ports;
 @property (readonly) NSString   *activePort;
 
-@property (readonly) NSUInteger channelCount;
-@property (readonly) NSUInteger volumeSteps;
-@property (readonly) NSUInteger baseVolume;
-@property (readonly) NSArray    *channelVolumes;
+@property (assign) NSUInteger channelCount;
+@property (assign) NSUInteger volumeSteps;
+@property (assign) NSUInteger baseVolume;
+@property (assign) NSArray    *channelVolumes;
 
-@property (readonly) BOOL       mute;
+@property (assign,nonatomic) BOOL mute;
 
 - (id)updateWithValue:(NSValue *)value;
 
