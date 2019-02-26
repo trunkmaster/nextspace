@@ -40,6 +40,9 @@
 - (NSUInteger)volume;
 - (void)setVolume:(NSUInteger)volume;
 
+- (CGFloat)balance;
+- (void)setBalance:(CGFloat)balance;
+
 - (BOOL)isMuted;
 - (void)setMuted:(BOOL)isMute;
 

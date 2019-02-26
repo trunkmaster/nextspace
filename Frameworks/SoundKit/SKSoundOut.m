@@ -28,6 +28,8 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import <dispatch/dispatch.h>
+
 #import "PACard.h"
 #import "PASink.h"
 #import "SKSoundOut.h"
@@ -108,12 +110,20 @@
 }
 - (void)setVolume:(NSUInteger)volume
 {
-  [_sink setVolume:volume];
+  [_sink applyVolume:volume];
+}
+- (CGFloat)balance
+{
+  return _sink.balance;
+}
+- (void)setBalance:(CGFloat)balance
+{
+  [_sink applyBalance:balance];
 }
 
 - (void)setMuted:(BOOL)isMute
 {
-  [_sink setMute:isMute];
+  [_sink applyMute:isMute];
 }
 - (BOOL)isMuted
 {

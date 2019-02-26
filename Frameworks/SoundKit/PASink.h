@@ -3,6 +3,7 @@
 
 @interface PASink : NSObject
 {
+  pa_channel_map *channel_map;
 }
 
 @property (assign) pa_context   *context;
@@ -15,17 +16,20 @@
 @property (readonly) NSArray    *ports;
 @property (readonly) NSString   *activePort;
 
+// KVO-compliant
 @property (assign) NSUInteger channelCount;
 @property (assign) NSUInteger volumeSteps;
 @property (assign) NSUInteger baseVolume;
+@property (assign) CGFloat    balance;
 @property (assign) NSArray    *channelVolumes;
 
 @property (assign,nonatomic) BOOL mute;
 
 - (id)updateWithValue:(NSValue *)value;
 
+- (void)applyMute:(BOOL)isMute;
 - (NSUInteger)volume;
-- (void)setVolume:(NSUInteger)v;
-- (void)setMute:(BOOL)isMute;
+- (void)applyVolume:(NSUInteger)v;
+- (void)applyBalance:(CGFloat)balance;
 
 @end

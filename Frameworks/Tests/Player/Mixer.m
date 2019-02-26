@@ -70,13 +70,15 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   
   if (context == OutputVolumeContext) {
     if (object == output.sink) {
-      // NSLog(@"SoundOut received change to `%@` object %@ change: %@",
-      //       keyPath, [object className], change);
+      NSLog(@"SoundOut received change to `%@` object %@ change: %@",
+            keyPath, [object className], change);
       if ([keyPath isEqualToString:@"mute"]) {
         [outputMute setState:[output isMuted]];
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
         [outputVolume setIntegerValue:[output volume]];
+        NSLog(@"Set balance: %f", [output balance]);
+        [outputBalance setFloatValue:[output balance]];
       }
     }
   } else {
@@ -165,7 +167,7 @@ static void *OutputVolumeContext = &OutputVolumeContext;
 {
   NSString      *title;
   SKSoundServer *server = [SKSoundServer sharedServer];
-  SKSoundOut    *defOut = [server defaultOutput];
+  SKSoundOut    *defOut;
   
   [outputDevice removeAllItems];
 
@@ -179,12 +181,13 @@ static void *OutputVolumeContext = &OutputVolumeContext;
     [self observeOutput:output];
   }
   
+  defOut = [server defaultOutput];
   [outputDevice selectItemWithTitle:[defOut activePort]];
-  [outputVolume setIntegerValue:[defOut volume]];
   [outputMute setState:[defOut isMuted]];
+  [outputVolume setIntegerValue:[defOut volume]];
+  [outputBalance setFloatValue:[defOut balance]];
   
   [self updateOutputProfileList:outputDevice];
-
 }
 
 // "Device" popup button action. Fills "Profile" popup button.
@@ -206,17 +209,19 @@ static void *OutputVolumeContext = &OutputVolumeContext;
 {
   SKSoundOut *output = [[outputDevice selectedItem] representedObject];
 
-  // NSLog(@"Ouput: set volume to %li (old: %lu)",
-  //       [outputVolume integerValue], [output volume]);
+  NSLog(@"Output: set volume to %li (old: %lu)",
+        [outputVolume integerValue], [output volume]);
   
   [output setVolume:[outputVolume integerValue]];
   
-  // NSLog(@"Ouput: volume was set to %lu", [output volume]);
+  NSLog(@"Output: volume was set to %lu", [output volume]);
 }
 
 - (void)outputSetBalance:(id)sender
 {
+  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
   NSLog(@"Ouput: set balance: %@", [sender className]);
+  [output setBalance:[outputBalance floatValue]];
 }
 
 // --- Window delegate
