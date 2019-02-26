@@ -22,6 +22,8 @@
 
 #import "Mixer.h"
 
+static void *OutputVolumeContext = &OutputVolumeContext;
+
 @implementation Mixer
 
 - init
@@ -46,6 +48,45 @@
   return window;
 }
 
+// --- Key-Value Observing
+- (void)observeOutput:(SKSoundOut *)output
+{
+  [output.sink addObserver:self
+                forKeyPath:@"channelVolumes"
+                   options:NSKeyValueObservingOptionNew
+                   context:OutputVolumeContext];
+  [output.sink addObserver:self
+                forKeyPath:@"mute"
+                   options:NSKeyValueObservingOptionNew
+                   context:OutputVolumeContext];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  
+  if (context == OutputVolumeContext) {
+    if (object == output.sink) {
+      // NSLog(@"SoundOut received change to `%@` object %@ change: %@",
+      //       keyPath, [object className], change);
+      if ([keyPath isEqualToString:@"mute"]) {
+        [outputMute setState:[output isMuted]];
+      }
+      else if ([keyPath isEqualToString:@"channelVolumes"]) {
+        [outputVolume setIntegerValue:[output volume]];
+      }
+    }
+  } else {
+    // Any unrecognized context must belong to super
+    [super observeValueForKeyPath:keyPath
+                         ofObject:object
+                           change:change
+                          context:context];
+  }
+}
 
 // --- Streams actions
 - (void)reloadBrowser:(NSBrowser *)browser
@@ -127,11 +168,15 @@
   SKSoundOut    *defOut = [server defaultOutput];
   
   [outputDevice removeAllItems];
-  
-  for (NSString *port in [defOut availablePorts]) {
-    title = [NSString stringWithFormat:@"%@", port];
-    [outputDevice addItemWithTitle:title];
-    [[outputDevice itemWithTitle:title] setRepresentedObject:defOut];
+
+  for (SKSoundOut *output in [server outputList]) {
+    for (NSString *port in [output availablePorts]) {
+      title = [NSString stringWithFormat:@"%@", port];
+      [outputDevice addItemWithTitle:title];
+      [[outputDevice itemWithTitle:title] setRepresentedObject:output];
+    }
+    // KVO for added output
+    [self observeOutput:output];
   }
   
   [outputDevice selectItemWithTitle:[defOut activePort]];
@@ -139,16 +184,17 @@
   [outputMute setState:[defOut isMuted]];
   
   [self updateOutputProfileList:outputDevice];
+
 }
 
 // "Device" popup button action. Fills "Profile" popup button.
 - (void)updateOutputProfileList:(id)sender
 {
-  SKSoundOut *defOut = [[outputDevice selectedItem] representedObject];
+  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
   
   [outputDeviceProfile removeAllItems];
-  [outputDeviceProfile addItemsWithTitles:[defOut availableProfiles]];
-  [outputDeviceProfile selectItemWithTitle:[defOut activeProfile]];
+  [outputDeviceProfile addItemsWithTitles:[output availableProfiles]];
+  [outputDeviceProfile selectItemWithTitle:[output activeProfile]];
 }
 
 - (void)outputMute:(id)sender
