@@ -22,7 +22,7 @@
 
 #import "Mixer.h"
 
-static void *OutputVolumeContext = &OutputVolumeContext;
+static void *OutputContext = &OutputContext;
 
 @implementation Mixer
 
@@ -32,8 +32,7 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   
   if (window == nil) {
     [NSBundle loadNibNamed:@"Mixer" owner:self];
-  }
-  
+  }  
   return self;
 }
 
@@ -44,22 +43,67 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   [self fillOutputDeviceList];
 }
 
-- (NSWindow *)window
+- (id)window
 {
   return window;
+}
+
+// Fills "Device" popup with port names
+- (void)fillOutputDeviceList
+{
+  NSString      *title;
+  SKSoundServer *server = [SKSoundServer sharedServer];
+  
+  [outputDevice removeAllItems];
+
+  for (SKSoundOut *output in [server outputList]) {
+    for (NSDictionary *port in [output availablePorts]) {
+      title = [NSString stringWithFormat:@"%@",
+                      [port objectForKey:@"Description"]];
+      [outputDevice addItemWithTitle:title];
+      [[outputDevice itemWithTitle:title] setRepresentedObject:output];
+    }
+    // KVO for added output
+    [self observeOutput:output];
+  }
+  
+  [outputDevice
+    selectItemWithTitle:[[server defaultOutput] activePort]];
+  [self setOutputPort:outputDevice];
+}
+
+// "Fills "Profile" popup button.
+- (void)fillOutputProfileList
+{
+  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  
+  [outputDeviceProfile removeAllItems];
+  for (NSDictionary *profile in [output availableProfiles]) {
+    [outputDeviceProfile addItemWithTitle:profile[@"Description"]];
+  }
+  // [outputDeviceProfile addItemsWithTitles:[output availableProfiles]];
+  [outputDeviceProfile selectItemWithTitle:[output activeProfile]];
 }
 
 // --- Key-Value Observing
 - (void)observeOutput:(SKSoundOut *)output
 {
   [output.sink addObserver:self
-                forKeyPath:@"channelVolumes"
-                   options:NSKeyValueObservingOptionNew
-                   context:OutputVolumeContext];
-  [output.sink addObserver:self
                 forKeyPath:@"mute"
                    options:NSKeyValueObservingOptionNew
-                   context:OutputVolumeContext];
+                   context:OutputContext];
+  [output.sink addObserver:self
+                forKeyPath:@"activePort"
+                   options:NSKeyValueObservingOptionNew
+                   context:OutputContext];
+  [output.card addObserver:self
+                forKeyPath:@"activeProfile"
+                   options:NSKeyValueObservingOptionNew
+                   context:OutputContext];
+  [output.sink addObserver:self
+                forKeyPath:@"channelVolumes"
+                   options:NSKeyValueObservingOptionNew
+                   context:OutputContext];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -69,17 +113,25 @@ static void *OutputVolumeContext = &OutputVolumeContext;
 {
   SKSoundOut *output = [[outputDevice selectedItem] representedObject];
   
-  if (context == OutputVolumeContext) {
+  if (context == OutputContext) {
     if (object == output.sink) {
       NSLog(@"SoundOut received change to `%@` object %@ change: %@",
             keyPath, [object className], change);
       if ([keyPath isEqualToString:@"mute"]) {
         [outputMute setState:[output isMute]];
       }
+      else if ([keyPath isEqualToString:@"activePort"]) {
+        [outputDevice selectItemWithTitle:output.activePort];
+      }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
         [outputVolume setIntegerValue:[output volume]];
-        NSLog(@"Set balance: %f", [output balance]);
+        // NSLog(@"Set balance: %f", [output balance]);
         [outputBalance setFloatValue:[output balance]];
+      }
+    }
+    else if (object == output.card) {
+      if ([keyPath isEqualToString:@"activeProfile"]) {
+        [outputDeviceProfile selectItemWithTitle:output.activeProfile];
       }
     }
   } else {
@@ -90,6 +142,11 @@ static void *OutputVolumeContext = &OutputVolumeContext;
                           context:context];
   }
 }
+
+// - (NSWindow *)window
+// {
+//   return window;
+// }
 
 // --- Streams actions
 - (void)reloadBrowser:(NSBrowser *)browser
@@ -169,6 +226,10 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   SKSoundOut *output = [[outputDevice selectedItem] representedObject];
 
   [output setActivePort:[[outputDevice selectedItem] title]];
+  [outputMute setState:[output isMute]];
+  [outputVolume setMaxValue:[output volumeSteps]-1];
+  [outputVolume setIntegerValue:[output volume]];
+  [outputBalance setFloatValue:[output balance]];
   [self fillOutputProfileList];
 }
 // "Profile" popup action
@@ -177,45 +238,6 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   SKSoundOut *output = [[outputDevice selectedItem] representedObject];
 
   [output setActiveProfile:[[outputDeviceProfile selectedItem] title]];
-}
-
-// Fills "Device" popup with port names
-- (void)fillOutputDeviceList
-{
-  NSString      *title;
-  SKSoundServer *server = [SKSoundServer sharedServer];
-  SKSoundOut    *defOut;
-  
-  [outputDevice removeAllItems];
-
-  for (SKSoundOut *output in [server outputList]) {
-    for (NSDictionary *port in [output availablePorts]) {
-      title = [NSString stringWithFormat:@"%@",
-                      [port objectForKey:@"Description"]];
-      [outputDevice addItemWithTitle:title];
-      [[outputDevice itemWithTitle:title] setRepresentedObject:output];
-    }
-    // KVO for added output
-    [self observeOutput:output];
-  }
-  
-  defOut = [server defaultOutput];
-  [outputDevice selectItemWithTitle:[defOut activePort]];
-  [outputMute setState:[defOut isMute]];
-  [outputVolume setIntegerValue:[defOut volume]];
-  [outputBalance setFloatValue:[defOut balance]];
-  
-  [self fillOutputProfileList];
-}
-
-// "Fills "Profile" popup button.
-- (void)fillOutputProfileList
-{
-  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
-  
-  [outputDeviceProfile removeAllItems];
-  [outputDeviceProfile addItemsWithTitles:[output availableProfiles]];
-  [outputDeviceProfile selectItemWithTitle:[output activeProfile]];
 }
 
 - (void)outputMute:(id)sender

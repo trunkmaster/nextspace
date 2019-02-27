@@ -10,8 +10,11 @@
  
 #import <AppKit/AppKit.h>
 
+@class Mixer;
+
 @interface AppController : NSObject
 {
+  Mixer *mixer;
 }
 
 - (void)showPrefPanel:(id)sender;

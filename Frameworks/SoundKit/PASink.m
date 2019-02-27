@@ -58,6 +58,7 @@
 {
   NSMutableArray *ports;
   NSDictionary   *d;
+  NSString       *newActivePort;
 
   if (info->n_ports > 0) {
     ports = [NSMutableArray new];
@@ -73,14 +74,17 @@
     [ports release];
   }
 
-  if (_activePort) {
-    [_activePort release];
-  }
-  if (info->active_port != NULL) {
-    _activePort = [[NSString alloc] initWithCString:info->active_port->description];
-  }
-  else {
-    _activePort = nil;
+  newActivePort = [[NSString alloc] initWithCString:info->active_port->description];
+  if (_activePort == nil || [_activePort isEqualToString:newActivePort] == NO) {
+    if (_activePort) {
+      [_activePort release];
+    }
+    if (info->active_port != NULL) {
+      self.activePort = newActivePort;
+    }
+    else {
+      self.activePort = nil;
+    }
   }
 }
 
@@ -195,6 +199,7 @@
   }
   pa_context_set_sink_port_by_index(_context, _index, port, NULL, self);
 }
+
 - (void)applyMute:(BOOL)isMute
 {
   pa_context_set_sink_mute_by_index(_context, _index, (int)isMute, NULL, self);

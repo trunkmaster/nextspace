@@ -45,7 +45,7 @@
   id outputBalance;
 }
 
-- (NSWindow *)window;
+- (id)window;
 
 - (void)reloadBrowser:(NSBrowser *)browser;
 - (void)fillOutputDeviceList;

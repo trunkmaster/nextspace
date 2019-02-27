@@ -33,10 +33,9 @@
 
 @property (readonly) NSArray    *outProfiles;
 @property (readonly) NSArray    *inProfiles;
-@property (readonly) NSString   *activeProfile;
+@property (assign)   NSString   *activeProfile;
 
 - (id)updateWithValue:(NSValue *)value;
-
 - (void)applyActiveProfile:(NSString *)profileName;
 
 @end

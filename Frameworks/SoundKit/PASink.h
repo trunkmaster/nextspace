@@ -32,12 +32,10 @@
 @property (readonly) NSUInteger index;
 @property (readonly) NSString   *description;
 @property (readonly) NSString   *name;
-
 @property (readonly) NSUInteger cardIndex;
 @property (readonly) NSArray    *ports;
-@property (readonly) NSString   *activePort;
-
 // KVO-compliant
+@property (assign) NSString   *activePort;
 @property (assign) NSUInteger channelCount;
 @property (assign) NSUInteger volumeSteps;
 @property (assign) NSUInteger baseVolume;

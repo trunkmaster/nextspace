@@ -53,7 +53,12 @@
 
 - (void)showMixer:(id)sender
 {
-  [Mixer new];
+  if (mixer == nil) {
+    mixer = [Mixer new];
+  }
+  else {
+    [[mixer window] makeKeyAndOrderFront:self];
+  }
 }
 
 - (void)showPrefPanel:(id)sender

@@ -42,8 +42,10 @@
 {
   const pa_card_info *info;
   NSString           *profileType;
+  NSDictionary       *d;
   NSMutableArray     *outProfs;
   NSMutableArray     *inProfs;
+  NSString           *newActiveProfile;
   
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_card_info));
@@ -61,13 +63,15 @@
     inProfs = [NSMutableArray new];
     
     for (unsigned i = 0; i < info->n_profiles; i++) {
-      profileType = [[[NSString stringWithCString:info->profiles2[i]->name]
+      d = @{@"Name":[NSString stringWithCString:info->profiles2[i]->name],
+            @"Description":[NSString stringWithCString:info->profiles2[i]->description]};
+      profileType = [[d[@"Name"]
                        componentsSeparatedByString:@":"] objectAtIndex:0];
       if ([profileType isEqualToString:@"output"]) {
-        [outProfs addObject:[NSString stringWithCString:info->profiles2[i]->description]];
+        [outProfs addObject:d];
       }
       else {
-        [inProfs addObject:[NSString stringWithCString:info->profiles2[i]->description]];
+        [inProfs addObject:d];
       }
     }
     
@@ -87,13 +91,17 @@
     }
   }
 
-  if (_activeProfile)
-    [_activeProfile release];
-  if (info->active_profile != NULL) {
-    _activeProfile = [[NSString alloc] initWithCString:info->active_profile->description];
-  }
-  else {
-    _activeProfile = nil;
+  newActiveProfile = [[NSString alloc] initWithCString:info->active_profile->description];
+  if (_activeProfile == nil || [_activeProfile isEqualToString:newActiveProfile] == NO) {
+    if (_activeProfile) {
+      [_activeProfile release];
+    }
+    if (info->active_profile != NULL) {
+      self.activeProfile = newActiveProfile;
+    }
+    else {
+      self.activeProfile = nil;
+    }
   }
 
  free ((void *)info);
@@ -103,7 +111,21 @@
 
 - (void)applyActiveProfile:(NSString *)profileName
 {
-  const char *profile = [profileName cString];
+  const char *profile = NULL;
+  
+  for (NSDictionary *p in _outProfiles) {
+    if ([p[@"Description"] isEqualToString:profileName]) {
+      profile = [p[@"Name"] cString];
+    }
+  }
+  if (profile == NULL) {
+    for (NSDictionary *p in _inProfiles) {
+      if ([p[@"Description"] isEqualToString:profileName]) {
+        profile = [p[@"Name"] cString];
+      }
+    }
+  }
+  
   pa_context_set_card_profile_by_index(_context, _index, profile, NULL, self);
 }
 
