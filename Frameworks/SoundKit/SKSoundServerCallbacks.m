@@ -87,9 +87,10 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
 
   fprintf(stderr, "[SoundKit] Sink: %s (%s)\n", info->name, info->description);
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  [(SKSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
-                                               withObject:value
-                                            waitUntilDone:YES];
+  // [(SKSoundServer *)userdata  performSelectorOnMainThread:@selector(updateSink:)
+  //                                              withObject:value
+  //                                           waitUntilDone:YES];
+  [(SKSoundServer *)userdata updateSink:value];
 }
 
 // --- SKSoundIn: Source --> [Card, Server] ---
@@ -112,9 +113,10 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
   fprintf(stderr, "[SoundKit] Source: %s (%s)\n", info->name, info->description);
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
-  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
-                                              withObject:value
-                                           waitUntilDone:YES];
+  // [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
+  //                                             withObject:value
+  //                                          waitUntilDone:YES];
+  [(SKSoundServer *)userdata updateSource:value];
 }
 
 // --- SKSoundStream: SinkInput | SourceOutput, Client, Saved Stream(?) ---
@@ -143,9 +145,10 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
           info->mute, info->corked);
   
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
-                                              withObject:value
-                                           waitUntilDone:YES];
+  // [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
+  //                                             withObject:value
+  //                                          waitUntilDone:YES];
+  [(SKSoundServer *)userdata updateSinkInput:value];
 }
 // SourceOutput
 void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
@@ -167,9 +170,10 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   fprintf(stderr, "[SoundKit] Source Output: %s\n", info->name);
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
-  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
-                                              withObject:value
-                                           waitUntilDone:YES];
+  // [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
+  //                                             withObject:value
+  //                                          waitUntilDone:YES];
+  [(SKSoundServer *)userdata updateSourceOutput:value];
 }
 // Client
 void client_cb(pa_context *ctx, const pa_client_info *info,
@@ -192,9 +196,10 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   
   fprintf(stderr, "[SoundKit] Client: %s (index:%i)\n", info->name, info->index);
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
-                                              withObject:value
-                                           waitUntilDone:YES];
+  // [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
+  //                                             withObject:value
+  //                                          waitUntilDone:YES];
+  [(SKSoundServer *)userdata updateClient:value];
 }
 // Saved Stream
 void ext_stream_restore_read_cb(pa_context *ctx,
@@ -218,10 +223,10 @@ void ext_stream_restore_read_cb(pa_context *ctx,
 
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
-  
-  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
-                                              withObject:value
-                                           waitUntilDone:YES];
+  // [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
+  //                                             withObject:value
+  //                                          waitUntilDone:YES];
+  [(SKSoundServer *)userdata updateStream:value];
 }
 
 // --- Context events subscription ---
@@ -238,9 +243,10 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SINK:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        [_server performSelectorOnMainThread:@selector(removeSinkWithIndex:)
-                                  withObject:[NSNumber numberWithUnsignedInt:index]
-                               waitUntilDone:YES];
+        // [_server performSelectorOnMainThread:@selector(removeSinkWithIndex:)
+        //                           withObject:[NSNumber numberWithUnsignedInt:index]
+        //                        waitUntilDone:YES];
+        [_server removeSinkWithIndex:[NSNumber numberWithUnsignedInt:index]];
       }
       else {
         if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, userdata))) {
@@ -255,9 +261,10 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SOURCE:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        [_server performSelectorOnMainThread:@selector(removeSourceWithIndex:)
-                                  withObject:[NSNumber numberWithUnsignedInt:index]
-                               waitUntilDone:YES];
+        // [_server performSelectorOnMainThread:@selector(removeSourceWithIndex:)
+        //                           withObject:[NSNumber numberWithUnsignedInt:index]
+        //                        waitUntilDone:YES];
+        [_server removeSourceWithIndex:[NSNumber numberWithUnsignedInt:index]];
       }
       else {
         if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, userdata))) {
@@ -272,9 +279,10 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        [_server performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
-                                  withObject:[NSNumber numberWithUnsignedInt:index]
-                               waitUntilDone:YES];
+        // [_server performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
+        //                           withObject:[NSNumber numberWithUnsignedInt:index]
+        //                        waitUntilDone:YES];
+        [_server removeSinkInputWithIndex:[NSNumber numberWithUnsignedInt:index]];
       }
       else {
         if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, userdata))) {
@@ -289,9 +297,10 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        [_server performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
-                                  withObject:[NSNumber numberWithUnsignedInt:index]
-                               waitUntilDone:YES];
+        // [_server performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
+        //                           withObject:[NSNumber numberWithUnsignedInt:index]
+        //                        waitUntilDone:YES];
+        [_server removeSourceOutputWithIndex:[NSNumber numberWithUnsignedInt:index]];
       }
       else {
         o = pa_context_get_source_output_info(ctx, index, source_output_cb, userdata);
@@ -307,9 +316,10 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_CLIENT:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        [_server performSelectorOnMainThread:@selector(removeClientWithIndex:)
-                                  withObject:[NSNumber numberWithUnsignedInt:index]
-                               waitUntilDone:YES];
+        // [_server performSelectorOnMainThread:@selector(removeClientWithIndex:)
+        //                           withObject:[NSNumber numberWithUnsignedInt:index]
+        //                        waitUntilDone:YES];
+        [_server removeClientWithIndex:[NSNumber numberWithUnsignedInt:index]];
       }
       else {
         if (!(o = pa_context_get_client_info(ctx, index, client_cb, userdata))) {
@@ -334,9 +344,10 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_CARD:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        [_server performSelectorOnMainThread:@selector(removeCardWithIndex:)
-                                  withObject:[NSNumber numberWithUnsignedInt:index]
-                               waitUntilDone:YES];
+        // [_server performSelectorOnMainThread:@selector(removeCardWithIndex:)
+        //                           withObject:[NSNumber numberWithUnsignedInt:index]
+        //                        waitUntilDone:YES];
+        [_server removeCardWithIndex:[NSNumber numberWithUnsignedInt:index]];
       }
       else {
         if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, userdata))) {
@@ -393,9 +404,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
   }
 
   // fprintf(stderr, "[SoundKit] send notification.\n");
-  [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
-                                              withObject:[NSNumber numberWithInt:state]
-                                           waitUntilDone:YES];
+  // [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
+  //                                             withObject:[NSNumber numberWithInt:state]
+  //                                          waitUntilDone:YES];
+  [(SKSoundServer *)userdata updateConnectionState:[NSNumber numberWithInt:state]];
 }
 
 // --- Initial inventory of PulseAudio objects ---
@@ -410,9 +422,10 @@ void inventory_start(pa_context *ctx, void *userdata)
 
   fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
       
-  [server performSelectorOnMainThread:@selector(updateConnectionState:)
-                           withObject:[NSNumber numberWithInt:SKServerInventoryState]
-                        waitUntilDone:YES];
+  // [server performSelectorOnMainThread:@selector(updateConnectionState:)
+  //                          withObject:[NSNumber numberWithInt:SKServerInventoryState]
+  //                       waitUntilDone:YES];
+  [server updateConnectionState:[NSNumber numberWithInt:SKServerInventoryState]];
   /* Keep track of the outstanding requests */
   n_outstanding = 0;
 
@@ -520,9 +533,10 @@ void inventory_end(pa_context *ctx, void *userdata)
   }
   pa_operation_unref(o);
 
-  [server performSelectorOnMainThread:@selector(updateConnectionState:)
-                           withObject:[NSNumber numberWithInt:SKServerReadyState]
-                        waitUntilDone:YES];
+  // [server performSelectorOnMainThread:@selector(updateConnectionState:)
+  //                          withObject:[NSNumber numberWithInt:SKServerReadyState]
+  //                       waitUntilDone:YES];
+  [server updateConnectionState:[NSNumber numberWithInt:SKServerReadyState]];
 }
 
 @end
