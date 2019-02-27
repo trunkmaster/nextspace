@@ -5,14 +5,14 @@ include $(GNUSTEP_MAKEFILES)/common.make
 VERSION = 0.1
 PACKAGE_NAME = Player
 APP_NAME = Player
-Player_APPLICATION_ICON = appicon.tiff
+Player_APPLICATION_ICON = Player.tiff
 GNUSTEP_INSTALLATION_DOMAIN = LOCAL
 
 #
 # Resource files
 #
 Player_RESOURCE_FILES = \
-	Resources/appicon.tiff \
+	Resources/Player.tiff \
 	Resources/Player.gorm \
 	Resources/PlayerWindow.gorm \
 	Resources/Mixer.gorm
