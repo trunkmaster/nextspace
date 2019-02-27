@@ -22,6 +22,8 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
   $(FRAMEWORK_NAME)_OBJC_FILES += \
 	PACard.m \
 	PASink.m \
+	PASource.m \
+	\
 	PASinkInput.m \
 	PAClient.m \
 	PAStream.m \

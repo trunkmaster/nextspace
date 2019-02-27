@@ -27,6 +27,7 @@
 
 @class PACard;
 @class PASink;
+@class PASource;
 @class PASinkInput;
 
 typedef enum NSInteger {
@@ -101,6 +102,8 @@ extern NSString *SKDeviceDidRemoveNotification;
 - (void)removeSinkWithIndex:(NSNumber *)index;
 // TODO: Source
 - (void)updateSource:(NSValue *)value;
+- (PASource *)sourceWithIndex:(NSUInteger)index;
+- (PASource *)sourceWithName:(NSString *)name;
 - (void)removeSourceWithIndex:(NSNumber *)index;
 // Sink Input
 - (void)updateSinkInput:(NSValue *)value;

@@ -40,7 +40,7 @@ static void *OutputContext = &OutputContext;
 {
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
-  [self fillOutputDeviceList];
+  [self fillDeviceList];
 }
 
 - (id)window
@@ -49,40 +49,38 @@ static void *OutputContext = &OutputContext;
 }
 
 // Fills "Device" popup with port names
-- (void)fillOutputDeviceList
+- (void)fillDeviceList
 {
   NSString      *title;
   SKSoundServer *server = [SKSoundServer sharedServer];
   
-  [outputDevice removeAllItems];
+  [devicePort removeAllItems];
 
   for (SKSoundOut *output in [server outputList]) {
     for (NSDictionary *port in [output availablePorts]) {
       title = [NSString stringWithFormat:@"%@",
                       [port objectForKey:@"Description"]];
-      [outputDevice addItemWithTitle:title];
-      [[outputDevice itemWithTitle:title] setRepresentedObject:output];
+      [devicePort addItemWithTitle:title];
+      [[devicePort itemWithTitle:title] setRepresentedObject:output];
     }
     // KVO for added output
     [self observeOutput:output];
   }
   
-  [outputDevice
-    selectItemWithTitle:[[server defaultOutput] activePort]];
-  [self setOutputPort:outputDevice];
+  [devicePort selectItemWithTitle:[[server defaultOutput] activePort]];
+  [self setOutputPort:devicePort];
 }
 
 // "Fills "Profile" popup button.
-- (void)fillOutputProfileList
+- (void)fillProfileList
 {
-  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  SKSoundOut *device = [[devicePort selectedItem] representedObject];
   
-  [outputDeviceProfile removeAllItems];
-  for (NSDictionary *profile in [output availableProfiles]) {
-    [outputDeviceProfile addItemWithTitle:profile[@"Description"]];
+  [deviceProfile removeAllItems];
+  for (NSDictionary *profile in [device availableProfiles]) {
+    [deviceProfile addItemWithTitle:profile[@"Description"]];
   }
-  // [outputDeviceProfile addItemsWithTitles:[output availableProfiles]];
-  [outputDeviceProfile selectItemWithTitle:[output activeProfile]];
+  [deviceProfile selectItemWithTitle:[device activeProfile]];
 }
 
 // --- Key-Value Observing
@@ -111,27 +109,27 @@ static void *OutputContext = &OutputContext;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  SKSoundOut *output = [[devicePort selectedItem] representedObject];
   
   if (context == OutputContext) {
     if (object == output.sink) {
       NSLog(@"SoundOut received change to `%@` object %@ change: %@",
             keyPath, [object className], change);
       if ([keyPath isEqualToString:@"mute"]) {
-        [outputMute setState:[output isMute]];
+        [deviceMute setState:[output isMute]];
       }
       else if ([keyPath isEqualToString:@"activePort"]) {
-        [outputDevice selectItemWithTitle:output.activePort];
+        [devicePort selectItemWithTitle:output.activePort];
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
-        [outputVolume setIntegerValue:[output volume]];
+        [deviceVolume setIntegerValue:[output volume]];
         // NSLog(@"Set balance: %f", [output balance]);
-        [outputBalance setFloatValue:[output balance]];
+        [deviceBalance setFloatValue:[output balance]];
       }
     }
     else if (object == output.card) {
       if ([keyPath isEqualToString:@"activeProfile"]) {
-        [outputDeviceProfile selectItemWithTitle:output.activeProfile];
+        [deviceProfile selectItemWithTitle:output.activeProfile];
       }
     }
   } else {
@@ -143,10 +141,17 @@ static void *OutputContext = &OutputContext;
   }
 }
 
-// - (NSWindow *)window
-// {
-//   return window;
-// }
+- (void)setMode:(id)sender
+{
+  NSString *title = [[sender selectedItem] title];
+
+  if ([title isEqualToString:@"Playback"]) {
+    [deviceBox setTitle:@"Output"];
+  }
+  else if ([title isEqualToString:@"Recording"]) {
+    [deviceBox setTitle:@"Input"];
+  }
+}
 
 // --- Streams actions
 - (void)reloadBrowser:(NSBrowser *)browser
@@ -223,45 +228,45 @@ static void *OutputContext = &OutputContext;
 // "Device" popup action
 - (void)setOutputPort:(id)sender
 {
-  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  SKSoundOut *output = [[devicePort selectedItem] representedObject];
 
-  [output setActivePort:[[outputDevice selectedItem] title]];
-  [outputMute setState:[output isMute]];
-  [outputVolume setMaxValue:[output volumeSteps]-1];
-  [outputVolume setIntegerValue:[output volume]];
-  [outputBalance setFloatValue:[output balance]];
-  [self fillOutputProfileList];
+  [output setActivePort:[[devicePort selectedItem] title]];
+  [deviceMute setState:[output isMute]];
+  [deviceVolume setMaxValue:[output volumeSteps]-1];
+  [deviceVolume setIntegerValue:[output volume]];
+  [deviceBalance setFloatValue:[output balance]];
+  [self fillProfileList];
 }
 // "Profile" popup action
 - (void)setOutputProfile:(id)sender
 {
-  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  SKSoundOut *output = [[devicePort selectedItem] representedObject];
 
-  [output setActiveProfile:[[outputDeviceProfile selectedItem] title]];
+  [output setActiveProfile:[[deviceProfile selectedItem] title]];
 }
 
-- (void)outputMute:(id)sender
+- (void)setDeviceMute:(id)sender
 {
-  [[[outputDevice selectedItem] representedObject] setMute:[sender state]];
+  [[[devicePort selectedItem] representedObject] setMute:[sender state]];
 }
 
-- (void)outputSetVolume:(id)sender
+- (void)setDeviceVolume:(id)sender
 {
-  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+  SKSoundOut *output = [[devicePort selectedItem] representedObject];
 
   NSLog(@"Output: set volume to %li (old: %lu)",
-        [outputVolume integerValue], [output volume]);
+        [deviceVolume integerValue], [output volume]);
   
-  [output setVolume:[outputVolume integerValue]];
+  [output setVolume:[deviceVolume integerValue]];
   
   NSLog(@"Output: volume was set to %lu", [output volume]);
 }
 
-- (void)outputSetBalance:(id)sender
+- (void)setDeviceBalance:(id)sender
 {
-  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
-  NSLog(@"Ouput: set balance: %@", [sender className]);
-  [output setBalance:[outputBalance floatValue]];
+  SKSoundOut *device = [[devicePort selectedItem] representedObject];
+  NSLog(@"Device: set balance: %@", [sender className]);
+  [device setBalance:[deviceBalance floatValue]];
 }
 
 // --- Window delegate

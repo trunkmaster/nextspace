@@ -22,6 +22,7 @@
 
 #import "PACard.h"
 #import "PASink.h"
+#import "PASource.h"
 #import "PASinkInput.h"
 #import "PAClient.h"
 #import "PAStream.h"
@@ -313,9 +314,59 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 // TODO: Source
 - (void)updateSource:(NSValue *)value // source_cb(...)
 {
+  const pa_source_info *info;
+  PASource             *source;
+  BOOL                 isUpdated = NO;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_source_info));
+  [value getValue:(void *)info];
+
+  for (source in sourceList) {
+    if (source.index == info->index) {
+      fprintf(stderr, "[SoundKit] Update Source: %s.\n", info->name);
+      [source updateWithValue:value];
+      isUpdated = YES;
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    source = [[PASource alloc] init];
+    fprintf(stderr, "[SoundKit] Add Source: %s.\n", info->name);
+    [source updateWithValue:value];
+    source.context = _pa_ctx;
+    [sourceList addObject:source];
+    [source release];
+  }
+  
+  free((void *)info);  
+}
+- (PASource *)sourceWithIndex:(NSUInteger)index
+{
+  for (PASource *source in sourceList) {
+    if (source.index == index) {
+      return source;
+    }
+  }
+  return nil;
+}
+- (PASource *)sourceWithName:(NSString *)name
+{
+  for (PASource *source in sourceList) {
+    if ([name isEqualToString:source.name]) {
+      return source;
+    }
+  }
+  return nil;
 }
 - (void)removeSourceWithIndex:(NSNumber *)index // context_subscribe_cb(...)
 {
+  PASource *source = [self sourceWithIndex:[index unsignedIntegerValue]];
+
+  if (source != nil) {
+    [sourceList removeObject:source];
+  }  
 }
 
 // Sink Input

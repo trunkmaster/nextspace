@@ -23,32 +23,26 @@
 @interface Mixer : NSObject
 {
   id window;
-  id serverInfo;
-  id cardInfo;
   
-  id streamsBrowser;
-  id sreamMute;
-  id streamVolume;
-  
-  id devicesBrowser;
-  id deviceMute;
-
-  // Advanced Sound Preferences
+  //
   id modeButton;
+  //
   id appBrowser;
   id appMute;
   id appVolume;
-  id outputMute;
-  id outputDevice;
-  id outputDeviceProfile;
-  id outputVolume;
-  id outputBalance;
+  //
+  id deviceBox;
+  id deviceMute;
+  id devicePort;
+  id deviceProfile;
+  id deviceVolume;
+  id deviceBalance;
 }
 
 - (id)window;
 
 - (void)reloadBrowser:(NSBrowser *)browser;
-- (void)fillOutputDeviceList;
-- (void)fillOutputProfileList;
+- (void)fillDeviceList;
+- (void)fillProfileList;
 
 @end

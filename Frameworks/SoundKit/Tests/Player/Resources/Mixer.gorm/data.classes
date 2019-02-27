@@ -12,12 +12,13 @@
 	Actions = (
 	    "appMuteClick:",
 	    "browserClick:",
-	    "setOutputProfile:",
+	    "setMode:",
 	    "orderFrontFontPanel:",
 	    "outputMute:",
 	    "outputSetBalance:",
 	    "outputSetVolume:",
 	    "setOutputPort:",
+	    "setOutputProfile:",
 	    "showPrefPanel:"
 	);
 	Super = NSObject;
@@ -30,26 +31,22 @@
 	    "outputSetBalance:",
 	    "outputMute:",
 	    "outputSetVolume:",
-	    "setOutputProfile:"
+	    "setOutputProfile:",
+	    "setMode:"
 	);
 	Outlets = (
-	    devicesBrowser,
-	    streamsBrowser,
 	    window,
 	    cardInfo,
 	    deviceMute,
-	    serverInfo,
-	    streamMute,
-	    streamVolume,
 	    appBrowser,
 	    appMute,
 	    appVolume,
 	    modeButton,
-	    outputBalance,
-	    outputDevice,
-	    outputDeviceProfile,
-	    outputMute,
-	    outputVolume
+	    deviceBalance,
+	    devicePort,
+	    deviceProfile,
+	    deviceVolume,
+	    deviceBox
 	);
 	Super = NSObject;
     };

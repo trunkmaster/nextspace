@@ -19,9 +19,9 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "PASink.h"
+#import "PASource.h"
 
-@implementation PASink
+@implementation PASource
 
 - (void)dealloc
 {
@@ -54,7 +54,7 @@
 }
 
 // --- Initialize and update
-- (void)updatePorts:(const pa_sink_info *)info
+- (void)updatePorts:(const pa_source_info *)info
 {
   NSMutableArray *ports;
   NSDictionary   *d;
@@ -90,7 +90,7 @@
   }
 }
 
-- (void)updateVolume:(const pa_sink_info *)info
+- (void)updateVolume:(const pa_source_info *)info
 {
   NSMutableArray *vol;
   NSNumber       *v;
@@ -102,7 +102,7 @@
   }
   
   balance = pa_cvolume_get_balance(&info->volume, &info->channel_map);
-  fprintf(stderr, "[SoundKit] Sink balance: %f\n", balance);
+  fprintf(stderr, "[SoundKit] Source balance: %f\n", balance);
   if (_balance != balance) {
     self.balance = balance;
   }
@@ -131,7 +131,7 @@
   }  
 }
 
-- (void)updateChannels:(const pa_sink_info *)info
+- (void)updateChannels:(const pa_source_info *)info
 {
   _channelCount = info->volume.channels;
   
@@ -149,11 +149,11 @@
 
 - (id)updateWithValue:(NSValue *)val
 {
-  const pa_sink_info *info;
-  NSMutableArray     *ports, *vol;
+  const pa_source_info *info;
+  NSMutableArray       *ports, *vol;
   
   // Convert PA structure into NSDictionary
-  info = malloc(sizeof(const pa_sink_info));
+  info = malloc(sizeof(const pa_source_info));
   [val getValue:(void *)info];
 
   // Indexes
@@ -199,12 +199,12 @@
       break;
     }
   }
-  pa_context_set_sink_port_by_index(_context, _index, port, NULL, self);
+  pa_context_set_source_port_by_index(_context, _index, port, NULL, self);
 }
 
 - (void)applyMute:(BOOL)isMute
 {
-  pa_context_set_sink_mute_by_index(_context, _index, (int)isMute, NULL, self);
+  pa_context_set_source_mute_by_index(_context, _index, (int)isMute, NULL, self);
 }
 
 - (NSUInteger)volume
@@ -227,7 +227,7 @@
   pa_cvolume_init(new_volume);
   pa_cvolume_set(new_volume, _channelCount, v);
   
-  pa_context_set_sink_volume_by_index(_context, _index, new_volume, NULL, self);
+  pa_context_set_source_volume_by_index(_context, _index, new_volume, NULL, self);
   
   free(new_volume);
 }
@@ -241,7 +241,7 @@
   pa_cvolume_set(volume, _channelCount, self.volume);
   
   pa_cvolume_set_balance(volume, channel_map, balance);
-  pa_context_set_sink_volume_by_index(_context, _index, volume, NULL, self);
+  pa_context_set_source_volume_by_index(_context, _index, volume, NULL, self);
   
   free(volume);
 }
