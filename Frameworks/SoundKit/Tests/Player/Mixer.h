@@ -48,7 +48,7 @@
 - (NSWindow *)window;
 
 - (void)reloadBrowser:(NSBrowser *)browser;
-- (void)updateOutputDeviceList;
-- (void)updateOutputProfileList:(NSPopUpButton *)button;
+- (void)fillOutputDeviceList;
+- (void)fillOutputProfileList;
 
 @end

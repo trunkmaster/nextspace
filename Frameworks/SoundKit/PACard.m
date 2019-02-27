@@ -19,7 +19,6 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <pulse/pulseaudio.h>
 #import "PACard.h"
 
 @implementation PACard
@@ -100,6 +99,12 @@
  free ((void *)info);
 
   return self;
+}
+
+- (void)applyActiveProfile:(NSString *)profileName
+{
+  const char *profile = [profileName cString];
+  pa_context_set_card_profile_by_index(_context, _index, profile, NULL, self);
 }
 
 @end

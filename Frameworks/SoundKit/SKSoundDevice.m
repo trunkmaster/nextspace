@@ -99,13 +99,9 @@
 {
   return _card.activeProfile;
 }
-- (void)setActiveProfile:(NSString *)profile
+- (void)setActiveProfile:(NSString *)profileName
 {
-  pa_context_set_card_profile_by_name(_server.pa_ctx,
-                                      [_card.name cString],
-                                      [profile cString],
-                                      NULL, // pa_context_success_cb_t cb,
-                                      self);
+  [_card applyActiveProfile:profileName];
 }
 
 @end

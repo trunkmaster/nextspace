@@ -48,6 +48,7 @@
 
 - (id)updateWithValue:(NSValue *)value;
 
+- (void)applyActivePort:(NSString *)portName;
 - (void)applyMute:(BOOL)isMute;
 - (NSUInteger)volume;
 - (void)applyVolume:(NSUInteger)v;

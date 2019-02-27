@@ -98,6 +98,7 @@
 }
 - (void)setActivePort:(NSString *)portName
 {
+  [_sink applyActivePort:portName];
 }
 
 - (NSUInteger)volumeSteps
@@ -121,18 +122,13 @@
   [_sink applyBalance:balance];
 }
 
-- (void)setMuted:(BOOL)isMute
+- (void)setMute:(BOOL)isMute
 {
   [_sink applyMute:isMute];
 }
-- (BOOL)isMuted
+- (BOOL)isMute
 {
   return (BOOL)_sink.mute;
 }
-
-// - samples
-// {}
-// - latency
-// {}
 
 @end

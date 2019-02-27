@@ -41,7 +41,7 @@ static void *OutputVolumeContext = &OutputVolumeContext;
 {
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
-  [self updateOutputDeviceList];
+  [self fillOutputDeviceList];
 }
 
 - (NSWindow *)window
@@ -74,7 +74,7 @@ static void *OutputVolumeContext = &OutputVolumeContext;
       NSLog(@"SoundOut received change to `%@` object %@ change: %@",
             keyPath, [object className], change);
       if ([keyPath isEqualToString:@"mute"]) {
-        [outputMute setState:[output isMuted]];
+        [outputMute setState:[output isMute]];
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
         [outputVolume setIntegerValue:[output volume]];
@@ -163,8 +163,24 @@ static void *OutputVolumeContext = &OutputVolumeContext;
 }
 
 // --- Output actions
+// "Device" popup action
+- (void)setOutputPort:(id)sender
+{
+  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+
+  [output setActivePort:[[outputDevice selectedItem] title]];
+  [self fillOutputProfileList];
+}
+// "Profile" popup action
+- (void)setOutputProfile:(id)sender
+{
+  SKSoundOut *output = [[outputDevice selectedItem] representedObject];
+
+  [output setActiveProfile:[[outputDeviceProfile selectedItem] title]];
+}
+
 // Fills "Device" popup with port names
-- (void)updateOutputDeviceList
+- (void)fillOutputDeviceList
 {
   NSString      *title;
   SKSoundServer *server = [SKSoundServer sharedServer];
@@ -173,8 +189,9 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   [outputDevice removeAllItems];
 
   for (SKSoundOut *output in [server outputList]) {
-    for (NSString *port in [output availablePorts]) {
-      title = [NSString stringWithFormat:@"%@", port];
+    for (NSDictionary *port in [output availablePorts]) {
+      title = [NSString stringWithFormat:@"%@",
+                      [port objectForKey:@"Description"]];
       [outputDevice addItemWithTitle:title];
       [[outputDevice itemWithTitle:title] setRepresentedObject:output];
     }
@@ -184,15 +201,15 @@ static void *OutputVolumeContext = &OutputVolumeContext;
   
   defOut = [server defaultOutput];
   [outputDevice selectItemWithTitle:[defOut activePort]];
-  [outputMute setState:[defOut isMuted]];
+  [outputMute setState:[defOut isMute]];
   [outputVolume setIntegerValue:[defOut volume]];
   [outputBalance setFloatValue:[defOut balance]];
   
-  [self updateOutputProfileList:outputDevice];
+  [self fillOutputProfileList];
 }
 
-// "Device" popup button action. Fills "Profile" popup button.
-- (void)updateOutputProfileList:(id)sender
+// "Fills "Profile" popup button.
+- (void)fillOutputProfileList
 {
   SKSoundOut *output = [[outputDevice selectedItem] representedObject];
   
@@ -203,7 +220,7 @@ static void *OutputVolumeContext = &OutputVolumeContext;
 
 - (void)outputMute:(id)sender
 {
-  [[[outputDevice selectedItem] representedObject] setMuted:[sender state]];
+  [[[outputDevice selectedItem] representedObject] setMute:[sender state]];
 }
 
 - (void)outputSetVolume:(id)sender

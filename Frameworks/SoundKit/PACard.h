@@ -19,11 +19,14 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import <pulse/pulseaudio.h>
 #import <Foundation/Foundation.h>
 
 @interface PACard : NSObject
 {
 }
+
+@property (assign) pa_context   *context;
 
 @property (readonly) NSUInteger index;
 @property (readonly) NSString   *name;
@@ -33,5 +36,7 @@
 @property (readonly) NSString   *activeProfile;
 
 - (id)updateWithValue:(NSValue *)value;
+
+- (void)applyActiveProfile:(NSString *)profileName;
 
 @end

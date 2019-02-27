@@ -12,23 +12,25 @@
 	Actions = (
 	    "appMuteClick:",
 	    "browserClick:",
-	    "outputSetBalance:",
+	    "setOutputProfile:",
 	    "orderFrontFontPanel:",
 	    "outputMute:",
+	    "outputSetBalance:",
 	    "outputSetVolume:",
-	    "showPrefPanel:",
-	    "updateOutputProfileList:"
+	    "setOutputPort:",
+	    "showPrefPanel:"
 	);
 	Super = NSObject;
     };
     Mixer = {
 	Actions = (
 	    "browserClick:",
-	    "updateOutputProfileList:",
+	    "setOutputPort:",
 	    "appMuteClick:",
 	    "outputSetBalance:",
 	    "outputMute:",
-	    "outputSetVolume:"
+	    "outputSetVolume:",
+	    "setOutputProfile:"
 	);
 	Outlets = (
 	    devicesBrowser,

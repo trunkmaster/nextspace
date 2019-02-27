@@ -43,7 +43,7 @@
 - (CGFloat)balance;
 - (void)setBalance:(CGFloat)balance;
 
-- (BOOL)isMuted;
-- (void)setMuted:(BOOL)isMute;
+- (BOOL)isMute;
+- (void)setMute:(BOOL)isMute;
 
 @end

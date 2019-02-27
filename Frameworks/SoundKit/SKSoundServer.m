@@ -225,6 +225,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     SKSoundDevice *soundDevice;
     card = [[PACard alloc] init];
     fprintf(stderr, "[SoundKit] Card Add: %s.\n", info->name);
+    card.context = _pa_ctx;
     [card updateWithValue:value];
     [cardList addObject:card];
     [card release];

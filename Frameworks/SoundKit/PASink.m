@@ -34,6 +34,12 @@
   if (_activePort) {
     [_activePort release];
   }
+  if (_ports){
+    [_ports release];
+  }
+  if (_channelVolumes){
+    [_channelVolumes release];
+  }
   
   free(channel_map);
   
@@ -51,11 +57,14 @@
 - (void)updatePorts:(const pa_sink_info *)info
 {
   NSMutableArray *ports;
-    
+  NSDictionary   *d;
+
   if (info->n_ports > 0) {
     ports = [NSMutableArray new];
     for (unsigned i = 0; i < info->n_ports; i++) {
-      [ports addObject:[NSString stringWithCString:info->ports[i]->description]];
+      d = @{@"Name":[NSString stringWithCString:info->ports[i]->name],
+            @"Description":[NSString stringWithCString:info->ports[i]->description]};
+      [ports addObject:d];
     }
     if (_ports) {
       [_ports release];
@@ -174,6 +183,18 @@
 }
 
 // --- Actions
+- (void)applyActivePort:(NSString *)portName
+{
+  const char *port;
+
+  for (NSDictionary *p in _ports) {
+    if ([[p objectForKey:@"Description"] isEqualToString:portName]) {
+      port = [[p objectForKey:@"Name"] cString];
+      break;
+    }
+  }
+  pa_context_set_sink_port_by_index(_context, _index, port, NULL, self);
+}
 - (void)applyMute:(BOOL)isMute
 {
   pa_context_set_sink_mute_by_index(_context, _index, (int)isMute, NULL, self);

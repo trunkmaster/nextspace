@@ -39,5 +39,6 @@
 
 - (NSArray *)availableProfiles;
 - (NSString *)activeProfile;
+- (void)setActiveProfile:(NSString *)profileName;
 
 @end
