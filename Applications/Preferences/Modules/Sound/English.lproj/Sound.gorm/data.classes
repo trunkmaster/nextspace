@@ -32,7 +32,6 @@
 	    micBalance,
 	    micLevel,
 	    muteButton,
-	    voiceAlertsButton,
 	    volumeBalance,
 	    volumeLevel,
 	    muteMicButton

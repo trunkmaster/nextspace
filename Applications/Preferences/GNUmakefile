@@ -18,13 +18,14 @@ $(APP_NAME)_APPLICATION_ICON = Mask.tiff
 SUBPROJECTS = \
 	Modules/Localization \
 	Modules/Font \
-	Modules/Keyboard \
-	Modules/Mouse \
 	Modules/Display \
 	Modules/Screen \
-	Modules/Power \
-	Modules/Password \
+	Modules/Keyboard \
+	Modules/Mouse \
+	Modules/Sound \
 	Modules/Expert
+#	Modules/Power
+#	Modules/Password
 
 #
 # Resource files
@@ -32,13 +33,15 @@ SUBPROJECTS = \
 $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Localization/Localization.preferences \
 	Modules/Font/Font.preferences \
-	Modules/Keyboard/Keyboard.preferences \
-	Modules/Mouse/Mouse.preferences \
 	Modules/Display/Display.preferences \
 	Modules/Screen/Screen.preferences \
-	Modules/Power/Power.preferences \
-	Modules/Password/Password.preferences \
+	Modules/Keyboard/Keyboard.preferences \
+	Modules/Mouse/Mouse.preferences \
+	Modules/Sound/Sound.preferences \
 	Modules/Expert/Expert.preferences
+
+#	Modules/Power/Power.preferences
+#	Modules/Password/Password.preferences
 
 #
 # Localization
