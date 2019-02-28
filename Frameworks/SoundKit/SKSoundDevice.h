@@ -34,11 +34,27 @@
 - (id)init;
 - (id)initWithServer:(SKSoundServer *)server;
 - (NSString *)host;
+- (NSString *)name;
 - (NSString *)description;
 - (void)printDescription;
 
 - (NSArray *)availableProfiles;
 - (NSString *)activeProfile;
 - (void)setActiveProfile:(NSString *)profileName;
+
+// Subclass responsiblity
+- (NSArray *)availablePorts;
+- (NSString *)activePort;
+- (void)setActivePort:(NSString *)portName;
+
+- (NSUInteger)volumeSteps;
+- (NSUInteger)volume;
+- (void)setVolume:(NSUInteger)volume;
+
+- (CGFloat)balance;
+- (void)setBalance:(CGFloat)balance;
+
+- (BOOL)isMute;
+- (void)setMute:(BOOL)isMute;
 
 @end

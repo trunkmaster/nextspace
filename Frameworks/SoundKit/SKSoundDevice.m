@@ -51,9 +51,13 @@
 {
   return _server.hostName;
 }
+- (NSString *)name
+{
+  return _card.description;
+}
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"PulseAudio Card `%@`", _card.name];
+  return [NSString stringWithFormat:@"PulseAudio Card `%@`", _card.description];
 }
 - (void)printDescription
 {
@@ -66,22 +70,24 @@
   fprintf(stderr, "\t    Retain Count : %lu\n", [self retainCount]);
 
   fprintf(stderr, "\t Output Profiles : \n");
-  for (NSString *prof in _card.outProfiles) {
-    NSString *profString;
-    if ([prof isEqualToString:_card.activeProfile])
-      profString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", prof, "\e[0m"];
+  for (NSDictionary *prof in _card.outProfiles) {
+    NSString *profDesc, *profString;
+    profDesc = prof[@"Description"];
+    if ([profDesc isEqualToString:_card.activeProfile])
+      profString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", profDesc, "\e[0m"];
     else
-      profString = [NSString stringWithFormat:@"%s%@%s", "- ", prof, ""];
+      profString = [NSString stringWithFormat:@"%s%@%s", "- ", profDesc, ""];
     fprintf(stderr, "\t                 %s\n", [profString cString]);
   }
   
   fprintf(stderr, "\t  Input Profiles : \n");
-  for (NSString *prof in _card.inProfiles) {
-    NSString *profString;
-    if ([prof isEqualToString:_card.activeProfile])
-      profString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", prof, "\e[0m"];
+  for (NSDictionary *prof in _card.inProfiles) {
+    NSString *profDesc, *profString;
+    profDesc = prof[@"Description"];
+    if ([profDesc isEqualToString:_card.activeProfile])
+      profString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", profDesc, "\e[0m"];
     else
-      profString = [NSString stringWithFormat:@"%s%@%s", "- ", prof, ""];
+      profString = [NSString stringWithFormat:@"%s%@%s", "- ", profDesc, ""];
     fprintf(stderr, "\t                 %s\n", [profString cString]);
   }
 }
@@ -102,6 +108,53 @@
 - (void)setActiveProfile:(NSString *)profileName
 {
   [_card applyActiveProfile:profileName];
+}
+
+// Subclass responsiblity
+- (NSArray *)availablePorts
+{
+  return nil;
+}
+- (NSString *)activePort
+{
+  return nil;
+}
+- (void)setActivePort:(NSString *)portName
+{
+  NSLog(@"[SoundKit] setActivePort: was send to SKSoundDevice."
+        " SKSoundOut or SKSoundIn subclasses should be used instead.");
+}
+
+- (NSUInteger)volumeSteps
+{
+  return 0;
+}
+- (NSUInteger)volume
+{
+  return 0;
+}
+- (void)setVolume:(NSUInteger)volume
+{
+  NSLog(@"[SoundKit] setVolume: was send to SKSoundDevice."
+        " SKSoundOut or SKSoundIn subclasses should be used instead.");
+}
+
+- (CGFloat)balance
+{
+  return 0.0;
+}
+- (void)setBalance:(CGFloat)balance
+{
+}
+
+- (BOOL)isMute
+{
+  return NO;
+}
+- (void)setMute:(BOOL)isMute
+{
+  NSLog(@"[SoundKit] setMute: was send to SKSoundDevice. "
+        "SKSoundOut or SKSoundIn subclasses should be used instead.");
 }
 
 @end

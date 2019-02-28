@@ -43,15 +43,19 @@
   [super dealloc];
 }
 
+- (NSString *)name
+{
+  return _sink.description;
+}
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"PulseAudio Sink `%@`", _sink.description];
 }
-
 // For debugging
 - (void)printDescription
 {
-  fprintf(stderr, "+++ SKSoundDevice: %s +++\n", [[super description] cString]);
+  fprintf(stderr, "+++ SKSoundDevice: %s +++++++++++++++++++++++++++++++++++++++++\n",
+          [[super description] cString]);
   [super printDescription];
   
   fprintf(stderr, "+++ SKSoundOut: %s +++\n", [[self description] cString]);
@@ -73,12 +77,13 @@
   fprintf(stderr, "\t       Retain Count : %lu\n", [self retainCount]);
 
   fprintf(stderr, "\t    Available Ports : \n");
-  for (NSString *port in [self availablePorts]) {
-    NSString *portString;
-    if ([port isEqualToString:_sink.activePort])
-      portString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", port, "\e[0m"];
+  for (NSDictionary *port in [self availablePorts]) {
+    NSString *portDesc, *portString;
+    portDesc = [port objectForKey:@"Description"];
+    if ([portDesc isEqualToString:_sink.activePort])
+      portString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", portDesc, "\e[0m"];
     else
-      portString = [NSString stringWithFormat:@"%s%@%s", "- ", port, ""];
+      portString = [NSString stringWithFormat:@"%s%@%s", "- ", portDesc, ""];
     fprintf(stderr, "\t                    %s\n", [portString cString]);
   }
 }

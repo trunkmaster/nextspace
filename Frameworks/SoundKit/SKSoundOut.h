@@ -28,22 +28,4 @@
 }
 @property (retain) PASink *sink;
 
-// For debuging purposes
-- (void)printDescription;
-
-- (NSArray *)availablePorts;
-- (NSString *)activePort;
-// TODO
-- (void)setActivePort:(NSString *)portName;
-
-- (NSUInteger)volumeSteps;
-- (NSUInteger)volume;
-- (void)setVolume:(NSUInteger)volume;
-
-- (CGFloat)balance;
-- (void)setBalance:(CGFloat)balance;
-
-- (BOOL)isMute;
-- (void)setMute:(BOOL)isMute;
-
 @end
