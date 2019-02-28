@@ -28,6 +28,7 @@
 #import "PAStream.h"
 
 #import "SKSoundOut.h"
+#import "SKSoundIn.h"
 #import "SKSoundServer.h"
 #import "SKSoundServerCallbacks.h"
 
@@ -138,7 +139,6 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 {
   SKSoundOut *output;
 
-  // Create SKSoundOut
   output = [[SKSoundOut alloc] init];
   output.card = [self cardWithIndex:sink.cardIndex];
   output.sink = sink;
@@ -159,20 +159,34 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   return [list autorelease];
 }
 
+- (SKSoundIn *)inputWithSource:(PASource *)source
+{
+  SKSoundIn *input;
+
+  input = [[SKSoundIn alloc] init];
+  input.card = [self cardWithIndex:source.cardIndex];
+  input.source = source;
+
+  return [input autorelease];
+}
 - (SKSoundIn *)defaultInput
 {
-  fprintf(stderr, "[SoundKit] default intput: %s\n", [_defaultSourceName cString]);
-  return nil;
+  return [self inputWithSource:[self sourceWithName:_defaultSourceName]];
 }
 - (NSArray *)inputList
 {
-  fprintf(stderr, "[SoundKit] inputList is not implemented yet.\n");
-  return nil;
+  NSMutableArray *list = [NSMutableArray new];
+
+  for (PASource *source in sourceList) {
+    [list addObject:[self inputWithSource:source]];
+  }
+  return [list autorelease];
 }
 
 @end
 
-// --- These methods are called by PA callbacks ---
+// --- These methods are called by PA callbacks in the ---
+// --- GCD thread with label "org.nextspace.soundkit"  ---
 
 @implementation SKSoundServer (PulseAudio)
 
@@ -311,7 +325,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }  
 }
 
-// TODO: Source
+// Source
 - (void)updateSource:(NSValue *)value // source_cb(...)
 {
   const pa_source_info *info;

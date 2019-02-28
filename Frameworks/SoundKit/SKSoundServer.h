@@ -83,6 +83,8 @@ extern NSString *SKDeviceDidRemoveNotification;
 
 - (SKSoundOut *)defaultOutput;
 - (NSArray *)outputList;
+- (SKSoundIn *)defaultInput;
+- (NSArray *)inputList;
 
 @end
 
@@ -100,7 +102,7 @@ extern NSString *SKDeviceDidRemoveNotification;
 - (PASink *)sinkWithIndex:(NSUInteger)index;
 - (PASink *)sinkWithName:(NSString *)name;
 - (void)removeSinkWithIndex:(NSNumber *)index;
-// TODO: Source
+// Source
 - (void)updateSource:(NSValue *)value;
 - (PASource *)sourceWithIndex:(NSUInteger)index;
 - (PASource *)sourceWithName:(NSString *)name;
