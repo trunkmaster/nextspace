@@ -14,11 +14,11 @@
 	    "browserClick:",
 	    "setMode:",
 	    "orderFrontFontPanel:",
-	    "outputMute:",
-	    "outputSetBalance:",
-	    "outputSetVolume:",
-	    "setOutputPort:",
-	    "setOutputProfile:",
+	    "setDeviceMute:",
+	    "setDeviceBalance:",
+	    "setDeviceVolume:",
+	    "setDevicePort:",
+	    "setDeviceProfile:",
 	    "showPrefPanel:"
 	);
 	Super = NSObject;
@@ -26,26 +26,27 @@
     Mixer = {
 	Actions = (
 	    "browserClick:",
-	    "setOutputPort:",
+	    "setDevicePort:",
 	    "appMuteClick:",
-	    "outputSetBalance:",
-	    "outputMute:",
-	    "outputSetVolume:",
-	    "setOutputProfile:",
+	    "setDeviceBalance:",
+	    "setDeviceMute:",
+	    "setDeviceVolume:",
+	    "setDeviceProfile:",
 	    "setMode:"
 	);
 	Outlets = (
 	    window,
 	    cardInfo,
-	    deviceMute,
 	    appBrowser,
 	    appMute,
 	    appVolume,
 	    modeButton,
 	    deviceBalance,
-	    devicePort,
-	    deviceProfile,
-	    deviceVolume,
+	    deviceMuteBtn,
+	    devicePortBtn,
+	    deviceProfileBtn,
+	    deviceVolumeSlider,
+	    deviceBalanceSlider,
 	    deviceBox
 	);
 	Super = NSObject;

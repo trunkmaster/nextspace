@@ -93,11 +93,27 @@
   return sOut;
 }
 
+- (SKSoundIn *)defaultSoundIn
+{
+  SKSoundIn *sIn;
+
+  for (SKSoundIn *sin in [server inputList]) {
+    [sin printDescription];
+  }
+
+  sIn = [server defaultInput];
+  fprintf(stderr, "========= Default SoundIn =========\n");
+  [sIn printDescription];
+
+  return sIn;
+}
+
 - (void)serverStateChanged:(NSNotification *)notif
 {
   if (server.status == SKServerReadyState) {
     [self describeSoundSystem];
     [self defaultSoundOut];
+    [self defaultSoundIn];
   }
 }
 

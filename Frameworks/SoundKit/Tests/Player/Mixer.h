@@ -32,11 +32,11 @@
   id appVolume;
   //
   id deviceBox;
-  id deviceMute;
-  id devicePort;
-  id deviceProfile;
-  id deviceVolume;
-  id deviceBalance;
+  id deviceMuteBtn;
+  id devicePortBtn;
+  id deviceProfileBtn;
+  id deviceVolumeSlider;
+  id deviceBalanceSlider;
 }
 
 - (id)window;
@@ -44,5 +44,6 @@
 - (void)reloadBrowser:(NSBrowser *)browser;
 - (void)fillDeviceList;
 - (void)fillProfileList;
+- (void)setDevicePort:(id)sender;
 
 @end
