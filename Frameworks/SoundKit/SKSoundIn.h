@@ -21,7 +21,11 @@
 
 #import "SKSoundDevice.h"
 
+@class PASource;
+
 @interface SKSoundIn : SKSoundDevice
 {
 }
+@property (retain) PASource *source;
+
 @end
