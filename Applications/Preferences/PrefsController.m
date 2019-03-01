@@ -139,17 +139,15 @@
   NSButtonCell	*button = [[NSButtonCell alloc] init];
   NSString	*caption = [aPrefsModule buttonCaption];
 
-  if (!caption)
-    {
-      [button release];
-      return NO;
-    }
+  if (!caption) {
+    [button release];
+    return NO;
+  }
   
-  if ([prefsViews objectForKey:caption] != aPrefsModule)
-    {
-      [prefsViews setObject:aPrefsModule forKey:caption];
-      [aPrefsModule release];
-    }
+  if ([prefsViews objectForKey:caption] != aPrefsModule) {
+    [prefsViews setObject:aPrefsModule forKey:caption];
+    [aPrefsModule release];
+  }
 
   [button setTitle:caption];
   [button setFont:[NSFont systemFontOfSize:9]];
@@ -178,9 +176,9 @@
   modules = [[NXBundle shared] loadRegisteredBundles:bRegistry
                                                 type:@"Preferences"
                                             protocol:@protocol(PrefsModule)];
-  for (id b in modules)
-    {
-      [self registerPrefsModule:b];
-    }
+  for (id b in modules) {
+    [self registerPrefsModule:b];
+  }
 }
+
 @end

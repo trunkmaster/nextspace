@@ -115,6 +115,8 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
+  [clockView removeFromSuperview];
+  [clockView release];
   [prefsController release];
 }
 
@@ -129,15 +131,13 @@ static NSUserDefaults *defaults = nil;
 
 - (void)showPreferencesWindow
 {
-  if (prefsController == nil)
-    {
-      prefsController = [[PrefsController alloc] init];
-      if ([NSBundle loadNibNamed:@"PrefsWindow" owner:self] == NO)
-        {
-          NSLog(@"Error loading NIB PrefsWindow");
-          return;
-        }
+  if (prefsController == nil) {
+    prefsController = [[PrefsController alloc] init];
+    if ([NSBundle loadNibNamed:@"PrefsWindow" owner:self] == NO) {
+      NSLog(@"Error loading NIB PrefsWindow");
+      return;
     }
+  }
 
   [NSApp activateIgnoringOtherApps:YES];
   [[prefsController window] makeKeyAndOrderFront:self];
