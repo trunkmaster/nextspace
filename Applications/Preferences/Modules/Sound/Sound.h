@@ -23,11 +23,15 @@
   Boston, MA  02111-1307, USA
 */
 #import <AppKit/NSImage.h>
+#import <SoundKit/SoundKit.h>
 #import <Preferences.h>
 
 @interface Sound: NSObject <PrefsModule>
 {
-  NSImage *image;
+  NSImage       *image;
+  SKSoundServer *soundServer;
+  SKSoundOut    *soundOut;
+  SKSoundIn     *soundIn;
   
   id view;
   id window;
@@ -43,13 +47,5 @@
   id micLevel;
   id micBalance;
 }
-- (void)setBeep:(id)sender;
-- (void)setMicBalance:(id)sender;
-- (void)setMicLevel:(id)sender;
-- (void)setMuteButton:(id)sender;
-- (void)setBeepRadio:(id)sender;
-- (void)setVoiceAlertsButton:(id)sender;
-- (void)setVolumeBalance:(id)sender;
-- (void)setVolumeLevel:(id)sender;
 
 @end

@@ -2,27 +2,21 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "setMute:",
+	    "setBalance:",
 	    "setBeep:",
-	    "setMicBalance:",
-	    "setMicLevel:",
-	    "setMuteButton:",
 	    "setBeepRadio:",
-	    "setVoiceAlertsButton:",
-	    "setVolumeBalance:",
-	    "setVolumeLevel:"
+	    "setVolume:"
 	);
 	Super = NSObject;
     };
     Sound = {
 	Actions = (
 	    "setBeep:",
-	    "setMicBalance:",
-	    "setMicLevel:",
-	    "setMuteButton:",
 	    "setBeepRadio:",
-	    "setVoiceAlertsButton:",
-	    "setVolumeBalance:",
-	    "setVolumeLevel:"
+	    "setBalance:",
+	    "setVolume:",
+	    "setMute:"
 	);
 	Outlets = (
 	    view,
