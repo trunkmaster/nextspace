@@ -4,18 +4,19 @@
 
 
 Name:           nextspace-frameworks
-Version:        0.6
-Release:        2%{?dist}
+Version:        0.7
+Release:        1%{?dist}
 Summary:        NextSpace core libraries.
 
 Group:          Libraries/NextSpace
 License:        GPLv2
-URL:		http://www.gitlab.com/stoyan/nextspace
+URL:		http://www.github.com/trunkmaster/nextspace
 Source0:	nextspace-frameworks-%{version}.tar.gz
 
 Provides:	NXFoundation.so
 Provides:	NXSystem.so
 Provides:	NXAppKit.so
+Provides:	SoundKit.so
 
 BuildRequires:	nextspace-gnustep-devel
 # NXFoundation
@@ -27,6 +28,8 @@ BuildRequires:	upower-devel
 BuildRequires:	libXrandr-devel
 BuildRequires:	libxkbfile-devel
 BuildRequires:	libXcursor-devel
+# SoundKit
+BuildRequires:	pulseaudio-libs-devel >= 10.0
 
 Requires:	nextspace-gnustep
 # NXFoundation
@@ -40,6 +43,8 @@ Requires:	glib2 >= 2.42.2
 Requires:	libXrandr >= 1.4.2
 Requires:	libxkbfile >= 1.0.9
 Requires:	libXcursor >= 1.1.14
+# SoundKit
+Requires:	pulseaudio-libs >= 10.0
 
 
 %description
@@ -50,7 +55,7 @@ Summary:	NextSpace core libraries (NXSystem, NXFoundation, NXAppKit).
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 
 %description devel
-Header file for NextSpace core libraries (NXSystem, NXFoundation, NXAppKit).
+Header files for NextSpace core libraries (NXSystem, NXFoundation, NXAppKit, SoundKit).
 
 %prep
 %setup
@@ -79,6 +84,10 @@ cd NXAppKit
 make messages=yes
 cd ..
 
+cd SoundKit
+make
+cd ..
+
 #
 # Build install phase
 #
@@ -95,6 +104,10 @@ cd NXFoundation
 cd ..
 
 cd NXAppKit
+%{make_install}
+cd ..
+
+cd SoundKit
 %{make_install}
 cd ..
 
@@ -124,6 +137,8 @@ rm /usr/NextSpace/Images
 rm /Library/Fonts
 
 %changelog
-* Fri Oct 21 2016 Sergii Stoian <stoyan255@ukr.net> 0.4-0
+* Fri Mar 01 2019 Sergii Stoian <stoyan255@gmail.com> 0.7-0
+- SoundKit was added.
+* Fri Oct 21 2016 Sergii Stoian <stoyan255@gmail.com> 0.4-0
 - Initial spec for CentOS 7.
 
