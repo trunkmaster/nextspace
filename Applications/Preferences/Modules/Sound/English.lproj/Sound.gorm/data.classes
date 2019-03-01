@@ -28,7 +28,8 @@
 	    muteButton,
 	    volumeBalance,
 	    volumeLevel,
-	    muteMicButton
+	    muteMicButton,
+	    soundInfo
 	);
 	Super = NSObject;
     };

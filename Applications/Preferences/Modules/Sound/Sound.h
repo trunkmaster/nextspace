@@ -46,6 +46,8 @@
   id muteMicButton;
   id micLevel;
   id micBalance;
+
+  id soundInfo;
 }
 
 @end

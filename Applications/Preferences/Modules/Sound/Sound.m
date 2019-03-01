@@ -74,7 +74,6 @@ static NSBundle                 *bundle = nil;
        selector:@selector(serverStateChanged:)
            name:SKServerStateDidChangeNotification
          object:soundServer];
-  
 }
 
 // --- Protocol
@@ -100,16 +99,19 @@ static NSBundle                 *bundle = nil;
   return image;
 }
 
-// --- Server actions
 - (void)_updateControls
 {
+  NSString *info = [NSString stringWithFormat:@"%@ version %@ on %@@%@",
+                             soundServer.name, soundServer.version,
+                             soundServer.userName, soundServer.hostName];
+  [soundInfo setStringValue:info];
   if (soundOut) {
     [muteButton setEnabled:YES];
     [volumeLevel setEnabled:YES];
     [volumeBalance setEnabled:YES];
     [muteButton setState:[soundOut isMute]];
     [volumeLevel setIntegerValue:[soundOut volume]];
-    [volumeBalance setIntegerValue:[soundOut balance]];
+    [volumeBalance setFloatValue:[soundOut balance]];
   }
   else {
     [muteButton setEnabled:NO];
@@ -123,7 +125,7 @@ static NSBundle                 *bundle = nil;
     [micBalance setEnabled:YES];
     [muteMicButton setState:[soundIn isMute]];
     [micLevel setIntegerValue:[soundIn volume]];
-    [micBalance setIntegerValue:[soundIn balance]];
+    [micBalance setFloatValue:[soundIn balance]];
   }
   else {
     [muteMicButton setEnabled:NO];
@@ -132,6 +134,64 @@ static NSBundle                 *bundle = nil;
   }
 }
 
+// --- Key-Value Observing
+static void *OutputContext = &OutputContext;
+static void *InputContext = &InputContext;
+- (void)observeOutput:(SKSoundOut *)output
+{
+  [output.sink addObserver:self
+                forKeyPath:@"mute"
+                   options:NSKeyValueObservingOptionNew
+                   context:OutputContext];
+  [output.sink addObserver:self
+                forKeyPath:@"channelVolumes"
+                   options:NSKeyValueObservingOptionNew
+                   context:OutputContext];
+}
+- (void)observeInput:(SKSoundIn *)input
+{
+  [input.source addObserver:self
+                 forKeyPath:@"mute"
+                    options:NSKeyValueObservingOptionNew
+                    context:InputContext];
+  [input.source addObserver:self
+                 forKeyPath:@"channelVolumes"
+                    options:NSKeyValueObservingOptionNew
+                    context:InputContext];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  if (context == OutputContext) {
+    if ([keyPath isEqualToString:@"mute"]) {
+      [muteButton setState:[soundOut isMute]];
+    }
+    else if ([keyPath isEqualToString:@"channelVolumes"]) {
+      [volumeLevel setIntegerValue:[soundOut volume]];
+      [volumeBalance setFloatValue:[soundOut balance]];
+    }
+  }
+  else if (context == InputContext) {
+    if ([keyPath isEqualToString:@"mute"]) {
+      [muteMicButton setState:[soundIn isMute]];
+    }
+    else if ([keyPath isEqualToString:@"channelVolumes"]) {
+      [micLevel setIntegerValue:[soundIn volume]];
+      [micBalance setFloatValue:[soundIn balance]];
+    }
+  } else {
+    // Any unrecognized context must belong to super
+    [super observeValueForKeyPath:keyPath
+                         ofObject:object
+                           change:change
+                          context:context];
+  }
+}
+
+// --- Sound subsystem actions
 - (void)serverStateChanged:(NSNotification *)notif
 {
   if (soundServer.status == SKServerReadyState) {
@@ -139,11 +199,14 @@ static NSBundle                 *bundle = nil;
     soundIn = [[soundServer defaultInput] retain];
     if (soundOut) {
       [volumeLevel setMaxValue:[soundOut volumeSteps]-1];
+      [self observeOutput:soundOut];
     }
     if (soundIn) {
       [micLevel setMaxValue:[soundIn volumeSteps]-1];
+      [self observeInput:soundIn];
     }
     [self _updateControls];
+    [beepBrowser reloadColumn:0];
   }
   else if (soundServer.status == SKServerFailedState ||
            soundServer.status == SKServerTerminatedState) {
@@ -154,6 +217,31 @@ static NSBundle                 *bundle = nil;
 }
 
 // --- Control actions
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+            inMatrix:(NSMatrix *)matrix
+{
+  NSBrowserCell *cell;
+  NSString      *path;
+  NSArray       *sounds;
+
+  // path = [NSString stringWithFormat:@"%@/Resources", [bundle bundlePath]];
+  path = [NSString stringWithFormat:@"/Library/Sounds"];
+  sounds = [[NSFileManager defaultManager]
+             contentsOfDirectoryAtPath:path error:NULL];
+
+  for (NSString *file in sounds) {
+    // if ([[file pathExtension] isEqualToString:@"snd"]) {
+      [matrix addRow];
+      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+      [cell setLeaf:YES];
+      [cell setRefusesFirstResponder:YES];
+      [cell setTitle:[file stringByDeletingPathExtension]];
+      [cell setRepresentedObject:file];
+    // }
+  }
+}
+
 - (void)setMute:(id)sender
 {
   SKSoundDevice *device = (sender == muteButton) ? soundOut : soundIn;
@@ -172,7 +260,18 @@ static NSBundle                 *bundle = nil;
   [device setBalance:[sender integerValue]];
 }
 
-- (void)setBeep:(id)sender {}
+- (void)setBeep:(id)sender
+{
+  NSString *selected = [[beepBrowser selectedCellInColumn:0] title];
+  NSString *soundPath;
+  NSSound  *sound;
+
+  soundPath = [NSString stringWithFormat:@"/Library/Sounds/%@.wav", selected];
+  NSLog(@"Clicked item: %@", soundPath);
+  sound = [[NSSound alloc] initWithContentsOfFile:soundPath byReference:NO];
+  [sound play];
+  [sound release];
+}
 - (void)setBeepRadio:(id)sender {}
 
 @end
