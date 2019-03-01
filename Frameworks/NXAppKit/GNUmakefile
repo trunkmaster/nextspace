@@ -44,7 +44,10 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXUtilities.h \
 	NXAlert.h
 
-$(FRAMEWORK_NAME)_RESOURCE_FILES = Resources/Images Resources/Fonts
+$(FRAMEWORK_NAME)_RESOURCE_FILES = \
+	Resources/Images \
+	Resources/Fonts \
+	Resources/Sounds
 
 $(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff NXAlertPanel.gorm
 $(FRAMEWORK_NAME)_LANGUAGES = \

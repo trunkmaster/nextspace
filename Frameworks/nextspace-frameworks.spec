@@ -129,6 +129,8 @@ cd ..
 %post
 ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Images /usr/NextSpace/Images
 ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Fonts /Library/Fonts
+ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Sounds /usr/NextSpace/Sounds
+ln -s /usr/NextSpace/Sounds/Bonk.snd /usr/NextSpace/Sounds/SystemBeep.snd
 
 #%preun
 
@@ -139,6 +141,7 @@ rm /Library/Fonts
 %changelog
 * Fri Mar 01 2019 Sergii Stoian <stoyan255@gmail.com> 0.7-0
 - SoundKit was added.
+- Sounds were added into NXAppKit framework.
 * Fri Oct 21 2016 Sergii Stoian <stoyan255@gmail.com> 0.4-0
 - Initial spec for CentOS 7.
 

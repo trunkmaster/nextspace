@@ -24,11 +24,12 @@ after-install::
 #	Copy my versions of existing GNUstep common_ images
 	cp Resources/GNUstepImages/*.tiff $(GNUSTEP_LOCAL_LIBRARY)/Images;
 
-	if [ ! -e $(GNUSTEP_SYSTEM_LIBRARY)/Sounds ]; then \
-	  mkdir $(GNUSTEP_SYSTEM_LIBRARY)/Sounds; \
+	if [ -e $(GNUSTEP_SYSTEM_LIBRARY)/Sounds ]; then \
+	  rm -r $(GNUSTEP_SYSTEM_LIBRARY)/Sounds; \
 	fi
 
-	cp Resources/Sounds/*.snd $(GNUSTEP_SYSTEM_LIBRARY)/Sounds;
+	ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Sounds $(GNUSTEP_SYSTEM_LIBRARY)/Sounds;
+	ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Sounds/Bonk.snd $(GNUSTEP_SYSTEM_LIBRARY)/Sounds/SystemBeep.snd; \
 
 after-uninstall::
 	rm -r $(DESTDIR)/usr/NextSpace/Images
