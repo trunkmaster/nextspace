@@ -125,6 +125,7 @@ static void handleShapeNotify(XEvent *event);
 #endif
 
 #ifdef KEEP_XKB_LOCK_STATUS
+static void handleXkbBellNotify(XkbEvent *event);
 static void handleXkbIndicatorStateNotify(XkbEvent *event);
 #endif
 
@@ -592,7 +593,15 @@ static void handleExtensions(XEvent * event)
 #endif
 #ifdef KEEP_XKB_LOCK_STATUS
 	if (wPreferences.modelock && (event->type == w_global.xext.xkb.event_base)) {
-		handleXkbIndicatorStateNotify((XkbEvent *) event);
+    XkbEvent *e = (XkbEvent *)event;
+    /* fprintf(stderr, "[WM] XKB event occured! = %i,%i\n", */
+    /*         event->xany.type, e->any.xkb_type); */
+    if (e->any.xkb_type == XkbBellNotify) {
+      handleXkbBellNotify(e);
+    }
+    else if (e->any.xkb_type == XkbIndicatorStateNotify) {
+      handleXkbIndicatorStateNotify(e);
+    }
 	}
 #endif				/*KEEP_XKB_LOCK_STATUS */
 #ifdef USE_RANDR
@@ -1393,6 +1402,12 @@ static void handleShapeNotify(XEvent * event)
 #endif				/* USE_XSHAPE */
 
 #ifdef KEEP_XKB_LOCK_STATUS
+static void handleXkbBellNotify(XkbEvent *event)
+{
+  // Play sound specified in ~/Library/Preferences/.NextSpace/NXGlobalDomain
+  // as NXSystemBeep.
+  fprintf(stderr, "[WM] XKB event is XkbBellNotify!\n");
+}
 /* please help ]d if you know what to do */
 static void handleXkbIndicatorStateNotify(XkbEvent *event)
 {

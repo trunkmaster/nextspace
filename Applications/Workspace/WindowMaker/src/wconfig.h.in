@@ -364,7 +364,7 @@
  * Icon can be changed in def_pixmaps.h.
  * More icons are welcome.
  */
-#define XKB_BUTTON_HINT
+#undef XKB_BUTTON_HINT
 #undef  LANGUAGE_TH
 #undef  LANGUAGE_SK
 #endif

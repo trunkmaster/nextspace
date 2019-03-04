@@ -15,6 +15,7 @@ if [ ! -f Makefile ];then
         --enable-randr \
         --enable-xinerama \
         --disable-magick \
+        --enable-modelock \
         \
         --prefix=/usr/NextSpace \
         --bindir=/usr/NextSpace/bin \

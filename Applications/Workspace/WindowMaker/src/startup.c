@@ -97,21 +97,21 @@ static int catchXError(Display * dpy, XErrorEvent * error)
 	/* ignore some errors */
 	if (error->resourceid != None
 	    && ((error->error_code == BadDrawable && error->request_code == X_GetGeometry)
-		|| (error->error_code == BadMatch && (error->request_code == X_SetInputFocus))
-		|| (error->error_code == BadWindow)
-		/*
-		   && (error->request_code == X_GetWindowAttributes
-		   || error->request_code == X_SetInputFocus
-		   || error->request_code == X_ChangeWindowAttributes
-		   || error->request_code == X_GetProperty
-		   || error->request_code == X_ChangeProperty
-		   || error->request_code == X_QueryTree
-		   || error->request_code == X_GrabButton
-		   || error->request_code == X_UngrabButton
-		   || error->request_code == X_SendEvent
-		   || error->request_code == X_ConfigureWindow))
-		 */
-		|| (error->request_code == X_InstallColormap))) {
+          || (error->error_code == BadMatch && (error->request_code == X_SetInputFocus))
+          || (error->error_code == BadWindow)
+          /*
+            && (error->request_code == X_GetWindowAttributes
+            || error->request_code == X_SetInputFocus
+            || error->request_code == X_ChangeWindowAttributes
+            || error->request_code == X_GetProperty
+            || error->request_code == X_ChangeProperty
+            || error->request_code == X_QueryTree
+            || error->request_code == X_GrabButton
+            || error->request_code == X_UngrabButton
+            || error->request_code == X_SendEvent
+            || error->request_code == X_ConfigureWindow))
+          */
+          || (error->request_code == X_InstallColormap))) {
 		return 0;
 	}
 	FormatXError(dpy, error, buffer, MAXLINE);
@@ -259,7 +259,7 @@ static void getOffendingModifiers(void)
 #ifdef NUMLOCK_HACK
 void
 wHackedGrabKey(int keycode, unsigned int modifiers,
-	       Window grab_window, Bool owner_events, int pointer_mode, int keyboard_mode)
+               Window grab_window, Bool owner_events, int pointer_mode, int keyboard_mode)
 {
 	if (modifiers == AnyModifier)
 		return;
@@ -270,66 +270,67 @@ wHackedGrabKey(int keycode, unsigned int modifiers,
 	 */
 	if (_NumLockMask)
 		XGrabKey(dpy, keycode, modifiers | _NumLockMask,
-			 grab_window, owner_events, pointer_mode, keyboard_mode);
+             grab_window, owner_events, pointer_mode, keyboard_mode);
 	if (_ScrollLockMask)
 		XGrabKey(dpy, keycode, modifiers | _ScrollLockMask,
-			 grab_window, owner_events, pointer_mode, keyboard_mode);
+             grab_window, owner_events, pointer_mode, keyboard_mode);
 	if (_NumLockMask && _ScrollLockMask)
 		XGrabKey(dpy, keycode, modifiers | _NumLockMask | _ScrollLockMask,
-			 grab_window, owner_events, pointer_mode, keyboard_mode);
+             grab_window, owner_events, pointer_mode, keyboard_mode);
 	if (_NumLockMask)
 		XGrabKey(dpy, keycode, modifiers | _NumLockMask | LockMask,
-			 grab_window, owner_events, pointer_mode, keyboard_mode);
+             grab_window, owner_events, pointer_mode, keyboard_mode);
 	if (_ScrollLockMask)
 		XGrabKey(dpy, keycode, modifiers | _ScrollLockMask | LockMask,
-			 grab_window, owner_events, pointer_mode, keyboard_mode);
+             grab_window, owner_events, pointer_mode, keyboard_mode);
 	if (_NumLockMask && _ScrollLockMask)
 		XGrabKey(dpy, keycode, modifiers | _NumLockMask | _ScrollLockMask | LockMask,
-			 grab_window, owner_events, pointer_mode, keyboard_mode);
+             grab_window, owner_events, pointer_mode, keyboard_mode);
 	/* phew, I guess that's all, right? */
 }
 #endif
 
 void
 wHackedGrabButton(unsigned int button, unsigned int modifiers,
-		  Window grab_window, Bool owner_events,
-		  unsigned int event_mask, int pointer_mode, int keyboard_mode, Window confine_to, Cursor cursor)
+                  Window grab_window, Bool owner_events,
+                  unsigned int event_mask, int pointer_mode, int keyboard_mode,
+                  Window confine_to, Cursor cursor)
 {
 	XGrabButton(dpy, button, modifiers, grab_window, owner_events,
-		    event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
+              event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
 
 	if (modifiers == AnyModifier)
 		return;
 
 	XGrabButton(dpy, button, modifiers | LockMask, grab_window, owner_events,
-		    event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
+              event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
 
 #ifdef NUMLOCK_HACK
 	/* same as above, but for mouse buttons */
 	if (_NumLockMask)
 		XGrabButton(dpy, button, modifiers | _NumLockMask,
-			    grab_window, owner_events, event_mask, pointer_mode,
-			    keyboard_mode, confine_to, cursor);
+                grab_window, owner_events, event_mask, pointer_mode,
+                keyboard_mode, confine_to, cursor);
 	if (_ScrollLockMask)
 		XGrabButton(dpy, button, modifiers | _ScrollLockMask,
-			    grab_window, owner_events, event_mask, pointer_mode,
-			    keyboard_mode, confine_to, cursor);
+                grab_window, owner_events, event_mask, pointer_mode,
+                keyboard_mode, confine_to, cursor);
 	if (_NumLockMask && _ScrollLockMask)
 		XGrabButton(dpy, button, modifiers | _ScrollLockMask | _NumLockMask,
-			    grab_window, owner_events, event_mask, pointer_mode,
-			    keyboard_mode, confine_to, cursor);
+                grab_window, owner_events, event_mask, pointer_mode,
+                keyboard_mode, confine_to, cursor);
 	if (_NumLockMask)
 		XGrabButton(dpy, button, modifiers | _NumLockMask | LockMask,
-			    grab_window, owner_events, event_mask, pointer_mode,
-			    keyboard_mode, confine_to, cursor);
+                grab_window, owner_events, event_mask, pointer_mode,
+                keyboard_mode, confine_to, cursor);
 	if (_ScrollLockMask)
 		XGrabButton(dpy, button, modifiers | _ScrollLockMask | LockMask,
-			    grab_window, owner_events, event_mask, pointer_mode,
-			    keyboard_mode, confine_to, cursor);
+                grab_window, owner_events, event_mask, pointer_mode,
+                keyboard_mode, confine_to, cursor);
 	if (_NumLockMask && _ScrollLockMask)
 		XGrabButton(dpy, button, modifiers | _ScrollLockMask | _NumLockMask | LockMask,
-			    grab_window, owner_events, event_mask, pointer_mode,
-			    keyboard_mode, confine_to, cursor);
+                grab_window, owner_events, event_mask, pointer_mode,
+                keyboard_mode, confine_to, cursor);
 #endif				/* NUMLOCK_HACK */
 }
 
@@ -519,7 +520,7 @@ void StartUp(Bool defaultScreenOnly)
 	 sigaction(SIGBUS, &sig_action, NULL);
 	 sigaction(SIGFPE, &sig_action, NULL);
 	 sigaction(SIGABRT, &sig_action, NULL);
-	 */
+  */
 
 	sig_action.sa_handler = handleExitSig;
 
@@ -576,7 +577,7 @@ void StartUp(Bool defaultScreenOnly)
 	/* check sanity of some values */
 	if (wPreferences.icon_size < 16) {
 		wwarning(_("icon size is configured to %i, but it's too small. Using 16 instead"),
-			 wPreferences.icon_size);
+             wPreferences.icon_size);
 		wPreferences.icon_size = 16;
 	}
 
@@ -603,7 +604,8 @@ void StartUp(Bool defaultScreenOnly)
 #endif
 
 #ifdef KEEP_XKB_LOCK_STATUS
-	w_global.xext.xkb.supported = XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base, NULL, NULL, NULL);
+	w_global.xext.xkb.supported = XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base,
+                                                  NULL, NULL, NULL);
 	if (wPreferences.modelock && !w_global.xext.xkb.supported) {
 		wwarning(_("XKB is not supported. KbdModeLock is automatically disabled."));
 		wPreferences.modelock = 0;
@@ -787,8 +789,8 @@ static void manageAllWindows(WScreen * scr, int crashRecovery)
 			}
 			if (wwin->flags.miniaturized
 			    && (wwin->transient_for == None
-				|| wwin->transient_for == scr->root_win
-				|| !windowInList(wwin->transient_for, children, nchildren))) {
+              || wwin->transient_for == scr->root_win
+              || !windowInList(wwin->transient_for, children, nchildren))) {
 
 				wwin->flags.skip_next_animation = 1;
 				wwin->flags.miniaturized = 0;
@@ -802,8 +804,8 @@ static void manageAllWindows(WScreen * scr, int crashRecovery)
 				border = (!HAS_BORDER(wwin) ? 0 : scr->frame_border_width);
 
 				wWindowMove(wwin, wwin->frame_x - border,
-					    wwin->frame_y - border -
-					    (wwin->frame->titlebar ? wwin->frame->titlebar->height : 0));
+                    wwin->frame_y - border -
+                    (wwin->frame->titlebar ? wwin->frame->titlebar->height : 0));
 			}
 		}
 	}
