@@ -1598,7 +1598,8 @@ void wHideApplication(WApplication *wapp)
 	else
 		wapp->last_focused = NULL;
 
-	animate = !wapp->flags.skip_next_animation;
+	/* animate = !wapp->flags.skip_next_animation; */
+  animate = 0;
 
 	while (wlist) {
 		if (wlist->main_window == wapp->main_window) {
@@ -1695,7 +1696,8 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
 	while (wlist->prev)
 		wlist = wlist->prev;
 
-	animate = !wapp->flags.skip_next_animation;
+	/* animate = !wapp->flags.skip_next_animation; */
+  animate = 0;
 
 	while (wlist) {
 		next = wlist->next;
