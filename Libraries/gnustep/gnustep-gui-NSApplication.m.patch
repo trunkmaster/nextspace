@@ -1,5 +1,5 @@
 --- gnustep-gui-0.24.1.orig/Source/NSApplication.m	2015-03-27 23:33:24.000000000 +0200
-+++ gnustep-gui-0.24.1/Source/NSApplication.m	2018-12-23 03:10:22.693466210 +0200
++++ gnustep-gui-0.24.1/Source/NSApplication.m	2019-03-04 02:13:29.380728072 +0200
 @@ -433,6 +433,11 @@
    return NO;
  }
@@ -38,24 +38,12 @@
      }
  }
  
-@@ -2441,7 +2458,12 @@
- 	    {
- 	      _hidden_key = [self keyWindow];
- 	      [_hidden_key resignKeyWindow];
-+              win = [self keyWindow];
- 	    }
-+          else
-+            {
-+              win = [[self mainMenu] window];
-+            }
- 	  
- 	  // The main window is saved for when the app is activated again.
- 	  // This is necessary for menu in window.
-@@ -2450,31 +2472,34 @@
+@@ -2450,31 +2467,35 @@
  	      _hidden_main = [self mainWindow];
  	      [_hidden_main resignMainWindow];
  	    }
 +          
++          win = [[self mainMenu] window];
 +          if ([GSServerForWindow(win) hidewindow: [win windowNumber]] == NO)
 +            {
 +              windows_list = GSOrderedWindows();
