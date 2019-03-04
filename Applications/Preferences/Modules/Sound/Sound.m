@@ -224,21 +224,24 @@ static void *InputContext = &InputContext;
   NSBrowserCell *cell;
   NSString      *path;
   NSArray       *sounds;
+  NSArray       *pathList = NSStandardLibraryPaths();
+  NSFileManager *fm = [NSFileManager defaultManager];
 
-  // path = [NSString stringWithFormat:@"%@/Resources", [bundle bundlePath]];
-  path = [NSString stringWithFormat:@"/Library/Sounds"];
-  sounds = [[NSFileManager defaultManager]
-             contentsOfDirectoryAtPath:path error:NULL];
+  for (NSString *lp in pathList) {
+    path = [NSString stringWithFormat:@"%@/Sounds", lp];
+    NSLog(@"Searching for sounds in %@", path);
+    sounds = [fm contentsOfDirectoryAtPath:path error:NULL];
 
-  for (NSString *file in sounds) {
-    // if ([[file pathExtension] isEqualToString:@"snd"]) {
-      [matrix addRow];
-      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-      [cell setLeaf:YES];
-      [cell setRefusesFirstResponder:YES];
-      [cell setTitle:[file stringByDeletingPathExtension]];
-      [cell setRepresentedObject:file];
-    // }
+    for (NSString *file in sounds) {
+      if ([file isEqualToString:@"SystemBeep.snd"] == NO) {
+        [matrix addRow];
+        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+        [cell setLeaf:YES];
+        [cell setRefusesFirstResponder:YES];
+        [cell setTitle:[file stringByDeletingPathExtension]];
+        [cell setRepresentedObject:file];
+      }
+    }
   }
 }
 
@@ -266,7 +269,8 @@ static void *InputContext = &InputContext;
   NSString *soundPath;
   NSSound  *sound;
 
-  soundPath = [NSString stringWithFormat:@"/Library/Sounds/%@.wav", selected];
+  soundPath = [NSString stringWithFormat:@"/usr/NextSpace/Sounds/%@.snd",
+                        selected];
   NSLog(@"Clicked item: %@", soundPath);
   sound = [[NSSound alloc] initWithContentsOfFile:soundPath byReference:NO];
   [sound play];
