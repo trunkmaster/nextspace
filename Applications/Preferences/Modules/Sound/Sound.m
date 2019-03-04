@@ -24,11 +24,13 @@
 */
 #import <AppKit/AppKit.h>
 #import <SoundKit/SoundKit.h>
+#import <NXFoundation/NXDefaults.h>
+
 #import "Sound.h"
 
 @implementation Sound
 
-static NSBundle                 *bundle = nil;
+// static NSBundle                 *bundle = nil;
 // static NSUserDefaults           *defaults = nil;
 // static NSMutableDictionary      *domain = nil;
 
@@ -49,6 +51,8 @@ static NSBundle                 *bundle = nil;
 
 - (id)init
 {
+  NSBundle *bundle;
+  
   self = [super init];
   
   // defaults = [NSUserDefaults standardUserDefaults];
@@ -222,7 +226,7 @@ static void *InputContext = &InputContext;
             inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
-  NSString      *path;
+  NSString      *path, *filePath;
   NSArray       *sounds;
   NSArray       *pathList = NSStandardLibraryPaths();
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -239,7 +243,8 @@ static void *InputContext = &InputContext;
         [cell setLeaf:YES];
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:[file stringByDeletingPathExtension]];
-        [cell setRepresentedObject:file];
+        filePath = [NSString stringWithFormat:@"%@/%@", path, file];
+        [cell setRepresentedObject:filePath];
       }
     }
   }
@@ -265,16 +270,24 @@ static void *InputContext = &InputContext;
 
 - (void)setBeep:(id)sender
 {
-  NSString *selected = [[beepBrowser selectedCellInColumn:0] title];
-  NSString *soundPath;
-  NSSound  *sound;
+  NSString   *soundPath;
+  NSSound    *sound;
+  NXDefaults *defs = [NXDefaults globalUserDefaults];
 
-  soundPath = [NSString stringWithFormat:@"/usr/NextSpace/Sounds/%@.snd",
-                        selected];
-  NSLog(@"Clicked item: %@", soundPath);
+  // FIXME: should be:
+  //// Write NXSystemBeep value to defaults.
+  // [defs setObject:soundPath forKey:@"NXSystemBeep"];
+  // [defs synchronize];
+  //// Call NSBeep() to play sound (Workspace should reread defaults on
+  //// [defs synchronize] and play new sound with XBell catching function).
+  // NSBeep();
+  soundPath = [[beepBrowser selectedCellInColumn:0] representedObject];
   sound = [[NSSound alloc] initWithContentsOfFile:soundPath byReference:NO];
   [sound play];
   [sound release];
+
+  [defs setObject:soundPath forKey:@"NXSystemBeep"];
+  [defs synchronize];
 }
 - (void)setBeepRadio:(id)sender {}
 
