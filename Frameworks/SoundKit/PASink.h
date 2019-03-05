@@ -30,8 +30,8 @@
 @property (assign) pa_context   *context;
 
 @property (readonly) NSUInteger index;
-@property (readonly) NSString   *description;
 @property (readonly) NSString   *name;
+@property (readonly) NSString   *description;
 @property (readonly) NSUInteger cardIndex;
 @property (readonly) NSArray    *ports;
 // KVO-compliant

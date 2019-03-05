@@ -57,7 +57,7 @@
 }
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"PulseAudio Card `%@`", _card.description];
+  return _card.description;
 }
 - (void)printDescription
 {
@@ -69,19 +69,8 @@
   fprintf(stderr, "\t            Name : %s\n", [_card.name cString]);
   fprintf(stderr, "\t    Retain Count : %lu\n", [self retainCount]);
 
-  fprintf(stderr, "\t Output Profiles : \n");
-  for (NSDictionary *prof in _card.outProfiles) {
-    NSString *profDesc, *profString;
-    profDesc = prof[@"Description"];
-    if ([profDesc isEqualToString:_card.activeProfile])
-      profString = [NSString stringWithFormat:@"%s%@%s", "\e[1m- ", profDesc, "\e[0m"];
-    else
-      profString = [NSString stringWithFormat:@"%s%@%s", "- ", profDesc, ""];
-    fprintf(stderr, "\t                 %s\n", [profString cString]);
-  }
-  
-  fprintf(stderr, "\t  Input Profiles : \n");
-  for (NSDictionary *prof in _card.inProfiles) {
+  fprintf(stderr, "\t        Profiles : \n");
+  for (NSDictionary *prof in _card.profiles) {
     NSString *profDesc, *profString;
     profDesc = prof[@"Description"];
     if ([profDesc isEqualToString:_card.activeProfile])
@@ -96,10 +85,10 @@
 - (NSArray *)availableProfiles
 {
   if (_card == nil) {
-    NSLog(@"SoundDevice: avaliablePorts was called without Sink was being set.");
+    NSLog(@"SoundDevice: avaliableProfiles was called without Card was being set.");
     return nil;
   }
-  return _card.outProfiles;
+  return _card.profiles;
 }
 - (NSString *)activeProfile
 {
@@ -107,13 +96,21 @@
 }
 - (void)setActiveProfile:(NSString *)profileName
 {
+  if (_card == nil) {
+    NSLog(@"SoundDevice: setActiveProfile was called without Card was being set.");
+    return;
+  }
   [_card applyActiveProfile:profileName];
 }
 
 // Subclass responsiblity
-- (NSArray *)availablePorts
+- (NSArray *)availableCardPorts
 {
   return nil;
+}
+- (NSArray *)availablePorts
+{
+  return [_card.outPorts arrayByAddingObjectsFromArray:_card.inPorts];
 }
 - (NSString *)activePort
 {

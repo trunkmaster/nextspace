@@ -54,7 +54,7 @@
 }
 
 // --- Initialize and update
-- (void)updatePorts:(const pa_sink_info *)info
+- (void)_updatePorts:(const pa_sink_info *)info
 {
   NSMutableArray *ports;
   NSDictionary   *d;
@@ -90,7 +90,7 @@
   }
 }
 
-- (void)updateVolume:(const pa_sink_info *)info
+- (void)_updateVolume:(const pa_sink_info *)info
 {
   NSMutableArray *vol;
   NSNumber       *v;
@@ -131,7 +131,7 @@
   }  
 }
 
-- (void)updateChannels:(const pa_sink_info *)info
+- (void)_updateChannels:(const pa_sink_info *)info
 {
   _channelCount = info->volume.channels;
   
@@ -170,17 +170,17 @@
   }
 
   // Ports
-  [self updatePorts:info];
+  [self _updatePorts:info];
 
   // Volume
-  [self updateVolume:info];
+  [self _updateVolume:info];
 
   if (_mute != (BOOL)info->mute) {
     self.mute = (BOOL)info->mute;
   }
 
   if (channel_map == NULL || pa_channel_map_equal(channel_map, &info->channel_map)) {
-    [self updateChannels:info];
+    [self _updateChannels:info];
   }
 
   free ((void *)info);

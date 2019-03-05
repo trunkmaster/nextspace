@@ -27,6 +27,7 @@
 #import "PAClient.h"
 #import "PAStream.h"
 
+#import "SKSoundDevice.h"
 #import "SKSoundOut.h"
 #import "SKSoundIn.h"
 #import "SKSoundServer.h"
@@ -133,6 +134,24 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   pa_context_unref(_pa_ctx);
   pa_mainloop_free(_pa_loop);
   fprintf(stderr, "[SoundKit] connection to server closed.\n");
+}
+
+- (SKSoundDevice *)defaultCard
+{
+  return nil;
+}
+- (NSArray *)cardList
+{
+  NSMutableArray *list = [NSMutableArray new];
+  SKSoundDevice  *device;
+
+  for (PACard *card in cardList) {
+    device = [[SKSoundDevice alloc] initWithServer:self];
+    device.card = card;
+    [list addObject:device];
+    [device release];
+  }
+  return list;
 }
 
 - (SKSoundOut *)outputWithSink:(PASink *)sink

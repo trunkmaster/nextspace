@@ -41,7 +41,7 @@ static void *InputContext = &InputContext;
 {
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
-  [self fillDeviceList];
+  [self fillCardList];
 }
 
 - (id)window
@@ -49,29 +49,64 @@ static void *InputContext = &InputContext;
   return window;
 }
 
-// Fills "Device" popup with port names
-- (void)fillDeviceList
+- (void)fillCardList
+{
+  SKSoundServer *server = [SKSoundServer sharedServer];
+  NSString      *title;
+  
+  [deviceCardBtn removeAllItems];
+  
+  for (SKSoundDevice *device in [server cardList]) {
+    NSLog(@"Device: %@", device.description);
+    title = device.description;
+    [deviceCardBtn addItemWithTitle:title];
+    [[deviceCardBtn itemWithTitle:title] setRepresentedObject:device];
+  }
+  [deviceCardBtn selectItemAtIndex:0];
+  
+  [self fillProfileList];
+}
+- (void)fillProfileList
+{
+  SKSoundDevice *device = [[deviceCardBtn selectedItem] representedObject];
+  NSString      *title;
+  
+  [deviceProfileBtn removeAllItems];
+  
+  for (NSDictionary *profile in [device availableProfiles]) {
+    title = profile[@"Description"];
+    [deviceProfileBtn addItemWithTitle:title];
+    [[deviceProfileBtn itemWithTitle:title] setRepresentedObject:device];
+  }
+  [deviceProfileBtn selectItemWithTitle:[device activeProfile]];
+  
+  [self fillPortList];
+}
+
+- (void)fillPortList
 {
   NSString      *title;
   SKSoundServer *server = [SKSoundServer sharedServer];
   NSArray       *deviceList;
+  BOOL          isPlayback;
 
-  if ([[[modeButton selectedItem] title] isEqualToString:@"Playback"]) {
-    NSLog(@"Playback");
+  isPlayback = [[[modeButton selectedItem] title] isEqualToString:@"Playback"];
+
+  [devicePortBtn removeAllItems];
+
+  if (isPlayback) {
     deviceList = [server outputList];
   }
   else {
-    NSLog(@"Recording");
     deviceList = [server inputList];
   }
   
-  [devicePortBtn removeAllItems];
-
   for (SKSoundDevice *device in deviceList) {
+  // for (SKSoundDevice *device in [server cardList]) {
     NSLog(@"Device: %@", device.description);
+    
     for (NSDictionary *port in [device availablePorts]) {
-      title = [NSString stringWithFormat:@"%@",
-                      [port objectForKey:@"Description"]];
+      title = port[@"Description"];
       [devicePortBtn addItemWithTitle:title];
       [[devicePortBtn itemWithTitle:title] setRepresentedObject:device];
     }
@@ -79,48 +114,63 @@ static void *InputContext = &InputContext;
       [devicePortBtn addItemWithTitle:device.name];
       [[devicePortBtn itemWithTitle:device.name] setRepresentedObject:device];
     }
+    
     // KVO for added output
     // FIXME: Ugly
-    if ([[[modeButton selectedItem] title] isEqualToString:@"Playback"]) {
-      [self observeOutput:(SKSoundOut *)device];
+    // if (isPlayback) {
+    //   [self observeOutput:(SKSoundOut *)device];
+    // }
+    // else {
+    //   [self observeInput:(SKSoundIn *)device];
+    // }
+  }
+  
+  if (isPlayback) {
+    SKSoundOut *output;
+    if ([devicePortBtn numberOfItems] > 1 &&
+        (output = [server defaultOutput]) != nil) {
+      [devicePortBtn selectItemWithTitle:[output activePort]];
+      if ([output activePort] != nil) {
+        [devicePortBtn selectItemWithTitle:[output activePort]];
+      }
+      else {
+        [devicePortBtn selectItemAtIndex:0];
+      }
     }
-    else {
-      [self observeInput:(SKSoundIn *)device];
+  }
+  else {
+    SKSoundIn *input;
+    if ([devicePortBtn numberOfItems] > 1 &&
+        (input = [server defaultInput]) != nil) {
+      if ([input activePort] != nil) {
+        [devicePortBtn selectItemWithTitle:[input activePort]];
+      }
+      else {
+        [devicePortBtn selectItemAtIndex:0];
+      }
     }
   }
 
-  if ([[devicePortBtn selectedItem] title] == nil) {
-    [deviceMuteBtn setEnabled:NO];
-    [devicePortBtn setEnabled:NO];
-    [deviceProfileBtn setEnabled:NO];
-    [deviceVolumeSlider setEnabled:NO];
-    [deviceBalanceSlider setEnabled:NO];
-  }
-  else {
-    [deviceMuteBtn setEnabled:YES];
-    [devicePortBtn setEnabled:YES];
-    [deviceProfileBtn setEnabled:YES];
-    [deviceVolumeSlider setEnabled:YES];
-    [deviceBalanceSlider setEnabled:YES];
-  }
+  // if ([[devicePortBtn selectedItem] title] == nil) {
+  //   [deviceMuteBtn setEnabled:NO];
+  //   [devicePortBtn setEnabled:NO];
+  //   [deviceProfileBtn setEnabled:NO];
+  //   [deviceVolumeSlider setEnabled:NO];
+  //   [deviceBalanceSlider setEnabled:NO];
+  // }
+  // else {
+  //   [deviceMuteBtn setEnabled:YES];
+  //   [devicePortBtn setEnabled:YES];
+  //   [deviceProfileBtn setEnabled:YES];
+  //   [deviceVolumeSlider setEnabled:YES];
+  //   [deviceBalanceSlider setEnabled:YES];
+  // }
     
   NSLog(@"Device port selected item: %@ - %@",
         [[[[devicePortBtn selectedItem] representedObject] class] description],
         [[devicePortBtn selectedItem] title]);
   
   [self setDevicePort:devicePortBtn];
-}
-
-// "Fills "Profile" popup button.
-- (void)fillProfileList
-{
-  SKSoundOut *device = [[devicePortBtn selectedItem] representedObject];
-  
-  [deviceProfileBtn removeAllItems];
-  for (NSDictionary *profile in [device availableProfiles]) {
-    [deviceProfileBtn addItemWithTitle:profile[@"Description"]];
-  }
-  [deviceProfileBtn selectItemWithTitle:[device activeProfile]];
 }
 
 // --- Key-Value Observing
@@ -235,11 +285,11 @@ static void *InputContext = &InputContext;
 
   if ([title isEqualToString:@"Playback"]) {
     [deviceBox setTitle:@"Output"];
-    [self fillDeviceList];
+    [self fillCardList];
   }
   else if ([title isEqualToString:@"Recording"]) {
     [deviceBox setTitle:@"Input"];
-    [self fillDeviceList];
+    [self fillCardList];
   }
 }
 
@@ -247,7 +297,7 @@ static void *InputContext = &InputContext;
 - (void)reloadBrowser:(NSBrowser *)browser
 {
   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
-    
+
   [appBrowser reloadColumn:0];
   [appBrowser setTitle:@"Streams" ofColumn:0];
 
@@ -315,8 +365,7 @@ static void *InputContext = &InputContext;
 }
 
 // --- Output actions
-// "Device" popup action
-- (void)setDevicePort:(id)sender
+- (void)setDeviceCard:(id)sender
 {
   SKSoundDevice *device = [[sender selectedItem] representedObject];
 
@@ -330,12 +379,25 @@ static void *InputContext = &InputContext;
   
   [self fillProfileList];
 }
-// "Profile" popup action
 - (void)setDeviceProfile:(id)sender
 {
-  SKSoundDevice *device = [[devicePortBtn selectedItem] representedObject];
+  SKSoundDevice *device = [[deviceProfileBtn selectedItem] representedObject];
 
   [device setActiveProfile:[[deviceProfileBtn selectedItem] title]];
+}
+- (void)setDevicePort:(id)sender
+{
+  SKSoundDevice *device = [[sender selectedItem] representedObject];
+
+  if ([[device availablePorts] count] > 0) {
+    [device setActivePort:[[sender selectedItem] title]];
+  }
+  [deviceMuteBtn setState:[device isMute]];
+  [deviceVolumeSlider setMaxValue:[device volumeSteps]-1];
+  [deviceVolumeSlider setIntegerValue:[device volume]];
+  [deviceBalanceSlider setFloatValue:[device balance]];
+  
+  // [self fillProfileList];
 }
 
 - (void)setDeviceMute:(id)sender

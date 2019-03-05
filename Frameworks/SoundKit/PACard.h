@@ -30,9 +30,11 @@
 
 @property (readonly) NSUInteger index;
 @property (readonly) NSString   *name;
+@property (readonly) NSString   *description;
 
-@property (readonly) NSArray    *outProfiles;
-@property (readonly) NSArray    *inProfiles;
+@property (readonly) NSArray    *outPorts;
+@property (readonly) NSArray    *inPorts;
+@property (readonly) NSArray    *profiles;
 @property (assign)   NSString   *activeProfile;
 
 - (id)updateWithValue:(NSValue *)value;

@@ -89,6 +89,10 @@
 }
 
 /*--- Sink proxy ---*/
+- (NSArray *)availableCardPorts
+{
+  return super.card.outPorts;
+}
 - (NSArray *)availablePorts
 {
   if (_sink == nil) {

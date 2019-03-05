@@ -79,6 +79,10 @@
 }
 
 /*--- Source proxy ---*/
+- (NSArray *)availableCardPorts
+{
+  return super.card.inPorts;
+}
 - (NSArray *)availablePorts
 {
   if (_source == nil) {

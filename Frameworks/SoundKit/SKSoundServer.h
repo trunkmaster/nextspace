@@ -22,6 +22,7 @@
 #import <pulse/pulseaudio.h>
 #import <Foundation/Foundation.h>
 
+@class SKSoundDevice;
 @class SKSoundOut;
 @class SKSoundIn;
 
@@ -81,6 +82,8 @@ extern NSString *SKDeviceDidRemoveNotification;
 - (id)initOnHost:(NSString *)hostName;
 - (void)disconnect;
 
+- (SKSoundDevice *)defaultCard;
+- (NSArray *)cardList;
 - (SKSoundOut *)defaultOutput;
 - (NSArray *)outputList;
 - (SKSoundIn *)defaultInput;

@@ -43,6 +43,7 @@
 - (void)setActiveProfile:(NSString *)profileName;
 
 // Subclass responsiblity
+- (NSArray *)availableCardPorts;
 - (NSArray *)availablePorts;
 - (NSString *)activePort;
 - (void)setActivePort:(NSString *)portName;
