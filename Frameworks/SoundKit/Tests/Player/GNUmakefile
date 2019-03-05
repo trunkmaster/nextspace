@@ -23,8 +23,8 @@ Player_RESOURCE_FILES = \
 Player_OBJC_FILES = \
 	AppController.m \
 	Mixer.m \
-	Player.m \
-	AudioFile.m
+	Player.m
+#	AudioFile.m
 
 #
 # Other sources
