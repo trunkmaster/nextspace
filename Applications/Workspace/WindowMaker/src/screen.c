@@ -656,10 +656,13 @@ WScreen *wScreenInit(int screen_number)
    * can change mode while holding it too - ]d
    */
   if (w_global.xext.xkb.supported) {
+    unsigned int auto_ctrls, auto_values;
+    unsigned long int mask = (XkbIndicatorStateNotifyMask | XkbBellNotifyMask);
     /* XkbSelectEvents(dpy, XkbUseCoreKbd, XkbStateNotifyMask, XkbStateNotifyMask); */
-    XkbSelectEvents(dpy, XkbUseCoreKbd,
-                    (XkbIndicatorStateNotifyMask | XkbBellNotifyMask),
-                    (XkbIndicatorStateNotifyMask | XkbBellNotifyMask));
+    XkbSelectEvents(dpy, XkbUseCoreKbd, mask, mask);
+    auto_ctrls = auto_values = XkbAudibleBellMask;
+    XkbSetAutoResetControls(dpy, XkbAudibleBellMask, &auto_ctrls, &auto_values);
+    XkbChangeEnabledControls(dpy, XkbUseCoreKbd, XkbAudibleBellMask, 0);
   }
 #endif				/* KEEP_XKB_LOCK_STATUS */
 
