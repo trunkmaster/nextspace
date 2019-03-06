@@ -23,11 +23,14 @@
   Boston, MA  02111-1307, USA
 */
 #import <AppKit/NSImage.h>
+#import <NXFoundation/NXDefaults.h>
 #import <SoundKit/SoundKit.h>
+
 #import <Preferences.h>
 
 @interface Sound: NSObject <PrefsModule>
 {
+  NXDefaults    *defaults;
   NSImage       *image;
   SKSoundServer *soundServer;
   SKSoundOut    *soundOut;
@@ -49,5 +52,7 @@
 
   id soundInfo;
 }
+
+- (void)reloadBrowser;
 
 @end

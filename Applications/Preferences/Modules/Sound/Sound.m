@@ -24,15 +24,10 @@
 */
 #import <AppKit/AppKit.h>
 #import <SoundKit/SoundKit.h>
-#import <NXFoundation/NXDefaults.h>
 
 #import "Sound.h"
 
 @implementation Sound
-
-// static NSBundle                 *bundle = nil;
-// static NSUserDefaults           *defaults = nil;
-// static NSMutableDictionary      *domain = nil;
 
 // --- Init and dealloc
 - (void)dealloc
@@ -52,14 +47,14 @@
 - (id)init
 {
   NSBundle *bundle;
+  NSString *imagePath;
   
   self = [super init];
   
-  // defaults = [NSUserDefaults standardUserDefaults];
-  // domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
+  defaults = [NXDefaults globalUserDefaults];
 
   bundle = [NSBundle bundleForClass:[self class]];
-  NSString *imagePath = [bundle pathForResource:@"Sound" ofType:@"tiff"];
+  imagePath = [bundle pathForResource:@"Sound" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
       
   return self;
@@ -210,7 +205,8 @@ static void *InputContext = &InputContext;
       [self observeInput:soundIn];
     }
     [self _updateControls];
-    [beepBrowser reloadColumn:0];
+    // [beepBrowser reloadColumn:0];
+    [self reloadBrowser];
   }
   else if (soundServer.status == SKServerFailedState ||
            soundServer.status == SKServerTerminatedState) {
@@ -221,6 +217,23 @@ static void *InputContext = &InputContext;
 }
 
 // --- Control actions
+- (void)reloadBrowser
+{
+  NSString  *defaultSound = [defaults objectForKey:@"NXSystemBeep"];
+  NSMatrix  *matrix = [beepBrowser matrixInColumn:0];
+  NSInteger row,col;
+  
+  [beepBrowser reloadColumn:0];
+  matrix = [beepBrowser matrixInColumn:0];
+  
+  for (NSBrowserCell *cell in [matrix cells]) {
+    if ([[cell representedObject] isEqualToString:defaultSound]) {
+      [matrix getRow:&row column:&col ofCell:cell];
+      [beepBrowser selectRow:row inColumn:0];
+      [beepBrowser scrollRowToVisible:row inColumn:0];
+    }
+  }
+}
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
@@ -272,7 +285,6 @@ static void *InputContext = &InputContext;
 {
   NSString   *soundPath;
   NSSound    *sound;
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
 
   // FIXME: should be:
   //// Write NXSystemBeep value to defaults.
@@ -286,8 +298,8 @@ static void *InputContext = &InputContext;
   [sound play];
   [sound release];
 
-  [defs setObject:soundPath forKey:@"NXSystemBeep"];
-  [defs synchronize];
+  [defaults setObject:soundPath forKey:@"NXSystemBeep"];
+  [defaults synchronize];
 }
 - (void)setBeepRadio:(id)sender {}
 
