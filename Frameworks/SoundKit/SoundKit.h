@@ -4,3 +4,4 @@
 #import <SoundKit/SKSoundDevice.h>
 #import <SoundKit/SKSoundOut.h>
 #import <SoundKit/SKSoundIn.h>
+#import <SoundKit/SKSoundStream.h>

@@ -32,7 +32,8 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	SKSoundServerCallbacks.m \
 	SKSoundDevice.m \
 	SKSoundOut.m \
-	SKSoundIn.m
+	SKSoundIn.m \
+	SKSoundStream.m
 endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
@@ -40,7 +41,8 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	SKSoundServer.h \
 	SKSoundDevice.h \
 	SKSoundOut.h \
-	SKSoundIn.h
+	SKSoundIn.h \
+	SKSoundStream.h
 
 $(FRAMEWORK_NAME)_RESOURCE_FILES = 
 

@@ -30,6 +30,7 @@
 #import "SKSoundDevice.h"
 #import "SKSoundOut.h"
 #import "SKSoundIn.h"
+#import "SKSoundStream.h"
 #import "SKSoundServer.h"
 #import "SKSoundServerCallbacks.h"
 
@@ -151,7 +152,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     [list addObject:device];
     [device release];
   }
-  return list;
+  return [list autorelease];
 }
 
 - (SKSoundOut *)outputWithSink:(PASink *)sink
@@ -198,6 +199,29 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (PASource *source in sourceList) {
     [list addObject:[self inputWithSource:source]];
+  }
+  return [list autorelease];
+}
+
+- (SKSoundStream *)defaultPlayStream
+{
+  for (SKSoundStream *st in [self streamList]) {
+    if (st.isPlayStream && st.isVirtual) {
+      return st;
+    }
+  }
+  return nil;
+}
+- (NSArray *)streamList
+{
+  NSMutableArray *list = [NSMutableArray new];
+  SKSoundStream  *soundStream;
+
+  for (PAStream *stream in savedStreamList) {
+    soundStream = [[SKSoundStream alloc] initWithRestoredStream:stream
+                                                         server:self];
+    [list addObject:soundStream];
+    [soundStream release];
   }
   return [list autorelease];
 }
@@ -298,7 +322,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (sink in sinkList) {
     if (sink.index == info->index) {
-      fprintf(stderr, "[SoundKit] Update Sink: %s.\n", info->name);
+      fprintf(stderr, "[SoundKit] Sink Update: %s.\n", info->name);
       [sink updateWithValue:value];
       isUpdated = YES;
       break;
@@ -308,7 +332,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   if (isUpdated == NO) {
     // Create Sink
     sink = [[PASink alloc] init];
-    fprintf(stderr, "[SoundKit] Add Sink: %s.\n", info->name);
+    fprintf(stderr, "[SoundKit] Sink Add: %s.\n", info->name);
     [sink updateWithValue:value];
     sink.context = _pa_ctx;
     [sinkList addObject:sink];
@@ -357,7 +381,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (source in sourceList) {
     if (source.index == info->index) {
-      fprintf(stderr, "[SoundKit] Update Source: %s.\n", info->name);
+      fprintf(stderr, "[SoundKit] Source Update: %s.\n", info->name);
       [source updateWithValue:value];
       isUpdated = YES;
       break;
@@ -366,7 +390,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   if (isUpdated == NO) {
     source = [[PASource alloc] init];
-    fprintf(stderr, "[SoundKit] Add Source: %s.\n", info->name);
+    fprintf(stderr, "[SoundKit] Source Add: %s.\n", info->name);
     [source updateWithValue:value];
     source.context = _pa_ctx;
     [sourceList addObject:source];
@@ -415,7 +439,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (sinkInput in sinkInputList) {
     if (sinkInput.index == info->index) {
-      fprintf(stderr, "[SoundKit] Update Sink Input: %s.\n", info->name);
+      fprintf(stderr, "[SoundKit] Sink Input Update: %s.\n", info->name);
       [sinkInput updateWithValue:value];
       isUpdated = YES;
       break;
@@ -424,7 +448,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   if (isUpdated == NO) {
     sinkInput = [[PASinkInput alloc] init];
-    fprintf(stderr, "[SoundKit] Add Sink Input: %s.\n", info->name);
+    fprintf(stderr, "[SoundKit] Sink Input Add: %s.\n", info->name);
     [sinkInput updateWithValue:value];
     sinkInput.context = _pa_ctx;
     [sinkInputList addObject:sinkInput];
@@ -432,6 +456,15 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
   
   free((void *)info);
+}
+- (PASinkInput *)sinkInputWithClientIndex:(NSUInteger)index
+{
+  for (PASinkInput *sinkInput in sinkInputList) {
+    if (sinkInput.clientIndex == index) {
+      return sinkInput;
+    }
+  }
+  return nil;
 }
 - (PASinkInput *)sinkInputWithIndex:(NSUInteger)index
 {
@@ -470,7 +503,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   for (PAClient *c in clientList) {
     if ([c index] == info->index) {
-      fprintf(stderr, "[SoundKit] Update Cleint: %s.\n", info->name);
+      fprintf(stderr, "[SoundKit] Client Update: %s.\n", info->name);
       [c updateWithValue:value];
       isUpdated = YES;
       break;
@@ -479,7 +512,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   if (isUpdated == NO) {
     PAClient *client = [[PAClient alloc] init];
-    fprintf(stderr, "[SoundKit] Add Client: %s.\n", info->name);
+    fprintf(stderr, "[SoundKit] Add: %s.\n", info->name);
     [client updateWithValue:value];
     [clientList addObject:client];
     [client release];
@@ -487,16 +520,27 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   
   free((void *)info);
 }
-- (void)removeClientWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (PAClient *)clientWithIndex:(NSNumber *)index
 {
-  PAClient *client;
-
-  for (PAClient *c in clientList) {
-    if ([c index] == [index unsignedIntegerValue]) {
-      client = c;
-      break;
+  for (PAClient *client in clientList) {
+    if ([client index] == [index unsignedIntegerValue]) {
+      return client;
     }
   }
+  return nil;
+}
+- (PAClient *)clientWithName:(NSString *)name
+{
+  for (PAClient *client in clientList) {
+    if ([name isEqualToString:client.name]) {
+      return client;
+    }
+  }
+  return nil;
+}
+- (void)removeClientWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+{
+  PAClient *client = [self clientWithIndex:index];
 
   if (client != nil) {
     [clientList removeObject:client];
@@ -517,6 +561,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   streamName = [NSString stringWithCString:info->name];
   for (PAStream *s in savedStreamList) {
     if ([[s name] isEqualToString:streamName]) {
+      fprintf(stderr, "[SoundKit] Stream Update: %s.\n", info->name);
       [s updateWithValue:value];
       isUpdated = YES;
       break;
@@ -525,6 +570,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
   if (isUpdated == NO) {
     PAStream *s = [[PAStream alloc] init];
+    fprintf(stderr, "[SoundKit] Stream Add: %s.\n", info->name);
     [s updateWithValue:value];
     [savedStreamList addObject:s];
     [s release];

@@ -25,11 +25,13 @@
 @class SKSoundDevice;
 @class SKSoundOut;
 @class SKSoundIn;
+@class SKSoundStream;
 
 @class PACard;
 @class PASink;
 @class PASource;
 @class PASinkInput;
+@class PAClient;
 
 typedef enum NSInteger {
   SKServerNoConnnectionState,	// PA_CONTEXT_UNCONNECTED
@@ -84,10 +86,15 @@ extern NSString *SKDeviceDidRemoveNotification;
 
 - (SKSoundDevice *)defaultCard;
 - (NSArray *)cardList;
+
 - (SKSoundOut *)defaultOutput;
 - (NSArray *)outputList;
+
 - (SKSoundIn *)defaultInput;
 - (NSArray *)inputList;
+
+- (SKSoundStream *)defaultPlayStream;
+- (NSArray *)streamList;
 
 @end
 
@@ -113,12 +120,15 @@ extern NSString *SKDeviceDidRemoveNotification;
 // Sink Input
 - (void)updateSinkInput:(NSValue *)value;
 - (PASinkInput *)sinkInputWithIndex:(NSUInteger)index;
+- (PASinkInput *)sinkInputWithClientIndex:(NSUInteger)index;
 - (void)removeSinkInputWithIndex:(NSNumber *)index;
 // TODO: Source Output
 - (void)updateSourceOutput:(NSValue *)value;
 - (void)removeSourceOutputWithIndex:(NSNumber *)index;
 // Client
 - (void)updateClient:(NSValue *)value;
+- (PAClient *)clientWithIndex:(NSNumber *)index;
+- (PAClient *)clientWithName:(NSString *)name;
 - (void)removeClientWithIndex:(NSNumber *)index;
 // Restored Stream
 - (void)updateStream:(NSValue *)value;
