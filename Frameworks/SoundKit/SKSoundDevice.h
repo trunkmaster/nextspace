@@ -35,6 +35,7 @@
 - (id)initWithServer:(SKSoundServer *)server;
 - (NSString *)host;
 - (NSString *)name;
+- (NSString *)cardDescription;
 - (NSString *)description;
 - (void)printDescription;
 
@@ -43,7 +44,6 @@
 - (void)setActiveProfile:(NSString *)profileName;
 
 // Subclass responsiblity
-- (NSArray *)availableCardPorts;
 - (NSArray *)availablePorts;
 - (NSString *)activePort;
 - (void)setActivePort:(NSString *)portName;

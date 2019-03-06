@@ -55,6 +55,10 @@
 {
   return _card.description;
 }
+- (NSString *)cardDescription
+{
+  return _card.description;
+}
 - (NSString *)description
 {
   return _card.description;
@@ -104,10 +108,6 @@
 }
 
 // Subclass responsiblity
-- (NSArray *)availableCardPorts
-{
-  return nil;
-}
 - (NSArray *)availablePorts
 {
   return [_card.outPorts arrayByAddingObjectsFromArray:_card.inPorts];
