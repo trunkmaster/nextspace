@@ -133,7 +133,7 @@
   }
   _name = [[NSString alloc] initWithCString:info->name];
 
-  desc = pa_proplist_gets(info->proplist, PA_PROP_DEVICE_DESCRIPTION);
+  desc = pa_proplist_gets(info->proplist, "alsa.card_name");
   _description = [[NSString alloc] initWithCString:desc];
 
   [self _updateProfiles:info];
