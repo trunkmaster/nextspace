@@ -41,6 +41,7 @@ static void *InputContext = &InputContext;
 {
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
+  [appBrowser reloadColumn:0];
   [self fillCardList];
 }
 
@@ -302,12 +303,12 @@ static void *InputContext = &InputContext;
 
   if ([title isEqualToString:@"Playback"]) {
     [deviceBox setTitle:@"Output"];
-    [self fillCardList];
   }
   else if ([title isEqualToString:@"Recording"]) {
     [deviceBox setTitle:@"Input"];
-    [self fillCardList];
   }
+  [appBrowser reloadColumn:0];
+  [self fillCardList];
 }
 
 // --- Streams actions
@@ -327,33 +328,25 @@ static void *InputContext = &InputContext;
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
-  // NSString      *mode = [[modeButton selectedItem] title];
-  // NSBrowserCell *cell;
+  SKSoundServer *server = [SKSoundServer sharedServer];
+  NSString      *mode = [[modeButton selectedItem] title];
+  NSBrowserCell *cell;
 
-  // if ([mode isEqualToString:@"Playback"]) {
-  //   // Get streams of "sink-input-by-media-role" type first
-  //   for (PAStream *st in streamList) {
-  //     if ([[st typeName] isEqualToString:@"sink-input-by-media-role"]) {
-  //       [matrix addRow];
-  //       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-  //       [cell setLeaf:YES];
-  //       [cell setRefusesFirstResponder:YES];
-  //       [cell setTitle:[NSString stringWithFormat:@"%@ Sounds", [st clientName]]];
-  //       [cell setRepresentedObject:st];
-  //     }
-  //   }
-  //   for (PASinkInput *si in sinkInputList) {
-  //     [matrix addRow];
-  //     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-  //     [cell setLeaf:YES];
-  //     [cell setRefusesFirstResponder:YES];
-  //     [cell setTitle:[si nameForClients:clientList streams:streamList]];
-  //     [cell setRepresentedObject:si];
-  //   }
-  // }
-  // else if ([mode isEqualToString:@"Recording"]) {
-  //   // TODO
-  // }
+  if ([mode isEqualToString:@"Playback"]) {
+    for (SKSoundStream *st in [server streamList]) {
+      if (st.isPlayStream != NO) {
+        [matrix addRow];
+        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+        [cell setLeaf:YES];
+        [cell setRefusesFirstResponder:YES];
+        [cell setTitle:[st name]];
+        [cell setRepresentedObject:st];
+      }
+    }
+  }
+  else if ([mode isEqualToString:@"Recording"]) {
+    // TODO
+  }
 }
 
 - (void)browserClick:(id)sender
@@ -364,9 +357,9 @@ static void *InputContext = &InputContext;
     return;
   }
   
-  // NSLog(@"Browser received click: %@, cell - %@, repObject - %@",
-  //       [sender className], [[sender selectedCellInColumn:0] title],
-  //       [[[sender selectedCellInColumn:0] representedObject] className]);
+  NSLog(@"Browser received click: %@, cell - %@, repObject - %@",
+        [sender className], [[sender selectedCellInColumn:0] title],
+        [[[sender selectedCellInColumn:0] representedObject] className]);
   
   // if ([object respondsToSelector:@selector(volumes)]) {
   //   NSArray *volume = [object volumes];
