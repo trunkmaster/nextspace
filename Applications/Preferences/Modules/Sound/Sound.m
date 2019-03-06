@@ -62,6 +62,8 @@
 
 - (void)awakeFromNib
 {
+  NSString *beepType;
+  
   [view retain];
   [window release];
 
@@ -73,6 +75,11 @@
        selector:@selector(serverStateChanged:)
            name:SKServerStateDidChangeNotification
          object:soundServer];
+
+  [[beepAudioRadio cellWithTag:0] setRefusesFirstResponder:YES];
+  [[beepAudioRadio cellWithTag:1] setRefusesFirstResponder:YES];
+  beepType = [defaults objectForKey:@"NXSystemBeepType"];
+  [beepAudioRadio selectCellWithTag:([beepType isEqualToString:@"Audio"] == NO)];
 }
 
 // --- Protocol
@@ -220,11 +227,17 @@ static void *InputContext = &InputContext;
 - (void)reloadBrowser
 {
   NSString  *defaultSound = [defaults objectForKey:@"NXSystemBeep"];
-  NSMatrix  *matrix = [beepBrowser matrixInColumn:0];
+  NSMatrix  *matrix;
   NSInteger row,col;
   
   [beepBrowser reloadColumn:0];
   matrix = [beepBrowser matrixInColumn:0];
+
+  if (defaultSound == nil) {
+    defaultSound = @"/usr/NextSpace/Sounds/Bonk.snd";
+    [defaults setObject:defaultSound forKey:@"NXSystemBeep"];
+    [defaults synchronize];
+  }
   
   for (NSBrowserCell *cell in [matrix cells]) {
     if ([[cell representedObject] isEqualToString:defaultSound]) {
@@ -301,6 +314,16 @@ static void *InputContext = &InputContext;
   [defaults setObject:soundPath forKey:@"NXSystemBeep"];
   [defaults synchronize];
 }
-- (void)setBeepRadio:(id)sender {}
+- (void)setBeepRadio:(id)sender
+{
+  NSString *type = [defaults objectForKey:@"NXSystemBeepType"];
+  NSString *title = [[sender selectedCell] title];
+
+  if ([title isEqualToString:type]) {
+    return;
+  }
+  [defaults setObject:title forKey:@"NXSystemBeepType"];
+  [defaults synchronize];
+}
 
 @end
