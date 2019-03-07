@@ -8,7 +8,7 @@ $(TOOL_NAME)_OBJC_FILES = soundtool_main.m
 
 $(TOOL_NAME)_NEEDS_GUI = no
 
-ADDITIONAL_LDFLAGS += -lNXSystem -lNXFoundation -lSoundKit
+ADDITIONAL_LDFLAGS += -lNXSystem -lNXFoundation -lSoundKit -lpulse -lsndfile
 
 include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/ctool.make

@@ -70,7 +70,9 @@
   }
   else {
     [self setClient:[_server clientWithName:[_stream clientName]]];
-    _name = _stream.name;
+    _name = _stream.clientName;
+    fprintf(stderr, "[SoundKit] SoundStream: %s \t\tSinkInput:`%s` \t\tClient:`%s`\n",
+            [_stream.name cString], [_sinkInput.name cString], [_client.name cString]);
   }
 }
 - (void)setClient:(PAClient *)client

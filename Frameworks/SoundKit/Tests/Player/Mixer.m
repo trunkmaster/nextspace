@@ -389,6 +389,7 @@ static void *InputContext = &InputContext;
   
   [self fillProfileList];
 }
+
 - (void)setDeviceProfile:(id)sender
 {
   SKSoundDevice *device = [[deviceProfileBtn selectedItem] representedObject];
@@ -396,6 +397,7 @@ static void *InputContext = &InputContext;
   [device setActiveProfile:[[deviceProfileBtn selectedItem] title]];
   [self fillPortList];
 }
+
 - (void)setDevicePort:(id)sender
 {
   SKSoundDevice *device = [[sender selectedItem] representedObject];
