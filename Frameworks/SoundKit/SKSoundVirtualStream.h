@@ -19,36 +19,17 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <Foundation/Foundation.h>
-
 #import <SoundKit/SKSoundServer.h>
-#import <SoundKit/SKSoundDevice.h>
+#import <SoundKit/SKSoundStream.h>
 
-@class PASinkInput;
 @class PAStream;
-@class PAClient;
 
-@interface SKSoundStream : NSObject
+@interface SKSoundVirtualStream : SKSoundStream
 {
-  pa_stream *paStream;
 }
-@property (assign) SKSoundServer *server;
+@property (readonly) PAStream *stream;
 
-@property (nonatomic, assign) PASinkInput   *sinkInput;
-@property (nonatomic, assign) PAClient      *client;
-@property (nonatomic, assign) SKSoundDevice *device;
-
-@property (assign) NSString    *name;
-@property (assign) BOOL        isVirtual;
-@property (assign) BOOL        isPlayStream;
-@property (assign) BOOL        isRecordStream;
-
-// Must be everriden in subclass: SoundPlayStream or SoundRecordStream
-- (id)initOnDevice:(SKSoundDevice *)device
-      samplingRate:(NSUInteger)rate
-      channelCount:(NSUInteger)channels
-            format:(NSUInteger)format;
-- (void)activate;
-- (void)deactivate;
+- (id)initWithStream:(PAStream *)stream
+              server:(SKSoundServer *)server;
 
 @end
