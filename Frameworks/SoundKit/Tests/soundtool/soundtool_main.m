@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <SoundKit/SKSoundServer.h>
 #import <SoundKit/SKSoundOut.h>
+#import <SoundKit/SKSoundStream.h>
 
 @interface SoundKitClient : NSObject
 {
@@ -174,14 +175,14 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
 {
   struct SF_INFO sfi;
   pa_channel_map channel_map;
-  pa_proplist    *proplist;
-  pa_stream      *stream;
-  // char           *file = "/usr/NextSpace/Sounds/Welcome-to-the-NeXT-world.snd";
-  // char           *file = "/usr/NextSpace/Sounds/SystemBeep.snd";
-  char           *file = "/usr/NextSpace/Sounds/Rooster.snd";
-  // char           *file = "/usr/share/sounds/alsa/Noise.wav";
-  // char           *file = "/usr/share/sounds/freedesktop/stereo/audio-channel-side-left.oga";
-  // char           *file = "/usr/share/sounds/KDE-Im-Irc-Event.ogg";
+  /*  pa_proplist    *proplist;
+      pa_stream      *stream; */
+  // char *file = "/usr/NextSpace/Sounds/Welcome-to-the-NeXT-world.snd";
+  // char *file = "/usr/NextSpace/Sounds/SystemBeep.snd";
+  char    *file = "/usr/NextSpace/Sounds/Rooster.snd";
+  // char *file = "/usr/share/sounds/alsa/Noise.wav";
+  // char *file = "/usr/share/sounds/freedesktop/stereo/audio-channel-side-left.oga";
+  // char *file = "/usr/share/sounds/KDE-Im-Irc-Event.ogg";
 
   if (!(snd_file = sf_open(file, SFM_READ, &sfi))) {
     fprintf(stderr, "Failed to open sound file.\n");
@@ -206,22 +207,28 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
 
   sample_length = (size_t)sfi.frames * pa_frame_size(&sample_spec);
 
+  SKSoundStream *stream;
+  NSLog(@"Creating stream...");
+  stream = [[SKSoundStream alloc] initOnDevice:[server defaultOutput]
+                                  samplingRate:sample_spec.rate
+                                  channelCount:sample_spec.channels
+                                        format:sample_spec.format];
+  NSLog(@"Activating stream...");
+  [stream activate];
+  [stream playBuffer];
+  // NSLog(@"Deactivating stream...");
+  // [stream deactivate];
+  /*
   // Create stream
   proplist = pa_proplist_new();
   pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, "event");
   stream = pa_stream_new_with_proplist(server.pa_ctx, "soundtool",
                                        &sample_spec, &channel_map,
                                        proplist);
-  // stream = pa_stream_new(server.pa_ctx, "soundtool", &sample_spec, NULL);
   // Connect default stream
   pa_stream_connect_playback(stream, NULL, NULL, 0, NULL, NULL);
   pa_stream_set_write_callback(stream, stream_write_callback, NULL);
-  
-  // SKPlayStream *skStream;
-  // skStream = [[SKPlayStream alloc] initOnDevice:[server defaultOutput]
-  //                                          rate:sample_spec.rate
-  //                                      channels:sample_spec.channels
-  //                                        format:sample_spec.format];
+  */
 
   // typedef struct pa_sample_spec {
   //   pa_sample_format_t format;   /* The sample format */

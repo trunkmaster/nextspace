@@ -19,7 +19,7 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "SKSoundDevice.h"
+#import <SoundKit/SKSoundDevice.h>
 
 @class PASource;
 

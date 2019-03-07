@@ -19,7 +19,6 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <pulse/pulseaudio.h>
 #include <pulse/ext-stream-restore.h>
 
 #import "PAClient.h"

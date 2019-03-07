@@ -33,7 +33,8 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	SKSoundDevice.m \
 	SKSoundOut.m \
 	SKSoundIn.m \
-	SKSoundStream.m
+	SKSoundStream.m \
+	SKSoundVirtualStream.m
 endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
@@ -42,7 +43,8 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	SKSoundDevice.h \
 	SKSoundOut.h \
 	SKSoundIn.h \
-	SKSoundStream.h
+	SKSoundStream.h \
+	SKSoundVirtualStream.h
 
 $(FRAMEWORK_NAME)_RESOURCE_FILES = 
 

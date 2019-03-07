@@ -19,9 +19,10 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#import <SoundKit/SKSoundIn.h>
+
 #import "PASource.h"
 #import "PACard.h"
-#import "SKSoundIn.h"
 
 @implementation SKSoundIn
 

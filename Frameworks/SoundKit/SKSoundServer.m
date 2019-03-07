@@ -27,11 +27,11 @@
 #import "PAClient.h"
 #import "PAStream.h"
 
-#import "SKSoundDevice.h"
-#import "SKSoundOut.h"
-#import "SKSoundIn.h"
-#import "SKSoundStream.h"
-#import "SKSoundServer.h"
+#import <SoundKit/SKSoundDevice.h>
+#import <SoundKit/SKSoundOut.h>
+#import <SoundKit/SKSoundIn.h>
+#import <SoundKit/SKSoundVirtualStream.h>
+#import <SoundKit/SKSoundServer.h>
 #import "SKSoundServerCallbacks.h"
 
 static dispatch_queue_t _pa_q;
@@ -205,8 +205,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 
 - (SKSoundStream *)defaultPlayStream
 {
-  for (SKSoundStream *st in [self streamList]) {
-    if (st.isPlayStream && st.isVirtual) {
+  for (SKSoundVirtualStream *st in [self streamList]) {
+    if (st.isPlayStream && st.isVirtual &&
+        [st.stream.clientName isEqualToString:@"event"]) {
       return st;
     }
   }
@@ -218,8 +219,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   SKSoundStream  *soundStream;
 
   for (PAStream *stream in savedStreamList) {
-    soundStream = [[SKSoundStream alloc] initWithRestoredStream:stream
-                                                         server:self];
+    soundStream = [[SKSoundVirtualStream alloc] initWithStream:stream
+                                                        server:self];
     [list addObject:soundStream];
     [soundStream release];
   }

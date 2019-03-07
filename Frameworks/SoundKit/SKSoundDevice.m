@@ -20,7 +20,8 @@
 
 #import "PACard.h"
 #import "PASink.h"
-#import "SKSoundDevice.h"
+
+#import <SoundKit/SKSoundDevice.h>
 
 @implementation SKSoundDevice
 

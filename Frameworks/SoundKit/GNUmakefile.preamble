@@ -14,7 +14,7 @@ ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-import -Wno-unused \
 ADDITIONAL_CFLAGS +=
 
 ### Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS +=
+ADDITIONAL_INCLUDE_DIRS += -I./derived_src
 
 # ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 #   ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags hal`

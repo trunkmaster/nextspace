@@ -20,7 +20,7 @@
 */
 
 #import <Foundation/Foundation.h>
-#import "SKSoundServer.h"
+#import <SoundKit/SKSoundServer.h>
 
 @class PACard;
 
