@@ -27,6 +27,7 @@
 
 @property (readonly) NSString  *name;
 @property (readonly) NSUInteger index;
+@property (readonly) NSString  *appName;
 
 - (id)updateWithValue:(NSValue *)value;
 

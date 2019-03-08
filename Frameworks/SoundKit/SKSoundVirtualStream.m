@@ -22,6 +22,7 @@
 #import <SoundKit/SKSoundVirtualStream.h>
 
 #import "PAStream.h"
+#import "PAClient.h"
 
 @implementation SKSoundVirtualStream
 
@@ -58,6 +59,11 @@
           [_stream.name cString], [_stream.deviceName cString]);
   
   return self;  
+}
+
+- (NSString *)appName
+{
+  return super.client.appName;
 }
 
 @end

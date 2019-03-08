@@ -52,6 +52,11 @@ typedef struct pa_client_info {
   _name = [[NSString alloc] initWithCString:info->name];
   _index = info->index;
 
+  if (_appName)
+    [_appName release];
+  _appName = [NSString stringWithCString:pa_proplist_gets(info->proplist,
+                                                          "application.process.binary")];
+
   return self;
 }
 
