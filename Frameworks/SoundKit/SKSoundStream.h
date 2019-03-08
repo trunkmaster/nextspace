@@ -38,10 +38,10 @@
 @property (nonatomic, assign) PAClient      *client;
 @property (nonatomic, assign) SKSoundDevice *device;
 
-@property (assign) NSString    *name;
-@property (assign) BOOL        isVirtual;
-@property (assign) BOOL        isPlayStream;
-@property (assign) BOOL        isRecordStream;
+@property (assign)   NSString    *name;
+@property (assign)   BOOL        isVirtual;
+@property (assign)   BOOL        isPlayStream;
+@property (assign)   BOOL        isRecordStream;
 
 // Must be everriden in subclass: SoundPlayStream or SoundRecordStream
 - (id)initOnDevice:(SKSoundDevice *)device

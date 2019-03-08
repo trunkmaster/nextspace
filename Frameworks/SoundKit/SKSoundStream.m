@@ -45,6 +45,20 @@
   return self;
 }
 
+- (id)initWithSinkInput:(PASinkInput *)sinkInput
+                 server:(SKSoundServer *)server
+{
+  _server = server;
+  _sinkInput = sinkInput;
+  _client = [server clientWithIndex:_sinkInput.clientIndex];
+  
+  _name = _client.appName;
+  _device = [server outputWithSink:[server sinkWithIndex:_sinkInput.sinkIndex]];
+  _isVirtual = NO;
+  _isPlayStream = YES;
+  _isRecordStream = NO;
+}
+
 static void stream_write_callback(pa_stream *stream, size_t length, void *userdata)
 {
   /*  sf_count_t frames, frames_read;
