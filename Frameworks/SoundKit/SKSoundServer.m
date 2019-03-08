@@ -218,12 +218,40 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   NSMutableArray *list = [NSMutableArray new];
   SKSoundStream  *soundStream;
 
+  // Pure virtual streams
   for (PAStream *stream in savedStreamList) {
     soundStream = [[SKSoundVirtualStream alloc] initWithStream:stream
                                                         server:self];
     [list addObject:soundStream];
     [soundStream release];
   }
+  // Streams with SinkInput and Client
+  for (PASinkInput *sinkInput in sinkInputList) {
+    soundStream = [SKSoundStream new];
+    soundStream.server = self;
+    soundStream.sinkInput = sinkInput;
+    soundStream.client = [self clientWithIndex:sinkInput.clientIndex];
+    soundStream.name = soundStream.client.appName;
+    soundStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
+    soundStream.isVirtual = NO;
+    soundStream.isPlayStream = YES;
+    soundStream.isRecordStream = NO;
+    [list addObject:soundStream];
+    [soundStream release];
+    fprintf(stderr, "Stream was added t list: %s", [soundStream.name cString]);
+  }
+  // Streams with SourceOuput and Client
+  // for (PASinkInput *sinkInput in sourceOutputList) {
+  //   soundStream = [SKSoundVirtualStream new];
+  //   soundStream.server = self;
+  //   soundStream.sinkInput = sinkInput;
+  //   soundStream.client = [self clientWithIndex:sinkInput.clientIndex];
+  //   soundStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
+  //   soundStream.isVirtual = NO;
+  //   soundStream.isPlayStream = YES;
+  //   soundStream.isRecordStream = NO;
+  // }
+  
   return [list autorelease];
 }
 
@@ -301,9 +329,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
   return nil;
 }
-- (void)removeCardWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (void)removeCardWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
-  PACard *card = [self cardWithIndex:[index unsignedIntegerValue]];
+  PACard *card = [self cardWithIndex:index];
 
   if (card != nil) {
     [cardList removeObject:card];
@@ -360,9 +388,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
   return nil;
 }
-- (void)removeSinkWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (void)removeSinkWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
-  PASink *sink = [self sinkWithIndex:[index unsignedIntegerValue]];
+  PASink *sink = [self sinkWithIndex:index];
 
   if (sink != nil) {
     [sinkList removeObject:sink];
@@ -418,9 +446,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
   return nil;
 }
-- (void)removeSourceWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (void)removeSourceWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
-  PASource *source = [self sourceWithIndex:[index unsignedIntegerValue]];
+  PASource *source = [self sourceWithIndex:index];
 
   if (source != nil) {
     [sourceList removeObject:source];
@@ -476,9 +504,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
   return nil;
 }
-- (void)removeSinkInputWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (void)removeSinkInputWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
-  PASinkInput *sinkInput = [self sinkInputWithIndex:[index unsignedIntegerValue]];
+  PASinkInput *sinkInput = [self sinkInputWithIndex:index];
   if (sinkInput != nil) {
     [sinkInputList removeObject:sinkInput];
   }
@@ -488,7 +516,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 - (void)updateSourceOutput:(NSValue *)value // source_outout_cb(...)
 {
 }
-- (void)removeSourceOutputWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (void)removeSourceOutputWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
 }
 
@@ -521,10 +549,10 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   
   free((void *)info);
 }
-- (PAClient *)clientWithIndex:(NSNumber *)index
+- (PAClient *)clientWithIndex:(NSUInteger)index
 {
   for (PAClient *client in clientList) {
-    if ([client index] == [index unsignedIntegerValue]) {
+    if ([client index] == index) {
       return client;
     }
   }
@@ -539,7 +567,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   }
   return nil;
 }
-- (void)removeClientWithIndex:(NSNumber *)index // context_subscribe_cb(...)
+- (void)removeClientWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
   PAClient *client = [self clientWithIndex:index];
 

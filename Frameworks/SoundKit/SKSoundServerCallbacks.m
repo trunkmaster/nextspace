@@ -243,10 +243,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SINK:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        // [_server performSelectorOnMainThread:@selector(removeSinkWithIndex:)
-        //                           withObject:[NSNumber numberWithUnsignedInt:index]
-        //                        waitUntilDone:YES];
-        [_server removeSinkWithIndex:[NSNumber numberWithUnsignedInt:index]];
+        [_server removeSinkWithIndex:index];
       }
       else {
         if (!(o = pa_context_get_sink_info_by_index(ctx, index, sink_cb, userdata))) {
@@ -261,10 +258,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SOURCE:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        // [_server performSelectorOnMainThread:@selector(removeSourceWithIndex:)
-        //                           withObject:[NSNumber numberWithUnsignedInt:index]
-        //                        waitUntilDone:YES];
-        [_server removeSourceWithIndex:[NSNumber numberWithUnsignedInt:index]];
+        [_server removeSourceWithIndex:index];
       }
       else {
         if (!(o = pa_context_get_source_info_by_index(ctx, index, source_cb, userdata))) {
@@ -279,10 +273,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        // [_server performSelectorOnMainThread:@selector(removeSinkInputWithIndex:)
-        //                           withObject:[NSNumber numberWithUnsignedInt:index]
-        //                        waitUntilDone:YES];
-        [_server removeSinkInputWithIndex:[NSNumber numberWithUnsignedInt:index]];
+        [_server removeSinkInputWithIndex:index];
       }
       else {
         if (!(o = pa_context_get_sink_input_info(ctx, index, sink_input_cb, userdata))) {
@@ -297,10 +288,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        // [_server performSelectorOnMainThread:@selector(removeSourceOutputWithIndex:)
-        //                           withObject:[NSNumber numberWithUnsignedInt:index]
-        //                        waitUntilDone:YES];
-        [_server removeSourceOutputWithIndex:[NSNumber numberWithUnsignedInt:index]];
+        [_server removeSourceOutputWithIndex:index];
       }
       else {
         o = pa_context_get_source_output_info(ctx, index, source_output_cb, userdata);
@@ -316,10 +304,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_CLIENT:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        // [_server performSelectorOnMainThread:@selector(removeClientWithIndex:)
-        //                           withObject:[NSNumber numberWithUnsignedInt:index]
-        //                        waitUntilDone:YES];
-        [_server removeClientWithIndex:[NSNumber numberWithUnsignedInt:index]];
+        [_server removeClientWithIndex:index];
       }
       else {
         if (!(o = pa_context_get_client_info(ctx, index, client_cb, userdata))) {
@@ -344,10 +329,7 @@ void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_ty
   case PA_SUBSCRIPTION_EVENT_CARD:
     {
       if (event_type_masked == PA_SUBSCRIPTION_EVENT_REMOVE) {
-        // [_server performSelectorOnMainThread:@selector(removeCardWithIndex:)
-        //                           withObject:[NSNumber numberWithUnsignedInt:index]
-        //                        waitUntilDone:YES];
-        [_server removeCardWithIndex:[NSNumber numberWithUnsignedInt:index]];
+        [_server removeCardWithIndex:index];
       }
       else {
         if (!(o = pa_context_get_card_info_by_index(ctx, index, card_cb, userdata))) {

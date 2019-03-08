@@ -106,30 +106,30 @@ extern NSString *SKDeviceDidRemoveNotification;
 // Card
 - (void)updateCard:(NSValue *)value;
 - (PACard *)cardWithIndex:(NSUInteger)index;
-- (void)removeCardWithIndex:(NSNumber *)index;
+- (void)removeCardWithIndex:(NSUInteger)index;
 // Sink
 - (void)updateSink:(NSValue *)value;
 - (PASink *)sinkWithIndex:(NSUInteger)index;
 - (PASink *)sinkWithName:(NSString *)name;
-- (void)removeSinkWithIndex:(NSNumber *)index;
+- (void)removeSinkWithIndex:(NSUInteger)index;
 // Source
 - (void)updateSource:(NSValue *)value;
 - (PASource *)sourceWithIndex:(NSUInteger)index;
 - (PASource *)sourceWithName:(NSString *)name;
-- (void)removeSourceWithIndex:(NSNumber *)index;
+- (void)removeSourceWithIndex:(NSUInteger)index;
 // Sink Input
 - (void)updateSinkInput:(NSValue *)value;
 - (PASinkInput *)sinkInputWithIndex:(NSUInteger)index;
 - (PASinkInput *)sinkInputWithClientIndex:(NSUInteger)index;
-- (void)removeSinkInputWithIndex:(NSNumber *)index;
+- (void)removeSinkInputWithIndex:(NSUInteger)index;
 // TODO: Source Output
 - (void)updateSourceOutput:(NSValue *)value;
-- (void)removeSourceOutputWithIndex:(NSNumber *)index;
+- (void)removeSourceOutputWithIndex:(NSUInteger)index;
 // Client
 - (void)updateClient:(NSValue *)value;
-- (PAClient *)clientWithIndex:(NSNumber *)index;
+- (PAClient *)clientWithIndex:(NSUInteger)index;
 - (PAClient *)clientWithName:(NSString *)name;
-- (void)removeClientWithIndex:(NSNumber *)index;
+- (void)removeClientWithIndex:(NSUInteger)index;
 // Restored Stream
 - (void)updateStream:(NSValue *)value;
 
