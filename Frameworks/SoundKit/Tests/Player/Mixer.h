@@ -42,7 +42,7 @@
 
 - (id)window;
 
-- (void)reloadBrowser:(NSBrowser *)browser;
+// - (void)reloadBrowser:(NSBrowser *)browser;
 - (void)fillCardList;
 - (void)fillProfileList;
 - (void)fillPortList;

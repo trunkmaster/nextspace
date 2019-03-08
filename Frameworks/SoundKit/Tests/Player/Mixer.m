@@ -312,17 +312,17 @@ static void *InputContext = &InputContext;
 }
 
 // --- Streams actions
-- (void)reloadBrowser:(NSBrowser *)browser
-{
-  NSString *selected = [[appBrowser selectedCellInColumn:0] title];
+// - (void)reloadBrowser:(NSBrowser *)browser
+// {
+//   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
 
-  [appBrowser reloadColumn:0];
-  [appBrowser setTitle:@"Streams" ofColumn:0];
+//   [appBrowser reloadColumn:0];
+//   [appBrowser setTitle:@"Streams" ofColumn:0];
 
-  if (selected == nil) {
-    [appBrowser selectRow:0 inColumn:0];
-  }
-}
+//   if (selected == nil) {
+//     [appBrowser selectRow:0 inColumn:0];
+//   }
+// }
  
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
@@ -331,6 +331,8 @@ static void *InputContext = &InputContext;
   SKSoundServer *server = [SKSoundServer sharedServer];
   NSString      *mode = [[modeButton selectedItem] title];
   NSBrowserCell *cell;
+
+  NSLog(@"Browser RELOAD.");
 
   if ([mode isEqualToString:@"Playback"]) {
     for (SKSoundStream *st in [server streamList]) {
