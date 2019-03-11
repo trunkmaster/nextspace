@@ -24,6 +24,7 @@
 
 static void *OutputContext = &OutputContext;
 static void *InputContext = &InputContext;
+static void *StreamContext = &StreamContext;
 
 @implementation Mixer
 
@@ -42,7 +43,18 @@ static void *InputContext = &InputContext;
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
   [appBrowser reloadColumn:0];
+  [[appBrowser matrixInColumn:0] selectCellAtRow:0 column:0];
+  [self browserClick:appBrowser];
   [self fillCardList];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(soundServerUpdated:)
+                                               name:SKDeviceDidChangeNotification
+                                             object:[SKSoundServer sharedServer]];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(soundServerUpdated:)
+                                               name:SKDeviceDidRemoveNotification
+                                             object:[SKSoundServer sharedServer]];
 }
 
 - (id)window
@@ -189,7 +201,7 @@ static void *InputContext = &InputContext;
 }
 
 // --- Key-Value Observing
-- (void)observeDevice:(SKSoundDevice *)device
+- (void)observeDevice:(id)device
 {
   if ([device isKindOfClass:[SKSoundOut class]]) {
     SKSoundOut *output = (SKSoundOut *)device;
@@ -229,6 +241,17 @@ static void *InputContext = &InputContext;
                       options:NSKeyValueObservingOptionNew
                       context:InputContext];
   }
+  else if ([device isKindOfClass:[SKSoundStream class]]) {
+    SKSoundStream *stream = (SKSoundStream *)device;
+    [stream.sinkInput addObserver:self
+                       forKeyPath:@"mute"
+                          options:NSKeyValueObservingOptionNew
+                          context:StreamContext];
+    [stream.sinkInput addObserver:self
+                       forKeyPath:@"channelVolumes"
+                          options:NSKeyValueObservingOptionNew
+                          context:StreamContext];
+  }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -236,8 +259,9 @@ static void *InputContext = &InputContext;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  SKSoundOut *output;
-  SKSoundIn  *input;
+  SKSoundOut    *output;
+  SKSoundIn     *input;
+  SKSoundStream *stream;
   
   if (context == OutputContext) {
     output = [[devicePortBtn selectedItem] representedObject];
@@ -288,13 +312,31 @@ static void *InputContext = &InputContext;
         [deviceProfileBtn selectItemWithTitle:input.activeProfile];
       }
     }
-  } else {
+  }
+  else if (context == StreamContext) {
+    stream = [[appBrowser selectedCellInColumn:0] representedObject];
+    if (object == stream.sinkInput) {
+      if ([keyPath isEqualToString:@"mute"]) {
+        NSLog(@"Stream changed mute attribute.");
+      }
+      else if ([keyPath isEqualToString:@"channelVolumes"]) {
+        NSLog(@"Stream changed it's volume.");
+      }
+    }
+  }
+  else {
     // Any unrecognized context must belong to super
     [super observeValueForKeyPath:keyPath
                          ofObject:object
                            change:change
                           context:context];
   }
+}
+
+- (void)soundServerUpdated:(NSNotification *)aNotif
+{
+  [appBrowser reloadColumn:0];
+  [self fillCardList];
 }
 
 - (void)setMode:(id)sender
@@ -343,6 +385,7 @@ static void *InputContext = &InputContext;
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:[st name]];
         [cell setRepresentedObject:st];
+        [self observeDevice:st];
       }
     }
   }
@@ -353,27 +396,34 @@ static void *InputContext = &InputContext;
 
 - (void)browserClick:(id)sender
 {
-  id object = [[sender selectedCellInColumn:0] representedObject];
+  SKSoundStream *stream = [[sender selectedCellInColumn:0] representedObject];
 
-  if (object == nil) {
+  if (stream == nil) {
     return;
   }
   
   NSLog(@"Browser received click: %@, cell - %@, repObject - %@",
         [sender className], [[sender selectedCellInColumn:0] title],
-        [[[sender selectedCellInColumn:0] representedObject] className]);
+        [stream className]);
   
-  // if ([object respondsToSelector:@selector(volumes)]) {
-  //   NSArray *volume = [object volumes];
-  //   if (volume != nil && [volume count] > 0) {
-  //     [appVolume setFloatValue:[volume[0] floatValue]];
-  //   }
-  // }
+  [appVolume setFloatValue:[stream volume]];
+  [appMute setState:[stream isMute]];  
 }
 
 - (void)appMuteClick:(id)sender
 {
   // [[[appBrowser selectedCellInColumn:0] representedObject] setMute:[sender state]];
+}
+- (void)setAppVolume:(id)sender
+{
+  SKSoundStream *stream = [[appBrowser selectedCellInColumn:0] representedObject];
+
+  NSLog(@"Stream: set volume to %li (old: %lu)",
+        [sender integerValue], [stream volume]);
+  
+  [stream setVolume:[sender integerValue]];
+  
+  NSLog(@"Stream: `%@` volume was set to %lu", [stream name], [stream volume]);
 }
 
 // --- Output actions
@@ -424,7 +474,7 @@ static void *InputContext = &InputContext;
 
   NSLog(@"Device: set volume to %li (old: %lu)",
         [deviceVolumeSlider integerValue], [device volume]);
-  
+
   [device setVolume:[deviceVolumeSlider integerValue]];
   
   NSLog(@"Output: volume was set to %lu", [device volume]);

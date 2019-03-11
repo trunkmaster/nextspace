@@ -215,7 +215,7 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
                                         format:sample_spec.format];
   NSLog(@"Activating stream...");
   [stream activate];
-  [stream playBuffer];
+  // [stream playBuffer];
   // NSLog(@"Deactivating stream...");
   // [stream deactivate];
   /*

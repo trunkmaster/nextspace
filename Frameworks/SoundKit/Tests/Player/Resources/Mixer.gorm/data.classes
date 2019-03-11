@@ -12,9 +12,10 @@
 	Actions = (
 	    "appMuteClick:",
 	    "browserClick:",
-	    "setDeviceCard:",
+	    "setAppVolume:",
 	    "orderFrontFontPanel:",
 	    "setDeviceBalance:",
+	    "setDeviceCard:",
 	    "setDeviceMute:",
 	    "setDevicePort:",
 	    "setDeviceProfile:",
@@ -34,7 +35,8 @@
 	    "setDeviceVolume:",
 	    "setDeviceProfile:",
 	    "setMode:",
-	    "setDeviceCard:"
+	    "setDeviceCard:",
+	    "setAppVolume:"
 	);
 	Outlets = (
 	    window,
