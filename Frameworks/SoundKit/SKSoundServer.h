@@ -60,6 +60,7 @@ extern NSString *SKDeviceDidRemoveNotification;
   NSMutableArray        *cardList;
   // SKSoundOut
   NSMutableArray        *sinkList;
+  // SKSoundIn
   NSMutableArray        *sourceList;
   // SKSoundStream
   NSMutableArray        *clientList;
@@ -87,6 +88,7 @@ extern NSString *SKDeviceDidRemoveNotification;
 - (SKSoundDevice *)defaultCard;
 - (NSArray *)cardList;
 
+- (SKSoundOut *)outputWithSink:(PASink *)sink;
 - (SKSoundOut *)defaultOutput;
 - (NSArray *)outputList;
 

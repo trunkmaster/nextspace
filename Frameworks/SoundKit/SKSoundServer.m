@@ -37,9 +37,9 @@
 static dispatch_queue_t _pa_q;
 static SKSoundServer    *_server;
 
-NSString *SKDeviceDidAddNotification = @"SKDeviceDidAdd";
-NSString *SKDeviceDidChangeNotification = @"SKDeviceDidChange";
-NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
+NSString *SKDeviceDidAddNotification = @"SKDeviceDidAddNotification";
+NSString *SKDeviceDidChangeNotification = @"SKDeviceDidChangeNotification";
+NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 
 @implementation SKSoundServer
 
@@ -344,6 +344,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   const pa_sink_info *info;
   PASink             *sink;
   BOOL               isUpdated = NO;
+  NSNotification     *aNotif;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_sink_info));
@@ -354,6 +355,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
       fprintf(stderr, "[SoundKit] Sink Update: %s.\n", info->name);
       [sink updateWithValue:value];
       isUpdated = YES;
+      aNotif = [NSNotification notificationWithName:SKDeviceDidAddNotification
+                                             object:self];
       break;
     }
   }
@@ -366,7 +369,13 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     sink.context = _pa_ctx;
     [sinkList addObject:sink];
     [sink release];
+    aNotif = [NSNotification notificationWithName:SKDeviceDidChangeNotification
+                                           object:self];
   }
+  [[NSNotificationCenter defaultCenter]
+        performSelectorOnMainThread:@selector(postNotification:)
+                         withObject:aNotif
+                      waitUntilDone:NO];
   
   free((void *)info);  
 }
@@ -459,8 +468,9 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 - (void)updateSinkInput:(NSValue *)value // sink_input_cb(...)
 {
   const pa_sink_input_info *info;
-  BOOL  isUpdated = NO;
-  PASinkInput *sinkInput;
+  PASinkInput              *sinkInput;
+  BOOL                     isUpdated = NO;
+  NSNotification           *aNotif;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_sink_input_info));
@@ -471,6 +481,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
       fprintf(stderr, "[SoundKit] Sink Input Update: %s.\n", info->name);
       [sinkInput updateWithValue:value];
       isUpdated = YES;
+      aNotif = [NSNotification notificationWithName:SKDeviceDidAddNotification
+                                             object:self];
       break;
     }
   }
@@ -482,7 +494,13 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
     sinkInput.context = _pa_ctx;
     [sinkInputList addObject:sinkInput];
     [sinkInput release];
+    aNotif = [NSNotification notificationWithName:SKDeviceDidChangeNotification
+                                           object:self];
   }
+  [[NSNotificationCenter defaultCenter]
+        performSelectorOnMainThread:@selector(postNotification:)
+                         withObject:aNotif
+                      waitUntilDone:NO];
   
   free((void *)info);
 }
@@ -506,9 +524,16 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
 }
 - (void)removeSinkInputWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
-  PASinkInput *sinkInput = [self sinkInputWithIndex:index];
+  PASinkInput    *sinkInput = [self sinkInputWithIndex:index];
+  NSNotification *aNotif;
   if (sinkInput != nil) {
     [sinkInputList removeObject:sinkInput];
+    aNotif = [NSNotification notificationWithName:SKDeviceDidRemoveNotification
+                                           object:self];
+    [[NSNotificationCenter defaultCenter]
+        performSelectorOnMainThread:@selector(postNotification:)
+                         withObject:aNotif
+                      waitUntilDone:NO];
   }
 }
 
@@ -600,6 +625,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemove";
   if (isUpdated == NO) {
     PAStream *s = [[PAStream alloc] init];
     fprintf(stderr, "[SoundKit] Stream Add: %s.\n", info->name);
+    s.context = _pa_ctx;
     [s updateWithValue:value];
     [savedStreamList addObject:s];
     [s release];
