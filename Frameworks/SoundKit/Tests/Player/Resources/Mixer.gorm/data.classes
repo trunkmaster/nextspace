@@ -42,7 +42,6 @@
 	    window,
 	    appBrowser,
 	    appMute,
-	    appVolume,
 	    modeButton,
 	    deviceBalance,
 	    deviceMuteBtn,
@@ -51,7 +50,8 @@
 	    deviceVolumeSlider,
 	    deviceBalanceSlider,
 	    deviceBox,
-	    deviceCardBtn
+	    deviceCardBtn,
+	    appVolumeSlider
 	);
 	Super = NSObject;
     };

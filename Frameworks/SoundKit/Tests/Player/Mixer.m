@@ -43,7 +43,7 @@ static void *StreamContext = &StreamContext;
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
   [appBrowser reloadColumn:0];
-  [[appBrowser matrixInColumn:0] selectCellAtRow:0 column:0];
+  [appBrowser selectRow:0 inColumn:0];
   [self browserClick:appBrowser];
   [self fillCardList];
 
@@ -406,7 +406,7 @@ static void *StreamContext = &StreamContext;
         [sender className], [[sender selectedCellInColumn:0] title],
         [stream className]);
   
-  [appVolume setFloatValue:[stream volume]];
+  [appVolumeSlider setFloatValue:[stream volume]];
   [appMute setState:[stream isMute]];  
 }
 
@@ -418,12 +418,7 @@ static void *StreamContext = &StreamContext;
 {
   SKSoundStream *stream = [[appBrowser selectedCellInColumn:0] representedObject];
 
-  NSLog(@"Stream: set volume to %li (old: %lu)",
-        [sender integerValue], [stream volume]);
-  
   [stream setVolume:[sender integerValue]];
-  
-  NSLog(@"Stream: `%@` volume was set to %lu", [stream name], [stream volume]);
 }
 
 // --- Output actions

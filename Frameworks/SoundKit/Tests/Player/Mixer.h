@@ -29,7 +29,7 @@
   //
   id appBrowser;
   id appMute;
-  id appVolume;
+  id appVolumeSlider;
   //
   id deviceBox;
   id deviceMuteBtn;
