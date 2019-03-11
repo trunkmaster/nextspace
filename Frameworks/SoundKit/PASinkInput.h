@@ -24,6 +24,7 @@
 
 @interface PASinkInput : NSObject
 {
+  pa_channel_map *channel_map;
 }
 
 @property (assign) pa_context   *context;
@@ -33,16 +34,21 @@
 @property (readonly) NSUInteger clientIndex;
 @property (readonly) NSUInteger sinkIndex;
 
-@property (readonly) BOOL mute;
-@property (readonly) BOOL corked;
+@property (readonly) BOOL       hasVolume;
+@property (readonly) BOOL       isVolumeWritable;
 
-@property (readonly) BOOL    hasVolume;
-@property (readonly) BOOL    isVolumeWritable;
-@property (readonly) NSArray *volumes;
+@property (assign)   NSUInteger channelCount;
+@property (assign)   CGFloat    balance;
+@property (assign)   NSArray    *channelVolumes;
+@property (readonly) BOOL       corked;
 
+@property (assign,nonatomic)  BOOL  mute;
 
 - (id)updateWithValue:(NSValue *)val;
-- (NSString *)nameForClients:(NSArray *)clientList
-                     streams:(NSArray *)streamList;
+
+- (NSUInteger)volume;
+- (void)applyVolume:(NSUInteger)v;
+- (void)applyBalance:(CGFloat)balance;
+- (void)applyMute:(BOOL)isMute;
 
 @end

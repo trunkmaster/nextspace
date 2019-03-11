@@ -26,27 +26,18 @@
 
 /*
 typedef struct pa_sink_input_info {
-  // Index of the sink input
-  uint32_t index;
-  // Name of the sink input
-  const char *name;
+  uint32_t   index; // Index of the sink input
+  const char *name; // Name of the sink input
 
-  // Index of the client this sink input belongs to, or PA_INVALID_INDEX
-  uint32_t client;
-  // Index of the connected sink
-  uint32_t sink;
-  // Stream muted
-  int mute;
-  // Stream corked
-  int corked;
+  uint32_t   client; // Index of the client this sink input belongs to, or PA_INVALID_INDEX
+  uint32_t   sink;  // Index of the connected sink
+  int mute;  // Stream muted
+  int corked;  // Stream corked
   
-  // The sample specification of the sink input.
-  pa_sample_spec sample_spec;
-  // The resampling method used by this sink input.
-  const char *resample_method;
+  pa_sample_spec sample_spec;  // The sample specification of the sink input.
+  const char *resample_method;  // The resampling method used by this sink input.
   
-  // Channel map
-  pa_channel_map channel_map;
+  pa_channel_map channel_map;  // Channel map
   // Stream has volume. 
   // If not set, then the meaning of this struct's volume member is unspecified.
   int has_volume;
@@ -76,13 +67,66 @@ typedef struct pa_sink_input_info {
 
 - (void)dealloc
 {
-  if (_name)
+  if (_name) {
     [_name release];
-  if (_volumes)
-    [_volumes release];
+  }
+  if (_channelVolumes) {
+    [_channelVolumes release];
+  }
   [super dealloc];
 }
 
+- (void)_updateVolume:(const pa_sink_input_info *)info
+{
+  NSMutableArray *vol;
+  NSNumber       *v;
+  BOOL           isVolumeChanged = NO;
+  CGFloat        balance;
+
+  _hasVolume = info->has_volume;
+  _isVolumeWritable = info->volume_writable;
+
+  if (_channelVolumes == nil) {
+    isVolumeChanged = YES;
+  }
+  
+  balance = pa_cvolume_get_balance(&info->volume, &info->channel_map);
+  fprintf(stderr, "[SoundKit] Sink Input balance: %f\n", balance);
+  if (_balance != balance) {
+    self.balance = balance;
+  }
+  
+  vol = [NSMutableArray new];
+  for (int i = 0; i < info->volume.channels; i++) {
+    v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
+    [vol addObject:v];
+    if (isVolumeChanged == NO && [_channelVolumes[i] isEqualToNumber:v] == NO) {
+      isVolumeChanged = YES;
+    }
+  }
+  if (isVolumeChanged != NO) {
+    if (_channelVolumes) {
+      [_channelVolumes release];
+    }
+    self.channelVolumes = [[NSArray alloc] initWithArray:vol];
+  }
+  [vol release];
+}
+- (void)_updateChannels:(const pa_sink_input_info *)info
+{
+  _channelCount = info->volume.channels;
+  
+  // Channel map
+  if (channel_map) {
+    free(channel_map);
+  }
+  channel_map = malloc(sizeof(pa_channel_map));
+  pa_channel_map_init(channel_map);
+  channel_map->channels = info->channel_map.channels;
+  for (int i = 0; i < channel_map->channels; i++) {
+    channel_map->map[i] = info->channel_map.map[i];
+  }
+}
 - (id)updateWithValue:(NSValue *)val
 {
   pa_sink_input_info *info = NULL;
@@ -99,71 +143,56 @@ typedef struct pa_sink_input_info {
   _index = info->index;
   _clientIndex = info->client;
   _sinkIndex = info->sink;
+  
   _mute = info->mute;
   _corked = info->corked;
 
-  if (info->has_volume) {
-    if (_volumes)
-      [_volumes release];
-    vol = [NSMutableArray new];
-    for (int i = 0; i < info->volume.channels; i++) {
-      v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-      [vol addObject:v];
-    }
-    if ([vol count] > 0) {
-      _volumes = [[NSArray alloc] initWithArray:vol];
-    }
-    [vol release];
-  }
+  [self _updateVolume:info];
+  [self _updateChannels:info];
   
   free((void *)info);
 
   return self;
 }
 
-// TODO
-- (NSString *)nameForClients:(NSArray *)clientList
-                     streams:(NSArray *)streamList
+- (NSUInteger)volume
 {
-  NSString *clientName = @"";
-  NSString *streamName = @"";
+  NSUInteger v, i;
+
+  for (i = 0, v = 0; i < _channelCount; i++) {
+    if ([_channelVolumes[i] unsignedIntegerValue] > v)
+      v = [_channelVolumes[i] unsignedIntegerValue];
+  }
   
-  if (_clientIndex == PA_INVALID_INDEX) {
-    NSLog(@"SinkInput `%@` doesn't belong to any client.\n", _name);
-    return nil;
-  }
-  else { // get client name by index
-    for (PAClient *c in clientList) {
-      if (c.index == _clientIndex) {
-        clientName = c.name;
-      }
-    }
-  }
-
-  if (clientName) { // get stream name by name
-    for (PAStream *s in streamList) {
-      if ([[s clientName] isEqualToString:clientName]) {
-        streamName = s.name;
-      }
-    }
-  }
-
-  return [NSString stringWithFormat:@"%@ : %@",
-                   clientName, _name];
+  return v;
 }
-
-- (void)setVolumes:(NSArray *)vol
+- (void)applyVolume:(NSUInteger)v
 {
+  pa_cvolume *new_volume;
+
+  new_volume = malloc(sizeof(pa_cvolume));
+  pa_cvolume_init(new_volume);
+  pa_cvolume_set(new_volume, _channelCount, v);
+  
+  pa_context_set_sink_input_volume(_context, _index, new_volume, NULL, self);
+  
+  free(new_volume);
 }
-
-- (void)setMute:(BOOL)isMute
+- (void)applyBalance:(CGFloat)balance
 {
-  // TODO: call PA function
-  // pa_operation* pa_context_set_sink_input_mute(pa_context *c,
-  //                                              uint32_t idx,
-  //                                              int mute,
-  //                                              pa_context_success_cb_t cb,
-  //                                              void *userdata);
+  pa_cvolume *volume;
+
+  volume = malloc(sizeof(pa_cvolume));
+  pa_cvolume_init(volume);
+  pa_cvolume_set(volume, _channelCount, self.volume);
+  
+  pa_cvolume_set_balance(volume, channel_map, balance);
+  pa_context_set_sink_input_volume(_context, _index, volume, NULL, self);
+  
+  free(volume);
+}
+- (void)applyMute:(BOOL)isMute
+{
   pa_context_set_sink_input_mute(_context, _index, isMute, NULL, NULL);
 }
 
