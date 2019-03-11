@@ -43,6 +43,8 @@ typedef struct pa_client_info {
 - (id)updateWithValue:(NSValue *)value
 {
   const pa_client_info *info;
+  const char *app_binary;
+  const char *app_name;
   
   info = malloc(sizeof(const pa_client_info));
   [value getValue:(void *)info];
@@ -54,8 +56,9 @@ typedef struct pa_client_info {
 
   if (_appName)
     [_appName release];
-  _appName = [NSString stringWithCString:pa_proplist_gets(info->proplist,
-                                                          "application.process.binary")];
+  app_name = pa_proplist_gets(info->proplist, "application.name");
+  app_binary = pa_proplist_gets(info->proplist, "application.process.binary");
+  _appName = [NSString stringWithFormat:@"%s : %s", app_binary, app_name];
 
   return self;
 }
