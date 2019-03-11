@@ -66,4 +66,14 @@
   return super.client.appName;
 }
 
+- (NSUInteger)volume
+{
+  return [_stream volume];
+}
+- (void)setVolume:(NSUInteger)volume
+{
+  [_stream applyVolume:volume];
+}
+
+
 @end

@@ -48,6 +48,9 @@
 - (id)initWithSinkInput:(PASinkInput *)sinkInput
                  server:(SKSoundServer *)server
 {
+  if ((self = [super init]) == nil)
+    return nil;
+  
   _server = server;
   _sinkInput = sinkInput;
   _client = [server clientWithIndex:_sinkInput.clientIndex];
@@ -57,6 +60,8 @@
   _isVirtual = NO;
   _isPlayStream = YES;
   _isRecordStream = NO;
+
+  return self;
 }
 
 static void stream_write_callback(pa_stream *stream, size_t length, void *userdata)
@@ -169,6 +174,31 @@ static void stream_write_callback(pa_stream *stream, size_t length, void *userda
   pa_stream_set_write_callback(paStream, NULL, NULL);
   pa_stream_disconnect(paStream);
   // pa_stream_unref(paStream);
+}
+
+- (NSUInteger)volume
+{
+  return [_sinkInput volume];
+}
+- (void)setVolume:(NSUInteger)volume
+{
+  [_sinkInput applyVolume:volume];
+}
+- (CGFloat)balance
+{
+  return _sinkInput.balance;
+}
+- (void)setBalance:(CGFloat)balance
+{
+  [_sinkInput applyBalance:balance];
+}
+- (void)setMute:(BOOL)isMute
+{
+  [_sinkInput applyMute:isMute];
+}
+- (BOOL)isMute
+{
+  return (BOOL)_sinkInput.mute;
 }
 
 // - (BOOL)isPaused {}
