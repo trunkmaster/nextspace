@@ -90,8 +90,8 @@
 {
   NSLog(@"PrefsController: dealloc");
 
-  [[currentModule view] removeFromSuperview];
   [prefsViews release];
+  [window close];
   [window release];
   
   [super dealloc];
