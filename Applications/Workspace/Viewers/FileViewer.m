@@ -1236,7 +1236,6 @@
            forKey:@"RootShelfContents"];
     [df setFloat:[shelf frame].size.height 
           forKey:@"RootViewerShelfSize"];
-    [df synchronize];
   }
   else if (![self isRootViewerCopy] && [fm isWritableFileAtPath:rootPath]) {
     NSString            *appName, *fileType;

@@ -236,7 +236,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
   
   [[NXDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
-  [[NXDefaults userDefaults] synchronize];
   
   [windows release];
   [fileViewers release];
@@ -348,7 +347,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   [[NXDefaults userDefaults] setObject:WWMNotDockedAppList()
                                 forKey:@"SavedApplications"];
-  [[NXDefaults userDefaults] synchronize];  
 }
 
 - (void)_startSavedApplications
@@ -370,7 +368,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [fileSystemMonitor terminate];
   // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
-  NSLog(@"_finishTerminateProcess fileSystemMonitor RC: %lu", [fileSystemMonitor retainCount]);
+  NSLog(@"_finishTerminateProcess fileSystemMonitor RC: %lu",
+        [fileSystemMonitor retainCount]);
   if ([fileSystemMonitor retainCount] > 1) {
     [fileSystemMonitor release];
   }
@@ -410,6 +409,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   TEST_RELEASE(console);
   TEST_RELEASE(procPanel);
   TEST_RELEASE(procManager);
+
+  [[NXDefaults userserDefaults] synchronize];
   
   // Quit WindowManager, close all X11 applications.
   if (useInternalWindowManager) {
