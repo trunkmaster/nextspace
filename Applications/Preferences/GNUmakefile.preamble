@@ -12,7 +12,7 @@ ADDITIONAL_OBJCFLAGS +=
 ADDITIONAL_CFLAGS += 
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS +=  -lNXFoundation -lNXSystem -lNXAppKit
+ADDITIONAL_LDFLAGS +=  -lNXFoundation -lNXSystem -lNXAppKit -lX11
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += 

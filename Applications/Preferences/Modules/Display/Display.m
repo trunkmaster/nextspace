@@ -42,7 +42,7 @@
 #import <NXSystem/NXDisplay.h>
 
 #import <dispatch/dispatch.h>
-#import <X11/Xlib.h>
+// #import <X11/Xlib.h>
 
 #import "AppController.h"
 #import "Display.h"
@@ -59,9 +59,6 @@
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
-
-  if (!XInitThreads())
-    NSLog(@"Display: multi-threading is not initialized!");
   
   return self;
 }
@@ -300,39 +297,38 @@
 {
   CGFloat value = [sender floatValue];
 
-  if (saveConfigTimer && [saveConfigTimer isValid])
-    {
-      [saveConfigTimer invalidate];
-    }
-  saveConfigTimer = [NSTimer scheduledTimerWithTimeInterval:2
-                                                     target:self
-                                                   selector:@selector(saveDisplayConfig)
-                                                   userInfo:nil
-                                                    repeats:NO];
+  if (saveConfigTimer && [saveConfigTimer isValid]) {
+    [saveConfigTimer invalidate];
+  }
+  saveConfigTimer = [NSTimer
+                      scheduledTimerWithTimeInterval:2
+                                              target:self
+                                            selector:@selector(saveDisplayConfig)
+                                            userInfo:nil
+                                             repeats:NO];
   [saveConfigTimer retain];
   
-  if (sender == gammaSlider)
-    {
-      // NSLog(@"Gamma slider moved");
-      [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", value]];
+  if (sender == gammaSlider) {
+    // NSLog(@"Gamma slider moved");
+    [gammaField setStringValue:[NSString stringWithFormat:@"%.2f", value]];
       
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
-                     ^{
-                       [selectedDisplay setGamma:value];
-                     });
-    }
-  else if (sender == brightnessSlider)
-    {
-      // NSLog(@"Brightness slider moved");
-      // if (value > 1.0) value = 1.0;
-      [brightnessField setIntValue:[sender intValue]];
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
-                     ^{
-                       [selectedDisplay setGammaBrightness:value/100];
-                     });
-    }
-  else
-    NSLog(@"Unknown slider moved");  
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
+                   ^{
+                     [selectedDisplay setGamma:value];
+                   });
+  }
+  else if (sender == brightnessSlider) {
+    // NSLog(@"Brightness slider moved");
+    // if (value > 1.0) value = 1.0;
+    [brightnessField setIntValue:[sender intValue]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
+                   ^{
+                     [selectedDisplay setGammaBrightness:value/100];
+                   });
+  }
+  else {
+    NSLog(@"Unknown slider moved");
+  }
 }
 
 - (IBAction)backgroundChanged:(id)sender
@@ -343,17 +339,16 @@
   // NSLog(@"Display: backgroundChanged: %@", [sender className]);
   if ([systemScreen setBackgroundColorRed:[rgbColor redComponent]
                                     green:[rgbColor greenComponent]
-                                     blue:[rgbColor blueComponent]] == YES)
-    {
-      NXDefaults   *defs = [NXDefaults globalUserDefaults];
-      NSDictionary *dBack;
+                                     blue:[rgbColor blueComponent]] == YES) {
+    NXDefaults   *defs = [NXDefaults globalUserDefaults];
+    NSDictionary *dBack;
 
-      dBack = @{@"Red":   [NSNumber numberWithFloat:[color redComponent]],
-                @"Green": [NSNumber numberWithFloat:[color greenComponent]],
-                @"Blue":  [NSNumber numberWithFloat:[color blueComponent]],
-                @"Alpha": [NSNumber numberWithFloat:1.0]};
-      [defs setObject:dBack forKey:@"NXDesktopBackgroundColor"];
-    }
+    dBack = @{@"Red":   [NSNumber numberWithFloat:[color redComponent]],
+              @"Green": [NSNumber numberWithFloat:[color greenComponent]],
+              @"Blue":  [NSNumber numberWithFloat:[color blueComponent]],
+              @"Alpha": [NSNumber numberWithFloat:1.0]};
+    [defs setObject:dBack forKey:@"NXDesktopBackgroundColor"];
+  }
 }
 
 //

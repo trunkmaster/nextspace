@@ -32,15 +32,13 @@ static NSUserDefaults *defaults = nil;
 
 - (id)init
 {
-  if (!(self = [super init]))
-    {
-      return nil;
-    }
+  if (!(self = [super init])) {
+    return nil;
+  }
 
-  if (!defaults)
-    {
-      defaults = [NSUserDefaults standardUserDefaults];
-    }
+  if (!defaults) {
+    defaults = [NSUserDefaults standardUserDefaults];
+  }
 
   prefsController = nil;
 
@@ -69,11 +67,10 @@ static NSUserDefaults *defaults = nil;
   [clockView setTarget:self];
   [clockView setDoubleAction:@selector(showPreferencesWindow)];
   [[NSApp iconWindow] setContentView:clockView];
+  [clockView release];
 }
 
-- (void)applicationWillFinishLaunching:(NSNotification *)notify
-{
-}
+- (void)applicationWillFinishLaunching:(NSNotification *)notify {}
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
 {
@@ -85,27 +82,25 @@ static NSUserDefaults *defaults = nil;
   // Apply preferences only if we're autolaunched.
   // NSApplication removed arguments (-NXAutoLaunch YES) to omit flickering.
   // We've just finished launching and not active == we've autolaunched
-  if ([NSApp isActive] == NO)
-    {
-      NXDefaults *defs = [NXDefaults globalUserDefaults];
+  if ([NSApp isActive] == NO) {
+    NXDefaults *defs = [NXDefaults globalUserDefaults];
       
-      NSLog(@"Configuring Keyboard...");
-      [NXKeyboard configureWithDefaults:defs];
+    NSLog(@"Configuring Keyboard...");
+    [NXKeyboard configureWithDefaults:defs];
       
-      NSLog(@"Configuring Mouse...");
-      NXMouse *mouse = [NXMouse new];
-      [mouse setAcceleration:[defs integerForKey:Acceleration]
-                   threshold:[defs integerForKey:Threshold]];
-      [mouse release];
+    NSLog(@"Configuring Mouse...");
+    NXMouse *mouse = [NXMouse new];
+    [mouse setAcceleration:[defs integerForKey:Acceleration]
+                 threshold:[defs integerForKey:Threshold]];
+    [mouse release];
       
-      NSLog(@"Configuring Desktop background...");
-      NXScreen *screen = [NXScreen sharedScreen];
-      CGFloat red, green, blue;
-      if ([screen savedBackgroundColorRed:&red green:&green blue:&blue] == YES)
-        {
-          [screen setBackgroundColorRed:red green:green blue:blue];
-        }
+    NSLog(@"Configuring Desktop background...");
+    NXScreen *screen = [NXScreen sharedScreen];
+    CGFloat red, green, blue;
+    if ([screen savedBackgroundColorRed:&red green:&green blue:&blue] == YES) {
+      [screen setBackgroundColorRed:red green:green blue:blue];
     }
+  }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -115,8 +110,7 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  [clockView removeFromSuperview];
-  [clockView release];
+  [clockView removeFromSuperviewWithoutNeedingDisplay];
   [prefsController release];
 }
 
