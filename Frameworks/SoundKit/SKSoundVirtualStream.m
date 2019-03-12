@@ -72,8 +72,23 @@
 }
 - (void)setVolume:(NSUInteger)volume
 {
-  [_stream applyVolume:volume];
+  [_stream setVolume:volume];
 }
-
+- (CGFloat)balance
+{
+  return _stream.balance;
+}
+- (void)setBalance:(CGFloat)balance
+{
+  [_stream setBalance:balance];
+}
+- (void)setMute:(BOOL)isMute
+{
+  [_stream setMute:isMute];
+}
+- (BOOL)isMute
+{
+  return (BOOL)_stream.mute;
+}
 
 @end

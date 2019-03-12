@@ -38,64 +38,15 @@ typedef struct pa_ext_stream_restore_info {
 
 - (void)dealloc
 {
-  if (_channelVolumes) {
-    [_channelVolumes release];
-  }
-  if (channel_map) {
-    free(channel_map);
-  }
   if (info_copy) {
     free(info_copy);
   }
  [super dealloc];
 }
 
-- (void)_updateVolume:(const pa_ext_stream_restore_info *)info
-{
-  NSMutableArray *vol;
-  NSNumber       *v;
-  BOOL           isVolumeChanged = NO;
-
-  if (_channelVolumes == nil) {
-    isVolumeChanged = YES;
-  }
-  
-  vol = [NSMutableArray new];
-  for (int i = 0; i < info->volume.channels; i++) {
-    v = [NSNumber numberWithUnsignedInteger:info->volume.values[i]];
-    [vol addObject:v];
-    if (isVolumeChanged == NO && [_channelVolumes[i] isEqualToNumber:v] == NO) {
-      isVolumeChanged = YES;
-    }
-  }
-  if (isVolumeChanged != NO) {
-    if (_channelVolumes) {
-      [_channelVolumes release];
-    }
-    self.channelVolumes = [[NSArray alloc] initWithArray:vol];
-  }
-  [vol release];
-}
-- (void)_updateChannels:(const pa_ext_stream_restore_info *)info
-{
-  _channelCount = info->volume.channels;
-  
-  // Channel map
-  if (channel_map) {
-    free(channel_map);
-  }
-  channel_map = malloc(sizeof(pa_channel_map));
-  pa_channel_map_init(channel_map);
-  channel_map->channels = info->channel_map.channels;
-  for (int i = 0; i < channel_map->channels; i++) {
-    channel_map->map[i] = info->channel_map.map[i];
-  }
-}
 - (id)updateWithValue:(NSValue *)value
 {
   const pa_ext_stream_restore_info *info;
-  NSMutableArray *vol;
-  NSNumber *v;
   
   info = malloc(sizeof(const pa_ext_stream_restore_info));
   [value getValue:(void *)info];
@@ -109,11 +60,10 @@ typedef struct pa_ext_stream_restore_info {
   if (_name)
     [_name release];
   _name = [[NSString alloc] initWithCString:info->name];
-
-  [self _updateVolume:info];
-  [self _updateChannels:info];
   
   self.mute = info->mute ? YES : NO;
+  self.balance = pa_cvolume_get_balance(&info->volume, &info->channel_map);
+  self.volume = [self volume];
   /***/
 
   free((void *)info);
@@ -131,7 +81,6 @@ typedef struct pa_ext_stream_restore_info {
 
   return nil;
 }
-
 - (NSString *)typeName
 {
   NSArray *comps = [_name componentsSeparatedByString:@":"];
@@ -154,7 +103,7 @@ typedef struct pa_ext_stream_restore_info {
   
   return v;
 }
-- (void)applyVolume:(NSUInteger)volume
+- (void)setVolume:(NSUInteger)volume
 {
   for (NSUInteger i = 0; i < info_copy->volume.channels; i++) {
     info_copy->volume.values[i] = volume;
@@ -163,12 +112,28 @@ typedef struct pa_ext_stream_restore_info {
   pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
                               1, YES, NULL, NULL);
 }
-- (void)applyMute:(BOOL)isMute
+- (CGFloat)balance
+{
+  return self.balance;
+}
+- (void)setBalance:(CGFloat)balance
+{
+  pa_cvolume_set_balance(&info_copy->volume, &info_copy->channel_map, balance);
+  // self.balance = pa_cvolume_get_balance(&info_copy->volume, &info_copy->channel_map);
+  
+  pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
+                              1, YES, NULL, NULL);
+}
+- (BOOL)mute
+{
+  return info_copy->mute;
+}
+- (void)setMute:(BOOL)isMute
 {
   info_copy->mute = isMute;
   pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
                               1, YES, NULL, NULL);
+  // _mute = isMute;
 }
-
 
 @end

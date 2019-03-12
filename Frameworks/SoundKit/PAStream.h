@@ -25,7 +25,6 @@
 
 @interface PAStream : NSObject
 {
-  pa_channel_map             *channel_map;
   pa_ext_stream_restore_info *info_copy;
 }
 @property (assign) pa_context   *context;
@@ -33,16 +32,13 @@
 @property (readonly) NSString   *name;
 @property (readonly) NSString   *deviceName;
 
-@property (assign)   NSUInteger channelCount;
-@property (assign)   NSArray    *channelVolumes;
-
-@property (assign,nonatomic)  BOOL  mute;
+@property (assign)   NSUInteger volume;
+@property (assign)   CGFloat    balance;
+@property (assign)   BOOL       mute;
 
 - (id)updateWithValue:(NSValue *)value;
 
 - (NSString *)clientName;
 - (NSString *)typeName;
-- (NSUInteger)volume;
-- (void)applyVolume:(NSUInteger)volume;
 
 @end
