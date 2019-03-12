@@ -168,12 +168,13 @@ static NXBundle *shared = nil;
 - (NSArray *)loadRegisteredBundles:(NSDictionary *)bundleRegistry
                               type:(NSString *)registryType
                           protocol:(Protocol *)aProtocol
- {
+{
   NSArray        *sortedBPaths = [self sortedBundlesPaths:bundleRegistry];
   NSString       *bType;
   NSString       *bExecutable;
   NSBundle       *bundle;
   Class          bClass;
+  id             bClassObject;
   NSMutableArray *loadedBundles = [NSMutableArray new];
 
   for (NSString *bPath in sortedBPaths)
@@ -222,7 +223,9 @@ static NXBundle *shared = nil;
         }
 
       // Add bundle to the list
-      [loadedBundles addObject:[bClass new]];
+      bClassObject = [bClass new];
+      [loadedBundles addObject:bClassObject];
+      [bClassObject release];
     }
 
   return [loadedBundles autorelease];
