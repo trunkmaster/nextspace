@@ -410,8 +410,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   TEST_RELEASE(procPanel);
   TEST_RELEASE(procManager);
 
-  [[NXDefaults userDefaults] synchronize];
-  
   // Quit WindowManager, close all X11 applications.
   if (useInternalWindowManager) {
     WWMShutdown(WSKillMode);
@@ -682,7 +680,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   return NO;
 }
-
+- (void)applicationWillTerminate:(NSNotification *)aNotif
+{
+  NSLog(@"Application will terminate");
+  // [NSApp deactivate];
+  [[NXDefaults userDefaults] synchronize];
+}
+  
 - (void)activate
 {
   if (isQuitting != NO)
