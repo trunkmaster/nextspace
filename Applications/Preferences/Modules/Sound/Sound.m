@@ -40,6 +40,7 @@
     [soundServer disconnect];
     [soundServer release];
   }
+  [defaults synchronize];
   [image release];
   [super dealloc];
 }
@@ -236,7 +237,6 @@ static void *InputContext = &InputContext;
   if (defaultSound == nil) {
     defaultSound = @"/usr/NextSpace/Sounds/Bonk.snd";
     [defaults setObject:defaultSound forKey:@"NXSystemBeep"];
-    [defaults synchronize];
   }
   
   for (NSBrowserCell *cell in [matrix cells]) {
@@ -302,7 +302,6 @@ static void *InputContext = &InputContext;
   // FIXME: should be:
   //// Write NXSystemBeep value to defaults.
   // [defs setObject:soundPath forKey:@"NXSystemBeep"];
-  // [defs synchronize];
   //// Call NSBeep() to play sound (Workspace should reread defaults on
   //// [defs synchronize] and play new sound with XBell catching function).
   // NSBeep();
@@ -312,7 +311,6 @@ static void *InputContext = &InputContext;
   [sound release];
 
   [defaults setObject:soundPath forKey:@"NXSystemBeep"];
-  [defaults synchronize];
 }
 - (void)setBeepRadio:(id)sender
 {

@@ -65,8 +65,11 @@ static NSMutableDictionary      *domain = nil;
 - (void)dealloc
 {
   NSLog(@"KeyboardPrefs -dealloc");
+  [[NXDefaults globalUserDefaults] synchronize];
   [image release];
-  if (keyboard) [keyboard release];
+  if (keyboard) {
+    [keyboard release];
+  }
   [super dealloc];
 }
 
@@ -310,8 +313,6 @@ static NSMutableDictionary      *domain = nil;
   if (SUCCESS == YES)
     {
       [defs setObject:mOptions forKey:Options];
-      [defs synchronize];
-      
       [options release];
       options = [[keyboard options] copy];
     }
@@ -340,8 +341,6 @@ static NSMutableDictionary      *domain = nil;
       [keyboard setRepeatRate:[defs integerForKey:RepeatRate]];
     }
 
-  [defs synchronize];
-
   [[sender window] makeFirstResponder:repeatTestField];
 }
 
@@ -360,7 +359,6 @@ static NSMutableDictionary      *domain = nil;
   
   [defs setObject:layouts forKey:Layouts];
   [defs setObject:variants forKey:Variants];
-  [defs synchronize];
   
   [layoutList reloadData];
 }
@@ -464,7 +462,6 @@ static NSMutableDictionary      *domain = nil;
 
   // Refresh defaults with actual X11 settings
   [[NXDefaults globalUserDefaults] setObject:options forKey:Options];
-  [[NXDefaults globalUserDefaults] synchronize];
 }
 
 - (void)updateSwitchLayoutShortcuts
@@ -524,8 +521,6 @@ static NSMutableDictionary      *domain = nil;
   if ([keyboard setLayouts:nil variants:nil options:mOptions] == YES)
     {
       [defs setObject:mOptions forKey:Options];
-      [defs synchronize];
-      
       [options release];
       options = [[keyboard options] copy];
     }
