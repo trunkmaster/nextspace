@@ -252,6 +252,17 @@ static void *StreamContext = &StreamContext;
                           options:NSKeyValueObservingOptionNew
                           context:StreamContext];
   }
+  else if ([device isKindOfClass:[SKSoundVirtualStream class]]) {
+    SKSoundVirtualStream *stream = (SKSoundVirtualStream *)device;
+    [stream.stream addObserver:self
+                    forKeyPath:@"mute"
+                       options:NSKeyValueObservingOptionNew
+                       context:StreamContext];
+    [stream.stream addObserver:self
+                    forKeyPath:@"volume"
+                       options:NSKeyValueObservingOptionNew
+                       context:StreamContext];
+  }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
