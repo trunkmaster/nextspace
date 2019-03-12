@@ -198,21 +198,21 @@ static NXDefaults *sharedGlobalUserDefaults;
   return self;
 }
 
-// Writes in-memory dictionary to a file.
-// On success, sends NXUserDefaultsDidChangeNotification.
-// If isGlobal == YES sends this notification to all applications
-// of current user.
 - (BOOL)synchronize
 {
   NSLog(@"NXDefaults: Waiting for defaults to be synchronized.");
-  while (syncTimer && [syncTimer isValid]) {
+  while (syncTimer && ([syncTimer isValid] != NO)) {
     [[NSRunLoop currentRunLoop]
-      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
   }
   NSLog(@"NXDefaults: synchronized!");
   return YES;
 }
 
+// Writes in-memory dictionary to a file.
+// On success, sends NXUserDefaultsDidChangeNotification.
+// If isGlobal == YES sends this notification to all applications
+// of current user.
 - (void)writeToDisk
 {
   NSLog(@"NXDefaults: write to file: %@", filePath);
