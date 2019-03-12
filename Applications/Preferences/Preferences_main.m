@@ -22,11 +22,15 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <AppKit/AppKit.h>
+#import <X11/Xlib.h>
+#import <AppKit/AppKit.h>
 
 int 
 main(int argc, const char *argv[])
 {
+  if (!XInitThreads()) {
+    NSLog(@"X11 multi-threading is not initialized!");
+  }
   return NSApplicationMain (argc, argv);
 }
 
