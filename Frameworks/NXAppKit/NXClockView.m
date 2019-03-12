@@ -168,6 +168,7 @@
 
 - (void)dealloc
 {
+  NSLog(@"[NXClockView] dealloc");
   if (isTrackDefaults) {
     [DISTRIBUTED_NC removeObserver:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -181,8 +182,9 @@
   }
   [date release];
 
-  if (tileImage)
-    [tileImage release];
+  // if (tileImage) {
+  //   [tileImage release];
+  // }
 
   [super dealloc];
 }
