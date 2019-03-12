@@ -37,6 +37,7 @@
 #import <Foundation/NSValue.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
 #import <Foundation/NSTimer.h>
+#import <Foundation/NSRunLoop.h>
 
 #import <Foundation/NSUserDefaults.h>
 
@@ -170,7 +171,7 @@ static NXDefaults *sharedGlobalUserDefaults;
     {
       syncTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
                                                    target:self
-                                                 selector:@selector(synchronize)
+                                                 selector:@selector(writeToDisk)
                                                  userInfo:nil
                                                   repeats:NO];
       [syncTimer retain];
@@ -181,58 +182,58 @@ static NXDefaults *sharedGlobalUserDefaults;
 {
   NSFileManager	*fileManager = [NSFileManager defaultManager];
 
-  if (defaultsDict)
+  if (defaultsDict) {
     [defaultsDict release];
+  }
   
   // Create or load defaults from file
-  if ([fileManager fileExistsAtPath:filePath])
-    {
-      defaultsDict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
-    }
-  else
-    {
-      defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
-      [defaultsDict retain];
-    }
+  if ([fileManager fileExistsAtPath:filePath]) {
+    defaultsDict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+  }
+  else {
+    defaultsDict = [NSMutableDictionary dictionaryWithCapacity:1];
+    [defaultsDict retain];
+  }
 
   return self;
 }
 
-// Writes in-memory dictionary to file.
-// On success sends NXUserDefaultsDidChangeNotification.
-// If isGlobal == YES sends this notification to all applications of current user.
+// Writes in-memory dictionary to a file.
+// On success, sends NXUserDefaultsDidChangeNotification.
+// If isGlobal == YES sends this notification to all applications
+// of current user.
 - (BOOL)synchronize
 {
-  NSLog(@"NXDefaults: synchronize called.");
-  // Race condition: 
-  if (isChanged == YES) return YES;
+  NSLog(@"NXDefaults: Waiting for defaults to be synchronized.");
+  while (syncTimer && [syncTimer isValid]) {
+    [[NSRunLoop currentRunLoop]
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+  }
+  NSLog(@"NXDefaults: synchronized!");
+  return YES;
+}
+
+- (void)writeToDisk
+{
+  NSLog(@"NXDefaults: write to file: %@", filePath);
   
-  if ([defaultsDict writeToFile:filePath atomically:NO] == YES)
-    {
-      isChanged = NO;
-      if (syncTimer && [syncTimer isValid])
-        {
-          [syncTimer invalidate];
-        }
-      
-      if (isGlobal == YES)
-        {
-          [[NSDistributedNotificationCenter
+  if ([defaultsDict writeToFile:filePath atomically:YES] == YES) {
+    if (isGlobal == YES) {
+      [[NSDistributedNotificationCenter
              notificationCenterForType:NSLocalNotificationCenterType]
             postNotificationName:NXUserDefaultsDidChangeNotification
                           object:@"NXGlobalDomain"];
-        }
-      else
-        {
-          [[NSNotificationCenter defaultCenter]
+    }
+    else {
+      [[NSNotificationCenter defaultCenter]
             postNotificationName:NXUserDefaultsDidChangeNotification
                           object:self];
-        }
-
-      return YES;
     }
 
-  return NO;
+    if (syncTimer && [syncTimer isValid]) {
+      [syncTimer invalidate];
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -262,10 +263,9 @@ static NXDefaults *sharedGlobalUserDefaults;
   id obj = [self objectForKey:key];
 
   if (obj != nil && ([obj isKindOfClass:[NSString class]]
-		  || [obj isKindOfClass:[NSNumber class]]))
-    {
-      return [obj floatValue];
-    }
+		  || [obj isKindOfClass:[NSNumber class]])) {
+    return [obj floatValue];
+  }
 
   return 0.0;
 }
@@ -273,7 +273,9 @@ static NXDefaults *sharedGlobalUserDefaults;
 - (void)setFloat:(float)value
           forKey:(NSString*)key
 {
-  [self setObject:[NSNumber numberWithFloat:value] forKey:key];
+  [self setObject:[NSNumber numberWithFloat:value]
+           forKey:key];
+  [self setChanged];
 }
 
 - (NSInteger)integerForKey:(NSString *)key
@@ -281,10 +283,9 @@ static NXDefaults *sharedGlobalUserDefaults;
   id obj = [self objectForKey:key];
 
   if (obj != nil && ([obj isKindOfClass:[NSString class]]
-		  || [obj isKindOfClass:[NSNumber class]]))
-    {
-      return [obj integerValue];
-    }
+                     || [obj isKindOfClass:[NSNumber class]])) {
+    return [obj integerValue];
+  }
 
   return -1;
 }
@@ -292,7 +293,9 @@ static NXDefaults *sharedGlobalUserDefaults;
 - (void)setInteger:(NSInteger)value
             forKey:(NSString *)key
 {
-  [self setObject:[NSNumber numberWithInteger:value] forKey:key];
+  [self setObject:[NSNumber numberWithInteger:value]
+           forKey:key];
+  [self setChanged];
 }
 
 - (BOOL)boolForKey:(NSString*)key
@@ -300,25 +303,23 @@ static NXDefaults *sharedGlobalUserDefaults;
   id obj = [self objectForKey:key];
 
   if (obj != nil && ([obj isKindOfClass:[NSString class]]
-		  || [obj isKindOfClass:[NSNumber class]]))
-    {
-      return [obj boolValue];
-    }
-
+                     || [obj isKindOfClass:[NSNumber class]])) {
+    return [obj boolValue];
+  }
+  
   return NO;
 }
 
 - (void)setBool:(BOOL)value
          forKey:(NSString*)key
 {
-  if (value == YES)
-    {
-      [self setObject:@"YES" forKey:key];
-    }
-  else
-    {
-      [self setObject:@"NO" forKey:key];
-    }
+  if (value == YES) {
+    [self setObject:@"YES" forKey:key];
+  }
+  else {
+    [self setObject:@"NO" forKey:key];
+  }
+  [self setChanged];
 }
 
 @end
