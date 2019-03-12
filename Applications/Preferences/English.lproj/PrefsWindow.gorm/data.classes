@@ -10,7 +10,8 @@
 	Outlets = (
 	    iconScrollView,
 	    prefsViewBox,
-	    window
+	    window,
+	    prefsController
 	);
 	Super = NSObject;
     };

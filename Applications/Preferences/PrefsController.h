@@ -52,6 +52,5 @@
 - (NSWindow *)window;
 
 - (void)loadBundles;
-// - (NSDictionary *)loadedBundles;
 
 @end
