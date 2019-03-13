@@ -124,8 +124,10 @@ extern NSString *SKDeviceDidRemoveNotification;
 - (PASinkInput *)sinkInputWithIndex:(NSUInteger)index;
 - (PASinkInput *)sinkInputWithClientIndex:(NSUInteger)index;
 - (void)removeSinkInputWithIndex:(NSUInteger)index;
-// TODO: Source Output
+// Source Output
 - (void)updateSourceOutput:(NSValue *)value;
+- (PASourceOutput *)sourceOutputWithClientIndex:(NSUInteger)index;
+- (PASourceOutput *)sourceOutputWithIndex:(NSUInteger)index;
 - (void)removeSourceOutputWithIndex:(NSUInteger)index;
 // Client
 - (void)updateClient:(NSValue *)value;
