@@ -44,7 +44,6 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
   else {
     NSValue *value;
     
-    fprintf(stderr, "[SoundKit] Card: %s\n", info->name);
     value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
     [(SKSoundServer *)userdata updateCard:value];
   }
@@ -81,7 +80,6 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
     return;
   }
 
-  fprintf(stderr, "[SoundKit] Sink: %s (%s)\n", info->name, info->description);
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
   [(SKSoundServer *)userdata updateSink:value];
 }
@@ -103,7 +101,6 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
     return;
   }
 
-  fprintf(stderr, "[SoundKit] Source: %s (%s)\n", info->name, info->description);
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
   [(SKSoundServer *)userdata updateSource:value];
@@ -129,11 +126,6 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
     return;
   }
 
-  fprintf(stderr, "[SoundKit] Sink Input: %s "
-          "(has_volume:%i client index:%i sink index:%i mute:%i corked:%i)\n",
-          info->name, info->has_volume, info->client, info->sink,
-          info->mute, info->corked);
-  
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
   [(SKSoundServer *)userdata updateSinkInput:value];
 }
@@ -154,7 +146,6 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
     return;
   }
   
-  fprintf(stderr, "[SoundKit] Source Output: %s\n", info->name);
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
   [(SKSoundServer *)userdata updateSourceOutput:value];
@@ -178,7 +169,6 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
     return;
   }
   
-  fprintf(stderr, "[SoundKit] Client: %s (index:%i)\n", info->name, info->index);
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
   [(SKSoundServer *)userdata updateClient:value];
 }
@@ -200,8 +190,6 @@ void ext_stream_restore_read_cb(pa_context *ctx,
     return;
   }
 
-  fprintf(stderr, "[SoundKit] Stream: %s for device %s\n", info->name);
-  
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
   [(SKSoundServer *)userdata updateStream:value];
@@ -382,9 +370,6 @@ void inventory_start(pa_context *ctx, void *userdata)
 
   fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
       
-  // [server performSelectorOnMainThread:@selector(updateConnectionState:)
-  //                          withObject:[NSNumber numberWithInt:SKServerInventoryState]
-  //                       waitUntilDone:YES];
   [server updateConnectionState:[NSNumber numberWithInt:SKServerInventoryState]];
   /* Keep track of the outstanding requests */
   n_outstanding = 0;
@@ -461,7 +446,6 @@ void inventory_start(pa_context *ctx, void *userdata)
    inventory_end). */
 void inventory_decrement_requests(pa_context *ctx, void *userdata)
 {
-  // fprintf(stderr, "[SoundKit] invetory_decrement_requests: %i\n", n_outstanding);
   if (n_outstanding <= 0)
     return;
 

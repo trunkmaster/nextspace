@@ -557,7 +557,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 
   for (PAClient *c in clientList) {
     if ([c index] == info->index) {
-      fprintf(stderr, "[SoundKit] Client Update: %s.\n", info->name);
+      fprintf(stderr, "[SoundKit] Client Update: %s (index: %i).\n",
+              info->name, info->index);
       [c updateWithValue:value];
       isUpdated = YES;
       break;
@@ -566,7 +567,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 
   if (isUpdated == NO) {
     PAClient *client = [[PAClient alloc] init];
-    fprintf(stderr, "[SoundKit] Add: %s.\n", info->name);
+    fprintf(stderr, "[SoundKit] Add: %s (index: %i).\n", info->name, info->index);
     [client updateWithValue:value];
     [clientList addObject:client];
     [client release];
