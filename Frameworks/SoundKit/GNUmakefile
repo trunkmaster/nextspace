@@ -25,6 +25,7 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	PASource.m \
 	\
 	PASinkInput.m \
+	PASourceOutput.m \
 	PAClient.m \
 	PAStream.m \
 	\

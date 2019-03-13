@@ -24,6 +24,7 @@
 #import "PASink.h"
 #import "PASource.h"
 #import "PASinkInput.h"
+#import "PASourceOutput.h"
 #import "PAClient.h"
 #import "PAStream.h"
 
@@ -540,9 +541,74 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 // TODO: Source Output
 - (void)updateSourceOutput:(NSValue *)value // source_outout_cb(...)
 {
+  const pa_source_output_info *info;
+  PASourceOutput              *sourceOutput;
+  BOOL                        isUpdated = NO;
+  NSNotification              *aNotif;
+
+  // Convert PA structure into NSDictionary
+  info = malloc(sizeof(const pa_source_output_info));
+  [value getValue:(void *)info];
+
+  for (sourceOutput in sourceOutputList) {
+    if (sourceOutput.index == info->index) {
+      fprintf(stderr, "[SoundKit] Source Output Update: %s.\n", info->name);
+      [sourceOutput updateWithValue:value];
+      isUpdated = YES;
+      aNotif = [NSNotification notificationWithName:SKDeviceDidAddNotification
+                                             object:self];
+      break;
+    }
+  }
+
+  if (isUpdated == NO) {
+    sourceOutput = [[PASourceOutput alloc] init];
+    fprintf(stderr, "[SoundKit] Source Output Add: %s.\n", info->name);
+    [sourceOutput updateWithValue:value];
+    sourceOutput.context = _pa_ctx;
+    [sourceOutputList addObject:sourceOutput];
+    [sourceOutput release];
+    aNotif = [NSNotification notificationWithName:SKDeviceDidChangeNotification
+                                           object:self];
+  }
+  [[NSNotificationCenter defaultCenter]
+        performSelectorOnMainThread:@selector(postNotification:)
+                         withObject:aNotif
+                      waitUntilDone:NO];
+  
+  free((void *)info);
+}
+- (PASourceOutput *)sourceOutputWithClientIndex:(NSUInteger)index
+{
+  for (PASourceOutput *sourceOutput in sourceOutputList) {
+    if (sourceOutput.clientIndex == index) {
+      return sourceOutput;
+    }
+  }
+  return nil;
+}
+- (PASourceOutput *)sourceOutputWithIndex:(NSUInteger)index
+{
+  for (PASourceOutput *sourceOutput in sourceOutputList) {
+    if (sourceOutput.index == index) {
+      return sourceOutput;
+    }
+  }
+  return nil;
 }
 - (void)removeSourceOutputWithIndex:(NSUInteger)index // context_subscribe_cb(...)
 {
+  PASourceOutput *sourceOutput = [self sourceOutputWithIndex:index];
+  NSNotification *aNotif;
+  if (sourceOutput != nil) {
+    [sourceOutputList removeObject:sourceOutput];
+    aNotif = [NSNotification notificationWithName:SKDeviceDidRemoveNotification
+                                           object:self];
+    [[NSNotificationCenter defaultCenter]
+        performSelectorOnMainThread:@selector(postNotification:)
+                         withObject:aNotif
+                      waitUntilDone:NO];
+  }
 }
 
 // Client
