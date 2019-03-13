@@ -7,7 +7,7 @@
     CopyrightDescription = "Released under ...";
     FullVersionID = 0.8;
     NSExecutable = Weather;
-    NSIcon = Weather.png;
+    NSIcon = Weather.tiff;
     NSMainNibFile = Weather.gorm;
     NSPrincipalClass = NSApplication;
     NSRole = Application;

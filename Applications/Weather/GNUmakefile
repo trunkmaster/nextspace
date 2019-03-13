@@ -13,14 +13,14 @@ include $(GNUSTEP_MAKEFILES)/common.make
 VERSION = 0.5
 PACKAGE_NAME = Weather
 APP_NAME = Weather
-$(APP_NAME)_APPLICATION_ICON = Weather.png
+$(APP_NAME)_APPLICATION_ICON = Weather.tiff
 
 #SUBPROJECTS =
 
 #
 # Resource files
 #
-$(APP_NAME)_RESOURCE_FILES = Weather.png
+$(APP_NAME)_RESOURCE_FILES = Weather.tiff
 
 #
 # Localization
@@ -42,7 +42,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 $(APP_NAME)_OBJC_FILES = \
 	AppController.m \
 	WeatherView.m \
-	YahooForecast.m
+	OWMForecast.m \
+	YahooForecast.m 
 
 #
 # Other sources

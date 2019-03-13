@@ -24,12 +24,13 @@
 
 @class WeatherView;
 @class YahooForecast;
+@class OWMForecast;
 
 @interface AppController : NSObject
 {
-  WeatherView   *weatherView;
-  YahooForecast *forecast;
-  NSTimer       *timer;
+  WeatherView *weatherView;
+  OWMForecast *forecast;
+  NSTimer     *timer;
 }
 
 - (void)showPreferencesWindow;

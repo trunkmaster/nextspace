@@ -25,6 +25,7 @@
 #import "AppController.h"
 #import "WeatherView.h"
 #import "YahooForecast.h"
+#import "OWMForecast.h"
 
 static NSUserDefaults *defaults = nil;
 
@@ -122,22 +123,27 @@ static NSUserDefaults *defaults = nil;
 
 - (void)updateWeather:(NSTimer *)timer
 {
-  NSDictionary *weather;
-
+  NSDictionary   *weather;
+  
+  // if (forecast == nil) {
+  //   forecast = [[YahooForecast alloc] init];
+  // }
   if (forecast == nil) {
-    forecast = [[YahooForecast alloc] init];
+    forecast = [[OWMForecast alloc] init];
   }
 
-  weather = [forecast fetchWeatherWithWOEID:@"924938"
-                                    zipCode:@""
-                                      units:@"c"];
+  weather = [forecast fetchWeather];
 
-  // NSLog(@"Got Yahoo weather forecast. %@", weather);
+  // weather = [forecast fetchWeatherWithWOEID:@"924938"
+  //                                   zipCode:@""
+  //                                     units:@"c"];
 
   if (weather && [[weather objectForKey:@"ErrorText"] length] == 0) {
-    [weatherView setImage:[weather objectForKey:@"Image"]];
+    NSLog(@"Got weather forecast. %@", weather);
+    // [weatherView setImage:[weather objectForKey:@"Image"]];
     [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
     [weatherView setHumidity:[weather objectForKey:@"Humidity"]];
+    [weatherView setNeedsDisplay:YES];
   }
   else {
     NSLog(@"Error getting data: %@", [weather objectForKey:@"ErrorText"]);
