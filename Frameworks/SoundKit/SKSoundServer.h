@@ -31,6 +31,7 @@
 @class PASink;
 @class PASource;
 @class PASinkInput;
+@class PASourceOutput;
 @class PAClient;
 
 typedef enum NSInteger {
