@@ -18,14 +18,12 @@
   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import "PASink.h"
-#import "PASource.h"
-#import "PASinkInput.h"
-#import "PAStream.h"
-#import "PAClient.h"
+// #import "PASink.h"
+// #import "PASource.h"
+// #import "PASinkInput.h"
+// #import "PAStream.h"
+// #import "PAClient.h"
 
-#import "SKSoundOut.h"
-#import "SKSoundIn.h"
 #import "SKSoundStream.h"
 
 @implementation SKSoundStream
@@ -35,170 +33,73 @@
   [super dealloc];
 }
 
-- (id)init
-{
-  if ((self = [super init]) == nil)
-    return nil;
-  _isVirtual = NO;
-  _isPlayStream = NO;
-  _isRecordStream = NO;
-  return self;
-}
-
-- (id)initWithSinkInput:(PASinkInput *)sinkInput
-                 server:(SKSoundServer *)server
-{
-  if ((self = [super init]) == nil)
-    return nil;
-  
-  _server = server;
-  _sinkInput = sinkInput;
-  _client = [server clientWithIndex:_sinkInput.clientIndex];
-  
-  _name = _client.appName;
-  _device = [server outputWithSink:[server sinkWithIndex:_sinkInput.sinkIndex]];
-  _isVirtual = NO;
-  _isPlayStream = YES;
-  _isRecordStream = NO;
-
-  return self;
-}
-
-static void stream_write_callback(pa_stream *stream, size_t length, void *userdata)
-{
-  /*  sf_count_t frames, frames_read;
-      float      *data; */
-  // pa_assert(s && length && snd_file);
-
-  fprintf(stderr, "[SKSoundStream] stream_write_callback\n");
-  
-  /*
-  data = pa_xmalloc(length);
-
-  // pa_assert(sample_length >= length);
-  frames = (sf_count_t) (length/pa_frame_size(&sample_spec));
-  frames_read = sf_readf_float(snd_file, data, frames);
-  fprintf(stderr, "length == %li frames == %li frames_read == %li\n",
-          length, frames, frames_read);
-  
-  if (frames_read <= 0) {
-    pa_xfree(data);
-    fprintf(stderr, "End of file\n");
-    pa_stream_set_write_callback(stream, NULL, NULL);
-    pa_stream_disconnect(stream);
-    pa_stream_unref(stream);
-    return;
-  }
-
-  pa_stream_write(s, d, length, pa_xfree, 0, PA_SEEK_RELATIVE);
-  */
-}
-
-- (id)initOnDevice:(SKSoundDevice *)device
-{
-  return [self initOnDevice:device
-               samplingRate:44100
-               channelCount:2
-                     format:PA_SAMPLE_FLOAT32LE];
-}
 - (id)initOnDevice:(SKSoundDevice *)device
       samplingRate:(NSUInteger)rate
       channelCount:(NSUInteger)channels
             format:(NSUInteger)format
 {
-  pa_sample_spec sample_spec;
-  pa_proplist    *proplist;
-
-  if ((self = [super init]) == nil)
-    return nil;
-
-  _server = [SKSoundServer sharedServer];
-
-  [self setDevice:device];
-
-  sample_spec.rate = rate;
-  sample_spec.channels = channels;
-  sample_spec.format = format;
-  
-  // Create stream
-  proplist = pa_proplist_new();
-  pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, "event");
-  _name = [[NSProcessInfo processInfo] processName];
-  
-  paStream = pa_stream_new_with_proplist(_server.pa_ctx, [_name cString],
-                                         &sample_spec, NULL, proplist);
-  // Connect default stream
-  // pa_stream_connect_playback(_stream, [device.sink.name cString],
-  //                            NULL, 0, NULL, NULL);
-  // pa_stream_set_write_callback(_stream, stream_write_callback, NULL);
-
-  return self;
-}
-- (void)setDevice:(SKSoundDevice *)device
-{
-  if (device != nil) {
-    _device = device;
-    _isVirtual = NO;
-    if ([device isKindOfClass:[SKSoundOut class]]) {
-      _isPlayStream = YES;
-    }
-    else if ([device isKindOfClass:[SKSoundIn class]]) {
-      _isRecordStream = YES;
-    }
-  }
+  NSLog(@"[SoundKit] initOnDevice:samplingRate:channelCount:format:"
+        " was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  return nil;
 }
 - (void)playBuffer:(void *)data
               size:(NSUInteger)bytes
                tag:(NSUInteger)anUInt
 {
+  NSLog(@"[SoundKit] playBuffer:size:tag: was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
 }
 
 - (BOOL)isActive
 {
+  NSLog(@"[SoundKit] isActive was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
   return NO;
 }
 - (void)activate
 {
-  if (_isPlayStream) {
-    pa_stream_connect_playback(paStream, [((SKSoundOut *)_device).sink.name cString],
-                               NULL, 0, NULL, NULL);
-  }
-  else if (_isRecordStream) {
-    pa_stream_connect_playback(paStream, [((SKSoundIn *)_device).source.name cString],
-                               NULL, 0, NULL, NULL);
-  }
-  pa_stream_set_write_callback(paStream, stream_write_callback, NULL);
+  NSLog(@"[SoundKit] `activate` was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
 }
 - (void)deactivate
 {
-  pa_stream_set_write_callback(paStream, NULL, NULL);
-  pa_stream_disconnect(paStream);
-  // pa_stream_unref(paStream);
+  NSLog(@"[SoundKit] `deactivate` was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
 }
 
 - (NSUInteger)volume
 {
-  return [_sinkInput volume];
+  NSLog(@"[SoundKit] `volume` was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  return 0;
 }
 - (void)setVolume:(NSUInteger)volume
 {
-  [_sinkInput applyVolume:volume];
+  NSLog(@"[SoundKit] `setVolume` was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
 }
 - (CGFloat)balance
 {
-  return _sinkInput.balance;
+  NSLog(@"[SoundKit] `balance` was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  return 0.0;
 }
 - (void)setBalance:(CGFloat)balance
 {
-  [_sinkInput applyBalance:balance];
+  NSLog(@"[SoundKit] setBalance was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
 }
 - (void)setMute:(BOOL)isMute
 {
-  [_sinkInput applyMute:isMute];
+  NSLog(@"[SoundKit] `setMute` was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
 }
 - (BOOL)isMute
 {
-  return (BOOL)_sinkInput.mute;
+  NSLog(@"[SoundKit] `isMute` was send to SKSoundStream."
+        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  return YES;
 }
 
 // - (BOOL)isPaused {}

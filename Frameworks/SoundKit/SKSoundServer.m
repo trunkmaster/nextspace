@@ -31,14 +31,16 @@
 #import <SoundKit/SKSoundDevice.h>
 #import <SoundKit/SKSoundOut.h>
 #import <SoundKit/SKSoundIn.h>
+#import <SoundKit/SKSoundPlayStream.h>
 #import <SoundKit/SKSoundVirtualStream.h>
 #import <SoundKit/SKSoundServer.h>
+
 #import "SKSoundServerCallbacks.h"
 
 static dispatch_queue_t _pa_q;
 static SKSoundServer    *_server;
 
-NSString *SKDeviceDidAddNotification = @"SKDeviceDidAddNotification";
+NSString *SKDeviceDidAddNotification    = @"SKDeviceDidAddNotification";
 NSString *SKDeviceDidChangeNotification = @"SKDeviceDidChangeNotification";
 NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 
@@ -207,7 +209,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 - (SKSoundStream *)defaultPlayStream
 {
   for (SKSoundVirtualStream *st in [self streamList]) {
-    if (st.isPlayStream && st.isVirtual &&
+    if ([st isKindOfClass:[SKSoundPlayStream class]] &&
         [st.stream.clientName isEqualToString:@"event"]) {
       return st;
     }
@@ -216,41 +218,39 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 }
 - (NSArray *)streamList
 {
-  NSMutableArray *list = [NSMutableArray new];
-  SKSoundStream  *soundStream;
+  NSMutableArray       *list = [NSMutableArray new];
+  SKSoundVirtualStream *virtualStream;
+  SKSoundPlayStream    *playStream;
 
   // Pure virtual streams
   for (PAStream *stream in savedStreamList) {
-    soundStream = [[SKSoundVirtualStream alloc] initWithStream:stream
-                                                        server:self];
-    [list addObject:soundStream];
-    [soundStream release];
+    virtualStream = [[SKSoundVirtualStream alloc] initWithStream:stream
+                                                          server:self];
+    [list addObject:virtualStream];
+    [virtualStream release];
   }
   // Streams with SinkInput and Client
   for (PASinkInput *sinkInput in sinkInputList) {
-    soundStream = [SKSoundStream new];
-    soundStream.server = self;
-    soundStream.sinkInput = sinkInput;
-    soundStream.client = [self clientWithIndex:sinkInput.clientIndex];
-    soundStream.name = soundStream.client.appName;
-    soundStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
-    soundStream.isVirtual = NO;
-    soundStream.isPlayStream = YES;
-    soundStream.isRecordStream = NO;
-    [list addObject:soundStream];
-    [soundStream release];
-    fprintf(stderr, "Stream was added t list: %s", [soundStream.name cString]);
+    playStream = [SKSoundPlayStream new];
+    playStream.server = self;
+    playStream.client = [self clientWithIndex:sinkInput.clientIndex];
+    playStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
+    playStream.name = playStream.client.appName;
+    playStream.sinkInput = sinkInput;
+    [list addObject:playStream];
+    [playStream release];
+    fprintf(stderr, "Stream was added to list: %s", [playStream.name cString]);
   }
   // Streams with SourceOuput and Client
-  // for (PASinkInput *sinkInput in sourceOutputList) {
-  //   soundStream = [SKSoundVirtualStream new];
+  // for (PASourceOutput *sourceOutput in sourceOutputList) {
+  //   soundStream = [SKSoundStream new];
   //   soundStream.server = self;
-  //   soundStream.sinkInput = sinkInput;
-  //   soundStream.client = [self clientWithIndex:sinkInput.clientIndex];
-  //   soundStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
+  //   soundStream.sourceOutput = sourceOutput;
+  //   soundStream.client = [self clientWithIndex:sourceOutput.clientIndex];
+  //   soundStream.device = [self outputWithSink:[self sinkWithIndex:sourceOutput.sourceIndex]];
   //   soundStream.isVirtual = NO;
-  //   soundStream.isPlayStream = YES;
-  //   soundStream.isRecordStream = NO;
+  //   soundStream.isPlayStream = NO;
+  //   soundStream.isRecordStream = YES;
   // }
   
   return [list autorelease];

@@ -39,14 +39,12 @@
 
   _stream = stream;
   super.server = server;
-  super.isVirtual = YES;
   
   if (_stream == nil) {
     super.name = @"Dummy Virtual Stream";
   }
   else if ([[_stream typeName] isEqualToString:@"sink-input-by-media-role"] != NO) {
     if ([[_stream clientName] isEqualToString:@"event"] != NO) {
-      super.isPlayStream = YES;
       super.name = @"System Sounds";
     }
   }
