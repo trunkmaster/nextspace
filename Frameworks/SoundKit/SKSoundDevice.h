@@ -26,7 +26,6 @@
 
 @interface SKSoundDevice : NSObject // <SKSoundParameters>
 {
-  // SKSoundServer *_server;
 }
 @property (retain)   PACard        *card;
 @property (readonly) SKSoundServer *server;

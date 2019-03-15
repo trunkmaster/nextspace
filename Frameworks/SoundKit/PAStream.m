@@ -41,7 +41,7 @@ typedef struct pa_ext_stream_restore_info {
   if (info_copy) {
     free(info_copy);
   }
- [super dealloc];
+  [super dealloc];
 }
 
 - (id)updateWithValue:(NSValue *)value
