@@ -1,0 +1,6 @@
+﻿{
+  type = Weather;
+  mode = OpenWeatherMap;
+  class = OWMForecast;
+  priority = 1;
+}

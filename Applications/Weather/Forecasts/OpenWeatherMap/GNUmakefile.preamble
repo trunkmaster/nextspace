@@ -1,0 +1,40 @@
+# Additional flags to pass to the preprocessor
+ADDITIONAL_CPPFLAGS += 
+
+# Additional flags to pass to the Objective-C compiler
+ADDITIONAL_OBJCFLAGS +=
+
+# Additional flags to pass to the C compiler
+ADDITIONAL_CFLAGS +=
+
+# Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS += -I../..
+
+# Additional LDFLAGS to pass to the linker
+ADDITIONAL_LDFLAGS += 
+
+# Additional library directories the linker should search
+ADDITIONAL_LIB_DIRS +=
+
+# Additional libraries
+
+# GNUstepWeb
+ADDITIONAL_GSW_LIBS +=
+# GUI apps
+ADDITIONAL_GUI_LIBS += -lNXFoundation -lNXSystem -ldispatch
+# Libraries
+ADDITIONAL_LIBRARY_LIBS +=
+# ObjC stuff
+ADDITIONAL_OBJC_LIBS +=
+# Tools
+ADDITIONAL_TOOL_LIBS +=
+# WebObjects
+ADDITIONAL_WO_LIBS +=
+
+#
+# Flags dealing with installing and uninstalling
+#
+#GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
+
+# Additional directories to be created during installation
+ADDITIONAL_INSTALL_DIRS +=
