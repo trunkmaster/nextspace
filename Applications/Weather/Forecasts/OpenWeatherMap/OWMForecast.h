@@ -26,7 +26,7 @@
 #import <Foundation/Foundation.h>
 #import "Weather.h"
 
-@interface OWMForecast : NSObject <WeatherForecast>
+@interface OWMForecast : NSObject <Forecast>
 {
   NSString *units;
   NSString *language;

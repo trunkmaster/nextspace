@@ -20,12 +20,9 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-//#import <NXAppKit/NXAlert.h>
+#import <NXFoundation/NXBundle.h>
 
 #import "AppController.h"
-#import "WeatherView.h"
-#import "YahooForecast.h"
-#import "OWMForecast.h"
 
 static NSUserDefaults *defaults = nil;
 
@@ -33,17 +30,13 @@ static NSUserDefaults *defaults = nil;
 
 - (id)init
 {
-  if (!(self = [super init]))
-    {
-      return nil;
-    }
+  if (!(self = [super init])) {
+    return nil;
+  }
 
-  if (!defaults)
-    {
-      defaults = [NSUserDefaults standardUserDefaults];
-    }
-
-  // prefsController = nil;
+  if (!defaults) {
+    defaults = [NSUserDefaults standardUserDefaults];
+  }
 
   return self;
 }
@@ -73,7 +66,6 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notify
 {
-
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
@@ -88,16 +80,10 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  // [prefsController release];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification*)aNotification
 {
-  // NSLog(@"Application became active!");
-  // if (prefsController)
-  //   {
-  //     [[prefsController window] makeKeyWindow];
-  //   }
 }
 
 - (BOOL)application:(NSApplication *)application openFile:(NSString *)fileName
@@ -123,30 +109,50 @@ static NSUserDefaults *defaults = nil;
 
 - (void)updateWeather:(NSTimer *)timer
 {
-  NSDictionary   *weather;
+  NSDictionary *weather;
+  NSString     *fetcherName;
+
+  fetcherName = [[NSUserDefaults standardUserDefaults] objectForKey:@"Fetcher"];
   
-  // if (forecast == nil) {
-  //   forecast = [[YahooForecast alloc] init];
-  // }
-  if (forecast == nil) {
-    forecast = [[OWMForecast alloc] init];
+  if (forecastFetcher == nil) {
+    forecastFetcher = [forecastModules objectForKey:fetcherName];
   }
 
-  weather = [forecast fetchWeather];
-
-  // weather = [forecast fetchWeatherWithWOEID:@"924938"
-  //                                   zipCode:@""
-  //                                     units:@"c"];
+  weather = [forecastFetcher fetchWeather];
 
   if (weather && [[weather objectForKey:@"ErrorText"] length] == 0) {
     NSLog(@"Got weather forecast. %@", weather);
-    // [weatherView setImage:[weather objectForKey:@"Image"]];
+    [weatherView setImage:[weather objectForKey:@"Image"]];
     [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
     [weatherView setHumidity:[weather objectForKey:@"Humidity"]];
     [weatherView setNeedsDisplay:YES];
   }
   else {
     NSLog(@"Error getting data: %@", [weather objectForKey:@"ErrorText"]);
+  }
+}
+
+//
+// Modules
+//
+- (BOOL)registerModule:(id)aModule
+{
+  return YES;
+}
+
+- (void)loadBundles
+{
+  NSDictionary *bRegistry;
+  NSArray      *modules;
+
+  bRegistry = [[NXBundle shared] registerBundlesOfType:@"forecast"
+                                                atPath:nil];
+  modules = [[NXBundle shared] loadRegisteredBundles:bRegistry
+                                                type:@"Weather"
+                                            protocol:@protocol(Forecast)];
+  
+  for (id b in modules) {
+    [self registerModule:b];
   }
 }
 

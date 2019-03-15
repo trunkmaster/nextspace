@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol WeatherForecast
+@protocol Forecast
 
 - (void)setCityByName:(NSString *)name;
 - (void)setUnits:(NSString *)name;

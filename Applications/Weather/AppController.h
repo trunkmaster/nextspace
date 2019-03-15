@@ -22,15 +22,15 @@
  
 #import <AppKit/AppKit.h>
 
-@class WeatherView;
-@class YahooForecast;
-@class OWMForecast;
+#import "Weather.h"
+#import "WeatherView.h"
 
 @interface AppController : NSObject
 {
-  WeatherView *weatherView;
-  OWMForecast *forecast;
-  NSTimer     *timer;
+  WeatherView  *weatherView;
+  NSDictionary *forecastModules;
+  id<Forecast> forecastFetcher;
+  NSTimer      *timer;
 }
 
 - (void)showPreferencesWindow;
