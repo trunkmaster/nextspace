@@ -1,28 +1,22 @@
-/*
-  Project: SoundKit framework.
-
-  Copyright (C) 2019 Sergii Stoian
-
-  This application is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public
-  License as published by the Free Software Foundation; either
-  version 2 of the License, or (at your option) any later version.
-
-  This application is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
-
-  You should have received a copy of the GNU General Public
-  License along with this library; if not, write to the Free
-  Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
-*/
-
-// #import "PASink.h"
-// #import "PASource.h"
-// #import "PASinkInput.h"
-// #import "PAStream.h"
-// #import "PAClient.h"
+//
+// Project: SoundKit framework.
+//
+// Copyright (C) 2019 Sergii Stoian
+//
+// This application is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+//
+// This application is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this library; if not, write to the Free
+// Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
+//
 
 #import "SKSoundStream.h"
 
@@ -34,29 +28,40 @@
 }
 
 - (id)initOnDevice:(SKSoundDevice *)device
+{
+  return [self initOnDevice:device
+               samplingRate:44100
+               channelCount:2
+                     format:PA_SAMPLE_FLOAT32LE];
+}
+- (id)initOnDevice:(SKSoundDevice *)device
       samplingRate:(NSUInteger)rate
       channelCount:(NSUInteger)channels
             format:(NSUInteger)format
 {
-  NSLog(@"[SoundKit] initOnDevice:samplingRate:channelCount:format:"
-        " was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
-  return nil;
-}
-- (void)playBuffer:(void *)data
-              size:(NSUInteger)bytes
-               tag:(NSUInteger)anUInt
-{
-  NSLog(@"[SoundKit] playBuffer:size:tag: was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  pa_sample_spec sample_spec;
+  pa_proplist    *proplist;
+
+  if ((self = [super init]) == nil)
+    return nil;
+
+  [self setDevice:device];
+
+  sample_spec.rate = rate;
+  sample_spec.channels = channels;
+  sample_spec.format = format;
+  
+  // Create stream
+  proplist = pa_proplist_new();
+  pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, "event");
+  _name = [[NSProcessInfo processInfo] processName];
+  
+  paStream = pa_stream_new_with_proplist(_server.pa_ctx, [_name cString],
+                                         &sample_spec, NULL, proplist);
+  
+  return self;
 }
 
-- (BOOL)isActive
-{
-  NSLog(@"[SoundKit] isActive was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
-  return NO;
-}
 - (void)activate
 {
   NSLog(@"[SoundKit] `activate` was send to SKSoundStream."
