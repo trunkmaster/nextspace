@@ -1,56 +1,54 @@
 /* -*- mode: objc -*- */
-/*
-  Project: SoundKit framework.
-
-  Copyright (C) 2019 Sergii Stoian
-
-  This application is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public
-  License as published by the Free Software Foundation; either
-  version 2 of the License, or (at your option) any later version.
-
-  This application is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
-
-  You should have received a copy of the GNU General Public
-  License along with this library; if not, write to the Free
-  Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
-*/
+//
+// Project: SoundKit framework.
+//
+// Copyright (C) 2019 Sergii Stoian
+//
+// This application is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+//
+// This application is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this library; if not, write to the Free
+// Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
+//
 
 #import "PAClient.h"
 #import "PAStream.h"
 #import "PASource.h"
 #import "PASourceOutput.h"
 
-/*
-typedef struct pa_source_output_info {
-  uint32_t		index;
-  const char		*name;
-
-  uint32_t		client;
-  uint32_t		source;
-  int			 mute;
-  int			corked;
-
-  pa_sample_spec	sample_spec;
-  const char		*resample_method;
-  
-  pa_channel_map	channel_map;
-  int			has_volume;
-  int			volume_writable;
-  pa_cvolume		volume;
-  
-  pa_usec_t		buffer_usec;
-  pa_usec_t		source_usec;
-  
-  uint32_t		owner_module;
-  const char		*driver;
-  pa_proplist		*proplist;
-  pa_format_info	*format;
-} pa_source_output_info;
-*/
+// typedef struct pa_source_output_info {
+//   uint32_t		index;
+//   const char		*name;
+//
+//   uint32_t		client;
+//   uint32_t		source;
+//   int			 mute;
+//   int			corked;
+//
+//   pa_sample_spec	sample_spec;
+//   const char		*resample_method;
+//  
+//   pa_channel_map	channel_map;
+//   int			has_volume;
+//   int			volume_writable;
+//   pa_cvolume		volume;
+//  
+//   pa_usec_t		buffer_usec;
+//   pa_usec_t		source_usec;
+//  
+//   uint32_t		owner_module;
+//   const char		*driver;
+//   pa_proplist		*proplist;
+//   pa_format_info	*format;
+// } pa_source_output_info;
 
 @implementation PASourceOutput
 
