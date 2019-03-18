@@ -25,6 +25,8 @@
 
 @interface SKSoundPlayStream : SKSoundStream
 {
+  SEL _action;
+  id  _delegate;
 }
 @property (assign) PASinkInput *sinkInput;
 

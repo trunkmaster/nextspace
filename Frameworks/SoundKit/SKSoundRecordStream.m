@@ -71,14 +71,14 @@ static void stream_read_callback(pa_stream *stream, size_t length, void *userdat
   }
   input = (SKSoundIn *)super.device;
 
-  pa_stream_connect_record(paStream, [input.source.name cString], NULL, 0);
-  pa_stream_set_read_callback(paStream, stream_read_callback, NULL);
+  pa_stream_connect_record(_pa_stream, [input.source.name cString], NULL, 0);
+  pa_stream_set_read_callback(_pa_stream, stream_read_callback, NULL);
   super.isActive = YES;
 }
 - (void)deactivate
 {
-  pa_stream_set_write_callback(paStream, NULL, NULL);
-  pa_stream_disconnect(paStream);
+  pa_stream_set_write_callback(_pa_stream, NULL, NULL);
+  pa_stream_disconnect(_pa_stream);
   // pa_stream_unref(paStream);
   super.isActive = NO;
 }

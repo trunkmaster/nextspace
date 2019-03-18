@@ -29,7 +29,7 @@
 
 @interface SKSoundStream : NSObject
 {
-  pa_stream *paStream;
+  pa_stream *_pa_stream;
 }
 @property (assign) SKSoundServer *server;
 @property (assign) PAClient      *client;

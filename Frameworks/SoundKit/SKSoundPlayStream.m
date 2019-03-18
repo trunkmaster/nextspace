@@ -31,34 +31,34 @@
   [super dealloc];
 }
 
-static void stream_write_callback(pa_stream *stream, size_t length, void *userdata)
+static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 {
-  /*  sf_count_t frames, frames_read;
-      float      *data; */
-  // pa_assert(s && length && snd_file);
+  [(SKSoundPlayStream *)userdata writeStreamLength:length];
+}
 
-  fprintf(stderr, "[SKSoundStream] stream_write_callback\n");
-  
-  /*
-  data = pa_xmalloc(length);
-
-  // pa_assert(sample_length >= length);
-  frames = (sf_count_t) (length/pa_frame_size(&sample_spec));
-  frames_read = sf_readf_float(snd_file, data, frames);
-  fprintf(stderr, "length == %li frames == %li frames_read == %li\n",
-          length, frames, frames_read);
-  
-  if (frames_read <= 0) {
-    pa_xfree(data);
-    fprintf(stderr, "End of file\n");
-    pa_stream_set_write_callback(stream, NULL, NULL);
-    pa_stream_disconnect(stream);
-    pa_stream_unref(stream);
+// when PA stream is ready to receive bytes `_delegate` will be messaged with `action`
+- (void)setDelegate:(id)aDelegate
+{
+  _delegate = aDelegate;
+}
+- (void)setAction:(SEL)aSel
+{
+  _action = aSel;
+}
+- (void)writeStreamLength:(size_t)length
+{
+  if (_delegate == nil) {
+    NSLog(@"[SoundKit] delegate is not set for SKSoundPlayStream.");
     return;
   }
-
-  pa_stream_write(s, d, length, pa_xfree, 0, PA_SEEK_RELATIVE);
-  */
+  if ([_delegate respondsToSelector:_action]) {
+    [_delegate performSelector:_action
+                    withObject:[NSNumber numberWithUnsignedInteger:length]];
+  }
+  else {
+    NSLog(@"[SoundKit] delegate does not respond to action write action"
+          " of SKSoundPlayStream");
+  }
 }
 
 - (void)activate
@@ -69,15 +69,16 @@ static void stream_write_callback(pa_stream *stream, size_t length, void *userda
     super.device = [super.server defaultOutput];
   }
   output = (SKSoundOut *)super.device;
-  pa_stream_connect_playback(paStream, [output.sink.name cString],
-                             NULL, 0, NULL, NULL);
-  pa_stream_set_write_callback(paStream, stream_write_callback, NULL);
+  
+  pa_stream_connect_playback(_pa_stream, [output.sink.name cString], NULL, 0, NULL, NULL);
+  pa_stream_set_write_callback(_pa_stream, _pa_write_callback, self);
+  
   super.isActive = YES;
 }
 - (void)deactivate
 {
-  pa_stream_set_write_callback(paStream, NULL, NULL);
-  pa_stream_disconnect(paStream);
+  pa_stream_set_write_callback(_pa_stream, NULL, NULL);
+  pa_stream_disconnect(_pa_stream);
   // pa_stream_unref(paStream);
   super.isActive = NO;
 }
@@ -86,7 +87,9 @@ static void stream_write_callback(pa_stream *stream, size_t length, void *userda
               size:(NSUInteger)bytes
                tag:(NSUInteger)anUInt
 {
-  NSLog(@"[SoundKit, SKSoundPlayStream] playBuffer:size:tag: is not implemented yes.");
+  pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE);
+ 
+  NSLog(@"[SoundKit, SKSoundPlayStream] playBuffer:size:tag: is not implemented yes.");  
 }
 
 - (NSUInteger)volume

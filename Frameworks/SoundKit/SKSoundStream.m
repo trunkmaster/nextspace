@@ -56,8 +56,8 @@
   pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, "event");
   _name = [[NSProcessInfo processInfo] processName];
   
-  paStream = pa_stream_new_with_proplist(_server.pa_ctx, [_name cString],
-                                         &sample_spec, NULL, proplist);
+  _pa_stream = pa_stream_new_with_proplist(_server.pa_ctx, [_name cString],
+                                           &sample_spec, NULL, proplist);
   
   return self;
 }
