@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <SoundKit/SKSoundServer.h>
 #import <SoundKit/SKSoundOut.h>
-#import <SoundKit/SKSoundStream.h>
+#import <SoundKit/SKSoundPlayStream.h>
 
 @interface SoundKitClient : NSObject
 {
@@ -209,10 +209,10 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
 
   SKSoundStream *stream;
   NSLog(@"Creating stream...");
-  stream = [[SKSoundStream alloc] initOnDevice:[server defaultOutput]
-                                  samplingRate:sample_spec.rate
-                                  channelCount:sample_spec.channels
-                                        format:sample_spec.format];
+  stream = [[SKSoundPlayStream alloc] initOnDevice:nil
+                                      samplingRate:sample_spec.rate
+                                      channelCount:sample_spec.channels
+                                            format:sample_spec.format];
   NSLog(@"Activating stream...");
   [stream activate];
   // [stream playBuffer];
@@ -358,9 +358,9 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
 - (void)serverStateChanged:(NSNotification *)notif
 {
   if (server.status == SKServerReadyState) {
-    [self describeSoundSystem];
+    // [self describeSoundSystem];
     [self defaultSoundOut];
-    [self defaultSoundIn];
+    // [self defaultSoundIn];
     [self playSystemBeep];
   }
 }
