@@ -63,7 +63,13 @@ static void stream_write_callback(pa_stream *stream, size_t length, void *userda
 
 - (void)activate
 {
-  pa_stream_connect_playback(paStream, [((SKSoundOut *)super.device).sink.name cString],
+  SKSoundOut *output;
+  
+  if (super.device == nil) {
+    super.device = [super.server defaultOutput];
+  }
+  output = (SKSoundOut *)super.device;
+  pa_stream_connect_playback(paStream, [output.sink.name cString],
                              NULL, 0, NULL, NULL);
   pa_stream_set_write_callback(paStream, stream_write_callback, NULL);
   super.isActive = YES;

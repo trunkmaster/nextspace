@@ -64,8 +64,14 @@ static void stream_read_callback(pa_stream *stream, size_t length, void *userdat
 
 - (void)activate
 {
-  pa_stream_connect_record(paStream, [((SKSoundIn *)super.device).source.name cString],
-                           NULL, 0);
+  SKSoundIn *input;
+  
+  if (super.device == nil) {
+    super.device = [super.server defaultInput];
+  }
+  input = (SKSoundIn *)super.device;
+
+  pa_stream_connect_record(paStream, [input.source.name cString], NULL, 0);
   pa_stream_set_read_callback(paStream, stream_read_callback, NULL);
   super.isActive = YES;
 }
