@@ -32,6 +32,7 @@
 #import <SoundKit/SKSoundOut.h>
 #import <SoundKit/SKSoundIn.h>
 #import <SoundKit/SKSoundPlayStream.h>
+#import <SoundKit/SKSoundRecordStream.h>
 #import <SoundKit/SKSoundVirtualStream.h>
 #import <SoundKit/SKSoundServer.h>
 
@@ -221,11 +222,11 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   NSMutableArray       *list = [NSMutableArray new];
   SKSoundVirtualStream *virtualStream;
   SKSoundPlayStream    *playStream;
+  SKSoundRecordStream  *recordStream;
 
   // Pure virtual streams
   for (PAStream *stream in savedStreamList) {
-    virtualStream = [[SKSoundVirtualStream alloc] initWithStream:stream
-                                                          server:self];
+    virtualStream = [[SKSoundVirtualStream alloc] initWithStream:stream];
     [list addObject:virtualStream];
     [virtualStream release];
   }
@@ -242,16 +243,16 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
     fprintf(stderr, "Stream was added to list: %s", [playStream.name cString]);
   }
   // Streams with SourceOuput and Client
-  // for (PASourceOutput *sourceOutput in sourceOutputList) {
-  //   soundStream = [SKSoundStream new];
-  //   soundStream.server = self;
-  //   soundStream.sourceOutput = sourceOutput;
-  //   soundStream.client = [self clientWithIndex:sourceOutput.clientIndex];
-  //   soundStream.device = [self outputWithSink:[self sinkWithIndex:sourceOutput.sourceIndex]];
-  //   soundStream.isVirtual = NO;
-  //   soundStream.isPlayStream = NO;
-  //   soundStream.isRecordStream = YES;
-  // }
+  for (PASourceOutput *sourceOutput in sourceOutputList) {
+    recordStream = [SKSoundRecordStream new];
+    recordStream.server = self;
+    recordStream.sourceOutput = sourceOutput;
+    recordStream.client = [self clientWithIndex:sourceOutput.clientIndex];
+    recordStream.device = [self outputWithSink:[self sinkWithIndex:sourceOutput.sourceIndex]];
+    [list addObject:recordStream];
+    [recordStream release];
+    fprintf(stderr, "Stream was added to list: %s", [recordStream.name cString]);
+  }
   
   return [list autorelease];
 }
