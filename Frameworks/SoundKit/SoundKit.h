@@ -24,4 +24,6 @@
 #import <SoundKit/SKSoundOut.h>
 #import <SoundKit/SKSoundIn.h>
 #import <SoundKit/SKSoundStream.h>
+#import <SoundKit/SKSoundPlayStream.h>
+#import <SoundKit/SKSoundRecordStream.h>
 #import <SoundKit/SKSoundVirtualStream.h>
