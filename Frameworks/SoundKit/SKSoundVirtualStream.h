@@ -30,7 +30,6 @@
 @property (readonly) PAStream *stream;
 @property (readonly) NSString *appName;
 
-- (id)initWithStream:(PAStream *)stream
-              server:(SKSoundServer *)server;
+- (id)initWithStream:(PAStream *)stream;
 
 @end

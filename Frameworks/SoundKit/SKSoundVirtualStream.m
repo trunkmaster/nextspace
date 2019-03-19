@@ -32,13 +32,11 @@
 }
 
 - (id)initWithStream:(PAStream *)stream
-              server:(SKSoundServer *)server
 {
   if ((self = [super init]) == nil)
     return nil;
 
   _stream = stream;
-  super.server = server;
   
   if (_stream == nil) {
     super.name = @"Dummy Virtual Stream";
@@ -53,8 +51,8 @@
     super.name = _stream.clientName;
   }
   
-  fprintf(stderr, "[SoundKit] SoundStream: %s \t\tDevice: %s\n",
-          [_stream.name cString], [_stream.deviceName cString]);
+  // fprintf(stderr, "[SoundKit] SoundStream: %s \t\tDevice: %s\n",
+  //         [_stream.name cString], [_stream.deviceName cString]);
   
   return self;  
 }
