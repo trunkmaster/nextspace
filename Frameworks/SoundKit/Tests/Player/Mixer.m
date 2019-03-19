@@ -24,7 +24,9 @@
 
 static void *OutputContext = &OutputContext;
 static void *InputContext = &InputContext;
-static void *StreamContext = &StreamContext;
+static void *StreamPlayContext = &StreamPlayContext;
+static void *StreamRecordContext = &StreamRecordContext;
+static void *StreamVirtualContext = &StreamVirtualContext;
 
 @implementation Mixer
 
@@ -241,27 +243,38 @@ static void *StreamContext = &StreamContext;
                       options:NSKeyValueObservingOptionNew
                       context:InputContext];
   }
-  else if ([device isKindOfClass:[SKSoundStream class]]) {
-    SKSoundStream *stream = (SKSoundStream *)device;
+  else if ([device isKindOfClass:[SKSoundPlayStream class]]) {
+    SKSoundPlayStream *stream = (SKSoundPlayStream *)device;
     [stream.sinkInput addObserver:self
                        forKeyPath:@"mute"
                           options:NSKeyValueObservingOptionNew
-                          context:StreamContext];
+                          context:StreamPlayContext];
     [stream.sinkInput addObserver:self
                        forKeyPath:@"channelVolumes"
                           options:NSKeyValueObservingOptionNew
-                          context:StreamContext];
+                          context:StreamPlayContext];
+  }
+  else if ([device isKindOfClass:[SKSoundRecordStream class]]) {
+    SKSoundRecordStream *stream = (SKSoundRecordStream *)device;
+    [stream.sourceOutput addObserver:self
+                       forKeyPath:@"mute"
+                          options:NSKeyValueObservingOptionNew
+                          context:StreamRecordContext];
+    [stream.sourceOutput addObserver:self
+                          forKeyPath:@"channelVolumes"
+                             options:NSKeyValueObservingOptionNew
+                             context:StreamRecordContext];
   }
   else if ([device isKindOfClass:[SKSoundVirtualStream class]]) {
     SKSoundVirtualStream *stream = (SKSoundVirtualStream *)device;
     [stream.stream addObserver:self
                     forKeyPath:@"mute"
                        options:NSKeyValueObservingOptionNew
-                       context:StreamContext];
+                       context:StreamVirtualContext];
     [stream.stream addObserver:self
                     forKeyPath:@"volume"
                        options:NSKeyValueObservingOptionNew
-                       context:StreamContext];
+                       context:StreamVirtualContext];
   }
 }
 
@@ -270,9 +283,10 @@ static void *StreamContext = &StreamContext;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  SKSoundOut    *output;
-  SKSoundIn     *input;
-  SKSoundStream *stream;
+  SKSoundOut          *output;
+  SKSoundIn           *input;
+  SKSoundPlayStream   *playStream;
+  SKSoundRecordStream *recordStream;
   
   if (context == OutputContext) {
     output = [[devicePortBtn selectedItem] representedObject];
@@ -324,9 +338,9 @@ static void *StreamContext = &StreamContext;
       }
     }
   }
-  else if (context == StreamContext) {
-    stream = [[appBrowser selectedCellInColumn:0] representedObject];
-    if (object == stream.sinkInput) {
+  else if (context == StreamPlayContext) {
+    playStream = [[appBrowser selectedCellInColumn:0] representedObject];
+    if (object == playStream.sinkInput) {
       if ([keyPath isEqualToString:@"mute"]) {
         NSLog(@"Stream changed mute attribute.");
       }
@@ -334,6 +348,12 @@ static void *StreamContext = &StreamContext;
         NSLog(@"Stream changed it's volume.");
       }
     }
+  }
+  else if (context == StreamRecordContext) {
+    // TODO
+  }
+  else if (context == StreamVirtualContext) {
+    // TODO
   }
   else {
     // Any unrecognized context must belong to super
@@ -389,7 +409,11 @@ static void *StreamContext = &StreamContext;
 
   if ([mode isEqualToString:@"Playback"]) {
     for (SKSoundStream *st in [server streamList]) {
-      if (st.isPlayStream != NO) {
+      if ([st isKindOfClass:[SKSoundVirtualStream class]] &&
+          (SKSoundVirtualStream *)st.name == nil) {
+        continue;
+      }
+      if ([st isKindOfClass:[SKSoundPlayStream class]]) {
         [matrix addRow];
         cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
         [cell setLeaf:YES];
