@@ -1,8 +1,0 @@
-./configure \
---bindir=/usr/NextSpace/bin \
---sbindir=/usr/NextSpace/sbin \
---datarootdir=/usr/NextSpace/share \
---libdir=/usr/NextSpace/lib \
---includedir=/usr/NextSpace/include \
---mandir=/usr/NextSpace/Documentation/man \
---docdir=/usr/NextSpace/Documentation/doc

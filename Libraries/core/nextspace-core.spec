@@ -1,31 +1,31 @@
-%define MAKE_VERSION    2.6.8
+%define MAKE_VERSION    2.7.0
 
 Name:		nextspace-core
-Version:	0.9
+Version:	0.95
 Release:	1%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
 Source0:	nextspace-os_files-%{version}.tar.gz
-Source1:	gnustep-make-%{MAKE_VERSION}.tar.gz
+Source1:	gnustep-make-%{MAKE_VERSION}.tgz
 Source2:	nextspace.fsl
 
 BuildRequires:  libobjc2-devel
 
 Requires:	libdispatch >= 1.3
-Requires:	libobjc2 >= 1.8.2
+Requires:	libobjc2 >= 2.0
 Requires:	zsh
 Requires:	plymouth-plugin-script
 Requires:	plymouth-plugin-label
 
 %description
 Includes several components:
-- gnustep-make-2.6.8 (/Developer, /Library/Preferences/GNUstep.conf, 
-  /usr/NextSpace/Documentation, /usr/NextSpace/bin);
 - OS configuration files (/etc: X11 font display config, paths for linker,
   user shell profile, udev rule to mount removable media under /media, 
   /etc/skel: user home dir skeleton, tuned and logind settings);
 - GNUstep helper script: /usr/NextSpace/bin/gnustep-services.
+- Plymouth `nextspace` theme. It should be activated manually.
+- `NextsSpace` mouse cursor theme
 
 %package devel
 Summary:	Development header files for NextSpace core components.
@@ -35,9 +35,8 @@ Requires:	libobjc2-devel
 Provides:	gnustep-make
 
 %description devel
-Development files for libdispatch (includes kqueue and pthread_workqueue) 
-and libobjc. Also contains gnustep-make-2.6.7 to build nextspace-runtime and
-develop applications/tools for NextSpace environment.
+Contains GNUstep Make to build nextspace-runtime and develop 
+applications/tools for NextSpace environment.
 
 %prep
 %setup -c -n nextspace-core -a 1
@@ -46,7 +45,7 @@ cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/gnustep-make-%{MAKE_VERSION}
 %build
 export CC=clang
 export CXX=clang++
-export OBJCFLAGS="-fblocks -fobjc-runtime=gnustep-1.8"
+#export OBJCFLAGS="-fblocks -fobjc-runtime=gnustep-1.8"
 export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
@@ -55,8 +54,8 @@ cd gnustep-make-%{MAKE_VERSION}
     --with-config-file=/Library/Preferences/GNUstep.conf \
     --with-layout=nextspace \
     --enable-native-objc-exceptions \
-    --enable-objc-nonfragile-abi \
-    --enable-debug-by-default
+    --enable-debug-by-default \
+    --with-library-combo=ng-gnu-gnu
 make
 cd ..
 
@@ -93,6 +92,9 @@ mkdir %{buildroot}/Users
 /usr/NextSpace/etc/
 /usr/NextSpace/bin/gnustep-services
 /usr/NextSpace/bin/openapp
+/usr/share/icons/NextSpace
+/usr/share/plymouth/themes
+/etc/dracut.conf.d
 
 %files devel
 /Developer
@@ -113,7 +115,16 @@ useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
-* Wed Nov 15 2016 Sergii Stoian <stoyan255@ukr.net> 0.9-1
+* Fri Mar 22 2019 Sergii Stoian <stoyan255@gmail.com> 0.95-1
+- added `--with-library-combo` to gnustep-make configure step
+
+* Fri Mar 22 2019 Sergii Stoian <stoyan255@gmail.com> 0.95-0
+- new GNUstep make version 2.7.0
+- use new version of libobjc2 - 2.0
+- new `nextspace` theme for plymouth boot screen
+- new `NextSpace` mouse cursor theme
+
+* Tue Nov 15 2016 Sergii Stoian <stoyan255@ukr.net> 0.9-1
 - Defaults ~/Library/Preferences were added for the root user.
 - Midnight Commander user's ini file was removed.
 
