@@ -1,0 +1,69 @@
+diff -Nru swift-corelibs-libdispatch-swift-5.0-RELEASE/dispatch/dispatch.h libdispatch-1.3/dispatch/dispatch.h
+--- swift-corelibs-libdispatch-swift-5.0-RELEASE/dispatch/dispatch.h	2019-03-22 20:45:03.000000000 +0200
++++ libdispatch-1.3/dispatch/dispatch.h	2019-03-28 13:03:55.499274000 +0200
+@@ -39,7 +39,13 @@
+ #include <stdarg.h>
+ #include <string.h>
+ #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+-#include <unistd.h>
++//#include <unistd.h>
++// Fix RedHat problematic unistd.h
++#pragma push_macro("__block")
++#undef __block
++#define __block my__block
++#include_next <unistd.h>
++#pragma pop_macro("__block")
+ #endif
+ #include <fcntl.h>
+ #if defined(_WIN32)
+diff -Nru swift-corelibs-libdispatch-swift-5.0-RELEASE/tests/bsdtests.h libdispatch-1.3/tests/bsdtests.h
+--- swift-corelibs-libdispatch-swift-5.0-RELEASE/tests/bsdtests.h	2019-03-22 20:45:03.000000000 +0200
++++ libdispatch-1.3/tests/bsdtests.h	2019-03-28 13:06:43.208086501 +0200
+@@ -50,7 +50,13 @@
+ #endif
+ 
+ #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
++//#include <unistd.h>
++// Fix RedHat problematic unistd.h
++#pragma push_macro("__block")
++#undef __block
++#define __block my__block
+ #include <unistd.h>
++#pragma pop_macro("__block")
+ #endif
+ #include <string.h>
+ #include <stdint.h>
+diff -Nru swift-corelibs-libdispatch-swift-5.0-RELEASE/tests/dispatch_io_net.c libdispatch-1.3/tests/dispatch_io_net.c
+--- swift-corelibs-libdispatch-swift-5.0-RELEASE/tests/dispatch_io_net.c	2019-03-22 20:45:03.000000000 +0200
++++ libdispatch-1.3/tests/dispatch_io_net.c	2019-03-28 13:09:14.547718500 +0200
+@@ -21,7 +21,13 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
++// #include <unistd.h>
++// Fix RedHat problematic unistd.h
++#pragma push_macro("__block")
++#undef __block
++#define __block my__block
+ #include <unistd.h>
++#pragma pop_macro("__block")
+ #endif
+ #include <errno.h>
+ #include <netdb.h>
+diff -Nru swift-corelibs-libdispatch-swift-5.0-RELEASE/tests/dispatch_select.c libdispatch-1.3/tests/dispatch_select.c
+--- swift-corelibs-libdispatch-swift-5.0-RELEASE/tests/dispatch_select.c	2019-03-22 20:45:03.000000000 +0200
++++ libdispatch-1.3/tests/dispatch_select.c	2019-03-28 13:07:52.106518500 +0200
+@@ -22,7 +22,13 @@
+ #include <fcntl.h>
+ #include <stdlib.h>
+ #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
++//#include <unistd.h>
++// Fix RedHat problematic unistd.h
++#pragma push_macro("__block")
++#undef __block
++#define __block my__block
+ #include <unistd.h>
++#pragma pop_macro("__block")
+ #endif
+ #include <sys/stat.h>
+ #include <dispatch/dispatch.h>
