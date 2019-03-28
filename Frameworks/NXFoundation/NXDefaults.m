@@ -215,7 +215,7 @@ static NXDefaults *sharedGlobalUserDefaults;
 // of current user.
 - (void)writeToDisk
 {
-  NSLog(@"NXDefaults: write to file: %@", filePath);
+  // NSLog(@"NXDefaults: write to file: %@", filePath);
   
   if ([defaultsDict writeToFile:filePath atomically:YES] == YES) {
     if (isGlobal == YES) {

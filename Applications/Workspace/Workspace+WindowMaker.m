@@ -1671,8 +1671,8 @@ int XWRunAlertPanel(char *title, char *message,
   info = @{@"Title":[NSString stringWithCString:title],
            @"Message":[NSString stringWithCString:message],
            @"DefaultButton":[NSString stringWithCString:defaultButton],
-           @"AlternateButton":[NSString stringWithCString:alternateButton],
-           @"OtherButton":[NSString stringWithCString:otherButton]};
+           @"AlternateButton":alternateButton?[NSString stringWithCString:alternateButton]:@"",
+           @"OtherButton":otherButton?[NSString stringWithCString:otherButton]:@""};
   alertInfo = [info mutableCopy];
   [info release];
   

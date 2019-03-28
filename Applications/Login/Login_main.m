@@ -21,7 +21,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <X11/Xlib.h>
+// #import <X11/Xlib.h>
 #import <unistd.h>
 
 #import <AppKit/NSApplication.h>
@@ -179,7 +179,7 @@ int main(int argc, const char ** argv)
       // Setup layout and gamma.
       // Inital brightess was set to 0.0. Displays will be lighten in
       // [NSApp applicationDidFinishLaunching].
-      setupDisplays();
+      // setupDisplays();
       
       // TODO: StartupHook
       NSString *startupHook = [loginDefaults objectForKey:@"StartupHook"];
