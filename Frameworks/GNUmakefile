@@ -8,7 +8,8 @@ VERSION = 0.6
 SUBPROJECTS = \
     NXFoundation \
     NXSystem \
-    NXAppKit
+    NXAppKit \
+    SoundKit
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/aggregate.make
