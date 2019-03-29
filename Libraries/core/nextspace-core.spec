@@ -2,18 +2,18 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
 Source0:	nextspace-os_files-%{version}.tar.gz
-Source1:	gnustep-make-%{MAKE_VERSION}.tgz
+Source1:	gnustep-make-%{MAKE_VERSION}.tar.gz
 Source2:	nextspace.fsl
 
 BuildRequires:  libobjc2-devel
 
 Requires:	libdispatch >= 1.3
-Requires:	libobjc2 >= 2.0
+Requires:	libobjc2 >= 1.8
 Requires:	zsh
 Requires:	plymouth-plugin-script
 Requires:	plymouth-plugin-label
@@ -45,7 +45,7 @@ cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/gnustep-make-%{MAKE_VERSION}
 %build
 export CC=clang
 export CXX=clang++
-#export OBJCFLAGS="-fblocks -fobjc-runtime=gnustep-1.8"
+export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
 export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
@@ -115,6 +115,10 @@ useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
+* Fri Mar 29 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-2
+- required version of libobjc2 set to >= 1.8
+- gnustep-make was updated to version 2.7.0
+
 * Fri Mar 22 2019 Sergii Stoian <stoyan255@gmail.com> 0.95-1
 - added `--with-library-combo` to gnustep-make configure step
 
