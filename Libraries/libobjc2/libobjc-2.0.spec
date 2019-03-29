@@ -1,10 +1,10 @@
 Name:		libobjc2
 Version:	2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	GNUstep Objecttive-C 2.0 runtime library.
 License:	GPL v2.0
 URL:		https://github.com/gnustep/libobjc2
-Source0:	libobjc2-2.0.tgz
+Source0:	libobjc2-2.0.tar.gz
 #Source1:	https://github.com/gnustep/libobjc2/archive/master.zip
 
 BuildRequires:	cmake3
@@ -54,30 +54,20 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 mkdir Build
 cd Build
 cmake3 .. \
-    -DGNUSTEP_INSTALL_TYPE=SYSTEM \
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
     -DCMAKE_C_FLAGS=-I/usr/NextSpace/include \
     -DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
+    -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
     -DTESTS=OFF -DCMAKE_BUILD_TYPE=Release
 
 make
 
 %install
 #cd libobjc2-%{version}
-#cd Build
-#make install DESTDIR=%{buildroot}
-mkdir -p %{buildroot}/usr/NextSpace/include
-cp -vr %{_builddir}/libobjc2-%{version}/objc %{buildroot}/usr/NextSpace/include
-mkdir -p %{buildroot}/usr/NextSpace/lib
-cp -vr %{_builddir}/libobjc2-%{version}/Build/libobjc*.so* %{buildroot}/usr/NextSpace/lib
-rm -v %{buildroot}/usr/NextSpace/include/objc/toydispatch.h
-
-#rm -vrf %{buildroot}/usr/NextSpace/lib/pkgconfig
-#cp -vr %{_builddir}/libdispatch-1.3/libkqueue/include/sys %{buildroot}/usr/NextSpace/include/
-#install -D -m 0644 %{_builddir}/libdispatch-1.3/libkqueue/kqueue.2 %{buildroot}/usr/NextSpace/Documentation/man/man2/kqueue.2
-#install -m 0644 %{_builddir}/libdispatch-1.3/libpwq/include/pthread_workqueue.h %{buildroot}/usr/NextSpace/include/pthread_workqueue.h
-#install -m 0644 %{_builddir}/libdispatch-1.3/libpwq/pthread_workqueue.3 %{buildroot}/usr/NextSpace/Documentation/man/man3/pthread_workqueue.3
+cd Build
+make install DESTDIR=%{buildroot}
+mv -v %{buildroot}/usr/NextSpace/include/Block.h %{buildroot}/usr/NextSpace/include/Block-libobjc.h 
 
 %check
 # requires lit.py from LLVM utilities
@@ -90,7 +80,18 @@ rm -v %{buildroot}/usr/NextSpace/include/objc/toydispatch.h
 %files devel
 /usr/NextSpace/include/
 
+%pre
+mv -v /usr/NextSpace/include/Block.h /usr/NextSpace/include/Block-libdispatch.h
+ln -sv /usr/NextSpace/include/Block-libobjc.h /usr/NextSpace/include/Block.h
+
+%postun
+rm -v /usr/NextSpace/include/Block.h
+mv -v /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
+
 %changelog
+* Fri Mar 29 2019 Sergii Stoian <stoyan255@gmail.com> - 2.0-2
+- now library can be build without GNUstep Make installed
+- switch to libobjc2 installation routines
 * Wed Mar 27 2019 Sergii Stoian <stoyan255@gmail.com> - 2.0-1
 - Fix an issue with incorrect offsets for the first ivar.
 - Rework some of the ivar offset calculations.

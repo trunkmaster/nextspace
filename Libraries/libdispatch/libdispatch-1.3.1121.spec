@@ -1,12 +1,12 @@
 Name:		libdispatch
-Version:	1.3
+Version:	1.3.1121
 Release:	2%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
 URL:		http://swift.org
-Source0:	libdispatch-1.3.tar.gz
+Source0:	libdispatch-1.3.1121.tar.gz
 Source1:	https://github.com/apple/swift-corelibs-libdispatch/archive/master.zip
-Patch0:		RedHat_unistd.patch
+Patch0:		libdispatch_redhat_unistd.patch
 
 BuildRequires:	libtool
 BuildRequires:	clang >= 3.8
