@@ -1,0 +1,64 @@
+diff -Nru libs-gui-gui-0_25_1.orig/Headers/Additions/GNUstepGUI/GSDisplayServer.h libs-gui-gui-0_25_1/Headers/Additions/GNUstepGUI/GSDisplayServer.h
+--- libs-gui-gui-0_25_1.orig/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2019-03-29 15:43:32.157649500 +0200
+@@ -137,6 +137,7 @@
+ - (void) titlewindow: (NSString *)window_title : (int)win;
+ - (void) miniwindow: (int)win;
+ - (BOOL) appOwnsMiniwindow;
++- (BOOL) hidewindow: (int)win;
+ - (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt;
+ // Deprecated
+ - (void) windowdevice: (int) winNum;
+diff -Nru libs-gui-gui-0_25_1.orig/Headers/AppKit/NSEvent.h libs-gui-gui-0_25_1/Headers/AppKit/NSEvent.h
+--- libs-gui-gui-0_25_1.orig/Headers/AppKit/NSEvent.h	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Headers/AppKit/NSEvent.h	2019-03-29 15:43:32.160651000 +0200
+@@ -475,6 +475,7 @@
+   GSAppKitDraggingFinished,
+   GSAppKitRegionExposed,
+   GSAppKitWindowDeminiaturize,
++  GSAppKitAppHide
+ } GSAppKitSubtype;
+ #endif
+ 
+diff -Nru libs-gui-gui-0_25_1.orig/Headers/AppKit/NSWindow.h libs-gui-gui-0_25_1/Headers/AppKit/NSWindow.h
+--- libs-gui-gui-0_25_1.orig/Headers/AppKit/NSWindow.h	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Headers/AppKit/NSWindow.h	2019-03-29 15:43:32.163652499 +0200
+@@ -70,21 +70,25 @@
+  * NSDesktopWindowLevel is copied from Window maker and is intended to be
+  * the level at which things on the desktop sit ... so you should be able
+  * to put a desktop background just below it.
+- * FIXME: The hardcoded values here don't match the ones in Cocoa. 
+- * But we cannot change them easily as the have to match the ones in Window maker.
++ *
++ * The hardcoded values here doesn't match the ones in Cocoa. 
++ * WindowMaker use these values to organize windows stacking order. 
++ * So values should represent logical placement of windows and doesn't depend 
++ * on values specified in WindowMaker's GNUstep.h.
+  */
+ enum {
+-  NSDesktopWindowLevel = -1000,	/* GNUstep addition	*/ // 2
+-  NSNormalWindowLevel = 0, // 3
+-  NSFloatingWindowLevel = 3, // 4
+-  NSSubmenuWindowLevel = 3, // 5
+-  NSTornOffMenuWindowLevel = 3, // 5
+-  NSMainMenuWindowLevel = 20, // 7
+-  NSDockWindowLevel = 21,	/* Deprecated - use NSStatusWindowLevel */ // 6
+-  NSStatusWindowLevel = 21, // 8
+-  NSModalPanelWindowLevel = 100, // 9
+-  NSPopUpMenuWindowLevel = 101,  // 10
+-  NSScreenSaverWindowLevel = 1000  // 12
++                                    // OPENSTEP  // MacOS  // GNUstep
++  NSDesktopWindowLevel     = -1000, // --        // 2      // -1000
++  NSNormalWindowLevel      = 0,     // 0         // 3      // 0
++  NSFloatingWindowLevel    = 3,     // 3         // 4      // 3
++  NSDockWindowLevel        = 5,     // 5         // 6      // 21
++  NSSubmenuWindowLevel     = 10,    // 10        // 5      // 3
++  NSTornOffMenuWindowLevel = 10,    // --        // 5      // 3
++  NSMainMenuWindowLevel    = 20,    // 20        // 7      // 20
++  NSStatusWindowLevel      = 21,    // --        // 8      // 21
++  NSModalPanelWindowLevel  = 100,   // --        // 9      // 100
++  NSPopUpMenuWindowLevel   = 101,   // --        // 10     // 101
++  NSScreenSaverWindowLevel = 1000   // --        // 12     // 1000
+ };
+ 
+ enum {
