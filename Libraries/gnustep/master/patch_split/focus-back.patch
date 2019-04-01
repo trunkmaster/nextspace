@@ -1,3 +1,5 @@
+--- libs-back-back-0_25_1.orig/Source/x11/XGServerEvent.m       2017-04-07 00:03:43.000000000 +0300
++++ libs-back-back-0_25_1/Source/x11/XGServerEvent.m            2019-03-29 15:56:10.374568502 +0200
 @@ -1096,8 +1201,7 @@
  
        // keyboard focus entered a window
