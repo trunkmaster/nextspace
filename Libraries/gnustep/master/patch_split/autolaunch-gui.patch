@@ -1,0 +1,36 @@
+--- libs-gui-gui-0_25_1.orig/Source/NSMenu.m	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Source/NSMenu.m	2019-03-29 15:47:01.688362500 +0200
+@@ -1839,9 +1839,14 @@
+ {
+   if ([self _isMain])
+   {
+-    [self display];
+-    // we must make sure that any attached submenu is visible too.
+-    [[self attachedMenu] display];
++    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++  
++    if (![[defaults objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
++      {
++        [self display];
++        // we must make sure that any attached submenu is visible too.
++        [[self attachedMenu] display];
++      }
+   }
+ }
+ 
+--- libs-gui-gui-0_25_1.orig/Source/NSApplication.m	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Source/NSApplication.m	2019-03-29 15:43:37.560349500 +0200
+@@ -1334,6 +1344,13 @@
+           postNotificationName: NSApplicationDidBecomeActiveNotification
+ 		      object: [NSWorkspace sharedWorkspace]
+           userInfo: info];
++
++      if ([[[NSUserDefaults standardUserDefaults]
++             objectForKey: @"NXAutoLaunch"] isEqualToString: @"YES"])
++        {
++          _app_is_active = NO;
++          [[NSUserDefaults standardUserDefaults] removeSuiteNamed: NSArgumentDomain];
++        }
+     }
+ }
+ 

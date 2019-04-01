@@ -1,0 +1,49 @@
+--- libs-back-back-0_25_1.orig/Source/x11/XGServerWindow.m	2017-04-07 00:03:43.000000000 +0300
++++ libs-back-back-0_25_1/Source/x11/XGServerWindow.m	2019-03-29 16:08:00.451429501 +0200
+@@ -4276,25 +4331,31 @@
+       cursor = XCreateFontCursor(dpy, XC_crosshair);
+       break;
+     case GSDisappearingItemCursor:
+-      cursor = XCreateFontCursor(dpy, XC_shuttle);
++      cursor = XCreateFontCursor(dpy, XC_pirate);
+       break;
+-    case GSPointingHandCursor:
++    case GSClosedHandCursor:
++      cursor = XCreateFontCursor(dpy, XC_fleur);
++      break;
++    case GSOpenHandCursor:
+       cursor = XCreateFontCursor(dpy, XC_hand1);
+       break;
++    case GSPointingHandCursor:
++      cursor = XCreateFontCursor(dpy, XC_hand2);
++      break;
+     case GSResizeDownCursor:
+-      cursor = XCreateFontCursor(dpy, XC_bottom_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_down_arrow);
+       break;
+     case GSResizeLeftCursor:
+-      cursor = XCreateFontCursor(dpy, XC_left_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_left_arrow);
+       break;
+     case GSResizeLeftRightCursor:
+       cursor = XCreateFontCursor(dpy, XC_sb_h_double_arrow);
+       break;
+     case GSResizeRightCursor:
+-      cursor = XCreateFontCursor(dpy, XC_right_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_right_arrow);
+       break;
+     case GSResizeUpCursor:
+-      cursor = XCreateFontCursor(dpy, XC_top_side);
++      cursor = XCreateFontCursor(dpy, XC_sb_up_arrow);
+       break;
+     case GSResizeUpDownCursor:
+       cursor = XCreateFontCursor(dpy, XC_sb_v_double_arrow);
+@@ -4373,7 +4434,7 @@
+     // FIXME: Factor this out
+     // Convert RGBA unpacked to ARGB packed
+     // NB Packed ARGB values are layed out as ARGB on big endian systems
+-    // and as BDRA on low endian systems
++    // and as BGRA on low endian systems
+     {
+       NSInteger stride;
+       NSInteger x, y;

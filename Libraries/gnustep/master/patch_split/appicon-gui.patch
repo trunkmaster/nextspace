@@ -1,0 +1,26 @@
+--- libs-gui-gui-0_25_1.orig/Source/NSApplication.m	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Source/NSApplication.m	2019-03-29 15:43:37.560349500 +0200
+@@ -433,6 +433,11 @@
+   return NO;
+ }
+ 
++- (BOOL) becomesKeyOnlyIfNeeded
++{
++  return YES;
++}
++
+ - (BOOL) worksWhenModal
+ {
+   return YES;
+@@ -541,6 +546,11 @@
+   return YES;
+ }
+ 
++- (BOOL) needsPanelToBecomeKey
++{
++  return NO;
++}
++
+ - (void) concludeDragOperation: (id<NSDraggingInfo>)sender
+ {
+ }

@@ -1,0 +1,94 @@
+--- libs-gui-gui-0_25_1.orig/Source/NSMenuItemCell.m	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Source/NSMenuItemCell.m	2019-03-29 15:43:37.562350500 +0200
+@@ -46,6 +46,7 @@
+ #import "AppKit/NSMenuItemCell.h"
+ #import "AppKit/NSMenuView.h"
+ #import "AppKit/NSParagraphStyle.h"
++#import "AppKit/NSStringDrawing.h"
+ #import "GNUstepGUI/GSTheme.h"
+ #import "GSGuiPrivate.h"
+ 
+@@ -255,6 +256,7 @@
+   if (m != 0)
+     {
+       BOOL shift;
++      NSFontTraitMask traits = 0;
+       // shift mask and not an upper case string?
+       shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
+       key = [NSString stringWithFormat:@"%@%@%@%@%@",
+@@ -263,11 +265,46 @@
+                       shift ? shiftKeyString : @"",
+                       (m & NSCommandKeyMask) ? commandKeyString : @"",
+                       key];
++      if (m & NSAlternateKeyMask)
++        traits |= NSItalicFontMask;
++
++      if (m & NSControlKeyMask)
++        traits |= NSBoldFontMask;
++
++      if (traits)
++        {
++          NSFont *font;
++          
++          font = [[NSFontManager sharedFontManager]
++                           fontWithFamily:[[NSFont controlContentFontOfSize:0.0] familyName]
++                                   traits:traits
++                                   weight:(traits & NSBoldFontMask) ? 9 : 5
++                                     size:[NSFont systemFontSize]];
++          if (font)
++            [self setKeyEquivalentFont:font];
++        }
+     }
+ 
+   return key;
+ }
+ 
++- (NSSize) _sizeKeyEquivalentText: (NSString*)title
++{
++  NSSize size;
++
++  if (title == nil) {
++      return NSMakeSize (0,0);
++    }
++
++  if (_keyEquivalentFont) {
++    size = [title sizeWithAttributes: @{NSFontAttributeName: _keyEquivalentFont}];
++  }
++  else {
++    size = [self _sizeText: title];
++  }
++  return size;
++}
++
+ - (void) calcSize
+ {
+   NSSize   componentSize;
+@@ -339,7 +376,7 @@
+   _titleWidth = componentSize.width;
+   if (componentSize.height > neededMenuItemHeight)
+     neededMenuItemHeight = componentSize.height;
+-  componentSize = [self _sizeText: [self _keyEquivalentString]];
++  componentSize = [self _sizeKeyEquivalentText: [self _keyEquivalentString]];
+   _keyEquivalentWidth = componentSize.width;
+   if (componentSize.height > neededMenuItemHeight)
+     neededMenuItemHeight = componentSize.height;
+@@ -735,8 +772,17 @@
+    * else they would be displayed one over the other one.
+    */
+   else if (![[_menuView menu] _ownedByPopUp] || (_imageToDisplay == nil))
+-    {    
+-      [self _drawText: [self _keyEquivalentString] inFrame: cellFrame];
++    {
++      if (_keyEquivalentFont != nil) {
++        NSAttributedString *aString;
++        
++        aString = [[NSAttributedString alloc] initWithString: [self _keyEquivalentString]
++                                                  attributes: @{NSFontAttributeName: _keyEquivalentFont}];
++        [self _drawAttributedText: aString inFrame: cellFrame];
++      }
++      else {
++        [self _drawText: [self _keyEquivalentString] inFrame: cellFrame];
++      }
+     }
+ }
+ 

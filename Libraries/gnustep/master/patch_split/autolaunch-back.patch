@@ -1,0 +1,37 @@
+--- libs-back-back-0_25_1.orig/Source/x11/XGServerWindow.m	2017-04-07 00:03:43.000000000 +0300
++++ libs-back-back-0_25_1/Source/x11/XGServerWindow.m	2019-03-29 16:08:00.451429501 +0200
+@@ -2930,6 +2953,34 @@
+        */
+       if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
+ 	{
++          NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++          if (op != NSWindowOut && window->map_state == IsUnmapped &&
++              [[defaults objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
++ 	    {
++              // window->ignore_take_focus = YES; // <<<<
++              {
++                // Window info_win = wsmap->scr->info_window;
++                XEvent ev;
++
++                ev.xclient.type = ClientMessage;
++                // WM/src/startup.c
++                ev.xclient.message_type = XInternAtom(dpy,"WM_IGNORE_FOCUS_EVENTS", False);
++                ev.xclient.format = 32;
++                
++                // Inform WM to ignore focus events
++                ev.xclient.data.l[0] = True;
++                XSendEvent(dpy, ROOT, True, EnterWindowMask, &ev);
++
++                // Action
++                XMapWindow(dpy, ROOT); // <<<<
++
++                // Inform WM to process focus events again
++                ev.xclient.data.l[0] = False;
++                XSendEvent(dpy, ROOT, True, EnterWindowMask, &ev);
++              }
++              // window->ignore_take_focus = NO; // <<<<
++ 	    }
++
+ 	  return;
+ 	}
+       if ((window->win_attrs.window_style & NSMiniWindowMask) != 0)
