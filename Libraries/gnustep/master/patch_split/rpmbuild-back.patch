@@ -1,4 +1,3 @@
-diff -Nru libs-back-back-0_25_1.orig/Source/art/GNUmakefile.preamble libs-back-back-0_25_1/Source/art/GNUmakefile.preamble
 --- libs-back-back-0_25_1.orig/Source/art/GNUmakefile.preamble	2017-04-07 00:03:43.000000000 +0300
 +++ libs-back-back-0_25_1/Source/art/GNUmakefile.preamble	2019-03-29 15:56:10.368565502 +0200
 @@ -37,7 +37,7 @@
@@ -10,7 +9,6 @@ diff -Nru libs-back-back-0_25_1.orig/Source/art/GNUmakefile.preamble libs-back-b
  	-I../$(GNUSTEP_TARGET_DIR) $(GRAPHIC_CFLAGS) \
  
  # Additional LDFLAGS to pass to the linker
-diff -Nru libs-back-back-0_25_1.orig/Source/gsc/GNUmakefile.preamble libs-back-back-0_25_1/Source/gsc/GNUmakefile.preamble
 --- libs-back-back-0_25_1.orig/Source/gsc/GNUmakefile.preamble	2017-04-07 00:03:43.000000000 +0300
 +++ libs-back-back-0_25_1/Source/gsc/GNUmakefile.preamble	2019-03-29 15:56:10.369566002 +0200
 @@ -37,7 +37,7 @@
@@ -22,4 +20,3 @@ diff -Nru libs-back-back-0_25_1.orig/Source/gsc/GNUmakefile.preamble libs-back-b
  
  # Additional LDFLAGS to pass to the linker
  #ADDITIONAL_LDFLAGS =
-diff -Nru libs-back-back-0_25_1.orig/Source/x11/XGServerEvent.m libs-back-back-0_25_1/Source/x11/XGServerEvent.m

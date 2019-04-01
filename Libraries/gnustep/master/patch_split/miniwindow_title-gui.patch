@@ -15,8 +15,8 @@
                inView: self];
 -  [titleCell drawWithFrame: NSMakeRect(1, iconSize.height - 12,
 -                                       iconSize.width - 2, 11)
-+  [titleCell drawWithFrame: NSMakeRect(2, iconSize.height - 12,
-+                                       iconSize.width - 3, 10)
++  [titleCell drawWithFrame: NSMakeRect(3, iconSize.height - 13,
++                                       iconSize.width - 6, 10)
                      inView: self];
  }
  
