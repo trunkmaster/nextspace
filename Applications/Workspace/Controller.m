@@ -188,14 +188,17 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Inspector
   if (inspector && [[inspector window] isVisible]) {
     [inspector deactivateInspector:self];
+    [inspector release];
   }
   // Processes
   if (procPanel && [[procPanel window] isVisible]) {
     [[procPanel window] close];
+    [procPanel release];
   }
   // Preferences
-  if (preferences)
+  if (preferences) {
     [preferences release];
+  }
   
   // Finder
   if (finder) {
@@ -404,21 +407,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [systemPower release];
   }
         
-  // Workspace Tools
-  TEST_RELEASE(inspector);
-  TEST_RELEASE(console);
-  TEST_RELEASE(procPanel);
+  // Process manager
   TEST_RELEASE(procManager);
 
-  // Quit WindowManager, close all X11 applications.
-  if (useInternalWindowManager) {
-    WWMShutdown(WSKillMode);
-    // // Trigger WindowMaker state variable
-    // SIG_WCHANGE_STATE(WSTATE_NEED_EXIT);
-    // // Generate some event to wake up WindowMaker GCD thread (wmaker_q)
-    // XWarpPointer(dpy, None, None, 0, 0, 0, 0, 100, 100);
-    // fprintf(stderr, "XWarpPointer called.\n");
-  }
+  [[NXDefaults userDefaults] synchronize];
+  
+  [NSApp stop:self];
 }
 
 @end
@@ -618,8 +612,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Log Out and Power Off terminate quitting when some application won't stop,
   // some removable media won't unmount/eject (optional: think).
   switch (NXRunAlertPanel(_(@"Log Out"),
-			  _(@"Do you really want to log out?"),
-			  _(@"Log out"), _(@"Power off"), _(@"Cancel")))
+        		  _(@"Do you really want to log out?"),
+        		  _(@"Log out"), _(@"Power off"), _(@"Cancel")))
     {
     case NSAlertDefaultReturn: // Log Out
       isQuitting = YES;
@@ -633,17 +627,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
       if ([procManager terminateAllApps] == NO) {
         [NSApp activateIgnoringOtherApps:YES];
-        NSRunAlertPanel(_(@"Power Off"),
+        NXRunAlertPanel(_(@"Log Out"),
                         _(@"Some application terminate power off process."),
                         _(@"Dismiss"), nil, nil);
         isQuitting = NO;
         return NO;
       }
 
+      [NSApp deactivate];
+
       // Close Workspace windows, hide Dock, quit WindowMaker
       [self _finishTerminateProcess];
-      
-      return YES;
+      return NSTerminateLater;
       break;
     case NSAlertAlternateReturn: // Power off
       isQuitting = YES;
@@ -666,10 +661,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [self _finishTerminateProcess];
       
       // Tell Login.app to shutdown a computer
-      /*	  [[NSDistributedNotificationCenter 
-                  notificationCenterForType:GSPublicNotificationCenterType] 
-                  postNotificationName:XSComputerShouldGoDown
-                  object:@"WorkspaceManager"];*/
+      // [[NSDistributedNotificationCenter 
+      //         notificationCenterForType:GSPublicNotificationCenterType] 
+      //         postNotificationName:XSComputerShouldGoDown
+      //         object:@"WorkspaceManager"];
       return YES;
       break;
     default:
@@ -682,9 +677,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  NSLog(@"Application will terminate");
+  // NSLog(@"Application will terminate");
   // [NSApp deactivate];
-  [[NXDefaults userDefaults] synchronize];
+  // [[NXDefaults userDefaults] synchronize];
 }
   
 - (void)activate

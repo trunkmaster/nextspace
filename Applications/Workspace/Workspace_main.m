@@ -20,12 +20,58 @@
 #import <NXSystem/NXScreen.h>
 
 #import "Workspace+WindowMaker.h"
+int
+WSApplicationMain(int argc, const char **argv)
+{
+  NSDictionary		*infoDict;
+  NSString              *mainModelFile;
+  NSString		*className;
+  Class			appClass;
+  CREATE_AUTORELEASE_POOL(pool);
+// #if defined(LIB_FOUNDATION_LIBRARY) || defined(GS_PASS_ARGUMENTS)
+//   extern char		**environ;
+
+//   [NSProcessInfo initializeWithArguments: (char**)argv
+// 				   count: argc
+// 			     environment: environ];
+// #endif
+
+  infoDict = [[NSBundle mainBundle] infoDictionary];
+  className = [infoDict objectForKey: @"NSPrincipalClass"];
+  appClass = NSClassFromString(className);
+
+  if (appClass == 0)
+    {
+      NSLog(@"Bad application class '%@' specified", className);
+      appClass = [NSApplication class];
+    }
+  [appClass sharedApplication];
+
+  mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
+  if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
+    {
+      if ([NSBundle loadNibNamed: mainModelFile owner: NSApp] == NO)
+	{
+	  NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
+	}
+    }
+
+  RECREATE_AUTORELEASE_POOL(pool);
+
+  [NSApp run];
+
+  [pool drain];
+
+  return 0;
+}
 
 int main(int argc, const char **argv)
 {
   if (xIsWindowServerReady() == NO)
     {
-      fprintf(stderr, "[Workspace] X Window server is not ready on display '%s'\n", getenv("DISPLAY"));
+      fprintf(stderr,
+              "[Workspace] X Window server is not ready on display '%s'\n",
+              getenv("DISPLAY"));
       exit(1);
     }
   
@@ -33,32 +79,33 @@ int main(int argc, const char **argv)
   useInternalWindowManager = !xIsWindowManagerAlreadyRunning();
   if (useInternalWindowManager)
     {
-      fprintf(stderr,"[Workspace] === Starting Workspace Manager [%s]... ===\n", REVISION);
+      fprintf(stderr,"[Workspace] === Starting Workspace [%s]... ===\n", REVISION);
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-      wmaker_q = dispatch_queue_create("ns.workspace.windowmaker", NULL);
+      wmaker_q = dispatch_queue_create("ns.workspace.wm", NULL);
 
-      fprintf(stderr, "[Workspace] === Initializing WindowMaker... ===\n");
+      fprintf(stderr, "[Workspace] === Initializing Window Manager... ===\n");
       //--- WindowMaker queue -----------------------------------------------
       dispatch_sync(wmaker_q, ^{
           WWMInitializeWindowMaker(argc, (char **)argv);
         });
-      fprintf(stderr, "[Workspace] === WindowMaker initialized! ===\n");
+      fprintf(stderr, "[Workspace] === Windoww Manager initialized! ===\n");
 
       // Start X11 EventLoop in parallel
       dispatch_async(wmaker_q, ^{ EventLoop(); });
       
-      fprintf(stderr, "[Workspace] === Starting Workspace application... ===\n");
       //--- Workspace (GNUstep) queue ---------------------------------------
+      fprintf(stderr, "[Workspace] === Starting Workspace application... ===\n");
       dispatch_sync(workspace_q, ^{
           @autoreleasepool {
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject:@"YES" forKey:@"NXAutoLaunch"];
-            NSApplicationMain(argc, argv);
-            NSLog(@"Workspace applicaton successfully finished.");
+            WSApplicationMain(argc, argv);
           }
         });
+      fprintf(stderr, "[Workspace] === Workspace successfully finished! ===\n");
       //---------------------------------------------------------------------
+      fprintf(stderr, "[Workspace] === Quitting Window manager... ===\n");
+      // Quit WindowManager, close all X11 applications.
+      WWMShutdown(WSKillMode);
     }
   else
 #endif // NEXTSPACE
