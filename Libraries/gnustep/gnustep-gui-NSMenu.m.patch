@@ -12,7 +12,7 @@
 +    {
 +      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 +  
-+      if (![[defaults objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
++      if (![[defaults objectForKey: @"autolaunch"] isEqualToString:@"YES"])
 +        {
 +          [self display];
 +          // we must make sure that any attached submenu is visible too.

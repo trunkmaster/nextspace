@@ -30,7 +30,7 @@
            userInfo: info];
 +
 +      if ([[[NSUserDefaults standardUserDefaults]
-+             objectForKey: @"NXAutoLaunch"] isEqualToString: @"YES"])
++             objectForKey: @"autolaunch"] isEqualToString: @"YES"])
 +        {
 +          _app_is_active = NO;
 +          [[NSUserDefaults standardUserDefaults] removeSuiteNamed: NSArgumentDomain];

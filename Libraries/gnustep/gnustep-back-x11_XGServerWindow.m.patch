@@ -128,7 +128,7 @@
 +          
 +	  if (op != NSWindowOut &&
 +              window->map_state == IsUnmapped &&
-+              [[defaults objectForKey: @"NXAutoLaunch"] isEqualToString:@"YES"])
++              [[defaults objectForKey: @"autolaunch"] isEqualToString:@"YES"])
  	    {
 -	      XMapRaised(dpy, ROOT);
 +              // window->ignore_take_focus = YES; // <<<<
