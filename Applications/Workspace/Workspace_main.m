@@ -20,41 +20,32 @@
 #import <NXSystem/NXScreen.h>
 
 #import "Workspace+WindowMaker.h"
-int
-WSApplicationMain(int argc, const char **argv)
+
+int WSApplicationMain(int argc, const char **argv)
 {
   NSDictionary		*infoDict;
   NSString              *mainModelFile;
   NSString		*className;
   Class			appClass;
+  
   CREATE_AUTORELEASE_POOL(pool);
-// #if defined(LIB_FOUNDATION_LIBRARY) || defined(GS_PASS_ARGUMENTS)
-//   extern char		**environ;
-
-//   [NSProcessInfo initializeWithArguments: (char**)argv
-// 				   count: argc
-// 			     environment: environ];
-// #endif
 
   infoDict = [[NSBundle mainBundle] infoDictionary];
-  className = [infoDict objectForKey: @"NSPrincipalClass"];
+  className = [infoDict objectForKey:@"NSPrincipalClass"];
   appClass = NSClassFromString(className);
 
-  if (appClass == 0)
-    {
-      NSLog(@"Bad application class '%@' specified", className);
-      appClass = [NSApplication class];
-    }
+  if (appClass == 0) {
+    NSLog(@"Bad application class '%@' specified", className);
+    appClass = [NSApplication class];
+  }
   [appClass sharedApplication];
 
-  mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
-  if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
-    {
-      if ([NSBundle loadNibNamed: mainModelFile owner: NSApp] == NO)
-	{
-	  NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
-	}
+  mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
+  if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO) {
+    if ([NSBundle loadNibNamed: mainModelFile owner: NSApp] == NO) {
+      NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
     }
+  }
 
   RECREATE_AUTORELEASE_POOL(pool);
 
@@ -67,13 +58,11 @@ WSApplicationMain(int argc, const char **argv)
 
 int main(int argc, const char **argv)
 {
-  if (xIsWindowServerReady() == NO)
-    {
-      fprintf(stderr,
-              "[Workspace] X Window server is not ready on display '%s'\n",
-              getenv("DISPLAY"));
-      exit(1);
-    }
+  if (xIsWindowServerReady() == NO) {
+    fprintf(stderr, "[Workspace] X Window server is not ready on display '%s'\n",
+            getenv("DISPLAY"));
+    exit(1);
+  }
   
 #ifdef NEXTSPACE
   useInternalWindowManager = !xIsWindowManagerAlreadyRunning();
@@ -116,5 +105,6 @@ int main(int argc, const char **argv)
       }
     }
   
-  return 0;
+  fprintf(stderr, "[Workspace] === Exit code is %i ===\n", ws_quit_code);
+  return ws_quit_code;
 }

@@ -369,8 +369,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Filesystem monitor
   [fileSystemMonitor pause];
   [fileSystemMonitor terminate];
+  
   // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
+
+  // FIXME: need to review retain count of `fileSystemMonitor`
   NSLog(@"_finishTerminateProcess fileSystemMonitor RC: %lu",
         [fileSystemMonitor retainCount]);
   if ([fileSystemMonitor retainCount] > 1) {
@@ -411,7 +414,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   TEST_RELEASE(procManager);
 
   [[NXDefaults userDefaults] synchronize];
-  
+
+  // Quit NSApplication runloop
   [NSApp stop:self];
 }
 
@@ -604,6 +608,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
+  NSApplicationTerminateReply terminateReply;
   // Log Out -
   // close all running applications, close all windows and panels, unmount all
   // removable media.
@@ -616,64 +621,70 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         		  _(@"Log out"), _(@"Power off"), _(@"Cancel")))
     {
     case NSAlertDefaultReturn: // Log Out
-      isQuitting = YES;
-      if ([procManager terminateAllBGOperations] == NO) {
-        isQuitting = NO;
-        return NO;
-      }
+      {
+        isQuitting = YES;
+        if ([procManager terminateAllBGOperations] == NO) {
+          isQuitting = NO;
+          return NO;
+        }
 
-      // Save running applications
-      [self _saveRunningApplications];
+        // Save running applications
+        [self _saveRunningApplications];
   
-      if ([procManager terminateAllApps] == NO) {
-        [NSApp activateIgnoringOtherApps:YES];
-        NXRunAlertPanel(_(@"Log Out"),
-                        _(@"Some application terminate power off process."),
-                        _(@"Dismiss"), nil, nil);
-        isQuitting = NO;
-        return NO;
+        if ([procManager terminateAllApps] == NO) {
+          [NSApp activateIgnoringOtherApps:YES];
+          NXRunAlertPanel(_(@"Log Out"),
+                          _(@"Some application terminate power off process."),
+                          _(@"Dismiss"), nil, nil);
+          isQuitting = NO;
+          return NO;
+        }
+
+        [NSApp deactivate];
+
+        // Close Workspace windows, hide Dock, quit WindowMaker
+        [self _finishTerminateProcess];
+        terminateReply = NSTerminateLater;
+        ws_quit_code = WSLogoutOnQuit;
       }
-
-      [NSApp deactivate];
-
-      // Close Workspace windows, hide Dock, quit WindowMaker
-      [self _finishTerminateProcess];
-      return NSTerminateLater;
       break;
     case NSAlertAlternateReturn: // Power off
-      isQuitting = YES;
-      if ([procManager terminateAllBGOperations] == NO)
-        {
+      {
+        isQuitting = YES;
+        if ([procManager terminateAllBGOperations] == NO) {
           isQuitting = NO;
           return NO;
         }
         
-      // if ([procManager terminateAllApps] == NO)
-      //   {
-      //     [NSApp activateIgnoringOtherApps:YES];
-      //     NSRunAlertPanel(_(@"Power Off"),
-      //                     _(@"Some application terminate power off process."),
-      //                     _(@"Dismiss"), nil, nil);
-      //     isQuitting = NO;
-      //     return NO;
-      //   }
+        // if ([procManager terminateAllApps] == NO)
+        //   {
+        //     [NSApp activateIgnoringOtherApps:YES];
+        //     NSRunAlertPanel(_(@"Power Off"),
+        //                     _(@"Some application terminate power off process."),
+        //                     _(@"Dismiss"), nil, nil);
+        //     isQuitting = NO;
+        //     return NO;
+        //   }
       
-      [self _finishTerminateProcess];
+        [self _finishTerminateProcess];
       
-      // Tell Login.app to shutdown a computer
-      // [[NSDistributedNotificationCenter 
-      //         notificationCenterForType:GSPublicNotificationCenterType] 
-      //         postNotificationName:XSComputerShouldGoDown
-      //         object:@"WorkspaceManager"];
-      return YES;
+        // Tell Login.app to shutdown a computer
+        // [[NSDistributedNotificationCenter 
+        //         notificationCenterForType:GSPublicNotificationCenterType] 
+        //         postNotificationName:XSComputerShouldGoDown
+        //         object:@"WorkspaceManager"];
+        terminateReply = NSTerminateLater;
+        ws_quit_code = WSPowerOffOnQuit;
+      }
       break;
     default:
       NSLog(@"Workspace->Quit->Cancel");
       isQuitting = NO;
+      terminateReply = NSTerminateCancel;
       break;
     }
 
-  return NO;
+  return terminateReply;
 }
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {

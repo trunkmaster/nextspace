@@ -11,6 +11,12 @@
 dispatch_queue_t workspace_q;
 dispatch_queue_t wmaker_q;
 
+enum {
+      WSLogoutOnQuit = 0,
+      WSPowerOffOnQuit = 127
+};
+int ws_quit_code;
+
 //-----------------------------------------------------------------------------
 // Visible in Workspace only
 //-----------------------------------------------------------------------------
