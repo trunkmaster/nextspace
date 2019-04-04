@@ -237,7 +237,7 @@
   
   // Set for WindowMaker part of Workspace to find its preferences
   // and other stuff
-  setenv("GNUSTEP_USER_ROOT", [[NSString stringWithFormat:@"%s/Library", user->pw_dir] cString], 1);
+  // setenv("GNUSTEP_USER_ROOT", [[NSString stringWithFormat:@"%s/Library", user->pw_dir] cString], 1);
 
   // For developers
   setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);

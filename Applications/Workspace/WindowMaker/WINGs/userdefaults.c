@@ -53,7 +53,7 @@ static void synchronizeUserDefaults(void *foo);
 
 const char *wusergnusteppath()
 {
-	static const char subdir[] = "/GNUstep";
+	static const char subdir[] = "/Library";
 	static char *path = NULL;
 	char *gspath, *h;
 	int pathlen;
