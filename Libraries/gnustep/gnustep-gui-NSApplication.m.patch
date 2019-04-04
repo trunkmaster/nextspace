@@ -1,5 +1,5 @@
 --- gnustep-gui-0.24.1.orig/Source/NSApplication.m	2015-03-27 23:33:24.000000000 +0200
-+++ gnustep-gui-0.24.1/Source/NSApplication.m	2019-03-04 02:13:29.380728072 +0200
++++ gnustep-gui-0.24.1/Source/NSApplication.m	2019-04-04 23:55:18.918165548 +0300
 @@ -433,6 +433,11 @@
    return NO;
  }
@@ -24,21 +24,38 @@
  - (void) concludeDragOperation: (id<NSDraggingInfo>)sender
  {
  }
-@@ -1334,6 +1344,13 @@
-           postNotificationName: NSApplicationDidBecomeActiveNotification
- 		      object: [NSWorkspace sharedWorkspace]
-           userInfo: info];
-+
-+      if ([[[NSUserDefaults standardUserDefaults]
-+             objectForKey: @"autolaunch"] isEqualToString: @"YES"])
-+        {
-+          _app_is_active = NO;
-+          [[NSUserDefaults standardUserDefaults] removeSuiteNamed: NSArgumentDomain];
-+        }
-     }
- }
+@@ -752,6 +762,8 @@
+  */
+ @implementation NSApplication
  
-@@ -2450,31 +2467,35 @@
++static BOOL _isAutolaunchChecked = NO;
++
+ /*
+  * Class methods
+  */
+@@ -1258,6 +1270,21 @@
+  */
+ - (void) activateIgnoringOtherApps: (BOOL)flag
+ {
++  if (_isAutolaunchChecked == NO)
++    {
++      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++      NSString       *autolaunch = [defaults objectForKey: @"autolaunch"];
++      
++      _isAutolaunchChecked = YES;
++      
++      /* Application was executed with an argument '-autolaunch YES'.
++         Do not activate application on first call. */
++      if (autolaunch && [autolaunch isEqualToString: @"YES"])
++        {
++          return;
++        }
++    }
++
+   // TODO: Currently the flag is ignored
+   if (_app_is_active == NO)
+     {
+@@ -2450,31 +2477,35 @@
  	      _hidden_main = [self mainWindow];
  	      [_hidden_main resignMainWindow];
  	    }
