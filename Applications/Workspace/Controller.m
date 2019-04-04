@@ -640,8 +640,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
           return NO;
         }
 
-        [NSApp deactivate];
-
         // Close Workspace windows, hide Dock, quit WindowMaker
         [self _finishTerminateProcess];
         terminateReply = NSTerminateLater;
@@ -688,9 +686,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  // NSLog(@"Application will terminate");
-  // [NSApp deactivate];
-  // [[NXDefaults userDefaults] synchronize];
 }
   
 - (void)activate

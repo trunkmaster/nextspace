@@ -687,13 +687,13 @@ void WWMDockAutoLaunch(WDock *dock)
       btn->drop_launch = 0;
       btn->paste_launch = 0;
 
-      // Add '-NXAutoLaunch YES' to GNUstep application parameters
+      // Add '-autolaunch YES' to GNUstep application parameters
       if (!strcmp(btn->wm_class, "GNUstep"))
         {
           cmd = [NSString stringWithCString:btn->command];
-          if ([cmd rangeOfString:@"NXAutoLaunch"].location == NSNotFound)
+          if ([cmd rangeOfString:@"autolaunch"].location == NSNotFound)
             {
-              cmd = [cmd stringByAppendingString:@" -NXAutoLaunch YES"];
+              cmd = [cmd stringByAppendingString:@" -autolaunch YES"];
             }
           command = wstrdup(btn->command);
           wfree(btn->command);
@@ -702,7 +702,7 @@ void WWMDockAutoLaunch(WDock *dock)
 
       wDockLaunchWithState(btn, state);
 
-      // Return 'command' field into initial state (without -NXAutoLaunch)
+      // Return 'command' field into initial state (without -autolaunch)
       if (!strcmp(btn->wm_class, "GNUstep"))
         {
           wfree(btn->command);
