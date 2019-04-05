@@ -1,0 +1,21 @@
+--- libs-back-back-0_25_1.orig/Source/x11/XGServerEvent.m	2017-04-07 00:03:43.000000000 +0300
++++ libs-back-back-0_25_1/Source/x11/XGServerEvent.m	2019-03-29 15:56:10.374568502 +0200
+@@ -475,7 +549,7 @@
+                  */
+             if ((cWin->win_attrs.window_style
+               & (NSMiniWindowMask | NSIconWindowMask)) != 0
+-              && eventType == NSLeftMouseDown && clickCount == 1)
++                && eventType == NSLeftMouseDown /*&& clickCount == 1*/)
+               {
+                 if (cWin->parent == None)
+                   break;
+@@ -484,7 +558,8 @@
+                 XSendEvent(dpy, cWin->parent, True,
+                            ButtonPressMask, &xEvent);
+                 XFlush(dpy);
+-                break;
++                if (clickCount != 2)
++                  break;
+               }
+           }
+ 

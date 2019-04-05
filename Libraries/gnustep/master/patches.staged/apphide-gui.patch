@@ -1,0 +1,95 @@
+--- libs-gui-gui-0_25_1.orig/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2019-03-29 15:43:32.157649500 +0200
+@@ -137,6 +137,7 @@
+ - (void) titlewindow: (NSString *)window_title : (int)win;
+ - (void) miniwindow: (int)win;
+ - (BOOL) appOwnsMiniwindow;
++- (BOOL) hidewindow: (int)win;
+ - (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt;
+ // Deprecated
+ - (void) windowdevice: (int) winNum;
+--- libs-gui-gui-0_25_1.orig/Headers/AppKit/NSEvent.h	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Headers/AppKit/NSEvent.h	2019-03-29 15:43:32.160651000 +0200
+@@ -475,6 +475,7 @@
+   GSAppKitDraggingFinished,
+   GSAppKitRegionExposed,
+   GSAppKitWindowDeminiaturize,
++  GSAppKitAppHide
+ } GSAppKitSubtype;
+ #endif
+ 
+--- libs-gui-gui-0_25_1.orig/Source/NSWindow.m	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Source/NSWindow.m	2019-03-29 15:43:37.573355999 +0200
+@@ -4222,6 +4222,10 @@
+               [self performMiniaturize: NSApp];
+               break;
+ 
++            case GSAppKitAppHide:
++              [NSApp hide: self];
++              break;
++
+             case GSAppKitWindowFocusIn:
+               if (_f.is_miniaturized)
+ 		{
+--- libs-gui-gui-0_25_1.orig/Source/NSApplication.m	2017-04-07 00:03:24.000000000 +0300
++++ libs-gui-gui-0_25_1/Source/NSApplication.m	2019-03-29 15:43:37.560349500 +0200
+@@ -2456,31 +2473,35 @@
+ 	      _hidden_main = [self mainWindow];
+ 	      [_hidden_main resignMainWindow];
+ 	    }
++          
++          win = [[self mainMenu] window];
++          if ([GSServerForWindow(win) hidewindow: [win windowNumber]] == NO)
++            {
++              windows_list = GSOrderedWindows();
++              iter = [windows_list reverseObjectEnumerator];
+ 	  
+-	  windows_list = GSOrderedWindows();
+-	  iter = [windows_list reverseObjectEnumerator];
+-	  
+-	  while ((win = [iter nextObject]))
+-	    {
+-	      if ([win isVisible] == NO && ![win isMiniaturized])
+-		{
+-		  continue;		/* Already invisible	*/
+-		}
+-	      if ([win canHide] == NO)
+-		{
+-		  continue;		/* Not hideable	*/
+-		}
+-	      if (win == _app_icon_window)
+-		{
+-		  continue;		/* can't hide the app icon.	*/
+-		}
+-	      if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
+-		{
+-		  continue;		/* Will be hidden by deactivation	*/
+-		}
+-	      [_hidden addObject: win];
+-	      [win orderOut: self];
+-	    }
++              while ((win = [iter nextObject]))
++                {
++                  if ([win isVisible] == NO && ![win isMiniaturized])
++                    {
++                      continue;		/* Already invisible	*/
++                    }
++                  if ([win canHide] == NO)
++                    {
++                      continue;		/* Not hideable	*/
++                    }
++                  if (win == _app_icon_window)
++                    {
++                      continue;		/* can't hide the app icon.	*/
++                    }
++                  if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
++                    {
++                      continue;		/* Will be hidden by deactivation	*/
++                    }
++                  [_hidden addObject: win];
++                  [win orderOut: self];
++                }
++            }
+ 	  _app_is_hidden = YES;
+ 	  
+ 	  if (YES == [[NSUserDefaults standardUserDefaults]
