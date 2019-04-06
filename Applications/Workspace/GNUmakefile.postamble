@@ -25,7 +25,6 @@ APP_WRAPPER_INSTALLED = $(DESTDIR)/$(GNUSTEP_SYSTEM_APPS)/$(APP_WRAPPER)
 SHARED = obj
 
 before-all::
-ifneq ($(windowmaker), no)
 	@ echo "Preparing WindowMaker part of Workspace..."
 	@ ./WM.configure
 	@ echo "Making WindowMaker external components ... "
@@ -34,13 +33,8 @@ ifneq ($(windowmaker), no)
 	@ cd $(WM_DIR)/wrlib; make
 	@ echo " Building WINGs library in $(WM_DIR)/WINGs ... "
 	@ cd $(WM_DIR)/WINGs; make
-	@ echo " Building utilities in $(WM_DIR)/util ..."
-	@ cd $(WM_DIR)/util; make
 	@ echo " Preparing data in $(WM_DIR)/WindowMaker ..."
 	@ cd $(WM_DIR)/WindowMaker; make
-	@ echo " Building documentation in $(WM_DIR)/doc..."
-	@ cd $(WM_DIR)/doc; make
-endif
 
 after-all::
 	@ echo " Copying Viewers bundles into the app wrapper ..."
@@ -52,7 +46,6 @@ after-all::
 	@ cp "Tools/Sizer/$(SHARED)/Sizer.tool" $(APP_WRAPPER)/Resources
 
 after-clean::
-ifneq ($(windowmaker), no)
 	@ echo "Making clean in WindowMaker ... "
 	@ echo " Cleaning in $(WM_DIR)/wrlib ..."
 	@ cd $(WM_DIR)/wrlib; make clean > /dev/null 2>&1
@@ -60,22 +53,14 @@ ifneq ($(windowmaker), no)
 	@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
 	@ echo " Cleaning in $(WM_DIR)/WindowMaker ..."
 	@ cd $(WM_DIR)/WindowMaker; make clean > /dev/null 2>&1
-	@ echo " Cleaning in $(WM_DIR)/doc ..."
-	@ cd $(WM_DIR)/doc; make clean > /dev/null 2>&1
-	@ echo " Cleaning in $(WM_DIR)/util ..."
-	@ cd $(WM_DIR)/util; make clean > /dev/null 2>&1
-endif
 
 before-install::
-ifneq ($(windowmaker), no)
 	@ mkdir -p $(APP_WRAPPER_INSTALLED)
-endif
 
 after-install::
 	@ echo " Copying header files into $(GNUSTEP_SYSTEM_HEADERS)/apps ..."
 	@ mkdir -p $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
 	@ cp Workspace.h $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
-ifneq ($(windowmaker), no)
 	@ echo "===> Installing WindowMaker resources ..."
 	@ cd $(WM_DIR)/wrlib; make install DESTDIR=$(DESTDIR)
 	@ cd $(WM_DIR)/WINGs; make install DESTDIR=$(DESTDIR)
@@ -86,20 +71,11 @@ ifneq ($(windowmaker), no)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/WindowMaker/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/WindowMaker/
-	@ cd $(WM_DIR)/doc; make install DESTDIR=$(DESTDIR)
-	@ cd $(WM_DIR)/util; make install DESTDIR=$(DESTDIR)
-endif
 
 after-uninstall::
-ifneq ($(windowmaker), no)
 	@ echo "Uninstalling $(WM_DIR)/wrlib ..."
 	@ cd $(WM_DIR)/wrlib; make uninstall > /dev/null 2>&1
 	@ echo "Uninstalling $(WM_DIR)/WINGs ..."
 	@ cd $(WM_DIR)/WINGs; make uninstall > /dev/null 2>&1
 	@ echo "Uninstalling $(WM_DIR)/WindowMaker ..."
 	@ cd $(WM_DIR)/WindowMaker; make uninstall > /dev/null 2>&1
-	@ echo "Uninstalling $(WM_DIR)/doc ..."
-	@ cd $(WM_DIR)/doc; make uninstall > /dev/null 2>&1
-	@ echo "Uninstalling $(WM_DIR)/util ..."
-	@ cd $(WM_DIR)/util; make uninstall > /dev/null 2>&1
-endif

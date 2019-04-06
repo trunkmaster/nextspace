@@ -37,7 +37,7 @@ AC_DEFUN_ONCE([WM_I18N_LANGUAGES],
 [AC_ARG_VAR([LINGUAS],
     [list of language translations to support (I18N), use 'list' to get the list of supported languages, default: none])dnl
 AC_DEFUN([WM_ALL_LANGUAGES],
-    [m4_esyscmd([( ls WINGs/po/ ; ls po/ ; ls util/po/ ) | sed -n -e '/po$/{s,\.po,,;p}' | sort -u | tr '\n' ' '])])dnl
+    [m4_esyscmd([( ls WINGs/po/ ; ls po/ ) | sed -n -e '/po$/{s,\.po,,;p}' | sort -u | tr '\n' ' '])])dnl
 dnl We 'divert' the macro to have it executed as soon as the option list have
 dnl been processed, so the list of locales will be printed after the configure
 dnl options have been parsed, but before any test have been run
@@ -68,8 +68,6 @@ AS_IF([test "x$LINGUAS" != "x"],
      # This is the list of locales that our archive currently supports
      wings_locales=" m4_esyscmd([ls WINGs/po/ | sed -n '/po$/{s,.po,,;p}' | tr '\n' ' '])"
      wmaker_locales=" m4_esyscmd([ls po/ | sed -n '/po$/{s,.po,,;p}' | tr '\n' ' '])"
-     util_locales=" m4_esyscmd([ls util/po/ | sed -n '/po$/{s,.po,,;p}' | tr '\n' ' '])"
-     man_locales=" m4_esyscmd([ls doc/ | grep '^[a-z][a-z]\(_[A-Z][A-Z]\)*$' | tr '\n' ' '])"
 
      # If the LINGUAS is specified as a simple '*', then we enable all the languages
      # we know. This is not standard, but it is useful is some cases
@@ -80,7 +78,7 @@ AS_IF([test "x$LINGUAS" != "x"],
      for lang in $LINGUAS; do
          found=0
          wm_missing=""
-         m4_foreach([REGION], [WINGs, wmaker, util, man],
+         m4_foreach([REGION], [WINGs, wmaker, man],
              [AS_IF([echo "$[]m4_tolower(REGION)[]_locales" | grep " $lang " > /dev/null],
                  [m4_toupper(REGION)MOFILES="$[]m4_toupper(REGION)MOFILES $lang.mo"
                   found=1],
@@ -104,7 +102,6 @@ AS_IF([test "x$LINGUAS" != "x"],
 [INTLIBS=""
  WINGSMOFILES=""
  WMAKERMOFILES=""
- UTILMOFILES=""
  MANLANGDIRS=""
  supported_locales=" disabled"])
 dnl
@@ -112,7 +109,6 @@ dnl The variables that are used in the Makefiles:
 AC_SUBST([INTLIBS])dnl
 AC_SUBST([WINGSMOFILES])dnl
 AC_SUBST([WMAKERMOFILES])dnl
-AC_SUBST([UTILMOFILES])dnl
 AC_SUBST([MANLANGDIRS])dnl
 ])
 

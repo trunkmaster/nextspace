@@ -6,7 +6,7 @@ cd $WM_DIR
 if [ ! -f Makefile ];then
     echo "===> 'Makefile' not found. Running configure script..."
     if [ ! -f config.h ]; then
-        ./autogen.sh
+        autoreconf -vfi -I m4
     fi
     WM_APP="/usr/NextSpace/Apps/Workspace.app"
     export CFLAGS=-DNEXTSPACE
@@ -28,7 +28,6 @@ if [ ! -f Makefile ];then
         --localedir=$WM_APP \
         --with-pixmapdir=$WM_APP/WindowMaker/Pixmaps \
         \
-        --with-gnustepdir=/usr/NextSpace \
         CC=clang CXX=clang++
 
     #  --disable-xft

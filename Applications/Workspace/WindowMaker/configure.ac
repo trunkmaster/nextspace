@@ -240,7 +240,7 @@ WM_PROG_CC_NESTEDFUNC
 dnl Posix thread
 dnl ============
 dnl they are used by util/wmiv
-AX_PTHREAD
+dnl AX_PTHREAD
 
 
 dnl Tracking on what is detected for final status
@@ -885,19 +885,16 @@ AC_CONFIG_FILES(
 
     dnl Window Maker's core
     src/Makefile src/wconfig.h po/Makefile
-    doc/Makefile doc/build/Makefile
-    doc/sk/Makefile doc/cs/Makefile doc/ru/Makefile
     WindowMaker/Makefile WindowMaker/Backgrounds/Makefile
     WindowMaker/Defaults/Makefile WindowMaker/IconSets/Makefile
     WindowMaker/Icons/Makefile WindowMaker/Pixmaps/Makefile
     WindowMaker/Styles/Makefile WindowMaker/Themes/Makefile
 
     dnl Command-line utilities
-    util/Makefile util/po/Makefile
+dnl    util/Makefile util/po/Makefile
 
     dnl Misceleanous stuff
-    wmlib/Makefile
-    test/Makefile
+dnl    test/Makefile
 )
 
 AC_OUTPUT
