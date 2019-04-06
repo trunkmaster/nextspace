@@ -842,31 +842,6 @@ AS_IF([test "x$with_pixmapdir" != "x"],
 AC_SUBST([pixmapdir])dnl
 
 
-dnl Support for GNUSTEP_LOCAL_ROOT, for WPrefs.app
-dnl ==============================================
-AC_ARG_WITH([gnustepdir],
-    [AS_HELP_STRING([--with-gnustepdir=PATH], [specify the directory for GNUstep applications])],
-    [AS_CASE([$withval],
-        [yes|no], [AC_MSG_ERROR([bad value '$withval' for --with-gnustepdir, expected a path]) ],
-        [/*],  [], dnl Absolute path, ok
-        [\$*], [], dnl Assumes it starts with a reference to $prefix or a similar variable, ok
-        [AC_MSG_ERROR([bad path '$withval' for gnustepdir, expecting an absolute path])])],
-    [dnl If no command-line option was given, we use $GNUSTEP_LOCAL_ROOT if it was set
-     with_gnustepdir="$GNUSTEP_LOCAL_ROOT"])
-
-AS_IF([test "x$with_gnustepdir" = "x"],
-    [dnl No path specified, use default
-     wprefs_base_dir=${prefix}
-     wprefs_datadir="${datadir}/WPrefs"
-     wprefs_bindir="${bindir}"],
-    [dnl User specified base path
-     wprefs_base_dir="$with_gnustepdir/Applications"
-     wprefs_datadir="$wprefs_base_dir/WPrefs.app"
-     wprefs_bindir="$wprefs_base_dir/WPrefs.app"])
-AC_SUBST([wprefs_datadir])dnl
-AC_SUBST([wprefs_bindir])dnl
-
-
 dnl Enable User Defined Menu thing
 dnl ==============================
 AC_ARG_ENABLE([usermenu],
@@ -917,10 +892,6 @@ AC_CONFIG_FILES(
     WindowMaker/Icons/Makefile WindowMaker/Pixmaps/Makefile
     WindowMaker/Styles/Makefile WindowMaker/Themes/Makefile
 
-    dnl Preference GUI
-    WPrefs.app/Makefile WPrefs.app/po/Makefile
-    WPrefs.app/tiff/Makefile WPrefs.app/xpm/Makefile
-
     dnl Command-line utilities
     util/Makefile util/po/Makefile
 
@@ -940,7 +911,6 @@ echo
 echo "Installation path prefix            : $prefix"
 echo "Installation path for binaries      : $_bindir"
 echo "Installation path for libraries     : $_libdir"
-echo "Installation path for WPrefs.app    : $wprefs_base_dir" | sed -e 's|\${prefix}|'"$prefix|"
 echo "Supported core features:            :$supported_core"
 echo "Supported X extensions:             :$supported_xext"
 echo "Supported graphic format libraries  :$supported_gfx"

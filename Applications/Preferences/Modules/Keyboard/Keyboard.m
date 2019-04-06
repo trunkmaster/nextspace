@@ -182,10 +182,10 @@ static NSMutableDictionary      *domain = nil;
     case 1: // Layouts
       [sectionBox setContentView:layoutsBox];
       [self updateLayouts];
-      [layoutList selectRow:0 byExtendingSelection:NO];
-      if (!options)
-        options = [[keyboard options] copy];
-      [self initSwitchLayoutShortcuts];
+      // [layoutList selectRow:0 byExtendingSelection:NO];
+      // if (!options)
+      //   options = [[keyboard options] copy];
+      // [self initSwitchLayoutShortcuts];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -351,16 +351,23 @@ static NSMutableDictionary      *domain = nil;
 - (void)updateLayouts
 {
   NXDefaults	*defs = [NXDefaults globalUserDefaults];
-  
-  if (layouts) [layouts release];
-  layouts = [[keyboard layouts] copy];
+
+  NSLog(@"1");
+  // if (layouts) [layouts release];
+  NSLog(@"2");
+  // NSLog(@"Keyboard layouts: %@", [keyboard layouts]);
+  layouts = [[NSArray alloc] initWithArray:[keyboard layouts]];
+  NSLog(@"3");
   if (variants) [variants release];
+  NSLog(@"4");
   variants = [[keyboard variants] copy];
   
+  NSLog(@"5");
   [defs setObject:layouts forKey:Layouts];
+  NSLog(@"6");
   [defs setObject:variants forKey:Variants];
   
-  [layoutList reloadData];
+  // [layoutList reloadData];
 }
 
 // "Add.." button action

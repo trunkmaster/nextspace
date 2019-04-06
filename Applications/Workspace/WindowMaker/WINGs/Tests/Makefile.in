@@ -279,7 +279,6 @@ VERSION = @VERSION@
 WINGSMOFILES = @WINGSMOFILES@
 WINGS_VERSION = @WINGS_VERSION@
 WMAKERMOFILES = @WMAKERMOFILES@
-WPREFSMOFILES = @WPREFSMOFILES@
 WRASTER_VERSION = @WRASTER_VERSION@
 WUTIL_VERSION = @WUTIL_VERSION@
 XCFLAGS = @XCFLAGS@
@@ -352,8 +351,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-wprefs_bindir = @wprefs_bindir@
-wprefs_datadir = @wprefs_datadir@
 AUTOMAKE_OPTIONS = 
 LDADD = $(top_builddir)/WINGs/libWINGs.la $(top_builddir)/wrlib/libwraster.la \
 	$(top_builddir)/WINGs/libWUtil.la \

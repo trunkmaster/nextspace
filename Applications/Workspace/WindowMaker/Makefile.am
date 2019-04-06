@@ -30,7 +30,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules LINGUAS='*'
 
 
-SUBDIRS = wrlib WINGs src util po WindowMaker wmlib WPrefs.app doc
+SUBDIRS = wrlib WINGs src util po WindowMaker wmlib doc
 DIST_SUBDIRS = $(SUBDIRS) test
 
 EXTRA_DIST = TODO BUGS BUGFORM FAQ INSTALL \
@@ -80,7 +80,7 @@ if HAVE_XGETTEXT
 	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) update-lang || exit $$?); \
 	done
 
-SUBDIRS_PO = WINGs/po po util/po WPrefs.app/po
+SUBDIRS_PO = WINGs/po po util/po
 else
 	@echo "Error: the program 'xgettext' was not found by configure, it is mandatory for this operation" >&2 ; exit 1
 endif

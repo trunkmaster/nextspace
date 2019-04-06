@@ -414,7 +414,7 @@ NSString *NumLockState = @"NXKeyboardNumLockState";
 - (NSArray *)layouts
 {
   NSString *l = [[self _serverConfig] objectForKey:Layouts];
-
+  
   return [l componentsSeparatedByString:@","];
 }
 
