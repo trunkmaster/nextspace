@@ -5,7 +5,7 @@ cd $WM_DIR
 
 if [ ! -f Makefile ];then
     echo "===> 'Makefile' not found. Running configure script..."
-    if [ ! -f config.h ]; then
+    if [ ! -f configure ]; then
         autoreconf -vfi -I m4
     fi
     WM_APP="/usr/NextSpace/Apps/Workspace.app"
