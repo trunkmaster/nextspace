@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WM_DIR="WindowMaker"
+WM_DIR="WM"
 cd $WM_DIR
 
 if [ ! -f Makefile ];then
@@ -23,10 +23,10 @@ if [ ! -f Makefile ];then
         --includedir=/usr/NextSpace/include \
         --mandir=/usr/NextSpace/Documentation/man \
         \
-        --datadir=$WM_APP \
-        --sysconfdir=$WM_APP \
-        --localedir=$WM_APP \
-        --with-pixmapdir=$WM_APP/WindowMaker/Pixmaps \
+        --datadir=$WM_APP/Resources/WM \
+        --sysconfdir=$WM_APP/Resources/WM \
+        --localedir=$WM_APP/Resources/WM \
+        --with-pixmapdir=$WM_APP/Resources/WM \
         \
         CC=clang CXX=clang++
 

@@ -54,12 +54,9 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Inspectors/Inspectors.bundle \
 	$(wildcard Processes/English.lproj)
 
-# WindowMaker
-# Commandline option to make it separate application: windowmaker=yes
-ifneq ($(windowmaker), no)
-  WM_DIR = WindowMaker
-  include GNUmakefile.WM
-endif
+# Window manager
+WM_DIR = WM
+include GNUmakefile.WM
 
 $(APP_NAME)_LOCALIZED_RESOURCE_FILES = $(notdir $(wildcard English.lproj/*))
 

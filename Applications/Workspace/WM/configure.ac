@@ -885,16 +885,6 @@ AC_CONFIG_FILES(
 
     dnl Window Maker's core
     src/Makefile src/wconfig.h po/Makefile
-    WindowMaker/Makefile WindowMaker/Backgrounds/Makefile
-    WindowMaker/Defaults/Makefile WindowMaker/IconSets/Makefile
-    WindowMaker/Icons/Makefile WindowMaker/Pixmaps/Makefile
-    WindowMaker/Styles/Makefile WindowMaker/Themes/Makefile
-
-    dnl Command-line utilities
-dnl    util/Makefile util/po/Makefile
-
-    dnl Misceleanous stuff
-dnl    test/Makefile
 )
 
 AC_OUTPUT

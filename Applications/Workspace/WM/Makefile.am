@@ -30,22 +30,8 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules LINGUAS='*'
 
 
-SUBDIRS = wrlib WINGs src po WindowMaker
+SUBDIRS = wrlib WINGs src po
 DIST_SUBDIRS = $(SUBDIRS)
-
-#EXTRA_DIST = TODO BUGS BUGFORM FAQ INSTALL \
-#	INSTALL-WMAKER README.i18n README.definable-cursor \
-#	The-perfect-Window-Maker-patch.txt \
-#	README COPYING.WTFPL autogen.sh \
-#	email-clients.txt checkpatch.pl update-changelog.pl \
-#	script/check-cmdline-options-doc.sh \
-#	script/check-translation-sources.sh \
-#	script/check-wmaker-loaddef-callbacks.sh \
-#	script/generate-mapfile-from-header.sh \
-#	script/generate-po-from-template.sh \
-#	script/generate-txt-from-texi.sh \
-#	script/nested-func-to-macro.sh \
-#	script/replace-ac-keywords.sh
 
 
 .PHONY:	coverage-reset coverage
