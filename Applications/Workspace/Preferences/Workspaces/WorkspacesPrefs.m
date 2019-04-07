@@ -21,7 +21,7 @@
 
 #import "WorkspacesPrefs.h"
 #import <NXFoundation/NXDefaults.h>
-#import <Workspace+WindowMaker.h>
+#import <Workspace+WM.h>
 #include <workspace.h>
 #import <Controller.h>
 

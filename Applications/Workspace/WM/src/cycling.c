@@ -41,7 +41,7 @@
 #include "xinerama.h"
 #include "switchpanel.h"
 
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 
 static void raiseWindow(WSwitchPanel * swpanel, WWindow * wwin)
 {

@@ -20,7 +20,7 @@
 
 #import <NXFoundation/NXDefaults.h>
 #import "AdvancedPrefs.h"
-#import <Workspace+WindowMaker.h>
+#import <Workspace+WM.h>
 
 @implementation AdvancedPrefs
 

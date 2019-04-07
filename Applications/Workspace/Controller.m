@@ -35,7 +35,7 @@
 #import <NXSystem/NXDisplay.h>
 #import <NXSystem/NXPower.h>
 
-#import "Workspace+WindowMaker.h"
+#import "Workspace+WM.h"
 
 #import "Controller.h"
 #import "Controller+NSWorkspace.h"

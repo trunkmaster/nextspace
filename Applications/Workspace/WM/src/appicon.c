@@ -55,7 +55,7 @@
 #include "xdnd.h"
 #endif
 #ifdef NEXTSPACE
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 #endif /* NEXTSPACE */
 
 /*

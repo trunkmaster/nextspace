@@ -9,7 +9,7 @@
 #import <Viewers/PathIcon.h>
 
 #import "RecyclerIcon.h"
-#import "Workspace+WindowMaker.h"
+#import "Workspace+WM.h"
 
 @interface ItemsLoader : NSOperation
 {

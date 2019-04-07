@@ -51,7 +51,7 @@
 #include "misc.h"
 #include "event.h"
 #ifdef NEXTSPACE
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 #endif // NEXTSPACE        
 
 

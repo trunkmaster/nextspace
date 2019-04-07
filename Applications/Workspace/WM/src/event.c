@@ -81,7 +81,7 @@
 #include "wsmap.h"
 
 #ifdef NEXTSPACE
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 extern void WWMIconYardShowIcons(WScreen *screen);
 extern void WWMIconYardHideIcons(WScreen *screen);
 extern void WWMDockShowIcons(WDock *dock);

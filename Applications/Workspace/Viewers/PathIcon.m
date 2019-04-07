@@ -13,7 +13,7 @@
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <GNUstepGUI/GSDragView.h>
 
-#import "Workspace+WindowMaker.h"
+#import "Workspace+WM.h"
 #import <superfluous.h>
 #import <defaults.h>
 

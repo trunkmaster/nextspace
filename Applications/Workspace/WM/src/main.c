@@ -60,7 +60,7 @@
 #include <WINGs/WUtil.h>
 
 #ifdef NEXTSPACE
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 #endif
 
 #ifndef GLOBAL_DEFAULTS_SUBDIR

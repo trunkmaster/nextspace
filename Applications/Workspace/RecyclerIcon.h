@@ -2,7 +2,7 @@
 
 #include <AppKit/AppKit.h>
 
-#import "Workspace+WindowMaker.h"
+#import "Workspace+WM.h"
 
 @interface RecyclerIconView : NSView
 {

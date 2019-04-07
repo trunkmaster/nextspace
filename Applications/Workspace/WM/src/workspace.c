@@ -51,7 +51,7 @@
 #include "event.h"
 #include "wsmap.h"
 #ifdef NEXTSPACE
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 #include "stacking.h"
 #endif // NEXTSPACE        
 

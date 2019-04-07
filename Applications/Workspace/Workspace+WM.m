@@ -19,7 +19,7 @@
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXSystemInfo.h>
 
-#import "Workspace+WindowMaker.h"
+#import "Workspace+WM.h"
 #import "Controller.h"
 #import "Operations/ProcessManager.h"
 

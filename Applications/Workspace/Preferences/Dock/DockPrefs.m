@@ -21,7 +21,7 @@
 
 #import "DockPrefs.h"
 #import <NXFoundation/NXDefaults.h>
-#import <Workspace+WindowMaker.h>
+#import <Workspace+WM.h>
 
 @implementation DockPrefsAppicon
 - (void)setCursor:(NSCursor *)c

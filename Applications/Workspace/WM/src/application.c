@@ -39,7 +39,7 @@
 #include "defaults.h"
 
 #ifdef NEXTSPACE
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 #include <stdio.h>
 #include "framewin.h"
 #endif

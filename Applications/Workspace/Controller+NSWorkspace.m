@@ -44,7 +44,7 @@
 #import <NXSystem/NXMediaManager.h>
 #import <NXAppKit/NXAlert.h>
 
-#import "Workspace+WindowMaker.h"
+#import "Workspace+WM.h"
 
 #import "Controller+NSWorkspace.h"
 

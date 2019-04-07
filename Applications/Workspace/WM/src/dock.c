@@ -61,7 +61,7 @@
 #include "event.h"
 
 #ifdef NEXTSPACE
-#include <Workspace+WindowMaker.h>
+#include <Workspace+WM.h>
 #endif
 
 /**** Local variables ****/

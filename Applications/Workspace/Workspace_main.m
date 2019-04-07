@@ -19,7 +19,7 @@
 #import <AppKit/AppKit.h>
 #import <NXSystem/NXScreen.h>
 
-#import "Workspace+WindowMaker.h"
+#import "Workspace+WM.h"
 
 int WSApplicationMain(int argc, const char **argv)
 {
