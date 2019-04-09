@@ -886,17 +886,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 // File
-- (void)newViewer:(id)sender
-{
-  FileViewer *fv;
-  NXDefaults *df = [NXDefaults userDefaults];
-  
-  fv = [self newViewerRootedAt:@"/"
-                        viewer:[df objectForKey:@"PreferredViewer"]
-                        isRoot:NO];
-  [[fv window] makeKeyAndOrderFront:self];
-}
-
 - (void)closeViewer:(id)viewer
 {
   NSLog(@"Controller: closeViewer[%lu] (%@)", [viewer retainCount], [viewer rootPath]);
@@ -925,6 +914,17 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)setViewerType:(id)sender
 {
   [[self fileViewerForWindow:[NSApp keyWindow]] setViewerType:sender];
+}
+
+- (void)newViewer:(id)sender
+{
+  FileViewer *fv;
+  NXDefaults *df = [NXDefaults userDefaults];
+  
+  fv = [self newViewerRootedAt:@"/"
+                        viewer:[df objectForKey:@"PreferredViewer"]
+                        isRoot:NO];
+  [[fv window] makeKeyAndOrderFront:self];
 }
 
 - (void)updateViewers:(id)sender

@@ -191,6 +191,7 @@
     // rootFrame.origin.x += 20;
     // rootFrame.origin.y -= 20;
     // [window setFrame:rootFrame display:NO];
+    [window setTitle:@"File Viewer  \u2014  /"];
     [window center];
     relativePath = rootPath;
   }
