@@ -1674,7 +1674,6 @@ int XWRunAlertPanel(char *title, char *message,
            @"AlternateButton":alternateButton?[NSString stringWithCString:alternateButton]:@"",
            @"OtherButton":otherButton?[NSString stringWithCString:otherButton]:@""};
   alertInfo = [info mutableCopy];
-  [info release];
   
   [[NSApp delegate] performSelectorOnMainThread:@selector(showWMAlert:)
                                      withObject:alertInfo
