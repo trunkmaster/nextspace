@@ -840,7 +840,9 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 	if (WFLAGP(wwin, start_maximized) && IS_RESIZABLE(wwin))
 		wwin->flags.maximized = MAX_VERTICAL | MAX_HORIZONTAL;
 
-	wNETWMCheckInitialClientState(wwin);
+        if (wwin->flags.is_gnustep == 0) {
+          wNETWMCheckInitialClientState(wwin);
+        }
 
 	/* apply previous state if it exists and we're in startup */
 	if (scr->flags.startup && wm_state >= 0) {
