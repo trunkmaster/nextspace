@@ -368,10 +368,14 @@ NSString *NumLockState = @"NXKeyboardNumLockState";
   //       vd.model, vd.layout, vd.variant, vd.options, file);
 
   config = [NSMutableDictionary dictionary];
-  [config setObject:[NSString stringWithCString:vd.layout] forKey:Layouts];
-  [config setObject:[NSString stringWithCString:vd.variant] forKey:Variants];
-  [config setObject:[NSString stringWithCString:vd.options] forKey:Options];
-  [config setObject:[NSString stringWithCString:vd.model] forKey:Model];
+  [config setObject:[NSString stringWithCString:(vd.layout != NULL) ? vd.layout : ""]
+             forKey:Layouts];
+  [config setObject:[NSString stringWithCString:(vd.variant != NULL) ? vd.variant : ""]
+             forKey:Variants];
+  [config setObject:[NSString stringWithCString:(vd.options != NULL) ? vd.options : ""]
+             forKey:Options];
+  [config setObject:[NSString stringWithCString:(vd.model != NULL) ? vd.model : ""]
+             forKey:Model];
   
   // [config writeToFile:@"/Users/me/Library/NXKeyboard" atomically:YES];
   
@@ -414,7 +418,7 @@ NSString *NumLockState = @"NXKeyboardNumLockState";
 - (NSArray *)layouts
 {
   NSString *l = [[self _serverConfig] objectForKey:Layouts];
-  
+
   return [l componentsSeparatedByString:@","];
 }
 
