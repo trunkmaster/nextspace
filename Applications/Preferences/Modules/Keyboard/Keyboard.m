@@ -350,31 +350,20 @@ static NSMutableDictionary      *domain = nil;
 - (void)updateLayouts
 {
   NXDefaults *defs = [NXDefaults globalUserDefaults];
-  NSArray    *systemLayouts, *systemVariants;
 
-  if (layouts)
+  if (layouts) {
     [layouts release];
-  systemLayouts = [keyboard layouts];
-  if (systemLayouts && [systemLayouts count] > 0) {
-    layouts = [[NSArray alloc] initWithArray:systemLayouts];
   }
-  else {
-    layouts = [[NSArray alloc] init];
-  }
+  layouts = [[keyboard layouts] copy];
 
-  if (variants)
+  if (variants) {
     [variants release];
-  systemVariants = [keyboard variants];
-  if (systemVariants && [systemVariants count] > 0) {
-    variants = [[NSArray alloc] initWithArray:systemVariants];
   }
-  else {
-    variants = [[NSArray alloc] init];
-  }
-  
+  variants = [[keyboard variants] copy];
+
   [defs setObject:layouts forKey:Layouts];
   [defs setObject:variants forKey:Variants];
-  
+
   [layoutList reloadData];
 }
 
