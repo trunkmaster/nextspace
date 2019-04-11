@@ -23,6 +23,7 @@
 #define WMSTARTUP_H
 
 void StartUp(Bool defaultScreenOnly);
+void WMSetErrorHandler(void);
 
 void wHackedGrabButton(unsigned int button, unsigned int modifiers,
 		       Window grab_window, Bool owner_events,

@@ -130,6 +130,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   NSString *osVersion;
   NSString *processorType;
   NSString *memorySize;
+  NSString *backendContext;
 
   [infoPanelImage setImage:[NSApp applicationIconImage]];
   
@@ -154,12 +155,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                                       [self _windowServerVersion]]];
 
   // Foundation Kit and AppKit
-  // extern char *gnustep_base_version;
-
   [baseVersion setStringValue:[NSString stringWithFormat:@"%s",
                                         STRINGIFY(GNUSTEP_BASE_VERSION)]];
-  [guiVersion setStringValue:[NSString stringWithFormat:@"%s",
-                                       STRINGIFY(GNUSTEP_GUI_VERSION)]];
+  backendContext = [[[[NSApp mainWindow] graphicsContext] className]
+                     stringByReplacingOccurrencesOfString:@"Context"
+                                               withString:@""];
+  [guiVersion setStringValue:[NSString stringWithFormat:@"%s (%@)",
+                                       STRINGIFY(GNUSTEP_GUI_VERSION),
+                                       backendContext]];
 }
 
 #define X_WINDOW(win) (Window)[GSCurrentServer() windowDevice:[(win) windowNumber]]
@@ -214,6 +217,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [finder release];
   }
   
+  // Info
+  if (infoPanel) {
+    [infoPanel close];
+    [infoPanel release];
+  }
+  
+  // Legal
+  if (legalPanel) {
+    [legalPanel close];
+    [legalPanel release];
+  }
+
   // Viewers
   for (FileViewer *fv in _fvs) {
     winState = WWMWindowState([fv window]);

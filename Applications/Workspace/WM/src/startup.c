@@ -118,6 +118,10 @@ static int catchXError(Display * dpy, XErrorEvent * error)
   wwarning(_("internal X error: %s"), buffer);
   return -1;
 }
+void WMSetErrorHandler(void)
+{
+  XSetErrorHandler((XErrorHandler) catchXError);
+}
 
 /*
  *----------------------------------------------------------------------

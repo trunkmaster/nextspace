@@ -21,6 +21,9 @@
 
 #import "Workspace+WM.h"
 
+// WM/src/startup.c
+extern void WMSetErrorHandler(void);
+
 int WSApplicationMain(int argc, const char **argv)
 {
   NSDictionary		*infoDict;
@@ -48,6 +51,8 @@ int WSApplicationMain(int argc, const char **argv)
   }
 
   RECREATE_AUTORELEASE_POOL(pool);
+
+  WMSetErrorHandler();
 
   [NSApp run];
 

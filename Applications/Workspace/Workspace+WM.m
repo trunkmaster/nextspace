@@ -25,11 +25,11 @@
 
 NSString *WMShowAlertPanel = @"WMShowAlertPanelNotification";
 
-// WindowMaker functions and vars
+// WM functions and vars
 extern Display *dpy;
 extern char *GetCommandForWindow(Window win);
-// WindowMaker/src/main.c
-extern int real_main(int argc, char **argv);
+// WM/src/main.c
+extern int WMInitialize(int argc, char **argv);
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -169,7 +169,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   }
 
   // external function (WindowMaker/src/main.c)
-  real_main(argc, argv);
+  WMInitialize(argc, argv);
   
   // Just load saved Dock state without icons drawing.
   WWMDockInit();
