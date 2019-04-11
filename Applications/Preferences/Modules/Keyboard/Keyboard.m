@@ -182,10 +182,9 @@ static NSMutableDictionary      *domain = nil;
     case 1: // Layouts
       [sectionBox setContentView:layoutsBox];
       [self updateLayouts];
-      // [layoutList selectRow:0 byExtendingSelection:NO];
-      // if (!options)
-      //   options = [[keyboard options] copy];
-      // [self initSwitchLayoutShortcuts];
+      if (!options)
+        options = [[keyboard options] copy];
+      [self initSwitchLayoutShortcuts];
       break;
     case 2: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
@@ -350,24 +349,33 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)updateLayouts
 {
-  NXDefaults	*defs = [NXDefaults globalUserDefaults];
+  NXDefaults *defs = [NXDefaults globalUserDefaults];
+  NSArray    *systemLayouts, *systemVariants;
 
-  NSLog(@"1");
-  // if (layouts) [layouts release];
-  NSLog(@"2");
-  // NSLog(@"Keyboard layouts: %@", [keyboard layouts]);
-  layouts = [[NSArray alloc] initWithArray:[keyboard layouts]];
-  NSLog(@"3");
-  if (variants) [variants release];
-  NSLog(@"4");
-  variants = [[keyboard variants] copy];
+  if (layouts)
+    [layouts release];
+  systemLayouts = [keyboard layouts];
+  if (systemLayouts && [systemLayouts count] > 0) {
+    layouts = [[NSArray alloc] initWithArray:systemLayouts];
+  }
+  else {
+    layouts = [[NSArray alloc] init];
+  }
+
+  if (variants)
+    [variants release];
+  systemVariants = [keyboard variants];
+  if (systemVariants && [systemVariants count] > 0) {
+    variants = [[NSArray alloc] initWithArray:systemVariants];
+  }
+  else {
+    variants = [[NSArray alloc] init];
+  }
   
-  NSLog(@"5");
   [defs setObject:layouts forKey:Layouts];
-  NSLog(@"6");
   [defs setObject:variants forKey:Variants];
   
-  // [layoutList reloadData];
+  [layoutList reloadData];
 }
 
 // "Add.." button action
