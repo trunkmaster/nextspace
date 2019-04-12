@@ -38,6 +38,7 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSButton.h>
 
+#import <NXFoundation/NXDefaults.h>
 #import <NXFoundation/NXBundle.h>
 
 #import "PrefsController.h"
@@ -93,6 +94,8 @@
   [prefsViews release];
   [window close];
   [window release];
+  
+  [[NXDefaults globalUserDefaults] synchronize];
   
   [super dealloc];
 }
