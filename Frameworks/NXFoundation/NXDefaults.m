@@ -48,6 +48,7 @@ NSString* const NXUserDefaultsDidChangeNotification = @"NXUserDefaultsDidChangeN
 static NXDefaults *sharedSystemDefaults;
 static NXDefaults *sharedUserDefaults;
 static NXDefaults *sharedGlobalUserDefaults;
+static NSLock     *syncLock;
 
 @implementation NXDefaults
 
@@ -123,6 +124,7 @@ static NXDefaults *sharedGlobalUserDefaults;
   [self reload];
 
   syncTimer = nil;
+  syncLock = [NSLock new];
 
   return self;
 }
@@ -161,6 +163,7 @@ static NXDefaults *sharedGlobalUserDefaults;
   if (syncTimer) [syncTimer release];
   [defaultsDict release];
   [filePath release];
+  [syncLock release];
   
   [super dealloc];
 }
@@ -175,6 +178,7 @@ static NXDefaults *sharedGlobalUserDefaults;
                                                  userInfo:nil
                                                   repeats:NO];
       [syncTimer retain];
+      NSLog(@"Timer scheduled!");
     }
 }
 
@@ -200,12 +204,17 @@ static NXDefaults *sharedGlobalUserDefaults;
 
 - (BOOL)synchronize
 {
-  NSLog(@"NXDefaults: Waiting for defaults to be synchronized.");
-  while (syncTimer && ([syncTimer isValid] != NO)) {
-    [[NSRunLoop currentRunLoop]
-      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+  if ([syncLock tryLock] == NO)
+    return NO;
+  
+  NSLog(@"NXDefaults: Waiting for defaults to be synchronized. %@ - %i",
+        syncTimer, [syncTimer isValid]);
+  if (syncTimer != nil && ([syncTimer isValid] != NO)) {
+    [syncTimer fire];
   }
   NSLog(@"NXDefaults: synchronized!");
+  
+  [syncLock unlock];
   return YES;
 }
 
@@ -215,7 +224,7 @@ static NXDefaults *sharedGlobalUserDefaults;
 // of current user.
 - (void)writeToDisk
 {
-  // NSLog(@"NXDefaults: write to file: %@", filePath);
+  NSLog(@"NXDefaults: write to file: %@", filePath);
   
   if ([defaultsDict writeToFile:filePath atomically:YES] == YES) {
     if (isGlobal == YES) {
