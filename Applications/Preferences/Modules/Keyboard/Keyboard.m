@@ -42,16 +42,14 @@
 
 @implementation Keyboard
 
-static NSBundle                 *bundle = nil;
-static NSUserDefaults           *defaults = nil;
-static NSMutableDictionary      *domain = nil;
+static NSBundle   *bundle = nil;
+static NXDefaults *defaults = nil;
 
 - (id)init
 {
   self = [super init];
   
-  defaults = [NSUserDefaults standardUserDefaults];
-  domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
+  defaults = [NXDefaults globalUserDefaults];
 
   bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Keyboard" ofType:@"tiff"];
@@ -65,7 +63,7 @@ static NSMutableDictionary      *domain = nil;
 - (void)dealloc
 {
   NSLog(@"KeyboardPrefs -dealloc");
-  [[NXDefaults globalUserDefaults] synchronize];
+  // [defaults synchronize];
   [image release];
   if (keyboard) {
     [keyboard release];
@@ -75,8 +73,6 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)awakeFromNib
 {
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
-    
   [view retain];
   [window release];
 
@@ -92,20 +88,20 @@ static NSMutableDictionary      *domain = nil;
 
   if (![initialRepeatMtrx selectCellWithTag:[keyboard initialRepeat]])
     {
-      if ([defs integerForKey:InitialRepeat] < 0)
+      if ([defaults integerForKey:InitialRepeat] < 0)
         [initialRepeatMtrx selectCellWithTag:200];
       else
         [initialRepeatMtrx
-            selectCellWithTag:[defs integerForKey:InitialRepeat]];
+            selectCellWithTag:[defaults integerForKey:InitialRepeat]];
       [self repeatAction:initialRepeatMtrx];
     }
     
   if (![repeatRateMtrx selectCellWithTag:[keyboard repeatRate]])
     {
-      if ([defs integerForKey:RepeatRate] < 0)
+      if ([defaults integerForKey:RepeatRate] < 0)
         [repeatRateMtrx selectCellWithTag:40];
       else
-        [repeatRateMtrx selectCellWithTag:[defs integerForKey:RepeatRate]];
+        [repeatRateMtrx selectCellWithTag:[defaults integerForKey:RepeatRate]];
       [self repeatAction:repeatRateMtrx];
     }
   
