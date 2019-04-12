@@ -29,7 +29,9 @@ after-install::
 	fi
 
 	ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Sounds $(GNUSTEP_SYSTEM_LIBRARY)/Sounds;
-	ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Sounds/Bonk.snd $(GNUSTEP_SYSTEM_LIBRARY)/Sounds/SystemBeep.snd; \
+	if [ ! -e $(GNUSTEP_SYSTEM_LIBRARY)/Sounds/SystemBeep.snd ]; then \
+	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Sounds/Bonk.snd $(GNUSTEP_SYSTEM_LIBRARY)/Sounds/SystemBeep.snd; \
+	fi
 
 after-uninstall::
 	rm -r $(DESTDIR)/usr/NextSpace/Images
