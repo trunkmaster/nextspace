@@ -40,6 +40,7 @@
     [soundServer disconnect];
     [soundServer release];
   }
+  [soundsList release];
   [defaults synchronize];
   [image release];
   [super dealloc];
@@ -57,8 +58,44 @@
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"Sound" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+
+  defaultSound = [defaults objectForKey:@"NXSystemBeep"];
+  if (defaultSound == nil) {
+    defaultSound = @"/usr/NextSpace/Sounds/Bonk.snd";
+    [defaults setObject:defaultSound forKey:@"NXSystemBeep"];
+  }
+
+  soundsList = [[NSDictionary alloc]
+                 initWithDictionary:[self loadSoundList]];
       
   return self;
+}
+
+- (NSDictionary *)loadSoundList
+{
+  NSString            *path, *filePath;
+  NSArray             *soundFiles;
+  NSArray             *pathList = NSStandardLibraryPaths();
+  NSFileManager       *fm = [NSFileManager defaultManager];
+  NSMutableDictionary *list;
+
+  list = [[NSMutableDictionary alloc] init];
+
+  for (NSString *lp in pathList) {
+    path = [NSString stringWithFormat:@"%@/Sounds", lp];
+    NSLog(@"Searching for sounds in %@", path);
+    soundFiles = [fm contentsOfDirectoryAtPath:path error:NULL];
+
+    for (NSString *file in soundFiles) {
+      if ([file isEqualToString:@"SystemBeep.snd"] == NO) {
+        filePath = [NSString stringWithFormat:@"%@/%@", path, file];
+        [list setObject:filePath
+                 forKey:[file stringByDeletingPathExtension]];
+      }
+    }
+  }
+
+  return [list autorelease];
 }
 
 - (void)awakeFromNib
@@ -80,7 +117,8 @@
   [[beepAudioRadio cellWithTag:0] setRefusesFirstResponder:YES];
   [[beepAudioRadio cellWithTag:1] setRefusesFirstResponder:YES];
   beepType = [defaults objectForKey:@"NXSystemBeepType"];
-  [beepAudioRadio selectCellWithTag:([beepType isEqualToString:@"Audio"] == NO)];
+  [beepAudioRadio
+    selectCellWithTag:([beepType isEqualToString:@"Audio"] == NO)];
 }
 
 // --- Protocol
@@ -213,8 +251,6 @@ static void *InputContext = &InputContext;
       [self observeInput:soundIn];
     }
     [self _updateControls];
-    // [beepBrowser reloadColumn:0];
-    [self reloadBrowser];
   }
   else if (soundServer.status == SKServerFailedState ||
            soundServer.status == SKServerTerminatedState) {
@@ -225,20 +261,15 @@ static void *InputContext = &InputContext;
 }
 
 // --- Control actions
+/*
 - (void)reloadBrowser
 {
-  NSString  *defaultSound = [defaults objectForKey:@"NXSystemBeep"];
   NSMatrix  *matrix;
   NSInteger row,col;
   
   [beepBrowser reloadColumn:0];
   matrix = [beepBrowser matrixInColumn:0];
 
-  if (defaultSound == nil) {
-    defaultSound = @"/usr/NextSpace/Sounds/Bonk.snd";
-    [defaults setObject:defaultSound forKey:@"NXSystemBeep"];
-  }
-  
   for (NSBrowserCell *cell in [matrix cells]) {
     if ([[cell representedObject] isEqualToString:defaultSound]) {
       [matrix getRow:&row column:&col ofCell:cell];
@@ -252,28 +283,67 @@ static void *InputContext = &InputContext;
             inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
-  NSString      *path, *filePath;
-  NSArray       *sounds;
-  NSArray       *pathList = NSStandardLibraryPaths();
-  NSFileManager *fm = [NSFileManager defaultManager];
+  // NSString      *path, *filePath;
+  // NSArray       *sounds;
+  // NSArray       *pathList = NSStandardLibraryPaths();
+  // NSFileManager *fm = [NSFileManager defaultManager];
 
-  for (NSString *lp in pathList) {
-    path = [NSString stringWithFormat:@"%@/Sounds", lp];
-    NSLog(@"Searching for sounds in %@", path);
-    sounds = [fm contentsOfDirectoryAtPath:path error:NULL];
+  // for (NSString *lp in pathList) {
+  //   path = [NSString stringWithFormat:@"%@/Sounds", lp];
+  //   NSLog(@"Searching for sounds in %@", path);
+  //   sounds = [fm contentsOfDirectoryAtPath:path error:NULL];
 
-    for (NSString *file in sounds) {
-      if ([file isEqualToString:@"SystemBeep.snd"] == NO) {
-        [matrix addRow];
-        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-        [cell setLeaf:YES];
-        [cell setRefusesFirstResponder:YES];
-        [cell setTitle:[file stringByDeletingPathExtension]];
-        filePath = [NSString stringWithFormat:@"%@/%@", path, file];
-        [cell setRepresentedObject:filePath];
-      }
-    }
+  //   for (NSString *file in sounds) {
+  //     if ([file isEqualToString:@"SystemBeep.snd"] == NO) {
+  //       [matrix addRow];
+  //       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+  //       [cell setLeaf:YES];
+  //       [cell setRefusesFirstResponder:YES];
+  //       [cell setTitle:[file stringByDeletingPathExtension]];
+  //       filePath = [NSString stringWithFormat:@"%@/%@", path, file];
+  //       [cell setRepresentedObject:filePath];
+  //     }
+  //   }
+  // }
+
+  for (NSString *file in [soundsList allKeys]) {
+    [matrix addRow];
+    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+    [cell setLeaf:YES];
+    [cell setRefusesFirstResponder:YES];
+    [cell setTitle:[file stringByDeletingPathExtension]];
+    [cell setRepresentedObject:[soundsList objectForKey:file]];
   }
+}
+*/
+
+- (NSInteger) browser:(NSBrowser *)sender
+ numberOfRowsInColumn:(NSInteger)column
+{
+  NSLog(@"Number of sounds is: %li", [[soundsList allKeys] count]);
+  return [[soundsList allKeys] count];
+}
+
+- (void) browser:(NSBrowser *)sender
+ willDisplayCell:(id)cell
+           atRow:(NSInteger)row
+          column:(NSInteger)column
+{
+  NSString *file = [[soundsList allKeys] objectAtIndex:row];
+  NSString *filePath = [soundsList objectForKey:file];
+  
+  [cell setLeaf:YES];
+  [cell setRefusesFirstResponder:YES];
+  [cell setTitle:[file stringByDeletingPathExtension]];
+  [cell setRepresentedObject:filePath];
+  if ([filePath isEqualToString:defaultSound]) {
+    NSLog(@"Default sound found at row %li", row);
+    defSoundRow = row;
+    // TODO: doesn't work
+    [[sender matrixInColumn:column] selectCellAtRow:row column:0];
+    // [sender selectRow:row inColumn:column];
+    // [beepBrowser scrollRowToVisible:row inColumn:0];
+  }  
 }
 
 - (void)setMute:(id)sender

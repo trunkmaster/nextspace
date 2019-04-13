@@ -35,6 +35,9 @@
   SKSoundServer *soundServer;
   SKSoundOut    *soundOut;
   SKSoundIn     *soundIn;
+  NSString      *defaultSound;
+  NSDictionary  *soundsList;
+  NSInteger     defSoundRow;
   
   id view;
   id window;
@@ -53,6 +56,7 @@
   id soundInfo;
 }
 
-- (void)reloadBrowser;
+- (NSDictionary *)loadSoundList;
+// - (void)reloadBrowser;
 
 @end
