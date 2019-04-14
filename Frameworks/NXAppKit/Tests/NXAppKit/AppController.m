@@ -138,4 +138,12 @@
   [textTest show];
 }
 
+- (void)showDrawingTest:(id)sender
+{
+  if (drawingTest == nil) {
+    drawingTest = [[DrawingTest alloc] init];
+  }
+  [drawingTest show];
+}
+
 @end

@@ -41,7 +41,8 @@ $(APP_NAME)_OBJC_FILES += \
 	ClockViewTest.m \
 	CursorsTest.m \
 	IconViewTest.m \
-	TextTest.m
+	TextTest.m \
+	DrawingTest.m
 
 #
 # Makefiles

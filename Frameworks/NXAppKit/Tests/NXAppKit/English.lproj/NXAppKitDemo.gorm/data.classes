@@ -9,7 +9,8 @@
 	    "showCursorsTest:",
 	    "show3LineAlert:",
 	    "showIconViewTest:",
-	    "showTextTest:"
+	    "showTextTest:",
+	    "showDrawingTest:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -20,14 +21,15 @@
     };
     FirstResponder = {
 	Actions = (
-	    "showTextTest:",
+	    "showDrawingTest:",
 	    "show3LineAlert:",
 	    "showClockViewDemo:",
 	    "showCursorsTest:",
 	    "showIconViewTest:",
 	    "showMultilineAlert:",
 	    "showSinglelineAlert:",
-	    "showTextFieldsDemo:"
+	    "showTextFieldsDemo:",
+	    "showTextTest:"
 	);
 	Super = NSObject;
     };

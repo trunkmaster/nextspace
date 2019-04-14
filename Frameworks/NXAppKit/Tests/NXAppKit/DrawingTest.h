@@ -1,9 +1,7 @@
 /*
-  Class:               AppController
-  Inherits from:       NSObject
-  Class descritopn:    NSApplication delegate
+  Descritopn: Testing GNUstep drawing operations.
 
-  Copyright (C) 2016 Sergii Stoian
+  Copyright (c) 2019 Sergii Stoian
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,21 +20,13 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-#import "NumericFieldTest.h"
-#import "ClockViewTest.h"
-#import "CursorsTest.h"
-#import "IconViewTest.h"
-#import "TextTest.h"
-#import "DrawingTest.h"
 
-@interface AppController : NSObject
+@interface DrawingTest : NSObject
 {
-  NumericFieldTest *numericFieldTest;
-  ClockViewTest    *clockViewTest;
-  CursorsTest      *cursorsTest;
-  IconViewTest     *iconViewTest;
-  TextTest         *textTest;
-  DrawingTest      *drawingTest;
+  id window;
+  id canvas;
 }
+
+- (void)show;
 
 @end
