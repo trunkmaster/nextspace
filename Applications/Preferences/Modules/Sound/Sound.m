@@ -354,14 +354,14 @@ static void *InputContext = &InputContext;
 - (void)setVolume:(id)sender
 {
   SKSoundDevice *device = (sender == volumeLevel) ? soundOut : soundIn;
-  
-  [device setVolume:[sender integerValue]];
+
+  [device setVolume:[sender intValue]];
 }
 - (void)setBalance:(id)sender
 {
   SKSoundDevice *device = (sender == volumeBalance) ? soundOut : soundIn;
   
-  [device setBalance:[sender integerValue]];
+  [device setBalance:[sender intValue]];
 }
 
 - (void)setBeep:(id)sender
@@ -391,7 +391,6 @@ static void *InputContext = &InputContext;
     return;
   }
   [defaults setObject:title forKey:@"NXSystemBeepType"];
-  [defaults synchronize];
 }
 
 @end
