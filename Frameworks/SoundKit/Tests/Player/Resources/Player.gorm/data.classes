@@ -2,6 +2,7 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     AppController = {
 	Actions = (
+	    "showMixer:"
 	);
 	Outlets = (
 	);
@@ -11,7 +12,7 @@
 	Actions = (
 	    "addPlaylist:",
 	    "eject:",
-	    "showMixer:",
+	    "newAction:",
 	    "next:",
 	    "pause:",
 	    "play:",
@@ -21,11 +22,5 @@
 	    "toggleSongInspector:"
 	);
 	Super = NSObject;
-    };
-    NSApplication = {
-	Actions = (
-	    "showMixer:"
-	);
-	Super = NSResponder;
     };
 }
