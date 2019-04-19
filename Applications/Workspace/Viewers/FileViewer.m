@@ -356,7 +356,7 @@
   [diskInfo setBordered:NO];
   [diskInfo setDrawsBackground:NO];
   [diskInfo setRefusesFirstResponder:YES];
-  [diskInfo setFont:[NSFont systemFontOfSize:10.0]];
+  [diskInfo setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
   // [diskInfo retain];
   // [diskInfo removeFromSuperview];
   [[window contentView] addSubview:diskInfo];
