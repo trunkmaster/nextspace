@@ -182,14 +182,7 @@ static NSDragOperation savedMask;
       XMapWindow(dpy, wScreen->dock_shadow);
       ondock = 1;
     }
-    NSCursor *newCursor = [cursors objectForKey:@"MoveCursor"];
-    if (newCursor == nil) {
-      NSImage *image = [NSImage imageNamed:@"dragMoveCursor"];
-      newCursor = [[NSCursor alloc] initWithImage:image];
-      [cursors setObject:newCursor forKey:@"MoveCursor"];
-      RELEASE(newCursor);
-    }
-    [newCursor set];
+    [[NSCursor greenArrowCursor] set];
   }
   else if (ondock) {
     XUnmapWindow(dpy, wScreen->dock_shadow);
@@ -771,7 +764,10 @@ static NSDragOperation savedMask;
   }
   
   if (draggingMask != NSDragOperationNone) {
-    [self setIconImage:[[NSApp delegate] openIconForDirectory:destPath]];
+    NSImage *openedDir = [[NSApp delegate] openIconForDirectory:destPath];
+    if (openedDir) {
+      [self setIconImage:openedDir];
+    }
   }
 
   return draggingMask;
