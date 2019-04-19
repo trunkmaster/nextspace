@@ -2,20 +2,20 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sat Apr  6 03:18:29 2019
+;; Created Mon Apr 15 16:33:28 2019
 ;; Desktop file format version 206
 ;; Emacs version 26.1
 
 ;; Global section:
-(setq desktop-saved-frameset [frameset 1 (23719 61525 626520 546000) (desktop . "208") "me@localhost.localdomain" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font-backend xft x) (font . "-pyrs-Roboto Mono-normal-normal-normal-*-13-*-*-*-*-0-iso10646-1") (font-parameter) (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars . right) (horizontal-scroll-bars) (foreground-color . "white smoke") (background-color . "gray20") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (no-special-glyphs) (scroll-bar-foreground . "dark turquoise") (scroll-bar-background . "gray20") (menu-bar-lines . 0) (tool-bar-lines . 0) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 13) (scroll-bar-height . 0) (alpha) (no-focus-on-map) (no-accept-focus) (fullscreen) (visibility . t) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "white") (sticky) (environment) (modeline . t) (unsplittable) (frameset--id . "D613-0DB4-38E9-0580") (frameset--mini t . t) (display . ":0") (icon-name) (explicit-name) (height . 46) (width . 166) (left . 212) (top . 56)) ((min-height . 4) (min-width . 20) (min-height-ignore . 2) (min-width-ignore . 12) (min-height-safe . 1) (min-width-safe . 4) (min-pixel-height . 68) (min-pixel-width . 160) (min-pixel-height-ignore . 34) (min-pixel-width-ignore . 96) (min-pixel-height-safe . 17) (min-pixel-width-safe . 32)) hc (pixel-width . 1357) (pixel-height . 765) (total-width . 170) (total-height . 45) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 677) (pixel-height . 765) (total-width . 85) (total-height . 45) (normal-height . 1.0) (normal-width . 0.5) (buffer "Keyboard.m" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 4665) (start . 4076))) (leaf (last . t) (pixel-width . 680) (pixel-height . 765) (total-width . 85) (total-height . 45) (normal-height . 1.0) (normal-width . 0.5) (buffer "*compilation*" (selected) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 3659) (start . 1740)))))])
+(setq desktop-saved-frameset [frameset 1 (23732 34856 605172 963000) (desktop . "208") "me@next.locadomain" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font-backend xft x) (font . "-pyrs-Roboto Mono-normal-normal-normal-*-13-*-*-*-*-0-iso10646-1") (font-parameter) (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars . right) (horizontal-scroll-bars) (foreground-color . "gray80") (background-color . "#212121") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (no-special-glyphs) (scroll-bar-foreground) (scroll-bar-background) (menu-bar-lines . 1) (tool-bar-lines . 0) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 16) (scroll-bar-height . 0) (alpha) (no-focus-on-map) (no-accept-focus) (fullscreen) (visibility . t) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "Magenta") (sticky) (environment) (frameset--id . "3982-6580-B604-512C") (frameset--mini t . t) (height . 36) (width . 80) (modeline . t) (unsplittable) (left . 567) (top . 156) (icon-name) (display . ":0") (explicit-name)) ((min-height . 4) (min-width . 10) (min-height-ignore . 2) (min-width-ignore . 6) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 68) (min-pixel-width . 80) (min-pixel-height-ignore . 34) (min-pixel-width-ignore . 48) (min-pixel-height-safe . 17) (min-pixel-width-safe . 16)) leaf (pixel-width . 672) (pixel-height . 595) (total-width . 84) (total-height . 35) (normal-height . 1.0) (normal-width . 1.0) (buffer "Keyboard.m" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 9000) (start . 5442))))])
 (setq default-directory "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name "/Developer/Headers/TAGS")
 (setq tags-table-list '("/Developer/Headers/TAGS"))
-(setq search-ring '("fontCat" "newLayou" "arrange" "pointAt" "NXScreen" "DidUpda" "savedBackground" "setCursor" "setCurs" "displayFra" "bgColor" "options" "_setOption" "bgColor" "image" "selectedDispla"))
+(setq search-ring '("updateLayouts" "fontCat" "newLayou" "arrange" "pointAt" "NXScreen" "DidUpda" "savedBackground" "setCursor" "setCurs" "displayFra" "bgColor" "options" "_setOption" "bgColor" "image"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences/AppController.*" "~/Developer/nextspace/Applications/Preferences/Modules/Expert/*.[hm]" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m" "~/Developer/nextspace/Applications/Preferences/Modules/Expert/*" "~/Developer/nextspace/Applications/Preferences/Modules/UNIX/*" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/LayoutSwitchKeys.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/xkb_option_grp.lst" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Layouts" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences"))
+(setq file-name-history '("~/Developer/nextspace/Applications/Login/" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences/AppController.*" "~/Developer/nextspace/Applications/Preferences/Modules/Expert/*.[hm]" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m" "~/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m" "~/Developer/nextspace/Applications/Preferences/Modules/Expert/*" "~/Developer/nextspace/Applications/Preferences/Modules/UNIX/*" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/LayoutSwitchKeys.plist" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/xkb_option_grp.lst" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Layouts" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/GNUmakefile" "~/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
@@ -23,11 +23,11 @@
   "Keyboard.m"
   'objc-mode
   '(abbrev-mode company-mode hs-minor-mode)
-  4665
-  '(4619 nil)
+  9000
+  '(8869 nil)
   nil
   nil
-  '((buffer-display-time 23719 61296 995597 705000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+  '((buffer-display-time 23732 34852 929639 153000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Preferences_main.m"
@@ -38,7 +38,7 @@
   '(1043 nil)
   nil
   nil
-  '((buffer-display-time 23719 61218 592444 117000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23729 21034 15143 929000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/AppController.m"
@@ -49,7 +49,7 @@
   '(2706 nil)
   nil
   nil
-  '((buffer-display-time 23719 61084 57355 484000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+  '((buffer-display-time 23729 20899 795598 696000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.m"
@@ -60,7 +60,7 @@
   '(1243 nil)
   nil
   nil
-  '((buffer-display-time 23719 61073 49249 127000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23729 20889 75572 373000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/Font.m"
@@ -71,7 +71,7 @@
   '(6938 nil)
   nil
   nil
-  '((buffer-display-time 23719 57434 947644 907000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+  '((buffer-display-time 23729 17251 287072 921000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/Font.h"
@@ -82,7 +82,7 @@
   '(1689 nil)
   nil
   nil
-  '((buffer-display-time 23726 32134 698300 254000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57487 352393 581000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.m"
@@ -93,7 +93,7 @@
   '(6089 nil)
   nil
   nil
-  '((buffer-display-time 23726 32135 10578 467000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57487 968683 41000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/ClockView.m"
@@ -104,7 +104,7 @@
   '(5964 nil)
   nil
   nil
-  '((buffer-display-time 23726 32135 309063 885000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57488 570108 524000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/ClockView.h"
@@ -115,7 +115,7 @@
   '(1096 nil)
   nil
   nil
-  '((buffer-display-time 23726 32135 625852 461000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57489 198058 145000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/AppController.h"
@@ -126,7 +126,7 @@
   '(1178 nil)
   nil
   nil
-  '((buffer-display-time 23726 32136 224361 175000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57490 85882 632000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/Expert.m"
@@ -137,7 +137,7 @@
   '(2345 nil)
   nil
   nil
-  '((buffer-display-time 23726 32137 129358 185000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57491 294694 427000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.m"
@@ -148,7 +148,7 @@
   '(4473 nil)
   nil
   nil
-  '((buffer-display-time 23726 32137 478373 649000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57491 964315 214000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Expert/Expert.h"
@@ -159,7 +159,7 @@
   '(868 nil)
   nil
   nil
-  '((buffer-display-time 23726 32137 759761 143000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57492 529797 4000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.m"
@@ -170,7 +170,7 @@
   '(5478 nil)
   nil
   nil
-  '((buffer-display-time 23726 32138 50949 524000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+  '((buffer-display-time 23735 57493 136863 869000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/Display.h"
@@ -181,7 +181,7 @@
   '(1310 nil)
   nil
   nil
-  '((buffer-display-time 23726 32138 391625 837000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57493 791105 528000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.m"
@@ -192,7 +192,7 @@
   '(11789 nil)
   nil
   nil
-  '((buffer-display-time 23726 32138 717590 824000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+  '((buffer-display-time 23735 57494 424770 955000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.m"
@@ -203,7 +203,7 @@
   '(6026 nil)
   nil
   nil
-  '((buffer-display-time 23726 32139 11606 639000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
+  '((buffer-display-time 23735 57495 33845 796000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/Screen.h"
@@ -214,7 +214,7 @@
   '(1487 nil)
   nil
   nil
-  '((buffer-display-time 23726 32139 358192 148000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57495 704287 124000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/ScreenCanvas.h"
@@ -225,7 +225,7 @@
   '(1005 nil)
   nil
   nil
-  '((buffer-display-time 23726 32139 639878 428000) (buffer-file-coding-system . utf-8-unix)))
+  '((buffer-display-time 23735 57496 273386 350000) (buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.m"
@@ -236,7 +236,7 @@
   '(3024 nil)
   nil
   nil
-  '((buffer-display-time 23726 32139 940285 585000) (buffer-file-coding-system . utf-8-unix)))
+  '((buffer-display-time 23735 57496 861671 175000) (buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/DisplayBox.h"
@@ -247,7 +247,7 @@
   '(1186 nil)
   nil
   nil
-  '((buffer-display-time 23726 32140 232797 942000) (buffer-file-coding-system . utf-8-unix)))
+  '((buffer-display-time 23735 57497 471944 105000) (buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile"
@@ -258,7 +258,7 @@
   '(379 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32140 425491 866000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57497 783383 440000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Password/Password.m"
@@ -269,7 +269,7 @@
   '(911 nil)
   nil
   nil
-  '((buffer-display-time 23726 32140 693904 478000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57498 350348 398000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Keyboard.h"
@@ -280,7 +280,7 @@
   '(1585 nil)
   nil
   nil
-  '((buffer-display-time 23726 32141 372705 675000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57499 346849 450000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/PrefsController.h"
@@ -291,7 +291,7 @@
   '(876 nil)
   nil
   nil
-  '((buffer-display-time 23726 32141 667268 492000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57499 943819 71000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/Mouse.h"
@@ -302,7 +302,7 @@
   '(1184 nil)
   nil
   nil
-  '((buffer-display-time 23726 32141 997297 242000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57500 557158 352000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.m"
@@ -313,7 +313,7 @@
   '(2376 nil)
   nil
   nil
-  '((buffer-display-time 23726 32142 315106 144000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+  '((buffer-display-time 23735 57501 212572 336000) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages.list"
@@ -324,7 +324,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32142 613733 297000) (buffer-file-coding-system . utf-8-unix)))
+  '((buffer-display-time 23735 57501 860480 841000) (buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/Resources/Shortcuts.plist"
@@ -335,7 +335,7 @@
   '(3 nil)
   nil
   nil
-  '((buffer-display-time 23726 32142 951170 824000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57502 486523 478000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/GNUmakefile"
@@ -346,7 +346,7 @@
   '(460 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32143 106144 41000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57502 733334 409000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.m"
@@ -357,7 +357,7 @@
   '(4522 nil)
   nil
   nil
-  '((buffer-display-time 23726 32143 404885 127000) (buffer-file-coding-system . utf-8-unix)))
+  '((buffer-display-time 23735 57503 363675 607000) (buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Keyboard/AddLayoutPanel.h"
@@ -368,7 +368,7 @@
   '(1341 nil)
   nil
   nil
-  '((buffer-display-time 23726 32143 695850 929000) (buffer-file-coding-system . utf-8-unix)))
+  '((buffer-display-time 23735 57503 957968 569000) (buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/GNUmakefile"
@@ -379,7 +379,7 @@
   '(807 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32143 809907 182000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57504 160239 12000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/PreferencesInfo.plist"
@@ -390,7 +390,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32143 914409 847000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57504 352068 745000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/GNUmakefile.preamble"
@@ -401,7 +401,7 @@
   '(360 nil)
   nil
   nil
-  '((buffer-display-time 23726 32144 38462 343000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57504 563436 588000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/GNUmakefile"
@@ -412,7 +412,7 @@
   '(98 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32144 125491 450000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57504 737241 149000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/GNUmakefile"
@@ -423,7 +423,7 @@
   '(412 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32144 212997 397000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57504 930220 864000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/bundle.registry"
@@ -434,7 +434,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32144 304911 100000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57505 110090 914000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Resources/languages-encodings.list"
@@ -445,7 +445,7 @@
   '(366 nil)
   nil
   nil
-  '((buffer-display-time 23726 32144 390819 105000) (buffer-file-coding-system . utf-8-unix)))
+  '((buffer-display-time 23735 57505 297807 273000) (buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/Localization.h"
@@ -456,7 +456,7 @@
   '(1374 nil)
   nil
   nil
-  '((buffer-display-time 23726 32144 675901 565000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57505 882294 753000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Font/GNUmakefile"
@@ -467,7 +467,7 @@
   '(418 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32144 785715 803000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57506 82596 282000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Localization/LanguageList.h"
@@ -478,7 +478,7 @@
   '(196 nil)
   nil
   nil
-  '((buffer-display-time 23726 32145 112232 617000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57506 697786 730000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Preferences.h"
@@ -489,7 +489,7 @@
   '(1707 nil)
   nil
   nil
-  '((buffer-display-time 23726 32145 412825 816000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57507 320869 117000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Power/Power.m"
@@ -500,7 +500,7 @@
   '(1709 nil)
   nil
   nil
-  '((buffer-display-time 23726 32145 705477 318000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57507 920472 963000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Screen/GNUmakefile.preamble"
@@ -511,7 +511,7 @@
   '(436 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32145 820770 269000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57508 130109 486000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Display/GNUmakefile.preamble"
@@ -522,7 +522,7 @@
   '(585 nil)
   nil
   nil
-  '((buffer-display-time 23726 32145 968075 995000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57508 366516 103000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Password/Password.h"
@@ -533,7 +533,7 @@
   '(116 nil)
   nil
   nil
-  '((buffer-display-time 23726 32146 255802 313000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57508 956872 156000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Password/GNUmakefile.preamble"
@@ -544,7 +544,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32146 376073 771000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57509 187594 809000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Password/GNUmakefile"
@@ -555,7 +555,7 @@
   '(354 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32146 462916 248000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57509 361508 527000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Password/Resources/bundle.registry"
@@ -566,7 +566,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32146 551975 290000) (buffer-file-coding-system . utf-8-with-signature-unix)))
+  '((buffer-display-time 23735 57509 539888 695000) (buffer-file-coding-system . utf-8-with-signature-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Power/Resources/bundle.registry"
@@ -577,7 +577,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32146 640122 842000) (buffer-file-coding-system . utf-8-with-signature-unix)))
+  '((buffer-display-time 23735 57509 720235 79000) (buffer-file-coding-system . utf-8-with-signature-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Power/Power.h"
@@ -588,7 +588,7 @@
   '(1 nil)
   nil
   nil
-  '((buffer-display-time 23726 32146 937252 535000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57510 320344 670000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Power/GNUmakefile.preamble"
@@ -599,7 +599,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32147 53046 632000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57510 528158 287000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Power/GNUmakefile"
@@ -610,7 +610,7 @@
   '(1 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32147 149912 679000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57510 712813 872000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/GNUmakefile"
@@ -621,7 +621,7 @@
   '(500 nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-display-time 23726 32147 256832 772000) (buffer-file-coding-system . undecided-unix)))
+  '((indent-tabs-mode . t) (buffer-display-time 23735 57510 926192 364000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/Modules/Mouse/GNUmakefile.preamble"
@@ -632,7 +632,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23726 32147 347274 849000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23735 57511 123206 437000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Applications/Preferences/GNUmakefile.postamble"
@@ -643,5 +643,5 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23719 56558 785872 159000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23729 16386 649125 634000) (buffer-file-coding-system . undecided-unix)))
 

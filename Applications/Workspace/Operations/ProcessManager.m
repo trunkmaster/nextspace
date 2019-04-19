@@ -626,7 +626,7 @@ static BOOL      _workspaceQuitting = NO;
   label = [[NSTextField alloc] initWithFrame:NSMakeRect(0,0,180,12)];
   [label setTextColor:[NSColor darkGrayColor]];
   [label setDrawsBackground:NO];
-  [label setFont:[NSFont toolTipsFontOfSize:0.0]];
+  [label setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
   [label setAlignment:NSRightTextAlignment];
   [label setBordered:NO];
   [label setBezeled:NO];
