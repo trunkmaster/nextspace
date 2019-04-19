@@ -1214,7 +1214,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   [self getInfoForFile:fullPath application:&appName type:&fileType];
 
-  usersDir = [NSString stringWithCString:getenv("GNUSTEP_SYSTEM_USERS_DIR")];
+  usersDir = [GNUstepConfig(nil) objectForKey:@"GNUSTEP_SYSTEM_USERS_DIR"];
 
   openDirIconPath = [fullPath stringByAppendingPathComponent:@".opendir.tiff"];
 
