@@ -459,7 +459,7 @@ NSString *WWMDefaultsPath(void)
     setFloatDefault(fontSize, @"NSMenuFontSize");
     // NSMessageFont, NSMessageFontSize = NSFontSize+2
     setStringDefault(fontName, @"NSMessageFont");
-    setFloatDefault(fontSize+2.0, @"NSMessageFontSize");
+    setFloatDefault(fontSize + 2.0, @"NSMessageFontSize");
     // NSControlContentFont, NSControlContentFontSize=12
     setStringDefault(fontName, @"NSControlContentFont");
     setFloatDefault(fontSize, @"NSControlContentFontSize");
@@ -467,13 +467,14 @@ NSString *WWMDefaultsPath(void)
     setStringDefault(fontName, @"NSLabelFont");
     setFloatDefault(fontSize, @"NSLabelFontSize");
     // NSMiniFontSize=9, NSSmallFontSize=11
-    setFloatDefault(9.0, @"NSMiniFontSize");
-    setFloatDefault(11.0, @"NSSmallFontSize");
+    setFloatDefault(fontSize - 4.0, @"NSMiniFontSize");
+    setFloatDefault(fontSize - 2.0, @"NSSmallFontSize");
     // WM
-    [self setWMFont:[NSFont fontWithName:[font familyName] size:9.0]
+    [self setWMFont:[NSFont fontWithName:[font familyName] size:fontSize - 4.0]
                 key:@"IconTitleFont"];
     [self setWMFont:font key:@"MenuTextFont"];
-    [self setWMFont:font key:@"LargeDisplayFont"];
+    [self setWMFont:[NSFont fontWithName:[font familyName] size:fontSize * 2.0]
+                key:@"LargeDisplayFont"];
   }
   else if ([fontKey isEqualToString:@"NSBoldFont"]) { // Bold System
     // NSBoldFont, NSBoldFontSize=12
