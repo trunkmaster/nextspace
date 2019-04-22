@@ -1407,31 +1407,68 @@ static void handleXkbBellNotify(XkbEvent *event)
   // Play sound specified in ~/Library/Preferences/.NextSpace/NXGlobalDomain
   // as NXSystemBeep.
   fprintf(stderr, "[WM] XKB event is XkbBellNotify!\n");
+
+  WWindow *wwin = wScreenWithNumber(0)->focused_window;
+  int     i = 0, j = 0, num_steps, num_shakes;
+  int     x = wwin->frame_x;
+  int     xo = x;
+  int     y = wwin->frame_y;
+  int     sleep_time = 2000;
+  
+  num_steps = 3;
+  num_shakes = 6;
+  for (i = 0; i < num_shakes; i++)
+    {
+      for (j = 0; j < num_steps; j++)
+        {
+          x += 10;
+          XMoveWindow(dpy, wwin->frame->core->window, x, y);
+          XSync(dpy, False);
+          usleep(sleep_time);
+        }
+      for (j = 0; j < num_steps*2; j++)
+        {
+          x -= 10;
+          XMoveWindow(dpy, wwin->frame->core->window, x, y);
+          XSync(dpy, False);
+          usleep(sleep_time);
+        }
+      for (j = 0; j < num_steps; j++)
+        {
+          x += 10;
+          XMoveWindow(dpy, wwin->frame->core->window, x, y);
+          XSync(dpy, False);
+          usleep(sleep_time);
+        }
+      XSync(dpy, True);
+    }
+  XFlush(dpy);
+  XMoveWindow(dpy, wwin->frame->core->window, xo, y);
 }
 /* please help ]d if you know what to do */
 static void handleXkbIndicatorStateNotify(XkbEvent *event)
 {
-	WWindow *wwin;
-	WScreen *scr;
-	XkbStateRec staterec;
-	int i;
+  WWindow *wwin;
+  WScreen *scr;
+  XkbStateRec staterec;
+  int i;
 
-	for (i = 0; i < w_global.screen_count; i++) {
-		scr = wScreenWithNumber(i);
-		wwin = scr->focused_window;
-		if (wwin && wwin->flags.focused) {
-			XkbGetState(dpy, XkbUseCoreKbd, &staterec);
-			if (wwin->frame->languagemode != staterec.group) {
-				wwin->frame->last_languagemode = wwin->frame->languagemode;
-				wwin->frame->languagemode = staterec.group;
-			}
+  for (i = 0; i < w_global.screen_count; i++) {
+    scr = wScreenWithNumber(i);
+    wwin = scr->focused_window;
+    if (wwin && wwin->flags.focused) {
+      XkbGetState(dpy, XkbUseCoreKbd, &staterec);
+      if (wwin->frame->languagemode != staterec.group) {
+        wwin->frame->last_languagemode = wwin->frame->languagemode;
+        wwin->frame->languagemode = staterec.group;
+      }
 #ifdef XKB_BUTTON_HINT
-			if (wwin->frame->titlebar) {
-				wFrameWindowPaint(wwin->frame);
-			}
+      if (wwin->frame->titlebar) {
+        wFrameWindowPaint(wwin->frame);
+      }
 #endif
-		}
-	}
+    }
+  }
 }
 #endif				/*KEEP_XKB_LOCK_STATUS */
 
