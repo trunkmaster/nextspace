@@ -52,7 +52,7 @@
 
 #define MOD_MASK wPreferences.modifier_mask
 #ifdef NEXTSPACE
-#define CACHE_ICON_PATH "/WindowMaker/CachedPixmaps"
+#define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
 #include <Workspace+WM.h>
 #else
 #define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
