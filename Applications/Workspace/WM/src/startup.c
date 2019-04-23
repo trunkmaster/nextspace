@@ -586,12 +586,6 @@ void StartUp(Bool defaultScreenOnly)
   }
 
   /* init other domains */
-  w_global.domain.root_menu = wDefaultsInitDomain("WMRootMenu", False);
-  if (!w_global.domain.root_menu->dictionary)
-    wwarning(_("could not read domain \"%s\" from defaults database"), "WMRootMenu");
-
-  wDefaultsMergeGlobalMenus(w_global.domain.root_menu);
-
   w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes", True);
   if (!w_global.domain.window_attr->dictionary)
     wwarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes");

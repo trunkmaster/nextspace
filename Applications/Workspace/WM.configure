@@ -35,19 +35,6 @@ if [ ! -f Makefile ];then
     #  --enable-kde
 fi
 
-if [ ! -f misc.hack_nf.c ];then
-    echo "==> Generating nested functions hack for file src/misc.c..."
-    cd src
-    make misc.hack_nf.c
-    cd ..
-fi
-if [ ! -f xmodifier.hack_nf.c ];then
-    echo "==> Generating nested functions hack for file src/xmodifier.c..."
-    cd src
-    make xmodifier.hack_nf.c
-    cd ..
-fi
-
 if [ ! -f config-paths.h ];then
     echo "==> Generating config-paths.h..."
     make config-paths.h

@@ -85,9 +85,6 @@ bin_PROGRAMS = wmaker$(EXEEXT)
 @WM_OSDEP_DARWIN_TRUE@am__append_4 = osdep_darwin.c
 @WM_OSDEP_LINUX_TRUE@am__append_5 = osdep_linux.c
 @WM_OSDEP_GENERIC_TRUE@am__append_6 = osdep_stub.c
-@USE_NESTED_FUNC_TRUE@am__append_7 = misc.c \
-@USE_NESTED_FUNC_TRUE@	xmodifier.c
-
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/wconfig.h.in $(top_srcdir)/depcomp
@@ -139,8 +136,6 @@ am__wmaker_SOURCES_DIST = GNUstep.h WindowMaker.h actions.c actions.h \
 @WM_OSDEP_DARWIN_TRUE@am__objects_4 = osdep_darwin.$(OBJEXT)
 @WM_OSDEP_LINUX_TRUE@am__objects_5 = osdep_linux.$(OBJEXT)
 @WM_OSDEP_GENERIC_TRUE@am__objects_6 = osdep_stub.$(OBJEXT)
-@USE_NESTED_FUNC_TRUE@am__objects_7 = misc.$(OBJEXT) \
-@USE_NESTED_FUNC_TRUE@	xmodifier.$(OBJEXT)
 am_wmaker_OBJECTS = actions.$(OBJEXT) appicon.$(OBJEXT) \
 	application.$(OBJEXT) appmenu.$(OBJEXT) balloon.$(OBJEXT) \
 	client.$(OBJEXT) colormap.$(OBJEXT) cycling.$(OBJEXT) \
@@ -158,10 +153,8 @@ am_wmaker_OBJECTS = actions.$(OBJEXT) appicon.$(OBJEXT) \
 	winspector.$(OBJEXT) wmspec.$(OBJEXT) workspace.$(OBJEXT) \
 	wsmap.$(OBJEXT) $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6) $(am__objects_7)
-@USE_NESTED_FUNC_FALSE@nodist_wmaker_OBJECTS = misc.hack_nf.$(OBJEXT) \
-@USE_NESTED_FUNC_FALSE@	xmodifier.hack_nf.$(OBJEXT)
-wmaker_OBJECTS = $(am_wmaker_OBJECTS) $(nodist_wmaker_OBJECTS)
+	$(am__objects_6) misc.$(OBJEXT) xmodifier.$(OBJEXT)
+wmaker_OBJECTS = $(am_wmaker_OBJECTS)
 wmaker_DEPENDENCIES = $(top_builddir)/WINGs/libWINGs.la \
 	$(top_builddir)/WINGs/libWUtil.la \
 	$(top_builddir)/wrlib/libwraster.la
@@ -203,7 +196,7 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(wmaker_SOURCES) $(nodist_wmaker_SOURCES)
+SOURCES = $(wmaker_SOURCES)
 DIST_SOURCES = $(am__wmaker_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -407,12 +400,8 @@ wmaker_SOURCES = GNUstep.h WindowMaker.h actions.c actions.h appicon.c \
 	winmenu.c winmenu.h winspector.h winspector.c wmspec.h \
 	wmspec.c workspace.c workspace.h wsmap.c wsmap.h \
 	$(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7)
-@USE_NESTED_FUNC_FALSE@nodist_wmaker_SOURCES = misc.hack_nf.c \
-@USE_NESTED_FUNC_FALSE@	xmodifier.hack_nf.c
-
-@USE_NESTED_FUNC_FALSE@CLEANFILES = $(nodist_wmaker_SOURCES)
+	$(am__append_4) $(am__append_5) $(am__append_6) misc.c \
+	xmodifier.c
 AM_CFLAGS = 
 AM_CPPFLAGS = $(DFLAGS) \
 	-I$(top_srcdir)/wrlib \
@@ -553,7 +542,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc.hack_nf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/monitor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/motif.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moveres.Po@am__quote@
@@ -587,7 +575,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xdnd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xinerama.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmodifier.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmodifier.hack_nf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xutil.Po@am__quote@
 
 .c.o:
@@ -731,7 +718,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -827,16 +813,6 @@ uninstall-am: uninstall-binPROGRAMS
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
 
-
-@USE_NESTED_FUNC_FALSE@misc.hack_nf.c: misc.c $(top_srcdir)/script/nested-func-to-macro.sh
-@USE_NESTED_FUNC_FALSE@	$(AM_V_GEN)$(top_srcdir)/script/nested-func-to-macro.sh \
-@USE_NESTED_FUNC_FALSE@		$(srcdir)/misc.c -o $(builddir)/misc.hack_nf.c \
-@USE_NESTED_FUNC_FALSE@		-f "append_string" -f "append_modifier"
-
-@USE_NESTED_FUNC_FALSE@xmodifier.hack_nf.c: xmodifier.c $(top_srcdir)/script/nested-func-to-macro.sh
-@USE_NESTED_FUNC_FALSE@	$(AM_V_GEN)$(top_srcdir)/script/nested-func-to-macro.sh \
-@USE_NESTED_FUNC_FALSE@		$(srcdir)/xmodifier.c -o $(builddir)/xmodifier.hack_nf.c \
-@USE_NESTED_FUNC_FALSE@		-f "modwarn" -f "modbarf" -f "check_modifier" -f "store_modifier"
 
 check-local: defaults-callbacks-static defaults-callbacks-dynamic
 

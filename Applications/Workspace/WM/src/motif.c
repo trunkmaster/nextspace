@@ -58,139 +58,139 @@
 
 /* Motif  window hints */
 typedef struct {
-	long flags;
-	long functions;
-	long decorations;
-	long inputMode;
-	long unknown;
+  long flags;
+  long functions;
+  long decorations;
+  long inputMode;
+  long unknown;
 } MWMHints;
 
 static Atom _XA_MOTIF_WM_HINTS;
 
 static void setupMWMHints(WWindow *wwin, MWMHints *mwm_hints)
 {
-	/*
-	 * We will ignore all decoration hints that have an equivalent as
-	 * functions, because wmaker does not distinguish decoration hints
-	 */
+  /*
+   * We will ignore all decoration hints that have an equivalent as
+   * functions, because wmaker does not distinguish decoration hints
+   */
 
-	if (mwm_hints->flags & MWM_HINTS_DECORATIONS) {
-		wwin->client_flags.no_titlebar = 1;
-		wwin->client_flags.no_close_button = 1;
-		wwin->client_flags.no_miniaturize_button = 1;
-		wwin->client_flags.no_resizebar = 1;
-		wwin->client_flags.no_border = 1;
+  if (mwm_hints->flags & MWM_HINTS_DECORATIONS) {
+    wwin->client_flags.no_titlebar = 1;
+    wwin->client_flags.no_close_button = 1;
+    wwin->client_flags.no_miniaturize_button = 1;
+    wwin->client_flags.no_resizebar = 1;
+    wwin->client_flags.no_border = 1;
 
-		if (mwm_hints->decorations & MWM_DECOR_ALL) {
-			wwin->client_flags.no_titlebar = 0;
-			wwin->client_flags.no_close_button = 0;
-			wwin->client_flags.no_closable = 0;
-			wwin->client_flags.no_miniaturize_button = 0;
-			wwin->client_flags.no_miniaturizable = 0;
-			wwin->client_flags.no_resizebar = 0;
-			wwin->client_flags.no_resizable = 0;
-			wwin->client_flags.no_border = 0;
-		}
+    if (mwm_hints->decorations & MWM_DECOR_ALL) {
+      wwin->client_flags.no_titlebar = 0;
+      wwin->client_flags.no_close_button = 0;
+      wwin->client_flags.no_closable = 0;
+      wwin->client_flags.no_miniaturize_button = 0;
+      wwin->client_flags.no_miniaturizable = 0;
+      wwin->client_flags.no_resizebar = 0;
+      wwin->client_flags.no_resizable = 0;
+      wwin->client_flags.no_border = 0;
+    }
 
-		if (mwm_hints->decorations & MWM_DECOR_BORDER) {
-			wwin->client_flags.no_border = 0;
-		}
+    if (mwm_hints->decorations & MWM_DECOR_BORDER) {
+      wwin->client_flags.no_border = 0;
+    }
 
-		if (mwm_hints->decorations & MWM_DECOR_RESIZEH)
-			wwin->client_flags.no_resizebar = 0;
+    if (mwm_hints->decorations & MWM_DECOR_RESIZEH)
+      wwin->client_flags.no_resizebar = 0;
 
-		if (mwm_hints->decorations & MWM_DECOR_TITLE) {
-			wwin->client_flags.no_titlebar = 0;
-			wwin->client_flags.no_close_button = 0;
-			wwin->client_flags.no_closable = 0;
-		}
+    if (mwm_hints->decorations & MWM_DECOR_TITLE) {
+      wwin->client_flags.no_titlebar = 0;
+      wwin->client_flags.no_close_button = 0;
+      wwin->client_flags.no_closable = 0;
+    }
 
-		if (mwm_hints->decorations * MWM_DECOR_MENU) {
-			/*
-			 * WindowMaker does not include a button to display the menu
-			 * for windows, this is done using right mouse button on the
-			 * title bar. As a consequence, we ignore this flag because we
-			 * have nothing to hide.
-			 */
-		}
+    if (mwm_hints->decorations * MWM_DECOR_MENU) {
+      /*
+       * WindowMaker does not include a button to display the menu
+       * for windows, this is done using right mouse button on the
+       * title bar. As a consequence, we ignore this flag because we
+       * have nothing to hide.
+       */
+    }
 
-		if (mwm_hints->decorations & MWM_DECOR_MINIMIZE) {
-			wwin->client_flags.no_miniaturize_button = 0;
-			wwin->client_flags.no_miniaturizable = 0;
-		}
+    if (mwm_hints->decorations & MWM_DECOR_MINIMIZE) {
+      wwin->client_flags.no_miniaturize_button = 0;
+      wwin->client_flags.no_miniaturizable = 0;
+    }
 
-		if (mwm_hints->decorations & MWM_DECOR_MAXIMIZE) {
-			/*
-			 * WindowMaker does not display a button to maximize windows,
-			 * so we don't need to hide anything more for that flag
-			 */
-		}
-	}
+    if (mwm_hints->decorations & MWM_DECOR_MAXIMIZE) {
+      /*
+       * WindowMaker does not display a button to maximize windows,
+       * so we don't need to hide anything more for that flag
+       */
+    }
+  }
 
-	if (mwm_hints->flags & MWM_HINTS_FUNCTIONS) {
-		wwin->client_flags.no_closable = 1;
-		wwin->client_flags.no_miniaturizable = 1;
-		wwin->client_flags.no_resizable = 1;
+  if (mwm_hints->flags & MWM_HINTS_FUNCTIONS) {
+    wwin->client_flags.no_closable = 1;
+    wwin->client_flags.no_miniaturizable = 1;
+    wwin->client_flags.no_resizable = 1;
 
-		if (mwm_hints->functions & MWM_FUNC_ALL) {
-			wwin->client_flags.no_closable = 0;
-			wwin->client_flags.no_miniaturizable = 0;
-			wwin->client_flags.no_resizable = 0;
-		}
-		if (mwm_hints->functions & MWM_FUNC_RESIZE)
-			wwin->client_flags.no_resizable = 0;
+    if (mwm_hints->functions & MWM_FUNC_ALL) {
+      wwin->client_flags.no_closable = 0;
+      wwin->client_flags.no_miniaturizable = 0;
+      wwin->client_flags.no_resizable = 0;
+    }
+    if (mwm_hints->functions & MWM_FUNC_RESIZE)
+      wwin->client_flags.no_resizable = 0;
 
-		if (mwm_hints->functions & MWM_FUNC_MOVE) {
-			/*
-			 * WindowMaker does not allow a window to not be moved, and this
-			 * is a good thing, so we explicitly ignore this flag.
-			 */
-		}
+    if (mwm_hints->functions & MWM_FUNC_MOVE) {
+      /*
+       * WindowMaker does not allow a window to not be moved, and this
+       * is a good thing, so we explicitly ignore this flag.
+       */
+    }
 
-		if (mwm_hints->functions & MWM_FUNC_MINIMIZE)
-			wwin->client_flags.no_miniaturizable = 0;
+    if (mwm_hints->functions & MWM_FUNC_MINIMIZE)
+      wwin->client_flags.no_miniaturizable = 0;
 
-		if (mwm_hints->functions & MWM_FUNC_MAXIMIZE) {
-			/* a window must be resizable to be maximizable */
-			wwin->client_flags.no_resizable = 0;
-		}
-		if (mwm_hints->functions & MWM_FUNC_CLOSE)
-			wwin->client_flags.no_closable = 0;
-	}
+    if (mwm_hints->functions & MWM_FUNC_MAXIMIZE) {
+      /* a window must be resizable to be maximizable */
+      wwin->client_flags.no_resizable = 0;
+    }
+    if (mwm_hints->functions & MWM_FUNC_CLOSE)
+      wwin->client_flags.no_closable = 0;
+  }
 }
 
 static int getMWMHints(Window window, MWMHints *mwmhints)
 {
-	unsigned long *data;
-	int count;
+  unsigned long *data;
+  int count;
 
-	if (!_XA_MOTIF_WM_HINTS)
-		_XA_MOTIF_WM_HINTS = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
+  if (!_XA_MOTIF_WM_HINTS)
+    _XA_MOTIF_WM_HINTS = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
 
-	data = (unsigned long *)PropGetCheckProperty(window, _XA_MOTIF_WM_HINTS,
-						     _XA_MOTIF_WM_HINTS, 32, 0, &count);
+  data = (unsigned long *)PropGetCheckProperty(window, _XA_MOTIF_WM_HINTS,
+                                               _XA_MOTIF_WM_HINTS, 32, 0, &count);
 
-	if (!data)
-		return 0;
+  if (!data)
+    return 0;
 
-	mwmhints->flags = 0;
-	if (count >= 4) {
-		mwmhints->flags = data[0];
-		mwmhints->functions = data[1];
-		mwmhints->decorations = data[2];
-		mwmhints->inputMode = data[3];
-		if (count > 5)
-			mwmhints->unknown = data[4];
-	}
-	XFree(data);
+  mwmhints->flags = 0;
+  if (count >= 4) {
+    mwmhints->flags = data[0];
+    mwmhints->functions = data[1];
+    mwmhints->decorations = data[2];
+    mwmhints->inputMode = data[3];
+    if (count > 5)
+      mwmhints->unknown = data[4];
+  }
+  XFree(data);
 
-	return 1;
+  return 1;
 }
 
 void wMWMCheckClientHints(WWindow *wwin)
 {
-	MWMHints hints;
+  MWMHints hints;
 
-	if (getMWMHints(wwin->client_win, &hints))
-		setupMWMHints(wwin, &hints);
+  if (getMWMHints(wwin->client_win, &hints))
+    setupMWMHints(wwin, &hints);
 }

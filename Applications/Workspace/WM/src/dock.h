@@ -26,43 +26,39 @@
 #include "appicon.h"
 
 typedef struct WDock {
-    WScreen *screen_ptr;
-    int x_pos, y_pos;		       /* position of the first icon */
+  WScreen *screen_ptr;
+  int x_pos, y_pos;		       /* position of the first icon */
 
-    WAppIcon **icon_array;	       /* array of docked icons */
-    int max_icons;
+  WAppIcon **icon_array;	       /* array of docked icons */
+  int max_icons;
 
-    int icon_count;
+  int icon_count;
 
 #define WM_DOCK        0
 #define WM_CLIP        1
 #define WM_DRAWER      2
-    int type;
+  int type;
 
-    WMagicNumber auto_expand_magic;
-    WMagicNumber auto_collapse_magic;
-    WMagicNumber auto_raise_magic;
-    WMagicNumber auto_lower_magic;
-    unsigned int auto_collapse:1;      /* if clip auto-collapse itself */
-    unsigned int auto_raise_lower:1;   /* if clip should raise/lower when
-                                        * entered/leaved */
-    unsigned int on_right_side:1;
-    unsigned int collapsed:1;
-    unsigned int mapped:1;
-    unsigned int lowered:1;
-    unsigned int attract_icons:1;      /* If clip should attract app-icons */
+  WMagicNumber auto_expand_magic;
+  WMagicNumber auto_collapse_magic;
+  WMagicNumber auto_raise_magic;
+  WMagicNumber auto_lower_magic;
+  unsigned int auto_collapse:1;      /* if clip auto-collapse itself */
+  unsigned int auto_raise_lower:1;   /* if clip should raise/lower when
+                                      * entered/leaved */
+  unsigned int on_right_side:1;
+  unsigned int collapsed:1;
+  unsigned int mapped:1;
+  unsigned int lowered:1;
+  unsigned int attract_icons:1;      /* If clip should attract app-icons */
 
-    unsigned int lclip_button_pushed:1;
-    unsigned int rclip_button_pushed:1;
+  unsigned int lclip_button_pushed:1;
+  unsigned int rclip_button_pushed:1;
 
-    struct WMenu *menu;
+  struct WMenu *menu;
 
-    struct WDDomain *defaults;
+  struct WDDomain *defaults;
 } WDock;
-
-
-
-
 
 WDock *wDockCreate(WScreen *scr, int type, const char *name);
 WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type);
@@ -115,11 +111,10 @@ RImage* wDrawerMakeTile(WScreen *scr, RImage *normalTile);
 #define WO_NOT_APPLICABLE  1
 #define WO_SUCCESS         2
 
-typedef enum
-{
-	P_NORMAL = 0,
-	P_AUTO_RAISE_LOWER,
-	P_KEEP_ON_TOP,
+typedef enum {
+  P_NORMAL = 0,
+  P_AUTO_RAISE_LOWER,
+  P_KEEP_ON_TOP,
 } dockPosition;
 
 int wClipMakeIconOmnipresent(WAppIcon *aicon, int omnipresent);

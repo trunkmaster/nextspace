@@ -35,76 +35,76 @@
 
 void wColormapInstallForWindow(WScreen * scr, WWindow * wwin)
 {
-	int i;
-	XWindowAttributes attributes;
-	int done = 0;
-	Window xwin = None;
+  int i;
+  XWindowAttributes attributes;
+  int done = 0;
+  Window xwin = None;
 
-	if (wwin) {
-		xwin = wwin->client_win;
-	} else {
-		xwin = scr->root_win;
-	}
+  if (wwin) {
+    xwin = wwin->client_win;
+  } else {
+    xwin = scr->root_win;
+  }
 
-	scr->cmap_window = wwin;
+  scr->cmap_window = wwin;
 
-	if (scr->root_colormap_install_count > 0) {
-		scr->original_cmap_window = wwin;
-		return;
-	}
+  if (scr->root_colormap_install_count > 0) {
+    scr->original_cmap_window = wwin;
+    return;
+  }
 
-	/* install colormap for all windows of the client */
-	if (wwin && wwin->cmap_window_no > 0 && wwin->cmap_windows) {
-		for (i = wwin->cmap_window_no - 1; i >= 0; i--) {
-			Window w;
+  /* install colormap for all windows of the client */
+  if (wwin && wwin->cmap_window_no > 0 && wwin->cmap_windows) {
+    for (i = wwin->cmap_window_no - 1; i >= 0; i--) {
+      Window w;
 
-			w = wwin->cmap_windows[i];
-			if (w == wwin->client_win)
-				done = 1;
+      w = wwin->cmap_windows[i];
+      if (w == wwin->client_win)
+        done = 1;
 
-			XGetWindowAttributes(dpy, w, &attributes);
-			if (attributes.colormap == None)
-				attributes.colormap = scr->colormap;
+      XGetWindowAttributes(dpy, w, &attributes);
+      if (attributes.colormap == None)
+        attributes.colormap = scr->colormap;
 
-			if (scr->current_colormap != attributes.colormap) {
-				scr->current_colormap = attributes.colormap;
-				/*
-				 * ICCCM 2.0: some client requested permission
-				 * to install colormaps by itself and we granted.
-				 * So, we can't install any colormaps.
-				 */
-				if (!scr->flags.colormap_stuff_blocked)
-					XInstallColormap(dpy, attributes.colormap);
-			}
-		}
-	}
+      if (scr->current_colormap != attributes.colormap) {
+        scr->current_colormap = attributes.colormap;
+        /*
+         * ICCCM 2.0: some client requested permission
+         * to install colormaps by itself and we granted.
+         * So, we can't install any colormaps.
+         */
+        if (!scr->flags.colormap_stuff_blocked)
+          XInstallColormap(dpy, attributes.colormap);
+      }
+    }
+  }
 
-	if (!done) {
-		attributes.colormap = None;
-		if (xwin != None)
-			XGetWindowAttributes(dpy, xwin, &attributes);
-		if (attributes.colormap == None)
-			attributes.colormap = scr->colormap;
+  if (!done) {
+    attributes.colormap = None;
+    if (xwin != None)
+      XGetWindowAttributes(dpy, xwin, &attributes);
+    if (attributes.colormap == None)
+      attributes.colormap = scr->colormap;
 
-		if (scr->current_colormap != attributes.colormap) {
-			scr->current_colormap = attributes.colormap;
-			if (!scr->flags.colormap_stuff_blocked)
-				XInstallColormap(dpy, attributes.colormap);
-		}
-	}
-	XSync(dpy, False);
+    if (scr->current_colormap != attributes.colormap) {
+      scr->current_colormap = attributes.colormap;
+      if (!scr->flags.colormap_stuff_blocked)
+        XInstallColormap(dpy, attributes.colormap);
+    }
+  }
+  XSync(dpy, False);
 }
 
 void wColormapAllowClientInstallation(WScreen * scr, Bool starting)
 {
-	scr->flags.colormap_stuff_blocked = starting;
-	/*
-	 * Client stopped managing the colormap stuff. Restore the colormap
-	 * that would be installed if the client did not request colormap
-	 * stuff.
-	 */
-	if (!starting) {
-		XInstallColormap(dpy, scr->current_colormap);
-		XSync(dpy, False);
-	}
+  scr->flags.colormap_stuff_blocked = starting;
+  /*
+   * Client stopped managing the colormap stuff. Restore the colormap
+   * that would be installed if the client did not request colormap
+   * stuff.
+   */
+  if (!starting) {
+    XInstallColormap(dpy, scr->current_colormap);
+    XSync(dpy, False);
+  }
 }

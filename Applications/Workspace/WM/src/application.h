@@ -67,4 +67,5 @@ void wApplicationActivate(WApplication *);
 void wApplicationDeactivate(WApplication *);
 
 void wApplicationMakeFirst(WApplication *);
+
 #endif

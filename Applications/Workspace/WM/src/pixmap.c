@@ -45,24 +45,24 @@
  */
 WPixmap *wPixmapCreateFromXPMData(WScreen * scr, char **data)
 {
-	RImage *image;
-	WPixmap *pix;
+  RImage *image;
+  WPixmap *pix;
 
-	image = RGetImageFromXPMData(scr->rcontext, data);
-	if (!image)
-		return NULL;
+  image = RGetImageFromXPMData(scr->rcontext, data);
+  if (!image)
+    return NULL;
 
-	pix = wmalloc(sizeof(WPixmap));
+  pix = wmalloc(sizeof(WPixmap));
 
-	RConvertImageMask(scr->rcontext, image, &pix->image, &pix->mask, 128);
+  RConvertImageMask(scr->rcontext, image, &pix->image, &pix->mask, 128);
 
-	pix->width = image->width;
-	pix->height = image->height;
-	pix->depth = scr->w_depth;
+  pix->width = image->width;
+  pix->height = image->height;
+  pix->depth = scr->w_depth;
 
-	RReleaseImage(image);
+  RReleaseImage(image);
 
-	return pix;
+  return pix;
 }
 
 /*
@@ -79,44 +79,44 @@ WPixmap *wPixmapCreateFromXPMData(WScreen * scr, char **data)
 WPixmap *wPixmapCreateFromXBMData(WScreen * scr, char *data, char *mask,
 				  int width, int height, unsigned long fg, unsigned long bg)
 {
-	WPixmap *pix;
+  WPixmap *pix;
 
-	pix = wmalloc(sizeof(WPixmap));
-	pix->image = XCreatePixmapFromBitmapData(dpy, scr->w_win, data, width, height, fg, bg, scr->w_depth);
-	if (pix->image == None) {
-		wfree(pix);
-		return NULL;
-	}
-	if (mask) {
-		pix->mask = XCreateBitmapFromData(dpy, scr->w_win, mask, width, height);
-	} else {
-		pix->mask = None;
-	}
-	pix->width = width;
-	pix->height = height;
-	pix->depth = scr->w_depth;
-	return pix;
+  pix = wmalloc(sizeof(WPixmap));
+  pix->image = XCreatePixmapFromBitmapData(dpy, scr->w_win, data, width, height, fg, bg, scr->w_depth);
+  if (pix->image == None) {
+    wfree(pix);
+    return NULL;
+  }
+  if (mask) {
+    pix->mask = XCreateBitmapFromData(dpy, scr->w_win, mask, width, height);
+  } else {
+    pix->mask = None;
+  }
+  pix->width = width;
+  pix->height = height;
+  pix->depth = scr->w_depth;
+  return pix;
 }
 
 WPixmap *wPixmapCreate(Pixmap image, Pixmap mask)
 {
-	WPixmap *pix;
-	Window foo;
-	int bar;
-	unsigned int width, height, depth, baz;
+  WPixmap *pix;
+  Window foo;
+  int bar;
+  unsigned int width, height, depth, baz;
 
-	pix = wmalloc(sizeof(WPixmap));
-	pix->image = image;
-	pix->mask = mask;
-	if (!XGetGeometry(dpy, image, &foo, &bar, &bar, &width, &height, &baz, &depth)) {
-		wwarning("XGetGeometry() failed during wPixmapCreate()");
-		wfree(pix);
-		return NULL;
-	}
-	pix->width = width;
-	pix->height = height;
-	pix->depth = depth;
-	return pix;
+  pix = wmalloc(sizeof(WPixmap));
+  pix->image = image;
+  pix->mask = mask;
+  if (!XGetGeometry(dpy, image, &foo, &bar, &bar, &width, &height, &baz, &depth)) {
+    wwarning("XGetGeometry() failed during wPixmapCreate()");
+    wfree(pix);
+    return NULL;
+  }
+  pix->width = width;
+  pix->height = height;
+  pix->depth = depth;
+  return pix;
 }
 
 /*
@@ -130,14 +130,14 @@ WPixmap *wPixmapCreate(Pixmap image, Pixmap mask)
  */
 void wPixmapDestroy(WPixmap * pix)
 {
-	if (!pix->shared) {
-		if (pix->mask && !pix->client_owned_mask) {
-			XFreePixmap(dpy, pix->mask);
-		}
+  if (!pix->shared) {
+    if (pix->mask && !pix->client_owned_mask) {
+      XFreePixmap(dpy, pix->mask);
+    }
 
-		if (pix->image && !pix->client_owned) {
-			XFreePixmap(dpy, pix->image);
-		}
-	}
-	wfree(pix);
+    if (pix->image && !pix->client_owned) {
+      XFreePixmap(dpy, pix->image);
+    }
+  }
+  wfree(pix);
 }

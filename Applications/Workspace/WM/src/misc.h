@@ -35,7 +35,7 @@ void ParseWindowName(WMPropList *value, char **winstance, char **wclass, const c
 
 static inline void slide_window(Window win, int from_x, int from_y, int to_x, int to_y)
 {
-	slide_windows(&win, 1, from_x, from_y, to_x, to_y);
+  slide_windows(&win, 1, from_x, from_y, to_x, to_y);
 }
 
 /* Helper is a 'wmsetbg' subprocess with sets the background for the current workspace */

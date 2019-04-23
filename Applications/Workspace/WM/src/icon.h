@@ -33,31 +33,33 @@
 #define MINIPREVIEW_BORDER 1
 
 typedef struct WIcon {
-	WCoreWindow 	*core;
-	WWindow 	*owner;		/* owner window */
-	char 		*icon_name;	/* the icon name hint */
+  WCoreWindow   *core;
+  WWindow       *owner;       /* owner window */
+  char          *icon_name;   /* the icon name hint */
 
-	Window 		icon_win;	/* client suplied icon window */
+  Window        icon_win;     /* client suplied icon window */
 
-	char		*file;		/* the file with the icon image */
-	RImage 		*file_image;	/* the image from the file */
+  char          *file;        /* the file with the icon image */
+  RImage        *file_image;  /* the image from the file */
 
-	unsigned int 	tile_type:4;
-	unsigned int 	show_title:1;
-	unsigned int 	selected:1;
-	unsigned int	step:3;		/* selection cycle step */
-	unsigned int	shadowed:1;	/* If the icon is to be blured */
-	unsigned int 	mapped:1;
-	unsigned int	highlighted:1;
+  unsigned int  tile_type:4;
+  unsigned int  show_title:1;
+  unsigned int  selected:1;
+  unsigned int  step:3;       /* selection cycle step */
+  unsigned int  shadowed:1;   /* If the icon is to be blured */
+  unsigned int  mapped:1;
+  unsigned int  highlighted:1;
 
-	Pixmap 		pixmap;
-	Pixmap		mini_preview;
+  Pixmap        pixmap;
+  Pixmap        mini_preview;
 
-	WMHandlerID	handlerID;	/* timer handler ID for cycling select
-					 * color */
+  WMHandlerID   handlerID;    /* timer handler ID for cycling select
+                               * color */
 } WIcon;
 
-WIcon *icon_create_for_dock(WScreen *scr, const char *command, const char *wm_instance, const char *wm_class, int tile);
+WIcon *icon_create_for_dock(WScreen *scr, const char *command,
+                            const char *wm_instance, const char *wm_class,
+                            int tile);
 WIcon *icon_create_for_wwindow(WWindow *wwin);
 
 void set_icon_image_from_database(WIcon *icon, const char *wm_instance, const char *wm_class, const char *command);

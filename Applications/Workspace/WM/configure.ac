@@ -842,19 +842,6 @@ AS_IF([test "x$with_pixmapdir" != "x"],
 AC_SUBST([pixmapdir])dnl
 
 
-dnl Enable User Defined Menu thing
-dnl ==============================
-AC_ARG_ENABLE([usermenu],
-    [AS_HELP_STRING([--enable-usermenu], [user defined menus for applications])],
-    [AS_CASE([$enableval],
-        [yes|no], [],
-        [AC_MSG_ERROR([bad value '$enableval' for --enable-usermenu])])],
-    [enable_usermenu=no])
-AS_IF([test "x$enable_usermenu" = "xyes"],
-    [AC_DEFINE([USER_MENU], [1],
-        [define if you want user defined menus for applications])])
-
-
 dnl Support for removing non-public symbols from a library
 dnl ======================================================
 gl_LD_VERSION_SCRIPT

@@ -24,10 +24,10 @@
 
 /* shutdown modes */
 typedef enum {
-    WSExitMode,
-    WSLogoutMode,
-    WSKillMode,
-    WSRestartPreparationMode
+              WSExitMode,
+              WSLogoutMode,
+              WSKillMode,
+              WSRestartPreparationMode
 } WShutdownMode;
 
 void Shutdown(WShutdownMode mode);

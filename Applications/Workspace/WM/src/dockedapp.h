@@ -24,40 +24,40 @@
 
 
 typedef struct _AppSettingsPanel {
-	WMWindow *win;
-	WAppIcon *editedIcon;
+  WMWindow *win;
+  WAppIcon *editedIcon;
 
-	WWindow *wwin;
+  WWindow *wwin;
 
-	WMLabel *iconLabel;
-	WMLabel *nameLabel;
+  WMLabel *iconLabel;
+  WMLabel *nameLabel;
 
-	WMFrame *commandFrame;
-	WMTextField *commandField;
+  WMFrame *commandFrame;
+  WMTextField *commandField;
 
-	WMFrame *dndCommandFrame;
-	WMTextField *dndCommandField;
-	WMLabel *dndCommandLabel;
+  WMFrame *dndCommandFrame;
+  WMTextField *dndCommandField;
+  WMLabel *dndCommandLabel;
 
-	WMFrame *pasteCommandFrame;
-	WMTextField *pasteCommandField;
-	WMLabel *pasteCommandLabel;
+  WMFrame *pasteCommandFrame;
+  WMTextField *pasteCommandField;
+  WMLabel *pasteCommandLabel;
 
-	WMFrame *iconFrame;
-	WMTextField *iconField;
-	WMButton *browseBtn;
+  WMFrame *iconFrame;
+  WMTextField *iconField;
+  WMButton *browseBtn;
 
-	WMButton *autoLaunchBtn;
-	WMButton *lockBtn;
+  WMButton *autoLaunchBtn;
+  WMButton *lockBtn;
 
-	WMButton *okBtn;
-	WMButton *cancelBtn;
+  WMButton *okBtn;
+  WMButton *cancelBtn;
 
-	Window parent;
+  Window parent;
 
-	/* kluge */
-	unsigned int destroyed:1;
-	unsigned int choosingIcon:1;
+  /* kluge */
+  unsigned int destroyed:1;
+  unsigned int choosingIcon:1;
 } AppSettingsPanel;
 
 void DestroyDockAppSettingsPanel(AppSettingsPanel *panel);

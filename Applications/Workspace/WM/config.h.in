@@ -176,9 +176,6 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
-/* define if you want user defined menus for applications */
-#undef USER_MENU
-
 /* Defined when user did not request to disable animations */
 #undef USE_ANIMATIONS
 

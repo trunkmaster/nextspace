@@ -27,7 +27,8 @@ ADDITIONAL_GUI_LIBS += -lNXSystem -lNXFoundation -lNXAppKit -lX11
 #
 # Window manager addons
 #
-ADDITIONAL_CFLAGS += -DNEXTSPACE -std=gnu89
+ADDITIONAL_CFLAGS += -DNEXTSPACE 
+#-std=gnu89
 ADDITIONAL_OBJCFLAGS += -DNEXTSPACE
 ADDITIONAL_LDFLAGS += -ldispatch -ldl
 ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/src -I./$(WM_DIR)/WINGs -I./$(WM_DIR)/wrlib

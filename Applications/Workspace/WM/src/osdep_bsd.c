@@ -60,123 +60,123 @@
  */
 Bool GetCommandForPid(int pid, char ***argv, int *argc)
 {
-	/*
-	 * it just returns failure if the sysctl calls fail; since there's
-	 * apparently no harm done to the caller because of this, it seems
-	 * more user-friendly than to bomb out.
-	 */
-	int j, mib[4];
-	unsigned int i;
-	size_t count;
-	static char *args = NULL;
-	static int argmax = 0;
+  /*
+   * it just returns failure if the sysctl calls fail; since there's
+   * apparently no harm done to the caller because of this, it seems
+   * more user-friendly than to bomb out.
+   */
+  int j, mib[4];
+  unsigned int i;
+  size_t count;
+  static char *args = NULL;
+  static int argmax = 0;
 #if defined( OPENBSD )
-	char kvmerr[_POSIX2_LINE_MAX];	/* for kvm*() error reporting */
-	int procs;			/* kvm_getprocs() */
-	kvm_t *kd;
-	struct kinfo_proc *kp;
-	char **nargv;			/* kvm_getarg() */
+  char kvmerr[_POSIX2_LINE_MAX];	/* for kvm*() error reporting */
+  int procs;			/* kvm_getprocs() */
+  kvm_t *kd;
+  struct kinfo_proc *kp;
+  char **nargv;			/* kvm_getarg() */
 #endif
 
-	*argv = NULL;
-	*argc = 0;
+  *argv = NULL;
+  *argc = 0;
 
-	/* the system-wide limit */
-	if (argmax == 0) { /* it hopefully doesn't change at runtime *g* */
-		mib[0] = CTL_KERN;
-		mib[1] = KERN_ARGMAX;
-		mib[2] = 0;
-		mib[3] = 0;
+  /* the system-wide limit */
+  if (argmax == 0) { /* it hopefully doesn't change at runtime *g* */
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_ARGMAX;
+    mib[2] = 0;
+    mib[3] = 0;
 
-		count = sizeof(argmax);
-		if (sysctl(mib, 2, &argmax, &count, NULL, 0) == -1)
-			return False;
-	}
+    count = sizeof(argmax);
+    if (sysctl(mib, 2, &argmax, &count, NULL, 0) == -1)
+      return False;
+  }
 
-	/* if argmax is still 0, something went very seriously wrong */
-	assert( argmax > 0);
+  /* if argmax is still 0, something went very seriously wrong */
+  assert( argmax > 0);
 
-	/* space for args; no need to free before returning even on errors */
-	if (args == NULL)
-		args = (char *)wmalloc(argmax);
+  /* space for args; no need to free before returning even on errors */
+  if (args == NULL)
+    args = (char *)wmalloc(argmax);
 
 #if defined( OPENBSD )
-	/* kvm descriptor */
-	kd = kvm_openfiles(NULL, NULL, NULL, KVM_NO_FILES, kvmerr);
-	if (kd == NULL)
-		return False;
+  /* kvm descriptor */
+  kd = kvm_openfiles(NULL, NULL, NULL, KVM_NO_FILES, kvmerr);
+  if (kd == NULL)
+    return False;
 
-	procs = 0;
-	/* the process we are interested in */
-	kp = kvm_getprocs(kd, KERN_PROC_PID, pid, sizeof(*kp), &procs);
-	if (kp == NULL || procs == 0)
-		/* if kvm_getprocs() bombs out or does not find the process */
-		return False;
+  procs = 0;
+  /* the process we are interested in */
+  kp = kvm_getprocs(kd, KERN_PROC_PID, pid, sizeof(*kp), &procs);
+  if (kp == NULL || procs == 0)
+    /* if kvm_getprocs() bombs out or does not find the process */
+    return False;
 
-	/* get its argv */
-	nargv = kvm_getargv(kd, kp, 0);
-	if (nargv == NULL)
-		return False;
+  /* get its argv */
+  nargv = kvm_getargv(kd, kp, 0);
+  if (nargv == NULL)
+    return False;
 
-	/* flatten nargv into args */
-	count = 0;
-	memset(args, 0, argmax);
-	/*
-	 * must have this much free space in `args' in order for the current
-	 * iteration not to overflow it: we are at `count', and will append
-	 * the next (*argc) arg and a nul (+1)
-	 * technically, overflow (or truncation, which isn't handled) can not
-	 * happen (should not, at least).
-	 */
-	#define ARGSPACE ( count + strlen(nargv[ (*argc) ] ) + 1 )
-	while (nargv[*argc] && ARGSPACE < argmax ) {
-		memcpy(args + count, nargv[*argc], strlen(nargv[*argc]));
-		count += strlen(nargv[*argc]) + 1;
-		(*argc)++;
-	}
-	#undef ARGSPACE
-	/* by now *argc is correct as a byproduct */
+  /* flatten nargv into args */
+  count = 0;
+  memset(args, 0, argmax);
+  /*
+   * must have this much free space in `args' in order for the current
+   * iteration not to overflow it: we are at `count', and will append
+   * the next (*argc) arg and a nul (+1)
+   * technically, overflow (or truncation, which isn't handled) can not
+   * happen (should not, at least).
+   */
+#define ARGSPACE ( count + strlen(nargv[ (*argc) ] ) + 1 )
+  while (nargv[*argc] && ARGSPACE < argmax ) {
+    memcpy(args + count, nargv[*argc], strlen(nargv[*argc]));
+    count += strlen(nargv[*argc]) + 1;
+    (*argc)++;
+  }
+#undef ARGSPACE
+  /* by now *argc is correct as a byproduct */
 
-	kvm_close(kd);
+  kvm_close(kd);
 #else /* FREEBSD || NETBSD || DRAGONFLYBSD */
 
-	mib[0] = CTL_KERN;
+  mib[0] = CTL_KERN;
 #if defined( NETBSD )
-	mib[1] = KERN_PROC_ARGS;
-	mib[2] = pid;
-	mib[3] = KERN_PROC_ARGV;
+  mib[1] = KERN_PROC_ARGS;
+  mib[2] = pid;
+  mib[3] = KERN_PROC_ARGV;
 #elif defined( FREEBSD ) || defined( DRAGONFLYBSD )
-	mib[1] = KERN_PROC;
-	mib[2] = KERN_PROC_ARGS;
-	mib[3] = pid;
+  mib[1] = KERN_PROC;
+  mib[2] = KERN_PROC_ARGS;
+  mib[3] = pid;
 #endif
 
-	count = argmax;
-	/* canary */
-	*args = 0;
-	if (sysctl(mib, 4, args, &count, NULL, 0) == -1 || *args == 0)
-		return False;
+  count = argmax;
+  /* canary */
+  *args = 0;
+  if (sysctl(mib, 4, args, &count, NULL, 0) == -1 || *args == 0)
+    return False;
 
-	/* args is a flattened series of null-terminated strings */
-	for (i = 0; i < count; i++)
-		if (args[i] == '\0')
-			(*argc)++;
+  /* args is a flattened series of null-terminated strings */
+  for (i = 0; i < count; i++)
+    if (args[i] == '\0')
+      (*argc)++;
 #endif
 
-	*argv = (char **)wmalloc(sizeof(char *) * (*argc + 1 /* term. null ptr */));
-	(*argv)[0] = args;
+  *argv = (char **)wmalloc(sizeof(char *) * (*argc + 1 /* term. null ptr */));
+  (*argv)[0] = args;
 
-	/* go through args, set argv[$next] to the beginning of each string */
-	for (i = 0, j = 1; i < count; i++) {
-		if (args[i] != '\0')
-			continue;
-		if (i < count - 1)
-			(*argv)[j++] = &args[i + 1];
-		if (j == *argc)
-			break;
-	}
+  /* go through args, set argv[$next] to the beginning of each string */
+  for (i = 0, j = 1; i < count; i++) {
+    if (args[i] != '\0')
+      continue;
+    if (i < count - 1)
+      (*argv)[j++] = &args[i + 1];
+    if (j == *argc)
+      break;
+  }
 
-	/* the list of arguments must be terminated by a null pointer */
-	(*argv)[j] = NULL;
-	return True;
+  /* the list of arguments must be terminated by a null pointer */
+  (*argv)[j] = NULL;
+  return True;
 }

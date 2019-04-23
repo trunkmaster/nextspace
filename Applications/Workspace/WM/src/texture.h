@@ -56,105 +56,105 @@
 
 
 typedef struct {
-    short type;			       /* type of texture */
-    char subtype;		       /* subtype of the texture */
-    XColor color;		       /* default background color */
-    GC gc;			       /* gc for the background color */
+  short type;			       /* type of texture */
+  char subtype;		       /* subtype of the texture */
+  XColor color;		       /* default background color */
+  GC gc;			       /* gc for the background color */
 } WTexAny;
 
 
 typedef struct WTexSolid {
-    short type;
-    char subtype;
-    XColor normal;
-    GC normal_gc;
+  short type;
+  char subtype;
+  XColor normal;
+  GC normal_gc;
 
-    GC light_gc;
-    GC dim_gc;
-    GC dark_gc;
+  GC light_gc;
+  GC dim_gc;
+  GC dark_gc;
 
-    XColor light;
-    XColor dim;
-    XColor dark;
+  XColor light;
+  XColor dim;
+  XColor dark;
 } WTexSolid;
 
 
 typedef struct WTexGradient {
-    short type;
-    char subtype;
-    XColor normal;
-    GC normal_gc;
+  short type;
+  char subtype;
+  XColor normal;
+  GC normal_gc;
 
-    RColor color1;
-    RColor color2;
+  RColor color1;
+  RColor color2;
 } WTexGradient;
 
 
 typedef struct WTexMGradient {
-    short type;
-    char subtype;
-    XColor normal;
-    GC normal_gc;
+  short type;
+  char subtype;
+  XColor normal;
+  GC normal_gc;
 
-    RColor **colors;
+  RColor **colors;
 } WTexMGradient;
 
 
 typedef struct WTexIGradient {
-    short type;
-    char dummy;
-    XColor normal;
-    GC normal_gc;
+  short type;
+  char dummy;
+  XColor normal;
+  GC normal_gc;
 
-    RColor colors1[2];
-    RColor colors2[2];
-    int thickness1;
-    int thickness2;
+  RColor colors1[2];
+  RColor colors2[2];
+  int thickness1;
+  int thickness2;
 } WTexIGradient;
 
 
 typedef struct WTexPixmap {
-    short type;
-    char subtype;
-    XColor normal;
-    GC normal_gc;
+  short type;
+  char subtype;
+  XColor normal;
+  GC normal_gc;
 
-    struct RImage *pixmap;
+  struct RImage *pixmap;
 } WTexPixmap;
 
 typedef struct WTexTGradient {
-    short type;
-    char subtype;
-    XColor normal;
-    GC normal_gc;
+  short type;
+  char subtype;
+  XColor normal;
+  GC normal_gc;
 
-    RColor color1;
-    RColor color2;
-    struct RImage *pixmap;
-    int opacity;
+  RColor color1;
+  RColor color2;
+  struct RImage *pixmap;
+  int opacity;
 } WTexTGradient;
 
 typedef struct WTexFunction {
-    short type;
-    char subtype;
-    XColor normal;
-    GC normal_gc;
+  short type;
+  char subtype;
+  XColor normal;
+  GC normal_gc;
 
-    void *handle;
-    RImage *(*render) (int, char**, int, int, int);
-    int argc;
-    char **argv;
+  void *handle;
+  RImage *(*render) (int, char**, int, int, int);
+  int argc;
+  char **argv;
 } WTexFunction;
 
 typedef union WTexture {
-    WTexAny any;
-    WTexSolid solid;
-    WTexGradient gradient;
-    WTexIGradient igradient;
-    WTexMGradient mgradient;
-    WTexPixmap pixmap;
-    WTexTGradient tgradient;
-    WTexFunction function;
+  WTexAny any;
+  WTexSolid solid;
+  WTexGradient gradient;
+  WTexIGradient igradient;
+  WTexMGradient mgradient;
+  WTexPixmap pixmap;
+  WTexTGradient tgradient;
+  WTexFunction function;
 } WTexture;
 
 

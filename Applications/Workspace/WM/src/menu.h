@@ -30,76 +30,76 @@
 #define MI_SHADED	4
 
 typedef struct WMenuEntry {
-    int order;
-    char *text;			       /* entry text */
-    char *rtext;		       /* text to show in the right part */
-    void (*callback)(struct WMenu *menu, struct WMenuEntry *entry);
-    void (*free_cdata)(void *data);    /* proc to be used to free clientdata */
-    void *clientdata;		       /* data to pass to callback */
-    int cascade;		       /* cascade menu index */
+  int order;
+  char *text;			       /* entry text */
+  char *rtext;		       /* text to show in the right part */
+  void (*callback)(struct WMenu *menu, struct WMenuEntry *entry);
+  void (*free_cdata)(void *data);    /* proc to be used to free clientdata */
+  void *clientdata;		       /* data to pass to callback */
+  int cascade;		       /* cascade menu index */
 #ifdef USER_MENU
-    WMPropList *instances;	       /* allowed instances */
+  WMPropList *instances;	       /* allowed instances */
 #endif /* USER_MENU */
-    struct {
-        unsigned int enabled:1;	       /* entry is selectable */
-        unsigned int indicator:1;      /* left indicator */
-        unsigned int indicator_on:1;
-        unsigned int indicator_type:3;
-        unsigned int editable:1;
-    } flags;
+  struct {
+    unsigned int enabled:1;	       /* entry is selectable */
+    unsigned int indicator:1;      /* left indicator */
+    unsigned int indicator_on:1;
+    unsigned int indicator_type:3;
+    unsigned int editable:1;
+  } flags;
 } WMenuEntry;
 
 
 typedef struct WMenu {
-    struct WMenu *parent;
-    struct WMenu *brother;
+  struct WMenu *parent;
+  struct WMenu *brother;
 
-    time_t timestamp;		       /* for the root menu. Last time
+  time_t timestamp;		       /* for the root menu. Last time
                                         * menu was reloaded */
 
-    /* decorations */
-    struct WFrameWindow *frame;
-    WCoreWindow *menu;		       /* the window menu */
-    Pixmap menu_texture_data;
-    int frame_x, frame_y;	       /* position of the frame in root*/
+  /* decorations */
+  struct WFrameWindow *frame;
+  WCoreWindow *menu;		       /* the window menu */
+  Pixmap menu_texture_data;
+  int frame_x, frame_y;	       /* position of the frame in root*/
 
-    WMenuEntry **entries;	       /* array of entries. This is shared
-                                        * by the menu and it's "brother" */
-    short alloced_entries;	       /* number of entries allocated in
+  WMenuEntry **entries;	       /* array of entries. This is shared
+                                * by the menu and it's "brother" */
+  short alloced_entries;	       /* number of entries allocated in
                                         * entry array */
-    struct WMenu **cascades;	       /* array of cascades */
-    short cascade_no;
+  struct WMenu **cascades;	       /* array of cascades */
+  short cascade_no;
 
-    short entry_no;		       /* number of entries */
-    short selected_entry;
+  short entry_no;		       /* number of entries */
+  short selected_entry;
 
-    short entry_height;		       /* height of each entry */
+  short entry_height;		       /* height of each entry */
 
-    WMHandlerID timer;		       /* timer for the autoscroll */
+  WMHandlerID timer;		       /* timer for the autoscroll */
 
-    void *jump_back;                   /* jump back data */
+  void *jump_back;                   /* jump back data */
 
-    /* to be called when some entry is edited */
-    void (*on_edit)(struct WMenu *menu, struct WMenuEntry *entry);
-    /* to be called when destroyed */
-    void (*on_destroy)(struct WMenu *menu);
+  /* to be called when some entry is edited */
+  void (*on_edit)(struct WMenu *menu, struct WMenuEntry *entry);
+  /* to be called when destroyed */
+  void (*on_destroy)(struct WMenu *menu);
 
-    struct {
-        unsigned int titled:1;
-        unsigned int realized:1;       /* whether the window was configured */
-        unsigned int app_menu:1;       /* this is a application or root menu */
-        unsigned int mapped:1;	       /* if menu is already mapped on screen*/
-        unsigned int buttoned:1;       /* if the close button is visible
-                                        * (menu was torn off) */
-        unsigned int open_to_left:1;   /* direction to open submenus */
-        unsigned int lowered:1;
+  struct {
+    unsigned int titled:1;
+    unsigned int realized:1;       /* whether the window was configured */
+    unsigned int app_menu:1;       /* this is a application or root menu */
+    unsigned int mapped:1;	       /* if menu is already mapped on screen*/
+    unsigned int buttoned:1;       /* if the close button is visible
+                                    * (menu was torn off) */
+    unsigned int open_to_left:1;   /* direction to open submenus */
+    unsigned int lowered:1;
 
-        unsigned int brother:1;	       /* if this is a copy of the menu*/
-        unsigned int editing:1;
-        unsigned int jump_back_pending:1;
+    unsigned int brother:1;	       /* if this is a copy of the menu*/
+    unsigned int editing:1;
+    unsigned int jump_back_pending:1;
 
-        unsigned int inside_handler:1;
-    } flags;
+    unsigned int inside_handler:1;
+  } flags;
 } WMenu;
 
 
@@ -114,8 +114,8 @@ WMenuEntry *wMenuInsertCallback(WMenu *menu, int index, const char *text,
 
 void wMenuEntrySetCascade(WMenu *menu, WMenuEntry *entry, WMenu *cascade);
 
-#define wMenuAddCallback(menu, text, callback, data) \
-    wMenuInsertCallback(menu, -1, text, callback, data)
+#define wMenuAddCallback(menu, text, callback, data)    \
+  wMenuInsertCallback(menu, -1, text, callback, data)
 
 void wMenuRemoveItem(WMenu *menu, int index);
 
@@ -132,6 +132,5 @@ void wMenuScroll(WMenu *menu);
 WMenu *wMenuUnderPointer(WScreen *screen);
 void wMenuSaveState(WScreen *scr);
 void wMenuRestoreState(WScreen *scr);
-
 
 #endif

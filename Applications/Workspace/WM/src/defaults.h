@@ -22,10 +22,10 @@
 #define WMDEFAULTS_H_
 
 typedef struct WDDomain {
-	const char *domain_name;
-	WMPropList *dictionary;
-	const char *path;
-	time_t timestamp;
+  const char *domain_name;
+  WMPropList *dictionary;
+  const char *path;
+  time_t timestamp;
 } WDDomain;
 
 WDDomain * wDefaultsInitDomain(const char *domain, Bool requireDictionary);

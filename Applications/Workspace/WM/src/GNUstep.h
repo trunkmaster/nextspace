@@ -29,9 +29,9 @@
 /* #define GNUSTEP_TITLEBAR_STATE "_GNUSTEP_TITLEBAR_STATE" */
 
 enum {
-    WMTitleBarKey = 0,
-    WMTitleBarNormal = 1,
-    WMTitleBarMain = 2
+      WMTitleBarKey = 0,
+      WMTitleBarNormal = 1,
+      WMTitleBarMain = 2
 };
 
 #ifndef _DEFINED_GNUSTEP_WINDOW_INFO
@@ -46,29 +46,29 @@ enum {
  * range INT_MIN+1 to INT_MAX
  */
 enum {
-                                    // OPENSTEP  // MacOS  // GNUstep
-  NSDesktopWindowLevel     = -1000, // --        // 2      // -1000
-  NSNormalWindowLevel      = 0,     // 0         // 3      // 0
-  NSFloatingWindowLevel    = 3,     // 3         // 4      // 3
-  NSDockWindowLevel        = 5,     // 5         // 6      // 21
-  NSSubmenuWindowLevel     = 10,    // 10        // 5      // 3
-  NSTornOffMenuWindowLevel = 10,    // --        // 5      // 3
-  NSMainMenuWindowLevel    = 20,    // 20        // 7      // 20
-  NSStatusWindowLevel      = 21,    // --        // 8      // 21
-  NSModalPanelWindowLevel  = 100,   // --        // 9      // 100
-  NSPopUpMenuWindowLevel   = 101,   // --        // 10     // 101
-  NSScreenSaverWindowLevel = 1000   // --        // 12     // 1000
+      // OPENSTEP  // MacOS  // GNUstep
+      NSDesktopWindowLevel     = -1000, // --        // 2      // -1000
+      NSNormalWindowLevel      = 0,     // 0         // 3      // 0
+      NSFloatingWindowLevel    = 3,     // 3         // 4      // 3
+      NSDockWindowLevel        = 5,     // 5         // 6      // 21
+      NSSubmenuWindowLevel     = 10,    // 10        // 5      // 3
+      NSTornOffMenuWindowLevel = 10,    // --        // 5      // 3
+      NSMainMenuWindowLevel    = 20,    // 20        // 7      // 20
+      NSStatusWindowLevel      = 21,    // --        // 8      // 21
+      NSModalPanelWindowLevel  = 100,   // --        // 9      // 100
+      NSPopUpMenuWindowLevel   = 101,   // --        // 10     // 101
+      NSScreenSaverWindowLevel = 1000   // --        // 12     // 1000
 };
 
 /* window attributes */
 enum {
-    WMBorderlessWindowMask = 0,
-    WMTitledWindowMask = 1,
-    WMClosableWindowMask = 2,
-    WMMiniaturizableWindowMask = 4,
-    WMResizableWindowMask = 8,
-    WMIconWindowMask = 64,
-    WMMiniWindowMask = 128
+      WMBorderlessWindowMask = 0,
+      WMTitledWindowMask = 1,
+      WMClosableWindowMask = 2,
+      WMMiniaturizableWindowMask = 4,
+      WMResizableWindowMask = 8,
+      WMIconWindowMask = 64,
+      WMMiniWindowMask = 128
 };
 #endif
 
@@ -77,15 +77,15 @@ enum {
 
 
 typedef struct {
-    CARD32 flags;
-    CARD32 window_style;
-    CARD32 window_level;
-    CARD32 reserved;
-    Pixmap miniaturize_pixmap;	       /* pixmap for miniaturize button */
-    Pixmap close_pixmap;	       /* pixmap for close button */
-    Pixmap miniaturize_mask;	       /* miniaturize pixmap mask */
-    Pixmap close_mask;		       /* close pixmap mask */
-    CARD32 extra_flags;
+  CARD32 flags;
+  CARD32 window_style;
+  CARD32 window_level;
+  CARD32 reserved;
+  Pixmap miniaturize_pixmap;	       /* pixmap for miniaturize button */
+  Pixmap close_pixmap;	       /* pixmap for close button */
+  Pixmap miniaturize_mask;	       /* miniaturize pixmap mask */
+  Pixmap close_mask;		       /* close pixmap mask */
+  CARD32 extra_flags;
 } GNUstepWMAttributes;
 
 #define GSWindowStyleAttr	(1<<0)

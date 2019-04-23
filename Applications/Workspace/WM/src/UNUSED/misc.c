@@ -761,24 +761,24 @@ char *GetShortcutKey(WShortKey key)
   char buffer[256];
   char *wr;
 
-#define append_string(text) \
-  { \
-    const char *string = text; \
- \
-    while (*string) { \
-      if (wr >= buffer + sizeof(buffer) - 1) \
-        break; \
-      *wr++ = *string++; \
-    } \
+  void append_string(const char *text)
+  {
+    const char *string = text;
+
+    while (*string) {
+      if (wr >= buffer + sizeof(buffer) - 1)
+        break;
+      *wr++ = *string++;
+    }
   }
 
-#define append_modifier(modifier_index, fallback_name) \
-  { \
-    if (wPreferences.modifier_labels[modifier_index]) { \
-      append_string(wPreferences.modifier_labels[modifier_index]); \
-    } else { \
-      append_string(fallback_name); \
-    } \
+  void append_modifier(int modifier_index, const char *fallback_name)
+  {
+    if (wPreferences.modifier_labels[modifier_index]) {
+      append_string(wPreferences.modifier_labels[modifier_index]);
+    } else {
+      append_string(fallback_name);
+    }
   }
 
   key_name = XKeysymToString(XkbKeycodeToKeysym(dpy, key.keycode, 0, 0));
@@ -797,8 +797,6 @@ char *GetShortcutKey(WShortKey key)
   *wr = '\0';
 
   return GetShortcutString(buffer);
-#undef append_modifier
-#undef append_string
 }
 
 char *EscapeWM_CLASS(const char *name, const char *class)

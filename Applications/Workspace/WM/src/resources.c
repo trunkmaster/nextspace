@@ -37,28 +37,28 @@
 
 int wGetColorForColormap(Colormap colormap, const char *color_name, XColor *color)
 {
-	if (!XParseColor(dpy, colormap, color_name, color)) {
-		wwarning(_("could not parse color \"%s\""), color_name);
-		return False;
-	}
-	if (!XAllocColor(dpy, colormap, color)) {
-		wwarning(_("could not allocate color \"%s\""), color_name);
-		return False;
-	}
-	return True;
+  if (!XParseColor(dpy, colormap, color_name, color)) {
+    wwarning(_("could not parse color \"%s\""), color_name);
+    return False;
+  }
+  if (!XAllocColor(dpy, colormap, color)) {
+    wwarning(_("could not allocate color \"%s\""), color_name);
+    return False;
+  }
+  return True;
 }
 
 int wGetColor(WScreen *scr, const char *color_name, XColor *color)
 {
-	return wGetColorForColormap(scr->w_colormap, color_name, color);
+  return wGetColorForColormap(scr->w_colormap, color_name, color);
 }
 
 void wFreeColor(WScreen * scr, unsigned long pixel)
 {
-	if (pixel != scr->white_pixel && pixel != scr->black_pixel) {
-		unsigned long colors[1];
+  if (pixel != scr->white_pixel && pixel != scr->black_pixel) {
+    unsigned long colors[1];
 
-		colors[0] = pixel;
-		XFreeColors(dpy, scr->w_colormap, colors, 1, 0);
-	}
+    colors[0] = pixel;
+    XFreeColors(dpy, scr->w_colormap, colors, 1, 0);
+  }
 }

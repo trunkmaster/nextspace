@@ -53,7 +53,6 @@
 #include "balloon.h"
 #include "geomview.h"
 #include "wmspec.h"
-#include "rootmenu.h"
 
 #include "xinerama.h"
 
@@ -893,9 +892,6 @@ void wScreenRestoreState(WScreen * scr)
 {
   WMPropList *state;
   char *path;
-
-  OpenRootMenu(scr, -10000, -10000, False);
-  wMenuUnmap(scr->root_menu);
 
   make_keys();
 
