@@ -146,5 +146,6 @@ int XWRunAlertPanel(char *title, char *message,
                      char *defaultButton,
                      char *alternateButton,
                      char *otherButton);
+void XWRingBell(WWindow *wwin);
 
 #endif //NEXTSPACE

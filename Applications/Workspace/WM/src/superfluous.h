@@ -26,4 +26,6 @@
 void DoKaboom(WScreen *scr, Window win, int x, int y);
 Pixmap MakeGhostIcon(WScreen *scr, Drawable drawable);
 void DoWindowBirth(WWindow *wwin);
+void wShakeWindow(WWindow *wwin);
+
 #endif

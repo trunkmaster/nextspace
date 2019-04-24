@@ -1393,46 +1393,16 @@ static void handleShapeNotify(XEvent * event)
 #ifdef KEEP_XKB_LOCK_STATUS
 static void handleXkbBellNotify(XkbEvent *event)
 {
-  // Play sound specified in ~/Library/Preferences/.NextSpace/NXGlobalDomain
-  // as NXSystemBeep.
-  fprintf(stderr, "[WM] XKB event is XkbBellNotify!\n");
-
-  WWindow *wwin = wScreenWithNumber(0)->focused_window;
-  int     i = 0, j = 0, num_steps, num_shakes;
-  int     x = wwin->frame_x;
-  int     xo = x;
-  int     y = wwin->frame_y;
-  int     sleep_time = 2000;
+  WWindow *wwin;
+  WScreen *scr;
   
-  num_steps = 3;
-  num_shakes = 3;
-  for (i = 0; i < num_shakes; i++)
-    {
-      for (j = 0; j < num_steps; j++)
-        {
-          x += 10;
-          XMoveWindow(dpy, wwin->frame->core->window, x, y);
-          XSync(dpy, False);
-          usleep(sleep_time);
-        }
-      for (j = 0; j < num_steps*2; j++)
-        {
-          x -= 10;
-          XMoveWindow(dpy, wwin->frame->core->window, x, y);
-          XSync(dpy, False);
-          usleep(sleep_time);
-        }
-      for (j = 0; j < num_steps; j++)
-        {
-          x += 10;
-          XMoveWindow(dpy, wwin->frame->core->window, x, y);
-          XSync(dpy, False);
-          usleep(sleep_time);
-        }
-      XSync(dpy, True);
+  for (int i = 0; i < w_global.screen_count; i++) {
+    scr = wScreenWithNumber(i);
+    wwin = scr->focused_window;
+    if (wwin && wwin->flags.focused) {
+      XWRingBell(wwin);
     }
-  XFlush(dpy);
-  XMoveWindow(dpy, wwin->frame->core->window, xo, y);
+  }
 }
 /* please help ]d if you know what to do */
 static void handleXkbIndicatorStateNotify(XkbEvent *event)

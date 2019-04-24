@@ -384,3 +384,42 @@ void wAppBounceWhileUrgent(WApplication *wapp)
     }
   }
 }
+
+void wShakeWindow(WWindow *wwin)
+{
+  int i = 0, j = 0, num_steps, num_shakes;
+  int x = wwin->frame_x;
+  int xo = x;
+  int y = wwin->frame_y;
+  int sleep_time = 2000;
+  
+  num_steps = 3;
+  num_shakes = 3;
+  for (i = 0; i < num_shakes; i++)
+    {
+      for (j = 0; j < num_steps; j++)
+        {
+          x += 10;
+          XMoveWindow(dpy, wwin->frame->core->window, x, y);
+          XSync(dpy, False);
+          usleep(sleep_time);
+        }
+      for (j = 0; j < num_steps*2; j++)
+        {
+          x -= 10;
+          XMoveWindow(dpy, wwin->frame->core->window, x, y);
+          XSync(dpy, False);
+          usleep(sleep_time);
+        }
+      for (j = 0; j < num_steps; j++)
+        {
+          x += 10;
+          XMoveWindow(dpy, wwin->frame->core->window, x, y);
+          XSync(dpy, False);
+          usleep(sleep_time);
+        }
+      XSync(dpy, True);
+    }
+  XFlush(dpy);
+  XMoveWindow(dpy, wwin->frame->core->window, xo, y);
+}

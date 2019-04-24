@@ -15,6 +15,7 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
+#import <NXFoundation/NXDefaults.h>
 #import <NXAppKit/NXAlert.h>
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXSystemInfo.h>
@@ -1682,6 +1683,31 @@ int XWRunAlertPanel(char *title, char *message,
   [alertInfo release];
   
   return result;
+}
+
+extern void wShakeWindow(WWindow *wwin);
+void XWRingBell(WWindow *wwin)
+{
+  NXDefaults *defs = [NXDefaults globalUserDefaults];
+  NSString   *beepType = [defs objectForKey:@"NXSystemBeepType"];
+
+  if (beepType && [beepType isEqualToString:@"Visual"]) {
+    wShakeWindow(wwin);
+  }
+  else {
+    // Play sound specified in ~/Library/Preferences/.NextSpace/NXGlobalDomain
+    // as NXSystemBeep.
+    NSString *beepPath = [defs objectForKey:@"NXSystemBeep"];
+    NSSound  *sound;
+    if (beepPath == nil ||
+        [[NSFileManager defaultManager] fileExistsAtPath:beepPath] == NO) {
+      beepPath = @"/usr/NextSpace/Sounds/Bonk.snd";
+    }
+    // TODO: should we play it with SoundKit?
+    sound = [[NSSound alloc] initWithContentsOfFile:beepPath byReference:NO];
+    [sound play];
+    [sound release];
+  }
 }
 
 #endif //NEXTSPACE
