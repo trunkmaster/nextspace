@@ -5,6 +5,7 @@
 *.framework
 *derived_src
 *.preferences
+*.forecast
 *.wsprefs
 *.bundle
 *.viewer
