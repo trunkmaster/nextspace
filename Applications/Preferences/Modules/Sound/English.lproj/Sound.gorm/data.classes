@@ -2,10 +2,11 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "setMute:",
+	    "showMixer:",
 	    "setBalance:",
 	    "setBeep:",
 	    "setBeepRadio:",
+	    "setMute:",
 	    "setVolume:"
 	);
 	Super = NSObject;
@@ -16,7 +17,8 @@
 	    "setBeepRadio:",
 	    "setBalance:",
 	    "setVolume:",
-	    "setMute:"
+	    "setMute:",
+	    "showMixer:"
 	);
 	Outlets = (
 	    view,

@@ -11,16 +11,19 @@ $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/bundle.registry
 
 $(BUNDLE_NAME)_OBJC_FILES= \
-	Sound.m
+	Sound.m \
+	Mixer.m
 
 $(BUNDLE_NAME)_HEADERS= \
-	Sound.h
+	Sound.h \
+	Mixer.h
 
 $(BUNDLE_NAME)_LANGUAGES = \
 	English
 
 $(BUNDLE_NAME)_LOCALIZED_RESOURCE_FILES= \
-	Sound.gorm
+	Sound.gorm \
+	Mixer.gorm
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/bundle.make
