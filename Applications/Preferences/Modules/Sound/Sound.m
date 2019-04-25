@@ -26,6 +26,7 @@
 #import <SoundKit/SoundKit.h>
 
 #import "Sound.h"
+#import "Mixer.h"
 
 @implementation Sound
 
@@ -43,6 +44,8 @@
   [soundsList release];
   [defaults synchronize];
   [image release];
+  if (mixer)
+    [mixer release];
   [super dealloc];
 }
 
@@ -391,6 +394,14 @@ static void *InputContext = &InputContext;
     return;
   }
   [defaults setObject:title forKey:@"NXSystemBeepType"];
+}
+
+- (void)showMixer:(id)sender
+{
+  if (mixer == nil) {
+    mixer = [[Mixer alloc] init];
+  }
+  [[mixer window] makeKeyAndOrderFront:self];
 }
 
 @end

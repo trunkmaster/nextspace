@@ -54,6 +54,8 @@
   id micBalance;
 
   id soundInfo;
+
+  id mixer;
 }
 
 - (NSDictionary *)loadSoundList;

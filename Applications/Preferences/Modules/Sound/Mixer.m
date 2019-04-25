@@ -311,7 +311,8 @@ static void *InputContext = &InputContext;
 
 - (void)appMuteClick:(id)sender
 {
-  // [[[appBrowser selectedCellInColumn:0] representedObject] setMute:[sender state]];
+  [[[appBrowser selectedCellInColumn:0] representedObject]
+    setMute:[sender state]];
 }
 
 // --- Output actions
