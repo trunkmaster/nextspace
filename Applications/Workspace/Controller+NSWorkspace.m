@@ -4,7 +4,7 @@
    Interface to Workspace Manager application.
    Workspace Manager application can by set by command:
 
-     defaults write NSGlobalDomain GSWorkspaceApplication <name of app>
+   > defaults write NSGlobalDomain GSWorkspaceApplication <name of app>
 
    Copyright (C) 1996-2002 Free Software Foundation, Inc.
 

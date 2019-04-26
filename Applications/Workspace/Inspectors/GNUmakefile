@@ -1,4 +1,6 @@
-
+#
+# GNUmakefile
+#
 include $(GNUSTEP_MAKEFILES)/common.make
 
 BUNDLE_NAME=Inspectors
