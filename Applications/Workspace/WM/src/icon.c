@@ -48,15 +48,11 @@
 #include "event.h"
 #include "winmenu.h"
 
-/**** Global varianebles ****/
+#include <Workspace+WM.h>
+
+/**** Global variables ****/
 
 #define MOD_MASK wPreferences.modifier_mask
-#ifdef NEXTSPACE
-#define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
-#include <Workspace+WM.h>
-#else
-#define CACHE_ICON_PATH "/Library/WindowMaker/CachedPixmaps"
-#endif
 #define ICON_BORDER 3
 
 static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);
@@ -659,20 +655,20 @@ void update_icon_pixmap(WIcon *icon)
 
   icon->pixmap = None;
  
-  /* Create the pixmap */
-  if (icon->file_image)
-    icon_update_pixmap(icon, icon->file_image);
-
   /* If dockapp, put inside the icon */
   if (icon->icon_win != None) {
     /* file_image is NULL, because is docked app */
     icon_update_pixmap(icon, NULL);
     set_dockapp_in_icon(icon);
   }
+  else {
+    /* Create the pixmap even if `file_image` is NULL */
+    icon_update_pixmap(icon, icon->file_image);
+  }
 
-  /* No pixmap, set default background */
-  if (icon->pixmap != None)
+  if (icon->pixmap != None) {
     XSetWindowBackgroundPixmap(dpy, icon->core->window, icon->pixmap);
+  }
 
   /* Paint it */
   wIconPaint(icon);
@@ -944,14 +940,16 @@ static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event)
   }
 }
 
-void set_icon_image_from_database(WIcon *icon, const char *wm_instance, const char *wm_class, const char *command)
+void set_icon_image_from_database(WIcon *icon, const char *wm_instance,
+                                  const char *wm_class, const char *command)
 {
   char *file = NULL;
 
   file = get_icon_filename(wm_instance, wm_class, command, False);
   if (file) {
     icon->file = wstrdup(file);
-    icon->file_image = get_rimage_from_file(icon->core->screen_ptr, icon->file, wPreferences.icon_size);
+    icon->file_image = get_rimage_from_file(icon->core->screen_ptr,
+                                            icon->file, wPreferences.icon_size);
     wfree(file);
   }
 }
