@@ -116,7 +116,7 @@
  */
 
 /* list of paths to look for the config files, searched in order of appearance */
-#define DEF_CONFIG_PATHS "~/GNUstep/Library/WindowMaker:"PKGDATADIR
+#define DEF_CONFIG_PATHS "~/Library/Preferences/.WindowMaker:"
 #define DEF_MENU_FILE	 "menu"
 
 /* name of the script to execute at startup */
@@ -135,21 +135,17 @@
 #define GLOBAL_EPILOGUE_MENU_FILE "GlobalMenu.post"
 
 /* pixmap path */
-#define DEF_PIXMAP_PATHS \
-    "(\"~/pixmaps\",\"~/GNUstep/Library/WindowMaker/Pixmaps\",\""PIXMAPDIR"\")"
-
-#ifdef USER_MENU
-#define GLOBAL_USER_MENU_PATH PKGDATADIR"/UserMenus"
-#define DEF_USER_MENU_PATHS \
-    "~/GNUstep/Library/WindowMaker/UserMenus:"GLOBAL_USER_MENU_PATH
-#endif
+#define DEF_PIXMAP_PATHS  "(\"~/Library/Images\", \"/Library/Images/\")"
 
 /* icon path */
 #define DEF_ICON_PATHS \
-    "(\"~/pixmaps\",\"~/Library/Images\",\"/usr/include/X11/pixmaps/\",\""PIXMAPDIR"\")"
+    "(\"~/Library/Images\",\"/Library/Images/\",\"/usr/NextSpace/Images/\",\"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
+
+/* icon cache path */
+#define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
 
 /* window title to use for untitled windows */
-#define DEF_WINDOW_TITLE "Untitled"
+#define DEF_WINDOW_TITLE "UNTITLED"
 
 /* default style */
 #define DEF_FRAME_COLOR   "white"
@@ -159,7 +155,7 @@
 #define DEF_MENU_TITLE_FONT     "\"Helvetica:bold:pixelsize=12\""
 #define DEF_MENU_ENTRY_FONT     "\"Helvetica:pixelsize=12\""
 #define DEF_ICON_TITLE_FONT     "\"Helvetica:pixelsize=9\""
-#define DEF_CLIP_TITLE_FONT     "\"Helvetica:bold:pixelsize=10\""
+#define DEF_CLIP_TITLE_FONT     "\"Helvetica:bold:pixelsize=9\""
 #define DEF_INFO_TEXT_FONT      "\"Helvetica:pixelsize=12\""
 #define DEF_WORKSPACE_NAME_FONT "\"Helvetica:pixelsize=24\""
 

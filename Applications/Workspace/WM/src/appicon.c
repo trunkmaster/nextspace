@@ -109,7 +109,9 @@ void wApplicationExtractDirPackIcon(const char *path, const char *wm_instance, c
   }
 }
 
-WAppIcon *wAppIconCreateForDock(WScreen *scr, const char *command, const char *wm_instance, const char *wm_class, int tile)
+WAppIcon *wAppIconCreateForDock(WScreen *scr, const char *command,
+                                const char *wm_instance, const char *wm_class,
+                                int tile)
 {
   WAppIcon *aicon;
 
