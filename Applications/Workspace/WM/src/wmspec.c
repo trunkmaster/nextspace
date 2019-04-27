@@ -506,8 +506,12 @@ static void updateIconImage(WWindow *wwin)
   /* Refresh the application icon */
   WApplication *app = wApplicationOf(wwin->main_window);
   if (app && app->app_icon) {
-    wIconUpdate(app->app_icon->icon);
-    wAppIconPaint(app->app_icon);
+    WWindow *app_owner = app->app_icon->icon->owner;
+    if (app_owner && !app_owner->net_icon_image) {
+      app_owner->net_icon_image =  get_window_image_from_x11(wwin->client_win);
+      wIconUpdate(app->app_icon->icon);
+      wAppIconPaint(app->app_icon);
+    }
   }
 }
 
@@ -1456,7 +1460,6 @@ static Bool updateNetIconInfo(WWindow *wwin)
 
     XFree(data);
     hasState = True;
-
   } else {
     wwin->flags.net_handle_icon = False;
   }
@@ -1533,7 +1536,8 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
   WWindow *wwin;
 
 #ifdef DEBUG_WMSPEC
-  wmessage("processClientMessage type %s", XGetAtomName(dpy, event->message_type));
+  wmessage("processClientMessage type %s",
+           XGetAtomName(dpy, event->message_type));
 #endif
 
   scr = wScreenForWindow(event->window);
@@ -1543,7 +1547,8 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
       wWorkspaceChange(scr, event->data.l[0]);
       return True;
 
-    } else if (event->message_type == net_number_of_desktops) {
+    }
+    else if (event->message_type == net_number_of_desktops) {
       long value;
 
       value = event->data.l[0];
@@ -1565,11 +1570,13 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
       }
       return True;
 
-    } else if (event->message_type == net_showing_desktop) {
+    }
+    else if (event->message_type == net_showing_desktop) {
       wNETWMShowingDesktop(scr, event->data.l[0]);
       return True;
 
-    } else if (event->message_type == net_desktop_names) {
+    }
+    else if (event->message_type == net_desktop_names) {
       handleDesktopNames(scr);
       return True;
     }
@@ -1597,7 +1604,8 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     }
     return True;
 
-  } else if (event->message_type == net_close_window) {
+  }
+  else if (event->message_type == net_close_window) {
     if (!WFLAGP(wwin, no_closable)) {
       if (wwin->protocols.DELETE_WINDOW)
         wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
@@ -1605,13 +1613,15 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     }
     return True;
 
-  } else if (event->message_type == net_wm_state) {
+  }
+  else if (event->message_type == net_wm_state) {
     int maximized = wwin->flags.maximized;
     long set = event->data.l[0];
 
 #ifdef DEBUG_WMSPEC
     wmessage("net_wm_state set %ld a1 %s a2 %s", set,
-             XGetAtomName(dpy, event->data.l[1]), XGetAtomName(dpy, event->data.l[2]));
+             XGetAtomName(dpy, event->data.l[1]),
+             XGetAtomName(dpy, event->data.l[2]));
 #endif
 
     doStateAtom(wwin, (Atom) event->data.l[1], set, False);
@@ -1629,11 +1639,14 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     updateStateHint(wwin, False, False);
     return True;
 
-  } else if (event->message_type == net_wm_handled_icons || event->message_type == net_wm_icon_geometry) {
+  }
+  else if (event->message_type == net_wm_handled_icons ||
+           event->message_type == net_wm_icon_geometry) {
     updateNetIconInfo(wwin);
     return True;
 
-  } else if (event->message_type == net_wm_desktop) {
+  }
+  else if (event->message_type == net_wm_desktop) {
     long desktop = event->data.l[0];
 
     if (desktop == -1) {
@@ -1652,32 +1665,44 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
 void wNETWMCheckClientHintChange(WWindow *wwin, XPropertyEvent *event)
 {
 #ifdef DEBUG_WMSPEC
-  wmessage("clientHintChange type %s", XGetAtomName(dpy, event->atom));
+  wmessage("%s (%lu) clientHintChange type %s",
+           wwin->wm_class, wwin->client_win,
+           XGetAtomName(dpy, event->atom));
 #endif
 
   if (event->atom == net_wm_strut || event->atom == net_wm_strut_partial) {
     updateStrut(wwin->screen_ptr, wwin->client_win, False);
     updateStrut(wwin->screen_ptr, wwin->client_win, True);
     wScreenUpdateUsableArea(wwin->screen_ptr);
-  } else if (event->atom == net_wm_handled_icons || event->atom == net_wm_icon_geometry) {
+  }
+  else if (event->atom == net_wm_handled_icons ||
+           event->atom == net_wm_icon_geometry) {
     updateNetIconInfo(wwin);
-  } else if (event->atom == net_wm_window_type) {
+  }
+  else if (event->atom == net_wm_window_type) {
     updateWindowType(wwin);
-  } else if (event->atom == net_wm_name) {
+  }
+  else if (event->atom == net_wm_name) {
     char *name = wNETWMGetWindowName(wwin->client_win);
     wWindowUpdateName(wwin, name);
     if (name)
       wfree(name);
-  } else if (event->atom == net_wm_icon_name) {
+  }
+  else if (event->atom == net_wm_icon_name) {
     if (wwin->icon) {
       wIconChangeTitle(wwin->icon, wwin);
       wIconPaint(wwin->icon);
     }
-  } else if (event->atom == net_wm_icon) {
+  }
+  else if (event->atom == net_wm_icon) {
     updateIconImage(wwin);
-  } else if (event->atom == net_wm_window_opacity) {
+  }
+  else if (event->atom == net_wm_window_opacity) {
     updateWindowOpacity(wwin);
   }
+  /* else if (event->atom == net_wm_state) { */
+  /*   updateIconImage(wwin); */
+  /* } */
 }
 
 int wNETWMGetPidForWindow(Window window)
