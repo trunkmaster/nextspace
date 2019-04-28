@@ -748,8 +748,15 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   wWindowSetupInitialAttributes(wwin, &window_level, &workspace);
 
   /* Make broken apps behave as a nice app. */
-  if (WFLAGP(wwin, emulate_appicon))
-    wwin->main_window = wwin->client_win;
+  /* if (WFLAGP(wwin, emulate_appicon)) */
+  if (wwin->main_window == None) {
+    WApplication *wapp = wApplicationWithName(scr, wwin->wm_instance);
+    if (wapp)
+      wwin->main_window = wapp->main_window;
+    else
+      wwin->main_window = wwin->client_win;
+    wwin->user_flags.shared_appicon = 1;
+  }
 
   fixLeaderProperties(wwin);
 

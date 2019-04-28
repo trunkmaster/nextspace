@@ -508,7 +508,7 @@ static void updateIconImage(WWindow *wwin)
   if (app && app->app_icon) {
     WWindow *app_owner = app->app_icon->icon->owner;
     if (app_owner && !app_owner->net_icon_image) {
-      app_owner->net_icon_image =  get_window_image_from_x11(wwin->client_win);
+      app_owner->net_icon_image = get_window_image_from_x11(wwin->client_win);
       wIconUpdate(app->app_icon->icon);
       wAppIconPaint(app->app_icon);
     }

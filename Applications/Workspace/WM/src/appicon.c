@@ -131,7 +131,8 @@ WAppIcon *wAppIconCreateForDock(WScreen *scr, const char *command,
   if (wm_instance)
     aicon->wm_instance = wstrdup(wm_instance);
 
-  if (wPreferences.flags.clip_merged_in_dock && wm_class != NULL && strcmp(wm_class, "WMDock") == 0)
+  if (wPreferences.flags.clip_merged_in_dock && wm_class != NULL &&
+      strcmp(wm_class, "WMDock") == 0)
     tile = TILE_CLIP;
   aicon->icon = icon_create_for_dock(scr, command, wm_instance, wm_class, tile);
 
