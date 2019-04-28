@@ -142,6 +142,13 @@ WIcon *icon_create_for_wwindow(WWindow *wwin)
   icon->tile_type = TILE_NORMAL;
 
   set_icon_image_from_database(icon, wwin->wm_instance, wwin->wm_class, NULL);
+  if (!icon->file_image) {
+    /* if icon in database was not found (even for "*") - set to 
+       NXUnknowApplication.tiff */
+    char *path = NULL;
+    path = FindImage(wPreferences.icon_path, "NXUnknownApplication.tiff");
+    icon->file_image = get_rimage_from_file(scr, path, wPreferences.icon_size);
+  }
   /* Update the icon, because icon could be NULL */
   wIconUpdate(icon);
 
