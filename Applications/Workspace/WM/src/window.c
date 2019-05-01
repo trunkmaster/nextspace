@@ -315,7 +315,10 @@ void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace)
 {
   WScreen *scr = wwin->screen_ptr;
 
-  /* sets global default stuff */
+  /* set some default values if WMWindowAttributes doesn't exist */
+  wwin->client_flags.shared_appicon = 1;
+  
+  /* sets global default stuff - read from WMWindowAttributes*/
   wDefaultFillAttributes(wwin->wm_instance, wwin->wm_class, &wwin->user_flags, NULL, True);
   wwin->defined_user_flags = wwin->user_flags;
 
@@ -751,27 +754,20 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   /* if (WFLAGP(wwin, emulate_appicon)) */
   if (wwin->main_window == None) {
     WApplication *wapp = wApplicationWithName(scr, wwin->wm_instance);
-    if (wapp)
-      wwin->main_window = wapp->main_window;
-    else
+    if (!wapp)
       wwin->main_window = wwin->client_win;
-    wwin->user_flags.shared_appicon = 1;
+    else
+      wwin->main_window = wapp->main_window;
+    WSETUFLAG(wwin, emulate_appicon, 1);
+    WSETUFLAG(wwin, shared_appicon, 1);
   }
 
   fixLeaderProperties(wwin);
 
   wwin->orig_main_window = wwin->main_window;
 
-  if (wwin->flags.is_gnustep) {
+  if (wwin->flags.is_gnustep)
     wwin->client_flags.shared_appicon = 0;
-    wwin->defined_user_flags.shared_appicon = 0;
-  }
-  if (wwin->main_window) {
-    XTextProperty text_prop;
-
-    if (XGetTextProperty(dpy, wwin->main_window, &text_prop, w_global.atom.wmaker.menu))
-      wwin->client_flags.shared_appicon = 0;
-  }
 
   if (wwin->flags.is_dockapp)
     wwin->client_flags.shared_appicon = 0;
