@@ -144,6 +144,9 @@
 /* icon cache path */
 #define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
 
+/* Icon for app without own icon. Bundled with NXAppKit. */
+#define DEF_APP_ICON "NXUnknownapplication.tiff"
+
 /* window title to use for untitled windows */
 #define DEF_WINDOW_TITLE "UNTITLED"
 

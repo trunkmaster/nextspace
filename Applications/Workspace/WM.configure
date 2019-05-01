@@ -3,8 +3,8 @@
 WM_DIR="WM"
 cd $WM_DIR
 
-if [ ! -f Makefile ];then
-    echo "===> 'Makefile' not found. Running configure script..."
+if [ ! -f Makefile -o ! -f src/wconfig.h ];then
+    echo "===> Running configure script..."
     if [ ! -f configure ]; then
         autoreconf -vfi -I m4
     fi

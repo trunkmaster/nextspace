@@ -445,6 +445,8 @@ char *get_default_image_path(void)
   file = wDefaultGetIconFile(NULL, NULL, True);
   if (file)
     path = FindImage(wPreferences.icon_path, file);
+  else
+    path = FindImage(wPreferences.icon_path, DEF_APP_ICON);
 
   return path;
 }
