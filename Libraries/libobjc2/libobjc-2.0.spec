@@ -1,6 +1,6 @@
 Name:		libobjc2
 Version:	2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	GNUstep Objecttive-C 2.0 runtime library.
 License:	GPL v2.0
 URL:		https://github.com/gnustep/libobjc2
@@ -89,6 +89,8 @@ rm -v /usr/NextSpace/include/Block.h
 mv -v /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
 
 %changelog
+* Thu May  2 2019  <me@localhost.localdomain> - 2.0-3
+- build with released 2.0 verion of libobjc2
 * Fri Mar 29 2019 Sergii Stoian <stoyan255@gmail.com> - 2.0-2
 - now library can be build without GNUstep Make installed
 - switch to libobjc2 installation routines
