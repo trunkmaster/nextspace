@@ -67,7 +67,7 @@
   MouseRightButtonAction = "OpenApplicationsMenu";
   MouseWheelAction = None;
   MouseWheelTiltAction = None;
-  MoveDisplay = floating;
+  MoveDisplay = None;
   NoWindowOverDock = YES;
   NoWindowOverIcons = YES;
   OpaqueMove = YES;
@@ -82,7 +82,7 @@
   );
   RaiseAppIconsWhenBouncing = NO;
   RaiseDelay = 0;
-  ResizeDisplay = floating;
+  ResizeDisplay = None;
   ResizeIncrement = 0;
   SaveSessionOnExit = NO;
   ScrollableMenus = NO;
