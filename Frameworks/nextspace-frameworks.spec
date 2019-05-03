@@ -1,11 +1,11 @@
-%define APPKIT_VERSION		0.6
-%define FOUNDATION_VERSION	0.3
-%define SYSTEM_VERSION		0.3
+%define APPKIT_VERSION		0.85
+%define FOUNDATION_VERSION	0.85
+%define SYSTEM_VERSION		0.85
 
 
 Name:           nextspace-frameworks
-Version:        0.7
-Release:        1%{?dist}
+Version:        0.85
+Release:        0%{?dist}
 Summary:        NextSpace core libraries.
 
 Group:          Libraries/NextSpace
@@ -137,8 +137,11 @@ ln -s /usr/NextSpace/Sounds/Bonk.snd /usr/NextSpace/Sounds/SystemBeep.snd
 %postun
 rm /usr/NextSpace/Images
 rm /Library/Fonts
+rm /usr/NextSpace/Sounds
 
 %changelog
+* Fri May  3 2019 Sergii Stoian <stoyan255@gmail.com> - 0.85-0
+- Build with nextspace-gnustep-1.26.0_0.25.0.
 * Fri Mar 01 2019 Sergii Stoian <stoyan255@gmail.com> 0.7-0
 - SoundKit was added.
 - Sounds were added into NXAppKit framework.
