@@ -1,0 +1,459 @@
+diff -Nru gnustep-gui-0.25.0.orig/Source/GNUmakefile gnustep-gui-0.25.0/Source/GNUmakefile
+--- gnustep-gui-0.25.0.orig/Source/GNUmakefile	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/GNUmakefile	2019-05-03 17:34:18.250890506 +0300
+@@ -23,7 +23,7 @@
+ #  Boston, MA 02110-1301, USA.
+ 
+ PACKAGE_NAME = gnustep-gui
+-GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
++GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../../gnustep-base-1.26.0/base.make ../gui.make
+ include $(GNUSTEP_MAKEFILES)/common.make
+ 
+ include ../Version
+diff -Nru gnustep-gui-0.25.0.orig/Source/GSDisplayServer.m gnustep-gui-0.25.0/Source/GSDisplayServer.m
+--- gnustep-gui-0.25.0.orig/Source/GSDisplayServer.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/GSDisplayServer.m	2019-05-02 19:20:57.652485999 +0300
+@@ -607,6 +607,13 @@
+   [self subclassResponsibility: _cmd];
+ }
+ 
++/** Ask the window manager to hide all the application windows for us.
++    Return whether they have been hidden. */
++- (BOOL) hidewindow: (int) win
++{
++  return NO;
++}
++
+ /** Returns YES if the application should create the miniwindow counterpart
+     to the full size window and own it. Some display systems handle the
+     miniwindow themselves. In this case the backend subclass should
+diff -Nru gnustep-gui-0.25.0.orig/Source/GSDragView.m gnustep-gui-0.25.0/Source/GSDragView.m
+--- gnustep-gui-0.25.0.orig/Source/GSDragView.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/GSDragView.m	2019-05-03 12:48:17.190648501 +0300
+@@ -162,7 +162,6 @@
+ - (void) dealloc
+ {
+   [super dealloc];
+-  RELEASE(cursors);
+ }
+ 
+ /* NSDraggingInfo protocol */
+@@ -486,8 +485,6 @@
+ - (void) _setCursor
+ {
+   NSCursor *newCursor;
+-  NSString *name;
+-  NSString *iname;
+   NSDragOperation mask;
+ 
+   mask = dragMask & operationMask;
+@@ -497,75 +494,35 @@
+ 
+   NSDebugLLog (@"NSDragging",
+                @"drag, operation, target mask = (%x, %x, %x), dnd aware = %d\n",
+-               (unsigned int)dragMask, (unsigned int)operationMask, (unsigned int)targetMask,
+-               (targetWindowRef != 0));
++               (unsigned int)dragMask, (unsigned int)operationMask,
++               (unsigned int)targetMask, (targetWindowRef != 0));
+   
+-  if (cursors == nil)
+-    cursors = RETAIN([NSMutableDictionary dictionary]);
+-  
+-  name = nil;
+-  newCursor = nil;
+-  iname = nil;
+   switch (mask)
+     {
+     case NSDragOperationNone:
+-      name = @"NoCursor";
+-      iname = @"common_noCursor";
++      newCursor = [NSCursor operationNotAllowedCursor];
+       break;
+     case NSDragOperationCopy:
+-      name = @"CopyCursor";
+-      iname = @"common_copyCursor";
++      newCursor = [NSCursor dragCopyCursor];
+       break;
+     case NSDragOperationLink:
+-      name = @"LinkCursor";
+-      iname = @"common_linkCursor";
++      newCursor = [NSCursor dragLinkCursor];
+       break;
+-    case NSDragOperationGeneric:
++    case NSDragOperationDelete:
++      newCursor = [NSCursor disappearingItemCursor];
+       break;
+     default:
+-      // FIXME: Should not happen, add warning?
+-      break;
+-    }
++      // NSDragOperationEvery, NSDragOperationPrivate
++      if (targetWindowRef != 0)
++        {
++          newCursor = [NSCursor greenArrowCursor];
++        }
++      else
++        {
++          newCursor = [NSCursor arrowCursor];
++        }
+ 
+-  if (name != nil)
+-    {
+-      newCursor = [cursors objectForKey: name];
+-      if (newCursor == nil)
+-	{
+-	  NSImage *image = [NSImage imageNamed: iname];
+-	  newCursor = [[NSCursor alloc] initWithImage: image];
+-	  [cursors setObject: newCursor forKey: name];
+-	  RELEASE(newCursor);
+-	}
+-    }
+-  if (newCursor == nil)
+-    {
+-      name = @"ArrowCursor";
+-      newCursor = [cursors objectForKey: name];
+-      if (newCursor == nil)
+-	{
+-	  /* Make our own arrow cursor, since we want to color it */
+-	  void *c;
+-	  
+-	  newCursor = [[NSCursor alloc] initWithImage: nil];
+-	  [GSCurrentServer() standardcursor: GSArrowCursor : &c];
+-	  [newCursor _setCid: c];
+-	  [cursors setObject: newCursor forKey: name];
+-	  RELEASE(newCursor);
+-	}
+-    }
+-  
+-  if ((targetWindowRef != 0) && mask != NSDragOperationNone)
+-    {
+-      [GSCurrentServer() recolorcursor: [NSColor greenColor] 
+-		      : [NSColor blackColor] 
+-		      : [newCursor _cid]];
+-    }
+-  else
+-    {
+-      [GSCurrentServer() recolorcursor: [NSColor blackColor] 
+-		      : [NSColor whiteColor] 
+-		      : [newCursor _cid]];
++      break;
+     }
+ 
+   [newCursor set];
+diff -Nru gnustep-gui-0.25.0.orig/Source/NSApplication.m gnustep-gui-0.25.0/Source/NSApplication.m
+--- gnustep-gui-0.25.0.orig/Source/NSApplication.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/NSApplication.m	2019-05-03 12:20:11.713331002 +0300
+@@ -433,6 +433,11 @@
+   return NO;
+ }
+ 
++- (BOOL) becomesKeyOnlyIfNeeded
++{
++  return YES;
++}
++
+ - (BOOL) worksWhenModal
+ {
+   return YES;
+@@ -752,6 +757,8 @@
+  */
+ @implementation NSApplication
+ 
++static BOOL _isAutolaunchChecked = NO;
++
+ /*
+  * Class methods
+  */
+@@ -1258,6 +1265,21 @@
+  */
+ - (void) activateIgnoringOtherApps: (BOOL)flag
+ {
++  if (_isAutolaunchChecked == NO)
++    {
++      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++      NSString       *autolaunch = [defaults objectForKey: @"autolaunch"];
++
++      _isAutolaunchChecked = YES;
++
++      /* Application was executed with an argument '-autolaunch YES'.
++         Do not activate application on first call. */
++      if (autolaunch && [autolaunch isEqualToString: @"YES"])
++        {
++          return;
++        }
++    }
++
+   // TODO: Currently the flag is ignored
+   if (_app_is_active == NO)
+     {
+@@ -2456,31 +2478,35 @@
+ 	      _hidden_main = [self mainWindow];
+ 	      [_hidden_main resignMainWindow];
+ 	    }
++          
++          win = [[self mainMenu] window];
++          if ([GSServerForWindow(win) hidewindow: [win windowNumber]] == NO)
++            {
++              windows_list = GSOrderedWindows();
++              iter = [windows_list reverseObjectEnumerator];
+ 	  
+-	  windows_list = GSOrderedWindows();
+-	  iter = [windows_list reverseObjectEnumerator];
+-	  
+-	  while ((win = [iter nextObject]))
+-	    {
+-	      if ([win isVisible] == NO && ![win isMiniaturized])
+-		{
+-		  continue;		/* Already invisible	*/
+-		}
+-	      if ([win canHide] == NO)
+-		{
+-		  continue;		/* Not hideable	*/
+-		}
+-	      if (win == _app_icon_window)
+-		{
+-		  continue;		/* can't hide the app icon.	*/
+-		}
+-	      if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
+-		{
+-		  continue;		/* Will be hidden by deactivation	*/
+-		}
+-	      [_hidden addObject: win];
+-	      [win orderOut: self];
+-	    }
++              while ((win = [iter nextObject]))
++                {
++                  if ([win isVisible] == NO && ![win isMiniaturized])
++                    {
++                      continue;		/* Already invisible	*/
++                    }
++                  if ([win canHide] == NO)
++                    {
++                      continue;		/* Not hideable	*/
++                    }
++                  if (win == _app_icon_window)
++                    {
++                      continue;		/* can't hide the app icon.	*/
++                    }
++                  if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
++                    {
++                      continue;		/* Will be hidden by deactivation	*/
++                    }
++                  [_hidden addObject: win];
++                  [win orderOut: self];
++                }
++            }
+ 	  _app_is_hidden = YES;
+ 	  
+ 	  if (YES == [[NSUserDefaults standardUserDefaults]
+diff -Nru gnustep-gui-0.25.0.orig/Source/NSCursor.m gnustep-gui-0.25.0/Source/NSCursor.m
+--- gnustep-gui-0.25.0.orig/Source/NSCursor.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/NSCursor.m	2019-05-03 12:37:47.262841999 +0300
+@@ -299,22 +299,7 @@
+ 
+ + (NSCursor*) greenArrowCursor
+ {
+-  NSString *name = @"GSGreenArrowCursor";
+-  NSCursor *cursor = [cursorDict objectForKey: name];
+-  if (cursor == nil)
+-    {
+-      void *c;
+-    
+-      cursor = [[NSCursor_class alloc] initWithImage: nil
+-                                             hotSpot: NSZeroPoint];
+-      [GSCurrentServer() standardcursor: GSArrowCursor : &c];
+-      [GSCurrentServer() recolorcursor: [NSColor greenColor] 
+-                                      : [NSColor blackColor] : c];
+-      [cursor _setCid: c];
+-      [cursorDict setObject: cursor forKey: name];
+-      RELEASE(cursor);
+-    }
+-  return cursor;
++  return getStandardCursor(@"GSGreenArrowCursor", GSGreenArrowCursor);
+ }
+ 
+ /*
+diff -Nru gnustep-gui-0.25.0.orig/Source/NSMenuItemCell.m gnustep-gui-0.25.0/Source/NSMenuItemCell.m
+--- gnustep-gui-0.25.0.orig/Source/NSMenuItemCell.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/NSMenuItemCell.m	2019-05-02 19:05:53.162467001 +0300
+@@ -46,6 +46,7 @@
+ #import "AppKit/NSMenuItemCell.h"
+ #import "AppKit/NSMenuView.h"
+ #import "AppKit/NSParagraphStyle.h"
++#import "AppKit/NSStringDrawing.h"
+ #import "GNUstepGUI/GSTheme.h"
+ #import "GSGuiPrivate.h"
+ 
+@@ -255,6 +256,7 @@
+   if (m != 0)
+     {
+       BOOL shift;
++      NSFontTraitMask traits = 0;
+       // shift mask and not an upper case string?
+       shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
+       key = [NSString stringWithFormat:@"%@%@%@%@%@",
+@@ -263,11 +265,46 @@
+                       shift ? shiftKeyString : @"",
+                       (m & NSCommandKeyMask) ? commandKeyString : @"",
+                       key];
++      if (m & NSAlternateKeyMask)
++        traits |= NSItalicFontMask;
++
++      if (m & NSControlKeyMask)
++        traits |= NSBoldFontMask;
++
++      if (traits)
++        {
++          NSFont *font;
++          
++          font = [[NSFontManager sharedFontManager]
++                           fontWithFamily:[[NSFont controlContentFontOfSize:0.0] familyName]
++                                   traits:traits
++                                   weight:(traits & NSBoldFontMask) ? 9 : 5
++                                     size:[NSFont systemFontSize]];
++          if (font)
++            [self setKeyEquivalentFont:font];
++        }
+     }
+ 
+   return key;
+ }
+ 
++- (NSSize) _sizeKeyEquivalentText: (NSString*)title
++{
++  NSSize size;
++
++  if (title == nil) {
++      return NSMakeSize (0,0);
++    }
++
++  if (_keyEquivalentFont) {
++    size = [title sizeWithAttributes: @{NSFontAttributeName: _keyEquivalentFont}];
++  }
++  else {
++    size = [self _sizeText: title];
++  }
++  return size;
++}
++
+ - (void) calcSize
+ {
+   NSSize   componentSize;
+@@ -339,7 +376,7 @@
+   _titleWidth = componentSize.width;
+   if (componentSize.height > neededMenuItemHeight)
+     neededMenuItemHeight = componentSize.height;
+-  componentSize = [self _sizeText: [self _keyEquivalentString]];
++  componentSize = [self _sizeKeyEquivalentText: [self _keyEquivalentString]];
+   _keyEquivalentWidth = componentSize.width;
+   if (componentSize.height > neededMenuItemHeight)
+     neededMenuItemHeight = componentSize.height;
+@@ -735,8 +772,17 @@
+    * else they would be displayed one over the other one.
+    */
+   else if (![[_menuView menu] _ownedByPopUp] || (_imageToDisplay == nil))
+-    {    
+-      [self _drawText: [self _keyEquivalentString] inFrame: cellFrame];
++    {
++      if (_keyEquivalentFont != nil) {
++        NSAttributedString *aString;
++        
++        aString = [[NSAttributedString alloc] initWithString: [self _keyEquivalentString]
++                                                  attributes: @{NSFontAttributeName: _keyEquivalentFont}];
++        [self _drawAttributedText: aString inFrame: cellFrame];
++      }
++      else {
++        [self _drawText: [self _keyEquivalentString] inFrame: cellFrame];
++      }
+     }
+ }
+ 
+diff -Nru gnustep-gui-0.25.0.orig/Source/NSMenu.m gnustep-gui-0.25.0/Source/NSMenu.m
+--- gnustep-gui-0.25.0.orig/Source/NSMenu.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/NSMenu.m	2019-05-03 12:23:18.375615500 +0300
+@@ -1794,11 +1794,16 @@
+ - (void) _showOnActivateApp: (NSNotification*)notification
+ {
+   if ([NSApp mainMenu] == self)
+-  {
+-    [self display];
+-    // we must make sure that any attached submenu is visible too.
+-    [[self attachedMenu] display];
+-  }
++    {
++      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++  
++      if (![[defaults objectForKey: @"autolaunch"] isEqualToString:@"YES"])
++        {
++          [self display];
++          // we must make sure that any attached submenu is visible too.
++          [[self attachedMenu] display];
++        }
++    }
+ }
+ 
+ - (BOOL) isTransient
+diff -Nru gnustep-gui-0.25.0.orig/Source/NSWindow.m gnustep-gui-0.25.0/Source/NSWindow.m
+--- gnustep-gui-0.25.0.orig/Source/NSWindow.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/NSWindow.m	2019-05-03 12:47:14.799468501 +0300
+@@ -479,7 +479,7 @@
+   
+   iconSize = GSGetIconSize();
+   
+-  tileImage = [[GSCurrentServer() iconTileImage] copy];
++  tileImage = [[NSImage imageNamed:@"common_MiniWindowTile"] copy];
+   [tileImage setScalesWhenResized: YES];
+   [tileImage setSize: iconSize];
+   
+@@ -501,7 +501,7 @@
+ }
+ 
+ - (void) drawRect: (NSRect)rect
+-{   
++{
+   NSSize iconSize = GSGetIconSize();
+ 
+   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
+@@ -512,8 +512,8 @@
+                                  iconSize.width - ((iconSize.width / 8) * 2),
+                                  iconSize.height - ((iconSize.height / 8) * 2))
+               inView: self];
+-  [titleCell drawWithFrame: NSMakeRect(1, iconSize.height - 12,
+-                                       iconSize.width - 2, 11)
++  [titleCell drawWithFrame: NSMakeRect(3, iconSize.height - 13,
++                                       iconSize.width - 6, 10)
+                     inView: self];
+ }
+ 
+@@ -595,15 +595,18 @@
+ {
+   if (titleCell == nil)
+     {
++      CGFloat miniFontSize;
++      
+       titleCell = [[NSTextFieldCell alloc] initTextCell: aString];
+       [titleCell setSelectable: NO];
+       [titleCell setEditable: NO];
+       [titleCell setBordered: NO];
+       [titleCell setAlignment: NSCenterTextAlignment];
+-      [titleCell setDrawsBackground: YES];
++      [titleCell setDrawsBackground: NO];
+       [titleCell setBackgroundColor: [NSColor blackColor]];
+       [titleCell setTextColor: [NSColor whiteColor]];
+-      [titleCell setFont: [NSFont systemFontOfSize: 8]];
++      miniFontSize = [[NSUserDefaults standardUserDefaults] floatForKey: @"NSMiniFontSize"];
++      [titleCell setFont: [NSFont systemFontOfSize: miniFontSize]];
+     }
+   else
+     {
+@@ -4219,6 +4222,10 @@
+               [self performMiniaturize: NSApp];
+               break;
+ 
++            case GSAppKitAppHide:
++              [NSApp hide: self];
++              break;
++
+             case GSAppKitWindowFocusIn:
+               if (_f.is_miniaturized)
+ 		{

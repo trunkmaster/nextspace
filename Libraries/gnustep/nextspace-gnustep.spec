@@ -1,47 +1,53 @@
 #%undefine _missing_build_ids_terminate_build
 
 # Defines
-%define BASE_VERSION	1.24.8
-%define GUI_VERSION	0.24.1
-%define BACK_VERSION	0.24.1
-%define GORM_VERSION	1.2.23
+%define BASE_VERSION	1.26.0
+%define GUI_VERSION	0.25.0
+%define BACK_VERSION	0.25.0
+%define GORM_VERSION	1.2.24
+%define PC_VERSION	0.6.2
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        10%{?dist}
+Release:        0%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
 License:        GPLv3
 URL:		http://www.gnustep.org
 Source0:	gnustep-base-%{BASE_VERSION}.tar.gz
-Source1:	gnustep-gui-%{GUI_VERSION}.tar.gz
-Source2:	gnustep-back-%{BACK_VERSION}.tar.gz
-Source3:	gdomap.interfaces
-Source4:	gdomap.service
-Source5:	gdnc.service
-Source6:	gpbs.service
-Source7:	gorm-%{GORM_VERSION}.tar.gz
+Source1:	gdomap.interfaces
+Source2:	gdomap.service
+Source3:	gdnc.service
+Source4:	gnustep-gui-%{GUI_VERSION}.tar.gz
+Source5:	common_contextualMenuCursor.tiff
+Source6:	common_copyCursor.tiff
+Source7:	common_disappearingItemCursor.tiff
+Source8:	common_greenArrowCursor.tiff
+Source9:	common_linkCursor.tiff
+Source10:	common_noCursor.tiff
+Source11:	gnustep-back-%{BACK_VERSION}.tar.gz
+Source12:	gpbs.service
+Source13:	gorm-%{GORM_VERSION}.tar.gz
+Source14:	ProjectCenter-%{PC_VERSION}.tar.gz
 
-# Changes backported from gnustep-base-1.24.9
-Patch0:		gnustep-base-GSConfig.h.in.patch
-Patch1:		gnustep-base-Languages_Korean.patch
 # Build GNUstep libraries in one RPM package
-Patch2:		gnustep-back-art_GNUmakefile.preamble.patch
-Patch3:		gnustep-back-gsc_GNUmakefile.preamble.patch
-Patch4:		gnustep-gui-Model_GNUmakefile.patch
-# NS*WindowLevel: Changed values in enum to separate menus and floating panels.
-Patch5:		gnustep-gui-NSWindow.h.patch
-# Miniwnidow style
-Patch6:		gnustep-gui-NSWindow.m.patch
-# Autolaunching applications (-NXAutoLaunch option)
-Patch7:		gnustep-back-x11_XGServerWindow.m.patch
-Patch8:		gnustep-gui-NSApplication.m.patch
-Patch9:		gnustep-gui-NSMenu.m.patch
+# GUI
+Patch0:		gnustep-gui-headers.patch
+Patch1:		gnustep-gui-images.patch
+Patch2:		gnustep-gui-model.patch
+Patch3:		gnustep-gui-source.patch
+# Back
+Patch4:		gnustep-back-art_GNUmakefile.preamble.patch
+Patch5:		gnustep-back-gsc_GNUmakefile.preamble.patch
+Patch6:		gnustep-back-headers.patch
+Patch7:		gnustep-back-source.patch
 
 Provides:	gnustep-base-%{BASE_VERSION}
 Provides:	gnustep-gui-%{GUI_VERSION}
 Provides:	gnustep-back-%{BACK_VERSION}
+Provides:	gorm-%{GORM_VERSION}
+Provides:	projectcenter-%{PC_VERSION}
 
 Conflicts:	gnustep-base
 Conflicts:	gnustep-filesystem
@@ -118,17 +124,18 @@ GNUstep libraries - implementation of OpenStep (AppKit, Foundation).
 %package devel
 Summary:	OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 Requires:	%{name}%{?_isa} = %{version}-%{release}
-Provides:	gnustep-make
 Provides:	gnustep-base-devel
 Provides:	gnustep-gui-devel
 Provides:	gnustep-back-devel
+Provides:	gorm
+Provides:	projectcenter
 
 %description devel
 OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-gnustep -a 1 -a 2 -a 7
+%setup -c -n nextspace-gnustep -a 4 -a 11 -a 13 -a 14
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
@@ -137,8 +144,6 @@ GNUstep Make installed with nextspace-core-devel package.
 %patch5 -p0
 %patch6 -p0
 %patch7 -p0
-%patch8 -p0
-%patch9 -p0
 rm -rf %{buildroot}
 
 #
@@ -151,7 +156,7 @@ export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
 source /Developer/Makefiles/GNUstep.sh
-export LDFLAGS="-L/usr/NextSpace/lib -lobjc -ldispatch"
+#export LDFLAGS="-L/usr/NextSpace/lib -lobjc -ldispatch"
 cd gnustep-base-%{BASE_VERSION}
 ./configure --disable-mixedabi
 make
@@ -168,6 +173,7 @@ export LDFLAGS+=" -L%{buildroot}/Library/Libraries -lgnustep-base"
 make
 %{make_install}
 cd ..
+unset GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES
 
 # Build ART GUI backend
 cd gnustep-back-%{BACK_VERSION}
@@ -183,6 +189,11 @@ cd ..
 export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
 cd gorm-%{GORM_VERSION}
+make
+cd ..
+
+# Build ProjectCenter
+cd ProjectCenter-%{PC_VERSION}
 make
 
 #
@@ -209,6 +220,19 @@ cd ..
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
 cd gorm-%{GORM_VERSION}
 %{make_install}
+cd ..
+# Install ProjectCenter
+cd ProjectCenter-%{PC_VERSION}
+%{make_install}
+cd ..
+
+# Replace cursor images
+cp %{_sourcedir}/common_contextualMenuCursor.tiff %{buildroot}/Library/Images
+cp %{_sourcedir}/common_copyCursor.tiff %{buildroot}/Library/Images
+cp %{_sourcedir}/common_disappearingItemCursor.tiff %{buildroot}/Library/Images
+cp %{_sourcedir}/common_greenArrowCursor.tiff %{buildroot}/Library/Images
+cp %{_sourcedir}/common_linkCursor.tiff %{buildroot}/Library/Images
+cp %{_sourcedir}/common_noCursor.tiff %{buildroot}/Library/Images
 
 # systemd service files and config of gdomap
 mkdir -p %{buildroot}/usr/NextSpace/etc
@@ -263,6 +287,11 @@ fi
 #%postun
 
 %changelog
+* Fri May  3 2019 Sergii Stoian <stoyan255@ukr.net> - 1.26.0_0.25.0-0
+- new versions of Base, GUI, Back, GORM.
+- ProjectCenter was added.
+- new mouse cursor images.
+
 * Mon Jun 12 2017 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-10
 - Comments are added to patches.
 - Pathes with implemented apps autolaunching are added.

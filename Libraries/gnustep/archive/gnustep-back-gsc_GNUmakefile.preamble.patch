@@ -1,5 +1,5 @@
---- gnustep-back-0.25.0.orig/Source/gsc/GNUmakefile.preamble	2008-06-10 07:12:46.000000000 +0300
-+++ gnustep-back-0.25.0/Source/gsc/GNUmakefile.preamble	2016-10-18 15:59:57.817295469 +0300
+--- gnustep-back-0.24.1.orig/Source/gsc/GNUmakefile.preamble	2008-06-10 07:12:46.000000000 +0300
++++ gnustep-back-0.24.1/Source/gsc/GNUmakefile.preamble	2016-10-18 15:59:57.817295469 +0300
 @@ -37,7 +37,7 @@
  #ADDITIONAL_CFLAGS = 
  

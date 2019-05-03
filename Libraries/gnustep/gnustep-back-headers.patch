@@ -1,0 +1,41 @@
+diff -Nru gnustep-back-0.25.0.orig/Headers/x11/XGGeneric.h gnustep-back-0.25.0/Headers/x11/XGGeneric.h
+--- gnustep-back-0.25.0.orig/Headers/x11/XGGeneric.h	2016-06-16 02:12:51.000000000 +0300
++++ gnustep-back-0.25.0/Headers/x11/XGGeneric.h	2019-05-03 13:33:16.691724499 +0300
+@@ -116,6 +116,7 @@
+   Atom                  net_wm_sync_request_atom;
+   Atom                  net_wm_sync_request_counter_atom;
+   Atom			miniaturize_atom;
++  Atom			hide_app_atom;
+   Atom			win_decor_atom;
+   Atom			titlebar_state_atom;
+   char			*rootName;
+diff -Nru gnustep-back-0.25.0.orig/Headers/x11/XGServerWindow.h gnustep-back-0.25.0/Headers/x11/XGServerWindow.h
+--- gnustep-back-0.25.0.orig/Headers/x11/XGServerWindow.h	2016-06-16 02:12:51.000000000 +0300
++++ gnustep-back-0.25.0/Headers/x11/XGServerWindow.h	2019-05-03 13:36:26.662662501 +0300
+@@ -57,6 +57,7 @@
+     unsigned long extra_flags;
+ } GNUstepWMAttributes;
+ 
++/* Window flags */
+ #define GSWindowStyleAttr	(1<<0)
+ #define GSWindowLevelAttr	(1<<1)
+ #define GSMiniaturizePixmapAttr (1<<3)
+@@ -65,14 +66,17 @@
+ #define GSCloseMaskAttr		(1<<6)
+ #define GSExtraFlagsAttr	(1<<7)
+ 
++/* Window extra flags */
+ #define GSDocumentEditedFlag			(1<<0)
+ #define GSWindowWillResizeNotificationsFlag	(1<<1)
+ #define GSWindowWillMoveNotificationsFlag 	(1<<2)
+ #define GSNoApplicationIconFlag			(1<<5)
++
++/* WM functions */
+ #define WMFHideOtherApplications		10
+ #define WMFHideApplication			12
+ 
+-#define GSMaxWMProtocols 5
++#define GSMaxWMProtocols 6
+ 
+ /* Graphics Driver protocol. Setup in [NSGraphicsContext-contextDevice:] */
+ enum {
