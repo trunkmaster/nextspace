@@ -115,8 +115,13 @@ cd ..
 # Files
 #
 %files
+#/Library/Images
+/Library/Fonts
 /usr/NextSpace/Frameworks
 /usr/NextSpace/lib
+/usr/NextSpace/Fonts
+/usr/NextSpace/Images
+/usr/NextSpace/Sounds
 
 %files devel
 /usr/NextSpace/include
@@ -127,10 +132,10 @@ cd ..
 #%pre
 
 %post
-ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Images /usr/NextSpace/Images
-ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Fonts /Library/Fonts
-ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Sounds /usr/NextSpace/Sounds
-ln -s /usr/NextSpace/Sounds/Bonk.snd /usr/NextSpace/Sounds/SystemBeep.snd
+#ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Images /usr/NextSpace/Images
+#ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Fonts /Library/Fonts
+#ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Sounds /usr/NextSpace/Sounds
+#ln -s /usr/NextSpace/Sounds/Bonk.snd /usr/NextSpace/Sounds/SystemBeep.snd
 
 #%preun
 

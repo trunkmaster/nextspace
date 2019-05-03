@@ -1,16 +1,16 @@
-%define PREFERENCES_VERSION	0.5
-%define LOGIN_VERSION		0.8
-%define WORKSPACE_VERSION	0.8
+%define PREFERENCES_VERSION	0.85
+%define LOGIN_VERSION		0.85
+%define WORKSPACE_VERSION	0.85
 
 
 Name:           nextspace-desktop
-Version:        0.8
+Version:        0.85
 Release:        0%{?dist}
 Summary:        NextSpace desktop core applications (Login, Preferences, Workspace).
 
 Group:          Libraries/NextSpace
 License:        GPLv2
-URL:		http://www.gitlab.com/stoyan/nextspace
+URL:		http://www.github.com/trunkmaster/nextspace
 Source0:	Preferences-%{PREFERENCES_VERSION}.tar.gz
 Source1:	Login-%{LOGIN_VERSION}.tar.gz
 Source2:	Workspace-%{WORKSPACE_VERSION}.tar.gz

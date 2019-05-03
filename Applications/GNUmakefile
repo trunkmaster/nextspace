@@ -2,7 +2,7 @@
 include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = nextspace-applications
-VERSION = 0.6
+VERSION = 0.85
 SUBPROJECTS = \
 	Login \
 	Workspace \

@@ -1,39 +1,39 @@
+DEST_SYS_LIB = $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)
+DEST_LOC_LIB = $(DESTDIR)/$(GNUSTEP_LOCAL_LIBRARY)
 
 after-clean::
 
 after-distclean::
 
 after-install::
-# 	Create link in Local domain if Images or Fonts exist in System domain
-	if [ -e $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)/Images ]; then \
-	  if [ ! -e $(DESTDIR)/$(GNUSTEP_LOCAL_LIBRARY)/Images ]; then \
-	    ln -s $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Images $(DESTDIR)/$(GNUSTEP_LOCAL_LIBRARY); \
-	  fi \
-	else \
-	  ln -s $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Images $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)/Images; \
+# /ust/NextSpace/Images
+	if [ ! -e $(DEST_SYS_LIB)/Images ]; then \
+	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Images $(DEST_SYS_LIB)/Images; \
 	fi
 
-	if [ -e $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)/Fonts ]; then \
-	  if [ ! -e $(DESTDIR)/$(GNUSTEP_LOCAL_LIBRARY)/Fonts ]; then \
-	    ln -s $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Fonts $(DESTDIR)/$(GNUSTEP_LOCAL_LIBRARY); \
-	  fi \
-	else \
-	  ln -s $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Fonts $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Fonts; \
+# /Library/Fonts
+	if [ ! -e $(DEST_LOC_LIB) ]; then \
+	  mkdir -p $(DEST_LOC_LIB); \
+	fi
+	if [ ! -e $(DEST_LOC_LIB)/Fonts ]; then \
+	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Fonts $(DEST_LOC_LIB)/Fonts; \
 	fi
 
-#	Copy my versions of existing GNUstep common_ images
-	if [ ! -e $(DESTDIR)$(GNUSTEP_LOCAL_LIBRARY)/Images ]; then \
-	  mkdir -p $(DESTDIR)$(GNUSTEP_LOCAL_LIBRARY)/Images; \
-	fi
-	cp Resources/GNUstepImages/*.tiff $(DESTDIR)$(GNUSTEP_LOCAL_LIBRARY)/Images;
-
-	if [ -e $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Sounds ]; then \
-	  rm -r $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Sounds; \
+# /usr/NextSpace/Fonts
+	if [ ! -e $(DEST_SYS_LIB)/Fonts ]; then \
+	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Fonts $(DEST_SYS_LIB)/Fonts; \
 	fi
 
-	ln -s $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Sounds $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Sounds;
-	if [ ! -e $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Sounds/SystemBeep.snd ]; then \
-	  ln -s $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Sounds/Bonk.snd $(DESTDIR)$(GNUSTEP_SYSTEM_LIBRARY)/Sounds/SystemBeep.snd; \
+# /usr/NextSpace/Sounds
+	if [ -e $(DEST_SYS_LIB)/Sounds ]; then \
+	  rm -r $(DEST_SYS_LIB)/Sounds; \
+	fi
+	ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Sounds $(DEST_SYS_LIB)/Sounds; \
+
+# /usr/NextSpace/Sounds/SystemBeep.snd
+	if [ ! -e $(DEST_SYS_LIB)/Sounds/SystemBeep.snd ]; then \
+	  cd $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/NXAppKit.framework/Resources/Sounds; \
+	  ln -s ./Bonk.snd SystemBeep.snd; \
 	fi
 
 after-uninstall::
