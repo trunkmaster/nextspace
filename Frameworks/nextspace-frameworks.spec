@@ -81,7 +81,7 @@ cd ..
 
 cd NXAppKit
 #export LDFLAGS="-L../NXFoundation-%{FOUNDATION_VERSION}/NXFoundation.framework -lNXFoundation"
-make messages=yes
+make
 cd ..
 
 cd SoundKit
