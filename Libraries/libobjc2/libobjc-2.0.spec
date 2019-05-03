@@ -89,7 +89,7 @@ rm -v /usr/NextSpace/include/Block.h
 mv -v /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
 
 %changelog
-* Thu May  2 2019  <me@localhost.localdomain> - 2.0-3
+* Thu May  2 2019 Sergii Stoian <stoyan255@gmail.com> - 2.0-3
 - build with released 2.0 verion of libobjc2
 * Fri Mar 29 2019 Sergii Stoian <stoyan255@gmail.com> - 2.0-2
 - now library can be build without GNUstep Make installed

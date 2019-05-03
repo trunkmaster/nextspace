@@ -287,23 +287,23 @@ fi
 #%postun
 
 %changelog
-* Fri May  3 2019 Sergii Stoian <stoyan255@ukr.net> - 1.26.0_0.25.0-0
+* Fri May  3 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-0
 - new versions of Base, GUI, Back, GORM.
 - ProjectCenter was added.
 - new mouse cursor images.
 
-* Mon Jun 12 2017 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-10
+* Mon Jun 12 2017 Sergii Stoian <stoyan255@gmail.com> 1.24.8_0.24.1-10
 - Comments are added to patches.
 - Pathes with implemented apps autolaunching are added.
 
-* Tue Nov 1 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-7
+* Tue Nov 1 2016 Sergii Stoian <stoyan255@gmail.com> 1.24.8_0.24.1-7
 - gorm-1.2.23 was added.
 
-* Mon Oct 31 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-6
+* Mon Oct 31 2016 Sergii Stoian <stoyan255@gmail.com> 1.24.8_0.24.1-6
 - Patch for NSWindow was updated: use common_MiniWindowTile.tiff for
   miniwindows.
 
-* Fri Oct 28 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-5
+* Fri Oct 28 2016 Sergii Stoian <stoyan255@gmail.com> 1.24.8_0.24.1-5
 - Switch to minimum clang version 3.8.0 (libdispatch and libobjc2 built
   with this version);
 - Add patch for Headers/GNUstepBase/GSConfig.h.in to silence clang-3.8
@@ -312,6 +312,6 @@ fi
 - Add patch for miniwindow font (change size from 8 to 9) default value.
 - Backported from gnustep-base-1.24.9 changes to Languages/Korean.
 
-* Thu Oct 20 2016 Sergii Stoian <stoyan255@ukr.net> 1.24.8_0.24.1-0
+* Thu Oct 20 2016 Sergii Stoian <stoyan255@gmail.com> 1.24.8_0.24.1-0
 - Initial spec for CentOS 7.
 

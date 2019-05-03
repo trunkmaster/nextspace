@@ -128,19 +128,19 @@ tuned-adm profile balanced
 - new `nextspace` theme for plymouth boot screen
 - new `NextSpace` mouse cursor theme
 
-* Tue Nov 15 2016 Sergii Stoian <stoyan255@ukr.net> 0.9-1
+* Tue Nov 15 2016 Sergii Stoian <stoyan255@gmail.com> 0.9-1
 - Defaults ~/Library/Preferences were added for the root user.
 - Midnight Commander user's ini file was removed.
 
-* Wed Oct 26 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-11
+* Wed Oct 26 2016 Sergii Stoian <stoyan255@gmail.com> 0.8-11
 - Add /Developer/Libraries into /etc/ld.so.conf.d/nextspace.conf
 - Add -fblocks to OBJFLAGS
 
-* Tue Oct 25 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-10
+* Tue Oct 25 2016 Sergii Stoian <stoyan255@gmail.com> 0.8-10
 - Remove --enable-objc-nonfragile-abi from gnustep-make configure options.
 
-* Mon Oct 24 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-7
+* Mon Oct 24 2016 Sergii Stoian <stoyan255@gmail.com> 0.8-7
 - Remove --with-thread-lib from gnustep-make configure options.
 
-* Wed Oct 19 2016 Sergii Stoian <stoyan255@ukr.net> 0.8-5
+* Wed Oct 19 2016 Sergii Stoian <stoyan255@gmail.com> 0.8-5
 - Initial spec.

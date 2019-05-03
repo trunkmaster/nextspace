@@ -98,5 +98,5 @@ install -m 0644 %{_builddir}/libdispatch-1.3/libpwq/pthread_workqueue.3 %{buildr
 /usr/NextSpace/Documentation/
 
 %changelog
-* Wed Oct 12 2016 Sergii Stoian <stoyan255@ukr.net> 1.3-1
+* Wed Oct 12 2016 Sergii Stoian <stoyan255@gmail.com> 1.3-1
 - Initial spec.
