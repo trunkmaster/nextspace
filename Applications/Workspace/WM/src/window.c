@@ -841,9 +841,12 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   if (WFLAGP(wwin, start_maximized) && IS_RESIZABLE(wwin))
     wwin->flags.maximized = MAX_VERTICAL | MAX_HORIZONTAL;
 
-  if (wwin->flags.is_gnustep == 0) {
-    wNETWMCheckInitialClientState(wwin);
-  }
+  // TODO: for GNUstep applications with `cairo` backend this code shows
+  // flickering app appicon. Without calling this code bad side effects
+  // occure - main menu appears in window list, menu-only app has no icon
+  // in switch panel, etc.
+  // wNETWMCheckInitialClientState() need to inspected.
+  wNETWMCheckInitialClientState(wwin);
 
   /* apply previous state if it exists and we're in startup */
   if (scr->flags.startup && wm_state >= 0) {
