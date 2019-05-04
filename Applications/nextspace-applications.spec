@@ -1,23 +1,16 @@
-%define PREFERENCES_VERSION	0.85
-%define LOGIN_VERSION		0.85
-%define WORKSPACE_VERSION	0.85
-
-
-Name:           nextspace-desktop
+Name:           nextspace-applications
 Version:        0.85
 Release:        0%{?dist}
-Summary:        NextSpace desktop core applications (Login, Preferences, Workspace).
+Summary:        NextSpace desktop core applications.
 
 Group:          Libraries/NextSpace
 License:        GPLv2
 URL:		http://www.github.com/trunkmaster/nextspace
-Source0:	Preferences-%{PREFERENCES_VERSION}.tar.gz
-Source1:	Login-%{LOGIN_VERSION}.tar.gz
-Source2:	Workspace-%{WORKSPACE_VERSION}.tar.gz
+Source0:	nextspace-applications-%{version}.tar.gz
 
-#Provides:	Preferences
 #Provides:	Login
 #Provides:	Workspace
+#Provides:	Preferences
 
 BuildRequires:	nextspace-frameworks-devel
 # Preferences
@@ -73,29 +66,23 @@ Requires:	%{name}%{?_isa} = %{version}-%{release}
 Header file for NextSpace core applications (Preferences, Workspace).
 
 %prep
-%setup -c nextspace-desktop -a 1 -a 2
+%setup
 
 #
 # Build phase
 #
 %build
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
-. /etc/profile.d/nextspace.sh
-
-cd Preferences-%{PREFERENCES_VERSION}
 make
-cd ..
-
-cd Login-%{LOGIN_VERSION}
-export ADDITIONAL_INCLUDE_DIRS="-I../../Preferences-%{PREFERENCES_VERSION}"
-make
-unset ADDITIONAL_INCLUDE_DIRS
-cd ..
-
-cd Workspace-%{WORKSPACE_VERSION}
-./WM.configure
-make
-cd ..
+#cd Login
+#make
+#cd ..
+#cd Preferences
+#make
+#cd ..
+#cd Workspace
+#make
+#cd ..
 
 #
 # Build install phase
@@ -103,18 +90,16 @@ cd ..
 %install
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export QA_SKIP_BUILD_ROOT=1
-
-cd Preferences-%{PREFERENCES_VERSION}
 %{make_install}
-cd ..
-
-cd Login-%{LOGIN_VERSION}
-%{make_install}
-cd ..
-
-cd Workspace-%{WORKSPACE_VERSION}
-%{make_install}
-cd ..
+#cd Login
+#%{make_install}
+#cd ..
+#cd Preferences
+#%{make_install}
+#cd ..
+#cd Workspace
+#%{make_install}
+#cd ..
 
 #
 # Files
@@ -141,6 +126,8 @@ systemctl disable loginwindow.service
 #%postun
 
 %changelog
+* Sat May  4 2019 Sergii Stoian <stoyan255@ukr.net> - 0.85-0
+- Prepared for 0.85 release.
 * Fri Oct 21 2016 Sergii Stoian <stoyan255@ukr.net> 0.4-0
 - Initial spec for CentOS 7.
 

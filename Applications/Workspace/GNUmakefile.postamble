@@ -63,7 +63,6 @@ after-install::
 # Rewrite some files
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(APP_WRAPPER_INSTALLED)/Resources/WM/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMState $(APP_WRAPPER_INSTALLED)/Resources/WM/
-	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMRootMenu $(APP_WRAPPER_INSTALLED)/Resources/WM/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(APP_WRAPPER_INSTALLED)/Resources/WM/
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(APP_WRAPPER_INSTALLED)/Resources/WM/
 
