@@ -1,3 +1,14 @@
+--- gnustep-back-0.25.0.orig/Source/art/GNUmakefile.preamble	2008-06-10 07:12:46.000000000 +0300
++++ gnustep-back-0.25.0/Source/art/GNUmakefile.preamble	2016-10-18 15:05:12.294722445 +0300
+@@ -37,7 +37,7 @@
+ #ADDITIONAL_CFLAGS = 
+ 
+ # Additional include directories the compiler should search
+-ADDITIONAL_INCLUDE_DIRS = -I../../Headers \
++ADDITIONAL_INCLUDE_DIRS += -I../../Headers \
+ 	-I../$(GNUSTEP_TARGET_DIR) $(GRAPHIC_CFLAGS) \
+ 
+ # Additional LDFLAGS to pass to the linker
 --- gnustep-back-0.25.0.orig/Source/gsc/GNUmakefile.preamble	2008-06-10 07:12:46.000000000 +0300
 +++ gnustep-back-0.25.0/Source/gsc/GNUmakefile.preamble	2016-10-18 15:59:57.817295469 +0300
 @@ -37,7 +37,7 @@

@@ -1,15 +1,3 @@
-diff -Nru gnustep-gui-0.25.0.orig/Source/GNUmakefile gnustep-gui-0.25.0/Source/GNUmakefile
---- gnustep-gui-0.25.0.orig/Source/GNUmakefile	2016-06-16 23:09:00.000000000 +0300
-+++ gnustep-gui-0.25.0/Source/GNUmakefile	2019-05-03 17:34:18.250890506 +0300
-@@ -23,7 +23,7 @@
- #  Boston, MA 02110-1301, USA.
- 
- PACKAGE_NAME = gnustep-gui
--GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
-+GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../../gnustep-base-1.26.0/base.make ../gui.make
- include $(GNUSTEP_MAKEFILES)/common.make
- 
- include ../Version
 diff -Nru gnustep-gui-0.25.0.orig/Source/GSDisplayServer.m gnustep-gui-0.25.0/Source/GSDisplayServer.m
 --- gnustep-gui-0.25.0.orig/Source/GSDisplayServer.m	2016-06-16 23:09:00.000000000 +0300
 +++ gnustep-gui-0.25.0/Source/GSDisplayServer.m	2019-05-02 19:20:57.652485999 +0300
@@ -368,31 +356,6 @@ diff -Nru gnustep-gui-0.25.0.orig/Source/NSMenuItemCell.m gnustep-gui-0.25.0/Sou
      }
  }
  
-diff -Nru gnustep-gui-0.25.0.orig/Source/NSMenu.m gnustep-gui-0.25.0/Source/NSMenu.m
---- gnustep-gui-0.25.0.orig/Source/NSMenu.m	2016-06-16 23:09:00.000000000 +0300
-+++ gnustep-gui-0.25.0/Source/NSMenu.m	2019-05-03 12:23:18.375615500 +0300
-@@ -1794,11 +1794,16 @@
- - (void) _showOnActivateApp: (NSNotification*)notification
- {
-   if ([NSApp mainMenu] == self)
--  {
--    [self display];
--    // we must make sure that any attached submenu is visible too.
--    [[self attachedMenu] display];
--  }
-+    {
-+      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-+  
-+      if (![[defaults objectForKey: @"autolaunch"] isEqualToString:@"YES"])
-+        {
-+          [self display];
-+          // we must make sure that any attached submenu is visible too.
-+          [[self attachedMenu] display];
-+        }
-+    }
- }
- 
- - (BOOL) isTransient
 diff -Nru gnustep-gui-0.25.0.orig/Source/NSWindow.m gnustep-gui-0.25.0/Source/NSWindow.m
 --- gnustep-gui-0.25.0.orig/Source/NSWindow.m	2016-06-16 23:09:00.000000000 +0300
 +++ gnustep-gui-0.25.0/Source/NSWindow.m	2019-05-03 12:47:14.799468501 +0300

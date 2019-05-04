@@ -41,11 +41,11 @@ Patch0:		gnustep-gui-headers.patch
 Patch1:		gnustep-gui-images.patch
 Patch2:		gnustep-gui-model.patch
 Patch3:		gnustep-gui-source.patch
+Patch4:		gnustep-gui_RPM_GNUmakefile.patch
 # Back
-Patch4:		gnustep-back-art_GNUmakefile.preamble.patch
-Patch5:		gnustep-back-gsc_GNUmakefile.preamble.patch
-Patch6:		gnustep-back-headers.patch
-Patch7:		gnustep-back-source.patch
+Patch5:		gnustep-back-headers.patch
+Patch6:		gnustep-back-source.patch
+Patch7:		gnustep-back_RPM_GNUmakefile.patch
 
 Provides:	gnustep-base-%{BASE_VERSION}
 Provides:	gnustep-gui-%{GUI_VERSION}
