@@ -380,6 +380,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_finishTerminateProcess
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  
   // Filesystem monitor
   [fileSystemMonitor pause];
   [fileSystemMonitor terminate];
