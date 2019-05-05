@@ -1,3 +1,4 @@
+# -*- mode: makefile-gmake -*-
 #
 #   GNUmakefile.postamble
 #   The OpenSpaceManager app postamble makefile.
