@@ -1,7 +1,5 @@
 # -*- mode: makefile-gmake -*-
-#
-# GNUmakefile
-#
+
 GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 include $(GNUSTEP_MAKEFILES)/common.make
 
