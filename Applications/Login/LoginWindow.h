@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Project: Login
+// Project: NEXTSPACE - Login application
 //
 // Description: Class to allow the display of a borderless window.  It also
 //              provides the necessary functionality for some of the other nice

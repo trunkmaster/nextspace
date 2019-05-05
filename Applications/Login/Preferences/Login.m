@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Project: Login
+// Project: NEXTSPACE - Login application
 //
 // Description: Module for Preferences application.
 //

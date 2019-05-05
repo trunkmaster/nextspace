@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Project: Login
+// Project: NEXTSPACE - Login application
 //
 // Description: Module for Preferences application.
 //
@@ -33,7 +33,5 @@
   IBOutlet id		view;
   NSImage		*image;
 }
-
-//- (IBAction) passwordChanged:(id)sender;
 
 @end

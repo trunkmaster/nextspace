@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Project: Login
+// Project: NEXTSPACE - Login application
 //
 // Copyright (C) 2011 Sergii Stoian
 //

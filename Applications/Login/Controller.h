@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Project: Login
+// Project: NEXTSPACE - Login application
 //
 // Copyright (C) 2014-2019 Sergii Stoian
 //
@@ -30,7 +30,7 @@
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <AppKit/AppKit.h>
 
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 #import <NXSystem/NXScreen.h>
 
 #import "LoginWindow.h"
@@ -60,7 +60,7 @@ extern NSString *SessionDidCloseNotification;
   NXScreen	       *screen;
 
   // Preferences
-  NXDefaults           *prefs;
+  NXTDefaults           *prefs;
 
   // User sessions
   NSArray              *mainThreadPorts;

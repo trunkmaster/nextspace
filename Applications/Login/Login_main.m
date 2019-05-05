@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Project: Login
+// Project: NEXTSPACE - Login application
 //
 // Copyright (C) 2014-2019 Sergii Stoian
 //
@@ -23,7 +23,7 @@
 #import <unistd.h>
 
 #import <AppKit/NSApplication.h>
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 #import <NXSystem/NXScreen.h>
 #import <NXSystem/NXDisplay.h>
 
@@ -31,7 +31,7 @@
 #import "Controller.h"
 
 NSTask     *xorgTask = nil;
-NXDefaults *loginDefaults = nil;
+NXTDefaults *loginDefaults = nil;
 
 // --- Plymouth ---
 BOOL isPlymouthRunning()
@@ -150,7 +150,7 @@ int main(int argc, const char ** argv)
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
   // Defaults
-  loginDefaults = [NXDefaults userDefaults];
+  loginDefaults = [NXTDefaults userDefaults];
   if (![[loginDefaults objectForKey:@"WindowServerCommand"]
          isKindOfClass:[NSArray class]])
     {

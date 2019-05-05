@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Project: Login
+// Project: NEXTSPACE - Login application
 //
 // Copyright (C) 2000 Free Software Foundation, Inc.
 // Author: Gregory John Casamento <greg_casamento@yahoo.com>
