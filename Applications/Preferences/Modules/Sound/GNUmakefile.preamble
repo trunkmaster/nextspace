@@ -1,4 +1,4 @@
 # -*- mode: makefile-gmake -*-
 
 ADDITIONAL_INCLUDE_DIRS += -I../..
-ADDITIONAL_GUI_LIBS += -lDesktopKit
+ADDITIONAL_GUI_LIBS += -lDesktopKit -lSoundKit

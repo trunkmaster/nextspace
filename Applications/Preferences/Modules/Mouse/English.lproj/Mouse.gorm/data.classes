@@ -39,7 +39,7 @@
 	);
 	Super = NSObject;
     };
-    NXNumericField = {
+    NXTNumericField = {
 	Actions = (
 	);
 	Outlets = (
