@@ -35,17 +35,19 @@
 #import <AppKit/NSMatrix.h>
 #import <AppKit/NSSlider.h>
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXAppKit/NXNumericField.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTNumericField.h>
 
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXDisplay.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEDisplay.h>
 
 #import <dispatch/dispatch.h>
 // #import <X11/Xlib.h>
 
 #import "AppController.h"
 #import "Display.h"
+
+NSString *NXTDesktopBackgroundColor = @"DesktopBackgroundColor";
 
 @implementation DisplayPrefs
 
@@ -81,7 +83,7 @@
   [view retain];
   [window release];
 
-  systemScreen = [NXScreen new];
+  systemScreen = [OSEScreen new];
   [systemScreen setUseAutosave:YES];
 
   // Setup NXNumericField float constraints
@@ -117,7 +119,7 @@
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(screenDidUpdate:)
-           name:NXScreenDidUpdateNotification
+           name:OSEScreenDidUpdateNotification
          object:systemScreen];
 }
 
@@ -281,7 +283,7 @@
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(screenDidUpdate:)
-           name:NXScreenDidUpdateNotification
+           name:OSEScreenDidUpdateNotification
          object:systemScreen];  
 }
 
@@ -340,14 +342,14 @@
   if ([systemScreen setBackgroundColorRed:[rgbColor redComponent]
                                     green:[rgbColor greenComponent]
                                      blue:[rgbColor blueComponent]] == YES) {
-    NXDefaults   *defs = [NXDefaults globalUserDefaults];
+    NXTDefaults   *defs = [NXTDefaults globalUserDefaults];
     NSDictionary *dBack;
 
     dBack = @{@"Red":   [NSNumber numberWithFloat:[color redComponent]],
               @"Green": [NSNumber numberWithFloat:[color greenComponent]],
               @"Blue":  [NSNumber numberWithFloat:[color blueComponent]],
               @"Alpha": [NSNumber numberWithFloat:1.0]};
-    [defs setObject:dBack forKey:@"NXDesktopBackgroundColor"];
+    [defs setObject:dBack forKey:NXTDesktopBackgroundColor];
   }
 }
 
@@ -371,7 +373,7 @@
   if (column > 0)
     return;
 
-  for (NXDisplay *d in [systemScreen connectedDisplays])
+  for (OSEDisplay *d in [systemScreen connectedDisplays])
     {
       [matrix addRow];
       bc = [matrix cellAtRow:[matrix numberOfRows]-1 column:0];

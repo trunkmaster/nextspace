@@ -26,7 +26,7 @@
 
 @implementation AddLayoutPanel
 
-- initWithKeyboard:(NXKeyboard *)k
+- initWithKeyboard:(OSEKeyboard *)k
 {
   self = [super init];
   

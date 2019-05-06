@@ -18,7 +18,7 @@
  
 #import <sys/wait.h>
 
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/DesktopKit.h>
 
 #import "Defaults.h"
 

@@ -23,14 +23,14 @@
   Boston, MA  02111-1307, USA
 */
 #import <AppKit/NSImage.h>
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 #import <SoundKit/SoundKit.h>
 
 #import <Preferences.h>
 
 @interface Sound: NSObject <PrefsModule>
 {
-  NXDefaults    *defaults;
+  NXTDefaults    *defaults;
   NSImage       *image;
   SKSoundServer *soundServer;
   SKSoundOut    *soundOut;

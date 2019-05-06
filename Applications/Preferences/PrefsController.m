@@ -38,8 +38,8 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSButton.h>
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXFoundation/NXBundle.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTBundle.h>
 
 #import "PrefsController.h"
 
@@ -95,7 +95,7 @@
   [window close];
   [window release];
   
-  [[NXDefaults globalUserDefaults] synchronize];
+  [[NXTDefaults globalUserDefaults] synchronize];
   
   [super dealloc];
 }
@@ -173,9 +173,9 @@
   NSDictionary *bRegistry;
   NSArray      *modules;
 
-  bRegistry = [[NXBundle shared] registerBundlesOfType:@"preferences"
+  bRegistry = [[NXTBundle shared] registerBundlesOfType:@"preferences"
                                                 atPath:nil];
-  modules = [[NXBundle shared] loadRegisteredBundles:bRegistry
+  modules = [[NXTBundle shared] loadRegisteredBundles:bRegistry
                                                 type:@"Preferences"
                                             protocol:@protocol(PrefsModule)];
   for (id b in modules) {

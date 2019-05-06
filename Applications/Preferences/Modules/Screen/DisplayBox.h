@@ -41,10 +41,10 @@
 
 @property NSRect displayFrame;
 @property (assign) NSString *displayName;
-@property (readonly) NXDisplay *display;
+@property (readonly) OSEDisplay *display;
 
 - initWithFrame:(NSRect)frameRect
-        display:(NXDisplay *)aDisplay
+        display:(OSEDisplay *)aDisplay
           owner:(id)prefs; // ugly
 
 - (void)setActive:(BOOL)active;

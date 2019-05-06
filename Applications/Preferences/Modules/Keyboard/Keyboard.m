@@ -35,27 +35,27 @@
 #import <AppKit/NSMatrix.h>
 #import <AppKit/NSWindow.h>
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXSystem/NXKeyboard.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEKeyboard.h>
 
 #import "Keyboard.h"
 
 @implementation Keyboard
 
-static NSBundle   *bundle = nil;
-static NXDefaults *defaults = nil;
+static NSBundle    *bundle = nil;
+static NXTDefaults *defaults = nil;
 
 - (id)init
 {
   self = [super init];
   
-  defaults = [NXDefaults globalUserDefaults];
+  defaults = [NXTDefaults globalUserDefaults];
 
   bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Keyboard" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  keyboard = [[NXKeyboard alloc] init];
+  keyboard = [[OSEKeyboard alloc] init];
       
   return self;
 }
@@ -88,20 +88,20 @@ static NXDefaults *defaults = nil;
 
   if (![initialRepeatMtrx selectCellWithTag:[keyboard initialRepeat]])
     {
-      if ([defaults integerForKey:InitialRepeat] < 0)
+      if ([defaults integerForKey:OSEKeyboardInitialRepeat] < 0)
         [initialRepeatMtrx selectCellWithTag:200];
       else
         [initialRepeatMtrx
-            selectCellWithTag:[defaults integerForKey:InitialRepeat]];
+            selectCellWithTag:[defaults integerForKey:OSEKeyboardInitialRepeat]];
       [self repeatAction:initialRepeatMtrx];
     }
     
   if (![repeatRateMtrx selectCellWithTag:[keyboard repeatRate]])
     {
-      if ([defaults integerForKey:RepeatRate] < 0)
+      if ([defaults integerForKey:OSEKeyboardRepeatRate] < 0)
         [repeatRateMtrx selectCellWithTag:40];
       else
-        [repeatRateMtrx selectCellWithTag:[defaults integerForKey:RepeatRate]];
+        [repeatRateMtrx selectCellWithTag:[defaults integerForKey:OSEKeyboardRepeatRate]];
       [self repeatAction:repeatRateMtrx];
     }
   
@@ -282,7 +282,7 @@ static NXDefaults *defaults = nil;
 
 - (BOOL)_setOption:(NSString *)option
 {
-  NXDefaults		*defs = [NXDefaults globalUserDefaults];
+  NXTDefaults		*defs = [NXTDefaults globalUserDefaults];
   NSMutableArray	*mOptions = [options mutableCopy];
   NSArray		*optComponents;
   NSString		*savedOption;
@@ -307,7 +307,7 @@ static NXDefaults *defaults = nil;
  SUCCESS = [keyboard setLayouts:nil variants:nil options:mOptions];
   if (SUCCESS == YES)
     {
-      [defs setObject:mOptions forKey:Options];
+      [defs setObject:mOptions forKey:OSEKeyboardOptions];
       [options release];
       options = [[keyboard options] copy];
     }
@@ -323,17 +323,17 @@ static NXDefaults *defaults = nil;
 
 - (void)repeatAction:(id)sender
 {
-  NXDefaults	*defs = [NXDefaults globalUserDefaults];
+  NXTDefaults	*defs = [NXTDefaults globalUserDefaults];
   
   if (sender == initialRepeatMtrx)
     { // NXKeyboard-InitialKeyRepeat - delay in milliseconds before repeat
-      [defs setInteger:[[sender selectedCell] tag] forKey:InitialRepeat];
-      [keyboard setInitialRepeat:[defs integerForKey:InitialRepeat]];
+      [defs setInteger:[[sender selectedCell] tag] forKey:OSEKeyboardInitialRepeat];
+      [keyboard setInitialRepeat:[defs integerForKey:OSEKeyboardInitialRepeat]];
     }
   else if (sender == repeatRateMtrx)
     { // NXKeyboard - RepeatRate - num of repeates per second
-      [defs setInteger:[[sender selectedCell] tag] forKey:RepeatRate];
-      [keyboard setRepeatRate:[defs integerForKey:RepeatRate]];
+      [defs setInteger:[[sender selectedCell] tag] forKey:OSEKeyboardRepeatRate];
+      [keyboard setRepeatRate:[defs integerForKey:OSEKeyboardRepeatRate]];
     }
 
   [[sender window] makeFirstResponder:repeatTestField];
@@ -345,7 +345,7 @@ static NXDefaults *defaults = nil;
 
 - (void)updateLayouts
 {
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
+  NXTDefaults *defs = [NXTDefaults globalUserDefaults];
 
   if (layouts) {
     [layouts release];
@@ -357,8 +357,8 @@ static NXDefaults *defaults = nil;
   }
   variants = [[keyboard variants] copy];
 
-  [defs setObject:layouts forKey:Layouts];
-  [defs setObject:variants forKey:Variants];
+  [defs setObject:layouts forKey:OSEKeyboardLayouts];
+  [defs setObject:variants forKey:OSEKeyboardVariants];
 
   [layoutList reloadData];
 }
@@ -369,7 +369,7 @@ static NXDefaults *defaults = nil;
   if (!layoutAddPanel)
     {
       layoutAddPanel = [[AddLayoutPanel alloc]
-                         initWithKeyboard:[NXKeyboard new]];
+                         initWithKeyboard:[OSEKeyboard new]];
     }
   // [NSApp runModalForWindow:[layoutAddPanel panel]] stops clock in appicon.
   [layoutAddPanel orderFront:self];
@@ -461,7 +461,7 @@ static NXDefaults *defaults = nil;
     [layoutShortcutBtn selectItemWithTitle:@"None"];
 
   // Refresh defaults with actual X11 settings
-  [[NXDefaults globalUserDefaults] setObject:options forKey:Options];
+  [[NXTDefaults globalUserDefaults] setObject:options forKey:OSEKeyboardOptions];
 }
 
 - (void)updateSwitchLayoutShortcuts
@@ -486,7 +486,7 @@ static NXDefaults *defaults = nil;
 // Replaces "NXKeyboardOptions" array item that contains "grp:" substring.
 - (void)setLayoutShortcut:(id)sender
 {
-  NXDefaults		*defs = [NXDefaults globalUserDefaults];
+  NXTDefaults		*defs = [NXTDefaults globalUserDefaults];
   NSMutableArray	*mOptions = [options mutableCopy];
   id			selectedOption;
   BOOL			isOptionReplaced = NO;
@@ -520,7 +520,7 @@ static NXDefaults *defaults = nil;
   
   if ([keyboard setLayouts:nil variants:nil options:mOptions] == YES)
     {
-      [defs setObject:mOptions forKey:Options];
+      [defs setObject:mOptions forKey:OSEKeyboardOptions];
       [options release];
       options = [[keyboard options] copy];
     }
@@ -565,7 +565,7 @@ static NXDefaults *defaults = nil;
 
   NSInteger numLockState;
   
-  numLockState = [[NXDefaults globalUserDefaults] integerForKey:NumLockState];
+  numLockState = [[NXTDefaults globalUserDefaults] integerForKey:OSEKeyboardNumLockState];
   [numLockStateMtrx selectCellWithTag:numLockState];
   if ([[numpadMtrx selectedCell] tag] != 2 )
     [keyboard setNumLockState:numLockState];
@@ -609,8 +609,8 @@ static NXDefaults *defaults = nil;
 
 - (void)numLockMtrxClicked:(id)sender
 {
-  [[NXDefaults globalUserDefaults] setInteger:[[sender selectedCell] tag]
-                                       forKey:NumLockState];
+  [[NXTDefaults globalUserDefaults] setInteger:[[sender selectedCell] tag]
+                                       forKey:OSEKeyboardNumLockState];
   [keyboard setNumLockState:[[sender selectedCell] tag]];
 }
 

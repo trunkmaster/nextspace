@@ -24,7 +24,7 @@
 */
 #import <AppKit/AppKit.h>
 
-#import <NXSystem/NXMouse.h>
+#import <SystemKit/OSEMouse.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
 #import "ScreenCanvas.h"
@@ -287,7 +287,7 @@
   initialOrigin = boxOrigin = boxFrame.origin;
   initialLocation = lastLocation = [theEvent locationInWindow];
 
-  moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
+  moveThreshold = [[[OSEMouse new] autorelease] accelerationThreshold];
   [[NSCursor closedHandCursor] push];
   
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];

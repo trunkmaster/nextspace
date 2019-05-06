@@ -46,12 +46,12 @@
   id reflectionBtn;
   NSColorWell *colorBtn;
 
-  NSImage   *image;
-  NXScreen  *systemScreen;
-  NXDisplay *selectedDisplay;
-  NSColor   *desktopBackground;
+  NSImage    *image;
+  OSEScreen  *systemScreen;
+  OSEDisplay *selectedDisplay;
+  NSColor    *desktopBackground;
 
-  NSTimer   *saveConfigTimer;
+  NSTimer    *saveConfigTimer;
 }
 
 //
@@ -63,3 +63,4 @@
 
 @end
 
+extern NSString *NXTDesktopBackgroundColor;

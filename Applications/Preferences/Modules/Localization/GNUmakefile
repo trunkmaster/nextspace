@@ -1,3 +1,5 @@
+# -*- mode: makefile-gmake -*-
+
 include $(GNUSTEP_MAKEFILES)/common.make
 
 BUNDLE_NAME = Localization
@@ -16,8 +18,7 @@ $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/Localization.tiff \
 	Resources/bundle.registry \
 	Resources/languages.list \
-	Resources/languages-encodings.list \
-	Resources/keyboards.list
+	Resources/languages-encodings.list
 
 $(BUNDLE_NAME)_OBJC_FILES= \
 	Localization.m \

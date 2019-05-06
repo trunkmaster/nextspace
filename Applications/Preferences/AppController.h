@@ -21,11 +21,11 @@
 #import <AppKit/AppKit.h>
 #import "PrefsController.h"
 
-@class NXClockView;
+@class NXTClockView;
 
 @interface AppController : NSObject
 {
-  NXClockView		*clockView;
+  NXTClockView		*clockView;
   PrefsController	*prefsController;
 }
 

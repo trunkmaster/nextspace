@@ -45,7 +45,7 @@
   NSArray    	*options;
   
   // -- Layouts
-  NXKeyboard	*keyboard;
+  OSEKeyboard	*keyboard;
   NSArray    	*layouts;
   NSArray    	*variants;
   NSDictionary	*layoutSwitchKeys;

@@ -31,7 +31,7 @@
 @synthesize displayName;
 
 - initWithFrame:(NSRect)frameRect
-        display:(NXDisplay *)aDisplay
+        display:(OSEDisplay *)aDisplay
           owner:(id)prefs
 {
   NSRect nameRect;
@@ -80,7 +80,7 @@
   
   if (active)
     {
-      [[NXScreen sharedScreen] savedBackgroundColorRed:&red
+      [[OSEScreen sharedScreen] savedBackgroundColorRed:&red
                                                  green:&green
                                                   blue:&blue];
       color = [NSColor colorWithDeviceRed:red

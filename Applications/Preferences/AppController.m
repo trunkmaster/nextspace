@@ -18,11 +18,11 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXSystem/NXKeyboard.h>
-#import <NXSystem/NXMouse.h>
-#import <NXSystem/NXScreen.h>
-#import <NXAppKit/NXClockView.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEKeyboard.h>
+#import <SystemKit/OSEMouse.h>
+#import <SystemKit/OSEScreen.h>
+#import <DesktopKit/NXTClockView.h>
 
 #import "AppController.h"
 
@@ -57,7 +57,7 @@ static NSUserDefaults *defaults = nil;
                      @"Month":NSStringFromRect(NSMakeRect(14,  9, 31, 6)),
                      @"Time":NSStringFromRect(NSMakeRect( 5, 46, 53, 11))};
   
-  clockView = [[NXClockView alloc]
+  clockView = [[NXTClockView alloc]
                 initWithFrame:NSMakeRect(0, 0, 64, 64)
                          tile:[NSImage imageNamed:@"ClockViewTile"]
                  displayRects:cvDisplayRects];
@@ -83,19 +83,19 @@ static NSUserDefaults *defaults = nil;
   // NSApplication removed arguments (-NXAutoLaunch YES) to omit flickering.
   // We've just finished launching and not active == we've autolaunched
   if ([NSApp isActive] == NO) {
-    NXDefaults *defs = [NXDefaults globalUserDefaults];
+    NXTDefaults *defs = [NXTDefaults globalUserDefaults];
       
     NSLog(@"Configuring Keyboard...");
-    [NXKeyboard configureWithDefaults:defs];
+    [OSEKeyboard configureWithDefaults:defs];
       
     NSLog(@"Configuring Mouse...");
-    NXMouse *mouse = [NXMouse new];
-    [mouse setAcceleration:[defs integerForKey:Acceleration]
-                 threshold:[defs integerForKey:Threshold]];
+    OSEMouse *mouse = [OSEMouse new];
+    [mouse setAcceleration:[defs integerForKey:OSEMouseAcceleration]
+                 threshold:[defs integerForKey:OSEMouseThreshold]];
     [mouse release];
       
     NSLog(@"Configuring Desktop background...");
-    NXScreen *screen = [NXScreen sharedScreen];
+    OSEScreen *screen = [OSEScreen sharedScreen];
     CGFloat red, green, blue;
     if ([screen savedBackgroundColorRed:&red green:&green blue:&blue] == YES) {
       [screen setBackgroundColorRed:red green:green blue:blue];

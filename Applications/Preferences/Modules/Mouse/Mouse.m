@@ -33,8 +33,8 @@
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSPopUpButton.h>
 
-#import <NXSystem/NXMouse.h>
-#import <NXAppKit/NXNumericField.h>
+#import <SystemKit/OSEMouse.h>
+#import <DesktopKit/NXTNumericField.h>
 
 #import "Mouse.h"
 
@@ -55,7 +55,7 @@ static NSMutableDictionary      *domain = nil;
   NSString *imagePath = [bundle pathForResource:@"Mouse" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  mouse = [NXMouse new];
+  mouse = [OSEMouse new];
 
   return self;
 }

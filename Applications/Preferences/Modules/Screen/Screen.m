@@ -38,9 +38,9 @@
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSPanel.h>
 
-#import <NXSystem/NXDisplay.h>
+#import <SystemKit/OSEDisplay.h>
 
-#import  "ScreenCanvas.h"
+#import "ScreenCanvas.h"
 #import "DisplayBox.h"
 #import "Screen.h"
 
@@ -96,7 +96,7 @@
   [view retain];
   [window release];
 
-  systemScreen = [NXScreen new];
+  systemScreen = [OSEScreen new];
   [systemScreen setUseAutosave:YES];
   
   // Get info about monitors and layout
@@ -106,16 +106,16 @@
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(screenDidUpdate:)
-           name:NXScreenDidUpdateNotification
+           name:OSEScreenDidUpdateNotification
          object:systemScreen];
 
   // Open/close lid events
-  power = [NXPower new];
+  power = [OSEPower new];
   [power startEventsMonitor];
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(lidDidChange:)
-           name:NXPowerLidDidChangeNotification
+           name:OSEPowerLidDidChangeNotification
          object:power];
   
   [[NSNotificationCenter defaultCenter]
@@ -167,7 +167,7 @@
   
   if (([sender isActive] &&
        [[systemScreen activeDisplays] count] > 1) ||
-      (![sender isActive] && ![NXPower isLidClosed]))
+      (![sender isActive] && ![OSEPower isLidClosed]))
     {
       [setStateBtn setEnabled:YES];
     }
@@ -179,16 +179,16 @@
 
 - (void)setMainDisplay:(id)sender
 {
-  NXDisplay *display;
+  OSEDisplay *display;
   
   display = [systemScreen displayWithName:selectedBox.displayName];
-  // [NXDisplay setMain:] will generate NXScreenDidChangeNotification.
+  // [OSEDisplay setMain:] will generate OSEScreenDidChangeNotification.
   [systemScreen setMainDisplay:display];
 }
 
 - (void)setDisplayState:(id)sender
 {
-  NXDisplay *display;
+  OSEDisplay *display;
   
   display = [systemScreen displayWithName:selectedBox.displayName];
   
@@ -235,7 +235,7 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
 
 - (void)applyArrangement:(id)sender
 {
-  NSLog(@"Convert DisplayBox positions and set to NXDisplay.");
+  NSLog(@"Convert DisplayBox positions and set to OSEDisplay.");
 
   NSArray		*dbList;
   NSArray		*layout = [systemScreen currentLayout];
@@ -251,10 +251,10 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   displayLastFrame = NSMakeRect(0,0,0,0);
   for (DisplayBox *db in dbList)
     {
-      // 1. Get frame of NXDisplay
+      // 1. Get frame of OSEDisplay
       displayFrame = db.display.frame;
 
-      // 2. Calculate NSPoint for NXDisplay
+      // 2. Calculate NSPoint for OSEDisplay
       boxFrame = db.frame;
 
       if (NSIsEmptyRect(displayLastFrame) &&
@@ -290,11 +290,11 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
       displayLastFrame = displayFrame;
       boxLastFrame = boxFrame;
       
-      // 3. Change frame origin of NXDisplay in layout description
+      // 3. Change frame origin of OSEDisplay in layout description
       displayDesc = [[systemScreen descriptionOfDisplay:db.display
                                                inLayout:layout] mutableCopy];
       [displayDesc setObject:NSStringFromRect(displayFrame)
-                      forKey:NXDisplayFrameKey];
+                      forKey:OSEDisplayFrameKey];
       NSLog(@"Set frame for %@: %@", db.displayName, NSStringFromRect(displayFrame));
       [newLayout addObject:displayDesc];
       [displayDesc release];
@@ -304,12 +304,12 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
     {
       for (NSMutableDictionary *d in newLayout)
         {
-          displayFrame = NSRectFromString([d objectForKey:NXDisplayFrameKey]);
+          displayFrame = NSRectFromString([d objectForKey:OSEDisplayFrameKey]);
           displayFrame.origin.x += xOffset;
           displayFrame.origin.y += yOffset;
-          NSLog(@"Adjust frame for %@: %@", [d objectForKey:NXDisplayNameKey],
+          NSLog(@"Adjust frame for %@: %@", [d objectForKey:OSEDisplayNameKey],
                 NSStringFromRect(displayFrame));
-          [d setObject:NSStringFromRect(displayFrame) forKey:NXDisplayFrameKey];
+          [d setObject:NSStringFromRect(displayFrame) forKey:OSEDisplayFrameKey];
         }
     }
 
@@ -342,7 +342,7 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   [self displayBoxClicked:db];
 }
 
-// Translates NXDisplay coordinates into ScreenCanvas coordinates
+// Translates OSEDisplay coordinates into ScreenCanvas coordinates
 - (void)updateDisplayBoxList
 {
   NSArray *displays;
@@ -364,7 +364,7 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   displays = [systemScreen connectedDisplays];
   
   // Calculate scale factor
-  for (NXDisplay *d in displays)
+  for (OSEDisplay *d in displays)
     {
       displayRect = [d frame];
       if (dMaxWidth < displayRect.size.width ||
@@ -379,7 +379,7 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   scaleFactor = (scaleWidth < scaleHeight) ? scaleWidth : scaleHeight;
 
   // Create and add display boxes
-  for (NXDisplay *d in displays)
+  for (OSEDisplay *d in displays)
     {
       if ([d isActive] == NO)
         displayRect = d.hiddenFrame;
@@ -425,10 +425,10 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
 
 - (void)lidDidChange:(NSNotification *)aNotif
 {
-  NXDisplay *builtinDisplay = nil;
+  OSEDisplay *builtinDisplay = nil;
 
   // for (DisplayBox *db in displayBoxList)
-  for (NXDisplay *d in [systemScreen connectedDisplays])
+  for (OSEDisplay *d in [systemScreen connectedDisplays])
     {
       if ([d isBuiltin])
         {

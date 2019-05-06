@@ -27,8 +27,8 @@
 #import <AppKit/NSBox.h>
 #import <AppKit/NSTextField.h>
 
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXPower.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEPower.h>
 
 #import <Preferences.h>
 
@@ -46,8 +46,8 @@
 
   NSImage *image;
 
-  NXScreen *systemScreen;
-  NXPower  *power;
+  OSEScreen *systemScreen;
+  OSEPower  *power;
  
   NSMutableArray *displayBoxList;
   DisplayBox     *selectedBox;

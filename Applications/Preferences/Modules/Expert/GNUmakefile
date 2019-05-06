@@ -1,3 +1,5 @@
+# -*- mode: makefile-gmake -*-
+
 include $(GNUSTEP_MAKEFILES)/common.make
 
 BUNDLE_NAME = Expert

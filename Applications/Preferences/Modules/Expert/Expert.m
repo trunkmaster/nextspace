@@ -23,7 +23,7 @@
   Boston, MA  02111-1307, USA
 */
 #import <AppKit/AppKit.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import "Expert.h"
 
@@ -34,7 +34,7 @@
 {
   self = [super init];
   
-  defaults = [NXDefaults globalUserDefaults];
+  defaults = [NXTDefaults globalUserDefaults];
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Expert" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
@@ -60,9 +60,9 @@
   [privateSoundServerBtn setRefusesFirstResponder:YES];
 
   [sortByBtn
-    selectItemWithTag:[[NXFileManager sharedManager] sortFilesBy]];
+    selectItemWithTag:[[NXTFileManager sharedManager] sortFilesBy]];
   [showHiddenFilesBtn
-    setState:[[NXFileManager sharedManager] isShowHiddenFiles]];
+    setState:[[NXTFileManager sharedManager] isShowHiddenFiles]];
 }
 
 - (NSView *)view
@@ -95,12 +95,12 @@
 
 - (void)setSortBy:(id)sender
 {
-  [[NXFileManager sharedManager] setSortFilesBy:[[sender selectedItem] tag]];
+  [[NXTFileManager sharedManager] setSortFilesBy:[[sender selectedItem] tag]];
 }
 
 - (void)setShowHiddenFiles:(id)sender
 {
-  [[NXFileManager sharedManager] setShowHiddenFiles:[sender state]];
+  [[NXTFileManager sharedManager] setShowHiddenFiles:[sender state]];
 }
 
 @end

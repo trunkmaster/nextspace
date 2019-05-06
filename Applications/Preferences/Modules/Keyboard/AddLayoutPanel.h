@@ -22,7 +22,7 @@
 */
 
 #import <AppKit/AppKit.h>
-#import <NXSystem/NXKeyboard.h>
+#import <SystemKit/OSEKeyboard.h>
 
 @class Keyboard;
 
@@ -33,14 +33,14 @@
   NSButton     *addBtn;
   NSTextField  *infoField;
   
-  NXKeyboard   *keyboard;
+  OSEKeyboard  *keyboard;
   Keyboard     *kPrefs;
   NSDictionary *layoutDict;
   NSArray      *layoutList;
   NSDictionary *variantDict;
 }
 
-- initWithKeyboard:(NXKeyboard *)k;
+- initWithKeyboard:(OSEKeyboard *)k;
 - (NSWindow *)panel;
 - (void)orderFront:(Keyboard *)kPreferences;
 
