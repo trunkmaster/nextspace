@@ -23,7 +23,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXAppKit/NXAppKit.h>
+#import <DesktopKit/DesktopKit.h>
 
 #import <Preferences.h>
 #import <Preferences/PrefsModule.h>
@@ -44,7 +44,7 @@
 
   NSBox  *box;
   NSBox  *box2;
-  NXIcon *icon;
+  NXTIcon *icon;
 }
 
 - (void)revert:sender;

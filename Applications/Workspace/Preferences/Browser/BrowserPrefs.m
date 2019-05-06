@@ -20,7 +20,7 @@
 //
 
 #import "BrowserPrefs.h"
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 
 static inline NSRect IncrementedRect(NSRect r)
 {
@@ -43,7 +43,7 @@ static inline NSRect IncrementedRect(NSRect r)
   NSRect     bFrame = [browser frame];
   NSSize     s = [[rightArr superview] frame].size;
   float      width;
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
 
   if ([df floatForKey:BrowserViewerColumnWidth] != BROWSER_DEF_COLUMN_WIDTH) {
     [button setEnabled:YES];
@@ -114,9 +114,9 @@ static inline NSRect IncrementedRect(NSRect r)
   return box;
 }
 
-// --- NXSizer delegate
+// --- NXTSizer delegate
 
-- (BOOL) arrowView:(NXSizer *)sender
+- (BOOL) arrowView:(NXTSizer *)sender
  shouldMoveByDelta:(float)delta
 {
   NSView     *superview = [sender superview];
@@ -150,12 +150,12 @@ static inline NSRect IncrementedRect(NSRect r)
   return YES;
 }
 
-- (void)arrowViewStoppedMoving:(NXSizer *)sender
+- (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
   NSLog(@"[BrowserPrefs] browser column width changed to: %f",
 	[rightArr frame].origin.x - [browser frame].origin.x);
 
-  [[NXDefaults userDefaults]
+  [[NXTDefaults userDefaults]
     setFloat:([rightArr frame].origin.x - [browser frame].origin.x)
       forKey:BrowserViewerColumnWidth];
 
@@ -172,7 +172,7 @@ static inline NSRect IncrementedRect(NSRect r)
     return;
   
   [sender setEnabled:NO];
-  [[NXDefaults userDefaults] setFloat:BROWSER_DEF_COLUMN_WIDTH
+  [[NXTDefaults userDefaults] setFloat:BROWSER_DEF_COLUMN_WIDTH
                                forKey:BrowserViewerColumnWidth];
   [[NSNotificationCenter defaultCenter]
     postNotificationName:BrowserViewerColumnWidthDidChangeNotification

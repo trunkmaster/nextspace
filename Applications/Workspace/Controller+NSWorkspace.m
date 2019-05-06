@@ -39,10 +39,10 @@
 #import <AppKit/AppKit.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXFoundation/NXFileManager.h>
-#import <NXSystem/NXMediaManager.h>
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEMediaManager.h>
+#import <DesktopKit/NXTAlert.h>
 
 #import "Workspace+WM.h"
 
@@ -611,7 +611,7 @@ static NSString		*_rootPath = @"/";
 
   if (![fm fileExistsAtPath:fullPath])
     {
-      NXRunAlertPanel(_(@"Workspace"),
+      NXTRunAlertPanel(_(@"Workspace"),
                       _(@"File '%@' does not exist!"), 
                       nil, nil, nil, [fullPath lastPathComponent]);
       return NO;
@@ -654,7 +654,7 @@ static NSString		*_rootPath = @"/";
       
       if ([self launchApplication:fullPath] == NO)
         {
-          NXRunAlertPanel(_(@"Workspace"),
+          NXTRunAlertPanel(_(@"Workspace"),
                           _(@"Failed to start application \"%@\""), 
                           nil, nil, nil, appName);
           return NO;
@@ -696,7 +696,7 @@ static NSString		*_rootPath = @"/";
       
       if (![self openFile:fullPath withApplication:appName andDeactivate:YES])
         {
-          NXRunAlertPanel(_(@"Workspace"),
+          NXTRunAlertPanel(_(@"Workspace"),
                           _(@"Failed to start application \"%@\" for file \"%@\""), 
                           nil, nil, nil, appName, [fullPath lastPathComponent]);
           return NO;
@@ -730,7 +730,7 @@ static NSString		*_rootPath = @"/";
       if ([self _extension:[fullPath pathExtension] role:nil app:&appName]
           == NO)
         {
-          appName = [[NXDefaults userDefaults] objectForKey:@"DefaultEditor"];
+          appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
 	}
     }
 
@@ -781,7 +781,7 @@ static NSString		*_rootPath = @"/";
   ext = [fullPath pathExtension];
   if ([self _extension:ext role:nil app:&appName] == NO)
     {
-      appName = [[NXDefaults userDefaults] objectForKey:@"DefaultEditor"];
+      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
     }
 
   app = [self _connectApplication: appName];
@@ -1025,19 +1025,19 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       [self getInfoForFile:fullPath application:&appName type:&wmFileType];
       if ([wmFileType isEqualToString:NSFilesystemFileType])
         {
-          NXFSType fsType;
+          NXTFSType fsType;
           
-          fsType = [[NXMediaManager defaultManager]
+          fsType = [[OSEMediaManager defaultManager]
                      filesystemTypeAtPath:fullPath];
-          if (fsType == NXFSTypeFAT)
+          if (fsType == NXTFSTypeFAT)
             {
               image = [NSImage imageNamed:@"DOS_FD.fs"];
             }
-          else if (fsType == NXFSTypeISO)
+          else if (fsType == NXTFSTypeISO)
             {
               image = [NSImage imageNamed:@"CDROM.fs"];
             }
-          else if (fsType == NXFSTypeNTFS)
+          else if (fsType == NXTFSTypeNTFS)
             {
               image = [NSImage imageNamed:@"NTFS_HDD.fs"];
             }
@@ -1225,14 +1225,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
   else if ([fileType isEqualToString:NSFilesystemFileType])
     {
-      NXFSType fsType;
+      NXTFSType fsType;
           
-      fsType = [[NXMediaManager defaultManager] filesystemTypeAtPath:fullPath];
-      if (fsType == NXFSTypeFAT)
+      fsType = [[OSEMediaManager defaultManager] filesystemTypeAtPath:fullPath];
+      if (fsType == NXTFSTypeFAT)
         {
           return [NSImage imageNamed:@"DOS_FD.openfs"];
         }
-      else if (fsType == NXFSTypeISO)
+      else if (fsType == NXTFSTypeISO)
         {
           return [NSImage imageNamed:@"CDROM.openfs"];
         }
@@ -1351,7 +1351,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 - (BOOL)unmountAndEjectDeviceAtPath:(NSString*)path
 {
-  [[NXMediaManager defaultManager] unmountAndEjectDeviceAtPath:path];
+  [[OSEMediaManager defaultManager] unmountAndEjectDeviceAtPath:path];
   return YES;
 }
 
@@ -1361,17 +1361,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 - (void)checkForRemovableMedia
 {
-  [[NXMediaManager defaultManager] checkForRemovableMedia];
+  [[OSEMediaManager defaultManager] checkForRemovableMedia];
 }
 
 - (NSArray*)mountNewRemovableMedia
 {
-  return [[NXMediaManager defaultManager] mountNewRemovableMedia];
+  return [[OSEMediaManager defaultManager] mountNewRemovableMedia];
 }
 
 - (NSArray*)mountedRemovableMedia
 {
-  return [[NXMediaManager defaultManager] mountedRemovableMedia];
+  return [[OSEMediaManager defaultManager] mountedRemovableMedia];
 }
 
 //-----------------------------------------------------------------------------
@@ -1653,7 +1653,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 /** Use libmagic to determine file type*/
 - (NSImage *)_iconForFileContents:(NSString *)fullPath
 {
-  NXFileManager *xfm = [NXFileManager sharedManager];
+  NXTFileManager *xfm = [NXTFileManager sharedManager];
   NSString      *mimeType = [xfm mimeTypeForFile:fullPath];;
   NSString      *mime0, *mime1;
   NSImage       *image = nil;

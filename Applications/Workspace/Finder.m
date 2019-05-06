@@ -20,10 +20,10 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXFoundation/NXDefaults.h>
-#import <NXAppKit/NXAlert.h>
-#import <NXAppKit/NXIconView.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTAlert.h>
+#import <DesktopKit/NXTIconView.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <Viewers/FileViewer.h>
 #import <Viewers/PathIcon.h>
@@ -123,7 +123,7 @@
 
 - (NSArray *)_directoryContentsAtPath:(NSString *)path
 {
-  NXFileManager *xfm = [NXFileManager sharedManager];
+  NXTFileManager *xfm = [NXTFileManager sharedManager];
 
   return [xfm directoryContentsAtPath:path
                               forPath:nil
@@ -287,7 +287,7 @@
 
 - (id)initWithFileViewer:(FileViewer *)fv
 {
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
   NSSize     slotSize;
     
   if ((self = [super init]) == nil) {
@@ -300,8 +300,8 @@
   else {
     slotSize = NSMakeSize(76, 76);
   }
-  [NXIcon setDefaultIconSize:NSMakeSize(66, 56)];
-  [NXIconView setDefaultSlotSize:slotSize];
+  [NXTIcon setDefaultIconSize:NSMakeSize(66, 56)];
+  [NXTIconView setDefaultSlotSize:slotSize];
   [NSBundle loadNibNamed:@"Finder" owner:self];
 
   fileViewer = fv;
@@ -389,7 +389,7 @@
 
 - (void)windowWillClose:(NSNotification *)notif
 {
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
 
   [df setObject:[shelf storableRepresentation] forKey:@"FinderShelfContents"];
   [df setObject:[self storableShelfSelection] forKey:@"FinderShelfSelection"];
@@ -707,7 +707,7 @@
 {
   NSInteger selRow;
   NSString  *item, *path;
-  NXIcon    *sIcon;
+  NXTIcon    *sIcon;
 
   if (sender != resultList)
     return;
@@ -745,7 +745,7 @@
   NSArray      *shelfSelection;
   PathIcon     *icon;
 
-  aDict = [[NXDefaults userDefaults] objectForKey:@"FinderShelfContents"];
+  aDict = [[NXTDefaults userDefaults] objectForKey:@"FinderShelfContents"];
   if (!aDict || ![aDict isKindOfClass:[NSDictionary class]]) {
     // Home
     icon = [shelf createIconForPaths:@[NSHomeDirectory()]];
@@ -754,25 +754,25 @@
       [icon setEditable:NO];
       [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
       [[icon label] setNextKeyView:findField];
-      [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
+      [shelf putIcon:icon intoSlot:NXTMakeIconSlot(0,0)];
       [shelf selectIcons:[NSSet setWithObject:icon]];
     }
   }
   else {
     [shelf reconstructFromRepresentation:aDict];
-    for (NXIcon *icon in [shelf icons]) {
+    for (NXTIcon *icon in [shelf icons]) {
       [[icon label] setNextKeyView:findField];
     }
   }
 
-  shelfSelection = [[NXDefaults userDefaults] objectForKey:@"FinderShelfSelection"];
+  shelfSelection = [[NXTDefaults userDefaults] objectForKey:@"FinderShelfSelection"];
   [self reconstructShelfSelection:shelfSelection];
 }
 
 - (NSArray *)storableShelfSelection
 {
   NSMutableArray *selectedSlots = [[NSMutableArray alloc] init];
-  NXIconSlot     slot;
+  NXTIconSlot     slot;
   
   for (PathIcon *icon in [shelf selectedIcons]) {
     if ([icon isKindOfClass:[NSNull class]]) {
@@ -788,24 +788,24 @@
 
 - (void)reconstructShelfSelection:(NSArray *)selectedSlots
 {
-  NXIconSlot   slot;
+  NXTIconSlot   slot;
   NSMutableSet *selection = [[NSMutableSet alloc] init];
 
   for (NSArray *slotRep in selectedSlots) {
-    slot = NXMakeIconSlot([[slotRep objectAtIndex:0] intValue],
+    slot = NXTMakeIconSlot([[slotRep objectAtIndex:0] intValue],
                           [[slotRep objectAtIndex:1] intValue]);
     [selection addObject:[shelf iconInSlot:slot]];
   }
 
   if (!selectedSlots || [selectedSlots count] == 0) {
-    [selection addObject:[shelf iconInSlot:NXMakeIconSlot(0,0)]];
+    [selection addObject:[shelf iconInSlot:NXTMakeIconSlot(0,0)]];
   }
   [shelf selectIcons:selection];
   [selection release];
 }
 
 // This method manipulates icon selected state directly.
-// NXIconView -selectedIcons method returns selected set of icons.
+// NXTIconView -selectedIcons method returns selected set of icons.
 - (void)resignShelfSelection
 {
   NSSet *selectedIcons = [shelf selectedIcons];

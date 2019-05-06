@@ -1,33 +1,33 @@
 /* Global preferences for NextSpace -*-c-*- */
 {
-  NXClockView24HourFormat = YES;
-  NXShowHiddenFiles = NO;
-  NXSortFilesBy = <*I1>;
+  ClockView24HourFormat = YES;
+  ShowHiddenFiles = NO;
+  SortFilesBy = <*I1>;
   NXDesktopBackgroundColor = {
    Alpha = 1.0;
    Red = 83;
    Green = 83;
    Blue = 116;
   };
-  NXKeyboardInitialKeyRepeat = <*I200>;
-  NXKeyboardRepeatRate = <*I20>;
-  NXKeyboardLayouts = (us);
-  NXKeyboardVariants = ("");
-  NXKeyboardNumLockState = <*I1>;
-  NXKeyboardOptions = (
+  KeyboardInitialKeyRepeat = <*I200>;
+  KeyboardRepeatRate = <*I20>;
+  KeyboardLayouts = (us);
+  KeyboardVariants = ("");
+  KeyboardNumLockState = <*I1>;
+  KeyboardOptions = (
     "compose:menu",
     "kpdl:dot",
     "numpad:mac",
     "caps:none",
     "grp:win_space_toggle"
   );
-  NXMenuButtonEnabled = YES;
-  NXMenuButtonHand = <*I3>;
-  NXMouseAcceleration = <*I2>;
-  NXMouseDoubleClickTime = <*I350>;
-  NXMouseThreshold = <*I4>;
-  NXMouseWheelControlScroll = <*I1>;
-  NXMouseWheelScroll = <*I3>;
+  MenuButtonEnabled = YES;
+  MenuButtonHand = <*I3>;
+  MouseAcceleration = <*I2>;
+  MouseDoubleClickTime = <*I350>;
+  MouseThreshold = <*I4>;
+  MouseWheelControlScroll = <*I1>;
+  MouseWheelScroll = <*I3>;
   NXSystemBeep = "/usr/NextSpace/Sounds/Bonk.snd";
   NXSystemBeepType = Visual;
 }

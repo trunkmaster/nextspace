@@ -23,7 +23,7 @@
 #import <signal.h>
 #import <AppKit/NSAlert.h>
 
-#import <NXAppKit/NXUtilities.h>
+#import <DesktopKit/Utilities.h>
 
 #import <Operations/ProcessManager.h>
 #import <Operations/BGOperation.h>
@@ -221,10 +221,10 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
 
       if ([identifier isEqualToString:@"OperationName"])
 	{
-          return NXShortenString([bgop titleString],
+          return NXTShortenString([bgop titleString],
                                  [aTableColumn width]-4,
                                  [[aTableColumn dataCell] font], 
-                                 NXPathElement, NXDotsAtLeft);
+                                 NXPathElement, NXTDotsAtLeft);
 	}
       else if ([identifier isEqualToString:@"OperationState"])
 	{

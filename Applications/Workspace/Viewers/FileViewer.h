@@ -24,16 +24,16 @@
 
 #import "Viewers/Viewer.h"
 
-#import <NXSystem/NXFileSystem.h>
-#import <NXSystem/NXFileSystemMonitor.h>
-#import <NXSystem/NXMediaManager.h>
+#import <SystemKit/OSEFileSystem.h>
+#import <SystemKit/OSEFileSystemMonitor.h>
+#import <SystemKit/OSEMediaManager.h>
 
 #import "PathIcon.h"
 #import "ShelfView.h"
 #import "PathView.h"
 #import "PathViewScroller.h"
 
-@class NXIconView, NXIcon, NXIconLabel;
+@class NXTIconView, NXTIcon, NXTIconLabel;
 
 @interface FileViewer : NSObject
 {
@@ -47,7 +47,7 @@
 
   id<MediaManager> mediaManager;
 
-  NXFileSystemMonitor *fileSystemMonitor;     // File system events
+  OSEFileSystemMonitor *fileSystemMonitor;     // File system events
   NSNumber            *monitorPathDescriptor; // file descriptor for path
 
   NSWindow *window;
@@ -74,7 +74,7 @@
   NSInteger sortFilesBy;
 
   // Dragging
-  NXIconView *draggedSource;
+  NXTIconView *draggedSource;
   PathIcon   *draggedIcon;
 }
 
@@ -121,7 +121,7 @@
 
 //=============================================================================
 - (void)scrollDisplayToRange:(NSRange)aRange;
-- (void)slideToPathFromShelfIcon:(NXIcon *)shelfIcon;
+- (void)slideToPathFromShelfIcon:(NXTIcon *)shelfIcon;
 
 //=============================================================================
 // Menu
@@ -156,9 +156,9 @@
 	    ofSubviewAt:(NSInteger)offset;
 
 //=============================================================================
-// NXIconLabel delegate
+// NXTIconLabel delegate
 //=============================================================================
-- (void)   iconLabel:(NXIconLabel *)anIconLabel
+- (void)   iconLabel:(NXTIconLabel *)anIconLabel
  didChangeStringFrom:(NSString *)oldLabelString
 		  to:(NSString *)newLabelString;
 

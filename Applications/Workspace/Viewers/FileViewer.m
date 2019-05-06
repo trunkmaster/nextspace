@@ -30,9 +30,9 @@
 //      ('rootPath' ivar)
 //=============================================================================
 
-#import <NXAppKit/NXAppKit.h>
-#import <NXFoundation/NXDefaults.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/DesktopKit.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <Workspace.h>
 
@@ -144,7 +144,7 @@
             viewer:(NSString *)viewerType
 	    isRoot:(BOOL)isRoot
 {
-  NXDefaults           *df = [NXDefaults userDefaults];
+  NXTDefaults           *df = [NXTDefaults userDefaults];
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSString             *relativePath = nil;
   NSSize               aSize;
@@ -158,18 +158,18 @@
   ASSIGN(rootPath, aRootPath);
   ASSIGN(displayedPath, @"");
 
-  // Initalize NXIconView frame. 
-  // NXIconView is a parent class for ShelfView and PathView
+  // Initalize NXTIconView frame. 
+  // NXTIconView is a parent class for ShelfView and PathView
   aSize = NSMakeSize(66, 52); // Size of hilite.tiff 66x52
-  [NXIcon setDefaultIconSize:aSize];
-  // Set NXIconView slot size
+  [NXTIcon setDefaultIconSize:aSize];
+  // Set NXTIconView slot size
   if ([df objectForKey:@"IconLabelWidth"]) {
     aSize = NSMakeSize([df floatForKey:@"IconLabelWidth"], PATH_VIEW_HEIGHT);
   }
   else {
     aSize = NSMakeSize(168, PATH_VIEW_HEIGHT);
   }
-  [NXIconView setDefaultSlotSize:aSize];
+  [NXTIconView setDefaultSlotSize:aSize];
   
   // [NSBundle loadNibNamed:@"FileViewer" owner:self];
   // To avoid .gorm loading ineterference manually construct File Viewer window.
@@ -236,7 +236,7 @@
   // If devider was moved we need to update info labels
   [nc addObserver:self
 	 selector:@selector(updateInfoLabels:)
-	     name:NXSplitViewDividerDidDraw
+	     name:NXTSplitViewDividerDidDraw
 	   object:splitView];
 
   // Media manager and mount, unmount, eject events
@@ -280,10 +280,10 @@
   // Make initial placement of disk and operation info labels
   [self updateInfoLabels:nil];
 
-  // NXFileSystem notifications
+  // OSEFileSystem notifications
   [nc addObserver:self
          selector:@selector(fileSystemChangedAtPath:)
-             name:NXFileSystemChangedAtPath
+             name:OSEFileSystemChangedAtPath
            object:nil];
 
   // Global user preferences changes
@@ -316,7 +316,7 @@
   //  NSRect       contentRect = NSMakeRect(100, 500, 522, 390);
   NSRect       contentRect = NSMakeRect(100, 500, WIN_DEF_WIDTH, 390);
   NSSize       wSize, sSize;
-  NXDefaults   *df = [NXDefaults userDefaults];
+  NXTDefaults   *df = [NXTDefaults userDefaults];
 
   // Create window
   if (isRootViewer) {
@@ -339,7 +339,7 @@
   [window setDelegate:self];
 
   // Spliview
-  splitView = [[NXSplitView alloc]
+  splitView = [[NXTSplitView alloc]
                 initWithFrame:NSMakeRect(8,-2,SPLIT_DEF_WIDTH,392)];
   [splitView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
   [self shelfResizableStateChanged:nil];
@@ -424,7 +424,7 @@
   [splitView setDelegate:self];
 
   {
-    NXDefaults *df = [NXDefaults userDefaults];
+    NXTDefaults *df = [NXTDefaults userDefaults];
     NSRect     shelfFrame = [shelf frame];
     NSRect     pathFrame = [[pathView enclosingScrollView] frame];
     NSSize     windowMinSize = [window minSize];
@@ -631,12 +631,12 @@
 - (NSArray *)directoryContentsAtPath:(NSString *)relPath
                              forPath:(NSString *)targetPath
 {
-  NXFileManager *xfm = [NXFileManager sharedManager];
+  NXTFileManager *xfm = [NXTFileManager sharedManager];
   NSString      *path = [rootPath stringByAppendingPathComponent:relPath];
   NSDictionary  *folderDefaults;
   
   // Get sorted directory contents
-  if ((folderDefaults = [[NXDefaults userDefaults] objectForKey:path]) != nil)
+  if ((folderDefaults = [[NXTDefaults userDefaults] objectForKey:path]) != nil)
     {
       sortFilesBy = [[folderDefaults objectForKey:@"SortBy"] intValue];
     }
@@ -983,7 +983,7 @@
 
   if (rename([oldFullPath cString], [newFullPath cString]) == -1) {
     NSString *alertFormat = _(@"Couldn't rename `%@` to `%@`. Error: %s");
-    NXRunAlertPanel(_(@"Rename"),
+    NXTRunAlertPanel(_(@"Rename"),
                     [NSString stringWithFormat:alertFormat,
                               oldFullPath, newFullPath,
                               strerror(errno)],
@@ -1049,7 +1049,7 @@
 
 - (void)restoreShelf
 {
-  NXDefaults   *df = [NXDefaults userDefaults];
+  NXTDefaults   *df = [NXTDefaults userDefaults];
   NSDictionary *shelfRep = nil;
   NSArray      *paths = nil;
   PathIcon     *icon = nil;
@@ -1076,7 +1076,7 @@
   }
   else {
     icon = [shelf createIconForPaths:paths];
-    [shelf putIcon:icon intoSlot:NXMakeIconSlot(0,0)];
+    [shelf putIcon:icon intoSlot:NXTMakeIconSlot(0,0)];
   }
 
   [[shelf icons] makeObjectsPerformSelector:@selector(setDelegate:)
@@ -1090,7 +1090,7 @@
 // Viewer delegate (BrowserViewer, IconViewer, ListViewer, etc.)
 //=============================================================================
 
-// Called when viewer contains NXIcons with editable label (IconViewer)
+// Called when viewer contains NXTIcons with editable label (IconViewer)
 - (BOOL)viewerRenamedCurrentFileTo:(NSString *)newName
 {
   return [self renameCurrentFileTo:newName updateViewer:NO];
@@ -1170,11 +1170,11 @@
 }
 
 //=============================================================================
-// NXIconLabel delegate
+// NXTIconLabel delegate
 //=============================================================================
 
 // Called by icon in PathView or IconViewer
-- (void)   iconLabel:(NXIconLabel *)anIconLabel
+- (void)   iconLabel:(NXTIconLabel *)anIconLabel
  didChangeStringFrom:(NSString *)oldLabelString
 		  to:(NSString *)newLabelString
 {
@@ -1214,7 +1214,7 @@
 
 - (void)windowWillClose:(NSNotification *)notif
 {
-  NXDefaults    *df = [NXDefaults userDefaults];
+  NXTDefaults    *df = [NXTDefaults userDefaults];
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString      *file = nil;
 
@@ -1318,7 +1318,7 @@
 {
   NSInteger rState;
 
-  rState = [[NXDefaults userDefaults] integerForKey:@"ShelfIsResizable"];
+  rState = [[NXTDefaults userDefaults] integerForKey:@"ShelfIsResizable"];
   [splitView setResizableState:rState];
 }
 
@@ -1332,7 +1332,7 @@
   NSString *labelstr;
   NSString *sizeString;
 
-  sizeString = [NXFileSystem fileSystemFreeSizeAtPath:[self absolutePath]];
+  sizeString = [OSEFileSystem fileSystemFreeSizeAtPath:[self absolutePath]];
   labelstr = [NSString 
     stringWithFormat:@"%@ available on hard disk", sizeString];
 
@@ -1367,7 +1367,7 @@
 
 // --- Filesystem events
 
-// "NXFileSystemChangedAtPath" notification callback
+// "OSEFileSystemChangedAtPath" notification callback
 // Paths are absolute here.
 // Notification holds dictionary with objects:
 //   "ChangedPath"   - source directory path
@@ -1391,7 +1391,7 @@
     return;
   }
   
-  NSString *commonPath = NXIntersectionPath(selectedPath, changedPath);
+  NSString *commonPath = NXTIntersectionPath(selectedPath, changedPath);
   if (([commonPath length] < 1) || ([commonPath length] < [rootPath length])) {
     // No intersection or changed path is out of our focus.
     return;
@@ -1399,7 +1399,7 @@
 
   operations = [changes objectForKey:@"Operations"];
 
-  // NSLog(@"[FileViewer:%@] NXFileSystem got filesystem changes %@ at %@",
+  // NSLog(@"[FileViewer:%@] OSEFileSystem got filesystem changes %@ at %@",
   //       [self displayedPath], operations, changedPath);
 
   // 'selectedPath' contains absolute path with 1 FS object selected
@@ -1429,11 +1429,11 @@
     // newFullPath      == "changedPath/changedFileTo"
     // selectedFullPath == "selectedPath/selectedFile"
 
-    // NSLog(@"[FileViewer] NXFileSystem: 'Rename' "
+    // NSLog(@"[FileViewer] OSEFileSystem: 'Rename' "
     //       @"operation occured for %@(%@). New name %@",
     //       changedFullPath, selectedFullPath, newFullPath);
       
-    commonPath = NXIntersectionPath(selectedFullPath, changedFullPath);
+    commonPath = NXTIntersectionPath(selectedFullPath, changedFullPath);
       
     if ([changedFullPath isEqualToString:selectedFullPath]) {
       // Last selected name changed
@@ -1480,7 +1480,7 @@
   }
   else if (([operations indexOfObject:@"Write"] != NSNotFound)) {
     // Write - monitored object was changed (Create, Delete)
-    NSLog(@"[FileViewer] NXFileSystem: 'Write' "
+    NSLog(@"[FileViewer] OSEFileSystem: 'Write' "
           @"operation occured for %@/(%@) selected path %@ selection %@",
           changedPath, changedFile, selectedPath, selection);
 
@@ -1493,7 +1493,7 @@
     [self displayPath:displayedPath selection:selection sender:viewer];
   }
   else if (([operations indexOfObject:@"Attributes"] != NSNotFound)) {
-    NSLog(@"[FileViewer] NXFileSystem: 'Attributes' "
+    NSLog(@"[FileViewer] OSEFileSystem: 'Attributes' "
           @"operation occured for %@ (%@) selection %@",
           changedPath, selectedPath, selection);
     [self displayPath:displayedPath selection:selection sender:self];
@@ -1514,9 +1514,9 @@
 
 - (void)globalUserPreferencesDidChange:(NSNotification *)aNotif
 {
-  NXFileManager *xfm = [NXFileManager sharedManager];
+  NXTFileManager *xfm = [NXTFileManager sharedManager];
   BOOL          hidden = [xfm isShowHiddenFiles];
-  NXSortType    sort = [xfm sortFilesBy];
+  NXTSortType    sort = [xfm sortFilesBy];
 
   if ((showHiddenFiles != hidden) || (sortFilesBy != sort)) {
     [viewer displayPath:[self displayedPath] selection:selection];
@@ -1526,7 +1526,7 @@
 }
 
 
-// --- NXMediaManager events
+// --- OSEMediaManager events
 
 // volumeDid* methods are for updating views.
 - (void)volumeDidMount:(NSNotification *)notif
@@ -1734,7 +1734,7 @@
   NSString      *selectedPath = [self absolutePath];
   NSString      *newPath;
   PathIcon      *selectedIcon = [[pathView icons] lastObject];;
-  NXIconLabel   *label;
+  NXTIconLabel   *label;
 
   NSLog(@"NF: %@", selectedPath);
 

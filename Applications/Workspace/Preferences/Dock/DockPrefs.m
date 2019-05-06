@@ -20,7 +20,7 @@
 //
 
 #import "DockPrefs.h"
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 #import <Workspace+WM.h>
 
 @implementation DockPrefsAppicon

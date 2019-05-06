@@ -21,9 +21,9 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXAppKit/NXProgressBar.h>
-#import <NXAppKit/NXUtilities.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTProgressBar.h>
+#import <DesktopKit/Utilities.h>
 
 #import <AppKit/AppKit.h>
 
@@ -137,10 +137,10 @@
   if (![message isEqualToString:@""])
     {
       [currentField
-            setStringValue:NXShortenString(message,
+            setStringValue:NXTShortenString(message,
                                            [currentField bounds].size.width-3,
                                            [currentField font],
-                                           NXSymbolElement, NXDotsAtRight)];
+                                           NXSymbolElement, NXTDotsAtRight)];
     }
   // From:, In: field
   if ([currSourceDir isEqualToString:@""])
@@ -151,10 +151,10 @@
     {
       [fromLabel setTextColor:[NSColor controlTextColor]];
     }
-  [fromField setStringValue:NXShortenString(currSourceDir,
+  [fromField setStringValue:NXTShortenString(currSourceDir,
                                             [fromField bounds].size.width-3,
                                             [fromField font], 
-                                            NXPathElement, NXDotsAtCenter)];
+                                            NXPathElement, NXTDotsAtCenter)];
   // To: field
   if ([currTargetDir isEqualToString:@""])
     {
@@ -164,10 +164,10 @@
     {
       [toLabel setTextColor:[NSColor controlTextColor]];
     }
-  [toField setStringValue:NXShortenString(currTargetDir,
+  [toField setStringValue:NXTShortenString(currTargetDir,
                                           [toField bounds].size.width-3,
                                           [toField font], 
-                                          NXPathElement, NXDotsAtCenter)];
+                                          NXPathElement, NXTDotsAtCenter)];
 
   if (progress > 0.0)
     {

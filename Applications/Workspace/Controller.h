@@ -20,9 +20,9 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXSystem/NXFileSystemMonitor.h>
-#import <NXSystem/NXMediaManager.h>
-#import <NXAppKit/NXIconBadge.h>
+#import <SystemKit/OSEFileSystemMonitor.h>
+#import <SystemKit/OSEMediaManager.h>
+#import <DesktopKit/NXTIconBadge.h>
 
 #import "Console.h"
 
@@ -32,8 +32,8 @@
 @class Inspector;
 @class Processes;
 @class ProcessManager;
-@class NXScreen;
-@class NXPower;
+@class OSEScreen;
+@class OSEPower;
 @class Recycler;
 @class Launcher;
 @class Finder;
@@ -54,12 +54,12 @@
   id machineType, cpuType, cpuClock, memory;
   id baseVersion, guiVersion;
 
-  NXPower  *systemPower;
+  OSEPower  *systemPower;
   
   FileViewer          *rootViewer;
   NSMutableArray      *fileViewers;
-  NXFileSystemMonitor *fileSystemMonitor;
-  NXMediaManager      *mediaManager;
+  OSEFileSystemMonitor *fileSystemMonitor;
+  OSEMediaManager      *mediaManager;
   id<MediaManager>    mediaAdaptor;
   Inspector           *inspector;
   Console             *console;
@@ -80,7 +80,7 @@
   BOOL			_fileSystemChanged;
   BOOL			_userDefaultsChanged;
 
-  NXIconBadge		*workspaceBadge;
+  NXTIconBadge		*workspaceBadge;
   Recycler		*recycler;
 }
 
@@ -97,7 +97,7 @@
 - (FileViewer *)rootViewer;
 - (FileViewer *)fileViewerForWindow:(NSWindow *)window;
 - (Inspector *)inspectorPanel;
-- (NXFileSystemMonitor *)fileSystemMonitor;
+- (OSEFileSystemMonitor *)fileSystemMonitor;
 - (id<MediaManager>)mediaManager;
 - (Processes *)processesPanel;
 - (Recycler *)recycler;

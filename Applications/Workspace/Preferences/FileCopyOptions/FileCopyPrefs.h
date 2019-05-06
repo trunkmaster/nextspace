@@ -23,7 +23,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXAppKit/NXAppKit.h>
+#import <DesktopKit/DesktopKit.h>
 
 #import <Preferences/PrefsModule.h>
 

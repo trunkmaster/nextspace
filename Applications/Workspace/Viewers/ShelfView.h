@@ -24,7 +24,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXAppKit/NXIconView.h>
+#import <DesktopKit/NXTIconView.h>
 
 @class FileViewer;
 @class PathIcon;
@@ -43,16 +43,16 @@
     such information. A shelf remembers the icon slots in which the icons
     were contained.
 */
-@interface ShelfView : NXIconView
+@interface ShelfView : NXTIconView
 {
   FileViewer *_owner;
 
   // Dragging
-  NXIconView *draggedSource;
+  NXTIconView *draggedSource;
   NSArray    *draggedPaths;
   PathIcon   *draggedIcon;
-  NXIconSlot lastSlotDragEntered;
-  NXIconSlot lastSlotDragExited;
+  NXTIconSlot lastSlotDragEntered;
+  NXTIconSlot lastSlotDragExited;
   NSPoint    dragPoint;
   NSUInteger draggedMask;
 

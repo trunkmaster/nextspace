@@ -20,7 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 #import <Workspace.h>
 
 @interface FolderInspector : WMInspector
@@ -29,7 +29,7 @@
   id sortByMatrix;
 
   NSString            *folderPath;
-  NXDefaults          *wsDefaults;
+  NXTDefaults          *wsDefaults;
   NSMutableDictionary *folderDefaults;
 }
 

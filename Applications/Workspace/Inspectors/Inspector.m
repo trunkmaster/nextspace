@@ -19,7 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <Viewers/FileViewer.h>
 #import <Controller.h>
@@ -87,9 +87,9 @@
       
       if ([font widthOfString:fileName] > width)
         {
-          [fileNameField setStringValue:NXShortenString(fileName, width,
+          [fileNameField setStringValue:NXTShortenString(fileName, width,
                                                         font, NXSymbolElement,
-                                                        NXDotsAtRight)];
+                                                        NXTDotsAtRight)];
         }
       else
         {
@@ -105,9 +105,9 @@
     }
   
   [dirNameField
-    setStringValue:NXShortenString(filePath, [dirNameField frame].size.width,
+    setStringValue:NXTShortenString(filePath, [dirNameField frame].size.width,
                                    [dirNameField font],
-                                   NXPathElement, NXDotsAtLeft)];
+                                   NXPathElement, NXTDotsAtLeft)];
 }
 
 - (void)_setInspector:(WMInspector *)inspector

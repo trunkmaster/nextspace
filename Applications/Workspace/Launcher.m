@@ -20,7 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 #import "Launcher.h"
 
 @interface WMCommandField : NSTextField
@@ -126,7 +126,7 @@
           [self saveHistory];
         }
         @catch (NSException *exception) {
-          NXRunAlertPanel(@"Run Command",
+          NXTRunAlertPanel(@"Run Command",
                           @"Run command failed with exception: \'%@\'", 
                           @"Close", nil, nil, [exception reason]);
         }
@@ -155,7 +155,7 @@
     [self saveHistory];
   }
   @catch (NSException *exception) {
-    NXRunAlertPanel(@"Run Command",
+    NXTRunAlertPanel(@"Run Command",
                     @"Run command failed with exception: \'%@\'", 
                     @"Close", nil, nil, [exception reason]);
   }

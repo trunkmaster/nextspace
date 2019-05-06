@@ -21,7 +21,7 @@
 
 #import <sys/types.h>
 #import <signal.h>
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 
 #import "Controller.h"
 #import "Processes/Processes.h"
@@ -460,7 +460,7 @@ static BOOL      _workspaceQuitting = NO;
                 format = @"Do you really want to recycle \n%@?";
                 message = [NSString stringWithFormat:format, object];
               }
-            if (NXRunAlertPanel(_(@"Workspace"), message,
+            if (NXTRunAlertPanel(_(@"Workspace"), message,
                                 _(@"Recycle"), _(@"Cancel"), nil) 
                 != NSAlertDefaultReturn)
               {
@@ -496,7 +496,7 @@ static BOOL      _workspaceQuitting = NO;
             message = [NSString stringWithFormat:format, object];
           }
         
-        if (NXRunAlertPanel(_(@"Workspace"),message,
+        if (NXTRunAlertPanel(_(@"Workspace"),message,
                             _(@"Destroy"), _(@"Cancel"), nil) 
             != NSAlertDefaultReturn)
           {

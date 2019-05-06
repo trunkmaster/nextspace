@@ -19,8 +19,8 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXFoundation/NXBundle.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTBundle.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import "FolderInspector.h"
 
@@ -69,7 +69,7 @@ static id dirInspector = nil;
       [c setRefusesFirstResponder:YES];
     }
 
-  wsDefaults = [NXDefaults userDefaults];
+  wsDefaults = [NXTDefaults userDefaults];
 }
 
 - (BOOL)isLocalFile
@@ -129,7 +129,7 @@ static id dirInspector = nil;
 {
   NSString   *path = nil;
   NSArray    *files = nil;
-  NXSortType sortType;
+  NXTSortType sortType;
 
   ASSIGN(folderDefaults, nil);
   
@@ -146,7 +146,7 @@ static id dirInspector = nil;
   if (folderDefaults == nil)
     {
       ASSIGN(folderDefaults, [[NSMutableDictionary new] autorelease]);
-      sortType = [[NXFileManager sharedManager] sortFilesBy];
+      sortType = [[NXTFileManager sharedManager] sortFilesBy];
       [folderDefaults setObject:[NSNumber numberWithInt:sortType]
                          forKey:@"SortBy"];
     }

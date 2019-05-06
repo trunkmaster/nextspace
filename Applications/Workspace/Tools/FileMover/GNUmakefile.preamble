@@ -9,4 +9,4 @@ endif
 
 ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-import -Wno-unused -Wno-unused-parameter -O2 -pipe
 ADDITIONAL_CFLAGS += -W -Wall
-ADDITIONAL_LDFLAGS += -lNXFoundation -lNXSystem
+ADDITIONAL_LDFLAGS += -lSystemKit -lDesktopKit -l gnustep-base -lgnustep-gui

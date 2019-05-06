@@ -20,7 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXSystem/NXScreen.h>
+#import <SystemKit/OSEScreen.h>
 
 #import "Workspace+WM.h"
 

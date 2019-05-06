@@ -20,7 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXFoundation/NXBundle.h>
+#import <DesktopKit/NXTBundle.h>
 
 #import "Preferences.h"
 
@@ -73,10 +73,10 @@ static Preferences * shared = nil;
   NSArray      *modules;
   NSString     *title;
 
-  mRegistry = [[NXBundle shared]
+  mRegistry = [[NXTBundle shared]
                 registerBundlesOfType:@"wsprefs"
                                atPath:[[NSBundle mainBundle] bundlePath]];
-  modules = [[NXBundle shared] loadRegisteredBundles:mRegistry
+  modules = [[NXTBundle shared] loadRegisteredBundles:mRegistry
                                                 type:@"WSPreferences"
                                             protocol:@protocol(PrefsModule)];
   for (id<PrefsModule> b in modules)

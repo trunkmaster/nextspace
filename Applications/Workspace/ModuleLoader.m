@@ -19,8 +19,8 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXFoundation/NXBundle.h>
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTBundle.h>
+#import <DesktopKit/NXTDefaults.h>
 
 #import "ModuleLoader.h"
 #import "Viewers/Viewer.h"
@@ -35,7 +35,7 @@
 
 - (void)loadViewers
 {
-  NXBundle *ld = [NXBundle shared];
+  NXTBundle *ld = [NXTBundle shared];
 
   ASSIGN(viewerBundles,
          [ld loadBundlesOfType:@"viewer"
@@ -50,7 +50,7 @@
   NSEnumerator        *e;
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 
-  bundles = [[NXBundle shared]
+  bundles = [[NXTBundle shared]
               loadBundlesOfType:@"wsprefs"
                        protocol:@protocol(PrefsModule)
                     inDirectory:[[NSBundle mainBundle] bundlePath]];
@@ -113,7 +113,7 @@ static ModuleLoader * shared = nil;
 
 - (id <Viewer>)preferredViewer
 {
-  NXDefaults  *df = [NXDefaults userDefaults];
+  NXTDefaults  *df = [NXTDefaults userDefaults];
   NSString    *preferredViewerType;
   id <Viewer> viewer;
 

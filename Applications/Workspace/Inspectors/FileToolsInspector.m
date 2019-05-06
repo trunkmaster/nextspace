@@ -21,7 +21,7 @@
 
 #include <AppKit/AppKit.h>
 
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 #import "FileToolsInspector.h"
 
 static inline void AddAppToMatrix(NSString *appName, NSMatrix *matrix)
@@ -90,7 +90,7 @@ static id toolsInspector = nil;
 
   ws = [NSWorkspace sharedWorkspace];
   
-  defaultEditor = [[[[NXDefaults userDefaults] objectForKey:@"DefaultEditor"]
+  defaultEditor = [[[[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"]
                      stringByDeletingPathExtension] retain];
 }
 

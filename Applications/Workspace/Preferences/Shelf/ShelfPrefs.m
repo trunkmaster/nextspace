@@ -21,7 +21,7 @@
 //
 
 #import "ShelfPrefs.h"
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 
 static inline NSRect IncrementedRect(NSRect r)
 {
@@ -46,7 +46,7 @@ static inline NSRect IncrementedRect(NSRect r)
   NSRect     frame;
   NSSize     s = [[leftArr superview] frame].size;
   float      width;
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
 
   if ([df objectForKey:ShelfIconSlotWidth])
     {
@@ -114,7 +114,7 @@ static inline NSRect IncrementedRect(NSRect r)
   [iconImage setImage:[NSImage imageNamed:@"GNUstep48x48"]];
   [iconLabel setStringValue:@"Workspace.app"];
 
-  rState = [[NXDefaults userDefaults] integerForKey:ShelfIsResizable];
+  rState = [[NXTDefaults userDefaults] integerForKey:ShelfIsResizable];
   NSLog(@"Preferences: resizableSwitch state: %li", rState);
   [resizableSwitch setIntValue:rState];
   // if (rState == 0)
@@ -140,9 +140,9 @@ static inline NSRect IncrementedRect(NSRect r)
   return box;
 }
 
-// --- NXSizer delegate
+// --- NXTSizer delegate
 
-- (BOOL) arrowView:(NXSizer *)sender
+- (BOOL) arrowView:(NXTSizer *)sender
  shouldMoveByDelta:(float)delta
 {
   NSView   *superview = [sender superview];
@@ -195,9 +195,9 @@ static inline NSRect IncrementedRect(NSRect r)
   textFrame.size.width = newWidth;
   [iconLabel setFrame:textFrame];
 
-  [iconLabel setStringValue:NXShortenString(@"Workspace.app",
+  [iconLabel setStringValue:NXTShortenString(@"Workspace.app",
                                             newWidth-4, [iconLabel font],
-                                            NXSymbolElement, NXDotsAtRight)];
+                                            NXSymbolElement, NXTDotsAtRight)];
   if (newWidth == SHELF_LABEL_WIDTH)
     [button setEnabled:NO];
   else
@@ -206,9 +206,9 @@ static inline NSRect IncrementedRect(NSRect r)
   return YES;
 }
 
-- (void)arrowViewStoppedMoving:(NXSizer *)sender
+- (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
-  [[NXDefaults userDefaults] setFloat:[iconLabel frame].size.width
+  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width
                                forKey:ShelfIconSlotWidth];
   
   [[NSNotificationCenter defaultCenter]
@@ -220,7 +220,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)setResizable:sender
 {
-  [[NXDefaults userDefaults] setInteger:[sender state]
+  [[NXTDefaults userDefaults] setInteger:[sender state]
                                  forKey:ShelfIsResizable];
   [[NSNotificationCenter defaultCenter]
           postNotificationName:ShelfResizableStateDidChangeNotification
@@ -232,7 +232,7 @@ static inline NSRect IncrementedRect(NSRect r)
   if ([sender isEqualTo:button] == NO)
     return;
   
-  [[NXDefaults userDefaults] setFloat:SHELF_LABEL_WIDTH
+  [[NXTDefaults userDefaults] setFloat:SHELF_LABEL_WIDTH
                                forKey:ShelfIconSlotWidth];
   [self _setupArrows];
   

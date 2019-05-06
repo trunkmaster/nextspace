@@ -23,7 +23,7 @@
 //
 
 #import "IconPrefs.h"
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 
 #define DEFAULT_LABEL_WIDTH 100
 
@@ -50,7 +50,7 @@ static inline NSRect IncrementedRect(NSRect r)
   NSRect     frame;
   NSSize     s = [[leftArr superview] frame].size;
   float      width;
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
 
   if ([df objectForKey:@"IconSlotWidth"])
     {
@@ -141,7 +141,7 @@ static inline NSRect IncrementedRect(NSRect r)
   return box;
 }
 
-- (BOOL) arrowView:(NXSizer *)sender
+- (BOOL) arrowView:(NXTSizer *)sender
  shouldMoveByDelta:(float)delta
 {
   NSView   *superview = [sender superview];
@@ -194,9 +194,9 @@ static inline NSRect IncrementedRect(NSRect r)
   textFrame.size.width = newWidth;
   [iconLabel setFrame:textFrame];
 
-  [iconLabel setStringValue:NXShortenString(@"Workspace.app",
+  [iconLabel setStringValue:NXTShortenString(@"Workspace.app",
                                             newWidth-4, [iconLabel font],
-                                            NXSymbolElement, NXDotsAtRight)];
+                                            NXSymbolElement, NXTDotsAtRight)];
   if (newWidth == DEFAULT_LABEL_WIDTH)
     [button setEnabled:NO];
   else
@@ -205,9 +205,9 @@ static inline NSRect IncrementedRect(NSRect r)
   return YES;
 }
 
-- (void)arrowViewStoppedMoving:(NXSizer *)sender
+- (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
-  [[NXDefaults userDefaults] setFloat:[iconLabel frame].size.width
+  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width
                                forKey:@"IconSlotWidth"];
   
   [[NSNotificationCenter defaultCenter]
@@ -217,7 +217,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)revert:sender
 {
-  [[NXDefaults userDefaults] setFloat:DEFAULT_LABEL_WIDTH
+  [[NXTDefaults userDefaults] setFloat:DEFAULT_LABEL_WIDTH
                                forKey:@"IconSlotWidth"];
   [self setupArrows];
   

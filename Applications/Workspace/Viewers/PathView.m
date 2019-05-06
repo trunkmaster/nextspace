@@ -21,9 +21,9 @@
 
 #import <AppKit/AppKit.h>
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXAppKit/NXIcon.h>
-#import <NXAppKit/NXIconLabel.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTIcon.h>
+#import <DesktopKit/NXTIconLabel.h>
 
 #import "FileViewer.h"
 #import "PathIcon.h"
@@ -53,7 +53,7 @@
   self = [super initWithFrame:r];
 
   size.height = PATH_VIEW_HEIGHT;
-  size.width = [[NXDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
+  size.width = [[NXTDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
   if (size.width <= 0) {
     size.width = BROWSER_DEF_COLUMN_WIDTH;
   }
@@ -131,7 +131,7 @@
 - (void)setPath:(NSString *)relativePath selection:(NSArray *)filenames
 {
   PathIcon    *pathIcon;
-  NXIconLabel *pathIconLabel;
+  NXTIconLabel *pathIconLabel;
   id<Viewer>  theViewer = [_owner viewer];
   NSUInteger  length;
   NSUInteger  componentsCount = [[relativePath pathComponents] count];
@@ -179,7 +179,7 @@
     PathIcon *itr = nil;
     // NSLog(@"[PathView] remove icon [%@] in slot: %i(%i)", 
     //       [icons lastObject], i, [icons count]);
-    //      [self removeIconInSlot:NXMakeIconSlot(i,0)];
+    //      [self removeIconInSlot:NXTMakeIconSlot(i,0)];
     itr = [icons lastObject];
     [self removeIcon:itr];
   }
@@ -211,7 +211,7 @@
         [icon setLabelString:@"-"];
         [icon setDoubleClickPassesClick:NO];
         [self setSlotsWide:i+1];
-        [self putIcon:icon intoSlot:NXMakeIconSlot(i, 0)];
+        [self putIcon:icon intoSlot:NXTMakeIconSlot(i, 0)];
       }
       [icon deselect:nil];
       [icon setEditable:NO];
@@ -239,7 +239,7 @@
         [icon setLabelString:@"-"];
         [icon setDoubleClickPassesClick:NO];
         [self setSlotsWide:i+1];
-        [self putIcon:icon intoSlot:NXMakeIconSlot(i, 0)];
+        [self putIcon:icon intoSlot:NXTMakeIconSlot(i, 0)];
       }
       [icon deselect:nil];
       [icon setEditable:NO];
@@ -255,7 +255,7 @@
 
       if ([icons indexOfObjectIdenticalTo:_multiIcon] == NSNotFound) {
         [self setSlotsWide:i + 1];
-        [self putIcon:_multiIcon intoSlot:NXMakeIconSlot(i,0)];
+        [self putIcon:_multiIcon intoSlot:NXTMakeIconSlot(i,0)];
       }
       [_multiIcon setPaths:[_owner absolutePathsForPaths:relPaths]];
     }
@@ -380,7 +380,7 @@
   }
 }
 
-- (NSArray *)pathsForIcon:(NXIcon *)icon
+- (NSArray *)pathsForIcon:(NXTIcon *)icon
 {
   NSUInteger idx = [icons indexOfObjectIdenticalTo:icon];
 
@@ -430,7 +430,7 @@
 }
 
 //=============================================================================
-// NXIconView delegate
+// NXTIconView delegate
 //=============================================================================
 - (void)iconDragged:sender event:(NSEvent *)ev
 {

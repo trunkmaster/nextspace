@@ -23,8 +23,8 @@
 // Concrete class for file contents inspectors.
 //
 
-#import <NXFoundation/NXBundle.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTBundle.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <dispatch/dispatch.h>
 

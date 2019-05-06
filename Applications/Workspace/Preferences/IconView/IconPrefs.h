@@ -20,7 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXAppKit/NXAppKit.h>
+#import <DesktopKit/DesktopKit.h>
 
 #import <Preferences/PrefsModule.h>
 
@@ -40,13 +40,13 @@
 
   NSBox  *box;
   NSBox  *box2;
-  NXIcon *icon;
+  NXTIcon *icon;
 }
 
 - (void)revert:sender;
 
-// - (BOOL)arrowView:(NXSizer *)sender shouldMoveByDelta:(float)delta;
-// - (void)arrowViewStoppedMoving:(NXSizer *)sender;
+// - (BOOL)arrowView:(NXTSizer *)sender shouldMoveByDelta:(float)delta;
+// - (void)arrowViewStoppedMoving:(NXTSizer *)sender;
 
 - (void)changedSelection:(NSNotification *)notif;
 

@@ -21,9 +21,9 @@
 
 #include <AppKit/AppKit.h>
 
-#import <NXAppKit/NXIconView.h>
-#import <NXAppKit/NXIconBadge.h>
-#import <NXSystem/NXFileSystemMonitor.h>
+#import <DesktopKit/NXTIconView.h>
+#import <DesktopKit/NXTIconBadge.h>
+#import <SystemKit/OSEFileSystemMonitor.h>
 
 #import <Viewers/PathIcon.h>
 
@@ -32,7 +32,7 @@
 
 @interface ItemsLoader : NSOperation
 {
-  NXIconView  *iconView;
+  NXTIconView  *iconView;
   NSTextField *statusField;
   NSString    *directoryPath;
   NSArray     *selectedFiles;
@@ -40,7 +40,7 @@
 
 @property (atomic, readonly) NSInteger itemsCount;
 
-- (id)initWithIconView:(NXIconView *)view
+- (id)initWithIconView:(NXTIconView *)view
                 status:(NSTextField *)status
                   path:(NSString *)dirPath
              selection:(NSArray *)filenames;
@@ -50,19 +50,19 @@
 @interface Recycler : NSObject
 {
   RecyclerIconView	*appIconView;
-  NXIconBadge		*badge;
+  NXTIconBadge		*badge;
 
   NSImage		*iconImage;
   NSString		*recyclerDBPath;
   
-  NXFileSystemMonitor	*fileSystemMonitor;
+  OSEFileSystemMonitor	*fileSystemMonitor;
 
   // Panel
   NSPanel		*panel;
   NSImageView		*panelIcon;
   NSTextField		*panelItems;
   NSScrollView		*panelView;
-  NXIconView		*filesView;
+  NXTIconView		*filesView;
   NSButton              *restoreBtn;
 
   // Items loader

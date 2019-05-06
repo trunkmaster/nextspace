@@ -20,7 +20,7 @@
 */
 
 #import "WorkspacesPrefs.h"
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 #import <Workspace+WM.h>
 #include <workspace.h>
 #import <Controller.h>
@@ -63,7 +63,7 @@
   // Show In Dock button
   [showInDockBtn setRefusesFirstResponder:YES];
   [showInDockBtn
-    setState:[[NXDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]];
+    setState:[[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]];
 
   DESTROY(window);
 }
@@ -299,7 +299,7 @@
 // ---
 - (void)setShowInDock:(id)sender
 {
-  [[NXDefaults userDefaults] setBool:[sender state] ? YES : NO
+  [[NXTDefaults userDefaults] setBool:[sender state] ? YES : NO
                               forKey:@"ShowWorkspaceInDock"];
   [[NSApp delegate] updateWorkspaceBadge];
 }

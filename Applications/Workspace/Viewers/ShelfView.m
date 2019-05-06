@@ -23,8 +23,8 @@
 #import <math.h>
 #import <AppKit/AppKit.h>
 #import <GNUstepGUI/GSDragView.h>
-#import <NXFoundation/NXDefaults.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <Preferences/Shelf/ShelfPrefs.h>
 #import <Viewers/FileViewer.h>
@@ -78,7 +78,7 @@
 {
   for (NSArray *key in [aDict allKeys]) {
     NSArray    *paths;
-    NXIconSlot slot;
+    NXTIconSlot slot;
     PathIcon   *icon;
 
     if (![key isKindOfClass:[NSArray class]] || [key count] != 2) {
@@ -89,7 +89,7 @@
       continue;
     }
 
-    slot = NXMakeIconSlot([[key objectAtIndex:0] intValue],
+    slot = NXTMakeIconSlot([[key objectAtIndex:0] intValue],
                           [[key objectAtIndex:1] intValue]);
       
     paths = [aDict objectForKey:key];
@@ -112,7 +112,7 @@
   Class               nullClass = [NSNull class];
 
   for (PathIcon *icon in [self icons]) {
-    NXIconSlot slot;
+    NXTIconSlot slot;
 
     if ([icon isKindOfClass:nullClass] || [[icon paths] count] > 1) {
       continue;
@@ -134,14 +134,14 @@
   return [dict autorelease];
 }
 
-- (void)addIcon:(NXIcon *)anIcon
+- (void)addIcon:(NXTIcon *)anIcon
 {
   [super addIcon:anIcon];
   [anIcon setEditable:NO];
 }
 
-- (void)putIcon:(NXIcon *)anIcon
-       intoSlot:(NXIconSlot)aSlot
+- (void)putIcon:(NXTIcon *)anIcon
+       intoSlot:(NXTIconSlot)aSlot
 {
   [super putIcon:anIcon intoSlot:aSlot];
   [anIcon setEditable:NO];
@@ -258,7 +258,7 @@
 
 - (void)iconSlotWidthChanged:(NSNotification *)notif
 {
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
   NSSize     size = [self slotSize];
   CGFloat    width = 0.0;
 
@@ -272,7 +272,7 @@
 }
 
 //=============================================================================
-// NXIconView delegate
+// NXTIconView delegate
 //=============================================================================
 - (void)iconDragged:(id)sender event:(NSEvent *)ev
 {
@@ -280,7 +280,7 @@
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
   NSRect       iconFrame = [sender frame];
   NSPoint      iconLocation = iconFrame.origin;
-  NXIconSlot   iconSlot = [self slotForIcon:sender];
+  NXTIconSlot   iconSlot = [self slotForIcon:sender];
 
   NSLog(@"Shelf: iconDragged: %@", [sender className]);
 
@@ -329,7 +329,7 @@
 {
   NSLog(@"[ShelfView] draggingSourceOperationMaskForLocal: %@",
         isLocal ? @"YES" : @"NO");
-  NXIconSlot iconSlot = [self slotForIcon:[[self selectedIcons] anyObject]];
+  NXTIconSlot iconSlot = [self slotForIcon:[[self selectedIcons] anyObject]];
 
   if ((iconSlot.x == 0 && iconSlot.y == 0) || isLocal == NO) {
     draggedMask = NSDragOperationCopy;
@@ -396,7 +396,7 @@
   else {
     NSString *p1 = [_owner rootPath];
     NSString *p2 = [dPaths lastObject];
-    if ([NXIntersectionPath(p1, p2) isEqualToString:p1] == NO) {
+    if ([NXTIntersectionPath(p1, p2) isEqualToString:p1] == NO) {
       return NO;
     }
   }
@@ -407,7 +407,7 @@
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)dragInfo
 {
   NSPasteboard *pasteBoard = [dragInfo draggingPasteboard];
-  NXIconSlot   iconSlot;
+  NXTIconSlot   iconSlot;
 
   draggedPaths = [pasteBoard propertyListForType:NSFilenamesPboardType];
   draggedSource = [dragInfo draggingSource];
@@ -437,14 +437,14 @@
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)dragInfo
 {
   NSPoint    mouseLocation;
-  NXIconSlot slotUnderMouse;
-  NXIcon     *icon = nil;
+  NXTIconSlot slotUnderMouse;
+  NXTIcon     *icon = nil;
 
   // NSLog(@"[ShelfView] -draggingUpdated (source:%@)",
   //       [[dragInfo draggingSource] className]);
   
   mouseLocation = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
-  slotUnderMouse = NXMakeIconSlot(floorf(mouseLocation.x / slotSize.width),
+  slotUnderMouse = NXTMakeIconSlot(floorf(mouseLocation.x / slotSize.width),
                                   floorf(mouseLocation.y / slotSize.height));
 
   // Draging hasn't leave shelf yet and no slot for drop

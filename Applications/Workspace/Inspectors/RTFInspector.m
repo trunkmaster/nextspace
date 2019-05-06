@@ -19,8 +19,8 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXFoundation/NXBundle.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTBundle.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <dispatch/dispatch.h>
 
@@ -92,7 +92,7 @@ static inline NSUInteger numberOfLinesInString(NSString *string)
 
   // Meta information
   [encodingField
-    setStringValue:[[NXFileManager sharedManager] mimeEncodingForFile:path]];
+    setStringValue:[[NXTFileManager sharedManager] mimeEncodingForFile:path]];
 
   [linesField setStringValue:[NSString stringWithFormat:@"%lu/%lu",
                                        showedLines, allLines]];
@@ -160,7 +160,7 @@ static id contentsInspector = nil;
   NSSize         size = NSZeroSize;
   CGFloat        factor = 0.0;
   NSTextStorage  *newTextStorage = nil;
-  NXFileManager  *xfm = [NXFileManager sharedManager];
+  NXTFileManager  *xfm = [NXTFileManager sharedManager];
 
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];

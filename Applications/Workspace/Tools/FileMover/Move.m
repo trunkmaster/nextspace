@@ -20,7 +20,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXSystem/NXFileSystem.h>
+#import <SystemKit/OSEFileSystem.h>
 
 #import <string.h>
 #import <errno.h>
@@ -82,8 +82,8 @@ void MoveOperation(NSString *sourceDir, NSArray  *files, NSString *destDir)
 	    }
 	}
 
-      smp = [NXFileSystem fileSystemMountPointAtPath:sourceDir];
-      dmp = [NXFileSystem fileSystemMountPointAtPath:destDir];
+      smp = [OSEFileSystem fileSystemMountPointAtPath:sourceDir];
+      dmp = [OSEFileSystem fileSystemMountPointAtPath:destDir];
       if ([smp isEqualToString:dmp])
         {
           if (rename([src cString], [dest cString]) < 0)

@@ -21,8 +21,8 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXAppKit/NXProgressPie.h>
-#import <NXAppKit/NXUtilities.h>
+#import <DesktopKit/NXTProgressPie.h>
+#import <DesktopKit/Utilities.h>
 
 #import <Operations/ProcessManager.h>
 #import <Operations/BGOperation.h>
@@ -246,7 +246,7 @@
       //       setStringValue:shortenString(message,
       //                                    [currentField bounds].size.width-3,
       //                                    [currentField font],
-      //                                    NXSymbolElement, NXDotsAtRight)];
+      //                                    NXSymbolElement, NXTDotsAtRight)];
       [currentField setStringValue:message];
     }
 

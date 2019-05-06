@@ -25,14 +25,14 @@
 #import <X11/Xlib.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
-#import <NXAppKit/NXAppKit.h>
-#import <NXFoundation/NXDefaults.h>
-#import <NXSystem/NXSystemInfo.h>
-#import <NXSystem/NXMediaManager.h>
-#import <NXSystem/NXFileSystemMonitor.h>
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXDisplay.h>
-#import <NXSystem/NXPower.h>
+#import <DesktopKit/DesktopKit.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSESystemInfo.h>
+#import <SystemKit/OSEMediaManager.h>
+#import <SystemKit/OSEFileSystemMonitor.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEDisplay.h>
+#import <SystemKit/OSEPower.h>
 
 #import "Workspace+WM.h"
 
@@ -51,7 +51,7 @@
 #import <Operations/Mounter.h>
 #import <Processes/Processes.h>
 
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 
 static NSString *WorkspaceVersion = @"0.8";
 
@@ -111,7 +111,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   inspector = [[[inspectorsBundle principalClass] alloc] init];
 }
 
-// TODO: Move to NXSystem framework and enhance
+// TODO: Move to SystemKit framework and enhance
 - (NSString *)_windowServerVersion
 {
   Display *xDisplay = [GSCurrentServer() serverDevice]; 
@@ -133,21 +133,21 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   [infoPanelImage setImage:[NSApp applicationIconImage]];
   
-  [hostName setStringValue:[NXSystemInfo hostName]];
+  [hostName setStringValue:[OSESystemInfo hostName]];
 
   // Processor:
   processorType = [NSString stringWithFormat:@"%@ @ %@",
-                            [NXSystemInfo tidyCPUName],
-                            [NXSystemInfo humanReadableCPUSpeed]];
+                            [OSESystemInfo tidyCPUName],
+                            [OSESystemInfo humanReadableCPUSpeed]];
   [cpuType setStringValue:processorType];
 
   // Memory:
   [memory setStringValue:
             [NSString stringWithFormat:@"%llu MB",
-                      [NXSystemInfo realMemory]/1024/1024]];
+                      [OSESystemInfo realMemory]/1024/1024]];
 
   // Operating System:
-  [osType setStringValue:[NXSystemInfo operatingSystemRelease]];
+  [osType setStringValue:[OSESystemInfo operatingSystemRelease]];
 
   // Window Server:
   [wsVersion setStringValue:[NSString stringWithFormat:@"%@", 
@@ -252,7 +252,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     }
   }
   
-  [[NXDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
+  [[NXTDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
   
   [windows release];
   [fileViewers release];
@@ -263,7 +263,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_restoreWindows
 {
-  NXDefaults          *df = [NXDefaults userDefaults];
+  NXTDefaults          *df = [NXTDefaults userDefaults];
   NSArray             *savedWindows = [df objectForKey:@"SavedWindows"];
   NSMutableArray      *winViews = [NSMutableArray new];
   NSMutableDictionary *winViewInfo;
@@ -324,7 +324,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 
   if (rootViewerWindow == nil) {
-    NXDefaults *df = [NXDefaults userDefaults];
+    NXTDefaults *df = [NXTDefaults userDefaults];
 
     NSLog(@"No saved root FileViewer window. Open default with viewer type: %@",
           [df objectForKey:@"PreferredViewer"]);
@@ -362,14 +362,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_saveRunningApplications
 {
-  [[NXDefaults userDefaults] setObject:WWMNotDockedAppList()
+  [[NXTDefaults userDefaults] setObject:WWMNotDockedAppList()
                                 forKey:@"SavedApplications"];
 }
 
 - (void)_startSavedApplications
 {
   NSArray *savedApps;
-  savedApps = [[NXDefaults userDefaults] objectForKey:@"SavedApplications"];
+  savedApps = [[NXTDefaults userDefaults] objectForKey:@"SavedApplications"];
 
   for (NSDictionary *appInfo in savedApps) {
     if (WWMIsAppRunning([appInfo objectForKey:@"Name"]) == NO) {
@@ -415,12 +415,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
   
   // Media and media manager
-  // NSLog(@"NXMediaManager RC:%lu", [mediaManager retainCount]);
+  // NSLog(@"OSEMediaManager RC:%lu", [mediaManager retainCount]);
   [mediaAdaptor ejectAllRemovables];
   [mediaManager release]; //  mediaAdaptor released also
   [mediaOperations release];
 
-  // NXSystem objects declared in Workspace+WindowMaker.h
+  // NXTSystem objects declared in Workspace+WindowMaker.h
   if (useInternalWindowManager) {
     [systemPower stopEventsMonitor];
     [systemPower release];
@@ -429,7 +429,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Process manager
   TEST_RELEASE(procManager);
 
-  [[NXDefaults userDefaults] synchronize];
+  [[NXTDefaults userDefaults] synchronize];
 
   // Quit NSApplication runloop
   [NSApp stop:self];
@@ -455,7 +455,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [fv release];
   }
   else {
-    NXRunAlertPanel(_(@"Open as Folder"), _(@"%@ is not a folder."),
+    NXTRunAlertPanel(_(@"Open as Folder"), _(@"%@ is not a folder."),
                     nil, nil, nil, path);
     return nil;
   }
@@ -470,7 +470,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path
 {
   FileViewer *fv;
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
   
   for (fv in fileViewers) {
     if ([[fv rootPath] isEqualToString:path]) {
@@ -495,7 +495,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)filename
 {
   FileViewer *fv;
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
   
   fv = [self newViewerRootedAt:filename
                         viewer:[df objectForKey:@"PreferredViewer"]
@@ -525,12 +525,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [self updateWorkspaceBadge];
       
       // Detect lid close/open events
-      systemPower = [NXPower new];
+      systemPower = [OSEPower new];
       [systemPower startEventsMonitor];
       [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(lidDidChange:)
-               name:NXPowerLidDidChangeNotification
+               name:OSEPowerLidDidChangeNotification
              object:systemPower];
       
       recycler = [[Recycler alloc] initWithDock:dock];
@@ -576,24 +576,24 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
              object:NSApp];
   }
 
-  // NXMediaManager
+  // OSEMediaManager
   // For future use
   [nc addObserver:self
          selector:@selector(diskDidAdd:)
-             name:NXDiskDisappeared
+             name:OSEDiskDisappeared
            object:mediaAdaptor];
   [nc addObserver:self
          selector:@selector(diskDidEject:)
-             name:NXDiskDisappeared
+             name:OSEDiskDisappeared
            object:mediaAdaptor];
   // Operations
   [nc addObserver:self
          selector:@selector(mediaOperationDidStart:)
-             name:NXMediaOperationDidStart
+             name:OSEMediaOperationDidStart
            object:mediaAdaptor];
   [nc addObserver:self
          selector:@selector(mediaOperationDidEnd:)
-             name:NXMediaOperationDidEnd
+             name:OSEMediaOperationDidEnd
            object:mediaAdaptor];
  
   [mediaAdaptor checkForRemovableMedia];
@@ -632,7 +632,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Workspace quit.
   // Log Out and Power Off terminate quitting when some application won't stop,
   // some removable media won't unmount/eject (optional: think).
-  switch (NXRunAlertPanel(_(@"Log Out"),
+  switch (NXTRunAlertPanel(_(@"Log Out"),
         		  _(@"Do you really want to log out?"),
         		  _(@"Log out"), _(@"Power off"), _(@"Cancel")))
     {
@@ -649,7 +649,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
         if ([procManager terminateAllApps] == NO) {
           [NSApp activateIgnoringOtherApps:YES];
-          NXRunAlertPanel(_(@"Log Out"),
+          NXTRunAlertPanel(_(@"Log Out"),
                           _(@"Some application terminate power off process."),
                           _(@"Dismiss"), nil, nil);
           isQuitting = NO;
@@ -744,12 +744,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 // First viewer which will call this method bring monitor to life.
 // fileSystemMonitor will be released on application termination.
-- (NXFileSystemMonitor *)fileSystemMonitor
+- (OSEFileSystemMonitor *)fileSystemMonitor
 {
   if (!fileSystemMonitor)
     {
       // Must be released in -dealloc.
-      fileSystemMonitor = [NXFileSystemMonitor sharedMonitor];
+      fileSystemMonitor = [OSEFileSystemMonitor sharedMonitor];
       
       NSLog(@"[Controller] fileSystemMonitor RC: %lu",
             [fileSystemMonitor retainCount]);
@@ -771,7 +771,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   if (!mediaManager)
     {
-      mediaManager = [[NXMediaManager alloc] init];
+      mediaManager = [[OSEMediaManager alloc] init];
       mediaAdaptor = [mediaManager adaptor];
     }
 
@@ -801,7 +801,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 //============================================================================
 - (void)createWorkspaceBadge
 {
-  workspaceBadge = [[NXIconBadge alloc]
+  workspaceBadge = [[NXTIconBadge alloc]
                              initWithPoint:NSMakePoint(5,48)
                                       text:@"0"
                                       font:[NSFont systemFontOfSize:9]
@@ -816,7 +816,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSString *wsCurrent;
 
-  if ([[NXDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"])
+  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"])
     {
       if (!workspaceBadge)
         {
@@ -935,7 +935,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)newViewer:(id)sender
 {
   FileViewer *fv;
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
   
   fv = [self newViewerRootedAt:@"/"
                         viewer:[df objectForKey:@"PreferredViewer"]
@@ -1153,7 +1153,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// NXMediaManager events (alert panels, Processes-Background updates).
+// OSEMediaManager events (alert panels, Processes-Background updates).
 //============================================================================
 - (void)diskDidAdd:(NSNotification *)notif
 {
@@ -1227,14 +1227,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// NXScreen events
+// OSEScreen events
 //============================================================================
 - (void)lidDidChange:(NSNotification *)aNotif
 {
-  NXDisplay *builtinDisplay = nil;
-  NXScreen  *screen = [NXScreen new];
+  OSEDisplay *builtinDisplay = nil;
+  OSEScreen  *screen = [OSEScreen new];
 
-  for (NXDisplay *d in [screen connectedDisplays])
+  for (OSEDisplay *d in [screen connectedDisplays])
     {
       if ([d isBuiltin])
         {
@@ -1271,7 +1271,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // NSLog(@"WMShowAlertPanel thread: %@ (main: %@) mode: %@", [NSThread currentThread],
   //       [NSThread mainThread], [[NSRunLoop currentRunLoop] currentMode]);
 
-  result = NXRunAlertPanel([alertInfo objectForKey:@"Title"],
+  result = NXTRunAlertPanel([alertInfo objectForKey:@"Title"],
                            [alertInfo objectForKey:@"Message"],
                            [alertInfo objectForKey:@"DefaultButton"],
                            [alertInfo objectForKey:@"AlternateButton"],

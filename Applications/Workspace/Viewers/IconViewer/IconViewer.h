@@ -26,9 +26,9 @@
 #import <Viewers/FileViewer.h>
 #import <Viewers/Viewer.h>
 
-@class NXIconView, NXIcon, NXIconLabel;
+@class NXTIconView, NXTIcon, NXTIconLabel;
 
-@interface WMIconView : NXIconView
+@interface WMIconView : NXTIconView
 {
   BOOL isDrawOpenAnimation;
 }
@@ -46,7 +46,7 @@
   BOOL           isAnimate;
 }
 
-- (id)initWithIconView:(NXIconView *)view
+- (id)initWithIconView:(NXTIconView *)view
                   path:(NSString *)dirPath
               contents:(NSArray *)dirContents
              selection:(NSArray *)filenames

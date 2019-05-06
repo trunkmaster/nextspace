@@ -21,13 +21,13 @@
 
 //
 // The default file contents inspector: shows file description returned 
-// by NXFileManager (libmagic functionality).
+// by NXTFileManager (libmagic functionality).
 // Contents inspectors manager: finds, loads .inspector bundles and returns
 // particular inspector for specified file extension.
 //
 
-#import <NXFoundation/NXBundle.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTBundle.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <dispatch/dispatch.h>
 
@@ -139,7 +139,7 @@ NSUInteger numberOfLinesInString(NSString *string)
 
   // Meta information
   [encodingField
-    setStringValue:[[NXFileManager sharedManager] mimeEncodingForFile:path]];
+    setStringValue:[[NXTFileManager sharedManager] mimeEncodingForFile:path]];
 
   [linesField setStringValue:[NSString stringWithFormat:@"%i/%i",
                                        showedLines, allLines]];
@@ -224,7 +224,7 @@ static id contentsInspector = nil;
   NSString      *file;
   NSString      *filePath;
   NSFileManager *fm = [NSFileManager defaultManager];
-  NXFileManager *xfm = [NXFileManager sharedManager];
+  NXTFileManager *xfm = [NXTFileManager sharedManager];
   NSDictionary  *fattrs;
   NSString      *mimeType;
 

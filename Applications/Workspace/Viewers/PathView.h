@@ -21,7 +21,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXAppKit/NXIconView.h>
+#import <DesktopKit/NXTIconView.h>
 
 @class NSArray, NSString, NSImage;
 @class PathIcon;
@@ -29,7 +29,7 @@
 
 #define PATH_VIEW_HEIGHT 76.0
 
-@interface PathView : NXIconView
+@interface PathView : NXTIconView
 {
   FileViewer *_owner;
 
@@ -41,7 +41,7 @@
   NSImage  *_arrowImage;
   
   // Dragging
-  NXIconView *_dragSource;
+  NXTIconView *_dragSource;
   PathIcon   *_dragIcon;
   unsigned   _dragMask;
 }
@@ -57,7 +57,7 @@
 - (NSInteger)numberOfEmptyColumns;
 - (void)syncEmptyColumns;
 
-- (NSArray *)pathsForIcon:(NXIcon *)anIcon;
+- (NSArray *)pathsForIcon:(NXTIcon *)anIcon;
 
 - (void)constrainScroller:(NSScroller *)aScroller;
 - (void)trackScroller:(NSScroller *)aScroller;

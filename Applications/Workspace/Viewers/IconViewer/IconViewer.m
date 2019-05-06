@@ -21,10 +21,10 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXAppKit/NXAppKit.h>
+#import <DesktopKit/DesktopKit.h>
 
-#import <NXFoundation/NXDefaults.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import <Viewers/FileViewer.h>
 #import <Viewers/PathIcon.h>
@@ -60,14 +60,14 @@
 - (void)_updateItems:(NSMutableArray *)items
             fileView:(WMIconView *)view
 {
-  NXIcon         *icon;
+  NXTIcon         *icon;
   NSMutableArray *itemsCopy = [items mutableCopy];
   NSArray        *iconsCopy = [[view icons] copy];
 
   // NSLog(@"_updateItems: %lu", [items count]);
   
   // Remove non-existing items
-  for (NXIcon *icon in iconsCopy) {
+  for (NXTIcon *icon in iconsCopy) {
     if ([items indexOfObject:[[icon label] text]] == NSNotFound) {
       [view performSelectorOnMainThread:@selector(removeIcon:)
                              withObject:icon
@@ -152,7 +152,7 @@
   if ((isUpdate != NO) &&
       selectedFiles &&
       ([selectedFiles count] != [selectedIcons count])) {
-    NXIcon *icon;
+    NXTIcon *icon;
     for (NSString *filename in selectedFiles) {
       if ((icon = [iconView iconWithLabelString:filename])) {
         [selectedIcons addObject:icon];
@@ -282,9 +282,9 @@ static NSRect viewFrame;
   [iconView setSendsDoubleActionOnReturn:YES];
   [iconView setDoubleAction:@selector(open:)];
   [iconView setAutoAdjustsToFitIcons:YES];
-  iconSize = [NXIconView defaultSlotSize];
-  if ([[NXDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
-    iconSize.width = [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+  iconSize = [NXTIconView defaultSlotSize];
+  if ([[NXTDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
+    iconSize.width = [[NXTDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
     [iconView setSlotSize:iconSize];
   }
   [iconView registerForDraggedTypes:@[NSFilenamesPboardType]];
@@ -358,7 +358,7 @@ static NSRect viewFrame;
 
 - (CGFloat)columnWidth
 {
-  return [[NXDefaults userDefaults] floatForKey:@"IconSlotWidth"];
+  return [[NXTDefaults userDefaults] floatForKey:@"IconSlotWidth"];
 }
 - (void)setColumnWidth:(CGFloat)width
 {
@@ -504,7 +504,7 @@ static NSRect viewFrame;
 // -- Notifications
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
   NSSize     slotSize = [iconView slotSize];
 
   slotSize.width = [df floatForKey:@"IconSlotWidth"];
@@ -517,10 +517,10 @@ static NSRect viewFrame;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  NXIconLabel *iconLabel;
+  NXTIconLabel *iconLabel;
   
   NSLog(@"IconView: Observer `%@` of '%@' was called.", [self className], keyPath);
-  for (NXIcon *icon in [iconView icons]) {
+  for (NXTIcon *icon in [iconView icons]) {
     [icon setEditable:YES];
     [icon setDelegate:self];
     [icon setTarget:self];
@@ -546,9 +546,9 @@ static NSRect viewFrame;
 // Local
 //=============================================================================
 //
-// --- NXIconView delegate
+// --- NXTIconView delegate
 //
-- (void)     iconView:(NXIconView*)anIconView
+- (void)     iconView:(NXTIconView*)anIconView
  didChangeSelectionTo:(NSSet *)selectedIcons
 {
   NSMutableArray *selected = [NSMutableArray array];
@@ -559,7 +559,7 @@ static NSRect viewFrame;
 
   NSLog(@"IconViewer(%@): selection did change.", rootPath);
 
-  for (NXIcon *icon in selectedIcons) {
+  for (NXTIcon *icon in selectedIcons) {
     [icon setShowsExpandedLabelWhenSelected:showsExpanded];
     [selected addObject:[icon labelString]];
   }
@@ -706,7 +706,7 @@ static NSRect viewFrame;
 //=============================================================================
 // Drag and Drop
 //=============================================================================
-// NXIconView delegate
+// NXTIconView delegate
 - (void)iconDragged:(PathIcon *)sender withEvent:(NSEvent *)ev
 {
   NSArray      *paths;

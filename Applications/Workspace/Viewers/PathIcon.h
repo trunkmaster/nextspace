@@ -2,7 +2,7 @@
 //
 // Project: Workspace
 //
-// Description: An NXIcon subclass that implements file operations.
+// Description: An NXTIcon subclass that implements file operations.
 //              PathIcon holds information about object(file, dir) path. Set
 //              with setPath: method and saved in 'paths' ivar. Any other
 //              optional information (e.g. device for mount point, application,
@@ -26,13 +26,13 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXAppKit/NXAppKit.h>
+#import <DesktopKit/DesktopKit.h>
 
-#import <NXAppKit/NXIcon.h>
+#import <DesktopKit/NXTIcon.h>
 
 @protocol NSDraggingInfo;
 
-@interface PathIcon : NXIcon
+@interface PathIcon : NXTIcon
 {
   NSArray             *paths;
   NSDictionary        *info;

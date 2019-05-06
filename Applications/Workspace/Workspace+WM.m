@@ -36,10 +36,10 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
-#import <NXFoundation/NXDefaults.h>
-#import <NXAppKit/NXAlert.h>
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXSystemInfo.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTAlert.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSESystemInfo.h>
 
 #import "Workspace+WM.h"
 #import "Controller.h"
@@ -108,7 +108,7 @@ BOOL xIsWindowManagerAlreadyRunning(void)
 
 //--- Below this line X Window related functions is TODO
 
-// TODO: Move to NXFoundation/NXFileManager
+// TODO: Move to DesktopKit/NXTFileManager
 NSString *fullPathForCommand(NSString *command)
 {
   NSString      *commandFile;
@@ -187,7 +187,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
               " Show only Workspace application icon.");
       }
     // Restore display layout
-    [[[NXScreen new] autorelease] applySavedDisplayLayout];
+    [[[OSEScreen new] autorelease] applySavedDisplayLayout];
   }
 
   // external function (WindowMaker/src/main.c)
@@ -1100,7 +1100,7 @@ WAppIcon *_FindLaunchingIcon(char *wm_instance, char *wm_class)
 NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret)
 {
   WScreen  *scr = wScreenWithNumber(0);
-  NSRect   mdRect = [[[NXScreen sharedScreen] mainDisplay] frame];
+  NSRect   mdRect = [[[OSEScreen sharedScreen] mainDisplay] frame];
   NSPoint  iconPoint = {0,0};
   WAppIcon *appIcon;
 
@@ -1181,7 +1181,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
   // 2. Otherwise create appicon and set its state to launching
   if (iconFound == NO)
     {
-      NSRect mdRect = [[[NXScreen sharedScreen] mainDisplay] frame];
+      NSRect mdRect = [[[OSEScreen sharedScreen] mainDisplay] frame];
       int    x_ret = 0, y_ret = 0;
       
       appIcon = wAppIconCreateForDock(wScreenWithNumber(0), NULL,
@@ -1572,7 +1572,7 @@ void XWUpdateScreenInfo(WScreen *scr)
   wScreenUpdateUsableArea(scr);
 
   @autoreleasepool {
-    NXScreen *systemScreen = [[NXScreen new] autorelease];
+    OSEScreen *systemScreen = [[OSEScreen new] autorelease];
     
     // 4.1 Get info about main display
     dRect = [[systemScreen mainDisplay] frame];
@@ -1602,10 +1602,10 @@ void XWUpdateScreenInfo(WScreen *scr)
   // NSLog(@"XRRScreenChangeNotify: END");
   XUnlockDisplay(dpy);
 
-  // NSLog(@"Sending NXScreenDidChangeNotification...");
-  // Send notification to active NXScreen applications.
+  // NSLog(@"Sending OSEScreenDidChangeNotification...");
+  // Send notification to active OSEScreen applications.
   [[NSDistributedNotificationCenter defaultCenter]
-     postNotificationName:NXScreenDidChangeNotification
+     postNotificationName:OSEScreenDidChangeNotification
                    object:nil];
 }
 
@@ -1709,7 +1709,7 @@ int XWRunAlertPanel(char *title, char *message,
 extern void wShakeWindow(WWindow *wwin);
 void XWRingBell(WWindow *wwin)
 {
-  NXDefaults *defs = [NXDefaults globalUserDefaults];
+  NXTDefaults *defs = [NXTDefaults globalUserDefaults];
   NSString   *beepType = [defs objectForKey:@"NXSystemBeepType"];
 
   if (beepType && [beepType isEqualToString:@"Visual"]) {

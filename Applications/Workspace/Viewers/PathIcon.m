@@ -20,8 +20,8 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXSystem/NXSystemInfo.h>
-#import <NXSystem/NXMouse.h>
+#import <SystemKit/OSESystemInfo.h>
+#import <SystemKit/OSEMouse.h>
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <GNUstepGUI/GSDragView.h>
@@ -578,7 +578,7 @@ static NSDragOperation savedMask;
 {
   NSInteger clickCount;
   NSDate    *evDate = [NSDate date];
-  NXMouse   *mouse = [[NXMouse new] autorelease];
+  OSEMouse  *mouse = [[OSEMouse new] autorelease];
   
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown) {
     return;
@@ -588,7 +588,7 @@ static NSDragOperation savedMask;
   clickCount = [ev clickCount];
   modifierFlags = [ev modifierFlags];
   
-  [(NXIconView *)[self superview] selectIcons:[NSSet setWithObject:self]
+  [(NXTIconView *)[self superview] selectIcons:[NSSet setWithObject:self]
                                 withModifiers:modifierFlags];
   
   // Dragging
@@ -656,7 +656,7 @@ static NSDragOperation savedMask;
       
       if ([[path pathComponents] count] == 1)
         {
-          [self setLabelString:[NXSystemInfo hostName]];
+          [self setLabelString:[OSESystemInfo hostName]];
         }
       else
         {

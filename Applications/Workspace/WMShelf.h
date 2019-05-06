@@ -23,7 +23,7 @@
 //
 // Represents a Workspace Manager Shelf with icons in it.
 //
-// Fundamental characteristics of the WMShelf as a subclass of NXIconView:
+// Fundamental characteristics of the WMShelf as a subclass of NXTIconView:
 // - holds icons of applications and directories with retrievable and
 //   restorable state;
 // - can temporarily hold multi-selection icon;
@@ -33,26 +33,26 @@
 // - doesn't accept FirstResponder state.
 //
 
-#import <NXAppKit/NXIconView.h>
+#import <DesktopKit/NXTIconView.h>
 
 @class FileViewer;
 @class PathIcon;
 
-@interface WMShelf : NXIconView
+@interface WMShelf : NXTIconView
 {
   // Dragging
-  NXIconView *draggedSource;
+  NXTIconView *draggedSource;
   NSArray    *draggedPaths;
   PathIcon   *draggedIcon;
-  NXIconSlot lastSlotDragEntered;
-  NXIconSlot lastSlotDragExited;
+  NXTIconSlot lastSlotDragEntered;
+  NXTIconSlot lastSlotDragExited;
   NSPoint    dragPoint;
   NSUInteger draggedMask;
 
   BOOL       isRootIconDragged;
 }
 
-- (PathIcon *)iconInSlot:(NXIconSlot)slot;
+- (PathIcon *)iconInSlot:(NXTIconSlot)slot;
 
 - (void)checkIfContentsExist;
 - (PathIcon *)createIconForPaths:(NSArray *)paths;

@@ -25,9 +25,9 @@
 #include <dispatch/dispatch.h>
 
 #import <AppKit/AppKit.h>
-#import <NXFoundation/NXDefaults.h>
-#import <NXFoundation/NXFileManager.h>
-#import <NXAppKit/NXUtilities.h>
+#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTFileManager.h>
+#import <DesktopKit/Utilities.h>
 
 #import <Workspace.h>
 #import <Preferences/Browser/BrowserPrefs.h>
@@ -154,8 +154,8 @@
     return;
 
   attrs = [aString attributesAtIndex:0 effectiveRange:NULL];
-  sString = NXShortenString([aString string], aRect.size.width, [self font],
-                            NXSymbolElement, NXDotsAtRight);
+  sString = NXTShortenString([aString string], aRect.size.width, [self font],
+                            NXSymbolElement, NXTDotsAtRight);
   saString = [[NSAttributedString alloc] initWithString:sString
                                              attributes:attrs];
   
@@ -335,7 +335,7 @@
 
 - (CGFloat)columnWidth
 {
-  NXDefaults *df = [NXDefaults userDefaults];
+  NXTDefaults *df = [NXTDefaults userDefaults];
 
   columnWidth = [df floatForKey:BrowserViewerColumnWidth];
   if (columnWidth <= BROWSER_MIN_COLUMN_WIDTH) {
