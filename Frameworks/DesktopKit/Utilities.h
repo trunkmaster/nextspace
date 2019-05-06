@@ -27,9 +27,9 @@
 #import <AppKit/AppKit.h>
 
 typedef enum {
-  NXDotsAtLeft = 0,
-  NXDotsAtCenter = 1,
-  NXDotsAtRight = 2
+  NXTDotsAtLeft = 0,
+  NXTDotsAtCenter = 1,
+  NXTDotsAtRight = 2
 } NXTDotsPosition;
 
 typedef enum {

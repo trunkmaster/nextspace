@@ -789,7 +789,7 @@ watch_toggled(DBusWatch *watch,
 
 // 'path' is not necessary a mount point, it can be some path inside
 // mounted filesystem
-- (NXFSType)fsTypeAtPath:(NSString *)path
+- (NXTFSType)fsTypeAtPath:(NSString *)path
 {
   NSEnumerator *e = [[self mountedVolumes] objectEnumerator];
   NSDictionary *volDesc;
@@ -804,24 +804,24 @@ watch_toggled(DBusWatch *watch,
 
   fsType = [volDesc objectForKey:@"FileSystemType"];
   
-  // Return NXFSType filesystem name
+  // Return NXTFSType filesystem name
   if ([fsType isEqualToString:@"msdosfs"] ||
       [fsType isEqualToString:@"vfat"] ||
       [fsType isEqualToString:@"fat"])
     {
-      return NXFSTypeFAT;
+      return NXTFSTypeFAT;
     }
   else if ([fsType isEqualToString:@"ntfs"])
     {
-      return NXFSTypeNTFS;
+      return NXTFSTypeNTFS;
     }
   else if ([fsType isEqualToString:@"iso9660"])
     {
-      return NXFSTypeISO;
+      return NXTFSTypeISO;
     }
   else if ([fsType isEqualToString:@"ufs"])
     {
-      return NXFSTypeUFS;
+      return NXTFSTypeUFS;
     }
 
   return -1;

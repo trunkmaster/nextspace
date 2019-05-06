@@ -91,7 +91,7 @@ NSString *NXDescriptionForSize(unsigned long long size)
 }
 
 // TODO
-+ (NXFSType)fileSystemTypeAtPath:(NSString *)path
++ (NXTFSType)fileSystemTypeAtPath:(NSString *)path
 {
   return [[OSEMediaManager defaultManager] filesystemTypeAtPath:path];
 }

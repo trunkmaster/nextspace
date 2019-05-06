@@ -509,7 +509,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
 
       if (notify)
         {
-          [notificationCenter postNotificationName:NXDiskAppeared
+          [notificationCenter postNotificationName:OSEDiskAppeared
                                             object:self
                                           userInfo:driveProps];
         }
@@ -627,8 +627,8 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
                                  @"Info",       @"MessageType",
                                @"Eject Disk", @"MessageTitle",
                                message,       @"Message", nil];
-          // NXDiskDisappeared notification
-          [notificationCenter postNotificationName:NXDiskDisappeared
+          // OSEDiskDisappeared notification
+          [notificationCenter postNotificationName:OSEDiskDisappeared
                                             object:self
                                           userInfo:info];
         }
@@ -718,14 +718,14 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
 
   if ([status isEqualToString:@"Started"])
     {
-      [notificationCenter postNotificationName:NXMediaOperationDidStart
+      [notificationCenter postNotificationName:OSEMediaOperationDidStart
                                         object:self
                                       userInfo:info];
     }
   else 
     {
       // "Completed" - operation was started by framework methods.
-      // NXVolume* and NXMediaOperation* notifications will be sent.
+      // NXVolume* and OSEMediaOperation* notifications will be sent.
       // "Occured" - operation was performed without framework methods (outside)
       // of application. Only NXVolume* notification will be sent.
       if ([name isEqualToString:@"Mount"] || [name isEqualToString:@"Unmount"])
@@ -759,7 +759,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
 
       if ([status isEqualToString:@"Completed"])
         {
-          [notificationCenter postNotificationName:NXMediaOperationDidEnd
+          [notificationCenter postNotificationName:OSEMediaOperationDidEnd
                                             object:self
                                           userInfo:info];
         }
@@ -1103,7 +1103,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
     {
       mountPoint = [volume1 mountPoints];
       // NSLog(@"LongestMP(%@): process MP: %@", filesystemPath, mountPoint);
-      mp1 = NXIntersectionPath(filesystemPath, mountPoint);
+      mp1 = NXTIntersectionPath(filesystemPath, mountPoint);
       if ([mp1 isEqualToString:mountPoint] && ([mp1 length] >= [mp length]))
         {
           ASSIGN(mp, mp1);
@@ -1122,7 +1122,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
 
 // 'path' is not necessary a mount point, it can be some path inside
 // mounted filesystem
-- (NXFSType)filesystemTypeAtPath:(NSString *)filesystemPath
+- (NXTFSType)filesystemTypeAtPath:(NSString *)filesystemPath
 {
   OSEUDisksVolume *volume = [self mountedVolumeForPath:filesystemPath];
 

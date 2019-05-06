@@ -45,7 +45,7 @@ NSString *NXTShortenString(NSString *fullString,
 
   while ([font widthOfString:shortString] > viewWidth) {
     switch (dotsPosition) {
-    case NXDotsAtLeft:
+    case NXTDotsAtLeft:
       if (elementType == NXSymbolElement) {
         position = 0;
         [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
@@ -64,7 +64,7 @@ NSString *NXTShortenString(NSString *fullString,
         }
       }
       break;
-    case NXDotsAtRight:
+    case NXTDotsAtRight:
       if (elementType == NXSymbolElement) {
         position = [shortString length]-1;
         [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
@@ -83,7 +83,7 @@ NSString *NXTShortenString(NSString *fullString,
         }
       }
       break;
-    case NXDotsAtCenter:
+    case NXTDotsAtCenter:
       position = round([shortString length]/2);
       if (elementType == NXSymbolElement) {
         [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
@@ -92,7 +92,7 @@ NSString *NXTShortenString(NSString *fullString,
         if ([shortString characterAtIndex:position] == '/') {
           position += 1;
         }
-        // NSLog(@"NXDotsAtCenter: %c", [shortString characterAtIndex:position]);
+        // NSLog(@"NXTDotsAtCenter: %c", [shortString characterAtIndex:position]);
         range = NSMakeRange(position, 1);
         if ([[shortString pathComponents] count] > 2) {
           NSRange    f_slash, b_slash;
@@ -131,7 +131,7 @@ NSString *NXTShortenString(NSString *fullString,
   }
 
   // String was shortened - insert dots
-  if (dotsPosition == NXDotsAtLeft) {
+  if (dotsPosition == NXTDotsAtLeft) {
     if (elementType == NXSymbolElement ||
         elementType == NXWordElement) {
       return [NSString stringWithFormat:@"...%@", shortString];
@@ -140,7 +140,7 @@ NSString *NXTShortenString(NSString *fullString,
       return [NSString stringWithFormat:@".../%@", shortString];
     }
   }
-  else if (dotsPosition == NXDotsAtRight) {
+  else if (dotsPosition == NXTDotsAtRight) {
     if (elementType == NXSymbolElement ||
         elementType == NXWordElement) {
       return [NSString stringWithFormat:@"%@...", shortString];
@@ -149,7 +149,7 @@ NSString *NXTShortenString(NSString *fullString,
       return [NSString stringWithFormat:@"%@/...", shortString];
     }
   }
-  else if (dotsPosition == NXDotsAtCenter) {
+  else if (dotsPosition == NXTDotsAtCenter) {
     NSString *shrinked;
     NSRange  rightPartRange;
 

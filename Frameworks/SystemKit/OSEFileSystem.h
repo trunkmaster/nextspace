@@ -34,7 +34,7 @@ NSString *NXDescriptionForSize(unsigned long long size);
 
 + (NSString *)fileSystemSizeAtPath:(NSString *)path;
 + (NSString *)fileSystemFreeSizeAtPath:(NSString *)path;
-+ (NXFSType)fileSystemTypeAtPath:(NSString *)path;
++ (NXTFSType)fileSystemTypeAtPath:(NSString *)path;
 + (NSString *)fileSystemMountPointAtPath:(NSString *)path;
 
 @end

@@ -52,7 +52,7 @@
 - (NSString *)driveObjectPath;
 
 //--- Accessories
-- (NXFSType)type;
+- (NXTFSType)type;
 - (NSString *)UUID;
 - (NSString *)label;
 - (NSString *)size;

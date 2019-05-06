@@ -27,20 +27,20 @@
 @class NSString, NSObject;
 
 // Utility functions
-NSString *NXIntersectionPath(NSString *aPath, NSString *bPath);
+NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath);
 
 typedef enum {
-  NXSortByName = 0, // by name only, folders mixed with files
-  NXSortByKind = 1, // folders first + NXSortByName
-  NXSortByType = 2, // file extention + NXSortByKind
-  NXSortByDate = 3, // + NXSortByName
-  NXSortBySize = 4, // + NXSortByName
-  NXSortByOwner = 5 // + NXSortByName
-} NXSortType;
+  NXTSortByName = 0, // by name only, folders mixed with files
+  NXTSortByKind = 1, // folders first + NXTSortByName
+  NXTSortByType = 2, // file extention + NXTSortByKind
+  NXTSortByDate = 3, // + NXTSortByName
+  NXTSortBySize = 4, // + NXTSortByName
+  NXTSortByOwner = 5 // + NXTSortByName
+} NXTSortType;
 
 // Preferences used by File Viewer, NSOpenPanel and NSSavePanel
-extern NSString *SortFilesBy;
-extern NSString *ShowHiddenFiles;
+extern NSString *NXTSortFilesBy;
+extern NSString *NXTShowHiddenFiles;
 
 @interface NXTFileManager : NSObject
 {
@@ -50,8 +50,8 @@ extern NSString *ShowHiddenFiles;
 
 - (BOOL)isShowHiddenFiles;
 - (void)setShowHiddenFiles:(BOOL)yn;
-- (NXSortType)sortFilesBy;
-- (void)setSortFilesBy:(NXSortType)type;
+- (NXTSortType)sortFilesBy;
+- (void)setSortFilesBy:(NXTSortType)type;
 
 - (NSArray *)sortedDirectoryContentsAtPath:(NSString *)path;
 
@@ -60,7 +60,7 @@ extern NSString *ShowHiddenFiles;
                           showHidden:(BOOL)showHidden;
 - (NSArray *)directoryContentsAtPath:(NSString *)path
                              forPath:(NSString *)targetPath
-                            sortedBy:(NXSortType)sortType
+                            sortedBy:(NXTSortType)sortType
                           showHidden:(BOOL)showHidden;
 
 // libmagic

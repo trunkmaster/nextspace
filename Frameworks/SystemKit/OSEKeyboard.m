@@ -23,13 +23,13 @@
 #include <X11/XKBlib.h>
 #include <X11/extensions/XKBrules.h>
 
-NSString *InitialRepeat = @"OSEKeyboardInitialKeyRepeat";
-NSString *RepeatRate = @"OSEKeyboardRepeatRate";
-NSString *Layouts = @"OSEKeyboardLayouts";
-NSString *Variants = @"OSEKeyboardVariants";
-NSString *Model = @"OSEKeyboardModel";
-NSString *Options = @"OSEKeyboardOptions";
-NSString *NumLockState = @"OSEKeyboardNumLockState";
+NSString *OSEKeyboardInitialRepeat = @"KeyboardInitialKeyRepeat";
+NSString *OSEKeyboardRepeatRate = @"KeyboardRepeatRate";
+NSString *OSEKeyboardLayouts = @"KeyboardLayouts";
+NSString *OSEKeyboardVariants = @"KeyboardVariants";
+NSString *OSEKeyboardModel = @"KeyboardModel";
+NSString *OSEKeyboardOptions = @"KeyboardOptions";
+NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 
 @implementation OSEKeyboard : NSObject
 
@@ -39,18 +39,18 @@ NSString *NumLockState = @"OSEKeyboardNumLockState";
   OSEKeyboard *keyb = [OSEKeyboard new];
 
   // Key Repeat
-  if ((initialRepeat = [defs integerForKey:InitialRepeat]) < 0)
+  if ((initialRepeat = [defs integerForKey:OSEKeyboardInitialRepeat]) < 0)
     initialRepeat = 0;
-  if ((repeatRate = [defs integerForKey:RepeatRate]) < 0)
+  if ((repeatRate = [defs integerForKey:OSEKeyboardRepeatRate]) < 0)
     repeatRate = 0;
   [keyb setInitialRepeat:initialRepeat rate:repeatRate];
 
   // Layouts, Numeric Keypad, Modifiers
-  [keyb setLayouts:[defs objectForKey:Layouts]
-          variants:[defs objectForKey:Variants]
-           options:[defs objectForKey:Options]];
-  if ([[defs objectForKey:Options] containsObject:@"numpad:mac"] == NO)
-    [keyb setNumLockState:[defs integerForKey:NumLockState]];
+  [keyb setLayouts:[defs objectForKey:OSEKeyboardLayouts]
+          variants:[defs objectForKey:OSEKeyboardVariants]
+           options:[defs objectForKey:OSEKeyboardOptions]];
+  if ([[defs objectForKey:OSEKeyboardOptions] containsObject:@"numpad:mac"] == NO)
+    [keyb setNumLockState:[defs integerForKey:OSEKeyboardNumLockState]];
   else
     [keyb setNumLockState:0];
 }
@@ -203,7 +203,7 @@ NSString *NumLockState = @"OSEKeyboardNumLockState";
 
 - (NSString *)model
 {
-  return [serverConfig objectForKey:Model];
+  return [serverConfig objectForKey:OSEKeyboardModel];
 }
 
 // TODO
@@ -368,13 +368,13 @@ NSString *NumLockState = @"OSEKeyboardNumLockState";
 
   config = [NSMutableDictionary dictionary];
   [config setObject:[NSString stringWithCString:(vd.layout != NULL) ? vd.layout : ""]
-             forKey:Layouts];
+             forKey:OSEKeyboardLayouts];
   [config setObject:[NSString stringWithCString:(vd.variant != NULL) ? vd.variant : ""]
-             forKey:Variants];
+             forKey:OSEKeyboardVariants];
   [config setObject:[NSString stringWithCString:(vd.options != NULL) ? vd.options : ""]
-             forKey:Options];
+             forKey:OSEKeyboardOptions];
   [config setObject:[NSString stringWithCString:(vd.model != NULL) ? vd.model : ""]
-             forKey:Model];
+             forKey:OSEKeyboardModel];
   
   // [config writeToFile:@"/Users/me/Library/OSEKeyboard" atomically:YES];
   
@@ -416,7 +416,7 @@ NSString *NumLockState = @"OSEKeyboardNumLockState";
 
 - (NSArray *)layouts
 {
-  NSString *l = [[self _serverConfig] objectForKey:Layouts];
+  NSString *l = [[self _serverConfig] objectForKey:OSEKeyboardLayouts];
 
   if (l == nil || [l isEqualToString:@""]) {
     return [NSArray arrayWithObject:@"us"];
@@ -428,7 +428,7 @@ NSString *NumLockState = @"OSEKeyboardNumLockState";
 - (NSArray *)variants
 {
   NSArray  *l = [self layouts];
-  NSString *v = [[self _serverConfig] objectForKey:Variants];
+  NSString *v = [[self _serverConfig] objectForKey:OSEKeyboardVariants];
   NSArray  *va = [v componentsSeparatedByString:@","];
 
   while ([l count] > [va count])
@@ -439,7 +439,7 @@ NSString *NumLockState = @"OSEKeyboardNumLockState";
 
 - (NSArray *)options
 {
-  NSString	 *optString = [[self _serverConfig] objectForKey:Options];
+  NSString	 *optString = [[self _serverConfig] objectForKey:OSEKeyboardOptions];
   NSMutableArray *optArray;
   NSArray	 *options;
 

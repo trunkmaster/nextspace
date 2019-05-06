@@ -151,3 +151,5 @@
 - (BOOL)tracksDefaultsDatabase;
 
 @end
+
+extern NSString *NXTClockView24HourFormat;

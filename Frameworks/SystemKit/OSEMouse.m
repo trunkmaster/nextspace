@@ -24,14 +24,14 @@
 #import <X11/Xlib.h>
 #import <X11/Xcursor/Xcursor.h>
 
-NSString *Acceleration = @"OSEMouseAcceleration";
-NSString *Threshold = @"OSEMouseThreshold";
-NSString *DoubleClickTime = @"OSEMouseDoubleClickTime";
-NSString *WheelScroll = @"OSEMouseWheelScroll";
-NSString *WheelControlScroll = @"OSEMouseWheelControlScroll";
-NSString *MenuButtonEnabled = @"NXMenuButtonEnabled";
-NSString *MenuButtonHand = @"NXMenuButtonHand";
-NSString *CursorTheme = @"OSEMouseCursorTheme";
+NSString *OSEMouseAcceleration = @"MouseAcceleration";
+NSString *OSEMouseThreshold = @"MouseThreshold";
+NSString *OSEMouseDoubleClickTime = @"MouseDoubleClickTime";
+NSString *OSEMouseWheelScroll = @"MouseWheelScroll";
+NSString *OSEMouseWheelControlScroll = @"MouseWheelControlScroll";
+NSString *OSEMouseMenuButtonEnabled = @"MenuButtonEnabled";
+NSString *OSEMouseMenuButtonHand = @"MenuButtonHand";
+NSString *OSEMouseCursorTheme = @"MouseCursorTheme";
 
 @implementation OSEMouse
 
@@ -111,7 +111,7 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
   XCloseDisplay(dpy);
 
   // NEXTSPACE
-  [defs setInteger:speed forKey:Acceleration];
+  [defs setInteger:speed forKey:OSEMouseAcceleration];
   [defs synchronize];
 
   // GNUstep
@@ -127,7 +127,7 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
   time = [gsDefaults integerForKey:@"GSDoubleClickTime"];
   if (time == 0)
     {
-      time = [nxDefaults integerForKey:DoubleClickTime];
+      time = [nxDefaults integerForKey:OSEMouseDoubleClickTime];
       if (time ==0 || time == -1)
         time = 300;
     }
@@ -147,7 +147,7 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
   lines = [gsDefaults integerForKey:@"GSMouseScrollMultiplier"];
   if (lines == 0)
     {
-      lines = [nxDefaults integerForKey:WheelScroll];
+      lines = [nxDefaults integerForKey:OSEMouseWheelScroll];
       if (lines == 0 || lines == -1)
         lines = 3;
     }
@@ -162,7 +162,7 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
 {
   NSInteger  lines;
   
-  lines = [nxDefaults integerForKey:WheelControlScroll];
+  lines = [nxDefaults integerForKey:OSEMouseWheelControlScroll];
   if (lines == 0 || lines == -1)
     lines = 1;
   
@@ -186,7 +186,7 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
     }
   else
     {
-      s = [nxDefaults objectForKey:MenuButtonEnabled];
+      s = [nxDefaults objectForKey:OSEMouseMenuButtonEnabled];
       if (s != nil)
         enabled = [s isEqualToString:@"YES"];
     }
@@ -200,7 +200,7 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
   event = [gsDefaults integerForKey:@"GSMouseScrollMultiplier"];
   if (event == 0)
     {
-      event = [nxDefaults integerForKey:WheelScroll];
+      event = [nxDefaults integerForKey:OSEMouseWheelScroll];
       if (event == -1)
         event = 3; // NSRightMouseDown
     }
@@ -281,16 +281,16 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
   BOOL sendNotification = NO;
   
   // Acceleration
-  if (acceleration != [nxDefaults integerForKey:Acceleration])
+  if (acceleration != [nxDefaults integerForKey:OSEMouseAcceleration])
     {
-      [nxDefaults setInteger:acceleration forKey:Acceleration];
+      [nxDefaults setInteger:acceleration forKey:OSEMouseAcceleration];
       [nxDefaults synchronize];
     }
 
   // Threshold
-  if (threshold != [nxDefaults integerForKey:Threshold])
+  if (threshold != [nxDefaults integerForKey:OSEMouseThreshold])
     {
-      [nxDefaults setInteger:threshold forKey:Threshold];
+      [nxDefaults setInteger:threshold forKey:OSEMouseThreshold];
       [nxDefaults synchronize];
     }
   if (threshold != [gsDefaults integerForKey:@"GSMouseMoveThreshold"])
@@ -314,9 +314,9 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
                      forKey:@"DoubleClickTime"];
       [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
     }
-  if (doubleClickTime != [nxDefaults integerForKey:DoubleClickTime])
+  if (doubleClickTime != [nxDefaults integerForKey:OSEMouseDoubleClickTime])
     {
-      [nxDefaults setInteger:doubleClickTime forKey:DoubleClickTime];
+      [nxDefaults setInteger:doubleClickTime forKey:OSEMouseDoubleClickTime];
     }
 
   // Mouse Wheel Scrolls
@@ -326,13 +326,13 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
                           forKey:@"GSMouseScrollMultiplier"];
       sendNotification = YES;
     }
-  if (wheelScrollLines != [nxDefaults integerForKey:WheelScroll])
+  if (wheelScrollLines != [nxDefaults integerForKey:OSEMouseWheelScroll])
     {
-      [nxDefaults setInteger:wheelScrollLines forKey:WheelScroll];
+      [nxDefaults setInteger:wheelScrollLines forKey:OSEMouseWheelScroll];
     }
-  if (wheelControlScrollLines != [nxDefaults integerForKey:WheelControlScroll])
+  if (wheelControlScrollLines != [nxDefaults integerForKey:OSEMouseWheelControlScroll])
     {
-      [nxDefaults setInteger:wheelControlScrollLines forKey:WheelControlScroll];
+      [nxDefaults setInteger:wheelControlScrollLines forKey:OSEMouseWheelControlScroll];
     }
 
   // Menu Button
@@ -354,13 +354,13 @@ NSString *CursorTheme = @"OSEMouseCursorTheme";
       [wmDefaults setObject:s forKey:@"DisableWSMouseActions"];
       [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
     }
-  if (menuButtonEvent != [nxDefaults integerForKey:MenuButtonHand])
+  if (menuButtonEvent != [nxDefaults integerForKey:OSEMouseMenuButtonHand])
     {
-      [nxDefaults setInteger:menuButtonEvent forKey:MenuButtonHand];
+      [nxDefaults setInteger:menuButtonEvent forKey:OSEMouseMenuButtonHand];
     }
-  if (isMenuButtonEnabled != [nxDefaults boolForKey:MenuButtonEnabled])
+  if (isMenuButtonEnabled != [nxDefaults boolForKey:OSEMouseMenuButtonEnabled])
     {
-      [nxDefaults setBool:isMenuButtonEnabled forKey:MenuButtonEnabled];
+      [nxDefaults setBool:isMenuButtonEnabled forKey:OSEMouseMenuButtonEnabled];
     }
 
   // Notify GNUstep backend about mouse preferences change

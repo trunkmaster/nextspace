@@ -29,27 +29,27 @@
 #import <Foundation/Foundation.h>
 
 // Events
-extern NSString *NXDiskAppeared;
-extern NSString *NXDiskDisappeared;
+extern NSString *OSEDiskAppeared;
+extern NSString *OSEDiskDisappeared;
 extern NSString *NXVolumeAppeared;
 extern NSString *NXVolumeDisappeared;
 extern NSString *NXVolumeMounted;
 extern NSString *NXVolumeUnmounted;
 
-extern NSString *NXMediaOperationDidStart;
-extern NSString *NXMediaOperationDidUpdate;
-extern NSString *NXMediaOperationDidEnd;
+extern NSString *OSEMediaOperationDidStart;
+extern NSString *OSEMediaOperationDidUpdate;
+extern NSString *OSEMediaOperationDidEnd;
 
 // Filesystem types
 typedef enum
 {
-  NXFSTypeNTFS = 0,
-  NXFSTypeFAT  = 1,
-  NXFSTypeUDF  = 2,
-  NXFSTypeUFS  = 3,
-  NXFSTypeISO  = 4,
-  NXFSTypeSwap = 5
-} NXFSType;
+  NXTFSTypeNTFS = 0,
+  NXTFSTypeFAT  = 1,
+  NXTFSTypeUDF  = 2,
+  NXTFSTypeUFS  = 3,
+  NXTFSTypeISO  = 4,
+  NXTFSTypeSwap = 5
+} NXTFSType;
 
 // Class which adopts <MediaManager> protocol aimed to implement
 // interaction with OS's method of getting information about disks, volumes,
@@ -61,7 +61,7 @@ typedef enum
 - (NSArray *)mountedVolumes;
 
 /** Returns name of filesystem type mounted at subpath of 'path'.*/
-- (NXFSType)filesystemTypeAtPath:(NSString *)path;
+- (NXTFSType)filesystemTypeAtPath:(NSString *)path;
 - (NSString *)mountPointForPath:(NSString *)path;
 
 // Disks -> Unmount.

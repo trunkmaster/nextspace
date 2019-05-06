@@ -32,13 +32,13 @@
 #import "NXTDefaults.h"
 #import "NXTFileManager.h"
 
-NSString *SortFilesBy = @"NXSortFilesBy";
-NSString *ShowHiddenFiles = @"NXShowHiddenFiles";
+NSString *NXTSortFilesBy = @"SortFilesBy";
+NSString *NXTShowHiddenFiles = @"ShowHiddenFiles";
 
 static NXTFileManager *sharedManager;
 static NSString      *dirPath;
 
-NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
+NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
 {
   NSString   *subPath = [[NSString new] autorelease];
   NSArray    *aPathComps = [aPath pathComponents];
@@ -163,31 +163,31 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
 
 - (BOOL)isShowHiddenFiles
 {
-  return [[[NXTDefaults globalUserDefaults] reload] boolForKey:ShowHiddenFiles];
+  return [[[NXTDefaults globalUserDefaults] reload] boolForKey:NXTShowHiddenFiles];
 }
 - (void)setShowHiddenFiles:(BOOL)yn
 {
   NXTDefaults *defs = [[NXTDefaults globalUserDefaults] reload];
   
-  [defs setBool:yn forKey:ShowHiddenFiles];
+  [defs setBool:yn forKey:NXTShowHiddenFiles];
   [defs synchronize];
 }
-- (NXSortType)sortFilesBy
+- (NXTSortType)sortFilesBy
 {
   NXTDefaults *defs = [[NXTDefaults globalUserDefaults] reload];
-  NSInteger  type = [defs integerForKey:SortFilesBy];
+  NSInteger  type = [defs integerForKey:NXTSortFilesBy];
 
   if (type == -1)
-    type = NXSortByKind;
+    type = NXTSortByKind;
   
   return type;
 }
 
-- (void)setSortFilesBy:(NXSortType)type
+- (void)setSortFilesBy:(NXTSortType)type
 {
   NXTDefaults *defs = [[NXTDefaults globalUserDefaults] reload];
 
-  [defs setInteger:type forKey:SortFilesBy];
+  [defs setInteger:type forKey:NXTSortFilesBy];
   [defs synchronize];
 }
 
@@ -339,7 +339,7 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
       NSString *hiddenFilename;
       unsigned i, n;
       NSString *filename;
-      NSString *pathIntersection = NXIntersectionPath(path, targetPath);
+      NSString *pathIntersection = NXTIntersectionPath(path, targetPath);
 
       hiddenFilename = [path stringByAppendingPathComponent:@".hidden"];
       if ([fm fileExistsAtPath:hiddenFilename])
@@ -377,7 +377,7 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
 
 - (NSArray *)directoryContentsAtPath:(NSString *)path
                              forPath:(NSString *)targetPath
-                            sortedBy:(NXSortType)sortType
+                            sortedBy:(NXTSortType)sortType
                           showHidden:(BOOL)showHidden
 {
   
@@ -390,24 +390,24 @@ NSString *NXIntersectionPath(NSString *aPath, NSString *bPath)
   
   switch (sortType)
     {
-    case NXSortByName:  // = 0
+    case NXTSortByName:  // = 0
       compareSelector = @selector(localizedCompare:);
       break;
-    case NXSortByKind:  // = 1
+    case NXTSortByKind:  // = 1
       compareSelector = @selector(localizedCompare:);
       foldersFirst = YES;
       break;
-    case NXSortByType:  // = 2
+    case NXTSortByType:  // = 2
       compareSelector = @selector(byTypeCompare:);
       foldersFirst = YES;
       break;
-    case NXSortByDate:  // = 3
+    case NXTSortByDate:  // = 3
       compareSelector = @selector(byDateCompare:);
       break;
-    case NXSortBySize:  // = 4
+    case NXTSortBySize:  // = 4
       compareSelector = @selector(bySizeCompare:);
       break;
-    case NXSortByOwner: // = 5
+    case NXTSortByOwner: // = 5
       compareSelector = @selector(byOwnerCompare:);
       break;
     }

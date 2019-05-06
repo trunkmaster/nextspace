@@ -71,11 +71,11 @@
 
 @end
 
-extern NSString *Acceleration;
-extern NSString *Threshold;
-extern NSString *DoubleClickTime;
-extern NSString *WheelScroll;
-extern NSString *WheelControlScroll;
-extern NSString *MenuButtonEnabled;
-extern NSString *MenuButtonHand;
-extern NSString *CursorTheme;
+extern NSString *OSEMouseAcceleration;
+extern NSString *OSEMouseThreshold;
+extern NSString *OSEMouseDoubleClickTime;
+extern NSString *OSEMouseWheelScroll;
+extern NSString *OSEMouseWheelControlScroll;
+extern NSString *OSEMouseMenuButtonEnabled;
+extern NSString *OSEMouseMenuButtonHand;
+extern NSString *OSEMouseCursorTheme;

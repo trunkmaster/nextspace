@@ -662,7 +662,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
                                   maximumCollapsedLabelWidth,
                                   [shortLabel font],
                                   NXSymbolElement,
-                                  NXDotsAtRight);
+                                  NXTDotsAtRight);
   [shortLabel setString:str];
   [shortLabel adjustFrame];
 }

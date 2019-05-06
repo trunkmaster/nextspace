@@ -232,36 +232,36 @@
 //-------------------------------------------------------------------------------
 //--- General properties
 //-------------------------------------------------------------------------------
-- (NXFSType)type
+- (NXTFSType)type
 {
   NSString *fsType = [self propertyForKey:@"IdType" interface:BLOCK_INTERFACE];
   
-  // Return NXFSType filesystem name
+  // Return NXTFSType filesystem name
   if ([fsType isEqualToString:@"msdosfs"] ||
       [fsType isEqualToString:@"vfat"] ||
       [fsType isEqualToString:@"fat"])
     {
-      return NXFSTypeFAT;
+      return NXTFSTypeFAT;
     }
   else if ([fsType isEqualToString:@"ntfs"])
     {
-      return NXFSTypeNTFS;
+      return NXTFSTypeNTFS;
     }
   else if ([fsType isEqualToString:@"iso9660"])
     {
-      return NXFSTypeISO;
+      return NXTFSTypeISO;
     }
   else if ([fsType isEqualToString:@"ufs"])
     {
-      return NXFSTypeUFS;
+      return NXTFSTypeUFS;
     }
   else if ([fsType isEqualToString:@"udf"])
     {
-      return NXFSTypeUDF;
+      return NXTFSTypeUDF;
     }
   else if ([fsType isEqualToString:@"swap"])
     {
-      return NXFSTypeSwap;
+      return NXTFSTypeSwap;
     }
 
   return -1;

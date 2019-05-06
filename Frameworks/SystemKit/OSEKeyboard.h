@@ -74,10 +74,10 @@
 @end
 
 // NXGlobalDomain keys. Strings are started with OSEKeyboard prefix
-extern NSString *InitialRepeat;
-extern NSString *RepeatRate;
-extern NSString *Layouts;
-extern NSString *Variants;
-extern NSString *Model;
-extern NSString *Options;
-extern NSString *NumLockState;
+extern NSString *OSEKeyboardInitialRepeat;
+extern NSString *OSEKeyboardRepeatRate;
+extern NSString *OSEKeyboardLayouts;
+extern NSString *OSEKeyboardVariants;
+extern NSString *OSEKeyboardModel;
+extern NSString *OSEKeyboardOptions;
+extern NSString *OSEKeyboardNumLockState;

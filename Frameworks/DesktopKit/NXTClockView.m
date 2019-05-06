@@ -20,13 +20,15 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import "NXTClockView.h"
-
 #import <Foundation/NSTimer.h>
 #import <AppKit/AppKit.h>
+
 #import "NXTDefaults.h"
+#import "NXTClockView.h"
 
 #define DISTRIBUTED_NC [NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+
+NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 
 @implementation NXTClockView
 
@@ -104,7 +106,7 @@
   // The next 2 method calls sets 'colonDisplayRect' ivar but it will not
   // cause drawing because 'is24HourFormat' was not changed
   is24HourFormat = [[NXTDefaults globalUserDefaults]
-                         boolForKey:@"NXClockView24HourFormat"];
+                         boolForKey:NXTClockView24HourFormat];
   [self set24HourFormat:is24HourFormat];
   
   [self setCalendarDate:[NSCalendarDate dateWithYear:1970
@@ -634,7 +636,7 @@
   if (flag != isTrackDefaults) {
     if (flag != NO) {
       // ~/Library/Preferences/.NextSpace/NXGlobalDomain
-      // NXTClockView24HourFormat = YES/NO;
+      // ClockView24HourFormat = YES/NO;
       [DISTRIBUTED_NC addObserver:self
                          selector:@selector(defaultsChanged:)
                              name:NXUserDefaultsDidChangeNotification
@@ -669,7 +671,7 @@
   if ([notifObject isKindOfClass:[NSString class]]) {
     // NextSpace's NXGlobalDomain was changed
     [self set24HourFormat:[[NXTDefaults globalUserDefaults]
-                            boolForKey:@"NXClockView24HourFormat"]];
+                            boolForKey:NXTClockView24HourFormat]];
   }
   else if ([notifObject isKindOfClass:[NSUserDefaults class]]) {
     [self setLanguage:nil];

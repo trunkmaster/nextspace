@@ -63,7 +63,7 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
   x = i % slotsWide;
 
-  return NXMakeIconSlot(x, (i - x) / slotsWide);
+  return NXTMakeIconSlot(x, (i - x) / slotsWide);
 }
 
 /// Private NXTIconView methods.
@@ -148,7 +148,7 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   if (slotsTall == 0)
     slotsTall = 1;
   
-  lastIcon = NXMakeIconSlot(-1, 0);
+  lastIcon = NXTMakeIconSlot(-1, 0);
 
   selectedIconSlot.x = -1;
   selectedIconSlot.y = -1;
@@ -401,7 +401,7 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
   slotsTall = 0;
   numHoles = 0;
-  lastIcon = NXMakeIconSlot(-1, 0);
+  lastIcon = NXTMakeIconSlot(-1, 0);
 
   selectedIconSlot.x = -1;
   selectedIconSlot.y = -1;
@@ -467,7 +467,7 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   NSUInteger i = [icons indexOfObjectIdenticalTo:anIcon];
 
   if (i == NSNotFound)
-    return NXMakeIconSlot(-1, -1);
+    return NXTMakeIconSlot(-1, -1);
   else
     return SlotFromIndex(slotsWide, i);
 }
@@ -1065,7 +1065,7 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
       }
     }
     else {
-      [self updateSelectionWithIcon:[self iconInSlot:NXMakeIconSlot(0,0)]
+      [self updateSelectionWithIcon:[self iconInSlot:NXTMakeIconSlot(0,0)]
                       modifierFlags:0];
     }
   }
@@ -1551,12 +1551,12 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
   if ([selectedIcons count] > 0) {
     NSRect     r = NSMakeRect(0,0,0,0);
-    NXTIconSlot lastSlot = NXMakeIconSlot(INT_MAX,INT_MAX), newSlot;
-    NXTIconSlot minOldSlot = NXMakeIconSlot(minSelectedIconSlot.x, minSelectedIconSlot.y);
-    NXTIconSlot maxOldSlot = NXMakeIconSlot(maxSelectedIconSlot.x, maxSelectedIconSlot.y);
+    NXTIconSlot lastSlot = NXTMakeIconSlot(INT_MAX,INT_MAX), newSlot;
+    NXTIconSlot minOldSlot = NXTMakeIconSlot(minSelectedIconSlot.x, minSelectedIconSlot.y);
+    NXTIconSlot maxOldSlot = NXTMakeIconSlot(maxSelectedIconSlot.x, maxSelectedIconSlot.y);
 
-    minSelectedIconSlot = NXMakeIconSlot(INT_MAX,INT_MAX);
-    maxSelectedIconSlot = NXMakeIconSlot(0,0);
+    minSelectedIconSlot = NXTMakeIconSlot(INT_MAX,INT_MAX);
+    maxSelectedIconSlot = NXTMakeIconSlot(0,0);
     for (NXTIcon *icon in selectedIcons) {
       if (icon && [icon isKindOfClass:[NXTIcon class]]) {
         newSlot = [self slotForIcon:icon];
@@ -1615,8 +1615,8 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   else {
     selectedIconSlot.x = -1;
     selectedIconSlot.y = -1;
-    minSelectedIconSlot = NXMakeIconSlot(0,0);
-    maxSelectedIconSlot = NXMakeIconSlot(0,slotsTall-1);
+    minSelectedIconSlot = NXTMakeIconSlot(0,0);
+    maxSelectedIconSlot = NXTMakeIconSlot(0,slotsTall-1);
   }
 
   if ([delegate respondsToSelector:@selector(iconView:didChangeSelectionTo:)]) {

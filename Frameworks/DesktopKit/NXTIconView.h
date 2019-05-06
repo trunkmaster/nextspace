@@ -68,7 +68,7 @@ typedef enum {
 
 /** A shorthand function to construct an icon slot from provided
     X and Y coordinates. */
-static inline NXTIconSlot NXMakeIconSlot(NSUInteger x, NSUInteger y)
+static inline NXTIconSlot NXTMakeIconSlot(NSUInteger x, NSUInteger y)
 {
   NXTIconSlot slot;
 

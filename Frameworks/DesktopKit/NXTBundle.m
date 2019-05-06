@@ -89,7 +89,7 @@ static NXTBundle *shared = nil;
       skip = NO;
       for (NSString *path in pathList)
         {
-          intersection = NXIntersectionPath(path, lPath);
+          intersection = NXTIntersectionPath(path, lPath);
           if ([intersection isEqualToString:path])
             {
               skip = YES;

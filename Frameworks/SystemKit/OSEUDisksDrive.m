@@ -359,7 +359,7 @@ NSLock *driveLock = nil;
   [driveLock unlock];
 }
 
-// 1. Send NXDiskOperationDidStart for drive.
+// 1. Send OSEDiskOperationDidStart for drive.
 // 2. Put mountedVolumes into cache (needsDetachMountedVolumes). Set needsDetach = YES.
 // 3. Unmount volumes. Each volume sends DidStart/DidEnd for volume.
 // 4. Catch DidEnd for volume and remove volume from cache.
