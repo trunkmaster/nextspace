@@ -23,9 +23,9 @@
 #import "unistd.h"
 #import <X11/Xlib.h>
 
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXDisplay.h>
-#import <NXSystem/NXMouse.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEDisplay.h>
+#import <SystemKit/OSEMouse.h>
 
 #import "Controller.h"
 #import "LoginWindow.h"
@@ -59,13 +59,13 @@
 
 - (void)center
 {
-  NXScreen  *screen = nil;
-  NXDisplay *display = nil;
+  OSEScreen  *screen = nil;
+  OSEDisplay *display = nil;
   NSRect    displayRect, gScreenRect, windowRect;
   NSPoint   newOrigin;
 
   // Get NEXTSPACE screen rect
-  screen = [[NXScreen new] autorelease];
+  screen = [[OSEScreen new] autorelease];
   display = [screen displayWithMouseCursor];
   if (!display)
     {
@@ -155,7 +155,7 @@
   int       x, y, width, height, xo, wo;
 
   // Get NEXTSPACE screen rect
-  mDisplayRect = [[[[NXScreen new] autorelease] displayWithMouseCursor] frame];
+  mDisplayRect = [[[[OSEScreen new] autorelease] displayWithMouseCursor] frame];
   
   xo = x = (int)windowRect.origin.x;
   y = (int)(mDisplayRect.size.height - windowRect.size.height)/2;

@@ -21,7 +21,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <NXSystem/NXMouse.h>
+#import <SystemKit/OSEMouse.h>
 
 #import "NXTIcon.h"
 #import "NXTIconLabel.h"
@@ -421,7 +421,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (void)mouseDown:(NSEvent *)ev
 {
   int clickCount;
-  NSInteger moveThreshold = [[[NXMouse new] autorelease] accelerationThreshold];
+  NSInteger moveThreshold = [[[OSEMouse new] autorelease] accelerationThreshold];
 
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown)
     {

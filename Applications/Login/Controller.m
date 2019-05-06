@@ -32,9 +32,9 @@
 
 #import <dispatch/dispatch.h>
 
-#import <NXSystem/NXDisplay.h>
-#import <NXSystem/NXMouse.h>
-#import <NXAppKit/NXAlert.h>
+#import <SystemKit/OSEDisplay.h>
+#import <SystemKit/OSEMouse.h>
+#import <DesktopKit/NXTAlert.h>
 
 static NSString
   * AuthenticationException = @"AuthenticationException",
@@ -260,7 +260,7 @@ void *alloc(int size)
 
 - (void)showSessionMessage:(NSString *)message
 {
-  NXRunAlertPanel(@"Login", message, @"OK", nil, nil);
+  NXTRunAlertPanel(@"Login", message, @"OK", nil, nil);
 }
 
 @end
@@ -272,7 +272,7 @@ void *alloc(int size)
 
 - (void)initXApp
 {
-  NXDisplay *display;
+  OSEDisplay *display;
   
   xServer = GSCurrentServer();
   xDisplay = [xServer serverDevice];
@@ -498,7 +498,7 @@ void *alloc(int size)
   NSLog(@"appDidFinishLaunch: end");
 
   // Turn light on
-  // for (NXDisplay *display in [[NXScreen sharedScreen] activeDisplays])
+  // for (OSEDisplay *display in [[OSEScreen sharedScreen] activeDisplays])
   //   {
   //     [display fadeToNormal:1.0];
   //   }
@@ -512,7 +512,7 @@ void *alloc(int size)
   if (pam_start("login", [user cString], &conv, &PAM_handle) != PAM_SUCCESS)
     {
       NSLog(@"Failed to initialize PAM");
-      NXRunAlertPanel(@"Login authentication",
+      NXTRunAlertPanel(@"Login authentication",
                       @"Failed to initialize PAM", nil, nil, nil);
       return NO;
     }
@@ -604,7 +604,7 @@ void *alloc(int size)
 {
   NSString *restartCmd;
   
-  if (NXRunAlertPanel(_(@"Restart"),
+  if (NXTRunAlertPanel(_(@"Restart"),
          	      _(@"Do you really want to restart the computer?"),
          	      _(@"Restart"), _(@"Cancel"), nil)
       == NSAlertDefaultReturn)
@@ -641,7 +641,7 @@ void *alloc(int size)
 
   // Ask user to verify his choice
   if (askUser &&
-      NXRunAlertPanel(_(@"Power"),
+      NXTRunAlertPanel(_(@"Power"),
 		      _(@"Do you really want to turn off the computer?"),
 		      _(@"Turn it off"), _(@"Cancel"), nil) 
       == NSAlertDefaultReturn)

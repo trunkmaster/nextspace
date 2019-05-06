@@ -24,8 +24,8 @@
 
 #import <AppKit/NSApplication.h>
 #import <DesktopKit/NXTDefaults.h>
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXDisplay.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEDisplay.h>
 
 #import "Application.h"
 #import "Controller.h"
@@ -105,7 +105,7 @@ int startWindowServer()
 
 void setupDisplays()
 {
-  NXScreen  *screen = [NXScreen sharedScreen];
+  OSEScreen  *screen = [OSEScreen sharedScreen];
   NSArray   *layout;
   // NSArray   *systemDisplays;
 
@@ -115,7 +115,7 @@ void setupDisplays()
   // Setup initial gamma and brightness
   // And check main display from saved layout is active
   // systemDisplays = [screen activeDisplays];
-  // for (NXDisplay *display in systemDisplays)
+  // for (OSEDisplay *display in systemDisplays)
   //   {
   //     [display setGammaBrightness:0.0];
   //   }

@@ -2,150 +2,184 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Aug 27 18:32:12 2018
+;; Created Mon May  6 12:15:06 2019
 ;; Desktop file format version 206
-;; Emacs version 24.3.1
+;; Emacs version 26.1
 
 ;; Global section:
-(setq default-directory "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/")
+(setq desktop-saved-frameset nil)
+(setq default-directory "~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
-(setq search-ring nil)
+(setq search-ring '("helm-swoop"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconView.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/CursorsTest.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Documentation/OpenStep Confusion.md" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/" "~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconView.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/CursorsTest.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Documentation/OpenStep Confusion.md" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.m"
-  "AppController.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  5763
-  '(5544 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m"
-  "IconViewTest.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  5180
-  '(7458 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.h"
-  "IconViewTest.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  577
-  '(182 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/ClockViewTest.m"
-  "ClockViewTest.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  1190
-  '(2916 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/AppController.h"
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/AppController.h"
   "AppController.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  1172
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
   '(nil nil)
   nil
   nil
-  '((buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23759 64281 403171 107000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile"
-  "GNUmakefile"
-  'makefile-gmake-mode
-  '(yas-minor-mode)
-  143
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/AppController.m"
+  "AppController.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
   '(nil nil)
   nil
   nil
-  '((indent-tabs-mode . t) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23759 63406 979533 576000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/CursorsTest.m"
-  "CursorsTest.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1504
-  '(2178 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/CursorsTest.h"
-  "CursorsTest.h"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode company-mode hs-minor-mode)
-  1583
-  '(1144 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/NumericFieldTest.m"
-  "NumericFieldTest.m"
-  'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
-  1706
-  '(nil nil)
-  nil
-  nil
-  '((buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/ClockViewTest.h"
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/ClockViewTest.h"
   "ClockViewTest.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   1
   '(nil nil)
   nil
   nil
-  '((buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23759 63407 421601 885000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/NXAppKitDemo_main.m"
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/ClockViewTest.m"
+  "ClockViewTest.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63407 868803 672000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/CursorsTest.h"
+  "CursorsTest.h"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63408 369969 72000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/CursorsTest.m"
+  "CursorsTest.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63408 826676 195000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/DrawingTest.h"
+  "DrawingTest.h"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63409 266599 375000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/DrawingTest.m"
+  "DrawingTest.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63409 739338 256000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/IconViewTest.h"
+  "IconViewTest.h"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63410 231970 435000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/IconViewTest.m"
+  "IconViewTest.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63410 682685 577000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/NXAppKitDemo_main.m"
   "NXAppKitDemo_main.m"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   1
   '(nil nil)
   nil
   nil
-  '((buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23759 63411 155416 160000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/Tests/NXAppKit/NumericFieldTest.h"
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/NumericFieldTest.h"
   "NumericFieldTest.h"
   'objc-mode
-  '(abbrev-mode yas-minor-mode auto-complete-mode company-mode hs-minor-mode)
+  '(abbrev-mode company-mode hs-minor-mode)
   1
   '(nil nil)
   nil
   nil
-  '((buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23759 63411 628355 802000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/NumericFieldTest.m"
+  "NumericFieldTest.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63412 96542 886000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/TextTest.h"
+  "TextTest.h"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63412 575139 31000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/TextTest.m"
+  "TextTest.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23759 63413 45033 952000) (buffer-file-coding-system . undecided-unix)))
 

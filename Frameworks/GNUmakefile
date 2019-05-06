@@ -6,9 +6,8 @@ include $(GNUSTEP_MAKEFILES)/common.make
 PACKAGE_NAME = nextspace-frameworks
 VERSION = 0.85
 SUBPROJECTS = \
-    NXFoundation \
-    NXSystem \
-    NXAppKit \
+    SystemKit \
+    DesktopKit \
     SoundKit
 
 -include GNUmakefile.preamble

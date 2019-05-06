@@ -21,9 +21,9 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <NXSystem/NXScreen.h>
-#import <NXSystem/NXDisplay.h>
-#import <NXSystem/NXMouse.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEDisplay.h>
+#import <SystemKit/OSEMouse.h>
 #import "NXTAlert.h"
 
 @implementation NXTAlert
@@ -343,9 +343,9 @@
   // Screen size possibly was changed after application start.
   // GNUstep information about screen size is obsolete. Adopt origin.y to
   // GNUstep screen coordinates.
-  NXScreen  *screen = [[NXScreen new] autorelease];
-  NXMouse   *mouse = [[NXMouse new] autorelease];
-  NXDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
+  OSEScreen  *screen = [[OSEScreen new] autorelease];
+  OSEMouse   *mouse = [[OSEMouse new] autorelease];
+  OSEDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
 
   if (display)
     {
@@ -373,7 +373,7 @@
 
 - (void)show
 {
-  NXScreen *screen = [[NXScreen new] autorelease];
+  OSEScreen *screen = [[OSEScreen new] autorelease];
 
   [self sizeToFitScreenSize:[screen sizeInPixels]];
   [panel makeFirstResponder:defaultButton];
@@ -405,7 +405,7 @@
 
 @end
 
-NSInteger NXRunAlertPanel(NSString *title,
+NSInteger NXTRunAlertPanel(NSString *title,
                           NSString *msg,
                           NSString *defaultButton,
                           NSString *alternateButton,
