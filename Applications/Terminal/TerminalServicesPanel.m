@@ -9,7 +9,7 @@
 */
 
 #import <AppKit/AppKit.h>
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 
 #import "Defaults.h"
 #import "TerminalServices.h"
@@ -400,7 +400,7 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
       for (NSString *s in serviceList)
         if ([s isEqualToString:sName])
           {
-            NXRunAlertPanel(@"Terminal Services",
+            NXTRunAlertPanel(@"Terminal Services",
                             @"Service with name \"%@\" already exist."
                             @" Choose another name for service please.",
                             @"OK", nil, nil, sName);

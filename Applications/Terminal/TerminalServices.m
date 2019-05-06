@@ -9,7 +9,7 @@
 */
 
 #import <AppKit/AppKit.h>
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 
 #import "TerminalServices.h"
 
@@ -29,7 +29,7 @@ static NSDictionary *servicesDictionary = nil;
                              dictionaryForKey:@"TerminalServices"];
   if (udServices == nil && servicesDictionary == nil) // no defs, no decision
     {
-      if (NXRunAlertPanel(@"Terminal Services",
+      if (NXTRunAlertPanel(@"Terminal Services",
                           @"No services are define. "
                           @"Would you like to load a set of example services?",
                           @"Load Examples", @"Don't Load", nil) == NSOKButton)
@@ -153,7 +153,7 @@ static NSDictionary *servicesDictionary = nil;
       if (![md objectForKey:@"NSSendTypes"] &&
           ![md objectForKey:@"NSReturnTypes"])
         {
-          NXRunAlertPanel(@"Terminal Services", @"Service with name '%@' has neither Send nor Return values. Please specify '%%s' as command parameter or 'Return Output' in 'Execution' block. Services file was not saved.", @"OK", nil, nil, name);
+          NXTRunAlertPanel(@"Terminal Services", @"Service with name '%@' has neither Send nor Return values. Please specify '%%s' as command parameter or 'Return Output' in 'Execution' block. Services file was not saved.", @"OK", nil, nil, name);
           DESTROY(md);
           DESTROY(a);
           return nil;

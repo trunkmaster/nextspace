@@ -29,7 +29,7 @@
 #import <AppKit/NSFont.h>
 #import <AppKit/NSGraphics.h>
 
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 
 #import "Terminal.h"
 #import "Defaults.h"
@@ -61,7 +61,7 @@ static Defaults *shared = nil;
     {
       if (!isDir)
         {
-          NXRunAlertPanel(@"Session Directory",
+          NXTRunAlertPanel(@"Session Directory",
                           @"%@ exists and not a directory.\n"
                           "Check your home directory layout",
                           @"Ok", nil, nil, path);
@@ -72,7 +72,7 @@ static Defaults *shared = nil;
     {
       if ([fm createDirectoryAtPath:path attributes:nil] == NO)
         {
-          NXRunAlertPanel(@"Session Directory",
+          NXTRunAlertPanel(@"Session Directory",
                           @"Error occured while creating directory %@.\n"
                           "Check your home directory layout",
                           @"Ok", nil, nil, path);

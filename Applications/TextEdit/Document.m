@@ -33,7 +33,7 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 
 #import "Document.h"
 #import "MultiplePageView.h"
@@ -717,7 +717,7 @@ static BOOL hyphenationSupported(void)
 {
   if (isRichText && ([textStorage length] > 0))
     {
-      int choice = NXRunAlertPanel (_(@"Make Plain Text"), 
+      int choice = NXTRunAlertPanel (_(@"Make Plain Text"), 
                                     _(@"Convert document to plain text? This will lose fonts, colors, and other text attribute settings."), 
                                     _(@"OK"), _(@"Cancel"), nil);
       
@@ -765,7 +765,7 @@ static BOOL hyphenationSupported(void)
 {
   if (documentName) {
     NSString *fileName = [documentName lastPathComponent];
-    int choice = NXRunAlertPanel(_(@"Revert"), 
+    int choice = NXTRunAlertPanel(_(@"Revert"), 
                                  _(@"Revert to saved version of %@?"), 
                                  _(@"OK"),
                                  _(@"Cancel"),
@@ -773,7 +773,7 @@ static BOOL hyphenationSupported(void)
                                  fileName);
     if (choice == NSAlertDefaultReturn) {
       if (![self loadFromPath: documentName encoding: encodingIfPlainText]) {
-        NXRunAlertPanel(_(@"Couldn't Revert"), 
+        NXTRunAlertPanel(_(@"Couldn't Revert"), 
                         _(@"Couldn't revert to saved version of %@."), 
                         _(@"OK"),
                         nil,
@@ -832,7 +832,7 @@ static BOOL hyphenationSupported(void)
         if (![Document openDocumentWithPath:filename encoding:flag ? [[encodingPopupButton selectedItem] tag] : UnknownStringEncoding])
           {
             NSString *alternate = (cnt + 1 == numFiles) ? nil : _(@"Abort");
-            unsigned choice = NXRunAlertPanel(_(@"File system error"), 
+            unsigned choice = NXTRunAlertPanel(_(@"File system error"), 
                                               _(@"Couldn't open file %@."), 
                                               _(@"OK"),
                                               alternate,
@@ -895,7 +895,7 @@ static BOOL hyphenationSupported(void)
 - (BOOL) canCloseDocument
 {
   if (isDocumentEdited) {
-    int result = NXRunAlertPanel (
+    int result = NXTRunAlertPanel (
                                   _(@"Close"),
                                   _(@"Document has been edited. Save?"),
                                   _(@"Save"),
@@ -966,7 +966,7 @@ static BOOL hyphenationSupported(void)
         encodingForSaving = NSUTF8StringEncoding;
 
       if (haveToChangeType) {
-        NXRunAlertPanel(_( @"Save Plain Text"), 
+        NXTRunAlertPanel(_( @"Save Plain Text"), 
                         _(@"Document can no longer be saved using its original %@ encoding. Please choose another encoding (%@ is one possibility)."), 
                         _(@"OK"),
                         nil,
@@ -1004,7 +1004,7 @@ static BOOL hyphenationSupported(void)
       return YES;
 
     } else {
-      NXRunAlertPanel(@"Couldn't Save",
+      NXTRunAlertPanel(@"Couldn't Save",
                       _(@"Couldn't save document as %@."),
                       _(@"OK"),
                       nil,

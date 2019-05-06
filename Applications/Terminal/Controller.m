@@ -514,7 +514,7 @@
   if (ask)
     {
       [NSApp activateIgnoringOtherApps:YES];
-      if (NXRunAlertPanel((@"Quit"),
+      if (NXTRunAlertPanel((@"Quit"),
                           (@"You have commands running in some terminal windows.\n"
                            "Quit Terminal terminating running commands?"),
                           (@"Don't quit"), (@"Quit"), nil)
