@@ -71,18 +71,18 @@ export PATH+=":/usr/NextSpace/bin"
 
 export ADDITIONAL_INCLUDE_DIRS="-I../NXFoundation/derived_src -I../NXSystem/derived_src"
 
-cd NXFoundation
+cd SystemKit
 make
 cd ..
 
-cd NXSystem
+cd DesktopKit
 make
 cd ..
 
-cd NXAppKit
+#cd NXAppKit
 #export LDFLAGS="-L../NXFoundation-%{FOUNDATION_VERSION}/NXFoundation.framework -lNXFoundation"
-make
-cd ..
+#make
+#cd ..
 
 cd SoundKit
 make
@@ -95,15 +95,11 @@ cd ..
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export QA_SKIP_BUILD_ROOT=1
 
-cd NXSystem
+cd SystemKit
 %{make_install}
 cd ..
 
-cd NXFoundation
-%{make_install}
-cd ..
-
-cd NXAppKit
+cd DesktopKit
 %{make_install}
 cd ..
 
@@ -140,9 +136,9 @@ cd ..
 #%preun
 
 %postun
-rm /usr/NextSpace/Images
-rm /Library/Fonts
-rm /usr/NextSpace/Sounds
+#rm /usr/NextSpace/Images
+#rm /Library/Fonts
+#rm /usr/NextSpace/Sounds
 
 %changelog
 * Fri May  3 2019 Sergii Stoian <stoyan255@gmail.com> - 0.85-0

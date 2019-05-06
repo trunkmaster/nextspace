@@ -10,7 +10,8 @@ after-distclean::
 after-install::
 # /ust/NextSpace/Images
 	if [ ! -e $(DEST_SYS_LIB)/Images ]; then \
-	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/DesktopKit.framework/Resources/Images $(DEST_SYS_LIB)/Images; \
+	  cd $(DEST_SYS_LIB); \
+	  ln -s ./Frameworks/DesktopKit.framework/Resources/Images $(DEST_SYS_LIB)/Images; \
 	fi
 
 # /Library/Fonts
@@ -23,14 +24,16 @@ after-install::
 
 # /usr/NextSpace/Fonts
 	if [ ! -e $(DEST_SYS_LIB)/Fonts ]; then \
-	  ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/DesktopKit.framework/Resources/Fonts $(DEST_SYS_LIB)/Fonts; \
+	  cd $(DEST_SYS_LIB); \
+	  ln -s ./Frameworks/DesktopKit.framework/Resources/Fonts $(DEST_SYS_LIB)/Fonts; \
 	fi
 
 # /usr/NextSpace/Sounds
 	if [ -e $(DEST_SYS_LIB)/Sounds ]; then \
 	  rm -r $(DEST_SYS_LIB)/Sounds; \
 	fi
-	ln -s $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/DesktopKit.framework/Resources/Sounds $(DEST_SYS_LIB)/Sounds; \
+	cd $(DEST_SYS_LIB); \
+	ln -s ./Frameworks/DesktopKit.framework/Resources/Sounds $(DEST_SYS_LIB)/Sounds; \
 
 # /usr/NextSpace/Sounds/SystemBeep.snd
 	if [ ! -e $(DEST_SYS_LIB)/Sounds/SystemBeep.snd ]; then \
@@ -39,6 +42,7 @@ after-install::
 	fi
 
 after-uninstall::
-	rm -r $(DESTDIR)/usr/NextSpace/Images
 	rm -r $(DESTDIR)/Library/Fonts
+	rm -r $(DESTDIR)/usr/NextSpace/Images
+	rm -r $(DESTDIR)/usr/NextSpace/Fonts
 	rm -r $(DESTDIR)/usr/NextSpace/Sounds

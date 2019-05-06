@@ -1,10 +1,7 @@
 # -*- mode: makefile-gmake -*-
 
-# Add paths to NXFoundation and SystemKit headers if built is out of 'rpmbuild'
-ifeq ($(ADDITIONAL_INCLUDE_DIRS), )
-  ADDITIONAL_INCLUDE_DIRS = -I../SystemKit/derived_src
-endif
+ADDITIONAL_INCLUDE_DIRS += -I../SystemKit/derived_src
 
 ADDITIONAL_OBJCFLAGS += -Wno-import -Wno-unused -pipe -Wno-format-security
 
-ADDITIONAL_LDFLAGS += -lSystemKit -lmagic
+ADDITIONAL_LDFLAGS += -L../SystemKit/SystemKit.framework -lSystemKit -lmagic
