@@ -1,0 +1,50 @@
+# -*- mode: makefile-gmake -*-
+#
+# GNUmakefile.preamble
+#
+
+### Additional flags to pass to the preprocessor
+ifeq ($(LIBACPI), yes)
+  ADDITIONAL_CPPFLAGS += -DLIBACPI
+endif
+
+### Additional flags to pass to Objective C compiler
+ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-import -Wno-unused -Wno-unused-parameter -pipe
+
+ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+  ADDITIONAL_OBJCFLAGS += -DFREEBSD -DWITH_HAL `pkg-config --cflags-only-other hal`
+endif
+
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+  ADDITIONAL_OBJCFLAGS += -DLINUX -DWITH_UDISKS -DWITH_UPOWER
+endif
+
+### Additional flags to pass to C compiler
+ADDITIONAL_CFLAGS +=
+
+### Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS += -I../
+
+ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags hal`
+endif
+
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags udisks2 dbus-1 upower-glib`
+  ADDITIONAL_INCLUDE_DIRS += -I/usr/include/gio-unix-2.0
+endif
+
+### Additional flags to pass to the linker
+ADDITIONAL_LDFLAGS += -lXrandr -lxkbfile -lXcursor
+ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+  ADDITIONAL_LDFLAGS += `pkg-config --libs hal`
+endif
+
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+  ADDITIONAL_LDFLAGS += `pkg-config --libs udisks2 dbus-1 upower-glib`
+  ADDITIONAL_LDFLAGS += -ldispatch
+endif
+
+### Additional library directories the linker should search
+ADDITIONAL_LIB_DIRS += 
+ADDITIONAL_GUI_LIBS += 
