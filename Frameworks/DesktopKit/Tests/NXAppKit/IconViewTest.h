@@ -1,12 +1,12 @@
 /* All Rights reserved */
 
 #include <AppKit/AppKit.h>
-#import <NXAppKit/NXIconView.h>
+#import <DesktopKit/NXTIconView.h>
 
 // Using NSOperation https://developer.apple.com/library/archive/technotes/tn2109/_index.html
 @interface PathLoader : NSOperation
 {
-  NXIconView  *iconView;
+  NXTIconView  *iconView;
   NSTextField *statusField;
   NSString    *directoryPath;
   NSArray     *selectedFiles;
@@ -14,7 +14,7 @@
 
 @property (atomic, assign, readonly) NSInteger itemsCount;
 
-- (id)initWithIconView:(NXIconView *)view
+- (id)initWithIconView:(NXTIconView *)view
                 status:(NSTextField *)status
                   path:(NSString *)dirPath
              selection:(NSArray *)filenames;
@@ -33,7 +33,7 @@
   NSTextField  *panelItemsCount;
   NSTextField  *panelStatusField;
   NSScrollView *panelView;
-  NXIconView   *filesView;
+  NXTIconView   *filesView;
 
   NSOperationQueue *opQ;
   PathLoader       *pathLoaderOp;

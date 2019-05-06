@@ -1,7 +1,7 @@
 /*
   Class:               NumericFieldTest
   Inherits from:       NSObject
-  Class descritopn:    NXNumericField demo for testing purposes.
+  Class descritopn:    NXTNumericField demo for testing purposes.
 
   Copyright (C) 2016 Sergii Stoian
 

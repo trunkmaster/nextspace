@@ -1,7 +1,7 @@
 /*
   Class:               ClockViewTest
   Inherits from:       NSObject
-  Class descritopn:    NXClockView demo for testing purposes.
+  Class descritopn:    NXTClockView demo for testing purposes.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -21,7 +21,7 @@
 */
 
 #import "ClockViewTest.h"
-#import <NXFoundation/NXDefaults.h>
+#import <DesktopKit/NXTDefaults.h>
 
 @implementation ClockViewTest : NSObject
 
@@ -81,9 +81,9 @@
 
 - (void)set24Hour:(id)sender
 {
-  [[NXDefaults globalUserDefaults] setBool:[sender state]
-                                    forKey:@"NXClockView24HourFormat"];
-  //  [[NXDefaults globalUserDefaults] synchronize];
+  [[NXTDefaults globalUserDefaults] setBool:[sender state]
+                                    forKey:@"NXTClockView24HourFormat"];
+  //  [[NXTDefaults globalUserDefaults] synchronize];
 }
 - (void)setShowYear:(id)sender
 {

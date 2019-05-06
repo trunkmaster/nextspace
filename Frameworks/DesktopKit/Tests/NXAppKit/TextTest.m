@@ -78,9 +78,9 @@ static inline NSRect IncrementedRect(NSRect r)
   [window makeFirstResponder:textToShrink];
 }
 
-// --- NXSizer delegate
+// --- NXTSizer delegate
 
-- (BOOL) arrowView:(NXSizer *)sender
+- (BOOL) arrowView:(NXTSizer *)sender
  shouldMoveByDelta:(float)delta
 {
   NSView   *superview = [sender superview];
@@ -132,7 +132,7 @@ static inline NSRect IncrementedRect(NSRect r)
   textFrame.size.width = newWidth;
   [shrinkedText setFrame:textFrame];
 
-  newText = NXShortenString([textToShrink stringValue],
+  newText = NXTShortenString([textToShrink stringValue],
                             newWidth - 4, [shrinkedText font],
                             [[elementType selectedCell] tag],
                             [[dotsPosition selectedCell] tag]);
@@ -141,7 +141,7 @@ static inline NSRect IncrementedRect(NSRect r)
   return YES;
 }
 
-- (void)arrowViewStoppedMoving:(NXSizer *)sender
+- (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
   [window makeFirstResponder:textToShrink];
 }

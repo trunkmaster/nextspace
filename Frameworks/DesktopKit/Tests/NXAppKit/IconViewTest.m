@@ -1,8 +1,8 @@
 /* All Rights reserved */
 
-#import <NXAppKit/NXIcon.h>
-#import <NXAppKit/NXIconLabel.h>
-#import <NXFoundation/NXFileManager.h>
+#import <DesktopKit/NXTIcon.h>
+#import <DesktopKit/NXTIconLabel.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import "IconViewTest.h"
 
@@ -33,7 +33,7 @@
   [panelView setHasHorizontalScroller:NO];
   [panelView setHasVerticalScroller:YES];
   
-  filesView = [[NXIconView alloc]
+  filesView = [[NXTIconView alloc]
                 initWithFrame:[[panelView contentView] frame]];
 
   [filesView setDelegate:self];
@@ -97,7 +97,7 @@
   //                ^{ [self displayPath:recyclerPath selection:nil]; });
 }
 
-// -- NXIconView delegate
+// -- NXTIconView delegate
 
 - (void)displayPath:(NSString *)dirPath
           selection:(NSArray *)filenames
@@ -106,10 +106,10 @@
   // NSMutableArray	*icons;
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   NSFileManager		*fm = [NSFileManager defaultManager];
-  NXFileManager		*xfm = [NXFileManager sharedManager];
+  NXTFileManager		*xfm = [NXTFileManager sharedManager];
   NSArray		*items;
   NSString              *path;
-  NXIcon                *anIcon;
+  NXTIcon                *anIcon;
   NSUInteger            slotsWide, x;
 
   // icons = [NSMutableArray array];
@@ -129,7 +129,7 @@
     {
       path = [dirPath stringByAppendingPathComponent:filename];
 
-      anIcon = [[NXIcon new] autorelease];
+      anIcon = [[NXTIcon new] autorelease];
       [anIcon setLabelString:filename];
       [[anIcon label] setIconLabelDelegate:self];
       [anIcon setIconImage:[[NSWorkspace sharedWorkspace] iconForFile:path]];
@@ -183,7 +183,7 @@
 
 @implementation PathLoader
 
-- (id)initWithIconView:(NXIconView *)view
+- (id)initWithIconView:(NXTIconView *)view
                 status:(NSTextField *)status
                   path:(NSString *)dirPath
              selection:(NSArray *)filenames
@@ -204,10 +204,10 @@
   // NSMutableArray	*icons = [NSMutableArray array];
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   // NSFileManager		*fm = [NSFileManager defaultManager];
-  NXFileManager		*xfm = [NXFileManager sharedManager];
+  NXTFileManager		*xfm = [NXTFileManager sharedManager];
   NSArray		*items;
   NSString		*path;
-  NXIcon		*anIcon;
+  NXTIcon		*anIcon;
   NSUInteger		slotsWide, x;
 
   [statusField performSelectorOnMainThread:@selector(setStringValue:)
@@ -228,7 +228,7 @@
     {
       path = [directoryPath stringByAppendingPathComponent:filename];
 
-      anIcon = [[NXIcon new] autorelease];
+      anIcon = [[NXTIcon new] autorelease];
       [anIcon setLabelString:filename];
       [anIcon setIconImage:[[NSWorkspace sharedWorkspace] iconForFile:path]];
       [[anIcon label] setIconLabelDelegate:self];

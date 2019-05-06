@@ -20,7 +20,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import <NXAppKit/NXAlert.h>
+#import <DesktopKit/NXTAlert.h>
 #import "AppController.h"
 
 @implementation AppController : NSObject
@@ -38,10 +38,10 @@
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-  return NXRunAlertPanel(@"Quit",
+  return NXTRunAlertPanel(@"Quit",
                          @"Do you really want to quit?",
                          @"Quit Now!", @"Who knows...", @"No!");
-  // return NXRunAlertPanel(@"GNU Preamble",
+  // return NXTRunAlertPanel(@"GNU Preamble",
   //                        @"This program is free software; \nyou can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; \neither version 2 of the License, or (at your option) any later version.",
   //                        @"Default", @"Alternate Button", @"Other");
 }
@@ -70,11 +70,11 @@
 
 - (void)showMultilineAlert:(id)sender
 {
-  // NXRunAlertPanel(@"GNU Preamble",
+  // NXTRunAlertPanel(@"GNU Preamble",
   //                 @"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.",
   //                 @"OK", @"Return to programm", @"Cancel");
 
-  NXRunAlertPanel(@"OpenStep Confusion",
+  NXTRunAlertPanel(@"OpenStep Confusion",
                   @"History\n"
                   "While the company \"NeXT\" has always been spelled with a lowercase \"e\", to make the logo look better and to make the name more recognizable in print, the names of the product changed quite often. Here is a detailed history as Garance A. Drosehn and we understand it.\n"
                   "NextStep - has never been used as a spelling as far as we can tell. But the all lowercase \"Next\" portion can be found in default filesystem locations such as: NextApps, NextLibrary, etc. These folder names have lasted until 1997 ... no matter how NeXT called their operating system.\n"
@@ -88,12 +88,12 @@
 
 - (void)show3LineAlert:(id)sender
 {
-  // NXRunAlertPanel(@"Alert with 3 line message",
+  // NXTRunAlertPanel(@"Alert with 3 line message",
   //                 @"This is the FIRST line.\n"
   //                 "This is the SECOND line.\n"
   //                 "This is the THIRD line.\n",
   //                 @"Dismiss", nil, nil);
-  NXAlert *alert = [[NXAlert alloc] init];
+  NXTAlert *alert = [[NXTAlert alloc] init];
   [alert createPanel];
   [alert setTitle:@"Alert with 3 line message"
           message:@"This is the FIRST line.\n"
@@ -107,7 +107,7 @@
 
 - (void)showSinglelineAlert:(id)sender
 {
-  NXRunAlertPanel(@"Alert with single line message",
+  NXTRunAlertPanel(@"Alert with single line message",
                   @"What is you favourite drink?",
                   @"Wiskey", @"Beer", @"Vodka");
 }

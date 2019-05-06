@@ -1,7 +1,7 @@
  /*
   Class:               ClockViewTest
   Inherits from:       NSObject
-  Class descritopn:    NXClockView demo for testing purposes.
+  Class descritopn:    NXTClockView demo for testing purposes.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -23,13 +23,13 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-#import <NXAppKit/NXClockView.h>
-#import <NXAppKit/NXNumericField.h>
+#import <DesktopKit/NXTClockView.h>
+#import <DesktopKit/NXTNumericField.h>
 
 @interface ClockViewTest : NSObject
 {
   id window;
-  NXClockView *clockView;
+  NXTClockView *clockView;
   id yearField;
   id monthField;
   id dayField;

@@ -1,7 +1,7 @@
 /*
   Class:               NumericFieldTest
   Inherits from:       NSObject
-  Class descritopn:    NXNumericField demo for testing purposes.
+  Class descritopn:    NXTNumericField demo for testing purposes.
 
   Copyright (C) 2016 Sergii Stoian
 
@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-#import <NXAppKit/NXNumericField.h>
+#import <DesktopKit/NXTNumericField.h>
 
 @interface NumericFieldTest : NSObject
 {
