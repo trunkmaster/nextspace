@@ -17,20 +17,27 @@
 #define ForegroundLayoutToIndex @"ForegroundLayoutToIndex"
 #define OpenPanelFollowsMainWindow @"OpenPanelFollowsMainWindow"
 
-@interface Preferences: NSObject {
-	id	richTextFontNameField;
-	id	plainTextFontNameField;
-	id	deleteBackupMatrix;
-	id	saveFilesWritableButton;
-	id	richTextMatrix;
-	id	showPageBreaksButton;
-	id	windowWidthField;
-	id	windowHeightField;
-	id	plainTextEncodingPopup;
-	id	tabWidthField;
+@interface Preferences: NSObject
+{
+  // Save Options
+  id	deleteBackupMatrix;
+  id	saveFilesWritableButton;
+  // New Document Format
+  id	richTextMatrix;
+  id	showPageBreaksButton;
+  id	tabWidthField;
+  // Fonts
+  id	richTextFontNameField;
+  id	plainTextFontNameField;
+  // Window Size
+  id	windowWidthField;
+  id	windowHeightField;
+  // Plain TextEncoding
+  id	plainTextEncodingPopup;
+  
 
-	NSDictionary		*curValues;
-	NSMutableDictionary	*displayedValues;
+  NSDictionary		*curValues;
+  NSMutableDictionary	*displayedValues;
 }
 
 + (id) objectForKey: (id)key;	/* Convenience for getting global preferences */
