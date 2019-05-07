@@ -29,10 +29,7 @@ TextEdit_LOCALIZED_RESOURCE_FILES= \
 	FindPanel.strings \
 	Localizable.strings
 
-TextEdit_LANGUAGES= \
-	English \
-	German \
-	Russian
+TextEdit_LANGUAGES= English
 
 #
 # Source
