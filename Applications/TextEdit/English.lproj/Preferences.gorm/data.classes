@@ -1,3 +1,20 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Preferences = {
+	Actions = (
+	);
+	Outlets = (
+	    deleteBackupMatrix,
+	    plainTextEncodingPopup,
+	    plainTextFontNameField,
+	    richTextFontNameField,
+	    richTextMatrix,
+	    saveFilesWritableButton,
+	    showPageBreakButton,
+	    tabWidthField,
+	    windowHeightField,
+	    windowWidthField
+	);
+	Super = NSObject;
+    };
 }

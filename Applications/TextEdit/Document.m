@@ -49,10 +49,10 @@
   [textView setUsesFontPanel:YES];
   [textView setDelegate:self];
   [self setRichText:[[Preferences objectForKey:RichText] boolValue]];
-  [self setHyphenationFactor: 0.0];
+  [self setHyphenationFactor:0.0];
 }
 
-- (id) init
+- (id)init
 {
   static NSPoint  cascadePoint = {0.0, 0.0};
   NSLayoutManager *layoutManager;
@@ -60,12 +60,11 @@
   self = [super init];
   textStorage = [[NSTextStorage alloc] init];
 
-  if (![NSBundle loadNibNamed:@"Document" owner:self])
-    {
-      NSLog (@"Failed to load Document.nib");
-      [self release];
-      return nil;
-    }
+  if (![NSBundle loadNibNamed:@"Document" owner:self]) {
+    NSLog (@"Failed to load Document.nib");
+    [self release];
+    return nil;
+  }
 
   layoutManager = [[NSLayoutManager alloc] init];
   [textStorage addLayoutManager:layoutManager];
@@ -85,52 +84,51 @@
   // This ensures the first view gets set up correctly
   [self setupInitialTextViewSharedState];
 
-  if (NSEqualPoints (cascadePoint, NSZeroPoint)) 
-    { // First time through...
-      NSRect frame = [[self window] frame];
-      cascadePoint = NSMakePoint(frame.origin.x, NSMaxY(frame));
-    }
+  if (NSEqualPoints (cascadePoint, NSZeroPoint))  {
+    // First time through...
+    NSRect frame = [[self window] frame];
+    cascadePoint = NSMakePoint(frame.origin.x, NSMaxY(frame));
+  }
   cascadePoint = [[self window] cascadeTopLeftFromPoint:cascadePoint];
   [[self window] setDelegate:self];
 
   // Set the window size from defaults...
-  if ([self hasMultiplePages])
-    {
-      [self setViewSize:[[scrollView documentView] pageRectForPageNumber:0].size];
-    }
-  else
-    {
-      int     windowHeight = [[Preferences objectForKey:WindowHeight] intValue];
-      int     windowWidth = [[Preferences objectForKey:WindowWidth] intValue];
-      NSFont  *font = [Preferences objectForKey:[self isRichText] ? RichTextFont : PlainTextFont];
-      NSSize  size;
-      NSGlyph nGlyph;
+  if ([self hasMultiplePages]) {
+    [self setViewSize:[[scrollView documentView] pageRectForPageNumber:0].size];
+  }
+  else {
+    int     windowHeight = [[Preferences objectForKey:WindowHeight] intValue];
+    int     windowWidth = [[Preferences objectForKey:WindowWidth] intValue];
+    NSFont  *font = [Preferences objectForKey:[self isRichText] ? RichTextFont : PlainTextFont];
+    NSSize  size;
+    NSGlyph nGlyph;
 #ifdef GNUSTEP
-      NSFont  *screenFont = [font screenFont];
+    NSFont  *screenFont = [font screenFont];
       
-      if (screenFont)
-        font = screenFont;
+    if (screenFont)
+      font = screenFont;
+    nGlyph = 'n';
+#else
+    if ([font respondsToSelector:@selector(glyphForCharacter:)])
+      nGlyph = (NSGlyph) [font glyphForCharacter:'n'];
+    else
+      nGlyph = 'n';
 #endif
-      if ([font respondsToSelector:@selector(glyphForCharacter:)])
-        nGlyph = (NSGlyph) [font glyphForCharacter:'n'];
-      else
-        nGlyph = 'n';
 
-      if ([font glyphIsEncoded: nGlyph])
-        { // Better to use n-width than the maximum, for rich text fonts...
-          size.width = [font advancementForGlyph:nGlyph].width;
-        }
-      else
-        {
-          size.width = [font maximumAdvancement].width;
-        }
-
-      float linePadding = [[[self firstTextView] textContainer] lineFragmentPadding];
-      size.width = ceil(size.width * windowWidth + linePadding * 2.0);
-      size.height = ceil ([font boundingRectForFont].size.height) * windowHeight;
-
-      [self setViewSize:size];
+    if ([font glyphIsEncoded: nGlyph]) {
+      // Better to use n-width than the maximum, for rich text fonts...
+      size.width = [font advancementForGlyph:nGlyph].width;
     }
+    else {
+      size.width = [font maximumAdvancement].width;
+    }
+
+    float linePadding = [[[self firstTextView] textContainer] lineFragmentPadding];
+    size.width = ceil(size.width * windowWidth + linePadding * 2.0);
+    size.height = ceil ([font boundingRectForFont].size.height) * windowHeight;
+
+    [self setViewSize:size];
+  }
 
   [[NSNotificationCenter defaultCenter]
 		addObserver:self
@@ -142,72 +140,64 @@
   return self;
 }
 
-- (void) fixUpScrollViewBackgroundColor:(NSNotification *)notification
+- (void)fixUpScrollViewBackgroundColor:(NSNotification *)notification
 {
   NSLog(@"fixUpScrollViewBackgroundColor:");
 }
 
-- (id) initWithPath:(NSString *)filename
-           encoding:(int)encoding
+- (id)initWithPath:(NSString *)filename
+          encoding:(int)encoding
 {
-  if (!(self = [self init]))
-    {
-      return nil;
-    }
+  if (!(self = [self init])) {
+    return nil;
+  }
 
-  if (filename && ![self loadFromPath:filename encoding:encoding])
-    {
-      [self release];
-      return nil;
-    }
+  if (filename && ![self loadFromPath:filename encoding:encoding]) {
+    [self release];
+    return nil;
+  }
 
-  if (filename)
-    {
-      [Document setLastOpenSavePanelDirectory:[filename stringByDeletingLastPathComponent]];
-    }
+  if (filename) {
+    [Document setLastOpenSavePanelDirectory:[filename stringByDeletingLastPathComponent]];
+  }
 
   [[self firstTextView] setSelectedRange:NSMakeRange(0, 0)];
   [self setDocumentName:filename];
   return self;
 }
 
-+ (BOOL) openUntitled
++ (BOOL)openUntitled
 {
   Document *document = [[self alloc] initWithPath:nil encoding:UnknownStringEncoding];
 
-  if (document)
-    {
-      [document setPotentialSaveDirectory:[Document openSavePanelDirectory]];
-      [document setDocumentName:nil];
-      [[document window] makeKeyAndOrderFront:nil];
-      return YES;
-    }
-  else
-    {
-      return NO;
-    }
+  if (document) {
+    [document setPotentialSaveDirectory:[Document openSavePanelDirectory]];
+    [document setDocumentName:nil];
+    [[document window] makeKeyAndOrderFront:nil];
+    return YES;
+  }
+  else {
+    return NO;
+  }
 }
 
-+ (BOOL) openDocumentWithPath:(NSString *)filename encoding:(int)encoding
++ (BOOL)openDocumentWithPath:(NSString *)filename encoding:(int)encoding
 {
   Document *document = [self documentForPath:filename];
 
-  if (!document)
-    {
-      document = [[self alloc] initWithPath:filename encoding:encoding];
-    }
+  if (!document) {
+    document = [[self alloc] initWithPath:filename encoding:encoding];
+  }
 
-  if (document)
-    {
-      [document doForegroundLayoutToCharacterIndex:
-                        [[Preferences objectForKey:ForegroundLayoutToIndex] intValue]];
-      [[document window] makeKeyAndOrderFront:nil];
-      return YES;
-    } 
-  else 
-    {
-      return NO;
-    }
+  if (document) {
+    [document doForegroundLayoutToCharacterIndex:
+                      [[Preferences objectForKey:ForegroundLayoutToIndex] intValue]];
+    [[document window] makeKeyAndOrderFront:nil];
+    return YES;
+  } 
+  else {
+    return NO;
+  }
 }
 
 /*
@@ -218,51 +208,51 @@
 {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 
-  [center removeObserver: self
-                    name: NSSystemColorsDidChangeNotification
-                  object: nil];
+  [center removeObserver:self
+                    name:NSSystemColorsDidChangeNotification
+                  object:nil];
 
-  [center removeObserver: self
-                    name: NSTextStorageDidProcessEditingNotification
-                  object: [self textStorage]];
+  [center removeObserver:self
+                    name:NSTextStorageDidProcessEditingNotification
+                  object:[self textStorage]];
 
-  [[self firstTextView] setDelegate: nil];
-  [[self window] setDelegate: nil];
+  [[self firstTextView] setDelegate:nil];
+  [[self window] setDelegate:nil];
   [documentName release];
   [textStorage release];
   [printInfo release];
   [super dealloc];
 }
 
-- (NSTextView *) firstTextView
+- (NSTextView *)firstTextView
 {
   return [[self layoutManager] firstTextView];
 }
 
-- (NSSize) viewSize
+- (NSSize)viewSize
 {
   return [scrollView contentSize];
 }
 
-- (void) setViewSize:(NSSize)size
+- (void)setViewSize:(NSSize)size
 {
   NSWindow	*window = [scrollView window];
-  NSRect		origWindowFrame = [window frame];
+  NSRect	origWindowFrame = [window frame];
 
   [window setContentSize:
-            [NSScrollView frameSizeForContentSize: size
-                            hasHorizontalScroller: [scrollView hasHorizontalScroller]
-                              hasVerticalScroller: [scrollView hasVerticalScroller]
-                                       borderType: [scrollView borderType]]];
+            [NSScrollView frameSizeForContentSize:size
+                            hasHorizontalScroller:[scrollView hasHorizontalScroller]
+                              hasVerticalScroller:[scrollView hasVerticalScroller]
+                                       borderType:[scrollView borderType]]];
 
-  [window setFrameTopLeftPoint: NSMakePoint (origWindowFrame.origin.x, NSMaxY (origWindowFrame))];
+  [window setFrameTopLeftPoint:NSMakePoint(origWindowFrame.origin.x, NSMaxY (origWindowFrame))];
 }
 
 /*
   This method causes the text to be laid out in the foreground (approximately)
   up to the indicated character index.
 */
-- (void) doForegroundLayoutToCharacterIndex:(unsigned)loc
+- (void)doForegroundLayoutToCharacterIndex:(unsigned)loc
 {
   unsigned int	len;
 
@@ -274,22 +264,21 @@
 
     // Find out which glyph index the desired character index corresponds to
     glyphRange = [[self layoutManager]
-						glyphRangeForCharacterRange: NSMakeRange (loc, 1)
-                                                       actualCharacterRange: NULL];
+                   glyphRangeForCharacterRange:NSMakeRange (loc, 1)
+                          actualCharacterRange:NULL];
 
     /*
       Now cause layout by asking a question which has to determine
       where the glyph is
     */
     if (glyphRange.location > 0) {
-      [[self layoutManager]
-				textContainerForGlyphAtIndex: glyphRange.location - 1
-                                              effectiveRange: NULL];
+      [[self layoutManager] textContainerForGlyphAtIndex:glyphRange.location - 1
+                                          effectiveRange:NULL];
     }
   }
 }
 
-+ (NSString *) cleanedUpPath:(NSString *)filename
++ (NSString *)cleanedUpPath:(NSString *)filename
 {
   NSString	*resolvedSymlinks = [filename stringByResolvingSymlinksInPath];
 
@@ -308,107 +297,107 @@
 
   if (filename) {
     documentName = [[filename stringByResolvingSymlinksInPath] copy];
-    [[self window] setTitleWithRepresentedFilename: documentName];
+    [[self window] setTitleWithRepresentedFilename:documentName];
   } else {
     NSString	*untitled = _(@"UNTITLED");
 
     if ([self isRichText])
-      untitled = [untitled stringByAppendingPathExtension: @"rtf"];
+      untitled = [untitled stringByAppendingPathExtension:@"rtf"];
 
     if (potentialSaveDirectory) {
-      [[self window] setTitleWithRepresentedFilename: [potentialSaveDirectory stringByAppendingPathComponent: untitled]];
+      [[self window] setTitleWithRepresentedFilename:[potentialSaveDirectory stringByAppendingPathComponent:untitled]];
     } else {
-      [[self window] setTitle: untitled];
+      [[self window] setTitle:untitled];
     }
     documentName = nil;
   }
 }
 
-- (NSString *) documentName
+- (NSString *)documentName
 {
   return documentName;
 }
 
-- (void) setPotentialSaveDirectory:(NSString *)nm
+- (void)setPotentialSaveDirectory:(NSString *)nm
 {
-  if (![[Preferences objectForKey: OpenPanelFollowsMainWindow] boolValue])
+  if (![[Preferences objectForKey:OpenPanelFollowsMainWindow] boolValue])
     return;
 
   [potentialSaveDirectory autorelease];
   potentialSaveDirectory = [nm copy];
 }
 
-- (NSString *) potentialSaveDirectory
+- (NSString *)potentialSaveDirectory
 {
-  if (![[Preferences objectForKey: OpenPanelFollowsMainWindow] boolValue])
-    return NSHomeDirectory ();
+  if (![[Preferences objectForKey:OpenPanelFollowsMainWindow] boolValue])
+    return NSHomeDirectory();
 
   return potentialSaveDirectory;
 }
 
-- (void) setDocumentEdited:(BOOL)flag
+- (void)setDocumentEdited:(BOOL)flag
 {
   if (flag != isDocumentEdited) {
     isDocumentEdited = flag;
-    [[self window] setDocumentEdited: isDocumentEdited];
+    [[self window] setDocumentEdited:isDocumentEdited];
   }
 }
 
-- (BOOL) isDocumentEdited
+- (BOOL)isDocumentEdited
 {
   return isDocumentEdited;
 }
 
-- (NSTextStorage *) textStorage
+- (NSTextStorage *)textStorage
 {
   return textStorage;
 }
 
-- (NSWindow *) window
+- (NSWindow *)window
 {
   return [[self firstTextView] window];
 }
 
-- (NSLayoutManager *) layoutManager
+- (NSLayoutManager *)layoutManager
 {
-  return [[textStorage layoutManagers] objectAtIndex: 0];
+  return [[textStorage layoutManagers] objectAtIndex:0];
 }
 
-- (void) setPrintInfo:(NSPrintInfo *)anObject
+- (void)setPrintInfo:(NSPrintInfo *)anObject
 {
   if (printInfo == anObject
-      || [[printInfo dictionary] isEqual: [anObject dictionary]])
+      || [[printInfo dictionary] isEqual:[anObject dictionary]])
     return;
 
   [printInfo autorelease];
   printInfo = [anObject copy];
 
   if ([self hasMultiplePages]) {
-    unsigned int		cnt;
-    unsigned int		numberOfPages = [self numberOfPages];
+    unsigned int	cnt;
+    unsigned int	numberOfPages = [self numberOfPages];
     MultiplePageView	*pagesView = [scrollView documentView];
-    NSArray				*textContainers = [[self layoutManager] textContainers];
+    NSArray		*textContainers = [[self layoutManager] textContainers];
 
     [pagesView setPrintInfo: printInfo];
 		
     for (cnt = 0; cnt < numberOfPages; cnt++) {
-      NSRect			textFrame = [pagesView documentRectForPageNumber: cnt];
-      NSTextContainer	*textContainer = [textContainers objectAtIndex: cnt];
+      NSRect		textFrame = [pagesView documentRectForPageNumber:cnt];
+      NSTextContainer	*textContainer = [textContainers objectAtIndex:cnt];
 
-      [textContainer setContainerSize: textFrame.size];
-      [[textContainer textView] setFrame: textFrame];
+      [textContainer setContainerSize:textFrame.size];
+      [[textContainer textView] setFrame:textFrame];
     }
   }
 }
 
-- (NSPrintInfo *) printInfo
+- (NSPrintInfo *)printInfo
 {
   return printInfo;
 }
 
 /* Multiple page related code */
 
-- (unsigned int) numberOfPages
+- (unsigned int)numberOfPages
 {
   if (hasMultiplePages) {
     return [[scrollView documentView] numberOfPages];
@@ -417,138 +406,143 @@
   }
 }
 
-- (BOOL) hasMultiplePages
+- (BOOL)hasMultiplePages
 {
   return hasMultiplePages;
 }
 
-- (void) addPage
+- (void)addPage
 {
   unsigned int		numberOfPages = [self numberOfPages];
   MultiplePageView	*pagesView = [scrollView documentView];
-  NSSize 				textSize = [pagesView documentSizeInPage];
-  NSTextContainer		*textContainer = [[NSTextContainer alloc] initWithContainerSize: textSize];
-  NSTextView			*textView;
+  NSSize 		textSize = [pagesView documentSizeInPage];
+  NSTextContainer	*textContainer;
+  NSTextView		*textView;
 
-  [pagesView setNumberOfPages: numberOfPages + 1];
+  [pagesView setNumberOfPages:numberOfPages + 1];
+  textContainer = [[NSTextContainer alloc] initWithContainerSize:textSize];
   textView = [[NSTextView alloc]
-				initWithFrame: [pagesView documentRectForPageNumber: numberOfPages]
-				textContainer: textContainer];
+               initWithFrame:[pagesView documentRectForPageNumber:numberOfPages]
+               textContainer:textContainer];
 
-  [textView setHorizontallyResizable: NO];
-  [textView setVerticallyResizable: NO];
-  [pagesView addSubview: textView];
-  [[self layoutManager] addTextContainer: textContainer];
+  [textView setHorizontallyResizable:NO];
+  [textView setVerticallyResizable:NO];
+  [pagesView addSubview:textView];
+  [[self layoutManager] addTextContainer:textContainer];
   [textView release];
   [textContainer release];
 }
 
-- (void) removePage
+- (void)removePage
 {
   unsigned int		numberOfPages = [self numberOfPages];
-  NSArray				*textContainers = [[self layoutManager] textContainers];
-  NSTextContainer		*lastContainer = [textContainers objectAtIndex: [textContainers count] - 1];
+  NSArray		*textContainers = [[self layoutManager] textContainers];
   MultiplePageView	*pagesView = [scrollView documentView];
+  NSTextContainer	*lastContainer;
 
-  [pagesView setNumberOfPages: numberOfPages - 1];
+  [pagesView setNumberOfPages:numberOfPages - 1];
+  lastContainer = [textContainers objectAtIndex:[textContainers count] - 1];
   [[lastContainer textView] removeFromSuperview];
-  [[lastContainer layoutManager] removeTextContainerAtIndex: [textContainers count] - 1];
+  [[lastContainer layoutManager] removeTextContainerAtIndex:[textContainers count] - 1];
 }
 
 /*
   This method determines whether the document has multiple pages or not.
   It can be called at any time.
 */	 
-- (void) setHasMultiplePages:(BOOL)flag
+- (void)setHasMultiplePages:(BOOL)flag
 {
   hasMultiplePages = flag;
 
   if (hasMultiplePages) {
-    NSTextView *textView = [self firstTextView];
-    MultiplePageView *pagesView = [[MultiplePageView alloc] init];
+    NSTextView		*textView = [self firstTextView];
+    MultiplePageView	*pagesView = [[MultiplePageView alloc] init];
 
-    [scrollView setDocumentView: pagesView];
+    [scrollView setDocumentView:pagesView];
 
-    [pagesView setPrintInfo: [self printInfo]];
+    [pagesView setPrintInfo:[self printInfo]];
 
-    // MF: Add the first new page before we remove the old container so we can avoid losing all the shared text view state.
+    // MF: Add the first new page before we remove the old container so we can
+    // avoid losing all the shared text view state.
     [self addPage];
 
     if (textView) {
-      [[self layoutManager] removeTextContainerAtIndex: 0];
+      [[self layoutManager] removeTextContainerAtIndex:0];
     }
 
-    [scrollView setHasHorizontalScroller: YES];
+    [scrollView setHasHorizontalScroller:YES];
 
   } else {
-    NSSize			size = [scrollView contentSize];
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize (size.width, FLT_MAX)];
-    NSTextView		*textView = [[NSTextView alloc] initWithFrame: NSMakeRect (0.0, 0.0, size.width, size.height) textContainer: textContainer];
+    NSSize		size = [scrollView contentSize];
+    NSTextContainer	*textContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(size.width, FLT_MAX)];
+    NSTextView		*textView = [[NSTextView alloc] initWithFrame:NSMakeRect(0.0, 0.0, size.width, size.height)
+                                                        textContainer:textContainer];
 
-    // Insert the single container as the first container in the layout manager before removing the existing pages in order to preserve the shared view state.
-    [[self layoutManager] insertTextContainer: textContainer atIndex: 0];
+    // Insert the single container as the first container in the layout manager
+    // before removing the existing pages in order to preserve the shared view state.
+    [[self layoutManager] insertTextContainer:textContainer atIndex:0];
 
-    if ([[scrollView documentView] isKindOfClass: [MultiplePageView class]]) {
-      NSArray			*textContainers = [[self layoutManager] textContainers];
+    if ([[scrollView documentView] isKindOfClass:[MultiplePageView class]]) {
+      NSArray		*textContainers = [[self layoutManager] textContainers];
       unsigned int	cnt = [textContainers count];
 
       while (cnt-- > 1) {
-        [[self layoutManager] removeTextContainerAtIndex: cnt];
+        [[self layoutManager] removeTextContainerAtIndex:cnt];
       }
     }
 
-    [textContainer setWidthTracksTextView: YES];
-    [textContainer setHeightTracksTextView: NO];	// Not really necessary
-    [textView setHorizontallyResizable: NO];		// Not really necessary
-    [textView setVerticallyResizable: YES];
+    [textContainer setWidthTracksTextView:YES];
+    [textContainer setHeightTracksTextView:NO];	// Not really necessary
+    [textView setHorizontallyResizable:NO];	// Not really necessary
+    [textView setVerticallyResizable:YES];
     [textView setAutoresizingMask: NSViewWidthSizable];
 #ifndef GNUSTEP
-    [textView setMinSize: size]; // Will be adjusted by the autoresizing...
+    [textView setMinSize:size]; // Will be adjusted by the autoresizing...
 #else
-    [textView setMinSize: NSMakeSize (0, 0)]; // is necessary on GNUstep
+    [textView setMinSize:NSMakeSize(0, 0)]; // is necessary on GNUstep
 #endif
-    [textView setMaxSize: NSMakeSize(FLT_MAX, FLT_MAX)]; // Will be adjusted
+    [textView setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)]; // Will be adjusted
 
     /*
       The next line should cause the multiple page view and everything
       else to go away
     */
-    [scrollView setDocumentView: textView];
-    [scrollView setHasHorizontalScroller: NO];
+    [scrollView setDocumentView:textView];
+    [scrollView setHasHorizontalScroller:NO];
 		
     [textView release];
     [textContainer release];
   }
-  [[scrollView window] makeFirstResponder: [self firstTextView]];
+  [[scrollView window] makeFirstResponder:[self firstTextView]];
 }
 
 /* Outlet methods */
 
-- (void) setScrollView:(id)anObject
+- (void)setScrollView:(id)anObject
 {
   scrollView = anObject;
 
-  [scrollView setHasVerticalScroller: YES];
-  [scrollView setHasHorizontalScroller: NO];
-  [[scrollView contentView] setAutoresizesSubviews: YES];
+  [scrollView setHasVerticalScroller:YES];
+  [scrollView setHasHorizontalScroller:NO];
+  [[scrollView contentView] setAutoresizesSubviews:YES];
 }
 		
 static NSPopUpButton *encodingPopupButton = nil;
 static NSView *encodingAccessory = nil;
 
-+ (void) loadEncodingPopupButton:(NSPopUpButton *)anObject
++ (void)loadEncodingPopupButton:(NSPopUpButton *)anObject
 {
 }
 
 /* Outlet method... */
-+ (void) setEncodingPopupButton:(id)anObject
++ (void)setEncodingPopupButton:(id)anObject
 {
   encodingPopupButton = [anObject retain];
   [self loadEncodingPopupButton:encodingPopupButton];
 }
 
 /* Outlet method... */
-+ (void) setEncodingAccessory:(id)anObject
++ (void)setEncodingAccessory:(id)anObject
 {
   encodingAccessory = [anObject retain];
 }
@@ -558,22 +552,20 @@ static NSView *encodingAccessory = nil;
   the specified item, and also includes or deletes the first entry
   (corresponding to "Default")
 */
-+ (NSView *) encodingAccessory:(int)encoding
-           includeDefaultEntry:(BOOL)includeDefaultItem
++ (NSView *)encodingAccessory:(int)encoding
+          includeDefaultEntry:(BOOL)includeDefaultItem
 {
-  if (!encodingAccessory)
-    {
-      if (![NSBundle loadNibNamed:@"EncodingAccessory" owner:self])
-        {
-          NSLog (@"Failed to load EncodingAccessory.nib");
-        }
+  if (!encodingAccessory) {
+    if (![NSBundle loadNibNamed:@"EncodingAccessory" owner:self]) {
+      NSLog (@"Failed to load EncodingAccessory.nib");
     }
+  }
 
   SetUpEncodingPopupButton(encodingPopupButton, encoding, includeDefaultItem);
   return encodingAccessory;
 }
 
-- (void) removeAttachments
+- (void)removeAttachments
 {
   NSTextStorage	*attrString = [self textStorage];
   unsigned int	loc = 0;
@@ -581,36 +573,33 @@ static NSView *encodingAccessory = nil;
 
   [attrString beginEditing];
 
-  while (loc < end)
-    { // Run through the string in terms of attachment runs
-      NSRange           attachmentRange; // Attachment attribute run
-      NSTextAttachment	*attachment;
+  while (loc < end) {
+    // Run through the string in terms of attachment runs
+    NSRange		attachmentRange; // Attachment attribute run
+    NSTextAttachment	*attachment;
 
-      attachment = [attrString attribute:NSAttachmentAttributeName
-                                 atIndex:loc
-                               longestEffectiveRange:&attachmentRange
-                                 inRange:NSMakeRange(loc, end - loc)];
+    attachment = [attrString attribute:NSAttachmentAttributeName
+                               atIndex:loc
+                 longestEffectiveRange:&attachmentRange
+                               inRange:NSMakeRange(loc, end - loc)];
+    
+    if (attachment) {
+      // If attachment, make sure it's valid
+      unichar	ch = [[attrString string] characterAtIndex:loc];
 
-      if (attachment)
-        { // If attachment, make sure it's valid
-          unichar	ch = [[attrString string] characterAtIndex: loc];
-
-          if (ch == NSAttachmentCharacter)
-            {
-              [attrString replaceCharactersInRange:NSMakeRange(loc, 1)
-                                        withString:@""];
-              end = [attrString length]; // New length
-            }
-          else
-            {
-              loc++; // Just skip over the current character...
-            }
-        }
-      else
-        {
-          loc = NSMaxRange (attachmentRange);
-        }
+      if (ch == NSAttachmentCharacter) {
+        [attrString replaceCharactersInRange:NSMakeRange(loc, 1)
+                                  withString:@""];
+        end = [attrString length]; // New length
+      }
+      else {
+        loc++; // Just skip over the current character...
+      }
     }
+    else {
+      loc = NSMaxRange(attachmentRange);
+    }
+  }
   [attrString endEditing];
 }
 
@@ -1523,11 +1512,11 @@ SupportedEncodings (void)
 void
 SetUpEncodingPopupButton (NSPopUpButton *popup, int selectedEncoding, BOOL includeDefaultItem)
 {
-  BOOL			defaultItemIsIncluded = NO;
+  BOOL		defaultItemIsIncluded = NO;
   unsigned int	cnt = [popup numberOfItems];
 
-  if (cnt <= 1) {		/* Seems like the popup hasn't been initialized yet... */
-    const int *enc = SupportedEncodings ();
+  if (cnt <= 1) {	/* Seems like the popup hasn't been initialized yet... */
+    const int *enc = SupportedEncodings();
     [popup removeAllItems];
 
     while (*enc != -1) {
@@ -1535,7 +1524,7 @@ SetUpEncodingPopupButton (NSPopUpButton *popup, int selectedEncoding, BOOL inclu
       [[popup lastItem] setTag:*enc];
       enc++;
     }
-  } else {	/* Check to see if the default item is in there... */
+  } else {		/* Check to see if the default item is in there... */
     while (!defaultItemIsIncluded && cnt-- > 0) {
       id<NSMenuItem>	item = [popup itemAtIndex:cnt];
 

@@ -34,35 +34,47 @@
   id	windowHeightField;
   // Plain TextEncoding
   id	plainTextEncodingPopup;
-  
 
   NSDictionary		*curValues;
   NSMutableDictionary	*displayedValues;
 }
 
-+ (id) objectForKey: (id)key;	/* Convenience for getting global preferences */
-+ (void) saveDefaults;		/* Convenience for saving global preferences */
+/* Convenience for getting global preferences */
++ (id)objectForKey:(id)key;
+/* Convenience for saving global preferences */
++ (void)saveDefaults;
 
-+ (Preferences *) sharedInstance;
++ (Preferences *)sharedInstance;
 
-- (NSDictionary *) preferences;	/* The current preferences; contains values for the documented keys */
+/* The current preferences; contains values for the documented keys */
+- (NSDictionary *)preferences;
 
-- (void) showPanel: (id)sender;	/* Shows the panel */
+/* Shows the panel */
+- (void)showPanel:(id)sender;
 
-- (void) updateUI;		/* Updates the displayed values in the UI */
-- (void) commitDisplayedValues;	/* The displayed values are made current */
-- (void) discardDisplayedValues;	/* The displayed values are replaced with current prefs and updateUI is called */
+/* Updates the displayed values in the UI */
+- (void)updateUI;
+/* The displayed values are made current */
+- (void)commitDisplayedValues;
+/* The displayed values are replaced with current prefs and updateUI is called */
+- (void)discardDisplayedValues;
 
-- (void) revert: (id)sender;	/* Reverts the displayed values to the current preferences */
-- (void) ok: (id)sender;		/* Calls commitUI to commit the displayed values as current */
-- (void) revertToDefault: (id)sender;    
+/* Reverts the displayed values to the current preferences */
+- (void)revert:(id)sender;
+/* Calls commitUI to commit the displayed values as current */
+- (void)ok:(id)sender;
+- (void)revertToDefault:(id)sender;
 
-- (void) miscChanged: (id)sender;		/* Action message for most of the misc items in the UI to get displayedValues */
-- (void) changeRichTextFont: (id)sender;	/* Request to change the rich text font */
-- (void) changePlainTextFont: (id)sender;	/* Request to change the plain text font */
-- (void) changeFont: (id)fontManager;	/* Sent by the font manager */
+/* Action message for most of the misc items in the UI to get displayedValues */
+- (void)miscChanged:(id)sender;
+/* Request to change the rich text font */
+- (void)changeRichTextFont:(id)sender;
+/* Request to change the plain text font */
+- (void)changePlainTextFont:(id)sender;
+/* Sent by the font manager */
+- (void)changeFont:(id)fontManager;
 
-+ (NSDictionary *) preferencesFromDefaults;
-+ (void) savePreferencesToDefaults:(NSDictionary *)dict;
++ (NSDictionary *)preferencesFromDefaults;
++ (void)savePreferencesToDefaults:(NSDictionary *)dict;
 
 @end

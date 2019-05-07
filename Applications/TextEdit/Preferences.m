@@ -25,222 +25,241 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-static NSDictionary *
-defaultValues (void)
+static NSDictionary *defaultValues (void)
 {
-	static NSDictionary *dict = nil;
-	if (!dict) {
-		dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-				[NSNumber numberWithBool:YES], DeleteBackup, 
-				[NSNumber numberWithBool:NO], SaveFilesWritable, 
-				[NSNumber numberWithBool:YES], RichText, 
-				[NSNumber numberWithBool:NO], ShowPageBreaks,
-				[NSNumber numberWithBool:NO], OpenPanelFollowsMainWindow,
+  static NSDictionary *dict = nil;
+  if (!dict) {
+    dict = [[NSDictionary alloc] initWithObjectsAndKeys:
+                               [NSNumber numberWithBool:YES], DeleteBackup, 
+                               [NSNumber numberWithBool:NO], SaveFilesWritable, 
+                               [NSNumber numberWithBool:YES], RichText, 
+                               [NSNumber numberWithBool:NO], ShowPageBreaks,
+                               [NSNumber numberWithBool:NO], OpenPanelFollowsMainWindow,
 				[NSNumber numberWithInt:80], WindowWidth, 
 				[NSNumber numberWithInt:30], WindowHeight, 
 				[NSNumber numberWithInt:UnknownStringEncoding], PlainTextEncoding,
 				[NSNumber numberWithInt:8], TabWidth,
 				[NSNumber numberWithInt:100000], ForegroundLayoutToIndex,		
-				[NSFont userFixedPitchFontOfSize:0.0], PlainTextFont, 
-				[NSFont userFontOfSize:0.0], RichTextFont, 
-				nil];
-	}
-	return dict;
+                       [NSFont userFixedPitchFontOfSize:0.0], PlainTextFont, 
+                                 [NSFont userFontOfSize:0.0], RichTextFont, 
+                                 nil];
+  }
+  return dict;
 }
 
 @implementation Preferences
 
 static Preferences *sharedInstance = nil;
 
-+ (id) objectForKey: (id)key
++ (id)objectForKey:(id)key
 {
-	return [[[self sharedInstance] preferences] objectForKey: key];
+  return [[[self sharedInstance] preferences] objectForKey:key];
 }
 
-+ (void) saveDefaults
++ (void)saveDefaults
 {
-	if (sharedInstance) {
-		[Preferences savePreferencesToDefaults: [sharedInstance preferences]];
-	}
+  if (sharedInstance) {
+    [Preferences savePreferencesToDefaults:[sharedInstance preferences]];
+  }
 }
 
-+ (Preferences *) sharedInstance
++ (Preferences *)sharedInstance
 {
   return sharedInstance ? sharedInstance : [[self alloc] init];
 }
 
-- (id) init
+- (id)init
 {
-  if (sharedInstance)
-    {
-      [self dealloc];
-    } 
-  else
-    {
-      [super init];
-      curValues = [[[self class] preferencesFromDefaults] copy];
-      [self discardDisplayedValues];
+  if (sharedInstance) {
+    [self dealloc];
+  } 
+  else {
+    [super init];
+    curValues = [[[self class] preferencesFromDefaults] copy];
+    [self discardDisplayedValues];
     sharedInstance = self;
-    }
+  }
   return sharedInstance;
 }
 
-- (void) dealloc
+- (void)dealloc
 {
   [super dealloc];
 }
 
-- (NSDictionary *) preferences
+- (NSDictionary *)preferences
 {
   return curValues;
 }
 
-- (void) showPanel:(id)sender
+- (void)showPanel:(id)sender
 {
-  if (!richTextFontNameField)
-    {
-      if (![NSBundle loadNibNamed: @"Preferences" owner:self])
-        {
-          NSLog (@"Failed to load Preferences.nib");
-          NSBeep ();
-          return;
-        }
-      [[richTextFontNameField window] setExcludedFromWindowsMenu: YES];
-      [[richTextFontNameField window] setMenu: nil];
-      [self updateUI];
-      [[richTextFontNameField window] center];
+  if (!richTextFontNameField) {
+    if (![NSBundle loadNibNamed:@"Preferences" owner:self]) {
+      NSLog(@"Failed to load Preferences.nib");
+      NSBeep();
+      return;
     }
-  [[richTextFontNameField window] makeKeyAndOrderFront: nil];
+    [[richTextFontNameField window] setExcludedFromWindowsMenu:YES];
+    [[richTextFontNameField window] setMenu:nil];
+    [self updateUI];
+    [[richTextFontNameField window] center];
+  }
+  [[richTextFontNameField window] makeKeyAndOrderFront:nil];
 }
 
-static void
-showFontInField (NSFont *font, NSTextField *field)
+- (void)awakeFromNib
 {
-	[field setStringValue: font ? [NSString stringWithFormat:@"%@ %g", [font fontName], [font pointSize]] : @""];
+  [deleteBackupMatrix setRefusesFirstResponder:YES];
+  [saveFilesWritableButton setRefusesFirstResponder:YES];
+  [richTextMatrix setRefusesFirstResponder:YES];
+  [richTextFontNameField setRefusesFirstResponder:YES];
+  [plainTextFontNameField setRefusesFirstResponder:YES];
+  [plainTextEncodingPopup setRefusesFirstResponder:YES];
 }
 
-- (void) updateUI
+static void showFontInField(NSFont *font, NSTextField *field)
 {
-	showFontInField ([displayedValues objectForKey:RichTextFont], richTextFontNameField);
-	showFontInField ([displayedValues objectForKey:PlainTextFont], plainTextFontNameField);
-	[deleteBackupMatrix selectCellWithTag: [[displayedValues objectForKey: DeleteBackup] boolValue] ? 1 : 0];
-	[saveFilesWritableButton setState: [[displayedValues objectForKey: SaveFilesWritable] boolValue]];
-	[richTextMatrix selectCellWithTag: [[displayedValues objectForKey: RichText] boolValue] ? 1 : 0];
-	[showPageBreaksButton setState: [[displayedValues objectForKey: ShowPageBreaks] boolValue]];
-
-	[windowWidthField setIntValue: [[displayedValues objectForKey: WindowWidth] intValue]];
-	[windowHeightField setIntValue: [[displayedValues objectForKey: WindowHeight] intValue]];
-
-	SetUpEncodingPopupButton (plainTextEncodingPopup, [[displayedValues objectForKey: PlainTextEncoding] intValue], YES);
+  NSString *fontName = @"";
+  
+  if (font) {
+    fontName = [NSString stringWithFormat:@"%@ %g",
+                         [font fontName], [font pointSize]];
+  }
+  
+  [field setStringValue:fontName];
 }
 
-/* Gets everything from UI except for fonts...
-*/
-- (void) miscChanged: (id)sender
+- (void)updateUI
 {
-	static NSNumber	*yes = nil;
-	static NSNumber	*no = nil;
-	int				anInt;
+  showFontInField([displayedValues objectForKey:RichTextFont], richTextFontNameField);
+  showFontInField ([displayedValues objectForKey:PlainTextFont], plainTextFontNameField);
+  [deleteBackupMatrix selectCellWithTag:[[displayedValues objectForKey:DeleteBackup] boolValue] ? 1 : 0];
+  [saveFilesWritableButton setState: [[displayedValues objectForKey: SaveFilesWritable] boolValue]];
+  [richTextMatrix selectCellWithTag: [[displayedValues objectForKey: RichText] boolValue] ? 1 : 0];
+  [showPageBreaksButton setState: [[displayedValues objectForKey: ShowPageBreaks] boolValue]];
+
+  [windowWidthField setIntValue: [[displayedValues objectForKey: WindowWidth] intValue]];
+  [windowHeightField setIntValue: [[displayedValues objectForKey: WindowHeight] intValue]];
+
+  SetUpEncodingPopupButton(plainTextEncodingPopup, [[displayedValues objectForKey:PlainTextEncoding] intValue], YES);
+}
+
+/* Gets everything from UI except for fonts... */
+- (void)miscChanged:(id)sender
+{
+  static NSNumber	*yes = nil;
+  static NSNumber	*no = nil;
+  int			anInt;
 	
-	if (!yes) {
-		yes = [[NSNumber alloc] initWithBool: YES];
-		no = [[NSNumber alloc] initWithBool: NO];
-	}
+  if (!yes) {
+    yes = [[NSNumber alloc] initWithBool:YES];
+    no = [[NSNumber alloc] initWithBool:NO];
+  }
 
-	[displayedValues setObject: ([[deleteBackupMatrix selectedCell] tag] ? yes : no) forKey: DeleteBackup];
-	[displayedValues setObject: ([[richTextMatrix selectedCell] tag] ? yes : no) forKey: RichText];
-	[displayedValues setObject: ([saveFilesWritableButton state] ? yes : no) forKey: SaveFilesWritable];
-	[displayedValues setObject: ([showPageBreaksButton state] ? yes : no) forKey: ShowPageBreaks];
-	[displayedValues setObject: [NSNumber numberWithInt: [[plainTextEncodingPopup selectedItem] tag]] forKey: PlainTextEncoding];
+  [displayedValues setObject:([[deleteBackupMatrix selectedCell] tag] ? yes : no)
+                      forKey:DeleteBackup];
+  [displayedValues setObject:([[richTextMatrix selectedCell] tag] ? yes : no)
+                      forKey:RichText];
+  [displayedValues setObject:([saveFilesWritableButton state] ? yes : no)
+                      forKey:SaveFilesWritable];
+  [displayedValues setObject:([showPageBreaksButton state] ? yes : no)
+                      forKey:ShowPageBreaks];
+  [displayedValues setObject:[NSNumber numberWithInt:[[plainTextEncodingPopup selectedItem] tag]]
+                      forKey:PlainTextEncoding];
 
-	anInt = [windowWidthField intValue];
-	if (anInt < 1 || anInt > 10000) {
-		anInt = [[displayedValues objectForKey: WindowWidth] intValue];
-		if (anInt < 1 || anInt > 10000)
-			anInt = [[defaultValues() objectForKey: WindowWidth] intValue];
-		[windowWidthField setIntValue: anInt];
-	} else {
-		[displayedValues setObject: [NSNumber numberWithInt: anInt] forKey: WindowWidth];
-	}
+  anInt = [windowWidthField intValue];
+  if (anInt < 1 || anInt > 10000) {
+    anInt = [[displayedValues objectForKey:WindowWidth] intValue];
+    if (anInt < 1 || anInt > 10000)
+      anInt = [[defaultValues() objectForKey:WindowWidth] intValue];
+    [windowWidthField setIntValue:anInt];
+  } else {
+    [displayedValues setObject:[NSNumber numberWithInt:anInt]
+                        forKey:WindowWidth];
+  }
 
-	anInt = [windowHeightField intValue];
-	if (anInt < 1 || anInt > 10000) {
-		anInt = [[displayedValues objectForKey:WindowHeight] intValue];
-		if (anInt < 1 || anInt > 10000)
-			anInt = [[defaultValues() objectForKey: WindowHeight] intValue];
-		[windowHeightField setIntValue: [[displayedValues objectForKey: WindowHeight] intValue]];
-	} else {
-		[displayedValues setObject: [NSNumber numberWithInt: anInt] forKey: WindowHeight];
-	}
+  anInt = [windowHeightField intValue];
+  if (anInt < 1 || anInt > 10000) {
+    anInt = [[displayedValues objectForKey:WindowHeight] intValue];
+    if (anInt < 1 || anInt > 10000)
+      anInt = [[defaultValues() objectForKey:WindowHeight] intValue];
+    [windowHeightField setIntValue:[[displayedValues objectForKey:WindowHeight] intValue]];
+  } else {
+    [displayedValues setObject:[NSNumber numberWithInt:anInt]
+                        forKey:WindowHeight];
+  }
 
-	[self commitDisplayedValues];
+  [self commitDisplayedValues];
 }
 
 /**** Font changing code ****/
 
 static BOOL changingRTFFont = NO;
 
-- (void) changeRichTextFont: (id)sender
+- (void)changeRichTextFont:(id)sender
 {
-	changingRTFFont = YES;
-	[[richTextFontNameField window] makeFirstResponder: [richTextFontNameField window]];
-	[[NSFontManager sharedFontManager] setSelectedFont: [curValues objectForKey: RichTextFont] isMultiple: NO];
-	[[NSFontManager sharedFontManager] orderFrontFontPanel: self];
+  changingRTFFont = YES;
+  [[richTextFontNameField window] makeFirstResponder:[richTextFontNameField window]];
+  [[NSFontManager sharedFontManager] setSelectedFont:[curValues objectForKey:RichTextFont] isMultiple:NO];
+  [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 
-- (void) changePlainTextFont: (id)sender
+- (void)changePlainTextFont:(id)sender
 {
-	changingRTFFont = NO;
-	[[richTextFontNameField window] makeFirstResponder: [richTextFontNameField window]];
-	[[NSFontManager sharedFontManager] setSelectedFont: [curValues objectForKey: PlainTextFont] isMultiple: NO];
-	[[NSFontManager sharedFontManager] orderFrontFontPanel: self];
+  changingRTFFont = NO;
+  [[richTextFontNameField window] makeFirstResponder:[richTextFontNameField window]];
+  [[NSFontManager sharedFontManager] setSelectedFont:[curValues objectForKey:PlainTextFont] isMultiple:NO];
+  [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 
-- (void) changeFont: (id)fontManager
+- (void)changeFont:(id)fontManager
 {
-	if (changingRTFFont) {
-		[displayedValues setObject: [fontManager convertFont: [curValues objectForKey: RichTextFont]] forKey: RichTextFont];
-		showFontInField ([displayedValues objectForKey: RichTextFont], richTextFontNameField);
-	} else {
-		[displayedValues setObject: [fontManager convertFont: [curValues objectForKey: PlainTextFont]] forKey: PlainTextFont];
-		showFontInField ([displayedValues objectForKey: PlainTextFont], plainTextFontNameField);
-	}
-	[self commitDisplayedValues];
+  if (changingRTFFont) {
+    [displayedValues setObject:[fontManager convertFont:[curValues objectForKey:RichTextFont]]
+                        forKey:RichTextFont];
+    showFontInField ([displayedValues objectForKey: RichTextFont], richTextFontNameField);
+  } else {
+    [displayedValues setObject:[fontManager convertFont:[curValues objectForKey:PlainTextFont]]
+                        forKey:PlainTextFont];
+    showFontInField ([displayedValues objectForKey: PlainTextFont], plainTextFontNameField);
+  }
+  [self commitDisplayedValues];
 }
 
 /**** Commit/revert etc ****/
 
-- (void) commitDisplayedValues
+- (void)commitDisplayedValues
 {
-	if (curValues != displayedValues) {
-		[curValues release];
-		curValues = [displayedValues copy];
-	}
+  if (curValues != displayedValues) {
+    [curValues release];
+    curValues = [displayedValues copy];
+  }
 }
 
-- (void) discardDisplayedValues
+- (void)discardDisplayedValues
 {
-	if (curValues != displayedValues) {
-		[displayedValues release];
-		displayedValues = [curValues mutableCopy];
-		[self updateUI];
-	}
+  if (curValues != displayedValues) {
+    [displayedValues release];
+    displayedValues = [curValues mutableCopy];
+    [self updateUI];
+  }
 }
 
-- (void) ok: (id)sender
+- (void)ok:(id)sender
 {
-	[self commitDisplayedValues];
+  [self commitDisplayedValues];
 }
 
-- (void) revertToDefault: (id)sender
+- (void)revertToDefault:(id)sender
 {
-	curValues = [defaultValues () copy];
-	[self discardDisplayedValues];
+  curValues = [defaultValues() copy];
+  [self discardDisplayedValues];
 }
 
-- (void) revert: (id)sender
+- (void)revert:(id)sender
 {
-	[self discardDisplayedValues];
+  [self discardDisplayedValues];
 }
 
 /**** Code to deal with defaults ****/
