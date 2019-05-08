@@ -1,6 +1,8 @@
 {\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f0\fswiss Helvetica;}
+{\colortbl;\red0\green0\blue0;\red0\green0\blue0;}
 \paperw13040\paperh9000\hyphauto1\hyphfactor0\f0\fs20\pard\tx8640\tx9600\ql Copyright 1993-1997 Scott Hess  All Rights Reserved.\par
-Port to Mac OS 10.1.x and to GNUstep by Gregory John Casamento, Riccardo Mottola and others.\par
+Port to Mac OS 10.1.x and to GNUstep by Gregory John Casamento, Riccardo Mottola and others.\cf1 \par
+This version was modified by Sergii Stoian and distributed as a part of NEXTSPACE project.\cf0 \par
 \pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
 \par
 \pard\ql\fs36\pard\tx0\li100\ql Welcome to TimeMon 4.2\par
@@ -10,34 +12,26 @@ Port to Mac OS 10.1.x and to GNUstep by Gregory John Casamento, Riccardo Mottola
 \par
 \pard\ql\fs36\pard\tx0\li100\ql What Am I Seeing?\par
 \pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql There are three general usages of CPU time under Unix.  System time is that time spent within the kernel.  User time is that time spent executing a user\rquote \cf0 s programs, but not within the kernel.  Nice time is user time that has been set to a low priority.  There is also one other type of CPU time \uc0 \u8212  \cf0 idle time.  This is time during which there is no productive work to do, so your machine essentially twiddles its thumbs at a high speed.\par
+\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql There are three general usages of CPU time under Unix.  System time is that time spent within the kernel.  User time is that time spent executing a user\rquote \cf1 s programs, but not within the kernel.  Nice time is user time that has been set to a low priority.  There is also one other type of CPU time \uc0 \u8212  idle time.  This is time during which there is no productive work to do, so your machine essentially twiddles its thumbs at a high speed.\par
 \pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql Lucky enough, the NeXT supplies four "\cf0 colors"\cf0 , which maps well to the four types of timing information.  Black is for system time, dark gray for user, light gray for nice, and white for idle time.  You can change these colors using the "\cf0 wells"\cf0  at the top of this panel.\par
+\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql Lucky enough, the NeXT supplies four "colors", which maps well to the four types of timing information.  Black is for system time, dark gray for user, light gray for nice, and white for idle time.  You can change these colors using the "wells" at the top of this panel.\par
 \pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql TimeMon displays this information within the program\rquote \cf0 s icon. There are three rings displayed. The innermost ring is updated according to the Update Period, which specifies the number of seconds between updates, and Lag Time which specifies how many update periods should be averaged together for the innermost ring.  The middle ring is an average of the last Layer Factor update periods, and the outer ring is an average of the values over the course of the square of the Layer Factor update periods. The values in the fields are automagically stored in the user\rquote \cf0 s defaults database.\par
+\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql TimeMon displays this information within the program\rquote s icon. There are three rings displayed. The innermost ring is updated according to the Update Period, which specifies the number of seconds between updates, and Lag Time which specifies how many update periods should be averaged together for the innermost ring.  The middle ring is an average of the last Layer Factor update periods, and the outer ring is an average of the values over the course of the square of the Layer Factor update periods. The values in the fields are automagically stored in the user\rquote s defaults database.\par
 \pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql The difference between Lag Time and Layer Factor are subtle but useful.  Both values cause the program to average information over some period of execution, resulting in a more stable display.  Lag Time should give a short amount of time useful to even out the "\cf0 bumps"\cf0  on the innermost ring.  A Lag Time of zero can result in a very dynamic display. A similar effect could be achieved by increasing the Update Period.\par
+\pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql The difference between Lag Time and Layer Factor are subtle but useful.  Both values cause the program to average information over some period of execution, resulting in a more stable display.  Lag Time should give a short amount of time useful to even out the "bumps" on the innermost ring.  A Lag Time of zero can result in a very dynamic display. A similar effect could be achieved by increasing the Update Period.\par
 \pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
 \pard\ql\fs24\pard\tx0\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\li300\ql TimeMon has been extensively tuned to use as few CPU cycles as possible.  But, if you feel the need to pause it, click the Pause menu item.  Otherwise, adjust your Update Period to a higher value so that it updates less often\fs16 \par
 \pard\ql\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs36\pard\tx0\li100\ql How To Find Scott\par
+\pard\ql\fs24\pard\tx1520\li300\ql \par
+\pard\ql\cf0\pard\tx0\li100\ql\cf2\fs36 How To Find Sergii\par
 \pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs28\pard\tx1520\li300\ql web:\tab http://www.doubleu.com/\par
-email:\tab scott@doubleu.com\par
-\par
-\pard\ql\fs36\pard\tx0\li100\ql How To Find Greg\par
-\pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs28\pard\tx1520\li300\ql email:\tab greg_casamento@yahoo.com\par
-phone:\tab (240)274-9630\par
-\par
-http://gap.nongnu.org/timemon/\fs16 \par
+\pard\ql\fs24\pard\tx1520\li300\ql web:\tab http:/github.com/trunkmaster/nextspace\par
+email:\tab stoyan255@gmail.com\fs28 \par
+\cf0\fs16\cf1 \par
 \pard\ql\fs20\pard\tx8640\tx9600\ql \par
-This is the small print.  All products or trademarks mentioned in this program are trademarks of their respective trademark holders.  Notably, NeXT and NeXTSTEP are trademarks of NeXT Computer, Inc., while DEC and VT100 are trademarks of Digital Equipment Corporation.  Communicae is a trademark of Active Ingredients, Inc.\par
-\pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
-\pard\ql\fs20\pard\tx8640\tx9600\ql TimeMon is Copyright \'E3 1991-1997  by Scott Hess.  Permission to use, copy, modify, and distribute this software and its documentation for any purpose and without fee is hereby granted, provided that this copyright notice appear in all copies.  Scott Hess makes no representations about the suitability of this software for any purpose.  It is provided "as is" without express or implied warranty.\par
+This is the small print.  All products or trademarks mentioned in this program are trademarks of their respective trademark holders.  Notably, NeXT and NeXTSTEP are trademarks of NeXT Computer, Inc., while DEC and VT100 are trademarks of Digital Equipment Corporation.  Communicae is a trademark of Active Ingredients, Inc\pard\ql\fs16\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\li360\ql \par
+\pard\ql\fs20\pard\tx8640\tx9600\ql TimeMon is Copyright \'A9 1991-1997  by Scott Hess.  Permission to use, copy, modify, and distribute this software and its documentation for any purpose and without fee is hereby granted, provided that this copyright notice appear in all copies.  Scott Hess makes no representations about the suitability of this software for any purpose.  It is provided "as is" without express or implied warranty.\par
 \par
-Ported to OPENSTEP by svail@apple.com, Ported to GNUstep and Cocoa by Gregory Casamento, Riccardo Mottola, Alex Malmberg and G\'9Frkan Seng\'9Fn \par
-\par
-\fs18 This is the \ulw\ul really\ulnone  small print.\fs16 \par
+Ported to OPENSTEP by svail@apple.com, Ported to GNUstep and Cocoa by Gregory Casamento, Riccardo Mottola, Alex Malmberg and\fs28  \fs20 Gu\'9Frkan Sengu\'9Fn \fs16 \par
 \fs2 And this is the \ulw\ul really\ulnone  small print.\par
 \tab }

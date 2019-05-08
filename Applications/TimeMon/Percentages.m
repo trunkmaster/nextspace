@@ -28,17 +28,16 @@
 
 - (id)init
 {
-    self = [super init];
-    if (self) 
-      {
-	// stipple = [NSImage imageNamed:@"NSApplicationIcon"];
-	defaults = [NSUserDefaults standardUserDefaults];
-	[NSApp setDelegate:self];
-      }
-    return self;
+  self = [super init];
+  if (self) {
+      // stipple = [NSImage imageNamed:@"NSApplicationIcon"];
+      defaults = [NSUserDefaults standardUserDefaults];
+      [NSApp setDelegate:self];
+    }
+  return self;
 }
 
--(void) drawImageRep
+-(void)drawImageRep
 {
   int i;
   static float radii[3]={ 23.0, 17.0, 11.0};
@@ -49,61 +48,70 @@
   NSPoint inner = NSMakePoint(35.5, 24.0);
   NSPoint lineEnd = NSMakePoint(24.0, 48.0);
 
-  for(i = 0; i < 3; i++) 
-    {
-      // Store away the values we redraw.
-      bcopy(pcents[i], lpcents[i], sizeof(lpcents[i])); 
-      drawArc2(radii[i],
-	       90 - (pcents[i][0]) * 360,
-	       90 - (pcents[i][0] + pcents[i][1]) * 360,
-	       90 - (pcents[i][0] + pcents[i][1] + pcents[i][2]) * 360,
-	       90 - (pcents[i][0] + pcents[i][1] + pcents[i][2] + pcents[i][3]) * 360);
-    }
+  for(i = 0; i < 3; i++) {
+    // Store away the values we redraw.
+    bcopy(pcents[i], lpcents[i], sizeof(lpcents[i])); 
+    drawArc2(radii[i],
+             90 - (pcents[i][0]) * 360,
+             90 - (pcents[i][0] + pcents[i][1]) * 360,
+             90 - (pcents[i][0] + pcents[i][1] + pcents[i][2]) * 360,
+             90 - (pcents[i][0] + pcents[i][1] + pcents[i][2] + pcents[i][3]) * 360);
+  }
   
   [[NSColor blackColor] set];
   [bp moveToPoint: outer];
-  [bp appendBezierPathWithArcWithCenter: point radius: 23.5 startAngle: 0 endAngle: 360 clockwise: NO];
+  [bp appendBezierPathWithArcWithCenter:point
+                                 radius:23.5
+                             startAngle:0
+                               endAngle:360
+                              clockwise:NO];
 
   [bp moveToPoint: middle];
-  [bp appendBezierPathWithArcWithCenter: point radius: 17.5 startAngle: 0 endAngle: 360 clockwise: NO];
+  [bp appendBezierPathWithArcWithCenter:point
+                                 radius:17.5
+                             startAngle:0
+                               endAngle:360
+                              clockwise:NO];
 
   [bp moveToPoint: inner];
-  [bp appendBezierPathWithArcWithCenter: point radius: 11.5 startAngle: 0 endAngle: 360 clockwise: NO];
+  [bp appendBezierPathWithArcWithCenter:point
+                                 radius:11.5
+                             startAngle:0
+                               endAngle:360
+                              clockwise:NO];
 
-  [bp moveToPoint: point];
-  [bp lineToPoint: lineEnd];
+  [bp moveToPoint:point];
+  [bp lineToPoint:lineEnd];
   [bp stroke];
 }
 
-- (void) awakeFromNib
+- (void)awakeFromNib
 {
-  NSString *path = [[NSBundle mainBundle] pathForResource: @"README" 
-					  ofType: @"rtf"];
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"README" 
+                                                   ofType:@"rtf"];
   // load the readme if it exists.
-  if (path != nil)
-    {
-      NSData *data = [NSData dataWithContentsOfFile: path];
-      if (data != nil)
-        {
-          NSDictionary *dict = nil;
-          NSTextStorage *ts = [[NSTextStorage alloc] initWithRTF: data
-						     documentAttributes: &dict];
-          [[(NSTextView *)readmeText layoutManager] replaceTextStorage: ts];
-        }
-    }		   
+  if (path != nil) {
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    if (data != nil) {
+      NSDictionary  *dict = nil;
+      NSTextStorage *ts = [[NSTextStorage alloc] initWithRTF:data
+                                          documentAttributes:&dict];
+      [[(NSTextView *)readmeText layoutManager] replaceTextStorage:ts];
+    }
+  }  
 }
 
 - (void)update
 {
   NSImageRep *r;
-  NSImage *stipple;
+  NSImage    *stipple;
   
-  stipple = [[NSImage alloc] initWithSize: NSMakeSize(48,48)];
+  stipple = [[NSImage alloc] initWithSize:NSMakeSize(48,48)];
   r = [[NSCustomImageRep alloc]
-        initWithDrawSelector: @selector(drawImageRep)
-        delegate: self];
-  [r setSize: NSMakeSize(48,48)];
-  [stipple addRepresentation: r];
+        initWithDrawSelector:@selector(drawImageRep)
+                    delegate:self];
+  [r setSize:NSMakeSize(48,48)];
+  [stipple addRepresentation:r];
   [NSApp setApplicationIconImage:stipple];
 
   [r release];
@@ -132,39 +140,33 @@
   
   // Calculate values for the innermost "lag" ring.
   oIndex=(laIndex-MIN(lagFactor, steps)+laSize)%laSize;
-  for(total=0, i=0; i<CPUSTATES; i++) 
-    {
-      total+=oldTimes[laIndex][i]-oldTimes[oIndex][i];
-    }
-  if (total) 
-    {
-      for (i = 0; i < CPUSTATES; i++)
-	pcents[2][i] = (oldTimes[laIndex][i] - oldTimes[oIndex][i]) / total;
-    }
+  for(total=0, i=0; i<CPUSTATES; i++) {
+    total+=oldTimes[laIndex][i]-oldTimes[oIndex][i];
+  }
+  if (total) {
+    for (i = 0; i < CPUSTATES; i++)
+      pcents[2][i] = (oldTimes[laIndex][i] - oldTimes[oIndex][i]) / total;
+  }
   
   // Calculate the middle ring.
   oIndex=(laIndex-MIN(lagFactor+layerFactor, steps)+laSize)%laSize;
-  for(total=0, i=0; i<CPUSTATES; i++) 
-    {
-      total+=oldTimes[laIndex][i]-oldTimes[oIndex][i];
-    }
-  if (total) 
-    {
-      for (i = 0; i < CPUSTATES; i++)
-	pcents[1][i] = (oldTimes[laIndex][i] - oldTimes[oIndex][i]) / total;
-    }
+  for(total=0, i=0; i<CPUSTATES; i++) {
+    total+=oldTimes[laIndex][i]-oldTimes[oIndex][i];
+  }
+  if (total) {
+    for (i = 0; i < CPUSTATES; i++)
+      pcents[1][i] = (oldTimes[laIndex][i] - oldTimes[oIndex][i]) / total;
+  }
   
   // Calculate the outer ring.
   oIndex=(laIndex-MIN(lagFactor+layerFactor*layerFactor, steps)+laSize)%laSize;
-  for(total=0, i=0; i<CPUSTATES; i++) 
-    {
-      total+=oldTimes[laIndex][i]-oldTimes[oIndex][i];
-    }
-  if (total) 
-    {
-      for (i = 0; i < CPUSTATES; i++)
-	pcents[0][i] = (oldTimes[laIndex][i] - oldTimes[oIndex][i]) / total;
-    }
+  for(total=0, i=0; i<CPUSTATES; i++) {
+    total+=oldTimes[laIndex][i]-oldTimes[oIndex][i];
+  }
+  if (total) {
+    for (i = 0; i < CPUSTATES; i++)
+      pcents[0][i] = (oldTimes[laIndex][i] - oldTimes[oIndex][i]) / total;
+  }
   
   // Move the index forward for the next cycle.
   laIndex = (laIndex + 1) % laSize;
@@ -173,26 +175,21 @@
   // Look through the rings and see if any values changed by
   // one percent or more, and if so mark that and inner rings
   // for update.
-  for (i = 0; i < CPUSTATES; i++)
-    {
-      for (j = 0; j < CPUSTATES; j++)
-	{
-	  if (rint(pcents[i][j] * 100) != rint(lpcents[i][j] * 100)) 
-	    {
-	      for ( ; i < 3; i++)
-		{
-		  updateFlags[i] = YES;
-		}
-	      break;
-	    }
-	}
+  for (i = 0; i < CPUSTATES; i++) {
+    for (j = 0; j < CPUSTATES; j++) {
+      if (rint(pcents[i][j] * 100) != rint(lpcents[i][j] * 100)) {
+        for ( ; i < 3; i++) {
+          updateFlags[i] = YES;
+        }
+        break;
+      }
     }
+  }
   
   // If there's a need for updating of any rings, call update.
-  if (updateFlags[2]) 
-    {
-      [self update];
-    }
+  if (updateFlags[2]) {
+    [self update];
+  }
 }
 
 // This was for debugging, no longer needed.  I used it to hook
@@ -258,95 +255,86 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-  if ([defaults boolForKey:@"NXAutoLaunch"])
-    {
-      [NSApp deactivate];
-    }
-    
   float f;
   int ret;
   CPUTime cp_time;
   SEL stepSel = @selector(step);
   NSMethodSignature *sig = [self methodSignatureForSelector:stepSel];  
   NSDictionary *defs = [NSDictionary dictionaryWithObjectsAndKeys:
-	@"0.5",			@"UpdatePeriod",
-	@"4",			@"LagFactor",
-	@"16",			@"LayerFactor",
-	@"YES",			@"HideOnAutolaunch",
-	@"NO",			@"NXAutoLaunch",
-	// For color systems.
-	@"1.000 1.000 1.000 1.000",	@"IdleColor",	// White
-	@"0.333 0.667 0.867 1.000",	@"NiceColor",	// A light blue-green
-	@"0.200 0.467 0.800 1.000",	@"UserColor",	// A darker blue-green
-	@"0.000 0.000 1.000 1.000",	@"SystemColor",	// Blue
-	@"1.000 0.800 0.900 1.000",	@"IOWaitColor",	// Light purple
-	// For monochrome systems.
-	@"1.000",		@"IdleGray",	// White
-	@"0.667",		@"NiceGray",	// Light gray
-	@"0.333",		@"UserGray",	// Dark gray
-	@"0.000",		@"SystemGray",	// Black
-	nil];
+                                       @"0.5",			@"UpdatePeriod",
+                                     @"4",			@"LagFactor",
+                                     @"16",			@"LayerFactor",
+                                     @"YES",			@"HideOnAutolaunch",
+                                     @"NO",			@"NXAutoLaunch",
+                                     // For color systems.
+                                     @"1.000 1.000 1.000 1.000",	@"IdleColor",	// White
+                                     @"0.333 0.667 0.867 1.000",	@"NiceColor",	// A light blue-green
+                                     @"0.200 0.467 0.800 1.000",	@"UserColor",	// A darker blue-green
+                                     @"0.000 0.000 1.000 1.000",	@"SystemColor",	// Blue
+                                     @"1.000 0.800 0.900 1.000",	@"IOWaitColor",	// Light purple
+                                     // For monochrome systems.
+                                     @"1.000",		@"IdleGray",	// White
+                                     @"0.667",		@"NiceGray",	// Light gray
+                                     @"0.333",		@"UserGray",	// Dark gray
+                                     @"0.000",		@"SystemGray",	// Black
+                                     nil];
 
-    [defaults registerDefaults:defs];
-    [defaults synchronize];
+  [defaults registerDefaults:defs];
+  [defaults synchronize];
 	
-    // Shoot out error codes if there was an error.
-    if ((ret = la_init(cp_time)) ) 
-      {
-	const id syslogs[] = {
-	  NULL,				          // LA_NOERR
-	  @"Cannot read or parse /proc/stat." // LA_ERROR
-	};
-	NSLog(@"TimeMon: %@", syslogs[ret]);
-	NSLog(@"TimeMon: Exiting!");
-	NSRunAlertPanel(@"TimeMon", syslogs[ret], @"OK", nil, nil, nil);
-	[NSApp terminate:[notification object]];
-      }
+  // Shoot out error codes if there was an error.
+  if ((ret = la_init(cp_time))) {
+    const id syslogs[] = {
+                          NULL,					// LA_NOERR
+                          @"Cannot read or parse /proc/stat."	// LA_ERROR
+    };
+    NSLog(@"TimeMon: %@", syslogs[ret]);
+    NSLog(@"TimeMon: Exiting!");
+    NSRunAlertPanel(@"TimeMon", syslogs[ret], @"OK", nil, nil, nil);
+    [NSApp terminate:[notification object]];
+  }
 
-    // Move ourselves over to the appIcon window.
-    // [NSApp setApplicationIconImage:stipple];
+  // Move ourselves over to the appIcon window.
+  // [NSApp setApplicationIconImage:stipple];
     
-    // Get us registered for periodic exec.
-    f = [defaults floatForKey:@"UpdatePeriod"];
-    f = MAX(f, MINPERIOD);
-    [periodText setFloatValue:f];
+  // Get us registered for periodic exec.
+  f = [defaults floatForKey:@"UpdatePeriod"];
+  f = MAX(f, MINPERIOD);
+  [periodText setFloatValue:f];
     
-    selfStep = [[NSInvocation invocationWithMethodSignature:sig] retain];
-    [selfStep setSelector:stepSel];
-    [selfStep setTarget:self];
-    [selfStep retainArguments];
-    te = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)f invocation:selfStep repeats:YES];
+  selfStep = [[NSInvocation invocationWithMethodSignature:sig] retain];
+  [selfStep setSelector:stepSel];
+  [selfStep setTarget:self];
+  [selfStep retainArguments];
+  te = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)f
+                                    invocation:selfStep
+                                       repeats:YES];
     
-    // Get the lag factor.
-    lagFactor = [defaults integerForKey:@"LagFactor"];
-    lagFactor = MAX(lagFactor, MINLAGFACTOR);
-    [lagText setIntValue:lagFactor];
+  // Get the lag factor.
+  lagFactor = [defaults integerForKey:@"LagFactor"];
+  lagFactor = MAX(lagFactor, MINLAGFACTOR);
+  [lagText setIntValue:lagFactor];
     
-    // Get the layer factor.
-    layerFactor = [defaults integerForKey:@"LayerFactor"];
-    layerFactor = MAX(layerFactor, MINFACTOR);
-    [factorText setIntValue:layerFactor];
+  // Get the layer factor.
+  layerFactor = [defaults integerForKey:@"LayerFactor"];
+  layerFactor = MAX(layerFactor, MINFACTOR);
+  [factorText setIntValue:layerFactor];
     
-    [self __reallocOldTimes];
-    bcopy(cp_time, oldTimes[0], sizeof(CPUTime));
-    laIndex = 1;
-    steps = 1;
+  [self __reallocOldTimes];
+  bcopy(cp_time, oldTimes[0], sizeof(CPUTime));
+  laIndex = 1;
+  steps = 1;
     
-    [colorFields readColors];
-    // if ([defaults boolForKey:@"HideOnAutolaunch"]
-    //    && [defaults boolForKey:@"NXAutoLaunch"]) {
-    //   [NSApp hide:self];
-    // }
+  [colorFields readColors];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(id)sender
-{ 
+{
   // If te is installed, remove it.
-  if (te) 
-    {
-      [te invalidate];
-      te = nil;
-    }
+  if (te) {
+    [te invalidate];
+    te = nil;
+  }
   // [stipple release];
   la_finish();
   return NSTerminateNow;
@@ -360,32 +348,32 @@
 
 - (void)togglePause:(id)sender
 {
-  if (te) 
-    {
-      NSImage *pausedImage = [NSImage imageNamed:@"TimeMonP"];
-      NSImage *pausedStipple = [NSApp applicationIconImage];
+  if (te) {
+    NSImage *pausedImage = [NSImage imageNamed:@"TimeMonP"];
+    NSImage *pausedStipple = [NSApp applicationIconImage];
       
-      [pauseMenuCell setTitle:@"Continue"];
-      [te invalidate];
-      te = nil;
+    [pauseMenuCell setTitle:@"Continue"];
+    [te invalidate];
+    te = nil;
       
-      [pausedStipple lockFocus];
-      [pausedImage compositeToPoint:NSZeroPoint 
-                   operation:NSCompositeSourceOver];
-      [pausedStipple unlockFocus];
+    [pausedStipple lockFocus];
+    [pausedImage compositeToPoint:NSZeroPoint 
+                        operation:NSCompositeSourceOver];
+    [pausedStipple unlockFocus];
       
-      [NSApp setApplicationIconImage: pausedStipple];
-    } 
-  else 
-    {
-      float f;
-      [pauseMenuCell setTitle:@"Pause"];
-      f = [defaults floatForKey:@"UpdatePeriod"];
-      f = MAX(f, MINPERIOD);
-      [periodText setFloatValue:f];
-      te = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)f invocation:selfStep repeats:YES];
-      [self display];
-    }
+    [NSApp setApplicationIconImage: pausedStipple];
+  } 
+  else {
+    float f;
+    [pauseMenuCell setTitle:@"Pause"];
+    f = [defaults floatForKey:@"UpdatePeriod"];
+    f = MAX(f, MINPERIOD);
+    [periodText setFloatValue:f];
+    te = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)f
+                                      invocation:selfStep
+                                         repeats:YES];
+    [self display];
+  }
 }
 
 - (void)setPeriod:(id)sender
@@ -398,7 +386,9 @@
     f = [defaults floatForKey:@"UpdatePeriod"];
     f = MAX(f, MINPERIOD);
     [periodText setFloatValue:f];
-    te = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)f invocation:selfStep repeats:YES];
+    te = [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)f
+                                      invocation:selfStep
+                                         repeats:YES];
   }
 }
 

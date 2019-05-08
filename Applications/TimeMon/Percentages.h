@@ -14,27 +14,27 @@ typedef unsigned long long CPUTime[CPUSTATES];
 
 @interface Percentages : NSObject
 {
-    CPUTime *oldTimes;		// The array of collected CPU times for
-				// the previous lagFactor+layerFactor^2
-				// time slices.
-    int laIndex;		// Index into the array of collected values.
-    int laSize;			// lagFactor+layerFactor^2
-    int lagFactor;		// How long to average for the inner circle.
-    int layerFactor;		// The factor that differentiates layers.
-    unsigned steps;		// Number of steps we've done.
-    float pcents[3][CPUSTATES];	// Percentages for display.
-    float lpcents[3][CPUSTATES];// Last-displayed percentages.
+  CPUTime		*oldTimes;		// The array of collected CPU times for
+						// the previous lagFactor+layerFactor^2
+						// time slices.
+  int			laIndex;		// Index into the array of collected values.
+  int			laSize;			// lagFactor+layerFactor^2
+  int			lagFactor;		// How long to average for the inner circle.
+  int			layerFactor;		// The factor that differentiates layers.
+  unsigned		steps;			// Number of steps we've done.
+  float			pcents[3][CPUSTATES];	// Percentages for display.
+  float			lpcents[3][CPUSTATES];	// Last-displayed percentages.
 
-    BOOL updateFlags[ 3];	// Which percentages to update.
-    NSTimer *te;		// The timed entry keeping us alive.
-    NSInvocation *selfStep;	// The invocation describing [self step]
-    NSUserDefaults *defaults;
-    id periodText;		// Period of the display.
-    id lagText;			// Lag factore for the inner circle.
-    id factorText;		// Factor between layers.
-    id pauseMenuCell;		// To change when we pause/unpause.
-    id colorFields;		// Fields that contain the color scheme.
-    id readmeText;              // the readme text...
+  BOOL			updateFlags[3];		// Which percentages to update.
+  NSTimer		*te;			// The timed entry keeping us alive.
+  NSInvocation		*selfStep;		// The invocation describing [self step]
+  NSUserDefaults	*defaults;
+  id 			periodText;		// Period of the display.
+  id 			lagText;		// Lag factore for the inner circle.
+  id			factorText;		// Factor between layers.
+  id			pauseMenuCell;		// To change when we pause/unpause.
+  id			colorFields;		// Fields that contain the color scheme.
+  id			readmeText;		// the readme text...
 }
 
 // Action methods
