@@ -37,7 +37,7 @@
   return self;
 }
 
--(void)drawImageRep
+- (void)drawImageRep
 {
   int i;
   static float radii[3]={ 23.0, 17.0, 11.0};
@@ -199,14 +199,6 @@
   [self step];
 }
 
-- (void)applicationWillFinishLaunching:(NSNotification *)notification
-{
-  // [NSApp hide:self];
-  // [[NSApp iconWindow] orderFrontRegardless];
-  // [[[NSApp mainMenu] window] orderFrontRegardless];
-  // [[[NSApp mainMenu] window] orderOut:self];
-}
-
 // Resize the oldTimes array and rearrange the values within
 // so that as many as possible are retained, but no bad values
 // are introduced.
@@ -324,7 +316,8 @@
   bcopy(cp_time, oldTimes[0], sizeof(CPUTime));
   laIndex = 1;
   steps = 1;
-    
+
+  [colorFields setDrawsBackground:YES];
   [colorFields readColors];
 }
 
