@@ -9,7 +9,7 @@
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        0%{?dist}
+Release:        1%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -20,20 +20,12 @@ Source1:	gdomap.interfaces
 Source2:	gdomap.service
 Source3:	gdnc.service
 Source4:	gnustep-gui-%{GUI_VERSION}.tar.gz
-Source5:	common_contextualMenuCursor.tiff
-Source6:	common_copyCursor.tiff
-Source7:	common_disappearingItemCursor.tiff
-Source8:	common_greenArrowCursor.tiff
-Source9:	common_linkCursor.tiff
-Source10:	common_noCursor.tiff
-Source11:	common_RadioOff.tiff
-Source12:	common_RadioOn.tiff
-Source13:	common_SwitchOff.tiff
-Source14:	common_SwitchOn.tiff
-Source15:	gnustep-back-%{BACK_VERSION}.tar.gz
-Source16:	gpbs.service
-Source17:	gorm-%{GORM_VERSION}.tar.gz
-Source18:	ProjectCenter-%{PC_VERSION}.tar.gz
+Source5:	gnustep-gui-images.tar.gz
+Source6:	gnustep-back-%{BACK_VERSION}.tar.gz
+Source7:	gpbs.service
+Source8:	gorm-%{GORM_VERSION}.tar.gz
+Source9:	projectcenter-%{PC_VERSION}.tar.gz
+Source10:	projectcenter-images.tar.gz
 
 # Build GNUstep libraries in one RPM package
 # GUI
@@ -139,7 +131,7 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-gnustep -a 4 -a 15 -a 17 -a 18
+%setup -c -n nextspace-gnustep -a 4 -a 6 -a 8 -a 9
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
@@ -227,21 +219,25 @@ cd gorm-%{GORM_VERSION}
 cd ..
 # Install ProjectCenter
 cd ProjectCenter-%{PC_VERSION}
+tar zxf %{_sourcedir}/projectcenter-images.tar.gz
 %{make_install}
 cd ..
 
 # Replace cursor images
-cp %{_sourcedir}/common_contextualMenuCursor.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_copyCursor.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_disappearingItemCursor.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_greenArrowCursor.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_linkCursor.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_noCursor.tiff %{buildroot}/Library/Images
+cd %{buildroot}/Library/Images
+tar zxf %{_sourcedir}/gnustep-gui-images.tar.gz
+#cp %{_sourcedir}/common_contextualMenuCursor.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_copyCursor.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_disappearingItemCursor.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_greenArrowCursor.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_linkCursor.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_noCursor.tiff %{buildroot}/Library/Images
 # Replace button images
-cp %{_sourcedir}/common_RadioOff.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_RadioOn.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_SwitchOff.tiff %{buildroot}/Library/Images
-cp %{_sourcedir}/common_SwitchOn.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_RadioOff.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_RadioOn.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_SwitchOff.tiff %{buildroot}/Library/Images
+#cp %{_sourcedir}/common_SwitchOn.tiff %{buildroot}/Library/Images
+
 
 # systemd service files and config of gdomap
 mkdir -p %{buildroot}/usr/NextSpace/etc
@@ -296,6 +292,10 @@ fi
 #%postun
 
 %changelog
+* Fri May 10 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-1
+- original ProjectBuilder's images were added to ProjectCenter.
+- replace some GNUstep images from tarball.
+
 * Fri May  3 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-0
 - new versions of Base, GUI, Back, GORM.
 - ProjectCenter was added.
