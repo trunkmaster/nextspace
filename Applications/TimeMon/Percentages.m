@@ -253,23 +253,24 @@
   SEL stepSel = @selector(step);
   NSMethodSignature *sig = [self methodSignatureForSelector:stepSel];  
   NSDictionary *defs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                       @"0.5",			@"UpdatePeriod",
-                                     @"4",			@"LagFactor",
-                                     @"16",			@"LayerFactor",
-                                     @"YES",			@"HideOnAutolaunch",
-                                     @"NO",			@"NXAutoLaunch",
-                                     // For color systems.
-                                     @"1.000 1.000 1.000 1.000",	@"IdleColor",	// White
-                                     @"0.333 0.667 0.867 1.000",	@"NiceColor",	// A light blue-green
-                                     @"0.200 0.467 0.800 1.000",	@"UserColor",	// A darker blue-green
-                                     @"0.000 0.000 1.000 1.000",	@"SystemColor",	// Blue
-                                     @"1.000 0.800 0.900 1.000",	@"IOWaitColor",	// Light purple
-                                     // For monochrome systems.
-                                     @"1.000",		@"IdleGray",	// White
-                                     @"0.667",		@"NiceGray",	// Light gray
-                                     @"0.333",		@"UserGray",	// Dark gray
-                                     @"0.000",		@"SystemGray",	// Black
-                                     nil];
+    (
+     @"0.5",			@"UpdatePeriod",
+     @"4",			@"LagFactor",
+     @"16",			@"LayerFactor",
+     @"YES",			@"HideOnAutolaunch",
+     // For color systems.
+     @"1.000 1.000 1.000 1.000",	@"IdleColor",	// White
+     @"0.333 0.667 0.867 1.000",	@"NiceColor",	// A light blue-green
+     @"0.200 0.467 0.800 1.000",	@"UserColor",	// A darker blue-green
+     @"0.000 0.000 1.000 1.000",	@"SystemColor",	// Blue
+     @"1.000 0.800 0.900 1.000",	@"IOWaitColor",	// Light purple
+     // For monochrome systems.
+     @"1.000",		@"IdleGray",	// White
+     @"0.667",		@"NiceGray",	// Light gray
+     @"0.333",		@"UserGray",	// Dark gray
+     @"0.000",		@"SystemGray",	// Black
+     nil
+     )];
 
   [defaults registerDefaults:defs];
   [defaults synchronize];

@@ -28,7 +28,12 @@
 	    factorText,
 	    pauseMenuCell,
 	    colorFields,
-	    readmeText
+	    readmeText,
+	    idleColor,
+	    iowaitColor,
+	    niceColor,
+	    systemColor,
+	    userColor
 	);
 	Super = NSObject;
     };
