@@ -176,8 +176,9 @@ static const id titles[] = {
   } 
   else {
     CGFloat gray, alpha;
-    [[color colorUsingColorSpaceName:NSCalibratedWhiteColorSpace] getWhite:&gray
-                                                                     alpha:&alpha];
+    [[color colorUsingColorSpaceName:NSCalibratedWhiteColorSpace]
+      getWhite:&gray
+         alpha:&alpha];
     [defaults setFloat:gray
                 forKey:[NSString stringWithFormat:@"%@Gray",titles[col]]];
   }
@@ -197,17 +198,19 @@ static const id titles[] = {
 // so that it's visible against the background.
 - (void)setColor:(NSColor *)color
 {
-  CGFloat gray;
+  CGFloat gray, white;
   CGFloat r, g, b;
     
   // Remove any alpha component.
   color = [color colorWithAlphaComponent:1.0];
     
   // Get the grayscale version.
-  gray = [[color colorUsingColorSpaceName:NSCalibratedWhiteColorSpace] whiteComponent];
-    
+  gray = [[color colorUsingColorSpaceName:NSCalibratedWhiteColorSpace]
+           whiteComponent];
+
   // Set the text to be visible.
-  [self setTextColor:[NSColor colorWithCalibratedWhite:(gray <= 0.33 ? NSWhite : NSBlack) alpha:1.0]];
+  white = (gray <= 0.30 ? NSWhite : NSBlack);
+  [self setTextColor:[NSColor colorWithCalibratedWhite:white alpha:1.0]];
     
   // Set the color and gray for the field.
   [self setBackgroundColor:color];

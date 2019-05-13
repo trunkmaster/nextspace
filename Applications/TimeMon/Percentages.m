@@ -253,7 +253,6 @@
   SEL stepSel = @selector(step);
   NSMethodSignature *sig = [self methodSignatureForSelector:stepSel];  
   NSDictionary *defs = [NSDictionary dictionaryWithObjectsAndKeys:
-    (
      @"0.5",			@"UpdatePeriod",
      @"4",			@"LagFactor",
      @"16",			@"LayerFactor",
@@ -269,8 +268,7 @@
      @"0.667",		@"NiceGray",	// Light gray
      @"0.333",		@"UserGray",	// Dark gray
      @"0.000",		@"SystemGray",	// Black
-     nil
-     )];
+     nil];
 
   [defaults registerDefaults:defs];
   [defaults synchronize];
