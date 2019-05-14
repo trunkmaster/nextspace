@@ -47,11 +47,10 @@
 	    deviceMuteBtn,
 	    devicePortBtn,
 	    deviceProfileBtn,
-	    deviceVolumeSlider,
-	    deviceBalanceSlider,
+	    deviceVolume,
 	    deviceBox,
-	    deviceCardBtn,
-	    appVolumeSlider
+	    appVolume,
+	    deviceCardBtn
 	);
 	Super = NSObject;
     };

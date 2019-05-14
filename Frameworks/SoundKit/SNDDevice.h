@@ -27,7 +27,7 @@
 @interface SNDDevice : NSObject // <SNDParameters>
 {
 }
-@property (retain)   PACard        *card;
+@property (retain)   PACard    *card;
 @property (readonly) SNDServer *server;
 
 - (id)init;
