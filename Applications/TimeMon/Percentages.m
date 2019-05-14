@@ -204,45 +204,42 @@
 // are introduced.
 - (void)__reallocOldTimes
 {
-    CPUTime *newTimes;
-    // Get the new size for the array.
-    unsigned newSize = layerFactor * layerFactor + lagFactor + 1;
+  CPUTime *newTimes;
+  // Get the new size for the array.
+  unsigned newSize = layerFactor * layerFactor + lagFactor + 1;
     
-    // Allocate info for the array.
-    newTimes = NSZoneMalloc([self zone], sizeof(CPUTime) * newSize);
-    bzero(newTimes, sizeof(CPUTime) * newSize);
+  // Allocate info for the array.
+  newTimes = NSZoneMalloc([self zone], sizeof(CPUTime) * newSize);
+  bzero(newTimes, sizeof(CPUTime) * newSize);
     
-    // If there was a previous array, copy over values.  First,
-    // an index is found for the first valid time.	Then enough
-    // times to fill the rings are copied, if available.
-    if (oldTimes) 
-      {
-	unsigned ii, jj, elts;
+  // If there was a previous array, copy over values.  First,
+  // an index is found for the first valid time.	Then enough
+  // times to fill the rings are copied, if available.
+  if (oldTimes) {
+    unsigned ii, jj, elts;
 	
-	elts = MIN(lagFactor + layerFactor * layerFactor + 1, steps);
-	ii = (laIndex + laSize - elts) % laSize;
-	jj = MIN(laSize - ii, elts);
+    elts = MIN(lagFactor + layerFactor * layerFactor + 1, steps);
+    ii = (laIndex + laSize - elts) % laSize;
+    jj = MIN(laSize - ii, elts);
 	
-	if (jj) 
-	  {
-	    bcopy(oldTimes + ii, newTimes + 0, jj * sizeof(oldTimes[0]));
-	  }
-	if (jj < elts) 
-	  {
-	    bcopy(oldTimes + 0, newTimes + jj, (elts - jj) * sizeof(oldTimes[0]));
-	  }
+    if (jj){
+      bcopy(oldTimes + ii, newTimes + 0, jj * sizeof(oldTimes[0]));
+    }
+    if (jj < elts) {
+      bcopy(oldTimes + 0, newTimes + jj, (elts - jj) * sizeof(oldTimes[0]));
+    }
 	
-	// Free the old times.
-	NSZoneFree([self zone], oldTimes);
-      }
+    // Free the old times.
+    NSZoneFree([self zone], oldTimes);
+  }
     
-    // Reset everything so that we only access valid data.
-    oldTimes	= newTimes;
-    laIndex	= MIN(steps, laSize);
-    laIndex	= MIN(laIndex, newSize)%newSize;
-    steps	= MIN(steps, laSize);
-    steps	= MIN(steps, newSize);
-    laSize	= newSize;
+  // Reset everything so that we only access valid data.
+  oldTimes	= newTimes;
+  laIndex	= MIN(steps, laSize);
+  laIndex	= MIN(laIndex, newSize)%newSize;
+  steps	= MIN(steps, laSize);
+  steps	= MIN(steps, newSize);
+  laSize	= newSize;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -251,24 +248,25 @@
   int ret;
   CPUTime cp_time;
   SEL stepSel = @selector(step);
-  NSMethodSignature *sig = [self methodSignatureForSelector:stepSel];  
-  NSDictionary *defs = [NSDictionary dictionaryWithObjectsAndKeys:
-     @"0.5",			@"UpdatePeriod",
-     @"4",			@"LagFactor",
-     @"16",			@"LayerFactor",
-     @"YES",			@"HideOnAutolaunch",
-     // For color systems.
-     @"1.000 1.000 1.000 1.000",	@"IdleColor",	// White
-     @"0.333 0.667 0.867 1.000",	@"NiceColor",	// A light blue-green
-     @"0.200 0.467 0.800 1.000",	@"UserColor",	// A darker blue-green
-     @"0.000 0.000 1.000 1.000",	@"SystemColor",	// Blue
-     @"1.000 0.800 0.900 1.000",	@"IOWaitColor",	// Light purple
-     // For monochrome systems.
-     @"1.000",		@"IdleGray",	// White
-     @"0.667",		@"NiceGray",	// Light gray
-     @"0.333",		@"UserGray",	// Dark gray
-     @"0.000",		@"SystemGray",	// Black
-     nil];
+  NSMethodSignature *sig = [self methodSignatureForSelector:stepSel];
+  NSDictionary *defs;
+
+  defs = @{@"UpdatePeriod":@"0.5",
+           @"LagFactor":@"4",
+           @"LayerFactor":@"16",
+           @"HideOnAutolaunch":@"YES",
+           // For color systems.
+           @"IdleColor":@"1.000 1.000 1.000 1.000",     // White
+           @"NiceColor":@"0.333 0.667 0.867 1.000",     // A light blue-green
+           @"UserColor":@"0.200 0.467 0.800 1.000",     // A darker blue-green
+           @"SystemColor":@"0.000 0.000 1.000 1.000",   // Blue
+           @"IOWaitColor":@"1.000 0.800 0.900 1.000",   // Light purple
+           // For monochrome systems.
+           @"IdleGray":@"1.000",                        // White
+           @"NiceGray":@"0.667",                        // Light gray
+           @"UserGray":@"0.333",                        // Dark gray
+           @"SystemGray":@"0.000",                      // Black
+  };
 
   [defaults registerDefaults:defs];
   [defaults synchronize];
@@ -285,9 +283,6 @@
     [NSApp terminate:[notification object]];
   }
 
-  // Move ourselves over to the appIcon window.
-  // [NSApp setApplicationIconImage:stipple];
-    
   // Get us registered for periodic exec.
   f = [defaults floatForKey:@"UpdatePeriod"];
   f = MAX(f, MINPERIOD);
@@ -318,6 +313,8 @@
 
   [colorFields setDrawsBackground:YES];
   [colorFields readColors];
+  
+  [self update];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(id)sender
