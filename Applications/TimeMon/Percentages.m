@@ -350,7 +350,7 @@
                         operation:NSCompositeSourceOver];
     [pausedStipple unlockFocus];
       
-    [NSApp setApplicationIconImage: pausedStipple];
+    [NSApp setApplicationIconImage:pausedStipple];
   } 
   else {
     float f;
