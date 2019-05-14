@@ -20,40 +20,37 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <SoundKit/SKSoundServer.h>
 
-@class PACard;
+#import <SoundKit/SNDServer.h>
+#import <SoundKit/SNDDevice.h>
 
-@interface SKSoundDevice : NSObject // <SKSoundParameters>
+@class PAStream;
+@class PAClient;
+
+@interface SNDStream : NSObject
 {
+  pa_stream *_pa_stream;
 }
-@property (retain)   PACard        *card;
-@property (readonly) SKSoundServer *server;
+@property (assign) SNDServer *server;
+@property (assign) PAClient      *client;
+@property (assign) SNDDevice *device;
+@property (assign) NSString      *name;
+@property (assign) BOOL          isActive;
 
-- (id)init;
-- (id)initWithServer:(SKSoundServer *)server;
-- (NSString *)host;
-- (NSString *)name;
-- (NSString *)cardDescription;
-- (NSString *)description;
-- (void)printDescription;
+// Must be everriden in subclass: SoundPlayStream or SoundRecordStream
+- (id)initOnDevice:(SNDDevice *)device
+      samplingRate:(NSUInteger)rate
+      channelCount:(NSUInteger)channels
+            format:(NSUInteger)format;
 
-- (NSArray *)availableProfiles;
-- (NSString *)activeProfile;
-- (void)setActiveProfile:(NSString *)profileName;
+// Subclass responsibilty
+- (void)activate;
+- (void)deactivate;
 
-// Subclass responsiblity
-- (NSArray *)availablePorts;
-- (NSString *)activePort;
-- (void)setActivePort:(NSString *)portName;
-
-- (NSUInteger)volumeSteps;
 - (NSUInteger)volume;
 - (void)setVolume:(NSUInteger)volume;
-
 - (CGFloat)balance;
 - (void)setBalance:(CGFloat)balance;
-
 - (BOOL)isMute;
 - (void)setMute:(BOOL)isMute;
 

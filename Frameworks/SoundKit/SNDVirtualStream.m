@@ -18,13 +18,13 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <SoundKit/SKSoundServer.h>
-#import <SoundKit/SKSoundVirtualStream.h>
+#import <SoundKit/SNDServer.h>
+#import <SoundKit/SNDVirtualStream.h>
 
 #import "PAStream.h"
 #import "PAClient.h"
 
-@implementation SKSoundVirtualStream
+@implementation SNDVirtualStream
 
 - (void)dealloc
 {

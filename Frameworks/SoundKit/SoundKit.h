@@ -19,11 +19,11 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <SoundKit/SKSoundServer.h>
-#import <SoundKit/SKSoundDevice.h>
-#import <SoundKit/SKSoundOut.h>
-#import <SoundKit/SKSoundIn.h>
-#import <SoundKit/SKSoundStream.h>
-#import <SoundKit/SKSoundPlayStream.h>
-#import <SoundKit/SKSoundRecordStream.h>
-#import <SoundKit/SKSoundVirtualStream.h>
+#import <SoundKit/SNDServer.h>
+#import <SoundKit/SNDDevice.h>
+#import <SoundKit/SNDOut.h>
+#import <SoundKit/SNDIn.h>
+#import <SoundKit/SNDStream.h>
+#import <SoundKit/SNDPlayStream.h>
+#import <SoundKit/SNDRecordStream.h>
+#import <SoundKit/SNDVirtualStream.h>

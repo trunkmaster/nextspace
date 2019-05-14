@@ -19,13 +19,13 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <SoundKit/SKSoundDevice.h>
+#import <SoundKit/SNDDevice.h>
 
-@class PASink;
+@class PASource;
 
-@interface SKSoundOut : SKSoundDevice
+@interface SNDIn : SNDDevice
 {
 }
-@property (retain) PASink *sink;
+@property (retain) PASource *source;
 
 @end

@@ -21,23 +21,23 @@
 #import "PACard.h"
 #import "PASink.h"
 
-#import <SoundKit/SKSoundDevice.h>
+#import <SoundKit/SNDDevice.h>
 
-@implementation SKSoundDevice
+@implementation SNDDevice
 
 - (void)dealloc
 {
-  NSLog(@"[SKSoundDevice] dealloc");
+  NSLog(@"[SNDDevice] dealloc");
   [_card release];
   [super dealloc];
 }
 
 - (id)init
 {
-  return [self initWithServer:[SKSoundServer sharedServer]];
+  return [self initWithServer:[SNDServer sharedServer]];
 }
 
-- (id)initWithServer:(SKSoundServer *)server
+- (id)initWithServer:(SNDServer *)server
 {
   if ((self = [super init]) == nil)
     return nil;
@@ -67,8 +67,8 @@
 - (void)printDescription
 {
   // Print header only if it's not subclass `super` call
-  if ([self class] == [SKSoundDevice class] ) {
-    fprintf(stderr, "+++ SKSoundDevice: %s +++\n", [[self description] cString]);
+  if ([self class] == [SNDDevice class] ) {
+    fprintf(stderr, "+++ SNDDevice: %s +++\n", [[self description] cString]);
   }
   fprintf(stderr, "\t           Index : %lu\n", _card.index);
   fprintf(stderr, "\t            Name : %s\n", [_card.name cString]);
@@ -119,8 +119,8 @@
 }
 - (void)setActivePort:(NSString *)portName
 {
-  NSLog(@"[SoundKit] setActivePort: was send to SKSoundDevice."
-        " SKSoundOut or SKSoundIn subclasses should be used instead.");
+  NSLog(@"[SoundKit] setActivePort: was send to SNDDevice."
+        " SNDOut or SNDIn subclasses should be used instead.");
 }
 
 - (NSUInteger)volumeSteps
@@ -133,8 +133,8 @@
 }
 - (void)setVolume:(NSUInteger)volume
 {
-  NSLog(@"[SoundKit] setVolume: was send to SKSoundDevice."
-        " SKSoundOut or SKSoundIn subclasses should be used instead.");
+  NSLog(@"[SoundKit] setVolume: was send to SNDDevice."
+        " SNDOut or SNDIn subclasses should be used instead.");
 }
 
 - (CGFloat)balance
@@ -151,8 +151,8 @@
 }
 - (void)setMute:(BOOL)isMute
 {
-  NSLog(@"[SoundKit] setMute: was send to SKSoundDevice. "
-        "SKSoundOut or SKSoundIn subclasses should be used instead.");
+  NSLog(@"[SoundKit] setMute: was send to SNDDevice. "
+        "SNDOut or SNDIn subclasses should be used instead.");
 }
 
 @end

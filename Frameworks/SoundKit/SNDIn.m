@@ -18,16 +18,16 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <SoundKit/SKSoundIn.h>
+#import <SoundKit/SNDIn.h>
 
 #import "PASource.h"
 #import "PACard.h"
 
-@implementation SKSoundIn
+@implementation SNDIn
 
 - (void)dealloc
 {
-  NSLog(@"[SKSoundIn] dealloc");
+  NSLog(@"[SNDIn] dealloc");
   [_source release];
   [super dealloc];
 }
@@ -44,11 +44,11 @@
 // For debugging
 - (void)printDescription
 {
-  fprintf(stderr, "+++ SKSoundDevice: %s +++++++++++++++++++++++++++++++++++++++++\n",
+  fprintf(stderr, "+++ SNDDevice: %s +++++++++++++++++++++++++++++++++++++++++\n",
           [[super description] cString]);
   [super printDescription];
   
-  fprintf(stderr, "+++ SKSoundIn: %s +++\n", [[self description] cString]);
+  fprintf(stderr, "+++ SNDIn: %s +++\n", [[self description] cString]);
   fprintf(stderr, "\t             Source : %s (%lu)\n",  [_source.name cString],
           [_source retainCount]);
   fprintf(stderr, "\t Source Description : %s\n",  [_source.description cString]);
@@ -82,7 +82,7 @@
 - (NSArray *)availablePorts
 {
   if (_source == nil) {
-    NSLog(@"SKSoundIn: avaliablePorts was called without Source was being set.");
+    NSLog(@"SNDIn: avaliablePorts was called without Source was being set.");
     return nil;
   }
   return _source.ports;

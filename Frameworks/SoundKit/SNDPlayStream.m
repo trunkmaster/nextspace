@@ -21,10 +21,10 @@
 #import "PASink.h"
 #import "PASinkInput.h"
 
-#import "SKSoundOut.h"
-#import "SKSoundPlayStream.h"
+#import "SNDOut.h"
+#import "SNDPlayStream.h"
 
-@implementation SKSoundPlayStream
+@implementation SNDPlayStream
 
 - (void)dealloc
 {
@@ -33,7 +33,7 @@
 
 static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 {
-  [(SKSoundPlayStream *)userdata writeStreamLength:length];
+  [(SNDPlayStream *)userdata writeStreamLength:length];
 }
 
 // when PA stream is ready to receive bytes `_delegate` will be messaged with `action`
@@ -48,7 +48,7 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 - (void)writeStreamLength:(size_t)length
 {
   if (_delegate == nil) {
-    NSLog(@"[SoundKit] delegate is not set for SKSoundPlayStream.");
+    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
     return;
   }
   if ([_delegate respondsToSelector:_action]) {
@@ -57,18 +57,18 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
   }
   else {
     NSLog(@"[SoundKit] delegate does not respond to action write action"
-          " of SKSoundPlayStream");
+          " of SNDPlayStream");
   }
 }
 
 - (void)activate
 {
-  SKSoundOut *output;
+  SNDOut *output;
   
   if (super.device == nil) {
     super.device = [super.server defaultOutput];
   }
-  output = (SKSoundOut *)super.device;
+  output = (SNDOut *)super.device;
   
   pa_stream_connect_playback(_pa_stream, [output.sink.name cString], NULL, 0, NULL, NULL);
   pa_stream_set_write_callback(_pa_stream, _pa_write_callback, self);
@@ -89,7 +89,7 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 {
   pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE);
  
-  NSLog(@"[SoundKit, SKSoundPlayStream] playBuffer:size:tag: is not implemented yes.");  
+  NSLog(@"[SoundKit, SNDPlayStream] playBuffer:size:tag: is not implemented yes.");  
 }
 
 - (NSUInteger)volume

@@ -18,23 +18,23 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import "SKSoundStream.h"
+#import "SNDStream.h"
 
-@implementation SKSoundStream
+@implementation SNDStream
 
 - (void)dealloc
 {
   [super dealloc];
 }
 
-- (id)initOnDevice:(SKSoundDevice *)device
+- (id)initOnDevice:(SNDDevice *)device
 {
   return [self initOnDevice:device
                samplingRate:44100
                channelCount:2
                      format:PA_SAMPLE_FLOAT32LE];
 }
-- (id)initOnDevice:(SKSoundDevice *)device
+- (id)initOnDevice:(SNDDevice *)device
       samplingRate:(NSUInteger)rate
       channelCount:(NSUInteger)channels
             format:(NSUInteger)format
@@ -64,46 +64,46 @@
 
 - (void)activate
 {
-  NSLog(@"[SoundKit] `activate` was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] `activate` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
 }
 - (void)deactivate
 {
-  NSLog(@"[SoundKit] `deactivate` was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] `deactivate` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
 }
 
 - (NSUInteger)volume
 {
-  NSLog(@"[SoundKit] `volume` was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] `volume` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
   return 0;
 }
 - (void)setVolume:(NSUInteger)volume
 {
-  NSLog(@"[SoundKit] `setVolume` was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] `setVolume` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
 }
 - (CGFloat)balance
 {
-  NSLog(@"[SoundKit] `balance` was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] `balance` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
   return 0.0;
 }
 - (void)setBalance:(CGFloat)balance
 {
-  NSLog(@"[SoundKit] setBalance was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] setBalance was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
 }
 - (void)setMute:(BOOL)isMute
 {
-  NSLog(@"[SoundKit] `setMute` was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] `setMute` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
 }
 - (BOOL)isMute
 {
-  NSLog(@"[SoundKit] `isMute` was send to SKSoundStream."
-        " SKSoundPlayStream or SKSoundRecordStream subclasses should be used instead.");
+  NSLog(@"[SoundKit] `isMute` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
   return YES;
 }
 

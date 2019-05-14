@@ -28,29 +28,29 @@
 #import "PAClient.h"
 #import "PAStream.h"
 
-#import <SoundKit/SKSoundDevice.h>
-#import <SoundKit/SKSoundOut.h>
-#import <SoundKit/SKSoundIn.h>
-#import <SoundKit/SKSoundPlayStream.h>
-#import <SoundKit/SKSoundRecordStream.h>
-#import <SoundKit/SKSoundVirtualStream.h>
-#import <SoundKit/SKSoundServer.h>
+#import <SoundKit/SNDDevice.h>
+#import <SoundKit/SNDOut.h>
+#import <SoundKit/SNDIn.h>
+#import <SoundKit/SNDPlayStream.h>
+#import <SoundKit/SNDRecordStream.h>
+#import <SoundKit/SNDVirtualStream.h>
+#import <SoundKit/SNDServer.h>
 
-#import "SKSoundServerCallbacks.h"
+#import "SNDServerCallbacks.h"
 
 static dispatch_queue_t _pa_q;
-static SKSoundServer    *_server;
+static SNDServer    *_server;
 
 NSString *SKDeviceDidAddNotification    = @"SKDeviceDidAddNotification";
 NSString *SKDeviceDidChangeNotification = @"SKDeviceDidChangeNotification";
 NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 
-@implementation SKSoundServer
+@implementation SNDServer
 
 + (void)initialize
 {
-  if ([SKSoundServer class] == self) {
-    _server = [SKSoundServer new];
+  if ([SNDServer class] == self) {
+    _server = [SNDServer new];
   }
 }
 + (id)sharedServer
@@ -141,17 +141,17 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   fprintf(stderr, "[SoundKit] connection to server closed.\n");
 }
 
-- (SKSoundDevice *)defaultCard
+- (SNDDevice *)defaultCard
 {
   return nil;
 }
 - (NSArray *)cardList
 {
   NSMutableArray *list = [NSMutableArray new];
-  SKSoundDevice  *device;
+  SNDDevice  *device;
 
   for (PACard *card in cardList) {
-    device = [[SKSoundDevice alloc] initWithServer:self];
+    device = [[SNDDevice alloc] initWithServer:self];
     device.card = card;
     [list addObject:device];
     [device release];
@@ -159,17 +159,17 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   return [list autorelease];
 }
 
-- (SKSoundOut *)outputWithSink:(PASink *)sink
+- (SNDOut *)outputWithSink:(PASink *)sink
 {
-  SKSoundOut *output;
+  SNDOut *output;
 
-  output = [[SKSoundOut alloc] init];
+  output = [[SNDOut alloc] init];
   output.card = [self cardWithIndex:sink.cardIndex];
   output.sink = sink;
 
   return [output autorelease];
 }
-- (SKSoundOut *)defaultOutput
+- (SNDOut *)defaultOutput
 {
   return [self outputWithSink:[self sinkWithName:_defaultSinkName]];
 }
@@ -183,17 +183,17 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   return [list autorelease];
 }
 
-- (SKSoundIn *)inputWithSource:(PASource *)source
+- (SNDIn *)inputWithSource:(PASource *)source
 {
-  SKSoundIn *input;
+  SNDIn *input;
 
-  input = [[SKSoundIn alloc] init];
+  input = [[SNDIn alloc] init];
   input.card = [self cardWithIndex:source.cardIndex];
   input.source = source;
 
   return [input autorelease];
 }
-- (SKSoundIn *)defaultInput
+- (SNDIn *)defaultInput
 {
   return [self inputWithSource:[self sourceWithName:_defaultSourceName]];
 }
@@ -207,10 +207,10 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   return [list autorelease];
 }
 
-- (SKSoundStream *)defaultPlayStream
+- (SNDStream *)defaultPlayStream
 {
-  for (SKSoundVirtualStream *st in [self streamList]) {
-    if ([st isKindOfClass:[SKSoundPlayStream class]] &&
+  for (SNDVirtualStream *st in [self streamList]) {
+    if ([st isKindOfClass:[SNDPlayStream class]] &&
         [st.stream.clientName isEqualToString:@"event"]) {
       return st;
     }
@@ -220,19 +220,19 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 - (NSArray *)streamList
 {
   NSMutableArray       *list = [NSMutableArray new];
-  SKSoundVirtualStream *virtualStream;
-  SKSoundPlayStream    *playStream;
-  SKSoundRecordStream  *recordStream;
+  SNDVirtualStream *virtualStream;
+  SNDPlayStream    *playStream;
+  SNDRecordStream  *recordStream;
 
   // Pure virtual streams
   for (PAStream *stream in savedStreamList) {
-    virtualStream = [[SKSoundVirtualStream alloc] initWithStream:stream];
+    virtualStream = [[SNDVirtualStream alloc] initWithStream:stream];
     [list addObject:virtualStream];
     [virtualStream release];
   }
   // Streams with SinkInput and Client
   for (PASinkInput *sinkInput in sinkInputList) {
-    playStream = [SKSoundPlayStream new];
+    playStream = [SNDPlayStream new];
     playStream.server = self;
     playStream.client = [self clientWithIndex:sinkInput.clientIndex];
     playStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
@@ -244,7 +244,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   }
   // Streams with SourceOuput and Client
   for (PASourceOutput *sourceOutput in sourceOutputList) {
-    recordStream = [SKSoundRecordStream new];
+    recordStream = [SNDRecordStream new];
     recordStream.server = self;
     recordStream.sourceOutput = sourceOutput;
     recordStream.client = [self clientWithIndex:sourceOutput.clientIndex];
@@ -262,7 +262,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 // --- These methods are called by PA callbacks in the ---
 // --- GCD thread with label "org.nextspace.soundkit"  ---
 
-@implementation SKSoundServer (PulseAudio)
+@implementation SNDServer (PulseAudio)
 
 // Server
 - (void)updateConnectionState:(NSNumber *)state
@@ -311,7 +311,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   }
 
   if (isUpdated == NO) {
-    SKSoundDevice *soundDevice;
+    SNDDevice *soundDevice;
     card = [[PACard alloc] init];
     fprintf(stderr, "[SoundKit] Card Add: %s.\n", info->name);
     card.context = _pa_ctx;

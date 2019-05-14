@@ -22,10 +22,10 @@
 #import <pulse/pulseaudio.h>
 #import <Foundation/Foundation.h>
 
-@class SKSoundDevice;
-@class SKSoundOut;
-@class SKSoundIn;
-@class SKSoundStream;
+@class SNDDevice;
+@class SNDOut;
+@class SNDIn;
+@class SNDStream;
 
 @class PACard;
 @class PASink;
@@ -50,20 +50,20 @@ extern NSString *SKDeviceDidAddNotification;
 extern NSString *SKDeviceDidChangeNotification;
 extern NSString *SKDeviceDidRemoveNotification;
 
-@interface SKSoundServer : NSObject
+@interface SNDServer : NSObject
 {
   // Define our pulse audio loop and connection variables
   pa_mainloop		*_pa_loop;
   pa_mainloop_api	*_pa_api;
   pa_operation		*_pa_op;
 
-  // SKSoundDevice
+  // SNDDevice
   NSMutableArray        *cardList;
-  // SKSoundOut
+  // SNDOut
   NSMutableArray        *sinkList;
-  // SKSoundIn
+  // SNDIn
   NSMutableArray        *sourceList;
-  // SKSoundStream
+  // SNDStream
   NSMutableArray        *clientList;
   NSMutableArray        *sinkInputList;
   NSMutableArray        *sourceOutputList;
@@ -86,22 +86,22 @@ extern NSString *SKDeviceDidRemoveNotification;
 - (id)initOnHost:(NSString *)hostName;
 - (void)disconnect;
 
-- (SKSoundDevice *)defaultCard;
+- (SNDDevice *)defaultCard;
 - (NSArray *)cardList;
 
-- (SKSoundOut *)outputWithSink:(PASink *)sink;
-- (SKSoundOut *)defaultOutput;
+- (SNDOut *)outputWithSink:(PASink *)sink;
+- (SNDOut *)defaultOutput;
 - (NSArray *)outputList;
 
-- (SKSoundIn *)defaultInput;
+- (SNDIn *)defaultInput;
 - (NSArray *)inputList;
 
-- (SKSoundStream *)defaultPlayStream;
+- (SNDStream *)defaultPlayStream;
 - (NSArray *)streamList;
 
 @end
 
-@interface SKSoundServer (PulseAudio)
+@interface SNDServer (PulseAudio)
 
 // Server
 - (void)updateConnectionState:(NSNumber *)state;

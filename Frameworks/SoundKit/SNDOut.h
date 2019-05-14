@@ -19,15 +19,13 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <SoundKit/SKSoundStream.h>
+#import <SoundKit/SNDDevice.h>
 
-@class PASinkInput;
+@class PASink;
 
-@interface SKSoundPlayStream : SKSoundStream
+@interface SNDOut : SNDDevice
 {
-  SEL _action;
-  id  _delegate;
 }
-@property (assign) PASinkInput *sinkInput;
+@property (retain) PASink *sink;
 
 @end

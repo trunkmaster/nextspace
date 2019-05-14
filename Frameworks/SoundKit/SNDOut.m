@@ -22,13 +22,13 @@
 
 #import "PACard.h"
 #import "PASink.h"
-#import "SKSoundOut.h"
+#import "SNDOut.h"
 
-@implementation SKSoundOut
+@implementation SNDOut
 
 - (void)dealloc
 {
-  NSLog(@"[SKSoundOut] dealloc");
+  NSLog(@"[SNDOut] dealloc");
   [_sink release];
   [super dealloc];
 }
@@ -44,11 +44,11 @@
 // For debugging
 - (void)printDescription
 {
-  fprintf(stderr, "+++ SKSoundDevice: %s +++++++++++++++++++++++++++++++++++++++++\n",
+  fprintf(stderr, "+++ SNDDevice: %s +++++++++++++++++++++++++++++++++++++++++\n",
           [[super description] cString]);
   [super printDescription];
   
-  fprintf(stderr, "+++ SKSoundOut: %s +++\n", [[self description] cString]);
+  fprintf(stderr, "+++ SNDOut: %s +++\n", [[self description] cString]);
   fprintf(stderr, "\t               Sink : %s (%lu)\n",  [_sink.name cString],
           [_sink retainCount]);
   fprintf(stderr, "\t   Sink Description : %s\n",  [_sink.description cString]);
@@ -82,7 +82,7 @@
 - (NSArray *)availablePorts
 {
   if (_sink == nil) {
-    NSLog(@"SKSoundOut: avaliablePorts was called without Sink was being set.");
+    NSLog(@"SNDOut: avaliablePorts was called without Sink was being set.");
     return nil;
   }
   return _sink.ports;

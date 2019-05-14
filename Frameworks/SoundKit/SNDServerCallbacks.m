@@ -18,16 +18,16 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import "SKSoundServer.h"
-#import "SKSoundServerCallbacks.h"
+#import "SNDServer.h"
+#import "SNDServerCallbacks.h"
 
 static int n_outstanding = 0;
 
 NSString *SKServerStateDidChangeNotification = @"SKServerStateDidChange";
 
-@implementation SKSoundServer (Callbacks)
+@implementation SNDServer (Callbacks)
 
-// --- SKSoundServer: Server and Card---
+// --- SNDServer: Server and Card---
 void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
 {
   if (eol < 0) {
@@ -45,7 +45,7 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
     NSValue *value;
     
     value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
-    [(SKSoundServer *)userdata updateCard:value];
+    [(SNDServer *)userdata updateCard:value];
   }
 }
 void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
@@ -59,10 +59,10 @@ void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
   inventory_decrement_requests(ctx, userdata);
   
   value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
-  [(SKSoundServer *)userdata updateServer:value];
+  [(SNDServer *)userdata updateServer:value];
 }
 
-// --- SKSoundOut: Sink --> [Card, Server] ---
+// --- SNDOut: Sink --> [Card, Server] ---
 void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
 {
   NSValue *value;
@@ -81,10 +81,10 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
   }
 
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  [(SKSoundServer *)userdata updateSink:value];
+  [(SNDServer *)userdata updateSink:value];
 }
 
-// --- SKSoundIn: Source --> [Card, Server] ---
+// --- SNDIn: Source --> [Card, Server] ---
 void source_cb(pa_context *ctx, const pa_source_info *info,
                int eol, void *userdata)
 {
@@ -103,10 +103,10 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
 
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
-  [(SKSoundServer *)userdata updateSource:value];
+  [(SNDServer *)userdata updateSource:value];
 }
 
-// --- SKSoundStream: SinkInput | SourceOutput, Client, Saved Stream(?) ---
+// --- SNDStream: SinkInput | SourceOutput, Client, Saved Stream(?) ---
 // SinkInput
 void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
                    int eol, void *userdata)
@@ -127,7 +127,7 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
   }
 
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  [(SKSoundServer *)userdata updateSinkInput:value];
+  [(SNDServer *)userdata updateSinkInput:value];
 }
 // SourceOutput
 void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
@@ -148,7 +148,7 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
-  [(SKSoundServer *)userdata updateSourceOutput:value];
+  [(SNDServer *)userdata updateSourceOutput:value];
 }
 // Client
 void client_cb(pa_context *ctx, const pa_client_info *info,
@@ -170,7 +170,7 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   }
   
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  [(SKSoundServer *)userdata updateClient:value];
+  [(SNDServer *)userdata updateClient:value];
 }
 // Saved Stream
 void ext_stream_restore_read_cb(pa_context *ctx,
@@ -192,14 +192,14 @@ void ext_stream_restore_read_cb(pa_context *ctx,
 
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
-  [(SKSoundServer *)userdata updateStream:value];
+  [(SNDServer *)userdata updateStream:value];
 }
 
 // --- Context events subscription ---
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata)
 {
-  SKSoundServer                *_server = userdata;
+  SNDServer                *_server = userdata;
   pa_subscription_event_type_t event_type_masked;
   pa_operation *o;
 
@@ -352,10 +352,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
   }
 
   // fprintf(stderr, "[SoundKit] send notification.\n");
-  // [(SKSoundServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
   //                                             withObject:[NSNumber numberWithInt:state]
   //                                          waitUntilDone:YES];
-  [(SKSoundServer *)userdata updateConnectionState:[NSNumber numberWithInt:state]];
+  [(SNDServer *)userdata updateConnectionState:[NSNumber numberWithInt:state]];
 }
 
 // --- Initial inventory of PulseAudio objects ---
@@ -366,7 +366,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
 void inventory_start(pa_context *ctx, void *userdata)
 {
   pa_operation *o;
-  SKSoundServer *server = (SKSoundServer *)userdata;
+  SNDServer *server = (SNDServer *)userdata;
 
   fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
       
@@ -395,7 +395,7 @@ void inventory_start(pa_context *ctx, void *userdata)
   pa_operation_unref(o);
   n_outstanding++;
 
-  // At this point we can create SKSoundOut objects
+  // At this point we can create SNDOut objects
 
   if (!(o = pa_context_get_source_info_list(ctx, source_cb, userdata))) {
     fprintf(stderr, "[SoundKit] pa_context_get_source_info_list() failed\n");
@@ -404,7 +404,7 @@ void inventory_start(pa_context *ctx, void *userdata)
   pa_operation_unref(o);
   n_outstanding++;
   
-  // At this point we can create SKSoundIn objects
+  // At this point we can create SNDIn objects
   
   if (!(o = pa_context_get_client_info_list(ctx, client_cb, userdata))) {
     fprintf(stderr, "[SoundKit] pa_context_client_info_list() failed\n");
@@ -427,7 +427,7 @@ void inventory_start(pa_context *ctx, void *userdata)
   pa_operation_unref(o);
   n_outstanding++;
 
-  // At this point we can create SKSoundStream objects
+  // At this point we can create SNDStream objects
 
   /* This call is not always supported. 
      This intial call has no complementary subscribe for events call.
@@ -459,7 +459,7 @@ void inventory_decrement_requests(pa_context *ctx, void *userdata)
 void inventory_end(pa_context *ctx, void *userdata)
 {
   pa_operation  *o;
-  SKSoundServer *server = (SKSoundServer *)userdata;
+  SNDServer *server = (SNDServer *)userdata;
   
   fprintf(stderr, "[SoundKit] --- Start tracking of PulseAudio events...\n");
   

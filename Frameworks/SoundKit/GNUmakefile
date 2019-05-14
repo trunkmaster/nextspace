@@ -29,27 +29,27 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	PAClient.m \
 	PAStream.m \
 	\
-	SKSoundServer.m \
-	SKSoundServerCallbacks.m \
-	SKSoundDevice.m \
-	SKSoundOut.m \
-	SKSoundIn.m \
-	SKSoundStream.m \
-	SKSoundPlayStream.m \
-	SKSoundRecordStream.m \
-	SKSoundVirtualStream.m
+	SNDServer.m \
+	SNDServerCallbacks.m \
+	SNDDevice.m \
+	SNDOut.m \
+	SNDIn.m \
+	SNDStream.m \
+	SNDPlayStream.m \
+	SNDRecordStream.m \
+	SNDVirtualStream.m
 endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
 	SoundKit.h \
-	SKSoundServer.h \
-	SKSoundDevice.h \
-	SKSoundOut.h \
-	SKSoundIn.h \
-	SKSoundStream.h \
-	SKSoundPlayStream.h \
-	SKSoundRecordStream.h \
-	SKSoundVirtualStream.h
+	SNDServer.h \
+	SNDDevice.h \
+	SNDOut.h \
+	SNDIn.h \
+	SNDStream.h \
+	SNDPlayStream.h \
+	SNDRecordStream.h \
+	SNDVirtualStream.h
 
 $(FRAMEWORK_NAME)_RESOURCE_FILES = 
 

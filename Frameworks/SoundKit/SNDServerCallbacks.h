@@ -23,7 +23,7 @@
 #import <pulse/ext-stream-restore.h>
 #import <pulse/ext-device-manager.h>
 
-@interface SKSoundServer (Callbacks)
+@interface SNDServer (Callbacks)
 
 // --- Server ---
 void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata);

@@ -19,13 +19,17 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <SoundKit/SKSoundDevice.h>
+#import <SoundKit/SNDServer.h>
+#import <SoundKit/SNDStream.h>
 
-@class PASource;
+@class PAStream;
 
-@interface SKSoundIn : SKSoundDevice
+@interface SNDVirtualStream : SNDStream
 {
 }
-@property (retain) PASource *source;
+@property (readonly) PAStream *stream;
+@property (readonly) NSString *appName;
+
+- (id)initWithStream:(PAStream *)stream;
 
 @end

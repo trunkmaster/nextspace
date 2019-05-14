@@ -21,10 +21,10 @@
 #import "PASource.h"
 #import "PASourceOutput.h"
 
-#import "SKSoundIn.h"
-#import "SKSoundRecordStream.h"
+#import "SNDIn.h"
+#import "SNDRecordStream.h"
 
-@implementation SKSoundRecordStream
+@implementation SNDRecordStream
 
 - (void)dealloc
 {
@@ -38,7 +38,7 @@ static void stream_read_callback(pa_stream *stream, size_t length, void *userdat
       float      *data; */
   // pa_assert(s && length && snd_file);
 
-  fprintf(stderr, "[SKSoundStream] stream_write_callback\n");
+  fprintf(stderr, "[SNDStream] stream_write_callback\n");
   
   /*
   data = pa_xmalloc(length);
@@ -64,12 +64,12 @@ static void stream_read_callback(pa_stream *stream, size_t length, void *userdat
 
 - (void)activate
 {
-  SKSoundIn *input;
+  SNDIn *input;
   
   if (super.device == nil) {
     super.device = [super.server defaultInput];
   }
-  input = (SKSoundIn *)super.device;
+  input = (SNDIn *)super.device;
 
   pa_stream_connect_record(_pa_stream, [input.source.name cString], NULL, 0);
   pa_stream_set_read_callback(_pa_stream, stream_read_callback, NULL);
