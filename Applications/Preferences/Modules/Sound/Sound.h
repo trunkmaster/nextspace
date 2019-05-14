@@ -32,9 +32,9 @@
 {
   NXTDefaults    *defaults;
   NSImage       *image;
-  SKSoundServer *soundServer;
-  SKSoundOut    *soundOut;
-  SKSoundIn     *soundIn;
+  SNDServer *soundServer;
+  SNDOut    *soundOut;
+  SNDIn     *soundIn;
   NSString      *defaultSound;
   NSDictionary  *soundsList;
   NSInteger     defSoundRow;

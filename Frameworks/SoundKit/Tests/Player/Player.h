@@ -1,7 +1,7 @@
 /* All Rights reserved */
 
 #include <AppKit/AppKit.h>
-#include <SoundKit/SKSoundServer.h>
+#include <SoundKit/SNDServer.h>
 
 @interface Player : NSObject
 {
@@ -30,7 +30,7 @@
   
   id ejectBtn;
 
-  SKSoundServer *server;
+  SNDServer *server;
 }
 - (void)setButtonsEnabled:(BOOL)yn;
   

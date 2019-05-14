@@ -49,7 +49,7 @@
   infoOn = [[NSImage alloc] initByReferencingFile:path];
 
   // 1. Connect to PulseAudio on locahost
-  server = [SKSoundServer sharedServer];
+  server = [SNDServer sharedServer];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self

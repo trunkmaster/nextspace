@@ -52,11 +52,11 @@ static void *StreamVirtualContext = &StreamVirtualContext;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(soundServerUpdated:)
                                                name:SKDeviceDidChangeNotification
-                                             object:[SKSoundServer sharedServer]];
+                                             object:[SNDServer sharedServer]];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(soundServerUpdated:)
                                                name:SKDeviceDidRemoveNotification
-                                             object:[SKSoundServer sharedServer]];
+                                             object:[SNDServer sharedServer]];
 }
 
 - (id)window
@@ -66,12 +66,12 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 
 - (void)fillCardList
 {
-  SKSoundServer *server = [SKSoundServer sharedServer];
+  SNDServer *server = [SNDServer sharedServer];
   NSString      *title;
   
   [deviceCardBtn removeAllItems];
   
-  for (SKSoundDevice *device in [server cardList]) {
+  for (SNDDevice *device in [server cardList]) {
     NSLog(@"Device: %@", device.description);
     title = device.description;
     [deviceCardBtn addItemWithTitle:title];
@@ -83,7 +83,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
         [[deviceCardBtn selectedItem] title]);
   
   if ([[[modeButton selectedItem] title] isEqualToString:@"Playback"] != NO) {
-    SKSoundOut *defOut = [server defaultOutput];
+    SNDOut *defOut = [server defaultOutput];
     if (defOut != nil) {
       [deviceCardBtn selectItemWithTitle:[defOut cardDescription]];
     }
@@ -95,7 +95,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
     }
   }
   else {
-    SKSoundIn *defIn = [server defaultInput];
+    SNDIn *defIn = [server defaultInput];
     if (defIn != nil) {
       [deviceCardBtn selectItemWithTitle:[defIn cardDescription]];
     }
@@ -111,7 +111,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 }
 - (void)fillProfileList
 {
-  SKSoundDevice *device = [[deviceCardBtn selectedItem] representedObject];
+  SNDDevice *device = [[deviceCardBtn selectedItem] representedObject];
   NSString      *title;
   
   [deviceProfileBtn removeAllItems];
@@ -128,7 +128,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 - (void)fillPortList
 {
   NSString      *title;
-  SKSoundServer *server = [SKSoundServer sharedServer];
+  SNDServer *server = [SNDServer sharedServer];
   NSArray       *deviceList;
   BOOL          isPlayback;
 
@@ -143,7 +143,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
     deviceList = [server inputList];
   }
     
-  for (SKSoundDevice *device in deviceList) {
+  for (SNDDevice *device in deviceList) {
     NSLog(@"Device: %@", device.description);
     
     for (NSDictionary *port in [device availablePorts]) {
@@ -157,7 +157,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
   }
   
   if (isPlayback) {
-    SKSoundOut *output;
+    SNDOut *output;
     if ([devicePortBtn numberOfItems] > 1 &&
         (output = [server defaultOutput]) != nil) {
       [devicePortBtn selectItemWithTitle:[output activePort]];
@@ -170,7 +170,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
     }
   }
   else {
-    SKSoundIn *input;
+    SNDIn *input;
     if ([devicePortBtn numberOfItems] > 1 &&
         (input = [server defaultInput]) != nil) {
       if ([input activePort] != nil) {
@@ -205,8 +205,8 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 // --- Key-Value Observing
 - (void)observeDevice:(id)device
 {
-  if ([device isKindOfClass:[SKSoundOut class]]) {
-    SKSoundOut *output = (SKSoundOut *)device;
+  if ([device isKindOfClass:[SNDOut class]]) {
+    SNDOut *output = (SNDOut *)device;
     [output.sink addObserver:self
                   forKeyPath:@"mute"
                      options:NSKeyValueObservingOptionNew
@@ -224,8 +224,8 @@ static void *StreamVirtualContext = &StreamVirtualContext;
                      options:NSKeyValueObservingOptionNew
                      context:OutputContext];
   }
-  else if ([device isKindOfClass:[SKSoundIn class]]) {
-    SKSoundIn *input = (SKSoundIn *)device;
+  else if ([device isKindOfClass:[SNDIn class]]) {
+    SNDIn *input = (SNDIn *)device;
     [input.source addObserver:self
                    forKeyPath:@"mute"
                       options:NSKeyValueObservingOptionNew
@@ -243,8 +243,8 @@ static void *StreamVirtualContext = &StreamVirtualContext;
                       options:NSKeyValueObservingOptionNew
                       context:InputContext];
   }
-  else if ([device isKindOfClass:[SKSoundPlayStream class]]) {
-    SKSoundPlayStream *stream = (SKSoundPlayStream *)device;
+  else if ([device isKindOfClass:[SNDPlayStream class]]) {
+    SNDPlayStream *stream = (SNDPlayStream *)device;
     [stream.sinkInput addObserver:self
                        forKeyPath:@"mute"
                           options:NSKeyValueObservingOptionNew
@@ -254,8 +254,8 @@ static void *StreamVirtualContext = &StreamVirtualContext;
                           options:NSKeyValueObservingOptionNew
                           context:StreamPlayContext];
   }
-  else if ([device isKindOfClass:[SKSoundRecordStream class]]) {
-    SKSoundRecordStream *stream = (SKSoundRecordStream *)device;
+  else if ([device isKindOfClass:[SNDRecordStream class]]) {
+    SNDRecordStream *stream = (SNDRecordStream *)device;
     [stream.sourceOutput addObserver:self
                        forKeyPath:@"mute"
                           options:NSKeyValueObservingOptionNew
@@ -265,8 +265,8 @@ static void *StreamVirtualContext = &StreamVirtualContext;
                              options:NSKeyValueObservingOptionNew
                              context:StreamRecordContext];
   }
-  else if ([device isKindOfClass:[SKSoundVirtualStream class]]) {
-    SKSoundVirtualStream *stream = (SKSoundVirtualStream *)device;
+  else if ([device isKindOfClass:[SNDVirtualStream class]]) {
+    SNDVirtualStream *stream = (SNDVirtualStream *)device;
     [stream.stream addObserver:self
                     forKeyPath:@"mute"
                        options:NSKeyValueObservingOptionNew
@@ -283,10 +283,10 @@ static void *StreamVirtualContext = &StreamVirtualContext;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  SKSoundOut          *output;
-  SKSoundIn           *input;
-  SKSoundPlayStream   *playStream;
-  SKSoundRecordStream *recordStream;
+  SNDOut          *output;
+  SNDIn           *input;
+  SNDPlayStream   *playStream;
+  SNDRecordStream *recordStream;
   
   if (context == OutputContext) {
     output = [[devicePortBtn selectedItem] representedObject];
@@ -401,19 +401,19 @@ static void *StreamVirtualContext = &StreamVirtualContext;
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
-  SKSoundServer *server = [SKSoundServer sharedServer];
+  SNDServer *server = [SNDServer sharedServer];
   NSString      *mode = [[modeButton selectedItem] title];
   NSBrowserCell *cell;
 
   NSLog(@"Browser RELOAD.");
 
   if ([mode isEqualToString:@"Playback"]) {
-    for (SKSoundStream *st in [server streamList]) {
-      if ([st isKindOfClass:[SKSoundVirtualStream class]] &&
-          (SKSoundVirtualStream *)st.name == nil) {
+    for (SNDStream *st in [server streamList]) {
+      if ([st isKindOfClass:[SNDVirtualStream class]] &&
+          (SNDVirtualStream *)st.name == nil) {
         continue;
       }
-      if ([st isKindOfClass:[SKSoundPlayStream class]]) {
+      if ([st isKindOfClass:[SNDPlayStream class]]) {
         [matrix addRow];
         cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
         [cell setLeaf:YES];
@@ -431,7 +431,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 
 - (void)browserClick:(id)sender
 {
-  SKSoundStream *stream = [[sender selectedCellInColumn:0] representedObject];
+  SNDStream *stream = [[sender selectedCellInColumn:0] representedObject];
 
   if (stream == nil) {
     return;
@@ -451,7 +451,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 }
 - (void)setAppVolume:(id)sender
 {
-  SKSoundStream *stream = [[appBrowser selectedCellInColumn:0] representedObject];
+  SNDStream *stream = [[appBrowser selectedCellInColumn:0] representedObject];
 
   [stream setVolume:[sender integerValue]];
 }
@@ -459,7 +459,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 // --- Output actions
 - (void)setDeviceCard:(id)sender
 {
-  SKSoundDevice *device = [[sender selectedItem] representedObject];
+  SNDDevice *device = [[sender selectedItem] representedObject];
 
   if ([[device availablePorts] count] > 0) {
     [device setActivePort:[[sender selectedItem] title]];
@@ -474,7 +474,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 
 - (void)setDeviceProfile:(id)sender
 {
-  SKSoundDevice *device = [[deviceProfileBtn selectedItem] representedObject];
+  SNDDevice *device = [[deviceProfileBtn selectedItem] representedObject];
 
   [device setActiveProfile:[[deviceProfileBtn selectedItem] title]];
   [self fillPortList];
@@ -482,7 +482,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 
 - (void)setDevicePort:(id)sender
 {
-  SKSoundDevice *device = [[sender selectedItem] representedObject];
+  SNDDevice *device = [[sender selectedItem] representedObject];
 
   if ([[device availablePorts] count] > 0) {
     [device setActivePort:[[sender selectedItem] title]];
@@ -500,7 +500,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 
 - (void)setDeviceVolume:(id)sender
 {
-  SKSoundDevice *device = [[devicePortBtn selectedItem] representedObject];
+  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
 
   NSLog(@"Device: set volume to %li (old: %lu)",
         [deviceVolumeSlider integerValue], [device volume]);
@@ -512,7 +512,7 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 
 - (void)setDeviceBalance:(id)sender
 {
-  SKSoundDevice *device = [[devicePortBtn selectedItem] representedObject];
+  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
   
   NSLog(@"Device: set balance: %@", [device className]);
   [device setBalance:[deviceBalanceSlider floatValue]];

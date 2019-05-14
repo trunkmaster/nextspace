@@ -7,13 +7,13 @@
 #include <sndfile.h>
 
 #import <Foundation/Foundation.h>
-#import <SoundKit/SKSoundServer.h>
-#import <SoundKit/SKSoundOut.h>
-#import <SoundKit/SKSoundPlayStream.h>
+#import <SoundKit/SNDServer.h>
+#import <SoundKit/SNDOut.h>
+#import <SoundKit/SNDPlayStream.h>
 
 @interface SoundKitClient : NSObject
 {
-  SKSoundServer *server;
+  SNDServer *server;
   BOOL          isRunning;
 }
 @end
@@ -207,9 +207,9 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
 
   sample_length = (size_t)sfi.frames * pa_frame_size(&sample_spec);
 
-  SKSoundStream *stream;
+  SNDStream *stream;
   NSLog(@"Creating stream...");
-  stream = [[SKSoundPlayStream alloc] initOnDevice:nil
+  stream = [[SNDPlayStream alloc] initOnDevice:nil
                                       samplingRate:sample_spec.rate
                                       channelCount:sample_spec.channels
                                             format:sample_spec.format];
@@ -279,7 +279,7 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
   self = [super init];
 
   // 1. Connect to PulseAudio on locahost
-  server = [SKSoundServer sharedServer];
+  server = [SNDServer sharedServer];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -318,18 +318,18 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
   
   // // Sound Out
   // fprintf(stderr, "=== SoundOut ===\n");
-  // for (SKSoundOut *sout in server.outputList) {
+  // for (SNDOut *sout in server.outputList) {
   //   [sout printDescription];
   // }
 }
 
-- (SKSoundOut *)defaultSoundOut
+- (SNDOut *)defaultSoundOut
 {
-  SKSoundOut *sOut;
-  // SKSoundStream *sStream;
-  // sStream = [[SKSoundStream alloc] initWithDevice:sOut];
+  SNDOut *sOut;
+  // SNDStream *sStream;
+  // sStream = [[SNDStream alloc] initWithDevice:sOut];
 
-  for (SKSoundOut *sout in [server outputList]) {
+  for (SNDOut *sout in [server outputList]) {
     [sout printDescription];
   }
 
@@ -340,11 +340,11 @@ static void stream_write_callback(pa_stream *s, size_t length, void *userdata)
   return sOut;
 }
 
-- (SKSoundIn *)defaultSoundIn
+- (SNDIn *)defaultSoundIn
 {
-  SKSoundIn *sIn;
+  SNDIn *sIn;
 
-  for (SKSoundIn *sin in [server inputList]) {
+  for (SNDIn *sin in [server inputList]) {
     [sin printDescription];
   }
 

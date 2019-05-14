@@ -109,7 +109,7 @@
   [window release];
 
   // 1. Connect to PulseAudio on locahost
-  soundServer = [SKSoundServer sharedServer];
+  soundServer = [SNDServer sharedServer];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -185,7 +185,7 @@
 // --- Key-Value Observing
 static void *OutputContext = &OutputContext;
 static void *InputContext = &InputContext;
-- (void)observeOutput:(SKSoundOut *)output
+- (void)observeOutput:(SNDOut *)output
 {
   [output.sink addObserver:self
                 forKeyPath:@"mute"
@@ -196,7 +196,7 @@ static void *InputContext = &InputContext;
                    options:NSKeyValueObservingOptionNew
                    context:OutputContext];
 }
-- (void)observeInput:(SKSoundIn *)input
+- (void)observeInput:(SNDIn *)input
 {
   [input.source addObserver:self
                  forKeyPath:@"mute"
@@ -351,18 +351,18 @@ static void *InputContext = &InputContext;
 
 - (void)setMute:(id)sender
 {
-  SKSoundDevice *device = (sender == muteButton) ? soundOut : soundIn;
+  SNDDevice *device = (sender == muteButton) ? soundOut : soundIn;
   [device setMute:[sender state]];
 }
 - (void)setVolume:(id)sender
 {
-  SKSoundDevice *device = (sender == volumeLevel) ? soundOut : soundIn;
+  SNDDevice *device = (sender == volumeLevel) ? soundOut : soundIn;
 
   [device setVolume:[sender intValue]];
 }
 - (void)setBalance:(id)sender
 {
-  SKSoundDevice *device = (sender == volumeBalance) ? soundOut : soundIn;
+  SNDDevice *device = (sender == volumeBalance) ? soundOut : soundIn;
   
   [device setBalance:[sender intValue]];
 }

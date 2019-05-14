@@ -53,7 +53,7 @@ static void *InputContext = &InputContext;
 - (void)fillDeviceList
 {
   NSString      *title;
-  SKSoundServer *server = [SKSoundServer sharedServer];
+  SNDServer *server = [SNDServer sharedServer];
   NSArray       *deviceList;
 
   if ([[[modeButton selectedItem] title] isEqualToString:@"Playback"]) {
@@ -67,7 +67,7 @@ static void *InputContext = &InputContext;
   
   [devicePortBtn removeAllItems];
 
-  for (SKSoundDevice *device in deviceList) {
+  for (SNDDevice *device in deviceList) {
     NSLog(@"Device: %@", device.description);
     for (NSDictionary *port in [device availablePorts]) {
       title = [NSString stringWithFormat:@"%@",
@@ -82,10 +82,10 @@ static void *InputContext = &InputContext;
     // KVO for added output
     // FIXME: Ugly
     if ([[[modeButton selectedItem] title] isEqualToString:@"Playback"]) {
-      [self observeOutput:(SKSoundOut *)device];
+      [self observeOutput:(SNDOut *)device];
     }
     else {
-      [self observeInput:(SKSoundIn *)device];
+      [self observeInput:(SNDIn *)device];
     }
   }
 
@@ -114,7 +114,7 @@ static void *InputContext = &InputContext;
 // "Fills "Profile" popup button.
 - (void)fillProfileList
 {
-  SKSoundOut *device = [[devicePortBtn selectedItem] representedObject];
+  SNDOut *device = [[devicePortBtn selectedItem] representedObject];
   
   [deviceProfileBtn removeAllItems];
   for (NSDictionary *profile in [device availableProfiles]) {
@@ -124,7 +124,7 @@ static void *InputContext = &InputContext;
 }
 
 // --- Key-Value Observing
-- (void)observeOutput:(SKSoundOut *)output
+- (void)observeOutput:(SNDOut *)output
 {
   [output.sink addObserver:self
                 forKeyPath:@"mute"
@@ -143,7 +143,7 @@ static void *InputContext = &InputContext;
                    options:NSKeyValueObservingOptionNew
                    context:OutputContext];
 }
-- (void)observeInput:(SKSoundIn *)input
+- (void)observeInput:(SNDIn *)input
 {
   [input.source addObserver:self
                  forKeyPath:@"mute"
@@ -168,8 +168,8 @@ static void *InputContext = &InputContext;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  SKSoundOut *output;
-  SKSoundIn  *input;
+  SNDOut *output;
+  SNDIn  *input;
   
   if (context == OutputContext) {
     output = [[devicePortBtn selectedItem] representedObject];
@@ -319,7 +319,7 @@ static void *InputContext = &InputContext;
 // "Device" popup action
 - (void)setDevicePort:(id)sender
 {
-  SKSoundDevice *device = [[sender selectedItem] representedObject];
+  SNDDevice *device = [[sender selectedItem] representedObject];
 
   if ([[device availablePorts] count] > 0) {
     [device setActivePort:[[sender selectedItem] title]];
@@ -334,7 +334,7 @@ static void *InputContext = &InputContext;
 // "Profile" popup action
 - (void)setDeviceProfile:(id)sender
 {
-  SKSoundDevice *device = [[devicePortBtn selectedItem] representedObject];
+  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
 
   [device setActiveProfile:[[deviceProfileBtn selectedItem] title]];
 }
@@ -346,7 +346,7 @@ static void *InputContext = &InputContext;
 
 - (void)setDeviceVolume:(id)sender
 {
-  SKSoundDevice *device = [[devicePortBtn selectedItem] representedObject];
+  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
 
   NSLog(@"Device: set volume to %li (old: %lu)",
         [deviceVolumeSlider integerValue], [device volume]);
@@ -358,7 +358,7 @@ static void *InputContext = &InputContext;
 
 - (void)setDeviceBalance:(id)sender
 {
-  SKSoundDevice *device = [[devicePortBtn selectedItem] representedObject];
+  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
   
   NSLog(@"Device: set balance: %@", [device className]);
   [device setBalance:[deviceBalanceSlider floatValue]];
