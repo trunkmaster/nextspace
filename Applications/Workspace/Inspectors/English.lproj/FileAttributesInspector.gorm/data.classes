@@ -42,7 +42,7 @@
 	);
 	Super = NSObject;
     };
-    NXClockView = {
+    NXTClockView = {
 	Actions = (
 	);
 	Outlets = (
