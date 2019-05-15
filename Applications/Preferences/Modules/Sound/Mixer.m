@@ -50,6 +50,7 @@ static void *InputContext = &InputContext;
   return window;
 }
 
+// Fills "Device" group "Card" popup button.
 - (void)fillCardList
 {
   SNDServer *server = [SNDServer sharedServer];
@@ -58,7 +59,7 @@ static void *InputContext = &InputContext;
   for (SNDDevice *card in [server cardList]) {
     [deviceCardBtn addItemWithTitle:[card name]];
   }
-  [deviceProfileBtn selectItemWithTitle:[[server defaultCard] name]];
+  [deviceCardBtn selectItemWithTitle:[[server defaultCard] name]];
 }
 // Fills "Device" group "Profile" popup button.
 - (void)fillProfileList
