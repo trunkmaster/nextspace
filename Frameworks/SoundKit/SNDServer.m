@@ -143,7 +143,18 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 
 - (SNDDevice *)defaultCard
 {
-  return nil;
+  NSArray   *cards = [self cardList];
+  PACard    *defOutCard = [self defaultOutput].card;
+  SNDDevice *defCard;
+
+  for (SNDDevice *device in cards) {
+    if (device.card == defOutCard) {
+      defCard = device;
+      break;
+    }
+  }  
+    
+  return defCard;
 }
 - (NSArray *)cardList
 {
