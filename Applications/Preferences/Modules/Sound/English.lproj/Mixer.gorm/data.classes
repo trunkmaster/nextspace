@@ -15,7 +15,6 @@
 	    "setAppVolume:",
 	    "orderFrontFontPanel:",
 	    "setDeviceBalance:",
-	    "setDeviceCard:",
 	    "setDeviceMute:",
 	    "setDevicePort:",
 	    "setDeviceProfile:",
@@ -35,7 +34,6 @@
 	    "setDeviceVolume:",
 	    "setDeviceProfile:",
 	    "setMode:",
-	    "setDeviceCard:",
 	    "setAppVolume:"
 	);
 	Outlets = (
@@ -47,10 +45,10 @@
 	    deviceMuteBtn,
 	    devicePortBtn,
 	    deviceProfileBtn,
-	    deviceVolume,
+	    deviceVolumeSlider,
 	    deviceBox,
 	    appVolume,
-	    deviceCardBtn
+	    cardDescription
 	);
 	Super = NSObject;
     };
