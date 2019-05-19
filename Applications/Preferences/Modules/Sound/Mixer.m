@@ -25,6 +25,11 @@
 static void *OutputContext = &OutputContext;
 static void *InputContext = &InputContext;
 
+enum {
+  PlaybackMode,
+  RecordingMode
+};
+
 @implementation Mixer
 
 - init
@@ -39,10 +44,12 @@ static void *InputContext = &InputContext;
 
 - (void)awakeFromNib
 {
+  [cardDescription setTextColor:[NSColor darkGrayColor]];
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
-  [self fillCardList];
-  [self fillDeviceList];
+  
+  [self reloadBrowser:appBrowser];
+  [self updateDeviceList];
 }
 
 - (id)window
@@ -50,37 +57,14 @@ static void *InputContext = &InputContext;
   return window;
 }
 
-// Fills "Device" group "Card" popup button.
-- (void)fillCardList
-{
-  SNDServer *server = [SNDServer sharedServer];
-  
-  [deviceCardBtn removeAllItems];
-  for (SNDDevice *card in [server cardList]) {
-    [deviceCardBtn addItemWithTitle:[card name]];
-  }
-  [deviceCardBtn selectItemWithTitle:[[server defaultCard] name]];
-}
-// Fills "Device" group "Profile" popup button.
-- (void)fillProfileList
-{
-  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
-  
-  [deviceProfileBtn removeAllItems];
-  for (NSDictionary *profile in [device availableProfiles]) {
-    [deviceProfileBtn addItemWithTitle:profile[@"Description"]];
-  }
-  [deviceProfileBtn selectItemWithTitle:[device activeProfile]];
-}
-
-// Fills "Output/Input" group popup with port names
-- (void)fillDeviceList
+// Fills "Output/Input" group popups
+- (void)updateDeviceList
 {
   NSString  *title;
   SNDServer *server = [SNDServer sharedServer];
   NSArray   *deviceList;
 
-  if ([[[modeButton selectedItem] title] isEqualToString:@"Playback"]) {
+  if ([[modeButton selectedItem] tag] == PlaybackMode) {
     NSLog(@"Playback");
     deviceList = [server outputList];
   }
@@ -104,8 +88,7 @@ static void *InputContext = &InputContext;
       [[devicePortBtn itemWithTitle:device.name] setRepresentedObject:device];
     }
     // KVO for added output
-    // FIXME: Ugly
-    if ([[[modeButton selectedItem] title] isEqualToString:@"Playback"]) {
+    if ([[modeButton selectedItem] tag] == PlaybackMode) {
       [self observeOutput:(SNDOut *)device];
     }
     else {
@@ -113,26 +96,62 @@ static void *InputContext = &InputContext;
     }
   }
 
-  if ([[devicePortBtn selectedItem] title] == nil) {
+  if ([[modeButton selectedItem] tag] == PlaybackMode) {
+    [devicePortBtn selectItemWithTitle:[[server defaultOutput] activePort]];
+  }
+
+  [self updateDeviceControls];
+  [self updateProfileList];
+    
+  NSLog(@"Device port selected item: %@ - %@",
+        [[[[devicePortBtn selectedItem] representedObject] class] description],
+        [[devicePortBtn selectedItem] title]);
+
+}
+
+- (void)updateProfileList
+{
+  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
+  
+  [deviceProfileBtn removeAllItems];
+  if (device) {
+    for (NSDictionary *profile in [device availableProfiles]) {
+      [deviceProfileBtn addItemWithTitle:profile[@"Description"]];
+    }
+    [deviceProfileBtn selectItemWithTitle:[device activeProfile]];
+  }
+}
+
+- (void)updateDeviceControls
+{
+  SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
+
+  if (device == nil) {
     [deviceMuteBtn setEnabled:NO];
     [devicePortBtn setEnabled:NO];
     [deviceProfileBtn setEnabled:NO];
-    [deviceVolume setEnabled:NO];
+    [deviceVolumeSlider setEnabled:NO];
     [deviceBalance setEnabled:NO];
+    
+    [cardDescription setStringValue:@""];
+    [deviceMuteBtn setState:NSOffState];
+    [deviceVolumeSlider setMaxValue:0];
+    [deviceVolumeSlider setIntegerValue:0];
+    [deviceBalance setFloatValue:0.0];
   }
   else {
     [deviceMuteBtn setEnabled:YES];
     [devicePortBtn setEnabled:YES];
     [deviceProfileBtn setEnabled:YES];
-    [deviceVolume setEnabled:YES];
+    [deviceVolumeSlider setEnabled:YES];
     [deviceBalance setEnabled:YES];
-  }
     
-  NSLog(@"Device port selected item: %@ - %@",
-        [[[[devicePortBtn selectedItem] representedObject] class] description],
-        [[devicePortBtn selectedItem] title]);
-  
-  [self setDevicePort:devicePortBtn];
+    [cardDescription setStringValue:[device cardDescription]];
+    [deviceMuteBtn setState:[device isMute]];
+    [deviceVolumeSlider setMaxValue:[device volumeSteps]-1];
+    [deviceVolumeSlider setIntegerValue:[device volume]];
+    [deviceBalance setFloatValue:[device balance]];
+  }  
 }
 
 // --- Key-Value Observing
@@ -198,7 +217,7 @@ static void *InputContext = &InputContext;
         }
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
-        [deviceVolume setIntegerValue:[output volume]];
+        [deviceVolumeSlider setIntegerValue:[output volume]];
         [deviceBalance setFloatValue:[output balance]];
       }
     }
@@ -223,7 +242,7 @@ static void *InputContext = &InputContext;
         }
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
-        [deviceVolume setIntegerValue:[input volume]];
+        [deviceVolumeSlider setIntegerValue:[input volume]];
         [deviceBalance setFloatValue:[input balance]];
       }
     }
@@ -243,16 +262,13 @@ static void *InputContext = &InputContext;
 
 - (void)setMode:(id)sender
 {
-  NSString *title = [[sender selectedItem] title];
-
-  if ([title isEqualToString:@"Playback"]) {
+  if ([[sender selectedItem] tag] == PlaybackMode) {
     [deviceBox setTitle:@"Output"];
-    [self fillDeviceList];
   }
-  else if ([title isEqualToString:@"Recording"]) {
+  else if ([[sender selectedItem] tag] == RecordingMode) {
     [deviceBox setTitle:@"Input"];
-    [self fillDeviceList];
   }
+  [self updateDeviceList];
 }
 
 // --- Streams actions
@@ -336,13 +352,10 @@ static void *InputContext = &InputContext;
   if ([[device availablePorts] count] > 0) {
     [device setActivePort:[[sender selectedItem] title]];
   }
-  [deviceMuteBtn setState:[device isMute]];
-  [deviceVolume setMaxValue:[device volumeSteps]-1];
-  [deviceVolume setIntegerValue:[device volume]];
-  [deviceBalance setFloatValue:[device balance]];
-  
-  [self fillProfileList];
+  [self updateProfileList];
+  [self updateDeviceControls];
 }
+
 // "Profile" popup action
 - (void)setDeviceProfile:(id)sender
 {
@@ -360,12 +373,7 @@ static void *InputContext = &InputContext;
 {
   SNDDevice *device = [[devicePortBtn selectedItem] representedObject];
 
-  NSLog(@"Device: set volume to %li (old: %lu)",
-        [deviceVolume integerValue], [device volume]);
-  
-  [device setVolume:[deviceVolume integerValue]];
-  
-  NSLog(@"Output: volume was set to %lu", [device volume]);
+  [device setVolume:[deviceVolumeSlider integerValue]];
 }
 
 - (void)setDeviceBalance:(id)sender

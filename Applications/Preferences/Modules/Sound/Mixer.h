@@ -35,18 +35,18 @@
   id appVolume;
   //
   id deviceBox;
+  id cardDescription;
   id deviceMuteBtn;
   id devicePortBtn;
-  id deviceVolume;
+  id deviceVolumeSlider;
   id deviceBalance;
 }
 
 - (id)window;
 
 - (void)reloadBrowser:(NSBrowser *)browser;
-- (void)fillCardList;
-- (void)fillProfileList;
-- (void)fillDeviceList;
-- (void)setDevicePort:(id)sender;
+- (void)updateDeviceList;
+- (void)updateProfileList;
+- (void)updateDeviceControls;
 
 @end
