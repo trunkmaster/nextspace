@@ -275,7 +275,7 @@ enum {
 - (void)reloadBrowser:(NSBrowser *)browser
 {
   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
-    
+
   [appBrowser reloadColumn:0];
   [appBrowser setTitle:@"Streams" ofColumn:0];
 
@@ -288,33 +288,27 @@ enum {
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
-  // NSString      *mode = [[modeButton selectedItem] title];
-  // NSBrowserCell *cell;
+  NSBrowserCell *cell;
 
-  // if ([mode isEqualToString:@"Playback"]) {
-  //   // Get streams of "sink-input-by-media-role" type first
-  //   for (PAStream *st in streamList) {
-  //     if ([[st typeName] isEqualToString:@"sink-input-by-media-role"]) {
-  //       [matrix addRow];
-  //       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-  //       [cell setLeaf:YES];
-  //       [cell setRefusesFirstResponder:YES];
-  //       [cell setTitle:[NSString stringWithFormat:@"%@ Sounds", [st clientName]]];
-  //       [cell setRepresentedObject:st];
-  //     }
-  //   }
-  //   for (PASinkInput *si in sinkInputList) {
-  //     [matrix addRow];
-  //     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-  //     [cell setLeaf:YES];
-  //     [cell setRefusesFirstResponder:YES];
-  //     [cell setTitle:[si nameForClients:clientList streams:streamList]];
-  //     [cell setRepresentedObject:si];
-  //   }
-  // }
-  // else if ([mode isEqualToString:@"Recording"]) {
-  //   // TODO
-  // }
+  NSLog(@"browser:createRowsForColumn:");
+  
+  if ([[modeButton selectedItem] tag] == PlaybackMode) {
+    for (SNDStream *st in [[SNDServer sharedServer] streamList]) {
+      if (st.isActive != NO &&
+          ([st isKindOfClass:[SNDPlayStream class]] ||
+           [st isKindOfClass:[SNDVirtualStream class]]))
+      [matrix addRow];
+      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+      [cell setLeaf:YES];
+      [cell setRefusesFirstResponder:YES];
+      [cell setTitle:st.name];
+      [cell setRepresentedObject:st];
+      NSLog(@"Stream: %@", st.name);
+    }
+  }
+  else if ([[modeButton selectedItem] tag] == RecordingMode) {
+    // TODO
+  }
 }
 
 - (void)browserClick:(id)sender
