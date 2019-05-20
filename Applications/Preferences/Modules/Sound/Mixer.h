@@ -31,8 +31,8 @@
   id deviceProfileBtn;
   //
   id appBrowser;
-  id appMute;
-  id appVolume;
+  id appMuteBtn;
+  id appVolumeSlider;
   //
   id deviceBox;
   id cardDescription;

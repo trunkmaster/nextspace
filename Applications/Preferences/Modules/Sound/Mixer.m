@@ -24,6 +24,9 @@
 
 static void *OutputContext = &OutputContext;
 static void *InputContext = &InputContext;
+static void *StreamPlayContext = &StreamPlayContext;
+static void *StreamRecordContext = &StreamRecordContext;
+static void *StreamVirtualContext = &StreamVirtualContext;
 
 enum {
   PlaybackMode,
@@ -193,14 +196,50 @@ enum {
                     options:NSKeyValueObservingOptionNew
                     context:InputContext];
 }
+- (void)observeStream:(SNDStream *)stream
+{
+  if ([stream isKindOfClass:[SNDVirtualStream class]]) {
+    SNDVirtualStream *st = (SNDVirtualStream *)stream;
+    [st.stream addObserver:self
+                forKeyPath:@"mute"
+                   options:NSKeyValueObservingOptionNew
+                   context:StreamVirtualContext];
+    [st.stream addObserver:self
+                forKeyPath:@"volume"
+                   options:NSKeyValueObservingOptionNew
+                   context:StreamVirtualContext];
+  }
+  else if ([stream isKindOfClass:[SNDPlayStream class]]) {
+    SNDPlayStream *st = (SNDPlayStream *)stream;
+    [st.sinkInput addObserver:self
+                   forKeyPath:@"mute"
+                      options:NSKeyValueObservingOptionNew
+                      context:StreamPlayContext];
+    [st.sinkInput addObserver:self
+                   forKeyPath:@"channelVolumes"
+                      options:NSKeyValueObservingOptionNew
+                      context:StreamPlayContext];
+  }
+  else if ([stream isKindOfClass:[SNDRecordStream class]]) {
+    SNDRecordStream *st = (SNDRecordStream *)stream;
+    [st.sourceOutput addObserver:self
+                      forKeyPath:@"mute"
+                         options:NSKeyValueObservingOptionNew
+                         context:StreamRecordContext];
+    [st.sourceOutput addObserver:self
+                      forKeyPath:@"channelVolumes"
+                         options:NSKeyValueObservingOptionNew
+                         context:StreamRecordContext];
+  }
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  SNDOut *output;
-  SNDIn  *input;
+  SNDOut    *output;
+  SNDIn     *input;
   
   if (context == OutputContext) {
     output = [[devicePortBtn selectedItem] representedObject];
@@ -251,7 +290,46 @@ enum {
         [deviceProfileBtn selectItemWithTitle:input.activeProfile];
       }
     }
-  } else {
+  }
+  else if (context == StreamVirtualContext) {
+    SNDVirtualStream *virtualStream;
+    virtualStream = [[appBrowser selectedCellInColumn:0] representedObject];
+    if (object == virtualStream.stream) {
+      if ([keyPath isEqualToString:@"mute"]) {
+        NSLog(@"VirtualStream changed mute attribute.");
+      }
+      else if ([keyPath isEqualToString:@"volume"]) {
+        NSLog(@"VirtualStream changed it's volume.");
+      }
+    }
+  }
+  else if (context == StreamPlayContext) {
+    SNDPlayStream *playStream;
+    playStream = [[appBrowser selectedCellInColumn:0] representedObject];
+    if (object == playStream.sinkInput) {
+      if ([keyPath isEqualToString:@"mute"]) {
+        NSLog(@"PlayStream changed mute attribute.");
+        [self browserClick:appBrowser];
+      }
+      else if ([keyPath isEqualToString:@"channelVolumes"]) {
+        NSLog(@"PlayStream changed it's volume.");
+        [self browserClick:appBrowser];
+      }
+    }
+  }
+  else if (context == StreamRecordContext) {
+    SNDRecordStream *recordStream;
+    recordStream = [[appBrowser selectedCellInColumn:0] representedObject];
+    if (object == recordStream.sourceOutput) {
+      if ([keyPath isEqualToString:@"mute"]) {
+        NSLog(@"RecordStream changed mute attribute.");
+      }
+      else if ([keyPath isEqualToString:@"channelVolumes"]) {
+        NSLog(@"RecordStream changed it's volume.");
+      }
+    }
+  }
+  else {
     // Any unrecognized context must belong to super
     [super observeValueForKeyPath:keyPath
                          ofObject:object
@@ -304,7 +382,8 @@ enum {
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:st.name];
         [cell setRepresentedObject:st];
-        NSLog(@"Browser add stream: %@", st.name);
+        [self observeStream:st];
+        NSLog(@"Browser add %@: %@", [st className], st.name);
       }
     }
   }
@@ -320,6 +399,7 @@ enum {
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:st.name];
         [cell setRepresentedObject:st];
+        [self observeStream:st];
         NSLog(@"Browser add stream: %@", st.name);
       }
     }
@@ -330,28 +410,37 @@ enum {
 {
   SNDStream *stream = [[sender selectedCellInColumn:0] representedObject];
 
-  // NSLog(@"Browser received click: %@, cell - %@, repObject - %@",
-  //       [sender className], [[sender selectedCellInColumn:0] title],
-  //        [[[sender selectedCellInColumn:0] representedObject] className]);
+  NSLog(@"Browser received click: %@, cell - %@, repObject - %@, volume - %lu",
+        [sender className], [[sender selectedCellInColumn:0] title],
+        [stream className], [stream volume]);
 
   if (stream != nil) {
-    [appMute setEnabled:YES];
-    [appVolume setEnabled:YES];
-    [appVolume setIntegerValue:[stream volume]];
-    [appMute setState:[stream isMute]];
+    [appMuteBtn setEnabled:YES];
+    [appVolumeSlider setEnabled:YES];
+    [appVolumeSlider setIntegerValue:[stream volume]];
+    [appMuteBtn setState:[stream isMute]];
   }
   else {
-    [appVolume setIntegerValue:0];
-    [appMute setState:NSOffState];
-    [appMute setEnabled:NO];
-    [appVolume setEnabled:NO];
+    [appVolumeSlider setIntegerValue:0];
+    [appMuteBtn setState:NSOffState];
+    [appMuteBtn setEnabled:NO];
+    [appVolumeSlider setEnabled:NO];
   }
 }
 
 - (void)appMuteClick:(id)sender
 {
-  [[[appBrowser selectedCellInColumn:0] representedObject]
-    setMute:[sender state]];
+  [[[appBrowser selectedCellInColumn:0] representedObject] setMute:[sender state]];
+}
+
+- (void)setAppVolume:(id)sender
+{
+  SNDStream *stream = [[appBrowser selectedCellInColumn:0] representedObject];
+
+  NSLog(@"setAppVolume: sender %@ stream: %@",
+        [sender className], [stream className]);
+
+  [stream setVolume:[sender integerValue]];
 }
 
 // --- Output actions
