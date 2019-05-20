@@ -199,9 +199,9 @@ void ext_stream_restore_read_cb(pa_context *ctx,
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,
                           uint32_t index, void *userdata)
 {
-  SNDServer                *_server = userdata;
+  SNDServer                    *_server = userdata;
   pa_subscription_event_type_t event_type_masked;
-  pa_operation *o;
+  pa_operation                 *o;
 
   event_type_masked = (event_type & PA_SUBSCRIPTION_EVENT_TYPE_MASK);
     
