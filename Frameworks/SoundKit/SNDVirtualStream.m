@@ -44,13 +44,13 @@
   else if ([[_stream typeName] isEqualToString:@"sink-input-by-media-role"] != NO) {
     if ([[_stream clientName] isEqualToString:@"event"] != NO) {
       super.name = @"System Sounds";
+      super.isActive = YES;
     }
   }
-
-  if (super.name == nil) {
+  else {
     super.name = _stream.clientName;
   }
-  
+
   // fprintf(stderr, "[SoundKit] SoundStream: %s \t\tDevice: %s\n",
   //         [_stream.name cString], [_stream.deviceName cString]);
   
