@@ -32,10 +32,10 @@
   pa_stream *_pa_stream;
 }
 @property (assign) SNDServer *server;
-@property (assign) PAClient      *client;
+@property (assign) PAClient  *client;
 @property (assign) SNDDevice *device;
-@property (assign) NSString      *name;
-@property (assign) BOOL          isActive;
+@property (assign) NSString  *name;
+@property (assign) BOOL      isActive;
 
 // Must be everriden in subclass: SoundPlayStream or SoundRecordStream
 - (id)initOnDevice:(SNDDevice *)device
