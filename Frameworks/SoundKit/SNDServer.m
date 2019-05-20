@@ -251,7 +251,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
     playStream.sinkInput = sinkInput;
     [list addObject:playStream];
     [playStream release];
-    fprintf(stderr, "Stream was added to list: %s", [playStream.name cString]);
+    fprintf(stderr, "SNDPlayStream was added to list: %s\n",
+            [playStream.name cString]);
   }
   // Streams with SourceOuput and Client
   for (PASourceOutput *sourceOutput in sourceOutputList) {
@@ -262,7 +263,8 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
     recordStream.device = [self outputWithSink:[self sinkWithIndex:sourceOutput.sourceIndex]];
     [list addObject:recordStream];
     [recordStream release];
-    fprintf(stderr, "Stream was added to list: %s", [recordStream.name cString]);
+    fprintf(stderr, "SNDRecordStream was added to list: %s\n",
+            [recordStream.name cString]);
   }
   
   return [list autorelease];
