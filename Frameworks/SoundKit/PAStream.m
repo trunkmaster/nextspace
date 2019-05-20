@@ -77,7 +77,7 @@
     return comps[1];
   }
 
-  return nil;
+  return _name;
 }
 - (NSString *)typeName
 {
@@ -87,7 +87,7 @@
     return comps[0];
   }
 
-  return nil;
+  return _name;
 }
 
 - (NSUInteger)volume
