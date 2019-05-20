@@ -261,6 +261,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
     recordStream.sourceOutput = sourceOutput;
     recordStream.client = [self clientWithIndex:sourceOutput.clientIndex];
     recordStream.device = [self outputWithSink:[self sinkWithIndex:sourceOutput.sourceIndex]];
+    recordStream.name = recordStream.client.appName;
     [list addObject:recordStream];
     [recordStream release];
     fprintf(stderr, "SNDRecordStream was added to list: %s\n",
