@@ -36,6 +36,7 @@
 @property (assign) SNDDevice *device;
 @property (assign) NSString  *name;
 @property (assign) BOOL      isActive;
+@property (assign) BOOL      isPlayback;
 
 // Must be everriden in subclass: SoundPlayStream or SoundRecordStream
 - (id)initOnDevice:(SNDDevice *)device

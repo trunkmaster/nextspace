@@ -45,6 +45,7 @@
     if ([[_stream clientName] isEqualToString:@"event"] != NO) {
       super.name = @"System Sounds";
       super.isActive = YES;
+      super.isPlayback = YES;
     }
   }
   else {
