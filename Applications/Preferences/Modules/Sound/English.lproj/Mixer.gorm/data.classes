@@ -39,7 +39,7 @@
 	Outlets = (
 	    window,
 	    appBrowser,
-	    appMute,
+	    appMuteBtn,
 	    modeButton,
 	    deviceBalance,
 	    deviceMuteBtn,
@@ -47,7 +47,7 @@
 	    deviceProfileBtn,
 	    deviceVolumeSlider,
 	    deviceBox,
-	    appVolume,
+	    appVolumeSlider,
 	    cardDescription
 	);
 	Super = NSObject;
