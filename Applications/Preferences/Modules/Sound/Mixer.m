@@ -269,6 +269,7 @@ enum {
     [deviceBox setTitle:@"Input"];
   }
   [self updateDeviceList];
+  [self reloadBrowser:appBrowser];
 }
 
 // --- Streams actions
@@ -279,9 +280,11 @@ enum {
   [appBrowser reloadColumn:0];
   [appBrowser setTitle:@"Streams" ofColumn:0];
 
-  if (selected == nil) {
+  if ([[appBrowser matrixInColumn:0] numberOfRows] > 0 &&
+      (selected == nil)) {
     [appBrowser selectRow:0 inColumn:0];
   }
+  [self browserClick:appBrowser];
 }
  
 - (void)     browser:(NSBrowser *)sender
@@ -289,46 +292,59 @@ enum {
             inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
+  NSArray       *streamList = [[SNDServer sharedServer] streamList];
 
-  NSLog(@"browser:createRowsForColumn:");
-  
   if ([[modeButton selectedItem] tag] == PlaybackMode) {
-    for (SNDStream *st in [[SNDServer sharedServer] streamList]) {
-      if (st.isActive != NO &&
-          ([st isKindOfClass:[SNDPlayStream class]] ||
-           [st isKindOfClass:[SNDVirtualStream class]]))
-      [matrix addRow];
-      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-      [cell setLeaf:YES];
-      [cell setRefusesFirstResponder:YES];
-      [cell setTitle:st.name];
-      [cell setRepresentedObject:st];
-      NSLog(@"Stream: %@", st.name);
+    for (SNDStream *st in streamList) {
+      if ([st isKindOfClass:[SNDPlayStream class]] ||
+          ([st isKindOfClass:[SNDVirtualStream class]] && st.isActive != NO)) {
+        [matrix addRow];
+        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+        [cell setLeaf:YES];
+        [cell setRefusesFirstResponder:YES];
+        [cell setTitle:st.name];
+        [cell setRepresentedObject:st];
+        NSLog(@"Browser add stream: %@", st.name);
+      }
     }
   }
   else if ([[modeButton selectedItem] tag] == RecordingMode) {
     // TODO
+    for (SNDStream *st in streamList) {
+      if ([st isKindOfClass:[SNDRecordStream class]] ||
+          ([st isKindOfClass:[SNDVirtualStream class]] && st.isActive != NO)) {
+        [matrix addRow];
+        cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+        [cell setLeaf:YES];
+        [cell setRefusesFirstResponder:YES];
+        [cell setTitle:st.name];
+        [cell setRepresentedObject:st];
+        NSLog(@"Browser add stream: %@", st.name);
+      }
+    }
   }
 }
 
 - (void)browserClick:(id)sender
 {
-  id object = [[sender selectedCellInColumn:0] representedObject];
+  SNDStream *stream = [[sender selectedCellInColumn:0] representedObject];
 
-  if (object == nil) {
-    return;
-  }
-  
   // NSLog(@"Browser received click: %@, cell - %@, repObject - %@",
   //       [sender className], [[sender selectedCellInColumn:0] title],
-  //       [[[sender selectedCellInColumn:0] representedObject] className]);
-  
-  // if ([object respondsToSelector:@selector(volumes)]) {
-  //   NSArray *volume = [object volumes];
-  //   if (volume != nil && [volume count] > 0) {
-  //     [appVolume setFloatValue:[volume[0] floatValue]];
-  //   }
-  // }
+  //        [[[sender selectedCellInColumn:0] representedObject] className]);
+
+  if (stream != nil) {
+    [appMute setEnabled:YES];
+    [appVolume setEnabled:YES];
+    [appVolume setIntegerValue:[stream volume]];
+    [appMute setState:[stream isMute]];
+  }
+  else {
+    [appVolume setIntegerValue:0];
+    [appMute setState:NSOffState];
+    [appMute setEnabled:NO];
+    [appVolume setEnabled:NO];
+  }
 }
 
 - (void)appMuteClick:(id)sender
