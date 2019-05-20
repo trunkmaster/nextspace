@@ -280,8 +280,7 @@ enum {
   [appBrowser reloadColumn:0];
   [appBrowser setTitle:@"Streams" ofColumn:0];
 
-  if ([[appBrowser matrixInColumn:0] numberOfRows] > 0 &&
-      (selected == nil)) {
+  if ([[appBrowser matrixInColumn:0] numberOfRows] > 0 && selected == nil) {
     [appBrowser selectRow:0 inColumn:0];
   }
   [self browserClick:appBrowser];
@@ -297,7 +296,8 @@ enum {
   if ([[modeButton selectedItem] tag] == PlaybackMode) {
     for (SNDStream *st in streamList) {
       if ([st isKindOfClass:[SNDPlayStream class]] ||
-          ([st isKindOfClass:[SNDVirtualStream class]] && st.isActive != NO)) {
+          ([st isKindOfClass:[SNDVirtualStream class]] &&
+           st.isActive != NO && st.isPlayback != NO)) {
         [matrix addRow];
         cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
         [cell setLeaf:YES];
@@ -312,7 +312,8 @@ enum {
     // TODO
     for (SNDStream *st in streamList) {
       if ([st isKindOfClass:[SNDRecordStream class]] ||
-          ([st isKindOfClass:[SNDVirtualStream class]] && st.isActive != NO)) {
+          ([st isKindOfClass:[SNDVirtualStream class]] &&
+           st.isActive != NO && st.isPlayback == NO)) {
         [matrix addRow];
         cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
         [cell setLeaf:YES];
