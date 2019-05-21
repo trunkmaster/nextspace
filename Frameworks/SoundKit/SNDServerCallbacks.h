@@ -46,6 +46,7 @@ void client_cb(pa_context *ctx, const pa_client_info *info, int eol, void *userd
 void ext_stream_restore_read_cb(pa_context *ctx,
                                 const pa_ext_stream_restore_info *info,
                                 int eol, void *userdata);
+void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata);
 
 // --- Context events ---
 void context_subscribe_cb(pa_context *ctx, pa_subscription_event_type_t event_type,

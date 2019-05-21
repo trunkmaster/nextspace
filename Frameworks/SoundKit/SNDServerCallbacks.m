@@ -190,9 +190,25 @@ void ext_stream_restore_read_cb(pa_context *ctx,
     return;
   }
 
+  // We need this only for `event` role type.
+  if (strcmp(info->name, "sink-input-by-media-role:event") != 0) {
+    return;
+  }
+
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
   [(SNDServer *)userdata updateStream:value];
+}
+void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata)
+{
+  pa_operation *o;
+
+  if (!(o = pa_ext_stream_restore_read(ctx, ext_stream_restore_read_cb, userdata))) {
+    fprintf(stderr, "[SoundKit] Failed to read external stream.\n");
+    return;
+  }
+  
+  pa_operation_unref(o);
 }
 
 // --- Context events subscription ---
@@ -429,18 +445,21 @@ void inventory_start(pa_context *ctx, void *userdata)
 
   // At this point we can create SNDStream objects
 
-  /* This call is not always supported. 
-     This intial call has no complementary subscribe for events call.
-     We need it only to get `sink-input-by-media-role:event` stream - special stream
-     for short-living clients. Thus, there's no accompanying client and sink input 
-     most of the time. However, user should be able to adjust volume level for such 
-     short-living sound events. */
+  /* This call is not always supported. */
   if (!(o = pa_ext_stream_restore_read(ctx, ext_stream_restore_read_cb, userdata))) {
     fprintf(stderr, "[SoundKit] Failed to initialize stream_restore extension: %s\n",
             pa_strerror(pa_context_errno(ctx)));
   }
-  pa_operation_unref(o);
-  n_outstanding++;
+  else {
+    pa_operation_unref(o);
+    n_outstanding++;
+      
+    pa_ext_stream_restore_set_subscribe_cb(ctx, ext_stream_restore_subscribe_cb,
+                                           userdata);
+    if ((o = pa_ext_stream_restore_subscribe(ctx, 1, NULL, NULL))) {
+      pa_operation_unref(o);
+    }
+  }
 }
 /* Decrements `n_outstanding`. If it equals to 0 - start tracking PA events (call
    inventory_end). */

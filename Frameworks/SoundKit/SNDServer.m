@@ -230,7 +230,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 }
 - (NSArray *)streamList
 {
-  NSMutableArray       *list = [NSMutableArray new];
+  NSMutableArray   *list = [NSMutableArray new];
   SNDVirtualStream *virtualStream;
   SNDPlayStream    *playStream;
   SNDRecordStream  *recordStream;
