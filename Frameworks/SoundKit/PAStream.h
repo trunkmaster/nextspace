@@ -41,4 +41,9 @@
 - (NSString *)clientName;
 - (NSString *)typeName;
 
+- (void)applyMute:(BOOL)isMute;
+- (NSUInteger)volume;
+- (void)applyVolume:(NSUInteger)v;
+- (void)applyBalance:(CGFloat)balance;
+
 @end

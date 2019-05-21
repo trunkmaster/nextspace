@@ -42,6 +42,50 @@
   [super dealloc];
 }
 
+- (NSUInteger)_volumeForInfo:(pa_ext_stream_restore_info *)info
+{
+  NSUInteger v, i;
+
+  for (i = 0, v = 0; i < info->volume.channels; i++) {
+    if (info->volume.values[i] > v)
+      v = info->volume.values[i];
+  }
+  
+  return v;
+}
+
+- (void)_updateMute:(pa_ext_stream_restore_info *)info
+{
+  BOOL isMute = info->mute ? YES : NO;
+
+  if (self.mute != isMute) {
+    self.mute = isMute;
+  }
+}
+
+- (void)_updateBalance:(pa_ext_stream_restore_info *)info
+{
+  float balance = pa_cvolume_get_balance(&info->volume, &info->channel_map);
+
+  if (self.balance != balance) {
+    self.balance = balance;
+  }
+}
+
+- (void)_updateVolume:(pa_ext_stream_restore_info *)info
+{
+  NSUInteger volume, i;
+
+  for (i = 0, volume = 0; i < info->volume.channels; i++) {
+    if (info->volume.values[i] > volume)
+      volume = info->volume.values[i];
+  }
+  
+  if (self.volume != volume) {
+    self.volume = volume;
+  }
+}
+
 - (id)updateWithValue:(NSValue *)value
 {
   const pa_ext_stream_restore_info *info;
@@ -58,10 +102,11 @@
   if (_name)
     [_name release];
   _name = [[NSString alloc] initWithCString:info->name];
-  
-  self.mute = info->mute ? YES : NO;
-  self.balance = pa_cvolume_get_balance(&info->volume, &info->channel_map);
-  self.volume = [self volume];
+
+  [self _updateMute:info_copy];
+  [self _updateBalance:info_copy];
+  [self _updateVolume:info_copy];
+  // self.volume = [self _volumeForInfo:info_copy];
   /***/
 
   free((void *)info);
@@ -90,48 +135,42 @@
   return _name;
 }
 
-- (NSUInteger)volume
+- (void)applyVolume:(NSUInteger)volume
 {
-  NSUInteger v, i;
-
-  for (i = 0, v = 0; i < info_copy->volume.channels; i++) {
-    if (info_copy->volume.values[i] > v)
-      v = info_copy->volume.values[i];
-  }
+  pa_operation *o;
   
-  return v;
-}
-- (void)setVolume:(NSUInteger)volume
-{
   for (NSUInteger i = 0; i < info_copy->volume.channels; i++) {
     info_copy->volume.values[i] = volume;
   }
 
-  pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
-                              1, YES, NULL, NULL);
+  o = pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
+                                  1, YES, NULL, NULL);
+  if (o) {
+    pa_operation_unref(o);
+  }
 }
-- (CGFloat)balance
+- (void)applyBalance:(CGFloat)balance
 {
-  return self.balance;
-}
-- (void)setBalance:(CGFloat)balance
-{
-  pa_cvolume_set_balance(&info_copy->volume, &info_copy->channel_map, balance);
-  // self.balance = pa_cvolume_get_balance(&info_copy->volume, &info_copy->channel_map);
+  pa_operation *o;
   
-  pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
+  pa_cvolume_set_balance(&info_copy->volume, &info_copy->channel_map, balance);
+  
+  o = pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
                               1, YES, NULL, NULL);
+  if (o) {
+    pa_operation_unref(o);
+  }
 }
-- (BOOL)mute
+- (void)applyMute:(BOOL)isMute
 {
-  return info_copy->mute;
-}
-- (void)setMute:(BOOL)isMute
-{
+  pa_operation *o;
+  
   info_copy->mute = isMute;
-  pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
-                              1, YES, NULL, NULL);
-  // _mute = isMute;
+  o = pa_ext_stream_restore_write(_context, PA_UPDATE_REPLACE, info_copy,
+                                  1, YES, NULL, NULL);
+  if (o) {
+    pa_operation_unref(o);
+  }
 }
 
 @end
