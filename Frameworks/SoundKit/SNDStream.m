@@ -107,6 +107,19 @@
   return YES;
 }
 
+- (NSString *)activePort
+{
+  NSLog(@"[SoundKit] `activePort` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
+  return nil;
+}
+- (void)setActivePort:(NSString *)portName
+{
+  NSLog(@"[SoundKit] `setActivePort` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
+}
+
+
 // - (BOOL)isPaused {}
 // - (void)pause:(id)sender {}
 // - (void)resume:(id)sender {}

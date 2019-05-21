@@ -55,4 +55,7 @@
 - (BOOL)isMute;
 - (void)setMute:(BOOL)isMute;
 
+- (NSString *)activePort;
+- (void)setActivePort:(NSString *)portName;
+
 @end

@@ -404,7 +404,7 @@ enum {
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:st.name];
         [cell setRepresentedObject:st];
-        NSLog(@"Browser add %@: %@", [st className], st.name);
+        // NSLog(@"Browser add %@: %@", [st className], st.name);
       }
     }
   }
@@ -419,7 +419,7 @@ enum {
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:st.name];
         [cell setRepresentedObject:st];
-        NSLog(@"Browser add stream: %@", st.name);
+        // NSLog(@"Browser add %@: %@", [st className], st.name);
       }
     }
   }
@@ -428,6 +428,7 @@ enum {
 - (void)browserClick:(id)sender
 {
   SNDStream *stream = [[sender selectedCellInColumn:0] representedObject];
+  SNDServer *server;
 
   // NSLog(@"Browser received click: %@, cell - %@, repObject - %@, volume - %lu",
   //       [sender className], [[sender selectedCellInColumn:0] title],
@@ -446,13 +447,25 @@ enum {
     [appVolumeSlider setEnabled:YES];
     [appVolumeSlider setIntegerValue:[stream volume]];
     [appMuteBtn setState:[stream isMute]];
+    [devicePortBtn selectItemWithTitle:[stream activePort]];
   }
   else {
     [appVolumeSlider setIntegerValue:0];
     [appMuteBtn setState:NSOffState];
     [appMuteBtn setEnabled:NO];
     [appVolumeSlider setEnabled:NO];
+    
+    server = [SNDServer sharedServer];
+    if ([[modeButton selectedItem] tag] == PlaybackMode) {
+      [devicePortBtn selectItemWithTitle:[[server defaultPlayStream] activePort]];
+    }
+    else {
+      [devicePortBtn selectItemWithTitle:[[server defaultInput] activePort]];
+    }
   }
+
+  [self updateProfileList];
+  [self updateDeviceControls];
 }
 
 - (void)appMuteClick:(id)sender

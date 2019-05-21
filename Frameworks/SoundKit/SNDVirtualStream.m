@@ -24,6 +24,9 @@
 #import "PAStream.h"
 #import "PAClient.h"
 
+#import "PASink.h"
+#import "SNDOut.h"
+
 @implementation SNDVirtualStream
 
 - (void)dealloc
@@ -86,6 +89,20 @@
 - (BOOL)isMute
 {
   return (BOOL)_stream.mute;
+}
+
+- (NSString *)activePort
+{
+  SNDServer *server = [SNDServer sharedServer];
+  
+  return [server defaultOutput].sink.activePort;
+}
+
+- (void)setActivePort:(NSString *)portName
+{
+  SNDServer *server = [SNDServer sharedServer];
+  
+  [[server defaultOutput].sink applyActivePort:portName];
 }
 
 @end

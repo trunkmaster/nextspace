@@ -117,4 +117,28 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
   return (BOOL)_sinkInput.mute;
 }
 
+- (NSString *)activePort
+{
+  SNDServer *server = [SNDServer sharedServer];
+  PASink    *sink = [server sinkWithIndex:_sinkInput.sinkIndex];
+
+  if (sink == nil) {
+    sink = [server defaultOutput].sink;
+  }
+
+  return sink.activePort;
+}
+
+- (void)setActivePort:(NSString *)portName
+{
+  SNDServer *server = [SNDServer sharedServer];
+  PASink    *sink = [server sinkWithIndex:_sinkInput.sinkIndex];
+
+  if (sink == nil) {
+    sink = [server defaultOutput].sink;
+  }
+
+  [sink applyActivePort:portName];
+}
+
 @end

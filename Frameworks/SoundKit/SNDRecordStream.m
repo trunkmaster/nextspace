@@ -108,4 +108,26 @@ static void stream_read_callback(pa_stream *stream, size_t length, void *userdat
   return (BOOL)_sourceOutput.mute;
 }
 
+- (NSString *)activePort
+{
+  PASource *source = [super.server sourceWithIndex:_sourceOutput.sourceIndex];
+
+  if (source == nil) {
+    source = [super.server defaultInput].source;
+  }
+
+  return source.activePort;
+}
+
+- (void)setActivePort:(NSString *)portName
+{
+  PASource *source = [super.server sourceWithIndex:_sourceOutput.sourceIndex];
+
+  if (source == nil) {
+    source = [super.server defaultInput].source;
+  }
+
+  [source applyActivePort:portName];
+}
+
 @end

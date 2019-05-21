@@ -182,6 +182,10 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
 }
 - (SNDOut *)defaultOutput
 {
+  if (_defaultSinkName == nil || [_defaultSinkName length] == 0) {
+    return [[self outputList] objectAtIndex:0];
+  }
+  
   return [self outputWithSink:[self sinkWithName:_defaultSinkName]];
 }
 - (NSArray *)outputList
@@ -300,7 +304,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   _version = [[NSString alloc] initWithCString:info->server_version];
   _defaultSinkName = [[NSString alloc] initWithCString:info->default_sink_name];
   _defaultSourceName = [[NSString alloc] initWithCString:info->default_source_name];
-  
+
   free((void *)info);
 }
 
