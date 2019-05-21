@@ -429,6 +429,7 @@ enum {
 {
   SNDStream *stream = [[sender selectedCellInColumn:0] representedObject];
   SNDServer *server;
+  NSString  *activePort;
 
   // NSLog(@"Browser received click: %@, cell - %@, repObject - %@, volume - %lu",
   //       [sender className], [[sender selectedCellInColumn:0] title],
@@ -447,7 +448,7 @@ enum {
     [appVolumeSlider setEnabled:YES];
     [appVolumeSlider setIntegerValue:[stream volume]];
     [appMuteBtn setState:[stream isMute]];
-    [devicePortBtn selectItemWithTitle:[stream activePort]];
+    activePort = [stream activePort];
   }
   else {
     [appVolumeSlider setIntegerValue:0];
@@ -456,12 +457,13 @@ enum {
     [appVolumeSlider setEnabled:NO];
     
     server = [SNDServer sharedServer];
-    if ([[modeButton selectedItem] tag] == PlaybackMode) {
-      [devicePortBtn selectItemWithTitle:[[server defaultPlayStream] activePort]];
-    }
-    else {
-      [devicePortBtn selectItemWithTitle:[[server defaultInput] activePort]];
-    }
+    if ([[modeButton selectedItem] tag] == PlaybackMode)
+      activePort = [[server defaultOutput] activePort];
+    else
+      activePort = [[server defaultInput] activePort];
+  }
+  if (activePort != nil) {
+    [devicePortBtn selectItemWithTitle:activePort];
   }
 
   [self updateProfileList];

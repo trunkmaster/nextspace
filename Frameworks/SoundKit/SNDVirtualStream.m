@@ -94,14 +94,14 @@
 - (NSString *)activePort
 {
   SNDServer *server = [SNDServer sharedServer];
-  
+
   return [server defaultOutput].sink.activePort;
 }
 
 - (void)setActivePort:(NSString *)portName
 {
   SNDServer *server = [SNDServer sharedServer];
-  
+
   [[server defaultOutput].sink applyActivePort:portName];
 }
 
