@@ -154,31 +154,44 @@
 - (void)applyVolume:(NSUInteger)v
 {
   pa_cvolume *new_volume;
+  pa_operation *o;
 
   new_volume = malloc(sizeof(pa_cvolume));
   pa_cvolume_init(new_volume);
   pa_cvolume_set(new_volume, _channelCount, v);
   
-  pa_context_set_source_output_volume(_context, _index, new_volume, NULL, self);
+  o = pa_context_set_source_output_volume(_context, _index, new_volume, NULL, self);
+  if (o) {
+    pa_operation_unref(o);
+  }
   
   free(new_volume);
 }
 - (void)applyBalance:(CGFloat)balance
 {
   pa_cvolume *volume;
+  pa_operation *o;
 
   volume = malloc(sizeof(pa_cvolume));
   pa_cvolume_init(volume);
   pa_cvolume_set(volume, _channelCount, self.volume);
   
   pa_cvolume_set_balance(volume, channel_map, balance);
-  pa_context_set_source_output_volume(_context, _index, volume, NULL, self);
+  o = pa_context_set_source_output_volume(_context, _index, volume, NULL, self);
+  if (o) {
+    pa_operation_unref(o);
+  }
   
   free(volume);
 }
 - (void)applyMute:(BOOL)isMute
 {
-  pa_context_set_source_output_mute(_context, _index, isMute, NULL, NULL);
+  pa_operation *o;
+  
+  o = pa_context_set_source_output_mute(_context, _index, isMute, NULL, NULL);
+  if (o) {
+    pa_operation_unref(o);
+  }
 }
 
 @end

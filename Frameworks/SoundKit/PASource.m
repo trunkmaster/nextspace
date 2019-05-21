@@ -191,7 +191,8 @@
 // --- Actions
 - (void)applyActivePort:(NSString *)portName
 {
-  const char *port;
+  const char   *port;
+  pa_operation *o;
 
   for (NSDictionary *p in _ports) {
     if ([[p objectForKey:@"Description"] isEqualToString:portName]) {
@@ -199,12 +200,20 @@
       break;
     }
   }
-  pa_context_set_source_port_by_index(_context, _index, port, NULL, self);
+  o = pa_context_set_source_port_by_index(_context, _index, port, NULL, self);
+  if (o) {
+    pa_operation_unref(o);
+  }
 }
 
 - (void)applyMute:(BOOL)isMute
 {
-  pa_context_set_source_mute_by_index(_context, _index, (int)isMute, NULL, self);
+  pa_operation *o;
+  
+  o =pa_context_set_source_mute_by_index(_context, _index, (int)isMute, NULL, self);
+  if (o) {
+    pa_operation_unref(o);
+  }
 }
 
 - (NSUInteger)volume
@@ -221,28 +230,36 @@
 
 - (void)applyVolume:(NSUInteger)v
 {
-  pa_cvolume *new_volume;
+  pa_cvolume   *new_volume;
+  pa_operation *o;
 
   new_volume = malloc(sizeof(pa_cvolume));
   pa_cvolume_init(new_volume);
   pa_cvolume_set(new_volume, _channelCount, v);
   
-  pa_context_set_source_volume_by_index(_context, _index, new_volume, NULL, self);
-  
+  o = pa_context_set_source_volume_by_index(_context, _index, new_volume, NULL, self);
+  if (o) {
+    pa_operation_unref(o);
+  }
+ 
   free(new_volume);
 }
 
 - (void)applyBalance:(CGFloat)balance
 {
-  pa_cvolume *volume;
+  pa_cvolume   *volume;
+  pa_operation *o;
 
   volume = malloc(sizeof(pa_cvolume));
   pa_cvolume_init(volume);
   pa_cvolume_set(volume, _channelCount, self.volume);
   
   pa_cvolume_set_balance(volume, channel_map, balance);
-  pa_context_set_source_volume_by_index(_context, _index, volume, NULL, self);
-  
+  o = pa_context_set_source_volume_by_index(_context, _index, volume, NULL, self);
+   if (o) {
+    pa_operation_unref(o);
+  }
+ 
   free(volume);
 }
 

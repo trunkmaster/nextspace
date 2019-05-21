@@ -146,15 +146,19 @@
 
 - (void)applyActiveProfile:(NSString *)profileName
 {
-  const char *profile = NULL;
-  
+  const char   *profile = NULL;
+  pa_operation *o;
+ 
   for (NSDictionary *p in _profiles) {
     if ([p[@"Description"] isEqualToString:profileName]) {
       profile = [p[@"Name"] cString];
     }
   }
   
-  pa_context_set_card_profile_by_index(_context, _index, profile, NULL, self);
+  o = pa_context_set_card_profile_by_index(_context, _index, profile, NULL, self);
+  if (o) {
+    pa_operation_unref(o);
+  }
 }
 
 @end
