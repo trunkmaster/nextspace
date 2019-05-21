@@ -196,7 +196,7 @@ enum {
                     options:NSKeyValueObservingOptionNew
                     context:InputContext];
 }
-- (void)observeStream:(SNDStream *)stream
+- (void)startObserveStream:(SNDStream *)stream
 {
   if ([stream isKindOfClass:[SNDVirtualStream class]]) {
     SNDVirtualStream *st = (SNDVirtualStream *)stream;
@@ -230,6 +230,24 @@ enum {
                       forKeyPath:@"channelVolumes"
                          options:NSKeyValueObservingOptionNew
                          context:StreamRecordContext];
+  }
+}
+- (void)stopObserveStream:(SNDStream *)stream
+{
+  if ([stream isKindOfClass:[SNDVirtualStream class]]) {
+    SNDVirtualStream *st = (SNDVirtualStream *)stream;
+    [st.stream removeObserver:self forKeyPath:@"mute"];
+    [st.stream removeObserver:self forKeyPath:@"volume"];
+  }
+  else if ([stream isKindOfClass:[SNDPlayStream class]]) {
+    SNDPlayStream *st = (SNDPlayStream *)stream;
+    [st.sinkInput removeObserver:self forKeyPath:@"mute"];
+    [st.sinkInput removeObserver:self forKeyPath:@"channelVolumes"];
+  }
+  else if ([stream isKindOfClass:[SNDRecordStream class]]) {
+    SNDRecordStream *st = (SNDRecordStream *)stream;
+    [st.sourceOutput removeObserver:self forKeyPath:@"mute"];
+    [st.sourceOutput removeObserver:self forKeyPath:@"channelVolumes"];
   }
 }
 
@@ -297,9 +315,11 @@ enum {
     if (object == virtualStream.stream) {
       if ([keyPath isEqualToString:@"mute"]) {
         NSLog(@"VirtualStream changed mute attribute.");
+        [self browserClick:appBrowser];
       }
       else if ([keyPath isEqualToString:@"volume"]) {
         NSLog(@"VirtualStream changed it's volume.");
+        [self browserClick:appBrowser];
       }
     }
   }
@@ -323,9 +343,11 @@ enum {
     if (object == recordStream.sourceOutput) {
       if ([keyPath isEqualToString:@"mute"]) {
         NSLog(@"RecordStream changed mute attribute.");
+        [self browserClick:appBrowser];
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
         NSLog(@"RecordStream changed it's volume.");
+        [self browserClick:appBrowser];
       }
     }
   }
@@ -382,13 +404,11 @@ enum {
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:st.name];
         [cell setRepresentedObject:st];
-        [self observeStream:st];
         NSLog(@"Browser add %@: %@", [st className], st.name);
       }
     }
   }
   else if ([[modeButton selectedItem] tag] == RecordingMode) {
-    // TODO
     for (SNDStream *st in streamList) {
       if ([st isKindOfClass:[SNDRecordStream class]] ||
           ([st isKindOfClass:[SNDVirtualStream class]] &&
@@ -399,7 +419,6 @@ enum {
         [cell setRefusesFirstResponder:YES];
         [cell setTitle:st.name];
         [cell setRepresentedObject:st];
-        [self observeStream:st];
         NSLog(@"Browser add stream: %@", st.name);
       }
     }
@@ -410,10 +429,18 @@ enum {
 {
   SNDStream *stream = [[sender selectedCellInColumn:0] representedObject];
 
-  NSLog(@"Browser received click: %@, cell - %@, repObject - %@, volume - %lu",
-        [sender className], [[sender selectedCellInColumn:0] title],
-        [stream className], [stream volume]);
+  // NSLog(@"Browser received click: %@, cell - %@, repObject - %@, volume - %lu",
+  //       [sender className], [[sender selectedCellInColumn:0] title],
+  //       [stream className], [stream volume]);
 
+  if (selectedApp != stream) {
+    if (selectedApp != nil) {
+      [self stopObserveStream:selectedApp];
+    }
+    [self startObserveStream:stream];
+    selectedApp = stream;
+  }
+  
   if (stream != nil) {
     [appMuteBtn setEnabled:YES];
     [appVolumeSlider setEnabled:YES];

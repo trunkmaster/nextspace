@@ -40,6 +40,8 @@
   id devicePortBtn;
   id deviceVolumeSlider;
   id deviceBalance;
+
+  SNDStream *selectedApp;
 }
 
 - (id)window;
