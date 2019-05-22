@@ -48,7 +48,13 @@
 	    deviceVolumeSlider,
 	    deviceBox,
 	    appVolumeSlider,
-	    cardDescription
+	    cardDescription,
+	    appVolumeMuteImg,
+	    deviceBalanceLeftImg,
+	    deviceBalanceRightImg,
+	    deviceVolumeLoudImg,
+	    deviceVolumeMuteImg,
+	    appVolumeLoudImg
 	);
 	Super = NSObject;
     };

@@ -33,6 +33,24 @@ enum {
   RecordingMode
 };
 
+@implementation Mixer (Private)
+- (NSImage *)imageNamed:(NSString *)name
+{
+  NSBundle *bundle = [NSBundle bundleForClass:[Mixer class]];
+  NSString *imagePath;
+  NSImage  *image;
+
+  imagePath = [bundle pathForResource:name
+                               ofType:@"tiff"
+                          inDirectory:@"Resources"];
+  NSLog(@"Path for image `%@` - %@", name, imagePath);
+  image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+  // [imagePath release];
+  
+  return [image autorelease];
+}  
+@end
+
 @implementation Mixer
 
 - init
@@ -445,16 +463,20 @@ enum {
   
   if (stream != nil) {
     [appMuteBtn setEnabled:YES];
+    [appVolumeMuteImg setEnabled:YES];
+    [appVolumeLoudImg setEnabled:YES];
     [appVolumeSlider setEnabled:YES];
     [appVolumeSlider setIntegerValue:[stream volume]];
     [appMuteBtn setState:[stream isMute]];
     activePort = [stream activePort];
   }
   else {
+    [appVolumeMuteImg setEnabled:NO];
+    [appVolumeLoudImg setEnabled:NO];
     [appVolumeSlider setIntegerValue:0];
+    [appVolumeSlider setEnabled:NO];
     [appMuteBtn setState:NSOffState];
     [appMuteBtn setEnabled:NO];
-    [appVolumeSlider setEnabled:NO];
     
     server = [SNDServer sharedServer];
     if ([[modeButton selectedItem] tag] == PlaybackMode)
@@ -462,8 +484,18 @@ enum {
     else
       activePort = [[server defaultInput] activePort];
   }
+  
   if (activePort != nil) {
     [devicePortBtn selectItemWithTitle:activePort];
+  }
+  
+  if ([[modeButton selectedItem] tag] == PlaybackMode) {
+    [appVolumeMuteImg setImage:[self imageNamed:@"volMute"]];
+    [appVolumeLoudImg setImage:[self imageNamed:@"volLoud"]];
+  }
+  else {
+    [appVolumeMuteImg setImage:[self imageNamed:@"micMute"]];
+    [appVolumeLoudImg setImage:[self imageNamed:@"micLoud"]];
   }
 
   [self updateProfileList];

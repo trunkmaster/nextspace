@@ -33,6 +33,8 @@
   id appBrowser;
   id appMuteBtn;
   id appVolumeSlider;
+  id appVolumeMuteImg;
+  id appVolumeLoudImg;
   //
   id deviceBox;
   id cardDescription;
@@ -40,6 +42,10 @@
   id devicePortBtn;
   id deviceVolumeSlider;
   id deviceBalance;
+  id deviceVolumeMuteImg;
+  id deviceVolumeLoudImg;
+  id deviceBalanceLeftImg;
+  id deviceBalanceRightImg;
 
   SNDStream *selectedApp;
 }
