@@ -238,6 +238,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
   SNDVirtualStream *virtualStream;
   SNDPlayStream    *playStream;
   SNDRecordStream  *recordStream;
+  PASource         *source;
 
   // Pure virtual streams
   for (PAStream *stream in savedStreamList) {
@@ -255,21 +256,23 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
     playStream.sinkInput = sinkInput;
     [list addObject:playStream];
     [playStream release];
-    fprintf(stderr, "SNDPlayStream was added to list: %s\n",
-            [playStream.name cString]);
+    fprintf(stderr, "SNDPlayStream was added to list: %s\n", [playStream.name cString]);
   }
   // Streams with SourceOuput and Client
   for (PASourceOutput *sourceOutput in sourceOutputList) {
-    recordStream = [SNDRecordStream new];
-    recordStream.server = self;
-    recordStream.sourceOutput = sourceOutput;
-    recordStream.client = [self clientWithIndex:sourceOutput.clientIndex];
-    recordStream.device = [self outputWithSink:[self sinkWithIndex:sourceOutput.sourceIndex]];
-    recordStream.name = recordStream.client.appName;
-    [list addObject:recordStream];
-    [recordStream release];
-    fprintf(stderr, "SNDRecordStream was added to list: %s\n",
-            [recordStream.name cString]);
+    source = [self sourceWithIndex:sourceOutput.sourceIndex];
+    if (source.isMonitor == NO) {
+      recordStream = [SNDRecordStream new];
+      recordStream.server = self;
+      recordStream.client = [self clientWithIndex:sourceOutput.clientIndex];
+      recordStream.device = [self inputWithSource:source];
+      recordStream.name = recordStream.client.appName;
+      recordStream.sourceOutput = sourceOutput;
+      [list addObject:recordStream];
+      [recordStream release];
+      fprintf(stderr, "SNDRecordStream was added to list: %s\n",
+              [recordStream.name cString]);
+    }
   }
   
   return [list autorelease];
