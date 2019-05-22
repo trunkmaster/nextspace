@@ -274,7 +274,7 @@ NSString *SKDeviceDidRemoveNotification = @"SKDeviceDidRemoveNotification";
               [recordStream.name cString]);
     }
   }
-  
+
   return [list autorelease];
 }
 
