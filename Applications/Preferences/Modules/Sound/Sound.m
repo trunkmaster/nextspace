@@ -109,7 +109,7 @@
   [window release];
 
   // 1. Connect to PulseAudio on locahost
-  soundServer = [SNDServer sharedServer];
+  soundServer = [SNDServer new];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self

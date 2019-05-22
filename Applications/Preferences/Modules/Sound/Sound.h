@@ -30,14 +30,14 @@
 
 @interface Sound: NSObject <PrefsModule>
 {
-  NXTDefaults    *defaults;
-  NSImage       *image;
-  SNDServer *soundServer;
-  SNDOut    *soundOut;
-  SNDIn     *soundIn;
-  NSString      *defaultSound;
-  NSDictionary  *soundsList;
-  NSInteger     defSoundRow;
+  NXTDefaults	*defaults;
+  NSImage	*image;
+  SNDServer	*soundServer;
+  SNDOut	*soundOut;
+  SNDIn		*soundIn;
+  NSString	*defaultSound;
+  NSDictionary	*soundsList;
+  NSInteger	defSoundRow;
   
   id view;
   id window;
