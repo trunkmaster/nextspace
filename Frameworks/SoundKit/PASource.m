@@ -169,6 +169,8 @@
     _name = [[NSString alloc] initWithCString:info->name];
   }
 
+  _isMonitor = (info->monitor_of_sink != PA_INVALID_INDEX) ? YES : NO;
+
   // Ports
   [self updatePorts:info];
 

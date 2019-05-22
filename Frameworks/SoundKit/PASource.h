@@ -34,6 +34,7 @@
 @property (readonly) NSString   *name;
 @property (readonly) NSUInteger cardIndex;
 @property (readonly) NSArray    *ports;
+@property (readonly) BOOL       isMonitor;
 // KVO-compliant
 @property (assign) NSString   *activePort;
 @property (assign) NSUInteger channelCount;

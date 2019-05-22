@@ -30,15 +30,15 @@
 //
 //   uint32_t		client;
 //   uint32_t		source;
-//   int			 mute;
-//   int			corked;
+//   int		 mute;
+//   int		corked;
 //
 //   pa_sample_spec	sample_spec;
 //   const char		*resample_method;
 //  
 //   pa_channel_map	channel_map;
-//   int			has_volume;
-//   int			volume_writable;
+//   int		has_volume;
+//   int		volume_writable;
 //   pa_cvolume		volume;
 //  
 //   pa_usec_t		buffer_usec;
@@ -46,7 +46,7 @@
 //  
 //   uint32_t		owner_module;
 //   const char		*driver;
-//   pa_proplist		*proplist;
+//   pa_proplist	*proplist;
 //   pa_format_info	*format;
 // } pa_source_output_info;
 
