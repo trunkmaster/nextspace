@@ -114,7 +114,7 @@
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(serverStateChanged:)
-           name:SKServerStateDidChangeNotification
+           name:SNDServerStateDidChangeNotification
          object:soundServer];
 
   [[beepAudioRadio cellWithTag:0] setRefusesFirstResponder:YES];

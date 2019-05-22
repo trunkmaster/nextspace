@@ -45,10 +45,10 @@ typedef enum NSInteger {
   SKServerInventoryState
 } SKConnectionState;
 
-extern NSString *SKServerStateDidChangeNotification;
-extern NSString *SKDeviceDidAddNotification;
-extern NSString *SKDeviceDidChangeNotification;
-extern NSString *SKDeviceDidRemoveNotification;
+extern NSString *SNDServerStateDidChangeNotification;
+extern NSString *SNDDeviceDidAddNotification;
+extern NSString *SNDDeviceDidChangeNotification;
+extern NSString *SNDDeviceDidRemoveNotification;
 
 @interface SNDServer : NSObject
 {
