@@ -45,7 +45,6 @@ enum {
                           inDirectory:@"Resources"];
   NSLog(@"Path for image `%@` - %@", name, imagePath);
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
-  // [imagePath release];
   
   return [image autorelease];
 }  
@@ -98,15 +97,17 @@ enum {
 
   for (SNDDevice *device in deviceList) {
     NSLog(@"Device: %@", device.description);
-    for (NSDictionary *port in [device availablePorts]) {
-      title = [NSString stringWithFormat:@"%@",
-                      [port objectForKey:@"Description"]];
-      [devicePortBtn addItemWithTitle:title];
-      [[devicePortBtn itemWithTitle:title] setRepresentedObject:device];
-    }
-    if ([devicePortBtn numberOfItems] == 0) {
+    if ([[device availablePorts] count] == 0) {
       [devicePortBtn addItemWithTitle:device.name];
       [[devicePortBtn itemWithTitle:device.name] setRepresentedObject:device];
+    }
+    else {
+      for (NSDictionary *port in [device availablePorts]) {
+        title = [NSString stringWithFormat:@"%@",
+                        [port objectForKey:@"Description"]];
+        [devicePortBtn addItemWithTitle:title];
+        [[devicePortBtn itemWithTitle:title] setRepresentedObject:device];
+      }
     }
     // KVO for added output
     if ([[modeButton selectedItem] tag] == PlaybackMode) {
@@ -382,9 +383,17 @@ enum {
 {
   if ([[sender selectedItem] tag] == PlaybackMode) {
     [deviceBox setTitle:@"Output"];
-  }
+    [appVolumeMuteImg setImage:[self imageNamed:@"volMute"]];
+    [appVolumeLoudImg setImage:[self imageNamed:@"volLoud"]];
+    [deviceVolumeMuteImg setImage:[self imageNamed:@"volMute"]];
+    [deviceVolumeLoudImg setImage:[self imageNamed:@"volLoud"]];
+ }
   else if ([[sender selectedItem] tag] == RecordingMode) {
     [deviceBox setTitle:@"Input"];
+    [appVolumeMuteImg setImage:[self imageNamed:@"micMute"]];
+    [appVolumeLoudImg setImage:[self imageNamed:@"micLoud"]];
+    [deviceVolumeMuteImg setImage:[self imageNamed:@"micMute"]];
+    [deviceVolumeLoudImg setImage:[self imageNamed:@"micLoud"]];
   }
   [self updateDeviceList];
   [self reloadBrowser:appBrowser];
@@ -489,15 +498,6 @@ enum {
     [devicePortBtn selectItemWithTitle:activePort];
   }
   
-  if ([[modeButton selectedItem] tag] == PlaybackMode) {
-    [appVolumeMuteImg setImage:[self imageNamed:@"volMute"]];
-    [appVolumeLoudImg setImage:[self imageNamed:@"volLoud"]];
-  }
-  else {
-    [appVolumeMuteImg setImage:[self imageNamed:@"micMute"]];
-    [appVolumeLoudImg setImage:[self imageNamed:@"micLoud"]];
-  }
-
   [self updateProfileList];
   [self updateDeviceControls];
 }
