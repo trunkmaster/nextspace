@@ -422,8 +422,13 @@ enum {
   NSMatrix *matrix;
   NSCell   *cell;
 
+  // Stop tracking SNDStream because it may disappear after reload
+  if (selectedApp != nil) {
+    [self stopObserveStream:selectedApp];
+    selectedApp = nil;
+  }
+  
   [appBrowser reloadColumn:0];
-  [appBrowser setTitle:@"Streams" ofColumn:0];
 
   matrix = [appBrowser matrixInColumn:0];
   if ([matrix numberOfRows] > 0 && selected == nil) {
@@ -438,6 +443,7 @@ enum {
       }
     }
   }
+  
   [self browserClick:appBrowser];
 }
  
