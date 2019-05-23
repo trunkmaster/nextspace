@@ -109,13 +109,13 @@
   [window release];
 
   // 1. Connect to PulseAudio on locahost
-  soundServer = [[SNDServer alloc] init];
+  soundServer = [SNDServer sharedServer];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(serverStateChanged:)
            name:SNDServerStateDidChangeNotification
-         object:nil];
+         object:soundServer];
 
   [[beepAudioRadio cellWithTag:0] setRefusesFirstResponder:YES];
   [[beepAudioRadio cellWithTag:1] setRefusesFirstResponder:YES];
@@ -133,7 +133,6 @@
       return nil;
     }
   }
-  
   return view;
 }
 
@@ -258,6 +257,7 @@ static void *InputContext = &InputContext;
       [self observeInput:soundIn];
     }
     [self _updateControls];
+    [self reloadBrowser];    
   }
   else if (soundServer.status == SKServerFailedState ||
            soundServer.status == SKServerTerminatedState) {
@@ -268,89 +268,41 @@ static void *InputContext = &InputContext;
 }
 
 // --- Control actions
-/*
+
 - (void)reloadBrowser
 {
-  NSMatrix  *matrix;
-  NSInteger row,col;
-  
   [beepBrowser reloadColumn:0];
-  matrix = [beepBrowser matrixInColumn:0];
-
-  for (NSBrowserCell *cell in [matrix cells]) {
-    if ([[cell representedObject] isEqualToString:defaultSound]) {
-      [matrix getRow:&row column:&col ofCell:cell];
-      [beepBrowser selectRow:row inColumn:0];
-      [beepBrowser scrollRowToVisible:row inColumn:0];
-    }
-  }
+  
+  // NSLog(@"Default sound row %li", defSoundRow);
+  // [beepBrowser selectRow:defSoundRow inColumn:0];
+  [[beepBrowser matrixInColumn:0] selectCellAtRow:defSoundRow column:0];
+  [beepBrowser scrollRowToVisible:defSoundRow inColumn:0];
 }
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
-  // NSString      *path, *filePath;
-  // NSArray       *sounds;
-  // NSArray       *pathList = NSStandardLibraryPaths();
-  // NSFileManager *fm = [NSFileManager defaultManager];
+  NSString      *filePath;
+  NSInteger     row;
 
-  // for (NSString *lp in pathList) {
-  //   path = [NSString stringWithFormat:@"%@/Sounds", lp];
-  //   NSLog(@"Searching for sounds in %@", path);
-  //   sounds = [fm contentsOfDirectoryAtPath:path error:NULL];
-
-  //   for (NSString *file in sounds) {
-  //     if ([file isEqualToString:@"SystemBeep.snd"] == NO) {
-  //       [matrix addRow];
-  //       cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-  //       [cell setLeaf:YES];
-  //       [cell setRefusesFirstResponder:YES];
-  //       [cell setTitle:[file stringByDeletingPathExtension]];
-  //       filePath = [NSString stringWithFormat:@"%@/%@", path, file];
-  //       [cell setRepresentedObject:filePath];
-  //     }
-  //   }
-  // }
-
+  defSoundRow = -1;
   for (NSString *file in [soundsList allKeys]) {
     [matrix addRow];
-    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+    row = [matrix numberOfRows] - 1;
+    cell = [matrix cellAtRow:row column:column];
     [cell setLeaf:YES];
     [cell setRefusesFirstResponder:YES];
     [cell setTitle:[file stringByDeletingPathExtension]];
-    [cell setRepresentedObject:[soundsList objectForKey:file]];
+
+    filePath = [soundsList objectForKey:file];
+    [cell setRepresentedObject:filePath];
+    
+    if ([filePath isEqualToString:defaultSound]) {
+      NSLog(@"Default sound found at row %li (column:%li)", row, column);
+      defSoundRow = row;
+    }
   }
-}
-*/
-
-- (NSInteger) browser:(NSBrowser *)sender
- numberOfRowsInColumn:(NSInteger)column
-{
-  NSLog(@"Number of sounds is: %li", [[soundsList allKeys] count]);
-  return [[soundsList allKeys] count];
-}
-
-- (void) browser:(NSBrowser *)sender
- willDisplayCell:(id)cell
-           atRow:(NSInteger)row
-          column:(NSInteger)column
-{
-  NSString *file = [[soundsList allKeys] objectAtIndex:row];
-  NSString *filePath = [soundsList objectForKey:file];
-  
-  [cell setLeaf:YES];
-  [cell setRefusesFirstResponder:YES];
-  [cell setTitle:[file stringByDeletingPathExtension]];
-  [cell setRepresentedObject:filePath];
-  if ([filePath isEqualToString:defaultSound]) {
-    NSLog(@"Default sound found at row %li", row);
-    defSoundRow = row;
-    // TODO: doesn't work
-    [[sender matrixInColumn:column] selectCellAtRow:row column:0];
-    // [sender selectRow:row inColumn:column];
-    // [beepBrowser scrollRowToVisible:row inColumn:0];
-  }  
 }
 
 - (void)setMute:(id)sender
