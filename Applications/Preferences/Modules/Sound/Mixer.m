@@ -36,17 +36,14 @@ enum {
 @implementation Mixer (Private)
 - (NSImage *)imageNamed:(NSString *)name
 {
-  NSBundle *bundle = [NSBundle bundleForClass:[Mixer class]];
   NSString *imagePath;
-  NSImage  *image;
 
-  imagePath = [bundle pathForResource:name
-                               ofType:@"tiff"
-                          inDirectory:@"Resources"];
-  NSLog(@"Path for image `%@` - %@", name, imagePath);
-  image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+  imagePath = [[NSBundle bundleForClass:[Mixer class]]
+                pathForResource:name
+                         ofType:@"tiff"
+                    inDirectory:@"Resources"];
   
-  return [image autorelease];
+  return [[[NSImage alloc] initWithContentsOfFile:imagePath] autorelease];
 }  
 @end
 
@@ -62,10 +59,12 @@ enum {
 {
   self = [super init];
   
+  soundServer = server;
+  
   if (window == nil) {
     [NSBundle loadNibNamed:@"Mixer" owner:self];
   }
-  soundServer = server;
+  
   return self;
 }
 
@@ -420,15 +419,24 @@ enum {
 - (void)reloadAppBrowser
 {
   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
+  NSMatrix *matrix;
+  NSCell   *cell;
 
   [appBrowser reloadColumn:0];
   [appBrowser setTitle:@"Streams" ofColumn:0];
 
-  if ([[appBrowser matrixInColumn:0] numberOfRows] > 0 && selected == nil) {
+  matrix = [appBrowser matrixInColumn:0];
+  if ([matrix numberOfRows] > 0 && selected == nil) {
     [appBrowser selectRow:0 inColumn:0];
   }
   else {
-    // TODO: select row with "selected" title
+    for (int i = 0; i < [[matrix cells] count]; i++) {
+      cell = [matrix cellAtRow:i column:0];
+      if ([[cell title] isEqualToString:selected]) {
+        [appBrowser selectRow:i inColumn:0];
+        break;
+      }
+    }
   }
   [self browserClick:appBrowser];
 }
