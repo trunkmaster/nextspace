@@ -379,7 +379,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
       fprintf(stderr, "[SoundKit] Sink Update: %s.\n", info->name);
       [sink updateWithValue:value];
       isUpdated = YES;
-      aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
+      aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
                                              object:self];
       break;
     }
@@ -393,8 +393,8 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     sink.context = _pa_ctx;
     [sinkList addObject:sink];
     [sink release];
-    aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
-                                           object:self];
+    aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
+                                             object:self];
   }
   [[NSNotificationCenter defaultCenter]
         performSelectorOnMainThread:@selector(postNotification:)
@@ -505,7 +505,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
       fprintf(stderr, "[SoundKit] Sink Input Update: %s.\n", info->name);
       [sinkInput updateWithValue:value];
       isUpdated = YES;
-      aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
+      aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
                                              object:self];
       break;
     }
@@ -518,7 +518,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     sinkInput.context = _pa_ctx;
     [sinkInputList addObject:sinkInput];
     [sinkInput release];
-    aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
+    aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
                                            object:self];
   }
   [[NSNotificationCenter defaultCenter]
@@ -578,7 +578,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
       fprintf(stderr, "[SoundKit] Source Output Update: %s.\n", info->name);
       [sourceOutput updateWithValue:value];
       isUpdated = YES;
-      aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
+      aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
                                              object:self];
       break;
     }
@@ -591,7 +591,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     sourceOutput.context = _pa_ctx;
     [sourceOutputList addObject:sourceOutput];
     [sourceOutput release];
-    aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
+    aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
                                            object:self];
   }
   [[NSNotificationCenter defaultCenter]
