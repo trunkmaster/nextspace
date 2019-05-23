@@ -52,13 +52,20 @@ enum {
 
 @implementation Mixer
 
-- init
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super dealloc];
+}
+
+- (id)initWithServer:(SNDServer *)server
 {
   self = [super init];
   
   if (window == nil) {
     [NSBundle loadNibNamed:@"Mixer" owner:self];
-  }  
+  }
+  soundServer = server;
   return self;
 }
 
@@ -68,7 +75,18 @@ enum {
   [window setFrameAutosaveName:@"Mixer"];
   [window makeKeyAndOrderFront:self];
   
-  [self reloadBrowser:appBrowser];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(reloadAppBrowser)
+           name:SNDDeviceDidAddNotification
+         object:soundServer];
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(reloadAppBrowser)
+           name:SNDDeviceDidRemoveNotification
+         object:soundServer];
+  
+  [self reloadAppBrowser];
   [self updateDeviceList];
 }
 
@@ -81,16 +99,15 @@ enum {
 - (void)updateDeviceList
 {
   NSString  *title;
-  SNDServer *server = [SNDServer sharedServer];
   NSArray   *deviceList;
 
   if ([[modeButton selectedItem] tag] == PlaybackMode) {
     NSLog(@"Playback");
-    deviceList = [server outputList];
+    deviceList = [soundServer outputList];
   }
   else {
     NSLog(@"Recording");
-    deviceList = [server inputList];
+    deviceList = [soundServer inputList];
   }
   
   [devicePortBtn removeAllItems];
@@ -119,7 +136,7 @@ enum {
   }
 
   if ([[modeButton selectedItem] tag] == PlaybackMode) {
-    [devicePortBtn selectItemWithTitle:[[server defaultOutput] activePort]];
+    [devicePortBtn selectItemWithTitle:[[soundServer defaultOutput] activePort]];
   }
 
   [self updateDeviceControls];
@@ -396,11 +413,11 @@ enum {
     [deviceVolumeLoudImg setImage:[self imageNamed:@"micLoud"]];
   }
   [self updateDeviceList];
-  [self reloadBrowser:appBrowser];
+  [self reloadAppBrowser];
 }
 
 // --- Streams actions
-- (void)reloadBrowser:(NSBrowser *)browser
+- (void)reloadAppBrowser
 {
   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
 
@@ -410,6 +427,9 @@ enum {
   if ([[appBrowser matrixInColumn:0] numberOfRows] > 0 && selected == nil) {
     [appBrowser selectRow:0 inColumn:0];
   }
+  else {
+    // TODO: select row with "selected" title
+  }
   [self browserClick:appBrowser];
 }
  
@@ -418,7 +438,7 @@ enum {
             inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
-  NSArray       *streamList = [[SNDServer sharedServer] streamList];
+  NSArray       *streamList = [soundServer streamList];
 
   if ([[modeButton selectedItem] tag] == PlaybackMode) {
     for (SNDStream *st in streamList) {
@@ -455,7 +475,6 @@ enum {
 - (void)browserClick:(id)sender
 {
   SNDStream *stream = [[sender selectedCellInColumn:0] representedObject];
-  SNDServer *server;
   NSString  *activePort;
 
   // NSLog(@"Browser received click: %@, cell - %@, repObject - %@, volume - %lu",
@@ -487,11 +506,10 @@ enum {
     [appMuteBtn setState:NSOffState];
     [appMuteBtn setEnabled:NO];
     
-    server = [SNDServer sharedServer];
     if ([[modeButton selectedItem] tag] == PlaybackMode)
-      activePort = [[server defaultOutput] activePort];
+      activePort = [[soundServer defaultOutput] activePort];
     else
-      activePort = [[server defaultInput] activePort];
+      activePort = [[soundServer defaultInput] activePort];
   }
   
   if (activePort != nil) {
@@ -511,8 +529,8 @@ enum {
 {
   SNDStream *stream = [[appBrowser selectedCellInColumn:0] representedObject];
 
-  NSLog(@"setAppVolume: sender %@ stream: %@",
-        [sender className], [stream className]);
+  // NSLog(@"setAppVolume: sender %@ stream: %@",
+  //       [sender className], [stream className]);
 
   [stream setVolume:[sender integerValue]];
 }

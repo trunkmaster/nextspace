@@ -22,6 +22,7 @@
 
 @interface Mixer : NSObject
 {
+  SNDServer *soundServer;
   id window;
   
   //
@@ -50,9 +51,10 @@
   SNDStream *selectedApp;
 }
 
+- (id)initWithServer:(SNDServer *)server;
 - (id)window;
 
-- (void)reloadBrowser:(NSBrowser *)browser;
+- (void)reloadAppBrowser;
 - (void)updateDeviceList;
 - (void)updateProfileList;
 - (void)updateDeviceControls;

@@ -109,13 +109,13 @@
   [window release];
 
   // 1. Connect to PulseAudio on locahost
-  soundServer = [SNDServer new];
+  soundServer = [[SNDServer alloc] init];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(serverStateChanged:)
            name:SNDServerStateDidChangeNotification
-         object:soundServer];
+         object:nil];
 
   [[beepAudioRadio cellWithTag:0] setRefusesFirstResponder:YES];
   [[beepAudioRadio cellWithTag:1] setRefusesFirstResponder:YES];
@@ -242,6 +242,10 @@ static void *InputContext = &InputContext;
 // --- Sound subsystem actions
 - (void)serverStateChanged:(NSNotification *)notif
 {
+  if ([notif object] != soundServer) {
+    NSLog(@"Received other SNDServer state change notification.");
+    return;
+  }
   if (soundServer.status == SKServerReadyState) {
     soundOut = [[soundServer defaultOutput] retain];
     soundIn = [[soundServer defaultInput] retain];
@@ -399,7 +403,7 @@ static void *InputContext = &InputContext;
 - (void)showMixer:(id)sender
 {
   if (mixer == nil) {
-    mixer = [[Mixer alloc] init];
+    mixer = [[Mixer alloc] initWithServer:soundServer];
   }
   [[mixer window] makeKeyAndOrderFront:self];
 }
