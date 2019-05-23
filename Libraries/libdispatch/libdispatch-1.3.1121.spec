@@ -1,6 +1,6 @@
 Name:		libdispatch
 Version:	1.3.1121
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
 URL:		http://swift.org
@@ -53,7 +53,8 @@ cd _build
 cmake3 .. \
        -DCMAKE_C_COMPILER=clang \
        -DCMAKE_CXX_COMPILER=clang++ \
-       -DCMAKE_INSTALL_PREFIX=/usr/NextSpace
+       -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+       -DINSTALL_PRIVATE_HEADERS=YES
 
 make %{?_smp_mflags}
 
@@ -61,6 +62,7 @@ make %{?_smp_mflags}
 #cd libdispatch-%{version}
 cd _build
 make install DESTDIR=%{buildroot}
+rm %{buildroot}/usr/NextSpace/include/Block_private.h
 
 %check
 # requires lit.py from LLVM utilities
@@ -75,7 +77,10 @@ make install DESTDIR=%{buildroot}
 /usr/NextSpace/share/man/
 
 %changelog
-* Thu Mar 28 2019 Sergii Stoian <stoyan255@gmail.com> - 1.3-2
+* Thu May 23 2019 Sergii Stoian <stoyan255@gmail.com> - 1.3.1121-3
+- New build flag `INSTALL_PRIVATE_HEADERS=YES` was added.
+
+* Thu Mar 28 2019 Sergii Stoian <stoyan255@gmail.com> - 1.3.1121-2
 - Build latest version of libdispatch without libkqueue and pthread_workqueue.
 
 * Wed Oct 12 2016 Sergii Stoian <stoyan255@gmail.com> 1.3-1

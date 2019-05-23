@@ -9,7 +9,7 @@
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -292,6 +292,10 @@ fi
 #%postun
 
 %changelog
+* Thu May 23 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-2
+- Rebuild with libdispatch private headers enabled and gnustep-base last
+  commit `ecbecbe`.
+
 * Fri May 10 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-1
 - original ProjectBuilder's images were added to ProjectCenter.
 - replace some GNUstep images from tarball.
