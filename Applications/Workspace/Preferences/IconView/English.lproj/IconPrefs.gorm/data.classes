@@ -23,7 +23,7 @@
 	);
 	Super = NSObject;
     };
-    NXSizer = {
+    NXTSizer = {
 	Actions = (
 	);
 	Outlets = (
