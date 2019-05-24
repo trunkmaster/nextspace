@@ -39,21 +39,21 @@
 	);
 	Super = NSObject;
     };
-    NXProgressBar = {
+    NXTProgressBar = {
 	Actions = (
 	);
 	Outlets = (
 	);
-	Super = NXProgressView;
+	Super = NXTProgressView;
     };
-    NXProgressPie = {
+    NXTProgressPie = {
 	Actions = (
 	);
 	Outlets = (
 	);
-	Super = NXProgressView;
+	Super = NXTProgressView;
     };
-    NXProgressView = {
+    NXTProgressView = {
 	Actions = (
 	    "takeIntValueFrom:",
 	    "increment:",
