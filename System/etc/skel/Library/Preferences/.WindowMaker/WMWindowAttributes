@@ -18,7 +18,7 @@
     Icon = "App-CentOS-48.tiff";
   };
   TimeMon.GNUstep = {
-    Icon = "/Applications/TimeMon.app/Resources/TimeMon.tiff";
+    Icon = "/Applications/TimeMon.app/Resources/TM-app.tiff";
   };
   Recycler.GNUstep = {
     Icon = recycler.tiff;
