@@ -54,6 +54,8 @@
     <string>Helvetica</string>
     <key>NSMessageFontSize</key>
     <string>14</string>
+    <key>NSMiniFontSize</key>
+    <string>9</string>
     <key>NSPaletteFont</key>
     <string>Helvetica-Oblique</string>
     <key>NSPaletteFontSize</key>
