@@ -37,7 +37,7 @@ after-install::
 
 # /usr/NextSpace/Sounds/SystemBeep.snd
 	if [ ! -e $(DEST_SYS_LIB)/Sounds/SystemBeep.snd ]; then \
-	  cd $(GNUSTEP_SYSTEM_LIBRARY)/Frameworks/DesktopKit.framework/Resources/Sounds; \
+	  cd $(DEST_SYS_LIB)/Sounds; \
 	  ln -s ./Bonk.snd SystemBeep.snd; \
 	fi
 
