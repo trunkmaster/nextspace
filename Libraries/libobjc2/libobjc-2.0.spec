@@ -53,7 +53,7 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 #cd libobjc2-%{version}
 mkdir Build
 cd Build
-cmake3 .. \
+cmake3 .. -DGNUSTEP_INSTALL_TYPE=NONE \
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
     -DCMAKE_C_FLAGS=-I/usr/NextSpace/include \
@@ -80,11 +80,11 @@ mv -v %{buildroot}/usr/NextSpace/include/Block.h %{buildroot}/usr/NextSpace/incl
 %files devel
 /usr/NextSpace/include/
 
-%pre
+%pre devel
 mv -v /usr/NextSpace/include/Block.h /usr/NextSpace/include/Block-libdispatch.h
 ln -sv /usr/NextSpace/include/Block-libobjc.h /usr/NextSpace/include/Block.h
 
-%postun
+%postun devel
 rm -v /usr/NextSpace/include/Block.h
 mv -v /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
 
