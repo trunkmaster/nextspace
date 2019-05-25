@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -24,8 +24,8 @@ Includes several components:
   user shell profile, udev rule to mount removable media under /media, 
   /etc/skel: user home dir skeleton, tuned and logind settings);
 - GNUstep helper script: /usr/NextSpace/bin/gnustep-services.
-- Plymouth `nextspace` theme. It should be activated manually.
-- `NextsSpace` mouse cursor theme
+- Plymouth `nextspace` theme.
+- `NextsSpace` mouse cursor theme.
 
 %package devel
 Summary:	Development header files for NextSpace core components.
@@ -35,8 +35,8 @@ Requires:	libobjc2-devel
 Provides:	gnustep-make
 
 %description devel
-Contains GNUstep Make to build nextspace-runtime and develop 
-applications/tools for NextSpace environment.
+Contains GNUstep Make and developemnt applications/tools for
+NextSpace environment.
 
 %prep
 %setup -c -n nextspace-core -a 1
@@ -69,9 +69,11 @@ cd nextspace-os_files-%{version}
 cp -vr ./etc %{buildroot}
 cp -vr ./usr %{buildroot}
 cp -vr ./root %{buildroot}
+cp -vr ./.hidden %{buildroot}
 mkdir %{buildroot}/Users
 
 %files 
+/.hidden
 /Library
 /Users
 /root/Library
@@ -109,12 +111,18 @@ mkdir %{buildroot}/Users
 %post
 useradd -D -b /Users -s /bin/zsh
 tuned-adm profile desktop
+echo "Setting up NextSpace boot splash. Please wait..."
+plymouth-set-default-theme -R nextspace
 
 %preun
 useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
+* Fri May 24 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-3
+- add missed /.hidden file
+- generate initrd with `nextspace` boot splash theme rpm install
+
 * Fri Mar 29 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-2
 - required version of libobjc2 set to >= 1.8
 - gnustep-make was updated to version 2.7.0

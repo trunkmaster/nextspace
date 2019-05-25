@@ -5,7 +5,7 @@
 
 Name:           nextspace-frameworks
 Version:        0.85
-Release:        0%{?dist}
+Release:        1%{?dist}
 Summary:        NextSpace core libraries.
 
 Group:          Libraries/NextSpace
@@ -13,9 +13,8 @@ License:        GPLv2
 URL:		http://www.github.com/trunkmaster/nextspace
 Source0:	nextspace-frameworks-%{version}.tar.gz
 
-Provides:	NXFoundation.so
-Provides:	NXSystem.so
-Provides:	NXAppKit.so
+Provides:	DesktopKit.so
+Provides:	SystemKit.so
 Provides:	SoundKit.so
 
 BuildRequires:	nextspace-gnustep-devel
@@ -45,6 +44,7 @@ Requires:	libxkbfile >= 1.0.9
 Requires:	libXcursor >= 1.1.14
 # SoundKit
 Requires:	pulseaudio-libs >= 10.0
+Requires:	pulseaudio >= 10.0
 
 
 %description
@@ -141,6 +141,10 @@ cd ..
 #rm /usr/NextSpace/Sounds
 
 %changelog
+* Fri May 24 2019 Sergii Stoian <stoyan255@gmail.com> - 0.85-1
+- Fixed SystemBeep.snd link creation in DesktopKit makefile.
+- PulseAudio was added as "Requires".
+- Changed library names in "Provides" fields according to frameworks refactoring.
 * Fri May  3 2019 Sergii Stoian <stoyan255@gmail.com> - 0.85-0
 - Build with nextspace-gnustep-1.26.0_0.25.0.
 * Fri Mar 01 2019 Sergii Stoian <stoyan255@gmail.com> 0.7-0
@@ -148,4 +152,3 @@ cd ..
 - Sounds were added into NXAppKit framework.
 * Fri Oct 21 2016 Sergii Stoian <stoyan255@gmail.com> 0.4-0
 - Initial spec for CentOS 7.
-
