@@ -15,7 +15,8 @@ CC=clang
 VERSION = 0.8
 PACKAGE_NAME = Login
 APP_NAME = Login
-Login_APPLICATION_ICON = GNUstep48x48.tiff
+Login_APPLICATION_ICON = loginwindow.tiff
+Login_MAIN_MODEL_FILE = Login
 
 
 #
@@ -29,7 +30,7 @@ Preferences
 #
 Login_RESOURCE_FILES = \
 Resources/Login.gorm \
-Resources/GNUstep48x48.tiff \
+Resources/loginwindow.tiff \
 Resources/Login \
 Resources/loginwindow.service \
 Preferences/Login.preferences
