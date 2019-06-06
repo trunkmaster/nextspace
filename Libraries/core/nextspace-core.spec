@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -119,6 +119,9 @@ useradd -D -b /home -s /bin/bash
 tuned-adm profile balanced
 
 %changelog
+* Wed Jun  5 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-4
+- add Times New Roman font into Plymouth theme.
+
 * Fri May 24 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-3
 - add missed /.hidden file
 - generate initrd with `nextspace` boot splash theme rpm install
