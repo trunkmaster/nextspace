@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	5%{?dist}
+Release:	6%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -111,16 +111,21 @@ mkdir %{buildroot}/Users
 %post
 useradd -D -b /Users -s /bin/zsh
 tuned-adm profile desktop
-echo "Setting up NextSpace boot splash. Please wait..."
 plymouth-set-default-theme -R nextspace
 
 %preun
-useradd -D -b /home -s /bin/bash
-tuned-adm profile balanced
+if [ $1 -eq 0 ]; then
+   # Package removal not upgrade
+   useradd -D -b /home -s /bin/bash
+   tuned-adm profile balanced
+fi
 
 %changelog
-* Fri Jun  7 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-5
+* Fri Jun  7 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-6
 - animated `watch` cursor was addef to cursor theme.
+
+* Thu Jun  6 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-5
+- do not run %preun actions on pckage update.
 
 * Wed Jun  5 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-4
 - add Times New Roman font into Plymouth theme.
