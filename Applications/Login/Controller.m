@@ -364,6 +364,54 @@ void *alloc(int size)
   XSetErrorHandler(NULL);
 }
 
+- (void)setBusyCursor
+{
+  XcursorCursors *cursors;
+
+  if (busy_cursor != NULL) {
+    [self destroyBusyCursor];
+  }
+
+  cursors = XcursorLibraryLoadCursors(xDisplay, "watch");
+  fprintf(stderr, "[Busy Cursor] loaded %i cursors\n", cursors->ncursor);
+  busy_cursor = XcursorAnimateCreate(cursors);
+  XcursorCursorsDestroy(cursors);
+
+  busyTimer = [NSTimer timerWithTimeInterval:0.02
+                                      target:self
+                                    selector:@selector(animateBusyCursor:)
+                                    userInfo:nil
+                                     repeats:YES];
+  // [self animateBusyCursor:nil];
+  [busyTimer fire];
+}
+- (void)destroyBusyCursor
+{
+  Cursor arrow_cursor;
+  
+  if (busyTimer != nil && [busyTimer isValid]) {
+    [busyTimer invalidate];
+  }
+  XcursorAnimateDestroy(busy_cursor);
+  busy_cursor = NULL;
+  
+  arrow_cursor = XCreateFontCursor(xDisplay, XC_left_ptr);
+  XDefineCursor(xDisplay, xRootWindow, arrow_cursor);
+  XDefineCursor(xDisplay, xPanelWindow, arrow_cursor);
+  XFreeCursor(xDisplay, arrow_cursor);
+}
+- (void)animateBusyCursor:(NSTimer *)timer
+{
+  Cursor xcursor = XcursorAnimateNext(busy_cursor);
+
+  fprintf(stderr, "[Animate] cursor %i\n", busy_cursor->sequence);
+  
+  XDefineCursor(xDisplay, xRootWindow, xcursor);
+  XDefineCursor(xDisplay, xPanelWindow, xcursor);
+  
+  XFlush(xDisplay);
+}
+
 @end
 
 //=============================================================================
@@ -543,6 +591,8 @@ void *alloc(int size)
 {
   NSString *user = [userName stringValue];
 
+  [self setBusyCursor];
+  
   NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
 
   if (sender == userName)
@@ -598,6 +648,7 @@ void *alloc(int size)
       [window shakePanel:xPanelWindow onDisplay:xDisplay];
       [self clearFields];
     }
+  [self destroyBusyCursor];
 }
 
 - (void)restart:sender

@@ -22,10 +22,7 @@
 #import <security/pam_appl.h>
 #import <X11/Xlib.h>
 #import <X11/cursorfont.h>
-
-//#import <X11/Xatom.h>
-//#import <X11/Xutil.h>
-//#import <X11/Xmu/WinUtil.h>
+#import <X11/Xcursor/Xcursor.h>
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <AppKit/AppKit.h>
@@ -67,6 +64,10 @@ extern NSString *SessionDidCloseNotification;
   NSMutableDictionary  *userSessions;
 
   pam_handle_t         *PAM_handle;
+
+  // Busy cursor
+  XcursorAnimate       *busy_cursor;
+  NSTimer              *busyTimer;
 }
 
 - (BOOL)authenticateUser:(NSString *)user;
@@ -98,6 +99,10 @@ extern NSString *SessionDidCloseNotification;
 - (void)hideWindow;
 - (void)showWindow;
 - (void)closeAllXClients;
+
+- (void)setBusyCursor;
+- (void)destroyBusyCursor;
+- (void)animateBusyCursor:(NSTimer *)timer;
 
 @end
 
