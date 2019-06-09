@@ -5,7 +5,7 @@
 
 Name:           nextspace-frameworks
 Version:        0.85
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        NextSpace core libraries.
 
 Group:          Libraries/NextSpace
@@ -68,7 +68,6 @@ export CC=clang
 export CXX=clang++
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":/usr/NextSpace/bin"
-
 export ADDITIONAL_INCLUDE_DIRS="-I../NXFoundation/derived_src -I../NXSystem/derived_src"
 
 cd SystemKit
@@ -78,11 +77,6 @@ cd ..
 cd DesktopKit
 make
 cd ..
-
-#cd NXAppKit
-#export LDFLAGS="-L../NXFoundation-%{FOUNDATION_VERSION}/NXFoundation.framework -lNXFoundation"
-#make
-#cd ..
 
 cd SoundKit
 make
@@ -128,6 +122,7 @@ cd ..
 #%pre
 
 %post
+ldconfig
 #ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Images /usr/NextSpace/Images
 #ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Fonts /Library/Fonts
 #ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Sounds /usr/NextSpace/Sounds
@@ -135,20 +130,26 @@ cd ..
 
 #%preun
 
-%postun
+#%postun
 #rm /usr/NextSpace/Images
 #rm /Library/Fonts
 #rm /usr/NextSpace/Sounds
 
 %changelog
+* Sun Jun  9 2019  <me@localhost.localdomain> - 0.85-2
+- run `ldconfig` in %post.
+
 * Fri May 24 2019 Sergii Stoian <stoyan255@gmail.com> - 0.85-1
 - Fixed SystemBeep.snd link creation in DesktopKit makefile.
 - PulseAudio was added as "Requires".
 - Changed library names in "Provides" fields according to frameworks refactoring.
+
 * Fri May  3 2019 Sergii Stoian <stoyan255@gmail.com> - 0.85-0
 - Build with nextspace-gnustep-1.26.0_0.25.0.
+
 * Fri Mar 01 2019 Sergii Stoian <stoyan255@gmail.com> 0.7-0
 - SoundKit was added.
 - Sounds were added into NXAppKit framework.
+
 * Fri Oct 21 2016 Sergii Stoian <stoyan255@gmail.com> 0.4-0
 - Initial spec for CentOS 7.

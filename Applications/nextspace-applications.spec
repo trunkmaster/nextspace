@@ -1,6 +1,6 @@
 Name:           nextspace-applications
 Version:        0.85
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        NextSpace desktop core applications.
 
 Group:          Libraries/NextSpace
@@ -8,8 +8,9 @@ License:        GPLv2
 URL:		http://www.github.com/trunkmaster/nextspace
 Source0:	nextspace-applications-%{version}.tar.gz
 
-Provides:	libWMUtil.so
-Provides:	libWINGs.so
+Provides:	libWUtil.so.so.5
+Provides:	libWINGs.so.so.3
+Provides:	libwraster.so.5
 
 BuildRequires:	nextspace-frameworks-devel
 # Preferences
@@ -99,21 +100,41 @@ export QA_SKIP_BUILD_ROOT=1
 #%pre
 
 %post
-systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
-systemctl set-default graphical.target
+if [ $1 -eq 1 ]; then
+    # post-installation
+    systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+    systemctl set-default graphical.target
+    ldconfig
+elif [ $1 -eq 2 ]; then
+    # post-upgrade
+    systemctl daemon-reload;
+    # systemctl restart loginwindow;
+fi
+
 
 %preun
-systemctl disable loginwindow.service
-systemctl set-default multi-user.target
+if [ $1 -eq 0 ]; then
+   systemctl disable loginwindow.service
+   systemctl set-default multi-user.target
+fi
 
 #%postun
 
 %changelog
+* Sun Jun  9 2019  Sergii Stoian <stoyan255@gmail.com> - 0.85-3
+- fixed %post script.
+
+* Sun Jun  9 2019  Sergii Stoian <stoyan255@gmail.com> - 0.85-2
+- fixed library names;
+- run ldconfig in %post.
+
 * Fri May 24 2019 Sergii Stoian <stoyan255@gmail.com>  - 0.85-1
 - Fixed more .gorm files due to framewrks refactoring.
 - set default `graphical.target` to systemd.
+
 * Sat May  4 2019 Sergii Stoian <stoyan255@gmail.com> - 0.85-0
 - Prepare for 0.85 release.
+
 * Fri Oct 21 2016 Sergii Stoian <stoyan255@gmail.com> 0.4-0
 - Initial spec for CentOS 7.
 

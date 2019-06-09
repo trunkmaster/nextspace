@@ -273,7 +273,7 @@ elif [ $1 -eq 2 ]; then
     #echo "Please restart GNUstep services manually with command:"
     #echo "# systemctl restart gdomap gdnc gpbs"
     systemctl daemon-reload;
-    systemctl restart gdomap gdnc gpbs;
+    # systemctl restart gdomap gdnc gpbs;
 fi
 
 # for %preun and %postun $1 = 0 - uninstallation, 1 - upgrade. 
