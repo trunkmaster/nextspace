@@ -262,29 +262,29 @@ cp %{_sourcedir}/*.service %{buildroot}/usr/NextSpace/lib/systemd
 # for %pre and %post $1 = 1 - installation, 2 - upgrade
 #%pre
 %post
-if [ "$1" = "1" ]; then
+if [ $1 -eq 1 ]; then
     # post-installation
     systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
     systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
     systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
     systemctl start gdomap gdnc gpbs;
-elif [ "$1" = "2" ]; then
+elif [ $1 -eq 2 ]; then
     # post-upgrade
     #echo "Please restart GNUstep services manually with command:"
     #echo "# systemctl restart gdomap gdnc gpbs"
     systemctl daemon-reload;
-    systemctl restart gdomap gdnc gpbs;
+    # systemctl restart gdomap gdnc gpbs;
 fi
 
 # for %preun and %postun $1 = 0 - uninstallation, 1 - upgrade. 
 %preun
-if [ "$1" = "0" ]; then
+if [ $1 -eq 0 ]; then
     # prepare for uninstall
     systemctl stop gdomap gdnc gpbs;
     systemctl disable gdomap.service;
     systemctl disable gdnc.service;
     systemctl disable gpbs.service;
-elif  [ "$1" = "1" ]; then
+elif  [ $1 -eq 1 ]; then
     # prepare for upgrade
     echo "This is an upgrade. Do nothing with GNUstep services.";
 fi
