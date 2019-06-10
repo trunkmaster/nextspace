@@ -20,11 +20,7 @@ Window.GetMaxHeight = fun() {
 }; 
 
 /* --- Init ------------------------------------------------------------------ */
-if (Plymouth.GetMode () == "boot") {
-  /* screen background color - dark gray*/
-  Window.SetBackgroundTopColor (0.33, 0.33, 0.33);
-  Window.SetBackgroundBottomColor (0.33, 0.33, 0.33);
-  
+fun draw_panel () {
   /* set the panel image and make its sprite */
   panel.image = Image ("panel.png");
   panel.sprite = Sprite (panel.image);
@@ -44,6 +40,16 @@ if (Plymouth.GetMode () == "boot") {
   spinning_disk.sprite.SetImage (spinning_disk.image);
   spinning_disk.sprite.SetOpacity (1);
 
+  return panel;
+}
+
+if (Plymouth.GetMode () == "boot") {
+  /* screen background color - dark gray */
+  Window.SetBackgroundTopColor (0.33, 0.33, 0.33);
+  Window.SetBackgroundBottomColor (0.33, 0.33, 0.33);
+
+  panel = draw_panel();
+  
   /* message */
   text_image = Image.Text("System is coming up...", 0, 0, 0, 1, "TimesNewRoman Italic 14", "center");
   
@@ -55,10 +61,16 @@ if (Plymouth.GetMode () == "boot") {
 else {
   Window.SetBackgroundTopColor (0.35, 0.35, 0.49);
   Window.SetBackgroundBottomColor (0.35, 0.35, 0.49);
-  /* panel.image = Image("bootsplash-alt.png"); */
-  /* panel.sprite = Sprite(panel.image); */
-  /* panel.sprite.SetOpacity(1); */
- }
+
+  panel = draw_panel();
+  
+  /* message */
+  text_image = Image.Text("System is powering off.\n Please wait...", 0, 0, 0, 1, "TimesNewRoman 12", "center");
+  message_sprite = Sprite(text_image);
+  message_sprite.SetX( panel.sprite.GetX() + panel.image.GetWidth()/2 - text_image.GetWidth()/2 );
+  message_sprite.SetY( panel.sprite.GetY() + panel.image.GetHeight()/2 - text_image.GetHeight()/2 );
+  message_sprite.SetZ(10000);
+}
 
 /* --- Quit ------------------------------------------------------------------*/
 
@@ -66,7 +78,6 @@ fun quit_callback () {
   panel.sprite.SetOpacity(0);
   spinning_disk.sprite.SetOpacity(0);
 }
-
 Plymouth.SetQuitFunction(quit_callback);
 
 /* --- Called continuosly by Plymouth ---------------------------------------- */
