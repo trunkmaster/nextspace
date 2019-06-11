@@ -36,19 +36,22 @@ Window.GetMaxHeight = fun() {
   spinning_disk.sprite = Sprite();
   spinning_disk.x = Window.GetWidth()/2 + panel.image.GetWidth()/2.5;
   spinning_disk.y = Window.GetHeight()/2 + panel.image.GetHeight()/3;
-  spinning_disk.sprite.SetPosition (spinning_disk.x, spinning_disk.y, 0);
-  spinning_disk.sprite.SetImage (spinning_disk.image);
-  spinning_disk.sprite.SetOpacity (1);
+  spinning_disk.sprite.SetPosition(spinning_disk.x, spinning_disk.y, 0);
+  spinning_disk.sprite.SetImage(spinning_disk.image);
+  spinning_disk.sprite.SetOpacity(1);
+
+  /* messages */
+  message_sprite = Sprite();
+  message_sprite.SetZ(10000);
+  message_sprite.SetOpacity(1);
 }
 
 /* --- Message --------------------------------------------------------------- */
-
 fun message_callback(text) {
   text_image = Image.Text(text, 0, 0, 0, 1, "TimesNewRoman 12", "center");
-  message_sprite = Sprite(text_image);
+  message_sprite.SetImage(text_image);
   message_sprite.SetX(panel.sprite.GetX() + panel.image.GetWidth()/2 - text_image.GetWidth()/2);
   message_sprite.SetY(panel.sprite.GetY() + panel.image.GetHeight()/2 - text_image.GetHeight()/2);
-  message_sprite.SetZ(10000);
 }
 Plymouth.SetMessageFunction(message_callback);
 
@@ -57,32 +60,14 @@ if (Plymouth.GetMode() == "boot") {
   Window.SetBackgroundTopColor (0.33, 0.33, 0.33);
   Window.SetBackgroundBottomColor (0.33, 0.33, 0.33);
 
-  /* message */
-  text_image = Image.Text("System is coming up...", 0, 0, 0, 1, "TimesNewRoman Italic 14", "center");
-  message_sprite = Sprite(text_image);
-  message_sprite.SetX( panel.sprite.GetX() + panel.image.GetWidth()/2 - text_image.GetWidth()/2);
-  message_sprite.SetY( panel.sprite.GetY() + panel.image.GetHeight()/2 - text_image.GetHeight()/2);
-  message_sprite.SetZ(10000);
+  message_callback("System is coming up...");
 }
 else {
   Window.SetBackgroundTopColor (0.35, 0.35, 0.49);
   Window.SetBackgroundBottomColor (0.35, 0.35, 0.49);
 
-  /* message */
-  text_image = Image.Text("System is powering off.\n Please wait...", 0, 0, 0, 1, "TimesNewRoman 12", "center");
-  message_sprite = Sprite(text_image);
-  message_sprite.SetX(panel.sprite.GetX() + panel.image.GetWidth()/2 - text_image.GetWidth()/2);
-  message_sprite.SetY(panel.sprite.GetY() + panel.image.GetHeight()/2 - text_image.GetHeight()/2);
-  message_sprite.SetZ(10000);
+  message_callback("System is powering off.\n Please wait...");
 }
-
-/* --- Quit ------------------------------------------------------------------*/
-
-fun quit_callback () {
-  panel.sprite.SetOpacity(0);
-  spinning_disk.sprite.SetOpacity(0);
-}
-Plymouth.SetQuitFunction(quit_callback);
 
 /* --- Called continuosly by Plymouth 50 times per second --------------------*/
 fun refresh() {
@@ -107,6 +92,13 @@ fun refresh() {
 }
 Plymouth.SetRefreshFunction(refresh);
 
+/* --- Quit ------------------------------------------------------------------*/
+fun quit_callback () {
+  panel.sprite.SetOpacity(0);
+  spinning_disk.sprite.SetOpacity(0);
+}
+Plymouth.SetQuitFunction(quit_callback);
+
 /* --- Progress Bar ----------------------------------------------------------*/
 /*
 progress_box2.image = Image("progress_box.png");
@@ -122,14 +114,15 @@ progress_bar.sprite = Sprite();
 progress_bar.x = Window.GetX() + Window.GetWidth()  / 2.198 - progress_bar.original_image.GetWidth() / 2;
 progress_bar.y = Window.GetY() + Window.GetHeight() / 2.018 - progress_box2.image.GetHeight() / 2 + (progress_box2.image.GetHeight() - progress_bar.original_image.GetHeight()) / 2;
 progress_bar.sprite.SetPosition(progress_bar.x, progress_bar.y, 1);
+*/
 
+/*
 fun progress_callback (duration, progress) {
-    if (progress_bar.image.GetWidth () != Math.Int (progress_bar.original_image.GetWidth () * progress)) {
-        progress_bar.image = progress_bar.original_image.Scale(progress_bar.original_image.GetWidth(progress_bar.original_image) * progress * 9.5, progress_bar.original_image.GetHeight());
-        progress_bar.sprite.SetImage (progress_bar.image);
-      }
+  if (progress_bar.image.GetWidth () != Math.Int (progress_bar.original_image.GetWidth () * progress)) {
+    progress_bar.image = progress_bar.original_image.Scale(progress_bar.original_image.GetWidth(progress_bar.original_image) * progress * 9.5, progress_bar.original_image.GetHeight());
+    progress_bar.sprite.SetImage (progress_bar.image);
   }
-
+}
 Plymouth.SetBootProgressFunction(progress_callback);
 */
 
