@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	7%{?dist}
+Release:	8%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -69,7 +69,7 @@ cd nextspace-os_files-%{version}
 cp -vr ./etc %{buildroot}
 cp -vr ./usr %{buildroot}
 cp -vr ./root %{buildroot}
-cp -vr ./.hidden %{buildroot}
+cp -vr ./dot_hidden %{buildroot}/.hidden
 mkdir %{buildroot}/Users
 
 %files 
@@ -121,6 +121,10 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Tue Jun 11 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-8
+- .hidden renamed to dor_hidden in tar.gz.
+- new "NEXTSPACE" branded boot splash panel.
+
 * Mon Jun 10 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-7
 - set `NSPortIsMessagePort` to `NO` in default NSGlobalDomain.
 
