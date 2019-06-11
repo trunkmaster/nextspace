@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	6%{?dist}
+Release:	7%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://gitlab.com/stoyan/nextspace
@@ -121,6 +121,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Mon Jun 10 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-7
+- set `NSPortIsMessagePort` to `NO` in default NSGlobalDomain.
+
 * Fri Jun  7 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-6
 - animated `watch` cursor was addef to cursor theme.
 
