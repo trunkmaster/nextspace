@@ -61,7 +61,7 @@
     <key>NSPaletteFontSize</key>
     <string>12</string>
     <key>NSPortIsMessagePort</key>
-    <string>YES</string>
+    <string>NO</string>
     <key>NSSmallFont</key>
     <string>Helvetica</string>
     <key>NSSmallFontSize</key>
