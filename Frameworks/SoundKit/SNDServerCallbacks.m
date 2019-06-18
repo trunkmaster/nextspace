@@ -23,8 +23,6 @@
 
 static int n_outstanding = 0;
 
-NSString *SKServerStateDidChangeNotification = @"SKServerStateDidChange";
-
 @implementation SNDServer (Callbacks)
 
 // --- SNDServer: Server and Card---
@@ -354,7 +352,7 @@ void context_state_cb(pa_context *ctx, void *userdata)
       pa_context_unref(ctx);
       ctx = NULL;
       // if (reconnect_timeout > 0) {
-      //   fprintf(stderr, "[SoundKit] DEBUG: Connection failed, attempting reconnect\n");
+      //   fprintf(stderr, "[SoundKit] Connection failed, attempting reconnect\n");
       //   // g_timeout_add_seconds(reconnect_timeout, connect_to_pulse, w);
       // }
     }
@@ -386,7 +384,7 @@ void inventory_start(pa_context *ctx, void *userdata)
 
   fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
       
-  [server updateConnectionState:[NSNumber numberWithInt:SKServerInventoryState]];
+  [server updateConnectionState:[NSNumber numberWithInt:SNDServerInventoryState]];
   /* Keep track of the outstanding requests */
   n_outstanding = 0;
 
@@ -496,7 +494,7 @@ void inventory_end(pa_context *ctx, void *userdata)
   }
   pa_operation_unref(o);
 
-  [server updateConnectionState:[NSNumber numberWithInt:SKServerReadyState]];
+  [server updateConnectionState:[NSNumber numberWithInt:SNDServerReadyState]];
 }
 
 @end

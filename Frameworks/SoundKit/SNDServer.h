@@ -35,14 +35,14 @@
 @class PAClient;
 
 typedef enum NSInteger {
-  SKServerNoConnnectionState,	// PA_CONTEXT_UNCONNECTED
-  SKServerConnectingState,	// PA_CONTEXT_CONNECTING
-  SKServerAuthorizingState,	// PA_CONTEXT_AUTHORIZING
-  SKServerSettingNameState,	// PA_CONTEXT_SETTING_NAME
-  SKServerReadyState,		// PA_CONTEXT_READY
-  SKServerFailedState,		// PA_CONTEXT_FAILED
-  SKServerTerminatedState,	// PA_CONTEXT_TERMINATED
-  SKServerInventoryState
+  SNDServerNoConnnectionState,	// PA_CONTEXT_UNCONNECTED
+  SNDServerConnectingState,	// PA_CONTEXT_CONNECTING
+  SNDServerAuthorizingState,	// PA_CONTEXT_AUTHORIZING
+  SNDServerSettingNameState,	// PA_CONTEXT_SETTING_NAME
+  SNDServerReadyState,		// PA_CONTEXT_READY
+  SNDServerFailedState,		// PA_CONTEXT_FAILED
+  SNDServerTerminatedState,	// PA_CONTEXT_TERMINATED
+  SNDServerInventoryState
 } SKConnectionState;
 
 extern NSString *SNDServerStateDidChangeNotification;
