@@ -24,6 +24,9 @@
 
 - (void)dealloc
 {
+  if (_pa_stream != NULL)
+    pa_stream_unref(_pa_stream);
+    
   [super dealloc];
 }
 
