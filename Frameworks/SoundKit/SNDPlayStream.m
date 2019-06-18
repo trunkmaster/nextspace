@@ -28,7 +28,8 @@
 
 - (void)dealloc
 {
-  [super dealloc];
+  pa_stream_unref(_pa_stream);
+ [super dealloc];
 }
 
 static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
@@ -79,7 +80,7 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 {
   pa_stream_set_write_callback(_pa_stream, NULL, NULL);
   pa_stream_disconnect(_pa_stream);
-  // pa_stream_unref(paStream);
+  
   super.isActive = NO;
 }
 
