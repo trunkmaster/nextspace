@@ -28,7 +28,6 @@
 
 - (void)dealloc
 {
-  pa_stream_unref(_pa_stream);
  [super dealloc];
 }
 
