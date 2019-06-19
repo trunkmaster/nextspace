@@ -26,6 +26,9 @@
 {
   if (_pa_stream != NULL)
     pa_stream_unref(_pa_stream);
+
+  [_server release];
+  [_device release];
     
   [super dealloc];
 }
@@ -50,8 +53,14 @@
 
   // NSLog(@"[SNDStream] init on server: %@", device.server.hostName);
 
-  [self setDevice:device];
-  [self setServer:device.server];
+  if (device == nil) {
+    self.server = [SNDServer sharedServer];
+    self.device = (SNDDevice *)[_server defaultOutput];
+  }
+  else {
+    self.device = device;
+    self.server = device.server;
+  }
 
   sample_spec.rate = rate;
   sample_spec.channels = channels;
@@ -62,8 +71,9 @@
   pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, "event");
   _name = [[NSProcessInfo processInfo] processName];
   
-  _pa_stream = pa_stream_new_with_proplist(device.server.pa_ctx, [_name cString],
+  _pa_stream = pa_stream_new_with_proplist(_server.pa_ctx, [_name cString],
                                            &sample_spec, NULL, proplist);
+  pa_xfree(proplist);
   
   return self;
 }
