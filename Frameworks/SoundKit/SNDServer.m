@@ -400,6 +400,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
         performSelectorOnMainThread:@selector(postNotification:)
                          withObject:aNotif
                       waitUntilDone:NO];
+  [aNotif release]; // GNUstep bug - notification retains object
   
   free((void *)info);  
 }
@@ -525,6 +526,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
         performSelectorOnMainThread:@selector(postNotification:)
                          withObject:aNotif
                       waitUntilDone:NO];
+  [aNotif release]; // GNUstep bug - notification retains object
   
   free((void *)info);
 }
@@ -598,7 +600,8 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
         performSelectorOnMainThread:@selector(postNotification:)
                          withObject:aNotif
                       waitUntilDone:NO];
-  
+  [aNotif release]; // GNUstep bug - notification retains object
+ 
   free((void *)info);
 }
 - (PASourceOutput *)sourceOutputWithClientIndex:(NSUInteger)index
