@@ -30,4 +30,12 @@
 }
 @property (assign) PASinkInput *sinkInput;
 
+- (void)setDelegate:(id)aDelegate;
+- (void)setAction:(SEL)aSel;
+- (void)writeStreamLength:(size_t)length;
+
+- (void)playBuffer:(void *)data
+              size:(NSUInteger)bytes
+               tag:(NSUInteger)anUInt;
+
 @end

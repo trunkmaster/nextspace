@@ -24,6 +24,13 @@
 #import "SNDOut.h"
 #import "SNDPlayStream.h"
 
+// PulseAudio callback: now stream is ready to receive sound bytes.
+// Call delegate's action to notify about stream readiness.
+static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
+{
+  [(SNDPlayStream *)userdata writeStreamLength:length];
+}
+
 @implementation SNDPlayStream
 
 - (void)dealloc
@@ -31,12 +38,6 @@
  [super dealloc];
 }
 
-static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
-{
-  [(SNDPlayStream *)userdata writeStreamLength:length];
-}
-
-// when PA stream is ready to receive bytes `_delegate` will be messaged with `action`
 - (void)setDelegate:(id)aDelegate
 {
   _delegate = aDelegate;
@@ -45,6 +46,7 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 {
   _action = aSel;
 }
+// Notify delegate that we are ready to receive `length` bytes of sound
 - (void)writeStreamLength:(size_t)length
 {
   if (_delegate == nil) {
@@ -87,9 +89,7 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
               size:(NSUInteger)bytes
                tag:(NSUInteger)anUInt
 {
-  pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE);
- 
-  NSLog(@"[SoundKit, SNDPlayStream] playBuffer:size:tag: is not implemented yes.");  
+  pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE); 
 }
 
 - (NSUInteger)volume
