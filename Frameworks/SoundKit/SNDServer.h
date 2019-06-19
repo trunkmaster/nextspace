@@ -43,7 +43,7 @@ typedef enum NSInteger {
   SNDServerFailedState,		// PA_CONTEXT_FAILED
   SNDServerTerminatedState,	// PA_CONTEXT_TERMINATED
   SNDServerInventoryState
-} SKConnectionState;
+} SNDConnectionState;
 
 extern NSString *SNDServerStateDidChangeNotification;
 extern NSString *SNDDeviceDidAddNotification;
@@ -70,8 +70,8 @@ extern NSString *SNDDeviceDidRemoveNotification;
   NSMutableArray        *savedStreamList; // sink-input* or source-output*
 }
 
-@property (readonly) pa_context        *pa_ctx;
-@property (readonly) SKConnectionState status;
+@property (readonly) pa_context         *pa_ctx;
+@property (readonly) SNDConnectionState status;
 
 @property (readonly) NSString *userName;  // User name of the daemon process
 @property (readonly) NSString *hostName;  // Host name the daemon is running on
