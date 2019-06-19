@@ -35,7 +35,8 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 
 - (void)dealloc
 {
- [super dealloc];
+  fprintf(stderr, "[SoundKit] SNDPlayStream: -dealloc\n");
+  [super dealloc];
 }
 
 - (void)setDelegate:(id)aDelegate

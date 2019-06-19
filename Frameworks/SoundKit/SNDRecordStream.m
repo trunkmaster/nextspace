@@ -28,6 +28,7 @@
 
 - (void)dealloc
 {
+  fprintf(stderr, "[SoundKit] SNDRecordStream: -dealloc\n");
   [super dealloc];
 }
 

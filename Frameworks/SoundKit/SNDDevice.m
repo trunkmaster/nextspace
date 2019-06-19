@@ -27,7 +27,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"[SNDDevice] dealloc");
+  fprintf(stderr, "[SoundKit] SNDDevice: dealloc\n");
   [_card release];
   [super dealloc];
 }
