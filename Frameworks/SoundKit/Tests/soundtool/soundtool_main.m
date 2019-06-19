@@ -26,6 +26,7 @@
 {
   NSLog(@"SoundKitClient: dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [stream release];
   fprintf(stderr, "\tRetain Count: %lu\n", [server retainCount]);
   [server release];
   [super dealloc];
