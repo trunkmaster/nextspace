@@ -25,17 +25,19 @@
 
 @interface SNDPlayStream : SNDStream
 {
-  SEL _action;
+  SEL _writeAction;
+  SEL _emptyAction;
   id  _delegate;
 }
 @property (assign) PASinkInput *sinkInput;
 
 - (void)setDelegate:(id)aDelegate;
-- (void)setAction:(SEL)aSel;
-- (void)writeStreamLength:(size_t)length;
+- (void)setWriteAction:(SEL)aSel;
+- (void)setEmptyAction:(SEL)aSel;
 
 - (void)playBuffer:(void *)data
               size:(NSUInteger)bytes
                tag:(NSUInteger)anUInt;
+- (void)emptyBuffer:(BOOL)flush;
 
 @end
