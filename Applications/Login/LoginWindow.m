@@ -20,7 +20,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import "unistd.h"
+#import <unistd.h>
 #import <X11/Xlib.h>
 
 #import <SystemKit/OSEScreen.h>

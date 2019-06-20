@@ -49,9 +49,9 @@ extern NSString *SessionDidCloseNotification;
   IBOutlet id          quitLabel;
 
   // X resources
-  GSDisplayServer      *xServer;
   Display              *xDisplay;
   Window               xRootWindow;
+  int                  xScreen;
   Window               xPanelWindow;
 
   OSEScreen	       *screen;

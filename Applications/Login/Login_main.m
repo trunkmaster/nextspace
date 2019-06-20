@@ -19,8 +19,10 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-// #import <X11/Xlib.h>
 #import <unistd.h>
+#import <X11/Xlib.h>
+#import <X11/cursorfont.h>
+#import <X11/Xcursor/Xcursor.h>
 
 #import <AppKit/NSApplication.h>
 #import <DesktopKit/NXTDefaults.h>
@@ -29,11 +31,14 @@
 
 #import "Application.h"
 #import "Controller.h"
+#import "Login_main.h"
 
-NSTask     *xorgTask = nil;
-NXTDefaults *loginDefaults = nil;
+static NSTask      *xorgTask = nil;
+static NXTDefaults *loginDefaults = nil;
 
-// --- Plymouth ---
+//-----------------------------------------------------------------------------
+// --- Plymouth
+//-----------------------------------------------------------------------------
 BOOL isPlymouthRunning()
 {
   int res = system("/usr/bin/plymouth --ping");
@@ -43,10 +48,9 @@ BOOL isPlymouthRunning()
 
 void plymouthDeactivate()
 {
-  if (isPlymouthRunning() == YES)
-    {
-      system("/usr/bin/plymouth deactivate");
-    }
+  if (isPlymouthRunning() == YES) {
+    system("/usr/bin/plymouth deactivate");
+  }
 }
 
 void plymouthQuit(BOOL withTransition)
@@ -60,45 +64,61 @@ void plymouthQuit(BOOL withTransition)
     system("/usr/bin/plymouth quit");
 }
 
+void plymouthStart(int mode)
+{
+  system("/usr/sbin/plymouthd");
+  if (isPlymouthRunning() == YES) {
+    system("/usr/bin/plymouth show-splash");
+    system("/usr/bin/plymouth change-mode --shutdown");
+  }
+}
+
+//-----------------------------------------------------------------------------
 // --- X11 ---
+//-----------------------------------------------------------------------------
 int startWindowServer()
 {
   NSMutableArray *serverArgs;
   NSString       *server;
-  Display        *xDisplay = NULL;
+  Display        *xDisplay;
+  Window         xRootWindow;
 
   setenv("DISPLAY", ":0.0", 0);
   setenv("HOME", "/root", 1);
   setenv("USER", "root", 0);
 
-  // NSLog(@"DISPLAY = %s", getenv("DISPLAY"));
-  // NSLog(@"HOME = %s", getenv("HOME"));
-  // NSLog(@"USER = %s", getenv("USER"));
+  if ((xDisplay = XOpenDisplay(NULL)) == NULL) {
+    serverArgs = [[loginDefaults objectForKey:@"WindowServerCommand"] mutableCopy];
+    server = [serverArgs objectAtIndex:0];
+    [serverArgs removeObjectAtIndex:0];
 
-  if ((xDisplay = XOpenDisplay(NULL)) == NULL)
-    {
-      serverArgs = [[loginDefaults objectForKey:@"WindowServerCommand"] mutableCopy];
-      server = [serverArgs objectAtIndex:0];
-      [serverArgs removeObjectAtIndex:0];
+    // Launch Xorg
+    xorgTask = [[NSTask alloc] init];
+    [xorgTask setLaunchPath:server];
+    [xorgTask setArguments:serverArgs];
+    [xorgTask setCurrentDirectoryPath:@"/"];
+    NSLog(@"================> Xorg is coming up <================");
+    [xorgTask launch];
 
-      // Launch Xorg
-      xorgTask = [[NSTask alloc] init];
-      [xorgTask setLaunchPath:server];
-      [xorgTask setArguments:serverArgs];
-      [xorgTask setCurrentDirectoryPath:@"/"];
-      NSLog(@"================> Xorg is coming up <================");
-      [xorgTask launch];
+    [serverArgs release];
 
-      [serverArgs release];
-
-      // Wait for X server connection
-      while (xDisplay == NULL)
-	{
-	  xDisplay = XOpenDisplay(NULL); // NULL == getenv("DISPLAY")
-	}
-      NSLog(@"================> Xorg is ready <================");
-      XCloseDisplay(xDisplay);
+    // Wait for X server connection
+    while (xDisplay == NULL) {
+      xDisplay = XOpenDisplay(NULL); // NULL == getenv("DISPLAY")
     }
+
+    // X11 Resources
+    system("xrdb -merge /etc/X11/Xresources.nextspace");
+    // Root window and it's background
+    xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
+    
+    XSetWindowBackground(xDisplay, xRootWindow, 5460853L);
+    XClearWindow(xDisplay, xRootWindow);
+    XSync(xDisplay, false);
+    
+    NSLog(@"================> Xorg is ready <================");
+    XCloseDisplay(xDisplay);
+  }
 
   return 0;
 }
@@ -106,7 +126,10 @@ int startWindowServer()
 void setupDisplays()
 {
   OSEScreen  *screen = [OSEScreen sharedScreen];
-  NSArray   *layout;
+  OSEDisplay *mainDisplay;
+  NSArray    *layout;
+  Display    *xDisplay;
+  Window     xRootWindow;
   // NSArray   *systemDisplays;
 
   // Get layout with monitors aligned horizontally
@@ -122,6 +145,14 @@ void setupDisplays()
   // [systemDisplays release];
   
   [screen applyDisplayLayout:layout];
+  
+  mainDisplay = [screen displayWithMouseCursor];
+  xDisplay = XOpenDisplay(NULL);
+  xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
+  XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0,
+               (int)mainDisplay.frame.origin.x + 50,
+               (int)mainDisplay.frame.origin.y + 50);
+  XCloseDisplay(xDisplay);
 }
 
 void startPasteboardService()
@@ -145,70 +176,169 @@ void startPasteboardService()
     }
 }
 
-int main(int argc, const char ** argv)
+void runCommand(NSString *command)
+{
+  NSArray    *commandArgs;
+  const char **argv;
+  int        argc, pid = 0;
+
+  commandArgs = [command componentsSeparatedByString:@" "];
+  argc = [commandArgs count];
+  argv = malloc((argc + 1) * sizeof(char *));
+
+  for (int i = 0; i < argc; i++) {
+    argv[i] = [[commandArgs objectAtIndex:i] cString];
+  }
+  argv[argc] = NULL;
+  
+  pid = fork();
+  switch (pid)
+    {
+    case 0:
+      execv(argv[0], (char **)argv);
+      abort();
+      break;
+    default:
+      break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+// --- Misc ---
+//-----------------------------------------------------------------------------
+static void handleSignal(int sig)
+{
+  fprintf(stderr, "[Login] got signal %i\n", sig);
+  [NSApp stop:nil];
+}
+
+NXTDefaults *getDefaults(NSString *appPath)
+{
+  NXTDefaults  *userDefaults;
+  id           serverCommand;
+  NSString     *defaultsPath;
+  NSDictionary *defaults;
+  NSString     *bundlePath;
+
+  if (loginDefaults != nil) {
+    return loginDefaults;
+  }
+  
+  userDefaults = [NXTDefaults userDefaults];
+  serverCommand = [userDefaults objectForKey:@"WindowServerCommand"];
+
+  // User defaults is not correct
+  if (serverCommand == nil ||
+      [serverCommand isKindOfClass:[NSArray class]] == NO) {
+    bundlePath = [appPath stringByDeletingLastPathComponent];
+    defaultsPath = [bundlePath stringByAppendingPathComponent:@"Resources/Login"];
+    defaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
+    for (NSString *key in [defaults allKeys]) {
+      [userDefaults setObject:[defaults objectForKey:key] forKey:key];
+    }
+    [userDefaults synchronize];
+  }
+
+  return userDefaults;
+}
+
+//-----------------------------------------------------------------------------
+// --- main()
+//-----------------------------------------------------------------------------
+int main(int argc, const char **argv)
 {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  NSString          *startupHook;
+  NSString          *shutdownHook;
+  NSString          *exitCommand;
+
+  panelExitCode = 0;
+  
+  // SIGQUIT will be received from systemd on `systemctl stop loginwindow`
+  signal(SIGQUIT, handleSignal);
 
   // Defaults
-  loginDefaults = [NXTDefaults userDefaults];
-  if (![[loginDefaults objectForKey:@"WindowServerCommand"]
-         isKindOfClass:[NSArray class]])
-    {
-      NSString     *defsPath;
-      NSDictionary *defs;
-      defsPath = [[[NSString stringWithCString:argv[0]] stringByDeletingLastPathComponent]
-                   stringByAppendingPathComponent:@"Resources/Login"];
-      defs = [NSDictionary dictionaryWithContentsOfFile:defsPath];
-      for (NSString *key in [defs allKeys])
-        {
-          [loginDefaults setObject:[defs objectForKey:key] forKey:key];
-        }
-      [loginDefaults synchronize];
-    }
-
-  plymouthDeactivate();
+  loginDefaults = getDefaults([NSString stringWithCString:argv[0]]);
 
   // Start Window Server (Xorg)
-  if (!startWindowServer())
-    {
-      system("xrdb -merge /etc/X11/Xresources.nextspace");
-      startPasteboardService();
-      plymouthQuit(YES);
-      // Setup layout and gamma.
-      // Inital brightess was set to 0.0. Displays will be lighten in
-      // [NSApp applicationDidFinishLaunching].
-      // setupDisplays();
+  if (startWindowServer() == 0) {
+    plymouthDeactivate();
+    // startPasteboardService();
+    runCommand(@"/Library/bin/gpbs --daemon");
+    plymouthQuit(YES);
+    // Setup layout and gamma.
+    // Inital brightess was set to 0.0. Displays will be lighten in
+    // [NSApp applicationDidFinishLaunching].
+    // setupDisplays();
       
-      // TODO: StartupHook
-      NSString *startupHook = [loginDefaults objectForKey:@"StartupHook"];
-      if (![startupHook isEqualToString:@""])
-        {
-          system([startupHook cString]);
-        }
+    // TODO: StartupHook
+    startupHook = [loginDefaults objectForKey:@"StartupHook"];
+    if ([startupHook isEqualToString:@""] == NO) {
+      system([startupHook cString]);
+    }
 
+    {
       // Since there is no window manager running yet, we'll want to
       // do window decorations ourselves
-      [[NSUserDefaults standardUserDefaults] 
-        setBool:NO 
-         forKey:@"GSX11HandlesWindowDecorations"];
-
+      [[NSUserDefaults standardUserDefaults] setBool:NO 
+                                              forKey:@"GSX11HandlesWindowDecorations"];
       setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
-      
       // Start our application without appicon
       [LoginApplication sharedApplication];
-      
       // Run loop
       NSApplicationMain(argc, argv);
     }
-
-  if (xorgTask != nil)
-    {
+    
+    if (xorgTask != nil) {
       NSLog(@"Terminating window server...");
       [xorgTask terminate];
+    }
+
+    // Show shutdown Plymouth splash screen
+    plymouthStart(1);
+  }
+  else {
+    NSLog(@"Unable to start Login Panel: no Window Server available.");
+  }
+
+  // Panel stopped it's execution - check exit code
+  switch (panelExitCode)
+    {
+    case QuitExitCode:
+      NSLog(@"`quit` command: Just finish Login execution.");
+      break;
+    case RebootExitCode:
+      exitCommand = [loginDefaults objectForKey:@"RebootCommand"];
+      if (exitCommand == nil || [exitCommand isEqualToString:@""]) {
+        exitCommand = @"shutdown -r now";
+      }
+      NSLog(@"Reboot system with command: %@", exitCommand);
+      break;
+    case ShutdownExitCode:
+      // TODO: Run ShutownHook
+      shutdownHook = [loginDefaults objectForKey:@"ShutdownHook"];
+      if ([shutdownHook isEqualToString:@""] == NO) {
+        system([shutdownHook cString]);
+      }
+      
+      exitCommand = [loginDefaults objectForKey:@"ShutdownCommand"];
+      if (exitCommand == nil || [exitCommand isEqualToString:@""]) {
+        exitCommand = @"shutdown -h now";
+      }
+      NSLog(@"Shutdown system with command: %@", exitCommand);
+      break;
+    case UpdateExitCode:
+      exitCommand = @"yum -y update";
+      NSLog(@"TODO: System update will be performed. Show panel with progress.");
+      break;
+    default:
+      NSLog(@"Unknown panel exit code received: %i", panelExitCode);
     }
 
   [pool release];
 
   NSLog(@"Exiting...");
+  // Run exitCommand
+  
   return 0;
 }

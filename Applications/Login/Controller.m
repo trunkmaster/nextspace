@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import "Login_main.h"
 #import "Controller.h"
 #import "UserSession.h"
 
@@ -83,14 +84,12 @@ void *alloc(int size)
   void *tmp;
 
   tmp = malloc(size);
-  if (!tmp)
-    {
-      NSLog(@"out of memory, terminating");
-      exit(0);
-    }
-  else
-    {
-      memset(tmp, 0, size);
+  if (!tmp) {
+    NSLog(@"out of memory, terminating");
+    exit(0);
+  }
+  else {
+    memset(tmp, 0, size);
     }
 
   return tmp;
@@ -272,18 +271,12 @@ void *alloc(int size)
 
 - (void)initXApp
 {
-  OSEDisplay *display;
+  GSDisplayServer *xServer = GSCurrentServer();
   
-  xServer = GSCurrentServer();
   xDisplay = [xServer serverDevice];
-  xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
+  xScreen = DefaultScreen(xDisplay);
+  xRootWindow = RootWindow(xDisplay, xScreen);
   xPanelWindow = (Window)[xServer windowDevice:[window windowNumber]];
-
-  // Set initial position of mouse cursor
-  display = [screen displayWithMouseCursor];
-  XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0,
-               (int)display.frame.origin.x + 50,
-               (int)display.frame.origin.y + 50);
 }
 
 - (void)setRootWindowBackground
@@ -315,7 +308,7 @@ void *alloc(int size)
   else
     {
       XUngrabKeyboard(xDisplay, CurrentTime);
-      XWithdrawWindow(xDisplay, xPanelWindow, DefaultScreen(xDisplay));
+      XWithdrawWindow(xDisplay, xPanelWindow, xScreen);
     }
   XFlush(xDisplay);
 }
@@ -584,7 +577,7 @@ void *alloc(int size)
 
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {
-  NSLog(@"Control did end editing.");
+  // NSLog(@"Control did end editing.");
 }
 
 - (void)authenticate:(id)sender
@@ -595,123 +588,87 @@ void *alloc(int size)
   
   NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
 
-  if (sender == userName)
-    {
-      if ([user isEqualToString:@"console"])
-	{
+  if (sender == userName) {
+    if ([user isEqualToString:@"console"]) {
 #ifdef __FreeBSD__
-	  int fd = open("/dev/ttyv0", O_RDONLY, 0);
+      int fd = open("/dev/ttyv0", O_RDONLY, 0);
 
-	  NSLog(@"Switch to console %i", fd);
-	  ioctl(fd, VT_ACTIVATE, 1);
-	  ioctl(fd, VT_WAITACTIVE, 1);
-	  NSLog(@"Switch to console %i completed!", fd);
-	  close(fd);
+      NSLog(@"Switch to console %i", fd);
+      ioctl(fd, VT_ACTIVATE, 1);
+      ioctl(fd, VT_WAITACTIVE, 1);
+      NSLog(@"Switch to console %i completed!", fd);
+      close(fd);
 #endif
-	  [self clearFields];
-	  return;
-	}
-      else if ([user isEqualToString:@"close"])
-	{
-	  NSLog(@"Application will be stopped");
-	  [NSApp stop:self]; // Go out of run loop
-	  return;
-	}
-      else if ([user isEqualToString:@"quit"])
-	{
-	  NSLog(@"Application will quit");
-	  [NSApp terminate:self]; // Equivalent to "Quit" menu item
-	  return;
-	}
-      else
-	{
-	  [window makeFirstResponder:password];
-	  return;
-	}
-    }
-
-  if ([self authenticateUser:user] == YES)
-    {
-      [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
-      [self hideWindow];
-      
-      // Clear password ivar for security reasons
-      // [password setStringValue:@""];
-
-      NSLog(@"Controller, username: %@", user);
-      // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
-      [self openSessionForUser:user];
-      // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
-    }
-  else
-    {
-      [window shakePanel:xPanelWindow onDisplay:xDisplay];
       [self clearFields];
+      return;
     }
+    else if ([user isEqualToString:@"quit"]) {
+      NSLog(@"Application will be stopped");
+      panelExitCode = QuitExitCode;
+      [NSApp stop:self]; // Go out of run loop
+      return;
+    }
+    else if ([user isEqualToString:@"terminate"]) {
+      NSLog(@"Application will quit");
+      [NSApp terminate:self]; // Equivalent to "Quit" menu item
+      return;
+    }
+    else {
+      [window makeFirstResponder:password];
+      return;
+    }
+  }
+
+  if ([self authenticateUser:user] == YES) {
+    [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
+    [self hideWindow];
+      
+    // Clear password ivar for security reasons
+    // [password setStringValue:@""];
+
+    NSLog(@"Controller, username: %@", user);
+    // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
+    [self openSessionForUser:user];
+    // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
+  }
+  else {
+    [window shakePanel:xPanelWindow onDisplay:xDisplay];
+    [self clearFields];
+  }
   [self destroyBusyCursor];
 }
 
 - (void)restart:sender
 {
-  NSString *restartCmd;
+  NSInteger alertResult;
   
-  if (NXTRunAlertPanel(_(@"Restart"),
-         	      _(@"Do you really want to restart the computer?"),
-         	      _(@"Restart"), _(@"Cancel"), nil)
-      == NSAlertDefaultReturn)
-    {
-      if ((restartCmd = [self rebootCommand]) == nil)
-	{
-	  restartCmd = @"reboot";
-	}
-
-      NSLog(@"RebootCommand: %@", restartCmd);
-      [quitLabel setStringValue:@"Restarting computer..."];
-      [self prepareForQuit];
-      system([restartCmd cString]);
-    }
+  alertResult = NXTRunAlertPanel(_(@"Restart"),
+                                 _(@"Do you really want to restart the computer?"),
+                                 _(@"Restart"), _(@"Cancel"), nil);
+  
+  if (alertResult == NSAlertDefaultReturn) {
+    panelExitCode = RebootExitCode;
+    [NSApp stop:self]; // Go out of run loop
+  }
 }
 
 - (void)shutDown:sender
 {
-  NSString *shutDownCmd;
-  BOOL     askUser = YES;
-  BOOL     performShutdown = NO;
+  NSInteger alertResult;
 
   NSLog(@"Login: receive \"Power off\" event from %@", [sender className]);
 
-  // Workspace app requests shutdown.
-  // TODO: Check if user has rights to do it (key?salt?)
   // TODO: Check if other users still logged in
-  if ([sender isKindOfClass:[NSNotification class]])
-    {
-      NSLog(@"POWER OFF: request by a NSNotification: %@", [sender object]);
-      askUser = NO;
-      performShutdown = YES;
-    }
-
+  
   // Ask user to verify his choice
-  if (askUser &&
-      NXTRunAlertPanel(_(@"Power"),
-		      _(@"Do you really want to turn off the computer?"),
-		      _(@"Turn it off"), _(@"Cancel"), nil) 
-      == NSAlertDefaultReturn)
-    {
-      performShutdown = YES;
-    }
-
-  // Perform quit preparation procedure and power off computer
-  if (performShutdown == YES)
-    {
-      if ((shutDownCmd = [self shutdownCommand]) == nil)
-	{
-	  shutDownCmd = @"shutdown -h now";
-	}
-
-      [quitLabel setStringValue:@"Powering off computer..."];
-      [self prepareForQuit];
-      system([shutDownCmd cString]);
-    }
+  alertResult = NXTRunAlertPanel(_(@"Power"),
+                                 _(@"Do you really want to turn off the computer?"),
+                                 _(@"Turn it off"), _(@"Cancel"), nil);
+  
+  if (alertResult == NSAlertDefaultReturn) {
+    panelExitCode = ShutdownExitCode;
+    [NSApp stop:self];
+  }
 }
 
 - (void)clearFields
@@ -720,13 +677,11 @@ void *alloc(int size)
   
   [password setStringValue:@""];
   
-  if (user && [user length] > 0)
-  {  
+  if (user && [user length] > 0) {  
     [userName setStringValue:[self lastLoggedInUser]];
     [window makeFirstResponder:password];
   }
-  else
-  {
+  else {
     [userName setStringValue:@""];
     [window makeFirstResponder:userName];
   }

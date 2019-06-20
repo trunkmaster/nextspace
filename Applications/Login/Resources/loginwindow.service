@@ -27,7 +27,8 @@ OnFailure=plymouth-quit.service
 EnvironmentFile=-/etc/profile.d/nextspace.sh
 ExecStart=/usr/NextSpace/Apps/Login.app/Login
 ExecStartPost=-/bin/bash -c "TERM=linux /usr/bin/clear > /dev/tty1"
-KillMode=mixed
+KillMode=process
+KillSignal=SIGQUIT
 Restart=on-success
 RestartSec=2s
 #Restart=always
