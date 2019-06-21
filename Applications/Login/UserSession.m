@@ -84,35 +84,30 @@
 // 3. LogoutHook (~/L/P/.N/Login)
 - (void)launchSessionScript
 {
-  int  ret;
-  BOOL appendToLog;
+  int      ret;
+  BOOL     appendToLog;
+  NSString *commandName;
 
   NSLog(@"launchSession: %@", sessionScript);
 
-  for (NSArray *scriptCommand in sessionScript)
-    {
-      NSString *commandName = nil;
-
-      if ([scriptCommand count] == 0)
-        continue;
-
-      commandName = [scriptCommand objectAtIndex:0];
-
-      NSLog(@"SESSION: starting command %@", commandName);
-
-      if (commandName == nil || [commandName isEqualToString:@""])
-        continue;
-
-      appendToLog = ([sessionScript indexOfObject:scriptCommand]==0) ? NO : YES;
-      ret = [self launchCommand:scriptCommand
-                      logAppend:appendToLog
-                           wait:YES];
-      if (ret != 0)
-	{
-	  NSLog(@"Error launching session script command %@", commandName);
-          break;
-	}
+  for (NSArray *scriptCommand in sessionScript) {
+    if ([scriptCommand count] == 0) {
+      continue;
     }
+    commandName = [scriptCommand objectAtIndex:0];
+    NSLog(@"SESSION: starting command %@", commandName);
+    if (commandName == nil || [commandName isEqualToString:@""])
+      continue;
+
+    appendToLog = ([sessionScript indexOfObject:scriptCommand] == 0) ? NO : YES;
+    ret = [self launchCommand:scriptCommand
+                    logAppend:appendToLog
+                         wait:YES];
+    if (ret != 0) {
+      NSLog(@"Error launching session script command %@", commandName);
+      break;
+    }
+  }
 }
 
 - (id)userDefaultsObjectForKey:(NSString *)key
@@ -143,37 +138,33 @@
                        wait:YES];
   // LoginHook - must be a string
   hook = [self userDefaultsObjectForKey:@"LoginHook"];
-  if (hook && [hook isKindOfClass:[NSString class]])
-    {
-      ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
-                      logAppend:YES wait:NO];
-    }
+  if (hook && [hook isKindOfClass:[NSString class]]) {
+    ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
+                    logAppend:YES wait:NO];
+  }
   // Workspace Manager
   ret = [self launchCommand:[NSArray arrayWithObjects:WM, nil]
                   logAppend:YES
                        wait:YES];
-  if (ret != 0)
-    {
-      message = @"Workspace Manager quit with error.";
-    }
+  if (ret != 0) {
+    message = @"Workspace Manager quit with error.";
+  }
   // LogoutHook
   hook = [self userDefaultsObjectForKey:@"LogoutHook"];
-  if (hook && [hook isKindOfClass:[NSString class]])
-    {
-      ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
-                      logAppend:YES wait:NO];
-    }
+  if (hook && [hook isKindOfClass:[NSString class]]) {
+    ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
+                    logAppend:YES wait:NO];
+  }
   // Stop GNUstep services
   ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"stop", nil]
                   logAppend:YES
                        wait:YES];
 
-  if (message)
-    {
-      [appController performSelectorOnMainThread:@selector(showSessionMessage:)
-                                      withObject:message
-                                   waitUntilDone:YES];
-    }
+  if (message) {
+    [appController performSelectorOnMainThread:@selector(showSessionMessage:)
+                                    withObject:message
+                                 waitUntilDone:YES];
+  }
 }
 
 // Called for every launched command  (launchCommand:)
@@ -184,15 +175,13 @@
   user = getpwnam([userName cString]);
   endpwent();
   
-  if (user == NULL)
-    {
-      NSLog(_(@"Unable to get credentials of user %@! Exiting."), userName);
-      return NO;
-    }
+  if (user == NULL) {
+    NSLog(_(@"Unable to get credentials of user %@! Exiting."), userName);
+    return NO;
+  }
 
   // Go to the user's home directory
-  if (chdir(user->pw_dir) != 0)
-    {
+  if (chdir(user->pw_dir) != 0) {
       NSLog(_(@"Unable to change to the user's home directory %s:%s\n"
 	      @"Staying where I am now."), user->pw_dir, strerror(errno));
     }

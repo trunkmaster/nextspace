@@ -131,27 +131,23 @@ void *alloc(int size)
   
   // E.g. "~/.xinitrc", "~/.xsession"
   uss = [prefs objectForKey:@"UserSessionScripts"];
-  for (path in uss)
-    {
-      path = [homeDir stringByAppendingPathComponent:path];
-      if ([fm fileExistsAtPath:path])
-        {
-          userSessionCommand = [NSArray arrayWithObjects:path, nil];
-          break;
-        }
+  for (path in uss) {
+    path = [homeDir stringByAppendingPathComponent:path];
+    if ([fm fileExistsAtPath:path]) {
+      userSessionCommand = [NSArray arrayWithObjects:path, nil];
+      break;
     }
+  }
 
   NSLog(@"User session command: %@", userSessionCommand);
   
-  if (userSessionCommand)
-    {
-      [sessionScript addObject:userSessionCommand];
-    }
-  else // Try system session script
-    {
-      [sessionScript
+  if (userSessionCommand) {
+    [sessionScript addObject:userSessionCommand];
+  }
+  else { // Try system session script
+    [sessionScript
         addObjectsFromArray:[prefs objectForKey:@"DefaultSessionScript"]];
-    }
+  }
     
   NSLog(@"Default session script: %@",
         [prefs objectForKey:@"DefaultSessionScript"]);
@@ -191,11 +187,6 @@ void *alloc(int size)
   aSession = [[UserSession alloc] initWithOwner:self name:user];
   [userSessions setObject:aSession forKey:user]; // remember user session
   [aSession release];
-
-  // NSThread *mct = [NSThread currentThread];
-  // [mct setName:@"MainLoginThread"];
-  // NSLog(@"Main thread[%@:%p]: %lu [main=%i]", 
-  //       [mct name], mct, [mct retainCount], [mct isMainThread]);
 
   // --- GCD code ---
   dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,
