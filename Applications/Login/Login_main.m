@@ -20,6 +20,7 @@
 //
 
 #import <unistd.h>
+#import <sys/wait.h>
 #import <X11/Xlib.h>
 #import <X11/cursorfont.h>
 #import <X11/Xcursor/Xcursor.h>
@@ -155,32 +156,13 @@ void setupDisplays()
   XCloseDisplay(xDisplay);
 }
 
-void startPasteboardService()
-{
-  const char *args[3];
-  int        pid = 0;
-
-  args[0] = "/Library/bin/gpbs";
-  args[1] = "--daemon";
-  args[2] = NULL;
-  
-  pid = fork();
-  switch (pid)
-    {
-    case 0:
-      execv("/Library/bin/gpbs", (char**)args);
-      abort();
-      break;
-    default:
-      break;
-    }
-}
-
-void runCommand(NSString *command)
+// Returns PID of running command if `wait` == NO
+// Returns exit status of child process if `wait` == YES
+int runCommand(NSString *command, BOOL wait)
 {
   NSArray    *commandArgs;
   const char **argv;
-  int        argc, pid = 0;
+  int        argc, pid = 0, child_status;
 
   commandArgs = [command componentsSeparatedByString:@" "];
   argc = [commandArgs count];
@@ -199,8 +181,12 @@ void runCommand(NSString *command)
       abort();
       break;
     default:
+      free(argv);
+      if (wait != NO)
+        waitpid(pid, &child_status, 0);
       break;
     }
+  return (wait == NO) ? pid : child_status;
 }
 
 //-----------------------------------------------------------------------------
@@ -251,6 +237,7 @@ int main(int argc, const char **argv)
   NSString          *startupHook;
   NSString          *shutdownHook;
   NSString          *exitCommand;
+  int               gpbs_pid = 0;
 
   panelExitCode = 0;
   
@@ -260,38 +247,43 @@ int main(int argc, const char **argv)
   // Defaults
   loginDefaults = getDefaults([NSString stringWithCString:argv[0]]);
 
-  // Start Window Server (Xorg)
+  plymouthDeactivate();
+  // Start Window Server
   if (startWindowServer() == 0) {
-    plymouthDeactivate();
-    // startPasteboardService();
-    runCommand(@"/Library/bin/gpbs --daemon");
+    gpbs_pid = runCommand(@"/Library/bin/gpbs --daemon", NO);
     plymouthQuit(YES);
+
     // Setup layout and gamma.
     // Inital brightess was set to 0.0. Displays will be lighten in
     // [NSApp applicationDidFinishLaunching].
     // setupDisplays();
       
-    // TODO: StartupHook
+    // StartupHook defined only system defaults (root user or app bundle)
     startupHook = [loginDefaults objectForKey:@"StartupHook"];
     if ([startupHook isEqualToString:@""] == NO) {
-      system([startupHook cString]);
+      if (runCommand(startupHook, YES) != 0) {
+        NSLog(@"Warning: StartupHook run is not successful.");
+      }
     }
 
-    {
-      // Since there is no window manager running yet, we'll want to
-      // do window decorations ourselves
-      [[NSUserDefaults standardUserDefaults] setBool:NO 
-                                              forKey:@"GSX11HandlesWindowDecorations"];
-      setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
-      // Start our application without appicon
-      [LoginApplication sharedApplication];
-      // Run loop
-      NSApplicationMain(argc, argv);
-    }
-    
+    // Since there is no window manager running yet, we'll want to
+    // do window decorations ourselves
+    [[NSUserDefaults standardUserDefaults] setBool:NO 
+                                            forKey:@"GSX11HandlesWindowDecorations"];
+    setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
+    // Start our application without appicon
+    [LoginApplication sharedApplication];
+    // Run loop
+    NSApplicationMain(argc, argv);
+
+    // Stop Window Server
     if (xorgTask != nil) {
       NSLog(@"Terminating window server...");
       [xorgTask terminate];
+    }
+    // Stop Pasteboard Service
+    if (gpbs_pid) {
+      kill(gpbs_pid, SIGQUIT);
     }
 
     // Show shutdown Plymouth splash screen
@@ -306,6 +298,7 @@ int main(int argc, const char **argv)
     {
     case QuitExitCode:
       NSLog(@"`quit` command: Just finish Login execution.");
+      exitCommand = @"";
       break;
     case RebootExitCode:
       exitCommand = [loginDefaults objectForKey:@"RebootCommand"];
@@ -315,10 +308,10 @@ int main(int argc, const char **argv)
       NSLog(@"Reboot system with command: %@", exitCommand);
       break;
     case ShutdownExitCode:
-      // TODO: Run ShutownHook
+      // ShutownHook defined only system defaults (root user or app bundle)
       shutdownHook = [loginDefaults objectForKey:@"ShutdownHook"];
       if ([shutdownHook isEqualToString:@""] == NO) {
-        system([shutdownHook cString]);
+        runCommand(shutdownHook, YES);
       }
       
       exitCommand = [loginDefaults objectForKey:@"ShutdownCommand"];
@@ -333,12 +326,17 @@ int main(int argc, const char **argv)
       break;
     default:
       NSLog(@"Unknown panel exit code received: %i", panelExitCode);
+      exitCommand = @"";
     }
 
+  NSLog(@"Exiting...");
+  
+  // Run exitCommand
+  if (exitCommand && [exitCommand isEqualToString:@""] == NO) {
+    runCommand(exitCommand, NO);
+  }
+  
   [pool release];
 
-  NSLog(@"Exiting...");
-  // Run exitCommand
-  
   return 0;
 }
