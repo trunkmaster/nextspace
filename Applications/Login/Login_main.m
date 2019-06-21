@@ -32,7 +32,6 @@
 
 #import "Application.h"
 #import "Controller.h"
-#import "Login_main.h"
 
 static NSTask      *xorgTask = nil;
 static NXTDefaults *loginDefaults = nil;
@@ -166,6 +165,9 @@ int runCommand(NSString *command, BOOL wait)
 
   commandArgs = [command componentsSeparatedByString:@" "];
   argc = [commandArgs count];
+  if (argc == 0) {
+    return 1;
+  }
   argv = malloc((argc + 1) * sizeof(char *));
 
   for (int i = 0; i < argc; i++) {
@@ -273,7 +275,6 @@ int main(int argc, const char **argv)
     setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
     // Start our application without appicon
     [LoginApplication sharedApplication];
-    // Run loop
     NSApplicationMain(argc, argv);
 
     // Stop Window Server

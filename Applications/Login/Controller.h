@@ -32,6 +32,19 @@
 
 #import "LoginWindow.h"
 
+// 1 - Catchall for general errors
+// 2 - Misuse of shell builtins (according to Bash documentation)
+// 10 - exit(0)
+// 11 - shutdown
+// 12 - reboot
+enum LoginExitCode {
+  QuitExitCode = 10,
+  ShutdownExitCode = 11,
+  RebootExitCode = 12,
+  UpdateExitCode = 13
+};
+int panelExitCode;
+
 extern NSString *SessionDidCloseNotification;
 
 @class UserSession;
