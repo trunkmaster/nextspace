@@ -23,13 +23,19 @@
 @implementation SoundKitClient
 
 - (void)dealloc
-{
+ {
   NSLog(@"SoundKitClient: dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  if (stream != nil)
+  
+  if (stream != nil) {
+    [stream deactivate];
     [stream release];
+  }
+  
   fprintf(stderr, "\tRetain Count: %lu\n", [server retainCount]);
   [server disconnect];
+  // [server release];
+  
   [super dealloc];
 }
 
@@ -45,6 +51,8 @@
        selector:@selector(serverStateChanged:)
            name:SNDServerStateDidChangeNotification
          object:server];
+
+  [self serverStateChanged:nil];
   
   return self;
 }
@@ -98,37 +106,42 @@
 // -----------------------------------------------------------------------------
 
 static SNDFILE        *snd_file;
+static struct SF_INFO sfi;
 static pa_sample_spec sample_spec;
 static char           *file = NULL;
 
-
 - (void)playBytes:(NSNumber *)count
 {
-  size_t     length = [count unsignedIntValue];
-  sf_count_t bytes_to_read, bytes_read;
+  size_t     bytes_length = [count unsignedIntValue]; // length of stream in bytes
+  sf_count_t frames_length;                           // length of stream in frames 
+  sf_count_t frames_read;
   float      *buffer;
 
-  // NSLog(@"Play bytes count: %li", length);
-  buffer = pa_xmalloc(length);
+  buffer = pa_xmalloc(bytes_length);
 
-  // pa_assert(sample_length >= length);
-  bytes_to_read = (sf_count_t) (length/pa_frame_size(&sample_spec));
-  bytes_read = sf_readf_float(snd_file, buffer, bytes_to_read);
-  // fprintf(stderr, "Stream ready to receive: %li | Bytes to read: %li | Bytes were read: %li\n",
-  //         length, bytes_to_read, bytes_read);
+  frames_length = (sf_count_t) (bytes_length/pa_frame_size(&sample_spec));
+  frames_read = sf_readf_float(snd_file, buffer, (frames_length > sfi.frames) ? sfi.frames : frames_length);
+  fprintf(stderr, "Stream size: %li bytes(B), %li frames(F) | F count: %li | F size: %i | F read: %li\n",
+          bytes_length, frames_length, sfi.frames, (int)pa_frame_size(&sample_spec), frames_read);
   
-  if (bytes_read <= 0) {
+  if (frames_read <= 0) {
     pa_xfree(buffer);
-    [stream deactivate];
+    [stream emptyBuffer:NO];
     return;
   }
 
-  [stream playBuffer:buffer size:length tag:0];
+  [stream playBuffer:buffer size:bytes_length tag:0];
+}
+
+- (void)playFinished
+{
+  NSLog(@"Play finished and buffer is empty. Can stop run loop now.");
+  [self runLoopStop];  
 }
 
 - (int)playSystemBeep
 {
-  struct SF_INFO sfi;
+  // struct SF_INFO sfi;
   // char *file = "/usr/NextSpace/Sounds/Welcome-to-the-NeXT-world.snd";
   // char *file = "/usr/NextSpace/Sounds/SystemBeep.snd";
   // char *file = "/usr/NextSpace/Sounds/Rooster.snd";
@@ -163,7 +176,8 @@ static char           *file = NULL;
                                   channelCount:sample_spec.channels
                                         format:sample_spec.format];
   [stream setDelegate:self];
-  [stream setAction:@selector(playBytes:)];
+  [stream setWriteAction:@selector(playBytes:)];
+  [stream setEmptyAction:@selector(playFinished)];
   
   NSLog(@"Activate stream...");
   [stream activate];
@@ -183,7 +197,7 @@ static void handle_signal(int sig)
 
 int main(int argc, char *argv[])
 {
-  // NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  NSAutoreleasePool *pool = [NSAutoreleasePool new];
   // NSConnection      *conn;
 
   if (argc < 2) {
@@ -193,24 +207,22 @@ int main(int argc, char *argv[])
 
   file = argv[1];
 
-  @autoreleasepool {
-    client = [SoundKitClient new];
-    // conn = [NSConnection defaultConnection];
-    // [conn registerName:@"soundtool"];
+  client = [SoundKitClient new];
+  // conn = [NSConnection defaultConnection];
+  // [conn registerName:@"soundtool"];
 
-    signal(SIGHUP, handle_signal);
-    signal(SIGINT, handle_signal);
-    signal(SIGQUIT, handle_signal);
-    signal(SIGTERM, handle_signal);
+  signal(SIGHUP, handle_signal);
+  signal(SIGINT, handle_signal);
+  signal(SIGQUIT, handle_signal);
+  signal(SIGTERM, handle_signal);
   
-    [client runLoopRun];
+  [client runLoopRun];
 
-    fprintf(stderr, "Runloop exited.\n");
+  fprintf(stderr, "Runloop exited.\n");
 
-    // [conn invalidate];
-    [client release];
-    // [pool release];
-  }
+  // [conn invalidate];
+  [client release];
+  [pool release];
 
   return 0;
 }

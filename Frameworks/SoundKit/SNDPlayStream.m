@@ -24,12 +24,56 @@
 #import "SNDOut.h"
 #import "SNDPlayStream.h"
 
+@interface SNDPlayStream (Private)
+- (void)_performWriteAction:(size_t)length;
+- (void)_performEmptyAction;
+@end
+
+@implementation SNDPlayStream (Private)
 // PulseAudio callback: now stream is ready to receive sound bytes.
 // Call delegate's action to notify about stream readiness.
-static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
+static void _stream_buffer_ready(pa_stream *stream, size_t length, void *userdata)
 {
-  [(SNDPlayStream *)userdata writeStreamLength:length];
+  [(SNDPlayStream *)userdata _performWriteAction:length];
 }
+static void _stream_buffer_empty(pa_stream *stream, int success, void *userdata)
+{
+  [(SNDPlayStream *)userdata _performEmptyAction];
+}
+
+// Notify delegate that we are ready to receive `length` bytes of sound
+- (void)_performWriteAction:(size_t)length
+{
+  if (_delegate == nil) {
+    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
+    return;
+  }
+  if ([_delegate respondsToSelector:_writeAction]) {
+    [_delegate performSelector:_writeAction
+                    withObject:[NSNumber numberWithUnsignedInteger:length]];
+  }
+  else {
+    NSLog(@"[SoundKit] delegate does not respond to action write action"
+          " of SNDPlayStream");
+  }
+}
+// Notify delegate that our buffer is empty
+- (void)_performEmptyAction
+{
+  if (_delegate == nil) {
+    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
+    return;
+  }
+  if ([_delegate respondsToSelector:_emptyAction]) {
+    [_delegate performSelector:_emptyAction];
+  }
+  else {
+    NSLog(@"[SoundKit] delegate does not respond to action write action"
+          " of SNDPlayStream");
+  }
+}
+
+@end
 
 @implementation SNDPlayStream
 
@@ -43,25 +87,13 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
 {
   _delegate = aDelegate;
 }
-- (void)setAction:(SEL)aSel
+- (void)setWriteAction:(SEL)aSel
 {
-  _action = aSel;
+  _writeAction = aSel;
 }
-// Notify delegate that we are ready to receive `length` bytes of sound
-- (void)writeStreamLength:(size_t)length
+- (void)setEmptyAction:(SEL)aSel
 {
-  if (_delegate == nil) {
-    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
-    return;
-  }
-  if ([_delegate respondsToSelector:_action]) {
-    [_delegate performSelector:_action
-                    withObject:[NSNumber numberWithUnsignedInteger:length]];
-  }
-  else {
-    NSLog(@"[SoundKit] delegate does not respond to action write action"
-          " of SNDPlayStream");
-  }
+  _emptyAction = aSel;
 }
 
 - (void)activate
@@ -74,7 +106,7 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
   output = (SNDOut *)super.device;
   
   pa_stream_connect_playback(_pa_stream, [output.sink.name cString], NULL, 0, NULL, NULL);
-  pa_stream_set_write_callback(_pa_stream, _pa_write_callback, self);
+  pa_stream_set_write_callback(_pa_stream, _stream_buffer_ready, self);
   
   super.isActive = YES;
 }
@@ -90,7 +122,14 @@ static void _pa_write_callback(pa_stream *stream, size_t length, void *userdata)
               size:(NSUInteger)bytes
                tag:(NSUInteger)anUInt
 {
-  pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE); 
+  pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE);
+}
+
+- (void)emptyBuffer:(BOOL)flush
+{
+  if (flush == NO) {
+    pa_stream_drain(_pa_stream, _stream_buffer_empty, self);
+  }
 }
 
 - (NSUInteger)volume

@@ -245,7 +245,7 @@ static void *InputContext = &InputContext;
     NSLog(@"Received other SNDServer state change notification.");
     return;
   }
-  if (soundServer.status == SKServerReadyState) {
+  if (soundServer.status == SNDServerReadyState) {
     soundOut = [[soundServer defaultOutput] retain];
     soundIn = [[soundServer defaultInput] retain];
     if (soundOut) {
@@ -259,8 +259,8 @@ static void *InputContext = &InputContext;
     [self _updateControls];
     [self reloadBrowser];    
   }
-  else if (soundServer.status == SKServerFailedState ||
-           soundServer.status == SKServerTerminatedState) {
+  else if (soundServer.status == SNDServerFailedState ||
+           soundServer.status == SNDServerTerminatedState) {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [soundServer release];
     soundServer = nil;
