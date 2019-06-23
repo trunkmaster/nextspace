@@ -127,7 +127,7 @@ static char           *file = NULL;
   
   if (frames_read <= 0) {
     pa_xfree(buffer);
-    [stream emptyBuffer:NO];
+    [stream empty:NO];
     return;
   }
 
