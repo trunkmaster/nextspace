@@ -27,13 +27,8 @@
 {
   SEL _writeAction;
   SEL _emptyAction;
-  id  _delegate;
 }
 @property (assign) PASinkInput *sinkInput;
-
-- (void)setDelegate:(id)aDelegate;
-- (void)setWriteAction:(SEL)aSel;
-- (void)setEmptyAction:(SEL)aSel;
 
 - (void)playBuffer:(void *)data
               size:(NSUInteger)bytes
