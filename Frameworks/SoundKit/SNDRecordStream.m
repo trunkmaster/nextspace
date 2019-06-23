@@ -24,43 +24,15 @@
 #import "SNDIn.h"
 #import "SNDRecordStream.h"
 
+extern void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream);
+extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream);
+
 @implementation SNDRecordStream
 
 - (void)dealloc
 {
   fprintf(stderr, "[SoundKit] SNDRecordStream: -dealloc\n");
   [super dealloc];
-}
-
-// TODO
-static void stream_read_callback(pa_stream *stream, size_t length, void *userdata)
-{
-  /*  sf_count_t frames, frames_read;
-      float      *data; */
-  // pa_assert(s && length && snd_file);
-
-  fprintf(stderr, "[SNDStream] stream_write_callback\n");
-  
-  /*
-  data = pa_xmalloc(length);
-
-  // pa_assert(sample_length >= length);
-  frames = (sf_count_t) (length/pa_frame_size(&sample_spec));
-  frames_read = sf_readf_float(snd_file, data, frames);
-  fprintf(stderr, "length == %li frames == %li frames_read == %li\n",
-          length, frames, frames_read);
-  
-  if (frames_read <= 0) {
-    pa_xfree(data);
-    fprintf(stderr, "End of file\n");
-    pa_stream_set_write_callback(stream, NULL, NULL);
-    pa_stream_disconnect(stream);
-    pa_stream_unref(stream);
-    return;
-  }
-
-  pa_stream_write(s, d, length, pa_xfree, 0, PA_SEEK_RELATIVE);
-  */
 }
 
 - (void)activate
@@ -73,12 +45,12 @@ static void stream_read_callback(pa_stream *stream, size_t length, void *userdat
   input = (SNDIn *)super.device;
 
   pa_stream_connect_record(_pa_stream, [input.source.name cString], NULL, 0);
-  pa_stream_set_read_callback(_pa_stream, stream_read_callback, NULL);
+  pa_stream_set_read_callback(_pa_stream, _stream_buffer_ready, NULL);
   super.isActive = YES;
 }
 - (void)deactivate
 {
-  pa_stream_set_write_callback(_pa_stream, NULL, NULL);
+  pa_stream_set_read_callback(_pa_stream, NULL, NULL);
   pa_stream_disconnect(_pa_stream);
   super.isActive = NO;
 }
@@ -118,7 +90,6 @@ static void stream_read_callback(pa_stream *stream, size_t length, void *userdat
 
   return source.activePort;
 }
-
 - (void)setActivePort:(NSString *)portName
 {
   PASource *source = [super.server sourceWithIndex:_sourceOutput.sourceIndex];

@@ -24,34 +24,35 @@
 #import "SNDOut.h"
 #import "SNDPlayStream.h"
 
-@interface SNDPlayStream (Private)
-@end
+extern void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream);
+extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream);
 
-@implementation SNDPlayStream (Private)
-// PulseAudio callback: now stream is ready to receive sound bytes.
-// Call delegate's action to notify about stream readiness.
-static void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
-{
-  id  delegate = [(SNDPlayStream *)sndStream delegate];
-  SEL action = @selector(soundStream:bufferReady:);
+// @interface SNDPlayStream (Private)
+// @end
+// @implementation SNDPlayStream (Private)
+// // PulseAudio callback: now stream is ready to receive sound bytes.
+// // Call delegate's action to notify about stream readiness.
+// static void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
+// {
+//   id  delegate = [(SNDStream *)sndStream delegate];
+//   SEL action = @selector(soundStream:bufferReady:);
   
-  if (delegate == nil) {
-    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
-    return;
-  }
-  if ([delegate respondsToSelector:action]) {
-    [delegate performSelector:action
-                   withObject:sndStream
-                   withObject:[NSNumber numberWithUnsignedInteger:length]];
-  }
-}
-static void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream)
-{
-  [(SNDStream *)sndStream
-      performDelegateSelector:@selector(soundStreamBufferEmpty:)];
-}
-
-@end
+//   if (delegate == nil) {
+//     NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
+//     return;
+//   }
+//   if ([delegate respondsToSelector:action]) {
+//     [delegate performSelector:action
+//                    withObject:sndStream
+//                    withObject:[NSNumber numberWithUnsignedInteger:length]];
+//   }
+// }
+// static void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream)
+// {
+//   [(SNDStream *)sndStream
+//       performDelegateSelector:@selector(soundStreamBufferEmpty:)];
+// }
+// @end
 
 @implementation SNDPlayStream
 
@@ -79,7 +80,6 @@ static void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
 {
   pa_stream_set_write_callback(_pa_stream, NULL, NULL);
   pa_stream_disconnect(_pa_stream);
-  
   super.isActive = NO;
 }
 
@@ -87,25 +87,12 @@ static void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
 {
   return _sinkInput.corked;
 }
-- (void)abort:(id)sender
-{
-  NSLog(@"[SoundKit] `abort:` was send to SNDStream."
-        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
-}
-
 
 - (void)playBuffer:(void *)data
               size:(NSUInteger)bytes
                tag:(NSUInteger)anUInt
 {
   pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE);
-}
-
-- (void)emptyBuffer:(BOOL)flush
-{
-  if (flush == NO) {
-    pa_stream_drain(_pa_stream, _stream_buffer_empty, self);
-  }
 }
 
 - (NSUInteger)volume
@@ -144,7 +131,6 @@ static void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
 
   return sink.activePort;
 }
-
 - (void)setActivePort:(NSString *)portName
 {
   SNDServer *server = [SNDServer sharedServer];

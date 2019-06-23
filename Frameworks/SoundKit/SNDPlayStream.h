@@ -33,6 +33,5 @@
 - (void)playBuffer:(void *)data
               size:(NSUInteger)bytes
                tag:(NSUInteger)anUInt;
-- (void)emptyBuffer:(BOOL)flush;
 
 @end

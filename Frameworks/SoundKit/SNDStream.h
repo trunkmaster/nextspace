@@ -53,6 +53,7 @@
 - (BOOL)isActive;
 - (void)activate;
 - (void)deactivate;
+- (void)empty:(BOOL)flush;
 
 - (BOOL)isPaused;
 - (void)pause:(id)sender;
