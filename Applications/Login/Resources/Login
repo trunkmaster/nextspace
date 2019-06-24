@@ -2,6 +2,8 @@
     LastLoggedInUser = "";
     StartupHook = "";
     ShutdownHook = "";
+    LoginHook = "";
+    LogoutHook = ;
     DefaultSessionScript = (
         ("/usr/NextSpace/bin/gnustep-services", "start"),
         ("/usr/NextSpace/Apps/Workspace.app/Workspace"),
