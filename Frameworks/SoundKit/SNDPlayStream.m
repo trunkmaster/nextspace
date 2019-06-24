@@ -24,56 +24,35 @@
 #import "SNDOut.h"
 #import "SNDPlayStream.h"
 
-@interface SNDPlayStream (Private)
-- (void)_performWriteAction:(size_t)length;
-- (void)_performEmptyAction;
-@end
+extern void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream);
+extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream);
 
-@implementation SNDPlayStream (Private)
-// PulseAudio callback: now stream is ready to receive sound bytes.
-// Call delegate's action to notify about stream readiness.
-static void _stream_buffer_ready(pa_stream *stream, size_t length, void *userdata)
-{
-  [(SNDPlayStream *)userdata _performWriteAction:length];
-}
-static void _stream_buffer_empty(pa_stream *stream, int success, void *userdata)
-{
-  [(SNDPlayStream *)userdata _performEmptyAction];
-}
-
-// Notify delegate that we are ready to receive `length` bytes of sound
-- (void)_performWriteAction:(size_t)length
-{
-  if (_delegate == nil) {
-    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
-    return;
-  }
-  if ([_delegate respondsToSelector:_writeAction]) {
-    [_delegate performSelector:_writeAction
-                    withObject:[NSNumber numberWithUnsignedInteger:length]];
-  }
-  else {
-    NSLog(@"[SoundKit] delegate does not respond to action write action"
-          " of SNDPlayStream");
-  }
-}
-// Notify delegate that our buffer is empty
-- (void)_performEmptyAction
-{
-  if (_delegate == nil) {
-    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
-    return;
-  }
-  if ([_delegate respondsToSelector:_emptyAction]) {
-    [_delegate performSelector:_emptyAction];
-  }
-  else {
-    NSLog(@"[SoundKit] delegate does not respond to action write action"
-          " of SNDPlayStream");
-  }
-}
-
-@end
+// @interface SNDPlayStream (Private)
+// @end
+// @implementation SNDPlayStream (Private)
+// // PulseAudio callback: now stream is ready to receive sound bytes.
+// // Call delegate's action to notify about stream readiness.
+// static void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
+// {
+//   id  delegate = [(SNDStream *)sndStream delegate];
+//   SEL action = @selector(soundStream:bufferReady:);
+  
+//   if (delegate == nil) {
+//     NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
+//     return;
+//   }
+//   if ([delegate respondsToSelector:action]) {
+//     [delegate performSelector:action
+//                    withObject:sndStream
+//                    withObject:[NSNumber numberWithUnsignedInteger:length]];
+//   }
+// }
+// static void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream)
+// {
+//   [(SNDStream *)sndStream
+//       performDelegateSelector:@selector(soundStreamBufferEmpty:)];
+// }
+// @end
 
 @implementation SNDPlayStream
 
@@ -81,19 +60,6 @@ static void _stream_buffer_empty(pa_stream *stream, int success, void *userdata)
 {
   fprintf(stderr, "[SoundKit] SNDPlayStream: -dealloc\n");
   [super dealloc];
-}
-
-- (void)setDelegate:(id)aDelegate
-{
-  _delegate = aDelegate;
-}
-- (void)setWriteAction:(SEL)aSel
-{
-  _writeAction = aSel;
-}
-- (void)setEmptyAction:(SEL)aSel
-{
-  _emptyAction = aSel;
 }
 
 - (void)activate
@@ -114,8 +80,12 @@ static void _stream_buffer_empty(pa_stream *stream, int success, void *userdata)
 {
   pa_stream_set_write_callback(_pa_stream, NULL, NULL);
   pa_stream_disconnect(_pa_stream);
-  
   super.isActive = NO;
+}
+
+- (BOOL)isPaused
+{
+  return _sinkInput.corked;
 }
 
 - (void)playBuffer:(void *)data
@@ -123,13 +93,6 @@ static void _stream_buffer_empty(pa_stream *stream, int success, void *userdata)
                tag:(NSUInteger)anUInt
 {
   pa_stream_write(_pa_stream, data, bytes, pa_xfree, 0, PA_SEEK_RELATIVE);
-}
-
-- (void)emptyBuffer:(BOOL)flush
-{
-  if (flush == NO) {
-    pa_stream_drain(_pa_stream, _stream_buffer_empty, self);
-  }
 }
 
 - (NSUInteger)volume
@@ -168,7 +131,6 @@ static void _stream_buffer_empty(pa_stream *stream, int success, void *userdata)
 
   return sink.activePort;
 }
-
 - (void)setActivePort:(NSString *)portName
 {
   SNDServer *server = [SNDServer sharedServer];

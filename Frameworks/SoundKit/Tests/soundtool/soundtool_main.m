@@ -110,7 +110,8 @@ static struct SF_INFO sfi;
 static pa_sample_spec sample_spec;
 static char           *file = NULL;
 
-- (void)playBytes:(NSNumber *)count
+// - (void)playBytes:(NSNumber *)count
+- (void)soundStream:(SNDPlayStream *)sndStream bufferReady:(NSNumber *)count
 {
   size_t     bytes_length = [count unsignedIntValue]; // length of stream in bytes
   sf_count_t frames_length;                           // length of stream in frames 
@@ -126,17 +127,20 @@ static char           *file = NULL;
   
   if (frames_read <= 0) {
     pa_xfree(buffer);
-    [stream emptyBuffer:NO];
+    [stream empty:NO];
     return;
   }
 
   [stream playBuffer:buffer size:bytes_length tag:0];
 }
 
-- (void)playFinished
+// - (void)playFinished
+- (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
-  NSLog(@"Play finished and buffer is empty. Can stop run loop now.");
-  [self runLoopStop];  
+  if (isRunning != NO) {
+    NSLog(@"Play finished and buffer is empty. Can stop run loop now.");
+    [self runLoopStop];
+  }
 }
 
 - (int)playSystemBeep
@@ -176,8 +180,8 @@ static char           *file = NULL;
                                   channelCount:sample_spec.channels
                                         format:sample_spec.format];
   [stream setDelegate:self];
-  [stream setWriteAction:@selector(playBytes:)];
-  [stream setEmptyAction:@selector(playFinished)];
+  // [stream setWriteAction:@selector(playBytes:)];
+  // [stream setEmptyAction:@selector(playFinished)];
   
   NSLog(@"Activate stream...");
   [stream activate];

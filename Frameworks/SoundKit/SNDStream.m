@@ -20,6 +20,37 @@
 
 #import "SNDStream.h"
 
+// PulseAudio callbacks.
+// Stream is ready to receive sound bytes.
+void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
+{
+  id  delegate = [(SNDStream *)sndStream delegate];
+  SEL action = @selector(soundStream:bufferReady:);
+  
+  if (delegate == nil) {
+    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
+    return;
+  }
+  if ([delegate respondsToSelector:action]) {
+    [delegate performSelector:action
+                   withObject:sndStream
+                   withObject:[NSNumber numberWithUnsignedInteger:length]];
+  }
+}
+// Stream finished processing bytes in buffer.
+void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream)
+{
+  [(SNDStream *)sndStream performDelegateSelector:@selector(soundStreamBufferEmpty:)];
+}
+static void _stream_paused(pa_stream *stream, int success, void *sndStream)
+{
+  [(SNDStream *)sndStream performDelegateSelector:@selector(soundStreamDidPause:)];
+}
+static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
+{
+  [(SNDStream *)sndStream performDelegateSelector:@selector(soundStreamDidResume:)];
+}
+
 @implementation SNDStream
 
 - (void)dealloc
@@ -78,6 +109,25 @@
   return self;
 }
 
+- (id)delegate
+{
+  return _delegate;
+}
+- (void)setDelegate:(id)aDelegate
+{
+  _delegate = aDelegate;
+}
+- (void)performDelegateSelector:(SEL)action
+{
+  if (_delegate == nil) {
+    NSLog(@"[SoundKit] delegate is not set for SNDStream.");
+    return;
+  }
+  if ([_delegate respondsToSelector:action]) {
+    [_delegate performSelector:action withObject:self];
+  }
+}
+
 - (void)activate
 {
   NSLog(@"[SoundKit] `activate` was send to SNDStream."
@@ -87,6 +137,31 @@
 {
   NSLog(@"[SoundKit] `deactivate` was send to SNDStream."
         " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
+}
+- (void)empty:(BOOL)flush
+{
+  if (flush == NO) {
+    pa_stream_drain(_pa_stream, _stream_buffer_empty, self);
+  }
+}
+
+- (BOOL)isPaused
+{
+  NSLog(@"[SoundKit] `isPaused` was send to SNDStream."
+        " SNDPlayStream or SNDRecordStream subclasses should be used instead.");
+  return NO;
+}
+- (void)pause:(id)sender
+{
+  pa_stream_cork(_pa_stream, 1, _stream_paused, self);
+}
+- (void)resume:(id)sender
+{
+  pa_stream_cork(_pa_stream, 0, _stream_resumed, self);
+}
+- (void)abort:(id)sender
+{
+  pa_stream_flush(_pa_stream, 0, _stream_buffer_empty, self);
 }
 
 - (NSUInteger)volume
@@ -136,18 +211,11 @@
 }
 
 
-// - (BOOL)isPaused {}
-// - (void)pause:(id)sender {}
-// - (void)resume:(id)sender {}
-// - (void)abort:(id)sender {}
-
 // - (NXSoundDeviceError)pauseAtTime:(struct timeval *)time;
 // - (NXSoundDeviceError)resumeAtTime:(struct timeval *)time;
 // - (NXSoundDeviceError)abortAtTime:(struct timeval *)time;
 
 // - (unsigned int)bytesProcessed;
 // - (NXSoundDeviceError)lastError;
-// - (id)delegate;
-// - (void)setDelegate:(id)anObject;
 
 @end

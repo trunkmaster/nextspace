@@ -30,6 +30,7 @@
 @interface SNDStream : NSObject
 {
   pa_stream *_pa_stream;
+  id        _delegate;
 }
 @property (assign) SNDServer *server;
 @property (assign) PAClient  *client;
@@ -44,9 +45,20 @@
       channelCount:(NSUInteger)channels
             format:(NSUInteger)format;
 
+- (id)delegate;
+- (void)setDelegate:(id)aDelegate;
+- (void)performDelegateSelector:(SEL)action;
+
 // Subclass responsibilty
+- (BOOL)isActive;
 - (void)activate;
 - (void)deactivate;
+- (void)empty:(BOOL)flush;
+
+- (BOOL)isPaused;
+- (void)pause:(id)sender;
+- (void)resume:(id)sender;
+- (void)abort:(id)sender;
 
 - (NSUInteger)volume;
 - (void)setVolume:(NSUInteger)volume;
@@ -57,5 +69,14 @@
 
 - (NSString *)activePort;
 - (void)setActivePort:(NSString *)portName;
+
+// - (NXSoundDeviceError)pauseAtTime:(struct timeval *)time;
+// - (NXSoundDeviceError)resumeAtTime:(struct timeval *)time;
+// - (NXSoundDeviceError)abortAtTime:(struct timeval *)time;
+
+// - (unsigned int)bytesProcessed;
+// - (NXSoundDeviceError)lastError;
+// - (id)delegate;
+// - (void)setDelegate:(id)anObject;
 
 @end
