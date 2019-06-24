@@ -36,18 +36,6 @@
 
 @implementation UserSession
 
-- (id)initWithOwner:(Controller *)controller
-               name:(NSString *)name
-{
-  self = [super init];
-
-  appController = controller;
-
-  [self setSessionName:name];
-
-  return self;
-}
-
 - (void)dealloc
 {
   NSLog(@"UserSession: dealloc");
@@ -62,21 +50,85 @@
 
   [super dealloc];
 }
+- (id)initWithOwner:(Controller *)controller
+               name:(NSString *)name
+           defaults:(NSDictionary *)defaults
+{
+  self = [super init];
+  if (self == nil) {
+    return nil;
+  }
+
+  appController = controller;
+  appDefaults = defaults;
+
+  [self setSessionName:name];
+
+  return self;
+}
 
 - (void)setSessionName:(NSString *)name
 {
   userName = [name copy];
 }
-
 - (NSString *)sessionName
 {
   return userName;
 }
 
-- (void)setSessionScript:(NSArray *)script
+- (void)readSessionScript
 {
-  sessionScript = [script copy];
+  NSString       *homeDir =  NSHomeDirectoryForUser(userName);
+  NSString       *pathFormat;
+  NSString       *defaultsPath;
+  NSDictionary   *userDefaults;
+  NSFileManager  *fm = [NSFileManager defaultManager];
+  NSArray        *command;
+  NSString       *hook;
+
+  sessionScript = [NSMutableArray new];
+  pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
+  defaultsPath = [NSString stringWithFormat:pathFormat, homeDir];
+  userDefaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
+  
+  // Login hook
+  if ((hook = [userDefaults objectForKey:@"LoginHook"]) != nil) {
+    [sessionScript addObject:hook];
+  }
+  
+  // E.g. "~/.xinitrc", "~/.xsession"
+  // Only first existing script will be executed (TODO?)
+  for (NSString *scriptPath in [appDefaults objectForKey:@"UserSessionScripts"]) {
+    scriptPath = [scriptPath stringByExpandingTildeInPath];
+    if ([fm fileExistsAtPath:scriptPath]) {
+      command = [NSArray arrayWithObjects:scriptPath, nil];
+      break;
+    }
+  }
+  
+  if (command) {
+    NSLog(@"UserSessionScript: %@", command);
+    [sessionScript addObject:command];
+  }
+  else { // Try system session script
+    NSLog(@"DefaultSessionScript: %@",
+          [appDefaults objectForKey:@"DefaultSessionScript"]);
+    [sessionScript
+      addObjectsFromArray:[appDefaults objectForKey:@"DefaultSessionScript"]];
+  }
+  
+  // Logout hook
+  if ((hook = [userDefaults objectForKey:@"LogoutHook"]) != nil) {
+    [sessionScript addObject:hook];
+  }
+  
+  NSLog(@"User session script: %@", sessionScript);
 }
+
+// - (void)setSessionScript:(NSArray *)script
+// {
+//   sessionScript = [script copy];
+// }
 
 // Starts:
 // 1. LoginHook (~/L/P/.N/Login)
@@ -171,6 +223,10 @@
 - (BOOL)_setUserEnvironment
 {
   struct passwd	*user;
+  NSFileManager *fm;
+  NSString	*logDir;
+  BOOL		isDir;
+  NSDictionary  *logAttrs;
   
   user = getpwnam([userName cString]);
   endpwent();
@@ -182,30 +238,27 @@
 
   // Go to the user's home directory
   if (chdir(user->pw_dir) != 0) {
-      NSLog(_(@"Unable to change to the user's home directory %s:%s\n"
-	      @"Staying where I am now."), user->pw_dir, strerror(errno));
-    }
+    NSLog(_(@"Unable to change to the user's home directory %s:%s\n"
+            @"Staying where I am now."), user->pw_dir, strerror(errno));
+  }
 
   // Lower our priviledges
-  if (initgroups(user->pw_name, user->pw_gid) != 0)
-    {
-      NSLog(_(@"Unable to set user's supplementary groups: %s. "
-	      @"Exiting."), strerror(errno));
-      return NO;
-    }
+  if (initgroups(user->pw_name, user->pw_gid) != 0) {
+    NSLog(_(@"Unable to set user's supplementary groups: %s. "
+            @"Exiting."), strerror(errno));
+    return NO;
+  }
 
-  if (setgid(user->pw_gid) != 0)
-    {
-      NSLog(_(@"Unable to set the user's GID (%d): %s. Exiting."),
-	    user->pw_gid, strerror(errno));
-      return NO;
-    }
-  if (setuid(user->pw_uid) != 0)
-    {
-      NSLog(_(@"Unable to set the user's UID (%d): %s. Exiting."),
-	    user->pw_uid, strerror(errno));
-      return NO;
-    }
+  if (setgid(user->pw_gid) != 0) {
+    NSLog(_(@"Unable to set the user's GID (%d): %s. Exiting."),
+          user->pw_gid, strerror(errno));
+    return NO;
+  }
+  if (setuid(user->pw_uid) != 0) {
+    NSLog(_(@"Unable to set the user's UID (%d): %s. Exiting."),
+          user->pw_uid, strerror(errno));
+    return NO;
+  }
 
   // General environment variables
   setenv("USER", user->pw_name, 1);
@@ -222,25 +275,20 @@
   setenv("INFOPATH", [[NSString stringWithFormat:@"%s/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info", user->pw_dir] cString], 1);
   setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
   
-  // Set for WindowMaker part of Workspace to find its preferences
-  // and other stuff
-  // setenv("GNUSTEP_USER_ROOT", [[NSString stringWithFormat:@"%s/Library", user->pw_dir] cString], 1);
-
   // For developers
   setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);
 
   // Log file for session use
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString	*logDir = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u", user->pw_uid];
-  BOOL		isDir;
-
-  if (![fm fileExistsAtPath:logDir isDirectory:&isDir])
-    {
-      [fm createDirectoryAtPath:logDir
-          withIntermediateDirectories:YES
-                     attributes:[NSDictionary dictionaryWithObject:@"700" forKey:NSFilePosixPermissions]
-                          error:0];
-    }
+  fm = [NSFileManager defaultManager];
+  logDir = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u", user->pw_uid];
+  if (![fm fileExistsAtPath:logDir isDirectory:&isDir]) {
+    logAttrs = [NSDictionary dictionaryWithObject:@"700"
+                                           forKey:NSFilePosixPermissions];
+    [fm createDirectoryAtPath:logDir
+        withIntermediateDirectories:YES
+                   attributes:logAttrs
+                        error:0];
+  }
   setenv("NS_LOGFILE", [[logDir stringByAppendingPathComponent:@"console.log"] cString], 1);
   
   return YES;
@@ -261,11 +309,10 @@
   executable = [[command objectAtIndex:0] fileSystemRepresentation];
   args[0] = executable;
 
-  for (i = 1; i < ac; i++)
-    {     
-      args[i] = [[command objectAtIndex:i] cString];
-      // fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
-    }
+  for (i = 1; i < ac; i++) {     
+    args[i] = [[command objectAtIndex:i] cString];
+    // fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
+  }
   args[ac] = NULL;
 
   pid = fork();
@@ -273,22 +320,19 @@
     {
     case 0:
       fprintf(stderr, "[fork] Executing %s\n", executable);
-      if ([self _setUserEnvironment] == YES)
-	{
-	  // fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
-	  //         getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
-          if (append)
-            {
-              freopen(getenv("NS_LOGFILE"), "a", stderr);
-              freopen(getenv("NS_LOGFILE"), "a", stdout);
-            }
-          else
-            {
-              freopen(getenv("NS_LOGFILE"), "w+", stderr);
-              freopen(getenv("NS_LOGFILE"), "w+", stdout);
-            }
-	  status = execv(executable, (char**)args);
-	}
+      if ([self _setUserEnvironment] == YES) {
+        // fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
+        //         getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
+        if (append) {
+          freopen(getenv("NS_LOGFILE"), "a", stderr);
+          freopen(getenv("NS_LOGFILE"), "a", stdout);
+        }
+        else {
+          freopen(getenv("NS_LOGFILE"), "w+", stderr);
+          freopen(getenv("NS_LOGFILE"), "w+", stdout);
+        }
+        status = execv(executable, (char**)args);
+      }
       // If forked process goes here - something went wrong: aborting.
       fprintf(stderr, "[fork] 'execv' returned error %i (%i:%s). Aborting.\n",
               status, errno, strerror(errno));
@@ -301,41 +345,27 @@
       // Wait for command to finish launching
       fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
       wpid = waitpid(pid, &status, 0);
-      // if (wpid == -1)
-      //   {
-      //     fprintf(stderr, "<launchCommand> waitpid (%i) error (%s)\n", 
-      //   	  pid, strerror(errno));
-      //     return 0;
-      //   }
-      // else
-      if (WIFEXITED(status))
-	{
-	  fprintf(stderr, "<launchCommand> %s EXITED with code %d(%d)\n", 
-		  executable, WEXITSTATUS(status), status);
-	}
-      else if (WIFSIGNALED(status))
-	{
-	  fprintf(stderr, "<launchCommand> %s KILLED with signal %d\n", 
-		  executable, WTERMSIG(status));
-	  if (WCOREDUMP(status))
-	    {
-	      fprintf(stderr, " (CORE DUMPED)\n");
-	    }
-	  else
-	    {
-	      fprintf(stderr, "\n");
-	    }
-	}
-      else if (WIFSTOPPED(status))
-	{
-	  fprintf(stderr, "<launchCommand> %s is STOPPED\n", executable);
-	}
-      else
-        {
-          fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
-                  executable, status);
+      if (WIFEXITED(status)) {
+        fprintf(stderr, "<launchCommand> %s EXITED with code %d(%d)\n", 
+                executable, WEXITSTATUS(status), status);
+      }
+      else if (WIFSIGNALED(status)) {
+        fprintf(stderr, "<launchCommand> %s KILLED with signal %d\n", 
+                executable, WTERMSIG(status));
+        if (WCOREDUMP(status)) {
+          fprintf(stderr, " (CORE DUMPED)\n");
         }
-
+        else {
+          fprintf(stderr, "\n");
+        }
+      }
+      else if (WIFSTOPPED(status)) {
+        fprintf(stderr, "<launchCommand> %s is STOPPED\n", executable);
+      }
+      else {
+        fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
+                executable, status);
+      }
       break;
     }
 

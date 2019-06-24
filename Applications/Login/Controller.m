@@ -99,152 +99,46 @@ void *alloc(int size)
 //=============================================================================
 @implementation Controller (UserSession)
 
-- (id)defaultsForKey:(NSString *)key forUser:(NSString *)user
-{
-  NSString	*pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
-  NSString	*homeDir = NSHomeDirectoryForUser(user);
-  NSString	*defsPath;
-  NSDictionary	*defs;
-  
-  defsPath = [NSString stringWithFormat:pathFormat, homeDir];
-  defs = [NSDictionary dictionaryWithContentsOfFile:defsPath];
-
-  return [defs objectForKey:key];
-}
-
-- (NSArray *)sessionScriptForUser:(NSString *)user
-{
-  NSString		*homeDir;
-  NSFileManager		*fm = [NSFileManager defaultManager];
-  NSString		*path = nil;
-  NSArray		*userSessionCommand = nil, *uss;
-  NSMutableArray	*sessionScript = nil;
-  NSString		*hook;
-
-  sessionScript = [NSMutableArray new];
-  homeDir = NSHomeDirectoryForUser(user);
-    
-  // Logout hook
-  hook = [self defaultsForKey:@"LoginHook" forUser:user];
-  if (hook != nil) [sessionScript addObject:hook];
-  
-  // E.g. "~/.xinitrc", "~/.xsession"
-  uss = [prefs objectForKey:@"UserSessionScripts"];
-  for (path in uss) {
-    path = [homeDir stringByAppendingPathComponent:path];
-    if ([fm fileExistsAtPath:path]) {
-      userSessionCommand = [NSArray arrayWithObjects:path, nil];
-      break;
-    }
-  }
-
-  NSLog(@"User session command: %@", userSessionCommand);
-  
-  if (userSessionCommand) {
-    [sessionScript addObject:userSessionCommand];
-  }
-  else { // Try system session script
-    [sessionScript
-        addObjectsFromArray:[prefs objectForKey:@"DefaultSessionScript"]];
-  }
-    
-  NSLog(@"Default session script: %@",
-        [prefs objectForKey:@"DefaultSessionScript"]);
-  
-  // Logout hook
-  hook = [self defaultsForKey:@"LogoutHook" forUser:user];
-  if (hook != nil) [sessionScript addObject:hook];
-  
-  NSLog(@"User session script: %@", sessionScript);
- 
-  return [sessionScript autorelease];
-}
-
 - (void)openSessionForUser:(NSString *)user
 {
-  // NSArray	*sessionScript;
-  UserSession	*aSession;
+  UserSession *aSession;
 
-  // sessionScript = [self sessionScriptForUser:user];
-  // // Set up session attributes
-  // aSession = [[UserSession alloc] init];
-  // [userSessions setObject:aSession forKey:user]; // remember user session
-  // [aSession setSessionName:user];
-  // if (sessionScript == nil || [sessionScript count] == 0)
-  //   { // Nothing to start
-  //     NSLog(@"Login failed: Couldn't find session script");
-  //     NXRunAlertPanel(@"Login failed", 
-  //        	      @"Couldn't find session script\n"
-  //        	      "Please check preferences of Login application.", 
-  //        	      nil, nil, nil);
-  //     [self userSessionWillClose:aSession];
-  //     [aSession release];
-  //     return;
-  //   }
-  // [aSession setSessionScript:sessionScript];
-
-  aSession = [[UserSession alloc] initWithOwner:self name:user];
+  aSession = [[UserSession alloc] initWithOwner:self
+                                           name:user
+                                       defaults:(NSDictionary *)prefs];
   [userSessions setObject:aSession forKey:user]; // remember user session
   [aSession release];
 
   // --- GCD code ---
-  dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,
-                                                  0);
-  dispatch_async(gq, ^{ [self launchUserSession:aSession]; });
+  dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+  dispatch_async(gq, ^{
+      @autoreleasepool {
+        [aSession launch];
+        [self performSelectorOnMainThread:@selector(userSessionWillClose:)
+                               withObject:aSession
+                            waitUntilDone:YES];
+      }
+    });
   // ----------------
-}
-
-// Executed inside libdispatch thread
-- (void)launchUserSession:(UserSession *)session
-{
-  if ([[NSThread currentThread] isMainThread])
-    {
-      NSLog(@"Error: user session started inside main thread");
-      NSRunAlertPanel(@"Open session", 
-		      @"Error opening user session.\n"
-		      "User session started inside main thread.", 
-		      nil, nil, nil);
-      [self showWindow];
-      return;
-    }
-
-  @autoreleasepool
-    {
-      // NSString *threadName;
-      // threadName = [NSString stringWithFormat:@"UserSessionThread_%@",
-      //                        [session sessionName]];
-      // [[NSThread currentThread] setName:threadName];
-
-      [session launch];
-      [self performSelectorOnMainThread:@selector(userSessionWillClose:) 
-			     withObject:session
-			  waitUntilDone:YES];
-    }
 }
 
 - (oneway void)userSessionWillClose:(UserSession *)session
 {
   NSString *user = [session sessionName];
 
-  NSLog(@"Session WILL close for user \'%@\' [%lu]", 
-        user, [session retainCount]);
-  // NSThread *mct = [NSThread currentThread];
-  // NSLog(@"Main thread[%@:%p]: %lu [main=%i]", 
-  //       [mct name], mct, [mct retainCount], [mct isMainThread]);
-
-  if ([userSessions objectForKey:user] == nil)
-    {
-      return;
-    }
+  NSLog(@"Session WILL close for user \'%@\' [%lu]", user, [session retainCount]);
+  
+  if ([userSessions objectForKey:user] == nil) {
+    return;
+  }
   [userSessions removeObjectForKey:user];
   pam_end(PAM_handle, 0);
 
 //  [self closeAllXClients];
 
-  if ([[userSessions allKeys] count] == 0)
-    {
-      [self showWindow];
-    }
+  if ([[userSessions allKeys] count] == 0) {
+    [self showWindow];
+  }
 }
 
 - (void)showSessionMessage:(NSString *)message

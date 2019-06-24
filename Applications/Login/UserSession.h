@@ -28,19 +28,19 @@
 
 @interface UserSession : NSObject
 {
-  Controller          *appController;
-  NSMutableDictionary *threadDict;
-
-  NSString            *userName;
-  NSArray             *sessionScript;
+  Controller     *appController;
+  NSDictionary   *appDefaults;
+  NSString       *userName;
+  NSMutableArray *sessionScript;
 }
 
 // ---
 
 - (id)initWithOwner:(Controller *)controller
-               name:(NSString *)name;
+               name:(NSString *)name
+           defaults:(NSDictionary *)defaults;
 
-- (void)setSessionScript:(NSArray *)script;
+// - (void)setSessionScript:(NSArray *)script;
 - (void)setSessionName:(NSString *)name;
 - (NSString *)sessionName;
 

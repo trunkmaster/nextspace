@@ -99,7 +99,6 @@ extern NSString *SessionDidCloseNotification;
 @interface Controller (UserSession)
 
 - (void)openSessionForUser:(NSString *)userName;
-- (void)launchUserSession:(UserSession *)session;
 - (oneway void)userSessionWillClose:(UserSession *)session;
 - (void)showSessionMessage:(NSString *)message;
 
