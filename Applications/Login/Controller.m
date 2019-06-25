@@ -121,52 +121,71 @@ void *alloc(int size)
                                  withObject:aSession
                               waitUntilDone:YES];
         }
+        NSLog(@"[GCD] panelExitCode: %d", panelExitCode);
+        if (panelExitCode == ShutdownExitCode) {
+          [self performSelectorOnMainThread:@selector(shutDown:)
+                                 withObject:self
+                              waitUntilDone:NO];
+        }
+        else if (panelExitCode == RebootExitCode) {
+          [self performSelectorOnMainThread:@selector(restart:)
+                                 withObject:self
+                              waitUntilDone:NO];
+        }
       }
     });
   // ----------------
 }
 
-- (oneway void)userSessionWillClose:(UserSession *)session
+- (void)userSessionWillClose:(UserSession *)session
 {
   NSString  *user = session.userName;
   NSInteger choice;
+  NSInteger sessionExitStatus;
 
-  NSLog(@"Session WILL close for user \'%@\' [%lu]", user, [session retainCount]);
+  NSLog(@"Session WILL close for user \'%@\' [%lu] exitStatus: %lu",
+        user, [session retainCount], session.exitStatus);
   
   if ([userSessions objectForKey:user] == nil) {
     return;
   }
 
   session.isRunning = NO;
-  
-  if ([session exitStatus] != 0) {
+  sessionExitStatus = session.exitStatus;
+
+  if (sessionExitStatus == ShutdownExitCode) {
+    panelExitCode = ShutdownExitCode;
+    // [self setPanelExitCode:ShutdownExitCode];
+  }
+  else if (sessionExitStatus != 0 &&
+           sessionExitStatus != ShutdownExitCode &&
+           sessionExitStatus != RebootExitCode) {
     choice = NXTRunAlertPanel(@"Login", @"Session finished with error. "
                               "See console.log for details.\n"
                               "Do you want to restart or cleanup session?\n"
                               "Note: \"Cleanup\" will kill all running applications.",
                               @"Restart", @"Cleanup", nil);
-    switch (choice)
-      {
-      case NSAlertAlternateReturn:
-        [self closeAllXClients];
-        break;
-      default:
-        // Session will be restarted in GCD queue (openSessionForUser:)
-        session.isRunning = YES;
-        return;
-      }
+    if (choice == NSAlertAlternateReturn) {
+      [self closeAllXClients];
+    }
+    else {
+      session.isRunning = YES;
+    }
   }
 
-  [userSessions removeObjectForKey:user];
-  pam_end(PAM_handle, 0);
+  // Do not close PAM session and show window if session aimed to be restarted.
+  // Session will be restarted in GCD queue (openSessionForUser:)
+  if (session.isRunning == NO) {
+    [userSessions removeObjectForKey:user];
+    pam_end(PAM_handle, 0);
   
-  // TODO: actually this doesn't make sense because no multuple session handling
-  // implemented. Leave it for future.
-  if ([[userSessions allKeys] count] == 0) {
-    if ([session exitStatus] != ShutdownExitCode)
-      [self setWindowVisible:YES];
-    else
-      panelExitCode = ShutdownExitCode;
+    // TODO: actually this doesn't make sense because no multuple session handling
+    // implemented yet. Leave it for the future.
+    if ([[userSessions allKeys] count] == 0) {
+      if (sessionExitStatus != ShutdownExitCode) {
+        [self setWindowVisible:YES];
+      }
+    }
   }
 }
 
@@ -330,7 +349,8 @@ void *alloc(int size)
 
 - (void)setLastLoggedInUser:(NSString *)username
 {
-  [prefs setObject:username forKey:@"LastLoggedInUser"];
+  [prefs setObject:username == nil ? @"" : [NSString stringWithString:username]
+            forKey:@"LastLoggedInUser"];
 }
 
 @end
@@ -399,8 +419,6 @@ void *alloc(int size)
 - (void)awakeFromNib
 {
   NSLog(@"Login: awakeFromNib");
-  [quitLabel retain];
-  [quitLabel removeFromSuperview];
   
   [shutDownBtn setRefusesFirstResponder:YES];
   [restartBtn setRefusesFirstResponder:YES];
@@ -412,12 +430,7 @@ void *alloc(int size)
 
   userSessions = [[NSMutableDictionary alloc] init];
 
-  // Setup events and notifications
-  [[NSDistributedNotificationCenter 
-     notificationCenterForType:GSPublicNotificationCenterType]
-    addObserver:self selector:@selector(shutDown:)
-           name:@"XSComputerShouldGoDown"
-         object:@"WorkspaceManager"];
+  panelExitCode = 0;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -446,13 +459,12 @@ void *alloc(int size)
   struct pam_conv conv;
 
   conv.conv = ConversationFunction;
-  if (pam_start("login", [user cString], &conv, &PAM_handle) != PAM_SUCCESS)
-    {
-      NSLog(@"Failed to initialize PAM");
-      NXTRunAlertPanel(@"Login authentication",
-                      @"Failed to initialize PAM", nil, nil, nil);
-      return NO;
-    }
+  if (pam_start("login", [user cString], &conv, &PAM_handle) != PAM_SUCCESS) {
+    NSLog(@"Failed to initialize PAM");
+    NXTRunAlertPanel(@"Login authentication",
+                     @"Failed to initialize PAM", @"Dismiss", nil, nil);
+    return NO;
+  }
   
   NS_DURING
     {
@@ -478,11 +490,11 @@ void *alloc(int size)
 
 - (void)authenticate:(id)sender
 {
-  NSString *user = [userName stringValue];
+  NSString *user = [[NSString alloc] initWithString:[userName stringValue]];
 
   [self setBusyCursor];
   
-  NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
+  NSLog(@"[Controller authenticate:] userName: %@", user);
 
   if (sender == userName) {
     if ([user isEqualToString:@"console"]) {
@@ -518,33 +530,38 @@ void *alloc(int size)
   if ([self authenticateUser:user] == YES) {
     [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
     [self setWindowVisible:NO];
-      
-    // Clear password ivar for security reasons
-    // [password setStringValue:@""];
-
-    NSLog(@"Controller, username: %@", user);
-    // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
     [self openSessionForUser:user];
-    // NSLog(@"[Controller authenticate:] userName RC: %lu", [user retainCount]);
   }
   else {
     [window shakePanel:xPanelWindow onDisplay:xDisplay];
-    [self clearFields];
   }
+  
+  [self clearFields];
   [self destroyBusyCursor];
+  [user release];
 }
 
 - (void)restart:sender
 {
   NSInteger alertResult;
+
+  NSLog(@"[Controller restart] initial exit code: %d", panelExitCode);
   
-  alertResult = NXTRunAlertPanel(_(@"Restart"),
-                                 _(@"Do you really want to restart the computer?"),
-                                 _(@"Restart"), _(@"Cancel"), nil);
+  // No need to ask user if exit code already defined.
+  if (panelExitCode == 0) {
+    alertResult = NXTRunAlertPanel(_(@"Restart"),
+                                   _(@"Do you really want to restart the computer?"),
+                                   _(@"Restart"), _(@"Cancel"), nil);
   
-  if (alertResult == NSAlertDefaultReturn) {
-    panelExitCode = RebootExitCode;
-    [NSApp stop:self]; // Go out of run loop
+    if (alertResult == NSAlertDefaultReturn) {
+      panelExitCode = RebootExitCode;
+    }
+  }
+
+  if (panelExitCode == RebootExitCode) {
+    NSLog(@"[Controller] restart: application will be stopped with exit code: %d",
+          panelExitCode);
+    // [NSApp stop:self]; // Go out of run loop
   }
 }
 
@@ -552,18 +569,23 @@ void *alloc(int size)
 {
   NSInteger alertResult;
 
-  NSLog(@"Login: receive \"Power off\" event from %@", [sender className]);
-
-  // TODO: Check if other users still logged in
+  NSLog(@"[Controller shutDown] initial exit code: %d", panelExitCode);
   
   // Ask user to verify his choice
-  alertResult = NXTRunAlertPanel(_(@"Power"),
-                                 _(@"Do you really want to turn off the computer?"),
-                                 _(@"Turn it off"), _(@"Cancel"), nil);
+  if (panelExitCode == 0) {
+    alertResult = NXTRunAlertPanel(_(@"Power"),
+                                   _(@"Do you really want to turn off the computer?"),
+                                   _(@"Turn it off"), _(@"Cancel"), nil);
   
-  if (alertResult == NSAlertDefaultReturn) {
-    panelExitCode = ShutdownExitCode;
-    [NSApp stop:self];
+    if (alertResult == NSAlertDefaultReturn) {
+      panelExitCode = ShutdownExitCode;
+    }
+  }
+  
+  if (panelExitCode == ShutdownExitCode) {
+    NSLog(@"[Controller] shutDown: application will be stopped with exit code: %d",
+          panelExitCode);
+    // [NSApp stop:self]; // Go out of run loop
   }
 }
 
@@ -589,8 +611,6 @@ void *alloc(int size)
   [password removeFromSuperview];
   [fieldsImage removeFromSuperview];
   [fieldsLabelImage removeFromSuperview];
-
-  [[window contentView] addSubview:quitLabel];
 }
 
 // It is needed by ConversationFunction()

@@ -45,8 +45,6 @@ enum LoginExitCode {
 };
 int panelExitCode;
 
-extern NSString *SessionDidCloseNotification;
-
 @class UserSession;
 
 @interface Controller : NSObject
@@ -59,7 +57,6 @@ extern NSString *SessionDidCloseNotification;
   IBOutlet id          password;
   IBOutlet id          shutDownBtn;
   IBOutlet id          restartBtn;
-  IBOutlet id          quitLabel;
 
   // X resources
   Display              *xDisplay;
@@ -99,7 +96,7 @@ extern NSString *SessionDidCloseNotification;
 @interface Controller (UserSession)
 
 - (void)openSessionForUser:(NSString *)userName;
-- (oneway void)userSessionWillClose:(UserSession *)session;
+- (void)userSessionWillClose:(UserSession *)session;
 
 @end
 
