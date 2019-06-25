@@ -165,71 +165,85 @@
   int        i;
   int        pid=0;
   int        status=0;
-  pid_t      wpid;
 
   executable = [[command objectAtIndex:0] fileSystemRepresentation];
   args[0] = executable;
 
   for (i = 1; i < ac; i++) {     
     args[i] = [[command objectAtIndex:i] cString];
-    // fprintf(stderr, "[launchCommand] Added argument: %s\n", args[i]);
   }
   args[ac] = NULL;
+
+  // Without this call waitpid() looses forked child process.
+  signal(SIGCHLD, SIG_DFL);
 
   pid = fork();
   switch (pid)
     {
     case 0:
-      fprintf(stderr, "[fork] Executing %s\n", executable);
-      if ([self _setUserEnvironment] == YES) {
-        // fprintf(stderr, "[fork] USER=%s, HOME=%s, DISPLAY=%s\n",
-        //         getenv("USER"), getenv("HOME"), getenv("DISPLAY"));
-        if (append) {
-          freopen(getenv("NS_LOGFILE"), "a", stderr);
-          freopen(getenv("NS_LOGFILE"), "a", stdout);
+      {
+        fprintf(stderr, "[fork] Executing %s\n", executable);
+        if ([self _setUserEnvironment] == YES) {
+          if (append) {
+            freopen(getenv("NS_LOGFILE"), "a", stderr);
+            freopen(getenv("NS_LOGFILE"), "a", stdout);
+          }
+          else {
+            freopen(getenv("NS_LOGFILE"), "w+", stderr);
+            freopen(getenv("NS_LOGFILE"), "w+", stdout);
+          }
+          status = execv(executable, (char**)args);
         }
-        else {
-          freopen(getenv("NS_LOGFILE"), "w+", stderr);
-          freopen(getenv("NS_LOGFILE"), "w+", stdout);
-        }
-        status = execv(executable, (char**)args);
+        // If forked process goes here - something went wrong: aborting.
+        fprintf(stderr, "[fork] 'execv' returned error %i (%i:%s). Aborting.\n",
+                status, errno, strerror(errno));
+        abort();
       }
-      // If forked process goes here - something went wrong: aborting.
-      fprintf(stderr, "[fork] 'execv' returned error %i (%i:%s). Aborting.\n",
-              status, errno, strerror(errno));
-      abort();
       break;
     default:
-      if (isWait == NO)
-        break;
+      {
+        if (isWait == NO)
+          break;
       
-      // Wait for command to finish launching
-      fprintf(stderr, "[lanchCommand] Waiting for PID: %i\n", pid);
-      wpid = waitpid(pid, &status, 0);
-      if (WIFEXITED(status)) {
-        fprintf(stderr, "<launchCommand> %s EXITED with code %d(%d)\n", 
-                executable, WEXITSTATUS(status), status);
-        status = WEXITSTATUS(status);
-      }
-      else if (WIFSIGNALED(status)) {
-        fprintf(stderr, "<launchCommand> %s KILLED with signal %d\n", 
-                executable, WTERMSIG(status));
-        if (WCOREDUMP(status)) {
-          fprintf(stderr, " (CORE DUMPED)\n");
+        // Wait for command to finish launching
+        fprintf(stderr, "[launchCommand] Waiting for PID: %i\n", pid);
+      
+        while (waitpid(pid, &status, 0) == -1) {
+          if (errno == EINTR) {
+            printf("[laucnCommand] Parent interrrupted - restarting...\n");
+            continue;
+          }
+          else {
+            perror("[launchCommand] waitpid() failed");
+            status = 1;
+          }
+        }
+      
+        if (WIFEXITED(status)) {
+          fprintf(stderr, "[launchCommand] %s EXITED with code %d(%d)\n", 
+                  executable, WEXITSTATUS(status), status);
+          status = WEXITSTATUS(status);
+        }
+        else if (WIFSIGNALED(status)) {
+          fprintf(stderr, "[launchCommand] %s KILLED with signal %d\n", 
+                  executable, WTERMSIG(status));
+          if (WCOREDUMP(status)) {
+            fprintf(stderr, " (CORE DUMPED)\n");
+          }
+          else {
+            fprintf(stderr, "\n");
+          }
+          status = 1;
+        }
+        else if (WIFSTOPPED(status)) {
+          fprintf(stderr, "[launchCommand] %s is STOPPED\n", executable);
+          status = 1;
         }
         else {
-          fprintf(stderr, "\n");
+          fprintf(stderr, "[launchCommand] %s finished with exit code %i\n", 
+                  executable, status);
+          status = 1;
         }
-        status = 1;
-      }
-      else if (WIFSTOPPED(status)) {
-        fprintf(stderr, "<launchCommand> %s is STOPPED\n", executable);
-        status = 1;
-      }
-      else {
-        fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
-                executable, status);
-        status = 1;
       }
       break;
     }

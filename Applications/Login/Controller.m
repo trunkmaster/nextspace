@@ -561,7 +561,7 @@ void *alloc(int size)
   if (panelExitCode == RebootExitCode) {
     NSLog(@"[Controller] restart: application will be stopped with exit code: %d",
           panelExitCode);
-    // [NSApp stop:self]; // Go out of run loop
+    [NSApp stop:self]; // Go out of run loop
   }
 }
 
@@ -585,7 +585,7 @@ void *alloc(int size)
   if (panelExitCode == ShutdownExitCode) {
     NSLog(@"[Controller] shutDown: application will be stopped with exit code: %d",
           panelExitCode);
-    // [NSApp stop:self]; // Go out of run loop
+    [NSApp stop:self]; // Go out of run loop
   }
 }
 
