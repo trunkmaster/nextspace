@@ -147,6 +147,8 @@
   appDefaults = defaults;
   _exitStatus = 0;
 
+  
+
   _userName = [[NSString alloc] initWithString:name];
   [self _setupSessionLog];
 
@@ -207,6 +209,7 @@
       if (WIFEXITED(status)) {
         fprintf(stderr, "<launchCommand> %s EXITED with code %d(%d)\n", 
                 executable, WEXITSTATUS(status), status);
+        status = WEXITSTATUS(status);
       }
       else if (WIFSIGNALED(status)) {
         fprintf(stderr, "<launchCommand> %s KILLED with signal %d\n", 
@@ -217,13 +220,16 @@
         else {
           fprintf(stderr, "\n");
         }
+        status = 1;
       }
       else if (WIFSTOPPED(status)) {
         fprintf(stderr, "<launchCommand> %s is STOPPED\n", executable);
+        status = 1;
       }
       else {
         fprintf(stderr, "<launchCommand> %s finished with exit code %i\n", 
                 executable, status);
+        status = 1;
       }
       break;
     }
@@ -264,8 +270,7 @@
   
   // Try system session script
   if (sessionScript == nil || [sessionScript count] == 0) {
-    NSLog(@"Using DefaultSessionScript: %@",
-          [appDefaults objectForKey:@"DefaultSessionScript"]);
+    NSLog(@"Using DefaultSessionScript...");
     [sessionScript
       addObjectsFromArray:[appDefaults objectForKey:@"DefaultSessionScript"]];
   }
@@ -274,8 +279,6 @@
   if ((hook = [userDefaults objectForKey:@"LogoutHook"]) != nil) {
     [sessionScript addObject:hook];
   }
-  
-  NSLog(@"User session script: %@", sessionScript);
 }
 
 // Starts:
@@ -288,7 +291,7 @@
   NSString *command;
   BOOL     firstCommand = YES;
 
-  NSLog(@"launchSession: %@", sessionScript);
+  // NSLog(@"launchSession: %@", sessionScript);
 
   for (NSArray *scriptCommand in sessionScript) {
     if (scriptCommand == nil ||
@@ -309,12 +312,12 @@
     }
     // Treat exit code of Workspace specially (LoginExitCode in Controller.h)
     if ([[[scriptCommand objectAtIndex:0] lastPathComponent] isEqualToString:@"Workspace"]) {
-      _exitStatus = ret;
+      _exitStatus = (NSInteger)ret;
     }
-    if (ret != 0) {
-      NSLog(@"Error launching session script command %@", command);
-      break;
-    }
+    // if (ret != 0) {
+    //   NSLog(@"Error launching session script command %@", command);
+    //   break;
+    // }
   }
 }
 
