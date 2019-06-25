@@ -100,7 +100,6 @@ extern NSString *SessionDidCloseNotification;
 
 - (void)openSessionForUser:(NSString *)userName;
 - (oneway void)userSessionWillClose:(UserSession *)session;
-- (void)showSessionMessage:(NSString *)message;
 
 @end
 
@@ -108,8 +107,6 @@ extern NSString *SessionDidCloseNotification;
 
 - (void)setRootWindowBackground;
 - (void)setWindowVisible:(BOOL)flag;
-- (void)hideWindow;
-- (void)showWindow;
 - (void)closeAllXClients;
 
 - (void)setBusyCursor;

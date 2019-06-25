@@ -32,6 +32,7 @@ Login_RESOURCE_FILES = \
 Resources/Login.gorm \
 Resources/loginwindow.tiff \
 Resources/Login \
+Resources/Login.user \
 Resources/loginwindow.service \
 Preferences/Login.preferences
 

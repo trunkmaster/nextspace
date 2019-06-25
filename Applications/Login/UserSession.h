@@ -30,9 +30,13 @@
 {
   Controller     *appController;
   NSDictionary   *appDefaults;
-  NSString       *userName;
   NSMutableArray *sessionScript;
 }
+
+@property (assign)   BOOL      isRunning;
+@property (readonly) NSInteger exitStatus;
+@property (readonly) NSString  *userName;
+@property (readonly) NSString  *sessionLog;
 
 // ---
 
@@ -40,17 +44,16 @@
                name:(NSString *)name
            defaults:(NSDictionary *)defaults;
 
-// - (void)setSessionScript:(NSArray *)script;
-- (void)setSessionName:(NSString *)name;
-- (NSString *)sessionName;
-
 // ---
 
-// - (void)launchSession;
-- (void)launch;
 - (int)launchCommand:(NSArray *)command
            logAppend:(BOOL)append
                 wait:(BOOL)isWait;
 
+@end
+
+@interface UserSession (ScriptLaunch)
+- (void)readSessionScript;
+- (void)launchSessionScript;
 @end
 

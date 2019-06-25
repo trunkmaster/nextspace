@@ -106,6 +106,8 @@ void *alloc(int size)
   aSession = [[UserSession alloc] initWithOwner:self
                                            name:user
                                        defaults:(NSDictionary *)prefs];
+  [aSession readSessionScript];
+  aSession.isRunning = YES;
   [userSessions setObject:aSession forKey:user]; // remember user session
   [aSession release];
 
@@ -113,10 +115,12 @@ void *alloc(int size)
   dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
   dispatch_async(gq, ^{
       @autoreleasepool {
-        [aSession launch];
-        [self performSelectorOnMainThread:@selector(userSessionWillClose:)
-                               withObject:aSession
-                            waitUntilDone:YES];
+        while (aSession.isRunning != NO) {
+          [aSession launchSessionScript];
+          [self performSelectorOnMainThread:@selector(userSessionWillClose:)
+                                 withObject:aSession
+                              waitUntilDone:YES];
+        }
       }
     });
   // ----------------
@@ -124,26 +128,46 @@ void *alloc(int size)
 
 - (oneway void)userSessionWillClose:(UserSession *)session
 {
-  NSString *user = [session sessionName];
+  NSString  *user = session.userName;
+  NSInteger choice;
 
   NSLog(@"Session WILL close for user \'%@\' [%lu]", user, [session retainCount]);
   
   if ([userSessions objectForKey:user] == nil) {
     return;
   }
+
+  session.isRunning = NO;
+  
+  if ([session exitStatus] != 0) {
+    choice = NXTRunAlertPanel(@"Login", @"Session finished with error. "
+                              "See console.log for details.\n"
+                              "Do you want to restart or cleanup session?\n"
+                              "Note: \"Cleanup\" will kill all running applications.",
+                              @"Restart", @"Cleanup", nil);
+    switch (choice)
+      {
+      case NSAlertAlternateReturn:
+        [self closeAllXClients];
+        break;
+      default:
+        // Session will be restarted in GCD queue (openSessionForUser:)
+        session.isRunning = YES;
+        return;
+      }
+  }
+
   [userSessions removeObjectForKey:user];
   pam_end(PAM_handle, 0);
-
-//  [self closeAllXClients];
-
+  
+  // TODO: actually this doesn't make sense because no multuple session handling
+  // implemented. Leave it for future.
   if ([[userSessions allKeys] count] == 0) {
-    [self showWindow];
+    if ([session exitStatus] != ShutdownExitCode)
+      [self setWindowVisible:YES];
+    else
+      panelExitCode = ShutdownExitCode;
   }
-}
-
-- (void)showSessionMessage:(NSString *)message
-{
-  NXTRunAlertPanel(@"Login", message, @"OK", nil, nil);
 }
 
 @end
@@ -192,19 +216,10 @@ void *alloc(int size)
   else
     {
       XUngrabKeyboard(xDisplay, CurrentTime);
+      [window orderOut:self]; // to prevent panels to show panel
       XWithdrawWindow(xDisplay, xPanelWindow, xScreen);
     }
   XFlush(xDisplay);
-}
-
-- (void)hideWindow
-{
-  [self setWindowVisible:NO];
-}
-
-- (void)showWindow
-{
-  [self setWindowVisible:YES];
 }
 
 - (void)closeAllXClients
@@ -220,20 +235,17 @@ void *alloc(int size)
   XQueryTree(xDisplay, xRootWindow, &dummywindow, &dummywindow, 
 	     &children, &nchildren);
 
-  for (i = 0; i < nchildren; i++)
-    {
-      if (XGetWindowAttributes(xDisplay, children[i], &attr)
-	  && (attr.map_state != IsUnmapped))
-	{
-//	  children[i] = XmuClientWindow(xDisplay, children[i]);
-	  XKillClient(xDisplay, children[i]);
-//	  XDestroyWindow(xDisplay, children[i]);
-	}
-      else
-	{
-	  children[i] = 0;
-	}
+  for (i = 0; i < nchildren; i++) {
+    if (XGetWindowAttributes(xDisplay, children[i], &attr)
+        && (attr.map_state != IsUnmapped)) {
+      // children[i] = XmuClientWindow(xDisplay, children[i]);
+      XKillClient(xDisplay, children[i]);
+      // XDestroyWindow(xDisplay, children[i]);
     }
+    else {
+      children[i] = 0;
+    }
+  }
 
   XFree((char *)children);
 
@@ -419,7 +431,7 @@ void *alloc(int size)
 
   NSLog(@"appDidFinishLaunch: before showWindow");
   // Show login window
-  [self showWindow];
+  [self setWindowVisible:YES];
   NSLog(@"appDidFinishLaunch: end");
 
   // Turn light on
@@ -505,7 +517,7 @@ void *alloc(int size)
 
   if ([self authenticateUser:user] == YES) {
     [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
-    [self hideWindow];
+    [self setWindowVisible:NO];
       
     // Clear password ivar for security reasons
     // [password setStringValue:@""];

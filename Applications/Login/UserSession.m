@@ -36,203 +36,38 @@
 
 @implementation UserSession
 
-- (void)dealloc
+// Log file for session use
+- (void)_setupSessionLog
 {
-  NSLog(@"UserSession: dealloc");
-
-  NSLog(@"userName: %lu", [userName retainCount]);
-  NSLog(@"sessionScript: %lu", [sessionScript retainCount]);
-
-  [userName release]; // retained by 'copy' in setSessionName:
-  [sessionScript release]; // retained by 'copy' in setSessionScript:
-
-  NSLog(@"UserSession: dealloc end");
-
-  [super dealloc];
-}
-- (id)initWithOwner:(Controller *)controller
-               name:(NSString *)name
-           defaults:(NSDictionary *)defaults
-{
-  self = [super init];
-  if (self == nil) {
-    return nil;
-  }
-
-  appController = controller;
-  appDefaults = defaults;
-
-  [self setSessionName:name];
-
-  return self;
-}
-
-- (void)setSessionName:(NSString *)name
-{
-  userName = [name copy];
-}
-- (NSString *)sessionName
-{
-  return userName;
-}
-
-- (void)readSessionScript
-{
-  NSString       *homeDir =  NSHomeDirectoryForUser(userName);
-  NSString       *pathFormat;
-  NSString       *defaultsPath;
-  NSDictionary   *userDefaults;
-  NSFileManager  *fm = [NSFileManager defaultManager];
-  NSArray        *command;
-  NSString       *hook;
-
-  sessionScript = [NSMutableArray new];
-  pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
-  defaultsPath = [NSString stringWithFormat:pathFormat, homeDir];
-  userDefaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString      *logDir;
+  BOOL          isDir;
   
-  // Login hook
-  if ((hook = [userDefaults objectForKey:@"LoginHook"]) != nil) {
-    [sessionScript addObject:hook];
-  }
+  logDir = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u",
+                     getpwnam([_userName cString])->pw_uid];
   
-  // E.g. "~/.xinitrc", "~/.xsession"
-  // Only first existing script will be executed (TODO?)
-  for (NSString *scriptPath in [appDefaults objectForKey:@"UserSessionScripts"]) {
-    scriptPath = [scriptPath stringByExpandingTildeInPath];
-    if ([fm fileExistsAtPath:scriptPath]) {
-      command = [NSArray arrayWithObjects:scriptPath, nil];
-      break;
-    }
+  if (![fm fileExistsAtPath:logDir isDirectory:&isDir]) {
+    [fm createDirectoryAtPath:logDir
+        withIntermediateDirectories:YES
+                   attributes:@{NSFilePosixPermissions:@"700"}
+                        error:0];
   }
-  
-  if (command) {
-    NSLog(@"UserSessionScript: %@", command);
-    [sessionScript addObject:command];
-  }
-  else { // Try system session script
-    NSLog(@"DefaultSessionScript: %@",
-          [appDefaults objectForKey:@"DefaultSessionScript"]);
-    [sessionScript
-      addObjectsFromArray:[appDefaults objectForKey:@"DefaultSessionScript"]];
-  }
-  
-  // Logout hook
-  if ((hook = [userDefaults objectForKey:@"LogoutHook"]) != nil) {
-    [sessionScript addObject:hook];
-  }
-  
-  NSLog(@"User session script: %@", sessionScript);
-}
-
-// - (void)setSessionScript:(NSArray *)script
-// {
-//   sessionScript = [script copy];
-// }
-
-// Starts:
-// 1. LoginHook (~/L/P/.N/Login)
-// 2. sessionScript
-// 3. LogoutHook (~/L/P/.N/Login)
-- (void)launchSessionScript
-{
-  int      ret;
-  BOOL     appendToLog;
-  NSString *commandName;
-
-  NSLog(@"launchSession: %@", sessionScript);
-
-  for (NSArray *scriptCommand in sessionScript) {
-    if ([scriptCommand count] == 0) {
-      continue;
-    }
-    commandName = [scriptCommand objectAtIndex:0];
-    NSLog(@"SESSION: starting command %@", commandName);
-    if (commandName == nil || [commandName isEqualToString:@""])
-      continue;
-
-    appendToLog = ([sessionScript indexOfObject:scriptCommand] == 0) ? NO : YES;
-    ret = [self launchCommand:scriptCommand
-                    logAppend:appendToLog
-                         wait:YES];
-    if (ret != 0) {
-      NSLog(@"Error launching session script command %@", commandName);
-      break;
-    }
-  }
-}
-
-- (id)userDefaultsObjectForKey:(NSString *)key
-{
-  NSString	*pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
-  NSString	*homeDir = NSHomeDirectoryForUser(userName);
-  NSString	*defsPath;
-  NSDictionary	*defs;
-  
-  defsPath = [NSString stringWithFormat:pathFormat, homeDir];
-  defs = [NSDictionary dictionaryWithContentsOfFile:defsPath];
-
-  return [defs objectForKey:key];
-}
-
-#define GS @"/usr/NextSpace/bin/gnustep-services"
-#define WM @"/usr/NextSpace/Apps/Workspace.app/Workspace"
-
-- (void)launch
-{
-  int 		ret;
-  NSArray	*hook;
-  NSString	*message = nil;
-  
-  // GNUstep services start
-  ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"start", nil]
-                  logAppend:NO
-                       wait:YES];
-  // LoginHook - must be a string
-  hook = [self userDefaultsObjectForKey:@"LoginHook"];
-  if (hook && [hook isKindOfClass:[NSString class]]) {
-    ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
-                    logAppend:YES wait:NO];
-  }
-  // Workspace Manager
-  ret = [self launchCommand:[NSArray arrayWithObjects:WM, nil]
-                  logAppend:YES
-                       wait:YES];
-  if (ret != 0) {
-    message = @"Workspace Manager quit with error.";
-  }
-  // LogoutHook
-  hook = [self userDefaultsObjectForKey:@"LogoutHook"];
-  if (hook && [hook isKindOfClass:[NSString class]]) {
-    ret = [self launchCommand:[NSArray arrayWithObjects:hook, nil]
-                    logAppend:YES wait:NO];
-  }
-  // Stop GNUstep services
-  ret = [self launchCommand:[NSArray arrayWithObjects:GS, @"stop", nil]
-                  logAppend:YES
-                       wait:YES];
-
-  if (message) {
-    [appController performSelectorOnMainThread:@selector(showSessionMessage:)
-                                    withObject:message
-                                 waitUntilDone:YES];
-  }
+  if (_sessionLog != nil)
+    [_sessionLog release];
+  _sessionLog = [[NSString alloc]
+                     initWithString:[logDir stringByAppendingPathComponent:@"console.log"]];
 }
 
 // Called for every launched command  (launchCommand:)
 - (BOOL)_setUserEnvironment
 {
   struct passwd	*user;
-  NSFileManager *fm;
-  NSString	*logDir;
-  BOOL		isDir;
-  NSDictionary  *logAttrs;
   
-  user = getpwnam([userName cString]);
+  user = getpwnam([_userName cString]);
   endpwent();
   
   if (user == NULL) {
-    NSLog(_(@"Unable to get credentials of user %@! Exiting."), userName);
+    NSLog(_(@"Unable to get credentials of user %@! Exiting."), _userName);
     return NO;
   }
 
@@ -278,20 +113,44 @@
   // For developers
   setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);
 
-  // Log file for session use
-  fm = [NSFileManager defaultManager];
-  logDir = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u", user->pw_uid];
-  if (![fm fileExistsAtPath:logDir isDirectory:&isDir]) {
-    logAttrs = [NSDictionary dictionaryWithObject:@"700"
-                                           forKey:NSFilePosixPermissions];
-    [fm createDirectoryAtPath:logDir
-        withIntermediateDirectories:YES
-                   attributes:logAttrs
-                        error:0];
-  }
-  setenv("NS_LOGFILE", [[logDir stringByAppendingPathComponent:@"console.log"] cString], 1);
+  setenv("NS_LOGFILE", [_sessionLog cString], 1);
   
   return YES;
+}
+
+
+- (void)dealloc
+{
+  NSLog(@"UserSession: dealloc");
+
+  NSLog(@"userName: %lu", [_userName retainCount]);
+  NSLog(@"sessionScript: %lu", [sessionScript retainCount]);
+
+  [_userName release]; // retained by 'copy' in setSessionName:
+  [sessionScript release]; // retained by 'copy' in setSessionScript:
+  [_sessionLog release];
+
+  NSLog(@"UserSession: dealloc end");
+
+  [super dealloc];
+}
+- (id)initWithOwner:(Controller *)controller
+               name:(NSString *)name
+           defaults:(NSDictionary *)defaults
+{
+  self = [super init];
+  if (self == nil) {
+    return nil;
+  }
+
+  appController = controller;
+  appDefaults = defaults;
+  _exitStatus = 0;
+
+  _userName = [[NSString alloc] initWithString:name];
+  [self _setupSessionLog];
+
+  return self;
 }
 
 - (int)launchCommand:(NSArray *)command
@@ -370,6 +229,93 @@
     }
 
   return status;
+}
+
+@end
+
+@implementation UserSession (ScriptLaunch)
+
+- (void)readSessionScript
+{
+  NSFileManager  *fm = [NSFileManager defaultManager];
+  NSString       *homeDir = NSHomeDirectoryForUser(_userName);
+  NSString       *pathFormat;
+  NSString       *defaultsPath;
+  NSDictionary   *userDefaults;
+  NSString       *hook;
+
+  sessionScript = [NSMutableArray new];
+  pathFormat = @"%@/Library/Preferences/.NextSpace/Login";
+  defaultsPath = [NSString stringWithFormat:pathFormat, homeDir];
+  if ([fm fileExistsAtPath:defaultsPath] == NO) {
+    [fm copyItemAtPath:[[NSBundle mainBundle] pathForResource:@"Login" ofType:@"user"]
+                toPath:defaultsPath
+                 error:0];
+  }
+  userDefaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
+  
+  // Login hook
+  if ((hook = [userDefaults objectForKey:@"LoginHook"]) != nil) {
+    [sessionScript addObject:hook];
+  }
+  
+  // Session script
+  [sessionScript addObjectsFromArray:[userDefaults objectForKey:@"SessionScript"]];
+  
+  // Try system session script
+  if (sessionScript == nil || [sessionScript count] == 0) {
+    NSLog(@"Using DefaultSessionScript: %@",
+          [appDefaults objectForKey:@"DefaultSessionScript"]);
+    [sessionScript
+      addObjectsFromArray:[appDefaults objectForKey:@"DefaultSessionScript"]];
+  }
+  
+  // Logout hook
+  if ((hook = [userDefaults objectForKey:@"LogoutHook"]) != nil) {
+    [sessionScript addObject:hook];
+  }
+  
+  NSLog(@"User session script: %@", sessionScript);
+}
+
+// Starts:
+// 1. LoginHook (~/L/P/.N/Login)
+// 2. sessionScript
+// 3. LogoutHook (~/L/P/.N/Login)
+- (void)launchSessionScript
+{
+  int      ret;
+  NSString *command;
+  BOOL     firstCommand = YES;
+
+  NSLog(@"launchSession: %@", sessionScript);
+
+  for (NSArray *scriptCommand in sessionScript) {
+    if (scriptCommand == nil ||
+        [scriptCommand isKindOfClass:[NSArray class]] == NO ||
+        [scriptCommand count] == 0) {
+      continue;
+    }
+    command = [scriptCommand objectAtIndex:0];
+    if (command == nil || [command isEqualToString:@""])
+      continue;
+
+    NSLog(@"SESSION: starting command %@", command);
+    ret = [self launchCommand:scriptCommand
+                    logAppend:!firstCommand
+                         wait:YES];
+    if (firstCommand != NO) {
+      firstCommand = NO;
+    }
+    // Treat exit code of Workspace specially (LoginExitCode in Controller.h)
+    if ([[[scriptCommand objectAtIndex:0] lastPathComponent] isEqualToString:@"Workspace"]) {
+      _exitStatus = ret;
+    }
+    if (ret != 0) {
+      NSLog(@"Error launching session script command %@", command);
+      break;
+    }
+  }
 }
 
 @end

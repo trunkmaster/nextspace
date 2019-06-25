@@ -2,16 +2,10 @@
     LastLoggedInUser = "";
     StartupHook = "";
     ShutdownHook = "";
-    LoginHook = "";
-    LogoutHook = ;
     DefaultSessionScript = (
         ("/usr/NextSpace/bin/gnustep-services", "start"),
         ("/usr/NextSpace/Apps/Workspace.app/Workspace"),
         ("/usr/NextSpace/bin/gnustep-services", "stop")
-    );
-    UserSessionScripts = (
-	"!.xinitrc",
-	"!.xsession"
     );
     WindowServerCommand = (
 	"/bin/Xorg",
