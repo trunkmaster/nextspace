@@ -34,7 +34,7 @@ dispatch_queue_t wmaker_q;
 
 enum {
       WSLogoutOnQuit = 0,
-      WSPowerOffOnQuit = 127
+      WSPowerOffOnQuit = 11 // ShutdownExitCode in Login application
 };
 int ws_quit_code;
 
