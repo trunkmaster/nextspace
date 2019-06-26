@@ -4,7 +4,7 @@ After=gdomap.service
 
 [Service]
 Environment=LD_LIBRARY_PATH=/Library/Libraries:/usr/NextSpace/lib
-ExecStart=/Library/bin/gdnc --daemon
+ExecStart=/Library/bin/gdnc --daemon -GSPublic YES
 ExecStop=/bin/kill -INT $MAINPID
 KillMode=process
 Restart=on-failure
