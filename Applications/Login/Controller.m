@@ -327,11 +327,6 @@ void *alloc(int size)
 //=============================================================================
 @implementation Controller (Preferences)
 
-- (void)openLoginPreferences
-{
-  prefs = [[NXTDefaults alloc] initWithUserDefaults];
-}
-
 - (NSString *)lastLoggedInUser
 {
   return [prefs objectForKey:@"LastLoggedInUser"];
@@ -339,6 +334,7 @@ void *alloc(int size)
 
 - (void)setLastLoggedInUser:(NSString *)username
 {
+  
   [prefs setObject:username == nil ? @"" : [NSString stringWithString:username]
             forKey:@"LastLoggedInUser"];
 }
@@ -413,24 +409,19 @@ void *alloc(int size)
   [fieldsLabelImage setRefusesFirstResponder:YES];
   [panelImageView setRefusesFirstResponder:YES];
 
-  [userName setStringValue:[self lastLoggedInUser]];
+  // Open preferences
+  prefs = [[NXTDefaults alloc] initWithUserDefaults];
 
+  [userName setStringValue:[self lastLoggedInUser]];
+            
   userSessions = [[NSMutableDictionary alloc] init];
 
   panelExitCode = 0;
-  [[NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
-    addObserver:self
-       selector:@selector(defaultsShouldChange:)
-           name:@"LoginDefaultsShouldChangeNotification"
-         object:nil];
-
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
 {
   NSLog(@"appDidFinishLaunch: start");
-  // Open preferences
-  [self openLoginPreferences];
 
   // Initialize X resources
   [self initXApp];
@@ -445,13 +436,23 @@ void *alloc(int size)
   //   {
   //     [display fadeToNormal:1.0];
   //   }
+  // NSConnection *conn = [NSConnection defaultConnection];
+  // [conn registerName:@"loginwindow"];
+
+  [[NSDistributedNotificationCenter
+     notificationCenterForType:GSPublicNotificationCenterType]
+    addObserver:self
+       selector:@selector(defaultsShouldChange:)
+           name:@"LoginDefaultsShouldChangeNotification"
+         object:@"Prefs"];
 }
 
 - (void)defaultsShouldChange:(NSNotification *)notif
 {
   NSDictionary *settings = [notif userInfo];
 
-  NSLog(@"Received request to change defaults: %@", [notif object]);
+  NSLog(@"Received request to change defaults: %@", notif);
+  
   if ([settings isKindOfClass:[NSDictionary class]] == NO) {
     NSLog(@"Changes is not in NSDictionary but in %@.",
           [settings className]);
@@ -461,9 +462,9 @@ void *alloc(int size)
     [prefs setObject:[settings objectForKey:@"DisplayHostName"]
               forKey:@"DisplayHostName"];
   }
-  else if ([settings objectForKey:@"DisplayHostName"] != nil) {
-    [prefs setObject:[settings objectForKey:@"DisplayHostName"]
-              forKey:@"DisplayHostName"];
+  else if ([settings objectForKey:@"RememberLastLoggedInUser"] != nil) {
+    [prefs setObject:[settings objectForKey:@"RememberLastLoggedInUser"]
+              forKey:@"RememberLastLoggedInUser"];
   }
 }
 

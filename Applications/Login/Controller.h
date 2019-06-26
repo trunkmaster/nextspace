@@ -113,7 +113,6 @@ int panelExitCode;
 
 @interface Controller (Preferences)
 
-- (void)openLoginPreferences;
 - (NSString*)lastLoggedInUser;
 - (void)setLastLoggedInUser:(NSString *)username;
 

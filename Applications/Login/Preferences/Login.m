@@ -112,11 +112,13 @@ static NXTDefaults          *defaults = nil;
   NSNumber     *senderState;
 
   senderState = [NSNumber numberWithInteger:[sender state]];
-  setting = @{@"SaveLastLoggedInUser":senderState};
+  setting = @{@"RememberLastLoggedInUser":senderState};
   
-  [[NSDistributedNotificationCenter defaultCenter]
+  [[NSDistributedNotificationCenter
+     notificationCenterForType:GSPublicNotificationCenterType]
     postNotificationName:@"LoginDefaultsShouldChangeNotification"
-                  object:setting];  
+                  object:setting
+      deliverImmediately:YES];
 }
 - (IBAction)setDisplayHostName:(id)sender
 {
@@ -128,10 +130,12 @@ static NXTDefaults          *defaults = nil;
   senderState = [NSNumber numberWithInteger:[sender state]];
   setting = @{@"DisplayHostName":senderState};
   
-  [[NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+  [[NSDistributedNotificationCenter
+     notificationCenterForType:GSPublicNotificationCenterType]
     postNotificationName:@"LoginDefaultsShouldChangeNotification"
-                  object:@"Preferences"
-                userInfo:setting];
+                  object:@"Prefs"
+                userInfo:setting
+      deliverImmediately:YES];
 }
 
 @end
