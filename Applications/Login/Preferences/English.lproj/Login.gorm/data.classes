@@ -1,11 +1,30 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setLastLoggedIn:",
+	    "setDisplayHostName:",
+	    "setLoginHook:",
+	    "setLogoutHook:"
+	);
+	Super = NSObject;
+    };
     Login = {
 	Actions = (
+	    "setLastLoggedIn:",
+	    "setDisplayHostName:",
+	    "setLoginHook:",
+	    "setLogoutHook:"
 	);
 	Outlets = (
 	    window,
-	    view
+	    view,
+	    displayHostName,
+	    loginHookField,
+	    logoutHookField,
+	    saveLastLoggedIn,
+	    screenSaverField,
+	    screenSaverSlider
 	);
 	Super = NSObject;
     };

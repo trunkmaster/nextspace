@@ -29,9 +29,15 @@
 
 @interface Login: NSObject <PrefsModule>
 {
+  NSImage		*image;
   IBOutlet NSWindow	*window;
   IBOutlet id		view;
-  NSImage		*image;
+  IBOutlet NSTextField	*loginHookField;
+  IBOutlet NSTextField	*logoutHookField;
+  IBOutlet NSTextField	*screenSaverField;
+  IBOutlet NSSlider	*screenSaverSlider;
+  IBOutlet NSButton	*displayHostName;
+  IBOutlet NSButton	*saveLastLoggedIn;
 }
 
 @end

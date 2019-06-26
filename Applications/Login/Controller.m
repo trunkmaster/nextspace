@@ -332,16 +332,6 @@ void *alloc(int size)
   prefs = [[NXTDefaults alloc] initWithUserDefaults];
 }
 
-- (NSString *)shutdownCommand
-{
-  return [prefs objectForKey:@"ShutdownCommand"];
-}
-
-- (NSString *)rebootCommand
-{
-  return [prefs objectForKey:@"RebootCommand"];
-}
-
 - (NSString *)lastLoggedInUser
 {
   return [prefs objectForKey:@"LastLoggedInUser"];
@@ -364,11 +354,10 @@ void *alloc(int size)
 {
   int ret;
   
-  if ((ret = pam_authenticate(handle, 0)) != PAM_SUCCESS)
-    {
-      NSLog(@"PAM error: %s", pam_strerror(handle, ret));
-      [NSException raise:AuthenticationException format:nil];
-    }
+  if ((ret = pam_authenticate(handle, 0)) != PAM_SUCCESS) {
+    NSLog(@"PAM error: %s", pam_strerror(handle, ret));
+    [NSException raise:AuthenticationException format:nil];
+  }
 }
 
 - (void)establishAccountManagementWithHandle:(pam_handle_t *)handle
@@ -397,19 +386,17 @@ void *alloc(int size)
 
 - (void)establishCredentialsWithHandle:(pam_handle_t *)handle
 {
-  if (pam_setcred(handle, PAM_ESTABLISH_CRED) != PAM_SUCCESS)
-    {
-      [NSException raise:CredentialsException format:nil];
-    }
+  if (pam_setcred(handle, PAM_ESTABLISH_CRED) != PAM_SUCCESS) {
+    [NSException raise:CredentialsException format:nil];
+  }
 }
 
 - (void)openSessionWithHandle:(pam_handle_t *)handle
 {
-  if (pam_open_session(handle, 0) != PAM_SUCCESS)
-    {
-      NSRunAlertPanel(_(@"Failed to open session"), nil, nil, nil, nil);
-      [NSException raise:SessionOpeningException format:nil];
-    }
+  if (pam_open_session(handle, 0) != PAM_SUCCESS) {
+    NSRunAlertPanel(_(@"Failed to open session"), nil, nil, nil, nil);
+    [NSException raise:SessionOpeningException format:nil];
+  }
 }
 
 @end
@@ -431,6 +418,12 @@ void *alloc(int size)
   userSessions = [[NSMutableDictionary alloc] init];
 
   panelExitCode = 0;
+  [[NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+    addObserver:self
+       selector:@selector(defaultsShouldChange:)
+           name:@"LoginDefaultsShouldChangeNotification"
+         object:nil];
+
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -452,6 +445,26 @@ void *alloc(int size)
   //   {
   //     [display fadeToNormal:1.0];
   //   }
+}
+
+- (void)defaultsShouldChange:(NSNotification *)notif
+{
+  NSDictionary *settings = [notif userInfo];
+
+  NSLog(@"Received request to change defaults: %@", [notif object]);
+  if ([settings isKindOfClass:[NSDictionary class]] == NO) {
+    NSLog(@"Changes is not in NSDictionary but in %@.",
+          [settings className]);
+  }
+
+  if ([settings objectForKey:@"DisplayHostName"] != nil) {
+    [prefs setObject:[settings objectForKey:@"DisplayHostName"]
+              forKey:@"DisplayHostName"];
+  }
+  else if ([settings objectForKey:@"DisplayHostName"] != nil) {
+    [prefs setObject:[settings objectForKey:@"DisplayHostName"]
+              forKey:@"DisplayHostName"];
+  }
 }
 
 - (BOOL)authenticateUser:(NSString *)user
@@ -603,14 +616,6 @@ void *alloc(int size)
     [userName setStringValue:@""];
     [window makeFirstResponder:userName];
   }
-}
-
-- (void)prepareForQuit
-{
-  [userName removeFromSuperview];
-  [password removeFromSuperview];
-  [fieldsImage removeFromSuperview];
-  [fieldsLabelImage removeFromSuperview];
 }
 
 // It is needed by ConversationFunction()

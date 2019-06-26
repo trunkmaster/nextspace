@@ -23,6 +23,9 @@
 
 #import <math.h>
 
+#import <Foundation/NSValue.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
+
 #import <AppKit/NSPopUpButton.h>
 #import <AppKit/NSButton.h>
 #import <AppKit/NSTextField.h>
@@ -32,15 +35,15 @@
 #import <AppKit/NSNibLoading.h>
 #import <AppKit/NSOpenPanel.h>
 #import <AppKit/NSImage.h>
-
+#import <AppKit/NSSlider.h>
 #import <AppKit/NSApplication.h>
+#import <DesktopKit/NXTDefaults.h>
 
 #import "Login.h"
 
 @implementation Login
 
-static NSUserDefaults       *defaults = nil;
-static NSMutableDictionary  *domain = nil;
+static NXTDefaults          *defaults = nil;
 
 - (id)init
 {
@@ -49,8 +52,7 @@ static NSMutableDictionary  *domain = nil;
       
   self = [super init];
       
-  defaults = [NSUserDefaults standardUserDefaults];
-  domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
+  defaults = [NXTDefaults userDefaults];
 
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"Loginwindow" ofType:@"tiff"];
@@ -58,12 +60,6 @@ static NSMutableDictionary  *domain = nil;
   view = nil;
       
   return self;
-}
-
-- (oneway void)release
-{
-  NSLog(@"[release] view RC: %lu", [view retainCount]);
-  [super release];
 }
 
 - (void)dealloc
@@ -103,8 +99,39 @@ static NSMutableDictionary  *domain = nil;
 //
 // Action methods
 //
-- (IBAction)passwordChanged:(id)sender
+- (IBAction)setLoginHook:(id)sender
 {
+  
+}
+- (IBAction)setLogoutHook:(id)sender
+{
+}
+- (IBAction)setLastLoggedIn:(id)sender
+{
+  NSDictionary *setting;
+  NSNumber     *senderState;
+
+  senderState = [NSNumber numberWithInteger:[sender state]];
+  setting = @{@"SaveLastLoggedInUser":senderState};
+  
+  [[NSDistributedNotificationCenter defaultCenter]
+    postNotificationName:@"LoginDefaultsShouldChangeNotification"
+                  object:setting];  
+}
+- (IBAction)setDisplayHostName:(id)sender
+{
+  NSDictionary *setting;
+  NSNumber     *senderState;
+
+  NSLog(@"[Login] setDisplayHostName");
+
+  senderState = [NSNumber numberWithInteger:[sender state]];
+  setting = @{@"DisplayHostName":senderState};
+  
+  [[NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+    postNotificationName:@"LoginDefaultsShouldChangeNotification"
+                  object:@"Preferences"
+                userInfo:setting];
 }
 
 @end
