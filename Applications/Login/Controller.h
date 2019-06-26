@@ -86,7 +86,6 @@ int panelExitCode;
 - (void)restart:sender;
 - (void)shutDown:sender;
 - (void)clearFields;
-- (void)prepareForQuit;
 
 - (NSString *)password;
 - (NSWindow *)window;
@@ -115,8 +114,6 @@ int panelExitCode;
 @interface Controller (Preferences)
 
 - (void)openLoginPreferences;
-- (NSString*)shutdownCommand;
-- (NSString*)rebootCommand;
 - (NSString*)lastLoggedInUser;
 - (void)setLastLoggedInUser:(NSString *)username;
 
