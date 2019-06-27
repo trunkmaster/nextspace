@@ -2,8 +2,12 @@
 //
 // Project: NEXTSPACE - Login application
 //
-// Copyright (C) 2000 Free Software Foundation, Inc.
-// Author: Gregory John Casamento <greg_casamento@yahoo.com>
+// Copyright (C) 2014-2019 Sergii Stoian
+//
+// Description: borderless window that centers in active display,
+//              shakes on user authentication failure and shrinks
+//              on success. Other window control functions are
+//              placed into Controller.
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -94,18 +98,6 @@
   // NSLog(@"Center: x=%f y=%f", newOrigin.x, newOrigin.y);
 }
 
-- (void)awakeFromNib
-{
-  NSRect rect;
-
-  rect = [self frame];
-  rect.size = [[panelImageView image] size];
-  [self setFrame:rect display:NO];
-  [self center];
-
-  [self displayHostname];
-}
-
 - (void)shakePanel:(Window)panel onDisplay:(Display*)dpy
 {
   NSRect windowRect = [self frame];
@@ -188,23 +180,6 @@
   XFree(windowSnap);
   XFreeGC(dpy, gc);
   XFreePixmap(dpy, pixmap);
-}
-
-- (void)displayHostname
-{
-  char     hostname[256], displayname[256];
-  int      namelen = 256, index = 0;
-  NSString *host_name = nil;
-
-  // Initialize hostname
-  gethostname( hostname, namelen );
-  for(index = 0; index < 256 && hostname[index] != '.'; index++)
-    {
-      displayname[index] = hostname[index];
-    }
-  displayname[index] = 0;
-  host_name = [NSString stringWithCString:displayname];
-  [hostnameField setStringValue:host_name];
 }
 
 @end

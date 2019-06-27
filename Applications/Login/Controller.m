@@ -36,13 +36,11 @@
 #import <SystemKit/OSEMouse.h>
 #import <DesktopKit/NXTAlert.h>
 
-static NSString
-  * AuthenticationException = @"AuthenticationException",
-//  * AccountRequiresResetupException = @"AccountRequiredResetupException",
-  * AccountExpiredException = @"AccountExpiredException",
-  * CredentialsException = @"CredentialsException",
-  * PermissionDeniedException = @"PermissionDeniedException",
-  * SessionOpeningException = @"SessionOpeningException";
+static NSString *PAMAuthenticationException = @"PAMAuthenticationException";
+static NSString *PAMAccountExpiredException = @"PAMAccountExpiredException";
+static NSString *PAMCredentialsException = @"PAMCredentialsException";
+static NSString *PAMPermissionDeniedException = @"PAMPermissionDeniedException";
+static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
 
 // ============================================================================
 // ==== Internal functions
@@ -60,11 +58,10 @@ int ConversationFunction(int num_msg,
     			 struct pam_response ** resp, 
     			 void * appdata_ptr)
 {
-  if (num_msg != 1)
-    {
-      NSLog(@"PAM error");
-      return -1;
-    }
+  if (num_msg != 1) {
+    NSLog(@"PAM error");
+    return -1;
+  }
 
   *resp = malloc(sizeof(struct pam_response));
   (*resp)[0].resp = strdup([[[NSApp delegate] password] cString]);
@@ -221,23 +218,21 @@ void *alloc(int size)
 - (void)setWindowVisible:(BOOL)flag
 {
   [self clearFields];
-  if (flag)
-    {
-      [self setRootWindowBackground];
-      [window center];
-      [window makeKeyAndOrderFront:self];
+  if (flag) {
+    [self setRootWindowBackground];
+    [window center];
+    [window makeKeyAndOrderFront:self];
 
-      XSetInputFocus(xDisplay, xPanelWindow, RevertToPointerRoot, 
-                     CurrentTime);
-      XGrabKeyboard(xDisplay, xPanelWindow, False, GrabModeAsync, 
-                    GrabModeAsync, CurrentTime);
-    }
-  else
-    {
-      XUngrabKeyboard(xDisplay, CurrentTime);
-      [window orderOut:self]; // to prevent panels to show panel
-      XWithdrawWindow(xDisplay, xPanelWindow, xScreen);
-    }
+    XSetInputFocus(xDisplay, xPanelWindow, RevertToPointerRoot, 
+                   CurrentTime);
+    XGrabKeyboard(xDisplay, xPanelWindow, False, GrabModeAsync, 
+                  GrabModeAsync, CurrentTime);
+  }
+  else {
+    XUngrabKeyboard(xDisplay, CurrentTime);
+    [window orderOut:self]; // to prevent altert panels to show window
+    XWithdrawWindow(xDisplay, xPanelWindow, xScreen);
+  }
   XFlush(xDisplay);
 }
 
@@ -297,7 +292,9 @@ void *alloc(int size)
 {
   Cursor arrow_cursor;
   
-  if (busyTimer != nil && [busyTimer isValid]) {
+  if (busyTimer != nil &&
+      [busyTimer isKindOfClass:[NSTimer class]] &&
+      [busyTimer isValid]) {
     [busyTimer invalidate];
   }
   XcursorAnimateDestroy(busy_cursor);
@@ -329,7 +326,11 @@ void *alloc(int size)
 
 - (NSString *)lastLoggedInUser
 {
-  return [prefs objectForKey:@"LastLoggedInUser"];
+  if ([[prefs objectForKey:@"RememberLastLoggedInUser"] integerValue] == 1) {
+    return [prefs objectForKey:@"LastLoggedInUser"];
+  }
+  
+  return nil;
 }
 
 - (void)setLastLoggedInUser:(NSString *)username
@@ -346,13 +347,46 @@ void *alloc(int size)
 //=============================================================================
 @implementation Controller (PAMAuth)
 
+- (BOOL)authenticateUser:(NSString *)user
+{
+  struct pam_conv conv;
+
+  conv.conv = ConversationFunction;
+  if (pam_start("login", [user cString], &conv, &PAM_handle) != PAM_SUCCESS) {
+    NSLog(@"Failed to initialize PAM");
+    return NO;
+  }
+  
+  NS_DURING
+    {
+      [self authenticateWithHandle:PAM_handle];
+      [self establishAccountManagementWithHandle:PAM_handle];
+      [self establishCredentialsWithHandle:PAM_handle];
+      [self setLastLoggedInUser:user];
+      [self openSessionWithHandle:PAM_handle];
+      return YES;
+    }
+  NS_HANDLER
+    {
+      pam_end(PAM_handle, 0);
+      return NO;
+    }
+  NS_ENDHANDLER
+}
+
+// It is needed by ConversationFunction()
+- (NSString *)password
+{
+  return [password stringValue];
+}
+
 - (void)authenticateWithHandle:(pam_handle_t *)handle
 {
   int ret;
   
   if ((ret = pam_authenticate(handle, 0)) != PAM_SUCCESS) {
     NSLog(@"PAM error: %s", pam_strerror(handle, ret));
-    [NSException raise:AuthenticationException format:nil];
+    [NSException raise:PAMAuthenticationException format:nil];
   }
 }
 
@@ -360,20 +394,21 @@ void *alloc(int size)
 {
   switch (pam_acct_mgmt(handle, 0))
     {
-//    case PAM_AUTHTOKEN_REQD:
-//      [NSException raise:AccountRequiresResetupException format:nil];
-//      break;
     case PAM_ACCT_EXPIRED:
-      [NSException raise:AccountExpiredException format:nil];
+      NSLog(@"PAM: Account expired.");
+      [NSException raise:PAMAccountExpiredException format:nil];
       break;
     case PAM_AUTH_ERR:
-      [NSException raise:AuthenticationException format:nil];
+      NSLog(@"PAM: Error.");
+      [NSException raise:PAMAuthenticationException format:nil];
       break;
     case PAM_PERM_DENIED:
-      [NSException raise:PermissionDeniedException format:nil];
+      NSLog(@"PAM: Permission denied.");
+      [NSException raise:PAMPermissionDeniedException format:nil];
       break;
     case PAM_USER_UNKNOWN: // hide the fact that the user is unknown
-      [NSException raise:AuthenticationException format:nil];
+      NSLog(@"PAM: User unknown.");
+      [NSException raise:PAMAuthenticationException format:nil];
       break;
     default:
       break;
@@ -383,15 +418,16 @@ void *alloc(int size)
 - (void)establishCredentialsWithHandle:(pam_handle_t *)handle
 {
   if (pam_setcred(handle, PAM_ESTABLISH_CRED) != PAM_SUCCESS) {
-    [NSException raise:CredentialsException format:nil];
+    NSLog(@"PAM: Failed to establish PAM credetials.");
+    [NSException raise:PAMCredentialsException format:nil];
   }
 }
 
 - (void)openSessionWithHandle:(pam_handle_t *)handle
 {
   if (pam_open_session(handle, 0) != PAM_SUCCESS) {
-    NSRunAlertPanel(_(@"Failed to open session"), nil, nil, nil, nil);
-    [NSException raise:SessionOpeningException format:nil];
+    NSLog(@"PAM: Failed to open PAM session.");
+    [NSException raise:PAMSessionOpeningException format:nil];
   }
 }
 
@@ -401,7 +437,16 @@ void *alloc(int size)
 
 - (void)awakeFromNib
 {
+  NSRect   rect;
+  NSString *user;
+
   NSLog(@"Login: awakeFromNib");
+
+  // Adjust window size to background image size
+  rect = [window frame];
+  rect.size = [[panelImageView image] size];
+  [window setFrame:rect display:NO];
+  // [self center];
   
   [shutDownBtn setRefusesFirstResponder:YES];
   [restartBtn setRefusesFirstResponder:YES];
@@ -412,11 +457,42 @@ void *alloc(int size)
   // Open preferences
   prefs = [[NXTDefaults alloc] initWithUserDefaults];
 
-  [userName setStringValue:[self lastLoggedInUser]];
+  [hostnameField retain];
+  [self displayHostname];
+
+  user = [self lastLoggedInUser];
+  if (user && [user length] > 0) {
+    [userName setStringValue:user];
+  }
             
   userSessions = [[NSMutableDictionary alloc] init];
 
   panelExitCode = 0;
+}
+
+- (void)displayHostname
+{
+  char     hostname[256], displayname[256];
+  int      namelen = 256, index = 0;
+  NSString *host_name = nil;
+
+  // Initialize hostname
+  gethostname( hostname, namelen );
+  for(index = 0; index < 256 && hostname[index] != '.'; index++) {
+    displayname[index] = hostname[index];
+  }
+  displayname[index] = 0;
+  host_name = [NSString stringWithCString:displayname];
+  [hostnameField setStringValue:host_name];
+
+  if ([[prefs objectForKey:@"DisplayHostName"] integerValue] == 0) {
+    if ([hostnameField superview] != nil) {
+      [hostnameField removeFromSuperview];
+    }
+  }
+  else if ([hostnameField superview] == nil) {
+    [panelImageView addSubview:hostnameField];
+  }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -444,14 +520,15 @@ void *alloc(int size)
     addObserver:self
        selector:@selector(defaultsShouldChange:)
            name:@"LoginDefaultsShouldChangeNotification"
-         object:@"Prefs"];
+         object:@"Preferences"];
 }
 
 - (void)defaultsShouldChange:(NSNotification *)notif
 {
   NSDictionary *settings = [notif userInfo];
 
-  NSLog(@"Received request to change defaults: %@", notif);
+  NSLog(@"Received request from `%@` to change defaults: %@",
+        [notif object], settings);
   
   if ([settings isKindOfClass:[NSDictionary class]] == NO) {
     NSLog(@"Changes is not in NSDictionary but in %@.",
@@ -461,40 +538,12 @@ void *alloc(int size)
   if ([settings objectForKey:@"DisplayHostName"] != nil) {
     [prefs setObject:[settings objectForKey:@"DisplayHostName"]
               forKey:@"DisplayHostName"];
+    [self displayHostname];
   }
   else if ([settings objectForKey:@"RememberLastLoggedInUser"] != nil) {
     [prefs setObject:[settings objectForKey:@"RememberLastLoggedInUser"]
               forKey:@"RememberLastLoggedInUser"];
   }
-}
-
-- (BOOL)authenticateUser:(NSString *)user
-{
-  struct pam_conv conv;
-
-  conv.conv = ConversationFunction;
-  if (pam_start("login", [user cString], &conv, &PAM_handle) != PAM_SUCCESS) {
-    NSLog(@"Failed to initialize PAM");
-    NXTRunAlertPanel(@"Login authentication",
-                     @"Failed to initialize PAM", @"Dismiss", nil, nil);
-    return NO;
-  }
-  
-  NS_DURING
-    {
-      [self authenticateWithHandle:PAM_handle];
-      [self establishAccountManagementWithHandle:PAM_handle];
-      [self establishCredentialsWithHandle:PAM_handle];
-      [self setLastLoggedInUser:user];
-      [self openSessionWithHandle:PAM_handle];
-      return YES;
-    }
-  NS_HANDLER
-    {
-      pam_end(PAM_handle, 0);
-      return NO;
-    }
-  NS_ENDHANDLER
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
@@ -506,7 +555,7 @@ void *alloc(int size)
 {
   NSString *user = [[NSString alloc] initWithString:[userName stringValue]];
 
-  [self setBusyCursor];
+  // [self setBusyCursor];
   
   NSLog(@"[Controller authenticate:] userName: %@", user);
 
@@ -551,7 +600,7 @@ void *alloc(int size)
   }
   
   [self clearFields];
-  [self destroyBusyCursor];
+  // [self destroyBusyCursor];
   [user release];
 }
 
@@ -606,28 +655,17 @@ void *alloc(int size)
 - (void)clearFields
 {
   NSString *user = [self lastLoggedInUser];
-  
+
   [password setStringValue:@""];
   
   if (user && [user length] > 0) {  
-    [userName setStringValue:[self lastLoggedInUser]];
+    [userName setStringValue:user];
     [window makeFirstResponder:password];
   }
   else {
     [userName setStringValue:@""];
     [window makeFirstResponder:userName];
   }
-}
-
-// It is needed by ConversationFunction()
-- (NSString *)password
-{
-  return [password stringValue];
-}
-
-- (NSWindow *)window
-{
-  return window;
 }
 
 @end

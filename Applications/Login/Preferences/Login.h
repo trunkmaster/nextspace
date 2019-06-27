@@ -4,7 +4,7 @@
 //
 // Description: Module for Preferences application.
 //
-// Copyright (C) 2011 Sergii Stoian
+// Copyright (C) 2011-2019 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public

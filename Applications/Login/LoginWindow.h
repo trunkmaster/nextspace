@@ -2,12 +2,7 @@
 //
 // Project: NEXTSPACE - Login application
 //
-// Description: Class to allow the display of a borderless window.  It also
-//              provides the necessary functionality for some of the other nice
-//              things we want the window to do.
-//
-// Copyright (C) 2000 Free Software Foundation, Inc.
-// Author: Gregory John Casamento <greg_casamento@yahoo.com>
+// Copyright (C) 2014-2019 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -28,18 +23,7 @@
 
 @interface LoginWindow : NSWindow
 {
-  IBOutlet id window;
-  IBOutlet id userName;
-  IBOutlet id password;
-  IBOutlet id shutDownBtn;
-  IBOutlet id restartBtn;
-  IBOutlet id panelImageView;
-  IBOutlet id tfImageView;
-  IBOutlet id hostnameField;
 }
-
-- (void)awakeFromNib;
-- (void)displayHostname;
 
 - (void)shakePanel:(Window)panel onDisplay:(Display*)dpy;
 - (void)shrinkPanel:(Window)panel onDisplay:(Display*)dpy;

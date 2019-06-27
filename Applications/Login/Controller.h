@@ -50,6 +50,7 @@ int panelExitCode;
 @interface Controller : NSObject
 {
   IBOutlet LoginWindow *window;
+  IBOutlet id          hostnameField;
   IBOutlet id          fieldsImage;
   IBOutlet id          fieldsLabelImage;
   IBOutlet id          panelImageView;
@@ -80,15 +81,12 @@ int panelExitCode;
   NSTimer              *busyTimer;
 }
 
-- (BOOL)authenticateUser:(NSString *)user;
+- (void)displayHostname;
+- (void)clearFields;
 
 - (void)authenticate:(id)sender;
 - (void)restart:sender;
 - (void)shutDown:sender;
-- (void)clearFields;
-
-- (NSString *)password;
-- (NSWindow *)window;
 
 @end
 
@@ -120,6 +118,8 @@ int panelExitCode;
 
 @interface Controller (PAMAuth)
 
+- (BOOL)authenticateUser:(NSString *)user;
+- (NSString *)password;
 - (void)authenticateWithHandle:(pam_handle_t *)handle;
 - (void)establishAccountManagementWithHandle:(pam_handle_t *)handle;
 - (void)establishCredentialsWithHandle:(pam_handle_t *)handle;

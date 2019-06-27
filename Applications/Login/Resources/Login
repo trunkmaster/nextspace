@@ -1,5 +1,7 @@
 {
     LastLoggedInUser = "";
+    RememberLastLoggedInUser = <*I1>;
+    DisplayHostName = <*I1>;        
     StartupHook = "";
     ShutdownHook = "";
     DefaultSessionScript = (
