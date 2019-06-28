@@ -19,12 +19,12 @@
 	Outlets = (
 	    window,
 	    view,
-	    displayHostName,
 	    loginHookField,
 	    logoutHookField,
 	    saveLastLoggedIn,
 	    screenSaverField,
-	    screenSaverSlider
+	    screenSaverSlider,
+	    displayHostname
 	);
 	Super = NSObject;
     };

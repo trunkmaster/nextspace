@@ -38,7 +38,6 @@
 #import <AppKit/NSImage.h>
 #import <AppKit/NSSlider.h>
 #import <AppKit/NSApplication.h>
-#import <DesktopKit/NXTDefaults.h>
 
 #import "Login.h"
 
@@ -50,6 +49,7 @@ static NXTDefaults *defaults = nil;
 {
   NSLog(@"view RC: %lu", [view retainCount]);
   [image release];
+  [defs release];
   [super dealloc];
 }
 
@@ -70,38 +70,18 @@ static NXTDefaults *defaults = nil;
   return self;
 }
 
-- (NSDictionary *)_rootDefaults
-{
-  NSString     *path = @"/root/Library/Preferences/.NextSpace/Login";
-  NSDictionary *defs = nil;
-
-  if ([[NSFileManager defaultManager] fileExistsAtPath:path] != NO) {
-    defs = [NSDictionary dictionaryWithContentsOfFile:path];
-  }
-  else {
-    NSLog(@"Failed to read `root` Login defaults.");
-  }
-
-  return defs;
-}
-
 - (void)awakeFromNib
 {
-  NSDictionary *defs = [self _rootDefaults];
+  defs = [[NXTDefaults alloc] initDefaultsWithPath:NSSystemDomainMask
+                                            domain:@"Login"];
 
-  if (defs != nil && [defs isKindOfClass:[NSDictionary class]]) {
-    [displayHostName setState:NSOnState];
-    [displayHostName
+  if (defs != nil) {
+    [displayHostname
       setState:[[defs objectForKey:@"DisplayHostName"] integerValue]];
-    [saveLastLoggedIn setState:NSOnState];
+  }
+  if (defs != nil) {
     [saveLastLoggedIn
       setState:[[defs objectForKey:@"RememberLastLoggedInUser"] integerValue]];
-  }
-  else {
-    [displayHostName setState:NSOffState];
-    [displayHostName setEnabled:NO];
-    [saveLastLoggedIn setState:NSOffState];
-    [saveLastLoggedIn setEnabled:NO];
   }
   
   [view retain];
@@ -141,36 +121,44 @@ static NXTDefaults *defaults = nil;
 }
 - (IBAction)setLastLoggedIn:(id)sender
 {
-  NSDictionary *setting;
-  NSNumber     *senderState;
+  // NSDictionary *setting;
+  // NSNumber     *senderState;
 
   NSLog(@"[Login] setLastLoggedIn: %@", [sender className]);
 
-  senderState = [NSNumber numberWithInteger:[sender state]];
-  setting = @{@"RememberLastLoggedInUser":senderState};
+  // senderState = [NSNumber numberWithInteger:[sender state]];
+  // setting = @{@"RememberLastLoggedInUser":senderState};
+
+  [defs setObject:[NSNumber numberWithInteger:[sender state]]
+           forKey:@"RememberLastLoggedInUser"];
+  [defs synchronize];
   
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
-    postNotificationName:@"LoginDefaultsShouldChangeNotification"
+    postNotificationName:@"LoginDefaultsDidChangeNotification"
                   object:@"Preferences"
-                userInfo:setting
+                userInfo:nil
       deliverImmediately:YES];
 }
 - (IBAction)setDisplayHostName:(id)sender
 {
-  NSDictionary *setting;
-  NSNumber     *senderState;
+  // NSDictionary *setting;
+  // NSNumber     *senderState;
 
   NSLog(@"[Login] setDisplayHostName: %@", [sender className]);
 
-  senderState = [NSNumber numberWithInteger:[sender state]];
-  setting = @{@"DisplayHostName":senderState};
+  // senderState = [NSNumber numberWithInteger:[sender state]];
+  // setting = @{@"DisplayHostName":senderState};
+  
+  [defs setObject:[NSNumber numberWithInteger:[sender state]]
+           forKey:@"DisplayHostName"];
+  [defs synchronize];
   
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
-    postNotificationName:@"LoginDefaultsShouldChangeNotification"
+    postNotificationName:@"LoginDefaultsDidChangeNotification"
                   object:@"Preferences"
-                userInfo:setting
+                userInfo:nil
       deliverImmediately:YES];
 }
 

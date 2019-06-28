@@ -25,6 +25,8 @@
 #import <AppKit/NSTextField.h>
 #import <AppKit/NSImageView.h>
 
+#import <DesktopKit/NXTDefaults.h>
+
 #import <Preferences.h>
 
 @interface Login: NSObject <PrefsModule>
@@ -36,8 +38,10 @@
   IBOutlet NSTextField	*logoutHookField;
   IBOutlet NSTextField	*screenSaverField;
   IBOutlet NSSlider	*screenSaverSlider;
-  IBOutlet NSButton	*displayHostName;
+  IBOutlet NSButton	*displayHostname;
   IBOutlet NSButton	*saveLastLoggedIn;
+
+  NXTDefaults            *defs;
 }
 
 @end

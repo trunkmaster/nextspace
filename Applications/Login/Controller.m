@@ -518,9 +518,15 @@ void *alloc(int size)
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
     addObserver:self
-       selector:@selector(defaultsShouldChange:)
-           name:@"LoginDefaultsShouldChangeNotification"
+       selector:@selector(defaultsDidChange:)
+           name:@"LoginDefaultsDidChangeNotification"
          object:@"Preferences"];
+}
+
+- (void)defaultsDidChange:(NSNotification *)notif
+{
+  [prefs reload];
+  [self displayHostname];
 }
 
 - (void)defaultsShouldChange:(NSNotification *)notif
