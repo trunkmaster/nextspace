@@ -202,7 +202,7 @@ static void handleSignal(int sig)
 
 NXTDefaults *getDefaults(NSString *appPath)
 {
-  NXTDefaults  *userDefaults;
+  NXTDefaults  *systemDefaults;
   id           serverCommand;
   NSString     *defaultsPath;
   NSDictionary *defaults;
@@ -212,8 +212,8 @@ NXTDefaults *getDefaults(NSString *appPath)
     return loginDefaults;
   }
   
-  userDefaults = [NXTDefaults userDefaults];
-  serverCommand = [userDefaults objectForKey:@"WindowServerCommand"];
+  systemDefaults = [NXTDefaults systemDefaults];
+  serverCommand = [systemDefaults objectForKey:@"WindowServerCommand"];
 
   // User defaults is not correct
   if (serverCommand == nil ||
@@ -222,12 +222,12 @@ NXTDefaults *getDefaults(NSString *appPath)
     defaultsPath = [bundlePath stringByAppendingPathComponent:@"Resources/Login"];
     defaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
     for (NSString *key in [defaults allKeys]) {
-      [userDefaults setObject:[defaults objectForKey:key] forKey:key];
+      [systemDefaults setObject:[defaults objectForKey:key] forKey:key];
     }
-    [userDefaults synchronize];
+    [systemDefaults synchronize];
   }
 
-  return userDefaults;
+  return systemDefaults;
 }
 
 //-----------------------------------------------------------------------------

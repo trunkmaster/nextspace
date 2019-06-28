@@ -455,7 +455,7 @@ void *alloc(int size)
   [panelImageView setRefusesFirstResponder:YES];
 
   // Open preferences
-  prefs = [[NXTDefaults alloc] initWithUserDefaults];
+  prefs = [[NXTDefaults alloc] initWithSystemDefaults];
 
   [hostnameField retain];
   [self displayHostname];
