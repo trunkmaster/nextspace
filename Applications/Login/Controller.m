@@ -529,29 +529,6 @@ void *alloc(int size)
   [self displayHostname];
 }
 
-- (void)defaultsShouldChange:(NSNotification *)notif
-{
-  NSDictionary *settings = [notif userInfo];
-
-  NSLog(@"Received request from `%@` to change defaults: %@",
-        [notif object], settings);
-  
-  if ([settings isKindOfClass:[NSDictionary class]] == NO) {
-    NSLog(@"Changes is not in NSDictionary but in %@.",
-          [settings className]);
-  }
-
-  if ([settings objectForKey:@"DisplayHostName"] != nil) {
-    [prefs setObject:[settings objectForKey:@"DisplayHostName"]
-              forKey:@"DisplayHostName"];
-    [self displayHostname];
-  }
-  else if ([settings objectForKey:@"RememberLastLoggedInUser"] != nil) {
-    [prefs setObject:[settings objectForKey:@"RememberLastLoggedInUser"]
-              forKey:@"RememberLastLoggedInUser"];
-  }
-}
-
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {
   // NSLog(@"Control did end editing.");
