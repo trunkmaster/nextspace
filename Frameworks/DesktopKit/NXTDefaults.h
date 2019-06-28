@@ -48,6 +48,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSTimer.h>
+#import <Foundation/NSPathUtilities.h>
 
 extern NSString* const NXUserDefaultsDidChangeNotification;
  
@@ -56,6 +57,7 @@ extern NSString* const NXUserDefaultsDidChangeNotification;
   NSString		*filePath;
   NSMutableDictionary	*defaultsDict;
   BOOL			isGlobal;
+  BOOL			isSystem;
   
   BOOL			isChanged;
   NSTimer		*syncTimer;
@@ -73,6 +75,9 @@ extern NSString* const NXUserDefaultsDidChangeNotification;
     ~/Library/Preferences/.NextSpace/NXGlobalDomain */
 - (NXTDefaults *)initWithGlobalUserDefaults;
 
+- (NXTDefaults *)initDefaultsWithPath:(NSSearchPathDomainMask)domainMask
+                               domain:(NSString *)domainName;
+  
 - (NXTDefaults *)reload;
 - (BOOL)synchronize;
 

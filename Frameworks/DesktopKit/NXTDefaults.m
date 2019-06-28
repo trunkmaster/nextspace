@@ -20,7 +20,6 @@
 //
 
 #import <Foundation/NSArray.h>
-#import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSProcessInfo.h>
@@ -87,6 +86,7 @@ static NSLock     *syncLock;
   NSString	*pathFormat;
   NSString	*defsDir;
   NSFileManager	*fileManager = [NSFileManager defaultManager];
+  NSDictionary  *attrs = nil;
 
   self = [super init];
 
@@ -105,9 +105,12 @@ static NSLock     *syncLock;
   defsDir = [filePath stringByDeletingLastPathComponent];
   if (![fileManager fileExistsAtPath:defsDir])
     {
+      if (isSystem != NO) {
+        attrs = @{NSFileGroupOwnerAccountName:@"wheel"};
+      }
       [fileManager createDirectoryAtPath:defsDir
              withIntermediateDirectories:YES
-                              attributes:nil
+                              attributes:attrs
                                    error:0];
     }
 
@@ -123,6 +126,7 @@ static NSLock     *syncLock;
 - (NXTDefaults *)initWithSystemDefaults
 {
   isGlobal = NO;
+  isSystem = YES;
   return [self initDefaultsWithPath:NSSystemDomainMask
                              domain:[[NSProcessInfo processInfo] processName]];
 }
@@ -131,6 +135,7 @@ static NSLock     *syncLock;
 - (NXTDefaults *)initWithUserDefaults
 {
   isGlobal = NO;
+  isSystem = NO;
   return [self initDefaultsWithPath:NSUserDomainMask
                              domain:[[NSProcessInfo processInfo] processName]];
 }
@@ -140,6 +145,7 @@ static NSLock     *syncLock;
 - (NXTDefaults *)initWithGlobalUserDefaults
 {
   isGlobal = YES;
+  isSystem = NO;
   return [self initDefaultsWithPath:NSUserDomainMask
                              domain:@"NXGlobalDomain"];
 }
@@ -214,7 +220,20 @@ static NSLock     *syncLock;
 // of current user.
 - (void)writeToDisk
 {
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSDictionary  *attrs = nil;
+  
   NSLog(@"NXTDefaults: write to file: %@", filePath);
+
+  if ([fileManager fileExistsAtPath:filePath] == NO) {
+    if (isSystem != NO) {
+      attrs = @{NSFileGroupOwnerAccountName:@"wheel",
+                NSFilePosixPermissions:[NSNumber numberWithShort:0664]};
+    }
+    [fileManager createFileAtPath:filePath
+                         contents:nil
+                       attributes:attrs];
+  }
   
   if ([defaultsDict writeToFile:filePath atomically:YES] == YES) {
     if (isGlobal == YES) {
