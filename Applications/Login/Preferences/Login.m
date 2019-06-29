@@ -22,6 +22,8 @@
 //
 
 #import <math.h>
+#include <sys/types.h>
+#include <grp.h>
 
 #import <Foundation/NSValue.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
@@ -70,6 +72,25 @@ static NXTDefaults *defaults = nil;
   return self;
 }
 
+- (BOOL)_isAdminUser
+{
+  struct group *grp;
+  int i = 0;
+  BOOL isAdmin = NO;
+  
+  grp = getgrnam("wheel");
+  while (grp->gr_mem[i] != NULL) {
+    printf("[Login] wheel member: %s\n", grp->gr_mem[i]);
+    if (!strcmp(grp->gr_mem[i], [NSUserName() cString])) {
+      isAdmin = YES;
+      break;
+    }
+    i++;
+  }
+
+  return isAdmin;
+}
+
 - (void)awakeFromNib
 {
   defs = [[NXTDefaults alloc] initDefaultsWithPath:NSSystemDomainMask
@@ -82,6 +103,13 @@ static NXTDefaults *defaults = nil;
   if (defs != nil) {
     [saveLastLoggedIn
       setState:[[defs objectForKey:@"RememberLastLoggedInUser"] integerValue]];
+  }
+
+  isAdminUser = [self _isAdminUser];
+  if (isAdminUser == NO) {
+    [displayHostname setEnabled:NO];
+    [saveLastLoggedIn setEnabled:NO];
+    [screenSaverField setEnabled:NO];
   }
   
   [view retain];
