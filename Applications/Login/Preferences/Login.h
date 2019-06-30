@@ -47,7 +47,8 @@
   IBOutlet NSButton	*displayHostname;
   IBOutlet NSButton	*saveLastLoggedIn;
 
-  NXTDefaults           *defs;
+  NXTDefaults           *defaults;
+  NXTDefaults           *systemDefaults;
   BOOL                  isAdminUser;
 }
 

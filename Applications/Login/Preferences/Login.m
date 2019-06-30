@@ -21,7 +21,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <math.h>
+#include <math.h>
 #include <sys/types.h>
 #include <grp.h>
 
@@ -41,17 +41,55 @@
 #import <AppKit/NSSlider.h>
 #import <AppKit/NSApplication.h>
 
+#import <DesktopKit/NXTAlert.h>
+
 #import "Login.h"
 
-@implementation Login
+@interface Login (Private)
+- (BOOL)_hookIsValid:(NSString *)hookPath;
+@end
+@implementation Login (Private)
+- (BOOL)_hookIsValid:(NSString *)hookPath
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
 
-static NXTDefaults *defaults = nil;
+  if (hookPath == nil) {
+    return NO;
+  }
+
+  // Empty string is valid. It's used to clear hooks.
+  if ([hookPath isEqualToString:@""]) {
+    return YES;
+  }
+  
+  // Check if file exist and is executable
+  if ([fm isExecutableFileAtPath:hookPath] == NO) {
+    NXTRunAlertPanel(@"Set Login Hook",
+                     @"File `%@` does not exist.\n"
+                     "Please specifiy existing program or script.",
+                     @"Understood", nil, nil, hookPath);
+    return NO;
+  }
+  else if ([fm isExecutableFileAtPath:hookPath] == NO) {
+    NXTRunAlertPanel(@"Set Login Hook",
+                     @"File `%@` is not executable.\n"
+                     "Please specifiy another or fix permissions.",
+                     @"Understood", nil, nil, hookPath);
+    return NO;
+  }
+
+  return YES;
+}
+@end
+
+@implementation Login
 
 - (void)dealloc
 {
   NSLog(@"view RC: %lu", [view retainCount]);
   [image release];
-  [defs release];
+  [systemDefaults release];
+  [defaults release];
   [super dealloc];
 }
 
@@ -62,7 +100,8 @@ static NXTDefaults *defaults = nil;
       
   self = [super init];
       
-  defaults = [NXTDefaults userDefaults];
+  defaults = [[NXTDefaults alloc] initDefaultsWithPath:NSUserDomainMask
+                                                domain:@"Login"];
 
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"Loginwindow" ofType:@"tiff"];
@@ -93,16 +132,19 @@ static NXTDefaults *defaults = nil;
 
 - (void)awakeFromNib
 {
-  defs = [[NXTDefaults alloc] initDefaultsWithPath:NSSystemDomainMask
-                                            domain:@"Login"];
+  systemDefaults = [[NXTDefaults alloc]
+                     initDefaultsWithPath:NSSystemDomainMask
+                                   domain:@"Login"];
 
-  if (defs != nil) {
+  if (systemDefaults != nil) {
     [displayHostname
-      setState:[[defs objectForKey:@"DisplayHostName"] integerValue]];
+      setState:[[systemDefaults objectForKey:@"DisplayHostName"]
+                 integerValue]];
   }
-  if (defs != nil) {
+  if (systemDefaults != nil) {
     [saveLastLoggedIn
-      setState:[[defs objectForKey:@"RememberLastLoggedInUser"] integerValue]];
+      setState:[[systemDefaults objectForKey:@"RememberLastLoggedInUser"]
+                 integerValue]];
   }
 
   isAdminUser = [self _isAdminUser];
@@ -122,18 +164,19 @@ static NXTDefaults *defaults = nil;
     [saveLastLoggedIn setEnabled:NO];
   }
   
+  [loginHookField setStringValue:[defaults objectForKey:@"LoginHook"]];
+  [logoutHookField setStringValue:[defaults objectForKey:@"LogoutHook"]];
+
   [view retain];
 }
 
 - (NSView *)view
 {
-  if (view == nil)
-    {
-      if (![NSBundle loadNibNamed:@"Login" owner:self])
-        {
-          return nil;
-        }      
-    }
+  if (view == nil) {
+    if (![NSBundle loadNibNamed:@"Login" owner:self]) {
+      return nil;
+    }      
+  }
   return view;
 }
 
@@ -152,24 +195,89 @@ static NXTDefaults *defaults = nil;
 //
 - (IBAction)setLoginHook:(id)sender
 {
+  NSString *hookPath = nil;
   
+  NSLog(@"Set LogIn Hook: %@", [sender className]);
+  if ([sender isKindOfClass:[NSTextField class]] != NO) {
+    hookPath = [sender stringValue];
+  }
+  else if ([sender isKindOfClass:[NSButton class]] != NO) {
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+
+    [panel setCanChooseDirectories:NO];
+    [panel setAllowsMultipleSelection:NO];
+    [panel setTitle:@"Set Login Hook"];
+    [panel setShowsHiddenFiles:NO];
+
+    if ([panel runModalForDirectory:NSHomeDirectory()
+                               file:@""
+                              types:nil] == NSOKButton) {
+      hookPath = [panel filename];
+    }
+  }
+
+  // Clear textfield with wrong
+  if ([self _hookIsValid:hookPath] == NO) {
+    if ([sender isKindOfClass:[NSTextField class]] != NO) {
+      [loginHookField setStringValue:@""];
+    }
+  }
+  else {
+    if ([sender isKindOfClass:[NSTextField class]] == NO) {
+      [loginHookField setStringValue:hookPath];
+    }
+    [defaults setObject:hookPath forKey:@"LoginHook"];
+    [[sender window] makeFirstResponder:[loginHookField nextKeyView]];
+  }
 }
 - (IBAction)setLogoutHook:(id)sender
 {
+  NSString *hookPath = nil;
+  
+  NSLog(@"Set LogOut Hook: %@", [sender className]);
+  
+  if ([sender isKindOfClass:[NSTextField class]] != NO) {
+    hookPath = [sender stringValue];
+  }
+  else if ([sender isKindOfClass:[NSButton class]] != NO) {
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+
+    [panel setCanChooseDirectories:NO];
+    [panel setAllowsMultipleSelection:NO];
+    [panel setTitle:@"Set Logout Hook"];
+    [panel setShowsHiddenFiles:NO];
+
+    if ([panel runModalForDirectory:NSHomeDirectory()
+                               file:@""
+                              types:nil] == NSOKButton) {
+      hookPath = [panel filename];
+    }
+  }
+
+  // Clear textfield with wrong
+  if ([self _hookIsValid:hookPath] == NO) {
+    if ([sender isKindOfClass:[NSTextField class]] != NO) {
+      [loginHookField setStringValue:@""];
+    }
+  }
+  else {
+    if ([sender isKindOfClass:[NSTextField class]] == NO) {
+      [loginHookField setStringValue:hookPath];
+    }
+    [defaults setObject:hookPath forKey:@"LogoutHook"];
+    if ([(NSControl *)[logoutHookField nextKeyView] isEnabled] != NO)
+      [[sender window] makeFirstResponder:[logoutHookField nextKeyView]];
+    else
+      [[sender window] makeFirstResponder:loginHookField];
+  }
 }
 - (IBAction)setLastLoggedIn:(id)sender
 {
-  // NSDictionary *setting;
-  // NSNumber     *senderState;
+  // NSLog(@"[Login] setLastLoggedIn: %@", [sender className]);
 
-  NSLog(@"[Login] setLastLoggedIn: %@", [sender className]);
-
-  // senderState = [NSNumber numberWithInteger:[sender state]];
-  // setting = @{@"RememberLastLoggedInUser":senderState};
-
-  [defs setObject:[NSNumber numberWithInteger:[sender state]]
-           forKey:@"RememberLastLoggedInUser"];
-  [defs synchronize];
+  [systemDefaults setObject:[NSNumber numberWithInteger:[sender state]]
+                     forKey:@"RememberLastLoggedInUser"];
+  [systemDefaults synchronize];
   
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
@@ -180,17 +288,11 @@ static NXTDefaults *defaults = nil;
 }
 - (IBAction)setDisplayHostName:(id)sender
 {
-  // NSDictionary *setting;
-  // NSNumber     *senderState;
+  // NSLog(@"[Login] setDisplayHostName: %@", [sender className]);
 
-  NSLog(@"[Login] setDisplayHostName: %@", [sender className]);
-
-  // senderState = [NSNumber numberWithInteger:[sender state]];
-  // setting = @{@"DisplayHostName":senderState};
-  
-  [defs setObject:[NSNumber numberWithInteger:[sender state]]
-           forKey:@"DisplayHostName"];
-  [defs synchronize];
+  [systemDefaults setObject:[NSNumber numberWithInteger:[sender state]]
+                     forKey:@"DisplayHostName"];
+  [systemDefaults synchronize];
   
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
