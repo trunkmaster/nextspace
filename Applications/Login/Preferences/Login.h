@@ -34,10 +34,16 @@
   NSImage		*image;
   IBOutlet NSWindow	*window;
   IBOutlet id		view;
-  IBOutlet NSTextField	*loginHookField;
-  IBOutlet NSTextField	*logoutHookField;
   IBOutlet NSTextField	*screenSaverField;
   IBOutlet NSSlider	*screenSaverSlider;
+  IBOutlet NSTextField	*loginHookField;
+  IBOutlet NSTextField	*logoutHookField;
+  IBOutlet NSTextField	*customSaverTitle;
+  IBOutlet NSTextField	*customSaverField;
+  IBOutlet NSButton	*customSaverButton;
+  IBOutlet NSTextField	*customUITitle;
+  IBOutlet NSTextField	*customUIField;
+  IBOutlet NSButton	*customUIButton;
   IBOutlet NSButton	*displayHostname;
   IBOutlet NSButton	*saveLastLoggedIn;
 

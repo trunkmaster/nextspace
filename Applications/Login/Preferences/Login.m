@@ -107,9 +107,19 @@ static NXTDefaults *defaults = nil;
 
   isAdminUser = [self _isAdminUser];
   if (isAdminUser == NO) {
+    [screenSaverSlider setEnabled:NO];
+    [screenSaverField setEnabled:NO];
+    
+    [customSaverTitle setEnabled:NO];
+    [customSaverField setEnabled:NO];
+    [customSaverButton setEnabled:NO];
+    
+    [customUITitle setEnabled:NO];
+    [customUIField setEnabled:NO];
+    [customUIButton setEnabled:NO];
+    
     [displayHostname setEnabled:NO];
     [saveLastLoggedIn setEnabled:NO];
-    [screenSaverField setEnabled:NO];
   }
   
   [view retain];

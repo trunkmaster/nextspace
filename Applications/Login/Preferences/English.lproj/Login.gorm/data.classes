@@ -24,7 +24,13 @@
 	    saveLastLoggedIn,
 	    screenSaverField,
 	    screenSaverSlider,
-	    displayHostname
+	    displayHostname,
+	    customSaverButton,
+	    customSaverField,
+	    customSaverTitle,
+	    customUIButton,
+	    customUITitle,
+	    customUIField
 	);
 	Super = NSObject;
     };
