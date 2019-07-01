@@ -27,33 +27,6 @@
 extern void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream);
 extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream);
 
-// @interface SNDPlayStream (Private)
-// @end
-// @implementation SNDPlayStream (Private)
-// // PulseAudio callback: now stream is ready to receive sound bytes.
-// // Call delegate's action to notify about stream readiness.
-// static void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
-// {
-//   id  delegate = [(SNDStream *)sndStream delegate];
-//   SEL action = @selector(soundStream:bufferReady:);
-  
-//   if (delegate == nil) {
-//     NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
-//     return;
-//   }
-//   if ([delegate respondsToSelector:action]) {
-//     [delegate performSelector:action
-//                    withObject:sndStream
-//                    withObject:[NSNumber numberWithUnsignedInteger:length]];
-//   }
-// }
-// static void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream)
-// {
-//   [(SNDStream *)sndStream
-//       performDelegateSelector:@selector(soundStreamBufferEmpty:)];
-// }
-// @end
-
 @implementation SNDPlayStream
 
 - (void)dealloc
