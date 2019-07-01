@@ -69,15 +69,18 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
   return [self initOnDevice:device
                samplingRate:44100
                channelCount:2
-                     format:PA_SAMPLE_FLOAT32LE];
+                     format:PA_SAMPLE_FLOAT32LE
+                       type:SNDEventType];
 }
 - (id)initOnDevice:(SNDDevice *)device
       samplingRate:(NSUInteger)rate
       channelCount:(NSUInteger)channels
             format:(NSUInteger)format
+              type:(SNDStreamType)streamType
 {
   pa_sample_spec sample_spec;
   pa_proplist    *proplist;
+  char           *stream_media_role;
 
   if ((self = [super init]) == nil)
     return nil;
@@ -96,10 +99,43 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
   sample_spec.rate = rate;
   sample_spec.channels = channels;
   sample_spec.format = format;
-  
+
   // Create stream
   proplist = pa_proplist_new();
-  pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, "event");
+  if (streamType > SNDApplicationType) {
+    switch (streamType) {
+    case SNDEventType:
+      stream_media_role = "event";
+      break;
+    case SNDMusicType:
+      stream_media_role = "music";
+      break;
+    case SNDVideoType:
+      stream_media_role = "music";
+      break;
+    case SNDGameType:
+      stream_media_role = "game";
+      break;
+    case SNDPhoneType:
+      stream_media_role = "phone";
+      break;
+    case SNDAnimationType:
+      stream_media_role = "animation";
+      break;
+    case SNDProductionType:
+      stream_media_role = "production";
+      break;
+    case SNDAccessibilityType:
+      stream_media_role = "a11y";
+      break;
+    case SNDTestType:
+      stream_media_role = "test";
+      break;
+    default:
+      break;
+    }  
+    pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, stream_media_role);
+  }
   _name = [[NSProcessInfo processInfo] processName];
   
   _pa_stream = pa_stream_new_with_proplist(_server.pa_ctx, [_name cString],
@@ -161,7 +197,7 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
 }
 - (void)abort:(id)sender
 {
-  pa_stream_flush(_pa_stream, 0, _stream_buffer_empty, self);
+  pa_stream_flush(_pa_stream, _stream_buffer_empty, self);
 }
 
 - (NSUInteger)volume

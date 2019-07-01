@@ -27,6 +27,19 @@
 @class PAStream;
 @class PAClient;
 
+typedef enum {
+  SNDApplicationType = 0,
+  SNDEventType,
+  SNDMusicType,
+  SNDVideoType,
+  SNDGameType,
+  SNDPhoneType,
+  SNDAnimationType,
+  SNDProductionType,
+  SNDAccessibilityType,
+  SNDTestType
+} SNDStreamType;
+
 @interface SNDStream : NSObject
 {
   pa_stream *_pa_stream;
@@ -43,7 +56,8 @@
 - (id)initOnDevice:(SNDDevice *)device
       samplingRate:(NSUInteger)rate
       channelCount:(NSUInteger)channels
-            format:(NSUInteger)format;
+            format:(NSUInteger)format
+              type:(SNDStreamType)streamType;
 
 - (id)delegate;
 - (void)setDelegate:(id)aDelegate;
