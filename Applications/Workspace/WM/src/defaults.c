@@ -228,6 +228,7 @@ static WOptionEnumeration seGeomDisplays[] = {
                                               {"Corner", WDIS_TOPLEFT, 0},
                                               {"Floating", WDIS_FRAME_CENTER, 0},
                                               {"Line", WDIS_NEW, 0},
+                                              {"Titlebar", WDIS_TITLEBAR, 0},
                                               {NULL, 0, 0}
 };
 
@@ -496,9 +497,9 @@ WDefaultEntry optionList[] = {
                                &wPreferences.no_window_over_icons, getBool, updateUsableArea, NULL, NULL},
                               {"WindowPlaceOrigin", "(0, 0)", NULL,
                                &wPreferences.window_place_origin, getCoord, NULL, NULL, NULL},
-                              {"ResizeDisplay", "corner", seGeomDisplays,
+                              {"ResizeDisplay", "titlebar", seGeomDisplays,
                                &wPreferences.size_display, getEnum, NULL, NULL, NULL},
-                              {"MoveDisplay", "corner", seGeomDisplays,
+                              {"MoveDisplay", "titlebar", seGeomDisplays,
                                &wPreferences.move_display, getEnum, NULL, NULL, NULL},
                               {"DontConfirmKill", "NO", NULL,
                                &wPreferences.dont_confirm_kill, getBool, NULL, NULL, NULL},

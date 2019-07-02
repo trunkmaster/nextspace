@@ -2853,11 +2853,16 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   if (event->xbutton.button == Button1)
     wRaiseFrame(wwin->frame->core);
 
+  // For NEXTSPACE resize events are handled in handleMotionNotify() (evenc.c)
+  // It was implemented to provide immediate chnage of focus and window raise
+  // after mouse down. With the code below window will be raised or focused on mouse
+  // release.
 #ifndef NEXTSPACE
   if (event->xbutton.window != wwin->frame->resizebar->window) {
     if (XGrabPointer(dpy, wwin->frame->resizebar->window, True,
                      ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-                     GrabModeAsync, GrabModeAsync, None, None, CurrentTime) != GrabSuccess) {
+                     GrabModeAsync, GrabModeAsync, None, None, CurrentTime)
+        != GrabSuccess) {
       return;
     }
   }

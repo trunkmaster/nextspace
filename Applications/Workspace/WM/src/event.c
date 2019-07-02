@@ -890,7 +890,7 @@ static void handleButtonPress(XEvent * event)
 #endif
     } else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
       executeButtonAction(scr, event, wPreferences.mouse_button8);
-    }else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
+    } else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
       executeButtonAction(scr, event, wPreferences.mouse_button9);
     } else if (event->xbutton.button == Button4 && wPreferences.mouse_wheel_scroll != WA_NONE) {
       executeWheelAction(scr, event, wPreferences.mouse_wheel_scroll);
@@ -2102,6 +2102,7 @@ static void handleKeyRelease(XEvent * event)
 static void handleMotionNotify(XEvent * event)
 {
   WScreen *scr = wScreenForRootWindow(event->xmotion.root);
+  char    *orig_title;
 
 #ifdef NEXTSPACE
   WWindow *wwin = wWindowFor(event->xmotion.window);
@@ -2114,16 +2115,26 @@ static void handleMotionNotify(XEvent * event)
       XGrabPointer(dpy, event->xmotion.window, False,
                    ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
                    GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
-    /* wMouseMoveWindow checks for button on ButtonRelease event inside it's loop */
+    // wMouseMoveWindow checks for button on ButtonRelease event inside it's loop
+
+    // Save title before move/resize chage it
+    orig_title = wstrdup(wwin->frame->title);
+  
     event->xbutton.button = Button1;
     if (event->xmotion.window == wwin->frame->titlebar->window ||
         event->xmotion.state & MOD_MASK) {
       /* move the window */
       wMouseMoveWindow(wwin, event);
     }
-    else if (IS_RESIZABLE(wwin) && event->xmotion.window == wwin->frame->resizebar->window) {
+    else if (IS_RESIZABLE(wwin) &&
+             event->xmotion.window == wwin->frame->resizebar->window) {
       wMouseResizeWindow(wwin, event);
     }
+    
+    // Restore original title
+    wWindowUpdateName(wwin, orig_title);
+    wfree(orig_title);
+    
     XUngrabPointer(dpy, CurrentTime);
   }
 #endif

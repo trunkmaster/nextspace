@@ -137,7 +137,13 @@ static void showPosition(WWindow * wwin, int x, int y)
 {
   WScreen *scr = wwin->screen_ptr;
 
-  if (wPreferences.move_display == WDIS_NEW) {
+  if (wPreferences.move_display == WDIS_TITLEBAR) {
+    char buffer[64];
+
+    snprintf(buffer, sizeof(buffer), "%+i, %+i", x, y);
+    wWindowUpdateName(wwin, buffer);
+  }
+  else if (wPreferences.move_display == WDIS_NEW) {
 #if 0
     int width = wwin->frame->core->width;
     int height = wwin->frame->core->height;
@@ -151,7 +157,8 @@ static void showPosition(WWindow * wwin, int x, int y)
     XDrawLine(dpy, scr->root_win, lgc, x - 1, 0, x - 1, scr->scr_height);
     XDrawLine(dpy, scr->root_win, lgc, x + width + 2, 0, x + width + 2, scr->scr_height);
 #endif
-  } else {
+  }
+  else {
     WSetGeometryViewShownPosition(scr->gview, x, y);
   }
 }
@@ -180,9 +187,7 @@ static void cyclePositionDisplay(WWindow * wwin, int x, int y, int w, int h)
       rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
       moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
     } else if (wPreferences.move_display == WDIS_FRAME_CENTER) {
-      /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
-      moveGeometryDisplayCentered(scr, x + w / 2,
-                                  y + wwin->frame->titlebar->height/2);
+      moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
     }
     WMMapWidget(scr->gview);
   }
@@ -193,7 +198,9 @@ static void mapPositionDisplay(WWindow * wwin, int x, int y, int w, int h)
   WScreen *scr = wwin->screen_ptr;
   WMRect rect;
 
-  if (wPreferences.move_display == WDIS_NEW || wPreferences.move_display == WDIS_NONE) {
+  if (wPreferences.move_display == WDIS_NEW ||
+      wPreferences.move_display == WDIS_NONE ||
+      wPreferences.move_display == WDIS_TITLEBAR) {
     return;
   } else if (wPreferences.move_display == WDIS_CENTER) {
     rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
@@ -203,8 +210,7 @@ static void mapPositionDisplay(WWindow * wwin, int x, int y, int w, int h)
     rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
     moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
   } else if (wPreferences.move_display == WDIS_FRAME_CENTER) {
-    /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
-    moveGeometryDisplayCentered(scr, x + w / 2, y + wwin->frame->titlebar->height/2);
+    moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
   }
   WMMapWidget(scr->gview);
   WSetGeometryViewShownPosition(scr->gview, x, y);
@@ -235,7 +241,15 @@ static void showGeometry(WWindow * wwin, int x1, int y1, int x2, int y2, int dir
   ty = y1 + wwin->frame->top_width;
   by = y2 - wwin->frame->bottom_width;
 
-  if (wPreferences.size_display == WDIS_NEW) {
+  if (wPreferences.size_display == WDIS_TITLEBAR) {
+    char buffer[64];
+
+    snprintf(buffer, sizeof(buffer), "%i x %i",
+             (x2 - x1 - wwin->normal_hints->base_width) / wwin->normal_hints->width_inc,
+             (by - ty - wwin->normal_hints->base_height) / wwin->normal_hints->height_inc);
+    wWindowUpdateName(wwin, buffer);
+  }
+  else if (wPreferences.size_display == WDIS_NEW) {
     fw = XTextWidth(scr->tech_draw_font, "8888", 4);
     fh = scr->tech_draw_font->ascent + scr->tech_draw_font->descent;
 
@@ -360,7 +374,8 @@ static void showGeometry(WWindow * wwin, int x1, int y1, int x2, int y2, int dir
     /* Display the width. */
     XDrawString(dpy, root, gc, mx - fw / 2 + 1, y - s + scr->tech_draw_font->ascent - fh / 2 + 1, num,
                 strlen(num));
-  } else {
+  }
+  else {
     WSetGeometryViewShownSize(scr->gview, (x2 - x1 - wwin->normal_hints->base_width)
                               / wwin->normal_hints->width_inc,
                               (by - ty - wwin->normal_hints->base_height)
@@ -387,9 +402,7 @@ static void cycleGeometryDisplay(WWindow * wwin, int x, int y, int w, int h, int
       rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
       moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
     } else if (wPreferences.size_display == WDIS_FRAME_CENTER) {
-      /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
-      moveGeometryDisplayCentered(scr, x + w / 2,
-                                  y + wwin->frame->titlebar->height/2);
+      moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
     }
     WMMapWidget(scr->gview);
     showGeometry(wwin, x, y, x + w, y + h, dir);
@@ -401,7 +414,9 @@ static void mapGeometryDisplay(WWindow * wwin, int x, int y, int w, int h)
   WScreen *scr = wwin->screen_ptr;
   WMRect rect;
 
-  if (wPreferences.size_display == WDIS_NEW || wPreferences.size_display == WDIS_NONE)
+  if (wPreferences.size_display == WDIS_NEW ||
+      wPreferences.size_display == WDIS_NONE ||
+      wPreferences.size_display == WDIS_TITLEBAR)
     return;
 
   if (wPreferences.size_display == WDIS_CENTER) {
@@ -412,8 +427,7 @@ static void mapGeometryDisplay(WWindow * wwin, int x, int y, int w, int h)
     rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
     moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
   } else if (wPreferences.size_display == WDIS_FRAME_CENTER) {
-    /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
-    moveGeometryDisplayCentered(scr, x + w / 2, y + wwin->frame->titlebar->height/2);
+    moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
   }
   WMMapWidget(scr->gview);
   showGeometry(wwin, x, y, x + w, y + h, 0);
@@ -487,9 +501,9 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
 
   // left & top
   if (x - 1 != wwin->frame_x) {
-    XDrawLine(dpy, root, gc, x - 1, y - 1, x - 1, y + height);
+    XDrawLine(dpy, root, gc, x - 1, y, x - 1, y + height);
     if (x - 1 < wwin->frame_x) {
-      XDrawLine(dpy, root, gc, wwin->frame_x, y - 1, x, y - 1);
+      XDrawLine(dpy, root, gc, x - 1, y - 1, wwin->frame_x, y - 1);
     }
   }
   else if (y + height > wwin->frame_y + wwin->frame->core->height) {
@@ -498,10 +512,10 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
   }
   // right & top
   if (width != wwin->frame->core->width && x - 1 == wwin->frame_x) {
-    XDrawLine(dpy, root, gc, x + width, y - 1, x + width, y + height);
+    XDrawLine(dpy, root, gc, x + width, y, x + width, y + height);
     if (width > wwin->frame->core->width) {
       XDrawLine(dpy, root, gc, x + wwin->frame->core->width + 1,
-                y - 1, x + width, y - 1);
+                y - 1, x + width + 1, y - 1);
     }
   }
   else if (y + height > wwin->frame_y + wwin->frame->core->height) {
@@ -1216,8 +1230,7 @@ updateWindowPosition(WWindow * wwin, MoveData * data, Bool doResistance,
     if (!scr->selected_windows && wPreferences.move_display == WDIS_FRAME_CENTER) {
 
       moveGeometryDisplayCentered(scr, newX + data->winWidth / 2,
-                                  newY + wwin->frame->titlebar->height/2);
-                                  /* newY + data->winHeight / 2); */
+                                  newY + data->winHeight / 2);
     }
 
     if (!opaqueMove) {
@@ -2446,9 +2459,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
           drawTransparentFrame(wwin, orig_fx, orig_fy, orig_fw, orig_fh);
 
         if (wPreferences.size_display == WDIS_FRAME_CENTER)
-          /* moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2); */
-          moveGeometryDisplayCentered(scr, fx + fw / 2,
-                                      fy + wwin->frame->titlebar->height/2);
+          moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2);
 
         if (!opaqueResize)
           drawTransparentFrame(wwin, fx, fy, fw, fh);
@@ -2466,8 +2477,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
           showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
           /* Now, continue drawing */
           XUngrabServer(dpy);
-          /* moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2); */
-          moveGeometryDisplayCentered(scr, fx + fw / 2, fy + wwin->frame->titlebar->height/2);
+          moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2);
           wWindowConfigure(wwin, fx, fy, fw, fh - vert_border);
           showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
         };

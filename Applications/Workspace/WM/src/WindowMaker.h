@@ -136,7 +136,8 @@ typedef enum {
 #define WDIS_CENTER		1	/* center of screen */
 #define WDIS_TOPLEFT		2	/* top left corner of screen */
 #define WDIS_FRAME_CENTER	3	/* center of the frame */
-#define WDIS_NONE		4
+#define WDIS_TITLEBAR		4	/* titlebar */
+#define WDIS_NONE		5
 
 /* keyboard input focus mode */
 #define WKF_CLICK	0
