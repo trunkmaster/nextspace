@@ -193,6 +193,15 @@
 //
 // Action methods
 //
+- (IBAction)setScreenSaver:(id)sender
+{
+  if ([sender isKindOfClass:[NSSlider class]]) {
+    [screenSaverField setFloatValue:[sender floatValue]];
+  }
+  else if ([sender isKindOfClass:[NSTextField class]]) {
+    [screenSaverSlider setFloatValue:[sender floatValue]];
+  }
+}
 - (IBAction)setLoginHook:(id)sender
 {
   NSString *hookPath = nil;

@@ -2,8 +2,9 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "setLastLoggedIn:",
+	    "setScreenSaver:",
 	    "setDisplayHostName:",
+	    "setLastLoggedIn:",
 	    "setLoginHook:",
 	    "setLogoutHook:"
 	);
@@ -14,7 +15,8 @@
 	    "setLastLoggedIn:",
 	    "setDisplayHostName:",
 	    "setLoginHook:",
-	    "setLogoutHook:"
+	    "setLogoutHook:",
+	    "setScreenSaver:"
 	);
 	Outlets = (
 	    window,
