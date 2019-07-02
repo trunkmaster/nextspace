@@ -10,7 +10,7 @@ Applications
 - return code of Workspace application handled specifically: if `11` returned Login execute shutdown procedure without panel displayed; if `12` returned - executes reboot procedure;
 - fixed bug specific to Linux child processes handling: by default SIGCHLD singnal handler is set to `SIG_IGN`. In this case `waitpid()` returns `-1` with error explained as "No child process" - waitpid looses tracked child proces by some away. To prevent ot from happening signal handler should be set to `SIG_DFL`;
 - changed start sequence: Login completely handles Xorg start and stop; loginwindow.service now handles only Login (doesn't kill Xorg on service stop);
-- defauls splitted into system (/root/Library/Preferences/.NextSpace/Login) and user ($HOME/Library/Preferences/.NextSpace/Login). User defaults is a place were login/logout hooks will be placed by Preferences;
+- defauls splitted into system (/usr/NextSpace/Preferences/Login) and user ($HOME/Library/Preferences/.NextSpace/Login). User defaults is a place were login/logout hooks are placed by "Login Preferences";
 
 **Workspace**
 
@@ -18,7 +18,7 @@ Applications
 
 **Preferences**
 
-- ;
+- "Login Preferences" module was implemented; System Login preferences ("Display Host Name", "Restore Last Logged In User Name",  screen saver, and custom UI and saver) can be changed by user that is member of `wheel` group;
 
 Frameworks
 ---
