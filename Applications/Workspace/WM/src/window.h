@@ -177,72 +177,72 @@ typedef struct WFakeGroupLeader {
  * structure created when it's being first mapped.
  */
 typedef struct WWindow {
-  struct WWindow *prev;			/* window focus list */
+  struct WWindow *prev;                 /* window focus list */
   struct WWindow *next;
 
-  WScreen *screen_ptr; 			/* pointer to the screen structure */
-  WWindowAttributes user_flags;		/* window attribute flags set by user */
-  WWindowAttributes defined_user_flags;	/* mask for user_flags */
-  WWindowAttributes client_flags;		/* window attribute flags set by app
-						 * initialized with global defaults */
+  WScreen *screen_ptr;                  /* pointer to the screen structure */
+  WWindowAttributes user_flags;         /* window attribute flags set by user */
+  WWindowAttributes defined_user_flags; /* mask for user_flags */
+  WWindowAttributes client_flags;       /* window attribute flags set by app
+                                         * initialized with global defaults */
 
-  struct InspectorPanel *inspector;	/* pointer to attribute editor panel */
+  struct InspectorPanel *inspector;     /* pointer to attribute editor panel */
 
-  struct WFrameWindow *frame;		/* the frame window */
-  int frame_x, frame_y;			/* position of the frame in root*/
-
-  struct {
-    int x, y;
-    unsigned int width, height;	/* original geometry of the window */
-  } old_geometry;				/* (before things like maximize) */
+  struct WFrameWindow *frame;           /* the frame window */
+  int frame_x, frame_y;                 /* position of the frame in root*/
 
   struct {
     int x, y;
-    unsigned int width, height;	/* original geometry of the window */
-  } bfs_geometry;				/* (before fullscreen) */
+    unsigned int width, height;         /* original geometry of the window */
+  } old_geometry;                       /* (before things like maximize) */
 
-  int maximus_x;				/* size after Maximusizing */
+  struct {
+    int x, y;
+    unsigned int width, height;         /* original geometry of the window */
+  } bfs_geometry;                       /* (before fullscreen) */
+
+  int maximus_x;                        /* size after Maximusizing */
   int maximus_y;
 
   /* client window info */
-  short old_border_width;			/* original border width of client_win*/
-  Window client_win;			/* the window we're managing */
-  WObjDescriptor client_descriptor;	/* dummy descriptor for client */
+  short old_border_width;               /* original border width of client_win*/
+  Window client_win;                    /* the window we're managing */
+  WObjDescriptor client_descriptor;     /* dummy descriptor for client */
   struct {
-    int x, y;			/* position of *client* relative
-                                 * to root */
-    unsigned int width, height;	/* size of the client window */
+    int x, y;                           /* position of *client* relative
+                                         * to root */
+    unsigned int width, height;         /* size of the client window */
   } client;
 
-  XSizeHints *normal_hints;		/* WM_NORMAL_HINTS */
-  XWMHints *wm_hints;			/* WM_HINTS (optional) */
-  char *wm_instance;			/* instance of WM_CLASS */
-  char *wm_class;				/* class of WM_CLASS */
-  GNUstepWMAttributes *wm_gnustep_attr;	/* GNUstep window attributes */
+  XSizeHints *normal_hints;             /* WM_NORMAL_HINTS */
+  XWMHints *wm_hints;                   /* WM_HINTS (optional) */
+  char *wm_instance;                    /* instance of WM_CLASS */
+  char *wm_class;                       /* class of WM_CLASS */
+  GNUstepWMAttributes *wm_gnustep_attr; /* GNUstep window attributes */
 
-  int state;				/* state as in ICCCM */
+  int state;                            /* state as in ICCCM */
 
-  Window transient_for;			/* WM_TRANSIENT_FOR */
+  Window transient_for;                 /* WM_TRANSIENT_FOR */
 
-  WFakeGroupLeader *fake_group;		/* Fake group leader for grouping into
+  WFakeGroupLeader *fake_group;         /* Fake group leader for grouping into
                                          * a single appicon */
-  Window group_id;			/* the leader window of the group */
-  Window client_leader;			/* WM_CLIENT_LEADER if not
+  Window group_id;                      /* the leader window of the group */
+  Window client_leader;                 /* WM_CLIENT_LEADER if not
                                          * internal_window */
 
-  Window main_window;			/* main window for the application */
-  Window orig_main_window;		/* original main window of application.
+  Window main_window;                   /* main window for the application */
+  Window orig_main_window;              /* original main window of application.
                                          * used for the shared appicon thing */
 
   int cmap_window_no;
   Window *cmap_windows;
 
   /* protocols */
-  WProtocols protocols;			/* accepted WM_PROTOCOLS */
+  WProtocols protocols;                 /* accepted WM_PROTOCOLS */
 
-  FocusMode focus_mode;			/* type of keyboard input focus */
+  FocusMode focus_mode;                 /* type of keyboard input focus */
 
-  long event_mask;			/* the event mask thats selected */
+  long event_mask;                      /* the event mask thats selected */
 
   /* state flags */
   struct {
@@ -257,40 +257,40 @@ typedef struct WWindow {
     unsigned int omnipresent:1;
     unsigned int semi_focused:1;
     /* window type flags */
-    unsigned int urgent:1;		/* if wm_hints says this is urgent */
+    unsigned int urgent:1;              /* if wm_hints says this is urgent */
 #ifdef USE_XSHAPE
     unsigned int shaped:1;
 #endif
 
     /* info flags */
-    unsigned int is_gnustep:1;	/* 1 if the window belongs to a GNUstep
-                                 * app */
-    unsigned int is_dockapp:1;	/* 1 if the window belongs to a DockApp */
+    unsigned int is_gnustep:1;          /* 1 if the window belongs to a GNUstep
+                                         * app */
+    unsigned int is_dockapp:1;          /* 1 if the window belongs to a DockApp */
 
-    unsigned int icon_moved:1;	/* icon for this window was moved
-                                 * by the user */
-    unsigned int selected:1;	/* multiple window selection */
+    unsigned int icon_moved:1;          /* icon for this window was moved
+                                         * by the user */
+    unsigned int selected:1;            /* multiple window selection */
     unsigned int skip_next_animation:1;
     unsigned int internal_window:1;
     unsigned int changing_workspace:1;
 
-    unsigned int inspector_open:1;	/* attrib inspector is already open */
+    unsigned int inspector_open:1;      /* attrib inspector is already open */
 
-    unsigned int destroyed:1;	/* window was already destroyed */
-    unsigned int menu_open_for_me:1;/* window commands menu */
-    unsigned int obscured:1;	/* window is obscured */
+    unsigned int destroyed:1;           /* window was already destroyed */
+    unsigned int menu_open_for_me:1;    /* window commands menu */
+    unsigned int obscured:1;            /* window is obscured */
 
     unsigned int net_skip_pager:1;
     unsigned int net_handle_icon:1;
     unsigned int net_show_desktop:1;
-    unsigned int net_has_title:1;	/* use netwm version of WM_NAME */
-  } flags;				/* state of the window */
+    unsigned int net_has_title:1;       /* use netwm version of WM_NAME */
+  } flags;                              /* state of the window */
 
-  struct WIcon *icon;			/* Window icon when miminized
+  struct WIcon *icon;                   /* Window icon when miminized
                                          * else is NULL! */
-  int icon_x, icon_y;			/* position of the icon */
+  int icon_x, icon_y;                   /* position of the icon */
   int icon_w, icon_h;
-  RImage *net_icon_image;			/* Window Image */
+  RImage *net_icon_image;               /* Window Image */
   Atom type;
 } WWindow;
 

@@ -180,7 +180,9 @@ static void cyclePositionDisplay(WWindow * wwin, int x, int y, int w, int h)
       rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
       moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
     } else if (wPreferences.move_display == WDIS_FRAME_CENTER) {
-      moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
+      /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
+      moveGeometryDisplayCentered(scr, x + w / 2,
+                                  y + wwin->frame->titlebar->height/2);
     }
     WMMapWidget(scr->gview);
   }
@@ -201,7 +203,8 @@ static void mapPositionDisplay(WWindow * wwin, int x, int y, int w, int h)
     rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
     moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
   } else if (wPreferences.move_display == WDIS_FRAME_CENTER) {
-    moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
+    /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
+    moveGeometryDisplayCentered(scr, x + w / 2, y + wwin->frame->titlebar->height/2);
   }
   WMMapWidget(scr->gview);
   WSetGeometryViewShownPosition(scr->gview, x, y);
@@ -384,7 +387,9 @@ static void cycleGeometryDisplay(WWindow * wwin, int x, int y, int w, int h, int
       rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
       moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
     } else if (wPreferences.size_display == WDIS_FRAME_CENTER) {
-      moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
+      /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
+      moveGeometryDisplayCentered(scr, x + w / 2,
+                                  y + wwin->frame->titlebar->height/2);
     }
     WMMapWidget(scr->gview);
     showGeometry(wwin, x, y, x + w, y + h, dir);
@@ -407,7 +412,8 @@ static void mapGeometryDisplay(WWindow * wwin, int x, int y, int w, int h)
     rect = wGetRectForHead(scr, wGetHeadForWindow(wwin));
     moveGeometryDisplayCentered(scr, rect.pos.x + 1, rect.pos.y + 1);
   } else if (wPreferences.size_display == WDIS_FRAME_CENTER) {
-    moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2);
+    /* moveGeometryDisplayCentered(scr, x + w / 2, y + h / 2); */
+    moveGeometryDisplayCentered(scr, x + w / 2, y + wwin->frame->titlebar->height/2);
   }
   WMMapWidget(scr->gview);
   showGeometry(wwin, x, y, x + w, y + h, 0);
@@ -428,7 +434,7 @@ static void doWindowMove(WWindow * wwin, WMArray * array, int dx, int dy)
       x = tmpw->frame_x + dx;
       y = tmpw->frame_y + dy;
 
-#if 1				/* XXX: with xinerama patch was #if 0, check this */
+#if 1 /* XXX: with xinerama patch was #if 0, check this */
       /* don't let windows become unreachable */
 
       if (x + (int)tmpw->frame->core->width < 20)
@@ -463,8 +469,8 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
   }
 
   if (HAS_TITLEBAR(wwin) && !wwin->flags.shaded) {
-    h = WMFontHeight(wwin->screen_ptr->title_font) + (wPreferences.window_title_clearance +
-                                                      TITLEBAR_EXTEND_SPACE) * 2;
+    h = WMFontHeight(wwin->screen_ptr->title_font) +
+      (wPreferences.window_title_clearance + TITLEBAR_EXTEND_SPACE) * 2;
 
     if (h > wPreferences.window_title_max_height)
       h = wPreferences.window_title_max_height;
@@ -477,14 +483,49 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
        (e.g. interactive placement), frame does not point to anything. */
     bottom = RESIZEBAR_HEIGHT;
   }
-  XDrawRectangle(dpy, root, gc, x - 1, y - 1, width + 1, height + 1);
+  /* XDrawRectangle(dpy, root, gc, x - 1, y - 1, width + 1, height + 1); */
 
-  if (h > 0) {
-    XDrawLine(dpy, root, gc, x, y + h - 1, x + width, y + h - 1);
+  // left & top
+  if (x - 1 != wwin->frame_x) {
+    XDrawLine(dpy, root, gc, x - 1, y - 1, x - 1, y + height);
+    if (x - 1 < wwin->frame_x) {
+      XDrawLine(dpy, root, gc, wwin->frame_x, y - 1, x, y - 1);
+    }
   }
-  if (bottom > 0) {
-    XDrawLine(dpy, root, gc, x, y + height - bottom, x + width, y + height - bottom);
+  else if (y + height > wwin->frame_y + wwin->frame->core->height) {
+    XDrawLine(dpy, root, gc, x - 1, y + wwin->frame->core->height + 1,
+              x - 1, y + height + 1);
   }
+  // right & top
+  if (width != wwin->frame->core->width && x - 1 == wwin->frame_x) {
+    XDrawLine(dpy, root, gc, x + width, y - 1, x + width, y + height);
+    if (width > wwin->frame->core->width) {
+      XDrawLine(dpy, root, gc, x + wwin->frame->core->width + 1,
+                y - 1, x + width, y - 1);
+    }
+  }
+  else if (y + height > wwin->frame_y + wwin->frame->core->height) {
+    XDrawLine(dpy, root, gc, x + width, y + wwin->frame->core->height + 1,
+              x + width, y + height + 1);
+  }
+  // bottom
+  if (y + height - 1 != wwin->frame_y + wwin->frame->core->height) {
+    XDrawLine(dpy, root, gc, x, y + height, x + width, y + height);
+  }
+  else {
+    if (x < wwin->frame_x) {
+      XDrawLine(dpy, root, gc, x - 1, y + height, wwin->frame_x, y + height);
+    }
+    else if (x + width > wwin->frame_x + wwin->frame->core->width &&
+             x - 1 == wwin->frame_x) {
+      XDrawLine(dpy, root, gc, x +
+                wwin->frame->core->width + 1, y + height,
+                x + width + 1, y + height);
+    }
+  }
+  /* if (h > 0) { */
+  /*   XDrawLine(dpy, root, gc, x + width, y, x + width, y + h - 1); */
+  /* } */
 }
 
 static void drawFrames(WWindow * wwin, WMArray * array, int dx, int dy)
@@ -1174,7 +1215,9 @@ updateWindowPosition(WWindow * wwin, MoveData * data, Bool doResistance,
 
     if (!scr->selected_windows && wPreferences.move_display == WDIS_FRAME_CENTER) {
 
-      moveGeometryDisplayCentered(scr, newX + data->winWidth / 2, newY + data->winHeight / 2);
+      moveGeometryDisplayCentered(scr, newX + data->winWidth / 2,
+                                  newY + wwin->frame->titlebar->height/2);
+                                  /* newY + data->winHeight / 2); */
     }
 
     if (!opaqueMove) {
@@ -2057,38 +2100,34 @@ Cursor wMouseResizeCursor(WWindow *wwin, int res, int fw, int fh)
 {
   Cursor new_cursor = wPreferences.cursor[WCUR_ARROW];
 	
-  if ((res == (LEFT | DOWN)) || (res == (LEFT | UP)))
-    {
-      if (fh >= wwin->normal_hints->max_height && fw >= wwin->normal_hints->max_width)
-        new_cursor = wPreferences.cursor[WCUR_TOPRIGHTRESIZE];
-      else
-        new_cursor = wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE];
-    }
-  else if ((res == (RIGHT | DOWN)) || (res == (RIGHT | UP)))
-    {
-      if (fh >= wwin->normal_hints->max_height && fw >= wwin->normal_hints->max_width)
-        new_cursor = wPreferences.cursor[WCUR_TOPLEFTRESIZE];
-      else
-        new_cursor = wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE];
-    }
-  else if (res == LEFT || res == RIGHT)
-    {
-      if (fw >= wwin->normal_hints->max_width)
-        new_cursor = wPreferences.cursor[(res == LEFT) ? WCUR_RIGHTRESIZE: WCUR_LEFTRESIZE];
-      else if (fw <= wwin->normal_hints->min_width)
-        new_cursor = wPreferences.cursor[(res == LEFT) ? WCUR_LEFTRESIZE: WCUR_RIGHTRESIZE];
-      else
-        new_cursor = wPreferences.cursor[WCUR_HORIZONRESIZE];
-    }
-  else if (res == UP || res == DOWN)
-    {
-      if (fh >= wwin->normal_hints->max_height)
-        new_cursor = wPreferences.cursor[WCUR_UPRESIZE];
-      else if (fh <= wwin->normal_hints->min_height)
-        new_cursor = wPreferences.cursor[WCUR_DOWNRESIZE];
-      else
-        new_cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
-    }
+  if ((res == (LEFT | DOWN)) || (res == (LEFT | UP))) {
+    if (fh >= wwin->normal_hints->max_height && fw >= wwin->normal_hints->max_width)
+      new_cursor = wPreferences.cursor[WCUR_TOPRIGHTRESIZE];
+    else
+      new_cursor = wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE];
+  }
+  else if ((res == (RIGHT | DOWN)) || (res == (RIGHT | UP))) {
+    if (fh >= wwin->normal_hints->max_height && fw >= wwin->normal_hints->max_width)
+      new_cursor = wPreferences.cursor[WCUR_TOPLEFTRESIZE];
+    else
+      new_cursor = wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE];
+  }
+  else if (res == LEFT || res == RIGHT) {
+    if (fw >= wwin->normal_hints->max_width)
+      new_cursor = wPreferences.cursor[(res == LEFT) ? WCUR_RIGHTRESIZE: WCUR_LEFTRESIZE];
+    else if (fw <= wwin->normal_hints->min_width)
+      new_cursor = wPreferences.cursor[(res == LEFT) ? WCUR_LEFTRESIZE: WCUR_RIGHTRESIZE];
+    else
+      new_cursor = wPreferences.cursor[WCUR_HORIZONRESIZE];
+  }
+  else if (res == UP || res == DOWN) {
+    if (fh >= wwin->normal_hints->max_height)
+      new_cursor = wPreferences.cursor[WCUR_UPRESIZE];
+    else if (fh <= wwin->normal_hints->min_height)
+      new_cursor = wPreferences.cursor[WCUR_DOWNRESIZE];
+    else
+      new_cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
+  }
 
   return new_cursor;
 }
@@ -2324,10 +2363,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
         wWindowConstrainSize(wwin, (unsigned int *)&fw, (unsigned int *)&fh);
 #ifdef NEXTSPACE
         new_cursor = wMouseResizeCursor(wwin, res, fw, fh);
-        if (cursor != new_cursor)
-          {
-            cursor = new_cursor;
-            XChangeActivePointerGrab(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
+        if (cursor != new_cursor) {
+          cursor = new_cursor;
+          XChangeActivePointerGrab(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
                                      cursor, CurrentTime);
           }
 #endif // NEXTSPACE
@@ -2408,7 +2446,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
           drawTransparentFrame(wwin, orig_fx, orig_fy, orig_fw, orig_fh);
 
         if (wPreferences.size_display == WDIS_FRAME_CENTER)
-          moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2);
+          /* moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2); */
+          moveGeometryDisplayCentered(scr, fx + fw / 2,
+                                      fy + wwin->frame->titlebar->height/2);
 
         if (!opaqueResize)
           drawTransparentFrame(wwin, fx, fy, fw, fh);
@@ -2426,7 +2466,8 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
           showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
           /* Now, continue drawing */
           XUngrabServer(dpy);
-          moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2);
+          /* moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2); */
+          moveGeometryDisplayCentered(scr, fx + fw / 2, fy + wwin->frame->titlebar->height/2);
           wWindowConfigure(wwin, fx, fy, fw, fh - vert_border);
           showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
         };
