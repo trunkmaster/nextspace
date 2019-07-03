@@ -33,7 +33,9 @@
 {
   NSBox *horizontalLine;
   
-  NSLog(@"NXTAlert createPanel thread: %@ (main: %@)", [NSThread currentThread], [NSThread mainThread]);
+  NSDebugLLog(@"NXTAlert",
+              @"NXTAlert createPanel thread: %@ (main: %@)",
+              [NSThread currentThread], [NSThread mainThread]);
 
   panel = [[NSPanel alloc] initWithContentRect:NSMakeRect(100,100,360,193)
                                      styleMask:NSTitledWindowMask
@@ -209,7 +211,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"NXTAlert: -dealloc");
+  NSDebugLLog(@"Memory",@"NXTAlert: -dealloc");
   [buttons release];
   [super dealloc];
 }
@@ -394,11 +396,10 @@
 
 - (void)buttonPressed:(id)sender
 {
-  if ([NSApp modalWindow] != panel)
-    {
-      NSLog(@"NXAalert panel button pressed when not in modal loop.");
-      return;
-    }
+  if ([NSApp modalWindow] != panel) {
+    NSLog(@"NXAalert panel button pressed when not in modal loop.");
+    return;
+  }
   
   [NSApp stopModalWithCode:[sender tag]];
 }

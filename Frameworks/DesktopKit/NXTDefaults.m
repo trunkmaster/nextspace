@@ -27,8 +27,8 @@
 #import <Foundation/NSDistributedNotificationCenter.h>
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSRunLoop.h>
-
 #import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDebug.h>
 
 #import "NXTDefaults.h"
 
@@ -174,7 +174,7 @@ static NSLock     *syncLock;
                                                  userInfo:nil
                                                   repeats:NO];
       [syncTimer retain];
-      NSLog(@"Timer scheduled!");
+      NSDebugLLog(@"NXTDefaults", @"[NXTDefaults] Timer scheduled!");
     }
 }
 
@@ -203,12 +203,13 @@ static NSLock     *syncLock;
   if ([syncLock tryLock] == NO)
     return NO;
   
-  NSLog(@"NXTDefaults: Waiting for defaults to be synchronized. %@ - %i",
-        syncTimer, [syncTimer isValid]);
+  NSDebugLLog(@"NXTDefaults",
+              @"[NXTDefaults] Waiting for defaults to be synchronized. %@ - %i",
+              syncTimer, [syncTimer isValid]);
   if (syncTimer != nil && ([syncTimer isValid] != NO)) {
     [syncTimer fire];
   }
-  NSLog(@"NXTDefaults: synchronized!");
+  NSDebugLLog(@"NXTDefaults", @"[NXTDefaults] synchronized!");
   
   [syncLock unlock];
   return YES;
@@ -223,7 +224,7 @@ static NSLock     *syncLock;
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSDictionary  *attrs = nil;
   
-  NSLog(@"NXTDefaults: write to file: %@", filePath);
+  NSDebugLLog(@"NXTDefaults", @"[NXTDefaults] write to file: %@", filePath);
 
   if ([fileManager fileExistsAtPath:filePath] == NO) {
     if (isSystem != NO) {

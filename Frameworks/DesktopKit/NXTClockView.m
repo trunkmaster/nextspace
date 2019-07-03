@@ -21,12 +21,13 @@
 //
 
 #import <Foundation/NSTimer.h>
+#import <Foundation/NSDebug.h>
 #import <AppKit/AppKit.h>
 
 #import "NXTDefaults.h"
 #import "NXTClockView.h"
 
-#define DISTRIBUTED_NC [NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+#define DNC [NSDistributedNotificationCenter defaultCenter]
 
 NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 
@@ -191,9 +192,9 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 
 - (void)dealloc
 {
-  NSLog(@"[NXTClockView] dealloc");
+  NSDebugLLog(@"Memory", @"[NXTClockView] dealloc");
   if (isTrackDefaults) {
-    [DISTRIBUTED_NC removeObserver:self];
+    [DNC removeObserver:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
   
@@ -637,10 +638,10 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
     if (flag != NO) {
       // ~/Library/Preferences/.NextSpace/NXGlobalDomain
       // ClockView24HourFormat = YES/NO;
-      [DISTRIBUTED_NC addObserver:self
-                         selector:@selector(defaultsChanged:)
-                             name:NXUserDefaultsDidChangeNotification
-                           object:nil];
+      [DNC addObserver:self
+              selector:@selector(defaultsChanged:)
+                  name:NXUserDefaultsDidChangeNotification
+                object:@"NXGlobalDomain"];
       
       // ~/Library/Preferences/NSGlobalDomain.
       // NSLanguages
@@ -651,7 +652,7 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
              object:nil];
     }
     else {
-      [DISTRIBUTED_NC removeObserver:self];
+      [DNC removeObserver:self];
     }
   }
   isTrackDefaults = flag;
@@ -666,7 +667,8 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 {
   id notifObject = [notif object];
   
-  NSLog(@"NXTClockView: defaults was changed! %@", [[notif object] className]);
+  NSDebugLLog(@"NXTClockView", @"[NXTClockView] defaults was changed! %@",
+              [[notif object] className]);
 
   if ([notifObject isKindOfClass:[NSString class]]) {
     // NextSpace's NXGlobalDomain was changed

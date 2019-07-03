@@ -28,6 +28,7 @@
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
 
 #import "NXTDefaults.h"
 #import "NXTFileManager.h"
@@ -276,10 +277,10 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
 
   dirContents = [[fm directoryContentsAtPath:path] mutableCopy];
 
-  NSLog(@"Dir contents sort START");
+  NSDebugLLog(@"NXTFileManager", @"[NXTFileManager] Dir contents sort START");
   // [self sortArray:dirContents start:0 count:[dirContents count]];
   [self _getSortedDirContents:dirContents atPath:path];
-  NSLog(@"Dir contents sort END");
+  NSDebugLLog(@"NXTFileManager", @"Dir contents sort END");
   
   return [dirContents autorelease];
   
