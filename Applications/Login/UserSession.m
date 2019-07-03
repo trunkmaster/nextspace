@@ -41,6 +41,7 @@
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString      *logDir;
+  NSString      *logPath;
   BOOL          isDir;
   
   logDir = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u",
@@ -52,10 +53,11 @@
                    attributes:@{NSFilePosixPermissions:@"700"}
                         error:0];
   }
-  if (_sessionLog != nil)
+  if (_sessionLog != nil) {
     [_sessionLog release];
-  _sessionLog = [[NSString alloc]
-                     initWithString:[logDir stringByAppendingPathComponent:@"console.log"]];
+  }
+  logPath = [logDir stringByAppendingPathComponent:@"console.log"];
+  _sessionLog = [[NSString alloc] initWithString:logPath];
 }
 
 // Called for every launched command  (launchCommand:)

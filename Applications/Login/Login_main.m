@@ -19,11 +19,11 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <unistd.h>
-#import <sys/wait.h>
-#import <X11/Xlib.h>
-#import <X11/cursorfont.h>
-#import <X11/Xcursor/Xcursor.h>
+#include <sys/wait.h>
+
+#include <X11/Xlib.h>
+#include <X11/cursorfont.h>
+#include <X11/Xcursor/Xcursor.h>
 
 #import <AppKit/NSApplication.h>
 #import <DesktopKit/NXTDefaults.h>
@@ -155,6 +155,9 @@ void setupDisplays()
   XCloseDisplay(xDisplay);
 }
 
+//-----------------------------------------------------------------------------
+// --- Misc ---
+//-----------------------------------------------------------------------------
 // Returns PID of running command if `wait` == NO
 // Returns exit status of child process if `wait` == YES
 int runCommand(NSString *command, BOOL wait)
@@ -191,9 +194,6 @@ int runCommand(NSString *command, BOOL wait)
   return (wait == NO) ? pid : child_status;
 }
 
-//-----------------------------------------------------------------------------
-// --- Misc ---
-//-----------------------------------------------------------------------------
 static void handleSignal(int sig)
 {
   fprintf(stderr, "[Login] got signal %i\n", sig);
@@ -259,7 +259,7 @@ int main(int argc, const char **argv)
     // Inital brightess was set to 0.0. Displays will be lighten in
     // [NSApp applicationDidFinishLaunching].
     // setupDisplays();
-      
+
     // StartupHook defined only system defaults (root user or app bundle)
     startupHook = [loginDefaults objectForKey:@"StartupHook"];
     if ([startupHook isEqualToString:@""] == NO) {

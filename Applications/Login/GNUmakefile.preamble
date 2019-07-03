@@ -12,7 +12,7 @@ ADDITIONAL_OBJCFLAGS += -DHAVE_PAM -Wno-typedef-redefinition -fno-objc-arc
 ADDITIONAL_CFLAGS += 
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += -lpam -lX11 -lSystemKit -lDesktopKit -ldispatch -lXcursor
+ADDITIONAL_LDFLAGS += -lpam -lX11 -lSystemKit -lDesktopKit -ldispatch -lXcursor -lXrandr
 #-lXmu -lXxf86vm 
 
 # Additional include directories the compiler should search

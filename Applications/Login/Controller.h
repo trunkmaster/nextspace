@@ -19,10 +19,10 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <security/pam_appl.h>
-#import <X11/Xlib.h>
-#import <X11/cursorfont.h>
-#import <X11/Xcursor/Xcursor.h>
+#include <security/pam_appl.h>
+#include <X11/Xlib.h>
+#include <X11/cursorfont.h>
+#include <X11/Xcursor/Xcursor.h>
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <AppKit/AppKit.h>
