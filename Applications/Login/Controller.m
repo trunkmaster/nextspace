@@ -30,14 +30,9 @@
 #import <sys/consio.h> // for changing VT
 #endif
 
-#include <dispatch/dispatch.h>
-#include <X11/extensions/Xrandr.h>
-
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEMouse.h>
 #import <DesktopKit/NXTAlert.h>
-
-static dispatch_queue_t x_eventloop_q;
 
 static NSString *PAMAuthenticationException = @"PAMAuthenticationException";
 static NSString *PAMAccountExpiredException = @"PAMAccountExpiredException";
@@ -268,22 +263,6 @@ void *alloc(int size)
 
   XSync(xDisplay, 0);
   XSetErrorHandler(NULL);
-}
-
-- (void)startEventLoop
-{
-  XEvent *event = NULL;
-  
-  XRRSelectInput(xDisplay, xScreen, RRScreenChangeNotifyMask);
-  
-  for (;;) {
-    XNextEvent(xDisplay, event); // blocks here
-    if (event->type == RRScreenChangeNotifyMask) {
-      // Handle screen change event
-      NSLog(@"XrandR event received.");
-      XRRUpdateConfiguration(event);
-    }
-  }
 }
 
 - (void)setBusyCursor
@@ -521,11 +500,6 @@ void *alloc(int size)
   // Initialize X resources
   [self initXApp];
   
-  // x_eventloop_q = dispatch_queue_create("ns.login.xeventloop", NULL);
-  // dispatch_async(x_eventloop_q, ^{
-  //     [self startEventLoop];
-  //   });     
-
   NSLog(@"appDidFinishLaunch: before showWindow");
   // Show login window
   [self setWindowVisible:YES];

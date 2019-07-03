@@ -20,10 +20,12 @@
 //
 
 #include <sys/wait.h>
+#include <dispatch/dispatch.h>
 
 #include <X11/Xlib.h>
 #include <X11/cursorfont.h>
 #include <X11/Xcursor/Xcursor.h>
+#include <X11/extensions/Xrandr.h>
 
 #import <AppKit/NSApplication.h>
 #import <DesktopKit/NXTDefaults.h>
@@ -32,6 +34,10 @@
 
 #import "Application.h"
 #import "Controller.h"
+
+static dispatch_queue_t x_q;
+static dispatch_queue_t app_q;
+static Display         *dpy = NULL;
 
 static NSTask      *xorgTask = nil;
 static NXTDefaults *loginDefaults = nil;
@@ -155,6 +161,52 @@ void setupDisplays()
   XCloseDisplay(xDisplay);
 }
 
+
+void prepareEventLoop()
+{
+  int screen;
+  
+  dpy = XOpenDisplay(NULL);
+  screen = DefaultScreen(dpy);
+  XRRSelectInput(dpy, RootWindow(dpy, screen), RRScreenChangeNotifyMask);
+  XSync(dpy, False);  
+}
+
+void startEventLoop()
+{
+  XEvent event;
+
+  for (;;) {
+    XNextEvent(dpy, &event); // blocks here
+    if (event.type & RRScreenChangeNotifyMask) {
+      // Handle screen change event
+      printf("[EventLoop] XrandR event received.\n");
+      XRRUpdateConfiguration(&event);
+    }
+    else {
+      printf("[EventLoop] some event received.\n");
+    }
+  }
+}
+
+void sendMessage(void)
+{
+  XEvent event;
+
+  event.xclient.type = RRScreenChangeNotifyMask;
+  event.xclient.message_type = 0L;
+  event.xclient.format = 32;
+  event.xclient.display = dpy;
+  event.xclient.window = RootWindow(dpy, DefaultScreen(dpy));
+  event.xclient.data.l[0] = 0;
+  event.xclient.data.l[1] = CurrentTime;
+  event.xclient.data.l[2] = 0;
+  event.xclient.data.l[3] = 0;
+  XSendEvent(dpy, RootWindow(dpy, DefaultScreen(dpy)), False, RRScreenChangeNotifyMask, &event);
+  XSync(dpy, False);
+}
+
+
 //-----------------------------------------------------------------------------
 // --- Misc ---
 //-----------------------------------------------------------------------------
@@ -240,6 +292,7 @@ int main(int argc, const char **argv)
   NSString          *shutdownHook;
   NSString          *exitCommand;
   int               gpbs_pid = 0;
+  __block BOOL      isRunEventLoop = YES;
 
   panelExitCode = 0;
   
@@ -251,6 +304,7 @@ int main(int argc, const char **argv)
 
   plymouthDeactivate();
   // Start Window Server
+  XInitThreads();
   if (startWindowServer() == 0) {
     gpbs_pid = runCommand(@"/Library/bin/gpbs --daemon", NO);
     plymouthQuit(YES);
@@ -259,6 +313,27 @@ int main(int argc, const char **argv)
     // Inital brightess was set to 0.0. Displays will be lighten in
     // [NSApp applicationDidFinishLaunching].
     // setupDisplays();
+
+    //--- X11 event loop queue --------------------------------------------------
+    x_q = dispatch_queue_create("ns.login.xeventloop", NULL);
+    dispatch_sync(x_q, ^{ prepareEventLoop(); });
+    dispatch_async(x_q, ^{
+        XEvent event;
+        
+        while (isRunEventLoop != NO) {
+          XNextEvent(dpy, &event); // blocks here
+          if (event.type & RRScreenChangeNotifyMask) {
+            // Handle screen change event
+            printf("[EventLoop] RandR event received.\n");
+            XRRUpdateConfiguration(&event);
+          }
+          else {
+            printf("[EventLoop] some event received.\n");
+          }
+        }
+        printf("[EventLoop] quit\n");
+      });
+    //---------------------------------------------------------------------------
 
     // StartupHook defined only system defaults (root user or app bundle)
     startupHook = [loginDefaults objectForKey:@"StartupHook"];
@@ -275,7 +350,22 @@ int main(int argc, const char **argv)
     setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
     // Start our application without appicon
     [LoginApplication sharedApplication];
-    NSApplicationMain(argc, argv);
+    
+    //--- Login application queue------------------------------------------------
+    app_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+    dispatch_sync(app_q, ^{
+        NSApplicationMain(argc, argv);
+      });
+    //---------------------------------------------------------------------------
+    // NSApplicationMain(argc, argv);
+
+    isRunEventLoop = NO;
+    XCloseDisplay(dpy);
+    // sendMessage();
+    // XFlush(dpy);
+    // NSLog(@"Stopping EventLoop");
+    // dispatch_sync(x_q, ^{ XCloseDisplay(dpy); });
+    // NSLog(@"EventLoop stopped");
 
     // Stop Window Server
     if (xorgTask != nil) {
