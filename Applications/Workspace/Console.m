@@ -19,9 +19,27 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <Foundation/NSDistributedNotificationCenter.h>
 #import "Console.h"
 
+#define DNC [NSDistributedNotificationCenter defaultCenter]
+
 @implementation Console
+
+- (void)dealloc
+{
+  NSLog(@"Console: dealloc");
+
+  [DNC removeObserver:self];
+
+  [self deactivate];
+
+  [savedString release];
+  [consoleFile release];
+  [window release];
+
+  [super dealloc];
+}
 
 - init
 {
@@ -45,24 +63,10 @@
   DESTROY(savedString);
 
   [window setFrameAutosaveName:@"Console"];
-  // Wait for changes to take effect: avoid flickering of 
-  // window on creation.
-  // [[NSRunLoop currentRunLoop] 
-  //       runMode:NSDefaultRunLoopMode 
-  //    beforeDate:[NSDate dateWithTimeIntervalSinceNow:.5]];
-}
-
-- (void)dealloc
-{
-  NSLog(@"Console: dealloc");
-
-  [self deactivate];
-
-  [savedString release];
-  [consoleFile release];
-  [window release];
-
-  [super dealloc];
+  [DNC addObserver:self
+          selector:@selector(fontDidChange:)
+              name:@"NXTSystemFontPreferencesDidChangeNotification"
+            object:@"Preferences"];
 }
 
 - (NSWindow *)window
@@ -163,6 +167,23 @@
 		 consoleHistory]);
 	}
     }
+}
+
+// Notifications
+- (void)fontDidChange:(NSNotification *)aNotif
+{
+  NSFont *font;
+  NSUserDefaults *defaults;
+  NSDictionary *globalDomain;
+
+  defaults = [NSUserDefaults standardUserDefaults];
+  [defaults synchronize];
+  globalDomain = [defaults persistentDomainForName:NSGlobalDomain];
+
+  font = [NSFont
+           fontWithName:[globalDomain objectForKey:@"NSUserFixedPitchFont"]
+                   size:[[globalDomain objectForKey:@"NSUserFixedPitchFontSize"] floatValue]];
+  [text setFont:font];
 }
 
 @end
