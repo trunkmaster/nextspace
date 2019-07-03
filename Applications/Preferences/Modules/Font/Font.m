@@ -25,6 +25,7 @@
 #import <Foundation/NSData.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
 
 #import <AppKit/NSImage.h>
 #import <AppKit/NSPopUpButton.h>
@@ -143,12 +144,12 @@ static void setStringDefault(NSString *string, NSString *name)
 
 static float getFloatDefault(NSMutableDictionary *dict, NSString *name)
 {
-  NSString	*sNum = [domain objectForKey: name];
+  NSString *sNum = [domain objectForKey:name];
 
   if (!sNum)
-    sNum =  [defaultValues() objectForKey: name];
+    sNum = [defaultValues() objectForKey:name];
 
-  [dict setObject: sNum forKey: name];
+  [dict setObject:sNum forKey:name];
 
   return [sNum floatValue];
 }
@@ -160,12 +161,12 @@ static void setFloatDefault(CGFloat aFloat, NSString *name)
 
 static int getIntDefault(NSMutableDictionary *dict, NSString *name)
 {
-  NSString	*sNum = [domain objectForKey: name];
+  NSString *sNum = [domain objectForKey:name];
 
   if (!sNum)
-    sNum =  [defaultValues() objectForKey: name];
+    sNum = [defaultValues() objectForKey:name];
 
-  [dict setObject: sNum forKey: name];
+  [dict setObject:sNum forKey:name];
 
   return [sNum intValue];
 }
@@ -251,16 +252,7 @@ NSString *WWMDefaultsPath(void)
 
   //
   [enableAntiAliasingButton
-    setIntValue:getBoolDefault(domain,@"GSFontAntiAlias")];
-
-  // if ((subpixel = getIntDefault(domain,@"back-art-subpixel-text")))
-  //   {
-  //     [enableSubpixelButton setIntValue:1];
-  //   }
-  // [subpixelModeButton setEnabled:(subpixel != 0)];
-
-  // if (subpixel == 2)
-  //   [subpixelModeButton setIntValue:1];
+    setIntValue:getIntDefault(domain, @"GSFontAntiAlias")];
 
   [view setNeedsDisplay:YES];
 }
@@ -401,25 +393,6 @@ NSString *WWMDefaultsPath(void)
   [self updateUI];
 }
 
-// UNUSED
-- (IBAction)enableSubpixelChanged:(id)sender
-{
-  int	subpixel = 0;
-
-  if ([enableSubpixelButton state])
-    {
-      subpixel++;
-      [subpixelModeButton setEnabled: YES];
-      if ([subpixelModeButton state])
-	{
-	  subpixel++;
-	}
-    }
-
-  setIntDefault(subpixel, @"back-art-subpixel-text");
-  [self updateUI];
-}
-
 // --- Class methods
 
 - (void)changeFont:(id)sender
@@ -495,6 +468,9 @@ NSString *WWMDefaultsPath(void)
 
   [defaults synchronize];
   [self updateUI];
+  [[NSDistributedNotificationCenter defaultCenter]
+    postNotificationName:@"NXTSystemFontPreferencesDidChangeNotification"
+                  object:@"Preferences"];
 }
 
-@end	// Font
+@end // Font
