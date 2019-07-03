@@ -77,7 +77,6 @@
 
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
-    NSLog(@"[NSWindow] click on %@", [v className]);
     if ([v isKindOfClass:[PathIcon class]]) {
       [v mouseDown:theEvent];
       return;
@@ -264,7 +263,7 @@
   // Start filesystem event monitor
   fileSystemMonitor = [[NSApp delegate] fileSystemMonitor];
 
-  NSLog(@"[FileViewer -init] %@", relativePath);
+  NSDebugLLog(@"FileViewer", @"[FileViewer -init] %@", relativePath);
 
   // finally display the path
   if ([self isRootViewerCopy] != NO) {
@@ -376,7 +375,7 @@
                                      owner:self];
   [shelf setAutoresizingMask:NSViewWidthSizable];
   [splitView addSubview:shelf];
-  NSLog(@"Shelf created with slots tall: %i", [shelf slotsTall]);
+  NSDebugLLog(@"FileViewer",@"Shelf created with slots tall: %i", [shelf slotsTall]);
   // [self configureShelf];
 
   // Bottom part of split view
@@ -450,7 +449,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"FileViewer %@: dealloc", rootPath);
+  NSDebugLLog(@"Memory",@"FileViewer %@: dealloc", rootPath);
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -466,7 +465,7 @@
   [[ProcessManager shared] releaseBackInfoLabel:operationInfo];
   TEST_RELEASE(lock);
 
-  NSLog(@"FileViewer %@: dealloc END", rootPath);
+  NSDebugLLog(@"Memory",@"FileViewer %@: dealloc END", rootPath);
   
   [super dealloc];
 }
@@ -566,7 +565,7 @@
       absolutePath = [absolutePath stringByDeletingLastPathComponent];
       ASSIGN(displayedPath, [self pathFromAbsolutePath:absolutePath]);
     }
-  NSLog(@"=== displayPath now: %@ (%@)", displayedPath, selection);
+  NSDebugLLog(@"FileViewer",@"=== displayPath now: %@ (%@)", displayedPath, selection);
 }
 
 - (NSString *)absolutePathFromPath:(NSString *)relPath
@@ -596,8 +595,9 @@
   path = [absolutePath substringToIndex:length];
   if (![rootPath isEqualToString:path])
     {
-      NSLog(@"[FileViewer-pathFromAbsolutePath] provided path %@ is not absloute in %@!",
-	    absolutePath, rootPath);
+      NSDebugLLog(@"FileViewer",
+                  @"[FileViewer-pathFromAbsolutePath] provided path %@ is not absloute in %@!",
+                  absolutePath, rootPath);
       return absolutePath;
     }
 
@@ -722,7 +722,7 @@
       path = [path stringByDeletingLastPathComponent];
       fullPath = [rootPath stringByAppendingPathComponent:path];
       ASSIGN(*filenames, nil);
-      NSLog(@"Stripped down to %@", path);
+      NSDebugLLog(@"FileViewer",@"Stripped down to %@", path);
     }
   
   // If 'filenames' is empty, check if 'relativePath' is path with
@@ -867,11 +867,11 @@
   // Prevent recursive calling
   // Recursive calls may be caused by changing column width via preferences
   if (!lock || [lock tryLock] == NO) {
-    NSLog(@"LOCK FAILED! Going out...");
+    NSDebugLLog(@"FileViewer",@"LOCK FAILED! Going out...");
     return;
   }
 
-  NSLog(@"[FileViewer] >>> updateWindowWidth");
+  NSDebugLLog(@"FileViewer",@"[FileViewer] >>> updateWindowWidth");
 
   frame = [window frame];
 
@@ -884,8 +884,8 @@
   columnCount = roundf((frame.size.width - WINDOW_INNER_OFFSET) / columnWidth);
   [viewer setColumnCount:columnCount];
   [viewer setColumnWidth:columnWidth];
-  NSLog(@"[FileViewer updateWindowWidth]: column count: %lu (width = %.0f)",
-        columnCount, columnWidth);
+  NSDebugLLog(@"FileViewer",@"[FileViewer updateWindowWidth]: column count: %lu (width = %.0f)",
+              columnCount, columnWidth);
 
   windowMinSize = NSMakeSize((2 * columnWidth) + WINDOW_INNER_OFFSET, WIN_MIN_HEIGHT);
 
@@ -901,7 +901,7 @@
   sValue = [scroller floatValue];
 
   // --- Resize window
-  NSLog(@"[FileViewer] window width: %f", frame.size.width);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] window width: %f", frame.size.width);
   frame.size.width = (columnCount * columnWidth) + WINDOW_INNER_OFFSET;
   [window setMinSize:windowMinSize];
   [window setResizeIncrements:NSMakeSize(columnWidth, 1)];
@@ -917,7 +917,7 @@
   [scroller setFloatValue:sValue];
   [pathView constrainScroller:scroller];
 
-  NSLog(@"[FileViewer] <<< updateWindowWidth");
+  NSDebugLLog(@"FileViewer", @"[FileViewer] <<< updateWindowWidth");
 
   [lock unlock];
 }
@@ -1112,8 +1112,8 @@
   NSRect shelfRect;
   NSRect boxRect;
 
-  NSLog(@"[FileViewer:splitView:resizeWithOldSuperviewSize] shelf:%@", 
-	NSStringFromRect([shelf frame]));
+  NSDebugLLog(@"FileViewer",@"[FileViewer:splitView:resizeWithOldSuperviewSize] shelf:%@", 
+              NSStringFromRect([shelf frame]));
 
   // Shelf
   shelfRect = [shelf frame];
@@ -1121,8 +1121,9 @@
   [shelf setFrame:shelfRect];
   [shelf resizeWithOldSuperviewSize:splitViewSize];
 
-  NSLog(@"[FileViewer:splitView:resizeWithOldSuperviewSize] shelf:%@ splitView:%fx%f", 
-	NSStringFromRect(shelfRect), oldSize.width, oldSize.height);
+  NSDebugLLog(@"FileViewer",
+              @"[FileViewer:splitView:resizeWithOldSuperviewSize] shelf:%@ splitView:%fx%f", 
+              NSStringFromRect(shelfRect), oldSize.width, oldSize.height);
 
   // PathView and Viewer
   boxRect.origin.x = 0;
@@ -1181,7 +1182,8 @@
   PathIcon *icon;
   NSString *path;
 
-  NSLog(@"Icon label did change from %@ to %@", oldLabelString, newLabelString);
+  NSDebugLLog(@"FileViewer", @"Icon label did change from %@ to %@",
+              oldLabelString, newLabelString);
 
   if (![self renameCurrentFileTo:newLabelString updateViewer:NO]) {
     [[anIconLabel icon] setLabelString:oldLabelString];
@@ -1196,7 +1198,8 @@
   path = [path stringByAppendingPathComponent:newLabelString];
   // NSLog(@"Icon new path: %@", path);
   [icon setPaths:[NSArray arrayWithObject:path]];
-  NSLog(@"FileViewer(%@): Icon now have paths: %@", rootPath, [icon paths]);
+  NSDebugLLog(@"FileViewer", @"FileViewer(%@): Icon now have paths: %@",
+              rootPath, [icon paths]);
 }
 
 //=============================================================================
@@ -1222,8 +1225,8 @@
     file = [selection objectAtIndex:0];
   }
   
-  NSLog(@"[FileViewer][%@] windowWillClose [%@]",
-        rootPath, [[notif object] className]);
+  NSDebugLLog(@"FileViewer", @"[FileViewer][%@] windowWillClose [%@]",
+              rootPath, [[notif object] className]);
 
   if (!isRootViewer && fileSystemMonitor) {
     [fileSystemMonitor 
@@ -1437,8 +1440,8 @@
       
     if ([changedFullPath isEqualToString:selectedFullPath]) {
       // Last selected name changed
-      NSLog(@"Last selected name changed from %@ to %@",
-            selectedFullPath, newFullPath);
+      NSDebugLLog(@"FileViewer", @"Last selected name changed from %@ to %@",
+                  selectedFullPath, newFullPath);
       // Optimization: do not use [self displayPath:selection:sender:] - just
       // set values for particular parts of FileViewer
       [pathView setPath:[self pathFromAbsolutePath:newFullPath] selection:nil];
@@ -1454,7 +1457,7 @@
     }
     else if ([changedPath isEqualToString:selectedPath]) {
       // Selected dir contents changed
-      NSLog(@"Selected dir contents changed");
+      NSDebugLLog(@"FileViewer", @"Selected dir contents changed");
       // Reload column in browser for changed directory contents
       ASSIGN(selection, [self checkSelection:selection
                                       atPath:displayedPath]);
@@ -1465,14 +1468,14 @@
                            stringByReplacingOccurrencesOfString:commonPath
                                                      withString:newFullPath];
       // Changed directory name, part of selectedPath 
-      NSLog(@"Changed directory name, part of selectedPath");
+      NSDebugLLog(@"FileViewer", @"Changed directory name, part of selectedPath");
       // [viewer reloadPath:[self pathFromAbsolutePath:selectedPath]];
       [self displayPath:[self pathFromAbsolutePath:selectedPath]
               selection:selection
                  sender:self];
     }
     else {
-      NSLog(@"One of not selected (but displayed) row name changed");
+      NSDebugLLog(@"FileViewer", @"One of not selected (but displayed) row name changed");
       // One of not selected (but displayed) row name changed
       // Reload column in browser for changed directory contents
       [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
@@ -1480,9 +1483,9 @@
   }
   else if (([operations indexOfObject:@"Write"] != NSNotFound)) {
     // Write - monitored object was changed (Create, Delete)
-    NSLog(@"[FileViewer] OSEFileSystem: 'Write' "
-          @"operation occured for %@/(%@) selected path %@ selection %@",
-          changedPath, changedFile, selectedPath, selection);
+    NSDebugLLog(@"FileViewer", @"[FileViewer] OSEFileSystem: 'Write' "
+                @"operation occured for %@/(%@) selected path %@ selection %@",
+                changedPath, changedFile, selectedPath, selection);
 
     // Check selection before path will be reloaded
     ASSIGN(selection, [self checkSelection:selection atPath:displayedPath]);
@@ -1493,9 +1496,9 @@
     [self displayPath:displayedPath selection:selection sender:viewer];
   }
   else if (([operations indexOfObject:@"Attributes"] != NSNotFound)) {
-    NSLog(@"[FileViewer] OSEFileSystem: 'Attributes' "
-          @"operation occured for %@ (%@) selection %@",
-          changedPath, selectedPath, selection);
+    NSDebugLLog(@"FileViewer", @"[FileViewer] OSEFileSystem: 'Attributes' "
+                @"operation occured for %@ (%@) selection %@",
+                changedPath, selectedPath, selection);
     [self displayPath:displayedPath selection:selection sender:self];
   }
 }
@@ -1522,7 +1525,7 @@
     [viewer displayPath:[self displayedPath] selection:selection];
   }
     
-  NSLog(@"[Workspace]: NXGlobalDomain was changed.");
+  NSDebugLLog(@"FileViewer", @"[Workspace]: NXGlobalDomain was changed.");
 }
 
 
@@ -1550,7 +1553,7 @@
   // No icon in the Shelf exists - create and add new
   icon = [shelf createIconForPaths:@[mountPoint]];
   if (icon) {
-    NSLog(@"Adding icon to the Shelf with info: %@", [notif userInfo]);
+    NSDebugLLog(@"FileViewer", @"Adding icon to the Shelf with info: %@", [notif userInfo]);
     [icon setInfo:[notif userInfo]];
     [icon setDelegate:shelf];
     [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
@@ -1736,7 +1739,7 @@
   PathIcon      *selectedIcon = [[pathView icons] lastObject];;
   NXTIconLabel   *label;
 
-  NSLog(@"NF: %@", selectedPath);
+  NSDebugLLog(@"FileViewer", @"NF: %@", selectedPath);
 
   newPath = [selectedPath stringByAppendingPathComponent:folderName];
   for (idx = 1; [fm fileExistsAtPath:newPath]; idx++)
@@ -1756,7 +1759,7 @@
 
   newPath = [self pathFromAbsolutePath:newPath];
 
-  NSLog(@"NewFolder: %@", newPath);
+  NSDebugLLog(@"FileViewer", @"NewFolder: %@", newPath);
   [self displayPath:newPath selection:nil sender:self];
 
   // Here is new selected icon
@@ -1807,24 +1810,21 @@
 
   if (NSRunAlertPanel(@"Destroy", 
                       @"Do you want to destroy selected files?",
-                      @"Destroy", @"Cancel", nil) 
-      != NSAlertDefaultReturn)
-    {
-      return;
-    }
+                      @"Destroy", @"Cancel", nil)
+      != NSAlertDefaultReturn) {
+    return;
+  }
   
   fullPath = [self absolutePath];
-  if ([selection count] > 0)
-    {
-      files = selection;
-    }
-  else
-    {
-      files = [NSArray arrayWithObject:[fullPath lastPathComponent]];
-      fullPath = [fullPath stringByDeletingLastPathComponent];
-    }
+  if ([selection count] > 0) {
+    files = selection;
+  }
+  else {
+    files = [NSArray arrayWithObject:[fullPath lastPathComponent]];
+    fullPath = [fullPath stringByDeletingLastPathComponent];
+  }
 
-  NSLog(@"Destroy: %@/%@", fullPath, files);
+  NSDebugLLog(@"FileViewer", @"Destroy: %@/%@", fullPath, files);
 
   [[FileMover alloc] initWithOperationType:DeleteOperation
                                  sourceDir:fullPath
@@ -1843,7 +1843,7 @@
 
 - (void)eject:(id)sender
 {
-  NSLog(@"[FileViewer:%@] eject", [self absolutePath]);
+  NSDebugLLog(@"FileViewer", @"[FileViewer:%@] eject", [self absolutePath]);
   [mediaManager unmountAndEjectDeviceAtPath:[self absolutePath]];
 }
 
