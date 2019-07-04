@@ -120,7 +120,6 @@
   return YES;
 }
 
-
 - (void)dealloc
 {
   NSLog(@"UserSession: dealloc");
@@ -148,8 +147,6 @@
   appController = controller;
   appDefaults = defaults;
   _exitStatus = 0;
-
-  
 
   _userName = [[NSString alloc] initWithString:name];
   [self _setupSessionLog];
@@ -273,6 +270,8 @@
     [fm copyItemAtPath:[[NSBundle mainBundle] pathForResource:@"Login" ofType:@"user"]
                 toPath:defaultsPath
                  error:0];
+    [fm changeFileAttributes:@{NSFileOwnerAccountName:_userName}
+                      atPath:defaultsPath];
   }
   userDefaults = [NSDictionary dictionaryWithContentsOfFile:defaultsPath];
   
