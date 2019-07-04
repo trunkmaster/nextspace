@@ -110,12 +110,17 @@ void *alloc(int size)
   dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
   dispatch_async(gq, ^{
       @autoreleasepool {
+        [self performSelectorOnMainThread:@selector(stopRRTimer)
+                               withObject:nil
+                            waitUntilDone:NO];
+        
         while (aSession.isRunning != NO) {
           [aSession launchSessionScript];
           [self performSelectorOnMainThread:@selector(userSessionWillClose:)
                                  withObject:aSession
                               waitUntilDone:YES];
         }
+        
         NSLog(@"[GCD] panelExitCode: %d", panelExitCode);
         if (panelExitCode == ShutdownExitCode) {
           [self performSelectorOnMainThread:@selector(shutDown:)
@@ -125,6 +130,11 @@ void *alloc(int size)
         else if (panelExitCode == RebootExitCode) {
           [self performSelectorOnMainThread:@selector(restart:)
                                  withObject:self
+                              waitUntilDone:NO];
+        }
+        else {
+          [self performSelectorOnMainThread:@selector(startRRTimer)
+                                 withObject:nil
                               waitUntilDone:NO];
         }
       }
@@ -199,6 +209,13 @@ void *alloc(int size)
   xScreen = DefaultScreen(xDisplay);
   xRootWindow = RootWindow(xDisplay, xScreen);
   xPanelWindow = (Window)[xServer windowDevice:[window windowNumber]];
+
+  // Subscribe to RandR notification
+  rrDisplay = XOpenDisplay(NULL);
+  XRRSelectInput(rrDisplay, RootWindow(rrDisplay, DefaultScreen(rrDisplay)),
+                 RRScreenChangeNotifyMask);
+  XSync(rrDisplay, False);
+  [self startRRTimer];
 }
 
 - (void)setRootWindowBackground
@@ -211,6 +228,33 @@ void *alloc(int size)
   XSetWindowBackground(xDisplay, xRootWindow, 5460853L);
   XClearWindow(xDisplay, xRootWindow);
   XSync(xDisplay, false);
+}
+
+- (void)checkForRREvents
+{
+  XEvent event;
+
+  if (XPending(rrDisplay)) {
+    XNextEvent(rrDisplay, &event);
+    if (event.type & RRScreenChangeNotifyMask) {
+      XRRUpdateConfiguration(&event);
+      [window center];
+    }
+  }
+}
+- (void)startRRTimer
+{
+  rrTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                             target:self
+                                           selector:@selector(checkForRREvents)
+                                           userInfo:nil
+                                            repeats:YES];
+  [rrTimer retain];
+}
+- (void)stopRRTimer
+{
+  [rrTimer invalidate];
+  [rrTimer release];
 }
 
 - (void)setWindowVisible:(BOOL)flag

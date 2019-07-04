@@ -45,6 +45,8 @@ enum LoginExitCode {
 };
 int panelExitCode;
 
+Display *rrDisplay;
+
 @class UserSession;
 
 @interface Controller : NSObject
@@ -79,6 +81,7 @@ int panelExitCode;
   // Busy cursor
   XcursorAnimate       *busy_cursor;
   NSTimer              *busyTimer;
+  NSTimer              *rrTimer;
 }
 
 - (void)displayHostname;
@@ -102,6 +105,10 @@ int panelExitCode;
 - (void)setRootWindowBackground;
 - (void)setWindowVisible:(BOOL)flag;
 - (void)closeAllXClients;
+
+- (void)checkForRREvents;
+- (void)startRRTimer;
+- (void)stopRRTimer;
 
 - (void)setBusyCursor;
 - (void)destroyBusyCursor;

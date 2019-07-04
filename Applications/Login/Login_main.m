@@ -35,10 +35,6 @@
 #import "Application.h"
 #import "Controller.h"
 
-static dispatch_queue_t x_q;
-static dispatch_queue_t app_q;
-static Display         *dpy = NULL;
-
 static NSTask      *xorgTask = nil;
 static NXTDefaults *loginDefaults = nil;
 
@@ -161,52 +157,6 @@ void setupDisplays()
   XCloseDisplay(xDisplay);
 }
 
-
-void prepareEventLoop()
-{
-  int screen;
-  
-  dpy = XOpenDisplay(NULL);
-  screen = DefaultScreen(dpy);
-  XRRSelectInput(dpy, RootWindow(dpy, screen), RRScreenChangeNotifyMask);
-  XSync(dpy, False);  
-}
-
-void startEventLoop()
-{
-  XEvent event;
-
-  for (;;) {
-    XNextEvent(dpy, &event); // blocks here
-    if (event.type & RRScreenChangeNotifyMask) {
-      // Handle screen change event
-      printf("[EventLoop] XrandR event received.\n");
-      XRRUpdateConfiguration(&event);
-    }
-    else {
-      printf("[EventLoop] some event received.\n");
-    }
-  }
-}
-
-void sendMessage(void)
-{
-  XEvent event;
-
-  event.xclient.type = RRScreenChangeNotifyMask;
-  event.xclient.message_type = 0L;
-  event.xclient.format = 32;
-  event.xclient.display = dpy;
-  event.xclient.window = RootWindow(dpy, DefaultScreen(dpy));
-  event.xclient.data.l[0] = 0;
-  event.xclient.data.l[1] = CurrentTime;
-  event.xclient.data.l[2] = 0;
-  event.xclient.data.l[3] = 0;
-  XSendEvent(dpy, RootWindow(dpy, DefaultScreen(dpy)), False, RRScreenChangeNotifyMask, &event);
-  XSync(dpy, False);
-}
-
-
 //-----------------------------------------------------------------------------
 // --- Misc ---
 //-----------------------------------------------------------------------------
@@ -282,110 +232,12 @@ NXTDefaults *getDefaults(NSString *appPath)
   return systemDefaults;
 }
 
-//-----------------------------------------------------------------------------
-// --- main()
-//-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+NSString *commandForExitCode(int exitCode)
 {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  NSString          *startupHook;
-  NSString          *shutdownHook;
-  NSString          *exitCommand;
-  int               gpbs_pid = 0;
-  __block BOOL      isRunEventLoop = YES;
-
-  panelExitCode = 0;
+  NSString *shutdownHook;
+  NSString *exitCommand;
   
-  // SIGQUIT will be received from systemd on `systemctl stop loginwindow`
-  signal(SIGQUIT, handleSignal);
-
-  // Defaults
-  loginDefaults = getDefaults([NSString stringWithCString:argv[0]]);
-
-  plymouthDeactivate();
-  // Start Window Server
-  XInitThreads();
-  if (startWindowServer() == 0) {
-    gpbs_pid = runCommand(@"/Library/bin/gpbs --daemon", NO);
-    plymouthQuit(YES);
-
-    // Setup layout and gamma.
-    // Inital brightess was set to 0.0. Displays will be lighten in
-    // [NSApp applicationDidFinishLaunching].
-    // setupDisplays();
-
-    //--- X11 event loop queue --------------------------------------------------
-    x_q = dispatch_queue_create("ns.login.xeventloop", NULL);
-    dispatch_sync(x_q, ^{ prepareEventLoop(); });
-    dispatch_async(x_q, ^{
-        XEvent event;
-        
-        while (isRunEventLoop != NO) {
-          XNextEvent(dpy, &event); // blocks here
-          if (event.type & RRScreenChangeNotifyMask) {
-            // Handle screen change event
-            printf("[EventLoop] RandR event received.\n");
-            XRRUpdateConfiguration(&event);
-          }
-          else {
-            printf("[EventLoop] some event received.\n");
-          }
-        }
-        printf("[EventLoop] quit\n");
-      });
-    //---------------------------------------------------------------------------
-
-    // StartupHook defined only system defaults (root user or app bundle)
-    startupHook = [loginDefaults objectForKey:@"StartupHook"];
-    if ([startupHook isEqualToString:@""] == NO) {
-      if (runCommand(startupHook, YES) != 0) {
-        NSLog(@"Warning: StartupHook run is not successful.");
-      }
-    }
-
-    // Since there is no window manager running yet, we'll want to
-    // do window decorations ourselves
-    [[NSUserDefaults standardUserDefaults] setBool:NO 
-                                            forKey:@"GSX11HandlesWindowDecorations"];
-    setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
-    // Start our application without appicon
-    [LoginApplication sharedApplication];
-    
-    //--- Login application queue------------------------------------------------
-    app_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-    dispatch_sync(app_q, ^{
-        NSApplicationMain(argc, argv);
-      });
-    //---------------------------------------------------------------------------
-    // NSApplicationMain(argc, argv);
-
-    isRunEventLoop = NO;
-    XCloseDisplay(dpy);
-    // sendMessage();
-    // XFlush(dpy);
-    // NSLog(@"Stopping EventLoop");
-    // dispatch_sync(x_q, ^{ XCloseDisplay(dpy); });
-    // NSLog(@"EventLoop stopped");
-
-    // Stop Window Server
-    if (xorgTask != nil) {
-      NSLog(@"Terminating window server...");
-      [xorgTask terminate];
-    }
-    // Stop Pasteboard Service
-    if (gpbs_pid) {
-      kill(gpbs_pid, SIGQUIT);
-    }
-
-    // Show shutdown Plymouth splash screen
-    plymouthStart(1);
-  }
-  else {
-    NSLog(@"Unable to start Login Panel: no Window Server available.");
-  }
-
-  // Panel stopped it's execution - check exit code
-  switch (panelExitCode)
+  switch (exitCode)
     {
     case QuitExitCode:
       NSLog(@"`quit` command: Just finish Login execution.");
@@ -419,13 +271,96 @@ int main(int argc, const char **argv)
       NSLog(@"Unknown panel exit code received: %i", panelExitCode);
       exitCommand = @"";
     }
+  
+  return exitCommand;
+}
+
+//-----------------------------------------------------------------------------
+// --- main()
+//-----------------------------------------------------------------------------
+int main(int argc, const char **argv)
+{
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  NSString          *startupHook;
+  NSString          *exitCommand;
+  int               gpbs_pid = 0;
+
+  panelExitCode = 0;
+  
+  // SIGQUIT will be received from systemd on `systemctl stop loginwindow`
+  signal(SIGQUIT, handleSignal);
+
+  // Defaults
+  loginDefaults = getDefaults([NSString stringWithCString:argv[0]]);
+
+  plymouthDeactivate();
+  // Start Window Server
+  XInitThreads();
+  if (startWindowServer() == 0) {
+    gpbs_pid = runCommand(@"/Library/bin/gpbs --daemon", NO);
+    plymouthQuit(YES);
+
+    // Setup layout and gamma.
+    // Inital brightess was set to 0.0. Displays will be lighten in
+    // [NSApp applicationDidFinishLaunching].
+    // setupDisplays();
+
+    //--- StartupHook -----------------------------------------------------------
+    // StartupHook defined only system defaults (root user or app bundle)
+    startupHook = [loginDefaults objectForKey:@"StartupHook"];
+    if ([startupHook isEqualToString:@""] == NO) {
+      if (runCommand(startupHook, YES) != 0) {
+        NSLog(@"Warning: StartupHook run is not successful.");
+      }
+    }
+    //---------------------------------------------------------------------------
+
+    //--- AppKit application ----------------------------------------------------
+    // Since there is no window manager running yet, we'll want to
+    // do window decorations ourselves
+    [[NSUserDefaults standardUserDefaults] setBool:NO 
+                                            forKey:@"GSX11HandlesWindowDecorations"];
+    setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
+    // Start our application without appicon
+    [LoginApplication sharedApplication];
+    NSApplicationMain(argc, argv);
+    //---------------------------------------------------------------------------
+
+    /*
+    // Stop EventLoop that checks for RandR events
+    NSLog(@"Stopping EventLoop");
+    shouldEventLoopRun = NO;
+    while (isEventLoopRunning != NO) { ; }
+    XCloseDisplay(dpy);
+    NSLog(@"EventLoop stopped");
+    */
+
+    // Stop Window Server
+    if (xorgTask != nil) {
+      NSLog(@"Terminating window server...");
+      [xorgTask terminate];
+    }
+    
+    // Stop Pasteboard Service
+    if (gpbs_pid) {
+      kill(gpbs_pid, SIGQUIT);
+    }
+
+    // Show shutdown Plymouth splash screen
+    plymouthStart(1);
+    
+    // Panel stopped it's execution - check exit code
+    exitCommand = commandForExitCode(panelExitCode);
+    if (exitCommand && [exitCommand isEqualToString:@""] == NO) {
+      runCommand(exitCommand, NO);
+    }
+  }
+  else {
+    NSLog(@"Unable to start Login Panel: no Window Server available. Return with 1.");
+    return 1;
+  }
 
   NSLog(@"Exiting...");
-  
-  // Run exitCommand
-  if (exitCommand && [exitCommand isEqualToString:@""] == NO) {
-    runCommand(exitCommand, NO);
-  }
   
   [pool release];
 
