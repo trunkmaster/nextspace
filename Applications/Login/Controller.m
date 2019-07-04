@@ -40,55 +40,6 @@ static NSString *PAMCredentialsException = @"PAMCredentialsException";
 static NSString *PAMPermissionDeniedException = @"PAMPermissionDeniedException";
 static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
 
-// ============================================================================
-// ==== Internal functions
-// ============================================================================
-
-int ConversationFunction(int num_msg,
-			 const struct pam_message ** msg,
-			 struct pam_response ** resp,
-			 void * appdata_ptr);
-
-static int catchXErrors(Display* dpy, XErrorEvent* event);
-
-int ConversationFunction(int num_msg, 
-    			 const struct pam_message ** msg, 
-    			 struct pam_response ** resp, 
-    			 void * appdata_ptr)
-{
-  if (num_msg != 1) {
-    NSLog(@"PAM error");
-    return -1;
-  }
-
-  *resp = malloc(sizeof(struct pam_response));
-  (*resp)[0].resp = strdup([[[NSApp delegate] password] cString]);
-  (*resp)[0].resp_retcode = 0;
-
-  return PAM_SUCCESS;
-}
-
-static int catchXErrors(Display* dpy, XErrorEvent* event)
-{
-  return 0;
-}
-
-void *alloc(int size)
-{
-  void *tmp;
-
-  tmp = malloc(size);
-  if (!tmp) {
-    NSLog(@"out of memory, terminating");
-    exit(0);
-  }
-  else {
-    memset(tmp, 0, size);
-    }
-
-  return tmp;
-}
-
 //=============================================================================
 // Manage user sessions
 //=============================================================================
@@ -197,10 +148,16 @@ void *alloc(int size)
 @end
 
 //=============================================================================
-// X Window System category
+// X Window System
 //=============================================================================
 @implementation Controller (XWindowSystem)
 
+static int catchXErrors(Display* dpy, XErrorEvent* event)
+{
+  return 0;
+}
+
+// --- General
 - (void)initXApp
 {
   GSDisplayServer *xServer = GSCurrentServer();
@@ -228,33 +185,6 @@ void *alloc(int size)
   XSetWindowBackground(xDisplay, xRootWindow, 5460853L);
   XClearWindow(xDisplay, xRootWindow);
   XSync(xDisplay, false);
-}
-
-- (void)checkForRREvents
-{
-  XEvent event;
-
-  if (XPending(rrDisplay)) {
-    XNextEvent(rrDisplay, &event);
-    if (event.type & RRScreenChangeNotifyMask) {
-      XRRUpdateConfiguration(&event);
-      [window center];
-    }
-  }
-}
-- (void)startRRTimer
-{
-  rrTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
-                                             target:self
-                                           selector:@selector(checkForRREvents)
-                                           userInfo:nil
-                                            repeats:YES];
-  [rrTimer retain];
-}
-- (void)stopRRTimer
-{
-  [rrTimer invalidate];
-  [rrTimer release];
 }
 
 - (void)setWindowVisible:(BOOL)flag
@@ -309,6 +239,37 @@ void *alloc(int size)
   XSetErrorHandler(NULL);
 }
 
+// --- RandR events handling
+- (void)checkForRREvents
+{
+  XEvent event;
+
+  if (XPending(rrDisplay)) {
+    XNextEvent(rrDisplay, &event);
+    if (event.type & RRScreenChangeNotifyMask) {
+      XRRUpdateConfiguration(&event);
+      [window center];
+    }
+  }
+}
+
+- (void)startRRTimer
+{
+  rrTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                             target:self
+                                           selector:@selector(checkForRREvents)
+                                           userInfo:nil
+                                            repeats:YES];
+  [rrTimer retain];
+}
+
+- (void)stopRRTimer
+{
+  [rrTimer invalidate];
+  [rrTimer release];
+}
+
+// --- Busy cursor
 - (void)setBusyCursor
 {
   XcursorCursors *cursors;
@@ -330,6 +291,7 @@ void *alloc(int size)
   // [self animateBusyCursor:nil];
   [busyTimer fire];
 }
+
 - (void)destroyBusyCursor
 {
   Cursor arrow_cursor;
@@ -347,6 +309,7 @@ void *alloc(int size)
   XDefineCursor(xDisplay, xPanelWindow, arrow_cursor);
   XFreeCursor(xDisplay, arrow_cursor);
 }
+
 - (void)animateBusyCursor:(NSTimer *)timer
 {
   Cursor xcursor = XcursorAnimateNext(busy_cursor);
@@ -388,6 +351,32 @@ void *alloc(int size)
 // PAM operations
 //=============================================================================
 @implementation Controller (PAMAuth)
+
+int ConversationFunction(int num_msg, 
+    			 const struct pam_message ** msg, 
+    			 struct pam_response ** resp, 
+    			 void * appdata_ptr)
+{
+  if (num_msg != 1) {
+    NSLog(@"PAM: 0 messages was sent to conversation function.");
+    return -1;
+  }
+
+  // *resp = malloc(sizeof(struct pam_response));
+  *resp = malloc(sizeof(struct pam_response));
+  if (!*resp) {
+    NSLog(@"PAM: out of memory, terminating");
+    exit(0);
+  }
+  else {
+    memset(*resp, 0, sizeof(struct pam_response));
+  }
+  
+  (*resp)[0].resp = strdup([[[NSApp delegate] password] cString]);
+  (*resp)[0].resp_retcode = 0;
+
+  return PAM_SUCCESS;
+}
 
 - (BOOL)authenticateUser:(NSString *)user
 {

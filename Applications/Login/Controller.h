@@ -102,6 +102,7 @@ Display *rrDisplay;
 
 @interface Controller (XWindowSystem)
 
+- (void)initXApp;
 - (void)setRootWindowBackground;
 - (void)setWindowVisible:(BOOL)flag;
 - (void)closeAllXClients;
