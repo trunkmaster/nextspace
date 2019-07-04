@@ -31,6 +31,7 @@
 #import <DesktopKit/NXTDefaults.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
+#import <SystemKit/OSEPower.h>
 
 #import "Application.h"
 #import "Controller.h"
@@ -128,27 +129,31 @@ int startWindowServer()
 void setupDisplays()
 {
   OSEScreen  *screen = [OSEScreen sharedScreen];
-  OSEDisplay *mainDisplay;
+  OSEDisplay *mainDisplay = nil;
   NSArray    *layout;
   Display    *xDisplay;
   Window     xRootWindow;
-  // NSArray   *systemDisplays;
+  NSArray    *displays;
 
   // Get layout with monitors aligned horizontally
   layout = [screen defaultLayout:YES];
 
-  // Setup initial gamma and brightness
-  // And check main display from saved layout is active
-  // systemDisplays = [screen activeDisplays];
-  // for (OSEDisplay *display in systemDisplays)
-  //   {
-  //     [display setGammaBrightness:0.0];
-  //   }
-  // [systemDisplays release];
-  
+  displays = [screen activeDisplays];
+  for (OSEDisplay *display in displays) {
+    if (display.isBuiltin) {
+      if (![OSEPower isLidClosed] && [displays count] > 1) {
+        [screen setMainDisplay:display];
+        mainDisplay = display;
+      }
+    }
+    else if (mainDisplay == nil) {
+      mainDisplay = display;
+    }
+  }
   [screen applyDisplayLayout:layout];
+  [screen setMainDisplay:mainDisplay];
   
-  mainDisplay = [screen displayWithMouseCursor];
+  // mainDisplay = [screen displayWithMouseCursor];
   xDisplay = XOpenDisplay(NULL);
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0,
@@ -294,16 +299,14 @@ int main(int argc, const char **argv)
   loginDefaults = getDefaults([NSString stringWithCString:argv[0]]);
 
   plymouthDeactivate();
-  // Start Window Server
   XInitThreads();
+  // Start Window Server
   if (startWindowServer() == 0) {
+    // Setup layout and gamma.
+    setupDisplays();
+
     gpbs_pid = runCommand(@"/Library/bin/gpbs --daemon", NO);
     plymouthQuit(YES);
-
-    // Setup layout and gamma.
-    // Inital brightess was set to 0.0. Displays will be lighten in
-    // [NSApp applicationDidFinishLaunching].
-    // setupDisplays();
 
     //--- StartupHook -----------------------------------------------------------
     // StartupHook defined only system defaults (root user or app bundle)
@@ -325,15 +328,6 @@ int main(int argc, const char **argv)
     [LoginApplication sharedApplication];
     NSApplicationMain(argc, argv);
     //---------------------------------------------------------------------------
-
-    /*
-    // Stop EventLoop that checks for RandR events
-    NSLog(@"Stopping EventLoop");
-    shouldEventLoopRun = NO;
-    while (isEventLoopRunning != NO) { ; }
-    XCloseDisplay(dpy);
-    NSLog(@"EventLoop stopped");
-    */
 
     // Stop Window Server
     if (xorgTask != nil) {
