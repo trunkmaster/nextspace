@@ -83,11 +83,6 @@ static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
                                  withObject:self
                               waitUntilDone:NO];
         }
-        else {
-          [self performSelectorOnMainThread:@selector(startRRTimer)
-                                 withObject:nil
-                              waitUntilDone:NO];
-        }
       }
     });
   // ----------------
@@ -138,8 +133,10 @@ static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
     // TODO: actually this doesn't make sense because no multuple session handling
     // implemented yet. Leave it for the future.
     if ([[userSessions allKeys] count] == 0) {
-      if (sessionExitStatus != ShutdownExitCode) {
+      if (sessionExitStatus != ShutdownExitCode &&
+          sessionExitStatus != RebootExitCode) {
         [self setWindowVisible:YES];
+        [self startRRTimer];
       }
     }
   }
