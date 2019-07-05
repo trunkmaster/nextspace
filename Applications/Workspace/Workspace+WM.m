@@ -1666,6 +1666,20 @@ void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
   NSLog(@"Switch to workspace %i completed.", workspace);
 }
 
+#import <SystemKit/OSEKeyboard.h>
+void XWKeyboardGroupDidChange(int group)
+{
+  OSEKeyboard *keyboard = [OSEKeyboard new];
+  NSString    *layout = [[keyboard layouts] objectAtIndex:group];
+  
+  NSLog(@"Keyboard layout was changed to %d - %@.", group,
+        [[keyboard layouts] objectAtIndex:group]);
+  [[NSApp delegate] performSelectorOnMainThread:@selector(updateKeyboardBadge:)
+                                     withObject:layout
+                                  waitUntilDone:YES];
+  [keyboard release];
+}
+
 void XWDockContentDidChange(WDock *dock)
 {
   NSNotification *notif;

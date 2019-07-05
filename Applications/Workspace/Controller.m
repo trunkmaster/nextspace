@@ -523,6 +523,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       WDock *dock = wScreenWithNumber(0)->dock;
 
       [self updateWorkspaceBadge];
+      [self updateKeyboardBadge:@"US"];
       
       // Detect lid close/open events
       systemPower = [OSEPower new];
@@ -812,24 +813,42 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSString *wsCurrent;
 
-  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"])
-    {
-      if (!workspaceBadge)
-        {
-          [self createWorkspaceBadge];
-        }
-      wsCurrent = [NSString stringWithFormat:@"%i",
-                            wScreenWithNumber(0)->current_workspace+1];
-      [workspaceBadge setStringValue:wsCurrent];
+  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]) {
+    if (!workspaceBadge) {
+      [self createWorkspaceBadge];
     }
-  else
-    {
-      if (workspaceBadge)
-        {
-          [workspaceBadge removeFromSuperview];
-          workspaceBadge = nil;
-        }
-    }
+    wsCurrent = [NSString stringWithFormat:@"%i",
+                          wScreenWithNumber(0)->current_workspace+1];
+    [workspaceBadge setStringValue:wsCurrent];
+  }
+  else if (workspaceBadge) {
+    [workspaceBadge removeFromSuperview];
+    workspaceBadge = nil;
+  }
+}
+
+- (void)createKeyboardBadge
+{
+  NSColor *textColor = [NSColor colorWithCalibratedRed:(100.0/255.0)
+                                                 green:0.0
+                                                  blue:0.0
+                                                 alpha:1.0];
+  keyboardBadge = [[NXTIconBadge alloc]
+                             initWithPoint:NSMakePoint(5,2)
+                                      text:@"us"
+                                      font:[NSFont systemFontOfSize:10]
+                                 textColor:[NSColor blackColor]
+                               shadowColor:[NSColor lightGrayColor]];
+  [[[NSApp iconWindow] contentView] addSubview:keyboardBadge];
+  [keyboardBadge release];
+}
+
+- (void)updateKeyboardBadge:(NSString *)layout
+{
+  if (!keyboardBadge) {
+    [self createKeyboardBadge];
+  }
+  [keyboardBadge setStringValue:[layout uppercaseString]];
 }
 
 //============================================================================

@@ -81,6 +81,7 @@
   BOOL			_userDefaultsChanged;
 
   NXTIconBadge		*workspaceBadge;
+  NXTIconBadge		*keyboardBadge;
   Recycler		*recycler;
 }
 
@@ -108,6 +109,8 @@
 //============================================================================
 - (void)createWorkspaceBadge;
 - (void)updateWorkspaceBadge;
+- (void)createKeyboardBadge;
+- (void)updateKeyboardBadge:(NSString *)layout;
 
 //============================================================================
 // Application menu

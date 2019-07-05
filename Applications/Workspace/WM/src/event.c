@@ -1417,6 +1417,7 @@ static void handleXkbIndicatorStateNotify(XkbEvent *event)
     wwin = scr->focused_window;
     if (wwin && wwin->flags.focused) {
       XkbGetState(dpy, XkbUseCoreKbd, &staterec);
+      XWKeyboardGroupDidChange(staterec.group);
       if (wwin->frame->languagemode != staterec.group) {
         wwin->frame->last_languagemode = wwin->frame->languagemode;
         wwin->frame->languagemode = staterec.group;

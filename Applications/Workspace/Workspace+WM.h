@@ -161,6 +161,7 @@ void XWUpdateScreenInfo(WScreen *scr);
 void XWActivateApplication(WScreen *scr, char *app_name);
 void XWActivateWorkspaceApp(WScreen *scr);
 void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window);
+void XWKeyboardGroupDidChange(int group);
 #include <dock.h> // to silence icon.c compile error
 void XWDockContentDidChange(WDock *dock);
 int XWRunAlertPanel(char *title, char *message,
