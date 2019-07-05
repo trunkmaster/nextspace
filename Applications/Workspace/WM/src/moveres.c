@@ -470,7 +470,7 @@ static void doWindowMove(WWindow * wwin, WMArray * array, int dx, int dy)
   }
 }
 
-static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int height)
+static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int height, BOOL all_sides)
 {
   Window root = wwin->screen_ptr->root_win;
   GC gc = wwin->screen_ptr->frame_gc;
@@ -497,49 +497,50 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
        (e.g. interactive placement), frame does not point to anything. */
     bottom = RESIZEBAR_HEIGHT;
   }
-  /* XDrawRectangle(dpy, root, gc, x - 1, y - 1, width + 1, height + 1); */
 
-  // left & top
-  if (x - 1 != wwin->frame_x) {
-    XDrawLine(dpy, root, gc, x - 1, y, x - 1, y + height);
-    if (x - 1 < wwin->frame_x) {
-      XDrawLine(dpy, root, gc, x - 1, y - 1, wwin->frame_x, y - 1);
-    }
-  }
-  else if (y + height > wwin->frame_y + wwin->frame->core->height) {
-    XDrawLine(dpy, root, gc, x - 1, y + wwin->frame->core->height + 1,
-              x - 1, y + height + 1);
-  }
-  // right & top
-  if (width != wwin->frame->core->width && x - 1 == wwin->frame_x) {
-    XDrawLine(dpy, root, gc, x + width, y, x + width, y + height);
-    if (width > wwin->frame->core->width) {
-      XDrawLine(dpy, root, gc, x + wwin->frame->core->width + 1,
-                y - 1, x + width + 1, y - 1);
-    }
-  }
-  else if (y + height > wwin->frame_y + wwin->frame->core->height) {
-    XDrawLine(dpy, root, gc, x + width, y + wwin->frame->core->height + 1,
-              x + width, y + height + 1);
-  }
-  // bottom
-  if (y + height - 1 != wwin->frame_y + wwin->frame->core->height) {
-    XDrawLine(dpy, root, gc, x, y + height, x + width, y + height);
+  if (all_sides == True) {
+    XDrawRectangle(dpy, root, gc, x - 1, y - 1, width + 1, height + 1);
   }
   else {
-    if (x < wwin->frame_x) {
-      XDrawLine(dpy, root, gc, x - 1, y + height, wwin->frame_x, y + height);
+    // left & top
+    if (x - 1 != wwin->frame_x) {
+      XDrawLine(dpy, root, gc, x - 1, y, x - 1, y + height);
+      if (x - 1 < wwin->frame_x) {
+        XDrawLine(dpy, root, gc, x - 1, y - 1, wwin->frame_x, y - 1);
+      }
     }
-    else if (x + width > wwin->frame_x + wwin->frame->core->width &&
-             x - 1 == wwin->frame_x) {
-      XDrawLine(dpy, root, gc, x +
-                wwin->frame->core->width + 1, y + height,
-                x + width + 1, y + height);
+    else if (y + height > wwin->frame_y + wwin->frame->core->height) {
+      XDrawLine(dpy, root, gc, x - 1, y + wwin->frame->core->height + 1,
+                x - 1, y + height + 1);
+    }
+    // right & top
+    if (width != wwin->frame->core->width && x - 1 == wwin->frame_x) {
+      XDrawLine(dpy, root, gc, x + width, y, x + width, y + height);
+      if (width > wwin->frame->core->width) {
+        XDrawLine(dpy, root, gc, x + wwin->frame->core->width + 1,
+                  y - 1, x + width + 1, y - 1);
+      }
+    }
+    else if (y + height > wwin->frame_y + wwin->frame->core->height) {
+      XDrawLine(dpy, root, gc, x + width, y + wwin->frame->core->height + 1,
+                x + width, y + height + 1);
+    }
+    // bottom
+    if (y + height - 1 != wwin->frame_y + wwin->frame->core->height) {
+      XDrawLine(dpy, root, gc, x, y + height, x + width, y + height);
+    }
+    else {
+      if (x < wwin->frame_x) {
+        XDrawLine(dpy, root, gc, x - 1, y + height, wwin->frame_x, y + height);
+      }
+      else if (x + width > wwin->frame_x + wwin->frame->core->width &&
+               x - 1 == wwin->frame_x) {
+        XDrawLine(dpy, root, gc, x +
+                  wwin->frame->core->width + 1, y + height,
+                  x + width + 1, y + height);
+      }
     }
   }
-  /* if (h > 0) { */
-  /*   XDrawLine(dpy, root, gc, x + width, y, x + width, y + h - 1); */
-  /* } */
 }
 
 static void drawFrames(WWindow * wwin, WMArray * array, int dx, int dy)
@@ -554,7 +555,7 @@ static void drawFrames(WWindow * wwin, WMArray * array, int dx, int dy)
     x = wwin->frame_x + dx;
     y = wwin->frame_y + dy;
 
-    drawTransparentFrame(wwin, x, y, wwin->frame->core->width, wwin->frame->core->height);
+    drawTransparentFrame(wwin, x, y, wwin->frame->core->width, wwin->frame->core->height, True);
 
   } else {
     WMArrayIterator iter;
@@ -580,7 +581,7 @@ static void drawFrames(WWindow * wwin, WMArray * array, int dx, int dy)
                          (int)tmpw->frame->core->width, (int)tmpw->frame->core->height);
 #endif
 
-      drawTransparentFrame(tmpw, x, y, tmpw->frame->core->width, tmpw->frame->core->height);
+      drawTransparentFrame(tmpw, x, y, tmpw->frame->core->width, tmpw->frame->core->height, True);
     }
   }
 }
@@ -1260,36 +1261,36 @@ static void draw_snap_frame(WWindow *wwin, int direction)
 
   switch (direction) {
   case SNAP_LEFT:
-    drawTransparentFrame(wwin, 0, 0, scr->scr_width/2, scr->scr_height);
+    drawTransparentFrame(wwin, 0, 0, scr->scr_width/2, scr->scr_height, True);
     break;
 
   case SNAP_RIGHT:
-    drawTransparentFrame(wwin, scr->scr_width/2, 0, scr->scr_width/2, scr->scr_height);
+    drawTransparentFrame(wwin, scr->scr_width/2, 0, scr->scr_width/2, scr->scr_height, True);
     break;
 
   case SNAP_TOP:
-    drawTransparentFrame(wwin, 0, 0, scr->scr_width, scr->scr_height/2);
+    drawTransparentFrame(wwin, 0, 0, scr->scr_width, scr->scr_height/2, True);
     break;
 
   case SNAP_BOTTOM:
-    drawTransparentFrame(wwin, 0, scr->scr_height/2, scr->scr_width, scr->scr_height/2);
+    drawTransparentFrame(wwin, 0, scr->scr_height/2, scr->scr_width, scr->scr_height/2, True);
     break;
 
   case SNAP_TOPLEFT:
-    drawTransparentFrame(wwin, 0, 0, scr->scr_width/2, scr->scr_height/2);
+    drawTransparentFrame(wwin, 0, 0, scr->scr_width/2, scr->scr_height/2, True);
     break;
 
   case SNAP_TOPRIGHT:
-    drawTransparentFrame(wwin, scr->scr_width/2, 0, scr->scr_width/2, scr->scr_height/2);
+    drawTransparentFrame(wwin, scr->scr_width/2, 0, scr->scr_width/2, scr->scr_height/2, True);
     break;
 
   case SNAP_BOTTOMLEFT:
-    drawTransparentFrame(wwin, 0, scr->scr_height/2, scr->scr_width/2, scr->scr_height/2);
+    drawTransparentFrame(wwin, 0, scr->scr_height/2, scr->scr_width/2, scr->scr_height/2, True);
     break;
 
   case SNAP_BOTTOMRIGHT:
     drawTransparentFrame(wwin, scr->scr_width/2, scr->scr_height/2,
-                         scr->scr_width/2, scr->scr_height/2);
+                         scr->scr_width/2, scr->scr_height/2, True);
     break;
   }
 }
@@ -1399,7 +1400,11 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
   int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
               : scr->xine_info.primary_head);
+  char *orig_title;
 
+  // Save title before move/resize chage it
+  orig_title = wstrdup(wwin->frame->title);
+  
   shiftl = XKeysymToKeycode(dpy, XK_Shift_L);
   shiftr = XKeysymToKeycode(dpy, XK_Shift_R);
   ctrlmode = done = off_x = off_y = 0;
@@ -1427,9 +1432,9 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
       if (scr->selected_windows)
         drawFrames(wwin, scr->selected_windows, off_x, off_y);
       else
-        drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h);
+        drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h, True);
     } else {
-      drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h);
+      drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h, True);
     }
   }
   if ((wwin->flags.shaded || scr->selected_windows) && (!scr->selected_windows)) {
@@ -1456,10 +1461,10 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
         if (scr->selected_windows)
           drawFrames(wwin, scr->selected_windows, off_x, off_y);
         else
-          drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h);
+          drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h, True);
         /*** I HATE EDGE RESISTANCE - ]d ***/
       } else {
-        drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, ww, wh);
+        drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, ww, wh, True);
       }
     }
 
@@ -1639,9 +1644,9 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
         if (scr->selected_windows)
           drawFrames(wwin, scr->selected_windows, off_x, off_y);
         else
-          drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h);
+          drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h, True);
       } else {
-        drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, ww, wh);
+        drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, ww, wh, True);
       }
     }
 
@@ -1662,9 +1667,9 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
           if (scr->selected_windows)
             drawFrames(wwin, scr->selected_windows, off_x, off_y);
           else
-            drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h);
+            drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, w, h, True);
         } else {
-          drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, ww, wh);
+          drawTransparentFrame(wwin, src_x + off_x, src_y + off_y, ww, wh, True);
         }
       }
 
@@ -1715,6 +1720,10 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
 
       update_saved_geometry(wwin);
 
+      // Restore original title
+      wWindowUpdateName(wwin, orig_title);
+      wfree(orig_title);
+      
       return 1;
     }
   }
@@ -1755,6 +1764,8 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
   int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
               : scr->xine_info.primary_head);
+  char *orig_title;
+
 
   if (!IS_MOVABLE(wwin))
     return False;
@@ -1777,6 +1788,10 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
   }
   shiftl = XKeysymToKeycode(dpy, XK_Shift_L);
   shiftr = XKeysymToKeycode(dpy, XK_Shift_R);
+  
+  // NEXTSPACE: Save title before move/resize chage it
+  orig_title = wstrdup(wwin->frame->title);
+  
   while (!done) {
     if (warped) {
       int junk;
@@ -1949,7 +1964,11 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
     case ButtonRelease:
       if (event.xbutton.button != ev->xbutton.button)
         break;
-
+      
+      // NEXTSPACE: Restore original title
+      wWindowUpdateName(wwin, orig_title);
+      wfree(orig_title);
+      
       if (started) {
         XEvent e;
 
@@ -2303,7 +2322,8 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
   Cursor cursor;
 #ifdef NEXTSPACE
   MouseBarriers barriers;
-  Cursor new_cursor;
+  Cursor        new_cursor;
+  char          *orig_title;
 #endif // NEXTSPACE
 
   if (!IS_RESIZABLE(wwin))
@@ -2325,24 +2345,31 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
   shiftl = XKeysymToKeycode(dpy, XK_Shift_L);
   shiftr = XKeysymToKeycode(dpy, XK_Shift_R);
 
+  fprintf(stderr, "[WM] wMouseResizeWindow\n");
+  // Save title before move/resize chage it
+  orig_title = wstrdup(wwin->frame->title);
+    
   while (1) {
-    WMMaskEvent(dpy, KeyPressMask | ButtonMotionMask
-                | ButtonReleaseMask | PointerMotionHintMask | ButtonPressMask | ExposureMask, &event);
+    WMMaskEvent(dpy, (KeyPressMask | ButtonMotionMask
+                      | ButtonReleaseMask | PointerMotionHintMask
+                      | ButtonPressMask | ExposureMask), &event);
     if (!checkMouseSamplingRate(&event))
       continue;
 
     switch (event.type) {
     case KeyPress:
-      showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
-      if (!opaqueResize) {
-        if ((event.xkey.keycode == shiftl || event.xkey.keycode == shiftr)
-            && started) {
-          drawTransparentFrame(wwin, fx, fy, fw, fh);
-          cycleGeometryDisplay(wwin, fx, fy, fw, fh, res);
-          drawTransparentFrame(wwin, fx, fy, fw, fh);
-        }
-      };
-      showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
+      {
+        showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
+        if (!opaqueResize) {
+          if ((event.xkey.keycode == shiftl || event.xkey.keycode == shiftr)
+              && started) {
+            drawTransparentFrame(wwin, fx, fy, fw, fh, False);
+            cycleGeometryDisplay(wwin, fx, fy, fw, fh, res);
+            drawTransparentFrame(wwin, fx, fy, fw, fh, False);
+          }
+        };
+        showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
+      }
       break;
 
     case MotionNotify:
@@ -2391,8 +2418,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
           fy = ry2 - fh + 1;
         else if (res & DOWN)
           fy = ry1;
-      } else if (abs(orig_x - event.xmotion.x_root) >= MOVE_THRESHOLD
-                 || abs(orig_y - event.xmotion.y_root) >= MOVE_THRESHOLD) {
+      }
+      else if (abs(orig_x - event.xmotion.x_root) >= MOVE_THRESHOLD
+               || abs(orig_y - event.xmotion.y_root) >= MOVE_THRESHOLD) {
         int tx, ty;
         Window junkw;
         int flags;
@@ -2444,7 +2472,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
         mapGeometryDisplay(wwin, fx, fy, fw, fh);
 
         if (!opaqueResize)
-          drawTransparentFrame(wwin, fx, fy, fw, fh);
+          drawTransparentFrame(wwin, fx, fy, fw, fh, False);
 
         showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
 
@@ -2456,13 +2484,13 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
           break;
         
         if (!opaqueResize)
-          drawTransparentFrame(wwin, orig_fx, orig_fy, orig_fw, orig_fh);
+          drawTransparentFrame(wwin, orig_fx, orig_fy, orig_fw, orig_fh, False);
 
         if (wPreferences.size_display == WDIS_FRAME_CENTER)
           moveGeometryDisplayCentered(scr, fx + fw / 2, fy + fh / 2);
 
         if (!opaqueResize)
-          drawTransparentFrame(wwin, fx, fy, fw, fh);
+          drawTransparentFrame(wwin, fx, fy, fw, fh, False);
 
         if (fh != orig_fh || fw != orig_fw) {
           if (wPreferences.size_display == WDIS_NEW)
@@ -2488,6 +2516,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
       break;
 
     case ButtonRelease:
+      fprintf(stderr, "[WM] wMouseResizeWindow - ButtonRelease\n");
       if (event.xbutton.button != ev->xbutton.button)
         break;
       
@@ -2497,21 +2526,28 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
         showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
 
         if (!opaqueResize)
-          drawTransparentFrame(wwin, fx, fy, fw, fh);
+          drawTransparentFrame(wwin, fx, fy, fw, fh, False);
 
         XUngrabKeyboard(dpy, CurrentTime);
         WMUnmapWidget(scr->gview);
         XUngrabServer(dpy);
 
-        if (fw != original_fw)
-          wwin->flags.maximized &= ~(MAX_HORIZONTAL | MAX_TOPHALF | MAX_BOTTOMHALF | MAX_MAXIMUS);
+        if (fw != original_fw) {
+          wwin->flags.maximized &= ~(MAX_HORIZONTAL | MAX_TOPHALF
+                                     | MAX_BOTTOMHALF | MAX_MAXIMUS);
+        }
 
-        if (fh != original_fh)
-          wwin->flags.maximized &= ~(MAX_VERTICAL | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_MAXIMUS);
+        if (fh != original_fh) {
+          wwin->flags.maximized &= ~(MAX_VERTICAL | MAX_LEFTHALF
+                                     | MAX_RIGHTHALF | MAX_MAXIMUS);
+        }
 
         wWindowConfigure(wwin, fx, fy, fw, fh - vert_border);
         wWindowSynthConfigureNotify(wwin);
       }
+      // Restore original title
+      wWindowUpdateName(wwin, orig_title);
+      wfree(orig_title);
       return;
 
     default:
@@ -2519,8 +2555,10 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
     }
   }
 
-  if (wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1 && head != wGetHeadForWindow(wwin))
+  if (wPreferences.auto_arrange_icons &&
+      wXineramaHeads(scr) > 1 && head != wGetHeadForWindow(wwin)) {
     wArrangeIcons(scr, True);
+  }
 }
 
 #undef LEFT
@@ -2665,7 +2703,7 @@ void InteractivePlaceWindow(WWindow * wwin, int *x_ret, int *y_ret, unsigned wid
   XQueryPointer(dpy, root, &junkw, &junkw, &x, &y, &junk, &junk, (unsigned *)&junk);
   mapPositionDisplay(wwin, x - width / 2, y - h / 2, width, height);
 
-  drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height);
+  drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height, True);
 
   shiftl = XKeysymToKeycode(dpy, XK_Shift_L);
   shiftr = XKeysymToKeycode(dpy, XK_Shift_R);
@@ -2679,14 +2717,14 @@ void InteractivePlaceWindow(WWindow * wwin, int *x_ret, int *y_ret, unsigned wid
     case KeyPress:
       if ((event.xkey.keycode == shiftl)
           || (event.xkey.keycode == shiftr)) {
-        drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height);
+        drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height, True);
         cyclePositionDisplay(wwin, x - width / 2, y - h / 2, width, height);
-        drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height);
+        drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height, True);
       }
       break;
 
     case MotionNotify:
-      drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height);
+      drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height, True);
 
       x = event.xmotion.x_root;
       y = event.xmotion.y_root;
@@ -2696,12 +2734,12 @@ void InteractivePlaceWindow(WWindow * wwin, int *x_ret, int *y_ret, unsigned wid
 
       showPosition(wwin, x - width / 2, y - h / 2);
 
-      drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height);
+      drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height, True);
 
       break;
 
     case ButtonPress:
-      drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height);
+      drawTransparentFrame(wwin, x - width / 2, y - h / 2, width, height, True);
       XSync(dpy, 0);
       *x_ret = x - width / 2;
       *y_ret = y - h / 2;

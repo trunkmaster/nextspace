@@ -2103,7 +2103,6 @@ static void handleKeyRelease(XEvent * event)
 static void handleMotionNotify(XEvent * event)
 {
   WScreen *scr = wScreenForRootWindow(event->xmotion.root);
-  char    *orig_title;
 
 #ifdef NEXTSPACE
   WWindow *wwin = wWindowFor(event->xmotion.window);
@@ -2118,9 +2117,6 @@ static void handleMotionNotify(XEvent * event)
                    GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
     // wMouseMoveWindow checks for button on ButtonRelease event inside it's loop
 
-    // Save title before move/resize chage it
-    orig_title = wstrdup(wwin->frame->title);
-  
     event->xbutton.button = Button1;
     if (event->xmotion.window == wwin->frame->titlebar->window ||
         event->xmotion.state & MOD_MASK) {
@@ -2131,10 +2127,6 @@ static void handleMotionNotify(XEvent * event)
              event->xmotion.window == wwin->frame->resizebar->window) {
       wMouseResizeWindow(wwin, event);
     }
-    
-    // Restore original title
-    wWindowUpdateName(wwin, orig_title);
-    wfree(orig_title);
     
     XUngrabPointer(dpy, CurrentTime);
   }

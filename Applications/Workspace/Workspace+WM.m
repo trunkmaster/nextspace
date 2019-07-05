@@ -1672,8 +1672,6 @@ void XWKeyboardGroupDidChange(int group)
   OSEKeyboard *keyboard = [OSEKeyboard new];
   NSString    *layout = [[keyboard layouts] objectAtIndex:group];
   
-  NSLog(@"Keyboard layout was changed to %d - %@.", group,
-        [[keyboard layouts] objectAtIndex:group]);
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateKeyboardBadge:)
                                      withObject:layout
                                   waitUntilDone:YES];
