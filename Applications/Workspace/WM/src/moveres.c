@@ -2345,7 +2345,6 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
   shiftl = XKeysymToKeycode(dpy, XK_Shift_L);
   shiftr = XKeysymToKeycode(dpy, XK_Shift_R);
 
-  fprintf(stderr, "[WM] wMouseResizeWindow\n");
   // Save title before move/resize chage it
   orig_title = wstrdup(wwin->frame->title);
     
@@ -2516,7 +2515,6 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
       break;
 
     case ButtonRelease:
-      fprintf(stderr, "[WM] wMouseResizeWindow - ButtonRelease\n");
       if (event.xbutton.button != ev->xbutton.button)
         break;
       

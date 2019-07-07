@@ -40,6 +40,7 @@
 #import <DesktopKit/NXTAlert.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSESystemInfo.h>
+#import <SystemKit/OSEKeyboard.h>
 
 #import "Workspace+WM.h"
 #import "Controller.h"
@@ -1666,7 +1667,6 @@ void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
   NSLog(@"Switch to workspace %i completed.", workspace);
 }
 
-#import <SystemKit/OSEKeyboard.h>
 void XWKeyboardGroupDidChange(int group)
 {
   OSEKeyboard *keyboard = [OSEKeyboard new];
