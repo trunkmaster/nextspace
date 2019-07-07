@@ -45,9 +45,9 @@ typedef enum {
   pa_stream *_pa_stream;
   id        _delegate;
 }
-@property (assign) SNDServer *server;
+@property (retain) SNDServer *server;
 @property (assign) PAClient  *client;
-@property (assign) SNDDevice *device;
+@property (retain) SNDDevice *device;
 @property (assign) NSString  *name;
 @property (assign) BOOL      isActive;
 @property (assign) BOOL      isPlayback;
