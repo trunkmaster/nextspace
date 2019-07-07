@@ -86,7 +86,7 @@ enum {
            name:SNDDeviceDidRemoveNotification
          object:soundServer];
   
-  [self reloadAppBrowser];
+  // [self reloadAppBrowser];
   [self updateDeviceList];
 }
 
@@ -101,6 +101,8 @@ enum {
   NSString  *title;
   NSArray   *deviceList;
 
+  [devicePortBtn removeAllItems];
+  
   if ([[modeButton selectedItem] tag] == PlaybackMode) {
     NSLog(@"Playback");
     deviceList = [soundServer outputList];
@@ -109,8 +111,6 @@ enum {
     NSLog(@"Recording");
     deviceList = [soundServer inputList];
   }
-  
-  [devicePortBtn removeAllItems];
 
   for (SNDDevice *device in deviceList) {
     NSLog(@"Device: %@", device.description);
