@@ -49,15 +49,17 @@
 
 - (BOOL)play
 {
-  [_stream activate];  
+  [_stream activate];
+  return YES;
 }
 - (BOOL)stop
 {
   [_stream empty:NO];
+  return YES;
 }
 
-- (BOOL)pause;
-- (BOOL)resume;
+// - (BOOL)pause;
+// - (BOOL)resume;
 
 // --- SNDPlayStream delegate
 - (void)soundStream:(SNDPlayStream *)sndStream bufferReady:(NSNumber *)count
