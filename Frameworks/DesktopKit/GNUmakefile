@@ -29,6 +29,7 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXTSizer.m \
 	NXTSplitView.m \
 	NXTNumericField.m \
+	NXTSound.m \
 	\
 	Utilities.m
 
@@ -51,6 +52,8 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXTSizer.h \
 	NXTSplitView.h \
 	NXTNumericField.h \
+	NXTSound.h \
+	\
 	Utilities.h
 
 $(FRAMEWORK_NAME)_RESOURCE_FILES = \
