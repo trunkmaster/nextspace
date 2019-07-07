@@ -51,11 +51,11 @@ static void *StreamVirtualContext = &StreamVirtualContext;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(soundServerUpdated:)
-                                               name:SKDeviceDidChangeNotification
+                                               name:SNDDeviceDidChangeNotification
                                              object:[SNDServer sharedServer]];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(soundServerUpdated:)
-                                               name:SKDeviceDidRemoveNotification
+                                               name:SNDDeviceDidRemoveNotification
                                              object:[SNDServer sharedServer]];
 }
 
