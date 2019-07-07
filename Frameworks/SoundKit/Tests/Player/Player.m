@@ -1,7 +1,9 @@
 /* All Rights reserved */
 
-#include <AppKit/AppKit.h>
-#include "Player.h"
+#import <AppKit/AppKit.h>
+#import <DesktopKit/NXTSound.h>
+
+#import "Player.h"
 
 @implementation Player
 
@@ -54,17 +56,17 @@
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(serverStateChanged:)
-           name:SKServerStateDidChangeNotification
+           name:SNDServerStateDidChangeNotification
          object:server];
 }
 
 - (void)serverStateChanged:(NSNotification *)notif
 {
-  if (server.status == SKServerReadyState) {
+  if (server.status == SNDServerReadyState) {
     [self play:playBtn];
   }
-  else if (server.status == SKServerFailedState ||
-           server.status == SKServerTerminatedState) {
+  else if (server.status == SNDServerFailedState ||
+           server.status == SNDServerTerminatedState) {
     [self stop:stopBtn];
     [self setButtonsEnabled:NO];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -90,6 +92,20 @@
   [stopBtn setState:NSOffState];
   
   [infoView setImage:infoOn];
+
+  NXTSound *sound;
+  NSString *file;
+
+  file = @"/usr/NextSpace/Sounds/Rooster.snd";
+  sound = [[NXTSound alloc] initWithContentsOfFile:file
+                                       byReference:NO];
+  [sound play];
+  [sound setDelegate:self];
+  // [sound release];
+}
+- (void)sound:(NSSound *)sound didFinishPlaying:(BOOL)aBool
+{
+  NSLog(@"Sound did finish playing");
 }
 - (void)pause:(id)sender
 {
