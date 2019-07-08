@@ -9,7 +9,6 @@
 */
 
 #import "Player.h"
-#import "Mixer.h"
 #import "AppController.h"
 
 @implementation AppController
@@ -49,16 +48,6 @@
            openFile:(NSString *)fileName
 {
   return NO;
-}
-
-- (void)showMixer:(id)sender
-{
-  if (mixer == nil) {
-    mixer = [Mixer new];
-  }
-  else {
-    [[mixer window] makeKeyAndOrderFront:self];
-  }
 }
 
 - (void)showPrefPanel:(id)sender

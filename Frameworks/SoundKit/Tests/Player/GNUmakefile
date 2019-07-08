@@ -14,15 +14,13 @@ GNUSTEP_INSTALLATION_DOMAIN = LOCAL
 Player_RESOURCE_FILES = \
 	Resources/Player.tiff \
 	Resources/Player.gorm \
-	Resources/PlayerWindow.gorm \
-	Resources/Mixer.gorm
+	Resources/PlayerWindow.gorm
 
 #
 # Objective-C Class files
 #
 Player_OBJC_FILES = \
 	AppController.m \
-	Mixer.m \
 	Player.m
 #	AudioFile.m
 
