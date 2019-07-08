@@ -71,7 +71,8 @@
   
   [infoView setImage:infoOn];
 
-  file = @"/usr/NextSpace/Sounds/Rooster.snd";
+  file = @"/usr/NextSpace/Sounds/Bonk.snd";
+  [songTitle setStringValue:file];
   sound = [[NXTSound alloc] initWithContentsOfFile:file
                                        byReference:NO];
   [sound play];
@@ -80,11 +81,10 @@
 // NXTSound deleagate method
 - (void)sound:(NXTSound *)snd didFinishPlaying:(BOOL)aBool
 {
-  NSLog(@"Sound did finish playing: %i", aBool);
-  if (aBool != NO && sound) {
-    [sound release];
-    sound = nil;
+  NSLog(@"Sound did finish playing; RC: %lu", [snd retainCount]);
+  if (aBool != NO) {
     [self stop:playBtn];
+    [snd release];
   }
 }
 - (void)pause:(id)sender
@@ -99,8 +99,11 @@
 }
 - (void)stop:(id)sender
 {
-  if (sound)
+  if (sound) {
     [sound stop];
+  }
+  
+  [songTitle setStringValue:@"--"];
   
   [playBtn setState:NSOffState];
   [pauseBtn setState:NSOffState];
