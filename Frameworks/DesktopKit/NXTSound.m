@@ -25,7 +25,17 @@
 
 @implementation NXTSound
 
-// --- Overridings
+- (void)dealloc
+{
+  if (_stream)
+    [self stop];
+  if (_server)
+    [_server release];
+
+  [super dealloc];
+}
+
+// --- NSSound overridings
 - (id)initWithContentsOfFile:(NSString *)path
                  byReference:(BOOL)byRef
 {
@@ -37,29 +47,79 @@
   NSLog(@"[NXTSound] channels: %lu rate: %lu format: %i",
         [_source channelCount], [_source sampleRate], [_source byteOrder]);
 
-  _stream = [[SNDPlayStream alloc] initOnDevice:nil
-                                   samplingRate:[_source sampleRate]
-                                   channelCount:[_source channelCount]
-                                         format:3 // PA
-                                           type:SNDEventType];
-  [_stream setDelegate:self];
+  // 1. Connect to PulseAudio on locahost
+  _server = [SNDServer sharedServer];
+  // 2. Wait for server to be ready
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(serverStateChanged:)
+           name:SNDServerStateDidChangeNotification
+         object:_server];
+
+  desiredState = NXTSoundInitial;
   
   return self;
 }
 
+- (void)serverStateChanged:(NSNotification *)notif
+{
+  if ([notif object] != _server) {
+    return;
+  }
+  
+  if (_server.status == SNDServerReadyState) {
+    NSLog(@"[NXTSound] creating play stream...");
+    _stream = [[SNDPlayStream alloc]
+                initOnDevice:(SNDDevice *)[_server defaultOutput]
+                samplingRate:[_source sampleRate]
+                channelCount:[_source channelCount]
+                      format:3 // PA
+                        type:SNDEventType];
+    [_stream setDelegate:self];
+    if (desiredState == NXTSoundPlay) {
+      NSLog(@"[NXTSound] desired state is `Play`...");
+      [self play];
+    }
+  }
+  else if (_server.status == SNDServerFailedState ||
+           _server.status == SNDServerTerminatedState) {
+    if (_stream) {
+      [_stream deactivate];
+      [_stream release];
+      [_server release];
+    }
+  }
+}
+
+
 - (BOOL)play
 {
-  [_stream activate];
+  if (_stream == nil)
+    desiredState = NXTSoundPlay;
+  else
+    [_stream activate];
+  
   return YES;
 }
 - (BOOL)stop
 {
-  [_stream empty:NO];
+  [_stream empty:YES];
   return YES;
 }
-
-// - (BOOL)pause;
-// - (BOOL)resume;
+- (BOOL)pause
+{
+  [_stream pause:self];
+  return YES;
+}
+- (BOOL)resume
+{
+  [_stream resume:self];
+  return YES;
+}
+- (BOOL)isPlaying
+{
+  return ([_stream isActive] && ![_stream isPaused]);
+}
 
 // --- SNDPlayStream delegate
 - (void)soundStream:(SNDPlayStream *)sndStream bufferReady:(NSNumber *)count
@@ -76,7 +136,7 @@
   
   if (bytes_read == 0) {
     free(buffer);
-    [_stream empty:NO];
+    [self stop];
     return;
   }
 
@@ -86,6 +146,10 @@
 {
   NSLog(@"[NXTSound] stream buffer is empty");
   [_stream deactivate];
+  if (_delegate &&
+      [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
+    [_delegate sound:self didFinishPlaying:YES];
+  }
 }
 
 @end

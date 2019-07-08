@@ -20,12 +20,22 @@
 //
 
 #import <AppKit/NSSound.h>
+#import <SoundKit/SNDServer.h>
 #import <SoundKit/SNDPlayStream.h>
+
+typedef enum {
+  NXTSoundPlay    = 0,
+  NXTSoundStop    = 1,
+  NXTSoundPause   = 2,
+  NXTSoundInitial = 3
+} NXTSoundState;
 
 @interface NXTSound : NSSound
 {
   NSSound       *_sound;
+  SNDServer     *_server;
   SNDPlayStream *_stream;
+  NXTSoundState desiredState;
 }
 
 @end
