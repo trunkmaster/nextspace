@@ -6,6 +6,7 @@
 
 - (void)dealloc
 {
+  NSLog(@"Player -dealloc");
   [infoOff release];
   [infoOn release];
   if (sound)
@@ -48,6 +49,14 @@
   path = [NSString stringWithFormat:@"%@/%@",
                         [[NSBundle mainBundle] bundlePath], imagePath];
   infoOn = [[NSImage alloc] initByReferencingFile:path];
+
+  // Should be set by controller on file or playlist loading
+  NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
+  // NSString *file = @"/Users/me/Music/Shallow/1 - Lady Gaga, Bradley Cooper - Shallow.flac";
+  [songTitle setStringValue:[file lastPathComponent]];
+  sound = [[NXTSound alloc] initWithContentsOfFile:file
+                                       byReference:YES];
+  [sound setDelegate:self];
 }
 
 - (void)setButtonsEnabled:(BOOL)yn
@@ -63,32 +72,37 @@
 
 - (void)play:(id)sender
 {
-  NSString *file;
-
   [playBtn setState:NSOnState];
   [pauseBtn setState:NSOffState];
   [stopBtn setState:NSOffState];
   
   [infoView setImage:infoOn];
 
-  file = @"/usr/NextSpace/Sounds/Bonk.snd";
-  [songTitle setStringValue:file];
-  sound = [[NXTSound alloc] initWithContentsOfFile:file
-                                       byReference:NO];
-  [sound play];
-  [sound setDelegate:self];
+  if ([sound isPlaying]) {
+    [sound resume];
+  }
+  else {
+    [sound play];
+  }
 }
 // NXTSound deleagate method
 - (void)sound:(NXTSound *)snd didFinishPlaying:(BOOL)aBool
 {
-  NSLog(@"Sound did finish playing; RC: %lu", [snd retainCount]);
+  NSLog(@"Sound did finish playing; RC: %lu", [sound retainCount]);
   if (aBool != NO) {
     [self stop:playBtn];
-    [snd release];
+    // NSTimer *timer;
+    // timer = [NSTimer scheduledTimerWithTimeInterval:2.0
+    //                                          target:sound
+    //                                        selector:@selector(release)
+    //                                        userInfo:nil
+    //                                         repeats:NO];
+    // [timer fire];
   }
 }
 - (void)pause:(id)sender
 {
+  [sound pause];
   if ([(NSButton *)sender state] == NSOnState) {
     [playBtn setState:NSOffState];
     [stopBtn setState:NSOffState];
@@ -99,12 +113,7 @@
 }
 - (void)stop:(id)sender
 {
-  if (sound) {
-    [sound stop];
-  }
-  
-  [songTitle setStringValue:@"--"];
-  
+  [sound stop];
   [playBtn setState:NSOffState];
   [pauseBtn setState:NSOffState];
   

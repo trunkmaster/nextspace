@@ -32,11 +32,12 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
 {
   NSLog(@"Application did finish launching.");
-  [Player new];
+  player = [Player new];
 }
 
 - (BOOL)applicationShouldTerminate:(id)sender
 {
+  [player release];
   return YES;
 }
 
