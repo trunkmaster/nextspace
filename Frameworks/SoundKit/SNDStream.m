@@ -20,12 +20,16 @@
 
 #import "SNDStream.h"
 
+static BOOL isBufferEmpty = YES;
+
 // PulseAudio callbacks.
 // Stream is ready to receive sound bytes.
 void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
 {
   id  delegate = [(SNDStream *)sndStream delegate];
   SEL action = @selector(soundStream:bufferReady:);
+
+  isBufferEmpty = NO;
   
   if (delegate == nil) {
     NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
@@ -40,7 +44,12 @@ void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
 // Stream finished processing bytes in buffer.
 void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream)
 {
-  [(SNDStream *)sndStream performDelegateSelector:@selector(soundStreamBufferEmpty:)];
+  if (isBufferEmpty != NO)
+    return;
+  
+  isBufferEmpty = YES;
+  [(SNDStream *)sndStream
+      performDelegateSelector:@selector(soundStreamBufferEmpty:)];
 }
 static void _stream_paused(pa_stream *stream, int success, void *sndStream)
 {
