@@ -36,6 +36,7 @@ typedef enum {
   SNDServer     *_server;
   SNDPlayStream *_stream;
   NXTSoundState desiredState;
+  BOOL          isBufferEmpty;
 }
 
 @end

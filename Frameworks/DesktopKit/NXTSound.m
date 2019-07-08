@@ -128,6 +128,8 @@
   NSUInteger bytes_read;
   float      *buffer;
 
+  isBufferEmpty = NO;
+
   // NSLog(@"[NXTSound] PLAY %lu bytes of sound", bytes_length);
 
   buffer = malloc(sizeof(short) * bytes_length);
@@ -136,7 +138,7 @@
   
   if (bytes_read == 0) {
     free(buffer);
-    [self stop];
+    [_stream empty:NO];
     return;
   }
 
@@ -144,7 +146,11 @@
 }
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
+  if (isBufferEmpty != NO)
+    return;
+  
   NSLog(@"[NXTSound] stream buffer is empty");
+  isBufferEmpty = YES;
   [_stream deactivate];
   if (_delegate &&
       [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
