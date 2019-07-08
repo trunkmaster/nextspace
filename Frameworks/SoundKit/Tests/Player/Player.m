@@ -1,8 +1,5 @@
 /* All Rights reserved */
 
-#import <AppKit/AppKit.h>
-#import <DesktopKit/NXTSound.h>
-
 #import "Player.h"
 
 @implementation Player
@@ -11,6 +8,8 @@
 {
   [infoOff release];
   [infoOn release];
+  if (sound)
+    [sound release];
   [super dealloc];
 }
 
@@ -49,31 +48,8 @@
   path = [NSString stringWithFormat:@"%@/%@",
                         [[NSBundle mainBundle] bundlePath], imagePath];
   infoOn = [[NSImage alloc] initByReferencingFile:path];
-
-  // 1. Connect to PulseAudio on locahost
-  server = [SNDServer sharedServer];
-  // 2. Wait for server to be ready
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(serverStateChanged:)
-           name:SNDServerStateDidChangeNotification
-         object:server];
 }
 
-- (void)serverStateChanged:(NSNotification *)notif
-{
-  if (server.status == SNDServerReadyState) {
-    [self play:playBtn];
-  }
-  else if (server.status == SNDServerFailedState ||
-           server.status == SNDServerTerminatedState) {
-    [self stop:stopBtn];
-    [self setButtonsEnabled:NO];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [server release];
-    server = nil;
-  }
-}
 - (void)setButtonsEnabled:(BOOL)yn
 {
   [playBtn setEnabled:yn];
@@ -85,27 +61,31 @@
   [shuffleBtn setEnabled:yn];
 }
 
-
 - (void)play:(id)sender
 {
+  NSString *file;
+
+  [playBtn setState:NSOnState];
   [pauseBtn setState:NSOffState];
   [stopBtn setState:NSOffState];
   
   [infoView setImage:infoOn];
-
-  NXTSound *sound;
-  NSString *file;
 
   file = @"/usr/NextSpace/Sounds/Rooster.snd";
   sound = [[NXTSound alloc] initWithContentsOfFile:file
                                        byReference:NO];
   [sound play];
   [sound setDelegate:self];
-  // [sound release];
 }
-- (void)sound:(NSSound *)sound didFinishPlaying:(BOOL)aBool
+// NXTSound deleagate method
+- (void)sound:(NXTSound *)snd didFinishPlaying:(BOOL)aBool
 {
-  NSLog(@"Sound did finish playing");
+  NSLog(@"Sound did finish playing: %i", aBool);
+  if (aBool != NO && sound) {
+    [sound release];
+    sound = nil;
+    [self stop:playBtn];
+  }
 }
 - (void)pause:(id)sender
 {
@@ -119,6 +99,9 @@
 }
 - (void)stop:(id)sender
 {
+  if (sound)
+    [sound stop];
+  
   [playBtn setState:NSOffState];
   [pauseBtn setState:NSOffState];
   
@@ -147,12 +130,7 @@
 - (void)eject:(id)sender
 {
   NSLog(@"Eject");
-  if (server != nil) {
-    NSLog(@"Server retain count: %lu", [server retainCount]);
-    [server disconnect];
-  }
 }
-
 
 - (BOOL)windowShouldClose:(id)sender
 {
