@@ -27,10 +27,16 @@
 
 - (void)dealloc
 {
-  if (_stream)
-    [self stop];
-  if (_server)
-    [_server release];
+  NSLog(@"[NXTSound] dealloc");
+  if (_stream) {
+    [_stream deactivate];
+    [_stream release];
+    _stream = nil;
+  }
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_server disconnect];
+  [_server release];
+  // NSLog(@"[NXTSound] server retain count: %lu", [_server retainCount]);
 
   [super dealloc];
 }
@@ -48,7 +54,7 @@
         [_source channelCount], [_source sampleRate], [_source byteOrder]);
 
   // 1. Connect to PulseAudio on locahost
-  _server = [SNDServer sharedServer];
+  _server = [SNDServer new];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -58,14 +64,16 @@
 
   desiredState = NXTSoundInitial;
   
+  // If _server already initialized in application - -serverStateChanged
+  // will never be called.
+  [self serverStateChanged:nil];
+  
   return self;
 }
 
 - (void)serverStateChanged:(NSNotification *)notif
 {
-  if ([notif object] != _server) {
-    return;
-  }
+  NSLog(@"[NXTSound] serverStateChanged");
   
   if (_server.status == SNDServerReadyState) {
     NSLog(@"[NXTSound] creating play stream...");
@@ -84,13 +92,12 @@
   else if (_server.status == SNDServerFailedState ||
            _server.status == SNDServerTerminatedState) {
     if (_stream) {
-      [_stream deactivate];
-      [_stream release];
-      [_server release];
+      // [_stream deactivate];
+      // [_stream release];
+      // [_server release];
     }
   }
 }
-
 
 - (BOOL)play
 {
@@ -103,7 +110,9 @@
 }
 - (BOOL)stop
 {
-  [_stream empty:YES];
+  if (_stream) {
+    [_stream empty:YES];
+  }
   return YES;
 }
 - (BOOL)pause
@@ -128,8 +137,6 @@
   NSUInteger bytes_read;
   float      *buffer;
 
-  isBufferEmpty = NO;
-
   // NSLog(@"[NXTSound] PLAY %lu bytes of sound", bytes_length);
 
   buffer = malloc(sizeof(short) * bytes_length);
@@ -146,11 +153,7 @@
 }
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
-  if (isBufferEmpty != NO)
-    return;
-  
   NSLog(@"[NXTSound] stream buffer is empty");
-  isBufferEmpty = YES;
   [_stream deactivate];
   if (_delegate &&
       [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
