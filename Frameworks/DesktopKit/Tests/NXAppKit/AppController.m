@@ -21,6 +21,7 @@
 */
 
 #import <DesktopKit/NXTAlert.h>
+#import <DesktopKit/NXTSavePanel.h>
 #import "AppController.h"
 
 @implementation AppController : NSObject
@@ -144,6 +145,13 @@
     drawingTest = [[DrawingTest alloc] init];
   }
   [drawingTest show];
+}
+
+- (void)openSavePanel:(id)sender
+{
+  NXTSavePanel *panel = [[NXTSavePanel alloc] init];
+  [panel runModal];
+  [panel release];
 }
 
 @end

@@ -1,0 +1,35 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "_selectText:"
+	);
+	Super = NSObject;
+    };
+    NSSavePanel = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSPanel;
+    };
+    NXTSavePanel = {
+	Actions = (
+	    "_selectText:"
+	);
+	Outlets = (
+	    "_bottomView",
+	    "_browser",
+	    "_diskButton",
+	    "_ejectButton",
+	    "_form",
+	    "_homeButton",
+	    "_icon",
+	    "_okButton",
+	    "_titleField",
+	    "_topView",
+	    "_cancelButton"
+	);
+	Super = NSPanel;
+    };
+}
