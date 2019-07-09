@@ -21,52 +21,89 @@
 
 #import <Foundation/NSNotification.h>
 #import <AppKit/AppKit.h>
+#import <SystemKit/OSEMediaManager.h>
 #import "NXTSavePanel.h"
+#import "NXTFileManager.h"
+
+@interface NXTPanelLoader : NSObject
+{
+  id IBOutlet panel;
+}
+- (id)loadPanelNamed:(NSString *)nibName;
+@end
+@implementation NXTPanelLoader
+
+- (id)loadPanelNamed:(NSString *)nibName
+{
+  if ([NSBundle loadNibNamed:nibName owner:self] == NO) {
+    NSLog(@"[NXTPanelLoader] can't load model file `%@`.", nibName);
+  }
+
+  while (panel == nil) {
+    [[NSRunLoop currentRunLoop]
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  }
+
+  return panel;
+}
+
+@end
 
 static NXTSavePanel *savePanel = nil;
 
 @implementation NXTSavePanel
 
++ (NXTSavePanel *)savePanel
+{
+  if (savePanel == nil) {
+    savePanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTSavePanel"];
+  }
+  
+  return savePanel;
+}
+
+- (void)dealloc
+{
+  NSLog(@"[NXTSavePanel] -dealloc: %lu", [savePanel retainCount]);
+  savePanel = nil;
+  [super dealloc];
+}
+
 // --- Overridings
 - (id)init
 {
-  self = [super initWithContentRect:NSMakeRect (100, 100, 308, 317)
-                          styleMask:(NSTitledWindowMask | NSResizableWindowMask) 
-                            backing:2
-                              defer:YES];
-
-  if ([NSBundle loadNibNamed:@"NXTSavePanel" owner:self] == NO) {
-    NSLog(@"[NXTSavePanel] can't load model file.");
-  }
-  
-  if (nil == self)
-    return nil;
-  
+  NSLog(@"[NXTSavePanel] -init");
+  self = [NXTSavePanel savePanel];  
   return self;
 }
 
 - (void)awakeFromNib
 {
-  [[self contentView] addSubview:_topView];
-  [[self contentView] addSubview:_bottomView];
+  NSLog(@"awakeFromNib");
+  [self setTitle:@"Save"];
+  
+  [_topView setBounds:[_topView frame]];
+  [_topView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+  [_topView setAutoresizesSubviews:YES];
+  
+  [_bottomView setBounds:[_bottomView frame]];
+  [_bottomView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+  [_bottomView setAutoresizesSubviews:YES];
 
-  NSLog(@"[NXTSavePanel] awakeFromNib");
+  [_icon setImage:[[NSApplication sharedApplication] applicationIconImage]];
 
   [_browser setTag:NSFileHandlingPanelBrowser];
   [_browser setDoubleAction:@selector(performClick:)];
-  [_browser setTarget:_okButton];
-  // [_browser setDelegate:self];
-  // [_browser setMinColumnWidth:140];
   // Browser rght-click menu
-  // _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
-  // [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
-  //                                     action:@selector(_toggleShowsHiddenFiles:)
-  //                              keyEquivalent:@""
-  //                                    atIndex:0];
-  // [[_showsHiddenFilesMenu itemAtIndex:0] setTarget:self];
-  // [[_showsHiddenFilesMenu itemAtIndex:0] setState:[self showsHiddenFiles]];
-  // [_browser setMenu:_showsHiddenFilesMenu];
-  // [_showsHiddenFilesMenu release];
+  _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
+  [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
+                                      action:@selector(_toggleShowsHiddenFiles:)
+                               keyEquivalent:@""
+                                     atIndex:0];
+  [[_showsHiddenFilesMenu itemAtIndex:0] setTarget:self];
+  [[_showsHiddenFilesMenu itemAtIndex:0] setState:[self showsHiddenFiles]];
+  [_browser setMenu:_showsHiddenFilesMenu];
+  [_showsHiddenFilesMenu release];
 
   [_form setTag:NSFileHandlingPanelForm];
   [_homeButton setTag:NSFileHandlingPanelHomeButton];
@@ -78,22 +115,14 @@ static NXTSavePanel *savePanel = nil;
   [_cancelButton setTag:NSFileHandlingPanelCancelButton];
   [_okButton setTag:NSFileHandlingPanelOKButton];
 
+  [self setFrameAutosaveName:@"NXTSavePanel"];
+  
   /* Used in setMinSize: */
-  // _originalMinSize = [self minSize];
+  _originalMinSize = [self minSize];
   /* Used in setContentSize: */
-  // _originalSize = [[self contentView] frame].size;
-}
+  _originalSize = [[self contentView] frame].size;
 
-static NSComparisonResult compareFilenames(id elem1, id elem2, void *context)
-{
-  /* TODO - use IMP optimization here.  */
-  NSSavePanel *s = context;
-  NSSavePanel *self = (NSSavePanel *)context;
-
-  return (NSComparisonResult)[s->_delegate panel:self
-                                 compareFilename:elem1
-                                            with:elem2
-                                   caseSensitive:YES];
+  [self setDirectory:NSHomeDirectory()];
 }
 
 - (BOOL)_shouldShowExtension:(NSString *)extension
@@ -160,9 +189,9 @@ static NSComparisonResult compareFilenames(id elem1, id elem2, void *context)
   unsigned              i, count, addedRows; 
   BOOL                  exists, isDir;
   NSBrowserCell         *cell;
-  NSString              *progressString = nil;
   NSWorkspace		*ws;
   NSFileManager         *fm;
+  NXTFileManager        *nxfm;
   /* We create lot of objects in this method, so we use a pool */
   NSAutoreleasePool     *pool;
 
@@ -172,57 +201,11 @@ static NSComparisonResult compareFilenames(id elem1, id elem2, void *context)
   ws = [NSWorkspace sharedWorkspace];
   fm = [NSFileManager defaultManager];
   path = [_browser pathToColumn:column];
-  files = [fm directoryContentsAtPath: path];
-
-  /* Remove hidden files.  */
-  {
-    NSString *h;
-    NSArray *hiddenFiles = nil;
-    
-    // FIXME: Use NSFileManager to tell us what files are hidden/non-hidden
-    // rather than having it hardcoded here
-
-    if ([files containsObject: @".hidden"] == YES) {
-      /* We need to remove files listed in the xxx/.hidden file.  */
-      h = [path stringByAppendingPathComponent: @".hidden"];
-      h = [NSString stringWithContentsOfFile: h];
-      hiddenFiles = [h componentsSeparatedByString: @"\n"];
-    }
-
-    /* Alse remove files starting with `.' (dot) */
-
-    /* Now copy the files array into a mutable array - but only if
-       strictly needed.  */
-    if (!_showsHiddenFiles) {
-      int j;
-      /* We must make a mutable copy of the array because the API
-         says that NSFileManager -directoryContentsAtPath: return a
-         NSArray, not a NSMutableArray, so we shouldn't expect it to
-         be mutable.  */
-      NSMutableArray *mutableFiles = AUTORELEASE ([files mutableCopy]);
-	
-      /* Ok - now modify the mutable array removing unwanted files.  */
-      if (hiddenFiles != nil) {
-        [mutableFiles removeObjectsInArray: hiddenFiles];
-      }
-	
-	
-      /* Don't use i which is unsigned.  */
-      j = [mutableFiles count] - 1;
-	
-      while (j >= 0) {
-        NSString *file = (NSString *)[mutableFiles objectAtIndex: j];
-	    
-        if ([file hasPrefix: @"."]) {
-          /* NSLog (@"Removing dot file %@", file); */
-          [mutableFiles removeObjectAtIndex: j];
-        }
-        j--;
-      }
-	
-      files = mutableFiles;
-    }
-  }
+  nxfm = [NXTFileManager sharedManager];
+  files = [nxfm directoryContentsAtPath:path
+                                forPath:nil
+                               sortedBy:NXTSortByKind
+                             showHidden:_showsHiddenFiles];
 
   count = [files count];
 
@@ -230,19 +213,6 @@ static NSComparisonResult compareFilenames(id elem1, id elem2, void *context)
   if (count == 0) {
     RELEASE (pool);
     return;
-  }
-
-  [self setTitle:_(@"Save")];
-
-  // TODO: Sort after creation of matrix so we do not sort 
-  // files we are not going to show.  Use NSMatrix sorting cells method
-  // Sort list of files to display
-  if (_delegateHasCompareFilter == YES) {
-    files = [files sortedArrayUsingFunction:compareFilenames 
-                                    context:self];
-  }
-  else {
-    files = [files sortedArrayUsingSelector:@selector(_gsSavePanelCompare:)];
   }
 
   addedRows = 0;
@@ -300,6 +270,31 @@ static NSComparisonResult compareFilenames(id elem1, id elem2, void *context)
   }
 
   RELEASE(pool);
+}
+
+//
+// Methods invoked by button press
+//
+- (void)_setHomeDirectory:(id)sender
+{
+  [super setDirectory:NSHomeDirectory()];
+}
+
+- (void)_mountMedia:(id)sender
+{
+  [[OSEMediaManager defaultManager] mountNewRemovableMedia];
+}
+
+- (void)_unmountMedia:(id)sender
+{
+  [[OSEMediaManager defaultManager] unmountAndEjectDeviceAtPath:[self directory]];
+}
+
+- (void)setTitle:(NSString*)title
+{
+  [super setTitle: @""];
+  [_titleField setStringValue:title];
+  [_titleField sizeToFit];
 }
 
 // --- Extentions

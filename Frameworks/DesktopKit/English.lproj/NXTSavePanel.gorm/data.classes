@@ -2,20 +2,30 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "_selectText:"
+	    "_mountMedia:",
+	    "_selectText:",
+	    "_setHomeDirectory:",
+	    "_unmountMedia:",
+	    "newAction:"
 	);
 	Super = NSObject;
     };
-    NSSavePanel = {
+    NXTPanelLoader = {
 	Actions = (
 	);
 	Outlets = (
+	    panel
 	);
-	Super = NSPanel;
+	Super = NSObject;
     };
     NXTSavePanel = {
 	Actions = (
-	    "_selectText:"
+	    "_selectText:",
+	    "_mountMedia:",
+	    "_setHomeDirectory:",
+	    "_unmountMedia:",
+	    "cancel:",
+	    "ok:"
 	);
 	Outlets = (
 	    "_bottomView",

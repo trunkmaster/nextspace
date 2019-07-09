@@ -23,11 +23,14 @@
 
 @interface NXTSavePanel : NSSavePanel
 {
-  NSButton *_homeButton;
-  NSButton *_diskButton;
-  NSButton *_ejectButton;
-  NSButton *_cancelButton;
+  NSImageView *_icon;
+  NSButton    *_homeButton;
+  NSButton    *_diskButton;
+  NSButton    *_ejectButton;
+  NSButton    *_cancelButton;
 }
+
++ (NXTSavePanel *)savePanel;
 
 @end
 
