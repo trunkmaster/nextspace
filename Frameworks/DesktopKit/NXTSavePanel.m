@@ -120,7 +120,7 @@ static NXTSavePanel *savePanel = nil;
   [_cancelButton setTag:NSFileHandlingPanelCancelButton];
   [_okButton setTag:NSFileHandlingPanelOKButton];
 
-  // [self setFrameAutosaveName:@"NXTSavePanel"];
+  [self setFrameAutosaveName:@"NXTSavePanel"];
   
   /* Used in setMinSize: */
   _originalMinSize = [self minSize];
