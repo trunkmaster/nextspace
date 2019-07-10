@@ -88,6 +88,9 @@ static NXTSavePanel *savePanel = nil;
 
   [_browser setTag:NSFileHandlingPanelBrowser];
   [_browser setDoubleAction:@selector(performClick:)];
+  [_browser loadColumnZero];
+
+  _showsHiddenFiles = [[NXTFileManager sharedManager] isShowHiddenFiles];
   // Browser rght-click menu
   // _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
   // [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
@@ -265,7 +268,7 @@ static NXTSavePanel *savePanel = nil;
       [_okButton setEnabled:NO];
     }
   }
-  [super makeFirstResponder:[_form cellAtIndex:0]];
+  [self makeFirstResponder:[_form cellAtIndex:0]];
 }
 
 - (void)_selectText:(id)sender
@@ -297,8 +300,8 @@ static NXTSavePanel *savePanel = nil;
   nxfm = [NXTFileManager sharedManager];
   files = [nxfm directoryContentsAtPath:path
                                 forPath:nil
-                               sortedBy:NXTSortByKind
-                             showHidden:_showsHiddenFiles];
+                               sortedBy:[nxfm sortFilesBy]
+                             showHidden:[nxfm isShowHiddenFiles]];
 
   count = [files count];
 
@@ -370,7 +373,7 @@ static NXTSavePanel *savePanel = nil;
 //
 - (void)_setHomeDirectory:(id)sender
 {
-  [super setDirectory:NSHomeDirectory()];
+  [self setDirectory:NSHomeDirectory()];
 }
 
 - (void)_mountMedia:(id)sender
