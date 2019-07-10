@@ -24,6 +24,7 @@
 #import <SystemKit/OSEMediaManager.h>
 #import "NXTSavePanel.h"
 #import "NXTFileManager.h"
+#import "NXTDefaults.h"
 
 @interface NXTPanelLoader : NSObject
 {
@@ -67,6 +68,7 @@ static NXTSavePanel *savePanel = nil;
 - (void)dealloc
 {
   NSLog(@"[NXTSavePanel] -dealloc: %lu", [savePanel retainCount]);
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
   savePanel = nil;
   [super dealloc];
 }
@@ -82,6 +84,12 @@ static NXTSavePanel *savePanel = nil;
 - (void)awakeFromNib
 {
   NSLog(@"awakeFromNib");
+  [[NSDistributedNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(_globalDefaultsChanged:)
+           name:NXUserDefaultsDidChangeNotification
+         object:@"NXGlobalDomain"];
+
   [self setTitle:@"Save"];
   
   [_icon setImage:[[NSApplication sharedApplication] applicationIconImage]];
@@ -394,5 +402,11 @@ static NXTSavePanel *savePanel = nil;
 }
 
 // --- Extentions
+
+- (void)_globalDefaultsChanged:(NSNotification *)aNotif
+{
+  [_browser loadColumnZero];
+  [_browser setPath:_directory];
+}
 
 @end
