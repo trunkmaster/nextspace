@@ -50,6 +50,8 @@
 @end
 
 static NXTSavePanel *savePanel = nil;
+#define _SAVE_PANEL_X_PAD	5
+#define _SAVE_PANEL_Y_PAD	4
 
 @implementation NXTSavePanel
 
@@ -82,28 +84,20 @@ static NXTSavePanel *savePanel = nil;
   NSLog(@"awakeFromNib");
   [self setTitle:@"Save"];
   
-  [_topView setBounds:[_topView frame]];
-  [_topView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-  [_topView setAutoresizesSubviews:YES];
-  
-  [_bottomView setBounds:[_bottomView frame]];
-  [_bottomView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-  [_bottomView setAutoresizesSubviews:YES];
-
   [_icon setImage:[[NSApplication sharedApplication] applicationIconImage]];
 
   [_browser setTag:NSFileHandlingPanelBrowser];
   [_browser setDoubleAction:@selector(performClick:)];
   // Browser rght-click menu
-  _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
-  [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
-                                      action:@selector(_toggleShowsHiddenFiles:)
-                               keyEquivalent:@""
-                                     atIndex:0];
-  [[_showsHiddenFilesMenu itemAtIndex:0] setTarget:self];
-  [[_showsHiddenFilesMenu itemAtIndex:0] setState:[self showsHiddenFiles]];
-  [_browser setMenu:_showsHiddenFilesMenu];
-  [_showsHiddenFilesMenu release];
+  // _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
+  // [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
+  //                                     action:@selector(_toggleShowsHiddenFiles:)
+  //                              keyEquivalent:@""
+  //                                    atIndex:0];
+  // [[_showsHiddenFilesMenu itemAtIndex:0] setTarget:self];
+  // [[_showsHiddenFilesMenu itemAtIndex:0] setState:[self showsHiddenFiles]];
+  // [_browser setMenu:_showsHiddenFilesMenu];
+  // [_showsHiddenFilesMenu release];
 
   [_form setTag:NSFileHandlingPanelForm];
   [_homeButton setTag:NSFileHandlingPanelHomeButton];
@@ -115,7 +109,7 @@ static NXTSavePanel *savePanel = nil;
   [_cancelButton setTag:NSFileHandlingPanelCancelButton];
   [_okButton setTag:NSFileHandlingPanelOKButton];
 
-  [self setFrameAutosaveName:@"NXTSavePanel"];
+  // [self setFrameAutosaveName:@"NXTSavePanel"];
   
   /* Used in setMinSize: */
   _originalMinSize = [self minSize];
@@ -123,6 +117,105 @@ static NXTSavePanel *savePanel = nil;
   _originalSize = [[self contentView] frame].size;
 
   [self setDirectory:NSHomeDirectory()];
+}
+
+- (void)setAccessoryView:(NSView*)aView
+{
+  NSRect accessoryViewFrame, bottomFrame;
+  NSRect tmpRect;
+  NSSize contentSize, contentMinSize;
+  float  addedHeight, accessoryWidth;
+
+  if (aView == _accessoryView)
+    return;
+  
+  // Remove old accessory view if any
+  if (_accessoryView != nil) {
+    // Remove accessory view
+    accessoryViewFrame = [_accessoryView frame];
+    [_accessoryView removeFromSuperview];
+
+    // Change the min size before doing the resizing otherwise it
+    // could be a problem.
+    [self setMinSize:_originalMinSize];
+
+    // Resize the panel to the height without the accessory view. 
+    // This must be done with the special care of not resizing 
+    // the heights of the other views.
+    addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
+    contentSize = [[self contentView] frame].size;
+    contentSize.height -= addedHeight;
+    // Resize without modifying topView and bottomView height.
+    [_browser setAutoresizingMask:NSViewWidthSizable | NSViewMinYMargin];
+    [self setContentSize:contentSize];
+    [_browser setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  }
+  
+  // Resize the panel to its original size.  This resizes freely the
+  // heights of the views. NB: minSize *must* come first
+  [self setMinSize:_originalMinSize];
+  [self setContentSize:_originalSize];
+  
+  // Set the new accessory view
+  _accessoryView = aView;
+  
+  // If there is a new accessory view, plug it in
+  if (_accessoryView != nil) {
+    // Make sure the new accessory view behaves  - its height must be fixed
+    // and its position relative to the bottom of the superview must not
+    // change	- so its position rlative to the top must be changable.
+    [_accessoryView setAutoresizingMask:NSViewMaxYMargin
+                    | ([_accessoryView autoresizingMask] 
+                       & ~(NSViewHeightSizable | NSViewMinYMargin))];  
+      
+    /* Compute size taken by the new accessory view */
+    accessoryViewFrame = [_accessoryView frame];
+    addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
+    accessoryWidth = accessoryViewFrame.size.width + (_SAVE_PANEL_X_PAD * 2);
+
+    /* Resize content size accordingly */
+    contentSize = _originalSize;
+    contentSize.height += addedHeight;
+    if (accessoryWidth > contentSize.width) {
+      contentSize.width = accessoryWidth;
+    }
+      
+    // Set new content size without resizing heights of topView, bottomView
+    // Our views should resize horizontally if needed, but not vertically
+    [_browser setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+    [self setContentSize: contentSize];
+    // Restore the original autoresizing masks
+    [_browser setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+
+    /* Compute new min size */
+    contentMinSize = _originalMinSize;
+    contentMinSize.height += addedHeight;
+    // width is more delicate
+    tmpRect = NSMakeRect (0, 0, contentMinSize.width, contentMinSize.height);
+    tmpRect = [NSWindow contentRectForFrameRect:tmpRect 
+                                      styleMask:[self styleMask]];
+    if (accessoryWidth > tmpRect.size.width) {
+      contentMinSize.width += accessoryWidth - tmpRect.size.width;
+    }
+    // Set new min size
+    [self setMinSize:contentMinSize];
+
+    /*
+     * Pack the Views
+     */
+
+    /* BottomView is ready */
+    bottomFrame = [_bottomView frame];
+
+    /* AccessoryView */
+    accessoryViewFrame.origin.x 
+      = (contentSize.width - accessoryViewFrame.size.width) / 2;
+    accessoryViewFrame.origin.y = NSMaxY (bottomFrame) + _SAVE_PANEL_Y_PAD;
+    [_accessoryView setFrameOrigin:accessoryViewFrame.origin];
+
+    /* Add the accessory view */
+    [[self contentView] addSubview:_accessoryView];
+  }
 }
 
 - (BOOL)_shouldShowExtension:(NSString *)extension
