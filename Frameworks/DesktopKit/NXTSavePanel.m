@@ -75,7 +75,7 @@ static NXTSavePanel *savePanel = nil;
   if (!_f.visible && [theEvent type] != NSAppKitDefined) {
     NSDebugLLog(@"NSEvent", @"Discard (window not visible) %@", theEvent);
     return;
- }
+  }
 
   if (!_f.cursor_rects_valid) {
     [self resetCursorRects];
@@ -94,6 +94,44 @@ static NXTSavePanel *savePanel = nil;
       [_form becomeFirstResponder];
       return;
     }
+  }
+  else if ([theEvent type] == NSKeyDown) {
+    NSString *characters = [theEvent characters];
+    unichar   character = 0;
+
+    if ([characters length] > 0) {
+      character = [characters characterAtIndex: 0];
+    }
+
+    switch (character)
+      {
+      case NSUpArrowFunctionKey:
+        NSLog(@"Selected column: %lu", [_browser selectedColumn]);
+        [[_browser matrixInColumn:[_browser selectedColumn]] keyDown:theEvent];
+        return;
+        break;
+      case NSDownArrowFunctionKey:
+        // [_form abortEditing];
+        // [_form resignFirstResponder];
+        // [_browser becomeFirstResponder];
+        [[_browser matrixInColumn:[_browser selectedColumn]] keyDown:theEvent];
+        // [_browser resignFirstResponder];
+        // [_form becomeFirstResponder];
+        return;
+        break;
+      case NSLeftArrowFunctionKey:
+      case NSRightArrowFunctionKey:
+        // [_form abortEditing];
+        if ([[[_form cellAtIndex:0] stringValue] length] > 0) {
+          break;
+        }
+        else {
+          [_browser keyDown:theEvent];
+          [_browser resignFirstResponder];
+          [_form becomeFirstResponder];
+        }
+        return;
+      }
   }
 
   [super sendEvent:theEvent];
