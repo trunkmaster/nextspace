@@ -149,16 +149,18 @@
 
 - (void)openSavePanel:(id)sender
 {
+  // NSSavePanel *panel = [NSSavePanel savePanel];
   // NXTSavePanel *panel = [NXTSavePanel savePanel];
   NXTSavePanel *panel = [NXTSavePanel new];
-  NSBox        *accView;
   
-  // NSLog(@"NXTSavePanel: %@", panel);
+  NSLog(@"NXTSavePanel: %@, RC: %lu", [panel className],
+        [panel retainCount]);
   
-  accView = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,200,100)];
-  [accView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-  [panel setAccessoryView:accView];
-  [accView release];
+  // NSBox *accView;
+  // accView = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,200,100)];
+  // [accView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+  // [panel setAccessoryView:accView];
+  // [accView release];
   
   [panel setDirectory:NSHomeDirectory()];
   [panel runModal];
