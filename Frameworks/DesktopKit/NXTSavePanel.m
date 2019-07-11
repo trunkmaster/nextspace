@@ -65,19 +65,57 @@ static NXTSavePanel *savePanel = nil;
   return savePanel;
 }
 
+// --- NSWindow Overriding
+// Catches the mouse clicks on various panel controls to hold focus on "Name:"
+// text field.
+- (void)sendEvent:(NSEvent*)theEvent
+{
+  NSView *v;
+
+  if (!_f.visible && [theEvent type] != NSAppKitDefined) {
+    NSDebugLLog(@"NSEvent", @"Discard (window not visible) %@", theEvent);
+    return;
+ }
+
+  if (!_f.cursor_rects_valid) {
+    [self resetCursorRects];
+  }
+
+  if ([theEvent type] == NSLeftMouseDown) {
+    v = [_wv hitTest:[theEvent locationInWindow]];
+    NSLog(@"[NXTSavePanel] mouse down on %@", [v className]);
+    if ([v isKindOfClass:[NSClipView class]] ||
+        [v isKindOfClass:[NSBrowser class]]) {
+      return;
+    }
+    else if ([v isKindOfClass:[NSMatrix class]]) {
+      [v mouseDown:theEvent];
+      [_browser resignFirstResponder];
+      [_form becomeFirstResponder];
+      return;
+    }
+  }
+
+  [super sendEvent:theEvent];
+}
+// ---
+
 - (void)dealloc
 {
   NSLog(@"[NXTSavePanel] -dealloc: %lu", [savePanel retainCount]);
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-  savePanel = nil;
+  // savePanel = nil;
   [super dealloc];
 }
 
-// --- Overridings
+// --- NSSavePanel Overridings
 - (id)init
 {
-  NSLog(@"[NXTSavePanel] -init");
-  self = [NXTSavePanel savePanel];  
+  // Save panel pattern is singleton, so no matter how it's created
+  // (+savePanel, +new or alloc-init) it must always return single object
+  // per application.
+  self = [NXTSavePanel savePanel];
+  NSLog(@"[NXTSavePanel] -init: %lu", [self retainCount]);
   return self;
 }
 
@@ -93,9 +131,12 @@ static NXTSavePanel *savePanel = nil;
   [self setTitle:@"Save"];
   
   [_icon setImage:[[NSApplication sharedApplication] applicationIconImage]];
+  [_icon setRefusesFirstResponder:YES];
 
+  [_browser setRefusesFirstResponder:YES];
   [_browser setTag:NSFileHandlingPanelBrowser];
   [_browser setDoubleAction:@selector(performClick:)];
+  [_browser setTarget:_okButton];
   [_browser loadColumnZero];
 
   _showsHiddenFiles = [[NXTFileManager sharedManager] isShowHiddenFiles];
@@ -240,13 +281,47 @@ static NXTSavePanel *savePanel = nil;
   return YES;
 }
 
+- (void)_selectCellName:(NSString *)title
+{
+  NSString           *cellString;
+  NSMatrix           *matrix;
+  NSComparisonResult  result;
+  int                 i, titleLength, cellLength, numberOfCells;
+
+  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  if ([matrix selectedCell]) {
+    return;
+  }
+
+  titleLength = [title length];
+  if (!titleLength) {
+    return;
+  }
+
+  numberOfCells = [[matrix cells] count];
+
+  for (i = 0; i < numberOfCells; i++) {
+    cellString = [[matrix cellAtRow:i column:0] stringValue];
+    cellLength = [cellString length];
+    if (cellLength != titleLength) {
+      continue;
+    }
+    if ([cellString isEqualToString:title] != NO) {
+      [matrix selectCellAtRow:i column:0];
+      [matrix scrollCellToVisibleAtRow:i column:0];
+      [_okButton setEnabled:YES];
+      return;
+    }
+  }
+}
+
 - (void)_selectTextInColumn:(int)column
 {
   NSMatrix      *matrix;
   NSBrowserCell *selectedCell;
   BOOL           isLeaf;
 
-  NSLog(@"_selectTextInColumn");
+  NSLog(@"_selectTextInColumn:");
 
   if (column == -1)
     return;
@@ -261,6 +336,7 @@ static NXTSavePanel *savePanel = nil;
 
   if (isLeaf) {
     [[_form cellAtIndex:0] setStringValue:[selectedCell stringValue]];
+    [_form selectTextAtIndex:0];
     [_okButton setEnabled:YES];
   }
   else {
@@ -270,13 +346,12 @@ static NXTSavePanel *savePanel = nil;
 
     if ([[[_form cellAtIndex:0] stringValue] length] > 0) {
       [_okButton setEnabled:YES];
-      // [self _selectCellName:[[_form cellAtIndex:0] stringValue]];
+      [self _selectCellName:[[_form cellAtIndex:0] stringValue]];
     }
     else {
       [_okButton setEnabled:NO];
     }
   }
-  [self makeFirstResponder:[_form cellAtIndex:0]];
 }
 
 - (void)_selectText:(id)sender
@@ -299,7 +374,7 @@ static NXTSavePanel *savePanel = nil;
   /* We create lot of objects in this method, so we use a pool */
   NSAutoreleasePool     *pool;
 
-  NSLog(@"browser:createRowsForColumn:inMatrix");
+  NSLog(@"browser:createRowsForColumn:inMatrix, NXTSavePanel RC: %lu", [self retainCount]);
 
   pool = [NSAutoreleasePool new];
   ws = [NSWorkspace sharedWorkspace];
