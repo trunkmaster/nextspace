@@ -19,31 +19,28 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import "NXTOpenPanel.h"
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSURL.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSBrowser.h>
+#import <AppKit/NSBrowserCell.h>
+#import <AppKit/NSForm.h>
 
-static NSString	*pathToColumn(NSBrowser *browser, int column)
-{
-  return [browser pathToColumn:column];
-}
+#import "NXTPanelLoader.h"
+#import "NXTOpenPanel.h"
 
 static NXTOpenPanel *_openPanel = nil;
 
 // Pacify the compiler
 @interface NSSavePanel (GSPrivateMethods)
-- (void) _resetDefaults;
-- (void) _updateDefaultDirectory;
-- (void) _reloadBrowser;
-- (void) _selectCellName: (NSString *)title;
-- (void) _selectTextInColumn: (int)column;
-- (void) _setupForDirectory: (NSString *)path file: (NSString *)filename;
-- (BOOL) _shouldShowExtension: (NSString *)extension;
-- (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
+- (void)awakeFromNib;
+- (void)_updateDefaultDirectory;
+- (void)_reloadBrowser;
+- (void)_setupForDirectory:(NSString *)path file:(NSString *)filename;
 @end
 
 @implementation NXTOpenPanel (GSPrivateMethods)
-- (void)_resetDefaults
-{
-}
 
 - (BOOL)_shouldShowExtension:(NSString *)extension
 {
@@ -71,8 +68,8 @@ static NXTOpenPanel *_openPanel = nil;
   matrix = [_browser matrixInColumn:column];
 
   // Validate selection
-  selectedCells = ;
-  for (id cell in [matrix selectedCells]) {
+  selectedCells = [matrix selectedCells];
+  for (id cell in selectedCells) {
     if ((![cell isLeaf] && !_canChooseDirectories) ||
         ([cell isLeaf] && !_canChooseFiles)) {
       selectionValid = NO;
@@ -86,7 +83,9 @@ static NXTOpenPanel *_openPanel = nil;
   }
   else {
     [[_form cellAtIndex:0] setStringValue:[[matrix selectedCell] stringValue]];
-  }  
+    [_form selectTextAtIndex:0];
+    [_okButton setEnabled:YES];
+ }  
 }
 
 - (void)_setupForDirectory:(NSString *)path file:(NSString *)filename
@@ -109,28 +108,26 @@ static NXTOpenPanel *_openPanel = nil;
 
 @implementation NXTOpenPanel
 
-+ (void) initialize
-{
-  if (self == [NXTOpenPanel class]) {
-    [self setVersion:1];
-  }
-}
-
 + (NXTOpenPanel *)openPanel
 {
-  if (!_openPanel) {
-    _openPanel = [[NXTOpenPanel alloc] init];
+  if (_openPanel == nil) {
+    _openPanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTOpenPanel"];
   }
-  [_openPanel setTitle:_(@"Open")];
-  [_openPanel setAllowsMultipleSelection:NO];
-  [_okButton setEnabled:NO];
 
   return _openPanel;
 }
 
+- (void)dealloc
+{
+  NSLog(@"[NXTOpenPanel] -dealloc: %lu", [_openPanel retainCount]);
+  _openPanel = nil;
+  [super dealloc];
+}
+
 - (id)init
 {
-  self = [super init];
+  self = [NXTOpenPanel openPanel];
+  NSLog(@"[NXTOpenPanel] -init: %lu", [self retainCount]);
   if (self != nil) {
     _canChooseDirectories = YES;
     _canChooseFiles = YES;
@@ -138,9 +135,19 @@ static NXTOpenPanel *_openPanel = nil;
   return self;
 }
 
-/*
- * Filtering Files
- */
+- (void)awakeFromNib
+{
+  NSLog(@"[NXTOpenPanel] awakeFromNib");
+  [super awakeFromNib];
+  
+  [self setTitle:_(@"Open")];
+  [self setAllowsMultipleSelection:NO];
+}
+
+//
+//--- Filtering Files
+//
+
 - (void)setAllowsMultipleSelection:(BOOL)flag
 {
   [_browser setAllowsMultipleSelection:flag];
@@ -228,7 +235,7 @@ static NXTOpenPanel *_openPanel = nil;
   }
 }
 
-- (NSArray *) URLs
+- (NSArray *)URLs
 {
   NSMutableArray *ret = [NSMutableArray new];
 
@@ -239,9 +246,10 @@ static NXTOpenPanel *_openPanel = nil;
   return AUTORELEASE(ret);
 }
 
-/*
- * Running the NXTOpenPanel
- */
+//
+//--- Running the NXTOpenPanel
+//
+
 - (NSInteger)runModal
 {
   return [self runModalForTypes:[self allowedFileTypes]];
@@ -321,77 +329,66 @@ static NXTOpenPanel *_openPanel = nil;
 
   selectedColumn = [_browser selectedColumn];
   lastColumn = [_browser lastColumn];
-  if (selectedColumn >= 0)
-    {
-      matrix = [_browser matrixInColumn: selectedColumn];
+  if (selectedColumn >= 0) {
+    matrix = [_browser matrixInColumn:selectedColumn];
 
-      if ([_browser allowsMultipleSelection] == YES)
-	{
-	  selectedCells = [matrix selectedCells];
+    if ([_browser allowsMultipleSelection] == YES) {
+      selectedCells = [matrix selectedCells];
 
-	  if (selectedColumn == lastColumn && [selectedCells count] == 1)
-	    selectedCell = [selectedCells objectAtIndex: 0];
-	}
-      else
-	{
-	  if (selectedColumn == lastColumn)
-	    selectedCell = [matrix selectedCell];
-	}
+      if (selectedColumn == lastColumn && [selectedCells count] == 1) {
+        selectedCell = [selectedCells objectAtIndex:0];
+      }
     }
-
-  if (selectedCell)
-    {
-      if ([selectedCell isLeaf] == NO)
-	{
-	  [[_form cellAtIndex: 0] setStringValue: @""];
-	  [_browser doClick: matrix];
-	  [_form selectTextAtIndex: 0];
-	  [_form setNeedsDisplay: YES];
-
-	  return;
-	}
+    else {
+      if (selectedColumn == lastColumn)
+        selectedCell = [matrix selectedCell];
     }
-  else if (_canChooseDirectories == NO
-    && (selectedColumn != lastColumn || ![selectedCells count]))
-    {
-      [_form selectTextAtIndex: 0];
-      [_form setNeedsDisplay: YES];
+  }
+
+  if (selectedCell) {
+    if ([selectedCell isLeaf] == NO) {
+      [[_form cellAtIndex:0] setStringValue:@""];
+      [_browser doClick:matrix];
+      [_form selectTextAtIndex:0];
+      [_form setNeedsDisplay:YES];
+
       return;
     }
+  }
+  else if (_canChooseDirectories == NO
+           && (selectedColumn != lastColumn || ![selectedCells count])) {
+    [_form selectTextAtIndex: 0];
+    [_form setNeedsDisplay: YES];
+    return;
+  }
 
-  ASSIGN (_directory, pathToColumn(_browser, [_browser lastColumn]));
+  ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
 
-  if (selectedCell)
+  if (selectedCell) {
     tmp = [selectedCell stringValue];
-  else
-    tmp = [[_form cellAtIndex: 0] stringValue];
+  }
+  else {
+    tmp = [[_form cellAtIndex:0] stringValue];
+  }
 
-  if ([tmp isAbsolutePath] == YES)
-    {
-      ASSIGN (_fullFileName, tmp);
-    }
-  else
-    {
-      ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent: tmp]);
-    }
+  if ([tmp isAbsolutePath] == YES) {
+    ASSIGN (_fullFileName, tmp);
+  }
+  else {
+    ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:tmp]);
+  }
 
-  if (_delegateHasValidNameFilter)
-    {
-      NSEnumerator *enumerator;
-      NSArray      *filenames = [self filenames];
-      NSString     *filename;
-
-      enumerator = [filenames objectEnumerator];
-      while ((filename = [enumerator nextObject]))
-	{
-	  if ([_delegate panel: self isValidFilename: filename] == NO)
-	    return;
-	}
+  if (_delegateHasValidNameFilter) {
+    for (NSString *filename in [self filenames]) {
+      if ([_delegate panel:self isValidFilename:filename] == NO) {
+        return;
+      }
     }
+  }
 
   [self _updateDefaultDirectory];
-  [NSApp stopModalWithCode: NSOKButton];
-  [_okButton setEnabled: NO];
+  [NSApp stopModalWithCode:NSOKButton];
+  [_okButton setEnabled:NO];
   [self close];
 }
 
@@ -406,146 +403,45 @@ static NXTOpenPanel *_openPanel = nil;
   // FIXME
 }
 
+//
+//--- NSForm delegate methods
+//
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+  NSString *enteredString;
+
+  enteredString = [[[aNotification userInfo] objectForKey:@"NSFieldEditor"] string];
+
+  if ([enteredString length] == 0) {
+    [[_browser matrixInColumn:[_browser lastColumn]] deselectAllCells];
+    [_okButton setEnabled:_canChooseDirectories];
+    return;
+  }
+  
+  [super controlTextDidChange:aNotification];
+}
+
 /*
  * NSCoding protocol
  */
-- (void)encodeWithCoder:(NSCoder*)aCoder
-{
-  [super encodeWithCoder:aCoder];
+// - (void)encodeWithCoder:(NSCoder*)aCoder
+// {
+//   [super encodeWithCoder:aCoder];
 
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at:&_canChooseDirectories];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at:&_canChooseFiles];
-}
+//   [aCoder encodeValueOfObjCType:@encode(BOOL) at:&_canChooseDirectories];
+//   [aCoder encodeValueOfObjCType:@encode(BOOL) at:&_canChooseFiles];
+// }
 
-- (id)initWithCoder:(NSCoder*)aDecoder
-{
-  self = [super initWithCoder:aDecoder];
-  if (nil == self)
-    return nil;
+// - (id)initWithCoder:(NSCoder*)aDecoder
+// {
+//   self = [super initWithCoder:aDecoder];
+//   if (nil == self)
+//     return nil;
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_canChooseDirectories];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_canChooseFiles];
+//   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_canChooseDirectories];
+//   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_canChooseFiles];
 
-  return self;
-}
+//   return self;
+// }
+
 @end
-
-//
-// NSForm delegate methods
-//
-@interface NXTOpenPanel (FormDelegate)
-- (void)controlTextDidChange:(NSNotification *)aNotification;
-@end
-@implementation NXTOpenPanel (FormDelegate)
-
-- (void)controlTextDidChange:(NSNotification *)aNotification;
-{
-  NSString           *s, *selectedString;
-  NSArray            *cells;
-  NSMatrix           *matrix;
-  NSCell             *selectedCell;
-  int                 i, sLength, cellLength, selectedRow;
-  NSComparisonResult  result;
-  NSRange             range;
-
-  s = [[[aNotification userInfo] objectForKey: @"NSFieldEditor"] string];
-
-  /*
-   * If the user typed in an absolute path, display it.
-   */
-  if ([s isAbsolutePath] == YES)
-    {
-      [self setDirectory: s];
-    }
-
-  sLength = [s length];
-  range.location = 0;
-  range.length = sLength;
-
-  matrix = [_browser matrixInColumn: [_browser lastColumn]];
-
-  if (sLength == 0)
-    {
-      [matrix deselectAllCells];
-      [_okButton setEnabled: _canChooseDirectories];
-      return;
-    }
-
-  selectedCell = [matrix selectedCell];
-  selectedString = [selectedCell stringValue];
-  selectedRow = [matrix selectedRow];
-  cells = [matrix cells];
-
-  if (selectedString)
-    {
-      cellLength = [selectedString length];
-
-      if (cellLength < sLength)
-	range.length = cellLength;
-
-      result = [selectedString compare: s options: 0 range: range];
-
-      if (result == NSOrderedSame)
-	return;
-      else if (result == NSOrderedAscending)
-	result = NSOrderedDescending;
-      else if (result == NSOrderedDescending)
-	result = NSOrderedAscending;
-
-      range.length = sLength;
-    }
-  else
-    result = NSOrderedDescending;
-
-  if (result == NSOrderedDescending)
-    {
-      int numberOfCells = [cells count];
-
-      for (i = selectedRow+1; i < numberOfCells; i++)
-	{
-	  selectedString = [[matrix cellAtRow: i column: 0] stringValue];
-
-	  cellLength = [selectedString length];
-	  if (cellLength < sLength)
-	    continue;
-
-	  result = [selectedString compare: s options: 0 range: range];
-
-	  if (result == NSOrderedSame)
-	    {
-	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow: i column: 0];
-	      [matrix scrollCellToVisibleAtRow: i column: 0];
-	      [_okButton setEnabled: YES];
-	      return;
-	    }
-	}
-    }
-  else
-    {
-      for (i = selectedRow; i >= 0; --i)
-	{
-	  selectedString = [[matrix cellAtRow: i column: 0] stringValue];
-
-	  cellLength = [selectedString length];
-	  if (cellLength < sLength)
-	    continue;
-
-	  result = [selectedString compare: s options: 0 range: range];
-
-	  if (result == NSOrderedSame)
-	    {
-	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow: i column: 0];
-	      [matrix scrollCellToVisibleAtRow: i column: 0];
-	      [_okButton setEnabled: YES];
-	      return;
-	    }
-	}
-    }
-
-  [matrix deselectAllCells];
-  [_okButton setEnabled: NO];
-}
-
-@end /* NXTOpenPanel */

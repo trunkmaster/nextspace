@@ -48,12 +48,12 @@
                  modalDelegate:(id)delegate
                 didEndSelector:(SEL)didEndSelector
                    contextInfo:(void *)contextInfo;
-- (void) beginForDirectory: (NSString *)absoluteDirectoryPath
-                      file: (NSString *)filename
-                     types: (NSArray *)fileTypes
-          modelessDelegate: (id)modelessDelegate
-            didEndSelector: (SEL)didEndSelector
-               contextInfo: (void *)contextInfo;
+- (void)beginForDirectory:(NSString *)absoluteDirectoryPath
+                     file:(NSString *)filename
+                    types:(NSArray *)fileTypes
+         modelessDelegate:(id)modelessDelegate
+           didEndSelector:(SEL)didEndSelector
+              contextInfo:(void *)contextInfo;
 
 - (NSArray *) filenames;
 

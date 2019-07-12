@@ -30,7 +30,9 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXTSplitView.m \
 	NXTNumericField.m \
 	NXTSound.m \
+	NXTPanelLoader.m \
 	NXTSavePanel.m \
+	NXTOpenPanel.m \
 	\
 	Utilities.m
 
@@ -55,6 +57,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXTNumericField.h \
 	NXTSound.h \
 	NXTSavePanel.h \
+	NXTOpenPanel.h \
 	\
 	Utilities.h
 
@@ -65,7 +68,8 @@ $(FRAMEWORK_NAME)_RESOURCE_FILES = \
 
 $(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff \
 	NXTAlertPanel.gorm \
-	NXTSavePanel.gorm
+	NXTSavePanel.gorm \
+	NXTOpenPanel.gorm
 $(FRAMEWORK_NAME)_LANGUAGES = \
 	English French German Italian Spanish \
 	Ukrainian Russian Dutch Slovak Hungarian
