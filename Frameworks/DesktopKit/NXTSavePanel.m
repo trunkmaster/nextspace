@@ -22,48 +22,105 @@
 #import <Foundation/NSNotification.h>
 #import <AppKit/AppKit.h>
 #import <SystemKit/OSEMediaManager.h>
-#import "NXTSavePanel.h"
+
+#import "NXTPanelLoader.h"
 #import "NXTFileManager.h"
 #import "NXTDefaults.h"
 #import "NXTAlert.h"
 
-@interface NXTPanelLoader : NSObject
-{
-  id IBOutlet panel;
-}
-- (id)loadPanelNamed:(NSString *)nibName;
-@end
-@implementation NXTPanelLoader
+#import "NXTSavePanel.h"
 
-- (id)loadPanelNamed:(NSString *)nibName
-{
-  if ([NSBundle loadNibNamed:nibName owner:self] == NO) {
-    NSLog(@"[NXTPanelLoader] can't load model file `%@`.", nibName);
-  }
-
-  while (panel == nil) {
-    [[NSRunLoop currentRunLoop]
-        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-  }
-
-  return panel;
-}
-
-@end
-
-static NXTSavePanel *savePanel = nil;
+static NXTSavePanel *_savePanel = nil;
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
 
 @implementation NXTSavePanel
 
++ (void) initialize
+{
+  if (self == [NXTSavePanel class]) {
+    [self setVersion:1];
+  }
+}
+
 + (NXTSavePanel *)savePanel
 {
-  if (savePanel == nil) {
-    savePanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTSavePanel"];
+  if (_savePanel == nil) {
+    _savePanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTSavePanel"];
   }
   
-  return savePanel;
+  return _savePanel;
+}
+
+- (void)dealloc
+{
+  NSLog(@"[NXTSavePanel] -dealloc: %lu", [_savePanel retainCount]);
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+  _savePanel = nil;
+  [super dealloc];
+}
+
+// --- NSSavePanel Overridings
+- (id)init
+{
+  // Save panel pattern is singleton, so no matter how it's created
+  // (+savePanel, +new or alloc-init) it must always return single object
+  // per application.
+  self = [NXTSavePanel savePanel];
+  NSLog(@"[NXTSavePanel] -init: %lu", [self retainCount]);
+  return self;
+}
+
+- (void)awakeFromNib
+{
+  NSLog(@"awakeFromNib");
+  [[NSDistributedNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(_globalDefaultsChanged:)
+           name:NXUserDefaultsDidChangeNotification
+         object:@"NXGlobalDomain"];
+
+  [self setTitle:@"Save"];
+  
+  [_icon setImage:[[NSApplication sharedApplication] applicationIconImage]];
+  [_icon setRefusesFirstResponder:YES];
+
+  [_browser setRefusesFirstResponder:YES];
+  [_browser setTag:NSFileHandlingPanelBrowser];
+  [_browser setDoubleAction:@selector(performClick:)];
+  [_browser setTarget:_okButton];
+  [_browser loadColumnZero];
+
+  _showsHiddenFiles = [[NXTFileManager sharedManager] isShowHiddenFiles];
+  // Browser rght-click menu
+  // _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
+  // [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
+  //                                     action:@selector(_toggleShowsHiddenFiles:)
+  //                              keyEquivalent:@""
+  //                                    atIndex:0];
+  // [[_showsHiddenFilesMenu itemAtIndex:0] setTarget:self];
+  // [[_showsHiddenFilesMenu itemAtIndex:0] setState:[self showsHiddenFiles]];
+  // [_browser setMenu:_showsHiddenFilesMenu];
+  // [_showsHiddenFilesMenu release];
+
+  [_form setTag:NSFileHandlingPanelForm];
+  [_homeButton setTag:NSFileHandlingPanelHomeButton];
+  [_homeButton setToolTip:_(@"Home")];
+  [_diskButton setTag:NSFileHandlingPanelDiskButton];
+  [_diskButton setToolTip:_(@"Mount")];
+  [_ejectButton setTag:NSFileHandlingPanelDiskEjectButton];
+  [_ejectButton setToolTip:_(@"Unmount")];
+  [_cancelButton setTag:NSFileHandlingPanelCancelButton];
+  [_okButton setTag:NSFileHandlingPanelOKButton];
+
+  [self setFrameAutosaveName:@"NXTSavePanel"];
+  
+  /* Used in setMinSize: */
+  _originalMinSize = [self minSize];
+  /* Used in setContentSize: */
+  _originalSize = [[self contentView] frame].size;
+
+  [self setDirectory:NSHomeDirectory()];
 }
 
 // --- NSBrowser replacements
@@ -204,77 +261,6 @@ static NXTSavePanel *savePanel = nil;
   [super sendEvent:theEvent];
 }
 // ---
-
-- (void)dealloc
-{
-  NSLog(@"[NXTSavePanel] -dealloc: %lu", [savePanel retainCount]);
-  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-  savePanel = nil;
-  [super dealloc];
-}
-
-// --- NSSavePanel Overridings
-- (id)init
-{
-  // Save panel pattern is singleton, so no matter how it's created
-  // (+savePanel, +new or alloc-init) it must always return single object
-  // per application.
-  self = [NXTSavePanel savePanel];
-  NSLog(@"[NXTSavePanel] -init: %lu", [self retainCount]);
-  return self;
-}
-
-- (void)awakeFromNib
-{
-  NSLog(@"awakeFromNib");
-  [[NSDistributedNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(_globalDefaultsChanged:)
-           name:NXUserDefaultsDidChangeNotification
-         object:@"NXGlobalDomain"];
-
-  [self setTitle:@"Save"];
-  
-  [_icon setImage:[[NSApplication sharedApplication] applicationIconImage]];
-  [_icon setRefusesFirstResponder:YES];
-
-  [_browser setRefusesFirstResponder:YES];
-  [_browser setTag:NSFileHandlingPanelBrowser];
-  [_browser setDoubleAction:@selector(performClick:)];
-  [_browser setTarget:_okButton];
-  [_browser loadColumnZero];
-
-  _showsHiddenFiles = [[NXTFileManager sharedManager] isShowHiddenFiles];
-  // Browser rght-click menu
-  // _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
-  // [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
-  //                                     action:@selector(_toggleShowsHiddenFiles:)
-  //                              keyEquivalent:@""
-  //                                    atIndex:0];
-  // [[_showsHiddenFilesMenu itemAtIndex:0] setTarget:self];
-  // [[_showsHiddenFilesMenu itemAtIndex:0] setState:[self showsHiddenFiles]];
-  // [_browser setMenu:_showsHiddenFilesMenu];
-  // [_showsHiddenFilesMenu release];
-
-  [_form setTag:NSFileHandlingPanelForm];
-  [_homeButton setTag:NSFileHandlingPanelHomeButton];
-  [_homeButton setToolTip:_(@"Home")];
-  [_diskButton setTag:NSFileHandlingPanelDiskButton];
-  [_diskButton setToolTip:_(@"Mount")];
-  [_ejectButton setTag:NSFileHandlingPanelDiskEjectButton];
-  [_ejectButton setToolTip:_(@"Unmount")];
-  [_cancelButton setTag:NSFileHandlingPanelCancelButton];
-  [_okButton setTag:NSFileHandlingPanelOKButton];
-
-  [self setFrameAutosaveName:@"NXTSavePanel"];
-  
-  /* Used in setMinSize: */
-  _originalMinSize = [self minSize];
-  /* Used in setContentSize: */
-  _originalSize = [[self contentView] frame].size;
-
-  [self setDirectory:NSHomeDirectory()];
-}
 
 - (void)setAccessoryView:(NSView*)aView
 {
@@ -581,6 +567,7 @@ static NXTSavePanel *savePanel = nil;
   // NSLog(@"controlTextDidChange: %@", enteredString);
 
   if ([enteredString length] == 0) {
+    [[_browser matrixInColumn:[_browser lastColumn]] deselectAllCells];
     [_okButton setEnabled:NO];
     return;
   }
