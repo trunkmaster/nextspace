@@ -197,6 +197,7 @@
   panelFrame = [panel frame];
   panelFrame.size.height = [panel minSize].height;
   [panel setFrame:panelFrame display:NO];
+  [panel setLevel:NSModalPanelWindowLevel];
   
   [titleField setRefusesFirstResponder:YES];
   [messageField setRefusesFirstResponder:YES];
