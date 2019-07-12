@@ -1,0 +1,42 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    NXTOpenPanel = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NXTSavePanel;
+    };
+    NXTPanelLoader = {
+	Actions = (
+	);
+	Outlets = (
+	    panel
+	);
+	Super = NSObject;
+    };
+    NXTSavePanel = {
+	Actions = (
+	    "_selectText:",
+	    "_mountMedia:",
+	    "_setHomeDirectory:",
+	    "_unmountMedia:",
+	    "cancel:",
+	    "ok:"
+	);
+	Outlets = (
+	    "_bottomView",
+	    "_browser",
+	    "_diskButton",
+	    "_ejectButton",
+	    "_form",
+	    "_homeButton",
+	    "_icon",
+	    "_okButton",
+	    "_titleField",
+	    "_topView",
+	    "_cancelButton"
+	);
+	Super = NSPanel;
+    };
+}
