@@ -25,6 +25,7 @@
 #import "NXTSavePanel.h"
 #import "NXTFileManager.h"
 #import "NXTDefaults.h"
+#import "NXTAlert.h"
 
 @interface NXTPanelLoader : NSObject
 {
@@ -65,6 +66,60 @@ static NXTSavePanel *savePanel = nil;
   return savePanel;
 }
 
+// --- NSBrowser replacements
+- (void)browserMoveLeft:(id)sender
+{
+  NSInteger selectedColumn = [_browser selectedColumn];
+  NSMatrix  *matrix = [_browser matrixInColumn:selectedColumn];
+
+  if (selectedColumn == -1) {
+    matrix = [_browser matrixInColumn:0];
+    if ([[matrix cells] count]) {
+      [matrix selectCellAtRow:0 column:0];
+    }
+  }
+
+  if (selectedColumn > 0) {
+    [matrix deselectAllCells];
+    [_browser setLastColumn:selectedColumn];
+
+    selectedColumn--;
+    matrix = [_browser matrixInColumn:selectedColumn];
+    [matrix scrollCellToVisibleAtRow:[matrix selectedRow]
+                              column:selectedColumn];
+    [_browser scrollColumnToVisible:selectedColumn];
+  }    
+}
+
+- (void)browserMoveRight:(id)sender
+{
+  NSInteger selectedColumn = [_browser selectedColumn];
+  NSMatrix  *matrix = [_browser matrixInColumn:selectedColumn];
+
+  if (selectedColumn == -1) {
+    matrix = [_browser matrixInColumn:0];
+    if ([[matrix cells] count]) {
+      [matrix selectCellAtRow:0 column:0];
+    }
+  }
+  else {
+    // if there is one selected cell and it is a leaf, move right
+    // (column is already loaded)
+    if (![[matrix selectedCell] isLeaf] && [[matrix selectedCells] count] == 1) {
+      selectedColumn++;
+      matrix = [_browser matrixInColumn:selectedColumn];
+      if ([[matrix cells] count] && [matrix selectedCell] == nil) {
+        [matrix selectCellAtRow: 0 column: 0];
+      }
+      // if selected cell is a leaf, we need to add a column
+      if (![[matrix selectedCell] isLeaf] && [[matrix selectedCells] count] == 1) {  
+        [_browser addColumn];
+      }
+    }
+  }
+}
+
+
 // --- NSWindow Overriding
 // Catches the mouse clicks on various panel controls to hold focus on "Name:"
 // text field.
@@ -83,7 +138,7 @@ static NXTSavePanel *savePanel = nil;
 
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
-    NSLog(@"[NXTSavePanel] mouse down on %@", [v className]);
+    // NSLog(@"[NXTSavePanel] mouse down on %@", [v className]);
     if ([v isKindOfClass:[NSClipView class]] ||
         [v isKindOfClass:[NSBrowser class]]) {
       return;
@@ -96,42 +151,54 @@ static NXTSavePanel *savePanel = nil;
     }
   }
   else if ([theEvent type] == NSKeyDown) {
-    NSString *characters = [theEvent characters];
-    unichar   character = 0;
+    unichar   character = [[theEvent characters] characterAtIndex:0];
+    NSMatrix  *matrix;
+    NSInteger selectedRow, cellsCount;
 
-    if ([characters length] > 0) {
-      character = [characters characterAtIndex: 0];
-    }
-
-    switch (character)
-      {
-      case NSUpArrowFunctionKey:
-        NSLog(@"Selected column: %lu", [_browser selectedColumn]);
-        [[_browser matrixInColumn:[_browser selectedColumn]] keyDown:theEvent];
-        return;
-        break;
-      case NSDownArrowFunctionKey:
-        // [_form abortEditing];
-        // [_form resignFirstResponder];
-        // [_browser becomeFirstResponder];
-        [[_browser matrixInColumn:[_browser selectedColumn]] keyDown:theEvent];
-        // [_browser resignFirstResponder];
-        // [_form becomeFirstResponder];
-        return;
-        break;
-      case NSLeftArrowFunctionKey:
-      case NSRightArrowFunctionKey:
-        // [_form abortEditing];
-        if ([[[_form cellAtIndex:0] stringValue] length] > 0) {
-          break;
-        }
-        else {
-          [_browser keyDown:theEvent];
-          [_browser resignFirstResponder];
-          [_form becomeFirstResponder];
+    if (character >= 0xF700) {
+      matrix = [_browser matrixInColumn:[_browser selectedColumn]];
+      selectedRow = [matrix selectedRow];
+      if (character == NSUpArrowFunctionKey) {
+        if (selectedRow > 0) {
+          [matrix selectCellAtRow:selectedRow-1 column:0];
         }
         return;
       }
+      else if (character == NSDownArrowFunctionKey) {
+        if (selectedRow < [[matrix cells] count]-1) {
+          [matrix selectCellAtRow:selectedRow+1 column:0];
+        }
+        return;
+      }
+      else if (character == NSLeftArrowFunctionKey) {
+        if ([[[_form cellAtIndex:0] stringValue] length] == 0) {
+          [self browserMoveLeft:_browser];
+          return;
+        }
+      }
+      else if (character == NSRightArrowFunctionKey) {
+        if ([[[_form cellAtIndex:0] stringValue] length] == 0) {
+          [self browserMoveRight:_browser];
+          return;
+        }
+      }
+    }
+  }
+  else if ([theEvent type] == NSKeyUp) {
+    unichar  character = [[theEvent characters] characterAtIndex:0];
+    NSMatrix *column;
+
+    if (character >= 0xF700) {
+      column = [_browser matrixInColumn:[_browser selectedColumn]];
+      if (character == NSUpArrowFunctionKey) {
+        [column performClick:self];
+        return;
+      }
+      else if (character == NSDownArrowFunctionKey) {
+        [column performClick:self];
+        return;
+      }
+    }
   }
 
   [super sendEvent:theEvent];
@@ -142,7 +209,7 @@ static NXTSavePanel *savePanel = nil;
 {
   NSLog(@"[NXTSavePanel] -dealloc: %lu", [savePanel retainCount]);
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-  // savePanel = nil;
+  savePanel = nil;
   [super dealloc];
 }
 
@@ -359,7 +426,7 @@ static NXTSavePanel *savePanel = nil;
   NSBrowserCell *selectedCell;
   BOOL           isLeaf;
 
-  NSLog(@"_selectTextInColumn:");
+  // NSLog(@"_selectTextInColumn:%d", column);
 
   if (column == -1)
     return;
@@ -390,6 +457,8 @@ static NXTSavePanel *savePanel = nil;
       [_okButton setEnabled:NO];
     }
   }
+
+  [matrix selectCell:selectedCell];
 }
 
 - (void)_selectText:(id)sender
@@ -401,18 +470,19 @@ static NXTSavePanel *savePanel = nil;
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix*)matrix
 {
-  NSString              *path, *file, *pathAndFile, *extension; 
-  NSArray               *files;
-  unsigned              i, count, addedRows; 
-  BOOL                  exists, isDir;
-  NSBrowserCell         *cell;
-  NSWorkspace		*ws;
-  NSFileManager         *fm;
-  NXTFileManager        *nxfm;
+  NSString         *path, *file, *pathAndFile, *extension; 
+  NSArray          *files;
+  unsigned         i, count, addedRows; 
+  BOOL             exists, isDir;
+  NSBrowserCell    *cell;
+  NSWorkspace      *ws;
+  NSFileManager    *fm;
+  NXTFileManager   *nxfm;
+  NSString         *fileType;
   /* We create lot of objects in this method, so we use a pool */
-  NSAutoreleasePool     *pool;
+  NSAutoreleasePool *pool;
 
-  NSLog(@"browser:createRowsForColumn:inMatrix, NXTSavePanel RC: %lu", [self retainCount]);
+  // NSLog(@"browser:createRowsForColumn:inMatrix, NXTSavePanel RC: %lu", [self retainCount]);
 
   pool = [NSAutoreleasePool new];
   ws = [NSWorkspace sharedWorkspace];
@@ -440,8 +510,7 @@ static NXTSavePanel *savePanel = nil;
     extension = [file pathExtension];
       
     pathAndFile = [path stringByAppendingPathComponent:file];
-    exists = [fm fileExistsAtPath:pathAndFile 
-                       isDirectory:&isDir];
+    exists = [fm fileExistsAtPath:pathAndFile isDirectory:&isDir];
 
     /* Note: The initial directory and its parents are always shown, even if
      * it they are file packages or would be rejected by the validator. */
@@ -451,8 +520,8 @@ static NXTSavePanel *savePanel = nil;
 
     if (exists && (!isDir || !HAS_PATH_PREFIX(_directory, pathAndFile))) {
       if (isDir && !_treatsFilePackagesAsDirectories
-          && ([ws isFilePackageAtPath: pathAndFile]
-              || [_allowedFileTypes containsObject: extension])) {
+          && ([ws isFilePackageAtPath:pathAndFile]
+              || [_allowedFileTypes containsObject:extension])) {
         isDir = NO;
       }
 
@@ -477,6 +546,13 @@ static NXTSavePanel *savePanel = nil;
       [cell setStringValue:file];
       [cell setRefusesFirstResponder:YES];
 
+      // Modify display attributes and set title of cell
+      NSString *fileType = [[fm fileAttributesAtPath:pathAndFile
+                                        traverseLink:NO] fileType];
+      if ([fileType isEqualToString:NSFileTypeSymbolicLink]) {
+        [cell setFont:[NSFont fontWithName:@"Helvetica-Oblique" size:12.0]];
+      }
+
       if (isDir)
         [cell setLeaf:NO];
       else
@@ -487,6 +563,78 @@ static NXTSavePanel *savePanel = nil;
   }
 
   RELEASE(pool);
+}
+
+// --- NSForm delegate
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+  NSString           *enteredString, *selectedString;
+  NSArray            *cells;
+  NSMatrix           *matrix;
+  NSCell             *selectedCell;
+  NSInteger          selectedRow, selectedColumn;
+  NSComparisonResult result;
+  NSRange            range;
+
+  enteredString = [[[aNotification userInfo] objectForKey:@"NSFieldEditor"] string];
+
+  // NSLog(@"controlTextDidChange: %@", enteredString);
+
+  if ([enteredString length] == 0) {
+    [_okButton setEnabled:NO];
+    return;
+  }
+
+  // If the user typed in an absolute path, display it.
+  if ([enteredString isAbsolutePath] == YES) {
+    [self setDirectory:enteredString];
+  }
+
+  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  selectedCell = [matrix selectedCell];
+  selectedString = [selectedCell stringValue];
+  selectedRow = [matrix selectedRow];
+  cells = [matrix cells];
+
+  int numberOfCells = [cells count];
+
+  range.location = 0;
+  range.length = [enteredString length];
+
+  // NSLog(@"Enetered text `%@` is OrderedDescending", enteredString);
+    
+  for (int i = selectedRow+1; i < numberOfCells; i++) {
+    selectedString = [[matrix cellAtRow:i column:0] stringValue];
+    if ([selectedString length] != range.length) {
+      continue;
+    }
+
+    result = [selectedString compare:enteredString options:0 range:range];
+    if (result == NSOrderedSame) {
+      // NSLog(@"Enetered text `%@` is OrderedDescending -> OrdereSame", enteredString);
+      if ([[matrix cellAtRow:i column:0] isLeaf]) {
+        [matrix deselectAllCells];
+        [matrix selectCellAtRow:i column:0];
+        [matrix scrollCellToVisibleAtRow:i column:0];
+        [_okButton setEnabled:YES];
+      }
+      else {
+        [matrix selectCellAtRow:i column:0];
+        [matrix scrollCellToVisibleAtRow:i column:0];
+        [matrix performClick:self];
+        [_okButton setEnabled:NO];
+      }
+      [_form selectTextAtIndex:0];
+      return;
+    }
+  }
+  
+  [matrix deselectAllCells];
+  [_okButton setEnabled:YES];
+}
+- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
+{
+  return [_okButton state];
 }
 
 //
@@ -506,6 +654,171 @@ static NXTSavePanel *savePanel = nil;
 {
   [[OSEMediaManager defaultManager] unmountAndEjectDeviceAtPath:[self directory]];
 }
+
+- (void) _setFileName: (NSString *)filename
+{
+  [self _selectCellName:filename];
+  [[_form cellAtIndex:0] setStringValue:filename];
+  [_form selectTextAtIndex:0];
+  [_form setNeedsDisplay:YES];
+}
+
+- (void)ok:(id)sender
+{
+  NSMatrix      *matrix;
+  NSBrowserCell *selectedCell;
+  NSString      *filename;
+  BOOL		isDir = NO;
+  NSFileManager *_fm = [NSFileManager defaultManager];
+
+  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  selectedCell = [matrix selectedCell];
+
+  if (selectedCell && [selectedCell isLeaf] == NO) {
+    [[_form cellAtIndex:0] setStringValue: @""];
+    [_browser doClick:matrix];
+    [_form selectTextAtIndex:0];
+    [_form setNeedsDisplay:YES];
+    return;
+  }
+
+  ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
+  filename = [[_form cellAtIndex:0] stringValue];
+  if ([filename isAbsolutePath] == NO) {
+    filename = [_directory stringByAppendingPathComponent:filename];
+  }
+  ASSIGN (_fullFileName, [filename stringByStandardizingPath]);
+
+  if (_delegateHasUserEnteredFilename) {
+    filename = [_delegate panel:self userEnteredFilename:_fullFileName
+                      confirmed:YES];
+    if (!filename) {
+      return;
+    }
+    else if (![_fullFileName isEqual: filename]) {
+      ASSIGN (_directory, [filename stringByDeletingLastPathComponent]);
+      ASSIGN (_fullFileName, filename);
+      [_browser setPath:_fullFileName];
+      [self _setFileName:[_fullFileName lastPathComponent]];
+    }
+  }
+
+  /* Warn user if a wrong extension was entered */
+  if (_allowedFileTypes != nil &&
+      [_allowedFileTypes indexOfObject:@""] == NSNotFound) {
+      NSString *fileType = [_fullFileName pathExtension];
+      if ([fileType length] != 0 &&
+	  [_allowedFileTypes indexOfObject:fileType] == NSNotFound) {
+	  int result;
+	  NSString *msgFormat, *butFormat;
+	  NSString *altType, *requiredType;
+
+	  requiredType = [self requiredFileType];
+	  if ([self allowsOtherFileTypes]) {
+            msgFormat = _(@"You have used the extension '.%@'.\n"
+                          @"The standard extension is '.%@'.'");
+            butFormat = _(@"Use .%@");
+            altType = fileType;
+          }
+	  else {
+            msgFormat = _(@"You cannot save this document with extension '.%@'.\n"
+                          @"The required extension is '.%@'.");
+            butFormat = _(@"Use .%@");
+            altType = [fileType stringByAppendingPathExtension:requiredType];
+          }
+
+	  result = NXTRunAlertPanel(_(@"Save"),
+                                   msgFormat,
+                                   [NSString stringWithFormat:butFormat,requiredType],
+                                   _(@"Cancel"),
+                                   [NSString stringWithFormat:butFormat,altType],
+                                   fileType, requiredType);
+	  switch (result) {
+          case NSAlertDefaultReturn:
+            filename = [_fullFileName stringByDeletingPathExtension];
+            filename = [filename stringByAppendingPathExtension:requiredType];
+
+            ASSIGN (_fullFileName, filename);
+            [_browser setPath:_fullFileName];
+            [self _setFileName:[_fullFileName lastPathComponent]];
+            break;
+          case NSAlertOtherReturn:
+            if (altType != fileType) {
+              filename = [_fullFileName stringByAppendingPathExtension: requiredType];
+
+              ASSIGN (_fullFileName, filename);
+              [_browser setPath:_fullFileName];
+              [self _setFileName:[_fullFileName lastPathComponent]];
+            }
+            break;
+          default:
+            return;
+          }
+      }
+  }
+
+  filename = [_fullFileName stringByDeletingLastPathComponent];
+  if ([_fm fileExistsAtPath:filename isDirectory:&isDir] == NO) {
+    int result;
+
+    result = NXTRunAlertPanel(_(@"Save"),
+                              _(@"The directory '%@' does not exist."
+                                " do you want to create it?"),
+                              _(@"Yes"), _(@"No"), nil, filename);
+
+    if (result == NSAlertDefaultReturn) {
+      if ([_fm createDirectoryAtPath: filename
+               withIntermediateDirectories: YES
+                          attributes: nil
+                               error: NULL] == NO) {
+        NXTRunAlertPanel(_(@"Save"),
+                         _(@"The directory '%@' could not be created."),
+                         _(@"Dismiss"), nil, nil, filename);
+        return;
+      }
+    }
+  }
+  else if (isDir == NO) {
+    NXTRunAlertPanel(_(@"Save"),
+                     _(@"The path '%@' is not a directory."),
+                     _(@"Dismiss"), nil, nil, filename);
+    return;
+  }
+  
+  if ([_fm fileExistsAtPath:[self filename] isDirectory:NULL]) {
+    int result;
+
+    result = NXTRunAlertPanel(_(@"Save"),
+                              _(@"The file '%@' in '%@' exists. Replace it?"),
+                              _(@"Replace"), _(@"Cancel"), nil,
+                              [[self filename] lastPathComponent], _directory);
+
+    if (result != NSAlertDefaultReturn)
+      return;
+  }
+
+  if (_delegateHasValidNameFilter) {
+    if (![_delegate panel: self isValidFilename:[self filename]]) {
+      return;
+    }
+  }
+
+  [[NSUserDefaults standardUserDefaults] setObject:_directory
+                                            forKey:@"NSDefaultOpenDirectory"];
+
+  if (self->_completionHandler == NULL) {
+    [NSApp stopModalWithCode:NSOKButton];
+  }
+  else {
+    CALL_BLOCK(self->_completionHandler, NSOKButton);
+    Block_release(self->_completionHandler);
+    self->_completionHandler = NULL;
+  }
+
+  [_okButton setEnabled:NO];
+  [self close];
+}
+
 
 - (void)setTitle:(NSString*)title
 {
