@@ -11,7 +11,8 @@
 	    "showIconViewTest:",
 	    "showTextTest:",
 	    "showDrawingTest:",
-	    "openSavePanel:"
+	    "openSavePanel:",
+	    "openOpenPanel:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -22,6 +23,7 @@
     };
     FirstResponder = {
 	Actions = (
+	    "openOpenPanel:",
 	    "openSavePanel:",
 	    "show3LineAlert:",
 	    "showClockViewDemo:",

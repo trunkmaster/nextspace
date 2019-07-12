@@ -22,6 +22,7 @@
 
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTSavePanel.h>
+#import <DesktopKit/NXTOpenPanel.h>
 #import "AppController.h"
 
 @implementation AppController : NSObject
@@ -165,6 +166,28 @@
   [panel setDirectory:NSHomeDirectory()];
   [panel runModal];
   [panel release];
+}
+
+- (void)openOpenPanel:(id)sender
+{
+  // NSSavePanel *panel = [NSSavePanel savePanel];
+  // NXTSavePanel *panel = [NXTSavePanel savePanel];
+  NXTOpenPanel *panel = [NXTOpenPanel new];
+  
+  NSLog(@"NXTOpenPanel: %@, RC: %lu", [panel className],
+        [panel retainCount]);
+  
+  // NSBox *accView;
+  // accView = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,200,100)];
+  // [accView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+  // [panel setAccessoryView:accView];
+  // [accView release];
+
+  if (panel) {
+    [panel setDirectory:NSHomeDirectory()];
+    [panel runModal];
+    [panel release];
+  }
 }
 
 @end
