@@ -2,6 +2,9 @@
  *  AppController.m 
  */
 
+#import <DesktopKit/NXTOpenPanel.h>
+#import <DesktopKit/NXTAlert.h>
+
 #import "AppController.h"
 #import "ImageWindow.h"
 #import "Inspector.h"
@@ -37,11 +40,7 @@
 {
 }
 
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
-#else
-- (BOOL)applicationShouldTerminate:(id)sender
-#endif
 {
   return YES;
 }
@@ -94,36 +93,29 @@
 
 - (void)openImage:(id)sender
 {
-  int         result;  
-  NSArray     *fileTypes = [NSImage imageFileTypes];
-  NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-  NSString    *pth = [[NSUserDefaults standardUserDefaults]
-                      objectForKey:@"OpenDir"];
+  int          result;
+  NSArray      *fileTypes = [NSImage imageFileTypes];
+  NXTOpenPanel *openPanel = [NXTOpenPanel openPanel];
+  NSString     *pth = [[NSUserDefaults standardUserDefaults]
+                        objectForKey:@"OpenDir"];
 
+  [openPanel setCanChooseDirectories:NO];
   [openPanel setAllowsMultipleSelection:NO];
   result = [openPanel runModalForDirectory:pth
-                                      file:nil 
+                                      file:nil
                                      types:fileTypes];
 
-  if (result == NSOKButton)
-    {
-      NSArray  *files = [openPanel filenames];
-      NSString *_pth = [openPanel directory];
-      int      i;
-      int      count = [files count];
-
-      [[NSUserDefaults standardUserDefaults] setObject:_pth forKey:@"OpenDir"];
-
-      for (i = 0; i < count; i++)
-	{
-	  NSString *imageFile = [files objectAtIndex:i];      
-	  if (![self openImageAtPath:imageFile])
-	    {
-	      NSRunAlertPanel(@"Error when opening file", 
-			      @"Couldn't open %@", @"OK", nil, nil,imageFile);
-	    }
-	}
-    }  
+  if (result == NSOKButton) {
+    [[NSUserDefaults standardUserDefaults] setObject:[openPanel directory]
+                                              forKey:@"OpenDir"];
+    
+    for (NSString *imageFile in [openPanel filenames]) {
+      if (![self openImageAtPath:imageFile]) {
+        NXTRunAlertPanel(@"Error when opening file", 
+                         @"Couldn't open %@", @"OK", nil, nil,imageFile);
+      }
+    }
+  }  
 }
 
 - (void)imageWindowWillClose:(id)sender
