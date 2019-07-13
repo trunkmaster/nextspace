@@ -34,6 +34,7 @@
 #include <AppKit/NSWindow.h>
 
 #import <DesktopKit/NXTAlert.h>
+#import <DesktopKit/NXTOpenPanel.h>
 
 #import "Document.h"
 #import "MultiplePageView.h"
@@ -798,14 +799,13 @@ static BOOL hyphenationSupported(void)
 
 + (void) openWithEncodingAccessory:(BOOL)flag
 {
-  NSOpenPanel *panel = [NSOpenPanel openPanel];
+  NXTOpenPanel *panel = [NXTOpenPanel openPanel];
 
-  if (flag)
-    {
-      [panel setAccessoryView:
-               [self encodingAccessory:[[Preferences objectForKey:PlainTextEncoding] intValue]
-                   includeDefaultEntry:YES]];
-    }
+  if (flag) {
+    [panel setAccessoryView:
+             [self encodingAccessory:[[Preferences objectForKey:PlainTextEncoding] intValue]
+                 includeDefaultEntry:YES]];
+  }
 
   [panel setAllowsMultipleSelection:YES];
   [panel setDirectory:[Document openSavePanelDirectory]];
@@ -1014,11 +1014,11 @@ static BOOL hyphenationSupported(void)
                  oldName:(NSString *)oldName
              oldEncoding:(int)encoding
 {
-  NSSavePanel	*panel = [NSSavePanel savePanel];
+  NXTSavePanel	*panel = [NXTSavePanel savePanel];
 
   switch (encoding) {
   case RichTextStringEncoding:
-    [panel setRequiredFileType: @"rtf"];
+    [panel setRequiredFileType:@"rtf"];
     [panel setTitle: _(@"Save RTF")];
     encodingForSaving = NULL;
     break;
