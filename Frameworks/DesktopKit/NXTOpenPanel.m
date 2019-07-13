@@ -26,6 +26,7 @@
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSBrowserCell.h>
 #import <AppKit/NSForm.h>
+#import <AppKit/NSImageView.h>
 
 #import "NXTPanelLoader.h"
 #import "NXTOpenPanel.h"
