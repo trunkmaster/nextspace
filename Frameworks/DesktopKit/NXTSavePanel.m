@@ -221,12 +221,14 @@ static NXTSavePanel *_savePanel = nil;
       selectedRow = [matrix selectedRow];
       if (character == NSUpArrowFunctionKey) {
         if (selectedRow > 0) {
+          [matrix deselectAllCells];
           [matrix selectCellAtRow:selectedRow-1 column:0];
         }
         return;
       }
       else if (character == NSDownArrowFunctionKey) {
         if (selectedRow < [[matrix cells] count]-1) {
+          [matrix deselectAllCells];
           [matrix selectCellAtRow:selectedRow+1 column:0];
         }
         return;
@@ -482,7 +484,6 @@ static NXTSavePanel *_savePanel = nil;
   }
 
   addedRows = 0;
-  [matrix setRefusesFirstResponder:YES];
   for (i = 0; i < count; i++) {
     // Now the real code
     file = [files objectAtIndex:i];
