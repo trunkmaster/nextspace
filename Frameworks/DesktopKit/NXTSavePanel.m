@@ -34,9 +34,13 @@ static NXTSavePanel *_savePanel = nil;
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
 
+@interface NSSavePanel (GSPrivateMethods)
+- (BOOL)_shouldShowExtension:(NSString *)extension;
+@end
+
 @implementation NXTSavePanel
 
-+ (void) initialize
++ (void)initialize
 {
   if (self == [NXTSavePanel class]) {
     [self setVersion:1];
@@ -359,17 +363,6 @@ static NXTSavePanel *_savePanel = nil;
     /* Add the accessory view */
     [[self contentView] addSubview:_accessoryView];
   }
-}
-
-- (BOOL)_shouldShowExtension:(NSString *)extension
-{
-  if (_allowedFileTypes != nil
-      && [_allowedFileTypes indexOfObject:extension] == NSNotFound
-      && [_allowedFileTypes indexOfObject:@""] == NSNotFound) {
-    return NO;
-  }
-
-  return YES;
 }
 
 - (void)_selectCellName:(NSString *)title
