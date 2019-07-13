@@ -46,7 +46,8 @@ static NXTOpenPanel *_openPanel = nil;
 - (BOOL)_shouldShowExtension:(NSString *)extension
 {
   if (_canChooseFiles == NO ||
-      (_allowedFileTypes != nil && [_allowedFileTypes containsObject:extension] == NO)) {
+      (_allowedFileTypes != nil &&
+       [_allowedFileTypes containsObject:extension] == NO)) {
     return NO;
   }
 
@@ -76,17 +77,18 @@ static NXTOpenPanel *_openPanel = nil;
       selectionValid = NO;
     }
   }
-  [_okButton setEnabled:selectionValid];
   
   // Set form label
   if ([selectedCells count] > 1) {
     [[_form cellAtIndex:0] setStringValue:@""];
   }
-  else {
+  else if (selectionValid != NO) {
     [[_form cellAtIndex:0] setStringValue:[[matrix selectedCell] stringValue]];
     [_form selectTextAtIndex:0];
-    [_okButton setEnabled:YES];
- }  
+  }
+  
+  [_okButton setEnabled:selectionValid];
+  [matrix selectCell:[matrix selectedCell]];
 }
 
 - (void)_setupForDirectory:(NSString *)path file:(NSString *)filename
@@ -109,6 +111,13 @@ static NXTOpenPanel *_openPanel = nil;
 
 @implementation NXTOpenPanel
 
++ (void)initialize
+{
+  if (self == [NXTOpenPanel class]) {
+    [self setVersion:1];
+  }
+}
+
 + (NXTOpenPanel *)openPanel
 {
   if (_openPanel == nil) {
@@ -128,19 +137,15 @@ static NXTOpenPanel *_openPanel = nil;
 - (id)init
 {
   self = [NXTOpenPanel openPanel];
-  NSLog(@"[NXTOpenPanel] -init: %lu", [self retainCount]);
-  if (self != nil) {
-    _canChooseDirectories = YES;
-    _canChooseFiles = YES;
-  }
   return self;
 }
 
 - (void)awakeFromNib
 {
-  NSLog(@"[NXTOpenPanel] awakeFromNib");
   [super awakeFromNib];
   
+  _canChooseDirectories = YES;
+  _canChooseFiles = YES;
   [self setTitle:_(@"Open")];
   [self setAllowsMultipleSelection:NO];
 }
