@@ -79,6 +79,7 @@ static NXTSavePanel *_savePanel = nil;
        selector:@selector(_globalDefaultsChanged:)
            name:NXUserDefaultsDidChangeNotification
          object:@"NXGlobalDomain"];
+  _showsHiddenFiles = [[NXTFileManager sharedManager] isShowHiddenFiles];
 
   [self setTitle:@"Save"];
   
@@ -90,18 +91,6 @@ static NXTSavePanel *_savePanel = nil;
   [_browser setDoubleAction:@selector(performClick:)];
   [_browser setTarget:_okButton];
   [_browser loadColumnZero];
-
-  _showsHiddenFiles = [[NXTFileManager sharedManager] isShowHiddenFiles];
-  // Browser rght-click menu
-  // _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
-  // [_showsHiddenFilesMenu insertItemWithTitle:_(@"Show Hidden Files")
-  //                                     action:@selector(_toggleShowsHiddenFiles:)
-  //                              keyEquivalent:@""
-  //                                    atIndex:0];
-  // [[_showsHiddenFilesMenu itemAtIndex:0] setTarget:self];
-  // [[_showsHiddenFilesMenu itemAtIndex:0] setState:[self showsHiddenFiles]];
-  // [_browser setMenu:_showsHiddenFilesMenu];
-  // [_showsHiddenFilesMenu release];
 
   [_form setTag:NSFileHandlingPanelForm];
   [_homeButton setTag:NSFileHandlingPanelHomeButton];
@@ -208,10 +197,21 @@ static NXTSavePanel *_savePanel = nil;
     }
   }
   else if ([theEvent type] == NSKeyDown) {
-    unichar   character = [[theEvent characters] characterAtIndex:0];
+    NSString  *chars = [theEvent characters];
+    unichar   character;
     NSMatrix  *matrix;
     NSInteger selectedRow, cellsCount;
 
+    if ([chars isEqualToString:@"\e"]) {
+      [_cancelButton performClick:self];
+      return;
+    }
+    else if ([chars isEqualToString:@"\r"] && [_okButton isEnabled] == NO) {
+      NSBeep();
+      return;
+    }
+
+    character = [chars characterAtIndex:0];
     if (character >= 0xF700) {
       matrix = [_browser matrixInColumn:[_browser selectedColumn]];
       selectedRow = [matrix selectedRow];
@@ -243,16 +243,16 @@ static NXTSavePanel *_savePanel = nil;
   }
   else if ([theEvent type] == NSKeyUp) {
     unichar  character = [[theEvent characters] characterAtIndex:0];
-    NSMatrix *column;
+    NSMatrix *matrix;
 
     if (character >= 0xF700) {
-      column = [_browser matrixInColumn:[_browser selectedColumn]];
+      matrix = [_browser matrixInColumn:[_browser selectedColumn]];
       if (character == NSUpArrowFunctionKey) {
-        [column performClick:self];
+        [matrix performClick:self];
         return;
       }
       else if (character == NSDownArrowFunctionKey) {
-        [column performClick:self];
+        [matrix performClick:self];
         return;
       }
     }
@@ -618,10 +618,6 @@ static NXTSavePanel *_savePanel = nil;
   
   [matrix deselectAllCells];
   [_okButton setEnabled:YES];
-}
-- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
-{
-  return [_okButton state];
 }
 
 //
