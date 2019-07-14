@@ -22,6 +22,7 @@
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSURL.h>
+#import <Foundation/NSFileManager.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSBrowserCell.h>
@@ -144,7 +145,7 @@ static NXTOpenPanel *_openPanel = nil;
 {
   [super awakeFromNib];
   
-  _canChooseDirectories = YES;
+  _canChooseDirectories = NO;
   _canChooseFiles = YES;
   [self setTitle:_(@"Open")];
   [self setAllowsMultipleSelection:NO];
@@ -410,11 +411,13 @@ static NXTOpenPanel *_openPanel = nil;
 }
 
 //
-//--- NSForm delegate methods
+//--- NSForm delegate
 //
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  NSString *enteredString;
+  NSString      *enteredString;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL          isDir;
 
   enteredString = [[[aNotification userInfo] objectForKey:@"NSFieldEditor"] string];
 
@@ -423,8 +426,13 @@ static NXTOpenPanel *_openPanel = nil;
     [_okButton setEnabled:_canChooseDirectories];
     return;
   }
-  
+
   [super controlTextDidChange:aNotification];
+
+  [fm fileExistsAtPath:[_browser path] isDirectory:&isDir];
+  if (isDir != NO) {
+    [_okButton setEnabled:_canChooseDirectories];
+  }
 }
 
 /*
