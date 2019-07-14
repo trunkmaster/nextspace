@@ -138,7 +138,8 @@ static NXTSavePanel *_savePanel = nil;
     [matrix scrollCellToVisibleAtRow:[matrix selectedRow]
                               column:selectedColumn];
     [_browser scrollColumnToVisible:selectedColumn];
-  }    
+  }
+  ASSIGN(_directory, [_browser path]);
 }
 
 - (void)browserMoveRight:(id)sender
@@ -159,14 +160,17 @@ static NXTSavePanel *_savePanel = nil;
       selectedColumn++;
       matrix = [_browser matrixInColumn:selectedColumn];
       if ([[matrix cells] count] && [matrix selectedCell] == nil) {
-        [matrix selectCellAtRow: 0 column: 0];
+        [matrix selectCellAtRow:0 column:0];
+        // [matrix performClick:self];
       }
       // if selected cell is a leaf, we need to add a column
-      if (![[matrix selectedCell] isLeaf] && [[matrix selectedCells] count] == 1) {  
+      if ([[matrix selectedCell] isLeaf] != NO) {
         [_browser addColumn];
       }
+      // [_browser setPath:[_browser path]];
     }
   }
+  ASSIGN(_directory, [_browser path]);
 }
 
 
@@ -207,11 +211,13 @@ static NXTSavePanel *_savePanel = nil;
     NSInteger selectedRow, cellsCount;
 
     if ([chars isEqualToString:@"\e"]) {
-      [_cancelButton performClick:self];
+      [[_form cellAtIndex:0] setStringValue:[_browser path]];
       return;
     }
     else if ([chars isEqualToString:@"\r"] && [_okButton isEnabled] == NO) {
-      NSBeep();
+      [[_form cellAtIndex:0] setStringValue:@""];
+      [_browser setPath:[_browser path]];
+      ASSIGN(_directory, [_browser path]);
       return;
     }
 
@@ -439,6 +445,7 @@ static NXTSavePanel *_savePanel = nil;
     }
   }
 
+  ASSIGN(_directory, [[_browser path] copy]);
   [matrix selectCell:selectedCell];
 }
 
@@ -463,7 +470,8 @@ static NXTSavePanel *_savePanel = nil;
   /* We create lot of objects in this method, so we use a pool */
   NSAutoreleasePool *pool;
 
-  // NSLog(@"browser:createRowsForColumn:inMatrix, NXTSavePanel RC: %lu", [self retainCount]);
+  // NSLog(@"browser:createRowsForColumn:inMatrix, NXTSavePanel RC: %lu",
+  //       [self retainCount]);
 
   pool = [NSAutoreleasePool new];
   ws = [NSWorkspace sharedWorkspace];
@@ -553,6 +561,7 @@ static NXTSavePanel *_savePanel = nil;
   NSMatrix           *matrix;
   NSCell             *selectedCell;
   NSInteger          selectedRow, selectedColumn;
+  NSUInteger         numberOfCells;
   NSComparisonResult result;
   NSRange            range;
 
@@ -563,6 +572,11 @@ static NXTSavePanel *_savePanel = nil;
   if ([enteredString length] == 0) {
     [[_browser matrixInColumn:[_browser lastColumn]] deselectAllCells];
     [_okButton setEnabled:NO];
+    NSLog(@"Path set by user: %@", _directory);
+    if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath:_directory]) {
+      ASSIGN(_directory, [_directory stringByDeletingLastPathComponent]);
+    }
+    [_browser setPath:_directory];
     return;
   }
 
@@ -571,28 +585,28 @@ static NXTSavePanel *_savePanel = nil;
     [self setDirectory:enteredString];
   }
 
-  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  selectedColumn = [_browser lastColumn];
+  matrix = [_browser matrixInColumn:selectedColumn];
   selectedCell = [matrix selectedCell];
-  selectedString = [selectedCell stringValue];
-  selectedRow = [matrix selectedRow];
+  selectedRow = ([matrix selectedRow] == -1) ? 0 : [matrix selectedRow];
   cells = [matrix cells];
 
-  int numberOfCells = [cells count];
-
+  // NSLog(@"Enetered: `%@`", enteredString);
+    
   range.location = 0;
   range.length = [enteredString length];
-
-  // NSLog(@"Enetered text `%@` is OrderedDescending", enteredString);
-    
-  for (int i = selectedRow+1; i < numberOfCells; i++) {
+  numberOfCells = [cells count];
+  for (int i = 0; i < numberOfCells; i++) {
     selectedString = [[matrix cellAtRow:i column:0] stringValue];
-    if ([selectedString length] != range.length) {
+    // NSLog(@"\tSelected %d: `%@`", i, selectedString);
+    if ([selectedString length] < range.length) {
       continue;
     }
 
     result = [selectedString compare:enteredString options:0 range:range];
     if (result == NSOrderedSame) {
-      // NSLog(@"Enetered text `%@` is OrderedDescending -> OrdereSame", enteredString);
+      // NSLog(@"Enetered text `%@` is OrderedDescending -> OrdereSame",
+      //       enteredString);
       if ([[matrix cellAtRow:i column:0] isLeaf]) {
         [matrix deselectAllCells];
         [matrix selectCellAtRow:i column:0];
@@ -602,15 +616,16 @@ static NXTSavePanel *_savePanel = nil;
       else {
         [matrix selectCellAtRow:i column:0];
         [matrix scrollCellToVisibleAtRow:i column:0];
-        [matrix performClick:self];
+        [_browser setLastColumn:selectedColumn];
         [_okButton setEnabled:NO];
       }
-      [_form selectTextAtIndex:0];
+      // [_form selectTextAtIndex:0];
       return;
     }
   }
-  
-  [matrix deselectAllCells];
+
+  // Set path to last set by user (click or Enter button press)
+  [_browser setPath:_directory];
   [_okButton setEnabled:YES];
 }
 
