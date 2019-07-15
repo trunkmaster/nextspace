@@ -198,22 +198,24 @@
     openPanel = nil;
   }
 }
+
 //--- Save and Open
-- (void)setCreateDirs:(id)sender
+- (void)setCreateDirs:(id)sender    // Mac OS extension
 {
   NXTSavePanel *panel = (savePanel != nil) ? savePanel : openPanel;
   [panel setCanCreateDirectories:[sender state]];
 }
-- (void)setHideExtension:(id)sender
+- (void)setHideExtension:(id)sender // Mac OS extension
 {
   NXTSavePanel *panel = (savePanel != nil) ? savePanel : openPanel;
   [panel setExtensionHidden:[sender state]];  
 }
-- (void)setPksIsDirs:(id)sender
+- (void)setPkgsIsDirs:(id)sender
 {
   NXTSavePanel *panel = (savePanel != nil) ? savePanel : openPanel;
   [panel setTreatsFilePackagesAsDirectories:[sender state]];
 }
+
 //--- Open only
 - (void)setChooseDirs:(id)sender
 {
