@@ -88,6 +88,10 @@ static NXTOpenPanel *_openPanel = nil;
     [_form selectTextAtIndex:0];
   }
   
+  if ([[matrix selectedCell] isLeaf] == NO) {
+    ASSIGN(_directory, [[_browser path] copy]);
+  }
+  
   [_okButton setEnabled:selectionValid];
   [matrix selectCell:[matrix selectedCell]];
 }
