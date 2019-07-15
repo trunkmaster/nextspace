@@ -46,14 +46,14 @@
 	);
 	Super = NSObject;
     };
-    NXClockView = {
+    NXTClockView = {
 	Actions = (
 	);
 	Outlets = (
 	);
 	Super = NSView;
     };
-    NXNumericField = {
+    NXTNumericField = {
 	Actions = (
 	);
 	Outlets = (
