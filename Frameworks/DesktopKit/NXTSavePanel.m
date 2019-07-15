@@ -607,8 +607,8 @@ static NXTSavePanel *_savePanel = nil;
     if (result == NSOrderedSame) {
       // NSLog(@"Enetered text `%@` is OrderedDescending -> OrdereSame",
       //       enteredString);
+      [matrix deselectAllCells];
       if ([[matrix cellAtRow:i column:0] isLeaf]) {
-        [matrix deselectAllCells];
         [matrix selectCellAtRow:i column:0];
         [matrix scrollCellToVisibleAtRow:i column:0];
         [_okButton setEnabled:YES];
