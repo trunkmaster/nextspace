@@ -814,8 +814,9 @@ static NXTSavePanel *_savePanel = nil;
 
 - (void)setTitle:(NSString*)title
 {
-  [super setTitle: @""];
+  [super setTitle:@""];
   [_titleField setStringValue:title];
+  [_titleField setAutoresizingMask:NSViewMinYMargin];
   [_titleField sizeToFit];
 }
 
