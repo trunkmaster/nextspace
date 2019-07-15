@@ -148,14 +148,18 @@
   [drawingTest show];
 }
 
+//
+//--- Open and Save panels
+//
+
 - (void)openSavePanel:(id)sender
 {
   // NSSavePanel *panel = [NSSavePanel savePanel];
   // NXTSavePanel *panel = [NXTSavePanel savePanel];
-  NXTSavePanel *panel = [NXTSavePanel new];
+  savePanel = [NXTSavePanel new];
   
-  NSLog(@"NXTSavePanel: %@, RC: %lu", [panel className],
-        [panel retainCount]);
+  NSLog(@"NXTSavePanel: %@, RC: %lu", [savePanel className],
+        [savePanel retainCount]);
   
   // NSBox *accView;
   // accView = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,200,100)];
@@ -163,30 +167,70 @@
   // [panel setAccessoryView:accView];
   // [accView release];
   
-  [panel setDirectory:NSHomeDirectory()];
-  [panel runModal];
-  [panel release];
+  [savePanel setDirectory:NSHomeDirectory()];
+  [savePanel runModal];
+  [savePanel release];
 }
 
 - (void)openOpenPanel:(id)sender
 {
-  // NSSavePanel *panel = [NSSavePanel savePanel];
-  // NXTSavePanel *panel = [NXTSavePanel savePanel];
-  NXTOpenPanel *panel = [NXTOpenPanel new];
+  openPanel = [NXTOpenPanel new];
   
-  NSLog(@"NXTOpenPanel: %@, RC: %lu", [panel className],
-        [panel retainCount]);
-  
-  // NSBox *accView;
-  // accView = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,200,100)];
-  // [accView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-  // [panel setAccessoryView:accView];
-  // [accView release];
+  NSLog(@"NXTOpenPanel: %@, RC: %lu", [openPanel className],
+        [openPanel retainCount]);
 
-  if (panel) {
-    [panel setDirectory:NSHomeDirectory()];
-    [panel runModal];
-    [panel release];
+  if ([NSBundle loadNibNamed:@"PanelOptions" owner:self]) {
+    [accessoryView retain];
+    [accessoryView removeFromSuperview];
+    [openPanel setAccessoryView:accessoryView];
+    [accessoryView release];
+    // NSBox *accView;
+    // accView = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,200,100)];
+    // [accView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+    // [panel setAccessoryView:accView];
+    // [accView release];
+  }
+
+  if (openPanel) {
+    [openPanel setDirectory:NSHomeDirectory()];
+    [openPanel runModal];
+    [openPanel release];
+    openPanel = nil;
+  }
+}
+//--- Save and Open
+- (void)setCreateDirs:(id)sender
+{
+  NXTSavePanel *panel = (savePanel != nil) ? savePanel : openPanel;
+  [panel setCanCreateDirectories:[sender state]];
+}
+- (void)setHideExtension:(id)sender
+{
+  NXTSavePanel *panel = (savePanel != nil) ? savePanel : openPanel;
+  [panel setExtensionHidden:[sender state]];  
+}
+- (void)setPksIsDirs:(id)sender
+{
+  NXTSavePanel *panel = (savePanel != nil) ? savePanel : openPanel;
+  [panel setTreatsFilePackagesAsDirectories:[sender state]];
+}
+//--- Open only
+- (void)setChooseDirs:(id)sender
+{
+  if (openPanel) {
+    [openPanel setCanChooseDirectories:[sender state]];
+  }
+}
+- (void)setChooseFiles:(id)sender
+{
+  if (openPanel) {
+    [openPanel setCanChooseFiles:[sender state]];
+  }
+}
+- (void)setMultiSelection:(id)sender
+{
+  if (openPanel) {
+    [openPanel setAllowsMultipleSelection:[sender state]];
   }
 }
 

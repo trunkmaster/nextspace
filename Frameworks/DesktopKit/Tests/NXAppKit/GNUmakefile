@@ -30,7 +30,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	ClockView.gorm \
 	Cursors.gorm \
 	IconView.gorm \
-	Text.gorm
+	Text.gorm \
+	PanelOptions.gorm
 #
 # Class files
 #

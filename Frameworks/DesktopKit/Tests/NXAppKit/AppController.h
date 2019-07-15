@@ -37,6 +37,10 @@
   IconViewTest     *iconViewTest;
   TextTest         *textTest;
   DrawingTest      *drawingTest;
+
+  NXTSavePanel     *savePanel;
+  NXTOpenPanel     *openPanel;
+  NSBox            *accessoryView;
 }
 
 @end
