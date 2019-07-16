@@ -161,13 +161,7 @@
   NSLog(@"NXTSavePanel: %@, RC: %lu", [savePanel className],
         [savePanel retainCount]);
   
-  // NSBox *accView;
-  // accView = [[NSBox alloc] initWithFrame:NSMakeRect(0,0,200,100)];
-  // [accView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-  // [panel setAccessoryView:accView];
-  // [accView release];
-  
-  [savePanel setDirectory:NSHomeDirectory()];
+  // [savePanel setDirectory:NSHomeDirectory()];
   [savePanel runModal];
   [savePanel release];
 }
@@ -192,7 +186,7 @@
   }
 
   if (openPanel) {
-    [openPanel setDirectory:NSHomeDirectory()];
+    // [openPanel setDirectory:NSHomeDirectory()];
     [openPanel runModal];
     [openPanel release];
     openPanel = nil;
