@@ -36,7 +36,10 @@ static NXTSavePanel *_savePanel = nil;
 
 @interface NSSavePanel (GSPrivateMethods)
 - (BOOL)_shouldShowExtension:(NSString *)extension;
-- (void) _setupForDirectory:(NSString *)path file:(NSString *)name;
+- (void)_setupForDirectory:(NSString *)path file:(NSString *)name;
+// Local additions
+- (void)_saveDefaultDirectory:(NSString*)path;
+- (void)_setDefaultDirectory;
 @end
 
 @implementation NXTSavePanel
@@ -117,7 +120,7 @@ static NXTSavePanel *_savePanel = nil;
   /* Used in setContentSize: */
   _originalSize = [[self contentView] frame].size;
 
-  [self setDirectory:NSHomeDirectory()];
+  [self _setDefaultDirectory];
 }
 
 // --- NSBrowser replacements
@@ -143,7 +146,7 @@ static NXTSavePanel *_savePanel = nil;
                               column:selectedColumn];
     [_browser scrollColumnToVisible:selectedColumn];
   }
-  ASSIGN(_directory, [_browser path]);
+  [self _saveDefaultDirectory:[_browser path]];
 }
 
 - (void)browserMoveRight:(id)sender
@@ -171,10 +174,10 @@ static NXTSavePanel *_savePanel = nil;
       if ([[matrix selectedCell] isLeaf] != NO) {
         [_browser addColumn];
       }
-      // [_browser setPath:[_browser path]];
     }
   }
-  ASSIGN(_directory, [_browser path]);
+  [_browser setPath:[_browser path]];
+  [self _saveDefaultDirectory:[_browser path]];
 }
 
 
@@ -221,7 +224,7 @@ static NXTSavePanel *_savePanel = nil;
     else if ([chars isEqualToString:@"\r"] && [_okButton isEnabled] == NO) {
       [[_form cellAtIndex:0] setStringValue:@""];
       [_browser setPath:[_browser path]];
-      ASSIGN(_directory, [_browser path]);
+      [self _saveDefaultDirectory:[_browser path]];
       return;
     }
 
@@ -341,10 +344,10 @@ static NXTSavePanel *_savePanel = nil;
       
     // Set new content size without resizing heights of topView, bottomView
     // Our views should resize horizontally if needed, but not vertically
-    [_browser setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+    [_browser setAutoresizingMask:NSViewWidthSizable|NSViewMinYMargin];
     [self setContentSize: contentSize];
     // Restore the original autoresizing masks
-    [_browser setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [_browser setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 
     /* Compute new min size */
     contentMinSize = _originalMinSize;
@@ -375,7 +378,7 @@ static NXTSavePanel *_savePanel = nil;
     /* Add the accessory view */
     [[self contentView] addSubview:_accessoryView];
   }
-  [self setFrameUsingName:@"NXTSavePanel"];  
+  [self setFrameUsingName:@"NXTSavePanel"];
 }
 
 - (void)_selectCellName:(NSString *)title
@@ -450,7 +453,7 @@ static NXTSavePanel *_savePanel = nil;
     }
   }
 
-  ASSIGN(_directory, [[_browser path] copy]);
+  [self _saveDefaultDirectory:[_browser path]];
   [matrix selectCell:selectedCell];
 }
 
@@ -579,7 +582,7 @@ static NXTSavePanel *_savePanel = nil;
     [_okButton setEnabled:NO];
     NSLog(@"Path set by user: %@", _directory);
     if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath:_directory]) {
-      ASSIGN(_directory, [_directory stringByDeletingLastPathComponent]);
+      [self _saveDefaultDirectory:[_directory stringByDeletingLastPathComponent]];
     }
     [_browser setPath:_directory];
     return;
@@ -800,8 +803,7 @@ static NXTSavePanel *_savePanel = nil;
     }
   }
 
-  [[NSUserDefaults standardUserDefaults] setObject:_directory
-                                            forKey:@"NSDefaultOpenDirectory"];
+  [self _saveDefaultDirectory:_directory];
 
   if (self->_completionHandler == NULL) {
     [NSApp stopModalWithCode:NSOKButton];
@@ -863,6 +865,35 @@ static NXTSavePanel *_savePanel = nil;
 {
   [_browser loadColumnZero];
   [_browser setPath:_directory];
+}
+
+- (void)_saveDefaultDirectory:(NSString*)path
+{
+  NSString      *standardPath = [path stringByStandardizingPath];
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL	        isDir;
+
+  if (standardPath &&
+      [fm fileExistsAtPath:standardPath isDirectory:&isDir] && isDir) {
+    [[NSUserDefaults standardUserDefaults] setObject:standardPath
+                                              forKey:@"NSDefaultOpenDirectory"];
+    ASSIGN(_directory, standardPath);
+  }
+}
+
+- (void)_setDefaultDirectory
+{
+  NSString *path = [[NSUserDefaults standardUserDefaults] 
+                     objectForKey:@"NSDefaultOpenDirectory"];
+
+  if (path == nil) {
+    ASSIGN(_directory, NSHomeDirectory());
+  }
+  else {
+    ASSIGN(_directory, path);
+  }
+  // [_browser setPath:_directory];
+  // [_browser scrollColumnToVisible:[_browser lastColumn]-1];
 }
 
 @end
