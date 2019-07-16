@@ -375,6 +375,7 @@ static NXTSavePanel *_savePanel = nil;
     /* Add the accessory view */
     [[self contentView] addSubview:_accessoryView];
   }
+  [self setFrameUsingName:@"NXTSavePanel"];  
 }
 
 - (void)_selectCellName:(NSString *)title
@@ -832,6 +833,7 @@ static NXTSavePanel *_savePanel = nil;
     [_okButton setEnabled:YES];
   }
   [self setFrameAutosaveName:@"NXTSavePanel"];
+  [self orderFrontRegardless];
   return [NSApp runModalForWindow:self];
 }
 
@@ -844,6 +846,7 @@ static NXTSavePanel *_savePanel = nil;
     [_okButton setEnabled:YES];
   }
   [self setFrameAutosaveName:@"NXTSavePanel"];
+  [self orderFrontRegardless];
   return [NSApp runModalForWindow:self
                  relativeToWindow:window];
 }
