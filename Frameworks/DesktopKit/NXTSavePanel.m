@@ -36,6 +36,7 @@ static NXTSavePanel *_savePanel = nil;
 
 @interface NSSavePanel (GSPrivateMethods)
 - (BOOL)_shouldShowExtension:(NSString *)extension;
+- (void) _setupForDirectory:(NSString *)path file:(NSString *)name;
 @end
 
 @implementation NXTSavePanel
@@ -60,6 +61,7 @@ static NXTSavePanel *_savePanel = nil;
 {
   NSLog(@"[NXTSavePanel] -dealloc: %lu", [_savePanel retainCount]);
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   _savePanel = nil;
   [super dealloc];
 }
@@ -84,6 +86,10 @@ static NXTSavePanel *_savePanel = nil;
            name:NXUserDefaultsDidChangeNotification
          object:@"NXGlobalDomain"];
   _showsHiddenFiles = [[NXTFileManager sharedManager] isShowHiddenFiles];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_windowResized:)
+                                               name:NSWindowDidResizeNotification
+                                             object:self];
 
   [self setTitle:@"Save"];
   
@@ -106,8 +112,6 @@ static NXTSavePanel *_savePanel = nil;
   [_cancelButton setTag:NSFileHandlingPanelCancelButton];
   [_okButton setTag:NSFileHandlingPanelOKButton];
 
-  [self setFrameAutosaveName:@"NXTSavePanel"];
-  
   /* Used in setMinSize: */
   _originalMinSize = [self minSize];
   /* Used in setContentSize: */
@@ -819,6 +823,36 @@ static NXTSavePanel *_savePanel = nil;
   [_titleField setAutoresizingMask:NSViewMinYMargin];
   [_titleField sizeToFit];
 }
+
+- (NSInteger)runModalForDirectory:(NSString*)path
+                             file:(NSString*)filename
+{
+  [self _setupForDirectory:path file:filename];
+  if ([filename length] > 0) {
+    [_okButton setEnabled:YES];
+  }
+  [self setFrameAutosaveName:@"NXTSavePanel"];
+  return [NSApp runModalForWindow:self];
+}
+
+- (NSInteger)runModalForDirectory:(NSString *)path
+                             file:(NSString *)filename
+                 relativeToWindow:(NSWindow*)window
+{
+  [self _setupForDirectory:path file:filename];
+  if ([filename length] > 0) {
+    [_okButton setEnabled:YES];
+  }
+  [self setFrameAutosaveName:@"NXTSavePanel"];
+  return [NSApp runModalForWindow:self
+                 relativeToWindow:window];
+}
+
+- (void) _windowResized: (NSNotification*)n
+{
+  [_browser setMaxVisibleColumns:[_browser frame].size.width / [_browser minColumnWidth]];
+}
+
 
 // --- Extentions
 
