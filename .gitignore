@@ -1,4 +1,4 @@
-*.emacs.desktop*
+*.emacs.desktop
 *.app
 *.d
 *obj
