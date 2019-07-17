@@ -61,19 +61,17 @@
        selector:@selector(serverStateChanged:)
            name:SNDServerStateDidChangeNotification
          object:_server];
+  // 3. Connect to sound server (pulseaudio)
+  [_server connect];
 
   desiredState = NXTSoundInitial;
-  
-  // If _server already initialized in application - -serverStateChanged
-  // will never be called.
-  [self serverStateChanged:nil];
   
   return self;
 }
 
 - (void)serverStateChanged:(NSNotification *)notif
 {
-  NSLog(@"[NXTSound] serverStateChanged");
+  NSLog(@"[NXTSound] serverStateChanged - %i", _server.status);
   
   if (_server.status == SNDServerReadyState) {
     NSLog(@"[NXTSound] creating play stream...");
@@ -101,10 +99,12 @@
 
 - (BOOL)play
 {
-  if (_stream == nil)
+  if (_stream == nil) {
     desiredState = NXTSoundPlay;
-  else
+  }
+  else {
     [_stream activate];
+  }
   
   return YES;
 }
