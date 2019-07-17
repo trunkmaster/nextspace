@@ -92,7 +92,10 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   [super init];
 
+  _status = SNDServerNoConnnectionState;
+
   if (hostName != nil) {
+    _hostName = [hostName copy];
     host = [hostName cString];
   }
 
@@ -119,16 +122,18 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   
   pa_proplist_free(proplist);
   
+  return self;
+}
+- (void)connect
+{
   pa_context_set_state_callback(_pa_ctx, context_state_cb, self);
-  pa_context_connect(_pa_ctx, host, 0, NULL);
+  pa_context_connect(_pa_ctx, [_hostName cString], 0, NULL);
 
   _pa_q = dispatch_queue_create("org.nextspace.soundkit", NULL);
   dispatch_async(_pa_q, ^{
       while (pa_mainloop_iterate(_pa_loop, 1, NULL) >= 0) { ; }
       fprintf(stderr, "[SoundKit] mainloop exited!\n");
     });
-  
-  return self;
 }
 - (void)disconnect
 {
@@ -289,8 +294,9 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 // Server
 - (void)updateConnectionState:(NSNumber *)state
 {
-  // fprintf(stderr, "[SoundKit] connection state was updated.\n");
   _status = [state intValue];
+  // fprintf(stderr, "[SoundKit] connection state was updated - %i.\n",
+  //         _status);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SNDServerStateDidChangeNotification
                     object:self];

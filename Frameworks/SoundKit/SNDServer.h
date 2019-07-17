@@ -35,14 +35,14 @@
 @class PAClient;
 
 typedef enum NSInteger {
-  SNDServerNoConnnectionState,	// PA_CONTEXT_UNCONNECTED
-  SNDServerConnectingState,	// PA_CONTEXT_CONNECTING
-  SNDServerAuthorizingState,	// PA_CONTEXT_AUTHORIZING
-  SNDServerSettingNameState,	// PA_CONTEXT_SETTING_NAME
-  SNDServerReadyState,		// PA_CONTEXT_READY
-  SNDServerFailedState,		// PA_CONTEXT_FAILED
-  SNDServerTerminatedState,	// PA_CONTEXT_TERMINATED
-  SNDServerInventoryState
+  SNDServerNoConnnectionState	= 0,	// PA_CONTEXT_UNCONNECTED
+  SNDServerConnectingState	= 1,	// PA_CONTEXT_CONNECTING
+  SNDServerAuthorizingState	= 2,	// PA_CONTEXT_AUTHORIZING
+  SNDServerSettingNameState	= 3,	// PA_CONTEXT_SETTING_NAME
+  SNDServerReadyState		= 4,	// PA_CONTEXT_READY
+  SNDServerFailedState		= 5,	// PA_CONTEXT_FAILED
+  SNDServerTerminatedState	= 6,	// PA_CONTEXT_TERMINATED
+  SNDServerInventoryState	= 7
 } SNDConnectionState;
 
 extern NSString *SNDServerStateDidChangeNotification;
@@ -84,6 +84,7 @@ extern NSString *SNDDeviceDidRemoveNotification;
 + (id)sharedServer;
 
 - (id)initOnHost:(NSString *)hostName;
+- (void)connect;
 - (void)disconnect;
 
 - (SNDDevice *)defaultCard;
