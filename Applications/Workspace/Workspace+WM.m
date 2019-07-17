@@ -38,6 +38,7 @@
 #import <Foundation/Foundation.h>
 #import <DesktopKit/NXTDefaults.h>
 #import <DesktopKit/NXTAlert.h>
+#import <SoundKit/NXTSound.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSESystemInfo.h>
 #import <SystemKit/OSEKeyboard.h>

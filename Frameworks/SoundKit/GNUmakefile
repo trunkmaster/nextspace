@@ -37,7 +37,9 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	SNDStream.m \
 	SNDPlayStream.m \
 	SNDRecordStream.m \
-	SNDVirtualStream.m
+	SNDVirtualStream.m \
+	\
+	NXTSound.m
 endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
@@ -49,7 +51,9 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	SNDStream.h \
 	SNDPlayStream.h \
 	SNDRecordStream.h \
-	SNDVirtualStream.h
+	SNDVirtualStream.h \
+	\
+	NXTSound.h
 
 $(FRAMEWORK_NAME)_RESOURCE_FILES = 
 

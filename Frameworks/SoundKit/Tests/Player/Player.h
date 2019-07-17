@@ -1,7 +1,7 @@
 /* All Rights reserved */
 
 #include <AppKit/AppKit.h>
-#include <DesktopKit/NXTSound.h>
+#include <SoundKit/NXTSound.h>
 
 @interface Player : NSObject
 {

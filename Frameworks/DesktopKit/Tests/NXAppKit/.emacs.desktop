@@ -2,43 +2,87 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon May  6 12:15:06 2019
+;; Created Wed Jul 17 13:39:55 2019
 ;; Desktop file format version 206
 ;; Emacs version 26.1
 
 ;; Global section:
-(setq desktop-saved-frameset nil)
-(setq default-directory "~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/")
+(setq desktop-saved-frameset [frameset 1 (23854 64251 163247 622000) (desktop . "208") "me@next.locadomain" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font-backend xft x) (font . "-pyrs-Roboto Mono-normal-normal-normal-*-13-*-*-*-*-0-iso10646-1") (font-parameter) (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars . right) (horizontal-scroll-bars) (foreground-color . "gray80") (background-color . "#212121") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (no-special-glyphs) (scroll-bar-foreground) (scroll-bar-background) (menu-bar-lines . 1) (tool-bar-lines . 0) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 16) (scroll-bar-height . 0) (alpha) (no-focus-on-map) (no-accept-focus) (fullscreen) (visibility . t) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "Magenta") (sticky) (environment) (frameset--id . "1867-877D-9C7C-1B7D") (frameset--mini t . t) (modeline . t) (unsplittable) (icon-name) (display . ":0") (explicit-name) (height . 48) (width . 80) (left . 609) (top . 0)) ((min-height . 4) (min-width . 10) (min-height-ignore . 2) (min-width-ignore . 6) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 68) (min-pixel-width . 80) (min-pixel-height-ignore . 34) (min-pixel-width-ignore . 48) (min-pixel-height-safe . 17) (min-pixel-width-safe . 16)) leaf (pixel-width . 672) (pixel-height . 799) (total-width . 84) (total-height . 47) (normal-height . 1.0) (normal-width . 1.0) (buffer "*compilation*" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 522) (start . 1))))])
+(setq default-directory "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/")
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring '("helm-swoop"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/" "~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconView.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/CursorsTest.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Documentation/OpenStep Confusion.md" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
+(setq file-name-history '("~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/GNUmakefile*" "~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/" "~/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconViewTest.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/IconView.m" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/GNUmakefile" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/CursorsTest.*" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Documentation/OpenStep Confusion.md" "~/Developer/nextspace/Frameworks/Tests/NXAppKit/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/*.[hm]" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Frameworks/NXAppKit" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/AppController.h" "~/Developer/nextspace/Frameworks/NXAppKit/NXAppKitDemo/" "~/Developer/nextspace/Frameworks/NXAppKit/" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Localization/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/Modules/Font/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "/Developer/Headers/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/" "~/Developer/nextspace/Applications/Preferences" "~/Developer/nextspace/Applications/Preferences/"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/AppController.h"
-  "AppController.h"
-  'objc-mode
-  '(abbrev-mode company-mode hs-minor-mode)
-  1
-  '(nil nil)
-  nil
-  nil
-  '((buffer-display-time 23759 64281 403171 107000) (buffer-file-coding-system . undecided-unix)))
-
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/AppController.m"
   "AppController.m"
   'objc-mode
   '(abbrev-mode company-mode hs-minor-mode)
+  7686
+  '(7734 nil)
+  nil
+  nil
+  '((buffer-display-time 23853 37769 995993 382000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/AppController.h"
+  "AppController.h"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1356
+  '(1325 nil)
+  nil
+  nil
+  '((buffer-display-time 23853 35685 469463 222000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/GNUmakefile"
+  "GNUmakefile"
+  'makefile-gmake-mode
+  nil
+  594
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode . t) (buffer-display-time 23852 35721 375689 360000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/CursorsTest.m"
+  "CursorsTest.m"
+  'objc-mode
+  '(abbrev-mode company-mode hs-minor-mode)
+  1270
+  '(1216 nil)
+  nil
+  nil
+  '((buffer-display-time 23852 35576 997766 29000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/GNUmakefile.preamble"
+  "GNUmakefile.preamble"
+  'fundamental-mode
+  nil
+  361
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 23851 39956 597037 799000) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/GNUmakefile.postamble"
+  "GNUmakefile.postamble"
+  'fundamental-mode
+  nil
   1
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63406 979533 576000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23851 39607 194401 419000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/ClockViewTest.h"
@@ -49,7 +93,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63407 421601 885000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18091 892077 222000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/ClockViewTest.m"
@@ -60,7 +104,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63407 868803 672000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18092 848043 999000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/CursorsTest.h"
@@ -71,18 +115,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63408 369969 72000) (buffer-file-coding-system . undecided-unix)))
-
-(desktop-create-buffer 206
-  "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/CursorsTest.m"
-  "CursorsTest.m"
-  'objc-mode
-  '(abbrev-mode company-mode hs-minor-mode)
-  1
-  '(nil nil)
-  nil
-  nil
-  '((buffer-display-time 23759 63408 826676 195000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18093 848274 729000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/DrawingTest.h"
@@ -93,7 +126,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63409 266599 375000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18095 812395 654000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/DrawingTest.m"
@@ -104,7 +137,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63409 739338 256000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18096 772482 869000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/IconViewTest.h"
@@ -115,7 +148,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63410 231970 435000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18097 760753 781000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/IconViewTest.m"
@@ -126,7 +159,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63410 682685 577000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18098 788914 410000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/NXAppKitDemo_main.m"
@@ -137,7 +170,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63411 155416 160000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18099 785440 103000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/NumericFieldTest.h"
@@ -148,7 +181,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63411 628355 802000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18100 747692 188000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/NumericFieldTest.m"
@@ -159,7 +192,7 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63412 96542 886000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18101 721790 485000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/TextTest.h"
@@ -170,16 +203,16 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63412 575139 31000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23850 18102 782771 985000) (buffer-file-coding-system . undecided-unix)))
 
 (desktop-create-buffer 206
   "/Users/me/Developer/nextspace/Frameworks/DesktopKit/Tests/NXAppKit/TextTest.m"
   "TextTest.m"
   'objc-mode
   '(abbrev-mode company-mode hs-minor-mode)
-  1
+  3351
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 23759 63413 45033 952000) (buffer-file-coding-system . undecided-unix)))
+  '((buffer-display-time 23852 35194 991178 709000) (buffer-file-coding-system . undecided-unix)))
 

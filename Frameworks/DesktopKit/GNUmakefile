@@ -29,7 +29,6 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXTSizer.m \
 	NXTSplitView.m \
 	NXTNumericField.m \
-	NXTSound.m \
 	NXTPanelLoader.m \
 	NXTSavePanel.m \
 	NXTOpenPanel.m \
@@ -55,7 +54,6 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXTSizer.h \
 	NXTSplitView.h \
 	NXTNumericField.h \
-	NXTSound.h \
 	NXTSavePanel.h \
 	NXTOpenPanel.h \
 	\

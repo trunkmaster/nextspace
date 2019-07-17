@@ -27,3 +27,4 @@
 #import <SoundKit/SNDPlayStream.h>
 #import <SoundKit/SNDRecordStream.h>
 #import <SoundKit/SNDVirtualStream.h>
+#import <SoundKit/NXTSound.h>
