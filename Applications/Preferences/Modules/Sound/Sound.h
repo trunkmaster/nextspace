@@ -56,6 +56,5 @@
 }
 
 - (NSDictionary *)loadSoundList;
-- (void)reloadBrowser;
 
 @end

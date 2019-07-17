@@ -113,6 +113,17 @@
        selector:@selector(serverStateChanged:)
            name:SNDServerStateDidChangeNotification
          object:soundServer];
+  // 3. Create connection to PulseAudio server
+  if (soundServer.status == SNDServerNoConnnectionState) {
+    [soundServer connect];
+  }
+
+  defSoundRow = -1;
+  [beepBrowser loadColumnZero];
+  if (defSoundRow >= 0) {
+    [beepBrowser selectRow:defSoundRow inColumn:0];
+    [beepBrowser scrollRowToVisible:defSoundRow+3 inColumn:0];
+  }
 
   [[beepAudioRadio cellWithTag:0] setRefusesFirstResponder:YES];
   [[beepAudioRadio cellWithTag:1] setRefusesFirstResponder:YES];
@@ -209,6 +220,7 @@ static void *InputContext = &InputContext;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
+  NSLog(@"KVO");
   if (context == OutputContext) {
     if ([keyPath isEqualToString:@"mute"]) {
       [muteButton setState:[soundOut isMute]];
@@ -245,16 +257,18 @@ static void *InputContext = &InputContext;
   if (soundServer.status == SNDServerReadyState) {
     soundOut = [[soundServer defaultOutput] retain];
     soundIn = [[soundServer defaultInput] retain];
+    
     if (soundOut) {
       [volumeLevel setMaxValue:[soundOut volumeSteps]-1];
-      [self observeOutput:soundOut];
+      // FIXME: KVO sometimes freezes the whole app and eats CPU
+      // [self observeOutput:soundOut];
     }
     if (soundIn) {
       [micLevel setMaxValue:[soundIn volumeSteps]-1];
-      [self observeInput:soundIn];
+      // FIXME: KVO sometimes freezes the whole app and eats CPU
+      // [self observeInput:soundIn];
     }
-    [self _updateControls];
-    [self reloadBrowser];    
+    [self _updateControls];    
   }
   else if (soundServer.status == SNDServerFailedState ||
            soundServer.status == SNDServerTerminatedState) {
@@ -266,15 +280,6 @@ static void *InputContext = &InputContext;
 
 // --- Control actions
 
-- (void)reloadBrowser
-{
-  [beepBrowser reloadColumn:0];
-  
-  // NSLog(@"Default sound row %li", defSoundRow);
-  // [beepBrowser selectRow:defSoundRow inColumn:0];
-  [[beepBrowser matrixInColumn:0] selectCellAtRow:defSoundRow column:0];
-  [beepBrowser scrollRowToVisible:defSoundRow inColumn:0];
-}
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
@@ -296,7 +301,7 @@ static void *InputContext = &InputContext;
     [cell setRepresentedObject:filePath];
     
     if ([filePath isEqualToString:defaultSound]) {
-      NSLog(@"Default sound found at row %li (column:%li)", row, column);
+       NSLog(@"Default sound found at row %li (column:%li)", row, column);
       defSoundRow = row;
     }
   }
