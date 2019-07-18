@@ -188,6 +188,9 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
   if (flush == NO) {
     pa_stream_drain(_pa_stream, _stream_buffer_empty, self);
   }
+  else {
+    [self abort:self];
+  }
 }
 
 - (BOOL)isPaused
