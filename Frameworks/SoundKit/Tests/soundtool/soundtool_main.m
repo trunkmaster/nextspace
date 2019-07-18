@@ -51,8 +51,9 @@
        selector:@selector(serverStateChanged:)
            name:SNDServerStateDidChangeNotification
          object:server];
+  [server connect];
 
-  [self serverStateChanged:nil];
+  // [self serverStateChanged:nil];
   
   return self;
 }
@@ -215,7 +216,7 @@ int main(int argc, char *argv[])
   signal(SIGINT, handle_signal);
   signal(SIGQUIT, handle_signal);
   signal(SIGTERM, handle_signal);
-  
+
   [client runLoopRun];
 
   fprintf(stderr, "Runloop exited.\n");

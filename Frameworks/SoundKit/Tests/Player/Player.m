@@ -51,12 +51,12 @@
   infoOn = [[NSImage alloc] initByReferencingFile:path];
 
   // Should be set by controller on file or playlist loading
-  NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
-  // NSString *file = @"/Users/me/Music/Shallow/1 - Lady Gaga, Bradley Cooper - Shallow.flac";
-  [songTitle setStringValue:[file lastPathComponent]];
-  sound = [[NXTSound alloc] initWithContentsOfFile:file
-                                       byReference:YES];
-  [sound setDelegate:self];
+  // NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
+  // // NSString *file = @"/Users/me/Music/Shallow/1 - Lady Gaga, Bradley Cooper - Shallow.flac";
+  // [songTitle setStringValue:[file lastPathComponent]];
+  // sound = [[NXTSound alloc] initWithContentsOfFile:file
+  //                                      byReference:YES];
+  // [sound setDelegate:self];
 }
 
 - (void)setButtonsEnabled:(BOOL)yn
@@ -78,10 +78,18 @@
   
   [infoView setImage:infoOn];
 
-  if ([sound isPlaying]) {
+  if (sound != nil && [sound isPlaying]) {
+    NSLog(@"[Player] sound is playing");
     [sound resume];
   }
   else {
+    NSLog(@"[Player] sound is stopped");
+    NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
+    
+    [songTitle setStringValue:[file lastPathComponent]];
+    sound = [[NXTSound alloc] initWithContentsOfFile:file
+                                         byReference:YES];
+    [sound setDelegate:self];
     [sound play];
   }
 }
@@ -91,6 +99,8 @@
   NSLog(@"Sound did finish playing; RC: %lu", [sound retainCount]);
   if (aBool != NO) {
     [self stop:playBtn];
+    [sound release];
+    sound = nil;
     // NSTimer *timer;
     // timer = [NSTimer scheduledTimerWithTimeInterval:2.0
     //                                          target:sound
