@@ -33,7 +33,6 @@ typedef enum {
 @interface NXTSound : NSSound
 {
   NSSound       *_sound;
-  SNDServer     *_server;
   SNDPlayStream *_stream;
   NXTSoundState desiredState;
 }

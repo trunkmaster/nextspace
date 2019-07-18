@@ -19,7 +19,6 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-// #import <Foundation/NSNotification.h>
 #import "NXTSound.h"
 #import <GNUstepGUI/GSSoundSource.h>
 
@@ -34,11 +33,6 @@
     _stream = nil;
   }
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  NSLog(@"[NXTSound] server retain count: %lu", [_server retainCount]);
-  [_server disconnect];
-  // [_server release];
-  // _server = nil;
-  // NSLog(@"[NXTSound] server retain count: %lu", [_server retainCount]);
 
   [super dealloc];
 }
@@ -47,7 +41,7 @@
 {
   NSLog(@"[NXTSound] creating play stream...");
   _stream = [[SNDPlayStream alloc]
-                initOnDevice:(SNDDevice *)[_server defaultOutput]
+                initOnDevice:(SNDDevice *)[[SNDServer sharedServer] defaultOutput]
                 samplingRate:[_source sampleRate]
                 channelCount:[_source channelCount]
                       format:3 // PA
@@ -61,16 +55,15 @@
 
 - (void)_serverStateChanged:(NSNotification *)notif
 {
-  NSLog(@"[NXTSound] serverStateChanged - %i", _server.status);
+  SNDServer *server = [notif object];
   
-  if (_server.status == SNDServerReadyState) {
+  NSLog(@"[NXTSound] serverStateChanged - %i", server.status);
+  
+  if (server.status == SNDServerReadyState) {
     [self _initStream];
   }
-  else if (_server.status == SNDServerFailedState ||
-           _server.status == SNDServerTerminatedState) {
-    // if (_stream) {
-    //   [self stop];
-    // }
+  else if (server.status == SNDServerFailedState ||
+           server.status == SNDServerTerminatedState) {
     if (_delegate &&
         [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
       [_delegate sound:self didFinishPlaying:YES];
@@ -82,26 +75,31 @@
 - (id)initWithContentsOfFile:(NSString *)path
                  byReference:(BOOL)byRef
 {
+  SNDServer *server;
+  
   self = [super initWithContentsOfFile:path byReference:byRef];
   if (self == nil) {
     return nil;
   }
 
-  NSLog(@"[NXTSound] channels: %lu rate: %lu format: %i",
-        [_source channelCount], [_source sampleRate], [_source byteOrder]);
+  NSLog(@"[NXTSound] channels: %lu rate: %lu format: %i duraction: %.3f",
+        [_source channelCount], [_source sampleRate], [_source byteOrder],
+        [_source duration]);
 
   // 1. Connect to PulseAudio on locahost
-  _server = [SNDServer sharedServer];
-  // [_server retain];
+  server = [SNDServer sharedServer];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(_serverStateChanged:)
            name:SNDServerStateDidChangeNotification
-         object:_server];
+         object:server];
   // 3. Connect to sound server (pulseaudio)
-  NSLog(@"[NXTSound] server status == %i", _server.status);
-  [_server connect];
+  NSLog(@"[NXTSound] server status == %i", server.status);
+  if (server.status != SNDServerReadyState) {
+    NSLog(@"[NXTSound] connecting to sound server");
+    [server connect];
+  }
 
   desiredState = NXTSoundInitial;
   
@@ -122,6 +120,9 @@
 - (BOOL)stop
 {
   if (_stream) {
+    NSLog(@"Current song time: %f", [self currentTime]);
+    [self pause];
+    [self setCurrentTime:0];
     [_stream empty:YES];
   }
   return YES;
@@ -165,7 +166,7 @@
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
   NSLog(@"[NXTSound] stream buffer is empty");
-  [_stream deactivate];
+  // [_stream deactivate];
   if (_delegate &&
       [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
     [_delegate sound:self didFinishPlaying:YES];
