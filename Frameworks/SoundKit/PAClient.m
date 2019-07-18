@@ -34,7 +34,10 @@
 
 - (void)dealloc
 {
-  if (_name) [_name release];
+  if (_name)
+    [_name release];
+  if (_appName)
+    [_appName release];
   [super dealloc];
 }
 
@@ -56,7 +59,7 @@
     [_appName release];
   app_name = pa_proplist_gets(info->proplist, "application.name");
   app_binary = pa_proplist_gets(info->proplist, "application.process.binary");
-  _appName = [NSString stringWithFormat:@"%s : %s", app_binary, app_name];
+  _appName = [[NSString alloc] initWithFormat:@"%s : %s", app_binary, app_name];
 
   return self;
 }
