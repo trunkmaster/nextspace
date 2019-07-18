@@ -43,10 +43,10 @@ void card_cb(pa_context *ctx, const pa_card_info *info, int eol, void *userdata)
     NSValue *value;
     
     value = [NSValue value:info withObjCType:@encode(const pa_card_info)];
-    // [(SNDServer *)userdata updateCard:value];
-    [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateCard:)
-                                            withObject:value
-                                         waitUntilDone:YES];
+    [(SNDServer *)userdata updateCard:value];
+    // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateCard:)
+    //                                         withObject:value
+    //                                      waitUntilDone:YES];
   }
 }
 void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
@@ -60,10 +60,10 @@ void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
   inventory_decrement_requests(ctx, userdata);
   
   value = [NSValue value:info withObjCType:@encode(const pa_server_info)];
-  // [(SNDServer *)userdata updateServer:value];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateServer:)
-                                          withObject:value
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateServer:value];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateServer:)
+  //                                         withObject:value
+  //                                      waitUntilDone:YES];
 }
 
 // --- SNDOut: Sink --> [Card, Server] ---
@@ -85,10 +85,10 @@ void sink_cb(pa_context *ctx, const pa_sink_info *info, int eol, void *userdata)
   }
 
   value = [NSValue value:info withObjCType:@encode(const pa_sink_info)];
-  // [(SNDServer *)userdata updateSink:value];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSink:)
-                                          withObject:value
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateSink:value];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSink:)
+  //                                         withObject:value
+  //                                      waitUntilDone:YES];
 }
 
 // --- SNDIn: Source --> [Card, Server] ---
@@ -110,10 +110,10 @@ void source_cb(pa_context *ctx, const pa_source_info *info,
 
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_info)];
-  // [(SNDServer *)userdata updateSource:value];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
-                                          withObject:value
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateSource:value];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSource:)
+  //                                         withObject:value
+  //                                      waitUntilDone:YES];
 }
 
 // --- SNDStream: SinkInput | SourceOutput, Client, Saved Stream(?) ---
@@ -137,10 +137,10 @@ void sink_input_cb(pa_context *ctx, const pa_sink_input_info *info,
   }
 
   value = [NSValue value:info withObjCType:@encode(const pa_sink_input_info)];
-  // [(SNDServer *)userdata updateSinkInput:value];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
-                                          withObject:value
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateSinkInput:value];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSinkInput:)
+  //                                         withObject:value
+  //                                      waitUntilDone:YES];
 }
 // SourceOutput
 void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
@@ -161,10 +161,10 @@ void source_output_cb(pa_context *ctx, const pa_source_output_info *info,
   
   NSValue *value = [NSValue value:info
                      withObjCType:@encode(const pa_source_output_info)];
-  // [(SNDServer *)userdata updateSourceOutput:value];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
-                                          withObject:value
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateSourceOutput:value];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateSourceOutput:)
+  //                                         withObject:value
+  //                                      waitUntilDone:YES];
 }
 // Client
 void client_cb(pa_context *ctx, const pa_client_info *info,
@@ -186,10 +186,10 @@ void client_cb(pa_context *ctx, const pa_client_info *info,
   }
   
   value = [NSValue value:info withObjCType:@encode(const pa_client_info)];
-  // [(SNDServer *)userdata updateClient:value];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
-                                          withObject:value
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateClient:value];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateClient:)
+  //                                         withObject:value
+  //                                      waitUntilDone:YES];
 }
 // Saved Stream
 void ext_stream_restore_read_cb(pa_context *ctx,
@@ -216,10 +216,10 @@ void ext_stream_restore_read_cb(pa_context *ctx,
 
   value = [NSValue value:info
             withObjCType:@encode(const pa_ext_stream_restore_info)];
-  // [(SNDServer *)userdata updateStream:value];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
-                                          withObject:value
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateStream:value];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateStream:)
+  //                                         withObject:value
+  //                                      waitUntilDone:YES];
 }
 void ext_stream_restore_subscribe_cb(pa_context *ctx, void *userdata)
 {
@@ -390,10 +390,10 @@ void context_state_cb(pa_context *ctx, void *userdata)
   }
 
   // fprintf(stderr, "[SoundKit] send notification.\n");
-  // [(SNDServer *)userdata updateConnectionState:[NSNumber numberWithInt:state]];
-  [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
-                                          withObject:[NSNumber numberWithInt:state]
-                                       waitUntilDone:YES];
+  [(SNDServer *)userdata updateConnectionState:[NSNumber numberWithInt:state]];
+  // [(SNDServer *)userdata performSelectorOnMainThread:@selector(updateConnectionState:)
+  //                                         withObject:[NSNumber numberWithInt:state]
+  //                                      waitUntilDone:YES];
 }
 
 // --- Initial inventory of PulseAudio objects ---
