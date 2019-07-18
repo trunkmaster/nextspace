@@ -32,7 +32,7 @@ void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream)
   isBufferEmpty = NO;
   
   if (delegate == nil) {
-    NSLog(@"[SoundKit] delegate is not set for SNDPlayStream.");
+    NSLog(@"[SoundKit] delegate is not set for SNDStream.");
     return;
   }
   if ([delegate respondsToSelector:action]) {
