@@ -38,7 +38,7 @@
 
 #import "SNDServerCallbacks.h"
 
-static dispatch_queue_t _pa_q;
+static dispatch_queue_t _pa_q = NULL;
 static SNDServer        *_server = nil;
 static BOOL             mainLoopRunning = NO;
 
@@ -49,20 +49,26 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
 @implementation SNDServer
 
-+ (void)initialize
-{
-  if ([SNDServer class] == self) {
-    _server = [SNDServer new];
-  }
-}
+// + (void)initialize
+// {
+//   if ([SNDServer class] == self) {
+//     _server = [SNDServer new];
+//   }
+// }
 + (id)sharedServer
 {
+  if (_server == nil) {
+    [SNDServer new];
+  }
   return _server;
 }
 
 - (void)dealloc
 {
   fprintf(stderr, "[SoundKit] SoundServer -dealloc\n");
+
+  // pa_context_unref(_pa_ctx);
+  // pa_mainloop_free(_pa_loop);
   
   [cardList release];
   [sinkList release];
@@ -87,20 +93,13 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 }
 - (id)initOnHost:(NSString *)hostName
 {
-  pa_proplist *proplist;
-  const char  *host = NULL;
-  const char  *app_name = NULL;
-
   [super init];
 
   _status = SNDServerNoConnnectionState;
 
   if (hostName != nil) {
     _hostName = [hostName copy];
-    host = [hostName cString];
   }
-
-  app_name = [[[NSProcessInfo processInfo] processName] cString];
 
   cardList = [NSMutableArray new];
   sinkList = [NSMutableArray new];
@@ -110,49 +109,69 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   sourceOutputList = [NSMutableArray new];
   savedStreamList = [NSMutableArray new];
   
-  _pa_loop = pa_mainloop_new();
-  _pa_api = pa_mainloop_get_api(_pa_loop);
-
-  proplist = pa_proplist_new();
-  pa_proplist_sets(proplist, PA_PROP_APPLICATION_NAME, app_name);
-  pa_proplist_sets(proplist, PA_PROP_APPLICATION_ID, "org.nextspace.soundkit");
-  pa_proplist_sets(proplist, PA_PROP_APPLICATION_ICON_NAME, "audio-card");
-  pa_proplist_sets(proplist, PA_PROP_APPLICATION_VERSION, "0.1");
-
-  _pa_ctx = pa_context_new_with_proplist(_pa_api, app_name, proplist);
-  
-  pa_proplist_free(proplist);
-
   _server = self;
   
   return self;
 }
 - (void)connect
 {
-  if (mainLoopRunning == YES) {
+  if (mainLoopRunning != NO) {
     return;
   }
-  pa_context_set_state_callback(_pa_ctx, context_state_cb, self);
-  pa_context_connect(_pa_ctx, [_hostName cString], 0, NULL);
 
+  NSLog(@"Make connection to server");
+  if (_pa_ctx == NULL) {
+    pa_proplist *proplist;
+    const char  *app_name = NULL;
+
+    _pa_loop = pa_mainloop_new();
+    _pa_api = pa_mainloop_get_api(_pa_loop);
+
+    app_name = [[[NSProcessInfo processInfo] processName] cString];
+  
+    proplist = pa_proplist_new();
+    pa_proplist_sets(proplist, PA_PROP_APPLICATION_NAME, app_name);
+    pa_proplist_sets(proplist, PA_PROP_APPLICATION_ID, "org.nextspace.soundkit");
+    pa_proplist_sets(proplist, PA_PROP_APPLICATION_ICON_NAME, "audio-card");
+    pa_proplist_sets(proplist, PA_PROP_APPLICATION_VERSION, "0.1");
+
+    _pa_ctx = pa_context_new_with_proplist(_pa_api, app_name, proplist);
+    pa_context_set_state_callback(_pa_ctx, context_state_cb, self);
+    
+    pa_proplist_free(proplist);
+  }
+  
+  pa_context_connect(_pa_ctx, [_hostName cString], 0, NULL);
+  
   _pa_q = dispatch_queue_create("org.nextspace.soundkit", NULL);
-  mainLoopRunning = YES;
   dispatch_async(_pa_q, ^{
       while (pa_mainloop_iterate(_pa_loop, 1, NULL) >= 0) { ; }
       fprintf(stderr, "[SoundKit] mainloop exited!\n");
-      mainLoopRunning = NO;
+      pa_mainloop_free(_pa_loop);
     });
+  mainLoopRunning = YES;
 }
 - (void)disconnect
 {
   int retval = 0;
   
-  fprintf(stderr, "[SoundKit] closing connection to server...\n");
+  fprintf(stderr, "[SoundKit] === disconnect === START\n");
+  fprintf(stderr, "[SoundKit] disconnect: stop mainloop...\n");
   pa_mainloop_quit(_pa_loop, retval);
-  pa_context_disconnect(_pa_ctx);
-  pa_context_unref(_pa_ctx);
-  pa_mainloop_free(_pa_loop);
-  fprintf(stderr, "[SoundKit] connection to server closed.\n");
+  fprintf(stderr, "[SoundKit] disconnect: clear PA context...\n");
+  if (_pa_ctx) {
+    pa_context_disconnect(_pa_ctx);
+    pa_context_set_state_callback(_pa_ctx, NULL, NULL);
+    pa_context_unref(_pa_ctx);
+    _pa_ctx = NULL;
+  }
+  fprintf(stderr, "[SoundKit] disconnect: release GCD queue...\n");
+  if (_pa_q) {
+    dispatch_release(_pa_q);
+    _pa_q = NULL;
+  }
+  mainLoopRunning = NO;
+  fprintf(stderr, "[SoundKit] === disconnect === END\n");
 }
 
 - (SNDDevice *)defaultCard
@@ -294,17 +313,14 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
 @end
 
-// --- These methods are called by PA callbacks in the ---
-// --- GCD thread with label "org.nextspace.soundkit"  ---
-
 @implementation SNDServer (PulseAudio)
 
 // Server
 - (void)updateConnectionState:(NSNumber *)state
 {
   _status = [state intValue];
-  // fprintf(stderr, "[SoundKit] connection state was updated - %i.\n",
-  //         _status);
+  fprintf(stderr, "[SoundKit] connection state was updated - %i.\n",
+          _status);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SNDServerStateDidChangeNotification
                     object:self];
@@ -408,13 +424,9 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     [sinkList addObject:sink];
     [sink release];
     aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
-                                             object:self];
+                                           object:self];
   }
-  [[NSNotificationCenter defaultCenter]
-        performSelectorOnMainThread:@selector(postNotification:)
-                         withObject:aNotif
-                      waitUntilDone:NO];
-  [aNotif release]; // GNUstep bug - notification retains object
+  // [[NSNotificationCenter defaultCenter] postNotification:aNotif];
   
   free((void *)info);  
 }
@@ -536,11 +548,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
                                            object:self];
   }
-  [[NSNotificationCenter defaultCenter]
-        performSelectorOnMainThread:@selector(postNotification:)
-                         withObject:aNotif
-                      waitUntilDone:NO];
-  [aNotif release]; // GNUstep bug - notification retains object
+  [[NSNotificationCenter defaultCenter] postNotification:aNotif];
   
   free((void *)info);
 }
@@ -570,10 +578,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     [sinkInputList removeObject:sinkInput];
     aNotif = [NSNotification notificationWithName:SNDDeviceDidRemoveNotification
                                            object:self];
-    [[NSNotificationCenter defaultCenter]
-        performSelectorOnMainThread:@selector(postNotification:)
-                         withObject:aNotif
-                      waitUntilDone:NO];
+    [[NSNotificationCenter defaultCenter] postNotification:aNotif];
   }
 }
 
@@ -610,11 +615,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
                                            object:self];
   }
-  [[NSNotificationCenter defaultCenter]
-        performSelectorOnMainThread:@selector(postNotification:)
-                         withObject:aNotif
-                      waitUntilDone:NO];
-  [aNotif release]; // GNUstep bug - notification retains object
+  [[NSNotificationCenter defaultCenter] postNotification:aNotif];
  
   free((void *)info);
 }
@@ -644,10 +645,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     [sourceOutputList removeObject:sourceOutput];
     aNotif = [NSNotification notificationWithName:SNDDeviceDidRemoveNotification
                                            object:self];
-    [[NSNotificationCenter defaultCenter]
-        performSelectorOnMainThread:@selector(postNotification:)
-                         withObject:aNotif
-                      waitUntilDone:NO];
+    [[NSNotificationCenter defaultCenter] postNotification:aNotif];
   }
 }
 
