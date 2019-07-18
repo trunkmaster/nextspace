@@ -54,7 +54,7 @@
         [_source channelCount], [_source sampleRate], [_source byteOrder]);
 
   // 1. Connect to PulseAudio on locahost
-  _server = [SNDServer new];
+  _server = [SNDServer sharedServer];
   // 2. Wait for server to be ready
   [[NSNotificationCenter defaultCenter]
     addObserver:self
