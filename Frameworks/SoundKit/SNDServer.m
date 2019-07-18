@@ -108,6 +108,10 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   sinkInputList = [NSMutableArray new];
   sourceOutputList = [NSMutableArray new];
   savedStreamList = [NSMutableArray new];
+
+  _pa_loop = NULL;
+  _pa_api = NULL;
+  _pa_ctx = NULL;
   
   _server = self;
   
@@ -119,7 +123,6 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     return;
   }
 
-  NSLog(@"Make connection to server");
   if (_pa_ctx == NULL) {
     pa_proplist *proplist;
     const char  *app_name = NULL;
@@ -145,9 +148,9 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   
   _pa_q = dispatch_queue_create("org.nextspace.soundkit", NULL);
   dispatch_async(_pa_q, ^{
+      fprintf(stderr, "[SoundKit] mainloop started.\n");
       while (pa_mainloop_iterate(_pa_loop, 1, NULL) >= 0) { ; }
-      fprintf(stderr, "[SoundKit] mainloop exited!\n");
-      pa_mainloop_free(_pa_loop);
+      fprintf(stderr, "[SoundKit] mainloop exited.\n");
     });
   mainLoopRunning = YES;
 }
@@ -156,17 +159,20 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   int retval = 0;
   
   fprintf(stderr, "[SoundKit] === disconnect === START\n");
-  fprintf(stderr, "[SoundKit] disconnect: stop mainloop...\n");
-  pa_mainloop_quit(_pa_loop, retval);
-  fprintf(stderr, "[SoundKit] disconnect: clear PA context...\n");
   if (_pa_ctx) {
+    fprintf(stderr, "[SoundKit] disconnect: clear PA context...\n");
     pa_context_disconnect(_pa_ctx);
     pa_context_set_state_callback(_pa_ctx, NULL, NULL);
     pa_context_unref(_pa_ctx);
     _pa_ctx = NULL;
   }
-  fprintf(stderr, "[SoundKit] disconnect: release GCD queue...\n");
+  if (_pa_loop) {
+    fprintf(stderr, "[SoundKit] disconnect: stop mainloop...\n");
+    pa_mainloop_quit(_pa_loop, retval);
+    pa_mainloop_free(_pa_loop);
+  }
   if (_pa_q) {
+    fprintf(stderr, "[SoundKit] disconnect: release GCD queue...\n");
     dispatch_release(_pa_q);
     _pa_q = NULL;
   }
@@ -333,7 +339,9 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   [value getValue:(void *)info];
 
   _userName = [[NSString alloc] initWithCString:info->user_name];
-  _hostName = [[NSString alloc] initWithCString:info->host_name];
+  // if (_hostName == nil) {
+  //   _hostName = [[NSString alloc] initWithCString:info->host_name];
+  // }
   _name = [[NSString alloc] initWithCString:info->server_name];
   _version = [[NSString alloc] initWithCString:info->server_version];
   _defaultSinkName = [[NSString alloc] initWithCString:info->default_sink_name];
