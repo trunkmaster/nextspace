@@ -39,7 +39,8 @@
 #import "SNDServerCallbacks.h"
 
 static dispatch_queue_t _pa_q;
-static SNDServer    *_server;
+static SNDServer        *_server = nil;
+static BOOL             mainLoopRunning = NO;
 
 NSString *SNDServerStateDidChangeNotification = @"SNDServerStateDidChangeNotification";
 NSString *SNDDeviceDidAddNotification    = @"SNDDeviceDidAddNotification";
@@ -121,18 +122,25 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   _pa_ctx = pa_context_new_with_proplist(_pa_api, app_name, proplist);
   
   pa_proplist_free(proplist);
+
+  _server = self;
   
   return self;
 }
 - (void)connect
 {
+  if (mainLoopRunning == YES) {
+    return;
+  }
   pa_context_set_state_callback(_pa_ctx, context_state_cb, self);
   pa_context_connect(_pa_ctx, [_hostName cString], 0, NULL);
 
   _pa_q = dispatch_queue_create("org.nextspace.soundkit", NULL);
+  mainLoopRunning = YES;
   dispatch_async(_pa_q, ^{
       while (pa_mainloop_iterate(_pa_loop, 1, NULL) >= 0) { ; }
       fprintf(stderr, "[SoundKit] mainloop exited!\n");
+      mainLoopRunning = NO;
     });
 }
 - (void)disconnect
