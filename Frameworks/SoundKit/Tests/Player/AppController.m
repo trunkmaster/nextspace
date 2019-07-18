@@ -13,7 +13,7 @@
 
 @implementation AppController
 
-+ (void) initialize
++ (void)initialize
 {
   NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 
@@ -25,7 +25,7 @@
    *
    */
   
-  [[NSUserDefaults standardUserDefaults] registerDefaults: defaults];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
   [[NSUserDefaults standardUserDefaults] synchronize];
 }
 

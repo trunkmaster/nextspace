@@ -32,6 +32,7 @@
 
   NXTSound *sound;
 }
+- (void)setWindowTitleForFile:(NSString *)filename;
 - (void)setButtonsEnabled:(BOOL)yn;
   
 - (void)eject:(id)sender;

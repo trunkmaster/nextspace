@@ -1,5 +1,7 @@
 /* All Rights reserved */
 
+#import <DesktopKit/NXTOpenPanel.h>
+
 #import "Player.h"
 
 @implementation Player
@@ -9,8 +11,12 @@
   NSLog(@"Player -dealloc");
   [infoOff release];
   [infoOn release];
+  
   if (sound)
     [sound release];
+  [[SNDServer sharedServer] disconnect];
+  [[SNDServer sharedServer] release];
+  
   [super dealloc];
 }
 
@@ -35,28 +41,22 @@
   [artistName setStringValue:@"Artist name"];
   [albumTitle setStringValue:@"Album title"];
   [songTitle setStringValue:@"Song title"];
-  [window setTitle:@"Player \u2014 No loaded sound"];
+  [self setWindowTitleForFile:nil];
 
   [pauseBtn setState:NSOffState];
   [stopBtn setState:NSOffState];
   
   imagePath = @"Resources/PlayerWindow.gorm/PlayerInfo-1.tiff";
   path = [NSString stringWithFormat:@"%@/%@",
-                        [[NSBundle mainBundle] bundlePath], imagePath];
+                   [[NSBundle mainBundle] bundlePath], imagePath];
   infoOff = [[NSImage alloc] initByReferencingFile:path];
   
   imagePath = @"Resources/PlayerWindow.gorm/PlayerInfo-2.tiff";
   path = [NSString stringWithFormat:@"%@/%@",
-                        [[NSBundle mainBundle] bundlePath], imagePath];
+                   [[NSBundle mainBundle] bundlePath], imagePath];
   infoOn = [[NSImage alloc] initByReferencingFile:path];
 
-  // Should be set by controller on file or playlist loading
-  // NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
-  // // NSString *file = @"/Users/me/Music/Shallow/1 - Lady Gaga, Bradley Cooper - Shallow.flac";
-  // [songTitle setStringValue:[file lastPathComponent]];
-  // sound = [[NXTSound alloc] initWithContentsOfFile:file
-  //                                      byReference:YES];
-  // [sound setDelegate:self];
+  [self setButtonsEnabled:NO];
 }
 
 - (void)setButtonsEnabled:(BOOL)yn
@@ -68,6 +68,43 @@
   [nextBtn setEnabled:yn];
   [repeatBtn setEnabled:yn];
   [shuffleBtn setEnabled:yn];
+}
+
+- (void)open:(id)sender
+{
+  NXTOpenPanel *openPanel = [NXTOpenPanel new];
+  NSString     *file;
+  // NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
+  // NSString *file = @"/Users/me/Music/Shallow/1 - Lady Gaga, Bradley Cooper - Shallow.flac";
+  // NSString *file = @"/usr/NextSpace/Sounds/Welcome-to-the-NeXT-world.snd";
+
+  if (openPanel == nil) {
+    return;
+  }
+
+  NSLog(@"Sounds: %@", [NSSound soundUnfilteredFileTypes]);
+  [openPanel setAllowedFileTypes:[NSSound soundUnfilteredFileTypes]];
+  
+  // [openPanel setDirectory:NSHomeDirectory()];
+  [openPanel runModal];
+  NSLog(@"Selected file: %@ in %@", [openPanel filename], [openPanel directory]);
+
+  if (sound != nil) {
+    [self stop:stopBtn];
+    [sound release];
+  }
+  
+  file = [openPanel filename];
+  [self setWindowTitleForFile:file];
+  [songTitle setStringValue:[file lastPathComponent]];
+  sound = [[NXTSound alloc] initWithContentsOfFile:file
+                                       byReference:YES];
+  [sound setDelegate:self];
+  
+  [self setButtonsEnabled:YES];
+  
+  [openPanel release];
+  openPanel = nil;
 }
 
 - (void)play:(id)sender
@@ -84,12 +121,6 @@
   }
   else {
     NSLog(@"[Player] sound is stopped");
-    NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
-    
-    [songTitle setStringValue:[file lastPathComponent]];
-    sound = [[NXTSound alloc] initWithContentsOfFile:file
-                                         byReference:YES];
-    [sound setDelegate:self];
     [sound play];
   }
 }
@@ -99,15 +130,8 @@
   NSLog(@"Sound did finish playing; RC: %lu", [sound retainCount]);
   if (aBool != NO) {
     [self stop:playBtn];
-    [sound release];
-    sound = nil;
-    // NSTimer *timer;
-    // timer = [NSTimer scheduledTimerWithTimeInterval:2.0
-    //                                          target:sound
-    //                                        selector:@selector(release)
-    //                                        userInfo:nil
-    //                                         repeats:NO];
-    // [timer fire];
+    // [sound release];
+    // sound = nil;
   }
 }
 - (void)pause:(id)sender
@@ -123,7 +147,9 @@
 }
 - (void)stop:(id)sender
 {
-  [sound stop];
+  if (sound != nil && [sound isPlaying]) {
+    [sound stop];
+  }
   [playBtn setState:NSOffState];
   [pauseBtn setState:NSOffState];
   
@@ -152,6 +178,20 @@
 - (void)eject:(id)sender
 {
   NSLog(@"Eject");
+}
+
+- (void)setWindowTitleForFile:(NSString *)filename
+{
+  NSString *name;
+
+  if (filename == nil) {
+    name = @"No sound";
+  }
+  else {
+    name = [[filename lastPathComponent] stringByDeletingPathExtension];
+  }
+
+  [window setTitle:[NSString stringWithFormat:@"Player \u2014 %@", name]];
 }
 
 - (BOOL)windowShouldClose:(id)sender
