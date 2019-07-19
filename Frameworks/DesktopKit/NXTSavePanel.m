@@ -168,7 +168,6 @@ static NXTSavePanel *_savePanel = nil;
       matrix = [_browser matrixInColumn:selectedColumn];
       if ([[matrix cells] count] && [matrix selectedCell] == nil) {
         [matrix selectCellAtRow:0 column:0];
-        // [matrix performClick:self];
       }
       // if selected cell is a leaf, we need to add a column
       if ([[matrix selectedCell] isLeaf] != NO) {
@@ -177,6 +176,9 @@ static NXTSavePanel *_savePanel = nil;
     }
   }
   [_browser setPath:[_browser path]];
+  if ([[matrix selectedCell] isLeaf] != NO) {
+    [self _selectTextInColumn:selectedColumn];
+  }
   [self _saveDefaultDirectory:[_browser path]];
 }
 
