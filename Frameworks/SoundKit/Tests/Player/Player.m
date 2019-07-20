@@ -70,13 +70,19 @@
   [shuffleBtn setEnabled:yn];
 }
 
+- (void)_initSoundWithFile:(NSString *)filename
+{
+  if (sound != nil) {
+    [sound release];
+  }
+  sound = [[NXTSound alloc] initWithContentsOfFile:filename
+                                       byReference:YES];
+  [sound setDelegate:self];
+}
+
 - (void)open:(id)sender
 {
   NXTOpenPanel *openPanel = [NXTOpenPanel new];
-  NSString     *file;
-  // NSString *file = @"/usr/NextSpace/Sounds/Bonk.snd";
-  // NSString *file = @"/Users/me/Music/Shallow/1 - Lady Gaga, Bradley Cooper - Shallow.flac";
-  // NSString *file = @"/usr/NextSpace/Sounds/Welcome-to-the-NeXT-world.snd";
 
   if (openPanel == nil) {
     return;
@@ -89,22 +95,27 @@
   [openPanel runModal];
   NSLog(@"Selected file: %@ in %@", [openPanel filename], [openPanel directory]);
 
+  if (file) {
+    [file release];
+  }
+  file = [[NSString alloc] initWithString:[openPanel filename]];
+  [openPanel release];
+  if (file == nil || [file length] == 0) {
+    return;
+  }
+  
   if (sound != nil) {
-    [self stop:stopBtn];
+    if ([sound isPlaying]) {
+      [self stop:stopBtn];
+    }
     [sound release];
   }
   
-  file = [openPanel filename];
   [self setWindowTitleForFile:file];
   [songTitle setStringValue:[file lastPathComponent]];
-  sound = [[NXTSound alloc] initWithContentsOfFile:file
-                                       byReference:YES];
-  [sound setDelegate:self];
+  [self _initSoundWithFile:file];
   
   [self setButtonsEnabled:YES];
-  
-  [openPanel release];
-  openPanel = nil;
 }
 
 - (void)play:(id)sender
@@ -115,6 +126,10 @@
   
   [infoView setImage:infoOn];
 
+  if (sound == nil) {
+    [self _initSoundWithFile:file];
+  }
+  
   if (sound != nil && [sound isPlaying]) {
     NSLog(@"[Player] sound is playing");
     [sound resume];

@@ -31,6 +31,7 @@
   id ejectBtn;
 
   NXTSound *sound;
+  NSString *file;
 }
 - (void)setWindowTitleForFile:(NSString *)filename;
 - (void)setButtonsEnabled:(BOOL)yn;
