@@ -372,7 +372,8 @@ void context_state_cb(pa_context *ctx, void *userdata)
     return;
   case PA_CONTEXT_FAILED:
     {
-      fprintf(stderr, "[SoundKit] PulseAudio connection state == FAILED!\n");
+      fprintf(stderr, "[SoundKit] PulseAudio connection state == FAILED - %s\n",
+              pa_strerror(pa_context_errno(ctx)));
       pa_context_unref(ctx);
       ctx = NULL;
       // if (reconnect_timeout > 0) {
@@ -382,7 +383,8 @@ void context_state_cb(pa_context *ctx, void *userdata)
     }
     break;
   case PA_CONTEXT_TERMINATED:
-    fprintf(stderr, "[SoundKit] PulseAudio connection state == TERMINATED.\n");
+    fprintf(stderr, "[SoundKit] PulseAudio connection state == TERMINATED - %s\n",
+            pa_strerror(pa_context_errno(ctx)));
     break;
   default:
     // fprintf(stderr, "[SoundKit] PulseAudio connection state == UNKNOWN.\n");
