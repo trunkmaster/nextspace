@@ -102,7 +102,6 @@
   }
   
   balance = pa_cvolume_get_balance(&info->volume, &info->channel_map);
-  fprintf(stderr, "[SoundKit] Source balance: %f\n", balance);
   if (_balance != balance) {
     self.balance = balance;
   }
