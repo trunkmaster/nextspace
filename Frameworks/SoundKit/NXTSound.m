@@ -27,13 +27,15 @@
 - (void)dealloc
 {
   NSLog(@"[NXTSound] dealloc");
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self setDelegate:nil];
   if (_stream) {
+    [_stream setDelegate:nil];
     [_stream deactivate];
     [_stream release];
     _stream = nil;
   }
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-
+  
   [super dealloc];
 }
 
@@ -86,6 +88,8 @@
         [_source channelCount], [_source sampleRate], [_source byteOrder],
         [_source duration]);
 
+  desiredState = NXTSoundInitial;
+  
   // 1. Connect to PulseAudio on locahost
   server = [SNDServer sharedServer];
   // 2. Wait for server to be ready
@@ -100,9 +104,10 @@
     NSLog(@"[NXTSound] connecting to sound server");
     [server connect];
   }
+  else {
+    [self _initStream];
+  }
 
-  desiredState = NXTSoundInitial;
-  
   return self;
 }
 
@@ -129,16 +134,21 @@
 }
 - (BOOL)pause
 {
-  [_stream pause:self];
+  if (_stream) {
+    [_stream pause:self];
+  }
   return YES;
 }
 - (BOOL)resume
 {
-  [_stream resume:self];
+  if (_stream) {
+    [_stream resume:self];
+  }
   return YES;
 }
 - (BOOL)isPlaying
 {
+  if (_stream == nil) return NO;
   return ([_stream isActive] && ![_stream isPaused]);
 }
 
@@ -166,7 +176,6 @@
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
   NSLog(@"[NXTSound] stream buffer is empty");
-  // [_stream deactivate];
   if (_delegate &&
       [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
     [_delegate sound:self didFinishPlaying:YES];
