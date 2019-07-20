@@ -100,6 +100,9 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   if (hostName != nil) {
     _hostName = [hostName copy];
   }
+  else {
+    _hostName = [[NSString alloc] initWithString:@"localhost"];
+  }
 
   cardList = [NSMutableArray new];
   sinkList = [NSMutableArray new];
@@ -119,6 +122,8 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 }
 - (void)connect
 {
+  const char *host_name = NULL;
+  
   if (mainLoopRunning != NO) {
     return;
   }
@@ -144,13 +149,16 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     pa_proplist_free(proplist);
   }
   
-  pa_context_connect(_pa_ctx, [_hostName cString], 0, NULL);
+  if (_hostName && [_hostName isEqualToString:@"localhost"] == NO) {
+    host_name = [_hostName cString];
+  }
+  pa_context_connect(_pa_ctx, host_name, 0, NULL);
   
   _pa_q = dispatch_queue_create("org.nextspace.soundkit", NULL);
   dispatch_async(_pa_q, ^{
-      fprintf(stderr, "[SoundKit] mainloop started.\n");
+      fprintf(stderr, "[SoundKit] >>> mainloop started.\n");
       while (pa_mainloop_iterate(_pa_loop, 1, NULL) >= 0) { ; }
-      fprintf(stderr, "[SoundKit] mainloop exited.\n");
+      fprintf(stderr, "[SoundKit] <<< mainloop exited.\n");
     });
   mainLoopRunning = YES;
 }
@@ -325,8 +333,8 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 - (void)updateConnectionState:(NSNumber *)state
 {
   _status = [state intValue];
-  fprintf(stderr, "[SoundKit] connection state was updated - %i.\n",
-          _status);
+  // fprintf(stderr, "[SoundKit] connection state was updated - %i.\n",
+  //         _status);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SNDServerStateDidChangeNotification
                     object:self];
@@ -679,7 +687,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   if (isUpdated == NO) {
     PAClient *client = [[PAClient alloc] init];
-    fprintf(stderr, "[SoundKit] Add: %s (index: %i).\n", info->name, info->index);
+    fprintf(stderr, "[SoundKit] Client Add: %s (index: %i).\n", info->name, info->index);
     [client updateWithValue:value];
     [clientList addObject:client];
     [client release];
