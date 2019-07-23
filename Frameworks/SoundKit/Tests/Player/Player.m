@@ -72,9 +72,6 @@
 
 - (void)_initSoundWithFile:(NSString *)filename
 {
-  if (sound != nil) {
-    [sound release];
-  }
   sound = [[NXTSound alloc] initWithContentsOfFile:filename
                                        byReference:YES];
   [sound setDelegate:self];
@@ -111,9 +108,9 @@
     [sound release];
   }
   
-  [self setWindowTitleForFile:file];
   [songTitle setStringValue:[file lastPathComponent]];
   [self _initSoundWithFile:file];
+  [self setWindowTitleForFile:file];
   
   [self setButtonsEnabled:YES];
 }
@@ -145,9 +142,7 @@
   NSLog(@"Sound did finish playing; RC: %lu", [sound retainCount]);
   if (aBool != NO) {
     [self stop:playBtn];
-    // [sound release];
-    // sound = nil;
-  }
+ }
 }
 - (void)pause:(id)sender
 {
