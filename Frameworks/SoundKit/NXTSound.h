@@ -34,7 +34,7 @@ typedef enum {
 {
   NSSound       *_sound;
   SNDPlayStream *_stream;
-  NXTSoundState desiredState;
+  NXTSoundState _state;
 }
 
 @end

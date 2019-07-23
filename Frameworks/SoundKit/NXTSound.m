@@ -22,6 +22,8 @@
 #import "NXTSound.h"
 #import <GNUstepGUI/GSSoundSource.h>
 
+static BOOL isPlayFinished = NO;
+
 @implementation NXTSound
 
 - (void)dealloc
@@ -49,7 +51,7 @@
                       format:3 // PA
                         type:SNDEventType];
   [_stream setDelegate:self];
-  if (desiredState == NXTSoundPlay) {
+  if (_state == NXTSoundPlay) {
     NSLog(@"[NXTSound] desired state is `Play`...");
     [self play];
   }
@@ -88,7 +90,7 @@
         [_source channelCount], [_source sampleRate], [_source byteOrder],
         [_source duration]);
 
-  desiredState = NXTSoundInitial;
+  _state = NXTSoundInitial;
   
   // 1. Connect to PulseAudio on locahost
   server = [SNDServer sharedServer];
@@ -114,28 +116,32 @@
 - (BOOL)play
 {
   if (_stream == nil) {
-    desiredState = NXTSoundPlay;
+    _state = NXTSoundPlay;
   }
   else {
     [_stream activate];
   }
+
+  isPlayFinished = NO;
   
   return YES;
 }
 - (BOOL)stop
 {
-  if (_stream) {
+  if (_stream && _state != NXTSoundStop) {
     NSLog(@"Current song time: %f", [self currentTime]);
     [self pause];
     [self setCurrentTime:0];
     [_stream empty:YES];
+    _state = NXTSoundStop;
   }
   return YES;
 }
 - (BOOL)pause
 {
-  if (_stream) {
+  if (_stream && _state != NXTSoundPause) {
     [_stream pause:self];
+    _state = NXTSoundPause;
   }
   return YES;
 }
@@ -143,6 +149,7 @@
 {
   if (_stream) {
     [_stream resume:self];
+    _state = NXTSoundPlay;
   }
   return YES;
 }
@@ -160,18 +167,22 @@
   float      *buffer;
 
   // NSLog(@"[NXTSound] PLAY %lu bytes of sound", bytes_length);
-
-  buffer = malloc(sizeof(short) * bytes_length);
-  bytes_read = [_source readBytes:buffer length:bytes_length];
-  // NSLog(@"[NXTSound] READ %lu bytes of sound", bytes_length);
-  
-  if (bytes_read == 0) {
-    free(buffer);
-    [_stream empty:NO];
+  if (isPlayFinished != NO) {
     return;
   }
 
-  [_stream playBuffer:buffer size:bytes_length tag:0];
+  buffer = malloc(sizeof(short) * bytes_length);
+  bytes_read = [_source readBytes:buffer length:bytes_length];
+  // NSLog(@"[NXTSound] READ %lu bytes of sound", bytes_read);
+  
+  if (bytes_read == 0) {
+    free(buffer);
+    isPlayFinished = YES;
+    return;
+  }
+  // buffer will be freed by PA function called by SNDPlayStream
+  [_stream playBuffer:buffer size:bytes_read tag:0];
+  [_stream empty:NO];
 }
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
