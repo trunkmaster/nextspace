@@ -27,6 +27,15 @@
 extern void _stream_buffer_ready(pa_stream *stream, size_t length, void *sndStream);
 extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream);
 
+void _stream_underflow(pa_stream *stream, void *sndStream)
+{
+  fprintf(stderr, "[SoundKit] PlayStream UNDERflow!\n");
+}
+void _stream_overflow(pa_stream *stream, void *sndStream)
+{
+  fprintf(stderr, "[SoundKit] PlayStream OVERflow!\n");
+}
+
 @implementation SNDPlayStream
 
 - (void)dealloc
@@ -46,6 +55,8 @@ extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
   
   pa_stream_connect_playback(_pa_stream, [output.sink.name cString], NULL, 0, NULL, NULL);
   pa_stream_set_write_callback(_pa_stream, _stream_buffer_ready, self);
+  pa_stream_set_underflow_callback(_pa_stream, _stream_underflow, self);
+  pa_stream_set_overflow_callback(_pa_stream, _stream_overflow, self);
   
   super.isActive = YES;
 }
