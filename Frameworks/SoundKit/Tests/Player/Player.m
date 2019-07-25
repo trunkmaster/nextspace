@@ -73,7 +73,8 @@
 - (void)_initSoundWithFile:(NSString *)filename
 {
   sound = [[NXTSound alloc] initWithContentsOfFile:filename
-                                       byReference:YES];
+                                       byReference:YES
+                                        streamType:SNDApplicationType];
   [sound setDelegate:self];
 }
 
@@ -155,10 +156,12 @@
   if ([pauseBtn state] == NSOnState) {
     [playBtn setState:NSOffState];
     [stopBtn setState:NSOffState];
-    [[[[[NSApp mainMenu] itemWithTitle:@"Sound"] submenu] itemWithTag:2] setTitle:@"Resume"];
+    [[[[[NSApp mainMenu] itemWithTitle:@"Sound"] submenu] itemWithTag:2]
+      setTitle:@"Resume"];
   }
   else {
-    [[[[[NSApp mainMenu] itemWithTitle:@"Sound"] submenu] itemWithTag:2] setTitle:@"Pause"];
+    [[[[[NSApp mainMenu] itemWithTitle:@"Sound"] submenu] itemWithTag:2]
+      setTitle:@"Pause"];
     [self play:sender];
   }
 }
