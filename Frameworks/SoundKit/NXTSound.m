@@ -49,7 +49,7 @@ static BOOL isPlayFinished = NO;
                 samplingRate:[_source sampleRate]
                 channelCount:[_source channelCount]
                       format:3 // PA
-                        type:SNDEventType];
+                        type:_streamType];
   [_stream setDelegate:self];
   if (_state == NXTSoundPlay) {
     NSLog(@"[NXTSound] desired state is `Play`...");
@@ -78,6 +78,7 @@ static BOOL isPlayFinished = NO;
 // --- NSSound overriding
 - (id)initWithContentsOfFile:(NSString *)path
                  byReference:(BOOL)byRef
+                  streamType:(SNDStreamType)sType
 {
   SNDServer *server;
   
@@ -87,7 +88,7 @@ static BOOL isPlayFinished = NO;
   }
 
   if ([_source duration] < 0.30) {
-    isShort = YES;
+    _isShort = YES;
   }
 
   NSLog(@"[NXTSound] channels: %lu rate: %lu format: %i duraction: %.3f",
@@ -95,6 +96,7 @@ static BOOL isPlayFinished = NO;
         [_source duration]);
 
   _state = NXTSoundInitial;
+  _streamType = sType;
   
   // 1. Connect to PulseAudio on locahost
   server = [SNDServer sharedServer];
@@ -193,7 +195,7 @@ static BOOL isPlayFinished = NO;
   }
   // buffer will be freed by PA function called by SNDPlayStream
   [_stream playBuffer:buffer size:bytes_read tag:0];
-  if (isShort)
+  if (_isShort)
     [_stream empty:NO];
 }
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
