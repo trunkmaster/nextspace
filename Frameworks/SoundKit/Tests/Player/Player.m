@@ -146,13 +146,20 @@
 }
 - (void)pause:(id)sender
 {
+  if ([sender isKindOfClass:[NSMenuItem class]]) {
+    [pauseBtn setState:![pauseBtn state]];
+  }
+
+  
   [sound pause];
-  if ([(NSButton *)sender state] == NSOnState) {
+  if ([pauseBtn state] == NSOnState) {
     [playBtn setState:NSOffState];
     [stopBtn setState:NSOffState];
+    [[[[[NSApp mainMenu] itemWithTitle:@"Sound"] submenu] itemWithTag:2] setTitle:@"Resume"];
   }
   else {
-    [playBtn setState:NSOnState];
+    [[[[[NSApp mainMenu] itemWithTitle:@"Sound"] submenu] itemWithTag:2] setTitle:@"Pause"];
+    [self play:sender];
   }
 }
 - (void)stop:(id)sender
@@ -178,10 +185,16 @@
 
 - (void)repeat:(id)sender
 {
+  if ([sender isKindOfClass:[NSMenuItem class]]) {
+    [repeatBtn setState:NSOnState];
+  }
   [shuffleBtn setState:NSOffState];
 }
 - (void)shuffle:(id)sender
 {
+  if ([sender isKindOfClass:[NSMenuItem class]]) {
+    [shuffleBtn setState:NSOnState];
+  }
   [repeatBtn setState:NSOffState];
 }
 
