@@ -120,7 +120,7 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
       stream_media_role = "music";
       break;
     case SNDVideoType:
-      stream_media_role = "music";
+      stream_media_role = "video";
       break;
     case SNDGameType:
       stream_media_role = "game";
