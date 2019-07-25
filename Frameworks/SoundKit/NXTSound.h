@@ -35,6 +35,7 @@ typedef enum {
   NSSound       *_sound;
   SNDPlayStream *_stream;
   NXTSoundState _state;
+  BOOL          isShort;
 }
 
 @end
