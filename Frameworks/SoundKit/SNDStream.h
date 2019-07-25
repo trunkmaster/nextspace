@@ -74,6 +74,7 @@ typedef enum {
 - (void)resume:(id)sender;
 - (void)abort:(id)sender;
 
+- (NSNumber *)bufferLength;
 - (NSUInteger)volume;
 - (void)setVolume:(NSUInteger)volume;
 - (CGFloat)balance;

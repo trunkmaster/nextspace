@@ -212,6 +212,14 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
   pa_stream_flush(_pa_stream, _stream_buffer_empty, self);
 }
 
+
+- (NSNumber *)bufferLength
+{
+  const pa_buffer_attr *buffer_attr;
+  buffer_attr = pa_stream_get_buffer_attr(_pa_stream);
+
+  return [NSNumber numberWithUnsignedInteger:buffer_attr->tlength];
+}
 - (NSUInteger)volume
 {
   NSLog(@"[SoundKit] `volume` was send to SNDStream."
