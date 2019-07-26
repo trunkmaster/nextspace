@@ -426,7 +426,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
       [sink updateWithValue:value];
       isUpdated = YES;
       aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
-                                             object:self];
+                                             object:[self outputWithSink:sink]];
       break;
     }
   }
@@ -440,9 +440,9 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     [sinkList addObject:sink];
     [sink release];
     aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
-                                           object:self];
+                                           object:[self outputWithSink:sink]];
   }
-  // [[NSNotificationCenter defaultCenter] postNotification:aNotif];
+  [[NSNotificationCenter defaultCenter] postNotification:aNotif];
   
   free((void *)info);  
 }
@@ -479,6 +479,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   const pa_source_info *info;
   PASource             *source;
   BOOL                 isUpdated = NO;
+  NSNotification       *aNotif;
 
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_source_info));
@@ -489,6 +490,8 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
       fprintf(stderr, "[SoundKit] Source Update: %s.\n", info->name);
       [source updateWithValue:value];
       isUpdated = YES;
+      aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
+                                             object:[self inputWithSource:source]];
       break;
     }
   }
@@ -500,7 +503,11 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
     source.context = _pa_ctx;
     [sourceList addObject:source];
     [source release];
+    aNotif = [NSNotification notificationWithName:SNDDeviceDidAddNotification
+                                           object:[self inputWithSource:source]];
   }
+  
+  [[NSNotificationCenter defaultCenter] postNotification:aNotif];
   
   free((void *)info);  
 }
