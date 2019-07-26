@@ -189,64 +189,6 @@
   }
 }
 
-// --- Key-Value Observing
-static void *OutputContext = &OutputContext;
-static void *InputContext = &InputContext;
-- (void)observeOutput:(SNDOut *)output
-{
-  [output.sink addObserver:self
-                forKeyPath:@"mute"
-                   options:NSKeyValueObservingOptionNew
-                   context:OutputContext];
-  [output.sink addObserver:self
-                forKeyPath:@"channelVolumes"
-                   options:NSKeyValueObservingOptionNew
-                   context:OutputContext];
-}
-- (void)observeInput:(SNDIn *)input
-{
-  [input.source addObserver:self
-                 forKeyPath:@"mute"
-                    options:NSKeyValueObservingOptionNew
-                    context:InputContext];
-  [input.source addObserver:self
-                 forKeyPath:@"channelVolumes"
-                    options:NSKeyValueObservingOptionNew
-                    context:InputContext];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-  NSLog(@"KVO");
-  if (context == OutputContext) {
-    if ([keyPath isEqualToString:@"mute"]) {
-      [muteButton setState:[soundOut isMute]];
-    }
-    else if ([keyPath isEqualToString:@"channelVolumes"]) {
-      [volumeLevel setIntegerValue:[soundOut volume]];
-      [volumeBalance setFloatValue:[soundOut balance]];
-    }
-  }
-  else if (context == InputContext) {
-    if ([keyPath isEqualToString:@"mute"]) {
-      [muteMicButton setState:[soundIn isMute]];
-    }
-    else if ([keyPath isEqualToString:@"channelVolumes"]) {
-      [micLevel setIntegerValue:[soundIn volume]];
-      [micBalance setFloatValue:[soundIn balance]];
-    }
-  } else {
-    // Any unrecognized context must belong to super
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
-  }
-}
-
 // --- Sound subsystem actions
 - (void)serverStateChanged:(NSNotification *)notif
 {
@@ -260,14 +202,15 @@ static void *InputContext = &InputContext;
     
     if (soundOut) {
       [volumeLevel setMaxValue:[soundOut volumeSteps]-1];
-      // FIXME: KVO sometimes freezes the whole app and eats CPU
-      // [self observeOutput:soundOut];
     }
     if (soundIn) {
       [micLevel setMaxValue:[soundIn volumeSteps]-1];
-      // FIXME: KVO sometimes freezes the whole app and eats CPU
-      // [self observeInput:soundIn];
     }
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(deviceDidUpdate:)
+               name:SNDDeviceDidChangeNotification
+             object:nil];
     [self _updateControls];    
   }
   else if (soundServer.status == SNDServerFailedState ||
@@ -275,6 +218,29 @@ static void *InputContext = &InputContext;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [soundServer release];
     soundServer = nil;
+  }
+}
+
+// --- Device notifications
+- (void)deviceDidUpdate:(NSNotification *)aNotif
+{
+  id device = [aNotif object]; // SNDOut or SNDIn
+
+  if ([device isKindOfClass:[SNDOut class]]) {
+    SNDOut *output = (SNDOut *)device;
+    if (output.sink == soundOut.sink) {
+      [muteButton setState:[soundOut isMute]];
+      [volumeLevel setIntegerValue:[soundOut volume]];
+      [volumeBalance setFloatValue:[soundOut balance]];
+    }
+  }
+  else if ([device isKindOfClass:[SNDIn class]]) {
+    SNDIn *input = (SNDIn *)device;
+    if (input.source == soundIn.source) {
+      [muteMicButton setState:[soundIn isMute]];
+      [micLevel setIntegerValue:[soundIn volume]];
+      [micBalance setFloatValue:[soundIn balance]];
+    }
   }
 }
 
