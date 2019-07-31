@@ -153,30 +153,33 @@ static NXTSavePanel *_savePanel = nil;
 {
   NSInteger selectedColumn = [_browser selectedColumn];
   NSMatrix  *matrix = [_browser matrixInColumn:selectedColumn];
+  id        selectedCell = [matrix selectedCell];
 
   if (selectedColumn == -1) {
     matrix = [_browser matrixInColumn:0];
     if ([[matrix cells] count]) {
       [matrix selectCellAtRow:0 column:0];
     }
+    selectedCell = [matrix selectedCell];
   }
   else {
     // if there is one selected cell and it is a leaf, move right
     // (column is already loaded)
-    if (![[matrix selectedCell] isLeaf] && [[matrix selectedCells] count] == 1) {
+    if (![selectedCell isLeaf] && [[matrix selectedCells] count] == 1) {
       selectedColumn++;
       matrix = [_browser matrixInColumn:selectedColumn];
       if ([[matrix cells] count] && [matrix selectedCell] == nil) {
         [matrix selectCellAtRow:0 column:0];
       }
       // if selected cell is a leaf, we need to add a column
-      if ([[matrix selectedCell] isLeaf] != NO) {
+      selectedCell = [matrix selectedCell];
+      if (selectedCell && [selectedCell isLeaf] != NO) {
         [_browser addColumn];
       }
     }
   }
   [_browser setPath:[_browser path]];
-  if ([[matrix selectedCell] isLeaf] != NO) {
+  if (selectedCell && [selectedCell isLeaf] != NO) {
     [self _selectTextInColumn:selectedColumn];
   }
   [self _saveDefaultDirectory:[_browser path]];
