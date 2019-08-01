@@ -296,29 +296,33 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   // Streams with SinkInput and Client
   for (PASinkInput *sinkInput in sinkInputList) {
     playStream = [SNDPlayStream new];
-    playStream.server = self;
     playStream.client = [self clientWithIndex:sinkInput.clientIndex];
-    playStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
-    playStream.name = playStream.client.appName;
-    playStream.sinkInput = sinkInput;
-    [list addObject:playStream];
+    if (playStream.client != nil) {
+      playStream.server = self;
+      playStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
+      playStream.name = playStream.client.appName;
+      playStream.sinkInput = sinkInput;
+      [list addObject:playStream];
+      fprintf(stderr, "SNDPlayStream was added to list: %s\n", [playStream.name cString]);
+    }
     [playStream release];
-    fprintf(stderr, "SNDPlayStream was added to list: %s\n", [playStream.name cString]);
   }
   // Streams with SourceOuput and Client
   for (PASourceOutput *sourceOutput in sourceOutputList) {
     source = [self sourceWithIndex:sourceOutput.sourceIndex];
     if (source.isMonitor == NO) {
       recordStream = [SNDRecordStream new];
-      recordStream.server = self;
       recordStream.client = [self clientWithIndex:sourceOutput.clientIndex];
-      recordStream.device = [self inputWithSource:source];
-      recordStream.name = recordStream.client.appName;
-      recordStream.sourceOutput = sourceOutput;
-      [list addObject:recordStream];
+      if (recordStream.client != nil) {
+        recordStream.server = self;
+        recordStream.device = [self inputWithSource:source];
+        recordStream.name = recordStream.client.appName;
+        recordStream.sourceOutput = sourceOutput;
+        [list addObject:recordStream];
+        fprintf(stderr, "SNDRecordStream was added to list: %s\n",
+                [recordStream.name cString]);
+      }
       [recordStream release];
-      fprintf(stderr, "SNDRecordStream was added to list: %s\n",
-              [recordStream.name cString]);
     }
   }
 
