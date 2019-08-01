@@ -67,9 +67,11 @@ NSString *NXTDesktopBackgroundColor = @"DesktopBackgroundColor";
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   [image release];
-  [systemScreen release];
+
+  if (view) [view release];
+  if (systemScreen) [systemScreen release];
   if (saveConfigTimer) [saveConfigTimer release];
-  [view release];
+  
   [super dealloc];
 }
 

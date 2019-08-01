@@ -58,7 +58,7 @@ static NSMutableDictionary      *domain = nil;
   NSLog(@"Localization - dealloc");
   [domain dealloc];
   [image release];
-  [view release];
+  if (view) [view release];
   
   [super dealloc];
 }

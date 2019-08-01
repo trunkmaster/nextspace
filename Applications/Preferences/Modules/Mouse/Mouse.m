@@ -58,9 +58,15 @@ static NSMutableDictionary      *domain = nil;
 - (void)dealloc
 {
   NSLog(@"Mouse -dealloc");
+
+  [domain release];
   [image release];
-  [handImage release];
   [mouse release];
+
+  if (view) {
+    [view release];
+    [handImage release];
+  }
   
   [super dealloc];
 }

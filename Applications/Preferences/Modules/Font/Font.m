@@ -286,11 +286,15 @@ NSString *WWMDefaultsPath(void)
 - (void)dealloc
 {
   NSLog(@"FontPrefs -dealloc");
-  
+
+  [domain release];
   [image release];
-  [normalExampleString release];
-  [boldExampleString release];
   [fontCategories dealloc];
+
+  if (view) {
+    [normalExampleString release];
+    [boldExampleString release];
+  }
   
   [super dealloc];
 }
@@ -320,11 +324,10 @@ NSString *WWMDefaultsPath(void)
 
 - (void)awakeFromNib
 {
-  if (!view)
-    {
-      view = [[window contentView] retain];
-      [view removeFromSuperview];
-    }
+  if (!view) {
+    view = [[window contentView] retain];
+    [view removeFromSuperview];
+  }
   [window release];
   window = nil;
 

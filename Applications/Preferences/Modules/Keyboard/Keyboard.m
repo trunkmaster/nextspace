@@ -59,11 +59,17 @@ static NXTDefaults *defaults = nil;
 - (void)dealloc
 {
   NSLog(@"KeyboardPrefs -dealloc");
-  // [defaults synchronize];
+  
   [image release];
-  if (keyboard) {
-    [keyboard release];
+  [keyboard release];
+  if (view) {
+    [view release];
+    [repeatBox release];
+    [shortcutsBox release];
+    [keypadBox release];
+    [modifiersBox release];
   }
+
   [super dealloc];
 }
 

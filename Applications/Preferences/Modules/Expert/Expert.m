@@ -42,6 +42,9 @@
 {
   NSLog(@"Expert -dealloc");
   [image release];
+  if (view) {
+    [view release];
+  }
   [super dealloc];
 }
 

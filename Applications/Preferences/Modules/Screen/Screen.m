@@ -78,11 +78,10 @@
   [appIconYardImage release];
   [iconYardImage release];
   
-  [displayBoxList release];
-
-  [systemScreen release];
-  [power release];
-  [view release];
+  if (displayBoxList) [displayBoxList release];
+  if (systemScreen) [systemScreen release];
+  if (power) [power release];
+  if (view) [view release];
   
   [super dealloc];
 }

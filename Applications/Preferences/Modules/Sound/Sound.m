@@ -59,7 +59,8 @@
   imagePath = [bundle pathForResource:@"Sound" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  defaultSound = [defaults objectForKey:@"NXSystemBeep"];
+  defaultSound = [[NSString alloc]
+                   initWithString:[defaults objectForKey:@"NXSystemBeep"]];
   if (defaultSound == nil) {
     defaultSound = @"/usr/NextSpace/Sounds/Bonk.snd";
     [defaults setObject:defaultSound forKey:@"NXSystemBeep"];
