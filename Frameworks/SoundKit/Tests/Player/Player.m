@@ -103,16 +103,13 @@
   }
   
   if (sound != nil) {
-    if ([sound isPlaying]) {
-      [self stop:stopBtn];
-    }
-    [sound release];
+    [self stop:stopBtn];
+    [sound autorelease];
   }
   
   [songTitle setStringValue:[file lastPathComponent]];
   [self _initSoundWithFile:file];
-  [self setWindowTitleForFile:file];
-  
+  [self setWindowTitleForFile:file]; 
   [self setButtonsEnabled:YES];
 }
 
