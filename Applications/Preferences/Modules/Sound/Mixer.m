@@ -52,7 +52,11 @@ enum {
 
 - (void)dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  if (selectedApp != nil) {
+    [self stopObserveStream:selectedApp];
+  }
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];  
   [super dealloc];
 }
 
@@ -73,7 +77,6 @@ enum {
 {
   [cardDescription setTextColor:[NSColor darkGrayColor]];
   [window setFrameAutosaveName:@"Mixer"];
-  [window makeKeyAndOrderFront:self];
   
   [[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -85,8 +88,9 @@ enum {
        selector:@selector(reloadAppBrowser)
            name:SNDDeviceDidRemoveNotification
          object:soundServer];
-  
-  // [self reloadAppBrowser];
+
+  selectedApp = nil;
+  [self reloadAppBrowser];
   [self updateDeviceList];
 }
 
@@ -298,8 +302,8 @@ enum {
   if (context == OutputContext) {
     output = [[devicePortBtn selectedItem] representedObject];
     if (object == output.sink) {
-      NSLog(@"SoundOut received change to `%@` object %@ change: %@",
-            keyPath, [object className], change);
+      // NSLog(@"SoundOut received change to `%@` object %@ change: %@",
+      //       keyPath, [object className], change);
       if ([keyPath isEqualToString:@"mute"]) {
         [deviceMuteBtn setState:[output isMute]];
       }
@@ -323,8 +327,8 @@ enum {
   else if (context == InputContext) {
     input = [[devicePortBtn selectedItem] representedObject];
     if (object == input.source) {
-      NSLog(@"SoundIn received change to `%@` object %@ change: %@",
-            keyPath, [object className], change);
+      // NSLog(@"SoundIn received change to `%@` object %@ change: %@",
+      //       keyPath, [object className], change);
       if ([keyPath isEqualToString:@"mute"]) {
         [deviceMuteBtn setState:[input isMute]];
       }
@@ -350,11 +354,11 @@ enum {
     virtualStream = [[appBrowser selectedCellInColumn:0] representedObject];
     if (object == virtualStream.stream) {
       if ([keyPath isEqualToString:@"mute"]) {
-        NSLog(@"VirtualStream changed mute attribute.");
+        // NSLog(@"VirtualStream changed mute attribute.");
         [self browserClick:appBrowser];
       }
       else if ([keyPath isEqualToString:@"volume"]) {
-        NSLog(@"VirtualStream changed it's volume.");
+        // NSLog(@"VirtualStream changed it's volume.");
         [self browserClick:appBrowser];
       }
     }
@@ -364,11 +368,11 @@ enum {
     playStream = [[appBrowser selectedCellInColumn:0] representedObject];
     if (object == playStream.sinkInput) {
       if ([keyPath isEqualToString:@"mute"]) {
-        NSLog(@"PlayStream changed mute attribute.");
+        // NSLog(@"PlayStream changed mute attribute.");
         [self browserClick:appBrowser];
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
-        NSLog(@"PlayStream changed it's volume.");
+        // NSLog(@"PlayStream changed it's volume.");
         [self browserClick:appBrowser];
       }
     }
@@ -378,11 +382,11 @@ enum {
     recordStream = [[appBrowser selectedCellInColumn:0] representedObject];
     if (object == recordStream.sourceOutput) {
       if ([keyPath isEqualToString:@"mute"]) {
-        NSLog(@"RecordStream changed mute attribute.");
+        // NSLog(@"RecordStream changed mute attribute.");
         [self browserClick:appBrowser];
       }
       else if ([keyPath isEqualToString:@"channelVolumes"]) {
-        NSLog(@"RecordStream changed it's volume.");
+        // NSLog(@"RecordStream changed it's volume.");
         [self browserClick:appBrowser];
       }
     }
@@ -422,6 +426,7 @@ enum {
   NSString *selected = [[appBrowser selectedCellInColumn:0] title];
   NSMatrix *matrix;
   NSCell   *cell;
+  BOOL     selectedExist = NO;
 
   // Stop tracking SNDStream because it may disappear after reload
   if (selectedApp != nil) {
@@ -429,10 +434,16 @@ enum {
     selectedApp = nil;
   }
   
-  [appBrowser reloadColumn:0];
+  [appBrowser loadColumnZero];
 
   matrix = [appBrowser matrixInColumn:0];
-  if ([matrix numberOfRows] > 0 && selected == nil) {
+  for (cell in [matrix cells]) {
+    if ([[cell title] isEqualToString:selected]) {
+      selectedExist = YES;
+    }
+  }
+  
+  if (selectedExist == NO || ([matrix numberOfRows] > 0 && selected == nil)) {
     [appBrowser selectRow:0 inColumn:0];
   }
   else {
@@ -547,7 +558,9 @@ enum {
   // NSLog(@"setAppVolume: sender %@ stream: %@",
   //       [sender className], [stream className]);
 
+  [self stopObserveStream:stream];
   [stream setVolume:[sender integerValue]];
+  [self startObserveStream:stream];
 }
 
 // --- Output actions
