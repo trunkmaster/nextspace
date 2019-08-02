@@ -52,6 +52,7 @@
 
   NSMutableArray *buttons;
   NSUInteger     maxButtonWidth;
+  NSUInteger     minButtonWidth;
 }
 
 - (id)initWithTitle:(NSString *)titleText
@@ -75,13 +76,13 @@
 @end
 
 extern void NXTRunExceptionPanel(NSString *title,
-                                NSString *msg,
-                                NSString *defaultButton,
-                                NSString *alternateButton,
-                                NSString *otherButton, ...);
-
-extern NSInteger NXTRunAlertPanel(NSString *title,
                                  NSString *msg,
                                  NSString *defaultButton,
                                  NSString *alternateButton,
                                  NSString *otherButton, ...);
+
+extern NSInteger NXTRunAlertPanel(NSString *title,
+                                  NSString *msg,
+                                  NSString *defaultButton,
+                                  NSString *alternateButton,
+                                  NSString *otherButton, ...);
