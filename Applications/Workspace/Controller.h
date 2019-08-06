@@ -23,6 +23,7 @@
 #import <SystemKit/OSEFileSystemMonitor.h>
 #import <SystemKit/OSEMediaManager.h>
 #import <DesktopKit/NXTIconBadge.h>
+#import <SoundKit/NXTSound.h>
 
 #import "Console.h"
 
@@ -83,6 +84,8 @@
   NXTIconBadge		*workspaceBadge;
   NXTIconBadge		*keyboardBadge;
   Recycler		*recycler;
+
+  NXTSound              *bellSound;
 }
 
 - (FileViewer *)newViewerRootedAt:(NSString *)path
@@ -135,5 +138,7 @@
 
 - (void)showLauncher:sender;
 - (void)setDockVisibility:(id)sender;
+
+- (void)ringBell;
 
 @end

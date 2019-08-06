@@ -22,7 +22,7 @@ ADDITIONAL_INCLUDE_DIRS += -I./ `pkg-config --cflags dbus-1 upower-glib`
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += 
 
-ADDITIONAL_GUI_LIBS += -lSystemKit -lDesktopKit -lX11
+ADDITIONAL_GUI_LIBS += -lSystemKit -lDesktopKit -lSoundKit -lX11
 
 
 #

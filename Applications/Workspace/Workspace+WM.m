@@ -1731,16 +1731,17 @@ void XWRingBell(WWindow *wwin)
   else {
     // Play sound specified in ~/Library/Preferences/.NextSpace/NXGlobalDomain
     // as NXSystemBeep.
-    NSString *beepPath = [defs objectForKey:@"NXSystemBeep"];
-    NSSound  *sound;
-    if (beepPath == nil ||
-        [[NSFileManager defaultManager] fileExistsAtPath:beepPath] == NO) {
-      beepPath = @"/usr/NextSpace/Sounds/Bonk.snd";
-    }
+    // NSString *beepPath = [defs objectForKey:@"NXSystemBeep"];
+    // NSSound  *sound;
+    // if (beepPath == nil ||
+    //     [[NSFileManager defaultManager] fileExistsAtPath:beepPath] == NO) {
+    //   beepPath = @"/usr/NextSpace/Sounds/Bonk.snd";
+    // }
+    // sound = [[NSSound alloc] initWithContentsOfFile:beepPath byReference:NO];
+    // [sound play];
+    // [sound release];
     // TODO: should we play it with SoundKit?
-    sound = [[NSSound alloc] initWithContentsOfFile:beepPath byReference:NO];
-    [sound play];
-    [sound release];
+    [[NSApp delegate] ringBell];
   }
 }
 
