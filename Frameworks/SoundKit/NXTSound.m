@@ -134,6 +134,7 @@ static BOOL isPlayFinished = NO;
     return YES;
   }
 
+  _state = NXTSoundPlay;
   return NO;
 }
 - (BOOL)stop
@@ -203,6 +204,8 @@ static BOOL isPlayFinished = NO;
   NSLog(@"[NXTSound] stream buffer is empty %.2f/%0.2f",
         [_source currentTime], [_source duration]);
   if (isPlayFinished == NO) {
+    // isPlayFinished will be set to 'YES' in called method below
+    // if no more bytes to read.
     [self soundStream:_stream bufferReady:[_stream bufferLength]];
   }
   else {
