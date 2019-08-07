@@ -35,8 +35,9 @@ typedef enum {
   NSSound       *_sound;
   SNDPlayStream *_stream;
   NXTSoundState _state;
-  BOOL          _isShort;
   SNDStreamType _streamType;
+  BOOL          _isShort;
+  BOOL          _isPlayFinished;
 }
 
 - (id)initWithContentsOfFile:(NSString *)path

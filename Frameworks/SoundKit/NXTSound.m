@@ -22,8 +22,6 @@
 #import "NXTSound.h"
 #import <GNUstepGUI/GSSoundSource.h>
 
-static BOOL isPlayFinished = NO;
-
 @implementation NXTSound
 
 - (void)dealloc
@@ -53,6 +51,7 @@ static BOOL isPlayFinished = NO;
   [_stream setDelegate:self];
   if (_state == NXTSoundPlay) {
     NSLog(@"[NXTSound] desired state is `Play`...");
+    _isPlayFinished = YES;
     [self play];
   }
 }
@@ -75,7 +74,6 @@ static BOOL isPlayFinished = NO;
   }
 }
 
-// --- NSSound overriding
 - (id)initWithContentsOfFile:(NSString *)path
                  byReference:(BOOL)byRef
                   streamType:(SNDStreamType)sType
@@ -95,6 +93,7 @@ static BOOL isPlayFinished = NO;
         [_source channelCount], [_source sampleRate], [_source byteOrder],
         [_source duration]);
 
+  _isPlayFinished = YES;
   _state = NXTSoundInitial;
   _streamType = sType;
   
@@ -121,9 +120,13 @@ static BOOL isPlayFinished = NO;
 
 - (BOOL)play
 {
-  isPlayFinished = NO;
+  if (_isPlayFinished == NO) {
+    fprintf(stderr, "[SoundKit] NXTSound skipped play - already playing.\n");
+    return NO;
+  }
   
   if (_stream != nil) {
+    _isPlayFinished = NO;
     if (_stream.isActive == NO) {
       [_stream activate];
     }
@@ -145,16 +148,18 @@ static BOOL isPlayFinished = NO;
     [self setCurrentTime:0];
     [_stream empty:YES];
     _state = NXTSoundStop;
+    return YES;
   }
-  return YES;
+  return NO;
 }
 - (BOOL)pause
 {
   if (_stream && _state != NXTSoundPause) {
     [_stream pause:self];
     _state = NXTSoundPause;
+    return YES;
   }
-  return YES;
+  return NO;
 }
 - (BOOL)resume
 {
@@ -177,7 +182,7 @@ static BOOL isPlayFinished = NO;
   NSUInteger bytes_read;
   float      *buffer;
 
-  if (isPlayFinished != NO) {
+  if (_isPlayFinished != NO) {
     return;
   }
 
@@ -190,21 +195,23 @@ static BOOL isPlayFinished = NO;
   
   if (bytes_read == 0) {
     free(buffer);
-    isPlayFinished = YES;
+    _isPlayFinished = YES;
     [_stream empty:NO];
     return;
   }
+  
   // buffer will be freed by PA function called by SNDPlayStream
   [_stream playBuffer:buffer size:bytes_read tag:0];
-  if (_isShort)
+  if (_isShort) {
     [_stream empty:NO];
+  }
 }
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
   NSLog(@"[NXTSound] stream buffer is empty %.2f/%0.2f",
         [_source currentTime], [_source duration]);
-  if (isPlayFinished == NO) {
-    // isPlayFinished will be set to 'YES' in called method below
+  if (_isPlayFinished == NO) {
+    // _isPlayFinished will be set to 'YES' in called method below
     // if no more bytes to read.
     [self soundStream:_stream bufferReady:[_stream bufferLength]];
   }
