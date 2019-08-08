@@ -322,7 +322,7 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
 
   i = [icons indexOfObjectIdenticalTo:anIcon];
   if (i == NSNotFound) {
-    NSLog(@"[NXTIconView -removeIcon] failed: Icon not found!");
+    NSLog(@"[NXTIconView] failed to remove icon: icon not found!");
     return;
   }
 
@@ -499,19 +499,19 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   
   // Determine how much slots can contain superview's width.
   if (_autoresizingMask & NSViewWidthSizable) {
-    NSLog(@"[NXTIconView setSlotSize] slotsWide from superview width");
+    // NSLog(@"[NXTIconView] set slot size from superview width");
     viewWidth = [[self superview] bounds].size.width;
   }
   else {
-    NSLog(@"[NXTIconView setSlotSize] own width from slotsWide");
+    // NSLog(@"[NXTIconView] set slot size from slotsWide");
     viewWidth = slotsWide * slotSize.width;
   }
 
   newSlotsWide = floorf(viewWidth / slotSize.width);
   [self setSlotsWide:newSlotsWide];
   
-  NSLog(@"[NXTIconView] slotsWide: %lu view width:%0.f",
-        newSlotsWide, [self frame].size.width);
+  // NSLog(@"[NXTIconView] slotsWide: %lu view width:%0.f",
+  //       newSlotsWide, [self frame].size.width);
 
   // Update collapsed icon labels width
   {
@@ -911,8 +911,8 @@ static inline NXTIconSlot SlotFromIndex(unsigned slotsWide, unsigned i)
   NXTIconSlot nextIcon = selectedIconSlot;
   NSRect     selRect = NSMakeRect(0,0,0,0);
 
-  NSLog(@"[NXTIconView] keyDown: %c (%x) modifiers: %lu slot: %i.%i",
-        c, c,flags, selectedIconSlot.x, selectedIconSlot.y);
+  // NSLog(@"[NXTIconView] keyDown: %c (%x) modifiers: %lu slot: %i.%i",
+  //       c, c,flags, selectedIconSlot.x, selectedIconSlot.y);
 
   // Arrows and Shift + Arrows selection
   if (allowsArrowsSelection &&
