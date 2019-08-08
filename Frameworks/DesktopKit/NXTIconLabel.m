@@ -98,19 +98,20 @@
       NSRect superFrame = [superview frame];
       NSRect iconFrame = [icon frame];
 
-     // NSLog(@"NXTIconLabel: sizes: (%@)%.0fx%.0f (%@)%.0fx%.0f (%@)%.0fx%.0f",
-     //        [superview className], 
-     //        superFrame.size.width, superFrame.size.height,
-     //        [icon className], 
-     //        iconFrame.size.width, iconFrame.size.height,
-     //        [self className], 
-     //        frame.size.width, frame.size.height);
+      // NSLog(@"NXTIconLabel: "
+      //       "(%@) sizes: (%@)%.0fx%.0f (%@)%.0fx%.0f (%@)%.0fx%.0f",
+      //       [self text],
+      //       [superview className], 
+      //       superFrame.size.width, superFrame.size.height,
+      //       [icon className], 
+      //       iconFrame.size.width, iconFrame.size.height,
+      //       [self className], 
+      //       frame.size.width, frame.size.height);
 
       // Y-position
       if ([superview isFlipped])
 	{
-	  frame.origin.y = 
-	    roundf(iconFrame.origin.y + iconFrame.size.height);
+	  frame.origin.y = roundf(iconFrame.origin.y + iconFrame.size.height);
 	}
       else
 	{
