@@ -40,36 +40,33 @@ static inline NSRect IncrementedRect(NSRect r)
 
   if (delegate == nil ||
       ![delegate respondsToSelector:@selector(arrowView:shouldMoveByDelta:)] ||
-      ![delegate respondsToSelector:@selector(arrowViewStoppedMoving:)])
-    {
-      return;
-    }
+      ![delegate respondsToSelector:@selector(arrowViewStoppedMoving:)]) {
+    return;
+  }
 
   lastPoint = [ev locationInWindow].x;
 
   while ([(ev = [[self window] nextEventMatchingMask:NSAnyEventMask]) type]
-         != NSLeftMouseUp)
-    {
-      float delta;
+         != NSLeftMouseUp) {
+    float delta;
 
-      if ([ev type] != NSLeftMouseDragged)
-        continue;
+    if ([ev type] != NSLeftMouseDragged)
+      continue;
 
-      delta = [ev locationInWindow].x - lastPoint;
-      if ([delegate arrowView:self shouldMoveByDelta:delta])
-        {
-          NSRect frame;
+    delta = [ev locationInWindow].x - lastPoint;
+    if ([delegate arrowView:self shouldMoveByDelta:delta]) {
+      NSRect frame;
         
-          frame = [self frame];
-          [[self superview] setNeedsDisplayInRect:IncrementedRect(frame)];
-          frame.origin.x += delta;
-          [self setFrame:frame];
-          [self setNeedsDisplay:YES];
-          [[self superview] setNeedsDisplayInRect:IncrementedRect(frame)];
+      frame = [self frame];
+      [[self superview] setNeedsDisplayInRect:IncrementedRect(frame)];
+      frame.origin.x += delta;
+      [self setFrame:frame];
+      [self setNeedsDisplay:YES];
+      [[self superview] setNeedsDisplayInRect:IncrementedRect(frame)];
         
-          lastPoint = [ev locationInWindow].x;
-        }
+      lastPoint = [ev locationInWindow].x;
     }
+  }
 
   [delegate arrowViewStoppedMoving:self];
 }

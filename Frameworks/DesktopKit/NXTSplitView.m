@@ -35,16 +35,18 @@ NSString *NXTSplitViewDividerDidDraw = @"NXTSplitViewDividerDidDraw";
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  if (!resizableState)
+  if (!resizableState) {
     return;
+  }
 
   [super mouseDown:theEvent];
 }
 
 - (void)resetCursorRects
 {
-  if (!resizableState)
+  if (!resizableState) {
     return;
+  }
 
   [super resetCursorRects];
 }
@@ -56,8 +58,9 @@ NSString *NXTSplitViewDividerDidDraw = @"NXTSplitViewDividerDidDraw";
 
 - (void)drawDividerInRect:(NSRect)aRect
 {
-  if (resizableState == 0)
+  if (resizableState == 0) {
     return;
+  }
   
   [super drawDividerInRect:aRect];
 

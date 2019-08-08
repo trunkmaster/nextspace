@@ -31,21 +31,18 @@
 - (void)renderBar
 {
   float angle = 90.0;
-  if ([self isHidden] || (ratio <= 0.0))
-    {
-      return;
-    }
-  if (ratio >= 1.0)
-    {
-      angle = -270.0;
-    }
-  if (ratio < 1.0 && ratio > 0.0)
-    {
-      angle = 90.0 - 360.0 * ratio;
-    }
+  if ([self isHidden] || (ratio <= 0.0)) {
+    return;
+  }
+  if (ratio >= 1.0) {
+    angle = -270.0;
+  }
+  if (ratio < 1.0 && ratio > 0.0) {
+    angle = 90.0 - 360.0 * ratio;
+  }
   PSmoveto(NSWidth([self bounds]) / 2.0, NSHeight([self bounds]) / 2.0);
   PSarcn(NSWidth([self bounds]) / 2.0, NSHeight([self bounds]) / 2.0,
-          NSHeight([self bounds]) / 2.0, 90.0, angle);
+         NSHeight([self bounds]) / 2.0, 90.0, angle);
   PSclosepath();
   [fg set];
   PSfill();
@@ -58,10 +55,9 @@
   CGFloat vWidth, vHeight;
   CGFloat center_x, center_y;
 
-  if ([self isHidden])
-    {
-      return;
-    }
+  if ([self isHidden]) {
+    return;
+  }
 
   [bd set];
 
@@ -71,14 +67,12 @@
   PSarc(vWidth/2.0, vHeight/2.0, (vHeight-2)/2.0, 0.0, 360.0);
   PSstroke();
 
-  if (ratio >= 1.0)
-    {
-      angle = -270.0;
-    }
-  if ((ratio < 1.0) && (ratio > 0.0))
-    {
-      angle = 90.0 - 360.0 * ratio;
-    }
+  if (ratio >= 1.0) {
+    angle = -270.0;
+  }
+  if ((ratio < 1.0) && (ratio > 0.0)) {
+    angle = 90.0 - 360.0 * ratio;
+  }
   PSmoveto(vWidth/2.0, vHeight/2.0);
   PSarcn(vWidth/2.0, vHeight/2.0, (vHeight-2)/2.0, 90.0, angle);
   PSclosepath();

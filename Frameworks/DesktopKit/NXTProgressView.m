@@ -54,28 +54,26 @@
 
 - (void)renderBarEdge
 {
-  if ((ratio > 0) && (ratio <= 1.0))
-    {
-      NSRect r = [self bounds];
-      r.size.width = [self bounds].size.width * ratio;
+  if ((ratio > 0) && (ratio <= 1.0)) {
+    NSRect r = [self bounds];
+    r.size.width = [self bounds].size.width * ratio;
 
-      [bd set];
-      PSnewpath();
-      PSmoveto(r.size.width, 0);
-      PSlineto(r.size.width, r.size.height);
-      PSstroke();
-    }
+    [bd set];
+    PSnewpath();
+    PSmoveto(r.size.width, 0);
+    PSlineto(r.size.width, r.size.height);
+    PSstroke();
+  }
 }
 
 - (void)renderBar
 {
-  if ((ratio > 0) && (ratio <= 1.0))
-    {
-      NSRect r = [self bounds];
-      r.size.width = [self bounds].size.width * ratio;
-      [fg set];
-      NSRectFill(r);
-    }
+  if ((ratio > 0) && (ratio <= 1.0)) {
+    NSRect r = [self bounds];
+    r.size.width = [self bounds].size.width * ratio;
+    [fg set];
+    NSRectFill(r);
+  }
 }
 
 - (void)renderBorder
@@ -140,50 +138,48 @@
 
 - (void)setBackgroundColor:(NSColor *)color
 {
-	if([bg isEqual:color])
-		return;
-	[bg release];
-	bg = [color retain];
+  if ([bg isEqual:color]) {
+    return;
+  }
+  [bg release];
+  bg = [color retain];
 }
 
 - (void)setForegroundColor:(NSColor *)color
 {
-	if([fg isEqual:color])
-		return;
-	[fg release];
-	fg = [color retain];
+  if ([fg isEqual:color]) {
+    return;
+  }
+  [fg release];
+  fg = [color retain];
 }
 
 - (void)setBorderColor:(NSColor *)color
 {
-  if([bd isEqual:color])
-    {
-      return;
-    }
+  if ([bd isEqual:color]) {
+    return;
+  }
   [bd release];
   bd = [color retain];
 }
 
 - (void)setBorderType:(NSBorderType)borderType
 {
-  if (border_type != borderType)
-    {
-      border_type = borderType;
-      [self setNeedsDisplay:YES];
-    }
+  if (border_type != borderType) {
+    border_type = borderType;
+    [self setNeedsDisplay:YES];
+  }
 }
 
 - (void)setRatio:(float)newRatio
 {
-  if (newRatio > 1.0) 
-    {
-      newRatio = 1.0;
-    }
-  if (ratio != newRatio)
-    {
-      ratio = newRatio;
-      [self setNeedsDisplay:YES];
-    }
+  if (newRatio > 1.0) {
+    newRatio = 1.0;
+  }
+  if (ratio != newRatio) {
+    ratio = newRatio;
+    [self setNeedsDisplay:YES];
+  }
 }
 
 
@@ -191,10 +187,9 @@
 {
   int temp = [sender intValue];
 
-  if ((temp < 0) || (temp > total))
-    {
-      return;
-    }
+  if ((temp < 0) || (temp > total)) {
+    return;
+  }
   count = temp;
   [self setRatio:(float)count/(float)total];
 }
@@ -241,6 +236,5 @@
   [aCoder encodeObject:fg];
   [aCoder encodeObject:bd];
 }
-
 
 @end

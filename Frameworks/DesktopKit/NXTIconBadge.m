@@ -49,21 +49,19 @@
   
   string = [[NSMutableString alloc] initWithString:text];
 
-  if (tColor)
-    {
-      textAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  tColor, NSForegroundColorAttributeName,
-                                font, NSFontAttributeName, nil];
-      [textAttrs retain];
-    }
+  if (tColor) {
+    textAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                tColor, NSForegroundColorAttributeName,
+                              font, NSFontAttributeName, nil];
+    [textAttrs retain];
+  }
 
-  if (sColor)
-    {
-      shadowAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    sColor, NSForegroundColorAttributeName,
-                                  font, NSFontAttributeName, nil];
-      [shadowAttrs retain];
-    }
+  if (sColor) {
+    shadowAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  sColor, NSForegroundColorAttributeName,
+                                font, NSFontAttributeName, nil];
+    [shadowAttrs retain];
+  }
 
   return self;
 }
@@ -109,18 +107,16 @@
 
   [super drawRect:rect];
   
-  if (shadowAttrs)
-    {
-      point.x++;
-      point.y--;
-      [string drawAtPoint:point withAttributes:shadowAttrs];
-    }
-  if (textAttrs)
-    {
-      point.x--;
-      point.y++;
-      [string drawAtPoint:point withAttributes:textAttrs];
-    }
+  if (shadowAttrs) {
+    point.x++;
+    point.y--;
+    [string drawAtPoint:point withAttributes:shadowAttrs];
+  }
+  if (textAttrs) {
+    point.x--;
+    point.y++;
+    [string drawAtPoint:point withAttributes:textAttrs];
+  }
 }
 
 @end

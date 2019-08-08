@@ -20,12 +20,6 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-/** @class NXTIconLabel
- *  @brief The label used in icons.
- *
- *  @author Saso Kiselkov, Sergii Stoian
- */
-
 #import <AppKit/NSTextView.h>
 
 @class NXTIcon, NSScrollView;
@@ -34,8 +28,7 @@
 {
   NSString *oldString;
   NSString *oldString1;
-
-  NXTIcon   *icon;
+  NXTIcon  *icon;
 
   id iconLabelDelegate;
 }
@@ -52,7 +45,7 @@
 // Returns the delegate.
 - iconLabelDelegate;
 
- /// Returns the icon which owns the receiver.
+// Returns the icon which owns the receiver.
 - (NXTIcon *)icon;
 
 @end

@@ -43,15 +43,13 @@
 {
   NSCharacterSet *digitsCharset = [NSCharacterSet decimalDigitCharacterSet];
   
-  for (int i = 0; i < [text length]; ++i)
-    {
-      if (([digitsCharset characterIsMember:[text characterAtIndex:i]] == NO)
-          && ([text characterAtIndex:i] != '-')
-          && ([text characterAtIndex:i] != '.'))
-        {
-          return NO;
-        }
+  for (int i = 0; i < [text length]; ++i) {
+    if (([digitsCharset characterIsMember:[text characterAtIndex:i]] == NO)
+        && ([text characterAtIndex:i] != '-')
+        && ([text characterAtIndex:i] != '.')) {
+      return NO;
     }
+  }
 
   return YES;
 }
@@ -121,7 +119,8 @@
   if (val < minimumValue) val = minimumValue;
   if (val > maximumValue) val = maximumValue;
 
-  [super setStringValue:[formatter stringFromNumber:[NSNumber numberWithFloat:val]]];
+  [super
+    setStringValue:[formatter stringFromNumber:[NSNumber numberWithFloat:val]]];
   
   return YES;
 }
@@ -132,19 +131,16 @@
   
   // 'Home' key places insertion point at the beginning and selects inegral
   // part of number.
-  if ([theEvent keyCode] == 110)
-    {
-      range = [[self stringValue] rangeOfString:@"."];  
-      if (range.location != NSNotFound)
-        {
-          // Select fraction part
-          range.length = range.location;
-          range.location = 0;
-          [[[self window] fieldEditor:NO forObject:self]
-                        setSelectedRange:range];
-        }
+  if ([[theEvent characters] characterAtIndex:0] == NSHomeFunctionKey) {
+    range = [[self stringValue] rangeOfString:@"."];  
+    if (range.location != NSNotFound) {
+      // Select fraction part
+      range.length = range.location;
+      range.location = 0;
+      [[[self window] fieldEditor:NO forObject:self]
+        setSelectedRange:range];
     }
-  
+  }  
 }
 
 //----------------------------------------------------------------------------
@@ -161,64 +157,56 @@
   BOOL    result = YES;
   NSRange range;
 
-  if (!replacementString || [replacementString length] == 0)
-    {
-      // Prevent deletion of '.' symbol
-      range = [[self stringValue] rangeOfString:@"."];
-      if (NSIntersectionRange(range, affectedCharRange).length > 0)
-        return NO;
-      else
-        return YES;
+  if (!replacementString || [replacementString length] == 0) {
+    // Prevent deletion of '.' symbol
+    range = [[self stringValue] rangeOfString:@"."];
+    if (NSIntersectionRange(range, affectedCharRange).length > 0) {
+      return NO;
     }
+    else {
+      return YES;
+    }
+  }
 
-  if ([formatter minimumFractionDigits] > 0 || [formatter maximumFractionDigits] > 0)
-    {
-      isDecimal = YES;
-    }
+  if ([formatter minimumFractionDigits] > 0 ||
+      [formatter maximumFractionDigits] > 0) {
+    isDecimal = YES;
+  }
   
-  if ([self _isValidString:replacementString] == YES)
-    {
-      for (int i = 0; i < [replacementString length]; ++i)
-        {
-          if ([replacementString characterAtIndex:i] == '-')
-            {
-              if (i != 0 || affectedCharRange.location != 0
-                  || [[self stringValue] rangeOfString:@"-"].location != NSNotFound)
-                {
-                  result = NO;
-                  break;
-                }
-            }
-          else if ([replacementString characterAtIndex:i] == '.')
-            {
-              if (!isDecimal)
-                {
-                  result = NO;
-                  break;
-                }
-              else
-                {
-                  range = [[self stringValue] rangeOfString:@"."];
-                  // Extra '.' want to be added
-                  if (range.location != NSNotFound
-                      && NSIntersectionRange(range, affectedCharRange).length == 0)
-                    {
-                      // Select fraction part
-                      range.location += 1;
-                      range.length = [[self stringValue] length] - range.location;
-                      [[[self window] fieldEditor:NO forObject:self]
-                        setSelectedRange:range];
-                      result = NO;
-                      break;
-                    }
-                }
-            }
+  if ([self _isValidString:replacementString] == YES) {
+    for (int i = 0; i < [replacementString length]; ++i) {
+      if ([replacementString characterAtIndex:i] == '-') {
+        if (i != 0 || affectedCharRange.location != 0
+            || [[self stringValue] rangeOfString:@"-"].location != NSNotFound) {
+          result = NO;
+          break;
         }
+      }
+      else if ([replacementString characterAtIndex:i] == '.') {
+        if (!isDecimal) {
+          result = NO;
+          break;
+        }
+        else {
+          range = [[self stringValue] rangeOfString:@"."];
+          // Extra '.' want to be added
+          if (range.location != NSNotFound
+              && NSIntersectionRange(range, affectedCharRange).length == 0) {
+            // Select fraction part
+            range.location += 1;
+            range.length = [[self stringValue] length] - range.location;
+            [[[self window] fieldEditor:NO forObject:self]
+              setSelectedRange:range];
+            result = NO;
+            break;
+          }
+        }
+      }
     }
-  else // Invalid text was entered
-    {
-      result = NO;
-    }
+  }
+  else { // Invalid text was entered
+    result = NO;
+  }
   
   return result;
 }

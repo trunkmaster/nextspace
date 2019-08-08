@@ -51,50 +51,45 @@
 
 - (void)setTickColor:(NSColor *)color
 {
-  if([tc isEqual:color])
+  if([tc isEqual:color]) {
     return;
+  }
   [tc release];
   tc = [color retain];
 }
 
 - (void)renderTicks
 {
-  if (isTicksVisible == YES)
-    {
-      int linecount;
-      [tc set];
-      for (linecount = 1; linecount <= numTicks; ++linecount)
-        {
-          int xcoord = ([self bounds].size.width / numTicks) * linecount;
-          PSnewpath();
-          PSmoveto(xcoord, 0);
-          if (linecount % emphasis)
-            {
-              PSlineto(xcoord, (int)([self bounds].size.height / 4));
-            }
-          else
-            {
-              PSlineto(xcoord, (int)([self bounds].size.height / 2));
-            }
-          PSstroke();
-        }
+  if (isTicksVisible == YES) {
+    int linecount;
+    [tc set];
+    for (linecount = 1; linecount <= numTicks; ++linecount) {
+      int xcoord = ([self bounds].size.width / numTicks) * linecount;
+      PSnewpath();
+      PSmoveto(xcoord, 0);
+      if (linecount % emphasis) {
+        PSlineto(xcoord, (int)([self bounds].size.height / 4));
+      }
+      else {
+        PSlineto(xcoord, (int)([self bounds].size.height / 2));
+      }
+      PSstroke();
     }
+  }
 }
 
 - (void)renderBar
 {
-  if (isTicksOverBar)
-    {
-      [super renderBar];
-      [self renderTicks];
-      [super renderBarEdge];
-    } 
-  else 
-    {
-      [self renderTicks];
-      [super renderBar];
-      [super renderBarEdge];
-    }
+  if (isTicksOverBar) {
+    [super renderBar];
+    [self renderTicks];
+    [super renderBarEdge];
+  } 
+  else {
+    [self renderTicks];
+    [super renderBar];
+    [super renderBarEdge];
+  }
 }
 
 - (void)setTicksVisible:(BOOL)aBool
@@ -163,6 +158,5 @@
 {
   return @"NXTProgressBarInspector";
 }
-
 
 @end

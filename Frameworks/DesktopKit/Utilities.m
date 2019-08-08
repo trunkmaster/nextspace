@@ -44,90 +44,91 @@ NSString *NXTShortenString(NSString *fullString,
   }
 
   while ([font widthOfString:shortString] > viewWidth) {
-    switch (dotsPosition) {
-    case NXTDotsAtLeft:
-      if (elementType == NXSymbolElement) {
-        position = 0;
-        [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
-      }
-      else if (elementType == NXPathElement) {
-        pathComponents = [[shortString pathComponents] mutableCopy];
-        [pathComponents removeObjectAtIndex:0];
-        [shortString setString:[NSString pathWithComponents:pathComponents]];
-        [pathComponents release];
-      }
-      else if (elementType == NXWordElement) {
-        range = [shortString rangeOfCharacterFromSet:charset];
-        if (range.location != NSNotFound) {
-          [shortString
-            deleteCharactersInRange:NSMakeRange(0, range.location+range.length)];
+    switch (dotsPosition)
+      {
+      case NXTDotsAtLeft:
+        if (elementType == NXSymbolElement) {
+          position = 0;
+          [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
         }
-      }
-      break;
-    case NXTDotsAtRight:
-      if (elementType == NXSymbolElement) {
-        position = [shortString length]-1;
-        [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
-        position--;
-      }
-      else if (elementType == NXPathElement) {
-        [shortString setString:[shortString stringByDeletingLastPathComponent]];
-      }
-      else if (elementType == NXWordElement) {
-        range = [shortString rangeOfCharacterFromSet:charset
-                                             options:NSBackwardsSearch];
-        del_range.location = range.location;
-        del_range.length = [shortString length] - range.location;
-        if (range.location != NSNotFound) {
-          [shortString deleteCharactersInRange:del_range];
+        else if (elementType == NXPathElement) {
+          pathComponents = [[shortString pathComponents] mutableCopy];
+          [pathComponents removeObjectAtIndex:0];
+          [shortString setString:[NSString pathWithComponents:pathComponents]];
+          [pathComponents release];
         }
-      }
-      break;
-    case NXTDotsAtCenter:
-      position = round([shortString length]/2);
-      if (elementType == NXSymbolElement) {
-        [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
-      }
-      else if (elementType == NXPathElement) {
-        if ([shortString characterAtIndex:position] == '/') {
-          position += 1;
-        }
-        // NSLog(@"NXTDotsAtCenter: %c", [shortString characterAtIndex:position]);
-        range = NSMakeRange(position, 1);
-        if ([[shortString pathComponents] count] > 2) {
-          NSRange    f_slash, b_slash;
-          NSUInteger s_length =  [shortString length];
-          // Search forward for '/'
-          f_slash = [shortString
-                      rangeOfString:@"/"
-                            options:0
-                              range:NSMakeRange(position, s_length - position)];
-          if (f_slash.location == NSNotFound) {
-            f_slash.location = s_length;
+        else if (elementType == NXWordElement) {
+          range = [shortString rangeOfCharacterFromSet:charset];
+          if (range.location != NSNotFound) {
+            [shortString
+              deleteCharactersInRange:NSMakeRange(0, range.location+range.length)];
           }
-          // Search backwards for '/'
-          b_slash = [shortString rangeOfString:@"/"
-                                       options:NSBackwardsSearch
-                                         range:NSMakeRange(0, position)];
-          if (b_slash.location == NSNotFound) {
-            b_slash.location = 0;
+        }
+        break;
+      case NXTDotsAtRight:
+        if (elementType == NXSymbolElement) {
+          position = [shortString length]-1;
+          [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
+          position--;
+        }
+        else if (elementType == NXPathElement) {
+          [shortString setString:[shortString stringByDeletingLastPathComponent]];
+        }
+        else if (elementType == NXWordElement) {
+          range = [shortString rangeOfCharacterFromSet:charset
+                                               options:NSBackwardsSearch];
+          del_range.location = range.location;
+          del_range.length = [shortString length] - range.location;
+          if (range.location != NSNotFound) {
+            [shortString deleteCharactersInRange:del_range];
           }
+        }
+        break;
+      case NXTDotsAtCenter:
+        position = round([shortString length]/2);
+        if (elementType == NXSymbolElement) {
+          [shortString deleteCharactersInRange:NSMakeRange(position, 1)];
+        }
+        else if (elementType == NXPathElement) {
+          if ([shortString characterAtIndex:position] == '/') {
+            position += 1;
+          }
+          // NSLog(@"NXTDotsAtCenter: %c", [shortString characterAtIndex:position]);
+          range = NSMakeRange(position, 1);
+          if ([[shortString pathComponents] count] > 2) {
+            NSRange    f_slash, b_slash;
+            NSUInteger s_length =  [shortString length];
+            // Search forward for '/'
+            f_slash = [shortString
+                        rangeOfString:@"/"
+                              options:0
+                                range:NSMakeRange(position, s_length - position)];
+            if (f_slash.location == NSNotFound) {
+              f_slash.location = s_length;
+            }
+            // Search backwards for '/'
+            b_slash = [shortString rangeOfString:@"/"
+                                         options:NSBackwardsSearch
+                                           range:NSMakeRange(0, position)];
+            if (b_slash.location == NSNotFound) {
+              b_slash.location = 0;
+            }
           
-          range.location = b_slash.location;
-          range.length = f_slash.location - range.location;
-          position = range.location;
+            range.location = b_slash.location;
+            range.length = f_slash.location - range.location;
+            position = range.location;
+          }
+          // NSLog(@"Delete characters in range: %@", NSStringFromRange(range));
+          [shortString deleteCharactersInRange:range];
+          // NSLog(@"Result: %@", shortString);
         }
-        // NSLog(@"Delete characters in range: %@", NSStringFromRange(range));
-        [shortString deleteCharactersInRange:range];
-        // NSLog(@"Result: %@", shortString);
+        else if (elementType == NXWordElement) {
+          // TODO
+        }
+        break;
+      default:
+        break;
       }
-      else if (elementType == NXWordElement) {
-        // TODO
-      }
-      break;
-    default:
-      break;
-    }
   }
 
   // String was shortened - insert dots

@@ -47,23 +47,20 @@ static NXTBundle *shared = nil;
 - (NSArray *)bundlePathsOfType:(NSString *)fileExtension
                         atPath:(NSString *)dirPath
 {
-  NSArray        *dirContent;
-  NSString       *bFullPath = nil;
-  NSMutableArray *bundlePathList = [NSMutableArray new];
-  
+  NSArray               *dirContent;
+  NSString              *bFullPath = nil;
+  NSMutableArray        *bundlePathList = [NSMutableArray new];
   NSDirectoryEnumerator *dirEnum;
-  NSString *bundleName;
+  NSString              *bundleName;
 
   // Search in dirPath
   dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
-  while ((bundleName = [dirEnum nextObject]))
-    {
-      if ([[bundleName pathExtension] isEqualToString:fileExtension])
-	{
-	  bFullPath = [NSString stringWithFormat:@"%@/%@", dirPath, bundleName];
-          [bundlePathList addObject:bFullPath];
-	}
+  while ((bundleName = [dirEnum nextObject])) {
+    if ([[bundleName pathExtension] isEqualToString:fileExtension]) {
+      bFullPath = [NSString stringWithFormat:@"%@/%@", dirPath, bundleName];
+      [bundlePathList addObject:bFullPath];
     }
+  }
   
   return bundlePathList;
 }
@@ -84,37 +81,31 @@ static NXTBundle *shared = nil;
   // ~/Library, /Library, /usr/NextSpace
   libPathList = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
                                                     NSAllDomainsMask, YES);
-  for (NSString *lPath in libPathList)
-    {
-      skip = NO;
-      for (NSString *path in pathList)
-        {
-          intersection = NXTIntersectionPath(path, lPath);
-          if ([intersection isEqualToString:path])
-            {
-              skip = YES;
-              break;
-            }
-          else if ([intersection isEqualToString:lPath])
-            {
-              [pathList replaceObjectAtIndex:[pathList indexOfObject:path]
-                                  withObject:lPath];
-              skip = YES;
-              break;
-            }
-        }
-      if (!skip)
-        {
-          [pathList addObject:lPath];
-        }
+  for (NSString *lPath in libPathList) {
+    skip = NO;
+    for (NSString *path in pathList) {
+      intersection = NXTIntersectionPath(path, lPath);
+      if ([intersection isEqualToString:path]) {
+        skip = YES;
+        break;
+      }
+      else if ([intersection isEqualToString:lPath]) {
+        [pathList replaceObjectAtIndex:[pathList indexOfObject:path]
+                            withObject:lPath];
+        skip = YES;
+        break;
+      }
     }
+    if (!skip) {
+      [pathList addObject:lPath];
+    }
+  }
   
   NSLog(@"Searching for bundles in: %@", pathList);
-  for (NSString *path in pathList)
-    {
-      [bundlePaths addObjectsFromArray:[self bundlePathsOfType:fileExtension
-                                                        atPath:path]];
-    }
+  for (NSString *path in pathList) {
+    [bundlePaths addObjectsFromArray:[self bundlePathsOfType:fileExtension
+                                                      atPath:path]];
+  }
 
   return bundlePaths;
 }
@@ -133,29 +124,25 @@ static NXTBundle *shared = nil;
   NSString            *brFile;          // path to file with registry information
   NSDictionary        *brContent;       // content of one registry file
 
-  if (dirPath != nil)
-    {
-      bundlePathsList = [self bundlePathsOfType:fileExtension atPath:dirPath];
-    }
-  else
-    {
-      bundlePathsList = [self bundlePathsOfType:fileExtension];
-    }
+  if (dirPath != nil) {
+    bundlePathsList = [self bundlePathsOfType:fileExtension atPath:dirPath];
+  }
+  else {
+    bundlePathsList = [self bundlePathsOfType:fileExtension];
+  }
   
   NSLog(@"Bundles path list: %@", bundlePathsList);
   bundlesRegistry = [NSMutableDictionary new];
   
-  for (NSString *bundlePath in bundlePathsList)
-    {
-      brFile = [NSBundle pathForResource:@"bundle"
-                                  ofType:@"registry"
-                             inDirectory:bundlePath];
-      if (brFile)
-        {
-          brContent = [NSDictionary dictionaryWithContentsOfFile:brFile];
-          [bundlesRegistry setObject:brContent forKey:bundlePath];
-        }
+  for (NSString *bundlePath in bundlePathsList) {
+    brFile = [NSBundle pathForResource:@"bundle"
+                                ofType:@"registry"
+                           inDirectory:bundlePath];
+    if (brFile) {
+      brContent = [NSDictionary dictionaryWithContentsOfFile:brFile];
+      [bundlesRegistry setObject:brContent forKey:bundlePath];
     }
+  }
 
   return bundlesRegistry;
 }
@@ -197,56 +184,49 @@ static NXTBundle *shared = nil;
   id             bClassObject;
   NSMutableArray *loadedBundles = [NSMutableArray new];
 
-  for (NSString *bPath in sortedBPaths)
-    {
-      // Check type
-      bType = [[bundleRegistry objectForKey:bPath] objectForKey:@"type"];
-      if (![bType isEqualToString:registryType])
-        {
-          NSLog(@"Module \"%@\" according to bundle.registry"
-                " is not '%@' module! Bundle loading was stopped.",
-                bPath, registryType);
-          continue;
-        }
-
-      // Load module
-      if ((bundle = [NSBundle bundleWithPath:bPath]))
-        {
-          bExecutable = [[bundle infoDictionary] objectForKey:@"NSExecutable"];
-          if (!bExecutable)
-            {
-              NSLog (@"Bundle `%@' has no executable!", bPath);
-              continue;
-            }
-        }
-      
-      bClass = [bundle principalClass];
-
-      // Check if bundle already loaded
-      for (id b in loadedBundles)
-        {
-          if ([[b class] isKindOfClass:bClass])
-            {
-              NSLog(@"Module \"%@\" with principal class \"%@\" is "
-                    "already loaded, skipping.", bPath, [b className]);
-              continue;
-            }
-        }
-
-      // Conforming to protocol check
-      if (![bClass conformsToProtocol:aProtocol])
-        {
-          NSLog (@"Principal class '%@' of '%@' bundle does not conform to the "
-                 "'%@' protocol.", NSStringFromClass(bClass), bPath,
-                 NSStringFromProtocol(aProtocol));
-          continue;
-        }
-
-      // Add bundle to the list
-      bClassObject = [bClass new];
-      [loadedBundles addObject:bClassObject];
-      [bClassObject release];
+  for (NSString *bPath in sortedBPaths) {
+    // Check type
+    bType = [[bundleRegistry objectForKey:bPath] objectForKey:@"type"];
+    if (![bType isEqualToString:registryType]) {
+      NSLog(@"Module \"%@\" according to bundle.registry"
+            " is not '%@' module! Bundle loading was stopped.",
+            bPath, registryType);
+      continue;
     }
+
+    // Load module
+    if ((bundle = [NSBundle bundleWithPath:bPath])) {
+      bExecutable = [[bundle infoDictionary] objectForKey:@"NSExecutable"];
+      if (!bExecutable) {
+        NSLog (@"Bundle `%@' has no executable!", bPath);
+        continue;
+      }
+    }
+      
+    bClass = [bundle principalClass];
+
+    // Check if bundle already loaded
+    for (id b in loadedBundles) {
+      if ([[b class] isKindOfClass:bClass]) {
+        NSLog(@"Module \"%@\" with principal class \"%@\" is "
+              "already loaded, skipping.", bPath, [b className]);
+        continue;
+      }
+    }
+
+    // Conforming to protocol check
+    if (![bClass conformsToProtocol:aProtocol]) {
+      NSLog (@"Principal class '%@' of '%@' bundle does not conform to the "
+             "'%@' protocol.", NSStringFromClass(bClass), bPath,
+             NSStringFromProtocol(aProtocol));
+      continue;
+    }
+
+    // Add bundle to the list
+    bClassObject = [bClass new];
+    [loadedBundles addObject:bClassObject];
+    [bClassObject release];
+  }
 
   return [loadedBundles autorelease];
 }
@@ -265,15 +245,13 @@ static NXTBundle *shared = nil;
 
   dirContent = [self bundlePathsOfType:fileType atPath:dir];
 
-  for (NSString *bundlePath in dirContent)
-    {
-      bundle = [NSBundle bundleWithPath:bundlePath];
+  for (NSString *bundlePath in dirContent) {
+    bundle = [NSBundle bundleWithPath:bundlePath];
       
-      if ([[bundle principalClass] conformsToProtocol:protocol] == YES)
-	{
-	  [loadedBundles addObject:bundle];
-	}
+    if ([[bundle principalClass] conformsToProtocol:protocol] == YES) {
+      [loadedBundles addObject:bundle];
     }
+  }
 
   return loadedBundles;
 }

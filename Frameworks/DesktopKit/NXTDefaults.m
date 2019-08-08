@@ -47,31 +47,25 @@ static NSLock     *syncLock;
 
 + (NXTDefaults *)systemDefaults
 {
-  if (sharedSystemDefaults == nil)
-    {
-      sharedSystemDefaults = [[NXTDefaults alloc] initWithSystemDefaults];
-    }
-
+  if (sharedSystemDefaults == nil) {
+    sharedSystemDefaults = [[NXTDefaults alloc] initWithSystemDefaults];
+  }
   return sharedSystemDefaults;
 }
 
 + (NXTDefaults *)userDefaults
 {
-  if (sharedUserDefaults == nil)
-    {
-      sharedUserDefaults = [[NXTDefaults alloc] initWithUserDefaults];
-    }
-
+  if (sharedUserDefaults == nil) {
+    sharedUserDefaults = [[NXTDefaults alloc] initWithUserDefaults];
+  }
   return sharedUserDefaults;
 }
 
 + (NXTDefaults *)globalUserDefaults
 {
-  if (sharedGlobalUserDefaults == nil)
-    {
-      sharedGlobalUserDefaults = [[NXTDefaults alloc] initWithGlobalUserDefaults];
-    }
-
+  if (sharedGlobalUserDefaults == nil) {
+    sharedGlobalUserDefaults = [[NXTDefaults alloc] initWithGlobalUserDefaults];
+  }
   return sharedGlobalUserDefaults;
 }
 
@@ -80,7 +74,7 @@ static NSLock     *syncLock;
 //-----------------------------------------------------------------------------
 
 - (NXTDefaults *)initDefaultsWithPath:(NSSearchPathDomainMask)domainMask
-                              domain:(NSString *)domainName
+                               domain:(NSString *)domainName
 {
   NSArray	*searchPath;
   NSString	*pathFormat;
@@ -152,10 +146,9 @@ static NSLock     *syncLock;
 
 - (void)dealloc
 {
-  if (isChanged)
-    {
-      [self synchronize];
-    }
+  if (isChanged) {
+    [self synchronize];
+  }
   if (syncTimer) [syncTimer release];
   [defaultsDict release];
   [filePath release];
@@ -166,16 +159,15 @@ static NSLock     *syncLock;
 
 - (void)setChanged
 {
-  if (syncTimer == nil || ![syncTimer isValid])
-    {
-      syncTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
-                                                   target:self
-                                                 selector:@selector(writeToDisk)
-                                                 userInfo:nil
-                                                  repeats:NO];
-      [syncTimer retain];
-      NSDebugLLog(@"NXTDefaults", @"[NXTDefaults] Timer scheduled!");
-    }
+  if (syncTimer == nil || ![syncTimer isValid]) {
+    syncTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
+                                                 target:self
+                                               selector:@selector(writeToDisk)
+                                               userInfo:nil
+                                                repeats:NO];
+    [syncTimer retain];
+    NSDebugLLog(@"NXTDefaults", @"[NXTDefaults] Timer scheduled!");
+  }
 }
 
 - (NXTDefaults *)reload

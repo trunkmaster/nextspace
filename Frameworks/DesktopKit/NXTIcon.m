@@ -47,7 +47,7 @@ static float defaultMaximumCollapsedLabelWidth = 100;
     [NSException raise: NSInvalidArgumentException
 		format: _(@"+setDefaultMaximumCollapsedLabelWidth:"
 			  @" argument must be greater than zero")];
-
+  
   defaultMaximumCollapsedLabelWidth = newWidth;
 }
 
@@ -76,9 +76,9 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   [super initWithFrame:frame];
 
   shortLabel = [[NXTIconLabel alloc] initWithFrame:NSMakeRect(0, 0, 10, 15)
-					     icon:self];
+                                              icon:self];
   longLabel = [[NXTIconLabel alloc] initWithFrame:NSMakeRect(0, 0, 10, 15)
-					    icon:self];
+                                             icon:self];
 
   ASSIGN(bgColor, [NSColor highlightColor]);
 
@@ -147,34 +147,30 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   NSSize  imgSize;
   NSPoint p;
 
-  if (isSelected)
-    {
-      NSImage *hiliteImage = [NSImage imageNamed:@"hilite"];
+  if (isSelected) {
+    NSImage *hiliteImage = [NSImage imageNamed:@"hilite"];
       
-      imgSize = [hiliteImage size];
-      p = NSMakePoint(roundf((mySize.width - imgSize.width) / 2),
-                      roundf((mySize.height - imgSize.height) / 2));
+    imgSize = [hiliteImage size];
+    p = NSMakePoint(roundf((mySize.width - imgSize.width) / 2),
+                    roundf((mySize.height - imgSize.height) / 2));
 
-      [hiliteImage compositeToPoint:p
-			  operation:NSCompositeSourceOver];
+    [hiliteImage compositeToPoint:p
+                        operation:NSCompositeSourceOver];
+  }
+
+  if (iconImage) {
+    imgSize = [iconImage size];
+    p = NSMakePoint(roundf((mySize.width - imgSize.width) / 2),
+                    roundf((mySize.height - imgSize.height) / 2));
+
+    if (isDimmed) {
+      [iconImage dissolveToPoint:p fraction:0.5];
     }
-
-  if (iconImage)
-    {
-      imgSize = [iconImage size];
-      p = NSMakePoint(roundf((mySize.width - imgSize.width) / 2),
-                      roundf((mySize.height - imgSize.height) / 2));
-
-      if (isDimmed)
-	{
-	  [iconImage dissolveToPoint:p fraction:0.5];
-	}
-      else
-	{
-	  [iconImage compositeToPoint:p
-			    operation:NSCompositeSourceOver];
-	}
+    else {
+      [iconImage compositeToPoint:p
+                        operation:NSCompositeSourceOver];
     }
+  }
 }
 
 - (void)setIconSize:(NSSize)newIconSize
@@ -190,13 +186,12 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   [self setFrame:rect];
 
   // if we're in a superview, reposition the label as well
-  if ([self superview])
-    {
-      if (isSelected)
-	[longLabel adjustFrame];
-      else
-	[shortLabel adjustFrame];
-    }
+  if ([self superview]) {
+    if (isSelected)
+      [longLabel adjustFrame];
+    else
+      [shortLabel adjustFrame];
+  }
 }
 
 - (NSSize)iconSize
@@ -358,14 +353,12 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 {
   [longLabel setEditable:edit];
   isEditable = edit;
-  if (edit)
-    {
-      [longLabel setBackgroundColor:bgColor];
-    }
-  else
-    {
-      [longLabel setBackgroundColor:[NSColor windowBackgroundColor]];
-    }
+  if (edit) {
+    [longLabel setBackgroundColor:bgColor];
+  }
+  else {
+    [longLabel setBackgroundColor:[NSColor windowBackgroundColor]];
+  }
 }
 
 - (BOOL)isEditable
@@ -409,10 +402,9 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   int clickCount;
   NSInteger moveThreshold = [[[OSEMouse new] autorelease] accelerationThreshold];
 
-  if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown)
-    {
-      return;
-    }
+  if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown) {
+    return;
+  }
 
   NSLog(@"NXTIcon: mouseDown");
 
@@ -422,46 +414,40 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   modifierFlags = [ev modifierFlags];
 
   // Dragging
-  if ([target respondsToSelector:dragAction])
-    {
-      NSPoint startPoint = [ev locationInWindow];
-      unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+  if ([target respondsToSelector:dragAction]) {
+    NSPoint startPoint = [ev locationInWindow];
+    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
 
-//      while ([(ev = [[self window] nextEventMatchingMask:NSAnyEventMask]) type]
-//	     == NSLeftMouseDragged)
-      while ([(ev = [[self window] nextEventMatchingMask:mask]) type]
-	     != NSLeftMouseUp)
-	{
-	  NSPoint endPoint = [ev locationInWindow];
+    //      while ([(ev = [[self window] nextEventMatchingMask:NSAnyEventMask]) type]
+    //	     == NSLeftMouseDragged)
+    while ([(ev = [[self window] nextEventMatchingMask:mask]) type]
+           != NSLeftMouseUp) {
+      NSPoint endPoint = [ev locationInWindow];
 
-	  if (absolute_value(startPoint.x - endPoint.x) > moveThreshold ||
-	      absolute_value(startPoint.y - endPoint.y) > moveThreshold)
-	    {
-	      [target performSelector:dragAction
-			   withObject:self
-			   withObject:ev];
-	      return;
-	    }
-	}
+      if (absolute_value(startPoint.x - endPoint.x) > moveThreshold ||
+          absolute_value(startPoint.y - endPoint.y) > moveThreshold) {
+        [target performSelector:dragAction
+                     withObject:self
+                     withObject:ev];
+        return;
+      }
     }
+  }
 
   // Clicking
-  if (clickCount == 2)
-    {
-      [self setSelected:NO];
-      if ([target respondsToSelector:doubleAction])
-	{
-     	  [target performSelector:doubleAction withObject:self];
-	}
+  if (clickCount == 2) {
+    [self setSelected:NO];
+    if ([target respondsToSelector:doubleAction]) {
+      [target performSelector:doubleAction withObject:self];
     }
-  else if (clickCount == 1)
-    {
-      [self setSelected:NO];
-      if ([target respondsToSelector:action])
-	{
-      	  [target performSelector:action withObject:self];
-	}
-    }
+  }
+  else if (clickCount == 1) {
+    [self setSelected:NO];
+    if ([target respondsToSelector:action])
+      {
+        [target performSelector:action withObject:self];
+      }
+  }
 }
 
 - (void)setTarget:aTarget
@@ -548,35 +534,32 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector:@selector(draggingEntered:icon:)]) 
-    {
-      dragEnteredResult = [delegate draggingEntered:sender icon:self];
-      return dragEnteredResult;
-    }
-  else
-    {
-      return NSDragOperationNone;
-    }
+      [delegate respondsToSelector:@selector(draggingEntered:icon:)]) {
+    dragEnteredResult = [delegate draggingEntered:sender icon:self];
+    return dragEnteredResult;
+  }
+  else {
+    return NSDragOperationNone;
+  }
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector:@selector(draggingUpdated:icon:)])
-    {
-      return [delegate draggingUpdated:sender icon:self];
-    }
-  else
-    {
-      return dragEnteredResult;
-    }
+      [delegate respondsToSelector:@selector(draggingUpdated:icon:)]) {
+    return [delegate draggingUpdated:sender icon:self];
+  }
+  else {
+    return dragEnteredResult;
+  }
 }
 
 - (void)draggingExited:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector:@selector(draggingExited:icon:)])
+      [delegate respondsToSelector:@selector(draggingExited:icon:)]) {
     [delegate draggingExited:sender icon:self];
+  }
 }
 
 // After the Image is Released
@@ -584,42 +567,39 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector:@selector(prepareForDragOperation:icon:)])
-    {
-      return [delegate prepareForDragOperation:sender icon:self];
-    }
-  else
-    {
-      return NO;
-    }
+      [delegate respondsToSelector:@selector(prepareForDragOperation:icon:)]) {
+    return [delegate prepareForDragOperation:sender icon:self];
+  }
+  else {
+    return NO;
+  }
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector:@selector(performDragOperation:icon:)])
-    {
-      return [delegate performDragOperation:sender icon:self];
-    }
-  else
-    {
-      return NO;
-    }
+      [delegate respondsToSelector:@selector(performDragOperation:icon:)]) {
+    return [delegate performDragOperation:sender icon:self];
+  }
+  else {
+    return NO;
+  }
 }
 
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector:
-                  @selector(concludeDragOperation:icon:)])
+      [delegate respondsToSelector:@selector(concludeDragOperation:icon:)]) {
     [delegate concludeDragOperation:sender icon:self];
+  }
 }
 
 - (void)draggingEnded:(id <NSDraggingInfo>)sender
 {
   if (delegate &&
-      [delegate respondsToSelector: @selector(draggingEnded:icon:)])
-	   [delegate draggingEnded: sender icon: self];
+      [delegate respondsToSelector:@selector(draggingEnded:icon:)]) {
+    [delegate draggingEnded: sender icon: self];
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -645,10 +625,10 @@ static float defaultMaximumCollapsedLabelWidth = 100;
 - (void)rebuildCollapsedLabelString
 {
   NSString *str = NXTShortenString(labelString,
-                                  maximumCollapsedLabelWidth,
-                                  [shortLabel font],
-                                  NXSymbolElement,
-                                  NXTDotsAtRight);
+                                   maximumCollapsedLabelWidth,
+                                   [shortLabel font],
+                                   NXSymbolElement,
+                                   NXTDotsAtRight);
   [shortLabel setString:str];
   [shortLabel adjustFrame];
 }
