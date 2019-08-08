@@ -1307,7 +1307,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)ringBell
 {
   if (bellSound == nil) {
-    NSString *bellPath = [[NXTDefaults globalUserDefaults] objectForKey:@"NXSystemBeep"];
+    NXTDefaults *defs = [NXTDefaults globalUserDefaults];
+    NSString    *bellPath = [defs objectForKey:@"NXSystemBeep"];
     if (bellPath == nil ||
         [[NSFileManager defaultManager] fileExistsAtPath:bellPath] == NO) {
       bellPath = @"/usr/NextSpace/Sounds/Bonk.snd";
