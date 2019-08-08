@@ -39,19 +39,7 @@
 
 @implementation NXTIcon
 
-static NSSize defaultIconSize = {64.0, 64.0};
-
 static float defaultMaximumCollapsedLabelWidth = 100;
-
-+ (void)setDefaultIconSize:(NSSize)newSize
-{
-  defaultIconSize = newSize;
-}
-
-+ (NSSize)defaultIconSize
-{
-  return defaultIconSize;
-}
 
 + (void)setDefaultMaximumCollapsedLabelWidth:(float)newWidth
 {
@@ -78,16 +66,14 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   [super dealloc];
 }
 
-- init
+- initWithFrame:(NSRect)frame
 {
   NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
   NSDictionary   *colorDict;
   NSDictionary   *fontDict;
-  NSRect         frame;
+  NSRect         labelFrame;
 
-  [super initWithFrame:NSMakeRect(0, 0, 
-				  defaultIconSize.width,
-				  defaultIconSize.height)];
+  [super initWithFrame:frame];
 
   shortLabel = [[NXTIconLabel alloc] initWithFrame:NSMakeRect(0, 0, 10, 15)
 					     icon:self];
@@ -141,13 +127,13 @@ static float defaultMaximumCollapsedLabelWidth = 100;
   showsExpandedLabelWhenSelected = YES;
 
   // readjust the real heights
-  frame = [shortLabel frame];
-  frame.size.height = [[shortLabel font] defaultLineHeightForFont];
-  [shortLabel setFrame: frame];
+  labelFrame = [shortLabel frame];
+  labelFrame.size.height = [[shortLabel font] defaultLineHeightForFont];
+  [shortLabel setFrame:labelFrame];
 
-  frame = [longLabel frame];
-  frame.size.height = [[longLabel font] defaultLineHeightForFont];
-  [longLabel setFrame: frame];
+  labelFrame = [longLabel frame];
+  labelFrame.size.height = [[longLabel font] defaultLineHeightForFont];
+  [longLabel setFrame:labelFrame];
 
   isEditable = YES;
   isSelectable = YES;

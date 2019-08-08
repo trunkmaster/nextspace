@@ -82,22 +82,12 @@ static inline float absolute_value(float v)
   NSColor *bgColor;
 }
 
-/** Sets the default icon size.
-    All subsequently created icons will have this size set up when created.*/
-+ (void)setDefaultIconSize:(NSSize)newSize;
-+ (NSSize)defaultIconSize;
-
 /** Sets the default maximum collapsed label width.
     All subsequently created icons will have this maximum collapsed
     label width set after creation. */
 + (void)setDefaultMaximumCollapsedLabelWidth:(float)newWidth;
 + (float)defaultMaximumCollapsedLabelWidth;
 - (void)dealloc;
-
-/** Designated initializer. Do not use "-initWithFrame:".
-    This method initializes the icon to the default size,
-    creates the labels and sets up all other stuff. */
-- init;
 
 /** Draws the receiver. */
 - (void)drawRect:(NSRect)r;
