@@ -41,7 +41,7 @@
 
 - (void)_initStream
 {
-  NSLog(@"[NXTSound] creating play stream...");
+  NSDebugLLog(@"SoundKit", @"[NXTSound] creating play stream...");
   _stream = [[SNDPlayStream alloc]
                 initOnDevice:(SNDDevice *)[[SNDServer sharedServer] defaultOutput]
                 samplingRate:[_source sampleRate]
@@ -50,7 +50,7 @@
                         type:_streamType];
   [_stream setDelegate:self];
   if (_state == NXTSoundPlay) {
-    NSLog(@"[NXTSound] desired state is `Play`...");
+    NSDebugLLog(@"SoundKit", @"[NXTSound] desired state is `Play`...");
     _isPlayFinished = YES;
     [self play];
   }
@@ -60,7 +60,7 @@
 {
   SNDServer *server = [notif object];
   
-  NSLog(@"[NXTSound] serverStateChanged - %i", server.status);
+  NSDebugLLog(@"SoundKit", @"[NXTSound] serverStateChanged - %i", server.status);
   
   if (server.status == SNDServerReadyState) {
     [self _initStream];
@@ -89,9 +89,10 @@
     _isShort = YES;
   }
 
-  NSLog(@"[NXTSound] channels: %lu rate: %lu format: %i duraction: %.3f",
-        [_source channelCount], [_source sampleRate], [_source byteOrder],
-        [_source duration]);
+  NSDebugLLog(@"SoundKit",
+              @"[NXTSound] channels: %lu rate: %lu format: %i duraction: %.3f",
+              [_source channelCount], [_source sampleRate], [_source byteOrder],
+              [_source duration]);
 
   _isPlayFinished = YES;
   _state = NXTSoundInitial;
@@ -106,9 +107,9 @@
            name:SNDServerStateDidChangeNotification
          object:server];
   // 3. Connect to sound server (pulseaudio)
-  NSLog(@"[NXTSound] server status == %i", server.status);
+  NSDebugLLog(@"SoundKit", @"[NXTSound] server status == %i", server.status);
   if (server.status != SNDServerReadyState) {
-    NSLog(@"[NXTSound] connecting to sound server");
+    NSDebugLLog(@"SoundKit", @"[NXTSound] connecting to sound server");
     [server connect];
   }
   else {
@@ -143,7 +144,7 @@
 - (BOOL)stop
 {
   if (_stream && _state != NXTSoundStop) {
-    NSLog(@"Current song time: %f", [self currentTime]);
+    NSDebugLLog(@"SoundKit", @"[NXTSound] Current song time: %f", [self currentTime]);
     [self pause];
     [self setCurrentTime:0];
     [_stream empty:YES];
@@ -187,11 +188,11 @@
   }
 
   bytes_length = [count unsignedIntValue];
-  // NSLog(@"[NXTSound] PLAY %lu bytes of sound", bytes_length);
+  // NSDebugLLog(@"SoundKit", @"[NXTSound] PLAY %lu bytes of sound", bytes_length);
   
   buffer = malloc(sizeof(short) * bytes_length);
   bytes_read = [_source readBytes:buffer length:bytes_length];
-  // NSLog(@"[NXTSound] READ %lu bytes of sound", bytes_read);
+  // NSDebugLLog(@"SoundKit", @"[NXTSound] READ %lu bytes of sound", bytes_read);
   
   if (bytes_read == 0) {
     free(buffer);
@@ -208,8 +209,8 @@
 }
 - (void)soundStreamBufferEmpty:(SNDPlayStream *)sndStream
 {
-  NSLog(@"[NXTSound] stream buffer is empty %.2f/%0.2f",
-        [_source currentTime], [_source duration]);
+  NSDebugLLog(@"SoundKit", @"[NXTSound] stream buffer is empty %.2f/%0.2f",
+              [_source currentTime], [_source duration]);
   if (_isPlayFinished == NO) {
     // _isPlayFinished will be set to 'YES' in called method below
     // if no more bytes to read.

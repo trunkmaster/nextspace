@@ -408,7 +408,7 @@ void inventory_start(pa_context *ctx, void *userdata)
   pa_operation *o;
   SNDServer *server = (SNDServer *)userdata;
 
-  fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: BEGIN\n");
+  NSDebugLLog(@"SoundKit", @">>> Inventory of PulseAudio objects: BEGIN\n");
       
   [server updateConnectionState:[NSNumber numberWithInt:SNDServerInventoryState]];
   /* Keep track of the outstanding requests */
@@ -494,7 +494,7 @@ void inventory_decrement_requests(pa_context *ctx, void *userdata)
 
   if (n_outstanding > 0) {
     if (--n_outstanding == 0) {
-      fprintf(stderr, "[SoundKit] --- Inventory of PulseAudio objects: END\n");
+      NSDebugLLog(@"SoundKit", @"<<< Inventory of PulseAudio objects: END\n");
       inventory_end(ctx, userdata);
     }
   }
@@ -504,7 +504,7 @@ void inventory_end(pa_context *ctx, void *userdata)
   pa_operation  *o;
   SNDServer *server = (SNDServer *)userdata;
   
-  fprintf(stderr, "[SoundKit] --- Start tracking of PulseAudio events...\n");
+  NSDebugLLog(@"SoundKit", @"=== Start tracking of PulseAudio events...\n");
   
   pa_context_set_subscribe_callback(ctx, context_subscribe_cb, userdata);
   if (!(o = pa_context_subscribe(ctx, (pa_subscription_mask_t)

@@ -156,9 +156,9 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   
   _pa_q = dispatch_queue_create("org.nextspace.soundkit", NULL);
   dispatch_async(_pa_q, ^{
-      fprintf(stderr, "[SoundKit] >>> mainloop started.\n");
+      NSDebugLLog(@"SoundKit", @"[SNDServer] >>> PulseAudio mainloop started.");
       while (pa_mainloop_iterate(_pa_loop, 1, NULL) >= 0) { ; }
-      fprintf(stderr, "[SoundKit] <<< mainloop exited.\n");
+      NSDebugLLog(@"SoundKit", @"[SNDServer] <<< PulseAudio mainloop exited.");
     });
   mainLoopRunning = YES;
 }
@@ -166,26 +166,26 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 {
   int retval = 0;
   
-  fprintf(stderr, "[SoundKit] === disconnect === START\n");
+  NSDebugLLog(@"SoundKit", @"[SNDServer] === disconnect === START");
   if (_pa_ctx) {
-    fprintf(stderr, "[SoundKit] disconnect: clear PA context...\n");
+    NSDebugLLog(@"SoundKit", @"[SNDServer] disconnect: clear PA context...");
     pa_context_disconnect(_pa_ctx);
     pa_context_set_state_callback(_pa_ctx, NULL, NULL);
     pa_context_unref(_pa_ctx);
     _pa_ctx = NULL;
   }
   if (_pa_loop) {
-    fprintf(stderr, "[SoundKit] disconnect: stop mainloop...\n");
+    NSDebugLLog(@"SoundKit", @"[SNDServer] disconnect: stop PA mainloop...");
     pa_mainloop_quit(_pa_loop, retval);
     pa_mainloop_free(_pa_loop);
   }
   if (_pa_q) {
-    fprintf(stderr, "[SoundKit] disconnect: release GCD queue...\n");
+    NSDebugLLog(@"SoundKit", @"[SNDServer] disconnect: release GCD queue...");
     dispatch_release(_pa_q);
     _pa_q = NULL;
   }
   mainLoopRunning = NO;
-  fprintf(stderr, "[SoundKit] === disconnect === END\n");
+  NSDebugLLog(@"SoundKit", @"[SNDServer] === disconnect === END");
 }
 
 - (SNDDevice *)defaultCard
@@ -303,7 +303,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
       playStream.name = playStream.client.appName;
       playStream.sinkInput = sinkInput;
       [list addObject:playStream];
-      fprintf(stderr, "SNDPlayStream was added to list: %s\n", [playStream.name cString]);
+      NSDebugLLog(@"SoundKit", @"SNDPlayStream was added to list: %@", playStream.name);
     }
     [playStream release];
   }
@@ -319,8 +319,8 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
         recordStream.name = recordStream.client.appName;
         recordStream.sourceOutput = sourceOutput;
         [list addObject:recordStream];
-        fprintf(stderr, "SNDRecordStream was added to list: %s\n",
-                [recordStream.name cString]);
+        NSDebugLLog(@"SoundKit", @"SNDRecordStream was added to list: %@",
+                    recordStream.name);
       }
       [recordStream release];
     }
@@ -337,8 +337,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 - (void)updateConnectionState:(NSNumber *)state
 {
   _status = [state intValue];
-  // fprintf(stderr, "[SoundKit] connection state was updated - %i.\n",
-  //         _status);
+  NSDebugLLog(@"SoundKit", @"[SNDServer] connection state was updated - %i.", _status);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SNDServerStateDidChangeNotification
                     object:self];
@@ -375,7 +374,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   for (card in cardList) {
     if (card.index == info->index) {
-      fprintf(stderr, "[SoundKit] Card Update: %s.\n", info->name);
+      NSDebugLLog(@"SoundKit", @"[SNDServer] Card Update: %s.", info->name);
       [card updateWithValue:value];
       isUpdated = YES;
       break;
@@ -385,7 +384,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   if (isUpdated == NO) {
     SNDDevice *soundDevice;
     card = [[PACard alloc] init];
-    fprintf(stderr, "[SoundKit] Card Add: %s.\n", info->name);
+    NSDebugLLog(@"SoundKit", @"[SNDServer] Card Add: %s.", info->name);
     card.context = _pa_ctx;
     [card updateWithValue:value];
     [cardList addObject:card];
@@ -426,7 +425,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   for (sink in sinkList) {
     if (sink.index == info->index) {
-      fprintf(stderr, "[SoundKit] Sink Update: %s.\n", info->name);
+      NSDebugLLog(@"SoundKit", @"[SNDServer] Sink Update: %s.", info->name);
       [sink updateWithValue:value];
       isUpdated = YES;
       aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
@@ -438,7 +437,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   if (isUpdated == NO) {
     // Create Sink
     sink = [[PASink alloc] init];
-    fprintf(stderr, "[SoundKit] Sink Add: %s.\n", info->name);
+    NSDebugLLog(@"SoundKit", @"[SNDServer] Sink Add: %s.", info->name);
     [sink updateWithValue:value];
     sink.context = _pa_ctx;
     [sinkList addObject:sink];
@@ -491,7 +490,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   for (source in sourceList) {
     if (source.index == info->index) {
-      fprintf(stderr, "[SoundKit] Source Update: %s.\n", info->name);
+      NSDebugLLog(@"SoundKit", @"[SNDServer] Source Update: %s.", info->name);
       [source updateWithValue:value];
       isUpdated = YES;
       aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
@@ -502,7 +501,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   if (isUpdated == NO) {
     source = [[PASource alloc] init];
-    fprintf(stderr, "[SoundKit] Source Add: %s.\n", info->name);
+    NSDebugLLog(@"SoundKit", @"[SNDServer] Source Add: %s.", info->name);
     [source updateWithValue:value];
     source.context = _pa_ctx;
     [sourceList addObject:source];
@@ -556,7 +555,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   for (sinkInput in sinkInputList) {
     if (sinkInput.index == info->index) {
-      fprintf(stderr, "[SoundKit] Sink Input Update: %s.\n", info->name);
+      NSDebugLLog(@"SoundKit", @"[SNDServer] Sink Input Update: %s.", info->name);
       [sinkInput updateWithValue:value];
       isUpdated = YES;
       aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
@@ -567,7 +566,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   if (isUpdated == NO) {
     sinkInput = [[PASinkInput alloc] init];
-    fprintf(stderr, "[SoundKit] Sink Input Add: %s.\n", info->name);
+    NSDebugLLog(@"SoundKit", @"[SNDServer] Sink Input Add: %s.", info->name);
     [sinkInput updateWithValue:value];
     sinkInput.context = _pa_ctx;
     [sinkInputList addObject:sinkInput];
@@ -623,7 +622,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   for (sourceOutput in sourceOutputList) {
     if (sourceOutput.index == info->index) {
-      fprintf(stderr, "[SoundKit] Source Output Update: %s.\n", info->name);
+      NSDebugLLog(@"SoundKit", @"[SNDServer] Source Output Update: %s.", info->name);
       [sourceOutput updateWithValue:value];
       isUpdated = YES;
       aNotif = [NSNotification notificationWithName:SNDDeviceDidChangeNotification
@@ -634,7 +633,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   if (isUpdated == NO) {
     sourceOutput = [[PASourceOutput alloc] init];
-    fprintf(stderr, "[SoundKit] Source Output Add: %s.\n", info->name);
+    NSDebugLLog(@"SoundKit", @"[SNDServer] Source Output Add: %s.", info->name);
     [sourceOutput updateWithValue:value];
     sourceOutput.context = _pa_ctx;
     [sourceOutputList addObject:sourceOutput];
@@ -688,7 +687,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   for (PAClient *c in clientList) {
     if ([c index] == info->index) {
-      fprintf(stderr, "[SoundKit] Client Update: %s (index: %i).\n",
+      NSDebugLLog(@"SoundKit", @"[SNDServer] Client Update: %s (index: %i).",
               info->name, info->index);
       [c updateWithValue:value];
       isUpdated = YES;
@@ -698,7 +697,8 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   if (isUpdated == NO) {
     PAClient *client = [[PAClient alloc] init];
-    fprintf(stderr, "[SoundKit] Client Add: %s (index: %i).\n", info->name, info->index);
+    NSDebugLLog(@"SoundKit", @"[SNDServer] Client Add: %s (index: %i).",
+                info->name, info->index);
     [client updateWithValue:value];
     [clientList addObject:client];
     [client release];
@@ -747,7 +747,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   streamName = [NSString stringWithCString:info->name];
   for (PAStream *s in savedStreamList) {
     if ([[s name] isEqualToString:streamName]) {
-      fprintf(stderr, "[SoundKit] Stream Update: %s.\n", info->name);
+      NSDebugLLog(@"SoundKit", @"[SNDServer] Stream Update: %s.", info->name);
       [s updateWithValue:value];
       isUpdated = YES;
       break;
@@ -756,7 +756,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
   if (isUpdated == NO) {
     PAStream *s = [[PAStream alloc] init];
-    fprintf(stderr, "[SoundKit] Stream Add: %s.\n", info->name);
+    NSDebugLLog(@"SoundKit", @"[SNDServer] Stream Add: %s.", info->name);
     s.context = _pa_ctx;
     [s updateWithValue:value];
     [savedStreamList addObject:s];

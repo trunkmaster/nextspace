@@ -29,11 +29,11 @@ extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
 
 void _stream_underflow(pa_stream *stream, void *sndStream)
 {
-  fprintf(stderr, "[SoundKit] PlayStream UNDERflow!\n");
+  NSDebugLLog(@"SoundKit", @"[SNDPlayStream] UNDERflow!");
 }
 void _stream_overflow(pa_stream *stream, void *sndStream)
 {
-  fprintf(stderr, "[SoundKit] PlayStream OVERflow!\n");
+  NSDebugLLog(@"SoundKit", @"[SoundKit] PlayStream OVERflow!");
 }
 
 @implementation SNDPlayStream
