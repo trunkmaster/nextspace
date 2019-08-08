@@ -300,7 +300,6 @@
   else {
     slotSize = NSMakeSize(76, 76);
   }
-  [NXTIcon setDefaultIconSize:NSMakeSize(66, 56)];
   [NXTIconView setDefaultSlotSize:slotSize];
   [NSBundle loadNibNamed:@"Finder" owner:self];
 

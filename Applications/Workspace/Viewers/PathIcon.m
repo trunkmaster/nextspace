@@ -555,7 +555,8 @@ static NSDragOperation savedMask;
 
 - init
 {
-  [super init];
+  // Size of hilite.tiff 66x52
+  [super initWithFrame:NSMakeRect(0,0,66,52)];
 
   // registerForDraggedTypes: must call view that holds icon (Shelf, Path).
   // Calling it here make shelf icons continuosly added and removed

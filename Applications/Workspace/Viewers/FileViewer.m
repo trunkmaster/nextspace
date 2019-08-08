@@ -157,11 +157,8 @@
   ASSIGN(rootPath, aRootPath);
   ASSIGN(displayedPath, @"");
 
-  // Initalize NXTIconView frame. 
-  // NXTIconView is a parent class for ShelfView and PathView
-  aSize = NSMakeSize(66, 52); // Size of hilite.tiff 66x52
-  [NXTIcon setDefaultIconSize:aSize];
   // Set NXTIconView slot size
+  // NXTIconView is a parent class for ShelfView and PathView
   if ([df objectForKey:@"IconLabelWidth"]) {
     aSize = NSMakeSize([df floatForKey:@"IconLabelWidth"], PATH_VIEW_HEIGHT);
   }
@@ -808,7 +805,7 @@
   if ([window isMainWindow] == YES) {
     Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
     if (inspector != nil) {
-        [inspector revert:self];
+      [inspector revert:self];
     }
   }
 
