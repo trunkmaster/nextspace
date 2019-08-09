@@ -86,9 +86,9 @@
 
 - (void)dealloc
 {
-  NSLog(@"view RC: %lu", [view retainCount]);
+  NSDebugLLog(@"Memory", @"Login -dealloc");
+  
   [image release];
-  [systemDefaults release];
   [defaults release];
   [super dealloc];
 }
