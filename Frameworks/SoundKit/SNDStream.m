@@ -164,11 +164,7 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
 }
 - (void)performDelegateSelector:(SEL)action
 {
-  if (_delegate == nil) {
-    NSLog(@"[SoundKit] delegate is not set for SNDStream.");
-    return;
-  }
-  if ([_delegate respondsToSelector:action]) {
+  if (_delegate != nil && [_delegate respondsToSelector:action]) {
     [_delegate performSelector:action withObject:self];
   }
 }
