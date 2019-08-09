@@ -41,9 +41,7 @@
 - (id)init
 {
   self = [super init];
-  
   prefsViews = [[NSMutableDictionary alloc] init];
-  
   return self;
 }
 
@@ -60,10 +58,12 @@
     return;
   }
 
-  iconList = [[NSMatrix alloc] initWithFrame: NSMakeRect (0, 0, 64*30, 70)];
-  [iconList setCellClass:[NSButtonCell class]];
-  [iconList setCellSize:NSMakeSize (70, 70)];
-  [iconList setMode:NSRadioModeMatrix];
+  iconList = [[NSMatrix alloc] initWithFrame:NSMakeRect(0,0,64*30,70)
+                                        mode:NSRadioModeMatrix
+                                   cellClass:[NSButtonCell class]
+                                numberOfRows:1
+                             numberOfColumns:0];
+  [iconList setCellSize:NSMakeSize(70, 70)];
   [iconList setIntercellSpacing:NSZeroSize];
   [iconList setAllowsEmptySelection:NO];
 
@@ -98,7 +98,7 @@
   return currentModule;
 }
 
-- (NSWindow*)window
+- (NSWindow *)window
 {
   return window;
 }
