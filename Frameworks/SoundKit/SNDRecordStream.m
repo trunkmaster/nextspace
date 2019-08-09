@@ -32,6 +32,10 @@ extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
 - (void)dealloc
 {
   fprintf(stderr, "[SoundKit] SNDRecordStream: -dealloc\n");
+  if (super.isActive != NO) {
+    [self setDelegate:nil];
+    [self deactivate];
+  }
   [super dealloc];
 }
 
@@ -46,6 +50,7 @@ extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
 
   pa_stream_connect_record(_pa_stream, [input.source.name cString], NULL, 0);
   pa_stream_set_read_callback(_pa_stream, _stream_buffer_ready, NULL);
+  
   super.isActive = YES;
 }
 - (void)deactivate
