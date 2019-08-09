@@ -58,8 +58,6 @@ extern NSString* const NXUserDefaultsDidChangeNotification;
   NSMutableDictionary	*defaultsDict;
   BOOL			isGlobal;
   BOOL			isSystem;
-  
-  BOOL			isChanged;
   NSTimer		*syncTimer;
 }
 
