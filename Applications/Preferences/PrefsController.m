@@ -87,9 +87,7 @@
   [prefsViews release];
   [window close];
   [window release];
-  
-  [[NXTDefaults globalUserDefaults] synchronize];
-  
+
   [super dealloc];
 }
 
