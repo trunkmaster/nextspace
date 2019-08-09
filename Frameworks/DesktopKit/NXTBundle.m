@@ -101,7 +101,7 @@ static NXTBundle *shared = nil;
     }
   }
   
-  NSLog(@"Searching for bundles in: %@", pathList);
+  NSDebugLLog(@"NXTBundle", @"Searching for bundles in: %@", pathList);
   for (NSString *path in pathList) {
     [bundlePaths addObjectsFromArray:[self bundlePathsOfType:fileExtension
                                                       atPath:path]];
@@ -131,7 +131,7 @@ static NXTBundle *shared = nil;
     bundlePathsList = [self bundlePathsOfType:fileExtension];
   }
   
-  NSLog(@"Bundles path list: %@", bundlePathsList);
+  NSDebugLLog(@"NXTBundle", @"Bundles path list: %@", bundlePathsList);
   bundlesRegistry = [NSMutableDictionary new];
   
   for (NSString *bundlePath in bundlePathsList) {
@@ -198,7 +198,7 @@ static NXTBundle *shared = nil;
     if ((bundle = [NSBundle bundleWithPath:bPath])) {
       bExecutable = [[bundle infoDictionary] objectForKey:@"NSExecutable"];
       if (!bExecutable) {
-        NSLog (@"Bundle `%@' has no executable!", bPath);
+        NSLog(@"Bundle `%@' has no executable!", bPath);
         continue;
       }
     }
