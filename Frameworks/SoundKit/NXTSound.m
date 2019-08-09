@@ -30,8 +30,6 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self setDelegate:nil];
   if (_stream) {
-    [_stream setDelegate:nil];
-    [_stream deactivate];
     [_stream release];
     _stream = nil;
   }
@@ -121,7 +119,8 @@
 
 - (BOOL)play
 {
-  if (_isPlayFinished == NO) {
+  // if (_isPlayFinished == NO) {
+  if (_state == NXTSoundPlay) {
     fprintf(stderr, "[SoundKit] NXTSound skipped play - already playing.\n");
     return NO;
   }
@@ -132,9 +131,13 @@
       [_stream activate];
     }
     else {
+      [self resume];
       [self soundStream:_stream bufferReady:[_stream bufferLength]];
     }
-    [self resume];
+    // If user calls release just after this method, sound will not be played.
+    // We're retain ourself to release it in -streamBufferEmpty:.
+    [self retain];
+
     return YES;
   }
 
@@ -222,6 +225,7 @@
         [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
       [_delegate sound:self didFinishPlaying:YES];
     }
+    [self release];
   }
 }
 
