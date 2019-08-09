@@ -293,21 +293,16 @@
 
 - (void)setBeep:(id)sender
 {
-  NSString   *soundPath;
-  NSSound    *sound;
-
-  // FIXME: should be:
-  //// Write NXSystemBeep value to defaults.
-  // [defs setObject:soundPath forKey:@"NXSystemBeep"];
-  //// Call NSBeep() to play sound (Workspace should reread defaults on
-  //// [defs synchronize] and play new sound with XBell catching function).
-  // NSBeep();
-  soundPath = [[beepBrowser selectedCellInColumn:0] representedObject];
-  sound = [[NSSound alloc] initWithContentsOfFile:soundPath byReference:NO];
-  [sound play];
-  [sound release];
+  NSString *soundPath = [[beepBrowser selectedCellInColumn:0] representedObject];
+  NXTSound *sound;
 
   [defaults setObject:soundPath forKey:@"NXSystemBeep"];
+  
+  sound = [[NXTSound alloc] initWithContentsOfFile:soundPath
+                                       byReference:NO
+                                        streamType:SNDEventType];
+  [sound play];
+  [sound release];
 }
 - (void)setBeepRadio:(id)sender
 {
