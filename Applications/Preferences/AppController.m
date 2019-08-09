@@ -27,8 +27,6 @@
 
 #import "AppController.h"
 
-static NSUserDefaults *defaults = nil;
-
 @implementation AppController
 
 - (id)init
@@ -37,12 +35,7 @@ static NSUserDefaults *defaults = nil;
     return nil;
   }
 
-  if (!defaults) {
-    defaults = [NSUserDefaults standardUserDefaults];
-  }
-
   prefsController = nil;
-
   return self;
 }
 
@@ -111,6 +104,7 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
+  [[NXTDefaults globalUserDefaults] synchronize];  
   [prefsController release];
   [clockView removeFromSuperviewWithoutNeedingDisplay];
 }

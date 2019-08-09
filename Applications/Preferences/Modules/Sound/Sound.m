@@ -39,7 +39,6 @@
     [soundServer release];
   }
   [soundsList release];
-  [defaults synchronize];
   [image release];
   if (mixer)
     [mixer release];

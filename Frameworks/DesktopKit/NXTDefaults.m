@@ -146,9 +146,9 @@ static NSLock     *syncLock;
 
 - (void)dealloc
 {
-  if (isChanged) {
-    [self synchronize];
-  }
+  NSLog(@"[NXTDefaults] - dealloc");
+  [self synchronize];
+  
   if (syncTimer) [syncTimer release];
   [defaultsDict release];
   [filePath release];
