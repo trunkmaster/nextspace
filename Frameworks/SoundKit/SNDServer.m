@@ -286,6 +286,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   SNDPlayStream    *playStream;
   SNDRecordStream  *recordStream;
   PASource         *source;
+  PAClient         *client;
 
   // Pure virtual streams
   for (PAStream *stream in savedStreamList) {
@@ -295,17 +296,20 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   }
   // Streams with SinkInput and Client
   for (PASinkInput *sinkInput in sinkInputList) {
-    playStream = [SNDPlayStream new];
-    playStream.client = [self clientWithIndex:sinkInput.clientIndex];
-    if (playStream.client != nil) {
+    client = [self clientWithIndex:sinkInput.clientIndex];
+    if (client != nil &&
+        (sinkInput.mediaRole == nil || [sinkInput.mediaRole isEqualToString:@""])) {
+      playStream = [SNDPlayStream new];
+      playStream.client = client;
       playStream.server = self;
       playStream.device = [self outputWithSink:[self sinkWithIndex:sinkInput.sinkIndex]];
       playStream.name = playStream.client.appName;
       playStream.sinkInput = sinkInput;
       [list addObject:playStream];
-      NSDebugLLog(@"SoundKit", @"SNDPlayStream was added to list: %@", playStream.name);
+      NSDebugLLog(@"SoundKit", @"SNDPlayStream was added to list: %@ (%@)",
+                  playStream.name, sinkInput.mediaRole);
+      [playStream release];
     }
-    [playStream release];
   }
   // Streams with SourceOuput and Client
   for (PASourceOutput *sourceOutput in sourceOutputList) {
