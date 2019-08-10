@@ -131,13 +131,14 @@
       [_stream activate];
     }
     else {
-      [self resume];
       [self soundStream:_stream bufferReady:[_stream bufferLength]];
+      [self resume];
     }
     // If user calls release just after this method, sound will not be played.
     // We're retain ourself to release it in -streamBufferEmpty:.
     [self retain];
 
+    _state = NXTSoundPlay;
     return YES;
   }
 
