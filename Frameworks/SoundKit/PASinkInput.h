@@ -33,6 +33,7 @@
 @property (readonly) NSUInteger index;
 @property (readonly) NSUInteger clientIndex;
 @property (readonly) NSUInteger sinkIndex;
+@property (readonly) NSString   *mediaRole;
 
 @property (readonly) BOOL       hasVolume;
 @property (readonly) BOOL       isVolumeWritable;

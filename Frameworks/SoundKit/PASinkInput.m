@@ -125,6 +125,23 @@
     channel_map->map[i] = info->channel_map.map[i];
   }
 }
+- (void)_updateMediaRole:(pa_sink_input_info *)info
+{
+  const char *media_role = pa_proplist_gets(info->proplist, PA_PROP_MEDIA_ROLE);
+
+  if (_mediaRole) {
+    [_mediaRole release];
+  }
+  
+  if (media_role != NULL) {
+    _mediaRole = [[NSString alloc] initWithCString:media_role];
+  }
+  else {
+    _mediaRole = nil;
+  }
+}
+
+
 - (id)updateWithValue:(NSValue *)val
 {
   pa_sink_input_info *info = NULL;
@@ -147,7 +164,9 @@
 
   [self _updateVolume:info];
   [self _updateChannels:info];
-  
+  [self _updateMediaRole:info];
+
+ 
   free((void *)info);
 
   return self;
