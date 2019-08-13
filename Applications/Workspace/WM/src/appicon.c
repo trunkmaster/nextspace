@@ -68,16 +68,20 @@
 
 static void iconDblClick(WObjDescriptor * desc, XEvent * event);
 static void iconExpose(WObjDescriptor * desc, XEvent * event);
-static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_instance, const char *wm_class);
+static void wApplicationSaveIconPathFor(const char *iconPath,
+                                        const char *wm_instance,
+                                        const char *wm_class);
 static WAppIcon *wAppIconCreate(WWindow * leader_win);
 static void add_to_appicon_list(WScreen *scr, WAppIcon *appicon);
 static void remove_from_appicon_list(WScreen *scr, WAppIcon *appicon);
-static void create_appicon_from_dock(WWindow *wwin, WApplication *wapp, Window main_window);
+static void create_appicon_from_dock(WWindow *wwin, WApplication *wapp,
+                                     Window main_window);
 
 /* This function is used if the application is a .app. It checks if it has an icon in it
  * like for example /usr/local/GNUstep/Applications/WPrefs.app/WPrefs.tiff
  */
-void wApplicationExtractDirPackIcon(const char *path, const char *wm_instance, const char *wm_class)
+void wApplicationExtractDirPackIcon(const char *path, const char *wm_instance,
+                                    const char *wm_class)
 {
   char *iconPath = NULL;
   char *tmp = NULL;
@@ -154,6 +158,16 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
 {
   /* Try to create an icon from the dock or clip */
   create_appicon_from_dock(wwin, wapp, wapp->main_window);
+
+#ifdef NEXTSPACE
+  /* Check if launching icon was created by Workspace*/
+  if (!wapp->app_icon) {
+    wapp->app_icon = XWLaunchingIconForApplication(wapp, wwin);
+    if (wapp->app_icon) {
+      wapp->app_icon->icon->core->descriptor.handle_expose = iconExpose;
+    }
+  }
+#endif // NEXTSPACE
 
   /* If app_icon was not found, create it */
   if (!wapp->app_icon) {

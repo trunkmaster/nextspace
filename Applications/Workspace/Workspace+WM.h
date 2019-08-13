@@ -146,6 +146,8 @@ pid_t WWMExecuteCommand(NSString *command);
 //-----------------------------------------------------------------------------
 int WWMDockLevel();
 void WWMSetDockLevel(int level);
+#include <appicon.h> // to silence compiler
+WAppIcon *XWLaunchingIconForApplication(WApplication *wapp, WWindow *wwin);
 
 char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
