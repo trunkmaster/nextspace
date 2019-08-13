@@ -67,6 +67,8 @@ void _stream_overflow(pa_stream *stream, void *sndStream)
 - (void)deactivate
 {
   pa_stream_set_write_callback(_pa_stream, NULL, NULL);
+  pa_stream_set_underflow_callback(_pa_stream, NULL, NULL);
+  pa_stream_set_overflow_callback(_pa_stream, NULL, NULL);
   pa_stream_disconnect(_pa_stream);
   super.isActive = NO;
 }
