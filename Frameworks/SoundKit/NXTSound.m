@@ -39,6 +39,10 @@
 
 - (void)_initStream
 {
+  if (_stream != nil) {
+    return;
+  }
+    
   NSDebugLLog(@"SoundKit", @"[NXTSound] creating play stream...");
   _stream = [[SNDPlayStream alloc]
                 initOnDevice:(SNDDevice *)[[SNDServer sharedServer] defaultOutput]
@@ -49,7 +53,7 @@
   [_stream setDelegate:self];
   if (_state == NXTSoundPlay) {
     NSDebugLLog(@"SoundKit", @"[NXTSound] desired state is `Play`...");
-    _isPlayFinished = YES;
+    _state = NXTSoundInitial;
     [self play];
   }
 }
@@ -60,7 +64,7 @@
   
   NSDebugLLog(@"SoundKit", @"[NXTSound] serverStateChanged - %i", server.status);
   
-  if (server.status == SNDServerReadyState) {
+  if (server.status == SNDServerReadyState && _stream == nil) {
     [self _initStream];
   }
   else if (server.status == SNDServerFailedState ||
@@ -92,7 +96,6 @@
               [_source channelCount], [_source sampleRate], [_source byteOrder],
               [_source duration]);
 
-  _isPlayFinished = YES;
   _state = NXTSoundInitial;
   _streamType = sType;
   
@@ -119,40 +122,42 @@
 
 - (BOOL)play
 {
-  // if (_isPlayFinished == NO) {
   if (_state == NXTSoundPlay) {
-    fprintf(stderr, "[SoundKit] NXTSound skipped play - already playing.\n");
+    NSDebugLLog(@"SoundKit", @"[NXTSound] PLAY skipped - already playing.\n");
     return NO;
   }
+
+  // Mark as 'Play' no matter if _stream exist or doesn't
+  _state = NXTSoundPlay;
   
   if (_stream != nil) {
-    _isPlayFinished = NO;
     if (_stream.isActive == NO) {
       [_stream activate];
     }
     else {
       [self soundStream:_stream bufferReady:[_stream bufferLength]];
-      [self resume];
     }
     // If user calls release just after this method, sound will not be played.
     // We're retain ourself to release it in -streamBufferEmpty:.
-    [self retain];
+    if ([self retainCount] <= 1) {
+      [self retain];
+    }
 
-    _state = NXTSoundPlay;
     return YES;
   }
 
-  _state = NXTSoundPlay;
+  NSDebugLLog(@"SoundKit", @"[NXTSound] PLAY skipped - no stream found.\n");
   return NO;
 }
 - (BOOL)stop
 {
-  if (_stream && _state != NXTSoundStop) {
-    NSDebugLLog(@"SoundKit", @"[NXTSound] Current song time: %f", [self currentTime]);
-    [self pause];
-    [self setCurrentTime:0];
+  if (_stream && _state != NXTSoundFinished) {
+    NSDebugLLog(@"SoundKit", @"[NXTSound] STOP at time: %.2f/%0.2f",
+                [_source currentTime], [_source duration]);
+    
+    _state = NXTSoundFinished;
     [_stream empty:YES];
-    _state = NXTSoundStop;
+    [self setCurrentTime:0];
     return YES;
   }
   return NO;
@@ -168,16 +173,22 @@
 }
 - (BOOL)resume
 {
-  if (_stream) {
+  if (_stream && _state != NXTSoundPlay && _state != NXTSoundFinished) {
     [_stream resume:self];
     _state = NXTSoundPlay;
+    return YES;
   }
-  return YES;
+  return NO;
 }
 - (BOOL)isPlaying
 {
-  if (_stream == nil) return NO;
-  return (_state == NXTSoundPlay || _state == NXTSoundPause);
+  if (_stream == nil)
+    return NO;
+  
+  if (_state != NXTSoundPlay && _state != NXTSoundPause)
+    return NO;
+
+  return YES;
 }
 
 // --- SNDPlayStream delegate
@@ -187,7 +198,7 @@
   NSUInteger bytes_read;
   float      *buffer;
 
-  if (_isPlayFinished != NO) {
+  if (_state != NXTSoundPlay) {
     return;
   }
 
@@ -200,12 +211,12 @@
   
   if (bytes_read == 0) {
     free(buffer);
-    _isPlayFinished = YES;
+    _state = NXTSoundFinished;
     [_stream empty:NO];
     return;
   }
   
-  // buffer will be freed by PA function called by SNDPlayStream
+  // `buffer` will be freed by PA function called by SNDPlayStream
   [_stream playBuffer:buffer size:bytes_read tag:0];
   if (_isShort) {
     [_stream empty:NO];
@@ -215,19 +226,33 @@
 {
   NSDebugLLog(@"SoundKit", @"[NXTSound] stream buffer is empty %.2f/%0.2f",
               [_source currentTime], [_source duration]);
-  if (_isPlayFinished == NO) {
-    // _isPlayFinished will be set to 'YES' in called method below
-    // if no more bytes to read.
+  if (_state != NXTSoundFinished) {
     [self soundStream:_stream bufferReady:[_stream bufferLength]];
   }
   else {
-    [self stop];
     if (_delegate &&
         [_delegate respondsToSelector:@selector(sound:didFinishPlaying:)] != NO) {
       [_delegate sound:self didFinishPlaying:YES];
     }
-    [self release];
+
+    [self setCurrentTime:0];
+    // TODO: balance -play's [self retain]
+    // if ([self retainCount] >= 1) {
+    //   NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+    //                                                     target:self
+    //                                                   selector:@selector(release:)
+    //                                                   userInfo:nil
+    //                                                    repeats:NO];
+    //   [timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:0.9]];
+    //   // [timer fire];
+    //   // [self release];
+    // }
   }
 }
+
+// - (void)release:(NSTimer *)timer
+// {
+//   [self release];
+// }
 
 @end

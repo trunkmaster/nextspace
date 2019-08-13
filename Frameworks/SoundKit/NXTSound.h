@@ -24,10 +24,10 @@
 #import <SoundKit/SNDPlayStream.h>
 
 typedef enum {
-  NXTSoundPlay    = 0,
-  NXTSoundStop    = 1,
-  NXTSoundPause   = 2,
-  NXTSoundInitial = 3
+  NXTSoundInitial  = 0,
+  NXTSoundPlay     = 1,
+  NXTSoundPause    = 2,
+  NXTSoundFinished = 3
 } NXTSoundState;
 
 @interface NXTSound : NSSound
@@ -37,7 +37,6 @@ typedef enum {
   NXTSoundState _state;
   SNDStreamType _streamType;
   BOOL          _isShort;
-  BOOL          _isPlayFinished;
 }
 
 - (id)initWithContentsOfFile:(NSString *)path
