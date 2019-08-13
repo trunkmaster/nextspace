@@ -164,7 +164,7 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
   if (!wapp->app_icon) {
     wapp->app_icon = XWLaunchingIconForApplication(wapp, wwin);
     if (wapp->app_icon) {
-      wapp->app_icon->icon->core->descriptor.handle_expose = iconExpose;
+      wapp->app_icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
     }
   }
 #endif // NEXTSPACE
