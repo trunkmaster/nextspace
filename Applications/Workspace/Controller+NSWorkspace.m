@@ -369,16 +369,16 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 @interface Controller (NSWorkspacePrivate)
 
 // Icon handling
-- (NSImage*) _extIconForApp: (NSString*)appName info: (NSDictionary*)extInfo;
-- (NSImage*) unknownFiletypeImage;
-- (NSImage*) _saveImageFor: (NSString*)iconPath;
-- (NSString*) thumbnailForFile: (NSString *)file;
-- (NSImage*) _iconForExtension: (NSString*)ext;
+- (NSImage*)_extIconForApp: (NSString*)appName info: (NSDictionary*)extInfo;
+- (NSImage*)unknownFiletypeImage;
+- (NSImage*)_saveImageFor: (NSString*)iconPath;
+- (NSString*)_thumbnailForFile: (NSString *)file;
+- (NSImage*)_iconForExtension: (NSString*)ext;
 - (NSImage *)_iconForFileContents:(NSString *)fullPath;
 - (NSImage *)_iconForFileContents:(NSString *)fullPath;
-- (BOOL) _extension:(NSString*)ext
-               role:(NSString*)role
-	        app:(NSString**)app;
+- (BOOL)_extension:(NSString*)ext
+              role:(NSString*)role
+               app:(NSString**)app;
 
 // Preferences
 - (void) _workspacePreferencesChanged: (NSNotification *)aNotification;
@@ -612,8 +612,8 @@ static NSString		*_rootPath = @"/";
   if (![fm fileExistsAtPath:fullPath])
     {
       NXTRunAlertPanel(_(@"Workspace"),
-                      _(@"File '%@' does not exist!"), 
-                      nil, nil, nil, [fullPath lastPathComponent]);
+                       _(@"File '%@' does not exist!"), 
+                       nil, nil, nil, [fullPath lastPathComponent]);
       return NO;
     }
 
@@ -645,20 +645,18 @@ static NSString		*_rootPath = @"/";
                                      ofType:nil];
       
       wmName = [appInfo objectForKey:@"NSExecutable"];
-      if ([[wmName componentsSeparatedByString:@"."] count] == 1)
-        {
-          wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                             [wmName stringByDeletingPathExtension]];
-        }
+      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
+        wmName = [NSString stringWithFormat:@"%@.GNUstep",
+                           [wmName stringByDeletingPathExtension]];
+      }
       WWMCreateLaunchingIcon(wmName, anImage, point, iconPath);
       
-      if ([self launchApplication:fullPath] == NO)
-        {
-          NXTRunAlertPanel(_(@"Workspace"),
-                          _(@"Failed to start application \"%@\""), 
-                          nil, nil, nil, appName);
-          return NO;
-        }
+      if ([self launchApplication:fullPath] == NO) {
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\""), 
+                         nil, nil, nil, appName);
+        return NO;
+      }
       return YES;
     }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
@@ -1140,7 +1138,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
         {
 	  // This image will be 128x128 pixels as oposed to the 48x48 
 	  // of other GNUstep icons or the 32x32 of the specification
-	  image = [self _saveImageFor:[self thumbnailForFile:fullPath]];
+	  image = [self _saveImageFor:[self _thumbnailForFile:fullPath]];
 	  if (image != nil)
 	    {
 	      return image;
@@ -1282,7 +1280,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 //--- Updating Registered Services and File Types
 //-----------------------------------------------------------------------------
-- (void) findApplications
+- (void)findApplications
 {
   static NSString	*path = nil;
   NSTask		*task;
@@ -1290,57 +1288,52 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   /*
    * Try to locate and run an executable copy of 'make_services'
    */
-  if (path == nil)
-    {
-      path = [[NSTask launchPathForTool: @"make_services"] retain];
-    }
-  task = [NSTask launchedTaskWithLaunchPath: path
-				  arguments: nil];
-  if (task != nil)
-    {
-      [task waitUntilExit];
-    }
+  if (path == nil){
+    path = [[NSTask launchPathForTool: @"make_services"] retain];
+  }
+  task = [NSTask launchedTaskWithLaunchPath:path
+				  arguments:nil];
+  if (task != nil) {
+    [task waitUntilExit];
+  }
   [self _workspacePreferencesChanged:
-     [NSNotification notificationWithName: GSWorkspacePreferencesChanged
-				   object: self]];
+          [NSNotification notificationWithName:GSWorkspacePreferencesChanged
+                                        object:self]];
 }
 
 //-----------------------------------------------------------------------------
 //--- Launching and Manipulating Applications
 //-----------------------------------------------------------------------------
-- (void) hideOtherApplications
+- (void)hideOtherApplications
 {
   // FIXME
 }
 
-- (BOOL) launchApplication: (NSString*)appName
+- (BOOL)launchApplication:(NSString*)appName
 {
-  return [self launchApplication: appName
-			showIcon: YES
-		      autolaunch: NO];
+  return [self launchApplication:appName
+			showIcon:YES
+		      autolaunch:NO];
 }
 
-- (BOOL) launchApplication: (NSString*)appName
-		  showIcon: (BOOL)showIcon
-	        autolaunch: (BOOL)autolaunch
+- (BOOL)launchApplication:(NSString*)appName
+                 showIcon:(BOOL)showIcon
+               autolaunch:(BOOL)autolaunch
 {
   id app;
 
-  app = [self _connectApplication: appName];
-  if (app == nil)
-    {
-      NSArray	*args = nil;
+  app = [self _connectApplication:appName];
+  if (app == nil) {
+      NSArray *args = nil;
 
-      if (autolaunch == YES)
-	{
-	  args = [NSArray arrayWithObjects: @"-autolaunch", @"YES", nil];
-	}
-      return [self _launchApplication: appName arguments: args];
-    }
-  else
-    {
-      [app activateIgnoringOtherApps:YES];
-    }
+      if (autolaunch == YES) {
+        args = [NSArray arrayWithObjects: @"-autolaunch", @"YES", nil];
+      }
+      return [self _launchApplication:appName arguments:args];
+  }
+  else {
+    [app activateIgnoringOtherApps:YES];
+  }
 
   return YES;
 }
@@ -1430,6 +1423,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 @implementation Controller (NSWorkspacePrivate)
 
+//-----------------------------------------------------------------------------
+//--- Images and icons
+//-----------------------------------------------------------------------------
 - (NSImage *)_extIconForApp:(NSString *)appName info:(NSDictionary*)extInfo
 {
   NSDictionary	*typeInfo = [extInfo objectForKey: appName];
@@ -1492,10 +1488,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   static NSImage *image = nil;
 
-  if (image == nil)
-    {
-      image = RETAIN([NSImage _standardImageWithName:@"NXUnknown"]);
-    }
+  if (image == nil) {
+    image = RETAIN([NSImage _standardImageWithName:@"NXUnknown"]);
+  }
 
   return image;
 }
@@ -1505,32 +1500,29 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSImage *tmp = nil;
 
-  NS_DURING
-    {
-      tmp = [[NSImage alloc] initWithContentsOfFile: iconPath];
-      if (tmp != nil)
-        {
-	  AUTORELEASE(tmp);
-	}
+  NS_DURING {
+    tmp = [[NSImage alloc] initWithContentsOfFile:iconPath];
+    if (tmp != nil) {
+      AUTORELEASE(tmp);
     }
-  NS_HANDLER
-    {
-      NSLog(@"BAD TIFF FILE '%@'", iconPath);
-    }
+  }
+  NS_HANDLER {
+    NSLog(@"BAD TIFF FILE '%@'", iconPath);
+  }
   NS_ENDHANDLER
 
   return tmp;
 }
 
 /** Returns the freedesktop thumbnail file name for a given file name */
-- (NSString *)thumbnailForFile:(NSString *)file
+- (NSString *)_thumbnailForFile:(NSString *)file
 {
   NSString *absolute;
   NSString *digest;
   NSString *thumbnail;
 
-  absolute = [[NSURL fileURLWithPath: [file stringByStandardizingPath]] 
-		 absoluteString];
+  absolute = [[NSURL fileURLWithPath:[file stringByStandardizingPath]] 
+               absoluteString];
   /* This compensates for a feature we have in NSURL, that is there to have 
    * MacOSX compatibility.
    */
@@ -1554,10 +1546,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSImage	*icon = nil;
 
-  if (ext == nil || [ext isEqualToString:@""])
-    {
-      return nil;
-    }
+  if (ext == nil || [ext isEqualToString:@""]) {
+    return nil;
+  }
   /*
    * extensions are case-insensitive - convert to lowercase.
    */
@@ -1820,6 +1811,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
 }
 
+//-----------------------------------------------------------------------------
+//--- Preferences
+//-----------------------------------------------------------------------------
 - (void)_workspacePreferencesChanged:(NSNotification *)aNotification
 {
   /* FIXME reload only those preferences that really were changed
@@ -1857,6 +1851,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   [_iconMap removeAllObjects];
 }
 
+//-----------------------------------------------------------------------------
+//--- Application management
+//-----------------------------------------------------------------------------
 /**
  * Launch an application locally (ie without reference to the workspace
  * manager application).  We should only call this method when we want
@@ -1864,181 +1861,184 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * launching IS the workspace manager, or because we have tried to get
  * the workspace manager to do the job and been unable to do so.
  */
-- (BOOL) _launchApplication:(NSString*)appName
-		  arguments:(NSArray*)args
+- (BOOL)_launchApplication:(NSString*)appName
+                 arguments:(NSArray*)args
 {
   NSTask	*task;
   NSString	*path;
   NSDictionary	*userinfo;
   NSString	*host;
 
-  path = [self locateApplicationBinary: appName];
-  if (path == nil)
-    {
-      return NO;
-    }
+  path = [self locateApplicationBinary:appName];
+  if (path == nil) {
+    return NO;
+  }
 
   /*
    * Try to ensure that apps we launch display in this workspace
    * ie they have the same -NSHost specification.
    */
-  host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-  if (host != nil)
-    {
-      NSHost	*h;
+  host = [[NSUserDefaults standardUserDefaults] stringForKey:@"NSHost"];
+  if (host != nil) {
+    NSHost *h;
 
-      h = [NSHost hostWithName: host];
-      if ([h isEqual: [NSHost currentHost]] == NO)
-	{
-	  if ([args containsObject: @"-NSHost"] == NO)
-	    {
-	      NSMutableArray	*a;
+    h = [NSHost hostWithName:host];
+    if ([h isEqual:[NSHost currentHost]] == NO) {
+      if ([args containsObject:@"-NSHost"] == NO) {
+        NSMutableArray	*a;
 
-	      if (args == nil)
-		{
-		  a = [NSMutableArray arrayWithCapacity: 2];
-		}
-	      else
-		{
-		  a = AUTORELEASE([args mutableCopy]);
-		}
-	      [a insertObject: @"-NSHost" atIndex: 0];
-	      [a insertObject: host atIndex: 1];
-	      args = a;
-	    }
-	}
+        if (args == nil) {
+          a = [NSMutableArray arrayWithCapacity:2];
+        }
+        else {
+          a = AUTORELEASE([args mutableCopy]);
+        }
+        [a insertObject:@"-NSHost" atIndex:0];
+        [a insertObject:host atIndex:1];
+        args = a;
+      }
     }
+  }
   /*
    * App being launched, send
    * NSWorkspaceWillLaunchApplicationNotification
    */
-  userinfo = [NSDictionary dictionaryWithObjectsAndKeys:
-    [[appName lastPathComponent] stringByDeletingPathExtension], 
-			   @"NSApplicationName",
-    appName, @"NSApplicationPath",
-    nil];
+  userinfo = [NSDictionary
+               dictionaryWithObjectsAndKeys:
+                 [[appName lastPathComponent] stringByDeletingPathExtension], 
+               @"NSApplicationName",
+               appName, @"NSApplicationPath",
+               nil];
   [_workspaceCenter
-    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
-    object: self
-    userInfo: userinfo];
-
-  task = [NSTask launchedTaskWithLaunchPath: path arguments: args];
-  if (task == nil)
-    {
-      return NO;
-    }
+    postNotificationName:NSWorkspaceWillLaunchApplicationNotification
+                  object:self
+                userInfo:userinfo];
+  task = [NSTask launchedTaskWithLaunchPath:path arguments:args];
+  if (task == nil) {
+    return NO;
+  }
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(_launchedApplicationDidTerminate:)
+           name:NSTaskDidTerminateNotification
+         object:task];
   /*
    * The NSWorkspaceDidLaunchApplicationNotification will be
    * sent by the started application itself.
    */
-  [_launched setObject: task forKey: appName];
+  [_launched setObject:task forKey:appName];
   return YES;
+}
+
+- (void)_launchedApplicationDidTerminate:(NSNotification *)aNotif
+{
+  NSTask *task = [aNotif object];
+  int    exitCode = [task terminationStatus];
+
+  NSLog(@"Application exited: %@ with code %i",
+        [task launchPath], exitCode);
+
+  if (exitCode != 0) {
+    NXTRunAlertPanel(_(@"Workspace"),
+                     _(@"Application '%@' exited with code %i"), 
+                     nil, nil, nil, [task launchPath], exitCode);
+  }
+  [[NSNotificationCenter defaultCenter]
+    removeObserver:self
+              name:NSTaskDidTerminateNotification
+            object:task];
 }
 
 - (id)_connectApplication:(NSString*)appName
 {
   NSTimeInterval        replyTimeout = 0.0;
   NSTimeInterval        requestTimeout = 0.0;
-  NSString	*host;
-  NSString	*port;
-  NSDate	*when = nil;
-  NSConnection  *conn = nil;
-  id		app = nil;
+  NSString		*host;
+  NSString		*port;
+  NSDate		*when = nil;
+  NSConnection  	*conn = nil;
+  id			app = nil;
 
-  while (app == nil)
-    {
-      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-      if (host == nil)
-	{
-	  host = @"";
-	}
-      else
-	{
-	  NSHost	*h;
+  while (app == nil) {
+    host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+    if (host == nil) {
+      host = @"";
+    }
+    else {
+      NSHost	*h;
 
-	  h = [NSHost hostWithName: host];
-	  if ([h isEqual: [NSHost currentHost]] == YES)
-	    {
-	      host = @"";
-	    }
-	}
-      port = [[appName lastPathComponent] stringByDeletingPathExtension];
-      /*
-       *	Try to contact a running application.
-       */
-      NS_DURING
-	{
-          conn = [NSConnection connectionWithRegisteredName: port host: host];
-          requestTimeout = [conn requestTimeout];
-          [conn setRequestTimeout: 5.0];
-          replyTimeout = [conn replyTimeout];
-          [conn setReplyTimeout: 5.0];
-	  app = [conn rootProxy];
-	}
-      NS_HANDLER
-	{
-	  /* Fatal error in DO	*/
-          conn = nil;
-	  app = nil;
-	}
-      NS_ENDHANDLER
+      h = [NSHost hostWithName: host];
+      if ([h isEqual: [NSHost currentHost]] == YES) {
+        host = @"";
+      }
+    }
+    port = [[appName lastPathComponent] stringByDeletingPathExtension];
+    /*
+     *	Try to contact a running application.
+     */
+    NS_DURING
+      {
+        conn = [NSConnection connectionWithRegisteredName:port host:host];
+        requestTimeout = [conn requestTimeout];
+        [conn setRequestTimeout:5.0];
+        replyTimeout = [conn replyTimeout];
+        [conn setReplyTimeout:5.0];
+        app = [conn rootProxy];
+      }
+    NS_HANDLER
+      {
+        /* Fatal error in DO	*/
+        conn = nil;
+        app = nil;
+      }
+    NS_ENDHANDLER
 
-        if (app == nil)
-          {
-            NSTask	*task = [_launched objectForKey: appName];
-            NSDate	*limit;
+      if (app == nil) {
+        NSTask	*task = [_launched objectForKey:appName];
+        NSDate	*limit;
 
-            if (task == nil || [task isRunning] == NO)
-              {
-                if (task != nil)	// Not running
-                  {
-                    [_launched removeObjectForKey: appName];
-                  }
-                break;		// Need to launch the app
-              }
-
-            if (when == nil)
-              {
-                when = [[NSDate alloc] init];
-              }
-            else if ([when timeIntervalSinceNow] < -5.0)
-              {
-                int		result;
-
-                DESTROY(when);
-                result = NSRunAlertPanel(appName,
-                                         @"Application seems to have hung",
-                                         @"Continue", @"Terminate", @"Wait");
-
-                if (result == NSAlertDefaultReturn)
-                  {
-                    break;		// Finished without app
-                  }
-                else if (result == NSAlertOtherReturn)
-                  {
-                    // Continue to wait for app startup.
-                  }
-                else
-                  {
-                    [task terminate];
-                    [_launched removeObjectForKey: appName];
-                    break;		// Terminate hung app
-                  }
-              }
-
-            // Give it another 0.5 of a second to start up.
-            limit = [[NSDate alloc] initWithTimeIntervalSinceNow: 0.5];
-            [[NSRunLoop currentRunLoop] runUntilDate: limit];
-            RELEASE(limit);
+        if (task == nil || [task isRunning] == NO) {
+          if (task != nil) {	// Not running
+            [_launched removeObjectForKey:appName];
           }
-    }
-  if (conn != nil)
-    {
-      /* Use original timeouts
-       */
-      [conn setRequestTimeout: requestTimeout];
-      [conn setReplyTimeout: replyTimeout];
-    }
+          break;		// Need to launch the app
+        }
+
+        if (when == nil) {
+          when = [[NSDate alloc] init];
+        }
+        else if ([when timeIntervalSinceNow] < -5.0) {
+          int		result;
+
+          DESTROY(when);
+          result = NSRunAlertPanel(appName,
+                                   @"Application seems to have hung",
+                                   @"Continue", @"Terminate", @"Wait");
+
+          if (result == NSAlertDefaultReturn) {
+            break;		// Finished without app
+          }
+          else if (result == NSAlertOtherReturn) {
+            // Continue to wait for app startup.
+          }
+          else {
+            [task terminate];
+            [_launched removeObjectForKey:appName];
+            break;		// Terminate hung app
+          }
+        }
+
+        // Give it another 0.5 of a second to start up.
+        limit = [[NSDate alloc] initWithTimeIntervalSinceNow:0.5];
+        [[NSRunLoop currentRunLoop] runUntilDate:limit];
+        RELEASE(limit);
+      }
+  }
+  if (conn != nil) {
+    /* Use original timeouts */
+    [conn setRequestTimeout:requestTimeout];
+    [conn setReplyTimeout:replyTimeout];
+  }
   TEST_RELEASE(when);
   return app;
 }
@@ -2051,20 +2051,18 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * Returns the path set for the icon matching the image by
  * -setBestIcon:forExtension:
  */
-- (NSString*) getBestIconForExtension: (NSString*)ext
+- (NSString*)getBestIconForExtension:(NSString*)ext
 {
   NSString	*iconPath = nil;
 
-  if (extPreferences != nil)
-    {
-      NSDictionary	*inf;
+  if (extPreferences != nil) {
+    NSDictionary	*inf;
 
-      inf = [extPreferences objectForKey: [ext lowercaseString]];
-      if (inf != nil)
-	{
-	  iconPath = [inf objectForKey: @"Icon"];
-	}
+    inf = [extPreferences objectForKey:[ext lowercaseString]];
+    if (inf != nil) {
+      iconPath = [inf objectForKey:@"Icon"];
     }
+  }
   return iconPath;
 }
 
