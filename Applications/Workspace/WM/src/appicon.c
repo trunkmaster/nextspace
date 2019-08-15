@@ -162,7 +162,7 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
 #ifdef NEXTSPACE
   /* Check if launching icon was created by Workspace*/
   if (!wapp->app_icon) {
-    wapp->app_icon = XWLaunchingIconForApplication(wapp, wwin);
+    wapp->app_icon = XWLaunchingIconForApplication(wapp);
     if (wapp->app_icon) {
       wapp->app_icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
     }

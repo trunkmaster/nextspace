@@ -124,7 +124,9 @@ void      WWMSetDockAppPasteCommand(int postion, const char *command);
 NSString  *WWMDockAppDndCommand(int position);
 void      WWMSetDockAppDndCommand(int position, const char *command);
 
-WAppIcon *WWMCreateLaunchingIcon(NSString *wmName, NSImage *anImage,
+WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
+                                 NSString *launchPath,
+                                 NSImage *anImage,
                                  NSPoint sourcePoint,
                                  NSString *imagePath);
 void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
@@ -147,7 +149,8 @@ pid_t WWMExecuteCommand(NSString *command);
 int WWMDockLevel();
 void WWMSetDockLevel(int level);
 #include <appicon.h> // to silence compiler
-WAppIcon *XWLaunchingIconForApplication(WApplication *wapp, WWindow *wwin);
+WAppIcon *XWLaunchingIconForApplication(WApplication *wapp);
+WAppIcon *XWLaunchingIconForCommand(char *command);
 
 char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
