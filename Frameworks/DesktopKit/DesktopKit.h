@@ -37,4 +37,5 @@
 #import <DesktopKit/NXTBundle.h>
 #import <DesktopKit/NXTDefaults.h>
 #import <DesktopKit/NXTFileManager.h>
+#import <DesktopKit/NXTOpenPanel.h>
 #import <DesktopKit/Utilities.h>
