@@ -21,9 +21,9 @@ SUBPROJECTS = \
 	Modules/Keyboard \
 	Modules/Mouse \
 	Modules/Sound \
-	Modules/Expert
+	Modules/Expert \
+	Modules/Password
 #	Modules/Power
-#	Modules/Password
 
 #
 # Resource files
@@ -36,10 +36,10 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Keyboard/Keyboard.preferences \
 	Modules/Mouse/Mouse.preferences \
 	Modules/Sound/Sound.preferences \
-	Modules/Expert/Expert.preferences
+	Modules/Expert/Expert.preferences \
+	Modules/Password/Password.preferences
 
 #	Modules/Power/Power.preferences
-#	Modules/Password/Password.preferences
 
 #
 # Localization
