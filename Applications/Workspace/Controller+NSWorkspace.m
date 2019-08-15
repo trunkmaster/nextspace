@@ -70,11 +70,12 @@ static NSImage	*unknownTool = nil;
 @interface Controller (NSWorkspacePrivate)
 
 // Icon handling
-- (NSImage*)_extIconForApp: (NSString*)appName info: (NSDictionary*)extInfo;
+- (NSImage*)_extIconForApp:(NSString*)appName
+                      info:(NSDictionary*)extInfo;
 - (NSImage*)unknownFiletypeImage;
-- (NSImage*)_saveImageFor: (NSString*)iconPath;
-- (NSString*)_thumbnailForFile: (NSString *)file;
-- (NSImage*)_iconForExtension: (NSString*)ext;
+- (NSImage*)_saveImageFor:(NSString*)iconPath;
+- (NSString*)_thumbnailForFile:(NSString *)file;
+- (NSImage*)_iconForExtension:(NSString*)ext;
 - (NSImage *)_iconForFileContents:(NSString *)fullPath;
 - (NSImage *)_iconForFileContents:(NSString *)fullPath;
 - (BOOL)_extension:(NSString*)ext
@@ -82,29 +83,29 @@ static NSImage	*unknownTool = nil;
                app:(NSString**)app;
 
 // Preferences
-- (void) _workspacePreferencesChanged: (NSNotification *)aNotification;
+- (void)_workspacePreferencesChanged:(NSNotification *)aNotification;
 
 // application communication
-- (BOOL) _launchApplication: (NSString*)appName
-		  arguments: (NSArray*)args;
-- (id) _connectApplication: (NSString*)appName;
+- (BOOL)_launchApplication:(NSString*)appName
+                 arguments:(NSArray*)args;
+- (id)_connectApplication:(NSString*)appName;
 
 @end
 
 @interface Controller (NSWorkspaceGNUstep)
 
-- (NSString*) getBestIconForExtension: (NSString*)ext;
-- (NSDictionary*) infoForExtension: (NSString*)ext;
-- (NSBundle*) bundleForApp: (NSString*)appName;
-- (NSImage*) appIconForApp: (NSString*)appName;
-- (NSString*) locateApplicationBinary: (NSString*)appName;
-- (void) setBestApp: (NSString*)appName
-	     inRole: (NSString*)role
-       forExtension: (NSString*)ext;
-- (void) setBestIcon: (NSString*)iconPath forExtension: (NSString*)ext;
+- (NSString*)getBestIconForExtension:(NSString*)ext;
+- (NSDictionary*)infoForExtension:(NSString*)ext;
+- (NSBundle*)bundleForApp:(NSString*)appName;
+- (NSImage*)appIconForApp:(NSString*)appName;
+- (NSString*)locateApplicationBinary:(NSString*)appName;
+- (void)setBestApp:(NSString*)appName
+	     inRole:(NSString*)role
+       forExtension:(NSString*)ext;
+- (void)setBestIcon:(NSString*)iconPath
+       forExtension:(NSString*)ext;
 
 @end
-
 
 //-----------------------------------------------------------------------------
 // Workspace OPENSTEP methods
@@ -124,7 +125,6 @@ static NSString		*_rootPath = @"/";
 //-----------------------------------------------------------------------------
 //--- Creating a Workspace
 //-----------------------------------------------------------------------------
-
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -511,92 +511,83 @@ static NSString		*_rootPath = @"/";
 //-----------------------------------------------------------------------------
 //--- Manipulating Files
 //-----------------------------------------------------------------------------
-// FIXME
-- (BOOL) performFileOperation: (NSString*)operation
-		       source: (NSString*)source
-		  destination: (NSString*)destination
-		        files: (NSArray*)files
-			  tag: (int*)tag
+// FIXME: TODO
+- (BOOL)performFileOperation:(NSString*)operation
+                      source:(NSString*)source
+                 destination:(NSString*)destination
+                       files:(NSArray*)files
+                         tag:(int*)tag
 {
   // FiXME
 
   return NO;
 }
 
-// FIXME
-- (BOOL) selectFile: (NSString*)fullPath
-inFileViewerRootedAtPath: (NSString*)rootFullpath
+// FIXME: TODO
+- (BOOL)       selectFile:(NSString*)fullPath
+ inFileViewerRootedAtPath:(NSString*)rootFullpath
 {
-  // FIXME
-
+  // TODO
   return NO;
 }
 
-- (NSString*) fullPathForApplication: (NSString*)appName
+- (NSString*)fullPathForApplication:(NSString*)appName
 {
   NSString	*base;
   NSString	*path;
   NSString	*ext;
 
-  if ([appName length] == 0)
-    {
-      return nil;
+  if ([appName length] == 0) {
+    return nil;
+  }
+  if ([[appName lastPathComponent] isEqual:appName] == NO) {
+    if ([appName isAbsolutePath] == YES) {
+      return appName;		// MacOS-X implementation behavior.
     }
-  if ([[appName lastPathComponent] isEqual: appName] == NO)
-    {
-      if ([appName isAbsolutePath] == YES)
-	{
-	  return appName;		// MacOS-X implementation behavior.
-	}
-      /*
-       * Relative path ... get standarized absolute path
-       */
-      path = [[NSFileManager defaultManager] currentDirectoryPath];
-      appName = [path stringByAppendingPathComponent: appName];
-      appName = [appName stringByStandardizingPath];
-    }
+    /*
+     * Relative path ... get standarized absolute path
+     */
+    path = [[NSFileManager defaultManager] currentDirectoryPath];
+    appName = [path stringByAppendingPathComponent: appName];
+    appName = [appName stringByStandardizingPath];
+  }
   base = [appName stringByDeletingLastPathComponent];
   appName = [appName lastPathComponent];
   ext = [appName pathExtension];
-  if ([ext length] == 0) // no extension, let's find one
-    {
-      path = [appName stringByAppendingPathExtension: @"app"];
+  if ([ext length] == 0) { // no extension, let's find one
+    path = [appName stringByAppendingPathExtension: @"app"];
+    path = [applications objectForKey: path];
+    if (path == nil) {
+      path = [appName stringByAppendingPathExtension: @"debug"];
       path = [applications objectForKey: path];
-      if (path == nil)
-	{
-	  path = [appName stringByAppendingPathExtension: @"debug"];
-	  path = [applications objectForKey: path];
-	}
-      if (path == nil)
-	{
-	  path = [appName stringByAppendingPathExtension: @"profile"];
-	  path = [applications objectForKey: path];
-	}
     }
-  else
-    {
-      path = [applications objectForKey: appName];
+    if (path == nil) {
+      path = [appName stringByAppendingPathExtension: @"profile"];
+      path = [applications objectForKey: path];
     }
+  }
+  else {
+    path = [applications objectForKey: appName];
+  }
 
   /*
    * If the original name included a path, check that the located name
    * matches it.  If it doesn't we return nil as MacOS-X does.
    */
   if ([base length] > 0
-    && [base isEqual: [path stringByDeletingLastPathComponent]] == NO)
-    {
-      path = nil;
-    }
+      && [base isEqual: [path stringByDeletingLastPathComponent]] == NO) {
+    path = nil;
+  }
   return path;
 }
 
 // FIXME
-- (BOOL) getFileSystemInfoForPath: (NSString*)fullPath
-		      isRemovable: (BOOL*)removableFlag
-		       isWritable: (BOOL*)writableFlag
-		    isUnmountable: (BOOL*)unmountableFlag
-		      description: (NSString **)description
-			     type: (NSString **)fileSystemType
+- (BOOL)getFileSystemInfoForPath:(NSString*)fullPath
+                     isRemovable:(BOOL*)removableFlag
+                      isWritable:(BOOL*)writableFlag
+                   isUnmountable:(BOOL*)unmountableFlag
+                     description:(NSString **)description
+                            type:(NSString **)fileSystemType
 {
   // uid_t uid;
   // struct statfs m;
@@ -655,11 +646,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       else if (*appName != nil && [extension length] > 0) {
         *type = NSPlainFileType;
       }
-      /*
-       * The idea here is that if the parent directory's
-       * fileSystemNumber differs, this must be a filesystem
-       * mount point.
-       */
+      // The idea here is that if the parent directory's
+      // fileSystemNumber differs, this must be a filesystem mount point.
       else if ([[fm fileAttributesAtPath:
                       [fullPath stringByDeletingLastPathComponent]
                             traverseLink:YES] fileSystemNumber]
@@ -671,10 +659,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       }
     }
     else {
-      /*
-       * This catches sockets, character special, block special,
-       * and unknown file types
-       */
+      // This catches sockets, character special, block special,
+      // and unknown file types
       *type = NSPlainFileType;
     }
     return YES;
@@ -686,7 +672,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   }
 }
 
-// NEXTSPACE
+// NEXTSPACE changes
 - (NSImage*)iconForFile:(NSString*)fullPath
 {
   NSImage	*image = nil;
@@ -919,7 +905,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 //--- Tracking Changes to the File System
 //-----------------------------------------------------------------------------
-- (BOOL) fileSystemChanged
+- (BOOL)fileSystemChanged
 {
   BOOL flag = _fileSystemChanged;
 
@@ -927,11 +913,10 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return flag;
 }
 
-- (void) noteFileSystemChanged
+- (void)noteFileSystemChanged
 {
   _fileSystemChanged = YES;
 }
-
 
 //-----------------------------------------------------------------------------
 //--- Updating Registered Services and File Types
@@ -941,11 +926,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   static NSString	*path = nil;
   NSTask		*task;
 
-  /*
-   * Try to locate and run an executable copy of 'make_services'
-   */
-  if (path == nil){
-    path = [[NSTask launchPathForTool: @"make_services"] retain];
+  // Try to locate and run an executable copy of 'make_services'
+  if (path == nil) {
+    path = [[NSTask launchPathForTool:@"make_services"] retain];
   }
   task = [NSTask launchedTaskWithLaunchPath:path
 				  arguments:nil];
@@ -960,9 +943,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 //--- Launching and Manipulating Applications
 //-----------------------------------------------------------------------------
+
+// FIXME: TODO
 - (void)hideOtherApplications
 {
-  // FIXME
+  // TODO
 }
 
 - (BOOL)launchApplication:(NSString*)appName
@@ -998,6 +983,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 //--- Unmounting a Device
 //-----------------------------------------------------------------------------
+
 - (BOOL)unmountAndEjectDeviceAtPath:(NSString*)path
 {
   [[OSEMediaManager defaultManager] unmountAndEjectDeviceAtPath:path];
@@ -1026,7 +1012,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 //--- Notification Center
 //-----------------------------------------------------------------------------
-- (NSNotificationCenter*) notificationCenter
+
+- (NSNotificationCenter*)notificationCenter
 {
   return _workspaceCenter;
 }
@@ -1037,7 +1024,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 /**
  * Simply makes a note that the user defaults database has changed.
  */
-- (void) noteUserDefaultsChanged
+- (void)noteUserDefaultsChanged
 {
   _userDefaultsChanged = YES;
 }
@@ -1046,7 +1033,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * Returns a flag to say if the defaults database has changed since
  * the last time this method was called.
  */
-- (BOOL) userDefaultsChanged
+- (BOOL)userDefaultsChanged
 {
   BOOL	hasChanged = _userDefaultsChanged;
 
@@ -1057,9 +1044,10 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 //--- Animating an Image
 //-----------------------------------------------------------------------------
-- (void) slideImage: (NSImage*)image
-	       from: (NSPoint)fromPoint
-		 to: (NSPoint)toPoint
+
+- (void)slideImage:(NSImage*)image
+              from:(NSPoint)fromPoint
+                to:(NSPoint)toPoint
 {
   [GSCurrentServer() slideImage:image from:fromPoint to:toPoint];
 }
@@ -1067,11 +1055,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 //-----------------------------------------------------------------------------
 //--- Requesting Additional Time before Power Off or Logout
 //-----------------------------------------------------------------------------
-// FIXME
-- (int) extendPowerOffBy: (int)requested
-{
-  // FIXME
 
+// FIXME: TODO
+- (int)extendPowerOffBy:(int)requested
+{
+  // TODO
   return 0;
 }
 
@@ -1517,6 +1505,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * launching IS the workspace manager, or because we have tried to get
  * the workspace manager to do the job and been unable to do so.
  */
+// NEXTSPACE changes
 - (BOOL)_launchApplication:(NSString*)appName
                  arguments:(NSArray*)args
 {
@@ -1586,7 +1575,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return YES;
 }
 
-// NEXTSPACE
+// NEXTSPACE addon
 - (void)_launchedApplicationDidTerminate:(NSNotification *)aNotif
 {
   NSTask   *task = [aNotif object];
@@ -1737,7 +1726,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * the dictionary of applications that can handle our file and
  * returns it.
  */
-- (NSDictionary*) infoForExtension: (NSString*)ext
+- (NSDictionary*)infoForExtension:(NSString*)ext
 {
   NSDictionary  *map;
 
@@ -1752,52 +1741,43 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * .debug, .profile) is optional, but if provided it will be used.<br />
  * Returns nil if the specified app does not exist as requested.
  */
-- (NSBundle*) bundleForApp: (NSString*)appName
+- (NSBundle*)bundleForApp:(NSString*)appName
 {
-  if ([appName length] == 0)
-    {
-      return nil;
-    }
-  if ([[appName lastPathComponent] isEqual: appName]) // it's a name
-    {
-      appName = [self fullPathForApplication: appName];
-    }
-  else
-    {
-      NSFileManager	*fm;
-      NSString		*ext;
-      BOOL		flag;
+  if ([appName length] == 0) {
+    return nil;
+  }
+  if ([[appName lastPathComponent] isEqual:appName]) { // it's a name
+    appName = [self fullPathForApplication:appName];
+  }
+  else {
+    NSFileManager	*fm;
+    NSString		*ext;
+    BOOL		flag;
 
-      fm = [NSFileManager defaultManager];
-      ext = [appName pathExtension];
-      if ([ext length] == 0) // no extension, let's find one
-	{
-	  NSString	*path;
+    fm = [NSFileManager defaultManager];
+    ext = [appName pathExtension];
+    if ([ext length] == 0) { // no extension, let's find one
+      NSString	*path;
 
-	  path = [appName stringByAppendingPathExtension: @"app"];
-	  if ([fm fileExistsAtPath: path isDirectory: &flag] == NO
-	    || flag == NO)
-	    {
-	      path = [appName stringByAppendingPathExtension: @"debug"];
-	      if ([fm fileExistsAtPath: path isDirectory: &flag] == NO
-		|| flag == NO)
-		{
-		  path = [appName stringByAppendingPathExtension: @"profile"];
-		}
-	    }
-	  appName = path;
-	}
-      if ([fm fileExistsAtPath: appName isDirectory: &flag] == NO
-	|| flag == NO)
-	{
-	  appName = nil;
-	}
+      path = [appName stringByAppendingPathExtension:@"app"];
+      if ([fm fileExistsAtPath:path isDirectory:&flag] == NO || flag == NO) {
+        {
+          path = [appName stringByAppendingPathExtension: @"debug"];
+          if ([fm fileExistsAtPath:path isDirectory:&flag] == NO || flag == NO) {
+            path = [appName stringByAppendingPathExtension: @"profile"];
+          }
+        }
+        appName = path;
+      }
+      if ([fm fileExistsAtPath:appName isDirectory:&flag] == NO || flag == NO) {
+        appName = nil;
+      }
     }
-  if (appName == nil)
-    {
-      return nil;
-    }
-  return [NSBundle bundleWithPath: appName];
+  }
+  if (appName == nil) {
+    return nil;
+  }
+  return [NSBundle bundleWithPath:appName];
 }
 
 /**
@@ -1874,46 +1854,41 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * Requires the path to an application wrapper as an argument, and returns
  * the full path to the executable.
  */
-- (NSString*) locateApplicationBinary: (NSString*)appName
+- (NSString*)locateApplicationBinary:(NSString*)appName
 {
   NSString	*path;
   NSString	*file;
-  NSBundle	*bundle = [self bundleForApp: appName];
+  NSBundle	*bundle = [self bundleForApp:appName];
 
-  if (bundle == nil)
-    {
-      return nil;
-    }
+  if (bundle == nil) {
+    return nil;
+  }
   path = [bundle bundlePath];
   file = [[bundle infoDictionary] objectForKey: @"NSExecutable"];
 
-  if (file == nil)
-    {
-      /*
-       * If there is no executable specified in the info property-list, then
-       * we expect the executable to reside within the app wrapper and to
-       * have the same name as the app wrapper but without the extension.
-       */
-      file = [path lastPathComponent];
-      file = [file stringByDeletingPathExtension];
-      path = [path stringByAppendingPathComponent: file];
+  if (file == nil) {
+    /*
+     * If there is no executable specified in the info property-list, then
+     * we expect the executable to reside within the app wrapper and to
+     * have the same name as the app wrapper but without the extension.
+     */
+    file = [path lastPathComponent];
+    file = [file stringByDeletingPathExtension];
+    path = [path stringByAppendingPathComponent:file];
+  }
+  else {
+    /*
+     * If there is an executable specified in the info property-list, then
+     * it can be either an absolute path, or a path relative to the app
+     * wrapper, so we make sure we end up with an absolute path to return.
+     */
+    if ([file isAbsolutePath] == YES) {
+      path = file;
     }
-  else
-    {
-      /*
-       * If there is an executable specified in the info property-list, then
-       * it can be either an absolute path, or a path relative to the app
-       * wrapper, so we make sure we end up with an absolute path to return.
-       */
-      if ([file isAbsolutePath] == YES)
-	{
-	  path = file;
-	}
-      else
-	{
-	  path = [path stringByAppendingPathComponent: file];
-	}
+    else {
+      path = [path stringByAppendingPathComponent:file];
     }
+  }
 
   return path;
 }
@@ -1922,101 +1897,99 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * Sets up a user preference  for which app should be used to open files
  * of the specified extension.
  */
-- (void) setBestApp: (NSString*)appName
-	     inRole: (NSString*)role
-       forExtension: (NSString*)ext
+- (void)setBestApp:(NSString*)appName
+            inRole:(NSString*)role
+      forExtension:(NSString*)ext
 {
   NSMutableDictionary	*map;
   NSMutableDictionary	*inf;
   NSData		*data;
 
   ext = [ext lowercaseString];
-  if (extPreferences != nil)
+  if (extPreferences != nil) {
     map = [extPreferences mutableCopy];
-  else
+  }
+  else {
     map = [NSMutableDictionary new];
+  }
 
   inf = [[map objectForKey: ext] mutableCopy];
-  if (inf == nil)
-    {
-      inf = [NSMutableDictionary new];
-    }
-  if (appName == nil)
-    {
-      if (role == nil)
-	{
-	  NSString	*iconPath = [inf objectForKey: @"Icon"];
+  if (inf == nil) {
+    inf = [NSMutableDictionary new];
+  }
+  if (appName == nil) {
+    if (role == nil) {
+      NSString	*iconPath = [inf objectForKey: @"Icon"];
 
-	  RETAIN(iconPath);
-	  [inf removeAllObjects];
-	  if (iconPath)
-	    {
-	      [inf setObject: iconPath forKey: @"Icon"];
-	      RELEASE(iconPath);
-	    }
-	}
-      else
-	{
-	  [inf removeObjectForKey: role];
-	}
+      RETAIN(iconPath);
+      [inf removeAllObjects];
+      if (iconPath) {
+        [inf setObject: iconPath forKey: @"Icon"];
+        RELEASE(iconPath);
+      }
     }
-  else
-    {
-      [inf setObject: appName forKey: (role ? (id)role : (id)@"Editor")];
+    else {
+      [inf removeObjectForKey: role];
     }
-  [map setObject: inf forKey: ext];
+  }
+  else {
+    [inf setObject:appName forKey:(role ? (id)role : (id)@"Editor")];
+  }
+  [map setObject:inf forKey:ext];
   RELEASE(inf);
   RELEASE(extPreferences);
   extPreferences = map;
-  data = [NSSerializer serializePropertyList: extPreferences];
-  if ([data writeToFile: extPrefPath atomically: YES])
-    {
-      [_workspaceCenter postNotificationName: GSWorkspacePreferencesChanged
-				      object: self];
-    }
-  else
-    {
-      NSLog(@"Update %@ of failed", extPrefPath);
-    }
+  data = [NSSerializer serializePropertyList:extPreferences];
+  if ([data writeToFile:extPrefPath atomically:YES]) {
+    [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
+                                    object:self];
+  }
+  else {
+    NSLog(@"Update %@ of failed", extPrefPath);
+  }
 }
 
 /**
  * Sets up a user preference for which icon should be used to
  * represent the specified file extension.
  */
-- (void) setBestIcon: (NSString*)iconPath forExtension: (NSString*)ext
+- (void)setBestIcon:(NSString*)iconPath
+       forExtension:(NSString*)ext
 {
   NSMutableDictionary	*map;
   NSMutableDictionary	*inf;
   NSData		*data;
 
   ext = [ext lowercaseString];
-  if (extPreferences != nil)
+  if (extPreferences != nil) {
     map = [extPreferences mutableCopy];
-  else
+  }
+  else {
     map = [NSMutableDictionary new];
+  }
 
-  inf = [[map objectForKey: ext] mutableCopy];
-  if (inf == nil)
+  inf = [[map objectForKey:ext] mutableCopy];
+  if (inf == nil) {
     inf = [NSMutableDictionary new];
-  if (iconPath)
-    [inf setObject: iconPath forKey: @"Icon"];
-  else
-    [inf removeObjectForKey: @"Icon"];
-  [map setObject: inf forKey: ext];
+  }
+  if (iconPath) {
+    [inf setObject:iconPath forKey:@"Icon"];
+  }
+  else {
+    [inf removeObjectForKey:@"Icon"];
+  }
+  [map setObject:inf forKey:ext];
   RELEASE(inf);
   RELEASE(extPreferences);
   extPreferences = map;
-  data = [NSSerializer serializePropertyList: extPreferences];
-  if ([data writeToFile: extPrefPath atomically: YES])
-    {
-      [_workspaceCenter postNotificationName: GSWorkspacePreferencesChanged
-				      object: self];
-    }
-  else
-    {
-      NSLog(@"Update %@ of failed", extPrefPath);
-    }
+  data = [NSSerializer serializePropertyList:extPreferences];
+  if ([data writeToFile:extPrefPath atomically:YES]) {
+    [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
+                                    object:self];
+  }
+  else {
+    NSLog(@"Update %@ of failed", extPrefPath);
+  }
 }
 
 @end
