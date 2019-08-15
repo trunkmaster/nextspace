@@ -11,8 +11,8 @@
   };
   KeyboardInitialKeyRepeat = <*I200>;
   KeyboardRepeatRate = <*I20>;
-  KeyboardLayouts = (us);
-  KeyboardVariants = ("");
+  KeyboardLayouts = ();
+  KeyboardVariants = ();
   KeyboardNumLockState = <*I1>;
   KeyboardOptions = (
     "compose:menu",
