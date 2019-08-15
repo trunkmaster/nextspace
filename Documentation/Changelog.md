@@ -6,17 +6,23 @@ Applications
 
 **Login**
 
-- some reengeneering of application was done;
-- return code of Workspace application handled specifically: if `11` returned Login execute shutdown procedure without panel displayed; if `12` returned - executes reboot procedure;
-- fixed bug specific to Linux child processes handling: by default SIGCHLD singnal handler is set to `SIG_IGN`. In this case `waitpid()` returns `-1` with error explained as "No child process" - waitpid looses tracked child proces by some away. To prevent ot from happening signal handler should be set to `SIG_DFL`;
-- changed start sequence: Login completely handles Xorg start and stop; loginwindow.service now handles only Login (doesn't kill Xorg on service stop);
-- defauls splitted into system (/usr/NextSpace/Preferences/Login) and user ($HOME/Library/Preferences/.NextSpace/Login). User defaults is a place were login/logout hooks are placed by "Login Preferences";
+- Some reengeneering of application was done.
+- Return code of Workspace application handled specifically: if `11` returned Login execute shutdown procedure without panel displayed; if `12` returned - executes reboot procedure.
+- Fixed bug specific to Linux child processes handling: by default SIGCHLD singnal handler is set to `SIG_IGN`. In this case `waitpid()` returns `-1` with error explained as "No child process" - waitpid looses tracked child proces by some away. To prevent ot from happening signal handler should be set to `SIG_DFL`.
+- Start sequence was changed: Login completely handles Xorg start and stop; loginwindow.service now handles only Login (doesn't kill Xorg on service stop).
+- Defauls splitted into system (/usr/NextSpace/Preferences/Login) and user ($HOME/Library/Preferences/.NextSpace/Login). User defaults is a place were login/logout hooks are placed by "Login Preferences".
 
 **Workspace**
 
 - Workspace returns exit code `11` on quit if "Power Off" button was pressed. As a result Login application performs OS shutdown without ordering front panel - should switch to Plymouth shutdown screen.
 - "Power Off" quit panel button now starts OS shutdown sequence.
-- Current keyboard layout now displayed in first Dock icon - quite ugly but remains until I'll find better design solution (window titlebar is not an option for me - it's ugly also).
+- Current keyboard layout now displayed in first Dock icon - quite ugly but it remains until I'll find better design solution (window titlebar is not an option for me - it's ugly also).
+- Bell sound is played via SoundKit with "event" type, so it can be controlled via "System Sounds" application/stream in Mixer.
+- Improved application launching and status tracking:
+	- launching appicon now reused as normal application icon;
+	- if application failed to start launching appicon removed from screen;
+	- application that started from FileViewer and ebnormally terminated (segfault, killed with signal) removed from Processes panel;
+	- on quit do not try to terminate application if it cannot be connected (just remove from list of known applications).
 
 **Preferences**
 
