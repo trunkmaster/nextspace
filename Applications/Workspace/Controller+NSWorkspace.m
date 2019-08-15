@@ -408,7 +408,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 //-----------------------------------------------------------------------------
 // Workspace OPENSTEP methods
 //-----------------------------------------------------------------------------
-
 @implementation	Controller (NSWorkspace)
 
 // ~/Library/Services/.GNUstepAppList
@@ -599,6 +598,7 @@ static NSString		*_rootPath = @"/";
   return [self openFile:fullPath withApplication:nil andDeactivate:YES];
 }
 
+// NEXTSPACE
 - (BOOL)openFile: (NSString*)fullPath
        fromImage:(NSImage*)anImage
               at:(NSPoint)point
@@ -609,13 +609,12 @@ static NSString		*_rootPath = @"/";
   NSFileManager *fm = [NSFileManager defaultManager];
   NSDictionary  *fattrs = nil;
 
-  if (![fm fileExistsAtPath:fullPath])
-    {
-      NXTRunAlertPanel(_(@"Workspace"),
-                       _(@"File '%@' does not exist!"), 
-                       nil, nil, nil, [fullPath lastPathComponent]);
-      return NO;
-    }
+  if (![fm fileExistsAtPath:fullPath]) {
+    NXTRunAlertPanel(_(@"Workspace"),
+                     _(@"File '%@' does not exist!"), 
+                     nil, nil, nil, [fullPath lastPathComponent]);
+    return NO;
+  }
 
   // Sliding coordinates
   point = [[aView window]
@@ -627,17 +626,19 @@ static NSString		*_rootPath = @"/";
 
   NSLog(@"[Workspace] openFile: type '%@' with app: %@", fileType, appName);
   
-  if ([fileType isEqualToString:NSApplicationFileType])
-    { // .app should be launched
+  if ([fileType isEqualToString:NSApplicationFileType]) {
+    // .app should be launched
       NSString     *wmName;
       NSBundle     *appBundle;
       NSDictionary *appInfo;
       NSString     *iconPath;
+      NSString     *launchPath;
       
       // Don't launch ourself and Login panel
       if ([appName isEqualToString:@"Workspace"] ||
-          [appName isEqualToString:@"Login"])
+          [appName isEqualToString:@"Login"]) {
         return YES;
+      }
 
       appBundle = [[NSBundle alloc] initWithPath:fullPath];
       appInfo = [appBundle infoDictionary];
@@ -649,7 +650,11 @@ static NSString		*_rootPath = @"/";
         wmName = [NSString stringWithFormat:@"%@.GNUstep",
                            [wmName stringByDeletingPathExtension]];
       }
-      WWMCreateLaunchingIcon(wmName, anImage, point, iconPath);
+      launchPath = [self locateApplicationBinary:fullPath];
+      if (launchPath == nil) {
+        return NO;
+      }
+      WWMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
       
       if ([self launchApplication:fullPath] == NO) {
         NXTRunAlertPanel(_(@"Workspace"),
@@ -661,52 +666,52 @@ static NSString		*_rootPath = @"/";
     }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
            [fileType isEqualToString:NSFilesystemFileType] ||
-           [wrappers containsObject:[fullPath pathExtension]])
-    {
+           [wrappers containsObject:[fullPath pathExtension]]) {
       // Open new FileViewer window
       [self openNewViewerIfNotExistRootedAt:fullPath];
       return YES;
     }
-  else if (appName)
-    { // .app found for opening file type
+  else if (appName) {
+    // .app found for opening file type
+    NSBundle     *appBundle;
+    NSDictionary *appInfo;
+    NSString     *wmName;
+    NSString     *iconPath;
+    NSString     *launchPath;
       
-      NSBundle     *appBundle;
-      NSDictionary *appInfo;
-      NSString     *wmName;
-      NSString     *iconPath;
-      
-      appBundle = [self bundleForApp:appName];
-      if (appBundle)
-        {
-          appInfo = [appBundle infoDictionary];
-          iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
-                                         ofType:nil];
-      
-          wmName = [appInfo objectForKey:@"NSExecutable"];
-          if ([[wmName componentsSeparatedByString:@"."] count] == 1)
-            {
-              wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                                 [appName stringByDeletingPathExtension]];
-            }
-      
-          WWMCreateLaunchingIcon(wmName, anImage, point, iconPath);
-        }
-      
-      if (![self openFile:fullPath withApplication:appName andDeactivate:YES])
-        {
-          NXTRunAlertPanel(_(@"Workspace"),
-                          _(@"Failed to start application \"%@\" for file \"%@\""), 
-                          nil, nil, nil, appName, [fullPath lastPathComponent]);
-          return NO;
-        }
-      return YES;
+    launchPath = [self locateApplicationBinary:fullPath];
+    if (launchPath == nil) {
+      return NO;
     }
-  else // File
-    {
-      return [self openFile:fullPath
-                   withApplication:appName
-                   andDeactivate:YES];
+    
+    appBundle = [self bundleForApp:appName];
+    if (appBundle) {
+      appInfo = [appBundle infoDictionary];
+      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
+                                     ofType:nil];
+      
+      wmName = [appInfo objectForKey:@"NSExecutable"];
+      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
+        wmName = [NSString stringWithFormat:@"%@.GNUstep",
+                           [appName stringByDeletingPathExtension]];
+      }
+      
+      WWMCreateLaunchingIcon(launchPath, wmName, anImage, point, iconPath);
     }
+      
+    if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
+      NXTRunAlertPanel(_(@"Workspace"),
+                       _(@"Failed to start application \"%@\" for file \"%@\""), 
+                       nil, nil, nil, appName, [fullPath lastPathComponent]);
+      return NO;
+    }
+    return YES;
+  }
+  else { // File
+    return [self openFile:fullPath
+                 withApplication:appName
+                 andDeactivate:YES];
+  }
 
   return NO;
 }
@@ -723,50 +728,42 @@ static NSString		*_rootPath = @"/";
 {
   id app;
 
-  if (appName == nil)
-    {
-      if ([self _extension:[fullPath pathExtension] role:nil app:&appName]
-          == NO)
-        {
-          appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
-	}
+  if (appName == nil) {
+    if ([self _extension:[fullPath pathExtension] role:nil app:&appName] == NO) {
+      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
+      if (!appName || [appName isEqualToString:@""]) {
+        appName = @"TextEdit";
+      }
     }
+  }
 
   app = [self _connectApplication:appName];
-  if (app == nil)
-    {
-      NSArray *args;
+  if (app == nil) {
+    NSArray *args;
 
-      args = [NSArray arrayWithObjects:@"-GSFilePath",fullPath,nil];
-      return [self _launchApplication:appName arguments:args];
+    args = [NSArray arrayWithObjects:@"-GSFilePath",fullPath,nil];
+    return [self _launchApplication:appName arguments:args];
+  }
+  else {
+    @try {
+      if (flag == NO) {
+        [app application:NSApp openFileWithoutUI:fullPath];
+      }
+      else {
+        [app application:NSApp openFile:fullPath];
+      }
     }
-  else
-    {
-      NS_DURING
-	{
-	  if (flag == NO)
-	    {
-	      [app application:NSApp openFileWithoutUI:fullPath];
-	    }
-	  else
-	    {
-	      [app application:NSApp openFile:fullPath];
-	    }
-	}
-      NS_HANDLER
-	{
-	  NSWarnLog(@"Failed to contact '%@' to open file", appName);
-          NSRunAlertPanel(_(@"Workspace"),
-                          _(@"Failed to contact app '%@' to open file"), 
-                          nil, nil, nil, appName);
-	  return NO;
-	}
-      NS_ENDHANDLER
+    @catch (NSException *e) {
+      NSWarnLog(@"Failed to contact '%@' to open file", appName);
+      NSRunAlertPanel(_(@"Workspace"),
+                      _(@"Failed to contact app '%@' to open file"), 
+                      nil, nil, nil, appName);
+      return NO;
     }
-  if (flag)
-    {
-      [NSApp deactivate];
-    }
+  }
+  if (flag) {
+    [NSApp deactivate];
+  }
   return YES;
 }
 
@@ -891,6 +888,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return path;
 }
 
+// FIXME
 - (BOOL) getFileSystemInfoForPath: (NSString*)fullPath
 		      isRemovable: (BOOL*)removableFlag
 		       isWritable: (BOOL*)writableFlag
@@ -929,75 +927,64 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   attributes = [fm fileAttributesAtPath:fullPath traverseLink:YES];
 
-  if (attributes != nil)
-    {
-      // application
-      [self _extension:extension role:nil app:appName];
+  if (attributes != nil) {
+    // application
+    [self _extension:extension role:nil app:appName];
 
-      // file type
-      fileType = [attributes fileType];
-      if ([fileType isEqualToString:NSFileTypeRegular])
-	{
-	  if ([attributes filePosixPermissions] & PosixExecutePermission)
-	    {
-	      *type = NSShellCommandFileType;
-	    }
-	  else
-	    {
-	      *type = NSPlainFileType;
-	    }
-	}
-      else if ([fileType isEqualToString:NSFileTypeDirectory])
-	{
-	  if ([extension isEqualToString:@"app"]
-              || [extension isEqualToString:@"debug"]
-              || [extension isEqualToString:@"profile"])
-	    {
-	      *type = NSApplicationFileType;
-	    }
-	  else if ([wrappers containsObject:extension])
-	    {
-	      *type = NSPlainFileType;
-	    }
-	  else if (*appName != nil && [extension length] > 0)
-	    {
-	      *type = NSPlainFileType;
-	    }
-	  /*
-	   * The idea here is that if the parent directory's
-	   * fileSystemNumber differs, this must be a filesystem
-	   * mount point.
-	   */
-	  else if ([[fm fileAttributesAtPath:
-                          [fullPath stringByDeletingLastPathComponent]
-                                traverseLink:YES] fileSystemNumber]
-                   != [attributes fileSystemNumber])
-	    {
-	      *type = NSFilesystemFileType;
-	    }
-	  else
-	    {
-	      *type = NSDirectoryFileType;
-	    }
-	}
-      else
-	{
-	  /*
-	   * This catches sockets, character special, block special,
-	   * and unknown file types
-	   */
-	  *type = NSPlainFileType;
-	}
-      return YES;
+    // file type
+    fileType = [attributes fileType];
+    if ([fileType isEqualToString:NSFileTypeRegular]) {
+      if ([attributes filePosixPermissions] & PosixExecutePermission) {
+        *type = NSShellCommandFileType;
+      }
+      else {
+        *type = NSPlainFileType;
+      }
     }
-  else
-    {
-      *appName = nil;
-      *type = nil;
-      return NO;
+    else if ([fileType isEqualToString:NSFileTypeDirectory]) {
+      if ([extension isEqualToString:@"app"]
+          || [extension isEqualToString:@"debug"]
+          || [extension isEqualToString:@"profile"]) {
+        *type = NSApplicationFileType;
+      }
+      else if ([wrappers containsObject:extension]) {
+        *type = NSPlainFileType;
+      }
+      else if (*appName != nil && [extension length] > 0) {
+        *type = NSPlainFileType;
+      }
+      /*
+       * The idea here is that if the parent directory's
+       * fileSystemNumber differs, this must be a filesystem
+       * mount point.
+       */
+      else if ([[fm fileAttributesAtPath:
+                      [fullPath stringByDeletingLastPathComponent]
+                            traverseLink:YES] fileSystemNumber]
+               != [attributes fileSystemNumber]) {
+        *type = NSFilesystemFileType;
+      }
+      else {
+        *type = NSDirectoryFileType;
+      }
     }
+    else {
+      /*
+       * This catches sockets, character special, block special,
+       * and unknown file types
+       */
+      *type = NSPlainFileType;
+    }
+    return YES;
+  }
+  else {
+    *appName = nil;
+    *type = nil;
+    return NO;
+  }
 }
 
+// NEXTSPACE
 - (NSImage*)iconForFile:(NSString*)fullPath
 {
   NSImage	*image = nil;
@@ -1011,188 +998,155 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   attributes = [mgr fileAttributesAtPath:fullPath traverseLink:YES];
   fileType = [attributes objectForKey:NSFileType];
   if (([fileType isEqual:NSFileTypeDirectory] == YES) &&
-      [mgr isReadableFileAtPath:fullPath] == NO)
-    {
-      image = [NSImage imageNamed:@"badFolder"];
-    }
-  else if ([fileType isEqual:NSFileTypeDirectory] == YES)
-    {
-      NSString *iconPath = nil;
+      [mgr isReadableFileAtPath:fullPath] == NO) {
+    image = [NSImage imageNamed:@"badFolder"];
+  }
+  else if ([fileType isEqual:NSFileTypeDirectory] == YES) {
+    NSString *iconPath = nil;
 
-      // Mount point
-      [self getInfoForFile:fullPath application:&appName type:&wmFileType];
-      if ([wmFileType isEqualToString:NSFilesystemFileType])
-        {
-          NXTFSType fsType;
+    // Mount point
+    [self getInfoForFile:fullPath application:&appName type:&wmFileType];
+    if ([wmFileType isEqualToString:NSFilesystemFileType]) {
+      NXTFSType fsType;
           
-          fsType = [[OSEMediaManager defaultManager]
+      fsType = [[OSEMediaManager defaultManager]
                      filesystemTypeAtPath:fullPath];
-          if (fsType == NXTFSTypeFAT)
-            {
-              image = [NSImage imageNamed:@"DOS_FD.fs"];
-            }
-          else if (fsType == NXTFSTypeISO)
-            {
-              image = [NSImage imageNamed:@"CDROM.fs"];
-            }
-          else if (fsType == NXTFSTypeNTFS)
-            {
-              image = [NSImage imageNamed:@"NTFS_HDD.fs"];
-            }
-          else
-            {
-              image = [NSImage imageNamed:@"HDD.fs"];
-            }
-        }
-
-      // Application
-      if ([pathExtension isEqualToString:@"app"] ||
-          [pathExtension isEqualToString:@"debug"] ||
-          [pathExtension isEqualToString:@"profile"])
-	{
-	  image = [self appIconForApp:fullPath];
-	  
-	  if (image == nil)
-	    {
-              image = [NSImage _standardImageWithName:@"NXApplication"];
-	    }
-	}
-      else if ([pathExtension isEqualToString:@"bundle"])
-        {
-          image = [NSImage imageNamed:@"bundle"];
-        }
-      
-      // Users home directory (/Users)
-      searchPath = NSSearchPathForDirectoriesInDomains(NSUserDirectory,
-                                                       NSSystemDomainMask,
-                                                       YES);
-      if ([searchPath count] > 0
-          && [fullPath isEqualToString:[searchPath objectAtIndex:0]])
-	{
-	  image = [NSImage imageNamed:@"neighbor"];
-	}
-
-      // Directory icon '.dir.tiff', '.dir.png'
-      if (iconPath == nil)
-	{
-	  iconPath = [fullPath stringByAppendingPathComponent:@".dir.png"];
-	  if ([mgr isReadableFileAtPath:iconPath] == NO)
-	    {
-	      iconPath = [fullPath stringByAppendingPathComponent:@".dir.tiff"];
-	      if ([mgr isReadableFileAtPath:iconPath] == NO)
-		{
-		  iconPath = nil;
-		}
-	    }
-          // Directory icon path found - get icon
-          if (iconPath != nil)
-            {
-              image = [self _saveImageFor:iconPath];
-            }
-	}
-
-      // It's not mount point, not bundle, not user homes,
-      // folder doesn't contain dir icon
-      if (image == nil)
-	{
-	  image = [self _iconForExtension:pathExtension];
-	  if (image == nil || image == [self unknownFiletypeImage])
-	    {
-	      NSString *iconName;
-
-	      iconName = [folderPathIconDict objectForKey:fullPath];
-	      if (iconName != nil)
-	        {
-	          NSImage *iconImage;
-
-	          iconImage = [folderIconCache objectForKey:iconName];
-	          if (iconImage == nil)
-	            {
-	              iconImage = [NSImage _standardImageWithName:iconName];
-	              /* the dictionary retains the image */
-	              [folderIconCache setObject:iconImage forKey:iconName];
-	            }
-	          image = iconImage;
-	        }
-	      else
-		{
-		  if (folderImage == nil)
-		    {
-		      folderImage = RETAIN([NSImage _standardImageWithName:
-						      @"NXFolder"]);
-		    }
-		  image = folderImage;
-		}
-	    }
-
-	}
+      if (fsType == NXTFSTypeFAT) {
+        image = [NSImage imageNamed:@"DOS_FD.fs"];
+      }
+      else if (fsType == NXTFSTypeISO) {
+        image = [NSImage imageNamed:@"CDROM.fs"];
+      }
+      else if (fsType == NXTFSTypeNTFS) {
+        image = [NSImage imageNamed:@"NTFS_HDD.fs"];
+      }
+      else {
+        image = [NSImage imageNamed:@"HDD.fs"];
+      }
     }
-  else if ([mgr isReadableFileAtPath:fullPath] == YES)
-    // NSFileTypeRegular, NSFileType
-    {
-      NSDebugLog(@"pathExtension is '%@'", pathExtension);
 
-      // TODO: Thumbnail of file
-      /*if ([[NSUserDefaults standardUserDefaults]
-            boolForKey:@"GSUseFreedesktopThumbnails"])
-        {
-	  // This image will be 128x128 pixels as oposed to the 48x48 
-	  // of other GNUstep icons or the 32x32 of the specification
-	  image = [self _saveImageFor:[self _thumbnailForFile:fullPath]];
-	  if (image != nil)
-	    {
-	      return image;
-	    }
-	}*/
+    // Application
+    if ([pathExtension isEqualToString:@"app"] ||
+        [pathExtension isEqualToString:@"debug"] ||
+        [pathExtension isEqualToString:@"profile"]) {
+      image = [self appIconForApp:fullPath];
+	  
+      if (image == nil) {
+        image = [NSImage _standardImageWithName:@"NXApplication"];
+      }
+    }
+    else if ([pathExtension isEqualToString:@"bundle"]) {
+      image = [NSImage imageNamed:@"bundle"];
+    }
+      
+    // Users home directory (/Users)
+    searchPath = NSSearchPathForDirectoriesInDomains(NSUserDirectory,
+                                                     NSSystemDomainMask,
+                                                     YES);
+    if ([searchPath count] > 0
+        && [fullPath isEqualToString:[searchPath objectAtIndex:0]]) {
+      image = [NSImage imageNamed:@"neighbor"];
+    }
+
+    // Directory icon '.dir.tiff', '.dir.png'
+    if (iconPath == nil) {
+      iconPath = [fullPath stringByAppendingPathComponent:@".dir.png"];
+      if ([mgr isReadableFileAtPath:iconPath] == NO) {
+        iconPath = [fullPath stringByAppendingPathComponent:@".dir.tiff"];
+        if ([mgr isReadableFileAtPath:iconPath] == NO) {
+          iconPath = nil;
+        }
+      }
+      // Directory icon path found - get icon
+      if (iconPath != nil) {
+        image = [self _saveImageFor:iconPath];
+      }
+    }
+
+    // It's not mount point, not bundle, not user homes,
+    // folder doesn't contain dir icon
+    if (image == nil) {
+      image = [self _iconForExtension:pathExtension];
+      if (image == nil || image == [self unknownFiletypeImage]) {
+        NSString *iconName;
+
+        iconName = [folderPathIconDict objectForKey:fullPath];
+        if (iconName != nil) {
+          NSImage *iconImage;
+
+          iconImage = [folderIconCache objectForKey:iconName];
+          if (iconImage == nil) {
+            iconImage = [NSImage _standardImageWithName:iconName];
+            /* the dictionary retains the image */
+            [folderIconCache setObject:iconImage forKey:iconName];
+          }
+          image = iconImage;
+        }
+        else {
+          if (folderImage == nil) {
+            folderImage = RETAIN([NSImage _standardImageWithName:
+                                            @"NXFolder"]);
+          }
+          image = folderImage;
+        }
+      }
+    }
+  }
+  else if ([mgr isReadableFileAtPath:fullPath] == YES) {
+    // NSFileTypeRegular, NSFileType
+    NSDebugLog(@"pathExtension is '%@'", pathExtension);
+
+    // TODO: Thumbnail of file
+    // if ([[NSUserDefaults standardUserDefaults]
+    //         boolForKey:@"GSUseFreedesktopThumbnails"]) {
+    //   // This image will be 128x128 pixels as oposed to the 48x48 
+    //   // of other GNUstep icons or the 32x32 of the specification
+    //   image = [self _saveImageFor:[self _thumbnailForFile:fullPath]];
+    //   if (image != nil) {
+    //     return image;
+    //   }
+    // }
 
       // By executable bit
-      if (image == nil
-          && ([fileType isEqual:NSFileTypeRegular] == YES)
-          && ([mgr isExecutableFileAtPath:fullPath] == YES))
-        {
-          if (unknownTool == nil)
-            {
-              unknownTool = RETAIN([NSImage _standardImageWithName:
-                                              @"NXTool"]);
-            }
-          image = unknownTool;
-        }
+    if (image == nil
+        && ([fileType isEqual:NSFileTypeRegular] == YES)
+        && ([mgr isExecutableFileAtPath:fullPath] == YES)) {
+      if (unknownTool == nil) {
+        unknownTool = RETAIN([NSImage _standardImageWithName:
+                                        @"NXTool"]);
+      }
+      image = unknownTool;
+    }
 
-      // By extension
-      if (image == nil)
-        {
-          image = [self _iconForExtension:pathExtension];
-        }
+    // By extension
+    if (image == nil) {
+      image = [self _iconForExtension:pathExtension];
+    }
       
-      // By file contents
-      if (image == nil || image == [self unknownFiletypeImage])
-        {
-          image = [self _iconForFileContents:fullPath];
-        }
+    // By file contents
+    if (image == nil || image == [self unknownFiletypeImage]) {
+      image = [self _iconForFileContents:fullPath];
     }
-  else if ([mgr isReadableFileAtPath:fullPath] == NO)
-    {
-      image = [NSImage imageNamed:@"badFile"];
-    }
+  }
+  else if ([mgr isReadableFileAtPath:fullPath] == NO) {
+    image = [NSImage imageNamed:@"badFile"];
+  }
 
-  if (image == nil)
-    {
-      image = [self unknownFiletypeImage];
-    }
+  if (image == nil) {
+    image = [self unknownFiletypeImage];
+  }
 
   return image;
 }
 
 - (NSImage*)iconForFiles:(NSArray*)pathArray
 {
-  if ([pathArray count] == 1)
-    {
-      return [self iconForFile:[pathArray objectAtIndex:0]];
-    }
-  if (multipleFiles == nil)
-    {
-      multipleFiles = [NSImage imageNamed:@"MultipleSelection"];
-    }
+  if ([pathArray count] == 1) {
+    return [self iconForFile:[pathArray objectAtIndex:0]];
+  }
+  if (multipleFiles == nil) {
+    multipleFiles = [NSImage imageNamed:@"MultipleSelection"];
+  }
 
   return multipleFiles;
 }
@@ -1202,7 +1156,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return [self _iconForExtension:fileType];
 }
 
-// ADDON
+// NEXTSPACE addon
 - (NSImage *)openIconForDirectory:(NSString *)fullPath
 {
   NSString *appName, *fileType;
@@ -1930,23 +1884,30 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return YES;
 }
 
+// NEXTSPACE
 - (void)_launchedApplicationDidTerminate:(NSNotification *)aNotif
 {
-  NSTask *task = [aNotif object];
-  int    exitCode = [task terminationStatus];
+  NSTask   *task = [aNotif object];
+  int      exitCode = [task terminationStatus];
+  WAppIcon *appicon;
+  char     *command;
 
-  NSLog(@"Application exited: %@ with code %i",
-        [task launchPath], exitCode);
-
-  if (exitCode != 0) {
-    NXTRunAlertPanel(_(@"Workspace"),
-                     _(@"Application '%@' exited with code %i"), 
-                     nil, nil, nil, [task launchPath], exitCode);
-  }
   [[NSNotificationCenter defaultCenter]
     removeObserver:self
               name:NSTaskDidTerminateNotification
             object:task];
+  
+  command = (char *)[[task launchPath] cString];
+  appicon = XWLaunchingIconForCommand(command);
+  if (appicon) {
+    WWMDestroyLaunchingIcon(appicon);
+  }
+  
+  if (exitCode != 0) {
+    NXTRunAlertPanel(_(@"Workspace"),
+                     _(@"Application '%s' exited with code %i"), 
+                     nil, nil, nil, command, exitCode);
+  }
 }
 
 - (id)_connectApplication:(NSString*)appName
@@ -1976,63 +1937,60 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     /*
      *	Try to contact a running application.
      */
-    NS_DURING
-      {
-        conn = [NSConnection connectionWithRegisteredName:port host:host];
-        requestTimeout = [conn requestTimeout];
-        [conn setRequestTimeout:5.0];
-        replyTimeout = [conn replyTimeout];
-        [conn setReplyTimeout:5.0];
-        app = [conn rootProxy];
-      }
-    NS_HANDLER
-      {
-        /* Fatal error in DO	*/
-        conn = nil;
-        app = nil;
-      }
-    NS_ENDHANDLER
+    @try {
+      conn = [NSConnection connectionWithRegisteredName:port host:host];
+      requestTimeout = [conn requestTimeout];
+      [conn setRequestTimeout:5.0];
+      replyTimeout = [conn replyTimeout];
+      [conn setReplyTimeout:5.0];
+      app = [conn rootProxy];
+    }
+    @catch (NSException *e) {
+      /* Fatal error in DO */
+      conn = nil;
+      app = nil;
+    }
 
-      if (app == nil) {
-        NSTask	*task = [_launched objectForKey:appName];
-        NSDate	*limit;
+    if (app == nil) {
+      NSTask	*task = [_launched objectForKey:appName];
+      NSDate	*limit;
 
-        if (task == nil || [task isRunning] == NO) {
-          if (task != nil) {	// Not running
-            [_launched removeObjectForKey:appName];
-          }
-          break;		// Need to launch the app
+      if (task == nil || [task isRunning] == NO) {
+        if (task != nil) {	// Not running
+          [_launched removeObjectForKey:appName];
         }
-
-        if (when == nil) {
-          when = [[NSDate alloc] init];
-        }
-        else if ([when timeIntervalSinceNow] < -5.0) {
-          int		result;
-
-          DESTROY(when);
-          result = NSRunAlertPanel(appName,
-                                   @"Application seems to have hung",
-                                   @"Continue", @"Terminate", @"Wait");
-
-          if (result == NSAlertDefaultReturn) {
-            break;		// Finished without app
-          }
-          else if (result == NSAlertOtherReturn) {
-            // Continue to wait for app startup.
-          }
-          else {
-            [task terminate];
-            [_launched removeObjectForKey:appName];
-            break;		// Terminate hung app
-          }
-        }
-
-        // Give it another 0.5 of a second to start up.
-        limit = [[NSDate alloc] initWithTimeIntervalSinceNow:0.5];
-        [[NSRunLoop currentRunLoop] runUntilDate:limit];
-        RELEASE(limit);
+        break;		// Need to launch the app
       }
+
+      if (when == nil) {
+        when = [[NSDate alloc] init];
+      }
+      else if ([when timeIntervalSinceNow] < -5.0) {
+        int		result;
+
+        DESTROY(when);
+        result = NSRunAlertPanel(appName,
+                                 @"Application seems to have hung",
+                                 @"Continue", @"Terminate", @"Wait");
+
+        if (result == NSAlertDefaultReturn) {
+          break;		// Finished without app
+        }
+        else if (result == NSAlertOtherReturn) {
+          // Continue to wait for app startup.
+        }
+        else {
+          [task terminate];
+          [_launched removeObjectForKey:appName];
+          break;		// Terminate hung app
+        }
+      }
+
+      // Give it another 0.5 of a second to start up.
+      limit = [[NSDate alloc] initWithTimeIntervalSinceNow:0.5];
+      [[NSRunLoop currentRunLoop] runUntilDate:limit];
+      RELEASE(limit);
+    }
   }
   if (conn != nil) {
     /* Use original timeouts */
@@ -2140,80 +2098,68 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * Returns the application icon for the given app.
  * Or null if none defined or appName is not a valid application name.
  */
-- (NSImage*) appIconForApp: (NSString*)appName
+- (NSImage*)appIconForApp:(NSString*)appName
 {
-  NSBundle *bundle;
-  NSImage *image = nil;
-  NSFileManager *mgr = [NSFileManager defaultManager];
-  NSString *iconPath = nil;
-  NSString *fullPath;
+  NSBundle	*bundle;
+  NSImage	*image = nil;
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  NSString	*iconPath = nil;
+  NSString	*fullPath;
   
-  fullPath = [self fullPathForApplication: appName];
-  bundle = [self bundleForApp: fullPath];
-  if (bundle == nil)
-    {
-      return nil;
-    }
+  fullPath = [self fullPathForApplication:appName];
+  bundle = [self bundleForApp:fullPath];
+  if (bundle == nil) {
+    return nil;
+  }
   
-  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
-  if (iconPath == nil)
-    {
-      /*
-       * Try the CFBundleIconFile property.
-       */
-      iconPath = [[bundle infoDictionary] objectForKey: @"CFBundleIconFile"];
+  iconPath = [[bundle infoDictionary] objectForKey:@"NSIcon"];
+  if (iconPath == nil) {
+    // Try the CFBundleIconFile property.
+    iconPath = [[bundle infoDictionary] objectForKey:@"CFBundleIconFile"];
+  }
+
+  if (iconPath && [iconPath isAbsolutePath] == NO) {
+    NSString *file = iconPath;
+
+    iconPath = [bundle pathForImageResource:file];
+
+    /*
+     * If there is no icon in the Resources of the app, try
+     * looking directly in the app wrapper.
+     */
+    if (iconPath == nil) {
+      iconPath = [fullPath stringByAppendingPathComponent: file];
+      if ([mgr isReadableFileAtPath: iconPath] == NO) {
+        iconPath = nil;
+      }
     }
-
-  if (iconPath && [iconPath isAbsolutePath] == NO)
-    {
-      NSString *file = iconPath;
-
-      iconPath = [bundle pathForImageResource: file];
-
-      /*
-       * If there is no icon in the Resources of the app, try
-       * looking directly in the app wrapper.
-       */
-      if (iconPath == nil)
-        {
-          iconPath = [fullPath stringByAppendingPathComponent: file];
-          if ([mgr isReadableFileAtPath: iconPath] == NO)
-            {
-              iconPath = nil;
-            }
-        }
-    }
+  }
     
   /*
    * If there is no icon specified in the Info.plist for app
    * try 'wrapper/app.png'
    */
-  if (iconPath == nil)
-    {      
-      NSString *str;
+  if (iconPath == nil) {      
+    NSString *str;
 
-      str = [fullPath lastPathComponent];
-      str = [str stringByDeletingPathExtension];
-      iconPath = [fullPath stringByAppendingPathComponent: str];
-      iconPath = [iconPath stringByAppendingPathExtension: @"png"];
-      if ([mgr isReadableFileAtPath: iconPath] == NO)
-        {
-	  iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
-	  if ([mgr isReadableFileAtPath: iconPath] == NO)
-	    {
-	      iconPath = [iconPath stringByAppendingPathExtension: @"icns"];
-	      if ([mgr isReadableFileAtPath: iconPath] == NO)
-		{		  
-		  iconPath = nil;
-		}
-	    }
+    str = [fullPath lastPathComponent];
+    str = [str stringByDeletingPathExtension];
+    iconPath = [fullPath stringByAppendingPathComponent: str];
+    iconPath = [iconPath stringByAppendingPathExtension: @"png"];
+    if ([mgr isReadableFileAtPath: iconPath] == NO) {
+      iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
+      if ([mgr isReadableFileAtPath: iconPath] == NO) {
+        iconPath = [iconPath stringByAppendingPathExtension: @"icns"];
+        if ([mgr isReadableFileAtPath: iconPath] == NO) {		  
+          iconPath = nil;
         }
+      }
     }
+  }
 
-  if (iconPath != nil)
-    {
-      image = [self _saveImageFor: iconPath];
-    }
+  if (iconPath != nil) {
+    image = [self _saveImageFor:iconPath];
+  }
   
   return image;
 }
