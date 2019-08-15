@@ -104,7 +104,7 @@
   
   if (sound != nil) {
     [self stop:stopBtn];
-    [sound autorelease];
+    [sound release];
   }
   
   [songTitle setStringValue:[file lastPathComponent]];
@@ -121,10 +121,6 @@
   
   [infoView setImage:infoOn];
 
-  if (sound == nil) {
-    [self _initSoundWithFile:file];
-  }
-  
   if (sound != nil && [sound isPlaying]) {
     NSLog(@"[Player] sound is playing");
     [sound resume];
@@ -140,7 +136,7 @@
   NSLog(@"Sound did finish playing; RC: %lu", [sound retainCount]);
   if (aBool != NO) {
     [self stop:playBtn];
- }
+  }
 }
 - (void)pause:(id)sender
 {
