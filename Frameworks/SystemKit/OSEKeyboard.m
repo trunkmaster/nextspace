@@ -35,8 +35,11 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 
 + (void)configureWithDefaults:(NXTDefaults *)defs
 {
-  NSInteger initialRepeat, repeatRate;
-  OSEKeyboard *keyb = [OSEKeyboard new];
+  NSInteger	initialRepeat, repeatRate;
+  OSEKeyboard	*keyb;
+  NSArray	*layouts, *variants;
+
+  keyb = [OSEKeyboard new];
 
   // Key Repeat
   if ((initialRepeat = [defs integerForKey:OSEKeyboardInitialRepeat]) < 0)
@@ -45,14 +48,28 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
     repeatRate = 0;
   [keyb setInitialRepeat:initialRepeat rate:repeatRate];
 
-  // Layouts, Numeric Keypad, Modifiers
-  [keyb setLayouts:[defs objectForKey:OSEKeyboardLayouts]
-          variants:[defs objectForKey:OSEKeyboardVariants]
+  // Layouts and Modifiers
+  layouts = [defs objectForKey:OSEKeyboardLayouts];
+  if (!layouts || [layouts count] == 0) {
+    layouts = [keyb layouts];
+    variants = [keyb variants];
+  }
+  else {
+    variants = [defs objectForKey:OSEKeyboardVariants];
+  }
+  [keyb setLayouts:layouts
+          variants:variants
            options:[defs objectForKey:OSEKeyboardOptions]];
-  if ([[defs objectForKey:OSEKeyboardOptions] containsObject:@"numpad:mac"] == NO)
+
+  // Numeric Keypad
+  if ([[defs objectForKey:OSEKeyboardOptions] containsObject:@"numpad:mac"] == NO) {
     [keyb setNumLockState:[defs integerForKey:OSEKeyboardNumLockState]];
-  else
+  }
+  else {
     [keyb setNumLockState:0];
+  }
+  
+  [keyb release];
 }
 
 // Converts string like
