@@ -64,6 +64,7 @@ static void _stream_resumed(pa_stream *stream, int success, void *sndStream)
 
 - (void)dealloc
 {
+  NSDebugLLog(@"Memory", @"[SNDStream] dealloc");
   if (_pa_stream != NULL)
     pa_stream_unref(_pa_stream);
 

@@ -27,7 +27,7 @@
 
 - (void)dealloc
 {
-  fprintf(stderr, "[SoundKit] SNDIn: dealloc\n");
+  NSDebugLLog(@"Memory", @"[SNDIn] dealloc");
   [_source release];
   [super dealloc];
 }

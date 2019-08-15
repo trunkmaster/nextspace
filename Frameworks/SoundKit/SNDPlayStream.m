@@ -40,7 +40,7 @@ void _stream_overflow(pa_stream *stream, void *sndStream)
 
 - (void)dealloc
 {
-  fprintf(stderr, "[SoundKit] SNDPlayStream: -dealloc\n");
+  NSDebugLLog(@"Memory", @"[SNDPlayStream] dealloc");
   if (super.isActive != NO) {
     [self setDelegate:nil];
     [self deactivate];

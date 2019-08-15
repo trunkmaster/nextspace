@@ -65,7 +65,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
 
 - (void)dealloc
 {
-  fprintf(stderr, "[SoundKit] SoundServer -dealloc\n");
+  NSDebugLLog(@"Memory", @"[SNDServer] dealloc");
 
   // pa_context_unref(_pa_ctx);
   // pa_mainloop_free(_pa_loop);

@@ -31,6 +31,7 @@
 
 - (void)dealloc
 {
+  NSDebugLLog(@"Memory", @"[SNDVirtualStream] dealloc");
   [super dealloc];
 }
 

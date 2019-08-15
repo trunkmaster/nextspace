@@ -31,7 +31,7 @@ extern void _stream_buffer_empty(pa_stream *stream, int success, void *sndStream
 
 - (void)dealloc
 {
-  fprintf(stderr, "[SoundKit] SNDRecordStream: -dealloc\n");
+  NSDebugLLog(@"Memory", @"[SNDRecordStream] dealloc");
   if (super.isActive != NO) {
     [self setDelegate:nil];
     [self deactivate];
