@@ -128,7 +128,7 @@
 // Shell > Open...
 - (void)openSession:(id)sender
 {
-  NSOpenPanel *panel = [NSOpenPanel openPanel];
+  NXTOpenPanel *panel = [NXTOpenPanel openPanel];
   NSString    *sessionDir, *path;
 
   [panel setCanChooseDirectories:NO];
@@ -243,16 +243,16 @@
 // Shell -> Save As...
 - (void)saveSessionAs:(id)sender
 {
-  TerminalWindowController *twc;
-  NSString    *fileName, *filePath;
-  NSSavePanel *panel;
-  NSString    *sessionDir;
-  Defaults    *prefs;
+  TerminalWindowController	*twc;
+  NSString			*fileName, *filePath;
+  NXTSavePanel			*panel;
+  NSString			*sessionDir;
+  Defaults			*prefs;
 
   if ((sessionDir = [Defaults sessionsDirectory]) == nil)
     return;
   
-  panel = [NSSavePanel savePanel];
+  panel = [NXTSavePanel savePanel];
   [panel setTitle:@"Save As"];
   [panel setShowsHiddenFiles:NO];
 
