@@ -351,58 +351,57 @@ static BOOL      _workspaceQuitting = NO;
   _workspaceQuitting = YES;
 
 //  NSLog(@"Launched applications: %@", apps);
-  while ((_appDict = [e nextObject]))
-    {
-      if ([[_appDict objectForKey:@"IsXWindowApplication"]
-            isEqualToString:@"YES"])
-	{
-          NSArray *pidList;
-          pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
+  while ((_appDict = [e nextObject])) {
+    if ([[_appDict objectForKey:@"IsXWindowApplication"]
+            isEqualToString:@"YES"]) {
+      NSArray *pidList;
+      pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
           
-          for (NSString *pidString in pidList)
-            {
-              // If PID is '-1' let window manager kill that app.
-              if (![pidString isEqualToString:@"-1"])
-                {
-                  kill([pidString integerValue], SIGKILL);
-                }
-            }
-          [applications removeObject:_appDict];
+      for (NSString *pidString in pidList) {
+        // If PID is '-1' let window manager kill that app.
+        if (![pidString isEqualToString:@"-1"]) {
+          kill([pidString integerValue], SIGKILL);
+        }
+      }
+      [applications removeObject:_appDict];
+      continue; // go to 'while' statement
+    }
+    else {
+      _appName = [_appDict objectForKey:@"NSApplicationName"];
+      if ([_appName isEqualToString:@"Workspace"] ||
+          [_appName isEqualToString:@"Login"])
+        {
+          // don't remove from app list - system apps
           continue; // go to 'while' statement
-	}
-      else
-	{
-	  _appName = [_appDict objectForKey:@"NSApplicationName"];
-	  if ([_appName isEqualToString:@"Workspace"] ||
-              [_appName isEqualToString:@"Login"])
-	    {
-	      // don't remove from app list - system apps
-	      continue; // go to 'while' statement
-	    }
-	  NSLog(@"Terminating - %@", _appName);
-	  _app = [NSConnection
+        }
+      NSLog(@"Terminating - %@", _appName);
+      _app = [NSConnection
                    rootProxyForConnectionWithRegisteredName:_appName
                                                        host:@""];
-	  NS_DURING
-	    {
-	      [_app terminate:nil];
-	    }
-	  NS_HANDLER
-	    {
-	      // application terminated -- remove app from launched apps list
-	      [applications removeObject:_appDict];
-              [[_app connectionForProxy] invalidate];
-	      continue; // go to 'while' statement
-	    }
-	  NS_ENDHANDLER;
-        }
-
-      NSLog(@"Application %@ ignore terminate request!", _appName);
-      _noRunningApps = NO;
-      _workspaceQuitting = NO;
-      [[[NSApp delegate] processesPanel] updateAppList];
-      break;
+      if (_app == nil) {
+        NSLog(@"Connection to %@ failed. Removing from list of known applications",
+              _appName);
+        [applications removeObject:_appDict];
+        continue; // go to 'while' statement
+      }
+          
+      @try {
+        [_app terminate:nil];
+      }
+      @catch (NSException *e){
+        // application terminated -- remove app from launched apps list
+        [applications removeObject:_appDict];
+        [[_app connectionForProxy] invalidate];
+        continue; // go to 'while' statement
+      }
     }
+
+    NSLog(@"Application %@ ignore terminate request!", _appName);
+    _noRunningApps = NO;
+    _workspaceQuitting = NO;
+    [[[NSApp delegate] processesPanel] updateAppList];
+    break;
+  }
 
   NSLog(@"Terminating of runnig apps completed!");
   [_appsCopy release];
