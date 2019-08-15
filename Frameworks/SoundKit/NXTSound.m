@@ -26,7 +26,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"[NXTSound] dealloc");
+  NSDebugLLog(@"Memory", @"[NXTSound] dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self setDelegate:nil];
   if (_stream) {
@@ -139,9 +139,7 @@
     }
     // If user calls release just after this method, sound will not be played.
     // We're retain ourself to release it in -streamBufferEmpty:.
-    if ([self retainCount] <= 1) {
-      [self retain];
-    }
+    [self retain];
 
     return YES;
   }
@@ -236,23 +234,31 @@
     }
 
     [self setCurrentTime:0];
-    // TODO: balance -play's [self retain]
-    // if ([self retainCount] >= 1) {
-    //   NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-    //                                                     target:self
-    //                                                   selector:@selector(release:)
-    //                                                   userInfo:nil
-    //                                                    repeats:NO];
-    //   [timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:0.9]];
-    //   // [timer fire];
-    //   // [self release];
-    // }
+    // Complementary timed -release for -retain called from -play
+    [self performSelectorOnMainThread:@selector(startReleaseTimer)
+                           withObject:nil
+                        waitUntilDone:YES];
   }
 }
 
-// - (void)release:(NSTimer *)timer
-// {
-//   [self release];
-// }
+- (void)startReleaseTimer
+{
+  if (releaseTimer != nil) {
+    return;
+  }
+  
+  releaseTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                                  target:self
+                                                selector:@selector(releaseIfNeeded:)
+                                                userInfo:nil
+                                                 repeats:NO];
+}
+
+- (void)releaseIfNeeded:(NSTimer *)timer
+{
+  [self release];
+  [releaseTimer invalidate];
+  releaseTimer = nil;
+}
 
 @end

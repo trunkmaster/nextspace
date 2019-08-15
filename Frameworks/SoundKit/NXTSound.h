@@ -37,6 +37,7 @@ typedef enum {
   NXTSoundState _state;
   SNDStreamType _streamType;
   BOOL          _isShort;
+  NSTimer       *releaseTimer;
 }
 
 - (id)initWithContentsOfFile:(NSString *)path
