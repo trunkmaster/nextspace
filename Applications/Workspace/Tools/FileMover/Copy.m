@@ -57,7 +57,9 @@ BOOL CopyOperation(NSString *sourceDir,
   e = [files objectEnumerator];
   while (((file = [e nextObject]) != nil) && !isStopped && (opResult == YES))
     {
+      NSLog(@"Copy operation START");
       opResult = CopyFile(file, sourceDir, destDir, NO, opType);
+      NSLog(@"Copy operation END");
     }
   
   // We received SIGTERM signal or 'Stop' command
@@ -141,111 +143,83 @@ BOOL CopyRegular(NSString *sourceFile,
 		 NSDictionary *fileAttributes,
                  OperationType opType)
 {
-  unsigned long long doneSize = 0;
-  NSString      *sourceDir = [sourceFile stringByDeletingLastPathComponent];
-  NSString      *targetDir = [targetFile stringByDeletingLastPathComponent];
-  NSFileManager *fm = [NSFileManager defaultManager];
-  Communicator  *comm = [Communicator shared];
-  NSFileHandle  *readHandle;
-  NSFileHandle  *writeHandle;
+  NSUInteger	doneSize = 0;
+  NSString	*sourceDir = [sourceFile stringByDeletingLastPathComponent];
+  NSString	*targetDir = [targetFile stringByDeletingLastPathComponent];
+  NSFileManager	*fm = [NSFileManager defaultManager];
+  Communicator	*comm = [Communicator shared];
+  
+  if ([fm fileExistsAtPath:targetFile]) {
+    ProblemSolution sol = [comm howToHandleProblem:FileExists];
 
-  if ([fm fileExistsAtPath:targetFile])
-    {
-      ProblemSolution sol = [comm howToHandleProblem:FileExists];
-
-      if (sol == SkipFile)
-	{
-  	  goto copyRegularEnd;
-	}
-      else if (![fm removeFileAtPath:targetFile handler:nil])
-	{
-      	  [comm howToHandleProblem:WriteError];
-	  goto copyRegularEnd;
-  	}
+    if (sol == SkipFile) {
+      return NO;
     }
-
-  if (![fm createFileAtPath:targetFile contents:nil attributes:nil])
-    {
+    else if (![fm removeFileAtPath:targetFile handler:nil]) {
       [comm howToHandleProblem:WriteError];
-      goto copyRegularEnd;
+      return NO;
     }
+  }
 
-  readHandle = [NSFileHandle fileHandleForReadingAtPath:sourceFile];
-  if (readHandle == nil)
-    {
+  if (![fm createFileAtPath:targetFile contents:nil attributes:nil]) {
+    [comm howToHandleProblem:WriteError];
+    return NO;
+  }
+
+  if ([fm fileExistsAtPath:targetFile] == NO) {
+    if ([fm createFileAtPath:targetFile contents:nil attributes:nil] == NO) {
+      return NO;
+    }
+  }
+
+  {
+    int		read_fd, write_fd;
+    ssize_t	bytes_read = 1;
+    size_t	block_size = 64 * 1024;
+    void	*buf;
+
+    read_fd = open([sourceFile cString], O_RDONLY);
+    if (read_fd < 0) {
       [comm howToHandleProblem:ReadError];
-      goto copyRegularEnd;
+      return NO;
     }
-
-  writeHandle = [NSFileHandle fileHandleForWritingAtPath:targetFile];
-  if (writeHandle == nil)
-    {
+    write_fd = open([targetFile cString], O_WRONLY);
+    if (write_fd < 0) {
       [comm howToHandleProblem:WriteError];
-      goto copyRegularEnd;
+      close(read_fd);
+      return NO;
     }
+    buf = malloc(64 * 1024);
 
-  while (!isStopped)
-    {
-      NSData *data;
-
-      NS_DURING
-        {
-          data = [readHandle readDataOfLength:64 * 1024];
-        }
-      NS_HANDLER
-        {
-          [comm howToHandleProblem:ReadError argument:[localException reason]];
-          goto copyRegularEnd;
-        }
-      NS_ENDHANDLER;
-
-      if ([data length] == 0)
-        {
-          break;
-        }
-
-      NS_DURING
-        {
-          [writeHandle writeData:data];
-        }
-      NS_HANDLER
-        {
-          [comm howToHandleProblem:WriteError argument:[localException reason]];
-          [data release];
-          goto copyRegularEnd;
-        }
-      NS_ENDHANDLER;
-
-      [writeHandle synchronizeFile];
-      
-      doneSize += [data length];
+    while (bytes_read) {
+      bytes_read = read(read_fd, buf, block_size);
+      if (bytes_read > 0) {
+        write(write_fd, buf, bytes_read);
+      }
+      doneSize += bytes_read;
       [comm showProcessingFilename:[sourceFile lastPathComponent]
                       sourcePrefix:sourceDir
                       targetPrefix:targetDir
-                     bytesAdvanced:[data length]
-                     operationType:opType];
-      [data release];
-    }
-
-  if (chmod([targetFile cString], [fileAttributes filePosixPermissions]) == -1)
-    {
-      [comm howToHandleProblem:AttributesUnchangeable
-		      argument:[NSString errnoDescription]];
-      goto copyRegularEnd;
-    }
-
- copyRegularEnd:
-  if (readHandle) [readHandle closeFile];
-  if (writeHandle) [writeHandle closeFile];
-
-  if (doneSize < [fileAttributes fileSize])
-    {
-      [comm showProcessingFilename:[sourceFile lastPathComponent]
-                      sourcePrefix:sourceDir
-                      targetPrefix:targetDir
-                     bytesAdvanced:[fileAttributes fileSize] - doneSize
+                     bytesAdvanced:(NSUInteger)bytes_read
                      operationType:opType];
     }
+    close(read_fd);
+    close(write_fd);
+    free(buf);
+  }
+
+  if (chmod([targetFile cString], [fileAttributes filePosixPermissions]) == -1) {
+    [comm howToHandleProblem:AttributesUnchangeable
+                    argument:[NSString errnoDescription]];
+  }
+
+  if (doneSize < [fileAttributes fileSize]) {
+    [comm showProcessingFilename:[sourceFile lastPathComponent]
+                    sourcePrefix:sourceDir
+                    targetPrefix:targetDir
+                   bytesAdvanced:[fileAttributes fileSize] - doneSize
+                   operationType:opType];
+  }
 
   return YES;
 }
