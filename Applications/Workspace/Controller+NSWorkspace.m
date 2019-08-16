@@ -319,12 +319,22 @@ static NSString		*_rootPath = @"/";
   }
 
   // Sliding coordinates
-  point = [[aView window]
-            convertBaseToScreen:[aView convertPoint:point toView:nil]];
+  point = [[aView window] convertBaseToScreen:[aView convertPoint:point
+                                                           toView:nil]];
 
   // Get file type and application name
   [self getInfoForFile:fullPath application:&appName type:&fileType];
   // fattrs = [fm fileAttributesAtPath:fullPath traverseLink:YES];
+
+  // Application is not associated - set `appName` to default editor.
+  if (appName == nil) {
+    if ([self _extension:[fullPath pathExtension] role:nil app:&appName] == NO) {
+      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
+      if (!appName || [appName isEqualToString:@""]) {
+        appName = @"TextEdit";
+      }
+    }
+  }
 
   NSLog(@"[Workspace] openFile: type '%@' with app: %@", fileType, appName);
   
@@ -381,11 +391,6 @@ static NSString		*_rootPath = @"/";
     NSString     *iconPath;
     NSString     *launchPath;
       
-    launchPath = [self locateApplicationBinary:fullPath];
-    if (launchPath == nil) {
-      return NO;
-    }
-    
     appBundle = [self bundleForApp:appName];
     if (appBundle) {
       appInfo = [appBundle infoDictionary];
@@ -397,8 +402,11 @@ static NSString		*_rootPath = @"/";
         wmName = [NSString stringWithFormat:@"%@.GNUstep",
                            [appName stringByDeletingPathExtension]];
       }
-      
-      WWMCreateLaunchingIcon(launchPath, wmName, anImage, point, iconPath);
+      launchPath = [self locateApplicationBinary:appName];
+      if (launchPath == nil) {
+        return NO;
+      }
+      WWMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
     }
       
     if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
@@ -408,11 +416,6 @@ static NSString		*_rootPath = @"/";
       return NO;
     }
     return YES;
-  }
-  else { // File
-    return [self openFile:fullPath
-                 withApplication:appName
-                 andDeactivate:YES];
   }
 
   return NO;
