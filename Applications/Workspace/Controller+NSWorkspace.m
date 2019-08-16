@@ -41,11 +41,9 @@
 
 #import <DesktopKit/NXTDefaults.h>
 #import <DesktopKit/NXTFileManager.h>
-#import <SystemKit/OSEMediaManager.h>
 #import <DesktopKit/NXTAlert.h>
 
 #import "Workspace+WM.h"
-
 #import "Controller+NSWorkspace.h"
 #import "Controller+WorkspaceCenter.h"
 
@@ -148,7 +146,7 @@ static NSString		*_rootPath = @"/";
   NSDictionary	*dict;
 
   libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, 
-                                                   NSUserDomainMask, YES);
+                                                    NSUserDomainMask, YES);
   service = [[libraryDirs objectAtIndex:0]
               stringByAppendingPathComponent:@"Services"];
 	  
@@ -157,32 +155,28 @@ static NSString		*_rootPath = @"/";
    */
   extPrefPath = [service stringByAppendingPathComponent:@".GNUstepExtPrefs"];
   RETAIN(extPrefPath);
-  if ([mgr isReadableFileAtPath: extPrefPath] == YES)
-    {
-      data = [NSData dataWithContentsOfFile: extPrefPath];
-      if (data)
-        {
-          dict = [NSDeserializer deserializePropertyListFromData:data
-                                               mutableContainers:NO];
-          extPreferences = RETAIN(dict);
-        }
+  if ([mgr isReadableFileAtPath: extPrefPath] == YES) {
+    data = [NSData dataWithContentsOfFile: extPrefPath];
+    if (data) {
+      dict = [NSDeserializer deserializePropertyListFromData:data
+                                           mutableContainers:NO];
+      extPreferences = RETAIN(dict);
     }
+  }
 	  
   /*
    * Load cached application information.
    */
   appListPath = [service stringByAppendingPathComponent:@".GNUstepAppList"];
   RETAIN(appListPath);
-  if ([mgr isReadableFileAtPath:appListPath] == YES)
-    {
-      data = [NSData dataWithContentsOfFile:appListPath];
-      if (data)
-        {
-          dict = [NSDeserializer deserializePropertyListFromData:data
-                                               mutableContainers:NO];
-          applications = RETAIN(dict);
-        }
+  if ([mgr isReadableFileAtPath:appListPath] == YES) {
+    data = [NSData dataWithContentsOfFile:appListPath];
+    if (data) {
+      dict = [NSDeserializer deserializePropertyListFromData:data
+                                           mutableContainers:NO];
+      applications = RETAIN(dict);
     }
+  }
 }
 
 // NEXTSPACE
@@ -208,23 +202,21 @@ static NSString		*_rootPath = @"/";
    * apps being installed etc ... so we actually poll regularly.
    */
   [[NSNotificationCenter defaultCenter]
-    addObserver: self
-       selector: @selector(_workspacePreferencesChanged:)
-           name: @"GSHousekeeping"
-         object: nil];
+    addObserver:self
+       selector:@selector(_workspacePreferencesChanged:)
+           name:@"GSHousekeeping"
+         object:nil];
 
   _workspaceCenter = [WorkspaceCenter new];
   _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
-  if (applications == nil)
-    {
-      [self findApplications];
-    }
-  [_workspaceCenter
-    addObserver: self
-       selector: @selector(_workspacePreferencesChanged:)
-           name: GSWorkspacePreferencesChanged
-         object: nil];
+  if (applications == nil) {
+    [self findApplications];
+  }
+  [_workspaceCenter addObserver:self
+                       selector:@selector(_workspacePreferencesChanged:)
+                           name:GSWorkspacePreferencesChanged
+                         object:nil];
 
   /* icon association and caching */
   folderPathIconDict = [[NSMutableDictionary alloc] initWithCapacity:5];
@@ -239,55 +231,51 @@ static NSString		*_rootPath = @"/";
                                                     NSAllDomainsMask, YES);
   sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
                                                   NSSystemDomainMask, YES);
- 
+
   /* we try to guess a System directory and check if looks like one */
   sysDir = nil;
-  if ([sysAppDir count] > 0)
-    {
-      sysDir = [[sysAppDir objectAtIndex: 0] stringByDeletingLastPathComponent];
-      if (![[sysDir lastPathComponent] isEqualToString: @"System"])
-	sysDir = nil;
+  if ([sysAppDir count] > 0) {
+    sysDir = [[sysAppDir objectAtIndex:0] stringByDeletingLastPathComponent];
+    if (![[sysDir lastPathComponent] isEqualToString:@"System"]) {
+      sysDir = nil;
     }
+  }
+  if (sysDir != nil) {
+    [folderPathIconDict setObject:@"NXFolder" forKey:sysDir];
+  }
 
-  if (sysDir != nil)
-    [folderPathIconDict setObject: @"NXFolder" forKey: sysDir];
-
-  [folderPathIconDict setObject: @"NXHomeDirectory"
-                         forKey: NSHomeDirectory()];
-  // [folderPathIconDict setObject: @"ImageFolder"
-  //                        forKey: [NSHomeDirectory() stringByAppendingPathComponent: @"Images"]];
-  // [folderPathIconDict setObject: @"MusicFolder"
-  //                        forKey: [NSHomeDirectory() stringByAppendingPathComponent: @"Music"]];
+  [folderPathIconDict setObject:@"NXHomeDirectory" forKey:NSHomeDirectory()];
+  // [folderPathIconDict
+  //   setObject:@"ImageFolder"
+  //      forKey:[NSHomeDirectory() stringByAppendingPathComponent:@"Images"]];
+  // [folderPathIconDict
+  //   setObject:@"MusicFolder"
+  //      forKey:[NSHomeDirectory() stringByAppendingPathComponent:@"Music"]];
   
-  /* it would be nice to use different root icons...*/
-  [folderPathIconDict setObject: @"NXRoot" forKey: _rootPath];
+  [folderPathIconDict setObject:@"NXRoot" forKey:_rootPath];
 
-  // for (i = 0; i < [libraryDirs count]; i++)
-  //   {
-  //     [folderPathIconDict setObject: @"LibraryFolder"
-  //                            forKey: [libraryDirs objectAtIndex: i]];
-  //   }
-  // for (i = 0; i < [documentDir count]; i++)
-  //   {
-  //     [folderPathIconDict setObject: @"DocsFolder"
-  //                            forKey: [documentDir objectAtIndex: i]];
-  //   }
-  // for (i = 0; i < [downloadDir count]; i++)
-  //   {
-  //     [folderPathIconDict setObject: @"DownloadFolder"
-  //                            forKey: [downloadDir objectAtIndex: i]];
-  //   }
-  // for (i = 0; i < [desktopDir count]; i++)
-  //   {
-  //     [folderPathIconDict setObject: @"Desktop"
-  //                            forKey: [desktopDir objectAtIndex: i]];
-  //   }
+  // for (i = 0; i < [libraryDirs count]; i++) {
+  //   [folderPathIconDict setObject:@"LibraryFolder"
+  //                          forKey:[libraryDirs objectAtIndex: i]];
+  // }
+  // for (i = 0; i < [documentDir count]; i++) {
+  //   [folderPathIconDict setObject:@"DocsFolder"
+  //                          forKey:[documentDir objectAtIndex:i]];
+  // }
+  // for (i = 0; i < [downloadDir count]; i++) {
+  //   [folderPathIconDict setObject:@"DownloadFolder"
+  //                          forKey:[downloadDir objectAtIndex:i]];
+  // }
+  // for (i = 0; i < [desktopDir count]; i++) {
+  //   [folderPathIconDict setObject:@"Desktop"
+  //                          forKey:[desktopDir objectAtIndex:i]];
+  // }
   folderIconCache = [[NSMutableDictionary alloc] init];
 
   // list of extensions of wrappers (will be shown as plain file in Workspace)
   wrappers = [@"(bundle, preferences, inspector, service)" propertyList];
   [wrappers retain];
-  NSLog(@"Wrappers list: %@(0=%@)", wrappers, [wrappers objectAtIndex:0]);
+  // NSLog(@"Wrappers list: %@(0=%@)", wrappers, [wrappers objectAtIndex:0]);
 
   return self;
 }
@@ -324,7 +312,6 @@ static NSString		*_rootPath = @"/";
 
   // Get file type and application name
   [self getInfoForFile:fullPath application:&appName type:&fileType];
-  // fattrs = [fm fileAttributesAtPath:fullPath traverseLink:YES];
 
   // Application is not associated - set `appName` to default editor.
   if (appName == nil) {
@@ -336,7 +323,8 @@ static NSString		*_rootPath = @"/";
     }
   }
 
-  NSLog(@"[Workspace] openFile: type '%@' with app: %@", fileType, appName);
+  NSDebugLLog(@"Workspace", @"[Workspace] openFile: type '%@' with app: %@",
+              fileType, appName);
   
   if ([fileType isEqualToString:NSApplicationFileType]) {
     // .app should be launched
@@ -427,6 +415,7 @@ static NSString		*_rootPath = @"/";
   return [self openFile:fullPath withApplication:appName andDeactivate:YES];
 }
 
+// NEXTSPACE
 - (BOOL)openFile:(NSString*)fullPath
  withApplication:(NSString*)appName
    andDeactivate:(BOOL)flag
@@ -460,9 +449,9 @@ static NSString		*_rootPath = @"/";
     }
     @catch (NSException *e) {
       NSWarnLog(@"Failed to contact '%@' to open file", appName);
-      NSRunAlertPanel(_(@"Workspace"),
-                      _(@"Failed to contact app '%@' to open file"), 
-                      nil, nil, nil, appName);
+      NXTRunAlertPanel(_(@"Workspace"),
+                       _(@"Failed to contact app '%@' to open file"), 
+                       nil, nil, nil, appName);
       return NO;
     }
   }
@@ -474,37 +463,29 @@ static NSString		*_rootPath = @"/";
 
 - (BOOL)openTempFile:(NSString*)fullPath
 {
-  id app;
-  NSString *appName;
-  NSString *ext;
+  id		app;
+  NSString	*appName;
+  NSString	*ext;
 
   ext = [fullPath pathExtension];
-  if ([self _extension:ext role:nil app:&appName] == NO)
-    {
-      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
-    }
+  if ([self _extension:ext role:nil app:&appName] == NO) {
+    appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
+  }
 
-  app = [self _connectApplication: appName];
-  if (app == nil)
-    {
-      NSArray *args;
-
-      args = [NSArray arrayWithObjects: @"-GSTempPath", fullPath, nil];
-      return [self _launchApplication: appName arguments: args];
+  app = [self _connectApplication:appName];
+  if (app == nil) {
+    NSArray *args = [NSArray arrayWithObjects:@"-GSTempPath", fullPath, nil];
+    return [self _launchApplication:appName arguments:args];
+  }
+  else {
+    @try {
+      [app application:NSApp openTempFile:fullPath];
     }
-  else
-    {
-      NS_DURING
-	{
-	  [app application: NSApp openTempFile: fullPath];
-	}
-      NS_HANDLER
-	{
-	  NSWarnLog(@"Failed to contact '%@' to open temp file", appName);
-	  return NO;
-	}
-      NS_ENDHANDLER
+    @catch (NSException *e) {
+      NSWarnLog(@"Failed to contact '%@' to open temp file", appName);
+      return NO;
     }
+  }
 
   [NSApp deactivate];
 
@@ -584,7 +565,7 @@ static NSString		*_rootPath = @"/";
   return path;
 }
 
-// FIXME
+// FIXME: TODO
 - (BOOL)getFileSystemInfoForPath:(NSString*)fullPath
                      isRemovable:(BOOL*)removableFlag
                       isWritable:(BOOL*)writableFlag
@@ -861,46 +842,36 @@ static NSString		*_rootPath = @"/";
 
   openDirIconPath = [fullPath stringByAppendingPathComponent:@".opendir.tiff"];
 
-  if ([[NSFileManager defaultManager] fileExistsAtPath:openDirIconPath])
-    {
-      return [[[NSImage alloc]
-                initByReferencingFile:openDirIconPath] autorelease];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:openDirIconPath]) {
+    return [[[NSImage alloc] initByReferencingFile:openDirIconPath] autorelease];
+  }
+  else if ([fileType isEqualToString:NSFilesystemFileType]) {
+    NXTFSType fsType;
+    
+    fsType = [[OSEMediaManager defaultManager] filesystemTypeAtPath:fullPath];
+    if (fsType == NXTFSTypeFAT) {
+      return [NSImage imageNamed:@"DOS_FD.openfs"];
     }
-  else if ([fileType isEqualToString:NSFilesystemFileType])
-    {
-      NXTFSType fsType;
-          
-      fsType = [[OSEMediaManager defaultManager] filesystemTypeAtPath:fullPath];
-      if (fsType == NXTFSTypeFAT)
-        {
-          return [NSImage imageNamed:@"DOS_FD.openfs"];
-        }
-      else if (fsType == NXTFSTypeISO)
-        {
-          return [NSImage imageNamed:@"CDROM.openfs"];
-        }
-      return [NSImage imageNamed:@"HDD.openfs"];
+    else if (fsType == NXTFSTypeISO) {
+      return [NSImage imageNamed:@"CDROM.openfs"];
     }
-  else if ([fileType isEqualToString:NSPlainFileType]) // e.g. .gorm
-    {
-      return [self iconForFile:fullPath];
-    }
-  else if ([fullPath isEqualToString:@"/"])
-    {
-      return [NSImage imageNamed:@"openRoot"];
-    }
-  else if ([fullPath isEqualToString:usersDir])
-    {
-      return [NSImage imageNamed:@"openNeighbor"];
-    }
-  else if ([fullPath isEqualToString:NSHomeDirectory()])
-    {
-      return [NSImage imageNamed:@"openHome"];
-    }
-  else if ([fileType isEqualToString:NSDirectoryFileType])
-    {
-      return [NSImage imageNamed:@"openFolder"];
-    }
+    return [NSImage imageNamed:@"HDD.openfs"];
+  }
+  else if ([fileType isEqualToString:NSPlainFileType]) { // e.g. .gorm
+    return [self iconForFile:fullPath];
+  }
+  else if ([fullPath isEqualToString:@"/"]) {
+    return [NSImage imageNamed:@"openRoot"];
+  }
+  else if ([fullPath isEqualToString:usersDir]) {
+    return [NSImage imageNamed:@"openNeighbor"];
+  }
+  else if ([fullPath isEqualToString:NSHomeDirectory()]) {
+    return [NSImage imageNamed:@"openHome"];
+  }
+  else if ([fileType isEqualToString:NSDirectoryFileType]) {
+    return [NSImage imageNamed:@"openFolder"];
+  }
 
   return [self iconForFile:fullPath];
 }
@@ -999,17 +970,17 @@ static NSString		*_rootPath = @"/";
 
 - (void)checkForRemovableMedia
 {
-  [[OSEMediaManager defaultManager] checkForRemovableMedia];
+  [mediaAdaptor checkForRemovableMedia];
 }
 
 - (NSArray*)mountNewRemovableMedia
 {
-  return [[OSEMediaManager defaultManager] mountNewRemovableMedia];
+  return [mediaAdaptor mountNewRemovableMedia];
 }
 
 - (NSArray*)mountedRemovableMedia
 {
-  return [[OSEMediaManager defaultManager] mountedRemovableMedia];
+  return [mediaAdaptor mountedRemovableMedia];
 }
 
 //-----------------------------------------------------------------------------

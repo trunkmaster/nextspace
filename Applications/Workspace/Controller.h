@@ -57,19 +57,19 @@
 
   OSEPower  *systemPower;
   
-  FileViewer          *rootViewer;
-  NSMutableArray      *fileViewers;
+  FileViewer           *rootViewer;
+  NSMutableArray       *fileViewers;
   OSEFileSystemMonitor *fileSystemMonitor;
   OSEMediaManager      *mediaManager;
-  id<MediaManager>    mediaAdaptor;
-  Inspector           *inspector;
-  Console             *console;
-  ProcessManager      *procManager;
-  Processes           *procPanel;
-  NSMutableDictionary *mediaOperations;
-  Launcher            *launcher;
-  Finder              *finder;
-  Preferences         *preferences;
+  id<MediaManager>     mediaAdaptor;
+  Inspector            *inspector;
+  Console              *console;
+  ProcessManager       *procManager;
+  Processes            *procPanel;
+  NSMutableDictionary  *mediaOperations;
+  Launcher             *launcher;
+  Finder               *finder;
+  Preferences          *preferences;
  
   BOOL dontOpenRootViewer;
   BOOL isQuitting;
