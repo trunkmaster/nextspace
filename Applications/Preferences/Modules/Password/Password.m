@@ -32,28 +32,39 @@
 
 static NSBundle *bundle = nil;
 
+- (void)dealloc
+{
+  NSLog(@"Password -dealloc");
+  [image release];
+  [lockImage release];
+  [lockOpenImage release];
+  [super dealloc];
+}
+
 - (id)init
 {
   self = [super init];
   
   bundle = [NSBundle bundleForClass:[self class]];
-  NSString *imagePath = [bundle pathForResource:@"Password" ofType:@"tiff"];
-  image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+  image = [[NSImage alloc]
+            initWithContentsOfFile:[bundle pathForResource:@"Password"
+                                                    ofType:@"tiff"]];
+  lockImage = [[NSImage alloc]
+                initWithContentsOfFile:[bundle pathForResource:@"Password"
+                                                        ofType:@"tiff"]];
+  lockOpenImage = [[NSImage alloc]
+                     initWithContentsOfFile:[bundle pathForResource:@"Password"
+                                                             ofType:@"tiff"]];
       
   return self;
-}
-
-- (void)dealloc
-{
-  NSLog(@"Password -dealloc");
-  [image release];
-  [super dealloc];
 }
 
 - (void)awakeFromNib
 {
   [view retain];
   [window release];
+
+  [messageField setStringValue:@""];
 }
 
 - (NSView *)view
@@ -81,11 +92,37 @@ static NSBundle *bundle = nil;
 //
 // Action methods
 //
-- (IBAction)passwordChanged:(id)sender
+- (IBAction)changePassword:(id)sender
 {
-  // Please type your old password.
-  // Please type your new password.
-  // Please type your new password.
+  switch (state) {
+  case EnterOld:
+    // Please type your old password.
+    [messageField setStringValue:@"Please type your old password."];
+    [okButton setTitle:@"Ok"];
+    [cancelButton setEnabled:YES];
+    state++;
+    break;
+  case EnterNew:
+    // Please type your new password.
+    [messageField setStringValue:@"Please type your new password."];
+    state++;
+    break;
+  case ConfirmNew:
+    // Please type your new password again.
+    [messageField setStringValue:@"Please type your new password again."];
+    state++;
+    break;
+  default:
+    [self cancel:okButton];
+  }
+}
+
+- (IBAction)cancel:(id)sender
+{
+  [messageField setStringValue:@""];
+  [okButton setTitle:@"Change"];
+  [cancelButton setEnabled:NO];
+  state = EnterOld;
 }
 
 @end
