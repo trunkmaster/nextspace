@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <DesktopKit/NXTAlert.h>
 #import "Operations/Mounter.h"
 
 @implementation Mounter
@@ -103,9 +104,9 @@
         ![[info objectForKey:@"Message"] isEqualToString:@""])
       {
         [NSApp activateIgnoringOtherApps:YES];
-        NSRunAlertPanel([info objectForKey:@"Title"],
-                        [info objectForKey:@"Message"],
-                        nil, nil, nil);
+        NXTRunAlertPanel([info objectForKey:@"Title"],
+                         [info objectForKey:@"Message"],
+                         nil, nil, nil);
       }
 }
 

@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <DesktopKit/NXTAlert.h>
 #import "FileAccessInspector.h"
 #import "WMPermissions.h"
 
@@ -79,9 +80,9 @@
                  forKey:NSFilePosixPermissions];
       if ([fm changeFileAttributes:fattrs atPath:fp] == NO)
         {
-          NSRunAlertPanel(_(@"Workspace Inspector"),
-                          _(@"Couldn't change permissions for \n%@."),
-                          nil, nil, nil, fp);
+          NXTRunAlertPanel(_(@"Workspace Inspector"),
+                           _(@"Couldn't change permissions for \n%@."),
+                           nil, nil, nil, fp);
           RELEASE(fattrs);
           return;
         }
@@ -247,9 +248,9 @@ static id accessInspector = nil;
                  forKey:NSFilePosixPermissions];
       if ([fm changeFileAttributes:fattrs atPath:fp] == NO)
         {
-          NSRunAlertPanel(_(@"Workspace Inspector"),
-                          _(@"Couldn't change permissions for \n%@."),
-                          nil, nil, nil, fp);
+          NXTRunAlertPanel(_(@"Workspace Inspector"),
+                           _(@"Couldn't change permissions for \n%@."),
+                           nil, nil, nil, fp);
           RELEASE(fattrs);
           return;
         }

@@ -929,10 +929,10 @@
   NSString      *oldFileName = nil;
 
   if (selection && [selection count] != 1) {
-      [NSException raise:NSInternalInconsistencyException
-		  format:@"Attempt to change the " \
-		  @"filename while multiple files are selected"];
-    }
+    [NSException raise:NSInternalInconsistencyException
+                format:@"Attempt to change the "
+                 @"filename while multiple files are selected"];
+  }
 
 //  NSLog(@"Rename selection: %@", selection);
 
@@ -956,20 +956,20 @@
     NSString *alreadyExists;
     
     if (isDir) {
-      alreadyExists = [NSString stringWithFormat:
-                                  @"Directory '%@' already exists.\n" 
-                                @"Do you want to replace existing directory?",
-                                newName];
+      alreadyExists = [NSString
+                        stringWithFormat:@"Directory '%@' already exists.\n" 
+                        @"Do you want to replace existing directory?",
+                        newName];
     }
-    else
-      {
-        alreadyExists = [NSString stringWithFormat: 
-                                    @"File '%@' already exists.\n" 
-                                  @"Do you want to replace existing file?", newName];
-      }
+    else {
+      alreadyExists = [NSString
+                        stringWithFormat:@"File '%@' already exists.\n" 
+                        @"Do you want to replace existing file?",
+                        newName];
+    }
 
-    switch (NSRunAlertPanel(_(@"Rename"), alreadyExists,
-                            _(@"Cancel"), _(@"Replace"), nil)) {
+    switch (NXTRunAlertPanel(_(@"Rename"), alreadyExists,
+                             _(@"Cancel"), _(@"Replace"), nil)) {
     case NSAlertDefaultReturn: // Cancel
       return NO;
       break;
@@ -1747,10 +1747,10 @@
 
   if (![fm createDirectoryAtPath:newPath attributes:nil])
     {
-      NSRunAlertPanel(_(@"New Folder"),
-		      _(@"Unable to create folder.\n\
+      NXTRunAlertPanel(_(@"New Folder"),
+                       _(@"Unable to create folder.\n\
 			The selected path is not writable"),
-		      nil, nil, nil);
+                       nil, nil, nil);
       return;
     }
 
@@ -1773,14 +1773,6 @@
   // NSLog(@"[FileViewer duplicate] path=%@ selection=%@",
   //       [self absolutePath], selection);
   
-  /*  if (NSRunAlertPanel(@"Duplicate", 
-                      @"Start duplicating files in selected directory?",
-                      @"Duplicate", @"Cancel", nil) 
-      != NSAlertDefaultReturn)
-    {
-      return;
-      }*/
-
   if ([selection count] > 0)
     {
       files = selection;
@@ -1805,10 +1797,9 @@
   NSArray  *files = nil;
   BOOL     started;
 
-  if (NSRunAlertPanel(@"Destroy", 
-                      @"Do you want to destroy selected files?",
-                      @"Destroy", @"Cancel", nil)
-      != NSAlertDefaultReturn) {
+  if (NXTRunAlertPanel(@"Destroy", 
+                       @"Do you want to destroy selected files?",
+                       @"Destroy", @"Cancel", nil) != NSAlertDefaultReturn) {
     return;
   }
   

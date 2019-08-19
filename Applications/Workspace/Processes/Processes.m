@@ -21,8 +21,8 @@
 
 #import <sys/types.h>
 #import <signal.h>
-#import <AppKit/NSAlert.h>
 
+#import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/Utilities.h>
 
 #import <Operations/ProcessManager.h>
@@ -279,10 +279,10 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
   NSDictionary *appInfo;
 
   appInfo = [[manager applications] objectAtIndex:[appList selectedRow]];
-  if (NSRunAlertPanel(_(@"Really kill?"),
-		      _(@"Really kill application %@?"), 
-		      _(@"Cancel"), _(@"Kill"), nil,
-		      [appInfo objectForKey: @"NSApplicationName"]) 
+  if (NXTRunAlertPanel(_(@"Kill application"),
+                       _(@"Really kill application %@?"), 
+                       _(@"Cancel"), _(@"Kill"), nil,
+                       [appInfo objectForKey: @"NSApplicationName"]) 
       != NSAlertDefaultReturn)
     {
       NSString       *pidListString;
@@ -415,9 +415,9 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
   appInfo = [[manager applications] objectAtIndex:clickedRow];
   if ([appInfo objectForKey:@"StartingUp"] != nil)
     {
-      NSRunAlertPanel(_(@"The application is still starting up"),
-		      _(@"An application that is starting up cannot be activated"),
-		      nil, nil, nil);
+      NXTRunAlertPanel(_(@"The application is still starting up"),
+                       _(@"An application that is starting up cannot be activated"),
+                       nil, nil, nil);
     }
   else
     {
@@ -433,9 +433,9 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
 								   host:nil];
       if (otherApp == nil)
 	{
-	  NSRunAlertPanel(_(@"Couldn't contact app"),
-			  _(@"Couldn't contact application %@."),
-			  nil, nil, nil, app);
+	  NXTRunAlertPanel(_(@"Couldn't contact app"),
+                           _(@"Couldn't contact application %@."),
+                           nil, nil, nil, app);
 	}
       else
 	{

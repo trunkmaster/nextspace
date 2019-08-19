@@ -20,6 +20,7 @@
 //
 
 #import <Foundation/NSDistributedNotificationCenter.h>
+#import <DesktopKit/NXTAlert.h>
 #import "Console.h"
 
 #define DNC [NSDistributedNotificationCenter defaultCenter]
@@ -86,9 +87,9 @@
       ASSIGN(fh, [NSFileHandle fileHandleForReadingAtPath:consoleFile]);
       if (fh == nil)
         {
-          NSRunAlertPanel(_(@"Workspace"),
-                          _(@"Couldn't open console file %@"), nil, nil, nil,
-                          consoleFile);
+          NXTRunAlertPanel(_(@"Workspace"),
+                           _(@"Couldn't open console file %@"), nil, nil, nil,
+                           consoleFile);
           return;
         }
 

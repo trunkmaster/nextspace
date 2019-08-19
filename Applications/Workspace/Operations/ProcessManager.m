@@ -569,11 +569,11 @@ static BOOL      _workspaceQuitting = NO;
       return YES;
     }
 
-  switch (NSRunAlertPanel(@"Log Out",
-                          @"You have background file operations running.\n"
-                          @"Do you want to stop all operations and quit?",
-                          @"Cancel", @"Review operations", @"Stop and quit", 
-                          nil))
+  switch (NXTRunAlertPanel(@"Log Out",
+                           @"You have background file operations running.\n"
+                           @"Do you want to stop all operations and quit?",
+                           @"Cancel", @"Review operations", @"Stop and quit", 
+                           nil))
     {
     case NSAlertDefaultReturn: // Cancel
       NSLog(@"Workspace quit: cancel terminating running background "

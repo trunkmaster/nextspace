@@ -682,9 +682,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         
         if ([procManager terminateAllApps] == NO) {
           [NSApp activateIgnoringOtherApps:YES];
-          NSRunAlertPanel(_(@"Power Off"),
-                          _(@"Some application terminate power off process."),
-                          _(@"Dismiss"), nil, nil);
+          NXTRunAlertPanel(_(@"Power Off"),
+                           _(@"Some application terminate power off process."),
+                           _(@"Dismiss"), nil, nil);
           isQuitting = NO;
           return NO;
         }
@@ -897,19 +897,17 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // TODO
 - (void)saveLegalToFile:sender
 {
-  NSSavePanel * sp = [NSSavePanel savePanel];
+  NSSavePanel *sp = [NXTSavePanel savePanel];
 
-  [sp setRequiredFileType: @"rtf"];
-  [sp setTitle: _(@"Save Legal Information to File")];
+  [sp setRequiredFileType:@"rtf"];
+  [sp setTitle:_(@"Save Legal Information to File")];
 
-  if ([sp runModal] == NSOKButton)
-    {
-      if ([[legalText RTFFromRange: NSMakeRange(0,[[legalText string] length])]
+  if ([sp runModal] == NSOKButton) {
+    if ([[legalText RTFFromRange: NSMakeRange(0,[[legalText string] length])]
             writeToFile:[sp filename]
-             atomically: NO] == NO)
-        {
-          NSRunAlertPanel(_(@"Failed to write file"),
-                          nil, nil, nil, nil);
+             atomically:NO] == NO) {
+          NXTRunAlertPanel(_(@"Failed to write legal text to file `%@`"),
+                          nil, nil, nil, [sp filename]);
         }
     }
 }
@@ -1193,9 +1191,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   if ([[info objectForKey:@"Success"] isEqualToString:@"false"])
     {
       [NSApp activateIgnoringOtherApps:YES];
-      NSRunAlertPanel([info objectForKey:@"Title"],
-                      [info objectForKey:@"Message"],
-                      nil, nil, nil);
+      NXTRunAlertPanel([info objectForKey:@"Title"],
+                       [info objectForKey:@"Message"],
+                       nil, nil, nil);
     }
   else
     {
@@ -1236,9 +1234,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   else // probably disk ejected without unmounting
     {
       [NSApp activateIgnoringOtherApps:YES];
-      NSRunAlertPanel([info objectForKey:@"Title"],
-                      [info objectForKey:@"Message"],
-                      nil, nil, nil);
+      NXTRunAlertPanel([info objectForKey:@"Title"],
+                       [info objectForKey:@"Message"],
+                       nil, nil, nil);
     }
       
   NSLog(@"[Contoller media-end] <%@> %@ [%@]",

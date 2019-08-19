@@ -1638,9 +1638,9 @@ static NSString		*_rootPath = @"/";
         int		result;
 
         DESTROY(when);
-        result = NSRunAlertPanel(appName,
-                                 @"Application seems to have hung",
-                                 @"Continue", @"Terminate", @"Wait");
+        result = NXTRunAlertPanel(appName,
+                                  @"Application seems to have hung",
+                                  @"Continue", @"Terminate", @"Wait");
 
         if (result == NSAlertDefaultReturn) {
           break;		// Finished without app
