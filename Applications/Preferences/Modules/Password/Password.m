@@ -65,6 +65,11 @@ static NSBundle *bundle = nil;
   [window release];
 
   [messageField setStringValue:@""];
+  [passwordField setStringValue:@"Password Secure"];
+
+  [okButton setRefusesFirstResponder:YES];
+  [canceButton setRefusesFirstResponder:YES];
+  [lockView setRefusesFirstResponder:YES];
 }
 
 - (NSView *)view
@@ -96,6 +101,12 @@ static NSBundle *bundle = nil;
 {
   switch (state) {
   case EnterOld:
+    [passwordField setDrawsBackground:YES];
+    [passwordField setStringValue:@""];
+    [[passwordField cell] setTextColor:[NSColor whiteColor]];
+    [passwordField setAlignment:NSLeftTextAlignment];
+    [passwordField setEditable:YES];
+    [[view window] makeFirstResponder:passwordField];
     // Please type your old password.
     [messageField setStringValue:@"Please type your old password."];
     [okButton setTitle:@"Ok"];
@@ -105,10 +116,12 @@ static NSBundle *bundle = nil;
   case EnterNew:
     // Please type your new password.
     [messageField setStringValue:@"Please type your new password."];
+    [passwordField setStringValue:@""];
     state++;
     break;
   case ConfirmNew:
     // Please type your new password again.
+    [passwordField setStringValue:@""];
     [messageField setStringValue:@"Please type your new password again."];
     state++;
     break;
@@ -119,6 +132,13 @@ static NSBundle *bundle = nil;
 
 - (IBAction)cancel:(id)sender
 {
+  // Password field
+  [passwordField setEditable:NO];
+  [passwordField setDrawsBackground:NO];
+  [passwordField setStringValue:@"Password Secure"];
+  [[passwordField cell] setTextColor:[NSColor darkGrayColor]];
+  [passwordField setAlignment:NSCenterTextAlignment];
+  //
   [messageField setStringValue:@""];
   [okButton setTitle:@"Change"];
   [cancelButton setEnabled:NO];
