@@ -2,24 +2,24 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "enableSubpixelChanged:",
-	    "subpixelModeChanged:"
+	    "changePassword:",
+	    "newAction:"
 	);
 	Super = NSObject;
     };
     Password = {
 	Actions = (
-	    "fontCategoryChanged:",
-	    "fontSetPushed:",
-	    "enableAntiAliasingChanged:",
-	    "enableSubpixelChanged:",
-	    "subpixelModeChanged:"
+	    "changePassword:",
+	    "cancel:"
 	);
 	Outlets = (
 	    window,
 	    view,
-	    passwordTextField,
-	    lockView
+	    passwordField,
+	    lockView,
+	    messageField,
+	    cancelButton,
+	    okButton
 	);
 	Super = NSObject;
     };

@@ -22,19 +22,28 @@
 #import <AppKit/NSImage.h>
 #import <Preferences.h>
 
+typedef enum {
+  EnterOld,
+  EnterNew,
+  ConfirmNew
+} PasswordState;
+
 @interface Password: NSObject <PrefsModule>
 {
-  IBOutlet id passwordTextField;
+  IBOutlet id passwordField;
+  IBOutlet id messageField;
   IBOutlet id lockView;
+  IBOutlet id okButton;
+  IBOutlet id cancelButton;
 
   IBOutlet id window;
   IBOutlet id view;
 
   NSImage *lockOpenImage;
-NSImage *lockImage;
-NSImage *image;
-}
+  NSImage *lockImage;
+  NSImage *image;
 
-- (IBAction) passwordChanged:(id)sender;
+  PasswordState state;
+}
 
 @end
