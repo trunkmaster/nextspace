@@ -25,6 +25,7 @@
 #import <AppKit/NSBox.h>
 #import <AppKit/NSImage.h>
 #import <AppKit/NSButton.h>
+#import <AppKit/NSWindow.h>
 
 #import "Password.h"
 
@@ -68,7 +69,7 @@ static NSBundle *bundle = nil;
   [passwordField setStringValue:@"Password Secure"];
 
   [okButton setRefusesFirstResponder:YES];
-  [canceButton setRefusesFirstResponder:YES];
+  [cancelButton setRefusesFirstResponder:YES];
   [lockView setRefusesFirstResponder:YES];
 }
 
