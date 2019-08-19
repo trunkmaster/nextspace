@@ -191,7 +191,7 @@ BOOL CopyRegular(NSString *sourceFile,
     }
     buf = malloc(64 * 1024);
 
-    while (bytes_read) {
+    while (!isStopped && bytes_read) {
       bytes_read = read(read_fd, buf, block_size);
       if (bytes_read > 0) {
         write(write_fd, buf, bytes_read);
@@ -208,17 +208,21 @@ BOOL CopyRegular(NSString *sourceFile,
     free(buf);
   }
 
-  if (chmod([targetFile cString], [fileAttributes filePosixPermissions]) == -1) {
-    [comm howToHandleProblem:AttributesUnchangeable
-                    argument:[NSString errnoDescription]];
-  }
+  if (!isStopped) {
+    int result = chmod([targetFile cString],
+                       [fileAttributes filePosixPermissions]);
+    if (result == -1) {
+      [comm howToHandleProblem:AttributesUnchangeable
+                      argument:[NSString errnoDescription]];
+    }
 
-  if (doneSize < [fileAttributes fileSize]) {
-    [comm showProcessingFilename:[sourceFile lastPathComponent]
-                    sourcePrefix:sourceDir
-                    targetPrefix:targetDir
-                   bytesAdvanced:[fileAttributes fileSize] - doneSize
-                   operationType:opType];
+    if (doneSize < [fileAttributes fileSize]) {
+      [comm showProcessingFilename:[sourceFile lastPathComponent]
+                      sourcePrefix:sourceDir
+                      targetPrefix:targetDir
+                     bytesAdvanced:[fileAttributes fileSize] - doneSize
+                     operationType:opType];
+    }
   }
 
   return YES;
