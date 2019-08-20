@@ -39,7 +39,7 @@
   NSPanel        *panel;
   NSTextField    *titleField;
   NSImageView    *icon;
-  NSTextField    *messageField;
+  NSTextView     *messageView;
   NSButton       *defaultButton;
   NSButton       *alternateButton;
   NSButton       *otherButton;

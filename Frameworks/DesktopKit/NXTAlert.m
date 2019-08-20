@@ -70,18 +70,18 @@
   [[panel contentView] addSubview:horizontalLine];
   [horizontalLine release];
   
-  messageField = [[NSTextField alloc] initWithFrame:NSMakeRect(8,43,344,71)];
-  [messageField setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
-  [messageField setStringValue:@"Alert message."];
-  [messageField setFont:[NSFont systemFontOfSize:14.0]];
-  [messageField setDrawsBackground:YES];
-  [messageField setEditable:NO];
-  [messageField setSelectable:YES];
-  [messageField setBezeled:NO];
-  [messageField setAlignment:NSCenterTextAlignment];
-  [messageField setBordered:NO];
-  [[panel contentView] addSubview:messageField];
-  [messageField release];
+  messageView = [[NSTextView alloc] initWithFrame:NSMakeRect(8,43,344,71)];
+  [messageView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
+  [messageView setText:@"Alert message."];
+  [messageView setFont:[NSFont systemFontOfSize:14.0]];
+  [messageView setDrawsBackground:YES];
+  [messageView setEditable:NO];
+  [messageView setSelectable:YES];
+  [messageView setAlignment:NSCenterTextAlignment];
+  // [messageView setBezeled:NO];
+  // [messageView setBordered:NO];
+  [[panel contentView] addSubview:messageView];
+  [messageView release];
   
   defaultButton = [[NSButton alloc] initWithFrame:NSMakeRect(278,8,72,24)];
   [defaultButton setAutoresizingMask:(NSViewMinXMargin | NSViewMaxYMargin)];
@@ -128,7 +128,7 @@
   else
     [otherButton setTitle:otherText];
 
-  [messageField setStringValue:messageText];
+  [messageView setString:messageText];
 }
 
 //--- Normal Altert Panel
@@ -174,7 +174,7 @@
     [buttons addObject:otherButton];
   }
 
-  [messageField setStringValue:messageText];
+  [messageView setText:messageText];
 
   return self;
 }
@@ -182,7 +182,7 @@
 - (void)awakeFromNib
 {
   NSDictionary *selectedAttrs;
-  NSText       *fieldEditor;
+  // NSText       *fieldEditor;
   NSRect       panelFrame;
 
   maxButtonWidth = ([panel frame].size.width - 16 - 10) / 3;
@@ -194,14 +194,20 @@
   [panel setLevel:NSModalPanelWindowLevel];
   
   [titleField setRefusesFirstResponder:YES];
-  [messageField setRefusesFirstResponder:YES];
   
-  selectedAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  [NSColor controlLightHighlightColor],
-                                NSBackgroundColorAttributeName,
-                                nil];
-  fieldEditor = [panel fieldEditor:YES forObject:messageField];
-  [(NSTextView *)fieldEditor setSelectedTextAttributes:selectedAttrs];  
+  [messageView setText:@"***"];
+  [messageView setFont:[NSFont systemFontOfSize:14.0]];
+  [messageView setDrawsBackground:NO];
+  [messageView setEditable:NO];
+  [messageView setSelectable:YES];
+  [messageView setAlignment:NSCenterTextAlignment];
+  [[panel contentView] addSubview:messageView];
+  [messageView release];
+  
+  selectedAttrs = @{NSBackgroundColorAttributeName:[NSColor controlLightHighlightColor]};
+  // fieldEditor = [panel fieldEditor:YES forObject:messageView];
+  // [(NSTextView *)fieldEditor setSelectedTextAttributes:selectedAttrs];
+  [messageView setSelectedTextAttributes:selectedAttrs];
 }
 
 - (void)dealloc
@@ -289,27 +295,29 @@
   NSRect    messageFrame;
   CGFloat   fieldWidth, textWidth;
   CGFloat   linesNum;
-  NSFont    *font = [messageField font];
+  NSFont    *font = [messageView font];
   CGFloat   lineHeight = [font defaultLineHeightForFont];
 
-  fieldWidth = [messageField bounds].size.width;
-  linesNum = [self numberOfLinesForText:[messageField stringValue]
+  fieldWidth = [messageView bounds].size.width;
+  linesNum = [self numberOfLinesForText:[messageView text]
                                    font:font
                                   width:fieldWidth];
   
   panelFrame = [panel frame];
-  messageFrame = [messageField frame];
+  messageFrame = [messageView frame];
   if (linesNum > 1) {
     CGFloat newMessageHeight;
+    CGFloat linePadding;
       
     panelFrame.size.height -= messageFrame.size.height;
     newMessageHeight = (lineHeight * linesNum);
     panelFrame.size.height += newMessageHeight;
-      
+
+    linePadding = ceilf([[messageView textContainer] lineFragmentPadding]/2);
     while (panelFrame.size.height > (screenSize.height*0.75) && [font pointSize] > 11.0) {
       font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
-      lineHeight = [font defaultLineHeightForFont] + 2;
-      linesNum = [self numberOfLinesForText:[messageField stringValue]
+      lineHeight = [font defaultLineHeightForFont] + linePadding;
+      linesNum = [self numberOfLinesForText:[messageView text]
                                        font:font
                                       width:fieldWidth];
           
@@ -317,16 +325,16 @@
       newMessageHeight = (lineHeight * linesNum);
       panelFrame.size.height += newMessageHeight;
           
-      [messageField setFont:font];
+      [messageView setFont:font];
     }
-    [messageField setAlignment:NSLeftTextAlignment];
+    [messageView setAlignment:NSLeftTextAlignment];
 
     panelFrame.origin.y = (screenSize.height - panelFrame.size.height)/2;
   }
   else {
     messageFrame.origin.y = messageFrame.origin.y + (messageFrame.size.height/2 - lineHeight/2);
     messageFrame.size.height = lineHeight;
-    [messageField setAlignment:NSCenterTextAlignment];
+    [messageView setAlignment:NSCenterTextAlignment];
       
     panelFrame.origin.y =
       (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
@@ -353,7 +361,7 @@
     panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
   }
   
-  [messageField setFrame:messageFrame];
+  [messageView setFrame:messageFrame];
   [panel setFrame:panelFrame display:NO];
 
   // Buttons
