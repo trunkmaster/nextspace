@@ -492,6 +492,8 @@ int ConversationFunction(int num_msg,
   if (user && [user length] > 0) {
     [userName setStringValue:user];
   }
+
+  [password setEchosBullets:NO];
             
   userSessions = [[NSMutableDictionary alloc] init];
 
