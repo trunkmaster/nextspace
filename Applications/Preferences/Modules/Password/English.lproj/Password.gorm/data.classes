@@ -19,7 +19,9 @@
 	    lockView,
 	    messageField,
 	    cancelButton,
-	    okButton
+	    okButton,
+	    infoField,
+	    passwordBox
 	);
 	Super = NSObject;
     };

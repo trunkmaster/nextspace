@@ -26,6 +26,8 @@
 #import <AppKit/NSImage.h>
 #import <AppKit/NSButton.h>
 #import <AppKit/NSWindow.h>
+#import <AppKit/NSSecureTextField.h>
+#import <AppKit/NSEvent.h>
 
 #import "Password.h"
 
@@ -67,6 +69,15 @@ static NSBundle *bundle = nil;
 
   [messageField setStringValue:@""];
   [passwordField setStringValue:@"Password Secure"];
+  [passwordField setEnabled:YES];
+  [passwordField sendActionOn:NSLeftMouseDownMask];
+
+  secureField = [[NSSecureTextField alloc]
+                  initWithFrame:[passwordField frame]];
+  [secureField setEchosBullets:NO];
+  [secureField setDelegate:self];
+  [infoField retain];
+  [infoField removeFromSuperview];
 
   [okButton setRefusesFirstResponder:YES];
   [cancelButton setRefusesFirstResponder:YES];
@@ -102,12 +113,9 @@ static NSBundle *bundle = nil;
 {
   switch (state) {
   case EnterOld:
-    [passwordField setDrawsBackground:YES];
-    [passwordField setStringValue:@""];
-    [[passwordField cell] setTextColor:[NSColor whiteColor]];
-    [passwordField setAlignment:NSLeftTextAlignment];
-    [passwordField setEditable:YES];
-    [[view window] makeFirstResponder:passwordField];
+    [passwordField retain];
+    [passwordBox replaceSubview:passwordField with:secureField];
+    [[view window] makeFirstResponder:secureField];
     // Please type your old password.
     [messageField setStringValue:@"Please type your old password."];
     [okButton setTitle:@"Ok"];
@@ -117,13 +125,15 @@ static NSBundle *bundle = nil;
   case EnterNew:
     // Please type your new password.
     [messageField setStringValue:@"Please type your new password."];
-    [passwordField setStringValue:@""];
+    [secureField setStringValue:@""];
+    [passwordBox addSubview:infoField];
     state++;
     break;
   case ConfirmNew:
     // Please type your new password again.
-    [passwordField setStringValue:@""];
+    [secureField setStringValue:@""];
     [messageField setStringValue:@"Please type your new password again."];
+    [infoField removeFromSuperview];
     state++;
     break;
   default:
@@ -134,11 +144,9 @@ static NSBundle *bundle = nil;
 - (IBAction)cancel:(id)sender
 {
   // Password field
-  [passwordField setEditable:NO];
-  [passwordField setDrawsBackground:NO];
-  [passwordField setStringValue:@"Password Secure"];
-  [[passwordField cell] setTextColor:[NSColor darkGrayColor]];
-  [passwordField setAlignment:NSCenterTextAlignment];
+  [passwordBox replaceSubview:secureField with:passwordField];
+  [passwordField release];
+  [infoField removeFromSuperview];
   //
   [messageField setStringValue:@""];
   [okButton setTitle:@"Change"];

@@ -30,14 +30,18 @@ typedef enum {
 
 @interface Password: NSObject <PrefsModule>
 {
-  IBOutlet id passwordField;
-  IBOutlet id messageField;
-  IBOutlet id lockView;
-  IBOutlet id okButton;
-  IBOutlet id cancelButton;
-
   IBOutlet id window;
   IBOutlet id view;
+  IBOutlet id lockView;
+
+  IBOutlet id passwordBox;
+  IBOutlet id messageField;
+  IBOutlet id passwordField;
+  IBOutlet id secureField;
+  IBOutlet id infoField;
+
+  IBOutlet id okButton;
+  IBOutlet id cancelButton;
 
   NSImage *lockOpenImage;
   NSImage *lockImage;
