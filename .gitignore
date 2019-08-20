@@ -1,4 +1,6 @@
-*.emacs.desktop
+Libraries/gnustep/gnustep-base-1.26.0*
+Libraries/gnustep/gnustep-gui-0.25.0*
+*.emacs.desktop*
 *.app
 *.d
 *obj
