@@ -356,9 +356,8 @@ diff -Nru gnustep-gui-0.25.0.orig/Source/NSMenuItemCell.m gnustep-gui-0.25.0/Sou
      }
  }
  
-diff -Nru gnustep-gui-0.25.0.orig/Source/NSWindow.m gnustep-gui-0.25.0/Source/NSWindow.m
 --- gnustep-gui-0.25.0.orig/Source/NSWindow.m	2016-06-16 23:09:00.000000000 +0300
-+++ gnustep-gui-0.25.0/Source/NSWindow.m	2019-05-03 12:47:14.799468501 +0300
++++ gnustep-gui-0.25.0/Source/NSWindow.m	2019-08-20 16:50:15.596752590 +0300
 @@ -479,7 +479,7 @@
    
    iconSize = GSGetIconSize();
@@ -368,27 +367,40 @@ diff -Nru gnustep-gui-0.25.0.orig/Source/NSWindow.m gnustep-gui-0.25.0/Source/NS
    [tileImage setScalesWhenResized: YES];
    [tileImage setSize: iconSize];
    
-@@ -501,7 +501,7 @@
- }
- 
+@@ -503,17 +503,23 @@
  - (void) drawRect: (NSRect)rect
--{   
-+{
+ {   
    NSSize iconSize = GSGetIconSize();
++  CGFloat borderWidth = 3;
++  NSRect  imageCellFrame, titleCellFrame;
  
    [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
-@@ -512,8 +512,8 @@
-                                  iconSize.width - ((iconSize.width / 8) * 2),
-                                  iconSize.height - ((iconSize.height / 8) * 2))
-               inView: self];
+-                     inView: self];
+-  [imageCell
+-       drawWithFrame: NSMakeRect(iconSize.width / 8,
+-                                 (iconSize.height / 16),
+-                                 iconSize.width - ((iconSize.width / 8) * 2),
+-                                 iconSize.height - ((iconSize.height / 8) * 2))
+-              inView: self];
 -  [titleCell drawWithFrame: NSMakeRect(1, iconSize.height - 12,
 -                                       iconSize.width - 2, 11)
-+  [titleCell drawWithFrame: NSMakeRect(3, iconSize.height - 13,
-+                                       iconSize.width - 6, 10)
++                   inView: self];
++  imageCellFrame = NSMakeRect(iconSize.width / 8,
++                              iconSize.height / 16,
++                              iconSize.width - ((iconSize.width / 8) * 2),
++                              iconSize.height - ((iconSize.height / 8) * 2));
++  [imageCell drawWithFrame: imageCellFrame
++                    inView: self];
++  
++  titleCellFrame = NSMakeRect(borderWidth,
++                              imageCellFrame.size.height - borderWidth,
++                              iconSize.width - (borderWidth * 2),
++                              [[titleCell font] defaultLineHeightForFont]);
++  [titleCell drawWithFrame: titleCellFrame
                      inView: self];
  }
  
-@@ -595,15 +595,18 @@
+@@ -595,15 +601,18 @@
  {
    if (titleCell == nil)
      {
@@ -409,7 +421,7 @@ diff -Nru gnustep-gui-0.25.0.orig/Source/NSWindow.m gnustep-gui-0.25.0/Source/NS
      }
    else
      {
-@@ -4219,6 +4222,10 @@
+@@ -4219,6 +4228,10 @@
                [self performMiniaturize: NSApp];
                break;
  
@@ -420,3 +432,15 @@ diff -Nru gnustep-gui-0.25.0.orig/Source/NSWindow.m gnustep-gui-0.25.0/Source/NS
              case GSAppKitWindowFocusIn:
                if (_f.is_miniaturized)
  		{
+
+--- gnustep-gui-0.25.0.orig/Source/NSTextFieldCell.m	2016-06-16 23:09:00.000000000 +0300
++++ gnustep-gui-0.25.0/Source/NSTextFieldCell.m	2019-08-20 16:35:37.490752590 +0300
+@@ -226,6 +226,8 @@
+ 
+ - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+ {
++  cellFrame.size.height = [_font defaultLineHeightForFont] + 1 + 6;
++  
+   if (_cell.in_editing)
+     [self _drawEditorWithFrame: cellFrame inView: controlView];
+   else
