@@ -183,14 +183,14 @@
 {
   NSDictionary *selectedAttrs;
   // NSText       *fieldEditor;
-  NSRect       panelFrame;
+  // NSRect       panelFrame;
 
   maxButtonWidth = ([panel frame].size.width - 16 - 10) / 3;
   minButtonWidth = [defaultButton frame].size.width;
   
-  panelFrame = [panel frame];
-  panelFrame.size.height = [panel minSize].height;
-  [panel setFrame:panelFrame display:NO];
+  // panelFrame = [panel frame];
+  // panelFrame.size.height = [panel minSize].height;
+  // [panel setFrame:panelFrame display:NO];
   [panel setLevel:NSModalPanelWindowLevel];
   
   [titleField setRefusesFirstResponder:YES];
@@ -299,20 +299,21 @@
   CGFloat linesNum;
   CGFloat lineHeight, linePadding;
   CGFloat lastMessageHeight, newMessageHeight;
+  CGFloat maxPanelHeight = screenSize.height * 0.75;
 
   viewWidth = [messageView bounds].size.width;
   linesNum = [self numberOfLinesForText:[messageView text]
                                    font:font
                                   width:viewWidth];
   linePadding = ceilf([[messageView textContainer] lineFragmentPadding]/2);
-  lineHeight = [font defaultLineHeightForFont];
+  lineHeight = [font defaultLineHeightForFont] + linePadding;
   
   panelFrame.size.height -= messageFrame.size.height;
   lastMessageHeight = newMessageHeight = (lineHeight * linesNum);
   panelFrame.size.height += newMessageHeight;
   
   if (linesNum > 1) {
-    while (panelFrame.size.height > (screenSize.height*0.75) && [font pointSize] >= 11.0) {
+    while (panelFrame.size.height > maxPanelHeight && [font pointSize] >= 11.0) {
       lastMessageHeight = newMessageHeight;
       font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
       lineHeight = [font defaultLineHeightForFont] + linePadding;
@@ -332,16 +333,7 @@
   }
   else {
     [messageView setAlignment:NSCenterTextAlignment];
-    panelFrame.origin.y =
-      (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
-  }
-
-  // Resize and reposition message view if it's height should be descreased
-  // Otherwise, panel resizing sould autoresize message view
-  if (newMessageHeight < messageFrame.size.height) {
-    messageFrame.origin.y += (messageFrame.size.height/2 - newMessageHeight/2);
-    messageFrame.size.height = newMessageHeight;
-    [messageView setFrame:messageFrame];
+    panelFrame.origin.y = (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
   }
 
   // TODO: GNUstep back XGServer should be fixed to get real screen dimensions.
