@@ -93,9 +93,9 @@
   NXTRunAlertPanel(@"Alert with 3 line message",
                    @"This is the FIRST line.\n"
                    "This is the SECOND line.\n"
-                   "This is the THIRD line.",
-                   // "This is the SECOND THIRD line.\n"
-                   // "This is the SECOND SECOND line.",
+                   "This is the THIRD line.\n"
+                   "This is the SECOND THIRD line.\n"
+                   "This is the SECOND SECOND line.",
                   @"Dismiss", @"Kind Of", @"Something");
   // NXTAlert *alert = [[NXTAlert alloc] init];
   // [alert createPanel];
