@@ -201,6 +201,7 @@
   [messageView setEditable:NO];
   [messageView setSelectable:YES];
   [messageView setAlignment:NSCenterTextAlignment];
+  [messageView setTextContainerInset:NSMakeSize(0,0)];
   [[panel contentView] addSubview:messageView];
   [messageView release];
   
@@ -291,30 +292,28 @@
 
 - (void)sizeToFitScreenSize:(NSSize)screenSize
 {
-  NSRect    panelFrame;
-  NSRect    messageFrame;
-  CGFloat   fieldWidth, textWidth;
-  CGFloat   linesNum;
-  NSFont    *font = [messageView font];
-  CGFloat   lineHeight = [font defaultLineHeightForFont];
+  NSRect  panelFrame = [panel frame];
+  NSRect  messageFrame = [messageView frame];
+  CGFloat fieldWidth, textWidth;
+  CGFloat linesNum;
+  NSFont  *font = [messageView font];
+  CGFloat lineHeight, linePadding;
+  CGFloat lastMessageHeight, newMessageHeight;
 
   fieldWidth = [messageView bounds].size.width;
   linesNum = [self numberOfLinesForText:[messageView text]
                                    font:font
                                   width:fieldWidth];
+  linePadding = ceilf([[messageView textContainer] lineFragmentPadding]/2);
+  lineHeight = [font defaultLineHeightForFont];
   
-  panelFrame = [panel frame];
-  messageFrame = [messageView frame];
+  panelFrame.size.height -= messageFrame.size.height;
+  lastMessageHeight = newMessageHeight = (lineHeight * linesNum);
+  panelFrame.size.height += newMessageHeight;
+  
   if (linesNum > 1) {
-    CGFloat newMessageHeight;
-    CGFloat linePadding;
-      
-    panelFrame.size.height -= messageFrame.size.height;
-    newMessageHeight = (lineHeight * linesNum);
-    panelFrame.size.height += newMessageHeight;
-
-    linePadding = ceilf([[messageView textContainer] lineFragmentPadding]/2);
-    while (panelFrame.size.height > (screenSize.height*0.75) && [font pointSize] > 11.0) {
+    while (panelFrame.size.height > (screenSize.height*0.75) && [font pointSize] >= 11.0) {
+      lastMessageHeight = newMessageHeight;
       font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
       lineHeight = [font defaultLineHeightForFont] + linePadding;
       linesNum = [self numberOfLinesForText:[messageView text]
@@ -324,20 +323,25 @@
       panelFrame.size.height -= newMessageHeight;
       newMessageHeight = (lineHeight * linesNum);
       panelFrame.size.height += newMessageHeight;
-          
-      [messageView setFont:font];
     }
+    newMessageHeight = lastMessageHeight;
+    [messageView setFont:font];
     [messageView setAlignment:NSLeftTextAlignment];
 
     panelFrame.origin.y = (screenSize.height - panelFrame.size.height)/2;
   }
   else {
-    messageFrame.origin.y = messageFrame.origin.y + (messageFrame.size.height/2 - lineHeight/2);
-    messageFrame.size.height = lineHeight;
     [messageView setAlignment:NSCenterTextAlignment];
-      
     panelFrame.origin.y =
       (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
+  }
+
+  // Resize and reposition message view if it's height should be descreased
+  // Otherwise, panel resizing sould autoresize message view
+  if (newMessageHeight < messageFrame.size.height) {
+    messageFrame.origin.y += (messageFrame.size.height/2 - newMessageHeight/2);
+    messageFrame.size.height = newMessageHeight;
+    [messageView setFrame:messageFrame];
   }
 
   // TODO: GNUstep back XGServer should be fixed to get real screen dimensions.
@@ -361,7 +365,6 @@
     panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
   }
   
-  [messageView setFrame:messageFrame];
   [panel setFrame:panelFrame display:NO];
 
   // Buttons
