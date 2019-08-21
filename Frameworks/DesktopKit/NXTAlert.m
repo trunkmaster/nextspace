@@ -294,16 +294,16 @@
 {
   NSRect  panelFrame = [panel frame];
   NSRect  messageFrame = [messageView frame];
-  CGFloat fieldWidth, textWidth;
-  CGFloat linesNum;
   NSFont  *font = [messageView font];
+  CGFloat viewWidth, textWidth;
+  CGFloat linesNum;
   CGFloat lineHeight, linePadding;
   CGFloat lastMessageHeight, newMessageHeight;
 
-  fieldWidth = [messageView bounds].size.width;
+  viewWidth = [messageView bounds].size.width;
   linesNum = [self numberOfLinesForText:[messageView text]
                                    font:font
-                                  width:fieldWidth];
+                                  width:viewWidth];
   linePadding = ceilf([[messageView textContainer] lineFragmentPadding]/2);
   lineHeight = [font defaultLineHeightForFont];
   
@@ -318,7 +318,7 @@
       lineHeight = [font defaultLineHeightForFont] + linePadding;
       linesNum = [self numberOfLinesForText:[messageView text]
                                        font:font
-                                      width:fieldWidth];
+                                      width:viewWidth];
           
       panelFrame.size.height -= newMessageHeight;
       newMessageHeight = (lineHeight * linesNum);
