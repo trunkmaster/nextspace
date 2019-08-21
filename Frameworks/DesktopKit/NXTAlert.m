@@ -333,7 +333,8 @@
   }
   else {
     [messageView setAlignment:NSCenterTextAlignment];
-    panelFrame.origin.y = (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
+    panelFrame.origin.y =
+      (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
   }
 
   // TODO: GNUstep back XGServer should be fixed to get real screen dimensions.
@@ -348,9 +349,9 @@
     panelFrame.origin.x = display.frame.origin.x;
     panelFrame.origin.x += display.frame.size.width/2 - panelFrame.size.width/2;
       
-    panelFrame.origin.y = screenSize.height - (display.frame.origin.y + display.frame.size.height);
+    panelFrame.origin.y = screenSize.height -
+      (display.frame.origin.y + display.frame.size.height);
     panelFrame.origin.y += (display.frame.size.height * 0.75) - panelFrame.size.height/2;
-    // NSLog(@"NXTAlert: panel origin: %@", NSStringFromPoint(panelFrame.origin));
   }
   else {
     panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
