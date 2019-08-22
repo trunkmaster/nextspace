@@ -183,14 +183,10 @@
 {
   NSDictionary *selectedAttrs;
   // NSText       *fieldEditor;
-  // NSRect       panelFrame;
 
   maxButtonWidth = ([panel frame].size.width - 16 - 10) / 3;
   minButtonWidth = [defaultButton frame].size.width;
   
-  // panelFrame = [panel frame];
-  // panelFrame.size.height = [panel minSize].height;
-  // [panel setFrame:panelFrame display:NO];
   [panel setLevel:NSModalPanelWindowLevel];
   
   [titleField setRefusesFirstResponder:YES];
@@ -298,9 +294,12 @@
   CGFloat viewWidth, textWidth;
   CGFloat linesNum;
   CGFloat lineHeight, linePadding;
-  CGFloat lastMessageHeight, newMessageHeight;
+  CGFloat emptyPanelHeight;
   CGFloat maxPanelHeight = screenSize.height * 0.75;
 
+  // Panel without message view
+  emptyPanelHeight = panelFrame.size.height - messageFrame.size.height;
+  
   viewWidth = [messageView bounds].size.width;
   linesNum = [self numberOfLinesForText:[messageView text]
                                    font:font
@@ -308,27 +307,18 @@
   linePadding = ceilf([[messageView textContainer] lineFragmentPadding]/2);
   lineHeight = [font defaultLineHeightForFont] + linePadding;
   
-  panelFrame.size.height -= messageFrame.size.height;
-  lastMessageHeight = newMessageHeight = (lineHeight * linesNum);
-  panelFrame.size.height += newMessageHeight;
+  panelFrame.size.height = emptyPanelHeight + (lineHeight * linesNum);
   
   if (linesNum > 1) {
-    while (panelFrame.size.height > maxPanelHeight && [font pointSize] >= 11.0) {
-      lastMessageHeight = newMessageHeight;
+    while (panelFrame.size.height >= maxPanelHeight && [font pointSize] >= 11.0) {
       font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
       lineHeight = [font defaultLineHeightForFont] + linePadding;
       linesNum = [self numberOfLinesForText:[messageView text]
                                        font:font
                                       width:viewWidth];
           
-      panelFrame.size.height -= newMessageHeight;
-      newMessageHeight = (lineHeight * linesNum);
-      panelFrame.size.height += newMessageHeight;
-      if (panelFrame.size.height <= maxPanelHeight) {
-        font = [NSFont systemFontOfSize:[font pointSize] + 1.0];
-      }
+      panelFrame.size.height = emptyPanelHeight + (lineHeight * linesNum);
     }
-    newMessageHeight = lastMessageHeight;
     [messageView setFont:font];
     [messageView setAlignment:NSLeftTextAlignment];
 
