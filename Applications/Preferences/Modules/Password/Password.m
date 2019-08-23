@@ -39,21 +39,6 @@
 #import "Password.h"
 
 static NSBundle *bundle = nil;
-/*
- * Size of the biggest passwd:
- *   $6$	3
- *   rounds=	7
- *   999999999	9
- *   $		1
- *   salt	16
- *   $		1
- *   SHA512	123
- *   nul	1
- *
- *   total	161
- */
-static char crypt_passwd[256];
-static struct passwd *pw;
 
 @implementation Password
 
@@ -130,10 +115,10 @@ static struct passwd *pw;
 //
 // Action methods
 //
-char *pw_encrypt(const char *clear, const char *salt)
+- (char *)_encryptPassword:(const char *)clear salt:(const char *)salt
 {
   static char cipher[128];
-  char *cp;
+  char        *cp;
 
   cp = crypt(clear, salt);
   if (NULL == cp) {
@@ -184,7 +169,7 @@ char *pw_encrypt(const char *clear, const char *salt)
     return NO;
   }
   clear = [clearText cString];
-  cipher = pw_encrypt(clear, crypt_passwd);
+  cipher = [self _encryptPassword:clear salt:encrypted_password];
 
   if (NULL == cipher) {
     memset((void *)clear, 0, strlen(clear));
@@ -192,7 +177,7 @@ char *pw_encrypt(const char *clear, const char *salt)
     return NO;
   }
 
-  if (strcmp(cipher, crypt_passwd) != 0) {
+  if (strcmp(cipher, encrypted_password) != 0) {
     memset((void *)clear, 0, strlen(clear));
     memset((void *)cipher, 0, strlen(cipher));
     // NSLog(@"Incorrect password for %s.", pw->pw_name);
@@ -222,6 +207,7 @@ char *pw_encrypt(const char *clear, const char *salt)
     if ([self authenticate:[passwordField stringValue]] == NO) {
       [self cancel:okButton];
       [messageField setStringValue:@"Entered password is incorrect."];
+      break;
     }
     [messageField setStringValue:@"Please type your new password."];
     [secureField setStringValue:@""];
