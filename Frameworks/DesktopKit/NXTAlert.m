@@ -26,6 +26,10 @@
 #import <SystemKit/OSEMouse.h>
 #import "NXTAlert.h"
 
+#define BUTTONS_SPACING 5
+#define BUTTONS_OFFSET 8
+#define ICON_YARD_HEIGHT 64;
+
 @implementation NXTAlert
 
 //--- When GORM file cannot be used...
@@ -221,31 +225,24 @@
 
 // --- Utility
 
-- (CGFloat)numberOfLinesForText:(NSString *)text
-                           font:(NSFont *)font
-                          width:(CGFloat)viewWidth
+- (NSRect)rectForView:(NSTextView *)view
 {
-  CGFloat	numberOfLines = .0, lineWidth;
-  NSUInteger	stringLength, i;
-  NSRange	lineRange;
-  
-  // Check for new line characters ('\n')
-  stringLength = [text length];
-  for (i = 0, numberOfLines = .0; i < stringLength; numberOfLines++)
-    {
-      lineRange = [text lineRangeForRange:NSMakeRange(i, 0)];
-      i = NSMaxRange(lineRange);
-      lineWidth = [font widthOfString:[text substringWithRange:lineRange]];
-      numberOfLines += floorf(lineWidth / viewWidth);
-    }
-  
-  // NSLog(@"NXTAlert: number of lines: %.2f", numberOfLines);
-  
-  return numberOfLines;
+  NSLayoutManager *layoutManager = [view layoutManager];
+  NSRange         textRange = NSMakeRange(0, [[view text] length]);
+  NSRect          *rectArray;
+  NSUInteger      rectCount;
+  NSRect          textRect = NSMakeRect(0,0,0,0);
+
+  rectArray = [layoutManager rectArrayForCharacterRange:textRange
+                           withinSelectedCharacterRange:textRange
+                                        inTextContainer:[view textContainer]
+                                              rectCount:&rectCount];
+  for (int i = 0; i < rectCount; i++) {
+    textRect.size.height += rectArray[i].size.height;
+  }
+  return textRect;
 }
 
-#define B_SPACING 5
-#define B_OFFSET 8
 - (void)arrangeButtons
 {
   NSRect   aFrame, bFrame;
@@ -280,7 +277,7 @@
     aFrame = [button frame];
     xShift = aFrame.size.width - maxWidth;
     aFrame.origin.x = panel.frame.size.width - (maxWidth + maxWidth*i);
-    aFrame.origin.x -= (B_SPACING * i) + B_OFFSET;
+    aFrame.origin.x -= (BUTTONS_SPACING * i) + BUTTONS_OFFSET;
     aFrame.size.width = maxWidth;
     [button setFrame:aFrame];
   }  
@@ -291,45 +288,29 @@
   NSRect  panelFrame = [panel frame];
   NSRect  messageFrame = [messageView frame];
   NSFont  *font = [messageView font];
-  CGFloat viewWidth, textWidth;
-  CGFloat linesNum;
-  CGFloat lineHeight, linePadding;
   CGFloat emptyPanelHeight;
-  CGFloat maxPanelHeight = screenSize.height * 0.75;
+  CGFloat maxPanelHeight = screenSize.height - ICON_YARD_HEIGHT;
+  NSRect textRect;
 
   // Panel without message view
   emptyPanelHeight = panelFrame.size.height - messageFrame.size.height;
   
-  viewWidth = [messageView bounds].size.width;
-  linesNum = [self numberOfLinesForText:[messageView text]
-                                   font:font
-                                  width:viewWidth];
-  linePadding = ceilf([[messageView textContainer] lineFragmentPadding]/2);
-  lineHeight = [font defaultLineHeightForFont] + linePadding;
-  
-  panelFrame.size.height = emptyPanelHeight + (lineHeight * linesNum);
-  
-  if (linesNum > 1) {
+  textRect = [self rectForView:messageView];
+
+  if (textRect.size.height > messageFrame.size.height) {
+    [messageView setAlignment:NSLeftTextAlignment];
+    panelFrame.size.height = emptyPanelHeight + textRect.size.height;
     while (panelFrame.size.height >= maxPanelHeight && [font pointSize] >= 11.0) {
       font = [NSFont systemFontOfSize:[font pointSize] - 1.0];
-      lineHeight = [font defaultLineHeightForFont] + linePadding;
-      linesNum = [self numberOfLinesForText:[messageView text]
-                                       font:font
-                                      width:viewWidth];
-          
-      panelFrame.size.height = emptyPanelHeight + (lineHeight * linesNum);
+      [messageView setFont:font];
+      textRect = [self rectForView:messageView];
+      panelFrame.size.height = emptyPanelHeight + textRect.size.height;
     }
-    [messageView setFont:font];
-    [messageView setAlignment:NSLeftTextAlignment];
-
-    panelFrame.origin.y = (screenSize.height - panelFrame.size.height)/2;
   }
   else {
     [messageView setAlignment:NSCenterTextAlignment];
-    panelFrame.origin.y =
-      (screenSize.height - (screenSize.height/4)) - panelFrame.size.height;
   }
-
+  
   // TODO: GNUstep back XGServer should be fixed to get real screen dimensions.
   // Screen size possibly was changed after application start.
   // GNUstep information about screen size is obsolete. Adopt origin.y to
@@ -344,7 +325,8 @@
       
     panelFrame.origin.y = screenSize.height -
       (display.frame.origin.y + display.frame.size.height);
-    panelFrame.origin.y += (display.frame.size.height * 0.75) - panelFrame.size.height/2;
+    panelFrame.origin.y += (display.frame.size.height * 0.75) -
+      panelFrame.size.height/2;
   }
   else {
     panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
