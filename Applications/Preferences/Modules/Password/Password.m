@@ -215,24 +215,20 @@ int PAMConversation(int num_msg,
 - (void)setMessage:(NSString *)text
 {
   // NSLog(@"setMessage: `%@`", text);
-  if ([text isEqualToString:@"(current) UNIX password: "] != NO) {
-    [messageField setStringValue:@"Please type your current password."];
-    [secureField setEnabled:YES];
-    [[view window] makeFirstResponder:secureField];
-  }
-  else if ([text isEqualToString:@"New password: "] != NO) {
-    [messageField setStringValue:@"Please type your new password."];
-    [secureField setEnabled:YES];
-    [[view window] makeFirstResponder:secureField];
-  }
-  else if ([text isEqualToString:@"New password: "] != NO) {
-    [messageField setStringValue:@"Please type your new password again."];
-    [secureField setEnabled:YES];
-    [[view window] makeFirstResponder:secureField];
-  }
-  else {
+  // if ([text isEqualToString:@"(current) UNIX password: "] != NO) {
+  //   [messageField setStringValue:@"Please type your current password."];
+  // }
+  // else if ([text isEqualToString:@"New password: "] != NO) {
+  //   [messageField setStringValue:@"Please type your new password."];
+  // }
+  // else if ([text isEqualToString:@"Retype new password: "] != NO) {
+  //   [messageField setStringValue:@"Please type your new password again."];
+  // }
+  // else {
     [messageField setStringValue:text];
-  }
+  // }
+  [secureField setEnabled:YES];
+  [[view window] makeFirstResponder:secureField];
 }
 - (void)setInfo:(NSString *)text
 {
