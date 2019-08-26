@@ -23,9 +23,11 @@
 #import <Preferences.h>
 
 typedef enum {
-  EnterOld,
-  EnterNew,
-  ConfirmNew
+  PAMStart,
+  PAMEnterOld,
+  PAMEnterNew,
+  PAMConfirmNew,
+  PAMAbort
 } PasswordState;
 
 @interface Password: NSObject <PrefsModule>
@@ -61,8 +63,12 @@ typedef enum {
    *
    *   total		161
    */
-  char          encrypted_password[256];
-  struct passwd *pw;
+  char        encrypted_password[256];
+  struct spwd *pw;
 }
+
+- (NSString *)password;
+- (void)setMessage:(NSString *)text;
+- (void)setInfo:(NSString *)text;
 
 @end
