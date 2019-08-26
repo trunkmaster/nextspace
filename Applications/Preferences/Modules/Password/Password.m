@@ -281,6 +281,9 @@ int PAMConversation(int num_msg,
         if ([self changePasswordWithPAM] == NO) {
           [infoField setStringValue:@"Password change was canceled."];
         }
+        else {
+          [infoField setStringValue:@"Password was successfully changed."];
+        }
         [self cancel:cancelButton];
       });
     state++;
