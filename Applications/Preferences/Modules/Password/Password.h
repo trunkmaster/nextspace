@@ -48,23 +48,9 @@ typedef enum {
   NSImage *lockOpenImage;
   NSImage *lockImage;
   NSImage *image;
+  NSTimer *fieldTimer;
 
   PasswordState state;
-  /*
-   * Size of the biggest passwd:
-   *   $6$		3
-   *   rounds=		7
-   *   999999999	9
-   *   $		1
-   *   salt		16
-   *   $		1
-   *   SHA512		123
-   *   nul		1
-   *
-   *   total		161
-   */
-  char        encrypted_password[256];
-  struct spwd *pw;
 }
 
 - (NSString *)password;

@@ -37,10 +37,10 @@
 
 #import "Password.h"
 
-static NSBundle *bundle = nil;
-static Password *sharedPassword = nil;
-static char     *PAMInput = NULL;
-static BOOL     PAMInputReady = NO;
+static Password         *sharedPassword = nil;
+static pam_handle_t     *PAM_handle = NULL;
+static char             *PAMInput = NULL;
+static BOOL             PAMInputReady = NO;
 static dispatch_queue_t pam_q;
 
 int PAMConversation(int num_msg, 
@@ -49,6 +49,7 @@ int PAMConversation(int num_msg,
                     void * appdata_ptr)
 {
   int count;
+  int result = PAM_SUCCESS;
   struct pam_response *reply;
   
   if (num_msg != 1) {
@@ -78,7 +79,11 @@ int PAMConversation(int num_msg,
       while (PAMInputReady == NO) {
         usleep(500000);
       }
-      NSLog(@"Password was entered: %s\n", PAMInput);
+      NSLog(@"Password was entered.\n");
+      if (PAMInput == NULL) {
+        pam_end(PAM_handle, PAM_ABORT);
+        result = PAM_ABORT;
+      }
       break;
     case PAM_PROMPT_ECHO_ON:
       NSLog(@"PAM ECHO_ON: %s",msg[count]->msg);
@@ -90,13 +95,17 @@ int PAMConversation(int num_msg,
       while (PAMInputReady == NO) {
         usleep(500000);
       }
+      if (PAMInput == NULL) {
+        result = PAM_ABORT;
+      }
       break;
     case PAM_ERROR_MSG:
-      NSLog(@"PAM message: %s",msg[count]->msg);
+      NSLog(@"PAM error message: %s",msg[count]->msg);
       [sharedPassword
         performSelectorOnMainThread:@selector(setInfo:)
                          withObject:[NSString stringWithCString:msg[count]->msg]
                       waitUntilDone:YES];
+      result = PAM_ABORT;
       break;
     case PAM_TEXT_INFO:
       NSLog(@"PAM information: %s",msg[count]->msg);
@@ -111,7 +120,7 @@ int PAMConversation(int num_msg,
       break;
     default:
       NSLog(@"PAM: erroneous conversation (%d)", msg[count]->msg_style);
-      return PAM_CONV_ERR;
+      result = PAM_CONV_ERR;
     }
     
     if (PAMInput) {
@@ -127,7 +136,7 @@ int PAMConversation(int num_msg,
     reply = NULL;
   }
 
-  return PAM_SUCCESS;
+  return result;
 }
 
 @implementation Password
@@ -145,6 +154,8 @@ int PAMConversation(int num_msg,
 
 - (id)init
 {
+  NSBundle *bundle;
+  
   self = [super init];
   
   bundle = [NSBundle bundleForClass:[self class]];
@@ -215,18 +226,30 @@ int PAMConversation(int num_msg,
 - (void)setMessage:(NSString *)text
 {
   // NSLog(@"setMessage: `%@`", text);
-  // if ([text isEqualToString:@"(current) UNIX password: "] != NO) {
-  //   [messageField setStringValue:@"Please type your current password."];
-  // }
-  // else if ([text isEqualToString:@"New password: "] != NO) {
-  //   [messageField setStringValue:@"Please type your new password."];
-  // }
-  // else if ([text isEqualToString:@"Retype new password: "] != NO) {
-  //   [messageField setStringValue:@"Please type your new password again."];
-  // }
-  // else {
+  if ([text isEqualToString:@"(current) UNIX password: "] != NO) {
+    state = PAMEnterOld;
+    [messageField setStringValue:@"Please type your current password."];
+  }
+  else if ([text isEqualToString:@"New password: "] != NO) {
+    state = PAMEnterNew;
+    [lockView setImage:lockOpenImage];
+    [messageField setStringValue:@"Please type your new password."];
+  }
+  else if ([text isEqualToString:@"Retype new password: "] != NO) {
+    state = PAMConfirmNew;
+    [messageField setStringValue:@"Please type your new password again."];
+  }
+  else {
     [messageField setStringValue:text];
-  // }
+  }
+
+  if ([secureField superview] == nil) {
+    [passwordBox replaceSubview:passwordField with:secureField];
+    [secureField setDelegate:self];
+  }
+  
+  [okButton setEnabled:YES];
+  [cancelButton setEnabled:YES];
   [secureField setEnabled:YES];
   [[view window] makeFirstResponder:secureField];
 }
@@ -241,97 +264,112 @@ int PAMConversation(int num_msg,
 - (BOOL)changePasswordWithPAM
 {
   struct pam_conv conv;
-  pam_handle_t    *PAM_handle;
   int             ret;
+  NSString        *infoMessage;
 
   conv.conv = PAMConversation;
-  if (pam_start("passwd", [NSUserName() cString], &conv, &PAM_handle)
-      != PAM_SUCCESS) {
-    NSLog(@"Failed to initialize PAM");
-    return NO;
-  }
-  
-  ret = pam_chauthtok(PAM_handle, 0);
-  if (ret != PAM_SUCCESS) {
-    NSLog(@"PAM failed: %s\n", pam_strerror(PAM_handle, ret));
+  ret = pam_start("passwd", [NSUserName() cString], &conv, &PAM_handle);
+  if (ret == PAM_SUCCESS) {
+    ret = pam_chauthtok(PAM_handle, ret);
     pam_end(PAM_handle, ret);
-    return NO;
+    if (ret != PAM_SUCCESS) {
+      NSLog(@"PAM failed: %s\n", pam_strerror(PAM_handle, ret));
+    }
   }
-
-  pam_end(PAM_handle, 0);
+  else {
+    NSLog(@"Failed to initialize PAM");
+  }
   
-  return YES;
+  if (ret != PAM_SUCCESS) {
+    infoMessage = @"Password change failed.";
+  }
+  else {
+    infoMessage = @"Password was successfully changed.";
+  }
+  
+  [self performSelectorOnMainThread:@selector(setInfo:)
+                         withObject:infoMessage
+                           waitUntilDone:YES];
+  [self performSelectorOnMainThread:@selector(cancel:)
+                         withObject:self
+                      waitUntilDone:YES];
+
+  return (ret == PAM_SUCCESS) ? YES : NO;
 }
 
 - (IBAction)changePassword:(id)sender
 {
-  switch (state) {
-  case PAMStart:    
-    // Please type your old password.
+  if (state == PAMStart) {
+    if (fieldTimer != nil && [fieldTimer isValid] != NO) {
+      [fieldTimer fire];
+    }
     [secureField setDelegate:self];
     [passwordBox replaceSubview:passwordField with:secureField];
     [[view window] makeFirstResponder:secureField];
-    // [messageField setStringValue:@"Please type your old password."];
+    
     [infoField setStringValue:@""];
     [okButton setTitle:@"Ok"];
     [cancelButton setEnabled:YES];
  
     pam_q = dispatch_queue_create("ns.preferences.pam", NULL);  
-    dispatch_async(pam_q, ^{
-        if ([self changePasswordWithPAM] == NO) {
-          [infoField setStringValue:@"Password change was canceled."];
-        }
-        else {
-          [infoField setStringValue:@"Password was successfully changed."];
-        }
-        [self cancel:cancelButton];
-      });
-    state++;
-    break;
-  case PAMEnterNew:
-    // [messageField setStringValue:@"Please type your new password."];
-    // state++;
-    // break;
-  case PAMConfirmNew:
-    // [messageField setStringValue:@"Please type your new password again."];
-    // state++;
-    // break;
-  case PAMEnterOld:
-    [lockView setImage:lockOpenImage];
-  default:
-    state++;
+    dispatch_async(pam_q, ^{[self changePasswordWithPAM];});
+  }
+  else {
     PAMInput = strdup([[secureField stringValue] cString]);
-    [secureField setEnabled:NO];
     PAMInputReady = YES;
+    
+    [passwordField setStringValue:@"Checking..."];
+    if ([passwordField superview] == nil) {
+      [secureField setDelegate:nil];
+      [passwordBox replaceSubview:secureField with:passwordField];
+    }
+    [secureField setEnabled:NO];
     [secureField setStringValue:@""];
-    // [passwordField setStringValue:@"Checking..."];
-    // if ([passwordField superview] == nil) {
-    //   [passwordBox replaceSubview:secureField with:passwordField];
-    // }
+    [messageField setStringValue:@""];
+    [infoField setStringValue:@""];
+    
+    [okButton setEnabled:NO];
+    [cancelButton setEnabled:NO];
+    
   }
 }
 
 - (IBAction)cancel:(id)sender
 {
-  // if (state == PAMAbort) {
-  //   return;
-  // }
-
   NSLog(@"Cancel");
 
-  // state = PAMAbort;
   PAMInput = NULL;
   PAMInputReady = YES;
   [lockView setImage:lockImage];
   // Password field
-  [secureField setDelegate:nil];
-  [passwordBox replaceSubview:secureField with:passwordField];
+  if ([secureField superview] != nil) {
+    [secureField setDelegate:nil];
+    [passwordBox replaceSubview:secureField with:passwordField];
+  }
+  [passwordField setStringValue:@"Password Secure"];
   //
   [messageField setStringValue:@""];
-  // [infoField setStringValue:@""];
+  if (sender == cancelButton) {
+    [infoField setStringValue:@""];
+  }
+  else if (fieldTimer == nil || [fieldTimer isValid] == NO) {
+    fieldTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
+                                                  target:self
+                                                selector:@selector(emptyFields:)
+                                                userInfo:nil
+                                                 repeats:NO];
+  }
   [okButton setTitle:@"Change"];
   [cancelButton setEnabled:NO];
+  [okButton setEnabled:YES];
   state = PAMStart;
+}
+
+- (void)emptyFields:(NSTimer *)timer
+{
+  [infoField setStringValue:@""];
+  [fieldTimer invalidate];
+  fieldTimer = nil;
 }
 
 - (BOOL)      control:(NSControl *)control
