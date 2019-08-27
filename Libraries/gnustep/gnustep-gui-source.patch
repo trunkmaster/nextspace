@@ -393,7 +393,7 @@ diff -Nru gnustep-gui-0.25.0.orig/Source/NSMenuItemCell.m gnustep-gui-0.25.0/Sou
 +                    inView: self];
 +  
 +  titleCellFrame = NSMakeRect(borderWidth,
-+                              imageCellFrame.size.height - borderWidth,
++                              imageCellFrame.size.height + borderWidth,
 +                              iconSize.width - (borderWidth * 2),
 +                              [[titleCell font] defaultLineHeightForFont]);
 +  [titleCell drawWithFrame: titleCellFrame
@@ -432,15 +432,3 @@ diff -Nru gnustep-gui-0.25.0.orig/Source/NSMenuItemCell.m gnustep-gui-0.25.0/Sou
              case GSAppKitWindowFocusIn:
                if (_f.is_miniaturized)
  		{
-
---- gnustep-gui-0.25.0.orig/Source/NSTextFieldCell.m	2016-06-16 23:09:00.000000000 +0300
-+++ gnustep-gui-0.25.0/Source/NSTextFieldCell.m	2019-08-20 16:35:37.490752590 +0300
-@@ -226,6 +226,8 @@
- 
- - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
- {
-+  cellFrame.size.height = [_font defaultLineHeightForFont] + 1 + 6;
-+  
-   if (_cell.in_editing)
-     [self _drawEditorWithFrame: cellFrame inView: controlView];
-   else
