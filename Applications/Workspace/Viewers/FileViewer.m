@@ -628,26 +628,24 @@
 - (NSArray *)directoryContentsAtPath:(NSString *)relPath
                              forPath:(NSString *)targetPath
 {
-  NXTFileManager *xfm = [NXTFileManager sharedManager];
-  NSString      *path = [rootPath stringByAppendingPathComponent:relPath];
-  NSDictionary  *folderDefaults;
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  NSString       *path = [rootPath stringByAppendingPathComponent:relPath];
+  NSDictionary   *folderDefaults;
   
   // Get sorted directory contents
-  if ((folderDefaults = [[NXTDefaults userDefaults] objectForKey:path]) != nil)
-    {
-      sortFilesBy = [[folderDefaults objectForKey:@"SortBy"] intValue];
-    }
-  else
-    {
-      sortFilesBy = [xfm sortFilesBy];
-    }
+  if ((folderDefaults = [[NXTDefaults userDefaults] objectForKey:path]) != nil) {
+    sortFilesBy = [[folderDefaults objectForKey:@"SortBy"] intValue];
+  }
+  else {
+    sortFilesBy = [fm sortFilesBy];
+  }
 
-  showHiddenFiles = [xfm isShowHiddenFiles];
+  showHiddenFiles = [fm isShowHiddenFiles];
   
-  return [xfm directoryContentsAtPath:path
-                              forPath:targetPath
-                             sortedBy:sortFilesBy
-                           showHidden:showHiddenFiles];
+  return [fm directoryContentsAtPath:path
+                             forPath:targetPath
+                            sortedBy:sortFilesBy
+                          showHidden:showHiddenFiles];
 }
 
 //=============================================================================
@@ -1514,9 +1512,9 @@
 
 - (void)globalUserPreferencesDidChange:(NSNotification *)aNotif
 {
-  NXTFileManager *xfm = [NXTFileManager sharedManager];
-  BOOL          hidden = [xfm isShowHiddenFiles];
-  NXTSortType    sort = [xfm sortFilesBy];
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  BOOL           hidden = [fm isShowHiddenFiles];
+  NXTSortType    sort = [fm sortFilesBy];
 
   if ((showHiddenFiles != hidden) || (sortFilesBy != sort)) {
     [viewer displayPath:[self displayedPath] selection:selection];

@@ -1262,23 +1262,21 @@ static NSString		*_rootPath = @"/";
 /** Use libmagic to determine file type*/
 - (NSImage *)_iconForFileContents:(NSString *)fullPath
 {
-  NXTFileManager *xfm = [NXTFileManager sharedManager];
-  NSString      *mimeType = [xfm mimeTypeForFile:fullPath];;
-  NSString      *mime0, *mime1;
-  NSImage       *image = nil;
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  NSString       *mimeType = [fm mimeTypeForFile:fullPath];;
+  NSString       *mime0, *mime1;
+  NSImage        *image = nil;
 
   // NSLog(@"%@: MIME type: %@ ", [fullPath lastPathComponent], mimeType);
 
   mime0 = [[mimeType pathComponents] objectAtIndex:0];
   mime1 = [[mimeType pathComponents] objectAtIndex:1];
-  if ([mime0 isEqualToString:@"text"])
-    {
-      image = [NSImage imageNamed:@"TextFile"];
-    }
-  else if ([mime0 isEqualToString:@"image"])
-    {
-      image = [self _iconForExtension:mime1];
-    }
+  if ([mime0 isEqualToString:@"text"]) {
+    image = [NSImage imageNamed:@"TextFile"];
+  }
+  else if ([mime0 isEqualToString:@"image"]) {
+    image = [self _iconForExtension:mime1];
+  }
   
   return image;
 }

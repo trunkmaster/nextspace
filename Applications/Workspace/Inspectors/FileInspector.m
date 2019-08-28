@@ -139,7 +139,7 @@ NSUInteger numberOfLinesInString(NSString *string)
 
   // Meta information
   [encodingField
-    setStringValue:[[NXTFileManager sharedManager] mimeEncodingForFile:path]];
+    setStringValue:[[NXTFileManager defaultManager] mimeEncodingForFile:path]];
 
   [linesField setStringValue:[NSString stringWithFormat:@"%i/%i",
                                        showedLines, allLines]];
@@ -221,12 +221,11 @@ static id contentsInspector = nil;
 
 - revert:sender
 {
-  NSString      *file;
-  NSString      *filePath;
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NXTFileManager *xfm = [NXTFileManager sharedManager];
-  NSDictionary  *fattrs;
-  NSString      *mimeType;
+  NSString       *file;
+  NSString       *filePath;
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  NSDictionary   *fattrs;
+  NSString       *mimeType;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
 
@@ -244,7 +243,7 @@ static id contentsInspector = nil;
   else {
     file = [selectedFiles objectAtIndex:0];
     filePath = [selectedPath stringByAppendingPathComponent:file];
-    mimeType = [xfm mimeTypeForFile:filePath];
+    mimeType = [fm mimeTypeForFile:filePath];
     if ([[[mimeType pathComponents] objectAtIndex:0] isEqualToString:@"text"]) {
       [self _showTextFields:YES];
       // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -256,7 +255,7 @@ static id contentsInspector = nil;
     }
     else {
       // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-      [fileInfoText setText:[xfm descriptionForFile:filePath]];
+      [fileInfoText setText:[fm descriptionForFile:filePath]];
       //                });
     }
   }  

@@ -121,15 +121,6 @@
   return self;
 }
 
-- (NSArray *)_directoryContentsAtPath:(NSString *)path
-{
-  NXTFileManager *xfm = [NXTFileManager sharedManager];
-
-  return [xfm directoryContentsAtPath:path
-                              forPath:nil
-                           showHidden:[xfm isShowHiddenFiles]];
-}
-
 - (BOOL)isTextMatched:(NSString *)text
 {
   NSUInteger matches;
@@ -179,15 +170,17 @@
 
 - (void)findInDirectory:(NSString *)dirPath
 {
-  NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL          isDir;
-  NSArray       *dirContents;
-  NSString      *itemPath;
-  NSDictionary  *attrs;
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  BOOL           isDir;
+  NSArray        *dirContents;
+  NSString       *itemPath;
+  NSDictionary   *attrs;
 
   NSLog(@"Processing directory %@...", dirPath);
 
-  dirContents = [self _directoryContentsAtPath:dirPath];
+  dirContents = [fm directoryContentsAtPath:dirPath
+                                    forPath:nil
+                                 showHidden:[fm isShowHiddenFiles]];
   for (NSString *item in dirContents) {
     if ([self isCancelled]) {
       break;

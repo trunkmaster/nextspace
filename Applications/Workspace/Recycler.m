@@ -90,18 +90,17 @@ static NSMutableArray *fileList = nil;
 
 - (void)main
 {
-  NSMutableSet		*selected = [[NSMutableSet new] autorelease];
-  NSFileManager		*fm = [NSFileManager defaultManager];
-  NXTFileManager		*xfm = [NXTFileManager sharedManager];
-  NSMutableArray	*items;
-  NSString		*path;
-  PathIcon		*anIcon;
-  NSUInteger		slotsWide, x;
-  NSInteger             dbFileIndex;
+  NSMutableSet   *selected = [[NSMutableSet new] autorelease];
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  NSMutableArray *items;
+  NSString       *path;
+  PathIcon       *anIcon;
+  NSUInteger     slotsWide, x;
+  NSInteger      dbFileIndex;
 
-  items = [[xfm directoryContentsAtPath:directoryPath
+  items = [[fm directoryContentsAtPath:directoryPath
                                forPath:nil
-                              sortedBy:[xfm sortFilesBy]
+                              sortedBy:[fm sortFilesBy]
                             showHidden:YES] mutableCopy];
 
   _itemsCount = [items count];

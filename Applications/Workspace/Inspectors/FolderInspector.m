@@ -146,7 +146,7 @@ static id dirInspector = nil;
   if (folderDefaults == nil)
     {
       ASSIGN(folderDefaults, [[NSMutableDictionary new] autorelease]);
-      sortType = [[NXTFileManager sharedManager] sortFilesBy];
+      sortType = [[NXTFileManager defaultManager] sortFilesBy];
       [folderDefaults setObject:[NSNumber numberWithInt:sortType]
                          forKey:@"SortBy"];
     }

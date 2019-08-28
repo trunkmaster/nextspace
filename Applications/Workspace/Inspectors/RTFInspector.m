@@ -92,7 +92,7 @@ static inline NSUInteger numberOfLinesInString(NSString *string)
 
   // Meta information
   [encodingField
-    setStringValue:[[NXTFileManager sharedManager] mimeEncodingForFile:path]];
+    setStringValue:[[NXTFileManager defaultManager] mimeEncodingForFile:path]];
 
   [linesField setStringValue:[NSString stringWithFormat:@"%lu/%lu",
                                        showedLines, allLines]];
@@ -160,8 +160,7 @@ static id contentsInspector = nil;
   NSSize         size = NSZeroSize;
   CGFloat        factor = 0.0;
   NSTextStorage  *newTextStorage = nil;
-  NXTFileManager  *xfm = [NXTFileManager sharedManager];
-
+  NXTFileManager *fm = [NXTFileManager defaultManager];
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
   filePath = [selectedPath
@@ -181,7 +180,7 @@ static id contentsInspector = nil;
       [[fileInfoText layoutManager] replaceTextStorage:newTextStorage];
       
       // Meta information
-      [encodingField setStringValue:[xfm mimeEncodingForFile:filePath]];
+      [encodingField setStringValue:[fm mimeEncodingForFile:filePath]];
 
       [linesField
         setStringValue:[NSString stringWithFormat:@"%lu",

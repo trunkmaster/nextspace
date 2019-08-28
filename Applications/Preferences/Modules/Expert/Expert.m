@@ -59,9 +59,9 @@
   [privateSoundServerBtn setRefusesFirstResponder:YES];
 
   [sortByBtn
-    selectItemWithTag:[[NXTFileManager sharedManager] sortFilesBy]];
+    selectItemWithTag:[[NXTFileManager defaultManager] sortFilesBy]];
   [showHiddenFilesBtn
-    setState:[[NXTFileManager sharedManager] isShowHiddenFiles]];
+    setState:[[NXTFileManager defaultManager] isShowHiddenFiles]];
 }
 
 - (NSView *)view
@@ -94,12 +94,12 @@
 
 - (void)setSortBy:(id)sender
 {
-  [[NXTFileManager sharedManager] setSortFilesBy:[[sender selectedItem] tag]];
+  [[NXTFileManager defaultManager] setSortFilesBy:[[sender selectedItem] tag]];
 }
 
 - (void)setShowHiddenFiles:(id)sender
 {
-  [[NXTFileManager sharedManager] setShowHiddenFiles:[sender state]];
+  [[NXTFileManager defaultManager] setShowHiddenFiles:[sender state]];
 }
 
 @end
