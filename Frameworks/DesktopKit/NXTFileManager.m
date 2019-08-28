@@ -135,7 +135,7 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
 
 @implementation NXTFileManager
 
-+ (NXTFileManager *)sharedManager
++ (NXTFileManager *)defaultManager
 {
   if (sharedManager == nil) {
     sharedManager = [[NXTFileManager alloc] init];

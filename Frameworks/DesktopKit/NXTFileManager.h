@@ -23,6 +23,7 @@
 //
 
 #import <Foundation/NSString.h>
+#import <Foundation/NSFileManager.h>
  
 @class NSString, NSObject;
 
@@ -42,11 +43,11 @@ typedef enum {
 extern NSString *NXTSortFilesBy;
 extern NSString *NXTShowHiddenFiles;
 
-@interface NXTFileManager : NSObject
+@interface NXTFileManager : NSFileManager
 {
 }
 
-+ (NXTFileManager *)sharedManager;
++ (NXTFileManager *)defaultManager;
 
 - (BOOL)isShowHiddenFiles;
 - (void)setShowHiddenFiles:(BOOL)yn;
