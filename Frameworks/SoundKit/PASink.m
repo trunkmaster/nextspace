@@ -182,6 +182,11 @@
     [self _updateChannels:info];
   }
 
+  // Flags
+  _flags = info->flags;
+  // State
+  _state = info->state;
+
   free ((void *)info);
 
   return self;
@@ -261,5 +266,9 @@
   
   free(volume);
 }
+
+// --- Attributes
+// Sample
+// Formats
 
 @end
