@@ -126,4 +126,38 @@
   return (BOOL)_sink.mute;
 }
 
+// Flags
+- (BOOL)hasHardwareVolumeControl
+{
+  return (_sink.flags & PA_SINK_HW_VOLUME_CTRL) ? YES : NO;
+}
+- (BOOL)hasHardwareMuteControl
+{
+  return (_sink.flags & PA_SINK_HW_MUTE_CTRL) ? YES : NO;
+}
+- (BOOL)hasFlatVolume
+{
+  return (_sink.flags & PA_SINK_FLAT_VOLUME) ? YES : NO;
+}
+- (BOOL)canQueryLatency
+{
+  return (_sink.flags & PA_SINK_LATENCY) ? YES : NO;
+}
+- (BOOL)canChangeLatency
+{
+  return (_sink.flags & PA_SINK_DYNAMIC_LATENCY) ? YES : NO;
+}
+- (BOOL)canSetFormats
+{
+  return (_sink.flags & PA_SINK_SET_FORMATS) ? YES : NO;
+}
+- (BOOL)isHardware
+{
+  return (_sink.flags & PA_SINK_HARDWARE) ? YES : NO;
+}
+- (BOOL)isNetwork
+{
+  return (_sink.flags & PA_SINK_NETWORK) ? YES : NO;
+}
+
 @end
