@@ -178,135 +178,12 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
   
   return type;
 }
-
 - (void)setSortFilesBy:(NXTSortType)type
 {
   NXTDefaults *defs = [[NXTDefaults globalUserDefaults] reload];
 
   [defs setInteger:type forKey:NXTSortFilesBy];
   [defs synchronize];
-}
-
-// --- Directory contents (obsolete)
-
-- (void)sortArray:(NSMutableArray *)array
-            start:(NSInteger)start // start index
-            count:(NSInteger)count // elements count
-{
-  int i, last;
-
-  if (count <= 1)
-    return;
-
-  // set pivot (center of an array) to first place (0)
-  [array exchangeObjectAtIndex:0 withObjectAtIndex:count/2];
-  i = start;
-  last = 0;
-
-  // Split
-  for (i=1; i<count; i++) {
-    if ([[array objectAtIndex:0] compare:[array objectAtIndex:0]]
-        == NSOrderedAscending) {
-      [array exchangeObjectAtIndex:++last withObjectAtIndex:i];
-    }
-  }
-
-  // (?) restore pivot
-  [array exchangeObjectAtIndex:0 withObjectAtIndex:last];
-
-  // Recursive sort
-  [self sortArray:array start:0 count:last];
-  // of every splitted part
-  [self sortArray:array start:last+1 count:count-last-1];
-}
-
-- (void)_getSortedDirContents:(NSMutableArray *)dirContents
-	 	       atPath:(NSString *)absolutePath
-{
-  NSFileManager  *fm = [NSFileManager defaultManager];
-  NSEnumerator   *e = [dirContents objectEnumerator];
-  NSMutableArray *dirs = [[NSMutableArray alloc] init];
-  NSMutableArray *files = [[NSMutableArray alloc] init];
-  NSString       *entry = nil;
-  BOOL           isDir;
-
-  while ((entry = [e nextObject]) != nil) {
-    NSString *path = [absolutePath stringByAppendingPathComponent:entry];
-
-    [fm fileExistsAtPath:path isDirectory:&isDir];
-    if (isDir == YES)	{
-      [dirs addObject:entry];
-    }
-    else {
-      [files addObject:entry];
-    }
-  }
-
-  // Empty dirContents
-  [dirContents removeAllObjects];
-
-  // Add sorted directories
-  [dirs sortUsingSelector:@selector(localizedCompare:)];
-  [dirContents addObjectsFromArray:dirs];
-  [dirs release];
-
-  // Add sorted files
-  [files sortUsingSelector:@selector(localizedCompare:)];
-  [dirContents addObjectsFromArray:files];
-  [files release];
-}
-
-- (NSArray *)sortedDirectoryContentsAtPath:(NSString *)path
-{
-  NSFileManager  *fm = [NSFileManager defaultManager];
-  NXTDefaults    *df = [NXTDefaults userDefaults];
-  NSUserDefaults *udf = [NSUserDefaults standardUserDefaults];
-  NSMutableArray *dirContents;
-
-  // return [fm directoryContentsAtPath:path];
-
-  dirContents = [[fm directoryContentsAtPath:path] mutableCopy];
-
-  NSDebugLLog(@"NXTFileManager", @"[NXTFileManager] Dir contents sort START");
-  // [self sortArray:dirContents start:0 count:[dirContents count]];
-  [self _getSortedDirContents:dirContents atPath:path];
-  NSDebugLLog(@"NXTFileManager", @"Dir contents sort END");
-  
-  return [dirContents autorelease];
-  
-  dirContents = [[fm directoryContentsAtPath:path] mutableCopy];
-
-  if ([udf objectForKey:@"GSFileBrowserHideDotFiles"] == nil
-      || [udf boolForKey:@"GSFileBrowserHideDotFiles"] == YES) {
-    NSString *hiddenFilename;
-    unsigned i, n;
-    NSString *filename;
-
-    hiddenFilename = [path stringByAppendingPathComponent:@".hidden"];
-    if ([fm fileExistsAtPath:hiddenFilename])	{
-      NSString     *h = [NSString stringWithContentsOfFile:hiddenFilename];
-      NSArray      *hidden = [h componentsSeparatedByString:@"\n"];
-      NSEnumerator *e = [hidden objectEnumerator];
-
-      while ((filename = [e nextObject]) != nil) {
-        [dirContents removeObject:filename];
-      }
-    }
-    for (i = 0, n = [dirContents count]; i < n; i++) {
-      NSString *filename = [dirContents objectAtIndex:i];
-
-      if ([filename length] <= 0 || [filename hasPrefix:@"."]) {
-        [dirContents removeObjectAtIndex:i];
-        n--;
-        i--;
-      }
-    }
-  }
-
-  // Sort the filenames
-  [self _getSortedDirContents:dirContents atPath:path];
-
-  return AUTORELEASE(dirContents);
 }
 
 // --- Directory contents
@@ -437,6 +314,35 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
   }
 
   return AUTORELEASE(dirContents);
+}
+
+// --- Search path
+- (NSArray *)executablesForSubstring:(NSString *)substring
+{
+  NSString       *envPath;
+  NSArray        *searchPaths;
+  NSMutableArray *variants = [[NSMutableArray alloc] init];
+  NSArray        *dirContents;
+  NSString       *absPath;
+  BOOL           isDir;
+  
+  envPath = [[[NSProcessInfo processInfo] environment] objectForKey:@"PATH"];
+  searchPaths = [NSArray
+                  arrayWithArray:[envPath componentsSeparatedByString:@":"]];
+  
+  for (NSString *dir in searchPaths) {
+    dirContents = [self directoryContentsAtPath:dir];
+    for (NSString *file in dirContents) {
+      if ([file rangeOfString:substring].location == 0) {
+        absPath = [dir stringByAppendingPathComponent:file];
+        if ([self isExecutableFileAtPath:absPath]) {
+          [variants addObject:file];
+        }
+      }
+    }
+  }
+
+  return [variants autorelease];
 }
 
 // --- Files

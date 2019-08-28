@@ -54,8 +54,6 @@ extern NSString *NXTShowHiddenFiles;
 - (NXTSortType)sortFilesBy;
 - (void)setSortFilesBy:(NXTSortType)type;
 
-- (NSArray *)sortedDirectoryContentsAtPath:(NSString *)path;
-
 - (NSArray *)directoryContentsAtPath:(NSString *)path
                              forPath:(NSString *)targetPath
                           showHidden:(BOOL)showHidden;
@@ -63,6 +61,8 @@ extern NSString *NXTShowHiddenFiles;
                              forPath:(NSString *)targetPath
                             sortedBy:(NXTSortType)sortType
                           showHidden:(BOOL)showHidden;
+
+- (NSArray *)executablesForSubstring:(NSString *)substring;
 
 // libmagic
 - (NSString *)mimeTypeForFile:(NSString *)fullPath;
