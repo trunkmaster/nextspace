@@ -183,6 +183,11 @@
   if (channel_map == NULL || pa_channel_map_equal(channel_map, &info->channel_map)) {
     [self updateChannels:info];
   }
+  
+  // Flags
+  _flags = info->flags;
+  // State
+  _state = info->state;
 
   free ((void *)info);
 

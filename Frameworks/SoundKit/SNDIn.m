@@ -126,4 +126,34 @@
   return (BOOL)_source.mute;
 }
 
+// Flags
+- (BOOL)hasHardwareVolumeControl
+{
+  return (_source.flags & PA_SOURCE_HW_VOLUME_CTRL) ? YES : NO;
+}
+- (BOOL)hasHardwareMuteControl
+{
+  return (_source.flags & PA_SOURCE_HW_MUTE_CTRL) ? YES : NO;
+}
+- (BOOL)hasFlatVolume
+{
+  return (_source.flags & PA_SOURCE_FLAT_VOLUME) ? YES : NO;
+}
+- (BOOL)canQueryLatency
+{
+  return (_source.flags & PA_SOURCE_LATENCY) ? YES : NO;
+}
+- (BOOL)canChangeLatency
+{
+  return (_source.flags & PA_SOURCE_DYNAMIC_LATENCY) ? YES : NO;
+}
+- (BOOL)isHardware
+{
+  return (_source.flags & PA_SOURCE_HARDWARE) ? YES : NO;
+}
+- (BOOL)isNetwork
+{
+  return (_source.flags & PA_SOURCE_NETWORK) ? YES : NO;
+}
+
 @end
