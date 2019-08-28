@@ -21,6 +21,7 @@
 
 #import <AppKit/AppKit.h>
 #import <DesktopKit/NXTAlert.h>
+#import <DesktopKit/NXTFileManager.h>
 #import "Launcher.h"
 
 @interface WMCommandField : NSTextField
@@ -127,8 +128,8 @@
         }
         @catch (NSException *exception) {
           NXTRunAlertPanel(@"Run Command",
-                          @"Run command failed with exception: \'%@\'", 
-                          @"Close", nil, nil, [exception reason]);
+                           @"Run command failed with exception: \'%@\'", 
+                           @"Close", nil, nil, [exception reason]);
         }
         @finally {
           [window close];
@@ -242,7 +243,7 @@
 - (NSArray *)completionFor:(NSString *)command
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
-  NSFileManager  *fm = [NSFileManager defaultManager];
+  NXTFileManager *fm = [NXTFileManager defaultManager];
   NSArray        *dirContents;
   const char     *c_t;
   BOOL           includeDirs = NO;
@@ -296,18 +297,23 @@
     }
   }
   else {
-    // Gor through the $PATH directories
-    for (NSString *dir in searchPaths) {
-      dirContents = [fm directoryContentsAtPath:dir];
-      for (NSString *file in dirContents) {
-        if ([file rangeOfString:command].location == 0) {
-          absPath = [dir stringByAppendingPathComponent:file];
-          if ([fm isExecutableFileAtPath:absPath]) {
-            [variants addObject:file];
-          }
-        }
-      }
+    // Go through the $PATH directories
+    NSArray *executables;
+    executables = [fm executablesForSubstring:command];
+    if ([executables count] > 0) {
+      [variants addObjectsFromArray:executables];
     }
+    // for (NSString *dir in searchPaths) {
+    //   dirContents = [fm directoryContentsAtPath:dir];
+    //   for (NSString *file in dirContents) {
+    //     if ([file rangeOfString:command].location == 0) {
+    //       absPath = [dir stringByAppendingPathComponent:file];
+    //       if ([fm isExecutableFileAtPath:absPath]) {
+    //         [variants addObject:file];
+    //       }
+    //     }
+    //   }
+    // }
   }
   
   return variants;
