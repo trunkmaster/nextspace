@@ -42,7 +42,7 @@
 - (NSString *)activeProfile;
 - (void)setActiveProfile:(NSString *)profileName;
 
-// Subclass responsiblity
+// --- Subclass responsiblity
 - (NSArray *)availablePorts;
 - (NSString *)activePort;
 - (void)setActivePort:(NSString *)portName;
@@ -56,5 +56,15 @@
 
 - (BOOL)isMute;
 - (void)setMute:(BOOL)isMute;
+
+// Flags
+- (BOOL)hasHardwareVolumeControl;
+- (BOOL)hasHardwareMuteControl;
+- (BOOL)hasFlatVolume;
+- (BOOL)canQueryLatency;
+- (BOOL)canChangeLatency;
+- (BOOL)canSetFormats;
+- (BOOL)isHardware;
+- (BOOL)isNetwork;
 
 @end

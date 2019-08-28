@@ -108,7 +108,7 @@
   [_card applyActiveProfile:profileName];
 }
 
-// Subclass responsiblity
+// --- Subclass responsiblity
 - (NSArray *)availablePorts
 {
   return [_card.outPorts arrayByAddingObjectsFromArray:_card.inPorts];
@@ -143,6 +143,8 @@
 }
 - (void)setBalance:(CGFloat)balance
 {
+  NSLog(@"[SoundKit] setBalance: was send to SNDDevice."
+        " SNDOut or SNDIn subclasses should be used instead.");
 }
 
 - (BOOL)isMute
@@ -153,6 +155,40 @@
 {
   NSLog(@"[SoundKit] setMute: was send to SNDDevice. "
         "SNDOut or SNDIn subclasses should be used instead.");
+}
+
+// Flags
+- (BOOL)hasHardwareVolumeControl
+{
+  return NO;
+}
+- (BOOL)hasHardwareMuteControl
+{
+  return NO;
+}
+- (BOOL)hasFlatVolume
+{
+  return NO;
+}
+- (BOOL)canQueryLatency
+{
+  return NO;
+}
+- (BOOL)canChangeLatency
+{
+  return NO;
+}
+- (BOOL)canSetFormats
+{
+  return NO;
+}
+- (BOOL)isHardware
+{
+  return NO;
+}
+- (BOOL)isNetwork
+{
+  return NO;
 }
 
 @end
