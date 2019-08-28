@@ -159,5 +159,10 @@
 {
   return (_sink.flags & PA_SINK_NETWORK) ? YES : NO;
 }
+// State
+- (SNDDeviceState)deviceState
+{
+  return _sink.state;
+}
 
 @end

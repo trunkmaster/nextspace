@@ -190,5 +190,10 @@
 {
   return NO;
 }
+// State
+- (SNDDeviceState)deviceState
+{
+  return SNDDeviceInvalidState;
+}
 
 @end

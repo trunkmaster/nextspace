@@ -24,6 +24,13 @@
 
 @class PACard;
 
+typedef enum SNDDeviceState {
+  SNDDeviceInvalidState = -1,
+  SNDDeviceRunningState = 0,
+  SNDDeviceIdelState = 1,
+  SNDDeviceSuspendedState = 2
+} SNDDeviceState;
+
 @interface SNDDevice : NSObject // <SNDParameters>
 {
 }
@@ -66,5 +73,7 @@
 - (BOOL)canSetFormats;
 - (BOOL)isHardware;
 - (BOOL)isNetwork;
+// State
+- (SNDDeviceState)deviceState;
 
 @end

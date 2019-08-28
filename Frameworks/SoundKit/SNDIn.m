@@ -155,5 +155,10 @@
 {
   return (_source.flags & PA_SOURCE_NETWORK) ? YES : NO;
 }
+// State
+- (SNDDeviceState)deviceState
+{
+  return _source.state;
+}
 
 @end
