@@ -28,14 +28,4 @@
 }
 @property (retain) PASink *sink;
 
-// Flags
-- (BOOL)hasHardwareVolumeControl;
-- (BOOL)hasHardwareMuteControl;
-- (BOOL)hasFlatVolume;
-- (BOOL)canQueryLatency;
-- (BOOL)canChangeLatency;
-- (BOOL)canSetFormats;
-- (BOOL)isHardware;
-- (BOOL)isNetwork;
-
 @end
