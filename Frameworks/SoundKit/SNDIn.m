@@ -160,5 +160,18 @@
 {
   return _source.state;
 }
+// Sample
+- (NSUInteger)sampleRate
+{
+  return _source.sampleRate;
+}
+- (NSUInteger)sampleChannelCount
+{
+  return _source.sampleChannelCount;
+}
+- (NSInteger)sampleFormat
+{
+  return _source.sampleFormat;
+}
 
 @end

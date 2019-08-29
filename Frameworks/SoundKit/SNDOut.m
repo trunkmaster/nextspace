@@ -164,5 +164,18 @@
 {
   return _sink.state;
 }
+// Sample
+- (NSUInteger)sampleRate
+{
+  return _sink.sampleRate;
+}
+- (NSUInteger)sampleChannelCount
+{
+  return _sink.sampleChannelCount;
+}
+- (NSInteger)sampleFormat
+{
+  return _sink.sampleFormat;
+}
 
 @end

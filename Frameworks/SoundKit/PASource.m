@@ -188,6 +188,10 @@
   _flags = info->flags;
   // State
   _state = info->state;
+  // Sample spec
+  _sampleRate = info->sample_spec.rate;
+  _sampleChannelCount = info->sample_spec.channels;
+  _sampleFormat = info->sample_spec.format;
 
   free ((void *)info);
 

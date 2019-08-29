@@ -35,8 +35,13 @@
 @property (readonly) NSUInteger cardIndex;
 @property (readonly) NSArray    *ports;
 @property (readonly) BOOL       isMonitor;
+
 @property (readonly) NSInteger  flags;
 @property (readonly) NSInteger  state;
+@property (readonly) NSUInteger sampleRate;
+@property (readonly) NSUInteger sampleChannelCount;
+@property (readonly) NSInteger  sampleFormat;
+
 // KVO-compliant
 @property (assign) NSString   *activePort;
 @property (assign) NSUInteger channelCount;
