@@ -37,6 +37,44 @@
   [super dealloc];
 }
 
+// Converts GSSoundSource encoding into PulseAudio sample format
+- (NSInteger)_sourceFormat
+{
+  NSInteger format;
+  
+  switch ([_source encoding])
+    {
+    case GSSoundFormatPCM16:
+      format = PA_SAMPLE_S16LE;
+      break;
+    case GSSoundFormatPCM24:
+      format = PA_SAMPLE_S24LE;
+      break;
+    case GSSoundFormatPCM32:
+      format = PA_SAMPLE_S32LE;
+      break;
+    case GSSoundFormatPCMU8:
+      format = PA_SAMPLE_U8;
+      break;
+    case GSSoundFormatFloat32:
+      format = PA_SAMPLE_FLOAT32LE;
+      break;
+    case GSSoundFormatULaw:
+      format = PA_SAMPLE_ULAW;
+      break;
+    case GSSoundFormatALaw:
+      format = PA_SAMPLE_ALAW;
+      break;
+    case GSSoundFormatUnknown:
+    case GSSoundFormatFloat64:
+    case GSSoundFormatPCMS8:
+    default:
+      format = PA_SAMPLE_INVALID;
+    }
+  
+  return format;
+}
+
 - (void)_initStream
 {
   if (_stream != nil) {
@@ -48,7 +86,7 @@
                 initOnDevice:(SNDDevice *)[[SNDServer sharedServer] defaultOutput]
                 samplingRate:[_source sampleRate]
                 channelCount:[_source channelCount]
-                      format:3 // PA
+                      format:[self _sourceFormat] // PA_SAMPLE_S16LE
                         type:_streamType];
   [_stream setDelegate:self];
   if (_state == NXTSoundPlay) {
