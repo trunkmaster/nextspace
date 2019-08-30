@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <pulse/channelmap.h>
 #import <Foundation/Foundation.h>
 #import <SoundKit/SNDServer.h>
 
@@ -48,6 +49,8 @@ typedef enum SNDDeviceState {
 - (NSArray *)availableProfiles;
 - (NSString *)activeProfile;
 - (void)setActiveProfile:(NSString *)profileName;
+
+- (NSString *)channelPositionToName:(pa_channel_position_t)poistion;
 
 // --- Subclass responsiblity
 - (NSArray *)availablePorts;
@@ -81,5 +84,7 @@ typedef enum SNDDeviceState {
 - (NSInteger)sampleFormat;
 // Formats
 - (NSArray *)formats;
+// Channel map
+- (NSArray *)channelNames;
 
 @end

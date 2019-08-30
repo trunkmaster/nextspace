@@ -41,7 +41,7 @@
     [_channelVolumes release];
   }
   
-  free(channel_map);
+  free(_channel_map);
   
  [super dealloc];
 }
@@ -49,7 +49,7 @@
 - (id)init
 {
   self = [super init];
-  channel_map = NULL;
+  _channel_map = NULL;
   return self;
 }
 
@@ -135,14 +135,14 @@
   _channelCount = info->volume.channels;
   
   // Channel map
-  if (channel_map) {
-    free(channel_map);
+  if (_channel_map) {
+    free(_channel_map);
   }
-  channel_map = malloc(sizeof(pa_channel_map));
-  pa_channel_map_init(channel_map);
-  channel_map->channels = info->channel_map.channels;
-  for (int i = 0; i < channel_map->channels; i++) {
-    channel_map->map[i] = info->channel_map.map[i];
+  _channel_map = malloc(sizeof(pa_channel_map));
+  pa_channel_map_init(_channel_map);
+  _channel_map->channels = info->channel_map.channels;
+  for (int i = 0; i < _channel_map->channels; i++) {
+    _channel_map->map[i] = info->channel_map.map[i];
   }
 }
 
@@ -195,7 +195,7 @@
     self.mute = (BOOL)info->mute;
   }
 
-  if (channel_map == NULL || pa_channel_map_equal(channel_map, &info->channel_map)) {
+  if (_channel_map == NULL || pa_channel_map_equal(_channel_map, &info->channel_map)) {
     [self _updateChannels:info];
   }
 
@@ -281,7 +281,7 @@
   pa_cvolume_init(volume);
   pa_cvolume_set(volume, _channelCount, self.volume);
   
-  pa_cvolume_set_balance(volume, channel_map, balance);
+  pa_cvolume_set_balance(volume, _channel_map, balance);
   o = pa_context_set_sink_volume_by_index(_context, _index, volume, NULL, self);
   if (o) {
     pa_operation_unref(o);

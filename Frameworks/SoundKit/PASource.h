@@ -24,10 +24,10 @@
 
 @interface PASource : NSObject
 {
-  pa_channel_map *channel_map;
 }
 
-@property (assign) pa_context   *context;
+@property (assign)   pa_context     *context;
+@property (readonly) pa_channel_map *channel_map;
 
 @property (readonly) NSUInteger index;
 @property (readonly) NSString   *description;

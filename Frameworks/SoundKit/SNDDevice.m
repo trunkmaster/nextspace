@@ -213,5 +213,64 @@
 {
   return nil;
 }
+// Channel map
+- (NSString *)channelPositionToName:(pa_channel_position_t)position
+{
+  switch (position)
+    {
+    case PA_CHANNEL_POSITION_MONO:
+      return @"Mono";
+      
+    case PA_CHANNEL_POSITION_FRONT_LEFT:
+      return @"Left";
+    case PA_CHANNEL_POSITION_FRONT_RIGHT:
+      return @"Right";
+    case PA_CHANNEL_POSITION_FRONT_CENTER:
+      return @"Center";
+      
+    case PA_CHANNEL_POSITION_REAR_CENTER:
+      return @"Center Surround";
+    case PA_CHANNEL_POSITION_REAR_LEFT:
+      return @"Left Surround";
+    case PA_CHANNEL_POSITION_REAR_RIGHT:
+    return @"Right Surround";
+
+    case PA_CHANNEL_POSITION_LFE:
+      return @"Subwoofer";
+
+    case PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER:
+      return @"Left Center";
+    case PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER:
+      return @"Right Center";
+
+    case PA_CHANNEL_POSITION_SIDE_LEFT:
+      return @"Left Surround Direct";
+    case PA_CHANNEL_POSITION_SIDE_RIGHT:
+      return @"Right Surround Direct";
+
+    case PA_CHANNEL_POSITION_TOP_CENTER:
+      return @"Top Center Surround";
+    case PA_CHANNEL_POSITION_TOP_FRONT_LEFT:
+      return @"Vertical Height Left";
+    case PA_CHANNEL_POSITION_TOP_FRONT_RIGHT:
+      return @"Vertical Height Right";
+    case PA_CHANNEL_POSITION_TOP_FRONT_CENTER:
+      return @"Vertical Height Center";
+
+    case PA_CHANNEL_POSITION_TOP_REAR_LEFT:
+      return @"Top Back Left";
+    case PA_CHANNEL_POSITION_TOP_REAR_RIGHT:
+      return @"Top Back Right";
+    case PA_CHANNEL_POSITION_TOP_REAR_CENTER:
+      return @"Top Back Center";
+    case PA_CHANNEL_POSITION_INVALID:
+    default:
+      return @"Unknown";
+    }
+}
+- (NSArray *)channelNames
+{
+  return nil;
+}
 
 @end

@@ -182,5 +182,18 @@
 {
   return _sink.formats;
 }
+// Channel map
+- (NSArray *)channelNames
+{
+  NSMutableArray *cn = [NSMutableArray new];
+  pa_channel_map *channel_map = _sink.channel_map;
+
+  if (channel_map->channels > 0) {
+    for (unsigned i = 0; i < channel_map->channels; i++) {
+      [cn addObject:[super channelPositionToName:channel_map->map[i]]];
+    }
+  }
+  return [[[NSArray array] initWithArray:cn] autorelease];
+}
 
 @end
