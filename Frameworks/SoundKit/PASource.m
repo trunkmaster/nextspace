@@ -54,7 +54,7 @@
 }
 
 // --- Initialize and update
-- (void)updatePorts:(const pa_source_info *)info
+- (void)_updatePorts:(const pa_source_info *)info
 {
   NSMutableArray *ports;
   NSDictionary   *d;
@@ -90,7 +90,7 @@
   }
 }
 
-- (void)updateVolume:(const pa_source_info *)info
+- (void)_updateVolume:(const pa_source_info *)info
 {
   NSMutableArray *vol;
   NSNumber       *v;
@@ -130,7 +130,7 @@
   }  
 }
 
-- (void)updateChannels:(const pa_source_info *)info
+- (void)_updateChannels:(const pa_source_info *)info
 {
   _channelCount = info->volume.channels;
   
@@ -143,6 +143,23 @@
   channel_map->channels = info->channel_map.channels;
   for (int i = 0; i < channel_map->channels; i++) {
     channel_map->map[i] = info->channel_map.map[i];
+  }
+}
+
+- (void)_updateFormats:(const pa_source_info *)info
+{
+  NSMutableArray *formats;
+  
+  if (info->n_formats > 0) {
+    formats = [NSMutableArray new];
+    for (unsigned i = 0; i < info->n_formats; i++) {
+      [formats addObject:[NSNumber numberWithInt:info->formats[i]->encoding]];
+    }
+    if (_formats) {
+      [_formats release];
+    }
+    _formats = [[NSArray alloc] initWithArray:formats];
+    [formats release];
   }
 }
 
@@ -171,17 +188,17 @@
   _isMonitor = (info->monitor_of_sink != PA_INVALID_INDEX) ? YES : NO;
 
   // Ports
-  [self updatePorts:info];
+  [self _updatePorts:info];
 
   // Volume
-  [self updateVolume:info];
+  [self _updateVolume:info];
 
   if (_mute != (BOOL)info->mute) {
     self.mute = (BOOL)info->mute;
   }
 
   if (channel_map == NULL || pa_channel_map_equal(channel_map, &info->channel_map)) {
-    [self updateChannels:info];
+    [self _updateChannels:info];
   }
   
   // Flags
@@ -192,6 +209,8 @@
   _sampleRate = info->sample_spec.rate;
   _sampleChannelCount = info->sample_spec.channels;
   _sampleFormat = info->sample_spec.format;
+  // Supported formats
+  [self _updateFormats:info];
 
   free ((void *)info);
 

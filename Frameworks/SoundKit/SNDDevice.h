@@ -75,5 +75,11 @@ typedef enum SNDDeviceState {
 - (BOOL)isNetwork;
 // State
 - (SNDDeviceState)deviceState;
+// Sample
+- (NSUInteger)sampleRate;
+- (NSUInteger)sampleChannelCount;
+- (NSInteger)sampleFormat;
+// Formats
+- (NSArray *)formats;
 
 @end

@@ -195,5 +195,23 @@
 {
   return SNDDeviceInvalidState;
 }
+// Sample
+- (NSUInteger)sampleRate
+{
+  return 0;
+}
+- (NSUInteger)sampleChannelCount
+{
+  return 0;
+}
+- (NSInteger)sampleFormat
+{
+  return -1;
+}
+// Formats
+- (NSArray *)formats
+{
+  return nil;
+}
 
 @end

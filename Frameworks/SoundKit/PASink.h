@@ -40,6 +40,7 @@
 @property (readonly) NSUInteger sampleRate;
 @property (readonly) NSUInteger sampleChannelCount;
 @property (readonly) NSInteger  sampleFormat;
+@property (readonly) NSArray    *formats;
 
 // KVO-compliant
 @property (assign) NSString   *activePort;

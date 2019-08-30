@@ -146,10 +146,27 @@
   }
 }
 
+- (void)_updateFormats:(const pa_sink_info *)info
+{
+  NSMutableArray *formats;
+  
+  if (info->n_formats > 0) {
+    formats = [NSMutableArray new];
+    for (unsigned i = 0; i < info->n_formats; i++) {
+      [formats addObject:[NSNumber numberWithInt:info->formats[i]->encoding]];
+    }
+    if (_formats) {
+      [_formats release];
+    }
+    _formats = [[NSArray alloc] initWithArray:formats];
+    [formats release];
+  }
+}
+
 - (id)updateWithValue:(NSValue *)val
 {
   const pa_sink_info *info;
-  NSMutableArray     *ports, *vol;
+  NSMutableArray     *ports, *vol, *formats;
   
   // Convert PA structure into NSDictionary
   info = malloc(sizeof(const pa_sink_info));
@@ -190,6 +207,8 @@
   _sampleRate = info->sample_spec.rate;
   _sampleChannelCount = info->sample_spec.channels;
   _sampleFormat = info->sample_spec.format;
+  // Supported formats
+  [self _updateFormats:info];
 
   free ((void *)info);
 

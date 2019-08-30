@@ -177,5 +177,10 @@
 {
   return _sink.sampleFormat;
 }
+// Formats
+- (NSArray *)formats
+{
+  return _sink.formats;
+}
 
 @end

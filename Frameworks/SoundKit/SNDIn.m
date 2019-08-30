@@ -173,5 +173,10 @@
 {
   return _source.sampleFormat;
 }
+// Formats
+- (NSArray *)formats
+{
+  return _source.formats;
+}
 
 @end
