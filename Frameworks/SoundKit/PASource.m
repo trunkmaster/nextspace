@@ -210,7 +210,7 @@
   _sampleChannelCount = info->sample_spec.channels;
   _sampleFormat = info->sample_spec.format;
   // Supported formats
-  [self _updateFormats:info];
+  // [self _updateFormats:info];
 
   free ((void *)info);
 
