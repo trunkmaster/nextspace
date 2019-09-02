@@ -97,6 +97,8 @@
     return NO;
   }
 
+  // --- Beyond this line code will be executed with user credetials
+
   // General environment variables
   setenv("USER", user->pw_name, 1);
   setenv("LOGNAME", user->pw_name, 1);
@@ -115,6 +117,7 @@
   // For developers
   setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);
 
+  [self _setupSessionLog];
   setenv("NS_LOGFILE", [_sessionLog cString], 1);
   
   return YES;
@@ -149,7 +152,6 @@
   _exitStatus = 0;
 
   _userName = [[NSString alloc] initWithString:name];
-  [self _setupSessionLog];
 
   return self;
 }
