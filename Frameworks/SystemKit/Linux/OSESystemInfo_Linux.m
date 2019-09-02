@@ -123,90 +123,53 @@
   return [[modelName componentsSeparatedByString:@":"] objectAtIndex:1];
 }
 
-+ (NSString *)operatingSystemRelease
++ (NSString *)_releaseFileValueForField:(NSString *)fieldName
 {
-  struct utsname buf;
-  NSString *osRelease;
-  NSRange  typeRange;
-  NSString *osType, *value;
-  NSString *releaseFile;
+  NSString *releaseFile = @"/etc/os-release";
+  NSString *fileText;
+  NSRange  fieldRange;
+  NSString *value = nil;
+  
+  if ([[NSFileManager defaultManager] fileExistsAtPath:releaseFile]) {
+    fileText = [NSString stringWithContentsOfFile:releaseFile];
+    fieldRange = [fileText lineRangeForRange:[fileText rangeOfString:fieldName]];
+    fieldRange.length--;
+    
+    value = [fileText substringWithRange:fieldRange];
+    value = [[value componentsSeparatedByString:@"="] objectAtIndex:1];
+    value = [value stringByReplacingOccurrencesOfString:@"\""
+                                             withString:@""];
+  }
 
-  if ([[NSFileManager defaultManager] fileExistsAtPath:@"/etc/os-release"])
-    {
-      osRelease = [NSString stringWithContentsOfFile:@"/etc/os-release"];
-
-      // OS type
-      typeRange = [osRelease lineRangeForRange:[osRelease rangeOfString:@"ID"]];
-      typeRange.length--;
-      osType = [osRelease substringWithRange:typeRange];
-      value = [[osType componentsSeparatedByString:@"="] objectAtIndex:1];
-      osType = [value stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-
-      releaseFile = [NSString stringWithFormat:@"/etc/%@-release", osType];
-      if ([[NSFileManager defaultManager] fileExistsAtPath:releaseFile])
-        {
-          return [NSString stringWithContentsOfFile:releaseFile];
-        }
-      else
-        {
-          return [OSESystemInfo operatingSystem];
-        }
-    }
-
-  return @"unknown";
+  return value;
 }
 
-// OPTIMIZE
 + (NSString *)operatingSystem
 {
   struct utsname buf;
-  NSString *osRelease;
-  NSRange  nameRange;
-  NSString *osName;
-  NSString *value;
+  NSString       *osName;
 
-  if ([[NSFileManager defaultManager] fileExistsAtPath:@"/etc/os-release"])
-    {
-      osRelease = [NSString stringWithContentsOfFile:@"/etc/os-release"];
+  osName = [OSESystemInfo _releaseFileValueForField:@"NAME"];
+  if (osName == nil) {
+    uname(&buf);
+    osName = [NSString stringWithUTF8String:buf.sysname];
+  }
 
-      nameRange = [osRelease
-                    lineRangeForRange:[osRelease rangeOfString:@"NAME"]];
-      nameRange.length--;
-      osName = [osRelease substringWithRange:nameRange];
-      
-      value = [[osName componentsSeparatedByString:@"="] objectAtIndex:1];
-
-      return [value stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-    }
-
-  uname(&buf);
-
-  return [NSString stringWithUTF8String:buf.sysname];
+  return osName;
 }
 
-// OPTIMIZE
 + (NSString *)operatingSystemVersion
 {
   struct utsname buf;
-  NSString *osRelease;
-  NSRange  range;
-  NSString *line;
-  NSString *value;
+  NSString       *osVersion;
 
-  if ([[NSFileManager defaultManager] fileExistsAtPath:@"/etc/os-release"])
-    {
-      osRelease = [NSString stringWithContentsOfFile:@"/etc/os-release"];
-      range = [osRelease lineRangeForRange:[osRelease rangeOfString:@"VERSION"]];
-      range.length--;
-      line = [osRelease substringWithRange:range];
-      value = [[line componentsSeparatedByString:@"="] objectAtIndex:1];
-      
-      return [value stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-    }
+  osVersion = [OSESystemInfo _releaseFileValueForField:@"VERSION"];
+  if (osVersion == nil) {
+    uname(&buf);
+    osVersion = [NSString stringWithUTF8String:buf.release];
+  }
 
-  uname(&buf);
-
-  return [NSString stringWithUTF8String:buf.release];
+  return osVersion;
 }
 
 + (BOOL)platformSupported
