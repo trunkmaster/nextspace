@@ -11,7 +11,7 @@ VERSION = 0.8
 REVISION = "`git log -n 1 --date=short --format=format:"%h, %ad"`"
 APP_NAME = Workspace
 OS_NAME=`./os-release`
-$(APP_NAME)_APPLICATION_ICON = App-$(OS_NAME)-48.tiff
+$(APP_NAME)_APPLICATION_ICON = app-$(OS_NAME)-48.tiff
 $(APP_NAME)_MAIN_MODEL_FILE = WorkspaceManager
 
 SUBPROJECTS = \
