@@ -292,7 +292,7 @@ humanReadableNumber(double value,
 
   uname(&buf);
 
-  return [NSString stringWithUTF8String:buf.release];
+  return [NSString stringWithUTF8String:buf.version];
 }
 
 /**
@@ -306,10 +306,34 @@ humanReadableNumber(double value,
 
   uname (&buf);
 
-  hostname = [NSString stringWithUTF8String: buf.nodename];
-  components = [hostname componentsSeparatedByString: @"."];
+  hostname = [NSString stringWithUTF8String:buf.nodename];
+  components = [hostname componentsSeparatedByString:@"."];
 
   return [components objectAtIndex:0];
+}
+
+/**
+ * Returns the host on which we are running.
+ */
++ (NSString *)domainName
+{
+  struct utsname buf;
+  NSString       *nodename;
+  NSArray        *comps;
+  NSMutableArray *domainComps = [NSMutableArray new];
+  NSString       *domain;
+
+  uname(&buf);
+
+  nodename = [NSString stringWithUTF8String:buf.nodename];
+  comps = [nodename componentsSeparatedByString:@"."];
+  for (NSUInteger i = 1; i < [comps count]; i++) {
+    [domainComps addObject:[comps objectAtIndex:i]];
+  }
+  domain = [domainComps componentsJoinedByString:@"."];
+  [domainComps release];
+
+  return domain;
 }
 
 /**

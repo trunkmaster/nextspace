@@ -53,6 +53,7 @@
 + (NSString *)operatingSystem;
 + (NSString *)operatingSystemVersion;
 + (NSString *)hostName;
++ (NSString *)domainName;
 + (NSString *)machineType;
 
 @end
