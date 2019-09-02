@@ -1,2 +1,3 @@
 #!/bin/sh
-echo `grep ^NAME= /etc/os-release | awk -F\" -c '{print $2}' | awk -c '{print $1}'`
+#echo `grep ^NAME= /etc/os-release | awk -F\" -c '{print $2}' | awk -c '{print $1}'`
+echo `grep ^ID= /etc/os-release | awk -F\= -c '{print $2}' | tr -d \"`
