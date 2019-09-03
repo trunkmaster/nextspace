@@ -34,6 +34,8 @@ enum {
   RecordingMode
 };
 
+static NSLock *browserLock = nil;
+
 @implementation Mixer (Private)
 - (NSImage *)imageNamed:(NSString *)name
 {
@@ -90,8 +92,10 @@ enum {
          object:soundServer];
 
   selectedApp = nil;
-  [self reloadAppBrowser];
+  browserLock = [NSLock new];
+  [appBrowser loadColumnZero];
   [self updateDeviceList];
+  [self browserClick:appBrowser];
 }
 
 - (id)window
@@ -391,13 +395,13 @@ enum {
       }
     }
   }
-  else {
-    // Any unrecognized context must belong to super
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
-  }
+   else {
+     // Any unrecognized context must belong to super
+     [super observeValueForKeyPath:keyPath
+                          ofObject:object
+                            change:change
+                           context:context];
+   }
 }
 
 - (void)setMode:(id)sender
@@ -417,46 +421,87 @@ enum {
     [deviceVolumeLoudImg setImage:[self imageNamed:@"micLoud"]];
   }
   [self updateDeviceList];
-  [self reloadAppBrowser];
+  [appBrowser reloadColumn:0];
+  [self browserClick:appBrowser];
 }
 
 // --- Streams actions
 - (void)reloadAppBrowser
 {
-  NSString *selected = [[appBrowser selectedCellInColumn:0] title];
-  NSMatrix *matrix;
-  NSCell   *cell;
-  BOOL     selectedExist = NO;
+  NSInteger      selectedRow;
+  BOOL           selectedExist = YES;
+  NSMatrix       *matrix;
+  NSInteger      rowCount;
+  NSBrowserCell  *cell;
+  NSArray        *streams;
+  NSMutableArray *streamList;
+  BOOL           isFound = NO;
+
+  NSLog(@"Reload app browser");
+  if ([browserLock tryLock] == NO) {
+    NSLog(@"[Mixer] can't aquire lock to reload app browser, Bailing out...");
+    return;
+  }
 
   // Stop tracking SNDStream because it may disappear after reload
-  if (selectedApp != nil) {
-    [self stopObserveStream:selectedApp];
-    selectedApp = nil;
-  }
+  // if (selectedApp != nil) {
+  //   [self stopObserveStream:selectedApp];
+  //   selectedApp = nil;
+  // }
   
-  [appBrowser loadColumnZero];
-
+  selectedRow = [appBrowser selectedRowInColumn:0];
+  streams = [soundServer streamList];
+  streamList = [streams mutableCopy];
   matrix = [appBrowser matrixInColumn:0];
-  for (cell in [matrix cells]) {
-    if ([[cell title] isEqualToString:selected]) {
-      selectedExist = YES;
-    }
-  }
+  rowCount = [matrix numberOfRows];
   
-  if (selectedExist == NO || ([matrix numberOfRows] > 0 && selected == nil)) {
-    [appBrowser selectRow:0 inColumn:0];
-  }
-  else {
-    for (int i = 0; i < [[matrix cells] count]; i++) {
-      cell = [matrix cellAtRow:i column:0];
-      if ([[cell title] isEqualToString:selected]) {
-        [appBrowser selectRow:i inColumn:0];
+  // Remove disappeared streams
+  for (int i = 0; i < rowCount; i++) {
+    for (SNDStream *st in streams) {
+      if ([[[matrix cellAtRow:i column:0] title] isEqualToString:st.name]) {
+        NSLog(@"Remove stream `%@`", st.name);
+        [streamList removeObject:st];
+        isFound = YES;
         break;
       }
     }
+    if (isFound == NO) {
+      cell = [matrix cellAtRow:i column:0];
+      if ([appBrowser selectedCellInColumn:0] == cell) {
+        selectedExist = NO;
+      }
+      NSLog(@"Remove cell `%@`", [cell title]);
+      [matrix removeRow:i];
+      i--;
+      rowCount--;
+    }
+    else {
+      isFound = NO;
+    }
   }
-  
-  [self browserClick:appBrowser];
+  // Add new streams
+  for (SNDStream *st in streamList) {
+    NSLog(@"Add %@", st.name);
+    [matrix addRow];
+    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
+    [cell setLeaf:YES];
+    [cell setRefusesFirstResponder:YES];
+    [cell setTitle:st.name];
+    [cell setRepresentedObject:st];
+  }
+  [appBrowser displayAllColumns];
+
+  // Select new row after reload
+  if (selectedExist == NO) {
+    if (selectedRow > [matrix numberOfRows]) {
+      selectedRow--;
+    }
+    [appBrowser selectRow:selectedRow inColumn:0];
+    [self browserClick:appBrowser];
+  }
+  [streamList release];
+
+  [browserLock unlock];
 }
  
 - (void)     browser:(NSBrowser *)sender
@@ -496,6 +541,7 @@ enum {
       }
     }
   }
+  selectedApp = nil;
 }
 
 - (void)browserClick:(id)sender
