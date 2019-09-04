@@ -215,8 +215,11 @@
   }
   else if (soundServer.status == SNDServerFailedState ||
            soundServer.status == SNDServerTerminatedState) {
+    NSString *info = [NSString
+                       stringWithFormat:@"Sound Server connection failed: %@",
+                       soundServer.statusDescription];
+    [soundInfo setStringValue:info];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [soundServer release];
     soundServer = nil;
   }
 }
