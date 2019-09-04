@@ -72,6 +72,7 @@ extern NSString *SNDDeviceDidRemoveNotification;
 
 @property (readonly) pa_context         *pa_ctx;
 @property (readonly) SNDConnectionState status;
+@property (readonly) NSString           *statusDescription;
 
 @property (readonly) NSString *userName;  // User name of the daemon process
 @property (readonly) NSString *hostName;  // Host name the daemon is running on
