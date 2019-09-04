@@ -187,7 +187,7 @@ static Defaults *shared = nil;
 - (BOOL)synchronize
 {
   if ([defaults isKindOfClass:[NSUserDefaults class]])
-    return [defaults synchronize];
+    return [(NSUserDefaults *)defaults synchronize];
   else
     return [defaults writeToFile:filePath atomically:YES];
 }
