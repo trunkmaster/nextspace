@@ -944,9 +944,10 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
             break;
           }
         }
-        if (originalDock != NULL && theNewDock == NULL &&
-            (aicon->launching || aicon->lock || aicon->running)) {
-          /* In those cases, stay in lastDock if no dock really wants us */
+        /* In those cases, stay in lastDock if no dock really wants us */
+        /* if (originalDock != NULL && theNewDock == NULL && */
+        /*     (aicon->launching || aicon->lock || aicon->running)) { */
+        if (originalDock != NULL && theNewDock == NULL && (aicon->launching || aicon->lock)) {
           theNewDock = lastDock;
         }
       }
@@ -1090,19 +1091,24 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
       else {
         if (originalDock != NULL) { /* Detaching a docked appicon */
           if (superfluous) {
-            if (!aicon->running && !wPreferences.no_animations) {
-              /* We need to deselect it, even if is deselected in
-               * wDockDetach(), because else DoKaboom() will fail.
-               */
-              if (aicon->icon->selected)
-                wIconSelect(aicon->icon);
-#ifdef NEXTSPACE
-              dispatch_async(workspace_q, ^{
-#endif
-                  DoKaboom(scr, aicon->icon->core->window, x, y);
-#ifdef NEXTSPACE
-                });
-#endif
+            if (!aicon->running) {
+              if (!wPreferences.no_animations) {
+                /* We need to deselect it, even if is deselected in
+                 * wDockDetach(), because else DoKaboom() will fail.
+                 */
+                if (aicon->icon->selected) {
+                  wIconSelect(aicon->icon);
+                }
+                // NEXTSPACE
+                dispatch_async(workspace_q,
+                               ^{ DoKaboom(scr, aicon->icon->core->window, x, y); });
+              }
+            }
+            else {
+              // Move running appicon to Icon Yard
+              int x1, y1;
+              PlaceIcon(scr, &x1, &y1, wGetHeadForWindow(icon->owner));
+              slide_window(icon->core->window, x, y, x1, y1);
             }
           }
           wDockDetach(originalDock, aicon);
@@ -1110,8 +1116,9 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
             originalDock->collapsed = 1;
             wDockHideIcons(originalDock);
           }
-          if (originalDock->auto_raise_lower)
+          if (originalDock->auto_raise_lower) {
             wDockLower(originalDock);
+          }
         }
       }
       // Can't remember why the icon hiding is better done above than below (commented out)
