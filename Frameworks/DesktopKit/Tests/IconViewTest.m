@@ -106,7 +106,7 @@
   // NSMutableArray	*icons;
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   NSFileManager		*fm = [NSFileManager defaultManager];
-  NXTFileManager		*xfm = [NXTFileManager sharedManager];
+  NXTFileManager		*xfm = [NXTFileManager defaultManager];
   NSArray		*items;
   NSString              *path;
   NXTIcon                *anIcon;
@@ -204,7 +204,7 @@
   // NSMutableArray	*icons = [NSMutableArray array];
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   // NSFileManager		*fm = [NSFileManager defaultManager];
-  NXTFileManager		*xfm = [NXTFileManager sharedManager];
+  NXTFileManager		*xfm = [NXTFileManager defaultManager];
   NSArray		*items;
   NSString		*path;
   NXTIcon		*anIcon;
