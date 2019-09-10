@@ -67,7 +67,8 @@ $(FRAMEWORK_NAME)_RESOURCE_FILES = \
 $(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff \
 	NXTAlertPanel.gorm \
 	NXTSavePanel.gorm \
-	NXTOpenPanel.gorm
+	NXTOpenPanel.gorm \
+	NXTHelpPanel.gorm
 $(FRAMEWORK_NAME)_LANGUAGES = \
 	English French German Italian Spanish \
 	Ukrainian Russian Dutch Slovak Hungarian
