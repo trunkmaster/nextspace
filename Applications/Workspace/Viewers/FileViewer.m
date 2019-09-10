@@ -693,6 +693,17 @@
   NSDebugLLog(@"FileViewer", @"Validate path %@ %@", *relativePath, *filenames);
 
   path = *relativePath;
+  
+  if ([path isEqualToString:@""]) {
+    *relativePath = @"/";
+    return;
+  }
+  else {
+    NSUInteger length = [path length];
+    if (length > 1 && [path characterAtIndex:length-1] == '/') {
+      path = [path substringFromRange:NSMakeRange(0, length-1)];
+    }
+  }
 
   // Check if displayed path still exists. If not, strip down by one directory
   // and check recursively. Finaly if root path is not valid anymore, close
@@ -755,10 +766,6 @@
   BOOL     pathIsReadable;
 
   [self setWindowEdited:YES];
-
-  if ([relativePath isEqualToString:@""]) {
-    relativePath = @"/";
-  }
 
   // check parameters
   [self validatePath:&relativePath selection:&filenames];
