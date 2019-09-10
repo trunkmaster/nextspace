@@ -1088,39 +1088,39 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
         if (lastDock->auto_collapse)
           collapsed = 0;
       }
-      else {
-        if (originalDock != NULL) { /* Detaching a docked appicon */
-          if (superfluous) {
-            if (!aicon->running) {
-              if (!wPreferences.no_animations) {
-                /* We need to deselect it, even if is deselected in
-                 * wDockDetach(), because else DoKaboom() will fail.
-                 */
-                if (aicon->icon->selected) {
-                  wIconSelect(aicon->icon);
-                }
-                // NEXTSPACE
-                dispatch_async(workspace_q,
-                               ^{ DoKaboom(scr, aicon->icon->core->window, x, y); });
+      else if (originalDock != NULL) { /* Detaching a docked appicon */
+        if (superfluous) {
+          if (!aicon->running) {
+            if (!wPreferences.no_animations) {
+              /* We need to deselect it, even if is deselected in
+               * wDockDetach(), because else DoKaboom() will fail.
+               */
+              if (aicon->icon->selected) {
+                wIconSelect(aicon->icon);
               }
-            }
-            else {
-              // Move running appicon to Icon Yard
-              int x1, y1;
-              PlaceIcon(scr, &x1, &y1, wGetHeadForWindow(icon->owner));
-              slide_window(icon->core->window, x, y, x1, y1);
+              // NEXTSPACE
+              dispatch_async(workspace_q,
+                             ^{ DoKaboom(scr, aicon->icon->core->window, x, y); });
             }
           }
-          wDockDetach(originalDock, aicon);
-          if (originalDock->auto_collapse && !originalDock->collapsed) {
-            originalDock->collapsed = 1;
-            wDockHideIcons(originalDock);
-          }
-          if (originalDock->auto_raise_lower) {
-            wDockLower(originalDock);
+          else {
+            // Move running appicon to Icon Yard
+            int x1, y1;
+            PlaceIcon(scr, &x1, &y1, wGetHeadForWindow(icon->owner));
+            slide_window(icon->core->window, x, y, x1, y1);
+            wAppIconMove(aicon, x1, y1);
           }
         }
+        wDockDetach(originalDock, aicon);
+        if (originalDock->auto_collapse && !originalDock->collapsed) {
+          originalDock->collapsed = 1;
+          wDockHideIcons(originalDock);
+        }
+        if (originalDock->auto_raise_lower) {
+          wDockLower(originalDock);
+        }
       }
+      
       // Can't remember why the icon hiding is better done above than below (commented out)
       // Also, lastDock is quite different from originalDock
       /*
@@ -1131,22 +1131,24 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
         }
       */
       if (superfluous) {
-        if (ghost != None)
+        if (ghost != None) {
           XFreePixmap(dpy, ghost);
+        }
         XSetWindowBackground(dpy, scr->dock_shadow, scr->white_pixel);
       }
       if (showed_all_clips) {
         int i;
         for (i = 0; i < scr->workspace_count; i++) {
-          if (i == scr->current_workspace)
+          if (i == scr->current_workspace) {
             continue;
-
+          }
           wDockHideIcons(scr->workspaces[i]->clip);
         }
       }
-      if (wPreferences.auto_arrange_icons && !(originalDock != NULL && docked))
-        /* Need to rearrange unless moving from dock to dock */
+      /* Need to rearrange unless moving from dock to dock */
+      if (wPreferences.auto_arrange_icons && !(originalDock != NULL && docked)) {
         wArrangeIcons(scr, True);
+      }
       return hasMoved;
     }
   }
