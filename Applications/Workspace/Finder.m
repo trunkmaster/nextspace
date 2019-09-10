@@ -175,17 +175,20 @@
   NSArray        *dirContents;
   NSString       *itemPath;
   NSDictionary   *attrs;
+  NSString       *itemFormat;
 
-  NSLog(@"Processing directory %@...", dirPath);
+  // NSLog(@"Processing directory %@...", dirPath);
 
   dirContents = [fm directoryContentsAtPath:dirPath
                                     forPath:nil
                                  showHidden:[fm isShowHiddenFiles]];
+  itemFormat = ([dirPath isEqualToString:@"/"] == NO) ? @"%@/%@" : @"%@%@";
+  
   for (NSString *item in dirContents) {
     if ([self isCancelled]) {
       break;
     }
-    itemPath = [NSString stringWithFormat:@"%@/%@", dirPath, item];
+    itemPath = [NSString stringWithFormat:itemFormat, dirPath, item];
     [fm fileExistsAtPath:itemPath isDirectory:&isDir];
     attrs = [fm fileAttributesAtPath:itemPath traverseLink:NO];
 
@@ -395,6 +398,87 @@
   return window;
 }
 
+- (void)reset
+{
+  [variantList removeAllObjects];
+  [resultList reloadColumn:0];
+  resultIndex = -1;
+  [resultsFound setStringValue:@""];
+  [resultIcon removeFromSuperview];
+}
+
+// --- Find button actions
+
+- (void)performFind:(id)sender
+{
+  NSError             *error = NULL;
+  NSRegularExpression *regex;
+  NSMutableArray      *searchPaths;
+  NSString            *enteredText;
+
+  if ([operationQ operationCount] > 0) {
+    NSLog(@"[Finder] stopping search operation.");
+    [operationQ cancelAllOperations];
+  }
+  else {
+    enteredText = [findField stringValue];
+    if ([enteredText isEqualToString:@""] ||
+        [enteredText characterAtIndex:0] == ' ') {
+      [self finishFind];
+      return;
+    }
+
+    [self reset];
+    
+    [findButton setImagePosition:NSImageOnly];
+    [findButton setImage:[findButton alternateImage]];
+    [statusField setStringValue:@"Searching..."];
+
+    searchPaths = [NSMutableArray array];
+
+    for (PathIcon *icon in [shelf selectedIcons]) {
+      [searchPaths addObjectsFromArray:[icon paths]];
+    }
+  
+    regex = [NSRegularExpression
+              regularExpressionWithPattern:enteredText
+                                   options:NSRegularExpressionCaseInsensitive
+                                     error:&error];
+
+    [self runWorkerWithPaths:searchPaths expression:regex];
+  }
+}
+
+- (void)addResult:(NSString *)resultString
+{
+  [variantList addObject:resultString];
+  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
+                                         [variantList count]]];
+  if ([variantList count] == 1) {
+    [resultList reloadColumn:0];
+  }
+  else {
+    NSBrowserCell *cell;
+    NSMatrix      *matrix = [resultList matrixInColumn:0];
+    
+    [matrix addRow];
+    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
+    [cell setLeaf:YES];
+    [cell setRefusesFirstResponder:YES];
+    [cell setTitle:resultString];
+    [cell setLoaded:YES];
+    [resultList displayColumn:0];
+  }
+}
+
+- (void)finishFind
+{
+  [findButton setImagePosition:NSImageAbove];
+  [findButton setImage:findButtonImage];
+  [findButton setState:NSOnState];
+  [statusField setStringValue:@""];  
+}
+
 // --- TextField Actions
 
 - (NSArray *)completionFor:(NSString *)path
@@ -441,19 +525,14 @@
       }
     }
   }
-  
-  [findField setStringValue:path];
-  [findField deselectText];  
 
   return variants;
 }
 
 - (void)makeCompletion
 {
-  NSString   *enteredText = [findField stringValue];
-  NSString   *variant;
-  NSText     *fieldEditor = [window fieldEditor:NO forObject:findField];
-  NSUInteger selLocation, selLength;
+  NSString *enteredText = [findField stringValue];
+  NSString *variant;
 
   [variantList removeAllObjects];
   
@@ -478,9 +557,11 @@
                                          [variantList count]]];
   
   if ([variantList count] > 0) {
-    NSFileManager  *fm = [NSFileManager defaultManager];
-    BOOL           isDir;
-    NSString       *path = [findField stringValue];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    BOOL          isDir;
+    NSString      *path = [findField stringValue];
+    NSString      *newPath;
+    NSRange       subRange;
     
     [resultList reloadColumn:0];
 
@@ -492,15 +573,26 @@
         }
       }
     }
-
-    [findField setStringValue:path];
-    [findField deselectText];
     
     // Set field value to first variant
     if ([variantList count] == 1) {
       variant = [variantList objectAtIndex:0];
-      path = [path stringByDeletingLastPathComponent];
-      [findField setStringValue:[path stringByAppendingPathComponent:variant]];
+      newPath = [[path stringByDeletingLastPathComponent]
+                  stringByAppendingPathComponent:variant];
+      
+      if ([fm fileExistsAtPath:newPath isDirectory:&isDir] && isDir != NO) {
+        newPath = [newPath stringByAppendingString:@"/"];
+      }
+      
+      [findField setStringValue:newPath];
+      
+      subRange = [newPath rangeOfString:path];
+      subRange.location = subRange.location + subRange.length;
+      subRange.length = [newPath length] - subRange.location;
+      [[window fieldEditor:NO forObject:findField] setSelectedRange:subRange];
+    }
+    else {
+      [findField setStringValue:path];
       [findField deselectText];
     }
   }
@@ -508,80 +600,6 @@
     [resultList reloadColumn:0];
     resultIndex = -1;
   }
-}
-
-// --- Find button actions
-
-- (void)performFind:(id)sender
-{
-  NSError             *error = NULL;
-  NSRegularExpression *regex;
-  NSMutableArray      *searchPaths;
-  NSString            *enteredText;
-
-  if ([operationQ operationCount] > 0) {
-    NSLog(@"[Finder] stopping search operation.");
-    [operationQ cancelAllOperations];
-    [self finishFind];
-  }
-  else {
-    [findButton setImagePosition:NSImageOnly];
-    [findButton setImage:[findButton alternateImage]];
-    [statusField setStringValue:@"Searching..."];
-
-    enteredText = [findField stringValue];
-    if ([enteredText isEqualToString:@""] ||
-        [enteredText characterAtIndex:0] == ' ') {
-      [self finishFind];
-      return;
-    }
-  
-    [variantList removeAllObjects];
-    [resultList reloadColumn:0];
-    searchPaths = [NSMutableArray array];
-
-    for (PathIcon *icon in [shelf selectedIcons]) {
-      [searchPaths addObjectsFromArray:[icon paths]];
-    }
-  
-    regex = [NSRegularExpression
-              regularExpressionWithPattern:enteredText
-                                   options:NSRegularExpressionCaseInsensitive
-                                     error:&error];
-
-    [self runWorkerWithPaths:searchPaths expression:regex];
-  }
-}
-
-- (void)addResult:(NSString *)resultString
-{
-  [variantList addObject:resultString];
-  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
-                                         [variantList count]]];
-  if ([variantList count] == 1) {
-    [resultList reloadColumn:0];
-  }
-  else {
-    NSBrowserCell *cell;
-    NSMatrix      *matrix = [resultList matrixInColumn:0];
-    
-    [matrix addRow];
-    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
-    [cell setLeaf:YES];
-    [cell setRefusesFirstResponder:YES];
-    [cell setTitle:resultString];
-    [cell setLoaded:YES];
-    [resultList displayColumn:0];
-  }
-}
-
-- (void)finishFind
-{
-  [resultList reloadColumn:0];
-  [findButton setImagePosition:NSImageAbove];
-  [findButton setImage:findButtonImage];
-  [findButton setState:NSOnState];
-  [statusField setStringValue:@""];  
 }
 
 // --- Search text field delegate
@@ -596,10 +614,7 @@
   }
 
   if ([operationQ operationCount] == 0) {
-    [resultList reloadColumn:0];
-    resultIndex = -1;
-    [resultsFound setStringValue:@""];
-    [resultIcon removeFromSuperview];
+    [self reset];
     [self restoreShelfSelection];
   }
   
@@ -649,6 +664,9 @@
     }
     break;
   case 27: // Escape
+    if ([operationQ operationCount] > 0) {
+      break;
+    }
     [self makeCompletion];
     if ([resultIcon superview]) {
       resultIndex = -1;
@@ -662,8 +680,11 @@
   case NSEnterCharacter:
     {
       NSString *enteredText = [findField stringValue];
-      if ([enteredText characterAtIndex:0] == '/') {
-        [fileViewer displayPath:enteredText selection:nil sender:self];
+      if ([enteredText characterAtIndex:0] == '/' ||
+          [enteredText characterAtIndex:0] == '~' ) {
+        [fileViewer displayPath:[enteredText stringByExpandingTildeInPath]
+                      selection:nil
+                         sender:self];
         [self deactivate]; 
       }
       else {
