@@ -31,7 +31,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	Cursors.gorm \
 	IconView.gorm \
 	Text.gorm \
-	PanelOptions.gorm
+	PanelOptions.gorm \
+	Help
 #
 # Class files
 #

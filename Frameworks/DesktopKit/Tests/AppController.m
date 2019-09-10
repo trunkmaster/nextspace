@@ -23,6 +23,7 @@
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTSavePanel.h>
 #import <DesktopKit/NXTOpenPanel.h>
+#import <DesktopKit/NXTHelpPanel.h>
 #import "AppController.h"
 
 @implementation AppController : NSObject
@@ -148,6 +149,20 @@
     drawingTest = [[DrawingTest alloc] init];
   }
   [drawingTest show];
+}
+
+- (void)showHelpPanel:(id)sender
+{
+  NXTHelpPanel *helpPanel;
+  NSString     *helpDir;
+
+  helpDir = [[NSBundle mainBundle] pathForResource:@"Help"
+                                            ofType:@""
+                                       inDirectory:@""];
+  NSLog(@"Get Help Panel for dir: %@", helpDir);
+  helpPanel = [NXTHelpPanel sharedHelpPanelWithDirectory:helpDir];
+  NSLog(@"Order Help Panel front");
+  [helpPanel makeKeyAndOrderFront:self];
 }
 
 //

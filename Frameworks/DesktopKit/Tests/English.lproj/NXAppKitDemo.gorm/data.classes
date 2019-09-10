@@ -23,6 +23,7 @@
     };
     FirstResponder = {
 	Actions = (
+	    "showHelpPanel:",
 	    "openOpenPanel:",
 	    "openSavePanel:",
 	    "show3LineAlert:",
@@ -36,5 +37,11 @@
 	    "showTextTest:"
 	);
 	Super = NSObject;
+    };
+    NSApplication = {
+	Actions = (
+	    "showHelpPanel:"
+	);
+	Super = NSResponder;
     };
 }
