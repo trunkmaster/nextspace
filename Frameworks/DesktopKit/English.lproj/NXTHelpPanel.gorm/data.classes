@@ -1,3 +1,20 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    NXTHelpPanel = {
+	Actions = (
+	);
+	Outlets = (
+	    findField,
+	    splitView
+	);
+	Super = NSPanel;
+    };
+    NXTPanelLoader = {
+	Actions = (
+	);
+	Outlets = (
+	    panel
+	);
+	Super = NSObject;
+    };
 }

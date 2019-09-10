@@ -35,7 +35,7 @@
 
 @interface NXTHelpPanel : NSPanel
 {
-  NSString     *_helpFile; // Currently
+  NSString     *_helpFile; // Currently displayed document
   NSDictionary *tableOfContents;
 
   NSTextField  *findField;

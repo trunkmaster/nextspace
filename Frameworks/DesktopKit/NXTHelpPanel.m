@@ -25,6 +25,8 @@
 #import <AppKit/NSNibLoading.h>
 #import <GNUstepGUI/GSHelpAttachment.h>
 
+#import "NXTPanelLoader.h"
+#import "NXTAlert.h"
 #import "NXTHelpPanel.h"
 
 static NXTHelpPanel *_sharedHelpPanel = nil;
@@ -55,6 +57,8 @@ static NSString     *_helpDirectory = nil;
   NSDictionary       *attrs;
   id                 attachment;
 
+  NSLog(@"Load TOC from: %@", tocFilePath);
+
   toc = [NSMutableDictionary new];
   attrString = [[NSAttributedString alloc]
                    initWithRTF:[NSData dataWithContentsOfFile:tocFilePath]
@@ -82,26 +86,71 @@ static NSString     *_helpDirectory = nil;
   [toc release];
 }
 
+// Brower delegate methods
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+            inMatrix:(NSMatrix *)matrix
+{
+  NSBrowserCell      *cell;
+  NSAttributedString *attrString;
+  NSString           *text;
+  NSRange            range;
+  NSDictionary       *attrs;
+  id                 attachment;
+  NSString           *tocFilePath;
+
+  tocFilePath = [NSString stringWithFormat:@"%@/TableOfContents.rtf",
+                          _helpDirectory];
+  NSLog(@"Load TOC from: %@", tocFilePath);
+
+  attrString = [[NSAttributedString alloc]
+                   initWithRTF:[NSData dataWithContentsOfFile:tocFilePath]
+                 documentAttributes:NULL];
+  text = [attrString string];
+    
+  for (int i = 0; i < [text length]; i++) {
+    attrs = [attrString attributesAtIndex:i effectiveRange:&range];
+    if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
+      range = [text lineRangeForRange:range];
+      range.location++;
+      range.length -= 2;
+      // NSLog(@"%@ -> %@", [text substringWithRange:range], [attachment fileName]);
+      
+      [matrix addRow];
+      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+      [cell setLeaf:YES];
+      [cell setRefusesFirstResponder:NO];
+      [cell setTitle:[text substringWithRange:range]];
+      [cell setRepresentedObject:[attachment fileName]];
+    }
+    i = range.location + range.length;
+  }
+}
+
+- (void)showArticle
+{
+  NSLog(@"Will show document: %@",
+        [[tocList selectedCellInColumn:0] representedObject]);
+}
+
 @end
 
 @implementation NXTHelpPanel : NSPanel
 
 + (NXTHelpPanel *)sharedHelpPanel
 {
-  return [NXTHelpPanel sharedHelpPanelWithDirectory:@""];
+  if (_sharedHelpPanel == nil) {
+    [self sharedHelpPanelWithDirectory:_helpDirectory];
+  }
+  return _sharedHelpPanel;
 }
 + (NXTHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory
 {
   NSString *tocFilePath;
   
-  if (_sharedHelpPanel == nil) {
-    _sharedHelpPanel = [[NXTHelpPanel alloc] init];
-  }
-  [NXTHelpPanel setHelpDirectory:helpDirectory];
-
   // Check if TableOfContents exists inside helpDirectory
   tocFilePath = [NSString stringWithFormat:@"%@/TableOfContents.rtf",
-                          _helpDirectory];
+                          helpDirectory];
   if ([[NSFileManager defaultManager] fileExistsAtPath:tocFilePath] == NO) {
     NXTRunAlertPanel(@"Help", @"NEXTSPACE Help isn't available for %@",
                      @"OK", nil, nil,
@@ -109,30 +158,41 @@ static NSString     *_helpDirectory = nil;
     return nil;
   }
 
-  // Load model file
-  if (![NSBundle loadNibNamed:@"NXTHelpPanel" owner:self]) {
-    NSLog(@"Cannot open HelpPanel model file!");
+  // Create instance
+  [self setHelpDirectory:helpDirectory];
+  if (_sharedHelpPanel == nil) {
+    _sharedHelpPanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTHelpPanel"];
   }
 
-  [self _loadTableOfContents:tocFilePath];
-  
+  // Load model file
+  // if (![NSBundle loadNibNamed:@"NXTHelpPanel" owner:self]) {
+  //   NSLog(@"Cannot open HelpPanel model file!");
+  // }
+
   return _sharedHelpPanel;
+}
+
+- (id)init
+{
+  self = [NXTHelpPanel sharedHelpPanel];
+  return self;
 }
 
 - (void)awakeFromNib
 {
-
   // TOC list
   tocList = [[NSBrowser alloc] initWithFrame:NSMakeRect(0,0,414,200)];
   [tocList setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
   [tocList setMaxVisibleColumns:1];
-  [tocList setHasVerticalScroller:YES];
   [tocList setHasHorizontalScroller:NO];
   [tocList setSeparatesColumns:YES];
-  [tocList setDeleagate:self];
+  [tocList setTitled:NO];
+  [tocList setDelegate:self];
   [tocList setAction:@selector(showArticle)];
   [splitView addSubview:tocList];
   [tocList release];
+
+  [tocList loadColumnZero];
 
   // Article
 }
@@ -141,9 +201,6 @@ static NSString     *_helpDirectory = nil;
 
 + (void)setHelpDirectory:(NSString *)helpDirectory
 {
-  if (_sharedHelpPanel == nil) {
-    [NXTHelpPanel sharedHelpPanelWithDirectory:helpDirectory];
-  }  
   if (_helpDirectory) {
     [_helpDirectory release];
   }
