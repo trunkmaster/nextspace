@@ -20,30 +20,44 @@
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
+#import <Foundation/Foundation.h>
+#import <AppKit/NSAttributedString.h>
+#import <AppKit/NSNibLoading.h>
+#import <GNUstepGUI/GSHelpAttachment.h>
+
 #import "NXTHelpPanel.h"
 
-@implementation NXTHelpPanel : NSPanel
+static NXTHelpPanel *_sharedHelpPanel = nil;
+static NSString     *_helpDirectory = nil;
 
-+ (NSHelpPanel *)sharedHelpPanel
+// @interface TOCListCell : NSTextFieldCell
+// {
+//   BOOL _isSelected;
+// }
+// @end
+// @implementation TOCListCell
+
+// @end
+
+// @interface TOCList : NXMatrix
+// @end
+// @implementation TOCList
+// @end
+
+@implementation NXTHelpPanel (PrivateMethods)
+
+- (void)_loadTableOfContents:(NSString *)tocFilePath
 {
-  NSLLog(@"Not implemented");
-  return nil;
-}
-+ (NSHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory
-{
-  NSLLog(@"Not implemented");
-  NSString           *fileName;
+  NSMutableDictionary *toc;
   NSAttributedString *attrString;
   NSString           *text;
   NSRange            range;
   NSDictionary       *attrs;
   id                 attachment;
 
-  // `helpDirectory`/TOC.rtf
-  fileName = [NSString stringWithCString:@"TOC.rtf"];
-
+  toc = [NSMutableDictionary new];
   attrString = [[NSAttributedString alloc]
-                   initWithRTF:[NSData dataWithContentsOfFile:fileName]
+                   initWithRTF:[NSData dataWithContentsOfFile:tocFilePath]
                  documentAttributes:NULL];
   text = [attrString string];
     
@@ -51,42 +65,105 @@
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
     // NSLog(@"[%d] %@ - (%@)", i, attrs, NSStringFromRange(range));
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
-      // attrs = [string attributesAtIndex:++i effectiveRange:&range];
       range = [text lineRangeForRange:range];
       range.location++;
       range.length -= 2;
-      NSLog(@"%@ -> %@",
-            [text substringWithRange:range],
-            [attachment fileName]);
+      NSLog(@"%@ -> %@", [text substringWithRange:range], [attachment fileName]);
+      [toc setObject:[attachment fileName] forKey:[text substringWithRange:range]];
     }
     i = range.location + range.length;
   }
+
+  if (tableOfContents != nil) {
+    [tableOfContents release];
+  }
+  tableOfContents = [[NSDictionary alloc] initWithDictionary:toc];
+  [attrString release];
+  [toc release];
+}
+
+@end
+
+@implementation NXTHelpPanel : NSPanel
+
++ (NXTHelpPanel *)sharedHelpPanel
+{
+  return [NXTHelpPanel sharedHelpPanelWithDirectory:@""];
+}
++ (NXTHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory
+{
+  NSString *tocFilePath;
   
-  return nil;
+  if (_sharedHelpPanel == nil) {
+    _sharedHelpPanel = [[NXTHelpPanel alloc] init];
+  }
+  [NXTHelpPanel setHelpDirectory:helpDirectory];
+
+  // Check if TableOfContents exists inside helpDirectory
+  tocFilePath = [NSString stringWithFormat:@"%@/TableOfContents.rtf",
+                          _helpDirectory];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:tocFilePath] == NO) {
+    NXTRunAlertPanel(@"Help", @"NEXTSPACE Help isn't available for %@",
+                     @"OK", nil, nil,
+                     [[NSProcessInfo processInfo] processName]);
+    return nil;
+  }
+
+  // Load model file
+  if (![NSBundle loadNibNamed:@"NXTHelpPanel" owner:self]) {
+    NSLog(@"Cannot open HelpPanel model file!");
+  }
+
+  [self _loadTableOfContents:tocFilePath];
+  
+  return _sharedHelpPanel;
+}
+
+- (void)awakeFromNib
+{
+
+  // TOC list
+  tocList = [[NSBrowser alloc] initWithFrame:NSMakeRect(0,0,414,200)];
+  [tocList setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
+  [tocList setMaxVisibleColumns:1];
+  [tocList setHasVerticalScroller:YES];
+  [tocList setHasHorizontalScroller:NO];
+  [tocList setSeparatesColumns:YES];
+  [tocList setDeleagate:self];
+  [tocList setAction:@selector(showArticle)];
+  [splitView addSubview:tocList];
+  [tocList release];
+
+  // Article
 }
 
 // --- Managing the Contents
 
 + (void)setHelpDirectory:(NSString *)helpDirectory
 {
-  NSLLog(@"Not implemented");
+  if (_sharedHelpPanel == nil) {
+    [NXTHelpPanel sharedHelpPanelWithDirectory:helpDirectory];
+  }  
+  if (_helpDirectory) {
+    [_helpDirectory release];
+  }
+  _helpDirectory = [[NSString alloc] initWithString:helpDirectory];
 }
 
 - (void)addSupplement:(NSString *)helpDirectory
                inPath:(NSString *)supplementPath
 {
-  NSLLog(@"Not implemented");
+  NSWarnFLog(@"Not implemented");
 }
 
 - (NSString *)helpDirectory
 {
-  NSLLog(@"Not implemented");
-  return nil;
+  return _helpDirectory;
 }
 
 - (NSString *)helpFile
 {
-  NSLLog(@"Not implemented");
+  NSWarnFLog(@"Not implemented");
   return nil;
 }
 
@@ -97,12 +174,12 @@
             markerName:(NSString *)markerName
                     to:(id)anObject
 {
-  NSLLog(@"Not implemented");
+  NSWarnFLog(@"Not implemented");
 }
 
 + (void)detachHelpFrom:(id)anObject
 {
-  NSLLog(@"Not implemented");
+  NSWarnFLog(@"Not implemented");
 }
 
 // --- Showing Help
@@ -110,19 +187,19 @@
 - (void)showFile:(NSString *)filename
         atMarker:(NSString *)markerName
 {
-  NSLLog(@"Not implemented");
+  NSWarnFLog(@"Not implemented");
 }
 
 - (BOOL)showHelpAttachedTo:(id)anObject
 {
-  NSLLog(@"Not implemented");
+  NSWarnFLog(@"Not implemented");
   return NO;
 }
 
 // --- Printing 
 - (void)print:(id)sender
 {
-  NSLLog(@"Not implemented");
+  NSLog(@"Not implemented");
 }
 
 @end

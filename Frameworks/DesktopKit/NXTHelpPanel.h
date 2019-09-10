@@ -22,6 +22,10 @@
 //
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSPanel.h>
+#import <AppKit/NSSplitView.h>
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSBrowser.h>
+#import <AppKit/NSTextView.h>
 
 @class NSString;
 
@@ -31,42 +35,64 @@
 
 @interface NXTHelpPanel : NSPanel
 {
-  // Attributes
+  NSString     *_helpFile; // Currently
+  NSDictionary *tableOfContents;
+
+  NSTextField  *findField;
+  NSSplitView  *splitView;
+  NSBrowser    *tocList;
+  NSTextView   *articleView;
 }
 
 //
-// Accessing the Help Panel
+// --- Accessing the Help Panel
 //
-+ (NSHelpPanel *)sharedHelpPanel;
-+ (NSHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory;
+/** Creates, if necessary, and returns the NSHelpPanel object. */
++ (NXTHelpPanel *)sharedHelpPanel;
+/** Creates, if necessary, and returns the NSHelpPanel object.
+    If the panel is created, it loads the help directory specified by 
+    helpDirectory. The help directory must reside in the main bundle. If a Help 
+    panel already exists but has loaded a help directory other than 
+    helpDirectory, a second panel will be created. */
++ (NXTHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory;
 
 //
-// Managing the Contents
+// --- Managing the Contents
 //
+/** Initializes the panel to display the help text found in helpDirectory. 
+    By default, the receiver looks for a directory named `Help`. */
 + (void)setHelpDirectory:(NSString *)helpDirectory;
+/** Append additional help entries to the Help panel's table of contents. */
 - (void)addSupplement:(NSString *)helpDirectory
                inPath:(NSString *)supplementPath;
+/** Returns the absolute path of the help directory. */
 - (NSString *)helpDirectory;
+/** Returns the path of the currently loaded help file. */
 - (NSString *)helpFile;
 
 //
-// Attaching Help to Objects 
+// --- Attaching Help to Objects
 //
+/** Associates the help file filename and markerName with `anObject`. */
 + (void)attachHelpFile:(NSString *)filename
             markerName:(NSString *)markerName
                     to:(id)anObject;
+/** Removes any help information associated with anObject. */
 + (void)detachHelpFrom:(id)anObject;
 
 //
-// Showing Help 
+// --- Showing Help
 //
+/** Causes the panel to display the help contained in filename at markerName. */
 - (void)showFile:(NSString *)filename
         atMarker:(NSString *)markerName;
+/** Causes the panel to display help attached to anObject. */
 - (BOOL)showHelpAttachedTo:(id)anObject;
 
 //
-// Printing 
+// --- Printing
 //
+/** Prints the currently displayed help text. */
 - (void)print:(id)sender;
 
 @end

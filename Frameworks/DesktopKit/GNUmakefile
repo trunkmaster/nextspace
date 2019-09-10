@@ -32,6 +32,7 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXTPanelLoader.m \
 	NXTSavePanel.m \
 	NXTOpenPanel.m \
+	NXTHelpPanel.m \
 	\
 	Utilities.m
 
@@ -56,6 +57,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXTNumericField.h \
 	NXTSavePanel.h \
 	NXTOpenPanel.h \
+	NXTHelpPanel.h \
 	\
 	Utilities.h
 
