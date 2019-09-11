@@ -27,6 +27,7 @@
 
 #import "NXTPanelLoader.h"
 #import "NXTAlert.h"
+#import "NXTListView.h"
 #import "NXTHelpPanel.h"
 
 static NXTHelpPanel *_sharedHelpPanel = nil;
@@ -50,16 +51,17 @@ static NSString     *_helpDirectory = nil;
 
 - (void)_loadTableOfContents:(NSString *)tocFilePath
 {
-  NSMutableDictionary *toc;
+  NSMutableArray     *titles, *attachments;
   NSAttributedString *attrString;
-  NSString           *text;
+  NSString           *text, *t;
   NSRange            range;
   NSDictionary       *attrs;
   id                 attachment;
 
   NSLog(@"Load TOC from: %@", tocFilePath);
 
-  toc = [NSMutableDictionary new];
+  titles = [NSMutableArray new];
+  attachments = [NSMutableArray new];
   attrString = [[NSAttributedString alloc]
                    initWithRTF:[NSData dataWithContentsOfFile:tocFilePath]
                  documentAttributes:NULL];
@@ -68,22 +70,40 @@ static NSString     *_helpDirectory = nil;
   for (int i = 0; i < [text length]; i++) {
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
     // NSLog(@"[%d] %@ - (%@)", i, attrs, NSStringFromRange(range));
+    NSLog(@"Font for(%@): %@", [text substringWithRange:range],
+          [attrs objectForKey:@"NSFont"]);
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
       range = [text lineRangeForRange:range];
       range.location++;
       range.length -= 2;
-      NSLog(@"%@ -> %@", [text substringWithRange:range], [attachment fileName]);
-      [toc setObject:[attachment fileName] forKey:[text substringWithRange:range]];
+      // NSLog(@"%@ -> %@", [text substringWithRange:range], [attachment fileName]);
+      t = [[text substringWithRange:range]
+            stringByReplacingOccurrencesOfString:@"\t"
+                                      withString:@"    "];
+      [titles addObject:t];
+      // [titles addObject:[text substringWithRange:range]];
+      [attachments addObject:[attachment fileName]];
+    }
+    else {
+      NSLog(@"Font for(%@): %@", [text substringWithRange:range],
+            [attrs objectForKey:@"NSFont"]);
+      t = [[text substringWithRange:range]
+            stringByReplacingOccurrencesOfString:@"\t"
+                                      withString:@"    "];
+      [titles addObject:t];
+      [attachments addObject:@""];
     }
     i = range.location + range.length;
   }
 
-  if (tableOfContents != nil) {
-    [tableOfContents release];
-  }
-  tableOfContents = [[NSDictionary alloc] initWithDictionary:toc];
+  if (tocTitles != nil) [titles release];
+  if (tocAttachments != nil) [titles release];
+  tocTitles = [[NSArray alloc] initWithArray:titles];
+  [titles release];
+  tocAttachments = [[NSArray alloc] initWithArray:attachments];
+  [attachments release];
+  
   [attrString release];
-  [toc release];
 }
 
 // Brower delegate methods
@@ -129,8 +149,7 @@ static NSString     *_helpDirectory = nil;
 
 - (void)showArticle
 {
-  NSLog(@"Will show document: %@",
-        [[tocList selectedCellInColumn:0] representedObject]);
+  NSLog(@"Will show document: %@", [[tocList selectedCell] representedObject]);
 }
 
 @end
@@ -163,12 +182,6 @@ static NSString     *_helpDirectory = nil;
   if (_sharedHelpPanel == nil) {
     _sharedHelpPanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTHelpPanel"];
   }
-
-  // Load model file
-  // if (![NSBundle loadNibNamed:@"NXTHelpPanel" owner:self]) {
-  //   NSLog(@"Cannot open HelpPanel model file!");
-  // }
-
   return _sharedHelpPanel;
 }
 
@@ -180,19 +193,15 @@ static NSString     *_helpDirectory = nil;
 
 - (void)awakeFromNib
 {
-  // TOC list
-  tocList = [[NSBrowser alloc] initWithFrame:NSMakeRect(0,0,414,200)];
-  [tocList setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-  [tocList setMaxVisibleColumns:1];
-  [tocList setHasHorizontalScroller:NO];
-  [tocList setSeparatesColumns:YES];
-  [tocList setTitled:NO];
-  [tocList setDelegate:self];
-  [tocList setAction:@selector(showArticle)];
-  [splitView addSubview:tocList];
-  [tocList release];
+  NSString *tocFilePath;
+  tocFilePath = [NSString stringWithFormat:@"%@/TableOfContents.rtf", _helpDirectory];
+  [self _loadTableOfContents:tocFilePath];
 
-  [tocList loadColumnZero];
+  // TOC list
+  tocList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
+  [splitView addSubview:tocList];
+  [tocList loadTitles:tocTitles andObjects:tocAttachments];
+  [tocList release];
 
   // Article
 }

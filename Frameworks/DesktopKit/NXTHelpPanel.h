@@ -27,7 +27,7 @@
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSTextView.h>
 
-@class NSString;
+@class NSString, NXTListView;
 
 @interface NSApplication (NSApplicationHelpExtension)
 - (void)orderFrontHelpPanel:(id)sender;
@@ -36,11 +36,12 @@
 @interface NXTHelpPanel : NSPanel
 {
   NSString     *_helpFile; // Currently displayed document
-  NSDictionary *tableOfContents;
+  NSArray      *tocTitles;
+  NSArray      *tocAttachments;
 
   NSTextField  *findField;
   NSSplitView  *splitView;
-  NSBrowser    *tocList;
+  NXTListView  *tocList;
   NSTextView   *articleView;
 }
 
