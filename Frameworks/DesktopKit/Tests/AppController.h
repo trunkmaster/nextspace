@@ -28,6 +28,7 @@
 #import "IconViewTest.h"
 #import "TextTest.h"
 #import "DrawingTest.h"
+#import "ListViewTest.h"
 
 @interface AppController : NSObject
 {
@@ -37,6 +38,7 @@
   IconViewTest     *iconViewTest;
   TextTest         *textTest;
   DrawingTest      *drawingTest;
+  ListViewTest     *listViewTest;
 
   NXTSavePanel     *savePanel;
   NXTOpenPanel     *openPanel;

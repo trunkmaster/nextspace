@@ -165,6 +165,14 @@
   [helpPanel makeKeyAndOrderFront:self];
 }
 
+- (void)showListViewTest:(id)sender
+{
+  if (listViewTest == nil) {
+    listViewTest = [[ListViewTest alloc] init];
+  }
+  [listViewTest show];
+}
+
 //
 //--- Open and Save panels
 //

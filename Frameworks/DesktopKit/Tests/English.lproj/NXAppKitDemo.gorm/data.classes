@@ -12,7 +12,8 @@
 	    "showTextTest:",
 	    "showDrawingTest:",
 	    "openSavePanel:",
-	    "openOpenPanel:"
+	    "openOpenPanel:",
+	    "showListViewTest:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -23,13 +24,14 @@
     };
     FirstResponder = {
 	Actions = (
-	    "showHelpPanel:",
+	    "showListViewTest:",
 	    "openOpenPanel:",
 	    "openSavePanel:",
 	    "show3LineAlert:",
 	    "showClockViewDemo:",
 	    "showCursorsTest:",
 	    "showDrawingTest:",
+	    "showHelpPanel:",
 	    "showIconViewTest:",
 	    "showMultilineAlert:",
 	    "showSinglelineAlert:",

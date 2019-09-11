@@ -32,6 +32,7 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	IconView.gorm \
 	Text.gorm \
 	PanelOptions.gorm \
+	ListView.gorm \
 	Help
 #
 # Class files
@@ -44,7 +45,8 @@ $(APP_NAME)_OBJC_FILES += \
 	CursorsTest.m \
 	IconViewTest.m \
 	TextTest.m \
-	DrawingTest.m
+	DrawingTest.m \
+	ListViewTest.m
 
 #
 # Makefiles
