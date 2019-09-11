@@ -1,0 +1,43 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AppController = {
+	Actions = (
+	    "showTextFieldsDemo:"
+	);
+	Outlets = (
+	    integerTextField,
+	    floatTextField,
+	    textFieldsWindow
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "showTextFieldsDemo:"
+	);
+	Super = NSObject;
+    };
+    ListViewTest = {
+	Actions = (
+	);
+	Outlets = (
+	    window,
+	    listView
+	);
+	Super = NSObject;
+    };
+    NXTListView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    NXTNumericField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
+}
