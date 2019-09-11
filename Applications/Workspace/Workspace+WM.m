@@ -1162,7 +1162,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
   return appIcon;
 }
 
-void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
+void WWMFinishLaunchingIcon(WAppIcon *appIcon)
 {
   WAppIcon *licon;
   
@@ -1176,6 +1176,11 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
   }
   appIcon->launching = 0;
   wAppIconPaint(appIcon);
+}
+void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
+{
+  WWMFinishLaunchingIcon(appIcon);
+  wAppIconDestroy(appIcon);
 }
 
 // ----------------------------
@@ -1420,7 +1425,7 @@ void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
   
   appIcon = _findLaunchingIcon(wm_instance, wm_class);
   if (appIcon) {
-    WWMDestroyLaunchingIcon(appIcon);
+    WWMFinishLaunchingIcon(appIcon);
     appIcon->main_window = wapp->main_window;
   }
   
