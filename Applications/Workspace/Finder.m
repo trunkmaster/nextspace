@@ -346,11 +346,11 @@
   // Icon at the right of text field
   [iconPlace setBorderType:NSNoBorder];
   resultIcon = [[PathIcon alloc] init];
-  [resultIcon setIconSize:NSMakeSize(66, 52)];
+  [resultIcon setIconSize:NSMakeSize(66, 55)];
   [resultIcon setEditable:NO];
   [resultIcon setSelected:YES];
   [resultIcon setPaths:@[@"me"]];
-  [resultIcon setMaximumCollapsedLabelWidth:50];
+  [resultIcon setMaximumCollapsedLabelWidth:80];
   [resultIcon setShowsExpandedLabelWhenSelected:NO];
 }
 
@@ -537,7 +537,7 @@
   [variantList removeAllObjects];
   
   if ([enteredText length] == 0) {
-    NSSet  *selectedIcons = [shelf selectedIcons];
+    NSSet *selectedIcons = [shelf selectedIcons];
     
     if ([selectedIcons count] > 1) {
       for (PathIcon *icon in selectedIcons) {
@@ -719,12 +719,14 @@
 - (void)listItemClicked:(id)sender
 {
   NSInteger selRow;
-  NSString  *item, *path;
-  NXTIcon    *sIcon;
+  NSString  *item, *path, *fieldText;
+  NSSet     *shelfIcons;
+  NXTIcon   *sIcon;
 
   if (sender != resultList)
     return;
 
+  // UGLY: Permit deselection of selected item in NSBrowser's column
   if (resultIndex == [resultList selectedRowInColumn:0]) {
     [resultList selectRow:resultIndex inColumn:0];
   }
@@ -732,9 +734,14 @@
   resultIndex = [resultList selectedRowInColumn:0];
   item = [variantList objectAtIndex:resultIndex];
 
-  path = [findField stringValue];
-  if ([path length] > 1 && [path characterAtIndex:[path length]-1] != '/') {
-    path = [path stringByDeletingLastPathComponent];
+  fieldText = [findField stringValue];
+  if (([fieldText length] > 1) &&
+      ([fieldText characterAtIndex:[fieldText length]-1] != '/')) {
+    path = [fieldText stringByDeletingLastPathComponent];
+  }
+  shelfIcons = [shelf selectedIcons];
+  if ([fieldText length] == 0 && [shelfIcons count] == 1) {
+    path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
   }
   path = [path stringByAppendingPathComponent:item];
   
@@ -742,7 +749,7 @@
   [resultIcon setPaths:@[path]];
   if (![resultIcon superview]) {
     [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,48)];
-    if ([[shelf selectedIcons] count] > 0) {
+    if ([shelfIcons count] > 0) {
       [self resignShelfSelection];
     }
   }
