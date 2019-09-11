@@ -371,8 +371,8 @@
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  NSTextField    *field = [aNotification object];
-  NSString       *text;
+  NSTextField *field = [aNotification object];
+  NSString    *text;
 
   if (field != commandField ||![field isKindOfClass:[NSTextField class]]) {
     return;
