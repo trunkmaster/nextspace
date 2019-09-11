@@ -31,5 +31,10 @@
 
 - (void)loadTitles:(NSArray *)titles
         andObjects:(NSArray *)objects;
+- (void)setTarget:(id)target;
+- (void)setAction:(SEL)action;
+
+- (id)selectedCell;
+- (void)setCellSize:(NSSize)size;
 
 @end

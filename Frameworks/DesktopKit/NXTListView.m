@@ -33,7 +33,7 @@
 - (id)init
 {
   self = [super init];
-  self.drawEdges = YES;
+  self.drawEdges = NO;
   return self;
 }
 
@@ -44,7 +44,7 @@
   // TODO: draw only if selected
   [[NSColor controlBackgroundColor] set];
   NSRectFill(cellFrame);
-  cellFrame.origin.x += 2;
+  // cellFrame.origin.y -= 2;
   [self _drawAttributedText:[self _drawAttributedString]
                     inFrame:[self titleRectForBounds:cellFrame]];
 
@@ -80,11 +80,10 @@
   self = [super initWithFrame:frameRect];
   [self setCellClass:[NXTListCell class]];
 
-  [self setIntercellSpacing:NSMakeSize(0,0)];
   [self setAllowsEmptySelection:YES];
   [self setAutoscroll:YES];
   [self setDrawsBackground:YES];
-  [self setBackgroundColor:[NSColor darkGrayColor]];
+  [self setBackgroundColor:[NSColor lightGrayColor]];
     
   return self;
 }
@@ -103,164 +102,41 @@
   }
 }
 
-// - (void)mouseDown:(NSEvent *)event
-// {
-//   NSWindow     *window = [event window];
-//   NSView       *contentView = [window contentView];
-//   NSInteger    dRow, dColumn;
-//   NSPoint      location, lastLocation;
-//   LanguageCell *draggedCell;
-//   NSRect       cellFrame;
-//   NSPoint      cellOrigin;
-//   CGFloat      cellHeight;
-
-//   // Determine clicked row
-//   lastLocation = [contentView convertPoint:[event locationInWindow]
-//                                     toView:[scrollView contentView]];
-//   [self getRow:&dRow column:&dColumn forPoint:lastLocation];
-//   draggedCell = [self cellAtRow:dRow column:dColumn];
-//   cellFrame = [self cellFrameAtRow:dRow column:dColumn];
-//   cellOrigin = cellFrame.origin;
-//   cellHeight = cellFrame.size.height;
-//   // NSLog(@"LanguageList: mouseDown on '%@'", [cell title]);
-
-//   // Prepare for dragging
-//   [draggedCell setDragged:YES];
-//   if (!draggedRow)
-//     {
-//       [NSTextField setCellClass:[LanguageCell class]];
-//       draggedRow = [[NSTextField alloc] initWithFrame:cellFrame];
-//       [draggedRow setBordered:NO];
-//       [draggedRow setBezeled:NO];
-//       [draggedRow setEditable:NO];
-//       [draggedRow setSelectable:NO];
-//       [draggedRow setDrawsBackground:YES];
-//       [draggedRow setBackgroundColor:[NSColor controlBackgroundColor]];
-//       [[draggedRow cell] setDrawEdges:YES];
-//     }
-//   else
-//     {
-//       [draggedRow setFrame:cellFrame];
-//     }
-//   [draggedRow setStringValue:[draggedCell title]];
-//   [self addSubview:draggedRow];
-
-//   // NSLog(@"NSMatrix superview visible rect: %@", NSStringFromRect([[self superview] visibleRect]));
-
-//   /*****************************************************************************/
-//   NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
-//                            | NSPeriodicMask | NSOtherMouseUpMask
-//                            | NSRightMouseUpMask);
-//   // NSRect      listRect = [[self superview] visibleRect];
-//   NSRect      listRect = [scrollView documentVisibleRect];
-//   CGFloat     listHeight = listRect.size.height;
-//   CGFloat     listWidth = listRect.size.width;
-//   NSInteger   y;
-//   BOOL        done = NO;
-
-//   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
-  
-//   while (!done)
-//     {
-//       event = [NSApp nextEventMatchingMask:eventMask
-//                                  untilDate:[NSDate distantFuture]
-//                                     inMode:NSEventTrackingRunLoopMode
-//                                    dequeue:YES];
-
-//       switch ([event type])
-//         {
-//         case NSRightMouseUp:
-//         case NSOtherMouseUp:
-//         case NSLeftMouseUp:
-//           // NSLog(@"Mouse UP.");
-//           done = YES;
-//           [draggedCell setDragged:NO];
-//           [draggedRow removeFromSuperview];
-//           if (_target)
-//             [_target performSelector:_action];
-//           break;
-//         case NSPeriodic:
-//           location = [contentView
-//                        convertPoint:[window mouseLocationOutsideOfEventStream]
-//                              toView:[scrollView contentView]];
-//           if (NSEqualPoints(location, lastLocation) == NO &&
-//               location.x > listRect.origin.x &&
-//               location.x < listWidth)
-//             {
-//               if (location.y > listRect.origin.y &&
-//                   location.y < (listRect.origin.y + listHeight))
-//                 {
-//                   y = cellOrigin.y;
-//                   y += (location.y - lastLocation.y);
-              
-//                   // NSLog(@"cellOrigin: %@, y:%li", NSStringFromPoint(cellOrigin), y);
-
-//                   if (y >= listRect.origin.y &&                               // top position
-//                       ((y + cellHeight) <= (listRect.origin.y + listHeight))) // bottom position
-//                     {
-//                       cellOrigin.y = y;
-//                     }
-
-//                   // Swap cells during dragging
-//                   dRow = [self swapCellAtPoint:location
-//                                       withCell:draggedCell
-//                                          atRow:dRow];
-//                 }
-//               else if (location.y >= (listRect.origin.y + listHeight) &&
-//                        [[scrollView verticalScroller] floatValue] < 1.0)
-//                 {
-//                   listRect.origin.y += [scrollView lineScroll];
-//                   [[scrollView documentView] scrollRectToVisible:listRect];
-//                   cellOrigin.y = (listRect.origin.y + listHeight) - cellHeight;
-//                   // Swap cells during dragging
-//                   dRow = [self swapCellAtPoint:location
-//                                       withCell:draggedCell
-//                                          atRow:dRow];
-//                 }
-//               else if (location.y <= listRect.origin.y &&
-//                        listRect.origin.y > 0)
-//                 {
-//                   listRect.origin.y -= [scrollView lineScroll];
-//                   [[scrollView documentView] scrollRectToVisible:listRect];
-//                   cellOrigin.y = listRect.origin.y;
-//                   // Swap cells during dragging
-//                   dRow = [self swapCellAtPoint:location
-//                                       withCell:draggedCell
-//                                          atRow:dRow];
-//                 }
-//               else
-//                 {
-//                   continue;
-//                 }
-//               lastLocation = location;
-//               [draggedRow setFrameOrigin:cellOrigin];
-//               [self setNeedsDisplay:YES];
-//             }
-//           break;
-//         default:
-//           break;
-//         }
-//     }
-//   [NSEvent stopPeriodicEvents];
-// }
-
 @end
 
 @implementation NXTListView
 
+- (id)init
+{
+  return [self initWithFrame:NSMakeRect(0,0,100,100)];
+}
+
 - (id)initWithFrame:(NSRect)rect
 {
+  NSSize cellSize;
+  
   [super initWithFrame:rect];
 
+  // rect.size.width -= 10; // why 10 ??
+  // rect.size.height -= 10; // why 10 ??
   scrollView = [[NSScrollView alloc] initWithFrame:rect];
+  [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   [scrollView setHasVerticalScroller:YES];
   [scrollView setBorderType:NSBezelBorder];
-  
-  listMatrix = [[NXTListMatrix alloc] initWithFrame:NSMakeRect(0,0,100,100)];
-  [listMatrix setCellSize:NSMakeSize(rect.size.width-24, 17)];
+
+  cellSize = NSMakeSize(rect.size.width-23, 13);
+  listMatrix = [[NXTListMatrix alloc]
+                 initWithFrame:NSMakeRect(0,0,cellSize.width,cellSize.height)];
+  [listMatrix setCellSize:cellSize];
+  [listMatrix setIntercellSpacing:NSMakeSize(0,0)];
+  [listMatrix setAutosizesCells:NO];
+  [listMatrix setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   
   [scrollView setDocumentView:listMatrix];
   [scrollView setLineScroll:17.0];
+  [listMatrix release];
+  
+  [self addSubview:scrollView];
   
   return self;
 }
@@ -269,6 +145,7 @@
         andObjects:(NSArray *)objects
 {
   [listMatrix loadTitles:titles andObjects:objects];
+  [listMatrix setCellSize:[listMatrix cellSize]];
 }
 
 - (void)setTarget:(id)target
@@ -279,6 +156,35 @@
 - (void)setAction:(SEL)action
 {
   [listMatrix setAction:action];
+}
+
+- (id)selectedCell
+{
+  return [listMatrix selectedCell];
+}
+
+- (void)setCellSize:(NSSize)size
+{
+  [listMatrix setCellSize:size];
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  NSWindow  *window = [event window];
+  NSView    *contentView = [window contentView];
+  NSPoint   lastLocation;
+  NSInteger dRow, dColumn;
+  // NSCell    *cell;
+
+  NSLog(@"[NXTLIstView] mouseDown");
+  
+  // Determine clicked row
+  lastLocation = [contentView convertPoint:[event locationInWindow]
+                                    toView:[scrollView contentView]];
+  [listMatrix getRow:&dRow column:&dColumn forPoint:lastLocation];
+  [listMatrix selectCellAtRow:dRow column:dColumn];
+  // cell = [self cellAtRow:dRow column:dColumn];
+  // [listMatrix ];
 }
 
 @end
