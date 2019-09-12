@@ -156,7 +156,7 @@
   NXTHelpPanel *helpPanel;
   NSString     *helpDir;
 
-  helpDir = [[NSBundle mainBundle] pathForResource:@"Help"
+  helpDir = [[NSBundle mainBundle] pathForResource:@"HelpTemplate"
                                             ofType:@""
                                        inDirectory:@""];
   NSLog(@"Get Help Panel for dir: %@", helpDir);

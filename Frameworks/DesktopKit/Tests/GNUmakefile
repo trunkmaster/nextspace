@@ -33,7 +33,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	Text.gorm \
 	PanelOptions.gorm \
 	ListView.gorm \
-	Help
+	Help \
+	HelpTemplate
 #
 # Class files
 #
