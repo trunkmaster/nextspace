@@ -60,13 +60,19 @@ static NSString     *_helpDirectory = nil;
     //       [attrs objectForKey:@"NSFont"]);
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
       range = [text lineRangeForRange:range];
+      // Skip attachment symbol
       range.location++;
-      range.length -= 2;
-      [titles addObject:[attrString attributedSubstringWithRange:range]];
+      range.length--;
+      // Exclude new line character if any
+      if ([[text substringFromRange:range]
+            characterAtIndex:range.length-1] == '\n') {
+        range.length--;
+      }
+      [titles addObject:[attrString attributedSubstringFromRange:range]];
       [attachments addObject:[attachment fileName]];
     }
     else {
-      [titles addObject:[attrString attributedSubstringWithRange:range]];
+      [titles addObject:[attrString attributedSubstringFromRange:range]];
       [attachments addObject:@""];
     }
     i = range.location + range.length;
