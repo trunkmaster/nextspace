@@ -72,8 +72,10 @@ static NSString     *_helpDirectory = nil;
       [attachments addObject:[attachment fileName]];
     }
     else {
-      [titles addObject:[attrString attributedSubstringFromRange:range]];
-      [attachments addObject:@""];
+      if ([[text substringFromRange:range] length] > 0) {
+        [titles addObject:[attrString attributedSubstringFromRange:range]];
+        [attachments addObject:@""];
+      }
     }
     i = range.location + range.length;
   }
@@ -91,12 +93,16 @@ static NSString     *_helpDirectory = nil;
 - (void)_showArticle
 {
   NSCell *cell = [tocList selectedCell];
+  NSString *docPath;
   NSString *artPath;
 
-  artPath = [_helpDirectory
-                   stringByAppendingPathComponent:[cell representedObject]];
-  // NSLog(@"[HelpPanel] showArticle from %@", artPath);
-  [articleView readRTFDFromFile:artPath];
+  docPath = [cell representedObject];
+  NSLog(@"[HelpPanel] showArticle doc path: %@", docPath);
+  
+  if (docPath && [docPath isEqualToString:@""] == NO) {
+    artPath = [_helpDirectory stringByAppendingPathComponent:docPath];
+    [articleView readRTFDFromFile:artPath];
+  }
 }
 
 @end
