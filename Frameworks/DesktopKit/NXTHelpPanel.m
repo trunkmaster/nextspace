@@ -33,20 +33,6 @@
 static NXTHelpPanel *_sharedHelpPanel = nil;
 static NSString     *_helpDirectory = nil;
 
-// @interface TOCListCell : NSTextFieldCell
-// {
-//   BOOL _isSelected;
-// }
-// @end
-// @implementation TOCListCell
-
-// @end
-
-// @interface TOCList : NXMatrix
-// @end
-// @implementation TOCList
-// @end
-
 @implementation NXTHelpPanel (PrivateMethods)
 
 - (void)_loadTableOfContents:(NSString *)tocFilePath
@@ -58,7 +44,7 @@ static NSString     *_helpDirectory = nil;
   NSDictionary       *attrs;
   id                 attachment;
 
-  NSLog(@"Load TOC from: %@", tocFilePath);
+  // NSLog(@"Load TOC from: %@", tocFilePath);
 
   titles = [NSMutableArray new];
   attachments = [NSMutableArray new];
@@ -67,89 +53,44 @@ static NSString     *_helpDirectory = nil;
                  documentAttributes:NULL];
   text = [attrString string];
     
-  for (int i = 0; i < [text length]; i++) {
+  for (int i = 0; i <= [text length]; i++) {
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
     // NSLog(@"[%d] %@ - (%@)", i, attrs, NSStringFromRange(range));
-    NSLog(@"Font for(%@): %@", [text substringWithRange:range],
-          [attrs objectForKey:@"NSFont"]);
+    // NSLog(@"Font for(%@): %@", [text substringWithRange:range],
+    //       [attrs objectForKey:@"NSFont"]);
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
       range = [text lineRangeForRange:range];
       range.location++;
       range.length -= 2;
-      // NSLog(@"%@ -> %@", [text substringWithRange:range], [attachment fileName]);
-      t = [[text substringWithRange:range]
-            stringByReplacingOccurrencesOfString:@"\t"
-                                      withString:@"    "];
-      [titles addObject:t];
-      // [titles addObject:[text substringWithRange:range]];
+      [titles addObject:[attrString attributedSubstringWithRange:range]];
       [attachments addObject:[attachment fileName]];
     }
     else {
-      NSLog(@"Font for(%@): %@", [text substringWithRange:range],
-            [attrs objectForKey:@"NSFont"]);
-      t = [[text substringWithRange:range]
-            stringByReplacingOccurrencesOfString:@"\t"
-                                      withString:@"    "];
-      [titles addObject:t];
+      [titles addObject:[attrString attributedSubstringWithRange:range]];
       [attachments addObject:@""];
     }
     i = range.location + range.length;
   }
 
   if (tocTitles != nil) [titles release];
-  if (tocAttachments != nil) [titles release];
   tocTitles = [[NSArray alloc] initWithArray:titles];
   [titles release];
+  if (tocAttachments != nil) [titles release];
   tocAttachments = [[NSArray alloc] initWithArray:attachments];
   [attachments release];
   
   [attrString release];
 }
 
-// Brower delegate methods
-- (void)     browser:(NSBrowser *)sender
- createRowsForColumn:(NSInteger)column
-            inMatrix:(NSMatrix *)matrix
+- (void)_showArticle
 {
-  NSBrowserCell      *cell;
-  NSAttributedString *attrString;
-  NSString           *text;
-  NSRange            range;
-  NSDictionary       *attrs;
-  id                 attachment;
-  NSString           *tocFilePath;
+  NSCell *cell = [tocList selectedCell];
+  NSString *artPath;
 
-  tocFilePath = [NSString stringWithFormat:@"%@/TableOfContents.rtf",
-                          _helpDirectory];
-  NSLog(@"Load TOC from: %@", tocFilePath);
-
-  attrString = [[NSAttributedString alloc]
-                   initWithRTF:[NSData dataWithContentsOfFile:tocFilePath]
-                 documentAttributes:NULL];
-  text = [attrString string];
-    
-  for (int i = 0; i < [text length]; i++) {
-    attrs = [attrString attributesAtIndex:i effectiveRange:&range];
-    if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
-      range = [text lineRangeForRange:range];
-      range.location++;
-      range.length -= 2;
-      // NSLog(@"%@ -> %@", [text substringWithRange:range], [attachment fileName]);
-      
-      [matrix addRow];
-      cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-      [cell setLeaf:YES];
-      [cell setRefusesFirstResponder:NO];
-      [cell setTitle:[text substringWithRange:range]];
-      [cell setRepresentedObject:[attachment fileName]];
-    }
-    i = range.location + range.length;
-  }
-}
-
-- (void)showArticle
-{
-  NSLog(@"Will show document: %@", [[tocList selectedCell] representedObject]);
+  artPath = [_helpDirectory
+                   stringByAppendingPathComponent:[cell representedObject]];
+  // NSLog(@"[HelpPanel] showArticle from %@", artPath);
+  [articleView readRTFDFromFile:artPath];
 }
 
 @end
@@ -194,16 +135,30 @@ static NSString     *_helpDirectory = nil;
 - (void)awakeFromNib
 {
   NSString *tocFilePath;
-  tocFilePath = [NSString stringWithFormat:@"%@/TableOfContents.rtf", _helpDirectory];
+  
+  tocFilePath = [_helpDirectory
+                  stringByAppendingPathComponent:@"TableOfContents.rtf"];
   [self _loadTableOfContents:tocFilePath];
 
   // TOC list
   tocList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
   [splitView addSubview:tocList];
+  [tocList setTarget:self];
+  [tocList setAction:@selector(_showArticle)];
   [tocList loadTitles:tocTitles andObjects:tocAttachments];
   [tocList release];
 
   // Article
+  NSScrollView *scrollView;
+  scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
+  [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [scrollView setHasVerticalScroller:YES];
+  [scrollView setBorderType:NSBezelBorder];
+  articleView = [[NSTextView alloc] initWithFrame:NSMakeRect(0,0,394,200)];
+  [articleView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [articleView setEditable:NO];
+  [scrollView setDocumentView:articleView];
+  [splitView addSubview:scrollView];
 }
 
 // --- Managing the Contents

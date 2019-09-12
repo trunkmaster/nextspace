@@ -17,4 +17,11 @@
 	);
 	Super = NSObject;
     };
+    NXTSplitView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSSplitView;
+    };
 }
