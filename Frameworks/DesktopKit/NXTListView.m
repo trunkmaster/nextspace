@@ -25,7 +25,7 @@
 @interface NXTListCell : NSTextFieldCell
 {
 }
-@property (assign) BOOL drawEdges;
+@property (assign) BOOL selected;
 @end
 
 @implementation NXTListCell
@@ -33,31 +33,33 @@
 - (id)init
 {
   self = [super init];
-  self.drawEdges = NO;
+  self.selected = NO;
   return self;
 }
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
                        inView:(NSView *)controlView
 {
-  // NSLog(@"Draw cell with frame: %@", NSStringFromRect(cellFrame));
-  // TODO: draw only if selected
-  [[NSColor controlBackgroundColor] set];
+  // NSLog(@"Draw interior for `%@` selected: %@",
+  //       [self title], _drawEdges ? @"YES" : @"NO");
+  if (_selected == NO) {
+    [[NSColor controlBackgroundColor] set];
+  }
+  else {
+    [[NSColor whiteColor] set];
+  }
   NSRectFill(cellFrame);
-  // cellFrame.origin.y -= 2;
+  
   [self _drawAttributedText:[self _drawAttributedString]
                     inFrame:[self titleRectForBounds:cellFrame]];
-
-  if (_drawEdges) {
-    [[NSColor darkGrayColor] set];
+  
+  if (_selected != NO) {
+    [[NSColor blackColor] set];
     PSnewpath();
-    PSmoveto(0, 0);
-    PSlineto(cellFrame.size.width, 0);
-    // PSstroke();
-    // [[NSColor darkGrayColor] set];
-    // PSnewpath();
-    PSmoveto(0, cellFrame.size.height-1);
-    PSlineto(cellFrame.size.width, cellFrame.size.height-1);
+    PSmoveto(cellFrame.origin.x, cellFrame.origin.y);
+    PSlineto(NSMaxX(cellFrame), cellFrame.origin.y);
+    PSmoveto(cellFrame.origin.x, NSMaxY(cellFrame)-1);
+    PSlineto(NSMaxX(cellFrame), NSMaxY(cellFrame)-1);
     PSstroke();
   }      
 }
@@ -65,6 +67,7 @@
 @end
 
 @interface NXTListMatrix : NSMatrix
+@property (assign) NSScrollView *scrollView;
 - (void)loadTitles:(NSArray *)titles
         andObjects:(NSArray *)objects;
 @end
@@ -79,11 +82,11 @@
 {
   self = [super initWithFrame:frameRect];
   [self setCellClass:[NXTListCell class]];
-
+  [self setMode:NSListModeMatrix];
   [self setAllowsEmptySelection:YES];
   [self setAutoscroll:YES];
   [self setDrawsBackground:YES];
-  [self setBackgroundColor:[NSColor lightGrayColor]];
+  [self setBackgroundColor:[NSColor grayColor]];
     
   return self;
 }
@@ -98,8 +101,36 @@
     cell = [self makeCellAtRow:i column:0];
     [cell setObjectValue:titles[i]];
     [cell setRepresentedObject:objects[i]];
-    [cell setSelectable:YES];
+    [cell setEditable:NO];
+    [cell setSelectable:NO];
+    [cell setRefusesFirstResponder:YES];
   }
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  NSWindow    *window = [event window];
+  NSView      *contentView = [window contentView];
+  NSPoint     mouseLocation;
+  NSInteger   dRow, dColumn;
+  NXTListCell *selectedCell, *clickedCell;
+
+  selectedCell = [self selectedCell];
+  
+  // Determine clicked row
+  mouseLocation = [contentView convertPoint:[event locationInWindow]
+                                     toView:[_scrollView contentView]];
+  mouseLocation.y += [self cellSize].height/2; // mouse cursor hit point?
+  [self getRow:&dRow column:&dColumn forPoint:mouseLocation];
+
+  // Select clicked cell
+  clickedCell = [self cellAtRow:dRow column:dColumn];
+  if (selectedCell != clickedCell) {
+    [selectedCell setSelected:NO];
+  }
+  [clickedCell setSelected:YES];
+  
+  [super mouseDown:event];  
 }
 
 @end
@@ -124,16 +155,18 @@
   [scrollView setHasVerticalScroller:YES];
   [scrollView setBorderType:NSBezelBorder];
 
-  cellSize = NSMakeSize(rect.size.width-23, 13);
+  cellSize = NSMakeSize(rect.size.width-23, 19);
   listMatrix = [[NXTListMatrix alloc]
                  initWithFrame:NSMakeRect(0,0,cellSize.width,cellSize.height)];
   [listMatrix setCellSize:cellSize];
   [listMatrix setIntercellSpacing:NSMakeSize(0,0)];
   [listMatrix setAutosizesCells:NO];
-  [listMatrix setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [listMatrix setDelegate:self];
+  listMatrix.scrollView = scrollView;
+  // [listMatrix setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   
   [scrollView setDocumentView:listMatrix];
-  [scrollView setLineScroll:17.0];
+  [scrollView setLineScroll:19.0];
   [listMatrix release];
   
   [self addSubview:scrollView];
@@ -145,7 +178,7 @@
         andObjects:(NSArray *)objects
 {
   [listMatrix loadTitles:titles andObjects:objects];
-  [listMatrix setCellSize:[listMatrix cellSize]];
+  [listMatrix sizeToCells];
 }
 
 - (void)setTarget:(id)target
@@ -166,25 +199,6 @@
 - (void)setCellSize:(NSSize)size
 {
   [listMatrix setCellSize:size];
-}
-
-- (void)mouseDown:(NSEvent *)event
-{
-  NSWindow  *window = [event window];
-  NSView    *contentView = [window contentView];
-  NSPoint   lastLocation;
-  NSInteger dRow, dColumn;
-  // NSCell    *cell;
-
-  NSLog(@"[NXTLIstView] mouseDown");
-  
-  // Determine clicked row
-  lastLocation = [contentView convertPoint:[event locationInWindow]
-                                    toView:[scrollView contentView]];
-  [listMatrix getRow:&dRow column:&dColumn forPoint:lastLocation];
-  [listMatrix selectCellAtRow:dRow column:dColumn];
-  // cell = [self cellAtRow:dRow column:dColumn];
-  // [listMatrix ];
 }
 
 @end
