@@ -101,6 +101,10 @@ static NSString     *_helpDirectory = nil;
   
   if (docPath && [docPath isEqualToString:@""] == NO) {
     artPath = [_helpDirectory stringByAppendingPathComponent:docPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:artPath] == NO) {
+      NXTRunAlertPanel(@"Help", @"Help file `%@` doesn't exist",
+                       @"OK", nil, nil, docPath);
+    }
     [articleView readRTFDFromFile:artPath];
   }
 }
