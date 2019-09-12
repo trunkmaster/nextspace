@@ -338,6 +338,7 @@
   splitView = [[NXTSplitView alloc]
                 initWithFrame:NSMakeRect(8,-2,SPLIT_DEF_WIDTH,392)];
   [splitView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+  [splitView setDividerThinkness:12.0];
   [self shelfResizableStateChanged:nil];
   //[splitView retain];
   //[splitView removeFromSuperview];
@@ -372,7 +373,8 @@
                                      owner:self];
   [shelf setAutoresizingMask:NSViewWidthSizable];
   [splitView addSubview:shelf];
-  NSDebugLLog(@"FileViewer",@"Shelf created with slots tall: %i", [shelf slotsTall]);
+  NSDebugLLog(@"FileViewer",@"Shelf created with slots tall: %i",
+              [shelf slotsTall]);
   // [self configureShelf];
 
   // Bottom part of split view
