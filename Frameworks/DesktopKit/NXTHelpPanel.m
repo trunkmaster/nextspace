@@ -54,11 +54,8 @@ static NSString     *_helpDirectory = nil;
                  documentAttributes:NULL];
   text = [attrString string];
     
-  for (int i = 0; i <= [text length]; i++) {
+  for (int i = 0; i < [text length]; i++) {
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
-    // NSLog(@"[%d] %@ - (%@)", i, attrs, NSStringFromRange(range));
-    // NSLog(@"Font for(%@): %@", [text substringWithRange:range],
-    //       [attrs objectForKey:@"NSFont"]);
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
       range = [text lineRangeForRange:range];
       // Skip attachment symbol
@@ -74,6 +71,10 @@ static NSString     *_helpDirectory = nil;
     }
     else {
       if ([[text substringFromRange:range] length] > 0) {
+        // Exclude new line character if any
+        if ([[text substringFromRange:range] characterAtIndex:range.length-1] == '\n') {
+          range.length--;
+        }
         [titles addObject:[attrString attributedSubstringFromRange:range]];
         [attachments addObject:@""];
       }
