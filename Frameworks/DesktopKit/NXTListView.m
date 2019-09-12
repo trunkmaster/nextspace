@@ -125,6 +125,9 @@
 
   // Select clicked cell
   clickedCell = [self cellAtRow:dRow column:dColumn];
+  if ([[clickedCell title] length] <= 1)
+    return;
+  
   if (selectedCell != clickedCell) {
     [selectedCell setSelected:NO];
   }
