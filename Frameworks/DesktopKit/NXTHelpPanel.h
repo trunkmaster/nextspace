@@ -27,7 +27,7 @@
 #import <AppKit/NSBrowser.h>
 #import <AppKit/NSTextView.h>
 
-@class NSString, NXTListView;
+@class NSString, NXTListView, NXTSplitView;
 
 @interface NSApplication (NSApplicationHelpExtension)
 - (void)orderFrontHelpPanel:(id)sender;
@@ -40,7 +40,7 @@
   NSArray      *tocAttachments;
 
   NSTextField  *findField;
-  NSSplitView  *splitView;
+  NXTSplitView *splitView;
   NXTListView  *tocList;
   NSTextView   *articleView;
 }

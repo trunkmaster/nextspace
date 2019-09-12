@@ -29,6 +29,7 @@
 #import "NXTAlert.h"
 #import "NXTListView.h"
 #import "NXTHelpPanel.h"
+#import "NXTSplitView.h"
 
 static NXTHelpPanel *_sharedHelpPanel = nil;
 static NSString     *_helpDirectory = nil;
@@ -155,6 +156,8 @@ static NSString     *_helpDirectory = nil;
   tocFilePath = [_helpDirectory
                   stringByAppendingPathComponent:@"TableOfContents.rtf"];
   [self _loadTableOfContents:tocFilePath];
+
+  [splitView setResizableState:NSOnState];
 
   // TOC list
   tocList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
