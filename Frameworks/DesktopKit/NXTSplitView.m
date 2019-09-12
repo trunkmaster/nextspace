@@ -30,7 +30,16 @@ NSString *NXTSplitViewDividerDidDraw = @"NXTSplitViewDividerDidDraw";
 
 - (CGFloat)dividerThickness
 {
-  return 12.0f;
+  if (_dividerWidth <= 0) {
+    _dividerWidth = 8.0;
+  }
+  
+  return _dividerWidth;
+}
+
+- (void)setDividerThinkness:(CGFloat)width
+{
+  _dividerWidth = width;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent

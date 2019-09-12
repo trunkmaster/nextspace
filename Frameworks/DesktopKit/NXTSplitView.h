@@ -37,6 +37,7 @@ extern NSString *NXTSplitViewDividerDidDraw;
   NSInteger resizableState;
 }
 
+- (void)setDividerThinkness:(CGFloat)width;
 - (NSRect)dividerRect;
 - (void)setResizableState:(NSInteger)state;
 - (NSInteger)resizableState;
