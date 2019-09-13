@@ -260,7 +260,6 @@
     [listMatrix deselectAllCells];
   }
   [listMatrix selectCellAtRow:index column:0];
-  [[listMatrix selectedCell] performClick:self];
 }
 
 @end

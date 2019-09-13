@@ -94,7 +94,7 @@ static NSString     *_helpDirectory = nil;
 
 - (void)_showArticle
 {
-  NSCell *cell = [tocList selectedCell];
+  NSCell   *cell = [tocList selectedItem];
   NSString *docPath;
   NSString *artPath;
 
@@ -179,6 +179,10 @@ static NSString     *_helpDirectory = nil;
   [articleView setEditable:NO];
   [scrollView setDocumentView:articleView];
   [splitView addSubview:scrollView];
+
+  [tocList selectItemAtIndex:0];
+  [self _showArticle];
+  [splitView setPosition:145.0 ofDividerAtIndex:0];
 }
 
 // --- Managing the Contents
@@ -191,6 +195,7 @@ static NSString     *_helpDirectory = nil;
   _helpDirectory = [[NSString alloc] initWithString:helpDirectory];
 }
 
+// TODO
 - (void)addSupplement:(NSString *)helpDirectory
                inPath:(NSString *)supplementPath
 {
@@ -204,13 +209,13 @@ static NSString     *_helpDirectory = nil;
 
 - (NSString *)helpFile
 {
-  NSWarnFLog(@"Not implemented");
-  return nil;
+  return [[tocList selectedItem] representedObject];
 }
 
 
 // --- Attaching Help to Objects
 
+// TODO
 + (void)attachHelpFile:(NSString *)filename
             markerName:(NSString *)markerName
                     to:(id)anObject
@@ -218,6 +223,7 @@ static NSString     *_helpDirectory = nil;
   NSWarnFLog(@"Not implemented");
 }
 
+// TODO
 + (void)detachHelpFrom:(id)anObject
 {
   NSWarnFLog(@"Not implemented");
@@ -225,12 +231,14 @@ static NSString     *_helpDirectory = nil;
 
 // --- Showing Help
 
+// TODO
 - (void)showFile:(NSString *)filename
         atMarker:(NSString *)markerName
 {
   NSWarnFLog(@"Not implemented");
 }
 
+// TODO
 - (BOOL)showHelpAttachedTo:(id)anObject
 {
   NSWarnFLog(@"Not implemented");
@@ -238,6 +246,7 @@ static NSString     *_helpDirectory = nil;
 }
 
 // --- Printing 
+// TODO
 - (void)print:(id)sender
 {
   NSLog(@"Not implemented");
