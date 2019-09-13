@@ -24,7 +24,7 @@
     };
     FirstResponder = {
 	Actions = (
-	    "showListViewTest:",
+	    "showHelpTemplatePanel:",
 	    "openOpenPanel:",
 	    "openSavePanel:",
 	    "show3LineAlert:",
@@ -33,6 +33,7 @@
 	    "showDrawingTest:",
 	    "showHelpPanel:",
 	    "showIconViewTest:",
+	    "showListViewTest:",
 	    "showMultilineAlert:",
 	    "showSinglelineAlert:",
 	    "showTextFieldsDemo:",
@@ -42,6 +43,7 @@
     };
     NSApplication = {
 	Actions = (
+	    "showHelpTemplatePanel:",
 	    "showHelpPanel:"
 	);
 	Super = NSResponder;

@@ -154,6 +154,20 @@
 - (void)showHelpPanel:(id)sender
 {
   NXTHelpPanel *helpPanel;
+
+  NSString     *helpDir;
+
+  helpDir = [[NSBundle mainBundle] pathForResource:@"Help"
+                                            ofType:@""
+                                       inDirectory:@""];
+  // helpPanel = [NXTHelpPanel sharedHelpPanel];
+  helpPanel = [NXTHelpPanel sharedHelpPanelWithDirectory:helpDir];
+  NSLog(@"Order Help: (%@)%@", helpPanel, [helpPanel helpDirectory]);
+  [helpPanel makeKeyAndOrderFront:self];
+}
+- (void)showHelpTemplatePanel:(id)sender
+{
+  NXTHelpPanel *helpPanel;
   NSString     *helpDir;
 
   helpDir = [[NSBundle mainBundle] pathForResource:@"HelpTemplate"
@@ -161,7 +175,7 @@
                                        inDirectory:@""];
   NSLog(@"Get Help Panel for dir: %@", helpDir);
   helpPanel = [NXTHelpPanel sharedHelpPanelWithDirectory:helpDir];
-  NSLog(@"Order Help Panel front");
+  NSLog(@"Order Help Template: (%@)%@", helpPanel, [helpPanel helpDirectory]);
   [helpPanel makeKeyAndOrderFront:self];
 }
 
