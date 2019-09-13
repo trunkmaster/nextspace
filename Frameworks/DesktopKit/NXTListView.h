@@ -35,6 +35,5 @@
 - (void)setAction:(SEL)action;
 
 - (id)selectedCell;
-- (void)setCellSize:(NSSize)size;
 
 @end

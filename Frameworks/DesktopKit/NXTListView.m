@@ -22,21 +22,13 @@
 #include <AppKit/AppKit.h>
 #include "NXTListView.h"
 
+// -----------------------------------------------------------------------------
+// Cell
+// -----------------------------------------------------------------------------
 @interface NXTListCell : NSTextFieldCell
-{
-}
 @property (assign) BOOL selected;
 @end
-
 @implementation NXTListCell
-
-- (id)init
-{
-  self = [super init];
-  self.selected = NO;
-  return self;
-}
-
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
                        inView:(NSView *)controlView
 {
@@ -63,7 +55,6 @@
     PSstroke();
   }      
 }
-
 @end
 
 @interface NXTListMatrix : NSMatrix
@@ -71,6 +62,10 @@
 - (void)loadTitles:(NSArray *)titles
         andObjects:(NSArray *)objects;
 @end
+
+// -----------------------------------------------------------------------------
+// Matrix : NSMatrix
+// -----------------------------------------------------------------------------
 @implementation NXTListMatrix
 
 - (void)dealloc
@@ -141,8 +136,23 @@
   [super mouseDown:event];  
 }
 
+- (void)resizeWithOldSuperviewSize:(NSSize)oldSize
+{
+  NSSize currentSize= [[self superview] frame].size;
+  NSSize cellSize;
+    
+  if (oldSize.width != currentSize.width) {
+    cellSize = [self cellSize];
+    cellSize.width = currentSize.width;
+    [self setCellSize:cellSize];
+  }
+}
+
 @end
 
+// -----------------------------------------------------------------------------
+// View : NSView
+// -----------------------------------------------------------------------------
 @implementation NXTListView
 
 - (id)init
@@ -202,11 +212,6 @@
 - (id)selectedCell
 {
   return [listMatrix selectedCell];
-}
-
-- (void)setCellSize:(NSSize)size
-{
-  [listMatrix setCellSize:size];
 }
 
 @end
