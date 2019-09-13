@@ -36,5 +36,6 @@
 
 - (id)selectedItem;
 - (void)selectItemAtIndex:(NSInteger)index;
+- (NSInteger)indexOfItem:(NSCell *)item;
 
 @end

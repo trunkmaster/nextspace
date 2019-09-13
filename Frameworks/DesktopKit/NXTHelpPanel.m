@@ -92,6 +92,21 @@ static NSString     *_helpDirectory = nil;
   [attrString release];
 }
 
+- (NSString *)_articlePathForAttachment:(NSString *)attachment
+{
+  NSString *artPath = nil;
+
+  if (attachment && [attachment isEqualToString:@""] == NO) {
+    artPath = [_helpDirectory stringByAppendingPathComponent:attachment];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:artPath] == NO) {
+      NXTRunAlertPanel(@"Help", @"Help file `%@` doesn't exist",
+                       @"OK", nil, nil, attachment);
+      artPath = nil;
+    }
+  }
+  return artPath;
+}
+
 - (void)_showArticle
 {
   NSCell   *cell = [tocList selectedItem];
@@ -101,14 +116,55 @@ static NSString     *_helpDirectory = nil;
   docPath = [cell representedObject];
   NSLog(@"[HelpPanel] showArticle doc path: %@", docPath);
   
-  if (docPath && [docPath isEqualToString:@""] == NO) {
-    artPath = [_helpDirectory stringByAppendingPathComponent:docPath];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:artPath] == NO) {
-      NXTRunAlertPanel(@"Help", @"Help file `%@` doesn't exist",
-                       @"OK", nil, nil, docPath);
+  artPath = [self _articlePathForAttachment:docPath];
+  if (artPath != nil) {
+    if (historyPosition < historyLength) {
+      historyPosition++;
+      history[historyPosition] = [tocList indexOfItem:cell];
+      NSLog(@"Postion after history grow %i", historyPosition);
     }
     [articleView readRTFDFromFile:artPath];
   }
+}
+
+- (void)_performFind:(id)sender
+{
+  // Search opened article
+  // Search Index
+  // Search through the articles
+}
+
+- (void)_showIndex:(id)sender
+{
+  // Find item with `Index.rtfd` represented object
+  for (int i = 0; i < [tocTitles count]; i++) {
+    if ([tocAttachments[i] isEqualToString:@"Index.rtfd"]) {
+      [tocList selectItemAtIndex:i];
+      [self _showArticle];
+      return;
+    }
+  }
+
+  // Item was not found
+  NXTRunAlertPanel(@"Help", @"No Index file found for this help.",
+                   @"OK", nil, nil);
+}
+
+- (void)_goHistoryBack:(id)sender
+{
+  NSCell   *cell;
+  NSString *artPath;
+  
+  NSLog(@"Backtrack at %d", historyPosition);
+  if (historyPosition > 0) {
+    historyPosition--;
+    NSLog(@"Backtrack to %d - %lu", historyPosition, history[historyPosition]);
+    [tocList selectItemAtIndex:history[historyPosition]];
+    cell = [tocList selectedItem];
+    artPath = [self _articlePathForAttachment:[cell representedObject]];
+    [articleView readRTFDFromFile:artPath];
+  }
+  NSLog(@"Postion after backtrack %d", historyPosition);
 }
 
 @end
@@ -180,6 +236,12 @@ static NSString     *_helpDirectory = nil;
   [scrollView setDocumentView:articleView];
   [splitView addSubview:scrollView];
 
+  // History (for Backtrack)
+  // history = [NSMutableArray new];
+  historyLength = 20;
+  historyPosition = -1;
+
+  // Show article that listed first in TOC
   [tocList selectItemAtIndex:0];
   [self _showArticle];
   [splitView setPosition:145.0 ofDividerAtIndex:0];

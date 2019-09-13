@@ -262,4 +262,12 @@
   [listMatrix selectCellAtRow:index column:0];
 }
 
+- (NSInteger)indexOfItem:(NSCell *)item
+{
+  NSInteger row, column;
+  [listMatrix getRow:&row column:&column ofCell:item];
+
+  return row;
+}
+
 @end

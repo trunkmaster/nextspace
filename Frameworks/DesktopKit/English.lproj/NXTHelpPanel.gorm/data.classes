@@ -1,7 +1,18 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "_performFind:",
+	    "_showIndex:",
+	    "_goHistoryBack:"
+	);
+	Super = NSObject;
+    };
     NXTHelpPanel = {
 	Actions = (
+	    "_performFind:",
+	    "_showIndex:",
+	    "_goHistoryBack:"
 	);
 	Outlets = (
 	    findField,

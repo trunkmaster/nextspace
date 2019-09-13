@@ -35,9 +35,14 @@
 
 @interface NXTHelpPanel : NSPanel
 {
-  NSString     *_helpFile; // Currently displayed document
-  NSArray      *tocTitles;
-  NSArray      *tocAttachments;
+  NSString       *_helpFile; // Currently displayed document
+  NSArray        *tocTitles;
+  NSArray        *tocAttachments;
+
+  // Backtrack
+  NSUInteger     history[20];
+  int            historyPosition;
+  int            historyLength;
 
   NSTextField  *findField;
   NXTSplitView *splitView;
