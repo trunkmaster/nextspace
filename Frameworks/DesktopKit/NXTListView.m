@@ -102,6 +102,17 @@
   }
 }
 
+- (void)selectCellAtRow:(NSInteger)row
+                 column:(NSInteger)column
+{
+  NXTListCell *selectedCell = [self selectedCell];
+  NXTListCell *cell = [self cellAtRow:row column:column];
+
+  selectedCell.selected = NO;
+  cell.selected = YES;
+  [super selectCellAtRow:row column:column];
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
   NSWindow    *window = [event window];
@@ -134,6 +145,35 @@
   [clickedCell setSelected:YES];
   
   [super mouseDown:event];  
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+  unichar c = [[theEvent characters] characterAtIndex:0];
+
+  switch(c) {
+  case NSUpArrowFunctionKey:
+    if (_selectedRow > 0) {
+      [self selectCellAtRow:_selectedRow-1 column:0];
+    }
+    break;
+  case NSDownArrowFunctionKey:
+    if (_selectedRow < [[self cells] count]) {
+      [self selectCellAtRow:_selectedRow+1 column:0];
+    }
+    break;
+  }
+}
+- (void)keyUp:(NSEvent *)theEvent
+{
+  unichar c = [[theEvent characters] characterAtIndex:0];
+
+  switch(c) {
+  case NSUpArrowFunctionKey:
+  case NSDownArrowFunctionKey:
+    [self performClick:self];
+    break;
+  }
 }
 
 - (void)resizeWithOldSuperviewSize:(NSSize)oldSize
@@ -209,9 +249,18 @@
   [listMatrix setAction:action];
 }
 
-- (id)selectedCell
+- (id)selectedItem
 {
   return [listMatrix selectedCell];
+}
+
+- (void)selectItemAtIndex:(NSInteger)index
+{
+  if (index < 0) {
+    [listMatrix deselectAllCells];
+  }
+  [listMatrix selectCellAtRow:index column:0];
+  [[listMatrix selectedCell] performClick:self];
 }
 
 @end

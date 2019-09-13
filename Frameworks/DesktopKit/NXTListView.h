@@ -34,6 +34,7 @@
 - (void)setTarget:(id)target;
 - (void)setAction:(SEL)action;
 
-- (id)selectedCell;
+- (id)selectedItem;
+- (void)selectItemAtIndex:(NSInteger)index;
 
 @end
