@@ -35,6 +35,7 @@
 
 @interface NXTHelpPanel : NSPanel
 {
+  NSString       *_helpDirectory;
   NSString       *_helpFile; // Currently displayed document
   NSArray        *tocTitles;
   NSArray        *tocAttachments;

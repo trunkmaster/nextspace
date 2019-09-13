@@ -32,9 +32,21 @@
 #import "NXTSplitView.h"
 
 static NXTHelpPanel *_sharedHelpPanel = nil;
-static NSString     *_helpDirectory = nil;
+// static NSString     *_helpDirectory = nil;
 
 @implementation NXTHelpPanel (PrivateMethods)
+
+- (void)_setHelpDirectory:(NSString *)helpDirectory
+{
+  if (_helpDirectory == helpDirectory) {
+    return;
+  }
+  
+  if (_helpDirectory) {
+    [_helpDirectory release];
+  }
+  _helpDirectory = [[NSString alloc] initWithString:helpDirectory];
+}
 
 - (void)_loadTableOfContents:(NSString *)tocFilePath
 {
@@ -45,7 +57,7 @@ static NSString     *_helpDirectory = nil;
   NSDictionary       *attrs;
   id                 attachment;
 
-  // NSLog(@"Load TOC from: %@", tocFilePath);
+  NSLog(@"Load TOC from: %@", tocFilePath);
 
   titles = [NSMutableArray new];
   attachments = [NSMutableArray new];
@@ -174,13 +186,22 @@ static NSString     *_helpDirectory = nil;
 + (NXTHelpPanel *)sharedHelpPanel
 {
   if (_sharedHelpPanel == nil) {
-    [self sharedHelpPanelWithDirectory:_helpDirectory];
+    [self sharedHelpPanelWithDirectory:nil];
   }
+    
   return _sharedHelpPanel;
 }
 + (NXTHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory
 {
-  NSString *tocFilePath;
+  NSString     *tocFilePath;
+  NXTHelpPanel *panel;
+  
+  // Setup help directory if needed
+  if (helpDirectory == nil) {
+    helpDirectory = [[NSBundle mainBundle] pathForResource:@"Help"
+                                                    ofType:@""
+                                               inDirectory:@""];
+  }
   
   // Check if TableOfContents exists inside helpDirectory
   tocFilePath = [NSString stringWithFormat:@"%@/TableOfContents.rtf",
@@ -192,12 +213,22 @@ static NSString     *_helpDirectory = nil;
     return nil;
   }
 
+  
   // Create instance
-  [self setHelpDirectory:helpDirectory];
   if (_sharedHelpPanel == nil) {
     _sharedHelpPanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTHelpPanel"];
+    [_sharedHelpPanel _setHelpDirectory:helpDirectory];
+    panel = _sharedHelpPanel;
   }
-  return _sharedHelpPanel;
+  else if ([helpDirectory isEqualToString:[_sharedHelpPanel helpDirectory]] == NO) {
+    panel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTHelpPanel"];
+    [panel _setHelpDirectory:helpDirectory];
+  }
+  else {
+    panel = _sharedHelpPanel;
+  }
+
+  return panel;
 }
 
 - (id)init
@@ -208,12 +239,6 @@ static NSString     *_helpDirectory = nil;
 
 - (void)awakeFromNib
 {
-  NSString *tocFilePath;
-  
-  tocFilePath = [_helpDirectory
-                  stringByAppendingPathComponent:@"TableOfContents.rtf"];
-  [self _loadTableOfContents:tocFilePath];
-
   [splitView setResizableState:NSOnState];
 
   // TOC list
@@ -221,7 +246,6 @@ static NSString     *_helpDirectory = nil;
   [splitView addSubview:tocList];
   [tocList setTarget:self];
   [tocList setAction:@selector(_showArticle)];
-  [tocList loadTitles:tocTitles andObjects:tocAttachments];
   [tocList release];
 
   // Article
@@ -235,26 +259,37 @@ static NSString     *_helpDirectory = nil;
   [articleView setEditable:NO];
   [scrollView setDocumentView:articleView];
   [splitView addSubview:scrollView];
+  [scrollView release];
 
   // History (for Backtrack)
-  // history = [NSMutableArray new];
   historyLength = 20;
   historyPosition = -1;
-
-  // Show article that listed first in TOC
-  [tocList selectItemAtIndex:0];
-  [self _showArticle];
+  
   [splitView setPosition:145.0 ofDividerAtIndex:0];
+}
+
+- (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(NSInteger)otherWin
+{
+  NSString *tocFilePath;
+
+  if (place != NSWindowOut && !tocTitles) {
+    tocFilePath = [_helpDirectory
+                    stringByAppendingPathComponent:@"TableOfContents.rtf"];
+    [self _loadTableOfContents:tocFilePath];
+    [tocList loadTitles:tocTitles andObjects:tocAttachments];
+    [tocList selectItemAtIndex:0];
+    [self _showArticle];
+  }
+  [super orderWindow:place relativeTo:otherWin];
 }
 
 // --- Managing the Contents
 
 + (void)setHelpDirectory:(NSString *)helpDirectory
 {
-  if (_helpDirectory) {
-    [_helpDirectory release];
+  if (_sharedHelpPanel != nil) {
+    [_sharedHelpPanel _setHelpDirectory:helpDirectory];
   }
-  _helpDirectory = [[NSString alloc] initWithString:helpDirectory];
 }
 
 // TODO
