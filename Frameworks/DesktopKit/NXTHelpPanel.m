@@ -137,6 +137,9 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     }
     [articleView readRTFDFromFile:artPath];
   }
+  if (historyPosition > 0) {
+    [backtrackBtn setEnabled:YES];
+  }
 }
 
 - (void)_performFind:(id)sender
@@ -177,6 +180,9 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     [articleView readRTFDFromFile:artPath];
   }
   NSLog(@"Postion after backtrack %d", historyPosition);
+  if (historyPosition == 0) {
+    [backtrackBtn setEnabled:NO];
+  }
 }
 
 @end
@@ -270,16 +276,16 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 
 - (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(NSInteger)otherWin
 {
-  NSString *tocFilePath;
+  NSString *toc;
 
   if (place != NSWindowOut && !tocTitles) {
-    tocFilePath = [_helpDirectory
-                    stringByAppendingPathComponent:@"TableOfContents.rtf"];
-    [self _loadTableOfContents:tocFilePath];
+    toc = [_helpDirectory stringByAppendingPathComponent:@"TableOfContents.rtf"];
+    [self _loadTableOfContents:toc];
     [tocList loadTitles:tocTitles andObjects:tocAttachments];
     [tocList selectItemAtIndex:0];
     [self _showArticle];
   }
+  
   [super orderWindow:place relativeTo:otherWin];
 }
 

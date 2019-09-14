@@ -45,6 +45,9 @@
   int            historyPosition;
   int            historyLength;
 
+  NSButton     *findBtn;
+  NSButton     *indexBtn;
+  NSButton     *backtrackBtn;
   NSTextField  *findField;
   NXTSplitView *splitView;
   NXTListView  *tocList;

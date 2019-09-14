@@ -16,7 +16,10 @@
 	);
 	Outlets = (
 	    findField,
-	    splitView
+	    splitView,
+	    backtrackBtn,
+	    indexBtn,
+	    findBtn
 	);
 	Super = NSPanel;
     };
