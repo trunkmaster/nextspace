@@ -23,6 +23,8 @@ Applications
 	- if application failed to start launching appicon removed from screen;
 	- application that started from FileViewer and ebnormally terminated (segfault, killed with signal) removed from Processes panel;
 	- on quit do not try to terminate application if it cannot be connected (just remove from list of known applications).
+- Copy operation speed improved. It's 4 times faster now.
+- Appicon of runing application can be dragged out of the Dock. It automatically placed in the Icon Yard after mouse up.
 
 **Preferences**
 
@@ -30,6 +32,7 @@ Applications
 	- implementation completed for "Login Hook", "Logout Hook", "Restore Last Logged In User Name", "Display Host Name".
 	- "Display Host Name", "Restore Last Logged In User Name", screen saver, and custom UI and saver preferences can be changed by administrator (user that is member of `wheel` group).
 - "Sound Preferences" now display configured "System Beep" with selection of sound in list at first module loading.
+- "Password Preferences" module was implemented. Now I need to find out how to change PAM settings to change password as user without SUID bit set (as `passwd` command works).
 
 Frameworks
 ---
@@ -45,6 +48,7 @@ Frameworks
 	- Unified with File Viewer sorting and displaying hidden files (configurable through "Expert Preferences" "Sort By" and "Show Hidden Files" options).
 	- Panels save/restore its position and size;
 	- Escape key press pastes current path into textfield - default completion shortcut (also used in Workspace's Finder).
+- NXAlertPanel fixed setting size for multi-line messages.
 
 **SoundKit**
 
