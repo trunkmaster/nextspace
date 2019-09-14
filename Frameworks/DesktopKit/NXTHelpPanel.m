@@ -31,8 +31,47 @@
 #import "NXTHelpPanel.h"
 #import "NXTSplitView.h"
 
+// Singleton
 static NXTHelpPanel *_sharedHelpPanel = nil;
-// static NSString     *_helpDirectory = nil;
+
+@implementation NSString (NSStringTextFinding)
+
+- (NSRange)findString:(NSString *)string
+        selectedRange:(NSRange)selectedRange
+              options:(unsigned)options
+                 wrap:(BOOL)wrap
+{
+  BOOL         forwards = (options & NSBackwardsSearch) == 0;
+  unsigned int length = [self length];
+  NSRange      searchRange, range;
+
+  if (forwards) {
+    searchRange.location = NSMaxRange(selectedRange);
+    searchRange.length = length - searchRange.location;
+    range = [self rangeOfString:string options:options range:searchRange];
+
+    if ((range.length == 0) && wrap) {
+      /* If not found look at the first part of the string */
+      searchRange.location = 0;
+      searchRange.length = selectedRange.location;
+      range = [self rangeOfString:string options:options range:searchRange];
+    }
+  }
+  else {
+    searchRange.location = 0;
+    searchRange.length = selectedRange.location;
+    range = [self rangeOfString:string options:options range:searchRange];
+    
+    if ((range.length == 0) && wrap) {
+      searchRange.location = NSMaxRange(selectedRange);
+      searchRange.length = length - searchRange.location;
+      range = [self rangeOfString:string options:options range:searchRange];
+    }
+  }
+  return range;
+}
+
+@end
 
 @implementation NXTHelpPanel (PrivateMethods)
 
@@ -145,6 +184,40 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 - (void)_performFind:(id)sender
 {
   // Search opened article
+  NSString   *text = [[articleView textStorage] string];
+  NSUInteger textLength;
+  BOOL       lastFindWasSuccessful = NO;
+  
+  if (text && (textLength = [text length])) {
+    NSRange      selectedRange, range;
+    unsigned int options = 0;
+
+    options = NSCaseInsensitiveSearch;
+    selectedRange = [articleView selectedRange];
+    NSLog(@"_performFind: selected range: %lu, %lu",
+          selectedRange.location, selectedRange.length);
+    if (selectedRange.length == 0) {
+      selectedRange.location = 0;
+      selectedRange.length = 0;
+    }
+    else {
+      selectedRange.location = selectedRange.location + selectedRange.length;
+      selectedRange.length = 0;      
+    }
+
+    range = [text findString:[findField stringValue]
+               selectedRange:selectedRange
+                     options:options
+                        wrap:NO];
+    if (range.length) {
+      [articleView setSelectedRange:range];
+      [articleView scrollRangeToVisible:range];
+      lastFindWasSuccessful = YES;
+    }
+  }
+  if (!lastFindWasSuccessful) {
+    NSBeep();
+  }
   // Search Index
   // Search through the articles
 }

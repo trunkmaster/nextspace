@@ -133,12 +133,6 @@
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
   selectedCell = [self selectedCell];
 
-  NSCursor *cursor = [NSCursor arrowCursor];
-  NSSize   cursorSize = [[cursor image] size];
-  NSPoint  cursorHotSpot = [cursor hotSpot];
-  NSLog(@"Cursor image size: %.0f x %.0f hot spot: %.0f,%.0f",
-        cursorSize.width, cursorSize.height, cursorHotSpot.x, cursorHotSpot.y);
-  
   while (!done) {
     event = [NSApp nextEventMatchingMask:eventMask
                                untilDate:[NSDate distantFuture]
