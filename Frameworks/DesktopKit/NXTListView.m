@@ -117,34 +117,70 @@
 {
   NSWindow    *window = [event window];
   NSView      *contentView = [window contentView];
-  NSPoint     mouseLocation;
+  NSPoint     lastLocation, location;
   NSInteger   dRow, dColumn;
   NXTListCell *selectedCell, *clickedCell;
   id          repObject;
+  NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
+                           | NSPeriodicMask | NSOtherMouseUpMask
+                           | NSRightMouseUpMask);
+  NSRect      listRect = [_scrollView documentVisibleRect];
+  CGFloat     listHeight = listRect.size.height;
+  CGFloat     listWidth = listRect.size.width;
+  NSInteger   y;
+  BOOL        done = NO;
 
+  [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
   selectedCell = [self selectedCell];
-  
-  // Determine clicked row
-  mouseLocation = [contentView convertPoint:[event locationInWindow]
-                                     toView:[_scrollView contentView]];
-  mouseLocation.y += [self cellSize].height/2; // mouse cursor hit point?
-  [self getRow:&dRow column:&dColumn forPoint:mouseLocation];
 
-  // Select clicked cell
-  clickedCell = [self cellAtRow:dRow column:dColumn];
-  if ([[clickedCell title] length] <= 1)
-    return;
-  repObject = [clickedCell representedObject];
-  if ([repObject isKindOfClass:[NSString class]] &&
-      [repObject isEqualToString:@""])
-    return;
+  NSCursor *cursor = [NSCursor arrowCursor];
+  NSSize   cursorSize = [[cursor image] size];
+  NSPoint  cursorHotSpot = [cursor hotSpot];
+  NSLog(@"Cursor image size: %.0f x %.0f hot spot: %.0f,%.0f",
+        cursorSize.width, cursorSize.height, cursorHotSpot.x, cursorHotSpot.y);
   
-  if (selectedCell != clickedCell) {
-    [selectedCell setSelected:NO];
+  while (!done) {
+    event = [NSApp nextEventMatchingMask:eventMask
+                               untilDate:[NSDate distantFuture]
+                                  inMode:NSEventTrackingRunLoopMode
+                                 dequeue:YES];
+    switch ([event type])
+      {
+      case NSRightMouseUp:
+      case NSOtherMouseUp:
+      case NSLeftMouseUp:
+        done = YES;
+        [self selectCellAtRow:dRow column:dColumn];
+        if (_target)
+          [_target performSelector:_action];
+        break;
+      case NSPeriodic:
+        location = [contentView
+                       convertPoint:[window mouseLocationOutsideOfEventStream]
+                             toView:self];
+        location.y += [self cellSize].height/2;
+        [self getRow:&dRow column:&dColumn forPoint:location];
+        clickedCell = [self cellAtRow:dRow column:dColumn];
+  
+        if (selectedCell != clickedCell) {
+          [selectedCell setSelected:NO];
+        }
+        if ([[clickedCell title] length] > 1) {
+          repObject = [clickedCell representedObject];
+          if ([repObject isKindOfClass:[NSString class]] &&
+              [repObject isEqualToString:@""] == NO) {
+            [clickedCell setSelected:YES];
+          }
+        }
+        selectedCell = clickedCell;
+        lastLocation = location;
+        [self setNeedsDisplay:YES];
+        break;
+      default:
+        break;
+      }
   }
-  [clickedCell setSelected:YES];
-  
-  [super mouseDown:event];  
+  [NSEvent stopPeriodicEvents];
 }
 
 - (void)keyDown:(NSEvent *)theEvent
