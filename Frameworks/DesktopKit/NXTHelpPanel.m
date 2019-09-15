@@ -181,30 +181,44 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   }
 }
 
+- (NSRange)_findInArcticleAtPath:(NSString *)path
+{
+  NSText       *reader = [NSText new];
+  NSString     *text = nil;
+  NSRange      range = NSMakeRange(0,0);
+  NSRange      selectedRange = NSMakeRange(0,0);
+  unsigned int options = NSCaseInsensitiveSearch;
+  BOOL         lastFindWasSuccessful = NO;
+
+  if ([reader readRTFDFromFile:path] != NO) {
+    text = [reader string];
+  }
+  if (text && [text length]) {
+    range = [text findString:[findField stringValue]
+               selectedRange:selectedRange
+                     options:options
+                        wrap:NO];
+  }
+  [reader release];
+
+  return range;
+}
+
 - (void)_performFind:(id)sender
 {
   // Search opened article
-  NSString   *text = [[articleView textStorage] string];
-  NSUInteger textLength;
-  BOOL       lastFindWasSuccessful = NO;
+  NSString     *text = [[articleView textStorage] string];
+  NSRange      selectedRange= NSMakeRange(0,0);
+  NSRange      range;
+  unsigned int options = NSCaseInsensitiveSearch;
+  BOOL         lastFindWasSuccessful = NO;
   
-  if (text && (textLength = [text length])) {
-    NSRange      selectedRange, range;
-    unsigned int options = 0;
-
-    options = NSCaseInsensitiveSearch;
+  if (text && [text length]) {
     selectedRange = [articleView selectedRange];
-    NSLog(@"_performFind: selected range: %lu, %lu",
-          selectedRange.location, selectedRange.length);
-    if (selectedRange.length == 0) {
-      selectedRange.location = 0;
+    if (selectedRange.length != 0) {
+      selectedRange.location = selectedRange.location + selectedRange.length;
       selectedRange.length = 0;
     }
-    else {
-      selectedRange.location = selectedRange.location + selectedRange.length;
-      selectedRange.length = 0;      
-    }
-
     range = [text findString:[findField stringValue]
                selectedRange:selectedRange
                      options:options
@@ -215,11 +229,26 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
       lastFindWasSuccessful = YES;
     }
   }
+  
+  // Search through the articles, skips Index.rtfd
   if (!lastFindWasSuccessful) {
-    NSBeep();
+    NSUInteger index = [tocList indexOfItem:[tocList selectedItem]] + 1;
+    NSString   *artPath;
+    for (NSUInteger i = index; i < [tocAttachments count]; i++) {
+      artPath = [self _articlePathForAttachment:[tocAttachments objectAtIndex:i]];
+      if ([artPath isEqualToString:@""] == NO &&
+          [[artPath lastPathComponent] isEqualToString:@"Index.rtfd"] == NO) {
+        range = [self _findInArcticleAtPath:artPath];
+        if (range.length > 0) {
+          [tocList selectItemAtIndex:i];
+          [self _showArticle];        
+          [articleView setSelectedRange:range];
+          [articleView scrollRangeToVisible:range];
+          break;
+        }
+      }
+    }
   }
-  // Search Index
-  // Search through the articles
 }
 
 - (void)_showIndex:(id)sender
