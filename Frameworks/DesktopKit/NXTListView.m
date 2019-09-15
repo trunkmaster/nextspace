@@ -119,7 +119,7 @@
   NSView      *contentView = [window contentView];
   NSPoint     lastLocation, location;
   NSInteger   dRow, dColumn;
-  NXTListCell *selectedCell, *clickedCell;
+  NXTListCell *originalCell, *selectedCell, *clickedCell;
   id          repObject;
   NSUInteger  eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
                            | NSPeriodicMask | NSOtherMouseUpMask
@@ -131,7 +131,8 @@
   BOOL        done = NO;
 
   [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
-  selectedCell = [self selectedCell];
+  originalCell = [self selectedCell];
+  selectedCell = originalCell;
 
   while (!done) {
     event = [NSApp nextEventMatchingMask:eventMask
@@ -144,9 +145,11 @@
       case NSOtherMouseUp:
       case NSLeftMouseUp:
         done = YES;
+        [self getRow:&dRow column:&dColumn ofCell:selectedCell];
         [self selectCellAtRow:dRow column:dColumn];
-        if (_target)
+        if ((selectedCell != originalCell) && _target) {
           [_target performSelector:_action];
+        }
         break;
       case NSPeriodic:
         location = [contentView
@@ -163,10 +166,13 @@
           repObject = [clickedCell representedObject];
           if ([repObject isKindOfClass:[NSString class]] &&
               [repObject isEqualToString:@""] == NO) {
+            selectedCell = clickedCell;
             [clickedCell setSelected:YES];
           }
         }
-        selectedCell = clickedCell;
+        if (selectedCell != clickedCell) {
+          selectedCell = originalCell;
+        }
         lastLocation = location;
         [self setNeedsDisplay:YES];
         break;
@@ -194,6 +200,7 @@
     break;
   }
 }
+
 - (void)keyUp:(NSEvent *)theEvent
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
