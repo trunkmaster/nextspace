@@ -52,6 +52,7 @@
 #import <Processes/Processes.h>
 
 #import <DesktopKit/NXTAlert.h>
+#import <DesktopKit/NXTHelpPanel.h>
 
 static NSString *WorkspaceVersion = @"0.8";
 
@@ -918,6 +919,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     preferences = [Preferences shared];
   }
   [preferences activate];
+}
+
+- (void)showHelpPanel:(id)sender
+{
+  [[NXTHelpPanel sharedHelpPanel] makeKeyAndOrderFront:self];
 }
 
 // File

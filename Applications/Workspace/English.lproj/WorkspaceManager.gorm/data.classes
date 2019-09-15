@@ -22,7 +22,8 @@
 	    "checkForDisks:",
 	    "setDockVisibility:",
 	    "setDockCollapse:",
-	    "setIconYardVisibility:"
+	    "setIconYardVisibility:",
+	    "showHelpPanel:"
 	);
 	Outlets = (
 	    deviceManager,
@@ -41,12 +42,13 @@
 	    "emptyRecycler:",
 	    "initializeDisk:",
 	    "logOut:",
-	    "setIconYardVisibility:",
+	    "showHelpPanel:",
 	    "newFolder:",
 	    "newViewer:",
 	    "openAsFolder:",
 	    "setDockCollapse:",
 	    "setDockVisibility:",
+	    "setIconYardVisibility:",
 	    "showAttributesInspector:",
 	    "showConsole:",
 	    "showContentsInspector:",
