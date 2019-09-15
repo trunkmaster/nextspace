@@ -374,6 +374,9 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   historyPosition = -1;
   
   [splitView setPosition:145.0 ofDividerAtIndex:0];
+
+  [self setTitle:[NSString stringWithFormat:@"%@ Help Panel",
+                           [[NSProcessInfo processInfo] processName]]];
 }
 
 - (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(NSInteger)otherWin
