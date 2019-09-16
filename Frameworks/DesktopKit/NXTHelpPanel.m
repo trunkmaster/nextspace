@@ -73,6 +73,30 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 
 @end
 
+@interface NXTHelpArticle : NSTextView
+@end
+@implementation NXTHelpArticle
+
+- (void)resetCursorRects
+{
+  NSSize   aSize;
+  NSRange  gRange = [_layoutManager glyphRangeForBoundingRect:[self bounds]
+                                              inTextContainer:_textContainer];
+  NSRect   gRect;
+  
+  for (NSUInteger index = 0; index < gRange.length; index++) {
+    aSize = [_layoutManager attachmentSizeForGlyphAtIndex:index];
+    if (aSize.width == 11) {
+      gRect = [_layoutManager boundingRectForGlyphRange:NSMakeRange(index,1)
+                                        inTextContainer:_textContainer];
+      [self addCursorRect:gRect cursor:[NSCursor pointingHandCursor]];
+    }
+  }
+  NSLog(@"resetCursorRects");
+}
+
+@end
+
 @implementation NXTHelpPanel (PrivateMethods)
 
 - (void)_setHelpDirectory:(NSString *)helpDirectory
@@ -166,8 +190,8 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 
   docPath = [cell representedObject];
   NSLog(@"[HelpPanel] showArticle doc path: %@", docPath);
-  
   artPath = [self _articlePathForAttachment:docPath];
+  
   if (artPath != nil) {
     if (historyPosition < historyLength) {
       historyPosition++;
@@ -363,9 +387,10 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   [scrollView setHasVerticalScroller:YES];
   [scrollView setBorderType:NSBezelBorder];
-  articleView = [[NSTextView alloc] initWithFrame:NSMakeRect(0,0,394,200)];
+  articleView = [[NXTHelpArticle alloc] initWithFrame:NSMakeRect(0,0,394,200)];
   [articleView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   [articleView setEditable:NO];
+  [articleView setDelegate:self];
   [scrollView setDocumentView:articleView];
   [splitView addSubview:scrollView];
   [scrollView release];
@@ -393,6 +418,33 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   }
   
   [super orderWindow:place relativeTo:otherWin];
+}
+
+// NSTextView delegate
+
+- (void)textView:(NSTextView *)textView
+   clickedOnCell:(id <NSTextAttachmentCell>)cell
+          inRect:(NSRect)cellFrame
+{
+  GSHelpLinkAttachment *attachment = (GSHelpLinkAttachment *)[cell attachment];
+  NSString             *fileName;
+  NSString             *currentPath, *filePath;
+
+  NSLog(@"Clicked on CELL(%.0fx%.0f): file:%@ marker:%@",
+        [cell cellSize].width, [cell cellSize].height,
+        [attachment fileName],
+        [attachment markerName]);
+  
+  if ([attachment isKindOfClass:[GSHelpLinkAttachment class]]) {
+    fileName = [attachment fileName];
+    currentPath = [_helpDirectory stringByAppendingPathComponent:[self helpFile]];
+    filePath = [[currentPath stringByDeletingLastPathComponent]
+                 stringByAppendingPathComponent:fileName];
+    NSLog(@"Will open: %@", filePath);
+    // Select TOC item
+    // Show article
+    // [self _showArticle];
+  }
 }
 
 // --- Managing the Contents
