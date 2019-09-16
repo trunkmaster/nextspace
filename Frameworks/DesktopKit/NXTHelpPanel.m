@@ -175,6 +175,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
       NSLog(@"Postion after history grow %i", historyPosition);
     }
     [articleView readRTFDFromFile:artPath];
+    [articleView scrollRangeToVisible:NSMakeRange(0,0)];
   }
   if (historyPosition > 0) {
     [backtrackBtn setEnabled:YES];
