@@ -83,7 +83,10 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   NSRange  gRange = [_layoutManager glyphRangeForBoundingRect:[self bounds]
                                               inTextContainer:_textContainer];
   NSRect   gRect;
-  
+
+  // Set pointing hand cursor to links
+  // TODO: It's assumed that links cell size is 11x11. Check if glyph really
+  // represents NeXTHelpLink RTF keyword (not just image).
   for (NSUInteger index = 0; index < gRange.length; index++) {
     aSize = [_layoutManager attachmentSizeForGlyphAtIndex:index];
     if (aSize.width == 11) {
@@ -92,7 +95,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
       [self addCursorRect:gRect cursor:[NSCursor pointingHandCursor]];
     }
   }
-  NSLog(@"resetCursorRects");
+  // NSLog(@"resetCursorRects");
 }
 
 @end
@@ -200,9 +203,11 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     }
     [articleView readRTFDFromFile:artPath];
     [articleView scrollRangeToVisible:NSMakeRange(0,0)];
+    
+    [backtrackBtn setEnabled:(historyPosition > 0)];
   }
-  if (historyPosition > 0) {
-    [backtrackBtn setEnabled:YES];
+  else {
+    [tocList selectItemAtIndex:history[historyPosition]];
   }
 }
 
@@ -300,7 +305,8 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   NSLog(@"Backtrack at %d", historyPosition);
   if (historyPosition > 0) {
     historyPosition--;
-    NSLog(@"Backtrack to %d - %lu", historyPosition, history[historyPosition]);
+    NSLog(@"Backtrack to %d - %lu", historyPosition,
+          history[historyPosition]);
     [tocList selectItemAtIndex:history[historyPosition]];
     cell = [tocList selectedItem];
     artPath = [self _articlePathForAttachment:[cell representedObject]];
@@ -426,24 +432,49 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
    clickedOnCell:(id <NSTextAttachmentCell>)cell
           inRect:(NSRect)cellFrame
 {
-  GSHelpLinkAttachment *attachment = (GSHelpLinkAttachment *)[cell attachment];
-  NSString             *fileName;
-  NSString             *currentPath, *filePath;
+  GSHelpLinkAttachment *attachment;
+  NSString             *currDir;
+  NSArray              *pathComps;
+  NSString             *repObject;
 
-  NSLog(@"Clicked on CELL(%.0fx%.0f): file:%@ marker:%@",
-        [cell cellSize].width, [cell cellSize].height,
-        [attachment fileName],
-        [attachment markerName]);
+  attachment = (GSHelpLinkAttachment *)[cell attachment];
+  // NSLog(@"Clicked on CELL(%.0fx%.0f): file:%@ marker:%@",
+  //       [cell cellSize].width, [cell cellSize].height,
+  //       [attachment fileName],
+  //       [attachment markerName]);
   
   if ([attachment isKindOfClass:[GSHelpLinkAttachment class]]) {
-    fileName = [attachment fileName];
-    currentPath = [_helpDirectory stringByAppendingPathComponent:[self helpFile]];
-    filePath = [[currentPath stringByDeletingLastPathComponent]
-                 stringByAppendingPathComponent:fileName];
-    NSLog(@"Will open: %@", filePath);
-    // Select TOC item
+    currDir = [[[tocList selectedItem] representedObject]
+                stringByDeletingLastPathComponent];
+    pathComps = [[attachment fileName] pathComponents];
+    // Convert to path relative to _helpDirectory
+    if ([pathComps count] == 1) { // relative to current dir of article
+      repObject = [currDir
+                    stringByAppendingPathComponent:[attachment fileName]];
+    }
+    else { // points to _helpDirectory (e.g `../Basics/Intro.rtfd`)
+      for (NSString *comp in pathComps) {
+        if ([comp isEqualToString:@".."]) {
+          currDir = [currDir stringByDeletingLastPathComponent];
+          continue;
+        }
+        currDir = [currDir stringByAppendingPathComponent:comp];
+      }
+      repObject = currDir;
+    }
+
+    // Find and select TOC item with `repObject`
+    NSString *object;
+    for (int i = 0; i < [tocAttachments count]; i++) {
+      object = [tocAttachments objectAtIndex:i];
+      if ([object isEqualToString:repObject]) {
+        [tocList selectItemAtIndex:i];
+        break;
+      }
+    }
+
     // Show article
-    // [self _showArticle];
+    [self _showArticle];
   }
 }
 
