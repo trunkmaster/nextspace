@@ -95,7 +95,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   // represents NeXTHelpLink RTF keyword (not just image).
   for (NSUInteger index = 0; index < gRange.length; index++) {
     aSize = [_layoutManager attachmentSizeForGlyphAtIndex:index];
-    if (aSize.width == 11) {
+    if (aSize.width == 12 && aSize.height == 12) {
       gRect = [_layoutManager boundingRectForGlyphRange:NSMakeRange(index,1)
                                         inTextContainer:_textContainer];
       [self addCursorRect:gRect cursor:[NSCursor pointingHandCursor]];
@@ -193,33 +193,22 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 - (void)_showArticle
 {
   NSCell   *cell = [tocList selectedItem];
-  NSString *docPath;
+  NSString *docPath = [cell representedObject];
   NSString *artPath;
 
-  docPath = [cell representedObject];
-  NSLog(@"[HelpPanel] showArticle doc path: %@", docPath);
+  // NSLog(@"[HelpPanel] showArticle doc path: %@", docPath);
   artPath = [self _articlePathForAttachment:docPath];
   
   if (artPath != nil) {
     if (historyPosition < historyLength) {
-      // Save displayed article scroller position before history grow
       if (historyPosition >= 0) {
-        NSRange gRange, cRange;
-        gRange = [[articleView layoutManager]
-                     glyphRangeForBoundingRect:scrollView.documentVisibleRect
-                               inTextContainer:articleView.textContainer];
-        history[historyPosition].range = gRange;
+        history[historyPosition].rect = [articleView visibleRect];
       }
-      NSLog(@"Before history grow position:%i range:%@",
-            historyPosition, NSStringFromRange(gRange));
       historyPosition++;
       history[historyPosition].index = [tocList indexOfItem:cell];
-      NSLog(@"After history grow position:%i scroller:%@",
-            historyPosition, NSStringFromRange(gRange));
     }
     [articleView readRTFDFromFile:artPath];
     [articleView scrollRangeToVisible:NSMakeRange(0,0)];
-    
     [backtrackBtn setEnabled:(historyPosition > 0)];
   }
   else {
@@ -315,22 +304,18 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 
 - (void)_goHistoryBack:(id)sender
 {
-  NSCell   *cell;
   NSString *artPath;
   
   NSLog(@"Backtrack at %d", historyPosition);
   if (historyPosition > 0) {
     historyPosition--;
-    NSLog(@"Backtrack to %d - %lu",
-          historyPosition, history[historyPosition].index);
+    
     [tocList selectItemAtIndex:history[historyPosition].index];
-    cell = [tocList selectedItem];
-    artPath = [self _articlePathForAttachment:[cell representedObject]];
+    artPath = [self _articlePathForAttachment:[[tocList selectedItem]
+                                                representedObject]];
     [articleView readRTFDFromFile:artPath];
-    [articleView scrollRangeToVisible:history[historyPosition].range];
+    [articleView scrollRectToVisible:history[historyPosition].rect];
   }
-  NSLog(@"Postion after backtrack %d scroller:%.2f", historyPosition,
-        [[scrollView verticalScroller] floatValue]);
   [backtrackBtn setEnabled:(historyPosition != 0)];
 }
 

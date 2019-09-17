@@ -35,7 +35,7 @@
 
 typedef struct {
   NSUInteger index;
-  NSRange    range;
+  NSRect     rect;
 } NXTHelpHistory;
 
 @interface NXTHelpPanel : NSPanel
