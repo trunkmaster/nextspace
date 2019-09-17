@@ -202,9 +202,20 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   
   if (artPath != nil) {
     if (historyPosition < historyLength) {
+      // Save displayed article scroller position before history grow
+      if (historyPosition >= 0) {
+        NSRange gRange, cRange;
+        gRange = [[articleView layoutManager]
+                     glyphRangeForBoundingRect:scrollView.documentVisibleRect
+                               inTextContainer:articleView.textContainer];
+        history[historyPosition].range = gRange;
+      }
+      NSLog(@"Before history grow position:%i range:%@",
+            historyPosition, NSStringFromRange(gRange));
       historyPosition++;
-      history[historyPosition] = [tocList indexOfItem:cell];
-      NSLog(@"Postion after history grow %i", historyPosition);
+      history[historyPosition].index = [tocList indexOfItem:cell];
+      NSLog(@"After history grow position:%i scroller:%@",
+            historyPosition, NSStringFromRange(gRange));
     }
     [articleView readRTFDFromFile:artPath];
     [articleView scrollRangeToVisible:NSMakeRange(0,0)];
@@ -212,7 +223,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     [backtrackBtn setEnabled:(historyPosition > 0)];
   }
   else {
-    [tocList selectItemAtIndex:history[historyPosition]];
+    [tocList selectItemAtIndex:history[historyPosition].index];
   }
 }
 
@@ -310,17 +321,17 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   NSLog(@"Backtrack at %d", historyPosition);
   if (historyPosition > 0) {
     historyPosition--;
-    NSLog(@"Backtrack to %d - %lu", historyPosition,
-          history[historyPosition]);
-    [tocList selectItemAtIndex:history[historyPosition]];
+    NSLog(@"Backtrack to %d - %lu",
+          historyPosition, history[historyPosition].index);
+    [tocList selectItemAtIndex:history[historyPosition].index];
     cell = [tocList selectedItem];
     artPath = [self _articlePathForAttachment:[cell representedObject]];
     [articleView readRTFDFromFile:artPath];
+    [articleView scrollRangeToVisible:history[historyPosition].range];
   }
-  NSLog(@"Postion after backtrack %d", historyPosition);
-  if (historyPosition == 0) {
-    [backtrackBtn setEnabled:NO];
-  }
+  NSLog(@"Postion after backtrack %d scroller:%.2f", historyPosition,
+        [[scrollView verticalScroller] floatValue]);
+  [backtrackBtn setEnabled:(historyPosition != 0)];
 }
 
 @end
@@ -393,7 +404,6 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   [tocList release];
 
   // Article
-  NSScrollView *scrollView;
   scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
   [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   [scrollView setHasVerticalScroller:YES];
@@ -409,6 +419,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   // History (for Backtrack)
   historyLength = 20;
   historyPosition = -1;
+  history = malloc(sizeof(NXTHelpHistory) * 20);
   
   [splitView setPosition:145.0 ofDividerAtIndex:0];
 

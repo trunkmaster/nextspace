@@ -33,6 +33,11 @@
 - (void)orderFrontHelpPanel:(id)sender;
 @end
 
+typedef struct {
+  NSUInteger index;
+  NSRange    range;
+} NXTHelpHistory;
+
 @interface NXTHelpPanel : NSPanel
 {
   NSString       *_helpDirectory;
@@ -41,7 +46,7 @@
   NSArray        *tocAttachments;
 
   // Backtrack
-  NSUInteger     history[20];
+  NXTHelpHistory *history;
   int            historyPosition;
   int            historyLength;
 
@@ -51,6 +56,7 @@
   NSTextField  *findField;
   NXTSplitView *splitView;
   NXTListView  *tocList;
+  NSScrollView *scrollView;
   NSTextView   *articleView;
 }
 
