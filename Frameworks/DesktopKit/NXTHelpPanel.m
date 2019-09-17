@@ -34,6 +34,13 @@
 // Singleton
 static NXTHelpPanel *_sharedHelpPanel = nil;
 
+@implementation NSApplication (NSApplicationHelpExtension)
+- (void)orderFrontHelpPanel:(id)sender
+{
+  [[NXTHelpPanel sharedHelpPanel] makeKeyAndOrderFront:self];
+}
+@end
+
 @implementation NSString (NSStringTextFinding)
 
 - (NSRange)findString:(NSString *)string
@@ -76,7 +83,6 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 @interface NXTHelpArticle : NSTextView
 @end
 @implementation NXTHelpArticle
-
 - (void)resetCursorRects
 {
   NSSize   aSize;
@@ -97,7 +103,6 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   }
   // NSLog(@"resetCursorRects");
 }
-
 @end
 
 @implementation NXTHelpPanel (PrivateMethods)
