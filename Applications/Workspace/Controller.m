@@ -921,11 +921,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [preferences activate];
 }
 
-- (void)showHelpPanel:(id)sender
-{
-  [[NXTHelpPanel sharedHelpPanel] makeKeyAndOrderFront:self];
-}
-
 // File
 - (void)closeViewer:(id)viewer
 {
