@@ -42,22 +42,29 @@ typedef struct {
 {
   NSString       *_helpDirectory;
   NSString       *_helpFile; // Currently displayed document
-  NSArray        *tocTitles;
-  NSArray        *tocAttachments;
 
   // Backtrack
   NXTHelpHistory *history;
   int            historyPosition;
   int            historyLength;
 
-  NSButton     *findBtn;
-  NSButton     *indexBtn;
-  NSButton     *backtrackBtn;
-  NSTextField  *findField;
-  NXTSplitView *splitView;
-  NXTListView  *tocList;
-  NSScrollView *scrollView;
-  NSTextView   *articleView;
+  // Table of contents
+  NXTListView    *tocList;
+  NSArray        *tocTitles;
+  NSArray        *tocAttachments;
+
+  // Index
+  NXTListView    *indexList;
+  NSArray        *indexTitles;
+  NSArray        *indexAttachments;
+  
+  NSButton       *findBtn;
+  NSButton       *indexBtn;
+  NSButton       *backtrackBtn;
+  NSTextField    *findField;
+  NXTSplitView   *splitView;
+  NSScrollView   *scrollView;
+  NSTextView     *articleView;
 }
 
 //

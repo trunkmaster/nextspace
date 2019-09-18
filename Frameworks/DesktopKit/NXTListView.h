@@ -27,6 +27,8 @@
 {
   NXTListMatrix *listMatrix;
   NSScrollView  *scrollView;
+  NSColor       *backgroundColor;
+  NSColor       *selBackgroundColor;
 }
 
 - (void)loadTitles:(NSArray *)titles

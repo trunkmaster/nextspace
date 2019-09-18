@@ -168,10 +168,10 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     i = range.location + range.length;
   }
 
-  if (tocTitles != nil) [titles release];
+  if (tocTitles != nil) [tocTitles release];
   tocTitles = [[NSArray alloc] initWithArray:titles];
   [titles release];
-  if (tocAttachments != nil) [titles release];
+  if (tocAttachments != nil) [tocAttachments release];
   tocAttachments = [[NSArray alloc] initWithArray:attachments];
   [attachments release];
   
@@ -213,6 +213,11 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     [articleView readRTFDFromFile:artPath];
     [articleView scrollRangeToVisible:NSMakeRange(0,0)];
     [backtrackBtn setEnabled:(historyPosition > 0)];
+    if ([scrollView superview] == nil) {
+      [splitView replaceSubview:indexList with:scrollView];
+      [splitView adjustSubviews];
+      [splitView setPosition:145.0 ofDividerAtIndex:0];
+    }
   }
   else {
     [tocList selectItemAtIndex:history[historyPosition].index];
@@ -290,13 +295,82 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   }
 }
 
+- (void)_loadIndex:(NSString *)indexFilePath
+{
+  NSMutableArray     *titles, *attachments;
+  NSAttributedString *attrString, *aS;
+  NSString           *text;
+  NSRange            range, lineRange;
+  NSUInteger         diff;
+  NSDictionary       *attrs;
+  id                 attachment;
+
+  NSLog(@"Load Index from: %@", indexFilePath);
+
+  titles = [NSMutableArray new];
+  attachments = [NSMutableArray new];
+  // indexFilePath = [indexFilePath stringByAppendingPathComponent:@"TXT.rtf"];
+  attrString = [[NSAttributedString alloc] initWithPath:indexFilePath
+                                     documentAttributes:NULL];
+  text = [attrString string];
+  NSLog(@"Index length %lu", [text length]);
+    
+  for (int i = 0; i < [text length]; i++) {
+    lineRange = [text lineRangeForRange:NSMakeRange(i,1)];
+    attrs = [attrString attributesAtIndex:i effectiveRange:&range];
+    NSLog(@"%@ - %@", NSStringFromRange(range), NSStringFromRange(lineRange));
+    if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
+      NSLog(@"Attachment: %@", [attachment className]);
+      if (lineRange.length > 2) {
+        // Skip attachment symbol
+        lineRange.length -= range.length;
+        lineRange.location = range.location + range.length;
+      }
+
+      aS = [attrString attributedSubstringFromRange:lineRange];
+      NSLog(@"String(%@): `%@`", NSStringFromRange(lineRange), [aS string]);
+      [titles addObject:[attrString attributedSubstringFromRange:lineRange]];
+      if ([attachment isKindOfClass:[NSTextAttachment class]] == NO)
+        [attachments addObject:[attachment fileName]];
+      else
+        [attachments addObject:@""];
+    }
+    else {
+      // NSLog(@"String: `%@`",
+      //       [[attrString attributedSubstringFromRange:lineRange] string]);
+      [titles addObject:[attrString attributedSubstringFromRange:lineRange]];
+      [attachments addObject:@""];
+    }
+    i = lineRange.location + (lineRange.length - 1);
+  }
+  [attrString release];
+
+  if (indexTitles != nil) [indexTitles release];
+  indexTitles = [[NSArray alloc] initWithArray:titles];
+  [titles release];
+  if (indexAttachments != nil) [indexAttachments release];
+  indexAttachments = [[NSArray alloc] initWithArray:attachments];
+  [attachments release];
+}
+
 - (void)_showIndex:(id)sender
 {
   // Find item with `Index.rtfd` represented object
   for (int i = 0; i < [tocTitles count]; i++) {
     if ([tocAttachments[i] isEqualToString:@"Index.rtfd"]) {
+      if (indexTitles == nil || [indexTitles count] == 0) {
+        [self _loadIndex:[_helpDirectory
+                           stringByAppendingPathComponent:tocAttachments[i]]];
+        indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
+        [indexList loadTitles:indexTitles andObjects:indexAttachments];
+        // [indexList setTarget:self];
+        // [indexList setAction:@selector(_showArticle)];
+      }
+      [splitView replaceSubview:scrollView with:indexList];
+      [splitView adjustSubviews];
+      [splitView setPosition:145.0 ofDividerAtIndex:0];
+      [indexList setNextKeyView:findField];
       [tocList selectItemAtIndex:i];
-      [self _showArticle];
       return;
     }
   }
@@ -404,7 +478,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   [articleView setDelegate:self];
   [scrollView setDocumentView:articleView];
   [splitView addSubview:scrollView];
-  [scrollView release];
+  // [scrollView release];
 
   // History (for Backtrack)
   historyLength = 20;

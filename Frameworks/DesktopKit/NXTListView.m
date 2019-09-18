@@ -286,6 +286,14 @@
   [listMatrix setAction:action];
 }
 
+- (void)setBackgroundColor:(NSColor *)backColor
+{
+  // backgroundColor = backColor;
+}
+- (void)setSelectionBackgroundColor:(NSColor *)selColor
+{
+}
+
 - (id)selectedItem
 {
   return [listMatrix selectedCell];
