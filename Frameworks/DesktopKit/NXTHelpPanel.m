@@ -98,6 +98,9 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     if (aSize.width == 12 && aSize.height == 12) {
       gRect = [_layoutManager boundingRectForGlyphRange:NSMakeRange(index,1)
                                         inTextContainer:_textContainer];
+      gRect.origin.x += (gRect.size.width-12)/2;
+      gRect.origin.y += (gRect.size.height-12)/2;
+      gRect.size = aSize;
       [self addCursorRect:gRect cursor:[NSCursor pointingHandCursor]];
     }
   }
@@ -214,9 +217,10 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   else {
     [tocList selectItemAtIndex:history[historyPosition].index];
   }
+  [self makeFirstResponder:findField];
 }
 
-- (NSRange)_findInArcticleAtPath:(NSString *)path
+- (NSRange)_findInArticleAtPath:(NSString *)path
 {
   NSText       *reader = [NSText new];
   NSString     *text = nil;
@@ -273,7 +277,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
       artPath = [self _articlePathForAttachment:[tocAttachments objectAtIndex:i]];
       if ([artPath isEqualToString:@""] == NO &&
           [[artPath lastPathComponent] isEqualToString:@"Index.rtfd"] == NO) {
-        range = [self _findInArcticleAtPath:artPath];
+        range = [self _findInArticleAtPath:artPath];
         if (range.length > 0) {
           [tocList selectItemAtIndex:i];
           [self _showArticle];        
@@ -386,6 +390,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   [splitView addSubview:tocList];
   [tocList setTarget:self];
   [tocList setAction:@selector(_showArticle)];
+  [tocList setNextKeyView:findField];
   [tocList release];
 
   // Article
