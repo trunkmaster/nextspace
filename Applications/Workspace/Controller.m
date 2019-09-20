@@ -843,7 +843,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   keyboardBadge = [[NXTIconBadge alloc]
                              initWithPoint:NSMakePoint(5,2)
                                       text:@"us"
-                                      font:[NSFont systemFontOfSize:10]
+                                      font:[NSFont systemFontOfSize:9]
                                  textColor:[NSColor blackColor]
                                shadowColor:[NSColor lightGrayColor]];
   [[[NSApp iconWindow] contentView] addSubview:keyboardBadge];
