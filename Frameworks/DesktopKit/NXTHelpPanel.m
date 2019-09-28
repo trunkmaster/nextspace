@@ -491,6 +491,8 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
                            [[NSProcessInfo processInfo] processName]]];
 }
 
+// --- Overrides
+
 - (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(NSInteger)otherWin
 {
   NSString *toc;
@@ -506,7 +508,29 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   [super orderWindow:place relativeTo:otherWin];
 }
 
-// NSTextView delegate
+- (void)sendEvent:(NSEvent *)theEvent
+{
+  NSEventType type = [theEvent type];
+  unichar c;
+
+  if (type == NSKeyDown || type == NSKeyUp) {
+    c = [[theEvent characters] characterAtIndex:0];
+  }
+  
+  if (type == NSKeyDown &&
+      (c == NSUpArrowFunctionKey || c == NSDownArrowFunctionKey)) {
+    [tocList keyDown:theEvent];
+  }
+  else if (type == NSKeyUp &&
+      (c == NSUpArrowFunctionKey || c == NSDownArrowFunctionKey)) {
+    [tocList keyUp:theEvent];
+  }
+  else {
+    [super sendEvent:theEvent];
+  }
+}
+
+// --- NSTextView delegate
 
 - (void)textView:(NSTextView *)textView
    clickedOnCell:(id <NSTextAttachmentCell>)cell

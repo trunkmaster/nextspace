@@ -315,4 +315,13 @@
   return row;
 }
 
+- (void)keyDown:(NSEvent *)theEvent
+{
+  [listMatrix keyDown:theEvent];
+}
+- (void)keyUp:(NSEvent *)theEvent
+{
+  [listMatrix keyUp:theEvent];
+}
+
 @end
