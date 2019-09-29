@@ -19,7 +19,8 @@
 	    splitView,
 	    backtrackBtn,
 	    indexBtn,
-	    findBtn
+	    findBtn,
+	    statusField
 	);
 	Super = NSPanel;
     };
