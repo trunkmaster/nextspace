@@ -38,6 +38,9 @@
 
 - (id)selectedItem;
 - (void)selectItemAtIndex:(NSInteger)index;
+- (NSCell *)itemAtIndex:(NSInteger)index;
 - (NSInteger)indexOfItem:(NSCell *)item;
+- (NSInteger)indexOfItemWithObjectRep:(id)object;
+- (NSInteger)indexOfItemWithStringRep:(NSString *)string;
 
 @end

@@ -33,6 +33,7 @@
 
 // Singleton
 static NXTHelpPanel *_sharedHelpPanel = nil;
+static NSRange selectedRange;
 
 @implementation NSApplication (NSApplicationHelpExtension)
 - (void)orderFrontHelpPanel:(id)sender
@@ -185,8 +186,6 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   if (attachment && [attachment isEqualToString:@""] == NO) {
     artPath = [_helpDirectory stringByAppendingPathComponent:attachment];
     if ([[NSFileManager defaultManager] fileExistsAtPath:artPath] == NO) {
-      NXTRunAlertPanel(@"Help", @"Help file `%@` doesn't exist",
-                       @"OK", nil, nil, attachment);
       artPath = nil;
     }
   }
@@ -195,14 +194,29 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 
 - (void)_showArticle
 {
-  NSCell   *cell = [tocList selectedItem];
-  NSString *docPath = [cell representedObject];
-  NSString *artPath;
+  [self _showArticleWithPath:nil];
+}
 
-  // NSLog(@"[HelpPanel] showArticle doc path: %@", docPath);
-  artPath = [self _articlePathForAttachment:docPath];
+// `path` must be a relative path e.g. `Tasks/Basics/Intro.rtfd`
+- (void)_showArticleWithPath:(NSString *)path
+{
+  NSCell    *cell = nil;
+  NSString  *absPath;
+  NSInteger index;
+
+  if (path == nil) {
+    cell = [tocList selectedItem];
+    path = [cell representedObject];
+  }
+  else {
+    if ((index = [tocList indexOfItemWithStringRep:path]) != NSNotFound) {
+      cell = [tocList itemAtIndex:index];
+    }
+  }
+  NSLog(@"[HelpPanel] showArticle doc path: %@", path);
+  absPath = [self _articlePathForAttachment:path];
   
-  if (artPath != nil) {
+  if (absPath != nil && cell != nil) {
     if (historyPosition < historyLength) {
       if (historyPosition >= 0) {
         history[historyPosition].rect = [articleView visibleRect];
@@ -210,7 +224,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
       historyPosition++;
       history[historyPosition].index = [tocList indexOfItem:cell];
     }
-    [articleView readRTFDFromFile:artPath];
+    [articleView readRTFDFromFile:absPath];
     [articleView scrollRangeToVisible:NSMakeRange(0,0)];
     [backtrackBtn setEnabled:(historyPosition > 0)];
     if ([scrollView superview] == nil) {
@@ -220,6 +234,8 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     }
   }
   else {
+    NXTRunAlertPanel(@"Help", @"Help file `%@` doesn't exist",
+                     @"OK", nil, nil, path);
     [tocList selectItemAtIndex:history[historyPosition].index];
   }
   [self makeFirstResponder:findField];
@@ -248,51 +264,124 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
   return range;
 }
 
+- (void)_enableButtons:(BOOL)isEnabled
+{
+  NSString *artPath = nil;
+
+  if (isEnabled != NO) {
+    // Find
+    [findBtn setEnabled:YES];
+    // Index
+    artPath = [_helpDirectory stringByAppendingPathComponent:@"Index.rtfd"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:artPath] != NO) {
+      [indexBtn setEnabled:YES];
+    }
+    else {
+      [indexBtn setEnabled:NO];
+    }
+    // Backtrack
+    [backtrackBtn setEnabled:(historyPosition > 0) ? YES : NO];
+  }
+  else {
+    [findBtn setEnabled:NO];
+    [indexBtn setEnabled:NO];
+    [backtrackBtn setEnabled:NO];
+  }  
+}
+
+- (void)_enableFindField
+{
+  [findField setTextColor:[NSColor blackColor]];
+  [findField setSelectable:YES];
+  [findField setEditable:YES];
+  [findField drawCell:[findField cell]];
+  [self makeFirstResponder:findField];
+  [self _enableButtons:YES];
+  [statusField setStringValue:@""];
+}
+
+- (void)_scrollArticle
+{
+  [articleView setSelectedRange:selectedRange];
+  [articleView scrollRangeToVisible:selectedRange];
+}
+
 - (void)_performFind:(id)sender
 {
-  // Search opened article
-  NSString     *text = [[articleView textStorage] string];
-  NSRange      selectedRange= NSMakeRange(0,0);
-  NSRange      range;
-  unsigned int options = NSCaseInsensitiveSearch;
-  BOOL         lastFindWasSuccessful = NO;
+  dispatch_queue_t find_q;
   
-  if (text && [text length]) {
-    selectedRange = [articleView selectedRange];
-    if (selectedRange.length != 0) {
-      selectedRange.location = selectedRange.location + selectedRange.length;
-      selectedRange.length = 0;
-    }
-    range = [text findString:[findField stringValue]
-               selectedRange:selectedRange
-                     options:options
-                        wrap:NO];
-    if (range.length) {
-      [articleView setSelectedRange:range];
-      [articleView scrollRangeToVisible:range];
-      lastFindWasSuccessful = YES;
-    }
+  if ([[findField stringValue] length] == 0) {
+    return;
   }
+
+  [findField setTextColor:[NSColor grayColor]];
+  [findField setEditable:NO];
+  [findField setSelectable:NO];
+  [findField drawCell:[findField cell]];
+  [self makeFirstResponder:articleView];
+  [self _enableButtons:NO];
+  [statusField setStringValue:@"Searching..."];
   
-  // Search through the articles, skips Index.rtfd
-  if (!lastFindWasSuccessful) {
-    NSUInteger index = [tocList indexOfItem:[tocList selectedItem]] + 1;
-    NSString   *artPath;
-    for (NSUInteger i = index; i < [tocAttachments count]; i++) {
-      artPath = [self _articlePathForAttachment:[tocAttachments objectAtIndex:i]];
-      if ([artPath isEqualToString:@""] == NO &&
-          [[artPath lastPathComponent] isEqualToString:@"Index.rtfd"] == NO) {
-        range = [self _findInArticleAtPath:artPath];
-        if (range.length > 0) {
-          [tocList selectItemAtIndex:i];
-          [self _showArticle];        
-          [articleView setSelectedRange:range];
-          [articleView scrollRangeToVisible:range];
-          break;
+  find_q = dispatch_queue_create("ns.desktopkit.helppanel", NULL);
+  dispatch_async(find_q, ^{
+      NSString     *text = [[articleView textStorage] string];
+      NSRange      range;
+      unsigned int options = NSCaseInsensitiveSearch;
+      BOOL         lastFindWasSuccessful = NO;
+      
+      // Search opened article
+      selectedRange = [articleView selectedRange];
+      if (text && [text length]) {
+        if (selectedRange.length != 0) {
+          selectedRange.location = selectedRange.location + selectedRange.length;
+          selectedRange.length = 0;
+        }
+        else {
+          selectedRange.location = 0;
+        }
+        range = [text findString:[findField stringValue]
+                   selectedRange:selectedRange
+                         options:options
+                            wrap:NO];
+        if (range.length) {
+          selectedRange.location = range.location;
+          selectedRange.length = range.length;
+          [self performSelectorOnMainThread:@selector(_scrollArticle)
+                                 withObject:nil
+                              waitUntilDone:YES];
+          lastFindWasSuccessful = YES;
         }
       }
-    }
-  }
+  
+      // Search through the articles, skips Index.rtfd
+      if (!lastFindWasSuccessful) {
+        NSUInteger index = [tocList indexOfItem:[tocList selectedItem]] + 1;
+        NSString   *artPath;
+        for (NSUInteger i = index; i < [tocAttachments count]; i++) {
+          artPath = [self _articlePathForAttachment:[tocAttachments objectAtIndex:i]];
+          if ([artPath isEqualToString:@""] == NO &&
+              [[artPath lastPathComponent] isEqualToString:@"Index.rtfd"] == NO) {
+            range = [self _findInArticleAtPath:artPath];
+            if (range.length > 0) {
+              [tocList selectItemAtIndex:i];
+              [self performSelectorOnMainThread:@selector(_showArticle)
+                                     withObject:nil
+                                  waitUntilDone:YES];
+              selectedRange.location = range.location;
+              selectedRange.length = range.length;
+              [self performSelectorOnMainThread:@selector(_scrollArticle)
+                                     withObject:nil
+                                  waitUntilDone:YES];
+              break;
+            }
+          }
+        }
+      }
+    
+      [self performSelectorOnMainThread:@selector(_enableFindField)
+                             withObject:nil
+                          waitUntilDone:YES];
+    });
 }
 
 - (void)_loadIndex:(NSString *)indexFilePath
@@ -409,6 +498,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     
   return _sharedHelpPanel;
 }
+
 + (NXTHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory
 {
   NSString     *tocFilePath;
@@ -457,6 +547,8 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
 
 - (void)awakeFromNib
 {
+  [statusField setStringValue:@""];
+  [self _enableButtons:YES];
   [splitView setResizableState:NSOnState];
 
   // TOC list
@@ -502,7 +594,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     [self _loadTableOfContents:toc];
     [tocList loadTitles:tocTitles andObjects:tocAttachments];
     [tocList selectItemAtIndex:0];
-    [self _showArticle];
+    [self _showArticleWithPath:nil];
   }
   
   [super orderWindow:place relativeTo:otherWin];
@@ -522,7 +614,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     [tocList keyDown:theEvent];
   }
   else if (type == NSKeyUp &&
-      (c == NSUpArrowFunctionKey || c == NSDownArrowFunctionKey)) {
+           (c == NSUpArrowFunctionKey || c == NSDownArrowFunctionKey)) {
     [tocList keyUp:theEvent];
   }
   else {
@@ -578,7 +670,7 @@ static NXTHelpPanel *_sharedHelpPanel = nil;
     }
 
     // Show article
-    [self _showArticle];
+    [self _showArticleWithPath:nil];
   }
 }
 

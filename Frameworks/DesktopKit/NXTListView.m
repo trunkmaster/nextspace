@@ -307,12 +307,45 @@
   [listMatrix selectCellAtRow:index column:0];
 }
 
+- (NSCell *)itemAtIndex:(NSInteger)index
+{
+  return [listMatrix cellAtRow:index column:0];
+}
+
 - (NSInteger)indexOfItem:(NSCell *)item
 {
   NSInteger row, column;
   [listMatrix getRow:&row column:&column ofCell:item];
 
   return row;
+}
+
+// Returns index of item that represented object is `object`
+- (NSInteger)indexOfItemWithStringRep:(NSString *)string
+{
+  NSString *rep;
+  
+  for (NSCell *cell in [listMatrix cells]) {
+    rep = [cell representedObject];
+    if ([rep isKindOfClass:[NSString class]] && [rep isEqualToString:string]) {
+      return [self indexOfItem:cell];
+    }
+  }
+  
+  return NSNotFound;
+}
+- (NSInteger)indexOfItemWithObjectRep:(id)object
+{
+  NSString *rep;
+  
+  for (NSCell *cell in [listMatrix cells]) {
+    rep = [cell representedObject];
+    if ([rep isEqualTo:object]) {
+      return [self indexOfItem:cell];
+    }
+  }
+  
+ return NSNotFound;
 }
 
 - (void)keyDown:(NSEvent *)theEvent

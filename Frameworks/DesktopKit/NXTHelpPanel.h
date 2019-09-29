@@ -62,6 +62,7 @@ typedef struct {
   NSButton       *indexBtn;
   NSButton       *backtrackBtn;
   NSTextField    *findField;
+  NSTextField    *statusField;
   NXTSplitView   *splitView;
   NSScrollView   *scrollView;
   NSTextView     *articleView;
