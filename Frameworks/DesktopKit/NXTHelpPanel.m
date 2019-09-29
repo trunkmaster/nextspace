@@ -33,7 +33,8 @@
 
 // Singleton
 static NXTHelpPanel *_sharedHelpPanel = nil;
-static NSRange selectedRange;
+static NSRange      selectedRange;
+static NSUInteger   selectedItemIndex;
 
 @implementation NSApplication (NSApplicationHelpExtension)
 - (void)orderFrontHelpPanel:(id)sender
@@ -192,11 +193,6 @@ static NSRange selectedRange;
   return artPath;
 }
 
-- (void)_showArticle
-{
-  [self _showArticleWithPath:nil];
-}
-
 // `path` must be a relative path e.g. `Tasks/Basics/Intro.rtfd`
 - (void)_showArticleWithPath:(NSString *)path
 {
@@ -206,6 +202,10 @@ static NSRange selectedRange;
 
   if (path == nil) {
     cell = [tocList selectedItem];
+    if ([tocList indexOfItem:cell] != selectedItemIndex) {
+      [tocList selectItemAtIndex:selectedItemIndex];
+      cell = [tocList selectedItem];
+    }
     path = [cell representedObject];
   }
   else {
@@ -236,7 +236,8 @@ static NSRange selectedRange;
   else {
     NXTRunAlertPanel(@"Help", @"Help file `%@` doesn't exist",
                      @"OK", nil, nil, path);
-    [tocList selectItemAtIndex:history[historyPosition].index];
+    selectedItemIndex = history[historyPosition].index;
+    [tocList selectItemAtIndex:selectedItemIndex];
   }
   [self makeFirstResponder:findField];
 }
@@ -306,6 +307,12 @@ static NSRange selectedRange;
   [articleView scrollRangeToVisible:selectedRange];
 }
 
+- (void)_tocItemClicked:(id)sender
+{
+  selectedItemIndex = [tocList indexOfItem:[tocList selectedItem]];
+  [self _showArticleWithPath:nil];
+}
+
 - (void)_performFind:(id)sender
 {
   dispatch_queue_t find_q;
@@ -363,8 +370,8 @@ static NSRange selectedRange;
               [[artPath lastPathComponent] isEqualToString:@"Index.rtfd"] == NO) {
             range = [self _findInArticleAtPath:artPath];
             if (range.length > 0) {
-              [tocList selectItemAtIndex:i];
-              [self performSelectorOnMainThread:@selector(_showArticle)
+              selectedItemIndex = i;
+              [self performSelectorOnMainThread:@selector(_showArticleWithPath:)
                                      withObject:nil
                                   waitUntilDone:YES];
               selectedRange.location = range.location;
@@ -460,6 +467,7 @@ static NSRange selectedRange;
       [splitView setPosition:145.0 ofDividerAtIndex:0];
       [indexList setNextKeyView:findField];
       [tocList selectItemAtIndex:i];
+      selectedItemIndex = i;
       return;
     }
   }
@@ -476,8 +484,9 @@ static NSRange selectedRange;
   NSLog(@"Backtrack at %d", historyPosition);
   if (historyPosition > 0) {
     historyPosition--;
-    
-    [tocList selectItemAtIndex:history[historyPosition].index];
+
+    selectedItemIndex = history[historyPosition].index;
+    [tocList selectItemAtIndex:selectedItemIndex];
     artPath = [self _articlePathForAttachment:[[tocList selectedItem]
                                                 representedObject]];
     [articleView readRTFDFromFile:artPath];
@@ -521,7 +530,6 @@ static NSRange selectedRange;
     return nil;
   }
 
-  
   // Create instance
   if (_sharedHelpPanel == nil) {
     _sharedHelpPanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTHelpPanel"];
@@ -548,6 +556,9 @@ static NSRange selectedRange;
 - (void)awakeFromNib
 {
   [statusField setStringValue:@""];
+  [[findBtn cell] setImageDimsWhenDisabled:YES];
+  [[indexBtn cell] setImageDimsWhenDisabled:YES];
+  [[backtrackBtn cell] setImageDimsWhenDisabled:YES];
   [self _enableButtons:YES];
   [splitView setResizableState:NSOnState];
 
@@ -555,7 +566,7 @@ static NSRange selectedRange;
   tocList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
   [splitView addSubview:tocList];
   [tocList setTarget:self];
-  [tocList setAction:@selector(_showArticle)];
+  [tocList setAction:@selector(_tocItemClicked:)];
   [tocList setNextKeyView:findField];
   [tocList release];
 
@@ -594,6 +605,7 @@ static NSRange selectedRange;
     [self _loadTableOfContents:toc];
     [tocList loadTitles:tocTitles andObjects:tocAttachments];
     [tocList selectItemAtIndex:0];
+    selectedItemIndex = 0;
     [self _showArticleWithPath:nil];
   }
   
@@ -665,6 +677,7 @@ static NSRange selectedRange;
       object = [tocAttachments objectAtIndex:i];
       if ([object isEqualToString:repObject]) {
         [tocList selectItemAtIndex:i];
+        selectedItemIndex = i;
         break;
       }
     }
