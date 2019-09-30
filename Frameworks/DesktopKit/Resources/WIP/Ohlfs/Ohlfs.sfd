@@ -3213,7 +3213,7 @@ NameList: AGL For New Fonts
 DisplaySize: 12
 AntiAlias: 1
 FitToEm: 0
-WinInfo: 960 32 8
+WinInfo: 64 32 8
 BeginPrivate: 0
 EndPrivate
 BeginChars: 65551 673
@@ -71214,7 +71214,7 @@ LkpkCLkpk+
 BDFChar: 57 86 7 1 5 0 7
 LkpkC:f&8W
 BDFChar: 58 87 7 1 5 0 7
-LkpkcW2NNh
+Lkr".W)-;e
 BDFChar: 59 88 7 1 5 0 7
 LknkM+AdlM
 BDFChar: 60 89 7 1 5 0 7
@@ -71277,8 +71277,8 @@ BDFChar: 88 117 7 1 5 0 6
 LkpkCLmViU
 BDFChar: 89 118 7 1 5 0 6
 Lknl(:`pk\
-BDFChar: 90 119 7 0 6 0 6
-JqB/K<)b7G
+BDFChar: 90 119 7 1 5 0 6
+LkpkcW)-:j
 BDFChar: 91 120 7 1 5 0 6
 Leo3:+Adjo
 BDFChar: 92 121 7 1 5 -2 6
