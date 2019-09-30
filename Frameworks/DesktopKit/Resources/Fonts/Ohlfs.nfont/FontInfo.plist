@@ -1,0 +1,26 @@
+{
+  Version = 1;
+  Foundry = "NextSpace";
+  Faces = (
+    {
+      PostScriptName = "Ohlfs";
+      Name = "Medium";
+      Files = (Ohlfs-Medium.ttf);
+    },
+    {
+      PostScriptName = "Ohlfs-Bold";
+      Name = "Bold";
+      Files = ("../Liberation Mono.nfont/LiberationMono-Bold.ttf");
+    },
+    {
+      PostScriptName = "Ohlfs-Oblique";
+      Name = "Italic";
+      Files = ("../Liberation Mono.nfont/LiberationMono-Italic.ttf");
+    },
+    {
+      PostScriptName = "Ohlfs-BoldOblique";
+      Name = "BoldOblique";
+      Files = ("../Liberation Mono.nfont/LiberationMono-BoldItalic.ttf");
+    }
+    );
+}
