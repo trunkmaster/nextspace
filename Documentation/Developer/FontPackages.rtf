@@ -1,13 +1,13 @@
-{\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f0\fswiss Helvetica;\f2\fnil Terminus;\f1\froman Times;}
+{\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f0\fswiss Helvetica;\f2\fnil Ohlfs;\f1\froman Times;}
 {\colortbl;\red0\green0\blue0;}
-\paperw12860\paperh11240\hyphauto1\hyphfactor0\f0\fs22\pard\ql Source: http://wiki.gnustep.org/index.php/Nfont_packages\fs24 \par
+\paperw12860\paperh11240\hyphauto1\hyphfactor0\f0\fs20\pard\ql Source: http://wiki.gnustep.org/index.php/Nfont_packages\fs24 \par
 \fs36 \par
 \pard\ql\f1\fs88\i\pard\tx2020\tx2400\ql Font bundles\f0\fs24\i0\cf1 \par
 \par
 \f1\fs28 The Art backend manages fonts using bundle with \b .nfont\b0  extension.\par
 \pard\ql\pard\tx0\tx1940\ql These \i font bundles\i0  are hand-crafted directories with a \b FontInfo.plist\b0  file and the font files, where the backend can find additional information to the fonts. System-wide available font bundles are installed to /Library/Fonts.\par
 \pard\ql\pard\tx2020\tx2400\ql \par
-Creating a font bundle is mainly a trivial task, so there are tools to help you creating them. One of them is alexm\rquote s \f2\fs24 mknfonts\f1\fs28  package.\f0\fs24 \par
+Creating a font bundle is mainly a trivial task, so there are tools to help you creating them. One of them is alexm\rquote s \f0\fs24 mknfonts\f1\fs28  package.\f0\fs24 \par
 \pard\ql\pard\ql \par
 \fs52\b Example\fs24\b0 \par
 \par
@@ -19,9 +19,9 @@ Arial.nfont/arial.ttf\par
 Arial.nfont/arialbi.ttf\par
 Arial.nfont/arialbd.ttf\par
 Arial.nfont/FontInfo.plist\par
-Arial.nfont/arialblk.ttf\par
+Arial.nfont/arialblk.ttf\f0 \par
 \par
-\f0 \par
+\par
 \f1\fs28 This is the FontInfo.plist file in that directory:\f0\fs24 \par
 \par
 \f2 \{\par
@@ -110,12 +110,12 @@ Arial.nfont/arialblk.ttf\par
 \par
 \f1\fs28 There\rquote s a hack for encoding rendering hints into Nfonts packages. You provide them using the\f0\fs24  \f1\fs28\b RenderHints_hack\b0  value. It\rquote s a 24-bit value (usually given in hexadecimal form), where the highest-order byte contains information on if we want to use antialiasing by default and the two following bytes contain hinting information for antialiased displays and non-antialiased displays.\f0\fs24 \par
 \par
-\f2 <-- high-order bits                       low-order bits -->\par
+\f2\fs20 <-- high-order bits                       low-order bits -->\par
 [  0 0 0 0 0 0 0 D  |  0 0 0 0 0 0 A A  | 0 0 0 0 0 0 N N  ]\par
                  |                 \\ /                \\ /\par
       antialiasing switch           |                  |\par
                             hinting type           hinting type\par
-                     on antialiased displays    on non-antialiased displays\f0 \par
+                     on antialiased displays    on non-antialiased displays\f0\fs24 \par
 \par
 \par
 \f1\fs28 The rendering hint types are as follows:\par
@@ -128,6 +128,6 @@ Arial.nfont/arialblk.ttf\par
 \par
 \fs48\b Rendering Hint example\fs24\b0 \par
 \par
-\f1\fs28 Let\rquote s say we have a \i RenderHints_hack\i0  value of \f2\fs24 0x010203\f1\fs28 . \par
+\f1\fs28 Let\rquote s say we have a \i RenderHints_hack\i0  value of \f0\fs24 0x010203\f1\fs28 . \par
 This would then mean "use antialiasing, on antialiased displays use instructions in the font and on unantialiased displays force automatic hinting".\f0\fs24 \par
 }

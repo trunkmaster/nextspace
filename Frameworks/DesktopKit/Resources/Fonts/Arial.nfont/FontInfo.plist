@@ -1,32 +1,29 @@
-{
+﻿{
     Faces = (
-	{
-	    Files = (
-		arial.ttf
-	    );
-	    Name = Medium;
-	    PostScriptName = Arial;
-	},
-	{
-	    Files = (
-		arialbd.ttf
-	    );
-	    Name = Bold;
-	    PostScriptName = Arial-Bold;
-	},
-	{
-	    Files = (
-		arialbi.ttf
-	    );
-	    Name = BoldOblique;
-	    PostScriptName = Arial-BoldOblique;
-	},
-	{
-	    Files = (
-		ariali.ttf
-	    );
-	    Name = Oblique;
-	    PostScriptName = Arial-Oblique;
-	}
+        {
+            Files = (arial.ttf);
+            Name = Medium;
+            PostScriptName = Arial;
+        },
+        {
+            Files = (arialbd.ttf);
+            Name = Bold;
+            PostScriptName = Arial-Bold;
+        },
+        {
+            Files = (arialbi.ttf);
+            Name = BoldOblique;
+            PostScriptName = Arial-BoldOblique;
+        },
+        {
+            Files = (ariali.ttf);
+            Name = Oblique;
+            PostScriptName = Arial-Oblique;
+        }
     );
+    Description = "Contemporary sans serif design, Arial contains more humanist characteristics than many of its predecessors and as such is more in tune with the mood of the last decades of the twentieth century. The overall treatment of curves is softer and fuller than in most industrial style sans serif faces.  Terminal strokes are cut on the diagonal which helps to give the face a less mechanical appearance.  Arial is an extremely versatile family of typefaces which can be used with equal success for text setting in reports, presentations, magazines etc, and for display use in newspapers, advertising and promotions.";
+    FontCopyright = "Typeface © The Monotype Corporation plc. Data © The Monotype Corporation plc/Type Solutions Inc. 1990-1992. All Rights Reserved";
+    Foundry = "Monotype Typography";
+    Packager = "Sergii Stoian <stoyan255@gmail.com>";
+    Version = 2.95;
 }

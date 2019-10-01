@@ -1,32 +1,29 @@
 {
     Faces = (
 	{
-	    Files = (
-		cour.ttf
-	    );
+	    Files = (cour.ttf);
 	    Name = Medium;
 	    PostScriptName = Courier;
 	},
 	{
-	    Files = (
-		courbd.ttf
-	    );
+	    Files = (courbd.ttf);
 	    Name = Bold;
 	    PostScriptName = Courier-Bold;
 	},
 	{
-	    Files = (
-		courbi.ttf
-	    );
+	    Files = (courbi.ttf);
 	    Name = BoldOblique;
 	    PostScriptName = Courier-BoldOblique;
 	},
 	{
-	    Files = (
-		couri.ttf
-	    );
+	    Files = (couri.ttf);
 	    Name = Oblique;
 	    PostScriptName = Courier-Oblique;
 	}
     );
+    Description = "Designed as a typewriter face for IBM, Courier was redrawn by Adrian Frutiger for IBM Selectric series.  A typical fixed pitch design, monotone in weight and slab serif in concept.  Used to emulate typewriter output for reports, tabular work and technical documentation.";
+    FontCopyright = "Typeface © The Monotype Corporation plc. Data © The Monotype Corporation plc/Type Solutions Inc. 1990-1994. All Rights Reserved";
+    Foundry = "Monotype Typography";
+    Packager = "Sergii Stoian <stoyan255@gmail.com>";
+    Version = 2.90;
 }
