@@ -394,7 +394,7 @@ static NSUInteger   selectedItemIndex;
 - (void)_loadIndex:(NSString *)indexFilePath
 {
   NSMutableArray     *titles, *attachments;
-  NSAttributedString *attrString, *aS;
+  NSAttributedString *attrString;
   NSString           *text;
   NSRange            range, lineRange;
   NSUInteger         diff;
@@ -405,7 +405,6 @@ static NSUInteger   selectedItemIndex;
 
   titles = [NSMutableArray new];
   attachments = [NSMutableArray new];
-  // indexFilePath = [indexFilePath stringByAppendingPathComponent:@"TXT.rtf"];
   attrString = [[NSAttributedString alloc] initWithPath:indexFilePath
                                      documentAttributes:NULL];
   text = [attrString string];
@@ -414,22 +413,21 @@ static NSUInteger   selectedItemIndex;
   for (int i = 0; i < [text length]; i++) {
     lineRange = [text lineRangeForRange:NSMakeRange(i,1)];
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
-    NSLog(@"%@ - %@", NSStringFromRange(range), NSStringFromRange(lineRange));
+    // NSLog(@"%@ - %@", NSStringFromRange(range), NSStringFromRange(lineRange));
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
-      NSLog(@"Attachment: %@", [attachment className]);
-      if (lineRange.length > 2) {
+      // NSLog(@"Attachment: %@ (%lu)", [attachment className], range.length);
+      if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
         // Skip attachment symbol
         lineRange.length -= range.length;
         lineRange.location = range.location + range.length;
       }
-
-      aS = [attrString attributedSubstringFromRange:lineRange];
-      NSLog(@"String(%@): `%@`", NSStringFromRange(lineRange), [aS string]);
       [titles addObject:[attrString attributedSubstringFromRange:lineRange]];
-      if ([attachment isKindOfClass:[NSTextAttachment class]] == NO)
+      if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
         [attachments addObject:[attachment fileName]];
-      else
+      }
+      else {
         [attachments addObject:@""];
+      }
     }
     else {
       // NSLog(@"String: `%@`",
@@ -451,6 +449,7 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_showIndex:(id)sender
 {
+  [statusField setStringValue:@"Loading Index..."];
   // Find item with `Index.rtfd` represented object
   for (int i = 0; i < [tocTitles count]; i++) {
     if ([tocAttachments[i] isEqualToString:@"Index.rtfd"]) {
@@ -458,6 +457,8 @@ static NSUInteger   selectedItemIndex;
         [self _loadIndex:[_helpDirectory
                            stringByAppendingPathComponent:tocAttachments[i]]];
         indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
+        [indexList setBackgroundColor:[NSColor whiteColor]];
+        [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
         [indexList loadTitles:indexTitles andObjects:indexAttachments];
         // [indexList setTarget:self];
         // [indexList setAction:@selector(_showArticle)];
@@ -471,6 +472,7 @@ static NSUInteger   selectedItemIndex;
       return;
     }
   }
+  [statusField setStringValue:@""];
 
   // Item was not found
   NXTRunAlertPanel(@"Help", @"No Index file found for this help.",
@@ -534,6 +536,7 @@ static NSUInteger   selectedItemIndex;
   if (_sharedHelpPanel == nil) {
     _sharedHelpPanel = [[NXTPanelLoader alloc] loadPanelNamed:@"NXTHelpPanel"];
     [_sharedHelpPanel _setHelpDirectory:helpDirectory];
+    [_sharedHelpPanel _enableButtons:YES];
     panel = _sharedHelpPanel;
   }
   else if ([helpDirectory isEqualToString:[_sharedHelpPanel helpDirectory]] == NO) {
@@ -559,7 +562,6 @@ static NSUInteger   selectedItemIndex;
   [[findBtn cell] setImageDimsWhenDisabled:YES];
   [[indexBtn cell] setImageDimsWhenDisabled:YES];
   [[backtrackBtn cell] setImageDimsWhenDisabled:YES];
-  [self _enableButtons:YES];
   [splitView setResizableState:NSOnState];
 
   // TOC list

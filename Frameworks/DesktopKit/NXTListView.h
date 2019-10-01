@@ -35,6 +35,8 @@
         andObjects:(NSArray *)objects;
 - (void)setTarget:(id)target;
 - (void)setAction:(SEL)action;
+- (void)setBackgroundColor:(NSColor *)color;
+- (void)setSelectionBackgroundColor:(NSColor *)color;
 
 - (id)selectedItem;
 - (void)selectItemAtIndex:(NSInteger)index;

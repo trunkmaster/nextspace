@@ -26,19 +26,18 @@
 // Cell
 // -----------------------------------------------------------------------------
 @interface NXTListCell : NSTextFieldCell
-@property (assign) BOOL selected;
+@property (assign) BOOL    selected;
+@property (assign) NSColor *selectionColor;
 @end
 @implementation NXTListCell
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
                        inView:(NSView *)controlView
 {
-  // NSLog(@"Draw interior for `%@` selected: %@",
-  //       [self title], _drawEdges ? @"YES" : @"NO");
   if (_selected == NO) {
-    [[NSColor controlBackgroundColor] set];
+    [[self backgroundColor] set];
   }
   else {
-    [[NSColor whiteColor] set];
+    [_selectionColor set];
   }
   NSRectFill(cellFrame);
   
@@ -59,6 +58,7 @@
 
 @interface NXTListMatrix : NSMatrix
 @property (assign) NSScrollView *scrollView;
+@property (assign) NSColor      *selectionColor;
 - (void)loadTitles:(NSArray *)titles
         andObjects:(NSArray *)objects;
 @end
@@ -81,7 +81,8 @@
   [self setAllowsEmptySelection:YES];
   [self setAutoscroll:YES];
   [self setDrawsBackground:YES];
-  [self setBackgroundColor:[NSColor grayColor]];
+  [self setBackgroundColor:[NSColor controlBackgroundColor]];
+  _selectionColor = [[NSColor whiteColor] retain];
     
   return self;
 }
@@ -89,16 +90,20 @@
 - (void)loadTitles:(NSArray *)titles
         andObjects:(NSArray *)objects
 {
-  NSCell *cell;
-  
+  // NSCell *cell; 
+  NXTListCell *cell;
+ 
   for (int i = 0; i < [titles count]; i++) {
     [self addRow];
-    cell = [self makeCellAtRow:i column:0];
+    cell = (NXTListCell *)[self makeCellAtRow:i column:0];
     [cell setObjectValue:titles[i]];
     [cell setRepresentedObject:objects[i]];
     [cell setEditable:NO];
     [cell setSelectable:NO];
     [cell setRefusesFirstResponder:YES];
+    [cell setDrawsBackground:YES];
+    [cell setBackgroundColor:[self backgroundColor]];
+    [cell setSelectionColor:_selectionColor];
   }
 }
 
@@ -276,6 +281,7 @@
   [listMatrix sizeToCells];
 }
 
+// --- Target/action
 - (void)setTarget:(id)target
 {
   [listMatrix setTarget:target];
@@ -286,14 +292,18 @@
   [listMatrix setAction:action];
 }
 
-- (void)setBackgroundColor:(NSColor *)backColor
+// --- Graphic attributes
+- (void)setBackgroundColor:(NSColor *)color
 {
-  // backgroundColor = backColor;
-}
-- (void)setSelectionBackgroundColor:(NSColor *)selColor
-{
+  [listMatrix setBackgroundColor:color];  
 }
 
+- (void)setSelectionBackgroundColor:(NSColor *)color
+{
+  [listMatrix setSelectionColor:color];
+}
+
+// --- Items
 - (id)selectedItem
 {
   return [listMatrix selectedCell];
@@ -348,6 +358,7 @@
  return NSNotFound;
 }
 
+// --- Interaction
 - (void)keyDown:(NSEvent *)theEvent
 {
   [listMatrix keyDown:theEvent];
