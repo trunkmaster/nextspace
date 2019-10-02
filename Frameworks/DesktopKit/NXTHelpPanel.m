@@ -309,8 +309,18 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_tocItemClicked:(id)sender
 {
-  selectedItemIndex = [tocList indexOfItem:[tocList selectedItem]];
-  [self _showArticleWithPath:nil];
+  NSCell   *item = [tocList selectedItem];
+  NSString *artPath = [item representedObject];
+
+  selectedItemIndex = [tocList indexOfItem:item];
+  
+  if (artPath && [artPath isKindOfClass:[NSString class]] &&
+      [artPath isEqualToString:@"Index.rtfd"]) {
+    [self _showIndex:indexBtn];
+  }
+  else {
+    [self _showArticleWithPath:nil];
+  }
 }
 
 - (void)_performFind:(id)sender
@@ -391,6 +401,8 @@ static NSUInteger   selectedItemIndex;
     });
 }
 
+// --- Index
+
 - (void)_loadIndex:(NSString *)indexFilePath
 {
   NSMutableArray     *titles, *attachments;
@@ -447,6 +459,13 @@ static NSUInteger   selectedItemIndex;
   [attachments release];
 }
 
+- (void)_indexItemClicked:(id)sender
+{
+  NSCell *cell = [indexList selectedItem];
+  NSLog(@"Index item clicked with link: %@", [cell representedObject]);
+  [self _showArticleWithPath:[cell representedObject]];
+}
+
 - (void)_showIndex:(id)sender
 {
   [statusField setStringValue:@"Loading Index..."];
@@ -460,8 +479,8 @@ static NSUInteger   selectedItemIndex;
         [indexList setBackgroundColor:[NSColor whiteColor]];
         [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
         [indexList loadTitles:indexTitles andObjects:indexAttachments];
-        // [indexList setTarget:self];
-        // [indexList setAction:@selector(_showArticle)];
+        [indexList setTarget:self];
+        [indexList setAction:@selector(_indexItemClicked:)];
       }
       [splitView replaceSubview:scrollView with:indexList];
       [splitView adjustSubviews];
@@ -478,6 +497,8 @@ static NSUInteger   selectedItemIndex;
   NXTRunAlertPanel(@"Help", @"No Index file found for this help.",
                    @"OK", nil, nil);
 }
+
+// --- Backtrack
 
 - (void)_goHistoryBack:(id)sender
 {
