@@ -112,6 +112,20 @@ static NSUInteger   selectedItemIndex;
 
 @implementation NXTHelpPanel (PrivateMethods)
 
+// --- History
+- (void)_updateHistoryWithIndex:(NSUInteger)index
+{
+  if (historyPosition < historyLength) {
+    if (historyPosition >= 0) {
+      history[historyPosition].rect = [articleView visibleRect];
+    }
+    historyPosition++;
+    history[historyPosition].index = index;
+    [backtrackBtn setEnabled:(historyPosition > 0)];
+    NSLog(@"Update history[%i] with index: %lu", historyPosition, index);
+  }
+}
+
 - (void)_setHelpDirectory:(NSString *)helpDirectory
 {
   if (_helpDirectory == helpDirectory) {
@@ -217,16 +231,9 @@ static NSUInteger   selectedItemIndex;
   absPath = [self _articlePathForAttachment:path];
   
   if (absPath != nil && cell != nil) {
-    if (historyPosition < historyLength) {
-      if (historyPosition >= 0) {
-        history[historyPosition].rect = [articleView visibleRect];
-      }
-      historyPosition++;
-      history[historyPosition].index = [tocList indexOfItem:cell];
-    }
+    [self _updateHistoryWithIndex:[tocList indexOfItem:cell]];
     [articleView readRTFDFromFile:absPath];
     [articleView scrollRangeToVisible:NSMakeRange(0,0)];
-    [backtrackBtn setEnabled:(historyPosition > 0)];
     if ([scrollView superview] == nil) {
       [splitView replaceSubview:indexList with:scrollView];
       [splitView adjustSubviews];
@@ -312,6 +319,9 @@ static NSUInteger   selectedItemIndex;
   NSCell   *item = [tocList selectedItem];
   NSString *artPath = [item representedObject];
 
+  if (selectedItemIndex == [tocList indexOfItem:item]) {
+    return;
+  }
   selectedItemIndex = [tocList indexOfItem:item];
   
   if (artPath && [artPath isKindOfClass:[NSString class]] &&
@@ -461,13 +471,21 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_indexItemClicked:(id)sender
 {
-  NSCell *cell = [indexList selectedItem];
-  NSLog(@"Index item clicked with link: %@", [cell representedObject]);
-  [self _showArticleWithPath:[cell representedObject]];
+  NSCell    *cell = [indexList selectedItem];
+  NSString  *rep = [cell representedObject];
+  NSInteger tocIndex = [tocList indexOfItemWithStringRep:rep];
+  
+  NSLog(@"Index item clicked with link: %@", rep);
+  
+  [tocList selectItemAtIndex:tocIndex];
+  selectedItemIndex = tocIndex;
+  [self _showArticleWithPath:rep];
 }
 
 - (void)_showIndex:(id)sender
 {
+  BOOL isSuccess = NO;
+  
   [statusField setStringValue:@"Loading Index..."];
   // Find item with `Index.rtfd` represented object
   for (int i = 0; i < [tocTitles count]; i++) {
@@ -488,14 +506,17 @@ static NSUInteger   selectedItemIndex;
       [indexList setNextKeyView:findField];
       [tocList selectItemAtIndex:i];
       selectedItemIndex = i;
-      return;
+      [self _updateHistoryWithIndex:i];
+      isSuccess = YES;
     }
   }
   [statusField setStringValue:@""];
 
-  // Item was not found
-  NXTRunAlertPanel(@"Help", @"No Index file found for this help.",
-                   @"OK", nil, nil);
+  if (isSuccess == NO) {
+    // Item was not found
+    NXTRunAlertPanel(@"Help", @"No Index file found for this help.",
+                     @"OK", nil, nil);
+  }
 }
 
 // --- Backtrack
@@ -504,18 +525,17 @@ static NSUInteger   selectedItemIndex;
 {
   NSString *artPath;
   
-  NSLog(@"Backtrack at %d", historyPosition);
+  NSLog(@"Backtrack at %d with %lu",
+        historyPosition, history[historyPosition].index);
   if (historyPosition > 0) {
     historyPosition--;
-
-    selectedItemIndex = history[historyPosition].index;
-    [tocList selectItemAtIndex:selectedItemIndex];
-    artPath = [self _articlePathForAttachment:[[tocList selectedItem]
-                                                representedObject]];
-    [articleView readRTFDFromFile:artPath];
+    [tocList selectItemAtIndex:history[historyPosition].index];
+    [self _tocItemClicked:self];
+    // _tocItemClicked grows history so we return it back once more
+    historyPosition--;
     [articleView scrollRectToVisible:history[historyPosition].rect];
+    [backtrackBtn setEnabled:(historyPosition != 0)];
   }
-  [backtrackBtn setEnabled:(historyPosition != 0)];
 }
 
 @end
