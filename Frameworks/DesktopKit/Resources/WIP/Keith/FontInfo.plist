@@ -1,0 +1,26 @@
+﻿{
+  Version = 1;
+  Foundry = "NextSpace";
+  Faces = (
+    {
+      PostScriptName = "Keith";
+      Name = "Medium";
+      Files = (Keith-Medium.ttf);
+    },
+    {
+      PostScriptName = "Keith-Bold";
+      Name = "Bold";
+      Files = ("../Liberation Mono.nfont/LiberationMono-Bold.ttf");
+    },
+    {
+      PostScriptName = "Keith-Oblique";
+      Name = "Italic";
+      Files = ("../Liberation Mono.nfont/LiberationMono-Italic.ttf");
+    },
+    {
+      PostScriptName = "Keith-BoldOblique";
+      Name = "BoldOblique";
+      Files = ("../Liberation Mono.nfont/LiberationMono-BoldItalic.ttf");
+    }
+    );
+}
