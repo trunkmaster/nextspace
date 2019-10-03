@@ -152,9 +152,7 @@
         done = YES;
         [self getRow:&dRow column:&dColumn ofCell:selectedCell];
         [self selectCellAtRow:dRow column:dColumn];
-        if ((selectedCell != originalCell) && _target) {
-          [_target performSelector:_action];
-        }
+        [_target performSelector:_action];
         break;
       case NSPeriodic:
         location = [contentView
