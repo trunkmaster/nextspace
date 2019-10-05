@@ -36,6 +36,7 @@
 typedef struct {
   NSUInteger index;
   NSRect     rect;
+  NSString   *documentPath;
 } NXTHelpHistory;
 
 @interface NXTHelpPanel : NSPanel
@@ -52,6 +53,7 @@ typedef struct {
   NXTListView    *tocList;
   NSArray        *tocTitles;
   NSArray        *tocAttachments;
+  NSUInteger     objectsPrologIndex;
 
   // Index
   NXTListView    *indexList;

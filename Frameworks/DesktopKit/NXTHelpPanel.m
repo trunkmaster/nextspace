@@ -114,6 +114,7 @@ static NSUInteger   selectedItemIndex;
 
 // --- History
 - (void)_updateHistoryWithIndex:(NSUInteger)index
+                   documentPath:(NSString *)path
 {
   if (historyPosition < historyLength) {
     if (historyPosition >= 0) {
@@ -121,6 +122,7 @@ static NSUInteger   selectedItemIndex;
     }
     historyPosition++;
     history[historyPosition].index = index;
+    history[historyPosition].documentPath = [path copy];
     [backtrackBtn setEnabled:(historyPosition > 0)];
     NSLog(@"Update history[%i] with index: %lu", historyPosition, index);
   }
@@ -146,6 +148,7 @@ static NSUInteger   selectedItemIndex;
   NSRange            range;
   NSDictionary       *attrs;
   id                 attachment;
+  NSString           *fileName;
 
   NSLog(@"Load TOC from: %@", tocFilePath);
 
@@ -169,7 +172,12 @@ static NSUInteger   selectedItemIndex;
         range.length--;
       }
       [titles addObject:[attrString attributedSubstringFromRange:range]];
-      [attachments addObject:[attachment fileName]];
+      
+      fileName = [attachment fileName];
+      if ([fileName rangeOfString:@"Objects"].location == 0) {
+        objectsPrologIndex = [attachments count];
+      }
+      [attachments addObject:fileName];
     }
     else {
       if ([[text substringFromRange:range] length] > 0) {
@@ -226,12 +234,17 @@ static NSUInteger   selectedItemIndex;
     if ((index = [tocList indexOfItemWithStringRep:path]) != NSNotFound) {
       cell = [tocList itemAtIndex:index];
     }
+    else {
+      cell = [tocList selectedItem];
+    }
   }
-  NSLog(@"[HelpPanel] showArticle doc path: %@", path);
   absPath = [self _articlePathForAttachment:path];
+  NSLog(@"[HelpPanel] showArticle doc path: %@ absPath: %@ cell:%@",
+        path, absPath, cell);
   
   if (absPath != nil && cell != nil) {
-    [self _updateHistoryWithIndex:[tocList indexOfItem:cell]];
+    [self _updateHistoryWithIndex:[tocList indexOfItem:cell]
+                     documentPath:path];
     [articleView readRTFDFromFile:absPath];
     [articleView scrollRangeToVisible:NSMakeRange(0,0)];
     if ([scrollView superview] == nil) {
@@ -471,15 +484,18 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_indexItemClicked:(id)sender
 {
-  NSCell    *cell = [indexList selectedItem];
-  NSString  *rep = [cell representedObject];
-  NSInteger tocIndex = [tocList indexOfItemWithStringRep:rep];
+  NSString  *artPath = [[indexList selectedItem] representedObject];
+  NSInteger tocIndex;
   
-  NSLog(@"Index item clicked with link: %@", rep);
-  
+  NSLog(@"Index item clicked with link: %@", artPath);
+
+  tocIndex = [tocList indexOfItemWithStringRep:artPath];
+  if (tocIndex == NSNotFound) {
+    tocIndex = objectsPrologIndex;
+  }
   [tocList selectItemAtIndex:tocIndex];
   selectedItemIndex = tocIndex;
-  [self _showArticleWithPath:rep];
+  [self _showArticleWithPath:artPath];
 }
 
 - (void)_showIndex:(id)sender
@@ -492,7 +508,7 @@ static NSUInteger   selectedItemIndex;
     if ([tocAttachments[i] isEqualToString:@"Index.rtfd"]) {
       if (indexTitles == nil || [indexTitles count] == 0) {
         [self _loadIndex:[_helpDirectory
-                           stringByAppendingPathComponent:tocAttachments[i]]];
+                           stringByAppendingPathComponent:@"Index.rtfd"]];
         indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
         [indexList setBackgroundColor:[NSColor whiteColor]];
         [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
@@ -506,7 +522,8 @@ static NSUInteger   selectedItemIndex;
       [indexList setNextKeyView:findField];
       [tocList selectItemAtIndex:i];
       selectedItemIndex = i;
-      [self _updateHistoryWithIndex:i];
+      [self _updateHistoryWithIndex:i
+                       documentPath:@"Index.rtfd"];
       isSuccess = YES;
     }
   }
@@ -523,15 +540,29 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_goHistoryBack:(id)sender
 {
-  NSString *artPath;
+  NSString *filePath;
   
   NSLog(@"Backtrack at %d with %lu",
         historyPosition, history[historyPosition].index);
   if (historyPosition > 0) {
+    /* We need to release NSString because it was copied earlier
+       in _updateHistoryWithIndex method */
+    [history[historyPosition].documentPath release];
+    
     historyPosition--;
-    [tocList selectItemAtIndex:history[historyPosition].index];
-    [self _tocItemClicked:self];
-    // _tocItemClicked grows history so we return it back once more
+    if (selectedItemIndex != history[historyPosition].index) {
+      [tocList selectItemAtIndex:history[historyPosition].index];
+    }
+    
+    filePath = history[historyPosition].documentPath;
+    if ([filePath isEqualToString:@"Index.rtfd"] != NO) {
+      [self _showIndex:self];
+    }
+    else {
+      [self _showArticleWithPath:filePath];
+    }
+    
+    // _show... methods increment history position so we return it back once more
     historyPosition--;
     [articleView scrollRectToVisible:history[historyPosition].rect];
     [backtrackBtn setEnabled:(historyPosition != 0)];
@@ -689,21 +720,20 @@ static NSUInteger   selectedItemIndex;
   NSString             *repObject;
 
   attachment = (GSHelpLinkAttachment *)[cell attachment];
-  // NSLog(@"Clicked on CELL(%.0fx%.0f): file:%@ marker:%@",
-  //       [cell cellSize].width, [cell cellSize].height,
-  //       [attachment fileName],
-  //       [attachment markerName]);
+  NSLog(@"Clicked on CELL(%.0fx%.0f): file:%@ marker:%@",
+        [cell cellSize].width, [cell cellSize].height,
+        [attachment fileName],
+        [attachment markerName]);
   
   if ([attachment isKindOfClass:[GSHelpLinkAttachment class]]) {
     currDir = [[[tocList selectedItem] representedObject]
                 stringByDeletingLastPathComponent];
     pathComps = [[attachment fileName] pathComponents];
+    NSLog(@"Path components: %@ (curr: %@)", pathComps, currDir);
+    
     // Convert to path relative to _helpDirectory
-    if ([pathComps count] == 1) { // relative to current dir of article
-      repObject = [currDir
-                    stringByAppendingPathComponent:[attachment fileName]];
-    }
-    else { // points to _helpDirectory (e.g `../Basics/Intro.rtfd`)
+    if ([pathComps[0] isEqualToString:@".."]) {
+      // points to _helpDirectory (e.g `../Basics/Intro.rtfd`)
       for (NSString *comp in pathComps) {
         if ([comp isEqualToString:@".."]) {
           currDir = [currDir stringByDeletingLastPathComponent];
@@ -713,20 +743,30 @@ static NSUInteger   selectedItemIndex;
       }
       repObject = currDir;
     }
+    else {
+      repObject = [currDir
+                    stringByAppendingPathComponent:[attachment fileName]];
+    }
 
     // Find and select TOC item with `repObject`
     NSString *object;
+    BOOL      isFound = NO;
     for (int i = 0; i < [tocAttachments count]; i++) {
       object = [tocAttachments objectAtIndex:i];
       if ([object isEqualToString:repObject]) {
         [tocList selectItemAtIndex:i];
         selectedItemIndex = i;
+        isFound = YES;
         break;
       }
     }
+    if (isFound == NO) { // it's a hidden file
+      [tocList selectItemAtIndex:objectsPrologIndex];
+      selectedItemIndex = objectsPrologIndex;
+    }
 
     // Show article
-    [self _showArticleWithPath:nil];
+    [self _showArticleWithPath:repObject];
   }
 }
 
