@@ -228,8 +228,9 @@ static NSUInteger   selectedItemIndex;
 }
 
 // `path` must be a relative path e.g. `Tasks/Basics/Intro.rtfd`
-- (void)_showArticleWithPath:(NSString *)path
+- (BOOL)_showArticleWithPath:(NSString *)path
 {
+  BOOL      isSuccess = NO;
   NSCell    *cell = nil;
   NSString  *absPath;
   NSInteger index;
@@ -266,6 +267,7 @@ static NSUInteger   selectedItemIndex;
       [splitView adjustSubviews];
       [splitView setPosition:145.0 ofDividerAtIndex:0];
     }
+    isSuccess = YES;
   }
   else {
     NXTRunAlertPanel(@"Help", @"Help file `%@` doesn't exist",
@@ -274,6 +276,37 @@ static NSUInteger   selectedItemIndex;
     [tocList selectItemAtIndex:selectedItemIndex];
   }
   [self makeFirstResponder:findField];
+
+  return isSuccess;
+}
+
+- (void)_showMarkerWithName:(NSString *)markerName
+{
+  NSString           *filePath = [self _filePathForAttachment:[self helpFile]];
+  NSAttributedString *attrString;
+  NSString           *artText;
+  NSUInteger         artLength;
+  NSRange            lineRange, range;
+  NSDictionary       *attrs;
+  id                 attachment;
+
+  attrString = [[NSAttributedString alloc] initWithPath:filePath
+                                     documentAttributes:NULL];
+  artText = [attrString string];
+  artLength = [artText length];
+  
+  for (int i = 0; i < artLength; i++) {
+    lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
+    attrs = [attrString attributesAtIndex:i effectiveRange:&range];
+    NSLog(@"%@ - %@", NSStringFromRange(range), attrs);
+    attachment = [attrs objectForKey:@"NSAttachment"];
+    if ([[attachment className] isEqualToString:@"GSHelpMarkerAttachment"] ||
+        [[attachment className] isEqualToString:@"GSHelpLinkAttachment"] ) {
+      NSLog(@"Marker found(%@): %@", [attachment className], [attachment markerName]);
+    }
+    i = lineRange.location + (lineRange.length - 1);
+  }
+  [attrString release];
 }
 
 - (NSRange)_findInArticleAtPath:(NSString *)path
@@ -466,6 +499,11 @@ static NSUInteger   selectedItemIndex;
     // NSLog(@"%@ - %@", NSStringFromRange(range), NSStringFromRange(lineRange));
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
       // NSLog(@"Attachment: %@ (%lu)", [attachment className], range.length);
+      if ([[attachment className] isEqualToString:@"GSHelpMarkerAttachment"] ||
+         [[attachment className] isEqualToString:@"GSHelpLinkAttachment"] ) {
+        NSLog(@"NSAttachment: %@ - %@", [attachment className],
+              [attachment markerName]);
+      }
       if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
         // Skip attachment symbol
         lineRange.length -= range.length;
@@ -830,6 +868,9 @@ static NSUInteger   selectedItemIndex;
 - (void)showFile:(NSString *)filename
         atMarker:(NSString *)markerName
 {
+  if ([self _showArticleWithPath:filename] != NO && markerName != nil) {
+    [self _showMarkerWithName:markerName];
+  }
   NSWarnFLog(@"Not implemented");
 }
 
