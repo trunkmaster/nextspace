@@ -33,6 +33,8 @@
 
 - (void)loadTitles:(NSArray *)titles
         andObjects:(NSArray *)objects;
+- (void)addItemWithTitle:(NSAttributedString *)title
+       representedObject:(id)object;
 - (void)setTarget:(id)target;
 - (void)setAction:(SEL)action;
 - (void)setBackgroundColor:(NSColor *)color;

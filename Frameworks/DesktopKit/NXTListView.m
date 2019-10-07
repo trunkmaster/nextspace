@@ -279,6 +279,29 @@
   [listMatrix sizeToCells];
 }
 
+- (void)addItemWithTitle:(NSAttributedString *)title
+       representedObject:(id)object
+{
+  NXTListCell *cell;
+  
+  [listMatrix addRow];
+
+  cell = (NXTListCell *)[listMatrix makeCellAtRow:[[listMatrix cells] count]-1
+                                           column:0];
+  [cell setObjectValue:title];
+  [cell setRepresentedObject:object];
+  [cell setEditable:NO];
+  [cell setSelectable:NO];
+  [cell setRefusesFirstResponder:YES];
+  [cell setDrawsBackground:YES];
+  [cell setBackgroundColor:[listMatrix backgroundColor]];
+  [cell setSelectionColor:listMatrix.selectionColor];
+
+  // [listMatrix drawCellAtRow:[[listMatrix cells] count]-1 column:0];
+  
+  [listMatrix sizeToCells];
+}
+
 // --- Target/action
 - (void)setTarget:(id)target
 {
