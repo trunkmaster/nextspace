@@ -202,16 +202,28 @@ static NSUInteger   selectedItemIndex;
   [attrString release];
 }
 
-- (NSString *)_articlePathForAttachment:(NSString *)attachment
+// Returns full path to file with article document
+- (NSString *)_filePathForAttachment:(NSString *)attachment
 {
   NSString *artPath = nil;
 
-  if (attachment && [attachment isEqualToString:@""] == NO) {
-    artPath = [_helpDirectory stringByAppendingPathComponent:attachment];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:artPath] == NO) {
-      artPath = nil;
-    }
+  if (!attachment && [attachment isEqualToString:@""] != NO) {
+    return nil;
   }
+  
+  // Convert `attachment` path into full path
+  if ([attachment characterAtIndex:0] != '/') {
+    artPath = [_helpDirectory stringByAppendingPathComponent:attachment];
+  }
+  else {
+    artPath = attachment;
+  }
+
+  // Check if document exists
+  if ([[NSFileManager defaultManager] fileExistsAtPath:artPath] == NO) {
+    artPath = nil;
+  }
+  
   return artPath;
 }
 
@@ -222,6 +234,7 @@ static NSUInteger   selectedItemIndex;
   NSString  *absPath;
   NSInteger index;
 
+  // If `path` is `nil` get article path from selected TOC item
   if (path == nil) {
     cell = [tocList selectedItem];
     if ([tocList indexOfItem:cell] != selectedItemIndex) {
@@ -238,7 +251,8 @@ static NSUInteger   selectedItemIndex;
       cell = [tocList selectedItem];
     }
   }
-  absPath = [self _articlePathForAttachment:path];
+  
+  absPath = [self _filePathForAttachment:path];
   NSLog(@"[HelpPanel] showArticle doc path: %@ absPath: %@ cell:%@",
         path, absPath, cell);
   
@@ -396,11 +410,13 @@ static NSUInteger   selectedItemIndex;
       // Search through the articles, skips Index.rtfd
       if (!lastFindWasSuccessful) {
         NSUInteger index = [tocList indexOfItem:[tocList selectedItem]] + 1;
-        NSString   *artPath;
+        NSString   *artPath, *attachment;
         for (NSUInteger i = index; i < [tocAttachments count]; i++) {
-          artPath = [self _articlePathForAttachment:[tocAttachments objectAtIndex:i]];
-          if ([artPath isEqualToString:@""] == NO &&
-              [[artPath lastPathComponent] isEqualToString:@"Index.rtfd"] == NO) {
+          attachment = [tocAttachments objectAtIndex:i];
+          if (attachment &&
+              [attachment isEqualToString:@""] == NO &&
+              [attachment isEqualToString:@"Index.rtfd"] == NO) {
+            artPath = [self _filePathForAttachment:attachment];
             range = [self _findInArticleAtPath:artPath];
             if (range.length > 0) {
               selectedItemIndex = i;
@@ -428,18 +444,17 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_loadIndex:(NSString *)indexFilePath
 {
-  NSMutableArray     *titles, *attachments;
   NSAttributedString *attrString;
   NSString           *text;
   NSRange            range, lineRange;
   NSUInteger         diff;
   NSDictionary       *attrs;
+  NSAttributedString *title;
+  id                 object;
   id                 attachment;
 
   NSLog(@"Load Index from: %@", indexFilePath);
 
-  titles = [NSMutableArray new];
-  attachments = [NSMutableArray new];
   attrString = [[NSAttributedString alloc] initWithPath:indexFilePath
                                      documentAttributes:NULL];
   text = [attrString string];
@@ -456,30 +471,24 @@ static NSUInteger   selectedItemIndex;
         lineRange.length -= range.length;
         lineRange.location = range.location + range.length;
       }
-      [titles addObject:[attrString attributedSubstringFromRange:lineRange]];
+      title = [attrString attributedSubstringFromRange:lineRange];
       if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
-        [attachments addObject:[attachment fileName]];
+        object = [attachment fileName];
       }
       else {
-        [attachments addObject:@""];
+        object = @"";
       }
     }
     else {
       // NSLog(@"String: `%@`",
       //       [[attrString attributedSubstringFromRange:lineRange] string]);
-      [titles addObject:[attrString attributedSubstringFromRange:lineRange]];
-      [attachments addObject:@""];
+      title = [attrString attributedSubstringFromRange:lineRange];
+      object = @"";
     }
+    [indexList addItemWithTitle:title representedObject:object];
     i = lineRange.location + (lineRange.length - 1);
   }
   [attrString release];
-
-  if (indexTitles != nil) [indexTitles release];
-  indexTitles = [[NSArray alloc] initWithArray:titles];
-  [titles release];
-  if (indexAttachments != nil) [indexAttachments release];
-  indexAttachments = [[NSArray alloc] initWithArray:attachments];
-  [attachments release];
 }
 
 - (void)_indexItemClicked:(id)sender
@@ -500,40 +509,37 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_showIndex:(id)sender
 {
-  BOOL isSuccess = NO;
-  
+  NSInteger idx;
+   
   [statusField setStringValue:@"Loading Index..."];
+  
   // Find item with `Index.rtfd` represented object
-  for (int i = 0; i < [tocTitles count]; i++) {
-    if ([tocAttachments[i] isEqualToString:@"Index.rtfd"]) {
-      if (indexTitles == nil || [indexTitles count] == 0) {
-        [self _loadIndex:[_helpDirectory
-                           stringByAppendingPathComponent:@"Index.rtfd"]];
-        indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
-        [indexList setBackgroundColor:[NSColor whiteColor]];
-        [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
-        [indexList loadTitles:indexTitles andObjects:indexAttachments];
-        [indexList setTarget:self];
-        [indexList setAction:@selector(_indexItemClicked:)];
-      }
-      [splitView replaceSubview:scrollView with:indexList];
-      [splitView adjustSubviews];
-      [splitView setPosition:145.0 ofDividerAtIndex:0];
-      [indexList setNextKeyView:findField];
-      [tocList selectItemAtIndex:i];
-      selectedItemIndex = i;
-      [self _updateHistoryWithIndex:i
-                       documentPath:@"Index.rtfd"];
-      isSuccess = YES;
+  idx = [tocList indexOfItemWithStringRep:@"Index.rtfd"];
+  if (idx != NSNotFound) {
+    if (indexList == nil) {
+      indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
+      [indexList setBackgroundColor:[NSColor whiteColor]];
+      [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
+      [indexList setTarget:self];
+      [indexList setAction:@selector(_indexItemClicked:)];
+      [self _loadIndex:[_helpDirectory
+                             stringByAppendingPathComponent:@"Index.rtfd"]];
     }
+    [splitView replaceSubview:scrollView with:indexList];
+    [splitView adjustSubviews];
+    [splitView setPosition:145.0 ofDividerAtIndex:0];
+    [indexList setNextKeyView:findField];
+    [tocList selectItemAtIndex:idx];
+    selectedItemIndex = idx;
+    [self _updateHistoryWithIndex:idx documentPath:@"Index.rtfd"];
   }
-  [statusField setStringValue:@""];
-
-  if (isSuccess == NO) {
+  else {
     // Item was not found
     NXTRunAlertPanel(@"Help", @"No Index file found for this help.",
                      @"OK", nil, nil);
   }
+  
+  [statusField setStringValue:@""];
 }
 
 // --- Backtrack
@@ -816,6 +822,11 @@ static NSUInteger   selectedItemIndex;
 // --- Showing Help
 
 // TODO
+/** Causes the Help panel to display the help contained in filename.  
+    If markerName is non-NULL, then the marker is sought in the file.  
+    If found, it's scrolled into view and the text from the marker to the end of 
+    the line is highlighted.  If the file is not a full path, then it's assumed 
+    to be relative to the currently displayed help file. */
 - (void)showFile:(NSString *)filename
         atMarker:(NSString *)markerName
 {

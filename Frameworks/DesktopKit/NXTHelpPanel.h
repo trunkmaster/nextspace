@@ -57,8 +57,6 @@ typedef struct {
 
   // Index
   NXTListView    *indexList;
-  NSArray        *indexTitles;
-  NSArray        *indexAttachments;
   
   NSButton       *findBtn;
   NSButton       *indexBtn;
