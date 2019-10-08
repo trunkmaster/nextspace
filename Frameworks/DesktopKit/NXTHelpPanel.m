@@ -290,6 +290,8 @@ static NSUInteger   selectedItemIndex;
   NSDictionary       *attrs;
   id                 attachment;
 
+  NSLog(@"Will show marker: %@", markerName);
+  
   attrString = [[NSAttributedString alloc] initWithPath:filePath
                                      documentAttributes:NULL];
   artText = [attrString string];
@@ -298,13 +300,15 @@ static NSUInteger   selectedItemIndex;
   for (int i = 0; i < artLength; i++) {
     lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
-    NSLog(@"%@ - %@", NSStringFromRange(range), attrs);
+    // NSLog(@"%@ - %@", NSStringFromRange(range), attrs);
     attachment = [attrs objectForKey:@"NSAttachment"];
     if ([[attachment className] isEqualToString:@"GSHelpMarkerAttachment"] ||
         [[attachment className] isEqualToString:@"GSHelpLinkAttachment"] ) {
-      NSLog(@"Marker found(%@): %@", [attachment className], [attachment markerName]);
+      NSLog(@"Marker found(%@): %@ range:%@ lineRange:%@",
+            [attachment className], [attachment markerName],
+            NSStringFromRange(range), NSStringFromRange(lineRange));
     }
-    i = lineRange.location + (lineRange.length - 1);
+    i = range.location + (range.length - 1);
   }
   [attrString release];
 }
@@ -477,14 +481,15 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_loadIndex:(NSString *)indexFilePath
 {
-  NSAttributedString *attrString;
-  NSString           *text;
-  NSRange            range, lineRange;
-  NSUInteger         diff;
-  NSDictionary       *attrs;
-  NSAttributedString *title;
-  id                 object;
-  id                 attachment;
+  NSAttributedString  *attrString;
+  NSString            *text;
+  NSRange             range, lineRange;
+  NSUInteger          diff;
+  NSDictionary        *attrs;
+  NSAttributedString  *title;
+  // NSMutableDictionary *object = [NSMutableDictionary new];
+  id                  object;
+  id                  attachment;
 
   NSLog(@"Load Index from: %@", indexFilePath);
 
@@ -499,11 +504,11 @@ static NSUInteger   selectedItemIndex;
     // NSLog(@"%@ - %@", NSStringFromRange(range), NSStringFromRange(lineRange));
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
       // NSLog(@"Attachment: %@ (%lu)", [attachment className], range.length);
-      if ([[attachment className] isEqualToString:@"GSHelpMarkerAttachment"] ||
-         [[attachment className] isEqualToString:@"GSHelpLinkAttachment"] ) {
-        NSLog(@"NSAttachment: %@ - %@", [attachment className],
-              [attachment markerName]);
-      }
+      // if ([[attachment className] isEqualToString:@"GSHelpMarkerAttachment"] ||
+      //    [[attachment className] isEqualToString:@"GSHelpLinkAttachment"] ) {
+      //   NSLog(@"NSAttachment: %@ - %@", [attachment className],
+      //         [attachment markerName]);
+      // }
       if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
         // Skip attachment symbol
         lineRange.length -= range.length;
@@ -511,6 +516,10 @@ static NSUInteger   selectedItemIndex;
       }
       title = [attrString attributedSubstringFromRange:lineRange];
       if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
+        // [object setObject:[attachment fileName] forKey:@"Link"];
+        // if ([attachment markerName]) {
+        //   [object setObject:[attachment markerName] forKey:@"Marker"];
+        // }
         object = [attachment fileName];
       }
       else {
@@ -523,6 +532,9 @@ static NSUInteger   selectedItemIndex;
       title = [attrString attributedSubstringFromRange:lineRange];
       object = @"";
     }
+    // NSDictionary *info = [[NSDictionary alloc] initWithDictionary:object];
+    // [indexList addItemWithTitle:title representedObject:info];
+    // [object removeAllObjects];
     [indexList addItemWithTitle:title representedObject:object];
     i = lineRange.location + (lineRange.length - 1);
   }
@@ -531,10 +543,15 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_indexItemClicked:(id)sender
 {
-  NSString  *artPath = [[indexList selectedItem] representedObject];
-  NSInteger tocIndex;
+  // NSDictionary *attrs = [[sender selectedCell] representedObject];
+  // NSString     *artPath = [attrs objectForKey:@"Link"];
+  NSString     *artPath = [[sender selectedCell] representedObject];
+  NSInteger    tocIndex;
   
-  NSLog(@"Index item clicked with link: %@", artPath);
+  // NSLog(@"[%@] Index item %@ clicked with link: %@ (%@)",
+  //       [sender className], [sender selectedCell], artPath, attrs);
+  NSLog(@"[%@] Index item %@ clicked with link: %@",
+        [sender className], [sender selectedCell], artPath);
 
   tocIndex = [tocList indexOfItemWithStringRep:artPath];
   if (tocIndex == NSNotFound) {
@@ -543,6 +560,7 @@ static NSUInteger   selectedItemIndex;
   [tocList selectItemAtIndex:tocIndex];
   selectedItemIndex = tocIndex;
   [self _showArticleWithPath:artPath];
+  // [self _showMarkerWithName:[attrs objectForKey:@"Marker"]];
 }
 
 - (void)_showIndex:(id)sender
@@ -558,10 +576,10 @@ static NSUInteger   selectedItemIndex;
       indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
       [indexList setBackgroundColor:[NSColor whiteColor]];
       [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
-      [indexList setTarget:self];
-      [indexList setAction:@selector(_indexItemClicked:)];
       [self _loadIndex:[_helpDirectory
                              stringByAppendingPathComponent:@"Index.rtfd"]];
+      [indexList setTarget:self];
+      [indexList setAction:@selector(_indexItemClicked:)];
     }
     [splitView replaceSubview:scrollView with:indexList];
     [splitView adjustSubviews];
