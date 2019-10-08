@@ -124,7 +124,7 @@ static NSUInteger   selectedItemIndex;
     history[historyPosition].index = index;
     history[historyPosition].documentPath = [path copy];
     [backtrackBtn setEnabled:(historyPosition > 0)];
-    NSLog(@"Update history[%i] with index: %lu", historyPosition, index);
+    // NSLog(@"Update history[%i] with index: %lu", historyPosition, index);
   }
 }
 
@@ -254,8 +254,8 @@ static NSUInteger   selectedItemIndex;
   }
   
   absPath = [self _filePathForAttachment:path];
-  NSLog(@"[HelpPanel] showArticle doc path: %@ absPath: %@ cell:%@",
-        path, absPath, cell);
+  // NSLog(@"[HelpPanel] showArticle doc path: %@ absPath: %@ cell:%@",
+  //       path, absPath, cell);
   
   if (absPath != nil && cell != nil) {
     [self _updateHistoryWithIndex:[tocList indexOfItem:cell]
@@ -290,7 +290,7 @@ static NSUInteger   selectedItemIndex;
   NSDictionary       *attrs;
   id                 attachment;
 
-  NSLog(@"Will show marker: %@", markerName);
+  // NSLog(@"Will show marker: %@", markerName);
 
   if (markerName == nil) {
     return;
@@ -305,14 +305,15 @@ static NSUInteger   selectedItemIndex;
   for (int i = 0; i < artLength; i++) {
     lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
-    // NSLog(@"%@ - %@", NSStringFromRange(range), attrs);
     attachment = [attrs objectForKey:@"NSAttachment"];
     if (attachment &&
         [attachment respondsToSelector:@selector(markerName)] &&
         [[attachment markerName] isEqualToString:markerName]) {
+      // Select text after marker
       lineRange = [artText lineRangeForRange:NSMakeRange(i+1,1)];
       [articleView setSelectedRange:lineRange];
-      
+
+      // Scroll to the +2 lines after selected
       i = lineRange.location + lineRange.length + 1;
       lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
       i = lineRange.location + lineRange.length + 1;
@@ -502,7 +503,7 @@ static NSUInteger   selectedItemIndex;
   NSMutableDictionary *object = [NSMutableDictionary new];
   id                  attachment;
 
-  NSLog(@"Loading Index from: %@", indexFilePath);
+  // NSLog(@"Loading Index from: %@", indexFilePath);
 
   attrString = [[NSAttributedString alloc] initWithPath:indexFilePath
                                      documentAttributes:NULL];
@@ -512,9 +513,7 @@ static NSUInteger   selectedItemIndex;
   for (int i = 0; i < [text length]; i++) {
     lineRange = [text lineRangeForRange:NSMakeRange(i,1)];
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
-    // NSLog(@"%@ - %@", NSStringFromRange(range), NSStringFromRange(lineRange));
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
-      // NSLog(@"Attachment: %@ (%lu)", [attachment className], range.length);
       if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
         // Skip attachment symbol
         lineRange.length -= range.length;
@@ -530,8 +529,6 @@ static NSUInteger   selectedItemIndex;
       }
     }
     else {
-      // NSLog(@"String: `%@`",
-      //       [[attrString attributedSubstringFromRange:lineRange] string]);
       title = [attrString attributedSubstringFromRange:lineRange];
     }
     if ([[object allKeys] count] > 0) {
@@ -576,7 +573,7 @@ static NSUInteger   selectedItemIndex;
 {
   NSInteger idx;
    
-  [statusField setStringValue:@"Loading Index..."];
+  // [statusField setStringValue:@"Loading Index..."];
   
   // Find item with `Index.rtfd` represented object
   idx = [tocList indexOfItemWithStringRep:@"Index.rtfd"];
@@ -604,7 +601,7 @@ static NSUInteger   selectedItemIndex;
                      @"OK", nil, nil);
   }
   
-  [statusField setStringValue:@""];
+  // [statusField setStringValue:@""];
 }
 
 // --- Backtrack
@@ -613,8 +610,8 @@ static NSUInteger   selectedItemIndex;
 {
   NSString *filePath;
   
-  NSLog(@"Backtrack at %d with %lu",
-        historyPosition, history[historyPosition].index);
+  // NSLog(@"Backtrack at %d with %lu",
+  //       historyPosition, history[historyPosition].index);
   if (historyPosition > 0) {
     /* We need to release NSString because it was copied earlier
        in _updateHistoryWithIndex method */
@@ -726,6 +723,7 @@ static NSUInteger   selectedItemIndex;
   [articleView setDelegate:self];
   [scrollView setDocumentView:articleView];
   [splitView addSubview:scrollView];
+  // Don't release scrollView - it can be replaced with Index view
   // [scrollView release];
 
   // History (for Backtrack)
@@ -791,16 +789,11 @@ static NSUInteger   selectedItemIndex;
   NSString             *repObject;
 
   attachment = (GSHelpLinkAttachment *)[cell attachment];
-  NSLog(@"Clicked on CELL(%.0fx%.0f): file:%@ marker:%@",
-        [cell cellSize].width, [cell cellSize].height,
-        [attachment fileName],
-        [attachment markerName]);
   
   if ([attachment isKindOfClass:[GSHelpLinkAttachment class]]) {
     currDir = [[[tocList selectedItem] representedObject]
                 stringByDeletingLastPathComponent];
     pathComps = [[attachment fileName] pathComponents];
-    NSLog(@"Path components: %@ (curr: %@)", pathComps, currDir);
     
     // Convert to path relative to _helpDirectory
     if ([pathComps[0] isEqualToString:@".."]) {
