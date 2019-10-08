@@ -282,7 +282,7 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_showMarkerWithName:(NSString *)markerName
 {
-  NSString           *filePath = [self _filePathForAttachment:[self helpFile]];
+  NSString           *filePath;
   NSAttributedString *attrString;
   NSString           *artText;
   NSUInteger         artLength;
@@ -291,7 +291,12 @@ static NSUInteger   selectedItemIndex;
   id                 attachment;
 
   NSLog(@"Will show marker: %@", markerName);
+
+  if (markerName == nil) {
+    return;
+  }
   
+  filePath = [self _filePathForAttachment:[self helpFile]];
   attrString = [[NSAttributedString alloc] initWithPath:filePath
                                      documentAttributes:NULL];
   artText = [attrString string];
@@ -302,11 +307,18 @@ static NSUInteger   selectedItemIndex;
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
     // NSLog(@"%@ - %@", NSStringFromRange(range), attrs);
     attachment = [attrs objectForKey:@"NSAttachment"];
-    if ([[attachment className] isEqualToString:@"GSHelpMarkerAttachment"] ||
-        [[attachment className] isEqualToString:@"GSHelpLinkAttachment"] ) {
-      NSLog(@"Marker found(%@): %@ range:%@ lineRange:%@",
-            [attachment className], [attachment markerName],
-            NSStringFromRange(range), NSStringFromRange(lineRange));
+    if (attachment &&
+        [attachment respondsToSelector:@selector(markerName)] &&
+        [[attachment markerName] isEqualToString:markerName]) {
+      lineRange = [artText lineRangeForRange:NSMakeRange(i+1,1)];
+      [articleView setSelectedRange:lineRange];
+      
+      i = lineRange.location + lineRange.length + 1;
+      lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
+      i = lineRange.location + lineRange.length + 1;
+      lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
+      [articleView scrollRangeToVisible:lineRange];
+      break;
     }
     i = range.location + (range.length - 1);
   }
@@ -487,16 +499,15 @@ static NSUInteger   selectedItemIndex;
   NSUInteger          diff;
   NSDictionary        *attrs;
   NSAttributedString  *title;
-  // NSMutableDictionary *object = [NSMutableDictionary new];
-  id                  object;
+  NSMutableDictionary *object = [NSMutableDictionary new];
   id                  attachment;
 
-  NSLog(@"Load Index from: %@", indexFilePath);
+  NSLog(@"Loading Index from: %@", indexFilePath);
 
   attrString = [[NSAttributedString alloc] initWithPath:indexFilePath
                                      documentAttributes:NULL];
   text = [attrString string];
-  NSLog(@"Index length %lu", [text length]);
+  // NSLog(@"Index length %lu", [text length]);
     
   for (int i = 0; i < [text length]; i++) {
     lineRange = [text lineRangeForRange:NSMakeRange(i,1)];
@@ -504,38 +515,33 @@ static NSUInteger   selectedItemIndex;
     // NSLog(@"%@ - %@", NSStringFromRange(range), NSStringFromRange(lineRange));
     if ((attachment = [attrs objectForKey:@"NSAttachment"]) != nil) {
       // NSLog(@"Attachment: %@ (%lu)", [attachment className], range.length);
-      // if ([[attachment className] isEqualToString:@"GSHelpMarkerAttachment"] ||
-      //    [[attachment className] isEqualToString:@"GSHelpLinkAttachment"] ) {
-      //   NSLog(@"NSAttachment: %@ - %@", [attachment className],
-      //         [attachment markerName]);
-      // }
       if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
         // Skip attachment symbol
         lineRange.length -= range.length;
         lineRange.location = range.location + range.length;
       }
       title = [attrString attributedSubstringFromRange:lineRange];
-      if ([attachment isKindOfClass:[GSHelpLinkAttachment class]] != NO) {
-        // [object setObject:[attachment fileName] forKey:@"Link"];
-        // if ([attachment markerName]) {
-        //   [object setObject:[attachment markerName] forKey:@"Marker"];
-        // }
-        object = [attachment fileName];
-      }
-      else {
-        object = @"";
+      if ([attachment respondsToSelector:@selector(fileName)]) {
+        [object setObject:[attachment fileName] forKey:@"Link"];
+        if ([attachment respondsToSelector:@selector(markerName)] &&
+            [attachment markerName]) {
+          [object setObject:[attachment markerName] forKey:@"Marker"];
+        }
       }
     }
     else {
       // NSLog(@"String: `%@`",
       //       [[attrString attributedSubstringFromRange:lineRange] string]);
       title = [attrString attributedSubstringFromRange:lineRange];
-      object = @"";
     }
-    // NSDictionary *info = [[NSDictionary alloc] initWithDictionary:object];
-    // [indexList addItemWithTitle:title representedObject:info];
-    // [object removeAllObjects];
-    [indexList addItemWithTitle:title representedObject:object];
+    if ([[object allKeys] count] > 0) {
+      [indexList addItemWithTitle:title
+                representedObject:[NSDictionary dictionaryWithDictionary:object]];
+      [object removeAllObjects];
+    }
+    else {
+      [indexList addItemWithTitle:title representedObject:nil];
+    }
     i = lineRange.location + (lineRange.length - 1);
   }
   [attrString release];
@@ -543,15 +549,18 @@ static NSUInteger   selectedItemIndex;
 
 - (void)_indexItemClicked:(id)sender
 {
-  // NSDictionary *attrs = [[sender selectedCell] representedObject];
-  // NSString     *artPath = [attrs objectForKey:@"Link"];
-  NSString     *artPath = [[sender selectedCell] representedObject];
+  NSDictionary *attrs;
+  NSString     *artPath;
   NSInteger    tocIndex;
+
+  if (sender == nil) {
+    return;
+  }
+  attrs = [[sender selectedCell] representedObject];
+  artPath = [attrs objectForKey:@"Link"];
   
   // NSLog(@"[%@] Index item %@ clicked with link: %@ (%@)",
   //       [sender className], [sender selectedCell], artPath, attrs);
-  NSLog(@"[%@] Index item %@ clicked with link: %@",
-        [sender className], [sender selectedCell], artPath);
 
   tocIndex = [tocList indexOfItemWithStringRep:artPath];
   if (tocIndex == NSNotFound) {
@@ -560,7 +569,7 @@ static NSUInteger   selectedItemIndex;
   [tocList selectItemAtIndex:tocIndex];
   selectedItemIndex = tocIndex;
   [self _showArticleWithPath:artPath];
-  // [self _showMarkerWithName:[attrs objectForKey:@"Marker"]];
+  [self _showMarkerWithName:[attrs objectForKey:@"Marker"]];
 }
 
 - (void)_showIndex:(id)sender
@@ -877,19 +886,12 @@ static NSUInteger   selectedItemIndex;
 
 // --- Showing Help
 
-// TODO
-/** Causes the Help panel to display the help contained in filename.  
-    If markerName is non-NULL, then the marker is sought in the file.  
-    If found, it's scrolled into view and the text from the marker to the end of 
-    the line is highlighted.  If the file is not a full path, then it's assumed 
-    to be relative to the currently displayed help file. */
 - (void)showFile:(NSString *)filename
         atMarker:(NSString *)markerName
 {
   if ([self _showArticleWithPath:filename] != NO && markerName != nil) {
     [self _showMarkerWithName:markerName];
   }
-  NSWarnFLog(@"Not implemented");
 }
 
 // TODO

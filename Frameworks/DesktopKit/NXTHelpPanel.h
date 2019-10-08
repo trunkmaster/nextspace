@@ -107,7 +107,11 @@ typedef struct {
 //
 // --- Showing Help
 //
-/** Causes the panel to display the help contained in filename at markerName. */
+/** Causes the Help panel to display the help contained in filename.  
+    If markerName is non-NULL, then the marker is sought in the file.  
+    If found, it's scrolled into view and the text from the marker to the end of 
+    the line is highlighted.  If the file is not a full path, then it's assumed 
+    to be relative to the currently displayed help file. */
 - (void)showFile:(NSString *)filename
         atMarker:(NSString *)markerName;
 /** Causes the panel to display help attached to anObject. */

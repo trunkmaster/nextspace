@@ -167,8 +167,7 @@
         }
         if ([[clickedCell title] length] > 1) {
           repObject = [clickedCell representedObject];
-          if ([repObject isKindOfClass:[NSString class]] &&
-              [repObject isEqualToString:@""] == NO) {
+          if (repObject != nil) {
             selectedCell = clickedCell;
             [clickedCell setSelected:YES];
           }
