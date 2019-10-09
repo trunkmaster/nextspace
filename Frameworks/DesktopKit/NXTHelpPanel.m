@@ -227,6 +227,25 @@ static NSUInteger   selectedItemIndex;
   return artPath;
 }
 
+- (void)_scrollArticle
+{
+  NSRange        range = selectedRange;
+  NSCharacterSet *letters = [NSCharacterSet alphanumericCharacterSet];
+  NSString       *text = [[articleView textStorage] string];
+  int            i;
+  
+  while ([letters characterIsMember:[text characterAtIndex:range.location]] == NO) {
+    range.location++;
+    range.length--;
+  }
+  [articleView setSelectedRange:range];
+
+  // Scroll to the +2 lines after selected
+  range = [text lineRangeForRange:NSMakeRange(range.location+range.length+1,1)];
+  range = [text lineRangeForRange:NSMakeRange(range.location+range.length+1,1)];
+  [articleView scrollRangeToVisible:range];
+}
+
 // `path` must be a relative path e.g. `Tasks/Basics/Intro.rtfd`
 - (BOOL)_showArticleWithPath:(NSString *)path
 {
@@ -310,15 +329,8 @@ static NSUInteger   selectedItemIndex;
         [attachment respondsToSelector:@selector(markerName)] &&
         [[attachment markerName] isEqualToString:markerName]) {
       // Select text after marker
-      lineRange = [artText lineRangeForRange:NSMakeRange(i+1,1)];
-      [articleView setSelectedRange:lineRange];
-
-      // Scroll to the +2 lines after selected
-      i = lineRange.location + lineRange.length + 1;
-      lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
-      i = lineRange.location + lineRange.length + 1;
-      lineRange = [artText lineRangeForRange:NSMakeRange(i,1)];
-      [articleView scrollRangeToVisible:lineRange];
+      selectedRange = [artText lineRangeForRange:NSMakeRange(i,1)];
+      [self _scrollArticle];
       break;
     }
     i = range.location + (range.length - 1);
@@ -383,12 +395,6 @@ static NSUInteger   selectedItemIndex;
   [self makeFirstResponder:findField];
   [self _enableButtons:YES];
   [statusField setStringValue:@""];
-}
-
-- (void)_scrollArticle
-{
-  [articleView setSelectedRange:selectedRange];
-  [articleView scrollRangeToVisible:selectedRange];
 }
 
 - (void)_tocItemClicked:(id)sender
