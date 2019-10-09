@@ -213,6 +213,7 @@
 
   // Output (connection port)
   _outputName = [[NSString alloc] initWithCString:output_info->name];
+  _isBuiltin = [self _isBuiltin];
   _physicalSize = NSMakeSize((CGFloat)output_info->mm_width,
                             (CGFloat)output_info->mm_height);
   connectionState = output_info->connection;
@@ -257,7 +258,6 @@
           
           XRRFreeCrtcInfo(crtc_info);
 
-          _isBuiltin = [self _isBuiltin];
           // Primary display
           isMain = [self isMain];
         }
