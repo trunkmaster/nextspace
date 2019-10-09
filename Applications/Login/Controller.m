@@ -236,7 +236,7 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   XSetErrorHandler(NULL);
 }
 
-// --- RandR events handling
+// --- RandR and OSEPowerevents handling
 - (void)checkForRREvents
 {
   XEvent event;
@@ -264,6 +264,36 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 {
   [rrTimer invalidate];
   [rrTimer release];
+}
+
+//============================================================================
+// OSEScreen events
+//============================================================================
+- (void)lidDidChange:(NSNotification *)aNotif
+{
+  OSEDisplay *builtinDisplay = nil;
+  OSEScreen  *screen = [OSEScreen new];
+
+  NSLog(@"lidDidChange:");
+
+  for (OSEDisplay *d in [screen allDisplays]) {
+    if ([d isBuiltin] != NO) {
+      builtinDisplay = d;
+      break;
+    }
+  }
+
+  if (builtinDisplay) {
+    if (![systemPower isLidClosed] && ![builtinDisplay isActive]) {
+      NSLog(@"activating display %@", [builtinDisplay outputName]);
+      [screen activateDisplay:builtinDisplay];
+    }
+    else if ([systemPower isLidClosed] && [builtinDisplay isActive]) {
+      NSLog(@"DEactivating display %@", [builtinDisplay outputName]);
+      [screen deactivateDisplay:builtinDisplay];
+    }
+  }
+  [screen release];
 }
 
 // --- Busy cursor
@@ -544,7 +574,17 @@ int ConversationFunction(int num_msg,
   //   }
   // NSConnection *conn = [NSConnection defaultConnection];
   // [conn registerName:@"loginwindow"];
+  
+  // Laptop lid events handling
+  systemPower = [OSEPower new];
+  [systemPower startEventsMonitor];
+  [[NSNotificationCenter defaultCenter]
+                  addObserver:self
+                     selector:@selector(lidDidChange:)
+                         name:OSEPowerLidDidChangeNotification
+                       object:systemPower];
 
+  // Defaults
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
     addObserver:self

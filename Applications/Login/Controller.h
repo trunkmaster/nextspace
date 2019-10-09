@@ -29,6 +29,7 @@
 
 #import <DesktopKit/NXTDefaults.h>
 #import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEPower.h>
 
 #import "LoginWindow.h"
 
@@ -67,7 +68,8 @@ Display *rrDisplay;
   int                  xScreen;
   Window               xPanelWindow;
 
-  OSEScreen	       *screen;
+  // OSEScreen	       *screen;
+  OSEPower             *systemPower;
 
   // Preferences
   NXTDefaults           *prefs;
