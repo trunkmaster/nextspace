@@ -61,6 +61,21 @@
   return NO;
 }
 
+- (NSPoint)convertPoint:(NSPoint)point
+             forDisplay:(OSEDisplay *)display
+               atScreen:(OSEScreen *)screen
+{
+  NSPoint newPoint = {0,0};
+  NSSize  screenSize = [screen sizeInPixels];
+  NSRect  displayRect = [display frame];
+
+  newPoint.x = displayRect.origin.x + point.x;
+  newPoint.y = point.y + (screenSize.height - displayRect.size.height);
+  newPoint.y -= displayRect.origin.y;
+
+  return newPoint;
+}
+
 - (void)center
 {
   OSEScreen  *screen = nil;
@@ -68,7 +83,7 @@
   NSRect    displayRect, gScreenRect, windowRect;
   NSPoint   newOrigin;
 
-  // Get NEXTSPACE screen rect
+  // Get NEXTSPACE display rect
   screen = [[OSEScreen new] autorelease];
   display = [screen displayWithMouseCursor];
   if (!display)
@@ -78,7 +93,10 @@
         display = [[screen activeDisplays] objectAtIndex:0];
     }
   displayRect = [display frame];
-  NSLog(@"NEXTSPACE screen size: %@", NSStringFromRect(displayRect));
+  NSLog(@"NEXTSPACE display size: %@",
+        NSStringFromRect(displayRect));
+  NSLog(@"NEXTSPACE screen size: %@",
+        NSStringFromSize([screen sizeInPixels]));
 
   // Get GNUstep screen rect
   gScreenRect = [[self screen] frame];
@@ -86,16 +104,22 @@
     
   // Get window size
   windowRect = [self frame];
+  NSLog(@"Window rect: %@", NSStringFromRect(windowRect));
     
   // Calculate the new position of the window.
   newOrigin.x = displayRect.size.width/2 - windowRect.size.width/2;
-  newOrigin.x += displayRect.origin.x;
+  // newOrigin.x += displayRect.origin.x;
   newOrigin.y = displayRect.size.height/2 - windowRect.size.height/2;
-  newOrigin.y += gScreenRect.size.height - displayRect.size.height;
+  // newOrigin.y += gScreenRect.size.height - displayRect.size.height;
+  NSLog(@"New origin: x = %.0f, y = %.0f", newOrigin.x, newOrigin.y);
+
+  newOrigin = [self convertPoint:newOrigin
+                      forDisplay:display
+                        atScreen:screen];
 
   // Set the origin
   [self setFrameOrigin:newOrigin];
-  // NSLog(@"Center: x=%f y=%f", newOrigin.x, newOrigin.y);
+  NSLog(@"Center: x = %.0f, y = %.0f", newOrigin.x, newOrigin.y);
 }
 
 - (void)shakePanel:(Window)panel onDisplay:(Display*)dpy
@@ -105,6 +129,29 @@
   int    x = (int)windowRect.origin.x;
   int    xo = x;
   int    y = (int)windowRect.origin.y;
+
+  {
+    // OSEScreen *screen = [[OSEScreen new] autorelease];
+    // OSEDisplay *display = [screen displayWithMouseCursor];
+    // NSPoint xOrigin;
+    // xOrigin = [self convertPoint:windowRect.origin
+    //                   forDisplay:display
+    //                     atScreen:screen];
+    // y += (int)[display frame].origin.y -
+    //   ([screen sizeInPixels].height - [display frame].size.height);
+    // if ([display frame].origin.y > 0) {
+    //   y += ([screen sizeInPixels].height - [display frame].size.height) -
+    //     (int)[display frame].origin.y;
+    // }
+    // y += (screenSize.height - displayRect.size.height);
+
+    // y = (int)xOrigin.y - 240;
+    // NSLog(@"Converted point %@ is %@",
+    //       NSStringFromPoint(windowRect.origin),
+    //       NSStringFromPoint(xOrigin));
+  }
+
+  NSLog(@"shakePanel with frame: %@", NSStringFromRect(windowRect));
   
   num_steps = 4;
   num_shakes = 14;
@@ -132,7 +179,8 @@
           usleep(600);
         }
     }
-  XMoveWindow(dpy, panel, xo, y);
+  // XMoveWindow(dpy, panel, xo, y);
+  [self center];
 }
 
 #define SHRINKFACTOR 2

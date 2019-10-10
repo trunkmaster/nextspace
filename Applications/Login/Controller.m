@@ -498,13 +498,12 @@ int ConversationFunction(int num_msg,
   NSRect   rect;
   NSString *user;
 
-  NSLog(@"Login: awakeFromNib");
+  NSLog(@"awakeFromNib");
 
   // Adjust window size to background image size
   rect = [window frame];
   rect.size = [[panelImageView image] size];
   [window setFrame:rect display:NO];
-  // [self center];
   
   [shutDownBtn setRefusesFirstResponder:YES];
   [restartBtn setRefusesFirstResponder:YES];
@@ -528,6 +527,7 @@ int ConversationFunction(int num_msg,
   userSessions = [[NSMutableDictionary alloc] init];
 
   panelExitCode = 0;
+  NSLog(@"awakeFromNib: end");
 }
 
 - (void)displayHostname
@@ -565,7 +565,6 @@ int ConversationFunction(int num_msg,
   NSLog(@"appDidFinishLaunch: before showWindow");
   // Show login window
   [self setWindowVisible:YES];
-  NSLog(@"appDidFinishLaunch: end");
 
   // Turn light on
   // for (OSEDisplay *display in [[OSEScreen sharedScreen] activeDisplays])
@@ -591,6 +590,7 @@ int ConversationFunction(int num_msg,
        selector:@selector(defaultsDidChange:)
            name:@"LoginDefaultsDidChangeNotification"
          object:@"Preferences"];
+  NSLog(@"appDidFinishLaunch: end");
 }
 
 - (void)defaultsDidChange:(NSNotification *)notif
