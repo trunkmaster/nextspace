@@ -278,6 +278,8 @@
   [listMatrix sizeToCells];
 }
 
+unsigned items_count = 0;
+
 - (void)addItemWithTitle:(NSAttributedString *)title
        representedObject:(id)object
 {
@@ -296,9 +298,21 @@
   [cell setBackgroundColor:[listMatrix backgroundColor]];
   [cell setSelectionColor:listMatrix.selectionColor];
 
-  // [listMatrix drawCellAtRow:[[listMatrix cells] count]-1 column:0];
-  
-  [listMatrix sizeToCells];
+  items_count++;
+  if (items_count == 30) {
+    [listMatrix sizeToCells];
+    NSEvent *event;
+    NSDate  *date;
+    date = [NSDate date];
+    do {
+      event = [NSApp nextEventMatchingMask:NSAnyEventMask
+                                 untilDate:date
+                                    inMode:NSDefaultRunLoopMode
+                                   dequeue:YES];
+      [NSApp sendEvent:event];
+    } while (event);
+    items_count = 0;
+  }
 }
 
 // --- Target/action

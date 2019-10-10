@@ -547,6 +547,7 @@ static NSUInteger   selectedItemIndex;
     }
     i = lineRange.location + (lineRange.length - 1);
   }
+  [indexList setNeedsDisplay:YES];
   [attrString release];
 }
 
@@ -578,6 +579,7 @@ static NSUInteger   selectedItemIndex;
 - (void)_showIndex:(id)sender
 {
   NSInteger idx;
+  BOOL      justCreated = NO;
    
   // [statusField setStringValue:@"Loading Index..."];
   
@@ -588,10 +590,11 @@ static NSUInteger   selectedItemIndex;
       indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
       [indexList setBackgroundColor:[NSColor whiteColor]];
       [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
-      [self _loadIndex:[_helpDirectory
-                             stringByAppendingPathComponent:@"Index.rtfd"]];
+      // [self _loadIndex:[_helpDirectory
+      //                        stringByAppendingPathComponent:@"Index.rtfd"]];
       [indexList setTarget:self];
       [indexList setAction:@selector(_indexItemClicked:)];
+      justCreated = YES;
     }
     [splitView replaceSubview:scrollView with:indexList];
     [splitView adjustSubviews];
@@ -600,6 +603,10 @@ static NSUInteger   selectedItemIndex;
     [tocList selectItemAtIndex:idx];
     selectedItemIndex = idx;
     [self _updateHistoryWithIndex:idx documentPath:@"Index.rtfd"];
+    if (justCreated) {
+      [self _loadIndex:[_helpDirectory
+                             stringByAppendingPathComponent:@"Index.rtfd"]];
+    }
   }
   else {
     // Item was not found
