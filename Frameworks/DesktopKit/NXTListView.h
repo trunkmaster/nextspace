@@ -29,6 +29,11 @@
   NSScrollView  *scrollView;
   NSColor       *backgroundColor;
   NSColor       *selBackgroundColor;
+
+  // Items loading related
+  BOOL       initialLoadDidComplete;
+  unsigned   items_count;
+  NSSize     cellSize;  
 }
 
 - (void)loadTitles:(NSArray *)titles

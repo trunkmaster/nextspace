@@ -509,13 +509,13 @@ static NSUInteger   selectedItemIndex;
   NSMutableDictionary *object = [NSMutableDictionary new];
   id                  attachment;
 
-  // NSLog(@"Loading Index from: %@", indexFilePath);
-
+  // NSLog(@"Loading Index: start");
   attrString = [[NSAttributedString alloc] initWithPath:indexFilePath
                                      documentAttributes:NULL];
   text = [attrString string];
-  // NSLog(@"Index length %lu", [text length]);
-    
+  // NSLog(@"Index loading done. Length == %lu", [text length]);
+
+  NSLog(@"Index.rtfd: loading items into list view: START");
   for (int i = 0; i < [text length]; i++) {
     lineRange = [text lineRangeForRange:NSMakeRange(i,1)];
     attrs = [attrString attributesAtIndex:i effectiveRange:&range];
@@ -537,6 +537,9 @@ static NSUInteger   selectedItemIndex;
     else {
       title = [attrString attributedSubstringFromRange:lineRange];
     }
+    
+    i = lineRange.location + (lineRange.length - 1);
+    
     if ([[object allKeys] count] > 0) {
       [indexList addItemWithTitle:title
                 representedObject:[NSDictionary dictionaryWithDictionary:object]];
@@ -545,9 +548,8 @@ static NSUInteger   selectedItemIndex;
     else {
       [indexList addItemWithTitle:title representedObject:nil];
     }
-    i = lineRange.location + (lineRange.length - 1);
   }
-  [indexList setNeedsDisplay:YES];
+  NSLog(@"Index.rtfd: loading items into list view: END");
   [attrString release];
 }
 
@@ -581,7 +583,8 @@ static NSUInteger   selectedItemIndex;
   NSInteger idx;
   BOOL      justCreated = NO;
    
-  // [statusField setStringValue:@"Loading Index..."];
+  [statusField setStringValue:@"Loading Index..."];
+  [statusField display];
   
   // Find item with `Index.rtfd` represented object
   idx = [tocList indexOfItemWithStringRep:@"Index.rtfd"];
@@ -590,22 +593,24 @@ static NSUInteger   selectedItemIndex;
       indexList = [[NXTListView alloc] initWithFrame:NSMakeRect(0,0,414,200)];
       [indexList setBackgroundColor:[NSColor whiteColor]];
       [indexList setSelectionBackgroundColor:[NSColor controlBackgroundColor]];
-      // [self _loadIndex:[_helpDirectory
-      //                        stringByAppendingPathComponent:@"Index.rtfd"]];
       [indexList setTarget:self];
       [indexList setAction:@selector(_indexItemClicked:)];
+      [indexList setNextKeyView:findField];
       justCreated = YES;
     }
     [splitView replaceSubview:scrollView with:indexList];
     [splitView adjustSubviews];
     [splitView setPosition:145.0 ofDividerAtIndex:0];
-    [indexList setNextKeyView:findField];
+    // [splitView display];
     [tocList selectItemAtIndex:idx];
+    [tocList display];
     selectedItemIndex = idx;
     [self _updateHistoryWithIndex:idx documentPath:@"Index.rtfd"];
+    
     if (justCreated) {
       [self _loadIndex:[_helpDirectory
                              stringByAppendingPathComponent:@"Index.rtfd"]];
+      [indexList display];
     }
   }
   else {
@@ -614,7 +619,8 @@ static NSUInteger   selectedItemIndex;
                      @"OK", nil, nil);
   }
   
-  // [statusField setStringValue:@""];
+  [statusField setStringValue:@""];
+  [statusField display];
 }
 
 // --- Backtrack

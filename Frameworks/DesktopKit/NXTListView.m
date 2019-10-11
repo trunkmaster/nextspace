@@ -241,8 +241,6 @@
 
 - (id)initWithFrame:(NSRect)rect
 {
-  NSSize cellSize;
-  
   [super initWithFrame:rect];
 
   // rect.size.width -= 10; // why 10 ??
@@ -265,9 +263,9 @@
   [scrollView setDocumentView:listMatrix];
   [scrollView setLineScroll:15.0];
   [listMatrix release];
-  
+
   [self addSubview:scrollView];
-  
+
   return self;
 }
 
@@ -278,16 +276,22 @@
   [listMatrix sizeToCells];
 }
 
-unsigned items_count = 0;
-
 - (void)addItemWithTitle:(NSAttributedString *)title
        representedObject:(id)object
 {
   NXTListCell *cell;
+  NSRect      docRect = [scrollView documentVisibleRect];
+  NSUInteger  cellsCount;
+
+  if ([[listMatrix cells] count] == 0) {
+    initialLoadDidComplete = NO;
+    items_count = 0;
+  }
   
   [listMatrix addRow];
 
-  cell = (NXTListCell *)[listMatrix makeCellAtRow:[[listMatrix cells] count]-1
+  cellsCount = [[listMatrix cells] count];
+  cell = (NXTListCell *)[listMatrix makeCellAtRow:cellsCount-1
                                            column:0];
   [cell setObjectValue:title];
   [cell setRepresentedObject:object];
@@ -298,20 +302,13 @@ unsigned items_count = 0;
   [cell setBackgroundColor:[listMatrix backgroundColor]];
   [cell setSelectionColor:listMatrix.selectionColor];
 
+  [listMatrix sizeToCells];
   items_count++;
-  if (items_count == 30) {
-    [listMatrix sizeToCells];
-    NSEvent *event;
-    NSDate  *date;
-    date = [NSDate date];
-    do {
-      event = [NSApp nextEventMatchingMask:NSAnyEventMask
-                                 untilDate:date
-                                    inMode:NSDefaultRunLoopMode
-                                   dequeue:YES];
-      [NSApp sendEvent:event];
-    } while (event);
-    items_count = 0;
+  if ((cellSize.height * cellsCount) > docRect.size.height) {
+    if (items_count >= (docRect.size.height/cellSize.height)) {
+      [self display];
+      items_count = 0;
+    }
   }
 }
 
