@@ -86,7 +86,8 @@
   // Get NEXTSPACE display rect
   screen = [[OSEScreen new] autorelease];
   screenSize = [screen sizeInPixels];
-  display = [screen displayWithMouseCursor];
+  // display = [screen displayWithMouseCursor];
+  display = [screen mainDisplay];
   if (!display) {
     display = [screen mainDisplay];
     if (!display) {
@@ -99,25 +100,23 @@
 
   NSLog(@"Window frame: %@", NSStringFromRect(windowRect));
   
-  // Calculate the new position of the window.
+  // Calculate the new position of the window on display.
   newOrigin.x = displayRect.size.width/2 - windowRect.size.width/2;
-  // newOrigin.x += displayRect.origin.x;
+  newOrigin.x += displayRect.origin.x;
   newOrigin.y = displayRect.size.height/2 - windowRect.size.height/2;
-  // newOrigin.y += gScreenRect.size.height - displayRect.size.height;
   NSLog(@"New origin: x = %.0f, y = %.0f", newOrigin.x, newOrigin.y);
   
   NSLog(@"Display rect: %@", NSStringFromRect(displayRect));
-  newOrigin.x += displayRect.origin.x;
 
   if (isGNUstep != NO) {
     // Get GNUstep screen rect
     gsScreenRect = [[self screen] frame];
-    NSLog(@"GNUstep screen size: %@", NSStringFromRect(gsScreenRect));
+    NSLog(@"GNUSTEP screen size: %@", NSStringFromRect(gsScreenRect));
 
+    // Add bottom offset
     if (NSMaxY(displayRect) < screenSize.height) {
       newOrigin.y += (screenSize.height - NSMaxY(displayRect));
     }
-    // Add bottom offset
     // Compensate difference between GNUstep and NEXTSPACE screen heights
     if (gsScreenRect.size.height > 0) {
       newOrigin.y -= (screenSize.height - gsScreenRect.size.height);
