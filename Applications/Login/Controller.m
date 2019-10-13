@@ -284,6 +284,7 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   }
 
   if (builtinDisplay) {
+    [self setWindowVisible:NO];
     if (![systemPower isLidClosed] && ![builtinDisplay isActive]) {
       NSLog(@"activating display %@", [builtinDisplay outputName]);
       [screen activateDisplay:builtinDisplay];
@@ -292,6 +293,7 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
       NSLog(@"DEactivating display %@", [builtinDisplay outputName]);
       [screen deactivateDisplay:builtinDisplay];
     }
+    [self setWindowVisible:YES];
   }
   [screen release];
 }
