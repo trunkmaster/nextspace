@@ -233,7 +233,7 @@
     }
 
   //CRTC = 0 if monitor is not connected to output port
-  if (output_info->crtc)
+  if (output_info->crtc && [allResolutions count] > 0)
     {
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, output_info->crtc);
       // Current resolution
@@ -262,17 +262,17 @@
           isMain = [self isMain];
         }
     }
-  else if ([allResolutions count] > 0)
+  else if ([allResolutions count] > 0) {
     {
       ASSIGN (_activeResolution, [OSEDisplay zeroResolution]);
       _activePosition = NSMakePoint(0,0);
       _hiddenFrame.origin = _activePosition;
       _hiddenFrame.size = NSSizeFromString([[self bestResolution]
-                                             objectForKey:OSEDisplaySizeKey]);
+                                               objectForKey:OSEDisplaySizeKey]);
     }
   
   XRRFreeOutputInfo(output_info);
-
+  
   // Initialize properties
   properties = nil;
   [self parseProperties];
@@ -343,7 +343,7 @@
   NSSize       resSize;
   NSDictionary *res, *resolution = nil;
   CGFloat      resRate, max_rate = 0.0;
-  
+
   for (res in allResolutions)
     {
       resSize = NSSizeFromString([res objectForKey:OSEDisplaySizeKey]);
@@ -373,8 +373,8 @@
   // Create new resolution and add to list of known resolutions.
   if (resolution == nil)
     {
-      NSLog(@"OSEDisplay: Display is not set up with best resolution: %@",
-            [self bestResolution]);
+      // NSLog(@"OSEDisplay: Display is not set up with best resolution: %@",
+      //       [self bestResolution]);
       NSSize rSize = NSMakeSize(width, height);
       NSNumber *rRate = [NSNumber numberWithFloat:refresh];
   
@@ -382,7 +382,7 @@
                                    NSStringFromSize(rSize), OSEDisplaySizeKey,
                                  rRate,OSEDisplayRateKey,
                                  nil];
-      [allResolutions insertObject:resolution atIndex:1];
+      [allResolutions insertObject:resolution atIndex:0];
     }
 
   return resolution;
@@ -391,8 +391,7 @@
 // Actually sets resolution of display device without changing layout.
 // Updates '_frame', '_activeRate', '_activeResolution' and '_activePosition'
 // ivars.
-// Doesn't change 'isActive' ivar but if display was deactivated setting
-// resolution to non-zero value activates it.
+// If display was deactivated setting resolution to non-zero value activates it.
 // If you want to set resolution and relayout displays with new resolution use
 // [OSEScreen setDisplay:resolution:] instead.
 - (void)setResolution:(NSDictionary *)resolution
