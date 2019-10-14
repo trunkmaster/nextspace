@@ -76,24 +76,38 @@
 - (NSPoint)centeredOriginForGNUstep:(BOOL)isGNUstep
 {
   OSEScreen  *screen;
-  OSEDisplay *display;
+  OSEDisplay *display = nil;
   NSSize     screenSize;
   NSRect     displayRect;
   NSRect     windowRect = [self frame];
   NSRect     gsScreenRect;
   NSPoint    newOrigin;
 
+  NSLog(@"centeredOriginForGNUstep");
+
   // Get NEXTSPACE display rect
   screen = [[OSEScreen new] autorelease];
-  screenSize = [screen sizeInPixels];
-  // display = [screen displayWithMouseCursor];
-  display = [screen mainDisplay];
-  if (!display) {
+  if ([[screen activeDisplays] count] > 0) {
     display = [screen mainDisplay];
     if (!display) {
+      NSLog(@"No main display - using first active.");
       display = [[screen activeDisplays] objectAtIndex:0];
     }
   }
+  else if ([[screen connectedDisplays] count] > 0) {
+    NSLog(@"No active displays left - activating first connected.");
+    display = [[screen connectedDisplays] objectAtIndex:0];
+    [screen activateDisplay:display];
+  }
+  else {
+    NSLog(@"No connected displays left. Can't center window.");
+  }
+  
+  if (!display) {
+    return NSMakePoint(0,0);
+  };
+  
+  screenSize = [screen sizeInPixels];
   displayRect = [display frame];
   NSLog(@"NEXTSPACE display frame: %@", NSStringFromRect(displayRect));
   NSLog(@"NEXTSPACE screen size: %@", NSStringFromSize([screen sizeInPixels]));
