@@ -350,8 +350,12 @@
   [resultIcon setEditable:NO];
   [resultIcon setSelected:YES];
   [resultIcon setPaths:@[@"me"]];
+  [resultIcon setSelectable:YES];
+  [resultIcon setDoubleClickPassesClick:NO];
+  [resultIcon setTarget:self];
+  [resultIcon setDoubleAction:@selector(resultIconDoubleClicked:)];
   [resultIcon setMaximumCollapsedLabelWidth:80];
-  [resultIcon setShowsExpandedLabelWhenSelected:NO];
+  [resultIcon setShowsExpandedLabelWhenSelected:YES];
 }
 
 - (void)activateWithString:(NSString *)searchString
@@ -726,7 +730,7 @@
   if (sender != resultList)
     return;
 
-  // UGLY: Permit deselection of selected item in NSBrowser's column
+  // UGLY: Prevent deselection of selected item in NSBrowser's column
   if (resultIndex == [resultList selectedRowInColumn:0]) {
     [resultList selectRow:resultIndex inColumn:0];
   }
@@ -734,16 +738,26 @@
   resultIndex = [resultList selectedRowInColumn:0];
   item = [variantList objectAtIndex:resultIndex];
 
-  fieldText = [findField stringValue];
-  if (([fieldText length] > 1) &&
-      ([fieldText characterAtIndex:[fieldText length]-1] != '/')) {
-    path = [fieldText stringByDeletingLastPathComponent];
-  }
   shelfIcons = [shelf selectedIcons];
-  if ([fieldText length] == 0 && [shelfIcons count] == 1) {
-    path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
+  fieldText = [findField stringValue];
+  if ([fieldText length] > 1) {
+    // if ([fieldText characterAtIndex:[fieldText length]-1] != '/') {
+    //   path = [fieldText stringByDeletingLastPathComponent];
+    // }
+    // else {
+      path = [NSString stringWithString:fieldText];
+    // }
+    NSLog(@"2.1 - %@", path);
   }
+  else { // text field empty
+    if ([shelfIcons count] == 1) {
+      path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
+    }
+    NSLog(@"3 - %@", path);
+  }
+  NSLog(@"[Finder] - result list clicked:%@ - %@", path, item);
   path = [path stringByAppendingPathComponent:item];
+  NSLog(@"[Finder] + result list clicked:%@", path);
   
   [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
   [resultIcon setPaths:@[path]];
@@ -753,6 +767,13 @@
       [self resignShelfSelection];
     }
   }
+}
+
+// --- Result icon action
+- (void)resultIconDoubleClicked:(id)sender
+{
+  NSLog(@"Result icon double action: %@", [sender className]);
+  [fileViewer open:sender];
 }
 
 @end
