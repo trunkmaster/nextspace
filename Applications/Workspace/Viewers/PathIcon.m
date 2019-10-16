@@ -580,6 +580,7 @@ static NSDragOperation savedMask;
   NSInteger clickCount;
   NSDate    *evDate = [NSDate date];
   OSEMouse  *mouse = [[OSEMouse new] autorelease];
+  id        superView;
   
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown) {
     return;
@@ -588,9 +589,12 @@ static NSDragOperation savedMask;
   
   clickCount = [ev clickCount];
   modifierFlags = [ev modifierFlags];
-  
-  [(NXTIconView *)[self superview] selectIcons:[NSSet setWithObject:self]
-                                withModifiers:modifierFlags];
+
+  superView = [self superview];
+  if ([superView isKindOfClass:[NXTIconView class]]) {
+    [superView selectIcons:[NSSet setWithObject:self]
+             withModifiers:modifierFlags];
+  }
   
   // Dragging
   if ([target respondsToSelector:dragAction]) {
