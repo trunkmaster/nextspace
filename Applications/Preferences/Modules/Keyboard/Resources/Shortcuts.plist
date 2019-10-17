@@ -5,8 +5,7 @@
      Meta    == Alt/Command
      Mod1    == Alt/Command
      Mod2    == ?
-    
- Mod3    == ?
+     Mod3    == ?
      Mod4    == Super/Alternate
      Mod5    == ?
   */
@@ -24,11 +23,11 @@
     }
     
     WindowResizing = {
-      MoveResizeKey = None;
+      MoveResizeKey =	None;
+      MaximusKey =	None;
       
       ShadeKey 	=	"Mod4+KP_Subtract";
       MaximizeKey = 	"Mod4+KP_Add";
-      MaximusKey = 	None;
       
       VMaximizeKey = 	"Mod4+Up"; 	/* Maximize vertically */
       HMaximizeKey = 	"Mod4+Right";	/* Maximize horizontally */
@@ -52,8 +51,8 @@
       MinimizeAllKey 	= "Mod1+M";		/* Cmd+M */
       FocusNextKey 	= "Mod1+Tab";		/* Cmd+Tab */
       FocusPrevKey 	= "Mod1+Shift+Tab";
-      GroupNextKey 	= None;
-      GroupPrevKey 	= None;
+      GroupNextKey 	= "Mod1+grave";
+      GroupPrevKey 	= "Mod1+Shift+grave";
       RaiseKey 		= None;
       LowerKey 		= None;
       RaiseLowerKey 	= None;
@@ -61,7 +60,9 @@
     }
 
     Dock = {
-      DockRaiseLowerKey = None; /* Mod4+Shift+D ?*/
+      DockRaiseLowerKey   = None;
+      DockHideShowKey     = "Mod4+Shift+D";
+      IconYardHideShowKey = "Mod4+Shift+Y";
     }
 
     Workspaces = {
@@ -116,46 +117,46 @@
   GNUstep = {
     /* ===== Reserved keyboard shortcuts ===== */
     /* Edit menu */
-    "Cut"			= "Command + x";
-    "Copy"			= "Command + c";
-    "Paste"			= "Command + v";
-    "Select All"		= "Command + a";
-    "Undo"			= "Command + z";
+    "Cut"			= "Command + x";	-		"Mod1 + x"
+    "Copy"			= "Command + c";	-		"Mod1 + c"
+    "Paste"			= "Command + v";	-		"Mod1 + v"
+    "Select All"		= "Command + a";	-		"Mod1 + a"
+    "Undo"			= "Command + z";	-		"Mod1 + z"
     /* */
-    "Close Window"		= "Command + w";	CloseKey	"Mod1 + w";
-    "Miniaturize Window"	= "Command + m";	MiniaturizeKey	"Mod1 + m";
-    "Hide"			= "Command + h";	HideKey		"Mod1 + h";
-    "Quit"			= "Command + q";
-    "Help"			= "Command + ?";
-    "Print"			= "Command + p";
-    "Open"			= "Command + o";
-    "New"			= "Command + n";
-    "Save"			= "Command + s";
+    "Close Window"		= "Command + w";	CloseKey	"Mod1 + w"
+    "Miniaturize Window"	= "Command + m";	MiniaturizeKey	"Mod1 + m"
+    "Hide"			= "Command + h";	HideKey		"Mod1 + h"
+    "Quit"			= "Command + q";	-		"Mod1 + q"
+    "Help"			= "Command + ?";	-		"Mod1 + ?"
+    "Print"			= "Command + p";	-		"Mod1 + p"
+    "Open"			= "Command + o";	-		"Mod1 + o"
+    "New"			= "Command + n";	-		"Mod1 + n"
+    "Save"			= "Command + s";	-		"Mod1 + s"
     
     /* ===== Required (if you use some functionality) ===== */
-    /* If use use Find */
-    "Find panel..."		= "Command + f";
-    "Find Next"			= "Command + g";
-    "Find Previous"		= "Command + d";
-    "Enter Selection"		= "Command + e";
-    "Jump To Selection"		= "Command + j";
+    /* If you use Find */
+    "Find panel..."		= "Command + f";	-		"Mod1 + f"
+    "Find Next"			= "Command + g";	-		"Mod1 + g"
+    "Find Previous"		= "Command + d";	-		"Mod1 + d"
+    "Enter Selection"		= "Command + e";	-		"Mod1 + e"
+    "Jump To Selection"		= "Command + j";	-		"Mod1 + j"
     /* If you use Fonts */
-    "Font Panel..."		= "Command + t";
-    "Bold"			= "Command + b";
-    "Italic"			= "Command + i";
-    "Colors..."			= "Command + C";
+    "Font Panel..."		= "Command + t";	-		"Mod1 + t"
+    "Bold"			= "Command + b";	-		"Mod1 + b"
+    "Italic"			= "Command + i";	-		"Mod1 + i"
+    "Colors..."			= "Command + C";	-		"Mod1 + C"
     /* Other */
-    "Check Spelling"		= "Command + ;";
+    "Check Spelling"		= "Command + ;";	-		"Mod1 + ;"
 
     /* ===== Recommended (it's a good style) ===== */
-    "Show Ruler"		= "Command + r";
-    "Copy Ruler"		= "Command + 1";
-    "Pase Ruler"		= "Command + 2";
-    "Copy Font"			= "Command + 3";
-    "Paste Font"		= "Command + 4";
-    "Page Layout"		= "Command + P";
-    "Save As"			= "Command + S";
-    "Paste and Link"		= "Command + V";
+    "Show Ruler"		= "Command + r";	-		"Mod1 + r"
+    "Copy Ruler"		= "Command + 1";	-		"Mod1 + 1"
+    "Pase Ruler"		= "Command + 2";	-		"Mod1 + 2"
+    "Copy Font"			= "Command + 3";	-		"Mod1 + 3"
+    "Paste Font"		= "Command + 4";	-		"Mod1 + 4"
+    "Page Layout"		= "Command + P";	-		"Mod1 + P"
+    "Save As"			= "Command + S";	-		"Mod1 + S"
+    "Paste and Link"		= "Command + V";	-		"Mod1 + V"
 
     /* TODO: Other useful (OpenStep UIG, section 3.20) */
     "Top of Page/Page Up"	= "Control + Up";
