@@ -485,37 +485,42 @@
 
 // --- TextField Actions
 
+- (NSString *)absolutePathForPath:(NSString *)path
+{
+  const char *c_t;
+  NSString   *absPath = nil;
+
+  if (!path || [path length] == 0 || [path isEqualToString:@""]) {
+    return nil;
+  }
+
+  c_t = [path cString];
+  if (c_t[0] == '/') {
+    absPath = path;
+  }
+  else if (c_t[0] == '~') {
+    absPath = [path stringByReplacingCharactersInRange:NSMakeRange(0,1)
+                                            withString:NSHomeDirectory()];
+  }
+  else if (([path length] > 1) && (c_t[0] == '.' && c_t[1] == '/')) {
+    absPath = [path stringByReplacingCharactersInRange:NSMakeRange(0,2)
+                                            withString:NSHomeDirectory()];
+  }
+
+  return absPath;
+}
+
 - (NSArray *)completionFor:(NSString *)path
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
   NSFileManager  *fm = [NSFileManager defaultManager];
   NSArray        *dirContents;
-  const char     *c_t;
-  BOOL           isAbsolute = NO;
-  NSString       *absPath;
+  NSString       *pathBase, *absPath;
   BOOL           isDir;
 
-  if (!path || [path length] == 0 || [path isEqualToString:@""]) {
-    return variants;
-  }
-
-  c_t = [path cString];
-  if (c_t[0] == '/') {
-    isAbsolute = YES;
-  }
-  else if (c_t[0] == '~') {
-    path = [path stringByReplacingCharactersInRange:NSMakeRange(0,1)
-                                         withString:NSHomeDirectory()];
-    isAbsolute = YES;
-  }
-  else if (([path length] > 1) && (c_t[0] == '.' && c_t[1] == '/')) {
-    path = [path stringByReplacingCharactersInRange:NSMakeRange(0,2)
-                                         withString:NSHomeDirectory()];
-    isAbsolute = YES;
-  }
-
-  if (isAbsolute) {
-    NSString *pathBase = [NSString stringWithString:path];
+  path = [self absolutePathForPath:path];
+  if (path != nil) {
+    pathBase = [NSString stringWithString:path];
     
     // Do filesystem scan
     while ([fm fileExistsAtPath:pathBase isDirectory:&isDir] == NO) {
@@ -560,7 +565,7 @@
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
                                          [variantList count]]];
   
-  if ([variantList count] > 0) {
+  if ([variantList count] > 1) {
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL          isDir;
     NSString      *path = [findField stringValue];
@@ -571,10 +576,9 @@
 
     // Append '/' to dir name or shrink enetered path to existing dir
     if ([path length] > 0 && [path characterAtIndex:[path length]-1] != '/') {
-      if ([fm fileExistsAtPath:path isDirectory:&isDir]) {
-        if (isDir != NO) {
-          path = [path stringByAppendingString:@"/"];
-        }
+      if (([fm fileExistsAtPath:[self absolutePathForPath:path]
+                    isDirectory:&isDir] != NO) && (isDir != NO)) {
+        path = [path stringByAppendingString:@"/"];
       }
     }
     
@@ -601,7 +605,13 @@
     }
   }
   else {
-    [resultList reloadColumn:0];
+    // [resultList reloadColumn:0];
+    NSMatrix  *mtrx = [resultList matrixInColumn:0];
+    NSInteger i, nRows = [mtrx numberOfRows];
+
+    for (i = 0;i < nRows; i++) {
+      [mtrx removeRow:0];
+    }
     resultIndex = -1;
   }
 }
@@ -723,7 +733,8 @@
 - (void)listItemClicked:(id)sender
 {
   NSInteger selRow;
-  NSString  *item, *path, *fieldText;
+  NSString  *item, *path, *fieldText, *absPath;
+  BOOL      isDir;
   NSSet     *shelfIcons;
   NXTIcon   *sIcon;
 
@@ -740,19 +751,19 @@
 
   shelfIcons = [shelf selectedIcons];
   fieldText = [findField stringValue];
+  absPath = [self absolutePathForPath:fieldText];
+  if (([[NSFileManager defaultManager] fileExistsAtPath:absPath
+                                            isDirectory:&isDir] == NO) ||
+      (isDir == NO)) {
+    fieldText = [fieldText stringByDeletingLastPathComponent];
+  }
+  
   if ([fieldText length] > 1) {
-    // if ([fieldText characterAtIndex:[fieldText length]-1] != '/') {
-    //   path = [fieldText stringByDeletingLastPathComponent];
-    // }
-    // else {
-      path = [NSString stringWithString:fieldText];
-    // }
+    path = [self absolutePathForPath:fieldText];
     NSLog(@"2.1 - %@", path);
   }
   else { // text field empty
-    if ([shelfIcons count] == 1) {
-      path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
-    }
+    path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
     NSLog(@"3 - %@", path);
   }
   NSLog(@"[Finder] - result list clicked:%@ - %@", path, item);
