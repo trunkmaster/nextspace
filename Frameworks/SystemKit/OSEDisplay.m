@@ -40,7 +40,7 @@
 //   int             npreferred;
 //   RRMode          *modes;
 // } XRROutputInfo;
-  
+
 // CRTC:
 // typedef struct _XRRCrtcInfo {
 //   Time            timestamp;
@@ -88,7 +88,7 @@
 {
   NSString *zeroSizeString = NSStringFromSize(NSMakeSize(0,0));
   NSNumber *zeroRate = [NSNumber numberWithFloat:0.0];
-  
+
   return [NSDictionary dictionaryWithObjectsAndKeys:
                          zeroSizeString, OSEDisplaySizeKey,
                        zeroRate,OSEDisplayRateKey,
@@ -120,7 +120,7 @@
   XRRModeInfo        mode_info;
   NSSize             resDims;
   float              rRate, mode_rate=0.0;
-  
+
   output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
 
   resDims = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
@@ -133,11 +133,11 @@
         {
           rRate = (float)mode_info.dotClock/mode_info.hTotal/mode_info.vTotal;
           if (rRate > mode_rate) mode_rate = rRate;
-          
+
           mode = output_info->modes[i];
         }
     }
-  
+
   XRRFreeOutputInfo(output_info);
 
   return mode;
@@ -147,7 +147,7 @@
   NSSize       resSize;
   NSDictionary *res;
   CGFloat      r;
-  
+
   for (res in allResolutions)
     {
       resSize = NSSizeFromString([res objectForKey:OSEDisplaySizeKey]);
@@ -174,10 +174,10 @@
 {
   if (!_outputName)
     return NO;
-  
+
   if (([_outputName rangeOfString:@"LVDS"].location != NSNotFound))
     return YES;
-  
+
   if (([_outputName rangeOfString:@"eDP"].location != NSNotFound))
     return YES;
 
@@ -198,7 +198,7 @@
   CGFloat       rRate;
   NSSize        rSize;
   NSDictionary  *res;
-  
+
   self = [super init];
 
   xDisplay = x_display;
@@ -208,7 +208,7 @@
   isMain = NO;
   // isActive = NO;
   output_id = output;
-  
+
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output);
 
   // Output (connection port)
@@ -255,14 +255,14 @@
                                                    rate:_activeRate];
           _activePosition = _frame.origin;
           // isActive = YES;
-          
+
           XRRFreeCrtcInfo(crtc_info);
 
           // Primary display
           isMain = [self isMain];
         }
     }
-  else if ([allResolutions count] > 0) {
+  else if ([allResolutions count] > 0)
     {
       ASSIGN (_activeResolution, [OSEDisplay zeroResolution]);
       _activePosition = NSMakePoint(0,0);
@@ -270,9 +270,9 @@
       _hiddenFrame.size = NSSizeFromString([[self bestResolution]
                                                objectForKey:OSEDisplaySizeKey]);
     }
-  
+
   XRRFreeOutputInfo(output_info);
-  
+
   // Initialize properties
   properties = nil;
   [self parseProperties];
@@ -290,7 +290,7 @@
   // NSLog(@"OSEDisplay %@: resolution count: %lu; reaint count: %lu",
   //       outputName, [allResolutions count], [allResolutions retainCount]);
   // [allResolutions release];
-  
+
   [properties release];
   [_outputName release];
 
@@ -303,7 +303,7 @@
   //       frame.size.height, _physicalSize.height);
   if ((_frame.size.height <= 0) || (_physicalSize.height <= 0))
     return .0;
-    
+
   return (25.4 * _frame.size.height) / _physicalSize.height;
 }
 
@@ -332,7 +332,7 @@
     { // resolution 0x0 used for display deactivation - accept it
       return YES;
     }
-  
+
   return !([self _modeForResolution:resolution] == 0);
 }
 
@@ -377,7 +377,7 @@
       //       [self bestResolution]);
       NSSize rSize = NSMakeSize(width, height);
       NSNumber *rRate = [NSNumber numberWithFloat:refresh];
-  
+
       resolution = [NSDictionary dictionaryWithObjectsAndKeys:
                                    NSStringFromSize(rSize), OSEDisplaySizeKey,
                                  rRate,OSEDisplayRateKey,
@@ -403,14 +403,14 @@
   RRCrtc             rr_crtc;
   XRRModeInfo        mode_info;
   NSSize 	     dims, resolutionSize;
-  
+
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
-  
-  NSLog(@"%s: Set resolution %@ and origin %@", 
+
+  NSLog(@"%s: Set resolution %@ and origin %@",
         output_info->name,
         [resolution objectForKey:OSEDisplaySizeKey],
         NSStringFromPoint(position));
- 
+
   rr_crtc = output_info->crtc;
   if (!rr_crtc)
     {
@@ -433,7 +433,7 @@
     }
 
   resolutionSize = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
-  
+
   if (resolutionSize.width == 0 || resolutionSize.height == 0)
     {
       rr_mode = None;
@@ -448,7 +448,7 @@
       // calculation ([OSEScreen applyLayout:]).
       rr_mode = [self _modeForResolution:resolution];
     }
-  
+
   // Current and new modes differ
   if (crtc_info->mode != rr_mode ||
       crtc_info->x != position.x ||
@@ -473,7 +473,7 @@
   ASSIGN(_activeResolution, resolution);
   _activeRate = [[resolution objectForKey:OSEDisplayRateKey] floatValue];
   _activePosition = position;
-  
+
   XRRFreeCrtcInfo(crtc_info);
   XRRFreeOutputInfo(output_info);
 }
@@ -496,7 +496,7 @@
 - (void)setActive:(BOOL)active
 {
   NSDictionary *resolution;
-  
+
   if (active == YES) // activation
     {
       if (NSIsEmptyRect(_hiddenFrame) == NO)
@@ -533,7 +533,7 @@
     {
       return YES;
     }
-  
+
   return NO;
 }
 
@@ -546,7 +546,7 @@
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);
     }
-  
+
   isMain = yn;
 }
 
@@ -584,7 +584,7 @@ find_last_non_clamped(CARD16 array[], int size)
   gammaValue.green = 1.0;
   gammaValue.blue = 1.0;
   gammaBrightness = 1.0;
-  
+
   if (!output_info->crtc)
     {
       NSDebugLLog(@"Display",@"OSEDisplay: No display connected to output %s",
@@ -675,12 +675,12 @@ find_last_non_clamped(CARD16 array[], int size)
 
       // Drop precision to 2 digits after point
       // NSLog(@"OSEDisplay _getGamma pre: %f", gammaValue.red);
-      
+
       gammaValue.red = (CGFloat)((int)(gammaValue.red*100.0))/100.0;
       gammaValue.green = (CGFloat)((int)(gammaValue.green*100.0))/100.0;
       gammaValue.blue = (CGFloat)((int)(gammaValue.blue*100.0))/100.0;
       // gammaBrightness = (CGFloat)((int)(gammaBrightness*100.0))/100.0;
-      
+
       // NSLog(@"OSEDisplay _getGamma post: %f", gammaValue.red);
     }
 
@@ -695,9 +695,9 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   XRROutputInfo *output_info;
   int           size;
- 
+
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
-  
+
   if (!output_info->crtc) return NO;
 
   size = XRRGetCrtcGammaSize(xDisplay, output_info->crtc);
@@ -730,14 +730,14 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   CGFloat      red, green, blue, brightness;
   NXGammaValue gamma;
-  
+
   if (!desc)
     return gammaValue;
-  
+
   red = [[desc objectForKey:OSEDisplayGammaRedKey] floatValue];
   green = [[desc objectForKey:OSEDisplayGammaGreenKey] floatValue];
   blue = [[desc objectForKey:OSEDisplayGammaBlueKey] floatValue];
-  
+
   gamma.red = (red == 0.0) ? 1.0 : red;
   gamma.green = (green == 0.0) ? 1.0 : green;
   gamma.blue = (blue == 0.0) ? 1.0 : blue;
@@ -748,10 +748,10 @@ find_last_non_clamped(CARD16 array[], int size)
 - (void)setGammaFromDescription:(NSDictionary *)gammaDict
 {
   NSString *red, *green, *blue, *brightness;
-  
+
   if (!gammaDict)
     return;
-  
+
   gammaValue = [self gammaFromDescription:gammaDict];
   gammaBrightness = [[gammaDict objectForKey:OSEDisplayGammaBrightnessKey]
                       floatValue];
@@ -762,7 +762,7 @@ find_last_non_clamped(CARD16 array[], int size)
 
   // NSLog(@"setGammaFromDescription: %f : %f : %f",
   //       gammaValue.red, gammaValue.green, gammaValue.blue);
-  
+
   [self setGammaRed:gammaValue.red
               green:gammaValue.green
                blue:gammaValue.blue
@@ -772,14 +772,14 @@ find_last_non_clamped(CARD16 array[], int size)
 - (CGFloat)gamma
 {
   [self _getGamma];
-  
+
   return (gammaValue.red + gammaValue.green + gammaValue.blue) / 3.0;
 }
 
 - (CGFloat)gammaBrightness
 {
   [self _getGamma];
-  
+
   return gammaBrightness;
 }
 
@@ -803,7 +803,7 @@ find_last_non_clamped(CARD16 array[], int size)
   gammaValue.green = (gammaGreen == 0.0) ? 1.0 : gammaGreen;
   gammaValue.blue = (gammaBlue == 0.0) ? 1.0 : gammaBlue;
   gammaBrightness = brightness;
-  
+
   for (i = 0; i < size; i++)
     {
       if (gammaRed == 1.0 && brightness == 1.0)
@@ -832,7 +832,7 @@ find_last_non_clamped(CARD16 array[], int size)
   XSync(xDisplay, False);
 
   XRRFreeGamma(new_gamma);
-  XRRFreeOutputInfo(output_info);  
+  XRRFreeOutputInfo(output_info);
 }
 
 - (void)setGamma:(CGFloat)value
@@ -869,13 +869,13 @@ find_last_non_clamped(CARD16 array[], int size)
     return;
 
   XGrabServer(xDisplay);
-  
+
   for (float i=10; i >= 0; i--)
     {
       [self setGammaBrightness:brightness * (i/10)];
       usleep(30000);
     }
-  
+
   XUngrabServer(xDisplay);
 }
 
@@ -884,9 +884,9 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   if (![self isActive])
     return;
-  
+
   // XGrabServer(xDisplay);
-  
+
   // for (float i=0; i <= 10; i++)
   //   {
   //     [self setGammaBrightness:i/10];
@@ -905,7 +905,7 @@ find_last_non_clamped(CARD16 array[], int size)
       [self setGammaBrightness:brightness * (i/steps)];
       usleep(30000);
     }
-  
+
   NSLog(@">>> End fade to normal");
 
   // XUngrabServer(xDisplay);
@@ -917,13 +917,13 @@ find_last_non_clamped(CARD16 array[], int size)
 {
   if (![self isActive])
     return;
-  
+
   NSLog(@">>> Start fade");
 
   NSUInteger msecs = seconds * 1000000;
   NSUInteger steps = ceil(msecs / 30000);
   float      i;
-  
+
   i = 1;
   while (i <= steps)
     {
@@ -931,11 +931,11 @@ find_last_non_clamped(CARD16 array[], int size)
         [self setGammaBrightness:brightness * (i/steps)];
       else	// to black
         [self setGammaBrightness:brightness * (i/steps)];
-      
+
       usleep(30000);
       i++;
     }
-  
+
   NSLog(@">>> End fade");
 
   // XUngrabServer(xDisplay);
@@ -1016,7 +1016,7 @@ id property_value(Display *dpy,
   unsigned char		*prop;
   char			*atom_name;
   XRRPropertyInfo	*prop_info;
-  
+
   NSMutableDictionary	*valueDict;
   NSMutableArray	*value;
   NSMutableArray	*variants;
@@ -1025,9 +1025,9 @@ id property_value(Display *dpy,
     {
       properties = [[NSMutableDictionary alloc] init];
     }
-  
+
   output_props = XRRListOutputProperties(xDisplay, output_id, &nprops);
-  
+
   // fprintf(stderr, "properties(%i):\n", nprops);
   for (int k=0; k<nprops; k++)
     {
@@ -1046,7 +1046,7 @@ id property_value(Display *dpy,
 
       // Name
       atom_name = XGetAtomName(xDisplay, output_props[k]);
-      
+
       if (!strcmp(atom_name, "EDID") && nitems > 1)
         {
           [properties setObject:[NSData dataWithBytes:prop length:128]
@@ -1055,11 +1055,11 @@ id property_value(Display *dpy,
       else
         {
           valueDict = [[NSMutableDictionary alloc] init];
-          
+
           // Value
           {
             int bytes_per_item = actual_format / 8;
-            
+
             value = [[NSMutableArray alloc] init];
             for (int i=0; i<(int)nitems; i++)
               {
@@ -1079,7 +1079,7 @@ id property_value(Display *dpy,
             {
               NSRange range;
               NSNumber *start, *end;
-              
+
               for (int j = 0; j < prop_info->num_values / 2; j++)
                 {
                   start =
@@ -1100,7 +1100,7 @@ id property_value(Display *dpy,
             {
               id vv;
               variants = [[NSMutableArray alloc] init];
-              
+
               for (int j = 0; j < prop_info->num_values; j++)
                 {
                   vv = property_value(xDisplay, 32, actual_type,
@@ -1110,13 +1110,13 @@ id property_value(Display *dpy,
               [valueDict setObject:variants forKey:@"Supported"];
               [variants release];
             }
-          
+
           [properties setObject:valueDict
                          forKey:[NSString stringWithCString:(char *)atom_name]];
           [valueDict release];
           free(prop_info);
         }
-      
+
       free(prop);
     }
 }
@@ -1134,7 +1134,7 @@ id property_value(Display *dpy,
     {
       displayID = _outputName;
     }
-  
+
   return displayID;
 }
 
