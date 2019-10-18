@@ -491,40 +491,15 @@
 
 // --- TextField Actions
 
-- (NSString *)absolutePathForPath:(NSString *)path
-{
-  const char *c_t;
-  NSString   *absPath = nil;
-
-  if (!path || [path length] == 0 || [path isEqualToString:@""]) {
-    return nil;
-  }
-
-  c_t = [path cString];
-  if (c_t[0] == '/') {
-    absPath = path;
-  }
-  else if (c_t[0] == '~') {
-    absPath = [path stringByReplacingCharactersInRange:NSMakeRange(0,1)
-                                            withString:NSHomeDirectory()];
-  }
-  else if (([path length] > 1) && (c_t[0] == '.' && c_t[1] == '/')) {
-    absPath = [path stringByReplacingCharactersInRange:NSMakeRange(0,2)
-                                            withString:NSHomeDirectory()];
-  }
-
-  return absPath;
-}
-
 - (NSArray *)completionFor:(NSString *)path
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
-  NSFileManager  *fm = [NSFileManager defaultManager];
+  NXTFileManager *fm = [NXTFileManager defaultManager];
   NSArray        *dirContents;
   NSString       *pathBase, *absPath;
   BOOL           isDir;
 
-  path = [self absolutePathForPath:path];
+  path = [fm absolutePathForPath:path];
   if (path != nil) {
     pathBase = [NSString stringWithString:path];
     
@@ -541,7 +516,7 @@
     }
   }
 
-  return variants;
+  return [variants autorelease];
 }
 
 - (void)makeCompletion
@@ -562,6 +537,7 @@
     else {
       enteredText = [[[selectedIcons anyObject] paths] objectAtIndex:0];
       [variantList addObjectsFromArray:[self completionFor:enteredText]];
+      [findField setStringValue:enteredText];
     }
   }
   else {
@@ -572,16 +548,14 @@
                                          [variantList count]]];
   
   if ([variantList count] > 0) {
-    NSFileManager *fm = [NSFileManager defaultManager];
-    BOOL          isDir;
-    NSString      *path = [findField stringValue];
-    NSString      *newPath;
-    NSRange       subRange;
+    NXTFileManager *fm = [NXTFileManager defaultManager];
+    NSString       *path = [findField stringValue];
+    NSString       *newPath;
+    NSRange        subRange;
     
     // Append '/' to dir name or shrink enetered path to existing dir
     if ([path length] > 0 && [path characterAtIndex:[path length]-1] != '/') {
-      if (([fm fileExistsAtPath:[self absolutePathForPath:path]
-                    isDirectory:&isDir] != NO) && (isDir != NO)) {
+      if ([fm directoryExistsAtPath:[fm absolutePathForPath:path]] != NO) {
         path = [path stringByAppendingString:@"/"];
       }
     }
@@ -592,8 +566,7 @@
       newPath = [[path stringByDeletingLastPathComponent]
                   stringByAppendingPathComponent:variant];
       
-      if ([fm fileExistsAtPath:[self absolutePathForPath:newPath]
-                  isDirectory:&isDir] && isDir != NO) {
+      if ([fm directoryExistsAtPath:[fm absolutePathForPath:newPath]] != NO) {
         newPath = [newPath stringByAppendingString:@"/"];
       }
       
@@ -840,10 +813,9 @@
 
 - (void)listItemClicked:(id)sender
 {
-  NSString      *item, *path;
-  NSSet         *shelfIcons;
-  NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL          isDir;
+  NSString       *item, *path;
+  NSSet          *shelfIcons;
+  NXTFileManager *fm = [NXTFileManager defaultManager];
 
   if (sender != resultList)
     return;
@@ -857,18 +829,17 @@
   item = [variantList objectAtIndex:resultIndex];
 
   shelfIcons = [shelf selectedIcons];
-  path = [self absolutePathForPath:[findField stringValue]];
+  path = [fm absolutePathForPath:[findField stringValue]];
   
   // NSLog(@"Absolute Path: %@", path);
   // Check if enetered text is existing directory
-  if (path &&
-      ([fm fileExistsAtPath:path isDirectory:&isDir] == NO || isDir == NO)) {
+  if (path && ([fm directoryExistsAtPath:path] == NO)) {
     path = [path stringByDeletingLastPathComponent];
   }
   
   // NSLog(@"Field: %@ Path: %@", [findField stringValue], path);
   // Clicked item is not absolute path
-  if ([self absolutePathForPath:item] == nil) {
+  if ([fm absolutePathForPath:item] == nil) {
     // Text field entry is not usable - get value from the shelf
     if (path == nil || [path isEqualToString:@""]) {
       path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
