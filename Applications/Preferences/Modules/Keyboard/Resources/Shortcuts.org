@@ -1,0 +1,65 @@
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Action                       | WM key              | WM value          | GS key               | GS value              |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Window resizing              |                     |                   |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Move & Resize Window         | MoveResizeKey       | None              |                      |                       |
+| Maximus                      | MaximusKey          | None              |                      |                       |
+| Shade                        | ShadeKey            | Mod4+KP_substruct |                      |                       |
+| Maximize                     | MaximizeKey         | Mod4+KP_Add       |                      |                       |
+| Miniaturize                  | MiniaturizeKey      | Mod1+M            |                      | Command + m           |
+| Miniaturize All              | MinimizeAllKey      | Mod1+Shift+M      |                      | Command + M           |
+| Maximize Verically           | VMaximizeKey        | Mod4+Up           |                      | Alternate + ArrowUp   |
+| Maximize Horizontally        | HMaximizeKey        | Mod4+Down         |                      | Alternate + ArrowDown |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Maximize Left Half           | LHMaximizeKey       | Mod4+KP_4         |                      |                       |
+| Maximize Right Half          | RHMaximizeKey       | Mod4+KP_6         |                      |                       |
+| Maximize Top Half            | THMaximizeKey       | Mod4+KP_8         |                      |                       |
+| Maximize Bottom Half         | BHMaximizeKey       | Mod4+KP_2         |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Maximize Left Top            | LTCMaximizeKey      | Mod4+KP_7         |                      |                       |
+| Maximize Right Top           | RTCMaximizeKey      | Mod4+KP_9         |                      |                       |
+| Maximize Left Bottom         | LBCMaximizeKey      | Mod4+KP_1         |                      |                       |
+| Maximize Right Bottom        | RBCMaximizeKey      | Mod4+KP_3         |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Window ordering              |                     |                   |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Window Close                 | CloseKey            | Mod1+W            |                      | Command + w           |
+| Application Hide             | HideKey             | Mod1+H            |                      | Command + h           |
+| Hide Other Applications      | HideOthersKey       | Mod1+Shift+H      |                      | Command + H           |
+| Focus Next Window            | FocusNextKey        | Mod1+Tab          |                      | Command + Tab         |
+| Focus Previous Window        | FocusPrevKey        | Mod1+Shift+Tab    |                      | Command + Shift + Tab |
+| Focus Next Application       | GroupNextKey        | Mod1+grave        |                      | Command + `           |
+| Focus Previous Application   | GroupPrevKey        | Mod1+Shift+grave  |                      | Command + ~           |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Dock, Icon Yard              |                     |                   |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Raise or Lower Dock          |                     |                   |                      |                       |
+| Hide or Show Dock            | DockHideShowKey     | Mod4+Shift+D      |                      | Alternate + D         |
+| Hide or Show Icon Yard       | IconYardHideShowKey | Mod4+Shift+Y      |                      | Alternate + Y         |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Workspaces                   |                     |                   |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Switch to Next Workspace     | NextWorkspaceKey    | "Control+Right"   |                      | Control + ArrowRight  |
+| Switch to Previous Workspace | PrevWorkspaceKey    | "Control+Left"    |                      | Control + ArrowLeft   |
+| Move to Last Workspace       | LastWorkspaceKey    |                   |                      |                       |
+| Show Workspace Map           | WorkspaceMapKey     |                   |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Misc                         |                     |                   |                      |                       |
+|------------------------------+---------------------+-------------------+----------------------+-----------------------|
+| Run Command                  | RunKey              | "Mod4+R"          | -                    | Command + r           |
+| Relaunch                     | WindowRelaunchKey   | "Mod4+Shift+R"    | -                    | Command + R           |
+| Alternate Key                | ModifierKey         | "Mod4"            | GSFirstAlternateKey  | Super_L               |
+| -                            | -                   | -                 | GSSecondAlternateKey | Super_R               |
+| Command Key                  | -                   | -                 | GSFirstCommandKey    | Alt_L                 |
+| -                            | -                   | -                 | GSSecondCommandKey   | Alt_R                 |
+| ?                            | ScreenSwitchKey     |                   |                      |                       |
+| Show Window List             | WindowListKey       |                   |                      |                       |
+| Show Window Menu             | WindowMenuKey       |                   |                      |                       |
+| Select Window                | SelectKey           |                   |                      |                       |
+|                              |                     |                   |                      |                       |
