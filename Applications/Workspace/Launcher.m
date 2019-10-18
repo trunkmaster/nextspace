@@ -250,7 +250,7 @@
     return variants;
   }
 
-  // NSLog(@"completionFor: %@ - %@", command, historyList);
+  NSLog(@"completionFor: %@ - %@", command, historyList);
 
   // Go through the history first
   for (NSString *compElement in historyList) {
@@ -309,18 +309,26 @@
     [completionList setTitle:@"History" ofColumn:0];
     completionIndex = -1;
   }
+  [self updateButtonsState];
 }
 
 - (void)updateButtonsState
 {
-  NSFileManager  *fm = [NSFileManager defaultManager];
+  NXTFileManager *fm = [NXTFileManager defaultManager];
   BOOL           isDir;
-  NSString       *text = [commandField stringValue];
+  NSString       *text, *path;
   BOOL           isEnabled = YES;
+
+  text = [commandField stringValue];
+  path = [fm absolutePathForPath:text];
+  if (path) {
+    text = path;
+  }
   
-  if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ')
+  if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ') {
     isEnabled = NO;
-  else if ([text characterAtIndex:0] == '/' &&
+  }
+  else if (([text characterAtIndex:0] == '/') &&
            (![fm fileExistsAtPath:text isDirectory:&isDir] || isDir)) {
     isEnabled = NO;
   }
@@ -341,12 +349,19 @@
 
   // Do not make completion if text in field was shrinked
   text = [field stringValue];
-  // if ([text length] > [savedCommand length]) {
-  if ([text length] > 0 && [text characterAtIndex:[text length]-1] == '/') {
+
+  if ([text length] == 0) {
+    ASSIGN(completionSource, historyList);
+    [completionList reloadColumn:0];
+    [completionList setTitle:@"History" ofColumn:0];
+    completionIndex = -1;
+  }
+  else if ([text characterAtIndex:[text length]-1] == '/' &&
+           [text length] > [savedCommand length]) {
     [self makeCompletion];
   }
 
-  // [savedCommand setString:text];
+  [savedCommand setString:text];
   [self updateButtonsState];
 }
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
