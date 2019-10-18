@@ -240,21 +240,17 @@
 
 // --- Utility
 
-- (NSArray *)completionFor:(NSString *)command
+- (NSArray *)completionForCommand:(NSString *)command
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
   NXTFileManager *fm = [NXTFileManager defaultManager];
-  NSArray        *dirContents;
-  const char     *c_t;
-  BOOL           includeDirs = NO;
   NSString       *absPath;
-  BOOL           isDir;
 
   if (!command || [command length] == 0 || [command isEqualToString:@""]) {
     return variants;
   }
 
-  // NSLog(@"completionFor:%@", command);
+  // NSLog(@"completionFor: %@ - %@", command, historyList);
 
   // Go through the history first
   for (NSString *compElement in historyList) {
@@ -263,57 +259,22 @@
     }
   }
 
-  c_t = [command cString];
-  if (c_t[0] == '/') {
-    includeDirs = YES;
-  }
-  if ([command length] > 1) {
-    if (c_t[0] == '.' && c_t[1] == '/') {
-      command = [command stringByReplacingCharactersInRange:NSMakeRange(0,2)
-                                                 withString:NSHomeDirectory()];
-      includeDirs = YES;
-    }
-    if (c_t[0] == '~') {
-      command = [command stringByReplacingCharactersInRange:NSMakeRange(0,1)
-                                                 withString:NSHomeDirectory()];
-      includeDirs = YES;
-    }
-  }
-
-  if (includeDirs) {
-    NSString *commandBase = [NSString stringWithString:command];
-    // Do filesystem scan
-    while ([fm fileExistsAtPath:commandBase isDirectory:&isDir] == NO) {
-      commandBase = [commandBase stringByDeletingLastPathComponent];
-    }
-    dirContents = [fm directoryContentsAtPath:commandBase];
-    for (NSString *file in dirContents) {
-      absPath = [commandBase stringByAppendingPathComponent:file];
-      if ([absPath rangeOfString:command].location == 0) {
-        if ([fm isExecutableFileAtPath:absPath]) {
-          [variants addObject:absPath];
-        }
+  absPath = [fm absolutePathForPath:command];
+  // NSLog(@"Absolute command: %@ - %@", command, absPath);
+  if (absPath) { // Absolute path exists
+    NSArray *completion = [fm completionForPath:absPath isAbsolute:YES];
+    for (NSString *path in completion) {
+      if ([fm isExecutableFileAtPath:path]) {
+        [variants addObject:path];
       }
     }
   }
-  else {
-    // Go through the $PATH directories
+  else { // No absolute path - go through the $PATH
     NSArray *executables;
     executables = [fm executablesForSubstring:command];
     if ([executables count] > 0) {
       [variants addObjectsFromArray:executables];
     }
-    // for (NSString *dir in searchPaths) {
-    //   dirContents = [fm directoryContentsAtPath:dir];
-    //   for (NSString *file in dirContents) {
-    //     if ([file rangeOfString:command].location == 0) {
-    //       absPath = [dir stringByAppendingPathComponent:file];
-    //       if ([fm isExecutableFileAtPath:absPath]) {
-    //         [variants addObject:file];
-    //       }
-    //     }
-    //   }
-    // }
   }
   
   return variants;
@@ -327,7 +288,7 @@
   NSUInteger selLocation, selLength;
 
   if (commandVariants) [commandVariants release];
-  commandVariants = [self completionFor:command];
+  commandVariants =[self completionForCommand:command];
 
   if ([commandVariants count] > 0) {
     ASSIGN(completionSource, commandVariants);
@@ -380,11 +341,12 @@
 
   // Do not make completion if text in field was shrinked
   text = [field stringValue];
-  if ([text length] > [savedCommand length]) {
+  // if ([text length] > [savedCommand length]) {
+  if ([text length] > 0 && [text characterAtIndex:[text length]-1] == '/') {
     [self makeCompletion];
   }
 
-  [savedCommand setString:text];
+  // [savedCommand setString:text];
   [self updateButtonsState];
 }
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
@@ -392,8 +354,8 @@
   unichar c = [[theEvent characters] characterAtIndex:0];
 
   switch(c) {
-  case NSUpArrowFunctionKey:
-    // NSLog(@"WMCommandField key: Up");
+  case NSDownArrowFunctionKey:
+    // NSLog(@"WMCommandField key: Down");
     completionIndex++;
     if (completionIndex >= [completionSource count]) {
       completionIndex--;
@@ -402,8 +364,8 @@
     [completionList selectRow:completionIndex inColumn:0];
     [self updateButtonsState];
     break;
-  case NSDownArrowFunctionKey:
-    // NSLog(@"WMCommandField key: Down");
+  case NSUpArrowFunctionKey:
+    // NSLog(@"WMCommandField key: Up");
     if (completionIndex > -1)
       completionIndex--;
     if (completionIndex >= 0) {
@@ -416,7 +378,7 @@
     }
     [self updateButtonsState];
     break;
-  case NSDeleteFunctionKey:
+    /*  case NSDeleteFunctionKey:
   case NSDeleteCharacter:
     // NSLog(@"WMCommandField key: Delete or Backspace");
     {
@@ -429,7 +391,7 @@
       if ([[commandField stringValue] length] > 0) {
         ASSIGN(completionSource, historyList);
         if (commandVariants) [commandVariants release];
-        commandVariants = [self completionFor:[commandField stringValue]];
+        commandVariants = [self completionForCommand:[commandField stringValue]];
         ASSIGN(completionSource, commandVariants);
         [completionList reloadColumn:0];
         [completionList setTitle:@"Completion" ofColumn:0];
@@ -443,9 +405,13 @@
       }
       [self updateButtonsState];
     }
+    break; */
   case NSTabCharacter:
     [[window fieldEditor:NO forObject:commandField]
         setSelectedRange:NSMakeRange([[commandField stringValue] length], 0)];
+    break;
+  case 27: // Escape
+    [self makeCompletion];
     break;
   default:
     break;
