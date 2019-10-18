@@ -345,41 +345,7 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
   return [variants autorelease];
 }
 
-- (NSString *)absolutePathForPath:(NSString *)path
-{
-  const char *c_t;
-  NSString   *absPath = nil;
-
-  if (!path || [path length] == 0 || [path isEqualToString:@""]) {
-    return nil;
-  }
-
-  c_t = [path cString];
-  if (c_t[0] == '/') {
-    absPath = path;
-  }
-  else if (c_t[0] == '~') {
-    absPath = [path stringByReplacingCharactersInRange:NSMakeRange(0,1)
-                                            withString:NSHomeDirectory()];
-  }
-  else if (([path length] > 1) && (c_t[0] == '.' && c_t[1] == '/')) {
-    absPath = [path stringByReplacingCharactersInRange:NSMakeRange(0,2)
-                                            withString:NSHomeDirectory()];
-  }
-
-  return absPath;
-}
-
-- (BOOL)directoryExistsAtPath:(NSString *)path
-{
-  BOOL isDir, isExist;
-
-  isExist = [self fileExistsAtPath:path isDirectory:&isDir];
-
-  return (isExist && isDir);
-}
-
-// --- Files (libmagic)
+// --- Files
 - (NSString *)mimeTypeForFile:(NSString *)fullPath
 {
   magic_t    cookie;
