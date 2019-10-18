@@ -64,7 +64,8 @@ extern NSString *NXTShowHiddenFiles;
                           showHidden:(BOOL)showHidden;
 
 - (NSArray *)executablesForSubstring:(NSString *)substring;
-- (NSArray *)completionForPath:(NSString *)path;
+- (NSArray *)completionForPath:(NSString *)path
+                    isAbsolute:(BOOL)isAbsolute;
 - (NSString *)absolutePathForPath:(NSString *)path;
 - (BOOL)directoryExistsAtPath:(NSString *)path;
 

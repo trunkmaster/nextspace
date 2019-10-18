@@ -354,6 +354,7 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
 }
 
 - (NSArray *)completionForPath:(NSString *)path
+                    isAbsolute:(BOOL)isAbsolute
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
   NXTFileManager *fm = [NXTFileManager defaultManager];
@@ -373,7 +374,12 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
     for (NSString *file in dirContents) {
       absPath = [pathBase stringByAppendingPathComponent:file];
       if ([absPath rangeOfString:path].location == 0) {
-        [variants addObject:[absPath lastPathComponent]];
+        if (isAbsolute != NO) {
+          [variants addObject:absPath];
+        }
+        else {
+          [variants addObject:[absPath lastPathComponent]];
+        }
       }
     }
   }
