@@ -489,40 +489,13 @@
   [statusField setStringValue:@""];  
 }
 
-// --- TextField Actions
-
-- (NSArray *)completionFor:(NSString *)path
-{
-  NSMutableArray *variants = [[NSMutableArray alloc] init];
-  NXTFileManager *fm = [NXTFileManager defaultManager];
-  NSArray        *dirContents;
-  NSString       *pathBase, *absPath;
-  BOOL           isDir;
-
-  path = [fm absolutePathForPath:path];
-  if (path != nil) {
-    pathBase = [NSString stringWithString:path];
-    
-    // Do filesystem scan
-    while ([fm fileExistsAtPath:pathBase isDirectory:&isDir] == NO) {
-      pathBase = [pathBase stringByDeletingLastPathComponent];
-    }
-    dirContents = [fileViewer directoryContentsAtPath:pathBase forPath:nil];
-    for (NSString *file in dirContents) {
-      absPath = [pathBase stringByAppendingPathComponent:file];
-      if ([absPath rangeOfString:path].location == 0) {
-        [variants addObject:[absPath lastPathComponent]];
-      }
-    }
-  }
-
-  return [variants autorelease];
-}
+// --- Completion
 
 - (void)makeCompletion
 {
-  NSString *enteredText = [findField stringValue];
-  NSString *variant;
+  NSString       *enteredText = [findField stringValue];
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  NSString       *variant;
 
   [variantList removeAllObjects];
   
@@ -536,22 +509,21 @@
     }
     else {
       enteredText = [[[selectedIcons anyObject] paths] objectAtIndex:0];
-      [variantList addObjectsFromArray:[self completionFor:enteredText]];
+      [variantList addObjectsFromArray:[fm completionForPath:enteredText]];
       [findField setStringValue:enteredText];
     }
   }
   else {
-    [variantList addObjectsFromArray:[self completionFor:enteredText]];
+    [variantList addObjectsFromArray:[fm completionForPath:enteredText]];
   }
 
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
                                          [variantList count]]];
   
   if ([variantList count] > 0) {
-    NXTFileManager *fm = [NXTFileManager defaultManager];
-    NSString       *path = [findField stringValue];
-    NSString       *newPath;
-    NSRange        subRange;
+    NSString *path = [findField stringValue];
+    NSString *newPath;
+    NSRange  subRange;
     
     // Append '/' to dir name or shrink enetered path to existing dir
     if ([path length] > 0 && [path characterAtIndex:[path length]-1] != '/') {

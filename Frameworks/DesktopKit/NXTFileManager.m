@@ -189,6 +189,14 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
 // --- Directory contents
 
 - (NSArray *)directoryContentsAtPath:(NSString *)path
+{
+  return [self directoryContentsAtPath:path
+                               forPath:nil
+                              sortedBy:[self sortFilesBy]
+                            showHidden:[self isShowHiddenFiles]];
+}
+
+- (NSArray *)directoryContentsAtPath:(NSString *)path
                              forPath:(NSString *)targetPath
                           showHidden:(BOOL)showHidden
 {
@@ -338,6 +346,34 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
         if ([self isExecutableFileAtPath:absPath]) {
           [variants addObject:file];
         }
+      }
+    }
+  }
+
+  return [variants autorelease];
+}
+
+- (NSArray *)completionForPath:(NSString *)path
+{
+  NSMutableArray *variants = [[NSMutableArray alloc] init];
+  NXTFileManager *fm = [NXTFileManager defaultManager];
+  NSArray        *dirContents;
+  NSString       *pathBase, *absPath;
+  BOOL           isDir;
+
+  path = [fm absolutePathForPath:path];
+  if (path != nil) {
+    pathBase = [NSString stringWithString:path];
+
+    // Do filesystem scan
+    while ([fm fileExistsAtPath:pathBase isDirectory:&isDir] == NO) {
+      pathBase = [pathBase stringByDeletingLastPathComponent];
+    }
+    dirContents = [self directoryContentsAtPath:pathBase];
+    for (NSString *file in dirContents) {
+      absPath = [pathBase stringByAppendingPathComponent:file];
+      if ([absPath rangeOfString:path].location == 0) {
+        [variants addObject:[absPath lastPathComponent]];
       }
     }
   }
