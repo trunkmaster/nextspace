@@ -267,6 +267,12 @@
 //=============================================================================
 // Finder class
 //=============================================================================
+
+@interface Finder (ResultsBrowser)
+- (void)refreshResultsList:(BOOL)showSingle;
+- (void)listItemClicked:(id)sender;
+@end
+
 @implementation Finder
 
 - (void)dealloc
@@ -565,15 +571,13 @@
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
                                          [variantList count]]];
   
-  if ([variantList count] > 1) {
+  if ([variantList count] > 0) {
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL          isDir;
     NSString      *path = [findField stringValue];
     NSString      *newPath;
     NSRange       subRange;
     
-    [resultList reloadColumn:0];
-
     // Append '/' to dir name or shrink enetered path to existing dir
     if ([path length] > 0 && [path characterAtIndex:[path length]-1] != '/') {
       if (([fm fileExistsAtPath:[self absolutePathForPath:path]
@@ -588,7 +592,8 @@
       newPath = [[path stringByDeletingLastPathComponent]
                   stringByAppendingPathComponent:variant];
       
-      if ([fm fileExistsAtPath:newPath isDirectory:&isDir] && isDir != NO) {
+      if ([fm fileExistsAtPath:[self absolutePathForPath:newPath]
+                  isDirectory:&isDir] && isDir != NO) {
         newPath = [newPath stringByAppendingString:@"/"];
       }
       
@@ -598,21 +603,16 @@
       subRange.location = subRange.location + subRange.length;
       subRange.length = [newPath length] - subRange.location;
       [[window fieldEditor:NO forObject:findField] setSelectedRange:subRange];
+      [self refreshResultsList:NO];
     }
     else {
       [findField setStringValue:path];
       [findField deselectText];
+      [self refreshResultsList:YES];
     }
   }
   else {
-    // [resultList reloadColumn:0];
-    NSMatrix  *mtrx = [resultList matrixInColumn:0];
-    NSInteger i, nRows = [mtrx numberOfRows];
-
-    for (i = 0;i < nRows; i++) {
-      [mtrx removeRow:0];
-    }
-    resultIndex = -1;
+    [self refreshResultsList:YES];
   }
 }
 
@@ -707,76 +707,6 @@
    }
   default:
     break;
-  }
-}
-
-// --- Results browser delegate
-
-- (void)     browser:(NSBrowser *)sender
- createRowsForColumn:(NSInteger)column
-	    inMatrix:(NSMatrix *)matrix
-{
-  NSBrowserCell *cell;
-  
-  if (sender != resultList)
-    return;
-
-  for (NSString *variant in variantList) {
-    [matrix addRow];
-    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
-    [cell setLeaf:YES];
-    [cell setTitle:variant];
-    [cell setRefusesFirstResponder:YES];
-  }
-}
-
-- (void)listItemClicked:(id)sender
-{
-  NSInteger selRow;
-  NSString  *item, *path, *fieldText, *absPath;
-  BOOL      isDir;
-  NSSet     *shelfIcons;
-  NXTIcon   *sIcon;
-
-  if (sender != resultList)
-    return;
-
-  // UGLY: Prevent deselection of selected item in NSBrowser's column
-  if (resultIndex == [resultList selectedRowInColumn:0]) {
-    [resultList selectRow:resultIndex inColumn:0];
-  }
-
-  resultIndex = [resultList selectedRowInColumn:0];
-  item = [variantList objectAtIndex:resultIndex];
-
-  shelfIcons = [shelf selectedIcons];
-  fieldText = [findField stringValue];
-  absPath = [self absolutePathForPath:fieldText];
-  if (([[NSFileManager defaultManager] fileExistsAtPath:absPath
-                                            isDirectory:&isDir] == NO) ||
-      (isDir == NO)) {
-    fieldText = [fieldText stringByDeletingLastPathComponent];
-  }
-  
-  if ([fieldText length] > 1) {
-    path = [self absolutePathForPath:fieldText];
-    NSLog(@"2.1 - %@", path);
-  }
-  else { // text field empty
-    path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
-    NSLog(@"3 - %@", path);
-  }
-  NSLog(@"[Finder] - result list clicked:%@ - %@", path, item);
-  path = [path stringByAppendingPathComponent:item];
-  NSLog(@"[Finder] + result list clicked:%@", path);
-  
-  [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
-  [resultIcon setPaths:@[path]];
-  if (![resultIcon superview]) {
-    [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,48)];
-    if ([shelfIcons count] > 0) {
-      [self resignShelfSelection];
-    }
   }
 }
 
@@ -880,6 +810,108 @@
     [icon setSelected:YES];
     [[icon label] setTextColor:[NSColor blackColor]];
     [[icon shortLabel] setTextColor:[NSColor blackColor]];
+  }
+}
+
+@end
+
+
+//-----------------------------------------------------------------------------
+// --- Results browser
+//-----------------------------------------------------------------------------
+@implementation Finder (Results)
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+            inMatrix:(NSMatrix *)matrix
+{
+  NSBrowserCell *cell;
+  
+  if (sender != resultList)
+    return;
+
+  for (NSString *variant in variantList) {
+    [matrix addRow];
+    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
+    [cell setLeaf:YES];
+    [cell setTitle:variant];
+    [cell setRefusesFirstResponder:YES];
+  }
+}
+
+- (void)listItemClicked:(id)sender
+{
+  NSString      *item, *path;
+  NSSet         *shelfIcons;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL          isDir;
+
+  if (sender != resultList)
+    return;
+
+  // UGLY: Prevent deselection of selected item in NSBrowser's column
+  if (resultIndex == [resultList selectedRowInColumn:0]) {
+    [resultList selectRow:resultIndex inColumn:0];
+  }
+
+  resultIndex = [resultList selectedRowInColumn:0];
+  item = [variantList objectAtIndex:resultIndex];
+
+  shelfIcons = [shelf selectedIcons];
+  path = [self absolutePathForPath:[findField stringValue]];
+  
+  // NSLog(@"Absolute Path: %@", path);
+  // Check if enetered text is existing directory
+  if (path &&
+      ([fm fileExistsAtPath:path isDirectory:&isDir] == NO || isDir == NO)) {
+    path = [path stringByDeletingLastPathComponent];
+  }
+  
+  // NSLog(@"Field: %@ Path: %@", [findField stringValue], path);
+  // Clicked item is not absolute path
+  if ([self absolutePathForPath:item] == nil) {
+    // Text field entry is not usable - get value from the shelf
+    if (path == nil || [path isEqualToString:@""]) {
+      path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
+      path = [path stringByAppendingPathComponent:item];
+    }
+    else {
+      path = [path stringByAppendingPathComponent:item];
+    }
+  }
+  else {
+    path = item;
+  }
+  
+  // NSLog(@"[Finder] + result list clicked:%@", path);
+  [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
+  [resultIcon setPaths:@[path]];
+  if (![resultIcon superview]) {
+    [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,48)];
+    if ([shelfIcons count] > 0) {
+      [self resignShelfSelection];
+    }
+  }
+}
+
+- (void)refreshResultsList:(BOOL)showSingle
+{
+  NSUInteger variantsCount = [variantList count];
+  
+  if (variantsCount == 1) {
+    if (showSingle != NO) {
+      [resultList reloadColumn:0];
+    }
+    else {
+      NSMatrix  *mtrx = [resultList matrixInColumn:0];
+      NSInteger i, nRows = [mtrx numberOfRows];
+      for (i = 0;i < nRows; i++) {
+        [mtrx removeRow:0];
+      }
+    }
+  }
+  else {
+    [resultList reloadColumn:0];
+    resultIndex = -1;
   }
 }
 
