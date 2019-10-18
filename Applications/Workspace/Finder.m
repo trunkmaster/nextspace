@@ -509,12 +509,14 @@
     }
     else {
       enteredText = [[[selectedIcons anyObject] paths] objectAtIndex:0];
-      [variantList addObjectsFromArray:[fm completionForPath:enteredText]];
+      [variantList addObjectsFromArray:[fm completionForPath:enteredText
+                                                  isAbsolute:NO]];
       [findField setStringValue:enteredText];
     }
   }
   else {
-    [variantList addObjectsFromArray:[fm completionForPath:enteredText]];
+    [variantList addObjectsFromArray:[fm completionForPath:enteredText
+                                                isAbsolute:NO]];
   }
 
   [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
