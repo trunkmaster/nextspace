@@ -63,6 +63,8 @@ extern NSString *NXTShowHiddenFiles;
                           showHidden:(BOOL)showHidden;
 
 - (NSArray *)executablesForSubstring:(NSString *)substring;
+- (NSString *)absolutePathForPath:(NSString *)path;
+- (BOOL)directoryExistsAtPath:(NSString *)path;
 
 // libmagic
 - (NSString *)mimeTypeForFile:(NSString *)fullPath;
