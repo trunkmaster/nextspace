@@ -262,7 +262,7 @@
           isMain = [self isMain];
         }
     }
-  else if ([allResolutions count] > 0) {
+  else if ([allResolutions count] > 0) 
     {
       ASSIGN (_activeResolution, [OSEDisplay zeroResolution]);
       _activePosition = NSMakePoint(0,0);
