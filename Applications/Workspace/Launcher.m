@@ -26,6 +26,7 @@
 
 @interface WMCommandField : NSTextField
 - (void)commandFieldKeyUp:(NSEvent *)theEvent;
+- (void)deselectText;
 @end
 @implementation WMCommandField
 - (void)keyUp:(NSEvent *)theEvent
@@ -37,6 +38,13 @@
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
 {
   // Should be implemented by delegate
+}
+- (void)deselectText
+{
+  NSString *fieldString = [self stringValue];
+  NSText   *fieldEditor = [_window fieldEditor:NO forObject:self];
+  
+  [fieldEditor setSelectedRange:NSMakeRange([fieldString length], 0)];
 }
 @end
 
@@ -282,10 +290,11 @@
 
 - (void)makeCompletion
 {
-  NSString   *command = [commandField stringValue];
-  NSString   *variant;
-  NSText     *fieldEditor = [window fieldEditor:NO forObject:commandField];
-  NSUInteger selLocation, selLength;
+  NSString       *command = [commandField stringValue];
+  NSUInteger     commandLength = [command length];
+  NSString       *variant;
+  BOOL           isDir = NO;
+  NXTFileManager *fm = [NXTFileManager defaultManager];
 
   if (commandVariants) [commandVariants release];
   commandVariants =[self completionForCommand:command];
@@ -297,11 +306,25 @@
     [completionList selectRow:0 inColumn:0];
     variant = [commandVariants objectAtIndex:0];
     completionIndex = 0;
+    isDir = [fm directoryExistsAtPath:variant];
 
-    [commandField setStringValue:variant];
-    selLocation = [command length];
-    selLength = [variant length] - [command length];
-    [fieldEditor setSelectedRange:NSMakeRange(selLocation, selLength)];
+    if ([[commandField stringValue] characterAtIndex:0] == '~') {
+      variant = [variant stringByAbbreviatingWithTildeInPath];
+    }
+    if (isDir) {
+      variant = [variant stringByAppendingFormat:@"/"];
+      // commandLength++;
+    }
+    if ([commandVariants count] == 1) {
+      [commandField setStringValue:variant];
+      [commandField deselectText];
+    }
+    else {
+      NSText     *fieldEditor = [window fieldEditor:NO forObject:commandField];
+      NSUInteger selLength = [variant length] - commandLength;
+      [commandField setStringValue:variant];
+      [fieldEditor setSelectedRange:NSMakeRange(commandLength, selLength)];
+    }
   }
   else {
     ASSIGN(completionSource, historyList);
@@ -316,22 +339,23 @@
 {
   NXTFileManager *fm = [NXTFileManager defaultManager];
   BOOL           isDir;
-  NSString       *text, *path;
+  NSString       *text;
   BOOL           isEnabled = YES;
 
-  text = [commandField stringValue];
-  path = [fm absolutePathForPath:text];
-  if (path) {
-    text = path;
+  text = [fm absolutePathForPath:[commandField stringValue]];
+  if (text == nil) {
+    if (completionIndex < 0) {
+      isEnabled = NO;
+    }
   }
-  
-  if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ') {
+  else if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ') {
     isEnabled = NO;
   }
   else if (([text characterAtIndex:0] == '/') &&
            (![fm fileExistsAtPath:text isDirectory:&isDir] || isDir)) {
     isEnabled = NO;
   }
+  
   [runInTerminal setEnabled:isEnabled];
   [runButton setEnabled:isEnabled];
 }
@@ -356,12 +380,12 @@
     [completionList setTitle:@"History" ofColumn:0];
     completionIndex = -1;
   }
-  else if ([text characterAtIndex:[text length]-1] == '/' &&
-           [text length] > [savedCommand length]) {
-    [self makeCompletion];
-  }
+  // else if ([text characterAtIndex:[text length]-1] == '/' &&
+  //          [text length] > [savedCommand length]) {
+  //   [self makeCompletion];
+  // }
 
-  [savedCommand setString:text];
+  // [savedCommand setString:text];
   [self updateButtonsState];
 }
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
@@ -443,11 +467,20 @@
   if (sender != completionList)
     return;
 
+  if ([completionSource count] == 1)
+    return;
+
   for (NSString *variant in completionSource) {
     [matrix addRow];
     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:column];
     [cell setLeaf:YES];
-    [cell setTitle:variant];
+    if (completionSource != historyList) {
+      [cell setTitle:[variant lastPathComponent]];
+      [cell setRepresentedObject:variant];
+    }
+    else {
+      [cell setTitle:variant];
+    }
     [cell setRefusesFirstResponder:YES];
   }
 }
@@ -455,12 +488,18 @@
 - (void)listItemClicked:(id)sender
 {
   NSInteger selRow;
+  NSString  *title;
+  id        object;
 
   if (sender != completionList)
     return;
   
   completionIndex = [sender selectedRowInColumn:0];
-  [commandField setStringValue:[completionSource objectAtIndex:completionIndex]];
+  title = [[completionList selectedCellInColumn:0] representedObject];
+  if (title == nil) {
+    title = [completionSource objectAtIndex:completionIndex];
+  }
+  [commandField setStringValue:title];
   [self updateButtonsState];
   
   [window makeFirstResponder:commandField];

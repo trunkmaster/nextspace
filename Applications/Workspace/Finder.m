@@ -545,11 +545,12 @@
       }
       
       [findField setStringValue:newPath];
+      [findField deselectText];
       
-      subRange = [newPath rangeOfString:path];
-      subRange.location = subRange.location + subRange.length;
-      subRange.length = [newPath length] - subRange.location;
-      [[window fieldEditor:NO forObject:findField] setSelectedRange:subRange];
+      // subRange = [newPath rangeOfString:path];
+      // subRange.location = subRange.location + subRange.length;
+      // subRange.length = [newPath length] - subRange.location;
+      // [[window fieldEditor:NO forObject:findField] setSelectedRange:subRange];
       [self refreshResultsList:NO];
     }
     else {
