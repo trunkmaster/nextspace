@@ -344,7 +344,7 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
       if ([file rangeOfString:substring].location == 0) {
         absPath = [dir stringByAppendingPathComponent:file];
         if ([self isExecutableFileAtPath:absPath]) {
-          [variants addObject:file];
+          [variants addObject:absPath];
         }
       }
     }
@@ -370,7 +370,9 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
     while ([fm fileExistsAtPath:pathBase isDirectory:&isDir] == NO) {
       pathBase = [pathBase stringByDeletingLastPathComponent];
     }
-    dirContents = [self directoryContentsAtPath:pathBase];
+    dirContents = [self directoryContentsAtPath:pathBase
+                                        forPath:nil
+                                     showHidden:YES];
     for (NSString *file in dirContents) {
       absPath = [pathBase stringByAppendingPathComponent:file];
       if ([absPath rangeOfString:path].location == 0) {
