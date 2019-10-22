@@ -63,7 +63,6 @@
   [text setString:savedString];
   DESTROY(savedString);
 
-  [window setFrameAutosaveName:@"Console"];
   [DNC addObserver:self
           selector:@selector(fontDidChange:)
               name:@"NXTSystemFontPreferencesDidChangeNotification"
@@ -102,6 +101,7 @@
     }
   
   [window makeKeyAndOrderFront:nil];
+  [window setFrameAutosaveName:@"Console"];
   [text scrollPoint:NSMakePoint(0, [text frame].size.height)];
 }
 
