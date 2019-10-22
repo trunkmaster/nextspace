@@ -258,14 +258,14 @@
     return variants;
   }
 
-  NSLog(@"completionFor: %@ - %@", command, historyList);
+  // NSLog(@"completionFor: %@ - %@", command, historyList);
 
   // Go through the history first
-  for (NSString *compElement in historyList) {
-    if ([compElement rangeOfString:command].location == 0) {
-      [variants addObject:compElement];
-    }
-  }
+  // for (NSString *compElement in historyList) {
+  //   if ([compElement rangeOfString:command].location == 0) {
+  //     [variants addObject:compElement];
+  //   }
+  // }
 
   absPath = [fm absolutePathForPath:command];
   // NSLog(@"Absolute command: %@ - %@", command, absPath);
@@ -290,47 +290,73 @@
 
 - (void)makeCompletion
 {
-  NSString       *command = [commandField stringValue];
-  NSUInteger     commandLength = [command length];
-  NSString       *variant;
-  BOOL           isDir = NO;
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  NSString   *command = [commandField stringValue];
+  NSUInteger commandLength = [command length];
+  NSString   *variant;
+  NSUInteger variantsCount;
+
+  NSLog(@">>> Make completion <<<");
 
   if (commandVariants) [commandVariants release];
-  commandVariants =[self completionForCommand:command];
+  commandVariants = [self completionForCommand:command];
+  variantsCount = [commandVariants count];
 
-  if ([commandVariants count] > 0) {
-    ASSIGN(completionSource, commandVariants);
-    [completionList reloadColumn:0];
-    [completionList setTitle:@"Completion" ofColumn:0];
-    [completionList selectRow:0 inColumn:0];
-    variant = [commandVariants objectAtIndex:0];
-    completionIndex = 0;
-    isDir = [fm directoryExistsAtPath:variant];
-
-    if ([[commandField stringValue] characterAtIndex:0] == '~') {
-      variant = [variant stringByAbbreviatingWithTildeInPath];
-    }
-    if (isDir) {
-      variant = [variant stringByAppendingFormat:@"/"];
-      // commandLength++;
-    }
-    if ([commandVariants count] == 1) {
-      [commandField setStringValue:variant];
-      [commandField deselectText];
+  if (variantsCount > 0) {
+    NSLog(@"Completions: %lu source: %@ index: %li",
+          variantsCount, (completionSource == historyList ? @"History" : @"Completion"),
+          completionIndex);
+    // Completion list handling
+    if (variantsCount > 1) {
+      completionIndex = (completionSource == historyList) ? -1 : completionIndex+1;
+      ASSIGN(completionSource, commandVariants);
     }
     else {
-      NSText     *fieldEditor = [window fieldEditor:NO forObject:commandField];
-      NSUInteger selLength = [variant length] - commandLength;
-      [commandField setStringValue:variant];
-      [fieldEditor setSelectedRange:NSMakeRange(commandLength, selLength)];
+      completionIndex = -1;
+      ASSIGN(completionSource, historyList);
+    }
+    [self reloadCompletionList];
+
+    // Extract and process current variant
+    if (completionIndex < 0 && variantsCount == 1) {
+      // variant = [commandVariants[0] stringByAbbreviatingWithTildeInPath];
+      variant = commandVariants[0];
+    }
+    else if (completionIndex >= 0) {
+      // variant = [commandVariants[completionIndex] stringByAbbreviatingWithTildeInPath];
+      variant = commandVariants[completionIndex];
+    }
+    else {
+      variant = [command stringByExpandingTildeInPath];
+    }
+    if ([[NXTFileManager defaultManager] directoryExistsAtPath:variant] &&
+        [variant characterAtIndex:[variant length]-1] != '/') {
+      if ([command characterAtIndex:0] == '~') {
+        variant = [variant stringByAbbreviatingWithTildeInPath];
+      }
+      variant = [variant stringByAppendingFormat:@"/"];
+    }
+    else if ([command characterAtIndex:0] == '~') {
+      variant = [variant stringByAbbreviatingWithTildeInPath];
+    }
+    [commandField setStringValue:variant];
+
+    // Process text field changes
+    if (completionIndex < 0 || variantsCount == 1) {
+      [commandField deselectText];
+      [savedCommand setString:variant];
+    }
+    else {
+      NSText *fieldEditor = [window fieldEditor:NO forObject:commandField];
+      NSRange range;
+      commandLength = [savedCommand length];
+      range = NSMakeRange(commandLength, ([variant length] - commandLength));
+      [fieldEditor setSelectedRange:range];
     }
   }
   else {
-    ASSIGN(completionSource, historyList);
-    [completionList reloadColumn:0];
-    [completionList setTitle:@"History" ofColumn:0];
     completionIndex = -1;
+    ASSIGN(completionSource, historyList);
+    [self reloadCompletionList];
   }
   [self updateButtonsState];
 }
@@ -362,6 +388,7 @@
 
 // --- Command text field delegate
 
+/*
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
   NSTextField *field = [aNotification object];
@@ -374,6 +401,11 @@
   // Do not make completion if text in field was shrinked
   text = [field stringValue];
 
+  if ([savedCommand isEqualToString:text]) {
+    return;
+  }
+  NSLog(@"controlTextDidChange");
+
   if ([text length] == 0) {
     ASSIGN(completionSource, historyList);
     [completionList reloadColumn:0];
@@ -385,9 +417,12 @@
   //   [self makeCompletion];
   // }
 
-  // [savedCommand setString:text];
+  completionIndex = -1;
+  [savedCommand setString:text];
   [self updateButtonsState];
 }
+*/
+
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
@@ -417,34 +452,6 @@
     }
     [self updateButtonsState];
     break;
-    /*  case NSDeleteFunctionKey:
-  case NSDeleteCharacter:
-    // NSLog(@"WMCommandField key: Delete or Backspace");
-    {
-      NSText  *text = [window fieldEditor:NO forObject:commandField];
-      NSRange selectedRange = [text selectedRange];
-      if (selectedRange.length > 0) {
-        [text replaceRange:selectedRange withString:@""];
-      }
-
-      if ([[commandField stringValue] length] > 0) {
-        ASSIGN(completionSource, historyList);
-        if (commandVariants) [commandVariants release];
-        commandVariants = [self completionForCommand:[commandField stringValue]];
-        ASSIGN(completionSource, commandVariants);
-        [completionList reloadColumn:0];
-        [completionList setTitle:@"Completion" ofColumn:0];
-        completionIndex = -1;
-      }
-      else {
-        ASSIGN(completionSource, historyList);
-        [completionList reloadColumn:0];
-        [completionList setTitle:@"History" ofColumn:0];
-        completionIndex = -1;
-      }
-      [self updateButtonsState];
-    }
-    break; */
   case NSTabCharacter:
     [[window fieldEditor:NO forObject:commandField]
         setSelectedRange:NSMakeRange([[commandField stringValue] length], 0)];
@@ -452,10 +459,23 @@
   case 27: // Escape
     [self makeCompletion];
     break;
+  case NSLeftArrowFunctionKey:
+  case NSRightArrowFunctionKey:
+  case NSHomeFunctionKey:
+  case NSBeginFunctionKey:
+  case NSEndFunctionKey:
+    // Do nothing here
+    break;
   default:
+    [savedCommand setString:[commandField stringValue]];
+    if ([savedCommand length] < 2) {
+      ASSIGN(completionSource, historyList);
+    }
+    completionIndex = -1;
+    [self reloadCompletionList];
     break;
   }
-  // NSLog(@"WMCommandField key: %X", c);
+  NSLog(@"WMCommandField key: %i", c);
 }
 // --- Command and History browser delegate
 - (void)     browser:(NSBrowser *)sender
@@ -464,10 +484,7 @@
 {
   NSBrowserCell *cell;
   
-  if (sender != completionList)
-    return;
-
-  if ([completionSource count] == 1)
+  if (sender != completionList || completionList == nil)
     return;
 
   for (NSString *variant in completionSource) {
@@ -503,6 +520,22 @@
   [self updateButtonsState];
   
   [window makeFirstResponder:commandField];
+}
+
+- (void)reloadCompletionList
+{
+  [completionList reloadColumn:0];
+  
+  if (completionSource == historyList) {
+    [completionList setTitle:@"History" ofColumn:0];
+  }
+  else {
+    [completionList setTitle:@"Completion" ofColumn:0];
+  }
+  
+  if (completionIndex >= 0) {
+    [completionList selectRow:completionIndex inColumn:0];
+  }
 }
 
 @end

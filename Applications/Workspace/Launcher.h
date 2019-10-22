@@ -46,5 +46,6 @@
 - (void)initHistory;
 - (void)saveHistory;
 - (void)updateButtonsState;
+- (void)reloadCompletionList;
 
 @end
