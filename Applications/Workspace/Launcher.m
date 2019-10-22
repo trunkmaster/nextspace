@@ -447,7 +447,8 @@
       [completionList selectRow:completionIndex inColumn:0];
     }
     else {
-      [commandField setStringValue:@""];
+      [commandField setStringValue:savedCommand];
+      [commandField deselectText];
       [completionList reloadColumn:0];
     }
     [self updateButtonsState];
