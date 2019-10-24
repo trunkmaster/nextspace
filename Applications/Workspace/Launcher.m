@@ -308,21 +308,29 @@
     // Completion list handling
     if (variantsCount > 1) {
       completionIndex = (completionSource == historyList) ? -1 : completionIndex+1;
+      // if (([completionSource count] == 1) || completionSource == historyList) {
+      //   completionIndex = -1;
+      //   [commandVariants release];
+      //   commandVariants =
+      //     [self completionForCommand:[command stringByDeletingLastPathComponent]];
+      // }
+      // else
+      //   completionIndex++;
       ASSIGN(completionSource, commandVariants);
     }
     else {
-      completionIndex = -1;
-      ASSIGN(completionSource, historyList);
+      // completionIndex = -1;
+      // ASSIGN(completionSource, historyList);
+      completionIndex = 0;
+      ASSIGN(completionSource, commandVariants);
     }
     [self reloadCompletionList];
 
     // Extract and process current variant
     if (completionIndex < 0 && variantsCount == 1) {
-      // variant = [commandVariants[0] stringByAbbreviatingWithTildeInPath];
       variant = commandVariants[0];
     }
     else if (completionIndex >= 0) {
-      // variant = [commandVariants[completionIndex] stringByAbbreviatingWithTildeInPath];
       variant = commandVariants[completionIndex];
     }
     else {
@@ -465,7 +473,7 @@
   case NSHomeFunctionKey:
   case NSBeginFunctionKey:
   case NSEndFunctionKey:
-    // Do nothing here
+    [savedCommand setString:[commandField stringValue]];
     break;
   default:
     [savedCommand setString:[commandField stringValue]];
@@ -476,7 +484,7 @@
     [self reloadCompletionList];
     break;
   }
-  NSLog(@"WMCommandField key: %i", c);
+  // NSLog(@"WMCommandField key: %i", c);
 }
 // --- Command and History browser delegate
 - (void)     browser:(NSBrowser *)sender
