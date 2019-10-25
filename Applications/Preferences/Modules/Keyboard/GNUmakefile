@@ -20,7 +20,8 @@ Keyboard_RESOURCE_FILES = \
 	Resources/bundle.registry \
 	Resources/LayoutSwitchKeys.plist \
 	Resources/ComposeCharacterKey.plist \
-	Resources/CapsLockKey.plist
+	Resources/CapsLockKey.plist \
+	Resources/Model.plist
 
 Keyboard_OBJC_FILES = \
 	Keyboard.m \
