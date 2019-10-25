@@ -295,32 +295,22 @@
   NSString   *variant;
   NSUInteger variantsCount;
 
-  NSLog(@">>> Make completion <<<");
+  // NSLog(@">>> Make completion <<<");
 
   if (commandVariants) [commandVariants release];
   commandVariants = [self completionForCommand:command];
   variantsCount = [commandVariants count];
 
   if (variantsCount > 0) {
-    NSLog(@"Completions: %lu source: %@ index: %li",
-          variantsCount, (completionSource == historyList ? @"History" : @"Completion"),
-          completionIndex);
+    // NSLog(@"Completions: %lu source: %@ index: %li",
+    //       variantsCount, (completionSource == historyList ? @"History" : @"Completion"),
+    //       completionIndex);
     // Completion list handling
     if (variantsCount > 1) {
       completionIndex = (completionSource == historyList) ? -1 : completionIndex+1;
-      // if (([completionSource count] == 1) || completionSource == historyList) {
-      //   completionIndex = -1;
-      //   [commandVariants release];
-      //   commandVariants =
-      //     [self completionForCommand:[command stringByDeletingLastPathComponent]];
-      // }
-      // else
-      //   completionIndex++;
       ASSIGN(completionSource, commandVariants);
     }
     else {
-      // completionIndex = -1;
-      // ASSIGN(completionSource, historyList);
       completionIndex = 0;
       ASSIGN(completionSource, commandVariants);
     }
@@ -395,41 +385,6 @@
 }
 
 // --- Command text field delegate
-
-/*
-- (void)controlTextDidChange:(NSNotification *)aNotification
-{
-  NSTextField *field = [aNotification object];
-  NSString    *text;
-
-  if (field != commandField ||![field isKindOfClass:[NSTextField class]]) {
-    return;
-  }
-
-  // Do not make completion if text in field was shrinked
-  text = [field stringValue];
-
-  if ([savedCommand isEqualToString:text]) {
-    return;
-  }
-  NSLog(@"controlTextDidChange");
-
-  if ([text length] == 0) {
-    ASSIGN(completionSource, historyList);
-    [completionList reloadColumn:0];
-    [completionList setTitle:@"History" ofColumn:0];
-    completionIndex = -1;
-  }
-  // else if ([text characterAtIndex:[text length]-1] == '/' &&
-  //          [text length] > [savedCommand length]) {
-  //   [self makeCompletion];
-  // }
-
-  completionIndex = -1;
-  [savedCommand setString:text];
-  [self updateButtonsState];
-}
-*/
 
 - (void)commandFieldKeyUp:(NSEvent *)theEvent
 {
@@ -514,18 +469,22 @@
 - (void)listItemClicked:(id)sender
 {
   NSInteger selRow;
-  NSString  *title;
+  NSString  *absPath;
   id        object;
 
   if (sender != completionList)
     return;
   
   completionIndex = [sender selectedRowInColumn:0];
-  title = [[completionList selectedCellInColumn:0] representedObject];
-  if (title == nil) {
-    title = [completionSource objectAtIndex:completionIndex];
+  absPath = [[completionList selectedCellInColumn:0] representedObject];
+  if (absPath == nil) {
+    absPath = [completionSource objectAtIndex:completionIndex];
   }
-  [commandField setStringValue:title];
+  if ([[commandField stringValue] characterAtIndex:0] == '~') {
+    absPath = [absPath stringByAbbreviatingWithTildeInPath];
+  }
+  
+  [commandField setStringValue:absPath];
   [self updateButtonsState];
   
   [window makeFirstResponder:commandField];
