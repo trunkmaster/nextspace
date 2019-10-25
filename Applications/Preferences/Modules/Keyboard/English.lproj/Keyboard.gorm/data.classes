@@ -62,7 +62,10 @@
 	    composeKeyBtn,
 	    capsLockMtrx,
 	    swapCAMtrx,
-	    numLockStateMtrx
+	    numLockStateMtrx,
+	    modelBrowser,
+	    modelDescription,
+	    modelBox
 	);
 	Super = NSObject;
     };

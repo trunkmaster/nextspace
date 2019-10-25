@@ -32,6 +32,11 @@
   id sectionBox;
   id sectionsBtn;
 
+  // Model
+  id modelBox;
+  id modelBrowser;
+  id modelDescription;
+
   // Key Repeat
   id repeatBox;
   id initialRepeatMtrx;

@@ -174,26 +174,29 @@ static NXTDefaults *defaults = nil;
 {
   switch ([[sender selectedItem] tag])
     {
-    case 0: // Key Repeat
+    case 0: // Model
+      [sectionBox setContentView:modelBox];
+      break;
+    case 1: // Key Repeat
       [sectionBox setContentView:repeatBox];
       break;
-    case 1: // Layouts
+    case 2: // Layouts
       [sectionBox setContentView:layoutsBox];
       [self updateLayouts];
       if (!options)
         options = [[keyboard options] copy];
       [self initSwitchLayoutShortcuts];
       break;
-    case 2: // Shortcuts
+    case 3: // Shortcuts
       [sectionBox setContentView:shortcutsBox];
       break;
-    case 3: // Numeric Keypad
+    case 4: // Numeric Keypad
       if (!options)
         options = [[keyboard options] copy];
       [self initNumpad];
       [sectionBox setContentView:keypadBox];
       break;
-    case 4: // Compose, Caps Lock, Command/Alternate swap
+    case 5: // Compose, Caps Lock, Command/Alternate swap
       if (!options)
         options = [[keyboard options] copy];
       [self initModifiers];
