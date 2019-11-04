@@ -80,6 +80,10 @@ static NXTDefaults *defaults = nil;
 
   [sectionsBtn setRefusesFirstResponder:YES];
 
+  // Model
+  [modelBox retain];
+  [modelBox removeFromSuperview];
+
   // Key Repeat
   [repeatBox retain];
   [repeatBox removeFromSuperview];
@@ -103,7 +107,8 @@ static NXTDefaults *defaults = nil;
       if ([defaults integerForKey:OSEKeyboardRepeatRate] < 0)
         [repeatRateMtrx selectCellWithTag:40];
       else
-        [repeatRateMtrx selectCellWithTag:[defaults integerForKey:OSEKeyboardRepeatRate]];
+        [repeatRateMtrx
+          selectCellWithTag:[defaults integerForKey:OSEKeyboardRepeatRate]];
       [self repeatAction:repeatRateMtrx];
     }
   
@@ -738,6 +743,61 @@ static NXTDefaults *defaults = nil;
       [self _setOption:@"caps:none"];
       break;
     }
+}
+
+@end
+
+@implementation Keyboard (Model)
+
+- (void)initModel
+{
+  if ([[[modelBrowser matrixInColumn:0] cells] count] == 0) {
+    [modelBrowser loadColumnZero];
+  }
+}
+
+- (NSString *)browser:(NSBrowser *)sender
+        titleOfColumn:(NSInteger)column
+{
+  if (column == 0) {
+    return @"Vendor";
+  }
+
+  return [[sender pathToColumn:column] lastPathComponent];
+}
+
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+            inMatrix:(NSMatrix *)matrix
+{
+  NSString      *filePath;
+  NSDictionary  *fileContents;
+  NSArray       *items;
+  NSBrowserCell *cell;
+  
+  if (sender != modelBrowser) {
+    return;
+  }
+  filePath = [bundle pathForResource:@"Model" ofType:@"plist"];
+  fileContents = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+
+  if (column == 0) {
+    items = [[fileContents allKeys]
+              sortedArrayUsingSelector:@selector(compare:)];
+  }
+  else {
+    NSString     *vendor = [[sender path] lastPathComponent];
+    NSDictionary *models = [fileContents objectForKey:vendor];
+    items = [[models allKeys] sortedArrayUsingSelector:@selector(compare:)];
+  }
+
+  for (NSString *entry in items) {
+    [matrix addRow];
+    cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
+    [cell setLeaf:(column == 0) ? NO : YES];
+    [cell setTitle:entry];
+    [cell setRefusesFirstResponder:YES];
+  }
 }
 
 @end

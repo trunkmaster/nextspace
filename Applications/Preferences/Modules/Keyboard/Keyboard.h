@@ -102,3 +102,7 @@
 @interface Keyboard (Modifiers)
 - (void)initModifiers;
 @end
+
+@interface Keyboard (Model)
+- (void)initModel;
+@end
