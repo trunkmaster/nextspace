@@ -1,7 +1,7 @@
 {
   /* Data for "Model" section of Keyboard Preferences */
   "Generic" = {
-    "101-key PC" = { "pc101" = "Generic 101-key PC"; }
+    "101-key PC" = { "pc101" = "Generic 101-key PC"; };
     "102-key PC" = { "pc102" = "Generic 102-key (Intl) PC"; };
     "104-key PC" = { "pc104" = "Generic 104-key PC"; };
     "105-key PC" = { "pc105" = "Generic 105-key (Intl) PC"; };
@@ -29,31 +29,8 @@
     "Macontish" = { "macintosh" = "Macintosh"; };
     "Macontish Old" = { "macintosh_old" = "Macintosh Old"; };
   };
-  "Compaq" = {
-    "Armada" = {
-      "armada" = "Laptop/notebook Compaq (eg. Armada) Laptop Keyboard";
-    };
-    "Presario" = {
-      "presario" = "Laptop/notebook Compaq (eg. Presario) Internet Keyboard";
-    };
-    "Easy Access" = {
-      "compaqeak8" = "Compaq Easy Access Keyboard";
-    };
-    "Internet Keyboard (7 keys)" = {
-      "compaqik7" = "Compaq Internet Keyboard (7 keys)";
-    };
-    "Internet Keyboard (13 keys)" = {
-      "compaqik13" = "Compaq Internet Keyboard (13 keys)";
-    };
-    "Internet Keyboard (18 keys)" = {
-      "compaqik18" = "Compaq Internet Keyboard (18 keys)"; };
-    "iPaq" = {
-      "ipaq" = "Compaq iPaq Keyboard";
-    };
-  };
   "ASUS" = {
-    "Laptop" = {"asus_laptop" = "Asus Laptop";
-    };
+    "Laptop" = {"asus_laptop" = "Asus Laptop"; };
   };
   "Azona" = {
     "Wireless Internet Keyboard" = { "azonaRF2300" = "Azona RF2300 wireless Internet Keyboard"; };
@@ -77,6 +54,28 @@
     "9019U" = { "btc9019u" = "BTC 9019U"; };
     "9116U" = { "btc9116u" = "BTC 9116U Mini Wireless Internet and Gaming"; };
   };
+  "Compaq" = {
+    "Armada" = {
+      "armada" = "Laptop/notebook Compaq (eg. Armada) Laptop Keyboard";
+    };
+    "Presario" = {
+      "presario" = "Laptop/notebook Compaq (eg. Presario) Internet Keyboard";
+    };
+    "Easy Access" = {
+      "compaqeak8" = "Compaq Easy Access Keyboard";
+    };
+    "Internet Keyboard (7 keys)" = {
+      "compaqik7" = "Compaq Internet Keyboard (7 keys)";
+    };
+    "Internet Keyboard (13 keys)" = {
+      "compaqik13" = "Compaq Internet Keyboard (13 keys)";
+    };
+    "Internet Keyboard (18 keys)" = {
+      "compaqik18" = "Compaq Internet Keyboard (18 keys)"; };
+    "iPaq" = {
+      "ipaq" = "Compaq iPaq Keyboard";
+    };
+  };
   "Cherry" = {
     "Blue Line CyBo@rd" = { "cherryblue" = "Cherry Blue Line CyBo@rd"; };
     "Blue Line CyBo@rd (alternate)" = { "cherrybluea" = "Cherry Blue Line CyBo@rd (alternate option)"; };
@@ -96,215 +95,237 @@
     "PC" = { "classmate" = "Classmate PC"; };
   };
   "Compal" = {
-    compalfl90 = FL90;
+    "FL90" = { "compalfl90" = "Compal FL90"; };
   };
   "Creative" = {
-    creativedw7000 = "Creative Desktop Wireless 7000";
+    "Desktop Wireless 7000" = { "creativedw7000" = "Creative Desktop Wireless 7000"; };
   };
   "Dell" = {
-    dell = Dell;
-    dell101 = "Dell 101-key PC";
-    dellm65 = "Dell Precision M65";
-    dellsk8125 = "Dell SK-8125";
-    dellsk8135 = "Dell SK-8135";
-    dellusbmm = "Dell USB Multimedia Keyboard";
-    inspiron = "Dell Laptop/notebook Inspiron 6xxx/8xxx";
-    latitude = "Dell Latitude series laptop";
-    "precision_m" = "Dell Laptop/notebook Precision M series";
+    "Generic" = { "dell" = "Dell Generic"; };
+    "101-key PC" = { "dell101" = "Dell 101-key PC"; };
+    "SK-8125" = { "dellsk8125" = "Dell SK-8125"; };
+    "SK-8135" = { "dellsk8135" = "Dell SK-8135"; };
+    "USB Multimedia Keyboard" = { "dellusbmm" = "Dell USB Multimedia Keyboard"; };
+    "Inspiron" = { "inspiron" = "Dell Laptop/notebook Inspiron 6xxx/8xxx"; };
+    "Latitude" = { "latitude" = "Dell Latitude series laptop"; };
+    "Precision M series" = { "precision_m" = "Dell Laptop/notebook Precision M series"; };
+    "Precision M65 laptop" = { "dellm65" = "Dell Precision M65"; };
   };
   "Dexxa" = {
-    dexxa = "Dexxa Wireless Desktop Keyboard";
+    "Wireless Desktop Keyboard" = { "dexxa" = "Dexxa Wireless Desktop Keyboard"; };
   };
   "Diamond" = {
-    diamond = "Diamond 9801 / 9802 series";
+    "9801/9802" = { "diamond" = "Diamond 9801/9802 series"; };
   };
   "DTK" = {
-    dtk2000 = DTK2000;
+    "DTK2000" = { "dtk2000" = "DTK2000"; };
   };
   "eMachines" = {
-    emachines = "Laptop/notebook eMachines m68xx";
+    "m68xx" = { "emachines" = "Laptop/notebook eMachines m68xx"; };
   };
   "Ennyah" = {
-    "ennyah_dkb1008" = "Ennyah DKB-1008";
+    "DBK-1008" = { "ennyah_dkb1008" = "Ennyah DKB-1008"; };
   };
   "Everex" = {
-    everex = "Everex STEPnote";
-  };
-  "Keytronic" = {
-    flexpro = "Keytronic FlexPro";
+    "STEPnote" = { "everex" = "Everex STEPnote"; };
   };
   "Fujitsu-Siemens" = {
-    fscaa1667g = "Fujitsu-Siemens Computers AMILO laptop";
+    "AMILO laptop" = { "fscaa1667g" = "Fujitsu-Siemens Computers AMILO laptop"; };
   };
   "Genius" = {
-    genius = "Genius Comfy KB-16M / Genius MM Keyboard KWD-910";
-    geniuscomfy = "Genius Comfy KB-12e";
-    geniuscomfy2 = "Genius Comfy KB-21e-Scroll";
-    geniuskb19e = "Genius KB-19e NB";
-    geniuskkb2050hs = "Genius KKB-2050HS";
+    "KB-16M / KWD-910" = { "genius" = "Genius Comfy KB-16M / Genius MM Keyboard KWD-910"; };
+    "KB-12e" = { "geniuscomfy" = "Genius Comfy KB-12e"; };
+    "KB-21e-Scroll" = { "geniuscomfy2" = "Genius Comfy KB-21e-Scroll"; };
+    "KB-19e NB" = { "geniuskb19e" = "Genius KB-19e NB"; };
+    "KKB-2050HS" = { "geniuskkb2050hs" = "Genius KKB-2050HS"; };
   };
   "Gyration" = {
-    gyration = Gyration;
+    "Generic" = { "gyration" = "Gyration Keyboard"; };
   };
   "Happy Hacking" = {
-    hhk = "Happy Hacking Keyboard";
-    "macintosh_hhk" = "Happy Hacking Keyboard for Mac";
-  };
-  "Honeywell" = {
-    "honeywell_euroboard" = "Honeywell Euroboard";
+    "Keyboard" = { "hhk" = "Happy Hacking Keyboard"; };
+    "Keyboard for Mac" = { "macintosh_hhk" = "Happy Hacking Keyboard for Mac"; };
   };
   "Hewlett-Packard" = {
-    hp250x = "Hewlett-Packard SK-250x Multimedia Keyboard";
-    hp500fa = "Hewlett-Packard Omnibook 500 FA";
-    hp5xx = "Hewlett-Packard Omnibook 5xx";
-    hp6000 = "Hewlett-Packard Omnibook 6000/6100";
-    hpdv5 = "Hewlett-Packard Pavilion dv5";
-    hpi6 = "Hewlett-Packard Internet Keyboard";
-    hpmini110 = "Hewlett-Packard Mini 110 Notebook";
-    hpnx9020 = "Hewlett-Packard nx9020";
-    hpxe3gc = "Hewlett-Packard Omnibook XE3 GC";
-    hpxe3gf = "Hewlett-Packard Omnibook XE3 GF";
-    hpxt1000 = "Hewlett-Packard Omnibook XT1000";
-    hpzt11xx = "Hewlett-Packard Pavilion ZT11xx";
+    "Internet Keyboard" = { "hpi6" = "Hewlett-Packard Internet Keyboard"; };
+    "Mini 110 Notebook" = { "hpmini110" = "Hewlett-Packard Mini 110 Notebook"; };
+    "nx9020" = { "hpnx9020" = "Hewlett-Packard nx9020"; };
+    "Omnibook 500 FA" = { "hp500fa" = "Hewlett-Packard Omnibook 500 FA"; };
+    "Omnibook 5xx" = { "hp5xx" = "Hewlett-Packard Omnibook 5xx"; };
+    "Omnibook 6000/6100" = { "hp6000" = "Hewlett-Packard Omnibook 6000/6100"; };
+    "Omnibook XE3 GC" = { "hpxe3gc" = "Hewlett-Packard Omnibook XE3 GC"; };
+    "Omnibook XE3 GF" = { "hpxe3gf" = "Hewlett-Packard Omnibook XE3 GF"; };
+    "Omnibook XT1000" = { "hpxt1000" = "Hewlett-Packard Omnibook XT1000"; };
+    "Pavilion dv5" = { "hpdv5" = "Hewlett-Packard Pavilion dv5"; };
+    "Pavilion ZT11xx" = { "hpzt11xx" = "Hewlett-Packard Pavilion ZT11xx"; };
+    "SK-250x Multimedia" = { "hp250x" = "Hewlett-Packard SK-250x Multimedia Keyboard"; };
+  };
+  "Honeywell" = {
+    "Euroboard" = { "honeywell_euroboard" = "Honeywell Euroboard"; };
   };
   "HTC" = {
-    htcdream = "HTC Dream phone";
+    "Dream phone" = { "htcdream" = "HTC Dream phone"; };
   };
-  "IBM" = {
-    "ibm_spacesaver" = "IBM Space Saver";
-    rapidaccess = "IBM Rapid Access";
-    rapidaccess2 = "IBM Rapid Access II";
-    thinkpad = "IBM ThinkPad 560Z/600/600E/A22E";
-    thinkpad60 = "IBM ThinkPad R60/T60/R61/T61";
-    thinkpadz60 = "IBM ThinkPad Z60m/Z60t/Z61m/Z61t";
-    winbook = "Winbook Model XP5";
-  };
-  "Logitech" = {
-    itouch = "Logitech iTouch";
-    logiaccess = "Logitech Access Keyboard";
-    logicd = "Logitech Cordless Desktop";
-    "logicd_it" = "Logitech Cordless Desktop iTouch";
-    "logicd_nav" = "Logitech Cordless Desktop Navigator";
-    "logicd_opt" = "Logitech Cordless Desktop Optical";
-    logicda = "Logitech Cordless Desktop (alternate option)";
-    logicdn = "Logitech Cordless Desktop Navigator";
-    logicdpa2 = "Logitech Cordless Desktop Pro (alternate option 2)";
-    logicfn = "Logitech Cordless Freedom/Desktop Navigator";
-    logicink = "Logitech Internet Navigator Keyboard";
-    logiclx300 = "Logitech Cordless Desktop LX-300";
-    logidinovo = "Logitech diNovo Keyboard";
-    logidinovoedge = "Logitech diNovo Edge Keyboard";
-    logiex110 = "Logitech Cordless Desktop EX110";
-    logii350 = "Logitech Internet 350 Keyboard";
-    logiik = "Logitech Internet Keyboard";
-    logiinkse = "Logitech iTouch Internet Navigator Keyboard SE";
-    logiinkseusb = "Logitech iTouch Internet Navigator Keyboard SE (USB)";
-    logiitc = "Logitech iTouch Cordless Keyboard (model Y-RB6)";
-    logimel = "Logitech Media Elite Keyboard";
-    "logitech_base" = "Logitech Generic Keyboard";
-    "logitech_g15" = "Logitech G15 extra keys via G15daemon";
-    logiultrax = "Logitech Ultra-X Keyboard";
-    logiultraxc = "Logitech Ultra-X Cordless Media Desktop Keyboard";
+  "Keytronic" = {
+    "FlexPro" = { "flexpro" = "Keytronic FlexPro"; };
   };
   "Kinesis" = {
-    kinesis = Kinesis;
-  }
+    "Generic" = { "kinesis" = "Kinesis"; };
+  };
+  "IBM" = {
+    "Space Saver" = { "ibm_spacesaver" = "IBM Space Saver"; };
+    "Rapid Access" = { "rapidaccess" = "IBM Rapid Access"; };
+    "Rapid Access II" = { "rapidaccess2" = "IBM Rapid Access II"; };
+    "ThinkPad 560Z/600/600E/A22E" = { "thinkpad" = "IBM ThinkPad 560Z/600/600E/A22E"; };
+    "ThinkPad R60/T60/R61/T61" = { "thinkpad60" = "IBM ThinkPad R60/T60/R61/T61"; };
+    "ThinkPad Z60m/Z60t/Z61m/Z61t" = { "thinkpadz60" = "IBM ThinkPad Z60m/Z60t/Z61m/Z61t"; };
+    "Winbook" = { "winbook" = "Winbook Model XP5"; };
+  };
+  "Logitech" = {
+    "Generic" = { "logitech_base" = "Logitech Generic Keyboard"; };
+    "iTouch" = { "itouch" = "Logitech iTouch"; };
+    "Access" = { "logiaccess" = "Logitech Access Keyboard"; };
+    "Cordless Desktop" = { "logicd" = "Logitech Cordless Desktop"; };
+    "Cordless Desktop (alternate)" = {
+      "logicda" = "Logitech Cordless Desktop (alternate option)";
+    };
+    "Cordless Desktop iTouch" = {
+      "logicd_it" = "Logitech Cordless Desktop iTouch"; };
+    "Cordless Desktop Navigator" = {
+      "logicdn" = "Logitech Cordless Desktop Navigator"; };
+    "Cordless Desktop Navigator (nav)" = {
+      "logicd_nav" = "Logitech Cordless Desktop Navigator"; };
+    "Cordless Desktop Optical" = {
+      "logicd_opt" = "Logitech Cordless Desktop Optical"; };
+    "Cordless Desktop Pro" = {
+      "logicdpa2" = "Logitech Cordless Desktop Pro (alternate option 2)"; };
+    "Cordless Desktop EX110" = {
+      "logiex110" = "Logitech Cordless Desktop EX110"; };
+    "Cordless Desktop LX-300" = {
+      "logiclx300" = "Logitech Cordless Desktop LX-300"; };
+    "Cordless Freedom/Desktop Navigator" = {
+      "logicfn" = "Logitech Cordless Freedom/Desktop Navigator"; };
+    "Internet Navigator Keyboard" = {
+      "logicink" = "Logitech Internet Navigator Keyboard"; };
+    "diNovo" = { "logidinovo" = "Logitech diNovo Keyboard"; };
+    "diNovo Edge" = { "logidinovoedge" = "Logitech diNovo Edge Keyboard"; };
+    "Internet 350" = { "logii350" = "Logitech Internet 350 Keyboard"; };
+    "Internet" = { "logiik" = "Logitech Internet Keyboard"; };
+    "iTouch Internet Navigator Keyboard SE" = {
+      "logiinkse" = "Logitech iTouch Internet Navigator Keyboard SE"; };
+    "iTouch Internet Navigator Keyboard SE (USB)" = {
+      "logiinkseusb" = "Logitech iTouch Internet Navigator Keyboard SE (USB)"; };
+    "iTouch Cordless Keyboard (model Y-RB6)" = {
+      "logiitc" = "Logitech iTouch Cordless Keyboard (model Y-RB6)"; };
+    "Media Elite Keyboard" = { "logimel" = "Logitech Media Elite Keyboard"; };
+    "G15" = { "logitech_g15" = "Logitech G15 extra keys via G15daemon"; };
+    "Ultra-X" = { "logiultrax" = "Logitech Ultra-X Keyboard"; };
+    "Ultra-X Cordless Media Desktop" = {
+      "logiultraxc" = "Logitech Ultra-X Cordless Media Desktop Keyboard"; };
+  };
   "Microsoft" = {
-    microsoft = "Microsoft Natural";
-    microsoft4000 = "Microsoft Natural Ergonomic Keyboard 4000";
-    microsoft7000 = "Microsoft Natural Wireless Ergonomic Keyboard 7000";
-    microsoftccurve2k = "Microsoft Comfort Curve Keyboard 2000";
-    microsoftelite = "Microsoft Natural Keyboard Elite";
-    microsoftinet = "Microsoft Internet Keyboard";
-    microsoftmult = "Microsoft Wireless Multimedia Keyboard 1.0A";
-    microsoftoffice = "Microsoft Office Keyboard";
-    microsoftpro = "Microsoft Natural Keyboard Pro / Microsoft Internet Keyboard Pro";
-    microsoftprooem = "Microsoft Natural Keyboard Pro OEM";
-    microsoftprose = "Microsoft Internet Keyboard Pro, Swedish";
-    microsoftprousb = "Microsoft Natural Keyboard Pro USB / Microsoft Internet Keyboard Pro";
+    "Natural" = { "microsoft" = "Microsoft Natural"; };
+    "Natural Elite" = { "microsoftelite" = "Microsoft Natural Keyboard Elite"; };
+    "Natural Ergonomic 4000" = {
+      "microsoft4000" = "Microsoft Natural Ergonomic Keyboard 4000"; };
+    "Natural Wireless Ergonomic 7000" = {
+      "microsoft7000" = "Microsoft Natural Wireless Ergonomic Keyboard 7000"; };
+    "Comfort Curve 2000" = {
+      "microsoftccurve2k" = "Microsoft Comfort Curve Keyboard 2000"; };
+    "Internet" = { "microsoftinet" = "Microsoft Internet Keyboard"; };
+    "Wireless Multimedia 1.0A" = {
+      "microsoftmult" = "Microsoft Wireless Multimedia Keyboard 1.0A"; };
+    "Office" = { "microsoftoffice" = "Microsoft Office Keyboard"; };
+    "Natural/Internet Pro" = {
+      "microsoftpro" = "Microsoft Natural Keyboard Pro / Microsoft Internet Keyboard Pro"; };
+    "Natural Pro OEM" = {
+      "microsoftprooem" = "Microsoft Natural Keyboard Pro OEM"; };
+    "Internet Pro, Swedish" = {
+      "microsoftprose" = "Microsoft Internet Keyboard Pro, Swedish"; };
+    "Natural/Internet Pro/Pro USB" = {
+      "microsoftprousb" = "Microsoft Natural Keyboard Pro USB / Microsoft Internet Keyboard Pro"; };
   };
   "Memorex" = {
-    mx1998 = "Memorex MX1998";
-    mx2500 = "Memorex MX2500 EZ-Access Keyboard";
-    mx2750 = "Memorex MX2750";
+    "MX1998" = { "mx1998" = "Memorex MX1998"; };
+    "MX2500 EZ-Access" = { "mx2500" = "Memorex MX2500 EZ-Access Keyboard"; };
+    "MX2750" = { "mx2750" = "Memorex MX2750"; };
   };
-  "OLPC" = {
-    olpc = OLPC;
-  };
-  "Northgate" = {
-    omnikey101 = "Northgate OmniKey 101";
-  };
+  "OLPC" = { "Generic" = { "olpc" = OLPC; }; };
+  "Northgate" = { "OmniKey 101" = { "omnikey101" = "Northgate OmniKey 101"; }; };
   "Oretec" = {
-    oretec = "Oretec MCK-800 MM/Internet keyboard";
+    "MCK-800 MM/Internet keyboard" = { "oretec" = "Oretec MCK-800 MM/Internet keyboard"; };
   };
   "KeyTronic" = {
-    propeller = "Propeller Voyager (KTEZ-1000)";
+    "Propeller Voyager" = { "propeller" = "Propeller Voyager (KTEZ-1000)"; };
   };
   "Samsung" = {
-    samsung4500 = "Samsung SDM 4500P";
-    samsung4510 = "Samsung SDM 4510P";
-    sanwaskbkg3 = "Sanwa Supply SKB-KG3";
+    "SDM 4500P" = { "samsung4500" = "Samsung SDM 4500P"; };
+    "SDM 4510P" = { "samsung4510" = "Samsung SDM 4510P"; };
+    "SKB-KG3" = { "sanwaskbkg3" = "Sanwa Supply SKB-KG3"; };
   };
   "QTronix" = {
-    scorpius = "Advance Scorpius KI";
-    qtronix = "QTronix Scorpius 98N+";
+    "Advance Scorpius KI" = { "scorpius" = "Advance Scorpius KI"; };
+    "Scorpius 98N+" = { "qtronix" = "QTronix Scorpius 98N+"; };
   };
   "Silvercrest" = {
-    silvercrest = "SILVERCREST Multimedia Wireless Keyboard";
+    "Multimedia Wireless" = { "silvercrest" = "SILVERCREST Multimedia Wireless Keyboard"; };
   };
   "NEC" = {
-    sk1300 = "SK-1300";
-    sk2500 = "SK-2500";
-    sk6200 = "SK-6200";
-    sk7100 = "SK-7100";
+    "SK-1300" = { "sk1300" = "NEC SK-1300 keyboard"; };
+    "SK-2500" = { "sk2500" = "NEC SK-2500 keyboard"; };
+    "SK-6200" = { "sk6200" = "NEC SK-6200 keyboard"; };
+    "SK-7100" = { "sk7100" = "NEC SK-7100 keyboard"; };
   };
   "Sun" = {
-    "sun_type6_euro_usb" = "Sun Type 6/7 USB (European layout)";
-    "sun_type6_jp" = "Sun Type 6 (Japanese layout)";
-    "sun_type6_jp_usb" = "Sun Type 6 USB (Japanese layout)";
-    "sun_type6_unix_usb" = "Sun Type 6 USB (Unix layout)";
-    "sun_type6_usb" = "Sun Type 6/7 USB";
-    "sun_type7_euro_usb" = "Sun Type 7 USB (European layout)";
-    "sun_type7_jp_usb" = "Sun Type 7 USB (Japanese layout) / Japanese 106-key";
-    "sun_type7_unix_usb" = "Sun Type 7 USB (Unix layout)";
-    "sun_type7_usb" = "Sun Type 7 USB";
+    "Type 6 USB" = { "sun_type6_usb" = "Sun Type 6/7 USB"; };
+    "Type 6 USB (Unix)" = { "sun_type6_unix_usb" = "Sun Type 6 USB (Unix layout)"; };
+    "Type 6 USB (European)" = {
+      "sun_type6_euro_usb" = "Sun Type 6/7 USB (European layout)"; };
+    "Type 7 USB" = { "sun_type7_usb" = "Sun Type 7 USB"; };
+    "Type 7 USB (Unix)" = { "sun_type7_unix_usb" = "Sun Type 7 USB (Unix layout)"; };
+    "Type 7 USB (European)" = { "sun_type7_euro_usb" = "Sun Type 7 USB (European layout)"; };
+    "Type 6 (Japanese)" = { "sun_type6_jp" = "Sun Type 6 (Japanese layout)"; };
+    "Type 6 USB (Japanese)" = { "sun_type6_jp_usb" = "Sun Type 6 USB (Japanese layout)"; };
+    "Type 7 (Japanese)" = {
+      "sun_type7_jp_usb" = "Sun Type 7 USB (Japanese layout) / Japanese 106-key"; };
   };
   "SVEN" = {
-    sven = "SVEN Ergonomic 2500";
-    sven303 = "SVEN Slim 303";
+    "Ergonomic 2500" = { "sven" = "SVEN Ergonomic 2500"; };
+    "Slim 303" = { "sven303" = "SVEN Slim 303"; };
   };
   "Symplon" = {
-    symplon = "Symplon PaceBook (tablet PC)";
+    "PaceBook" = { "symplon" = "Symplon PaceBook (tablet PC)"; };
   };
   "Targa" = {
-    "targa_v811" = "Targa Visionary 811";
+    "Visionary 811" = { "targa_v811" = "Targa Visionary 811"; };
   };
   "TypeMatrix" = {
-    tm2020 = "TypeMatrix EZ-Reach 2020";
-    tm2030PS2 = "TypeMatrix EZ-Reach 2030 PS2";
-    tm2030USB = "TypeMatrix EZ-Reach 2030 USB";
-    "tm2030USB-102" = "TypeMatrix EZ-Reach 2030 USB (102/105:EU mode)";
-    "tm2030USB-106" = "TypeMatrix EZ-Reach 2030 USB (106:JP mode)";
+    "EZ-Reach 2020" = { "tm2020" = "TypeMatrix EZ-Reach 2020"; };
+    "EZ-Reach 2030 PS2" = { "tm2030PS2" = "TypeMatrix EZ-Reach 2030 PS2"; };
+    "EZ-Reach 2030 USB" = { "tm2030USB" = "TypeMatrix EZ-Reach 2030 USB"; };
+    "EZ-Reach 2030 USB (102/105:EU mode)" = {
+      "tm2030USB-102" = "TypeMatrix EZ-Reach 2030 USB (102/105:EU mode)"; };
+    "EZ-Reach 2030 USB (106:JP mode)" = {
+      "tm2030USB-106" = "TypeMatrix EZ-Reach 2030 USB (106:JP mode)"; };
   };
   "Truly Ergonomic" = {
-    teck227 = "Truly Ergonomic Computer Keyboard Model 227 (Wide Alt keys)";
-    teck229 = "Truly Ergonomic Computer Keyboard Model 229 (Standard sized Alt keys, additional Super and Menu key)";
+    "Model 227" = {
+      "teck227" = "Truly Ergonomic Computer Keyboard Model 227 (Wide Alt keys)"; };
+    "Model 229" = { "teck229" = "Truly Ergonomic Computer Keyboard Model 229 (Standard sized Alt keys, additional Super and Menu key)"; };
   };
   "Toshiba" = {
-    "toshiba_s3000" = "Toshiba Satellite S3000";
+    "Satellite S3000" = { "toshiba_s3000" = "Toshiba Satellite S3000"; };
   };
   "Trust" = {
-    trust = "Trust Wireless Keyboard Classic";
-    "trust_slimline" = "Trust Slimline";
-    trustda = "Trust Direct Access Keyboard";
+    "Wireless Keyboard Classic" = { "trust" = "Trust Wireless Keyboard Classic"; };
+    "Slimline" = { "trust_slimline" = "Trust Slimline"; };
+    "Direct Access Keyboard" = { "trustda" = "Trust Direct Access Keyboard"; };
   };
-  "Unitek" = {
-    unitekkb1925 = "Unitek KB-1925";
-  };
+  "Unitek" = { "KB-1925" = { "unitekkb1925" = "Unitek KB-1925"; }; };
   "ViewSonic" = {
-    vsonku306 = "ViewSonic KU-306 Internet Keyboard";
+    "Internet Keyboard" = { "vsonku306" = "ViewSonic KU-306 Internet Keyboard"; };
   };
   "Yahoo!" = {
-    yahoo = "Yahoo! Internet Keyboard";
-  }
+    "Internet Keyboard" = { "yahoo" = "Yahoo! Internet Keyboard"; };
+  };
 }
