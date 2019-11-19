@@ -50,6 +50,13 @@
 //   pa_format_info	*format;
 // } pa_source_output_info;
 
+@interface PASourceOutput ()
+@property (assign) NSUInteger channelCount;
+@property (assign) CGFloat    balance;
+@property (assign) NSArray    *channelVolumes;
+@property (assign) BOOL       mute;
+@end
+
 @implementation PASourceOutput
 
 - (void)dealloc

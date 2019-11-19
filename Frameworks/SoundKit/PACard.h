@@ -35,7 +35,7 @@
 @property (readonly) NSArray    *outPorts;
 @property (readonly) NSArray    *inPorts;
 @property (readonly) NSArray    *profiles;
-@property (assign)   NSString   *activeProfile;
+@property (readonly) NSString   *activeProfile;
 
 - (id)updateWithValue:(NSValue *)value;
 - (void)applyActiveProfile:(NSString *)profileName;

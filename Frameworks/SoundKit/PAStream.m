@@ -32,6 +32,12 @@
 //   const char     *device;
 // } pa_ext_stream_restore_info;
 
+@interface PAStream ()
+@property (assign) NSUInteger volume;
+@property (assign) CGFloat    balance;
+@property (assign) BOOL       mute;
+@end
+
 @implementation PAStream
 
 - (void)dealloc

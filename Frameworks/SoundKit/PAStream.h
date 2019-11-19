@@ -32,9 +32,9 @@
 @property (readonly) NSString   *name;
 @property (readonly) NSString   *deviceName;
 
-@property (assign)   NSUInteger volume;
-@property (assign)   CGFloat    balance;
-@property (assign)   BOOL       mute;
+@property (readonly) NSUInteger volume;
+@property (readonly) CGFloat    balance;
+@property (readonly) BOOL       mute;
 
 - (id)updateWithValue:(NSValue *)value;
 

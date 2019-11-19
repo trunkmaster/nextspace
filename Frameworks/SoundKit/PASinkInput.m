@@ -62,6 +62,12 @@
 //   pa_format_info *format;
 // } pa_sink_input_info;
 
+@interface PASinkInput ()
+@property (assign) NSUInteger channelCount;
+@property (assign) CGFloat    balance;
+@property (assign) NSArray    *channelVolumes;
+@end
+
 @implementation PASinkInput
 
 - (void)dealloc

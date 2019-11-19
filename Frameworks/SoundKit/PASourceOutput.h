@@ -37,12 +37,11 @@
 @property (readonly) BOOL       hasVolume;
 @property (readonly) BOOL       isVolumeWritable;
 
-@property (assign)   NSUInteger channelCount;
-@property (assign)   CGFloat    balance;
-@property (assign)   NSArray    *channelVolumes;
+@property (readonly) NSUInteger channelCount;
+@property (readonly) CGFloat    balance;
+@property (readonly) NSArray    *channelVolumes;
 @property (readonly) BOOL       corked;
-
-@property (assign,nonatomic)  BOOL  mute;
+@property (readonly) BOOL       mute;
 
 - (id)updateWithValue:(NSValue *)val;
 

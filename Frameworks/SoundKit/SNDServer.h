@@ -34,7 +34,7 @@
 @class PASourceOutput;
 @class PAClient;
 
-typedef enum NSInteger {
+typedef NS_ENUM(NSInteger, SNDConnectionState) {
   SNDServerNoConnnectionState	= 0,	// PA_CONTEXT_UNCONNECTED
   SNDServerConnectingState	= 1,	// PA_CONTEXT_CONNECTING
   SNDServerAuthorizingState	= 2,	// PA_CONTEXT_AUTHORIZING
@@ -43,7 +43,7 @@ typedef enum NSInteger {
   SNDServerFailedState		= 5,	// PA_CONTEXT_FAILED
   SNDServerTerminatedState	= 6,	// PA_CONTEXT_TERMINATED
   SNDServerInventoryState	= 7
-} SNDConnectionState;
+};
 
 extern NSString *SNDServerStateDidChangeNotification;
 extern NSString *SNDDeviceDidAddNotification;
@@ -80,7 +80,6 @@ extern NSString *SNDDeviceDidRemoveNotification;
 @property (readonly) NSString *version;   // Version string of the daemon
 @property (readonly) NSString *defaultSinkName;
 @property (readonly) NSString *defaultSourceName;
-
 
 + (id)sharedServer;
 

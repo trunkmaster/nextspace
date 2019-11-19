@@ -346,7 +346,7 @@ NSString *SNDDeviceDidRemoveNotification = @"SNDDeviceDidRemoveNotification";
   }
   _statusDescription = [[NSString alloc]
                            initWithCString:pa_strerror(pa_context_errno(_pa_ctx))];
-  NSDebugLLog(@"SoundKit", @"[SNDServer] connection state was updated - %i.",
+  NSDebugLLog(@"SoundKit", @"[SNDServer] connection state was updated - %li.",
               _status);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:SNDServerStateDidChangeNotification

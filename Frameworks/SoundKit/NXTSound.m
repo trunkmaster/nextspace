@@ -100,7 +100,7 @@
 {
   SNDServer *server = [notif object];
   
-  NSDebugLLog(@"SoundKit", @"[NXTSound] serverStateChanged - %i", server.status);
+  NSDebugLLog(@"SoundKit", @"[NXTSound] serverStateChanged - %li", server.status);
   
   if (server.status == SNDServerReadyState && _stream == nil) {
     [self _initStream];
@@ -146,7 +146,7 @@
            name:SNDServerStateDidChangeNotification
          object:server];
   // 3. Connect to sound server (pulseaudio)
-  NSDebugLLog(@"SoundKit", @"[NXTSound] server status == %i", server.status);
+  NSDebugLLog(@"SoundKit", @"[NXTSound] server status == %li", server.status);
   if (server.status != SNDServerReadyState) {
     NSDebugLLog(@"SoundKit", @"[NXTSound] connecting to sound server");
     [server connect];

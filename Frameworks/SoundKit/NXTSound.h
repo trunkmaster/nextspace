@@ -23,12 +23,12 @@
 #import <SoundKit/SNDServer.h>
 #import <SoundKit/SNDPlayStream.h>
 
-typedef enum {
+typedef NS_ENUM (NSUInteger, NXTSoundState) {
   NXTSoundInitial  = 0,
   NXTSoundPlay     = 1,
   NXTSoundPause    = 2,
   NXTSoundFinished = 3
-} NXTSoundState;
+};
 
 @interface NXTSound : NSSound
 {

@@ -21,6 +21,17 @@
 
 #import "PASink.h"
 
+@interface PASink ()
+@property (assign) NSString   *activePort;
+@property (assign) NSUInteger channelCount;
+@property (assign) NSUInteger volumeSteps;
+@property (assign) NSUInteger baseVolume;
+@property (assign) CGFloat    balance;
+@property (assign) NSArray    *channelVolumes;
+
+@property (assign,nonatomic) BOOL mute;
+@end
+
 @implementation PASink
 
 - (void)dealloc

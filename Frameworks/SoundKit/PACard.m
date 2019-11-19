@@ -21,6 +21,10 @@
 
 #import "PACard.h"
 
+@interface PACard ()
+@property (assign) NSString *activeProfile;
+@end
+
 @implementation PACard
 
 - (void)dealloc

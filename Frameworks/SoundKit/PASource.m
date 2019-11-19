@@ -21,6 +21,16 @@
 
 #import "PASource.h"
 
+@interface PASource ()
+@property (assign) NSString   *activePort;
+@property (assign) NSUInteger channelCount;
+@property (assign) NSUInteger volumeSteps;
+@property (assign) NSUInteger baseVolume;
+@property (assign) CGFloat    balance;
+@property (assign) NSArray    *channelVolumes;
+@property (assign) BOOL       mute;
+@end
+
 @implementation PASource
 
 - (void)dealloc

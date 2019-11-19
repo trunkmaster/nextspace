@@ -27,7 +27,7 @@
 @class PAStream;
 @class PAClient;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, SNDStreamType) {
   SNDApplicationType = 0,
   SNDEventType,
   SNDMusicType,
@@ -38,7 +38,7 @@ typedef enum {
   SNDProductionType,
   SNDAccessibilityType,
   SNDTestType
-} SNDStreamType;
+};
 
 @interface SNDStream : NSObject
 {

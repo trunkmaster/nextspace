@@ -43,14 +43,13 @@
 @property (readonly) NSArray    *formats;
 
 // KVO-compliant
-@property (assign) NSString   *activePort;
-@property (assign) NSUInteger channelCount;
-@property (assign) NSUInteger volumeSteps;
-@property (assign) NSUInteger baseVolume;
-@property (assign) CGFloat    balance;
-@property (assign) NSArray    *channelVolumes;
-
-@property (assign,nonatomic) BOOL mute;
+@property (readonly) NSString   *activePort;
+@property (readonly) NSUInteger channelCount;
+@property (readonly) NSUInteger volumeSteps;
+@property (readonly) NSUInteger baseVolume;
+@property (readonly) CGFloat    balance;
+@property (readonly) NSArray    *channelVolumes;
+@property (readonly) BOOL       mute;
 
 - (id)updateWithValue:(NSValue *)value;
 
