@@ -778,6 +778,7 @@ static NXTDefaults *defaults = nil;
   if (sender != modelBrowser) {
     return;
   }
+  
   filePath = [bundle pathForResource:@"Model" ofType:@"plist"];
   fileContents = [[NSDictionary alloc] initWithContentsOfFile:filePath];
 
@@ -798,6 +799,46 @@ static NXTDefaults *defaults = nil;
     [cell setTitle:entry];
     [cell setRefusesFirstResponder:YES];
   }
+  [fileContents release];
+}
+
+- (void)modelBrowserClicked:(id)sender
+{
+  NSString      *filePath;
+  NSDictionary  *fileContents;
+  NSDictionary  *vendor, *model;
+  NSString      *modelKey;
+  NSArray       *pathArray;
+  
+  if (sender != modelBrowser) {
+    return;
+  }
+  
+  filePath = [bundle pathForResource:@"Model" ofType:@"plist"];
+  fileContents = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+  
+  pathArray = [[sender path] pathComponents];
+  vendor = fileContents[pathArray[1]];
+  model = vendor[pathArray[2]];
+  modelKey = [model allKeys][0];
+  NSLog(@"Model Browser clicked! %@ - %@ - %@ (%@)",
+        pathArray[1], pathArray[2], modelKey, model[modelKey]);
+
+  // Display description
+  [modelDescription];
+
+  // Save setting to NXGlobalDomain
+  
+  [fileContents release];
+}
+
+- (BOOL)browser:(NSBrowser *)sender
+      selectRow:(NSInteger)row
+       inColumn:(NSInteger)column
+{
+  NSLog(@"Selected item: %@",
+        [[[sender matrixInColumn:column] selectedCell] title]);
+  return YES;
 }
 
 @end

@@ -8,6 +8,7 @@
 	    "deleteKeyMtrxClicked:",
 	    "layoutMove:",
 	    "layoutRemove:",
+	    "modelBrowserClicked:",
 	    "numLockMtrxClicked:",
 	    "numpadMtrxClicked:",
 	    "repeatAction:",
@@ -32,7 +33,8 @@
 	    "composeBtnClicked:",
 	    "capsLockMtrxClicked:",
 	    "swapCAMtrxClicked:",
-	    "numLockMtrxClicked:"
+	    "numLockMtrxClicked:",
+	    "modelBrowserClicked:"
 	);
 	Outlets = (
 	    window,
