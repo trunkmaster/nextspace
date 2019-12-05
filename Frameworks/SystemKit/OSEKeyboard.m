@@ -122,76 +122,53 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   baseLst = [NSString stringWithContentsOfFile:XKB_BASE_LST];
   scanner = [NSScanner scannerWithString:baseLst];
 
-  while ([scanner scanUpToString:@"\n" intoString:&lineString] == YES)
-    {
-      // New section start encountered
-      if ([lineString characterAtIndex:0] == '!')
-        {
-          if ([[modeDict allKeys] count] > 0)
-            {
-              [dict setObject:[modeDict copy] forKey:sectionName];
-              // fileName = [NSString
-              //              stringWithFormat:@"/Users/me/Library/XKB_%@.list",
-              //             sectionName];
-              // [modeDict writeToFile:fileName atomically:YES];
-              [modeDict removeAllObjects];
-              [modeDict release];
-              modeDict = [[NSMutableDictionary alloc] init];
-            }
+  while ([scanner scanUpToString:@"\n" intoString:&lineString] == YES) {
+    // New section start encountered
+    if ([lineString characterAtIndex:0] == '!') {
+      if ([[modeDict allKeys] count] > 0) {
+        [dict setObject:[modeDict copy] forKey:sectionName];
+        [modeDict removeAllObjects];
+        [modeDict release];
+        modeDict = [[NSMutableDictionary alloc] init];
+      }
           
-          sectionName = [lineString substringFromIndex:2];
-          
-          // NSLog(@"Keyboard: found section: %@", sectionName);
-        }
-      else
-        { // Parse line and add into 'modeDict' dictionary
-          NSMutableArray	*lineComponents;
-          NSString		*key;
-          NSMutableString	*value = [[NSMutableString alloc] init];
-          BOOL			add = NO;
-          
-          lineComponents = [[lineString componentsSeparatedByString:@" "]
-                             mutableCopy];
-          key = [lineComponents objectAtIndex:0];
-
-          for (NSUInteger i = 1; i < [lineComponents count]; i++)
-            {
-              if (add == NO &&
-                  ![[lineComponents objectAtIndex:i] isEqualToString:@""])
-                {
-                  add = YES;
-                  [value appendFormat:@"%@", [lineComponents objectAtIndex:i]];
-                }
-              else if (add == YES)
-                [value appendFormat:@" %@", [lineComponents objectAtIndex:i]];
-            }
-
-          // homophonic = {
-          //   Layout = ua;
-          //   Description = "Ukrainian (homophonic)";
-          // }
-          if ([sectionName isEqualToString:@"variant"])
-            {
-              [modeDict setObject:[self _parseVariantString:value] forKey:key];
-            }
-          else
-            {
-              [modeDict setObject:value forKey:key];
-              [value release];
-            }
-          
-          [lineComponents release];
-        }
+      sectionName = [lineString substringFromIndex:2];
     }
+    else { // Parse line and add into 'modeDict' dictionary
+      NSMutableArray	*lineComponents;
+      NSString		*key;
+      NSMutableString	*value = [[NSMutableString alloc] init];
+      BOOL			add = NO;
+          
+      lineComponents = [[lineString componentsSeparatedByString:@" "]
+                         mutableCopy];
+      key = [lineComponents objectAtIndex:0];
+
+      for (NSUInteger i = 1; i < [lineComponents count]; i++) {
+        if (add == NO &&
+            ![[lineComponents objectAtIndex:i] isEqualToString:@""]) {
+          add = YES;
+          [value appendFormat:@"%@", [lineComponents objectAtIndex:i]];
+        }
+        else if (add == YES) {
+          [value appendFormat:@" %@", [lineComponents objectAtIndex:i]];
+        }
+      }
+
+      if ([sectionName isEqualToString:@"variant"]) {
+        [modeDict setObject:[self _parseVariantString:value] forKey:key];
+      }
+      else {
+        [modeDict setObject:value forKey:key];
+        [value release];
+      }
+      [lineComponents release];
+    }
+  }
   
   [dict setObject:[modeDict copy] forKey:sectionName];
-  // fileName = [NSString stringWithFormat:@"/Users/me/Library/XKB_%@.list",
-  //                      sectionName];
-  // [modeDict writeToFile:fileName atomically:YES];
   [modeDict removeAllObjects];
   [modeDict release];
-
-  // [dict writeToFile:@"/Users/me/Library/Keyboards.list" atomically:YES];
   
   return [dict autorelease];
 }
@@ -208,19 +185,18 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 
 - (NSDictionary *)modelList
 {
-  if (!modelDict)
-    {
-      modelDict = [[NSDictionary alloc]
+  if (!modelDict) {
+    modelDict = [[NSDictionary alloc]
                     initWithDictionary:[[self _xkbBaseListDictionary]
                                          objectForKey:@"model"]];
-    }
+  }
 
   return modelDict;
 }
 
 - (NSString *)model
 {
-  return [serverConfig objectForKey:OSEKeyboardModel];
+  return [[self _serverConfig] objectForKey:OSEKeyboardModel];
 }
 
 // TODO
@@ -236,27 +212,29 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   char		*modifier_atom;
   
   xkb = XkbGetKeyboard(dpy, XkbAllComponentsMask, XkbUseCoreKbd);
-  if (!xkb || !xkb->names)
+  if (!xkb || !xkb->names) {
     return;
+  }
     
-  for (int i = 0; i < XkbNumVirtualMods; i++)
-    {
-      modifier_atom = XGetAtomName(xkb->dpy, xkb->names->vmods[i]);
-      if (modifier_atom != NULL && strcmp("NumLock", modifier_atom) == 0)
-        {
-          XkbVirtualModsToReal(xkb, 1 << i, &mask);
-          break;
-        }
+  for (int i = 0; i < XkbNumVirtualMods; i++) {
+    modifier_atom = XGetAtomName(xkb->dpy, xkb->names->vmods[i]);
+    if (modifier_atom != NULL && strcmp("NumLock", modifier_atom) == 0) {
+      XkbVirtualModsToReal(xkb, 1 << i, &mask);
+      break;
     }
+  }
   XkbFreeKeyboard(xkb, 0, True);
   
-  if(mask == 0)
+  if(mask == 0) {
     return;
+  }
 
-  if (state > 0)
+  if (state > 0) {
     XkbLockModifiers(dpy, XkbUseCoreKbd, mask, mask);
-  else
+  }
+  else {
     XkbLockModifiers(dpy, XkbUseCoreKbd, mask, 0);
+  }
   
   XCloseDisplay(dpy);
 }
@@ -267,24 +245,22 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 
 - (NSDictionary *)availableLayouts
 {
-  if (!layoutDict)
-    {
-      layoutDict = [[NSDictionary alloc]
+  if (!layoutDict) {
+    layoutDict = [[NSDictionary alloc]
                      initWithDictionary:[[self _xkbBaseListDictionary]
                                           objectForKey:@"layout"]];
-    }
+  }
 
   return layoutDict;
 }
 
 - (NSString *)nameForLayout:(NSString *)layoutCode
 {
-  if (!layoutDict)
-    {
-      layoutDict = [[NSDictionary alloc]
+  if (!layoutDict) {
+    layoutDict = [[NSDictionary alloc]
                      initWithDictionary:[[self _xkbBaseListDictionary]
                                           objectForKey:@"layout"]];
-    }
+  }
 
   return [layoutDict objectForKey:layoutCode];
 }
@@ -294,17 +270,17 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   NSDictionary	*variant;
   NSString	*title;
   
-  if (!variantDict)
-    {
-      variantDict = [[NSDictionary alloc]
+  if (!variantDict) {
+    variantDict = [[NSDictionary alloc]
                       initWithDictionary:[[self _xkbBaseListDictionary]
                                            objectForKey:@"variant"]];
-    }
+  }
 
   variant = [variantDict objectForKey:variantCode];
   title = [variant objectForKey:@"Description"];
-  if (!title)
+  if (!title) {
     title = [variant objectForKey:@"Language"];
+  }
 
   return title;
 }
@@ -316,23 +292,20 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   NSMutableDictionary	*layoutVariants;
   NSDictionary		*variant;
     
-  if (!variantDict)
-    {
-      variantDict = [[NSDictionary alloc]
+  if (!variantDict) {
+    variantDict = [[NSDictionary alloc]
                       initWithDictionary:[[self _xkbBaseListDictionary]
                                            objectForKey:@"variant"]];
-    }
+  }
 
   layoutVariants = [[NSMutableDictionary alloc] init];
-  for (NSString *key in [variantDict allKeys])
-    {
-      variant = [variantDict objectForKey:key];
-      if ([[variant objectForKey:field] isEqualToString:value])
-        {
-          [layoutVariants setObject:[self nameForVariant:key]
-                             forKey:key];
-        }
+  for (NSString *key in [variantDict allKeys]) {
+    variant = [variantDict objectForKey:key];
+    if ([[variant objectForKey:field] isEqualToString:value]) {
+      [layoutVariants setObject:[self nameForVariant:key]
+                         forKey:key];
     }
+  }
 
   return [layoutVariants autorelease];
 }
@@ -375,10 +348,11 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   XkbRF_VarDefsRec	vd;
   NSMutableDictionary	*config;
 
-  if ((dpy = [self _getXkbVariables:&vd file:&file]) == NULL)
+  dpy = [self _getXkbVariables:&vd file:&file];
+  if (dpy == NULL) {
     return nil;
-  else
-    XCloseDisplay(dpy);
+  }
+  XCloseDisplay(dpy);
   
   // NSLog(@"OSEKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Options: '%s' Rules file: %s",
   //       vd.model, vd.layout, vd.variant, vd.options, file);
@@ -407,23 +381,20 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   XkbDescPtr		xkb;
 
   rules = XkbRF_Load("/usr/share/X11/xkb/rules/evdev", "C", True, True);
-  if (rules != NULL)
-    {
-      XkbRF_GetComponents(rules, &xkb_vars, &rnames);
-      xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,
-                                 XkbGBN_AllComponentsMask,
-                                 XkbGBN_AllComponentsMask &
-                                 (~XkbGBN_GeometryMask), True);
-      if (!xkb)
-        {
-          NSLog(@"[OSEKeyboard] Fialed to load new keyboard description.");
-          return NO;
-        }
+  if (rules != NULL) {
+    XkbRF_GetComponents(rules, &xkb_vars, &rnames);
+    xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,
+                               XkbGBN_AllComponentsMask,
+                               XkbGBN_AllComponentsMask &
+                               (~XkbGBN_GeometryMask), True);
+    if (!xkb) {
+      NSLog(@"[OSEKeyboard] Fialed to load new keyboard description.");
+      return NO;
     }
-  else
-    {
-      NSLog(@"[OSEKeyboard] Failed to load XKB rules!");
-    }
+  }
+  else {
+    NSLog(@"[OSEKeyboard] Failed to load XKB rules!");
+  }
 
   XkbRF_SetNamesProp(dpy, file, &xkb_vars);
   XSync(dpy, False);
@@ -448,8 +419,9 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   NSString *v = [[self _serverConfig] objectForKey:OSEKeyboardVariants];
   NSArray  *va = [v componentsSeparatedByString:@","];
 
-  while ([l count] > [va count])
+  while ([l count] > [va count]) {
     va = [va arrayByAddingObject:@""];
+  }
 
   return va;
 }
@@ -462,9 +434,11 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 
   optArray = [[optString componentsSeparatedByString:@","] mutableCopy];
 
-  for (unsigned int i = 0; i < [optArray count]; i++)
-    if ([[optArray objectAtIndex:i] isEqualToString:@""])
+  for (unsigned int i = 0; i < [optArray count]; i++) {
+    if ([[optArray objectAtIndex:i] isEqualToString:@""]) {
       [optArray removeObjectAtIndex:i];
+    }
+  }
 
   options = [NSArray arrayWithArray:optArray];
   [optArray release];
@@ -477,21 +451,18 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   NSMutableArray *layouts = [[self layouts] mutableCopy];
   NSMutableArray *variants = [[self variants] mutableCopy];
 
-  if (vCode)
-    {
-      NSInteger lc = [layouts count];
-      NSInteger vc = [variants count];
+  if (vCode) {
+    NSInteger lc = [layouts count];
+    NSInteger vc = [variants count];
           
-      for (int i = 0; i < (lc - vc); i++)
-        [variants addObject:@""];
-      
-      [variants addObject:vCode];
-    }
-  else
-    {
+    for (int i = 0; i < (lc - vc); i++){
       [variants addObject:@""];
     }
-  
+    [variants addObject:vCode];
+  }
+  else {
+    [variants addObject:@""];
+  }
   [layouts addObject:lCode];
 
   // NSLog(@"[OSEKeyboard] addLayout new config: layouts: %@ variants: %@",
@@ -509,16 +480,17 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   NSUInteger	 lIndex;
 
   lIndex = [layouts indexOfObject:lCode];
-  for (lIndex = 0; lIndex < [layouts count]; lIndex++)
-    {
-      if ([[layouts objectAtIndex:lIndex] isEqualToString:lCode] &&
-          (!vCode || [vCode isEqualToString:@""] ||
-           [[variants objectAtIndex:lIndex] isEqualToString:vCode]))
-        break;
+  for (lIndex = 0; lIndex < [layouts count]; lIndex++) {
+    if ([[layouts objectAtIndex:lIndex] isEqualToString:lCode] &&
+        (!vCode || [vCode isEqualToString:@""] ||
+         [[variants objectAtIndex:lIndex] isEqualToString:vCode])) {
+      break;
     }
+  }
   [layouts removeObjectAtIndex:lIndex];
-  if (lIndex < [variants count])
+  if (lIndex < [variants count]) {
     [variants removeObjectAtIndex:lIndex];
+  }
   
   [self setLayouts:layouts variants:variants options:nil];
   [layouts release];
@@ -538,32 +510,28 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
     return NO;
 
-  if (layouts)
-    {
-      xkb_vars.layout =
-        strdup([[layouts componentsJoinedByString:@","] cString]);
-    }
-  if (variants)
-    {
-      xkb_vars.variant =
-        strdup([[variants componentsJoinedByString:@","] cString]);
-    }
-  if (options)
-    {
-      xkb_vars.options =
-        strdup([[options componentsJoinedByString:@","] cString]);
-    }
+  if (layouts) {
+    xkb_vars.layout =
+      strdup([[layouts componentsJoinedByString:@","] cString]);
+  }
+  if (variants) {
+    xkb_vars.variant =
+      strdup([[variants componentsJoinedByString:@","] cString]);
+  }
+  if (options) {
+    xkb_vars.options =
+      strdup([[options componentsJoinedByString:@","] cString]);
+  }
 
   success = [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
 
   XCloseDisplay(dpy);
 
   // Update cached configuration
-  if (success == YES)
-    {
-      if (serverConfig) [serverConfig release];
-      serverConfig = [[self _serverConfig] retain];
-    }
+  if (success == YES) {
+    if (serverConfig) [serverConfig release];
+    serverConfig = [[self _serverConfig] retain];
+  }
   
   return success;
 }
@@ -577,22 +545,22 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   XkbDescPtr xkb = XkbAllocKeyboard();
   Display    *dpy = XOpenDisplay(NULL);
 
-  if (!dpy)
-    {
-      NSLog(@"Can't open Display! This program must be run in X Window.");
-      return;
-    }
-  if (!xkb)
-    {
-      NSLog(@"No X11 XKB extension found!");
-      return;
-    }
+  if (!dpy) {
+    NSLog(@"Can't open Display! This program must be run in X Window.");
+    return;
+  }
+  if (!xkb) {
+    NSLog(@"No X11 XKB extension found!");
+    return;
+  }
   
   XkbGetControls(dpy, XkbRepeatKeysMask, xkb);
-  if (repeat)
+  if (repeat) {
     xkb->ctrls->repeat_delay = (int)repeat;
-  if (rate)
+  }
+  if (rate) {
     xkb->ctrls->repeat_interval = (int)rate;
+  }
   XkbSetControls(dpy, XkbRepeatKeysMask, xkb);
   
   XCloseDisplay(dpy);
@@ -602,17 +570,14 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   XkbDescPtr xkb = XkbAllocKeyboard();
   Display    *dpy = XOpenDisplay(NULL);
 
-  if (!dpy)
-    {
-      NSLog(@"Can't open Display! This program must be run in X Window.");
-      return NULL;
-    }
-  if (!xkb)
-    {
-      NSLog(@"No X11 XKB extension found!");
-      return NULL;
-    }
-  
+  if (!dpy) {
+    NSLog(@"Can't open Display! This program must be run in X Window.");
+    return NULL;
+  }
+  if (!xkb) {
+    NSLog(@"No X11 XKB extension found!");
+    return NULL;
+  }
   XkbGetControls(dpy, XkbRepeatKeysMask, xkb);
   XCloseDisplay(dpy);
 
