@@ -202,6 +202,7 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 // TODO
 - (void)setModel:(NSString *)name
 {
+  NSLog(@"[OSEKeyboard] -setModel: method is not implemented yet. Model name is: %@", name);
 }
 
 - (void)setNumLockState:(NSInteger)state
