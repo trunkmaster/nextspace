@@ -83,6 +83,7 @@ static NXTDefaults *defaults = nil;
   // Model
   [modelBox retain];
   [modelBox removeFromSuperview];
+  [modelDescription setStringValue:@""];
 
   // Key Repeat
   [repeatBox retain];
@@ -181,6 +182,7 @@ static NXTDefaults *defaults = nil;
     {
     case 0: // Model
       [sectionBox setContentView:modelBox];
+      [self initModel];
       break;
     case 1: // Key Repeat
       [sectionBox setContentView:repeatBox];
@@ -749,11 +751,59 @@ static NXTDefaults *defaults = nil;
 
 @implementation Keyboard (Model)
 
+- (NSDictionary *)_modelsList
+{
+  NSString     *filePath = nil;
+  NSDictionary *fileContents = nil;
+
+  filePath = [bundle pathForResource:@"Model" ofType:@"plist"];
+  if (filePath) {
+    fileContents = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+  }
+  else {
+    NSLog(@"Keyboard ERROR: Model.plist file resource was not found!");
+  }
+
+  return [fileContents autorelease];
+}
+
 - (void)initModel
 {
+  NSDictionary *modelsList = nil;
+  NSString     *theModel = nil;
+  NSString     *theVendor = nil;
+  NSString     *currentModel = nil;
+  NSString     *modelType = nil;
+  
   if ([[[modelBrowser matrixInColumn:0] cells] count] == 0) {
     [modelBrowser loadColumnZero];
   }
+  
+  modelsList = [self _modelsList];
+  if (modelsList == nil) {
+    return;
+  }
+
+  currentModel = [keyboard model];
+  NSLog(@"Current keyboard model is: %@", currentModel);
+
+  for (NSString *vendor in modelsList) {
+    for (NSString *model in modelsList[vendor]) {
+      modelType = [modelsList[vendor][model] allKeys][0];
+      if ([modelType isEqualToString:currentModel]) {
+        theModel = [NSString stringWithString:model];
+        [modelDescription setStringValue:modelsList[vendor][model][modelType]];
+        break;
+      }
+    }
+    if (theModel) {
+      theVendor = [NSString stringWithString:vendor];
+      break;
+    }
+  }
+  NSLog(@"Model browser: vendor: %@ model:%@", theVendor, theModel);
+  
+  [modelBrowser setPath:[NSString stringWithFormat:@"/%@/%@", theVendor, theModel]];
 }
 
 - (NSString *)browser:(NSBrowser *)sender
@@ -770,25 +820,22 @@ static NXTDefaults *defaults = nil;
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
-  NSString      *filePath;
-  NSDictionary  *fileContents;
-  NSArray       *items;
-  NSBrowserCell *cell;
+  NSDictionary  *modelsList = nil;
+  NSArray       *items = nil;
+  NSBrowserCell *cell = nil;
   
   if (sender != modelBrowser) {
     return;
   }
   
-  filePath = [bundle pathForResource:@"Model" ofType:@"plist"];
-  fileContents = [[NSDictionary alloc] initWithContentsOfFile:filePath];
-
+  modelsList = [self _modelsList];
+  
   if (column == 0) {
-    items = [[fileContents allKeys]
-              sortedArrayUsingSelector:@selector(compare:)];
+    items = [[modelsList allKeys] sortedArrayUsingSelector:@selector(compare:)];
   }
   else {
     NSString     *vendor = [[sender path] lastPathComponent];
-    NSDictionary *models = [fileContents objectForKey:vendor];
+    NSDictionary *models = [modelsList objectForKey:vendor];
     items = [[models allKeys] sortedArrayUsingSelector:@selector(compare:)];
   }
 
@@ -799,37 +846,36 @@ static NXTDefaults *defaults = nil;
     [cell setTitle:entry];
     [cell setRefusesFirstResponder:YES];
   }
-  [fileContents release];
 }
 
 - (void)modelBrowserClicked:(id)sender
 {
-  NSString      *filePath;
-  NSDictionary  *fileContents;
-  NSDictionary  *vendor, *model;
-  NSString      *modelKey;
-  NSArray       *pathArray;
+  NSDictionary  *modelsList = nil;
+  NSDictionary  *vendor = nil, *model = nil;
+  NSString      *modelKey = nil;
+  NSArray       *pathArray = nil;
   
   if (sender != modelBrowser) {
     return;
   }
   
-  filePath = [bundle pathForResource:@"Model" ofType:@"plist"];
-  fileContents = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+  modelsList = [self _modelsList];
   
   pathArray = [[sender path] pathComponents];
-  vendor = fileContents[pathArray[1]];
+  vendor = modelsList[pathArray[1]];
   model = vendor[pathArray[2]];
   modelKey = [model allKeys][0];
-  NSLog(@"Model Browser clicked! %@ - %@ - %@ (%@)",
-        pathArray[1], pathArray[2], modelKey, model[modelKey]);
-
-  // Display description
-  [modelDescription];
-
-  // Save setting to NXGlobalDomain
-  
-  [fileContents release];
+  // NSLog(@"Model Browser clicked! %@ - %@ - %@ (%@)",
+  //       pathArray[1], pathArray[2], modelKey, model[modelKey]);
+  if (modelKey) {
+    // Display description
+    [modelDescription setStringValue:model[modelKey]];
+    // Save setting to NXGlobalDomain
+    [keyboard setModel:modelKey];
+  }
+  else {
+    [modelDescription setStringValue:@""];
+  }
 }
 
 - (BOOL)browser:(NSBrowser *)sender
