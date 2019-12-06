@@ -872,6 +872,8 @@ static NXTDefaults *defaults = nil;
     [modelDescription setStringValue:model[modelKey]];
     // Save setting to NXGlobalDomain
     [keyboard setModel:modelKey];
+    [[NXTDefaults globalUserDefaults] setObject:modelKey
+                                         forKey:OSEKeyboardModel];
   }
   else {
     [modelDescription setStringValue:@""];
