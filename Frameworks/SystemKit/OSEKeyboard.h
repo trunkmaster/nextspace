@@ -36,15 +36,13 @@
   NSDictionary *modelDict;
   NSDictionary *variantDict;
   NSDictionary *optionDict;
-
-  NSDictionary *serverConfig;
 }
 
 + (void)configureWithDefaults:(NXTDefaults *)defs;
 
 - (NSDictionary *)modelList;
 - (NSString *)model;
-- (void)setModel:(NSString *)name;
+- (BOOL)setModel:(NSString *)name;
 
 - (void)setNumLockState:(NSInteger)state;
 

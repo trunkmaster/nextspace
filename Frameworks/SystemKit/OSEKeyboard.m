@@ -106,9 +106,7 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   return dictionary;
 }
 
-//
 // Reading XKB_BASE_LST. Default is '/usr/share/X11/xkb/rules/base.lst'.
-//
 - (NSDictionary *)_xkbBaseListDictionary
 {
   NSMutableDictionary	*dict = [[NSMutableDictionary alloc] init];
@@ -173,6 +171,85 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   return [dict autorelease];
 }
 
+// Return 'Display' must be closed by caller
+- (Display *)_getXkbVariables:(XkbRF_VarDefsRec *)var_defs
+                         file:(char **)rules_file
+{
+  Display *dpy;
+
+  dpy = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
+  if (!XkbRF_GetNamesProp(dpy, rules_file, var_defs) || !rules_file)
+    {
+      NSLog(@"OSEKeyboard: error reading XKB properties!");
+      XCloseDisplay(dpy);
+      return NULL;
+    }
+
+  return dpy;
+}
+
+- (BOOL)_applyServerConfig:(XkbRF_VarDefsRec *)xkb_vars
+                      file:(char *)file
+                forDisplay:(Display *)dpy
+{
+  XkbComponentNamesRec	rnames;
+  XkbRF_RulesPtr 	rules;
+  XkbDescPtr		xkb;
+
+  rules = XkbRF_Load("/usr/share/X11/xkb/rules/evdev", "C", True, True);
+  if (rules != NULL) {
+    XkbRF_GetComponents(rules, xkb_vars, &rnames);
+    xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,
+                               XkbGBN_AllComponentsMask,
+                               XkbGBN_AllComponentsMask &
+                               (~XkbGBN_GeometryMask), True);
+    if (!xkb) {
+      NSLog(@"[OSEKeyboard] Fialed to load new keyboard description.");
+      return NO;
+    }
+  }
+  else {
+    NSLog(@"[OSEKeyboard] Failed to load XKB rules!");
+  }
+
+  XkbRF_SetNamesProp(dpy, file, xkb_vars);
+  XSync(dpy, False);
+
+  return YES;
+}
+
+// Returned value is converted to dictionary XkbRF_VarDefsRec structure.
+- (NSDictionary *)_serverConfig
+{
+  Display 		*dpy;
+  char			*file = NULL;
+  XkbRF_VarDefsRec	vd;
+  NSMutableDictionary	*config;
+
+  dpy = [self _getXkbVariables:&vd file:&file];
+  if (dpy == NULL) {
+    return nil;
+  }
+  XCloseDisplay(dpy);
+  
+  // NSLog(@"OSEKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Options: '%s' Rules file: %s",
+  //       vd.model, vd.layout, vd.variant, vd.options, file);
+
+  config = [NSMutableDictionary dictionary];
+  [config setObject:[NSString stringWithCString:(vd.layout != NULL) ? vd.layout : ""]
+             forKey:OSEKeyboardLayouts];
+  [config setObject:[NSString stringWithCString:(vd.variant != NULL) ? vd.variant : ""]
+             forKey:OSEKeyboardVariants];
+  [config setObject:[NSString stringWithCString:(vd.options != NULL) ? vd.options : ""]
+             forKey:OSEKeyboardOptions];
+  [config setObject:[NSString stringWithCString:(vd.model != NULL) ? vd.model : ""]
+             forKey:OSEKeyboardModel];
+  
+  // [config writeToFile:@"/Users/me/Library/OSEKeyboard" atomically:YES];
+  
+  return config;
+}
+
 - (void)dealloc
 {
   if (layoutDict)  [layoutDict release];
@@ -183,6 +260,9 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   [super dealloc];
 }
 
+//------------------------------------------------------------------------------
+// Model
+//------------------------------------------------------------------------------
 - (NSDictionary *)modelList
 {
   if (!modelDict) {
@@ -200,9 +280,24 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 }
 
 // TODO
-- (void)setModel:(NSString *)name
+- (BOOL)setModel:(NSString *)name
 {
-  NSLog(@"[OSEKeyboard] -setModel: method is not implemented yet. Model name is: %@", name);
+  Display          *dpy;
+  char             *file = NULL;
+  XkbRF_VarDefsRec xkb_vars;
+  BOOL             success = NO;
+
+  dpy = [self _getXkbVariables:&xkb_vars file:&file];
+  if (dpy == NULL) {
+    return NO;
+  }
+  if (name) {
+    xkb_vars.model = strdup([name cString]);
+  }
+  success = [self _applyServerConfig:&xkb_vars file:file forDisplay:dpy];
+  XCloseDisplay(dpy);
+
+  return success;
 }
 
 - (void)setNumLockState:(NSInteger)state
@@ -321,88 +416,6 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   return [self _variantListForKey:@"Language" value:language];
 }
 
-//
-// Retrieving and changing XKB configuration
-// 
-
-// Return 'Display' must be closed by caller
-- (Display *)_getXkbVariables:(XkbRF_VarDefsRec *)var_defs
-                         file:(char **)rules_file
-{
-  Display *dpy;
-
-  dpy = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
-  if (!XkbRF_GetNamesProp(dpy, rules_file, var_defs) || !rules_file)
-    {
-      NSLog(@"OSEKeyboard: error reading XKB properties!");
-      XCloseDisplay(dpy);
-      return NULL;
-    }
-
-  return dpy;
-}
-
-- (NSDictionary *)_serverConfig
-{
-  Display 		*dpy;
-  char			*file = NULL;
-  XkbRF_VarDefsRec	vd;
-  NSMutableDictionary	*config;
-
-  dpy = [self _getXkbVariables:&vd file:&file];
-  if (dpy == NULL) {
-    return nil;
-  }
-  XCloseDisplay(dpy);
-  
-  // NSLog(@"OSEKeyboard Model: '%s'; Layouts: '%s'; Variants: '%s' Options: '%s' Rules file: %s",
-  //       vd.model, vd.layout, vd.variant, vd.options, file);
-
-  config = [NSMutableDictionary dictionary];
-  [config setObject:[NSString stringWithCString:(vd.layout != NULL) ? vd.layout : ""]
-             forKey:OSEKeyboardLayouts];
-  [config setObject:[NSString stringWithCString:(vd.variant != NULL) ? vd.variant : ""]
-             forKey:OSEKeyboardVariants];
-  [config setObject:[NSString stringWithCString:(vd.options != NULL) ? vd.options : ""]
-             forKey:OSEKeyboardOptions];
-  [config setObject:[NSString stringWithCString:(vd.model != NULL) ? vd.model : ""]
-             forKey:OSEKeyboardModel];
-  
-  // [config writeToFile:@"/Users/me/Library/OSEKeyboard" atomically:YES];
-  
-  return config;
-}
-
-- (BOOL)_applyServerConfig:(XkbRF_VarDefsRec)xkb_vars
-                      file:(char *)file
-                forDisplay:(Display *)dpy
-{
-  XkbComponentNamesRec	rnames;
-  XkbRF_RulesPtr 	rules;
-  XkbDescPtr		xkb;
-
-  rules = XkbRF_Load("/usr/share/X11/xkb/rules/evdev", "C", True, True);
-  if (rules != NULL) {
-    XkbRF_GetComponents(rules, &xkb_vars, &rnames);
-    xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,
-                               XkbGBN_AllComponentsMask,
-                               XkbGBN_AllComponentsMask &
-                               (~XkbGBN_GeometryMask), True);
-    if (!xkb) {
-      NSLog(@"[OSEKeyboard] Fialed to load new keyboard description.");
-      return NO;
-    }
-  }
-  else {
-    NSLog(@"[OSEKeyboard] Failed to load XKB rules!");
-  }
-
-  XkbRF_SetNamesProp(dpy, file, &xkb_vars);
-  XSync(dpy, False);
-
-  return YES;
-}
-
 - (NSArray *)layouts
 {
   NSString *l = [[self _serverConfig] objectForKey:OSEKeyboardLayouts];
@@ -498,41 +511,32 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   [variants release];
 }
 
-// This will be used for keyboard initialization (Preferrences startup).
 - (BOOL)setLayouts:(NSArray *)layouts
           variants:(NSArray *)variants
            options:(NSArray *)options
 {
-  Display		*dpy;
-  char			*file = NULL;
-  XkbRF_VarDefsRec	xkb_vars;
-  BOOL			success = NO;
+  Display          *dpy;
+  char             *file = NULL;
+  XkbRF_VarDefsRec xkb_vars;
+  BOOL             success = NO;
 
-  if ((dpy = [self _getXkbVariables:&xkb_vars file:&file]) == NULL)
+  dpy = [self _getXkbVariables:&xkb_vars file:&file];
+  if (dpy == NULL) {
     return NO;
+  }
 
   if (layouts) {
-    xkb_vars.layout =
-      strdup([[layouts componentsJoinedByString:@","] cString]);
+    xkb_vars.layout = strdup([[layouts componentsJoinedByString:@","] cString]);
   }
   if (variants) {
-    xkb_vars.variant =
-      strdup([[variants componentsJoinedByString:@","] cString]);
+    xkb_vars.variant = strdup([[variants componentsJoinedByString:@","] cString]);
   }
   if (options) {
-    xkb_vars.options =
-      strdup([[options componentsJoinedByString:@","] cString]);
+    xkb_vars.options = strdup([[options componentsJoinedByString:@","] cString]);
   }
-
-  success = [self _applyServerConfig:xkb_vars file:file forDisplay:dpy];
-
+  
+  success = [self _applyServerConfig:&xkb_vars file:NULL forDisplay:dpy];
   XCloseDisplay(dpy);
-
-  // Update cached configuration
-  if (success == YES) {
-    if (serverConfig) [serverConfig release];
-    serverConfig = [[self _serverConfig] retain];
-  }
   
   return success;
 }
