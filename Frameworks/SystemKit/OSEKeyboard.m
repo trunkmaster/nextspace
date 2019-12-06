@@ -41,6 +41,9 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 
   keyb = [OSEKeyboard new];
 
+  // Model
+  [keyb setModel:[defs objectForKey:OSEKeyboardModel]];
+
   // Key Repeat
   if ((initialRepeat = [defs integerForKey:OSEKeyboardInitialRepeat]) < 0)
     initialRepeat = 0;
