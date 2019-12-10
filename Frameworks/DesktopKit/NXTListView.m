@@ -41,8 +41,7 @@
   }
   NSRectFill(cellFrame);
   
-  [self _drawAttributedText:[self _drawAttributedString]
-                    inFrame:[self titleRectForBounds:cellFrame]];
+  [super drawInteriorWithFrame:cellFrame inView:controlView];
   
   if (_selected != NO) {
     [[NSColor darkGrayColor] set];
