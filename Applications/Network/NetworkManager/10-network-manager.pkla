@@ -1,0 +1,6 @@
+[Enable the users make changes]
+Identity=unix-user:*
+Action=org.freedesktop.NetworkManager.*
+ResultAny=no
+ResultInactive=yes
+ResultActive=yes

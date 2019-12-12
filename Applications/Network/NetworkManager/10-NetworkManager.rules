@@ -1,0 +1,24 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.NetworkManager.settings.modify.own") {
+        return "yes";
+    }
+
+/*    
+  <action id="org.freedesktop.NetworkManager.enable-disable-network">
+  <action id="org.freedesktop.NetworkManager.reload">
+  <action id="org.freedesktop.NetworkManager.sleep-wake">
+  <action id="org.freedesktop.NetworkManager.enable-disable-wifi">
+  <action id="org.freedesktop.NetworkManager.enable-disable-wwan">
+  <action id="org.freedesktop.NetworkManager.enable-disable-wimax">
+  <action id="org.freedesktop.NetworkManager.network-control">
+  <action id="org.freedesktop.NetworkManager.wifi.share.protected">
+  <action id="org.freedesktop.NetworkManager.wifi.share.open">
+  <action id="">
+  <action id="org.freedesktop.NetworkManager.settings.modify.system">
+  <action id="org.freedesktop.NetworkManager.settings.modify.hostname">
+  <action id="org.freedesktop.NetworkManager.settings.modify.global-dns">
+  <action id="org.freedesktop.NetworkManager.checkpoint-rollback">
+  <action id="org.freedesktop.NetworkManager.enable-disable-statistics">
+  <action id="org.freedesktop.NetworkManager.enable-disable-connectivity-check">
+*/
+}
