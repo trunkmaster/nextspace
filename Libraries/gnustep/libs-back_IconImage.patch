@@ -1,0 +1,44 @@
+--- libs-back-back-0_25_1.orig/Source/x11/XGServerWindow.m	2017-04-07 00:03:43.000000000 +0300
++++ libs-back-back-0_25_1/Source/x11/XGServerWindow.m	2019-03-29 16:08:00.451429501 +0200
+@@ -122,11 +122,6 @@
+       return nil;
+     }
+ 
+-/*
+-  We should rather convert the image to a bitmap representation here via 
+-  the following code, but this is currently not supported by the libart backend
+-
+-{
+   NSSize size = [image size];
+ 
+   [image lockFocus];
+@@ -134,9 +129,9 @@
+             NSMakeRect(0, 0, size.width, size.height)];
+   AUTORELEASE(rep);
+   [image unlockFocus];
+-} 
+-*/
+ 
++  return rep;
++/*
+   rep = (NSBitmapImageRep *)[image bestRepresentationForDevice: nil];
+   if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
+     {
+@@ -154,6 +149,7 @@
+                                     bytesPerRow: 0
+                                    bitsPerPixel: 0];
+     }
++*/
+ }
+ 
+ 
+@@ -2126,8 +2126,7 @@
+ 
+   // For window managers supporting EWMH, but not Window Maker, 
+   // where we use a different solution, set the window icon.
+-  if (((generic.wm & XGWM_EWMH) != 0)
+-    && ((generic.wm & XGWM_WINDOWMAKER) == 0))
++  if ((generic.wm & XGWM_EWMH) != 0)
+     {
+       [self _setNetWMIconFor: window->ident];
+     }
