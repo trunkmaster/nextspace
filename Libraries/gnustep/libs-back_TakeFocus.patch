@@ -1,43 +1,23 @@
---- libs-back-back-0_25_1.orig/Source/x11/XGServerEvent.m       2017-04-07 00:03:43.000000000 +0300
-+++ libs-back-back-0_25_1/Source/x11/XGServerEvent.m            2019-03-29 15:56:10.374568502 +0200
-@@ -1096,8 +1201,7 @@
- 
-       // keyboard focus entered a window
-       case FocusIn:
--        NSDebugLLog(@"NSEvent", @"%lu FocusIn\n",
--                    xEvent.xfocus.window);
-+        NSDebugLLog(@"Focus", @"[FocusIn] %lu", xEvent.xfocus.window);
-         if (cWin == 0 || xEvent.xfocus.window != cWin->ident)
-           {
-             generic.cachedWindow
-@@ -1105,10 +1209,12 @@
-           }
-         if (cWin == 0)
-           break;
--        NSDebugLLog(@"Focus", @"%lu got focus on %lu\n",
--                    xEvent.xfocus.window, cWin->number);
-+        
-+        NSDebugLLog(@"Focus", @"[FocusIn] %lu got focus on %lu (root: %lu)",
-+                    xEvent.xfocus.window, cWin->number, generic.appRootWindow);
+--- gnustep-back-0.28.0.orig/Source/x11/XGServerEvent.m	2019-12-16 12:02:02.126214723 +0200
++++ gnustep-back-0.28.0/Source/x11/XGServerEvent.m	2019-12-11 17:43:31.000000000 +0200
+@@ -1220,6 +1220,7 @@
+                     xEvent.xfocus.window, cWin->number);
          // Store this for debugging, may not be the real focus window
          generic.currentFocusWindow = cWin->number;
 +        generic.desiredFocusWindow = cWin->number;
          if (xEvent.xfocus.serial == generic.focusRequestNumber)
            {
              /*
-@@ -1132,18 +1238,26 @@
+@@ -1243,18 +1244,24 @@
             * it's not one of ours.
             * If it has gone to our root window - use the icon window.
             * If it has gone to a window - we see if it is one of ours.
 +           * If it has gone to our unmapped window - deactivate.
             */
            XGetInputFocus(xEvent.xfocus.display, &fw, &rev);
--          NSDebugLLog(@"NSEvent", @"%lu FocusOut\n",
--                      xEvent.xfocus.window);
+           NSDebugLLog(@"NSEvent", @"%lu FocusOut\n",
+                       xEvent.xfocus.window);
 -          if (fw != None && fw != PointerRoot)
-+          NSDebugLLog(@"Focus", @"[FocusOut] from %lu (parent:%lu) to %lu\n",
-+                      xEvent.xfocus.window, cWin ? cWin->parent : 0, fw);
-+
 +          if (cWin && (fw == cWin->parent) && (cWin->map_state != IsViewable))
 +            { // focus switched to WM decorations
 +              nswin = GSWindowWithNumber(cWin->number);
@@ -51,40 +31,11 @@
                    generic.cachedWindow = [XGServer _windowForXParent: fw];
                  }
 -              if (cWin == 0)
-+              
-+              if ((cWin == 0) || (cWin->map_state != IsViewable))
++              if (cWin == 0 || (cWin->map_state != IsViewable))
                  {
                    nswin = nil;
                  }
-@@ -1156,7 +1270,7 @@
-             {
-               nswin = nil;
-             }
--          NSDebugLLog(@"Focus", @"Focus went to %lu (xwin %lu)\n", 
-+          NSDebugLLog(@"Focus", @"[FocusOut] focus went to %lu (xwin %lu)\n", 
-                       (nswin != nil) ? cWin->number : 0, fw);
- 
-           // Focus went to a window not in this application.
-@@ -1168,7 +1282,7 @@
-           // Clean up old focus request
-           generic.cachedWindow
-               = [XGServer _windowForXWindow: xEvent.xfocus.window];
--          NSDebugLLog(@"Focus", @"%lu lost focus on %lu\n",
-+          NSDebugLLog(@"Focus", @"[FocusOut] %lu lost focus on %lu\n",
-                       xEvent.xfocus.window, (cWin) ? cWin->number : 0);
-           generic.currentFocusWindow = 0;
-           if (cWin && generic.desiredFocusWindow == cWin->number)
-@@ -1323,8 +1437,7 @@
-             // when a window changes state from ummapped to
-             // mapped or vice versa
-       case MapNotify:
--        NSDebugLLog(@"NSEvent", @"%lu MapNotify\n",
--                    xEvent.xmap.window);
-+        NSDebugLLog(@"NSEvent", @"[MapNotify] %lu", xEvent.xmap.window);
-         if (cWin == 0 || xEvent.xmap.window != cWin->ident)
-           {
-             generic.cachedWindow
-@@ -1338,7 +1451,7 @@
+@@ -1449,7 +1456,7 @@
               * focus, re-do the request.
               */
              if (generic.desiredFocusWindow == cWin->number
@@ -93,17 +44,7 @@
                {
                  NSDebugLLog(@"Focus", @"Refocusing %lu on map notify", 
                              cWin->number);
-@@ -1354,8 +1467,7 @@
- 
-             // Window is no longer visible.
-       case UnmapNotify:
--        NSDebugLLog(@"NSEvent", @"%lu UnmapNotify\n",
--                    xEvent.xunmap.window);
-+        NSDebugLLog(@"NSEvent", @"[UnmapNotify] %lu", xEvent.xmap.window);
-         if (cWin == 0 || xEvent.xunmap.window != cWin->ident)
-           {
-             generic.cachedWindow
-@@ -1810,26 +1922,43 @@
+@@ -1913,19 +1920,14 @@
  {
    int key_num;
    NSWindow *key_win;
@@ -111,23 +52,9 @@
    NSEvent *e = nil;
    key_win = [NSApp keyWindow];
    key_num = [key_win windowNumber];
--  NSDebugLLog(@"Focus", @"take focus:%lu (current=%lu key=%d)",
 +  keyWin =  [XGServer _windowWithTag:key_num];
-+
-+  NSDebugLLog(@"Focus", @"take focus:%lu  (current=%lu key=%d)",
+   NSDebugLLog(@"Focus", @"take focus:%lu (current=%lu key=%d)",
                cWin->number, generic.currentFocusWindow, key_num);
-+  {
-+    long current_num = generic.currentFocusWindow;
-+    long desired_num = generic.desiredFocusWindow;
-+    NSDebugLLog(@"Focus",
-+                @"[TakeFocus] %lu(%li) {%.0f x %.0f} (current=%lu(%lu)"
-+                " desired=%lu(%lu) key=%lu(%d))",
-+                cWin->ident, cWin->number,
-+                cWin->xframe.size.width, cWin->xframe.size.height,
-+                [XGServer _windowWithTag:current_num]->ident, current_num,
-+                [XGServer _windowWithTag:desired_num]->ident, desired_num,
-+                keyWin->ident, key_num);
-+  }
  
 -  /* Sometimes window managers lose the setinputfocus on the key window
 -   * e.g. when ordering out a window with focus then ordering in the key window.   
@@ -139,13 +66,11 @@
    /* Invalidate the previous request. It's possible the app lost focus
       before this request was fufilled and we are being focused again,
       or ??? */
--  {
--    generic.focusRequestNumber = 0;
--    generic.desiredFocusWindow = 0;
--  }
-+  generic.focusRequestNumber = 0;
-+  generic.desiredFocusWindow = 0;
-+  
+@@ -1933,6 +1935,17 @@
+     generic.focusRequestNumber = 0;
+     generic.desiredFocusWindow = 0;
+   }
++
 +  if (([NSApp isActive] == NO) &&
 +      ([NSApp isHidden] == NO) &&
 +      ([[NSApp mainMenu] isTransient] == NO) &&
@@ -159,14 +84,9 @@
    /* We'd like to send this event directly to the front-end to handle,
       but the front-end polls events so slowly compared the speed at
       which X events could potentially come that we could easily get
-@@ -1840,31 +1969,85 @@
-       /* This often occurs when hidding an app, since a bunch of
-          windows get hidden at once, and the WM is searching for a
+@@ -1945,15 +1958,36 @@
           window to take focus after each one gets hidden. */
--      NSDebugLLog(@"Focus", @"WM take focus while hiding");
-+      NSDebugLLog(@"Focus",
-+                  @"[TakeFocus] %lu(%li): application is in hidden state..",
-+                  cWin->ident, cWin->number);
+       NSDebugLLog(@"Focus", @"WM take focus while hiding");
      }
 -  else if (cWin->ignore_take_focus == YES)
 +  else if ([[NSApp mainMenu] isTransient] != NO) // right-click main menu
@@ -178,11 +98,8 @@
 +    }
 +  else if (cWin->number == key_num && keyWin->map_state != IsUnmapped) // already key window
      {
--      NSDebugLLog(@"Focus", @"Ignoring window focus request");
+       NSDebugLLog(@"Focus", @"Ignoring window focus request");
        cWin->ignore_take_focus = NO;
-+      NSDebugLLog(@"Focus", @"[TakeFocus] %lu(%i): is already a key."
-+                  " Reasserting focus.", keyWin->ident, key_num);
-+      [GSServerForWindow(key_win) setinputfocus: cWin->number];
      }
 -  else if (cWin->number == key_num)
 +  else if (cWin->ignore_take_focus == YES) // after orderwindow:::
@@ -206,12 +123,9 @@
 +          [GSServerForWindow(key_win) setinputfocus: cWin->number];
 +        }
      }
--  else if (key_num 
--           && cWin->number == [[[NSApp mainMenu] window] windowNumber])
-+  else if (key_win &&
-+           cWin->number == [[[NSApp mainMenu] window] windowNumber]) // main menu
-     {
-       /* This might occur when the window manager just wants someone
+   else if (key_num 
+            && cWin->number == [[[NSApp mainMenu] window] windowNumber])
+@@ -1962,12 +1996,35 @@
           to become key, so it tells the main menu (typically the first
           menu in the list), but since we already have a window that
           was key before, use that instead */
@@ -224,31 +138,25 @@
 +      
 +      if (keyWin->map_state == IsUnmapped)
 +        {
-+        NSDebugLLog(@"Focus", @"[TakeFocus] ...%lu(%li): key window was unmapped"
-+                    " - setinputfocus to self", cWin->ident, cWin->number);
-+        [GSServerForWindow(key_win) setinputfocus: cWin->number];
++          NSDebugLLog(@"Focus", @"[TakeFocus] ...%lu(%li): key window was unmapped"
++                      " - setinputfocus to self", cWin->ident, cWin->number);
++          [GSServerForWindow(key_win) setinputfocus: cWin->number];
 +        }
 +      else
 +        {
-+          /* If key window is visible and didn't receive TakeFocus message yet
-+             set input focus to it. Otherwise, if application will be deactivated 
-+             and key window receive TakeFocus, nothing happens because:
++          /* If application will be deactivated and key window receive TakeFocus, 
++             nothing happens because:
 +             - NSApplication resigns key window on deactivation;
 +             - key window has `ignore_take_focus == YES`;
 +             So click on key window of inactive application will be ignored 
-+             because of ignore_take_focus == YES.
-+             Test to observe incorrect behaviour without code below in NEXTSPACE:
-+             - workspace 1, Workspace app active;
-+             - switch to workspace 2 - Workspace app menu only visible;
-+             - switch back to workspace 1 - Workspace app active;
-+             - launch menu-only app - TextEdit;
-+             - click on titlebar of unfocused "File Viewer".
-+          */
++             because of ignore_take_focus == YES. 
++             To handle such situation we set input focus to key window if key 
++             window is visible and hasn't receive TakeFocus message yet. */
 +          NSDebugLLog(@"Focus",
 +                      @"[TakeFocus] ...%lu(%li):  setinputfocus to key: %lu(%d)",
 +                      cWin->ident, cWin->number, keyWin->ident, key_num);
 +          [GSServerForWindow(key_win) setinputfocus: key_num];
-+      }
++        }
      }
    else
      {
@@ -256,12 +164,12 @@
        /*
         * Here the app asked for this (if key_win==nil) or there was a
         * click on the title bar or some other reason (window mapped,
-@@ -1872,17 +2055,20 @@
+@@ -1975,16 +2032,15 @@
         * last reason but we just have to deal with that since we can
         * never be sure if it's necessary.
         */
 -      eventLocation = NSMakePoint(0,0);
--      e = [NSEvent otherEventWithType:NSAppKitDefined
+       e = [NSEvent otherEventWithType:NSAppKitDefined
 -                   location: eventLocation
 -                   modifierFlags: 0
 -                   timestamp: 0
@@ -270,10 +178,6 @@
 -                   subtype: GSAppKitWindowFocusIn
 -                   data1: 0
 -                   data2: 0];
-+      NSDebugLLog(@"Focus",
-+                  @"[TakeFocus] Creating NSEvent for: %lu(%li)",
-+                  cWin->ident, cWin->number);
-+      e = [NSEvent otherEventWithType: NSAppKitDefined
 +                             location: NSMakePoint(0,0)
 +                        modifierFlags: 0
 +                            timestamp: 0
@@ -283,7 +187,5 @@
 +                                data1: 0
 +                                data2: 0];
      }
-+  
    return e;
  }
- 
