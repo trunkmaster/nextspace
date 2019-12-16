@@ -25,7 +25,7 @@ Source6:	gnustep-gui-images.tar.gz
 Source7:	gnustep-back-%{BACK_VERSION}.tar.gz
 Source8:	gpbs.service
 Source9:	gorm-%{GORM_VERSION}.tar.gz
-Source10:	projectcenter-%{PC_VERSION}.tar.gz
+Source10:	ProjectCenter-%{PC_VERSION}.tar.gz
 Source11:	projectcenter-images.tar.gz
 
 # Build GNUstep libraries in one RPM package
