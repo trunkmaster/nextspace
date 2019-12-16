@@ -1,39 +1,5 @@
 --- gnustep-back-0.28.0.orig/Source/x11/XGServerWindow.m	2019-12-16 12:02:02.128214723 +0200
 +++ gnustep-back-0.28.0/Source/x11/XGServerWindow.m	2019-12-16 12:16:11.169214723 +0200
-@@ -114,11 +114,6 @@
-       return nil;
-     }
- 
--/*
--  We should rather convert the image to a bitmap representation here via
--  the following code, but this is currently not supported by the libart backend
--
--{
-   NSSize size = [image size];
- 
-   [image lockFocus];
-@@ -126,10 +121,10 @@
-             NSMakeRect(0, 0, size.width, size.height)];
-   AUTORELEASE(rep);
-   [image unlockFocus];
--}
--*/
- 
--  rep = (NSBitmapImageRep *)[image bestRepresentationForDevice: nil];
-+  return rep;
-+  
-+  /*  rep = (NSBitmapImageRep *)[image bestRepresentationForDevice: nil];
-   if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
-     {
-       return nil;
-@@ -146,6 +141,7 @@
-                                     bytesPerRow: 0
-                                    bitsPerPixel: 0];
-     }
-+  */
- }
- 
- 
 @@ -2018,8 +2014,7 @@
  
    // For window managers supporting EWMH, but not Window Maker,
