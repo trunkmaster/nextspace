@@ -1,15 +1,15 @@
 #%undefine _missing_build_ids_terminate_build
 
 # Defines
-%define BASE_VERSION	1.26.0
-%define GUI_VERSION	0.25.0
-%define BACK_VERSION	0.25.0
+%define BASE_VERSION	1.27.0
+%define GUI_VERSION	0.28.0
+%define BACK_VERSION	0.28.0
 %define GORM_VERSION	1.2.24
 %define PC_VERSION	0.6.2
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        GNUstep libraries.
 
 Group:          Libraries/NextSpace
@@ -19,25 +19,22 @@ Source0:	gnustep-base-%{BASE_VERSION}.tar.gz
 Source1:	gdomap.interfaces
 Source2:	gdomap.service
 Source3:	gdnc.service
-Source4:	gnustep-gui-%{GUI_VERSION}.tar.gz
-Source5:	gnustep-gui-images.tar.gz
-Source6:	gnustep-back-%{BACK_VERSION}.tar.gz
-Source7:	gpbs.service
-Source8:	gorm-%{GORM_VERSION}.tar.gz
-Source9:	projectcenter-%{PC_VERSION}.tar.gz
-Source10:	projectcenter-images.tar.gz
+Source4:	gdnc-local.service
+Source5:	gnustep-gui-%{GUI_VERSION}.tar.gz
+Source6:	gnustep-gui-images.tar.gz
+Source7:	gnustep-back-%{BACK_VERSION}.tar.gz
+Source8:	gpbs.service
+Source9:	gorm-%{GORM_VERSION}.tar.gz
+Source10:	projectcenter-%{PC_VERSION}.tar.gz
+Source11:	projectcenter-images.tar.gz
 
 # Build GNUstep libraries in one RPM package
 # GUI
-Patch0:		gnustep-gui-headers.patch
-Patch1:		gnustep-gui-images.patch
-Patch2:		gnustep-gui-model.patch
-Patch3:		gnustep-gui-source.patch
-Patch4:		gnustep-gui_RPM_GNUmakefile.patch
+Patch0:		libs-gui_rpmbuild.patch
 # Back
-Patch5:		gnustep-back-headers.patch
-Patch6:		gnustep-back-source.patch
-Patch7:		gnustep-back_RPM_GNUmakefile.patch
+Patch1:		libs-back_IconImage.patch
+Patch2:		libs-back_TakeFocus.patch
+Patch3:		libs-back_rpmbuild.patch
 
 Provides:	gnustep-base-%{BASE_VERSION}
 Provides:	gnustep-gui-%{GUI_VERSION}
@@ -131,15 +128,11 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-gnustep -a 4 -a 6 -a 8 -a 9
+%setup -c -n nextspace-gnustep -a 5 -a 7 -a 9 -a 10
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
 %patch3 -p0
-%patch4 -p0
-%patch5 -p0
-%patch6 -p0
-%patch7 -p0
 rm -rf %{buildroot}
 
 #
@@ -266,6 +259,7 @@ if [ $1 -eq 1 ]; then
     # post-installation
     systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
     systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
+    systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
     systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
     systemctl start gdomap gdnc gpbs;
 elif [ $1 -eq 2 ]; then
@@ -283,6 +277,7 @@ if [ $1 -eq 0 ]; then
     systemctl stop gdomap gdnc gpbs;
     systemctl disable gdomap.service;
     systemctl disable gdnc.service;
+    systemctl disable gdnc-local.service;
     systemctl disable gpbs.service;
 elif  [ $1 -eq 1 ]; then
     # prepare for upgrade
@@ -292,18 +287,23 @@ fi
 #%postun
 
 %changelog
+* Mon Dec 16 2019 Sergii Stoian <stoyan255@gmail.com> - 1.27.0_0.28.0-1
+- Switched to master branch of GNUstep soure code.
+- Reduced number of custom patches.
+- Notification center service for local notifications was added.
+
 * Thu May 23 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-2
 - Rebuild with libdispatch private headers enabled and gnustep-base last
   commit `ecbecbe`.
 
 * Fri May 10 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-1
-- original ProjectBuilder's images were added to ProjectCenter.
-- replace some GNUstep images from tarball.
+- Original ProjectBuilder's images were added to ProjectCenter.
+- Replace some GNUstep images from tarball.
 
 * Fri May  3 2019 Sergii Stoian <stoyan255@gmail.com> - 1.26.0_0.25.0-0
-- new versions of Base, GUI, Back, GORM.
+- New versions of Base, GUI, Back, GORM.
 - ProjectCenter was added.
-- new mouse cursor images.
+- New mouse cursor images.
 
 * Mon Jun 12 2017 Sergii Stoian <stoyan255@gmail.com> 1.24.8_0.24.1-10
 - Comments are added to patches.
