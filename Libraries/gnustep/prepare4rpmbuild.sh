@@ -39,7 +39,7 @@ printf "Creating dist for Back $BACK_VERSION...\n"
 printf "  Configuring..."
 ./configure 2>&1 > /dev/null
 printf "\n"
-echo "  Packing..."
+printf "  Packing..."
 make dist 2>&1 > /dev/null
 printf "\n"
 cd ..
@@ -47,6 +47,10 @@ mv gnustep-back-$BACK_VERSION.tar.gz ~/rpmbuild/SOURCES
 cp libs-back_IconImage.patch ~/rpmbuild/SOURCES
 cp libs-back_TakeFocus.patch ~/rpmbuild/SOURCES
 cp libs-back_rpmbuild.patch ~/rpmbuild/SOURCES
+
+# SystemD services
+cp *.service ~/rpmbuild/SOURCES
+cp gdomap.interfaces ~/rpmbuild/SOURCES
 
 # GORM
 cd apps-gorm
@@ -64,7 +68,7 @@ printf "  Packing..."
 make dist 2>&1 > /dev/null
 printf "\n"
 cd ..
-mv ProjeCtcenter-$PC_VERSION.tar.gz ~/rpmbuild/SOURCES
+mv ProjectCenter-$PC_VERSION.tar.gz ~/rpmbuild/SOURCES
 cp projectcenter-images.tar.gz ~/rpmbuild/SOURCES
 
 # spec file
