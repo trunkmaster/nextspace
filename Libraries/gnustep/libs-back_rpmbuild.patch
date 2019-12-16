@@ -1,5 +1,5 @@
---- libs-back-back-0_25_1.orig/Source/art/GNUmakefile.preamble	2017-04-07 00:03:43.000000000 +0300
-+++ libs-back-back-0_25_1/Source/art/GNUmakefile.preamble	2019-03-29 15:56:10.368565502 +0200
+--- gnustep-back-0.28.0.orig/Source/art/GNUmakefile.preamble	2017-04-07 00:03:43.000000000 +0300
++++ gnustep-back-0.28.0/Source/art/GNUmakefile.preamble	2019-03-29 15:56:10.368565502 +0200
 @@ -37,7 +37,7 @@
  #ADDITIONAL_CFLAGS = 
  
@@ -9,8 +9,8 @@
  	-I../$(GNUSTEP_TARGET_DIR) $(GRAPHIC_CFLAGS) \
  
  # Additional LDFLAGS to pass to the linker
---- libs-back-back-0_25_1.orig/Source/gsc/GNUmakefile.preamble	2017-04-07 00:03:43.000000000 +0300
-+++ libs-back-back-0_25_1/Source/gsc/GNUmakefile.preamble	2019-03-29 15:56:10.369566002 +0200
+--- gnustep-back-0.28.0.orig/Source/gsc/GNUmakefile.preamble	2017-04-07 00:03:43.000000000 +0300
++++ gnustep-back-0.28.0/Source/gsc/GNUmakefile.preamble	2019-03-29 15:56:10.369566002 +0200
 @@ -37,7 +37,7 @@
  #ADDITIONAL_CFLAGS = 
  

@@ -40,7 +40,7 @@
    // where we use a different solution, set the window icon.
 -  if (((generic.wm & XGWM_EWMH) != 0)
 -    && ((generic.wm & XGWM_WINDOWMAKER) == 0))
-+  if ((generic.wm & XGWM_EWMH) != 0))
++  if ((generic.wm & XGWM_EWMH) != 0)
      {
        [self _setNetWMIconFor: window->ident];
      }
