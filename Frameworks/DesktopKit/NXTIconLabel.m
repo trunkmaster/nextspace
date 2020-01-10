@@ -27,7 +27,7 @@
 #import "NXTIconLabel.h"
 #import "NXTIcon.h"
 
-#define TEXT_PADDING 7.0
+#define TEXT_PADDING 5.0
 
 @implementation NXTIconLabel
 
@@ -60,7 +60,7 @@
 
 - (void)textDidChange:(NSNotification *)notif
 {
-  // [self adjustFrame];
+  [self adjustFrameForString:[self string]];
 }
 
 - (void)textDidEndEditing:(NSNotification *)notif
@@ -87,14 +87,21 @@
 
 - (void)adjustFrame
 {
+  [self adjustFrameForString:[self string]];
+}
+
+- (void)adjustFrameForString:(NSString *)string
+{
   NSView *superview = [self superview];
 
   if (superview != nil) {
-    float  stringWidth = [[self font] widthOfString:[self string]];
-    NSRect frame = [self frame];
+    float  stringWidth = [[self font] widthOfString:string];
+    NSRect oldFrame, newFrame;
     NSRect superFrame = [superview frame];
     NSRect iconFrame = [icon frame];
 
+    oldFrame = newFrame = [self frame];
+    
     // NSLog(@"NXTIconLabel: "
     //       "(%@) sizes: (%@)%.0fx%.0f (%@)%.0fx%.0f (%@)%.0fx%.0f",
     //       [self text],
@@ -105,40 +112,52 @@
     //       [self className], 
     //       frame.size.width, frame.size.height);
 
-    // Y-position
-    if ([superview isFlipped]) {
-      frame.origin.y = roundf(iconFrame.origin.y + iconFrame.size.height);
-    }
-    else {
-      frame.origin.y = iconFrame.origin.y - frame.size.height;
+    // Width of label
+    newFrame.size.width = stringWidth + (TEXT_PADDING * 2);
+    if (stringWidth == 0) {
+      newFrame.size.width += 1;
     }
 
-    // Width of label
-    if (stringWidth == 0) {
-      // empty string?
-      frame.size.width = TEXT_PADDING;
-    }
-    else if ((stringWidth + (TEXT_PADDING * 2)) >= superFrame.size.width) {
-      frame.size.width = superFrame.size.width - 6; // FIXME:6?
+    // Y-position
+    if ([superview isFlipped]) {
+      newFrame.origin.y = (int)(iconFrame.origin.y + iconFrame.size.height);
     }
     else {
-      frame.size.width = stringWidth + (TEXT_PADDING * 2);
+      newFrame.origin.y = (int)(iconFrame.origin.y - newFrame.size.height);
     }
 
     // X-position
-    frame.origin.x = floorf([icon frame].origin.x) + 
-      roundf(([icon frame].size.width - frame.size.width)/2);
-    if (frame.origin.x < 0) {
-      frame.origin.x = 0;
+    // newFrame.origin.x = floorf([icon frame].origin.x) + 
+    //   roundf(([icon frame].size.width - newFrame.size.width)/2);
+    newFrame.origin.x = (int)([icon frame].origin.x) + 
+      (int)(([icon frame].size.width - newFrame.size.width)/2);
+    if (newFrame.origin.x < 0 && newFrame.size.width <= superFrame.size.width) {
+      newFrame.origin.x = 0;
     }
-    else if (frame.origin.x + frame.size.width > superFrame.size.width - 5) {
-      frame.origin.x = superFrame.size.width - frame.size.width - 5;
+    else if (newFrame.origin.x + newFrame.size.width > superFrame.size.width ||
+             newFrame.size.width > superFrame.size.width) {
+      newFrame.origin.x = superFrame.size.width - newFrame.size.width;
     }
 
-    [self setFrame:frame];
-    // TODO: redraw only superview rectangle around icon
-    [[self superview] setNeedsDisplay:YES];
+    [self setFrame:newFrame];
+    [[self superview] setNeedsDisplayInRect:oldFrame];
   }
+}
+
+- (void)paste:(id)sender
+{
+  NSString *pString;
+  pString = [[NSPasteboard generalPasteboard] stringForType:NSPasteboardTypeString];
+  if (pString && [pString length]) {
+    [self adjustFrameForString:[[self string] stringByAppendingString:pString]];
+  }
+  [super paste:sender];
+}
+
+- (void)insertText:(id)insertString
+{
+  [self adjustFrameForString:[[self string] stringByAppendingString:insertString]];
+  [super insertText:insertString];
 }
 
 - (void)keyDown:(NSEvent *)ev
@@ -150,8 +169,7 @@
   else {
     [super keyDown:ev];
   }
-
-  [self adjustFrame];
+  // adjustFrame will be called from insertText: or paste: methods
 }
 
 - (NXTIcon *)icon
