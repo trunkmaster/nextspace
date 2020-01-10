@@ -39,6 +39,7 @@
 
 // Tells the receiver to adjust it's frame to fit into its superview.
 - (void)adjustFrame;
+- (void)adjustFrameForString:(NSString *)string;
 
 // Sets the delegate to whom delegate messages are passed.
 - (void)setIconLabelDelegate:aDelegate;
