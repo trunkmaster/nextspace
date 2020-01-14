@@ -1686,33 +1686,39 @@
 - (void)open:(id)sender
 {
   NSImage        *image;
-  NSString       *filePath;
-  NSMutableArray *extensions;
+  NSMutableArray *extensions = [[NSMutableArray new] autorelease];
   NSString	 *ext;
+  NSSize         senderSize;
+  NSPoint        iconOrigin;
 
   // "Return" key press in *Viewer, File->Open menu item, double click
   if (![sender isKindOfClass:[PathIcon class]]) {
     sender = [[pathView icons] lastObject];
   }
 
+  senderSize = [sender frame].size;
+
   // For multiple files:
   // For each type call openFile:fromImage:at:inView with 'image' for first
   // file in list (flying icon) and 'nil' for the rest (no flying icon).
-  extensions = [[NSMutableArray new] autorelease];
-  for (filePath in [sender paths]) {
+  for (NSString *filePath in [sender paths]) {
+    image = nil;
     ext = [filePath pathExtension];
-    if ([ext isEqualToString:@"app"] == YES ||
-        [extensions containsObject:ext] == NO) {
-      [extensions addObject:[filePath pathExtension]];
-      image = [[NSApp delegate] iconForFile:filePath];
+    if ([ext isEqualToString:@"app"] == YES || [extensions containsObject:ext] == NO) {
+      if ([[sender paths] count] == 1) {
+        image = [sender iconImage];
+      }
+      else {
+        [extensions addObject:[filePath pathExtension]];
+        image = [[NSApp delegate] iconForFile:filePath];
+      }
     }
-    else {
-      image = nil;
-    }
-      
+
+    iconOrigin = NSMakePoint((senderSize.width - image.size.width) / 2,
+                             (senderSize.height - image.size.height) / 2);
     if ([[NSApp delegate] openFile:filePath
                          fromImage:image
-                                at:NSMakePoint((64-image.size.width)/2, 0)
+                                at:iconOrigin
                             inView:sender] == NO) {
       break;
     }
