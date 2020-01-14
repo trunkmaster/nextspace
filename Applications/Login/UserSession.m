@@ -284,7 +284,7 @@
   
   // Session script
   [sessionScript addObjectsFromArray:[userDefaults objectForKey:@"SessionScript"]];
-  
+
   // Try system session script
   if (sessionScript == nil || [sessionScript count] == 0) {
     NSLog(@"Using DefaultSessionScript...");
@@ -304,23 +304,30 @@
 // 3. LogoutHook (~/L/P/.N/Login)
 - (void)launchSessionScript
 {
-  int      ret;
-  NSString *command;
-  BOOL     firstCommand = YES;
+  int  ret;
+  BOOL firstCommand = YES;
 
-  // NSLog(@"launchSession: %@", sessionScript);
+  NSLog(@"launchSession: %@", sessionScript);
 
-  for (NSArray *scriptCommand in sessionScript) {
+  for (id scriptCommand in sessionScript) {
     if (scriptCommand == nil ||
-        [scriptCommand isKindOfClass:[NSArray class]] == NO ||
-        [scriptCommand count] == 0) {
+        ([scriptCommand isKindOfClass:[NSArray class]] != NO &&
+         [scriptCommand count] == 0)) {
       continue;
     }
-    command = [scriptCommand objectAtIndex:0];
-    if (command == nil || [command isEqualToString:@""])
-      continue;
+    if ([scriptCommand isKindOfClass:[NSString class]] != NO) {
+      if ([scriptCommand isEqualToString:@""])
+        continue;
+      scriptCommand = [scriptCommand componentsSeparatedByString:@" "];
+    }
+    else {
+      NSString *command;
+      command = [scriptCommand objectAtIndex:0];
+      if (command == nil || [command isEqualToString:@""])
+        continue;
+      NSLog(@"SESSION: starting command %@", command);
+    }
 
-    NSLog(@"SESSION: starting command %@", command);
     ret = [self launchCommand:scriptCommand
                     logAppend:!firstCommand
                          wait:YES];
