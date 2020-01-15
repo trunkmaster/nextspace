@@ -48,16 +48,9 @@
 {
   PathViewScroller *scroller;
   NSScrollView     *sv;
-  NSSize          size;
 
   self = [super initWithFrame:r];
-
-  size.height = PATH_VIEW_HEIGHT;
-  size.width = [[NXTDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
-  if (size.width <= 0) {
-    size.width = BROWSER_DEF_COLUMN_WIDTH;
-  }
-  [self setSlotSize:size];
+  [self updateSlotSize];
   
   _owner = fileViewer;
 
@@ -107,6 +100,18 @@
   [_multiIcon unregisterDraggedTypes];
 
   return self;
+}
+
+- (void)updateSlotSize
+{
+  NSSize size;
+
+  size.height = PATH_VIEW_HEIGHT;
+  size.width = [[NXTDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
+  if (size.width <= 0) {
+    size.width = BROWSER_DEF_COLUMN_WIDTH;
+  }
+  [self setSlotSize:size];
 }
 
 - (void)drawRect:(NSRect)r

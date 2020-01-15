@@ -1331,6 +1331,7 @@
 
 - (void)browserColumnWidthChanged:(NSNotification *)notif
 {
+  [pathView updateSlotSize];
   [self updateWindowWidth:viewer];
 }
 
