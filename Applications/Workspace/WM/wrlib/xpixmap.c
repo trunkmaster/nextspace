@@ -120,13 +120,16 @@ RImage *RCreateImageFromXImage(RContext * context, XImage * image, XImage * mask
 #define MIN(a,b) ((a)<(b)?(a):(b))
 	if (mask) {
 		data = img->data + 3;	/* Skip R, G & B */
-                image_data = image->data + 3;
+		image_data = (unsigned char *)image->data + 3;
 		for (y = 0; y < MIN(mask->height, image->height); y++) {
 			for (x = 0; x < MIN(mask->width, image->width); x++) {
 				if (mask->width <= image->width && XGetPixel(mask, x, y)) {
-					*data = *image_data;
-					/* *data = 0xff; */
-				} else {
+					if (*image_data > 0)
+						*data = *image_data;
+					else
+						*data = 0xff;
+				}
+				else {
 					*data = 0;
 				}
 				data += 4;
