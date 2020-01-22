@@ -83,19 +83,17 @@ static OSEScreen *systemScreen = nil;
   CGFloat width = 0.0, height = 0.0, w = 0.0, h = 0.0;
   NSRect  dFrame;
   
-  for (OSEDisplay *display in systemDisplays)
-    {
-      if ([display isConnected] && [display isActive])
-        {
-          dFrame = [display frame];
+  for (OSEDisplay *display in systemDisplays) {
+    if ([display isConnected] && [display isActive]) {
+      dFrame = [display frame];
           
-          w = dFrame.origin.x + dFrame.size.width;
-          if (w > width) width = w;
+      w = dFrame.origin.x + dFrame.size.width;
+      if (w > width) width = w;
 
-          h = dFrame.origin.y + dFrame.size.height;
-          if (h > height) height = h;
-        }
+      h = dFrame.origin.y + dFrame.size.height;
+      if (h > height) height = h;
     }
+  }
 
   return NSMakeSize(width, height);
 }
@@ -108,19 +106,19 @@ static OSEScreen *systemScreen = nil;
   CGFloat      width = 0.0, height = 0.0, w = 0.0, h = 0.0;
   NSRect       frame;
   
-  for (NSDictionary *display in layout)
-    {
-      if ([[display objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"NO"])
-        continue;
-      
-      frame = NSRectFromString([display objectForKey:OSEDisplayFrameKey]);
-          
-      w = frame.origin.x + frame.size.width;
-      if (w > width) width = w;
-
-      h = frame.origin.y + frame.size.height;
-      if (h > height) height = h;
+  for (NSDictionary *display in layout) {
+    if ([[display objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"NO"]) {
+      continue;
     }
+      
+    frame = NSRectFromString([display objectForKey:OSEDisplayFrameKey]);
+          
+    w = frame.origin.x + frame.size.width;
+    if (w > width) width = w;
+
+    h = frame.origin.y + frame.size.height;
+    if (h > height) height = h;
+  }
 
   return NSMakeSize(width, height);
 }
@@ -134,23 +132,25 @@ static OSEScreen *systemScreen = nil;
   NSSize       dPSize, pixSize;
   NSDictionary *mode;
   
-  for (OSEDisplay *display in systemDisplays)
-    {
-      if ([display isConnected] && [display isActive])
-        {
-          dPSize = [display physicalSize];
+  for (OSEDisplay *display in systemDisplays) {
+    if ([display isConnected] && [display isActive]) {
+      dPSize = [display physicalSize];
           
-          if (dPSize.width > width)
-            width = dPSize.width;
-          else if (dPSize.width == 0)
-            width = 200; // perhaps it's VM, this number will be ignored
+      if (dPSize.width > width) {
+        width = dPSize.width;
+      }
+      else if (dPSize.width == 0) {
+        width = 200; // perhaps it's VM, this number will be ignored
+      }
           
-          if (dPSize.height > height)
-            height = dPSize.height;
-          else if (dPSize.height == 0)
-            height = 200; // perhaps it's VM, this number will be ignored
-        }
+      if (dPSize.height > height) {
+        height = dPSize.height;
+      }
+      else if (dPSize.height == 0) {
+        height = 200; // perhaps it's VM, this number will be ignored
+      }
     }
+  }
   
   return NSMakeSize(width, height);
 }
@@ -165,23 +165,27 @@ static OSEScreen *systemScreen = nil;
   NSSize       dPSize, pixSize;
   NSDictionary *mode;
   
-  for (NSDictionary *display in layout)
-    {
-      if ([[display objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"NO"])
-        continue;
-      
-      dPSize = NSSizeFromString([display objectForKey:OSEDisplayPhSizeKey]);
-          
-      if (dPSize.width > width)
-        width = dPSize.width;
-      else if (dPSize.width == 0)
-        width = 200; // perhaps it's VM, this number will be ignored
-          
-      if (dPSize.height > height)
-        height = dPSize.height;
-      else if (dPSize.height == 0)
-        height = 200; // perhaps it's VM, this number will be ignored
+  for (NSDictionary *display in layout) {
+    if ([[display objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"NO"]) {
+      continue;
     }
+      
+    dPSize = NSSizeFromString([display objectForKey:OSEDisplayPhSizeKey]);
+          
+    if (dPSize.width > width) {
+      width = dPSize.width;
+    }
+    else if (dPSize.width == 0) {
+      width = 200; // perhaps it's VM, this number will be ignored
+    }
+          
+    if (dPSize.height > height) {
+      height = dPSize.height;
+    }
+    else if (dPSize.height == 0) {
+      height = 200; // perhaps it's VM, this number will be ignored
+    }
+  }
   
   return NSMakeSize(width, height);
 }
@@ -194,10 +198,9 @@ static OSEScreen *systemScreen = nil;
   // Construct path to config file
   configDir = [LAYOUTS_DIR stringByExpandingTildeInPath];
   
-  for (OSEDisplay *d in [self connectedDisplays])
-    {
-      layoutHash += [[d uniqueID] hash];
-    }
+  for (OSEDisplay *d in [self connectedDisplays]) {
+    layoutHash += [[d uniqueID] hash];
+  }
   
   return [NSString stringWithFormat:@"%@/Displays-%lu.config",
                    configDir, layoutHash];
@@ -210,37 +213,34 @@ static OSEScreen *systemScreen = nil;
   NSRect       hiddenFrame;
   NSDictionary *props;
   
-  if (layout == nil)
+  if (layout == nil) {
     return;
+  }
   
-  for (OSEDisplay *d in systemDisplays)
-    {
-      // FrameHidden
-      attribute = [self objectForKey:OSEDisplayHiddenFrameKey
-                          forDisplay:d
-                            inLayout:layout];
-      if (attribute != nil && [attribute isKindOfClass:[NSString class]])
-        {
-          hiddenFrame = NSRectFromString(attribute);
-          NSDebugLLog(@"Screen", @"[OSEScreen] %@ restore hiddenFrame: %@",
-                      d.outputName, attribute);
-          if ([d isActive] == NO && NSIsEmptyRect(hiddenFrame) == NO)
-            {
-              d.hiddenFrame = hiddenFrame;
-            }
-        }
-
-      // Gamma
-      attribute = [self objectForKey:OSEDisplayGammaKey
-                          forDisplay:d
-                            inLayout:layout];
-      if (attribute != nil &&
-          [attribute isKindOfClass:[NSDictionary class]])
-        {
-          // Only 'gammaValue' ivar will be set if display is inactive
-          [d setGammaFromDescription:attribute];
-        }
+  for (OSEDisplay *d in systemDisplays) {
+    // FrameHidden
+    attribute = [self objectForKey:OSEDisplayHiddenFrameKey
+                        forDisplay:d
+                          inLayout:layout];
+    if (attribute != nil && [attribute isKindOfClass:[NSString class]]) {
+      hiddenFrame = NSRectFromString(attribute);
+      NSDebugLLog(@"Screen", @"[OSEScreen] %@ restore hiddenFrame: %@",
+                  d.outputName, attribute);
+      if ([d isActive] == NO && NSIsEmptyRect(hiddenFrame) == NO) {
+        d.hiddenFrame = hiddenFrame;
+      }
     }
+
+    // Gamma
+    attribute = [self objectForKey:OSEDisplayGammaKey
+                        forDisplay:d
+                          inLayout:layout];
+    if (attribute != nil &&
+        [attribute isKindOfClass:[NSDictionary class]]) {
+      // Only 'gammaValue' ivar will be set if display is inactive
+      [d setGammaFromDescription:attribute];
+    }
+  }
 }
 
 @end
@@ -249,10 +249,9 @@ static OSEScreen *systemScreen = nil;
 
 + (id)sharedScreen
 {
-  if (systemScreen == nil)
-    {
-      systemScreen = [[OSEScreen alloc] init];
-    }
+  if (systemScreen == nil) {
+    systemScreen = [[OSEScreen alloc] init];
+  }
 
   return systemScreen;
 }
@@ -262,11 +261,11 @@ static OSEScreen *systemScreen = nil;
   self = [super init];
 
   xDisplay = XOpenDisplay(getenv("DISPLAY"));
-  if (!xDisplay)
-    {
-      NSLog(@"Can't open Xorg display. Please setup DISPLAY environment variable.");
-      return nil;
-    }
+  if (!xDisplay) {
+    NSLog(@"Can't open Xorg display."
+          @" Please setup DISPLAY environment variable.");
+    return nil;
+  }
 
   {
     int event_base, error_base;
@@ -287,18 +286,17 @@ static OSEScreen *systemScreen = nil;
   [self randrUpdateScreenResources];
 
   // Initially we set primary display to first active
-  if ([self mainDisplay] == nil)
-    {
-      NSDebugLLog(@"Screen", @"OSEScreen: main display not found, setting first active as main.");
-      for (OSEDisplay *display in systemDisplays)
-        {
-          if ([display isActive])
-            {
-              [display setMain:YES];
-              break;
-            }
-        }
+  if ([self mainDisplay] == nil) {
+    NSDebugLLog(@"Screen",
+                @"OSEScreen: main display not found,"
+                @" setting first active as main.");
+    for (OSEDisplay *display in systemDisplays) {
+      if ([display isActive]) {
+        [display setMain:YES];
+        break;
+      }
     }
+  }
 
   useAutosave = NO;
 
@@ -343,18 +341,17 @@ static OSEScreen *systemScreen = nil;
 // XRRScreenResources update will generate OSEScreenDidUpdateNotification.
 - (void)randrScreenDidChange:(NSNotification *)aNotif
 {
-  NSDebugLLog(@"Screen", @"OSEScreen: OSEScreenDidChangeNotification received.");
+  NSDebugLLog(@"Screen",
+              @"OSEScreen: OSEScreenDidChangeNotification received.");
   
   [self randrUpdateScreenResources];
 }
 
 - (XRRScreenResources *)randrScreenResources
 {
-  if (screen_resources == NULL)
-    {
-      [self randrUpdateScreenResources];
-    }
-  
+  if (screen_resources == NULL) {
+    [self randrUpdateScreenResources];
+  }
   return screen_resources;
 }
 
@@ -362,43 +359,40 @@ static OSEScreen *systemScreen = nil;
 {
   OSEDisplay *display;
   
-  if ([updateScreenLock tryLock] == NO)
-    {
-      NSDebugLLog(@"Screen", @"OSEScreen: update of XRandR screen resources was unsuccessful!");
-      return;
-    }
+  if ([updateScreenLock tryLock] == NO) {
+    NSDebugLLog(@"Screen",
+                @"OSEScreen: update of XRandR screen"
+                @" resources was unsuccessful!");
+    return;
+  }
     
   NSDebugLLog(@"Screen", @"OSEScreen: randrUpdateScreenResources: START");
   
   // Reread screen resources
-  if (screen_resources)
-    {
-      XRRFreeScreenResources(screen_resources);
-    }
+  if (screen_resources) {
+    XRRFreeScreenResources(screen_resources);
+  }
   screen_resources = XRRGetScreenResources(xDisplay, xRootWindow);
 
   // Create/clean display information local cache.
-  if (systemDisplays)
-    {
-      [systemDisplays removeAllObjects];
-    }
-  else
-    {
-      systemDisplays = [[NSMutableArray alloc] init];
-    }
+  if (systemDisplays) {
+    [systemDisplays removeAllObjects];
+  }
+  else {
+    systemDisplays = [[NSMutableArray alloc] init];
+  }
 
   // Update displays info
-  for (int i=0; i < screen_resources->noutput; i++)
-    {
-      display = [[OSEDisplay alloc]
+  for (int i=0; i < screen_resources->noutput; i++) {
+    display = [[OSEDisplay alloc]
                   initWithOutputInfo:screen_resources->outputs[i]
                      screenResources:screen_resources
                               screen:self
                             xDisplay:xDisplay];
-      
-      [systemDisplays addObject:display];
-      [display release];
-    }
+    
+    [systemDisplays addObject:display];
+    [display release];
+  }
 
   // Restore some Display attributes from saved layout (if any)
   [self _restoreDisplaysAttributesFromLayout:[self savedDisplayLayout]];
@@ -421,15 +415,15 @@ static OSEScreen *systemScreen = nil;
   RRCrtc      crtc;
   XRRCrtcInfo *info;
 
-  for (int i=0; i<screen_resources->ncrtc; i++)
-    {
-      crtc = screen_resources->crtcs[i];
-      info = XRRGetCrtcInfo(xDisplay, screen_resources, crtc);
-      // fprintf(stderr, "CRTC '%lu' has %i outputs.\n", crtc, info->noutput);
-      
-      if (info->noutput == 0)
-        break;
+  for (int i=0; i<screen_resources->ncrtc; i++) {
+    crtc = screen_resources->crtcs[i];
+    info = XRRGetCrtcInfo(xDisplay, screen_resources, crtc);
+    // fprintf(stderr, "CRTC '%lu' has %i outputs.\n", crtc, info->noutput);
+    
+    if (info->noutput == 0) {
+      break;
     }
+  }
 
   return crtc;
 }
@@ -466,20 +460,18 @@ static OSEScreen *systemScreen = nil;
   
   dBack =  [[NXTDefaults globalUserDefaults]
                                objectForKey:@"NXDesktopBackgroundColor"];
-  if (dBack)
-    {
-      *redComponent = [dBack[@"Red"] floatValue];
-      *greenComponent = [dBack[@"Green"] floatValue];
-      *blueComponent = [dBack[@"Blue"] floatValue];
-      success = YES;
-    }
-  else
-    {
-      *redComponent = 83.0/255.0;
-      *greenComponent = 83.0/255.0;
-      *blueComponent = 116.0/255.0;
-      success = YES;
-    }
+  if (dBack) {
+    *redComponent = [dBack[@"Red"] floatValue];
+    *greenComponent = [dBack[@"Green"] floatValue];
+    *blueComponent = [dBack[@"Blue"] floatValue];
+    success = YES;
+  }
+  else {
+    *redComponent = 83.0/255.0;
+    *greenComponent = 83.0/255.0;
+    *blueComponent = 116.0/255.0;
+    success = YES;
+  }
   
   return success;
 }
@@ -498,42 +490,38 @@ static OSEScreen *systemScreen = nil;
   // is set with XSetWindowBackground function and:
   // "XSetWindowBackground uses a pixmap of undefined size filled with the pixel
   // value you passed" [XSetWindowBackground(3)].
-  if (XGetWindowAttributes(xDisplay, xRootWindow, &attrs) != 0)
-    {
-      image = XGetImage(xDisplay, xRootWindow, 0, 0,
-                        attrs.width, attrs.height, AllPlanes, ZPixmap);
-      if (image != NULL)
-        {
-          pixel = XGetPixel(image, attrs.width-1, attrs.height-1); // magic: works in VM
-          // fprintf(stderr, "X Offset: %i\n", image->xoffset);
-          // fprintf(stderr, "BP Red: %lu (%f)\n",
-          //         (attrs.backing_pixel), (CGFloat)(attrs.backing_pixel>>16)/255.0);
-          // fprintf(stderr, "Red  : %lu (%f)\n",
-          //         (pixel>>16), (CGFloat)(pixel>>16)/255.0);
-          // fprintf(stderr, "Green: %lu (%f)\n",
-          //         ((pixel&0x00ff00)>>8), (CGFloat)((pixel&0x00ff00)>>8)/255.0);
-          // fprintf(stderr, "Blue : %lu (%f)\n",
-          //         (pixel&0x0000ff), (CGFloat)(pixel&0x0000ff)/255.0);
-          // cBack = [NSColor colorWithDeviceRed:(CGFloat)(pixel>>16)/255.0
-          //                               green:(CGFloat)((pixel&0x00ff00)>>8)/255.0
-          //                                blue:(CGFloat)(pixel&0x0000ff)/255.0
-          //                               alpha:1.0];
-          *redComponent = (CGFloat)(pixel>>16)/255.0;
-          *greenComponent = (CGFloat)((pixel&0x00ff00)>>8)/255.0;
-          *blueComponent = (CGFloat)(pixel&0x0000ff)/255.0;
-          XDestroyImage(image);
-          success = YES;
-        }
+  if (XGetWindowAttributes(xDisplay, xRootWindow, &attrs) != 0) {
+    image = XGetImage(xDisplay, xRootWindow, 0, 0,
+                      attrs.width, attrs.height, AllPlanes, ZPixmap);
+    if (image != NULL) {
+      pixel = XGetPixel(image, attrs.width-1, attrs.height-1); // magic: works in VM
+      // fprintf(stderr, "X Offset: %i\n", image->xoffset);
+      // fprintf(stderr, "BP Red: %lu (%f)\n",
+      //         (attrs.backing_pixel), (CGFloat)(attrs.backing_pixel>>16)/255.0);
+      // fprintf(stderr, "Red  : %lu (%f)\n",
+      //         (pixel>>16), (CGFloat)(pixel>>16)/255.0);
+      // fprintf(stderr, "Green: %lu (%f)\n",
+      //         ((pixel&0x00ff00)>>8), (CGFloat)((pixel&0x00ff00)>>8)/255.0);
+      // fprintf(stderr, "Blue : %lu (%f)\n",
+      //         (pixel&0x0000ff), (CGFloat)(pixel&0x0000ff)/255.0);
+      // cBack = [NSColor colorWithDeviceRed:(CGFloat)(pixel>>16)/255.0
+      //                               green:(CGFloat)((pixel&0x00ff00)>>8)/255.0
+      //                                blue:(CGFloat)(pixel&0x0000ff)/255.0
+      //                               alpha:1.0];
+      *redComponent = (CGFloat)(pixel>>16)/255.0;
+      *greenComponent = (CGFloat)((pixel&0x00ff00)>>8)/255.0;
+      *blueComponent = (CGFloat)(pixel&0x0000ff)/255.0;
+      XDestroyImage(image);
+      success = YES;
     }
+  }
 
-  if (success == NO)
-    {
-      success = [self savedBackgroundColorRed:redComponent
-                                        green:greenComponent
-                                         blue:blueComponent];
-    }
-  
-    
+  if (success == NO) {
+    success = [self savedBackgroundColorRed:redComponent
+                                      green:greenComponent
+                                       blue:blueComponent];
+  }
+      
   return success;
 }
 
@@ -541,11 +529,11 @@ static OSEScreen *systemScreen = nil;
                         green:(CGFloat)greenComponent
                          blue:(CGFloat)blueComponent
 {
-  unsigned	red, green, blue;
-  NSString	*rgbSpec;
-  char		*x_color_spec;
-  Screen	*xScreen = DefaultScreenOfDisplay(xDisplay);
-  XColor	xColor;
+  unsigned red, green, blue;
+  NSString *rgbSpec;
+  char     *x_color_spec;
+  Screen   *xScreen = DefaultScreenOfDisplay(xDisplay);
+  XColor   xColor;
 
   // rgbColor = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
   
@@ -556,17 +544,15 @@ static OSEScreen *systemScreen = nil;
   
   x_color_spec = (char *)[rgbSpec cString];
   
-  if (!XParseColor(xDisplay, xScreen->cmap, x_color_spec, &xColor))
-    {
-      fprintf(stderr,"OSEScreen: unknown color \"%s\"\n", x_color_spec);
-      return NO;
-    }
-  if (!XAllocColor(xDisplay, xScreen->cmap, &xColor))
-    {
-      fprintf(stderr, "OSEScreen: unable to allocate color for \"%s\"\n",
-              x_color_spec);
-      return NO;
-    }
+  if (!XParseColor(xDisplay, xScreen->cmap, x_color_spec, &xColor)) {
+    fprintf(stderr,"OSEScreen: unknown color \"%s\"\n", x_color_spec);
+    return NO;
+  }
+  if (!XAllocColor(xDisplay, xScreen->cmap, &xColor)) {
+    fprintf(stderr, "OSEScreen: unable to allocate color for \"%s\"\n",
+            x_color_spec);
+    return NO;
+  }
   
   XSetWindowBackground(xDisplay, xRootWindow, xColor.pixel);
   XClearWindow(xDisplay, xRootWindow);
@@ -594,13 +580,11 @@ static OSEScreen *systemScreen = nil;
 {
   NSMutableArray *activeDL = [[NSMutableArray alloc] init];
   
-  for (OSEDisplay *d in systemDisplays)
-    {
-      if ([d isActive])
-        {
-          [activeDL addObject:d];
-        }
+  for (OSEDisplay *d in systemDisplays) {
+    if ([d isActive]) {
+      [activeDL addObject:d];
     }
+  }
 
   return [activeDL autorelease];
 }
@@ -609,13 +593,11 @@ static OSEScreen *systemScreen = nil;
 {
   NSMutableArray *connectedDL = [[NSMutableArray alloc] init];
 
-  for (OSEDisplay *d in systemDisplays)
-    {
-      if ([d isConnected])
-        {
-          [connectedDL addObject:d];
-        }
-    }
+  for (OSEDisplay *d in systemDisplays) {
+      if ([d isConnected]) {
+        [connectedDL addObject:d];
+      }
+  }
 
   return [connectedDL autorelease];
 }
@@ -626,41 +608,40 @@ static OSEScreen *systemScreen = nil;
 {
   OSEDisplay *display;
   
-  for (display in systemDisplays)
-    {
-      if ([display isActive] && [display isMain])
-        break;
-      display = nil;
+  for (display in systemDisplays) {
+    if ([display isActive] && [display isMain]) {
+      break;
     }
+    display = nil;
+  }
   
   return display;
 }
 
 - (void)setMainDisplay:(OSEDisplay *)display
 {
-  if (display == nil)
-    {
-      XRRSetOutputPrimary(xDisplay, xRootWindow, None);
-      [self randrUpdateScreenResources];
-      return;
-    }
+  if (display == nil) {
+    XRRSetOutputPrimary(xDisplay, xRootWindow, None);
+    [self randrUpdateScreenResources];
+    return;
+  }
   
-  for (OSEDisplay *d in systemDisplays)
-    {
-      [d setMain:(d == display) ? YES : NO];
-    }
+  for (OSEDisplay *d in systemDisplays) {
+    [d setMain:(d == display) ? YES : NO];
+  }
   [self randrUpdateScreenResources];
-  if (useAutosave)
+  if (useAutosave) {
     [self saveCurrentDisplayLayout];
+  }
 }
 
 - (OSEDisplay *)displayAtPoint:(NSPoint)point
 {
-  for (OSEDisplay *display in systemDisplays)
-    {
-      if (NSPointInRect(point, [display frame]) == YES)
-        return display;
+  for (OSEDisplay *display in systemDisplays) {
+    if (NSPointInRect(point, [display frame]) == YES) {
+      return display;
     }
+  }
   
   return nil;
 }
@@ -679,26 +660,23 @@ static OSEScreen *systemScreen = nil;
 
 - (OSEDisplay *)displayWithName:(NSString *)name
 {
-  for (OSEDisplay *display in systemDisplays)
-    {
-      if ([[display outputName] isEqualToString:name])
-        return display;
+  for (OSEDisplay *display in systemDisplays) {
+    if ([[display outputName] isEqualToString:name]) {
+      return display;
     }
-
+  }
   return nil;
 }
 
 - (OSEDisplay *)displayWithID:(id)uniqueID
 {
   NSData *uid;
-  for (OSEDisplay *display in systemDisplays)
-    {
-      uid = [display uniqueID];
-      if (uid && ([uid hash] == [uniqueID hash]))
-        {
-          return display;
-        }
+  for (OSEDisplay *display in systemDisplays) {
+    uid = [display uniqueID];
+    if (uid && ([uid hash] == [uniqueID hash])) {
+      return display;
     }
+  }
 
   return nil;
 }
@@ -708,15 +686,16 @@ static OSEScreen *systemScreen = nil;
 {
   NSPoint position;
 
-  if (activated == NO)
+  if (activated == NO) {
     return display.hiddenFrame.origin;
+  }
   
   position = NSMakePoint(0, 0);
-  for (OSEDisplay *d in [self connectedDisplays])
-    {
-      if (d != display)
-        position.x += d.frame.size.width;
+  for (OSEDisplay *d in [self connectedDisplays]) {
+    if (d != display) {
+      position.x += d.frame.size.width;
     }
+  }
   
   return position;
 }
@@ -786,13 +765,12 @@ static OSEScreen *systemScreen = nil;
 {
   NSRect  frame = [display frame];
 
-  if (NSEqualPoints(position, frame.origin) == NO)
-    {
-      frame.origin = position;
-      [display setFrame:frame];
-  
-      [self applyDisplayLayout:[self arrangedDisplayLayout]];
-    }
+  if (NSEqualPoints(position, frame.origin) == NO) {
+    frame.origin = position;
+    [display setFrame:frame];
+    
+    [self applyDisplayLayout:[self arrangedDisplayLayout]];
+  }
 }
 //------------------------------------------------------------------------------
 // Layouts
@@ -829,76 +807,71 @@ static OSEScreen *systemScreen = nil;
   NSRect              frame;
   NSDictionary        *properties;
   
-  for (OSEDisplay *display in [self connectedDisplays])
-    {
-      // With default layout all monitors have origin set to (0.0,0.0),
-      // show the same contents. Primary(main) display make sense on aligned
-      // monitors (screen stretched across all active monitors).
-      // So in this case all monitors must be unset as primary(main).
-      if (arrange == NO)
-        [display setMain:NO];
-      else if ([systemDisplays indexOfObject:display] == 0)
-        [display setMain:YES];
+  for (OSEDisplay *display in [self connectedDisplays]) {
+    // With default layout all monitors have origin set to (0.0,0.0),
+    // show the same contents. Primary(main) display make sense on aligned
+    // monitors (screen stretched across all active monitors).
+    // So in this case all monitors must be unset as primary(main).
+    if (arrange == NO)
+      [display setMain:NO];
+    else if ([systemDisplays indexOfObject:display] == 0)
+      [display setMain:YES];
         
-      d = [[NSMutableDictionary alloc] init];
-      [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
-            forKey:OSEDisplayIDKey];
-      [d setObject:[display outputName]
-            forKey:OSEDisplayNameKey];
+    d = [[NSMutableDictionary alloc] init];
+    [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
+          forKey:OSEDisplayIDKey];
+    [d setObject:[display outputName]
+          forKey:OSEDisplayNameKey];
       
-      [d setObject:NSStringFromSize([display physicalSize])
-            forKey:OSEDisplayPhSizeKey];
+    [d setObject:NSStringFromSize([display physicalSize])
+          forKey:OSEDisplayPhSizeKey];
       
-      // Preferred resolution always at first position.
-      resolution = [display bestResolution];
-      frame = NSZeroRect;
-      frame.size = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
-      frame.origin = origin;
+    // Preferred resolution always at first position.
+    resolution = [display bestResolution];
+    frame = NSZeroRect;
+    frame.size = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
+    frame.origin = origin;
       
-      [d setObject:NSStringFromRect(frame)
-            forKey:OSEDisplayFrameKey];
-      [d setObject:NSStringFromRect(NSZeroRect)
-            forKey:OSEDisplayHiddenFrameKey];
-      [d setObject:[resolution objectForKey:OSEDisplayRateKey]
-            forKey:OSEDisplayFrameRateKey];
+    [d setObject:NSStringFromRect(frame)
+          forKey:OSEDisplayFrameKey];
+    [d setObject:NSStringFromRect(NSZeroRect)
+          forKey:OSEDisplayHiddenFrameKey];
+    [d setObject:[resolution objectForKey:OSEDisplayRateKey]
+          forKey:OSEDisplayFrameRateKey];
 
-      if ([display isBuiltin] && [OSEPower isLidClosed])
-        {
-          [d setObject:@"NO" forKey:OSEDisplayIsActiveKey];
-          [d setObject:@"NO" forKey:OSEDisplayIsMainKey];
-        }
-      else
-        {
-          [d setObject:@"YES" forKey:OSEDisplayIsActiveKey];
-          [d setObject:([display isMain]) ? @"YES" : @"NO"
-                forKey:OSEDisplayIsMainKey];
-        }
-      
-      gamma = [NSMutableDictionary new];
-      [gamma setObject:[NSNumber numberWithFloat:0.8]
-                forKey:OSEDisplayGammaRedKey];
-      [gamma setObject:[NSNumber numberWithFloat:0.8]
-                forKey:OSEDisplayGammaGreenKey];
-      [gamma setObject:[NSNumber numberWithFloat:0.8]
-                forKey:OSEDisplayGammaBlueKey];
-      [gamma setObject:[NSNumber numberWithFloat:1.0]
-                forKey:OSEDisplayGammaBrightnessKey];
-      [d setObject:gamma forKey:OSEDisplayGammaKey];
-      
-      if ((properties = [display properties]))
-        {
-          [d setObject:properties forKey:OSEDisplayPropertiesKey];
-        }
-      
-      [layout addObject:d];
-      [d release];
-
-      if (arrange && (![display isBuiltin] || ![OSEPower isLidClosed]))
-        {
-          origin.x +=
-            NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]).width;
-        }
+    if ([display isBuiltin] && [OSEPower isLidClosed]) {
+      [d setObject:@"NO" forKey:OSEDisplayIsActiveKey];
+      [d setObject:@"NO" forKey:OSEDisplayIsMainKey];
     }
+    else {
+      [d setObject:@"YES" forKey:OSEDisplayIsActiveKey];
+      [d setObject:([display isMain]) ? @"YES" : @"NO"
+            forKey:OSEDisplayIsMainKey];
+    }
+      
+    gamma = [NSMutableDictionary new];
+    [gamma setObject:[NSNumber numberWithFloat:0.8]
+              forKey:OSEDisplayGammaRedKey];
+    [gamma setObject:[NSNumber numberWithFloat:0.8]
+              forKey:OSEDisplayGammaGreenKey];
+    [gamma setObject:[NSNumber numberWithFloat:0.8]
+              forKey:OSEDisplayGammaBlueKey];
+    [gamma setObject:[NSNumber numberWithFloat:1.0]
+              forKey:OSEDisplayGammaBrightnessKey];
+    [d setObject:gamma forKey:OSEDisplayGammaKey];
+      
+    if ((properties = [display properties])) {
+      [d setObject:properties forKey:OSEDisplayPropertiesKey];
+    }
+      
+    [layout addObject:d];
+    [d release];
+
+    if (arrange && (![display isBuiltin] || ![OSEPower isLidClosed])) {
+      origin.x +=
+        NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]).width;
+    }
+  }
 
   return [layout copy];
 }
@@ -913,46 +886,42 @@ static OSEScreen *systemScreen = nil;
   NSDictionary        *properties;
   NSDictionary        *gamma;
 
-  for (OSEDisplay *display in [self connectedDisplays])
-    {
-      d = [[[NSMutableDictionary alloc] init] autorelease];
-      @try
-        {
-          [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
-                forKey:OSEDisplayIDKey];
-          [d setObject:[display outputName]
-                forKey:OSEDisplayNameKey];
+  for (OSEDisplay *display in [self connectedDisplays]) {
+    d = [[[NSMutableDictionary alloc] init] autorelease];
+    @try {
+      [d setObject:([display uniqueID] == nil) ? @" " : [display uniqueID]
+            forKey:OSEDisplayIDKey];
+      [d setObject:[display outputName]
+            forKey:OSEDisplayNameKey];
       
-          [d setObject:NSStringFromSize([display physicalSize])
-                forKey:OSEDisplayPhSizeKey];
+      [d setObject:NSStringFromSize([display physicalSize])
+            forKey:OSEDisplayPhSizeKey];
 
-          [d setObject:NSStringFromRect([display frame])
-                forKey:OSEDisplayFrameKey];
-          [d setObject:NSStringFromRect([display hiddenFrame])
-                forKey:OSEDisplayHiddenFrameKey];
-          [d setObject:[display.activeResolution objectForKey:OSEDisplayRateKey]
-                forKey:OSEDisplayFrameRateKey];
+      [d setObject:NSStringFromRect([display frame])
+            forKey:OSEDisplayFrameKey];
+      [d setObject:NSStringFromRect([display hiddenFrame])
+            forKey:OSEDisplayHiddenFrameKey];
+      [d setObject:[display.activeResolution objectForKey:OSEDisplayRateKey]
+            forKey:OSEDisplayFrameRateKey];
 
-          [d setObject:([display isActive]) ? @"YES" : @"NO"
-                forKey:OSEDisplayIsActiveKey];
-          [d setObject:([display isMain]) ? @"YES" : @"NO"
-                forKey:OSEDisplayIsMainKey];
+      [d setObject:([display isActive]) ? @"YES" : @"NO"
+            forKey:OSEDisplayIsActiveKey];
+      [d setObject:([display isMain]) ? @"YES" : @"NO"
+            forKey:OSEDisplayIsMainKey];
 
-          gamma = [display gammaDescription];
-          [d setObject:gamma forKey:OSEDisplayGammaKey];
-          if ((properties = [display properties]))
-            {
-              [d setObject:properties forKey:OSEDisplayPropertiesKey];
-            }
-        }
-      @catch (NSException *exception)
-        {
-          NSLog(@"Exception occured during getting layout of displays: %@",
-                exception.description);
-        }
-
-      [layout addObject:d];
+      gamma = [display gammaDescription];
+      [d setObject:gamma forKey:OSEDisplayGammaKey];
+      if ((properties = [display properties])) {
+        [d setObject:properties forKey:OSEDisplayPropertiesKey];
+      }
     }
+    @catch (NSException *exception) {
+      NSLog(@"Exception occured during getting layout of displays: %@",
+            exception.description);
+    }
+
+    [layout addObject:d];
+  }
 
   return layout;
 }
@@ -964,47 +933,46 @@ static OSEScreen *systemScreen = nil;
   NSRect	dFrame;
   NSDictionary	*resolution;
   
-  for (NSDictionary *d in layout)
-    {
-      dName = [d objectForKey:OSEDisplayNameKey];
+  for (NSDictionary *d in layout) {
+    dName = [d objectForKey:OSEDisplayNameKey];
 
-      // ID
-      if (![self displayWithID:[d objectForKey:OSEDisplayIDKey]])
-        { // Some display is not connected - use default layout
-          NSDebugLLog(@"Screen", @"OSEScreen: monitor %@ is not connected.", dName);
-          return NO;
-        }
-
-      // Resolution & origin
-      dFrame = NSRectFromString([d objectForKey:OSEDisplayFrameKey]);
-      if ([[d objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"YES"] &&
-          (dFrame.size.width <= 0 || dFrame.size.height <= 0))
-        { // Display resolution or origin not found
-          NSDebugLLog(@"Screen",
-                      @"OSEScreen: monitor %@ has no saved resolution or origin.",
-                      dName);
-          return NO;
-        }
-
-      // Is resolution supported by monitor?
-      // resolution = [d objectForKey:OSEDisplayResolutionKey];
-      // if (![[self displayWithName:dName] isSupportedResolution:resolution])
-      //   {
-      //     NSLog(@"OSEScreen: monitor %@ doesn't support resolution %@.",
-      //           dName, [resolution objectForKey:OSEDisplaySizeKey]);
-      //     return NO;
-      //   }
-      
-      if (!(gamma = [d objectForKey:OSEDisplayGammaKey]) ||
-          ![gamma objectForKey:OSEDisplayGammaRedKey] ||
-          ![gamma objectForKey:OSEDisplayGammaGreenKey] ||
-          ![gamma objectForKey:OSEDisplayGammaBlueKey] ||
-          ![gamma objectForKey:OSEDisplayGammaBrightnessKey])
-        { // Something wrong with saved gamma
-          NSDebugLLog(@"Screen", @"OSEScreen: display %@ no saved gamma", dName);
-          return NO;
-        }
+    // ID
+    if (![self displayWithID:[d objectForKey:OSEDisplayIDKey]]) {
+      // Some display is not connected - use default layout
+      NSDebugLLog(@"Screen", @"OSEScreen: monitor %@ is not connected.", dName);
+      return NO;
     }
+
+    // Resolution & origin
+    dFrame = NSRectFromString([d objectForKey:OSEDisplayFrameKey]);
+    if ([[d objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"YES"] &&
+        (dFrame.size.width <= 0 || dFrame.size.height <= 0)) {
+      // Display resolution or origin not found
+      NSDebugLLog(@"Screen",
+                  @"OSEScreen: monitor %@ has no saved resolution or origin.",
+                  dName);
+      return NO;
+    }
+
+    // Is resolution supported by monitor?
+    // resolution = [d objectForKey:OSEDisplayResolutionKey];
+    // if (![[self displayWithName:dName] isSupportedResolution:resolution])
+    //   {
+    //     NSLog(@"OSEScreen: monitor %@ doesn't support resolution %@.",
+    //           dName, [resolution objectForKey:OSEDisplaySizeKey]);
+    //     return NO;
+    //   }
+      
+    if (!(gamma = [d objectForKey:OSEDisplayGammaKey]) ||
+        ![gamma objectForKey:OSEDisplayGammaRedKey] ||
+        ![gamma objectForKey:OSEDisplayGammaGreenKey] ||
+        ![gamma objectForKey:OSEDisplayGammaBlueKey] ||
+        ![gamma objectForKey:OSEDisplayGammaBrightnessKey]) {
+      // Something wrong with saved gamma
+      NSDebugLLog(@"Screen", @"OSEScreen: display %@ no saved gamma", dName);
+      return NO;
+    }
+  }
 
   return YES;
 }
@@ -1013,9 +981,9 @@ static OSEScreen *systemScreen = nil;
 {
   NSSize       newPixSize;
   NSSize       mmSize;
-  OSEDisplay    *mainDisplay;
-  OSEDisplay    *lastActiveDisplay;
-  OSEDisplay    *display;
+  OSEDisplay   *mainDisplay;
+  OSEDisplay   *lastActiveDisplay;
+  OSEDisplay   *display;
   NSString     *displayName;
   NSDictionary *gamma;
   NSRect       frame;
@@ -1024,12 +992,11 @@ static OSEScreen *systemScreen = nil;
   NSPoint      origin;
 
   // Validate 'layout'
-  if ([self validateLayout:layout] == NO)
-    {
-      NSDebugLLog(@"Screen",
-                  @"OSEScreen: Proposed layout is invalid. Do nothing.");
-      return NO;
-    }
+  if ([self validateLayout:layout] == NO) {
+    NSDebugLLog(@"Screen",
+                @"OSEScreen: Proposed layout is invalid. Do nothing.");
+    return NO;
+  }
 
   // Calculate sizes of screen
   newPixSize = [self _sizeInPixelsForLayout:layout];
@@ -1044,94 +1011,85 @@ static OSEScreen *systemScreen = nil;
      but width is smaller. In VirtualBox this leads to - X Error: 
      BadMatch (invalid parameter attributes). */
   if (newPixSize.width > sizeInPixels.width &&
-      newPixSize.height > sizeInPixels.height)
-    {
-      NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: START");
-      XRRSetScreenSize(xDisplay, xRootWindow,
-                       (int)newPixSize.width, (int)newPixSize.height,
-                       (int)mmSize.width, (int)mmSize.height);
-      NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: END");
-    }
+      newPixSize.height > sizeInPixels.height) {
+    NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: START");
+    XRRSetScreenSize(xDisplay, xRootWindow,
+                     (int)newPixSize.width, (int)newPixSize.height,
+                     (int)mmSize.width, (int)mmSize.height);
+    NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: END");
+  }
   
   // Set resolution and gamma to displays
   mainDisplay = nil;
-  for (NSDictionary *displayLayout in layout)
-    {
-      displayName = [displayLayout objectForKey:OSEDisplayNameKey];
-      display = [self displayWithName:displayName];
+  for (NSDictionary *displayLayout in layout) {
+    displayName = [displayLayout objectForKey:OSEDisplayNameKey];
+    display = [self displayWithName:displayName];
 
-      // Set resolution to displays marked as active in layout
-      if ([[displayLayout objectForKey:OSEDisplayIsActiveKey]
-            isEqualToString:@"YES"])
-        {
-          if ([display isBuiltin] && [OSEPower isLidClosed])
-            {
-              // set 'frame' to preserve it in 'hiddenFrame' on deactivate
-              frame = NSRectFromString([displayLayout
+    // Set resolution to displays marked as active in layout
+    if ([[displayLayout objectForKey:OSEDisplayIsActiveKey]
+            isEqualToString:@"YES"]) {
+      if ([display isBuiltin] && [OSEPower isLidClosed]) {
+        // set 'frame' to preserve it in 'hiddenFrame' on deactivate
+        frame = NSRectFromString([displayLayout
                                          objectForKey:OSEDisplayFrameKey]);
-              display.frame = frame;
-              // save 'frame' in 'hiddenFrame'
-              [display setActive:NO];
-              // deactivate
-              [display setResolution:[OSEDisplay zeroResolution]
-                            position:display.hiddenFrame.origin];
-              continue;
-            }
+        display.frame = frame;
+        // save 'frame' in 'hiddenFrame'
+        [display setActive:NO];
+        // deactivate
+        [display setResolution:[OSEDisplay zeroResolution]
+                      position:display.hiddenFrame.origin];
+        continue;
+      }
 
-          if ([[displayLayout objectForKey:OSEDisplayIsMainKey]
-                isEqualToString:@"YES"])
-            mainDisplay = display;
+      if ([[displayLayout objectForKey:OSEDisplayIsMainKey]
+                isEqualToString:@"YES"]) {
+        mainDisplay = display;
+      }
 
-          frame = NSRectFromString([displayLayout
+      frame = NSRectFromString([displayLayout
                                      objectForKey:OSEDisplayFrameKey]);
-          frameRate = [displayLayout objectForKey:OSEDisplayFrameRateKey];
-          resolution = [display resolutionWithWidth:frame.size.width
-                                             height:frame.size.height
-                                               rate:[frameRate floatValue]];
-          [display setResolution:resolution position:frame.origin];
-          XFlush(xDisplay);
+      frameRate = [displayLayout objectForKey:OSEDisplayFrameRateKey];
+      resolution = [display resolutionWithWidth:frame.size.width
+                                         height:frame.size.height
+                                           rate:[frameRate floatValue]];
+      [display setResolution:resolution position:frame.origin];
+      XFlush(xDisplay);
 
-          lastActiveDisplay = display;
-        }
-      else // Setting zero resolution to display disables it.
-        {
-          [display setResolution:[OSEDisplay zeroResolution]
-                        position:[display hiddenFrame].origin];
-        }
-      gamma = [displayLayout objectForKey:OSEDisplayGammaKey];
-      [display setGammaFromDescription:gamma];
+      lastActiveDisplay = display;
     }
+    else { // Setting zero resolution to display disables it.
+      [display setResolution:[OSEDisplay zeroResolution]
+                    position:[display hiddenFrame].origin];
+    }
+    gamma = [displayLayout objectForKey:OSEDisplayGammaKey];
+    [display setGammaFromDescription:gamma];
+  }
 
   // If new screen size is SMALLER - set new screen size here
   if (newPixSize.width < sizeInPixels.width ||
-      newPixSize.height < sizeInPixels.height)
-    {
-      NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: START");
-      XRRSetScreenSize(xDisplay, xRootWindow,
-                       (int)newPixSize.width, (int)newPixSize.height,
-                       (int)mmSize.width, (int)mmSize.height);
-      NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: END");
-    }
+      newPixSize.height < sizeInPixels.height) {
+    NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: START");
+    XRRSetScreenSize(xDisplay, xRootWindow,
+                     (int)newPixSize.width, (int)newPixSize.height,
+                     (int)mmSize.width, (int)mmSize.height);
+    NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: END");
+  }
   
   sizeInPixels = newPixSize;
   
   // No active main displays left. Set main to last processed with loop above.
-  if (mainDisplay)
-    {
-      if ([mainDisplay isMain] == NO)
-        {
-          [mainDisplay setMain:YES];
-        }
+  if (mainDisplay) {
+    if ([mainDisplay isMain] == NO) {
+      [mainDisplay setMain:YES];
     }
-  else
-    {
-      [lastActiveDisplay setMain:YES];
-    }
+  }
+  else {
+    [lastActiveDisplay setMain:YES];
+  }
 
-  if (useAutosave == YES)
-    {
-      [self saveCurrentDisplayLayout];
-    }
+  if (useAutosave == YES) {
+    [self saveCurrentDisplayLayout];
+  }
 
   [updateScreenLock unlock];
   
