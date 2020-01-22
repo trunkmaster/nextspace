@@ -1039,15 +1039,18 @@ static OSEScreen *systemScreen = nil;
 
   [updateScreenLock lock];
   
-  // If new screen size is BIGGER - set new screen size here
-  if (newPixSize.width > sizeInPixels.width ||
+  /* If new screen size is BIGGER - set new screen size here
+     Example: current size is 1440x900, new size 1280x960. Height is bigger
+     but width is smaller. In VirtualBox this leads to - X Error: 
+     BadMatch (invalid parameter attributes). */
+  if (newPixSize.width > sizeInPixels.width &&
       newPixSize.height > sizeInPixels.height)
     {
-      // NSLog(@"OSEScreen: set new BIGGER screen size: START");
+      NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: START");
       XRRSetScreenSize(xDisplay, xRootWindow,
                        (int)newPixSize.width, (int)newPixSize.height,
                        (int)mmSize.width, (int)mmSize.height);
-      // NSLog(@"OSEScreen: set new BIGGER screen size: END");
+      NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: END");
     }
   
   // Set resolution and gamma to displays
@@ -1103,11 +1106,11 @@ static OSEScreen *systemScreen = nil;
   if (newPixSize.width < sizeInPixels.width ||
       newPixSize.height < sizeInPixels.height)
     {
-      // NSLog(@"OSEScreen: set new SMALLER screen size: START");
+      NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: START");
       XRRSetScreenSize(xDisplay, xRootWindow,
                        (int)newPixSize.width, (int)newPixSize.height,
                        (int)mmSize.width, (int)mmSize.height);
-      // NSLog(@"OSEScreen: set new SMALLER screen size: END");
+      NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: END");
     }
   
   sizeInPixels = newPixSize;
