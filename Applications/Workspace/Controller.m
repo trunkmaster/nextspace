@@ -717,6 +717,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [NSApp activateIgnoringOtherApps:YES];
 }
 
+- (void)applicationDidChangeScreenParameters: (NSNotification*)aNotification
+{
+  NSLog(@"[Controller] screen parameters were changed.");
+}
+
 //============================================================================
 // Access to Workspace data via NSApp
 //============================================================================
