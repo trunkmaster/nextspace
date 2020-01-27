@@ -61,10 +61,6 @@ static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
   dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
   dispatch_async(gq, ^{
       @autoreleasepool {
-        [self performSelectorOnMainThread:@selector(stopRRTimer)
-                               withObject:nil
-                            waitUntilDone:NO];
-        
         while (aSession.isRunning != NO) {
           [aSession launchSessionScript];
           [self performSelectorOnMainThread:@selector(userSessionWillClose:)
@@ -136,7 +132,6 @@ static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
       if (sessionExitStatus != ShutdownExitCode &&
           sessionExitStatus != RebootExitCode) {
         [self setWindowVisible:YES];
-        [self startRRTimer];
       }
     }
   }
@@ -163,13 +158,6 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   xScreen = DefaultScreen(xDisplay);
   xRootWindow = RootWindow(xDisplay, xScreen);
   xPanelWindow = (Window)[xServer windowDevice:[window windowNumber]];
-
-  // Subscribe to RandR notification
-  rrDisplay = XOpenDisplay(NULL);
-  XRRSelectInput(rrDisplay, RootWindow(rrDisplay, DefaultScreen(rrDisplay)),
-                 RRScreenChangeNotifyMask);
-  XSync(rrDisplay, False);
-  [self startRRTimer];
 }
 
 - (void)setRootWindowBackground
@@ -234,36 +222,6 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 
   XSync(xDisplay, 0);
   XSetErrorHandler(NULL);
-}
-
-// --- RandR and OSEPowerevents handling
-- (void)checkForRREvents
-{
-  XEvent event;
-
-  if (XPending(rrDisplay)) {
-    XNextEvent(rrDisplay, &event);
-    if (event.type & RRScreenChangeNotifyMask) {
-      XRRUpdateConfiguration(&event);
-      [window center];
-    }
-  }
-}
-
-- (void)startRRTimer
-{
-  rrTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
-                                             target:self
-                                           selector:@selector(checkForRREvents)
-                                           userInfo:nil
-                                            repeats:YES];
-  [rrTimer retain];
-}
-
-- (void)stopRRTimer
-{
-  [rrTimer invalidate];
-  [rrTimer release];
 }
 
 //============================================================================
@@ -585,6 +543,13 @@ int ConversationFunction(int num_msg,
                          name:OSEPowerLidDidChangeNotification
                        object:systemPower];
 
+  // Screen parameters changes
+  [[NSNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(handleScreenParametersChange:)
+           name:NSApplicationDidChangeScreenParametersNotification
+         object:NSApp];
+
   // Defaults
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
@@ -604,6 +569,11 @@ int ConversationFunction(int num_msg,
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {
   // NSLog(@"Control did end editing.");
+}
+
+- (void)handleScreenParametersChange:(NSNotification *)aNotif
+{
+  [window center];
 }
 
 - (void)authenticate:(id)sender
