@@ -270,7 +270,6 @@ LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBXINERAMA = @LIBXINERAMA@
 LIBXMU = @LIBXMU@
-LIBXRANDR = @LIBXRANDR@
 LINGUAS = @LINGUAS@
 LIPO = @LIPO@
 LN_S = @LN_S@
@@ -412,7 +411,6 @@ wmaker_LDADD = \
 	$(top_builddir)/WINGs/libWUtil.la\
 	$(top_builddir)/wrlib/libwraster.la\
 	@XLFLAGS@ \
-	@LIBXRANDR@ \
 	@LIBXINERAMA@ \
 	@XLIBS@ \
 	@LIBM@ \

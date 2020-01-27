@@ -590,17 +590,6 @@ AC_ARG_ENABLE([xinerama],
 WM_XEXT_CHECK_XINERAMA
 
 
-dnl RandR support
-dnl =============
-AC_ARG_ENABLE([randr],
-    [AS_HELP_STRING([--enable-randr], [enable RandR extension support (NOT recommended, buggy)])],
-    [AS_CASE(["$enableval"],
-        [yes|no], [],
-        [AC_MSG_ERROR([bad value $enableval for --enable-randr]) ]) ],
-    [enable_randr=no])
-WM_XEXT_CHECK_XRANDR
-
-
 dnl Math library
 dnl ============
 dnl libWINGS uses math functions, check whether usage requires linking
