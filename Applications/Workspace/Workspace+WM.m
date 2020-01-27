@@ -1615,6 +1615,15 @@ void XWUpdateScreenInfo(WScreen *scr)
                    object:nil];
 }
 
+// FIXME: do we need to support multi-screen setups?
+// Is it actually demanded nowadays?
+void XWUpdateScreenParameters(void)
+{
+  for (int i = 0; i < w_global.screen_count; i++) {
+    XWUpdateScreenInfo(wScreenWithNumber(i));
+  }
+}
+
 void XWActivateApplication(WScreen *scr, char *app_name)
 {
   id           app;

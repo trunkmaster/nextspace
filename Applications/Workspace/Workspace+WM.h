@@ -163,6 +163,7 @@ void XWApplicationDidCloseWindow(WWindow *wwin);
 
 // Called from WM/src/event.c on update of XrandR screen configuration
 void XWUpdateScreenInfo(WScreen *scr);
+void XWUpdateScreenParameters(void);
 
 void XWActivateApplication(WScreen *scr, char *app_name);
 void XWActivateWorkspaceApp(WScreen *scr);
