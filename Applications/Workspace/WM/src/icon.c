@@ -23,6 +23,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -180,6 +181,14 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
                                    wPreferences.icon_size,
                                    0, scr->w_depth, scr->w_visual, scr->w_colormap,
                                    scr->white_pixel);
+
+  /* Set NETWM window type to be correctly handled by compton */
+  // This atoms already exist in wmspe.c but defined static.
+  Atom data = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
+  Atom property = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
+  XChangeProperty(dpy, icon->core->window, property,
+                  XA_ATOM, 32, PropModeReplace,
+                  (unsigned char *)&data, 1);
 
   /* will be overriden if this is a application icon */
   icon->core->descriptor.handle_mousedown = miniwindowMouseDown;
