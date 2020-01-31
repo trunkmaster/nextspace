@@ -109,10 +109,6 @@ Display *rrDisplay;
 - (void)setWindowVisible:(BOOL)flag;
 - (void)closeAllXClients;
 
-- (void)checkForRREvents;
-- (void)startRRTimer;
-- (void)stopRRTimer;
-
 - (void)setBusyCursor;
 - (void)destroyBusyCursor;
 - (void)animateBusyCursor:(NSTimer *)timer;

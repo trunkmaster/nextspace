@@ -541,6 +541,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                name:OSEPowerLidDidChangeNotification
              object:systemPower];
       
+      [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(applicationDidChangeScreenParameters:)
+               name:NSApplicationDidChangeScreenParametersNotification
+             object:NSApp];
+      
       recycler = [[Recycler alloc] initWithDock:dock];
       
       WWMDockAutoLaunch(dock);
@@ -715,6 +721,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   NSLog(@"Activating Workspace from Controller!");
   [NSApp activateIgnoringOtherApps:YES];
+}
+
+- (void)applicationDidChangeScreenParameters:(NSNotification*)aNotification
+{
+  XWUpdateScreenParameters();
 }
 
 //============================================================================

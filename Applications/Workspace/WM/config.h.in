@@ -206,9 +206,6 @@
 /* defined when valid PNG library with header was found */
 #undef USE_PNG
 
-/* defined when valid RandR library with header was found */
-#undef USE_RANDR
-
 /* defined when valid TIFF library with header was found */
 #undef USE_TIFF
 

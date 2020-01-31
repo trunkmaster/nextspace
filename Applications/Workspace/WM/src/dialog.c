@@ -1344,16 +1344,6 @@ void wShowInfoPanel(WScreen *scr)
 	}
 #endif
 
-#ifdef USE_RANDR
-	strbuf = wstrappend(strbuf, _("\n"));
-	strbuf = wstrappend(strbuf, "RandR: ");
-	if (w_global.xext.randr.supported)
-		strbuf = wstrappend(strbuf, _("supported"));
-	else
-		strbuf = wstrappend(strbuf, _("unsupported"));
-	strbuf = wstrappend(strbuf, ".");
-#endif
-
 	panel->infoL = WMCreateLabel(panel->win);
 	WMResizeWidget(panel->infoL, 350, 80);
 	WMMoveWidget(panel->infoL, 15, 115);

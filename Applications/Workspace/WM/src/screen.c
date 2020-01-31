@@ -31,10 +31,6 @@
 #ifdef KEEP_XKB_LOCK_STATUS
 #include <X11/XKBlib.h>
 #endif				/* KEEP_XKB_LOCK_STATUS */
-#ifdef USE_RANDR
-#include <X11/extensions/Xrandr.h>
-#endif
-
 #include <wraster.h>
 #include "WindowMaker.h"
 #include "def_pixmaps.h"
@@ -664,11 +660,6 @@ WScreen *wScreenInit(int screen_number)
     XkbChangeEnabledControls(dpy, XkbUseCoreKbd, XkbAudibleBellMask, 0);
   }
 #endif				/* KEEP_XKB_LOCK_STATUS */
-
-#ifdef USE_RANDR
-  if (w_global.xext.randr.supported)
-    XRRSelectInput(dpy, scr->root_win, RRScreenChangeNotifyMask);
-#endif
 
   XSync(dpy, False);
   XSetErrorHandler(oldHandler);
