@@ -44,9 +44,6 @@
 #ifdef KEEP_XKB_LOCK_STATUS
 #include <X11/XKBlib.h>
 #endif
-#ifdef USE_RANDR
-#include <X11/extensions/Xrandr.h>
-#endif
 
 #include "WindowMaker.h"
 #include "GNUstep.h"
@@ -595,10 +592,6 @@ void StartUp(Bool defaultScreenOnly)
 #ifdef USE_XSHAPE
   /* ignore j */
   w_global.xext.shape.supported = XShapeQueryExtension(dpy, &w_global.xext.shape.event_base, &j);
-#endif
-
-#ifdef USE_RANDR
-  w_global.xext.randr.supported = XRRQueryExtension(dpy, &w_global.xext.randr.event_base, &j);
 #endif
 
 #ifdef KEEP_XKB_LOCK_STATUS

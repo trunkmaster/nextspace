@@ -615,13 +615,6 @@ extern struct wmaker_global_variables {
     } xkb;
 #endif
 
-#ifdef USE_RANDR
-    struct {
-      Bool supported;
-      int event_base;
-    } randr;
-#endif
-
     /*
      * If no extension were activated, we would end up with an empty
      * structure, which old compilers may not appreciate, so let's

@@ -541,6 +541,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                name:OSEPowerLidDidChangeNotification
              object:systemPower];
       
+      [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(applicationDidChangeScreenParameters:)
+               name:NSApplicationDidChangeScreenParametersNotification
+             object:NSApp];
+      
       recycler = [[Recycler alloc] initWithDock:dock];
       
       WWMDockAutoLaunch(dock);
@@ -717,6 +723,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [NSApp activateIgnoringOtherApps:YES];
 }
 
+- (void)applicationDidChangeScreenParameters:(NSNotification*)aNotification
+{
+  XWUpdateScreenParameters();
+}
+
 //============================================================================
 // Access to Workspace data via NSApp
 //============================================================================
@@ -743,6 +754,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (Inspector *)inspectorPanel
 {
+  if (isQuitting != NO) {
+    return nil;
+  }
   return inspector;
 }
 
@@ -750,6 +764,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // fileSystemMonitor will be released on application termination.
 - (OSEFileSystemMonitor *)fileSystemMonitor
 {
+  if (isQuitting != NO) {
+    return nil;
+  }
   if (!fileSystemMonitor)
     {
       // Must be released in -dealloc.
@@ -773,27 +790,37 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (id<MediaManager>)mediaManager
 {
-  if (!mediaManager)
-    {
-      mediaManager = [[OSEMediaManager alloc] init];
-      mediaAdaptor = [mediaManager adaptor];
-    }
-
+  if (isQuitting != NO) {
+    return nil;
+  }
+  if (!mediaManager) {
+    mediaManager = [[OSEMediaManager alloc] init];
+    mediaAdaptor = [mediaManager adaptor];
+  }
   return mediaAdaptor;
 }
 
 - (Processes *)processesPanel
 {
+  if (isQuitting != NO) {
+    return nil;
+  }
   return procPanel;
 }
 
 - (Recycler *)recycler
 {
+  if (isQuitting != NO) {
+    return nil;
+  }
   return recycler;
 }
 
 - (Finder *)finder
 {
+  if (isQuitting != NO) {
+    return nil;
+  }
   if (finder == nil) {
     finder = [[Finder alloc] initWithFileViewer:rootViewer];
   }

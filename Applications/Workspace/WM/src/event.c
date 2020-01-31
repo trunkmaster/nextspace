@@ -45,10 +45,6 @@
 #include "xdnd.h"
 #endif
 
-#ifdef USE_RANDR
-#include <X11/extensions/Xrandr.h>
-#endif
-
 #ifdef KEEP_XKB_LOCK_STATUS
 #include <X11/XKBlib.h>
 #endif				/* KEEP_XKB_LOCK_STATUS */
@@ -292,10 +288,6 @@ void DispatchEvent(XEvent * event)
     break;
 
   case ConfigureNotify:
-#ifdef USE_RANDR
-    if (event->xconfigure.window == DefaultRootWindow(dpy))
-      XRRUpdateConfiguration(event);
-#endif
     break;
 
   case SelectionRequest:
@@ -593,8 +585,6 @@ static void handleExtensions(XEvent * event)
 #ifdef KEEP_XKB_LOCK_STATUS
   if (wPreferences.modelock && (event->type == w_global.xext.xkb.event_base)) {
     XkbEvent *e = (XkbEvent *)event;
-    /* fprintf(stderr, "[WM] XKB event occured! = %i,%i\n", */
-    /*         event->xany.type, e->any.xkb_type); */
     if (e->any.xkb_type == XkbBellNotify) {
       handleXkbBellNotify(e);
     }
@@ -603,23 +593,6 @@ static void handleExtensions(XEvent * event)
     }
   }
 #endif				/*KEEP_XKB_LOCK_STATUS */
-#ifdef USE_RANDR
-  if (w_global.xext.randr.supported && event->type == (w_global.xext.randr.event_base + RRScreenChangeNotify)) {
-    /* From xrandr man page: "Clients must call back into Xlib using
-     * XRRUpdateConfiguration when screen configuration change notify
-     * events are generated */
-    XRRUpdateConfiguration(event);
-#ifdef NEXTSPACE                
-    for (int i = 0; i < w_global.screen_count; i++) {
-      XWUpdateScreenInfo(wScreenWithNumber(i));
-    }
-#else
-    WCHANGE_STATE(WSTATE_RESTARTING);
-    Shutdown(WSRestartPreparationMode);
-    Restart(NULL,True);
-#endif
-  }
-#endif
 }
 
 static void handleMapRequest(XEvent * ev)

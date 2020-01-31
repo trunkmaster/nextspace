@@ -47,6 +47,7 @@
 }
 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;
+- (void)updateSlotSize;
 
 - (void)setPath:(NSString *)relativePath selection:(NSArray *)filenames;
 - (NSString *)path;
