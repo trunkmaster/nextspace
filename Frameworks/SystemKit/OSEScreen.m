@@ -258,7 +258,8 @@ static OSEScreen *systemScreen = nil;
 
 - (id)init
 {
-  self = [super init];
+  int event_base, error_base;
+  int major_version, minor_version;
 
   xDisplay = XOpenDisplay(getenv("DISPLAY"));
   if (!xDisplay) {
@@ -267,17 +268,18 @@ static OSEScreen *systemScreen = nil;
     return nil;
   }
 
-  {
-    int event_base, error_base;
-    int major_version, minor_version;
-
-    XRRQueryExtension(xDisplay, &event_base, &error_base);
+  if (XRRQueryExtension(xDisplay, &event_base, &error_base) == True) {
     XRRQueryVersion(xDisplay, &major_version, &minor_version);
-
     NSDebugLLog(@"Screen", @"XRandR %i.%i, event base:%i, error base:%i",
                 major_version, minor_version,
                 event_base, error_base);
   }
+  else {
+    NSLog(@"[OSEScreen] no XRandR extension available. Retrun nil.");
+    return nil;
+  }
+
+  self = [super init];
 
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   screen_resources = NULL;
