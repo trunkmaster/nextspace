@@ -87,31 +87,30 @@
 
   // Get NEXTSPACE display rect
   screen = [[OSEScreen new] autorelease];
-  if ([[screen activeDisplays] count] > 0) {
-    display = [screen mainDisplay];
-    if (!display) {
-      NSLog(@"No main display - using first active.");
-      display = [[screen activeDisplays] objectAtIndex:0];
+  if (screen != nil) {
+    if ([[screen activeDisplays] count] > 0) {
+      display = [screen mainDisplay];
+      if (!display) {
+        NSLog(@"No main display - using first active.");
+        display = [[screen activeDisplays] objectAtIndex:0];
+      }
     }
-  }
-  else if ([[screen connectedDisplays] count] > 0) {
-    NSLog(@"No active displays left - activating first connected.");
-    display = [[screen connectedDisplays] objectAtIndex:0];
-    [screen activateDisplay:display];
+    else if ([[screen connectedDisplays] count] > 0) {
+      NSLog(@"No active displays left - activating first connected.");
+      display = [[screen connectedDisplays] objectAtIndex:0];
+      [screen activateDisplay:display];
+    }
+    screenSize = [screen sizeInPixels];
+    displayRect = [display frame];
+    
+    NSLog(@"NEXTSPACE display frame: %@", NSStringFromRect(displayRect));
+    NSLog(@"NEXTSPACE screen size: %@", NSStringFromSize([screen sizeInPixels]));
   }
   else {
-    NSLog(@"No connected displays left. Can't center window.");
+    NSLog(@"No OSEScreen avaliable, use NScreen...");
+    displayRect = [[self screen] frame];
   }
   
-  if (!display) {
-    return NSMakePoint(0,0);
-  };
-  
-  screenSize = [screen sizeInPixels];
-  displayRect = [display frame];
-  NSLog(@"NEXTSPACE display frame: %@", NSStringFromRect(displayRect));
-  NSLog(@"NEXTSPACE screen size: %@", NSStringFromSize([screen sizeInPixels]));
-
   NSLog(@"Window frame: %@", NSStringFromRect(windowRect));
   
   // Calculate the new position of the window on display.
@@ -147,7 +146,7 @@
 {
   NSPoint newOrigin;
 
-  newOrigin = [self centeredOriginForGNUstep:YES];
+  newOrigin = [self centeredOriginForGNUstep:NO];
   NSLog(@"Center: x = %.0f, y = %.0f", newOrigin.x, newOrigin.y);
   // Set the origin
   [self setFrameOrigin:newOrigin];
