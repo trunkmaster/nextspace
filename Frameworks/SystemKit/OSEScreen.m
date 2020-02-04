@@ -275,7 +275,7 @@ static OSEScreen *systemScreen = nil;
                 event_base, error_base);
   }
   else {
-    NSLog(@"[OSEScreen] no XRandR extension available. Retrun nil.");
+    NSLog(@"[OSEScreen] no XRandR extension available. Return nil.");
     return nil;
   }
 
