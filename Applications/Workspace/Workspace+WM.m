@@ -628,18 +628,16 @@ NSString *WWMDockStatePath(void)
   userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WMState",
                           GSDefaultsRootForUser(NSUserName())];
   
-  if (![fm fileExistsAtPath:userDefPath])
-    {
-      appDefPath = [[NSBundle mainBundle] pathForResource:@"WMState"
-                                                   ofType:nil
-                                              inDirectory:@"WindowMaker"];
-      if (![fm fileExistsAtPath:appDefPath])
-        {
-          return nil;
-        }
-
-      [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
+  if (![fm fileExistsAtPath:userDefPath]) {
+    appDefPath = [[NSBundle mainBundle] pathForResource:@"WMState"
+                                                 ofType:nil
+                                            inDirectory:@"WM"];
+    if (![fm fileExistsAtPath:appDefPath]) {
+      return nil;
     }
+
+    [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
+  }
 
   return userDefPath;
 }
@@ -647,20 +645,9 @@ NSString *WWMDockStatePath(void)
 // Saves dock on-screen state into WMState file
 void WWMDockStateSave(void)
 {
-  // WScreen    *scr = NULL;
-  // WMPropList *old_state = NULL;
-
-  for (int i = 0; i < w_global.screen_count; i++)
-    {
-      wScreenSaveState(wScreenWithNumber(i));
-      // scr = wScreenWithNumber(i);
-      // old_state = scr->session_state;
-      // scr->session_state = WMCreatePLDictionary(NULL, NULL);
-      
-      // wDockSaveState(scr, old_state);
-      // WMReleasePropList(old_state);
-      // wDockSaveState(scr, scr->session_state);
-    }
+  for (int i = 0; i < w_global.screen_count; i++) {
+    wScreenSaveState(wScreenWithNumber(i));
+  }
 }
 
 // Returns NSDictionary representation of WMState file
