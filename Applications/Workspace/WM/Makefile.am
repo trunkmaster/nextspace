@@ -30,7 +30,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules LINGUAS='*'
 
 
-SUBDIRS = wrlib WINGs src po
+SUBDIRS = WINGs src po
 DIST_SUBDIRS = $(SUBDIRS)
 
 

@@ -13,8 +13,8 @@ dist_bin_SCRIPTS = get-wings-flags get-wutil-flags
 lib_LTLIBRARIES = libWUtil.la libWINGs.la
 
 
-LDADD= libWUtil.la libWINGs.la $(top_builddir)/wrlib/libwraster.la @INTLIBS@
-libWINGs_la_LIBADD = libWUtil.la $(top_builddir)/wrlib/libwraster.la @XLIBS@ @XFTLIBS@ @FCLIBS@ @LIBM@ @PANGOLIBS@
+LDADD= libWUtil.la libWINGs.la @INTLIBS@
+libWINGs_la_LIBADD = libWUtil.la @XLIBS@ @XFTLIBS@ @FCLIBS@ @LIBM@ @PANGOLIBS@
 libWUtil_la_LIBADD = @LIBBSD@
 
 EXTRA_DIST = BUGS make-rgb Examples Extras Tests

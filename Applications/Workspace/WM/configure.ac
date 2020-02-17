@@ -850,10 +850,6 @@ dnl ==========================
 AC_CONFIG_FILES(
     Makefile
 
-    dnl WRaster Library
-    wrlib/Makefile
-    wrlib/tests/Makefile
-
     dnl WINGs toolkit
     WINGs/Makefile WINGs/WINGs/Makefile WINGs/po/Makefile
     WINGs/Documentation/Makefile WINGs/Resources/Makefile WINGs/Extras/Makefile
