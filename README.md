@@ -1,8 +1,8 @@
 # NEXTSPACE
 
-NEXTSPACE is a desktop environment that brings a [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to CentOS 7 Linux. I try to keep the user experience as close as possible to the original NeXT OS. It is developed according to the ["OpenStep User Interface Guidelines"](http://www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf).
+NEXTSPACE is a desktop environment that brings a [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT OS. It is developed according to the ["OpenStep User Interface Guidelines"](http://www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf).
 
-* An explanation of the NeXTSTEP / NextStep naming convention is discussed in further detail [here](Documentation/OpenStep%20Confusion.md).
+> An explanation of the NeXTSTEP / NextStep naming convention is discussed in further detail [here](Documentation/OpenStep%20Confusion.md).
 
 ![NEXTSPACE example](Documentation/NEXTSPACE_Screenshot.png)
 
@@ -47,12 +47,12 @@ A fast and elegant Workspace Manager using multithreading to provide maximum smo
 * Recycler - support for drag-and-drop and the ability to restore recycled objects to their original location with a single click.
 * Other: inspectors for various types of contents, finder, console messages and preferences for various parts of Workspace.
 
-Note: Workspace is NOT:
-* WindowMaker with some patches
-* WindowMaker with some good configuration defaults only
-* Another implementation of WindowMaker.
-
-Workspace is written from scratch. Some WindowMaker code is a part of Workspace (as well as configuration defaults) to provide window management functions. The code is tightly coupled with Workspace to provide seamless intergation. Configurable parameters of the integrated WindowMaker are spread across Workspace's Preferences and Preferences application.
+> Note: Workspace is NOT:
+> * WindowMaker with some patches
+> * WindowMaker with some good configuration defaults only
+> * Another implementation of WindowMaker.
+> 
+> Workspace is written from scratch. Some WindowMaker code is a part of Workspace (as well as configuration defaults) to provide window management functions. The code is tightly coupled with Workspace to provide seamless intergation. Configurable parameters of the integrated WindowMaker are spread across Workspace's Preferences and Preferences application.
 
 Theoretically, Workspace can be used without WindowMaker. However, the current development focus is on a **single** application to deliver the best user experience.
 
