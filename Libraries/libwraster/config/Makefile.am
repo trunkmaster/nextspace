@@ -1,11 +1,11 @@
 ## automake input file for wrlib
 
 SUBDIRS = .
-DIST_SUBDIRS = $(SUBDIRS) tests
+DIST_SUBDIRS = $(SUBDIRS) ../tests
 
 AUTOMAKE_OPTIONS =
 
-EXTRA_DIST = tests
+EXTRA_DIST = ../tests
 
 lib_LTLIBRARIES = libwraster.la
 

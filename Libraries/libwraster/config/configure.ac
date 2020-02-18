@@ -36,7 +36,7 @@ dnl Configuration for Autoconf and Automake
 dnl =======================================
 AC_INIT([WindowMaker],[0.95.7],[wmaker-dev@lists.windowmaker.org],[WindowMaker],[http://www.windowmaker.org/])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([../config.h])
 
 dnl We need the EXTRA_xxx_DEPENDENCIES keyword in Makefiles which have been
 dnl introduced in the version 1.11.3; because the 1.12 was realeased shortly
@@ -44,7 +44,7 @@ dnl after, we just ask for it
 AM_INIT_AUTOMAKE([1.12 silent-rules])
 
 dnl Reference file used by 'configure' to make sure the path to sources is valid
-AC_CONFIG_SRCDIR([wraster.h])
+AC_CONFIG_SRCDIR([../wraster.h])
 
 dnl libtool library versioning
 dnl ==========================
@@ -548,7 +548,7 @@ dnl Spit out the configuration
 dnl ==========================
 AC_CONFIG_FILES(
     Makefile
-    tests/Makefile
+    ../tests/Makefile
 )
 
 AC_OUTPUT
