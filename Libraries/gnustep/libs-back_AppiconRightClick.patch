@@ -1,0 +1,23 @@
+# ChangeLog
+2020-01-30  Sergii Stoian  <stoyan255@gmail.com>
+
+    * Source/x11/XGServerEvent.m (_handleTakeFocusAtom:forContext:):
+      do not grab focus of active applicaion if right-click app menu requests
+      focus.
+
+--- libs-back/Source/x11/XGServerEvent.m	2020-02-19 15:29:22.564308184 +0200
++++ back-art/Source/x11/XGServerEvent.m	2020-02-18 16:20:17.072730738 +0200
+@@ -1987,6 +1990,13 @@
+       NSDebugLLog(@"Focus", @"Ignoring window focus request");
+       cWin->ignore_take_focus = NO;
+     }
++  else if ([[NSApp mainMenu] isTransient] != NO)
++    {
++      /* Do not grab focus from active application if right-click on our
++         application icon was performed. */
++      NSDebugLLog(@"Focus",
++                  @"Ignore transient application menu focus request.");
++    }
+   else if (cWin->number == key_num)
+     {
+       NSDebugLLog(@"Focus", @"Reasserting key window");
