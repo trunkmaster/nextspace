@@ -574,18 +574,18 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
 
         // create NSEvent
         e = [NSEvent mouseEventWithType: eventType
-                     location: eventLocation
-                     modifierFlags: eventFlags
-         timestamp: (NSTimeInterval)generic.lastClick / 1000.0
-                     windowNumber: cWin->number
-                     context: gcontext
-                     eventNumber: xEvent.xbutton.serial
-                     clickCount: clickCount
-                     pressure: 1.0
-                     buttonNumber: buttonNumber /* FIXME */
-                     deltaX: deltaX
-                     deltaY: deltaY
-                     deltaZ: 0.];
+                               location: eventLocation
+                          modifierFlags: eventFlags
+                              timestamp: (NSTimeInterval)generic.lastClick / 1000.0
+                           windowNumber: cWin->number
+                                context: gcontext
+                            eventNumber: xEvent.xbutton.serial
+                             clickCount: clickCount
+                               pressure: 1.0
+                           buttonNumber: buttonNumber /* FIXME */
+                                 deltaX: deltaX
+                                 deltaY: deltaY
+                                 deltaZ: 0.];
         break;
 
       case ButtonRelease:
@@ -1946,7 +1946,7 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
   NSWindow *keyWindow = [NSApp keyWindow];
   int key_num = [keyWindow windowNumber];
   NSEvent *e = nil;
-  
+
   NSDebugLLog(@"Focus",
               @"TakeFocus received by: %li (%lu) (focused = %lu, key = %d)",
               cWin->number, xEvent.xfocus.window,
