@@ -2839,7 +2839,20 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
   height = [rep pixelsHigh];
   colors = [rep samplesPerPixel];
 
+  if (rcontext->depth != 32)
+    {
+      NSLog(@"Unsupported context depth %d", rcontext->depth);
+      return 0;
+    }
+
   rxImage = RCreateXImage(rcontext, rcontext->depth, width, height);
+  if (rxImage->image->bytes_per_line != 4 * width)
+    {
+      NSLog(@"bytes_per_line %d does not match width %d",
+            rxImage->image->bytes_per_line, width);
+      RDestroyXImage(rcontext, rxImage);
+      return 0;
+    }
   swapColors((unsigned char *)rxImage->image->data, rep);
   
   xIconPixmap = XCreatePixmap(dpy, rcontext->drawable,
@@ -2848,7 +2861,8 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
             0, 0, 0, 0, width, height);
   RDestroyXImage(rcontext, rxImage);
   
-  xIconMask = alphaMaskForImage(dpy, ROOT, [rep bitmapData], width, height, colors, 0);
+  xIconMask = alphaMaskForImage(dpy, ROOT, [rep bitmapData],
+                                width, height, colors, 0);
 
   return 1;
 }
@@ -2962,7 +2976,7 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
       if (other)
 	level = other->win_attrs.window_level;
     }
-  else if (otherWin == 0 && op == NSWindowAbove)
+  else if (otherWin == 0 && op == NSWindowAbove && level < NSSubmenuWindowLevel)
     {
       /* Don't let the window go in front of the current key/main window.  */
       /* FIXME: Don't know how to get the current main window.  */
