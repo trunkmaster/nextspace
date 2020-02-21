@@ -63,6 +63,7 @@ typedef struct MonitorDevice {
 {
   Display           *dpy;
   int               defScreen;
+  NSSize            xScreenSize;
   NSMapTable        *screenList;
   Window	    grabWindow;
   struct XGGeneric  generic;
