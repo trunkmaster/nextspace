@@ -10,8 +10,6 @@
 #define GRAPHICS_cairo  4
 #define GRAPHICS_opal   5
 
-#define HAVE_WRASTER_H
-
 /* Define to type of graphics context to build */
 #undef BUILD_GRAPHICS
 
@@ -162,3 +160,6 @@
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
+
+/* Define to enable WRaster library */
+#undef HAVE_WRASTER_H

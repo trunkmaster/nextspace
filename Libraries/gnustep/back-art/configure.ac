@@ -546,11 +546,22 @@ if test "x$enable_glitz" = "xyes"; then
 fi
 
 #--------------------------------------------------------------------
-# Set definitions
+# WRaster library
 #--------------------------------------------------------------------
 WITH_WRASTER=no
+AC_CHECK_HEADERS(wraster.h, gs_cv_have_wraster=yes, gs_cv_have_wraster=no)
+if test $gs_cv_have_wraster = no; then
+  GRAPHIC_LFLAGS=
+else
+   GRAPHIC_LFLAGS=-lwraster
+   WITH_WRASTER=yes
+fi
 AC_SUBST(WITH_WRASTER)
 
+
+#--------------------------------------------------------------------
+# Set definitions
+#--------------------------------------------------------------------
 # Revert to previous flags (removing added GNUstep flags)
 CPPFLAGS=${GRAPHIC_CFLAGS}
 LDFLAGS=${GRAPHIC_LFLAGS}
@@ -801,3 +812,13 @@ You are about to build the $BUILD_GRAPHICS backend which is deprecated
 and likely to be removed in the future.
 EOF
 ])
+
+#
+# Summary
+#
+echo "======================================="
+echo " GNUstep backend configuration summary "
+echo "======================================="
+echo " Graphics library : $BUILD_GRAPHICS"
+echo " Server           : $BUILD_SERVER"
+echo " Backend name     : $BACKEND_NAME"

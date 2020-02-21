@@ -7108,11 +7108,35 @@ $as_echo "#define USE_GLITZ 1" >>confdefs.h
 fi
 
 #--------------------------------------------------------------------
+# WRaster library
+#--------------------------------------------------------------------
+WITH_WRASTER=no
+for ac_header in wraster.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "wraster.h" "ac_cv_header_wraster_h" "$ac_includes_default"
+if test "x$ac_cv_header_wraster_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_WRASTER_H 1
+_ACEOF
+ gs_cv_have_wraster=yes
+else
+  gs_cv_have_wraster=no
+fi
+
+done
+
+if test $gs_cv_have_wraster = no; then
+  GRAPHIC_LFLAGS=
+else
+   GRAPHIC_LFLAGS=-lwraster
+   WITH_WRASTER=yes
+fi
+
+
+
+#--------------------------------------------------------------------
 # Set definitions
 #--------------------------------------------------------------------
-WITH_WRASTER=yes
-
-
 # Revert to previous flags (removing added GNUstep flags)
 CPPFLAGS=${GRAPHIC_CFLAGS}
 LDFLAGS=${GRAPHIC_LFLAGS}
@@ -8699,3 +8723,13 @@ and likely to be removed in the future.
 EOF
 
 fi
+
+#
+# Summary
+#
+echo "======================================="
+echo " GNUstep backend configuration summary "
+echo "======================================="
+echo " Graphics library : $BUILD_GRAPHICS"
+echo " Server           : $BUILD_SERVER"
+echo " Backend name     : $BACKEND_NAME"
