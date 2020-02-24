@@ -898,6 +898,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [self fillInfoPanelWithSystemInfo];
     }
 
+  [infoPanel center];
   [infoPanel makeKeyAndOrderFront:nil];
 }
 
