@@ -127,59 +127,60 @@
   [self setFrameOrigin:newOrigin];
 }
 
+#define ANIMATION_DELAY 250
+
 - (void)shakePanel:(Window)panel onDisplay:(Display*)dpy
 {
-  NSPoint origin = [self frame].origin;
+  NSPoint origin;
   int     x, xo, y;
-  int     i = 0, j = 0, num_steps, num_shakes;
+  int     i, j, num_steps, num_shakes;
 
+  origin = [self frame].origin;
   xo = x = (int)origin.x;
   y = (int)(origin.y - [[self screen] frame].origin.y);
     
   num_steps = 4;
   num_shakes = 14;
-  for (i = 0; i < num_shakes; i++)
-    {
-      for (j = 0; j < num_steps; j++)
-        {
-          x += 10;
-          XMoveWindow(dpy, panel, x, y);
-          XSync(dpy, false);
-          usleep(250);
-        }
-      for (j = 0; j < num_steps*2; j++)
-        {
-          x -= 10;
-          XMoveWindow(dpy, panel, x, y);
-          XSync(dpy, false);
-          usleep(250);
-        }
-      for (j = 0; j < num_steps; j++)
-        {
-          x += 10;
-          XMoveWindow(dpy, panel, x, y);
-          XSync(dpy, false);
-          usleep(250);
-        }
+  for (i = 0; i < num_shakes; i++) {
+    for (j = 0; j < num_steps; j++) {
+      x += 10;
+      XMoveWindow(dpy, panel, x, y);
+      XSync(dpy, false);
+      usleep(ANIMATION_DELAY);
     }
+    for (j = 0; j < num_steps*2; j++) {
+      x -= 10;
+      XMoveWindow(dpy, panel, x, y);
+      XSync(dpy, false);
+      usleep(ANIMATION_DELAY);
+    }
+    for (j = 0; j < num_steps; j++) {
+      x += 10;
+      XMoveWindow(dpy, panel, x, y);
+      XSync(dpy, false);
+      usleep(ANIMATION_DELAY);
+    }
+  }
   XMoveWindow(dpy, panel, xo, y);
   XSync(dpy, False);
 }
 
-#define SHRINKFACTOR 2
+#define SHRINK_FACTOR 2
 
 - (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy
 {
-  NSRect  windowRect = [self frame];
-  NSPoint origin = windowRect.origin;
+  NSRect  windowRect;
+  NSPoint origin;
   GC      gc;
   Pixmap  pixmap;
   XImage  *windowSnap;
-  int     x, y, width, height, xo, wo;
+  int     x, y, width, height, initial_x, initial_width;
 
-  xo = x = (int)origin.x;
+  windowRect = [self frame];
+  origin = windowRect.origin;
+  initial_x = x = (int)origin.x;
   y = (int)(origin.y - [[self screen] frame].origin.y);
-  wo = width = (int)windowRect.size.width;
+  initial_width = width = (int)windowRect.size.width;
   height = (int)windowRect.size.height;
 
   pixmap = XCreatePixmap(dpy, panel, width, height, 24);
@@ -188,21 +189,21 @@
   windowSnap = XGetImage(dpy, panel, 0, 0, width, height, AllPlanes, XYPixmap);
   XPutImage(dpy, pixmap, gc, windowSnap, 0, 0, 0, 0, width, height);
     
-  while ((width - SHRINKFACTOR) > 0) {
-    x += SHRINKFACTOR/2;
-    width -= SHRINKFACTOR;
+  while ((width - SHRINK_FACTOR) > 0) {
+    x += SHRINK_FACTOR/2;
+    width -= SHRINK_FACTOR;
     
     XMoveResizeWindow(dpy, panel, x, y, width, height);
     XCopyArea(dpy, pixmap, pixmap, gc,
-              SHRINKFACTOR/2, 0, width, height, 0, 0);
+              SHRINK_FACTOR/2, 0, width, height, 0, 0);
     XSetWindowBackgroundPixmap(dpy, panel, pixmap);
     XSync(dpy, False);
-    usleep(250);
+    usleep(ANIMATION_DELAY);
   }
 
   // Restore original window size. Don't call XSync and let Controller hide
   // panel before XMoveResizeWindow results will  made visible.
-  XMoveResizeWindow(dpy, panel, xo, y, wo, height);
+  XMoveResizeWindow(dpy, panel, initial_x, y, initial_width, height);
   XSync(dpy, False);
   
   XFree(windowSnap);
