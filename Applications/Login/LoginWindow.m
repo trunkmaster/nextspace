@@ -134,10 +134,8 @@
   int     i = 0, j = 0, num_steps, num_shakes;
 
   xo = x = (int)origin.x;
-  y = (int)origin.y;
+  y = (int)(origin.y - [[self screen] frame].origin.y);
     
-  // NSLog(@"shakePanel with frame: %@", NSStringFromRect(windowRect));
-  
   num_steps = 4;
   num_shakes = 14;
   for (i = 0; i < num_shakes; i++)
@@ -147,25 +145,25 @@
           x += 10;
           XMoveWindow(dpy, panel, x, y);
           XSync(dpy, false);
-          usleep(600);
+          usleep(250);
         }
       for (j = 0; j < num_steps*2; j++)
         {
           x -= 10;
           XMoveWindow(dpy, panel, x, y);
           XSync(dpy, false);
-          usleep(600);
+          usleep(250);
         }
       for (j = 0; j < num_steps; j++)
         {
           x += 10;
           XMoveWindow(dpy, panel, x, y);
           XSync(dpy, false);
-          usleep(600);
+          usleep(250);
         }
     }
-  // XMoveWindow(dpy, panel, xo, y);
-  [self center];
+  XMoveWindow(dpy, panel, xo, y);
+  XSync(dpy, False);
 }
 
 #define SHRINKFACTOR 2
@@ -180,7 +178,7 @@
   int     x, y, width, height, xo, wo;
 
   xo = x = (int)origin.x;
-  y = (int)origin.y;
+  y = (int)(origin.y - [[self screen] frame].origin.y);
   wo = width = (int)windowRect.size.width;
   height = (int)windowRect.size.height;
 
@@ -205,6 +203,7 @@
   // Restore original window size. Don't call XSync and let Controller hide
   // panel before XMoveResizeWindow results will  made visible.
   XMoveResizeWindow(dpy, panel, xo, y, wo, height);
+  XSync(dpy, False);
   
   XFree(windowSnap);
   XFreeGC(dpy, gc);
