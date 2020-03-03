@@ -147,6 +147,7 @@ pid_t WWMExecuteCommand(NSString *command);
 // Visible in WindowMaker and Workspace
 // Workspace callbacks for WindowMaker.
 //-----------------------------------------------------------------------------
+int XWDockMaxIcons(void);
 int WWMDockLevel();
 void WWMSetDockLevel(int level);
 #include <appicon.h> // to silence compiler

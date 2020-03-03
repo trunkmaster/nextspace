@@ -527,6 +527,12 @@ void WWMDockCollapse(WDock *dock)
 
 // -- Should be called from already existing @autoreleasepool ---
 
+int XWDockMaxIcons(void)
+{
+  NSInteger screenHeight;
+  screenHeight = [[[OSEScreen sharedScreen] mainDisplay] frame].size.height;
+  return (int)(screenHeight / wPreferences.icon_size);
+}
 enum {
   KeepOnTop = WMDockLevel,
   Normal = WMNormalLevel,
@@ -537,15 +543,16 @@ int WWMDockLevel()
   int current_level = -1;
   NSDictionary *dockState = [WWMDockState() objectForKey:@"Dock"];
   
-  if ([[dockState objectForKey:@"Lowered"] isEqualToString:@"Yes"]) { // Normal or AutoRaiseLower
-    if ([[dockState objectForKey:@"AutoRaiseLower"] isEqualToString:@"Yes"]) { // AutoRaiseLower
+  if ([[dockState objectForKey:@"Lowered"] isEqualToString:@"Yes"]) {
+    // Normal or AutoRaiseLower
+    if ([[dockState objectForKey:@"AutoRaiseLower"] isEqualToString:@"Yes"]) {
       current_level = AutoRaiseLower;
     }
-    else { // Normal
+    else {
       current_level = Normal;
     }
   }
-  else { // KeepOnTop
+  else {
     current_level = KeepOnTop;
   }
 

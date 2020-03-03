@@ -1318,7 +1318,10 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
     break;
   case WM_DOCK:
   default:
-    dock->max_icons = scr->scr_height / wPreferences.icon_size;
+    {
+      /* dock->max_icons = scr->scr_height / wPreferences.icon_size; */
+      dock->max_icons = XWDockMaxIcons();
+    }
   }
 
   dock->icon_array = wmalloc(sizeof(WAppIcon *) * dock->max_icons);
