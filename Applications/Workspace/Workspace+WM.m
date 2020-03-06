@@ -527,6 +527,12 @@ void WWMDockCollapse(WDock *dock)
 
 // -- Should be called from already existing @autoreleasepool ---
 
+int XWDockMaxIcons(void)
+{
+  NSInteger screenHeight;
+  screenHeight = [[[OSEScreen sharedScreen] mainDisplay] frame].size.height;
+  return (int)(screenHeight / wPreferences.icon_size);
+}
 enum {
   KeepOnTop = WMDockLevel,
   Normal = WMNormalLevel,
@@ -537,15 +543,16 @@ int WWMDockLevel()
   int current_level = -1;
   NSDictionary *dockState = [WWMDockState() objectForKey:@"Dock"];
   
-  if ([[dockState objectForKey:@"Lowered"] isEqualToString:@"Yes"]) { // Normal or AutoRaiseLower
-    if ([[dockState objectForKey:@"AutoRaiseLower"] isEqualToString:@"Yes"]) { // AutoRaiseLower
+  if ([[dockState objectForKey:@"Lowered"] isEqualToString:@"Yes"]) {
+    // Normal or AutoRaiseLower
+    if ([[dockState objectForKey:@"AutoRaiseLower"] isEqualToString:@"Yes"]) {
       current_level = AutoRaiseLower;
     }
-    else { // Normal
+    else {
       current_level = Normal;
     }
   }
-  else { // KeepOnTop
+  else {
     current_level = KeepOnTop;
   }
 
@@ -628,18 +635,16 @@ NSString *WWMDockStatePath(void)
   userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WMState",
                           GSDefaultsRootForUser(NSUserName())];
   
-  if (![fm fileExistsAtPath:userDefPath])
-    {
-      appDefPath = [[NSBundle mainBundle] pathForResource:@"WMState"
-                                                   ofType:nil
-                                              inDirectory:@"WindowMaker"];
-      if (![fm fileExistsAtPath:appDefPath])
-        {
-          return nil;
-        }
-
-      [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
+  if (![fm fileExistsAtPath:userDefPath]) {
+    appDefPath = [[NSBundle mainBundle] pathForResource:@"WMState"
+                                                 ofType:nil
+                                            inDirectory:@"WM"];
+    if (![fm fileExistsAtPath:appDefPath]) {
+      return nil;
     }
+
+    [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
+  }
 
   return userDefPath;
 }
@@ -647,20 +652,9 @@ NSString *WWMDockStatePath(void)
 // Saves dock on-screen state into WMState file
 void WWMDockStateSave(void)
 {
-  // WScreen    *scr = NULL;
-  // WMPropList *old_state = NULL;
-
-  for (int i = 0; i < w_global.screen_count; i++)
-    {
-      wScreenSaveState(wScreenWithNumber(i));
-      // scr = wScreenWithNumber(i);
-      // old_state = scr->session_state;
-      // scr->session_state = WMCreatePLDictionary(NULL, NULL);
-      
-      // wDockSaveState(scr, old_state);
-      // WMReleasePropList(old_state);
-      // wDockSaveState(scr, scr->session_state);
-    }
+  for (int i = 0; i < w_global.screen_count; i++) {
+    wScreenSaveState(wScreenWithNumber(i));
+  }
 }
 
 // Returns NSDictionary representation of WMState file
@@ -1593,7 +1587,8 @@ void XWUpdateScreenInfo(WScreen *scr)
   // 4.2 Move Dock
   // Place Dock into main display with changed usable area.
   [RecyclerIcon recyclerAppIconForDock:scr->dock];
-  moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
+  moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE),
+           dRect.origin.y);
   
   // 5. Move IconYard
   // IconYard is placed into main display automatically.

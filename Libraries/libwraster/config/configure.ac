@@ -1,0 +1,582 @@
+dnl ============================================================================
+dnl
+dnl Window Maker autoconf input
+dnl
+AC_COPYRIGHT([Copyright (c) 2001-2015 The Window Maker Team])
+dnl
+dnl ============================================================================
+dnl
+dnl This program is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2 of the License, or
+dnl (at your option) any later version.
+dnl
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU General Public License along
+dnl with this program; see the file COPYING.
+dnl
+dnl ============================================================================
+dnl
+dnl Process with: ./autogen.sh
+
+
+dnl Due to a bug in Autoconf 2.68 (apparently a regression), we need at least
+dnl version 2.68b which includes this patch:
+dnl   http://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=commit;h=2b0d95faef68d7ed7c08b0edb9ff1c38728376fa
+dnl
+dnl Because the 2.69 was released only a few month later, let's just ask for it
+AC_PREREQ([2.69])
+
+
+dnl Configuration for Autoconf and Automake
+dnl =======================================
+AC_INIT([WindowMaker],[0.95.7],[wmaker-dev@lists.windowmaker.org],[WindowMaker],[http://www.windowmaker.org/])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS([../config.h])
+
+dnl We need the EXTRA_xxx_DEPENDENCIES keyword in Makefiles which have been
+dnl introduced in the version 1.11.3; because the 1.12 was realeased shortly
+dnl after, we just ask for it
+AM_INIT_AUTOMAKE([1.12 silent-rules])
+
+dnl Reference file used by 'configure' to make sure the path to sources is valid
+AC_CONFIG_SRCDIR([../wraster.h])
+
+dnl libtool library versioning
+dnl ==========================
+dnl
+dnl current
+dnl revision
+dnl age
+dnl
+dnl 1. Start with version information of ‘0:0:0’ for each libtool library.
+dnl 2. Update the version information only immediately before a public
+dnl release of your software. More frequent updates are unnecessary, and
+dnl only guarantee that the current interface number gets larger faster.
+dnl 3. If the library source code has changed at all since the last
+dnl update, then increment revision (‘c:r:a’ becomes ‘c:r+1:a’).
+dnl 4. If any interfaces have been added, removed, or changed since the
+dnl last update, increment current, and set revision to 0.
+dnl 5. If any interfaces have been added since the last public release,
+dnl then increment age.
+dnl 6. If any interfaces have been removed or changed since the last
+dnl public release, then set age to 0.
+dnl
+dnl libwraster
+WRASTER_CURRENT=5
+WRASTER_REVISION=0
+WRASTER_AGE=0
+WRASTER_VERSION=$WRASTER_CURRENT:$WRASTER_REVISION:$WRASTER_AGE
+AC_SUBST(WRASTER_VERSION)
+
+dnl Checks for programs
+dnl ===================
+AC_PROG_CC
+WM_PROG_CC_C11
+AC_PROG_LN_S
+AC_PROG_GCC_TRADITIONAL
+LT_INIT
+
+
+dnl Debugging Options
+dnl =================
+AC_ARG_ENABLE([debug],
+    [AS_HELP_STRING([--enable-debug], [enable debugging options, @<:@default=no@:>@])],
+    [AS_CASE(["$enableval"],
+        [yes], [debug=yes],
+        [no],  [debug=no],
+        [AC_MSG_ERROR([bad value $enableval for --enable-debug])] )],
+    [debug=no])
+AS_IF([test "x$debug" = "xyes"],
+    [dnl This flag should have already been detected and added, but if user
+     dnl provided an explicit CFLAGS it may not be the case
+     AS_IF([echo " $CFLAGS " | grep " -g " 2>&1 > /dev/null],
+           [@%:@ Debug symbol already activated],
+           [AX_CFLAGS_GCC_OPTION([-g])])
+     dnl
+     dnl This flag generally makes debugging nightmarish, remove it if present
+     CFLAGS="`echo "$CFLAGS" | sed -e 's/-fomit-frame-pointer *//' `"
+     dnl
+     dnl Enable internal debug code
+     CPPFLAGS="$CPPFLAGS -DDEBUG"
+],  [dnl
+     dnl When debug is not enabled, the user probably does not wants to keep
+     dnl assertions in the final program
+     CPPFLAGS="$CPPFLAGS -DNDEBUG"
+])
+
+
+AX_CFLAGS_GCC_OPTION([-Wall])
+AX_CFLAGS_GCC_OPTION([-Wextra -Wno-sign-compare])
+dnl
+dnl The use of trampolines cause code that can crash on some secured OS, it is
+dnl also known to be a source of crash if not used properly, in a more general
+dnl way it tends to generate binary code that may not be optimal, and it is
+dnl not compatible with the 'nested-func-to-macro' workaround
+WM_CFLAGS_CHECK_FIRST([-Wtrampolines],
+         [-Werror=trampolines  dnl try to generate an error if possible
+          -Wtrampolines        dnl if not, try to fall back to a simple warning
+         ])
+dnl
+AS_IF([test "x$debug" = "xyes"],
+    [dnl When debug is enabled, we try to activate more checks from
+     dnl the compiler. They are on independant check because the
+     dnl macro checks all the options at once, but we may have cases
+     dnl where some options are not supported and we don't want to
+     dnl loose all of them.
+     dnl
+     dnl clang, suggest parenthesis on bit operations that could be
+     dnl misunderstood due to C operator precedence
+     AX_CFLAGS_GCC_OPTION([-Wbitwise-op-parentheses])
+     dnl
+     dnl Points at code that gcc thinks is so complicated that gcc
+     dnl gives up trying to optimize, which probably also means it is
+     dnl too complicated to maintain
+     AX_CFLAGS_GCC_OPTION([-Wdisabled-optimization])
+     dnl
+     dnl Because of C's type promotion, the compiler has to generate
+     dnl less optimal code when a double constant is used in a
+     dnl float expression
+     AX_CFLAGS_GCC_OPTION([-Wdouble-promotion])
+     dnl
+     dnl Floating-point comparison is not a good idea
+     AX_CFLAGS_GCC_OPTION([-Wfloat-equal])
+     dnl
+     dnl clang warns about constants that may have portability issues due
+     dnl to the endianness of the host
+     AX_CFLAGS_GCC_OPTION([-Wfour-char-constants])
+     dnl
+     dnl clang warns about constant that may be too big to be portable
+     AX_CFLAGS_GCC_OPTION([-Wliteral-range])
+     dnl
+     dnl Try to report misuses of '&' versus '&&' and similar
+     AX_CFLAGS_GCC_OPTION([-Wlogical-op])
+     dnl
+     dnl clang, reports cases where the code assumes everyone is an
+     dnl expert in C operator precedence... which is unlikely!
+     AX_CFLAGS_GCC_OPTION([-Wlogical-op-parentheses])
+     dnl
+     dnl Reports declaration of global things that are done inside
+     dnl a local environment, instead of using the appropriate
+     dnl header
+     AX_CFLAGS_GCC_OPTION([-Wnested-externs])
+     dnl
+     dnl Warn about constant strings that could pose portability issues
+     AX_CFLAGS_GCC_OPTION([-Woverlength-strings])
+     dnl
+     dnl Use of 'sizeof()' on inappropriate pointer types
+     AX_CFLAGS_GCC_OPTION([-Wpointer-arith])
+     dnl
+     dnl Having more than 1 prototype for a function makes code updates
+     dnl more difficult, so try to avoid it
+     AX_CFLAGS_GCC_OPTION([-Wredundant-decls])
+     dnl
+     dnl clang, detect some misuses of sizeof. We also count in our code
+     dnl on the use of the macro 'wlength' which contains a check if the
+     dnl compiler support C11's static_assert
+     AX_CFLAGS_GCC_OPTION([-Wsizeof-array-argument])
+     dnl
+     dnl Prototype of function must be explicit, no deprecated K&R syntax
+     dnl and no empty argument list which prevents compiler from doing
+     dnl type checking when using the function
+     WM_CFLAGS_GCC_OPTION_STRICTPROTO
+     dnl
+     dnl Proper attributes helps the compiler to produce better code
+     WM_CFLAGS_CHECK_FIRST([format attribute suggest],
+         [-Wsuggest-attribute=format  dnl new gcc syntax
+          -Wmissing-format-attribute  dnl old gcc syntax, clang
+         ])
+     WM_CFLAGS_CHECK_FIRST([no-return attribute suggest],
+         [-Wsuggest-attribute=noreturn  dnl gcc syntax
+          -Wmissing-noreturn            dnl clang syntax
+         ])
+     dnl
+     dnl GCC provides a couple of checks to detect incorrect macro uses
+     AX_CFLAGS_GCC_OPTION([-Wundef])
+     WM_CFLAGS_GCC_OPTION_UNUSEDMACROS
+     dnl
+     dnl clang reports stuff marked unused but which is actually used
+     AX_CFLAGS_GCC_OPTION([-Wused-but-marked-unused])
+], [dnl
+     dnl When debug not enabled, we try to avoid some non-necessary
+     dnl messages from the compiler
+     dnl
+     dnl To support legacy X servers, we have sometime to use
+     dnl functions marked as deprecated. We do not wish our users
+     dnl to be worried about it
+     AX_CFLAGS_GCC_OPTION([-Wno-deprecated])
+     AX_CFLAGS_GCC_OPTION([-Wno-deprecated-declarations])
+])
+
+
+dnl Posix thread
+dnl ============
+dnl they are used by util/wmiv
+dnl AX_PTHREAD
+
+
+dnl Tracking on what is detected for final status
+dnl =============================================
+unsupported=""
+supported_core=""
+supported_xext=""
+supported_gfx=""
+
+
+dnl Platform-specific Makefile setup
+dnl ================================
+AS_CASE(["$host"],
+    [*-*-linux*|*-*-cygwin*|*-gnu*], [WM_OSDEP="linux" ; CPPFLAGS="$CPPFLAGS -D_XOPEN_SOURCE=600"],
+    [*-*-freebsd*|*-k*bsd-gnu*],     [WM_OSDEP="bsd"   ; CPPFLAGS="$CPPFLAGS -D_XOPEN_SOURCE=600 -DFREEBSD"],
+    [*-*-netbsd*],                   [WM_OSDEP="bsd"   ; CPPFLAGS="$CPPFLAGS -DNETBSD"],
+    [*-*-openbsd*],                  [WM_OSDEP="bsd"   ; CPPFLAGS="$CPPFLAGS -DOPENBSD"],
+    [*-*-dragonfly*],                [WM_OSDEP="bsd"   ; CPPFLAGS="$CPPFLAGS -DDRAGONFLYBSD"],
+    [*-apple-darwin*],               [WM_OSDEP="darwin"],
+    [*-*-solaris*],                  [WM_OSDEP="stub"],  dnl  solaris.c when done
+    [WM_OSDEP="stub"])
+AM_CONDITIONAL([WM_OSDEP_LINUX],   [test "x$WM_OSDEP" = "xlinux"])
+AM_CONDITIONAL([WM_OSDEP_BSD],     [test "x$WM_OSDEP" = "xbsd"])
+AM_CONDITIONAL([WM_OSDEP_DARWIN],  [test "x$WM_OSDEP" = "xdarwin"])
+AM_CONDITIONAL([WM_OSDEP_GENERIC], [test "x$WM_OSDEP" = "xstub"])
+
+
+dnl the prefix
+dnl ==========
+dnl
+dnl move this earlier in the script... anyone know why this is handled
+dnl in such a bizarre way?
+
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+dnl Let make expand exec_prefix.
+test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
+
+
+_bindir=`eval echo $bindir`
+_bindir=`eval echo $_bindir`
+_libdir=`eval echo $libdir`
+_libdir=`eval echo $_libdir`
+
+lib_search_path='-L${libdir}'
+
+inc_search_path='-I${includedir}'
+
+dnl ===============================================
+dnl Specify paths to look for libraries and headers
+dnl ===============================================
+AC_ARG_WITH(libs-from, AS_HELP_STRING([--with-libs-from], [pass compiler flags to look for libraries]),
+	[lib_search_path="$withval $lib_search_path"])
+
+AC_ARG_WITH(incs-from, AS_HELP_STRING([--with-incs-from], [pass compiler flags to look for header files]),
+	[inc_search_path="$withval $inc_search_path"])
+
+
+dnl ============================
+dnl Checks for library functions
+dnl ============================
+AC_FUNC_MEMCMP
+AC_FUNC_VPRINTF
+WM_FUNC_SECURE_GETENV
+AC_CHECK_FUNCS(gethostname select poll strcasecmp strncasecmp \
+	       setsid mallinfo mkstemp sysconf)
+AC_SEARCH_LIBS([strerror], [cposix])
+
+dnl nanosleep is generally available in standard libc, although not always the
+dnl case. One known example is Solaris which needs -lrt
+AC_SEARCH_LIBS([nanosleep], [rt], [],
+    [AC_MSG_ERROR([function 'nanosleep' not found, please report to wmaker-dev@lists.windowmaker.org])])
+
+
+dnl Check for strlcat/strlcpy
+dnl =========================
+AC_ARG_WITH([libbsd],
+  [AS_HELP_STRING([--without-libbsd], [do not use libbsd for strlcat and strlcpy [default=check]])],
+  [AS_IF([test "x$with_libbsd" != "xno"],
+    [with_libbsd=bsd]
+    [with_libbsd=]
+  )],
+  [with_libbsd=bsd])
+
+tmp_libs=$LIBS
+AC_SEARCH_LIBS([strlcat],[$with_libbsd],
+  [AC_DEFINE(HAVE_STRLCAT, 1, [Define if strlcat is available])],
+  [],
+  []
+)
+AC_SEARCH_LIBS([strlcpy],[$with_libbsd],
+  [AC_DEFINE(HAVE_STRLCAT, 1, [Define if strlcpy is available])],
+  [],
+  []
+)
+LIBS=$tmp_libs
+
+LIBBSD=
+AS_IF([test "x$ac_cv_search_strlcat" = "x-lbsd" -o "x$ac_cv_search_strlcpy" = "x-lbsd"],
+  [LIBBSD=-lbsd
+   AC_CHECK_HEADERS([bsd/string.h])]
+)
+AC_SUBST(LIBBSD)
+
+
+dnl Check for OpenBSD kernel memory interface - kvm(3)
+dnl ==================================================
+AS_IF([test "x$WM_OSDEP" = "xbsd"],
+  AC_SEARCH_LIBS([kvm_openfiles], [kvm]) )
+
+
+dnl Checks for header files
+dnl =======================
+AC_HEADER_SYS_WAIT
+AC_HEADER_TIME
+AC_CHECK_HEADERS(fcntl.h limits.h sys/ioctl.h libintl.h poll.h malloc.h ctype.h \
+		 string.h strings.h)
+
+
+dnl Checks for typedefs, structures, and compiler characteristics
+dnl =============================================================
+AC_C_CONST
+AC_C_INLINE
+WM_C_NORETURN
+AC_TYPE_SIZE_T
+AC_TYPE_PID_T
+WM_TYPE_SIGNAL
+
+
+dnl pkg-config
+dnl ==========
+AC_CHECK_PROG([PKGCONFIG], [pkg-config], [pkg-config])
+
+
+dnl ===========================================
+dnl 		Stuff that uses X
+dnl ===========================================
+
+AC_PATH_XTRA
+
+AS_IF([test "x$no_x" = "xyes"],
+    [AC_MSG_ERROR([The path for the X11 files not found!
+Make sure you have X and it's headers and libraries (the -devel packages
+in Linux) installed.])])
+
+X_LIBRARY_PATH=$x_libraries
+XCFLAGS="$X_CFLAGS"
+XLFLAGS="$X_LIBS"
+XLIBS="-lX11 $X_EXTRA_LIBS"
+
+lib_search_path="$lib_search_path $XLFLAGS"
+inc_search_path="$inc_search_path $XCFLAGS"
+
+AC_SUBST(X_LIBRARY_PATH)
+
+
+dnl MIT-SHM support
+dnl ===============
+AC_ARG_ENABLE([shm],
+    [AS_HELP_STRING([--disable-shm], [disable usage of MIT-SHM extension])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-shm]) ]) ],
+    [enable_shm=auto])
+WM_XEXT_CHECK_XSHM
+
+dnl Math library
+dnl ============
+dnl libWINGS uses math functions, check whether usage requires linking
+dnl against libm
+WM_CHECK_LIBM
+
+
+dnl X Misceleanous Utility
+dnl ======================
+dnl the libXmu is used in WRaster
+WM_EXT_CHECK_XMU
+
+
+dnl ==============================================
+dnl         Graphic Format Libraries
+dnl ==============================================
+
+dnl XPM Support
+dnl ===========
+AC_ARG_ENABLE([xpm],
+    [AS_HELP_STRING([--disable-xpm], [disable use of XPM pixmaps through libXpm])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-xpm])] )],
+    [enable_xpm=auto])
+WM_IMGFMT_CHECK_XPM
+
+
+# for wmlib
+AC_SUBST(XCFLAGS)
+# for test
+AC_SUBST(XLFLAGS)
+AC_SUBST(XLIBS)
+AC_SUBST(X_EXTRA_LIBS)
+
+dnl ===============================================
+dnl 		End of stuff that uses X
+dnl ===============================================
+
+dnl EXIF Support
+dnl ============
+WM_CHECK_LIBEXIF
+AS_IF([test "x$LIBEXIF" != "x"],
+        [AC_DEFINE(HAVE_EXIF, 1, [Define if EXIF can be used])])
+
+
+dnl PNG Support
+dnl ===========
+AC_ARG_ENABLE([png],
+    [AS_HELP_STRING([--disable-png], [disable PNG support through libpng])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-png])] )],
+    [enable_png=auto])
+WM_IMGFMT_CHECK_PNG
+
+
+dnl JPEG Support
+dnl ============
+AC_ARG_ENABLE([jpeg],
+    [AS_HELP_STRING([--disable-jpeg], [disable JPEG support through libjpeg])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-jpeg])] )],
+    [enable_jpeg=auto])
+WM_IMGFMT_CHECK_JPEG
+
+
+dnl GIF Support
+dnl ============
+AC_ARG_ENABLE(gif,
+    [AS_HELP_STRING([--disable-gif], [disable GIF support through libgif or libungif])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-gif])] )],
+    [enable_gif=auto])
+WM_IMGFMT_CHECK_GIF
+
+
+dnl TIFF Support
+dnl ============
+AC_ARG_ENABLE([tiff],
+    [AS_HELP_STRING([--disable-tiff], [disable use of TIFF images through libtiff])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-tiff])] )],
+    [enable_tiff=auto])
+WM_IMGFMT_CHECK_TIFF
+
+
+dnl WEBP Support
+dnl ============
+AC_ARG_ENABLE([webp],
+    [AS_HELP_STRING([--disable-webp], [disable WEBP support through libwebp])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-webp])] )],
+    [enable_webp=auto])
+WM_IMGFMT_CHECK_WEBP
+
+
+dnl MagicK Support
+dnl ==============
+AC_ARG_ENABLE([magick],
+    [AS_HELP_STRING([--disable-magick], [disable MAGICK support through libMagickWand])],
+    [AS_CASE(["$enableval"],
+        [yes|no], [],
+        [AC_MSG_ERROR([bad value $enableval for --enable-magick])] )],
+    [enable_magick=auto])
+WM_IMGFMT_CHECK_MAGICK
+
+
+dnl PPM Support
+dnl ===========
+# The PPM format is always enabled because we have built-in support for the format
+# We are not using any external library like libppm
+supported_gfx="$supported_gfx builtin-PPM"
+
+
+# Choice of the default format for icons
+AS_IF([test "x$enable_tiff" != "xno"],
+    [ICONEXT="tiff"],
+    [ICONEXT="xpm"])
+
+
+LIBRARY_SEARCH_PATH="$lib_search_path"
+HEADER_SEARCH_PATH="$inc_search_path"
+
+AC_SUBST(LIBRARY_SEARCH_PATH)
+AC_SUBST(HEADER_SEARCH_PATH)
+
+
+AC_SUBST(GFXLIBS)
+AC_SUBST(ICONEXT)
+AM_CONDITIONAL([ICON_EXT_XPM],  [test "x$ICONEXT" = "xxpm"])
+AM_CONDITIONAL([ICON_EXT_TIFF], [test "x$ICONEXT" = "xtiff"])
+
+
+dnl ==============================================
+dnl         End of Graphic Format Libraries
+dnl ==============================================
+
+
+dnl
+dnl stdlib.h is checked here, because of conflict in jpeglib.h
+AC_CHECK_HEADERS(stdlib.h)
+
+
+dnl Support for removing non-public symbols from a library
+dnl ======================================================
+gl_LD_VERSION_SCRIPT
+
+
+dnl Add the post-poned compilation options
+dnl ======================================
+WM_CFLAGS_GCC_OPTION_POSTPONED
+
+
+AC_SUBST(lib_search_path)
+AC_SUBST(inc_search_path)
+
+
+dnl Spit out the configuration
+dnl ==========================
+AC_CONFIG_FILES(
+    Makefile
+    ../tests/Makefile
+)
+
+AC_OUTPUT
+
+
+dnl Provide a summary of the config
+dnl ===============================
+AS_IF([test "x$debug" = "xyes"],
+    [AS_ECHO(["Debug enabled: CFLAGS = $CFLAGS"]) ])
+echo
+
+AS_IF([test "x$enable_jpeg" = xno], [dnl
+    AS_ECHO(["WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING"])
+    AS_ECHO([])
+    AS_ECHO(["JPEG support will not be included because the JPEG library is"])
+    AS_ECHO(["not installed correctly or was not found. Background images"])
+    AS_ECHO(["from themes will not display as they usually are JPEG files."])
+    AS_ECHO([])
+    AS_ECHO(["To fix, download and install the jpeg library and/or make sure you"])
+    AS_ECHO(["installed all jpeg related packages, SPECIALLY the development packages"])
+    AS_ECHO(["like jpeg-dev (if you use some prepackaged version of libjpeg)."])
+    AS_ECHO([])
+    AS_ECHO(["WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING"])dnl
+])
+
+
+dnl This is for Emacs.  I'm lazy, I know... (nicolai)
+dnl ================================================
+dnl Local Variables:
+dnl compile-command: "autoconf"
+dnl End:

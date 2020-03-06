@@ -1,0 +1,19 @@
+#!/bin/sh
+
+if [ ! -f Makefile -o ! -f config.h ];then
+    if [ ! -f install-sh -o ! -f configure ];then
+	echo "===> Running configure script..."
+	autoreconf -vfi -I m4
+    fi
+fi
+
+./configure \
+    --disable-magick \
+    \
+    --prefix=/usr/NextSpace \
+    --bindir=/usr/NextSpace/bin \
+    --libdir=/usr/NextSpace/lib \
+    --includedir=/usr/NextSpace/include \
+    --mandir=/usr/NextSpace/Documentation/man \
+    \
+    CC=clang CXX=clang++

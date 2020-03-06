@@ -12,7 +12,6 @@ if [ ! -f Makefile -o ! -f src/wconfig.h ];then
     export CFLAGS=-DNEXTSPACE
     
     ./configure \
-        --enable-randr \
         --enable-xinerama \
         --disable-magick \
         --enable-modelock \

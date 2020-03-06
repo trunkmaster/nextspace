@@ -73,17 +73,16 @@
    such changes. We need to adjust `point` to be correct in GNUstep coordinate 
    system and screen dimensions.
 */
-- (NSPoint)centeredOriginForGNUstep:(BOOL)isGNUstep
+- (void)center
 {
   OSEScreen  *screen;
   OSEDisplay *display = nil;
   NSSize     screenSize;
   NSRect     displayRect;
   NSRect     windowRect = [self frame];
-  NSRect     gsScreenRect;
   NSPoint    newOrigin;
 
-  NSLog(@"centeredOriginForGNUstep");
+  NSLog(@"center");
 
   // Get NEXTSPACE display rect
   screen = [[OSEScreen new] autorelease];
@@ -103,110 +102,100 @@
     screenSize = [screen sizeInPixels];
     displayRect = [display frame];
     
-    NSLog(@"NEXTSPACE display frame: %@", NSStringFromRect(displayRect));
-    NSLog(@"NEXTSPACE screen size: %@", NSStringFromSize([screen sizeInPixels]));
-  }
-  else {
-    NSLog(@"No OSEScreen avaliable, use NScreen...");
-    displayRect = [[self screen] frame];
+    NSLog(@"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
   }
   
-  NSLog(@"Window frame: %@", NSStringFromRect(windowRect));
+  NSLog(@"Display frame : %4.0f x %4.0f  (%.0f, %.0f)",
+        displayRect.size.width, displayRect.size.height,
+        displayRect.origin.x, displayRect.origin.y);
+  
+  NSLog(@"Window frame  : %4.0f, %4.0f (size: %.0f x %.0f)",
+        windowRect.origin.x, windowRect.origin.y,
+        windowRect.size.width, windowRect.size.height);
   
   // Calculate the new position of the window on display.
   newOrigin.x = displayRect.size.width/2 - windowRect.size.width/2;
   newOrigin.x += displayRect.origin.x;
   newOrigin.y = displayRect.size.height/2 - windowRect.size.height/2;
-  NSLog(@"New origin: x = %.0f, y = %.0f", newOrigin.x, newOrigin.y);
-  
-  NSLog(@"Display rect: %@", NSStringFromRect(displayRect));
+  newOrigin.y += displayRect.origin.y;
+  // displayRect is presented system(Xlib) coordiante system.
+  // Convert newOrigin into OpenStep coordinate system (non-flipped).
+  newOrigin.y = screenSize.height - (newOrigin.y + windowRect.size.height);
+  NSLog(@"New origin    : %4.0f, %4.0f", newOrigin.x, newOrigin.y);
 
-  if (isGNUstep != NO) {
-    // Get GNUstep screen rect
-    gsScreenRect = [[self screen] frame];
-    NSLog(@"GNUSTEP screen size: %@", NSStringFromRect(gsScreenRect));
-
-    // Add bottom offset
-    if (NSMaxY(displayRect) < screenSize.height) {
-      newOrigin.y += (screenSize.height - NSMaxY(displayRect));
-    }
-    // Compensate difference between GNUstep and NEXTSPACE screen heights
-    if (gsScreenRect.size.height > 0) {
-      newOrigin.y -= (screenSize.height - gsScreenRect.size.height);
-    }
-  }
-  else {
-    newOrigin.y += displayRect.origin.y;
-  }
-  
-  return newOrigin;
+  [self setFrameOrigin:newOrigin];
 }
 
-- (void)center
-{
-  NSPoint newOrigin;
+#define ANIMATION_DELAY 250
 
-  newOrigin = [self centeredOriginForGNUstep:NO];
-  NSLog(@"Center: x = %.0f, y = %.0f", newOrigin.x, newOrigin.y);
-  // Set the origin
-  [self setFrameOrigin:newOrigin];
+- (NSPoint)windowScreenOrigin
+{
+  NSRect  allScreensFrame;
+  NSRect  frame = [self frame];
+  NSPoint origin = frame.origin;
+  
+  for (NSScreen *scr in [NSScreen screens]) {
+    allScreensFrame = NSUnionRect(allScreensFrame, [scr frame]);
+  }
+  
+  origin.y = NSMaxY(allScreensFrame) - NSMaxY(frame);
+
+  NSLog(@"[screen origin] Y -> Xlib: %.0f Max: %.0f Screen: %.0f (Max: %.0f)",
+        origin.y, NSMaxY(frame),
+        allScreensFrame.origin.y, NSMaxY(allScreensFrame));
+  
+  return origin;
 }
 
 - (void)shakePanel:(Window)panel onDisplay:(Display*)dpy
 {
-  NSPoint origin = [self centeredOriginForGNUstep:NO];
-  int     x, xo, y;
-  int     i = 0, j = 0, num_steps, num_shakes;
+  NSPoint origin = [self windowScreenOrigin];
+  int     x, initial_x, y;
+  int     i, j, num_steps, num_shakes;
 
-  xo = x = (int)origin.x;
+  initial_x = x = (int)origin.x;
   y = (int)origin.y;
     
-  // NSLog(@"shakePanel with frame: %@", NSStringFromRect(windowRect));
-  
   num_steps = 4;
   num_shakes = 14;
-  for (i = 0; i < num_shakes; i++)
-    {
-      for (j = 0; j < num_steps; j++)
-        {
-          x += 10;
-          XMoveWindow(dpy, panel, x, y);
-          XSync(dpy, false);
-          usleep(600);
-        }
-      for (j = 0; j < num_steps*2; j++)
-        {
-          x -= 10;
-          XMoveWindow(dpy, panel, x, y);
-          XSync(dpy, false);
-          usleep(600);
-        }
-      for (j = 0; j < num_steps; j++)
-        {
-          x += 10;
-          XMoveWindow(dpy, panel, x, y);
-          XSync(dpy, false);
-          usleep(600);
-        }
+  for (i = 0; i < num_shakes; i++) {
+    for (j = 0; j < num_steps; j++) {
+      x += 10;
+      XMoveWindow(dpy, panel, x, y);
+      XSync(dpy, false);
+      usleep(ANIMATION_DELAY);
     }
-  // XMoveWindow(dpy, panel, xo, y);
-  [self center];
+    for (j = 0; j < num_steps*2; j++) {
+      x -= 10;
+      XMoveWindow(dpy, panel, x, y);
+      XSync(dpy, false);
+      usleep(ANIMATION_DELAY);
+    }
+    for (j = 0; j < num_steps; j++) {
+      x += 10;
+      XMoveWindow(dpy, panel, x, y);
+      XSync(dpy, false);
+      usleep(ANIMATION_DELAY);
+    }
+  }
+  XMoveWindow(dpy, panel, initial_x, y);
+  XSync(dpy, False);
 }
 
-#define SHRINKFACTOR 2
+#define SHRINK_FACTOR 2
 
 - (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy
 {
   NSRect  windowRect = [self frame];
-  NSPoint origin = [self centeredOriginForGNUstep:NO];
+  NSPoint origin = [self windowScreenOrigin];
   GC      gc;
   Pixmap  pixmap;
   XImage  *windowSnap;
-  int     x, y, width, height, xo, wo;
+  int     x, y, width, height, initial_x, initial_width;
 
-  xo = x = (int)origin.x;
+  initial_x = x = (int)origin.x;
   y = (int)origin.y;
-  wo = width = (int)windowRect.size.width;
+  initial_width = width = (int)windowRect.size.width;
   height = (int)windowRect.size.height;
 
   pixmap = XCreatePixmap(dpy, panel, width, height, 24);
@@ -215,21 +204,22 @@
   windowSnap = XGetImage(dpy, panel, 0, 0, width, height, AllPlanes, XYPixmap);
   XPutImage(dpy, pixmap, gc, windowSnap, 0, 0, 0, 0, width, height);
     
-  while ((width - SHRINKFACTOR) > 0) {
-    x += SHRINKFACTOR/2;
-    width -= SHRINKFACTOR;
+  while ((width - SHRINK_FACTOR) > 0) {
+    x += SHRINK_FACTOR/2;
+    width -= SHRINK_FACTOR;
     
     XMoveResizeWindow(dpy, panel, x, y, width, height);
     XCopyArea(dpy, pixmap, pixmap, gc,
-              SHRINKFACTOR/2, 0, width, height, 0, 0);
+              SHRINK_FACTOR/2, 0, width, height, 0, 0);
     XSetWindowBackgroundPixmap(dpy, panel, pixmap);
     XSync(dpy, False);
-    usleep(250);
+    usleep(ANIMATION_DELAY);
   }
 
   // Restore original window size. Don't call XSync and let Controller hide
   // panel before XMoveResizeWindow results will  made visible.
-  XMoveResizeWindow(dpy, panel, xo, y, wo, height);
+  XMoveResizeWindow(dpy, panel, initial_x, y, initial_width, height);
+  XSync(dpy, False);
   
   XFree(windowSnap);
   XFreeGC(dpy, gc);

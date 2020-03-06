@@ -20,9 +20,12 @@
 //
 
 #import <GNUstepGUI/GSDisplayServer.h>
+#import <SystemKit/OSEScreen.h>
+#import <SystemKit/OSEDisplay.h>
 #import <Operations/ProcessManager.h>
 #import <Viewers/ShelfView.h>
 
+#import "Workspace+WM.h"
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 
@@ -260,21 +263,20 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 
 @implementation	RecyclerIcon
 
+// Search for position in Dock for new Recycler
 + (int)positionInDock:(WDock *)dock
 {
   WAppIcon *btn;
-  int      rec_pos, new_max_icons;
- 
-  new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
+  int      max_icons = XWDockMaxIcons();
+  int      position;
   
- // Search for position in Dock for new Recycler
-  for (rec_pos = new_max_icons-1; rec_pos > 0; rec_pos--) {
-    if ((btn = dock->icon_array[rec_pos]) == NULL) {
+  for (position = max_icons-1; position > 0; position--) {
+    if ((btn = dock->icon_array[position]) == NULL) {
       break;
     }
   }
 
-  return rec_pos;
+  return position;
 }
 
 + (WAppIcon *)createAppIconForDock:(WDock *)dock
@@ -291,12 +293,11 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 
 + (void)rebuildDock:(WDock *)dock
 {
-  int new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
+  int      new_max_icons = XWDockMaxIcons();
   WAppIcon **new_icon_array = wmalloc(sizeof(WAppIcon *) * new_max_icons);
 
   dock->icon_count = 0;
   for (int i=0; i < new_max_icons; i++) {
-    // NSLog(@"%i", i);
     if (dock->icon_array[i] == NULL || i >= dock->max_icons) {
       new_icon_array[i] = NULL;
     }
@@ -305,6 +306,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
       dock->icon_count++;
     }
   }
+  
   wfree(dock->icon_array);
   dock->icon_array = new_icon_array;
   dock->max_icons = new_max_icons;
@@ -331,7 +333,8 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   }
   
   new_yindex = [RecyclerIcon positionInDock:dock];
-  new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
+  // new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
+  new_max_icons = dock->max_icons;
 
   if (rec_btn->docked &&
       (rec_btn->yindex > new_max_icons-1 && new_yindex == 0)) {
@@ -350,7 +353,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
     [RecyclerIcon rebuildDock:dock];
     new_yindex = [RecyclerIcon positionInDock:dock];
     if (new_yindex > 0) {
-      NSLog(@"Recycler: attach");
+      NSLog(@"Recycler: attach at %i", new_yindex);
       wDockAttachIcon(dock, rec_btn, 0, new_yindex, NO);
     }
   }
