@@ -543,13 +543,6 @@ int ConversationFunction(int num_msg,
                          name:OSEPowerLidDidChangeNotification
                        object:systemPower];
 
-  // Screen parameters changes
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(handleScreenParametersChange:)
-           name:NSApplicationDidChangeScreenParametersNotification
-         object:NSApp];
-
   // Defaults
   [[NSDistributedNotificationCenter
      notificationCenterForType:GSPublicNotificationCenterType]
@@ -569,11 +562,6 @@ int ConversationFunction(int num_msg,
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {
   // NSLog(@"Control did end editing.");
-}
-
-- (void)handleScreenParametersChange:(NSNotification *)aNotif
-{
-  [window center];
 }
 
 - (void)authenticate:(id)sender
@@ -607,6 +595,10 @@ int ConversationFunction(int num_msg,
     else if ([user isEqualToString:@"terminate"]) {
       NSLog(@"Application will quit");
       [NSApp terminate:self]; // Equivalent to "Quit" menu item
+      return;
+    }
+    else if ([user isEqualToString:@"shake"]) { // for testing
+      [window shakePanel:xPanelWindow onDisplay:xDisplay];
       return;
     }
     else {

@@ -104,11 +104,7 @@
     
     NSLog(@"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
   }
-  else {
-    NSLog(@"No OSEScreen avaliable, use NScreen...");
-    displayRect = [[self screen] frame];
-    screenSize = displayRect.size;
-  }
+  
   NSLog(@"Display frame : %4.0f x %4.0f  (%.0f, %.0f)",
         displayRect.size.width, displayRect.size.height,
         displayRect.origin.x, displayRect.origin.y);
@@ -121,7 +117,10 @@
   newOrigin.x = displayRect.size.width/2 - windowRect.size.width/2;
   newOrigin.x += displayRect.origin.x;
   newOrigin.y = displayRect.size.height/2 - windowRect.size.height/2;
-  newOrigin.y += (screenSize.height - displayRect.size.height) + displayRect.origin.y;
+  newOrigin.y += displayRect.origin.y;
+  // displayRect is presented system(Xlib) coordiante system.
+  // Convert newOrigin into OpenStep coordinate system (non-flipped).
+  newOrigin.y = screenSize.height - (newOrigin.y + windowRect.size.height);
   NSLog(@"New origin    : %4.0f, %4.0f", newOrigin.x, newOrigin.y);
 
   [self setFrameOrigin:newOrigin];
@@ -129,15 +128,33 @@
 
 #define ANIMATION_DELAY 250
 
+- (NSPoint)windowScreenOrigin
+{
+  NSRect  allScreensFrame;
+  NSRect  frame = [self frame];
+  NSPoint origin = frame.origin;
+  
+  for (NSScreen *scr in [NSScreen screens]) {
+    allScreensFrame = NSUnionRect(allScreensFrame, [scr frame]);
+  }
+  
+  origin.y = NSMaxY(allScreensFrame) - NSMaxY(frame);
+
+  NSLog(@"[screen origin] Y -> Xlib: %.0f Max: %.0f Screen: %.0f (Max: %.0f)",
+        origin.y, NSMaxY(frame),
+        allScreensFrame.origin.y, NSMaxY(allScreensFrame));
+  
+  return origin;
+}
+
 - (void)shakePanel:(Window)panel onDisplay:(Display*)dpy
 {
-  NSPoint origin;
-  int     x, xo, y;
+  NSPoint origin = [self windowScreenOrigin];
+  int     x, initial_x, y;
   int     i, j, num_steps, num_shakes;
 
-  origin = [self frame].origin;
-  xo = x = (int)origin.x;
-  y = (int)(origin.y - [[self screen] frame].origin.y);
+  initial_x = x = (int)origin.x;
+  y = (int)origin.y;
     
   num_steps = 4;
   num_shakes = 14;
@@ -161,7 +178,7 @@
       usleep(ANIMATION_DELAY);
     }
   }
-  XMoveWindow(dpy, panel, xo, y);
+  XMoveWindow(dpy, panel, initial_x, y);
   XSync(dpy, False);
 }
 
@@ -169,17 +186,15 @@
 
 - (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy
 {
-  NSRect  windowRect;
-  NSPoint origin;
+  NSRect  windowRect = [self frame];
+  NSPoint origin = [self windowScreenOrigin];
   GC      gc;
   Pixmap  pixmap;
   XImage  *windowSnap;
   int     x, y, width, height, initial_x, initial_width;
 
-  windowRect = [self frame];
-  origin = windowRect.origin;
   initial_x = x = (int)origin.x;
-  y = (int)(origin.y - [[self screen] frame].origin.y);
+  y = (int)origin.y;
   initial_width = width = (int)windowRect.size.width;
   height = (int)windowRect.size.height;
 
