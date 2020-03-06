@@ -1587,7 +1587,8 @@ void XWUpdateScreenInfo(WScreen *scr)
   // 4.2 Move Dock
   // Place Dock into main display with changed usable area.
   [RecyclerIcon recyclerAppIconForDock:scr->dock];
-  moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE), 0);
+  moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE),
+           dRect.origin.y);
   
   // 5. Move IconYard
   // IconYard is placed into main display automatically.
