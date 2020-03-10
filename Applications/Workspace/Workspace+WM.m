@@ -1120,8 +1120,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
 
   // 2. Otherwise create appicon and set its state to launching
   if (iconFound == NO) {
-    NSRect mdRect = [[[OSEScreen sharedScreen] mainDisplay] frame];
-    int    x_ret = 0, y_ret = 0;
+    int x_ret = 0, y_ret = 0;
       
     appIcon = wAppIconCreateForDock(wScreenWithNumber(0), [launchPath cString],
                                     (char *)wmInstance, (char *)wmClass,
@@ -1138,7 +1137,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     PlaceIcon(wScreenWithNumber(0), &x_ret, &y_ret, 0);
     wAppIconMove(appIcon, x_ret, y_ret);
     iconPoint.x = (CGFloat)x_ret;
-    iconPoint.y = mdRect.size.height - (y_ret + ICON_HEIGHT);
+    iconPoint.y = wScreenWithNumber(0)->scr_height - (y_ret + ICON_HEIGHT);
     [[NSApp delegate] slideImage:anImage
                             from:sourcePoint
                               to:iconPoint];
