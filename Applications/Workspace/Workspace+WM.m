@@ -1535,44 +1535,48 @@ static void moveDock(WDock *dock, int new_x, int new_y)
 
 void XWUpdateScreenInfo(WScreen *scr)
 {
-  NSRect dRect;
-  int    dWidth;
+  NSRect screenRect, headRect, primaryRect;
 
   XLockDisplay(dpy);
 
   NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
 
-  // 1. Update screen dimensions
-  @autoreleasepool {
-    OSEScreen *systemScreen = [[OSEScreen new] autorelease];
-    
-    // 4.1 Get info about main display
-    dRect = [[systemScreen mainDisplay] frame];
-    dWidth = dRect.origin.x + dRect.size.width;
-    scr->scr_width = (int)[systemScreen sizeInPixels].width;
-    scr->scr_height = (int)[systemScreen sizeInPixels].height;
-  }
-  
-  // 2. Update WM Xrandr
+  // Update WM Xrandr
   wUpdateXrandrInfo(scr);
 
-  // 3. Update WM usable area info
+  screenRect = NSMakeRect(0,0,0,0);
+  for (int i = 0; i < scr->xrandr_info.count; i++) {
+    headRect.origin.x = scr->xrandr_info.screens[i].pos.x;
+    headRect.origin.y = scr->xrandr_info.screens[i].pos.y;
+    headRect.size.width = scr->xrandr_info.screens[i].size.width;
+    headRect.size.height = scr->xrandr_info.screens[i].size.height;
+
+    if (i == scr->xrandr_info.primary_head)
+      primaryRect = headRect;
+    
+    screenRect = NSUnionRect(screenRect, headRect);
+  }
+  scr->scr_width = (int)screenRect.size.width;
+  scr->scr_height = (int)screenRect.size.height;
+
+  // Update WM usable area info
   wScreenUpdateUsableArea(scr);
 
-  NSLog(@"[XWUpdateScreenInfo] screen W:%i H:%i heads count: %i",
-        scr->scr_width, scr->scr_height, scr->xrandr_info.count);
+  // NSLog(@"[XWUpdateScreenInfo] screen W:%i H:%i heads count: %i",
+  //       scr->scr_width, scr->scr_height, scr->xrandr_info.count);
 
-  // 4.2 Move Dock
+  // Move Dock
   // Place Dock into main display with changed usable area.
   [RecyclerIcon recyclerAppIconForDock:scr->dock];
-  moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE),
-           dRect.origin.y);
+  moveDock(scr->dock,
+           (NSMaxX(primaryRect) - wPreferences.icon_size - DOCK_EXTRA_SPACE),
+           primaryRect.origin.y);
   
-  // 5. Move IconYard
+  // Move IconYard
   // IconYard is placed into main display automatically.
   wArrangeIcons(scr, True);
   
-  // 6. Save Dock state with new position and screen size
+  // Save Dock state with new position and screen size
   wScreenSaveState(scr);
 
   // Save changed layout in user's preferences directory
