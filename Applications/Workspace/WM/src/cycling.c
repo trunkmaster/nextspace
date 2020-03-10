@@ -84,7 +84,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 {
   WShortKey binding;
   WSwitchPanel    *swpanel       = NULL;
-  WScreen         *scr           = wScreenForRootWindow(event->xkey.root);
+  WScreen         *scr           = wDefaultScreen();
   KeyCode         leftKey        = XKeysymToKeycode(dpy, XK_Left);
   KeyCode         rightKey       = XKeysymToKeycode(dpy, XK_Right);
   KeyCode         homeKey        = XKeysymToKeycode(dpy, XK_Home);

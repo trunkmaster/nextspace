@@ -90,7 +90,7 @@
   wmStateWS = [[NSMutableArray alloc]
                 initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
   [self arrangeWorkspaceReps];
-  [[wsReps objectAtIndex:wScreenWithNumber(0)->current_workspace] performClick:self];
+  [[wsReps objectAtIndex:wDefaultScreen()->current_workspace] performClick:self];
 
   NSLog(@"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
         [switchKey className], [[switchKey selectedItem] tag],
@@ -171,7 +171,7 @@
   NSInteger index = [wsReps indexOfObject:selectedWSRep];
   NSString  *name = [nameField stringValue];
   
-  wWorkspaceRename(wScreenWithNumber(0), [wsReps indexOfObject:selectedWSRep],
+  wWorkspaceRename(wDefaultScreen(), [wsReps indexOfObject:selectedWSRep],
                    [name cString]);
   [changeNameBtn setEnabled:NO];
   
@@ -207,12 +207,12 @@
 
   if (diff < 0) { // remove WS
     for (int i = wsCount; i > wsQuantity; i--) {
-      wWorkspaceDelete(wScreenWithNumber(0), i);
+      wWorkspaceDelete(wDefaultScreen(), i);
       [[wsReps objectAtIndex:i-1] removeFromSuperview];
     }
   }
   else {
-      wWorkspaceMake(wScreenWithNumber(0), diff);
+      wWorkspaceMake(wDefaultScreen(), diff);
       for (int i = wsCount; i < wsQuantity; i++) {
         [wsBox addSubview:[wsReps objectAtIndex:i]];
       }

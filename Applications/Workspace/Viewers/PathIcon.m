@@ -289,7 +289,7 @@ static NSDragOperation savedMask;
   NSArray      *paths = [dragPasteboard propertyListForType:NSFilenamesPboardType];
   NSDictionary *wmAppInfo;
   WAppIcon     *wAppIcon = NULL;
-  wScreen = wScreenWithNumber(0);
+  wScreen = wDefaultScreen();
   if ((wmAppInfo = [self _validateAppForPath:[paths objectAtIndex:0]]) != nil) {
     // Try to find existing appicon
     wAppIcon = [self _appIconForInstance:[[wmAppInfo objectForKey:@"Instance"] cString]

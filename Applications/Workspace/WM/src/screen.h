@@ -330,9 +330,7 @@ int wScreenKeepInside(WScreen *scr, int *x, int *y, int width, int height);
 
 
 /* in startup.c */
-WScreen *wScreenWithNumber(int i);
-WScreen *wScreenForRootWindow(Window window);   /* window must be valid */
-WScreen *wScreenForWindow(Window window);   /* slower than above functions */
+WScreen *wDefaultScreen(void);
 
 void wScreenFinish(WScreen *scr);
 void wScreenUpdateUsableArea(WScreen *scr);

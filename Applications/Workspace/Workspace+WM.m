@@ -202,9 +202,9 @@ void WWMInitializeWindowMaker(int argc, char **argv)
 
   // TODO: go through all screens
   // Adjust WM elements placing
-  XWUpdateScreenInfo(wScreenWithNumber(0));
+  XWUpdateScreenInfo(wDefaultScreen());
 
-  WWMDockShowIcons(wScreenWithNumber(0)->dock);
+  WWMDockShowIcons(wDefaultScreen()->dock);
 
   // Unmanage some signals which are managed by GNUstep part of Workspace
   WWMSetupSignalHandling();
@@ -243,7 +243,7 @@ void WWMSetupFrameOffsetProperty()
                          1, 1, titleBarHeight, 9,
                          1, 1, titleBarHeight, 9};
   
-  XChangeProperty(dpy, wScreenWithNumber(0)->root_win,
+  XChangeProperty(dpy, wDefaultScreen()->root_win,
                   XInternAtom(dpy, "_GNUSTEP_FRAME_OFFSETS", False),
                   XA_CARDINAL, 16, PropModeReplace,
                   (unsigned char *)offsets, 60);
@@ -251,7 +251,7 @@ void WWMSetupFrameOffsetProperty()
 
 void WWMSetDockAppiconState(int index_in_dock, int launching)
 {
-  WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[index_in_dock];
+  WAppIcon *btn = wDefaultScreen()->dock->icon_array[index_in_dock];
   int      saved_launching = btn->launching;
 
   // Set and display dock icon state change
@@ -320,30 +320,24 @@ void WWMWipeDesktop(WScreen * scr)
 void WWMShutdown(WShutdownMode mode)
 {
   int i;
+  WScreen *scr;
 
   fprintf(stderr, "*** Shutting down Window Manager...\n");
   
-  for (i = 0; i < w_global.screen_count; i++)
-    {
-      WScreen *scr;
-
-      scr = wScreenWithNumber(i);
-      if (scr)
-        {
-          if (scr->helper_pid)
-            {
-              kill(scr->helper_pid, SIGKILL);
-            }
-
-          wScreenSaveState(scr);
-
-          if (mode == WSKillMode)
-            WWMWipeDesktop(scr);
-          else
-            RestoreDesktop(scr);
-        }
-      wNETWMCleanup(scr); // Delete _NET_* Atoms
+  scr = wDefaultScreen();
+  if (scr) {
+    if (scr->helper_pid) {
+      kill(scr->helper_pid, SIGKILL);
     }
+
+    wScreenSaveState(scr);
+
+    if (mode == WSKillMode)
+      WWMWipeDesktop(scr);
+    else
+      RestoreDesktop(scr);
+  }
+  wNETWMCleanup(scr); // Delete _NET_* Atoms
   // ExecExitScript();
 
   if (launchingIcons) free(launchingIcons);
@@ -444,7 +438,7 @@ void WWMIconYardHideIcons(WScreen *screen)
 #import "Recycler.h"
 void WWMDockInit(void)
 {
-  WDock      *dock = wScreenWithNumber(0)->dock;
+  WDock      *dock = wDefaultScreen()->dock;
   WMPropList *state;
   WAppIcon   *btn;
   NSString   *iconName;
@@ -596,7 +590,7 @@ static void toggleLowered(WDock *dock)
 void WWMSetDockLevel(int level)
 {
   int   current_level;
-  WDock *dock = wScreenWithNumber(0)->dock;
+  WDock *dock = wDefaultScreen()->dock;
   
   // From?
   current_level = WWMDockLevel();
@@ -652,9 +646,7 @@ NSString *WWMDockStatePath(void)
 // Saves dock on-screen state into WMState file
 void WWMDockStateSave(void)
 {
-  for (int i = 0; i < w_global.screen_count; i++) {
-    wScreenSaveState(wScreenWithNumber(i));
-  }
+  wScreenSaveState(wDefaultScreen());
 }
 
 // Returns NSDictionary representation of WMState file
@@ -673,7 +665,7 @@ NSArray *WWMDockStateApps(void)
   NSString *appsKey;
       
   appsKey = [NSString stringWithFormat:@"Applications%i",
-                      wScreenWithNumber(0)->scr_height];
+                      wDefaultScreen()->scr_height];
   
   dockApps = [[WWMDockState() objectForKey:@"Dock"] objectForKey:appsKey];
   if (!dockApps || [dockApps count] == 0)
@@ -735,7 +727,7 @@ void WWMDockAutoLaunch(WDock *dock)
 
 NSInteger WWMDockAppsCount(void)
 {
-  WScreen *scr = wScreenWithNumber(XDefaultScreen(dpy));
+  WScreen *scr = wDefaultScreen();
   WDock   *dock = scr->dock;
 
   if (!dock)
@@ -747,7 +739,7 @@ NSInteger WWMDockAppsCount(void)
 
 WAppIcon *_appiconInDockPosition(int position)
 {
-  WScreen  *scr = wScreenWithNumber(XDefaultScreen(dpy));
+  WScreen  *scr = wDefaultScreen();
   WDock    *dock = scr->dock;
 
   if (!dock || position > dock->max_icons-1)
@@ -869,11 +861,11 @@ NSImage *WWMDockAppImage(int position)
 }
 void WWMSetDockAppImage(NSString *path, int position, BOOL save)
 {
-  WDock    *dock = wScreenWithNumber(0)->dock;
+  WDock    *dock = wDefaultScreen()->dock;
   WAppIcon *btn;
   RImage   *rimage;
 
-  for (int i = 0; i < wScreenWithNumber(0)->dock->max_icons; i++)
+  for (int i = 0; i < wDefaultScreen()->dock->max_icons; i++)
     {
       btn = dock->icon_array[i];
       if (btn->yindex == position)
@@ -886,7 +878,7 @@ void WWMSetDockAppImage(NSString *path, int position, BOOL save)
     }
   btn->icon->file = wstrdup([path cString]);
 
-  rimage = RLoadImage(wScreenWithNumber(0)->rcontext, btn->icon->file, 0);
+  rimage = RLoadImage(wDefaultScreen()->rcontext, btn->icon->file, 0);
 
   if (!rimage)
     return;
@@ -1085,7 +1077,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
 {
   NSPoint    iconPoint = {0, 0};
   BOOL       iconFound = NO;
-  WScreen    *scr = wScreenWithNumber(0);
+  WScreen    *scr = wDefaultScreen();
   WAppIcon   *appIcon;
   NSArray    *wmNameParts = [wmName componentsSeparatedByString:@"."];
   const char *wmInstance = [[wmNameParts objectAtIndex:0] cString];
@@ -1103,7 +1095,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     if (!strcmp(appIcon->wm_instance, wmInstance) &&
         !strcmp(appIcon->wm_class, wmClass)) {
       iconPoint.x = appIcon->x_pos + ((ICON_WIDTH - [anImage size].width)/2);
-      iconPoint.y = wScreenWithNumber(0)->scr_height - appIcon->y_pos - 64;
+      iconPoint.y = wDefaultScreen()->scr_height - appIcon->y_pos - 64;
       iconPoint.y += (ICON_WIDTH - [anImage size].width)/2;
       [[NSApp delegate] slideImage:anImage
                               from:sourcePoint
@@ -1122,7 +1114,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
   if (iconFound == NO) {
     int x_ret = 0, y_ret = 0;
       
-    appIcon = wAppIconCreateForDock(wScreenWithNumber(0), [launchPath cString],
+    appIcon = wAppIconCreateForDock(wDefaultScreen(), [launchPath cString],
                                     (char *)wmInstance, (char *)wmClass,
                                     TILE_NORMAL);
     appIcon->icon->core->descriptor.handle_mousedown = NULL;
@@ -1134,10 +1126,10 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     //       launchingIcons->wm_instance, launchingIcons->wm_class);
 
     // Calculate postion for new launch icon
-    PlaceIcon(wScreenWithNumber(0), &x_ret, &y_ret, 0);
+    PlaceIcon(wDefaultScreen(), &x_ret, &y_ret, 0);
     wAppIconMove(appIcon, x_ret, y_ret);
     iconPoint.x = (CGFloat)x_ret;
-    iconPoint.y = wScreenWithNumber(0)->scr_height - (y_ret + ICON_HEIGHT);
+    iconPoint.y = wDefaultScreen()->scr_height - (y_ret + ICON_HEIGHT);
     [[NSApp delegate] slideImage:anImage
                             from:sourcePoint
                               to:iconPoint];
@@ -1210,7 +1202,7 @@ NSArray *WWMNotDockedAppList(void)
   WAppIcon       *appIcon;
   char           *command = NULL;
 
-  appIcon = wScreenWithNumber(0)->app_icon_list;
+  appIcon = wDefaultScreen()->app_icon_list;
   while (appIcon->next) {
     if (!appIcon->docked) {
       if (appIcon->command && appIcon->command != NULL) {
@@ -1248,7 +1240,7 @@ BOOL WWMIsAppRunning(NSString *appName)
   BOOL     isAppFound = NO;
   WAppIcon *appIcon;
 
-  appIcon = wScreenWithNumber(0)->app_icon_list;
+  appIcon = wDefaultScreen()->app_icon_list;
   while (appIcon->next) {
     if (!strcmp(app_instance, appIcon->wm_instance) &&
         !strcmp(app_class, appIcon->wm_class)) {
@@ -1263,7 +1255,7 @@ BOOL WWMIsAppRunning(NSString *appName)
 
 pid_t WWMExecuteCommand(NSString *command)
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
   pid_t   pid;
   char    **argv;
   int     argc;
@@ -1613,9 +1605,7 @@ void XWUpdateScreenInfo(WScreen *scr)
 // Is it actually demanded nowadays?
 void XWUpdateScreenParameters(void)
 {
-  for (int i = 0; i < w_global.screen_count; i++) {
-    XWUpdateScreenInfo(wScreenWithNumber(i));
-  }
+  XWUpdateScreenInfo(wDefaultScreen());
 }
 
 void XWActivateApplication(WScreen *scr, char *app_name)

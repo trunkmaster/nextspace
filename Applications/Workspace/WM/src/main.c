@@ -53,7 +53,6 @@
 #include "xmodifier.h"
 #include "session.h"
 #include "shutdown.h"
-#include "dialog.h"
 #include "main.h"
 #include "monitor.h"
 
@@ -98,7 +97,6 @@ const char WMNResetStacking[] = "WMNResetStacking";
 
 static char *DisplayName = NULL;
 static char **Arguments;
-static Bool multiHead = True;
 static int  *wVisualID = NULL;
 static int  wVisualID_len = 0;
 
@@ -189,33 +187,8 @@ void Restart(char *manager, Bool abortOnFailure)
 
 void SetupEnvironment(WScreen * scr)
 {
-  char *tmp, *ptr;
-  char buf[16];
+  char *tmp;
 
-  if (multiHead) {
-    int len = strlen(DisplayName) + 64;
-    tmp = wmalloc(len);
-    snprintf(tmp, len, "DISPLAY=%s", XDisplayName(DisplayName));
-
-    /* Search from the end to be compatible with ipv6 address */
-    ptr = strrchr(tmp, ':');
-    if (ptr == NULL) {
-      static Bool message_already_displayed = False;
-
-      if (!message_already_displayed)
-        wwarning(_("the display name has an unexpected syntax: \"%s\""),
-                 XDisplayName(DisplayName));
-      message_already_displayed = True;
-    } else {
-      /* If found, remove the screen specification from the display variable */
-      ptr = strchr(ptr, '.');
-      if (ptr)
-        *ptr = 0;
-    }
-    snprintf(buf, sizeof(buf), ".%i", scr->screen);
-    strcat(tmp, buf);
-    putenv(tmp);
-  }
   tmp = wmalloc(60);
   snprintf(tmp, 60, "WRASTER_COLOR_RESOLUTION%i=%i", scr->screen,
            scr->rcontext->attribs->colors_per_channel);
@@ -238,13 +211,9 @@ static void shellCommandHandler(pid_t pid, unsigned int status, void *client_dat
     char *buffer;
 
     buffer = wstrconcat(_("Could not execute command: "), data->command);
-#ifdef NEXTSPACE
     dispatch_async(workspace_q, ^{
         XWRunAlertPanel(_("Run Error"), buffer, _("Got It"), NULL, NULL);
       });
-#else
-    wMessageDialog(data->scr, _("Error"), buffer, _("OK"), NULL, NULL);
-#endif
     wfree(buffer);
   } else if (status != 127) {
     /*
@@ -369,14 +338,11 @@ Bool RelaunchWindow(WWindow *wwin)
  */
 noreturn void wAbort(Bool dumpCore)
 {
-  int i;
   WScreen *scr;
 
-  for (i = 0; i < w_global.screen_count; i++) {
-    scr = wScreenWithNumber(i);
-    if (scr)
-      RestoreDesktop(scr);
-  }
+  scr = wDefaultScreen();
+  if (scr)
+    RestoreDesktop(scr);
   printf(_("%s aborted.\n"), ProgName);
   if (dumpCore)
     abort();
@@ -474,17 +440,10 @@ void ExecExitScript(void)
   }
 }
 
-// int real_main(int argc, char **argv)
 int WMInitialize(int argc, char **argv)
 {
-  char *pos;
-  int d, s;
-
   setlocale(LC_ALL, "");
   wsetabort(wAbort);
-
-  /* for telling WPrefs what's the name of the wmaker binary being ran */
-  setenv("WMAKER_BIN_NAME", argv[0], 1);
 
   if (!wPreferences.flags.noupdates) {
     /* check existence of Defaults DB directory */
@@ -567,24 +526,11 @@ int WMInitialize(int argc, char **argv)
     setWVisualID(0, (int)DefaultVisual(dpy, DefaultScreen(dpy))->visualid);
   }
 
-  /* check if the user specified a complete display name (with screen).
-   * If so, only manage the specified screen */
-  if (DisplayName)
-    pos = strchr(DisplayName, ':');
-  else
-    pos = NULL;
-
-  if (pos && sscanf(pos, ":%i.%i", &d, &s) == 2)
-    multiHead = False;
-
   DisplayName = XDisplayName(DisplayName);
   setenv("DISPLAY", DisplayName, 1);
 
   wXModifierInitialize();
-  StartUp(!multiHead);
-
-  if (w_global.screen_count == 1)
-    multiHead = False;
+  StartUp(True);
 
   ExecInitScript();
 #ifdef HAVE_INOTIFY

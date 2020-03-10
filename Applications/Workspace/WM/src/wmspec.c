@@ -1540,7 +1540,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
            XGetAtomName(dpy, event->message_type));
 #endif
 
-  scr = wScreenForWindow(event->window);
+  scr = wDefaultScreen();
   if (scr) {
     /* generic client messages */
     if (event->message_type == net_current_desktop) {

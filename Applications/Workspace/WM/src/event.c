@@ -601,7 +601,7 @@ static void handleMapRequest(XEvent * ev)
   WScreen *scr = NULL;
   Window window = ev->xmaprequest.window;
 
-  scr = wScreenForRootWindow(ev->xmaprequest.parent);
+  scr = wDefaultScreen();
 
   wwin = wWindowFor(window);
   if (wwin != NULL) {
@@ -687,7 +687,7 @@ static void handleDestroyNotify(XEvent * event)
   WWindow *wwin;
   WApplication *app;
   Window window = event->xdestroywindow.window;
-  WScreen *scr = wScreenForRootWindow(event->xdestroywindow.event);
+  WScreen *scr = wDefaultScreen();
   int widx;
 
   wwin = wWindowFor(window);
@@ -817,7 +817,7 @@ static void handleButtonPress(XEvent * event)
   WObjDescriptor *desc;
   WScreen *scr;
 
-  scr = wScreenForRootWindow(event->xbutton.root);
+  scr = wDefaultScreen();
   
 #ifdef NEXTSPACE
   // reset current focused window button beacuse ButtonPress may change focus
@@ -937,7 +937,7 @@ static void handleButtonPress(XEvent * event)
 #ifdef NEXTSPACE
 static void handleButtonRelease(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xbutton.root);
+  WScreen *scr = wDefaultScreen();
 
   if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
       && event->xbutton.button == Button3) {
@@ -1099,7 +1099,7 @@ static void handleClientMessage(XEvent * event)
     if (!wwin->flags.miniaturized)
       wIconifyWindow(wwin);
   } else if (event->xclient.message_type == w_global.atom.wm.colormap_notify && event->xclient.format == 32) {
-    WScreen *scr = wScreenForRootWindow(event->xclient.window);
+    WScreen *scr = wDefaultScreen();
 
     if (!scr)
       return;
@@ -1189,7 +1189,7 @@ static void handleClientMessage(XEvent * event)
       break;
     }
   } else if (event->xclient.message_type == w_global.atom.wm.ignore_focus_events) {
-    WScreen *scr = wScreenForRootWindow(event->xclient.window);
+    WScreen *scr = wDefaultScreen();
     if (!scr)
       return;
     scr->flags.ignore_focus_events = event->xclient.data.l[0] ? 1 : 0;
@@ -1245,7 +1245,7 @@ static void handleEnterNotify(XEvent * event)
   WWindow *wwin;
   WObjDescriptor *desc = NULL;
   XEvent ev;
-  WScreen *scr = wScreenForRootWindow(event->xcrossing.root);
+  WScreen *scr = wDefaultScreen();
 
   if (XCheckTypedWindowEvent(dpy, event->xcrossing.window, LeaveNotify, &ev)) {
     /* already left the window... */
@@ -1369,12 +1369,10 @@ static void handleXkbBellNotify(XkbEvent *event)
   WWindow *wwin;
   WScreen *scr;
   
-  for (int i = 0; i < w_global.screen_count; i++) {
-    scr = wScreenWithNumber(i);
-    wwin = scr->focused_window;
-    if (wwin && wwin->flags.focused) {
-      XWRingBell(wwin);
-    }
+  scr = wDefaultScreen();
+  wwin = scr->focused_window;
+  if (wwin && wwin->flags.focused) {
+    XWRingBell(wwin);
   }
 }
 /* please help ]d if you know what to do */
@@ -1383,24 +1381,21 @@ static void handleXkbIndicatorStateNotify(XkbEvent *event)
   WWindow *wwin;
   WScreen *scr;
   XkbStateRec staterec;
-  int i;
 
-  for (i = 0; i < w_global.screen_count; i++) {
-    scr = wScreenWithNumber(i);
-    wwin = scr->focused_window;
-    if (wwin && wwin->flags.focused) {
-      XkbGetState(dpy, XkbUseCoreKbd, &staterec);
-      XWKeyboardGroupDidChange(staterec.group);
-      if (wwin->frame->languagemode != staterec.group) {
-        wwin->frame->last_languagemode = wwin->frame->languagemode;
-        wwin->frame->languagemode = staterec.group;
-      }
-#ifdef XKB_BUTTON_HINT
-      if (wwin->frame->titlebar) {
-        wFrameWindowPaint(wwin->frame);
-      }
-#endif
+  scr = wDefaultScreen();
+  wwin = scr->focused_window;
+  if (wwin && wwin->flags.focused) {
+    XkbGetState(dpy, XkbUseCoreKbd, &staterec);
+    XWKeyboardGroupDidChange(staterec.group);
+    if (wwin->frame->languagemode != staterec.group) {
+      wwin->frame->last_languagemode = wwin->frame->languagemode;
+      wwin->frame->languagemode = staterec.group;
     }
+#ifdef XKB_BUTTON_HINT
+    if (wwin->frame->titlebar) {
+      wFrameWindowPaint(wwin->frame);
+    }
+#endif
   }
 }
 #endif				/*KEEP_XKB_LOCK_STATUS */
@@ -1475,7 +1470,7 @@ static void handleFocusIn(XEvent * event)
       wSetFocusTo(wwin->screen_ptr, NULL);
     }
   } else if (!wwin) {
-    WScreen *scr = wScreenForWindow(event->xfocus.window);
+    WScreen *scr = wDefaultScreen();
     if (scr)
       wSetFocusTo(scr, NULL);
   }
@@ -1502,7 +1497,7 @@ static int CheckFullScreenWindowFocused(WScreen * scr)
 
 static void handleKeyPress(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xkey.root);
+  WScreen *scr = wDefaultScreen();
   WWindow *wwin = scr->focused_window;
   short i, widx;
   int modifiers;
@@ -1960,29 +1955,6 @@ static void handleKeyPress(XEvent * event)
 
     break;
 
-  case WKBD_SWITCH_SCREEN:
-    if (w_global.screen_count > 1) {
-      WScreen *scr2;
-      int i;
-
-      /* find index of this screen */
-      for (i = 0; i < w_global.screen_count; i++) {
-        if (wScreenWithNumber(i) == scr)
-          break;
-      }
-      i++;
-      if (i >= w_global.screen_count) {
-        i = 0;
-      }
-      scr2 = wScreenWithNumber(i);
-
-      if (scr2) {
-        XWarpPointer(dpy, scr->root_win, scr2->root_win, 0, 0, 0, 0,
-                     scr2->scr_width / 2, scr2->scr_height / 2);
-      }
-    }
-    break;
-
   case WKBD_RUN:
     {
       char *cmdline;
@@ -2052,7 +2024,7 @@ static void handleKeyPress(XEvent * event)
 #ifdef NEXTSPACE
 static void handleKeyRelease(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xkey.root);
+  WScreen *scr = wDefaultScreen();
   WWindow *wwin = scr->focused_window;
   
   if (event->xkey.window == event->xkey.root ||
@@ -2075,7 +2047,7 @@ static void handleKeyRelease(XEvent * event)
 #endif
 static void handleMotionNotify(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xmotion.root);
+  WScreen *scr = wDefaultScreen();
 
 #ifdef NEXTSPACE
   WWindow *wwin = wWindowFor(event->xmotion.window);
