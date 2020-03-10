@@ -46,7 +46,7 @@
 #include "wmspec.h"
 #include "icon.h"
 #include "stacking.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "properties.h"
 
 

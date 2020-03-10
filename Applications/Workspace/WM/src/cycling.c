@@ -38,7 +38,7 @@
 #include "actions.h"
 #include "stacking.h"
 #include "cycling.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "switchpanel.h"
 
 #include <Workspace+WM.h>

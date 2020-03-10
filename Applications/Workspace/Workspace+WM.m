@@ -29,7 +29,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xlocale.h>
 #include <X11/Xatom.h>
-#include <X11/extensions/Xinerama.h>
 
 #include <wraster.h>
 #include <startup.h>
@@ -54,6 +53,8 @@ extern Display *dpy;
 extern char *GetCommandForWindow(Window win);
 // WM/src/main.c
 extern int WMInitialize(int argc, char **argv);
+// WM/src/xrandr.c
+extern void wUpdateXrandrInfo(WScreen *scr);
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -1542,26 +1543,6 @@ void XWUpdateScreenInfo(WScreen *scr)
   NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
 
   // 1. Update screen dimensions
-  scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, scr->screen));
-  scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, scr->screen));
-  
-  // 2. Update Xinerama heads dimension (-> xinerama.c)
-  WXineramaInfo      *info = &scr->xine_info;
-  XineramaScreenInfo *xine_screens;
-
-  xine_screens = XineramaQueryScreens(dpy, &info->count);
-  for (int i = 0; i < info->count; i++)
-    {
-      info->screens[i].pos.x = xine_screens[i].x_org;
-      info->screens[i].pos.y = xine_screens[i].y_org;
-      info->screens[i].size.width = xine_screens[i].width;
-      info->screens[i].size.height = xine_screens[i].height;
-    }
-  XFree(xine_screens);
-
-  // 3. Update WindowMaker info about usable area
-  wScreenUpdateUsableArea(scr);
-
   @autoreleasepool {
     OSEScreen *systemScreen = [[OSEScreen new] autorelease];
     
@@ -1570,11 +1551,17 @@ void XWUpdateScreenInfo(WScreen *scr)
     dWidth = dRect.origin.x + dRect.size.width;
     scr->scr_width = (int)[systemScreen sizeInPixels].width;
     scr->scr_height = (int)[systemScreen sizeInPixels].height;
-    
-    // Save changed layout in user's preferences directory
-    // [systemScreen saveCurrentDisplayLayout];
   }
   
+  // 2. Update WM Xrandr
+  wUpdateXrandrInfo(scr);
+
+  // 3. Update WM usable area info
+  wScreenUpdateUsableArea(scr);
+
+  NSLog(@"[XWUpdateScreenInfo] screen W:%i H:%i heads count: %i",
+        scr->scr_width, scr->scr_height, scr->xrandr_info.count);
+
   // 4.2 Move Dock
   // Place Dock into main display with changed usable area.
   [RecyclerIcon recyclerAppIconForDock:scr->dock];

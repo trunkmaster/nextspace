@@ -167,9 +167,6 @@
 /* Define as the return type of signal handlers (`int' or `void') */
 #undef RETSIGTYPE
 
-/* defined when the Solaris Xinerama extension was detected */
-#undef SOLARIS_XINERAMA
-
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
@@ -212,11 +209,11 @@
 /* defined when valid Webp library with header was found */
 #undef USE_WEBP
 
-/* defined when usable Xinerama library with header was found */
-#undef USE_XINERAMA
-
 /* defined when valid XPM library with header was found */
 #undef USE_XPM
+
+/* defined when valid XRandR library with header was found */
+#undef USE_XRANDR
 
 /* defined when valid XShape library with header was found */
 #undef USE_XSHAPE

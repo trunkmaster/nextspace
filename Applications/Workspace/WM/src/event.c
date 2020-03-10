@@ -64,7 +64,7 @@
 #include "framewin.h"
 #include "properties.h"
 #include "balloon.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "wmspec.h"
 #include "colormap.h"
 #include "screen.h"

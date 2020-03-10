@@ -46,7 +46,7 @@
 #include "menu.h"
 #include "framewin.h"
 #include "dialog.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "client.h"
 #include "placement.h"
 #include "misc.h"

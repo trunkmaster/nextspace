@@ -50,7 +50,7 @@
 #include "geomview.h"
 #include "wmspec.h"
 
-#include "xinerama.h"
+#include "xrandr.h"
 
 #include <WINGs/WUtil.h>
 
@@ -618,7 +618,7 @@ WScreen *wScreenInit(int screen_number)
   scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, screen_number));
   scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, screen_number));
 
-  wInitXinerama(scr);
+  wInitXrandr(scr);
 
   scr->usableArea = (WArea *) wmalloc(sizeof(WArea) * wXineramaHeads(scr));
   scr->totalUsableArea = (WArea *) wmalloc(sizeof(WArea) * wXineramaHeads(scr));
