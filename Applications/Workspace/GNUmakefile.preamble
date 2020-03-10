@@ -34,4 +34,5 @@ ADDITIONAL_OBJCFLAGS += -DNEXTSPACE
 ADDITIONAL_LDFLAGS += -ldispatch -ldl
 ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/src -I./$(WM_DIR)/WINGs
 ADDITIONAL_LIB_DIRS += -L./$(WM_DIR)/WINGs/.libs
-ADDITIONAL_GUI_LIBS += -lWUtil -lWINGs -lwraster -lXext -lXrandr -lXinerama -lXfixes -lXcursor
+ADDITIONAL_GUI_LIBS += $(WM_DIR)/WINGs/.libs/libWINGs.a $(WM_DIR)/WINGs/.libs/libWUtil.a
+ADDITIONAL_GUI_LIBS += -lbsd -lfontconfig -lXft -lwraster -lXext -lXrandr -lXfixes -lXcursor
