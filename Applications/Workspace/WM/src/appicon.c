@@ -45,7 +45,6 @@
 #include "superfluous.h"
 #include "menu.h"
 #include "framewin.h"
-#include "dialog.h"
 #include "xrandr.h"
 #include "client.h"
 #include "placement.h"
@@ -56,6 +55,7 @@
 #endif
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
+#include <stdio.h>
 #endif /* NEXTSPACE */
 
 /*
@@ -538,47 +538,6 @@ static void unhideHereCallback(WMenu * menu, WMenuEntry * entry)
 
   wUnhideApplication(wapp, False, True);
 }
-#ifndef NEXTSPACE
-static void setIconCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WAppIcon *icon = ((WApplication *) entry->clientdata)->app_icon;
-  char *file = NULL;
-  WScreen *scr;
-  int result;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  assert(icon != NULL);
-
-  if (icon->editing)
-    return;
-
-  icon->editing = 1;
-  scr = icon->icon->core->screen_ptr;
-
-  wretain(icon);
-
-  result = wIconChooserDialog(scr, &file, icon->wm_instance, icon->wm_class);
-
-  if (result) {
-    if (!icon->destroyed) {
-      if (!wIconChangeImageFile(icon->icon, file)) {
-        wMessageDialog(scr, _("Error"),
-                       _("Could not open specified icon file"),
-                       _("OK"), NULL, NULL);
-      } else {
-        wDefaultChangeIcon(icon->wm_instance, icon->wm_class, file);
-        wAppIconPaint(icon);
-      }
-    }
-    if (file)
-      wfree(file);
-  }
-  icon->editing = 0;
-  wrelease(icon);
-}
-#endif
 static void killCallback(WMenu * menu, WMenuEntry * entry)
 {
   WApplication *wapp = (WApplication *) entry->clientdata;
@@ -634,9 +593,6 @@ static WMenu *createApplicationMenu(WScreen *scr)
   wMenuAddCallback(menu, _("Launch"), relaunchCallback, NULL);
   wMenuAddCallback(menu, _("Unhide Here"), unhideHereCallback, NULL);
   wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
-#ifndef NEXTSPACE
-  wMenuAddCallback(menu, _("Set Icon..."), setIconCallback, NULL);
-#endif
   wMenuAddCallback(menu, _("Kill"), killCallback, NULL);
 
   return menu;
@@ -725,7 +681,6 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
     wHideOtherApplications(aicon->icon->owner);
 }
 
-#include <stdio.h>
 void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
 {
   WAppIcon *aicon = desc->parent;

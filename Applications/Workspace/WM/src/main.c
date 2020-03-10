@@ -54,7 +54,6 @@
 #include "session.h"
 #include "shutdown.h"
 #include "main.h"
-#include "monitor.h"
 
 #include <WINGs/WUtil.h>
 

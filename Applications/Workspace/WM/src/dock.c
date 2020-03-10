@@ -45,8 +45,6 @@
 #include "actions.h"
 #include "stacking.h"
 #include "dock.h"
-#include "dockedapp.h"
-#include "dialog.h"
 #include "main.h"
 #include "properties.h"
 #include "menu.h"
@@ -165,29 +163,6 @@ static void make_keys(void)
   dDock = WMCreatePLString("Dock");
   dClip = WMCreatePLString("Clip");
   dDrawers = WMCreatePLString("Drawers");
-}
-
-static void renameCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WDock *dock = entry->clientdata;
-  char buffer[128];
-  int wspace;
-  char *name;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  assert(entry->clientdata != NULL);
-
-  wspace = dock->screen_ptr->current_workspace;
-
-  name = wstrdup(dock->screen_ptr->workspaces[wspace]->name);
-
-  snprintf(buffer, sizeof(buffer), _("Type the name for workspace %i:"), wspace + 1);
-  if (wInputDialog(dock->screen_ptr, _("Rename Workspace"), buffer, &name))
-    wWorkspaceRename(dock->screen_ptr, wspace, name);
-
-  wfree(name);
 }
 
 static void toggleLoweredCallback(WMenu *menu, WMenuEntry *entry)
@@ -447,19 +422,19 @@ static void omnipresentCallback(WMenu *menu, WMenuEntry *entry)
   }
   WMFreeArray(selectedIcons);
   if (failed > 1) {
-    wMessageDialog(dock->screen_ptr, _("Warning"),
-                   _("Some icons cannot be made omnipresent. "
-                     "Please make sure that no other icon is "
-                     "docked in the same positions on the other "
-                     "workspaces and the Clip is not full in "
-                     "some workspace."), _("OK"), NULL, NULL);
+    XWRunAlertPanel(_("Dock: Warning"),
+                    _("Some icons cannot be made omnipresent. "
+                      "Please make sure that no other icon is "
+                      "docked in the same positions on the other "
+                      "workspaces and the Clip is not full in "
+                      "some workspace."), _("OK"), NULL, NULL);
   } else if (failed == 1) {
-    wMessageDialog(dock->screen_ptr, _("Warning"),
-                   _("Icon cannot be made omnipresent. "
-                     "Please make sure that no other icon is "
-                     "docked in the same position on the other "
-                     "workspaces and the Clip is not full in "
-                     "some workspace."), _("OK"), NULL, NULL);
+    XWRunAlertPanel(_("Dock: Warning"),
+                    _("Icon cannot be made omnipresent. "
+                      "Please make sure that no other icon is "
+                      "docked in the same position on the other "
+                      "workspaces and the Clip is not full in "
+                      "some workspace."), _("OK"), NULL, NULL);
   }
 }
 
@@ -503,10 +478,9 @@ static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
   selectedIcons = getSelected(dock);
 
   if (WMGetArrayItemCount(selectedIcons)) {
-    if (wMessageDialog(dock->screen_ptr,
-                       dock->type == WM_CLIP ? _("Workspace Clip") : _("Drawer"),
-                       _("All selected icons will be removed!"),
-                       _("OK"), _("Cancel"), NULL) != WAPRDefault) {
+    if (XWRunAlertPanel(dock->type == WM_CLIP ? _("Workspace Clip") : _("Drawer"),
+                        _("All selected icons will be removed!"),
+                        _("OK"), _("Cancel"), NULL) != WAPRDefault) {
       WMFreeArray(selectedIcons);
       return;
     }
@@ -523,72 +497,6 @@ static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
   if (dock->type == WM_DRAWER) {
     drawerConsolidateIcons(dock);
   }
-}
-
-static void keepIconsCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WAppIcon *clickedIcon = (WAppIcon *) entry->clientdata;
-  WDock *dock;
-  WAppIcon *aicon;
-  WMArray *selectedIcons;
-  WMArrayIterator it;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  assert(clickedIcon != NULL);
-  dock = clickedIcon->dock;
-
-  selectedIcons = getSelected(dock);
-
-  if (!WMGetArrayItemCount(selectedIcons)
-      && clickedIcon != dock->screen_ptr->clip_icon) {
-    char *command = NULL;
-
-    if (!clickedIcon->command && !clickedIcon->editing) {
-      clickedIcon->editing = 1;
-      if (wInputDialog(dock->screen_ptr, _("Keep Icon"),
-                       _("Type the command used to launch the application"), &command)) {
-        if (command && (command[0] == 0 || (command[0] == '-' && command[1] == 0))) {
-          wfree(command);
-          command = NULL;
-        }
-        clickedIcon->command = command;
-        clickedIcon->editing = 0;
-      } else {
-        clickedIcon->editing = 0;
-        if (command)
-          wfree(command);
-        WMFreeArray(selectedIcons);
-        return;
-      }
-    }
-
-    WMAddToArray(selectedIcons, clickedIcon);
-  }
-
-  WM_ITERATE_ARRAY(selectedIcons, aicon, it) {
-    if (aicon->icon->selected)
-      wIconSelect(aicon->icon);
-
-    if (aicon->attracted && aicon->command) {
-      aicon->attracted = 0;
-      if (aicon->icon->shadowed) {
-        aicon->icon->shadowed = 0;
-
-        /*
-         * Update icon pixmap, RImage doesn't change,
-         * so call wIconUpdate is not needed
-         */
-        update_icon_pixmap(aicon->icon);
-
-        /* Paint it */
-        wAppIconPaint(aicon);
-      }
-    }
-    save_appicon(aicon, True);
-  }
-  WMFreeArray(selectedIcons);
 }
 
 static void toggleAutoAttractCallback(WMenu *menu, WMenuEntry *entry)
@@ -773,19 +681,6 @@ static void launchCallback(WMenu *menu, WMenuEntry *entry)
 
   launchDockedApplication(btn, False);
 }
-#ifndef NEXTSPACE
-static void settingsCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WAppIcon *btn = (WAppIcon *) entry->clientdata;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  if (btn->editing)
-    return;
-  ShowDockAppSettingsPanel(btn);
-}
-#endif
 static void hideCallback(WMenu *menu, WMenuEntry *entry)
 {
   WApplication *wapp;
@@ -1242,12 +1137,6 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
      * entry text is different between the two contexts, or if it can
      * change depending on some state, free the duplicated string (from
      * wMenuInsertCallback) and use gettext's string */
-    if (type == WM_CLIP) {
-      entry = wMenuAddCallback(menu, _("Rename Workspace"), renameCallback, NULL);
-      wfree(entry->text);
-      entry->text = _("Rename Workspace"); /* can be: (Toggle) Omnipresent */
-    }
-
     entry = wMenuAddCallback(menu, _("Selected"), selectCallback, NULL);
     entry->flags.indicator = 1;
     entry->flags.indicator_on = 1;
@@ -1256,10 +1145,6 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
     entry = wMenuAddCallback(menu, _("Select All Icons"), selectIconsCallback, NULL);
     wfree(entry->text);
     entry->text = _("Select All Icons"); /* can be: Unselect all icons */
-
-    entry = wMenuAddCallback(menu, _("Keep Icon"), keepIconsCallback, NULL);
-    wfree(entry->text);
-    entry->text = _("Keep Icon"); /* can be: Keep Icons */
 
     if (type == WM_CLIP) {
       entry = wMenuAddCallback(menu, _("Move Icon To"), NULL, NULL);
@@ -1278,15 +1163,10 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
   }
 
   wMenuAddCallback(menu, _("Launch"), launchCallback, NULL);
-
   wMenuAddCallback(menu, _("Unhide Here"), unhideHereCallback, NULL);
-
   entry = wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
   wfree(entry->text);
   entry->text = _("Hide"); /* can be: Unhide */
-#ifndef NEXTSPACE
-  wMenuAddCallback(menu, _("Settings..."), settingsCallback, NULL);
-#endif
   entry = wMenuAddCallback(menu, _("Kill"), killCallback, NULL);
   wfree(entry->text);
   entry->text = _("Kill"); /* can be: Remove drawer */
@@ -2152,35 +2032,10 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
     if (command) {
       icon->command = command;
     } else {
-      /* icon->forced_dock = 1; */
-      if (dock->type != WM_CLIP || !icon->attracted) {
-        icon->editing = 1;
-        if (wInputDialog(dock->screen_ptr, _("Dock Icon"),
-                         _("Type the command used to launch the application"), &command)) {
-          if (command && (command[0] == 0 || (command[0] == '-' && command[1] == 0))) {
-            wfree(command);
-            command = NULL;
-          }
-          icon->command = command;
-          icon->editing = 0;
-        } else {
-          icon->editing = 0;
-          if (command)
-            wfree(command);
-          /* If the target is the dock, reject the icon. If
-           * the target is the clip, make it an attracted icon
-           */
-          if (dock->type == WM_CLIP) {
-            icon->attracted = 1;
-            if (!icon->icon->shadowed) {
-              icon->icon->shadowed = 1;
-              lupdate_icon = True;
-            }
-          } else {
-            return False;
-          }
-        }
-      }
+      XWRunAlertPanel("Workspace Dock",
+                      "Application icon without command set cannot be attached to Dock.",
+                      _("OK"), NULL, NULL);
+      return False;
     }
   }
 
@@ -2303,22 +2158,10 @@ Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, i
     if (command) {
       icon->command = command;
     } else {
-      icon->editing = 1;
-      /* icon->forced_dock = 1; */
-      if (wInputDialog(src->screen_ptr, _("Dock Icon"),
-                       _("Type the command used to launch the application"), &command)) {
-        if (command && (command[0] == 0 || (command[0] == '-' && command[1] == 0))) {
-          wfree(command);
-          command = NULL;
-        }
-        icon->command = command;
-      } else {
-        icon->editing = 0;
-        if (command)
-          wfree(command);
-        return False;
-      }
-      icon->editing = 0;
+      XWRunAlertPanel("Workspace Dock",
+                      "Application icon without command set cannot be attached to Dock.",
+                      _("OK"), NULL, NULL);
+      return False;
     }
   }
 
@@ -2393,10 +2236,6 @@ void wDockDetach(WDock *dock, WAppIcon *icon)
 {
   int index;
   Bool update_icon = False;
-
-  /* make the settings panel be closed */
-  if (icon->panel)
-    DestroyDockAppSettingsPanel(icon->panel);
 
   /* This must be called before icon->dock is set to NULL.
    * Don't move it. -Dan
@@ -3493,12 +3332,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     if (dock->type == WM_CLIP) {
       /* Rename Workspace */
       entry = dock->menu->entries[++index];
-      if (aicon == scr->clip_icon) {
-        entry->callback = renameCallback;
-        entry->clientdata = dock;
-        entry->flags.indicator = 0;
-        entry->text = _("Rename Workspace");
-      } else {
+      if (aicon != scr->clip_icon) {
         entry->callback = omnipresentCallback;
         entry->clientdata = aicon;
         if (n_selected > 0) {
@@ -3671,35 +3505,36 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
     if (event->xbutton.state & ALT_MOD_MASK)
       wHideOtherApplications(btn->icon->owner);
-  } else {
+  }
+  else {
     if (event->xbutton.button == Button1) {
       if (event->xbutton.state & MOD_MASK) {
         /* raise/lower dock */
         toggleLowered(dock);
-      } else if (btn == dock->screen_ptr->clip_icon) {
-        if (getClipButton(event->xbutton.x, event->xbutton.y) != CLIP_IDLE)
+      }
+      else if (btn == dock->screen_ptr->clip_icon) {
+        if (getClipButton(event->xbutton.x, event->xbutton.y) != CLIP_IDLE) {
           handleClipChangeWorkspace(dock->screen_ptr, event);
+        }
         else if (wPreferences.flags.clip_merged_in_dock) {
           // Is actually the dock
-          if (btn->command)
-            {
-              if (!btn->launching && (!btn->running || (event->xbutton.state & ControlMask)))
-                launchDockedApplication(btn, False);
+          if (btn->command) {
+            if (!btn->launching
+                && (!btn->running || (event->xbutton.state & ControlMask))) {
+              launchDockedApplication(btn, False);
             }
-          else
-            {
-              wShowInfoPanel(dock->screen_ptr);
-            }
+          }
         }
-        else
+        else {
           toggleCollapsed(dock);
-      } else if (wIsADrawer(btn)) {
+        }
+      }
+      else if (wIsADrawer(btn)) {
         toggleCollapsed(dock);
-      } else if (btn->command) {
+      }
+      else if (btn->command) {
         if (!btn->launching && (!btn->running || (event->xbutton.state & ControlMask)))
           launchDockedApplication(btn, False);
-      } else if (btn->xindex == 0 && btn->yindex == 0 && btn->dock->type == WM_DOCK) {
-        wShowInfoPanel(dock->screen_ptr);
       }
     }
   }
@@ -4532,9 +4367,9 @@ static void removeDrawerCallback(WMenu *menu, WMenuEntry *entry)
   assert(dock != NULL);
 
   if (dock->icon_count > 2) {
-    if (wMessageDialog(dock->screen_ptr, _("Drawer"),
-                       _("All icons in this drawer will be detached!"),
-                       _("OK"), _("Cancel"), NULL) != WAPRDefault)
+    if (XWRunAlertPanel(_("Drawer"),
+                        _("All icons in this drawer will be detached!"),
+                        _("OK"), _("Cancel"), NULL) != WAPRDefault)
       return;
   }
   drawerDestroy(dock);

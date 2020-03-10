@@ -33,7 +33,6 @@
 #include "main.h"
 #include "properties.h"
 #include "session.h"
-#include "winspector.h"
 #include "wmspec.h"
 #include "colormap.h"
 #include "shutdown.h"
@@ -159,7 +158,6 @@ void RestoreDesktop(WScreen * scr)
   }
 
   XGrabServer(dpy);
-  wDestroyInspectorPanels();
 
   /* reparent windows back to the root window, keeping the stacking order */
   restoreWindows(scr->stacking_list, NULL);

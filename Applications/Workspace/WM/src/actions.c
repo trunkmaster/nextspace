@@ -42,7 +42,6 @@
 #include "stacking.h"
 #include "appicon.h"
 #include "dock.h"
-#include "winspector.h"
 #include "workspace.h"
 #include "xrandr.h"
 #include "placement.h"
@@ -1425,9 +1424,6 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int a
     return;
   }
 
-  if (wwin->flags.inspector_open)
-    wHideInspectorForWindow(wwin);
-
   wwin->flags.hidden = 1;
   wWindowUnmap(wwin);
 
@@ -1522,7 +1518,7 @@ void wHideOtherApplications(WWindow *awin)
         && wwin->frame->workspace == awin->screen_ptr->current_workspace
         && !(wwin->flags.miniaturized || wwin->flags.hidden)
         && !wwin->flags.internal_window
-        && wGetWindowOfInspectorForWindow(wwin) != awin && !WFLAGP(wwin, no_hide_others)) {
+        && !WFLAGP(wwin, no_hide_others)) {
 
       if (tapp != wapp && wwin->protocols.HIDE_APP) {
         WIcon *icon = tapp->app_icon->icon;
@@ -1656,8 +1652,6 @@ static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int
     wwin->flags.mapped = 1;
     wRaiseFrame(wwin->frame->core);
   }
-  if (wwin->flags.inspector_open)
-    wUnhideInspectorForWindow(wwin);
 
   WMPostNotificationName(WMNChangedState, wwin, "hide");
 }

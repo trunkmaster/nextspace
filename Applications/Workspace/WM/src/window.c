@@ -44,7 +44,6 @@
 #include "framewin.h"
 #include "texture.h"
 #include "window.h"
-#include "winspector.h"
 #include "icon.h"
 #include "properties.h"
 #include "actions.h"
@@ -1502,10 +1501,6 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 
   fprintf(stderr, "[WM] will unmanage window:%lu\n", wwin->client_win);
   
-  /* First close attribute editor window if open */
-  if (wwin->flags.inspector_open)
-    wCloseInspectorForWindow(wwin);
-
   /* Close window menu if it's open for this window */
   if (wwin->flags.menu_open_for_me)
     CloseWindowMenu(scr);

@@ -48,7 +48,6 @@
 #include "wcore.h"
 #include "window.h"
 #include "framewin.h"
-#include "dialog.h"
 #include "xutil.h"
 #include "xmodifier.h"
 #include "main.h"
@@ -462,7 +461,7 @@ static char*
 getuserinput(WScreen *scr, const char *line, int *ptr, Bool advanced)
 {
   char *ret = NULL, *title = NULL, *prompt = NULL, *name = NULL;
-  int rv;
+  int rv = 0;
 
   if(line[*ptr] == '(')
     title = parseuserinputpart(line, ptr, ",)");
@@ -471,16 +470,16 @@ getuserinput(WScreen *scr, const char *line, int *ptr, Bool advanced)
   if(prompt != NULL && line[*ptr] == ',')
     name = parseuserinputpart(line, ptr, ")");
 
-  if(advanced)
-    rv = wAdvancedInputDialog(scr,
-                              title ? _(title):_("Program Arguments"),
-                              prompt ? _(prompt):_("Enter command arguments:"),
-                              name, &ret);
-  else
-    rv = wInputDialog(scr,
-                      title ? _(title):_("Program Arguments"),
-                      prompt ? _(prompt):_("Enter command arguments:"),
-                      &ret);
+  /* if(advanced) */
+  /*   rv = wAdvancedInputDialog(scr, */
+  /*                             title ? _(title):_("Program Arguments"), */
+  /*                             prompt ? _(prompt):_("Enter command arguments:"), */
+  /*                             name, &ret); */
+  /* else */
+  /*   rv = wInputDialog(scr, */
+  /*                     title ? _(title):_("Program Arguments"), */
+  /*                     prompt ? _(prompt):_("Enter command arguments:"), */
+  /*                     &ret); */
 
   if(title) wfree(title);
   if(prompt) wfree(prompt);
