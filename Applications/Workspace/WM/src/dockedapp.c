@@ -37,7 +37,7 @@
 #include "misc.h"
 #include "defaults.h"
 #include "framewin.h"
-#include "xinerama.h"
+#include "xrandr.h"
 
 
 static void updateCommand(WAppIcon * icon, char *command)

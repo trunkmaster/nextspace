@@ -36,7 +36,7 @@
 #include "actions.h"
 #include "application.h"
 #include "dock.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "placement.h"
 
 

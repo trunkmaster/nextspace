@@ -522,7 +522,7 @@ extern struct wmaker_global_variables {
   } domain;
 
   /* Screens related */
-  int screen_count;
+  /* int screen_count; */
 
   /*
    * Ignore Workspace Change:

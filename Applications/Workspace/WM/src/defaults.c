@@ -798,9 +798,7 @@ WDefaultEntry optionList[] = {
                               {"WindowShortcut10Key", "None", (void *)WKBD_WINDOW10,
                                NULL, getKeybind, setKeyGrab, NULL, NULL},
                               {"WindowRelaunchKey", "None", (void *)WKBD_RELAUNCH,
-                               NULL, getKeybind, setKeyGrab, NULL, NULL},
-                              {"ScreenSwitchKey", "None", (void *)WKBD_SWITCH_SCREEN,
-                               NULL, getKeybind, setKeyGrab, NULL, NULL},
+                               NULL, getKeybind, setKeyGrab, NULL, NULL},                        
                               {"RunKey", "None", (void *)WKBD_RUN,
                                NULL, getKeybind, setKeyGrab, NULL, NULL},
 
@@ -1052,7 +1050,6 @@ void wDefaultsCheckDomains(void* arg)
   struct stat stbuf;
   WMPropList *shared_dict = NULL;
   WMPropList *dict;
-  int i;
 
   /* Parameter not used, but tell the compiler that it is ok */
   (void) arg;
@@ -1080,11 +1077,9 @@ void wDefaultsCheckDomains(void* arg)
           shared_dict = NULL;
         }
 
-        for (i = 0; i < w_global.screen_count; i++) {
-          scr = wScreenWithNumber(i);
-          if (scr)
-            wReadDefaults(scr, dict);
-        }
+        scr = wDefaultScreen();
+        if (scr)
+          wReadDefaults(scr, dict);
 
         if (w_global.domain.wmaker->dictionary)
           WMReleasePropList(w_global.domain.wmaker->dictionary);
@@ -1123,16 +1118,14 @@ void wDefaultsCheckDomains(void* arg)
           WMReleasePropList(w_global.domain.window_attr->dictionary);
 
         w_global.domain.window_attr->dictionary = dict;
-        for (i = 0; i < w_global.screen_count; i++) {
-          scr = wScreenWithNumber(i);
-          if (scr) {
-            wDefaultUpdateIcons(scr);
+        scr = wDefaultScreen();
+        if (scr) {
+          wDefaultUpdateIcons(scr);
 
-            /* Update the panel image if changed */
-            /* Don't worry. If the image is the same these
-             * functions will have no performance impact. */
-            create_logo_image(scr);
-          }
+          /* Update the panel image if changed */
+          /* Don't worry. If the image is the same these
+           * functions will have no performance impact. */
+          create_logo_image(scr);
         }
       }
     } else {

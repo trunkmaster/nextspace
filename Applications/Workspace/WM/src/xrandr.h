@@ -26,9 +26,10 @@
 #include "window.h"
 #include <WINGs/WINGs.h>
 
-void wInitXinerama(WScreen *scr);
+void wInitXrandr(WScreen *scr);
+void wUpdateXrandrInfo(WScreen *scr);
 
-#define wXineramaHeads(scr) ((scr)->xine_info.count ? (scr)->xine_info.count : 1)
+#define wXineramaHeads(scr) ((scr)->xrandr_info.count ? (scr)->xrandr_info.count : 1)
 
 #define XFLAG_NONE	0x00
 #define XFLAG_DEAD	0x01
@@ -55,6 +56,3 @@ Bool wWindowTouchesHead(WWindow *wwin, int head);
 Bool wAppIconTouchesHead(WAppIcon *aicon, int head);
 
 #endif
-
-
-

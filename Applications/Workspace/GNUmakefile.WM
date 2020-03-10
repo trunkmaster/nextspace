@@ -31,7 +31,7 @@ $(APP_NAME)_C_FILES = \
 	$(WM_DIR)/src/superfluous.c \
 	$(WM_DIR)/src/switchmenu.c \
 	$(WM_DIR)/src/texture.c \
-	$(WM_DIR)/src/xinerama.c \
+	$(WM_DIR)/src/xrandr.c \
 	$(WM_DIR)/src/xutil.c \
 	$(WM_DIR)/src/wcore.c \
 	$(WM_DIR)/src/wdefaults.c \

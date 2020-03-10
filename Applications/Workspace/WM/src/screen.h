@@ -33,14 +33,15 @@
 #define WTB_FOCUSED	0
 #define WTB_UNFOCUSED	2
 #define WTB_PFOCUSED	4
-#define WTB_MENU 6
+#define WTB_MENU 	6
 
 typedef struct {
   WMRect *screens;
-  int count;                 /* screen count, 0 = inactive */
-  int primary_head;	       /* main working screen */
-} WXineramaInfo;
-
+  int    count;              /* screen count, 0 = inactive */
+  int    primary_head;       /* main working screen */
+  int    event_base;
+  int    error_base;
+} WXrandrInfo;
 
 
 /* an area of the screen reserved by some window */
@@ -50,12 +51,10 @@ typedef struct WReservedArea {
   struct WReservedArea *next;
 } WReservedArea;
 
-
 typedef struct WAppIconChain {
   struct WAppIcon *aicon;
   struct WAppIconChain *next;
 } WAppIconChain;
-
 
 /* Drawers, which are docks, really */
 typedef struct WDrawerChain {
@@ -91,7 +90,7 @@ typedef struct _WScreen {
   int  w_depth;
   Colormap w_colormap;	       /* our colormap */
 
-  WXineramaInfo xine_info;
+  WXrandrInfo xrandr_info;
 
   Window no_focus_win;	       /* window to get focus when nobody
                                 * else can do it */
@@ -330,9 +329,7 @@ int wScreenKeepInside(WScreen *scr, int *x, int *y, int width, int height);
 
 
 /* in startup.c */
-WScreen *wScreenWithNumber(int i);
-WScreen *wScreenForRootWindow(Window window);   /* window must be valid */
-WScreen *wScreenForWindow(Window window);   /* slower than above functions */
+WScreen *wDefaultScreen(void);
 
 void wScreenFinish(WScreen *scr);
 void wScreenUpdateUsableArea(WScreen *scr);

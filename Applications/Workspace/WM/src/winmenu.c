@@ -45,7 +45,7 @@
 #include "dialog.h"
 #include "stacking.h"
 #include "icon.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "winmenu.h"
 
 

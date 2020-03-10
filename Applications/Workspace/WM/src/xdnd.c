@@ -91,7 +91,7 @@ static void wXDNDDecodeURI(char *uri)
 
 Bool wXDNDProcessSelection(XEvent *event)
 {
-  WScreen *scr = wScreenForWindow(event->xselection.requestor);
+  WScreen *scr = wDefaultScreen();
   char *retain;
   Atom ret_type;
   int ret_format;
@@ -198,7 +198,7 @@ static Bool isAwareXDND(Window window)
 
 static Bool acceptXDND(Window window)
 {
-  WScreen *scr = wScreenForWindow(window);
+  WScreen *scr = wDefaultScreen();
   WDock *dock;
   int icon_pos, i;
 

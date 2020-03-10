@@ -60,7 +60,7 @@
 #include "framewin.h"
 #include "window.h"
 #include "actions.h"
-#include "xinerama.h"
+#include "xrandr.h"
 
 
 static WMPoint getCenter(WScreen * scr, int width, int height)
