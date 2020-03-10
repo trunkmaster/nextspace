@@ -40,7 +40,7 @@
 
 #include "geomview.h"
 #include "screen.h"
-#include "xinerama.h"
+#include "xrandr.h"
 
 #include <WINGs/WINGsP.h>
 
@@ -100,7 +100,7 @@ static void moveGeometryDisplayCentered(WScreen * scr, int x, int y)
   y -= h / 2;
 
   /* dead area check */
-  if (scr->xine_info.count) {
+  if (scr->xrandr_info.count) {
     WMRect rect;
     int head, flags;
 
@@ -1399,7 +1399,7 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
   int modes = ((IS_MOVABLE(wwin) ? MOVABLE_BIT : 0) | (IS_RESIZABLE(wwin) ? RESIZABLE_BIT : 0));
   int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
-              : scr->xine_info.primary_head);
+              : scr->xrandr_info.primary_head);
   char *orig_title;
 
   // Save title before move/resize chage it
@@ -1763,7 +1763,7 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
   MoveData moveData;
   int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
-              : scr->xine_info.primary_head);
+              : scr->xrandr_info.primary_head);
   char *orig_title;
 
 
@@ -2317,7 +2317,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
   int original_fh = fh;
   int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
-              : scr->xine_info.primary_head);
+              : scr->xrandr_info.primary_head);
   int opaqueResize = wPreferences.opaque_resize;
   Cursor cursor;
 #ifdef NEXTSPACE

@@ -39,7 +39,7 @@
 #include "actions.h"
 #include "winmenu.h"
 #include "stacking.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "workspace.h"
 #include "dialog.h"
 #include "switchmenu.h"

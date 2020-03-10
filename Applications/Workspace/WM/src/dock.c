@@ -55,7 +55,7 @@
 #include "workspace.h"
 #include "framewin.h"
 #include "superfluous.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "placement.h"
 #include "misc.h"
 #include "event.h"

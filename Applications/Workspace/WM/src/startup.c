@@ -335,41 +335,9 @@ wHackedGrabButton(unsigned int button, unsigned int modifiers,
 #endif				/* NUMLOCK_HACK */
 }
 
-WScreen *wScreenWithNumber(int i)
+WScreen *wDefaultScreen(void)
 {
-  assert(i < w_global.screen_count);
-
-  return wScreen[i];
-}
-
-WScreen *wScreenForRootWindow(Window window)
-{
-  int i;
-
-  if (w_global.screen_count == 1)
-    return wScreen[0];
-
-  /* Since the number of heads will probably be small (normally 2),
-   * it should be faster to use this than a hash table, because
-   * of the overhead. */
-  for (i = 0; i < w_global.screen_count; i++)
-    if (wScreen[i]->root_win == window)
-      return wScreen[i];
-
-  return wScreenForWindow(window);
-}
-
-WScreen *wScreenForWindow(Window window)
-{
-  XWindowAttributes attr;
-
-  if (w_global.screen_count == 1)
-    return wScreen[0];
-
-  if (XGetWindowAttributes(dpy, window, &attr))
-    return wScreenForRootWindow(attr.root);
-
-  return NULL;
+  return wScreen[0];
 }
 
 static char *atomNames[] = {
@@ -441,7 +409,6 @@ void StartUp(Bool defaultScreenOnly)
 #ifdef HAVE_XINTERNATOMS
   XInternAtoms(dpy, atomNames, wlengthof(atomNames), False, atom);
 #else
-
   {
     int i;
     for (i = 0; i < wlengthof(atomNames); i++)
@@ -603,15 +570,6 @@ void StartUp(Bool defaultScreenOnly)
   }
 #endif
 
-  if (defaultScreenOnly)
-    max = 1;
-  else
-    max = ScreenCount(dpy);
-
-  wScreen = wmalloc(sizeof(WScreen *) * max);
-
-  w_global.screen_count = 0;
-
   /* Check if TIFF images are supported */
   formats = RSupportedFileFormats();
   if (formats) {
@@ -623,83 +581,71 @@ void StartUp(Bool defaultScreenOnly)
     }
   }
 
-  /* manage the screens */
-  for (j = 0; j < max; j++) {
-    if (defaultScreenOnly || max == 1) {
-      wScreen[w_global.screen_count] = wScreenInit(DefaultScreen(dpy));
-      if (!wScreen[w_global.screen_count]) {
-        wfatal(_("it seems that there is already a window manager running"));
-        Exit(1);
-      }
-    } else {
-      wScreen[w_global.screen_count] = wScreenInit(j);
-      if (!wScreen[w_global.screen_count]) {
-        wwarning(_("could not manage screen %i"), j);
-        continue;
-      }
-    }
-    w_global.screen_count++;
+  /* manage the screen */
+  if (defaultScreenOnly)
+    max = 1;
+  else
+    max = ScreenCount(dpy);
+
+  wScreen = wmalloc(sizeof(WScreen *) * max);
+  wScreen[0] = wScreenInit(DefaultScreen(dpy));
+  if (!wScreen) {
+    wfatal(_("it seems that there is already a window manager running"));
+    Exit(1);
   }
 
   InitializeSwitchMenu();
 
   /* initialize/restore state for the screens */
-  for (j = 0; j < w_global.screen_count; j++) {
-    int lastDesktop;
+  int lastDesktop;
 
-    lastDesktop = wNETWMGetCurrentDesktopFromHint(wScreen[j]);
+  lastDesktop = wNETWMGetCurrentDesktopFromHint(wScreen[0]);
 
-    wScreenRestoreState(wScreen[j]);
+  wScreenRestoreState(wScreen[0]);
 
-    /* manage all windows that were already here before us */
-    if (!wPreferences.flags.nodock && wScreen[j]->dock)
-      wScreen[j]->last_dock = wScreen[j]->dock;
+  /* manage all windows that were already here before us */
+  if (!wPreferences.flags.nodock && wScreen[0]->dock)
+    wScreen[0]->last_dock = wScreen[0]->dock;
 
-    manageAllWindows(wScreen[j], wPreferences.flags.restarting == 2);
+  manageAllWindows(wScreen[0], wPreferences.flags.restarting == 2);
 
-    /* restore saved menus */
-    wMenuRestoreState(wScreen[j]);
+  /* restore saved menus */
+  wMenuRestoreState(wScreen[0]);
 
-    /* If we're not restarting, restore session */
-    if (wPreferences.flags.restarting == 0 && !wPreferences.flags.norestore)
-      wSessionRestoreState(wScreen[j]);
+  /* If we're not restarting, restore session */
+  if (wPreferences.flags.restarting == 0 && !wPreferences.flags.norestore)
+    wSessionRestoreState(wScreen[0]);
 
-    if (!wPreferences.flags.noautolaunch) {
-      /* auto-launch apps */
-      if (!wPreferences.flags.nodock && wScreen[j]->dock) {
-        wScreen[j]->last_dock = wScreen[j]->dock;
-        wDockDoAutoLaunch(wScreen[j]->dock, 0);
-      }
-      /* auto-launch apps in clip */
-      if (!wPreferences.flags.noclip) {
-        int i;
-        for (i = 0; i < wScreen[j]->workspace_count; i++) {
-          if (wScreen[j]->workspaces[i]->clip) {
-            wScreen[j]->last_dock = wScreen[j]->workspaces[i]->clip;
-            wDockDoAutoLaunch(wScreen[j]->workspaces[i]->clip, i);
-          }
+  if (!wPreferences.flags.noautolaunch) {
+    /* auto-launch apps */
+    if (!wPreferences.flags.nodock && wScreen[0]->dock) {
+      wScreen[0]->last_dock = wScreen[0]->dock;
+      wDockDoAutoLaunch(wScreen[0]->dock, 0);
+    }
+    /* auto-launch apps in clip */
+    if (!wPreferences.flags.noclip) {
+      int i;
+      for (i = 0; i < wScreen[0]->workspace_count; i++) {
+        if (wScreen[0]->workspaces[i]->clip) {
+          wScreen[0]->last_dock = wScreen[0]->workspaces[i]->clip;
+          wDockDoAutoLaunch(wScreen[0]->workspaces[i]->clip, i);
         }
       }
-      /* auto-launch apps in drawers */
-      if (!wPreferences.flags.nodrawer) {
-        WDrawerChain *dc;
-        for (dc = wScreen[j]->drawers; dc; dc = dc->next) {
-          wScreen[j]->last_dock = dc->adrawer;
-          wDockDoAutoLaunch(dc->adrawer, 0);
-        }
+    }
+    /* auto-launch apps in drawers */
+    if (!wPreferences.flags.nodrawer) {
+      WDrawerChain *dc;
+      for (dc = wScreen[0]->drawers; dc; dc = dc->next) {
+        wScreen[0]->last_dock = dc->adrawer;
+        wDockDoAutoLaunch(dc->adrawer, 0);
       }
     }
 
     /* go to workspace where we were before restart */
     if (lastDesktop >= 0)
-      wWorkspaceForceChange(wScreen[j], lastDesktop);
+      wWorkspaceForceChange(wScreen[0], lastDesktop);
     else
-      wSessionRestoreLastWorkspace(wScreen[j]);
-  }
-
-  if (w_global.screen_count == 0) {
-    wfatal(_("could not manage any screen"));
-    Exit(1);
+      wSessionRestoreLastWorkspace(wScreen[0]);
   }
 
 #ifndef HAVE_INOTIFY

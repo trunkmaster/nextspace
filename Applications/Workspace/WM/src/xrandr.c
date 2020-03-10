@@ -1,7 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
  *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
+ *  Copyright (c) 2020- Sergii Stoian
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,70 +21,82 @@
 
 #include "wconfig.h"
 
-#include "xinerama.h"
+#include "xrandr.h"
 
 #include "screen.h"
 #include "window.h"
 #include "framewin.h"
 #include "placement.h"
 #include "dock.h"
+#include "stdio.h"
 
-#ifdef USE_XINERAMA
-# ifdef SOLARIS_XINERAMA	/* sucks */
-#  include <X11/extensions/xinerama.h>
-# else
-#  include <X11/extensions/Xinerama.h>
-# endif
+#ifdef USE_XRANDR
+#  include <X11/extensions/Xrandr.h>
 #endif
 
-void wInitXinerama(WScreen * scr)
+void wInitXrandr(WScreen *scr)
 {
-  scr->xine_info.primary_head = 0;
-  scr->xine_info.screens = NULL;
-  scr->xine_info.count = 0;
-#ifdef USE_XINERAMA
-# ifdef SOLARIS_XINERAMA
-  if (XineramaGetState(dpy, scr->screen)) {
-    WXineramaInfo *info = &scr->xine_info;
-    XRectangle head[MAXFRAMEBUFFERS];
-    unsigned char hints[MAXFRAMEBUFFERS];
-    int i;
-
-    if (XineramaGetInfo(dpy, scr->screen, head, hints, &info->count)) {
-
-      info->screens = wmalloc(sizeof(WMRect) * (info->count + 1));
-
-      for (i = 0; i < info->count; i++) {
-        info->screens[i].pos.x = head[i].x;
-        info->screens[i].pos.y = head[i].y;
-        info->screens[i].size.width = head[i].width;
-        info->screens[i].size.height = head[i].height;
-      }
-    }
+  WXrandrInfo *info = &scr->xrandr_info;
+  int major_version, minor_version;
+  
+  info->primary_head = 0;
+  info->screens = NULL;
+  info->count = 0;
+  
+#ifdef USE_XRANDR
+  if (XRRQueryExtension(dpy, &info->event_base, &info->error_base) == True) {
+    XRRQueryVersion(dpy, &major_version, &minor_version);
+    fprintf(stderr, "[WM] Use XRandR %i.%i, event base:%i, error base:%i\n",
+            major_version, minor_version, info->event_base, info->error_base);
+    wUpdateXrandrInfo(scr);
   }
-# else				/* !SOLARIS_XINERAMA */
-  if (XineramaIsActive(dpy)) {
-    XineramaScreenInfo *xine_screens;
-    WXineramaInfo *info = &scr->xine_info;
-    int i;
-
-    xine_screens = XineramaQueryScreens(dpy, &info->count);
-
-    info->screens = wmalloc(sizeof(WMRect) * (info->count + 1));
-
-    for (i = 0; i < info->count; i++) {
-      info->screens[i].pos.x = xine_screens[i].x_org;
-      info->screens[i].pos.y = xine_screens[i].y_org;
-      info->screens[i].size.width = xine_screens[i].width;
-      info->screens[i].size.height = xine_screens[i].height;
-    }
-    XFree(xine_screens);
+  else {
+    fprintf(stderr, "[WM] no XRandR extension available.\n");
   }
-# endif				/* !SOLARIS_XINERAMA */
-#endif				/* USE_XINERAMA */
+#endif
 }
 
-int wGetRectPlacementInfo(WScreen * scr, WMRect rect, int *flags)
+void wUpdateXrandrInfo(WScreen *scr)
+{
+#ifdef USE_XRANDR
+  WXrandrInfo        *info = &scr->xrandr_info;
+  XRRScreenResources *screen_res = XRRGetScreenResources(dpy, scr->root_win);
+  RROutput           primary_output;
+  XRROutputInfo      *output_info;
+  XRRCrtcInfo        *crtc_info;
+  int                head_count;
+  
+  if (screen_res != NULL) {
+    info->screens = wmalloc(sizeof(WMRect) * (screen_res->noutput + 1));
+    if (screen_res->noutput != 0) {
+      primary_output = XRRGetOutputPrimary(dpy, scr->root_win);
+      head_count = 0;
+      for (int i = 0; i < screen_res->noutput; i++) {
+        output_info = XRRGetOutputInfo(dpy, screen_res, screen_res->outputs[i]);
+        if (screen_res->outputs[i] == primary_output) {
+          info->primary_head = i;
+        }
+        if (output_info->crtc) {
+          crtc_info = XRRGetCrtcInfo(dpy, screen_res, output_info->crtc);
+          
+          info->screens[i].pos.x = crtc_info->x;
+          info->screens[i].pos.y = crtc_info->y;
+          info->screens[i].size.width = crtc_info->width;
+          info->screens[i].size.height = crtc_info->height;
+          
+          XRRFreeCrtcInfo(crtc_info);
+          head_count++;
+        }
+        XRRFreeOutputInfo(output_info);
+      }
+      info->count = head_count;
+    }
+    XRRFreeScreenResources(screen_res);
+  }
+#endif
+}
+
+int wGetRectPlacementInfo(WScreen *scr, WMRect rect, int *flags)
 {
   int best;
   unsigned long area, totalArea;
@@ -101,7 +114,7 @@ int wGetRectPlacementInfo(WScreen * scr, WMRect rect, int *flags)
 
   *flags = XFLAG_NONE;
 
-  if (scr->xine_info.count <= 1) {
+  if (scr->xrandr_info.count <= 1) {
     unsigned long a;
 
     a = calcIntersectionArea(rx, ry, rw, rh, 0, 0, scr->scr_width, scr->scr_height);
@@ -112,17 +125,17 @@ int wGetRectPlacementInfo(WScreen * scr, WMRect rect, int *flags)
       *flags |= XFLAG_PARTIAL;
     }
 
-    return scr->xine_info.primary_head;
+    return scr->xrandr_info.primary_head;
   }
 
   for (i = 0; i < wXineramaHeads(scr); i++) {
     unsigned long a;
 
     a = calcIntersectionArea(rx, ry, rw, rh,
-                             scr->xine_info.screens[i].pos.x,
-                             scr->xine_info.screens[i].pos.y,
-                             scr->xine_info.screens[i].size.width,
-                             scr->xine_info.screens[i].size.height);
+                             scr->xrandr_info.screens[i].pos.x,
+                             scr->xrandr_info.screens[i].pos.y,
+                             scr->xrandr_info.screens[i].size.width,
+                             scr->xrandr_info.screens[i].size.height);
 
     totalArea += a;
     if (a > area) {
@@ -143,7 +156,7 @@ int wGetRectPlacementInfo(WScreen * scr, WMRect rect, int *flags)
 }
 
 /* get the head that covers most of the rectangle */
-int wGetHeadForRect(WScreen * scr, WMRect rect)
+int wGetHeadForRect(WScreen *scr, WMRect rect)
 {
   int best;
   unsigned long area;
@@ -153,8 +166,8 @@ int wGetHeadForRect(WScreen * scr, WMRect rect)
   int rw = rect.size.width;
   int rh = rect.size.height;
 
-  if (!scr->xine_info.count)
-    return scr->xine_info.primary_head;
+  if (!scr->xrandr_info.count)
+    return scr->xrandr_info.primary_head;
 
   best = -1;
   area = 0;
@@ -163,10 +176,10 @@ int wGetHeadForRect(WScreen * scr, WMRect rect)
     unsigned long a;
 
     a = calcIntersectionArea(rx, ry, rw, rh,
-                             scr->xine_info.screens[i].pos.x,
-                             scr->xine_info.screens[i].pos.y,
-                             scr->xine_info.screens[i].size.width,
-                             scr->xine_info.screens[i].size.height);
+                             scr->xrandr_info.screens[i].pos.x,
+                             scr->xrandr_info.screens[i].pos.y,
+                             scr->xrandr_info.screens[i].size.width,
+                             scr->xrandr_info.screens[i].size.height);
 
     if (a > area) {
       area = a;
@@ -240,14 +253,14 @@ int wGetHeadForPoint(WScreen * scr, WMPoint point)
 {
   int i;
 
-  for (i = 0; i < scr->xine_info.count; i++) {
-    WMRect *rect = &scr->xine_info.screens[i];
+  for (i = 0; i < scr->xrandr_info.count; i++) {
+    WMRect *rect = &scr->xrandr_info.screens[i];
 
     if ((unsigned)(point.x - rect->pos.x) < rect->size.width &&
         (unsigned)(point.y - rect->pos.y) < rect->size.height)
       return i;
   }
-  return scr->xine_info.primary_head;
+  return scr->xrandr_info.primary_head;
 }
 
 int wGetHeadForPointerLocation(WScreen * scr)
@@ -257,25 +270,27 @@ int wGetHeadForPointerLocation(WScreen * scr)
   int ble;
   unsigned int blo;
 
-  if (!scr->xine_info.count)
-    return scr->xine_info.primary_head;
+  if (!scr->xrandr_info.count)
+    return scr->xrandr_info.primary_head;
 
-  if (!XQueryPointer(dpy, scr->root_win, &bla, &bla, &point.x, &point.y, &ble, &ble, &blo))
-    return scr->xine_info.primary_head;
+  if (!XQueryPointer(dpy, scr->root_win, &bla, &bla, &point.x, &point.y,
+                     &ble, &ble, &blo)) {
+    return scr->xrandr_info.primary_head;
+  }
 
   return wGetHeadForPoint(scr, point);
 }
 
 /* get the dimensions of the head */
-WMRect wGetRectForHead(WScreen * scr, int head)
+WMRect wGetRectForHead(WScreen *scr, int head)
 {
   WMRect rect;
 
-  if (head < scr->xine_info.count) {
-    rect.pos.x = scr->xine_info.screens[head].pos.x;
-    rect.pos.y = scr->xine_info.screens[head].pos.y;
-    rect.size.width = scr->xine_info.screens[head].size.width;
-    rect.size.height = scr->xine_info.screens[head].size.height;
+  if (head < scr->xrandr_info.count) {
+    rect.pos.x = scr->xrandr_info.screens[head].pos.x;
+    rect.pos.y = scr->xrandr_info.screens[head].pos.y;
+    rect.size.width = scr->xrandr_info.screens[head].size.width;
+    rect.size.height = scr->xrandr_info.screens[head].size.height;
   } else {
     rect.pos.x = 0;
     rect.pos.y = 0;
@@ -307,7 +322,8 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
 
   if (noicons) {
     /* check if user wants dock covered */
-    if (scr->dock && scr->dock->mapped && wPreferences.no_window_over_dock && wAppIconTouchesHead(scr->dock->icon_array[0], head)) {
+    if (scr->dock && scr->dock->mapped && wPreferences.no_window_over_dock
+        && wAppIconTouchesHead(scr->dock->icon_array[0], head)) {
       int offset = wPreferences.icon_size + DOCK_EXTRA_SPACE;
 
       if (scr->dock->on_right_side)
@@ -326,7 +342,9 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
     }
 
     /* check if icons are on the same side as dock, and adjust if not done already */
-    if (scr->dock && wPreferences.no_window_over_icons && !wPreferences.no_window_over_dock && (wPreferences.icon_yard & IY_VERT)) {
+    if (scr->dock && wPreferences.no_window_over_icons
+        && !wPreferences.no_window_over_dock
+        && (wPreferences.icon_yard & IY_VERT)) {
       int offset = wPreferences.icon_size + DOCK_EXTRA_SPACE;
 
       if (scr->dock->on_right_side && (wPreferences.icon_yard & IY_RIGHT))

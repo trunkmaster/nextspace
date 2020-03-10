@@ -407,7 +407,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   if (useInternalWindowManager) {
     // Hide Dock
-    WWMDockHideIcons(wScreenWithNumber(0)->dock);
+    WWMDockHideIcons(wDefaultScreen()->dock);
     if (recycler) {
       [[recycler appIcon] close];
       [recycler release];
@@ -527,7 +527,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Show Dock and start applications in it
   if (useInternalWindowManager)
     {
-      WDock *dock = wScreenWithNumber(0)->dock;
+      WDock *dock = wDefaultScreen()->dock;
 
       [self updateWorkspaceBadge];
       [self updateKeyboardBadge:@"US"];
@@ -614,7 +614,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   if (useInternalWindowManager) {
     WAppIcon *btn = [recycler dockIcon];
-    WDock    *dock = wScreenWithNumber(0)->dock;
+    WDock    *dock = wDefaultScreen()->dock;
 
     if (btn) {
       btn->icon->owner = dock->icon_array[0]->icon->owner;
@@ -852,7 +852,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [self createWorkspaceBadge];
     }
     wsCurrent = [NSString stringWithFormat:@"%i",
-                          wScreenWithNumber(0)->current_workspace+1];
+                          wDefaultScreen()->current_workspace+1];
     [workspaceBadge setStringValue:wsCurrent];
   }
   else if (workspaceBadge) {
@@ -1082,7 +1082,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Dock
 - (void)setDockVisibility:(id)sender
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
 
   if ([[sender title] isEqualToString:@"Hide"])
     {
@@ -1101,7 +1101,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 - (void)setDockCollapse:(id)sender
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
   
   if ([[sender title] isEqualToString:@"Collapse"]) {
     WWMDockCollapse(scr->dock);
@@ -1120,7 +1120,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Icon Yard
 - (void)setIconYardVisibility:(id)sender
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
 
   if ([[sender title] isEqualToString:@"Hide"]) {
     WWMIconYardHideIcons(scr);
@@ -1162,18 +1162,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   else if ([menuTitle isEqualToString:@"Dock"]) {
     if ([[menuItem title] isEqualToString:@"Collapse"] ||
         [[menuItem title] isEqualToString:@"Uncollapse"]) {
-      if (!wScreenWithNumber(0)->dock->mapped) {
+      if (!wDefaultScreen()->dock->mapped) {
         return NO;
       }
     }
     if ([[menuItem title] isEqualToString:@"Hide"] &&
-        !wScreenWithNumber(0)->dock->mapped) {
+        !wDefaultScreen()->dock->mapped) {
       [menuItem setTitle:@"Show"];
     }
   }
   else if ([menuTitle isEqualToString:@"Icon Yard"]) {
     if ([[menuItem title] isEqualToString:@"Hide"] &&
-        !wScreenWithNumber(0)->flags.icon_yard_mapped) {
+        !wDefaultScreen()->flags.icon_yard_mapped) {
       [menuItem setTitle:@"Show"];
     }
   }

@@ -44,7 +44,7 @@
 #include "dock.h"
 #include "winspector.h"
 #include "workspace.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "placement.h"
 #include "misc.h"
 #include "event.h"

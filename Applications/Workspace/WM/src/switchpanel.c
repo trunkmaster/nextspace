@@ -33,7 +33,7 @@
 #include "defaults.h"
 #include "switchpanel.h"
 #include "misc.h"
-#include "xinerama.h"
+#include "xrandr.h"
 
 
 #ifdef USE_XSHAPE

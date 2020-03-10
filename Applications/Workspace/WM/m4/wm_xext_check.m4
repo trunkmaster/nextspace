@@ -190,7 +190,7 @@ AC_SUBST(LIBXINERAMA)dnl
 # the variable 'supported_xext'
 # When not found, append info to variable 'unsupported'
 AC_DEFUN_ONCE([WM_XEXT_CHECK_XRANDR],
-[WM_LIB_CHECK([RandR], [-lXrandr], [XRRQueryExtension], [$XLIBS],
+[WM_LIB_CHECK([XRandR], [-lXrandr], [XRRQueryExtension], [$XLIBS],
     [wm_save_CFLAGS="$CFLAGS"
      AS_IF([wm_fn_lib_try_compile "X11/extensions/Xrandr.h" "Display *dpy;" "XRRQueryExtension(dpy, NULL, NULL)" ""],
         [],

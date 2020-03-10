@@ -47,7 +47,7 @@
 #include "workspace.h"
 #include "appicon.h"
 #include "wmspec.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "event.h"
 #include "wsmap.h"
 #ifdef NEXTSPACE

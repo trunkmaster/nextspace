@@ -579,15 +579,15 @@ dnl the libXmu is used in WRaster
 WM_EXT_CHECK_XMU
 
 
-dnl XINERAMA support
+dnl XRANDR support
 dnl ================
-AC_ARG_ENABLE([xinerama],
-    [AS_HELP_STRING([--enable-xinerama], [enable Xinerama extension support])],
+AC_ARG_ENABLE([xrandr],
+    [AS_HELP_STRING([--enable-xrandr], [enable XRandR extension support])],
     [AS_CASE(["$enableval"],
         [yes|no], [],
-        [AC_MSG_ERROR([bad value $enableval for --enable-xinerama]) ]) ],
-    [enable_xinerama=auto])
-WM_XEXT_CHECK_XINERAMA
+        [AC_MSG_ERROR([bad value $enableval for --enable-xrandr]) ]) ],
+    [enable_xrandr=auto])
+WM_XEXT_CHECK_XRANDR
 
 
 dnl Math library

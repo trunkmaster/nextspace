@@ -54,7 +54,7 @@
 #include "stacking.h"
 #include "defaults.h"
 #include "workspace.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "appicon.h"
 #include "superfluous.h"
 #include "placement.h"
@@ -613,7 +613,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   Bool withdraw = False;
   Bool raise = False;
 
-  fprintf(stderr, "[WM] will manage window:%lu\n", window);
+  /* fprintf(stderr, "[WM] will manage window:%lu\n", window); */
 
   /* mutex. */
   XGrabServer(dpy);
@@ -1024,7 +1024,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
       if (wPreferences.window_placement == WPM_MANUAL)
         dontBring = True;
 
-    } else if (scr->xine_info.count && (wwin->normal_hints->flags & PPosition)) {
+    } else if (scr->xrandr_info.count && (wwin->normal_hints->flags & PPosition)) {
       int head, flags;
       WMRect rect;
       int reposition = 0;
