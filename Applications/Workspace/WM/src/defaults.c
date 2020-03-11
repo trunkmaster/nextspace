@@ -707,8 +707,6 @@ WDefaultEntry optionList[] = {
                                NULL, getKeybind, setKeyGrab, NULL, NULL},
                               {"SelectKey", "None", (void *)WKBD_SELECT,
                                NULL, getKeybind, setKeyGrab, NULL, NULL},
-                              {"WorkspaceMapKey", "None", (void *)WKBD_WORKSPACEMAP,
-                               NULL, getKeybind, setKeyGrab, NULL, NULL},
                               {"FocusNextKey", "None", (void *)WKBD_FOCUSNEXT,
                                NULL, getKeybind, setKeyGrab, NULL, NULL},
                               {"FocusPrevKey", "None", (void *)WKBD_FOCUSPREV,

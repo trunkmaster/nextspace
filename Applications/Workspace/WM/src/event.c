@@ -73,7 +73,6 @@
 #include "event.h"
 #include "winmenu.h"
 #include "switchmenu.h"
-#include "wsmap.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
@@ -1797,11 +1796,6 @@ static void handleKeyPress(XEvent * event)
     if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
       wSelectWindow(wwin, !wwin->flags.selected);
     }
-    break;
-
-  case WKBD_WORKSPACEMAP:
-    if (wPreferences.enable_workspace_pager)
-      StartWorkspaceMap(scr);
     break;
 
   case WKBD_FOCUSNEXT:

@@ -35,13 +35,12 @@ $(APP_NAME)_C_FILES = \
 	$(WM_DIR)/src/winmenu.c \
 	$(WM_DIR)/src/wmspec.c \
 	$(WM_DIR)/src/workspace.c \
-	$(WM_DIR)/src/wsmap.c \
 	$(WM_DIR)/src/misc.c \
 	$(WM_DIR)/src/xrandr.c \
 	$(WM_DIR)/src/xutil.c \
 	$(WM_DIR)/src/xmodifier.c \
 	$(WM_DIR)/src/xdnd.c
-
+        
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 $(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_bsd.c
 endif

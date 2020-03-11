@@ -49,7 +49,6 @@
 #include "wmspec.h"
 #include "xrandr.h"
 #include "event.h"
-#include "wsmap.h"
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
 #include "stacking.h"
@@ -500,11 +499,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
   if (workspace >= MAX_WORKSPACES || workspace < 0 || workspace == scr->current_workspace)
     return;
-
-  /* The code below produces FocusOut/FocusIn events for GNUstep application. 
-     Why? To omit them set "EnableWorkspacepager = NO" in WM preferences. Sergii Stoian */
-  if (wPreferences.enable_workspace_pager && !w_global.process_workspacemap_event)
-    wWorkspaceMapUpdate(scr);
 
   SendHelperMessage(scr, 'C', workspace + 1, NULL);
 
