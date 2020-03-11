@@ -31,10 +31,10 @@ Source11:	projectcenter-images.tar.gz
 # Build GNUstep libraries in one RPM package
 # GUI
 Patch0:		libs-gui_rpmbuild.patch
+Patch1:		libs-gui_NSPopUpButton.patch
 # Back
-Patch1:		libs-back_IconImage.patch
-Patch2:		libs-back_TakeFocus.patch
-Patch3:		libs-back_rpmbuild.patch
+Patch2:		libs-back_rpmbuild.patch
+Patch3:		libs-back_AppiconRightClick.patch
 
 Provides:	gnustep-base-%{BASE_VERSION}
 Provides:	gnustep-gui-%{GUI_VERSION}
@@ -100,6 +100,7 @@ BuildRequires:	libXext-devel
 BuildRequires:	libXfixes-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libXt-devel
+BuildRequires:	libXrandr-devel
 #
 Requires:	libart_lgpl
 Requires:	freetype
@@ -110,6 +111,7 @@ Requires:	libXext >= 1.3.3
 Requires:	libXfixes >= 5.0.1
 Requires:	libXmu >= 1.1.2
 Requires:	libXt >= 1.1.4
+Requires:	libXrandr >= 1.5
 
 %description
 GNUstep libraries - implementation of OpenStep (AppKit, Foundation).
