@@ -2283,7 +2283,8 @@ _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
 
   if ((style & NSIconWindowMask) || (style & NSMiniWindowMask))
     {
-      style = NSBorderlessWindowMask;
+      *l = *r = *t = *b = 0.0;
+      return;
     }
 
   /* Next try to get the offset information that we have obtained from
@@ -2832,14 +2833,16 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
 
   rep = getStandardBitmap([NSApp applicationIconImage]);
   if (rep == nil)
-    return 0;
+    {
+      return 0;
+    }
 
   rcontext = [self screenRContext];
   width = [rep pixelsWide];
   height = [rep pixelsHigh];
   colors = [rep samplesPerPixel];
 
-  if (rcontext->depth != 32)
+  if (rcontext->depth != 32 && rcontext->depth != 24)
     {
       NSLog(@"Unsupported context depth %d", rcontext->depth);
       return 0;
@@ -2848,11 +2851,11 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
   rxImage = RCreateXImage(rcontext, rcontext->depth, width, height);
   if (rxImage->image->bytes_per_line != 4 * width)
     {
-      NSLog(@"bytes_per_line %d does not match width %d",
-            rxImage->image->bytes_per_line, width);
+      NSLog(@"bytes_per_line %d does not match width %d", rxImage->image->bytes_per_line, width);
       RDestroyXImage(rcontext, rxImage);
       return 0;
     }
+
   swapColors((unsigned char *)rxImage->image->data, rep);
   
   xIconPixmap = XCreatePixmap(dpy, rcontext->drawable,
@@ -2861,8 +2864,7 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
             0, 0, 0, 0, width, height);
   RDestroyXImage(rcontext, rxImage);
   
-  xIconMask = alphaMaskForImage(dpy, ROOT, [rep bitmapData],
-                                width, height, colors, 0);
+  xIconMask = alphaMaskForImage(dpy, ROOT, [rep bitmapData], width, height, colors, 0);
 
   return 1;
 }
@@ -2873,8 +2875,6 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
   gswindow_device_t	*other;
   int		level;
 
-  NSLog(@"orderWindow %i other: %i", winNum, otherWin);
-  
   window = WINDOW_WITH_TAG(winNum);
   if (winNum == 0 || window == NULL)
     {
@@ -2907,21 +2907,23 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
 	  gen_hints.window_group = ROOT;
 	  gen_hints.icon_window = window->ident;
 
-	  if (!didCreatePixmaps)
-	    {
-	      [self _createAppIconPixmaps];
-	    }
-
-	  if (xIconPixmap)
-	    {
-	      gen_hints.flags |= IconPixmapHint;
-	      gen_hints.icon_pixmap = xIconPixmap;
-	    }
-	  if (xIconMask)
-	    {
-	      gen_hints.flags |= IconMaskHint;
-	      gen_hints.icon_mask = xIconMask;
-	    }
+          if ((generic.wm & XGWM_WINDOWMAKER) != 0)
+            {
+              if (!didCreatePixmaps)
+                {
+                  [self _createAppIconPixmaps];
+                }
+              if (xIconPixmap)
+                {
+                  gen_hints.flags |= IconPixmapHint;
+                  gen_hints.icon_pixmap = xIconPixmap;
+                }
+              if (xIconMask)
+                {
+                  gen_hints.flags |= IconMaskHint;
+                  gen_hints.icon_mask = xIconMask;
+                }
+            }
 
 	  XSetWMHints(dpy, ROOT, &gen_hints);
 	}
@@ -2976,7 +2978,7 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
       if (other)
 	level = other->win_attrs.window_level;
     }
-  else if (otherWin == 0 && op == NSWindowAbove && level < NSSubmenuWindowLevel)
+  else if (otherWin == 0 && op == NSWindowAbove)
     {
       /* Don't let the window go in front of the current key/main window.  */
       /* FIXME: Don't know how to get the current main window.  */
@@ -3092,12 +3094,12 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
 	  if (window->win_attrs.window_level == NSDesktopWindowLevel)
 	    {
 	      [self _sendRoot: window->root
-                         type: generic._NET_WM_STATE_ATOM
-                       window: window->ident
-                        data0: _NET_WM_STATE_ADD
-                        data1: generic._NET_WM_STATE_SKIP_TASKBAR_ATOM
-                        data2: generic._NET_WM_STATE_STICKY_ATOM
-                        data3: 1];
+		    type: generic._NET_WM_STATE_ATOM
+		    window: window->ident
+		    data0: _NET_WM_STATE_ADD
+		    data1: generic._NET_WM_STATE_SKIP_TASKBAR_ATOM
+		    data2: generic._NET_WM_STATE_STICKY_ATOM
+		    data3: 1];
 	    }
 	  else
 	    {
@@ -3105,12 +3107,12 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
 	      NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
 
 	      [self _sendRoot: window->root
-                         type: generic._NET_WM_STATE_ATOM
-                       window: window->ident
-                        data0: _NET_WM_STATE_ADD
-                        data1: generic._NET_WM_STATE_SKIP_TASKBAR_ATOM
-                        data2: generic._NET_WM_STATE_SKIP_PAGER_ATOM
-                        data3: 1];
+		    type: generic._NET_WM_STATE_ATOM
+		    window: window->ident
+		    data0: _NET_WM_STATE_ADD
+		    data1: generic._NET_WM_STATE_SKIP_TASKBAR_ATOM
+		    data2: generic._NET_WM_STATE_SKIP_PAGER_ATOM
+                    data3: 1];
 
 	      if ((window->win_attrs.window_style & NSIconWindowMask) != 0)
 		{
@@ -3216,9 +3218,8 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
 - (void) placewindow: (NSRect)rect : (int)win
 {
   NSEvent *e;
-  NSRect xVal;
+  NSRect xFrame;
   NSRect xHint;
-  NSRect frame;
   gswindow_device_t *window;
   NSWindow *nswin;
   BOOL resize = NO;
@@ -3233,19 +3234,27 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
 
   NSDebugLLog(@"XGTrace", @"DPSplacewindow: %@ : %d", NSStringFromRect(rect),
 	      win);
-  nswin  = GSWindowWithNumber(win);
-  frame = [nswin frame];
-  if (NSEqualRects(rect, frame) == YES)
-    return;
-  if (NSEqualSizes(rect.size, frame.size) == NO)
+
+  xFrame = [self _OSFrameToXFrame: rect for: window];
+  if (NSEqualRects(rect, window->osframe) == YES
+      && NSEqualRects(xFrame, window->xframe) == YES)
+    {
+      return;
+    }
+
+  if (NSEqualSizes(rect.size, window->osframe.size) == NO)
     {
       resize = YES;
       move = YES;
     }
-  if (NSEqualPoints(rect.origin, frame.origin) == NO)
+  else if (NSEqualPoints(rect.origin, window->osframe.origin) == NO
+           || NSEqualPoints(xFrame.origin, window->xframe.origin) == NO)
     {
       move = YES;
     }
+
+  // Cache OpenStep window frame for future comparison
+  window->osframe = rect;
 
   /* Temporarily remove minimum and maximum window size hints to make
    * the window resizable programatically.
@@ -3259,15 +3268,14 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
       window->siz_hints.flags = flags;
     }
 
-  xVal = [self _OSFrameToXFrame: rect for: window];
-  xHint = [self _XFrameToXHints: xVal for: window];
+  xHint = [self _XFrameToXHints: xFrame for: window];
   window->siz_hints.width = (int)xHint.size.width;
   window->siz_hints.height = (int)xHint.size.height;
   window->siz_hints.x = (int)xHint.origin.x;
   window->siz_hints.y = (int)xHint.origin.y;
 
   NSDebugLLog(@"Moving", @"Place %lu - o:%@, x:%@", window->number,
-    NSStringFromRect(rect), NSStringFromRect(xVal));
+    NSStringFromRect(rect), NSStringFromRect(xFrame));
   XMoveResizeWindow (dpy, window->ident,
     window->siz_hints.x, window->siz_hints.y,
     window->siz_hints.width, window->siz_hints.height);
@@ -3277,13 +3285,14 @@ swapColors(unsigned char *image_data, NSBitmapImageRep *rep)
   and we don't have to do anything when the ConfigureNotify arrives later.
   If we're wrong, the ConfigureNotify will have the exact coordinates, and
   at that point, we'll send new GSAppKitWindow* events to -gui. */
-  window->xframe = xVal;
+  window->xframe = xFrame;
 
   /* Update the hints.  Note that we do this _after_ updating xframe since
      the hint setting code needs the new xframe to work around problems
      with min/max sizes and resizability in some window managers.  */
   setNormalHints(dpy, window);
 
+  nswin = GSWindowWithNumber(win);
   if (resize == YES)
     {
       NSDebugLLog(@"Moving", @"Fake size %lu - %@", window->number,
