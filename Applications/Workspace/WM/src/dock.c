@@ -3491,8 +3491,8 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
     assert(wapp != NULL);
 
-    fprintf(stderr, "[WM] Dock icon Double-click for workspace %i leader: %lu\n",
-            wapp->last_workspace, wapp->main_window);
+    wmessage("[dock.c] Dock icon Double-click for workspace %i leader: %lu\n",
+             wapp->last_workspace, wapp->main_window);
     
     unhideHere = (event->xbutton.state & ShiftMask);
 
@@ -3839,7 +3839,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   WDock *dock = aicon->dock;
   WScreen *scr = aicon->icon->core->screen_ptr;
 
-  fprintf(stderr, "[WM] Dock iconMouseDown\n");
+  wmessage("[dock.c] Dock iconMouseDown\n");
   
   if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
     return;

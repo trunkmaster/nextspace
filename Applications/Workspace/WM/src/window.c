@@ -30,7 +30,6 @@
 #include <X11/XKBlib.h>
 #endif	  /* KEEP_XKB_LOCK_STATUS */
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
@@ -66,6 +65,10 @@
 # include "motif.h"
 #endif
 #include "wmspec.h"
+
+#ifdef NEXTSPACE
+#include <Workspace+WM.h>
+#endif
 
 #define MOD_MASK wPreferences.modifier_mask
 #define ALT_MOD_MASK wPreferences.alt_modifier_mask
@@ -612,7 +615,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   Bool withdraw = False;
   Bool raise = False;
 
-  /* fprintf(stderr, "[WM] will manage window:%lu\n", window); */
+  /* wmessage("[window.c] will manage window:%lu\n", window); */
 
   /* mutex. */
   XGrabServer(dpy);
@@ -1499,7 +1502,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   int wasFocused;
   WScreen *scr = wwin->screen_ptr;
 
-  fprintf(stderr, "[WM] will unmanage window:%lu\n", wwin->client_win);
+  wmessage("[window.c] will unmanage window:%lu\n", wwin->client_win);
   
   /* Close window menu if it's open for this window */
   if (wwin->flags.menu_open_for_me)
@@ -3017,7 +3020,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
   CloseWindowMenu(wwin->screen_ptr);
 
-  /* fprintf(stderr, "xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
+  /* wmessage("[window.c] xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
   /*         event->xbutton.state, wXModifierFromKey("MOD1"), */
   /*         wXModifierFromKey("MOD4")); */
 

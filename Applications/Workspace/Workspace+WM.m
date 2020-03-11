@@ -1730,4 +1730,15 @@ void XWRingBell(WWindow *wwin)
   }
 }
 
+void XWMessage(char *fmt, ...)
+{
+  va_list args;
+  
+  va_start(args, fmt);
+  NSLogv([NSString stringWithFormat:@"[WM] %@", [NSString stringWithCString:fmt]],
+         args);
+  va_end(args);
+}
+
+
 #endif //NEXTSPACE

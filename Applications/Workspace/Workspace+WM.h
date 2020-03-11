@@ -177,5 +177,8 @@ int XWRunAlertPanel(char *title, char *message,
                      char *alternateButton,
                      char *otherButton);
 void XWRingBell(WWindow *wwin);
+void XWMessage(char *fmt, ...);
+
+#define wmessage(fmt, args...) XWMessage(fmt, ## args)
 
 #endif //NEXTSPACE

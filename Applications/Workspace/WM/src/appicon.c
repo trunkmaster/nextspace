@@ -55,7 +55,6 @@
 #endif
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
-#include <stdio.h>
 #endif /* NEXTSPACE */
 
 /*
@@ -687,14 +686,14 @@ void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
   WScreen *scr = aicon->icon->core->screen_ptr;
   Bool hasMoved;
 
-  fprintf(stderr, "[WM] Appicon Mouse Down\n");
+  wmessage("[appicon.c] Appicon Mouse Down\n");
     
   if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
     return;
 
   if (IsDoubleClick(scr, event)) {
     /* Middle or right mouse actions were handled on first click */
-    fprintf(stderr, "[WM] Appicon Double-click\n");
+    wmessage("[appicon.c] Appicon Double-click\n");
     if (event->xbutton.button == Button1)
       iconDblClick(desc, event);
     return;

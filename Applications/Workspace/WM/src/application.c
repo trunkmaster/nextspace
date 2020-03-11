@@ -36,7 +36,6 @@
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
-#include <stdio.h>
 #include "framewin.h"
 #endif
 
@@ -99,8 +98,8 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
   if (!wapp)
     return;
   
-  fprintf(stderr, "[WM wApplication] ADD window: %lu level:%i name: %s refcount=%i\n",
-          wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
+  wmessage("[application.c] ADD window: %lu level:%i name: %s refcount=%i\n",
+           wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
   
   if (wapp->app_icon && wapp->app_icon->docked &&
       wapp->app_icon->relaunching && wapp->main_window_desc->fake_group) {
@@ -135,8 +134,8 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   
   window_count = WMGetArrayItemCount(wapp->windows);
 
-  fprintf(stderr, "[WM wApplication] REMOVE window: %lu name: %s refcount=%i\n",
-          wwin->client_win, wwin->wm_instance, wapp->refcount);
+  wmessage("[application.c] REMOVE window: %lu name: %s refcount=%i\n",
+           wwin->client_win, wwin->wm_instance, wapp->refcount);
   
   for (int i = 0; i < window_count; i++) {
     awin = WMGetFromArray(wapp->windows, i);
@@ -175,8 +174,8 @@ WApplication *wApplicationCreate(WWindow * wwin)
     return wapp;
   }
 
-  fprintf(stderr, "[WM wApplication] CREATE for window: %lu level:%i name: %s\n",
-          wwin->client_win, WINDOW_LEVEL(wwin), wwin->wm_instance);
+  wmessage("[application.c] CREATE for window: %lu level:%i name: %s\n",
+           wwin->client_win, WINDOW_LEVEL(wwin), wwin->wm_instance);
 
   wapp = wmalloc(sizeof(WApplication));
 
@@ -230,10 +229,10 @@ WApplication *wApplicationCreate(WWindow * wwin)
     wApplicationMakeFirst(wapp);
   }
 
-  fprintf(stderr, "[WM] WApplication `%s` was created! Prev `%s` Next `%s`\n",
-          wwin->wm_instance,
-          wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
-          wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
+  wmessage("[application.c] WApplication `%s` was created! Prev `%s` Next `%s`\n",
+           wwin->wm_instance,
+           wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
+           wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
         
 #ifdef NEXTSPACE
   dispatch_sync(workspace_q, ^{ XWApplicationDidCreate(wapp, wwin); });
@@ -263,8 +262,8 @@ void wApplicationDestroy(WApplication *wapp)
   if (!wapp)
     return;
 
-  fprintf(stderr, "[WM application.c] DESTROY main window:%lu name:%s windows #:%i refcount:%i\n",
-          wapp->main_window, wapp->app_icon->wm_instance,
+  wmessage("[application.c] DESTROY main window:%lu name:%s windows #:%i refcount:%i\n",
+           wapp->main_window, wapp->app_icon->wm_instance,
           WMGetArrayItemCount(wapp->windows), wapp->refcount);
 
   WMEmptyArray(wapp->windows);
@@ -315,20 +314,21 @@ void wApplicationDestroy(WApplication *wapp)
   if (wwin) {
     /* undelete client window context that was deleted in
      * wWindowDestroy */
-    XSaveContext(dpy, wwin->client_win, w_global.context.client_win, (XPointer) & wwin->client_descriptor);
+    XSaveContext(dpy, wwin->client_win, w_global.context.client_win,
+                 (XPointer) & wwin->client_descriptor);
   }
   wfree(wapp);
-  fprintf(stderr, "[WM application.c] DESTROY END.\n");
+  wmessage("[application.c] DESTROY END.\n");
 }
 
 void wApplicationActivate(WApplication *wapp)
 {
   WScreen *scr = wapp->main_window_desc->screen_ptr;
 
-  fprintf(stderr, "[WM] wApplicationActivate %s current WS:%i last WS:%i app WS:%i\n",
-          wapp->main_window_desc->wm_instance,
-          scr->current_workspace, scr->last_workspace,
-          wapp->last_workspace);
+  wmessage("[application.c] wApplicationActivate %s current WS:%i last WS:%i app WS:%i\n",
+           wapp->main_window_desc->wm_instance,
+           scr->current_workspace, scr->last_workspace,
+           wapp->last_workspace);
   
   if (wapp->app_icon && wPreferences.highlight_active_app) {
     wIconSetHighlited(wapp->app_icon->icon, True);
@@ -376,14 +376,12 @@ void wApplicationMakeFirst(WApplication *wapp)
   wapp->next = first_wapp;
   
   scr->wapp_list = wapp;
-  fprintf(stderr, "[WM] wApplicationMakeFirst: %s. Application list: ",
-          wapp->main_window_desc->wm_instance);
+  wmessage("[application.c] wApplicationMakeFirst: %s. Application list: ",
+           wapp->main_window_desc->wm_instance);
 
   app = scr->wapp_list;
   while (app) {
-    fprintf(stderr, "%s%s", app->main_window_desc->wm_instance,
-            app->next ? ", " : "");
+    wmessage("%s%s", app->main_window_desc->wm_instance, app->next ? ", " : "");
     app = app->next;
   }
-  fprintf(stderr, "\n");
 }

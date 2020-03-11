@@ -68,80 +68,80 @@ void w_syslog_close(void)
 
 void __wmessage(const char *func, const char *file, int line, int type, const char *msg, ...)
 {
-	va_list args;
-	char *buf;
-	static int linemax = 0;
-	int truncated = 0;
+  va_list args;
+  char *buf;
+  static int linemax = 0;
+  int truncated = 0;
 #ifdef HAVE_SYSLOG
-	int syslog_priority = LOG_INFO;
+  int syslog_priority = LOG_INFO;
 #endif
 
-	if (linemax == 0) {
+  if (linemax == 0) {
 #ifdef HAVE_SYSCONF
-		linemax = sysconf(_SC_LINE_MAX);
-		if (linemax == -1) {
-			/* I'd like to know of this ever fires */
-			fprintf(stderr, "%s %d: sysconf(_SC_LINE_MAX) returned error\n",
-				__FILE__, __LINE__);
-			linemax = 512;
-		}
+    linemax = sysconf(_SC_LINE_MAX);
+    if (linemax == -1) {
+      /* I'd like to know of this ever fires */
+      fprintf(stderr, "%s %d: sysconf(_SC_LINE_MAX) returned error\n",
+              __FILE__, __LINE__);
+      linemax = 512;
+    }
 #else /* !HAVE_SYSCONF */
-		fprintf(stderr, "%s %d: Your system does not have sysconf(3); "
-			"let wmaker-dev@windowmaker.org know.\n", __FILE__, __LINE__);
-		linemax = 512;
+    fprintf(stderr, "%s %d: Your system does not have sysconf(3); "
+            "let wmaker-dev@windowmaker.org know.\n", __FILE__, __LINE__);
+    linemax = 512;
 #endif /* HAVE_SYSCONF */
-	}
+  }
 
-	buf = wmalloc(linemax);
+  buf = wmalloc(linemax);
 
-	fflush(stdout);
+  fflush(stdout);
 
-	/* message format: <wings_progname>(function(file:line): <type?>: <message>"\n" */
-	strncat(buf, _WINGS_progname ? _WINGS_progname : "WINGs", linemax - 1);
-	snprintf(buf + strlen(buf), linemax - strlen(buf), "(%s(%s:%d))", func, file, line);
-	strncat(buf, ": ", linemax - 1 - strlen(buf));
+  /* message format: <wings_progname>(function(file:line): <type?>: <message>"\n" */
+  strncat(buf, _WINGS_progname ? _WINGS_progname : "WINGs", linemax - 1);
+  snprintf(buf + strlen(buf), linemax - strlen(buf), "(%s(%s:%d))", func, file, line);
+  strncat(buf, ": ", linemax - 1 - strlen(buf));
 
-	switch (type) {
-		case WMESSAGE_TYPE_FATAL:
-			strncat(buf, _("fatal: "), linemax - 1 - strlen(buf));
+  switch (type) {
+  case WMESSAGE_TYPE_FATAL:
+    strncat(buf, _("fatal: "), linemax - 1 - strlen(buf));
 #ifdef HAVE_SYSLOG
-			syslog_priority = LOG_CRIT;
+    syslog_priority = LOG_CRIT;
 #endif
-		break;
-		case WMESSAGE_TYPE_ERROR:
-			strncat(buf, _("error: "), linemax - 1 - strlen(buf));
+    break;
+  case WMESSAGE_TYPE_ERROR:
+    strncat(buf, _("error: "), linemax - 1 - strlen(buf));
 #ifdef HAVE_SYSLOG
-			syslog_priority = LOG_ERR;
+    syslog_priority = LOG_ERR;
 #endif
-		break;
-		case WMESSAGE_TYPE_WARNING:
-			strncat(buf, _("warning: "), linemax - 1 - strlen(buf));
+    break;
+  case WMESSAGE_TYPE_WARNING:
+    strncat(buf, _("warning: "), linemax - 1 - strlen(buf));
 #ifdef HAVE_SYSLOG
-			syslog_priority = LOG_WARNING;
+    syslog_priority = LOG_WARNING;
 #endif
-		break;
-		case WMESSAGE_TYPE_MESSAGE:
-			/* FALLTHROUGH */
-		default:	/* should not happen, but doesn't hurt either */
-		break;
-	}
+    break;
+  case WMESSAGE_TYPE_MESSAGE:
+    /* FALLTHROUGH */
+  default:	/* should not happen, but doesn't hurt either */
+    break;
+  }
 
-	va_start(args, msg);
-	if (vsnprintf(buf + strlen(buf), linemax - strlen(buf), msg, args) >= linemax - strlen(buf))
-		truncated = 1;
+  va_start(args, msg);
+  if (vsnprintf(buf + strlen(buf), linemax - strlen(buf), msg, args) >= linemax - strlen(buf))
+    truncated = 1;
 
-	va_end(args);
+  va_end(args);
 
-	fputs(buf, stderr);
+  fputs(buf, stderr);
 #ifdef HAVE_SYSLOG
-	syslog_message(syslog_priority, _WINGS_progname ? _WINGS_progname : "WINGs", buf);
+  syslog_message(syslog_priority, _WINGS_progname ? _WINGS_progname : "WINGs", buf);
 #endif
 
-	if (truncated)
-		fputs("*** message truncated ***", stderr);
+  if (truncated)
+    fputs("*** message truncated ***", stderr);
 
-	fputs("\n", stderr);
+  fputs("\n", stderr);
 
-	wfree(buf);
+  wfree(buf);
 }
 

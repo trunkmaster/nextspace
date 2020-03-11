@@ -30,6 +30,10 @@
 #include "dock.h"
 #include "stdio.h"
 
+#ifdef NEXTSPACE
+#  include <Workspace+WM.h>
+#endif
+
 #ifdef USE_XRANDR
 #  include <X11/extensions/Xrandr.h>
 #endif
@@ -46,12 +50,12 @@ void wInitXrandr(WScreen *scr)
 #ifdef USE_XRANDR
   if (XRRQueryExtension(dpy, &info->event_base, &info->error_base) == True) {
     XRRQueryVersion(dpy, &major_version, &minor_version);
-    fprintf(stderr, "[WM] Use XRandR %i.%i, event base:%i, error base:%i\n",
-            major_version, minor_version, info->event_base, info->error_base);
+    wmessage("[xrandr.c] Use XRandR %i.%i, event base:%i, error base:%i\n",
+             major_version, minor_version, info->event_base, info->error_base);
     wUpdateXrandrInfo(scr);
   }
   else {
-    fprintf(stderr, "[WM] no XRandR extension available.\n");
+    wmessage("[xrandr.c] no XRandR extension available.\n");
   }
 #endif
 }
