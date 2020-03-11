@@ -525,32 +525,39 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // ProcessManager created - Workspace is ready to register applications.
   // Show Dock and start applications in it
-  if (useInternalWindowManager)
-    {
-      WDock *dock = wDefaultScreen()->dock;
+  if (useInternalWindowManager) {
+    WAppIcon *btn;
+    WDock    *dock = wDefaultScreen()->dock;
 
-      [self updateWorkspaceBadge];
-      [self updateKeyboardBadge:@"US"];
+    [self updateWorkspaceBadge];
+    [self updateKeyboardBadge:@"US"];
       
-      // Detect lid close/open events
-      systemPower = [OSEPower new];
-      [systemPower startEventsMonitor];
-      [[NSNotificationCenter defaultCenter]
+    // Detect lid close/open events
+    systemPower = [OSEPower new];
+    [systemPower startEventsMonitor];
+    [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(lidDidChange:)
                name:OSEPowerLidDidChangeNotification
              object:systemPower];
       
-      [[NSNotificationCenter defaultCenter]
+    [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
              object:NSApp];
-      
-      recycler = [[Recycler alloc] initWithDock:dock];
-      
-      WWMDockAutoLaunch(dock);
+
+    // Recycler
+    recycler = [[Recycler alloc] initWithDock:dock];
+    btn = [recycler dockIcon];
+    if (btn) {
+      btn->icon->owner = dock->icon_array[0]->icon->owner;
+      btn->main_window = dock->icon_array[0]->main_window;
+      [[recycler appIcon] orderFrontRegardless];
     }
+      
+    WWMDockAutoLaunch(dock);
+  }
 
   return;
 }
@@ -611,18 +618,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
            object:mediaAdaptor];
  
   [mediaAdaptor checkForRemovableMedia];
-
-  if (useInternalWindowManager) {
-    WAppIcon *btn = [recycler dockIcon];
-    WDock    *dock = wDefaultScreen()->dock;
-
-    if (btn) {
-      btn->icon->owner = dock->icon_array[0]->icon->owner;
-      btn->main_window = dock->icon_array[0]->main_window;
-      [[recycler appIcon] orderFrontRegardless];
-    }
-  }
-
+  
   [self _startSavedApplications];
 }
 

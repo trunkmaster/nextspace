@@ -1562,15 +1562,12 @@ void XWUpdateScreenInfo(WScreen *scr)
   // Update WM usable area info
   wScreenUpdateUsableArea(scr);
 
-  // NSLog(@"[XWUpdateScreenInfo] screen W:%i H:%i heads count: %i",
-  //       scr->scr_width, scr->scr_height, scr->xrandr_info.count);
-
   // Move Dock
   // Place Dock into main display with changed usable area.
-  [RecyclerIcon recyclerAppIconForDock:scr->dock];
   moveDock(scr->dock,
            (NSMaxX(primaryRect) - wPreferences.icon_size - DOCK_EXTRA_SPACE),
            primaryRect.origin.y);
+  [RecyclerIcon recyclerAppIconForDock:scr->dock];
   
   // Move IconYard
   // IconYard is placed into main display automatically.

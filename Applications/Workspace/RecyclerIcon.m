@@ -209,7 +209,7 @@ static NSTimeInterval tInterval = 0;
 
 - (void)concludeDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"Recycler: conclude dragging");
+  // NSLog(@"Recycler: conclude dragging");
 }
 
 @end
@@ -219,46 +219,45 @@ static NSTimeInterval tInterval = 0;
 // RMB click goes to root window (handles by event.c in WindowMaker).
 void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 {
-  fprintf(stderr, "Recycler: mouse down (window: %lu (%lu) subwindow: %lu)!\n",
-          event->xbutton.window, event->xbutton.root, event->xbutton.subwindow);
   NSEvent   *theEvent;
   WAppIcon  *aicon = desc->parent;
   NSInteger clickCount = 1;
       
   XUngrabPointer(dpy, CurrentTime);
   
-  if (event->xbutton.button == Button1)
-    {
-      if (IsDoubleClick(aicon->icon->owner->screen_ptr, event))
-        clickCount = 2;
+  if (event->xbutton.button == Button1) {
+    if (IsDoubleClick(wDefaultScreen(), event)) {
+      clickCount = 2;
+    }
 
-      // Handle move of icon
-      if (aicon->dock)
-        wHandleAppIconMove(aicon, event);
+    // Handle move of icon
+    if (aicon->dock) {
+      wHandleAppIconMove(aicon, event);
+    }
   
-      theEvent =
-        [NSEvent mouseEventWithType:NSLeftMouseDown
-                           location:NSMakePoint(event->xbutton.x, event->xbutton.y)
-                      modifierFlags:0
-                          timestamp:(NSTimeInterval)event->xbutton.time / 1000.0
-                       windowNumber:[[recycler appIcon] windowNumber]
-                            context:[[recycler appIcon] graphicsContext]
-                        eventNumber:event->xbutton.serial
-                         clickCount:clickCount
-                           pressure:1.0];
+    theEvent =
+      [NSEvent mouseEventWithType:NSLeftMouseDown
+                         location:NSMakePoint(event->xbutton.x, event->xbutton.y)
+                    modifierFlags:0
+                        timestamp:(NSTimeInterval)event->xbutton.time / 1000.0
+                     windowNumber:[[recycler appIcon] windowNumber]
+                          context:[[recycler appIcon] graphicsContext]
+                      eventNumber:event->xbutton.serial
+                       clickCount:clickCount
+                         pressure:1.0];
 
-      [recycler performSelectorOnMainThread:@selector(mouseDown:)
-                                 withObject:theEvent
-                              waitUntilDone:NO];
+    [recycler performSelectorOnMainThread:@selector(mouseDown:)
+                               withObject:theEvent
+                            waitUntilDone:NO];
       
-    }
-  else if (event->xbutton.button == Button3)
-    {
-      // This will bring menu of active application on screen at mouse pointer
-      event->xbutton.window = event->xbutton.root;
-      // XSendEvent(dpy, event->xbutton.root, False, ButtonPressMask, event);
-      XSendEvent(dpy, aicon->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
-    }
+  }
+  else if (event->xbutton.button == Button3) {
+    // This will bring menu of active application on screen at mouse pointer
+    event->xbutton.window = event->xbutton.root;
+    // XSendEvent(dpy, event->xbutton.root, False, ButtonPressMask, event);
+    XSendEvent(dpy, aicon->dock->icon_array[0]->icon->icon_win, False,
+               ButtonPressMask, event);
+  }
 }
 
 @implementation	RecyclerIcon
@@ -333,19 +332,18 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   }
   
   new_yindex = [RecyclerIcon positionInDock:dock];
-  // new_max_icons = dock->screen_ptr->scr_height / wPreferences.icon_size;
   new_max_icons = dock->max_icons;
 
   if (rec_btn->docked &&
       (rec_btn->yindex > new_max_icons-1 && new_yindex == 0)) {
-    NSLog(@"Recycler: detach");
+    // NSLog(@"Recycler: detach");
     wDockDetach(dock, rec_btn);
   }
   else if (rec_btn->docked) {
     [RecyclerIcon rebuildDock:dock];
     new_yindex = [RecyclerIcon positionInDock:dock];
     if (rec_btn->yindex != new_yindex && new_yindex > 0) {
-      NSLog(@"Recycler: reattach");
+      // NSLog(@"Recycler: reattach");
       wDockReattachIcon(dock, rec_btn, 0, new_yindex);
     }
   }
@@ -353,7 +351,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
     [RecyclerIcon rebuildDock:dock];
     new_yindex = [RecyclerIcon positionInDock:dock];
     if (new_yindex > 0) {
-      NSLog(@"Recycler: attach at %i", new_yindex);
+      // NSLog(@"Recycler: attach at %i", new_yindex);
       wDockAttachIcon(dock, rec_btn, 0, new_yindex, NO);
     }
   }
@@ -383,9 +381,9 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   }
 }
 
-- (id)initWithWindowRef:(void *)X11Window recycler:(Recycler *)theRecycler
+- (id)initWithWindowRef:(void *)xWindow recycler:(Recycler *)theRecycler
 {
-  self = [super initWithWindowRef:X11Window];
+  self = [super initWithWindowRef:xWindow];
   recycler = theRecycler;
 
   return self;
@@ -404,11 +402,6 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 - (BOOL)worksWhenModal
 {
   return YES;
-}
-
-- (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(NSInteger)otherWin
-{
-  [super orderWindow:place relativeTo:otherWin];
 }
 
 @end
