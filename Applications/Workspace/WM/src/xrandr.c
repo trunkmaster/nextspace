@@ -68,14 +68,15 @@ void wUpdateXrandrInfo(WScreen *scr)
   RROutput           primary_output;
   XRROutputInfo      *output_info;
   XRRCrtcInfo        *crtc_info;
-  int                head_count;
+  int                i;
   
   if (screen_res != NULL) {
-    info->screens = wmalloc(sizeof(WMRect) * (screen_res->noutput + 1));
+    if (info->screens == NULL) {
+      info->screens = wmalloc(sizeof(WMRect) * (screen_res->noutput + 1));
+    }
     if (screen_res->noutput != 0) {
       primary_output = XRRGetOutputPrimary(dpy, scr->root_win);
-      head_count = 0;
-      for (int i = 0; i < screen_res->noutput; i++) {
+      for (i = 0; i < screen_res->noutput; i++) {
         output_info = XRRGetOutputInfo(dpy, screen_res, screen_res->outputs[i]);
         if (screen_res->outputs[i] == primary_output) {
           info->primary_head = i;
@@ -89,11 +90,10 @@ void wUpdateXrandrInfo(WScreen *scr)
           info->screens[i].size.height = crtc_info->height;
           
           XRRFreeCrtcInfo(crtc_info);
-          head_count++;
         }
         XRRFreeOutputInfo(output_info);
       }
-      info->count = head_count;
+      info->count = i;
     }
     XRRFreeScreenResources(screen_res);
   }

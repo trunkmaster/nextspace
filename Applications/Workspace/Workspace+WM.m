@@ -1564,10 +1564,10 @@ void XWUpdateScreenInfo(WScreen *scr)
 
   // Move Dock
   // Place Dock into main display with changed usable area.
+  [RecyclerIcon recyclerAppIconForDock:scr->dock];
   moveDock(scr->dock,
            (NSMaxX(primaryRect) - wPreferences.icon_size - DOCK_EXTRA_SPACE),
            primaryRect.origin.y);
-  [RecyclerIcon recyclerAppIconForDock:scr->dock];
   
   // Move IconYard
   // IconYard is placed into main display automatically.
@@ -1589,8 +1589,6 @@ void XWUpdateScreenInfo(WScreen *scr)
                    object:nil];
 }
 
-// FIXME: do we need to support multi-screen setups?
-// Is it actually demanded nowadays?
 void XWUpdateScreenParameters(void)
 {
   XWUpdateScreenInfo(wDefaultScreen());
