@@ -40,6 +40,10 @@
 #include <X11/extensions/shape.h>
 #endif
 
+#ifdef NEXTSPACE
+#include <Workspace+WM.h>
+#endif
+
 struct SwitchPanel {
   WScreen *scr;
   WMWindow *win;
@@ -378,7 +382,6 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
     free(ntitle);
 }
 
-#include <stdio.h>
 static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool class_only)
 {
   WMArray *windows = WMCreateArray(1);
@@ -386,19 +389,20 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
 
   /* WApplications */
   if (class_only == False) {
-    fprintf(stderr, "[WM] window list array creation BEGIN\n");
+    wmessage("[switchpanel.c] window list array creation BEGIN\n");
     WApplication *wapp = scr->wapp_list;
     while (wapp) {
       WWindow *w = NULL;
-      fprintf(stderr, "[WM] Inspect application: ");
+      wmessage("[switchpanel.c] Inspect application: ");
       if (wapp->flags.is_gnustep) {
         if (wapp->menu_win) {
           w = wapp->menu_win;
-          fprintf(stderr, "\t%s (menu: %lu)",  w->wm_instance, w->client_win);
+          wmessage("[switchpanel.c]\t%s (menu: %lu)",  w->wm_instance, w->client_win);
         }
         else {
           w = wapp->main_window_desc;
-          fprintf(stderr, "\t%s (main window: %lu)", w->wm_instance, w->client_win);
+          wmessage("[switchpanel.c]\t%s (main window: %lu)",
+                   w->wm_instance, w->client_win);
         }
       }
       else if (WMGetArrayItemCount(wapp->windows) > 0) {
@@ -406,16 +410,17 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
           w = wapp->last_focused;
         else
           w = WMGetFromArray(wapp->windows, 0);
-        fprintf(stderr, "\t%s (window: %lu)", w->wm_instance, w->client_win);
+        wmessage("[switchpanel.c]\t%s (window: %lu)", w->wm_instance, w->client_win);
       }
 
       if (w)
         WMAddToArray(windows, w);
       
-      fprintf(stderr, "\tWindow count:%i\n", WMGetArrayItemCount(wapp->windows));
+      wmessage("[switchpanel.c]\tWindow count:%i\n",
+               WMGetArrayItemCount(wapp->windows));
       wapp = wapp->next;
     }
-    fprintf(stderr, "[WM] window list array creation END\n");
+    wmessage("[switchpanel.c] window list array creation END\n");
   }
   else {
     /* Mapped windows */
