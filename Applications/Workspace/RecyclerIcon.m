@@ -29,6 +29,8 @@
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 
+#include <xrandr.h>
+
 static Recycler *recycler = nil;
 
 @implementation RecyclerIconView
@@ -263,13 +265,12 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 @implementation	RecyclerIcon
 
 // Search for position in Dock for new Recycler
-+ (int)positionInDock:(WDock *)dock
++ (int)newPositionInDock:(WDock *)dock
 {
   WAppIcon *btn;
-  int      max_icons = XWDockMaxIcons();
-  int      position;
+  int      position = 0;
   
-  for (position = max_icons-1; position > 0; position--) {
+  for (position = dock->max_icons-1; position > 0; position--) {
     if ((btn = dock->icon_array[position]) == NULL) {
       break;
     }
@@ -281,20 +282,33 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 + (WAppIcon *)createAppIconForDock:(WDock *)dock
 {
   WAppIcon *btn;
-  int      rec_pos = [RecyclerIcon positionInDock:dock];
+  int      rec_pos = [RecyclerIcon newPositionInDock:dock];
  
   btn = wAppIconCreateForDock(dock->screen_ptr, "", "Recycler", "GNUstep",
                               TILE_NORMAL);
   btn->yindex = rec_pos;
+  
+  btn->running = 1;
+  btn->launching = 0;
+  btn->lock = 1;
+  btn->command = wstrdup("-");
+  btn->dnd_command = NULL;
+  btn->paste_command = NULL;
+  btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;  
 
   return btn;
 }
 
 + (void)rebuildDock:(WDock *)dock
 {
-  int      new_max_icons = XWDockMaxIcons();
-  WAppIcon **new_icon_array = wmalloc(sizeof(WAppIcon *) * new_max_icons);
-
+  WScreen  *scr = dock->screen_ptr;
+  WMRect   head_rect = wGetRectForHead(scr, scr->xrandr_info.primary_head);
+  int      new_max_icons;
+  WAppIcon **new_icon_array;
+  
+  new_max_icons = head_rect.size.height / wPreferences.icon_size;
+  new_icon_array = wmalloc(sizeof(WAppIcon *) * new_max_icons);
+  
   dock->icon_count = 0;
   for (int i=0; i < new_max_icons; i++) {
     if (dock->icon_array[i] == NULL || i >= dock->max_icons) {
@@ -313,11 +327,10 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 
 + (WAppIcon *)recyclerAppIconForDock:(WDock *)dock
 {
-  WScreen  *scr = dock->screen_ptr;
-  WAppIcon *btn, *rec_btn = NULL;
-  int      new_yindex = 0, new_max_icons;
+  WAppIcon *btn = NULL;
+  WAppIcon *rec_btn = NULL;
  
-  btn = scr->app_icon_list;
+  btn = dock->screen_ptr->app_icon_list;
   while (btn->next) {
     if (!strcmp(btn->wm_instance, "Recycler")) {
       rec_btn = btn;
@@ -327,44 +340,43 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   }
 
   if (!rec_btn) {
-    rec_btn = wAppIconCreateForDock(dock->screen_ptr, "-", "Recycler",
-                                    "GNUstep", TILE_NORMAL);
+    rec_btn = [RecyclerIcon createAppIconForDock:dock];
   }
-  
-  new_yindex = [RecyclerIcon positionInDock:dock];
-  new_max_icons = dock->max_icons;
-
-  if (rec_btn->docked &&
-      (rec_btn->yindex > new_max_icons-1 && new_yindex == 0)) {
-    // NSLog(@"Recycler: detach");
-    wDockDetach(dock, rec_btn);
-  }
-  else if (rec_btn->docked) {
-    [RecyclerIcon rebuildDock:dock];
-    new_yindex = [RecyclerIcon positionInDock:dock];
-    if (rec_btn->yindex != new_yindex && new_yindex > 0) {
-      // NSLog(@"Recycler: reattach");
-      wDockReattachIcon(dock, rec_btn, 0, new_yindex);
-    }
-  }
-  else if (!rec_btn->docked && new_yindex > 0) {
-    [RecyclerIcon rebuildDock:dock];
-    new_yindex = [RecyclerIcon positionInDock:dock];
-    if (new_yindex > 0) {
-      // NSLog(@"Recycler: attach at %i", new_yindex);
-      wDockAttachIcon(dock, rec_btn, 0, new_yindex, NO);
-    }
-  }
-  
-  rec_btn->running = 1;
-  rec_btn->launching = 0;
-  rec_btn->lock = 1;
-  rec_btn->command = wstrdup("-");
-  rec_btn->dnd_command = NULL;
-  rec_btn->paste_command = NULL;
-  rec_btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
   
   return rec_btn;
+}
+
++ (void)updatePositionInDock:(WDock *)dock
+{
+  WAppIcon *rec_icon = [RecyclerIcon recyclerAppIconForDock:dock];
+  int      yindex, new_yindex, max_position;
+
+  yindex = rec_icon->yindex;
+  // 1. Screen dimensions may have changed - rebuild Dock.
+  //    If main display height reduced - Recycler will be removed from Dock.
+  [RecyclerIcon rebuildDock:dock];
+  
+  // 2. Get new position for Recycler.
+  new_yindex = [RecyclerIcon newPositionInDock:dock];
+  
+  // 3. Place Recycler to the new position if Dock has room.
+  if (rec_icon->docked) {
+    if (new_yindex == 0) {
+      // Dock has no room
+      NSLog(@"Recycler: detach");
+      wDockDetach(dock, rec_icon);
+    }
+    else {
+      if (yindex != new_yindex) {
+        NSLog(@"Recycler: reattach");
+        wDockReattachIcon(dock, rec_icon, 0, new_yindex);
+      }
+    }
+  }
+  else if (new_yindex > 0) {
+    NSLog(@"Recycler: attach at %i", new_yindex);
+    wDockAttachIcon(dock, rec_icon, 0, new_yindex, NO);
+  }
 }
 
 - (void)_initDefaults
@@ -385,6 +397,11 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 {
   self = [super initWithWindowRef:xWindow];
   recycler = theRecycler;
+
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+              name: NSApplicationDidChangeScreenParametersNotification
+            object: NSApp];
 
   return self;
 }
