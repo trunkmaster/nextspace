@@ -526,6 +526,7 @@ int XWDockMaxIcons(void)
 {
   NSInteger screenHeight;
   screenHeight = [[[OSEScreen sharedScreen] mainDisplay] frame].size.height;
+  NSLog(@"Screen height: %li", screenHeight);
   return (int)(screenHeight / wPreferences.icon_size);
 }
 enum {
@@ -1564,7 +1565,8 @@ void XWUpdateScreenInfo(WScreen *scr)
 
   // Move Dock
   // Place Dock into main display with changed usable area.
-  [RecyclerIcon recyclerAppIconForDock:scr->dock];
+  // RecyclerIcon call should go first to update its position on screen.
+  [RecyclerIcon updatePositionInDock:scr->dock];
   moveDock(scr->dock,
            (NSMaxX(primaryRect) - wPreferences.icon_size - DOCK_EXTRA_SPACE),
            primaryRect.origin.y);
@@ -1712,18 +1714,6 @@ void XWRingBell(WWindow *wwin)
     wShakeWindow(wwin);
   }
   else {
-    // Play sound specified in ~/Library/Preferences/.NextSpace/NXGlobalDomain
-    // as NXSystemBeep.
-    // NSString *beepPath = [defs objectForKey:@"NXSystemBeep"];
-    // NSSound  *sound;
-    // if (beepPath == nil ||
-    //     [[NSFileManager defaultManager] fileExistsAtPath:beepPath] == NO) {
-    //   beepPath = @"/usr/NextSpace/Sounds/Bonk.snd";
-    // }
-    // sound = [[NSSound alloc] initWithContentsOfFile:beepPath byReference:NO];
-    // [sound play];
-    // [sound release];
-    // TODO: should we play it with SoundKit?
     [[NSApp delegate] ringBell];
   }
 }
@@ -1737,6 +1727,5 @@ void XWMessage(char *fmt, ...)
          args);
   va_end(args);
 }
-
 
 #endif //NEXTSPACE
