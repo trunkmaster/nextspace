@@ -3839,7 +3839,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   WDock *dock = aicon->dock;
   WScreen *scr = aicon->icon->core->screen_ptr;
 
-  wmessage("[dock.c] Dock iconMouseDown\n");
+  wmessage("[dock.c] Dock iconMouseDown");
   
   if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
     return;
@@ -3861,8 +3861,9 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   if (event->xbutton.button == Button1) {
     if (!(event->xbutton.state & MOD_MASK))
       wDockRaise(dock);
-
-    if ((event->xbutton.state & ShiftMask) && aicon != scr->clip_icon && dock->type != WM_DOCK) {
+    
+    if ((event->xbutton.state & ShiftMask) && aicon != scr->clip_icon
+        && dock->type != WM_DOCK) {
       wIconSelect(aicon->icon);
       return;
     }
@@ -3873,12 +3874,14 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
         handleClipChangeWorkspace(scr, event);
       else
         handleDockMove(dock, aicon, event);
-    } else {
+    }
+    else {
       Bool hasMoved = wHandleAppIconMove(aicon, event);
       if (wPreferences.single_click && !hasMoved)
         iconDblClick(desc, event);
     }
-  } else if (event->xbutton.button == Button2 && aicon == scr->clip_icon) {
+  }
+  else if (event->xbutton.button == Button2 && aicon == scr->clip_icon) {
     if (!scr->clip_ws_menu)
       scr->clip_ws_menu = wWorkspaceMenuMake(scr, False);
 
@@ -3900,10 +3903,12 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
       event->xany.send_event = True;
       (*desc->handle_mousedown) (desc, event);
     }
-  } else if (event->xbutton.button == Button2 && dock->type == WM_CLIP &&
-             (event->xbutton.state & ShiftMask) && aicon != scr->clip_icon) {
+  }
+  else if (event->xbutton.button == Button2 && dock->type == WM_CLIP &&
+           (event->xbutton.state & ShiftMask) && aicon != scr->clip_icon) {
     wClipMakeIconOmnipresent(aicon, !aicon->omnipresent);
-  } else if (event->xbutton.button == Button3) {
+  }
+  else if (event->xbutton.button == Button3) {
     if (event->xbutton.send_event &&
         XGrabPointer(dpy, aicon->icon->core->window, True, ButtonMotionMask
                      | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
@@ -3913,14 +3918,17 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
     }
 
     openDockMenu(dock, aicon, event);
-  } else if (event->xbutton.button == Button2) {
+  }
+  else if (event->xbutton.button == Button2) {
     WAppIcon *btn = desc->parent;
 
     if (!btn->launching && (!btn->running || (event->xbutton.state & ControlMask)))
       launchDockedApplication(btn, True);
-  } else if (event->xbutton.button == Button4 && dock->type == WM_CLIP) {
+  }
+  else if (event->xbutton.button == Button4 && dock->type == WM_CLIP) {
     wWorkspaceRelativeChange(scr, 1);
-  } else if (event->xbutton.button == Button5 && dock->type == WM_CLIP) {
+  }
+  else if (event->xbutton.button == Button5 && dock->type == WM_CLIP) {
     wWorkspaceRelativeChange(scr, -1);
   }
 }
