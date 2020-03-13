@@ -287,7 +287,6 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   btn = wAppIconCreateForDock(dock->screen_ptr, "", "Recycler", "GNUstep",
                               TILE_NORMAL);
   btn->yindex = rec_pos;
-  
   btn->running = 1;
   btn->launching = 0;
   btn->lock = 1;
@@ -342,7 +341,11 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   if (!rec_btn) {
     rec_btn = [RecyclerIcon createAppIconForDock:dock];
   }
-  
+  else {
+    // Recycler icon can be restored from state file
+    btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;  
+  }
+
   return rec_btn;
 }
 
