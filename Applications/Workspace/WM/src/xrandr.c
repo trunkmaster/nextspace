@@ -243,7 +243,7 @@ int wGetHeadForWindow(WWindow * wwin)
   WMRect rect;
 
   if (wwin == NULL || wwin->frame == NULL)
-    return 0;
+    return wDefaultScreen()->xrandr_info.primary_head;
 
   rect.pos.x = wwin->frame_x;
   rect.pos.y = wwin->frame_y;
