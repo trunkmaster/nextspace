@@ -86,7 +86,7 @@ int main(int argc, const char **argv)
       dispatch_sync(wmaker_q, ^{
           WWMInitializeWindowMaker(argc, (char **)argv);
         });
-      fprintf(stderr, "[Workspace] === Windoww Manager initialized! ===\n");
+      fprintf(stderr, "[Workspace] === Window Manager initialized! ===\n");
 
       // Start X11 EventLoop in parallel
       dispatch_async(wmaker_q, ^{ EventLoop(); });
