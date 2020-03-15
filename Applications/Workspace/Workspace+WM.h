@@ -60,6 +60,7 @@ int ws_quit_code;
 // Appicons placement
 #include <stacking.h>
 #include <placement.h>
+#include <xrandr.h>
 
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
@@ -147,7 +148,7 @@ pid_t WWMExecuteCommand(NSString *command);
 // Visible in WindowMaker and Workspace
 // Workspace callbacks for WindowMaker.
 //-----------------------------------------------------------------------------
-int XWDockMaxIcons(void);
+int XWDockMaxIcons(WScreen *scr);
 int WWMDockLevel();
 void WWMSetDockLevel(int level);
 #include <appicon.h> // to silence compiler

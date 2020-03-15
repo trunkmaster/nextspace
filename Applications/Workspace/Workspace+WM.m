@@ -166,7 +166,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   w_global.shortcut.modifiers_mask = 0xff;
 
   /* setup common stuff for the monitor and wmaker itself */
-  WMInitializeApplication("WindowMaker", &argc, argv);
+  WMInitializeApplication("WM", &argc, argv);
 
   memset(&wPreferences, 0, sizeof(wPreferences));
   // wDockDoAutoLaunch() called in applicationDidFinishLaunching of Workspace
@@ -522,12 +522,11 @@ void WWMDockCollapse(WDock *dock)
 
 // -- Should be called from already existing @autoreleasepool ---
 
-int XWDockMaxIcons(void)
+int XWDockMaxIcons(WScreen *scr)
 {
-  NSInteger screenHeight;
-  screenHeight = [[[OSEScreen sharedScreen] mainDisplay] frame].size.height;
-  NSLog(@"Screen height: %li", screenHeight);
-  return (int)(screenHeight / wPreferences.icon_size);
+  WMRect head_rect = wGetRectForHead(scr, scr->xrandr_info.primary_head);
+  
+  return head_rect.size.height / wPreferences.icon_size;
 }
 enum {
   KeepOnTop = WMDockLevel,
@@ -1540,7 +1539,7 @@ void XWUpdateScreenInfo(WScreen *scr)
 
   XLockDisplay(dpy);
 
-  NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
+  NSLog(@"XRRScreenChangeNotify received, updating applications and WM...");
 
   // Update WM Xrandr
   wUpdateXrandrInfo(scr);
