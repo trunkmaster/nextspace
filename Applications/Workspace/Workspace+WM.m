@@ -1127,7 +1127,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     //       launchingIcons->wm_instance, launchingIcons->wm_class);
 
     // Calculate postion for new launch icon
-    PlaceIcon(wDefaultScreen(), &x_ret, &y_ret, 0);
+    PlaceIcon(wDefaultScreen(), &x_ret, &y_ret, scr->xrandr_info.primary_head);
     wAppIconMove(appIcon, x_ret, y_ret);
     iconPoint.x = (CGFloat)x_ret;
     iconPoint.y = wDefaultScreen()->scr_height - (y_ret + ICON_HEIGHT);
