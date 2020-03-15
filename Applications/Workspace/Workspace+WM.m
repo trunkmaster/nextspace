@@ -1096,7 +1096,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     if (!strcmp(appIcon->wm_instance, wmInstance) &&
         !strcmp(appIcon->wm_class, wmClass)) {
       iconPoint.x = appIcon->x_pos + ((ICON_WIDTH - [anImage size].width)/2);
-      iconPoint.y = wDefaultScreen()->scr_height - appIcon->y_pos - 64;
+      iconPoint.y = scr->scr_height - appIcon->y_pos - 64;
       iconPoint.y += (ICON_WIDTH - [anImage size].width)/2;
       [[NSApp delegate] slideImage:anImage
                               from:sourcePoint
@@ -1115,7 +1115,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
   if (iconFound == NO) {
     int x_ret = 0, y_ret = 0;
       
-    appIcon = wAppIconCreateForDock(wDefaultScreen(), [launchPath cString],
+    appIcon = wAppIconCreateForDock(scr, [launchPath cString],
                                     (char *)wmInstance, (char *)wmClass,
                                     TILE_NORMAL);
     appIcon->icon->core->descriptor.handle_mousedown = NULL;
@@ -1127,10 +1127,10 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     //       launchingIcons->wm_instance, launchingIcons->wm_class);
 
     // Calculate postion for new launch icon
-    PlaceIcon(wDefaultScreen(), &x_ret, &y_ret, scr->xrandr_info.primary_head);
+    PlaceIcon(scr, &x_ret, &y_ret, scr->xrandr_info.primary_head);
     wAppIconMove(appIcon, x_ret, y_ret);
     iconPoint.x = (CGFloat)x_ret;
-    iconPoint.y = wDefaultScreen()->scr_height - (y_ret + ICON_HEIGHT);
+    iconPoint.y = scr->scr_height - (y_ret + ICON_HEIGHT);
     [[NSApp delegate] slideImage:anImage
                             from:sourcePoint
                               to:iconPoint];
