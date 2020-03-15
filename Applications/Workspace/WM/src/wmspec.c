@@ -730,7 +730,7 @@ void wNETWMUpdateWorkarea(WScreen *scr)
      */
     total_usable = scr->usableArea[0];
 
-    for (i = 1; i < wXineramaHeads(scr); i++) {
+    for (i = 1; i < wScreenHeads(scr); i++) {
       /* The merge is not subtle because _NET_WORKAREA does not need more */
       if (scr->usableArea[i].x1 < total_usable.x1)
         total_usable.x1 = scr->usableArea[i].x1;

@@ -29,7 +29,7 @@
 void wInitXrandr(WScreen *scr);
 void wUpdateXrandrInfo(WScreen *scr);
 
-#define wXineramaHeads(scr) ((scr)->xrandr_info.count ? (scr)->xrandr_info.count : 1)
+#define wScreenHeads(scr) ((scr)->xrandr_info.count ? (scr)->xrandr_info.count : 1)
 
 #define XFLAG_NONE	0x00
 #define XFLAG_DEAD	0x01

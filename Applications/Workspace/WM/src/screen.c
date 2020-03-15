@@ -620,10 +620,10 @@ WScreen *wScreenInit(int screen_number)
 
   wInitXrandr(scr);
 
-  scr->usableArea = (WArea *) wmalloc(sizeof(WArea) * wXineramaHeads(scr));
-  scr->totalUsableArea = (WArea *) wmalloc(sizeof(WArea) * wXineramaHeads(scr));
+  scr->usableArea = (WArea *) wmalloc(sizeof(WArea) * wScreenHeads(scr));
+  scr->totalUsableArea = (WArea *) wmalloc(sizeof(WArea) * wScreenHeads(scr));
 
-  for (i = 0; i < wXineramaHeads(scr); ++i) {
+  for (i = 0; i < wScreenHeads(scr); ++i) {
     WMRect rect = wGetRectForHead(scr, i);
     scr->usableArea[i].x1 = scr->totalUsableArea[i].x1 = rect.pos.x;
     scr->usableArea[i].y1 = scr->totalUsableArea[i].y1 = rect.pos.y;
@@ -815,7 +815,7 @@ void wScreenUpdateUsableArea(WScreen *scr)
   unsigned int size = wPreferences.workspace_border_size;
   unsigned int position = wPreferences.workspace_border_position;
 
-  for (i = 0; i < wXineramaHeads(scr); ++i) {
+  for (i = 0; i < wScreenHeads(scr); ++i) {
     WMRect rect = wGetRectForHead(scr, i);
     scr->totalUsableArea[i].x1 = rect.pos.x;
     scr->totalUsableArea[i].y1 = rect.pos.y;

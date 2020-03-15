@@ -1397,7 +1397,7 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
   KeySym keysym = NoSymbol;
   int moment = 0;
   int modes = ((IS_MOVABLE(wwin) ? MOVABLE_BIT : 0) | (IS_RESIZABLE(wwin) ? RESIZABLE_BIT : 0));
-  int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
+  int head = ((wPreferences.auto_arrange_icons && wScreenHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
               : scr->xrandr_info.primary_head);
   char *orig_title;
@@ -1713,7 +1713,7 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
         wSetFocusTo(scr, wwin);
       }
 
-      if (wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1 &&
+      if (wPreferences.auto_arrange_icons && wScreenHeads(scr) > 1 &&
           head != wGetHeadForWindow(wwin)) {
         wArrangeIcons(scr, True);
       }
@@ -1761,7 +1761,7 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
   /* This needs not to change while moving, else bad things can happen */
   int opaqueMove = wPreferences.opaque_move;
   MoveData moveData;
-  int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
+  int head = ((wPreferences.auto_arrange_icons && wScreenHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
               : scr->xrandr_info.primary_head);
   char *orig_title;
@@ -2044,7 +2044,7 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
 
   freeMoveData(&moveData);
 
-  if (started && wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1 &&
+  if (started && wPreferences.auto_arrange_icons && wScreenHeads(scr) > 1 &&
       head != wGetHeadForWindow(wwin)) {
     wArrangeIcons(scr, True);
   }
@@ -2315,7 +2315,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
   int orig_fh = fh;
   int original_fw = fw;
   int original_fh = fh;
-  int head = ((wPreferences.auto_arrange_icons && wXineramaHeads(scr) > 1)
+  int head = ((wPreferences.auto_arrange_icons && wScreenHeads(scr) > 1)
               ? wGetHeadForWindow(wwin)
               : scr->xrandr_info.primary_head);
   int opaqueResize = wPreferences.opaque_resize;
@@ -2554,7 +2554,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
   }
 
   if (wPreferences.auto_arrange_icons &&
-      wXineramaHeads(scr) > 1 && head != wGetHeadForWindow(wwin)) {
+      wScreenHeads(scr) > 1 && head != wGetHeadForWindow(wwin)) {
     wArrangeIcons(scr, True);
   }
 }

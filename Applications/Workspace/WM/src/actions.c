@@ -1802,7 +1802,7 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
   WAppIcon *aicon;
 
   int head;
-  const int heads = wXineramaHeads(scr);
+  const int heads = wScreenHeads(scr);
 
   struct HeadVars {
     int pf;		/* primary axis */

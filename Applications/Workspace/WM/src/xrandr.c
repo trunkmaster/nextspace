@@ -132,7 +132,7 @@ int wGetRectPlacementInfo(WScreen *scr, WMRect rect, int *flags)
     return scr->xrandr_info.primary_head;
   }
 
-  for (i = 0; i < wXineramaHeads(scr); i++) {
+  for (i = 0; i < wScreenHeads(scr); i++) {
     unsigned long a;
 
     a = calcIntersectionArea(rx, ry, rw, rh,
@@ -176,7 +176,7 @@ int wGetHeadForRect(WScreen *scr, WMRect rect)
   best = -1;
   area = 0;
 
-  for (i = 0; i < wXineramaHeads(scr); i++) {
+  for (i = 0; i < wScreenHeads(scr); i++) {
     unsigned long a;
 
     a = calcIntersectionArea(rx, ry, rw, rh,
@@ -319,7 +319,7 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
   if (totalAreaPtr != NULL)
     *totalAreaPtr = totalArea;
 
-  if (head < wXineramaHeads(scr)) {
+  if (head < wScreenHeads(scr)) {
     usableArea = noicons ? scr->totalUsableArea[head] : scr->usableArea[head];
   } else
     usableArea = totalArea;
