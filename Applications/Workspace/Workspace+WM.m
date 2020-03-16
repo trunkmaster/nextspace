@@ -1539,7 +1539,7 @@ void XWUpdateScreenInfo(WScreen *scr)
 
   XLockDisplay(dpy);
 
-  NSLog(@"XRRScreenChangeNotify received, updating applications and WM...");
+  NSDebugLLog(@"Screen", @"Screen layout changed, updating Workspace and WM...");
 
   // Update WM Xrandr
   wUpdateXrandrInfo(scr);

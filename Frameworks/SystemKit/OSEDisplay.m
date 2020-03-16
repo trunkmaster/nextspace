@@ -406,20 +406,21 @@
   
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
   
-  NSLog(@"%s: Set resolution %@ and origin %@", 
-        output_info->name,
-        [resolution objectForKey:OSEDisplaySizeKey],
-        NSStringFromPoint(position));
+  NSDebugLLog(@"Screen", @"%s: Set resolution %@ and origin %@", 
+              output_info->name,
+              [resolution objectForKey:OSEDisplaySizeKey],
+              NSStringFromPoint(position));
  
   rr_crtc = output_info->crtc;
   if (!rr_crtc)
     {
-      NSLog(@"%s: no CRTC assossiated with Output - requesting free CRTC...",
-            output_info->name);
+      NSDebugLLog(@"Screen",
+                  @"%s: no CRTC assossiated with Output - requesting free CRTC...",
+                  output_info->name);
       rr_crtc = [screen randrFindFreeCRTC];
       if (!rr_crtc)
         {
-          NSLog(@"%s: Can't find free CRTC!", output_info->name);
+          NSDebugLLog(@"Screen", @"%s: Can't find free CRTC!", output_info->name);
         }
       crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
       crtc_info->timestamp = CurrentTime;
@@ -541,7 +542,7 @@
 {
   if ([self isActive] && yn == YES)
     {
-      NSLog(@"%@: become main display.", _outputName);
+      NSDebugLLog(@"Screen", @"%@: become main display.", _outputName);
       XRRSetOutputPrimary(xDisplay,
                           RootWindow(xDisplay, DefaultScreen(xDisplay)),
                           output_id);
@@ -893,7 +894,7 @@ find_last_non_clamped(CARD16 array[], int size)
   //     usleep(10000);
   //   }
 
-  NSLog(@">>> Start fade to normal");
+  NSDebugLLog(@"Screen", @">>> Start fade to normal");
 
   CGFloat    secs = 0.5;
   NSUInteger msecs = secs * 1000000;
@@ -906,7 +907,7 @@ find_last_non_clamped(CARD16 array[], int size)
       usleep(30000);
     }
   
-  NSLog(@">>> End fade to normal");
+  NSDebugLLog(@"Screen", @">>> End fade to normal");
 
   // XUngrabServer(xDisplay);
 }
@@ -918,7 +919,7 @@ find_last_non_clamped(CARD16 array[], int size)
   if (![self isActive])
     return;
   
-  NSLog(@">>> Start fade");
+  NSDebugLLog(@"Screen", @">>> Start fade");
 
   NSUInteger msecs = seconds * 1000000;
   NSUInteger steps = ceil(msecs / 30000);
@@ -936,7 +937,7 @@ find_last_non_clamped(CARD16 array[], int size)
       i++;
     }
   
-  NSLog(@">>> End fade");
+  NSDebugLLog(@"Screen", @">>> End fade");
 
   // XUngrabServer(xDisplay);
 }
