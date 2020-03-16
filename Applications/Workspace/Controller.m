@@ -258,8 +258,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [windows release];
   [fileViewers release];
 
-  NSLog(@"_closeAllFileViewers shared FS monitor RC: %lu",
-        [fileSystemMonitor retainCount]);
+  NSDebugLLog(@"Memory", @"_closeAllFileViewers shared FS monitor RC: %lu",
+              [fileSystemMonitor retainCount]);
 }
 
 - (void)_restoreWindows
@@ -391,8 +391,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [self _saveWindowsStateAndClose];
 
   // FIXME: need to review retain count of `fileSystemMonitor`
-  NSLog(@"_finishTerminateProcess fileSystemMonitor RC: %lu",
-        [fileSystemMonitor retainCount]);
+  NSDebugLLog(@"Memory", @"_finishTerminateProcess fileSystemMonitor RC: %lu",
+              [fileSystemMonitor retainCount]);
   if ([fileSystemMonitor retainCount] > 1) {
     [fileSystemMonitor release];
   }
@@ -620,6 +620,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaAdaptor checkForRemovableMedia];
   
   [self _startSavedApplications];
+  fprintf(stderr, "[Workspace] === Workspace is ready. ===\n");
+  fprintf(stderr, "[Workspace] === Welcome to the NeXT world! ===\n");
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
@@ -698,7 +700,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       }
       break;
     default:
-      NSLog(@"Workspace->Quit->Cancel");
+      // NSLog(@"Workspace->Quit->Cancel");
       isQuitting = NO;
       terminateReply = NSTerminateCancel;
       break;
@@ -715,7 +717,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   if (isQuitting != NO)
     return;
   
-  NSLog(@"Activating Workspace from Controller!");
+  // NSLog(@"Activating Workspace from Controller!");
   [NSApp activateIgnoringOtherApps:YES];
 }
 
@@ -768,8 +770,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       // Must be released in -dealloc.
       fileSystemMonitor = [OSEFileSystemMonitor sharedMonitor];
       
-      NSLog(@"[Controller] fileSystemMonitor RC: %lu",
-            [fileSystemMonitor retainCount]);
+      NSDebugLLog(@"Memory", @"[Controller] fileSystemMonitor RC: %lu",
+                  [fileSystemMonitor retainCount]);
       
       while ([fileSystemMonitor monitorThread] == nil)
         {// wait for event monitor
@@ -948,7 +950,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // File
 - (void)closeViewer:(id)viewer
 {
-  NSLog(@"Controller: closeViewer[%lu] (%@)", [viewer retainCount], [viewer rootPath]);
+  NSDebugLLog(@"Memory", @"Controller: closeViewer[%lu] (%@)",
+              [viewer retainCount], [viewer rootPath]);
   if ([fileViewers count] > 0) {
     [fileViewers removeObject:viewer];
   }

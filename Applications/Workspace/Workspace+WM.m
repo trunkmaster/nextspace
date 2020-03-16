@@ -1722,8 +1722,9 @@ void XWMessage(char *fmt, ...)
   va_list args;
   
   va_start(args, fmt);
-  NSLogv([NSString stringWithFormat:@"[WM] %@", [NSString stringWithCString:fmt]],
-         args);
+  NSDebugLLog(@"WM",
+              [NSString stringWithFormat:@"[WM] %@", [NSString stringWithCString:fmt]],
+              args);
   va_end(args);
 }
 

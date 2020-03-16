@@ -92,7 +92,7 @@ int main(int argc, const char **argv)
       dispatch_async(wmaker_q, ^{ EventLoop(); });
       
       //--- Workspace (GNUstep) queue ---------------------------------------
-      fprintf(stderr, "[Workspace] === Starting Workspace application... ===\n");
+      fprintf(stderr, "[Workspace] === Starting the Workspace... ===\n");
       dispatch_sync(workspace_q, ^{
           @autoreleasepool {
             WSApplicationMain(argc, argv);
@@ -108,7 +108,7 @@ int main(int argc, const char **argv)
 #endif // NEXTSPACE
     {
       @autoreleasepool {
-        NSLog(@"Starting Workspace as standalone application!");
+        NSLog(@"Starting the Workspace as standalone application!");
         NSApplicationMain(argc, argv);
       }
     }

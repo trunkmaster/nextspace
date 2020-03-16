@@ -364,18 +364,18 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   if (rec_icon->docked) {
     if (new_yindex == 0) {
       // Dock has no room
-      NSLog(@"Recycler: detach");
+      NSDebugLLog(@"Recycler", @"Recycler detach");
       wDockDetach(dock, rec_icon);
     }
     else {
       if (yindex != new_yindex) {
-        NSLog(@"Recycler: reattach");
+        NSDebugLLog(@"Recycler", @"Recycler: reattach");
         wDockReattachIcon(dock, rec_icon, 0, new_yindex);
       }
     }
   }
   else if (new_yindex > 0) {
-    NSLog(@"Recycler: attach at %i", new_yindex);
+    NSDebugLLog(@"Recycler", @"Recycler: attach at %i", new_yindex);
     wDockAttachIcon(dock, rec_icon, 0, new_yindex, NO);
   }
 }

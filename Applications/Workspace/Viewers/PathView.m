@@ -489,8 +489,7 @@
   CGFloat    v;
   NSRect     visibleRect, superRect;
 
-  NSLog(@"[FileViewer -contrainScroller] PathView # of icons: %lu",
-        [icons count]);
+  NSDebugLLog(@"FileViewer", @"PathView # of icons: %lu", [icons count]);
 
   if (num == 0) {
     v = 0.0;
