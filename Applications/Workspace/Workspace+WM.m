@@ -1719,13 +1719,15 @@ void XWRingBell(WWindow *wwin)
 
 void XWMessage(char *fmt, ...)
 {
-  va_list args;
-  
-  va_start(args, fmt);
-  NSDebugLLog(@"WM",
-              [NSString stringWithFormat:@"[WM] %@", [NSString stringWithCString:fmt]],
-              args);
-  va_end(args);
+  va_list  args;
+  NSString *format;
+
+  if (GSDebugSet(@"WM") == YES) {
+    va_start(args, fmt);
+    format = [NSString stringWithCString:fmt];
+    NSLogv([NSString stringWithFormat:@"[WM] %@", format], args);
+    va_end(args);
+  }
 }
 
 #endif //NEXTSPACE
