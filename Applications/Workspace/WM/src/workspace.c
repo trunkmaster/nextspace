@@ -263,7 +263,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
   char *name = scr->workspaces[workspace]->name;
   int len = strlen(name);
   int x, y;
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
   int head;
   WMRect rect;
   int xx, yy;
@@ -291,12 +291,12 @@ static void showWorkspaceName(WScreen * scr, int workspace)
   w = WMWidthOfString(scr->workspace_name_font, name, len);
   h = WMFontHeight(scr->workspace_name_font);
 
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
   head = wGetHeadForPointerLocation(scr);
   rect = wGetRectForHead(scr, head);
-  if (scr->xine_info.count) {
-    xx = rect.pos.x + (scr->xine_info.screens[head].size.width - (w + 4)) / 2;
-    yy = rect.pos.y + (scr->xine_info.screens[head].size.height - (h + 4)) / 2;
+  if (scr->xrandr_info.count) {
+    xx = rect.pos.x + (scr->xrandr_info.screens[head].size.width - (w + 4)) / 2;
+    yy = rect.pos.y + (scr->xrandr_info.screens[head].size.height - (h + 4)) / 2;
   }
   else {
     xx = (scr->scr_width - (w + 4)) / 2;
@@ -306,7 +306,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
 
   switch (wPreferences.workspace_name_display_position) {
   case WD_TOP:
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
     px = xx;
 #else
     px = (scr->scr_width - (w + 4)) / 2;
@@ -314,7 +314,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
     py = WORKSPACE_NAME_DISPLAY_PADDING;
     break;
   case WD_BOTTOM:
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
     px = xx;
 #else
     px = (scr->scr_width - (w + 4)) / 2;
@@ -339,7 +339,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
     break;
   case WD_CENTER:
   default:
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
     px = xx;
     py = yy;
 #else
@@ -719,7 +719,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
   WMPostNotificationName(WMNWorkspaceChanged, scr, (void *)(uintptr_t) workspace);
 
-  /* XSync(dpy, False); */
+  XSync(dpy, False);
 }
 
 static void switchWSCommand(WMenu * menu, WMenuEntry * entry)
