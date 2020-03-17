@@ -620,8 +620,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaAdaptor checkForRemovableMedia];
   
   [self _startSavedApplications];
-  fprintf(stderr, "[Workspace] === Workspace is ready. ===\n");
-  fprintf(stderr, "[Workspace] === Welcome to the NeXT world! ===\n");
+  fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
