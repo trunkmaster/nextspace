@@ -60,6 +60,7 @@ int ws_quit_code;
 // Appicons placement
 #include <stacking.h>
 #include <placement.h>
+#include <xrandr.h>
 
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
@@ -73,73 +74,73 @@ BOOL useInternalWindowManager;
 
 //-----------------------------------------------------------------------------
 // Calls related to internals of WindowMaker.
-// 'WWM' prefix is a vector of calls 'Workspace->WindowMaker'
+// 'WM' prefix is a vector of calls 'Workspace->WindowMaker'
 //-----------------------------------------------------------------------------
 
-void WWMInitializeWindowMaker(int argc, char **argv);
-void WWMSetupFrameOffsetProperty();
-void WWMSetDockAppiconState(int index_in_dock, int launching);
+void WMInitializeWindowMaker(int argc, char **argv);
+void WMSetupFrameOffsetProperty();
+void WMSetDockAppiconState(int index_in_dock, int launching);
 // Disable some signal handling inside WindowMaker code.
-void WWMSetupSignalHandling(void);
+void WMSetupSignalHandling(void);
 
 // --- Logout/PowerOff related activities
-void WWMWipeDesktop(WScreen * scr);
-void WWMShutdown(WShutdownMode mode);
+void WMWipeDesktop(WScreen * scr);
+void WMShutdown(WShutdownMode mode);
 
 // --- Defaults
-NSString *WWMDefaultsPath(void);
+NSString *WMDefaultsPath(void);
   
 // --- Icon Yard
-void WWMIconYardShowIcons(WScreen *screen);
-void WWMIconYardHideIcons(WScreen *screen);
+void WMIconYardShowIcons(WScreen *screen);
+void WMIconYardHideIcons(WScreen *screen);
 
 // --- Dock
-void WWMDockInit(void);
-void WWMDockShowIcons(WDock *dock);
-void WWMDockHideIcons(WDock *dock);
-void WWMDockUncollapse(WDock *dock);
-void WWMDockCollapse(WDock *dock);
+void WMDockInit(void);
+void WMDockShowIcons(WDock *dock);
+void WMDockHideIcons(WDock *dock);
+void WMDockUncollapse(WDock *dock);
+void WMDockCollapse(WDock *dock);
 
 // - Should be called from already existing @autoreleasepool
-NSString     *WWMDockStatePath(void);
-NSDictionary *WWMDockState(void);
-void         WWMDockStateSave(void);
-NSArray      *WWMDockStateApps(void);
-void         WWMDockAutoLaunch(WDock *dock);
+NSString     *WMDockStatePath(void);
+NSDictionary *WMDockState(void);
+void         WMDockStateSave(void);
+NSArray      *WMDockStateApps(void);
+void         WMDockAutoLaunch(WDock *dock);
 
 // Appicons getters/setters of on-screen Dock
 WAppIcon  **launchingIcons;
-NSInteger WWMDockAppsCount(void);
-NSString  *WWMDockAppName(int position);
-NSImage   *WWMDockAppImage(int position);
-void      WWMSetDockAppImage(NSString *path, int position, BOOL saved);
-BOOL      WWMIsDockAppAutolaunch(int position);
-void      WWMSetDockAppAutolaunch(int position, BOOL autolaunch);
-BOOL      WWMIsDockAppLocked(int position);
-void      WWMSetDockAppLocked(int position, BOOL lock);
-NSString  *WWMDockAppCommand(int position);
-void      WWMSetDockAppCommand(int position, const char *command);
-NSString  *WWMDockAppPasteCommand(int position);
-void      WWMSetDockAppPasteCommand(int postion, const char *command);
-NSString  *WWMDockAppDndCommand(int position);
-void      WWMSetDockAppDndCommand(int position, const char *command);
+NSInteger WMDockAppsCount(void);
+NSString  *WMDockAppName(int position);
+NSImage   *WMDockAppImage(int position);
+void      WMSetDockAppImage(NSString *path, int position, BOOL saved);
+BOOL      WMIsDockAppAutolaunch(int position);
+void      WMSetDockAppAutolaunch(int position, BOOL autolaunch);
+BOOL      WMIsDockAppLocked(int position);
+void      WMSetDockAppLocked(int position, BOOL lock);
+NSString  *WMDockAppCommand(int position);
+void      WMSetDockAppCommand(int position, const char *command);
+NSString  *WMDockAppPasteCommand(int position);
+void      WMSetDockAppPasteCommand(int postion, const char *command);
+NSString  *WMDockAppDndCommand(int position);
+void      WMSetDockAppDndCommand(int position, const char *command);
 
-WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
+WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
                                  NSString *launchPath,
                                  NSImage *anImage,
                                  NSPoint sourcePoint,
                                  NSString *imagePath);
-void WWMFinishLaunchingIcon(WAppIcon *appIcon);
-void WWMDestroyLaunchingIcon(WAppIcon *appIcon);
+void WMFinishLaunchingIcon(WAppIcon *appIcon);
+void WMDestroyLaunchingIcon(WAppIcon *appIcon);
 // - End of functions which require existing @autorelease pool
 
 NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret);
 
 // --- Windows and applications
-NSString *WWMWindowState(NSWindow *nsWindow);
-NSArray *WWMNotDockedAppList(void);
-BOOL WWMIsAppRunning(NSString *appName);
-pid_t WWMExecuteCommand(NSString *command);
+NSString *WMWindowState(NSWindow *nsWindow);
+NSArray *WMNotDockedAppList(void);
+BOOL WMIsAppRunning(NSString *appName);
+pid_t WMExecuteCommand(NSString *command);
 
 #endif //__Foundation_h_GNUSTEP_BASE_INCLUDE
 
@@ -147,35 +148,38 @@ pid_t WWMExecuteCommand(NSString *command);
 // Visible in WindowMaker and Workspace
 // Workspace callbacks for WindowMaker.
 //-----------------------------------------------------------------------------
-int XWDockMaxIcons(void);
-int WWMDockLevel();
-void WWMSetDockLevel(int level);
+int WSDockMaxIcons(WScreen *scr);
+int WSDockLevel();
+void WSSetDockLevel(int level);
 #include <appicon.h> // to silence compiler
-WAppIcon *XWLaunchingIconForApplication(WApplication *wapp);
-WAppIcon *XWLaunchingIconForCommand(char *command);
+WAppIcon *WSLaunchingIconForApplication(WApplication *wapp);
+WAppIcon *WSLaunchingIconForCommand(char *command);
 
-char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
+char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
 // Applications creation and destroying
-void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin);
-void XWApplicationDidAddWindow(WApplication *wapp, WWindow *wwin);
-void XWApplicationDidDestroy(WApplication *wapp);
-void XWApplicationDidCloseWindow(WWindow *wwin);
+void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin);
+void WSApplicationDidAddWindow(WApplication *wapp, WWindow *wwin);
+void WSApplicationDidDestroy(WApplication *wapp);
+void WSApplicationDidCloseWindow(WWindow *wwin);
 
 // Called from WM/src/event.c on update of XrandR screen configuration
-void XWUpdateScreenInfo(WScreen *scr);
-void XWUpdateScreenParameters(void);
+void WSUpdateScreenInfo(WScreen *scr);
+void WSUpdateScreenParameters(void);
 
-void XWActivateApplication(WScreen *scr, char *app_name);
-void XWActivateWorkspaceApp(WScreen *scr);
-void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window);
-void XWKeyboardGroupDidChange(int group);
+void WSActivateApplication(WScreen *scr, char *app_name);
+void WSActivateWorkspaceApp(WScreen *scr);
+void WSWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window);
+void WSKeyboardGroupDidChange(int group);
 #include <dock.h> // to silence icon.c compile error
-void XWDockContentDidChange(WDock *dock);
-int XWRunAlertPanel(char *title, char *message,
+void WSDockContentDidChange(WDock *dock);
+int WSRunAlertPanel(char *title, char *message,
                      char *defaultButton,
                      char *alternateButton,
                      char *otherButton);
-void XWRingBell(WWindow *wwin);
+void WSRingBell(WWindow *wwin);
+void WSMessage(char *fmt, ...);
+
+#define wmessage(fmt, args...) WSMessage(fmt, ## args)
 
 #endif //NEXTSPACE

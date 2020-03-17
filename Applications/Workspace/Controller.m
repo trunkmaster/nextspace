@@ -177,7 +177,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Console
   if (console) {
-    winState = WWMWindowState([console window]);
+    winState = WMWindowState([console window]);
     if (winState) {
       winInfo = @{@"Type":@"Console", @"State":winState};
       [windows addObject:winInfo];
@@ -205,7 +205,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   // Finder
   if (finder) {
-    winState = WWMWindowState([finder window]);
+    winState = WMWindowState([finder window]);
     if (winState) {
       winInfo = @{@"Type":@"Finder", @"State":winState};
       [windows addObject:winInfo];
@@ -231,7 +231,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Viewers
   for (FileViewer *fv in _fvs) {
-    winState = WWMWindowState([fv window]);
+    winState = WMWindowState([fv window]);
     if (winState) {
       if ([fv isRootViewer] != NO)
         type = @"RootViewer";
@@ -258,8 +258,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [windows release];
   [fileViewers release];
 
-  NSLog(@"_closeAllFileViewers shared FS monitor RC: %lu",
-        [fileSystemMonitor retainCount]);
+  NSDebugLLog(@"Memory", @"_closeAllFileViewers shared FS monitor RC: %lu",
+              [fileSystemMonitor retainCount]);
 }
 
 - (void)_restoreWindows
@@ -363,7 +363,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_saveRunningApplications
 {
-  [[NXTDefaults userDefaults] setObject:WWMNotDockedAppList()
+  [[NXTDefaults userDefaults] setObject:WMNotDockedAppList()
                                 forKey:@"SavedApplications"];
 }
 
@@ -373,8 +373,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   savedApps = [[NXTDefaults userDefaults] objectForKey:@"SavedApplications"];
 
   for (NSDictionary *appInfo in savedApps) {
-    if (WWMIsAppRunning([appInfo objectForKey:@"Name"]) == NO) {
-      WWMExecuteCommand([appInfo objectForKey:@"Command"]);
+    if (WMIsAppRunning([appInfo objectForKey:@"Name"]) == NO) {
+      WMExecuteCommand([appInfo objectForKey:@"Command"]);
     }
   }
 }
@@ -391,8 +391,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [self _saveWindowsStateAndClose];
 
   // FIXME: need to review retain count of `fileSystemMonitor`
-  NSLog(@"_finishTerminateProcess fileSystemMonitor RC: %lu",
-        [fileSystemMonitor retainCount]);
+  NSDebugLLog(@"Memory", @"_finishTerminateProcess fileSystemMonitor RC: %lu",
+              [fileSystemMonitor retainCount]);
   if ([fileSystemMonitor retainCount] > 1) {
     [fileSystemMonitor release];
   }
@@ -407,7 +407,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   if (useInternalWindowManager) {
     // Hide Dock
-    WWMDockHideIcons(wScreenWithNumber(0)->dock);
+    WMDockHideIcons(wDefaultScreen()->dock);
     if (recycler) {
       [[recycler appIcon] close];
       [recycler release];
@@ -525,32 +525,39 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // ProcessManager created - Workspace is ready to register applications.
   // Show Dock and start applications in it
-  if (useInternalWindowManager)
-    {
-      WDock *dock = wScreenWithNumber(0)->dock;
+  if (useInternalWindowManager) {
+    WAppIcon *btn;
+    WDock    *dock = wDefaultScreen()->dock;
 
-      [self updateWorkspaceBadge];
-      [self updateKeyboardBadge:@"US"];
+    [self updateWorkspaceBadge];
+    [self updateKeyboardBadge:@"US"];
       
-      // Detect lid close/open events
-      systemPower = [OSEPower new];
-      [systemPower startEventsMonitor];
-      [[NSNotificationCenter defaultCenter]
+    // Detect lid close/open events
+    systemPower = [OSEPower new];
+    [systemPower startEventsMonitor];
+    [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(lidDidChange:)
                name:OSEPowerLidDidChangeNotification
              object:systemPower];
       
-      [[NSNotificationCenter defaultCenter]
+    [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
              object:NSApp];
-      
-      recycler = [[Recycler alloc] initWithDock:dock];
-      
-      WWMDockAutoLaunch(dock);
+
+    // Recycler
+    recycler = [[Recycler alloc] initWithDock:dock];
+    btn = [recycler dockIcon];
+    if (btn) {
+      btn->icon->owner = dock->icon_array[0]->icon->owner;
+      btn->main_window = dock->icon_array[0]->main_window;
+      [[recycler appIcon] orderFrontRegardless];
     }
+      
+    WMDockAutoLaunch(dock);
+  }
 
   return;
 }
@@ -579,7 +586,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   // Now we are ready to show windows and menu
   [df setObject:@"NO" forKey:@"NXAutoLaunch"];
-  if (WWMIsDockAppAutolaunch(0) != NO) {
+  if (WMIsDockAppAutolaunch(0) != NO) {
     [self _restoreWindows];
     [[NSApp mainMenu] display];
   }
@@ -611,19 +618,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
            object:mediaAdaptor];
  
   [mediaAdaptor checkForRemovableMedia];
-
-  if (useInternalWindowManager) {
-    WAppIcon *btn = [recycler dockIcon];
-    WDock    *dock = wScreenWithNumber(0)->dock;
-
-    if (btn) {
-      btn->icon->owner = dock->icon_array[0]->icon->owner;
-      btn->main_window = dock->icon_array[0]->main_window;
-      [[recycler appIcon] orderFrontRegardless];
-    }
-  }
-
+  
   [self _startSavedApplications];
+  fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
@@ -702,7 +699,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       }
       break;
     default:
-      NSLog(@"Workspace->Quit->Cancel");
+      // NSLog(@"Workspace->Quit->Cancel");
       isQuitting = NO;
       terminateReply = NSTerminateCancel;
       break;
@@ -719,13 +716,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   if (isQuitting != NO)
     return;
   
-  NSLog(@"Activating Workspace from Controller!");
+  // NSLog(@"Activating Workspace from Controller!");
   [NSApp activateIgnoringOtherApps:YES];
 }
 
 - (void)applicationDidChangeScreenParameters:(NSNotification*)aNotification
 {
-  XWUpdateScreenParameters();
+  WSUpdateScreenParameters();
 }
 
 //============================================================================
@@ -772,8 +769,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       // Must be released in -dealloc.
       fileSystemMonitor = [OSEFileSystemMonitor sharedMonitor];
       
-      NSLog(@"[Controller] fileSystemMonitor RC: %lu",
-            [fileSystemMonitor retainCount]);
+      NSDebugLLog(@"Memory", @"[Controller] fileSystemMonitor RC: %lu",
+                  [fileSystemMonitor retainCount]);
       
       while ([fileSystemMonitor monitorThread] == nil)
         {// wait for event monitor
@@ -852,7 +849,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [self createWorkspaceBadge];
     }
     wsCurrent = [NSString stringWithFormat:@"%i",
-                          wScreenWithNumber(0)->current_workspace+1];
+                          wDefaultScreen()->current_workspace+1];
     [workspaceBadge setStringValue:wsCurrent];
   }
   else if (workspaceBadge) {
@@ -952,7 +949,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // File
 - (void)closeViewer:(id)viewer
 {
-  NSLog(@"Controller: closeViewer[%lu] (%@)", [viewer retainCount], [viewer rootPath]);
+  NSDebugLLog(@"Memory", @"Controller: closeViewer[%lu] (%@)",
+              [viewer retainCount], [viewer rootPath]);
   if ([fileViewers count] > 0) {
     [fileViewers removeObject:viewer];
   }
@@ -1082,18 +1080,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Dock
 - (void)setDockVisibility:(id)sender
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
 
   if ([[sender title] isEqualToString:@"Hide"])
     {
-      WWMDockHideIcons(scr->dock);
+      WMDockHideIcons(scr->dock);
       wScreenUpdateUsableArea(scr);
       if (!scr->dock->mapped)
         [sender setTitle:@"Show"];
     }
   else
     {
-      WWMDockShowIcons(scr->dock);
+      WMDockShowIcons(scr->dock);
       wScreenUpdateUsableArea(scr);
       if (scr->dock->mapped)
         [sender setTitle:@"Hide"];
@@ -1101,16 +1099,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 - (void)setDockCollapse:(id)sender
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
   
   if ([[sender title] isEqualToString:@"Collapse"]) {
-    WWMDockCollapse(scr->dock);
+    WMDockCollapse(scr->dock);
     if (scr->dock->collapsed) {
       [sender setTitle:@"Uncollapse"];
     }
   }
   else {
-    WWMDockUncollapse(scr->dock);
+    WMDockUncollapse(scr->dock);
     if (!scr->dock->collapsed) {
       [sender setTitle:@"Collapse"];
     }
@@ -1120,16 +1118,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Icon Yard
 - (void)setIconYardVisibility:(id)sender
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
 
   if ([[sender title] isEqualToString:@"Hide"]) {
-    WWMIconYardHideIcons(scr);
+    WMIconYardHideIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (!scr->dock->mapped)
     [sender setTitle:@"Show"];
   }
   else {
-    WWMIconYardShowIcons(scr);
+    WMIconYardShowIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (scr->dock->mapped)
     [sender setTitle:@"Hide"];
@@ -1162,18 +1160,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   else if ([menuTitle isEqualToString:@"Dock"]) {
     if ([[menuItem title] isEqualToString:@"Collapse"] ||
         [[menuItem title] isEqualToString:@"Uncollapse"]) {
-      if (!wScreenWithNumber(0)->dock->mapped) {
+      if (!wDefaultScreen()->dock->mapped) {
         return NO;
       }
     }
     if ([[menuItem title] isEqualToString:@"Hide"] &&
-        !wScreenWithNumber(0)->dock->mapped) {
+        !wDefaultScreen()->dock->mapped) {
       [menuItem setTitle:@"Show"];
     }
   }
   else if ([menuTitle isEqualToString:@"Icon Yard"]) {
     if ([[menuItem title] isEqualToString:@"Hide"] &&
-        !wScreenWithNumber(0)->flags.icon_yard_mapped) {
+        !wDefaultScreen()->flags.icon_yard_mapped) {
       [menuItem setTitle:@"Show"];
     }
   }

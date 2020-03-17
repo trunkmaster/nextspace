@@ -33,7 +33,6 @@
 #include "main.h"
 #include "properties.h"
 #include "session.h"
-#include "winspector.h"
 #include "wmspec.h"
 #include "colormap.h"
 #include "shutdown.h"
@@ -53,7 +52,7 @@ static void wipeDesktop(WScreen * scr);
  */
 void Shutdown(WShutdownMode mode)
 {
-  int i;
+  WScreen *scr;
 
   switch (mode) {
   case WSLogoutMode:
@@ -67,43 +66,37 @@ void Shutdown(WShutdownMode mode)
       w_global.inotify.fd_event_queue = -1;
     }
 #endif
-    for (i = 0; i < w_global.screen_count; i++) {
-      WScreen *scr;
+    
+    scr = wDefaultScreen();
+    if (scr) {
+      if (scr->helper_pid)
+        kill(scr->helper_pid, SIGKILL);
 
-      scr = wScreenWithNumber(i);
-      if (scr) {
-        if (scr->helper_pid)
-          kill(scr->helper_pid, SIGKILL);
+      wScreenSaveState(scr);
 
-        wScreenSaveState(scr);
-
-        if (mode == WSKillMode)
-          wipeDesktop(scr);
-        else
-          RestoreDesktop(scr);
-      }
+      if (mode == WSKillMode)
+        wipeDesktop(scr);
+      else
+        RestoreDesktop(scr);
     }
+    
     ExecExitScript();
     Exit(0);
     break;
 
   case WSRestartPreparationMode:
-    for (i = 0; i < w_global.screen_count; i++) {
-      WScreen *scr;
-
 #ifdef HAVE_INOTIFY
-      if (w_global.inotify.fd_event_queue >= 0) {
-        close(w_global.inotify.fd_event_queue);
-        w_global.inotify.fd_event_queue = -1;
-      }
+    if (w_global.inotify.fd_event_queue >= 0) {
+      close(w_global.inotify.fd_event_queue);
+      w_global.inotify.fd_event_queue = -1;
+    }
 #endif
-      scr = wScreenWithNumber(i);
-      if (scr) {
-        if (scr->helper_pid)
-          kill(scr->helper_pid, SIGKILL);
-        wScreenSaveState(scr);
-        RestoreDesktop(scr);
-      }
+    scr = wDefaultScreen();
+    if (scr) {
+      if (scr->helper_pid)
+        kill(scr->helper_pid, SIGKILL);
+      wScreenSaveState(scr);
+      RestoreDesktop(scr);
     }
     break;
   }
@@ -165,7 +158,6 @@ void RestoreDesktop(WScreen * scr)
   }
 
   XGrabServer(dpy);
-  wDestroyInspectorPanels();
 
   /* reparent windows back to the root window, keeping the stacking order */
   restoreWindows(scr->stacking_list, NULL);

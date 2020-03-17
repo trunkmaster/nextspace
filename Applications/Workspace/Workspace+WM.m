@@ -29,7 +29,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xlocale.h>
 #include <X11/Xatom.h>
-#include <X11/extensions/Xinerama.h>
 
 #include <wraster.h>
 #include <startup.h>
@@ -54,6 +53,8 @@ extern Display *dpy;
 extern char *GetCommandForWindow(Window win);
 // WM/src/main.c
 extern int WMInitialize(int argc, char **argv);
+// WM/src/xrandr.c
+extern void wUpdateXrandrInfo(WScreen *scr);
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -144,10 +145,10 @@ NSString *fullPathForCommand(NSString *command)
 //-----------------------------------------------------------------------------
 // WindowMaker releated functions: call WindowMaker functions, change
 // WindowMaker behaviour, change WindowMaker runtime variables.
-// 'WWM' prefix is a vector of calls 'Workspace->WindowMaker'
+// 'WM' prefix is a vector of calls 'Workspace->WindowMaker'
 //------------------------------------------------------------------------------
 
-void WWMInitializeWindowMaker(int argc, char **argv)
+void WMInitializeWindowMaker(int argc, char **argv)
 {
   int  len;
   char *str;
@@ -165,7 +166,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   w_global.shortcut.modifiers_mask = 0xff;
 
   /* setup common stuff for the monitor and wmaker itself */
-  WMInitializeApplication("WindowMaker", &argc, argv);
+  WMInitializeApplication("WM", &argc, argv);
 
   memset(&wPreferences, 0, sizeof(wPreferences));
   // wDockDoAutoLaunch() called in applicationDidFinishLaunching of Workspace
@@ -183,7 +184,7 @@ void WWMInitializeWindowMaker(int argc, char **argv)
 
   @autoreleasepool {
     // Check WMState user file (Dock state)
-    if (WWMDockStatePath() == nil)
+    if (WMDockStatePath() == nil)
       {
         NSLog(@"[Workspace] Dock contents cannot be restored."
               " Show only Workspace application icon.");
@@ -196,25 +197,25 @@ void WWMInitializeWindowMaker(int argc, char **argv)
   WMInitialize(argc, argv);
   
   // Just load saved Dock state without icons drawing.
-  WWMDockInit();
+  WMDockInit();
 
   //--- Below this point WindowMaker was initialized
 
   // TODO: go through all screens
   // Adjust WM elements placing
-  XWUpdateScreenInfo(wScreenWithNumber(0));
+  WSUpdateScreenInfo(wDefaultScreen());
 
-  WWMDockShowIcons(wScreenWithNumber(0)->dock);
+  WMDockShowIcons(wDefaultScreen()->dock);
 
   // Unmanage some signals which are managed by GNUstep part of Workspace
-  WWMSetupSignalHandling();
+  WMSetupSignalHandling();
   
   // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct
   // initialization of GNUstep backend (gnustep-back).
-  WWMSetupFrameOffsetProperty();
+  WMSetupFrameOffsetProperty();
 }
 
-void WWMSetupFrameOffsetProperty()
+void WMSetupFrameOffsetProperty()
 {
   int		count, nelements;
   NSUInteger	titleBarHeight;
@@ -243,15 +244,15 @@ void WWMSetupFrameOffsetProperty()
                          1, 1, titleBarHeight, 9,
                          1, 1, titleBarHeight, 9};
   
-  XChangeProperty(dpy, wScreenWithNumber(0)->root_win,
+  XChangeProperty(dpy, wDefaultScreen()->root_win,
                   XInternAtom(dpy, "_GNUSTEP_FRAME_OFFSETS", False),
                   XA_CARDINAL, 16, PropModeReplace,
                   (unsigned char *)offsets, 60);
 }
 
-void WWMSetDockAppiconState(int index_in_dock, int launching)
+void WMSetDockAppiconState(int index_in_dock, int launching)
 {
-  WAppIcon *btn = wScreenWithNumber(0)->dock->icon_array[index_in_dock];
+  WAppIcon *btn = wDefaultScreen()->dock->icon_array[index_in_dock];
   int      saved_launching = btn->launching;
 
   // Set and display dock icon state change
@@ -266,8 +267,8 @@ void WWMSetDockAppiconState(int index_in_dock, int launching)
 }
 
 // Disable some signal handling inside WindowMaker code.
-// Should be called after WWMInitializeWindowMaker().
-void WWMSetupSignalHandling(void)
+// Should be called after WMInitializeWindowMaker().
+void WMSetupSignalHandling(void)
 {
   // signal(SIGTERM, SIG_DFL); // Logout panel - OK
   // signal(SIGINT, SIG_DFL);  // Logout panel - OK
@@ -277,7 +278,7 @@ void WWMSetupSignalHandling(void)
 }
 
 // --- Logout
-void WWMWipeDesktop(WScreen * scr)
+void WMWipeDesktop(WScreen * scr)
 {
   Window       rootWindow, parentWindow;
   Window       *childrenWindows;
@@ -317,33 +318,27 @@ void WWMWipeDesktop(WScreen * scr)
   XSync(dpy, False);
 }
 
-void WWMShutdown(WShutdownMode mode)
+void WMShutdown(WShutdownMode mode)
 {
   int i;
+  WScreen *scr;
 
   fprintf(stderr, "*** Shutting down Window Manager...\n");
   
-  for (i = 0; i < w_global.screen_count; i++)
-    {
-      WScreen *scr;
-
-      scr = wScreenWithNumber(i);
-      if (scr)
-        {
-          if (scr->helper_pid)
-            {
-              kill(scr->helper_pid, SIGKILL);
-            }
-
-          wScreenSaveState(scr);
-
-          if (mode == WSKillMode)
-            WWMWipeDesktop(scr);
-          else
-            RestoreDesktop(scr);
-        }
-      wNETWMCleanup(scr); // Delete _NET_* Atoms
+  scr = wDefaultScreen();
+  if (scr) {
+    if (scr->helper_pid) {
+      kill(scr->helper_pid, SIGKILL);
     }
+
+    wScreenSaveState(scr);
+
+    if (mode == WSKillMode)
+      WMWipeDesktop(scr);
+    else
+      RestoreDesktop(scr);
+  }
+  wNETWMCleanup(scr); // Delete _NET_* Atoms
   // ExecExitScript();
 
   if (launchingIcons) free(launchingIcons);
@@ -353,7 +348,7 @@ void WWMShutdown(WShutdownMode mode)
 }
 
 // --- Defaults
-NSString *WWMDefaultsPath(void)
+NSString *WMDefaultsPath(void)
 {
   NSString      *userDefPath, *appDefPath;
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -378,7 +373,7 @@ NSString *WWMDefaultsPath(void)
 // ----------------------------
 // --- Icon Yard
 // ----------------------------
-void WWMIconYardShowIcons(WScreen *screen)
+void WMIconYardShowIcons(WScreen *screen)
 {
   WAppIcon *appicon = screen->app_icon_list;
   WWindow  *w_window;
@@ -407,7 +402,7 @@ void WWMIconYardShowIcons(WScreen *screen)
   screen->flags.icon_yard_mapped = 1;
   // wArrangeIcons(screen, True);
 }
-void WWMIconYardHideIcons(WScreen *screen)
+void WMIconYardHideIcons(WScreen *screen)
 {
   WAppIcon *appicon = screen->app_icon_list;
   WWindow  *w_window;
@@ -442,9 +437,9 @@ void WWMIconYardHideIcons(WScreen *screen)
 
 // --- Init
 #import "Recycler.h"
-void WWMDockInit(void)
+void WMDockInit(void)
 {
-  WDock      *dock = wScreenWithNumber(0)->dock;
+  WDock      *dock = wDefaultScreen()->dock;
   WMPropList *state;
   WAppIcon   *btn;
   NSString   *iconName;
@@ -465,14 +460,14 @@ void WWMDockInit(void)
   iconName = [NSString stringWithCString:APP_ICON];
   iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
   if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == YES)
-    WWMSetDockAppImage(iconPath, 0, NO);
+    WMSetDockAppImage(iconPath, 0, NO);
 
   // Setup Recycler icon
   [RecyclerIcon recyclerAppIconForDock:dock];
   
   launchingIcons = NULL;
 }
-void WWMDockShowIcons(WDock *dock)
+void WMDockShowIcons(WDock *dock)
 {
   if (dock == NULL || dock->mapped) {
     return;
@@ -485,7 +480,7 @@ void WWMDockShowIcons(WDock *dock)
   XSync(dpy, False);
   dock->mapped = 1;
 }
-void WWMDockHideIcons(WDock *dock)
+void WMDockHideIcons(WDock *dock)
 {
   if (dock == NULL || !dock->mapped) {
     return;
@@ -498,7 +493,7 @@ void WWMDockHideIcons(WDock *dock)
   XSync(dpy, False);
   dock->mapped = 0;
 }
-void WWMDockUncollapse(WDock *dock)
+void WMDockUncollapse(WDock *dock)
 {
   if (dock == NULL || !dock->collapsed) {
     return;
@@ -511,7 +506,7 @@ void WWMDockUncollapse(WDock *dock)
   XSync(dpy, False);
   dock->collapsed = 0;
 }
-void WWMDockCollapse(WDock *dock)
+void WMDockCollapse(WDock *dock)
 {
   if (dock == NULL || dock->collapsed || !dock->mapped) {
     return;
@@ -527,21 +522,21 @@ void WWMDockCollapse(WDock *dock)
 
 // -- Should be called from already existing @autoreleasepool ---
 
-int XWDockMaxIcons(void)
+int WSDockMaxIcons(WScreen *scr)
 {
-  NSInteger screenHeight;
-  screenHeight = [[[OSEScreen sharedScreen] mainDisplay] frame].size.height;
-  return (int)(screenHeight / wPreferences.icon_size);
+  WMRect head_rect = wGetRectForHead(scr, scr->xrandr_info.primary_head);
+  
+  return head_rect.size.height / wPreferences.icon_size;
 }
 enum {
   KeepOnTop = WMDockLevel,
   Normal = WMNormalLevel,
   AutoRaiseLower = WMDesktopLevel
 };
-int WWMDockLevel()
+int WSDockLevel()
 {
   int current_level = -1;
-  NSDictionary *dockState = [WWMDockState() objectForKey:@"Dock"];
+  NSDictionary *dockState = [WMDockState() objectForKey:@"Dock"];
   
   if ([[dockState objectForKey:@"Lowered"] isEqualToString:@"Yes"]) {
     // Normal or AutoRaiseLower
@@ -593,13 +588,13 @@ static void toggleLowered(WDock *dock)
     wScreenUpdateUsableArea(dock->screen_ptr);
   }
 }
-void WWMSetDockLevel(int level)
+void WSSetDockLevel(int level)
 {
   int   current_level;
-  WDock *dock = wScreenWithNumber(0)->dock;
+  WDock *dock = wDefaultScreen()->dock;
   
   // From?
-  current_level = WWMDockLevel();
+  current_level = WSDockLevel();
   
   // To?
   if (current_level == level)
@@ -621,13 +616,13 @@ void WWMSetDockLevel(int level)
   }
   toggleLowered(dock);
 
-  WWMDockStateSave();
+  WMDockStateSave();
 }
 
 // Returns path to user WMState if exist.
 // Returns 'nil' if user WMState doesn't exist and cannot
 // be recovered from Workspace.app/WindowMaker directory.
-NSString *WWMDockStatePath(void)
+NSString *WMDockStatePath(void)
 {
   NSString      *userDefPath, *appDefPath;
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -650,41 +645,39 @@ NSString *WWMDockStatePath(void)
 }
 
 // Saves dock on-screen state into WMState file
-void WWMDockStateSave(void)
+void WMDockStateSave(void)
 {
-  for (int i = 0; i < w_global.screen_count; i++) {
-    wScreenSaveState(wScreenWithNumber(i));
-  }
+  wScreenSaveState(wDefaultScreen());
 }
 
 // Returns NSDictionary representation of WMState file
-NSDictionary *WWMDockState(void)
+NSDictionary *WMDockState(void)
 {
   NSDictionary *wmState;
 
-  wmState = [[NSDictionary alloc] initWithContentsOfFile:WWMDockStatePath()];
+  wmState = [[NSDictionary alloc] initWithContentsOfFile:WMDockStatePath()];
 
   return [wmState autorelease];
 }
 
-NSArray *WWMDockStateApps(void)
+NSArray *WMDockStateApps(void)
 {
   NSArray  *dockApps;
   NSString *appsKey;
       
   appsKey = [NSString stringWithFormat:@"Applications%i",
-                      wScreenWithNumber(0)->scr_height];
+                      wDefaultScreen()->scr_height];
   
-  dockApps = [[WWMDockState() objectForKey:@"Dock"] objectForKey:appsKey];
+  dockApps = [[WMDockState() objectForKey:@"Dock"] objectForKey:appsKey];
   if (!dockApps || [dockApps count] == 0)
     {
-      [[WWMDockState() objectForKey:@"Dock"] objectForKey:@"Applications"];
+      [[WMDockState() objectForKey:@"Dock"] objectForKey:@"Applications"];
     }
 
   return dockApps;
 }
 
-void WWMDockAutoLaunch(WDock *dock)
+void WMDockAutoLaunch(WDock *dock)
 {
   WAppIcon    *btn;
   WSavedState *state;
@@ -733,9 +726,9 @@ void WWMDockAutoLaunch(WDock *dock)
 
 // --- Appicons getters/setters of on-screen Dock
 
-NSInteger WWMDockAppsCount(void)
+NSInteger WMDockAppsCount(void)
 {
-  WScreen *scr = wScreenWithNumber(XDefaultScreen(dpy));
+  WScreen *scr = wDefaultScreen();
   WDock   *dock = scr->dock;
 
   if (!dock)
@@ -747,7 +740,7 @@ NSInteger WWMDockAppsCount(void)
 
 WAppIcon *_appiconInDockPosition(int position)
 {
-  WScreen  *scr = wScreenWithNumber(XDefaultScreen(dpy));
+  WScreen  *scr = wDefaultScreen();
   WDock    *dock = scr->dock;
 
   if (!dock || position > dock->max_icons-1)
@@ -765,7 +758,7 @@ WAppIcon *_appiconInDockPosition(int position)
   return NULL;
 }
 
-NSString *WWMDockAppName(int position)
+NSString *WMDockAppName(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
@@ -804,7 +797,7 @@ NSImage *_imageForRasterImage(RImage *r_image)
   return [image autorelease];
 }
 
-char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
+char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
 {
   NSImage  *image = _imageForRasterImage(r_image);
   NSData   *tiffRep = [image TIFFRepresentation];
@@ -825,7 +818,7 @@ char *XWSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
   return wstrdup([filePath cString]);
 }
 
-NSImage *WWMDockAppImage(int position)
+NSImage *WMDockAppImage(int position)
 {
   WAppIcon     *btn = _appiconInDockPosition(position);
   NSString     *iconPath;
@@ -867,13 +860,13 @@ NSImage *WWMDockAppImage(int position)
   
   return icon;
 }
-void WWMSetDockAppImage(NSString *path, int position, BOOL save)
+void WMSetDockAppImage(NSString *path, int position, BOOL save)
 {
-  WDock    *dock = wScreenWithNumber(0)->dock;
+  WDock    *dock = wDefaultScreen()->dock;
   WAppIcon *btn;
   RImage   *rimage;
 
-  for (int i = 0; i < wScreenWithNumber(0)->dock->max_icons; i++)
+  for (int i = 0; i < wDefaultScreen()->dock->max_icons; i++)
     {
       btn = dock->icon_array[i];
       if (btn->yindex == position)
@@ -886,7 +879,7 @@ void WWMSetDockAppImage(NSString *path, int position, BOOL save)
     }
   btn->icon->file = wstrdup([path cString]);
 
-  rimage = RLoadImage(wScreenWithNumber(0)->rcontext, btn->icon->file, 0);
+  rimage = RLoadImage(wDefaultScreen()->rcontext, btn->icon->file, 0);
 
   if (!rimage)
     return;
@@ -904,7 +897,7 @@ void WWMSetDockAppImage(NSString *path, int position, BOOL save)
       NSMutableDictionary *wa, *appAttrs;
       NSString *waPath, *appKey;
 
-      waPath = [WWMDockStatePath() stringByDeletingLastPathComponent];
+      waPath = [WMDockStatePath() stringByDeletingLastPathComponent];
       waPath = [waPath stringByAppendingPathComponent:@"WMWindowAttributes"];
   
       wa = [[NSMutableDictionary alloc] initWithContentsOfFile:waPath];
@@ -932,7 +925,7 @@ void WWMSetDockAppImage(NSString *path, int position, BOOL save)
   wIconUpdate(btn->icon);
 }
 
-BOOL WWMIsDockAppAutolaunch(int position)
+BOOL WMIsDockAppAutolaunch(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
@@ -941,18 +934,18 @@ BOOL WWMIsDockAppAutolaunch(int position)
   else
     return YES;
 }
-void WWMSetDockAppAutolaunch(int position, BOOL autolaunch)
+void WMSetDockAppAutolaunch(int position, BOOL autolaunch)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
   if (appicon)
     {
       appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
-      WWMDockStateSave();
+      WMDockStateSave();
     }
 }
 
-BOOL WWMIsDockAppLocked(int position)
+BOOL WMIsDockAppLocked(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
@@ -961,18 +954,18 @@ BOOL WWMIsDockAppLocked(int position)
   else
     return YES;
 }
-void WWMSetDockAppLocked(int position, BOOL lock)
+void WMSetDockAppLocked(int position, BOOL lock)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
   if (appicon)
     {
       appicon->lock = (lock == YES) ? 1 : 0;
-      WWMDockStateSave();
+      WMDockStateSave();
     }
 }
 
-NSString *WWMDockAppCommand(int position)
+NSString *WMDockAppCommand(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
@@ -981,7 +974,7 @@ NSString *WWMDockAppCommand(int position)
   else
     return nil;
 }
-void WWMSetDockAppCommand(int position, const char *command)
+void WMSetDockAppCommand(int position, const char *command)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
   
@@ -989,11 +982,11 @@ void WWMSetDockAppCommand(int position, const char *command)
     {
       wfree(appicon->command);
       appicon->command = wstrdup(command);
-      WWMDockStateSave();
+      WMDockStateSave();
     }
 }
 
-NSString *WWMDockAppPasteCommand(int position)
+NSString *WMDockAppPasteCommand(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
@@ -1002,7 +995,7 @@ NSString *WWMDockAppPasteCommand(int position)
   else
     return nil;
 }
-void WWMSetDockAppPasteCommand(int position, const char *command)
+void WMSetDockAppPasteCommand(int position, const char *command)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
   
@@ -1010,11 +1003,11 @@ void WWMSetDockAppPasteCommand(int position, const char *command)
     {
       wfree(appicon->paste_command);
       appicon->paste_command = wstrdup(command);
-      WWMDockStateSave();
+      WMDockStateSave();
     }
 }
 
-NSString *WWMDockAppDndCommand(int position)
+NSString *WMDockAppDndCommand(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
@@ -1023,7 +1016,7 @@ NSString *WWMDockAppDndCommand(int position)
   else
     return nil;
 }
-void WWMSetDockAppDndCommand(int position, const char *command)
+void WMSetDockAppDndCommand(int position, const char *command)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
   
@@ -1031,7 +1024,7 @@ void WWMSetDockAppDndCommand(int position, const char *command)
     {
       wfree(appicon->dnd_command);
       appicon->dnd_command = wstrdup(command);
-      WWMDockStateSave();
+      WMDockStateSave();
     }
 }
 
@@ -1077,7 +1070,7 @@ WAppIcon *_findLaunchingIcon(char *wm_instance, char *wm_class)
 }
 // wmName is in 'wm_instance.wm_class' format
 static NSLock *raceLock = nil;
-WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
+WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
                                  NSString *launchPath,
                                  NSImage *anImage,
                                  NSPoint sourcePoint,
@@ -1085,7 +1078,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
 {
   NSPoint    iconPoint = {0, 0};
   BOOL       iconFound = NO;
-  WScreen    *scr = wScreenWithNumber(0);
+  WScreen    *scr = wDefaultScreen();
   WAppIcon   *appIcon;
   NSArray    *wmNameParts = [wmName componentsSeparatedByString:@"."];
   const char *wmInstance = [[wmNameParts objectAtIndex:0] cString];
@@ -1103,7 +1096,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     if (!strcmp(appIcon->wm_instance, wmInstance) &&
         !strcmp(appIcon->wm_class, wmClass)) {
       iconPoint.x = appIcon->x_pos + ((ICON_WIDTH - [anImage size].width)/2);
-      iconPoint.y = wScreenWithNumber(0)->scr_height - appIcon->y_pos - 64;
+      iconPoint.y = scr->scr_height - appIcon->y_pos - 64;
       iconPoint.y += (ICON_WIDTH - [anImage size].width)/2;
       [[NSApp delegate] slideImage:anImage
                               from:sourcePoint
@@ -1120,10 +1113,9 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
 
   // 2. Otherwise create appicon and set its state to launching
   if (iconFound == NO) {
-    NSRect mdRect = [[[OSEScreen sharedScreen] mainDisplay] frame];
-    int    x_ret = 0, y_ret = 0;
+    int x_ret = 0, y_ret = 0;
       
-    appIcon = wAppIconCreateForDock(wScreenWithNumber(0), [launchPath cString],
+    appIcon = wAppIconCreateForDock(scr, [launchPath cString],
                                     (char *)wmInstance, (char *)wmClass,
                                     TILE_NORMAL);
     appIcon->icon->core->descriptor.handle_mousedown = NULL;
@@ -1135,10 +1127,10 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
     //       launchingIcons->wm_instance, launchingIcons->wm_class);
 
     // Calculate postion for new launch icon
-    PlaceIcon(wScreenWithNumber(0), &x_ret, &y_ret, 0);
+    PlaceIcon(scr, &x_ret, &y_ret, scr->xrandr_info.primary_head);
     wAppIconMove(appIcon, x_ret, y_ret);
     iconPoint.x = (CGFloat)x_ret;
-    iconPoint.y = mdRect.size.height - (y_ret + ICON_HEIGHT);
+    iconPoint.y = scr->scr_height - (y_ret + ICON_HEIGHT);
     [[NSApp delegate] slideImage:anImage
                             from:sourcePoint
                               to:iconPoint];
@@ -1156,7 +1148,7 @@ WAppIcon *WWMCreateLaunchingIcon(NSString *wmName,
   return appIcon;
 }
 
-void WWMFinishLaunchingIcon(WAppIcon *appIcon)
+void WMFinishLaunchingIcon(WAppIcon *appIcon)
 {
   WAppIcon *licon;
   
@@ -1171,9 +1163,9 @@ void WWMFinishLaunchingIcon(WAppIcon *appIcon)
   appIcon->launching = 0;
   wAppIconPaint(appIcon);
 }
-void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
+void WMDestroyLaunchingIcon(WAppIcon *appIcon)
 {
-  WWMFinishLaunchingIcon(appIcon);
+  WMFinishLaunchingIcon(appIcon);
   wAppIconDestroy(appIcon);
 }
 
@@ -1182,7 +1174,7 @@ void WWMDestroyLaunchingIcon(WAppIcon *appIcon)
 // ----------------------------
 #import <GNUstepGUI/GSDisplayServer.h>
 #define X_WINDOW(win) (Window)[GSCurrentServer() windowDevice:[(win) windowNumber]]
-NSString *WWMWindowState(NSWindow *nsWindow)
+NSString *WMWindowState(NSWindow *nsWindow)
 {
   WWindow *wWin = wWindowFor(X_WINDOW(nsWindow));
   
@@ -1203,7 +1195,7 @@ NSString *WWMWindowState(NSWindow *nsWindow)
   }
 }
 
-NSArray *WWMNotDockedAppList(void)
+NSArray *WMNotDockedAppList(void)
 {
   NSMutableArray *appList = [[NSMutableArray alloc] init];
   NSString       *appName;
@@ -1211,7 +1203,7 @@ NSArray *WWMNotDockedAppList(void)
   WAppIcon       *appIcon;
   char           *command = NULL;
 
-  appIcon = wScreenWithNumber(0)->app_icon_list;
+  appIcon = wDefaultScreen()->app_icon_list;
   while (appIcon->next) {
     if (!appIcon->docked) {
       if (appIcon->command && appIcon->command != NULL) {
@@ -1241,7 +1233,7 @@ NSArray *WWMNotDockedAppList(void)
   return [appList autorelease];
 }
 
-BOOL WWMIsAppRunning(NSString *appName)
+BOOL WMIsAppRunning(NSString *appName)
 {
   NSArray  *nameComps = [appName componentsSeparatedByString:@"."];
   char     *app_instance = (char *)[[nameComps objectAtIndex:0] cString];
@@ -1249,7 +1241,7 @@ BOOL WWMIsAppRunning(NSString *appName)
   BOOL     isAppFound = NO;
   WAppIcon *appIcon;
 
-  appIcon = wScreenWithNumber(0)->app_icon_list;
+  appIcon = wDefaultScreen()->app_icon_list;
   while (appIcon->next) {
     if (!strcmp(app_instance, appIcon->wm_instance) &&
         !strcmp(app_class, appIcon->wm_class)) {
@@ -1262,9 +1254,9 @@ BOOL WWMIsAppRunning(NSString *appName)
   return isAppFound;
 }
 
-pid_t WWMExecuteCommand(NSString *command)
+pid_t WMExecuteCommand(NSString *command)
 {
-  WScreen *scr = wScreenWithNumber(0);
+  WScreen *scr = wDefaultScreen();
   pid_t   pid;
   char    **argv;
   int     argc;
@@ -1301,12 +1293,12 @@ pid_t WWMExecuteCommand(NSString *command)
 //-----------------------------------------------------------------------------
 // Workspace functions which are called from WindowMaker code.
 // Most calls are coming from X11 EventLoop().
-// 'XW' prefix is a vector of calls 'WindowMaker(X)->Workspace(W)'
+// 'WS' prefix is a vector of calls 'WindowMaker(X)->Workspace(W)'
 // All the functions below are executed insise 'wwmaker_q' GCD queue.
 //-----------------------------------------------------------------------------
 
 //--- Application management
-WAppIcon *XWLaunchingIconForApplication(WApplication *wapp)
+WAppIcon *WSLaunchingIconForApplication(WApplication *wapp)
 {
   WAppIcon *aicon;
   WWindow  *mainw = wapp->main_window_desc;
@@ -1328,7 +1320,7 @@ WAppIcon *XWLaunchingIconForApplication(WApplication *wapp)
   return aicon;
 }
 
-WAppIcon *XWLaunchingIconForCommand(char *command)
+WAppIcon *WSLaunchingIconForCommand(char *command)
 {
   WAppIcon *aicon = NULL;
   WAppIcon *licon = NULL;
@@ -1355,7 +1347,7 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   int                 app_pid;
   char                *app_command;
 
-  [appInfo setObject:@"YES" forKey:@"IsXWindowApplication"];
+  [appInfo setObject:@"YES" forKey:@"IsWSindowApplication"];
 
   // NSApplicationName = NSString*
   xAppName = [NSString stringWithCString:wapp->main_window_desc->wm_class];
@@ -1407,7 +1399,7 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
 
 // Called by WindowMaker in GCD global high-priority queue
 // (com.apple.root.high-priority)
-void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
+void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin)
 {
   NSNotification *notif = nil;
   NSDictionary   *appInfo = nil;
@@ -1419,7 +1411,7 @@ void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
   
   appIcon = _findLaunchingIcon(wm_instance, wm_class);
   if (appIcon) {
-    WWMFinishLaunchingIcon(appIcon);
+    WMFinishLaunchingIcon(appIcon);
     appIcon->main_window = wapp->main_window;
   }
   
@@ -1438,7 +1430,7 @@ void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
   // NSApplicationIcon=NSImage*
   // NSApplicationPath=NSString*
   appInfo = _applicationInfoForWApp(wapp, wwin);
-  NSDebugLLog(@"WM", @"W+WM: XWApplicationDidCreate: %@", appInfo);
+  NSDebugLLog(@"WM", @"W+WM: WSApplicationDidCreate: %@", appInfo);
   
   notif = [NSNotification 
              notificationWithName:NSWorkspaceDidLaunchApplicationNotification
@@ -1448,9 +1440,9 @@ void XWApplicationDidCreate(WApplication *wapp, WWindow *wwin)
   [[ProcessManager shared] applicationDidLaunch:notif];
 }
 
-void XWApplicationDidAddWindow(WApplication *wapp, WWindow *wwin)
+void WSApplicationDidAddWindow(WApplication *wapp, WWindow *wwin)
 {
-  // XWApplicationDidCreate(wapp, wwin);
+  // WSApplicationDidCreate(wapp, wwin);
   
   // fprintf(stderr, "*** New window for %s.%s"
   //         " appmain:0x%lx main:0x%lx client:0x%lx group:0x%lx\n",
@@ -1460,7 +1452,7 @@ void XWApplicationDidAddWindow(WApplication *wapp, WWindow *wwin)
   //         wwin->main_window, wwin->client_win, wwin->group_id);  
 }
 
-void XWApplicationDidDestroy(WApplication *wapp)
+void WSApplicationDidDestroy(WApplication *wapp)
 {
   NSNotification *notif = nil;
   NSDictionary   *appInfo = nil;
@@ -1473,7 +1465,7 @@ void XWApplicationDidDestroy(WApplication *wapp)
           wapp->main_window_desc->wm_class);
 
   appInfo = _applicationInfoForWApp(wapp, wapp->main_window_desc);
-  NSLog(@"W+WM: XWApplicationDidDestroy: %@", appInfo);
+  NSLog(@"W+WM: WSApplicationDidDestroy: %@", appInfo);
   
   notif = [NSNotification 
             notificationWithName:NSWorkspaceDidTerminateApplicationNotification
@@ -1484,7 +1476,7 @@ void XWApplicationDidDestroy(WApplication *wapp)
   [[ProcessManager shared] applicationDidTerminate:notif];
 }
 
-void XWApplicationDidCloseWindow(WWindow *wwin)
+void WSApplicationDidCloseWindow(WWindow *wwin)
 {
   NSNotification *notif;
   NSDictionary   *appInfo;
@@ -1495,7 +1487,7 @@ void XWApplicationDidCloseWindow(WWindow *wwin)
   // fprintf(stderr, "*** X11 application %s.%s window did closed(destroyed)\n", 
   //         wwin->wm_instance, wwin->wm_class);
 
-  // NSLog(@"W+WM: XWApplicationDidCloseWindow: %s:%i %i %i %i",
+  // NSLog(@"W+WM: WSApplicationDidCloseWindow: %s:%i %i %i %i",
   //       wwin->wm_class,
   //       wNETWMGetPidForWindow(wwin->client_win),
   //       wNETWMGetPidForWindow(wwin->main_window),
@@ -1541,60 +1533,48 @@ static void moveDock(WDock *dock, int new_x, int new_y)
     }
 }
 
-void XWUpdateScreenInfo(WScreen *scr)
+void WSUpdateScreenInfo(WScreen *scr)
 {
-  NSRect dRect;
-  int    dWidth;
+  NSRect screenRect, headRect, primaryRect;
 
   XLockDisplay(dpy);
 
-  NSLog(@"XRRScreenChangeNotify received, updating applications and WindowMaker...");
+  NSDebugLLog(@"Screen", @"Screen layout changed, updating Workspace and WM...");
 
-  // 1. Update screen dimensions
-  scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, scr->screen));
-  scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, scr->screen));
-  
-  // 2. Update Xinerama heads dimension (-> xinerama.c)
-  WXineramaInfo      *info = &scr->xine_info;
-  XineramaScreenInfo *xine_screens;
+  // Update WM Xrandr
+  wUpdateXrandrInfo(scr);
 
-  xine_screens = XineramaQueryScreens(dpy, &info->count);
-  for (int i = 0; i < info->count; i++)
-    {
-      info->screens[i].pos.x = xine_screens[i].x_org;
-      info->screens[i].pos.y = xine_screens[i].y_org;
-      info->screens[i].size.width = xine_screens[i].width;
-      info->screens[i].size.height = xine_screens[i].height;
-    }
-  XFree(xine_screens);
+  screenRect = NSMakeRect(0,0,0,0);
+  for (int i = 0; i < scr->xrandr_info.count; i++) {
+    headRect.origin.x = scr->xrandr_info.screens[i].pos.x;
+    headRect.origin.y = scr->xrandr_info.screens[i].pos.y;
+    headRect.size.width = scr->xrandr_info.screens[i].size.width;
+    headRect.size.height = scr->xrandr_info.screens[i].size.height;
 
-  // 3. Update WindowMaker info about usable area
+    if (i == scr->xrandr_info.primary_head)
+      primaryRect = headRect;
+    
+    screenRect = NSUnionRect(screenRect, headRect);
+  }
+  scr->scr_width = (int)screenRect.size.width;
+  scr->scr_height = (int)screenRect.size.height;
+
+  // Update WM usable area info
   wScreenUpdateUsableArea(scr);
 
-  @autoreleasepool {
-    OSEScreen *systemScreen = [[OSEScreen new] autorelease];
-    
-    // 4.1 Get info about main display
-    dRect = [[systemScreen mainDisplay] frame];
-    dWidth = dRect.origin.x + dRect.size.width;
-    scr->scr_width = (int)[systemScreen sizeInPixels].width;
-    scr->scr_height = (int)[systemScreen sizeInPixels].height;
-    
-    // Save changed layout in user's preferences directory
-    // [systemScreen saveCurrentDisplayLayout];
-  }
-  
-  // 4.2 Move Dock
+  // Move Dock
   // Place Dock into main display with changed usable area.
-  [RecyclerIcon recyclerAppIconForDock:scr->dock];
-  moveDock(scr->dock, (dWidth - wPreferences.icon_size - DOCK_EXTRA_SPACE),
-           dRect.origin.y);
+  // RecyclerIcon call should go first to update its position on screen.
+  [RecyclerIcon updatePositionInDock:scr->dock];
+  moveDock(scr->dock,
+           (NSMaxX(primaryRect) - wPreferences.icon_size - DOCK_EXTRA_SPACE),
+           primaryRect.origin.y);
   
-  // 5. Move IconYard
+  // Move IconYard
   // IconYard is placed into main display automatically.
   wArrangeIcons(scr, True);
   
-  // 6. Save Dock state with new position and screen size
+  // Save Dock state with new position and screen size
   wScreenSaveState(scr);
 
   // Save changed layout in user's preferences directory
@@ -1610,23 +1590,19 @@ void XWUpdateScreenInfo(WScreen *scr)
                    object:nil];
 }
 
-// FIXME: do we need to support multi-screen setups?
-// Is it actually demanded nowadays?
-void XWUpdateScreenParameters(void)
+void WSUpdateScreenParameters(void)
 {
-  for (int i = 0; i < w_global.screen_count; i++) {
-    XWUpdateScreenInfo(wScreenWithNumber(i));
-  }
+  WSUpdateScreenInfo(wDefaultScreen());
 }
 
-void XWActivateApplication(WScreen *scr, char *app_name)
+void WSActivateApplication(WScreen *scr, char *app_name)
 {
   id           app;
   NSString     *appName;
   NSConnection *appConnection;
 
   if (!strcmp(app_name, "Workspace")) {
-    XWActivateWorkspaceApp(scr);
+    WSActivateWorkspaceApp(scr);
     return;
   }
 
@@ -1634,11 +1610,11 @@ void XWActivateApplication(WScreen *scr, char *app_name)
   app = [NSConnection rootProxyForConnectionWithRegisteredName:appName
                                                           host:nil];
   if (app == nil) {
-    NSLog(@"XWActivateApplication: Couldn't contact application %@.", appName);
-    XWActivateWorkspaceApp(scr);
+    WSMessage("WSActivateApplication: Couldn't contact application %@.", appName);
+    WSActivateWorkspaceApp(scr);
   }
   else {
-    NSLog(@"Activating application `%@`", appName);
+    WSMessage("[WS+WM] Activating application `%@`", appName);
     [app activateIgnoringOtherApps:YES];
 
     appConnection = [app connectionForProxy];
@@ -1648,7 +1624,7 @@ void XWActivateApplication(WScreen *scr, char *app_name)
     [app release];
     
     if ([NSApp isActive] != NO) {
-      NSLog(@"Workspace is active - deactivating...");
+      WSMessage("Workspace is active - deactivating...");
       [NSApp performSelectorOnMainThread:@selector(deactivate)
                               withObject:nil
                            waitUntilDone:YES];
@@ -1656,7 +1632,7 @@ void XWActivateApplication(WScreen *scr, char *app_name)
   }
 }
 
-void XWActivateWorkspaceApp(WScreen *scr)
+void WSActivateWorkspaceApp(WScreen *scr)
 {
   if ([NSApp isHidden] == NO) {
     [[NSApp delegate] performSelectorOnMainThread:@selector(activate)
@@ -1668,15 +1644,15 @@ void XWActivateWorkspaceApp(WScreen *scr)
   }
 }
 
-void XWWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
+void WSWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
 {
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
                                      withObject:nil
                                   waitUntilDone:YES];
-  NSLog(@"Switch to workspace %i completed.", workspace);
+  WSMessage("Switch to workspace %i completed.", workspace);
 }
 
-void XWKeyboardGroupDidChange(int group)
+void WSKeyboardGroupDidChange(int group)
 {
   OSEKeyboard *keyboard = [OSEKeyboard new];
   NSString    *layout = [[keyboard layouts] objectAtIndex:group];
@@ -1687,7 +1663,7 @@ void XWKeyboardGroupDidChange(int group)
   [keyboard release];
 }
 
-void XWDockContentDidChange(WDock *dock)
+void WSDockContentDidChange(WDock *dock)
 {
   NSNotification *notif;
   
@@ -1704,7 +1680,7 @@ void XWDockContentDidChange(WDock *dock)
 // WAPRAlternate, NSAlertAlternateReturn = 0;
 // WAPROther,     NSAlertOtherReturn = -1;
 // WAPRError,     NSAlertErrorReturn  = -2
-int XWRunAlertPanel(char *title, char *message,
+int WSRunAlertPanel(char *title, char *message,
                      char *defaultButton, char *alternateButton, char *otherButton)
 {
   NSDictionary        *info;
@@ -1728,7 +1704,7 @@ int XWRunAlertPanel(char *title, char *message,
 }
 
 extern void wShakeWindow(WWindow *wwin);
-void XWRingBell(WWindow *wwin)
+void WSRingBell(WWindow *wwin)
 {
   NXTDefaults *defs = [NXTDefaults globalUserDefaults];
   NSString   *beepType = [defs objectForKey:@"NXSystemBeepType"];
@@ -1737,19 +1713,20 @@ void XWRingBell(WWindow *wwin)
     wShakeWindow(wwin);
   }
   else {
-    // Play sound specified in ~/Library/Preferences/.NextSpace/NXGlobalDomain
-    // as NXSystemBeep.
-    // NSString *beepPath = [defs objectForKey:@"NXSystemBeep"];
-    // NSSound  *sound;
-    // if (beepPath == nil ||
-    //     [[NSFileManager defaultManager] fileExistsAtPath:beepPath] == NO) {
-    //   beepPath = @"/usr/NextSpace/Sounds/Bonk.snd";
-    // }
-    // sound = [[NSSound alloc] initWithContentsOfFile:beepPath byReference:NO];
-    // [sound play];
-    // [sound release];
-    // TODO: should we play it with SoundKit?
     [[NSApp delegate] ringBell];
+  }
+}
+
+void WSMessage(char *fmt, ...)
+{
+  va_list  args;
+  NSString *format;
+
+  if (GSDebugSet(@"WM") == YES) {
+    va_start(args, fmt);
+    format = [NSString stringWithCString:fmt];
+    NSLogv([NSString stringWithFormat:@"[WM] %@", format], args);
+    va_end(args);
   }
 }
 

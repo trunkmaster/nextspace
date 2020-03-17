@@ -50,7 +50,7 @@
 #include "geomview.h"
 #include "wmspec.h"
 
-#include "xinerama.h"
+#include "xrandr.h"
 
 #include <WINGs/WUtil.h>
 
@@ -525,15 +525,15 @@ void create_logo_image(WScreen *scr)
  *----------------------------------------------------------------------
  * createInternalWindows--
  * 	Creates some windows used internally by the program. One to
- * receive input focus when no other window can get it and another
- * to display window geometry information during window resize/move.
+ *      receive input focus when no other window can get it and another
+ *      to display window geometry information during window resize/move.
  *
  * Returns:
  * 	Nothing
  *
  * Side effects:
  * 	Windows are created and some colors are allocated for the
- * window background.
+ *      window background.
  *----------------------------------------------------------------------
  */
 static void createInternalWindows(WScreen * scr)
@@ -579,22 +579,22 @@ static void createInternalWindows(WScreen * scr)
 }
 
 /*
- *----------------------------------------------------------------------
+ *----------------------------------------------------------------------------
  * wScreenInit--
  * 	Initializes the window manager for the given screen and
- * allocates a WScreen descriptor for it. Many resources are allocated
- * for the screen and the root window is setup appropriately.
+ *      allocates a WScreen descriptor for it. Many resources are allocated
+ *      for the screen and the root window is setup appropriately.
  *
  * Returns:
  * 	The WScreen descriptor for the screen.
  *
  * Side effects:
- * 	Many resources are allocated and the IconSize property is
- * set on the root window.
+ * 	Many resources are allocated and the IconSize property is set on the 
+ *      root window.
  *	The program can be aborted if some fatal error occurs.
  *
  * TODO: User specifiable visual.
- *----------------------------------------------------------------------
+ *----------------------------------------------------------------------------
  */
 WScreen *wScreenInit(int screen_number)
 {
@@ -618,12 +618,12 @@ WScreen *wScreenInit(int screen_number)
   scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, screen_number));
   scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, screen_number));
 
-  wInitXinerama(scr);
+  wInitXrandr(scr);
 
-  scr->usableArea = (WArea *) wmalloc(sizeof(WArea) * wXineramaHeads(scr));
-  scr->totalUsableArea = (WArea *) wmalloc(sizeof(WArea) * wXineramaHeads(scr));
+  scr->usableArea = (WArea *) wmalloc(sizeof(WArea) * wScreenHeads(scr));
+  scr->totalUsableArea = (WArea *) wmalloc(sizeof(WArea) * wScreenHeads(scr));
 
-  for (i = 0; i < wXineramaHeads(scr); ++i) {
+  for (i = 0; i < wScreenHeads(scr); ++i) {
     WMRect rect = wGetRectForHead(scr, i);
     scr->usableArea[i].x1 = scr->totalUsableArea[i].x1 = rect.pos.x;
     scr->usableArea[i].y1 = scr->totalUsableArea[i].y1 = rect.pos.y;
@@ -815,7 +815,7 @@ void wScreenUpdateUsableArea(WScreen *scr)
   unsigned int size = wPreferences.workspace_border_size;
   unsigned int position = wPreferences.workspace_border_position;
 
-  for (i = 0; i < wXineramaHeads(scr); ++i) {
+  for (i = 0; i < wScreenHeads(scr); ++i) {
     WMRect rect = wGetRectForHead(scr, i);
     scr->totalUsableArea[i].x1 = rect.pos.x;
     scr->totalUsableArea[i].y1 = rect.pos.y;
@@ -886,20 +886,9 @@ void wScreenRestoreState(WScreen * scr)
 
   make_keys();
 
-  if (w_global.screen_count == 1) {
-    path = wdefaultspathfordomain("WMState");
-  } else {
-    char buf[16];
-    snprintf(buf, sizeof(buf), "WMState.%i", scr->screen);
-    path = wdefaultspathfordomain(buf);
-  }
+  path = wdefaultspathfordomain("WMState");
   scr->session_state = WMReadPropListFromFile(path);
   wfree(path);
-  if (!scr->session_state && w_global.screen_count > 1) {
-    path = wdefaultspathfordomain("WMState");
-    scr->session_state = WMReadPropListFromFile(path);
-    wfree(path);
-  }
 
   if (!scr->session_state)
     scr->session_state = WMCreatePLDictionary(NULL, NULL);
@@ -997,13 +986,7 @@ void wScreenSaveState(WScreen * scr)
 
   wMenuSaveState(scr);
 
-  if (w_global.screen_count == 1) {
-    str = wdefaultspathfordomain("WMState");
-  } else {
-    char buf[16];
-    snprintf(buf, sizeof(buf), "WMState.%i", scr->screen);
-    str = wdefaultspathfordomain(buf);
-  }
+  str = wdefaultspathfordomain("WMState");
   if (!WMWritePropListToFile(scr->session_state, str)) {
     werror(_("could not save session state in %s"), str);
   }

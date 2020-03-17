@@ -42,9 +42,8 @@
 #include "stacking.h"
 #include "appicon.h"
 #include "dock.h"
-#include "winspector.h"
 #include "workspace.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "placement.h"
 #include "misc.h"
 #include "event.h"
@@ -133,7 +132,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   BOOL focus_succeeded = False;
   Window ws_menu_win = 0;
 
-  /* fprintf(stderr, "[WM] wSetFocusTo: %lu focused: %lu\n", */
+  /* wmessage("[actions.c] wSetFocusTo: %lu focused: %lu\n", */
   /*         (wwin && wwin->client_win) ? wwin->client_win : 0, */
   /*         (focused && focused->client_win) ? focused->client_win : 0); */
 
@@ -155,7 +154,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   /*     !strcmp(wwin->wm_instance, focused->wm_instance) && */
   /*     wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel && */
   /*     focused->flags.mapped) { */
-  /*   fprintf(stderr, "[WM] wSetFocusTo: do not set focus to active `%s` app menu." */
+  /*   wmessage("[actions.c] wSetFocusTo: do not set focus to active `%s` app menu." */
   /*           " Key %lu mapped = %i\n", */
   /*           focused->wm_instance, focused->client_win, focused->flags.mapped); */
   /*   return; */
@@ -175,7 +174,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   wsapp = wApplicationWithName(scr, "Workspace");
   if (wsapp && wsapp->menu_win) {
     ws_menu_win = wsapp->menu_win->client_win;
-    /* fprintf(stderr, "[WM] Workspace menu window:%lu\n", ws_menu_win); */
+    /* wmessage("[actions.c] Workspace menu window:%lu\n", ws_menu_win); */
   }
   
   if (wwin == NULL) {
@@ -211,19 +210,19 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     /* set input focus */
     switch (wwin->focus_mode) {
     case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
-      /* fprintf(stderr, "[WM] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win); */
+      /* wmessage("[actions.c] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win); */
       return;
     case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
-      /* fprintf(stderr, "[WM] %lu focus mode == PASSIVE.\n", wwin->client_win); */
+      /* wmessage("[actions.c] %lu focus mode == PASSIVE.\n", wwin->client_win); */
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       break;
     case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
-      /* fprintf(stderr, "[WM] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win); */
+      /* wmessage("[actions.c] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win); */
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       focus_succeeded = True;
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
-      /* fprintf(stderr, "[WM] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win); */
+      /* wmessage("[actions.c] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win); */
       wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
       break;
@@ -1425,9 +1424,6 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int a
     return;
   }
 
-  if (wwin->flags.inspector_open)
-    wHideInspectorForWindow(wwin);
-
   wwin->flags.hidden = 1;
   wWindowUnmap(wwin);
 
@@ -1522,11 +1518,11 @@ void wHideOtherApplications(WWindow *awin)
         && wwin->frame->workspace == awin->screen_ptr->current_workspace
         && !(wwin->flags.miniaturized || wwin->flags.hidden)
         && !wwin->flags.internal_window
-        && wGetWindowOfInspectorForWindow(wwin) != awin && !WFLAGP(wwin, no_hide_others)) {
+        && !WFLAGP(wwin, no_hide_others)) {
 
       if (tapp != wapp && wwin->protocols.HIDE_APP) {
         WIcon *icon = tapp->app_icon->icon;
-        /* fprintf(stderr, "[WM] send WM_HIDE_APP protocol message to client.\n"); */
+        /* wmessage("[actions.c] send WM_HIDE_APP protocol message to client.\n"); */
         animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
                       wwin->frame->core->width, wwin->frame->core->height,
                       tapp->app_icon->x_pos, tapp->app_icon->y_pos,
@@ -1656,8 +1652,6 @@ static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int
     wwin->flags.mapped = 1;
     wRaiseFrame(wwin->frame->core);
   }
-  if (wwin->flags.inspector_open)
-    wUnhideInspectorForWindow(wwin);
 
   WMPostNotificationName(WMNChangedState, wwin, "hide");
 }
@@ -1808,7 +1802,7 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
   WAppIcon *aicon;
 
   int head;
-  const int heads = wXineramaHeads(scr);
+  const int heads = wScreenHeads(scr);
 
   struct HeadVars {
     int pf;		/* primary axis */

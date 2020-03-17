@@ -30,7 +30,7 @@ make dist 2>&1 > /dev/null
 printf "\n"
 cd ..
 mv gnustep-gui-$GUI_VERSION.tar.gz ~/rpmbuild/SOURCES
-cp libs-gui_rpmbuild.patch ~/rpmbuild/SOURCES
+cp libs-gui_*.patch ~/rpmbuild/SOURCES
 cp gnustep-gui-images.tar.gz ~/rpmbuild/SOURCES
 
 # Back
@@ -44,9 +44,9 @@ make dist 2>&1 > /dev/null
 printf "\n"
 cd ..
 mv gnustep-back-$BACK_VERSION.tar.gz ~/rpmbuild/SOURCES
-cp libs-back_IconImage.patch ~/rpmbuild/SOURCES
-cp libs-back_TakeFocus.patch ~/rpmbuild/SOURCES
-cp libs-back_rpmbuild.patch ~/rpmbuild/SOURCES
+cp libs-back_*.patch ~/rpmbuild/SOURCES
+#cp libs-back_TakeFocus.patch ~/rpmbuild/SOURCES
+#cp libs-back_rpmbuild.patch ~/rpmbuild/SOURCES
 
 # SystemD services
 cp *.service ~/rpmbuild/SOURCES

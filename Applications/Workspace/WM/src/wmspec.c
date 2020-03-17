@@ -46,7 +46,7 @@
 #include "wmspec.h"
 #include "icon.h"
 #include "stacking.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "properties.h"
 
 
@@ -730,7 +730,7 @@ void wNETWMUpdateWorkarea(WScreen *scr)
      */
     total_usable = scr->usableArea[0];
 
-    for (i = 1; i < wXineramaHeads(scr); i++) {
+    for (i = 1; i < wScreenHeads(scr); i++) {
       /* The merge is not subtle because _NET_WORKAREA does not need more */
       if (scr->usableArea[i].x1 < total_usable.x1)
         total_usable.x1 = scr->usableArea[i].x1;
@@ -1540,7 +1540,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
            XGetAtomName(dpy, event->message_type));
 #endif
 
-  scr = wScreenForWindow(event->window);
+  scr = wDefaultScreen();
   if (scr) {
     /* generic client messages */
     if (event->message_type == net_current_desktop) {

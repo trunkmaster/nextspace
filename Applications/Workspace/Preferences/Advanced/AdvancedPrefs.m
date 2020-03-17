@@ -66,14 +66,14 @@
   [slideWhenOpening setState:![df boolForKey:@"DontSlideIconsWhenOpening"]];
   [slideOnBadFop setState:![df boolForKey:@"DontSlideIconBackOnBadFop"]];
 
-  [dockLevelBtn selectItemWithTag:WWMDockLevel()];
+  [dockLevelBtn selectItemWithTag:WSDockLevel()];
 }
 
 // --- Actions
 
 - (void)setDockLevel:(id)sender
 {
-  WWMSetDockLevel([[sender selectedItem] tag]);
+  WSSetDockLevel([[sender selectedItem] tag]);
 }
 
 - (void)setSlidesWhenChangingPath:(id)sender

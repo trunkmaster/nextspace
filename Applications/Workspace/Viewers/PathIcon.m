@@ -175,14 +175,19 @@ static NSDragOperation savedMask;
 - (void)_updateDockIcon:(NSPoint)screenPoint
 {
   int shad_x, shad_y;
+  NSRect screenBounds;
 
   if (dockable == NO) return;
 
-  // NSLog(@"Screen resolution: %@", NSStringFromRect([GSCurrentServer() boundsForScreen:0]));
-  screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - screenPoint.y;
+  // NSLog(@"Screen resolution: %@",
+  //       NSStringFromRect([GSCurrentServer() boundsForScreen:0]));
+  screenBounds = [GSCurrentServer()
+                     boundsForScreen:[[[self window] screen] screenNumber]];
+  screenPoint.y = NSMaxY(screenBounds) - screenPoint.y;
   screenPoint.y -= wPreferences.icon_size;
   
-  // fprintf(stderr, "New position: %i,%i\n", (int)screenPoint.x, (int)screenPoint.y);
+  // fprintf(stderr, "New position: %i,%i\n",
+  //         (int)screenPoint.x, (int)screenPoint.y);
       
   if (wDockSnapIcon(wScreen->dock, wAppIconNew,
                     (int)screenPoint.x, (int)screenPoint.y,
@@ -289,7 +294,7 @@ static NSDragOperation savedMask;
   NSArray      *paths = [dragPasteboard propertyListForType:NSFilenamesPboardType];
   NSDictionary *wmAppInfo;
   WAppIcon     *wAppIcon = NULL;
-  wScreen = wScreenWithNumber(0);
+  wScreen = wDefaultScreen();
   if ((wmAppInfo = [self _validateAppForPath:[paths objectAtIndex:0]]) != nil) {
     // Try to find existing appicon
     wAppIcon = [self _appIconForInstance:[[wmAppInfo objectForKey:@"Instance"] cString]
@@ -439,14 +444,16 @@ static NSDragOperation savedMask;
 
     case NSMouseMoved:
     case NSLeftMouseDragged:
-      newPosition = [[theEvent window] convertBaseToScreen:[theEvent locationInWindow]];
+      newPosition = [[theEvent window]
+                      convertBaseToScreen:[theEvent locationInWindow]];
       if (dockable != NO) {
         [self _updateDockIcon:newPosition];
       }
       break;
     case NSLeftMouseDown:
     case NSLeftMouseUp:
-      newPosition = [[theEvent window] convertBaseToScreen:[theEvent locationInWindow]];
+      newPosition = [[theEvent window]
+                      convertBaseToScreen:[theEvent locationInWindow]];
       break;
     case NSFlagsChanged:
       if ([self _updateOperationMask:theEvent]) {

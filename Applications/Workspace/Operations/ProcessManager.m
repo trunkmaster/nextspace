@@ -54,7 +54,7 @@ static BOOL      _workspaceQuitting = NO;
 
 - (void)dealloc
 {
-  NSLog(@"ProcessManager: dealloc");
+  NSDebugLLog(@"Memory", @"ProcessManager: dealloc");
 
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
 
@@ -232,7 +232,7 @@ static BOOL      _workspaceQuitting = NO;
 
   newAppInfo = [self _normalizeApplicationInfo:[notif userInfo]];
   
-  NSLog(@"didLaunchApp: %@", newAppInfo);
+  // NSLog(@"didLaunchApp: %@", newAppInfo);
   
   newAppName = [newAppInfo objectForKey:@"NSApplicationName"];
   newAppPID = [newAppInfo objectForKey:@"NSApplicationProcessIdentifier"];
@@ -618,8 +618,8 @@ static BOOL      _workspaceQuitting = NO;
       backInfoLabelCopies = [[NSMutableArray alloc] initWithCapacity:1];
     }
 
-  NSLog(@"[Processes] backInfoLabel: labels befor create new: %lu",
-	[backInfoLabelCopies count]);
+  // NSLog(@"[Processes] backInfoLabel: labels befor create new: %lu",
+  //       [backInfoLabelCopies count]);
 
   label = [[NSTextField alloc] initWithFrame:NSMakeRect(0,0,180,12)];
   [label setTextColor:[NSColor darkGrayColor]];

@@ -76,43 +76,43 @@ int main(int argc, const char **argv)
   useInternalWindowManager = !xIsWindowManagerAlreadyRunning();
   if (useInternalWindowManager)
     {
-      fprintf(stderr,"[Workspace] === Starting Workspace [%s]... ===\n", REVISION);
+      fprintf(stderr,"=== Starting Workspace [%s]... ===\n", REVISION);
 
       workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
       wmaker_q = dispatch_queue_create("ns.workspace.wm", NULL);
 
-      fprintf(stderr, "[Workspace] === Initializing Window Manager... ===\n");
+      fprintf(stderr, "=== Initializing Window Manager... ===\n");
       //--- WindowMaker queue -----------------------------------------------
       dispatch_sync(wmaker_q, ^{
-          WWMInitializeWindowMaker(argc, (char **)argv);
+          WMInitializeWindowMaker(argc, (char **)argv);
         });
-      fprintf(stderr, "[Workspace] === Windoww Manager initialized! ===\n");
+      fprintf(stderr, "=== Window Manager initialized! ===\n");
 
       // Start X11 EventLoop in parallel
       dispatch_async(wmaker_q, ^{ EventLoop(); });
       
       //--- Workspace (GNUstep) queue ---------------------------------------
-      fprintf(stderr, "[Workspace] === Starting Workspace application... ===\n");
+      fprintf(stderr, "=== Starting the Workspace... ===\n");
       dispatch_sync(workspace_q, ^{
           @autoreleasepool {
             WSApplicationMain(argc, argv);
           }
         });
-      fprintf(stderr, "[Workspace] === Workspace successfully finished! ===\n");
+      fprintf(stderr, "=== Workspace successfully finished! ===\n");
       //---------------------------------------------------------------------
-      fprintf(stderr, "[Workspace] === Quitting Window manager... ===\n");
+      fprintf(stderr, "=== Quitting Window manager... ===\n");
       // Quit WindowManager, close all X11 applications.
-      WWMShutdown(WSKillMode);
+      WMShutdown(WSKillMode);
     }
   else
 #endif // NEXTSPACE
     {
       @autoreleasepool {
-        NSLog(@"Starting Workspace as standalone application!");
+        NSLog(@"Starting the Workspace as standalone application!");
         NSApplicationMain(argc, argv);
       }
     }
   
-  fprintf(stderr, "[Workspace] === Exit code is %i ===\n", ws_quit_code);
+  fprintf(stderr, "=== Exit code is %i ===\n", ws_quit_code);
   return ws_quit_code;
 }

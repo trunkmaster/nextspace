@@ -30,7 +30,6 @@
 #include <X11/XKBlib.h>
 #endif	  /* KEEP_XKB_LOCK_STATUS */
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
@@ -44,7 +43,6 @@
 #include "framewin.h"
 #include "texture.h"
 #include "window.h"
-#include "winspector.h"
 #include "icon.h"
 #include "properties.h"
 #include "actions.h"
@@ -54,7 +52,7 @@
 #include "stacking.h"
 #include "defaults.h"
 #include "workspace.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "appicon.h"
 #include "superfluous.h"
 #include "placement.h"
@@ -67,6 +65,10 @@
 # include "motif.h"
 #endif
 #include "wmspec.h"
+
+#ifdef NEXTSPACE
+#include <Workspace+WM.h>
+#endif
 
 #define MOD_MASK wPreferences.modifier_mask
 #define ALT_MOD_MASK wPreferences.alt_modifier_mask
@@ -613,7 +615,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   Bool withdraw = False;
   Bool raise = False;
 
-  fprintf(stderr, "[WM] will manage window:%lu\n", window);
+  /* wmessage("[window.c] will manage window:%lu\n", window); */
 
   /* mutex. */
   XGrabServer(dpy);
@@ -1024,7 +1026,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
       if (wPreferences.window_placement == WPM_MANUAL)
         dontBring = True;
 
-    } else if (scr->xine_info.count && (wwin->normal_hints->flags & PPosition)) {
+    } else if (scr->xrandr_info.count && (wwin->normal_hints->flags & PPosition)) {
       int head, flags;
       WMRect rect;
       int reposition = 0;
@@ -1500,12 +1502,8 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   int wasFocused;
   WScreen *scr = wwin->screen_ptr;
 
-  fprintf(stderr, "[WM] will unmanage window:%lu\n", wwin->client_win);
+  wmessage("[window.c] will unmanage window:%lu\n", wwin->client_win);
   
-  /* First close attribute editor window if open */
-  if (wwin->flags.inspector_open)
-    wCloseInspectorForWindow(wwin);
-
   /* Close window menu if it's open for this window */
   if (wwin->flags.menu_open_for_me)
     CloseWindowMenu(scr);
@@ -3022,7 +3020,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
   CloseWindowMenu(wwin->screen_ptr);
 
-  /* fprintf(stderr, "xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
+  /* wmessage("[window.c] xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
   /*         event->xbutton.state, wXModifierFromKey("MOD1"), */
   /*         wXModifierFromKey("MOD4")); */
 

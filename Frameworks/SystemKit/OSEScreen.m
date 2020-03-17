@@ -1135,12 +1135,12 @@ static OSEScreen *systemScreen = nil;
 
   if (layout)
     {
-      NSLog(@"OSEScreen: Apply display layout saved in %@",
-            [self _displayConfigFileName]);
+      NSDebugLLog(@"Screen", @"OSEScreen: Apply display layout saved in %@",
+                  [self _displayConfigFileName]);
       return [self applyDisplayLayout:layout];
     }
   
-  NSLog(@"OSEScreen: Apply automatic default display layout");
+  NSDebugLLog(@"Screen", @"OSEScreen: Apply automatic default display layout");
   return [self applyDisplayLayout:[self defaultLayout:YES]];
 }
 

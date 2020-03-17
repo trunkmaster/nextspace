@@ -15,8 +15,8 @@
 	Fixed formatting.
 diff --git a/Source/NSMenuView.m b/Source/NSMenuView.m
 index 0eb2db5..eaca6e7 100644
---- a/Source/NSMenuView.m
-+++ b/Source/NSMenuView.m
+--- gnustep-gui-0.28.0.orig/Source/NSMenuView.m
++++ gnustep-gui-0.28.0/Source/NSMenuView.m
 @@ -405,7 +405,15 @@ static float menuBarHeight = 0.0;
      }
  
@@ -171,8 +171,8 @@ index 0eb2db5..eaca6e7 100644
    if (selectedItemIndex == -1)
 diff --git a/Source/NSPopUpButtonCell.m b/Source/NSPopUpButtonCell.m
 index 729c32d..74be338 100644
---- a/Source/NSPopUpButtonCell.m
-+++ b/Source/NSPopUpButtonCell.m
+--- gnustep-gui-0.28.0.orig/Source/NSPopUpButtonCell.m
++++ gnustep-gui-0.28.0/Source/NSPopUpButtonCell.m
 @@ -905,7 +905,7 @@ static NSImage *_pbc_image[5];
    NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
    NSWindow              *cvWin = [controlView window];

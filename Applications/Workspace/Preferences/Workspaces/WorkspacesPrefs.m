@@ -49,7 +49,7 @@
                 initWithObjects:ws1,ws2,ws3,ws4,ws5,ws6,ws7,ws8,ws9,ws10,nil];
 
   wmStateWS = [[NSMutableArray alloc]
-                        initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
+                        initWithArray:[WMDockState() objectForKey:@"Workspaces"]];
   wsCount = [wmStateWS count];
   for (int i = 9; i >= 0; i--) {
     if (i >= wsCount) {
@@ -88,9 +88,9 @@
   if (wmStateWS) [wmStateWS release];
   
   wmStateWS = [[NSMutableArray alloc]
-                initWithArray:[WWMDockState() objectForKey:@"Workspaces"]];
+                initWithArray:[WMDockState() objectForKey:@"Workspaces"]];
   [self arrangeWorkspaceReps];
-  [[wsReps objectAtIndex:wScreenWithNumber(0)->current_workspace] performClick:self];
+  [[wsReps objectAtIndex:wDefaultScreen()->current_workspace] performClick:self];
 
   NSLog(@"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
         [switchKey className], [[switchKey selectedItem] tag],
@@ -102,7 +102,7 @@
   NSDictionary *wmDefaults;
   NSString     *shortcut;
   NSArray      *modifiers;
-  wmDefaults = [[NSDictionary alloc] initWithContentsOfFile:WWMDefaultsPath()];
+  wmDefaults = [[NSDictionary alloc] initWithContentsOfFile:WMDefaultsPath()];
 
   shortcut = [wmDefaults objectForKey:@"NextWorkspaceKey"];
   modifiers = [shortcut componentsSeparatedByString:@"+"];
@@ -171,11 +171,11 @@
   NSInteger index = [wsReps indexOfObject:selectedWSRep];
   NSString  *name = [nameField stringValue];
   
-  wWorkspaceRename(wScreenWithNumber(0), [wsReps indexOfObject:selectedWSRep],
+  wWorkspaceRename(wDefaultScreen(), [wsReps indexOfObject:selectedWSRep],
                    [name cString]);
   [changeNameBtn setEnabled:NO];
   
-  WWMDockStateSave();
+  WMDockStateSave();
   [wmStateWS replaceObjectAtIndex:index withObject:@{@"Name":name}];
 }
 
@@ -207,20 +207,20 @@
 
   if (diff < 0) { // remove WS
     for (int i = wsCount; i > wsQuantity; i--) {
-      wWorkspaceDelete(wScreenWithNumber(0), i);
+      wWorkspaceDelete(wDefaultScreen(), i);
       [[wsReps objectAtIndex:i-1] removeFromSuperview];
     }
   }
   else {
-      wWorkspaceMake(wScreenWithNumber(0), diff);
+      wWorkspaceMake(wDefaultScreen(), diff);
       for (int i = wsCount; i < wsQuantity; i++) {
         [wsBox addSubview:[wsReps objectAtIndex:i]];
       }
       [wsBox setNeedsDisplay:YES];
   }
 
-  WWMDockStateSave();
-  [wmStateWS setArray:[WWMDockState() objectForKey:@"Workspaces"]];
+  WMDockStateSave();
+  [wmStateWS setArray:[WMDockState() objectForKey:@"Workspaces"]];
 
   // Select last WS rep button if selected one was removed
   if ([wsReps indexOfObject:selectedWSRep] >= wsQuantity) {
@@ -234,7 +234,7 @@
 // --- Shortcuts
 - (void)setSwitchShortcut:(id)sender
 {
-  NSString            *wmDefaultsPath = WWMDefaultsPath();
+  NSString            *wmDefaultsPath = WMDefaultsPath();
   NSInteger           selectedItemTag = [[sender selectedItem] tag];
   NSMutableDictionary *wmDefaults;
   NSString *prefix;
@@ -265,7 +265,7 @@
 }
 - (void)setDirectSwitchShortcut:(id)sender
 {
-  NSString            *wmDefaultsPath = WWMDefaultsPath();
+  NSString            *wmDefaultsPath = WMDefaultsPath();
   NSMutableDictionary *wmDefaults;
   NSString *prefix;
 

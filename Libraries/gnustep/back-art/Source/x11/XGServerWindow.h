@@ -95,7 +95,8 @@ typedef struct _gswindow_device_t {
   int                   visibility;    /* X visibility */
   int                   wm_state;      /* X WM state */
   NSBackingStoreType    type;          /* Backing type */
-  NSRect                xframe;        /* Window frame */
+  NSRect                xframe;        /* Window frame in X11 coordinates */
+  NSRect                osframe;       /* Window frame in OpenStep coordinates */
 
   unsigned int          buffer_width;  /* Size in pixels of the current buffers. */
   unsigned int          buffer_height;

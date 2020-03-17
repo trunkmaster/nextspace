@@ -354,7 +354,7 @@ static NSString		*_rootPath = @"/";
       if (launchPath == nil) {
         return NO;
       }
-      WWMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
+      WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
       
       if ([self launchApplication:fullPath] == NO) {
         NXTRunAlertPanel(_(@"Workspace"),
@@ -394,7 +394,7 @@ static NSString		*_rootPath = @"/";
       if (launchPath == nil) {
         return NO;
       }
-      WWMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
+      WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
     }
       
     if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
@@ -1561,9 +1561,9 @@ static NSString		*_rootPath = @"/";
             object:task];
   
   command = (char *)[[task launchPath] cString];
-  appicon = XWLaunchingIconForCommand(command);
+  appicon = WSLaunchingIconForCommand(command);
   if (appicon) {
-    WWMDestroyLaunchingIcon(appicon);
+    WMDestroyLaunchingIcon(appicon);
   }
   [_workspaceCenter
     postNotificationName:NSWorkspaceDidTerminateApplicationNotification

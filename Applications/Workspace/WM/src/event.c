@@ -64,7 +64,7 @@
 #include "framewin.h"
 #include "properties.h"
 #include "balloon.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "wmspec.h"
 #include "colormap.h"
 #include "screen.h"
@@ -73,14 +73,13 @@
 #include "event.h"
 #include "winmenu.h"
 #include "switchmenu.h"
-#include "wsmap.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
-extern void WWMIconYardShowIcons(WScreen *screen);
-extern void WWMIconYardHideIcons(WScreen *screen);
-extern void WWMDockShowIcons(WDock *dock);
-extern void WWMDockHideIcons(WDock *dock);
+extern void WMIconYardShowIcons(WScreen *screen);
+extern void WMIconYardHideIcons(WScreen *screen);
+extern void WMDockShowIcons(WDock *dock);
+extern void WMDockHideIcons(WDock *dock);
 #endif
 
 #define MOD_MASK wPreferences.modifier_mask
@@ -371,7 +370,7 @@ static void handle_inotify_events(void)
       wPreferences.flags.noupdates = 1;
     }
     if ((pevent->mask & IN_MODIFY) && oneShotFlag == 0) {
-      wwarning(_("Inotify: Reading config files in defaults database."));
+      wmessage(_("Inotify: Reading config files in defaults database."));
       wDefaultsCheckDomains(NULL);
       oneShotFlag = 1;
     }
@@ -601,11 +600,11 @@ static void handleMapRequest(XEvent * ev)
   WScreen *scr = NULL;
   Window window = ev->xmaprequest.window;
 
-  scr = wScreenForRootWindow(ev->xmaprequest.parent);
+  scr = wDefaultScreen();
 
   wwin = wWindowFor(window);
   if (wwin != NULL) {
-    /* fprintf(stderr, "[WM] MapRequest %lu\n", wwin->client_win); */
+    /* wmessage("[event.c] MapRequest %lu\n", wwin->client_win); */
     if (!wwin->flags.is_gnustep && wwin->flags.shaded) {
       wUnshadeWindow(wwin);
     }
@@ -687,14 +686,14 @@ static void handleDestroyNotify(XEvent * event)
   WWindow *wwin;
   WApplication *app;
   Window window = event->xdestroywindow.window;
-  WScreen *scr = wScreenForRootWindow(event->xdestroywindow.event);
+  WScreen *scr = wDefaultScreen();
   int widx;
 
   wwin = wWindowFor(window);
   if (wwin) {
-    /* fprintf(stderr, "[WM, event.c] DestroyNotify will unmanage window:%lu\n", window); */
+    /* wmessage("[event.c] DestroyNotify will unmanage window:%lu\n", window); */
 #ifdef NEXTSPACE
-    dispatch_sync(workspace_q, ^{ XWApplicationDidCloseWindow(wwin); });
+    dispatch_sync(workspace_q, ^{ WSApplicationDidCloseWindow(wwin); });
 #endif
     wUnmanageWindow(wwin, False, True);
   }
@@ -817,7 +816,7 @@ static void handleButtonPress(XEvent * event)
   WObjDescriptor *desc;
   WScreen *scr;
 
-  scr = wScreenForRootWindow(event->xbutton.root);
+  scr = wDefaultScreen();
   
 #ifdef NEXTSPACE
   // reset current focused window button beacuse ButtonPress may change focus
@@ -904,10 +903,10 @@ static void handleButtonPress(XEvent * event)
       WAppIcon *appicon0 = scr->dock->icon_array[0];
       if ((desc->parent_type == WCLASS_DOCK_ICON) &&
           (appicon->icon->icon_win == appicon0->icon->icon_win)) {
-        if (WWMDockLevel() == WMDockLevel)
-          WWMSetDockLevel(WMNormalLevel);
+        if (WSDockLevel() == WMDockLevel)
+          WSSetDockLevel(WMNormalLevel);
         else {
-          WWMSetDockLevel(WMDockLevel);
+          WSSetDockLevel(WMDockLevel);
         }
         XUngrabPointer(dpy, CurrentTime);
         return;
@@ -937,7 +936,7 @@ static void handleButtonPress(XEvent * event)
 #ifdef NEXTSPACE
 static void handleButtonRelease(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xbutton.root);
+  WScreen *scr = wDefaultScreen();
 
   if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
       && event->xbutton.button == Button3) {
@@ -957,7 +956,7 @@ static void handleMapNotify(XEvent * event)
 
   wwin = wWindowFor(event->xmap.event);
   if (wwin && wwin->client_win == event->xmap.event) {
-    /* fprintf(stderr, "[WM] MapNotify %lu\n", wwin->client_win); */
+    /* wmessage("[event.c] MapNotify %lu\n", wwin->client_win); */
     if (wwin->flags.miniaturized) {
       wDeiconifyWindow(wwin);
     } else {
@@ -978,7 +977,7 @@ static void handleUnmapNotify(XEvent * event)
   /* only process windows with StructureNotify selected
    * (ignore SubstructureNotify) */
   
-  /* fprintf(stderr, "[WM] handleUnmapNotify for window %lu.\n", event->xunmap.window); */
+  /* wmessage("[event.c] handleUnmapNotify for window %lu.\n", event->xunmap.window); */
   
   wwin = wWindowFor(event->xunmap.window);
   if (!wwin)
@@ -1015,7 +1014,7 @@ static void handleUnmapNotify(XEvent * event)
       wClientSetState(wwin, WithdrawnState, None);
 
     if (WINDOW_LEVEL(wwin) != WMMainMenuLevel) {
-      /* fprintf(stderr, "[WM, event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n", */
+      /* wmessage("[event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n", */
       /*         event->xunmap.window, wwin->flags.is_gnustep); */
       /* if the window was reparented, do not reparent it back to the
        * root window */
@@ -1099,7 +1098,7 @@ static void handleClientMessage(XEvent * event)
     if (!wwin->flags.miniaturized)
       wIconifyWindow(wwin);
   } else if (event->xclient.message_type == w_global.atom.wm.colormap_notify && event->xclient.format == 32) {
-    WScreen *scr = wScreenForRootWindow(event->xclient.window);
+    WScreen *scr = wDefaultScreen();
 
     if (!scr)
       return;
@@ -1189,7 +1188,7 @@ static void handleClientMessage(XEvent * event)
       break;
     }
   } else if (event->xclient.message_type == w_global.atom.wm.ignore_focus_events) {
-    WScreen *scr = wScreenForRootWindow(event->xclient.window);
+    WScreen *scr = wDefaultScreen();
     if (!scr)
       return;
     scr->flags.ignore_focus_events = event->xclient.data.l[0] ? 1 : 0;
@@ -1245,7 +1244,7 @@ static void handleEnterNotify(XEvent * event)
   WWindow *wwin;
   WObjDescriptor *desc = NULL;
   XEvent ev;
-  WScreen *scr = wScreenForRootWindow(event->xcrossing.root);
+  WScreen *scr = wDefaultScreen();
 
   if (XCheckTypedWindowEvent(dpy, event->xcrossing.window, LeaveNotify, &ev)) {
     /* already left the window... */
@@ -1369,12 +1368,10 @@ static void handleXkbBellNotify(XkbEvent *event)
   WWindow *wwin;
   WScreen *scr;
   
-  for (int i = 0; i < w_global.screen_count; i++) {
-    scr = wScreenWithNumber(i);
-    wwin = scr->focused_window;
-    if (wwin && wwin->flags.focused) {
-      XWRingBell(wwin);
-    }
+  scr = wDefaultScreen();
+  wwin = scr->focused_window;
+  if (wwin && wwin->flags.focused) {
+    WSRingBell(wwin);
   }
 }
 /* please help ]d if you know what to do */
@@ -1383,24 +1380,21 @@ static void handleXkbIndicatorStateNotify(XkbEvent *event)
   WWindow *wwin;
   WScreen *scr;
   XkbStateRec staterec;
-  int i;
 
-  for (i = 0; i < w_global.screen_count; i++) {
-    scr = wScreenWithNumber(i);
-    wwin = scr->focused_window;
-    if (wwin && wwin->flags.focused) {
-      XkbGetState(dpy, XkbUseCoreKbd, &staterec);
-      XWKeyboardGroupDidChange(staterec.group);
-      if (wwin->frame->languagemode != staterec.group) {
-        wwin->frame->last_languagemode = wwin->frame->languagemode;
-        wwin->frame->languagemode = staterec.group;
-      }
-#ifdef XKB_BUTTON_HINT
-      if (wwin->frame->titlebar) {
-        wFrameWindowPaint(wwin->frame);
-      }
-#endif
+  scr = wDefaultScreen();
+  wwin = scr->focused_window;
+  if (wwin && wwin->flags.focused) {
+    XkbGetState(dpy, XkbUseCoreKbd, &staterec);
+    WSKeyboardGroupDidChange(staterec.group);
+    if (wwin->frame->languagemode != staterec.group) {
+      wwin->frame->last_languagemode = wwin->frame->languagemode;
+      wwin->frame->languagemode = staterec.group;
     }
+#ifdef XKB_BUTTON_HINT
+    if (wwin->frame->titlebar) {
+      wFrameWindowPaint(wwin->frame);
+    }
+#endif
   }
 }
 #endif				/*KEEP_XKB_LOCK_STATUS */
@@ -1475,7 +1469,7 @@ static void handleFocusIn(XEvent * event)
       wSetFocusTo(wwin->screen_ptr, NULL);
     }
   } else if (!wwin) {
-    WScreen *scr = wScreenForWindow(event->xfocus.window);
+    WScreen *scr = wDefaultScreen();
     if (scr)
       wSetFocusTo(scr, NULL);
   }
@@ -1502,7 +1496,7 @@ static int CheckFullScreenWindowFocused(WScreen * scr)
 
 static void handleKeyPress(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xkey.root);
+  WScreen *scr = wDefaultScreen();
   WWindow *wwin = scr->focused_window;
   short i, widx;
   int modifiers;
@@ -1516,7 +1510,7 @@ static void handleKeyPress(XEvent * event)
 
 #ifdef NEXTSPACE
   /* if (wwin && wwin->client_win) { */
-  /*   fprintf(stderr, "[WindowMaker] handleKeyPress: %i state: %i mask: %i" */
+  /*   wmessage("[event.c] handleKeyPress: %i state: %i mask: %i" */
   /*           " modifiers: %i window:%lu\n", */
   /*           event->xkey.keycode, event->xkey.state, MOD_MASK, */
   /*           modifiers, wwin->client_win); */
@@ -1584,10 +1578,10 @@ static void handleKeyPress(XEvent * event)
   case WKBD_DOCKHIDESHOW:
     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->dock->mapped) {
-        WWMDockHideIcons(scr->dock);
+        WMDockHideIcons(scr->dock);
       }
       else {
-        WWMDockShowIcons(scr->dock);
+        WMDockShowIcons(scr->dock);
       }
     }
     else {
@@ -1597,10 +1591,10 @@ static void handleKeyPress(XEvent * event)
   case WKBD_YARDHIDESHOW:
     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->flags.icon_yard_mapped) {
-        WWMIconYardHideIcons(scr);
+        WMIconYardHideIcons(scr);
       }
       else {
-        WWMIconYardShowIcons(scr);
+        WMIconYardShowIcons(scr);
       }
     }
     else {
@@ -1627,7 +1621,7 @@ static void handleKeyPress(XEvent * event)
     if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
       CloseWindowMenu(scr);
       if (wwin->protocols.MINIATURIZE_WINDOW) {
-        /* fprintf(stderr, "[WM] send WM_MINIATURIZE_WINDOW protocol message to client.\n"); */
+        /* wmessage("[event.c] send WM_MINIATURIZE_WINDOW protocol message to client.\n"); */
         if (wwin->flags.is_gnustep) {
           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }
@@ -1804,11 +1798,6 @@ static void handleKeyPress(XEvent * event)
     }
     break;
 
-  case WKBD_WORKSPACEMAP:
-    if (wPreferences.enable_workspace_pager)
-      StartWorkspaceMap(scr);
-    break;
-
   case WKBD_FOCUSNEXT:
     StartWindozeCycle(wwin, event, True, False);
     break;
@@ -1960,29 +1949,6 @@ static void handleKeyPress(XEvent * event)
 
     break;
 
-  case WKBD_SWITCH_SCREEN:
-    if (w_global.screen_count > 1) {
-      WScreen *scr2;
-      int i;
-
-      /* find index of this screen */
-      for (i = 0; i < w_global.screen_count; i++) {
-        if (wScreenWithNumber(i) == scr)
-          break;
-      }
-      i++;
-      if (i >= w_global.screen_count) {
-        i = 0;
-      }
-      scr2 = wScreenWithNumber(i);
-
-      if (scr2) {
-        XWarpPointer(dpy, scr->root_win, scr2->root_win, 0, 0, 0, 0,
-                     scr2->scr_width / 2, scr2->scr_height / 2);
-      }
-    }
-    break;
-
   case WKBD_RUN:
     {
       char *cmdline;
@@ -2052,14 +2018,14 @@ static void handleKeyPress(XEvent * event)
 #ifdef NEXTSPACE
 static void handleKeyRelease(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xkey.root);
+  WScreen *scr = wDefaultScreen();
   WWindow *wwin = scr->focused_window;
   
   if (event->xkey.window == event->xkey.root ||
       event->xkey.window == scr->no_focus_win) {
     return;
   }
-  /* fprintf(stderr, "[WindowMaker] handleKeyRelease: %i state: %i mask: %i\n", */
+  /* wmessage("[event.c] handleKeyRelease: %i state: %i mask: %i\n", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
   if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
@@ -2075,7 +2041,7 @@ static void handleKeyRelease(XEvent * event)
 #endif
 static void handleMotionNotify(XEvent * event)
 {
-  WScreen *scr = wScreenForRootWindow(event->xmotion.root);
+  WScreen *scr = wDefaultScreen();
 
 #ifdef NEXTSPACE
   WWindow *wwin = wWindowFor(event->xmotion.window);

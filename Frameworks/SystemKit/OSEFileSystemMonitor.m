@@ -34,8 +34,8 @@ NSString *OSEFileSystemChangedAtPath = @"OSEFileSystemChangedAtPath";
   if (_fileSystemMonitor == nil)
     {
       _fileSystemMonitor = [[OSEFileSystemMonitor alloc] init];
-      NSLog(@"[NXFSM]_fileSystemMonitor RC: %lu",
-            [_fileSystemMonitor retainCount]);
+      NSDebugLLog(@"Memory", @"[NXFSM]_fileSystemMonitor RC: %lu",
+                  [_fileSystemMonitor retainCount]);
     }
 
   return _fileSystemMonitor;

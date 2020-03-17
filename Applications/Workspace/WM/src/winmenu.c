@@ -41,12 +41,12 @@
 #include "misc.h"
 #include "framewin.h"
 #include "workspace.h"
-#include "winspector.h"
-#include "dialog.h"
 #include "stacking.h"
 #include "icon.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "winmenu.h"
+
+#include <Workspace+WM.h>
 
 
 static WMenu *makeWorkspaceMenu(WScreen *scr);
@@ -71,7 +71,6 @@ enum
    MC_MAXIMIZE,
    MC_MINIATURIZE,
    MC_HIDE,
-   MC_PROPERTIES,
    MC_RELAUNCH,
    MC_CLOSE,
    MC_KILL
@@ -244,10 +243,10 @@ static void execMenuCommand(WMenu * menu, WMenuEntry * entry)
   case MC_KILL:
     wretain(wwin);
     if (wPreferences.dont_confirm_kill
-        || wMessageDialog(menu->frame->screen_ptr, _("Kill Application"),
-                          _
-                          ("This will kill the application.\nAny unsaved changes will be lost.\nPlease confirm."),
-                          _("Yes"), _("No"), NULL) == WAPRDefault) {
+        || WSRunAlertPanel(_("Kill Application"),
+                           _("This will kill the application.\n"
+                             "Any unsaved changes will be lost.\nPlease confirm."),
+                           _("Yes"), _("No"), NULL) == WAPRDefault) {
       if (!wwin->flags.destroyed)
         wClientKill(wwin);
     }
@@ -290,10 +289,6 @@ static void execMenuCommand(WMenu * menu, WMenuEntry * entry)
 
   case MC_MOVERESIZE:
     wKeyboardMoveResizeWindow(wwin);
-    break;
-
-  case MC_PROPERTIES:
-    wShowInspectorForWindow(wwin);
     break;
 
   case MC_RELAUNCH:
@@ -700,12 +695,6 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
   }
 
   wMenuSetEnabled(menu, MC_CHANGEWKSPC, !IS_OMNIPRESENT(wwin));
-
-  if (!wwin->flags.inspector_open) {
-    wMenuSetEnabled(menu, MC_PROPERTIES, True);
-  } else {
-    wMenuSetEnabled(menu, MC_PROPERTIES, False);
-  }
 
   /* Update shortcut labels except for (Un)Maximize which is
    * handled separately.

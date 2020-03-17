@@ -7,17 +7,15 @@ $(APP_NAME)_C_FILES = \
 	$(WM_DIR)/src/colormap.c \
 	$(WM_DIR)/src/cycling.c \
 	$(WM_DIR)/src/defaults.c \
-	$(WM_DIR)/src/dialog.c \
 	$(WM_DIR)/src/dock.c \
-	$(WM_DIR)/src/dockedapp.c \
 	$(WM_DIR)/src/event.c \
 	$(WM_DIR)/src/framewin.c \
 	$(WM_DIR)/src/geomview.c \
 	$(WM_DIR)/src/icon.c \
 	$(WM_DIR)/src/main.c \
 	$(WM_DIR)/src/menu.c \
-	$(WM_DIR)/src/monitor.c \
 	$(WM_DIR)/src/moveres.c \
+	$(WM_DIR)/src/motif.c \
 	$(WM_DIR)/src/pixmap.c \
 	$(WM_DIR)/src/placement.c \
 	$(WM_DIR)/src/properties.c \
@@ -31,25 +29,18 @@ $(APP_NAME)_C_FILES = \
 	$(WM_DIR)/src/superfluous.c \
 	$(WM_DIR)/src/switchmenu.c \
 	$(WM_DIR)/src/texture.c \
-	$(WM_DIR)/src/xinerama.c \
-	$(WM_DIR)/src/xutil.c \
 	$(WM_DIR)/src/wcore.c \
 	$(WM_DIR)/src/wdefaults.c \
 	$(WM_DIR)/src/window.c \
 	$(WM_DIR)/src/winmenu.c \
-	$(WM_DIR)/src/winspector.c \
 	$(WM_DIR)/src/wmspec.c \
 	$(WM_DIR)/src/workspace.c \
-	$(WM_DIR)/src/wsmap.c \
 	$(WM_DIR)/src/misc.c \
+	$(WM_DIR)/src/xrandr.c \
+	$(WM_DIR)/src/xutil.c \
 	$(WM_DIR)/src/xmodifier.c \
-	$(WM_DIR)/src/xdnd.c \
-	$(WM_DIR)/src/motif.c
-
-#	$(WM_DIR)/src/appmenu.c \
-#	$(WM_DIR)/src/usermenu.c \
-#	$(WM_DIR)/src/rootmenu.c \
-
+	$(WM_DIR)/src/xdnd.c
+        
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 $(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_bsd.c
 endif

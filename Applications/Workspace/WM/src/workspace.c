@@ -47,9 +47,8 @@
 #include "workspace.h"
 #include "appicon.h"
 #include "wmspec.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "event.h"
-#include "wsmap.h"
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
 #include "stacking.h"
@@ -264,7 +263,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
   char *name = scr->workspaces[workspace]->name;
   int len = strlen(name);
   int x, y;
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
   int head;
   WMRect rect;
   int xx, yy;
@@ -292,12 +291,12 @@ static void showWorkspaceName(WScreen * scr, int workspace)
   w = WMWidthOfString(scr->workspace_name_font, name, len);
   h = WMFontHeight(scr->workspace_name_font);
 
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
   head = wGetHeadForPointerLocation(scr);
   rect = wGetRectForHead(scr, head);
-  if (scr->xine_info.count) {
-    xx = rect.pos.x + (scr->xine_info.screens[head].size.width - (w + 4)) / 2;
-    yy = rect.pos.y + (scr->xine_info.screens[head].size.height - (h + 4)) / 2;
+  if (scr->xrandr_info.count) {
+    xx = rect.pos.x + (scr->xrandr_info.screens[head].size.width - (w + 4)) / 2;
+    yy = rect.pos.y + (scr->xrandr_info.screens[head].size.height - (h + 4)) / 2;
   }
   else {
     xx = (scr->scr_width - (w + 4)) / 2;
@@ -307,7 +306,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
 
   switch (wPreferences.workspace_name_display_position) {
   case WD_TOP:
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
     px = xx;
 #else
     px = (scr->scr_width - (w + 4)) / 2;
@@ -315,7 +314,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
     py = WORKSPACE_NAME_DISPLAY_PADDING;
     break;
   case WD_BOTTOM:
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
     px = xx;
 #else
     px = (scr->scr_width - (w + 4)) / 2;
@@ -340,7 +339,7 @@ static void showWorkspaceName(WScreen * scr, int workspace)
     break;
   case WD_CENTER:
   default:
-#ifdef USE_XINERAMA
+#ifdef USE_XRANDR
     px = xx;
     py = yy;
 #else
@@ -477,10 +476,10 @@ void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
 {
   WWindow *saved_wwin;
     
-  fprintf(stderr, "[WM] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
-          wwin->client_win, wwin->wm_instance, wwin->wm_class,
-          wwin->old_geometry.width, wwin->old_geometry.height,
-          workspace);
+  wmessage("[workspace.c] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
+           wwin->client_win, wwin->wm_instance, wwin->wm_class,
+           wwin->old_geometry.width, wwin->old_geometry.height,
+           workspace);
   
   if (scr->workspaces[workspace]->focused_window) {
     wrelease(scr->workspaces[workspace]->focused_window);
@@ -500,11 +499,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
   if (workspace >= MAX_WORKSPACES || workspace < 0 || workspace == scr->current_workspace)
     return;
-
-  /* The code below produces FocusOut/FocusIn events for GNUstep application. 
-     Why? To omit them set "EnableWorkspacepager = NO" in WM preferences. Sergii Stoian */
-  if (wPreferences.enable_workspace_pager && !w_global.process_workspacemap_event)
-    wWorkspaceMapUpdate(scr);
 
   SendHelperMessage(scr, 'C', workspace + 1, NULL);
 
@@ -602,7 +596,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
       tmp = tmp->prev;
     }
 
-    fprintf(stderr, "[WM] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
+    wmessage("[workspace.c] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
     while (toUnmapCount > 0) {
       wWindowUnmap(toUnmap[--toUnmapCount]);
     }
@@ -623,8 +617,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     /* At this point `foc` can hold random selected window or `NULL` */
     if (!foc && scr->workspaces[workspace]->focused_window) {
       foc = scr->workspaces[workspace]->focused_window;
-      fprintf(stderr, "[WM] SAVED focused window: %lu, %s.%s\n",
-              foc->client_win, foc->wm_instance, foc->wm_class);
+      wmessage("[workspace.c] SAVED focused window: %lu, %s.%s\n",
+               foc->client_win, foc->wm_instance, foc->wm_class);
     }
     
     /*
@@ -649,25 +643,25 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     }
 
     if (foc) {
-      fprintf(stderr, "[WM] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
-              foc->client_win, foc->wm_instance, foc->wm_class,
-              foc->old_geometry.width, foc->old_geometry.height);
+      wmessage("[workspace.c] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
+               foc->client_win, foc->wm_instance, foc->wm_class,
+               foc->old_geometry.width, foc->old_geometry.height);
     }
     
     if (wPreferences.focus_mode == WKF_CLICK) {
       if (foc) {
         /* Mapped window found earlier. */
-        fprintf(stderr, "[WM] focusing managed window %lu...\n", foc->client_win);
+        wmessage("[workspace.c] focusing managed window %lu...\n", foc->client_win);
         wRaiseFrame(foc->frame->core);
       }
       wSetFocusTo(scr, foc);
       /* else if (scr->workspaces[workspace]->focused_window) { */
       /*   /\* No mapped window to focus. If window was saved for this workspace - use it. *\/ */
       /*   foc = scr->workspaces[workspace]->focused_window; */
-      /*   fprintf(stderr, "[WM] focusing SAVED window %lu...\n", foc->client_win); */
+      /*   wmessage("[workspace.c] focusing SAVED window %lu...\n", foc->client_win); */
       /* } */
       
-      dispatch_sync(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
+      dispatch_sync(workspace_q, ^{ WSWorkspaceDidChange(scr, workspace, foc); });
     }
     else {
       unsigned int mask;
@@ -725,7 +719,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
   WMPostNotificationName(WMNWorkspaceChanged, scr, (void *)(uintptr_t) workspace);
 
-  /* XSync(dpy, False); */
+  XSync(dpy, False);
 }
 
 static void switchWSCommand(WMenu * menu, WMenuEntry * entry)

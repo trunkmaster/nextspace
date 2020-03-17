@@ -45,8 +45,7 @@
 #include "superfluous.h"
 #include "menu.h"
 #include "framewin.h"
-#include "dialog.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "client.h"
 #include "placement.h"
 #include "misc.h"
@@ -162,7 +161,7 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
 #ifdef NEXTSPACE
   /* Check if launching icon was created by Workspace*/
   if (!wapp->app_icon) {
-    wapp->app_icon = XWLaunchingIconForApplication(wapp);
+    wapp->app_icon = WSLaunchingIconForApplication(wapp);
     if (wapp->app_icon) {
       wapp->app_icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
     }
@@ -538,47 +537,6 @@ static void unhideHereCallback(WMenu * menu, WMenuEntry * entry)
 
   wUnhideApplication(wapp, False, True);
 }
-#ifndef NEXTSPACE
-static void setIconCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WAppIcon *icon = ((WApplication *) entry->clientdata)->app_icon;
-  char *file = NULL;
-  WScreen *scr;
-  int result;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  assert(icon != NULL);
-
-  if (icon->editing)
-    return;
-
-  icon->editing = 1;
-  scr = icon->icon->core->screen_ptr;
-
-  wretain(icon);
-
-  result = wIconChooserDialog(scr, &file, icon->wm_instance, icon->wm_class);
-
-  if (result) {
-    if (!icon->destroyed) {
-      if (!wIconChangeImageFile(icon->icon, file)) {
-        wMessageDialog(scr, _("Error"),
-                       _("Could not open specified icon file"),
-                       _("OK"), NULL, NULL);
-      } else {
-        wDefaultChangeIcon(icon->wm_instance, icon->wm_class, file);
-        wAppIconPaint(icon);
-      }
-    }
-    if (file)
-      wfree(file);
-  }
-  icon->editing = 0;
-  wrelease(icon);
-}
-#endif
 static void killCallback(WMenu * menu, WMenuEntry * entry)
 {
   WApplication *wapp = (WApplication *) entry->clientdata;
@@ -604,7 +562,7 @@ static void killCallback(WMenu * menu, WMenuEntry * entry)
   wretain(wapp->main_window_desc);
   dispatch_async(workspace_q, ^{
       if (wPreferences.dont_confirm_kill
-          || XWRunAlertPanel(_("Kill Application"),
+          || WSRunAlertPanel(_("Kill Application"),
                              buffer, _("Keep Running"), _("Kill"), NULL) == WAPRAlternate) {
         if (fPtr != NULL) {
           WWindow *wwin, *twin;
@@ -634,9 +592,6 @@ static WMenu *createApplicationMenu(WScreen *scr)
   wMenuAddCallback(menu, _("Launch"), relaunchCallback, NULL);
   wMenuAddCallback(menu, _("Unhide Here"), unhideHereCallback, NULL);
   wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
-#ifndef NEXTSPACE
-  wMenuAddCallback(menu, _("Set Icon..."), setIconCallback, NULL);
-#endif
   wMenuAddCallback(menu, _("Kill"), killCallback, NULL);
 
   return menu;
@@ -725,21 +680,20 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
     wHideOtherApplications(aicon->icon->owner);
 }
 
-#include <stdio.h>
 void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
 {
   WAppIcon *aicon = desc->parent;
   WScreen *scr = aicon->icon->core->screen_ptr;
   Bool hasMoved;
 
-  fprintf(stderr, "[WM] Appicon Mouse Down\n");
+  wmessage("[appicon.c] Appicon Mouse Down\n");
     
   if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
     return;
 
   if (IsDoubleClick(scr, event)) {
     /* Middle or right mouse actions were handled on first click */
-    fprintf(stderr, "[WM] Appicon Double-click\n");
+    wmessage("[appicon.c] Appicon Double-click\n");
     if (event->xbutton.button == Button1)
       iconDblClick(desc, event);
     return;

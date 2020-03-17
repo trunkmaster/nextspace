@@ -39,9 +39,8 @@
 #include "actions.h"
 #include "winmenu.h"
 #include "stacking.h"
-#include "xinerama.h"
+#include "xrandr.h"
 #include "workspace.h"
-#include "dialog.h"
 #include "switchmenu.h"
 
 
@@ -1753,22 +1752,7 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
   if (entry_no >= 0) {
     entry = menu->entries[entry_no];
 
-    if (!close_on_exit && (bev->state & ControlMask) && smenu && entry->flags.editable) {
-      char buffer[128];
-      char *name;
-      int number = entry_no - 3; /* Entries "New", "Destroy Last" and "Last Used" appear before workspaces */
-
-      name = wstrdup(scr->workspaces[number]->name);
-      snprintf(buffer, sizeof(buffer), _("Type the name for workspace %i:"), number + 1);
-
-      if (wInputDialog(scr, _("Rename Workspace"), buffer, &name))
-        wWorkspaceRename(scr, number, name);
-
-      if (name)
-        wfree(name);
-
-      goto byebye;
-    } else if (bev->state & ControlMask) {
+    if (bev->state & ControlMask) {
       goto byebye;
     }
 
