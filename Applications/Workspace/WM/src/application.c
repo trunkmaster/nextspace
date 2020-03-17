@@ -120,7 +120,7 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
   wapp->refcount++;
   
 #ifdef NEXTSPACE
-  dispatch_sync(workspace_q, ^{ XWApplicationDidAddWindow(wapp, wwin); });
+  dispatch_sync(workspace_q, ^{ WSApplicationDidAddWindow(wapp, wwin); });
 #endif                
 }
 
@@ -235,7 +235,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
            wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
         
 #ifdef NEXTSPACE
-  dispatch_sync(workspace_q, ^{ XWApplicationDidCreate(wapp, wwin); });
+  dispatch_sync(workspace_q, ^{ WSApplicationDidCreate(wapp, wwin); });
 #endif
 
   return wapp;
@@ -287,7 +287,7 @@ void wApplicationDestroy(WApplication *wapp)
 #ifdef NEXTSPACE
   // Must be synchronous. Otherwise XWApplicationDidDestroy crashed
   // during access to wapp structure.
-  dispatch_sync(workspace_q, ^{ XWApplicationDidDestroy(wapp); });
+  dispatch_sync(workspace_q, ^{ WSApplicationDidDestroy(wapp); });
 #endif
         
   scr = wapp->main_window_desc->screen_ptr;

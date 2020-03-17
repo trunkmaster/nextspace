@@ -528,7 +528,7 @@ char *wIconStore(WIcon *icon)
   }
 
 #ifdef NEXTSPACE
-  path = XWSaveRasterImageAsTIFF(image, path);
+  path = WSSaveRasterImageAsTIFF(image, path);
 #else
   if (!RSaveImage(image, path, "XPM")) {
     wfree(path);

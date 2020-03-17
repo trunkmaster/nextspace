@@ -102,19 +102,19 @@
 //
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
-  return WWMDockAppsCount();
+  return WMDockAppsCount();
 }
 
 - (id)           tableView:(NSTableView *)tv
  objectValueForTableColumn:(NSTableColumn *)tc
                        row:(int)row
 {
-  NSString *appName = WWMDockAppName(row);
+  NSString *appName = WMDockAppName(row);
 
   
   if (tc == [appList tableColumnWithIdentifier:@"autostart"])
     {
-      if (WWMIsDockAppAutolaunch(row))
+      if (WMIsDockAppAutolaunch(row))
         return [NSImage imageNamed:@"CheckMark"];
       else
         return nil;
@@ -144,7 +144,7 @@
 {
   NSTableView  *tv = [aNotification object];
   NSInteger    selRow = [tv selectedRow];
-  NSString     *appName = WWMDockAppName(selRow);
+  NSString     *appName = WMDockAppName(selRow);
 
   if ([[appName pathExtension] isEqualToString:@"GNUstep"])
     appName = [appName stringByDeletingPathExtension];
@@ -159,11 +159,11 @@
     [pathField setStringValue:@""];
   }
   else {
-    [iconBtn setImage:WWMDockAppImage(selRow)];
-    [pathField setStringValue:WWMDockAppCommand(selRow)];
+    [iconBtn setImage:WMDockAppImage(selRow)];
+    [pathField setStringValue:WMDockAppCommand(selRow)];
   }
   [autostartBtn
-      setState:WWMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
+      setState:WMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
   
   if ([appPanel isVisible]) {
     [self appSettingsPanelUpdate];
@@ -173,7 +173,7 @@
 - (BOOL)tableView:(NSTableView *)tv
   shouldSelectRow:(NSInteger)row
 {
-  NSString *value = WWMDockAppName(row);
+  NSString *value = WMDockAppName(row);
 
   if (!value || [value isEqualToString:@".NoApplication"] ||
       [value isEqualToString:@"Recycler.GNUstep"])
@@ -184,7 +184,7 @@
 
 - (void)appListDoubleClicked:(id)sender
 {
-  WWMSetDockAppAutolaunch([appList selectedRow], ![autostartBtn state]);
+  WMSetDockAppAutolaunch([appList selectedRow], ![autostartBtn state]);
   
   [autostartBtn setState:![autostartBtn state]];
   [appList reloadData];
@@ -194,7 +194,7 @@
 
 - (void)setAppAutostarted:(id)sender
 {
-  WWMSetDockAppAutolaunch([appList selectedRow], [autostartBtn state]);
+  WMSetDockAppAutolaunch([appList selectedRow], [autostartBtn state]);
   [appList reloadData];
 }
 
@@ -217,12 +217,12 @@
 - (void)appSettingsPanelUpdate
 {
   NSInteger selRow = [appList selectedRow];
-  NSString  *appName = WWMDockAppName(selRow);
+  NSString  *appName = WMDockAppName(selRow);
 
   [appNameField setStringValue:appName];
-  [appIconView setImage:WWMDockAppImage(selRow)];
-  [appCommandField setStringValue:WWMDockAppCommand(selRow)];
-  [appLockedBtn setState:WWMIsDockAppLocked(selRow)];
+  [appIconView setImage:WMDockAppImage(selRow)];
+  [appCommandField setStringValue:WMDockAppCommand(selRow)];
+  [appLockedBtn setState:WMIsDockAppLocked(selRow)];
   
   if ([appName isEqualToString:@"Workspace.GNUstep"] ||
       [appName isEqualToString:@"Recycler.GNUstep"])
@@ -245,14 +245,14 @@
       [appCommandField setEnabled:YES];
       [appMiddleClickField setEnabled:YES];
       [appDndCommandField setEnabled:YES];
-      [appMiddleClickField setStringValue:WWMDockAppPasteCommand(selRow)];
-      [appDndCommandField setStringValue:WWMDockAppDndCommand(selRow)];
+      [appMiddleClickField setStringValue:WMDockAppPasteCommand(selRow)];
+      [appDndCommandField setStringValue:WMDockAppDndCommand(selRow)];
     }  
 }
 
 - (void)showAppSettingsPanel:(id)sender
 {
-  NSString  *appName = WWMDockAppName([appList selectedRow]);
+  NSString  *appName = WMDockAppName([appList selectedRow]);
 
   if (!appName ||
       [appName isEqualToString:@"Workspace.GNUstep"] ||
@@ -281,32 +281,32 @@
                                      types:[NSImage imageFileTypes]];
   if (result == NSOKButton) {
     [defs setObject:[openPanel directory] forKey:@"OpenDir"];
-    WWMSetDockAppImage([[openPanel filenames] lastObject], selRow, YES);
-    [appIconView setImage:WWMDockAppImage(selRow)];
-    [iconBtn setImage:WWMDockAppImage(selRow)];
+    WMSetDockAppImage([[openPanel filenames] lastObject], selRow, YES);
+    [appIconView setImage:WMDockAppImage(selRow)];
+    [iconBtn setImage:WMDockAppImage(selRow)];
   }  
 }
 
 - (void)setAppLocked:(id)sender
 {
-  WWMSetDockAppLocked([appList selectedRow], [sender state]);
+  WMSetDockAppLocked([appList selectedRow], [sender state]);
 }
 
 - (void)setAppCommand:(id)sender
 {
-  WWMSetDockAppCommand([appList selectedRow],
+  WMSetDockAppCommand([appList selectedRow],
                        [[sender stringValue] cString]);
 }
 
 - (void)setAppPasteCommand:(id)sender
 {
-  WWMSetDockAppPasteCommand([appList selectedRow],
+  WMSetDockAppPasteCommand([appList selectedRow],
                             [[sender stringValue] cString]);
 }
 
 - (void)setAppDndCommand:(id)sender
 {
-  WWMSetDockAppDndCommand([appList selectedRow],
+  WMSetDockAppDndCommand([appList selectedRow],
                           [[sender stringValue] cString]);
 }
 

@@ -301,7 +301,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 + (void)rebuildDock:(WDock *)dock
 {
   WScreen  *scr = dock->screen_ptr;
-  int      new_max_icons = XWDockMaxIcons(dock->screen_ptr);
+  int      new_max_icons = WSDockMaxIcons(dock->screen_ptr);
   WAppIcon **new_icon_array;
   
   new_icon_array = wmalloc(sizeof(WAppIcon *) * new_max_icons);

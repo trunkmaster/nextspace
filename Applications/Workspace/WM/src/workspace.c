@@ -661,7 +661,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
       /*   wmessage("[workspace.c] focusing SAVED window %lu...\n", foc->client_win); */
       /* } */
       
-      dispatch_sync(workspace_q, ^{ XWWorkspaceDidChange(scr, workspace, foc); });
+      dispatch_sync(workspace_q, ^{ WSWorkspaceDidChange(scr, workspace, foc); });
     }
     else {
       unsigned int mask;

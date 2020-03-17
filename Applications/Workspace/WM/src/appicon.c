@@ -161,7 +161,7 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
 #ifdef NEXTSPACE
   /* Check if launching icon was created by Workspace*/
   if (!wapp->app_icon) {
-    wapp->app_icon = XWLaunchingIconForApplication(wapp);
+    wapp->app_icon = WSLaunchingIconForApplication(wapp);
     if (wapp->app_icon) {
       wapp->app_icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
     }
@@ -562,7 +562,7 @@ static void killCallback(WMenu * menu, WMenuEntry * entry)
   wretain(wapp->main_window_desc);
   dispatch_async(workspace_q, ^{
       if (wPreferences.dont_confirm_kill
-          || XWRunAlertPanel(_("Kill Application"),
+          || WSRunAlertPanel(_("Kill Application"),
                              buffer, _("Keep Running"), _("Kill"), NULL) == WAPRAlternate) {
         if (fPtr != NULL) {
           WWindow *wwin, *twin;

@@ -211,7 +211,7 @@ static void shellCommandHandler(pid_t pid, unsigned int status, void *client_dat
 
     buffer = wstrconcat(_("Could not execute command: "), data->command);
     dispatch_async(workspace_q, ^{
-        XWRunAlertPanel(_("Run Error"), buffer, _("Got It"), NULL, NULL);
+        WSRunAlertPanel(_("Run Error"), buffer, _("Got It"), NULL, NULL);
       });
     wfree(buffer);
   } else if (status != 127) {

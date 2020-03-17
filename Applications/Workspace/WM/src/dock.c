@@ -225,7 +225,7 @@ static void killCallback(WMenu *menu, WMenuEntry *entry)
 
   dispatch_async(workspace_q, ^{
       if (wPreferences.dont_confirm_kill
-          || XWRunAlertPanel(_("Kill Application"),
+          || WSRunAlertPanel(_("Kill Application"),
                              buffer, _("Keep Running"), _("Kill"), NULL) == WAPRAlternate) {
         if (fPtr != NULL) {
           WWindow *wwin, *twin;
@@ -422,14 +422,14 @@ static void omnipresentCallback(WMenu *menu, WMenuEntry *entry)
   }
   WMFreeArray(selectedIcons);
   if (failed > 1) {
-    XWRunAlertPanel(_("Dock: Warning"),
+    WSRunAlertPanel(_("Dock: Warning"),
                     _("Some icons cannot be made omnipresent. "
                       "Please make sure that no other icon is "
                       "docked in the same positions on the other "
                       "workspaces and the Clip is not full in "
                       "some workspace."), _("OK"), NULL, NULL);
   } else if (failed == 1) {
-    XWRunAlertPanel(_("Dock: Warning"),
+    WSRunAlertPanel(_("Dock: Warning"),
                     _("Icon cannot be made omnipresent. "
                       "Please make sure that no other icon is "
                       "docked in the same position on the other "
@@ -478,7 +478,7 @@ static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
   selectedIcons = getSelected(dock);
 
   if (WMGetArrayItemCount(selectedIcons)) {
-    if (XWRunAlertPanel(dock->type == WM_CLIP ? _("Workspace Clip") : _("Drawer"),
+    if (WSRunAlertPanel(dock->type == WM_CLIP ? _("Workspace Clip") : _("Drawer"),
                         _("All selected icons will be removed!"),
                         _("OK"), _("Cancel"), NULL) != WAPRDefault) {
       WMFreeArray(selectedIcons);
@@ -1198,7 +1198,7 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
     break;
   case WM_DOCK:
   default:
-    dock->max_icons = XWDockMaxIcons(scr);
+    dock->max_icons = WSDockMaxIcons(scr);
   }
 
   dock->icon_array = wmalloc(sizeof(WAppIcon *) * dock->max_icons);
@@ -2029,7 +2029,7 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
     if (command) {
       icon->command = command;
     } else {
-      XWRunAlertPanel("Workspace Dock",
+      WSRunAlertPanel("Workspace Dock",
                       "Application icon without command set cannot be attached to Dock.",
                       _("OK"), NULL, NULL);
       return False;
@@ -2099,7 +2099,7 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
   }
   
 #ifdef NEXTSPACE
-  XWDockContentDidChange(dock);
+  WSDockContentDidChange(dock);
 #endif
 
   return True;
@@ -2122,7 +2122,7 @@ void wDockReattachIcon(WDock *dock, WAppIcon *icon, int x, int y)
   icon->y_pos = dock->y_pos + y * ICON_SIZE;
   
 #ifdef NEXTSPACE
-  XWDockContentDidChange(dock);
+  WSDockContentDidChange(dock);
 #endif
 }
 
@@ -2155,7 +2155,7 @@ Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, i
     if (command) {
       icon->command = command;
     } else {
-      XWRunAlertPanel("Workspace Dock",
+      WSRunAlertPanel("Workspace Dock",
                       "Application icon without command set cannot be attached to Dock.",
                       _("OK"), NULL, NULL);
       return False;
@@ -2308,7 +2308,7 @@ void wDockDetach(WDock *dock, WAppIcon *icon)
   if (dock->auto_collapse || dock->auto_raise_lower)
     clipLeave(dock);
 #ifdef NEXTSPACE
-  XWDockContentDidChange(dock);
+  WSDockContentDidChange(dock);
 #endif
 }
 
@@ -3222,7 +3222,7 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
 #ifdef NEXTSPACE
         char *message = wstrdup(msg);
         dispatch_async(workspace_q, ^{
-            XWRunAlertPanel(_("Workspace Dock"), message, _("Got It"), NULL, NULL);
+            WSRunAlertPanel(_("Workspace Dock"), message, _("Got It"), NULL, NULL);
             wfree(message);
           });
 #else
@@ -4372,7 +4372,7 @@ static void removeDrawerCallback(WMenu *menu, WMenuEntry *entry)
   assert(dock != NULL);
 
   if (dock->icon_count > 2) {
-    if (XWRunAlertPanel(_("Drawer"),
+    if (WSRunAlertPanel(_("Drawer"),
                         _("All icons in this drawer will be detached!"),
                         _("OK"), _("Cancel"), NULL) != WAPRDefault)
       return;

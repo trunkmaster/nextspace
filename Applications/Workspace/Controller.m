@@ -177,7 +177,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Console
   if (console) {
-    winState = WWMWindowState([console window]);
+    winState = WMWindowState([console window]);
     if (winState) {
       winInfo = @{@"Type":@"Console", @"State":winState};
       [windows addObject:winInfo];
@@ -205,7 +205,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   // Finder
   if (finder) {
-    winState = WWMWindowState([finder window]);
+    winState = WMWindowState([finder window]);
     if (winState) {
       winInfo = @{@"Type":@"Finder", @"State":winState};
       [windows addObject:winInfo];
@@ -231,7 +231,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Viewers
   for (FileViewer *fv in _fvs) {
-    winState = WWMWindowState([fv window]);
+    winState = WMWindowState([fv window]);
     if (winState) {
       if ([fv isRootViewer] != NO)
         type = @"RootViewer";
@@ -363,7 +363,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_saveRunningApplications
 {
-  [[NXTDefaults userDefaults] setObject:WWMNotDockedAppList()
+  [[NXTDefaults userDefaults] setObject:WMNotDockedAppList()
                                 forKey:@"SavedApplications"];
 }
 
@@ -373,8 +373,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   savedApps = [[NXTDefaults userDefaults] objectForKey:@"SavedApplications"];
 
   for (NSDictionary *appInfo in savedApps) {
-    if (WWMIsAppRunning([appInfo objectForKey:@"Name"]) == NO) {
-      WWMExecuteCommand([appInfo objectForKey:@"Command"]);
+    if (WMIsAppRunning([appInfo objectForKey:@"Name"]) == NO) {
+      WMExecuteCommand([appInfo objectForKey:@"Command"]);
     }
   }
 }
@@ -407,7 +407,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   if (useInternalWindowManager) {
     // Hide Dock
-    WWMDockHideIcons(wDefaultScreen()->dock);
+    WMDockHideIcons(wDefaultScreen()->dock);
     if (recycler) {
       [[recycler appIcon] close];
       [recycler release];
@@ -556,7 +556,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [[recycler appIcon] orderFrontRegardless];
     }
       
-    WWMDockAutoLaunch(dock);
+    WMDockAutoLaunch(dock);
   }
 
   return;
@@ -586,7 +586,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   // Now we are ready to show windows and menu
   [df setObject:@"NO" forKey:@"NXAutoLaunch"];
-  if (WWMIsDockAppAutolaunch(0) != NO) {
+  if (WMIsDockAppAutolaunch(0) != NO) {
     [self _restoreWindows];
     [[NSApp mainMenu] display];
   }
@@ -722,7 +722,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)applicationDidChangeScreenParameters:(NSNotification*)aNotification
 {
-  XWUpdateScreenParameters();
+  WSUpdateScreenParameters();
 }
 
 //============================================================================
@@ -1084,14 +1084,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   if ([[sender title] isEqualToString:@"Hide"])
     {
-      WWMDockHideIcons(scr->dock);
+      WMDockHideIcons(scr->dock);
       wScreenUpdateUsableArea(scr);
       if (!scr->dock->mapped)
         [sender setTitle:@"Show"];
     }
   else
     {
-      WWMDockShowIcons(scr->dock);
+      WMDockShowIcons(scr->dock);
       wScreenUpdateUsableArea(scr);
       if (scr->dock->mapped)
         [sender setTitle:@"Hide"];
@@ -1102,13 +1102,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   WScreen *scr = wDefaultScreen();
   
   if ([[sender title] isEqualToString:@"Collapse"]) {
-    WWMDockCollapse(scr->dock);
+    WMDockCollapse(scr->dock);
     if (scr->dock->collapsed) {
       [sender setTitle:@"Uncollapse"];
     }
   }
   else {
-    WWMDockUncollapse(scr->dock);
+    WMDockUncollapse(scr->dock);
     if (!scr->dock->collapsed) {
       [sender setTitle:@"Collapse"];
     }
@@ -1121,13 +1121,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   WScreen *scr = wDefaultScreen();
 
   if ([[sender title] isEqualToString:@"Hide"]) {
-    WWMIconYardHideIcons(scr);
+    WMIconYardHideIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (!scr->dock->mapped)
     [sender setTitle:@"Show"];
   }
   else {
-    WWMIconYardShowIcons(scr);
+    WMIconYardShowIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (scr->dock->mapped)
     [sender setTitle:@"Hide"];

@@ -243,7 +243,7 @@ static void execMenuCommand(WMenu * menu, WMenuEntry * entry)
   case MC_KILL:
     wretain(wwin);
     if (wPreferences.dont_confirm_kill
-        || XWRunAlertPanel(_("Kill Application"),
+        || WSRunAlertPanel(_("Kill Application"),
                            _("This will kill the application.\n"
                              "Any unsaved changes will be lost.\nPlease confirm."),
                            _("Yes"), _("No"), NULL) == WAPRDefault) {

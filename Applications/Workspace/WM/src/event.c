@@ -76,10 +76,10 @@
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
-extern void WWMIconYardShowIcons(WScreen *screen);
-extern void WWMIconYardHideIcons(WScreen *screen);
-extern void WWMDockShowIcons(WDock *dock);
-extern void WWMDockHideIcons(WDock *dock);
+extern void WMIconYardShowIcons(WScreen *screen);
+extern void WMIconYardHideIcons(WScreen *screen);
+extern void WMDockShowIcons(WDock *dock);
+extern void WMDockHideIcons(WDock *dock);
 #endif
 
 #define MOD_MASK wPreferences.modifier_mask
@@ -693,7 +693,7 @@ static void handleDestroyNotify(XEvent * event)
   if (wwin) {
     /* wmessage("[event.c] DestroyNotify will unmanage window:%lu\n", window); */
 #ifdef NEXTSPACE
-    dispatch_sync(workspace_q, ^{ XWApplicationDidCloseWindow(wwin); });
+    dispatch_sync(workspace_q, ^{ WSApplicationDidCloseWindow(wwin); });
 #endif
     wUnmanageWindow(wwin, False, True);
   }
@@ -903,10 +903,10 @@ static void handleButtonPress(XEvent * event)
       WAppIcon *appicon0 = scr->dock->icon_array[0];
       if ((desc->parent_type == WCLASS_DOCK_ICON) &&
           (appicon->icon->icon_win == appicon0->icon->icon_win)) {
-        if (WWMDockLevel() == WMDockLevel)
-          WWMSetDockLevel(WMNormalLevel);
+        if (WSDockLevel() == WMDockLevel)
+          WSSetDockLevel(WMNormalLevel);
         else {
-          WWMSetDockLevel(WMDockLevel);
+          WSSetDockLevel(WMDockLevel);
         }
         XUngrabPointer(dpy, CurrentTime);
         return;
@@ -1371,7 +1371,7 @@ static void handleXkbBellNotify(XkbEvent *event)
   scr = wDefaultScreen();
   wwin = scr->focused_window;
   if (wwin && wwin->flags.focused) {
-    XWRingBell(wwin);
+    WSRingBell(wwin);
   }
 }
 /* please help ]d if you know what to do */
@@ -1385,7 +1385,7 @@ static void handleXkbIndicatorStateNotify(XkbEvent *event)
   wwin = scr->focused_window;
   if (wwin && wwin->flags.focused) {
     XkbGetState(dpy, XkbUseCoreKbd, &staterec);
-    XWKeyboardGroupDidChange(staterec.group);
+    WSKeyboardGroupDidChange(staterec.group);
     if (wwin->frame->languagemode != staterec.group) {
       wwin->frame->last_languagemode = wwin->frame->languagemode;
       wwin->frame->languagemode = staterec.group;
@@ -1578,10 +1578,10 @@ static void handleKeyPress(XEvent * event)
   case WKBD_DOCKHIDESHOW:
     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->dock->mapped) {
-        WWMDockHideIcons(scr->dock);
+        WMDockHideIcons(scr->dock);
       }
       else {
-        WWMDockShowIcons(scr->dock);
+        WMDockShowIcons(scr->dock);
       }
     }
     else {
@@ -1591,10 +1591,10 @@ static void handleKeyPress(XEvent * event)
   case WKBD_YARDHIDESHOW:
     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->flags.icon_yard_mapped) {
-        WWMIconYardHideIcons(scr);
+        WMIconYardHideIcons(scr);
       }
       else {
-        WWMIconYardShowIcons(scr);
+        WMIconYardShowIcons(scr);
       }
     }
     else {

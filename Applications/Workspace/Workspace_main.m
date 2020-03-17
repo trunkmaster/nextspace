@@ -84,7 +84,7 @@ int main(int argc, const char **argv)
       fprintf(stderr, "=== Initializing Window Manager... ===\n");
       //--- WindowMaker queue -----------------------------------------------
       dispatch_sync(wmaker_q, ^{
-          WWMInitializeWindowMaker(argc, (char **)argv);
+          WMInitializeWindowMaker(argc, (char **)argv);
         });
       fprintf(stderr, "=== Window Manager initialized! ===\n");
 
@@ -102,7 +102,7 @@ int main(int argc, const char **argv)
       //---------------------------------------------------------------------
       fprintf(stderr, "=== Quitting Window manager... ===\n");
       // Quit WindowManager, close all X11 applications.
-      WWMShutdown(WSKillMode);
+      WMShutdown(WSKillMode);
     }
   else
 #endif // NEXTSPACE
