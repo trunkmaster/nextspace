@@ -64,7 +64,9 @@ BOOL xIsWindowServerReady(void)
   Display *xdpy = XOpenDisplay(NULL);
   BOOL    ready = (xdpy == NULL ? NO : YES);
 
-  if (ready) XCloseDisplay(xdpy);
+  if (ready) {
+    XCloseDisplay(xdpy);
+  }
 
   return ready;
 }
@@ -94,19 +96,17 @@ BOOL xIsWindowManagerAlreadyRunning(void)
   XSync(xDisplay, False);
   XSetErrorHandler(oldHandler);
 
-  if (CantManageScreen)
-    {
-      XCloseDisplay(xDisplay);
-      return YES;
-    }
-  else
-    {
-      event_mask &= ~(SubstructureRedirectMask);
-      XSelectInput(xDisplay, RootWindow(xDisplay, xScreen), event_mask);
-      XSync(xDisplay, False);
-      XCloseDisplay(xDisplay);
-      return NO;
-    }
+  if (CantManageScreen) {
+    XCloseDisplay(xDisplay);
+    return YES;
+  }
+  else {
+    event_mask &= ~(SubstructureRedirectMask);
+    XSelectInput(xDisplay, RootWindow(xDisplay, xScreen), event_mask);
+    XSync(xDisplay, False);
+    XCloseDisplay(xDisplay);
+    return NO;
+  }
 }
 
 //--- Below this line X Window related functions is TODO
@@ -120,10 +120,9 @@ NSString *fullPathForCommand(NSString *command)
   NSString      *path;
   NSFileManager *fm;
 
-  if ([command isAbsolutePath])
-    {
-      return command;
-    }
+  if ([command isAbsolutePath]) {
+    return command;
+  }
 
   commandFile = [[command componentsSeparatedByString:@" "] objectAtIndex:0];
   // commandFile = [command lastPathComponent];
@@ -131,13 +130,11 @@ NSString *fullPathForCommand(NSString *command)
   e = [[envPath componentsSeparatedByString:@":"] objectEnumerator];
   fm = [NSFileManager defaultManager];
 
-  while ((path = [e nextObject]))
-    {
-      if ([[fm directoryContentsAtPath:path] containsObject:commandFile])
-	{
-	  return [path stringByAppendingPathComponent:commandFile];
-	}
+  while ((path = [e nextObject])) {
+    if ([[fm directoryContentsAtPath:path] containsObject:commandFile]) {
+      return [path stringByAppendingPathComponent:commandFile];
     }
+  }
 
   return nil;
 }
@@ -184,11 +181,10 @@ void WMInitializeWindowMaker(int argc, char **argv)
 
   @autoreleasepool {
     // Check WMState user file (Dock state)
-    if (WMDockStatePath() == nil)
-      {
-        NSLog(@"[Workspace] Dock contents cannot be restored."
-              " Show only Workspace application icon.");
-      }
+    if (WMDockStatePath() == nil) {
+      NSLog(@"[Workspace] Dock contents cannot be restored."
+            " Show only Workspace application icon.");
+    }
     // Restore display layout
     [[[OSEScreen new] autorelease] applySavedDisplayLayout];
   }
@@ -260,10 +256,9 @@ void WMSetDockAppiconState(int index_in_dock, int launching)
   wAppIconPaint(btn);
 
   // Revert attribute back to make dock autolaunch working
-  if (index_in_dock > 0)
-    {
-      btn->launching = saved_launching;
-    }
+  if (index_in_dock > 0) {
+    btn->launching = saved_launching;
+  }
 }
 
 // Disable some signal handling inside WindowMaker code.
@@ -290,30 +285,24 @@ void WMWipeDesktop(WScreen * scr)
              &rootWindow, &parentWindow,
              &childrenWindows, &nChildrens);
     
-  for (i=0; i < nChildrens; i++)
-    {
-      wapp = wApplicationOf(childrenWindows[i]);
-      if (wapp)
-        {
-          wwin = wapp->main_window_desc;
-          if (!strcmp(wwin->wm_class, "GNUstep"))
-            {
-              continue;
-            }
-          else
-            {
-              if (wwin->protocols.DELETE_WINDOW)
-                {
-                  wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
-                                      w_global.timestamp.last_event);
-                }
-              else
-                {
-                  wClientKill(wwin);
-                }
-            }
+  for (i=0; i < nChildrens; i++) {
+    wapp = wApplicationOf(childrenWindows[i]);
+    if (wapp) {
+      wwin = wapp->main_window_desc;
+      if (!strcmp(wwin->wm_class, "GNUstep")) {
+        continue;
+      }
+      else {
+        if (wwin->protocols.DELETE_WINDOW) {
+          wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
+                              w_global.timestamp.last_event);
         }
+        else {
+          wClientKill(wwin);
+        }
+      }
     }
+  }
 
   XSync(dpy, False);
 }
@@ -669,10 +658,9 @@ NSArray *WMDockStateApps(void)
                       wDefaultScreen()->scr_height];
   
   dockApps = [[WMDockState() objectForKey:@"Dock"] objectForKey:appsKey];
-  if (!dockApps || [dockApps count] == 0)
-    {
-      [[WMDockState() objectForKey:@"Dock"] objectForKey:@"Applications"];
-    }
+  if (!dockApps || [dockApps count] == 0) {
+    [[WMDockState() objectForKey:@"Dock"] objectForKey:@"Applications"];
+  }
 
   return dockApps;
 }
@@ -684,44 +672,41 @@ void WMDockAutoLaunch(WDock *dock)
   char        *command = NULL;
   NSString    *cmd;
 
-  for (int i = 0; i < dock->max_icons; i++)
-    {
-      btn = dock->icon_array[i];
+  for (int i = 0; i < dock->max_icons; i++) {
+    btn = dock->icon_array[i];
 
-      if (!btn || !btn->auto_launch ||
-          !btn->command || btn->running || btn->launching ||
-          !strcmp(btn->wm_instance, "Workspace"))
-        continue;
+    if (!btn || !btn->auto_launch ||
+        !btn->command || btn->running || btn->launching ||
+        !strcmp(btn->wm_instance, "Workspace")) {
+      continue;
+    }
 
-      state = wmalloc(sizeof(WSavedState));
-      state->workspace = 0;
-      btn->drop_launch = 0;
-      btn->paste_launch = 0;
+    state = wmalloc(sizeof(WSavedState));
+    state->workspace = 0;
+    btn->drop_launch = 0;
+    btn->paste_launch = 0;
 
-      // Add '-autolaunch YES' to GNUstep application parameters
-      if (!strcmp(btn->wm_class, "GNUstep"))
-        {
-          cmd = [NSString stringWithCString:btn->command];
-          if ([cmd rangeOfString:@"autolaunch"].location == NSNotFound)
-            {
-              cmd = [cmd stringByAppendingString:@" -autolaunch YES"];
-            }
-          command = wstrdup(btn->command);
-          wfree(btn->command);
-          btn->command = wstrdup([cmd cString]);
-        }
+    // Add '-autolaunch YES' to GNUstep application parameters
+    if (!strcmp(btn->wm_class, "GNUstep")) {
+      cmd = [NSString stringWithCString:btn->command];
+      if ([cmd rangeOfString:@"autolaunch"].location == NSNotFound) {
+        cmd = [cmd stringByAppendingString:@" -autolaunch YES"];
+      }
+      command = wstrdup(btn->command);
+      wfree(btn->command);
+      btn->command = wstrdup([cmd cString]);
+    }
 
-      wDockLaunchWithState(btn, state);
+    wDockLaunchWithState(btn, state);
 
-      // Return 'command' field into initial state (without -autolaunch)
-      if (!strcmp(btn->wm_class, "GNUstep"))
-        {
-          wfree(btn->command);
-          btn->command = wstrdup(command);
-          wfree(command);
-          command = NULL;
-        }
-    }  
+    // Return 'command' field into initial state (without -autolaunch)
+    if (!strcmp(btn->wm_class, "GNUstep")) {
+      wfree(btn->command);
+      btn->command = wstrdup(command);
+      wfree(command);
+      command = NULL;
+    }
+  }  
 }
 
 // --- Appicons getters/setters of on-screen Dock
@@ -743,17 +728,18 @@ WAppIcon *_appiconInDockPosition(int position)
   WScreen  *scr = wDefaultScreen();
   WDock    *dock = scr->dock;
 
-  if (!dock || position > dock->max_icons-1)
+  if (!dock || position > dock->max_icons-1) {
     return NULL;
+  }
 
-  for (int i=0; i < dock->max_icons; i++)
-    {
-      if (!dock->icon_array[i])
-        continue;
-      
-      if (dock->icon_array[i]->yindex == position)
-        return dock->icon_array[i];
+  for (int i=0; i < dock->max_icons; i++) {
+    if (!dock->icon_array[i]) {
+      continue;
     }
+    if (dock->icon_array[i]->yindex == position) {
+      return dock->icon_array[i];
+    }
+  }
   
   return NULL;
 }
@@ -762,11 +748,13 @@ NSString *WMDockAppName(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
-  if (appicon)
+  if (appicon) {
     return [NSString stringWithFormat:@"%s.%s",
                      appicon->wm_instance, appicon->wm_class];
-  else
+  }
+  else {
     return @".NoApplication";
+  }
 }
 
 NSImage *_imageForRasterImage(RImage *r_image)
@@ -787,12 +775,11 @@ NSImage *_imageForRasterImage(RImage *r_image)
                             bytesPerRow:0
                            bitsPerPixel:hasAlpha ? 32 : 24];
 
-  if (rep)
-    {
-      image = [[NSImage alloc] init];
-      [image addRepresentation:rep];
-      [rep release];
-    }
+  if (rep) {
+    image = [[NSImage alloc] init];
+    [image addRepresentation:rep];
+    [rep release];
+  }
 
   return [image autorelease];
 }
@@ -806,11 +793,10 @@ char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
   filePath = [NSString stringWithCString:file_path];
   wfree(file_path);
   
-  if (![[filePath pathExtension] isEqualToString:@"tiff"])
-    {
-      filePath = [filePath stringByDeletingPathExtension];
-      filePath = [filePath stringByAppendingPathExtension:@"tiff"];
-    }
+  if (![[filePath pathExtension] isEqualToString:@"tiff"]) {
+    filePath = [filePath stringByDeletingPathExtension];
+    filePath = [filePath stringByAppendingPathExtension:@"tiff"];
+  }
   
   [tiffRep writeToFile:filePath atomically:YES];
   [image release];
@@ -826,37 +812,35 @@ NSImage *WMDockAppImage(int position)
   NSDictionary *appDesc;
   NSImage      *icon = nil;
 
-  if (btn)
-    {
-      // NSLog(@"W+W: icon image file: %s", btn->icon->file);
-      if (btn->icon->file)
-        { // Docked and not running application
-          iconPath = [NSString stringWithCString:btn->icon->file];
-          icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
-          [icon autorelease];
-        }
-      else
-        {
-          if (!strcmp(btn->wm_class, "GNUstep"))
-            appName = [NSString stringWithCString:btn->wm_instance];
-          else
-            appName = [NSString stringWithCString:btn->wm_class];
-          
-          appDesc = [[ProcessManager shared] _applicationWithName:appName];
-          
-          if (!strcmp(btn->wm_class, "GNUstep"))
-            {
-              icon = [[NSApp delegate]
-                       iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
-            }
-          else
-            {
-              icon = [appDesc objectForKey:@"NSApplicationIcon"];
-            }
-        }
-      if (!icon)
-        icon = [NSImage imageNamed:@"NXUnknownApplication"];
+  if (btn) {
+    // NSLog(@"W+W: icon image file: %s", btn->icon->file);
+    if (btn->icon->file) { // Docked and not running application
+      iconPath = [NSString stringWithCString:btn->icon->file];
+      icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+      [icon autorelease];
     }
+    else {
+      if (!strcmp(btn->wm_class, "GNUstep")) {
+        appName = [NSString stringWithCString:btn->wm_instance];
+      }
+      else {
+        appName = [NSString stringWithCString:btn->wm_class];
+      }
+          
+      appDesc = [[ProcessManager shared] _applicationWithName:appName];
+          
+      if (!strcmp(btn->wm_class, "GNUstep")) {
+        icon = [[NSApp delegate]
+                       iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
+      }
+      else {
+        icon = [appDesc objectForKey:@"NSApplicationIcon"];
+      }
+    }
+    if (!icon) {
+      icon = [NSImage imageNamed:@"NXUnknownApplication"];
+    }
+  }
   
   return icon;
 }
@@ -866,61 +850,59 @@ void WMSetDockAppImage(NSString *path, int position, BOOL save)
   WAppIcon *btn;
   RImage   *rimage;
 
-  for (int i = 0; i < wDefaultScreen()->dock->max_icons; i++)
-    {
-      btn = dock->icon_array[i];
-      if (btn->yindex == position)
-        break;
+  for (int i = 0; i < wDefaultScreen()->dock->max_icons; i++) {
+    btn = dock->icon_array[i];
+    if (btn->yindex == position) {
+      break;
     }
+  }
   
-  if (btn->icon->file)
-    {
-      wfree(btn->icon->file);
-    }
+  if (btn->icon->file) {
+    wfree(btn->icon->file);
+  }
   btn->icon->file = wstrdup([path cString]);
 
   rimage = RLoadImage(wDefaultScreen()->rcontext, btn->icon->file, 0);
 
-  if (!rimage)
+  if (!rimage) {
     return;
+  }
   
-  if (btn->icon->file_image)
-    {
-      RReleaseImage(btn->icon->file_image);
-      btn->icon->file_image = NULL;
-    }
+  if (btn->icon->file_image) {
+    RReleaseImage(btn->icon->file_image);
+    btn->icon->file_image = NULL;
+  }
   btn->icon->file_image = RRetainImage(rimage);
   
   // Write to WindowMaker 'WMWindowAttributes' file
-  if (save == YES)
-    {
-      NSMutableDictionary *wa, *appAttrs;
-      NSString *waPath, *appKey;
+  if (save == YES) {
+    NSMutableDictionary *wa, *appAttrs;
+    NSString *waPath, *appKey;
 
-      waPath = [WMDockStatePath() stringByDeletingLastPathComponent];
-      waPath = [waPath stringByAppendingPathComponent:@"WMWindowAttributes"];
+    waPath = [WMDockStatePath() stringByDeletingLastPathComponent];
+    waPath = [waPath stringByAppendingPathComponent:@"WMWindowAttributes"];
   
-      wa = [[NSMutableDictionary alloc] initWithContentsOfFile:waPath];
-      appKey = [NSString stringWithFormat:@"%s.%s",
-                         btn->wm_instance, btn->wm_class];
-      appAttrs = [wa objectForKey:appKey];
-      if (!appAttrs)
-        appAttrs = [NSMutableDictionary new];
-  
-      [appAttrs setObject:[NSString stringWithCString:btn->icon->file]
-                   forKey:@"Icon"];
-      [appAttrs setObject:@"YES" forKey:@"AlwaysUserIcon"];
-
-      if (position == 0)
-        {
-          [wa setObject:appAttrs forKey:@"Logo.WMDock"];
-          [wa setObject:appAttrs forKey:@"Logo.WMPanel"];
-        }
-  
-      [wa setObject:appAttrs forKey:appKey];
-      [wa writeToFile:waPath atomically:YES];
-      [wa release];
+    wa = [[NSMutableDictionary alloc] initWithContentsOfFile:waPath];
+    appKey = [NSString stringWithFormat:@"%s.%s",
+                       btn->wm_instance, btn->wm_class];
+    appAttrs = [wa objectForKey:appKey];
+    if (!appAttrs) {
+      appAttrs = [NSMutableDictionary new];
     }
+  
+    [appAttrs setObject:[NSString stringWithCString:btn->icon->file]
+                 forKey:@"Icon"];
+    [appAttrs setObject:@"YES" forKey:@"AlwaysUserIcon"];
+
+    if (position == 0) {
+      [wa setObject:appAttrs forKey:@"Logo.WMDock"];
+      [wa setObject:appAttrs forKey:@"Logo.WMPanel"];
+    }
+  
+    [wa setObject:appAttrs forKey:appKey];
+    [wa writeToFile:waPath atomically:YES];
+    [wa release];
+  }
   
   wIconUpdate(btn->icon);
 }
@@ -929,103 +911,108 @@ BOOL WMIsDockAppAutolaunch(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
-  if (!appicon || appicon->auto_launch == 0)
+  if (!appicon || appicon->auto_launch == 0) {
     return NO;
-  else
+  }
+  else {
     return YES;
+  }
 }
 void WMSetDockAppAutolaunch(int position, BOOL autolaunch)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
-  if (appicon)
-    {
-      appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
-      WMDockStateSave();
-    }
+  if (appicon) {
+    appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
+    WMDockStateSave();
+  }
 }
 
 BOOL WMIsDockAppLocked(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
-  if (!appicon || appicon->lock == 0)
+  if (!appicon || appicon->lock == 0) {
     return NO;
-  else
+  }
+  else {
     return YES;
+  }
 }
 void WMSetDockAppLocked(int position, BOOL lock)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
     
-  if (appicon)
-    {
-      appicon->lock = (lock == YES) ? 1 : 0;
-      WMDockStateSave();
-    }
+  if (appicon) {
+    appicon->lock = (lock == YES) ? 1 : 0;
+    WMDockStateSave();
+  }
 }
 
 NSString *WMDockAppCommand(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
-  if (appicon)
+  if (appicon) {
     return [NSString stringWithCString:appicon->command];
-  else
+  }
+  else {
     return nil;
+  }
 }
 void WMSetDockAppCommand(int position, const char *command)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
   
-  if (appicon)
-    {
-      wfree(appicon->command);
-      appicon->command = wstrdup(command);
-      WMDockStateSave();
-    }
+  if (appicon) {
+    wfree(appicon->command);
+    appicon->command = wstrdup(command);
+    WMDockStateSave();
+  }
 }
 
 NSString *WMDockAppPasteCommand(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
-  if (appicon)
+  if (appicon) {
     return [NSString stringWithCString:appicon->paste_command];
-  else
+  }
+  else {
     return nil;
+  }
 }
 void WMSetDockAppPasteCommand(int position, const char *command)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
   
-  if (appicon)
-    {
-      wfree(appicon->paste_command);
-      appicon->paste_command = wstrdup(command);
-      WMDockStateSave();
-    }
+  if (appicon) {
+    wfree(appicon->paste_command);
+    appicon->paste_command = wstrdup(command);
+    WMDockStateSave();
+  }
 }
 
 NSString *WMDockAppDndCommand(int position)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
 
-  if (appicon)
+  if (appicon) {
     return [NSString stringWithCString:appicon->dnd_command];
-  else
+  }
+  else {
     return nil;
+  }
 }
 void WMSetDockAppDndCommand(int position, const char *command)
 {
   WAppIcon *appicon = _appiconInDockPosition(position);
   
-  if (appicon)
-    {
-      wfree(appicon->dnd_command);
-      appicon->dnd_command = wstrdup(command);
-      WMDockStateSave();
-    }
+  if (appicon) {
+    wfree(appicon->dnd_command);
+    appicon->dnd_command = wstrdup(command);
+    WMDockStateSave();
+  }
 }
 
 // ----------------------------
@@ -1038,8 +1025,9 @@ void WMSetDockAppDndCommand(int position, const char *command)
 // static WAppIcon **launchingIcons = NULL;
 void _addLaunchingIcon(WAppIcon *appicon)
 {
-  if (!launchingIcons)
+  if (!launchingIcons) {
     launchingIcons = wmalloc(DOCK_MAX_ICONS * sizeof(WAppIcon*));
+  }
   
   for (int i=0; i < DOCK_MAX_ICONS; i++) {
     if (launchingIcons[i] == NULL) {
@@ -1354,45 +1342,39 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   [appInfo setObject:xAppName forKey:@"NSApplicationName"];
 
   // NSApplicationProcessIdentifier = NSString*
-  if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0)
-    {
-      [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
-        	  forKey:@"NSApplicationProcessIdentifier"];
-    }
-  else if ((app_pid = wapp->app_icon->pid) > 0)
-    {
-      [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
-        	  forKey:@"NSApplicationProcessIdentifier"];
-    }
-  else
-    {
-      [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
-    }
+  if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0) {
+    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
+                forKey:@"NSApplicationProcessIdentifier"];
+  }
+  else if ((app_pid = wapp->app_icon->pid) > 0) {
+    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
+                forKey:@"NSApplicationProcessIdentifier"];
+  }
+  else {
+    [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
+  }
 
   // NSApplicationPath = NSString*
   app_command = GetCommandForWindow(wwin->client_win);
-  if (app_command != NULL)
-    {
-      xAppPath = fullPathForCommand([NSString stringWithCString:app_command]);
-      if (xAppPath)
-        [appInfo setObject:xAppPath forKey:@"NSApplicationPath"];
-      else
-        [appInfo setObject:[NSString stringWithCString:app_command]
-                    forKey:@"NSApplicationPath"];
-    }
-  else
-    {
-      [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
-    }
+  if (app_command != NULL) {
+    xAppPath = fullPathForCommand([NSString stringWithCString:app_command]);
+    if (xAppPath)
+      [appInfo setObject:xAppPath forKey:@"NSApplicationPath"];
+    else
+      [appInfo setObject:[NSString stringWithCString:app_command]
+                  forKey:@"NSApplicationPath"];
+  }
+  else {
+    [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
+  }
 
   // Get icon image from windowmaker app structure(WApplication)
   // NSApplicationIcon=NSImage*
   NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
-  if (wapp->app_icon->icon->file_image)
-    {
-      [appInfo setObject:_imageForRasterImage(wapp->app_icon->icon->file_image)
-                  forKey:@"NSApplicationIcon"];
-    }
+  if (wapp->app_icon->icon->file_image) {
+    [appInfo setObject:_imageForRasterImage(wapp->app_icon->icon->file_image)
+                forKey:@"NSApplicationIcon"];
+  }
 
   return (NSDictionary *)appInfo;
 }
@@ -1513,24 +1495,21 @@ static void moveDock(WDock *dock, int new_x, int new_y)
   WDrawerChain *dc;
   int i;
 
-  if (dock->type == WM_DOCK)
-    {
-      for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next)
-        moveDock(dc->adrawer, new_x, dc->adrawer->y_pos - dock->y_pos + new_y);
-    }
+  if (dock->type == WM_DOCK) {
+    for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next)
+      moveDock(dc->adrawer, new_x, dc->adrawer->y_pos - dock->y_pos + new_y);
+  }
 
   dock->x_pos = new_x;
   dock->y_pos = new_y;
-  for (i = 0; i < dock->max_icons; i++)
-    {
-      btn = dock->icon_array[i];
-      if (btn)
-        {
-          btn->x_pos = new_x + btn->xindex * wPreferences.icon_size;
-          btn->y_pos = new_y + btn->yindex * wPreferences.icon_size;
-          XMoveWindow(dpy, btn->icon->core->window, btn->x_pos, btn->y_pos);
-        }
+  for (i = 0; i < dock->max_icons; i++) {
+    btn = dock->icon_array[i];
+    if (btn) {
+      btn->x_pos = new_x + btn->xindex * wPreferences.icon_size;
+      btn->y_pos = new_y + btn->yindex * wPreferences.icon_size;
+      XMoveWindow(dpy, btn->icon->core->window, btn->x_pos, btn->y_pos);
     }
+  }
 }
 
 void WSUpdateScreenInfo(WScreen *scr)

@@ -46,6 +46,7 @@
 #include "xrandr.h"
 #include "winmenu.h"
 
+#include "dock.h"
 #include <Workspace+WM.h>
 
 

@@ -41,6 +41,7 @@
 #endif
 
 #ifdef NEXTSPACE
+#include "dock.h"
 #include <Workspace+WM.h>
 #endif
 
