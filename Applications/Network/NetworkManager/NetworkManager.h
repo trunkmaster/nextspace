@@ -5,13 +5,45 @@
 // where:
 //   --system                                        <--- Send to system message bus
 //   --dest=org.freedesktop.NetworkManager           <--- Connection name
-//   /org/freedesktop/NetworkManager                 <--- Object Path
+//   /org/freedesktop/NetworkManager                 <--- Object Path (change this)
 //   org.freedesktop.DBus.Introspectable.Introspect  <--- Method (Interface.Memeber)
 
 #import <Foundation/Foundation.h>
+#import "NetworkManager/DBusIntrospectable.h"
+#import "NetworkManager/DBusPeer.h"
+#import "NetworkManager/DBusProperties.h"
+#import "NetworkManager/NMActiveConnection.h"
+#import "NetworkManager/NMDevice.h"
 
 // org.freedesktop.NetworkManager
-@protocol NetworkManager
+@protocol NetworkManager <DBusIntrospectable, DBusPeer, DBusProperties>
+
+// Properties
+@property (assign,readwrite) NSDictionary *GlobalDnsConfiguration;
+@property (assign,readwrite) NSNumber     *ConnectivityCheckEnabled;
+@property (assign,readwrite) NSNumber     *WimaxEnabled;
+@property (assign,readwrite) NSNumber     *WwanEnabled;
+@property (assign,readwrite) NSNumber     *WirelessEnabled;
+
+@property (readonly) NSArray <DKProxy<NMActiveConnection> *> *ActiveConnections;
+@property (readonly) DKProxy <NMActiveConnection>            *ActivatingConnection;
+@property (readonly) DKProxy <NMActiveConnection>            *PrimaryConnection;
+@property (readonly) NSArray <DKProxy<NMDevice> *>           *AllDevices;
+@property (readonly) NSArray <DKProxy<NMDevice> *>           *Devices;
+
+@property (readonly) NSArray  *Checkpoints;
+@property (readonly) NSNumber *State;
+@property (readonly) NSNumber *Connectivity;
+@property (readonly) NSString *PrimaryConnectionType;
+@property (readonly) NSNumber *NetworkingEnabled;
+@property (readonly) NSString *Version;
+@property (readonly) NSNumber *Startup;
+@property (readonly) NSNumber *Capabilities;
+@property (readonly) NSNumber *ConnectivityCheckAvailable;
+@property (readonly) NSNumber *Metered;
+@property (readonly) NSNumber *WwanHardwareEnabled;
+@property (readonly) NSNumber *WimaxHardwareEnabled;
+@property (readonly) NSNumber *WirelessHardwareEnabled;
 
 // Enumerating
 - (NSArray*)GetAllDevices;
@@ -46,55 +78,5 @@
 - (void)CheckpointAdjustRollbackTimeout:(DKProxy*)checkpoint
                                        :(NSNumber*)add_timeout;
 - (NSDictionary*)CheckpointRollback:(DKProxy*)checkpoint;
-
-@property (assign,readwrite) NSDictionary *GlobalDnsConfiguration;
-@property (assign,readwrite) NSNumber     *ConnectivityCheckEnabled;
-@property (assign,readwrite) NSNumber     *WimaxEnabled;
-@property (assign,readwrite) NSNumber     *WwanEnabled;
-@property (assign,readwrite) NSNumber     *WirelessEnabled;
-
-@property (readonly)  NSArray  *Checkpoints;
-@property (readonly)  NSNumber *State;
-@property (readonly)  NSNumber *WwanHardwareEnabled;
-@property (readonly)  DKProxy  *ActivatingConnection;
-@property (readonly)  NSNumber *Connectivity;
-@property (readonly)  NSArray  *AllDevices;
-@property (readonly)  NSArray  *Devices;
-@property (readonly)  NSArray  *ActiveConnections;
-@property (readonly)  NSString *PrimaryConnectionType;
-@property (readonly)  NSNumber *NetworkingEnabled;
-@property (readonly)  NSString *Version;
-@property (readonly)  NSNumber *Startup;
-@property (readonly)  DKProxy  *PrimaryConnection;
-@property (readonly)  NSNumber *Capabilities;
-@property (readonly)  NSNumber *ConnectivityCheckAvailable;
-@property (readonly)  NSNumber *Metered;
-@property (readonly)  NSNumber *WimaxHardwareEnabled;
-@property (readonly)  NSNumber *WirelessHardwareEnabled;
-
-@end
-
-// org.freedesktop.DBus.Introspectable
-@protocol DBusIntrospectable
-
-- (NSString*)Introspect;
-
-@end
-
-// org.freedesktop.DBus.Peer
-@protocol DBusPeer
-- (NSString*)GetMachineId;
-- (void)Ping;
-@end
-
-// org.freedesktop.DBus.Properties
-@protocol DBusProperties
-
-- (void)Set:(NSString*)interface_name
-           :(NSString*)property_name
-           :(id)value;
-- (id)Get:(NSString*)interface_name
-         :(NSString*)property_name;
-- (NSDictionary*)GetAll:(NSString*)interface_name;
 
 @end

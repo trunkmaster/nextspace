@@ -1,8 +1,11 @@
 /* -*- mode: objc -*- */
 #import <Foundation/Foundation.h>
+#import "NetworkManager/NMIP4Config.h"
+#import "NetworkManager/NMDHCP4Config.h"
+#import "NetworkManager/NMActiveConnection.h"
 
 // org.freedesktop.NetworkManager.Device.Statistics
-@protocol NetworkManagerDeviceStatistics
+@protocol NMDeviceStatistics
 
 @property (assign,readwrite) NSNumber *RefreshRateMs;
 @property (readonly)         NSNumber *RxBytes;
@@ -11,7 +14,7 @@
 @end
 
 // org.freedesktop.NetworkManager.Device.Generic
-@protocol NetworkManagerDeviceGeneric
+@protocol NMDeviceGeneric
 
 @property (readonly) NSString *TypeDescription;
 @property (readonly) NSString *HwAddress;
@@ -19,16 +22,20 @@
 @end
 
 // org.freedesktop.NetworkManager.Device
-@protocol NetworkManagerDevice
+@protocol NMDevice
 
-- (void)Delete;
-- (void)Disconnect;
-- (void)Reapply:(NSDictionary*)connection :(NSNumber*)version_id :(NSNumber*)flags;
-- (NSArray*)GetAppliedConnection:(NSNumber*)flags;
+@property (readonly) DKProxy<NMActiveConnection> *ActiveConnection;
+@property (readonly) DKProxy<NMIP4Config>        *Ip4Config;
+@property (readonly) DKProxy<NMDHCP4Config>      *Dhcp4Config;
+@property (readonly) DKProxy                     *Ip6Config;
+@property (readonly) DKProxy                     *Dhcp6Config;
 
-@property (readonly) NSNumber *State; // enum NMDeviceState
-@property (readonly) NSNumber *DeviceType; // enum NMDeviceType
-@property (readonly) NSNumber *Capabilities; // enum NMDeviceCapabilities
+// enum NMDeviceState
+@property (readonly) NSNumber *State;
+// enum NMDeviceType
+@property (readonly) NSNumber *DeviceType;
+// enum NMDeviceCapabilities
+@property (readonly) NSNumber *Capabilities;
 @property (readonly) NSNumber *NmPluginMissing; // BOOL
 @property (readonly) NSNumber *Metered; // BOOL
 @property (readonly) NSNumber *Ip4Address; // DEPRECATED; use the 'Addresses' property of the 'Ip4Config' object instead. 
@@ -49,13 +56,12 @@
 // Array of DKProxy <NetworkManagerSettingsConnection> objects
 @property (readonly) NSArray  *AvailableConnections;
 
-@property (readonly) DKProxy  *Ip4Config;
-@property (readonly) DKProxy  *Dhcp4Config;
-@property (readonly) DKProxy  *Ip6Config;
-@property (readonly) DKProxy  *Dhcp6Config;
-@property (readonly) DKProxy  *ActiveConnection;
-
 @property (copy,readwrite) NSNumber *Managed; // BOOL
 @property (assign,readwrite) NSNumber *Autoconnect; // BOOL
+
+- (void)Delete;
+- (void)Disconnect;
+- (void)Reapply:(NSDictionary*)connection :(NSNumber*)version_id :(NSNumber*)flags;
+- (NSArray*)GetAppliedConnection:(NSNumber*)flags;
 
 @end

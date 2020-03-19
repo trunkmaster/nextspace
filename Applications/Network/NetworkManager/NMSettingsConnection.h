@@ -3,7 +3,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol NetworkManagerSettingsConnection
+@protocol NMSettingsConnection
 
 - (void)Update:(NSDictionary*)properties;
 - (NSDictionary*)Update2:(NSDictionary*)settings
