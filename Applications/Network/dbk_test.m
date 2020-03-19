@@ -24,7 +24,9 @@ void showNetInformation(id<NetworkManager> nm)
   fprintf(stderr, "=== Network Preferences ===\n");
   fprintf(stderr, "  Devices/Connections: \n");
   for (DKProxy<NMDevice> *dev in nm.AllDevices) {
-    fprintf(stderr, "    %s: ", [dev.IpInterface cString]);
+    fprintf(stderr, "    %s (%s): ",
+            [dev.Interface cString],
+            [dev.IpInterface cString]);
     connections = dev.AvailableConnections;
     if ([connections count] > 0) {
       connSets = connections[0];
@@ -182,7 +184,9 @@ int main(int argc, char *argv[])
     // showDevices(networkManager);
     showNetInformation(networkManager);
     for (DKProxy<NMDevice> *device in [networkManager GetAllDevices]) {
-      showDeviceInformation(device);
+      if ([device.IpInterface isEqualToString:@""] == NO) {
+        showDeviceInformation(device);
+      }
     }
 
     // Devices
