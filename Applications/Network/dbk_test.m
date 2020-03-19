@@ -2,7 +2,6 @@
 #import <DBusKit/DBusKit.h>
 
 #import "NetworkManager/NetworkManager.h"
-#import "NetworkManager/NMSettingsConnection.h"
 
 #define CONNECTION_NAME @"org.freedesktop.NetworkManager"
 #define OBJECT_PATH     @"/org/freedesktop/NetworkManager"
@@ -17,58 +16,28 @@ void showPermissions(id nm)
   }
 }
 
-void showDevices(id<NetworkManager> nm)
-{
-  NSArray *availableConnections;
-  DKProxy<NMDevice> *device;
-  
-  fprintf(stderr, "=== Devices ===\n");
-  
-  for (device in nm.AllDevices) {
-    fprintf(stderr, "%s %s (%s)\n", [[object_getClass(device) description] cString],
-            [device.Interface cString], [device.Udi cString]);
-    fprintf(stderr, "\t Interface:        %s\n", [device.IpInterface cString]);
-    fprintf(stderr, "\t Driver:           %s\n", [device.Driver cString]);
-    fprintf(stderr, "\t Driver version:   %s\n", [device.DriverVersion cString]);
-    fprintf(stderr, "\t Port ID:          %s\n", [device.PhysicalPortId cString]);
-    fprintf(stderr, "\t Firmware:         %s\n", [device.FirmwareVersion cString]);
-    
-    fprintf(stderr, "\t DeviceType:       %d\n", [device.DeviceType intValue]);
-    fprintf(stderr, "\t Capabilities:     %d\n", [device.Capabilities intValue]);
-    fprintf(stderr, "\t State:            %d\n", [device.State intValue]);
-    fprintf(stderr, "\t IPv4 address:     %d\n", [device.Ip4Address intValue]);
-    fprintf(stderr, "\t MTU:              %d\n", [device.Mtu intValue]);
-    fprintf(stderr, "\t Firmware missing: %s\n", [device.FirmwareMissing intValue] ? "Yes" : "No");
-    fprintf(stderr, "\t Plugin Missing:   %s\n", [device.NmPluginMissing intValue] ? "Yes" : "No");
-    fprintf(stderr, "\t Metered:          %s\n", [device.Metered intValue] ? "Yes" : "No");
-    fprintf(stderr, "\t Real:             %s\n", [device.Real intValue] ? "Yes" : "No");
-
-    id<NMSettingsConnection> connectionSettings;
-    availableConnections = device.AvailableConnections;
-    if ([availableConnections count] > 0) {
-      fprintf(stderr, "\t Avalilable connections:\n");
-      for (id conn in availableConnections) {
-        connectionSettings = conn;
-        NSLog(@"%@", connectionSettings.GetSettings);
-        fprintf(stderr, "\t\t %s\n", [connectionSettings.Filename cString]);
-      }
-    }
-  }
-}
-
 void showNetInformation(id<NetworkManager> nm)
 {
+  NSArray *connections;
+  DKProxy<NMConnectionSettings> *connSets;
+  
   fprintf(stderr, "=== Network Preferences ===\n");
-  fprintf(stderr, "  Devices: ");
+  fprintf(stderr, "  Devices/Connections: \n");
   for (DKProxy<NMDevice> *dev in nm.AllDevices) {
-    fprintf(stderr, " %s", [dev.IpInterface cString]);
+    fprintf(stderr, "    %s: ", [dev.IpInterface cString]);
+    connections = dev.AvailableConnections;
+    if ([connections count] > 0) {
+      connSets = connections[0];
+      fprintf(stderr, "%s", [connSets.Filename cString]);
+    }
+    else {
+      fprintf(stderr, "None");
+    }
+    fprintf(stderr, "\n");  
   }
-  fprintf(stderr, "\n");
-  // fprintf(stderr, "  Connections: ");
-  // for (NSString *conn in nm.ActiveConnections) {
-  //   fprintf(stderr, " %s", [conn cString]);
-  // }
-  fprintf(stderr, "\n");
+
+  fprintf(stderr, "  Active Connection: \n");
+  
 }
 
 NSString *nameOfDeviceType(NSNumber *type)
@@ -180,8 +149,8 @@ void showDeviceInformation(DKProxy<NMDevice> *device)
   }
   
   fprintf(stderr, "--- Hardware ---\n");
-  fprintf(stderr, " MTU:              %d\n", [device.Mtu intValue]);
-  fprintf(stderr, " Driver:           %s (%s)\n",
+  fprintf(stderr, " MTU         :    %d\n", [device.Mtu intValue]);
+  fprintf(stderr, " Driver      :    %s (%s)\n",
           [device.Driver cString], [device.DriverVersion cString]);
   // fprintf(stderr, " Firmware:         %s\n", [device.FirmwareVersion cString]);
   // fprintf(stderr, " Port ID:          %s\n", [device.PhysicalPortId cString]);

@@ -1,3 +1,4 @@
+/* -*- mode: objc -*- */
 #import <Foundation/Foundation.h>
 
 /*
