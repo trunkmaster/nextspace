@@ -57,6 +57,7 @@
 
 #include <WINGs/WUtil.h>
 
+#include "dock.h"
 #include <Workspace+WM.h>
 
 #ifndef GLOBAL_DEFAULTS_SUBDIR

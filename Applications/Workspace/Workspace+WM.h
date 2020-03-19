@@ -65,8 +65,6 @@ int ws_quit_code;
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
 
-extern NSString *WMShowAlertPanel;
-
 BOOL xIsWindowServerReady(void);
 BOOL xIsWindowManagerAlreadyRunning(void);
 
@@ -74,7 +72,7 @@ BOOL useInternalWindowManager;
 
 //-----------------------------------------------------------------------------
 // Calls related to internals of WindowMaker.
-// 'WM' prefix is a vector of calls 'Workspace->WindowMaker'
+// 'WM' prefix is a call direction 'Workspace->WindowMaker'
 //-----------------------------------------------------------------------------
 
 void WMInitializeWindowMaker(int argc, char **argv);
@@ -134,8 +132,6 @@ void WMFinishLaunchingIcon(WAppIcon *appIcon);
 void WMDestroyLaunchingIcon(WAppIcon *appIcon);
 // - End of functions which require existing @autorelease pool
 
-NSPoint _pointForNewLaunchingIcon(int *x_ret, int *y_ret);
-
 // --- Windows and applications
 NSString *WMWindowState(NSWindow *nsWindow);
 NSArray *WMNotDockedAppList(void);
@@ -148,38 +144,44 @@ pid_t WMExecuteCommand(NSString *command);
 // Visible in WindowMaker and Workspace
 // Workspace callbacks for WindowMaker.
 //-----------------------------------------------------------------------------
+
+// --- Dock
 int WSDockMaxIcons(WScreen *scr);
 int WSDockLevel();
 void WSSetDockLevel(int level);
-#include <appicon.h> // to silence compiler
+void WSDockContentDidChange(WDock *dock);
+
+// --- Application icons
 WAppIcon *WSLaunchingIconForApplication(WApplication *wapp);
 WAppIcon *WSLaunchingIconForCommand(char *command);
 
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
-// Applications creation and destroying
+// --- Applications creation and destroying
 void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin);
 void WSApplicationDidAddWindow(WApplication *wapp, WWindow *wwin);
 void WSApplicationDidDestroy(WApplication *wapp);
 void WSApplicationDidCloseWindow(WWindow *wwin);
 
-// Called from WM/src/event.c on update of XrandR screen configuration
+// --- XRandR
 void WSUpdateScreenInfo(WScreen *scr);
 void WSUpdateScreenParameters(void);
 
+// --- Workspaces
 void WSActivateApplication(WScreen *scr, char *app_name);
 void WSActivateWorkspaceApp(WScreen *scr);
 void WSWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window);
+
+// --- Layout badge in Workspace appicon
 void WSKeyboardGroupDidChange(int group);
-#include <dock.h> // to silence icon.c compile error
-void WSDockContentDidChange(WDock *dock);
+
+// -- Alerts, messages and sounds
 int WSRunAlertPanel(char *title, char *message,
                      char *defaultButton,
                      char *alternateButton,
                      char *otherButton);
 void WSRingBell(WWindow *wwin);
 void WSMessage(char *fmt, ...);
-
 #define wmessage(fmt, args...) WSMessage(fmt, ## args)
 
 #endif //NEXTSPACE

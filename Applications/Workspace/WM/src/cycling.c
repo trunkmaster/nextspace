@@ -41,6 +41,7 @@
 #include "xrandr.h"
 #include "switchpanel.h"
 
+#include "dock.h"
 #include <Workspace+WM.h>
 
 /* static void raiseWindow(WSwitchPanel * swpanel, WWindow * wwin) */
