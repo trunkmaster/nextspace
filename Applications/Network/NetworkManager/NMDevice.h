@@ -24,6 +24,24 @@
 
 @end
 
+/* org.freedesktop.NetworkManager.Device.Wireless. */
+@protocol NMDeviceWireless
+
+- (void)RequestScan:(NSDictionary*)options;
+- (NSArray*)GetAccessPoints;
+- (NSArray*)GetAllAccessPoints;
+
+@property (readonly) NSString *PermHwAddress;
+@property (readonly) NSString *HwAddress;
+@property (readonly) NSNumber *Mode;
+@property (readonly) NSNumber *Bitrate;
+@property (readonly) NSNumber *WirelessCapabilities;
+@property (readonly) DKProxy  *ActiveAccessPoint;
+@property (readonly) NSNumber *LastScan;
+@property (readonly) NSArray  *AccessPoints;
+
+@end
+
 /* org.freedesktop.NetworkManager.Device.Statistics */
 @protocol NMDeviceStatistics
 

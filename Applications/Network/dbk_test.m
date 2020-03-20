@@ -178,6 +178,7 @@ void showDeviceInformation(DKProxy<NMDevice> *device)
   
   fprintf(stderr, "--- Hardware ---\n");
   // TypeDescription is a property of org.freedesktop.NetworkManager.Device.Generic
+  // `conformsToProtocol:` is not working for DKProxy objects - bug?
   if ([device respondsToSelector:@selector(TypeDescription)]) {
     fprintf(stderr, " Type           :    %s\n", [device.TypeDescription cString]);
   }
@@ -207,11 +208,11 @@ NSArray *deviceList(DKProxy<NetworkManager> *nm)
   for (DKProxy<NMDevice> *device in allDevices) {
     // if ([device.IpInterface isEqualToString:@""] == NO
     //     && device.State != [NSNumber numberWithInt:10]) {
-    if ([device.IpInterface isEqualToString:@""] == NO) {
+    if (device.State != [NSNumber numberWithInt:10]) {
       [deviceList addObject:device];
     }
     else {
-      fprintf(stderr, "Device will be `%s` skipped. Reason: %s\n",
+      fprintf(stderr, "Device `%s` will be skipped. Reason: %s\n",
               [device.Interface cString],
               [descriptionOfDeviceState(device.State) cString]);
     }
