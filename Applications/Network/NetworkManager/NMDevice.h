@@ -5,7 +5,26 @@
 #import "NetworkManager/NMActiveConnection.h"
 #import "NetworkManager/NMConnectionSettings.h"
 
-// org.freedesktop.NetworkManager.Device.Statistics
+/* org.freedesktop.NetworkManager.Device.Generic */
+@protocol NMDeviceGeneric
+
+@property (readonly) NSString *TypeDescription;
+@property (readonly) NSString *HwAddress;
+
+@end
+
+/* org.freedesktop.NetworkManager.Device.Wired */
+@protocol NMDeviceWired
+
+@property (readonly) NSNumber *Speed;
+@property (readonly) NSNumber *Carrier;
+@property (readonly) NSString *HwAddress;
+@property (readonly) NSString *PermHwAddress;
+@property (readonly) NSArray  *S390Subchannels;
+
+@end
+
+/* org.freedesktop.NetworkManager.Device.Statistics */
 @protocol NMDeviceStatistics
 
 @property (assign,readwrite) NSNumber *RefreshRateMs;
@@ -14,16 +33,8 @@
 
 @end
 
-// org.freedesktop.NetworkManager.Device.Generic
-@protocol NMDeviceGeneric
-
-@property (readonly) NSString *TypeDescription;
-@property (readonly) NSString *HwAddress;
-
-@end
-
 // org.freedesktop.NetworkManager.Device
-@protocol NMDevice
+@protocol NMDevice <NMDeviceGeneric, NMDeviceWired, NMDeviceStatistics>
 
 @property (readonly) NSArray<DKProxy<NMConnectionSettings> *> *AvailableConnections;
 @property (readonly) DKProxy<NMActiveConnection>              *ActiveConnection;
@@ -71,3 +82,4 @@
 - (NSArray*)GetAppliedConnection:(NSNumber*)flags;
 
 @end
+

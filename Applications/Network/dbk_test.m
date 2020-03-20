@@ -22,6 +22,30 @@ void showNetInformation(id<NetworkManager> nm)
   DKProxy<NMConnectionSettings> *connSets;
   
   fprintf(stderr, "=== Network Preferences ===\n");
+  fprintf(stderr, "  Networking : ");
+  if ([nm.NetworkingEnabled boolValue] != NO)
+    fprintf(stderr, "OK\n");
+  else
+    fprintf(stderr, "Disabled\n");
+    
+  fprintf(stderr, "  WiMax      : ");
+  if ([nm.WimaxEnabled boolValue] != NO)
+    fprintf(stderr, "OK\n");
+  else
+    fprintf(stderr, "Disabled\n");
+  
+  fprintf(stderr, "  Wireless   : ");
+  if ([nm.WirelessEnabled boolValue] != NO)
+    fprintf(stderr, "OK\n");
+  else
+    fprintf(stderr, "Disabled\n");
+  
+  fprintf(stderr, "  Wwan       : ");
+  if ([nm.WwanEnabled boolValue] != NO)
+    fprintf(stderr, "OK\n");
+  else
+    fprintf(stderr, "Disabled\n");
+  
   fprintf(stderr, "  Devices/Connections: \n");
   for (DKProxy<NMDevice> *dev in nm.AllDevices) {
     fprintf(stderr, "    %s (%s): ",
@@ -39,7 +63,6 @@ void showNetInformation(id<NetworkManager> nm)
   }
 
   fprintf(stderr, "  Active Connection: \n");
-  
 }
 
 NSString *nameOfDeviceType(NSNumber *type)
@@ -139,30 +162,62 @@ void showDeviceInformation(DKProxy<NMDevice> *device)
   fprintf(stderr, "State        : %s\n", [descriptionOfDeviceState(device.State) cString]);
 
   fprintf(stderr, "--- TCP/IP ---\n");
-  fprintf(stderr, " Interface   :    %s\n", [device.IpInterface cString]);
-  fprintf(stderr, " IPv4 Address:    %s\n", [[configData objectForKey:@"address"] cString]);
-  fprintf(stderr, " Subnet Mask :    %d\n", [[configData objectForKey:@"prefix"] intValue]);
-  fprintf(stderr, " Router      :    %s\n", [ip4Config.Gateway cString]);
+  fprintf(stderr, " Interface      :    %s\n", [device.IpInterface cString]);
+  fprintf(stderr, " IPv4 Address   :    %s\n", [[configData objectForKey:@"address"] cString]);
+  fprintf(stderr, " Subnet Mask    :    %d\n", [[configData objectForKey:@"prefix"] intValue]);
+  fprintf(stderr, " Router         :    %s\n", [ip4Config.Gateway cString]);
 
   fprintf(stderr, "--- DNS ---\n");
   for (configData in ip4Config.NameserverData) {
-    fprintf(stderr, " DNS Address :    %s\n", [[configData objectForKey:@"address"] cString]);
-    fprintf(stderr, " DNS Prefix  :    %d\n", [[configData objectForKey:@"prefix"] intValue]);
+    fprintf(stderr, " DNS Server     :    %s\n",
+            [[configData objectForKey:@"address"] cString]);
+    fprintf(stderr, " DNS Prefix     :    %d\n",
+            [[configData objectForKey:@"prefix"] intValue]);
+    fprintf(stderr, " Search Domains :    Not implemented\n");
   }
   
   fprintf(stderr, "--- Hardware ---\n");
-  fprintf(stderr, " MTU         :    %d\n", [device.Mtu intValue]);
-  fprintf(stderr, " Driver      :    %s (%s)\n",
+  // TypeDescription is a property of org.freedesktop.NetworkManager.Device.Generic
+  if ([device respondsToSelector:@selector(TypeDescription)]) {
+    fprintf(stderr, " Type           :    %s\n", [device.TypeDescription cString]);
+  }
+  // TypeDescription is a property of org.freedesktop.NetworkManager.Device.Wired
+  // and org.freedesktop.NetworkManager.Device.Generic
+  if ([device respondsToSelector:@selector(HwAddress)]) {
+    fprintf(stderr, " MAC Address    :    %s\n", [device.HwAddress cString]);
+  }    
+  if ([device respondsToSelector:@selector(Speed)]) {
+    fprintf(stderr, " Speed          :    %d Mb/s\n", [device.Speed intValue]);
+  }
+  fprintf(stderr, " MTU            :    %d\n", [device.Mtu intValue]);
+  fprintf(stderr, " Driver         :    %s (%s)\n",
           [device.Driver cString], [device.DriverVersion cString]);
-  // fprintf(stderr, " Firmware:         %s\n", [device.FirmwareVersion cString]);
-  // fprintf(stderr, " Port ID:          %s\n", [device.PhysicalPortId cString]);
-  // fprintf(stderr, " DeviceType:       %d\n", [device.DeviceType intValue]);
-  // fprintf(stderr, " Capabilities:     %d\n", [device.Capabilities intValue]);
-  // fprintf(stderr, " State:            %d\n", [device.State intValue]);
-  // fprintf(stderr, " Firmware missing: %s\n", [device.FirmwareMissing intValue] ? "Yes" : "No");
-  // fprintf(stderr, " Plugin Missing:   %s\n", [device.NmPluginMissing intValue] ? "Yes" : "No");
-  // fprintf(stderr, " Metered:          %s\n", [device.Metered intValue] ? "Yes" : "No");
-  // fprintf(stderr, " Real:             %s\n", [device.Real intValue] ? "Yes" : "No");  
+  if ([device.FirmwareMissing boolValue] != NO) {
+    fprintf(stderr, " Firmware       :    %s\n", [device.FirmwareVersion cString]);
+  }
+
+}
+
+// Returns list of available devices
+NSArray *deviceList(DKProxy<NetworkManager> *nm)
+{
+  NSArray        *allDevices = [nm GetAllDevices];
+  NSMutableArray *deviceList = [NSMutableArray new];
+    
+  for (DKProxy<NMDevice> *device in allDevices) {
+    // if ([device.IpInterface isEqualToString:@""] == NO
+    //     && device.State != [NSNumber numberWithInt:10]) {
+    if ([device.IpInterface isEqualToString:@""] == NO) {
+      [deviceList addObject:device];
+    }
+    else {
+      fprintf(stderr, "Device will be `%s` skipped. Reason: %s\n",
+              [device.Interface cString],
+              [descriptionOfDeviceState(device.State) cString]);
+    }
+  }
+
+  return [NSArray arrayWithArray:[deviceList autorelease]];
 }
 
 int main(int argc, char *argv[])
@@ -181,22 +236,10 @@ int main(int argc, char *argv[])
     networkManager = (DKProxy<NetworkManager> *)[connection proxyAtPath:OBJECT_PATH];
 
     // showPermissions(networkManager);
-    // showDevices(networkManager);
     showNetInformation(networkManager);
-    for (DKProxy<NMDevice> *device in [networkManager GetAllDevices]) {
-      if ([device.IpInterface isEqualToString:@""] == NO) {
-        showDeviceInformation(device);
-      }
+    for (DKProxy<NMDevice> *device in deviceList(networkManager)) {
+      showDeviceInformation(device);
     }
-
-    // Devices
-    // NSLog(@"State: %i", [[networkManager state] intValue]);
-    // NSLog(@"Active connections:");
-    // NSArray *activeConns = [networkManager ActiveConnections];
-    // for (id c in activeConns) {
-    //   NSLog(@"\t%@ - %@", [c _path], c);
-    // }
-    // NSLog(@"Primary connection type: %@", [networkManager PrimaryConnectionType]);
 
     [connection invalidate];
     [sendPort release];
