@@ -52,7 +52,7 @@
 @end
 
 // org.freedesktop.NetworkManager.Device
-@protocol NMDevice <NMDeviceGeneric, NMDeviceWired, NMDeviceStatistics>
+@protocol NMDevice <NMDeviceGeneric, NMDeviceWired, NMDeviceWireless, NMDeviceStatistics>
 
 @property (readonly) NSArray<DKProxy<NMConnectionSettings> *> *AvailableConnections;
 @property (readonly) DKProxy<NMActiveConnection>              *ActiveConnection;
@@ -100,4 +100,3 @@
 - (NSArray*)GetAppliedConnection:(NSNumber*)flags;
 
 @end
-

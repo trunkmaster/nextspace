@@ -2,6 +2,7 @@
 #import <DBusKit/DBusKit.h>
 
 #import "NetworkManager/NetworkManager.h"
+#import "NetworkManager/NMAccessPoint.h"
 
 #define CONNECTION_NAME @"org.freedesktop.NetworkManager"
 #define OBJECT_PATH     @"/org/freedesktop/NetworkManager"
@@ -59,6 +60,7 @@ void showNetInformation(id<NetworkManager> nm)
     else {
       fprintf(stderr, "None");
     }
+    fprintf(stderr, " %d", [dev.State intValue]);  
     fprintf(stderr, "\n");  
   }
 
@@ -152,14 +154,30 @@ NSString *descriptionOfDeviceState(NSNumber *state)
 void showDeviceInformation(DKProxy<NMDevice> *device)
 {
   DKProxy<NMIP4Config> *ip4Config;
-  NSDictionary *configData;
-  
-  ip4Config = device.Ip4Config;
-  configData = [ip4Config.AddressData objectAtIndex:0];
+  NSDictionary *configData = nil;
+
+  if ([device.State intValue] < 100) {
+    fprintf(stderr, "=== %s ===\n", [device.Interface cString]);
+    fprintf(stderr, "State           : %s\n", [descriptionOfDeviceState(device.State) cString]);
+    return;
+  }
+
+  if (device && [device respondsToSelector:@selector(Ip4Config)]) {
+    ip4Config = device.Ip4Config;
+    if (ip4Config && [ip4Config respondsToSelector:@selector(AddressData)]) {
+      configData = [ip4Config.AddressData objectAtIndex:0];
+    }
+    else {
+      return;
+    }
+  }
+  else {
+    return;
+  }
   
   fprintf(stderr, "=== %s (%s) ===\n", [device.Interface cString],
           [nameOfDeviceType(device.DeviceType) cString]);
-  fprintf(stderr, "State        : %s\n", [descriptionOfDeviceState(device.State) cString]);
+  fprintf(stderr, "State           : %s\n", [descriptionOfDeviceState(device.State) cString]);
 
   fprintf(stderr, "--- TCP/IP ---\n");
   fprintf(stderr, " Interface      :    %s\n", [device.IpInterface cString]);
@@ -197,6 +215,26 @@ void showDeviceInformation(DKProxy<NMDevice> *device)
     fprintf(stderr, " Firmware       :    %s\n", [device.FirmwareVersion cString]);
   }
 
+  // Wi-Fi
+  if ([device respondsToSelector:@selector(AccessPoints)]) {
+    // @try {
+    //   [device RequestScan:nil];
+    // }
+    // @catch (NSException *ex) {
+    //   NSLog(@"Rescan of access points failed: %@", [ex reason]);
+    // }
+    fprintf(stderr, " Access Points  : \n");
+    for (DKPort<NMAccessPoint> *ap in device.GetAllAccessPoints) {
+      for (id c in ap.Ssid) {
+        fprintf(stderr, "%c", [c charValue]);
+      }
+      fprintf(stderr, "(%s)", [ap.HwAddress cString]);
+      fprintf(stderr, " - Strength: %d%% Bitrate: %d Mb/s Frequency: %.2f Hz\n",
+              [ap.Strength intValue], [ap.MaxBitrate intValue]/1000,
+              [ap.Frequency floatValue]/1000.0);
+    }
+    // fprintf(stderr, "\n");
+  }
 }
 
 // Returns list of available devices
@@ -206,16 +244,17 @@ NSArray *deviceList(DKProxy<NetworkManager> *nm)
   NSMutableArray *deviceList = [NSMutableArray new];
     
   for (DKProxy<NMDevice> *device in allDevices) {
+    [deviceList addObject:device];
     // if ([device.IpInterface isEqualToString:@""] == NO
     //     && device.State != [NSNumber numberWithInt:10]) {
-    if (device.State != [NSNumber numberWithInt:10]) {
-      [deviceList addObject:device];
-    }
-    else {
-      fprintf(stderr, "Device `%s` will be skipped. Reason: %s\n",
-              [device.Interface cString],
-              [descriptionOfDeviceState(device.State) cString]);
-    }
+    // if (device.State != [NSNumber numberWithInt:10]) {
+    //   [deviceList addObject:device];
+    // }
+    // else {
+    //   fprintf(stderr, "Device `%s` will be skipped. Reason: %s\n",
+    //           [device.Interface cString],
+    //           [descriptionOfDeviceState(device.State) cString]);
+    // }
   }
 
   return [NSArray arrayWithArray:[deviceList autorelease]];
