@@ -15,21 +15,7 @@
 - (id)init
 {
   if ((self = [super init])) {
-    DKPort *receivePort;
-    
-    sendPort = [[DKPort alloc] initWithRemote:CONNECTION_NAME
-                                        onBus:DKDBusSystemBus];
-    receivePort = [DKPort portForBusType:DKDBusSessionBus];
-    connection = [NSConnection connectionWithReceivePort:receivePort
-                                                sendPort:sendPort];
-    if (connection) {
-      _networkManager = (DKProxy<NetworkManager> *)[connection proxyAtPath:OBJECT_PATH];
-      [connection retain];
-      [_networkManager retain];
-    }
   }
-
-  NSLog(@"AppController: init");
   return self;
 }
 
@@ -49,6 +35,7 @@
 {
   NSLog(@"awakeFromNib: NetworkManager: %@", _networkManager.Version);
   [window center];
+  [window setTitle:@"Connecting to NetworkManager..."];
   [connectionAction setRefusesFirstResponder:YES];
   [self _clearFields];
 }
@@ -58,6 +45,24 @@
 }
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
 {
+  DKPort *receivePort;
+    
+  sendPort = [[DKPort alloc] initWithRemote:CONNECTION_NAME
+                                      onBus:DKDBusSystemBus];
+  receivePort = [DKPort portForBusType:DKDBusSessionBus];
+  connection = [NSConnection connectionWithReceivePort:receivePort
+                                              sendPort:sendPort];
+  if (connection) {
+    [DKPort enableWorkerThread];
+    _networkManager = (DKProxy<NetworkManager> *)[connection proxyAtPath:OBJECT_PATH];
+    [connection retain];
+    [_networkManager retain];
+    [window setTitle:@"Network Connections"];
+    [connectionList loadColumnZero];
+  }
+  else {
+    [window setTitle:@"Connection to NetworkManager failed!"];
+  }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
