@@ -9,7 +9,9 @@
 
 void showPermissions(id nm)
 {
+  NSLog(@"NetworkManager GetPermissions: start");
   NSDictionary *perms = [nm GetPermissions];
+  NSLog(@"NetworkManager GetPermissions: end");
   fprintf(stderr, "=== Permissions ===\n");
   for (NSString *key in [perms allKeys]) {
     fprintf(stderr, "\t%s = %s\n",
@@ -49,6 +51,7 @@ void showNetInformation(id<NetworkManager> nm)
   
   fprintf(stderr, "  Devices/Connections: \n");
   for (DKProxy<NMDevice> *dev in nm.AllDevices) {
+    [dev setPrimaryDBusInterface:@"org.freedesktop.NetworkManager.Device"];
     fprintf(stderr, "    %s (%s): ",
             [dev.Interface cString],
             [dev.IpInterface cString]);
@@ -61,7 +64,7 @@ void showNetInformation(id<NetworkManager> nm)
       fprintf(stderr, "None");
     }
     fprintf(stderr, " %d", [dev.State intValue]);  
-    fprintf(stderr, "\n");  
+    fprintf(stderr, "\n");
   }
 
   fprintf(stderr, "  Active Connection: \n");
@@ -156,6 +159,7 @@ void showDeviceInformation(DKProxy<NMDevice> *device)
   DKProxy<NMIP4Config> *ip4Config;
   NSDictionary *configData = nil;
 
+  // [device setPrimaryDBusInterface:@"org.freedesktop.NetworkManager.Device"];
   if ([device.State intValue] < 100) {
     fprintf(stderr, "=== %s ===\n", [device.Interface cString]);
     fprintf(stderr, "State           : %s\n", [descriptionOfDeviceState(device.State) cString]);
@@ -267,7 +271,8 @@ int main(int argc, char *argv[])
   DKPort       *receivePort;
   NSConnection *connection;
   DKProxy<NetworkManager> *networkManager;
-  
+
+  NSLog(@"Setting up connection to the NetworkManager...");
   sendPort = [[DKPort alloc] initWithRemote:CONNECTION_NAME
                                       onBus:DKDBusSystemBus];
   receivePort = [DKPort portForBusType:DKDBusSessionBus];
@@ -275,8 +280,10 @@ int main(int argc, char *argv[])
                                               sendPort:sendPort];
   if (connection) {
     networkManager = (DKProxy<NetworkManager> *)[connection proxyAtPath:OBJECT_PATH];
+    NSLog(@"Done!");
 
-    // showPermissions(networkManager);
+    [DKPort enableWorkerThread];  
+    showPermissions(networkManager);
     showNetInformation(networkManager);
     for (DKProxy<NMDevice> *device in deviceList(networkManager)) {
       showDeviceInformation(device);
