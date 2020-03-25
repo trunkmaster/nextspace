@@ -1,24 +1,53 @@
 polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.NetworkManager.network-control") {
+        return "yes";
+    }
     if (action.id == "org.freedesktop.NetworkManager.settings.modify.own") {
         return "yes";
     }
+    if (action.id == "org.freedesktop.NetworkManager.settings.modify.system") {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.enable-disable-network") {
+        return "yes";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.enable-disable-wifi") {
+        return "yes";
+    }
 
-/*    
-  <action id="org.freedesktop.NetworkManager.enable-disable-network">
-  <action id="org.freedesktop.NetworkManager.reload">
-  <action id="org.freedesktop.NetworkManager.sleep-wake">
-  <action id="org.freedesktop.NetworkManager.enable-disable-wifi">
-  <action id="org.freedesktop.NetworkManager.enable-disable-wwan">
-  <action id="org.freedesktop.NetworkManager.enable-disable-wimax">
-  <action id="org.freedesktop.NetworkManager.network-control">
-  <action id="org.freedesktop.NetworkManager.wifi.share.protected">
-  <action id="org.freedesktop.NetworkManager.wifi.share.open">
-  <action id="">
-  <action id="org.freedesktop.NetworkManager.settings.modify.system">
-  <action id="org.freedesktop.NetworkManager.settings.modify.hostname">
-  <action id="org.freedesktop.NetworkManager.settings.modify.global-dns">
-  <action id="org.freedesktop.NetworkManager.checkpoint-rollback">
-  <action id="org.freedesktop.NetworkManager.enable-disable-statistics">
-  <action id="org.freedesktop.NetworkManager.enable-disable-connectivity-check">
+/*
+    if (action.id == "org.freedesktop.NetworkManager.reload") {
+        return "auth";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.sleep-wake") {
+        return "auth";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.enable-disable-wwan") {
+        return "no";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.enable-disable-wimax") {
+        return "no";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.wifi.share.protected") {
+        return "no";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.wifi.share.open") {
+        return "no";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.settings.modify.hostname") {
+        return "auth";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.settings.modify.global-dns") {
+        return "auth";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.checkpoint-rollback") {
+        return "auth";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.enable-disable-statistics") {
+        return "no";
+    }
+    if (action.id == "org.freedesktop.NetworkManager.enable-disable-connectivity-check") {
+        return "no";
+    }
 */
-}
+});
