@@ -7,6 +7,7 @@
 
 #define CONNECTION_NAME @"org.freedesktop.NetworkManager"
 #define OBJECT_PATH     @"/org/freedesktop/NetworkManager"
+#define DKNC [DKNotificationCenter systemBusCenter]
 
 #import "AppController.h"
 
@@ -59,6 +60,12 @@
     [_networkManager retain];
     [window setTitle:@"Network Connections"];
     [connectionList loadColumnZero];
+    [connectionList selectRow:0 inColumn:0];
+    [self connectionListClick:connectionList];
+    [DKNC addObserver:self
+             selector:@selector(deviceStateDidChange:)
+                 name:@"DKSignal_org.freedesktop.NetworkManager.Device_StateChanged"
+               object:nil];
   }
   else {
     [window setTitle:@"Connection to NetworkManager failed!"];
@@ -102,21 +109,30 @@
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
-  NSBrowserCell *cell;
-  NSInteger     row;
-  NSString      *title;
-  NSArray       *allDevices = [_networkManager GetAllDevices];
+  NSBrowserCell                 *cell;
+  NSInteger                     row;
+  NSString                      *title;
+  NSArray                       *allDevices = [_networkManager GetAllDevices];
+  DKProxy<NMActiveConnection>   *aconn;
+  DKProxy<NMConnectionSettings> *conns;
     
   for (DKProxy<NMDevice> *device in allDevices) {
-    [matrix addRow];
-    row = [matrix numberOfRows] - 1;
-    cell = [matrix cellAtRow:row column:column];
-    [cell setLeaf:YES];
-    [cell setRefusesFirstResponder:YES];
-    title = [NSString stringWithFormat:@"%@ (%@)",
-               [self _nameOfDeviceType:device.DeviceType], device.Interface];
-    [cell setTitle:title];
-    [cell setRepresentedObject:device];
+    if ([device.DeviceType intValue] != 14) {
+      [matrix addRow];
+      row = [matrix numberOfRows] - 1;
+      cell = [matrix cellAtRow:row column:column];
+      [cell setLeaf:YES];
+      [cell setRefusesFirstResponder:YES];
+      // title = [NSString stringWithFormat:@"%@ (%@)",
+      //            [self _nameOfDeviceType:device.DeviceType], device.Interface];
+      aconn = device.ActiveConnection;
+      conns = (DKProxy<NMConnectionSettings> *)aconn.Connection;
+      if ([conns respondsToSelector:@selector(GetSettings)]) {
+        title = [[[conns GetSettings] objectForKey:@"connection"] objectForKey:@"id"];
+        [cell setTitle:title];
+        [cell setRepresentedObject:device];
+      }
+    }
   }
 }
 
@@ -190,43 +206,78 @@
   DKProxy<NMDevice>    *device;
   DKProxy<NMIP4Config> *ip4Config;
   NSDictionary         *configData = nil;
+  NSString             *ip, *mask, *gw, *dns, *domains, *statusDesc;
 
-  [self _clearFields];
-  
-  if (cell) {
-    device = [cell representedObject];
-    if (!device) {
-      return;
-    }
-    
-    if ([device.State intValue] < 100) {
-      [statusInfo setStringValue:@"Not Connected"];
-      [statusDescription setStringValue:[self _descriptionOfDeviceState:device.State]];
-      return;
-    }
-    else {
-      [statusInfo setStringValue:@"Connected"];
-      [statusDescription setStringValue:[self _descriptionOfDeviceState:device.State]];
-    }
+  if (cell == nil)
+    return;
 
+  if ((device = [cell representedObject]) == nil)
+    return;
+   
+  if ([device.State intValue] < 100) {
+    statusDesc = [self _descriptionOfDeviceState:device.State];
+    [self _clearFields];
+    [statusInfo setStringValue:@"Not Connected"];
+    [statusDescription setStringValue:statusDesc];
+  }
+  else {
+    statusDesc = [self _descriptionOfDeviceState:device.State];
     if ([device respondsToSelector:@selector(Ip4Config)]) {
       ip4Config = device.Ip4Config;
       if (ip4Config && [ip4Config respondsToSelector:@selector(AddressData)]) {
         configData = [ip4Config.AddressData objectAtIndex:0];
       }
       else {
+        [self _clearFields];
         return;
       }
     }
     else {
+      [self _clearFields];
       return;
     }
-    [ipAddress setStringValue:[configData objectForKey:@"address"]];
-    [subnetMask setStringValue:[configData objectForKey:@"prefix"]];
-    [defaultGateway setStringValue:ip4Config.Gateway];
-    [dnsServers setStringValue:[ip4Config.NameserverData[0] objectForKey:@"address"]];
-    [searchDomains setStringValue:[ip4Config.Domains componentsJoinedByString:@","]];
+    
+    ip = [configData objectForKey:@"address"];
+    mask = [configData objectForKey:@"prefix"];
+    gw = ip4Config.Gateway;
+    dns = [ip4Config.NameserverData[0] objectForKey:@"address"];
+    domains  = [ip4Config.Domains componentsJoinedByString:@","];
+    
+    [self _clearFields];
+    [statusInfo setStringValue:@"Connected"];
+    [statusDescription setStringValue:statusDesc];
+    [ipAddress setStringValue:ip];
+    [subnetMask setStringValue:mask];
+    [defaultGateway setStringValue:gw];
+    [dnsServers setStringValue:dns];
+    [searchDomains setStringValue:domains];
   }
+}
+
+/* Signals/Notifications */
+- (void)deviceStateDidChange:(NSNotification *)aNotif
+{
+  NSLog(@"Device sate was changed: \n%@\nuserInfo: %@",
+        [aNotif object], [aNotif userInfo]);
+  // if ([[connectionList selectedCell] representedObject] == [aNotif object]) {
+  //   NSLog(@"Update selected connection info");
+    // [self connectionListClick:connectionList];
+  // }
+  if (timer && [timer isValid]) {
+    [timer invalidate];
+  }
+  timer = [NSTimer scheduledTimerWithTimeInterval:.5
+                                  target:self
+                                selector:@selector(updateConnectionInfo:)
+                                userInfo:nil
+                                 repeats:NO];
+}
+
+- (void)updateConnectionInfo:(NSTimer *)ti
+{
+  [self connectionListClick:connectionList];
+  [timer invalidate];
+  timer = nil;
 }
 
 @end

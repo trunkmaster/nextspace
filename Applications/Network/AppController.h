@@ -9,6 +9,7 @@
 {
   DKPort       *sendPort;
   NSConnection *connection;
+  NSTimer      *timer;
 
   // GUI
   NSWindow      *window;
