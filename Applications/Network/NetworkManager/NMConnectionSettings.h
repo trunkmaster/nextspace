@@ -3,7 +3,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol NMConnectionSettings
+@protocol NMConnectionSettings <DBusPeer, DBusProperties>
 
 - (void)Update:(NSDictionary*)properties;
 - (NSDictionary*)Update2:(NSDictionary*)settings
