@@ -7,7 +7,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 VERSION = 0.1
 PACKAGE_NAME = Network
 APP_NAME = Network
-Network_APPLICATION_ICON = net.tiff
+Network_APPLICATION_ICON = eunet.tiff
 Network_MAIN_MODEL_FILE = Network.gorm
 
 # Test
@@ -15,7 +15,9 @@ SUBPROJECTS = Test
 
 # Resource files
 Network_RESOURCE_FILES = \
-	Resources/net.tiff
+	Resources/eunet.tiff \
+	Resources/net.tiff \
+	Resources/asianet.tiff
 
 # Localization
 Network_LANGUAGES = English
