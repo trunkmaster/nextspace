@@ -22,19 +22,22 @@ Network_RESOURCE_FILES = \
 # Localization
 Network_LANGUAGES = English
 Network_LOCALIZED_RESOURCE_FILES = \
-	Network.gorm
+	Network.gorm \
+	EthernetView.gorm
 
 #
 # Header files
 #
 Network_HEADER_FILES = \
-	AppController.h
+	AppController.h \
+	EthernetController.h
 
 #
 # Class files
 #
 Network_OBJC_FILES = \
-	AppController.m
+	AppController.m \
+	EthernetController.m
 
 #
 # Other sources
