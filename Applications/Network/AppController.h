@@ -13,17 +13,13 @@
 
   // GUI
   NSWindow      *window;
+  NSBox         *contentBox;
   NSBrowser     *connectionList;
   NSPopUpButton *connectionAction;
   
-  NSTextField *statusInfo;
-  NSTextField *statusDescription;
-
-  NSTextField *ipAddress;
-  NSTextField *subnetMask;
-  NSTextField *defaultGateway;
-  NSTextField *dnsServers;
-  NSTextField *searchDomains;
+  NSTextField   *statusInfo;
+  NSTextField   *statusDescription;
+  NSView        *connectionView;
 }
 
 @property (readonly) DKProxy<NetworkManager> *networkManager;

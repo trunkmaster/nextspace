@@ -2,44 +2,20 @@
  *  AppController.m 
  */
 
+#import "EthernetController.h"
 #import <DBusKit/DBusKit.h>
-#import "NetworkManager/NMAccessPoint.h"
+
+#import "AppController.h"
 
 #define CONNECTION_NAME @"org.freedesktop.NetworkManager"
 #define OBJECT_PATH     @"/org/freedesktop/NetworkManager"
 #define DKNC [DKNotificationCenter systemBusCenter]
 
-#import "AppController.h"
-
 @implementation AppController
 
-- (id)init
-{
-  if ((self = [super init])) {
-  }
-  return self;
-}
-
-- (void)_clearFields
-{
-  [statusInfo setStringValue:@""];
-  [statusDescription setStringValue:@""];
-
-  [ipAddress setStringValue:@""];
-  [subnetMask setStringValue:@""];
-  [defaultGateway setStringValue:@""];
-  [dnsServers setStringValue:@""];
-  [searchDomains setStringValue:@""];
-}
-
-- (void)awakeFromNib
-{
-  NSLog(@"awakeFromNib: NetworkManager: %@", _networkManager.Version);
-  [window center];
-  [window setTitle:@"Connecting to NetworkManager..."];
-  [connectionAction setRefusesFirstResponder:YES];
-  [self _clearFields];
-}
+//
+// --- Application
+//
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
@@ -80,9 +56,29 @@
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
   NSLog(@"AppController: applicationWillTerminate");
+  [[EthernetController controller] release];
   [connection invalidate];
   [sendPort release];
   [_networkManager release];
+}
+
+//
+// --- Main window
+//
+
+- (void)_clearFields
+{
+  [statusInfo setStringValue:@""];
+  [statusDescription setStringValue:@""];
+}
+
+- (void)awakeFromNib
+{
+  NSLog(@"awakeFromNib: NetworkManager: %@", _networkManager.Version);
+  [window center];
+  [window setTitle:@"Connecting to NetworkManager..."];
+  [connectionAction setRefusesFirstResponder:YES];
+  [self _clearFields];
 }
 
 // NetworkManager related methods
@@ -200,58 +196,59 @@
   return desc;
 }
 
+- (void)_setConnectionView:(NSView *)view
+{
+  NSRect viewFrame;
+
+  if (connectionView) {
+    viewFrame = [connectionView frame];
+    [connectionView removeFromSuperview];
+  }
+  if (view) {
+    [view setFrame:viewFrame];
+    [contentBox addSubview:view];
+  }
+  connectionView = view;
+}
+
+- (void)_updateStatusInfoForDevice:(DKProxy<NMDevice> *)device
+{
+  NSString *status, *statusDesc;
+  
+  status = ([device.State intValue] < 100) ? @"Not Connected": @"Connected";
+  statusDesc = [self _descriptionOfDeviceState:device.State];
+  
+  [self _clearFields];
+  [statusInfo setStringValue:status];
+  [statusDescription setStringValue:statusDesc];
+}
+
 - (void)connectionListClick:(id)sender
 {
-  NSBrowserCell        *cell = [connectionList selectedCell];
-  DKProxy<NMDevice>    *device;
-  DKProxy<NMIP4Config> *ip4Config;
-  NSDictionary         *configData = nil;
-  NSString             *ip, *mask, *gw, *dns, *domains, *statusDesc;
+  NSBrowserCell     *cell = [connectionList selectedCell];
+  DKProxy<NMDevice> *device;
 
   if (cell == nil)
     return;
 
   if ((device = [cell representedObject]) == nil)
     return;
-   
-  if ([device.State intValue] < 100) {
-    statusDesc = [self _descriptionOfDeviceState:device.State];
-    [self _clearFields];
-    [statusInfo setStringValue:@"Not Connected"];
-    [statusDescription setStringValue:statusDesc];
+  
+  switch([device.DeviceType intValue]) {
+  case 1: // Ethernet
+    [self _updateStatusInfoForDevice:device];
+    [self _setConnectionView:[EthernetController view]];
+    break;
+  case 2: // Wi-Fi
+    break;
+  case 5: // Bluetooth
+    break;
+  case 14: // Generic
+  default:
+    [self _setConnectionView:nil];
+    break;
   }
-  else {
-    statusDesc = [self _descriptionOfDeviceState:device.State];
-    if ([device respondsToSelector:@selector(Ip4Config)]) {
-      ip4Config = device.Ip4Config;
-      if (ip4Config && [ip4Config respondsToSelector:@selector(AddressData)]) {
-        configData = [ip4Config.AddressData objectAtIndex:0];
-      }
-      else {
-        [self _clearFields];
-        return;
-      }
-    }
-    else {
-      [self _clearFields];
-      return;
-    }
-    
-    ip = [configData objectForKey:@"address"];
-    mask = [configData objectForKey:@"prefix"];
-    gw = ip4Config.Gateway;
-    dns = [ip4Config.NameserverData[0] objectForKey:@"address"];
-    domains  = [ip4Config.Domains componentsJoinedByString:@","];
-    
-    [self _clearFields];
-    [statusInfo setStringValue:@"Connected"];
-    [statusDescription setStringValue:statusDesc];
-    [ipAddress setStringValue:ip];
-    [subnetMask setStringValue:mask];
-    [defaultGateway setStringValue:gw];
-    [dnsServers setStringValue:dns];
-    [searchDomains setStringValue:domains];
-  }
+  
 }
 
 /* Signals/Notifications */
