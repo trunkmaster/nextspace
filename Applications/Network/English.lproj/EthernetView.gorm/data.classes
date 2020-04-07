@@ -1,17 +1,16 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
-    AppController = {
+    EthernetController = {
 	Actions = (
-	    "connectionListClick:"
 	);
 	Outlets = (
-	    connectionList,
-	    connectionAction,
-	    statusDescription,
-	    statusInfo,
-	    window,
-	    connectionView,
-	    contentBox
+	    configureMethod,
+	    defaultGateway,
+	    dnsServers,
+	    ipAddress,
+	    ethernetView,
+	    searchDomains,
+	    subnetMask
 	);
 	Super = NSObject;
     };
