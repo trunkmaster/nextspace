@@ -68,7 +68,7 @@
 
 - (void)_clearFields
 {
-  [statusInfo setStringValue:@""];
+  [statusInfo setStringValue:@"Unknown"];
   [statusDescription setStringValue:@""];
 }
 
@@ -105,12 +105,10 @@
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
-  NSBrowserCell                 *cell;
-  NSInteger                     row;
-  NSString                      *title;
-  NSArray                       *allDevices = [_networkManager GetAllDevices];
-  DKProxy<NMActiveConnection>   *aconn;
-  DKProxy<NMConnectionSettings> *conns;
+  NSBrowserCell *cell;
+  NSInteger     row;
+  NSString      *title;
+  NSArray       *allDevices = [_networkManager GetAllDevices];
     
   for (DKProxy<NMDevice> *device in allDevices) {
     if ([device.DeviceType intValue] != 14) {
@@ -119,14 +117,17 @@
       cell = [matrix cellAtRow:row column:column];
       [cell setLeaf:YES];
       [cell setRefusesFirstResponder:YES];
-      // title = [NSString stringWithFormat:@"%@ (%@)",
-      //            [self _nameOfDeviceType:device.DeviceType], device.Interface];
-      aconn = device.ActiveConnection;
-      conns = (DKProxy<NMConnectionSettings> *)aconn.Connection;
-      if ([conns respondsToSelector:@selector(GetSettings)]) {
-        title = [[[conns GetSettings] objectForKey:@"connection"] objectForKey:@"id"];
-        [cell setTitle:title];
-        [cell setRepresentedObject:device];
+
+      // Use list of available connections beacuse device may not have
+      // active connection (connection was deactivated and no way to know
+      // its state).
+      for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
+        if ([conns respondsToSelector:@selector(GetSettings)]) {
+          title = [[[conns GetSettings] objectForKey:@"connection"]
+                    objectForKey:@"id"];
+          [cell setTitle:title];
+          [cell setRepresentedObject:device];
+        }
       }
     }
   }
@@ -236,6 +237,7 @@
   
   switch([device.DeviceType intValue]) {
   case 1: // Ethernet
+    [[EthernetController controller] updateForDevice:device];
     [self _updateStatusInfoForDevice:device];
     [self _setConnectionView:[EthernetController view]];
     break;
@@ -247,8 +249,7 @@
   default:
     [self _setConnectionView:nil];
     break;
-  }
-  
+  }  
 }
 
 /* Signals/Notifications */
@@ -260,7 +261,9 @@
   //   NSLog(@"Update selected connection info");
     // [self connectionListClick:connectionList];
   // }
-  if (timer && [timer isValid]) {
+  if (timer &&
+      [timer isKindOfClass:[NSTimer class]] &&
+      [timer isValid]) {
     [timer invalidate];
   }
   timer = [NSTimer scheduledTimerWithTimeInterval:.5
