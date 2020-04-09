@@ -1,6 +1,8 @@
 /* All Rights reserved */
 
-#include <AppKit/AppKit.h>
+#import <AppKit/AppKit.h>
+#import <DBusKit/DBusKit.h>
+#import "NetworkManager/NetworkManager.h"
 
 @interface EthernetController : NSObject
 {
@@ -15,5 +17,6 @@
 
 + (instancetype)controller;
 + (NSView *)view;
+- (void)updateForDevice:(DKProxy<NMDevice> *)device;
 
 @end
