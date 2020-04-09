@@ -3,9 +3,31 @@
 
 #import "NetworkManager/NetworkManager.h"
 #import "NetworkManager/NMAccessPoint.h"
+#import "NetworkManager/NMConnectionSettings.h"
 
 #define CONNECTION_NAME @"org.freedesktop.NetworkManager"
 #define OBJECT_PATH     @"/org/freedesktop/NetworkManager"
+
+NSDictionary *validateSettings(NSDictionary *settings)
+{
+  NSMutableDictionary *validSettings = [settings mutableCopy];
+  id value;
+
+  for (NSString *key in [settings allKeys]) {
+    value = [settings objectForKey:key];
+    if ([value isKindOfClass:[NSArray class]]) {
+      if ([value count] == 0)
+        [validSettings removeObjectForKey:key];
+    }
+    else if ([value isKindOfClass:[NSDictionary class]]) {
+      if ([[value allKeys] count] == 0)
+        [validSettings removeObjectForKey:key];        
+    }
+  }
+
+  return [NSDictionary dictionaryWithDictionary:validSettings];
+}
+
 
 void showPermissions(id nm)
 {
@@ -178,7 +200,7 @@ void showDeviceInformation(DKProxy<NMDevice> *device)
   else {
     return;
   }
-  
+
   fprintf(stderr, "=== %s (%s) ===\n", [device.Interface cString],
           [nameOfDeviceType(device.DeviceType) cString]);
   fprintf(stderr, "State           : %s\n", [descriptionOfDeviceState(device.State) cString]);
@@ -239,6 +261,48 @@ void showDeviceInformation(DKProxy<NMDevice> *device)
               [ap.Frequency floatValue]/1000.0);
     }
     // fprintf(stderr, "\n");
+  }
+
+  {
+    DKProxy<NMActiveConnection> *aconn = device.ActiveConnection;
+    DKProxy<NMConnectionSettings> *conn = (DKProxy<NMConnectionSettings> *)aconn.Connection;
+    NSLog(@"Connection Settings: %@", [conn GetSettings]);
+    {
+      NSDictionary *validSets;
+      NSMutableDictionary /**cSets1,*/ *cSets2, *nSets;
+      // cSets1 = [NSMutableDictionary
+      //            dictionaryWithDictionary:[conn GetSettings]];
+      // cSets2 = [NSMutableDictionary
+      //            dictionaryWithDictionary:[cSets1 objectForKey:@"connection"]];
+      validSets = validateSettings([[conn GetSettings] objectForKey:@"connection"]);
+      cSets2 = [NSMutableDictionary dictionaryWithDictionary:validSets];
+      // NSLog(@"Connection Settings: %@", cSets2);
+      // [cSets2 setObject:[NSNumber numberWithInt:1] forKey:@"autoconnect-priority"];
+      // [cSets2 removeObjectForKey:@"permissions"];
+      [cSets2 setObject:[NSNumber numberWithInt:0] forKey:@"autoconnect-priority"];
+      nSets = [NSMutableDictionary new];
+      [nSets setObject:cSets2 forKey:@"connection"];
+      
+      NSLog(@"Will `Update` to: %@", nSets);
+      NSLog(@"Call `Update` to connection settings");
+      @try {
+        [conn Update:nSets];
+      }
+      @catch (NSException *ex) {
+        NSLog(@"%@", [ex userInfo]);
+      }
+      @finally {
+        [nSets release];
+      }
+    }
+    NSLog(@"\nConnection Settings after `Update`: %@", [conn GetSettings]);
+    
+    // NSLog(@"Setting autoconnect-priority to 1");
+    // [(DKProxy<NMConnectionSettings> *)conn Set:@"org.freedesktop.DBus.Properties"
+    //                                           :@"autoconnect-priority"
+    //                                           :[NSNumber numberWithInt:1]];
+    // NSLog(@"Connection Settings after change: %@",
+    //       [(DKProxy<NMConnectionSettings> *)conn GetSettings]);
   }
 }
 
