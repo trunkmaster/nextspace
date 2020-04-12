@@ -1,0 +1,166 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: amd64/centos:7
+    steps:
+      - run:
+          name: Add EPEL
+          command: yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      - run:
+          name: Update Yum
+          command: yum -y update
+      - run:
+          name: Install git
+          command: yum -y install git
+      - run:
+          name: Install libffi
+          command: yum -y install libffi libffi-devel
+      - run:
+          name: Install libxml2
+          command: yum -y install libxml2 libxml2-devel
+      - run:
+          name: Install gnutls
+          command: yum -y install gnutls gnutls-devel
+      - run:
+          name: Install libxslt
+          command: yum -y install libxslt libxslt-devel
+      - run:
+          name: Install libicu
+          command: yum -y install libicu libicu-devel
+      - run:
+          name: Install libjpeg
+          command: yum -y install libjpeg libjpeg-devel
+      - run:
+          name: Install libtiff
+          command: yum -y install libtiff libtiff-devel
+      - run:
+          name: Install libpng
+          command: yum -y install libpng libpng-devel
+      - run:
+          name: Install freetype
+          command: yum -y install freetype freetype-devel
+      - run:
+          name: Install libart
+          command: yum -y install libart_lgpl libart_lgpl-devel
+      - run:
+          name: Install libX11
+          command: yum -y install libX11 libX11-devel
+      - run:
+          name: Install libXt
+          command: yum -y install libXt libXt-devel
+      - run:
+          name: Install which
+          command: yum -y install which
+      - run:
+          name: Install X Window System
+          command: yum -y groupinstall "X Window System"
+      - run:
+          name: Install clang-libs
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/clang-libs-7.0.1-4.el7.x86_64.rpm
+      - run:
+          name: Install clang
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/clang-7.0.1-4.el7.x86_64.rpm
+      - run:
+          name: Install libdispatch
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libdispatch-1.3.1121-3.el7.x86_64.rpm
+      - run:
+          name: Install libdispatch-devel
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libdispatch-devel-1.3.1121-3.el7.x86_64.rpm
+      - run:
+          name: Install libobjc2
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libobjc2-2.0-3.el7.x86_64.rpm
+      - run:
+          name: Install libojc2-devel
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libobjc2-devel-2.0-3.el7.x86_64.rpm
+      - run:
+          name: Install llvm-libs
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/llvm-libs-7.0.1-3.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-gnustep
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-gnustep-1.26.0_0.25.0-2.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-gnustep-devel
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-gnustep-devel-1.26.0_0.25.0-2.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-core
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-core-0.95-8.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-core-devel
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-core-devel-0.95-8.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-frameworks
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-frameworks-0.85-2.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-frameworks-devel
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-frameworks-devel-0.85-2.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-applications
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-applications-0.85-3.el7.x86_64.rpm
+      - run:
+          name: Install nextspace-applications-devel
+          command: yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-applications-devel-0.85-3.el7.x86_64.rpm
+      - run:
+          name: Source profile
+          command: source /etc/profile.d/nextspace.sh
+      - run:
+          name: Build and install libs-base
+          command: |
+            source /etc/profile.d/nextspace.sh
+            CC=/usr/bin/clang
+            GNUSTEP_MAKEFILES=/Developer/Makefiles
+            git clone https://github.com/gnustep/libs-base
+            cd libs-base
+            ./configure --disable-mixedabi
+            make
+            make install
+            ldconfig
+      - run:
+          name: Build and install libs-gui
+          command: |
+            source /etc/profile.d/nextspace.sh
+            CC=/usr/bin/clang
+            GNUSTEP_MAKEFILES=/Developer/Makefiles
+            git clone https://github.com/gnustep/libs-gui
+            cd libs-gui
+            git checkout nextspace
+            ./configure
+            make
+            make install
+            ldconfig
+      - run:
+          name: Build and install libs-back
+          command: |
+            source /etc/profile.d/nextspace.sh
+            CC=/usr/bin/clang
+            GNUSTEP_MAKEFILES=/Developer/Makefiles
+            git clone https://github.com/gnustep/libs-back
+            cd libs-back
+            git checkout nextspace
+            ./configure --enable-graphics=art --with-name=art
+            make
+            make fonts=no install
+            ldconfig
+      - checkout:
+          path: /root/nextspace
+      - run:
+          name: Build and install Frameworks
+          command: |
+            cd /root/nextspace
+            source /etc/profile.d/nextspace.sh
+            CC=/usr/bin/clang
+            cd Frameworks
+            yum -y install `grep "BuildRequires" nextspace-frameworks.spec | awk -c '{print $2}'`
+            make
+            make install
+            ldconfig
+      - run:
+          name: Build and install Applications
+          command: |
+            cd /root/nextspace
+            source /etc/profile.d/nextspace.sh
+            CC=/usr/bin/clang
+            cd Applications
+            yum -y install `grep "BuildRequires" nextspace-applications.spec | awk -c '{print $2}'`
+            make
+            make install
