@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: amd64/centos:7
+      - image: amd64/centos:7.7.1908
     environment:
       CC: /usr/bin/clang
       BASH_ENV: /etc/profile.d/nextspace.sh
