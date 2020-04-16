@@ -75,8 +75,7 @@ jobs:
       - run:
           name: Build and install Frameworks
           command: |
-            cd /root/nextspace
-            cd Frameworks
+            cd /root/nextspace/Frameworks
             yum -y install `grep "BuildRequires" nextspace-frameworks.spec | awk -c '{print $2}'`
             make
             make install
@@ -84,7 +83,11 @@ jobs:
       - run:
           name: Build and install Applications
           command: |
-            cd /root/nextspace
+            cd /root/nextspace/Libraries/libwraster
+            make 
+            make install
+            cd /root/nextspace/Applications
+            make 
             cd Applications
             yum -y install `grep "BuildRequires" nextspace-applications.spec | awk -c '{print $2}'`
             make
