@@ -3,9 +3,9 @@ jobs:
   build:
     docker:
       - image: amd64/centos:7
-      environment:
-        CC: /usr/bin/clang
-        BASH_ENV: /etc/profile.d/nextspace.sh
+    environment:
+      CC: /usr/bin/clang
+      BASH_ENV: /etc/profile.d/nextspace.sh
     steps:
       - run:
           name: Setup Yum
