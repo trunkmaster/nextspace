@@ -2,9 +2,10 @@
  *  AppController.m 
  */
 
-#import "EthernetController.h"
 #import <DBusKit/DBusKit.h>
+#import <DesktopKit/NXTAlert.h>
 
+#import "EthernetController.h"
 #import "AppController.h"
 
 #define CONNECTION_NAME @"org.freedesktop.NetworkManager"
@@ -19,6 +20,7 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
+  connections = [NSMutableArray new];
 }
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
 {
@@ -42,6 +44,7 @@
              selector:@selector(deviceStateDidChange:)
                  name:@"DKSignal_org.freedesktop.NetworkManager.Device_StateChanged"
                object:nil];
+    [connectionAction setEnabled:YES];
   }
   else {
     [window setTitle:@"Connection to NetworkManager failed!"];
@@ -60,6 +63,7 @@
   [connection invalidate];
   [sendPort release];
   [_networkManager release];
+  [connMan release];
 }
 
 //
@@ -82,6 +86,29 @@
 }
 
 // NetworkManager related methods
+// - (BOOL)_reloadConnections
+// {
+//   NSArray *allDevices = [_networkManager GetAllDevices];
+
+//   [connections removeAllObjects];
+    
+//   for (DKProxy<NMDevice> *device in allDevices) {
+//     if ([device.DeviceType intValue] != 14) {
+//       // Use list of available connections beacuse device may not have
+//       // active connection (connection was deactivated and no way to know
+//       // its state).
+//       for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
+//         if ([conns respondsToSelector:@selector(GetSettings)]) {
+//           title = [[[conns GetSettings] objectForKey:@"connection"]
+//                     objectForKey:@"id"];
+//           [cell setTitle:title];
+//           [cell setRepresentedObject:device];
+//         }
+//       }
+//     }
+//   }
+// }
+  
 - (NSString *)_nameOfDeviceType:(NSNumber *)type
 {
   NSString *typeName = nil;
@@ -251,6 +278,40 @@
     break;
   }  
 }
+
+- (void)connectionActionClick:(id)sender
+{
+  switch ([[sender selectedItem] tag])
+    {
+    case 0: // Add
+      NSLog(@"Add Connection");
+      if (connMan == nil)
+        connMan = [ConnectionManager new];
+      // Delay message send to leave room for popup menu closing
+      [NSTimer scheduledTimerWithTimeInterval:0.1
+                                       target:connMan
+                                     selector:@selector(showAddConnectionPanel)
+                                     userInfo:nil
+                                      repeats:NO];
+      break;
+    case 1: // Remove
+      NSLog(@"Remove Connection");
+      NXTRunAlertPanel(@"Remove Connection",
+                       @"Do you want to remove connection %@",
+                       @"Remove", @"Leave", nil,
+                       [[connectionList selectedCell] title]);
+      break;
+    case 2: // Rename
+      NSLog(@"Rename Connection");
+      break;
+    case 3: // Deactivate
+      NSLog(@"Deactivate Connection");
+      break;
+    default:
+      break;
+    }
+}
+
 
 /* Signals/Notifications */
 - (void)deviceStateDidChange:(NSNotification *)aNotif

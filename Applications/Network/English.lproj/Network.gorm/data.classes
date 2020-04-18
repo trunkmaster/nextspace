@@ -2,7 +2,8 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     AppController = {
 	Actions = (
-	    "connectionListClick:"
+	    "connectionListClick:",
+	    "connectionActionClick:"
 	);
 	Outlets = (
 	    connectionList,
@@ -17,7 +18,8 @@
     };
     FirstResponder = {
 	Actions = (
-	    "connectionListClick:"
+	    "connectionListClick:",
+	    "connectionActionClick:"
 	);
 	Super = NSObject;
     };
