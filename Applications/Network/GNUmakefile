@@ -23,7 +23,8 @@ Network_RESOURCE_FILES = \
 Network_LANGUAGES = English
 Network_LOCALIZED_RESOURCE_FILES = \
 	Network.gorm \
-	EthernetView.gorm
+	EthernetView.gorm \
+	AddConnection.gorm
 
 #
 # Header files
@@ -37,6 +38,7 @@ Network_HEADER_FILES = \
 #
 Network_OBJC_FILES = \
 	AppController.m \
+	ConnectionManager.m \
 	EthernetController.m
 
 #
