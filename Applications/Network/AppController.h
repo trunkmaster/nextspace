@@ -22,7 +22,8 @@
   NSBox         *contentBox;
   NSBrowser     *connectionList;
   NSPopUpButton *connectionAction;
-  
+
+  NSBox         *statusBox;
   NSTextField   *statusInfo;
   NSTextField   *statusDescription;
   NSView        *connectionView;

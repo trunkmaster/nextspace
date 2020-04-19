@@ -12,103 +12,8 @@
 #define OBJECT_PATH     @"/org/freedesktop/NetworkManager"
 #define DKNC [DKNotificationCenter systemBusCenter]
 
-@implementation AppController
+@implementation AppController (NetworkManager)
 
-//
-// --- Application
-//
-
-- (void)applicationWillFinishLaunching:(NSNotification *)notif
-{
-  connections = [NSMutableArray new];
-}
-- (void)applicationDidFinishLaunching:(NSNotification *)notif
-{
-  DKPort *receivePort;
-    
-  sendPort = [[DKPort alloc] initWithRemote:CONNECTION_NAME
-                                      onBus:DKDBusSystemBus];
-  receivePort = [DKPort portForBusType:DKDBusSessionBus];
-  connection = [NSConnection connectionWithReceivePort:receivePort
-                                              sendPort:sendPort];
-  if (connection) {
-    [DKPort enableWorkerThread];
-    _networkManager = (DKProxy<NetworkManager> *)[connection proxyAtPath:OBJECT_PATH];
-    [connection retain];
-    [_networkManager retain];
-    [window setTitle:@"Network Connections"];
-    [connectionList loadColumnZero];
-    [connectionList selectRow:0 inColumn:0];
-    [self connectionListClick:connectionList];
-    [DKNC addObserver:self
-             selector:@selector(deviceStateDidChange:)
-                 name:@"DKSignal_org.freedesktop.NetworkManager.Device_StateChanged"
-               object:nil];
-    [connectionAction setEnabled:YES];
-  }
-  else {
-    [window setTitle:@"Connection to NetworkManager failed!"];
-  }
-}
-
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
-{
-  return YES;
-}
-
-- (void)applicationWillTerminate:(NSNotification *)notification
-{
-  NSLog(@"AppController: applicationWillTerminate");
-  [[EthernetController controller] release];
-  [connection invalidate];
-  [sendPort release];
-  [_networkManager release];
-  [connMan release];
-}
-
-//
-// --- Main window
-//
-
-- (void)_clearFields
-{
-  [statusInfo setStringValue:@"Unknown"];
-  [statusDescription setStringValue:@""];
-}
-
-- (void)awakeFromNib
-{
-  NSLog(@"awakeFromNib: NetworkManager: %@", _networkManager.Version);
-  [window center];
-  [window setTitle:@"Connecting to NetworkManager..."];
-  [connectionAction setRefusesFirstResponder:YES];
-  [self _clearFields];
-}
-
-// NetworkManager related methods
-// - (BOOL)_reloadConnections
-// {
-//   NSArray *allDevices = [_networkManager GetAllDevices];
-
-//   [connections removeAllObjects];
-    
-//   for (DKProxy<NMDevice> *device in allDevices) {
-//     if ([device.DeviceType intValue] != 14) {
-//       // Use list of available connections beacuse device may not have
-//       // active connection (connection was deactivated and no way to know
-//       // its state).
-//       for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
-//         if ([conns respondsToSelector:@selector(GetSettings)]) {
-//           title = [[[conns GetSettings] objectForKey:@"connection"]
-//                     objectForKey:@"id"];
-//           [cell setTitle:title];
-//           [cell setRepresentedObject:device];
-//         }
-//       }
-//     }
-//   }
-// }
-  
 - (NSString *)_nameOfDeviceType:(NSNumber *)type
 {
   NSString *typeName = nil;
@@ -127,37 +32,6 @@
     break;
   }
   return typeName;
-}
-- (void)     browser:(NSBrowser *)sender
- createRowsForColumn:(NSInteger)column
-            inMatrix:(NSMatrix *)matrix
-{
-  NSBrowserCell *cell;
-  NSInteger     row;
-  NSString      *title;
-  NSArray       *allDevices = [_networkManager GetAllDevices];
-    
-  for (DKProxy<NMDevice> *device in allDevices) {
-    if ([device.DeviceType intValue] != 14) {
-      [matrix addRow];
-      row = [matrix numberOfRows] - 1;
-      cell = [matrix cellAtRow:row column:column];
-      [cell setLeaf:YES];
-      [cell setRefusesFirstResponder:YES];
-
-      // Use list of available connections beacuse device may not have
-      // active connection (connection was deactivated and no way to know
-      // its state).
-      for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
-        if ([conns respondsToSelector:@selector(GetSettings)]) {
-          title = [[[conns GetSettings] objectForKey:@"connection"]
-                    objectForKey:@"id"];
-          [cell setTitle:title];
-          [cell setRepresentedObject:device];
-        }
-      }
-    }
-  }
 }
 
 - (NSString *)_descriptionOfDeviceState:(NSNumber *)state
@@ -224,6 +98,143 @@
   return desc;
 }
 
+@end
+
+@implementation AppController
+
+//
+// --- Application
+//
+
+- (void)applicationWillFinishLaunching:(NSNotification *)notif
+{
+  connections = [NSMutableArray new];
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)notif
+{
+  DKPort *receivePort;
+    
+  sendPort = [[DKPort alloc] initWithRemote:CONNECTION_NAME
+                                      onBus:DKDBusSystemBus];
+  receivePort = [DKPort portForBusType:DKDBusSessionBus];
+  connection = [NSConnection connectionWithReceivePort:receivePort
+                                              sendPort:sendPort];
+  if (connection) {
+    [DKPort enableWorkerThread];
+    _networkManager = (DKProxy<NetworkManager> *)[connection proxyAtPath:OBJECT_PATH];
+    [connection retain];
+    [_networkManager retain];
+    [window setTitle:@"Network Connections"];
+    [connectionList loadColumnZero];
+    [connectionList selectRow:0 inColumn:0];
+    [self connectionListClick:connectionList];
+    [DKNC addObserver:self
+             selector:@selector(deviceStateDidChange:)
+                 name:@"DKSignal_org.freedesktop.NetworkManager.Device_StateChanged"
+               object:nil];
+    [connectionAction setEnabled:YES];
+  }
+  else {
+    [window setTitle:@"Connection to NetworkManager failed!"];
+  }
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+  return YES;
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+  NSLog(@"AppController: applicationWillTerminate");
+  [[EthernetController controller] release];
+  [connection invalidate];
+  [sendPort release];
+  [_networkManager release];
+  [connMan release];
+}
+
+//
+// --- Main window
+//
+
+- (void)_clearFields
+{
+  [statusInfo setStringValue:@"Unknown"];
+  [statusDescription setStringValue:@""];
+}
+
+- (void)awakeFromNib
+{
+  NSLog(@"awakeFromNib: NetworkManager: %@", _networkManager.Version);
+  [statusBox retain];
+  [statusBox removeFromSuperview];
+  [window center];
+  [window setTitle:@"Connecting to NetworkManager..."];
+  [connectionAction setRefusesFirstResponder:YES];
+  [self _clearFields];
+}
+
+// NetworkManager related methods
+// - (BOOL)_reloadConnections
+// {
+//   NSArray *allDevices = [_networkManager GetAllDevices];
+
+//   [connections removeAllObjects];
+    
+//   for (DKProxy<NMDevice> *device in allDevices) {
+//     if ([device.DeviceType intValue] != 14) {
+//       // Use list of available connections beacuse device may not have
+//       // active connection (connection was deactivated and no way to know
+//       // its state).
+//       for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
+//         if ([conns respondsToSelector:@selector(GetSettings)]) {
+//           title = [[[conns GetSettings] objectForKey:@"connection"]
+//                     objectForKey:@"id"];
+//           [cell setTitle:title];
+//           [cell setRepresentedObject:device];
+//         }
+//       }
+//     }
+//   }
+// }
+  
+- (void)     browser:(NSBrowser *)sender
+ createRowsForColumn:(NSInteger)column
+            inMatrix:(NSMatrix *)matrix
+{
+  NSBrowserCell *cell;
+  NSInteger     row;
+  NSString      *title;
+  NSArray       *allDevices = [_networkManager GetAllDevices];
+    
+  for (DKProxy<NMDevice> *device in allDevices) {
+    if ([device.DeviceType intValue] != 14) {
+      [matrix addRow];
+      row = [matrix numberOfRows] - 1;
+      cell = [matrix cellAtRow:row column:column];
+      [cell setLeaf:YES];
+      [cell setRefusesFirstResponder:YES];
+
+      // Use list of available connections beacuse device may not have
+      // active connection (connection was deactivated and no way to know
+      // its state).
+      for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
+        if ([conns respondsToSelector:@selector(GetSettings)]) {
+          title = [[[conns GetSettings] objectForKey:@"connection"]
+                    objectForKey:@"id"];
+          [cell setTitle:title];
+          [cell setRepresentedObject:device];
+        }
+      }
+      if ([cell title] == nil || [[cell title] isEqualToString:@""]) {
+        [matrix removeRow:row];
+      }
+    }
+  }
+}
+
 - (void)_setConnectionView:(NSView *)view
 {
   NSRect viewFrame;
@@ -261,6 +272,10 @@
 
   if ((device = [cell representedObject]) == nil)
     return;
+
+  if ([statusBox superview] == nil) {
+    [[window contentView] addSubview:statusBox];
+  }
   
   switch([device.DeviceType intValue]) {
   case 1: // Ethernet
@@ -279,6 +294,7 @@
   }  
 }
 
+// "Connection" pull down button
 - (void)connectionActionClick:(id)sender
 {
   switch ([[sender selectedItem] tag])
