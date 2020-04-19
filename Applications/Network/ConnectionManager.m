@@ -1,7 +1,10 @@
 /* All Rights reserved */
 
-#include <AppKit/AppKit.h>
-#include "ConnectionManager.h"
+#import <AppKit/AppKit.h>
+#import <DBusKit/DBusKit.h>
+#import "NetworkManager/NetworkManager.h"
+#import "AppController.h"
+#import "ConnectionManager.h"
 
 @implementation ConnectionManager
 
@@ -21,22 +24,37 @@
 
 - (void)awakeFromNib
 {
-  [deviceList removeAllItems];  
+  DKProxy<NetworkManager> *networkManager;
+
+  [deviceList removeAllItems];
+  networkManager = ((AppController *)[NSApp delegate]).networkManager;
+  for (DKProxy<NMDevice> *device in [networkManager GetAllDevices]) {
+    if ([device.DeviceType intValue] != 14) {
+      [deviceList addItemWithTitle:device.Interface];
+      [[deviceList itemWithTitle:device.Interface]
+        setRepresentedObject:device];
+    }
+  }
 }
 
 - (void)addConnection:(id)sender
 {
-  /* insert your code here */
-}
+  DKProxy<NetworkManager> *networkManager;
+  NSMutableDictionary     *settings = [NSMutableDictionary dictionary];
+  DKProxy                 *device;
 
-- (void)setName:(id)sender
-{
-  /* insert your code here */
-}
+  networkManager = ((AppController *)[NSApp delegate]).networkManager;
+  
+  NSLog(@"Add connection with name `%@` for device `%@`",
+        [connectionName stringValue], [[deviceList selectedItem] title]);
 
-- (void)setDevice:(id)sender
-{
-  /* insert your code here */
+  [settings setObject:[connectionName stringValue] forKey:@"id"];
+  device = [[deviceList selectedItem] representedObject];
+  
+  [networkManager AddAndActivateConnection:settings
+                                          :device
+                                          :nil];
+  [window close];
 }
 
 @end

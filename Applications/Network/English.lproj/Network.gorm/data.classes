@@ -12,7 +12,8 @@
 	    statusInfo,
 	    window,
 	    connectionView,
-	    contentBox
+	    contentBox,
+	    statusBox
 	);
 	Super = NSObject;
     };
