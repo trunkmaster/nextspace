@@ -2,6 +2,7 @@
  *  AppController.m 
  */
 
+#import <Foundation/NSNotification.h>
 #import <DBusKit/DBusKit.h>
 #import <DesktopKit/NXTAlert.h>
 
@@ -98,6 +99,26 @@
   return desc;
 }
 
+- (DKProxy<NMConnectionSettings> *)_connectionWithName:(NSString *)name
+                                             forDevice:(DKProxy<NMDevice> *)device
+{
+  NSDictionary *settings;
+  DKProxy<NMConnectionSettings> *conn = nil;
+  
+  // NSArray<DKProxy<NMConnectionSettings> *> *allConns;
+  // allConns = device.AvailableConnections;
+  for (DKProxy<NMConnectionSettings> *connSets in device.AvailableConnections) {
+    settings = [connSets GetSettings];
+    if ([[[settings objectForKey:@"connection"] objectForKey:@"id"]
+          isEqualToString:name] != NO) {
+      conn = connSets;
+      break;
+    }
+  }
+
+  return conn;
+}
+
 @end
 
 @implementation AppController
@@ -176,62 +197,36 @@
   [self _clearFields];
 }
 
-// NetworkManager related methods
-// - (BOOL)_reloadConnections
-// {
-//   NSArray *allDevices = [_networkManager GetAllDevices];
-
-//   [connections removeAllObjects];
-    
-//   for (DKProxy<NMDevice> *device in allDevices) {
-//     if ([device.DeviceType intValue] != 14) {
-//       // Use list of available connections beacuse device may not have
-//       // active connection (connection was deactivated and no way to know
-//       // its state).
-//       for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
-//         if ([conns respondsToSelector:@selector(GetSettings)]) {
-//           title = [[[conns GetSettings] objectForKey:@"connection"]
-//                     objectForKey:@"id"];
-//           [cell setTitle:title];
-//           [cell setRepresentedObject:device];
-//         }
-//       }
-//     }
-//   }
-// }
-  
 - (void)     browser:(NSBrowser *)sender
  createRowsForColumn:(NSInteger)column
             inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
-  NSInteger     row;
+  NSInteger     row = 0;
   NSString      *title;
   NSArray       *allDevices = [_networkManager GetAllDevices];
     
   for (DKProxy<NMDevice> *device in allDevices) {
-    if ([device.DeviceType intValue] != 14) {
-      [matrix addRow];
-      row = [matrix numberOfRows] - 1;
-      cell = [matrix cellAtRow:row column:column];
-      [cell setLeaf:YES];
-      [cell setRefusesFirstResponder:YES];
-
-      // Use list of available connections beacuse device may not have
-      // active connection (connection was deactivated and no way to know
-      // its state).
-      for (DKProxy<NMConnectionSettings> *conns in device.AvailableConnections) {
-        if ([conns respondsToSelector:@selector(GetSettings)]) {
-          title = [[[conns GetSettings] objectForKey:@"connection"]
+    if ([device.DeviceType intValue] == 14)
+      continue;
+    // Use list of available connections because device may not have
+    // active connection (connection was deactivated and no way to know
+    // its state).
+    for (DKProxy<NMConnectionSettings> *conn in device.AvailableConnections) {
+      if ([conn respondsToSelector:@selector(GetSettings)] == NO)
+        continue;
+      title = [[[conn GetSettings] objectForKey:@"connection"]
                     objectForKey:@"id"];
-          [cell setTitle:title];
-          [cell setRepresentedObject:device];
-        }
+      if (title && [title isEqualToString:@""] == NO) {
+        [matrix addRow];
+        row = [matrix numberOfRows] - 1;
+        cell = [matrix cellAtRow:row column:column];
+        [cell setLeaf:YES];
+        [cell setRefusesFirstResponder:YES];
+        [cell setTitle:title];
+        [cell setRepresentedObject:device];
       }
-      if ([cell title] == nil || [[cell title] isEqualToString:@""]) {
-        [matrix removeRow:row];
-      }
-    }
+    }  
   }
 }
 
@@ -266,6 +261,7 @@
 {
   NSBrowserCell     *cell = [connectionList selectedCell];
   DKProxy<NMDevice> *device;
+  id<NSMenuItem>    popupItem;
 
   if (cell == nil)
     return;
@@ -291,7 +287,16 @@
   default:
     [self _setConnectionView:nil];
     break;
-  }  
+  }
+
+  popupItem = [connectionAction
+                itemAtIndex:[connectionAction indexOfItemWithTag:3]];
+  if ([device.State intValue] >= 100) {
+    [popupItem setTitle:@"Deactivate..."];
+  }
+  else {
+    [popupItem setTitle:@"Activate..."];
+  }
 }
 
 // "Connection" pull down button
@@ -300,34 +305,84 @@
   switch ([[sender selectedItem] tag])
     {
     case 0: // Add
-      NSLog(@"Add Connection");
-      if (connMan == nil)
-        connMan = [ConnectionManager new];
       // Delay message send to leave room for popup menu closing
       [NSTimer scheduledTimerWithTimeInterval:0.1
-                                       target:connMan
-                                     selector:@selector(showAddConnectionPanel)
+                                       target:self
+                                     selector:@selector(addConnection)
                                      userInfo:nil
                                       repeats:NO];
       break;
     case 1: // Remove
-      NSLog(@"Remove Connection");
-      NXTRunAlertPanel(@"Remove Connection",
-                       @"Do you want to remove connection %@",
-                       @"Remove", @"Leave", nil,
-                       [[connectionList selectedCell] title]);
+      [NSTimer scheduledTimerWithTimeInterval:0.1
+                                       target:self
+                                     selector:@selector(removeConnection)
+                                     userInfo:nil
+                                      repeats:NO];
       break;
     case 2: // Rename
       NSLog(@"Rename Connection");
       break;
     case 3: // Deactivate
-      NSLog(@"Deactivate Connection");
+      if ([[[sender selectedItem] title] isEqualToString:@"Deactivate..."]) {
+        [self deactivateConnection];
+      }
+      else {
+        [self activateConnection];
+      }
       break;
     default:
       break;
     }
 }
 
+- (void)addConnection
+{
+  if (connMan == nil) {
+    connMan = [ConnectionManager new];
+  }
+  [connMan showAddConnectionPanel];
+  [connectionList reloadColumn:0];
+}
+
+- (void)removeConnection
+{
+  NSInteger                     result;
+  DKProxy<NMDevice>             *device;
+  DKProxy<NMConnectionSettings> *conn;
+
+  result = NXTRunAlertPanel(@"Remove",
+                            @"Do you want to remove connection `%@`?",
+                            @"Remove", @"Leave", nil,
+                            [[connectionList selectedCell] title]);
+  if (result == NSAlertDefaultReturn) {
+    device = [[connectionList selectedCell] representedObject];
+    conn = [self _connectionWithName:[[connectionList selectedCell] title]
+                           forDevice:device];
+    [conn Delete];
+    [connectionList reloadColumn:0];
+  }
+}
+
+- (void)deactivateConnection
+{
+  DKProxy<NMDevice> *device = [[connectionList selectedCell] representedObject];
+  [_networkManager DeactivateConnection:device.ActiveConnection];
+}
+- (void)activateConnection
+{
+  DKProxy<NMDevice>             *device;
+  DKProxy<NMConnectionSettings> *conn;
+
+  device = [[connectionList selectedCell] representedObject];
+  conn = [self _connectionWithName:[[connectionList selectedCell] title]
+                         forDevice:device];
+  
+  // NSLog(@"Activate connection: %@ - %@", conn,
+  //       [[[conn GetSettings] objectForKey:@"connection"] objectForKey:@"id"]);
+  [_networkManager ActivateConnection:conn
+                                     :device
+                                     :device];
+}
 
 /* Signals/Notifications */
 - (void)deviceStateDidChange:(NSNotification *)aNotif

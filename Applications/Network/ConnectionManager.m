@@ -41,19 +41,18 @@
 {
   DKProxy<NetworkManager> *networkManager;
   NSMutableDictionary     *settings = [NSMutableDictionary dictionary];
+  NSDictionary            *connection;
   DKProxy                 *device;
 
   networkManager = ((AppController *)[NSApp delegate]).networkManager;
   
-  NSLog(@"Add connection with name `%@` for device `%@`",
-        [connectionName stringValue], [[deviceList selectedItem] title]);
-
-  [settings setObject:[connectionName stringValue] forKey:@"id"];
+  connection = @{@"id":[connectionName stringValue]};
+  [settings setObject:connection forKey:@"connection"];
   device = [[deviceList selectedItem] representedObject];
-  
+
   [networkManager AddAndActivateConnection:settings
                                           :device
-                                          :nil];
+                                          :device];
   [window close];
 }
 
