@@ -63,14 +63,31 @@ static EthernetController *_controller = nil;
   [searchDomains setStringValue:@""];
 }
 
+- (void)_updateConfigureMethod:(NSString *)type
+{
+  if ([type isEqualToString:@"auto"]) {
+    [configureMethod selectItemWithTag:0];
+  }
+  else if ([type isEqualToString:@"manual"]) {
+    [configureMethod selectItemWithTag:1];
+  }
+  else if ([type isEqualToString:@"link-local"]) {
+    [configureMethod selectItemWithTag:2];
+  }
+  else if ([type isEqualToString:@"disabled"]) {
+    [configureMethod selectItemWithTag:3];
+  }
+}
+
+// FIXME: unused
 - (void)updateForDevice:(DKProxy<NMDevice> *)device
 {
   DKProxy<NMIP4Config> *ip4Config;
   NSDictionary         *configData = nil;
   NSString             *ip, *mask, *gw, *dns, *domains;
-  
-  if ([device.State intValue] < 100) {
-    [self _clearFields];
+   
+  [self _clearFields];
+  if (device == nil || [device.State intValue] < 100) {
     return;
   }
   else {
@@ -80,12 +97,10 @@ static EthernetController *_controller = nil;
         configData = [ip4Config.AddressData objectAtIndex:0];
       }
       else {
-        [self _clearFields];
         return;
       }
     }
     else {
-      [self _clearFields];
       return;
     }
     
@@ -95,13 +110,55 @@ static EthernetController *_controller = nil;
     dns = [ip4Config.NameserverData[0] objectForKey:@"address"];
     domains  = [ip4Config.Domains componentsJoinedByString:@","];
     
-    [self _clearFields];
     [ipAddress setStringValue:ip];
     [subnetMask setStringValue:mask];
     [defaultGateway setStringValue:gw];
     [dnsServers setStringValue:dns];
     [searchDomains setStringValue:domains];
   }
+}
+
+- (void)updateForConnection:(DKProxy<NMConnectionSettings> *)conn
+{
+  NSDictionary *settings;
+  NSDictionary *ipv4;
+  NSArray      *address_data;
+  NSString     *ip=@"", *mask=@"", *gw, *dns, *domains, *method;
+   
+  [self _clearFields];
+
+  if ([conn respondsToSelector:@selector(Connection)]) {
+    DKProxy<NMDevice> *device;
+
+    device = [(DKProxy<NMActiveConnection> *)conn Devices][0];
+    conn = (DKProxy<NMConnectionSettings> *)[(DKProxy<NMActiveConnection> *)conn Connection];
+    method = [conn GetSettings][@"ipv4"][@"method"];
+    
+    [self updateForDevice:device];
+  }
+  else {
+    settings = [conn GetSettings];
+    ipv4 = settings[@"ipv4"];
+
+    address_data = ipv4[@"address-data"];
+
+    if ([address_data count] > 0) {
+      ip = [address_data[0] objectForKey:@"address"];
+      mask = [address_data[0] objectForKey:@"prefix"];
+    }
+    gw = ipv4[@"gateway"];
+    dns = [ipv4[@"dns"] componentsJoinedByString:@","];
+    domains  = [ipv4[@"dns-search"] componentsJoinedByString:@","];
+    
+    [ipAddress setStringValue:ip];
+    [subnetMask setStringValue:mask];
+    [defaultGateway setStringValue:gw];
+    [dnsServers setStringValue:dns];
+    [searchDomains setStringValue:domains];
+    method = ipv4[@"method"];
+  }
+
+  [self _updateConfigureMethod:method];
 }
 
 @end

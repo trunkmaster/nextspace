@@ -119,6 +119,25 @@
   return conn;
 }
 
+- (BOOL)_isActiveConnection:(NSString *)name
+                  forDevice:(DKProxy<NMDevice> *)device
+{
+  DKProxy<NMConnectionSettings> *conn;
+  DKProxy<NMActiveConnection>   *active;
+  DKProxy<NMConnectionSettings> *activeConn;
+
+  conn = [self _connectionWithName:name forDevice:device];
+  active = device.ActiveConnection;
+  if ([active respondsToSelector:@selector(Connection)]) {
+    activeConn = (DKProxy<NMConnectionSettings> *)active.Connection;
+  }
+  else {
+    return NO;
+  }
+  
+  return [conn.Filename isEqualToString:activeConn.Filename];
+}
+
 @end
 
 @implementation AppController
@@ -259,9 +278,10 @@
 
 - (void)connectionListClick:(id)sender
 {
-  NSBrowserCell     *cell = [connectionList selectedCell];
-  DKProxy<NMDevice> *device;
-  id<NSMenuItem>    popupItem;
+  NSBrowserCell                 *cell = [connectionList selectedCell];
+  DKProxy<NMDevice>             *device;
+  DKProxy<NMConnectionSettings> *conn;
+  id<NSMenuItem>                popupItem;
 
   if (cell == nil)
     return;
@@ -275,9 +295,21 @@
   
   switch([device.DeviceType intValue]) {
   case 1: // Ethernet
-    [[EthernetController controller] updateForDevice:device];
-    [self _updateStatusInfoForDevice:device];
-    [self _setConnectionView:[EthernetController view]];
+    if ([self _isActiveConnection:[cell title] forDevice:device] != NO) {
+      [self _setConnectionView:[EthernetController view]];
+      NSLog(@"%@ is active connection.", [cell title]);
+      [[EthernetController controller]
+        updateForConnection:device.ActiveConnection];
+      [self _updateStatusInfoForDevice:device];
+      [connectionView setHidden:NO];
+    }
+    else {
+      conn = [self _connectionWithName:[cell title] forDevice:device];
+      [[EthernetController controller] updateForConnection:conn];
+      // [connectionView setHidden:YES];
+      [self _clearFields];
+      [statusInfo setStringValue:@"Not Connected"];
+    }
     break;
   case 2: // Wi-Fi
     break;
@@ -285,13 +317,13 @@
     break;
   case 14: // Generic
   default:
-    [self _setConnectionView:nil];
+    [connectionView setHidden:YES];
     break;
   }
 
   popupItem = [connectionAction
                 itemAtIndex:[connectionAction indexOfItemWithTag:3]];
-  if ([device.State intValue] >= 100) {
+  if ([self _isActiveConnection:[cell title] forDevice:device]) {
     [popupItem setTitle:@"Deactivate..."];
   }
   else {
@@ -299,7 +331,7 @@
   }
 }
 
-// "Connection" pull down button
+// --- "Connection" pull down button
 - (void)connectionActionClick:(id)sender
 {
   switch ([[sender selectedItem] tag])
@@ -334,7 +366,6 @@
       break;
     }
 }
-
 - (void)addConnection
 {
   if (connMan == nil) {
@@ -343,7 +374,6 @@
   [connMan showAddConnectionPanel];
   [connectionList reloadColumn:0];
 }
-
 - (void)removeConnection
 {
   NSInteger                     result;
@@ -362,7 +392,6 @@
     [connectionList reloadColumn:0];
   }
 }
-
 - (void)deactivateConnection
 {
   DKProxy<NMDevice> *device = [[connectionList selectedCell] representedObject];

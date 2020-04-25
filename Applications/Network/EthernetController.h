@@ -18,5 +18,6 @@
 + (instancetype)controller;
 + (NSView *)view;
 - (void)updateForDevice:(DKProxy<NMDevice> *)device;
+- (void)updateForConnection:(DKProxy<NMConnectionSettings> *)conn;
 
 @end
