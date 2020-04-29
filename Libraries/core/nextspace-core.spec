@@ -1,13 +1,13 @@
-%define MAKE_VERSION    2.7.0
+%define MAKE_VERSION	2.7.0
 
 Name:		nextspace-core
 Version:	0.95
-Release:	8%{?dist}
+Release:	9%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
-URL:		http://gitlab.com/stoyan/nextspace
+URL:		http://github.com/trunkmaster/nextspace
 Source0:	nextspace-os_files-%{version}.tar.gz
-Source1:	gnustep-make-%{MAKE_VERSION}.tar.gz
+Source1:	https://github.com/gnustep/tools-make/archive/make-2_7_0.tar.gz
 Source2:	nextspace.fsl
 
 BuildRequires:  libobjc2-devel
@@ -40,7 +40,7 @@ NextSpace environment.
 
 %prep
 %setup -c -n nextspace-core -a 1
-cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/gnustep-make-%{MAKE_VERSION}/FilesystemLayouts/nextspace
+cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/tools-make-make-2_7_0/FilesystemLayouts/nextspace
 
 %build
 export CC=clang
@@ -49,7 +49,7 @@ export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
 export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
-cd gnustep-make-%{MAKE_VERSION}
+cd tools-make-make-2_7_0
 ./configure \
     --with-config-file=/Library/Preferences/GNUstep.conf \
     --with-layout=nextspace \
@@ -60,7 +60,7 @@ make
 cd ..
 
 %install
-cd gnustep-make-%{MAKE_VERSION}
+cd tools-make-make-2_7_0
 %{make_install}
 rm %{buildroot}/usr/NextSpace/bin/opentool
 cd ..
@@ -121,6 +121,10 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Wed Apr 29 2020 Sergii Stoian <stoyan255@gmail.com> - 0.95-9
+- Source file should be downloaded with `spectool -g` command into
+  SOURCES directory manually.
+
 * Tue Jun 11 2019 Sergii Stoian <stoyan255@gmail.com> - 0.95-8
 - .hidden renamed to dor_hidden in tar.gz.
 - new "NEXTSPACE" branded boot splash panel.
