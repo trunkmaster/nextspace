@@ -68,7 +68,7 @@ jobs:
           command: |
             git clone https://github.com/gnustep/libs-back
             cd libs-back
-            git checkout gnustep-gui-nextspace
+            git checkout gnustep-back-nextspace
             source /opt/rh/llvm-toolset-7.0/enable
             ./configure --enable-graphics=art --with-name=art
             make
