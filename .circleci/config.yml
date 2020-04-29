@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: amd64/centos:7.7.1908
     environment:
-      CC: /usr/bin/clang
+      CC: /opt/rh/llvm-toolset-7.0/root/usr/bin/clang
       BASH_ENV: /etc/profile.d/nextspace.sh
     steps:
       - run:
