@@ -11,6 +11,7 @@ jobs:
           name: Setup Yum
           command: |
             yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            yum -y install centos-release-scl-rh centos-release-scl
             yum -y update
       - run:
           name: Install libdispatch
@@ -30,10 +31,7 @@ jobs:
       - run:
           name: Install LLVM, Clang and Git
           command: |
-            yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/llvm-libs-7.0.1-3.el7.x86_64.rpm
-            yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/clang-libs-7.0.1-4.el7.x86_64.rpm
-            yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/clang-7.0.1-4.el7.x86_64.rpm
-            yum -y install git which
+            yum -y install llvm-toolset-7.0-clang git which
       - run:
           name: GNUstep Base - install build dependencies
           command: yum -y install libffi-devel gnutls-devel openssl-devel libicu-devel libxml2-devel libxslt-devel
@@ -41,8 +39,9 @@ jobs:
           name: GNUstep Base - build and install
           command: |
             git clone https://github.com/gnustep/libs-base
+            source /opt/rh/llvm-toolset-7.0/enable
             cd libs-base
-            ./configure --disable-mixedabi
+            ./configure
             make
             make install
             ldconfig
@@ -54,7 +53,8 @@ jobs:
           command: |
             git clone https://github.com/gnustep/libs-gui
             cd libs-gui
-            git checkout nextspace
+            git checkout gnustep-gui-nextspace
+            source /opt/rh/llvm-toolset-7.0/enable
             ./configure
             make
             make install
@@ -68,7 +68,8 @@ jobs:
           command: |
             git clone https://github.com/gnustep/libs-back
             cd libs-back
-            git checkout nextspace
+            git checkout gnustep-gui-nextspace
+            source /opt/rh/llvm-toolset-7.0/enable
             ./configure --enable-graphics=art --with-name=art
             make
             make fonts=no install
@@ -81,6 +82,7 @@ jobs:
             cd /root/nextspace
             cd Frameworks
             yum -y install `grep "BuildRequires" nextspace-frameworks.spec | awk -c '{print $2}'`
+            source /opt/rh/llvm-toolset-7.0/enable
             make 
             make install
             ldconfig
@@ -91,6 +93,7 @@ jobs:
             cd Applications
             yum -y install `grep "BuildRequires" nextspace-applications.spec | awk -c '{print $2}'`
             cd ../Libraries/libwraster
+            source /opt/rh/llvm-toolset-7.0/enable
             make 
             make install
             cd ../../Applications
