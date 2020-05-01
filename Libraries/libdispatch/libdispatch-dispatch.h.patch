@@ -1,19 +1,17 @@
---- libdispatch-1.3.orig/dispatch/dispatch.h	2016-10-22 01:13:49.234193116 +0300
-+++ libdispatch-1.3/dispatch/dispatch.h	2016-10-12 01:15:52.000000000 +0300
-@@ -44,7 +44,15 @@
- #include <stdint.h>
- #include <stdbool.h>
+--- swift-corelibs-libdispatch-swift-5.1.5-RELEASE.orig/dispatch/dispatch.h	2020-05-01 02:17:19.213642598 +0300
++++ swift-corelibs-libdispatch-swift-5.1.5-RELEASE/dispatch/dispatch.h	2020-05-01 02:18:32.719889998 +0300
+@@ -39,7 +39,13 @@
  #include <stdarg.h>
+ #include <string.h>
+ #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 -#include <unistd.h>
-+
-+// Fix RedHat problematic unistd.h
++/* Fix RedHat problematic unistd.h */
 +#pragma push_macro("__block")
 +#undef __block
 +#define __block my__block
 +#include_next <unistd.h>
 +#pragma pop_macro("__block")
-+//#include <unistd.h>
-+
++/* #include <unistd.h> */
+ #endif
  #include <fcntl.h>
- 
- #if defined(__linux__) && defined(__has_feature)
+ #if defined(_WIN32)
