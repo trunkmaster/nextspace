@@ -11,6 +11,11 @@ Source1:	https://github.com/gnustep/tools-make/archive/make-2_7_0.tar.gz
 Source2:	nextspace.fsl
 
 BuildRequires:  libobjc2-devel
+%if 0%{?el7}
+BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
+%else
+BuildRequires:	clang >= 7.0.1
+%endif
 
 Requires:	libdispatch >= 1.3
 Requires:	libobjc2 >= 1.8
@@ -43,10 +48,13 @@ NextSpace environment.
 cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/tools-make-make-2_7_0/FilesystemLayouts/nextspace
 
 %build
+%if 0%{?el7}
+source /opt/rh/llvm-toolset-7.0/enable
+%endif
 export CC=clang
 export CXX=clang++
 export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
-export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
 cd tools-make-make-2_7_0
