@@ -86,6 +86,7 @@ rm %{buildroot}/usr/NextSpace/include/Block_private.h
 
 %changelog
 * Wed Apr 29 2020 Sergii Stoian <stoyan255@gmail.com> - 5.1.5
+- Use clang from RedHat SCL repo on CentOS 7.
 - New libdispatch version 5.1.5.
 - With new libdispatch version no need to patch sources against 
   '__block' usage.

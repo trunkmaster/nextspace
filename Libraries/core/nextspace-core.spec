@@ -130,6 +130,7 @@ fi
 
 %changelog
 * Wed Apr 29 2020 Sergii Stoian <stoyan255@gmail.com> - 0.95-9
+- Use clang from RedHat SCL repo on CentOS 7.
 - Source file should be downloaded with `spectool -g` command into
   SOURCES directory manually.
 
