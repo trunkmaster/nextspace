@@ -29,7 +29,7 @@ echo "==========================================================================
 echo " Prepare build environment"
 echo "================================================================================"
 echo "========== Install RPM build tools... =========================================="
-sudo yum -y install rpm-build
+sudo yum -y install rpm-build rpmdevtools make
 echo "========== Create rpmbuild directories... ======================================"
 mkdir -p $SOURCES_DIR
 mkdir -p $SPECS_DIR
@@ -46,7 +46,7 @@ echo "========== Install libdispatch build dependecies... ======================
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libdispatch.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > libdispatch_build.log
 echo "========== Downloading libdispatch sources... =================================="
-spectool -g -R ${SPECS_DIR}/libdispatch.spec 2>&1 >> libdispatch_build.log
+spectool -g -R ${SPECS_DIR}/libdispatch.spec
 echo "========== Building libdispatch package... ====================================="
 rpmbuild -bb ${SPECS_DIR}/libdispatch.spec 2>&1 >> libdispatch_build.log
 rm ${SPECS_DIR}/libdispatch.spec
@@ -56,8 +56,8 @@ if [ $? -eq 0 ]; then
     echo "================================================================================"
     echo "========== Installing libdispatch RPMs... ======================================"
 #    sudo yum -y localinstall \
-#        ${RPMS_DIR}/libdispatch-5.1.5* \
-#        ${RPMS_DIR}/libdispatch-devel-5.1.5*
+#        ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}* \
+#        ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}*
 else
     echo "================================================================================"
     echo " Building of Grand Central Dispatch library RPM FAILED!"
@@ -75,7 +75,7 @@ echo "========== Install libobjc2 build dependecies... =========================
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libobjc2.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > libobjc2_build.log
 echo "========== Downloading libobjc2 sources... ====================================="
-spectool -g -R ${SPECS_DIR}/libobjc2.spec 2>&1 >> libobjc2_build.log
+spectool -g -R ${SPECS_DIR}/libobjc2.spec
 echo "========== Building libobjc2 package... ========================================"
 rpmbuild -bb ${SPECS_DIR}/libobjc2.spec 2>&1 >> libobjc2_build.log
 rm ${SPECS_DIR}/libobjc2.spec
@@ -107,7 +107,7 @@ cd ${REPO_DIR}/System && make dist 2>&1 > /dev/null
 cd $CWD
 mv ${REPO_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/core/nextspace.fsl ${SOURCES_DIR}
-spectool -g -R ${SPECS_DIR}/nextspace-core.spec 2>&1 >> nextspace-core_build.log
+spectool -g -R ${SPECS_DIR}/nextspace-core.spec
 echo "========== Building NEXTSPACE core components (nextspace-core) RPM... =========="
 rpmbuild -bb ${SPECS_DIR}/nextspace-core.spec 2>&1 >> nextspace-core_build.log
 rm ${SPECS_DIR}/nextspace-core.spec
@@ -117,8 +117,8 @@ if [ $? -eq 0 ]; then
     echo " Building of NEXTSPACE Core RPM SUCCEEDED!"
     echo "================================================================================"
 #    sudo yum -y localinstall \
-#        ${RPMS_DIR}/nextspace-core-0.95* \
-#        ${RPMS_DIR}/nextspace-core-devel-0.95*
+#        ${RPMS_DIR}/nextspace-core-${CORE_VERSION}* \
+#        ${RPMS_DIR}/nextspace-core-devel-${CORE_VERSION}*
 else
     echo "================================================================================"
     echo " Building of NEXTSPACE Core RPM FAILED!"
@@ -136,10 +136,10 @@ echo "========== Install libwraster build dependecies... =======================
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libwraster.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > libwraster_build.log
 echo "========== Downloading libwraster sources... ==================================="
-cd ${REPO_DIR}/Libraries/libwraster && make dist 2>&1 >> libwraster_build.log
+cd ${REPO_DIR}/Libraries/libwraster && make dist
 cd $CWD
 mv ${REPO_DIR}/Libraries/libwraster-${WRASTER_VERSION}.tar.gz ${SOURCES_DIR}
-spectool -g -R ${SPECS_DIR}/libwraster.spec 2>&1 >> libwraster_build.log
+spectool -g -R ${SPECS_DIR}/libwraster.spec
 echo "=========== Building libwraster RPM... ========================================="
 rpmbuild -bb ${SPECS_DIR}/libwraster.spec 2>&1 >> libwraster_build.log
 if [ $? -eq 0 ]; then 
@@ -156,6 +156,42 @@ else
     exit $?
 fi
 rm ${SPECS_DIR}/libwraster.spec
+
+# GNUstep
+echo "================================================================================"
+echo " Building NEXTSPACE GNUstep (nextspace-gnustep) package..."
+echo " Build log: gnustep_build.log"
+echo "================================================================================"
+cp ${REPO_DIR}/Libraries/gnustep/nextspace-gnustep.spec ${SPECS_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/gdnc-local.service ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/gdnc.service ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/gdomap.interfaces ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/gdomap.service ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/gpbs.service ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${SOURCES_DIR}
+echo "========== Install GNUstep build dependecies... ================================"
+DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-gnustep.spec | awk -c '{print $1}'`
+sudo yum -y install ${DEPS} 2>&1 > gnustep_build.log
+echo "========== Downloading GNUstep sources... ======================================"
+spectool -g -R ${SPECS_DIR}/nextspace-gnustep.spec
+echo "========== Building GNUstep package... ========================================="
+rpmbuild -bb ${SPECS_DIR}/nextspace-gnustep.spec 2>&1 >> gnustep_build.log
+rm ${SPECS_DIR}/nextspace-gnustep.spec
+if [ $? -eq 0 ]; then 
+    echo "================================================================================"
+    echo " Building of NEXTSPACE GNUstep RPM SUCCEEDED!"
+    echo "================================================================================"
+#    sudo yum -y localinstall \
+#        ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}* \
+#        ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}*
+else
+    echo "================================================================================"
+    echo " Building of NEXTSPACE GNUstep RPM FAILED!"
+    echo "================================================================================"
+    exit $?
+fi
+
 
 echo "================================================================================"
 echo " Build and install of NEXTSPACE Libraries SUCCEEDED!"
