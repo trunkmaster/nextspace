@@ -69,6 +69,7 @@ include $(GNUSTEP_MAKEFILES)/clibrary.make
 
 before-all::
 	@ if [ ! -e config.h ]; then \
+	  cp config/config.h.in ./;\
 	  cd config; \
 	  autoreconf -vfi -I m4; \
 	  ./configure \

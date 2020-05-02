@@ -79,6 +79,7 @@ source /opt/rh/llvm-toolset-7.0/enable
 export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
+rm config.h
 make
 
 #
