@@ -41,7 +41,11 @@ Conflicts:	gnustep-filesystem
 Conflicts:	gnustep-gui
 Conflicts:	gnustep-back
 
+%if 0%{?el7}
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
+%else
+BuildRequires:	clang >= 7.0.1
+%endif
 
 # gnustep-base
 BuildRequires:	libffi-devel
@@ -131,9 +135,12 @@ rm -rf %{buildroot}
 # Build phase
 #
 %build
+%if 0%{?el7}
+source /opt/rh/llvm-toolset-7.0/enable
+%endif
 export CC=clang
 export CXX=clang++
-export LD_LIBRARY_PATH="%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
 source /Developer/Makefiles/GNUstep.sh
