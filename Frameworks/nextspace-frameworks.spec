@@ -1,13 +1,7 @@
-%define APPKIT_VERSION		0.85
-%define FOUNDATION_VERSION	0.85
-%define SYSTEM_VERSION		0.85
-
-
 Name:           nextspace-frameworks
-Version:        0.85
-Release:        2%{?dist}
+Version:        0.90
+Release:        0%{?dist}
 Summary:        NextSpace core libraries.
-
 Group:          Libraries/NextSpace
 License:        GPLv2
 URL:		http://www.github.com/trunkmaster/nextspace
@@ -17,10 +11,15 @@ Provides:	DesktopKit.so
 Provides:	SystemKit.so
 Provides:	SoundKit.so
 
+%if 0%{?el7}
+BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
+%else
+BuildRequires:	clang >= 7.0.1
+%endif
+
 BuildRequires:	nextspace-gnustep-devel
-# NXFoundation
+# SystemKit
 BuildRequires:	file-devel
-# NXSystem
 BuildRequires:	libudisks2-devel
 BuildRequires:	dbus-devel
 BuildRequires:	upower-devel
@@ -31,9 +30,8 @@ BuildRequires:	libXcursor-devel
 BuildRequires:	pulseaudio-libs-devel >= 10.0
 
 Requires:	nextspace-gnustep
-# NXFoundation
+# SystemKit
 Requires:	file-libs >= 5.11
-# NXSystem
 Requires:	udisks2
 Requires:	libudisks2 >= 2.1.2
 Requires:	dbus-libs >= 1.6.12
@@ -51,11 +49,11 @@ Requires:	pulseaudio >= 10.0
 NextSpace libraries.
 
 %package devel
-Summary:	NextSpace core libraries (NXSystem, NXFoundation, NXAppKit).
+Summary:	NextSpace core libraries (SystemKit, DesktopKit, SoundKit).
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 
 %description devel
-Header files for NextSpace core libraries (NXSystem, NXFoundation, NXAppKit, SoundKit).
+Header files for NextSpace core libraries (SystemKit, DesktopKit, SoundKit).
 
 %prep
 %setup
@@ -64,11 +62,14 @@ Header files for NextSpace core libraries (NXSystem, NXFoundation, NXAppKit, Sou
 # Build phase
 #
 %build
+%if 0%{?el7}
+source /opt/rh/llvm-toolset-7.0/enable
+%endif
 export CC=clang
 export CXX=clang++
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":/usr/NextSpace/bin"
-export ADDITIONAL_INCLUDE_DIRS="-I../NXFoundation/derived_src -I../NXSystem/derived_src"
+export ADDITIONAL_INCLUDE_DIRS="-I../SystemKit/derived_src"
 
 cd SystemKit
 make
@@ -123,19 +124,22 @@ cd ..
 
 %post
 ldconfig
-#ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Images /usr/NextSpace/Images
-#ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Fonts /Library/Fonts
-#ln -s /usr/NextSpace/Frameworks/NXAppKit.framework/Resources/Sounds /usr/NextSpace/Sounds
+ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/Fonts /Library/Fonts
+#ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/Images /usr/NextSpace/Images
+#ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/Sounds /usr/NextSpace/Sounds
 #ln -s /usr/NextSpace/Sounds/Bonk.snd /usr/NextSpace/Sounds/SystemBeep.snd
 
 #%preun
 
 #%postun
-#rm /usr/NextSpace/Images
-#rm /Library/Fonts
-#rm /usr/NextSpace/Sounds
+rm /Library/Fonts
 
 %changelog
+* Sun May 3 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-0
+- Use clang from RedHat SCL repo on CentOS 7.
+- SPEC file adopted for non-CentOS 7 distributions.
+- Set /Library/Fonts as symbolic link to NextSpace fonts.
+
 * Sun Jun  9 2019  <me@localhost.localdomain> - 0.85-2
 - run `ldconfig` in %post.
 
