@@ -29,7 +29,14 @@ echo "==========================================================================
 echo " Prepare build environment"
 echo "================================================================================"
 echo "========== Install RPM build tools... =========================================="
-sudo yum -y install rpm-build rpmdevtools make
+BUILD_TOOLS="rpm-build rpmdevtools make patch"
+if [ -f /etc/os-release ]; then 
+    source /etc/os-release;
+    if [ $ID == "centos" ] && [ $VERSION_ID == "7" ];then
+        BUILD_TOOLS="$BUILD_TOOLS centos-release-scl centos-release-scl-rh"
+    fi
+fi
+sudo yum -y install ${BUILD_TOOLS}
 echo "========== Create rpmbuild directories... ======================================"
 mkdir -p $SOURCES_DIR
 mkdir -p $SPECS_DIR
