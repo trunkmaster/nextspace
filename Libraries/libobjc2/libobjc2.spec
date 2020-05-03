@@ -8,11 +8,12 @@ Source0:	https://github.com/gnustep/libobjc2/archive/v%{version}.tar.gz
 
 %if 0%{?el7}
 BuildRequires:	cmake3
+BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
 BuildRequires:	cmake
+BuildRequires:	clang >= 7.0.1
 %endif
 BuildRequires:	libtool
-BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 BuildRequires:	libdispatch-devel >= 1.3
 
 Requires:	libdispatch >= 1.3
