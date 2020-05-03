@@ -34,7 +34,7 @@ echo "==========================================================================
 echo " Building NEXTSPACE Frameworks package..."
 echo "================================================================================"
 cp ${REPO_DIR}/Frameworks/nextspace-frameworks.spec ${SPECS_DIR}
-echo "========== Install libdispatch build dependecies... ============================"
+echo "========== Install nextspace-frameworks build dependecies... ==================="
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-frameworks.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > frameworks_build.log
 echo "========== Downloading nextspace-frameworks sources... ========================="

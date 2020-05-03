@@ -1,6 +1,3 @@
-#%undefine _missing_build_ids_terminate_build
-
-# Defines
 %define GS_REPO		https://github.com/gnustep
 %define BASE_VERSION	1_27_0
 %define GUI_VERSION	nextspace

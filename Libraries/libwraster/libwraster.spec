@@ -1,6 +1,3 @@
-#%undefine _missing_build_ids_terminate_build
-
-# Defines
 %define WRASTER_VERSION 5.0.0
 
 Name:           libwraster
