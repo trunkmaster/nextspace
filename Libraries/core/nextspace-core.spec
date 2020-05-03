@@ -1,5 +1,3 @@
-%define MAKE_VERSION	2.7.0
-
 Name:		nextspace-core
 Version:	0.95
 Release:	9%{?dist}
@@ -10,12 +8,13 @@ Source0:	nextspace-os_files-%{version}.tar.gz
 Source1:	https://github.com/gnustep/tools-make/archive/make-2_7_0.tar.gz
 Source2:	nextspace.fsl
 
-BuildRequires:  libobjc2-devel
 %if 0%{?el7}
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
 BuildRequires:	clang >= 7.0.1
 %endif
+BuildRequires:  libdispatch-devel
+BuildRequires:  libobjc2-devel
 
 Requires:	libdispatch >= 1.3
 Requires:	libobjc2 >= 1.8
