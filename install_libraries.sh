@@ -137,7 +137,7 @@ rm ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz
 
 # libwraster
 echo "================================================================================"
-echo " Building Raster library (libwraster) RPM..."
+echo " Building Raster graphics library (libwraster) RPM..."
 echo " Build log: libwraster_build.log"
 echo "================================================================================"
 cp ${REPO_DIR}/Libraries/libwraster/libwraster.spec ${SPECS_DIR}
@@ -145,6 +145,7 @@ echo "========== Install libwraster build dependecies... =======================
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libwraster.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > libwraster_build.log
 echo "========== Downloading libwraster sources... ==================================="
+source /Developer/Makefiles/GNUstep.sh
 cd ${REPO_DIR}/Libraries/libwraster && make dist
 cd $CWD
 mv ${REPO_DIR}/Libraries/libwraster-${WRASTER_VERSION}.tar.gz ${SOURCES_DIR}
