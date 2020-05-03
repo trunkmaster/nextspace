@@ -109,9 +109,12 @@ echo "========== Install nextspace-core build dependecies... ===================
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-core.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > nextspace-core_build.log
 echo "========== Downloading NEXTSPACE Core sources... ==============================="
-cd ${REPO_DIR}/System && make dist 2>&1 > /dev/null
+mkdir -p /tmp/nextspace-os_files-${CORE_VERSION}
+cd /tmp 
+cp ${REPO_DIR}/System/* ./nextspace-os_files-${CORE_VERSION}/
+rm ./nextspace-os_files-${CORE_VERSION}/GNUmakefile
+tar zcf ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz nextspace-os_files-${CORE_VERSION}
 cd $CWD
-mv ${REPO_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/core/nextspace.fsl ${SOURCES_DIR}
 spectool -g -R ${SPECS_DIR}/nextspace-core.spec
 echo "========== Building NEXTSPACE core components (nextspace-core) RPM... =========="
