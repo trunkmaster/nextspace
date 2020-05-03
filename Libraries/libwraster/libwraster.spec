@@ -75,7 +75,6 @@ export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 source /Developer/Makefiles/GNUstep.sh
-rm config.h
 make
 
 #
