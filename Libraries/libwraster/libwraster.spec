@@ -4,17 +4,10 @@ Name:           libwraster
 Version:        %{WRASTER_VERSION}
 Release:        0%{?dist}
 Summary:        Raster graphics library.
-
 Group:          Libraries/NextSpace
 License:        GPLv3
-URL:		http://www.gnustep.org
+URL:		https://github.com/trunkmaster/nextspace
 Source0:	libwraster-%{WRASTER_VERSION}.tar.gz
-
-# Build GNUstep libraries in one RPM package
-Provides:	libwraster.so
-Provides:	libwraster.so.5
-Provides:	libwraster.so.%{WRASTER_VERSION}
-
 
 %if 0%{?el7}
 BuildRequires:	centos-release-scl
@@ -23,6 +16,9 @@ BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
 BuildRequires:	clang >= 7.0.1
 %endif
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool
 BuildRequires:	nextspace-core >= 0.95
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
@@ -32,6 +28,10 @@ BuildRequires:	libXpm-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libXext-devel
 BuildRequires:	libX11-devel
+
+Provides:	libwraster.so
+Provides:	libwraster.so.5
+Provides:	libwraster.so.%{WRASTER_VERSION}
 
 Requires:	giflib >= 4.1.6
 Requires:	libjpeg-turbo >= 1.2.90
