@@ -59,6 +59,7 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 mkdir _build
 cd _build
 %if 0%{?el7}
+source /opt/rh/llvm-toolset-7.0/enable
 cmake3 .. \
 %else
 cmake .. \
