@@ -10,8 +10,6 @@ URL:		https://github.com/trunkmaster/nextspace
 Source0:	libwraster-%{WRASTER_VERSION}.tar.gz
 
 %if 0%{?el7}
-BuildRequires:	centos-release-scl
-BuildRequires:	centos-release-scl-rh
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
 BuildRequires:	clang >= 7.0.1

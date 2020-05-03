@@ -9,8 +9,6 @@ Patch0:		libdispatch-dispatch.h.patch
 
 %if 0%{?el7}
 BuildRequires:	cmake3
-BuildRequires:	centos-release-scl
-BuildRequires:	centos-release-scl-rh
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
 BuildRequires:	cmake
