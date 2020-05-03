@@ -74,6 +74,7 @@ source /opt/rh/llvm-toolset-7.0/enable
 export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
+source /Developer/Makefiles/GNUstep.sh
 rm config.h
 make
 
@@ -81,7 +82,7 @@ make
 # Build install phase
 #
 %install
-export GNUSTEP_MAKEFILES=/Developer/Makefiles
+source /Developer/Makefiles/GNUstep.sh
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
 
