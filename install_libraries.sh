@@ -40,7 +40,6 @@ sudo yum -y install ${BUILD_TOOLS}
 echo "========== Create rpmbuild directories... ======================================"
 mkdir -p $SOURCES_DIR
 mkdir -p $SPECS_DIR
-#cd $REPO_DIR
 
 # libdispatch
 echo "================================================================================"
@@ -56,21 +55,21 @@ echo "========== Downloading libdispatch sources... ============================
 spectool -g -R ${SPECS_DIR}/libdispatch.spec
 echo "========== Building libdispatch package... ====================================="
 rpmbuild -bb ${SPECS_DIR}/libdispatch.spec 2>&1 >> libdispatch_build.log
-rm ${SPECS_DIR}/libdispatch.spec
 if [ $? -eq 0 ]; then 
     echo "================================================================================"
     echo " Building of Grand Central Dispatch library RPM SUCCEEDED!"
     echo "================================================================================"
     echo "========== Installing libdispatch RPMs... ======================================"
-#    sudo yum -y localinstall \
-#        ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}* \
-#        ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}*
+    sudo yum -y localinstall \
+        ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}* \
+        ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}*
 else
     echo "================================================================================"
     echo " Building of Grand Central Dispatch library RPM FAILED!"
     echo "================================================================================"
     exit $?
 fi
+rm ${SPECS_DIR}/libdispatch.spec
 
 # libobjc2
 echo "================================================================================"
@@ -85,20 +84,20 @@ echo "========== Downloading libobjc2 sources... ===============================
 spectool -g -R ${SPECS_DIR}/libobjc2.spec
 echo "========== Building libobjc2 package... ========================================"
 rpmbuild -bb ${SPECS_DIR}/libobjc2.spec 2>&1 >> libobjc2_build.log
-rm ${SPECS_DIR}/libobjc2.spec
 if [ $? -eq 0 ]; then 
     echo "================================================================================"
     echo " Building of Objective-C Runtime RPM SUCCEEDED!"
     echo "================================================================================"
-#    sudo yum -y localinstall \
-#        ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}* \
-#        ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}*
+    sudo yum -y localinstall \
+        ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}* \
+        ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}*
 else
     echo "================================================================================"
     echo " Building of Objective-C Runtime RPM FAILED!"
     echo "================================================================================"
     exit $?
 fi
+rm ${SPECS_DIR}/libobjc2.spec
 
 # nextspace-core
 echo "================================================================================"
@@ -117,21 +116,21 @@ cp ${REPO_DIR}/Libraries/core/nextspace.fsl ${SOURCES_DIR}
 spectool -g -R ${SPECS_DIR}/nextspace-core.spec
 echo "========== Building NEXTSPACE core components (nextspace-core) RPM... =========="
 rpmbuild -bb ${SPECS_DIR}/nextspace-core.spec 2>&1 >> nextspace-core_build.log
-rm ${SPECS_DIR}/nextspace-core.spec
-rm ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz
 if [ $? -eq 0 ]; then 
     echo "================================================================================"
     echo " Building of NEXTSPACE Core RPM SUCCEEDED!"
     echo "================================================================================"
-#    sudo yum -y localinstall \
-#        ${RPMS_DIR}/nextspace-core-${CORE_VERSION}* \
-#        ${RPMS_DIR}/nextspace-core-devel-${CORE_VERSION}*
+    sudo yum -y localinstall \
+        ${RPMS_DIR}/nextspace-core-${CORE_VERSION}* \
+        ${RPMS_DIR}/nextspace-core-devel-${CORE_VERSION}*
 else
     echo "================================================================================"
     echo " Building of NEXTSPACE Core RPM FAILED!"
     echo "================================================================================"
     exit $?
 fi
+rm ${SPECS_DIR}/nextspace-core.spec
+rm ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz
 
 # libwraster
 echo "================================================================================"
@@ -153,9 +152,9 @@ if [ $? -eq 0 ]; then
     echo "================================================================================"
     echo " Building libwraster RPM SUCCEEDED!"
     echo "================================================================================"
-#    sudo yum -y localinstall \
-#        ${RPMS_DIR}/libwraster-${WRASTER_VERSION}* \
-#        ${RPMS_DIR}/libwraster-devel-${WRASTER_VERSION}*
+    sudo yum -y localinstall \
+        ${RPMS_DIR}/libwraster-${WRASTER_VERSION}* \
+        ${RPMS_DIR}/libwraster-devel-${WRASTER_VERSION}*
 else
     echo "================================================================================"
     echo " Building libwraster RPM FAILED!"
@@ -184,21 +183,20 @@ echo "========== Downloading GNUstep sources... ================================
 spectool -g -R ${SPECS_DIR}/nextspace-gnustep.spec
 echo "========== Building GNUstep package... ========================================="
 rpmbuild -bb ${SPECS_DIR}/nextspace-gnustep.spec 2>&1 >> gnustep_build.log
-rm ${SPECS_DIR}/nextspace-gnustep.spec
 if [ $? -eq 0 ]; then 
     echo "================================================================================"
     echo " Building of NEXTSPACE GNUstep RPM SUCCEEDED!"
     echo "================================================================================"
-#    sudo yum -y localinstall \
-#        ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}* \
-#        ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}*
+    sudo yum -y localinstall \
+        ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}* \
+        ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}*
 else
     echo "================================================================================"
     echo " Building of NEXTSPACE GNUstep RPM FAILED!"
     echo "================================================================================"
     exit $?
 fi
-
+rm ${SPECS_DIR}/nextspace-gnustep.spec
 
 echo "================================================================================"
 echo " Build and install of NEXTSPACE Libraries SUCCEEDED!"
