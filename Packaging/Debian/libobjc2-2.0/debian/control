@@ -1,0 +1,74 @@
+Source: libobjc2
+Priority: optional
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Build-Depends: debhelper-compat (= 12), cmake, clang, libdispatch-dev (>= 5)
+Standards-Version: 4.5.0
+Section: libs
+Homepage: https://github.com/gnustep/libobjc2
+Vcs-Browser: https://github.com/gnustep/libobjc2
+Vcs-Git: https://github.com/gnustep/libobjc2
+
+Package: libobjc2-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libobjc2-4 (= ${binary:Version}), ${misc:Depends}
+Description: Static libraries and headers of libobjc2
+ The GNUstep Objective-C runtime is designed as a drop-in replacement
+ for the GCC runtime. It supports both a legacy and a modern ABI,
+ allowing code compiled with old versions of GCC to be supported
+ without requiring recompilation.
+ The modern ABI adds the following features:
+ .
+  * Non-fragile instance variables.
+  * Protocol uniquing.
+  * Object planes support.
+  * Declared property introspection.
+ .
+ Both ABIs support the following feature above and beyond the
+ GCC runtime:
+ .
+  * The modern Objective-C runtime APIs, introduced with OS X 10.5.
+  * Blocks (closures).
+  * Low memory profile for platforms where memory usage is more
+    important than speed.
+  * Synthesised property accessors.
+  * Efficient support for @synchronized()
+  * Type-dependent dispatch, eliminating stack corruption from
+    mismatched selectors.
+  * Support for the associated reference APIs introduced with
+    Mac OS X 10.6.
+  * Support for the automatic reference counting APIs introduced
+    with Mac OS X 10.
+
+Package: libobjc2-4
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Gnustep ObjC2 runtime library
+ The GNUstep Objective-C runtime is designed as a drop-in replacement
+ for the GCC runtime. It supports both a legacy and a modern ABI,
+ allowing code compiled with old versions of GCC to be supported
+ without requiring recompilation.
+ The modern ABI adds the following features:
+ .
+ * Non-fragile instance variables.
+ * Protocol uniquing.
+ * Object planes support.
+ * Declared property introspection.
+ .
+ Both ABIs support the following feature above and beyond the
+ GCC runtime:
+ .
+ * The modern Objective-C runtime APIs, introduced with OS X 10.5.
+ * Blocks (closures).
+ * Low memory profile for platforms where memory usage is more
+   important than speed.
+ * Synthesised property accessors.
+ * Efficient support for @synchronized()
+ * Type-dependent dispatch, eliminating stack corruption from
+   mismatched selectors.
+ * Support for the associated reference APIs introduced with
+   Mac OS X 10.6.
+ * Support for the automatic reference counting APIs introduced
+   with Mac OS X 10.

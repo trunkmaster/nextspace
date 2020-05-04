@@ -1,0 +1,107 @@
+
+	 GNUstep for Debian GNU/Linux
+	 ----------------------------
+
+This is GNUstep, packaged for Debian GNU/Linux.
+
+GNUstep is a free implementation of the OpenStep specification by NeXT.
+OpenStep is the foundation of Apple's new Mac OS X GUI API.
+The full OpenStep specification can be found at :
+
+  http://www.gnustep.org/resources/OpenStepSpec/OpenStepSpec.html
+
+
+Examples
+--------
+
+Install gnustep-examples to view some basic test applications :
+
+    openapp Ink.app
+
+You find the examples in /usr/lib/GNUstep/Apps
+
+
+Name server for GNUstep Distributed Objects
+-------------------------------------------
+
+The name server (gdomap) can use several methods for finding other servers.
+The Debian default setup disables the broadcast to the local networks
+with the option -p. To change the setup, you can edit /etc/defaults/gdomap
+
+* Re-enable the broadcast by removing the -p option.
+
+* Delimit the broadcast to specific hosts by replacing the -p option
+  with -c /etc/GNUstep/gdomap_probes (probe specific hosts).
+
+You can get more information calling `man gdomap', `gdomap -H' and `gdomap -C'.
+
+
+GNUstep Distributed Notification Center
+---------------------------------------
+
+Every user needs to have his own instance of gdnc running.  While  gdnc
+will  be started automatically as soon as it is needed, it is recommended
+to start gdnc in a personal login script like  ~/.bashrc  or  ~/.cshrc.
+
+You can get more information calling `man gdnc'.
+
+
+GNUstep PasteBoard Server
+-------------------------
+
+Every user needs to have his own instance of gpbs running.
+While  gpbs  will  be started automatically as soon as it is needed, 
+it is recommended to start gpbs when your windowing system 
+or the window manager is started. For example, on systems with X11 
+you can launch gpbs from your .xinitrc script or 
+alternatively - if you are running Window Maker - put  it  in  
+Window  Maker's autostart  script.
+
+You can get more information calling `man gpbs'.
+
+
+Resources
+---------
+
+The official web site of the GNUstep project is
+
+  http://www.gnustep.org/
+
+
+The GNUstep Community Website :
+
+  http://www.gnustep.net/
+
+
+The GNUstep Wiki Website :
+
+  http://wiki.gnustep.org
+
+
+There's also several GNUstep newsgroups and mailing lists :
+
+  http://www.gnustep.org/information/gethelp.html
+
+
+On a regular basis snapshots of the sources are made and placed online at:
+
+  ftp://ftp.gnustep.org/pub/daily-snapshots/
+
+
+The source repository of the GNUstep project is available via anonymous CVS.
+For instructions, have a look at the GNUstep-HOWTO.
+For a first start, look at :
+
+  http://savannah.gnu.org/cvs/?group=gnustep
+
+
+    11/09/98
+    Gregor Hoffleit <flight@debian.org>
+    05/08/99
+    Matthias Klose <doko@debian.org>
+    04/04/03
+    Eric Heintzmann <debian@gnustep.fr.st>
+    24/09/03
+    Eric Heintzmann <eric@gnustep.fr.st>
+
+ -- Yavor Doganov <yavor@gnu.org>, Sat,  8 Aug 2009 19:08:15 +0300

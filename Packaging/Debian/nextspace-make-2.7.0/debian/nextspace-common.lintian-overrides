@@ -1,0 +1,3 @@
+# Intentional. Initialization of GNUstep filesystem
+gnustep-common: package-contains-empty-directory
+

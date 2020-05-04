@@ -1,0 +1,22 @@
+#!/bin/sh
+# Handle the move of arch-independent Resources to /usr/share as dpkg
+# will not replace a real directory with a symlink.
+# FIXME: Remove during the jessie+1 cycle.
+
+set -e
+set -u
+
+RESDIR=/usr/lib/GNUstep/Applications/Gorm.app/Resources/English.lproj
+
+if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
+    if [ -d $RESDIR ] && [ ! -L $RESDIR ]; then
+	rm -rf $RESDIR
+	for i in ${RESDIR%English.lproj}/*.palette; do
+	    rm -rf $i/Resources;
+	done
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0

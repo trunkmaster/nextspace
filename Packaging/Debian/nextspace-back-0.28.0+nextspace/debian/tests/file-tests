@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+set -u
+
+export GNUSTEP_MAKEFILES=/usr/share/GNUstep/Makefiles
+
+cd debian/tests; make messages=yes && ./obj/load_backends
+
+exit 0

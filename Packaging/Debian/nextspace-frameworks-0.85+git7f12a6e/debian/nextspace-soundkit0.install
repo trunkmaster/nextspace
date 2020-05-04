@@ -1,0 +1,8 @@
+usr/NextSpace/Frameworks/SoundKit.framework/SoundKit
+usr/NextSpace/Frameworks/SoundKit.framework/libSoundKit.so
+usr/NextSpace/Frameworks/SoundKit.framework/Resources
+usr/NextSpace/Frameworks/SoundKit.framework/Versions/Current
+usr/NextSpace/Frameworks/SoundKit.framework/Versions/*/SoundKit
+usr/NextSpace/Frameworks/SoundKit.framework/Versions/*/libSoundKit.so*
+usr/NextSpace/Frameworks/SoundKit.framework/Versions/*/Resources
+usr/NextSpace/lib/libSoundKit.so*

@@ -1,0 +1,61 @@
+Description: Fix UDP amplification vulnerability
+ A couple of is_local_net() tests were wrong: they used "&&" with
+ masks, but that is the logical shortcut operator.  The correct
+ bitwise operator is "&".  The result was that is_local_net() was
+ always returning true.
+ .
+ Only allow local processes to send GDO_SERVERS requests.  This
+ request is only useful locally.  Do not allow remote requests for the
+ server list.  Our response can be large, so it would make a great UDP
+ amplification attack.
+ . 
+ Patch by Alan Jenkins <alan.christopher.jenkins@gmail.com>; issue
+ reported to the Debian security team.
+Origin: upstream, commit:de9740c
+Last-Update: 2019-09-18
+---
+
+--- gnustep-base.orig/Tools/gdomap.c
++++ gnustep-base/Tools/gdomap.c
+@@ -419,7 +419,7 @@
+ 
+   for (i = 0; i < interfaces; i++)
+     {
+-      if ((mask[i].s_addr && addr[i].s_addr) == (mask[i].s_addr && a.s_addr))
++      if ((mask[i].s_addr & addr[i].s_addr) == (mask[i].s_addr & a.s_addr))
+ 	{
+ 	  return 1;
+ 	}
+@@ -3100,6 +3100,21 @@
+       unsigned int	i;
+       unsigned int	j;
+ 
++      /*
++       *	See if this is a request from a local process.
++       *
++       *	This request is only useful locally.  Do not allow remote
++       *	requests for the server list.  Our response can be large,
++       *	so it would make a great UDP amplification attack.
++       */
++      if (is_local_host(ri->addr.sin_addr) == 0)
++	{
++	  snprintf(ebuf, sizeof(ebuf), "Illegal attempt to list servers!");
++	  gdomap_log(LOG_ERR);
++	  clear_chan(desc);
++	  return;
++	}
++
+       free(wi->buf);
+       wi->buf = (char*)calloc(sizeof(uint32_t)
+ 	+ (prb_used+1)*IASIZE, 1);
+@@ -3260,8 +3275,8 @@
+ 		    {
+ 		      continue;
+ 		    }
+-		  if ((mask[i].s_addr && addr[i].s_addr) ==
+-			(mask[i].s_addr && ri->addr.sin_addr.s_addr))
++		  if ((mask[i].s_addr & addr[i].s_addr) ==
++			(mask[i].s_addr & ri->addr.sin_addr.s_addr))
+ 		    {
+ 		      laddr = addr[i];
+ 		      memcpy(wbuf, &laddr, IASIZE);

@@ -1,0 +1,1171 @@
+nextspace-gui (0.28.0+nextspace-1) unstable; urgency=medium
+
+  * Adapt for NEXTSPACE
+
+ -- Patrick Georgi <patrick@georgi.software>  Wed, 06 May 2020 00:53:57 +0200
+
+gnustep-gui (0.27.0-5) unstable; urgency=medium
+
+  * debian/patches/gshorizontaltypesetter-crash.patch: Replace with the
+    fix that was actually committed upstream.
+  * debian/patches/nsbitmapimagerep-icns.patch: New; put best image first
+    in the array of bitmap representations (Closes: #908512).
+  * debian/patches/series: Update.
+  * debian/templates/control.m4 (Build-Depends): Add libicns-dev.
+    GNUstep GUI has its own, completely independent implementation of
+    libicns because that library was GPL'ed.  However, libicns' license
+    has been downgraded to LGPL and it's been in Debian for quite some
+    time, so there is no reason to avoid linking with it.  At first glance
+    it is also more portable compared to gnustep-gui's implementation.
+  * debian/control: Regenerate.
+
+ -- Yavor Doganov <yavor@gnu.org>  Wed, 27 Feb 2019 10:14:09 +0200
+
+gnustep-gui (0.27.0-4) unstable; urgency=medium
+
+  * debian/patches/ftbfs-kfreebsd.patch: Replace with the fix that was
+    committed upstream.
+  * debian/patches/gshorizontaltypesetter-crash.patch: New; fix crash in
+    GSHorizontalTypesetter -_getProposedRectFor:withLineHeight:,
+    reproducible with lynkeos.app when stacking multiple images.
+  * debian/patches/series: Update.
+  * debian/rules (override_dh_auto_configure): Pass --disable-icu-config.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sun, 03 Feb 2019 22:39:36 +0200
+
+gnustep-gui (0.27.0-3) unstable; urgency=medium
+
+  * debian/templates/control.m4: Tighten dependencies, disallowing partial
+    upgrades and co-installation of different library versions.  This
+    reverts the changes made in 0.26.2-1 (Addresses: #918844).
+  * debian/control: Regenerate.
+  * debian/patches/ftbfs-kfreebsd.patch: New; fixes FTBFS on GNU/kFreeBSD
+    where HAVE_GETMNTINFO and HAVE_GETMNTENT are not mutually exclusive.
+  * debian/patches/series: Update.
+
+ -- Yavor Doganov <yavor@gnu.org>  Fri, 18 Jan 2019 15:29:49 +0200
+
+gnustep-gui (0.27.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * debian/gbp.conf: Remove debian-branch.
+  * debian/rules: Suppress verbose output in install/clean recipes.
+
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 10 Jan 2019 15:29:30 +0200
+
+gnustep-gui (0.27.0-1) experimental; urgency=medium
+
+  * New upstream release:
+    - Implements lazy loading of the app icon (Closes: #908512).
+    - SONAME change: libgnustep-gui0.26 -> 0.27.
+  * Remove patches applied upstream:
+    - panel-selection.patch;
+    - print-crash.patch;
+    - gsdisplayserver-mainthread.patch;
+    - gstheme-nssegmentedcontrol.patch.
+  * debian/patches/series: Update.
+  * debian/compat: Set to 12.
+  * debian/templates/control.m4 (Build-Depends): Bump debhelper
+    requirement to match the compat level.  Bump gnustep-make to >=
+    2.7.0-4 for "terse" support.
+    (Standards-Version): Claim compliance with 4.3.0; no changes needed.
+  * debian/control: Regenerate, reflecting the SONAME change.
+  * debian/rules: Replace all occurrences of "messages=yes" with
+    "$(verbose)" to support "terse" in DEB_BUILD_OPTIONS.
+    (override_dh_auto_install-indep): Delete duplicate files which trigger
+    lintian warning; they are already shipped in /usr/share/doc.
+    (v_base): Bump to 1.26.
+  * debian/clean: Update for the new SONAME.
+  * debian/upstream/signing-key.asc: Minimize.
+  * debian/gbp.conf: New file.
+  * debian/templates/gnustep-gui-common.install.in: Add manpages as
+    they're installed by the upstream build system.
+  * debian/gnustep-gui-common.manpages: Delete; pointless.
+  * debian/templates/gnustep-gui-doc.install.in: Likewise, let the
+    upstream build system handle the Info manual.
+  * debian/gnustep-gui-doc.info: Delete.
+  * debian/copyright: Bump copyright years for Debian packaging.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 08 Jan 2019 13:17:27 +0200
+
+gnustep-gui (0.26.2-3) unstable; urgency=medium
+
+  * debian/patches/gsdisplayserver-mainthread.patch: New, cherry-picked
+    from upstream; makes possible drawing from secondary threads which is
+    needed by lynkeos.app/2.10.
+  * debian/patches/gstheme-nssegmentedcontrol.patch: New, cherry-picked
+    from upstream; fixes int/NSInteger mismatch and enables mouse tracking
+    for NSSegmentedCell.
+  * debian/patches/series: Update.
+  * debian/rules: Remove boilerplate dh_make comments.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 06 Mar 2018 19:55:44 +0200
+
+gnustep-gui (0.26.2-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * debian/templates/control.m4: (Vcs-Git, Vcs-Browser): Update to point
+    to the new repository location at salsa.debian.org.
+    (gnustep-gui-doc): Mark as Multi-Arch: foreign.
+  * debian/control: Regenerate.
+  * debian/patches/panel-selection.patch: New, fixes file selection in
+    panels.  Cherry-picked from upstream.
+  * debian/patches/printing-crash.patch: New, fixes crash during printing
+    when there is no printer configured.  Also taken from upstream.
+  * debian/patches/series: Update.
+  * debian/README.Debian: Delete; mostly duplicate of gnustep-common's
+    README.Debian.
+
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 25 Jan 2018 20:42:02 +0200
+
+gnustep-gui (0.26.2-1) experimental; urgency=medium
+
+  [ Eric Heintzmann ]
+  * debian/patches/fix-spelling-errors.patch: Remove, applied upstream.
+  * debian/patches/series: Update.
+  * debian/templates/control.m4:
+    + Bump Standards-Version to 4.1.0.
+    + As required by Gürkan, update his name.
+    + Use canonical URL in Vcs-Browser field.
+  * Add a testsuite.
+  * debian/rules:
+    + Remove -pie option.
+    + Now depends on latest gnustep-base.
+    + Enable --as-needed LDFLAG.
+    + Remove -shared-libgcc LDFLAG, now useless.
+    + Recalculate dependencies of shared lib.
+
+  [ Yavor Doganov ]
+  * New upstream release 0.26.2:
+    + Fixes printing via CUPS (Closes: #883583).
+    + Fixes overlapping glyphs (Closes: #886226).
+    + Rename library package following the SONAME change:
+      - libgnustep-gui0.25 -> libgnustep-gui0.26
+  * debian/watch: Switch to ftp.gnustep.org; much more reliable.
+  * debian/compat: Bump compat level to 11.
+  * debian/rules: Replace shell comments with makefile comments; strip
+    trailing whitespace.
+    (DEB_LDFLAGS_MAINT_APPEND): Add -Wl,--no-undefined.
+    (v_base): Bump to 1.25.1; required.
+    (override_dh_testdir): New target to regenerate debian/control.
+    (override_dh_auto_build_arch): Explicitly pass dpkg-buildflags;
+    gnustep-make discards environment flags so OBJCFLAGS is ignored
+    completely for all compilation units, while LDFLAGS is discarded for
+    some executables in the -runtime package.  Also pass $(optim) for
+    proper noopt support in DEB_BUILD_OPTIONS.
+    (override_dh_autotest): Run the testsuite.
+    (override_dh_install): Don't skip .gsdoc files; they're necessary for
+    generating proper cross-references.
+    (override_dh_installdocs): Don't act on the -dbg package.
+    (override_dh_strip): Remove override.
+  * debian/templates/control.m4: Remove -dbg package in favor of automatic
+    -dbgsym packages.  Relax some dependencies for smoother transitions (a
+    reincarnation of #655433; regression introduced during the migration
+    to modern debhelper).
+    (Build-Depends): Require debhelper >= 11; remove dh-autoreconf.  Add
+    gnustep-make >= 2.7.0-3 for the optim variable conditional definition.
+    (Build-Depeends-Indep): Add gnustep-base-doc for usable xrefs to -base
+    classes and methods.
+    (gnustep-gui-doc): Recommend gnustep-base-doc.
+    (Standards-Version): Claim compliance with 4.1.3 as of this release.
+  * debian/control: Regenerate.
+  * debian/tests/testsuite: New test; run the testsuite.
+  * debian/tests/control (Tests): Add testsuite.
+    (Restrictions): Add allow-stderr.
+    (Depends): Add file, needed by file-tests.
+  * debian/templates/libgnustep-guiN.overrides.m4: Remove override for
+    no-symbols-control-file as lintian #749202 has been fixed.
+  * debian/changelog: Whitespace cleanup.
+  * debian/copyright: Update copyright years.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sat, 20 Jan 2018 18:44:22 +0200
+
+gnustep-gui (0.25.0-5) unstable; urgency=medium
+
+  * Ensure that gnustep-gui-runtime does not depend on gnustep-back
+    (Closes: #880460). Thanks to Yavor Doganov.
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Wed, 01 Nov 2017 19:47:23 +0100
+
+gnustep-gui (0.25.0-4) unstable; urgency=medium
+
+  * Delete debian/libgnustep-gui0.25.symbols file (Closes: #835894).
+  * Override lintian warning about symbols control file.
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Fri, 02 Sep 2016 19:42:42 +0200
+
+gnustep-gui (0.25.0-3) unstable; urgency=medium
+
+  * Closes: #834025 :
+    + update debian/rules :
+      - don't use --link-doc between arch all and not all packages.
+      - generate libgnustep-guiN.maintscript file
+      - generate libgnustep-guiN.docs file
+    + new debian/templates/libgnustep-guiN.maintscript.in file.
+    + new debian/templates/libgnustep-guiN.docs.in file
+    + update debian/clean file
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Tue, 23 Aug 2016 00:16:11 +0200
+
+gnustep-gui (0.25.0-2) unstable; urgency=medium
+
+  * Upload to unstable
+  * Update debian/patches/fix-spelling-errors patch
+  * Thanks to Iain R. Learmonth, use cme and licensecheck tools:
+    + Update debian/templates/control.m4 file
+      and regenerate debian/control file
+    + Provide a new debian/copyright-scan-patterns.yml file
+    + Provide a new debian/fill.copyright.blanks.yml file
+    + Provide a new debian/fix.scanned.copyright file
+    + Update debian/copyright file
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Fri, 08 Jul 2016 20:42:40 +0200
+
+gnustep-gui (0.25.0-1) experimental; urgency=low
+
+  * Team Upload:
+    + In agreement with the Debian GNUstep maintainers,
+      add myself as Uploader
+  * New Upstream version 0.25.0:
+    + Closes: #826592
+    + remove gorm-loading patch, now useless
+    + remove xib-loading patch, now useless
+    + remove giflib5.diff patch, now useless
+    + update info-direntry patch
+    + New SONAME, thus package names are changed:
+      - libgnustep-gui0.24     -> libgnustep-gui0.25
+      - libgnustep-gui0.24-dev -> libgnustep-gui0.25-dev
+      - libgnustep-gui0.24-dbg -> libgnustep-gui0.25-dbg
+      - start a transition: upload in experimental first
+  * New fix-spelling-errors patch
+  * Move debian/control.m4 file to new debian/templates directory
+   + bump Standards-Version to 3.9.8
+   + now depends on latest gnustep-base
+   + remove useless {gnustep:Depends} variable
+   + update Vcs-* fields
+   + tighten dependencies
+   + add build dependency to dh-autoreconf
+  * Move debian/libgnustep-guiN.overrides.m4 to debian/templates directory
+  * Provide a new debian/templates/gnustep-gui-common.install.in
+  * Provide a new debian/templates/gnustep-gui-doc.install.in file
+  * Provide a new debian/templates/gnustep-gui-runtime.install.in file
+  * Provide a new debian/templates/gnustep-gui-runtime.links.in file
+  * Provide a new debian/templates/libgnustep-gui-dev.install.in file
+  * Provide a new debian/templates/libgnustep-guiN.install.in file
+  * New debian/source/local-options file
+  * Update debian/watch file to version 4
+  * New debian/upstream/signing-key.asc file
+  * Rewrite debian/copyright file
+  * Provide a new debian/clean file
+  * Provide a new debian/gnustep-gui-common.docs file
+  * Provide a new debian/gnustep-gui-common.manpages file
+  * Provide a new debian/gnustep-gui-doc.docs file
+  * Provide a new debian/gnustep-gui-doc.info file
+  * Provide a new debian/libgnustep-gui0.25.symbols
+  * Rewrite debian/rules file for easier maintenance
+    + use override_dh_* targets
+    + enable hardening:
+      remove debian/gnustep-gui-runtime.lintian-overrides, now useless
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Thu, 30 Jun 2016 22:13:09 +0200
+
+gnustep-gui (0.24.0-3.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Build using giflib 5. Closes: #803283.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 16 Dec 2015 04:44:00 +0000
+
+gnustep-gui (0.24.0-3) unstable; urgency=medium
+
+  * debian/patches/xib-loading.patch: New; fixes a crash with XIB
+    decoding/loading (Closes: #754825).
+  * debian/patches/gorm-loading.patch: New; fixes a crash in Gorm
+    loading (Closes: #755823).
+  * debian/patches/series: Update.
+  * debian/control.m4 (Standards-Version): Bump to 3.9.6; no changes
+    needed.
+  * debian/control: Regenerate.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 28 Oct 2014 09:39:18 +0200
+
+gnustep-gui (0.24.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * debian/compat: Set to 9 to get .build-id debugging symbols.
+  * debian/control.m4 (Build-Depends): Require debhelper >= 9.
+    (libgnustep-gui`'SOV_GUI-dbg) <Conflicts>: Remove.
+  * debian/control: Regenerate.
+  * debian/rules (confflags): Define conditionally and pass --host to
+    configure only if cross-compiling.
+
+ -- Yavor Doganov <yavor@gnu.org>  Mon, 07 Jul 2014 14:34:47 +0300
+
+gnustep-gui (0.24.0-1) experimental; urgency=low
+
+  * New major upstream release:
+    - Provides a more complete implementation of NSBox (Closes: #711938).
+  * debian/patches/say-build.patch: Remove; fixed upstream.
+  * debian/patches/info-direntry.patch: New.
+  * debian/patches/series: Update.
+  * debian/rules (v_base): Bump to 1.24.6.
+    (install-doc): Do not create User/Developer symlinks.  Remove gsdoc
+    files, do not delete info ones.
+    (binary-arch): Remove gnustep-gpbs from generated shlibs, will be
+    merged into -common.
+  * debian/control.m4 (Build-Depends): Replace libtiff4-dev with
+    libtiff-dev (Closes: #736010).
+    (Build-Depends-Indep): Remove texi2html.
+    (libgnustep-gui`'SOV_GUI-dbg) <Conflicts>: Remove
+    libgnustep-gui0.18-dbg, add libgnustep-gui0.22-dbg.
+    (Vcs-Git): Use the canonical URI.
+    (Standards-Version): Bump to 3.9.5 (no changes needed).
+  * debian/control: Regenerate.
+  * debian/gnustep-gui-doc.doc-base.manual: Add HTML format; it is now
+    properly built and installed following the texi2html->makeinfo switch
+    (Closes: #732137).
+  * debian/copyright: Update copyright years; typo fix.
+
+ -- Yavor Doganov <yavor@gnu.org>  Mon, 26 May 2014 19:11:54 +0300
+
+gnustep-gui (0.22.0-1) experimental; urgency=low
+
+  * New major upstream release.
+  * debian/rules (v_base): Bump to 1.24 (Closes: #672986).
+    Run the testsuite in the proper target.  Enable hardening and
+    imagemagick.
+  * debian/control.m4 (Build-Depends): Add libmagickcore-dev and
+    libicu-dev.
+    (libgnustep-gui`'SOV_GUI-dbg) <Recommends>: Set to
+    libgnustep-base1.24-dbg.
+    <Conflicts>: Add libgnustep-gui0.20-dbg.
+  * debian/control: Regenerate.
+  * debian/patches/fix-ftbfs-gcc46.patch: Remove; fixed upstream.
+  * debian/patches/say-build.patch: Update/refresh.
+  * debian/patches/series: Update.
+  * debian/gnustep-gui-runtime.lintian-overrides: New file; hardening
+    false positives.
+  * debian/copyright: Update copyright years.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 22 May 2012 18:13:44 +0300
+
+gnustep-gui (0.20.0-3) unstable; urgency=low
+
+  * debian/control.m4 (Build-Depends): Replace libpng12-dev with
+    libpng-dev (Closes: #662357).  Remove quilt.
+    (gnustep-gui-runtime, libgnustep-gui`'SOV_GUI) <Depends>: Relax the
+    dependency on -common (Closes: #655433).
+    (Standards-Version): Bump to 3.9.3; no changes needed.
+  * debian/control: Regenerate.
+  * debian/source/format: Change to 3.0 (quilt).
+  * debian/README.source: Delete.
+  * debian/rules: Don't include /usr/share/quilt/quilt.make.  Eliminate
+    quilt patch/unpatch and adjust target dependencies (Closes: #670328).
+
+ -- Yavor Doganov <yavor@gnu.org>  Fri, 27 Apr 2012 12:08:40 +0300
+
+gnustep-gui (0.20.0-2.1) unstable; urgency=low
+
+  * NMU, fix FTBFS with gcc 4.6 (Closes: #639692)
+
+ -- Konstantinos Margaritis <markos@genesi-usa.com>  Wed, 11 Jan 2012 13:39:39 +0000
+
+gnustep-gui (0.20.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * debian/rules (v_base): Set to 1.22.1 to ensure that the package is
+    built with gcc-4.6 on all architectures.
+  * debian/control: Regenerate.
+  * debian/patches/say-build.patch: New; fixes FTBFS with gcc-4.6 (Closes:
+    #639692) and with ld --as-needed (Closes: #631148).
+  * debian/patches/series: Update.
+
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 15 Sep 2011 21:07:20 +0300
+
+gnustep-gui (0.20.0-1) experimental; urgency=low
+
+  * New major upstream release.
+  * debian/control.m4 (Vcs-Arch): Replace with...
+    (Vcs-Git): ...following the migration to Git.
+    (Vcs-Browser): New field.
+    (Standards-Version): Bump to 3.9.2; no changes needed.
+    (libgnustep-gui-dev) <Depends>: Remove libjpeg-dev, libpng12-dev,
+    libtiff4-dev | libtiff-dev, libgif-dev, zlib1g-dev -- unnecessary
+    dependencies.
+    (libgnustep-gui`'SOV_GUI-dbg) <Recommends>: Set to
+    libgnustep-base1.22-dbg.
+    <Conflicts>: Set to libgnustep-gui0.18-dbg.
+  * debian/control: Regenerate.
+  * debian/rules (v_base): Bump to 1.22.
+    (debian/build-indep-stamp): Run the testsuite.
+    (install-shared): Delete GSSpeechServer.desktop.
+    (binary-arch): Move colorpickers' images to /usr/share.
+  * debian/patches/gmodel-loading.patch:
+  * debian/patches/untitled-document-loading.patch: Delete; fixed
+    upstream.
+  * debian/patches/series: Update.
+  * debian/gnustep-gui-runtime.preinst:
+  * debian/gnustep-gui-runtime.lintian-overrides: Delete; not needed
+    anymore.
+  * debian/copyright: Update copyright years.
+
+ -- Yavor Doganov <yavor@gnu.org>  Fri, 03 Jun 2011 00:23:00 +0300
+
+gnustep-gui (0.18.0-5) unstable; urgency=medium
+
+  * debian/patches/untitled-document-loading.patch: New; prevent loading
+    of untitled document in an NSDocument-based app without an editor type
+    (Closes: #595757).
+  * debian/patches/series: Update.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 07 Sep 2010 18:13:59 +0300
+
+gnustep-gui (0.18.0-4) unstable; urgency=medium
+
+  * debian/control.m4 (Build-Depends): Add quilt.
+  * debian/control: Regenerate.
+  * debian/rules: Include /usr/share/quilt/quilt.make; adjust targets and
+    prerequisites for quilt.
+  * debian/patches/gmodel-loading.patch: New; fixes loading of GModel
+    bundles, regression introduced in 0.18.0 (Closes: #594597).
+  * debian/patches/series:
+  * debian/README.source: New file.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sun, 29 Aug 2010 12:30:47 +0300
+
+gnustep-gui (0.18.0-3) unstable; urgency=low
+
+  * Upload to unstable.
+  * debian/control.m4 (libgnustep-gui`'SOV_GUI-dbg) <Conflicts>: Replace
+    gnustep-gui-runtime-dbg with libgnustep-gui0.14-dbg and
+    libgnustep-gui0.16-dbg.
+    <Provides>: Remove; obsolete.
+    <Recommends>: Add libgnustep-base1.20-dbg which is needed in most
+    cases to provide a meaningful backtrace.
+    (Standards-Version): Compliant with 3.9.1; no changes needed.
+  * debian/control: Regenerate.
+  * debian/watch: Track only stable releases.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 10 Aug 2010 20:36:58 +0300
+
+gnustep-gui (0.18.0-2) experimental; urgency=low
+
+  * debian/gnustep-gui-runtime.preinst: Fix a terrible typo.  Avoid set -u
+    since fresh installs fail while the condition is otherwise true as
+    expected.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 22 Jun 2010 19:37:11 +0300
+
+gnustep-gui (0.18.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * debian/control.m4 (Build-Depends): Replace libaudiofile-dev and
+    portaudio19-dev with libao-dev and libsndfile1-dev; libjpeg62-dev with
+    libjpeg-dev.  Add flite1-dev.
+    (libgnustep-gui-dev) <Depends>: Remove libaspell-dev, libaudiofile-dev
+    and ${shlibs:Depends}.  Replace libjpeg62-dev with libjpeg-dev.
+    (libgnustep-gui`'SOV_GUI-dbg) <Depends>: Add ${misc:Depends}.
+    (gnustep-gui-doc) <Depends>: Likewise.
+    (Description): Extend.
+    (Standards-Version): Bump to 3.8.4 (no changes needed).
+  * debian/control: Regenerate, which picks the SONAME change as well.
+  * debian/rules: Remove all sparc conditionals; not needed anymore.
+    (v_base): Bump to 1.20.0.
+    (v_make): Remove; unused.
+    (OPTFLAG): Remove and rework noopt handling to be compatible with
+    gnustep-make/2.4.0.
+    (HURD_CONF): Remove; not necessary anymore.
+    (install-shared): Move Sounds to -common.
+    (binary_indep): Don't install gnustep_sndd.1; install the newly added
+    manpages.
+  * debian/gnustep_sndd.1: Remove; daemon gone for good.
+  * debian/gnustep-gui-runtime.lintian-overrides: Remove the gnustep_sndd
+    override (now unused), add new for say and GSSpeechServer.
+  * debian/source/format: New file.
+  * debian/gnustep-gui-runtime.preinst: New; handle the removal of
+    gnustep_sndd's init script.
+  * debian/say.1:
+  * debian/GSSpeechServer.1: New file.
+  * debian/copyright: Add 2010 to the copyright years.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 01 Jun 2010 23:05:26 +0300
+
+gnustep-gui (0.17.1-1) experimental; urgency=low
+
+  [ Gürkan Sengün ]
+  * New upstream version.
+  * Bump standards version.
+
+  [ Yavor Doganov ]
+  * debian/control.m4: Wrap all fields.
+    (Section): Change to `gnustep'.  Adjust binary packages accordingly.
+    (Uploaders): Add myself, remove Hubert upon his request.
+    (Homepage, Vcs-Arch): New fields.
+    (Suggests): Remove redundant suggests on -doc; only the -dev package
+    should suggest it.
+    (Depends): Tighten depends on -common.
+    (Recommends): Remove.
+  * debian/control: Regenerate.
+  * debian/rules: Add support for noopt.  Temporary remove sparc
+    conditionals.  Use $(MAKE) instead of gs_make.
+    (debian/deb-scripts-stamp, debian/deb-scripts): Remove.
+    (debian/libgnustep-gui$(sov_gui).lintian-overrides): New target.
+    (binary-arch): Depend on it.  Install the lintian overrides.  Remove
+    dh_installinit invocation.
+    (clean_files): Add debian/libgnustep-gui$(sov_gui).lintian-overrides.
+  * debian/gnustep_sndd.1:
+  * debian/gnustep-gui-runtime.lintian-overrides:
+  * debian/libgnustep-guiN.overrides.m4:
+  * debian/gnustep-gui-doc.doc-base.gui:
+  * debian/gnustep-gui-doc.doc-base.additions:
+  * debian/gnustep-gui-doc.doc-base.manual: New file.
+  * debian/README.Debian: Typo fix.
+  * debian/gnustep-gui-common.gnustep_sndd:
+  * debian/gnustep-gui-common.gnustep_sndd.in: Delete; the daemon should
+    not be started as root.
+  * debian/watch: Don't uupdate, add opts=pasv.
+  * debian/copyright: Update copyright years.  Make it clear that the
+    Tools are licenses under GPLv3+ now.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sun, 22 Nov 2009 20:18:24 +0200
+
+gnustep-gui (0.16.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Sat, 11 Apr 2009 13:38:29 -0400
+
+gnustep-gui (0.16.0-1) experimental; urgency=low
+
+  [Gürkan Sengün]
+  * New upstream version.
+  * Bump standards version.
+  * Bump debhelper version.
+  * Add myself to Uploaders field.
+  * Change libungif4-dev into libgif-dev in build-depends.
+
+  [Hubert Chathi]
+  * Bump version numbers.
+  * Force installation into system domain.
+  * Target to experimental distribution.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Fri, 20 Feb 2009 22:02:17 +0100
+
+gnustep-gui (0.14.0-4) unstable; urgency=low
+
+  * debian/rules: Move definition of HURD_CONF outside of the rule.
+    (Really closes: #456257)
+  * debian/control: Build-depend on texlive-base and texlive-latex-base
+    instead of just texlive-base-bin.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Sat, 19 Jul 2008 11:13:23 -0400
+
+gnustep-gui (0.14.0-3) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Wed, 02 Jul 2008 13:40:29 -0400
+
+gnustep-gui (0.14.0-2) experimental; urgency=low
+
+  * debian/rules: Install new man pages for gclose, gcloseall,
+    set_show_services.
+  * debian/copyright: Custom license for UI element images replaced by
+    GPL. (Closes: #487143)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 19 Jun 2008 13:10:51 -0400
+
+gnustep-gui (0.14.0-1) experimental; urgency=low
+
+  * New upstream release.
+    * debian/rules: NOTES file is no longer shipped.
+  * debian/control: Add dependencies on ${gnustep:Depends}.
+  * debian/rules: Put HURD_CONF definition in the right spot. (Closes: #456257)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Sun, 15 Jun 2008 23:40:43 -0400
+
+gnustep-gui (0.12.0-4) unstable; urgency=low
+
+  * debian/control: Build-depend on libcups2 instead of libcupsys2.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 12 Jun 2008 20:01:09 -0400
+
+gnustep-gui (0.12.0-3) unstable; urgency=low
+
+  * debian/control, debian/rules: Add debugging package.
+  * debian/control, debian/compat: Bump debhelper compatibility level to 5.
+  * debian/control: Bump standards version to 3.7.3 (no other changes needed).
+  * debian/control: Fix dependencies so that binNMUs should work.
+  * debian/rules: Remove call to strip.  dh_strip should be sufficient.
+  * debian/copyright: Add copyright info, update note about
+    common-licenses to point to specific the version of the license as
+    well as the latest version.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Tue, 26 Feb 2008 23:26:44 -0500
+
+gnustep-gui (0.12.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Wed,  3 Oct 2007 17:17:19 -0400
+
+gnustep-gui (0.12.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Update maintainer address.
+  * Update build-depends for texlive.
+  * Build-depend on portaudio19-dev. (Closes: #407308)
+  * Remove dependency on (not needed any more) gnustep-ppd.
+  * Remove obsolete conflicts.
+
+ -- Hubert Chan <uhoreg@debian.org>  Fri,  6 Jul 2007 12:39:55 -0400
+
+gnustep-gui (0.11.0-2) unstable; urgency=low
+
+  * Provide: old -dev package name, to allow binNMUs of GNUstep packages.
+  * Fix Depends for -dev package: depend on gnustep-gui-runtime instead of
+    gnustep-base-runtime.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 26 Sep 2006 00:11:27 -0400
+
+gnustep-gui (0.11.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Minor improvements to debian/control generation.
+  * Change priority of -dbg to extra, to match overrides file.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Wed, 30 Aug 2006 16:30:47 -0600
+
+gnustep-gui (0.10.3-1) experimental; urgency=low
+
+  * New upstream release.
+    - Files can now be dropped on "Open Files" dialogs (closes: #310719)
+  * Fix dependencies.
+  * Drop SONAME from -dev package -- OpenStep API should be fairly stable.
+  * Fix -dbg package to behave like other -dbg packages and put the
+    libraries in /usr/lib/debug.
+  * Get rid of circular dependency. (see: #359158)
+    - Split off -runtime package from -common.
+    - -common now only contains data files and is now Arch: all.
+    - Add -runtime to shlibs file.
+  * Bump standards version to 3.7.2 (no changes).
+  * Move gui.make to -dev package since it's only needed for development.
+  * Add license headers to copyright files.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon, 14 Aug 2006 20:22:30 -0600
+
+gnustep-gui (0.10.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 27 Dec 2005 13:00:37 -0700
+
+gnustep-gui (0.10.1-2) unstable; urgency=low
+
+  * gnustep-back now has a so-versioned package name.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Fri, 16 Dec 2005 21:49:12 -0500
+
+gnustep-gui (0.10.1-1) unstable; urgency=low
+
+  * New upstream release.
+    - keep menu onscreen when screen changes resolution (closes: #315274)
+  * Rebuild with new gnustep-make.
+  * Remove unneeded lintian and linda overrides.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon, 12 Dec 2005 20:38:23 -0500
+
+gnustep-gui (0.9.5-2) unstable; urgency=low
+
+  * Rebuild using gcc/gobjc 4.0.
+  * debian/control.m4:
+    - Clean Replaces and Conflicts fields.
+    - Bump Standards version to 3.6.2.1.
+  * debian/rules (config.status and binary-arch targets):
+    - Disable gsnd server for hurd-i386 arch (see #309073).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Fri,  9 Sep 2005 19:13:52 +0200
+
+gnustep-gui (0.9.5-1) unstable; urgency=low
+
+  * New upstream release:
+    - array type has now complete element type (closes: #299178).
+    - should fix FTBFS on kfreebsd-gnu (closes: #267909).
+  * Add symlink for User doc in gnustep-gui-doc package. Thanks to Jonathan Shipley.
+  * Overrides inappropriate linda warnings.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Wed,  6 Apr 2005 21:25:57 +0200
+
+gnustep-gui (0.9.4-4) unstable; urgency=low
+
+  * Fix typo setting OPTFLAG for the sparc-linux architecture.
+
+ -- Matthias Klose <doko@debian.org>  Tue, 16 Nov 2004 07:25:30 +0100
+
+gnustep-gui (0.9.4-3) unstable; urgency=low
+
+  * Rebuild using the .orig.tar.gz file from Debian pool.
+  * gnustep-gui-common now replaces gnustep-ppd (<< 1.0.0).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sun, 14 Nov 2004 18:41:00 +0100
+
+gnustep-gui (0.9.4-2) unstable; urgency=low
+
+  * Rebuild using latest gnustep-base.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sun, 7 Nov 2004 15:38:58 +0100
+
+gnustep-gui (0.9.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control.m4:
+    - Add libcupsys2-dev in Build-Depends field.
+    - Remove empty transitional package gnustep-gui0.
+  * Remove gnustep-ppd package which is no longer
+     included into gnustep-gui.
+  * New SONAME, thus package names are changed:
+    -libgnustep-gui0 -> libgnustep-gui0.9
+    -libgnustep-gui0-dev -> libgnustep-gui0.9-dev
+    -libgnustep-gui0-dbg -> libgnustep-gui0.9-dbg
+  * As recommended by Gurkan Sengun and Riccardo Mottola,
+     set optimization level to -O1 on sparc.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Wed, 27 Oct 2004 21:46:13 +0200
+
+gnustep-gui (0.9.3-4) unstable; urgency=medium
+
+  * Adjust libtiff dependency for -dev package as well (closes: #262851).
+
+ -- Matthias Klose <doko@debian.org>  Wed,  4 Aug 2004 07:23:00 +0200
+
+gnustep-gui (0.9.3-3) unstable; urgency=low
+
+  * Adjust libtiff-dev build dependency.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 31 Jul 2004 11:56:53 +0200
+
+gnustep-gui (0.9.3-2) unstable; urgency=low
+
+  * debian/control.m4:
+    -Bump Standards-Version to 3.6.1.1.
+    -libgnustep-gui0 now depends on gnustep-gui-common
+      (>= {Source-Version}) and not (= {Source-Version})
+      (needed if we want to install multiple version of the shared lib).
+    -Use {shlibs:Depends} in gnustep-gui-common Depends field.
+  * debian/rules:
+    -Update v-base to 1.9.2-6.
+    -binary-arch target:
+      calculate shlibs dependencies separatly to avoid
+      gnustep-gui-common depends on gnustep-back.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sun, 11 Jul 2004 16:41:15 +0200
+
+gnustep-gui (0.9.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control.m4:
+    - Add libgnustep-base1-dbg in Build-Depends field because
+      the debug gui library must be linked with a debug version
+      of the base library (closes: #225154).
+    - Update Debian GNUstep maintainers e-mail.
+    - New build-dependencies: libaspell-dev.
+  * New Packaging scheme. Apply all recommendations of the
+    Debian Library Packaging Guide:
+    - gnustep-gui0 is now an empty transitional package.
+    - gnustep-gui0-dev has been renamed in libgnustep-gui0-dev.
+    - gnustep-gui0-dbg has been renamed in libgnustep-gui0-dbg.
+    - new gnustep-gui-common package (common files).
+    - new libgnustep-gui0 package (shared library).
+  * Provides wrapper scripts for gopen and make_services.
+    (closes: #256151).
+  * Modify Documentation/GNUmakefile to prevent documentation
+    to be removed after install.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Wed, 23 Jun 2004 19:20:02 +0200
+
+gnustep-gui (0.9.2-1) unstable; urgency=low
+
+  * New upstream release (closes: #235916).
+  * debian/control.m4:
+    -Update Build-Depends field.
+    -gnustep-gui0 now conflicts with gnustep-back (<< 0.9.2).
+     (gnustep-gui 0.9.2 is not compatible with previous gnustep-back)
+  * debian/rules:
+    -Update CC.
+    -Install make_services manpage.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sun, 21 Mar 2004 12:03:41 +0100
+
+gnustep-gui (0.9.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove m68k specific lines in debian/rules and debian/control.m4.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Fri, 19 Dec 2003 14:51:05 +0100
+
+gnustep-gui (0.9.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update debian/README.Debian file.
+  * debian/control.m4 : Update Description fields (closes: #213586).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Thu,  2 Oct 2003 08:49:17 +0200
+
+gnustep-gui (0.8.9-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update to standard version 3.6.1.
+  * debian/control.m4 file : update Conflicts fields.
+  * Install gopen manpage.
+  * Use CVS version of Tools/gsnd/gsnd.m (avoid buildd hangs).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Wed, 27 Aug 2003 21:36:36 +0200
+
+gnustep-gui (0.8.8-5) unstable; urgency=low
+
+  * Re-enable gnustep_sndd at boot/install time.
+  * Apply Matthias Klose's patch on gsnd.m (fixing the buildd hangs).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Fri, 15 Aug 2003 16:08:57 +0200
+
+gnustep-gui (0.8.8-4) unstable; urgency=low
+
+  * Do not start gnustep_sndd at boot/install time.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Thu, 14 Aug 2003 00:06:01 +0200
+
+gnustep-gui (0.8.8-3) unstable; urgency=low
+
+  * Fix debian/rules install-ppd target (closes: #204159).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Mon,  4 Aug 2003 23:01:59 +0200
+
+gnustep-gui (0.8.8-2) unstable; urgency=low
+
+  * gnustep-dev and -dbg packages go to section libdevel.
+  * gnustep-ppd is architecture all.
+  * Make build more verbose (messages=yes).
+  * Don't include old changelogs.
+  * Re-add the shlibs dependency on gnustep-gui and gnustep-back.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 30 Jul 2003 07:34:25 +0200
+
+gnustep-gui (0.8.8-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove debian/gnustep-gui0.docs and debian/gnustep-gui-doc.docs files.
+  * Update debian/rules :
+    - Use bash.
+    - Enable CC variable.
+    - Use p_* and d_* variable names.
+    - remove GS_HOST, GS_CPU, GS_OS, GS_LIB_DIR, GS_COMBO_DIR variables.
+    - use the new doc= variable.
+    - Don't depend build target on build-indep target.
+  * Change Section of gnustep-gui0-dev and gnustep-gui0-dev (libdevel).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sun, 27 Jul 2003 23:07:09 +0200
+
+gnustep-gui (0.8.7-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update to standard version 3.5.10.
+  * Update to debhelper compatibility level 4.
+  * Use gcc/gobjc 3.3.
+  * Fix lintian warnings and errors.
+  * Add libaudiofile-dev in Build-Depends
+  * New gnustep-gui-doc package. Closes: #148063.
+  * New gnustep_sndd init script. Closes: #193341.
+  * Do not use dh_doclink any longer.
+  * Update Descriptions field in debian/control
+    ( using descriptions found in .spec files ).
+  * Update README.Debian file.
+  * Do not use dh_doclink any longer.
+  * Add debian/watch file.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Thu,  3 Jul 2003 08:52:34 +0200
+
+gnustep-gui (0.8.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update README.Debian and copyright (Eric Heintzmann).
+    Closes: #186135, 186252.
+
+ -- Matthias Klose <doko@debian.org>  Tue, 25 Mar 2003 21:46:18 +0100
+
+gnustep-gui (0.8.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@debian.org>  Sat,  1 Mar 2003 14:22:03 +0100
+
+gnustep-gui (0.8.3-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Mon, 20 Jan 2003 23:57:33 +0100
+
+gnustep-gui (0.8.1-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 11 Sep 2002 06:52:01 +0200
+
+gnustep-gui (0.8.0-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Sat,  3 Aug 2002 00:56:31 +0200
+
+gnustep-gui (0.7.9-2) unstable; urgency=low
+
+  * Tighten dependency on gnustep-base1 (m68k build). Closes: #153975.
+
+ -- Matthias Klose <doko@debian.org>  Thu, 25 Jul 2002 07:06:25 +0200
+
+gnustep-gui (0.7.9-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 21 Jul 2002 17:27:49 +0200
+
+gnustep-gui (0.7.8-1) unstable; urgency=low
+
+  * New upstream release.
+  * Recompiled apps (gui/back) work again (closes: #140800).
+  * gnustep-base1-dev now depends on the compiler used (closes: #149654).
+
+ -- Matthias Klose <doko@debian.org>  Tue, 16 Jul 2002 22:26:23 +0200
+
+gnustep-gui (0.7.7-3) unstable; urgency=low
+
+  * Recompile with tightened gnustep-base dependency.
+  * Remove explicit gcc dependency.
+
+ -- Matthias Klose <doko@debian.org>  Sat,  1 Jun 2002 10:06:39 +0200
+
+gnustep-gui (0.7.7-2) unstable; urgency=low
+
+  * gnustep-gui-dev: Add dependency on gnustep-base-dev (closes: #147880).
+
+ -- Matthias Klose <doko@debian.org>  Fri, 24 May 2002 01:00:58 +0200
+
+gnustep-gui (0.7.7-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@debian.org>  Sun,  5 May 2002 12:49:28 +0200
+
+gnustep-gui (0.7.6-0.1) unstable; urgency=medium
+
+  * Non Maintainer Upload
+  * New upstream release
+
+ -- Paul Seelig <pseelig@debian.org>  Mon,  25 Mar 2002 01:12:55 +0100
+
+gnustep-gui (0.7.5-3) unstable; urgency=medium
+
+  * Rebuild to get the libobjc1 depedency right.
+
+ -- Matthias Klose <doko@debian.org>  Thu,  7 Mar 2002 00:19:10 +0100
+
+gnustep-gui (0.7.5-2) unstable; urgency=medium
+
+  * Remove gnustep-gui0's dependency on gnustep-xgps0 and insert this
+    dependency in gnustep-gui0's shlibs file to avoid a circular build
+    dependency between gnustep-gui and gnustep-xgps.
+
+ -- Matthias Klose <doko@debian.org>  Wed,  6 Feb 2002 21:56:10 +0100
+
+gnustep-gui (0.7.5-1) unstable; urgency=medium
+
+  * Final release.
+
+ -- Matthias Klose <doko@debian.org>  Sun,  3 Feb 2002 20:00:37 +0100
+
+gnustep-gui (0.7.0.90-2) unstable; urgency=low
+
+  * Add dependency on gnustep-xgps0.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 16 Jan 2002 21:27:33 +0100
+
+gnustep-gui (0.7.0.90-1) unstable; urgency=low
+
+  * New upstream snapshot (daily snapshot 20020110).
+
+ -- Matthias Klose <doko@debian.org>  Fri, 11 Jan 2002 21:57:39 +0100
+
+gnustep-gui (0.7.0-1) unstable; urgency=low
+
+  * Correctly determine s390 architecture.
+  * Build-Depend on gnustep-base (>= 1.2.0-2) on architecture s390.
+
+ -- Matthias Klose <doko@debian.org>  Wed,  9 Jan 2002 02:24:07 +0100
+
+gnustep-gui (0.7.0-0.3) unstable; urgency=low
+
+  * Add jpeg-dev build dependency (closes: #112837).
+
+ -- Matthias Klose <doko@debian.org>  Sat, 22 Sep 2001 10:02:05 +0200
+
+gnustep-gui (0.7.0-0.2) unstable; urgency=low
+
+  * Add build dependencies (closes: #111183).
+
+ -- Matthias Klose <doko@debian.org>  Tue,  4 Sep 2001 23:43:31 +0200
+
+gnustep-gui (0.7.0-0.1) unstable; urgency=low
+
+  * New upstream release.
+  * Use Standards-Version 3.5.5.
+
+ -- Chanop Silpa-Anan <chanop@debian.org>  Thu, 26 Jul 2001 07:01:08 +1000
+
+gstep-core (0.6.5-3) frozen unstable; urgency=low
+
+  * base/Source/NSInvocation.m: Fix important build error on alpha #59373.
+  * Set GNUSTEP_SYSTEM_ROOT to /usr/lib/GNUstep and disable separate
+    system root. Needed to correctly build gstep-extensions and gstep-guile.
+  * debian/gstep-base.init.in: Fix typo (fixes #59423).
+  * debian/gstep-base.postrm: Remove directory in ld.so.conf inserted
+    in postinst (fixes #59424).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed,  1 Mar 2000 21:33:53 +0100
+
+gstep-core (0.6.5-2) frozen unstable; urgency=medium
+
+  * Updated to the current state of the CVS. Integrates the Debian
+    patches submitted upstream.
+  * debian/gstep-base.init.d: Use new gdomap option -p for not probing
+    machines on the local network (really fixes grave #55906).
+  * debian/README.Debian: Document gdomap configuration.
+  * debian/control.in: Add autoconf to Build-Depends (fixes i#58873).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sun, 27 Feb 2000 22:31:00 +0100
+
+gstep-core (0.6.5-1) frozen unstable; urgency=medium
+
+  * Final release.
+  * Don't probe machines on the local network (grave #55906).
+  * Stop gdomap daemon (#48796).
+  * /etc/GNUstep: directory for GNUstep configuration files.
+  * debian/control.in: Add build depends.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sat, 19 Feb 2000 10:09:19 +0100
+
+gstep-core (0.6.0.90-1) unstable; urgency=low
+
+  * New snapshot from CVS (1999-10-28).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Thu, 28 Oct 1999 21:04:46 +0200
+
+gstep-core (0.6.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/gstep-base.init: Change init script message (fixes #40339).
+  * debian/gstep-xgps.{preinst,postrm}: Divert gpbs (fixes #40976).
+  * debian/gstep-base.init.in: Don't source GNUstep.sh (fixes #40338).
+  * debian/control.in: Use versioned package names for libraries.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sat, 21 Aug 1999 20:41:37 +0200
+
+gstep-core (0.5.5.990625-1) unstable; urgency=low
+
+  * New snapshot.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Fri, 25 Jun 1999 22:24:56 +0200
+
+gstep-core (0.5.5.990508-1) unstable; urgency=low
+
+  * New snapshot. Built with xgps as backend.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sun,  9 May 1999 15:18:28 +0200
+
+gstep-core (0.5.5.990310-1) unstable; urgency=low
+
+  * GNUstep 0.5.5 + minor updates from the CVS archive.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Thu, 11 Mar 1999 22:47:17 +0100
+
+gstep-core (0.5.5-1) unstable; urgency=low
+
+  * gstep-0.6 prerelease2 ("dawn").
+  * gstep-extensions, gstep-db and gstep-guile are moved out of the core package.
+  * Moved to debhelper-1.2.x.
+  * First try for powerpc and alpha architectures.
+  * New package gstep-base-dbg (link with -lgnustep-base_d).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed, 24 Feb 1999 18:35:13 +0100
+
+gstep-core (0.5.0.981229-1) frozen unstable; urgency=low
+
+  * Fixed linking of guile dependent binaries (introduced with guile 1.3-11).
+  * Fixed x permissions of debian installation scripts.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Tue, 29 Dec 1998 20:12:17 +0100
+
+gstep-core (0.5.0.981222-1) frozen unstable; urgency=low
+
+  * Moved symlink patches upstream.
+  * Built with debhelper 1.1.24 and provide the needed debhelper-1.2.18 files.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Mon, 22 Dec 1998 21:41:54 +0200
+
+gstep-core (0.5.0.981218-1) frozen unstable; urgency=low
+
+  * New maintainer.
+  * Previous builds included GNUSTEP_SYSTEM_ROOT, if GNUstep packages
+    were installed.
+  * Fixed build error on the alpha architecture (forwarding still doesn't
+    work).
+  * Install compiled guile modules in /usr/lib/guile1.3; don't know, if
+    this is correct, but better than /usr/share/guile.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sat, 19 Dec 1998 01:53:27 +0200
+
+gstep-core (0.5.0.981215-0.1) frozen unstable; urgency=low
+
+  * Finally recompiled with correct libc.
+  * Finished db and guile packages (db already was in 0.5.0.980820-0.1).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Mon, 14 Dec 1998 16:15:27 +0200
+
+gstep-core (0.5.0.981207-0.1) frozen unstable; urgency=low
+
+  * Recompiled with correct libc.
+  * Removed dependencies on dpsclient.
+  * Fixed dependencies of gstep-*-dev packages.
+  * debian/rules: Removed explicit ix86 dependencies (again!).
+  * Added debian/patches directory for Debian specific patches.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Mon,  7 Dec 1998 14:38:47 +0200
+
+gstep-core (0.5.0.981106cvs-1) frozen unstable; urgency=low
+
+  * New upstream CVS snapshot.o
+    With the new anon CVS server, we can now track the GNUstep
+    development much faster.
+  * Don't build gstep-xdps until there's a free DPS system in Debian.
+  * Instead, we have the X/RAW backend. With X/RAW, gstep doesn't any
+    longer depend on non-free components and can go into main.
+  * gstep-gui now has a working NSText class.
+  * debian/rules: Rewritten again.
+
+ -- Gregor Hoffleit <flight@debian.org>  Sat,  7 Nov 1998 12:08:45 +0100
+
+gstep-core (0.5.0.980820-0.1) unstable; urgency=low
+
+  * New upstream snapshot.
+  * Built with X/RAW as backend; still depends on dgs.
+  * New postinst/postrm scripts.
+  * debian/rules: Rewritten.
+  * debian/control.in: Tightened dependencies.
+  * Keep NEXTSTEP files.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Tue, 25 Aug 1998 13:48:48 +0200
+
+gstep-core (0.5.0.980806-1) unstable; urgency=low
+
+  * New upstream snapshot.
+  * GNUstep is now built from a single source package, gstep-core.
+
+ -- Gregor Hoffleit <flight@debian.org>  Fri,  7 Aug 1998 13:33:43 +0200

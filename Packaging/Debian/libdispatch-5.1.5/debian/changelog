@@ -1,0 +1,68 @@
+libdispatch (5.1.5-0.1) unstable; urgency=medium
+
+  * New upstream version. (Closes: #861886)
+
+ -- Patrick Georgi <patrick@georgi.software>  Sun, 03 May 2020 09:33:50 +0200
+
+libdispatch (0~svn197-3.3) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Build successfully on mips/mipesl
+    Add -fPIC flag for mips/mipsel
+    Patch by Dejan Latinovic
+    Closes: #741943
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Mon, 17 Mar 2014 15:36:52 +0000
+
+libdispatch (0~svn197-3.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Detect GNU linker on host_os-es other than linux-gnu (Closes: #660671)
+
+ -- Balint Reczey <balint@balintreczey.hu>  Tue, 12 Nov 2013 17:47:45 +0100
+
+libdispatch (0~svn197-3.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix use SSE2 instructions in i386. (Closes: #660806)
+
+ -- Nobuhiro Iwamatsu <iwamatsu@debian.org>  Tue, 10 Jul 2012 02:05:06 +0900
+
+libdispatch (0~svn197-3) unstable; urgency=low
+
+  * Replace individual patches with a combined libdispatch-r197_v2 patch.
+  * Add workaround for eglibc bug #631888.
+  * The configure script now defaults to Clang if it is available.
+
+ -- Mark Heily <mark@heily.com>  Tue, 28 Jun 2011 22:20:40 -0400
+
+libdispatch (0~svn197-2) unstable; urgency=low
+
+  * Require clang >= 2.8
+  * patches/dispatch_main: prevent the process from becoming a zombie.
+  * patches/__builtin_expect: removed due to use of >= 2.8
+  * patches/use_libm: removed due to use of clang >= 2.8
+  * Add a Build-Depends on dh-autoreconf, and enable this in debian/rules
+
+ -- Mark Heily <mark@heily.com>  Wed, 18 May 2011 22:28:58 -0400
+
+libdispatch (0~svn197-1) unstable; urgency=low
+
+  * Upgrade to r197 from the upstream source repository.
+  * Remove all Debian-specific patches.
+  * Remove libbsd as a dependency.
+  * Add a dependency on libpthread-workqueue.
+
+ -- Mark Heily <mark@heily.com>  Sun, 6 Mar 2011 15:31:39 -0400
+
+libdispatch (0~svn188-2) unstable; urgency=low
+
+  * Add pkg-config as a dependency (fixes FTBFS)
+
+ -- Mark Heily <mark@heily.com>  Tue, 13 Jul 2010 22:45:01 -0400
+
+libdispatch (0~svn188-1) unstable; urgency=low
+
+  * Initial upload (Closes: #576638)
+
+ -- Mark Heily <mark@heily.com>  Mon, 05 Apr 2010 23:00:34 -0400

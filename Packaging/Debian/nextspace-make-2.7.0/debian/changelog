@@ -1,0 +1,1013 @@
+nextspace-make (2.7.0-0.1) unstable; urgency=medium
+
+  * Use 2.7.0 as NEXTSPACE requires
+  * Adapt to NEXTSPACE
+  * Use libobjc2 and clang
+
+ -- Patrick Georgi <patrick@georgi.software>  Tue, 05 May 2020 22:44:31 +0200
+
+gnustep-make (2.8.0-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Fix day-of-week for changelog entry 1.7.1-1.
+
+  [ Yavor Doganov ]
+  * New upstream release.
+  * debian/compat: Set to 12.
+  * debian/control (Build-Depends): Bump debhelper requirement.
+    Add pkg-config, needed by GS_LIBOBJC_PKG.
+    (Rules-Requires-Root): Set to "no".
+    (Standards-Version): Claim compliance with 4.5.0; no changes needed.
+  * debian/rules: Include /usr/share/dpkg/pkg-info.mk and set
+    FORCE_SOURCE_DATE to achieve reproducible builds.
+    (override_dh_auto_configure): Override test for bash as it produces
+    different results with merged /usr, giving unreproducible builds.
+  * debian/dh_gnustep/dh_gnustep: Remove support for substvar
+    ${gnustep:Depends}; it's been obsolete for quite some time.
+  * debian/dh_gnustep/dh_gnustep.1: Regenerate.
+  * debian/patches/no-setcontentsaftertitlepage.patch: Remove; merged
+    upstream.
+  * debian/patches/precompiled-header.patch: New; fix test for GCC 9 or
+    later which implies -Wl,--as-needed.
+  * debian/patches/fix-spelling-errors.patch: Fix yet another typo.
+  * debian/patches/series: Update.
+  * debian/gnustep-make-doc.links: New file; install symlinks in
+    /usr/share/doc pointing to /usr/share/GNUstep/Documentation.
+  * debian/gnustep-make-doc.doc-base.gnustep-faq: Use /usr/share/doc
+    symlinks for doc-base registration; fixes a lintian error.
+  * debian/gnustep-make-doc.doc-base.gnustep-filesystem: Likewise.
+  * debian/gnustep-make-doc.doc-base.gnustep-howto: Likewise.
+  * debian/gnustep-make-doc.doc-base.gnustep-make: Likewise.
+  * debian/gnustep-make-doc.doc-base.gnustep-userfaq: Likewise.
+  * debian/gnustep-common.install: Let the upstream build system install
+    the manpages.
+  * debian/gnustep-make.install: Likewise.  Also add bake_debian_files.sh
+    and app-wrapper.template.
+  * debian/gnustep-make.manpages: Remove upstream manpages.
+  * debian/gnustep-common.manpages: Delete; no longer needed.
+  * debian/not-installed: New file; add config.{guess,sub}.
+  * debian/copyright: Bump copyright years.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 14 Apr 2020 22:09:52 +0300
+
+gnustep-make (2.7.0-4) unstable; urgency=medium
+
+  * debian/rules (override_dh_auto_build-indep)
+    (override_dh_auto_configure): Remove --disable-strict-v2-mode.
+  * debian/compat: Bump to 11.
+  * debian/control (Build-Depends): Require debhelper >= 11.
+    (Vcs-Git, Vcs-Browser): Adjust following the migration to Salsa.
+    (Standards-Version): Compliant with 4.2.1 as of this release.
+  * debian/addons/gs_make: Delete; has never been useful and actually does
+    more harm than good as it ignores variables defined on the command line.
+  * debian/addons/gs_make.1: Likewise.
+  * debian/gnustep-make.install: Remove gs_make.
+  * debian/gnustep-make.manpages: Remove gs_make.1.
+  * debian/watch: Switch to ftp.gnustep.org, use version 4 features.
+  * debian/addons/config.mk: Add support for "terse" (Policy §4.9.1).
+  * debian/upstream/signing-key.asc: Minimize key to placate lintian.
+  * debian/gbp.conf: Add a minimalistic one.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sun, 09 Dec 2018 00:48:24 +0200
+
+gnustep-make (2.7.0-3) unstable; urgency=medium
+
+  * debian/addons/config.mk: Add snippet to handle optimization
+    when building GNUstep related packages (Thanks to Yavor Doganov).
+  * debian/control: Mark gnustep-make-doc as Multi-Arch: foreign.
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Sun, 22 Oct 2017 23:05:36 +0200
+
+gnustep-make (2.7.0-2) unstable; urgency=medium
+
+  [ Yavor Doganov ]
+  * debian/rules: Reset all flags as dpkg's default flags creep in and get
+    hardcoded in gnustep-make itself (Closes: #879085).  Remove dh's
+    --with autoreconf argument.
+  * debian/gnustep-make.links: Create symlinks for config.{guess,sub} from
+    autotools-dev to ensure they're always up-to-date.
+  * debian/gnustep-make.install: Do not install config.{guess,sub}.
+  * debian/compat: Set compat level to 10.
+  * debian/control (Build-Depends): Require debhelper >= 10; remove
+    dh-autoreconf.
+    (gnustep-make) <Depends>: Add autotools-dev.
+    (Standards-Version): Bump to 4.1.1 (no changes needed).
+  * debian/gnustep-common.maintscript: Delete; no longer needed.
+  * debian/patches/no-user-root-paths.patch: Remove; merged upstream.
+  * debian/patches/series: Update.
+  * debian/copyright: Update copyright years.
+
+  [ Eric Heintzmann ]
+  * debian/rules: Remove comment about XDG compliance.
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Sun, 22 Oct 2017 01:47:53 +0200
+
+gnustep-make (2.7.0-1) unstable; urgency=low
+
+  [ Eric Heintzmann ]
+  * New upstream version 2.7.0
+  * Remove debian patches applied upstream:
+    + fix-spelling-errors
+    + versioned-frameworks
+    + no-gzip-timestamps patch
+    + use-makeinfo patch
+  * Refresh debian patches:
+    + no-setcontentsaftertitlepage
+    + no-user-root-paths
+
+  [ Yavor Doganov ]
+  * debian/control (Breaks, Replaces): Remove; obsolete.
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Sun, 03 Sep 2017 05:25:49 +0200
+
+gnustep-make (2.6.8-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Replace @setcontentsaftertitlepage with @contents.
+    (Closes: #838278)
+
+ -- Adrian Bunk <bunk@debian.org>  Wed, 25 Jan 2017 23:53:44 +0200
+
+gnustep-make (2.6.8-2) unstable; urgency=medium
+
+  * Update versioned-frameworks patch to avoid breaking resource lookups.
+  * debian/rules:
+    + Enable hardening
+    + Use the shared libgcc
+  * New fix-spelling-errors patch.
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Sun, 24 Jul 2016 18:38:47 +0200
+
+gnustep-make (2.6.8-1) unstable; urgency=low
+
+  * Team upload.
+  * In agreement with the Debian GNUstep maintainers,
+    add myself as new Co-Maintainer.
+  * New upstream version
+  * Remove patches applied upstream:
+    + honor-CFLAGS.patch
+    + info-document-missing-direntry.patch
+    + library-combo-whatis-entry.patch
+    + manpage-spelling-errors.patch
+    + test-clean-core.patch
+    + texi-section-level.patch
+  * Update no-gzip-timestamps.patch.
+  * Update use-makeinfo.patch.
+  * Bump Standards-Version to 3.6.8 in debian/control.
+  * Set debhelper compatibility level to 9.
+  * Update Vcs-* fields in debian/control
+  * Rewrite debian/rules:
+    + Use dh $@ --with autoreconf and --buiddirectory
+    + No more use autotools-dev: drop dependencies
+    + Disable strict gnustep-make version 2 mode for now
+    + Build and install doc in *-indep sequence (Closes: #823281, #806197)
+    + Use --with-layout=debian in configure scripts:
+      - remove fhs-system-includedir.patch
+      - remove obsolete {gnustep:Depends} var in debian/control
+    + Remove debian/control.in file, useless now
+    + Remove debian/fhs/gnustep-common.disr.in, now useless
+    + Remove debian/fhs/gnustep-common.links.in, now useless
+    + Remove debian/gnustep-make.dirs.in, now useless
+  * Provide a new debian/clean file.
+  * Update debian/copyright file.
+  * Update debian/watch file to version 4.
+  * Replace debian/upstream/signig-key.pgp by signing-key.asc:
+    remove debian/source/include-binaries file.
+  * Provide a new debian/gnustep-make-doc.install file.
+  * Provide a new debian/gnustep-make-doc.info file.
+  * Rename debian/gnustep-make-doc.doc-base to
+    debian/gnustep-make-doc.doc-base.gnustep-make.
+  * Provides new debian/gnustep-make-doc.doc-base.* files.
+  * Provide a new debian/gnustep-make.install file.
+  * Provide a new debian/gnustep-make.lintian-overrides file.
+  * Provide a new debian/gnustep-make.manpages file:
+    remove debian/gnustep-test.1 file, useless now.
+  * Provide a new debian/gnustep-make.docs file.
+  * Provide a new debian/gnustep-make.links.
+  * Rename debian/fhs dir to debian/dh_gnustep.
+  * gnustep-make now Depends on {perl:Depends}
+  * New debian/addons dir:
+    + remove debian/gs_make.in and debian/config.mk.in, now useless
+    + new gs_make and config.mk files in debian/addons dir
+    + move debian/gs_make.1 to debian/addons dir
+  * Remove debian/gnustep-make.dirs.in, useless now.
+  * Provide a new debian/gnustep-common.maintscript file.
+  * Provide a new debian/gnustep-common.install file.
+  * Provide a new debian/gnustep-common.manpages file.
+  * Provide a new debian/gnustep-common.docs file.
+  * Provide a new debian/gnustep-common.dirs file.
+  * Provide a new debian/gnustep-common.links file.
+  * Provide a new debian/gnustep-common.lintian-overrides file.
+  * Move gnustep-config.1 manpage to gnustep-make package:
+    gnustep-make now Replaces and Breaks gnustep-common (<<2.6.8-1).
+
+ -- Eric Heintzmann <heintzmann.eric@free.fr>  Tue, 03 May 2016 22:13:30 +0200
+
+gnustep-make (2.6.6-3) unstable; urgency=medium
+
+  * debian/patches/versioned-frameworks.patch: New, properly support
+    versioned frameworks and thus library transitions (Closes: #755572).
+  * debian/patches/no-gzip-timestamps.patch: New, avoid timestamps in
+    compressed manpages.
+  * debian/patches/manpage-spelling-errors.patch: New, fix two spelling
+    errors.
+  * debian/patches/series: Update.
+  * debian/cdbs/frameworklib.install.in: Remove Current/Resources
+    symlinks; the former is in the -dev package and the latter is no
+    longer created.
+  * debian/cdbs/frameworkdev.install.in: Add two more symlinks in the
+    .framework directory.
+  * debian/cdbs/frameworklib.overrides.in: Delete; no longer necessary.
+  * debian/cdbs/gnustep.mk: Don't remove the Current symlink from the -dev
+    package.  Deprecate DEB_GS_AUTO_LINTIAN_OVERRIDES as installing
+    lintian overrides is no longer needed.
+  * debian/gnustep-make.dirs.in: Remove @GS_SYSTEM_ROOT@/Library;
+    redundant since 2.0.x.
+  * debian/upstream/signing-key.pgp: New, add upstream keyring.
+  * debian/source/include-binaries: Add signing-key.pgp.
+  * debian/watch: Verify upstream signature.
+  * debian/control.in (Standards-Version): Bump to 3.9.6; no changes
+    needed.
+  * debian/control: Regenerate.
+
+ -- Yavor Doganov <yavor@gnu.org>  Mon, 20 Oct 2014 15:02:19 +0300
+
+gnustep-make (2.6.6-2) unstable; urgency=medium
+
+  * debian/rules: Define GNUSTEP_MAKEFILES globally.
+    (confflags): Define conditionally and pass --host to configure only
+    if cross-compiling.  Do not set CC/CXX explicitly.
+    (common_scripts): Add config.make as it is arch-dependent.
+    (c-n, create-compat-symlink, delete-compat-symlink): Handle
+    config.make in addition to config-noarch.make.
+    (install-indep-common): Do not create empty directory.
+  * debian/control.in (Replaces, Breaks): Add/correct as appropriate.
+    (Depends): Tighten depends on gnustep-common.
+    (Suggests): Remove gnustep-base-common, pointless.
+    (Description): Extend.
+  * debian/control: Regenerate.
+  * debian/patches/use-makeinfo.patch: Correct .html targets to avoid
+    rebuilding them in the install rule.
+  * debian/config.mk.in: Define/export GNUSTEP_MAKEFILES and
+    GNUSTEP_INSTALLATION_DOMAIN.
+  * debian/copyright: Actually switch to format 1.0 by specifying
+    the Format/Source fields.
+
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 26 Jun 2014 19:50:40 +0300
+
+gnustep-make (2.6.6-1) unstable; urgency=low
+
+  * New upstream release:
+    - Fixes FTBFS of sogo with make 4.0 (Closes: #747028).
+  * Ack NMU, thanks David Prévot.
+  * debian/rules (debian/$(p_make)-configure-stamp, clean): Use
+    dh_autotools-dev to update config.{sub,guess} files; thanks Matthias
+    Klose (Closes: #727263).
+    (install-indep-stamp): Don't install Internals documentation.
+    (binary-indep): Stop creating useless symlinks.
+  * debian/control.in (Build-Depends): Add autotools-dev.
+    (Build-Depends-Indep): Remove texi2html.
+    (Vcs-Git, Vcs-Browser): Use canonical URIs.
+    (gnustep-make-doc) <Depends>: Remove dpkg (>= 1.15.4) | install-info.
+    (Standards-Version): Compliant with 3.9.5 as of this release.
+  * debian/control: Regenerate.
+  * debian/Internals/*: Delete; not very useful.
+  * debian/patches/use-makeinfo.patch: New; generate HTML documentation
+    with makeinfo instead of texi2html.
+  * debian/patches/honor-CFLAGS.patch: New, do not ignore user-defined
+    CFLAGS; thanks Nicolas Boulenguez (Closes: #719622).
+  * debian/patches/series: Update.
+  * debian/NEWS: New file; document the switch to makeinfo.
+  * debian/gnustep-make-doc.doc-base: New file.
+
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 22 May 2014 19:09:24 +0300
+
+gnustep-make (2.6.2-2.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix gnustep-filesystem.texi syntax (Closes: #707506).
+
+ -- David Prévot <taffit@debian.org>  Mon, 08 Jul 2013 00:05:04 -0400
+
+gnustep-make (2.6.2-2) unstable; urgency=low
+
+  * debian/source/format: Switch to 3.0 (quilt).
+  * debian/control.in (Build-Depends): Drop quilt.
+  * debian/control: Regenerate.
+  * debian/rules: Don't include /usr/share/quilt/quilt.make.  Remove quilt
+    patch/unpatch dependencies.
+  * debian/README.source: Delete; redundant.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sat, 28 Apr 2012 12:31:36 +0300
+
+gnustep-make (2.6.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/patches/gcc-4.6.patch: Delete; GCC 4.6 is now the default
+    compiler on all architectures (Closes: #667149).
+  * debian/patches/texi2html-flags.patch: Delete; fixed upstream.
+  * debian/patches/tests-clean-core.patch: New; delete all possible core
+    files left by failed tests (Closes: #646840).  Thanks Peter
+    Eisentraut.
+  * debian/patches/series: Update.
+  * debian/control.in (Build-Depends): Replace gobjc++-4.6 with gobjc++.
+  * debian/control: Regenerate.
+    (Depends): Replace gobjc-4.6 with gobjc.  Move the autotools-dev
+    dependency from -common to -make (Closes: #653715).
+    (Replaces, Breaks): New fields to cater for the files moved from
+    -common to -make.
+    (Standards-Version): Bump to 3.9.3; no changes needed.
+  * debian/rules (common_scripts): Remove config.sub and config.guess.
+    (debian/install-arch-stamp): Install correct symlinks for
+    config.{sub,guess}.
+  * debian/copyright: Update copyright years.
+
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 26 Apr 2012 14:11:23 +0300
+
+gnustep-make (2.6.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/patches/gcc-4.6.patch: New; enforce gcc-4.6 on all
+    architectures for the new ObjC runtime.
+  * debian/patches/series: Update.
+  * debian/control.in (Build-Depends): Remove gobjc, replace gobjc++ with
+    gobjc++-4.6.
+    (gnustep-make) <Depends>: Add gobjc-4.6.
+  * debian/control: Regenerate.
+
+ -- Yavor Doganov <yavor@gnu.org>  Wed, 14 Sep 2011 18:18:18 +0300
+
+gnustep-make (2.6.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/conrol.in (Vcs-Arch): Replace with...
+    (Vcs-Git): ...following the switch to Git.
+    (Vcs-Browser): New field.
+    (Standards-Version): Bump to 3.9.2; no changes necessary.
+    (Build-Depends): Add gobjc++.
+  * debian/control: Regenerate.
+  * debian/gnustep-tests.1: New file.
+  * debian/rules (debian/install-arch-stamp): Move gnustep-tests to the
+    -make package.
+    (binary-arch): Install gnustep-tests.1.
+    (binary-indep): Do not invoke dh_lintian.
+  * debian/patches/texi2html-flags.patch: New; temporary workaround for a
+    bug in texi.make (Closes: #594141).
+  * debian/patches/series: Update.
+  * debian/gnustep-make.lintian-overrides: Delete.
+  * debian/copyright: Update copyright years.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sun, 22 May 2011 17:17:41 +0300
+
+gnustep-make (2.4.0-3) unstable; urgency=medium
+
+  * debian/rules (common_scripts): Add config-noarch.make which is
+    architecture-dependent; thanks Michael Werle (Closes: #583840).
+    Remove ld_lib_path.{,c}sh which no longer exist.
+    (c-n, create-compat-symlink, remove-compat-symlink): New convenience
+    variables to aid in bootstrapping which now fails because of the
+    config-noarch.make move.
+    (debian/build-indep-stamp, debian/install-indep-stamp, clean-patched):
+    Use them.
+
+ -- Yavor Doganov <yavor@gnu.org>  Mon, 31 May 2010 16:12:50 +0300
+
+gnustep-make (2.4.0-2) unstable; urgency=low
+
+  * debian/control.in (gnustep-make) <Depends>: Tighten depends on
+    gnustep-common.
+  * debian/control: Regenerate.
+  * debian/cdbs/gnustep.mk (__gs_application_update_lintian_overrides):
+    Remove and replace with a deprecation warning; maintainers are
+    supposed to fix these issues instead of sweeping them under the carpet
+    with lintian overrides.
+  * debian/cdbs/application.overrides.in: Delete.
+  * debian/TODO: Remove; obsolete.
+
+ -- Yavor Doganov <yavor@gnu.org>  Wed, 26 May 2010 13:34:50 +0300
+
+gnustep-make (2.4.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control.in: Wrap all fields.
+    (Section): Change to `gnustep' to match the override file.
+    (Uploaders): Add myself; remove Eric and Hubert.
+    (Build-Depends): Remove obsolete version requirement of gobjc.  Add
+    quilt.
+    (gnustep-common) <Conflicts>: Remove; obsolete.
+    <Replaces>: Remove version as we move print_unique_pathlist.sh here
+    with this upload; furthermore, using versioned Replaces: is considered
+    harmful.
+    <Depends>: Move autotools-dev here; fixes a piuparts error as the
+    symlinks are shipped in this package.  Remove useless
+    ${shlibs:Depends}.
+    (gnustep-make): <Depends>: Drop autotools-dev and ${shlibs:Depends}.
+    <Conflicts>: Remove.
+    (gnustep-make-doc) <Replaces>: Likewise.
+    <Depends>: Set to "dpkg (>= 1.15.4) | install-info, ${misc:Depends}".
+    (Homepage, Vcs-Arch): New fields.
+    (Standards-Version): Claim compliance with 3.8.4 as of this upload.
+  * debian/control: Regenerate.
+  * debian/rules: Cleanups.  Permanently get rid of all OpenGroupware.org
+    stuff.  Include /usr/share/quilt/quilt.make and update the rules
+    accordingly.
+    (p_make_ogo, b_make_ogo, d_make_ogo, V_OBJC, GS_OGO_ROOT,
+    GS_OGO_USRLOCAL, GS_OGO_SYSTEM_ROOT, GS_OGO_LOCAL_ROOT,
+    GS_OGO_NETWORK_ROOT, GS_OGO_DOC_DIR, GS_OGO_LIBS_DIR, GS_OGO_ETC_DIR,
+    GS_OGO_LIBRARY_COMBO): Do not define.
+    (clean_files): Do not append the ogo wrappers, stamps and maintainer
+    scripts.
+    (debian/$(p_make_ogo)-configure-stamp): Remove the entire rule.
+    (clean): Omit clean in $(b_ogo).
+    (in_files): Remove override files.
+    (debian/install-arch-stamp): Do not install the override files; all of
+    the existing overrides are unused.
+    (debian/install-indep-stamp): Install the Info manual.
+    (binary-arch): Install gs_make's manpage.
+    (binary-indep): Invoke dh_lintian.
+    (common_scripts): Add print_unique_pathlist.sh which actually belongs
+    to gnustep-common, thanks Tomas Kuliavas (Closes: #560359).
+  * debian/gnustep-make-ogo.overrides:
+  * debian/gnustep-common.overrides:
+  * debian/app-wrapper-ogo.sh.in:
+  * debian/app-wrapper.sh.in:
+  * debian/tool-wrapper-ogo.sh.in:
+  * debian/app-wrapper.sh.in:
+  * debian/postinst.in:
+  * debian/postrm.in: Delete.
+  * debian/gnustep-make.overrides: Rename as...
+  * debian/gnustep-make.lintian-overrides: ...in order to be installed by
+    dh_lintian.  Add override `binary-without-manpage' for gnustep-config,
+    shipped in the gnustep-common package.
+  * debian/patches/no-user-root-paths.patch:
+  * debian/patches/fhs-system-includedir.patch: New, split from the
+    diff.gz and maintain them with quilt.
+  * debian/patches/info-document-missing-direntry.patch:
+  * debian/patches/library-combo-whatis-entry.patch: New.
+  * debian/patches/series:
+  * debian/source/format:
+  * debian/README.source:
+  * debian/gs_make.1: New file.
+  * debian/watch: Bump version; don't uupdate.
+
+ -- Yavor Doganov <yavor@gnu.org>  Wed, 12 May 2010 22:25:55 +0300
+
+gnustep-make (2.2.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Bump standards version.
+  * Fix spelling error in debian/README.Debian.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Wed, 18 Nov 2009 12:45:34 +0100
+
+gnustep-make (2.0.8-1) unstable; urgency=low
+
+  * New upstream version.
+  * Bump standards version.
+  * Bump debhelper version.
+  * Add myself to the Uploaders field.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Fri, 20 Feb 2009 17:13:03 +0100
+
+gnustep-make (2.0.6-2) unstable; urgency=low
+
+  * Rename gsdh_gnustep to dh_gnustep.  (Everyone creates their own dh_
+    programs anyways.)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 26 Jun 2008 17:00:16 -0400
+
+gnustep-make (2.0.6-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Sun, 15 Jun 2008 16:29:03 -0400
+
+gnustep-make (2.0.5-4) unstable; urgency=low
+
+  * debian/rules, debian/control: Use config.guess and config.sub from
+    autotools-dev, instead of using our own copy.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 15 May 2008 20:11:41 -0400
+
+gnustep-make (2.0.5-3) unstable; urgency=low
+
+  * debian/rules: Force CXX to be g++. (closes: #480840)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Mon, 12 May 2008 11:21:49 -0400
+
+gnustep-make (2.0.5-2) unstable; urgency=low
+
+  * debian/gs_make: Add quotes around $@, so that arguments with spaces work
+    properly.
+  * debian/control, debian/rules: Remove opengroupware.org stuff, since
+    opengroupware.org is no longer in Debian.
+  * debian/control, debian/rules, debian/*/gsdh_gnustep: Add GNUstep filesystem
+    virtual package for ensuring that applications are installed with the right
+    filesystem layout.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Fri, 09 May 2008 18:23:30 -0400
+
+gnustep-make (2.0.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * openapp.in: Remove bashisms.  (closes: #471420)
+  * debian/copyright: Update dates.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu, 20 Mar 2008 16:37:52 -0400
+
+gnustep-make (2.0.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/rules: clean up some old cruft; don't install app wrapper any
+    more (unused).
+  * debian/control.in, debian/rules: Put documentation symlinks in
+    gnustep-make-doc instead of gnustep-make.  (closes: #459769)
+  * debian/control.in, debian/rules: Put filesystem.[c]sh in gnustep-common,
+    since it's needed to run GNUstep.[c]sh.
+  * debian/control.in: Bump standards version to 3.7.3 (no other changes needed)
+  * debian/control.in: Drop unnecessary versioned dependency on tar.
+  * debian/copyright: Update license to GPL-3+; use proposed
+    machine-readable copyright format.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Wed, 23 Jan 2008 14:48:48 -0500
+
+gnustep-make (2.0.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu,  6 Dec 2007 11:23:18 -0500
+
+gnustep-make (2.0.1-3) unstable; urgency=low
+
+  * binary-arch no longer depends on install-indep. (closes: #433544)
+
+ -- Hubert Chathi <uhoreg@debian.org>  Mon,  8 Oct 2007 15:35:45 -0400
+
+gnustep-make (2.0.1-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Enable native Objective-C exceptions.
+  * Fix relative_path.sh so that it drops the leading "./" (sometimes).
+
+ -- Hubert Chathi <uhoreg@debian.org>  Thu,  4 Oct 2007 13:18:04 -0400
+
+gnustep-make (2.0.1-1) experimental; urgency=low
+
+  * New upstream release.
+  * Change the default system root when not following the FHS to match
+    upstream's default.
+  * Remove tool wrapper -- not needed anymore as tools are installed in /bin.
+  * Simplify app wrapper -- no longer needs environment.
+  * Update build-dependencies for TeX Live.
+  * Remove build-depends on gobjc, since there are no more compiled programs.
+  * Remove obsolete conflicts.
+  * Conflict with old gnustep packages, due to changed directory structure.
+  * Add gs_make helper script to set up the GNUstep environment before calling
+    make.
+  * Remove some obsolete comments from README.Debian.
+  * Upload to experimental, since packages will need porting.
+  * Update maintainer address.
+  * The gnustep-make is now arch:all.
+  * Remove obsolete links from gnustep-common.
+
+ -- Hubert Chan <uhoreg@debian.org>  Sat, 30 Jun 2007 19:52:24 -0400
+
+gnustep-make (1.13.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove obsolete readme file: FILESYSTEM.Changes.Debian.
+  * Move wrapper scripts out of /usr/bin (since they're not meant to be
+    called directly).  Add compatibility symlinks (to be removed after etch).
+  * Output error message if wrapper scripts called directly.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon, 28 Aug 2006 16:42:33 -0600
+
+gnustep-make (1.12.0-2) unstable; urgency=low
+
+  * Fix control vs. control.in discrepancy, and drop automatic building of
+    control.  Instead, error if control is not up to date. (closes: #375655)
+  * Fix removal of info files. (closes: #375375)
+  * Fix the build aand install targets.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 27 Jun 2006 13:07:58 -0400
+
+gnustep-make (1.12.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fix dependency on gnustep-make-doc.
+  * Change package section to agree with override file.
+  * Add new gnustep-common package so that users don't have to install all the
+    makefiles.
+  * Rework rules file.
+  * Add license headers to copyright file.
+  * Bump standards version to 3.7.2.  (No changes)
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Fri, 26 May 2006 23:25:44 -0400
+
+gnustep-make (1.11.2-2) unstable; urgency=low
+
+  * Fix tool-wrapper recursion (closes: #332634).
+  * Fix openapp so that it finds the application when the .app extension is not
+    specified.
+  * Fix typo in postinst and prerm that resulted in incorrect symlink name.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon,  2 Jan 2006 16:06:32 -0700
+
+gnustep-make (1.11.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fix building documentation under a clean environment.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Tue, 27 Dec 2005 10:59:49 -0700
+
+gnustep-make (1.11.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Don't include user-domain paths when building Debian packages
+    (closes: #332829).
+  * Update config.guess and config.sub (closes: #327725).
+  * Relocate arch-indep files to /usr/share/GNUstep, as described in
+    http://www.uhoreg.ca/programming/debian/gnustep/locations.text, in order
+    to comply more with FHS.
+  * Conflict with old gnustep-base package to handle file relocation.
+  * Provide gsdh_gnustep debhelper script to help with file relocation.
+  * Install new GNUstep.conf file.
+  * Remove unneeded modifications to ld.so.conf.
+  * Include full path to opentool in tool-wrapper.
+
+ -- Hubert Chan <hubert@uhoreg.ca>  Mon, 12 Dec 2005 19:25:04 -0500
+
+gnustep-make (1.10.0-6) unstable; urgency=low
+
+  * Rebuild using gcc/gobjc 4.0.
+  * Bump Standards-Version up to 3.6.2.1.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Fri, 26 Aug 2005 23:29:26 +0200
+
+gnustep-make (1.10.0-5) unstable; urgency=low
+
+  * debian/control.in:
+     now Suggests gnustep-base-common not gnustep-base1.
+  * debian/tool-wrapper and debian/tool-wrapper-ogo:
+     use opentool to open tools (closes: #296585).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Thu, 24 Feb 2005 19:06:56 +0100
+
+gnustep-make (1.10.0-4) unstable; urgency=low
+
+  * Add missing spaces in gnustep-app-wrapper.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sat, 20 Nov 2004 15:22:58 +0100
+
+gnustep-make (1.10.0-3) unstable; urgency=low
+
+  * Upload in unstable.
+  * 1.10.0-4
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sat, 20 Nov 2004 15:22:52 +0100
+
+gnustep-make (1.10.0-2) experimental; urgency=low
+
+  * Upload in experimental.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sat, 30 Oct 2004 17:51:49 +0200
+
+gnustep-make (1.10.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/app-wrapper.sh:
+     start gdnc and gpbs if needed.
+  * Bump Standards-Version up to 3.6.1.1.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Mon, 25 Oct 2004 20:00:55 +0200
+
+gnustep-make (1.9.2-2) unstable; urgency=medium
+
+  * Add wrapper scripts gnustep-app-wrapper and gnustep-tool-wrapper.
+    Provide wrappers for openapp, opentool, debugapp (closes: #256153).
+
+ -- Matthias Klose <doko@debian.org>  Fri, 25 Jun 2004 20:16:44 +0200
+
+gnustep-make (1.9.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Change Debian GNUstep maintainers e-mail:
+    use pkg-gnustep-maintainers@lists.alioth.debian.org.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sat, 12 Jun 2004 23:48:05 +0200
+
+gnustep-make (1.9.1-2) unstable; urgency=low
+
+  * Acknowledge NMU (closes: #240280).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Mon, 29 Mar 2004 19:45:12 +0200
+
+gnustep-make (1.9.1-1.1) unstable; urgency=low
+
+  * NMU.  Fix postinst, patch in bts.  Closes: #240280
+
+ -- LaMont Jones <lamont@debian.org>  Mon, 29 Mar 2004 09:32:12 -0700
+
+gnustep-make (1.9.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sun, 14 Mar 2004 00:12:51 +0100
+
+gnustep-make (1.9.0-2) unstable; urgency=low
+
+  * New gnustep-make-ogo package needed by OpenGroupware.org.
+    ( Thanks to Sebastian Ley )
+  * Apply Sebastian Ley's patch on GNUMakefile.in.
+  * Use Instance/framework.make from CVS.
+  * Use dh_usrlocal in debian/rules.
+  * Build-depends on tar (>= 1.13.92-4) to avoid Bug #230910.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Sun,  1 Feb 2004 22:18:04 +0100
+
+gnustep-make (1.9.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Do not use latex2html anymore (closes: #221324).
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Wed, 10 Dec 2003 18:41:28 +0100
+
+gnustep-make (1.8.0-2) unstable; urgency=medium
+
+  * Fix typo in postinst script (closes: #214833).Thanks to Robert Bamler.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Thu,  9 Oct 2003 14:22:44 +0200
+
+gnustep-make (1.8.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/rules : update V_OBJC (3:3.3-1 -> 4:3.3.1).
+  * Update README.Debian.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Tue, 30 Sep 2003 01:52:27 +0200
+
+gnustep-make (1.7.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * New Co-Maintainer.
+  * Udate to Standards-Version 3.6.1.
+  * Udate Suggests and Conflicts fields :
+     replace gnustep-* 1.7.0 by 1.7.3 to avoid imcompatibilities.
+  * Install new openapp manpage.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Tue, 26 Aug 2003 00:30:55 +0200
+
+gnustep-make (1.7.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update debian/rules to use flattened directory structure :
+    - remove GS_HOST, GS_CPU, GS_OS, GS_LIB_DIR, GS_COMBO_DIR variables.
+    - rename @GSCOMBODIR@ to @GSLIBRARIES@.
+  * Update debian/postinst.in to use flattened directory structure :
+    - replace combodir and libdir variables by libraries_dir variable.
+    - rename @GSCOMBODIR@ in @GSLIBRARIES@.
+  * Install new GNUstep.7 manpage.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Wed, 23 Jul 2003 22:00:21 +0200
+
+gnustep-make (1.7.1-3) unstable; urgency=low
+
+  * Reupload (debconf fixed in the meantime).
+
+ -- Matthias Klose <doko@debian.org>  Tue, 15 Jul 2003 07:54:45 +0200
+
+gnustep-make (1.7.1-2) unstable; urgency=low
+
+  * Don't try to build the docs when build arch-dependent packages only.
+  * debian/control: gnustep-make-doc: Don't recommend gnustep-make.
+  * debian/control: Remove references to gstep-* packages.
+  * debian/control: Change section to libs. Package is needed for pure
+    user setups as well.
+  * Add the text docs to the -doc package.
+  * Some packaging changes.
+
+ -- Matthias Klose <doko@debian.org>  Fri, 11 Jul 2003 08:17:12 +0200
+
+gnustep-make (1.7.1-1) unstable; urgency=low
+
+  * New upstream release (New filesystem structure).
+  * New gnustep-make-doc package (675 KB of installed data).
+  * Use default gcc.
+  * Update control file :
+    - New Build-Depends-Indep field.
+    - Add latex2html in Build-Depends-Indep.
+    - Add gnustep-base (<< 1.7.0), gnustep-gui/back (<< 0.8.6) in Conflicts.
+  * New FILESYSTEM.Changes.Debian documentation file.
+  * Update postinst and prerm scripts.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Fri, 30 May 2003 14:21:07 +0200
+
+gnustep-make (1.6.0-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Update to Debian Policy 3.5.9.
+  * Update to Debhelper compatibility level 4.
+  * Update copyright file (closes: #187698).
+  * Update README.Debian (closes: #187696).
+  * Fix lintian warning (closes: #187800).
+  * Use 2775 permissions for local dirs in postinst script (Policy 10.1.2).
+  * Add debian/docs file.
+  * Add debian/watch file.
+  * Update maintainer scripts.
+
+ -- Eric Heintzmann <debian@gnustep.fr.st>  Mon, 07 Apr 2003 14:21:07 +0200
+
+gnustep-make (1.6.0-1) unstable; urgency=low
+
+  * New stable upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Thu, 20 Mar 2003 00:07:31 +0100
+
+gnustep-make (1.5.90-1) unstable; urgency=low
+
+  * Snapshot taken from the freeze-1_6_0 branch (CVS 20030303).
+
+ -- Matthias Klose <doko@debian.org>  Tue,  4 Mar 2003 00:23:44 +0100
+
+gnustep-make (1.5.2-2) unstable; urgency=low
+
+  * Apply build patch from BTS (closes: #182316). However the GNU_TYPE
+    doesn't say anything about the compiler options used.
+
+ -- Matthias Klose <doko@debian.org>  Tue, 25 Feb 2003 23:10:12 +0100
+
+gnustep-make (1.5.2-1) unstable; urgency=low
+
+  * New upstream release.
+    - The config values in GNUstep.{sh,csh} are now hardcoded, no
+      need to run config.guess/config.sub at runtime, which would
+      require gcc, binutils and libc6-dev beeing installed (closes: #177292).
+
+ -- Matthias Klose <doko@debian.org>  Fri, 21 Feb 2003 20:00:22 +0100
+
+gnustep-make (1.5.1-2) unstable; urgency=low
+
+  * Rebuild with fixed tetex-base.
+
+ -- Matthias Klose <doko@debian.org>  Fri, 17 Jan 2003 16:43:43 +0100
+
+gnustep-make (1.5.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@debian.org>  Mon,  6 Jan 2003 23:12:24 +0100
+
+gnustep-make (1.5.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Build using gcc-3.2.
+
+ -- Matthias Klose <doko@debian.org>  Sun,  8 Sep 2002 13:18:24 +0200
+
+gnustep-make (1.4.0-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Tue, 30 Jul 2002 00:33:53 +0200
+
+gnustep-make (1.3.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Adjust README.Debian (closes: #152443).
+  * Use gobjc-3.1 (CC=gcc-3.1) on all architectures.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 14 Jul 2002 21:03:24 +0200
+
+gnustep-make (1.3.2-2) unstable; urgency=low
+
+  * Use gobjc-3.1 on all architectures, except m68k (gobjc-3.0).
+  * Remove the dependency on gnustep-make and the compiler.
+    Make gnustep-base1-dev depend on the correct compiler.
+    Package maintainers: Please
+    - remove any dependencies on the compiler,
+    - build-depend on gnustep-base1-dev (>= 1.3.2-3),
+    - determine the compiler in debian/rules by using something like:
+      GS_ROOT = usr/lib/GNUstep/System
+      GS_CPU := $(shell /$(GS_ROOT)/Makefiles/clean_cpu.sh \
+                        `/$(GS_ROOT)/Makefiles/cpu.sh $(GS_HOST)`)
+      GS_OS  := $(shell /$(GS_ROOT)/Makefiles/clean_os.sh \
+                        `/$(GS_ROOT)/Makefiles/os.sh $(GS_HOST)`)
+      lib_dir = $(GS_CPU)/$(GS_OS)
+      CC := $(shell sed -n -e '/^CC.*=/s,.*= *\(.*\),\1,p' \
+              /$(GS_ROOT)/Makefiles/$(lib_dir)/config.make)
+  * ld_lib_path.sh does restore IFS variable since 1.3.2 (closes: #143089).
+  * Do not assume an existing /etc/ld.so.conf (closes: #147732).
+
+ -- Matthias Klose <doko@debian.org>  Fri, 31 May 2002 23:20:22 +0200
+
+gnustep-make (1.3.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@debian.org>  Sat,  4 May 2002 14:25:01 +0200
+
+gnustep-make (1.3.0-3) unstable; urgency=medium
+
+  * Update to CVS 20020414. Fixes resetting IFS after sourcing GNUstep.sh
+    and another fix for correct symlinks in bundle building.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 14 Apr 2002 12:35:51 +0200
+
+gnustep-make (1.3.0-2) unstable; urgency=high
+
+  * Update to CVS 20020406 for correct building of bundles.
+
+ -- Matthias Klose <doko@debian.org>  Sun,  7 Apr 2002 13:05:53 +0200
+
+gnustep-make (1.3.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fixed upstream and (closes: #135066).
+  * On arm, depend on gobjc-3.0.2.
+
+ -- Matthias Klose <doko@debian.org>  Fri, 15 Mar 2002 22:02:12 +0100
+
+gnustep-make (1.2.1-4) unstable; urgency=high
+
+  * Make the dependency on gobjc-3.0 unversioned for arm. This let's
+    gnustep-make build on arm.
+
+ -- Matthias Klose <doko@debian.org>  Sun,  3 Feb 2002 18:59:41 +0100
+
+gnustep-make (1.2.1-3) unstable; urgency=low
+
+  * Fix documentation symlinks.
+  * Support for building with garbage collection is available (closes: #87871).
+
+ -- Matthias Klose <doko@debian.org>  Sun, 13 Jan 2002 22:03:16 +0100
+
+gnustep-make (1.2.1-2) unstable; urgency=low
+
+  * Add tetex-extra to build dependencies (closes: #128775).
+
+ -- Matthias Klose <doko@debian.org>  Fri, 11 Jan 2002 18:54:09 +0100
+
+gnustep-make (1.2.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@debian.org>  Thu, 10 Jan 2002 02:32:14 +0100
+
+gnustep-make (1.2.0-2) unstable; urgency=medium
+
+  * Correctly determine s390 architecture (closes: #128339).
+
+ -- Matthias Klose <doko@debian.org>  Wed,  9 Jan 2002 02:21:49 +0100
+
+gnustep-make (1.2.0-1) unstable; urgency=low
+
+  * Depend on gobjc (>= 3.0.2), not (>= 3.0.3).
+
+ -- Matthias Klose <doko@debian.org>  Mon, 31 Dec 2001 01:08:10 +0100
+
+gnustep-make (1.2.0-0.1) unstable; urgency=low
+
+  * NMU. New upstream release.
+  * Fix error in postinst script (closes: #121452).
+  * Include DESIGN document in binary package (closes: #115117).
+
+ -- Matthias Klose <doko@debian.org>  Sun,  9 Dec 2001 10:24:51 +0100
+
+gnustep-make (1.0.1-0.1) unstable; urgency=low
+
+  * New upstream release.
+  * Use gobjc-3.0 as a compiler, get rid of gnustep-objc package.
+  * Use Standards-Version: 3.5.5
+
+ -- Chanop Silpa-Anan <chanop@debian.org>  Thu, 26 Jul 2001 06:29:58 +1000
+
+gnustep-make (1.0.0) unstable; urgency=low
+
+  * Change library-combo to gnu-gnu-gnu
+
+ -- Adam Fedor <fedor@gnu.org>  Thu, 12 Apr 2001 18:47:57 +0600
+
+gnustep-make (0.9.1.010302-1) unstable; urgency=low
+
+  * New Maintainer.
+  * New CVS version.
+  * Various small fixes.
+
+ -- Kai Henningsen <kai@khms.westfalen.de>  Sat,  3 Mar 2001 00:20:55 +0100
+
+gnustep-make (0.9.1.010224-1) unstable; urgency=low
+
+  * Update to Debian policy 3.2.1.
+  * Set prefix to /usr/lib/GNUstep to match FHS.
+  * Use debhelper.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 24 Feb 2001 07:45:38 +0100
+
+gnustep-make (0.9.0) unstable; urgency=low
+
+  * Packaged for Debian.
+  * Use gnustep- prefix for package names (was gstep- before).
+  * New packaging schema doesn't support gnustep-core anymore, so each
+    component starts with fresh Debian files.
+
+ -- Nicola Pero <n.pero@mi.flashnet.it>  Mon, 29 Jan 2001 23:04:21 +0000

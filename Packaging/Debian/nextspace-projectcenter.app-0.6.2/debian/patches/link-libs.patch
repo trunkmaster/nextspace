@@ -1,0 +1,17 @@
+2010-06-03  Yavor Doganov  <yavor@gnu.org>
+
+	* Framework/GNUmakefile (ProjectCenter_LIBRARIES_DEPEND_UPON):
+          Add -lm.
+
+
+--- projectcenter.app.orig/Framework/GNUmakefile
++++ projectcenter.app/Framework/GNUmakefile
+@@ -13,7 +13,7 @@
+ ProjectCenter_DEPLOY_WITH_CURRENT_VERSION = yes
+ ProjectCenter_HEADER_FILES_DIR = ../Headers/ProjectCenter
+ 
+-ProjectCenter_LIBRARIES_DEPEND_UPON += $(OBJC_LIBS) $(FND_LIBS) $(GUI_LIBS)
++ProjectCenter_LIBRARIES_DEPEND_UPON += $(OBJC_LIBS) $(FND_LIBS) $(GUI_LIBS) -lm
+ 
+ #
+ # Subprojects

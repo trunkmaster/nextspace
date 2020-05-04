@@ -1,0 +1,52 @@
+Source: nextspace-gorm.app
+Section: gnustep
+Priority: optional
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Build-Depends: debhelper (>= 11),
+	       libnextspace-gui-dev,
+	       texlive-latex-base,
+	       texlive-fonts-recommended,
+	       cm-super-minimal,
+	       texinfo,
+	       imagemagick
+Standards-Version: 4.5.0
+
+Package: nextspace-gorm.app
+Architecture: any
+Depends: libnextspace-gorm1 (= ${binary:Version}),
+	 ${shlibs:Depends},
+	 ${misc:Depends}
+Recommends: projectcenter.app
+Description: Visual Interface Builder for GNUstep
+ Gorm, the GNUstep Object Relationship Modeler, is a tool to build GUI
+ interfaces for the GNUstep system.  It is a clone of the NeXTStep
+ "Interface Builder" app. It works well with ProjectCenter to create
+ GUI applications for GNUstep.
+ .
+ You can create .nib files that also work on macOS and vice versa.
+
+Package: libnextspace-gorm-dev
+Section: libdevel
+Architecture: any
+Depends: libnextspace-gorm1 (= ${binary:Version}),
+	 libnextspace-gui-dev,
+	 ${misc:Depends}
+Description: Clone of the InterfaceBuilder framework - development files
+ Gorm, the GNUstep Object Relationship Modeler, is a tool to build GUI
+ interfaces for the GNUstep system.  It is a clone of the NeXTStep
+ "Interface Builder" app.
+ .
+ This package contains the development files of the Gorm library,
+ allowing the creation of custom palettes and inspectors for Gorm.
+
+Package: libnextspace-gorm1
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+	 ${misc:Depends}
+Description: Clone of the InterfaceBuilder framework - runtime library
+ Gorm, the GNUstep Object Relationship Modeler, is a tool to build GUI
+ interfaces for the GNUstep system.  It is a clone of the NeXTStep
+ "Interface Builder" app.
+ .
+ This package contains the shared Gorm library.

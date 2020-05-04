@@ -1,0 +1,8 @@
+usr/NextSpace/Frameworks/SystemKit.framework/SystemKit
+usr/NextSpace/Frameworks/SystemKit.framework/libSystemKit.so
+usr/NextSpace/Frameworks/SystemKit.framework/Resources
+usr/NextSpace/Frameworks/SystemKit.framework/Versions/Current
+usr/NextSpace/Frameworks/SystemKit.framework/Versions/*/SystemKit
+usr/NextSpace/Frameworks/SystemKit.framework/Versions/*/libSystemKit.so*
+usr/NextSpace/Frameworks/SystemKit.framework/Versions/*/Resources
+usr/NextSpace/lib/libSystemKit.so*

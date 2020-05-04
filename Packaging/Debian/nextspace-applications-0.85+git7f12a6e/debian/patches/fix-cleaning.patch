@@ -1,0 +1,22 @@
+Description: Don't break during clean if WINGs hasn't been built
+ There's no Makefile by default, so make clean will fail.
+ .
+ nextspace-applications (0.85+git7f12a6e-1) unstable; urgency=medium
+ .
+   * Initial release
+Author: Patrick Georgi <patrick@georgi.software>
+
+---
+Last-Update: 2020-05-19
+
+--- nextspace-applications-0.85+git7f12a6e.orig/Workspace/GNUmakefile.postamble
++++ nextspace-applications-0.85+git7f12a6e/Workspace/GNUmakefile.postamble
+@@ -46,7 +46,7 @@ after-all::
+ after-clean::
+ 	@ echo "Making clean in WM ... "
+ 	@ echo " Cleaning in $(WM_DIR)/WINGs ..."
+-	@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
++	-@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
+ 
+ before-install::
+ 	@ mkdir -p $(APP_WRAPPER_INSTALLED)

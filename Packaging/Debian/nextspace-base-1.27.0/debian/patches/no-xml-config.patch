@@ -1,0 +1,56 @@
+Description: Detect libxml2 with pkg-config instead of xml-config.
+Bug-Debian: https://bugs.debian.org/949152
+Origin: upstream, commit:27b95a3
+Last-Update: 2020-04-01
+---
+
+--- gnustep-base.orig/configure.ac
++++ gnustep-base/configure.ac
+@@ -3136,13 +3136,13 @@
+   [  --disable-xml			Build even if XML-dependencies are not met],,
+   enable_xml=yes)
+ 
++HAVE_LIBXML=0
++
+ if test $enable_xml = yes; then
+-  # Save CFLAGS and LIBS as AM_PATH_XML clobbers these variables regardless
+-  # of the success of the macro.
+-  saved_LIBS="$LIBS"
+-  saved_CFLAGS="$CFLAGS"
++  PKG_CHECK_MODULES([XML], [libxml-2.0 >= 2.3.0], [enable_libxml=yes], [
++    AM_PATH_XML(2.3.0, enable_libxml=yes, enable_libxml=no)
++  ])
+ 
+-  AM_PATH_XML(2.3.0, enable_libxml=yes, enable_libxml=no)
+   if test $enable_libxml = yes; then
+     CPPFLAGS="$CPPFLAGS $XML_CFLAGS"
+     INCLUDE_FLAGS="$INCLUDE_FLAGS $XML_CFLAGS"
+@@ -3150,6 +3150,7 @@
+     HAVE_LIBXML=1
+     AC_DEFINE(HAVE_LIBXML,1,[Define if libxml available])
+     AC_CHECK_HEADERS(libxml/SAX2.h)
++
+     #--------------------------------------------------------------------
+     # Check for (optional) libxslt
+     #--------------------------------------------------------------------
+@@ -3183,10 +3184,6 @@
+     fi
+     AC_SUBST(HAVE_LIBXSLT)
+   else
+-    HAVE_LIBXML=0
+-    # Restore the CFLAGS and LIBS because AM_PATH_XML messes them
+-    LIBS="$saved_LIBS"
+-    CFLAGS="$saved_CFLAGS"
+     echo
+     echo "You do not appear to have usable libxml2 headers/library."
+     echo "Building without them will disable the GSXML and NSXMLNode."
+@@ -3196,8 +3193,7 @@
+     AC_MSG_ERROR([Missing support for XML DOM functionality.])
+   fi
+ else
+-  AC_MSG_WARN([Disabled support for XML funtionality.])
+-  HAVE_LIBXML=0
++  AC_MSG_WARN([XML functionality disabled.])
+ fi
+ AC_SUBST(HAVE_LIBXML)
+ 

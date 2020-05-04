@@ -1,0 +1,18 @@
+# Install conf file
+Library/Preferences/GNUstep.conf
+
+# Install arch dep tools
+usr/NextSpace/bin/debugapp
+usr/NextSpace/bin/openapp
+
+# Instal arch dep makefiles
+Developer/Makefiles/GNUstep.*sh
+Developer/Makefiles/GNUstep-reset.*sh
+Developer/Makefiles/config*.make
+Developer/Makefiles/filesystem.*sh
+Developer/Makefiles/clean*.*sh
+Developer/Makefiles/cpu.*sh
+Developer/Makefiles/fixpath.*sh
+Developer/Makefiles/os.*sh
+Developer/Makefiles/print_unique_pathlist.*sh
+Developer/Makefiles/vendor.*sh

@@ -1,0 +1,52 @@
+# -*-debian-control-*-
+Source: nextspace-back
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Section: gnustep
+Priority: optional
+Build-Depends: debhelper (>= 12),
+	       m4,
+	       nextspace-make (>= 2.7.0),
+	       libnextspace-gui-dev,
+	       libice-dev,
+	       libxext-dev,
+	       libxcursor-dev,
+	       libxmu-dev,
+	       libfreetype6-dev,
+	       libxft-dev,
+	       libfontconfig1-dev,
+	       libgl1-mesa-dev,
+	       libart-2.0-dev,
+	       pkg-config,
+	       libcairo2-dev,
+	       texinfo
+Standards-Version: 4.3.0
+
+Package: nextspace-back0.28
+Architecture: any
+Depends: nextspace-back-common (>= 0.28.0),
+	 ${shlibs:Depends},
+	 ${misc:Depends}
+Description: GNUstep GUI Backend (art)
+ It is a backend component for the GNUstep GUI Library.
+ The implementation of the GNUstep GUI Library is designed in two parts.
+ The first part is the front-end component which is independent of platform
+ and display system.  This front-end is combined with a back-end
+ component which handles all of the display system dependent such as
+ specific calls to the X Window System.
+ .
+ This package provides the deprecated libart backend.
+
+Package: nextspace-back-common
+Architecture: any
+Depends: fontconfig,
+	 ${shlibs:Depends},
+	 ${misc:Depends}
+Description: GNUstep GUI Backend - common files
+ It is a backend component for the GNUstep GUI Library.
+ The implementation of the GNUstep GUI Library is designed in two parts.
+ The first part is the front-end component which is independent of platform
+ and display system.  This front-end is combined with a back-end
+ component which handles all of the display system dependent such as
+ specific calls to the X Window System.
+ .
+ This package contains the common files needed by the GNUstep GUI Backend.

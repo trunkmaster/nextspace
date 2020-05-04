@@ -1,0 +1,40 @@
+Source: nextspace-make
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Section: gnustep
+Priority: optional
+Build-Depends: debhelper (>= 12),
+               clang,
+               libobjc2-dev,
+               pkg-config
+Build-Depends-Indep: texinfo,
+                     texlive-base,
+                     texlive-latex-base
+Rules-Requires-Root: no
+Standards-Version: 4.5.0
+Vcs-Browser: https://salsa.debian.org/nextspace-team/nextspace-make
+Vcs-Git: https://salsa.debian.org/nextspace-team/nextspace-make.git
+Homepage: http://nextspace.org
+
+Package: nextspace-common
+Architecture: any
+Depends: ${misc:Depends}, libobjc2-4
+Provides: nextspace-fslayout-fhs
+Description: Common files for the core GNUstep environment
+ This package contains the main GNUstep configuration file, common
+ files, scripts and directory layout needed to run any GNUstep
+ software.
+
+Package: nextspace-make
+Architecture: all
+Depends: nextspace-common (>= ${source:Version}),
+         nextspace-common (<< ${source:Version}.1~),
+         clang,
+         libobjc2-dev,
+         libdispatch-dev,
+         autotools-dev,
+         ${misc:Depends},
+         ${perl:Depends}
+Description: GNUstep build system
+ This package contains the makefiles needed to compile any GNUstep
+ software, and the GNUstep Test Framework used by GNUstep packages to
+ build and run tests.

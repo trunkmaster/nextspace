@@ -1,0 +1,437 @@
+Description: <short summary of the patch>
+ TODO: Put a short summary on the line above and replace this paragraph
+ with a longer explanation of this change. Complete the meta-information
+ with other relevant fields (see below for details). To make it easier, the
+ information below has been extracted from the changelog. Adjust it or drop
+ it.
+ .
+ nextspace-applications (0.85+git7f12a6e-1) unstable; urgency=medium
+ .
+   * Initial release
+Author: Patrick Georgi <patrick@georgi.software>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2020-05-21
+
+--- nextspace-applications-0.85+git7f12a6e.orig/Workspace/GNUmakefile.postamble
++++ nextspace-applications-0.85+git7f12a6e/Workspace/GNUmakefile.postamble
+@@ -58,10 +58,10 @@ after-install::
+ 	@ echo " Copying WM resources into $(WM_RESOURCES)..."
+ 	@ mkdir -p $(WM_RESOURCES)
+ 	@ cp $(WM_DIR)/WINGs/Resources/Images.tiff $(WM_RESOURCES)
+-	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(WM_RESOURCES)
+-	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMState $(WM_RESOURCES)
+-	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(WM_RESOURCES)
+-	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(WM_RESOURCES)
++	@ cp -f $(WM_DIR)/WINGs/Resources/WMGLOBAL $(WM_RESOURCES)
++	@ cp -f $(WM_DIR)/WINGs/Resources/WMState $(WM_RESOURCES)
++	@ cp -f $(WM_DIR)/WINGs/Resources/WMWindowAttributes $(WM_RESOURCES)
++	@ cp -f $(WM_DIR)/WINGs/Resources/WindowMaker $(WM_RESOURCES)
+ 
+ after-uninstall::
+ #	@ echo "Uninstalling $(WM_DIR)/WINGs ..."
+--- /dev/null
++++ nextspace-applications-0.85+git7f12a6e/Workspace/WM/WINGs/Resources/WMGLOBAL
+@@ -0,0 +1,12 @@
++{
++  SystemFont = "Helvetica:slant=0:weight=80:width=100:pixelsize=12";
++  BoldSystemFont = "Helvetica:slant=0:weight=200:width=100:pixelsize=12";
++  AntialiasedSystemFont = "Helvetica:slant=0:weight=80:width=100:pixelsize=12";
++  AntialiasedBoldSystemFont = "Helvetica:slant=0:weight=200:width=100:pixelsize=12";
++  DefaultFontSize = 12;
++  MultiByteText = No;
++  AntialiasedText = No;
++  DoubleClickTime = 250;
++  MouseWheelUp = Button4;
++  MouseWheelDown = Button5;
++}
+--- /dev/null
++++ nextspace-applications-0.85+git7f12a6e/Workspace/WM/WINGs/Resources/WMState
+@@ -0,0 +1,68 @@
++{
++  Dock = {
++    Applications = (
++      {
++        Position = "0,0";
++        Command = "NEXTSPACE internal: don't edit it!";
++        Name = Workspace.GNUstep;
++        AutoLaunch = Yes;
++        Forced = No;
++        Lock = Yes;
++        BuggyApplication = No;
++      },
++      {
++        Position = "0,1";
++        Command = "/Applications/Preferences.app/Preferences";
++        Name = Preferences.GNUstep;
++        AutoLaunch = Yes;
++        Forced = No;
++        Lock = No;
++        BuggyApplication = No;
++      },
++      {
++        Position = "0,2";
++        Command = "/Applications/TimeMon.app/TimeMon";
++        Name = TimeMon.GNUstep;
++        AutoLaunch = Yes;
++        Forced = No;
++        Lock = No;
++        BuggyApplication = No;
++      },
++      {
++        Position = "0,3";
++        Command = "/Applications/Terminal.app/Terminal";
++        Name = Terminal.GNUstep;
++        AutoLaunch = No;
++        Forced = No;
++        Lock = No;
++        BuggyApplication = No;
++      },
++      {
++        Position = "0,4";
++        Command = "/Applications/TextEdit.app/TextEdit";
++        Name = TextEdit.GNUstep;
++        AutoLaunch = No;
++        Forced = No;
++        Lock = No;
++        BuggyApplication = No;
++      }
++    );
++    Position = "-64,0";
++    Lowered = No;
++    AutoRaiseLower = No;
++  };
++  Workspaces = (
++    {
++      Name = "Workspace 1";
++    },
++    {
++      Name = "Workspace 2";
++    },
++    {
++      Name = "Workspace 3";
++    },
++    {
++      Name = "Workspace 3";
++    }
++  );
++}
+--- /dev/null
++++ nextspace-applications-0.85+git7f12a6e/Workspace/WM/WINGs/Resources/WMWindowAttributes
+@@ -0,0 +1,26 @@
++{
++  TextEdit.GNUstep = {
++    Icon = "/Applications/TextEdit.app/Resources/Edit.tiff";
++  };
++  Logo.WMPanel = {
++    Icon = GNUstep48x48.tiff;
++  };
++  Terminal.GNUstep = {
++    Icon = "/Applications/Terminal.app/Resources/Terminal.tiff";
++  };
++  Workspace.GNUstep = {
++    Icon = GNUstep.tiff;
++  };
++  Preferences.GNUstep = {
++    Icon = "/Applications/Preferences.app/Resources/English.lproj/Preferences.tiff";
++  };
++  Logo.WMDock = {
++    Icon = "App-CentOS-48.tiff";
++  };
++  TimeMon.GNUstep = {
++    Icon = "/Applications/TimeMon.app/Resources/TM-app.tiff";
++  };
++  Recycler.GNUstep = {
++    Icon = recycler.tiff;
++  };
++}
+--- /dev/null
++++ nextspace-applications-0.85+git7f12a6e/Workspace/WM/WINGs/Resources/WindowMaker
+@@ -0,0 +1,277 @@
++{
++  COMMENT = "/* ===== Static Options ======================================= */";
++  
++  ClipMergedInDock = NO;
++  ColormapSize = 4;
++  DisableClip = YES;
++  DisableDithering = NO;
++  DisableDock = NO;
++  DisableDrawers = NO;
++  DisableMiniwindows = NO;
++  EnableWorkspacePager = YES;
++  FocusMode = manual;
++  IconSize = 64;
++  ModifierKey = Mod4;
++  NewStyle = "old";
++
++  COMMENT = "/* ===== Dynamic Options ====================================== */";
++
++  AdvanceToNewWorkspace = NO;
++  AlignSubmenus = YES;
++  AppIconBalloons = NO;
++  Attraction = NO;
++  AutoArrangeIcons = NO;
++  AutoFocus = YES;
++  BounceAppIconsWhenUrgent = YES;
++  CirculateRaise = YES;
++  ClipAutocollapseDelay = 1000;
++  ClipAutoexpandDelay = 600;
++  ClipAutolowerDelay = 1000;
++  ClipAutoraiseDelay = 600;
++  ColormapMode = "auto";
++  CycleWorkspaces = NO;
++  CycleActiveHeadOnly = NO;
++  CycleIgnoreMinimized = NO;
++  DialogHistoryLines = 500;
++  DisableAnimations = NO;
++  DisableBlinking = NO;
++  DisableWSMouseActions = NO;
++  DoNotMakeAppIconsBounce = YES;
++  DontConfirmKill = NO;
++  DontLinkWorkspaces = NO;
++  DoubleClickTime = 250;
++  DragMaximizedWindow = "Move";
++  EdgeResistance = 30;
++  HelpBalloons = NO;
++  HighlightActiveApp = NO;
++  IconPath = (
++    "~/Library/Images",
++    "/usr/NextSpace/Images",
++    "/usr/NextSpace/Apps/Workspace.app/Resources",
++    "/Library/Images"
++  );
++  IconPosition = "blh";
++  IconSlideSpeed = "medium";
++  IconificationStyle = "Zoom";
++  IgnoreFocusClick = NO;
++  IgnoreGtkHints = NO;
++  KbdModeLock = YES;
++  MenuScrollSpeed = "medium";
++  MiniPreviewSize = 128;
++  MiniwindowPreviewBalloons = NO;
++  MiniwindowTitleBalloons = YES;
++  MouseBackwardButtonAction = None;
++  MouseForwardButtonAction = None;
++  MouseLeftButtonAction = "SelectWindows";
++  MouseMiddleButtonAction = "OpenWindowListMenu";
++  MouseRightButtonAction = "OpenApplicationsMenu";
++  MouseWheelAction = None;
++  MouseWheelTiltAction = None;
++  MoveDisplay = titlebar;
++  NoWindowOverDock = YES;
++  NoWindowOverIcons = YES;
++  OpaqueMove = YES;
++  OpaqueMoveResizeKeyboard = NO;
++  OpaqueResize = NO;
++  OpenTransientOnOwnerWorkspace = YES;
++  PixmapPath = (
++    "~/Library/Images",
++    "/usr/NextSpace/Images",
++    "/usr/NextSpace/Apps/Workspace.app/Resources",
++    "/Library/Images"
++  );
++  RaiseAppIconsWhenBouncing = NO;
++  RaiseDelay = 0;
++  ResizeDisplay = titlebar;
++  ResizeIncrement = 0;
++  SaveSessionOnExit = NO;
++  ScrollableMenus = NO;
++  ShadeSpeed = medium;
++  SingleClickLaunch = NO;
++  SnapCornerDetect = 10;
++  SnapEdgeDetect = 1;
++  StickyIcons = YES;
++  StrictWindozeCycle = YES;
++  Superfluous = YES;
++  SwitchPanelOnlyOpen = NO;
++  UseSaveUnders = NO;
++  ViKeyMenus = NO;
++  WindowPlaceOrigin = (100, 100);
++  WindowPlacement = cascade;
++  WindowSnapping = NO;
++  WindowTitleBalloons = NO;
++  WorkspaceBorder = "AllDirections";
++  WorkspaceBorderSize = 0;
++  WorkspaceNameDisplayPosition = "center";
++  WrapAppiconsInDock = NO;
++  WrapMenus = NO;
++
++  COMMENT = "/* ===== Style Options ======================================== */";
++
++  WorkspaceSpecificBack = ();
++  COMMENT = "/* WorkspaceBack must come after WorkspaceSpecificBack or WorkspaceBack wont know WorkspaceSpecificBack was also specified and 2 copies of wmsetbg will be launched */";
++  WorkspaceBack = (solid, "#535374");
++  
++  CClipTitleColor = "#454045";
++  ClipTitleColor = black;
++  ClipTitleFont = "Helvetica:pixelsize=10";
++  FTitleBack = (solid, black);
++  FTitleColor = white;
++  FrameBorderColor = black;
++  FrameBorderWidth = 1;
++  FrameFocusedBorderColor = black;
++  FrameSelectedBorderColor = white;
++  HighlightColor = white;
++  HighlightTextColor = black;
++  IconBack = (tpixmap, "/Library/Images/common_Tile.tiff", "#000000");
++  MiniwindowBack = (tpixmap, "/Library/Images/common_MiniWindowTile.tiff", "#000000");
++  IconTitleBack = black;
++  IconTitleColor = white;
++  IconTitleFont = "Helvetica:pixelsize=9";
++  LargeDisplayFont = "Helvetica:pixelsize=24";
++  MenuDisabledColor = "#555555";
++  MenuStyle = normal;
++  MenuTextBack = (solid, "#aaaaaa");
++  MenuTextColor = black;
++  MenuTextExtendSpace = 0;
++  MenuTextFont = "Helvetica:pixelsize=12";
++  MenuTitleBack = (solid, black);
++  MenuTitleColor = white;
++  MenuTitleExtendSpace = 0;
++  MenuTitleFont = "Helvetica:bold:pixelsize=12";
++  MenuTitleMaxHeight = 22;
++  MenuTitleMinHeight = 22;
++  ModifierKeyLabels = ("Shift+", "Control+", "Mod1+",  "Mod2+", "Mod3+", "Mod4+",  "Mod5+");
++  PTitleBack = (solid, "#555555");
++  PTitleColor = white;
++  ResizebarBack = (solid, "#aaaaaa");
++  ShowClipTitle = YES;
++  SmoothWorkspaceBack = NO;
++  SwitchPanelImages = (swtile.png, swback.png, 30, 40);
++  TitleJustify = center;
++  UTitleBack = (solid, "#aaaaaa");
++  UTitleColor = black;
++  WidgetColor = (solid, "#aaaaaa");
++  WindowTitleExtendSpace = 0;
++  WindowTitleFont = "Helvetica:bold:pixelsize=12";
++  WindowTitleMaxHeight = 22;
++  WindowTitleMinHeight = 22;
++  WorkspaceMapBack = (solid, black);
++
++  COMMENT = "/* ===== Keyboard Shortcuts =================================== */";
++
++  COMMENT        = "/* --- Dock and Icon Yard --- */";
++  DockHideShowKey = "Mod4+Shift+D";
++  IconYardHideShowKey = "Mod4+Shift+Y";
++
++  COMMENT        = "/* --- Window Resizing --- */";
++  MoveResizeKey  = None;
++  MaximusKey     = "Mod4+KP_5";
++  ShadeKey       = "Mod4+KP_Subtract";
++  MaximizeKey    = "Mod4+KP_Add";
++  VMaximizeKey   = "Mod4+Up";
++  HMaximizeKey   = "Mod4+Right";
++  LHMaximizeKey  = "Mod4+KP_4";
++  RHMaximizeKey  = "Mod4+KP_6";
++  THMaximizeKey  = "Mod4+KP_8";
++  BHMaximizeKey  = "Mod4+KP_2";
++  LTCMaximizeKey = "Mod4+KP_7";
++  RTCMaximizeKey = "Mod4+KP_9";
++  LBCMaximizeKey = "Mod4+KP_1";
++  RBCMaximizeKey = "Mod4+KP_3";
++
++  COMMENT        = "/* --- Window Ordering --- */";
++  CloseKey       = None;
++  HideKey        = "Mod1+h";
++  HideOthersKey  = "Mod1+Shift+h";
++  MiniaturizeKey = "Mod1+m";
++  MinimizeAllKey = "Mod1+Shift+m";
++  
++  COMMENT           = "/* --- Focus switch --- */";
++  FocusNextKey      = "Mod1+Tab";
++  FocusPrevKey      = "Mod1+Shift+Tab";
++  GroupNextKey      = "Mod1+grave";
++  GroupPrevKey      = "Mod1+Shift+grave";
++  RaiseKey          = None;
++  LowerKey          = None;
++  RaiseLowerKey     = None;
++  OmnipresentKey    = None;
++  ClipRaiseLowerKey = None;
++  DockRaiseLowerKey = None;
++  
++  COMMENT       = "/* --- Menus --- */";
++  RootMenuKey   = None;
++  WindowListKey = None;
++  WindowMenuKey = None;
++  
++  COMMENT           = "/* --- Misc --- */";
++  RunKey            = "Mod4+R";
++  WindowRelaunchKey = "Mod4+Shift+R";
++  ScreenSwitchKey   = None;
++  SelectKey         = None;
++  
++  COMMENT          = "/* --- Workspaces --- */";
++  NextWorkspaceKey = "Control+Right";
++  PrevWorkspaceKey = "Control+Left";
++  
++  WorkspaceMapKey = None;
++  LastWorkspaceKey = None;
++  NextWorkspaceLayerKey = None;
++  PrevWorkspaceLayerKey = None;
++  MoveToLastWorkspaceKey = None;
++  MoveToNextWorkspaceKey = None;
++  MoveToNextWorkspaceLayerKey = None;
++  MoveToPrevWorkspaceKey = None;
++  MoveToPrevWorkspaceLayerKey = None;
++  MoveToWorkspace10Key = None;
++  MoveToWorkspace1Key = None;
++  MoveToWorkspace2Key = None;
++  MoveToWorkspace3Key = None;
++  MoveToWorkspace4Key = None;
++  MoveToWorkspace5Key = None;
++  MoveToWorkspace6Key = None;
++  MoveToWorkspace7Key = None;
++  MoveToWorkspace8Key = None;
++  MoveToWorkspace9Key = None;
++  WindowShortcut10Key = None;
++  WindowShortcut1Key = None;
++  WindowShortcut2Key = None;
++  WindowShortcut3Key = None;
++  WindowShortcut4Key = None;
++  WindowShortcut5Key = None;
++  WindowShortcut6Key = None;
++  WindowShortcut7Key = None;
++  WindowShortcut8Key = None;
++  WindowShortcut9Key = None;
++  Workspace10Key = None;
++  Workspace1Key = None;
++  Workspace2Key = None;
++  Workspace3Key = None;
++  Workspace4Key = None;
++  Workspace5Key = None;
++  Workspace6Key = None;
++  Workspace7Key = None;
++  Workspace8Key = None;
++  Workspace9Key = None;
++  
++  COMMENT = "/* ===== Mouse Cursors ======================================== */";
++  
++  ArrowCursor = (builtin, "left_ptr");
++  BottomLeftResizeCursor = (library, "fd_double_arrow");
++  TopRightResizeCursor = (library, "fd_double_arrow");
++  BottomRightResizeCursor = (library, "bd_double_arrow");
++  TopLeftResizeCursor = (library, "bd_double_arrow");
++  HorizontalResizeCursor = (library, "wm_h_double_arrow");
++  VerticalResizeCursor = (library, "wm_v_double_arrow");
++  UpResizeCursor = (library, "wm_up_arrow");
++  DownResizeCursor = (library, "wm_down_arrow");
++  LeftResizeCursor = (library, "wm_left_arrow");
++  RightResizeCursor = (library, "wm_right_arrow");
++  MoveCursor = (library, move);
++  NormalCursor = (builtin, left_ptr);
++  QuestionCursor = (builtin, question_arrow);
++  ResizeCursor = (builtin, sizing);
++  SelectCursor = (builtin, cross);
++  TextCursor = (builtin, xterm);
++  WaitCursor = (builtin, watch);
++}

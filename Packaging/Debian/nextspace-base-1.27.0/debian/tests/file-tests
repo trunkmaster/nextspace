@@ -1,0 +1,19 @@
+#!/bin/sh
+
+exec 2>&1
+
+set -e
+
+test_static_lib() {
+  assertEquals "application/x-archive" "$(file --mime-type --brief /usr/lib/libgnustep-base.a)"
+}
+
+test_dev_symlink() {
+  assertEquals "inode/symlink" "$(file --mime-type --brief /usr/lib/libgnustep-base.so)"
+}
+
+test_shared_lib() {
+  assertEquals "application/x-sharedlib" "$(file --mime-type --brief /usr/lib/libgnustep-base.so.*.*.*)"
+}
+
+. shunit2

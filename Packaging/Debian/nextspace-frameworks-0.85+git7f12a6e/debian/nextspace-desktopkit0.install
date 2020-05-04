@@ -1,0 +1,12 @@
+Library/Fonts
+usr/NextSpace/Fonts
+usr/NextSpace/Frameworks/DesktopKit.framework/DesktopKit
+usr/NextSpace/Frameworks/DesktopKit.framework/libDesktopKit.so
+usr/NextSpace/Frameworks/DesktopKit.framework/Resources
+usr/NextSpace/Frameworks/DesktopKit.framework/Versions/Current
+usr/NextSpace/Frameworks/DesktopKit.framework/Versions/*/DesktopKit
+usr/NextSpace/Frameworks/DesktopKit.framework/Versions/*/libDesktopKit.so*
+usr/NextSpace/Frameworks/DesktopKit.framework/Versions/*/Resources
+usr/NextSpace/Images
+usr/NextSpace/Sounds
+usr/NextSpace/lib/libDesktopKit.so*

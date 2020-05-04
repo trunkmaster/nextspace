@@ -1,0 +1,30 @@
+Description: Fix precompiled header test so that it works with GCC >= 9.
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: https://savannah.gnu.org/bugs/index.php?58172
+Last-Update: 2020-04-14
+---
+
+--- gnustep-make.orig/config-precomp-test/run-test.sh
++++ gnustep-make/config-precomp-test/run-test.sh
+@@ -77,8 +77,8 @@
+ 
+ # Try to compile the file first.
+ echo "** Compile the file without precompiled headers" >>"$gs_logfile" 2>&1
+-echo "$CC -o \"$gs_builddir/config-precomp-test.out\" $CFLAGS $CPPFLAGS $LDFLAGS $LIBS config-precomp-test.m" >>"$gs_logfile" 2>&1
+-$CC -o "$gs_builddir/config-precomp-test.out" $CFLAGS $CPPFLAGS $LDFLAGS $LIBS config-precomp-test.m >>"$gs_logfile" 2>&1
++echo "$CC -o \"$gs_builddir/config-precomp-test.out\" $CFLAGS $CPPFLAGS $LDFLAGS config-precomp-test.m $LIBS" >>"$gs_logfile" 2>&1
++$CC -o "$gs_builddir/config-precomp-test.out" $CFLAGS $CPPFLAGS $LDFLAGS config-precomp-test.m $LIBS >>"$gs_logfile" 2>&1
+ if test ! "$?" = "0"; then
+   echo "Failure" >>"$gs_logfile" 2>&1
+   rm -f "$gs_builddir/config-precomp-test.out"
+@@ -101,8 +101,8 @@
+ 
+ # Now try to compile again with the preprocessed header.  It might get ignored - which is fine.
+ echo "** Compile the file with precompiled headers" >>"$gs_logfile" 2>&1
+-echo "$CC -o \"$gs_builddir/config-precomp-test.out\" $CFLAGS $CPPFLAGS $LDFLAGS $LIBS -I\"$gs_builddir\" config-precomp-test.m" >>"$gs_logfile" 2>&1
+-$CC -o "$gs_builddir/config-precomp-test.out" $CFLAGS $CPPFLAGS $LDFLAGS $LIBS -I"$gs_builddir" config-precomp-test.m >>"$gs_logfile" 2>&1
++echo "$CC -o \"$gs_builddir/config-precomp-test.out\" $CFLAGS $CPPFLAGS $LDFLAGS -I\"$gs_builddir\" config-precomp-test.m $LIBS" >>"$gs_logfile" 2>&1
++$CC -o "$gs_builddir/config-precomp-test.out" $CFLAGS $CPPFLAGS $LDFLAGS -I"$gs_builddir" config-precomp-test.m $LIBS >>"$gs_logfile" 2>&1
+ if test ! "$?" = "0"; then
+   echo "Failure" >>"$gs_logfile" 2>&1
+   rm -f "$gs_builddir/config-precomp-test.out" "$gs_builddir/config-precomp-test.h.gch"

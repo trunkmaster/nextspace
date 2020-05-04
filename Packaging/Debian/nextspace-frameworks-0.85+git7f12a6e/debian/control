@@ -1,0 +1,114 @@
+Source: nextspace-frameworks
+Priority: optional
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Build-Depends: debhelper-compat (= 12),
+	libdispatch-dev (>= 5.1.5),
+	libdbus-1-dev,
+	libmagic-dev,
+	libpulse-dev,
+	libudisks2-dev,
+	libupower-glib-dev,
+	libxcursor-dev,
+	libxkbfile-dev,
+	libxrandr-dev,
+	x11proto-dev,
+	nextspace-make,
+	libnextspace-base-dev,
+	libnextspace-gui-dev
+Standards-Version: 4.5.0
+Section: gnustep
+Homepage: https://github.com/trunkmaster/nextspace
+Vcs-Browser: https://github.com/trunkmaster/nextspace
+Vcs-Git: https://github.com/trunkmaster/nextspace
+
+Package: nextspace-desktopkit0
+Section: gnustep
+Architecture: any
+Depends: ${shlibs:Depends},
+	 ${misc:Depends},
+	 fonts-roboto
+Multi-Arch: same
+Description: dummy
+ dummy
+
+Package: nextspace-desktopkit-dev
+Section: gnustep
+Architecture: any
+Depends: nextspace-desktopkit0 (= ${binary:Version}),
+	 libdbus-1-dev,
+	 libmagic-dev,
+	 libpulse-dev,
+	 libudisks2-dev,
+	 libupower-glib-dev,
+	 libxcursor-dev,
+	 libxkbfile-dev,
+	 libxrandr-dev,
+	 x11proto-dev,
+	 nextspace-make,
+	 libnextspace-base-dev,
+	 libnextspace-gui-dev,
+	 ${misc:Depends}
+Multi-Arch: same
+Description: dummy
+ dummy
+
+Package: nextspace-soundkit0
+Section: gnustep
+Architecture: any
+Depends: ${shlibs:Depends},
+	 ${misc:Depends}
+Multi-Arch: same
+Description: dummy
+ dummy
+
+Package: nextspace-soundkit-dev
+Section: gnustep
+Architecture: any
+Depends: nextspace-soundkit0 (= ${binary:Version}),
+	 libdbus-1-dev,
+	 libmagic-dev,
+	 libpulse-dev,
+	 libudisks2-dev,
+	 libupower-glib-dev,
+	 libxcursor-dev,
+	 libxkbfile-dev,
+	 libxrandr-dev,
+	 x11proto-dev,
+	 nextspace-make,
+	 libnextspace-base-dev,
+	 libnextspace-gui-dev,
+	 ${misc:Depends}
+Multi-Arch: same
+Description: dummy
+ dummy
+
+Package: nextspace-systemkit0
+Section: gnustep
+Architecture: any
+Depends: ${shlibs:Depends},
+	 ${misc:Depends}
+Multi-Arch: same
+Description: dummy
+ dummy
+
+Package: nextspace-systemkit-dev
+Section: gnustep
+Architecture: any
+Depends: nextspace-systemkit0 (= ${binary:Version}),
+	 libdbus-1-dev,
+	 libmagic-dev,
+	 libpulse-dev,
+	 libudisks2-dev,
+	 libupower-glib-dev,
+	 libxcursor-dev,
+	 libxkbfile-dev,
+	 libxrandr-dev,
+	 x11proto-dev,
+	 nextspace-make,
+	 libnextspace-base-dev,
+	 libnextspace-gui-dev,
+	 ${misc:Depends}
+Multi-Arch: same
+Description: dummy
+ dummy
+
