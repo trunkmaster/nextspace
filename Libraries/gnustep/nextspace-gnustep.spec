@@ -153,16 +153,17 @@ export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Application Kit
 cd libs-gui-gnustep-gui-%{GUI_VERSION}
-export LDFLAGS+=" -L%{buildroot}/Library/Libraries -lgnustep-base"
+cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
+export ADDITIONAL_LDFLAGS=" -L%{buildroot}/Library/Libraries -lgnustep-base"
 ./configure
 make
 %{make_install}
+rm /Developer/Makefiles/Additional/base.make
 cd ..
-unset GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES
 
 # Build ART GUI backend
 cd libs-back-gnustep-back-%{BACK_VERSION}
-export LDFLAGS+=" -lgnustep-gui"
+export ADDITIONAL_LDFLAGS=" -L%{buildroot}/Library/Libraries -lgnustep-gui -lgnustep-base"
 ./configure \
     --enable-server=x11 \
     --enable-graphics=art \
