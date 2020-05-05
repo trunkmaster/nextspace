@@ -34,7 +34,7 @@ echo "==========================================================================
 echo " Building NEXTSPACE Frameworks package..."
 echo "================================================================================"
 cp ${REPO_DIR}/Frameworks/nextspace-frameworks.spec ${SPECS_DIR}
-echo "========== Install nextspace-frameworks build dependecies... ==================="
+echo "========== Install nextspace-frameworks build dependencies... ==================="
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-frameworks.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > frameworks_build.log
 echo "========== Downloading nextspace-frameworks sources... ========================="
@@ -51,11 +51,11 @@ if [ $? -eq 0 ]; then
     echo "================================================================================"
     echo "========== Installing nextspace-frameworks RPMs... ============================="
     sudo yum -y localinstall \
-        ${RPMS_DIR}/nextspace-frameworks-${FRAMEWORKS-VERSION}* \
-        ${RPMS_DIR}/nextspace-frameworks-devel-${FRAMEWORKS-VERSION}*
+        ${RPMS_DIR}/nextspace-frameworks-${FRAMEWORKS_VERSION}* \
+        ${RPMS_DIR}/nextspace-frameworks-devel-${FRAMEWORKS_VERSION}*
 else
     echo "================================================================================"
-    echo " Building of Grand Central Dispatch library RPM FAILED!"
+    echo " Building of NEXTSPACE Frameworks RPM FAILED!"
     echo "================================================================================"
     exit $?
 fi

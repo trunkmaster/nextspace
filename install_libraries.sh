@@ -49,7 +49,7 @@ echo " Build log: libdispatch_build.log"
 echo "================================================================================"
 cp ${REPO_DIR}/Libraries/libdispatch/libdispatch.spec ${SPECS_DIR}
 cp ${REPO_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch ${SOURCES_DIR}
-echo "========== Install libdispatch build dependecies... ============================"
+echo "========== Install libdispatch build dependencies... ==========================="
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libdispatch.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > libdispatch_build.log
 echo "========== Downloading libdispatch sources... =================================="
@@ -78,7 +78,7 @@ echo " Building Objective-C Runtime(libobjc2) package..."
 echo " Build log: libobjc2_build.log"
 echo "================================================================================"
 cp ${REPO_DIR}/Libraries/libobjc2/libobjc2.spec ${SPECS_DIR}
-echo "========== Install libobjc2 build dependecies... ==============================="
+echo "========== Install libobjc2 build dependencies... =============================="
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libobjc2.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > libobjc2_build.log
 echo "========== Downloading libobjc2 sources... ====================================="
@@ -106,7 +106,7 @@ echo " Building of NEXTSPACE core components (nextspace-core) RPM..."
 echo " Build log: nextspace-core_build.log"
 echo "================================================================================"
 cp ${REPO_DIR}/Libraries/core/nextspace-core.spec ${SPECS_DIR}
-echo "========== Install nextspace-core build dependecies... ========================="
+echo "========== Install nextspace-core build dependencies... ========================"
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-core.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > nextspace-core_build.log
 echo "========== Downloading NEXTSPACE Core sources... ==============================="
@@ -142,7 +142,7 @@ echo " Building Raster graphics library (libwraster) RPM..."
 echo " Build log: libwraster_build.log"
 echo "================================================================================"
 cp ${REPO_DIR}/Libraries/libwraster/libwraster.spec ${SPECS_DIR}
-echo "========== Install libwraster build dependecies... ============================="
+echo "========== Install libwraster build dependencies... ============================"
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libwraster.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > libwraster_build.log
 echo "========== Downloading libwraster sources... ==================================="
@@ -181,7 +181,7 @@ cp ${REPO_DIR}/Libraries/gnustep/gdomap.service ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gpbs.service ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${SOURCES_DIR}
-echo "========== Install GNUstep build dependecies... ================================"
+echo "========== Install GNUstep build dependencies... ==============================="
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-gnustep.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > gnustep_build.log
 echo "========== Downloading GNUstep sources... ======================================"
