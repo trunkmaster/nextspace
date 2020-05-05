@@ -50,9 +50,9 @@ if [ $? -eq 0 ]; then
     echo " Building of NEXTSPACE Frameworks RPM SUCCEEDED!"
     echo "================================================================================"
     echo "========== Installing nextspace-frameworks RPMs... ============================="
-#    sudo yum -y localinstall \
-#        ${RPMS_DIR}/nextspace-frameworks-${FRAMEWORKS-VERSION}* \
-#        ${RPMS_DIR}/nextspace-frameworks-devel--${FRAMEWORKS-VERSION}*
+    sudo yum -y localinstall \
+        ${RPMS_DIR}/nextspace-frameworks-${FRAMEWORKS-VERSION}* \
+        ${RPMS_DIR}/nextspace-frameworks-devel-${FRAMEWORKS-VERSION}*
 else
     echo "================================================================================"
     echo " Building of Grand Central Dispatch library RPM FAILED!"
