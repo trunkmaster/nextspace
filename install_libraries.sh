@@ -24,6 +24,7 @@ DISPATCH_VERSION=5.1.5
 OBJC2_VERSION=2.0
 CORE_VERSION=0.95
 WRASTER_VERSION=5.0.0
+GNUSTEP_VERSION=1_27_0_nextspace
 
 echo "================================================================================"
 echo " Prepare build environment"
@@ -192,8 +193,8 @@ if [ $? -eq 0 ]; then
     echo " Building of NEXTSPACE GNUstep RPM SUCCEEDED!"
     echo "================================================================================"
     sudo yum -y localinstall \
-        ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}* \
-        ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}*
+        ${RPMS_DIR}/nextspace-gnustep-${GNUSTEP_VERSION}* \
+        ${RPMS_DIR}/nextspace-gnustep-devel-${GNUSTEP_VERSION}*
 else
     echo "================================================================================"
     echo " Building of NEXTSPACE GNUstep RPM FAILED!"
