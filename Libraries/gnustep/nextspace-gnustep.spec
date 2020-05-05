@@ -173,6 +173,7 @@ cd ..
 
 # Build GORM
 export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
+export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
 cd apps-gorm-gorm-%{GORM_VERSION}
 make
 cd ..
