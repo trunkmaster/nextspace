@@ -135,13 +135,12 @@ rm -rf %{buildroot}
 %if 0%{?el7}
 source /opt/rh/llvm-toolset-7.0/enable
 %endif
+source /Developer/Makefiles/GNUstep.sh
 export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
-source /Developer/Makefiles/GNUstep.sh
-#export LDFLAGS="-L/usr/NextSpace/lib -lobjc -ldispatch"
 cd libs-base-base-%{BASE_VERSION}
 ./configure
 make
@@ -149,12 +148,12 @@ make
 cd ..
 
 export ADDITIONAL_INCLUDE_DIRS="-I%{buildroot}/Developer/Headers"
+export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Application Kit
 cd libs-gui-gnustep-gui-%{GUI_VERSION}
 cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
-export ADDITIONAL_LDFLAGS=" -L%{buildroot}/Library/Libraries -lgnustep-base"
 ./configure
 make
 %{make_install}
@@ -163,17 +162,17 @@ cd ..
 
 # Build ART GUI backend
 cd libs-back-gnustep-back-%{BACK_VERSION}
-export ADDITIONAL_LDFLAGS=" -L%{buildroot}/Library/Libraries -lgnustep-gui -lgnustep-base"
+export ADDITIONAL_TOOL_LIBS="-lgnustep-gui -lgnustep-base"
 ./configure \
     --enable-server=x11 \
     --enable-graphics=art \
     --with-name=art
 make
+unset ADDITIONAL_TOOL_LIBS
 cd ..
 
 # Build GORM
 export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
-export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
 cd apps-gorm-gorm-%{GORM_VERSION}
 make
 cd ..
