@@ -69,6 +69,9 @@ Header file for NextSpace core applications (Preferences, Workspace).
 # Build phase
 #
 %build
+%if 0%{?el7}
+source /opt/rh/llvm-toolset-7.0/enable
+%endif
 source /Developer/Makefiles/GNUstep.sh
 export ADDITIONAL_INCLUDE_DIRS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
