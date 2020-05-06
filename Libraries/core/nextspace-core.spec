@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Name:		nextspace-core
 Version:	0.95
 Release:	9%{?dist}
