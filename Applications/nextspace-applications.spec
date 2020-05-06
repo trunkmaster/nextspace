@@ -1,16 +1,12 @@
 Name:           nextspace-applications
-Version:        0.85
-Release:        3%{?dist}
+Version:        0.90
+Release:        0%{?dist}
 Summary:        NextSpace desktop core applications.
 
 Group:          Libraries/NextSpace
 License:        GPLv2
 URL:		http://www.github.com/trunkmaster/nextspace
 Source0:	nextspace-applications-%{version}.tar.gz
-
-Provides:	libWUtil.so.so.5
-Provides:	libWINGs.so.so.3
-Provides:	libwraster.so.5
 
 BuildRequires:	nextspace-frameworks-devel
 # Preferences
