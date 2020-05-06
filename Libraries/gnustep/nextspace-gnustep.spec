@@ -153,11 +153,11 @@ export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Application Kit
 cd libs-gui-gnustep-gui-%{GUI_VERSION}
-cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
+sudo cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
 ./configure
 make
 %{make_install}
-rm /Developer/Makefiles/Additional/base.make
+sudo rm /Developer/Makefiles/Additional/base.make
 cd ..
 
 # Build ART GUI backend
