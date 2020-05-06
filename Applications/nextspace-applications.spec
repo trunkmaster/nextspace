@@ -73,9 +73,11 @@ Header file for NextSpace core applications (Preferences, Workspace).
 source /opt/rh/llvm-toolset-7.0/enable
 %endif
 source /Developer/Makefiles/GNUstep.sh
+export CC=clang
+export CXX=clang++
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 export ADDITIONAL_INCLUDE_DIRS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
-export GNUSTEP_MAKEFILES=/Developer/Makefiles
 make
 
 #
