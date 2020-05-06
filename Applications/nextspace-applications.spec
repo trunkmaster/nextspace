@@ -41,15 +41,16 @@ Requires:	xorg-x11-drv-evdev
 Requires:	xorg-x11-drv-intel
 Requires:	xorg-x11-drv-vesa
 Requires:	xorg-x11-drv-synaptics
-Requires:	xorg-x11-drv-keyboard
-Requires:	xorg-x11-drv-mouse
 Requires:	xorg-x11-server-Xorg
 Requires:	xorg-x11-server-utils
 Requires:	xorg-x11-xkb-utils
 Requires:	xorg-x11-fonts-100dpi
 Requires:	xorg-x11-fonts-misc
 Requires:	mesa-dri-drivers
-
+%if 0%{?el7}
+Requires:	xorg-x11-drv-keyboard
+Requires:	xorg-x11-drv-mouse
+%endif
 
 %description
 NextSpace desktop core applications.
@@ -68,6 +69,9 @@ Header file for NextSpace core applications (Preferences, Workspace).
 # Build phase
 #
 %build
+source /Developer/Makefiles/GNUstep.sh
+export ADDITIONAL_INCLUDE_DIRS="-I%{buildroot}/Developer/Headers"
+export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 make
 
