@@ -39,6 +39,12 @@ DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-applications.spec | awk 
 sudo yum -y install ${DEPS} 2>&1 > applications_build.log
 echo "========== Downloading nextspace-frameworks sources... ========================="
 source /Developer/Makefiles/GNUstep.sh
+if [ -f /etc/os-release ]; then 
+    source /etc/os-release;
+    if [ $ID == "centos" ] && [ $VERSION_ID == "7" ];then
+        source /opt/rh/llvm-toolset-7.0/enable
+    fi
+fi
 echo "--- Prepare Workspace sources ---"
 cd ${REPO_DIR}/Applications/Workspace && ./WM.configure 2>&1 >> applications_build.log
 echo "--- Creating applications source tarball ---"
