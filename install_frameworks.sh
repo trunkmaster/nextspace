@@ -38,6 +38,7 @@ echo "========== Install nextspace-frameworks build dependencies... ============
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-frameworks.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > frameworks_build.log
 echo "========== Downloading nextspace-frameworks sources... ========================="
+source /Developer/Makefiles/GNUstep.sh
 cd ${REPO_DIR}/Frameworks && make dist 2>&1 >> frameworks_build.log
 cd $CWD
 mv ${REPO_DIR}/nextspace-frameworks-${FRAMEWORKS_VERSION}.tar.gz ${SOURCES_DIR}
