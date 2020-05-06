@@ -131,7 +131,7 @@ ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/Fonts /Library/Fo
 
 #%preun
 
-#%postun
+%postun
 rm /Library/Fonts
 
 %changelog
