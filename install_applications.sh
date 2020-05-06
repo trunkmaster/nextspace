@@ -39,6 +39,9 @@ DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-applications.spec | awk 
 sudo yum -y install ${DEPS} 2>&1 > applications_build.log
 echo "========== Downloading nextspace-frameworks sources... ========================="
 source /Developer/Makefiles/GNUstep.sh
+echo "--- Prepare Workspace sources ---"
+cd ${REPO_DIR}/Applications/Workspace && ./WM.configure 2>&1 >> applications_build.log
+echo "--- Creating applications source tarball ---"
 cd ${REPO_DIR}/Applications && make dist 2>&1 >> applications_build.log
 cd $CWD
 mv ${REPO_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${SOURCES_DIR}
