@@ -33,8 +33,17 @@ echo "========== Install RPM build tools... ====================================
 BUILD_TOOLS="rpm-build rpmdevtools make patch"
 if [ -f /etc/os-release ]; then 
     source /etc/os-release;
-    if [ $ID == "centos" ] && [ $VERSION_ID == "7" ];then
-        BUILD_TOOLS="$BUILD_TOOLS centos-release-scl centos-release-scl-rh"
+    if [ $ID == "centos" ];then
+        if [ $VERSION_ID == "7" ];then
+            BUILD_TOOLS="$BUILD_TOOLS centos-release-scl centos-release-scl-rh"
+        fi
+        if [ $VERSION_ID == "8" ];then
+            yum config-manager --set-enabled PowerTools
+            yum -y install http://mirror.ppa.trinitydesktop.org/trinity/rpm/el8/trinity-r14/RPMS/noarch/trinity-repo-14.0.7-1.el8.noarch.rpm
+            yum -y install http://rpmfind.net/linux/centos/8-stream/PowerTools/x86_64/os/Packages/libudisks2-devel-2.8.3-2.el8.x86_64.rpm
+            yum -y update
+            BUILD_TOOLS="$BUILD_TOOLS epel-release dnf-plugins-core"
+        fi
     fi
 fi
 sudo yum -y install ${BUILD_TOOLS}
