@@ -72,11 +72,11 @@ cd ..
 cd tools-make-make-2_7_0
 %{make_install}
 rm %{buildroot}/usr/NextSpace/bin/opentool
-rm %{buildroot}/etc/X11/xorg.conf.d/20-intel.conf
 cd ..
 
 cd nextspace-os_files-%{version}
 cp -vr ./etc %{buildroot}
+rm %{buildroot}/etc/X11/xorg.conf.d/20-intel.conf
 cp -vr ./usr %{buildroot}
 cp -vr ./root %{buildroot}
 cp -vr ./dot_hidden %{buildroot}/.hidden
