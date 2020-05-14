@@ -19,7 +19,7 @@
 - Fixed bug specific to Linux child processes handling: by default SIGCHLD signal handler is set to `SIG_IGN`. In this case `waitpid()` returns `-1` with error explained as "No child process" - waitpid looses tracked child process by some away. To prevent it from happening signal handler should be set to `SIG_DFL`.
 
 ### Workspace
-  - Copy operation now 4 times faster.
+  - Copy operation now 4 times faster for large files.
   - "Shutdown" and "Power Off" return exit code for correct Login application handling. Workspace returns exit code `11` on quit if "Power Off" button was pressed. As a result Login application performs OS shutdown without ordering front panel - should switch to Plymouth shutdown screen.
   - Current keyboard layout now displayed in first Dock icon - quite ugly but it remains until I'll find better design solution (window titlebar is not an option for me - it's ugly too).
   - Bell sound is played via SoundKit with "event" type, so it can be controlled via "System Sounds" application/stream in Mixer.
