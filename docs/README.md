@@ -1,6 +1,7 @@
 # Release 0.90
 
-### General
+General
+---
 - Based on latest release of GNUstep libraries with some custom patches and improvements which are left unmerged to `master` branch. GNUstep GUI and Back now have `nextspace` branch to hold these specific changes.
 - Switched to use LLVM/clang from distribution repositories (SCL for CentOS 7, CentOS 8 and Fedora already have correct compiler).
 - Reduced debug output to console.
@@ -10,6 +11,8 @@
 - Numerous SoundKit fixes and improvements.
 - Created scripts for automated creation of RPM packages.
 
+Applications
+---
 ### Login
 - Startup and shutdown sequences were re-engineered. Login completely handles Xorg start and stop. loginwindow.service now handles only Login (doesn't kill Xorg on service stop).
 - Defauls splitted into system (/usr/NextSpace/Preferences/Login) and user ($HOME/Library/Preferences/.NextSpace/Login). User defaults is a place were login/logout hooks are placed by "Login Preferences".
@@ -49,6 +52,8 @@
   - honor system keyboard settings if no keyboard preferences found in defaults file.
   - Keyboard: added data and UI elements for keyboard model selection section.
 
+Frameworks
+---
 ### DesktopKit
   - Implemented `NXTOpenPanel : NXTSavePanel` and `NXTSavePanel : NSSavePanel`. Differences to NSOpenPanel and NSSavePanel:
     - No icons in browser.
