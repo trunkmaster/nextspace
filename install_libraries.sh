@@ -121,6 +121,7 @@ sudo yum -y install ${DEPS} 2>&1 > nextspace-core_build.log
 echo "========== Downloading NEXTSPACE Core sources... ==============================="
 mkdir -p /tmp/nextspace-os_files-${CORE_VERSION}
 cd /tmp 
+rm -rf ./nextspace-os_files-${CORE_VERSION}
 cp -R ${REPO_DIR}/System/* ./nextspace-os_files-${CORE_VERSION}/
 rm ./nextspace-os_files-${CORE_VERSION}/GNUmakefile
 tar zcf ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz nextspace-os_files-${CORE_VERSION}
