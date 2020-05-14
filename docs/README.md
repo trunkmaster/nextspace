@@ -1,77 +1,63 @@
-# NEXTSPACE
+# ChangeLog Release 0.90
 
-NEXTSPACE is desktop environment that brings [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT's OS. It is developed according to ["OpenStep User Interface Guidelines"](http://www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf).
-> If you've noticed or ever bothered with naming convention all of these "NeXTSTEP, NextStep", here is [explanation](/Documentation/OpenStep%20Confusion.md).
+### General
+- Switched to latest release of GNUstep libraries with some custom patches and improvements which are left unmerged. GNUstep GUI and Back now have "nextspace" branch to hold these changes.
+- Switched to use LLVM/clang from distribution repositories (SCL for CentOS 7, CentOS 8 and Fedora already have correct compiler).
+- Reduced debug output to console.
+- WRaster library moved out of Workspace and can be used by GNUstep Back as shared library.
+- Configured CircleCI automated build check.
+- /etc/skel/.zshrc renamed to .zshrc.nextspace to prevent conflict with zsh RPM resource file.
 
-![NEXTSPACE example](/Documentation/NEXTSPACE_Screenshot.png)
+### SoundKit
+- numerous bugfixes and improvements
 
-## What NEXTSPACE is?
-## Applications
 ### Login
-Simple login panel where you enter your user name and password.
+- Startup and shutdown sequences were re-engineered and now looks good.
+- "LoginHook" and "LogoutHook" preferences were added to defaults file.
+- On unclean exit of user session show dialog to select restart or cleanup.
+- Fixed panel positioning on monitor dimension and monitor layout changes.
+
 ### Workspace
-* File Viewer - file system navigation, create, copy, move, link files/directories.
-* Window manager - app icons for X11 application, move, resize windows, workspaces, dock, starts applications after logon.
-* Process - shows information about X11 and GNUstep applications, background processes of file manager.
-* Media - automatically mounts removable media, has menu item to eject/unmount removables.
-* Other: inspectors, finder, console messages and preferences for mentioned the parts of Workspace.
+  - Copy operation now 4 times faster;
+  - "Shutdown" and "Power Off" return exit code for correct Login application handling;
+  - While window moved/resized current window position/size displayed in window titlebar temporary replacing application titlebar text;
+  - Help Panel was added as result of NXTHelpPanel (table of contents, index, clickable links in articles, backtrack);
+  - Console on-the-fly applies font changed in "Font Preferences";
+  - Reuse appicon created by launch from FileViewer for appeared application instead of creating new and remove icon with 'launching' state;
+  - Improved application execution handling. When application double-clicked in FileViewer several things happen:
+    - icon slides down to IconYard and appicon with 'launching' state created holding WM name and command;
+    - if application quits with error (no app was started) appicon removed from screen and alert panel appears;
+    - after successful startup of application 'launching' appicon get used as normal application icon.
+  - Ubuntu and Fedora logos were added;
+  - Running apps' appicons which are dragged out of the Dock are automatically slides into the Icon Yard now.
+  - Launcher: Workspace Launcher: changed completion logic: on first Escape press directory name completed, on second press - shows directory contents in completion list;
+  - Fixed alpha channel handling while drawing application icons;
+  - Set `_NET_WM_WINDOW_TYPE_DOCK` property to icon core window. This helps compositing managers like compton correctly handle dock icons and miniwindows.
+  - Some fixes to Recycler icon positioning.
+  - Xinerama support replaced with XRandR.
+  - WINGs and WUtil libraries now compiled statically so vanilla WindowMaker may be installed aside.
+  - Fixed WM's internal string drawing: prevents appearance of `RenderBadPicture` X internal error in Console.
 
 ### Preferences
-Settings for locale, fonts, displays (size, arrangement), keyboard, mouse, sound, network, power management. It is designed to manage settings related to: GNUstep (NSGlobalDomain), WindowMaker (~/Library/Preferences/.NextSpace/WindowMaker), Xorg (keyboard, mouse, displays), CentOS Linux (sound, networking, power).
+  - Login: add initial implementation of - you can setup login and logout hooks now;
+  - Password: added implementation (needs more testing);
+  - Font: sends notification on font changes to NSDistributedNotificationCenter;
+  - Sound: was implemented (uses SoundKit);
+  - honor system keyboard settings if no keyboard preferences found in defaults file;
+  - Keyboard: added data and UI elements for keyboard model selection section
 
-![Localization](/Documentation/Preferences-Localization.png) ![Display](/Documentation/Preferences-Display.png)
+### DesktopKit
+  - NXTOpenPanel, NXTSavePanel: new custom open ans save panels.
+    Much improved usability against vanilla GNUstep panels. 
+    New panels honors “Show Hiddes Files” setting (Expert Preferences in Preferences application).
+  - NXTSound: new class to play sounds leveraging SoundKit;
+  - NXTAlert: set window level to modal; fixed placement of programatically created panel;
+  - NXTIcon: fixed problem of NXTIcon usage inside one application but from different classes;
+  - Fixed and optimized label resizing in edit mode. Problem: if NSTextView is not sized to draw new character or text GSLayoutManager fails to find glyph for character and label doesn't receive textDidChange: message. Now NXTIconLabel receive adjust it's frame in insertText: method (called before GSLayouManager's methods) and paste:.
+  - NXTListView: new class for creating comprehensive (attributed text, icons, sections) lists;
+  - NXTHelpPanel: 
+  - Helvetica.nfont: recreate bitmaps for sizes 8,10,12,14 for Medium, Bold and Oblique;
+  - Keith.nfont: created new fixed width font similar to Ohlfs NeXTSTEP font;
+  
+  - NXTFileManager: now it's a subcluss of NSFileManager;
 
-### Terminal
-Terminal with Linux console emulation. I've started with version created by Alexander Malmberg and make numerous fixes and enhancements. Original application can found at [GNUstep Application Project](http://www.nongnu.org/gap/terminal/index.html) site. Enhancement to original application are:
-* Preferences and Services panels are rewritten from scratch.
-* Numerous fixes and enhancements in: color management (background, foreground can be any and can be configured in preferences, bold, blink, inverse, cursor colours), cursor placement fixes on scrolling and window resizing, 'Clear Buffer' and 'Set Title' menu items.
-* Now you can search through the text displayed in Terminal window (Find panel).
-* Session management: you can save window with all settings that are set in preferences panel (including shell/command) to a file and then open it. Configuration with multiple windows is supported.
-
-![Terminals](/Documentation/Terminals.png)
-
-### TextEdit
-Simple text editor that supports RTF and RTFD. It is simple application from NeXT Developer demos.
-
-### Review
-Image viewer. Nothing interesting yet. Maybe replaced by some other image and document (PDF, PostScript, etc.) viewing application in future.
-
-Everything else is optional and will be developed upon completion of core applications listed above. Among them:
-* TimeMon: system load monitoring. Version from GNUstep Application Project.
-* Weather: Shows weather conditions from Yahoo! weather site. Proof of concept (no preferences, no forecast, shows weather for Kyiv, Ukraine).
-
-## Frameworks
-* NXAppKit: GUI classes that can be useful in multiple applications (for example: ClockView, ProgressBar and ProgressPie).
-* NXSystem: system-specific classes go here (UDisks, UPower, D-BUS, XRandR, XKB, etc.).
-* NXFoundation: non-graphical utility classes (custom defaults and bundle management, etc.)
->'NX' prefix is a tribute to the NeXTstep classes back in early 90th but has no connection to original NeXT's API.
-
-## Core technologies it is based on
-* [CentOS Linux 7](https://www.centos.org) and its technologies (systemd, UDisks2, Xorg, etc.): stable, well supported enterprise level OS.
-* Compiler: [Clang](http://www.llvm.org/) 3.8.1
-* Objective-C runtime: [libobjc2](https://github.com/gnustep/libobjc2) by David Chisnall.
-* Multithreading: [libdispatch](https://github.com/apple/swift-corelibs-libdispatch) by Apple.
-* [OpenStep](https://en.wikipedia.org/wiki/OpenStep) implementation: [GNUstep](http://www.gnustep.org). This is where I started from back in 2001. Additional functionality and fixes will go upstream when it will be ready.
-* [WindowMaker](https://windowmaker.org/): great window manager. It is still alive and in active development. All changes I'm packaging as a set of patches (to the original 0.95.7 version) which can be pushed to upstream project later.
-
-## Status of implementation
-* [Login](https://github.com/trunkmaster/nextspace/projects/6)
-* [Workspace](https://github.com/trunkmaster/nextspace/projects/4)
-* [Preferences](https://github.com/trunkmaster/nextspace/projects/2)
-* [Terminal](https://github.com/trunkmaster/nextspace/projects/3)
-* TextEdit - as is.
-* Review - early development.
-
-## Why am I doing this?
-1. I like look, feel and design principles of NeXTSTEP.
-2. I think [GNUstep](http://www.gnustep.org) needs reference implementation of user oriented desktop environment.
-3. As main developer of [ProjectCenter](http://www.gnustep.org/experience/ProjectCenter.html) (IDE for GNUstep) I need desktop environment where ProjectCenter can be developed, tested and integrated with.
-4. Maybe some day it will become interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
-
-Unlike other 'real' and 'serious' projects I've not defined target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray blurry lines, flat controls, acid colours, transparency). I like this accurate, clear, grayish, boring UI that just not hinder to get my job done...
-
-## I will not plan to do
-* Porting to other Linux distributions and operating systems for now. I want fast, accurate and stable version for CentOS 7 at last. However, NEXTSPACE was designed to be portable and this point maybe changed in future.
-* WindowMaker only fork (Workspace includes WindowMaker though).
-* GNOME, KDE, MacOS rival in terms of visual effects, modern design principles, look and feel.
-* Implement MacOS X like desktop paradigm. There is another good place for this -- [Étoilé](http://etoileos.com).
