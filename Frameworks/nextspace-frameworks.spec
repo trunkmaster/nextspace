@@ -1,6 +1,6 @@
 Name:           nextspace-frameworks
 Version:        0.90
-Release:        0%{?dist}
+Release:        1%{?dist}
 Summary:        NextSpace core libraries.
 Group:          Libraries/NextSpace
 License:        GPLv2
@@ -106,7 +106,6 @@ cd ..
 # Files
 #
 %files
-#/Library/Images
 /Library/Fonts
 /usr/NextSpace/Frameworks
 /usr/NextSpace/lib
@@ -124,17 +123,21 @@ cd ..
 
 %post
 ldconfig
-ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/Fonts /Library/Fonts
-#ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/Images /usr/NextSpace/Images
-#ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/Sounds /usr/NextSpace/Sounds
-#ln -s /usr/NextSpace/Sounds/Bonk.snd /usr/NextSpace/Sounds/SystemBeep.snd
 
+#
+# Package removal
+#
 #%preun
 
 %postun
-rm /Library/Fonts
+ldconfig
 
 %changelog
+* Sun May 17 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-1
+- remove lines with sybmbolic links creation and removal - it is
+  managed by DisktopKit makefiles.
+- run `ldconfig` in %postun.
+
 * Sun May 3 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-0
 - Use clang from RedHat SCL repo on CentOS 7.
 - SPEC file adopted for non-CentOS 7 distributions.
