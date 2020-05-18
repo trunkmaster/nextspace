@@ -7,10 +7,10 @@ if [ $# -eq 0 ];then
     printf "\nERROR: No NEXTSPACE directory specified.\n\n"
     printf "You have to specify directory where NEXTSPACE git clone resides.\n"
     printf "For example, consider this scenario:\n\n"
-    printf "$ cd ~/Devloper\n"
+    printf "$ cd ~/Developer\n"
     printf "$ git clone https://github.com/trunkmaster/nextspace\n"
     printf "$ cd nextspace/Libraries\n"
-    printf "$ ./install_libraries.sh ~/Developer/nextspace\n\n"
+    printf "$ ./build_libraries.sh ~/Developer/nextspace\n\n"
     exit
 fi
 
@@ -39,7 +39,7 @@ if [ -f /etc/os-release ]; then
         fi
         if [ $VERSION_ID == "8" ];then
             yum config-manager --set-enabled PowerTools
-            yum -y install http://mirror.ppa.trinitydesktop.org/trinity/rpm/el8/trinity-r14/RPMS/noarch/trinity-repo-14.0.7-1.el8.noarch.rpm
+            yum -y install http://mirror.ppa.trinitydesktop.org/trinity/rpm/el8/trinity-r14/RPMS/noarch/trinity-repo-14.0.8-1.el8.noarch.rpm
             yum -y install http://rpmfind.net/linux/centos/8-stream/PowerTools/x86_64/os/Packages/libudisks2-devel-2.8.3-2.el8.x86_64.rpm
             yum -y update
             BUILD_TOOLS="$BUILD_TOOLS epel-release dnf-plugins-core"

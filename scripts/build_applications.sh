@@ -7,9 +7,10 @@ if [ $# -eq 0 ];then
     printf "\nERROR: No NEXTSPACE directory specified.\n\n"
     printf "You have to specify directory where NEXTSPACE git clone resides.\n"
     printf "For example, consider this scenario:\n\n"
+    printf "$ cd ~/Developer\n"
     printf "$ git clone https://github.com/trunkmaster/nextspace\n"
     printf "$ cd nextspace\n"
-    printf "$ ./install_applications.sh ~/nextspace\n\n"
+    printf "$ ./build_applications.sh ~/nextspace\n\n"
     exit
 fi
 
