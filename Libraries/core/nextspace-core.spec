@@ -38,6 +38,16 @@ Summary:	Development header files for NextSpace core components.
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 Requires:	libdispatch-devel
 Requires:	libobjc2-devel
+%if 0%{?el7}
+Requires:	centos-release-scl
+Requires:	centos-release-scl-rh
+Requires:	llvm-toolset-7.0-clang >= 7.0.1
+%else
+Requires:	clang >= 7.0.1
+%endif
+Requires:	make
+Requires:	git
+Requires:	patch
 Provides:	gnustep-make
 
 %description devel
