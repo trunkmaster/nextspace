@@ -46,7 +46,7 @@ after-all::
 after-clean::
 	@ echo "Making clean in WM ... "
 	@ echo " Cleaning in $(WM_DIR)/WINGs ..."
-	@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
+	-@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
 
 before-install::
 	@ mkdir -p $(APP_WRAPPER_INSTALLED)
