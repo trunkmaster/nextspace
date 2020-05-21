@@ -1,6 +1,6 @@
 Name:           nextspace-frameworks
 Version:        0.90
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        NextSpace core libraries.
 Group:          Libraries/NextSpace
 License:        GPLv2
@@ -43,6 +43,8 @@ Requires:	libXcursor >= 1.1.14
 # SoundKit
 Requires:	pulseaudio-libs >= 10.0
 Requires:	pulseaudio >= 10.0
+# DesktopKit
+Requires:	google-roboto-mono-fonts
 
 
 %description
@@ -51,6 +53,7 @@ NextSpace libraries.
 %package devel
 Summary:	NextSpace core libraries (SystemKit, DesktopKit, SoundKit).
 Requires:	%{name}%{?_isa} = %{version}-%{release}
+Requires:	google-roboto-mono-fonts
 
 %description devel
 Header files for NextSpace core libraries (SystemKit, DesktopKit, SoundKit).
@@ -133,6 +136,10 @@ ldconfig
 ldconfig
 
 %changelog
+* Sun May 22 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-2
+* new dependency "google-roboto-mono-fonts" - RobotoMono.nfont
+  use files from this package.
+
 * Sun May 17 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-1
 - remove lines with sybmbolic links creation and removal - it is
   managed by DisktopKit makefiles.
