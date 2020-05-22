@@ -8,7 +8,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = Workspace
 VERSION = 0.8
-REVISION = "`git log -n 1 --date=short --format=format:"%h, %ad"`"
+REVISION := "$(shell git log -n 1 --date=short --format=format:"%h, %ad" 2>/dev/null || echo unknown)"
 APP_NAME = Workspace
 OS_NAME=`./os-release`
 $(APP_NAME)_APPLICATION_ICON = app-$(OS_NAME)-48.tiff
