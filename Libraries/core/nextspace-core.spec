@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	9%{?dist}
+Release:	10%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://github.com/trunkmaster/nextspace
@@ -23,6 +23,7 @@ Requires:	libobjc2 >= 1.8
 Requires:	zsh
 Requires:	plymouth-plugin-script
 Requires:	plymouth-plugin-label
+Requires:	tuned
 
 %description
 Includes several components:
@@ -99,10 +100,7 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /Users
 /root/Library
 /root/.config
-/root/.fonts
-/root/.gtkrc
 /root/.gtkrc-2.0
-/root/fonts.conf
 /etc/ld.so.conf.d
 /etc/profile.d
 /etc/skel
@@ -142,6 +140,10 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Mon May 25 2020 Sergii Stoian <stoyan255@gmail.com> - 0.95-10
+- Removed files cleared from %files section.
+- Added new dependency - tuned.
+
 * Wed Apr 29 2020 Sergii Stoian <stoyan255@gmail.com> - 0.95-9
 - Use clang from RedHat SCL repo on CentOS 7.
 - Source file should be downloaded with `spectool -g` command into
