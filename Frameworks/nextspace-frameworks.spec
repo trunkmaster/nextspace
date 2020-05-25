@@ -136,8 +136,8 @@ ldconfig
 ldconfig
 
 %changelog
-* Sun May 22 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-2
-* new dependency "google-roboto-mono-fonts" - RobotoMono.nfont
+* Fri May 22 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-2
+- new dependency "google-roboto-mono-fonts" - RobotoMono.nfont
   use files from this package.
 
 * Sun May 17 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-1
