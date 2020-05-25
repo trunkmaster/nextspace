@@ -1,0 +1,88 @@
+# -*-Shell-script-*-
+#
+
+export CWD=`pwd`
+export SOURCES_DIR=~/rpmbuild/SOURCES
+export SPECS_DIR=~/rpmbuild/SPECS
+export RPMS_DIR=~/rpmbuild/RPMS/x86_64
+
+# Bold
+print_H1()
+{
+    echo $COLUMNS
+    echo -e -n "\e1m"
+    echo "================================================================================"
+    echo "$1"
+    echo "================================================================================"
+    echo -e -n "\e[0m"
+}
+
+# Brown
+print_H2()
+{
+    echo -e -n "\e[33m"
+    echo "$1"
+    echo -e -n "\e[0m"
+}
+
+# Green
+print_OK()
+{
+    echo -e -n "\e[32m"
+    echo "================================================================================"
+    echo "$1"
+    echo "================================================================================"
+    echo -e -n "\e[0m"
+}
+
+# Red
+print_ERR()
+{
+    echo -e -n "\e[31m"
+    echo "================================================================================"
+    echo "$1"
+    echo "================================================================================"
+    echo -e -n "\e[0m"
+}
+
+
+prepare_environment() 
+{
+    print_H1 " Prepare build environment"
+    print_H2 "========== Install RPM build tools... =========================================="
+    BUILD_TOOLS="rpm-build rpmdevtools make patch"
+    if [ -f /etc/os-release ]; then 
+        source /etc/os-release;
+        if [ $ID == "centos" ];then
+            if [ $VERSION_ID == "7" ];then
+                BUILD_TOOLS="$BUILD_TOOLS centos-release-scl centos-release-scl-rh"
+            fi
+            if [ $VERSION_ID == "8" ];then
+                yum config-manager --set-enabled PowerTools
+                yum -y install http://mirror.ppa.trinitydesktop.org/trinity/rpm/el8/trinity-r14/RPMS/noarch/trinity-repo-14.0.7-1.el8.noarch.rpm
+                yum -y install http://rpmfind.net/linux/centos/8-stream/PowerTools/x86_64/os/Packages/libudisks2-devel-2.8.3-2.el8.x86_64.rpm
+                yum -y update
+                BUILD_TOOLS="$BUILD_TOOLS epel-release dnf-plugins-core"
+            fi
+        fi
+    fi
+    sudo yum -y install ${BUILD_TOOLS}
+    print_H2 "========== Create rpmbuild directories... ======================================"
+    mkdir -p $SOURCES_DIR
+    mkdir -p $SPECS_DIR
+}
+
+print_help()
+{
+    SCRIPT_NAME=`basename $0`
+    print_ERR " ERROR: No NEXTSPACE directory specified."
+    printf "\n"
+    print_H2 "You have to specify directory where NEXTSPACE git clone resides."
+    print_H2 "For example, consider this scenario:"
+    printf "\n"
+    print_H2 "$ git clone https://github.com/trunkmaster/nextspace"
+    print_H2 "$ cd nextspace"
+    print_H2 "$ ./scripts/$SCRIPT_NAME ~/nextspace"
+    printf "\n"
+}
+

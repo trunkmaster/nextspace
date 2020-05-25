@@ -3,61 +3,39 @@
 # run this script as has appropriate rights.
 #
 
+REPO_DIR=$1
+. `dirname $0`/functions
+
 if [ $# -eq 0 ];then
-    printf "\nERROR: No NEXTSPACE directory specified.\n\n"
-    printf "You have to specify directory where NEXTSPACE git clone resides.\n"
-    printf "For example, consider this scenario:\n\n"
-    printf "$ git clone https://github.com/trunkmaster/nextspace\n"
-    printf "$ cd nextspace\n"
-    printf "$ ./install_frameworks.sh ~/nextspace\n\n"
+    print_help
     exit
 fi
 
-REPO_DIR=$1
-CWD=`pwd`
-SOURCES_DIR=~/rpmbuild/SOURCES
-SPECS_DIR=~/rpmbuild/SPECS
-RPMS_DIR=~/rpmbuild/RPMS/x86_64
-
+LOG_FILE=${CWD}/frameworks_build.log
 FRAMEWORKS_VERSION=0.90
 
-echo "================================================================================"
-echo " Prepare build environment"
-echo "================================================================================"
-echo "========== Install RPM build tools... =========================================="
-sudo yum -y install rpm-build
-echo "========== Create rpmbuild directories... ======================================"
-mkdir -p $SOURCES_DIR
-mkdir -p $SPECS_DIR
-
-echo "================================================================================"
-echo " Building NEXTSPACE Frameworks package..."
-echo "================================================================================"
+print_H1 " Building NEXTSPACE Frameworks package..."
 cp ${REPO_DIR}/Frameworks/nextspace-frameworks.spec ${SPECS_DIR}
-echo "========== Install nextspace-frameworks build dependencies... ==================="
+print_H2 "========== Install nextspace-frameworks build dependencies... ==================="
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-frameworks.spec | awk -c '{print $1}'`
-sudo yum -y install ${DEPS} 2>&1 > frameworks_build.log
-echo "========== Downloading nextspace-frameworks sources... ========================="
+sudo yum -y install ${DEPS} 2>&1 > ${LOG_FILE}
+print_H2 "========== Downloading nextspace-frameworks sources... ========================="
 source /Developer/Makefiles/GNUstep.sh
-cd ${REPO_DIR}/Frameworks && make dist 2>&1 >> frameworks_build.log
+cd ${REPO_DIR}/Frameworks && make dist 2>&1 >> ${LOG_FILE}
 cd $CWD
 mv ${REPO_DIR}/nextspace-frameworks-${FRAMEWORKS_VERSION}.tar.gz ${SOURCES_DIR}
-spectool -g -R ${SPECS_DIR}/nextspace-frameworks.spec 2>&1 >> frameworks_build.log
-echo "========== Building nextspace-frameworks package... ============================"
-rpmbuild -bb ${SPECS_DIR}/nextspace-frameworks.spec 2>&1 >> frameworks_build.log
+spectool -g -R ${SPECS_DIR}/nextspace-frameworks.spec 2>&1 >> ${LOG_FILE}
+print_H2 "========== Building nextspace-frameworks package... ============================"
+rpmbuild -bb ${SPECS_DIR}/nextspace-frameworks.spec 2>&1 >> ${LOG_FILE}
 rm ${SPECS_DIR}/nextspace-frameworks.spec
 if [ $? -eq 0 ]; then 
-    echo "================================================================================"
-    echo " Building of NEXTSPACE Frameworks RPM SUCCEEDED!"
-    echo "================================================================================"
-    echo "========== Installing nextspace-frameworks RPMs... ============================="
-    sudo yum -y localinstall \
+    print_OK " Building of NEXTSPACE Frameworks RPM SUCCEEDED!"
+    print_H2 "========== Installing nextspace-frameworks RPMs... ============================="
+    sudo yum -y install \
         ${RPMS_DIR}/nextspace-frameworks-${FRAMEWORKS_VERSION}* \
         ${RPMS_DIR}/nextspace-frameworks-devel-${FRAMEWORKS_VERSION}*
 else
-    echo "================================================================================"
-    echo " Building of NEXTSPACE Frameworks RPM FAILED!"
-    echo "================================================================================"
+    print_ERR " Building of NEXTSPACE Frameworks RPM FAILED!"
     exit $?
 fi
 

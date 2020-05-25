@@ -3,41 +3,25 @@
 # run this script as has appropriate rights.
 #
 
+REPO_DIR=$1
+. `dirname $0`/functions
+
 if [ $# -eq 0 ];then
-    printf "\nERROR: No NEXTSPACE directory specified.\n\n"
-    printf "You have to specify directory where NEXTSPACE git clone resides.\n"
-    printf "For example, consider this scenario:\n\n"
-    printf "$ git clone https://github.com/trunkmaster/nextspace\n"
-    printf "$ cd nextspace\n"
-    printf "$ ./install_applications.sh ~/nextspace\n\n"
+    print_help
     exit
 fi
 
-REPO_DIR=$1
-CWD=`pwd`
-SOURCES_DIR=~/rpmbuild/SOURCES
-SPECS_DIR=~/rpmbuild/SPECS
-RPMS_DIR=~/rpmbuild/RPMS/x86_64
-
+LOG_FILE=${CWD}/applications_build.log
 APPLICATIONS_VERSION=0.90
 
-echo "================================================================================"
-echo " Prepare build environment"
-echo "================================================================================"
-echo "========== Install RPM build tools... =========================================="
-sudo yum -y install rpm-build
-echo "========== Create rpmbuild directories... ======================================"
-mkdir -p $SOURCES_DIR
-mkdir -p $SPECS_DIR
+prepare_environment
 
-echo "================================================================================"
-echo " Building NEXTSPACE Applications package..."
-echo "================================================================================"
+print_H1 " Building NEXTSPACE Applications package..."
 cp ${REPO_DIR}/Applications/nextspace-applications.spec ${SPECS_DIR}
-echo "========== Install nextspace-applications build dependencies... ================"
+print_H2 "========== Install nextspace-applications build dependencies... ================"
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-applications.spec | awk -c '{print $1}'`
-sudo yum -y install ${DEPS} 2>&1 > applications_build.log
-echo "========== Downloading nextspace-frameworks sources... ========================="
+sudo yum -y install ${DEPS} 2>&1 > ${LOG_FILE}
+print_H2 "========== Downloading nextspace-frameworks sources... ========================="
 source /Developer/Makefiles/GNUstep.sh
 if [ -f /etc/os-release ]; then 
     source /etc/os-release;
@@ -45,27 +29,23 @@ if [ -f /etc/os-release ]; then
         source /opt/rh/llvm-toolset-7.0/enable
     fi
 fi
-echo "--- Prepare Workspace sources ---"
-cd ${REPO_DIR}/Applications/Workspace && ./WM.configure 2>&1 >> applications_build.log
-echo "--- Creating applications source tarball ---"
-cd ${REPO_DIR}/Applications && make dist 2>&1 >> applications_build.log
+print_H2 "--- Prepare Workspace sources ---"
+cd ${REPO_DIR}/Applications/Workspace && ./WM.configure 2>&1 >> ${LOG_FILE}
+print_H2 "--- Creating applications source tarball ---"
+cd ${REPO_DIR}/Applications && make dist 2>&1 >> ${LOG_FILE}
 cd $CWD
 mv ${REPO_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${SOURCES_DIR}
-spectool -g -R ${SPECS_DIR}/nextspace-applications.spec 2>&1 >> applications_build.log
-echo "========== Building nextspace-applications package... =========================="
-rpmbuild -bb ${SPECS_DIR}/nextspace-applications.spec 2>&1 >> applications_build.log
+spectool -g -R ${SPECS_DIR}/nextspace-applications.spec 2>&1 >> ${LOG_FILE}
+print_H2 "========== Building nextspace-applications package... =========================="
+rpmbuild -bb ${SPECS_DIR}/nextspace-applications.spec 2>&1 >> ${LOG_FILE}
 if [ $? -eq 0 ]; then 
-    echo "================================================================================"
-    echo " Building of NEXTSPACE Applications RPM SUCCEEDED!"
-    echo "================================================================================"
-    echo "========== Installing nextspace-applications RPMs... ==========================="
-    sudo yum -y localinstall \
+    print_OK " Building of NEXTSPACE Applications RPM SUCCEEDED!"
+    print_H2 "========== Installing nextspace-applications RPMs... ==========================="
+    sudo yum -y install \
         ${RPMS_DIR}/nextspace-applications-${APPLICATIONS_VERSION}* \
         ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}*
 else
-    echo "================================================================================"
-    echo " Building of NEXTSPACE Applications RPM FAILED!"
-    echo "================================================================================"
+    print_ERR " Building of NEXTSPACE Applications RPM FAILED!"
     exit $?
 fi
 rm ${SPECS_DIR}/nextspace-applications.spec
