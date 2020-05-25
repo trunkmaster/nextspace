@@ -3,7 +3,6 @@
 # run this script as has appropriate rights.
 #
 
-REPO_DIR=$1
 . `dirname $0`/functions
 
 if [ $# -eq 0 ];then
@@ -11,7 +10,11 @@ if [ $# -eq 0 ];then
     exit
 fi
 
+prepare_environment
+
+REPO_DIR=$1
 LOG_FILE=${CWD}/frameworks_build.log
+
 FRAMEWORKS_VERSION=0.90
 
 print_H1 " Building NEXTSPACE Frameworks package..."

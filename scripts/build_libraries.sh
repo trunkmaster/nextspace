@@ -3,28 +3,22 @@
 # run this script as has appropriate rights.
 #
 
+. `dirname $0`/functions
+
 if [ $# -eq 0 ];then
-    printf "\nERROR: No NEXTSPACE directory specified.\n\n"
-    printf "You have to specify directory where NEXTSPACE git clone resides.\n"
-    printf "For example, consider this scenario:\n\n"
-    printf "$ cd ~/Devloper\n"
-    printf "$ git clone https://github.com/trunkmaster/nextspace\n"
-    printf "$ cd nextspace/Libraries\n"
-    printf "$ ./install_libraries.sh ~/Developer/nextspace\n\n"
+    print_help
     exit
 fi
 
+prepare_environment
+
 REPO_DIR=$1
-. ./scripts/functions
-LOG_FILE=${CWD}/libraries_build.log
 
 DISPATCH_VERSION=5.1.5
 OBJC2_VERSION=2.0
 CORE_VERSION=0.95
 WRASTER_VERSION=5.0.0
 GNUSTEP_VERSION=1_27_0_nextspace
-
-prepare_environment
 
 # libdispatch
 print_H1 " Building Grand Central Dispatch (libdispatch) package...\n Build log: libdispatch_build.log"

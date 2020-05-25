@@ -9,7 +9,6 @@ export RPMS_DIR=~/rpmbuild/RPMS/x86_64
 # Bold
 print_H1()
 {
-    echo $COLUMNS
     echo -e -n "\e1m"
     echo "================================================================================"
     echo "$1"
