@@ -1,3 +1,9 @@
+nextspace-applications (0.85+20200526.gitfc5851fd-1) unstable; urgency=medium
+
+  * Update to latest master
+
+ -- Patrick Georgi <patrick@t-stueck.local>  Fri, 29 May 2020 00:06:05 +0200
+
 nextspace-applications (0.85+20200520.gitdcb7a3e6-1) unstable; urgency=medium
 
   * Update to latest master
