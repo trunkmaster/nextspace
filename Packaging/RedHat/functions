@@ -20,7 +20,7 @@ print_H1()
 print_H2()
 {
     echo -e -n "\e[33m"
-    echo "$1"
+    echo -e "$1"
     echo -e -n "\e[0m"
 }
 
