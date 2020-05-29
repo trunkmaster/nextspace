@@ -1,0 +1,2 @@
+Tests: file-tests
+Depends: @, file, shunit2

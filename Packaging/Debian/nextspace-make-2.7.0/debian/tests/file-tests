@@ -1,0 +1,19 @@
+#!/bin/sh
+
+exec 2>&1
+
+set -e
+
+test_opentool() {
+  assertEquals "text/x-shellscript" "$(file --mime-type --brief /usr/bin/opentool)"
+}
+
+test_openapp() {
+  assertEquals "text/x-shellscript" "$(file --mime-type --brief /usr/bin/openapp)"
+}
+
+test_debugapp() {
+  assertEquals "text/x-shellscript" "$(file --mime-type --brief /usr/bin/debugapp)"
+}
+
+. shunit2

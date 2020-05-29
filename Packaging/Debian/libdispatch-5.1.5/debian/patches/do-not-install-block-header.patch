@@ -1,0 +1,24 @@
+Description: libobjc2 provides it
+ This gives a conflict, so mirror what nextspace is doing.
+ .
+ libdispatch (5.1.5-0.1) unstable; urgency=medium
+ .
+   * Non-maintainer upload.
+Author: Patrick Georgi <patrick@georgi.software>
+
+---
+Last-Update: 2020-05-03
+
+--- libdispatch-5.1.5.orig/CMakeLists.txt
++++ libdispatch-5.1.5/CMakeLists.txt
+@@ -153,10 +153,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin
+ 
+   add_library(BlocksRuntime::BlocksRuntime ALIAS BlocksRuntime)
+ 
+-  install(FILES
+-            ${PROJECT_SOURCE_DIR}/src/BlocksRuntime/Block.h
+-          DESTINATION
+-            "${INSTALL_BLOCK_HEADERS_DIR}")
+   if(INSTALL_PRIVATE_HEADERS)
+     install(FILES
+               ${PROJECT_SOURCE_DIR}/src/BlocksRuntime/Block_private.h

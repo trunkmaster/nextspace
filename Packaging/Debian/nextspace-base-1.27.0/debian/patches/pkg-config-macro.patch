@@ -1,0 +1,23 @@
+Description: Use PKG_PROG_PKG_CONFIG to handle cross-compilation scenarios.
+ This patch was applied upstream but with a last-resort option that
+ still triggers a lintian warning.
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: https://savannah.gnu.org/bugs/?52778
+Applied-Upstream: commit:925f1dd
+Last-Update: 2019-01-08
+---
+
+--- gnustep-base.orig/configure.ac
++++ gnustep-base/configure.ac
+@@ -1226,11 +1226,6 @@
+ 
+ AC_PATH_PROG(WHOAMI, whoami, echo, $PATH:/usr/ucb)
+ PKG_PROG_PKG_CONFIG
+-# If the modern mechanism failswe may havew an older pkg-config
+-# so try looking it up the old fashioned way.
+-if test -z "$PKG_CONFIG"; then
+-  AC_PATH_PROG(PKG_CONFIG,pkg-config,,)
+-fi
+ 
+ 
+ #--------------------------------------------------------------------

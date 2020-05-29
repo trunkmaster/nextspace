@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+include /Developer/Makefiles/config.mk
+
+SHELL := /bin/bash
+export DEB_LDFLAGS_MAINT_APPEND := -Wl,--no-undefined -Wl,--as-needed \
+				     -Wl,-rpath,/usr/NextSpace/lib
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+optim := debug=yes
+endif
+
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+
+%:
+	dh $@
+
+override_dh_makeshlibs:
+# Avoid lintian warnings for the library; it is installed as private.
+	dh_makeshlibs --noscripts

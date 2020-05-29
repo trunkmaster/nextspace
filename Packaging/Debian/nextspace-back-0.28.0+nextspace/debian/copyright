@@ -1,0 +1,163 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gnustep-back
+Upstream-Contact: gnustep-dev@gnu.org
+Source: ftp://ftp.gnustep.org/pub/gnustep/core/
+
+Files: *
+Copyright: 1991-2017, Free Software Foundation, Inc
+License: LGPL-2+
+
+Files: Fonts/Helvetica.nfont/*
+Copyright: 1999, (URW)++ Design & Development
+License: GPL-3+
+
+Files: Headers/x11/StdCmap.h
+Copyright: 1988, X Consortium
+License: X/MIT
+
+Files: Headers/x11/wraster.h
+Copyright: 1997-2002, Alfredo K. Kojima
+License: LGPL-2+
+
+Files: Headers/x11/xdnd.h
+Copyright: 1998, Paul Sheer
+License: LGPL-2+
+
+Files: Source/x11/context.c
+  Source/x11/convert.c
+  Source/x11/raster.c
+  Source/x11/scale.c
+  Source/x11/wrasterP.h
+  Source/x11/xutil.c
+Copyright: 1997-2002, Alfredo K. Kojima
+License: LGPL-2+
+
+Files: Source/x11/xdnd.c
+Copyright: 1998, Paul Sheer
+License: LGPL-2+
+
+Files: Source/xdps/drawingfuncs.psw
+  Source/xdps/extensions.psw
+  Source/xdps/fonts.psw
+  Source/xdps/general.psw
+Copyright: 1996-2015, Free Software Foundation, Inc
+License: LGPL-3+
+
+Files: Source/xdps/parseAFM.c
+  Source/xdps/parseAFM.h
+Copyright: 1991-1994, Adobe Systems Incorporated
+License: permissive
+
+Files: Tools/*
+Copyright: 1997, 1999, 2000, 2003, 2018 Free Software Foundation, Inc
+License: GPL-3+
+
+Files: Tools/GNUmakefile
+  Tools/GNUmakefile.postamble
+  Tools/GNUmakefile.preamble
+Copyright: 1992-2015, Free Software Foundation, Inc
+License: LGPL-2+
+
+Files: Version
+Copyright: 2002, Free Software Foundation
+License: LGPL-2+
+
+Files: configure.ac
+Copyright: 1996-2015, Free Software Foundation, Inc
+License: LGPL-3+
+
+Files: configure
+Copyright: 1992-1996, 1998-2012 Free Software Foundation, Inc.
+License: FSFUL
+
+Files: debian/*
+Copyright: 1998-2019 Debian GNUstep maintainers
+License: LGPL-2+
+
+License: GPL-3+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or (at
+ your option) any later version.
+ .
+ On Debian systems, the complete text of version 3 of the GNU General
+ Public License can be found in '/usr/share/common-licenses/GPL-3'.
+
+License: LGPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Library General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ .
+ On Debian systems, the complete text of version 2 of the GNU Library
+ General Public License can be found in `/usr/share/common-licenses/LGPL-2'.
+
+License: LGPL-3+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation; either version 3 of the
+ License, or (at your option) any later version.
+ .
+ On Debian systems, the complete text of version 3 of the GNU Lesser
+ General Public License can be found in `/usr/share/common-licenses/LGPL-3'.
+
+License: X/MIT
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT.  IN NO EVENT SHALL THE X CONSORTIUM BE LIABLE FOR
+ ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name of the X Consortium
+ shall not be used in advertising or otherwise to promote the sale,
+ use or other dealings in this Software without prior written
+ authorization from the X Consortium.
+
+License: permissive
+ Permission to use, copy, modify, distribute, and sublicense this
+ software and its documentation for any purpose and without fee is
+ hereby granted, provided that the above copyright notices appear in
+ all copies and that both those copyright notices and this permission
+ notice appear in supporting documentation and that the name of Adobe
+ Systems Incorporated not be used in advertising or publicity
+ pertaining to distribution of the software without specific, written
+ prior permission.  No trademark license to use the Adobe trademarks
+ is hereby granted.  If the Adobe trademark "Display PostScript"(tm)
+ is used to describe this software, its functionality or for any other
+ purpose, such use shall be limited to a statement that this software
+ works in conjunction with the Display PostScript system.  Proper
+ trademark attribution to reflect Adobe's ownership of the trademark
+ shall be given whenever any such reference to the Display PostScript
+ system is made.
+ .
+ ADOBE MAKES NO REPRESENTATIONS ABOUT THE SUITABILITY OF THE SOFTWARE
+ FOR ANY PURPOSE.  IT IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED
+ WARRANTY.  ADOBE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
+ SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NON- INFRINGEMENT OF THIRD PARTY
+ RIGHTS.  IN NO EVENT SHALL ADOBE BE LIABLE TO YOU OR ANY OTHER PARTY
+ FOR ANY SPECIAL, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ WHATSOEVER WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE, STRICT
+ LIABILITY OR ANY OTHER ACTION ARISING OUT OF OR IN CONNECTION WITH
+ THE USE OR PERFORMANCE OF THIS SOFTWARE.  ADOBE WILL NOT PROVIDE ANY
+ TRAINING OR OTHER SUPPORT FOR THE SOFTWARE.
+ .
+ Adobe, PostScript, and Display PostScript are trademarks of Adobe
+ Systems Incorporated which may be registered in certain jurisdictions
+
+License: FSFUL
+ This configure script is free software; the Free Software Foundation
+ gives unlimited permission to copy, distribute and modify it.

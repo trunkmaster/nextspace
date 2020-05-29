@@ -1,0 +1,106 @@
+From: Eric Heintzmann <heintzmann.eric@free.fr>
+Description: Lengthen the time the tests wait for process startup.
+Last-Update: 2016-06-24
+
+--- a/Tests/base/NSURL/test00.m
++++ b/Tests/base/NSURL/test00.m
+@@ -42,7 +42,7 @@
+       cont = [NSData dataWithBytes: lit length: strlen(lit)];
+ 
+       // Pause to allow server subtask to set up.
+-      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
++      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+       u = [NSURL URLWithString: @"http://localhost:1234/chunked"];
+       // Talk to server.
+       data = [u resourceDataUsingCache: NO];
+@@ -73,7 +73,7 @@
+       cont = [NSData dataWithBytes: lit length: strlen(lit)];
+ 
+       // Pause to allow server subtask to set up.
+-      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
++      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+       u = [NSURL URLWithString: @"http://localhost:1234/chunked"];
+ 
+       request = [NSURLRequest requestWithURL: u];
+@@ -122,7 +122,7 @@
+   if (t != nil)
+     {
+       // Pause to allow server subtask to set up.
+-      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
++      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+       i = [resp length];
+       while (i-- > 0)
+         {
+@@ -172,7 +172,7 @@
+       if (t != nil)
+         {
+           // Pause to allow server subtask to set up.
+-          [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.0]];
++          [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+           for (i = 0; i < 2; i++)
+             {
+ 	      NSAutoreleasePool	*pool = [NSAutoreleasePool new];
+--- a/Tests/base/NSURL/test01.m
++++ b/Tests/base/NSURL/test01.m
+@@ -41,7 +41,7 @@
+   if (t != nil)
+     {
+       // Pause to allow server subtask to set up.
+-      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
++      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+       
+       for (i = 0; i < 10; i++)
+ 	{
+--- a/Tests/base/NSURL/test02.m
++++ b/Tests/base/NSURL/test02.m
+@@ -40,7 +40,7 @@
+   if (t != nil)
+     {
+       // Pause to allow server subtask to set up.
+-      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
++      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+       // remove the captured data from a possible previous run
+       [fm removeItemAtPath: file error: NULL];
+       // making a POST request
+@@ -82,7 +82,7 @@
+   if (t != nil)
+     {
+       // Pause to allow server subtask to set up.
+-      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
++      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+       // remove the captured data from a possible previous run
+       [fm removeItemAtPath: file error: NULL];
+       // making a POST request
+--- a/Tests/base/NSURLConnection/Helpers/NSURLConnectionTest.m
++++ b/Tests/base/NSURLConnection/Helpers/NSURLConnectionTest.m
+@@ -7,7 +7,7 @@
+ /* the runloop's time slice */
+ #define TIMING 0.1
+ /* the max duration of a test */
+-#define MAXDURATION 3.0
++#define MAXDURATION 5.0
+ 
+ @interface NSURLConnectionTest (Private)
+ 
+--- a/Tests/base/NSURLConnection/Helpers/TestWebServer.m
++++ b/Tests/base/NSURLConnection/Helpers/TestWebServer.m
+@@ -41,7 +41,7 @@
+ #define TIMING 0.1
+ /* the maximum duration of running of the SimpleWebServer instance
+    after which the server must be shut down */
+-#define MAXDURATION 3.0
++#define MAXDURATION 5.0
+ 
+ @implementation TestWebServer
+ 
+--- a/Tests/base/NSURLHandle/test01.m
++++ b/Tests/base/NSURLHandle/test01.m
+@@ -36,7 +36,7 @@
+   if (t != nil)
+     {
+       // pause, so that the server is set up
+-      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
++      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+       // try some different requests
+       handle = [[[cls alloc] initWithURL: url cached: NO] autorelease];
+       rxd = [handle loadInForeground];

@@ -1,0 +1,85 @@
+# -*-debian-control-*-
+Source: nextspace-base
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Section: gnustep
+Priority: optional
+Build-Depends: debhelper (>= 12),
+               nextspace-make (>= 2.7.0),
+               libffi-dev,
+               libxml2-dev,
+               libxslt1-dev,
+               libgnutls28-dev,
+               zlib1g-dev,
+               m4,
+               libavahi-client-dev,
+               libicu-dev,
+               dh-exec,
+               tzdata
+Build-Depends-Indep: texinfo,
+                     texlive-latex-base,
+                     texlive-fonts-recommended,
+                     xml-core
+Build-Conflicts: libgmp3-dev
+Rules-Requires-Root: no
+Standards-Version: 4.5.0
+
+Package: nextspace-base-common
+Architecture: all
+Depends: nextspace-common (>= 2.7.0),
+         ca-certificates,
+         tzdata,
+         ${misc:Depends}
+Description: GNUstep Base library - common files
+ The GNUstep Base Library is a powerful fast library of
+ general-purpose, non-graphical Objective C classes, inspired by the
+ OpenStep API but implementing Apple and GNU additions to the API as
+ well.
+ .
+ This package contains the common files needed by the GNUstep Base library.
+
+Package: nextspace-base-runtime
+Architecture: any
+Depends: nextspace-base-common (= ${source:Version}),
+         ${shlibs:Depends},
+         ${misc:Depends},
+         lsb-base
+Description: GNUstep Base library - daemons and tools
+ The GNUstep Base Library is a powerful fast library of
+ general-purpose, non-graphical Objective C classes, inspired by the
+ OpenStep API but implementing Apple and GNU additions to the API as
+ well.
+ .
+ This package contains the runtime support files needed by GNUstep
+ applications.
+
+Package: libnextspace-base1.27
+Section: libs
+Architecture: any
+Depends: nextspace-base-common (= ${source:Version}),
+         ${shlibs:Depends},
+         ${misc:Depends}
+Recommends: nextspace-base-runtime (= ${binary:Version})
+Description: GNUstep Base library
+ The GNUstep Base Library is a powerful fast library of
+ general-purpose, non-graphical Objective C classes, inspired by the
+ OpenStep API but implementing Apple and GNU additions to the API as
+ well.  It includes for example classes for unicode strings, arrays,
+ dictionaries, sets, byte streams, typed coders, invocations,
+ notifications, notification dispatchers, scanners, tasks, files,
+ networking, threading, remote object messaging support (distributed
+ objects), event loops, loadable bundles, attributed unicode strings,
+ xml, mime, user defaults.
+
+Package: libnextspace-base-dev
+Section: libdevel
+Architecture: any
+Depends: libnextspace-base1.27 (= ${binary:Version}),
+         nextspace-base-runtime (= ${binary:Version}),
+         nextspace-make (>= 2.7.0),
+         ${misc:Depends}
+Description: GNUstep Base header files and development libraries
+ This package contains the header files and static libraries required
+ to build applications against the GNUstep Base library.
+ .
+ Install this package if you wish to develop your own programs using
+ the GNUstep Base Library.

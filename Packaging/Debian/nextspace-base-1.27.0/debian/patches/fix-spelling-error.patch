@@ -1,0 +1,37 @@
+Description: Fix spelling error
+Author: Eric Heintzmann <heintzmann.eric@free.fr>
+Author: Yavor Doganov <yavor@gnu.org>
+Last-Update: 2019-09-18
+---
+
+--- gnustep-base.orig/Tools/gdnc.m
++++ gnustep-base/Tools/gdnc.m
+@@ -490,7 +490,7 @@
+     {
+       if ([conn registerName: service withNameServer: ns] == NO)
+ 	{
+-	  NSLog(@"gdnc - unable to register with name server as %@ - quiting.",
++	  NSLog(@"gdnc - unable to register with name server as %@ - quitting.",
+ 	    service);
+ 	  DESTROY(self);
+ 	  return self;
+@@ -505,7 +505,7 @@
+ 
+       if (host == nil)
+ 	{
+-	  NSLog(@"gdnc - unknown NSHost argument  ... %@ - quiting.", hostname);
++	  NSLog(@"gdnc - unknown NSHost argument  ... %@ - quitting.", hostname);
+ 	  DESTROY(self);
+ 	  return self;
+ 	}
+--- gnustep-base.orig/Tools/gspath.1
++++ gnustep-base/Tools/gspath.1
+@@ -33,7 +33,7 @@
+ .B libpath
+ argument.
+ .P
+-To display the directory search path needed to locate commmand-line programs,
++To display the directory search path needed to locate command-line programs,
+ use the
+ .B path
+ argument.

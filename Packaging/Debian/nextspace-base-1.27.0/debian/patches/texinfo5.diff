@@ -1,0 +1,14 @@
+Author: Matthias Klose <doko@debian.org>
+Description: Fix FTBFS with texinfo 5.x.
+Last-Update: 2013-05-13
+
+--- a/Documentation/coding-standards.texi
++++ b/Documentation/coding-standards.texi
+@@ -53,6 +53,7 @@
+ 
+ @node Top, Introduction, (dir), (dir)
+ @top Coding Standards
++@raisesections
+ 
+ @menu
+ * Introduction::                

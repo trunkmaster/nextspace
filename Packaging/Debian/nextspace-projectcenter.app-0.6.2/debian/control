@@ -1,0 +1,21 @@
+Source: nextspace-projectcenter.app
+Section: gnustep
+Priority: optional
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Build-Depends: debhelper (>= 11),
+	       libnextspace-gui-dev (>= 0.24),
+	       imagemagick
+Standards-Version: 4.2.1
+
+Package: nextspace-projectcenter.app
+Architecture: any
+Depends: ${shlibs:Depends},
+	 ${misc:Depends}
+Recommends: nextspace-gorm.app,
+	    gdb,
+	    libnextspace-gui-dev
+Description: IDE for GNUstep Development
+ ProjectCenter is an integrated development environment (IDE) for
+ GNUstep systems.  It is a clone of the ProjectBuilder application for
+ NextStep, which became popular for its ease of use and speed of
+ development.

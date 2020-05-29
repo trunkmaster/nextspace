@@ -1,0 +1,3 @@
+Tests: file-tests
+Restrictions: allow-stderr
+Depends: @, libgnustep-base-dev

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+set -u
+
+export GNUSTEP_MAKEFILES=/usr/share/GNUstep/Makefiles
+
+# Some tests require config.mak and GSConfig.h.
+# Arguments to configure must be kept in sync with those in the
+# override_dh_auto_configure target in debian/rules.
+./configure ac_cv_lib_kvm_kvm_getenvv=no --disable-bfd  \
+    || (cat config.log; exit 1)
+
+gnustep-tests Tests/base || (cat Tests/tests.log; exit 1)
+
+exit 0

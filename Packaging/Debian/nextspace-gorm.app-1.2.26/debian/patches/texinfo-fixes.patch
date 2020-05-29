@@ -1,0 +1,54 @@
+Description: Fix makeinfo errors and warnings.
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: no
+Last-Update: 2014-06-17
+---
+
+--- gorm.app.orig/Documentation/Gorm.texi
++++ gorm.app/Documentation/Gorm.texi
+@@ -9,13 +9,10 @@
+ 
+ @include version.texi
+ 
+-@ifinfo
+-@format
+-START-INFO-DIR-ENTRY
+-* Gorm::                      The GNUstep Graphical Object Relationship Modeler
+-END-INFO-DIR-ENTRY
+-@end format
+-@end ifinfo
++@dircategory Software development
++@direntry
++* Gorm: (Gorm).  The GNUstep Graphical Object Relationship Modeler.
++@end direntry
+ 
+ @ifinfo
+ This file documents the features and implementation of the Gorm
+@@ -54,8 +51,7 @@
+ @end iftex
+ 
+ @titlepage
+-@title Guide to the
+-@title Gorm application
++@title Guide to the Gorm application
+ @sp 3
+ @c @subtitle last updated February, 2001
+ @subtitle Version @value{GORM-VERSION}
+@@ -130,7 +126,9 @@
+ @node Installation, News, Contributors, Top
+ @chapter Installing Gorm
+ 
++@raisesections
+ @include install.texi
++@lowersections
+ 
+ @node News, Overview, Installation, Top
+ @chapter News
+@@ -784,6 +782,7 @@
+ @chapter Frequently Asked Questions
+ @cindex FAQ
+ 
++@raisesections
+ @subsection Should I modify the data.classes of file in the .gorm package?
+ 
+ My advice is never to do this, ever.  Some have said that ``they're plain text and I should be able to change them''.   My response to this rather loosely pronounced and weak rationale is that if they are modified I cannot and will not guarantee that Gorm will be able to read them or will function correctly if it does.

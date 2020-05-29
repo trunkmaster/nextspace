@@ -1,0 +1,20 @@
+Description: Avoid lintian warnings.
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: not-needed
+Last-Update: 2016-05-15
+---
+
+--- a/Tools/autogsdoc.1
++++ b/Tools/autogsdoc.1
+@@ -435,9 +435,9 @@
+ with values to be used to map the filenames found in the indexes.
+ For example, if a project index (igsdoc) file says that the class
+ \&'Foo' is found in the file 'Foo', and the
+-path associated with that project index is '/usr/doc/proj',
++path associated with that project index is '/usr/share/doc/proj',
+ Then generated html output may reference the class as being in
+-\&'/usr/doc/prj/Foo.html' .  Note that a dictionary may be
++\&'/usr/share/doc/prj/Foo.html' .  Note that a dictionary may be
+ given on the command line by using the standard PropertyList format
+ (not the XML format of OS X), using semicolons as line-separators, and
+ enclosing it in single quotes.

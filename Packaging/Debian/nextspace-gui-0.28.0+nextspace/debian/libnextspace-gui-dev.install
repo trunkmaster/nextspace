@@ -1,0 +1,4 @@
+Developer/Makefiles/Additional/gui.make
+usr/NextSpace/include
+usr/NextSpace/lib/lib*.a
+usr/NextSpace/lib/lib*.so
