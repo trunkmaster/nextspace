@@ -43,3 +43,4 @@ git_remote_archive https://github.com/gnustep/apps-projectcenter nextspace-proje
 
 git_local_archive ${nextspace_version} Frameworks nextspace-frameworks
 git_local_archive ${nextspace_version} Applications nextspace-applications
+git_local_archive ${nextspace_version} System nextspace

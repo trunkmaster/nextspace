@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+export DESTDIR=$(CURDIR)/debian/tmp
+
+%:
+	dh $@
+
+override_dh_auto_build override_dh_auto_clean override_dh_auto_test override_dh_auto_install:
+	true

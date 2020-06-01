@@ -18,6 +18,8 @@ build() {
 
 method=${1-pbuilder}
 
+build "nextspace" "$(map_version_from_commit ${nextspace_version})"
+
 build "libdispatch" "${libdispatch_version}"
 build "libobjc2" "${libobjc2_version}"
 build "nextspace-make" "${gnustep_make_version}"
