@@ -17,4 +17,7 @@ gnustep_back_version=0.28.0+nextspace
 gorm_version=1.2.26
 projectcenter_version=0.6.2
 
+roboto_mono_version=0.2020.05.08
+roboto_mono_checkout=master
+
 nextspace_version=fc5851fdbc3ef8bb54d6981fbb012bc9be3d675c

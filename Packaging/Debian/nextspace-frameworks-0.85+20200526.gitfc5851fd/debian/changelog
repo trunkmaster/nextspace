@@ -1,8 +1,14 @@
+nextspace-frameworks (0.85+20200526.gitfc5851fd-2) unstable; urgency=medium
+
+  * Fix up Roboto Mono font
+
+ -- Patrick Georgi <patrick@georgi.software>  Wed, 03 Jun 2020 00:03:43 +0200
+
 nextspace-frameworks (0.85+20200526.gitfc5851fd-1) unstable; urgency=medium
 
   * Update to latest master
 
- -- Patrick Georgi <patrick@t-stueck.local>  Fri, 29 May 2020 00:06:46 +0200
+ -- Patrick Georgi <patrick@georgi.software>  Fri, 29 May 2020 00:06:46 +0200
 
 nextspace-frameworks (0.85+20200520.gitdcb7a3e6-1) unstable; urgency=medium
 
