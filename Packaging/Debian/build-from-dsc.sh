@@ -28,7 +28,5 @@ build "nextspace-back" "${gnustep_back_version}"
 build "nextspace-gorm.app" "${gorm_version}"
 build "nextspace-projectcenter.app" "${projectcenter_version}"
 
-build "roboto-mono" "${roboto_mono_version}"
-
 build "nextspace-frameworks" "$(map_version_from_commit ${nextspace_version})"
 build "nextspace-applications" "$(map_version_from_commit ${nextspace_version})"

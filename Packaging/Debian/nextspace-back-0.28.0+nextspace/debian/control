@@ -6,6 +6,7 @@ Priority: optional
 Build-Depends: debhelper (>= 12),
 	       m4,
 	       nextspace-make (>= 2.7.0),
+	       libbrotli-dev,
 	       libnextspace-gui-dev,
 	       libice-dev,
 	       libxext-dev,
