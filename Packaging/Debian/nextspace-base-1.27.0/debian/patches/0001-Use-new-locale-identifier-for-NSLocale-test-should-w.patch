@@ -1,0 +1,42 @@
+Taken (and slightly adapted) from http://savannah.gnu.org/bugs/?58190
+
+From b00722c61ddd27e59b2df85fb172d1cbf0bceab1 Mon Sep 17 00:00:00 2001
+From: Yavor Doganov <yavor@gnu.org>
+Date: Thu, 16 Apr 2020 16:32:00 +0300
+Subject: [PATCH] Use new locale identifier for NSLocale test; should work with
+ ICU >= 65
+
+---
+ ChangeLog                     | 5 +++++
+ Tests/base/NSLocale/general.m | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index c3e39f230..63a8e3596 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,8 @@
++2020-04-16  Yavor Doganov  <yavor@gnu.org>
++
++	* Tests/base/NSLocale/general.m: Use "es_ES@currency=ESP" as
++	locale identifier; should work with all supported ICU versions.
++
+ 2020-04-05  Ivan Vucica <ivan@vucica.net>
+ 
+ 	* ANNOUNCE:
+diff --git a/Tests/base/NSLocale/general.m b/Tests/base/NSLocale/general.m
+index 48a5188d7..129003813 100644
+--- a/Tests/base/NSLocale/general.m
++++ b/Tests/base/NSLocale/general.m
+@@ -22,7 +22,7 @@ int main(void)
+ 
+   // These tests don't really work all that well.  I need to come up with
+   // something better.  Most of the ones that fail are because nil is returned.
+-  locale = [[NSLocale alloc] initWithLocaleIdentifier: @"es_ES_PREEURO"];
++  locale = [[NSLocale alloc] initWithLocaleIdentifier: @"es_ES@currency=ESP"];
+   PASS_EQUAL([locale objectForKey: NSLocaleIdentifier],
+     @"es_ES@currency=ESP",
+     "NSLocaleIdentifier key returns 'es_ES@currency=ESP'");
+-- 
+2.26.1
+
