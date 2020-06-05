@@ -29,9 +29,11 @@ fi
 # Hostname in /etc/hosts
 echo -n "Checking /etc/hosts..."
 HOSTNAME="`hostname -s`"
-HOSTNAME="$HOSTNAME `hostname`"
 grep "$HOSTNAME" /etc/hosts 2>&1 > /dev/null
 if [ $? -eq 1 ];then
+    if [ $HOSTNAME != `hostname` ];then
+        HOSTNAME="$HOSTNAME `hostname`"
+    fi
     echo -e -n "\e[33m"
     echo "configuring needed"
     echo -e -n "\e[0m"
