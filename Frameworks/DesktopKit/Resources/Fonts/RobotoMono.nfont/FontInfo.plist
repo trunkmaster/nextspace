@@ -4,7 +4,7 @@
     Faces = (
 	{
 	    Files = (
-		/usr/share/fonts/google-roboto-mono/RobotoMono-Regular.ttf
+		RobotoMono-Regular.ttf
 	    );
 	    Name = Regular;
 	    PostScriptName = "RobotoMono-Regular";
@@ -13,7 +13,7 @@
 	},
 	{
 	    Files = (
-		/usr/share/fonts/google-roboto-mono/RobotoMono-Bold.ttf
+		RobotoMono-Bold.ttf
 	    );
 	    Name = Bold;
 	    PostScriptName = "RobotoMono-Bold";
@@ -22,7 +22,7 @@
 	},
 	{
 	    Files = (
-		/usr/share/fonts/google-roboto-mono/RobotoMono-Italic.ttf
+		RobotoMono-Italic.ttf
 	    );
 	    Name = Italic;
 	    PostScriptName = "RobotoMono-Italic";
@@ -31,7 +31,7 @@
 	},
 	{
 	    Files = (
-		/usr/share/fonts/google-roboto-mono/RobotoMono-BoldItalic.ttf
+		RobotoMono-BoldItalic.ttf
 	    );
 	    Name = BoldItalic;
 	    PostScriptName = "RobotoMono-BoldItalic";
@@ -40,7 +40,7 @@
 	},
 	{
 	    Files = (
-		/usr/share/fonts/google-roboto-mono/RobotoMono-Medium.ttf
+		RobotoMono-Medium.ttf
 	    );
 	    Name = Medium;
 	    PostScriptName = "RobotoMono-Medium";
@@ -49,7 +49,7 @@
 	},
 	{
 	    Files = (
-		/usr/share/fonts/google-roboto-mono/RobotoMono-MediumItalic.ttf
+		RobotoMono-MediumItalic.ttf
 	    );
 	    Name = MediumItalic;
 	    PostScriptName = "RobotoMono-MediumItalic";

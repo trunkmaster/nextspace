@@ -43,8 +43,6 @@ Requires:	libXcursor >= 1.1.14
 # SoundKit
 Requires:	pulseaudio-libs >= 10.0
 Requires:	pulseaudio >= 10.0
-# DesktopKit
-Requires:	google-roboto-mono-fonts
 
 
 %description
