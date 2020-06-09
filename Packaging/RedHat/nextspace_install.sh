@@ -125,6 +125,7 @@ fi
 
 # Install User packages
 echo -n "Installing NEXTSPACE User packages..."
+setup_package_list
 yum -y -q install --enablerepo=epel ${USER_PACKAGES} 2>&1 > /dev/null
 ldconfig
 echo -e -n "\e[32m"
@@ -139,6 +140,9 @@ read YN
 if [ $YN = "y" ]; then
     echo -n "Installing NEXTSPACE Developer packages..."
     yum -y -q install --enablerepo=epel ${DEVEL_PACKAGES} 2>&1 > /dev/null
+    echo -e -n "\e[32m"
+    echo "done"
+    echo -e -n "\e[0m"
 fi
 
 # Adding user
