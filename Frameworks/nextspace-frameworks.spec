@@ -51,7 +51,6 @@ NextSpace libraries.
 %package devel
 Summary:	NextSpace core libraries (SystemKit, DesktopKit, SoundKit).
 Requires:	%{name}%{?_isa} = %{version}-%{release}
-Requires:	google-roboto-mono-fonts
 
 %description devel
 Header files for NextSpace core libraries (SystemKit, DesktopKit, SoundKit).
