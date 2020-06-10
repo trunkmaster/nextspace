@@ -44,10 +44,12 @@ print_ERR()
     echo -e -n "\e[0m"
 }
 
-
 prepare_environment() 
 {
     print_H1 " Prepare build environment"
+    print_H2 "========== Create rpmbuild directories... ======================================"
+    mkdir -p $SOURCES_DIR
+    mkdir -p $SPECS_DIR
     print_H2 "========== Install RPM build tools... =========================================="
     BUILD_TOOLS="rpm-build rpmdevtools make patch"
     if [ -f /etc/os-release ]; then 
@@ -57,18 +59,13 @@ prepare_environment()
                 BUILD_TOOLS="$BUILD_TOOLS centos-release-scl centos-release-scl-rh"
             fi
             if [ $VERSION_ID == "8" ];then
-                yum config-manager --set-enabled PowerTools
-                yum -y install http://mirror.ppa.trinitydesktop.org/trinity/rpm/el8/trinity-r14/RPMS/noarch/trinity-repo-14.0.7-1.el8.noarch.rpm
-                yum -y install http://rpmfind.net/linux/centos/8-stream/PowerTools/x86_64/os/Packages/libudisks2-devel-2.8.3-2.el8.x86_64.rpm
-                yum -y update
-                BUILD_TOOLS="$BUILD_TOOLS epel-release dnf-plugins-core"
+		export RELEASE_USR="$CWD/CentOS-8/NSUser"
+		export RELEASE_DEV="$CWD/CentOS-8/NSDeveloper"
+		`dirname $0`/el8_prepare.sh
             fi
         fi
     fi
     sudo yum -y install ${BUILD_TOOLS}
-    print_H2 "========== Create rpmbuild directories... ======================================"
-    mkdir -p $SOURCES_DIR
-    mkdir -p $SPECS_DIR
 }
 
 print_help()

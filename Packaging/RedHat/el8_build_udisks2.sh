@@ -26,7 +26,7 @@ build_libbytesize()
 
     cp SOURCES/*.patch ${SOURCES_DIR}
     cp SPECS/*.spec ${SPECS_DIR}
-    curl -L https://github.com/storaged-project/libbytesize/releases/download/1.4-1/libbytesize-1.4.tar.gz \
+    curl -L https://github.com/storaged-project/libbytesize/releases/download/1.4/libbytesize-1.4.tar.gz \
 	 -o ${SOURCES_DIR}/libbytesize-1.4.tar.gz
     DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libbytesize.spec | awk -c '{print $1}'`
     sudo yum -y install ${DEPS}
