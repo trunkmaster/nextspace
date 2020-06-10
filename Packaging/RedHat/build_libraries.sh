@@ -21,11 +21,11 @@ fi
 if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "8" ];then
     rpm -q libart_lgpl 2>&1 > /dev/null
     if [ $? -eq 1 ]; then
-        `dirname $0`/el8_build_libart.sh
+        `dirname $0`/build_libart.sh
     fi
     rpm -q libudisks-devel 2>&1 > /dev/null
     if [ $? -eq 1 ]; then
-        `dirname $0`/el8_build_udisks2.sh
+        `dirname $0`/build_udisks2.sh
     fi
 fi
 

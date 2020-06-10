@@ -4,7 +4,7 @@
 
 . `dirname $0`/functions
 
-cd `pwd`/../../Libraries
+cd `dirname $0`/../../Libraries
 mkdir -p UDisks
 cd UDisks
 export CWD=`pwd`

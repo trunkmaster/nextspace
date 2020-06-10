@@ -6,7 +6,7 @@
 
 print_H1 " Build libart library"
 
-cd $CWD/../../Libraries
+cd `dirname $0`/../../Libraries
 if [ ! -d "libart_lgpl" ];then
     git clone https://src.fedoraproject.org/rpms/libart_lgpl.git
 fi
@@ -16,7 +16,7 @@ cp *.patch ${SOURCES_DIR}
 
 LIBART_VERSION=`rpm_version libart_lgpl.spec`
 spectool -g -R libart_lgpl.spec
-DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libart_lgpl.spec | awk -c '{print $1}'`
+DEPS=`rpmspec -q --buildrequires libart_lgpl.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS}
 
 rpmbuild -bb libart_lgpl.spec
