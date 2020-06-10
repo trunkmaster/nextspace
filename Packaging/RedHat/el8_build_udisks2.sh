@@ -146,7 +146,6 @@ if [ $? -eq 1 ];then
     build_iscsi_initiator_utils
     if [ $? -eq 0 ];then
 	yum -y install ${RPMS_DIR}/iscsi-initiator-utils-devel-6.2.0.877-1.gitf71581b.el8.x86_64.rpm
-	mv ${RPMS_DIR}/iscsi-initiator-utils-devel-6.2.0.877-1.gitf71581b.el8.x86_64.rpm ${RELEASE_DEV}
     fi
 fi
 
@@ -155,7 +154,6 @@ if [ $? -eq 1 ];then
     build_libstoragemgmt
     if [ $? -eq 0 ];then
 	yum -y install ${RPMS_DIR}/libstoragemgmt-devel-1.8.1-2.el8.x86_64.rpm
-	mv ${RPMS_DIR}/libstoragemgmt-devel-1.8.1-2.el8.x86_64.rpm ${RELEASE_DEV}
     fi
 fi
 

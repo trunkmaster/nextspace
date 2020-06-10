@@ -56,8 +56,5 @@ fi
 rpm -q libudisks-devel 2>&1 > /dev/null
 if [ $? -eq 1 ]; then
     `dirname $0`/el8_build_udisks2.sh
-    mv ${RPMS_DIR}/libart_lgpl-2.3.21-23.el8.x86_64.rpm ${RELEASE_USR}
-    mv ${RPMS_DIR}/libart_lgpl-devel-2.3.21-23.el8.x86_64.rpm ${RELEASE_DEV}
-    mv ${RPMS_DIR}/libart_lgpl-debuginfo-2.3.21-23.el8.x86_64.rpm ${RELEASE_DEV}
-    mv ${RPMS_DIR}/libart_lgpl-debugsource-2.3.21-23.el8.x86_64.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/libudisks2-devel-2.8.3-2.el8.x86_64.rpm ${RELEASE_USR}
 fi
