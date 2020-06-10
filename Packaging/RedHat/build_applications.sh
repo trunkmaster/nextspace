@@ -15,14 +15,15 @@ prepare_environment
 REPO_DIR=$1
 LOG_FILE=${CWD}/applications_build.log
 
-APPLICATIONS_VERSION=0.90
-
 print_H1 " Building NEXTSPACE Applications package..."
 cp ${REPO_DIR}/Applications/nextspace-applications.spec ${SPECS_DIR}
-print_H2 "========== Install nextspace-applications build dependencies... ================"
-DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-applications.spec | awk -c '{print $1}'`
+SPEC_FILE=${SPECS_DIR}/nextspace-applications.spec
+
+APPLICATIONS_VERSION=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
+print_H2 "===== Install nextspace-applications build dependencies..."
+DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > ${LOG_FILE}
-print_H2 "========== Downloading nextspace-frameworks sources... ========================="
+print_H2 "===== Downloading nextspace-frameworks sources..."
 source /Developer/Makefiles/GNUstep.sh
 if [ -f /etc/os-release ]; then 
     source /etc/os-release;
@@ -30,26 +31,33 @@ if [ -f /etc/os-release ]; then
         source /opt/rh/llvm-toolset-7.0/enable
     fi
 fi
-print_H2 "--- Prepare Workspace sources ---"
-cd ${REPO_DIR}/Applications/Workspace && ./WM.configure 2>&1 >> ${LOG_FILE}
-print_H2 "--- Creating applications source tarball ---"
+print_H2 "--- Prepare Workspace sources"
+cd ${REPO_DIR}/Applications/Workspace
+rm WM/src/wconfig.h && rm WM/configure && ./WM.configure 2>&1 >> ${LOG_FILE}
+print_H2 "--- Creating applications source tarball"
 cd ${REPO_DIR}/Applications && make dist 2>&1 >> ${LOG_FILE}
 cd $CWD
 mv ${REPO_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${SOURCES_DIR}
-spectool -g -R ${SPECS_DIR}/nextspace-applications.spec 2>&1 >> ${LOG_FILE}
-print_H2 "========== Building nextspace-applications package... =========================="
-rpmbuild -bb ${SPECS_DIR}/nextspace-applications.spec 2>&1 >> ${LOG_FILE}
+spectool -g -R ${SPEC_FILE} 2>&1 >> ${LOG_FILE}
+print_H2 "===== Building nextspace-applications package..."
+rpmbuild -bb ${SPEC_FILE} 2>&1 >> ${LOG_FILE}
+
+APPLICATIONS_VERSION=`rpm_version ${SPEC_FILE}`
+rm ${SPEC_FILE}
 if [ $? -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Applications RPM SUCCEEDED!"
-    print_H2 "========== Installing nextspace-applications RPMs... ==========================="
-    sudo yum -y install \
-        ${RPMS_DIR}/nextspace-applications-${APPLICATIONS_VERSION}* \
-        ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}*
+    print_H2 "===== Installing nextspace-applications RPMs..."
+    install_rpm nextspace-applications ${RPMS_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.rpm
+    mv ${RPMS_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.rpm ${RELEASE_USR}
+    install_rpm nextspace-applications-devel ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm
+    mv ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/nextspace-applications-debuginfo-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
+    if [ $OS_NAME == "centos" ] && [ $OS_VERSION != "7" ];then
+        mv ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
+    fi
 else
     print_ERR " Building of NEXTSPACE Applications RPM FAILED!"
     exit $?
 fi
-rm ${SPECS_DIR}/nextspace-applications.spec
 
 exit 0
-

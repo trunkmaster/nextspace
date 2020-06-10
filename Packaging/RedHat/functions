@@ -9,11 +9,11 @@ export RPMS_DIR=~/rpmbuild/RPMS/x86_64
 prepare_environment() 
 {
     print_H1 " Prepare build environment"
-    print_H2 "========== Create rpmbuild directories..."
+    print_H2 "===== Create rpmbuild directories..."
     mkdir -p $SOURCES_DIR
     mkdir -p $SPECS_DIR
 
-    print_H2 "========== Install RPM build tools..."
+    print_H2 "===== Install RPM build tools..."
     rpm -q rpm-build 2>&1 > /dev/null
     if [ $? -eq 1 ]; then BUILD_TOOLS+=" rpm-build"; fi
     rpm -q rpmdevtools 2>&1 > /dev/null
@@ -27,16 +27,22 @@ prepare_environment()
         source /etc/os-release;
 	export RELEASE_USR="$CWD/$ID-$VERSION_ID/NSUser"
 	export RELEASE_DEV="$CWD/$ID-$VERSION_ID/NSDeveloper"
+        export OS_NAME=$ID
+        export OS_VERSION=$VERSION_ID
         mkdir -p ${RELEASE_USR}
         mkdir -p ${RELEASE_DEV}
-        if [ $ID == "centos" ];then
-            if [ $VERSION_ID == "7" ];then
+        if [ $OS_NAME == "centos" ];then
+            if [ $OS_VERSION == "7" ];then
+                yum repolist | grep "epel/" 2>&1 > /dev/null
+                if [ $? -eq 1 ]; then
+                    BUILD_TOOLS+=" https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm";
+                fi
                 rpm -q centos-release-scl 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl"; fi
                 rpm -q centos-release-scl-rh 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl-rh"; fi
             fi
-            if [ $VERSION_ID == "8" ];then
+            if [ $OS_VERSION_ID == "8" ];then
                 yum config-manager --set-enabled PowerTools
                 rpm -q epel-release 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" epel-release"; fi
