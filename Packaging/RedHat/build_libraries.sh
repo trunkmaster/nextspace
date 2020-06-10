@@ -1,26 +1,45 @@
 #!/bin/sh
 # This script uses `sudo` to install generated RPMs. Please make sure user you 
 # run this script as has appropriate rights.
+# Notice it always rebuilds and reinstalls packages even if they're already installed.
 #
 
 . `dirname $0`/functions
 
 if [ $# -eq 0 ];then
     print_help
-    exit
+    exit 1
 fi
 
 prepare_environment
+if [ $? -eq 1 ];then
+    print_ERR "Failed to setup building environment. Exiting..."
+    exit 1
+fi
+
+# Build missed libraries for CentOS 8: libudisks2-devel and libart_lgpl
+if [ -f /etc/os-release ]; then 
+    source /etc/os-release;
+    if [ $ID == "centos" ] && [ $VERSION_ID == "8" ];then
+        rpm -q libart_lgpl 2>&1 > /dev/null
+        if [ $? -eq 1 ]; then
+            `dirname $0`/el8_build_libart.sh
+            mv ${RPMS_DIR}/libart_lgpl-2.3.21-23.el8.x86_64.rpm ${RELEASE_USR}
+            mv ${RPMS_DIR}/libart_lgpl-devel-2.3.21-23.el8.x86_64.rpm ${RELEASE_DEV}
+            mv ${RPMS_DIR}/libart_lgpl-debuginfo-2.3.21-23.el8.x86_64.rpm ${RELEASE_DEV}
+            mv ${RPMS_DIR}/libart_lgpl-debugsource-2.3.21-23.el8.x86_64.rpm ${RELEASE_DEV}
+        fi
+        rpm -q libudisks-devel 2>&1 > /dev/null
+        if [ $? -eq 1 ]; then
+            `dirname $0`/el8_build_udisks2.sh
+        fi
+    fi
+fi
 
 REPO_DIR=$1
 
-DISPATCH_VERSION=5.1.5
-OBJC2_VERSION=2.0
-CORE_VERSION=0.95
-WRASTER_VERSION=5.0.0
-GNUSTEP_VERSION=1_27_0_nextspace
-
 # libdispatch
+DISPATCH_VERSION=`rpm_version ${REPO_DIR}/Libraries/libdispatch/libdispatch.spec`
 print_H1 " Building Grand Central Dispatch (libdispatch) package...\n Build log: libdispatch_build.log"
 cp ${REPO_DIR}/Libraries/libdispatch/libdispatch.spec ${SPECS_DIR}
 cp ${REPO_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch ${SOURCES_DIR}
@@ -34,9 +53,12 @@ rpmbuild -bb ${SPECS_DIR}/libdispatch.spec 2>&1 >> libdispatch_build.log
 if [ $? -eq 0 ]; then 
     print_OK " Building of Grand Central Dispatch library RPM SUCCEEDED!"
     print_H2 "========== Installing libdispatch RPMs... ======================================"
-    sudo yum -y install \
-        ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}* \
-        ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}*
+    install_rpm libdispatch ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}.rpm
+    mv ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}.rpm ${RELEASE_USR}
+    install_rpm libdispatch-devel ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}.rpm
+    mv ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/libdispatch-debuginfo-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/libdispatch-debugsource-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
 else
     print_ERR " Building of Grand Central Dispatch library RPM FAILED!"
     exit $?
@@ -44,6 +66,7 @@ fi
 rm ${SPECS_DIR}/libdispatch.spec
 
 # libobjc2
+OBJC2_VERSION=`rpm_version ${REPO_DIR}/Libraries/libobjc2/libobjc2.spec`
 print_H1 " Building Objective-C Runtime(libobjc2) package...\n Build log: libobjc2_build.log"
 cp ${REPO_DIR}/Libraries/libobjc2/libobjc2.spec ${SPECS_DIR}
 print_H2 "========== Install libobjc2 build dependencies... =============================="
@@ -55,9 +78,12 @@ print_H2 "========== Building libobjc2 package... ==============================
 rpmbuild -bb ${SPECS_DIR}/libobjc2.spec 2>&1 >> libobjc2_build.log
 if [ $? -eq 0 ]; then 
     print_OK " Building of Objective-C Runtime RPM SUCCEEDED!"
-    sudo yum -y install \
-        ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}* \
-        ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}*
+    install_rpm libobjc2 ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}.rpm
+    mv ${RPMS_DIR}/libobjc2-${OBJC2_VERSION}.rpm ${RELEASE_USR}
+    install_rpm libobjc2-devel ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}.rpm
+    mv ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/libobjc2-debuginfo-${OBJC2_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/libobjc2-debugsource-${OBJC2_VERSION}.rpm ${RELEASE_DEV}
 else
     print_ERR " Building of Objective-C Runtime RPM FAILED!"
     exit $?
@@ -71,6 +97,7 @@ print_H2 "========== Install nextspace-core build dependencies... ==============
 DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/nextspace-core.spec | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > nextspace-core_build.log
 print_H2 "========== Downloading NEXTSPACE Core sources... ==============================="
+CORE_VERSION=`rpmspec -q --qf "%{version}:" ${SPECS_DIR}/nextspace-core.spec | awk -F: '{print $1}'`
 cd /tmp 
 rm -rf ./nextspace-os_files-${CORE_VERSION}
 mkdir -p /tmp/nextspace-os_files-${CORE_VERSION}
@@ -78,15 +105,17 @@ cp -R ${REPO_DIR}/System/* ./nextspace-os_files-${CORE_VERSION}/
 rm ./nextspace-os_files-${CORE_VERSION}/GNUmakefile
 tar zcf ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz nextspace-os_files-${CORE_VERSION}
 cd $CWD
+CORE_VERSION=`rpm_version ${SPECS_DIR}/nextspace-core.spec`
 cp ${REPO_DIR}/Libraries/core/nextspace.fsl ${SOURCES_DIR}
 spectool -g -R ${SPECS_DIR}/nextspace-core.spec
 print_H2 "========== Building NEXTSPACE core components (nextspace-core) RPM... =========="
 rpmbuild -bb ${SPECS_DIR}/nextspace-core.spec 2>&1 >> nextspace-core_build.log
 if [ $? -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Core RPM SUCCEEDED!"
-    sudo yum -y install \
-        ${RPMS_DIR}/nextspace-core-${CORE_VERSION}* \
-        ${RPMS_DIR}/nextspace-core-devel-${CORE_VERSION}*
+    install_rpm nextspace-core ${RPMS_DIR}/nextspace-core-${CORE_VERSION}.rpm
+    mv ${RPMS_DIR}/nextspace-core-${CORE_VERSION}.rpm ${RELEASE_USR}
+    install_rpm nextspace-core-devel ${RPMS_DIR}/nextspace-core-devel-${CORE_VERSION}.rpm
+    mv ${RPMS_DIR}/nextspace-core-devel-${CORE_VERSION}.rpm ${RELEASE_DEV}
 else
     print_ERR " Building of NEXTSPACE Core RPM FAILED!"
     exit $?
@@ -104,15 +133,20 @@ print_H2 "========== Downloading libwraster sources... =========================
 source /Developer/Makefiles/GNUstep.sh
 cd ${REPO_DIR}/Libraries/libwraster && make dist
 cd $CWD
+WRASTER_VERSION=`rpmspec -q --qf "%{version}:" ${SPECS_DIR}/libwraster.spec | awk -F: '{print $1}'`
 mv ${REPO_DIR}/Libraries/libwraster-${WRASTER_VERSION}.tar.gz ${SOURCES_DIR}
+WRASTER_VERSION=`rpm_version ${SPECS_DIR}/libwraster.spec`
 spectool -g -R ${SPECS_DIR}/libwraster.spec
 print_H2 "=========== Building libwraster RPM... ========================================="
 rpmbuild -bb ${SPECS_DIR}/libwraster.spec 2>&1 >> libwraster_build.log
 if [ $? -eq 0 ]; then 
     print_OK " Building libwraster RPM SUCCEEDED!"
-    sudo yum -y install \
-        ${RPMS_DIR}/libwraster-${WRASTER_VERSION}* \
-        ${RPMS_DIR}/libwraster-devel-${WRASTER_VERSION}*
+    install_rpm libwraster ${RPMS_DIR}/libwraster-${WRASTER_VERSION}.rpm
+    mv ${RPMS_DIR}/libwraster-${WRASTER_VERSION}.rpm ${RELEASE_USR}
+    install_rpm libwraster-devel ${RPMS_DIR}/libwraster-devel-${WRASTER_VERSION}.rpm
+    mv ${RPMS_DIR}/libwraster-devel-${WRASTER_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/libwraster-debuginfo-${WRASTER_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/libwraster-debugsource-${WRASTER_VERSION}.rpm ${RELEASE_DEV}
 else
     print_ERR " Building libwraster RPM FAILED!"
     exit $?
@@ -120,6 +154,7 @@ fi
 rm ${SPECS_DIR}/libwraster.spec
 
 # GNUstep
+GNUSTEP_VERSION=`rpm_version ${REPO_DIR}/Libraries/gnustep/nextspace-gnustep.spec`
 print_H1 " Building NEXTSPACE GNUstep (nextspace-gnustep) package...\n Build log: gnustep_build.log"
 cp ${REPO_DIR}/Libraries/gnustep/nextspace-gnustep.spec ${SPECS_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gdnc-local.service ${SOURCES_DIR}
@@ -138,20 +173,12 @@ print_H2 "========== Building GNUstep package... ===============================
 rpmbuild -bb ${SPECS_DIR}/nextspace-gnustep.spec 2>&1 >> gnustep_build.log
 if [ $? -eq 0 ]; then 
     print_OK " Building of NEXTSPACE GNUstep RPM SUCCEEDED!"
-    rpm -qa | grep nextspace-gnustep
-    if [ $? -eq 1 ]; then 
-        INST_CMD=install
-    else
-        INST_CMD=reinstall
-    fi
-    sudo yum -y $INST_CMD ${RPMS_DIR}/nextspace-gnustep-${GNUSTEP_VERSION}*
-    rpm -qa | grep nextspace-gnustep-devel
-    if [ $? -eq 1 ]; then 
-        INST_CMD=install
-    else
-        INST_CMD=reinstall
-    fi
-    sudo yum -y $INST_CMD ${RPMS_DIR}/nextspace-gnustep-devel-${GNUSTEP_VERSION}*
+    install_rpm nextspace-gnustep ${RPMS_DIR}/nextspace-gnustep-${GNUSTEP_VERSION}.rpm
+    mv ${RPMS_DIR}/nextspace-gnustep-${GNUSTEP_VERSION}.rpm ${RELEASE_USR}
+    install_rpm nextspace-gnustep-devel ${RPMS_DIR}/nextspace-gnustep-devel-${GNUSTEP_VERSION}.rpm
+    mv ${RPMS_DIR}/nextspace-gnustep-devel-${GNUSTEP_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/nextspace-gnustep-debuginfo-${GNUSTEP_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/nextspace-gnustep-debugsource-${GNUSTEP_VERSION}.rpm ${RELEASE_DEV}
 else
     print_ERR " Building of NEXTSPACE GNUstep RPM FAILED!"
     exit $?

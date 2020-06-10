@@ -4,13 +4,6 @@
 
 . `dirname $0`/functions
 
-#export CWD=`pwd`
-#export SOURCES_DIR=~/rpmbuild/SOURCES
-#export SPECS_DIR=~/rpmbuild/SPECS
-#export RPMS_DIR=~/rpmbuild/RPMS/x86_64
-#export RELEASE_USR="$CWD/CentOS-8/NSUser"
-#export RELEASE_DEV="$CWD/CentOS-8/NSDeveloper"
-
 print_H1 " Build libart library"
 
 cd $CWD/../../Libraries

@@ -6,6 +6,73 @@ export SOURCES_DIR=~/rpmbuild/SOURCES
 export SPECS_DIR=~/rpmbuild/SPECS
 export RPMS_DIR=~/rpmbuild/RPMS/x86_64
 
+prepare_environment() 
+{
+    print_H1 " Prepare build environment"
+    print_H2 "========== Create rpmbuild directories..."
+    mkdir -p $SOURCES_DIR
+    mkdir -p $SPECS_DIR
+
+    print_H2 "========== Install RPM build tools..."
+    rpm -q rpm-build 2>&1 > /dev/null
+    if [ $? -eq 1 ]; then BUILD_TOOLS+=" rpm-build"; fi
+    rpm -q rpmdevtools 2>&1 > /dev/null
+    if [ $? -eq 1 ]; then BUILD_TOOLS+=" rpmdevtools"; fi
+    rpm -q make 2>&1 > /dev/null
+    if [ $? -eq 1 ]; then BUILD_TOOLS+=" make"; fi
+    rpm -q patch 2>&1 > /dev/null
+    if [ $? -eq 1 ]; then BUILD_TOOLS+=" patch"; fi
+
+    if [ -f /etc/os-release ]; then 
+        source /etc/os-release;
+	export RELEASE_USR="$CWD/$ID-$VERSION_ID/NSUser"
+	export RELEASE_DEV="$CWD/$ID-$VERSION_ID/NSDeveloper"
+        mkdir -p ${RELEASE_USR}
+        mkdir -p ${RELEASE_DEV}
+        if [ $ID == "centos" ];then
+            if [ $VERSION_ID == "7" ];then
+                rpm -q centos-release-scl 2>&1 > /dev/null
+                if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl"; fi
+                rpm -q centos-release-scl-rh 2>&1 > /dev/null
+                if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl-rh"; fi
+            fi
+            if [ $VERSION_ID == "8" ];then
+                yum config-manager --set-enabled PowerTools
+                rpm -q epel-release 2>&1 > /dev/null
+                if [ $? -eq 1 ]; then BUILD_TOOLS+=" epel-release"; fi
+                rpm -q dnf-plugins-core 2>&1 > /dev/null
+                if [ $? -eq 1 ]; then BUILD_TOOLS+=" dnf-plugins-core"; fi
+                rpm -q git 2>&1 > /dev/null
+                if [ $? -eq 1 ]; then BUILD_TOOLS+=" git"; fi
+            fi
+        fi
+    else
+        print_H2 ">>>>> Can't find /etc/os-release - this OS is unsupported."
+        return 1
+    fi
+    
+    if [ "${BUILD_TOOLS}" != "" ]; then
+        sudo yum -y install ${BUILD_TOOLS}
+    fi
+}
+
+rpm_version()
+{
+    echo `rpmspec -q --qf "%{version}-%{release}.%{arch}:" $1 | awk -F: '{print $1}'`
+}
+
+# $1 - package name, $2 - rpm file path
+install_rpm()
+{
+    rpm -q $1 2>&1 > /dev/null
+    if [ $? -eq 1 ]; then 
+        INST_CMD=install
+    else
+        INST_CMD=reinstall
+    fi
+    sudo yum -y $INST_CMD $2
+}
+
 # Bold
 print_H1()
 {
@@ -42,30 +109,6 @@ print_ERR()
     echo -e "$1"
     echo "================================================================================"
     echo -e -n "\e[0m"
-}
-
-prepare_environment() 
-{
-    print_H1 " Prepare build environment"
-    print_H2 "========== Create rpmbuild directories... ======================================"
-    mkdir -p $SOURCES_DIR
-    mkdir -p $SPECS_DIR
-    print_H2 "========== Install RPM build tools... =========================================="
-    BUILD_TOOLS="rpm-build rpmdevtools make patch"
-    if [ -f /etc/os-release ]; then 
-        source /etc/os-release;
-        if [ $ID == "centos" ];then
-            if [ $VERSION_ID == "7" ];then
-                BUILD_TOOLS="$BUILD_TOOLS centos-release-scl centos-release-scl-rh"
-            fi
-            if [ $VERSION_ID == "8" ];then
-		export RELEASE_USR="$CWD/CentOS-8/NSUser"
-		export RELEASE_DEV="$CWD/CentOS-8/NSDeveloper"
-		`dirname $0`/el8_prepare.sh
-            fi
-        fi
-    fi
-    sudo yum -y install ${BUILD_TOOLS}
 }
 
 print_help()

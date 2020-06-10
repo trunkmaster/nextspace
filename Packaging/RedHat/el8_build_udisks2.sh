@@ -9,12 +9,6 @@ mkdir -p UDisks
 cd UDisks
 export CWD=`pwd`
 
-#export SOURCES_DIR=~/rpmbuild/SOURCES
-#export SPECS_DIR=~/rpmbuild/SPECS
-#export RPMS_DIR=~/rpmbuild/RPMS/x86_64
-#export RELEASE_USR="$CWD/CentOS-8/NSUser"
-#export RELEASE_DEV="$CWD/CentOS-8/NSDeveloper"
-
 build_libbytesize()
 {
     print_H1 " Build libbytesize package"
@@ -162,6 +156,6 @@ if [ $? -eq 1 ];then
     build_udisks_dev
     if [ $? -eq 0 ];then
 	yum -y install ${RPMS_DIR}/libudisks2-devel-2.8.3-2.el8.x86_64.rpm
-	mv ${RPMS_DIR}/libudisks2-devel-2.8.3-2.el8.x86_64.rpm ${RELEASE_DEV}
+        mv ${RPMS_DIR}/libudisks2-devel-2.8.3-2.el8.x86_64.rpm ${RELEASE_DEV}
     fi
 fi
