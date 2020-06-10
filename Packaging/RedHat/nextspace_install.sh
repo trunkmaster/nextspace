@@ -110,13 +110,13 @@ fi
 
 # Disable SELinux
 echo -n "Checking SELinux configuration..."
-grep "SELINUX=enforcing" /etc/sysconfig/selinux 2>&1 > /dev/null
+grep "SELINUX=enforcing" /etc/selinux/config 2>&1 > /dev/null
 if [ $? -eq 0 ];then
     echo -e -n "\e[33m"
     echo "configuring needed"
     echo -e -n "\e[0m"
     echo "Configuring SELinux (SELINUX=disabled)..."
-    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 else
     echo -e -n "\e[32m"
     echo "good"
