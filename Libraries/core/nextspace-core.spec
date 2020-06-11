@@ -2,7 +2,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	10%{?dist}
+Release:	11%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://github.com/trunkmaster/nextspace
@@ -86,6 +86,7 @@ rm %{buildroot}/usr/NextSpace/bin/opentool
 cd ..
 
 cd nextspace-os_files-%{version}
+cp -vr ./Library %{buildroot}
 cp -vr ./etc %{buildroot}
 rm %{buildroot}/etc/X11/xorg.conf.d/20-intel.conf
 cp -vr ./usr %{buildroot}
@@ -140,6 +141,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Fri Jun 12 2020 Sergii Stoian <stoyan255@gmail.com> - 0.95-11
+- Added new files - /Library - contains GlobalDefaults.
+
 * Mon May 25 2020 Sergii Stoian <stoyan255@gmail.com> - 0.95-10
 - Removed files cleared from %files section.
 - Added new dependency - tuned.
