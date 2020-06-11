@@ -1,67 +1,21 @@
 #!/bin/sh
+# It is a helper script for automated install of NEXTSPACE.
+# This script should be placed along with NSUser and NSDeveloper
+# directories.
 
-#===============================================================================
-# Defines
-#===============================================================================
-RELEASE=0.90
-
-#===============================================================================
-# Functions
-#===============================================================================
-setup_package_list()
-{
-if [ -f /etc/os-release ]; then
-    source /etc/os-release;
-    if [ $ID == "centos" ];then
-        if [ $VERSION_ID == "7" ];then
-            REPO_URL="https://trunkmaster.github.io/0.90/el7"
-            USER_PACKAGES="${REPO_URL}/libdispatch-5.1.5-0.el7.x86_64.rpm \
-               ${REPO_URL}/libobjc2-2.0-4.el7.x86_64.rpm \
-               ${REPO_URL}/libwraster-5.0.0-0.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-core-0.95-10.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-gnustep-1_27_0_nextspace-1.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-frameworks-0.90-2.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-applications-0.90-0.el7.x86_64.rpm"
-            DEVEL_PACKAGES="${REPO_URL}/libdispatch-devel-5.1.5-0.el7.x86_64.rpm \
-               ${REPO_URL}/libdispatch-debuginfo-5.1.5-0.el7.x86_64.rpm \
-               ${REPO_URL}/libobjc2-devel-2.0-4.el7.x86_64.rpm \
-               ${REPO_URL}/libobjc2-debuginfo-2.0-4.el7.x86_64.rpm \
-               ${REPO_URL}/libwraster-devel-5.0.0-0.el7.x86_64.rpm \
-               ${REPO_URL}/libwraster-debuginfo-5.0.0-0.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-core-devel-0.95-10.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-gnustep-devel-1_27_0_nextspace-1.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-gnustep-debuginfo-1_27_0_nextspace-1.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-frameworks-devel-0.90-2.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-frameworks-debuginfo-0.90-2.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-applications-devel-0.90-0.el7.x86_64.rpm \
-               ${REPO_URL}/nextspace-applications-debuginfo-0.90-0.el7.x86_64.rpm"
-        fi
-        if [ $VERSION_ID == "8" ];then
-            REPO_URL="https://trunkmaster.github.io/0.90/el8"
-            USER_PACKAGES="${REPO_URL}/libdispatch-5.1.5-0.el8.x86_64.rpm \
-               ${REPO_URL}/libobjc2-2.0-4.el8.x86_64.rpm \
-               ${REPO_URL}/libwraster-5.0.0-0.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-core-0.95-10.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-gnustep-1_27_0_nextspace-1.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-frameworks-0.90-2.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-applications-0.90-0.el8.x86_64.rpm"
-            DEVEL_PACKAGES="${REPO_URL}/libdispatch-devel-5.1.5-0.el8.x86_64.rpm \
-               ${REPO_URL}/libdispatch-debuginfo-5.1.5-0.el8.x86_64.rpm \
-               ${REPO_URL}/libobjc2-devel-2.0-4.el8.x86_64.rpm \
-               ${REPO_URL}/libobjc2-debuginfo-2.0-4.el8.x86_64.rpm \
-               ${REPO_URL}/libwraster-devel-5.0.0-0.el8.x86_64.rpm \
-               ${REPO_URL}/libwraster-debuginfo-5.0.0-0.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-core-devel-0.95-10.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-gnustep-devel-1_27_0_nextspace-1.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-gnustep-debuginfo-1_27_0_nextspace-1.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-frameworks-devel-0.90-2.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-frameworks-debuginfo-0.90-2.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-applications-devel-0.90-0.el8.x86_64.rpm \
-               ${REPO_URL}/nextspace-applications-debuginfo-0.90-0.el8.x86_64.rpm"
+if [ -f /etc/os-release ]; then 
+    source /etc/os-release
+    export OS_NAME=$ID
+    export OS_VERSION=$VERSION_ID
+    if [ $ID == "centos" ]; then
+        if [ $VERSION_ID == "7" ]; then
+            EPEL_REPO=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        else
+            EPEL_REPO=epel-release
         fi
     fi
 fi
-}
+
 #===============================================================================
 # Main sequence
 #===============================================================================
@@ -76,17 +30,19 @@ if [ $YN != "y" ]; then
 fi
 
 # Add EPEL package repository
-echo -n "Checking for EPEL repository installed..."
-yum repolist | grep "epel/" 2>&1 > /dev/null
-if [ $? -eq 1 ];then
-    echo "Adding EPEL repository..."
-    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 2>&1 > /dev/null
-    echo "Updating system..."
-    yum -y update  2>&1 > /dev/null
-else
-    echo -e -n "\e[32m"
-    echo "yes"
-    echo -e -n "\e[0m"
+if [ $EPEL_REPO != "" ]; then
+    echo -n "Checking for EPEL repository installed..."
+    yum repolist | grep "epel" 2>&1 > /dev/null
+    if [ $? -eq 1 ];then
+        echo "Adding EPEL repository..."
+        yum -y install $EPEL_REPO 2>&1 > /dev/null
+        echo "Updating system..."
+        yum -y update  2>&1 > /dev/null
+    else
+        echo -e -n "\e[32m"
+        echo "yes"
+        echo -e -n "\e[0m"
+    fi
 fi
 
 # Hostname in /etc/hosts
@@ -125,8 +81,7 @@ fi
 
 # Install User packages
 echo -n "Installing NEXTSPACE User packages..."
-setup_package_list
-yum -y -q install --enablerepo=epel ${USER_PACKAGES} 2>&1 > /dev/null
+yum -y -q install --enablerepo=epel NSUser/*.rpm 2>&1 > /dev/null
 ldconfig
 echo -e -n "\e[32m"
 echo "done"
@@ -139,7 +94,7 @@ echo -e -n "\e[0m"
 read YN
 if [ $YN = "y" ]; then
     echo -n "Installing NEXTSPACE Developer packages..."
-    yum -y -q install --enablerepo=epel ${DEVEL_PACKAGES} 2>&1 > /dev/null
+    yum -y -q install --enablerepo=epel NSDeveloper/*.rpm 2>&1 > /dev/null
     echo -e -n "\e[32m"
     echo "done"
     echo -e -n "\e[0m"
