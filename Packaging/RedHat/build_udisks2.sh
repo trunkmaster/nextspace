@@ -11,6 +11,7 @@ export CWD=`pwd`
 
 build_libbytesize()
 {
+    SPEC_FILE=SPECS/libbytesize.spec
     print_H1 " Build libbytesize package"
     if [ ! -d "libbytesize" ];then
         git clone https://git.centos.org/rpms/libbytesize.git
@@ -19,12 +20,12 @@ build_libbytesize()
     git checkout imports/c8/libbytesize-1.4-1.el8
 
     cp SOURCES/*.patch ${SOURCES_DIR}
-    cp SPECS/*.spec ${SPECS_DIR}
     curl -L https://github.com/storaged-project/libbytesize/releases/download/1.4/libbytesize-1.4.tar.gz \
 	 -o ${SOURCES_DIR}/libbytesize-1.4.tar.gz
-    DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libbytesize.spec | awk -c '{print $1}'`
+    
+    DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
     sudo yum -y install ${DEPS}
-    rpmbuild -bb ${SPECS_DIR}/libbytesize.spec
+    rpmbuild -bb ${SPEC_FILE}
     cd $CWD
 }
 
@@ -38,12 +39,13 @@ build_libblockdev()
     git checkout imports/c8/libblockdev-2.19-9.el8
 
     cp SOURCES/*.patch ${SOURCES_DIR}
-    cp SPECS/*.spec ${SPECS_DIR}
     curl -L https://github.com/storaged-project/libblockdev/releases/download/2.19-1/libblockdev-2.19.tar.gz \
 	 -o ${SOURCES_DIR}/libblockdev-2.19.tar.gz
-    DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libblockdev.spec | awk -c '{print $1}'`
+    
+    SPEC_FILE=SPECS/libblockdev.spec
+    DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
     sudo yum -y install ${DEPS}
-    rpmbuild -bb ${SPECS_DIR}/libblockdev.spec
+    rpmbuild -bb ${SPEC_FILE}
     cd $CWD
 }
 
@@ -54,14 +56,11 @@ build_iscsi_initiator_utils()
         git clone https://git.centos.org/rpms/iscsi-initiator-utils.git
     fi
     cd iscsi-initiator-utils
+    
     git checkout imports/c8/iscsi-initiator-utils-6.2.0.877-1.gitf71581b.el8
-
     cp SOURCES/* ${SOURCES_DIR}
-    cp SPECS/*.spec ${SPECS_DIR}
-    spectool -g -R ${SPECS_DIR}/iscsi-initiator-utils.spec
-    DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/iscsi-initiator-utils.spec | awk -c '{print $1}'`
-    sudo yum -y install ${DEPS}
-    rpmbuild -bb ${SPECS_DIR}/iscsi-initiator-utils.spec
+
+    build_rpm SPECS/iscsi-initiator-utils.spec
     cd $CWD
 }
 
@@ -73,13 +72,9 @@ build_libstoragemgmt()
     fi
     cd libstoragemgmt
     git checkout imports/c8/libstoragemgmt-1.8.1-2.el8
-
     cp SOURCES/* ${SOURCES_DIR}
-    cp SPECS/*.spec ${SPECS_DIR}
-    spectool -g -R ${SPECS_DIR}/libstoragemgmt.spec
-    DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/libstoragemgmt.spec | awk -c '{print $1}'`
-    sudo yum -y install ${DEPS}
-    rpmbuild -bb ${SPECS_DIR}/libstoragemgmt.spec
+    
+    build_rpm SPECS/libstoragemgmt.spec
     cd $CWD
 }
 
@@ -93,13 +88,9 @@ build_udisks_dev()
     fi
     cd udisks2
     git checkout imports/c8/udisks2-2.8.3-2.el8
-
     cp SOURCES/*.patch ${SOURCES_DIR}
-    cp SPECS/*.spec ${SPECS_DIR}
-    spectool -g -R ${SPECS_DIR}/udisks2.spec
-    DEPS=`rpmspec -q --buildrequires ${SPECS_DIR}/udisks2.spec | awk -c '{print $1}'`
-    sudo yum -y install ${DEPS}
-    rpmbuild -bb ${SPECS_DIR}/udisks2.spec
+
+    build_rpm SPECS/udisks2.spec
     cd $CWD
 }
 

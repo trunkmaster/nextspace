@@ -46,7 +46,7 @@ if [ $? -eq 1 ]; then
 fi
 
 # nextspace-core
-`dirname $0`/build_nextspace_core.sh $1
+`dirname $0`/build_nextspace-core.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1
@@ -60,7 +60,7 @@ if [ $? -eq 1 ]; then
 fi
 
 # GNUstep
-`dirname $0`/build_nextspace_gnustep.sh $1
+`dirname $0`/build_nextspace-gnustep.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1

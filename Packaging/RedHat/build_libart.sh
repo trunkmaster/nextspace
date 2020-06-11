@@ -4,6 +4,8 @@
 
 . `dirname $0`/functions
 
+SPEC_FILE=libart_lgpl.spec
+
 print_H1 " Build libart library"
 
 cd `dirname $0`/../../Libraries
@@ -14,17 +16,17 @@ fi
 cd libart_lgpl
 cp *.patch ${SOURCES_DIR}
 
-LIBART_VERSION=`rpm_version libart_lgpl.spec`
-spectool -g -R libart_lgpl.spec
-DEPS=`rpmspec -q --buildrequires libart_lgpl.spec | awk -c '{print $1}'`
+LIBART_VERSION=`rpm_version ${SPEC_FILE}`
+spectool -g -R ${SPEC_FILE}
+DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS}
 
 rpmbuild -bb libart_lgpl.spec
 if [ $? -eq 0 ];then
-    install_rpm libart_lgpl ${RPMS_DIR}/libart_lgpl-${LIBART_VERSION}.rpm
+    install_rpm libart_lgpl-${LIBART_VERSION} ${RPMS_DIR}/libart_lgpl-${LIBART_VERSION}.rpm
     mv ${RPMS_DIR}/libart_lgpl-${LIBART_VERSION}.rpm ${RELEASE_USR}
     
-    install_rpm libart_lgpl-devel ${RPMS_DIR}/libart_lgpl-devel-${LIBART_VERSION}.rpm
+    install_rpm libart_lgpl-devel-${LIBART_VERSION} ${RPMS_DIR}/libart_lgpl-devel-${LIBART_VERSION}.rpm
     mv ${RPMS_DIR}/libart_lgpl-devel-${LIBART_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/libart_lgpl-debuginfo-${LIBART_VERSION}.rpm ${RELEASE_DEV}
     if [ $OS_NAME == "centos" ] && [ $OS_VERSION != "7" ];then

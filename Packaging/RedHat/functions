@@ -5,6 +5,15 @@ export CWD=`pwd`
 export SOURCES_DIR=~/rpmbuild/SOURCES
 export SPECS_DIR=~/rpmbuild/SPECS
 export RPMS_DIR=~/rpmbuild/RPMS/x86_64
+if [ -f /etc/os-release ]; then 
+    source /etc/os-release;
+    export RELEASE_USR="$CWD/$ID-$VERSION_ID/NSUser"
+    export RELEASE_DEV="$CWD/$ID-$VERSION_ID/NSDeveloper"
+    export OS_NAME=$ID
+    export OS_VERSION=$VERSION_ID
+    mkdir -p ${RELEASE_USR}
+    mkdir -p ${RELEASE_DEV}
+fi
 
 prepare_environment() 
 {
@@ -24,13 +33,6 @@ prepare_environment()
     if [ $? -eq 1 ]; then BUILD_TOOLS+=" patch"; fi
 
     if [ -f /etc/os-release ]; then 
-        source /etc/os-release;
-	export RELEASE_USR="$CWD/$ID-$VERSION_ID/NSUser"
-	export RELEASE_DEV="$CWD/$ID-$VERSION_ID/NSDeveloper"
-        export OS_NAME=$ID
-        export OS_VERSION=$VERSION_ID
-        mkdir -p ${RELEASE_USR}
-        mkdir -p ${RELEASE_DEV}
         if [ $OS_NAME == "centos" ];then
             if [ $OS_VERSION == "7" ];then
                 yum repolist | grep "epel/" 2>&1 > /dev/null
@@ -65,6 +67,16 @@ prepare_environment()
 rpm_version()
 {
     echo `rpmspec -q --qf "%{version}-%{release}.%{arch}:" $1 | awk -F: '{print $1}'`
+}
+
+# $1 - path to spec file
+build_rpm()
+{
+    SPEC_FILE=$1
+    spectool -g -R ${SPEC_FILE}
+    DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
+    sudo yum -y install ${DEPS}
+    rpmbuild -bb ${SPEC_FILE}
 }
 
 # $1 - package name, $2 - rpm file path
