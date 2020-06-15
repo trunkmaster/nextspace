@@ -84,19 +84,16 @@
 (global-set-key [f8]   'next-error)
 (global-set-key "\M-b" 'Build-Project)           ; make
 (global-set-key "\M-B" 'Build-Install-Project)   ; make install
-(global-set-key "\M-w"  'Kill-Active-Buffer)     ; Close buffer
-(global-set-key [M-return]   'c-indent-new-comment-line)
-
-;(global-set-key "\M-z" 'undo)                  ; Undo (C-x u, C-/)
+(global-set-key [f10]  'Kill-Active-Buffer)      ; Close buffer
 
 ; Cut
 ;;(global-set-key [S-delete])
 
 ;; Window resizing
-(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "S-C-<down>") 'shrink-window)
-(global-set-key (kbd "S-C-<up>") 'enlarge-window)
+(global-set-key (kbd "S-C-<down>")  'shrink-window)
+(global-set-key (kbd "S-C-<up>")    'enlarge-window)
 
 ;; Copy
 (global-set-key [C-kp-insert] 'copy-region-as-kill)
@@ -109,8 +106,9 @@
 (global-set-key "\M-v"        'yank)
 
 ;; Indent
-(global-set-key [(control c) tab] 'indent-relative-maybe)
-(global-set-key [S-iso-lefttab]   'indent-relative-maybe)
+(global-set-key [M-return]         'c-indent-new-comment-line)
+(global-set-key [(control c) tab]  'indent-relative-maybe)
+(global-set-key [S-iso-lefttab]    'indent-relative-maybe)
 ;; (global-set-key [S-iso-lefttab] 'indent-relative)
 
 ;; ============================================================================
