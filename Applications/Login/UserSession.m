@@ -99,6 +99,11 @@
 
   // --- Beyond this line code will be executed with user credetials
 
+  // Create user GNUstep directory in /tmp.
+  [[NSFileManager defaultManager]
+    createDirectoryAtPath:[NSString stringWithFormat:@"/tmp/GNUstepSecure%d", user->pw_uid]
+               attributes:@{@"NSFilePosixPermissions":[NSNumber numberWithShort:0700]}];
+
   // General environment variables
   setenv("USER", user->pw_name, 1);
   setenv("LOGNAME", user->pw_name, 1);
