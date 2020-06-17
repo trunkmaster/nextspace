@@ -45,6 +45,19 @@ if [ $EPEL_REPO != "" ]; then
     fi
 fi
 
+# Drivers on real hardware
+echo -e -n "\e[1m"
+echo -n "Is it a real hardware install (drivers needed)? [yn]: "
+echo -e -n "\e[0m"
+read YN
+if [ $YN = "y" ]; then
+    echo -n "Installing complete X Window system..."
+    yum -y -q groupinstall "X Window system" 2>&1 > /dev/null
+    echo -e -n "\e[32m"
+    echo "done"
+    echo -e -n "\e[0m"
+fi
+
 # Hostname in /etc/hosts
 echo -n "Checking /etc/hosts..."
 HOSTNAME="`hostname -s`"
