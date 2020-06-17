@@ -1,0 +1,3 @@
+[submodule "Frameworks/DBusKit"]
+	path = Frameworks/DBusKit
+	url = https://github.com/gnustep/libs-dbuskit
