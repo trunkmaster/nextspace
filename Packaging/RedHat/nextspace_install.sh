@@ -45,18 +45,12 @@ if [ $EPEL_REPO != "" ]; then
     fi
 fi
 
-# Drivers on real hardware
-echo -e -n "\e[1m"
-echo -n "Is it a real hardware install (drivers needed)? [yn]: "
+# More X drivers. Workaround until NextSpace RPMs include them as dependencies
+echo -n "Installing X11 drivers and utilities..."
+yum -y -q install xorg-x11-drivers xorg-x11-xinit xorg-x11-utils 2>&1 > /dev/null
+echo -e -n "\e[32m"
+echo "done"
 echo -e -n "\e[0m"
-read YN
-if [ $YN = "y" ]; then
-    echo -n "Installing complete X Window system..."
-    yum -y -q groupinstall "X Window system" 2>&1 > /dev/null
-    echo -e -n "\e[32m"
-    echo "done"
-    echo -e -n "\e[0m"
-fi
 
 # Hostname in /etc/hosts
 echo -n "Checking /etc/hosts..."
