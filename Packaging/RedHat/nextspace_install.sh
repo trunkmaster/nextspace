@@ -45,6 +45,13 @@ if [ $EPEL_REPO != "" ]; then
     fi
 fi
 
+# More X drivers. Workaround until NextSpace RPMs include them as dependencies
+echo -n "Installing X11 drivers and utilities..."
+yum -y -q install xorg-x11-drivers xorg-x11-xinit xorg-x11-utils 2>&1 > /dev/null
+echo -e -n "\e[32m"
+echo "done"
+echo -e -n "\e[0m"
+
 # Hostname in /etc/hosts
 echo -n "Checking /etc/hosts..."
 HOSTNAME="`hostname -s`"
