@@ -100,14 +100,26 @@ int startWindowServer()
     [xorgTask setLaunchPath:server];
     [xorgTask setArguments:serverArgs];
     [xorgTask setCurrentDirectoryPath:@"/"];
+    
     NSLog(@"================> Xorg is coming up <================");
-    [xorgTask launch];
-
-    [serverArgs release];
+    @try {
+      [xorgTask launch];
+    }
+    @catch (NSException *e) {
+      NSLog(@"Failed to start Window Server: %@", [e reason]);
+      [xorgTask release];
+      return 1;
+    }
+    @finally {
+      [serverArgs release];
+    }
 
     // Wait for X server connection
     while (xDisplay == NULL) {
       xDisplay = XOpenDisplay(NULL); // NULL == getenv("DISPLAY")
+      if ([xorgTask isRunning] == NO) {
+        return 1;
+      }
     }
 
     // X11 Resources
@@ -304,7 +316,7 @@ int main(int argc, const char **argv)
   if (startWindowServer() == 0) {
     // Setup layout and gamma.
     setupDisplays();
-
+    
     gpbs_pid = runCommand(@"/Library/bin/gpbs --daemon", NO);
     plymouthQuit(YES);
 
@@ -349,8 +361,9 @@ int main(int argc, const char **argv)
       runCommand(exitCommand, NO);
     }
   }
-  else {
-    NSLog(@"Unable to start Login Panel: no Window Server available. Return with 1.");
+  else { // Xorg server start failed - cleanup
+    NSLog(@"Unable to start Login Panel: no Window Server available.");
+    plymouthQuit(YES);
     return 1;
   }
 
