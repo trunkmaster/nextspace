@@ -49,6 +49,7 @@
 {
   NSBundle *bundle;
   NSString *imagePath;
+  NSString *systemBeep;
   
   self = [super init];
   
@@ -58,8 +59,10 @@
   imagePath = [bundle pathForResource:@"Sound" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  defaultSound = [[NSString alloc]
-                   initWithString:[defaults objectForKey:@"NXSystemBeep"]];
+  systemBeep = [defaults objectForKey:@"NXSystemBeep"];
+  if (systemBeep != nil) {
+    defaultSound = [[NSString alloc] initWithString:systemBeep];
+  }
   if (defaultSound == nil) {
     defaultSound = @"/usr/NextSpace/Sounds/Bonk.snd";
     [defaults setObject:defaultSound forKey:@"NXSystemBeep"];
@@ -270,7 +273,7 @@
     [cell setRepresentedObject:filePath];
     
     if ([filePath isEqualToString:defaultSound]) {
-       NSLog(@"Default sound found at row %li (column:%li)", row, column);
+       // NSLog(@"Default sound found at row %li (column:%li)", row, column);
       defSoundRow = row;
     }
   }
