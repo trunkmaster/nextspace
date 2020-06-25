@@ -21,7 +21,7 @@ if [ -d /Developer/Makefiles ];then
 fi
 
 # Only user home lib dir here. Others in /etc/ld.so.conf.d/nextspace.conf
-export LD_LIBRARY_PATH="LD_LIBRARY_PATH:$HOME/Library/Libraries"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/Library/Libraries"
 export GNUSTEP_PATHLIST="$HOME:/:/usr/NextSpace:/Network"
 export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info"
 
