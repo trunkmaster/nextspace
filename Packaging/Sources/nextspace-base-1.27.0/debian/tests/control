@@ -1,0 +1,3 @@
+Tests: file-tests testsuite
+Restrictions: allow-stderr
+Depends: @, @builddeps@, file, shunit2

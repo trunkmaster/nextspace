@@ -1,0 +1,75 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE = 1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-undefined -Wl,--as-needed -Wl,-rpath,/usr/NextSpace/lib
+
+# config.mk is provided by nextspace-make package
+include /Developer/Makefiles/config.mk
+
+# Install in debian/tmp
+export DESTDIR=$(CURDIR)/debian/tmp
+
+##################### VERSION NUMBERS ###########################
+
+# GNUstep Back version :
+v_back := $(shell . ./Version; echo $$VERSION)
+
+# GNUstep Back SONAME version :
+sov_back := $(shell . ./Version; echo $$GNUSTEP_BACK_MAJOR_VERSION.$$GNUSTEP_BACK_MINOR_VERSION)
+
+# GNUstep Back INTERFACE version :
+ifv_back := $(shell . ./Version; echo $$INTERFACE_VERSION_NUMBER)
+
+# GNUstep Gui version :
+v_gui   := $(v_back)
+
+# GNUstep Gui SONAME version :
+sov_gui := $(sov_back)
+
+#### PACKAGES NAMES #############################################
+
+p_back          = nextspace-back$(sov_back)
+p_common        = nextspace-back-common
+
+#### DIRS #######################################################
+
+#################################################################
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+# Configure art backend in a separate build dir
+	dh_auto_configure -- \
+	    --enable-graphics=art --with-name=art \
+	|| (cat config.log; exit 1)
+
+# dpkg-buildflags must be supplied on the command line because
+# gnustep-make resets OBJCFLAGS and CFLAGS.
+override_dh_auto_build:
+	dh_auto_build -- -C Documentation
+# Build art backend
+	dh_auto_build -- \
+	   $(verbose) \
+	   $(optim) \
+	   $(shell dpkg-buildflags --export=cmdline)
+
+override_dh_auto_install:
+	dh_auto_install -- -C Documentation
+
+# Install art backend
+	dh_auto_install -- fonts=no
+
+override_dh_auto_clean:
+	-dh_auto_clean -- -C Documentation
+	dh_auto_clean
+
+# gnustep-gui's shlibs *must* be overridden, otherwise there are
+# circular dependencies (#882078).
+override_dh_shlibdeps:
+	echo \
+	  "libnextspace-gui $(sov_back) libnextspace-gui$(sov_back) (>= $(v_gui)), nextspace-gui-runtime (>= $(v_gui))" \
+	  > debian/shlibs.local
+	dh_shlibdeps
+	rm debian/shlibs.local

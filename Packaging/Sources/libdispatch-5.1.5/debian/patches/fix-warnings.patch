@@ -1,0 +1,35 @@
+Description: Fix warnings
+ Fix warnings.
+ .
+ libdispatch (5.1.5-0.1) unstable; urgency=medium
+ .
+   * Non-maintainer upload.
+Author: Patrick Georgi <patrick@georgi.software>
+
+---
+Last-Update: 2020-05-03
+
+--- libdispatch-5.1.5.orig/tests/bsdtests.c
++++ libdispatch-5.1.5/tests/bsdtests.c
+@@ -347,8 +347,8 @@ _test_errno(const char* file, long line,
+ {
+ 	char* actual_str;
+ 	char* expected_str;
+-	asprintf(&actual_str, "%d\t%s", actual, actual ? strerror(actual) : "");
+-	asprintf(&expected_str, "%d\t%s", expected, expected ? strerror(expected) : "");
++	(void)asprintf(&actual_str, "%d\t%s", actual, actual ? strerror(actual) : "");
++	(void)asprintf(&expected_str, "%d\t%s", expected, expected ? strerror(expected) : "");
+ 	_test_print(file, line, desc,
+ 		(actual == expected), "%s", actual_str, "%s", expected_str);
+ 	free(actual_str);
+--- libdispatch-5.1.5.orig/tests/dispatch_overcommit.c
++++ libdispatch-5.1.5/tests/dispatch_overcommit.c
+@@ -48,7 +48,7 @@ main(void)
+ 	int i;
+ 	for (i = 0; i < final; ++i) {
+ 		char* name;
+-		asprintf(&name, "test.overcommit.%d", i);
++		(void)asprintf(&name, "test.overcommit.%d", i);
+ 
+ 		dispatch_queue_t queue = dispatch_queue_create(name, NULL);
+ 		test_ptr_notnull("dispatch_queue_create", queue);

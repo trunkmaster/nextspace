@@ -1,0 +1,7 @@
+debian/*.docs
+debian/*.postinst
+debian/*.preinst
+debian/*.prerm
+debian/*.links
+Source/libgnustep-*Info.plist
+Documentation/version.texi

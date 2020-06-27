@@ -1,0 +1,221 @@
+Description: Link all needed libraries, fixes building with ld --no-undefined.
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: no
+Last-Update: 2014-06-17
+---
+
+--- gorm.app.orig/GormObjCHeaderParser/GNUmakefile
++++ gorm.app/GormObjCHeaderParser/GNUmakefile
+@@ -29,7 +29,7 @@
+ # Additional libraries
+ #
+ 
+-libGormObjCHeaderParser_LIBRARIES_DEPEND_UPON += -lgnustep-gui -l$(FOUNDATION_LIBRARY_NAME)
++libGormObjCHeaderParser_LIBRARIES_DEPEND_UPON += -lgnustep-gui -l$(FOUNDATION_LIBRARY_NAME) $(OBJC_LIBS)
+ 
+ #
+ # Header files
+--- gorm.app.orig/GormLib/GNUmakefile
++++ gorm.app/GormLib/GNUmakefile
+@@ -31,7 +31,8 @@
+ # Additional libraries
+ #
+ 
+-libGorm_LIBRARIES_DEPEND_UPON += -lgnustep-gui -l$(FOUNDATION_LIBRARY_NAME)
++libGorm_LIBRARIES_DEPEND_UPON += -lgnustep-gui -l$(FOUNDATION_LIBRARY_NAME) \
++				   $(OBJC_LIBS) -lm
+ 
+ #
+ # Header files
+--- gorm.app.orig/GormCore/GNUmakefile.preamble
++++ gorm.app/GormCore/GNUmakefile.preamble
+@@ -37,4 +37,5 @@
+ 	-L../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR)
+ endif
+ 
+-GormCore_LIBRARIES_DEPEND_UPON += -lGormObjCHeaderParser
++GormCore_LIBRARIES_DEPEND_UPON += -lGormObjCHeaderParser -lGorm $(GUI_LIBS) \
++			       	    $(FND_LIBS) $(OBJC_LIBS) -lm
+--- gorm.app.orig/GormPrefs/GNUmakefile
++++ gorm.app/GormPrefs/GNUmakefile
+@@ -31,7 +31,8 @@
+ # Additional libraries
+ #
+ 
+-GormPrefs_LIBRARIES_DEPEND_UPON += -lgnustep-gui -l$(FOUNDATION_LIBRARY_NAME)
++GormPrefs_LIBRARIES_DEPEND_UPON += -lGormCore -lgnustep-gui $(FND_LIBS) \
++				     $(OBJC_LIBS)
+ 
+ #
+ # Header files
+--- gorm.app.orig/Palettes/0Menus/GNUmakefile.preamble
++++ gorm.app/Palettes/0Menus/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Palettes/1Windows/GNUmakefile.preamble
++++ gorm.app/Palettes/1Windows/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Palettes/2Controls/GNUmakefile.preamble
++++ gorm.app/Palettes/2Controls/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Palettes/3Containers/GNUmakefile.preamble
++++ gorm.app/Palettes/3Containers/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Palettes/4Data/GNUmakefile.preamble
++++ gorm.app/Palettes/4Data/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Plugins/GModel/GNUmakefile.preamble
++++ gorm.app/Plugins/GModel/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Plugins/Gorm/GNUmakefile.preamble
++++ gorm.app/Plugins/Gorm/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Plugins/Nib/GNUmakefile.preamble
++++ gorm.app/Plugins/Nib/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+--- gorm.app.orig/Plugins/Xib/GNUmakefile.preamble
++++ gorm.app/Plugins/Xib/GNUmakefile.preamble
+@@ -1,7 +1,6 @@
+ # Additional include directories the compiler should search
+ ADDITIONAL_INCLUDE_DIRS += -I../..
+ 
+-ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \
+         -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+@@ -9,7 +8,7 @@
+         -L../../GormCore/$(GNUSTEP_OBJ_DIR)
+ 
+ ADDITIONAL_GUI_LIBS += -lGorm -lGormCore
+-endif
++
+ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ ADDITIONAL_LIB_DIRS += \
+         -L../../GormLib/$(GNUSTEP_OBJ_DIR) \

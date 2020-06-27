@@ -1,0 +1,104 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE = 1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-undefined -Wl,--as-needed
+
+undefine CC CXX
+export CC=clang
+export CXX=clang++
+# config.mk is provided by nextspace-make package
+include /Developer/Makefiles/config.mk
+export LDFLAGS=-Wl,-rpath,/usr/NextSpace/lib
+
+# Install in debian/tmp
+export DESTDIR=$(CURDIR)/debian/tmp
+
+##### VERSION NUMBERS #################################
+
+# GNUstep Make version :
+v_make	:= 2.7.0
+
+# GNUstep Base version :
+v_base	:= $(shell . ./Version; echo $$VERSION)
+
+# GNUstep Base SONAME version :
+sov_base := $(shell . ./Version; echo $$MAJOR_VERSION.$$MINOR_VERSION)
+
+#### PACKAGES NAMES ###################################
+p_com	= nextspace-base-common
+p_run	= nextspace-base-runtime
+p_lib	= libnextspace-base$(sov_base)
+p_dev	= libnextspace-base-dev
+
+#####################################################"#
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+# Override the test for libkvm to ensure that /proc is used on
+# GNU/kFreeBSD even if libkvm-dev is installed (#593898).
+	dh_auto_configure -- \
+	    ac_cv_lib_kvm_kvm_getenvv=no \
+	    --disable-bfd  || (cat config.log; exit 1)
+
+override_dh_auto_build-arch:
+# build shared libs
+	dh_auto_build -- \
+	    $(verbose) \
+	    $(optim) \
+	    doc=no \
+	    $(shell dpkg-buildflags --export=cmdline)
+
+# build dev/static lib
+	dh_auto_build -- \
+	    -C Source \
+	    $(verbose) \
+	    $(optim) \
+	    doc=no \
+	    shared=no
+
+override_dh_auto_build-indep:
+# build shared libs
+	dh_auto_build -- \
+	    $(verbose) \
+	    $(optim) \
+	    doc=no
+
+override_dh_auto_install-arch:
+# install shared version of libraries
+	dh_auto_install -- \
+	    doc=no
+
+# install dev/static lib
+	dh_auto_install -- \
+	    -C Source \
+	    doc=no \
+	    shared=no
+
+override_dh_auto_install-indep:
+# install shared version of libraries
+	dh_auto_install -- \
+	    doc=no
+
+# Delete README which triggers lintian I: gnustep-base-common:
+# package-contains-documentation-outside-usr-share-doc.  These
+# instructions are unnecessary as the Debian package uses tzdata.
+	$(RM) debian/tmp/usr/lib/GNUstep/Libraries/gnustep-base/Versions/$(sov_base)/Resources/NSTimeZones/README
+
+override_dh_auto_clean-indep:
+	dh_auto_clean -- \
+	    doc=yes
+
+
+# Install the gdomap init script
+override_dh_installinit:
+	dh_installinit -p$(p_run) --name=gdomap --no-enable --no-start
+
+override_dh_shlibdeps:
+	dh_shlibdeps
+# Recalculate dependencies of the shared library to ensure that
+# gnustep-base-runtime is added as additional dependency.
+	dh_makeshlibs -p$(p_lib) \
+	  -V '$(p_lib) (>= $(v_base)), $(p_run) (>= $(v_base))'

@@ -1,0 +1,120 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE = 1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-undefined -Wl,--as-needed -Wl,-rpath,/usr/NextSpace/lib
+
+# config.mk is provided by nextspace-make package
+include /Developer/Makefiles/config.mk
+
+# Install in debian/tmp
+export DESTDIR=$(CURDIR)/debian/tmp
+
+##### VERSION NUMBERS ###########################################
+
+# GNUstep Base version :
+v_base  := 1.27
+
+# GNUstep Gui/Back version :
+v_gui   := $(shell . ./Version; echo $$VERSION)
+
+# GNUstep Gui/Back SONAME version :
+sov_gui := $(shell . ./Version; echo $$GNUSTEP_GUI_MAJOR_VERSION.$$GNUSTEP_GUI_MINOR_VERSION)
+
+#### PACKAGES NAMES ###################################
+p_com           = nextspace-gui-common
+p_run           = nextspace-gui-runtime
+p_lib           = libnextspace-gui$(sov_gui)
+p_dev           = libnextspace-gui-dev
+
+######################################################
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+	    --disable-icu-config \
+	    --enable-imagemagick
+
+override_dh_auto_build-arch:
+# build shared libs
+	dh_auto_build -- \
+	    $(verbose) \
+	    $(optim) \
+	    doc=no \
+	    $(shell dpkg-buildflags --export=cmdline)
+
+# build dev/static lib
+	dh_auto_build -- \
+	    -C Source \
+	    $(verbose) \
+	    doc=no \
+	    shared=no
+
+override_dh_auto_build-indep:
+# build shared libs
+	dh_auto_build -- \
+	    $(verbose) \
+	    doc=no
+
+# build main doc. Make sure autogsdoc can find the libraries.
+	dh_auto_build -- \
+	    -C Documentation \
+	    message=yes \
+	    doc=yes
+
+override_dh_auto_test:
+	dh_auto_test || (cat Tests/tests.log; exit 1)
+
+override_dh_auto_install-arch:
+# install shared version of libraries
+	dh_auto_install -- \
+	    doc=no
+
+# install dev/static lib
+	dh_auto_install -- \
+	    -C Source \
+	    doc=no \
+	    shared=no
+
+override_dh_auto_install-indep:
+# install shared version of libraries
+	dh_auto_install -- \
+	    doc=no
+
+# install doc
+	dh_auto_install -- \
+	    -C Documentation \
+	    doc=yes
+# Delete duplicate files already shipped at /usr/share/doc/.
+	$(RM) -r debian/tmp$(GNUSTEP_SYSTEM_DOC)/Developer/Gui/ReleaseNotes/0.*
+
+override_dh_auto_clean-indep:
+	dh_auto_clean -- \
+	    doc=yes
+
+override_dh_install:
+# Don't install stamp.make file
+	dh_install -p$(p_run) -Xstamp.make
+
+	dh_install --remaining-packages
+
+# Doc symlinks
+override_dh_installdocs:
+	dh_installdocs -p$(p_run) --link-doc=$(p_lib)
+	dh_installdocs -p$(p_dev) --link-doc=$(p_lib)
+	dh_installdocs --remaining-packages
+
+override_dh_fixperms:
+# Fix .desktop files permissions
+	find debian -name "*.desktop" -perm 0755 -exec chmod -v 0644 {} \;
+	dh_fixperms
+
+override_dh_shlibdeps:
+# First calculate shlib dependencies of all -gui packages
+	dh_shlibdeps
+
+# Then recalculate dependencies of shared lib
+	dh_makeshlibs -p$(p_lib) \
+	    -V '$(p_lib) (>= $(v_gui)), nextspace-gui-runtime (>= $(v_gui)), nextspace-back$(sov_gui) (>= $(v_gui))'

@@ -1,0 +1,87 @@
+# -*-debian-control-*-
+Source: nextspace-gui
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Section: gnustep
+Priority: optional
+Build-Depends: debhelper (>= 12),
+               libnextspace-base-dev (>= 1.27),
+               nextspace-make (>= 2.7.0),
+               libicns-dev,
+               libjpeg-dev,
+               libtiff-dev,
+               libpng-dev,
+               libgif-dev,
+               libmagickcore-dev,
+               libicu-dev,
+               libaspell-dev,
+               zlib1g-dev,
+               libcups2-dev,
+               libao-dev,
+               libsndfile1-dev,
+               flite1-dev
+Build-Depends-Indep: texinfo,
+                     texlive-base,
+                     texlive-latex-base
+Standards-Version: 4.3.0
+
+Package: nextspace-gui-common
+Architecture: all
+Depends: nextspace-base-common (>= 1.27),
+         ${misc:Depends}
+Description: GNUstep GUI Library - common files
+ The GNUstep GUI Library is a powerful library of graphical user interface
+ classes written completely in the Objective-C language; the classes are
+ based upon the OpenStep specification, and provide the user with a
+ traditional nextstep-like look and feel.
+ .
+ This package contains the common files needed by the GNUstep GUI library.
+
+Package: nextspace-gui-runtime
+Architecture: any
+Depends: nextspace-gui-common (= ${source:Version}),
+         ${shlibs:Depends},
+         ${misc:Depends}
+Description: GNUstep GUI Library - runtime files
+ The GNUstep GUI Library is a powerful library of graphical user interface
+ classes written completely in the Objective-C language; the classes are
+ based upon the OpenStep specification, and provide the user with a
+ traditional nextstep-like look and feel.
+ .
+ This package contains the runtime support files needed by GNUstep GUI
+ applications.
+
+Package: libnextspace-gui0.28
+Architecture: any
+Section: libs
+Depends: nextspace-gui-common (= ${source:Version}),
+         ${shlibs:Depends},
+         ${misc:Depends}
+Recommends: nextspace-gui-runtime (= ${binary:Version})
+Description: GNUstep GUI Library
+ The GNUstep GUI library is a powerful library of graphical user interface
+ classes written completely in the Objective-C language; the classes are
+ based upon the OpenStep specification, and provide the user with a
+ traditional nextstep-like look and feel.  The classes include graphical
+ objects such as windows, menus, buttons, text fields, popup lists, browsers,
+ scrollviews, splitviews, fonts, colors, images, events, pasteboards...
+ You need the corresponding backend library package (gnustep-back) to use
+ this package.
+
+Package: libnextspace-gui-dev
+Architecture: any
+Section: libdevel
+Depends: libnextspace-gui0.28 (= ${binary:Version}),
+         nextspace-gui-runtime (= ${binary:Version}),
+         libnextspace-base-dev (>= 1.27),
+         ${misc:Depends}
+Description: GNUstep GUI header files and static libraries
+ The GNUstep GUI Library is a powerful library of graphical user interface
+ classes written completely in the Objective-C language; the classes are
+ based upon the OpenStep specification, and provide the user with a
+ traditional nextstep-like look and feel.
+ .
+ This package contains the header files and static libraries required
+ to build applications against the GNUstep GUI library.
+ .
+ Install this package if you wish to develop your own programs using
+ the GNUstep GUI Library.

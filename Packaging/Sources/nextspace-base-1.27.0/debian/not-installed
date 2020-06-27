@@ -1,0 +1,5 @@
+# Timezone data which is not installed; we use Debian's tzdata package.
+usr/lib/NextSpace/Libraries/gnustep-base/Versions/*/Resources/NSTimeZones/zones
+
+# Likewise; we rely on ca-certificates.
+usr/lib/NextSpace/Libraries/gnustep-base/Versions/*/Resources/GSTLS/ca-certificates.crt

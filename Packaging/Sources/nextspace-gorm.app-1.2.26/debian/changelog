@@ -1,0 +1,389 @@
+nextspace-gorm.app (1.2.26-2) UNRELEASED; urgency=medium
+
+  * Adapt for NEXTSPACE
+
+ -- Patrick Georgi <patrick@georgi.software>  Tue, 19 May 2020 00:15:33 +0200
+
+gorm.app (1.2.26-1) unstable; urgency=medium
+
+  * New upstream version.
+  * Bump standards version to 4.5.0.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Wed, 15 Apr 2020 16:14:40 +0200
+
+gorm.app (1.2.24-1) unstable; urgency=high
+
+  * New upstream version.
+  * debian/copyright: update years.
+  * debian/control: Mac OS X is now macOS.
+  * debian/README.source: added.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Thu, 07 Feb 2019 08:47:42 +0100
+
+gorm.app (1.2.23-3) unstable; urgency=medium
+
+  * Bump standards version to 4.2.1.
+  * Lintian clean up:
+    - debian/changelog: drop trailing whitespaces.
+    - debian/rules: drop unnecessary-dh-argument.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Thu, 13 Sep 2018 13:01:07 +0200
+
+gorm.app (1.2.23-2) unstable; urgency=medium
+
+  * Drop debian/menu.
+  * debian/control: update Vcs urls.
+  * Bump debhelper version to 11.
+  * Bump standards version to 4.1.4.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Fri, 17 Aug 2018 14:48:51 +0200
+
+gorm.app (1.2.23-1) unstable; urgency=medium
+
+  [ Gürkan Myczko ]
+  * New upstream version.
+    + Drop patches/fix-gorm-loading.patch: not needed anymore.
+  * Update my name.
+  * debian/control: Bump standards version to 3.9.8.
+  * Bump debhelper version to 9.
+  * Remove empty MimeType field from desktop file.
+
+  [ Axel Beckert ]
+  * Update Vcs-* header to https and cgit.
+  * debian/copyright: Remove invalid backslash escaped line breaks.
+  * Enable parallel building.
+  * Enable all hardening build flags.
+  * Remove gorm.app-dbg in favour of an automatic gorm.app-dbgsym package.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Sun, 08 Jan 2017 06:38:12 +0100
+
+gorm.app (1.2.20-2) unstable; urgency=medium
+
+  * debian/patches/fix-gorm-loading.patch: New; fixes a crash when loading
+    gorm files with ImageMagick-enabled gnustep-gui (Closes: #767066).
+  * debian/patches/series: Update.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sat, 01 Nov 2014 22:24:15 +0200
+
+gorm.app (1.2.20-1) unstable; urgency=medium
+
+  * New upstream release:
+    - Compatible with current GNUstep libraries (Closes: #749750).
+  * Ack NMU, thanks gregor herrmann.
+  * Debian/control (Maintainer): Set to the GNUstep team.
+    (Uploaders): Add myself.
+    (Build-Depends): Bump debhelper to >= 9, remove texi2html.  Add
+    imagemagick, texlive-fonts-recommended and cm-super-minimal.
+    (Depends): Remove dpkg | install-info, add ${misc:Depends} and
+    ${gnustep:Depends}.
+    (Conflicts, Replaces): Remove; obsolete.
+    (libgorm-dev, libgorm1, gorm.app-dbg): New packages.
+    (Vcs-Git, Vcs-Browser): New fields.
+    (Standards-Version): Compliant with 3.9.5.
+  * debian/compat: Set to 9.
+  * debian/watch: Update to version 3.
+  * debian/source/format: Switch to 3.0 (quilt).
+  * GormCore/GormPrivate.m: Revert local modifications (present upstream).
+  * debian/patches/texinfo-fixes.patch: New; fix errors/warnings with
+    texinfo/5.x.  Correct dircatecory/direntry.
+  * debian/patches/link-libs.patch: New; fix build with ld --no-undefined.
+  * debian/patches/series: Create.
+  * debian/rules: Rewrite for modern dh.  Move resources to /usr/share.
+    Install all libraries except libGorm as private.  Enable hardening.
+  * debian/dirs:
+  * debian/overrides: Delete.
+  * debian/preinst:
+  * debian/examples:
+  * debian/gorm.app.install:
+  * debian/libgorm-dev.install:
+  * debian/libgorm1.install: New file.
+  * debian/doc-base: Correct Section, Index and Files.
+  * debian/Gorm.1: Extend a bit.
+  * debian/menu: Add icon.
+  * debian/Gorm.desktop: Make it valid, add Keywords field.
+  * debian/README.Debian: Delete; obsolete.
+  * debian/docs: Remove ANNOUNCE; duplicated with NEWS.
+  * debian/copyright: Rewrite in format 1.0.
+
+ -- Yavor Doganov <yavor@gnu.org>  Wed, 06 Aug 2014 10:34:54 +0300
+
+gorm.app (1.2.16-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix "FTBFS: GormCore/./obj/libGormCore.so: undefined reference to
+    `class_pose_as'":
+    apply patch from Ubuntu / Julian Taylor:
+    - disable unnecessary class_pose_as workaround in GormCore/GormPrivate.m
+      applied upstream 1.2.17
+    (Closes: #707393)
+
+ -- gregor herrmann <gregoa@debian.org>  Wed, 10 Jul 2013 20:31:12 +0200
+
+gorm.app (1.2.16-1) unstable; urgency=low
+
+  * New upstream version. (Closes: #671393)
+  * Bump standards version to 3.9.2.
+  * Bump debhelper version to 8.
+  * debian/copyright: Update copyright years.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Mon, 20 Feb 2012 13:40:45 +0100
+
+gorm.app (1.2.10-2.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix FTBFS with gnustep-base/1.22; patch taken from upstream SVN
+    (Closes: #629198).
+  * Fix FTBFS with gcc-4.6; do not include nonexistent header (Closes:
+    #618205).
+
+ -- Yavor Doganov <yavor@gnu.org>  Sat, 08 Oct 2011 13:33:05 +0300
+
+gorm.app (1.2.10-2) unstable; urgency=low
+
+  * Bump standards version to 3.9.1.
+  * Apply patch to fix FTBFS, thanks to Yavor Doganov. (Closes: #581940)
+  * debian/copyright: Update copyright years.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Fri, 13 Aug 2010 21:44:25 +0000
+
+gorm.app (1.2.10-1) unstable; urgency=low
+
+  * New upstream version.
+  * Replace texlive-base-bin b-d with texlive-latex-base.
+  * Fix up doc-base file.
+  * Bump standards version.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Wed, 18 Nov 2009 14:10:02 +0100
+
+gorm.app (1.2.8-1) unstable; urgency=low
+
+  * New upstream version.
+  * Bump standards version.
+  * Bump debhelper version.
+  * Updated debian/copyright.
+  * Changed section to gnustep.
+  * Updated build-depends.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Thu, 09 Apr 2009 11:21:00 +0100
+
+gorm.app (1.2.4-1) experimental; urgency=low
+
+  * New upstream version.
+  * Update my email address.
+  * debian/copyright: Updated.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Tue, 08 Apr 2008 09:57:40 +0200
+
+gorm.app (1.2.2-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Thu, 15 Nov 2007 23:29:38 +0100
+
+gorm.app (1.2.1-1) unstable; urgency=low
+
+  * New upstream version.
+    + Updated debian/copyright.
+    + Updated debian/README.Debian.
+    + Moved homepage field in debian/control.
+  * GNUstep transition. (Closes: #448151, #442057)
+    + Updated debian/rules.
+  * Add desktop file.
+  * Updated debian/overrides file.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Sun, 10 Jun 2007 09:49:51 +0200
+
+gorm.app (1.1.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Updated debian/watch file.
+  * Updated build-depends.
+  * Added manual page.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Tue, 29 Aug 2006 09:51:04 +0200
+
+gorm.app (1.0.8-2) unstable; urgency=low
+
+  * Fix overrides filename.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Fri,  2 Jun 2006 14:02:31 +0200
+
+gorm.app (1.0.8-1) unstable; urgency=low
+
+  * New upstream release.
+  * Bump standards version.
+  * Updated copyright file.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Mon, 22 May 2006 19:49:46 +0200
+
+gorm.app (1.0.6-1) unstable; urgency=low
+
+  * New upstream release.
+  * Switched me with gnustep alioth team in Maintainer/Uploaders.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Sun,  9 Apr 2006 17:39:33 +0200
+
+gorm.app (1.0.4-2) unstable; urgency=low
+
+  * Fix dh_link, add .app. (closes: #353511)
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Sat, 11 Feb 2006 10:46:25 +0100
+
+gorm.app (1.0.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update FSF address.
+  * Fix renaming bugs.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Thu, 26 Jan 2006 07:49:40 +0100
+
+gorm.app (1.0.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Renamed package to gorm.app.
+  * Bump standards version.
+  * Removed debian/package.info.
+  * Build-depends update for libgnustep-gui0.10-dev.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Mon,  5 Dec 2005 21:21:51 +0100
+
+gorm (0.9.2-1) unstable; urgency=low
+
+  * New upstream release. (closes: 295583)
+  * New maintainer. (closes: #296624)
+  * Cleaned debian/rules.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Wed,  2 Feb 2005 20:03:51 +0100
+
+gorm (0.8.0-0.1) unstable; urgency=low
+
+  * New upstream release. (closes: #275132)
+  * Non-maintainer upload.
+  * Updated build-depends.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Tue, 14  Dec 2004 18:24:37 +0100
+
+gorm (0.7.7-1.1) unstable; urgency=low
+
+  * NMU, updated build-depends. (Closes: #259484)
+  * Added app wrapper. (Closes: #256156)
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Tue, 10 Aug 2004 01:32:59 +0200
+
+gorm (0.7.7-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Evan Prodromou <evan@debian.org>  Sat, 19 Jun 2004 12:27:20 -0400
+
+gorm (0.7.6-1) unstable; urgency=low
+
+  * New upstream release (closes: Bug#254157).
+
+ -- Evan Prodromou <evan@debian.org>  Fri, 18 Jun 2004 16:17:48 -0400
+
+gorm (0.6.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Rebuild with not-broken tar (closes: Bug#231938).
+  
+ -- Evan Prodromou <evan@debian.org>  Tue, 10 Feb 2004 00:06:43 -0500
+
+gorm (0.5.0-1) unstable; urgency=low
+
+  * New upstream release (closes: Bug#225967).
+
+ -- Evan Prodromou <evan@debian.org>  Tue,  6 Jan 2004 09:39:18 -0500
+
+gorm (0.4.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fix cleanup of Gorm.html.
+
+ -- Evan Prodromou <evan@debian.org>  Fri, 24 Oct 2003 15:54:35 +0200
+
+gorm (0.3.1-0.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * New upstream release.
+  * Compile using new gnustep layout.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Thu, 25 Sep 2003 21:32:20 +0200
+
+gorm (0.2.6-2) unstable; urgency=low
+
+  * Removed /usr/bin/gorm wrapper script (sick of maintaining
+    it). Changed menu to use openapp instead.
+  * Removed undocumented gorm.1.
+  * Fixed up copyright file.
+
+ -- Evan Prodromou <evan@debian.org>  Mon, 17 Mar 2003 10:47:02 +0000
+
+gorm (0.2.6-1) unstable; urgency=low
+
+  * New upstream release
+  * Now install /usr/bin/gorm wrapper script (closes: Bug#182571).
+  * Changed Build-Depends for new GNUstep libs.
+
+ -- Evan Prodromou <evan@debian.org>  Thu,  6 Mar 2003 15:02:45 +0100
+
+gorm (0.1.0-8) unstable; urgency=low
+
+  * Rebuild for new version of GNUstep packages in Debian.
+  * Changing rules file to use doc=yes for new version of gnustep-make
+    should fix install problem (closes: Bug#155524).
+
+ -- Evan Prodromou <evan@debian.org>  Mon, 23 Sep 2002 15:12:17 +0200
+
+gorm (0.1.0-7) unstable; urgency=low
+
+  * Rebuild for new versions of gnustep-make, gnustep-base, gnustep-gui.
+  * Removed work-arounds for doc installation, since bug was fixed in
+    gnustep-make 1.4.
+  * Removed compiler dependencies per gnustep-make Debian package changelog.
+
+ -- Evan Prodromou <evan@debian.org>  Mon,  5 Aug 2002 11:44:05 -0400
+
+gorm (0.1.0-6) unstable; urgency=low
+
+  * Rebuild for new GNUstep packages.
+
+ -- Evan Prodromou <evan@debian.org>  Fri, 26 Jul 2002 16:16:50 -0400
+
+gorm (0.1.0-5) unstable; urgency=low
+
+  * Fixed a typo in rules file that was installing Gorm.ps twice; this
+    caused an error with pbuilder.
+  * Since dh_strip now recognized GNUstep shared libs, removed
+    my_strip and fixed Build-Depends.
+
+ -- Evan Prodromou <evan@debian.org>  Sun, 30 Jun 2002 21:44:39 -0400
+
+gorm (0.1.0-4) unstable; urgency=low
+
+  * Corrected flaky Build-Depends (closes: Bug#150266).
+
+ -- Evan Prodromou <evan@debian.org>  Mon, 17 Jun 2002 15:28:21 -0400
+
+gorm (0.1.0-3) unstable; urgency=low
+
+  * Build and install the rump documentation, too.
+
+ -- Evan Prodromou <evan@debian.org>  Fri, 24 May 2002 22:26:50 -0400
+
+gorm (0.1.0-2) unstable; urgency=low
+
+  * Two image files are inexplicably marked as executable; turn
+    that off.
+  * Permissions problem on local strip script; force executable
+    every time it runs.
+  * Stupid typo in control file Recommends: projectbuilder, which
+    doesn't exist.
+
+ -- Evan Prodromou <evan@debian.org>  Thu, 23 May 2002 11:07:06 -0400
+
+gorm (0.1.0-1) unstable; urgency=low
+
+  * Initial Release (closes: Bug#147686).
+
+ -- Evan Prodromou <evan@debian.org>  Wed, 22 May 2002 15:01:00 -0400

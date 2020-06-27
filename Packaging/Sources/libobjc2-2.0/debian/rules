@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+	-DGNUSTEP_INSTALL_TYPE=NONE \
+	-DCMAKE_C_COMPILER=clang \
+	-DCMAKE_CXX_COMPILER=clang++ \
+	-DCMAKE_C_FLAGS="-I/usr/NextSpace/include -g" \
+	-DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
+	-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+	-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+	-DCMAKE_LINKER=ld.gold \
+	-DCMAKE_MODULE_LINKER_FLAGS="-fuse-ld=/usr/bin/ld.gold -Wl,-rpath,/usr/NextSpace/lib" \
+	-DCMAKE_SKIP_RPATH=ON \
+	-DTESTS=OFF \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
+

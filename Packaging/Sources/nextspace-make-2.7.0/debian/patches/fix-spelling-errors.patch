@@ -1,0 +1,36 @@
+Description: Fix spelling errors
+Author: Eric Heintzmann <heintzmann.eric@free.fr>
+Last-Update: 2017-09-05
+
+
+--- gnustep-make.orig/Documentation/library-combo.7
++++ gnustep-make/Documentation/library-combo.7
+@@ -17,7 +17,7 @@
+ .PP
+ If you installed your
+ .B GNUstep
+-system in a non-flattened way all system dependend binaries are installed in subdirectories with
++system in a non-flattened way all system dependent binaries are installed in subdirectories with
+ .I cpu/os/library-combo
+ information. That means for instance that the
+ .I gnustep-base
+--- gnustep-make.orig/Documentation/gnustep-config.1
++++ gnustep-make/Documentation/gnustep-config.1
+@@ -10,10 +10,13 @@
+ .RB | \-\-objc-flags | \-\-objc-libs | \-\-base-libs | \-\-gui-libs " ]"
+ .SH DESCRIPTION
+ .B gnustep-config
+-can print information about the currently installed GNUstep system. Output
+-is generated dynamically based on environment variables such as
+-GNUSTEP_CONFIG_FILE and GNUSTEP_MAKEFILES,
+-though default values for these are generated when the tool is configured/installed.  Output is primarily the locations in which various GNUstep resources are installed, but also provide flags used to build differnt types of GNUstep project.
++can print information about the currently installed GNUstep
++system. Output is generated dynamically based on environment variables
++such as GNUSTEP_CONFIG_FILE and GNUSTEP_MAKEFILES, though default
++values for these are generated when the tool is configured/installed.
++Output is primarily the locations in which various GNUstep resources
++are installed, but also provide flags used to build different types of
++GNUstep project.
+ .SH OPTIONS
+ .TP
+ .BI \-\-variable= variable

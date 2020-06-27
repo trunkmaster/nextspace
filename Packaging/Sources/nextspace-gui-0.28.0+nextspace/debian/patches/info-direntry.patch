@@ -1,0 +1,18 @@
+Description: Documentation/manual/AppKit.texi: Add @dircategory and @direntry.
+Author: Yavor Doganov  <yavor@gnu.org>
+Last-Update: 2016-05-27
+
+--- a/Documentation/manual/AppKit.texi
++++ b/Documentation/manual/AppKit.texi
+@@ -27,6 +27,11 @@
+ @afourpaper
+ @c %**end of header
+ 
++@dircategory Software libraries
++@direntry
++* GNUstepGUI: (AppKit).         GNUstep GUI Library Programming Manual.
++@end direntry
++
+ @copying
+ @copyright{} 2005-2006 Christopher Armstrong.
+ 

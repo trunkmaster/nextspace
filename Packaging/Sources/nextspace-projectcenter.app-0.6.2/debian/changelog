@@ -1,0 +1,356 @@
+nextspace-projectcenter.app (0.6.2-1) unstable; urgency=medium
+
+  * Adapt to NEXTSPACE
+
+ -- Patrick Georgi <patrick@georgi.software>  Tue, 19 May 2020 21:37:22 +0200
+
+projectcenter.app (0.6.2+git20190606-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Sat, 10 Aug 2019 18:25:52 +0200
+
+projectcenter.app (0.6.2+git20190606-1) experimental; urgency=medium
+
+  * New upstream snapshot.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Thu, 06 Jun 2019 15:29:04 +0200
+
+projectcenter.app (0.6.2-2) unstable; urgency=medium
+
+  * Bump debhelper version to 11.
+  * Bump standards version to 4.2.1.
+  * debian/menu: dropped.
+  * debian/control: updated Vcs links.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Mon, 17 Sep 2018 18:54:21 +0200
+
+projectcenter.app (0.6.2-1) unstable; urgency=medium
+
+  [ Gürkan Myczko ]
+  * New upstream release.
+  * Bump standards version to 3.9.8.
+  * Update my name.
+  * Drop gui-0.24.patch, no more needed.
+
+  [ Axel Beckert ]
+  * Switch Vcs-* headers to https:// and cgit.
+  * Enable all hardening build flags.
+
+ -- Gürkan Myczko <gurkan@phys.ethz.ch>  Fri, 20 Jan 2017 04:02:17 +0100
+
+projectcenter.app (0.6.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches/gui-0.22.patch: Remove; fixed upstream.
+  * debian/patches/gui-0.24.patch: New; adapt to the current GNUstep
+    (Closes: #749764).
+  * debian/patches/series: Update.
+  * debian/copyright: Update copyright years, point to GPL-3.  Switch to
+    format 1.0.
+  * debian/compat: Set to 9.
+  * debian/control (Build-Depends): Remove dpkg-dev.  Require
+    libgnustep-gui-dev >= 0.24 and debhelper >= 9.
+    (Vcs-Git): Use the canonical URI.
+    (Standards-Version): Compliant with 3.9.6 as of this release.
+  * debian/rules: Rewrite for modern dh.
+  * debian/install:
+  * debian/manpages: New file.
+  * debian/ProjectCenter.desktop: Add Keywords field.
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 21 Oct 2014 14:27:49 +0300
+
+projectcenter.app (0.6.0-2) unstable; urgency=low
+
+  * debian/patches/05_link-libs.dpatch: Rename as...
+  * debian/patches/link-libs.patch: ...and remove dpatch header.
+  * debian/patches/gui-0.22.patch: New; fixes FTBFS with gnustep-gui/0.22
+    (Closes: #674920).
+  * debian/patches/00list: Rename as...
+  * debian/patches/series: ...and update.
+  * debian/source/format: Switch to 3.0 (quilt).
+  * debian/README.source: Delete; redundant.
+  * debian/control (Build-Depends): Remove dpatch.  Add dpkg-dev (>=
+    1.16.1~), for hardening support.
+    (Recommends): Add gdb.
+    (Vcs-Arch): Replace with...
+    (Vcs-Git): Since the package is now maintained with Git.
+    (Vcs-Browser): New field.
+    (Standards-Version): Bump to 3.9.3; no changes needed.
+  * debian/rules: Don't include /usr/share/dpatch/dpatch.make.  Remove
+    patch/unpatch dependencies.  Enable hardening.
+    (binary-arch): Remove GS_USE_FHS conditional.
+  * debian/preinst: Delete; no longer needed.
+
+ -- Yavor Doganov <yavor@gnu.org>  Mon, 04 Jun 2012 19:47:30 +0300
+
+projectcenter.app (0.6.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Add myself to uploaders.
+
+ -- Gürkan Sengün <gurkan@phys.ethz.ch>  Tue, 08 Feb 2011 14:48:25 +0100
+
+projectcenter.app (0.5.3~20100601-2) unstable; urgency=high
+
+  * debian/preinst: Explicitly delete Resources from the app bundle to
+    make the new FHS_ME_HARDER implementation actually work for upgrades;
+    otherwise they break badly since Resources remains a dangling symlink
+    at the time dpkg replaces moved files (Closes: #585978).
+
+ -- Yavor Doganov <yavor@gnu.org>  Tue, 15 Jun 2010 14:21:38 +0300
+
+projectcenter.app (0.5.3~20100601-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/compat: Set to 7.
+  * debian/control (Section): Change to `gnustep'.
+    (Build-Depends): Require debhelper >= 7, remove version constraints
+    for libgnustep-gui-dev (obsolete).
+    (Depends): Add ${gnustep:Depends}.
+    (Standards-Version): Compliant with 3.8.4 as of this release.
+    (Vcs-Arch): New field.
+    (Description): Do not praise NextStep.
+  * debian/rules: Export GNUSTEP_MAKEFILES and get rid of gs_make.
+    (OPTFLAG): No longer define; rework noopt handling to be compatible
+    with gnustep-make/2.4.x (Closes: #581976).
+    (build-stamp): Pass GDB=/usr/bin/gdb for the PCDefaultDebugger
+    define.
+    (install): Replace dh_clean -k with dh_prep.
+    (binary-arch): Adjust dh_installchangelogs' argument.  Rework the
+    FHS_ME_HARDER snippet; PC's supporting executables are no longer
+    installed as Bundles.
+  * debian/patches/05_link-libs.dpatch: Update; the fix was merged
+    upstream, but now -lm is required as well.
+  * debian/patches/10_bundles-install-dir.dpatch: Remove; obsolete with
+    the new way of FHS-compliance handling.
+  * debian/links: Delete; no longer needed.
+  * debian/menu: Adjust command.
+  * debian/source/format:
+  * debian/README.source:
+  * debian/preinst: New file.
+  * debian/copyright: Bump copyright years, add more upstream authors.
+
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 03 Jun 2010 16:04:52 +0300
+
+projectcenter.app (0.5.0~20080704-1) unstable; urgency=low
+
+  [ Gürkan Sengün ]
+  * GNUstep transition.
+    + Updated debian/rules.
+  * debian/copyright: Fix indentation.
+  * debian/compat: Bump version, no changes needed.
+  * Added a desktop file.
+
+  [ Yavor Doganov ]
+  * New upstream snapshot of the pending 0.5.0 release; contains important
+    bugfixes and generally much more stable than 0.4.3.  This also makes
+    it compliant with the current layout and Closes: #443676.
+  * Adopt package; set the GNUstep team as maintainer and add myself to
+    Uploaders (Closes: #453429).
+  * debian/control (Build-Depends): Drop gnustep-make and add dpatch; wrap
+    them.  Bump libgnustep-gui-dev to >= 0.14.0.  Add imagemagick.
+    (Standards-Version): Declare compliance to 3.8.0; no changes needed.
+    (Homepage): Add.
+    (Depends): Add ${misc:Depends}.
+    (Conflicts, Replaces): Remove; not needed for Etch->Lenny upgrade.
+    (Recommends): Add libgnustep-gui-dev (Closes: #443666).
+  * debian/dirs: Delete.
+  * debian/watch: Make it work; prepend `opts=pasv'.
+  * debian/rules: Include /usr/share/dpatch/dpatch.make and adjust all
+    rules accordingly.
+    (PACKAGE, GNUSTEP_MAKEFILES): Do not define.
+    (d_app, LDFLAGS): Define.
+    (OPTFLAG): Define conditionally, support for `noopt'.
+    (build-stamp): Pass LDFLAGS, OPTFLAG, messages=yes and
+    DO_LIB_LINK=yes.  Use gs_make (Closes: #451460, #471755).  Convert the
+    app icon in XPM format.
+    (clean-patched): Delete the generated icon.
+    (install): Pass messages=yes and install the ProjectCenter private
+    library in /usr/lib/projectcenter.app.  Do not invoke dh_installdirs.
+    Do not install the overrides file.  Install the XPM icon in
+    /usr/share/pixmaps.
+    (binary-arch): Remove call to dh_makeshlibs and parameter to
+    dh_shlibdeps.  Invoke gsdh_gnustep and move Resources to /usr/share.
+    Install the manpage.
+  * debian/overrides: Delete.
+  * debian/patches/05_link-libs.dpatch: New; link the ProjectCenter
+    library against the libs it uses symbols from.
+  * debian/patches/10_bundles-install-dir.dpatch: New; install all bundles
+    in /usr/lib/GNUstep/Bundles/ProjectCenter.
+  * debian/patches/00list: Create.
+  * debian/docs: Remove Changelog-1, README and README.contributors; the
+    latter two redundant and not accurate.
+  * debian/links: New file; create symlinks for all the bundles.
+  * debian/copyright: License is now GPLv3 or later.
+  * debian/menu: Add `icon' and kill `description'.
+  * debian/ProjectCenter.desktop: Correct the `Categories' field and add
+    `Comment' and `Icon'.
+  * debian/ProjectCenter.1: New file.
+
+ -- Yavor Doganov <yavor@gnu.org>  Sat, 06 Jul 2008 19:21:14 +0300
+
+projectcenter.app (0.4.3-3) unstable; urgency=low
+
+  * Rebuild against latest libgnustep-gui-dev.
+  * Bump standards version.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Wed, 20 Sep 2006 23:01:27 +0200
+
+projectcenter.app (0.4.3-2) unstable; urgency=low
+
+  * Updated recommends of gorm to gorm.app.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Tue, 14 Mar 2006 14:17:23 +0100
+
+projectcenter.app (0.4.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update build depends for latest libgnustepgui-dev.
+  * Update FSF Address.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Sat, 21 Jan 2006 11:41:16 +0100
+
+projectcenter.app (0.4.2-2) unstable; urgency=low
+
+  * Add forgotten conflicts/replaces.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Fri, 25 Nov 2005 15:31:52 +0100
+
+projectcenter.app (0.4.2-1) unstable; urgency=low
+
+  * New maintainer. (Closes: #296625)
+  * Renamed package to projectcenter.app. (Closes: #241627)
+  * Bump standards version.
+  * Add co-maintainers.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Wed, 23 Nov 2005 16:28:04 +0100
+
+projectcenter (0.4.2-0.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fixed FTBFS on amd64/gcc-4.0, thanks to Andreas Jochens. (Closes: #300537)
+
+ -- Philipp Kern <pkern@debian.org>  Wed, 11 May 2005 20:11:33 +0200
+
+projectcenter (0.4.2-0.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * New upstream version. (Closes: #295585)
+  * Removed dh-make comments from debian/rules.
+
+ -- Gürkan Sengün <gurkan@linuks.mine.nu>  Wed,  2 Feb 2005 00:14:27 +0100
+
+projectcenter (0.4.0-1.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Rebuild using latest GNUstep Core packages.
+  * As suggested by Gurkan Sengun, remove .app suffix from wrapper.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Tue, 14 Dec 2004 18:16:00 +0100
+
+projectcenter (0.4.0-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/control:
+   - Rebuild using latest GNUstep Core packages.
+   - projectcenter now depends on libgnustep-gui0-dev (closes: #259034).
+  * debian/rules:
+   - Provide a wrapper (link) for ProjectCenter.app (closes: #256164).
+   - Uncomment dh_makeshlib line.
+  * debian/menu:
+     No more source GNUstep.sh. Use new openapp wrapper.
+  * debian/overrides:
+     Overrides new lintian warnings.
+
+ -- Eric Heintzmann <eric@gnustep.fr.st>  Mon,  9 Aug 2004 12:53:53 +0200
+
+projectcenter (0.4.0-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Evan Prodromou <evan@debian.org>  Mon, 21 Jun 2004 11:44:36 -0400
+
+projectcenter (0.3.6-1) unstable; urgency=low
+
+  * New upstream release
+  * Add lintian overrided to prevent squawking over images in /usr/lib
+  * Fixed dh_shlibdeps call to stop squawking over missing libs (thanks,
+    Eric Heintzmann).
+  * Rebuild for new GNUstep layout (closes: Bug#213161).
+  
+ -- Evan Prodromou <evan@debian.org>  Mon, 13 Oct 2003 18:21:42 -0400
+
+projectcenter (0.3.5-1) unstable; urgency=low
+
+  * New upstream release
+  * GNUmakefile.preamble, GNUmakefile.bundles, PCLib/GNUmakefile.preamble:
+    removed -Werror, since there's a warning generated in a
+    gnustep-gui0-dev header file.
+  * Updated Standards-Version.
+  * Changed Build-Depends to use most current versions of GNUstep
+    libraries.
+	
+ -- Evan Prodromou <evan@debian.org>  Thu, 10 Jul 2003 13:16:22 -0400
+
+projectcenter (0.3.2-2) unstable; urgency=low
+
+  * Removed /usr/bin/projectcenter wrapper script, as I am sick of
+    supporting it. Replaced it with a more reasonable menu command.
+  * Updated debian/menu with hints.
+  * Removed now-unnecessary dh_undocumented invocation.
+  * Fixed copyright thanks to lintian.
+  
+ -- Evan Prodromou <evan@debian.org>  Mon, 17 Mar 2003 12:36:26 +0000
+
+projectcenter (0.3.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Evan Prodromou <evan@debian.org>  Thu,  6 Mar 2003 15:02:03 +0100
+
+projectcenter (0.3.0rel-5) unstable; urgency=low
+
+  * Rebuild for new GNUstep packages in Debian.
+  * Removed explicit Build-Depends for compiler, libxml2 and zlib.
+  * Removed explicit Depends for gobjc-X.X.
+  * Added explicit Depends for gnustep-baseX-dev and gnustep-guiX-dev.
+
+ -- Evan Prodromou <evan@debian.org>  Mon, 23 Sep 2002 14:29:44 +0200
+
+projectcenter (0.3.0rel-4) unstable; urgency=low
+
+  * Rebuild for new GNUstep packages in Debian.
+
+ -- Evan Prodromou <evan@debian.org>  Sat, 27 Jul 2002 11:27:56 -0400
+
+projectcenter (0.3.0rel-3) unstable; urgency=low
+
+  * Since dh_strip now supports GNUstep shared objects, removed
+    my_strip and changed Build-Depends.
+
+ -- Evan Prodromou <evan@debian.org>  Sun, 30 Jun 2002 21:46:47 -0400
+
+projectcenter (0.3.0rel-2) unstable; urgency=low
+
+  * Fixed flakey Build-Depends (closes: Bug#150261).
+
+ -- Evan Prodromou <evan@debian.org>  Mon, 17 Jun 2002 19:59:21 -0400
+
+projectcenter (0.3.0rel-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Evan Prodromou <evan@debian.org>  Sun, 16 Jun 2002 10:27:20 -0400
+
+projectcenter (0.3.0pr1-2) unstable; urgency=low
+
+  * Permission problem on local strip script.
+
+ -- Evan Prodromou <evan@debian.org>  Thu, 23 May 2002 11:43:59 -0400
+
+projectcenter (0.3.0pr1-1) unstable; urgency=low
+
+  * Initial Release (closes: Bug#147690).
+
+ -- Evan Prodromou <evan@debian.org>  Tue, 21 May 2002 13:31:15 -0400

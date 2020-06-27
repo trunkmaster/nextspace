@@ -1,0 +1,4 @@
+# We use config.{guess,sub} as provided by autotools-dev; see
+# debian/gnustep-make.links.
+usr/share/GNUstep/Makefiles/config.guess
+usr/share/GNUstep/Makefiles/config.sub

@@ -1,0 +1,118 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Gorm
+Source: ftp://ftp.gnustep.org/pub/gnustep/dev-apps/
+
+Files: *
+Copyright: 1999-2019 Free Software Foundation, Inc.
+License: GPL-3+
+
+Files: Documentation/Examples/*
+Copyright: 1999-2019 Free Software Foundation, Inc.
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or (at
+ your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301 USA.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+Files: GormLib/*
+Copyright: 1999-2019 Free Software Foundation, Inc.
+License: LGPL-2.1+
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation; either version 2.1 of the
+ License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301 USA
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License version 2.1 can be found in
+ `/usr/share/common-licenses/LGPL-2.1'.
+
+Files: GormCore/GormClassInspector.* GormCore/GormCustomClassInspector.*
+       GormCore/GormFilePrefsManager.* GormCore/GormResource.h
+       GormCore/GormSound.h GormCore/GormOutlineView.* GormCore/GormImage.h
+       GormCore/GormScrollViewAttributesInspector.* GormCore/GormViewKnobs.*
+       GormCore/GormSoundInspector.* GormCore/GormSoundView.*
+Copyright: 1999-2019 Free Software Foundation, Inc.
+License: LGPL-3+
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation; either version 3 of the
+ License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301 USA
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License version 3 can be found in
+ `/usr/share/common-licenses/LGPL-3'.
+
+Files: Documentation/*.texi
+Copyright: 1999-2019 Free Software Foundation, Inc.
+License: other
+ Permission is granted to make and distribute verbatim copies of this
+ manual provided the copyright notice and this permission notice are
+ preserved on all copies.
+ .
+ Permission is granted to copy and distribute modified versions of
+ this manual under the conditions for verbatim copying, provided also
+ that the section entitled ``GNU Library General Public License'' is
+ included exactly as in the original, and provided that the entire
+ resulting derived work is distributed under the terms of a permission
+ notice identical to this one.
+ .
+ Permission is granted to copy and distribute translations of this
+ manual into another language, under the above conditions for modified
+ versions, except that the section entitled ``GNU Library General
+ Public License'' and this permission notice may be included in
+ translations approved by the Free Software Foundation instead of in
+ the original English.
+
+Files: debian/*
+Copyright: 2002-2019 Debian GNUstep maintainers
+License: GPL-3+
+
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or (at
+ your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 3 can be found in `/usr/share/common-licenses/GPL-3'.

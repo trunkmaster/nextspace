@@ -1,0 +1,40 @@
+Description: Ignore NSInvocation's NSRect test on armhf.
+ Print the NSRect's; might give some clue where to look at.
+ This patch should not be submitted upstream as it's not a proper fix.
+Author: Yavor Doganov <yavor@gnu.org>
+Bug-Debian: https://bugs.debian.org/918366
+Forwarded: not-needed
+Last-Update: 2019-02-01
+---
+
+--- gnustep-base.orig/Tests/base/NSInvocation/general.m
++++ gnustep-base/Tests/base/NSInvocation/general.m
+@@ -204,6 +204,28 @@
+   TEST_INVOKE_ARG(@selector(loopRect:),&rarg);
+   [inv getReturnValue:&rret];
+   rprx = [pxy loopRect:rarg];
++#ifdef __ARM_EABI__
++  /* Ignore this test on armhf as it fails if built on arm64.  */
++  testHopeful = YES;
++
++  /* Because gnustep-tests redirects the standard streams, save the
++     results in a file to be printed from debian/rules.  We can't use
++     the testsuite log as we don't have access to it if it passes (and
++     it certainly will since the test is ignored).  We used to install
++     it in /usr/share/doc/ in the -dbg package precisely for obscure
++     cases like this one but it made the build unreproducible so we
++     are no longer doing it.  */
++  FILE *f = fopen("armhf.log", "w");
++  /* This information will be useless if the package is built by a
++     pure armhf buildd (that is, anything but arm-arm-01 on Debian).
++     Fortunately, we can look at the results in Ubuntu where TTBOMK
++     all armhf buildds are arm64 machines.  Unfortunately, it is
++     unlikely to be of any help, but I don't have other ideas at the
++     moment as I couldn't reproduce the test failure myself.  */
++  GSPrintf(f, @"rarg: %@\nrret: %@\nrprx: %@\n", NSStringFromRect(rarg),
++           NSStringFromRect(rret), NSStringFromRect(rprx));
++  fclose(f);
++#endif
+   PASS(NSEqualRects(rret, rarg) && NSEqualRects(rprx, rarg),
+        "Can send/return NSRect");
+   

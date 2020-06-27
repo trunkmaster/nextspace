@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+include /Developer/Makefiles/config.mk
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-undefined -Wl,--as-needed -Wl,-rpath,/usr/NextSpace/lib
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+export DEB_OBJCFLAGS_MAINT_APPEND = -Wno-format-security
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+optim := debug=yes
+endif
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	dh_auto_build -- $(optim) messages=yes $(shell dpkg-buildflags --export=cmdline)
+	#convert Images/Gorm.tiff -resize 32x32 Gorm.xpm
+	$(MAKE) -C Documentation
+
+override_dh_clean:
+	[ ! -f Documentation/Gorm.info ] || $(MAKE) -C Documentation distclean
+	dh_clean
+
+override_dh_auto_install:
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+	$(MAKE) -C Documentation install DESTDIR=$(CURDIR)/debian/tmp

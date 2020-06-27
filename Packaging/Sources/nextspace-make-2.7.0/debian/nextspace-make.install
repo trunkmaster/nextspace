@@ -1,0 +1,27 @@
+# Install Debian packaging help
+debian/addons/config.mk Developer/Makefiles
+
+# Install arch indep tools
+usr/NextSpace/bin/gnustep-config
+usr/NextSpace/bin/gnustep-tests
+
+# Install arch indep makefiles
+Developer/Makefiles/common.make
+Developer/Makefiles/config.sub
+Developer/Makefiles/config.guess
+Developer/Makefiles/clibrary.make
+Developer/Makefiles/ctool.make
+Developer/Makefiles/[!c]*.make
+Developer/Makefiles/*.template
+Developer/Makefiles/tar-exclude-list
+Developer/Makefiles/gnustep-make-help
+Developer/Makefiles/install-sh
+Developer/Makefiles/mkinstalldirs
+Developer/Makefiles/bake_debian_files.sh
+Developer/Makefiles/relative_path.sh
+Developer/Makefiles/strip_makefiles.sh
+Developer/Makefiles/Additional/
+Developer/Makefiles/Auxiliary/
+Developer/Makefiles/Instance/
+Developer/Makefiles/Master/
+Developer/Makefiles/TestFramework/

@@ -1,0 +1,47 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+# Upstream documentation uses the @today macro which causes
+# unreproducible builds.
+include /usr/share/dpkg/pkg-info.mk
+export FORCE_SOURCE_DATE = 1
+
+# Reset all flags because dpkg's default buildflags propagate and
+# become hardcoded in gnustep-make as GNUstep's build system, which is
+# clearly undesirable (Bug#879085).
+export CC=clang
+export CXX=clang++
+export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
+export LD=/usr/bin/ld.gold
+export LDFLAGS=-fuse-ld=/usr/bin/ld.gold -Wl,-rpath,/usr/NextSpace/lib -L/usr/NextSpace/lib
+
+# Install in a temp dir
+export DESTDIR=$(CURDIR)/debian/tmp
+
+%:
+	dh $@ \
+	  --builddirectory=build-gnustep-make
+
+# Overriding the AC_PATH_PROG test for bash is necessary because it
+# produces different results with merged /usr, leading to
+# unreproducible builds.
+override_dh_auto_configure:
+	cp debian/nextspace.fsl FilesystemLayouts/nextspace
+	dh_auto_configure -- \
+	    --prefix=/ \
+	    --with-config-file=/Library/Preferences/GNUstep.conf \
+	    --with-layout=nextspace \
+	    --enable-native-objc-exceptions \
+	    --enable-debug-by-default \
+	    --with-library-combo=ng-gnu-gnu
+
+	    true \
+	    --with-objc-lib-flag=-l:libobjc.so.4.6 \
+	    --with-runtime-abi=gnustep-1.8 \
+
+override_dh_auto_install:
+	dh_auto_install
+	rm $(CURDIR)/debian/tmp/usr/NextSpace/bin/opentool
+	-rm $(CURDIR)/debian/tmp/usr/NextSpace/Documentation/man/man1/opentool.1.gz

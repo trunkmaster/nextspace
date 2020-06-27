@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+
+export LDFLAGS=-Wl,-rpath,/usr/NextSpace/lib
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DCMAKE_C_COMPILER=clang \
+		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCMAKE_SKIP_RPATH=ON \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+		-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+		-DINSTALL_PRIVATE_HEADERS=YES \
+		-DENABLE_TESTING=OFF \
+		-DUSE_GOLD_LINKER=YES
+
+override_dh_auto_install:
+	dh_auto_install
+	rm $(CURDIR)/debian/tmp/usr/NextSpace/include/Block_private.h
+
+%:
+	dh $@

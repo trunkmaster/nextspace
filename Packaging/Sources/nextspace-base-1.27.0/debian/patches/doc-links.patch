@@ -1,0 +1,71 @@
+Description: Documentation/HtmlNav/index.html: Fix some broken links.
+Author: Yavor Doganov <yavor@gnu.org>
+Last-Update: 2016-05-15
+
+
+--- a/Documentation/HtmlNav/index.html
++++ b/Documentation/HtmlNav/index.html
+@@ -40,20 +40,20 @@
+          <td width="50%">
+           <table width="80%">
+             <tr>
+-              <td><a href="User/GNUstep/userfaq_toc.html">User FAQ</a></td>
+-              <td><a href="User/GNUstep/userfaq.pdf">(PDF)</a></td>
++              <td><a href="User/GNUstep/gnustep-userfaq/index.html">User FAQ</a></td>
++              <td><a href="User/GNUstep/gnustep-userfaq.pdf">(PDF)</a></td>
+             </tr>
+             <tr>
+-              <td><a href="User/GNUstep/faq_toc.html">Developer FAQ</a></td>
+-              <td><a href="User/GNUstep/faq.pdf">(PDF)</a></td>
++              <td><a href="User/GNUstep/gnustep-faq/index.html">Developer FAQ</a></td>
++              <td><a href="User/GNUstep/gnustep-faq.pdf">(PDF)</a></td>
+             </tr>
+             <tr>
+-              <td><a href="User/GNUstep/gnustep-howto_toc.html">How-To</a></td>
++              <td><a href="User/GNUstep/gnustep-howto/index.html">How-To</a></td>
+               <td><a href="User/GNUstep/gnustep-howto.pdf">(PDF)</a></td>
+             </tr>
+             <tr>
+-              <td><a href="User/GNUstep/filesystem_toc.html">Filesystem Layout</a></td>
+-              <td><a href="User/GNUstep/filesystem.pdf">(PDF)</a></td>
++              <td><a href="User/GNUstep/gnustep-filesystem/index.html">Filesystem Layout</a></td>
++              <td><a href="User/GNUstep/gnustep-filesystem.pdf">(PDF)</a></td>
+               </tr>
+           </table>
+         </td>
+@@ -82,12 +82,12 @@
+          <td width="50%">
+            <table>
+              <tr>
+-               <td><a href="Developer/Base/ProgrammingManual/manual_toc.html">Base Programming Manual</a></td>
++               <td><a href="Developer/Base/ProgrammingManual/gs-base/index.html">Base Programming Manual</a></td>
+                <td><a href="Developer/Base/ProgrammingManual/manual.pdf">(PDF)</a></td>
+              </tr>
+              <tr>
+-               <td><a href="Developer/Make/Manual/make_toc.html">Make Utility</a>&nbsp;&nbsp;(<a href="Developer/Make/ReleaseNotes/">Release notes</a>)</td>
+-               <td><a href="Developer/Make/Manual/make.pdf">(PDF)</a></td>
++               <td><a href="Developer/Make/Manual/gnustep-make/index.html">Make Utility</a>&nbsp;&nbsp;(<a href="Developer/Make/ReleaseNotes/">Release notes</a>)</td>
++               <td><a href="Developer/Make/Manual/gnustep-make.pdf">(PDF)</a></td>
+              </tr>
+              <tr>
+                <td><a href="Developer/Tools/Reference/index.html">Command-line Tools</a></td>
+@@ -104,7 +104,7 @@
+                <td><a href="Developer/Base/General/OpenStepCompliance.html">OpenStep and OS X Compliance</a></td>
+              </tr>
+              <tr>
+-               <td><a href="Developer/CodingStandards/coding-standards_toc.html">GNUstep Coding Standards</a></td>
++               <td><a href="Developer/CodingStandards/gs-standards/index.html">GNUstep Coding Standards</a></td>
+                <td><a href="Developer/CodingStandards/coding-standards.pdf">(PDF)</a></td>
+              </tr>
+              <tr>
+@@ -117,8 +117,8 @@
+           portion of GNUstep.
+           <table>
+             <tr>
+-              <td><a href="Developer/Gui/ProgrammingManual/manual_toc.html">GUI Programming Manual</a></td>
+-              <td><a href="Developer/Gui/ProgrammingManual/manual.pdf">(PDF)</a></td>
++              <td><a href="Developer/Gui/ProgrammingManual/AppKit/index.html">GUI Programming Manual</a></td>
++              <td><a href="Developer/Gui/ProgrammingManual/AppKit.pdf">(PDF)</a></td>
+             </tr>
+              <tr><td>&nbsp;</td></tr>
+             <tr>

@@ -1,0 +1,16 @@
+Source: roboto-mono
+Section: fonts
+Priority: optional
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.1.3
+Vcs-Git: https://github.com/TypeNetwork/RobotoMono
+Vcs-Browser: https://github.com/TypeNetwork/RobotoMono
+Homepage: https://github.com/TypeNetwork/RobotoMono
+
+Package: fonts-roboto-mono
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: monospaced version of Roboto
+ Google's Roboto font in a monospace version, by Christian Robertson.

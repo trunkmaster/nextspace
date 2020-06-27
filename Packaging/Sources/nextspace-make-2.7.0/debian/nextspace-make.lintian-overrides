@@ -1,0 +1,5 @@
+# Intentional. Initialization of GNUstep filesystem
+nextspace-make: package-contains-empty-directory
+
+# According to upstream, false positive
+nextspace-make: old-style-config-script usr/bin/nextspace-config
