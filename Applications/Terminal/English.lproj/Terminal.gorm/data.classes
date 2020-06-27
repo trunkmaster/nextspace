@@ -40,8 +40,10 @@
 	    "openSetTitlePanel:",
 	    "openWindow:",
 	    "orderFrontFontPanel:",
+	    "pasteSelection:",
 	    "removeFontTrait:",
-	    "saveSession:"
+	    "saveSession:",
+	    "} - initWithPreferences:"
 	);
 	Super = NSObject;
     };
@@ -51,5 +53,14 @@
 	Outlets = (
 	);
 	Super = NSApplication;
+    };
+    TerminalView = {
+	Actions = (
+	    "} - initWithPreferences:",
+	    "pasteSelection:"
+	);
+	Outlets = (
+	);
+	Super = NSView;
     };
 }

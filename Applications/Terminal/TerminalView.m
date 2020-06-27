@@ -1747,6 +1747,19 @@ static void set_foreground(NSGraphicsContext *gc,
     [tp sendString:str];
 }
 
+// Menu item "Edit > Paste Selection"
+- (void)pasteSelection:(id)sender
+{
+  NSString     *s = [self _selectionAsString];
+  if (!s)
+    {
+      NSBeep();
+      return;
+    }
+  if (s)
+    [tp sendString:s];
+}
+
 // Menu item "Font > Copy Font"
 - (void)copyFont:(id)sender
 {
@@ -3030,6 +3043,8 @@ static int handled_mask = (NSDragOperationCopy |
   if ([itemTitle isEqualToString:@"Clear Buffer"] && (sb_length <= 0))
     return NO;
   if ([itemTitle isEqualToString:@"Copy"] && (selection.length <= 0))
+    return NO;
+  if ([itemTitle isEqualToString:@"Paste Selection"] && (selection.length <= 0))
     return NO;
   if ([itemTitle isEqualToString:@"Copy Font"])
     {
