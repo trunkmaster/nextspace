@@ -42,7 +42,7 @@
 #import "AppController.h"
 #import "Display.h"
 
-NSString *NXTDesktopBackgroundColor = @"DesktopBackgroundColor";
+NSString *NXTDesktopBackgroundColor = @"NXDesktopBackgroundColor";
 
 @implementation DisplayPrefs
 
