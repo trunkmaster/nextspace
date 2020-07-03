@@ -27,8 +27,6 @@ export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/u
 
 export COLUMNS
 
-export LC_CTYPE="en_US.UTF-8"
-
 export NS_SYSTEM="/usr/NextSpace"
 
 # Log file
