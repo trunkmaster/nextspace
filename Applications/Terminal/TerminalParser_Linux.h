@@ -36,7 +36,7 @@
 
 #define TITLE_BUF_SIZE 255
   char title_buf[TITLE_BUF_SIZE+1];
-  int title_len, title_type;
+  unsigned int title_len, title_type;
 
   enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
          EShash, ESsetG0, ESsetG1, ESpercent, ESignore, ESnonstd,

@@ -108,6 +108,7 @@ extern const NSUInteger TitleBarShellPath;
 extern const NSUInteger TitleBarDeviceName;
 extern const NSUInteger TitleBarFileName;
 extern const NSUInteger TitleBarWindowSize;
+extern const NSUInteger TitleBarTermTitle;
 
 @interface Defaults (TitleBar)
 - (NSUInteger)titleBarElementsMask;

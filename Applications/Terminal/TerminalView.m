@@ -2967,6 +2967,15 @@ static int handled_mask = (NSDragOperationCopy |
 // ---
 // Title (window, icon)
 // ---
+- (NSString *)windowTitle
+{
+  return title_window;
+}
+- (NSString *)miniWindowTitle
+{
+  return title_miniwindow;
+}
+
 - (NSString *)programPath
 {
   return programPath;

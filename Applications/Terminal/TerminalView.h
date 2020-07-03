@@ -154,6 +154,8 @@ struct selection_range
 - (void)setDoubleEscape:(BOOL)doubleEscape;
 - (void)setAlternateAsMeta:(BOOL)altAsMeta;
 
+- (NSString *)windowTitle;
+- (NSString *)miniWindowTitle;
 - (NSString *)programPath;
 - (NSString *)deviceName;
 - (NSSize)windowSize;

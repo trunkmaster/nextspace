@@ -426,6 +426,7 @@ const NSUInteger TitleBarShellPath   = 1<<1;
 const NSUInteger TitleBarDeviceName  = 1<<2;
 const NSUInteger TitleBarFileName    = 1<<3;
 const NSUInteger TitleBarWindowSize  = 1<<4;
+const NSUInteger TitleBarTermTitle   = 1<<5;
 
 @implementation Defaults (TitleBar)
 - (NSUInteger)titleBarElementsMask
@@ -437,6 +438,7 @@ const NSUInteger TitleBarWindowSize  = 1<<4;
     {
       titleBarElements = TitleBarShellPath |
                          TitleBarDeviceName |
+                         TitleBarTermTitle |
                          TitleBarWindowSize;
     }
   

@@ -132,13 +132,13 @@ static const unichar *_set_translate(int charset)
                                currcons);                       \
   } while (0)
 
-
 - (void)_reset_terminal
 {
   top		= 0;
   bottom	= height;
   vc_state	= ESnormal;
   ques		= 0;
+  title_len = 0;
 
   translate	= set_translate(LAT1_MAP,currcons);
   G0_charset	= LAT1_MAP;

@@ -253,9 +253,13 @@ NSString *TerminalWindowSizeDidChangeNotification =
 {
   NSString *title;
   NSString *miniTitle = [self shellPath];
+  NSString *terminalWindowTitle = [tView windowTitle];
   NSString *file;
 
   title = [NSString new];
+
+  if (n) 
+    titleBarElementsMask = [preferences titleBarElementsMask]; //called from the notification, rather than directly
   
   if (titleBarElementsMask & TitleBarShellPath)
     title = [title stringByAppendingFormat:@"%@ ", [self shellPath]];
@@ -291,6 +295,18 @@ NSString *TerminalWindowSizeDidChangeNotification =
       else
         {
           title = [title stringByAppendingFormat:@"\u2014 %@", file];
+        }
+    }
+  if ((titleBarElementsMask & TitleBarTermTitle) &&
+      [terminalWindowTitle length])
+    {
+      if ([title length] == 0)
+        {
+          title = [NSString stringWithFormat:@"%@", terminalWindowTitle];
+        }
+      else
+        {
+          title = [title stringByAppendingFormat:@"\u2014 %@", terminalWindowTitle];
         }
     }
 
