@@ -17,7 +17,7 @@ BuildRequires:	clang >= 7.0.1
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
-BuildRequires:	nextspace-core >= 0.95
+BuildRequires:	nextspace-core-devel >= 0.95
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
