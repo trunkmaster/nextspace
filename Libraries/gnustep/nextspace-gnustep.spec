@@ -1,7 +1,7 @@
 %define GS_REPO		https://github.com/gnustep
 %define BASE_VERSION	1_27_0
-%define GUI_VERSION	nextspace
-%define BACK_VERSION	nextspace
+%define GUI_VERSION	    gnustep-gui-nextspace
+%define BACK_VERSION	gnustep-gui-nextspace
 %define GORM_VERSION	1_2_26
 %define PC_VERSION	0_6_2
 
