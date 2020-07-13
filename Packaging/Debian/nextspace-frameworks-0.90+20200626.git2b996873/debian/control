@@ -25,8 +25,7 @@ Package: nextspace-desktopkit0
 Section: gnustep
 Architecture: any
 Depends: ${shlibs:Depends},
-	 ${misc:Depends},
-	 fonts-roboto-mono
+	 ${misc:Depends}
 Multi-Arch: same
 Description: dummy
  dummy

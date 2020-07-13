@@ -18,6 +18,8 @@ create_dsc() {
 	dpkg-source -b .
 }
 
+create_dsc nextspace-$(map_version_from_commit ${nextspace_version})
+
 create_dsc libdispatch-${libdispatch_version}
 create_dsc libobjc2-${libobjc2_version}
 create_dsc nextspace-make-${gnustep_make_version}
@@ -27,7 +29,6 @@ create_dsc nextspace-back-${gnustep_gui_version}
 
 create_dsc nextspace-gorm.app-${gorm_version}
 create_dsc nextspace-projectcenter.app-${projectcenter_version}
-create_dsc roboto-mono-${roboto_mono_version}
 
 create_dsc nextspace-frameworks-$(map_version_from_commit ${nextspace_version})
 create_dsc nextspace-applications-$(map_version_from_commit ${nextspace_version})

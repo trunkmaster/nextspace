@@ -28,6 +28,7 @@ Architecture: all
 Depends: nextspace-common (>= 2.7.0),
          ca-certificates,
          tzdata,
+         nextspace-core,
          ${misc:Depends}
 Description: GNUstep Base library - common files
  The GNUstep Base Library is a powerful fast library of
