@@ -12,7 +12,7 @@ create_dsc() {
 	cd "$dir"
 	if [ -f debian/patches/series ]; then
 		cat debian/patches/series | while read filename; do
-			patch -p1 -i "debian/patches/$filename"
+			patch -N -p1 -i "debian/patches/$filename"
 	       	done
 	fi
 	dpkg-source -b .
