@@ -492,41 +492,41 @@
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   TerminalWindowController *twc;
-  BOOL ask = NO;
+  NSInteger alertChoice;
   
-  if (![self numberOfActiveTerminalWindows])
-    {
-      return NSTerminateNow;
-    }
+  if (![self numberOfActiveTerminalWindows]) {
+    return NSTerminateNow;
+  }
 
   // manually check state of windows
   [self checkTerminalWindowsState];
   
-  for (NSString *windowKey in windows)
-    {
-      twc = [windows objectForKey:windowKey];
-      if ([[twc window] isDocumentEdited])
-        {
-          ask = YES;
-        }
+  for (NSString *windowKey in windows) {
+    twc = [windows objectForKey:windowKey];
+    if ([[twc window] isDocumentEdited]) {
+      break;
     }
+    else {
+      twc = nil;
+    }
+  }
 
-  if (ask)
-    {
-      [NSApp activateIgnoringOtherApps:YES];
-      if (NXTRunAlertPanel((@"Quit"),
-                          (@"You have commands running in some terminal windows.\n"
-                           "Quit Terminal terminating running commands?"),
-                          (@"Don't quit"), (@"Quit"), nil)
-          == NSAlertAlternateReturn)
-        {
-          return NSTerminateNow;
-        }
-      else
-        {
-          return NSTerminateLater;
-        }
+  if (twc != nil) {
+    [NSApp activateIgnoringOtherApps:YES];
+    alertChoice = NXTRunAlertPanel((@"Quit"),
+                                   (@"Some windows have running commands."),
+                                   (@"Review"), (@"Quit Anyway"), (@"Cancel"));
+
+    if (alertChoice == NSAlertAlternateReturn) {
+      return NSTerminateNow;
     }
+    else {
+      if (alertChoice == NSAlertDefaultReturn) {
+        [[twc window] makeKeyAndOrderFront:self];
+      }
+      return NSTerminateLater;
+    }
+  }
 
   return NSTerminateNow;
 }
