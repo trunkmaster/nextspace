@@ -2925,6 +2925,10 @@ static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
     for (i = 0; i < argc; i++)
       args[i] = argv[i];
 
+    sigset_t sigs;
+    sigfillset(&sigs);
+    sigprocmask(SIG_UNBLOCK, &sigs, NULL);
+
     args[argc] = NULL;
     execvp(argv[0], args);
     exit(111);
