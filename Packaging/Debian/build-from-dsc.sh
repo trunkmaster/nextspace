@@ -18,6 +18,8 @@ build() {
 
 method=${1-pbuilder}
 
+build "nextspace" "$(map_version_from_commit ${nextspace_version})"
+
 build "libdispatch" "${libdispatch_version}"
 build "libobjc2" "${libobjc2_version}"
 build "nextspace-make" "${gnustep_make_version}"
@@ -27,8 +29,6 @@ build "nextspace-back" "${gnustep_back_version}"
 
 build "nextspace-gorm.app" "${gorm_version}"
 build "nextspace-projectcenter.app" "${projectcenter_version}"
-
-build "roboto-mono" "${roboto_mono_version}"
 
 build "nextspace-frameworks" "$(map_version_from_commit ${nextspace_version})"
 build "nextspace-applications" "$(map_version_from_commit ${nextspace_version})"

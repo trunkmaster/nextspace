@@ -41,7 +41,6 @@ git_remote_archive https://github.com/gnustep/libs-back nextspace-back ${gnustep
 git_remote_archive https://github.com/gnustep/apps-gorm nextspace-gorm.app ${gorm_version} gorm-${gorm_version//./_}
 git_remote_archive https://github.com/gnustep/apps-projectcenter nextspace-projectcenter.app ${projectcenter_version} projectcenter-${projectcenter_version//./_}
 
-git_remote_archive https://github.com/TypeNetwork/RobotoMono roboto-mono ${roboto_mono_version} ${roboto_mono_checkout}
-
 git_local_archive ${nextspace_version} Frameworks nextspace-frameworks
 git_local_archive ${nextspace_version} Applications nextspace-applications
+git_local_archive ${nextspace_version} System nextspace

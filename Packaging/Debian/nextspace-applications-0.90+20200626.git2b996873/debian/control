@@ -4,6 +4,7 @@ Maintainer: Patrick Georgi <patrick@georgi.software>
 Build-Depends: debhelper-compat (= 12),
 	automake,
 	fontconfig,
+	libbrotli-dev,
 	libbsd-dev,
 	libpam0g-dev,
 	libwraster-dev,

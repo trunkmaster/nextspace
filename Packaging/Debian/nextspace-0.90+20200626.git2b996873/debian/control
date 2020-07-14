@@ -1,0 +1,35 @@
+Source: nextspace
+Priority: optional
+Maintainer: Patrick Georgi <patrick@georgi.software>
+Build-Depends: debhelper-compat (= 12),
+	nextspace-make
+Standards-Version: 4.5.0
+Section: gnustep
+Homepage: https://github.com/trunkmaster/nextspace
+Vcs-Browser: https://github.com/trunkmaster/nextspace
+Vcs-Git: https://github.com/trunkmaster/nextspace
+
+Package: nextspace-core
+Section: gnustep
+Architecture: all
+Depends: ${misc:Depends},
+Description: System-wide configuration for the NEXTSPACE system
+ Default configuration for the shell, gnustep, init system and whatever is
+ needed to bring up NEXTSPACE correctly.
+
+Package: nextspace-desktop
+Section: gnustep
+Architecture: all
+Recommends: nextspace-projectcenter.app,
+	    nextspace-gorm.app
+Depends: ${misc:Depends},
+	 nextspace-login.app,
+	 nextspace-workspace.app,
+	 nextspace-timemon.app,
+	 nextspace-textedit.app,
+	 nextspace-terminal.app,
+	 nextspace-openup.app,
+	 nextspace-preferences.app
+Description: NEXTSPACE Desktop Environment
+ The GNUstep based desktop environment that strives to implement the
+ look and feel of OpenStep on a modern Linux base.

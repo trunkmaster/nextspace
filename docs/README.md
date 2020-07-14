@@ -2,7 +2,7 @@
 
 General
 ---
-- Based on latest release of GNUstep libraries with some custom patches and improvements which are left unmerged to `master` branch. GNUstep GUI and Back now have `nextspace` branch to hold these specific changes.
+- Based on latest release of GNUstep libraries with some custom patches and improvements which are left unmerged to `master` branch. GNUstep GUI and Back now have `gnustep-gui-nextspace` and `gnustep-back-nextspace` branches to hold these specific changes.
 - Switched to use LLVM/clang from distribution repositories (SCL for CentOS 7, CentOS 8 and Fedora already have correct compiler).
 - Reduced debug output to console.
 - WRaster library moved out of Workspace and can be used by GNUstep Back as shared library.
