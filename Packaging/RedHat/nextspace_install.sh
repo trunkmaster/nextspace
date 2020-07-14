@@ -29,7 +29,7 @@ if [ $YN != "y" ]; then
     exit
 fi
 
-# Add EPEL package repository
+# Add EPEL package repository if needed
 if [ $EPEL_REPO != "" ]; then
     echo -n "Checking for EPEL repository installed..."
     yum repolist | grep "epel" 2>&1 > /dev/null
@@ -80,6 +80,13 @@ if [ $? -eq 0 ];then
     echo -e -n "\e[0m"
     echo "Configuring SELinux (SELINUX=disabled)..."
     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+    echo "+------------------------------------------------------------------------------+"
+    echo "| SELinux configuration has been changed. Linux needs reboot to apply changes. |"
+    echo "| Run this script after reboot to continue installation of NEXTSPACE.          |"
+    echo "+------------------------------------------------------------------------------+"
+    echo "  Press Enter to reboot or Crtl-C to cancel reboot and quit..."
+    read YN
+    shutdown -r now
 else
     echo -e -n "\e[32m"
     echo "good"
