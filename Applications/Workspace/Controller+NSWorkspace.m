@@ -342,18 +342,37 @@ static NSString		*_rootPath = @"/";
 
       appBundle = [[NSBundle alloc] initWithPath:fullPath];
       appInfo = [appBundle infoDictionary];
-      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
-                                     ofType:nil];
-      
+      if (!appInfo) {
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\".\n"
+                           "Application info dictionary was not found or broken."), 
+                         nil, nil, nil, appName);
+        return NO;
+      }
       wmName = [appInfo objectForKey:@"NSExecutable"];
+      if (!wmName) {
+        NSLog(@"No application NSExecutable found.");
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\".\n"
+                           "Executable name is unknown (info doctionary is broken)."),
+                         nil, nil, nil, appName);
+        return NO;
+      }
       if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
         wmName = [NSString stringWithFormat:@"%@.GNUstep",
                            [wmName stringByDeletingPathExtension]];
       }
       launchPath = [self locateApplicationBinary:fullPath];
       if (launchPath == nil) {
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\".\n"
+                           "Executable \"%@\" was not found.\n"),
+                         nil, nil, nil, appName, fullPath);
         return NO;
       }
+      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
+                                     ofType:nil];
+      
       WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
       
       if ([self launchApplication:fullPath] == NO) {
@@ -363,7 +382,7 @@ static NSString		*_rootPath = @"/";
         return NO;
       }
       return YES;
-    }
+  }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
            [fileType isEqualToString:NSFilesystemFileType] ||
            [wrappers containsObject:[fullPath pathExtension]]) {

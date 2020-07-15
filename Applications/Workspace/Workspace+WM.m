@@ -1059,18 +1059,28 @@ WAppIcon *_findLaunchingIcon(char *wm_instance, char *wm_class)
 // wmName is in 'wm_instance.wm_class' format
 static NSLock *raceLock = nil;
 WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
-                                 NSString *launchPath,
-                                 NSImage *anImage,
-                                 NSPoint sourcePoint,
-                                 NSString *imagePath)
+                                NSString *launchPath,
+                                NSImage *anImage,
+                                NSPoint sourcePoint,
+                                NSString *imagePath)
 {
   NSPoint    iconPoint = {0, 0};
   BOOL       iconFound = NO;
   WScreen    *scr = wDefaultScreen();
   WAppIcon   *appIcon;
-  NSArray    *wmNameParts = [wmName componentsSeparatedByString:@"."];
-  const char *wmInstance = [[wmNameParts objectAtIndex:0] cString];
-  const char *wmClass = [[wmNameParts objectAtIndex:1] cString];
+  NSArray    *wmNameParts;
+  const char *wmInstance;
+  const char *wmClass;
+
+  if (wmName != nil) {
+    wmNameParts = [wmName componentsSeparatedByString:@"."];
+    wmInstance = [[wmNameParts objectAtIndex:0] cString];
+    wmClass = [[wmNameParts objectAtIndex:1] cString];
+  }
+  else {
+    // Can't create launching icon without application name
+    return NULL;
+  }
 
   if (!raceLock) raceLock = [NSLock new];
   [raceLock lock];
@@ -1109,8 +1119,10 @@ WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
     appIcon->icon->core->descriptor.handle_mousedown = NULL;
     appIcon->launching = 1;
     _addLaunchingIcon(appIcon);
-    
-    wIconChangeImageFile(appIcon->icon, [imagePath cString]);
+
+    if (imagePath && [imagePath length] > 0) {
+      wIconChangeImageFile(appIcon->icon, [imagePath cString]);
+    }
     // NSLog(@"First icon in launching list for: %s.%s",
     //       launchingIcons->wm_instance, launchingIcons->wm_class);
 
