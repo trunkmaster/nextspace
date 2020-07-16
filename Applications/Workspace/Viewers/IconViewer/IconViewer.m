@@ -346,24 +346,6 @@ static NSRect viewFrame;
   
   return self;
 }
-- (NSArray*) selectedPaths
-{
-  if (!currentPath) return nil;
-
-  NSMutableArray* ls = [NSMutableArray new];
-  if ([selection count] > 0) {
-    for (NSString* path in selection) {
-      path = [[rootPath stringByAppendingPathComponent:currentPath] stringByAppendingPathComponent:path];
-      [ls addObject:path];
-    }
-    return ls;
-  }
-  else {
-    [ls addObject:currentPath];
-  }
-  
-  return ls;
-}
 
 //=============================================================================
 // <Viewer> protocol methods
@@ -425,6 +407,31 @@ static NSRect viewFrame;
 - (void)setNumberOfEmptyColumns:(NSInteger)num
 {
   // Do nothing: Viewer protocol method
+}
+
+- (NSArray *)selectedPaths
+{
+  NSMutableArray *pathList;
+  NSString       *pathPrefix;
+  
+  if (!currentPath)
+    return nil;
+
+  pathList = [NSMutableArray new];
+  pathPrefix = [rootPath stringByAppendingPathComponent:currentPath];
+  
+  if ([selection count] > 0) {
+    for (NSString *path in selection) {
+      path = [pathPrefix stringByAppendingPathComponent:path];
+      [pathList addObject:path];
+    }
+    return pathList;
+  }
+  else {
+    [pathList addObject:currentPath];
+  }
+  
+  return pathList;
 }
 
 //=============================================================================
