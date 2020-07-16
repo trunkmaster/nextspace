@@ -742,7 +742,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [self openNewViewerIfNotExistRootedAt:path];
     }
     else {
-      [self openFile:path];
+      path = [path stringByDeletingLastPathComponent];
+      [self openNewViewerIfNotExistRootedAt:path];
     }
   }
   else {
