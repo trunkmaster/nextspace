@@ -530,7 +530,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     WDock    *dock = wDefaultScreen()->dock;
 
     [self updateWorkspaceBadge];
-    [self updateKeyboardBadge:@"US"];
+    WSKeyboardGroupDidChange(0);
       
     // Detect lid close/open events
     systemPower = [OSEPower new];
