@@ -652,9 +652,12 @@ WScreen *wScreenInit(int screen_number)
    */
   if (w_global.xext.xkb.supported) {
     unsigned int auto_ctrls, auto_values;
-    unsigned long int mask = (XkbStateNotifyMask | XkbBellNotifyMask);
-    /* XkbSelectEvents(dpy, XkbUseCoreKbd, XkbStateNotifyMask, XkbStateNotifyMask); */
-    XkbSelectEvents(dpy, XkbUseCoreKbd, mask, mask);
+    /* unsigned long int mask = (XkbStateNotifyMask | XkbBellNotifyMask); */
+    /* XkbSelectEvents(dpy, XkbUseCoreKbd, mask, mask); */
+    XkbSelectEventDetails(dpy, XkbUseCoreKbd, XkbStateNotify,
+                          XkbAllStateComponentsMask, XkbGroupStateMask);
+    XkbSelectEventDetails (dpy, XkbUseCoreKbd, XkbBellNotify,
+                           XkbAllBellEventsMask, XkbAllBellEventsMask);
     auto_ctrls = auto_values = XkbAudibleBellMask;
     XkbSetAutoResetControls(dpy, XkbAudibleBellMask, &auto_ctrls, &auto_values);
     XkbChangeEnabledControls(dpy, XkbUseCoreKbd, XkbAudibleBellMask, 0);
