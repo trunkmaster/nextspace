@@ -78,7 +78,6 @@
   unsigned   _dragMask;
 }
 
-- (NSArray*) selectedPaths;
 - (void)open:(id)sender;
 
 @end

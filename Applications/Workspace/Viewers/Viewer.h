@@ -40,6 +40,7 @@
 - (void)setOwner:(FileViewer *)owner;
 - (void)setRootPath:(NSString *)rootPath;
 - (NSString *)fullPath;
+- (NSArray *)selectedPaths;
 
 - (CGFloat)columnWidth;
 - (void)setColumnWidth:(CGFloat)width;
