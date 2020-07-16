@@ -120,7 +120,7 @@ static void handleShapeNotify(XEvent *event);
 
 #ifdef KEEP_XKB_LOCK_STATUS
 static void handleXkbBellNotify(XkbEvent *event);
-static void handleXkbIndicatorStateNotify(XkbEvent *event);
+static void handleXkbStateNotify(XkbEvent *event);
 #endif
 
 /* real dead process handler */
@@ -587,8 +587,8 @@ static void handleExtensions(XEvent * event)
     if (e->any.xkb_type == XkbBellNotify) {
       handleXkbBellNotify(e);
     }
-    else if (e->any.xkb_type == XkbIndicatorStateNotify) {
-      handleXkbIndicatorStateNotify(e);
+    else if (e->any.xkb_type == XkbStateNotify) {
+      handleXkbStateNotify(e);
     }
   }
 #endif				/*KEEP_XKB_LOCK_STATUS */
@@ -1375,7 +1375,7 @@ static void handleXkbBellNotify(XkbEvent *event)
   }
 }
 /* please help ]d if you know what to do */
-static void handleXkbIndicatorStateNotify(XkbEvent *event)
+static void handleXkbStateNotify(XkbEvent *event)
 {
   WWindow *wwin;
   WScreen *scr;
