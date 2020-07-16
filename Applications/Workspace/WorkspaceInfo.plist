@@ -4,4 +4,14 @@
     "Saso Kiselkov",
     "Sergii Stoian"
   );
+  NSServices = (
+    {
+      NSPortName = Workspace;
+      NSMessage = openFileViewerService;
+      NSSendTypes = ( NSStringPboardType );
+      NSMenuItem = {
+        default = "Open in Workspace";
+      };
+    }
+  );
 }
