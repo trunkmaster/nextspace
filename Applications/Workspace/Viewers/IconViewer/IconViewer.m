@@ -189,7 +189,7 @@ static NSRect viewFrame;
 - (id)validRequestorForSendType:(NSString *)st
                      returnType:(NSString *)rt
 {
-  NSString* currentPath = [[[self delegate]selectedPaths]firstObject];
+  NSString* currentPath = [[[self delegate] selectedPaths] firstObject];
   if (currentPath && [st isEqual:NSStringPboardType])
     return self;
   else
