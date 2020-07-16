@@ -1652,6 +1652,13 @@ void WSKeyboardGroupDidChange(int group)
 {
   OSEKeyboard *keyboard = [OSEKeyboard new];
   NSString    *layout = [[keyboard layouts] objectAtIndex:group];
+
+  if ([[keyboard layouts] count] <= 1) {
+    layout = @"";
+  }
+  else {
+    layout = [[keyboard layouts] objectAtIndex:group];
+  }
   
   [[NSApp delegate] performSelectorOnMainThread:@selector(updateKeyboardBadge:)
                                      withObject:layout
