@@ -189,16 +189,19 @@ static NSRect viewFrame;
 - (id)validRequestorForSendType:(NSString *)st
                      returnType:(NSString *)rt
 {
-  NSString* currentPath = [[[self delegate] selectedPaths] firstObject];
+  NSString *currentPath = [[[self delegate] selectedPaths] firstObject];
+  
   if (currentPath && [st isEqual:NSStringPboardType])
     return self;
   else
     return nil;
 }
 
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard*) pb types:(NSArray*) types
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pb
+                             types:(NSArray *)types
 {
-  NSString* currentPath = [[[self delegate] selectedPaths] firstObject];
+  NSString *currentPath = [[[self delegate] selectedPaths] firstObject];
+  
   if (currentPath) {
     [pb declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
     [pb setString:currentPath forType:NSStringPboardType];
