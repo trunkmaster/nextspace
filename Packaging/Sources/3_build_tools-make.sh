@@ -1,12 +1,12 @@
 #!/bin/bash
 
+cp ../Debian/nextspace-make-2.7.0/debian/nextspace.fsl ./nextspace-make-2.7.0/FilesystemLayouts/nextspace || exit 1
+
 cd ./nextspace-make-2.7.0
 
 export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
 export LD=/usr/bin/ld.gold
 export LDFLAGS="-fuse-ld=/usr/bin/ld.gold -Wl,-rpath,/usr/NextSpace/lib -L/usr/NextSpace/lib"
-
-cp debian/nextspace.fsl FilesystemLayouts/nextspace
 
 make clean
 sh ./configure \

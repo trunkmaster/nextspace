@@ -2,9 +2,7 @@
 
 . /Developer/Makefiles/GNUstep.sh
 
-export LDFLAGS="-Wl,-rpath,/usr/NextSpace/lib"
-
-cd ./nextspace-base-1.27.0
+cd ./nextspace-base-1.27.0 || exit 1
 
 make clean
 ./configure || exit 1
