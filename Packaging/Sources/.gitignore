@@ -1,11 +1,1 @@
-*.orig.tar.gz
-*.debian.tar.xz
-*.dsc
-*.deb
-*.asc
-*_*.build
-*_*.buildinfo
-*_*.changes
 */**
-!*/debian/**
-!*/debian

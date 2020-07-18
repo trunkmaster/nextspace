@@ -1,99 +1,39 @@
-# Creating Debian packages
+# Building NEXTSPACE from sources
 
-The scripts in this directory are supposed to ease the creation of Debian
-packages. The focus in on Debian sid (i.e. unstable), but tweaks for
-other systems using dpkg are permitted.
+The scripts in this directory should make it easier to build NEXTSPACE and libraries it depends on from source. List of dependencies as well as their respective versions is taken from Debian package build process. 
 
-## Creating the source tarballs
+### prepare sources for build
 
-To avoid cluttering up git with lots of tarballs, a script generates
-them on the fly. For this, run
+The script will clone repos to current directory and apply patches from Debian package build.
 
-    $ ./download-origs.sh
+    $ ./0_prepare_sources.sh
 
-## Creating source package files
+You may get a warning that some patches have been applied already, this is usually OK because the source code in repository may be newer than what Debian package should be used for building.
 
-These are created by running
+### build and install each dependency
 
-    $ ./create-dscs.sh
+Dependencies have to be built and installed in predetermined order like this:
 
-This overwrites most of the work that may have been done in the package
-source subdirectories, so when working on the packages, rebuild the dsc
-files manually, by running `dpkg-source -b .`.
+    $ sudo ./1_build_libobjc2.sh
+    $ sudo ./2_build_libdispatch.sh
+    $ sudo ./3_build_tools-make.sh
+    $ sudo ./4_build_libs-base.sh
+    $ sudo ./5_build_libs-gui.sh
+    $ sudo ./6_build_libs-back.sh
 
-You may have to setup GnuPG with a set of keys so it can sign the results.
+Once you install everything for the very first time, you can more selective as to what to build.
 
-## Building packages from dsc
+### build and install NEXTSPACE itself
 
-There are many ways to build debian packages and the tested one is based on `pbuilder`.
+Building NEXTSPACE will simply use this source tree.
 
-### Setting up pbuilder
+    # sudo ./7_build_Frameworks.sh
+    # sudo ./8_build_Applications.sh
 
-The way pbuilder works is by creating a chroot with a Debian system inside
-that contains only the base packages. From there it installs the build
-dependencies of your package, builds it and finally extracts the .deb file
-from within the chroot to store it in `/var/cache/pbuilder/result`. That
-initial system comes from a cached filesystem tarball that you have to
-create first, using
+### installing default profile and configuration
 
-    $ sudo pbuild create --distribution sid
+Before you can run NEXTSTEP, you need to make sure you install various scripts and configurations that the NEXTSTEP depends on at runtime. Some stuff is system-wide and it need to be installed by root, other is installed in user's home directory. For this reason you should run the following installation script twice. 
 
-If you want to build for a different distribution, adapt as appropriate
-(but sid is the best tested distribution).
+    # sudo ./9_install_scripts.sh
+    $ ./9_install_scripts.sh
 
-### Setting up local packages in pbuilder
-
-Since the packages depend on another but are generated independently,
-pbuilder needs access to the packages it built in an earlier run. The
-easiest way to do that is to make pbuilder's results directory a
-package archive for pbuilder.
-
-Edit `/etc/pbuilderrc` to contain the lines
-
-    HOOKDIR=/etc/pbuilder/hook.d
-    BINDMOUNTS=/var/cache/pbuilder/result
-
-And add a file `/etc/pbuilder/hook.d/D05self-archive` containing
-
-    apt-get install --assume-yes apt-utils
-    
-    cd /var/cache/pbuilder/result/
-    rm -f InRelease Packages Packages.gz Release Release.gpg Sources Sources.gz
-    
-    apt-ftparchive packages . > /var/cache/pbuilder/result/Packages
-    apt-ftparchive release . > Release
-    apt-ftparchive sources . > Sources 2>/dev/null
-    
-    cat<<EOF >/etc/apt/sources.list.d/apt-ftparchive.list
-    deb [trusted=yes] file:///var/cache/pbuilder/result/ ./
-    EOF
-    
-    cat<<EOF >/etc/apt/preferences
-    Package: *
-    Pin: release o=pbuilder
-    Pin-Priority: 701
-    EOF
-    
-    apt-get -qy update
-
-Finally make the file executable with
-`chmod +x /etc/pbuilder/hook.d/D05self-archive`.
-
-### Building a package
-
-This is as simple as running
-
-    $ sudo pbuilder build [package.dsc]
-
-There's a convenience script to build them all in the right order:
-
-    $ ./build-from-dsc.sh
-
-# Credits
-
-This integration used several sources that informed how the packages are built:
-
-* [Debian's pbuilder Tricks page](https://wiki.debian.org/PbuilderTricks) provided the base for the pbuilder hooks.
-* [gnustep-build](https://github.com/plaurent/gnustep-build) helped figuring out some of configuration details required to integrate libobjc2.
-* Debian packages were reused as much as possible: gnustep-{make,base,gui,back}, but renamed to nextspace-\* so they can be installed side-by-side.
-* trunkmaster's helpful advice in here
