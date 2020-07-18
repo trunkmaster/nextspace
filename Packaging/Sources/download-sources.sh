@@ -1,34 +1,21 @@
 #!/bin/bash
 set -e
 
-. versions.inc.sh
+. ../Debian/versions.inc.sh
 
 git_remote_archive() {
 	local url="$1"
-	local tarfile="$2_$3.orig.tar.gz"
-	local prefix="$2-$3/"
-	local branch="$4"
+  local dest="$2-$3"
 
-	if [ -f "$tarfile" ]; then
-		return
-	fi
-	rm -rf tmp
-	git clone --recurse-submodules "$url" tmp
-	git archive --prefix="$prefix" --remote=file://$PWD/tmp/ -o "$tarfile" "$branch"
-	rm -rf tmp
+  if [ -d "$dest" ];then
+    echo "$dest exists, skipping"
+  else
+	  git clone --recurse-submodules "$url" "$dest"
+  fi
 }
 
-git_local_archive() {
-	local pwd=$PWD
-	local commitid="$1"
-	local path="$2"
-	local version=$(map_version_from_commit $commitid)
-	local tarfile="$3_${version}.orig.tar.gz"
-	local treeish="$(git ls-tree -d $commitid ../../$path |awk '{print $3;}')"
-	cd ../..
-	git archive -o "$pwd/$tarfile" --prefix="$3-${version}/" $treeish
-	cd $pwd
-}
+[ ! -x Applications ] && ln -s ../../Applications Applications
+[ ! -x Frameworks ] && ln -s ../../Frameworks Frameworks
 
 git_remote_archive https://github.com/apple/swift-corelibs-libdispatch libdispatch ${libdispatch_version} swift-${libdispatch_version}-RELEASE
 
@@ -42,6 +29,3 @@ git_remote_archive https://github.com/gnustep/apps-gorm nextspace-gorm.app ${gor
 git_remote_archive https://github.com/gnustep/apps-projectcenter nextspace-projectcenter.app ${projectcenter_version} projectcenter-${projectcenter_version//./_}
 
 git_remote_archive https://github.com/TypeNetwork/RobotoMono roboto-mono ${roboto_mono_version} ${roboto_mono_checkout}
-
-git_local_archive ${nextspace_version} Frameworks nextspace-frameworks
-git_local_archive ${nextspace_version} Applications nextspace-applications

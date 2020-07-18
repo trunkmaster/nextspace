@@ -1,21 +1,22 @@
 #!/bin/bash
 
-. versions.inc.sh
+. ../Debian/versions.inc.sh
 
 rootdir="$(pwd)"
+patchdir=`readlink -f ../Debian`
 
 create_dsc() {
 	local dir="$1"
 
-	cd "$rootdir"
-	tar xf ${dir//-/?}.orig.tar.gz
-	cd "$dir"
-	if [ -f debian/patches/series ]; then
-		cat debian/patches/series | while read filename; do
-			patch -p1 -i "debian/patches/$filename"
-	       	done
-	fi
-	dpkg-source -b .
+  cd $rootdir
+  if [ -d $dir ];then
+    cd $dir
+    if [ -f $patchdir/$dir/debian/patches/series ];then
+      cat $patchdir/$dir/debian/patches/series | while read filename; do
+        patch -p1 -i $patchdir/$dir/debian/patches/$filename
+       done
+    fi
+  fi
 }
 
 create_dsc libdispatch-${libdispatch_version}

@@ -1,2 +1,0 @@
-# The bundles and binaries from -runtime are required, so is -back.
-libnextspace-gui0.28: shlibs-declares-dependency-on-other-package
