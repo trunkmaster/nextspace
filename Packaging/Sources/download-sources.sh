@@ -6,11 +6,12 @@ set -e
 git_remote_archive() {
 	local url="$1"
   local dest="$2-$3"
+  local branch="$4"
 
   if [ -d "$dest" ];then
     echo "$dest exists, skipping"
   else
-	  git clone --recurse-submodules "$url" "$dest"
+	  git clone --branch $branch --recurse-submodules "$url" "$dest"
   fi
 }
 
