@@ -8,8 +8,6 @@ The script will clone repos to current directory and apply patches from Debian p
 
     $ ./0_prepare_sources.sh
 
-You may get a warning that some patches have been applied already, this is usually OK because the source code in repository may be newer than what Debian package should be used for building.
-
 ### build and install each dependency
 
 Dependencies have to be built and installed in predetermined order like this:
