@@ -2,16 +2,21 @@
 set -e
 
 . ../Debian/versions.inc.sh
+ROOT="$PWD"
 
 git_remote_archive() {
 	local url="$1"
   local dest="$2-$3"
   local branch="$4"
 
+  cd "$ROOT"
+  
   if [ -d "$dest" ];then
     echo "$dest exists, skipping"
   else
-	  git clone --branch $branch --recurse-submodules "$url" "$dest"
+	  git clone --recurse-submodules "$url" "$dest"
+    cd "$dest"
+    git checkout $branch
   fi
 }
 
