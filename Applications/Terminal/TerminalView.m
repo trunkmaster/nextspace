@@ -1025,7 +1025,6 @@ static void set_foreground(NSGraphicsContext *gc,
 
 - (void)ts_setTitle:(NSString *)new_title type:(int)title_type
 {
-  NSLog(@"ts_setTitle: %@ [%i]", new_title, title_type);
   NSDebugLLog(@"ts",@"setTitle: %@  type: %i",new_title,title_type);
   
   if (title_type == 1 || title_type == 0)
