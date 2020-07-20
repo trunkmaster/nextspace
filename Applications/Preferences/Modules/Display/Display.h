@@ -56,5 +56,3 @@
 - (void)selectFirstEnabledMonitor;
 
 @end
-
-extern NSString *NXTDesktopBackgroundColor;

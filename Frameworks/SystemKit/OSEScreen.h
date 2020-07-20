@@ -141,6 +141,9 @@
 
 @end
 
+// NXGlobalDefaults desktop background key
+extern NSString *OSEDesktopBackgroundColor;
+
 // Displays.config user path
 #define DISPLAYS_CONFIG @"~/Library/Preferences/Displays.config"
 #define LAYOUTS_DIR     @"~/Library/Preferences/.NextSpace"

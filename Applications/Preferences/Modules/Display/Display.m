@@ -37,12 +37,9 @@
 #import <SystemKit/OSEDisplay.h>
 
 #import <dispatch/dispatch.h>
-// #import <X11/Xlib.h>
 
 #import "AppController.h"
 #import "Display.h"
-
-NSString *NXTDesktopBackgroundColor = @"NXDesktopBackgroundColor";
 
 @implementation DisplayPrefs
 
@@ -346,7 +343,7 @@ NSString *NXTDesktopBackgroundColor = @"NXDesktopBackgroundColor";
               @"Green": [NSNumber numberWithFloat:[color greenComponent]],
               @"Blue":  [NSNumber numberWithFloat:[color blueComponent]],
               @"Alpha": [NSNumber numberWithFloat:1.0]};
-    [defs setObject:dBack forKey:NXTDesktopBackgroundColor];
+    [defs setObject:dBack forKey:OSEDesktopBackgroundColor];
   }
 }
 
