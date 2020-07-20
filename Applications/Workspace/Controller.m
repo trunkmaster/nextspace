@@ -518,7 +518,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
-  //NSUpdateDynamicServices();
   // [[NSWorkspace sharedWorkspace] findApplications];
 
   procManager = [ProcessManager shared];
@@ -566,6 +565,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSUserDefaults       *df = [NSUserDefaults standardUserDefaults];
+
+  // init services
+  [NSApp setServicesProvider:self];
+  //NSUpdateDynamicServices();
 
   // Initialize private NSWorkspace implementation
   [self initNSWorkspace];
@@ -723,6 +726,30 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)applicationDidChangeScreenParameters:(NSNotification*)aNotification
 {
   WSUpdateScreenParameters();
+}
+
+- (void)openFileViewerService:(NSPasteboard *)pboard
+                     userData:(NSString *)userData
+                        error:(NSString **)error
+{
+  NSString *path = [[pboard stringForType:NSStringPboardType] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\n\r"]];
+  BOOL isDir = FALSE;
+  path = [path stringByStandardizingPath];
+
+  NSFileManager *fm = [NSFileManager defaultManager];
+  if ([fm fileExistsAtPath:path isDirectory:&isDir]) {
+    if (isDir && [[NSWorkspace sharedWorkspace] isFilePackageAtPath:path] == NO) {
+      [self openNewViewerIfNotExistRootedAt:path];
+    }
+    else {
+      path = [path stringByDeletingLastPathComponent];
+      [self openNewViewerIfNotExistRootedAt:path];
+    }
+  }
+  else {
+    *error = [NSString stringWithFormat:@"path \"%@\" does not exist", path];
+  }
+  
 }
 
 //============================================================================
