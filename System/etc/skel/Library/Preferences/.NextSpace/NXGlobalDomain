@@ -3,7 +3,7 @@
   ClockView24HourFormat = YES;
   ShowHiddenFiles = NO;
   SortFilesBy = <*I1>;
-  NXDesktopBackgroundColor = {
+  DesktopBackgroundColor = {
    Alpha = 1.0;
    Red = 83;
    Green = 83;
