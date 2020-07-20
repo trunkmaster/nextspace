@@ -17,6 +17,7 @@
 	    "showDefault:"
 	);
 	Outlets = (
+	    xtermTitleBtn,
 	    customTitleBtn,
 	    customTitleField,
 	    deviceNameBtn,

@@ -1029,10 +1029,10 @@ static void set_foreground(NSGraphicsContext *gc,
   NSDebugLLog(@"ts",@"setTitle: %@  type: %i",new_title,title_type);
   
   if (title_type == 1 || title_type == 0)
-    ASSIGN(title_miniwindow, new_title);
+    ASSIGN(xtermIconTitle, new_title);
   
   if (title_type == 2 || title_type == 0)
-    ASSIGN(title_window, new_title);
+    ASSIGN(xtermTitle, new_title);
   
   [[NSNotificationCenter defaultCenter]
 		postNotificationName:TerminalViewTitleDidChangeNotification
@@ -2351,11 +2351,11 @@ static void set_foreground(NSGraphicsContext *gc,
                               object:self];
 
   // Setup titles
-  DESTROY(title_window);
+  DESTROY(xtermTitle);
   childTerminalName = [[NSString stringWithCString:tty_name] retain];
   free(tty_name);
 
-  ASSIGN(title_miniwindow, path);
+  ASSIGN(xtermIconTitle, path);
   
   [[NSNotificationCenter defaultCenter]
 		postNotificationName:TerminalViewTitleDidChangeNotification
@@ -2795,8 +2795,8 @@ static int handled_mask = (NSDragOperationCopy |
   DESTROY(boldFont);
 
   DESTROY(childTerminalName);
-  DESTROY(title_window);
-  DESTROY(title_miniwindow);
+  DESTROY(xtermTitle);
+  DESTROY(xtermIconTitle);
 
   DESTROY(programPath);
 
@@ -2985,6 +2985,16 @@ static int handled_mask = (NSDragOperationCopy |
 // ---
 // Title (window, icon)
 // ---
+- (NSString *)xtermTitle
+{
+  return xtermTitle;
+}
+
+- (NSString *)xtermIconTitle
+{
+  return xtermIconTitle;
+}
+
 - (NSString *)programPath
 {
   return programPath;

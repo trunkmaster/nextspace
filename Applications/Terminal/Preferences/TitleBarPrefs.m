@@ -60,6 +60,9 @@
     mask |= TitleBarWindowSize;
   if ([customTitleBtn state] == NSOnState)
     mask |= TitleBarCustomTitle;
+  if ([xtermTitleBtn state] == NSOnState)
+    mask |= TitleBarXTermTitle;
+
 
   return mask;
 }
@@ -108,7 +111,19 @@
           title = [title stringByAppendingFormat:@"\u2014 %@", [twc fileName]];
         }
     }
-  
+
+   if (elementsMask & TitleBarXTermTitle)
+    {
+      if ([title length] == 0)
+        {
+          title = [NSString stringWithFormat:@"%@", @"Shell Title"];
+        }
+      else
+        {
+          title = [title stringByAppendingFormat:@"\u2014 %@", @"Shell Title"];
+        }
+    }
+ 
   [demoTitleBarField setStringValue:title];
 }
 
@@ -122,6 +137,7 @@
   [filenameBtn setState:(titleBarMask & TitleBarFileName) ? 1 : 0];
   [windowSizeBtn setState:(titleBarMask & TitleBarWindowSize) ? 1 : 0];
   [customTitleBtn setState:(titleBarMask & TitleBarCustomTitle) ? 1 : 0];
+  [xtermTitleBtn setState:(titleBarMask & TitleBarXTermTitle) ? 1 : 0];
 
   if (!customTitle)
     [customTitleField setStringValue:@"Terminal"];

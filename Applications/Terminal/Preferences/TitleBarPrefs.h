@@ -21,6 +21,7 @@
 @interface TitleBarPrefs : NSObject <PrefsModule>
 {
   id customTitleBtn;
+  id xtermTitleBtn;
   id customTitleField;
   id deviceNameBtn;
   id filenameBtn;

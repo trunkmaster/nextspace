@@ -33,8 +33,8 @@ struct selection_range
 
 @interface TerminalView : NSView
 {
-  NSString	*title_window;
-  NSString	*title_miniwindow;
+  NSString	*xtermTitle;
+  NSString	*xtermIconTitle;
   
   NSString	*programPath;
   NSString	*childTerminalName;
@@ -156,6 +156,8 @@ struct selection_range
 - (void)setDoubleEscape:(BOOL)doubleEscape;
 - (void)setAlternateAsMeta:(BOOL)altAsMeta;
 
+- (NSString *)xtermTitle;
+- (NSString *)xtermIconTitle;
 - (NSString *)programPath;
 - (NSString *)deviceName;
 - (NSSize)windowSize;
