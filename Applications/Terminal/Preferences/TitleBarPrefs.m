@@ -77,42 +77,39 @@
 
   title = [NSString new];
   
-  if (elementsMask & TitleBarShellPath)
-    title = [title stringByAppendingFormat:@"%@ ", [twc shellPath]];
-  
-  if (elementsMask & TitleBarDeviceName)
-    title = [title stringByAppendingFormat:@"(%@) ", [twc deviceName]];
-  
-  if (elementsMask & TitleBarWindowSize)
-    title = [title stringByAppendingFormat:@"%@ ", [twc windowSizeString]];
-  
-  if (elementsMask & TitleBarCustomTitle)
-    {
-      if ([title length] == 0)
-        {
-          title = [NSString stringWithFormat:@"%@ ",
-                            [customTitleField stringValue]];
-        }
-      else
-        {
-          title = [NSString stringWithFormat:@"%@ \u2014 %@",
-                            [customTitleField stringValue], title];
-        }
+  if (elementsMask & TitleBarShellPath) {
+    title = [title stringByAppendingFormat:@"%@ ",
+               (twc == nil) ? @"/bin/zsh" : [twc shellPath]];
+  }
+  if (elementsMask & TitleBarDeviceName) {
+    title = [title stringByAppendingFormat:@"(%@) ",
+                  (twc == nil) ? @"pts/0" : [twc deviceName]];
+  }
+  if (elementsMask & TitleBarWindowSize) {
+    title = [title stringByAppendingFormat:@"%@ ",
+                  (twc == nil) ? @"80x24" : [twc windowSizeString]];
+  }
+  if (elementsMask & TitleBarCustomTitle) {
+    if ([title length] == 0) {
+      title = [NSString stringWithFormat:@"%@ ",
+                        [customTitleField stringValue]];
     }
-
-  if (elementsMask & TitleBarFileName)
-    {
-      if ([title length] == 0)
-        {
-          title = [NSString stringWithFormat:@"%@", [twc fileName]];
-        }
-      else
-        {
-          title = [title stringByAppendingFormat:@"\u2014 %@", [twc fileName]];
-        }
+    else {
+      title = [NSString stringWithFormat:@"%@ \u2014 %@ ",
+                        [customTitleField stringValue], title];
     }
-
-   if (elementsMask & TitleBarXTermTitle)
+  }
+  if (elementsMask & TitleBarFileName) {
+    if ([title length] == 0) {
+      title = [NSString stringWithFormat:@"%@ ",
+                        (twc == nil) ? @"Default" : [twc fileName]];
+    }
+    else {
+      title = [title stringByAppendingFormat:@"\u2014 %@ ",
+                  (twc == nil) ? @"Default" : [twc fileName]];
+    }
+  }
+  if (elementsMask & TitleBarXTermTitle)
     {
       if ([title length] == 0)
         {
