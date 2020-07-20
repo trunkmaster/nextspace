@@ -366,8 +366,8 @@ static NSDictionary *servicesDictionary = nil;
         }
         [in closeFile];
 
-        // NSDebugLLog(@"service",@"waitUntilExit");
-        // [t waitUntilExit];
+        NSDebugLLog(@"service",@"waitUntilExit");
+        [t waitUntilExit];
 
         if (ret_data) {
           NSString *s;
