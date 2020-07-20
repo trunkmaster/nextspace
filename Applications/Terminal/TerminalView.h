@@ -134,6 +134,8 @@ struct selection_range
 - initWithPreferences:(id)preferences;
 - (Defaults *)preferences; // used by terminal parser
 
+- (NSObject<TerminalParser> *)terminalParser;
+
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 - (void)scrollRangeToVisible:(NSRange)range;

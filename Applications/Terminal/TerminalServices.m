@@ -313,7 +313,7 @@ static NSDictionary *servicesDictionary = nil;
                                    service:name];
         if (!cmdline)
           {
-            // *error=[_(@"Service aborted by user.") retain];
+            *error=[_(@"Service aborted by user.") retain];
             return;
           }
       }
@@ -323,8 +323,13 @@ static NSDictionary *servicesDictionary = nil;
     // No Shell/Default shell
     if (shell)
       {
-        program = @"/bin/sh";
-        arguments = [NSArray arrayWithObjects:@"-c",cmdline,nil];
+        program = [[Defaults shared] shell];
+        program = [program stringByAppendingFormat:@" -c %@", cmdline];
+        NSLog(@"Command line with default shell: %@", program);
+
+        arguments = [program componentsSeparatedByString:@" "];
+        program = [arguments objectAtIndex:0];
+        arguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count]-1)];
       }
     else
       {
@@ -465,13 +470,21 @@ static NSDictionary *servicesDictionary = nil;
           }
         else
           {
-            twc = [[NSApp delegate]
-                    newWindowWithProgram:program
-                               arguments:arguments
-                                   input:input == INPUT_STDIN ? data : nil];
+            if (shell)
+              {
+                twc = [[NSApp delegate] newWindowWithShell];
+                [[[twc terminalView] terminalParser]
+                  sendString:[NSString stringWithFormat:@"%@\n", cmdline]];
+              }
+            else
+              {
+                twc = [[NSApp delegate]
+                        newWindowWithProgram:program
+                                   arguments:arguments
+                                       input:input == INPUT_STDIN ? data : nil];
+              }
             [twc showWindow:self];
           }
-
       }
       break;
     }

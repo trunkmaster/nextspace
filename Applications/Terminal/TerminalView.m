@@ -2770,6 +2770,11 @@ static int handled_mask = (NSDragOperationCopy |
   return defaults;
 }
 
+- (NSObject<TerminalParser> *)terminalParser
+{
+  return tp;
+}
+
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
