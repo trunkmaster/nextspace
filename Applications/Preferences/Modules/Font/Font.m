@@ -86,7 +86,7 @@ static NSMutableDictionary *defaultValues(void)
 	@"Helvetica",		@"NSToolTipsFont",
 	@"Helvetica",		@"NSControlContentFont",
 	@"Helvetica",		@"NSUserFont",
-	@"Terminus",		@"NSUserFixedPitchFont",
+	@"Liberation Mono",	@"NSUserFixedPitchFont",
 
 	[NSString stringWithFormat:@"%g", 12.0],@"NSFontSize",
 	[NSString stringWithFormat:@"%g", 12.0],@"NSLabelFontSize",
