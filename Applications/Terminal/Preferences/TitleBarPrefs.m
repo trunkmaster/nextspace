@@ -60,8 +60,8 @@
     mask |= TitleBarWindowSize;
   if ([customTitleBtn state] == NSOnState)
     mask |= TitleBarCustomTitle;
-  if ([termTitleBtn state] == NSOnState)
-    mask |= TitleBarTermTitle;
+  if ([xtermTitleBtn state] == NSOnState)
+    mask |= TitleBarXTermTitle;
 
 
   return mask;
@@ -112,7 +112,7 @@
         }
     }
 
-   if (elementsMask & TitleBarTermTitle)
+   if (elementsMask & TitleBarXTermTitle)
     {
       if ([title length] == 0)
         {
@@ -137,7 +137,7 @@
   [filenameBtn setState:(titleBarMask & TitleBarFileName) ? 1 : 0];
   [windowSizeBtn setState:(titleBarMask & TitleBarWindowSize) ? 1 : 0];
   [customTitleBtn setState:(titleBarMask & TitleBarCustomTitle) ? 1 : 0];
-  [termTitleBtn setState:(titleBarMask & TitleBarTermTitle) ? 1 : 0];
+  [xtermTitleBtn setState:(titleBarMask & TitleBarXTermTitle) ? 1 : 0];
 
   if (!customTitle)
     [customTitleField setStringValue:@"Terminal"];
