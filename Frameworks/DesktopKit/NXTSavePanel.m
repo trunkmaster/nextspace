@@ -837,6 +837,9 @@ static NXTSavePanel *_savePanel = nil;
   if ([filename length] > 0) {
     [_okButton setEnabled:YES];
   }
+  if ([self setFrameUsingName:@"NXTSavePanel"] == NO) {
+    [self center];
+  }
   [self setFrameAutosaveName:@"NXTSavePanel"];
   [self orderFrontRegardless];
   return [NSApp runModalForWindow:self];
