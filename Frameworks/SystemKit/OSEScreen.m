@@ -463,8 +463,8 @@ static OSEScreen *systemScreen = nil;
   NSDictionary	*dBack;
   BOOL		success = NO;
   
-  dBack =  [[NXTDefaults globalUserDefaults]
-                               objectForKey:@"NXDesktopBackgroundColor"];
+  dBack = [[NXTDefaults globalUserDefaults]
+                               objectForKey:OSEDesktopBackgroundColor];
   if (dBack) {
     *redComponent = [dBack[@"Red"] floatValue];
     *greenComponent = [dBack[@"Green"] floatValue];
