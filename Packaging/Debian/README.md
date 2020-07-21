@@ -36,7 +36,7 @@ from within the chroot to store it in `/var/cache/pbuilder/result`. That
 initial system comes from a cached filesystem tarball that you have to
 create first, using
 
-    $ sudo pbuild create --distribution sid
+    $ sudo pbuilder create --distribution sid
 
 If you want to build for a different distribution, adapt as appropriate
 (but sid is the best tested distribution).
