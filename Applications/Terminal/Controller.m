@@ -78,10 +78,9 @@
 // Info > Info Panel...
 - (void)openInfoPanel:(id)sender
 {
-  if (infoPanel == nil)
-    {
-      infoPanel = [[InfoPanel alloc] init];
-    }
+  if (infoPanel == nil) {
+    infoPanel = [[InfoPanel alloc] init];
+  }
   [infoPanel activatePanel];
 }
 
@@ -89,33 +88,29 @@
 - (void)openPreferences:(id)sender
 {
   // load Preferences.bundle, send 'activate' to principal class
-  if (preferencesPanel == nil)
-    {
-      NSString *bundlePath;
-      NSBundle *bundle;
+  if (preferencesPanel == nil) {
+    NSString *bundlePath;
+    NSBundle *bundle;
 
-      bundlePath = [[[NSBundle mainBundle] resourcePath]
+    bundlePath = [[[NSBundle mainBundle] resourcePath]
                      stringByAppendingPathComponent:@"Preferences.bundle"];
 
-      // NSLog(@"[Controller] Inspectors: %@", inspectorsPath);
+    // NSLog(@"[Controller] Inspectors: %@", inspectorsPath);
 
-      bundle = [[NSBundle alloc] initWithPath:bundlePath];
+    bundle = [[NSBundle alloc] initWithPath:bundlePath];
 
-      // NSLog(@"[Controller] Inspectors Class: %@",
-      //       [inspectorsBundle principalClass]);
-      preferencesPanel = [[[bundle principalClass] alloc] init];
-    }
-  
+    // NSLog(@"[Controller] Inspectors Class: %@",
+    //       [inspectorsBundle principalClass]);
+    preferencesPanel = [[[bundle principalClass] alloc] init];
+  }
   [preferencesPanel activatePanel];
 }
 
 - (void)openServicesPanel:(id)sender
 {
-  if (servicesPanel == nil)
-    {
-      servicesPanel = [[TerminalServicesPanel alloc] init];
-    }
- 
+  if (servicesPanel == nil) {
+    servicesPanel = [[TerminalServicesPanel alloc] init];
+  }
   [servicesPanel activatePanel];
 }
 
@@ -129,27 +124,26 @@
 - (void)openSession:(id)sender
 {
   NXTOpenPanel *panel = [NXTOpenPanel openPanel];
-  NSString    *sessionDir, *path;
+  NSString     *sessionDir, *path;
+  NSInteger    result;
 
   [panel setCanChooseDirectories:NO];
   [panel setAllowsMultipleSelection:NO];
   [panel setTitle:@"Open Shell"];
   [panel setShowsHiddenFiles:NO];
 
-  if ((sessionDir = [Defaults sessionsDirectory]) == nil)
+  if ((sessionDir = [Defaults sessionsDirectory]) == nil) {
     return;
+  }
 
-  if ([panel runModalForDirectory:sessionDir
-                             file:@"Default.term"
-                            types:[NSArray arrayWithObject:@"term"]]
-      == NSOKButton)
-    {
-      if ((path = [panel filename]) != nil)
-        {
-          // [[self newWindowWithStartupFile:path] showWindow:self];
-          [self openStartupFile:path];
-        }
-    }  
+  result = [panel runModalForDirectory:sessionDir
+                                  file:@"Default.term"
+                                 types:[NSArray arrayWithObject:@"term"]];
+  if (result == NSOKButton) {
+    if ((path = [panel filename]) != nil) {
+      [self openStartupFile:path];
+    }
+  }  
 }
 // Shell > Save
 - (void)_saveMultiSession:(NSString *)path allWindows:(BOOL)all
@@ -161,35 +155,29 @@
           
   // sessionDict = {MultipleWindows = YES; Windows = (dict, dict,...)}
   [sessionDict setObject:@"YES" forKey:@"MultipleWindows"];
-  if (all == NO)
-    {
-      // Save windows that have represented filename equal to 'path'.
-      for (TerminalWindowController *twc in [windows allValues])
-        {
-          if ([[[twc window] representedFilename] isEqualToString:path])
-            {
-              [winsToSave addObject:twc];
-            }
-        }
+  if (all == NO) {
+    // Save windows that have represented filename equal to 'path'.
+    for (TerminalWindowController *twc in [windows allValues]) {
+      if ([[[twc window] representedFilename] isEqualToString:path]) {
+        [winsToSave addObject:twc];
+      }
     }
-  else
-    {
-      [winsToSave addObjectsFromArray:[windows allValues]];
-    }
+  }
+  else {
+    [winsToSave addObjectsFromArray:[windows allValues]];
+  }
   
-  for (TerminalWindowController *twc in winsToSave)
-    {
-      if ((prefs = [twc livePreferences]) == nil)
-        {
-          prefs = [twc preferences];
-        }
-      [prefs setBool:[[twc window] isMiniaturized]
-              forKey:@"WindowMiniaturized"];
-      [prefs setBool:[[twc window] isMainWindow] forKey:@"WindowMain"];
-      [prefs setObject:NSStringFromRect([[twc window] frame])
-                forKey:@"WindowFrame"];
-      [winDefs addObject:[prefs dictionaryRep]];
+  for (TerminalWindowController *twc in winsToSave) {
+    if ((prefs = [twc livePreferences]) == nil) {
+      prefs = [twc preferences];
     }
+    [prefs setBool:[[twc window] isMiniaturized]
+            forKey:@"WindowMiniaturized"];
+    [prefs setBool:[[twc window] isMainWindow] forKey:@"WindowMain"];
+    [prefs setObject:NSStringFromRect([[twc window] frame])
+              forKey:@"WindowFrame"];
+    [winDefs addObject:[prefs dictionaryRep]];
+  }
   [sessionDict setObject:winDefs forKey:@"Windows"];
   [sessionDict writeToFile:path atomically:YES];
 }
@@ -207,47 +195,42 @@
     filePath = nil;
   
   // Loaded startup file exists
-  if (filePath != nil)
-    {
-      // Main window preferences were changed
-      if ([self preferencesForWindow:[NSApp mainWindow] live:YES] != nil)
-        {
-          // Check if startup file contains multiple windows
-          NSDictionary *existingStartup;
-          existingStartup = [NSDictionary dictionaryWithContentsOfFile:filePath];
+  if (filePath != nil) {
+    // Main window preferences were changed
+    if ([self preferencesForWindow:[NSApp mainWindow] live:YES] != nil) {
+      // Check if startup file contains multiple windows
+      NSDictionary *existingStartup;
+      existingStartup = [NSDictionary dictionaryWithContentsOfFile:filePath];
           
-          if ([[existingStartup allKeys] containsObject:@"MultipleWindows"])
-            {// Save all windows loaded from specific file
-              // NSLog(@"Save all windows loaded from file %@.", filePath);
-              [self _saveMultiSession:filePath allWindows:NO];
-            }
-          else
-            {// Save single window loaded from file
-              // NSLog(@"Save single window loaded from file %@.", filePath);
-              Defaults *defs = [twc livePreferences];
-              if (defs == nil) defs = [twc preferences];
+      if ([[existingStartup allKeys] containsObject:@"MultipleWindows"]) {
+        // Save all windows loaded from specific file
+        [self _saveMultiSession:filePath allWindows:NO];
+      }
+      else {
+        // Save single window loaded from file
+        Defaults *defs = [twc livePreferences];
+        if (defs == nil) defs = [twc preferences];
           
-              [defs setObject:NSStringFromRect([[twc window] frame])
-                       forKey:@"WindowFrame"];
-              [defs writeToFile:filePath atomically:YES];
-            }
-        }
+        [defs setObject:NSStringFromRect([[twc window] frame])
+                 forKey:@"WindowFrame"];
+        [defs writeToFile:filePath atomically:YES];
+      }
     }
-  else
-    { // If it's a default session (changed or not) - open "Save As..." panel
-      NSLog(@"It's a default session - will open \"Save As...\" panel");
-      [self saveSessionAs:sender];
-    }
-  
+  }
+  else {
+    // If it's a default session (changed or not) - open "Save As..." panel
+    NSLog(@"It's a default session - will open \"Save As...\" panel");
+    [self saveSessionAs:sender];
+  }  
 }
 // Shell -> Save As...
 - (void)saveSessionAs:(id)sender
 {
-  TerminalWindowController	*twc;
-  NSString			*fileName, *filePath;
-  NXTSavePanel			*panel;
-  NSString			*sessionDir;
-  Defaults			*prefs;
+  TerminalWindowController *twc;
+  NSString                 *fileName, *filePath;
+  NXTSavePanel             *panel;
+  NSString                 *sessionDir;
+  Defaults                 *prefs;
 
   if ((sessionDir = [Defaults sessionsDirectory]) == nil)
     return;
@@ -257,60 +240,52 @@
   [panel setShowsHiddenFiles:NO];
 
   // Accessory view
-  if (accView == nil)
-    {
-      [NSBundle loadNibNamed:@"SaveAsAccessory" owner:self];
-      [accView retain];
-    }
+  if (accView == nil) {
+    [NSBundle loadNibNamed:@"SaveAsAccessory" owner:self];
+    [accView retain];
+  }
   [windowPopUp selectItemWithTag:0]; // MainWindow
   [loadAtStartupBtn setState:0];
   [panel setAccessoryView:accView];
 
   twc = [self terminalWindowForWindow:[NSApp mainWindow]];
-  if ((filePath = [[twc window] representedFilename]) == nil)
-    {
-      fileName = @"Default.term";
-      filePath = [sessionDir stringByAppendingPathComponent:fileName];
-    }
-  else
-    {
-      fileName = [filePath lastPathComponent];
-    }
+  if ((filePath = [[twc window] representedFilename]) == nil) {
+    fileName = @"Default.term";
+    filePath = [sessionDir stringByAppendingPathComponent:fileName];
+  }
+  else {
+    fileName = [filePath lastPathComponent];
+  }
 
-  if ([panel runModalForDirectory:sessionDir file:fileName] == NSOKButton)
-    {
-      filePath = [panel filename];
-      if ([windowPopUp selectedTag]) // All Windows
-        {
-          // NSLog(@"Save all opened windows As %@.", filePath);
-          [self _saveMultiSession:filePath allWindows:YES];
-        }
-      else
-        {
-          // NSLog(@"Save single window As %@.", filePath);
-          if ((prefs = [twc livePreferences]) == nil)
-            prefs = [twc preferences];
-          [prefs setObject:NSStringFromRect([[twc window] frame])
-                    forKey:@"WindowFrame"];
-          [prefs writeToFile:filePath atomically:YES];
-        }
-      
-      if ([loadAtStartupBtn state])
-        {
-          Defaults *defs = [Defaults shared];
-          [defs setStartupFile:filePath];
-          [defs setStartupAction:OnStartOpenFile];
-          [defs synchronize];
-        }
+  if ([panel runModalForDirectory:sessionDir file:fileName] == NSOKButton) {
+    filePath = [panel filename];
+    if ([windowPopUp selectedTag]) { // All Windows
+      // NSLog(@"Save all opened windows As %@.", filePath);
+      [self _saveMultiSession:filePath allWindows:YES];
     }
+    else {
+      // NSLog(@"Save single window As %@.", filePath);
+      if ((prefs = [twc livePreferences]) == nil)
+        prefs = [twc preferences];
+      [prefs setObject:NSStringFromRect([[twc window] frame])
+                forKey:@"WindowFrame"];
+      [prefs writeToFile:filePath atomically:YES];
+    }
+      
+    if ([loadAtStartupBtn state]) {
+      Defaults *defs = [Defaults shared];
+      [defs setStartupFile:filePath];
+      [defs setStartupAction:OnStartOpenFile];
+      [defs synchronize];
+    }
+  }
 }
 // Shell > Set Title...
 - (void)openSetTitlePanel:(id)sender
 {
-  if (setTitlePanel == nil)
-    {
-      setTitlePanel = [[SetTitlePanel alloc] init];
-    }
+  if (setTitlePanel == nil) {
+    setTitlePanel = [[SetTitlePanel alloc] init];
+  }
   [setTitlePanel activatePanel];
 }
 
@@ -335,7 +310,6 @@
 
   tv = [[self terminalWindowForWindow:[NSApp keyWindow]] terminalView];
   string = [[tv stringRepresentation] substringFromRange:[tv selectedRange]];
-
   [finder setFindString:string];
 }
 - (void)jumpToSelection:(id)sender
@@ -374,22 +348,21 @@
   NSString *menuTitle = [[menuItem menu] title];
   NSString *itemTitle = [menuItem title];
 
-  if ([self terminalWindowForWindow:[NSApp keyWindow]] == nil)
-    {
-      // NSLog(@"Controller: Validate menu: %@: key window is not Terminal",
-      //       menuTitle);
-      if ([itemTitle isEqualToString:@"Save"])
-        return NO;
-      if ([itemTitle isEqualToString:@"Save As..."])
-        return NO;
-      if ([itemTitle isEqualToString:@"Set Title..."])
-        return NO;
+  if ([self terminalWindowForWindow:[NSApp keyWindow]] == nil) {
+    // NSLog(@"Controller: Validate menu: %@: key window is not Terminal",
+    //       menuTitle);
+    if ([itemTitle isEqualToString:@"Save"])
+      return NO;
+    if ([itemTitle isEqualToString:@"Save As..."])
+      return NO;
+    if ([itemTitle isEqualToString:@"Set Title..."])
+      return NO;
       
-      if ([menuTitle isEqualToString:@"Font"])
-        return NO;
-      if ([menuTitle isEqualToString:@"Find"])
-        return NO;
-    }
+    if ([menuTitle isEqualToString:@"Font"])
+      return NO;
+    if ([menuTitle isEqualToString:@"Find"])
+      return NO;
+  }
   
   return YES;
 }
@@ -415,27 +388,20 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)n
 {
-  NSArray *args = [[NSProcessInfo processInfo] arguments];
-  NSArray *arguments;
+  NSArray                  *args;
+  NSInteger                index;
   TerminalWindowController *twc;
 
-  // NSLog(@"Controller: applicationDidFinishLaunching");
-  
   [NSApp setServicesProvider:[[TerminalServices alloc] init]];
 
-  // Remove "Terminal" from argument list
-  arguments = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
-  // Check for -NXAutoLaunch
-  if ([arguments containsObject:@"-NXAutoLaunch"])
-    {
-      // NSLog(@"Appplication arguments contains -NXAutoLaunch");
-      
-      NSUInteger index = [arguments indexOfObject:@"-NXAutoLaunch"];
-      if ([[arguments objectAtIndex:++index] isEqualToString:@"YES"])
-        {
-          isAppAutoLaunched = YES;
-        }
+  // Check for -autolaunch
+  args = [[NSProcessInfo processInfo] arguments];
+  index = [args indexOfObject:@"-autolaunch"];
+  if (index != NSNotFound) {
+    if ([[args objectAtIndex:++index] isEqualToString:@"YES"]) {
+      isAppAutoLaunched = YES;
     }
+  }
 
   switch ([[Defaults shared] startupAction])
     {
@@ -453,10 +419,12 @@
 
   // By default "-NXAutoLaunch YES" option resigns active state from
   // starting application.
-  if (isAppAutoLaunched == YES && [[Defaults shared] hideOnAutolaunch] == YES)
+  if (isAppAutoLaunched == YES && [[Defaults shared] hideOnAutolaunch] == YES) {
     [NSApp hide:self];
-  else
+  }
+  else {
     [NSApp activateIgnoringOtherApps:YES];
+  }
 
   // Activate timer for windows state checking
   timer = [NSTimer
@@ -469,30 +437,25 @@
 
 - (void)applicationWillTerminate:(NSNotification *)n
 {
-  if (preferencesPanel)
-    {
-      [preferencesPanel closePanel];
-      [preferencesPanel release];
-    }
-  
-  if (setTitlePanel)
-    {
-      [setTitlePanel closeSetTitlePanel:self];
-      [setTitlePanel release];
-    }
-
+  if (preferencesPanel) {
+    [preferencesPanel closePanel];
+    [preferencesPanel release];
+  }
+  if (setTitlePanel) {
+    [setTitlePanel closeSetTitlePanel:self];
+    [setTitlePanel release];
+  }
   // Clear font pasteboard data
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
-  if ([pb dataForType:NSFontPboardType] != nil)
-    {
-      [pb setData:nil forType:NSFontPboardType];
-    }
+  if ([pb dataForType:NSFontPboardType] != nil) {
+    [pb setData:nil forType:NSFontPboardType];
+  }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   TerminalWindowController *twc;
-  NSInteger alertChoice;
+  NSInteger                alertChoice;
   
   if (![self numberOfActiveTerminalWindows]) {
     return NSTerminateNow;
@@ -534,12 +497,9 @@
 - (BOOL)application:(NSApplication *)sender
  	   openFile:(NSString *)filename
 {
-  // NSLog(@"Open file: %@", filename);
-  if ([[filename pathExtension] isEqualToString:@"term"])
-    {
-      [self openStartupFile:filename];
-    }
-  
+  if ([[filename pathExtension] isEqualToString:@"term"]) {
+    [self openStartupFile:filename];
+  }
   return YES;
 }
 
@@ -565,13 +525,11 @@
   [twc setDocumentEdited:NO];
 
   windowCloseBehavior = [[twc preferences] windowCloseBehavior];
-  if (windowCloseBehavior != WindowCloseNever)
-    {
-      if ((windowCloseBehavior == WindowCloseAlways) || (status == 0))
-        {
-          [twc close];
-        }
+  if (windowCloseBehavior != WindowCloseNever) {
+    if ((windowCloseBehavior == WindowCloseAlways) || (status == 0)) {
+      [twc close];
     }
+  }
 }
 
 - (void)mainWindowDidChange:(NSNotification *)notif
@@ -582,28 +540,25 @@
 
   mainWindow = [notif object];
   
-  if (fp == nil)
-    {
+  if (fp == nil) {
+    return;
+  }
+  
+  if ((defs = [self preferencesForWindow:mainWindow live:YES]) == nil) {
+    if ((defs = [self preferencesForWindow:mainWindow live:NO]) == nil) {
+      // this is not terminal window
       return;
     }
-  
-  if ((defs = [self preferencesForWindow:mainWindow live:YES]) == nil)
-    {
-      if ((defs = [self preferencesForWindow:mainWindow live:NO]) == nil)
-        { // this is not terminal window
-          return;
-        }
-    }
+  }
 
   [fm setSelectedFont:[defs terminalFont] isMultiple:NO];
 }
 
 - (void)noMoreActiveTerminalWindows:(NSNotification *)n
 {
-  if (quitPanelOpen) 
-    {
-      [NSApp replyToApplicationShouldTerminate:YES];
-    }
+  if (quitPanelOpen) {
+    [NSApp replyToApplicationShouldTerminate:YES];
+  }
 }
 
 - (int)numberOfActiveTerminalWindows
@@ -613,12 +568,11 @@
 
 - (void)checkActiveTerminalWindows
 {
-  if (![self numberOfActiveTerminalWindows])
-    {
-      [[NSNotificationCenter defaultCenter]
+  if (![self numberOfActiveTerminalWindows]) {
+    [[NSNotificationCenter defaultCenter]
 			postNotificationName:TerminalWindowNoMoreActiveWindowsNotification
                                       object:self];
-    }
+  }
 }
 
 - (void)checkTerminalWindowsState
@@ -628,24 +582,21 @@
 
   NSArray *wins = [windows allValues];
 
-  for (TerminalWindowController *twc in wins)
-    {
-      // NSLog(@"%@: idleList contains = %i, user programm = %i ",
-      //       [twc shellPath],
-      //       [idleList containsObject:twc],
-      //       [[twc terminalView] isUserProgramRunning]);
+  for (TerminalWindowController *twc in wins) {
+    // NSLog(@"%@: idleList contains = %i, user programm = %i ",
+    //       [twc shellPath],
+    //       [idleList containsObject:twc],
+    //       [[twc terminalView] isUserProgramRunning]);
  
-      if (([[twc terminalView] isUserProgramRunning] ||
-           [self isProgramClean:[twc shellPath]] == NO) &&
-          [idleList containsObject:twc] == NO)
-        {
-          [twc setDocumentEdited:YES];
-        }
-      else
-        {
-          [twc setDocumentEdited:NO];
-        }
+    if (([[twc terminalView] isUserProgramRunning] ||
+         [self isProgramClean:[twc shellPath]] == NO) &&
+        [idleList containsObject:twc] == NO) {
+      [twc setDocumentEdited:YES];
     }
+    else {
+      [twc setDocumentEdited:NO];
+    }
+  }
 }
 
 - (int)pidForTerminalWindow:(TerminalWindowController *)twc
@@ -653,66 +604,57 @@
   NSArray *keys = [windows allKeys];
   int     pid = -1;
  
-  for (NSString *PID in keys)
-    {
-      if ([windows objectForKey:PID] == twc)
-        {
-          pid = [PID integerValue]; 
-        }
+  for (NSString *PID in keys) {
+    if ([windows objectForKey:PID] == twc) {
+      pid = [PID integerValue]; 
     }
+  }
 
   return pid;
 }
 
 - (TerminalWindowController *)terminalWindowForWindow:(NSWindow *)win
 {
-  for (TerminalWindowController *windowController in [windows allValues])
-    {
-      if ([windowController window] == win)
-        {
-          return windowController;
-        }
+  for (TerminalWindowController *windowController in [windows allValues]) {
+    if ([windowController window] == win) {
+      return windowController;
     }
+  }
   
   return nil;
 }
 
 - (void)terminalWindow:(TerminalWindowController *)twc becameIdle:(BOOL)idle
 {
-  if (idle)
-    {
-      int pid, status;
+  if (idle) {
+    int pid, status;
 
-      NSLog(@"Window %@ became idle.", [twc shellPath]);
-      [idleList addObject:twc];
+    // NSLog(@"Window %@ became idle.", [twc shellPath]);
+    [idleList addObject:twc];
       
-      if ((pid = [self pidForTerminalWindow:twc]) > 0)
-        {
-          fprintf(stderr, "Idle: Waiting for PID: %i...", pid);
-          waitpid(pid, &status, 0);
-          fprintf(stderr, "\tdone!\n");
+    if ((pid = [self pidForTerminalWindow:twc]) > 0) {
+      // fprintf(stderr, "Idle: Waiting for PID: %i...", pid);
+      waitpid(pid, &status, 0);
+      // fprintf(stderr, "\tdone!\n");
           
-          // [self childWithPID:pid didExit:status];
-          int windowCloseBehavior = [[Defaults shared] windowCloseBehavior];
-          [twc setDocumentEdited:NO];
+      // [self childWithPID:pid didExit:status];
+      int windowCloseBehavior = [[Defaults shared] windowCloseBehavior];
+      [twc setDocumentEdited:NO];
 
-          windowCloseBehavior = [twc closeBehavior];
-          if (windowCloseBehavior != WindowCloseNever)
-            {
-              // WindowCloseAlways - "Always close the window"
-              // 'status == 0' - "Close the window if shell exits cleanly"
-              if ((windowCloseBehavior == WindowCloseAlways) || (status == 0))
-                {
-                  [twc close];
-                }
-            }
+      windowCloseBehavior = [twc closeBehavior];
+      if (windowCloseBehavior != WindowCloseNever) {
+        // WindowCloseAlways - "Always close the window"
+        // 'status == 0' - "Close the window if shell exits cleanly"
+        if ((windowCloseBehavior == WindowCloseAlways) || (status == 0)) {
+          [twc close];
         }
+      }
     }
-  else
-    {
-      NSLog(@"Window %@ became non idle.", [twc shellPath]);
-      [idleList removeObject:twc];
-    }
+  }
+  else {
+    NSLog(@"Window %@ became non idle.", [twc shellPath]);
+    [idleList removeObject:twc];
+  }
 
   [[NSApp delegate] checkActiveTerminalWindows];
 }
@@ -743,15 +685,14 @@
   if ([idleList containsObject:twc])
     [idleList removeObject:twc];
 
-  if ((pid = [self pidForTerminalWindow:twc]) > 0)
-    {
-      kill(pid, SIGKILL);
-      // fprintf(stderr, "Close: Waiting for PID: %i...", pid);
-      waitpid(pid, &status, 0);
-      // fprintf(stderr, "\tdone!\n");
+  if ((pid = [self pidForTerminalWindow:twc]) > 0) {
+    kill(pid, SIGKILL);
+    // fprintf(stderr, "Close: Waiting for PID: %i...", pid);
+    waitpid(pid, &status, 0);
+    // fprintf(stderr, "\tdone!\n");
       
-      [windows removeObjectForKey:[NSString stringWithFormat:@"%i", pid]];
-    }
+    [windows removeObjectForKey:[NSString stringWithFormat:@"%i", pid]];
+  }
    
   [[NSApp delegate] checkActiveTerminalWindows];
 }
@@ -771,13 +712,11 @@
 
 - (BOOL)_noDuplicatesOf:(NSString *)string inside:(NSArray *)array
 {
-  for (NSString *s in array)
-    {
-      if ([[s lastPathComponent] isEqualToString:[string lastPathComponent]])
-        {
-          return NO;
-        }
+  for (NSString *s in array) {
+    if ([[s lastPathComponent] isEqualToString:[string lastPathComponent]]) {
+      return NO;
     }
+  }
   return YES;
 }
 // Fill in array with items from /etc/shells
@@ -785,24 +724,22 @@
 // duplicates).
 - (NSArray *)shellList
 {
-  NSString  *etc_shells = [NSString stringWithContentsOfFile:@"/etc/shells"];
-  NSString  *lString;
-  NSRange   lRange;
-  NSUInteger index, stringLength = [etc_shells length];
+  NSString       *etc_shells = [NSString stringWithContentsOfFile:@"/etc/shells"];
+  NSString       *lString;
+  NSRange        lRange;
+  NSUInteger     index, stringLength = [etc_shells length];
   NSMutableArray *shells = [[NSMutableArray alloc] init];
 
-  for (index=0; index < stringLength;)
-    {
-      lRange = [etc_shells lineRangeForRange:NSMakeRange(index, 0)];
-      lRange.length -= 1; // Do not include new line char
-      lString = [etc_shells substringFromRange:lRange];
-      if ([lString rangeOfString:@"nologin"].location == NSNotFound &&
-          [self _noDuplicatesOf:lString inside:shells])
-        {
-          [shells addObject:lString];
-        }
-      index = lRange.location + lRange.length + 1;
+  for (index=0; index < stringLength; ) {
+    lRange = [etc_shells lineRangeForRange:NSMakeRange(index, 0)];
+    lRange.length -= 1; // Do not include new line char
+    lString = [etc_shells substringFromRange:lRange];
+    if ([lString rangeOfString:@"nologin"].location == NSNotFound &&
+        [self _noDuplicatesOf:lString inside:shells]) {
+      [shells addObject:lString];
     }
+    index = lRange.location + lRange.length + 1;
+  }
 
   return [shells autorelease];
 }
@@ -810,14 +747,11 @@
 // For now it's only a shells
 - (BOOL)isProgramClean:(NSString *)program
 {
-  for (NSString *s in [self shellList])
-    {
-      if ([[s lastPathComponent] isEqualToString:[program lastPathComponent]])
-        {
-          return YES;
-        }
+  for (NSString *s in [self shellList]) {
+    if ([[s lastPathComponent] isEqualToString:[program lastPathComponent]]) {
+      return YES;
     }
-  
+  }
   return NO;
 }
 
@@ -825,26 +759,25 @@
 {
   [controller setDocumentEdited:YES];
   
-  if ([[windows allValues] count] > 0)
-    {
-      NSRect  mwFrame = [[NSApp mainWindow] frame];
-      NSPoint wOrigin = mwFrame.origin;
+  if ([[windows allValues] count] > 0) {
+    NSRect  mwFrame = [[NSApp mainWindow] frame];
+    NSPoint wOrigin = mwFrame.origin;
 
-      wOrigin.x += [NSScroller scrollerWidth] + 3;
-      wOrigin.y -= 24;
-      [[controller window] setFrameOrigin:wOrigin];
-    }
-  else
-    {
-      [[controller window] center];
-    }
+    wOrigin.x += [NSScroller scrollerWidth] + 3;
+    wOrigin.y -= 24;
+    [[controller window] setFrameOrigin:wOrigin];
+  }
+  else {
+    [[controller window] center];
+  }
 }
 
 - (TerminalWindowController *)newWindow
 {
   TerminalWindowController *twc = [[TerminalWindowController alloc] init];
   
-  if (twc == nil) return nil;
+  if (twc == nil)
+    return nil;
   
   [self setupTerminalWindow:twc];
 
@@ -874,11 +807,12 @@
   TerminalWindowController *twc = [self newWindow];
   int pid;
 
-  if (twc == nil) return nil;
- 
-  if (program == nil)
+  if (twc == nil) {
+    return nil;
+  }
+  if (program == nil) {
     program = [[twc preferences] shell];
-  
+  }
   pid = [[twc terminalView] runProgram:program
                          withArguments:args
                           initialInput:input];
@@ -893,9 +827,9 @@
                                            startupFile:(NSString *)path
 {
   TerminalWindowController *twc;
-  NSString *shell;
-  NSArray *args;
-  int pid;
+  NSString                 *shell;
+  NSArray                  *args;
+  int                      pid;
 
   twc = [[TerminalWindowController alloc] initWithPreferences:defs
                                                   startupFile:path];
@@ -903,11 +837,12 @@
   
   args = [[[twc preferences] shell] componentsSeparatedByString:@" "];
   shell = [[args objectAtIndex:0] copy];
-  if ([args count] > 1)
+  if ([args count] > 1) {
     args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
-  else
+  }
+  else {
     args = nil;
-
+  }
   pid = [[twc terminalView] runProgram:shell
                          withArguments:args
                            inDirectory:nil
@@ -928,43 +863,41 @@
   NSRect                   wFrame;
   
   fileDict = [[NSDictionary alloc] initWithContentsOfFile:filePath];
-  if ([fileDict objectForKey:@"MultipleWindows"] != nil)
-    {
-      NSWindow *mWindow;
-      for (defs in [fileDict objectForKey:@"Windows"])
-        {
-          twc = [self newWindowWithPreferences:defs
-                                   startupFile:filePath];
-          
-          wFrame = NSRectFromString([defs objectForKey:@"WindowFrame"]);
-          [[twc window] setFrameOrigin:wFrame.origin];
-          if ([[twc preferences] boolForKey:@"WindowMain"] == YES)
-            mWindow = [twc window];
-          [twc showWindow:self];
-          if ([[twc preferences] boolForKey:@"WindowMiniaturized"] == YES)
-            [[twc window] miniaturize:self];
-        }
-      [mWindow makeKeyAndOrderFront:self];
-    }
-  else
-    {
-      defs = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+  if ([fileDict objectForKey:@"MultipleWindows"] != nil) {
+    NSWindow *mWindow;
+    for (defs in [fileDict objectForKey:@"Windows"]) {
       twc = [self newWindowWithPreferences:defs
                                startupFile:filePath];
       wFrame = NSRectFromString([defs objectForKey:@"WindowFrame"]);
       [[twc window] setFrameOrigin:wFrame.origin];
-      [defs release];
+      if ([[twc preferences] boolForKey:@"WindowMain"] == YES) {
+        mWindow = [twc window];
+      }
       [twc showWindow:self];
+      if ([[twc preferences] boolForKey:@"WindowMiniaturized"] == YES) {
+        [[twc window] miniaturize:self];
+      }
     }
+    [mWindow makeKeyAndOrderFront:self];
+  }
+  else {
+    defs = [[NSDictionary alloc] initWithContentsOfFile:filePath];
+    twc = [self newWindowWithPreferences:defs
+                             startupFile:filePath];
+    wFrame = NSRectFromString([defs objectForKey:@"WindowFrame"]);
+    [[twc window] setFrameOrigin:wFrame.origin];
+    [defs release];
+    [twc showWindow:self];
+  }
   [fileDict release];
 }
 
 - (void)runProgram:(NSString *)commandLine
 {
-  NSMutableArray *args;
-  NSString       *prog;
+  NSMutableArray           *args;
+  NSString                 *prog;
   TerminalWindowController *twc;
-  Defaults     *prefs;
+  Defaults                 *prefs;
   
   args = [NSMutableArray
            arrayWithArray:[commandLine componentsSeparatedByString:@" "]];
@@ -996,17 +929,16 @@
 - (id)preferencesForWindow:(NSWindow *)win
                       live:(BOOL)isLive
 {
-  TerminalWindowController *windowController;
+  TerminalWindowController *twc = [self terminalWindowForWindow:win];
   
-  windowController = [self terminalWindowForWindow:win];
-  if (windowController != nil)
-    {
-      if (isLive)
-        return [windowController livePreferences];
-      else
-        return [windowController preferences];
+  if (twc != nil) {
+    if (isLive) {
+      return [twc livePreferences];
     }
-  
+    else {
+      return [twc preferences];
+    }
+  }
   return nil;
 }
 
