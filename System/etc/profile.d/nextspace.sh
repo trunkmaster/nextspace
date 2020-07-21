@@ -5,8 +5,14 @@ export PATH=$NS_PATH:$PATH
 
 export MANPATH=:/Library/Documentation/man:/usr/NextSpace/Documentation/man
 
-### Moved into NSGlobalDomain prefs. Format 'Local Time Zone' = Europe/Kiev
-#export GNUSTEP_TZ=`cat /etc/timezone`
+# Initialize time zone to system time zone, but only if not yet set.
+# NSGlobalDomain preference. Format 'Local Time Zone' = Europe/Kiev
+defaults read NSGlobalDomain "Local Time Zone" 2>&1 > /dev/null
+if [ $? -ne 0 ]; then
+    echo "Updating `Local Time Zone` preference..."
+    TZ=`/usr/bin/env -i stat --printf "%N\n" /etc/localtime |sed "s,.*-> '.*/zoneinfo/\([^']*\)',\1,"`
+    defaults write NSGlobalDomain "Local Time Zone" $TZ
+fi
 ### NSString encoding should be determined from system locale
 #export GNUSTEP_STRING_ENCODING="NSUTF8StringEncoding"
 ### LANGUAGES moved into NSLanguages in NSGlobalDomain preferences
@@ -26,8 +32,6 @@ export GNUSTEP_PATHLIST="$HOME:/:/usr/NextSpace:/Network"
 export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info"
 
 export COLUMNS
-
-export LC_CTYPE="en_US.UTF-8"
 
 export NS_SYSTEM="/usr/NextSpace"
 
