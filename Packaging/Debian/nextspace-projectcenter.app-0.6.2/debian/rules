@@ -20,3 +20,6 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 override_dh_makeshlibs:
 # Avoid lintian warnings for the library; it is installed as private.
 	dh_makeshlibs --noscripts
+
+override_dh_dwz:
+	dh_dwz || true

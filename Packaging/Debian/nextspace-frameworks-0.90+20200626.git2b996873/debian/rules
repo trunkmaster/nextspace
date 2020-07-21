@@ -13,3 +13,6 @@ export messages=yes
 
 override_dh_link:
 	dh_link
+
+override_dh_dwz:
+	dh_dwz || true

@@ -45,3 +45,6 @@ override_dh_auto_install:
 	dh_auto_install
 	rm $(CURDIR)/debian/tmp/usr/NextSpace/bin/opentool
 	-rm $(CURDIR)/debian/tmp/usr/NextSpace/Documentation/man/man1/opentool.1.gz
+
+override_dh_dwz:
+	dh_dwz || true

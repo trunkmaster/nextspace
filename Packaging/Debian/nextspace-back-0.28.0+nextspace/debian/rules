@@ -73,3 +73,6 @@ override_dh_shlibdeps:
 	  > debian/shlibs.local
 	dh_shlibdeps
 	rm debian/shlibs.local
+
+override_dh_dwz:
+	dh_dwz || true

@@ -19,3 +19,6 @@ override_dh_auto_install:
 
 %:
 	dh $@
+
+override_dh_dwz:
+	dh_dwz || true

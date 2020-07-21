@@ -27,3 +27,6 @@ override_dh_clean:
 override_dh_auto_install:
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	$(MAKE) -C Documentation install DESTDIR=$(CURDIR)/debian/tmp
+
+override_dh_dwz:
+	dh_dwz || true

@@ -118,3 +118,6 @@ override_dh_shlibdeps:
 # Then recalculate dependencies of shared lib
 	dh_makeshlibs -p$(p_lib) \
 	    -V '$(p_lib) (>= $(v_gui)), nextspace-gui-runtime (>= $(v_gui)), nextspace-back$(sov_gui) (>= $(v_gui))'
+
+override_dh_dwz:
+	dh_dwz || true

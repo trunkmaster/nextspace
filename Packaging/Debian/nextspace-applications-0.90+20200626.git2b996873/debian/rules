@@ -9,3 +9,6 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-undefined -Wl,--as-needed
 
 %:
 	dh $@
+
+override_dh_dwz:
+	dh_dwz || true
