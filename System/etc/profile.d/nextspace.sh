@@ -31,7 +31,7 @@ export LC_CTYPE=$LANG
 if [ -d /Developer/Makefiles ];then
     export GNUSTEP_MAKEFILES="/Developer/Makefiles"
     if [ -f /opt/rh/llvm-toolset-7.0/enable ];then
-        source /opt/rh/llvm-toolset-7.0/enable
+        . /opt/rh/llvm-toolset-7.0/enable
     fi
 fi
 
