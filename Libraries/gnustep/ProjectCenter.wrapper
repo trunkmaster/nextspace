@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -f /opt/rh/llvm-toolset-7.0/enable ]; then
+    source /opt/rh/llvm-toolset-7.0/enable
+fi
+
+if [ "$2" != "" ];
+then
+    exec `dirname $0`/PC "$2"
+else
+    exec `dirname $0`/PC
+fi
