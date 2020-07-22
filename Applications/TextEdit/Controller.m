@@ -193,6 +193,12 @@
 
 - (void) applicationWillFinishLaunching:(NSNotification *)not
 {
+  /* connect system Fonts menu to NSFontManager 
+   * NextStep and Mac OS does this automagicaly as part of nib/xib loading process
+   * once Gorm offers similar possibility, this code can be removed
+   */
+  NSMenu *f =[[[[[NSApp mainMenu] itemWithTitle:@"Format"] submenu] itemWithTitle:@"Font"] submenu];
+  [[NSFontManager sharedFontManager] setFontMenu:f];
 }
 
 @end
