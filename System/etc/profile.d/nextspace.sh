@@ -42,7 +42,9 @@ export NS_SYSTEM="/usr/NextSpace"
 # Log file
 #
 export USER=`whoami`
-export UID=`id -u`
+if [ ! -n "$UID" ];then
+    export UID=`id -u`
+fi
 GS_SECURE="/tmp/GNUstepSecure"$UID
 export LOGFILE="$GS_SECURE/console.log"
 if [ ! -d $GS_SECURE ];then
@@ -53,7 +55,7 @@ fi
 #
 # ZSH: replace ~/.zshrc with NextSpace supplied version
 #
-if [ $SHELL == "/bin/zsh" ]; then
+if [ -n "$SHELL" -a "$SHELL" = "/bin/zsh" ]; then
     if [ -f ~/.zshrc.nextspace ]; then
         echo "Replacing .zshrc with .zshrc.nextspace"
         mv -f ~/.zshrc.nextspace ~/.zshrc
