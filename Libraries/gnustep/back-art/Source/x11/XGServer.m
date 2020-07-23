@@ -432,7 +432,7 @@ _parse_display_name(NSString *name, int *dn, int *sn)
     {
       char *dname = XDisplayName([display_name cString]);
       [NSException raise: NSWindowServerCommunicationException
-                  format: @"Unable to connect to X Server %s`", dname];
+                  format: @"Unable to connect to X Server `%s'", dname];
     }
 
   /* Parse display information */
@@ -538,6 +538,11 @@ _parse_display_name(NSString *name, int *dn, int *sn)
 - (Window) xAppRootWindow
 {
   return generic.appRootWindow;
+}
+
+- (NSSize) xScreenSize
+{
+  return xScreenSize;
 }
 
 - (XGScreenContext *) _defaultScreenContext

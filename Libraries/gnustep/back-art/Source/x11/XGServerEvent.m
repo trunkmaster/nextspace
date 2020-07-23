@@ -2713,7 +2713,7 @@ process_modifier_flags(unsigned int state)
     }
   else
     {
-      height = DisplayHeight(dpy, defScreen);
+      height = xScreenSize.height;
     }
   p = NSMakePoint(currentX, height - currentY);
   if (win)

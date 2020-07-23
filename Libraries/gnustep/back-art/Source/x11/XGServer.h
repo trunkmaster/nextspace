@@ -78,6 +78,7 @@ typedef struct MonitorDevice {
 - (Display *) xDisplay;
 - (Window) xDisplayRootWindow;
 - (Window) xAppRootWindow;
+- (NSSize) xScreenSize;
 
 - (void *) screenRContext;
 - (Visual *) screenVisual;
