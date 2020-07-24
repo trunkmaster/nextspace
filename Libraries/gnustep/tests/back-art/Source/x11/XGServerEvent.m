@@ -415,8 +415,8 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
     {
       // mouse button events
     case ButtonPress:
-      NSDebugLLog(@"NSEvent", @"%lu ButtonPress: \
-                xEvent.xbutton.time %lu timeOfLastClick %lu \n",
+      NSDebugLLog(@"NSEvent", @"%lu ButtonPress: "
+                  "xEvent.xbutton.time %lu timeOfLastClick %lu \n",
                   xEvent.xbutton.window, xEvent.xbutton.time,
                   generic.lastClick);
       {
@@ -692,11 +692,13 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
           break;
         if (xEvent.xclient.message_type == generic.WM_PROTOCOLS_ATOM)
           {
+            Atom wm_protocol = xEvent.xclient.data.l[0];
+            
             [self setLastTime: (Time)xEvent.xclient.data.l[1]];
             NSDebugLLog(@"NSEvent", @"WM Protocol - %s\n",
-                        XGetAtomName(dpy, xEvent.xclient.data.l[0]));
+                        XGetAtomName(dpy, wm_protocol));
 
-            if ((Atom)xEvent.xclient.data.l[0] == generic.WM_DELETE_WINDOW_ATOM)
+            if (wm_protocol == generic.WM_DELETE_WINDOW_ATOM)
               {
                 /*
                  * WM is asking us to close a window
@@ -712,8 +714,7 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
                                           data1: 0
                                           data2: 0];
               }
-            else if ((Atom)xEvent.xclient.data.l[0]
-                     == generic._GNUSTEP_WM_MINIATURIZE_WINDOW_ATOM)
+            else if (wm_protocol == generic._GNUSTEP_WM_MINIATURIZE_WINDOW_ATOM)
               {
                 NSDebugLLog(@"Miniaturize", @"%lu miniaturized", cWin->number);
                 eventLocation = NSMakePoint(0,0);
@@ -727,8 +728,7 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
                                           data1: 0
                                           data2: 0];
               }
-            else if ((Atom)xEvent.xclient.data.l[0]
-                     == generic._GNUSTEP_WM_HIDE_APP_ATOM)
+            else if (wm_protocol == generic._GNUSTEP_WM_HIDE_APP_ATOM)
               {
                 NSDebugLLog(@"Hide", @"%lu application will be hidden", cWin->number);
                 eventLocation = NSMakePoint(0,0);
@@ -742,14 +742,12 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
                                           data1: 0
                                           data2: 0];
               }              
-            else if ((Atom)xEvent.xclient.data.l[0]
-                     == generic.WM_TAKE_FOCUS_ATOM)
+            else if (wm_protocol == generic.WM_TAKE_FOCUS_ATOM)
               {
                 e = [self _handleTakeFocusAtom: xEvent 
                                     forContext: gcontext];
               }
-            else if ((Atom)xEvent.xclient.data.l[0]
-                     == generic._NET_WM_PING_ATOM)
+            else if (wm_protocol == generic._NET_WM_PING_ATOM)
               {
                 xEvent.xclient.window = RootWindow(dpy, cWin->screen_id);
                 XSendEvent(dpy, xEvent.xclient.window, False, 
@@ -757,8 +755,7 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
                            &xEvent);
               }
 #ifdef HAVE_X11_EXTENSIONS_SYNC_H
-            else if ((Atom)xEvent.xclient.data.l[0]
-                     == generic._NET_WM_SYNC_REQUEST_ATOM)
+            else if (wm_protocol == generic._NET_WM_SYNC_REQUEST_ATOM)
               {
                 cWin->net_wm_sync_request_counter_value_low = (Atom)xEvent.xclient.data.l[2];
                 cWin->net_wm_sync_request_counter_value_high = (Atom)xEvent.xclient.data.l[3];
@@ -1250,7 +1247,7 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
           = [XGServer _windowForXWindow: xEvent.xfocus.window];
         NSDebugLLog(@"Focus", @"%lu lost focus on %lu\n",
                     xEvent.xfocus.window, (cWin) ? cWin->number : 0);
-        generic.currentFocusWindow = 0;
+        generic.currentFocusWindow = (cWin) ? cWin->number : 0;
         if (cWin && generic.desiredFocusWindow == cWin->number)
           {
             /* Request not valid anymore since we lost focus */
@@ -1792,10 +1789,6 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
                                 xEvent.xreparent.x, xEvent.xreparent.y);
                     NSDebugLLog(@"NSEvent", @"Parent border,width,height %d,%d,%d\n",
                                 wattr.border_width, wattr.width, wattr.height);
-
-
-                    NSLog();
-                    NSLog();
                   }
               }
 
