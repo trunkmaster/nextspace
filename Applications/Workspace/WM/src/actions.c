@@ -127,14 +127,13 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   WWindow *old_focused;
   WWindow *focused = scr->focused_window;
   Time timestamp = w_global.timestamp.last_event;
-  WApplication *oapp = NULL, *napp = NULL, *wsapp = NULL;
+  WApplication *oapp = NULL, *napp = NULL;
   int wasfocused;
   BOOL focus_succeeded = False;
-  Window ws_menu_win = 0;
 
-  /* wmessage("[actions.c] wSetFocusTo: %lu focused: %lu\n", */
-  /*         (wwin && wwin->client_win) ? wwin->client_win : 0, */
-  /*         (focused && focused->client_win) ? focused->client_win : 0); */
+  WSMessage("[actions.c] wSetFocusTo: %lu focused: %lu\n",
+            (wwin && wwin->client_win) ? wwin->client_win : 0,
+            (focused && focused->client_win) ? focused->client_win : 0);
 
   if (scr->flags.ignore_focus_events ||
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
@@ -170,18 +169,19 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   if (old_focused)
     oapp = wApplicationOf(old_focused->main_window);
 
-  // TDDO: hold Workspace main menu in WScreen
-  wsapp = wApplicationWithName(scr, "Workspace");
-  if (wsapp && wsapp->menu_win) {
-    ws_menu_win = wsapp->menu_win->client_win;
-    /* wmessage("[actions.c] Workspace menu window:%lu\n", ws_menu_win); */
-  }
-  
+  // Focus Workspace main application menu if there's no window to focus.
   if (wwin == NULL) {
-    if (ws_menu_win)
-      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
-    else
-      XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+    // TDDO: hold Workspace main menu in WScreen
+    WApplication *wsapp = wApplicationWithName(scr, "Workspace");
+    if (wsapp && wsapp->menu_win) {
+      /* WSMessage("[actions.c] Workspace menu window: %lu", ws_menu_win); */
+      if (wsapp->menu_win->client_win) {
+        wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
+      }
+      else {
+        XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+      }
+    }
     
     if (old_focused)
       wWindowUnfocus(old_focused);
