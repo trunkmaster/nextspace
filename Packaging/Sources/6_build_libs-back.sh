@@ -9,4 +9,4 @@ make clean
   --enable-graphics=art \
   --with-name=art
 
-make install
+make fonts=no install

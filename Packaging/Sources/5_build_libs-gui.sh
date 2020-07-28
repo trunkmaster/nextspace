@@ -5,7 +5,6 @@
 cd ./nextspace-gui-0.28.0+nextspace || exit 1
 
 make clean
-sh ./configure \
-	--disable-icu-config
+sh ./configure
 
 make install
