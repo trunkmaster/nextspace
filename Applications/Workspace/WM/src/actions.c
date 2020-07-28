@@ -139,25 +139,19 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
-  /* Do not focus GNUstep main menu if focused window belongs to 
-     the same application. 
-     Problem revealed with this scenario:
-     - workspace #1 with active TextEdit with window;
-     - switch to workspace #2 without apps (Workspace menu only visible);
-     - switch back to workspace #1 - TextEdit window should be focused; 
-     - closing TextEdit window switches focus to Workspace - incorrect -
-     TextEdit should stay active. */
-  /* if (wwin && focused && wwin != focused && */
-  /*     !strcmp(wwin->wm_class, "GNUstep") && */
-  /*     !strcmp(wwin->wm_class, focused->wm_class) && */
-  /*     !strcmp(wwin->wm_instance, focused->wm_instance) && */
-  /*     wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel && */
-  /*     focused->flags.mapped) { */
-  /*   wmessage("[actions.c] wSetFocusTo: do not set focus to active `%s` app menu." */
-  /*           " Key %lu mapped = %i\n", */
-  /*           focused->wm_instance, focused->client_win, focused->flags.mapped); */
-  /*   return; */
-  /* } */
+  /* Do not focus GNUstep main menu if focused window exists, mapped and belongs to 
+     the same application. This also covers shaded focused window case: exists, belongs
+     to the same application but not mapped - focus goes to the main app menu. */
+  if (wwin && focused && (wwin != focused) && focused->flags.mapped // sanity check
+      && wwin->flags.is_gnustep // it's GNUstep application
+      && wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel // it's a menu
+      && !strcmp(wwin->wm_class, focused->wm_class)          // windows belong
+      && !strcmp(wwin->wm_instance, focused->wm_instance)) { // to the same application
+    WSMessage("[actions.c] wSetFocusTo: do not set focus to active `%s` app menu."
+              " Focused window %lu is mapped = %s.", focused->wm_instance,
+              focused->client_win, focused->flags.mapped ? "true" : "false");
+    return;
+  }
 
   if (!old_scr)
     old_scr = scr;
@@ -174,7 +168,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     // TDDO: hold Workspace main menu in WScreen
     WApplication *wsapp = wApplicationWithName(scr, "Workspace");
     if (wsapp && wsapp->menu_win) {
-      /* WSMessage("[actions.c] Workspace menu window: %lu", ws_menu_win); */
+      /* WSMessage("[actions.c] Workspace menu window: %lu", wsapp->menu_win->client_win); */
       if (wsapp->menu_win->client_win) {
         wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
       }
