@@ -1820,6 +1820,9 @@ void wWindowUnfocus(WWindow *wwin)
     // GNUstep TODO: if focus was changed with click on a titlebar, GNUstep app
     // set focus to main application menu and the code below doesn't work.
     XEvent ev;
+    /* Window focused_win; */
+    /* int    rev; */
+    /* XGetInputFocus(dpy, &focused_win, &rev); */
     ev.xfocus.type = FocusOut;
     ev.xfocus.send_event = True;
     ev.xfocus.display = dpy;
@@ -3045,22 +3048,23 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   /*         event->xbutton.state, wXModifierFromKey("MOD1"), */
   /*         wXModifierFromKey("MOD4")); */
 
-  if (wPreferences.focus_mode == WKF_CLICK &&
-      !(event->xbutton.state & MOD_MASK) && // not Mod4, Alternate
-      !(event->xbutton.state & ALT_MOD_MASK) && // not Mod1, Command
-      !WFLAGP(wwin, no_focusable)) // focusable
+  if (wPreferences.focus_mode == WKF_CLICK
+      && !(event->xbutton.state & MOD_MASK) // not Mod4, Alternate
+      && !(event->xbutton.state & ALT_MOD_MASK) // not Mod1, Command
+      && !WFLAGP(wwin, no_focusable)) { // focusable
     wSetFocusTo(wwin->screen_ptr, wwin);
+  }
 
+  // Handle Click, Shift + Click and Command + Click
   if (event->xbutton.button == Button1 || event->xbutton.button == Button2) {
-
     if (event->xbutton.button == Button1) {
-      if (event->xbutton.state & ALT_MOD_MASK) // Command
+      if (event->xbutton.state & ALT_MOD_MASK) // Command + Click
         wLowerFrame(wwin->frame->core);
       else
         wRaiseFrame(wwin->frame->core);
     }
-    if ((event->xbutton.state & ShiftMask)
-        && !(event->xbutton.state & ControlMask)) {
+    // Shift + Click
+    if ((event->xbutton.state & ShiftMask) && !(event->xbutton.state & ControlMask)) {
       wSelectWindow(wwin, !wwin->flags.selected);
       return;
     }
@@ -3077,8 +3081,10 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
     XUngrabPointer(dpy, CurrentTime);
 #endif
-  } else if (event->xbutton.button == Button3
-             && !wwin->flags.internal_window && !WCHECK_STATE(WSTATE_MODAL)) {
+  }
+  else if (event->xbutton.button == Button3
+           && !wwin->flags.internal_window
+           && !WCHECK_STATE(WSTATE_MODAL)) {
     WObjDescriptor *desc;
 
     if (event->xbutton.window != wwin->frame->titlebar->window
