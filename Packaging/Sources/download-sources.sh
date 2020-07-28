@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
-. ../Debian/versions.inc.sh
+. ./versions.inc.sh
 ROOT="$PWD"
 
 git_remote_archive() {
-	local url="$1"
+  local url="$1"
   local dest="$2-$3"
   local branch="$4"
 
   cd "$ROOT"
-  
+
   if [ -d "$dest" ];then
     echo "$dest exists, skipping"
   else

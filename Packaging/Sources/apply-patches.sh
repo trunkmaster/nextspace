@@ -1,19 +1,19 @@
 #!/bin/bash
 
-. ../Debian/versions.inc.sh
+. ./versions.inc.sh
 
 rootdir="$(pwd)"
-patchdir=`readlink -f ../Debian`
+patchdir="$(pwd)/patches"
 
 create_dsc() {
-	local dir="$1"
+  local dir="$1"
 
   cd $rootdir
   if [ -d $dir ];then
     cd $dir
-    if [ -f $patchdir/$dir/debian/patches/series ];then
-      cat $patchdir/$dir/debian/patches/series | while read filename; do
-        patch -p1 -i $patchdir/$dir/debian/patches/$filename
+    if [ -f $patchdir/$dir/patches/series ];then
+      cat $patchdir/$dir/patches/series | while read filename; do
+        patch -p1 -i $patchdir/$dir/patches/$filename
        done
     fi
   fi
