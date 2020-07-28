@@ -30,8 +30,8 @@ Building NEXTSPACE will simply use this source tree.
 
 ### installing default profile and configuration
 
-Before you can run NEXTSTEP, you need to make sure you install various scripts and configurations that the NEXTSTEP depends on at runtime. Some stuff is system-wide and it need to be installed by root, other is installed in user's home directory. For this reason you should run the following installation script twice. 
-
+Before you can run NEXTSPACE, you need to make sure you install various scripts and configurations that the NEXTSPACE depends on at runtime. Some stuff is system-wide and it need to be installed by root, other is installed in user's home directory. For this reason you should run the following installation script twice. 
     # sudo ./9_install_scripts.sh
     $ ./9_install_scripts.sh
 
+Note that this is "minimal" startup configuration, which uses xinitrc script to start everything up (usually invoked as part of startx). If you want to use Login.app or start Workspace in any other way, you may have to create your own configuration.
